@@ -1,99 +1,62 @@
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH] serial: vt8500_serial: Fix a parameter of
- find_first_zero_bit.
-Date: Tue, 23 Aug 2016 06:20:28 +0200
-Message-ID: <57f44339-76c6-051f-b592-2648afaae336@wanadoo.fr>
-References: <1471814425-18949-1-git-send-email-christophe.jaillet@wanadoo.fr>
- <2512469.eM8MYFl15l@wuerfel>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH 1/3] ACPI / APD: Provide build-in properties of the UART
+Date: Tue, 23 Aug 2016 09:37:08 +0300
+Message-ID: <20160823063708.GC9065@kuha.fi.intel.com>
+References: <1471875855-110782-2-git-send-email-heikki.krogerus@linux.intel.com>
+ <201608222208.evSAciq7%fengguang.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-In-Reply-To: <2512469.eM8MYFl15l@wuerfel>
-Sender: kernel-janitors-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
-Cc: gregkh@linuxfoundation.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org, linux@prisktech.co.nz, linux-serial@vger.kernel.org, jslaby@suse.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <201608222208.evSAciq7%fengguang.wu@intel.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: kbuild test robot <lkp@intel.com>
+Cc: kbuild-all@01.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Ken Xue <Ken.Xue@amd.com>
 List-Id: linux-serial@vger.kernel.org
-
-Le 22/08/2016 à 10:42, Arnd Bergmann a écrit :
-> [...]
-> Sorry, but I'm not following the logic here.
->
-> [...]
-> You argue that the two have the same meaning, which I see, but
-> why is it better than the existing code?
->
-> 	Arnd
 
 Hi,
 
-sorry if my explanation was unclear.
+On Mon, Aug 22, 2016 at 11:00:49PM +0800, kbuild test robot wrote:
+> Hi Heikki,
+> 
+> [auto build test ERROR on pm/linux-next]
+> [also build test ERROR on v4.8-rc3 next-20160822]
+> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+> [Suggest to use git(>=2.9.0) format-patch --base=<commit> (or --base=auto for convenience) to record what (public, well-known) commit your patch series was built on]
+> [Check https://git-scm.com/docs/git-format-patch for more information]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Heikki-Krogerus/ACPI-APD-Provide-build-in-properties-of-the-UART/20160822-222543
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
+> config: x86_64-randconfig-x016-201634 (attached as .config)
+> compiler: gcc-6 (Debian 6.1.1-9) 6.1.1 20160705
+> reproduce:
+>         # save the attached .config to linux build tree
+>         make ARCH=x86_64 
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    drivers/acpi/acpi_apd.c: In function 'acpi_apd_setup':
+> >> drivers/acpi/acpi_apd.c:71:11: error: 'struct apd_private_data' has no member named 'properties'
+>      if (pdata->properties)
+>               ^~
+>    drivers/acpi/acpi_apd.c:73:16: error: 'struct apd_private_data' has no member named 'properties'
+>               pdata->properties);
+>                    ^~
+> 
+> vim +71 drivers/acpi/acpi_apd.c
+> 
+>     65						dev_name(&pdata->adev->dev),
+>     66						NULL, 0, dev_desc->fixed_clk_rate);
+>     67			clk_register_clkdev(clk, NULL, dev_name(&pdata->adev->dev));
+>     68			pdata->clk = clk;
+>     69		}
+>     70	
+>   > 71		if (pdata->properties)
 
-What I mean is that if "sizeof(unsigned long) = 4" (i.e. 32 bits systems 
-?) then:
-
-	port = find_first_zero_bit(&vt8500_ports_in_use, sizeof(vt8500_ports_in_use));
-turns into:
-  	port = find_first_zero_bit(&vt8500_ports_in_use, 4);
-
-find_first_zero_bit "Returns the bit number of the first set bit.  If no bits are set, returns @size."
-So, in this case, it can return 1, 2, 3 or 4, if one of the 4 first bits is 0.
-And will also return 4, if none of the 4 first bits is 0.
-
-In no way, 5 or above can be returned.
-
-The code just after is:
-	if (port >= VT8500_MAX_PORTS)
-		return -ENODEV;
-It turns into:
-	if (port >= 6)
-		return -ENODEV;
-
-
-I see 2 problems there:
-	- First, according to this test, "port = 5" seems a legal value, but can never trigger.
-	- Second, if the first 3 bits are set, the find_first_zero_bit will return 4, whatever the value of the 4th bit.
-           This 4 can either mean "4th bit is clear" or "no clear bit found, so return @size (i.e. 4)"
-
-  
-Using:
-	port = find_first_zero_bit(&vt8500_ports_in_use, BITS_PER_LONG);
-Would solve the 2 issues.
-    - 4 would really mean, 4th bit is set.
-    - 5 becomes a possible value.
-    - 6 to 31 would mean: we found a clear bit "in the garbage after the VT8500_MAX_PORTS (i.e. 6) relevant bits".
-    - 32 would mean, all bits set.
-
-These answers look more in line with the "if (port >= VT8500_MAX_PORTS)" test.
-
-
-
-Finally, what I meant by "Other options are possible:" is:
-   - 'vt8500_ports_in_use' being a 'unsigned long', use ffz to reduce code verbosity
-	port = ffz(&vt8500_ports_in_use);
-     would also work, because it is equivalent to:
-	port = find_first_zero_bit(&vt8500_ports_in_use, BITS_PER_LONG);
-
-   - VT8500_MAX_PORTS, in order to be consistent with the test below
-	port = find_first_zero_bit(&vt8500_ports_in_use, VT8500_MAX_PORTS);
-     would also work and is maybe more logical in regard to the test "if (port >= VT8500_MAX_PORTS)"
+Thanks, I'll fix it. I did not get compiler error from this? Weird.
 
 
+Br,
 
-Now if "sizeof(unsigned long) = 8" (i.e. 64 bits systems ?), the actual code would work.
-But using "sizeof(long)" to mean "more than VT8500_MAX_PORTS" is odd.
-In other words, expressing a number of bits using something that gives a size in bytes is, IMHO, spurious.
-
-  
-All this is pure speculation.
-
-Hoping that it is clearer now ( and that my analysis is right :) )
-
-Best regard,
-CJ
-
-
----
-L'absence de virus dans ce courrier électronique a été vérifiée par le logiciel antivirus Avast.
-https://www.avast.com/antivirus
-
+-- 
+heikki
