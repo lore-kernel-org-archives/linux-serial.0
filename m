@@ -1,94 +1,43 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] serial: vt8500_serial: Fix a parameter of find_first_zero_bit.
-Date: Tue, 23 Aug 2016 11:23:34 +0200
-Message-ID: <11520879.bzQ3JxDSyK@wuerfel>
-References: <1471814425-18949-1-git-send-email-christophe.jaillet@wanadoo.fr> <2512469.eM8MYFl15l@wuerfel> <57f44339-76c6-051f-b592-2648afaae336@wanadoo.fr>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+From: Marcel Holtmann <marcel@holtmann.org>
+Subject: Re: [RFC PATCH 0/3] UART slave device bus
+Date: Tue, 23 Aug 2016 07:42:38 -0400
+Message-ID: <A02E1BEE-FAC7-473F-B742-4C747CCEEBD5@holtmann.org>
+References: <CAL_JsqL1s9QTc+xVXafcHmyiH+6Yy0Ded+JbeYhTtYNxLtWREg@mail.gmail.com> <2775954.hrE2UdODgU@wuerfel> <CAL_Jsq+tft4zsoOeE0WvMR3W9hAXEKzz35CgFtNJ6+P82uy-3A@mail.gmail.com> <20160822180254.5c95af7c@lxorguk.ukuu.org.uk> <CAL_JsqLe74GYN+j5muoCcnEX=BRu8cCvacRG0Xz7i+AEwxbDZg@mail.gmail.com> <20160822183849.6dfdb9d2@lxorguk.ukuu.org.uk> <2D07EA08-1055-4292-96B3-32913EC9BBE1@holtmann.org> <20160822223223.398ee72d@lxorguk.ukuu.org.uk> <20160822220017.GA10689@amd> <20160822235414.4b2f8712@lxorguk.ukuu.org.uk> <20160822235758.gh33xupgyroye5wa@earth> <20160823011521.0ed94283@lxorguk.ukuu.org.uk>
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8BIT
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-In-Reply-To: <57f44339-76c6-051f-b592-2648afaae336@wanadoo.fr>
-Sender: kernel-janitors-owner@vger.kernel.org
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org, linux@prisktech.co.nz, linux-serial@vger.kernel.org, jslaby@suse.com
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160823011521.0ed94283@lxorguk.ukuu.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday, August 23, 2016 6:20:28 AM CEST Christophe JAILLET wrote:
-> Le 22/08/2016 à 10:42, Arnd Bergmann a écrit :
-> > [...]
-> > Sorry, but I'm not following the logic here.
-> >
-> > [...]
-> > You argue that the two have the same meaning, which I see, but
-> > why is it better than the existing code?
-> >
-> > 	Arnd
-> 
-> Hi,
-> 
-> sorry if my explanation was unclear.
-> 
-> What I mean is that if "sizeof(unsigned long) = 4" (i.e. 32 bits systems 
-> ?) then:
-> 
-> 	port = find_first_zero_bit(&vt8500_ports_in_use, sizeof(vt8500_ports_in_use));
-> turns into:
->   	port = find_first_zero_bit(&vt8500_ports_in_use, 4);
-> 
-> find_first_zero_bit "Returns the bit number of the first set bit.  If no bits are set, returns @size."
-> So, in this case, it can return 1, 2, 3 or 4, if one of the 4 first bits is 0.
-> And will also return 4, if none of the 4 first bits is 0.
+Hi Alan,
 
-Ah, got it.
-
+>>> That would still be a regression. Not everyone even uses the kernel
+>>> bluetooth stack. It would only return EBUSY if you had done an "up"
+>>> on it via the direct bluetooth stack.  
+>> 
+>> So it returns EBUSY when uart-bus is used. Since uart-bus is about
+>> hardwired devices that's basically always.
 > 
-> Finally, what I meant by "Other options are possible:" is:
->    - 'vt8500_ports_in_use' being a 'unsigned long', use ffz to reduce code verbosity
-> 	port = ffz(&vt8500_ports_in_use);
->      would also work, because it is equivalent to:
-> 	port = find_first_zero_bit(&vt8500_ports_in_use, BITS_PER_LONG);
+> That would only be when the bluetooth port in question was active via the
+> hardwired interface - which is not always. You choose to turn on/off
+> bluetooth interfaces. If you boot with an older user space you'd use
+> hciattach instead.
 > 
->    - VT8500_MAX_PORTS, in order to be consistent with the test below
-> 	port = find_first_zero_bit(&vt8500_ports_in_use, VT8500_MAX_PORTS);
->      would also work and is maybe more logical in regard to the test "if (port >= VT8500_MAX_PORTS)"
-> 
-> 
-> 
-> Now if "sizeof(unsigned long) = 8" (i.e. 64 bits systems ?), the actual code would work.
-> But using "sizeof(long)" to mean "more than VT8500_MAX_PORTS" is odd.
-> In other words, expressing a number of bits using something that gives a size in bytes is, IMHO, spurious.
->   
-> All this is pure speculation.
-> 
-> Hoping that it is clearer now ( and that my analysis is right :) )
+> In many cases you'll also still need the tty interface to do things like
+> firmware upgrades.
 
-I misread the code in the same way the original author wrote it wrong,
-I guess it was meant to say
+actually for Bluetooth you don't. We dealt with all of this crazy vendor stuff and provided proper hooks in the Bluetooth subsystem to support.
 
-	port = find_first_zero_bit(&vt8500_ports_in_use, sizeof(vt8500_ports_in_use) * 8);
+hciattach / btattach are just the hotplug trigger to attach the hardware. It is like plugging in an USB dongle into your USB port. That is how you have to see this. Killing the hciattach / btattach process is the unplug event. It is that simple.
 
-to convert number of bytes into number of bits. Your patch is absolutely
-correct, but being more specific about the kind of mistake that was made
-is a good idea.
+And if you can skip the hciattach / btattach step and use kernel serial bus with proper enumeration and driver binding, then the end result is that you get a hci0 Bluetooth interface. The same way as you would have gotten when calling hciattach / btattach. Meaning you then call hciconfig hci0 up (or let bluetoothd do it for you) and you have Bluetooth working. It worked this way since 2.4.6 kernel.
 
-Regarding which of the four alternatives to use, I'd probably use
-your third one, checking against VT8500_MAX_PORTS. To make this code
-absolutely foolproof, we can add this hunk too then:
+The real power on is done via hciconfig hci0 up and not hciattach. The only difference is that since a long time now, kernel drivers can provide extra vendor hooks. And the kernel can internally and temporally power on the hardware if it has to do certain tasks. For example configuring the BD_ADDR, loading some patches or doing some audio configuration.
 
-diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-index 23cfc5e16b45..a68be66d2770 100644
---- a/drivers/tty/serial/vt8500_serial.c
-+++ b/drivers/tty/serial/vt8500_serial.c
-@@ -118,7 +118,7 @@ struct vt8500_port {
-  * have been allocated as we can't use pdev->id in
-  * devicetree
-  */
--static unsigned long vt8500_ports_in_use;
-+static DECLARE_BITMAP(vt8500_ports_in_use, VT8500_MAX_PORTS);
- 
- static inline void vt8500_write(struct uart_port *port, unsigned int val,
- 			     unsigned int off)
+Regards
 
-
-
-	Arnd
+Marcel
