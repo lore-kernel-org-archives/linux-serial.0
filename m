@@ -1,101 +1,30 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
 Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Wed, 24 Aug 2016 14:57:14 +0100
-Message-ID: <20160824145714.02bbebb3@lxorguk.ukuu.org.uk>
-References: <CAL_Jsq+tft4zsoOeE0WvMR3W9hAXEKzz35CgFtNJ6+P82uy-3A@mail.gmail.com>
-        <20160822180254.5c95af7c@lxorguk.ukuu.org.uk>
-        <CAL_JsqLe74GYN+j5muoCcnEX=BRu8cCvacRG0Xz7i+AEwxbDZg@mail.gmail.com>
-        <20160822183849.6dfdb9d2@lxorguk.ukuu.org.uk>
-        <2D07EA08-1055-4292-96B3-32913EC9BBE1@holtmann.org>
-        <20160822223223.398ee72d@lxorguk.ukuu.org.uk>
-        <20160822220017.GA10689@amd>
-        <20160822235414.4b2f8712@lxorguk.ukuu.org.uk>
-        <20160822235758.gh33xupgyroye5wa@earth>
-        <20160823011521.0ed94283@lxorguk.ukuu.org.uk>
-        <20160823005749.io6x4oi7muttkhfx@earth>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Date: Wed, 24 Aug 2016 10:29:58 -0400
+Message-ID: <A8AA3046-E635-4697-BA01-86FFFBB5B2E0@holtmann.org>
+References: <CAL_Jsq+tft4zsoOeE0WvMR3W9hAXEKzz35CgFtNJ6+P82uy-3A@mail.gmail.com> <20160822180254.5c95af7c@lxorguk.ukuu.org.uk> <CAL_JsqLe74GYN+j5muoCcnEX=BRu8cCvacRG0Xz7i+AEwxbDZg@mail.gmail.com> <20160822183849.6dfdb9d2@lxorguk.ukuu.org.uk> <2D07EA08-1055-4292-96B3-32913EC9BBE1@holtmann.org> <20160822223223.398ee72d@lxorguk.ukuu.org.uk> <20160822220017.GA10689@amd> <20160822235414.4b2f8712@lxorguk.ukuu.org.uk> <20160822235758.gh33xupgyroye5wa@earth> <20160823011521.0ed94283@lxorguk.ukuu.org.uk> <20160823005749.io6x4oi7muttkhfx@earth> <20160824145714.02bbebb3@lxorguk.ukuu.org.uk>
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160823005749.io6x4oi7muttkhfx@earth>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sre@kernel.org>
-Cc: Pavel Machek <pavel@ucw.cz>, Marcel Holtmann <marcel@holtmann.org>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160824145714.02bbebb3-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-> So you mean if I do "hciconfig hci0 down", then the uart-bus should
-> "down" the tty and only on "hciconfig hci0 up" it should "up" the
-> tty? I would expect a uart-bus slave-device takes control of the
-> device ("up" it) on probe. It's hardwired anyway.
+Hi Alan,
 
-Today you can switch stacks at runtime, you can switch between the kernel
-stack and debug tools at runtime. Breaking that is a regression.
-
-> Also what should happen if old userspace use hciattach while
-> uart-bus slave-device doesn't have control over it? Do you
-
-You would either use the old hciattach in which case you wouldn't be able
-to manage it via a new API while attached, or the new API in which case
-you wouldn't be able to manage it via the old interface while it was
-being used directly.
-
-> Or do you suggest to register hci1 and one cannot use hci0? I guess
-> this breaks even more devices, as the device number changes.
-
-Device numbers are dynamic anyway. Plug a USB adapter in and if it beats
-your onboard adapter to registration then the order changes.
-
-> So yes, from your point of view there is a regression, just because
-> it's working automatically. So let's just not convert existing boards
-> with working hciattach based bluetooth devices. New devices can use
-
->From a distribution point of view that would be a nightmare.
-
-> the uart-bus, as it's not a regression for them and Nokia N series
-> can also do it, since they have no working bluetooth at all at the
-> moment.
-
-The Nokia N series is a weird corner case.
-
-> > In many cases you'll also still need the tty interface to do
-> > things like firmware upgrades.  
+>> So you mean if I do "hciconfig hci0 down", then the uart-bus should
+>> "down" the tty and only on "hciconfig hci0 up" it should "up" the
+>> tty? I would expect a uart-bus slave-device takes control of the
+>> device ("up" it) on probe. It's hardwired anyway.
 > 
-> I would expect the uart-slave driver to know how to do firmware
-> updates. Actually most bluetooth chips are initialized by uploading
-> a firmware to them.
+> Today you can switch stacks at runtime, you can switch between the kernel
+> stack and debug tools at runtime. Breaking that is a regression.
 
-Usually no - you don't want a ton of kernel code for flashing adapters
-when they have built in firmware (similar issue for 3G modems)
+actually that is not true. We have HCI User Channel since a long time that gives you raw access to the devices. And also kernel interfaces to do all vendor / debug tasks.
 
-> And there are definitely uart drivers not caring about having a tty
-> device. Nokia's vendor driver for their bluetooth protocol contains
-> a custom omap-serial driver combined with the actual bluetooth
-> driver. There is nothing related to the tty framework. I think the
-> same would work for the other hardwired bluetooth chips perfectly
-> fine.
+Regards
 
-That means having two different omap serial drivers to maintain which is
-not ideal.
-
-To me there are four different things
-
-1. bluetooth devices "just work". That can be user space (eg it seems to
-just work on my Fedora boxes and bluetooth enumeration is being done via
-user space, or may be via kernel enumeration, or a mix. PPP is an
-existing example of this - serial port PPP is an ldisc but ports that are
-not UART like speak directly to the PPP layer as network adapters.
-
-2. Sideband controls and power management, where we need to give the
-tty_port a child device and power it up/down properly and have the
-tty_port hooks to do so based upon the ldisc protocol state machine when
-talking stuff like NMEA or HCI.
-
-3. The special case UART power saving features/hacks like GPIO snooping,
-again with the right hooks
-
-4. Whether it's useful to be able to create a tty device in kernel and
-attach that to stuff with no userspace involved.
-
-All are independent.
-
-Alan
+Marcel
