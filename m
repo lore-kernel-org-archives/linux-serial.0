@@ -1,7 +1,7 @@
 From: Rob Herring <robh@kernel.org>
-Subject: [RFC PATCH 1/6] serio: add DT driver binding
-Date: Wed, 24 Aug 2016 18:24:31 -0500
-Message-ID: <20160824232437.9446-2-robh@kernel.org>
+Subject: [RFC PATCH 5/6] serio: add serial configuration functions
+Date: Wed, 24 Aug 2016 18:24:36 -0500
+Message-ID: <20160824232437.9446-7-robh@kernel.org>
 References: <20160824232437.9446-1-robh@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20160824232437.9446-1-robh@kernel.org>
@@ -10,65 +10,46 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@hol
 Cc: Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This adds DT driver binding support to the serio bus. The parent of the
-serio port device must have a device_node associated with it. Typically,
-this would be the UART device node. The slave device must be a child node
-of the UART device node.
+Just stub functions ATM.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/input/serio/serio.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ include/linux/serio.h | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/input/serio/serio.c b/drivers/input/serio/serio.c
-index 1ca7f55..9e8eb7a 100644
---- a/drivers/input/serio/serio.c
-+++ b/drivers/input/serio/serio.c
-@@ -36,6 +36,7 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- #include <linux/mutex.h>
-+#include <linux/of_device.h>
+diff --git a/include/linux/serio.h b/include/linux/serio.h
+index 5d0b69f..5bf1754 100644
+--- a/include/linux/serio.h
++++ b/include/linux/serio.h
+@@ -41,6 +41,8 @@ struct serio {
+ 	void (*close)(struct serio *);
+ 	int (*start)(struct serio *);
+ 	void (*stop)(struct serio *);
++	void (*set_flow_control)(struct serio *, bool);
++	unsigned int (*set_baudrate)(struct serio *, unsigned int);
  
- MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
- MODULE_DESCRIPTION("Serio abstraction core");
-@@ -88,7 +89,7 @@ static void serio_disconnect_driver(struct serio *serio)
+ 	struct serio *parent;
+ 	/* Entry in parent->children list */
+@@ -170,6 +172,20 @@ static inline void serio_drv_write_wakeup(struct serio *serio)
+ 		serio->drv->write_wakeup(serio);
+ }
  
- static int serio_match_port(const struct serio_device_id *ids, struct serio *serio)
- {
--	while (ids->type || ids->proto) {
-+	while (ids && (ids->type || ids->proto)) {
- 		if ((ids->type == SERIO_ANY || ids->type == serio->id.type) &&
- 		    (ids->proto == SERIO_ANY || ids->proto == serio->id.proto) &&
- 		    (ids->extra == SERIO_ANY || ids->extra == serio->id.extra) &&
-@@ -542,6 +543,8 @@ static void serio_init_port(struct serio *serio)
- static void serio_add_port(struct serio *serio)
- {
- 	struct serio *parent = serio->parent;
-+	struct device_node *parent_node =
-+		serio->dev.parent ? serio->dev.parent->of_node : NULL;
- 	int error;
- 
- 	if (parent) {
-@@ -555,6 +558,8 @@ static void serio_add_port(struct serio *serio)
- 	if (serio->start)
- 		serio->start(serio);
- 
-+	serio->dev.of_node = of_get_next_available_child(parent_node, NULL);
++static inline void serio_set_flow_control(struct serio *serio, bool enable)
++{
++	if (serio->set_flow_control)
++		serio->set_flow_control(serio, enable);
++}
 +
- 	error = device_add(&serio->dev);
- 	if (error)
- 		dev_err(&serio->dev,
-@@ -902,6 +907,10 @@ static int serio_bus_match(struct device *dev, struct device_driver *drv)
- 	struct serio *serio = to_serio_port(dev);
- 	struct serio_driver *serio_drv = to_serio_driver(drv);
- 
-+	if (of_driver_match_device(dev, drv)) {
-+		printk("matched %s\n", dev->of_node->name);
-+		return 1;
-+	}
- 	if (serio->manual_bind || serio_drv->manual_bind)
- 		return 0;
- 
++static inline unsigned int serio_set_baudrate(struct serio *serio, unsigned int speed)
++{
++	if (serio->set_baudrate)
++		return serio->set_baudrate(serio, speed);
++
++	return 0;
++}
++
+ /*
+  * Use the following functions to manipulate serio's per-port
+  * driver-specific data.
 -- 
 2.9.3
