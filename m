@@ -1,132 +1,40 @@
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v3 3/3] serial: 8250_dw: add ACPI support for uart on
- Hisilicon Hip05 soc
-Date: Wed, 24 Aug 2016 16:22:58 +0800
-Message-ID: <5cf24dd0-92ca-fe25-d9a0-39c4a6c52868@huawei.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v3 2/3] serial: 8250_dw: Use new dev variable in probe
+Date: Wed, 24 Aug 2016 13:00:17 +0300
+Message-ID: <1472032817.4887.253.camel@linux.intel.com>
 References: <1468580485-28567-1-git-send-email-wangkefeng.wang@huawei.com>
- <1468580485-28567-4-git-send-email-wangkefeng.wang@huawei.com>
- <1471865054.4887.206.camel@linux.intel.com>
- <20160822140558.GB9065@kuha.fi.intel.com>
+         <1468580485-28567-3-git-send-email-wangkefeng.wang@huawei.com>
+         <1471864381.4887.202.camel@linux.intel.com>
+         <c9107ca9-bd35-e80e-135c-1492789e044a@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160822140558.GB9065@kuha.fi.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-acpi@vger.kernel.org, guohanjun@huawei.com, z.liuxinliang@hisilicon.com, xuwei5@hisilicon.com, graeme.gregory@linaro.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <c9107ca9-bd35-e80e-135c-1492789e044a@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Kefeng Wang <wangkefeng.wang@huawei.com>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org
+Cc: linux-acpi@vger.kernel.org, guohanjun@huawei.com, z.liuxinliang@hisilicon.com, xuwei5@hisilicon.com, graeme.gregory@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 2016/8/22 22:05, Heikki Krogerus wrote:
-> Hi,
+On Wed, 2016-08-24 at 16:20 +0800, Kefeng Wang wrote:
 > 
-> On Mon, Aug 22, 2016 at 02:24:14PM +0300, Andy Shevchenko wrote:
->> On Fri, 2016-07-15 at 19:01 +0800, Kefeng Wang wrote:
->>> Use built-in device properties to set device parameters for the
->>> existing device probed by acpi.
->>
->> acpi -> ACPI
->>
->>>
->>> Add ACPI identifier for UART on Hisilicon Hip05 soc, be careful
->>
->> soc -> SoC
->>
->>> that it is not 16550 compatibal, so we need set "reg-io-width"
->>
->> compatibal -> compatible
-
-Will fix.
-
->>
->>> and "reg-shift" by _DSD method in DSDT.
->>>
->>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
->>> ---
->>>  drivers/tty/serial/8250/8250_dw.c | 23 +++++++++++++++++------
->>>  1 file changed, 17 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/8250/8250_dw.c
->>> b/drivers/tty/serial/8250/8250_dw.c
->>> index d6934310..5ab9cfe 100644
->>> --- a/drivers/tty/serial/8250/8250_dw.c
->>> +++ b/drivers/tty/serial/8250/8250_dw.c
->>> @@ -297,12 +297,6 @@ static void dw8250_quirks(struct uart_port *p,
->>> struct dw8250_data *data)
->>>  			p->serial_in = dw8250_serial_in32be;
->>>  			p->serial_out = dw8250_serial_out32be;
->>>  		}
->>> -	} else if (has_acpi_companion(p->dev)) {
->>> -		p->iotype = UPIO_MEM32;
->>> -		p->regshift = 2;
->>> -		p->serial_in = dw8250_serial_in32;
->>> -		/* So far none of there implement the Busy
->>> Functionality */
->>> -		data->uart_16550_compatible = true;
->>>  	}
->>>  
->>>  	/* Platforms with iDMA */
->>> @@ -352,6 +346,19 @@ static void dw8250_setup_port(struct uart_port
->>> *p)
->>>  		up->capabilities |= UART_CAP_AFE;
->>>  }
->>>  
->>> +static struct property_entry dw8250_properties[] = {
->>> +	PROPERTY_ENTRY_U32("reg-io-width", 4),
->>> +	PROPERTY_ENTRY_U32("reg-shift", 2),
->>> +	PROPERTY_ENTRY_BOOL("snps,uart-16550-compatible"),
->>> +	{ },
->>> +};
->>> +
->>> +/* non 16550 compatible id list*/
->>
->> non 16550 -> Non-16550
->> Space before */
->>
->>> +static const struct acpi_device_id non_16550_ids[] = {
->>> +	{ "HISI0031", 0 },
->>> +	{ },
->>> +};
->>> +
->>>  static int dw8250_probe(struct platform_device *pdev)
->>>  {
->>>  	struct uart_8250_port uart = {};
->>> @@ -395,6 +402,9 @@ static int dw8250_probe(struct platform_device
->>> *pdev)
->>>  	if (!data)
->>>  		return -ENOMEM;
->>>  
->>> +	if (has_acpi_companion(dev) &&
->>> !acpi_match_device(non_16550_ids, dev))
->>
->>
->>> +		platform_device_add_properties(pdev,
->>> dw8250_properties);
->>
->> What if we probe device which has already properties assigned?
->>
->> Heikki, are you good with such trick?
+> On 2016/8/22 19:13, Andy Shevchenko wrote:
+> > 
+> > On Fri, 2016-07-15 at 19:01 +0800, Kefeng Wang wrote:
+> > > 
+> > > Use new dev variable instead of pdev->dev and p->dev in probe
+> > > function.
+> > 
+> > I'm not sure we need this one. What is wrong with &pdev->dev?
 > 
-> No this is not the way to do this. As we talked, we need to add the
-> properties in the mfd drivers when they exist and not in the driver
-> itself. Only if there is no mfd driver that creates the actual
-> platform device for dw8250 and when also the ACPI tables don't provide
-> the properties, we identify the board in dw8250_quirks and handle it
-> separately. Right now there is only one such board.
+> Yes, no error in current code. there are &pdev->dev(A) and p->dev(B),
+> some codes use A, others use B, so I want to use an unified one.
 > 
-> I'll prepare the patches for that right now. This series can then be
-> made on top of those.
-> 
+> If someone don't like this, I will drop it, :)
 
-OK, will base on your patchset.
+I want to say that this change doesn't belong to the series in this
+case. You may submit it separately later on.
 
-Thanks Andy and Heikki for your comments.
-
-Kefeng
-
-
-> 
-> Thanks,
-> 
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
