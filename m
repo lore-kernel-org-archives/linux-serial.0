@@ -1,71 +1,82 @@
-From: Gabriel Paubert <paubert@iram.es>
-Subject: Re: [PATCH v3 2/5] firmware: annotate thou shalt not request fw on
- init or probe
-Date: Wed, 24 Aug 2016 10:17:38 +0200
-Message-ID: <20160824081738.GA8991@visitor2.iram.es>
-References: <1466117661-22075-1-git-send-email-mcgrof@kernel.org>
- <1471999507-913-1-git-send-email-mcgrof@kernel.org>
- <1471999507-913-3-git-send-email-mcgrof@kernel.org>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v3 1/3] serial: 8250_dw: make dw8250_set_termios as
+ default set_termios callback
+Date: Wed, 24 Aug 2016 16:09:01 +0800
+Message-ID: <3dca2d98-1272-0daa-20a5-4649d8ae2405@huawei.com>
+References: <1468580485-28567-1-git-send-email-wangkefeng.wang@huawei.com>
+ <1468580485-28567-2-git-send-email-wangkefeng.wang@huawei.com>
+ <1471864110.4887.199.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-Content-Disposition: inline
-In-Reply-To: <1471999507-913-3-git-send-email-mcgrof@kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: mcgrof@kernel.org
-Cc: Kevin Cernekee <cernekee@gmail.com>, Gilles.Muller@lip6.fr, tiwai@suse.de, Daniel Vetter <daniel.vetter@ffwll.ch>, ming.lei@canonical.com, stephen.boyd@linaro.org, bjorn.andersson@linaro.org, teg@jklm.no, chunkeey@googlemail.com, cocci@systeme.lip6.fr, jwboyer@fedoraproject.org, Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org, torvalds@linux-foundation.org, Thierry Martinez <martinez@nsup.org>, linux-serial@vger.kernel.org, jslaby@suse.com, zohar@linux.vnet.ibm.com, Alessandro Rubini <rubini@gnudd.com>, arend.vanspriel@broadcom.com, Kees Cook <keescook@chromium.org>, hauke@hauke-m.de, markivx@codeaurora.org, nicolas.palix@imag.fr, Abhay_Salunke@dell.com, Julia.Lawall@lip6.fr, broonie@kernel.org, j.anaszewski@samsung.com, kvalo@codeaurora.org, dhowells@redhat.com, fengguang.wu@intel.com, gregkh@linuxfoundation.org, dmitry.torokhov@gmail.com, daniel.wagner@bmw-c
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1471864110.4887.199.camel@linux.intel.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org
+Cc: linux-acpi@vger.kernel.org, guohanjun@huawei.com, z.liuxinliang@hisilicon.com, xuwei5@hisilicon.com, graeme.gregory@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Aug 23, 2016 at 05:45:04PM -0700, mcgrof@kernel.org wrote:
 
-[snip]
-> ---
->  Documentation/firmware_class/README                |  20 ++++
->  drivers/base/Kconfig                               |   2 +-
->  .../request_firmware-avoid-init-probe-init.cocci   | 130 +++++++++++++++++++++
->  3 files changed, 151 insertions(+), 1 deletion(-)
->  create mode 100644 scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
+
+On 2016/8/22 19:08, Andy Shevchenko wrote:
+> On Fri, 2016-07-15 at 19:01 +0800, Kefeng Wang wrote:
+>> We can safely use dw8250_set_termios() as the default set_termios
+>> callback instead of serial8250_do_set_termios(), so do it.
 > 
-> diff --git a/Documentation/firmware_class/README b/Documentation/firmware_class/README
-> index cafdca8b3b15..056d1cb9d365 100644
-> --- a/Documentation/firmware_class/README
-> +++ b/Documentation/firmware_class/README
-> @@ -93,6 +93,26 @@
->     user contexts to request firmware asynchronously, but can't be called
->     in atomic contexts.
->  
-> +Requirements:
-> +=============
-> +
-> +You should avoid at all costs requesting firmware on both init and probe paths
-> +of your device driver. Reason for this is the complexity needed to ensure a
-> +firmware will be available for a driver early in boot through different
-> +build configurations. Consider built-in drivers needing firmware early, or
-> +consider a driver assuming it will only get firmware after pivot_root().
-> +
-> +Drivers that really need firmware early should use stuff the firmware in
+> So, current set_termios() relies on clock to be defined or be an error
+> pointer. I'm not sure that it handles NULL properly.
+> 
+> So, the question is does set_termios() handle all possible cases? If no,
+> do we guarantee that the case it doesn't handle never happened?
+> 
+> Answer to this question and amend either the patch or improve commit
+> message.
+> 
 
-Minor grammatical nit: s/use//
+If clk do be NUL, uartclk will be set wrong value, zero, will judge this case
+in dw8250_set_termios, then make it as default callback.
 
-> +initramfs or consider using CONFIG_EXTRA_FIRMWARE. Using initramfs is much
-> +more portable to more distributions as not all distributions wish to enable
-> +CONFIG_EXTRA_FIRMWARE. Should a driver require the firmware being built-in
-> +it should depend on CONFIG_EXTRA_FIRMWARE. There is no current annotation for
-> +requiring a firmware on initramfs.
-> +
-> +If you're a maintainer you can help police this with:
-> +
-> +$ export COCCI=scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
-> +$ make coccicheck MODE=report
->  
->   about in-kernel persistence:
->   ---------------------------
+
+>>
+>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+>> ---
+>>  drivers/tty/serial/8250/8250_dw.c | 3 +--
+>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_dw.c
+>> b/drivers/tty/serial/8250/8250_dw.c
+>> index e199696..65f3da7 100644
+>> --- a/drivers/tty/serial/8250/8250_dw.c
+>> +++ b/drivers/tty/serial/8250/8250_dw.c
+>> @@ -301,7 +301,6 @@ static void dw8250_quirks(struct uart_port *p,
+>> struct dw8250_data *data)
+>>  		p->iotype = UPIO_MEM32;
+>>  		p->regshift = 2;
+>>  		p->serial_in = dw8250_serial_in32;
+>> -		p->set_termios = dw8250_set_termios;
+>>  		/* So far none of there implement the Busy
+>> Functionality */
+>>  		data->uart_16550_compatible = true;
+>>  	}
+>> @@ -309,7 +308,6 @@ static void dw8250_quirks(struct uart_port *p,
+>> struct dw8250_data *data)
+>>  	/* Platforms with iDMA */
+>>  	if (platform_get_resource_byname(to_platform_device(p->dev),
+>>  					 IORESOURCE_MEM,
+>> "lpss_priv")) {
+>> -		p->set_termios = dw8250_set_termios;
+>>  		data->dma.rx_param = p->dev->parent;
+>>  		data->dma.tx_param = p->dev->parent;
+>>  		data->dma.fn = dw8250_idma_filter;
+>> @@ -386,6 +384,7 @@ static int dw8250_probe(struct platform_device
+>> *pdev)
+>>  	p->iotype	= UPIO_MEM;
+>>  	p->serial_in	= dw8250_serial_in;
+>>  	p->serial_out	= dw8250_serial_out;
+>> +	p->set_termios	= dw8250_set_termios;
+>>  
+>>  	p->membase = devm_ioremap(&pdev->dev, regs->start,
+>> resource_size(regs));
+>>  	if (!p->membase)
+> 
+
