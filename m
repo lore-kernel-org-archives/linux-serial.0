@@ -1,49 +1,71 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v2] serial: vt8500_serial: Fix a parameter of find_first_zero_bit.
-Date: Wed, 24 Aug 2016 09:21:26 +0200
-Message-ID: <10942927.gm6yg0F9Sl@wuerfel>
-References: <1472015218-31826-1-git-send-email-christophe.jaillet@wanadoo.fr>
+From: Gabriel Paubert <paubert@iram.es>
+Subject: Re: [PATCH v3 2/5] firmware: annotate thou shalt not request fw on
+ init or probe
+Date: Wed, 24 Aug 2016 10:17:38 +0200
+Message-ID: <20160824081738.GA8991@visitor2.iram.es>
+References: <1466117661-22075-1-git-send-email-mcgrof@kernel.org>
+ <1471999507-913-1-git-send-email-mcgrof@kernel.org>
+ <1471999507-913-3-git-send-email-mcgrof@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1472015218-31826-1-git-send-email-christophe.jaillet@wanadoo.fr>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>, linux@prisktech.co.nz, gregkh@linuxfoundation.org, jslaby@suse.com, kernel-janitors@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Content-Disposition: inline
+In-Reply-To: <1471999507-913-3-git-send-email-mcgrof@kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: mcgrof@kernel.org
+Cc: Kevin Cernekee <cernekee@gmail.com>, Gilles.Muller@lip6.fr, tiwai@suse.de, Daniel Vetter <daniel.vetter@ffwll.ch>, ming.lei@canonical.com, stephen.boyd@linaro.org, bjorn.andersson@linaro.org, teg@jklm.no, chunkeey@googlemail.com, cocci@systeme.lip6.fr, jwboyer@fedoraproject.org, Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org, torvalds@linux-foundation.org, Thierry Martinez <martinez@nsup.org>, linux-serial@vger.kernel.org, jslaby@suse.com, zohar@linux.vnet.ibm.com, Alessandro Rubini <rubini@gnudd.com>, arend.vanspriel@broadcom.com, Kees Cook <keescook@chromium.org>, hauke@hauke-m.de, markivx@codeaurora.org, nicolas.palix@imag.fr, Abhay_Salunke@dell.com, Julia.Lawall@lip6.fr, broonie@kernel.org, j.anaszewski@samsung.com, kvalo@codeaurora.org, dhowells@redhat.com, fengguang.wu@intel.com, gregkh@linuxfoundation.org, dmitry.torokhov@gmail.com, daniel.wagner@bmw-c
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday, August 24, 2016 7:06:58 AM CEST Christophe JAILLET wrote:
-> The 2nd parameter of 'find_first_zero_bit' is the number of bits to search.
-> In this case, we are passing 'sizeof(vt8500_ports_in_use)'.
-> 'vt8500_ports_in_use' is an 'unsigned long'. So the sizeof is likely to
-> return 4 on a 32 bits kernel.
-> 
-> A few lines below, we check if it is below VT8500_MAX_PORTS, which is 6.
-> 
-> It is likely that the number of bits in a long was expected here.
-> 
-> In order to fix it:
->    - use DECLARE_BITMAP when declaring the vt8500_ports_in_use
->    - use VT8500_MAX_PORTS as a maximum value when checking/setting bits in
->      this bitmap
->    - modify code now that 'vt8500_ports_in_use' has become a pointer
->      because of the use of DECLARE_BITMAP
-> 
-> 
-> It has been spotted by the following coccinelle script:
-> @@
-> expression ret, x;
-> 
-> @@
-> *  ret = \(find_first_bit \| find_first_zero_bit\) (x, sizeof(...));
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> v2: - use of VT8500_MAX_PORTS instead of BITS_PER_LONG to better self
->       document the code
->     - declare vt8500_ports_in_use with DECLARE_BITMAP in order to self
->       document even better and to be foolproof should VT8500_MAX_PORTS
->       be changed one day
+On Tue, Aug 23, 2016 at 05:45:04PM -0700, mcgrof@kernel.org wrote:
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+[snip]
+> ---
+>  Documentation/firmware_class/README                |  20 ++++
+>  drivers/base/Kconfig                               |   2 +-
+>  .../request_firmware-avoid-init-probe-init.cocci   | 130 +++++++++++++++++++++
+>  3 files changed, 151 insertions(+), 1 deletion(-)
+>  create mode 100644 scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
+> 
+> diff --git a/Documentation/firmware_class/README b/Documentation/firmware_class/README
+> index cafdca8b3b15..056d1cb9d365 100644
+> --- a/Documentation/firmware_class/README
+> +++ b/Documentation/firmware_class/README
+> @@ -93,6 +93,26 @@
+>     user contexts to request firmware asynchronously, but can't be called
+>     in atomic contexts.
+>  
+> +Requirements:
+> +=============
+> +
+> +You should avoid at all costs requesting firmware on both init and probe paths
+> +of your device driver. Reason for this is the complexity needed to ensure a
+> +firmware will be available for a driver early in boot through different
+> +build configurations. Consider built-in drivers needing firmware early, or
+> +consider a driver assuming it will only get firmware after pivot_root().
+> +
+> +Drivers that really need firmware early should use stuff the firmware in
+
+Minor grammatical nit: s/use//
+
+> +initramfs or consider using CONFIG_EXTRA_FIRMWARE. Using initramfs is much
+> +more portable to more distributions as not all distributions wish to enable
+> +CONFIG_EXTRA_FIRMWARE. Should a driver require the firmware being built-in
+> +it should depend on CONFIG_EXTRA_FIRMWARE. There is no current annotation for
+> +requiring a firmware on initramfs.
+> +
+> +If you're a maintainer you can help police this with:
+> +
+> +$ export COCCI=scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
+> +$ make coccicheck MODE=report
+>  
+>   about in-kernel persistence:
+>   ---------------------------
