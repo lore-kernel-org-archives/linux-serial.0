@@ -1,50 +1,47 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Wed, 24 Aug 2016 14:14:23 +0200
-Message-ID: <CACRpkda4BmgfuYo0Tj8Rvoq4qvfSz7HT03J0dNPJiL4z7PWx1g@mail.gmail.com>
-References: <20160818011445.22726-1-robh@kernel.org> <12886761.WF058qtZp8@wuerfel>
- <CAL_JsqL1s9QTc+xVXafcHmyiH+6Yy0Ded+JbeYhTtYNxLtWREg@mail.gmail.com>
- <2775954.hrE2UdODgU@wuerfel> <20160822164533.688a6aec@lxorguk.ukuu.org.uk>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/2] tty: serial_core: convert uart_open to use
+ tty_port_open
+Date: Wed, 24 Aug 2016 14:46:44 +0100
+Message-ID: <20160824144644.43543830@lxorguk.ukuu.org.uk>
+References: <20160822223910.24453-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160822164533.688a6aec@lxorguk.ukuu.org.uk>
+In-Reply-To: <20160822223910.24453-1-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Aug 22, 2016 at 5:45 PM, One Thousand Gnomes
-<gnomes@lxorguk.ukuu.org.uk> wrote:
+On Mon, 22 Aug 2016 17:39:09 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-> and if I look at the usermode crapfest on a lot of Android systems it
-> looks similar but with the notion of things like being able to describe
->
-> -       Use GPIO mode sleeping and assume first char is X to save power
+> tty_port_open handles much of the common parts of tty opening. Convert
+> uart_open to use it and move the serial_core specific parts into
+> tty_port.activate function. This will be needed to use tty_port functions
+> directly from in kernel clients.
+> 
+> The tricky part is uart_port_startup can return positive values to allow
+> setserial to configure the port. We now return the positive value to
+> tty_port_open so that the tty is not marked as initialized and then set the
+> return value in uart_open to 0.
+> 
+> Cc: Alan Cox <alan@linux.intel.com>
+> Cc: Peter Hurley <peter@hurleysoftware.com>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> In looking at using tty_port for uart slaves, this is the first thing I 
+> hit. serial_core doesn't even use the 2 functions that already exist for 
+> tty_port and are needed.
+> 
+> I've tested this on QEMU with pl011 and 8250 UARTs using setserial, but 
+> I'm not sure what are all the tricky cases to handle.
+> 
+> Greg, Don't apply these without comment from Alan and Peter.
 
-It's really nasty hardware design, or a software hack to solve
-a hardware problem: what should have been done is
-of course create a UART with an asynchronous low-power mode
-that can recieve a character and wake up the system at any time,
-handing over the wakeup character(s) to the driver. That is
-obviously the usecase they were designing for.
+Originally I didn't convert them because the lockign was incompatible.
+That looks to have been fixed by other changes. This is definitely the
+right direction irrespective of the uart slave discussion.
 
-But yeah, I guess we have to contain hacks like that.
-
-> -       Power up, wait n ms, write, read, wait n ms, power down (which
->         has to be driven at the ldisc/user level as only the ldisc
->         understands transactions, or via ioctls (right now Android user
->         space tends to do hardcoded writes to /sys.. gpio to drive power
-
-This kind of abominational abuse of the GPIO sysfs ABI is
-partly why I've obsoleted it. The right abstraction is the
-fixed regulator with a GPIO line obviously, then some
-sequencing along the lines of what you can find in
-drivers/mmc/core/pwrseq*
-
-Unfortunately that sysfs ABI crept in during a window of time
-when GPIO was unmaintained and I am trying my best to
-contain and improve the situation.
-
-Yours,
-Linus Walleij
+Acked-by: Alan Cox <alan@linux.intel.com>
