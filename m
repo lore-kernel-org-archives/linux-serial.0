@@ -1,105 +1,297 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Thu, 25 Aug 2016 11:40:07 -0500
-Message-ID: <CAL_JsqJ_5+Em5SLSuqiJ3SnazhyEY2XaYh6N1AtR8_+MdcezMg@mail.gmail.com>
-References: <20160818011445.22726-1-robh@kernel.org> <20160818102208.GA20476@kroah.com>
- <CAL_Jsq+Va2OF1pYTivH8YN1GKsiaT1eTOaSv607K_V+H+0Buvw@mail.gmail.com> <20160818160449.328b2eec@lxorguk.ukuu.org.uk>
+From: "Luis R. Rodriguez" <mcgrof@kernel.org>
+Subject: Re: [PATCH v2 2/5] firmware: annotate thou shalt not request fw on
+ init or probe
+Date: Thu, 25 Aug 2016 21:41:33 +0200
+Message-ID: <20160825194133.GC3296@wotan.suse.de>
+References: <1466117661-22075-1-git-send-email-mcgrof@kernel.org>
+ <1466117661-22075-3-git-send-email-mcgrof@kernel.org>
+ <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
+ <20160824203901.GT3296@wotan.suse.de>
+ <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160818160449.328b2eec-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Daniel Vetter <daniel.vetter@ffwll.ch>, Felix Fietkau <nbd@nbd.name>, David Woodhouse <dwmw2@infradead.org>, =?iso-8859-1?Q?J=F6rg_R=F6del?= <jroedel@suse.de>, Joerg Roedel <joro@8bytes.org>, Roman Pen <r.peniaev@gmail.com>, Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>, Ming Lei <ming.lei@canonical.com>, Andrew Morton <akpm@linux-foundation.org>, Michal Marek <mmarek@suse.com>, Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Vikram Mulukutla <markivx@codeaurora.org>, Stephen Boyd <stephen.boyd@linaro.org>, zohar@linux.vnet.ibm.com, Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.de>, Johannes Berg <johannes@sipsolutions.net>, Christian Lamparter <chunkeey@googlemail.com>, hauke@hauke-m.de, Josh Boyer <jwboyer@fedoraproject.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, jslaby@suse.com, Linus Torvalds <torvalds@linux-foundation.org>, Andy Lutomirski <luto@amacapital.net>, Wu Fengguang <fengguang.wu@intel.com>, rpurdie@rpsys
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Aug 18, 2016 at 10:04 AM, One Thousand Gnomes
-<gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org> wrote:
->> No, the code should be fast as it is so simple. I assume there is some
->> reason the tty buffering is more complex than just a circular buffer.
->
-> I would suggest you read n_tty.c carefully and then it'll make a fair bit
-> of sense. It has to interlock multiple reader/writes with discipline
-> changes and flushes of pending data. At the same time a received
-> character may cause output changes including bytes to be queued for
-> transmit and the entire lot must not excessively recurse.
->
-> It's fun and it took years to make work safely but basically you need to
-> handle a simultaneous ldisc change, config change, read of data from the
-> buffers, receive, transmit and the receive causing the transmit status to
-> change and maybe other transmits, that might have to be sent with
-> priority. It's fun 8)
->
-> The good news is that nobody but n_tty and maybe n_irda cares on the rx
-> side. Every other ldisc consumes the bytes immediately. IRDA hasn't worked
-> for years anyway.
->
->> My best guess is because the tty layer has to buffer things for
->> userspace and userspace can be slow to read? Do line disciplines make
->> assumptions about the tty buffering? Is 4KB enough buffering?
->
-> RTFS but to save you a bit of effort
->
-> 1. 4K is not enough, 64K is not always sufficient, this is why we have
-> all the functionality you appear to want to re-invent already in the tty
-> buffer logic of the tty_port
-> 2. Only n_tty actually uses the tty_port layer buffering
-> 3. The ring buffer used for dumb uarts is entirely about latency limits
-> on low end processors and only used by some uarts anyway.
->
->> Also, the current receive implementation has no concept of blocking or
->> timeout. Should the uart_dev_rx() function return when there's no more
->> data or wait (with timeout) until all requested data is received?
->> (Probably do all of them is my guess).
->
-> Your rx routine needs to be able to run in IRQ context, not block and
-> complete in very very short time scales because on some hardware you have
-> exactly 9 bit times to recover the data byte and clear the IRQ done.
-> Serial really stretches some of the low end embedded processors running
-> at 56K/115200, and RS485 at 4Mbits even with 8 bytes of buffering is
-> pretty tight. Thus you need very fast buffers for just about any use case.
-> Dumb uarts you'll need to keep the existing ring buffer or similar
-> (moving to a kfifo would slightly improve performance I think) and queue
-> after.
->
->> >> - Convert a real driver/line discipline over to UART bus.
->> >
->> > That's going to be the real test, I recommend trying that as soon as
->> > possible as it will show where the real pain points are :)
->
-> The locking. It's taken ten years to debug the current line discipline
-> change locking. If you want to be able to switch stuff kernel side
-> however it's somewhat easier.
->
-> The change should be
->
-> Add tty_port->rx(uint8_t *data,uint8_t *flags, unsigned int len)
->
-> The semantics of tty_port->rx are
->
-> - You may not assume a tty is bound to this port
-> - You may be called in IRQ context, but are guaranteed not to get
->   parallel calls for the same port
-> - When you return the bytes you passed are history
->
-> At that point you can set tty_port->rx to point to the
-> tty_flip_buffer_push() and everyone can use it. Slow ones will want to
-> queue to a ring buffer then do tty_port->rx (where we do the flush_buffer
-> now), fast ones will do the ->rx directly.
+Summoning Felix for the embedded aspect on initramfs below.
+Jörg might be interested in the async facilities you speak of as well.
 
-Other than doing DMA, I did not find any examples of UARTs doing
-internal rx ring buffers. Most/all the non-DMA cases do
-tty_insert_flip_char directly in the ISR. The flow is insert a series
-of flags and characters as we process the receive status and then
-trigger a flush of the buffer at the end. That doesn't match up with
-what you are proposing for how tty_port->rx would work. That would
-change the receive ISR processing in all the drivers quite a bit.
-Either we'd have to call tty_port->rx a character at a time or
-implement some temporary buffer. I don't think we want to call things
-like BT receive code a byte at a time. This needs to be a layer
-higher. flush_to_ldisc either needs to be duplicated to handle
-tty_port->rx or generalized to call either tty_port->rx or ldisc
-receive_buf. I'm not sure what to do about ldisc ref counting in the
-latter case.
+On Thu, Aug 25, 2016 at 01:05:44PM +0200, Daniel Vetter wrote:
+> On Wed, Aug 24, 2016 at 10:39 PM, Luis R. Rodriguez <mcgrof@kernel.org> wrote:
+> > On Wed, Aug 24, 2016 at 08:55:55AM +0200, Daniel Vetter wrote:
+> >> On Fri, Jun 17, 2016 at 12:54 AM, Luis R. Rodriguez <mcgrof@kernel.org> wrote:
+> >> > Thou shalt not make firmware calls early on init or probe.
+> >
+> > <-- snip -->
+> >
+> >> > There are 4 offenders at this time:
+> >> >
+> >> > mcgrof@ergon ~/linux-next (git::20160609)$ export COCCI=scripts/coccinelle/api/request_firmware.cocci
+> >> > mcgrof@ergon ~/linux-next (git::20160609)$ make coccicheck MODE=report
+> >> >
+> >> > drivers/fmc/fmc-fakedev.c: ERROR: driver call request firmware call on its init routine on line 321.
+> >> > drivers/fmc/fmc-write-eeprom.c: ERROR: driver call request firmware call on its probe routine on line 136.
+> >> > drivers/tty/serial/rp2.c: ERROR: driver call request firmware call on its probe routine on line 796.
+> >> > drivers/tty/serial/ucc_uart.c: ERROR: driver call request firmware call on its probe routine on line 1246.
+> >>
+> >> Plus all gpu drivers which need firmware. And yes we must load them at
+> >> probe
+> >
+> > Do you have an upstream driver in mind that does this ? Is it on device
+> > drier module probe or a DRM subsystem specific probe call of some sort ?
+> 
+> i915 is the one I care about for obvious reasons ;-) It's all from the
+> pci device probe function, but nested really deeply.
 
-Rob
+The above SmPL grammar should capture well nested calls of calls within probe,
+so curious why it didn't pick up i915. Let's see.
+
+i915_pci_probe() --> i915_driver_load() -->
+	i915_load_modeset_init() --> (drivers/gpu/drm/i915/i915_drv.c)
+		a) intel_csr_ucode_init() (drivers/gpu/drm/i915/intel_csr.c)
+		...
+		b) intel_guc_init() (drivers/gpu/drm/i915/intel_guc_loader.c)
+
+The two firmwares come from:
+
+a) intel_csr_ucode_init() --> schedule_work(&dev_priv->csr.work);
+	csr_load_work_fn() --> request_firmware()
+
+b) intel_guc_init() --> guc_fw_fetch() request_firmware()
+
+---
+
+a) is not dealt with given the grammar does not include scheduled work,
+however using work to offload loading firmware seems reasonable here.
+
+b) This should have been picked up, but its not. Upon closer inspection
+   the grammar currently expects the module init and probe to be on the
+   same file. Loosening this:
+
+diff --git a/scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci b/scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
+index cf180c59e042..e19e6d3dfc0f 100644
+--- a/scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
++++ b/scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
+@@ -49,7 +49,7 @@ identifier init;
+ 
+ module_init(init);
+ 
+-@ has_probe depends on defines_module_init@
++@ has_probe @
+ identifier drv_calls, drv_probe;
+ type bus_driver;
+ identifier probe_op =~ "(probe)";
+@@ -59,7 +59,7 @@ bus_driver drv_calls = {
+ 	.probe_op = drv_probe,
+ };
+ 
+-@hascall depends on !after_start && defines_module_init@
++@hascall depends on !after_start @
+ position p;
+ @@
+ 
+
+I get a lot more complaints but still -- i915 b) case is not yet covered:
+
+./drivers/bluetooth/ath3k.c: ERROR: driver call request firmware call on its probe routine on line 546.
+./drivers/bluetooth/bcm203x.c: ERROR: driver call request firmware call on its probe routine on line 193.
+./drivers/bluetooth/bcm203x.c: ERROR: driver call request firmware call on its probe routine on line 218.
+./drivers/bluetooth/bfusb.c: ERROR: driver call request firmware call on its probe routine on line 655.
+./drivers/fmc/fmc-fakedev.c: ERROR: driver call request firmware call on its init routine on line 321.
+./drivers/fmc/fmc-write-eeprom.c: ERROR: driver call request firmware call on its probe routine on line 136.
+./drivers/tty/serial/ucc_uart.c: ERROR: driver call request firmware call on its probe routine on line 1246.
+./sound/soc/codecs/wm2000.c: ERROR: driver call request firmware call on its probe routine on line 893.
+./sound/soc/sh/siu_dai.c: ERROR: driver call request firmware call on its probe routine on line 747.
+./drivers/net/wireless/intersil/orinoco/orinoco_usb.c: ERROR: driver call request firmware call on its probe routine on line 1661.
+./sound/soc/intel/common/sst-acpi.c: ERROR: driver call request firmware call on its probe routine on line 161.
+./drivers/input/touchscreen/goodix.c: ERROR: driver call request firmware call on its probe routine on line 744.
+./drivers/media/usb/go7007/go7007-loader.c: ERROR: driver call request firmware call on its probe routine on line 78.
+./drivers/media/usb/go7007/go7007-loader.c: ERROR: driver call request firmware call on its probe routine on line 93.
+./drivers/tty/serial/rp2.c: ERROR: driver call request firmware call on its probe routine on line 796.
+./drivers/usb/misc/isight_firmware.c: ERROR: driver call request firmware call on its probe routine on line 50.
+./drivers/usb/serial/mxuport.c: ERROR: driver call request firmware call on its probe routine on line 1067.
+./sound/pci/hda/hda_intel.c: ERROR: driver call request firmware call on its probe routine on line 2015.
+./drivers/media/usb/s2255/s2255drv.c: ERROR: driver call request firmware call on its probe routine on line 2304.
+./drivers/misc/lattice-ecp3-config.c: ERROR: driver call request firmware call on its probe routine on line 206.
+./drivers/net/wireless/ath/carl9170/usb.c: ERROR: driver call request firmware call on its probe routine on line 1103.
+./drivers/video/fbdev/metronomefb.c: ERROR: driver call request firmware call on its probe routine on line 681.
+
+At a quick glance these check out though, and it was because I loosened
+the requirement to not necessarily have module_init -- usb for instance has
+module_usb_driver()...
+
+I believe i915 is not picked up given the request for firmware comes in
+on separate files than both the module_init *and* probe calls, that is,
+its implemented in drivers/gpu/drm/i915/intel_csr.c. Tuning this a bit more
+can take a bit of time, but the intent stands -- as such I think the
+current grammar is justified and we should evolve it to catch more and
+as it does we touch base again to see what the implications are -- clearly
+this means way many more drivers are requesting firmware on probe than
+expected.
+
+> >> because people are generally pissed when they boot their machine
+> >> and the screen goes black. On top of that a lot of people want their
+> >> gpu drivers to be built-in, but can't ship the firmware blobs in the
+> >> kernel image because gpl. Yep, there's a bit a contradiction there ...
+> >
+> > Can they use initramfs for this ?
+> 
+> Apparently that's also uncool with the embedded folks.
+
+What's uncool with embedded folks? To use initramfs for firmware ?
+If so can you explain why ?
+
+> Tbh I don't
+> know exactly why. Also I thought initramfs is available only after
+> built-in drivers have finished loading, but maybe that changed.
+
+Its still the same, we run through all init calls first (do_initcalls()
+and finally the initramfs is processed via prepare_namespace()
+
+do_basic_setup() {
+	...
+	driver_init();
+	...
+	do_initcalls();
+	...
+}
+
+kernel_init_freeable() {
+	...
+	do_basic_setup();
+	...
+	if (sys_access((const char __user *) ramdisk_execute_command, 0) != 0) {
+		ramdisk_execute_command = NULL;
+		prepare_namespace();
+        }
+}
+
+Felix, are initramfs not kosher for embedded ? If so why not ? The question
+here is where to stuff firmware if its needed early in boot and since
+graphics folks want video turned on ASAP they often load firmware on probe
+and due to licensing may not be able to use the built-in firmware facility.
+Using initrafms is what would be expected for these cases then, if that's
+not kosher what do you recommend ? Granted video may not be a concern for
+embedded but since we're on topic figured we should square this away.
+
+> > Also just curious -- as with other subsystems, is it possible to load
+> > a generic driver first, say vesa, and then a more enhanced one later ?
+> > I am not saying this is ideal or am I suggesting this, I'd just like
+> > to know the feasibility of this.
+> 
+> Some users want a fully running gfx stack 2s after power-on. There's
+> not even enough time to load an uefi or vga driver first. i915
+> directly initializes the gpu from power-on state on those.
+
+I see.. thanks.
+
+> >> I think what would work is loading the different subsystems of the
+> >> driver in parallel (we already do that largely)
+> >
+> > Init level stuff is actually pretty synchronous, and in fact both
+> > init and probe are called serially. There are a few subsystems which
+> > have been doing things a bit differently, but these are exceptions.
+> >
+> > When you say we already do this largely, can you describe a bit more
+> > precisely what you mean ?
+> 
+> Oh, this isn't subsystems as in linux device/driver model, but
+> different parts within the driver. We fire up a bunch of struct work
+> to get various bits done asynchronously.
+
+Thanks for the clarification.
+
+> >>, and then if one
+> >> firmware blob isn't there yet simply stall that async worker until it
+> >> shows up.
+> >
+> > Is this an existing framework or do you mean if we add something
+> > generic to do this async loading of subsystems ?
+> 
+> normal workers, and flush_work and friends to sync up. We have some
+> really fancy ideas for essentially async init tasks that can declare
+> their depencies systemd-unit file style, but that's only in the
+> prototype stage.
+
+Great, another solution. More reason to talk at KS/Plumbers to see
+exactly what each different pipe dream is coming up with.
+
+> We need this (eventually) since handling the ordering
+> correctly is getting unwieldy. But again just struct work launched
+> from the main pci probe function.
+
+You mean its a struct work based solution ?
+
+> >> But the answers I've gotten thus far from request_firmware()
+> >> folks (well at least Greg) is don't do that ...
+> >
+> > Well in this patch set I'm adding myself as a MAINTAINER and I've
+> > been extending the firmware API recently to help with a few new
+> > features I want, I've been wanting to hear more feedback from
+> > other's needs and I had actually not gotten much -- except
+> > only recently with the usermode helper and reasons why some
+> > folks thought they could not use direct firmware loading from
+> > the fs. I'm keen to hear or more use cases and needs specially if
+> > they have to do with improving boot time and asynchronous boot.
+> >
+> >> Is that problem still somewhere on the radar?
+> >
+> > Not mine.
+> >
+> >> Atm there's various
+> >> wait_for_rootfs hacks out there floating in vendor/product trees.
+> >
+> > This one I've heard about recently, and I suggested two possible
+> > solutions, with a preference to a simply notification of when
+> > rootfs is available from userspace.
+> >
+> >> "Avoid at all costs" sounds like upstream prefers to not care about
+> >> android/cros in those case (yes I know most arm socs don't need
+> >> firmware, which would make it a problem fo just be a subset of all
+> >> devices).
+> >
+> > In my days of dealing with Android I learned most folks did not frankly
+> > care too much about upstream-first model. That means things were reactive.
+> > That's a business mind set and that's fine. However for upstream we want
+> > what is best and to discuss. I haven't seen proposals so, so long as
+> > we just hear of "hacks" that some folks do in vendor/product trees,
+> > what can we do ?
+> 
+> One of the proposals which would have worked for us died a while back:
+> 
+> https://lkml.org/lkml/2014/6/15/47
+
+Interesting, the problem stated here, which comes from the fact (as clarified
+above) the rootfs comes up only *after* we run do_initcalls() as such there are
+possible theoretical races even with request_firmware_nowait() -- as such that
+justifies even more the SmPL grammar rule to include even request_firmware_nowait()
+on probe / init as this patch has.
+
+Anyway yeah that patch has good intentions but its wrong for a slew of reasons.
+The problem is the same as discussed with Bjorn recently. The solution
+discussed is that since only userspace knows when the *real* rootfs is ready
+(because of slew of reasons) the best we can do is have an event issued by
+userspace to inform us of that.
+
+> That's essentially what I'd like to have.
+
+You're not alone.
+
+> [cut discussion about async probe]
+> 
+> > So .. I agree, let's avoid the hacks. Patches welcomed.
+> 
+> Hm, this is a definite change of tack - back when I discussed this
+> with Greg about 2 ks ago it sounded like "don't do this". The only
+> thing we need is some way to wait for rootfs before we do the
+> request_firmware. Everything else we handle already in the kernel.
+
+OK so lets just get this userspace event done, and we're set.
+
+  Luis
