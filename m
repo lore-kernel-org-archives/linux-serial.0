@@ -1,143 +1,105 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH] tty/serial: atmel: add fractional baud rate support
-Date: Thu, 25 Aug 2016 17:11:30 +0200
-Message-ID: <0a43b5e9-e449-1a0d-6aef-605e5fb5f5cc@atmel.com>
-References: <20160825134756.6261-1-ludovic.desroches@atmel.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH 0/3] UART slave device bus
+Date: Thu, 25 Aug 2016 11:40:07 -0500
+Message-ID: <CAL_JsqJ_5+Em5SLSuqiJ3SnazhyEY2XaYh6N1AtR8_+MdcezMg@mail.gmail.com>
+References: <20160818011445.22726-1-robh@kernel.org> <20160818102208.GA20476@kroah.com>
+ <CAL_Jsq+Va2OF1pYTivH8YN1GKsiaT1eTOaSv607K_V+H+0Buvw@mail.gmail.com> <20160818160449.328b2eec@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160825134756.6261-1-ludovic.desroches@atmel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ludovic Desroches <ludovic.desroches@atmel.com>, gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160818160449.328b2eec-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: One Thousand Gnomes <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Le 25/08/2016 à 15:47, Ludovic Desroches a écrit :
-> The USART device provides a fractional baud rate generator to get a more
-> accurate baud rate. It can be used only when the USART is configured in
-> 'normal mode' and this feature is not available on AT91RM9200 SoC.
-> 
-> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+On Thu, Aug 18, 2016 at 10:04 AM, One Thousand Gnomes
+<gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org> wrote:
+>> No, the code should be fast as it is so simple. I assume there is some
+>> reason the tty buffering is more complex than just a circular buffer.
+>
+> I would suggest you read n_tty.c carefully and then it'll make a fair bit
+> of sense. It has to interlock multiple reader/writes with discipline
+> changes and flushes of pending data. At the same time a received
+> character may cause output changes including bytes to be queued for
+> transmit and the entire lot must not excessively recurse.
+>
+> It's fun and it took years to make work safely but basically you need to
+> handle a simultaneous ldisc change, config change, read of data from the
+> buffers, receive, transmit and the receive causing the transmit status to
+> change and maybe other transmits, that might have to be sent with
+> priority. It's fun 8)
+>
+> The good news is that nobody but n_tty and maybe n_irda cares on the rx
+> side. Every other ldisc consumes the bytes immediately. IRDA hasn't worked
+> for years anyway.
+>
+>> My best guess is because the tty layer has to buffer things for
+>> userspace and userspace can be slow to read? Do line disciplines make
+>> assumptions about the tty buffering? Is 4KB enough buffering?
+>
+> RTFS but to save you a bit of effort
+>
+> 1. 4K is not enough, 64K is not always sufficient, this is why we have
+> all the functionality you appear to want to re-invent already in the tty
+> buffer logic of the tty_port
+> 2. Only n_tty actually uses the tty_port layer buffering
+> 3. The ring buffer used for dumb uarts is entirely about latency limits
+> on low end processors and only used by some uarts anyway.
+>
+>> Also, the current receive implementation has no concept of blocking or
+>> timeout. Should the uart_dev_rx() function return when there's no more
+>> data or wait (with timeout) until all requested data is received?
+>> (Probably do all of them is my guess).
+>
+> Your rx routine needs to be able to run in IRQ context, not block and
+> complete in very very short time scales because on some hardware you have
+> exactly 9 bit times to recover the data byte and clear the IRQ done.
+> Serial really stretches some of the low end embedded processors running
+> at 56K/115200, and RS485 at 4Mbits even with 8 bytes of buffering is
+> pretty tight. Thus you need very fast buffers for just about any use case.
+> Dumb uarts you'll need to keep the existing ring buffer or similar
+> (moving to a kfifo would slightly improve performance I think) and queue
+> after.
+>
+>> >> - Convert a real driver/line discipline over to UART bus.
+>> >
+>> > That's going to be the real test, I recommend trying that as soon as
+>> > possible as it will show where the real pain points are :)
+>
+> The locking. It's taken ten years to debug the current line discipline
+> change locking. If you want to be able to switch stuff kernel side
+> however it's somewhat easier.
+>
+> The change should be
+>
+> Add tty_port->rx(uint8_t *data,uint8_t *flags, unsigned int len)
+>
+> The semantics of tty_port->rx are
+>
+> - You may not assume a tty is bound to this port
+> - You may be called in IRQ context, but are guaranteed not to get
+>   parallel calls for the same port
+> - When you return the bytes you passed are history
+>
+> At that point you can set tty_port->rx to point to the
+> tty_flip_buffer_push() and everyone can use it. Slow ones will want to
+> queue to a ring buffer then do tty_port->rx (where we do the flush_buffer
+> now), fast ones will do the ->rx directly.
 
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Other than doing DMA, I did not find any examples of UARTs doing
+internal rx ring buffers. Most/all the non-DMA cases do
+tty_insert_flip_char directly in the ISR. The flow is insert a series
+of flags and characters as we process the receive status and then
+trigger a flush of the buffer at the end. That doesn't match up with
+what you are proposing for how tty_port->rx would work. That would
+change the receive ISR processing in all the drivers quite a bit.
+Either we'd have to call tty_port->rx a character at a time or
+implement some temporary buffer. I don't think we want to call things
+like BT receive code a byte at a time. This needs to be a layer
+higher. flush_to_ldisc either needs to be duplicated to handle
+tty_port->rx or generalized to call either tty_port->rx or ldisc
+receive_buf. I'm not sure what to do about ldisc ref counting in the
+latter case.
 
-Thanks, bye,
-
-> ---
->  drivers/tty/serial/atmel_serial.c | 41 +++++++++++++++++++++++++++++++--------
->  include/linux/atmel_serial.h      |  1 +
->  2 files changed, 34 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 2eaa18d..1759239 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -166,6 +166,7 @@ struct atmel_uart_port {
->  	u32			rts_low;
->  	bool			ms_irq_enabled;
->  	u32			rtor;	/* address of receiver timeout register if it exists */
-> +	bool			has_frac_baudrate;
->  	bool			has_hw_timer;
->  	struct timer_list	uart_timer;
->  
-> @@ -1745,6 +1746,11 @@ static void atmel_get_ip_name(struct uart_port *port)
->  	dbgu_uart = 0x44424755;	/* DBGU */
->  	new_uart = 0x55415254;	/* UART */
->  
-> +	/*
-> +	 * Only USART devices from at91sam9260 SOC implement fractional
-> +	 * baudrate.
-> +	 */
-> +	atmel_port->has_frac_baudrate = false;
->  	atmel_port->has_hw_timer = false;
->  
->  	if (name == new_uart) {
-> @@ -1753,6 +1759,7 @@ static void atmel_get_ip_name(struct uart_port *port)
->  		atmel_port->rtor = ATMEL_UA_RTOR;
->  	} else if (name == usart) {
->  		dev_dbg(port->dev, "Usart\n");
-> +		atmel_port->has_frac_baudrate = true;
->  		atmel_port->has_hw_timer = true;
->  		atmel_port->rtor = ATMEL_US_RTOR;
->  	} else if (name == dbgu_uart) {
-> @@ -1764,6 +1771,7 @@ static void atmel_get_ip_name(struct uart_port *port)
->  		case 0x302:
->  		case 0x10213:
->  			dev_dbg(port->dev, "This version is usart\n");
-> +			atmel_port->has_frac_baudrate = true;
->  			atmel_port->has_hw_timer = true;
->  			atmel_port->rtor = ATMEL_US_RTOR;
->  			break;
-> @@ -2025,8 +2033,9 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
->  static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
->  			      struct ktermios *old)
->  {
-> +	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
->  	unsigned long flags;
-> -	unsigned int old_mode, mode, imr, quot, baud;
-> +	unsigned int old_mode, mode, imr, quot, baud, div, cd, fp = 0;
->  
->  	/* save the current mode register */
->  	mode = old_mode = atmel_uart_readl(port, ATMEL_US_MR);
-> @@ -2036,12 +2045,6 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
->  		  ATMEL_US_PAR | ATMEL_US_USMODE);
->  
->  	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
-> -	quot = uart_get_divisor(port, baud);
-> -
-> -	if (quot > 65535) {	/* BRGR is 16-bit, so switch to slower clock */
-> -		quot /= 8;
-> -		mode |= ATMEL_US_USCLKS_MCK_DIV8;
-> -	}
->  
->  	/* byte size */
->  	switch (termios->c_cflag & CSIZE) {
-> @@ -2160,7 +2163,29 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
->  		atmel_uart_writel(port, ATMEL_US_CR, rts_state);
->  	}
->  
-> -	/* set the baud rate */
-> +	/*
-> +	 * Set the baud rate:
-> +	 * Fractional baudrate allows to setup output frequency more
-> +	 * accurately. This feature is enabled only when using normal mode.
-> +	 * baudrate = selected clock / (8 * (2 - OVER) * (CD + FP / 8))
-> +	 * Currently, OVER is always set to 0 so we get
-> +	 * baudrate = selected clock (16 * (CD + FP / 8))
-> +	 */
-> +	if (atmel_port->has_frac_baudrate &&
-> +	    (mode & ATMEL_US_USMODE) == ATMEL_US_USMODE_NORMAL) {
-> +		div = DIV_ROUND_CLOSEST(port->uartclk, baud);
-> +		cd = div / 16;
-> +		fp = DIV_ROUND_CLOSEST(div % 16, 2);
-> +	} else {
-> +		cd = uart_get_divisor(port, baud);
-> +	}
-> +
-> +	if (cd > 65535) {	/* BRGR is 16-bit, so switch to slower clock */
-> +		cd /= 8;
-> +		mode |= ATMEL_US_USCLKS_MCK_DIV8;
-> +	}
-> +	quot = cd | fp << ATMEL_US_FP_OFFSET;
-> +
->  	atmel_uart_writel(port, ATMEL_US_BRGR, quot);
->  	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
->  	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-> diff --git a/include/linux/atmel_serial.h b/include/linux/atmel_serial.h
-> index 5a4d664..f8e452a 100644
-> --- a/include/linux/atmel_serial.h
-> +++ b/include/linux/atmel_serial.h
-> @@ -118,6 +118,7 @@
->  
->  #define ATMEL_US_BRGR		0x20	/* Baud Rate Generator Register */
->  #define	ATMEL_US_CD		GENMASK(15, 0)	/* Clock Divider */
-> +#define ATMEL_US_FP_OFFSET	16	/* Fractional Part */
->  
->  #define ATMEL_US_RTOR		0x24	/* Receiver Time-out Register for USART */
->  #define ATMEL_UA_RTOR		0x28	/* Receiver Time-out Register for UART */
-> 
-
-
--- 
-Nicolas Ferre
+Rob
