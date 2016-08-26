@@ -1,53 +1,33 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Fri, 26 Aug 2016 14:12:23 +0100
-Message-ID: <20160826141223.445ed1db@lxorguk.ukuu.org.uk>
-References: <20160818011445.22726-1-robh@kernel.org>
-        <20160818102208.GA20476@kroah.com>
-        <CAL_Jsq+Va2OF1pYTivH8YN1GKsiaT1eTOaSv607K_V+H+0Buvw@mail.gmail.com>
-        <20160818160449.328b2eec@lxorguk.ukuu.org.uk>
-        <CAL_JsqJ_5+Em5SLSuqiJ3SnazhyEY2XaYh6N1AtR8_+MdcezMg@mail.gmail.com>
+From: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] UART slave devices using serio
+Date: Fri, 26 Aug 2016 22:05:09 +0200
+Message-ID: <20160826200509.GA22583@amd>
+References: <20160824232437.9446-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqJ_5+Em5SLSuqiJ3SnazhyEY2XaYh6N1AtR8_+MdcezMg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20160824232437.9446-1-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-> Either we'd have to call tty_port->rx a character at a time or
-> implement some temporary buffer. I don't think we want to call things
-> like BT receive code a byte at a time. This needs to be a layer
-> higher. flush_to_ldisc either needs to be duplicated to handle
-> tty_port->rx or generalized to call either tty_port->rx or ldisc
-> receive_buf. I'm not sure what to do about ldisc ref counting in the
-> latter case.
+On Wed 2016-08-24 18:24:30, Rob Herring wrote:
+> This is a new approach to supporting UART slave devices using the
+> existing serio bus. After Arnd's proding, I took another look at serio
+> and decided extending it does make sense. Using serio primarily requires
+> adding DT based device matching and supporting buffer based write and
+> receive.
 
-You already have the buffer
+Strange, the series has _two_ 1/6 patches.
 
-What I was trying to suggest was that instead of
+> Rob Herring (6):
+>   serio: add DT driver binding
 
-
-chars->buffer
-flush
-workqueue
-loop pushing data into the ldisc
-
-
-You can also do
-
-chars->buffer
-flush
-workqueue
-->rx()  [where flush_to_ldisc is just one implementation of ->rx]
-
-For byte by byte ports it really makes no difference (except you would be
-able to do processing without an ldisc), but for DMA devices it would
-give us a faster path for processing since the DMA completion event can
-simply fire a buffer a characters directly at the protocol handler where
-there are not latency concerns (ie it starts the new DMA and directly
-involves ->rx())
-
-Alan
+There's one saying "add OF driver binding" on the mailinglist, too...
+Best regards,
+									Pavel
+-- 
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
