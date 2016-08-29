@@ -1,71 +1,76 @@
-From: Michal Suchanek <hramrach@gmail.com>
-Subject: Re: [RFC PATCH 0/3] UART slave device bus
-Date: Sat, 27 Aug 2016 14:01:54 +0200
-Message-ID: <CAOMqctRMOhV6Y28T231CD4Ja8f1D2TmfWSdaeU1V2-mPZ83keg@mail.gmail.com>
-References: <20160818011445.22726-1-robh@kernel.org> <20160818202900.hyvm4hfxedifuefn@earth>
- <CAL_Jsq+OfT1AXaEKOgZ4oVfpVZhu=55dYoHTG7D_prpnTqpeOg@mail.gmail.com>
- <20160819052125.ze5zilppwoe3f2lx@earth> <ACEF800E-8DB3-4345-ADE2-15C99F3659D5@goldelico.com>
- <efcd1fe0-52f8-ba84-1310-9f4c24ad35bc@rempel-privat.de> <53A846F1-33E5-48C3-B3A6-DB251661CDD5@goldelico.com>
- <20160820143405.04303834@lxorguk.ukuu.org.uk> <B4DF8974-1C6B-432E-AD1A-1E6067B9C158@goldelico.com>
- <20160822203947.ksxwnvzhc3tpnnx7@earth> <EA228ADD-F03A-49C0-9A0B-E768D7A7A466@goldelico.com>
+From: Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH] ARM: dts: imx6sx: document SION necessity of
+ ENET1_REF_CLK1
+Date: Mon, 29 Aug 2016 09:18:44 +0800
+Message-ID: <20160829011844.GA30790@tiger>
+References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
+ <1458825865-7434-7-git-send-email-u.kleine-koenig@pengutronix.de>
+ <1470350663.26773.41.camel@googlemail.com>
+ <20160805065845.GI17874@pengutronix.de>
+ <1470398615.1936.22.camel@googlemail.com>
+ <CAOMZO5BQQemrKFjejUxQpW+d=BGn_b+d_sbr9Untu8iO3dOVvw@mail.gmail.com>
+ <1471120532.1923.4.camel@googlemail.com>
+ <20160815052244.mwygjlo72e46w353@pengutronix.de>
+ <1471425931.1934.18.camel@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <EA228ADD-F03A-49C0-9A0B-E768D7A7A466@goldelico.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Sebastian Reichel <sre@kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Oleksij Rempel <linux@rempel-privat.de>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1471425931.1934.18.camel@googlemail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Fritz <chf.fritz@googlemail.com>
+Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 22 August 2016 at 23:23, H. Nikolaus Schaller <hns@goldelico.com> wrote:
-> Hi Sebastian,
->
->> Am 22.08.2016 um 22:39 schrieb Sebastian Reichel <sre@kernel.org>:
->>
->> Hi,
->>
->> On Sun, Aug 21, 2016 at 09:50:57AM +0200, H. Nikolaus Schaller wrote:
->>>> Am 20.08.2016 um 15:34 schrieb One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>:
->>>>> What it is not about are UART/RS232 converters connected through USB or virtual
->>>>> serial ports created for WWAN modems (e.g. /dev/ttyACM, /dev/ttyHSO). Or BT devices
->>>>> connected through USB (even if they also run HCI protocol).
->>>>
->>>> It actually has to be about both because you will find the exact same
->>>> device wired via USB SSIC/HSIC to a USB UART or via a classic UART. Not is
->>>> it just about embedded boards.
->>>
->>> Not necessarily.
->>>
->>> We often have two interface options for exactly the sam sensor chips. They can be connected
->>> either through SPI or I2C. Which means that there is a core driver for the chip and two different
->>> transport glue components (see e.g. iio/accel/bmc150).
->>>
->>> This does not require I2C to be able to handle SPI or vice versa or provide a common API.
->>
->> I don't understand this comparison. I2C and SPI are different
->> protocols,
->
-> Yes, they are different on protocol level, but on both you transfer blocks of data from/to a slave device
-> which usually can be addressed. And for some chips they are just two slightly alternative serial interfaces.
->
->> while native UART and USB-connected UART are both UART.
->
-> I see what you mean, but kernel divides between directly connected UART and USB-connected UART.
->
-> drivers/usb/serial/ vs. drivers/tty/serial/
->
-> to implement two different groups of UARTs. Although on user space level they are harmonized again.
-> This is why I compare with i2c and spi. But each such comparison is not perfect.
->
-> Anyways, to me it looks as if everybody wants to make the solution work for usb-uarts as well
-> (although I still would like to see a real world use-case).
+On Wed, Aug 17, 2016 at 11:25:31AM +0200, Christoph Fritz wrote:
+> 
+> Signed-off-by: Christoph Fritz <chf.fritz@googlemail.com>
 
-I use a NFC reader attached to a PL2303 UART. It's a proof of concept
-solution but if I needed a finished
-product all it takes is to put the two pieces of PCB into a box with
-the USB connector sticking out.
-Or glue the PCB on the inside of a plastic part of a PC case.
+Applied, thanks.
 
-Thanks
-
-Michal
+> ---
+>  arch/arm/boot/dts/imx6sx-pinfunc.h | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/imx6sx-pinfunc.h b/arch/arm/boot/dts/imx6sx-pinfunc.h
+> index bb9c6b7..42c4c80 100644
+> --- a/arch/arm/boot/dts/imx6sx-pinfunc.h
+> +++ b/arch/arm/boot/dts/imx6sx-pinfunc.h
+> @@ -308,6 +308,20 @@
+>  #define MX6SX_PAD_ENET1_RX_CLK__VDEC_DEBUG_35                     0x008C 0x03D4 0x0000 0x8 0x0
+>  #define MX6SX_PAD_ENET1_RX_CLK__PCIE_CTRL_DEBUG_29                0x008C 0x03D4 0x0000 0x9 0x0
+>  #define MX6SX_PAD_ENET1_TX_CLK__ENET1_TX_CLK                      0x0090 0x03D8 0x0000 0x0 0x0
+> +/*
+> + * SION bit is necessary for ENET1_REF_CLK1 (ENET2_REF_CLK2 untested) if it is
+> + * used as clock output of IMX6SX_CLK_ENET_REF (ENET1_TX_CLK) to e.g. supply a
+> + * PHY in RMII mode. This configuration is valid if:
+> + *  - bit 1 in field IMX6SX_GPR1_FEC_CLOCK_PAD_DIR_MASK is set
+> + *  - bit 1 in field IMX6SX_GPR1_FEC_CLOCK_MUX_SEL_MASK unset
+> + * It seems to be a silicon bug that in this configuration ENET1_TX reference
+> + * clock isn't provided automatically.  According to i.MX6SX reference manual
+> + * (IOMUXC_GPR_GPR1 field descriptions: ENET1_CLK_SEL, Rev. 0 from 2/2015) it
+> + * should be the case.
+> + * So this might have unwanted side effects for other hardware units that are
+> + * also connected to that pin and using respective function as input (e.g.
+> + * UART1's DTR handling on MX6SX_PAD_ENET1_TX_CLK__UART1_DTR_B).
+> + */
+>  #define MX6SX_PAD_ENET1_TX_CLK__ENET1_REF_CLK1                    0x0090 0x03D8 0x0760 0x1 0x1
+>  #define MX6SX_PAD_ENET1_TX_CLK__AUDMUX_AUD4_RXD                   0x0090 0x03D8 0x0644 0x2 0x1
+>  #define MX6SX_PAD_ENET1_TX_CLK__UART1_DTR_B                       0x0090 0x03D8 0x0000 0x3 0x0
+> -- 
+> 2.1.4
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
