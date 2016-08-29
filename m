@@ -1,17 +1,14 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: [PATCH 0/6] SA11x0 serial updates
-Date: Mon, 29 Aug 2016 13:05:31 +0100
-Message-ID: <20160829120531.GG1041@n2100.armlinux.org.uk>
-References: <20160829100232.GC1041@n2100.armlinux.org.uk>
- <20160829102328.GA28796@n2100.armlinux.org.uk>
- <20160829110157.GE1041@n2100.armlinux.org.uk>
- <20160829112540.GF1041@n2100.armlinux.org.uk>
+From: Russell King <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 2/6] ARM: sa1100/assabet: convert serial to gpiod APIs
+Date: Mon, 29 Aug 2016 13:05:56 +0100
+Message-ID: <E1beLK8-0001Td-W5@rmk-PC.armlinux.org.uk>
+References: <20160829120531.GG1041@n2100.armlinux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160829120531.GG1041@n2100.armlinux.org.uk>
 Content-Disposition: inline
-In-Reply-To: <20160829112540.GF1041@n2100.armlinux.org.uk>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -25,27 +22,134 @@ To: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-This series converts SA11x0 serial to make use of the mctrl helpers
-where appropriate.  This allows us to remove several board-specific
-callbacks.
+Convert the Assabet serial modem control signals to use the gpiod APIs
+rather than custom callbacks into platform code.
 
-As serial is critical for console output, we report but otherwise
-ignore any error except probe deferral from mctrl initialisation.
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ arch/arm/mach-sa1100/assabet.c | 91 +++++++++++++-----------------------------
+ 1 file changed, 28 insertions(+), 63 deletions(-)
 
-Obviously, as this is part of a larger series (and has dependencies
-on the previous series) this can not be applied to individual
-subsystem maintainer trees.  Please ack.
-
- arch/arm/mach-sa1100/assabet.c  |  91 +++++++++++----------------------
- arch/arm/mach-sa1100/badge4.c   |   2 -
- arch/arm/mach-sa1100/h3xxx.c    |  64 ++++-------------------
- arch/arm/mach-sa1100/hackkit.c  |  48 ------------------
- arch/arm/mach-sa1100/neponset.c | 109 +++++++++++-----------------------------
- drivers/tty/serial/Kconfig      |   1 +
- drivers/tty/serial/sa1100.c     |  42 ++++++++++++++--
- 7 files changed, 106 insertions(+), 251 deletions(-)
-
+diff --git a/arch/arm/mach-sa1100/assabet.c b/arch/arm/mach-sa1100/assabet.c
+index 14a75735e9d0..a841f6845701 100644
+--- a/arch/arm/mach-sa1100/assabet.c
++++ b/arch/arm/mach-sa1100/assabet.c
+@@ -515,6 +515,29 @@ static const struct gpio_keys_platform_data assabet_keys_pdata = {
+ 	.rep = 0,
+ };
+ 
++static struct gpiod_lookup_table assabet_uart1_gpio_table = {
++	.dev_id = "sa11x0-uart.1",
++	.table = {
++		GPIO_LOOKUP("assabet", 16, "dtr", GPIO_ACTIVE_LOW),
++		GPIO_LOOKUP("assabet", 17, "rts", GPIO_ACTIVE_LOW),
++		GPIO_LOOKUP("assabet", 25, "dcd", GPIO_ACTIVE_LOW),
++		GPIO_LOOKUP("assabet", 26, "cts", GPIO_ACTIVE_LOW),
++		GPIO_LOOKUP("assabet", 27, "dsr", GPIO_ACTIVE_LOW),
++		{ },
++	},
++};
++
++static struct gpiod_lookup_table assabet_uart3_gpio_table = {
++	.dev_id = "sa11x0-uart.3",
++	.table = {
++		GPIO_LOOKUP("assabet", 28, "cts", GPIO_ACTIVE_LOW),
++		GPIO_LOOKUP("assabet", 29, "dsr", GPIO_ACTIVE_LOW),
++		GPIO_LOOKUP("assabet", 30, "dcd", GPIO_ACTIVE_LOW),
++		GPIO_LOOKUP("assabet", 31, "rng", GPIO_ACTIVE_LOW),
++		{ },
++	},
++};
++
+ static void __init assabet_init(void)
+ {
+ 	gpiod_add_lookup_table(&assabet_irda_gpio_table);
+@@ -568,6 +591,9 @@ static void __init assabet_init(void)
+ 						  &assabet_keys_pdata,
+ 						  sizeof(assabet_keys_pdata));
+ 
++		gpiod_add_lookup_table(&assabet_uart1_gpio_table);
++		gpiod_add_lookup_table(&assabet_uart3_gpio_table);
++
+ 		assabet_register_fixed_regulator(0, &assabet_cf_vcc_pdata,
+ 					 assabet_cf_vcc_consumers,
+ 					 ARRAY_SIZE(assabet_cf_vcc_consumers));
+@@ -650,74 +676,13 @@ static void assabet_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
+ {
+ 	if (port->mapbase == _Ser1UTCR0) {
+ 		if (state)
+-			ASSABET_BCR_clear(ASSABET_BCR_RS232EN |
+-					  ASSABET_BCR_COM_RTS |
+-					  ASSABET_BCR_COM_DTR);
+-		else
+-			ASSABET_BCR_set(ASSABET_BCR_RS232EN |
+-					ASSABET_BCR_COM_RTS |
+-					ASSABET_BCR_COM_DTR);
+-	}
+-}
+-
+-/*
+- * Assabet uses COM_RTS and COM_DTR for both UART1 (com port)
+- * and UART3 (radio module).  We only handle them for UART1 here.
+- */
+-static void assabet_set_mctrl(struct uart_port *port, u_int mctrl)
+-{
+-	if (port->mapbase == _Ser1UTCR0) {
+-		u_int set = 0, clear = 0;
+-
+-		if (mctrl & TIOCM_RTS)
+-			clear |= ASSABET_BCR_COM_RTS;
++			ASSABET_BCR_clear(ASSABET_BCR_RS232EN);
+ 		else
+-			set |= ASSABET_BCR_COM_RTS;
+-
+-		if (mctrl & TIOCM_DTR)
+-			clear |= ASSABET_BCR_COM_DTR;
+-		else
+-			set |= ASSABET_BCR_COM_DTR;
+-
+-		ASSABET_BCR_clear(clear);
+-		ASSABET_BCR_set(set);
+-	}
+-}
+-
+-static u_int assabet_get_mctrl(struct uart_port *port)
+-{
+-	u_int ret = 0;
+-	u_int bsr = ASSABET_BSR;
+-
+-	/* need 2 reads to read current value */
+-	bsr = ASSABET_BSR;
+-
+-	if (port->mapbase == _Ser1UTCR0) {
+-		if (bsr & ASSABET_BSR_COM_DCD)
+-			ret |= TIOCM_CD;
+-		if (bsr & ASSABET_BSR_COM_CTS)
+-			ret |= TIOCM_CTS;
+-		if (bsr & ASSABET_BSR_COM_DSR)
+-			ret |= TIOCM_DSR;
+-	} else if (port->mapbase == _Ser3UTCR0) {
+-		if (bsr & ASSABET_BSR_RAD_DCD)
+-			ret |= TIOCM_CD;
+-		if (bsr & ASSABET_BSR_RAD_CTS)
+-			ret |= TIOCM_CTS;
+-		if (bsr & ASSABET_BSR_RAD_DSR)
+-			ret |= TIOCM_DSR;
+-		if (bsr & ASSABET_BSR_RAD_RI)
+-			ret |= TIOCM_RI;
+-	} else {
+-		ret = TIOCM_CD | TIOCM_CTS | TIOCM_DSR;
++			ASSABET_BCR_set(ASSABET_BCR_RS232EN);
+ 	}
+-
+-	return ret;
+ }
+ 
+ static struct sa1100_port_fns assabet_port_fns __initdata = {
+-	.set_mctrl	= assabet_set_mctrl,
+-	.get_mctrl	= assabet_get_mctrl,
+ 	.pm		= assabet_uart_pm,
+ };
+ 
 -- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+2.1.0
