@@ -1,7 +1,7 @@
 From: Russell King <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 2/6] ARM: sa1100/assabet: convert serial to gpiod APIs
-Date: Mon, 29 Aug 2016 13:05:56 +0100
-Message-ID: <E1beLK8-0001Td-W5@rmk-PC.armlinux.org.uk>
+Subject: [PATCH 3/6] ARM: sa1100/h3xxx: convert serial to gpiod APIs
+Date: Mon, 29 Aug 2016 13:06:02 +0100
+Message-ID: <E1beLKE-0001Tj-4e@rmk-PC.armlinux.org.uk>
 References: <20160829120531.GG1041@n2100.armlinux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,134 +22,106 @@ To: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Convert the Assabet serial modem control signals to use the gpiod APIs
-rather than custom callbacks into platform code.
+Convert the iPAQ H3xxx serial modem control signals to use the gpiod
+APIs rather than custom callbacks into platform code.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- arch/arm/mach-sa1100/assabet.c | 91 +++++++++++++-----------------------------
- 1 file changed, 28 insertions(+), 63 deletions(-)
+ arch/arm/mach-sa1100/h3xxx.c | 64 ++++++++------------------------------------
+ 1 file changed, 11 insertions(+), 53 deletions(-)
 
-diff --git a/arch/arm/mach-sa1100/assabet.c b/arch/arm/mach-sa1100/assabet.c
-index 14a75735e9d0..a841f6845701 100644
---- a/arch/arm/mach-sa1100/assabet.c
-+++ b/arch/arm/mach-sa1100/assabet.c
-@@ -515,6 +515,29 @@ static const struct gpio_keys_platform_data assabet_keys_pdata = {
- 	.rep = 0,
- };
- 
-+static struct gpiod_lookup_table assabet_uart1_gpio_table = {
-+	.dev_id = "sa11x0-uart.1",
-+	.table = {
-+		GPIO_LOOKUP("assabet", 16, "dtr", GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP("assabet", 17, "rts", GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP("assabet", 25, "dcd", GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP("assabet", 26, "cts", GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP("assabet", 27, "dsr", GPIO_ACTIVE_LOW),
-+		{ },
-+	},
-+};
-+
-+static struct gpiod_lookup_table assabet_uart3_gpio_table = {
-+	.dev_id = "sa11x0-uart.3",
-+	.table = {
-+		GPIO_LOOKUP("assabet", 28, "cts", GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP("assabet", 29, "dsr", GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP("assabet", 30, "dcd", GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP("assabet", 31, "rng", GPIO_ACTIVE_LOW),
-+		{ },
-+	},
-+};
-+
- static void __init assabet_init(void)
- {
- 	gpiod_add_lookup_table(&assabet_irda_gpio_table);
-@@ -568,6 +591,9 @@ static void __init assabet_init(void)
- 						  &assabet_keys_pdata,
- 						  sizeof(assabet_keys_pdata));
- 
-+		gpiod_add_lookup_table(&assabet_uart1_gpio_table);
-+		gpiod_add_lookup_table(&assabet_uart3_gpio_table);
-+
- 		assabet_register_fixed_regulator(0, &assabet_cf_vcc_pdata,
- 					 assabet_cf_vcc_consumers,
- 					 ARRAY_SIZE(assabet_cf_vcc_consumers));
-@@ -650,74 +676,13 @@ static void assabet_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
- {
- 	if (port->mapbase == _Ser1UTCR0) {
- 		if (state)
--			ASSABET_BCR_clear(ASSABET_BCR_RS232EN |
--					  ASSABET_BCR_COM_RTS |
--					  ASSABET_BCR_COM_DTR);
--		else
--			ASSABET_BCR_set(ASSABET_BCR_RS232EN |
--					ASSABET_BCR_COM_RTS |
--					ASSABET_BCR_COM_DTR);
+diff --git a/arch/arm/mach-sa1100/h3xxx.c b/arch/arm/mach-sa1100/h3xxx.c
+index 31035ab3c095..d127cc190fb3 100644
+--- a/arch/arm/mach-sa1100/h3xxx.c
++++ b/arch/arm/mach-sa1100/h3xxx.c
+@@ -87,57 +87,6 @@ static struct resource h3xxx_flash_resource =
+ /*
+  * H3xxx uart support
+  */
+-static struct gpio h3xxx_uart_gpio[] = {
+-	{ H3XXX_GPIO_COM_DCD,	GPIOF_IN,		"COM DCD" },
+-	{ H3XXX_GPIO_COM_CTS,	GPIOF_IN,		"COM CTS" },
+-	{ H3XXX_GPIO_COM_RTS,	GPIOF_OUT_INIT_LOW,	"COM RTS" },
+-};
+-
+-static bool h3xxx_uart_request_gpios(void)
+-{
+-	static bool h3xxx_uart_gpio_ok;
+-	int rc;
+-
+-	if (h3xxx_uart_gpio_ok)
+-		return true;
+-
+-	rc = gpio_request_array(h3xxx_uart_gpio, ARRAY_SIZE(h3xxx_uart_gpio));
+-	if (rc)
+-		pr_err("h3xxx_uart_request_gpios: error %d\n", rc);
+-	else
+-		h3xxx_uart_gpio_ok = true;
+-
+-	return h3xxx_uart_gpio_ok;
+-}
+-
+-static void h3xxx_uart_set_mctrl(struct uart_port *port, u_int mctrl)
+-{
+-	if (port->mapbase == _Ser3UTCR0) {
+-		if (!h3xxx_uart_request_gpios())
+-			return;
+-		gpio_set_value(H3XXX_GPIO_COM_RTS, !(mctrl & TIOCM_RTS));
 -	}
 -}
 -
--/*
-- * Assabet uses COM_RTS and COM_DTR for both UART1 (com port)
-- * and UART3 (radio module).  We only handle them for UART1 here.
-- */
--static void assabet_set_mctrl(struct uart_port *port, u_int mctrl)
+-static u_int h3xxx_uart_get_mctrl(struct uart_port *port)
 -{
--	if (port->mapbase == _Ser1UTCR0) {
--		u_int set = 0, clear = 0;
+-	u_int ret = TIOCM_CD | TIOCM_CTS | TIOCM_DSR;
 -
--		if (mctrl & TIOCM_RTS)
--			clear |= ASSABET_BCR_COM_RTS;
-+			ASSABET_BCR_clear(ASSABET_BCR_RS232EN);
- 		else
--			set |= ASSABET_BCR_COM_RTS;
--
--		if (mctrl & TIOCM_DTR)
--			clear |= ASSABET_BCR_COM_DTR;
--		else
--			set |= ASSABET_BCR_COM_DTR;
--
--		ASSABET_BCR_clear(clear);
--		ASSABET_BCR_set(set);
+-	if (port->mapbase == _Ser3UTCR0) {
+-		if (!h3xxx_uart_request_gpios())
+-			return ret;
+-		/*
+-		 * DCD and CTS bits are inverted in GPLR by RS232 transceiver
+-		 */
+-		if (gpio_get_value(H3XXX_GPIO_COM_DCD))
+-			ret &= ~TIOCM_CD;
+-		if (gpio_get_value(H3XXX_GPIO_COM_CTS))
+-			ret &= ~TIOCM_CTS;
 -	}
--}
--
--static u_int assabet_get_mctrl(struct uart_port *port)
--{
--	u_int ret = 0;
--	u_int bsr = ASSABET_BSR;
--
--	/* need 2 reads to read current value */
--	bsr = ASSABET_BSR;
--
--	if (port->mapbase == _Ser1UTCR0) {
--		if (bsr & ASSABET_BSR_COM_DCD)
--			ret |= TIOCM_CD;
--		if (bsr & ASSABET_BSR_COM_CTS)
--			ret |= TIOCM_CTS;
--		if (bsr & ASSABET_BSR_COM_DSR)
--			ret |= TIOCM_DSR;
--	} else if (port->mapbase == _Ser3UTCR0) {
--		if (bsr & ASSABET_BSR_RAD_DCD)
--			ret |= TIOCM_CD;
--		if (bsr & ASSABET_BSR_RAD_CTS)
--			ret |= TIOCM_CTS;
--		if (bsr & ASSABET_BSR_RAD_DSR)
--			ret |= TIOCM_DSR;
--		if (bsr & ASSABET_BSR_RAD_RI)
--			ret |= TIOCM_RI;
--	} else {
--		ret = TIOCM_CD | TIOCM_CTS | TIOCM_DSR;
-+			ASSABET_BCR_set(ASSABET_BCR_RS232EN);
- 	}
 -
 -	return ret;
+-}
+-
+ static void h3xxx_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
+ {
+ 	if (port->mapbase == _Ser3UTCR0) {
+@@ -170,12 +119,20 @@ static int h3xxx_uart_set_wake(struct uart_port *port, u_int enable)
  }
  
- static struct sa1100_port_fns assabet_port_fns __initdata = {
--	.set_mctrl	= assabet_set_mctrl,
--	.get_mctrl	= assabet_get_mctrl,
- 	.pm		= assabet_uart_pm,
+ static struct sa1100_port_fns h3xxx_port_fns __initdata = {
+-	.set_mctrl	= h3xxx_uart_set_mctrl,
+-	.get_mctrl	= h3xxx_uart_get_mctrl,
+ 	.pm		= h3xxx_uart_pm,
+ 	.set_wake	= h3xxx_uart_set_wake,
  };
  
++static struct gpiod_lookup_table h3xxx_uart3_gpio_table = {
++	.dev_id = "sa11x0-uart.3",
++	.table = {
++		GPIO_LOOKUP("gpio", H3XXX_GPIO_COM_DCD, "dcd", GPIO_ACTIVE_LOW),
++		GPIO_LOOKUP("gpio", H3XXX_GPIO_COM_CTS, "cts", GPIO_ACTIVE_LOW),
++		GPIO_LOOKUP("gpio", H3XXX_GPIO_COM_RTS, "rts", GPIO_ACTIVE_LOW),
++		{ },
++	},
++};
++
+ /*
+  * EGPIO
+  */
+@@ -283,6 +240,7 @@ static struct gpiod_lookup_table h3xxx_pcmcia_gpio_table = {
+ void __init h3xxx_mach_init(void)
+ {
+ 	gpiod_add_lookup_table(&h3xxx_pcmcia_gpio_table);
++	gpiod_add_lookup_table(&h3xxx_uart3_gpio_table);
+ 	sa1100_register_uart_fns(&h3xxx_port_fns);
+ 	sa11x0_register_mtd(&h3xxx_flash_data, &h3xxx_flash_resource, 1);
+ 	platform_add_devices(h3xxx_devices, ARRAY_SIZE(h3xxx_devices));
 -- 
 2.1.0
