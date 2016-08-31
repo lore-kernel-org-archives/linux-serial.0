@@ -1,77 +1,29 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH] serial: imx: add rx and tx led trigger
-Date: Wed, 31 Aug 2016 16:00:36 +0200
-Message-ID: <20160831140036.GC13298@kroah.com>
-References: <1467646452-21243-1-git-send-email-u.kleine-koenig@pengutronix.de>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCHv2 3/3] serial: 8250_dw: Add quirk for APM X-Gene SoC
+Date: Wed, 31 Aug 2016 16:16:02 +0200
+Message-ID: <20160831141602.GA4725@kroah.com>
+References: <1471941208-27963-1-git-send-email-heikki.krogerus@linux.intel.com>
+ <1471941208-27963-4-git-send-email-heikki.krogerus@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1467646452-21243-1-git-send-email-u.kleine-koenig@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: kernel@pengutronix.de, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <1471941208-27963-4-git-send-email-heikki.krogerus@linux.intel.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Feng Kan <fkan@apm.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jul 04, 2016 at 05:34:12PM +0200, Uwe Kleine-K=F6nig wrote:
-> Add support for two led triggers per UART instance that blink on
-> transmission and reception of data respectively.
-> =
-
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+On Tue, Aug 23, 2016 at 11:33:28AM +0300, Heikki Krogerus wrote:
+> The APM X-Gene SoC UART is the only board that still needs
+> the hard-coded values, so handle it separately in
+> dw8250_quirks(). The other ACPI platforms are able to
+> provide the values with device properties.
+> 
+> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> Cc: Feng Kan <fkan@apm.com>
 > ---
->  drivers/tty/serial/imx.c | 57 ++++++++++++++++++++++++++++++++++++++++++=
-++++++
->  1 file changed, 57 insertions(+)
-> =
+>  drivers/tty/serial/8250/8250_dw.c | 15 ++++++++++-----
+>  1 file changed, 10 insertions(+), 5 deletions(-)
 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 621e488cbb12..2b6ba3b8bdd5 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -39,6 +39,7 @@
->  #include <linux/of_device.h>
->  #include <linux/io.h>
->  #include <linux/dma-mapping.h>
-> +#include <linux/leds.h>
->  =
-
->  #include <asm/irq.h>
->  #include <linux/platform_data/serial-imx.h>
-> @@ -227,6 +228,8 @@ struct imx_port {
->  	wait_queue_head_t	dma_wait;
->  	unsigned int            saved_reg[10];
->  	bool			context_saved;
-> +	struct led_trigger	led_trigger_rx;
-> +	struct led_trigger	led_trigger_tx;
->  };
->  =
-
->  struct imx_port_ucrs {
-> @@ -293,6 +296,10 @@ static inline int is_imx6q_uart(struct imx_port *spo=
-rt)
->  {
->  	return sport->devdata->devtype =3D=3D IMX6Q_UART;
->  }
-> +
-> +static unsigned long led_delay =3D 50;
-> +module_param(led_delay, ulong, 0644);
-
-I hate module parameters, and so should you, this isn't the 1990's
-anymore :(
-
-And I'm with Arnd, let's make this work for all tty drivers that want to
-use it please.
-
-thanks,
-
-greg k-h
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
