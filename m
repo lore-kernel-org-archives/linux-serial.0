@@ -1,7 +1,7 @@
 From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Subject: [PATCH 2/7] serial: 8250_fintek: Set IRQ Mode when port probed
-Date: Thu,  1 Sep 2016 11:39:51 +0800
-Message-ID: <1472701196-14795-3-git-send-email-hpeter+linux_kernel@gmail.com>
+Subject: [PATCH 6/7] serial: 8250_fintek: Add F81866 Support
+Date: Thu,  1 Sep 2016 11:39:55 +0800
+Message-ID: <1472701196-14795-7-git-send-email-hpeter+linux_kernel@gmail.com>
 References: <1472701196-14795-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1472701196-14795-1-git-send-email-hpeter+linux_kernel@gmail.com>
@@ -10,108 +10,176 @@ To: gregkh@linuxfoundation.org, jslaby@suse.com, ricardo.ribalda@gmail.com
 Cc: arnd@arndb.de, peter@hurleysoftware.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Set IRQ Mode when port probed in find_base_port()
+Fintek F81866 is a LPC to 6 UARTs SuperIO. It has fully functional UARTs
+likes F81216H. It's also need check the IRQ mode with system assigned,
+but the configuration is not the same with F81216 series.
 
-It should hold the IO port premission via fintek_8250_enter_key() and
-release via fintek_8250_exit_key() when we configure the SuperIO.
+F81866 IRQ Mode setting:
+	0xf0
+		Bit1: IRQ_MODE0
+		Bit0: Share mode (always on)
+	0xf6
+		Bit3: IRQ_MODE1
 
-This patch will move all SuperIO configure operations to find_base_port()
-to reduce fintek_8250_enter_key()/fintek_8250_exit_key() usage.
+	Level/Low: IRQ_MODE0:0, IRQ_MODE1:0
+	Edge/High: IRQ_MODE0:1, IRQ_MODE1:0
 
-Suggested-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+The following list is brief descriptions of F81866:
+
+F81866 (1010)
+	9Bit/High baud rate(not implements with mainline)
+	RS485, 128Bytes FIFO (implemented)
+
 Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 36 ++++++++++++++++++-----------------
- 1 file changed, 19 insertions(+), 17 deletions(-)
+ drivers/tty/serial/8250/8250_fintek.c | 75 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 69 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 2ae846e..cd8903f 100644
+index a62cfdd..1194e57 100644
 --- a/drivers/tty/serial/8250/8250_fintek.c
 +++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -49,6 +49,9 @@ struct fintek_8250 {
- 	u8 key;
- };
+@@ -21,6 +21,7 @@
+ #define EXIT_KEY 0xAA
+ #define CHIP_ID1  0x20
+ #define CHIP_ID2  0x21
++#define CHIP_ID_F81866 0x1010
+ #define CHIP_ID_F81216AD 0x1602
+ #define CHIP_ID_F81216H 0x0501
+ #define CHIP_ID_F81216 0x0802
+@@ -50,6 +51,26 @@
+ #define RXFTHR_MODE_MASK	(BIT(5) | BIT(4))
+ #define RXFTHR_MODE_4X		BIT(5)
  
-+static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata,
-+				     bool level_mode);
++#define F81216_LDN_LOW	0x0
++#define F81216_LDN_HIGH	0x4
 +
- static u8 sio_read_reg(struct fintek_8250 *pdata, u8 reg)
- {
- 	outb(reg, pdata->base_port + ADDR_PORT);
-@@ -154,10 +157,13 @@ static int fintek_8250_rs485_config(struct uart_port *port,
++/*
++ * F81866 registers
++ *
++ * The IRQ setting mode of F81866 is not the same with F81216 series.
++ *	Level/Low: IRQ_MODE0:0, IRQ_MODE1:0
++ *	Edge/High: IRQ_MODE0:1, IRQ_MODE1:0
++ */
++#define F81866_IRQ_MODE		0xf0
++#define F81866_IRQ_SHARE	BIT(0)
++#define F81866_IRQ_MODE0	BIT(1)
++
++#define F81866_FIFO_CTRL	FIFO_CTRL
++#define F81866_IRQ_MODE1	BIT(3)
++
++#define F81866_LDN_LOW		0x10
++#define F81866_LDN_HIGH		0x16
++
+ struct fintek_8250 {
+ 	u16 pid;
+ 	u16 base_port;
+@@ -109,6 +130,7 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
+ 	chip |= sio_read_reg(pdata, CHIP_ID2) << 8;
+ 
+ 	switch (chip) {
++	case CHIP_ID_F81866:
+ 	case CHIP_ID_F81216AD:
+ 	case CHIP_ID_F81216H:
+ 	case CHIP_ID_F81216:
+@@ -121,6 +143,26 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
  	return 0;
  }
  
--static int find_base_port(struct fintek_8250 *pdata, u16 io_address)
-+static int find_base_port(struct fintek_8250 *pdata, u16 io_address,
-+			  unsigned int irq)
++static int fintek_8250_get_ldn_range(struct fintek_8250 *pdata, int *min,
++				     int *max)
++{
++	switch (pdata->pid) {
++	case CHIP_ID_F81866:
++		*min = F81866_LDN_LOW;
++		*max = F81866_LDN_HIGH;
++		return 0;
++
++	case CHIP_ID_F81216AD:
++	case CHIP_ID_F81216H:
++	case CHIP_ID_F81216:
++		*min = F81216_LDN_LOW;
++		*max = F81216_LDN_HIGH;
++		return 0;
++	}
++
++	return -ENODEV;
++}
++
+ static int fintek_8250_rs485_config(struct uart_port *port,
+ 			      struct serial_rs485 *rs485)
  {
- 	static const u16 addr[] = {0x4e, 0x2e};
+@@ -175,6 +217,7 @@ static void fintek_8250_set_max_fifo(struct fintek_8250 *pdata)
+ 	default: /* Default 16Bytes FIFO */
+ 		return;
+ 
++	case CHIP_ID_F81866:
+ 	case CHIP_ID_F81216H: /* 128Bytes FIFO */
+ 		sio_write_mask_reg(pdata, FIFO_CTRL,
+ 				   FIFO_MODE_MASK | RXFTHR_MODE_MASK,
+@@ -186,9 +229,27 @@ static void fintek_8250_set_max_fifo(struct fintek_8250 *pdata)
+ static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool is_level)
+ {
+ 	sio_write_reg(pdata, LDN, pdata->index);
+-	sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_SHARE, IRQ_SHARE);
+-	sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_MODE_MASK,
+-			   is_level ? IRQ_LEVEL_LOW : IRQ_EDGE_HIGH);
++
++	switch (pdata->pid) {
++	case CHIP_ID_F81866:
++		sio_write_mask_reg(pdata, F81866_FIFO_CTRL, F81866_IRQ_MODE1,
++				   0);
++		sio_write_mask_reg(pdata, F81866_IRQ_MODE, F81866_IRQ_SHARE,
++				   F81866_IRQ_SHARE);
++		sio_write_mask_reg(pdata, F81866_IRQ_MODE,
++				   F81866_IRQ_MODE0,
++				   is_level ? 0 : F81866_IRQ_MODE0);
++		break;
++
++	case CHIP_ID_F81216AD:
++	case CHIP_ID_F81216H:
++	case CHIP_ID_F81216:
++		sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_SHARE,
++				   IRQ_SHARE);
++		sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_MODE_MASK,
++				   is_level ? IRQ_LEVEL_LOW : IRQ_EDGE_HIGH);
++		break;
++	}
+ }
+ 
+ static int find_base_port(struct fintek_8250 *pdata, u16 io_address,
+@@ -198,7 +259,7 @@ static int find_base_port(struct fintek_8250 *pdata, u16 io_address,
  	static const u8 keys[] = {0x77, 0xa0, 0x87, 0x67};
-+	struct irq_data *irq_data;
-+	bool level_mode = false;
- 	int i, j, k;
+ 	struct irq_data *irq_data;
+ 	bool level_mode = false;
+-	int i, j, k;
++	int i, j, k, min, max;
  
  	for (i = 0; i < ARRAY_SIZE(addr); i++) {
-@@ -181,9 +187,16 @@ static int find_base_port(struct fintek_8250 *pdata, u16 io_address)
- 				if (aux != io_address)
- 					continue;
+ 		for (j = 0; j < ARRAY_SIZE(keys); j++) {
+@@ -207,12 +268,13 @@ static int find_base_port(struct fintek_8250 *pdata, u16 io_address,
  
--				fintek_8250_exit_key(addr[i]);
- 				pdata->index = k;
- 
-+				irq_data = irq_get_irq_data(irq);
-+				if (irq_data)
-+					level_mode =
-+						irqd_is_level_type(irq_data);
-+
-+				fintek_8250_set_irq_mode(pdata, level_mode);
-+				fintek_8250_exit_key(addr[i]);
-+
- 				return 0;
+ 			if (fintek_8250_enter_key(addr[i], keys[j]))
+ 				continue;
+-			if (fintek_8250_check_id(pdata)) {
++			if (fintek_8250_check_id(pdata) ||
++			    fintek_8250_get_ldn_range(pdata, &min, &max)) {
+ 				fintek_8250_exit_key(addr[i]);
+ 				continue;
  			}
  
-@@ -194,31 +207,20 @@ static int find_base_port(struct fintek_8250 *pdata, u16 io_address)
- 	return -ENODEV;
- }
+-			for (k = 0; k < 4; k++) {
++			for (k = min; k < max; k++) {
+ 				u16 aux;
  
--static int fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool level_mode)
-+static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool is_level)
- {
--	int status;
--
--	status = fintek_8250_enter_key(pdata->base_port, pdata->key);
--	if (status)
--		return status;
--
- 	sio_write_reg(pdata, LDN, pdata->index);
- 	sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_SHARE, IRQ_SHARE);
- 	sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_MODE_MASK,
--			   level_mode ? IRQ_LEVEL_LOW : IRQ_EDGE_HIGH);
--
--	fintek_8250_exit_key(pdata->base_port);
--	return 0;
-+			   is_level ? IRQ_LEVEL_LOW : IRQ_EDGE_HIGH);
- }
+ 				sio_write_reg(pdata, LDN, k);
+@@ -250,6 +312,7 @@ static void fintek_8250_set_rs485_handler(struct uart_8250_port *uart)
+ 	default: /* No RS485 Auto direction functional */
+ 		break;
  
- int fintek_8250_probe(struct uart_8250_port *uart)
- {
- 	struct fintek_8250 *pdata;
- 	struct fintek_8250 probe_data;
--	struct irq_data *irq_data = irq_get_irq_data(uart->port.irq);
--	bool level_mode = irqd_is_level_type(irq_data);
- 
--	if (find_base_port(&probe_data, uart->port.iobase))
-+	if (find_base_port(&probe_data, uart->port.iobase, uart->port.irq))
- 		return -ENODEV;
- 
- 	pdata = devm_kzalloc(uart->port.dev, sizeof(*pdata), GFP_KERNEL);
-@@ -229,5 +231,5 @@ int fintek_8250_probe(struct uart_8250_port *uart)
- 	uart->port.rs485_config = fintek_8250_rs485_config;
- 	uart->port.private_data = pdata;
- 
--	return fintek_8250_set_irq_mode(pdata, level_mode);
-+	return 0;
- }
++	case CHIP_ID_F81866:
+ 	case CHIP_ID_F81216AD:
+ 	case CHIP_ID_F81216H:
+ 		uart->port.rs485_config = fintek_8250_rs485_config;
 -- 
 1.9.1
