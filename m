@@ -1,87 +1,37 @@
-From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
-Subject: Re: [PATCH 9/9] serial/arc: constify uart_ops structures
-Date: Thu, 1 Sep 2016 11:49:45 -0700
-Message-ID: <a666292c-e4a8-d6b4-6e2a-a44d8b6b9528@synopsys.com>
+From: Peter Griffin <peter.griffin@linaro.org>
+Subject: Re: [STLinux Kernel] [PATCH 1/9] serial: st-asc: constify uart_ops
+ structures
+Date: Thu, 1 Sep 2016 20:55:38 +0100
+Message-ID: <20160901195538.GA19072@griffinp-ThinkPad-X1-Carbon-2nd>
 References: <1472752298-981-1-git-send-email-Julia.Lawall@lip6.fr>
- <1472752298-981-10-git-send-email-Julia.Lawall@lip6.fr>
+ <1472752298-981-2-git-send-email-Julia.Lawall@lip6.fr>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1472752298-981-10-git-send-email-Julia.Lawall@lip6.fr>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1472752298-981-2-git-send-email-Julia.Lawall@lip6.fr>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Julia Lawall <Julia.Lawall@lip6.fr>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-snps-arc@lists.infradead.org
+Cc: kernel@stlinux.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel-janitors@vger.kernel.org, Patrice Chotard <patrice.chotard@st.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 09/01/2016 10:51 AM, Julia Lawall wrote:
+On Thu, 01 Sep 2016, Julia Lawall wrote:
+
 > Check for uart_ops structures that are only stored in the ops field of a
 > uart_port structure.  This field is declared const, so uart_ops structures
 > that have this property can be declared as const also.
-> 
-> The semantic patch that makes this change is as follows:
-> (http://coccinelle.lip6.fr/)
-> 
-> // <smpl>
-> @r disable optional_qualifier@
-> identifier i;
-> position p;
-> @@
-> static struct uart_ops i@p = { ... };
-> 
-> @ok@
-> identifier r.i;
-> struct uart_port e;
-> position p;
-> @@
-> e.ops = &i@p;
-> 
-> @bad@
-> position p != {r.p,ok.p};
-> identifier r.i;
-> struct uart_ops e;
-> @@
-> e@i@p
-> 
-> @depends on !bad disable optional_qualifier@
-> identifier r.i;
-> @@
-> static
-> +const
->  struct uart_ops i = { ... };
-> // </smpl>
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-Acked-by: Vineet Gupta <vgupta@synopsys.com>
+Acked-by: Peter Griffin <peter.griffin@linaro.org>
 
-Thx for making it better Julia !
--Vineet
+regards,
 
-> 
-> ---
->  drivers/tty/serial/arc_uart.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-> index 3a1de5c..5ac06fc 100644
-> --- a/drivers/tty/serial/arc_uart.c
-> +++ b/drivers/tty/serial/arc_uart.c
-> @@ -464,7 +464,7 @@ static int arc_serial_poll_getchar(struct uart_port *port)
->  }
->  #endif
->  
-> -static struct uart_ops arc_serial_pops = {
-> +static const struct uart_ops arc_serial_pops = {
->  	.tx_empty	= arc_serial_tx_empty,
->  	.set_mctrl	= arc_serial_set_mctrl,
->  	.get_mctrl	= arc_serial_get_mctrl,
-> 
+Peter.
