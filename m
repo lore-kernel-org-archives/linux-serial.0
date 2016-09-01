@@ -1,87 +1,60 @@
-From: Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
-Subject: [PATCH v3 1/1] Allowing UART DMA to be configured on i.MX53
-Date: Thu,  1 Sep 2016 11:30:46 +0200
-Message-ID: <1472722246-20618-1-git-send-email-fabien.lahoudere@collabora.co.uk>
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: Re: [PATCH 3/7] serial: 8250_fintek: Set maximum FIFO of F81216H
+Date: Thu, 1 Sep 2016 13:16:07 +0200
+Message-ID: <CAPybu_1-N_+QJwUtfxHRs84Mnd=D72xnprSSjX1jqLK2AN_eyA@mail.gmail.com>
+References: <1472701196-14795-1-git-send-email-hpeter+linux_kernel@gmail.com> <1472701196-14795-4-git-send-email-hpeter+linux_kernel@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1472701196-14795-4-git-send-email-hpeter+linux_kernel@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Martyn Welch <martyn.welch@collabora.co.uk>, Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
+To: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, =?UTF-8?B?UEEyMCBUT00gVFNBSSDolKHlrpfkvZE=?= <tom_tsai@fintek.com.tw>, Peter H <peter_hong@fintek.com.tw>, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Martyn Welch <martyn.welch@collabora.co.uk>
+Hi Peter
 
-The UART DMA was only being configured on i.MX6Q compatible devices. We
-know that the DMA also works for i.MX53 devices, so enable uart DMA for
-imx53 and let the device tree to configure if DMA should be used or not.
+On Thu, Sep 1, 2016 at 5:39 AM, Ji-Ze Hong (Peter Hong)
+<hpeter@gmail.com> wrote:
 
-Signed-off-by: Martyn Welch <martyn.welch@collabora.co.uk>
-Signed-off-by: Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
----
- drivers/tty/serial/imx.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+> +static void fintek_8250_set_max_fifo(struct fintek_8250 *pdata)
+> +{
+> +       switch (pdata->pid) {
+> +       default: /* Default 16Bytes FIFO */
+> +               return;
+> +
+> +       case CHIP_ID_F81216H: /* 128Bytes FIFO */
+> +               sio_write_mask_reg(pdata, FIFO_CTRL,
+> +                                  FIFO_MODE_MASK | RXFTHR_MODE_MASK,
+> +                                  FIFO_MODE_128 | RXFTHR_MODE_4X);
+> +               break;
+> +       }
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 08ccfe1..1c9315a 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -190,6 +190,7 @@
- enum imx_uart_type {
- 	IMX1_UART,
- 	IMX21_UART,
-+	IMX53_UART,
- 	IMX6Q_UART,
- };
- 
-@@ -247,6 +248,10 @@ static struct imx_uart_data imx_uart_devdata[] = {
- 		.uts_reg = IMX21_UTS,
- 		.devtype = IMX21_UART,
- 	},
-+	[IMX53_UART] = {
-+		.uts_reg = IMX21_UTS,
-+		.devtype = IMX53_UART,
-+	},
- 	[IMX6Q_UART] = {
- 		.uts_reg = IMX21_UTS,
- 		.devtype = IMX6Q_UART,
-@@ -261,6 +266,9 @@ static const struct platform_device_id imx_uart_devtype[] = {
- 		.name = "imx21-uart",
- 		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX21_UART],
- 	}, {
-+		.name = "imx53-uart",
-+		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX53_UART],
-+	}, {
- 		.name = "imx6q-uart",
- 		.driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX6Q_UART],
- 	}, {
-@@ -271,6 +279,7 @@ MODULE_DEVICE_TABLE(platform, imx_uart_devtype);
- 
- static const struct of_device_id imx_uart_dt_ids[] = {
- 	{ .compatible = "fsl,imx6q-uart", .data = &imx_uart_devdata[IMX6Q_UART], },
-+	{ .compatible = "fsl,imx53-uart", .data = &imx_uart_devdata[IMX53_UART], },
- 	{ .compatible = "fsl,imx1-uart", .data = &imx_uart_devdata[IMX1_UART], },
- 	{ .compatible = "fsl,imx21-uart", .data = &imx_uart_devdata[IMX21_UART], },
- 	{ /* sentinel */ }
-@@ -292,6 +301,11 @@ static inline int is_imx21_uart(struct imx_port *sport)
- 	return sport->devdata->devtype == IMX21_UART;
- }
- 
-+static inline int is_imx53_uart(struct imx_port *sport)
-+{
-+	return sport->devdata->devtype == IMX53_UART;
-+}
-+
- static inline int is_imx6q_uart(struct imx_port *sport)
- {
- 	return sport->devdata->devtype == IMX6Q_UART;
-@@ -1254,8 +1268,7 @@ static int imx_startup(struct uart_port *port)
- 	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
- 
- 	/* Can we enable the DMA support? */
--	if (is_imx6q_uart(sport) && !uart_console(port) &&
--	    !sport->dma_is_inited)
-+	if (!uart_console(port) && !sport->dma_is_inited)
- 		imx_uart_dma_init(sport);
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
+I think it is more clear to have the default case as the ast one;
+> +}
+> +
+>  static int find_base_port(struct fintek_8250 *pdata, u16 io_address,
+>                           unsigned int irq)
+
+I think that we should rename find_base_port to something else like
+probe_setup_port(),  we are not only finding the port but also setting
+it up.
+
+>  {
+> @@ -195,6 +217,7 @@ static int find_base_port(struct fintek_8250 *pdata, u16 io_address,
+>                                                 irqd_is_level_type(irq_data);
+>
+>                                 fintek_8250_set_irq_mode(pdata, level_mode);
+> +                               fintek_8250_set_max_fifo(pdata);
+>                                 fintek_8250_exit_key(addr[i]);
+>
+>                                 return 0;
+> --
+> 1.9.1
+>
+
+Regrds!
+
+
 -- 
-2.1.4
+Ricardo Ribalda
