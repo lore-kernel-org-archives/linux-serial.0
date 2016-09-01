@@ -1,7 +1,7 @@
 From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Subject: [PATCH 5/7] serial: 8250_fintek: Add F81216 Support
-Date: Thu,  1 Sep 2016 11:39:54 +0800
-Message-ID: <1472701196-14795-6-git-send-email-hpeter+linux_kernel@gmail.com>
+Subject: [PATCH 1/7] serial: 8250_fintek: Refactoring read/write method
+Date: Thu,  1 Sep 2016 11:39:50 +0800
+Message-ID: <1472701196-14795-2-git-send-email-hpeter+linux_kernel@gmail.com>
 References: <1472701196-14795-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1472701196-14795-1-git-send-email-hpeter+linux_kernel@gmail.com>
@@ -10,85 +10,155 @@ To: gregkh@linuxfoundation.org, jslaby@suse.com, ricardo.ribalda@gmail.com
 Cc: arnd@arndb.de, peter@hurleysoftware.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Fintek F81216 is a LPC to 4 UARTs device. It's the F81216 series but
-support less functional than F81216AD/F81216H
+If we need to access SuperIO registers, It should write register offset
+to base_addr and read/write value to base_addr + 1 to perform read/write.
+We can make it more simply with write/read functions.
 
-The following list is brief descriptions of F81216 series:
-
-F81216H (0105)
-	9Bit/High baud rate(not implements with mainline)
-	RS485, 128Bytes FIFO (implemented)
-
-F81216AD (0216)
-	9Bit(not implements with mainline)
-	RS485(implemented)
-
-F81216 (0208)
-	basically 16550A
+This patch add sio_read_reg()/sio_write_reg()/sio_write_mask_reg() to
+reduce SuperIO register operation with lot of outb()/inb().
 
 Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 26 ++++++++++++++++++++++++--
- 1 file changed, 24 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_fintek.c | 73 ++++++++++++++++++-----------------
+ 1 file changed, 38 insertions(+), 35 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 921f742..a62cfdd 100644
+index 0facc78..2ae846e 100644
 --- a/drivers/tty/serial/8250/8250_fintek.c
 +++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -23,6 +23,7 @@
- #define CHIP_ID2  0x21
- #define CHIP_ID_F81216AD 0x1602
- #define CHIP_ID_F81216H 0x0501
-+#define CHIP_ID_F81216 0x0802
- #define VENDOR_ID1 0x23
- #define VENDOR_ID1_VAL 0x19
- #define VENDOR_ID2 0x24
-@@ -107,8 +108,14 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
- 	chip = sio_read_reg(pdata, CHIP_ID1);
- 	chip |= sio_read_reg(pdata, CHIP_ID2) << 8;
+@@ -49,6 +49,27 @@ struct fintek_8250 {
+ 	u8 key;
+ };
  
--	if (chip != CHIP_ID_F81216AD && chip != CHIP_ID_F81216H)
-+	switch (chip) {
-+	case CHIP_ID_F81216AD:
-+	case CHIP_ID_F81216H:
-+	case CHIP_ID_F81216:
-+		break;
-+	default:
- 		return -ENODEV;
-+	}
- 
- 	pdata->pid = chip;
- 	return 0;
-@@ -235,6 +242,21 @@ static int find_base_port(struct fintek_8250 *pdata, u16 io_address,
- 	return -ENODEV;
- }
- 
-+static void fintek_8250_set_rs485_handler(struct uart_8250_port *uart)
++static u8 sio_read_reg(struct fintek_8250 *pdata, u8 reg)
 +{
-+	struct fintek_8250 *pdata = uart->port.private_data;
-+
-+	switch (pdata->pid) {
-+	default: /* No RS485 Auto direction functional */
-+		break;
-+
-+	case CHIP_ID_F81216AD:
-+	case CHIP_ID_F81216H:
-+		uart->port.rs485_config = fintek_8250_rs485_config;
-+		break;
-+	}
++	outb(reg, pdata->base_port + ADDR_PORT);
++	return inb(pdata->base_port + DATA_PORT);
 +}
 +
- int fintek_8250_probe(struct uart_8250_port *uart)
++static void sio_write_reg(struct fintek_8250 *pdata, u8 reg, u8 data)
++{
++	outb(reg, pdata->base_port + ADDR_PORT);
++	outb(data, pdata->base_port + DATA_PORT);
++}
++
++static void sio_write_mask_reg(struct fintek_8250 *pdata, u8 reg, u8 mask,
++			       u8 data)
++{
++	u8 tmp;
++
++	tmp = (sio_read_reg(pdata, reg) & ~mask) | (mask & data);
++	sio_write_reg(pdata, reg, tmp);
++}
++
+ static int fintek_8250_enter_key(u16 base_port, u8 key)
  {
- 	struct fintek_8250 *pdata;
-@@ -248,8 +270,8 @@ int fintek_8250_probe(struct uart_8250_port *uart)
- 		return -ENOMEM;
+ 	if (!request_muxed_region(base_port, 2, "8250_fintek"))
+@@ -66,22 +87,18 @@ static void fintek_8250_exit_key(u16 base_port)
+ 	release_region(base_port + ADDR_PORT, 2);
+ }
  
- 	memcpy(pdata, &probe_data, sizeof(probe_data));
--	uart->port.rs485_config = fintek_8250_rs485_config;
- 	uart->port.private_data = pdata;
-+	fintek_8250_set_rs485_handler(uart);
+-static int fintek_8250_check_id(u16 base_port)
++static int fintek_8250_check_id(struct fintek_8250 *pdata)
+ {
+ 	u16 chip;
  
+-	outb(VENDOR_ID1, base_port + ADDR_PORT);
+-	if (inb(base_port + DATA_PORT) != VENDOR_ID1_VAL)
++	if (sio_read_reg(pdata, VENDOR_ID1) != VENDOR_ID1_VAL)
+ 		return -ENODEV;
+ 
+-	outb(VENDOR_ID2, base_port + ADDR_PORT);
+-	if (inb(base_port + DATA_PORT) != VENDOR_ID2_VAL)
++	if (sio_read_reg(pdata, VENDOR_ID2) != VENDOR_ID2_VAL)
+ 		return -ENODEV;
+ 
+-	outb(CHIP_ID1, base_port + ADDR_PORT);
+-	chip = inb(base_port + DATA_PORT);
+-	outb(CHIP_ID2, base_port + ADDR_PORT);
+-	chip |= inb(base_port + DATA_PORT) << 8;
++	chip = sio_read_reg(pdata, CHIP_ID1);
++	chip |= sio_read_reg(pdata, CHIP_ID2) << 8;
+ 
+ 	if (chip != CHIP_ID_0 && chip != CHIP_ID_1)
+ 		return -ENODEV;
+@@ -128,10 +145,8 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+ 	if (fintek_8250_enter_key(pdata->base_port, pdata->key))
+ 		return -EBUSY;
+ 
+-	outb(LDN, pdata->base_port + ADDR_PORT);
+-	outb(pdata->index, pdata->base_port + DATA_PORT);
+-	outb(RS485, pdata->base_port + ADDR_PORT);
+-	outb(config, pdata->base_port + DATA_PORT);
++	sio_write_reg(pdata, LDN, pdata->index);
++	sio_write_reg(pdata, RS485, config);
+ 	fintek_8250_exit_key(pdata->base_port);
+ 
+ 	port->rs485 = *rs485;
+@@ -147,10 +162,12 @@ static int find_base_port(struct fintek_8250 *pdata, u16 io_address)
+ 
+ 	for (i = 0; i < ARRAY_SIZE(addr); i++) {
+ 		for (j = 0; j < ARRAY_SIZE(keys); j++) {
++			pdata->base_port = addr[i];
++			pdata->key = keys[j];
+ 
+ 			if (fintek_8250_enter_key(addr[i], keys[j]))
+ 				continue;
+-			if (fintek_8250_check_id(addr[i])) {
++			if (fintek_8250_check_id(pdata)) {
+ 				fintek_8250_exit_key(addr[i]);
+ 				continue;
+ 			}
+@@ -158,19 +175,13 @@ static int find_base_port(struct fintek_8250 *pdata, u16 io_address)
+ 			for (k = 0; k < 4; k++) {
+ 				u16 aux;
+ 
+-				outb(LDN, addr[i] + ADDR_PORT);
+-				outb(k, addr[i] + DATA_PORT);
+-
+-				outb(IO_ADDR1, addr[i] + ADDR_PORT);
+-				aux = inb(addr[i] + DATA_PORT);
+-				outb(IO_ADDR2, addr[i] + ADDR_PORT);
+-				aux |= inb(addr[i] + DATA_PORT) << 8;
++				sio_write_reg(pdata, LDN, k);
++				aux = sio_read_reg(pdata, IO_ADDR1);
++				aux |= sio_read_reg(pdata, IO_ADDR2) << 8;
+ 				if (aux != io_address)
+ 					continue;
+ 
+ 				fintek_8250_exit_key(addr[i]);
+-				pdata->key = keys[j];
+-				pdata->base_port = addr[i];
+ 				pdata->index = k;
+ 
+ 				return 0;
+@@ -186,24 +197,16 @@ static int find_base_port(struct fintek_8250 *pdata, u16 io_address)
+ static int fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool level_mode)
+ {
+ 	int status;
+-	u8 tmp;
+ 
+ 	status = fintek_8250_enter_key(pdata->base_port, pdata->key);
+ 	if (status)
+ 		return status;
+ 
+-	outb(LDN, pdata->base_port + ADDR_PORT);
+-	outb(pdata->index, pdata->base_port + DATA_PORT);
+-
+-	outb(FINTEK_IRQ_MODE, pdata->base_port + ADDR_PORT);
+-	tmp = inb(pdata->base_port + DATA_PORT);
+-
+-	tmp &= ~IRQ_MODE_MASK;
+-	tmp |= IRQ_SHARE;
+-	if (!level_mode)
+-		tmp |= IRQ_EDGE_HIGH;
++	sio_write_reg(pdata, LDN, pdata->index);
++	sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_SHARE, IRQ_SHARE);
++	sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_MODE_MASK,
++			   level_mode ? IRQ_LEVEL_LOW : IRQ_EDGE_HIGH);
+ 
+-	outb(tmp, pdata->base_port + DATA_PORT);
+ 	fintek_8250_exit_key(pdata->base_port);
  	return 0;
  }
 -- 
