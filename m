@@ -1,13 +1,13 @@
 From: Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: [PATCH 8/9] serial-uartlite: constify uart_ops structures
-Date: Thu,  1 Sep 2016 19:51:37 +0200
-Message-ID: <1472752298-981-9-git-send-email-Julia.Lawall@lip6.fr>
+Subject: [PATCH 3/9] serial: altera: constify uart_ops structures
+Date: Thu,  1 Sep 2016 19:51:32 +0200
+Message-ID: <1472752298-981-4-git-send-email-Julia.Lawall@lip6.fr>
 References: <1472752298-981-1-git-send-email-Julia.Lawall@lip6.fr>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <kernel-janitors-owner@vger.kernel.org>
 In-Reply-To: <1472752298-981-1-git-send-email-Julia.Lawall@lip6.fr>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Korsgaard <jacmet@sunsite.dk>
-Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Tobias Klauser <tklauser@distanz.ch>
+Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 Check for uart_ops structures that are only stored in the ops field of a
@@ -49,19 +49,34 @@ static
 Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
 ---
- drivers/tty/serial/uartlite.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/altera_jtaguart.c |    2 +-
+ drivers/tty/serial/altera_uart.c     |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 05089b6..817bb0d 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -387,7 +387,7 @@ static void ulite_put_poll_char(struct uart_port *port, unsigned char ch)
- }
- #endif
- 
--static struct uart_ops ulite_ops = {
-+static const struct uart_ops ulite_ops = {
- 	.tx_empty	= ulite_tx_empty,
- 	.set_mctrl	= ulite_set_mctrl,
- 	.get_mctrl	= ulite_get_mctrl,
+diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+index 32df2a0..e409d7d 100644
+--- a/drivers/tty/serial/altera_jtaguart.c
++++ b/drivers/tty/serial/altera_jtaguart.c
+@@ -280,7 +280,7 @@ static int altera_jtaguart_verify_port(struct uart_port *port,
+ /*
+  *	Define the basic serial functions we support.
+  */
+-static struct uart_ops altera_jtaguart_ops = {
++static const struct uart_ops altera_jtaguart_ops = {
+ 	.tx_empty	= altera_jtaguart_tx_empty,
+ 	.get_mctrl	= altera_jtaguart_get_mctrl,
+ 	.set_mctrl	= altera_jtaguart_set_mctrl,
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index 61b607f..820a742 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -404,7 +404,7 @@ static void altera_uart_poll_put_char(struct uart_port *port, unsigned char c)
+ /*
+  *	Define the basic serial functions we support.
+  */
+-static struct uart_ops altera_uart_ops = {
++static const struct uart_ops altera_uart_ops = {
+ 	.tx_empty	= altera_uart_tx_empty,
+ 	.get_mctrl	= altera_uart_get_mctrl,
+ 	.set_mctrl	= altera_uart_set_mctrl,
+
