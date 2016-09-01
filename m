@@ -1,37 +1,67 @@
-From: Peter Griffin <peter.griffin@linaro.org>
-Subject: Re: [STLinux Kernel] [PATCH 1/9] serial: st-asc: constify uart_ops
- structures
-Date: Thu, 1 Sep 2016 20:55:38 +0100
-Message-ID: <20160901195538.GA19072@griffinp-ThinkPad-X1-Carbon-2nd>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+Subject: [PATCH 2/9] tty/serial: at91: constify uart_ops structures
+Date: Thu,  1 Sep 2016 19:51:31 +0200
+Message-ID: <1472752298-981-3-git-send-email-Julia.Lawall@lip6.fr>
 References: <1472752298-981-1-git-send-email-Julia.Lawall@lip6.fr>
- <1472752298-981-2-git-send-email-Julia.Lawall@lip6.fr>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1472752298-981-2-git-send-email-Julia.Lawall@lip6.fr>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Julia Lawall <Julia.Lawall@lip6.fr>
-Cc: kernel@stlinux.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel-janitors@vger.kernel.org, Patrice Chotard <patrice.chotard@st.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1472752298-981-1-git-send-email-Julia.Lawall@lip6.fr>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 01 Sep 2016, Julia Lawall wrote:
+Check for uart_ops structures that are only stored in the ops field of a
+uart_port structure.  This field is declared const, so uart_ops structures
+that have this property can be declared as const also.
 
-> Check for uart_ops structures that are only stored in the ops field of a
-> uart_port structure.  This field is declared const, so uart_ops structures
-> that have this property can be declared as const also.
+The semantic patch that makes this change is as follows:
+(http://coccinelle.lip6.fr/)
 
-Acked-by: Peter Griffin <peter.griffin@linaro.org>
+// <smpl>
+@r disable optional_qualifier@
+identifier i;
+position p;
+@@
+static struct uart_ops i@p = { ... };
 
-regards,
+@ok@
+identifier r.i;
+struct uart_port e;
+position p;
+@@
+e.ops = &i@p;
 
-Peter.
+@bad@
+position p != {r.p,ok.p};
+identifier r.i;
+struct uart_ops e;
+@@
+e@i@p
+
+@depends on !bad disable optional_qualifier@
+identifier r.i;
+@@
+static
++const
+ struct uart_ops i = { ... };
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+
+---
+ drivers/tty/serial/atmel_serial.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 2eaa18d..963a72f 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2292,7 +2292,7 @@ static void atmel_poll_put_char(struct uart_port *port, unsigned char ch)
+ }
+ #endif
+ 
+-static struct uart_ops atmel_pops = {
++static const struct uart_ops atmel_pops = {
+ 	.tx_empty	= atmel_tx_empty,
+ 	.set_mctrl	= atmel_set_mctrl,
+ 	.get_mctrl	= atmel_get_mctrl,
