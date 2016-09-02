@@ -1,20 +1,20 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH 2/9] tty/serial: at91: constify uart_ops structures
-Date: Fri, 2 Sep 2016 09:55:51 +0200
-Message-ID: <931065fc-5304-a0d5-1cde-b02bc5dc4b21@atmel.com>
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: Re: [PATCH 3/9] serial: altera: constify uart_ops structures
+Date: Fri, 2 Sep 2016 10:36:56 +0200
+Message-ID: <20160902083655.GE8952@distanz.ch>
 References: <1472752298-981-1-git-send-email-Julia.Lawall@lip6.fr>
- <1472752298-981-3-git-send-email-Julia.Lawall@lip6.fr>
+ <1472752298-981-4-git-send-email-Julia.Lawall@lip6.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1472752298-981-3-git-send-email-Julia.Lawall@lip6.fr>
+Content-Disposition: inline
+In-Reply-To: <1472752298-981-4-git-send-email-Julia.Lawall@lip6.fr>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Julia Lawall <Julia.Lawall@lip6.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: kernel-janitors@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org
+To: Julia Lawall <Julia.Lawall@lip6.fr>
+Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Le 01/09/2016 à 19:51, Julia Lawall a écrit :
+On 2016-09-01 at 19:51:32 +0200, Julia Lawall <Julia.Lawall@lip6.fr> wrote:
 > Check for uart_ops structures that are only stored in the ops field of a
 > uart_port structure.  This field is declared const, so uart_ops structures
 > that have this property can be declared as const also.
@@ -53,31 +53,6 @@ Le 01/09/2016 à 19:51, Julia Lawall a écrit :
 > 
 > Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Acked-by: Tobias Klauser <tklauser@distanz.ch>
 
-Thanks Julia.
-Bye,
-
-> ---
->  drivers/tty/serial/atmel_serial.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 2eaa18d..963a72f 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2292,7 +2292,7 @@ static void atmel_poll_put_char(struct uart_port *port, unsigned char ch)
->  }
->  #endif
->  
-> -static struct uart_ops atmel_pops = {
-> +static const struct uart_ops atmel_pops = {
->  	.tx_empty	= atmel_tx_empty,
->  	.set_mctrl	= atmel_set_mctrl,
->  	.get_mctrl	= atmel_get_mctrl,
-> 
-> 
-
-
--- 
-Nicolas Ferre
+Thanks a lot.
