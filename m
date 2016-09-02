@@ -1,58 +1,31 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [PATCH 3/9] serial: altera: constify uart_ops structures
-Date: Fri, 2 Sep 2016 10:36:56 +0200
-Message-ID: <20160902083655.GE8952@distanz.ch>
-References: <1472752298-981-1-git-send-email-Julia.Lawall@lip6.fr>
- <1472752298-981-4-git-send-email-Julia.Lawall@lip6.fr>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH v4 2/2] serial: 8250_dw: add ACPI support for uart on
+ Hisilicon Hip05 SoC
+Date: Fri, 2 Sep 2016 14:16:02 +0300
+Message-ID: <20160902111602.GA21737@kuha.fi.intel.com>
+References: <1472614152-43136-1-git-send-email-wangkefeng.wang@huawei.com>
+ <1472614152-43136-3-git-send-email-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1472752298-981-4-git-send-email-Julia.Lawall@lip6.fr>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Julia Lawall <Julia.Lawall@lip6.fr>
-Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1472614152-43136-3-git-send-email-wangkefeng.wang@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jiri Slaby <jslaby@suse.com>, guohanjun@huawei.com, xuwei5@hisilicon.com, graeme.gregory@linaro.org, z.liuxinliang@hisilicon.com, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2016-09-01 at 19:51:32 +0200, Julia Lawall <Julia.Lawall@lip6.fr> wrote:
-> Check for uart_ops structures that are only stored in the ops field of a
-> uart_port structure.  This field is declared const, so uart_ops structures
-> that have this property can be declared as const also.
+On Wed, Aug 31, 2016 at 11:29:12AM +0800, Kefeng Wang wrote:
+> Add ACPI identifier for UART on Hisilicon Hip05 SoC, be careful that
+> it is not 16550 compatible, and "reg-io-width" and "reg-shift" need
+> be set properly by _DSD method in DSDT.
 > 
-> The semantic patch that makes this change is as follows:
-> (http://coccinelle.lip6.fr/)
-> 
-> // <smpl>
-> @r disable optional_qualifier@
-> identifier i;
-> position p;
-> @@
-> static struct uart_ops i@p = { ... };
-> 
-> @ok@
-> identifier r.i;
-> struct uart_port e;
-> position p;
-> @@
-> e.ops = &i@p;
-> 
-> @bad@
-> position p != {r.p,ok.p};
-> identifier r.i;
-> struct uart_ops e;
-> @@
-> e@i@p
-> 
-> @depends on !bad disable optional_qualifier@
-> identifier r.i;
-> @@
-> static
-> +const
->  struct uart_ops i = { ... };
-> // </smpl>
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-Acked-by: Tobias Klauser <tklauser@distanz.ch>
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-Thanks a lot.
+
+Thanks,
+
+-- 
+heikki
