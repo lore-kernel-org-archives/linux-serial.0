@@ -1,86 +1,120 @@
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Subject: Re: [PATCH v4 1/2] serial: 8250_dw: make dw8250_set_termios as
- default set_termios callback
-Date: Fri, 2 Sep 2016 14:21:06 +0300
-Message-ID: <20160902112106.GB21737@kuha.fi.intel.com>
-References: <1472614152-43136-1-git-send-email-wangkefeng.wang@huawei.com>
- <1472614152-43136-2-git-send-email-wangkefeng.wang@huawei.com>
- <20160831120756.GG1751@kuha.fi.intel.com>
+From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+Subject: [PATCH] serial: earlycon: Extend earlycon command line option to
+ support 64-bit addresses
+Date: Fri, 2 Sep 2016 13:20:21 +0200
+Message-ID: <af0e6790-c9e0-a3ed-ac17-1a6a56d954ce@nokia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160831120756.GG1751@kuha.fi.intel.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jiri Slaby <jslaby@suse.com>, guohanjun@huawei.com, xuwei5@hisilicon.com, graeme.gregory@linaro.org, z.liuxinliang@hisilicon.com, linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Aug 31, 2016 at 03:07:56PM +0300, Heikki Krogerus wrote:
-> Hi,
-> 
-> On Wed, Aug 31, 2016 at 11:29:11AM +0800, Kefeng Wang wrote:
-> > Make dw8250_set_termios() handle all cases of dw8250_data->clk properly,
-> > then we can safely use dw8250_set_termios() as the default set_termios
-> > callback instead of serial8250_do_set_termios(), so do it.
-> > 
-> > Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_dw.c | 5 ++---
-> >  1 file changed, 2 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> > index 5c0c123..adecece 100644
-> > --- a/drivers/tty/serial/8250/8250_dw.c
-> > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > @@ -235,7 +235,7 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
-> >  	unsigned int rate;
-> >  	int ret;
-> >  
-> > -	if (IS_ERR(d->clk) || !old)
-> > +	if (IS_ERR_OR_NULL(d->clk) || !old)
-> >  		goto out;
-> 
-> This part is fine, but...
-> 
-> >  	clk_disable_unprepare(d->clk);
-> > @@ -308,13 +308,11 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
-> >  			p->serial_in = dw8250_serial_in32;
-> >  			data->uart_16550_compatible = true;
-> >  		}
-> > -		p->set_termios = dw8250_set_termios;
-> >  	}
-> >  
-> >  	/* Platforms with iDMA */
-> >  	if (platform_get_resource_byname(to_platform_device(p->dev),
-> >  					 IORESOURCE_MEM, "lpss_priv")) {
-> > -		p->set_termios = dw8250_set_termios;
-> >  		data->dma.rx_param = p->dev->parent;
-> >  		data->dma.tx_param = p->dev->parent;
-> >  		data->dma.fn = dw8250_idma_filter;
-> > @@ -391,6 +389,7 @@ static int dw8250_probe(struct platform_device *pdev)
-> >  	p->iotype	= UPIO_MEM;
-> >  	p->serial_in	= dw8250_serial_in;
-> >  	p->serial_out	= dw8250_serial_out;
-> > +	p->set_termios	= dw8250_set_termios;
-> 
-> I'm a bit worried about this. If I remember correctly, we didn't set
-> the set_termios hook by default in the past because somebody was using
-> a type of clk that can't handle rate rounding and ended up using
-> improper clock frequency for some baud rates. Unfortunately I can't
-> remember who had that problem and on which platform.
-> 
-> On the other hand, I'm not sure if drivers should worry about things
-> like that. This should be done the other way around. The platform
-> with the problem should unset the p->set_termios hook in a quirk, but
-> by default everybody would use dw8250_set_termios.
+earlycon implementation used "unsigned long" internally, but there are systems
+(ARM with LPAE) where sizeof(unsigned long) == 4 and uart is mapped beyond 4GiB
+address range.
 
-No comments... I would suggest we skip this for now. I don't think
-it's necessary for Hisilicon Hip05 SoC support, so perhaps you can
-just propose this change separately.
+Switch to resource_size_t internally and replace obsoleted simple_strtoul() with
+kstrtoull().
 
+Signed-off-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+---
+ drivers/tty/serial/8250/8250_core.c |  2 +-
+ drivers/tty/serial/earlycon.c       |  7 +++----
+ drivers/tty/serial/serial_core.c    | 12 +++++++++---
+ include/linux/serial_core.h         |  2 +-
+ 4 files changed, 14 insertions(+), 9 deletions(-)
 
-Thanks,
-
--- 
-heikki
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 13ad5c3..f64d6cd 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -639,7 +639,7 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
+ {
+ 	char match[] = "uart";	/* 8250-specific earlycon name */
+ 	unsigned char iotype;
+-	unsigned long addr;
++	resource_size_t addr;
+ 	int i;
+ 
+ 	if (strncmp(name, match, 4) != 0)
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 067783f..3940280 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -38,7 +38,7 @@ static struct earlycon_device early_console_dev = {
+ 	.con = &early_con,
+ };
+ 
+-static void __iomem * __init earlycon_map(unsigned long paddr, size_t size)
++static void __iomem * __init earlycon_map(resource_size_t paddr, size_t size)
+ {
+ 	void __iomem *base;
+ #ifdef CONFIG_FIX_EARLYCON_MEM
+@@ -49,8 +49,7 @@ static void __iomem * __init earlycon_map(unsigned long paddr, size_t size)
+ 	base = ioremap(paddr, size);
+ #endif
+ 	if (!base)
+-		pr_err("%s: Couldn't map 0x%llx\n", __func__,
+-		       (unsigned long long)paddr);
++		pr_err("%s: Couldn't map %pa\n", __func__, &paddr);
+ 
+ 	return base;
+ }
+@@ -92,7 +91,7 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ {
+ 	struct uart_port *port = &device->port;
+ 	int length;
+-	unsigned long addr;
++	resource_size_t addr;
+ 
+ 	if (uart_parse_earlycon(options, &port->iotype, &addr, &options))
+ 		return -EINVAL;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 9fc1533..89f5d6a 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1938,11 +1938,14 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
+  *	   console=<name>,0x<addr>,<options>
+  *	is also accepted; the returned @iotype will be UPIO_MEM.
+  *
+- *	Returns 0 on success or -EINVAL on failure
++ *	Returns 0 on success, -EINVAL or -ERANGE on failure
+  */
+-int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
++int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
+ 			char **options)
+ {
++	int ret;
++	unsigned long long tmp;
++
+ 	if (strncmp(p, "mmio,", 5) == 0) {
+ 		*iotype = UPIO_MEM;
+ 		p += 5;
+@@ -1968,7 +1971,10 @@ int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
+ 		return -EINVAL;
+ 	}
+ 
+-	*addr = simple_strtoul(p, NULL, 0);
++	ret = kstrtoull(p, 0, &tmp);
++	if (ret)
++		return ret;
++	*addr = tmp;
+ 	p = strchr(p, ',');
+ 	if (p)
+ 		p++;
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 2f44e20..cdba6f1 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -374,7 +374,7 @@ extern int of_setup_earlycon(const struct earlycon_id *match,
+ 
+ struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+ 				   struct console *c);
+-int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
++int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
+ 			char **options);
+ void uart_parse_options(char *options, int *baud, int *parity, int *bits,
+ 			int *flow);
