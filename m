@@ -1,59 +1,80 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial driver fixes for 4.8-rc5
-Date: Sat, 3 Sep 2016 16:49:15 +0200
-Message-ID: <20160903144915.GA10764@kroah.com>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [RFC] fs: add userspace critical mounts event support
+Date: Sat, 3 Sep 2016 10:49:39 -0700
+Message-ID: <20160903174939.GB32345@dtor-ws>
+References: <1466117661-22075-3-git-send-email-mcgrof@kernel.org>
+ <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
+ <20160824203901.GT3296@wotan.suse.de>
+ <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
+ <20160825194133.GC3296@wotan.suse.de>
+ <20160902235916.GO3296@wotan.suse.de>
+ <20160903002014.GP3296@wotan.suse.de>
+ <CA+55aFy4_QLYiQxtKpq0FJD7eSBRZ8nXS=Ruuz1TYodHdE_dCA@mail.gmail.com>
+ <CAKdAkRSQmz3FoP8Z2ONm7-_A9RHF2Ox6snaCpsyS6HA7=+RerQ@mail.gmail.com>
+ <CA+55aFz4q5peXAeY9h8o3he7R=wXrBSYkOjMM9TehOw=pPoS+Q@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+In-Reply-To: <CA+55aFz4q5peXAeY9h8o3he7R=wXrBSYkOjMM9TehOw=pPoS+Q@mail.gmail.com>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Takashi Iwai <tiwai@suse.de>, Daniel Vetter <daniel.vetter@ffwll.ch>, Ming Lei <ming.lei@canonical.com>, Jeff Mahoney <jeffm@suse.com>, Kay Sievers <kay@vrfy.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, David Howells <dhowells@redhat.com>, Christian Lamparter <chunkeey@googlemail.com>, cocci@systeme.lip6.fr, Josh Boyer <jwboyer@fedoraproject.org>, Jonathan Corbet <corbet@lwn.net>, Kevin Cernekee <cernekee@gmail.com>, Thierry Martinez <martinez@nsup.org>, linux-serial <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, Mimi Zohar <zohar@linux.vnet.ibm.com>, Alessandro Rubini <rubini@gnudd.com>, Stephen Boyd <stephen.boyd@linaro.org>, Kees Cook <keescook@chromium.org>, Hauke Mehrtens <hauke@hauke-m.de>, nicolas.palix@imag.fr, "Abhay_Salunke@dell.com" <Abhay_Salunke@dell.com>, Julia Lawall <Julia.Lawall>
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit 694d0d0bb2030d2e36df73e2d23d5770511dbc8d:
+On Fri, Sep 02, 2016 at 09:41:18PM -0700, Linus Torvalds wrote:
+> On Sep 2, 2016 9:20 PM, "Dmitry Torokhov" <dmitry.torokhov@gmail.com> wrote:
+> >
+> > Like what? Some devices do need to have firmware loaded so we know
+> > their capabilities, so we really can't push the firmware loading into
+> > "open".
+> 
+> So you
+> (a) document that
 
-  Linux 4.8-rc2 (2016-08-14 19:11:36 -0700)
+Document that device may come up half-broken? Not sure how that would
+help end user.
 
-are available in the git repository at:
+> (b) make the driver only build as a module
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.8-rc5
+Unfortunately module loading and availability of firmware is very
+loosely coupled. Of course, if you only load modules from the same
+partition that your firmware is on you can get away with it, but if some
+of the modules are in initramfs and firmware is on final root fs then
+it still does not work. And populating also initramfs with firmware that
+might be used once in a 1000 boots is somewhat wasteful. That is not
+talking about systems that do not wish to use modules for one reason or
+another, or even more esoteric setups where non-essential for boot
+firmware can be mounted later over nfs, etc, etc.
 
-for you to fetch changes up to c8d192428f52f244130b84650ad616df09f2b1e1:
+> (c) make sure the module and the firmware go together
 
-  serial: 8250: added acces i/o products quad and octal serial cards (2016-08-31 16:28:26 +0200)
+I do not think it is always possible. Quite often it is though, at the
+expense of increasing kernel/initramfs size.
 
-----------------------------------------------------------------
-Serial driver fixes for 4.8-rc5
+> 
+> End of problem.
+> 
+> Why make up random interfaces for crazy stuff?
 
-Here are some small serial driver fixes for 4.8-rc5.  One fixes an
-oft-reported build issue with the fintek driver, another reverts a patch
-that was causing problems, one fixes a crash, and some new device ids
-were added.
+Because we want a solution that works well for all cases, simple and
+complex. This includes allowing drivers to be built into the kernel but
+allow them waiting for additional data (config/firmware) that may become
+available later in the game. We just need to be able to tell them when
+it does not make sense to wait anymore as the data they want is not
+coming, and do it more reliably then simply declaring 10 or 30 or 300
+seconds time out.
 
-All of these have been in linux-next for a while.
+Thanks.
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Andy Shevchenko (2):
-      Revert "tty/serial/8250: use mctrl_gpio helpers"
-      serial: 8250_mid: fix divide error bug if baud rate is 0
-
-Arnd Bergmann (1):
-      8250/fintek: rename IRQ_MODE macro
-
-Jimi Damon (1):
-      serial: 8250: added acces i/o products quad and octal serial cards
-
- Documentation/devicetree/bindings/serial/8250.txt |  19 ---
- drivers/tty/serial/8250/8250.h                    |  35 +-----
- drivers/tty/serial/8250/8250_core.c               |   9 --
- drivers/tty/serial/8250/8250_fintek.c             |   4 +-
- drivers/tty/serial/8250/8250_mid.c                |   3 +
- drivers/tty/serial/8250/8250_omap.c               |  31 ++---
- drivers/tty/serial/8250/8250_pci.c                | 139 ++++++++++++++++++++++
- drivers/tty/serial/8250/8250_port.c               |   7 +-
- drivers/tty/serial/8250/Kconfig                   |   1 -
- include/linux/serial_8250.h                       |   1 -
- 10 files changed, 159 insertions(+), 90 deletions(-)
+-- 
+Dmitry
