@@ -1,91 +1,39 @@
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v4 1/2] serial: 8250_dw: make dw8250_set_termios as
- default set_termios callback
-Date: Mon, 5 Sep 2016 09:28:53 +0800
-Message-ID: <793806a7-f57d-def2-8b22-31c6479ad5ec@huawei.com>
-References: <1472614152-43136-1-git-send-email-wangkefeng.wang@huawei.com>
- <1472614152-43136-2-git-send-email-wangkefeng.wang@huawei.com>
- <20160831120756.GG1751@kuha.fi.intel.com>
- <20160902112106.GB21737@kuha.fi.intel.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 0/6] SA11x0 serial updates
+Date: Mon, 5 Sep 2016 11:09:38 +0200
+Message-ID: <CACRpkdZFZVq92UAiq+dsHabyEk+_AbQ_B3SOETGru-8Kbp=h9Q@mail.gmail.com>
+References: <20160829100232.GC1041@n2100.armlinux.org.uk>
+ <20160829102328.GA28796@n2100.armlinux.org.uk>
+ <20160829110157.GE1041@n2100.armlinux.org.uk>
+ <20160829112540.GF1041@n2100.armlinux.org.uk>
+ <20160829120531.GG1041@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20160902112106.GB21737@kuha.fi.intel.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jiri Slaby <jslaby@suse.com>, guohanjun@huawei.com, xuwei5@hisilicon.com, graeme.gregory@linaro.org, z.liuxinliang@hisilicon.com, linux-acpi@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160829120531.GG1041@n2100.armlinux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
+On Mon, Aug 29, 2016 at 2:05 PM, Russell King - ARM Linux
+<linux@armlinux.org.uk> wrote:
 
+> This series converts SA11x0 serial to make use of the mctrl helpers
+> where appropriate.  This allows us to remove several board-specific
+> callbacks.
 
-On 2016/9/2 19:21, Heikki Krogerus wrote:
-> On Wed, Aug 31, 2016 at 03:07:56PM +0300, Heikki Krogerus wrote:
->> Hi,
->>
->> On Wed, Aug 31, 2016 at 11:29:11AM +0800, Kefeng Wang wrote:
->>> Make dw8250_set_termios() handle all cases of dw8250_data->clk properly,
->>> then we can safely use dw8250_set_termios() as the default set_termios
->>> callback instead of serial8250_do_set_termios(), so do it.
->>>
->>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
->>> ---
->>>  drivers/tty/serial/8250/8250_dw.c | 5 ++---
->>>  1 file changed, 2 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
->>> index 5c0c123..adecece 100644
->>> --- a/drivers/tty/serial/8250/8250_dw.c
->>> +++ b/drivers/tty/serial/8250/8250_dw.c
->>> @@ -235,7 +235,7 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
->>>  	unsigned int rate;
->>>  	int ret;
->>>  
->>> -	if (IS_ERR(d->clk) || !old)
->>> +	if (IS_ERR_OR_NULL(d->clk) || !old)
->>>  		goto out;
->>
->> This part is fine, but...
->>
->>>  	clk_disable_unprepare(d->clk);
->>> @@ -308,13 +308,11 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
->>>  			p->serial_in = dw8250_serial_in32;
->>>  			data->uart_16550_compatible = true;
->>>  		}
->>> -		p->set_termios = dw8250_set_termios;
->>>  	}
->>>  
->>>  	/* Platforms with iDMA */
->>>  	if (platform_get_resource_byname(to_platform_device(p->dev),
->>>  					 IORESOURCE_MEM, "lpss_priv")) {
->>> -		p->set_termios = dw8250_set_termios;
->>>  		data->dma.rx_param = p->dev->parent;
->>>  		data->dma.tx_param = p->dev->parent;
->>>  		data->dma.fn = dw8250_idma_filter;
->>> @@ -391,6 +389,7 @@ static int dw8250_probe(struct platform_device *pdev)
->>>  	p->iotype	= UPIO_MEM;
->>>  	p->serial_in	= dw8250_serial_in;
->>>  	p->serial_out	= dw8250_serial_out;
->>> +	p->set_termios	= dw8250_set_termios;
->>
->> I'm a bit worried about this. If I remember correctly, we didn't set
->> the set_termios hook by default in the past because somebody was using
->> a type of clk that can't handle rate rounding and ended up using
->> improper clock frequency for some baud rates. Unfortunately I can't
->> remember who had that problem and on which platform.
->>
->> On the other hand, I'm not sure if drivers should worry about things
->> like that. This should be done the other way around. The platform
->> with the problem should unset the p->set_termios hook in a quirk, but
->> by default everybody would use dw8250_set_termios.
-> 
-> No comments... I would suggest we skip this for now. I don't think
-> it's necessary for Hisilicon Hip05 SoC support, so perhaps you can
-> just propose this change separately.
+>From GPIO and H3600 point of view:
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-OK,  will send it separately, like you said, if some platform has issue
-with this change, let's work around it in dw8250_quirks().
-
-Thanks,
-Kefeng
-
+Yours,
+Linus Walleij
