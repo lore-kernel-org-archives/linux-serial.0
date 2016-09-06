@@ -1,38 +1,67 @@
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: "Luis R. Rodriguez" <mcgrof@kernel.org>
 Subject: Re: [RFC] fs: add userspace critical mounts event support
-Date: Tue, 6 Sep 2016 15:28:47 -0700
-Message-ID: <20160906222847.GF15161@tuxbot>
-References: <20160825194133.GC3296@wotan.suse.de>
+Date: Wed, 7 Sep 2016 00:32:55 +0200
+Message-ID: <20160906223255.GS3296@wotan.suse.de>
+References: <1466117661-22075-3-git-send-email-mcgrof@kernel.org>
+ <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
+ <20160824203901.GT3296@wotan.suse.de>
+ <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
+ <20160825194133.GC3296@wotan.suse.de>
  <20160902235916.GO3296@wotan.suse.de>
  <20160903002014.GP3296@wotan.suse.de>
  <CA+55aFy4_QLYiQxtKpq0FJD7eSBRZ8nXS=Ruuz1TYodHdE_dCA@mail.gmail.com>
- <CAKdAkRSQmz3FoP8Z2ONm7-_A9RHF2Ox6snaCpsyS6HA7=+RerQ@mail.gmail.com>
- <CA+55aFz4q5peXAeY9h8o3he7R=wXrBSYkOjMM9TehOw=pPoS+Q@mail.gmail.com>
- <20160903174939.GB32345@dtor-ws>
- <CA+55aFwLrXRUO9n75Sthu+g73BEjskAgUkguyLwU=JA_PNzdOQ@mail.gmail.com>
- <CAKdAkRTv5Fv54wetBqkS+EyEuP_k5exJat+QXBLtTkFLO_-maQ@mail.gmail.com>
- <20160906215204.GR3296@wotan.suse.de>
+ <20160906174630.GB15161@tuxbot>
+ <CA+55aFw01BW2_etsPJGMRY=3BXdo_+g9+c_vRCW59gRpj9GVsw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160906215204.GR3296@wotan.suse.de>
+In-Reply-To: <CA+55aFw01BW2_etsPJGMRY=3BXdo_+g9+c_vRCW59gRpj9GVsw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Luis R. Rodriguez" <mcgrof@kernel.org>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Jacek Anaszewski <j.anaszewski@samsung.com>, David Woodhouse <dwmw2@infradead.org>, Christian Lamparter <chunkeey@googlemail.com>, Julia Lawall <Julia.Lawall@lip6.fr>, Andrew Morton <akpm@linux-foundation.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Mimi Zohar <zohar@linux.vnet.ibm.com>, Andy Lutomirski <luto@amacapital.net>, Richard Purdie <rpurdie@rpsys.net>, Wu Fengguang <fengguang.wu@intel.com>, Johannes Berg <johannes@sipsolutions.net>, Michal Marek <mmarek@suse.com>, Hauke Mehrtens <hauke@hauke-m.de>, Mark Brown <broonie@kernel.org>, Jiri Slaby <jslaby@suse.com>, Ming Lei <ming.lei@canonical.>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>, "Luis R. Rodriguez" <mcgrof@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, Mimi Zohar <zohar@linux.vnet.ibm.com>, Felix Fietkau <nbd@nbd.name>, David Woodhouse <dwmw2@infradead.org>, Roman Pen <r.peniaev@gmail.com>, Ming Lei <ming.lei@canonical.com>, Andrew Morton <akpm@linux-foundation.org>, Michal Marek <mmarek@suse.com>, Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Vikram Mulukutla <markivx@codeaurora.org>, Stephen Boyd <stephen.boyd@linaro.org>, Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.de>, Johannes Berg <johannes@sipsolutions.net>, Christian Lamparter <chunkeey@googlemail.com>, Hauke Mehrtens <hauke@hauke-m.de>, Josh
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 06 Sep 14:52 PDT 2016, Luis R. Rodriguez wrote:
+On Tue, Sep 06, 2016 at 11:32:05AM -0700, Linus Torvalds wrote:
+> On Tue, Sep 6, 2016 at 10:46 AM, Bjorn Andersson
+> <bjorn.andersson@linaro.org> wrote:
+> >
+> > Linus, I reversed the order of your questions/answers to fit my answer
+> > better.
+> 
+> Nobody has actually answered the "why don't we just tie the firmware
 
-> We already have MODULE_FIRMWARE(), we could have MODULE_FIRMWARE_REQ() or
-> something like it to help annotate the the driver was only functional with the
-> firmware, punt things to kmod to deal with the requirements.
+This is not about firmware anymore. The fact that we were reading files from
+the filesystem in different ways called for a generic API, that was done by
+Mimi with the new generic kernel_read_file_from_path(), the fact that there
+were race concerns with firmware means such races are also in theory possible
+outside of firmware.
 
-That implies that a single driver will only use a single version of the
-firmware. There are cases where we want a single driver to load firmware
-depending on e.g. hardware revisions, or previous firmware version and
-there are cases where we want to load firmware based on requested
-use-cases.
+> and module together" question.
 
-Regards,
-Bjorn
+In terms of the firmware, licensing is one reason I'm aware of. Another reason
+is updates to firmware files may not implicate a driver update -- its pointless
+to rebuild a kernel if all you need is a firmware update.
+
+For both modules and built-in we already have the option to bundle firmware
+into initramfs, and CONFIG_EXTRA_FIRMWARE, some folks do not want to use these.
+Bjorn noted a few reasons why. Here's the full list of reasons I've heard why
+folks shy away from these:
+
+  o Licensing
+  o You still want the ability to do updates
+  o The size of the files can be huge (remoteproc is talking about 10 MiB files)
+
+Do we want to bring the firmware closer together than what we allow for modules? If
+so it may make sense to use a modpost command to try to bundle module and
+firmware together, the build system could use the MODULE_FIRMWARE() for that.
+It does mean you now have a build dependency for linux-firmware on the kernel.
+Do we want that?
+
+> Really. If the driver doesn't work without the firmware, then why the
+> hell is it separated from it in the first place?
+
+This I agree with, although you still have to consider you may want to enable
+updates for firmware without a driver update.
+
+  Luis
