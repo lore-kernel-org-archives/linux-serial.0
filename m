@@ -1,35 +1,73 @@
-From: Liu Xiang <liuxiang_1999@126.com>
-Subject: [PATCH] serial: max310x: Set IRQF_TRIGGER_FALLING flag when dev.of_node is not NULL
-Date: Wed,  7 Sep 2016 22:05:01 +0800
-Message-ID: <1473257101-3423-1-git-send-email-liuxiang_1999@126.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: [PATCH 1/3] serial: mctrl_gpio: implement mctrl_gpio_use_rtscts
+Date: Wed,  7 Sep 2016 18:13:22 +0200
+Message-ID: <20160907161324.27774-1-richard.genoud@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, Liu Xiang <liuxiang_1999@126.com>, Liu Xiang <liu.xiang6@zte.com.cn>
+To: Cyrille Pitchen <cyrille.pitchen@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Richard Genoud <richard.genoud@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-When dev.of_node is not NULL, we also need to set IRQF_TRIGGER_FALLING
-flag, otherwise it may cause uncertain interrupts.
+This function returns true if CTS and RTS are used as GPIOs.
+Some drivers (like atmel_serial) needs to know if the flow control is
+handled by the controller or by GPIOs.
 
-Signed-off-by: Liu Xiang <liu.xiang6@zte.com.cn>
+Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 ---
- drivers/tty/serial/max310x.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/serial_mctrl_gpio.c | 8 ++++++++
+ drivers/tty/serial/serial_mctrl_gpio.h | 9 +++++++++
+ 2 files changed, 17 insertions(+)
 
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 9360801..8a3e926 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -1329,9 +1329,9 @@ static int max310x_spi_probe(struct spi_device *spi)
- 		const struct spi_device_id *id_entry = spi_get_device_id(spi);
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+index d2da6aa7f27d..93bed8c99796 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.c
++++ b/drivers/tty/serial/serial_mctrl_gpio.c
+@@ -17,6 +17,7 @@
+ #include <linux/err.h>
+ #include <linux/device.h>
+ #include <linux/irq.h>
++#include <linux/err.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/termios.h>
+ #include <linux/serial_core.h>
+@@ -72,6 +73,13 @@ struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+ }
+ EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
  
- 		devtype = (struct max310x_devtype *)id_entry->driver_data;
--		flags = IRQF_TRIGGER_FALLING;
- 	}
++bool mctrl_gpio_use_rtscts(struct mctrl_gpios *gpios)
++{
++	return !IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS)) &&
++		!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_RTS));
++}
++EXPORT_SYMBOL_GPL(mctrl_gpio_use_rtscts);
++
+ unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
+ {
+ 	enum mctrl_gpio_idx i;
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
+index fa000bcff217..5d423b7f1e1c 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.h
++++ b/drivers/tty/serial/serial_mctrl_gpio.h
+@@ -101,6 +101,11 @@ void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios);
+  */
+ void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios);
  
-+	flags = IRQF_TRIGGER_FALLING;
- 	regcfg.max_register = devtype->nr * 0x20 - 1;
- 	regmap = devm_regmap_init_spi(spi, &regcfg);
++/*
++ * Return true if both CTS and RTS are used with GPIOs
++ */
++bool mctrl_gpio_use_rtscts(struct mctrl_gpios *gpios);
++
+ #else /* GPIOLIB */
  
--- 
-1.9.1
+ static inline
+@@ -152,6 +157,10 @@ static inline void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios)
+ {
+ }
+ 
++static inline bool mctrl_gpio_use_rtscts(struct mctrl_gpios *gpios)
++{
++}
++
+ #endif /* GPIOLIB */
+ 
+ #endif
