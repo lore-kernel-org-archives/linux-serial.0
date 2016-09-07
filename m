@@ -1,45 +1,42 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH 3/3] tty/serial: at91: fix hardware handshake when DMA is
- not used
-Date: Wed, 7 Sep 2016 18:59:18 +0200
-Message-ID: <20160907165918.xog3poqstw434r2j@piout.net>
-References: <20160907161324.27774-1-richard.genoud@gmail.com>
- <20160907161324.27774-3-richard.genoud@gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [RFC RESEND] serial: 8250: fix regression in 8250 uart driver
+Date: Wed, 07 Sep 2016 20:16:04 +0300
+Message-ID: <1473268564.11323.91.camel@linux.intel.com>
+References: <575F7325.3030907@kernel.org>
+         <1465897220.30123.26.camel@linux.intel.com>
+         <cca9fb6eca58d8a29e3070e3f34fa40f.squirrel@emailmg.ipower.com>
+         <1465920046.30123.83.camel@linux.intel.com>
+         <dbaa0abe-06ab-57ee-4ba3-4e4717af4a62@leemhuis.info>
+         <1471432466.4887.134.camel@linux.intel.com>
+         <abf9f9cb-c14c-7efb-8d1c-ed89a6a979a3@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160907161324.27774-3-richard.genoud@gmail.com>
+In-Reply-To: <abf9f9cb-c14c-7efb-8d1c-ed89a6a979a3@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Cyrille Pitchen <cyrille.pitchen@atmel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Dinh Nguyen <dinguyen@kernel.org>, Thorsten Leemhuis <regressions@leemhuis.info>
+Cc: heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
-
-On 07/09/2016 at 18:13:24 +0200, Richard Genoud wrote :
-> Commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
-> hardware handshake is enabled") broke the hardware handshake when
-> DMA is not used.
+On Tue, 2016-08-23 at 08:53 -0500, Dinh Nguyen wrote:
+> Hi Andy,
 > 
-> So, here's a summary:
-> If DMA is NOT USED the mode should be ATMEL_US_USMODE_NORMAL because the
-> controller can't drive the RTS pin (there's no way for it to know when
-> we can't receive data anymore).
+> On 08/17/2016 06:14 AM, Andy Shevchenko wrote:
+> > 
+> > 
+> > I sent a v2 of the series for internal review, same you may found on
+> > [1]. If Heikki is okay to that I'll send it here.
+> > 
+> > [1] https://bitbucket.org/andy-shev/linux/branch/topic%2Fdw%2Fqrk
+> > 
 > 
+> I tested this branch on SoCFPGA hardware and encountered this
+> error[1].
+> Doing a bisect led me to this commit[2].
 
-You forgot that the PDC can properly drive the RTS pin so all the
-platforms that are using the PDC will break after your patch.
-
-Also, I believe the controller is able to drive the RTS and CTS pins
-when simply using PIOs (it knows when one complete character has been
-received and US_RHR has not yet been read). However, I didn't test.
-Maybe someone at Atmel can confirm.
-
-I think that 5be605ac9af9 is doing the right thing but I still can be
-convince otherwise ;).
+Forgot to add you to Cc list, there is new version there.
 
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
