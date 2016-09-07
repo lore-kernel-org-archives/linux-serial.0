@@ -1,73 +1,69 @@
 From: Richard Genoud <richard.genoud@gmail.com>
-Subject: [PATCH 1/3] serial: mctrl_gpio: implement mctrl_gpio_use_rtscts
-Date: Wed,  7 Sep 2016 18:13:22 +0200
-Message-ID: <20160907161324.27774-1-richard.genoud@gmail.com>
+Subject: [PATCH 2/3] tty/serial: at91: fix hardware handshake with GPIOs
+Date: Wed,  7 Sep 2016 18:13:23 +0200
+Message-ID: <20160907161324.27774-2-richard.genoud@gmail.com>
+References: <20160907161324.27774-1-richard.genoud@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160907161324.27774-1-richard.genoud@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Cyrille Pitchen <cyrille.pitchen@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>
 Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Richard Genoud <richard.genoud@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This function returns true if CTS and RTS are used as GPIOs.
-Some drivers (like atmel_serial) needs to know if the flow control is
-handled by the controller or by GPIOs.
+Commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
+hardware handshake is enabled") broke the hardware handshake when GPIOs
+where used.
+
+Hardware handshake with GPIOs used to work before this commit because
+the CRTSCTS flag (termios->c_cflag) was set, but not the
+ATMEL_US_USMODE_HWHS flag (controller register) ; so hardware handshake
+enabled, but not handled by the controller.
+
+This commit restores this behaviour.
+
+NB: -stable is not Cced because it doesn't cleanly apply on 4.1+
+and it will also need previous commit:
+"serial: mctrl_gpio: implement mctrl_gpio_use_rtscts"
 
 Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+Fixes: 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when hardware handshake is enabled")
 ---
- drivers/tty/serial/serial_mctrl_gpio.c | 8 ++++++++
- drivers/tty/serial/serial_mctrl_gpio.h | 9 +++++++++
- 2 files changed, 17 insertions(+)
+ drivers/tty/serial/atmel_serial.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index d2da6aa7f27d..93bed8c99796 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.c
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -17,6 +17,7 @@
- #include <linux/err.h>
- #include <linux/device.h>
- #include <linux/irq.h>
-+#include <linux/err.h>
- #include <linux/gpio/consumer.h>
- #include <linux/termios.h>
- #include <linux/serial_core.h>
-@@ -72,6 +73,13 @@ struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
- }
- EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
- 
-+bool mctrl_gpio_use_rtscts(struct mctrl_gpios *gpios)
-+{
-+	return !IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS)) &&
-+		!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_RTS));
-+}
-+EXPORT_SYMBOL_GPL(mctrl_gpio_use_rtscts);
-+
- unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 2eaa18ddef61..e9b4fbf88c2d 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2025,6 +2025,7 @@ static void atmel_serial_pm(struct uart_port *port, unsigned int state,
+ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			      struct ktermios *old)
  {
- 	enum mctrl_gpio_idx i;
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
-index fa000bcff217..5d423b7f1e1c 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.h
-+++ b/drivers/tty/serial/serial_mctrl_gpio.h
-@@ -101,6 +101,11 @@ void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios);
-  */
- void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios);
++	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+ 	unsigned long flags;
+ 	unsigned int old_mode, mode, imr, quot, baud;
  
-+/*
-+ * Return true if both CTS and RTS are used with GPIOs
-+ */
-+bool mctrl_gpio_use_rtscts(struct mctrl_gpios *gpios);
-+
- #else /* GPIOLIB */
+@@ -2126,8 +2127,12 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		atmel_uart_writel(port, ATMEL_US_TTGR,
+ 				  port->rs485.delay_rts_after_send);
+ 		mode |= ATMEL_US_USMODE_RS485;
+-	} else if (termios->c_cflag & CRTSCTS) {
+-		/* RS232 with hardware handshake (RTS/CTS) */
++	} else if ((termios->c_cflag & CRTSCTS) &&
++		   !mctrl_gpio_use_rtscts(atmel_port->gpios)) {
++		/*
++		 * RS232 with hardware handshake (RTS/CTS)
++		 * handled by the controller.
++		 */
+ 		if (atmel_use_dma_rx(port) && !atmel_use_fifo(port)) {
+ 			dev_info(port->dev, "not enabling hardware flow control because DMA is used");
+ 			termios->c_cflag &= ~CRTSCTS;
+@@ -2135,7 +2140,7 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			mode |= ATMEL_US_USMODE_HWHS;
+ 		}
+ 	} else {
+-		/* RS232 without hadware handshake */
++		/* RS232 without hadware handshake or controlled by GPIOs */
+ 		mode |= ATMEL_US_USMODE_NORMAL;
+ 	}
  
- static inline
-@@ -152,6 +157,10 @@ static inline void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios)
- {
- }
- 
-+static inline bool mctrl_gpio_use_rtscts(struct mctrl_gpios *gpios)
-+{
-+}
-+
- #endif /* GPIOLIB */
- 
- #endif
