@@ -1,42 +1,122 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [RFC RESEND] serial: 8250: fix regression in 8250 uart driver
-Date: Wed, 07 Sep 2016 20:16:04 +0300
-Message-ID: <1473268564.11323.91.camel@linux.intel.com>
-References: <575F7325.3030907@kernel.org>
-         <1465897220.30123.26.camel@linux.intel.com>
-         <cca9fb6eca58d8a29e3070e3f34fa40f.squirrel@emailmg.ipower.com>
-         <1465920046.30123.83.camel@linux.intel.com>
-         <dbaa0abe-06ab-57ee-4ba3-4e4717af4a62@leemhuis.info>
-         <1471432466.4887.134.camel@linux.intel.com>
-         <abf9f9cb-c14c-7efb-8d1c-ed89a6a979a3@kernel.org>
+From: Cyrille Pitchen <cyrille.pitchen@atmel.com>
+Subject: Re: [PATCH 3/3] tty/serial: at91: fix hardware handshake when DMA is
+ not used
+Date: Wed, 7 Sep 2016 19:28:24 +0200
+Message-ID: <15e0dbe0-6636-6bec-9622-be00056dae5e@atmel.com>
+References: <20160907161324.27774-1-richard.genoud@gmail.com>
+ <20160907161324.27774-3-richard.genoud@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <abf9f9cb-c14c-7efb-8d1c-ed89a6a979a3@kernel.org>
+In-Reply-To: <20160907161324.27774-3-richard.genoud@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dinh Nguyen <dinguyen@kernel.org>, Thorsten Leemhuis <regressions@leemhuis.info>
-Cc: heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Richard Genoud <richard.genoud@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2016-08-23 at 08:53 -0500, Dinh Nguyen wrote:
-> Hi Andy,
-> 
-> On 08/17/2016 06:14 AM, Andy Shevchenko wrote:
-> > 
-> > 
-> > I sent a v2 of the series for internal review, same you may found on
-> > [1]. If Heikki is okay to that I'll send it here.
-> > 
-> > [1] https://bitbucket.org/andy-shev/linux/branch/topic%2Fdw%2Fqrk
-> > 
-> 
-> I tested this branch on SoCFPGA hardware and encountered this
-> error[1].
-> Doing a bisect led me to this commit[2].
+Hi Richard,
 
-Forgot to add you to Cc list, there is new version there.
+For usart without FIFOs (hence before sama5d2), according to our designers, the
+RTS line could only been controlled by an internal PDC signal which doesn't
+exist with the DMA controller. Referring to its datasheet, the sam9g35 embeds
+DMA controllers. So if you enable the hardware handshaking feature on some
+usart, its RTS line won't be monitored at all. The hardware handshaking is
+broken on all SoCs using DMA controllers instead of PDC.
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+With the sama5d2, our latest MPU, we fixed this issue by introducing an
+alternative mechanism which relies on 2 thresholds on the RX FIFO. So when
+FIFOs are available, those thresholds can be used to control the level of RTS
+line.
+
+Indeed I think a better test should be:
+if (!atmel_use_pdc_rx(port) && !atmel_use_fifo(port)) {
+	dev_info(port->dev, "not enabling hardware flow control because neither the PDC nor the FIFO are available");
+	termios->c_cflags &= ~CRTSCTS;
+}
+
+We can double check once again with our designers to confirm that without FIFO
+the only way for the hardware handshaking to work is to use a PDC.
+So IMHO, your patch should not be applied, sorry!
+
+Best regards,
+
+Cyrille
+
+Le 07/09/2016 à 18:13, Richard Genoud a écrit :
+> Commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
+> hardware handshake is enabled") broke the hardware handshake when
+> DMA is not used.
+> 
+> So, here's a summary:
+> If DMA is NOT USED the mode should be ATMEL_US_USMODE_NORMAL because the
+> controller can't drive the RTS pin (there's no way for it to know when
+> we can't receive data anymore).
+> 
+> If DMA is USED along with FIFOs, the mode should be ATMEL_US_USMODE_HWHS
+> because when there's a FIFO, it can know when it's full and then drive
+> the RTS pin accordingly.
+> NB: I didn't test this mode since my board (at91sam9g35-cm) has not the
+> FIFO mechanism.
+> 
+> If DMA is USED WITHOUT FIFOs, then this is the bad case: the controller
+> can't control the RTS pin, and we can't control it either by hand. So,
+> the hardware handshake is disabled. (that's what commit 5be605ac9af9
+> ("tty/serial: atmel: fix hardware handshake selection") did).
+> 
+> There's still something obscure to me:
+> In the SAM9G35 datasheet, it's said that
+> "Setting the USART to operate with hardware handshaking is performed by
+> writing the USART_MODE field in US_MR to the value 0x2.
+> [..] Using this mode requires using the DMA channel for reception."
+> 
+> So, according to this, it *should* be possible to use automatic hardware
+> handshake with the DMA and without FIFO (sam9x5 have no FIFOs like
+> samad controllers)
+> 
+> NB: -stable is not Cced because it doesn't cleanly apply on 4.1+
+> 
+> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+> Fixes: 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when hardware handshake is enabled")
+> ---
+>  drivers/tty/serial/atmel_serial.c | 24 ++++++++++++++++++------
+>  1 file changed, 18 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index e9b4fbf88c2d..503fbc623227 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -2130,14 +2130,26 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+>  	} else if ((termios->c_cflag & CRTSCTS) &&
+>  		   !mctrl_gpio_use_rtscts(atmel_port->gpios)) {
+>  		/*
+> -		 * RS232 with hardware handshake (RTS/CTS)
+> -		 * handled by the controller.
+> +		 * Automatic hardware handshake (RTS/CTS) only work with
+> +		 * DMA enabled and FIFOs.
+> +		 * TODO: sam9x5 controllers don't have FIFOs like samad
+> +		 * controllers, and yet, the datasheet says that the
+> +		 * ATMEL_US_USMODE_HWHS can be used with (and only with) a DMA
+> +		 * channel for reception.
+>  		 */
+> -		if (atmel_use_dma_rx(port) && !atmel_use_fifo(port)) {
+> -			dev_info(port->dev, "not enabling hardware flow control because DMA is used");
+> -			termios->c_cflag &= ~CRTSCTS;
+> +		if (atmel_use_dma_rx(port)) {
+> +			if (atmel_use_fifo(port)) {
+> +				mode |= ATMEL_US_USMODE_HWHS;
+> +			} else {
+> +				dev_info(port->dev, "not enabling hardware flow control because DMA is used without fifo");
+> +				termios->c_cflag &= ~CRTSCTS;
+> +			}
+>  		} else {
+> -			mode |= ATMEL_US_USMODE_HWHS;
+> +			/*
+> +			 * if DMA is not used, tell the controller that it
+> +			 * should not handle the RTS pin automatically
+> +			 */
+> +			mode |= ATMEL_US_USMODE_NORMAL;
+>  		}
+>  	} else {
+>  		/* RS232 without hadware handshake or controlled by GPIOs */
+> 
