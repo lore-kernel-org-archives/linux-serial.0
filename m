@@ -1,55 +1,291 @@
 From: "Luis R. Rodriguez" <mcgrof@kernel.org>
-Subject: Re: [RFC] fs: add userspace critical mounts event support
-Date: Wed, 7 Sep 2016 01:14:00 +0200
-Message-ID: <20160906231400.GU3296@wotan.suse.de>
-References: <20160902235916.GO3296@wotan.suse.de>
- <20160903002014.GP3296@wotan.suse.de>
- <CA+55aFy4_QLYiQxtKpq0FJD7eSBRZ8nXS=Ruuz1TYodHdE_dCA@mail.gmail.com>
- <CAKdAkRSQmz3FoP8Z2ONm7-_A9RHF2Ox6snaCpsyS6HA7=+RerQ@mail.gmail.com>
- <CA+55aFz4q5peXAeY9h8o3he7R=wXrBSYkOjMM9TehOw=pPoS+Q@mail.gmail.com>
- <20160903174939.GB32345@dtor-ws>
- <CA+55aFwLrXRUO9n75Sthu+g73BEjskAgUkguyLwU=JA_PNzdOQ@mail.gmail.com>
- <CAKdAkRTv5Fv54wetBqkS+EyEuP_k5exJat+QXBLtTkFLO_-maQ@mail.gmail.com>
- <20160906215204.GR3296@wotan.suse.de>
- <20160906222847.GF15161@tuxbot>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: [PATCH v4 2/5] firmware: annotate thou shalt not request fw on init or probe
+Date: Tue,  6 Sep 2016 17:42:07 -0700
+Message-ID: <1473208930-6835-3-git-send-email-mcgrof@kernel.org>
+References: <1471999507-913-1-git-send-email-mcgrof@kernel.org>
+ <1473208930-6835-1-git-send-email-mcgrof@kernel.org>
 Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160906222847.GF15161@tuxbot>
+In-Reply-To: <1473208930-6835-1-git-send-email-mcgrof@kernel.org>
 Sender: linux-doc-owner@vger.kernel.org
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Jacek Anaszewski <j.anaszewski@samsung.com>, David Woodhouse <dwmw2@infradead.org>, Christian Lamparter <chunkeey@googlemail.com>, Julia Lawall <Julia.Lawall@lip6.fr>, Andrew Morton <akpm@linux-foundation.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Mimi Zohar <zohar@linux.vnet.ibm.com>, Andy Lutomirski <luto@amacapital.net>, Richard Purdie <rpurdie@rpsys.net>, Wu Fengguang <fengguang.wu@intel.com>, Johannes Berg <johannes@sipsolutions.net>, Michal Marek <mmarek@suse.com>, Hauke Mehrtens <hauke@hauke-m.de>, Mark Brown <broonie@kernel.org>, Jiri Slaby <jslaby>
+To: ming.lei@canonical.com, akpm@linux-foundation.org, gregkh@linuxfoundation.org
+Cc: daniel.wagner@bmw-carit.de, mmarek@suse.com, linux-kernel@vger.kernel.org, markivx@codeaurora.org, stephen.boyd@linaro.org, zohar@linux.vnet.ibm.com, broonie@kernel.org, tiwai@suse.de, johannes@sipsolutions.net, chunkeey@googlemail.com, hauke@hauke-m.de, jwboyer@fedoraproject.org, dmitry.torokhov@gmail.com, dwmw2@infradead.org, jslaby@suse.com, torvalds@linux-foundation.org, luto@amacapital.net, fengguang.wu@intel.com, rpurdie@rpsys.net, j.anaszewski@samsung.com, Abhay_Salunke@dell.com, Julia.Lawall@lip6.fr, Gilles.Muller@lip6.fr, nicolas.palix@imag.fr, teg@jklm.no, dhowells@redhat.com, bjorn.andersson@linaro.org, arend.vanspriel@broadcom.com, kvalo@codeaurora.org, "Luis R. Rodriguez" <mcgrof@kernel.org>, Alessandro Rubini <rubini@gnudd.com>, Kevin Cernekee <cerneke>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Sep 06, 2016 at 03:28:47PM -0700, Bjorn Andersson wrote:
-> On Tue 06 Sep 14:52 PDT 2016, Luis R. Rodriguez wrote:
-> 
-> > We already have MODULE_FIRMWARE(), we could have MODULE_FIRMWARE_REQ() or
-> > something like it to help annotate the the driver was only functional with the
-> > firmware, punt things to kmod to deal with the requirements.
-> 
-> That implies that a single driver will only use a single version of the
-> firmware. 
+Thou shalt not make firmware calls early on init or probe.
 
-Today firmware requests are done manually by the driver, in the future it should
-be possible to specify just an array of firmwares and on that list specify
-which firmware is optional, and perhaps if you need at last one. Then you treat
-optional firmware upgrades as optional -- and only treat fatal conditions as
-such. Today drivers manage all this on their own.  This is something we can
-later do as we have the flexible firmware API in place, but for now -- you are
-right. There is no clear way to extract the semantics of what firmware
-requirements really are in an easy way.
+systemd already ripped support out for the usermode helper
+a while ago, there are still users that require the usermode helper,
+however systemd's use of the usermode helper exacerbated a long
+lasting issue of the fact that we have many drivers that load
+firmware on init or probe. Independent of the usermode helper
+loading firmware on init or probe is a bad idea for a few reasons.
 
-> There are cases where we want a single driver to load firmware
-> depending on e.g. hardware revisions,
+When the firmware is read directly from the filesystem by the kernel,
+if the driver is built-in to the kernel the firmware may not yet be
+available, for such uses one could use initramfs and stuff the firmware
+inside, or one also use CONFIG_EXTRA_FIRMWARE; however not all distributions
+use this, as such generally one cannot count on this. There is another
+corner cases to consider, since we are accessing the firmware directly folks
+cannot expect new found firmware on a filesystem after we switch off from
+an initramfs with pivot_root().
 
-Dynamic firmware names -- indeed. Good point.
+Supporting such situations is possible today but fixing it for good is
+really complex due to the large amount of variablity in the boot up
+process.
 
-> or previous firmware version and
-> there are cases where we want to load firmware based on requested
-> use-cases.
+Instead just document the expectations properly and add a grammar rule to
+enable folks to check / validate / police if drivers are using the request
+firmware API early on init or probe.
 
-True.
+The SmPL rule used to check for the probe routine is loose and is
+currently defined through a regexp, that can easily be extended to any
+other known bus probe routine names. It also uses the new Python
+iteration support which allows us to backtrack from a request_firmware*()
+call back to a possible probe or init, iteratively. Without iteration
+we would only be able to get reports for callers who directly use the
+request_firmware*() API on the initial probe or init routine.
 
-  Luis
+There are 4 offenders at this time:
+
+mcgrof@ergon ~/linux-next (git::20160609)$ export COCCI=scripts/coccinelle/api/request_firmware.cocci
+mcgrof@ergon ~/linux-next (git::20160609)$ make coccicheck MODE=report
+
+drivers/fmc/fmc-fakedev.c: ERROR: driver call request firmware call on its init routine on line 321.
+drivers/fmc/fmc-write-eeprom.c: ERROR: driver call request firmware call on its probe routine on line 136.
+drivers/tty/serial/rp2.c: ERROR: driver call request firmware call on its probe routine on line 796.
+drivers/tty/serial/ucc_uart.c: ERROR: driver call request firmware call on its probe routine on line 1246.
+
+I checked and verified all these are valid reports. This list also matches
+the same list as in 20150805, so we have fortunately not gotten worse.
+Let's keep it that way and also fix these drivers.
+
+v3:
+
+Clarify that if initramfs or builtin_fw cannot be used the race
+between driver probe and /lib/firmware/ being ready must be addressed.
+
+v2: changes from v1 [0]:
+
+o This now supports iteration, this extends our coverage on the report
+
+o Update documentation and commit log to accept the fate of not being
+  able to remove the usermode helper.
+
+[0] https://lkml.kernel.org/r/1440811107-861-1-git-send-email-mcgrof@do-not-panic.com
+
+Cc: Alessandro Rubini <rubini@gnudd.com>
+Cc: Kevin Cernekee <cernekee@gmail.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Mimi Zohar <zohar@linux.vnet.ibm.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Ming Lei <ming.lei@canonical.com>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Julia Lawall <Julia.Lawall@lip6.fr>
+Cc: Gilles Muller <Gilles.Muller@lip6.fr>
+Cc: Nicolas Palix <nicolas.palix@imag.fr>
+Cc: Thierry Martinez <martinez@nsup.org>
+Cc: Michal Marek <mmarek@suse.com>
+Cc: cocci@systeme.lip6.fr
+Cc: Alessandro Rubini <rubini@gnudd.com>
+Cc: Kevin Cernekee <cernekee@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-doc@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+---
+ Documentation/firmware_class/README                |  22 ++++
+ drivers/base/Kconfig                               |   2 +-
+ .../request_firmware-avoid-init-probe-init.cocci   | 130 +++++++++++++++++++++
+ 3 files changed, 153 insertions(+), 1 deletion(-)
+ create mode 100644 scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
+
+diff --git a/Documentation/firmware_class/README b/Documentation/firmware_class/README
+index cafdca8b3b15..20aca5901785 100644
+--- a/Documentation/firmware_class/README
++++ b/Documentation/firmware_class/README
+@@ -93,6 +93,28 @@
+    user contexts to request firmware asynchronously, but can't be called
+    in atomic contexts.
+ 
++Requirements:
++=============
++
++You should avoid at all costs requesting firmware on both init and probe paths
++of your device driver. Reason for this is loading firmware and using it can
++often delay boot and we can have races early in boot, between a device's probe
++and having the real /lib/firmware ready.
++
++Drivers that really need firmware early should stuff the firmware in
++initramfs or consider using CONFIG_EXTRA_FIRMWARE. Using initramfs is much
++more portable to more distributions as not all distributions wish to enable
++CONFIG_EXTRA_FIRMWARE. Should a driver require the firmware being built-in
++it should depend on CONFIG_EXTRA_FIRMWARE. There is no current annotation for
++requiring a firmware on initramfs.
++
++If drivers cannot use CONFIG_EXTRA_FIRMWARE or initramfs the races between
++probe and having /lib/firmware ready needs to be addressed first.
++
++If you're a maintainer you can help police this with:
++
++$ export COCCI=scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
++$ make coccicheck MODE=report
+ 
+  about in-kernel persistence:
+  ---------------------------
+diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
+index fdf44cac08e6..d493e7f45805 100644
+--- a/drivers/base/Kconfig
++++ b/drivers/base/Kconfig
+@@ -152,7 +152,7 @@ config FW_LOADER_USER_HELPER
+ 	bool
+ 
+ config FW_LOADER_USER_HELPER_FALLBACK
+-	bool "Fallback user-helper invocation for firmware loading"
++	bool "Fallback user-helper invocation for firmware loading (avoid)"
+ 	depends on FW_LOADER
+ 	select FW_LOADER_USER_HELPER
+ 	help
+diff --git a/scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci b/scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
+new file mode 100644
+index 000000000000..cf180c59e042
+--- /dev/null
++++ b/scripts/coccinelle/api/request_firmware-avoid-init-probe-init.cocci
+@@ -0,0 +1,130 @@
++///
++/// Thou shalt not request firmware on init or probe
++///
++// Confidence: High
++// Copyright: (C) 2016 Luis R. Rodriguez <mcgrof@kernel.org>
++// Copyright: (C) 2015 Julia Lawall, Inria/LIP6.
++//
++// GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Options: --no-includes --include-headers --no-show-diff
++// Requires: 1.0.5
++//
++// Coccinelle 1.0.5 is required given that this uses the shiny new
++// python iteration feature.
++
++virtual report
++virtual after_start
++
++// -------------------------------------------------------------------------
++
++@initialize:python@
++@@
++
++seen = set()
++
++def add_if_not_present(f, file, starter_var):
++    if (f, file, starter_var) not in seen:
++        seen.add((f, file, starter_var))
++        it = Iteration()
++        if file != None:
++            it.set_files([file])
++    it.add_virtual_rule(after_start)
++    it.add_virtual_rule(report)
++    it.add_virtual_identifier(fn, f)
++    it.add_virtual_identifier(starter, starter_var)
++    it.register()
++
++reported = set()
++
++def print_err(str, file, line):
++    if (file, line) not in reported:
++        reported.add((file, line))
++	print "%s: ERROR: driver call request firmware call on its %s routine on line %d." % (file, str, line)
++
++@ defines_module_init@
++declarer name module_init;
++identifier init;
++@@
++
++module_init(init);
++
++@ has_probe depends on defines_module_init@
++identifier drv_calls, drv_probe;
++type bus_driver;
++identifier probe_op =~ "(probe)";
++@@
++
++bus_driver drv_calls = {
++	.probe_op = drv_probe,
++};
++
++@hascall depends on !after_start && defines_module_init@
++position p;
++@@
++
++(
++request_firmware@p(...)
++|
++request_firmware_nowait@p(...)
++|
++request_firmware_direct@p(...)
++)
++
++@script:python@
++init << defines_module_init.init;
++p << hascall.p;
++@@
++
++if p[0].current_element == init:
++    print_err("init", p[0].file, int(p[0].line))
++    cocci.include_match(False)
++
++@script:python@
++drv_probe << has_probe.drv_probe;
++p << hascall.p;
++@@
++
++if p[0].current_element == drv_probe:
++    print_err("probe", p[0].file, int(p[0].line))
++    cocci.include_match(False)
++
++@script:python@
++p << hascall.p;
++@@
++
++add_if_not_present(p[0].current_element, p[0].file, p[0].line)
++
++@hasrecall depends on after_start@
++position p;
++identifier virtual.fn;
++@@
++
++fn@p(...)
++
++@script:python@
++init << defines_module_init.init;
++p << hasrecall.p;
++starter << virtual.starter;
++@@
++
++if p[0].current_element == init:
++    print_err("init", p[0].file, int(starter))
++    cocci.include_match(False)
++
++@script:python@
++drv_probe << has_probe.drv_probe;
++p << hasrecall.p;
++starter << virtual.starter;
++@@
++
++if p[0].current_element == drv_probe:
++    print_err("probe", p[0].file, int(starter))
++    cocci.include_match(False)
++
++@script:python@
++p << hasrecall.p;
++starter << virtual.starter;
++@@
++
++add_if_not_present(p[0].current_element, p[0].file, starter)
+-- 
+2.9.2
+
