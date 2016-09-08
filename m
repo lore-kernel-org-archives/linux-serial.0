@@ -1,47 +1,39 @@
-From: Hanjun Guo <hanjun.guo@linaro.org>
-Subject: Re: [PATCH v10 3/4] ARM64: ACPI: enable ACPI_SPCR_TABLE
-Date: Thu, 8 Sep 2016 21:35:27 +0800
-Message-ID: <b1064bed-3823-392d-e4c1-cf82f06712ff@linaro.org>
-References: <20160905123617.18775-1-aleksey.makarov@linaro.org>
- <20160905123617.18775-4-aleksey.makarov@linaro.org>
- <7e5486cc-4080-2d1e-8f6d-98874379887d@gmail.com>
- <20160908111654.GH1493@arm.com>
+From: <tthayer@opensource.altera.com>
+Subject: [PATCH 0/4] Add TX FIFO Threshold for Altera 16550-FIFOxx
+Date: Thu, 8 Sep 2016 11:12:17 -0500
+Message-ID: <1473351141-9239-1-git-send-email-tthayer@opensource.altera.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20160908111654.GH1493@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Aleksey Makarov <amakarov.linux@gmail.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, "Zheng, Lv" <lv.zheng@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-acpi@vger.kernel.org, Yury Norov <ynorov@caviumnetworks.com>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Mark Salter <msalter@redhat.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, lftan@altera.com, jslaby@suse.com, arnd@arndb.de, peter@hurleysoftware.com, andriy.shevchenko@linux.intel.com, anton.wuerfel@fau.de, phillip.raffeck@fau.de, yegorslists@googlemail.com, matwey@sai.msu.ru, mail@maciej.szmigiero.name
+Cc: peter.ujfalusi@ti.com, jonathanh@nvidia.com, dongsheng.wang@nxp.com, luis@debethencourt.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, tthayer.linux@gmail.com, tthayer@opensource.altera.com, nios2-dev@lists.rocketboards.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2016/9/8 19:16, Will Deacon wrote:
-> On Wed, Sep 07, 2016 at 12:30:19PM +0300, Aleksey Makarov wrote:
->>
->> On 09/05/2016 03:36 PM, Aleksey Makarov wrote:
->>> SBBR mentions SPCR as a mandatory ACPI table.  So enable it for ARM64
->>>
->>> Earlycon should be set up as early as possible.  ACPI boot tables are
->>> mapped in arch/arm64/kernel/acpi.c:acpi_boot_table_init() that
->>> is called from setup_arch() and that's where we parse SPCR.
->>> So it has to be opted-in per-arch.
->>>
->>> When ACPI_SPCR_TABLE is defined initialization of DT earlycon is
->>> deferred until the DT/ACPI decision is done.  Initialize DT earlycon
->>> if ACPI is disabled.
->>
->> Hi Will, Catalin,
->>
->> Can you review this patch and consider ACKing it please?
->
-> Hanjun, Al, Mark, Graeme -- any comments on this?
+From: Thor Thayer <tthayer@opensource.altera.com>
 
-We tested this patch on D02, although d02 is 8250 based
-uart, but this patch is the core part, which makes sense
-to me,
+Some variants of the 16550 have a programmable TX FIFO threshold that
+will trigger an IRQ when the FIFO drops below the threshold. The Altera
+16550 compatible soft IP supports programmable TX FIFO thresholds.
 
-Acked-by: Hanjun Guo <hanjun.guo@linaro.org>
+This patch series adds the tx_loadsz to the device tree. The tx_loadsz
+variable is amount of data that can be loaded into the FIFO on an IRQ.
 
-Thanks
-Hanjun
+This patch series also adds support for the TX FIFO threshold registers
+in the Altera 16550-FIFOxx soft IP.
+
+Thor Thayer (4):
+  Documentation: dt: serial: Add TX FIFO load size
+  serial: 8250: of: Load TX FIFO Load Size from DT
+  serial: 8250: Set Altera 16550 TX FIFO Threshold
+  nios2: dts: 10m50: Add tx-loadsz parameter
+
+ Documentation/devicetree/bindings/serial/8250.txt |    1 +
+ arch/nios2/boot/dts/10m50_devboard.dts            |    1 +
+ drivers/tty/serial/8250/8250_of.c                 |    6 ++++
+ drivers/tty/serial/8250/8250_port.c               |   36 +++++++++++++++++++++
+ include/uapi/linux/serial_reg.h                   |    8 +++++
+ 5 files changed, 52 insertions(+)
+
+-- 
+1.7.9.5
