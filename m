@@ -1,43 +1,45 @@
-From: <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
-Subject: [PATCH 1/4] Documentation: dt: serial: Add TX FIFO load size
-Date: Thu, 8 Sep 2016 11:12:18 -0500
-Message-ID: <1473351141-9239-2-git-send-email-tthayer@opensource.altera.com>
-References: <1473351141-9239-1-git-send-email-tthayer@opensource.altera.com>
+From: Mark Salter <msalter@redhat.com>
+Subject: Re: [PATCH v10 3/4] ARM64: ACPI: enable ACPI_SPCR_TABLE
+Date: Thu, 08 Sep 2016 12:34:16 -0400
+Message-ID: <1473352456.21193.8.camel@redhat.com>
+References: <20160905123617.18775-1-aleksey.makarov@linaro.org>
+         <20160905123617.18775-4-aleksey.makarov@linaro.org>
+         <7e5486cc-4080-2d1e-8f6d-98874379887d@gmail.com>
+         <20160908111654.GH1493@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1473351141-9239-1-git-send-email-tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, anton.wuerfel-d40JDW7QUjc@public.gmane.org, phillip.raffeck-d40JDW7QUjc@public.gmane.org, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org, matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org, mail-APzI5cXaD1zVlRWJc41N0YvC60bnQu0Y@public.gmane.org
-Cc: peter.ujfalusi-l0cyMroinI0@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, dongsheng.wang-3arQi8VN3Tc@public.gmane.org, luis-HiykPkW1eAzzDCI4PIEvbQC/G2K4zDHf@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tthayer.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20160908111654.GH1493@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>, Aleksey Makarov <amakarov.linux@gmail.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, "Zheng, Lv" <lv.zheng@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-acpi@vger.kernel.org, Yury Norov <ynorov@caviumnetworks.com>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+On Thu, 2016-09-08 at 12:16 +0100, Will Deacon wrote:
+> On Wed, Sep 07, 2016 at 12:30:19PM +0300, Aleksey Makarov wrote:
+> > 
+> > 
+> > On 09/05/2016 03:36 PM, Aleksey Makarov wrote:
+> > > 
+> > > SBBR mentions SPCR as a mandatory ACPI table.  So enable it for ARM64
+> > > 
+> > > Earlycon should be set up as early as possible.  ACPI boot tables are
+> > > mapped in arch/arm64/kernel/acpi.c:acpi_boot_table_init() that
+> > > is called from setup_arch() and that's where we parse SPCR.
+> > > So it has to be opted-in per-arch.
+> > > 
+> > > When ACPI_SPCR_TABLE is defined initialization of DT earlycon is
+> > > deferred until the DT/ACPI decision is done.  Initialize DT earlycon
+> > > if ACPI is disabled.
+> > Hi Will, Catalin,
+> > 
+> > Can you review this patch and consider ACKing it please?
+> Hanjun, Al, Mark, Graeme -- any comments on this?
+> 
+> Will
 
-Add the device tree bindings needed to support the TX FIFO
-load size.
+I think there is a problem still with systems using 32-bit access to 8250
+UARTs (i.e. Mustang) but that will need a DBG2 table spec change and
+followup patch to resolve.
 
-Signed-off-by: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
----
- Documentation/devicetree/bindings/serial/8250.txt |    1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
-index f5561ac..93de5ef 100644
---- a/Documentation/devicetree/bindings/serial/8250.txt
-+++ b/Documentation/devicetree/bindings/serial/8250.txt
-@@ -45,6 +45,7 @@ Optional properties:
- - {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD
-   line respectively. It will use specified GPIO instead of the peripheral
-   function pin for the UART feature. If unsure, don't specify this property.
-+- tx-loadsz: the number of bytes that can be loaded into the TX FIFO.
- 
- Note:
- * fsl,ns16550:
--- 
-1.7.9.5
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
