@@ -1,53 +1,38 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 0/6] SA11x0 serial updates
-Date: Thu, 8 Sep 2016 00:28:24 +0200
-Message-ID: <CACRpkdaFsrm7V19s4VntqPnkY52xjV3_Bz+nW5fVrfWERRx=Rg@mail.gmail.com>
-References: <20160829100232.GC1041@n2100.armlinux.org.uk>
- <20160829102328.GA28796@n2100.armlinux.org.uk>
- <20160829110157.GE1041@n2100.armlinux.org.uk>
- <20160829112540.GF1041@n2100.armlinux.org.uk>
- <20160829120531.GG1041@n2100.armlinux.org.uk>
- <CACRpkdZFZVq92UAiq+dsHabyEk+_AbQ_B3SOETGru-8Kbp=h9Q@mail.gmail.com>
- <20160905122810.GP1041@n2100.armlinux.org.uk>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v10 3/4] ARM64: ACPI: enable ACPI_SPCR_TABLE
+Date: Thu, 8 Sep 2016 12:16:55 +0100
+Message-ID: <20160908111654.GH1493@arm.com>
+References: <20160905123617.18775-1-aleksey.makarov@linaro.org>
+ <20160905123617.18775-4-aleksey.makarov@linaro.org>
+ <7e5486cc-4080-2d1e-8f6d-98874379887d@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160905122810.GP1041@n2100.armlinux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@armlinux.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jiri Slaby <jslaby@suse.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <7e5486cc-4080-2d1e-8f6d-98874379887d@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Aleksey Makarov <amakarov.linux@gmail.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, "Zheng, Lv" <lv.zheng@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-acpi@vger.kernel.org, Yury Norov <ynorov@caviumnetworks.com>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Mark Salter <msalter@redhat.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Sep 5, 2016 at 2:28 PM, Russell King - ARM Linux
-<linux@armlinux.org.uk> wrote:
-> On Mon, Sep 05, 2016 at 11:09:38AM +0200, Linus Walleij wrote:
->> On Mon, Aug 29, 2016 at 2:05 PM, Russell King - ARM Linux
->> <linux@armlinux.org.uk> wrote:
->>
->> > This series converts SA11x0 serial to make use of the mctrl helpers
->> > where appropriate.  This allows us to remove several board-specific
->> > callbacks.
->>
->> >From GPIO and H3600 point of view:
->> Acked-by: Linus Walleij <linus.walleij@linaro.org>
->
-> Thanks - did you check that the appropriate GPIOs were claimed for
-> serial in gpio's debugfs?
+On Wed, Sep 07, 2016 at 12:30:19PM +0300, Aleksey Makarov wrote:
+> 
+> On 09/05/2016 03:36 PM, Aleksey Makarov wrote:
+> > SBBR mentions SPCR as a mandatory ACPI table.  So enable it for ARM64
+> > 
+> > Earlycon should be set up as early as possible.  ACPI boot tables are
+> > mapped in arch/arm64/kernel/acpi.c:acpi_boot_table_init() that
+> > is called from setup_arch() and that's where we parse SPCR.
+> > So it has to be opted-in per-arch.
+> > 
+> > When ACPI_SPCR_TABLE is defined initialization of DT earlycon is
+> > deferred until the DT/ACPI decision is done.  Initialize DT earlycon
+> > if ACPI is disabled.
+> 
+> Hi Will, Catalin,
+> 
+> Can you review this patch and consider ACKing it please?
 
-Getting to it tomorrow (didn't forget about it).
+Hanjun, Al, Mark, Graeme -- any comments on this?
 
-I was working from home the last two days and back to the office where
-I have all the hardware tomorrow. Will test it and report back. Will also
-try to investigate the PCMCIA probe bounce with -2.
-
-Yours,
-Linus Walleij
+Will
