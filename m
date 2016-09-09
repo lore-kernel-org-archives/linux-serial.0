@@ -1,258 +1,37 @@
-From: Nava kishore Manne <nava.manne@xilinx.com>
-Subject: [PATCH 1/2] serial: xuartps: Adds RXBS register support for zynqmp
-Date: Fri, 9 Sep 2016 16:23:21 +0530
-Message-ID: <1473418402-34855-1-git-send-email-navam@xilinx.com>
+From: Sebastian Andrzej Siewior <sebastian.siewior@linutronix.de>
+Subject: Re: [PATCH] sc16is7xx: drop bogus use of IRQF_ONESHOT
+Date: Fri, 9 Sep 2016 15:14:32 +0200
+Message-ID: <20160909131432.baydlypki3wch5nv@linutronix.de>
+References: <20160218084634.017c3ab4@laptop>
+ <1455816372-13989-1-git-send-email-joshc@ni.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, jslaby@suse.com, michal.simek@xilinx.com, soren.brinkmann@xilinx.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Nava kishore Manne <navam@xilinx.com>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1455816372-13989-1-git-send-email-joshc@ni.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Josh Cartwright <joshc@ni.com>
+Cc: Jakub Kicinski <moorray3@wp.pl>, linux-serial@vger.kernel.org, linux-rt-users@vger.kernel.org, Sean Nyekjaer <sean.nyekjaer@prevas.dk>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds RXBS register access support for zynqmp.
-To avoid the corner error conditions it will consider only
-RXBS[2:0] bits while checking the error conditions
-(Parity,Framing and BRAK).
+On 2016-02-18 11:26:12 [-0600], Josh Cartwright wrote:
+> The use of IRQF_ONESHOT when registering an interrupt handler with
+> request_irq() is non-sensical.
+> 
+> Not only that, it also prevents the handler from being threaded when it
+> otherwise should be w/ IRQ_FORCED_THREADING is enabled.  This causes the
+> following deadlock observed by Sean Nyekjaer on -rt:
 
-Signed-off-by: Nava kishore Manne <navam@xilinx.com>
----
- drivers/tty/serial/xilinx_uartps.c | 101 +++++++++++++++++++++++++++++--------
- 1 file changed, 81 insertions(+), 20 deletions(-)
+So we this patch 
+  http://lkml.iu.edu/hypermail/linux/kernel/1602.2/02637.html
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 9ca1a4d..efd7f73 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -57,7 +57,7 @@ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
- #define CDNS_UART_IMR		0x10  /* Interrupt Mask */
- #define CDNS_UART_ISR		0x14  /* Interrupt Status */
- #define CDNS_UART_BAUDGEN	0x18  /* Baud Rate Generator */
--#define CDNS_UART_RXTOUT		0x1C  /* RX Timeout */
-+#define CDNS_UART_RXTOUT	0x1C  /* RX Timeout */
- #define CDNS_UART_RXWM		0x20  /* RX FIFO Trigger Level */
- #define CDNS_UART_MODEMCR	0x24  /* Modem Control */
- #define CDNS_UART_MODEMSR	0x28  /* Modem Status */
-@@ -68,6 +68,7 @@ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
- #define CDNS_UART_IRRX_PWIDTH	0x3C  /* IR Min Received Pulse Width */
- #define CDNS_UART_IRTX_PWIDTH	0x40  /* IR Transmitted pulse Width */
- #define CDNS_UART_TXWM		0x44  /* TX FIFO Trigger Level */
-+#define CDNS_UART_RXBS		0x48  /* RX FIFO byte status register */
- 
- /* Control Register Bit Definitions */
- #define CDNS_UART_CR_STOPBRK	0x00000100  /* Stop TX break */
-@@ -79,6 +80,9 @@ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
- #define CDNS_UART_CR_TXRST	0x00000002  /* TX logic reset */
- #define CDNS_UART_CR_RXRST	0x00000001  /* RX logic reset */
- #define CDNS_UART_CR_RST_TO	0x00000040  /* Restart Timeout Counter */
-+#define CDNS_UART_RXBS_PARITY    0x00000001 /* Parity error status */
-+#define CDNS_UART_RXBS_FRAMING   0x00000002 /* Framing error status */
-+#define CDNS_UART_RXBS_BRK       0x00000004 /* Overrun error status */
- 
- /*
-  * Mode Register:
-@@ -131,8 +135,9 @@ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
- 				 CDNS_UART_IXR_TOUT)
- 
- /* Goes in read_status_mask for break detection as the HW doesn't do it*/
--#define CDNS_UART_IXR_BRK	0x80000000
-+#define CDNS_UART_IXR_BRK	0x00002000
- 
-+#define CDNS_UART_RXBS_SUPPORT BIT(1)
- /*
-  * Modem Control register:
-  * The read/write Modem Control register controls the interface with the modem
-@@ -172,18 +177,29 @@ struct cdns_uart {
- 	struct clk		*pclk;
- 	unsigned int		baud;
- 	struct notifier_block	clk_rate_change_nb;
-+	u32			quirks;
-+};
-+struct cdns_platform_data {
-+	u32 quirks;
- };
- #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
- 		clk_rate_change_nb);
- 
- static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
- {
-+	struct cdns_uart *cdns_uart = port->private_data;
-+	bool is_rxbs_support;
-+	unsigned int rxbs_status;
-+	unsigned int status_mask;
-+
-+	is_rxbs_support = cdns_uart->quirks & CDNS_UART_RXBS_SUPPORT;
-+
- 	/*
- 	 * There is no hardware break detection, so we interpret framing
- 	 * error with all-zeros data as a break sequence. Most of the time,
- 	 * there's another non-zero byte at the end of the sequence.
- 	 */
--	if (isrstatus & CDNS_UART_IXR_FRAMING) {
-+	if (!is_rxbs_support && (isrstatus & CDNS_UART_IXR_FRAMING)) {
- 		while (!(readl(port->membase + CDNS_UART_SR) &
- 					CDNS_UART_SR_RXEMPTY)) {
- 			if (!readl(port->membase + CDNS_UART_FIFO)) {
-@@ -200,6 +216,8 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
- 
- 	isrstatus &= port->read_status_mask;
- 	isrstatus &= ~port->ignore_status_mask;
-+	status_mask = port->read_status_mask;
-+	status_mask &= ~port->ignore_status_mask;
- 
- 	if (!(isrstatus & (CDNS_UART_IXR_TOUT | CDNS_UART_IXR_RXTRIG)))
- 		return;
-@@ -208,6 +226,9 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
- 		u32 data;
- 		char status = TTY_NORMAL;
- 
-+		if (is_rxbs_support)
-+			rxbs_status = readl(port->membase + CDNS_UART_RXBS);
-+
- 		data = readl(port->membase + CDNS_UART_FIFO);
- 
- 		/* Non-NULL byte after BREAK is garbage (99%) */
-@@ -217,21 +238,41 @@ static void cdns_uart_handle_rx(struct uart_port *port, unsigned int isrstatus)
- 			if (uart_handle_break(port))
- 				continue;
- 		}
-+		if (is_rxbs_support && (rxbs_status & CDNS_UART_RXBS_BRK)) {
-+			port->icount.brk++;
-+			status = TTY_BREAK;
-+			if (uart_handle_break(port))
-+				continue;
-+		}
- 
- 		if (uart_handle_sysrq_char(port, data))
- 			continue;
- 
- 		port->icount.rx++;
- 
--		if (isrstatus & CDNS_UART_IXR_PARITY) {
--			port->icount.parity++;
--			status = TTY_PARITY;
--		} else if (isrstatus & CDNS_UART_IXR_FRAMING) {
--			port->icount.frame++;
--			status = TTY_FRAME;
--		} else if (isrstatus & CDNS_UART_IXR_OVERRUN) {
--			port->icount.overrun++;
-+		if (is_rxbs_support) {
-+			if ((rxbs_status & CDNS_UART_RXBS_PARITY)
-+				&& (status_mask & CDNS_UART_IXR_PARITY)) {
-+				port->icount.parity++;
-+				status = TTY_PARITY;
-+			}
-+			if ((rxbs_status & CDNS_UART_RXBS_FRAMING)
-+				&& (status_mask & CDNS_UART_IXR_PARITY)) {
-+				port->icount.frame++;
-+				status = TTY_FRAME;
-+			}
-+		} else {
-+			if (isrstatus & CDNS_UART_IXR_PARITY) {
-+				port->icount.parity++;
-+				status = TTY_PARITY;
-+			}
-+			if (isrstatus & CDNS_UART_IXR_FRAMING) {
-+				port->icount.frame++;
-+				status = TTY_FRAME;
-+			}
- 		}
-+		if (isrstatus & CDNS_UART_IXR_OVERRUN)
-+			port->icount.overrun++;
- 
- 		uart_insert_char(port, isrstatus, CDNS_UART_IXR_OVERRUN,
- 				 data, status);
-@@ -736,10 +777,14 @@ static void cdns_uart_set_termios(struct uart_port *port,
-  */
- static int cdns_uart_startup(struct uart_port *port)
- {
-+	struct cdns_uart *cdns_uart = port->private_data;
-+	bool is_brk_support;
- 	int ret;
- 	unsigned long flags;
- 	unsigned int status = 0;
- 
-+	is_brk_support = cdns_uart->quirks & CDNS_UART_RXBS_SUPPORT;
-+
- 	spin_lock_irqsave(&port->lock, flags);
- 
- 	/* Disable the TX and RX */
-@@ -794,7 +839,11 @@ static int cdns_uart_startup(struct uart_port *port)
- 	}
- 
- 	/* Set the Interrupt Registers with desired interrupts */
--	writel(CDNS_UART_RX_IRQS, port->membase + CDNS_UART_IER);
-+	if (is_brk_support)
-+		writel(CDNS_UART_RX_IRQS | CDNS_UART_IXR_BRK,
-+					port->membase + CDNS_UART_IER);
-+	else
-+		writel(CDNS_UART_RX_IRQS, port->membase + CDNS_UART_IER);
- 
- 	return 0;
- }
-@@ -1328,6 +1377,18 @@ static int cdns_uart_resume(struct device *device)
- static SIMPLE_DEV_PM_OPS(cdns_uart_dev_pm_ops, cdns_uart_suspend,
- 		cdns_uart_resume);
- 
-+static const struct cdns_platform_data zynqmp_uart_def = {
-+				.quirks = CDNS_UART_RXBS_SUPPORT, };
-+
-+/* Match table for of_platform binding */
-+static const struct of_device_id cdns_uart_of_match[] = {
-+	{ .compatible = "xlnx,xuartps", },
-+	{ .compatible = "cdns,uart-r1p8", },
-+	{ .compatible = "cdns,uart-r1p12", .data = &zynqmp_uart_def },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, cdns_uart_of_match);
-+
- /**
-  * cdns_uart_probe - Platform driver probe
-  * @pdev: Pointer to the platform device structure
-@@ -1340,12 +1401,20 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	struct uart_port *port;
- 	struct resource *res;
- 	struct cdns_uart *cdns_uart_data;
-+	const struct of_device_id *match;
- 
- 	cdns_uart_data = devm_kzalloc(&pdev->dev, sizeof(*cdns_uart_data),
- 			GFP_KERNEL);
- 	if (!cdns_uart_data)
- 		return -ENOMEM;
- 
-+	match = of_match_node(cdns_uart_of_match, pdev->dev.of_node);
-+	if (match && match->data) {
-+		const struct cdns_platform_data *data = match->data;
-+
-+		cdns_uart_data->quirks = data->quirks;
-+	}
-+
- 	cdns_uart_data->pclk = devm_clk_get(&pdev->dev, "pclk");
- 	if (IS_ERR(cdns_uart_data->pclk)) {
- 		cdns_uart_data->pclk = devm_clk_get(&pdev->dev, "aper_clk");
-@@ -1471,14 +1540,6 @@ static int cdns_uart_remove(struct platform_device *pdev)
- 	return rc;
- }
- 
--/* Match table for of_platform binding */
--static const struct of_device_id cdns_uart_of_match[] = {
--	{ .compatible = "xlnx,xuartps", },
--	{ .compatible = "cdns,uart-r1p8", },
--	{}
--};
--MODULE_DEVICE_TABLE(of, cdns_uart_of_match);
--
- static struct platform_driver cdns_uart_platform_driver = {
- 	.probe   = cdns_uart_probe,
- 	.remove  = cdns_uart_remove,
--- 
-2.1.2
+sitting in -RT. Then someone posted
+  http://www.spinics.net/lists/linux-rt-users/msg14975.html
+which depends on it.
+Before I was are of the first patch, I posted
+  http://www.spinics.net/lists/linux-rt-users/msg14666.html
+
+and nobody seems to care if anything of this gets merged upstream
+where it belongs. Could some please carry this to Greg upstream?
+
+Sebastian
