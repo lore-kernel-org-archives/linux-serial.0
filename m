@@ -1,7 +1,7 @@
 From: Rob Herring <robh@kernel.org>
-Subject: [PATCH 1/9] tty: serial_core: add tty NULL check to uart_tx_stopped
-Date: Fri,  9 Sep 2016 17:37:02 -0500
-Message-ID: <20160909223711.26238-2-robh@kernel.org>
+Subject: [PATCH 6/9] tty: serial_core: introduce tty_port_to_uart_state
+Date: Fri,  9 Sep 2016 17:37:07 -0500
+Message-ID: <20160909223711.26238-7-robh@kernel.org>
 References: <20160909223711.26238-1-robh@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20160909223711.26238-1-robh@kernel.org>
@@ -10,32 +10,65 @@ To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Commit 761ed4a94582 ("tty: serial_core: convert uart_close to use
-tty_port_close") created a case where a port used for a console does not
-get shutdown on tty closing. Then a call to uart_tx_stopped() segfaults
-because the tty is NULL. This could be fixed to restore old behavior,
-but we also want to allow tty_ports to work without a tty attached. So
-this change to allow a NULL tty_struct is needed either way.
+The uart_state is a container of tty_port. Add an inline to convert
+tty_port ptr to uart_state ptr and convert existing container_of users.
 
-Fixes: 761ed4a94582 ("tty: serial_core: convert uart_close to use tty_port_close")
-Reported-by: kernel test robot <xiaolong.ye@intel.com>
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- include/linux/serial_core.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/serial_core.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index cdba6f144f72..378d80a8dd43 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -412,7 +412,7 @@ int uart_resume_port(struct uart_driver *reg, struct uart_port *port);
- static inline int uart_tx_stopped(struct uart_port *port)
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index d48ea0a98e92..29eef4644e98 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -93,6 +93,11 @@ static inline void uart_port_deref(struct uart_port *uport)
+ 		uart_port_deref(__uport);				\
+ 	})
+ 
++static inline struct uart_state *tty_port_to_uart_state(struct tty_port *port)
++{
++	return container_of(port, struct uart_state, port);
++}
++
+ static inline struct uart_port *uart_port_check(struct uart_state *state)
  {
- 	struct tty_struct *tty = port->state->port.tty;
--	if (tty->stopped || port->hw_stopped)
-+	if ((tty && tty->stopped) || port->hw_stopped)
- 		return 1;
- 	return 0;
- }
+ 	lockdep_assert_held(&state->port.mutex);
+@@ -720,7 +725,7 @@ static void uart_unthrottle(struct tty_struct *tty)
+ 
+ static int uart_get_info(struct tty_port *port, struct serial_struct *retinfo)
+ {
+-	struct uart_state *state = container_of(port, struct uart_state, port);
++	struct uart_state *state = tty_port_to_uart_state(port);
+ 	struct uart_port *uport;
+ 	int ret = -ENODEV;
+ 
+@@ -1603,7 +1608,7 @@ static void uart_hangup(struct tty_struct *tty)
+ /* uport == NULL if uart_port has already been removed */
+ static void uart_port_shutdown(struct tty_port *port)
+ {
+-	struct uart_state *state = container_of(port, struct uart_state, port);
++	struct uart_state *state = tty_port_to_uart_state(port);
+ 	struct uart_port *uport = uart_port_check(state);
+ 
+ 	/*
+@@ -1630,7 +1635,7 @@ static void uart_port_shutdown(struct tty_port *port)
+ 
+ static int uart_carrier_raised(struct tty_port *port)
+ {
+-	struct uart_state *state = container_of(port, struct uart_state, port);
++	struct uart_state *state = tty_port_to_uart_state(port);
+ 	struct uart_port *uport;
+ 	int mctrl;
+ 
+@@ -1655,7 +1660,7 @@ static int uart_carrier_raised(struct tty_port *port)
+ 
+ static void uart_dtr_rts(struct tty_port *port, int onoff)
+ {
+-	struct uart_state *state = container_of(port, struct uart_state, port);
++	struct uart_state *state = tty_port_to_uart_state(port);
+ 	struct uart_port *uport;
+ 
+ 	uport = uart_port_ref(state);
 -- 
 2.9.3
