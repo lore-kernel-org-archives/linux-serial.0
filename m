@@ -1,66 +1,50 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [RFC RESEND] serial: 8250: fix regression in 8250 uart driver
-Date: Fri, 09 Sep 2016 17:28:33 +0300
-Message-ID: <1473431313.11323.159.camel@linux.intel.com>
-References: <575F7325.3030907@kernel.org>
-         <1465897220.30123.26.camel@linux.intel.com>
-         <cca9fb6eca58d8a29e3070e3f34fa40f.squirrel@emailmg.ipower.com>
-         <1465920046.30123.83.camel@linux.intel.com>
-         <dbaa0abe-06ab-57ee-4ba3-4e4717af4a62@leemhuis.info>
-         <1471432466.4887.134.camel@linux.intel.com>
-         <abf9f9cb-c14c-7efb-8d1c-ed89a6a979a3@kernel.org>
-         <1473268564.11323.91.camel@linux.intel.com>
-         <af26be97-ff08-8a07-b9c7-fc674056507e@kernel.org>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v10 3/4] ARM64: ACPI: enable ACPI_SPCR_TABLE
+Date: Fri, 9 Sep 2016 18:07:04 +0300
+Message-ID: <ffcabf79-17b8-f386-32b5-a6052f27f992@linaro.org>
+References: <20160905123617.18775-1-aleksey.makarov@linaro.org>
+ <20160905123617.18775-4-aleksey.makarov@linaro.org>
+ <7e5486cc-4080-2d1e-8f6d-98874379887d@gmail.com>
+ <20160909092958.GB20192@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <af26be97-ff08-8a07-b9c7-fc674056507e@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Dinh Nguyen <dinguyen@kernel.org>, Thorsten Leemhuis <regressions@leemhuis.info>
-Cc: heikki.krogerus@linux.intel.com, peter@hurleysoftware.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20160909092958.GB20192@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>, Aleksey Makarov <amakarov.linux@gmail.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, "Zheng, Lv" <lv.zheng@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-acpi@vger.kernel.org, Yury Norov <ynorov@caviumnetworks.com>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Mark Salter <msalter@redhat.com>, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2016-09-09 at 08:57 -0500, Dinh Nguyen wrote:
+
+
+On 09/09/2016 12:29 PM, Will Deacon wrote:
+> On Wed, Sep 07, 2016 at 12:30:19PM +0300, Aleksey Makarov wrote:
+>>
+>> On 09/05/2016 03:36 PM, Aleksey Makarov wrote:
+>>> SBBR mentions SPCR as a mandatory ACPI table.  So enable it for ARM64
+>>>
+>>> Earlycon should be set up as early as possible.  ACPI boot tables are
+>>> mapped in arch/arm64/kernel/acpi.c:acpi_boot_table_init() that
+>>> is called from setup_arch() and that's where we parse SPCR.
+>>> So it has to be opted-in per-arch.
+>>>
+>>> When ACPI_SPCR_TABLE is defined initialization of DT earlycon is
+>>> deferred until the DT/ACPI decision is done.  Initialize DT earlycon
+>>> if ACPI is disabled.
+>>
+>> Hi Will, Catalin,
+>>
+>> Can you review this patch and consider ACKing it please?
 > 
-> On 09/07/2016 12:16 PM, Andy Shevchenko wrote:
-> > 
-> > On Tue, 2016-08-23 at 08:53 -0500, Dinh Nguyen wrote:
-> > > 
-> > > Hi Andy,
-> > > 
-> > > On 08/17/2016 06:14 AM, Andy Shevchenko wrote:
-> > > > 
-> > > > 
-> > > > 
-> > > > I sent a v2 of the series for internal review, same you may
-> > > > found on
-> > > > [1]. If Heikki is okay to that I'll send it here.
-> > > > 
-> > > > [1] https://bitbucket.org/andy-shev/linux/branch/topic%2Fdw%2Fqr
-> > > > k
-> > > > 
-> > > 
-> > > I tested this branch on SoCFPGA hardware and encountered this
-> > > error[1].
-> > > Doing a bisect led me to this commit[2].
-> > 
-> > Forgot to add you to Cc list, there is new version there.
-> > 
+> Since the ACPI folks seem happy with the series, then:
 > 
-> I'm no longer getting the previous error, but I am still seeing this:
+> Acked-by: Will Deacon <will.deacon@arm.com>
 > 
-> [    6.025749] ttyS0 - failed to request DMA
+> for this patch.
 
-As Peter told you your DMA engine doesn't provide everything UART driver
-needs to establish such transfers.
+Thank you.  Can you pull the series?  Should I ask Rafael?
 
-My patchset does not prevent that check. It might be fixed, but I don't
-know yet the proper way. Any suggestions you have, please, comment at
-the series [1] directly.
-
-[1] http://www.spinics.net/lists/linux-serial/msg23608.html
-
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+> 
+> Will
+> 
