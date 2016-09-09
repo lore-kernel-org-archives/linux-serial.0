@@ -1,7 +1,7 @@
 From: Rob Herring <robh@kernel.org>
-Subject: [PATCH 4/9] tty: move TTY_IO_ERROR flag to tty_port iflags
-Date: Fri,  9 Sep 2016 17:37:05 -0500
-Message-ID: <20160909223711.26238-5-robh@kernel.org>
+Subject: [PATCH 3/9] tty: move hw_stopped flag to tty_port
+Date: Fri,  9 Sep 2016 17:37:04 -0500
+Message-ID: <20160909223711.26238-4-robh@kernel.org>
 References: <20160909223711.26238-1-robh@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20160909223711.26238-1-robh@kernel.org>
@@ -10,513 +10,1027 @@ To: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-TTY_IO_ERROR is a property of the tty port rather than the tty, so move
-it to tty_port struct and remove another dependency on tty_struct from
+hw_stopped is a property of the tty port rather than the tty, so move it
+to tty_port struct and remove another dependency on tty_struct from
 drivers.
 
-Partially converted with coccinelle:
+Converted with coccinelle:
 
 @@
 identifier t;
-identifier func;
 @@
-- func(TTY_IO_ERROR, &t->flags)
-+ func(TTY_PORT_IO_ERROR, &t->port->iflags)
+- t->hw_stopped
++ t->port->hw_stopped
 
 @@
 expression port;
-identifier func;
 @@
-- func(TTY_IO_ERROR, &port.tty->flags)
-+ func(TTY_PORT_IO_ERROR, &port.iflags)
+- port.tty->hw_stopped
++ port.hw_stopped
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/char/pcmcia/synclink_cs.c   |  6 +++---
- drivers/isdn/i4l/isdn_tty.c         |  4 ++--
- drivers/mmc/card/sdio_uart.c        |  4 ++--
- drivers/staging/fwserial/fwserial.c |  4 ++--
- drivers/tty/amiserial.c             |  6 +++---
- drivers/tty/cyclades.c              | 12 ++++++------
- drivers/tty/mxser.c                 |  6 +++---
- drivers/tty/pty.c                   |  6 +++---
- drivers/tty/serial/crisv10.c        |  4 ++--
- drivers/tty/serial/ioc4_serial.c    |  2 +-
- drivers/tty/serial/serial_core.c    |  5 ++---
- drivers/tty/synclink.c              |  6 +++---
- drivers/tty/synclink_gt.c           |  4 ++--
- drivers/tty/synclinkmp.c            |  4 ++--
- drivers/tty/tty_port.c              |  6 +++---
- include/linux/tty.h                 |  5 +++--
- net/bluetooth/rfcomm/tty.c          |  2 +-
- net/irda/ircomm/ircomm_tty.c        |  2 +-
- 18 files changed, 44 insertions(+), 44 deletions(-)
+ drivers/char/pcmcia/synclink_cs.c   | 16 ++++++++--------
+ drivers/mmc/card/sdio_uart.c        | 14 +++++++-------
+ drivers/staging/fwserial/fwserial.c | 20 +++++++++----------
+ drivers/tty/amiserial.c             | 38 ++++++++++++++++++-------------------
+ drivers/tty/cyclades.c              | 14 +++++++-------
+ drivers/tty/isicom.c                | 14 +++++++-------
+ drivers/tty/mxser.c                 | 28 +++++++++++++--------------
+ drivers/tty/serial/bfin_uart.c      |  6 +++---
+ drivers/tty/synclink.c              | 16 ++++++++--------
+ drivers/tty/synclink_gt.c           | 14 +++++++-------
+ drivers/tty/synclinkmp.c            | 16 ++++++++--------
+ include/linux/tty.h                 |  2 +-
+ net/irda/ircomm/ircomm_tty.c        | 20 +++++++++----------
+ net/irda/ircomm/ircomm_tty_attach.c |  6 +++---
+ net/irda/ircomm/ircomm_tty_ioctl.c  |  2 +-
+ 15 files changed, 113 insertions(+), 113 deletions(-)
 
 diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
-index 39a3748ef6c9..86ff86712ee7 100644
+index 8f5528abc390..39a3748ef6c9 100644
 --- a/drivers/char/pcmcia/synclink_cs.c
 +++ b/drivers/char/pcmcia/synclink_cs.c
-@@ -1300,7 +1300,7 @@ static int startup(MGSLPC_INFO * info, struct tty_struct *tty)
- 
- 	if (retval) {
- 		if (capable(CAP_SYS_ADMIN) && tty)
--			set_bit(TTY_IO_ERROR, &tty->flags);
-+			set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 		release_resources(info);
- 		return retval;
- 	}
-@@ -1309,7 +1309,7 @@ static int startup(MGSLPC_INFO * info, struct tty_struct *tty)
- 	mgslpc_change_params(info, tty);
- 
- 	if (tty)
--		clear_bit(TTY_IO_ERROR, &tty->flags);
-+		clear_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 
- 	tty_port_set_initialized(&info->port, 1);
- 
-@@ -1359,7 +1359,7 @@ static void shutdown(MGSLPC_INFO * info, struct tty_struct *tty)
- 	release_resources(info);
- 
- 	if (tty)
--		set_bit(TTY_IO_ERROR, &tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 
- 	tty_port_set_initialized(&info->port, 0);
- }
-diff --git a/drivers/isdn/i4l/isdn_tty.c b/drivers/isdn/i4l/isdn_tty.c
-index ca5ea73a3fc9..76bb852c3dc9 100644
---- a/drivers/isdn/i4l/isdn_tty.c
-+++ b/drivers/isdn/i4l/isdn_tty.c
-@@ -1060,7 +1060,7 @@ isdn_tty_startup(modem_info *info)
- 	 */
- 	info->mcr = UART_MCR_DTR | UART_MCR_RTS | UART_MCR_OUT2;
- 	if (info->port.tty)
--		clear_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+		clear_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
- 	/*
- 	 * and set the speed of the serial port
- 	 */
-@@ -1097,7 +1097,7 @@ isdn_tty_shutdown(modem_info *info)
+@@ -987,7 +987,7 @@ static void tx_done(MGSLPC_INFO *info, struct tty_struct *tty)
+ 	else
+ #endif
+ 	{
+-		if (tty && (tty->stopped || tty->hw_stopped)) {
++		if (tty && (tty->stopped || tty->port->hw_stopped)) {
+ 			tx_stop(info);
+ 			return;
  		}
- 	}
- 	if (info->port.tty)
--		set_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
+@@ -1007,7 +1007,7 @@ static void tx_ready(MGSLPC_INFO *info, struct tty_struct *tty)
+ 		if (!info->tx_active)
+ 			return;
+ 	} else {
+-		if (tty && (tty->stopped || tty->hw_stopped)) {
++		if (tty && (tty->stopped || tty->port->hw_stopped)) {
+ 			tx_stop(info);
+ 			return;
+ 		}
+@@ -1058,11 +1058,11 @@ static void cts_change(MGSLPC_INFO *info, struct tty_struct *tty)
+ 	wake_up_interruptible(&info->event_wait_q);
  
- 	tty_port_set_initialized(&info->port, 0);
+ 	if (tty && tty_port_cts_enabled(&info->port)) {
+-		if (tty->hw_stopped) {
++		if (tty->port->hw_stopped) {
+ 			if (info->serial_signals & SerialSignal_CTS) {
+ 				if (debug_level >= DEBUG_LEVEL_ISR)
+ 					printk("CTS tx start...");
+-				tty->hw_stopped = 0;
++				tty->port->hw_stopped = 0;
+ 				tx_start(info, tty);
+ 				info->pending_bh |= BH_TRANSMIT;
+ 				return;
+@@ -1071,7 +1071,7 @@ static void cts_change(MGSLPC_INFO *info, struct tty_struct *tty)
+ 			if (!(info->serial_signals & SerialSignal_CTS)) {
+ 				if (debug_level >= DEBUG_LEVEL_ISR)
+ 					printk("CTS tx stop...");
+-				tty->hw_stopped = 1;
++				tty->port->hw_stopped = 1;
+ 				tx_stop(info);
+ 			}
+ 		}
+@@ -1528,7 +1528,7 @@ static void mgslpc_flush_chars(struct tty_struct *tty)
+ 		return;
+ 
+ 	if (info->tx_count <= 0 || tty->stopped ||
+-	    tty->hw_stopped || !info->tx_buf)
++	    tty->port->hw_stopped || !info->tx_buf)
+ 		return;
+ 
+ 	if (debug_level >= DEBUG_LEVEL_INFO)
+@@ -1596,7 +1596,7 @@ static int mgslpc_write(struct tty_struct * tty,
+ 		ret += c;
+ 	}
+ start:
+-	if (info->tx_count && !tty->stopped && !tty->hw_stopped) {
++	if (info->tx_count && !tty->stopped && !tty->port->hw_stopped) {
+ 		spin_lock_irqsave(&info->lock, flags);
+ 		if (!info->tx_active)
+ 			tx_start(info, tty);
+@@ -2318,7 +2318,7 @@ static void mgslpc_set_termios(struct tty_struct *tty, struct ktermios *old_term
+ 
+ 	/* Handle turning off CRTSCTS */
+ 	if (old_termios->c_cflag & CRTSCTS && !C_CRTSCTS(&tty->termios)) {
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 		tx_release(tty);
+ 	}
  }
 diff --git a/drivers/mmc/card/sdio_uart.c b/drivers/mmc/card/sdio_uart.c
-index d6d6a2e345ea..fa99cd32999f 100644
+index 4a6decfcad03..d6d6a2e345ea 100644
 --- a/drivers/mmc/card/sdio_uart.c
 +++ b/drivers/mmc/card/sdio_uart.c
-@@ -607,7 +607,7 @@ static int sdio_uart_activate(struct tty_port *tport, struct tty_struct *tty)
- 	 * Set the TTY IO error marker - we will only clear this
- 	 * once we have successfully opened the port.
- 	 */
--	set_bit(TTY_IO_ERROR, &tty->flags);
-+	set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
+@@ -445,7 +445,7 @@ static void sdio_uart_transmit_chars(struct sdio_uart_port *port)
+ 	tty = tty_port_tty_get(&port->port);
  
- 	kfifo_reset(&port->xmit_fifo);
+ 	if (tty == NULL || !kfifo_len(xmit) ||
+-				tty->stopped || tty->hw_stopped) {
++				tty->stopped || tty->port->hw_stopped) {
+ 		sdio_uart_stop_tx(port);
+ 		tty_kref_put(tty);
+ 		return;
+@@ -495,15 +495,15 @@ static void sdio_uart_check_modem_status(struct sdio_uart_port *port)
+ 		tty = tty_port_tty_get(&port->port);
+ 		if (tty && C_CRTSCTS(&tty->termios)) {
+ 			int cts = (status & UART_MSR_CTS);
+-			if (tty->hw_stopped) {
++			if (tty->port->hw_stopped) {
+ 				if (cts) {
+-					tty->hw_stopped = 0;
++					tty->port->hw_stopped = 0;
+ 					sdio_uart_start_tx(port);
+ 					tty_wakeup(tty);
+ 				}
+ 			} else {
+ 				if (!cts) {
+-					tty->hw_stopped = 1;
++					tty->port->hw_stopped = 1;
+ 					sdio_uart_stop_tx(port);
+ 				}
+ 			}
+@@ -653,7 +653,7 @@ static int sdio_uart_activate(struct tty_port *tport, struct tty_struct *tty)
  
-@@ -655,7 +655,7 @@ static int sdio_uart_activate(struct tty_port *tport, struct tty_struct *tty)
+ 	if (C_CRTSCTS(&tty->termios))
  		if (!(sdio_uart_get_mctrl(port) & TIOCM_CTS))
- 			tty->port->hw_stopped = 1;
+-			tty->hw_stopped = 1;
++			tty->port->hw_stopped = 1;
  
--	clear_bit(TTY_IO_ERROR, &tty->flags);
-+	clear_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
+ 	clear_bit(TTY_IO_ERROR, &tty->flags);
  
- 	/* Kick the IRQ handler once while we're still holding the host lock */
- 	sdio_uart_irq(port->func);
+@@ -902,14 +902,14 @@ static void sdio_uart_set_termios(struct tty_struct *tty,
+ 
+ 	/* Handle turning off CRTSCTS */
+ 	if ((old_termios->c_cflag & CRTSCTS) && !(cflag & CRTSCTS)) {
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 		sdio_uart_start_tx(port);
+ 	}
+ 
+ 	/* Handle turning on CRTSCTS */
+ 	if (!(old_termios->c_cflag & CRTSCTS) && (cflag & CRTSCTS)) {
+ 		if (!(sdio_uart_get_mctrl(port) & TIOCM_CTS)) {
+-			tty->hw_stopped = 1;
++			tty->port->hw_stopped = 1;
+ 			sdio_uart_stop_tx(port);
+ 		}
+ 	}
 diff --git a/drivers/staging/fwserial/fwserial.c b/drivers/staging/fwserial/fwserial.c
-index 0dfdc9dc9672..aff79647fd0e 100644
+index e391344d227c..0dfdc9dc9672 100644
 --- a/drivers/staging/fwserial/fwserial.c
 +++ b/drivers/staging/fwserial/fwserial.c
-@@ -992,7 +992,7 @@ static int fwtty_port_activate(struct tty_port *tty_port,
- 	unsigned int baud;
- 	int err;
+@@ -340,9 +340,9 @@ static void fwtty_update_port_status(struct fwtty_port *port,
+ 	if (delta & TIOCM_CTS) {
+ 		tty = tty_port_tty_get(&port->port);
+ 		if (tty && C_CRTSCTS(&tty->termios)) {
+-			if (tty->hw_stopped) {
++			if (tty->port->hw_stopped) {
+ 				if (status & TIOCM_CTS) {
+-					tty->hw_stopped = 0;
++					tty->port->hw_stopped = 0;
+ 					if (port->loopback)
+ 						__fwtty_restart_tx(port);
+ 					else
+@@ -350,7 +350,7 @@ static void fwtty_update_port_status(struct fwtty_port *port,
+ 				}
+ 			} else {
+ 				if (~status & TIOCM_CTS)
+-					tty->hw_stopped = 1;
++					tty->port->hw_stopped = 1;
+ 			}
+ 		}
+ 		tty_kref_put(tty);
+@@ -358,9 +358,9 @@ static void fwtty_update_port_status(struct fwtty_port *port,
+ 	} else if (delta & OOB_TX_THROTTLE) {
+ 		tty = tty_port_tty_get(&port->port);
+ 		if (tty) {
+-			if (tty->hw_stopped) {
++			if (tty->port->hw_stopped) {
+ 				if (~status & OOB_TX_THROTTLE) {
+-					tty->hw_stopped = 0;
++					tty->port->hw_stopped = 0;
+ 					if (port->loopback)
+ 						__fwtty_restart_tx(port);
+ 					else
+@@ -368,7 +368,7 @@ static void fwtty_update_port_status(struct fwtty_port *port,
+ 				}
+ 			} else {
+ 				if (status & OOB_TX_THROTTLE)
+-					tty->hw_stopped = 1;
++					tty->port->hw_stopped = 1;
+ 			}
+ 		}
+ 		tty_kref_put(tty);
+@@ -735,7 +735,7 @@ static int fwtty_tx(struct fwtty_port *port, bool drain)
  
--	set_bit(TTY_IO_ERROR, &tty->flags);
-+	set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
+ 	/* try to write as many dma transactions out as possible */
+ 	n = -EAGAIN;
+-	while (!tty->stopped && !tty->hw_stopped &&
++	while (!tty->stopped && !tty->port->hw_stopped &&
+ 	       !test_bit(STOP_TX, &port->flags)) {
+ 		txn = kmem_cache_alloc(fwtty_txn_cache, GFP_ATOMIC);
+ 		if (!txn) {
+@@ -1014,7 +1014,7 @@ static int fwtty_port_activate(struct tty_port *tty_port,
+ 	}
  
- 	err = dma_fifo_alloc(&port->tx_fifo, FWTTY_PORT_TXFIFO_LEN,
- 			     cache_line_size(),
-@@ -1019,7 +1019,7 @@ static int fwtty_port_activate(struct tty_port *tty_port,
+ 	if (C_CRTSCTS(&tty->termios) && ~port->mstatus & TIOCM_CTS)
+-		tty->hw_stopped = 1;
++		tty->port->hw_stopped = 1;
+ 
  	__fwtty_write_port_status(port);
  	spin_unlock_bh(&port->lock);
+@@ -1316,11 +1316,11 @@ static void fwtty_set_termios(struct tty_struct *tty, struct ktermios *old)
  
--	clear_bit(TTY_IO_ERROR, &tty->flags);
-+	clear_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 
- 	return 0;
+ 	if (old->c_cflag & CRTSCTS) {
+ 		if (!C_CRTSCTS(&tty->termios)) {
+-			tty->hw_stopped = 0;
++			tty->port->hw_stopped = 0;
+ 			fwtty_restart_tx(port);
+ 		}
+ 	} else if (C_CRTSCTS(&tty->termios) && ~port->mstatus & TIOCM_CTS) {
+-		tty->hw_stopped = 1;
++		tty->port->hw_stopped = 1;
+ 	}
  }
+ 
 diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-index be6d59b910f8..7b2e44bb85f6 100644
+index 16483a6cc347..be6d59b910f8 100644
 --- a/drivers/tty/amiserial.c
 +++ b/drivers/tty/amiserial.c
-@@ -547,7 +547,7 @@ static int startup(struct tty_struct *tty, struct serial_state *info)
- 	retval = request_irq(IRQ_AMIGA_VERTB, ser_vbl_int, 0, "serial status", info);
- 	if (retval) {
- 	  if (serial_isroot()) {
--	      set_bit(TTY_IO_ERROR, &tty->flags);
-+	      set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 	    retval = 0;
- 	  }
- 	  goto errout;
-@@ -566,7 +566,7 @@ static int startup(struct tty_struct *tty, struct serial_state *info)
- 	  info->MCR = SER_DTR | SER_RTS;
- 	rtsdtr_ctrl(info->MCR);
+@@ -16,7 +16,7 @@
+  * Richard Lucock 28/12/99
+  *
+  *  Copyright (C) 1991, 1992  Linus Torvalds
+- *  Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 
++ *  Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997,
+  * 		1998, 1999  Theodore Ts'o
+  *
+  */
+@@ -237,7 +237,7 @@ static void rs_start(struct tty_struct *tty)
+  * rs_interrupt() should try to keep the interrupt handler as fast as
+  * possible.  After you are done making modifications, it is not a bad
+  * idea to do:
+- * 
++ *
+  * gcc -S -DKERNEL -Wall -Wstrict-prototypes -O6 -fomit-frame-pointer serial.c
+  *
+  * and look at the resulting assemble code in serial.s.
+@@ -347,7 +347,7 @@ static void transmit_chars(struct serial_state *info)
+ 	}
+ 	if (info->xmit.head == info->xmit.tail
+ 	    || info->tport.tty->stopped
+-	    || info->tport.tty->hw_stopped) {
++	    || info->tport.hw_stopped) {
+ 		info->IER &= ~UART_IER_THRI;
+ 	        custom.intena = IF_TBE;
+ 		mb();
+@@ -414,12 +414,12 @@ static void check_modem_status(struct serial_state *info)
+ 		}
+ 	}
+ 	if (tty_port_cts_enabled(port)) {
+-		if (port->tty->hw_stopped) {
++		if (port->hw_stopped) {
+ 			if (!(status & SER_CTS)) {
+ #if (defined(SERIAL_DEBUG_INTR) || defined(SERIAL_DEBUG_FLOW))
+ 				printk("CTS tx start...");
+ #endif
+-				port->tty->hw_stopped = 0;
++				port->hw_stopped = 0;
+ 				info->IER |= UART_IER_THRI;
+ 				custom.intena = IF_SETCLR | IF_TBE;
+ 				mb();
+@@ -434,7 +434,7 @@ static void check_modem_status(struct serial_state *info)
+ #if (defined(SERIAL_DEBUG_INTR) || defined(SERIAL_DEBUG_FLOW))
+ 				printk("CTS tx stop...");
+ #endif
+-				port->tty->hw_stopped = 1;
++				port->hw_stopped = 1;
+ 				info->IER &= ~UART_IER_THRI;
+ 				/* disable Tx interrupt and remove any pending interrupts */
+ 				custom.intena = IF_TBE;
+@@ -756,7 +756,7 @@ static void change_speed(struct tty_struct *tty, struct serial_state *info,
+ 	if (I_IGNBRK(&tty->termios)) {
+ 		info->ignore_status_mask |= UART_LSR_BI;
+ 		/*
+-		 * If we're ignore parity and break indicators, ignore 
++		 * If we're ignore parity and break indicators, ignore
+ 		 * overruns too.  (For real raw support).
+ 		 */
+ 		if (I_IGNPAR(&tty->termios))
+@@ -824,7 +824,7 @@ static void rs_flush_chars(struct tty_struct *tty)
  
--	clear_bit(TTY_IO_ERROR, &tty->flags);
-+	clear_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 	info->xmit.head = info->xmit.tail = 0;
+ 	if (info->xmit.head == info->xmit.tail
+ 	    || tty->stopped
+-	    || tty->hw_stopped
++	    || tty->port->hw_stopped
+ 	    || !info->xmit.buf)
+ 		return;
  
- 	/*
-@@ -643,7 +643,7 @@ static void shutdown(struct tty_struct *tty, struct serial_state *info)
- 		info->MCR &= ~(SER_DTR|SER_RTS);
- 	rtsdtr_ctrl(info->MCR);
+@@ -871,7 +871,7 @@ static int rs_write(struct tty_struct * tty, const unsigned char *buf, int count
  
--	set_bit(TTY_IO_ERROR, &tty->flags);
-+	set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
+ 	if (info->xmit.head != info->xmit.tail
+ 	    && !tty->stopped
+-	    && !tty->hw_stopped
++	    && !tty->port->hw_stopped
+ 	    && !(info->IER & UART_IER_THRI)) {
+ 		info->IER |= UART_IER_THRI;
+ 		local_irq_disable();
+@@ -950,7 +950,7 @@ static void rs_send_xchar(struct tty_struct *tty, char ch)
+ /*
+  * ------------------------------------------------------------
+  * rs_throttle()
+- * 
++ *
+  * This routine is called by the upper-layer tty layer to signal that
+  * incoming characters should be throttled.
+  * ------------------------------------------------------------
+@@ -1011,7 +1011,7 @@ static int get_serial_info(struct tty_struct *tty, struct serial_state *state,
+ 			   struct serial_struct __user * retinfo)
+ {
+ 	struct serial_struct tmp;
+-   
++
+ 	if (!retinfo)
+ 		return -EFAULT;
+ 	memset(&tmp, 0, sizeof(tmp));
+@@ -1049,7 +1049,7 @@ static int set_serial_info(struct tty_struct *tty, struct serial_state *state,
+ 		tty_unlock(tty);
+ 		return -EINVAL;
+ 	}
+-  
++
+ 	if (!serial_isroot()) {
+ 		if ((new_serial.baud_base != state->baud_base) ||
+ 		    (new_serial.close_delay != port->close_delay) ||
+@@ -1111,7 +1111,7 @@ check_and_exit:
+  * 	    release the bus after transmitting. This must be done when
+  * 	    the transmit shift register is empty, not be done when the
+  * 	    transmit holding register is empty.  This functionality
+- * 	    allows an RS485 driver to be written in user space. 
++ * 	    allows an RS485 driver to be written in user space.
+  */
+ static int get_lsr_info(struct serial_state *info, unsigned int __user *value)
+ {
+@@ -1283,7 +1283,7 @@ static int rs_ioctl(struct tty_struct *tty,
+ 				local_irq_save(flags);
+ 				cnow = info->icount; /* atomic copy */
+ 				local_irq_restore(flags);
+-				if (cnow.rng == cprev.rng && cnow.dsr == cprev.dsr && 
++				if (cnow.rng == cprev.rng && cnow.dsr == cprev.dsr &&
+ 				    cnow.dcd == cprev.dcd && cnow.cts == cprev.cts) {
+ 					ret = -EIO; /* no change => error */
+ 					break;
+@@ -1346,7 +1346,7 @@ static void rs_set_termios(struct tty_struct *tty, struct ktermios *old_termios)
  
- 	tty_port_set_initialized(&info->tport, 0);
- 	local_irq_restore(flags);
+ 	/* Handle turning off CRTSCTS */
+ 	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(&tty->termios)) {
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 		rs_start(tty);
+ 	}
+ 
+@@ -1365,7 +1365,7 @@ static void rs_set_termios(struct tty_struct *tty, struct ktermios *old_termios)
+ /*
+  * ------------------------------------------------------------
+  * rs_close()
+- * 
++ *
+  * This routine is called when the serial port gets closed.  First, we
+  * wait for the last remaining data to be sent.  Then, we unlink its
+  * async structure from the interrupt chain if necessary, and we free
+@@ -1407,7 +1407,7 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
+ 	}
+ 	shutdown(tty, state);
+ 	rs_flush_buffer(tty);
+-		
++
+ 	tty_ldisc_flush(tty);
+ 	port->tty = NULL;
+ 
+@@ -1435,7 +1435,7 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	 * Set the check interval to be 1/5 of the estimated time to
+ 	 * send a single character, and make it at least 1.  The check
+ 	 * interval should also be less than the timeout.
+-	 * 
++	 *
+ 	 * Note: we have to use pretty tight timings here to satisfy
+ 	 * the NIST-PCTS.
+ 	 */
+@@ -1699,7 +1699,7 @@ static int __init amiga_serial_probe(struct platform_device *pdev)
+ 	state = rs_table;
+ 	state->port = (int)&custom.serdatr; /* Just to give it a value */
+ 	state->custom_divisor = 0;
+-	state->icount.cts = state->icount.dsr = 
++	state->icount.cts = state->icount.dsr =
+ 	  state->icount.rng = state->icount.dcd = 0;
+ 	state->icount.rx = state->icount.tx = 0;
+ 	state->icount.frame = state->icount.parity = 0;
 diff --git a/drivers/tty/cyclades.c b/drivers/tty/cyclades.c
-index 07f92c04cd6d..14370d97d199 100644
+index 2d165282f483..07f92c04cd6d 100644
 --- a/drivers/tty/cyclades.c
 +++ b/drivers/tty/cyclades.c
-@@ -1281,7 +1281,7 @@ static int cy_startup(struct cyclades_port *info, struct tty_struct *tty)
- 		goto errout;
- 
- 	if (!info->type) {
--		set_bit(TTY_IO_ERROR, &tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 		goto errout;
- 	}
- 
-@@ -1364,7 +1364,7 @@ static int cy_startup(struct cyclades_port *info, struct tty_struct *tty)
- 
- 	tty_port_set_initialized(&info->port, 1);
- 
--	clear_bit(TTY_IO_ERROR, &tty->flags);
-+	clear_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 	info->xmit_cnt = info->xmit_head = info->xmit_tail = 0;
- 	info->breakon = info->breakoff = 0;
- 	memset((char *)&info->idle_stats, 0, sizeof(info->idle_stats));
-@@ -1445,7 +1445,7 @@ static void cy_shutdown(struct cyclades_port *info, struct tty_struct *tty)
- 		/* it may be appropriate to clear _XMIT at
- 		   some later date (after testing)!!! */
- 
--		set_bit(TTY_IO_ERROR, &tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 		tty_port_set_initialized(&info->port, 0);
- 		spin_unlock_irqrestore(&card->card_lock, flags);
- 	} else {
-@@ -1470,7 +1470,7 @@ static void cy_shutdown(struct cyclades_port *info, struct tty_struct *tty)
- 		if (C_HUPCL(&tty->termios))
- 			tty_port_lower_dtr_rts(&info->port);
- 
--		set_bit(TTY_IO_ERROR, &tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 		tty_port_set_initialized(&info->port, 0);
- 
- 		spin_unlock_irqrestore(&card->card_lock, flags);
-@@ -2147,7 +2147,7 @@ static void cy_set_line_char(struct cyclades_port *info, struct tty_struct *tty)
- 		else
- 			cyy_change_rts_dtr(info, TIOCM_DTR, 0);
- 
--		clear_bit(TTY_IO_ERROR, &tty->flags);
-+		clear_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 		spin_unlock_irqrestore(&card->card_lock, flags);
- 
- 	} else {
-@@ -2267,7 +2267,7 @@ static void cy_set_line_char(struct cyclades_port *info, struct tty_struct *tty)
- 				"was %x\n", info->line, retval);
+@@ -633,7 +633,7 @@ static void cyy_chip_tx(struct cyclades_card *cinfo, unsigned int chip,
+ 				cyy_readb(info, CySRER) & ~CyTxRdy);
+ 			goto done;
  		}
- 
--		clear_bit(TTY_IO_ERROR, &tty->flags);
-+		clear_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
+-		if (tty->stopped || tty->hw_stopped) {
++		if (tty->stopped || tty->port->hw_stopped) {
+ 			cyy_writeb(info, CySRER,
+ 				cyy_readb(info, CySRER) & ~CyTxRdy);
+ 			goto done;
+@@ -719,11 +719,11 @@ static void cyy_chip_modem(struct cyclades_card *cinfo, int chip,
+ 			tty_hangup(tty);
  	}
- }				/* set_line_char */
+ 	if ((mdm_change & CyCTS) && tty_port_cts_enabled(&info->port)) {
+-		if (tty->hw_stopped) {
++		if (tty->port->hw_stopped) {
+ 			if (mdm_status & CyCTS) {
+ 				/* cy_start isn't used
+ 				   because... !!! */
+-				tty->hw_stopped = 0;
++				tty->port->hw_stopped = 0;
+ 				cyy_writeb(info, CySRER,
+ 					cyy_readb(info, CySRER) | CyTxRdy);
+ 				tty_wakeup(tty);
+@@ -732,7 +732,7 @@ static void cyy_chip_modem(struct cyclades_card *cinfo, int chip,
+ 			if (!(mdm_status & CyCTS)) {
+ 				/* cy_stop isn't used
+ 				   because ... !!! */
+-				tty->hw_stopped = 1;
++				tty->port->hw_stopped = 1;
+ 				cyy_writeb(info, CySRER,
+ 					cyy_readb(info, CySRER) & ~CyTxRdy);
+ 			}
+@@ -1800,7 +1800,7 @@ static int cy_write(struct tty_struct *tty, const unsigned char *buf, int count)
+ 	info->idle_stats.xmit_bytes += ret;
+ 	info->idle_stats.xmit_idle = jiffies;
  
+-	if (info->xmit_cnt && !tty->stopped && !tty->hw_stopped)
++	if (info->xmit_cnt && !tty->stopped && !tty->port->hw_stopped)
+ 		start_xmit(info);
+ 
+ 	return ret;
+@@ -1858,7 +1858,7 @@ static void cy_flush_chars(struct tty_struct *tty)
+ 	if (serial_paranoia_check(info, tty->name, "cy_flush_chars"))
+ 		return;
+ 
+-	if (info->xmit_cnt <= 0 || tty->stopped || tty->hw_stopped ||
++	if (info->xmit_cnt <= 0 || tty->stopped || tty->port->hw_stopped ||
+ 			!info->port.xmit_buf)
+ 		return;
+ 
+@@ -2785,7 +2785,7 @@ static void cy_set_termios(struct tty_struct *tty, struct ktermios *old_termios)
+ 	cy_set_line_char(info, tty);
+ 
+ 	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(&tty->termios)) {
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 		cy_start(tty);
+ 	}
+ #if 0
+diff --git a/drivers/tty/isicom.c b/drivers/tty/isicom.c
+index 2478aa559834..240c766b4a04 100644
+--- a/drivers/tty/isicom.c
++++ b/drivers/tty/isicom.c
+@@ -443,7 +443,7 @@ static void isicom_tx(unsigned long _data)
+ 			continue;
+ 
+ 		txcount = min_t(short, TX_SIZE, port->xmit_cnt);
+-		if (txcount <= 0 || tty->stopped || tty->hw_stopped)
++		if (txcount <= 0 || tty->stopped || tty->port->hw_stopped)
+ 			continue;
+ 
+ 		if (!(inw(base + 0x02) & (1 << port->channel)))
+@@ -601,16 +601,16 @@ static irqreturn_t isicom_interrupt(int irq, void *dev_id)
+ 			}
+ 
+ 			if (tty_port_cts_enabled(&port->port)) {
+-				if (tty->hw_stopped) {
++				if (tty->port->hw_stopped) {
+ 					if (header & ISI_CTS) {
+-						tty->hw_stopped = 0;
++						tty->port->hw_stopped = 0;
+ 						/* start tx ing */
+ 						port->status |= (ISI_TXOK
+ 							| ISI_CTS);
+ 						tty_wakeup(tty);
+ 					}
+ 				} else if (!(header & ISI_CTS)) {
+-					tty->hw_stopped = 1;
++					tty->port->hw_stopped = 1;
+ 					/* stop tx ing */
+ 					port->status &= ~(ISI_TXOK | ISI_CTS);
+ 				}
+@@ -966,7 +966,7 @@ static int isicom_write(struct tty_struct *tty,	const unsigned char *buf,
+ 		count -= cnt;
+ 		total += cnt;
+ 	}
+-	if (port->xmit_cnt && !tty->stopped && !tty->hw_stopped)
++	if (port->xmit_cnt && !tty->stopped && !tty->port->hw_stopped)
+ 		port->status |= ISI_TXOK;
+ 	spin_unlock_irqrestore(&card->card_lock, flags);
+ 	return total;
+@@ -1003,7 +1003,7 @@ static void isicom_flush_chars(struct tty_struct *tty)
+ 	if (isicom_paranoia_check(port, tty->name, "isicom_flush_chars"))
+ 		return;
+ 
+-	if (port->xmit_cnt <= 0 || tty->stopped || tty->hw_stopped ||
++	if (port->xmit_cnt <= 0 || tty->stopped || tty->port->hw_stopped ||
+ 			!port->port.xmit_buf)
+ 		return;
+ 
+@@ -1201,7 +1201,7 @@ static void isicom_set_termios(struct tty_struct *tty,
+ 	spin_unlock_irqrestore(&port->card->card_lock, flags);
+ 
+ 	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(&tty->termios)) {
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 		isicom_start(tty);
+ 	}
+ }
 diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 72ae8a990a79..ec3a6ecc4b58 100644
+index 1a5fb2887b0e..72ae8a990a79 100644
 --- a/drivers/tty/mxser.c
 +++ b/drivers/tty/mxser.c
-@@ -870,7 +870,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 	spin_lock_irqsave(&info->slock, flags);
- 
- 	if (!info->ioaddr || !info->type) {
--		set_bit(TTY_IO_ERROR, &tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 		free_page(page);
- 		spin_unlock_irqrestore(&info->slock, flags);
- 		return 0;
-@@ -897,7 +897,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 	if (inb(info->ioaddr + UART_LSR) == 0xff) {
- 		spin_unlock_irqrestore(&info->slock, flags);
- 		if (capable(CAP_SYS_ADMIN)) {
--			set_bit(TTY_IO_ERROR, &tty->flags);
-+			set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 			return 0;
- 		} else
- 			return -ENODEV;
-@@ -935,7 +935,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 	(void) inb(info->ioaddr + UART_IIR);
- 	(void) inb(info->ioaddr + UART_MSR);
- 
--	clear_bit(TTY_IO_ERROR, &tty->flags);
-+	clear_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 	info->xmit_cnt = info->xmit_head = info->xmit_tail = 0;
- 
- 	/*
-diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index 7c51ff7f9030..e77579e0e3c5 100644
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -49,7 +49,7 @@ static void pty_close(struct tty_struct *tty, struct file *filp)
- 		if (tty->count > 2)
- 			return;
- 	}
--	set_bit(TTY_IO_ERROR, &tty->flags);
-+	set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 	wake_up_interruptible(&tty->read_wait);
- 	wake_up_interruptible(&tty->write_wait);
- 	spin_lock_irq(&tty->ctrl_lock);
-@@ -246,13 +246,13 @@ static int pty_open(struct tty_struct *tty, struct file *filp)
- 	if (tty->driver->subtype == PTY_TYPE_SLAVE && tty->link->count != 1)
- 		goto out;
- 
--	clear_bit(TTY_IO_ERROR, &tty->flags);
-+	clear_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 	clear_bit(TTY_OTHER_CLOSED, &tty->link->flags);
- 	set_bit(TTY_THROTTLED, &tty->flags);
- 	return 0;
- 
- out:
--	set_bit(TTY_IO_ERROR, &tty->flags);
-+	set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 	return -EIO;
- }
- 
-diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
-index a45dc9d27b87..906ca2621f6a 100644
---- a/drivers/tty/serial/crisv10.c
-+++ b/drivers/tty/serial/crisv10.c
-@@ -2659,7 +2659,7 @@ startup(struct e100_serial * info)
+@@ -718,9 +718,9 @@ static int mxser_change_speed(struct tty_struct *tty,
+ 			info->MCR |= UART_MCR_AFE;
+ 		} else {
+ 			status = inb(info->ioaddr + UART_MSR);
+-			if (tty->hw_stopped) {
++			if (tty->port->hw_stopped) {
+ 				if (status & UART_MSR_CTS) {
+-					tty->hw_stopped = 0;
++					tty->port->hw_stopped = 0;
+ 					if (info->type != PORT_16550A &&
+ 							!info->board->chip_flag) {
+ 						outb(info->IER & ~UART_IER_THRI,
+@@ -734,7 +734,7 @@ static int mxser_change_speed(struct tty_struct *tty,
+ 				}
+ 			} else {
+ 				if (!(status & UART_MSR_CTS)) {
+-					tty->hw_stopped = 1;
++					tty->port->hw_stopped = 1;
+ 					if ((info->type != PORT_16550A) &&
+ 							(!info->board->chip_flag)) {
+ 						info->IER &= ~UART_IER_THRI;
+@@ -829,9 +829,9 @@ static void mxser_check_modem_status(struct tty_struct *tty,
  	}
  
- 	if (info->port.tty)
--		clear_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+		clear_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
+ 	if (tty_port_cts_enabled(&port->port)) {
+-		if (tty->hw_stopped) {
++		if (tty->port->hw_stopped) {
+ 			if (status & UART_MSR_CTS) {
+-				tty->hw_stopped = 0;
++				tty->port->hw_stopped = 0;
  
- 	info->xmit.head = info->xmit.tail = 0;
- 	info->first_recv_buffer = info->last_recv_buffer = NULL;
-@@ -2775,7 +2775,7 @@ shutdown(struct e100_serial * info)
+ 				if ((port->type != PORT_16550A) &&
+ 						(!port->board->chip_flag)) {
+@@ -845,7 +845,7 @@ static void mxser_check_modem_status(struct tty_struct *tty,
+ 			}
+ 		} else {
+ 			if (!(status & UART_MSR_CTS)) {
+-				tty->hw_stopped = 1;
++				tty->port->hw_stopped = 1;
+ 				if (port->type != PORT_16550A &&
+ 						!port->board->chip_flag) {
+ 					port->IER &= ~UART_IER_THRI;
+@@ -1123,7 +1123,7 @@ static int mxser_write(struct tty_struct *tty, const unsigned char *buf, int cou
  	}
  
- 	if (info->port.tty)
--		set_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
+ 	if (info->xmit_cnt && !tty->stopped) {
+-		if (!tty->hw_stopped ||
++		if (!tty->port->hw_stopped ||
+ 				(info->type == PORT_16550A) ||
+ 				(info->board->chip_flag)) {
+ 			spin_lock_irqsave(&info->slock, flags);
+@@ -1154,7 +1154,7 @@ static int mxser_put_char(struct tty_struct *tty, unsigned char ch)
+ 	info->xmit_cnt++;
+ 	spin_unlock_irqrestore(&info->slock, flags);
+ 	if (!tty->stopped) {
+-		if (!tty->hw_stopped ||
++		if (!tty->port->hw_stopped ||
+ 				(info->type == PORT_16550A) ||
+ 				info->board->chip_flag) {
+ 			spin_lock_irqsave(&info->slock, flags);
+@@ -1174,7 +1174,7 @@ static void mxser_flush_chars(struct tty_struct *tty)
+ 	unsigned long flags;
  
- 	tty_port_set_initialized(&info->port, 0);
- 	local_irq_restore(flags);
-diff --git a/drivers/tty/serial/ioc4_serial.c b/drivers/tty/serial/ioc4_serial.c
-index e5c42fef69d2..284639e2cea6 100644
---- a/drivers/tty/serial/ioc4_serial.c
-+++ b/drivers/tty/serial/ioc4_serial.c
-@@ -2442,7 +2442,7 @@ static void ic4_shutdown(struct uart_port *the_port)
- 	wake_up_interruptible(&state->port.delta_msr_wait);
+ 	if (info->xmit_cnt <= 0 || tty->stopped || !info->port.xmit_buf ||
+-			(tty->hw_stopped && info->type != PORT_16550A &&
++			(tty->port->hw_stopped && info->type != PORT_16550A &&
+ 			 !info->board->chip_flag))
+ 		return;
  
- 	if (state->port.tty)
--		set_bit(TTY_IO_ERROR, &state->port.tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &state->port.iflags);
+@@ -1778,7 +1778,7 @@ static int mxser_ioctl(struct tty_struct *tty,
+ 		else
+ 			info->mon_data.hold_reason |= NPPI_NOTIFY_XOFFXENT;
  
- 	spin_lock_irqsave(&the_port->lock, port_flags);
- 	set_notification(port, N_ALL, 0);
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 73b7a7ae7862..70aea76dbfb7 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -237,7 +237,7 @@ static int uart_startup(struct tty_struct *tty, struct uart_state *state,
+-		if (tty->hw_stopped)
++		if (tty->port->hw_stopped)
+ 			info->mon_data.hold_reason |= NPPI_NOTIFY_CTSHOLD;
+ 		else
+ 			info->mon_data.hold_reason &= ~NPPI_NOTIFY_CTSHOLD;
+@@ -1946,7 +1946,7 @@ static void mxser_set_termios(struct tty_struct *tty, struct ktermios *old_termi
+ 	spin_unlock_irqrestore(&info->slock, flags);
  
- 	retval = uart_port_startup(tty, state, init_hw);
- 	if (retval)
--		set_bit(TTY_IO_ERROR, &tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &port->iflags);
+ 	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(&tty->termios)) {
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 		mxser_start(tty);
+ 	}
  
- 	return retval;
- }
-@@ -257,8 +257,7 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- 	/*
- 	 * Set the TTY IO error marker
- 	 */
--	if (tty)
--		set_bit(TTY_IO_ERROR, &tty->flags);
-+	set_bit(TTY_PORT_IO_ERROR, &port->iflags);
+@@ -2172,9 +2172,9 @@ static void mxser_transmit_chars(struct tty_struct *tty, struct mxser_port *port
+ 		return;
  
- 	if (tty_port_initialized(port)) {
- 		tty_port_set_initialized(port, 0);
+ 	if (port->xmit_cnt <= 0 || tty->stopped ||
+-			(tty->hw_stopped &&
+-			(port->type != PORT_16550A) &&
+-			(!port->board->chip_flag))) {
++			(tty->port->hw_stopped &&
++			 (port->type != PORT_16550A) &&
++			 (!port->board->chip_flag))) {
+ 		port->IER &= ~UART_IER_THRI;
+ 		outb(port->IER, port->ioaddr + UART_IER);
+ 		return;
+diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
+index 293ecbb00684..fc24c9ec1935 100644
+--- a/drivers/tty/serial/bfin_uart.c
++++ b/drivers/tty/serial/bfin_uart.c
+@@ -113,14 +113,14 @@ static irqreturn_t bfin_serial_mctrl_cts_int(int irq, void *dev_id)
+ #ifdef SERIAL_BFIN_HARD_CTSRTS
+ 
+ 	UART_CLEAR_SCTS(uart);
+-	if (uport->hw_stopped) {
++	if (uport->port->hw_stopped) {
+ 		if (status) {
+-			uport->hw_stopped = 0;
++			uport->port->hw_stopped = 0;
+ 			uart_write_wakeup(uport);
+ 		}
+ 	} else {
+ 		if (!status)
+-			uport->hw_stopped = 1;
++			uport->port->hw_stopped = 1;
+ 	}
+ #else
+ 	uart_handle_cts_change(uport, status & TIOCM_CTS);
 diff --git a/drivers/tty/synclink.c b/drivers/tty/synclink.c
-index 57f678c6484e..48e63dd15595 100644
+index 712776cf7ab7..57f678c6484e 100644
 --- a/drivers/tty/synclink.c
 +++ b/drivers/tty/synclink.c
-@@ -1780,7 +1780,7 @@ static int startup(struct mgsl_struct * info)
- 		
- 	if ( retval ) {
-   		if (capable(CAP_SYS_ADMIN) && info->port.tty)
--			set_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+			set_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
- 		mgsl_release_resources(info);
-   		return retval;
-   	}
-@@ -1789,7 +1789,7 @@ static int startup(struct mgsl_struct * info)
- 	mgsl_change_params(info);
+@@ -1259,7 +1259,7 @@ static void mgsl_isr_transmit_status( struct mgsl_struct *info )
+ 	else 
+ #endif
+ 	{
+-		if (info->port.tty->stopped || info->port.tty->hw_stopped) {
++		if (info->port.tty->stopped || info->port.hw_stopped) {
+ 			usc_stop_transmitter(info);
+ 			return;
+ 		}
+@@ -1357,11 +1357,11 @@ static void mgsl_isr_io_pin( struct mgsl_struct *info )
+ 	
+ 		if (tty_port_cts_enabled(&info->port) &&
+ 		     (status & MISCSTATUS_CTS_LATCHED) ) {
+-			if (info->port.tty->hw_stopped) {
++			if (info->port.hw_stopped) {
+ 				if (status & MISCSTATUS_CTS) {
+ 					if ( debug_level >= DEBUG_LEVEL_ISR )
+ 						printk("CTS tx start...");
+-					info->port.tty->hw_stopped = 0;
++					info->port.hw_stopped = 0;
+ 					usc_start_transmitter(info);
+ 					info->pending_bh |= BH_TRANSMIT;
+ 					return;
+@@ -1371,7 +1371,7 @@ static void mgsl_isr_io_pin( struct mgsl_struct *info )
+ 					if ( debug_level >= DEBUG_LEVEL_ISR )
+ 						printk("CTS tx stop...");
+ 					if (info->port.tty)
+-						info->port.tty->hw_stopped = 1;
++						info->port.hw_stopped = 1;
+ 					usc_stop_transmitter(info);
+ 				}
+ 			}
+@@ -1405,7 +1405,7 @@ static void mgsl_isr_transmit_data( struct mgsl_struct *info )
+ 			
+ 	usc_ClearIrqPendingBits( info, TRANSMIT_DATA );
+ 	
+-	if (info->port.tty->stopped || info->port.tty->hw_stopped) {
++	if (info->port.tty->stopped || info->port.hw_stopped) {
+ 		usc_stop_transmitter(info);
+ 		return;
+ 	}
+@@ -2050,7 +2050,7 @@ static void mgsl_flush_chars(struct tty_struct *tty)
+ 	if (mgsl_paranoia_check(info, tty->name, "mgsl_flush_chars"))
+ 		return;
  
- 	if (info->port.tty)
--		clear_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+		clear_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
+-	if (info->xmit_cnt <= 0 || tty->stopped || tty->hw_stopped ||
++	if (info->xmit_cnt <= 0 || tty->stopped || tty->port->hw_stopped ||
+ 	    !info->xmit_buf)
+ 		return;
  
- 	tty_port_set_initialized(&info->port, 1);
+@@ -2190,7 +2190,7 @@ static int mgsl_write(struct tty_struct * tty,
+ 		}
+ 	}	
+ 	
+- 	if (info->xmit_cnt && !tty->stopped && !tty->hw_stopped) {
++ 	if (info->xmit_cnt && !tty->stopped && !tty->port->hw_stopped) {
+ 		spin_lock_irqsave(&info->irq_spinlock,flags);
+ 		if (!info->tx_active)
+ 		 	usc_start_transmitter(info);
+@@ -3048,7 +3048,7 @@ static void mgsl_set_termios(struct tty_struct *tty, struct ktermios *old_termio
  
-@@ -1854,7 +1854,7 @@ static void shutdown(struct mgsl_struct * info)
- 	mgsl_release_resources(info);
+ 	/* Handle turning off CRTSCTS */
+ 	if (old_termios->c_cflag & CRTSCTS && !C_CRTSCTS(&tty->termios)) {
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 		mgsl_start(tty);
+ 	}
  
- 	if (info->port.tty)
--		set_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
- 
- 	tty_port_set_initialized(&info->port, 0);
- }	/* end of shutdown() */
 diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index 7e56d62039e8..314a8cd897ff 100644
+index 055fa71bc2fb..7e56d62039e8 100644
 --- a/drivers/tty/synclink_gt.c
 +++ b/drivers/tty/synclink_gt.c
-@@ -2440,7 +2440,7 @@ static int startup(struct slgt_info *info)
- 	change_params(info);
+@@ -793,7 +793,7 @@ static void set_termios(struct tty_struct *tty, struct ktermios *old_termios)
  
- 	if (info->port.tty)
--		clear_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+		clear_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
- 
- 	tty_port_set_initialized(&info->port, 1);
- 
-@@ -2487,7 +2487,7 @@ static void shutdown(struct slgt_info *info)
- 	spin_unlock_irqrestore(&info->lock,flags);
- 
- 	if (info->port.tty)
--		set_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
- 
- 	tty_port_set_initialized(&info->port, 0);
+ 	/* Handle turning off CRTSCTS */
+ 	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(&tty->termios)) {
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 		tx_release(tty);
+ 	}
  }
+@@ -825,7 +825,7 @@ static int write(struct tty_struct *tty,
+ 	if (!info->tx_buf || (count > info->max_frame_size))
+ 		return -EIO;
+ 
+-	if (!count || tty->stopped || tty->hw_stopped)
++	if (!count || tty->stopped || tty->port->hw_stopped)
+ 		return 0;
+ 
+ 	spin_lock_irqsave(&info->lock, flags);
+@@ -947,7 +947,7 @@ static void flush_chars(struct tty_struct *tty)
+ 	DBGINFO(("%s flush_chars entry tx_count=%d\n", info->device_name, info->tx_count));
+ 
+ 	if (info->tx_count <= 0 || tty->stopped ||
+-	    tty->hw_stopped || !info->tx_buf)
++	    tty->port->hw_stopped || !info->tx_buf)
+ 		return;
+ 
+ 	DBGINFO(("%s flush_chars start transmit\n", info->device_name));
+@@ -2039,15 +2039,15 @@ static void cts_change(struct slgt_info *info, unsigned short status)
+ 
+ 	if (tty_port_cts_enabled(&info->port)) {
+ 		if (info->port.tty) {
+-			if (info->port.tty->hw_stopped) {
++			if (info->port.hw_stopped) {
+ 				if (info->signals & SerialSignal_CTS) {
+-		 			info->port.tty->hw_stopped = 0;
++		 			info->port.hw_stopped = 0;
+ 					info->pending_bh |= BH_TRANSMIT;
+ 					return;
+ 				}
+ 			} else {
+ 				if (!(info->signals & SerialSignal_CTS))
+-		 			info->port.tty->hw_stopped = 1;
++		 			info->port.hw_stopped = 1;
+ 			}
+ 		}
+ 	}
+@@ -2323,7 +2323,7 @@ static void isr_txeom(struct slgt_info *info, unsigned short status)
+ 		else
+ #endif
+ 		{
+-			if (info->port.tty && (info->port.tty->stopped || info->port.tty->hw_stopped)) {
++			if (info->port.tty && (info->port.tty->stopped || info->port.hw_stopped)) {
+ 				tx_stop(info);
+ 				return;
+ 			}
 diff --git a/drivers/tty/synclinkmp.c b/drivers/tty/synclinkmp.c
-index 46ab0c9808f7..1cfa66178487 100644
+index ffefc5e6d66c..46ab0c9808f7 100644
 --- a/drivers/tty/synclinkmp.c
 +++ b/drivers/tty/synclinkmp.c
-@@ -2660,7 +2660,7 @@ static int startup(SLMP_INFO * info)
- 	mod_timer(&info->status_timer, jiffies + msecs_to_jiffies(10));
+@@ -890,7 +890,7 @@ static void set_termios(struct tty_struct *tty, struct ktermios *old_termios)
  
- 	if (info->port.tty)
--		clear_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+		clear_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
- 
- 	tty_port_set_initialized(&info->port, 1);
- 
-@@ -2703,7 +2703,7 @@ static void shutdown(SLMP_INFO * info)
- 	spin_unlock_irqrestore(&info->lock,flags);
- 
- 	if (info->port.tty)
--		set_bit(TTY_IO_ERROR, &info->port.tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &info->port.iflags);
- 
- 	tty_port_set_initialized(&info->port, 0);
+ 	/* Handle turning off CRTSCTS */
+ 	if (old_termios->c_cflag & CRTSCTS && !C_CRTSCTS(&tty->termios)) {
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 		tx_release(tty);
+ 	}
  }
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 5ad4bda512e2..5f7a41547901 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -239,7 +239,7 @@ void tty_port_hangup(struct tty_port *port)
- 	port->count = 0;
- 	tty = port->tty;
- 	if (tty)
--		set_bit(TTY_IO_ERROR, &tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 	port->tty = NULL;
- 	spin_unlock_irqrestore(&port->lock, flags);
- 	tty_port_set_active(port, 0);
-@@ -531,7 +531,7 @@ void tty_port_close(struct tty_port *port, struct tty_struct *tty,
- 	if (tty_port_close_start(port, tty, filp) == 0)
+@@ -969,7 +969,7 @@ static int write(struct tty_struct *tty,
+ 		tx_load_dma_buffer(info, info->tx_buf, info->tx_count);
+ 	}
+ start:
+- 	if (info->tx_count && !tty->stopped && !tty->hw_stopped) {
++ 	if (info->tx_count && !tty->stopped && !tty->port->hw_stopped) {
+ 		spin_lock_irqsave(&info->lock,flags);
+ 		if (!info->tx_active)
+ 		 	tx_start(info);
+@@ -1149,7 +1149,7 @@ static void flush_chars(struct tty_struct *tty)
+ 	if (sanity_check(info, tty->name, "flush_chars"))
  		return;
- 	tty_port_shutdown(port, tty);
--	set_bit(TTY_IO_ERROR, &tty->flags);
-+	set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 	tty_port_close_end(port, tty);
- 	tty_port_tty_set(port, NULL);
- }
-@@ -580,7 +580,7 @@ int tty_port_open(struct tty_port *port, struct tty_struct *tty,
- 	mutex_lock(&port->mutex);
  
- 	if (!tty_port_initialized(port)) {
--		clear_bit(TTY_IO_ERROR, &tty->flags);
-+		clear_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 		if (port->ops->activate) {
- 			int retval = port->ops->activate(port, tty);
- 			if (retval) {
+-	if (info->tx_count <= 0 || tty->stopped || tty->hw_stopped ||
++	if (info->tx_count <= 0 || tty->stopped || tty->port->hw_stopped ||
+ 	    !info->tx_buf)
+ 		return;
+ 
+@@ -2261,7 +2261,7 @@ static void isr_txeom(SLMP_INFO * info, unsigned char status)
+ 		else
+ #endif
+ 		{
+-			if (info->port.tty && (info->port.tty->stopped || info->port.tty->hw_stopped)) {
++			if (info->port.tty && (info->port.tty->stopped || info->port.hw_stopped)) {
+ 				tx_stop(info);
+ 				return;
+ 			}
+@@ -2316,7 +2316,7 @@ static void isr_txrdy(SLMP_INFO * info)
+ 		return;
+ 	}
+ 
+-	if (info->port.tty && (info->port.tty->stopped || info->port.tty->hw_stopped)) {
++	if (info->port.tty && (info->port.tty->stopped || info->port.hw_stopped)) {
+ 		tx_stop(info);
+ 		return;
+ 	}
+@@ -2481,11 +2481,11 @@ static void isr_io_pin( SLMP_INFO *info, u16 status )
+ 		if (tty_port_cts_enabled(&info->port) &&
+ 		     (status & MISCSTATUS_CTS_LATCHED) ) {
+ 			if ( info->port.tty ) {
+-				if (info->port.tty->hw_stopped) {
++				if (info->port.hw_stopped) {
+ 					if (status & SerialSignal_CTS) {
+ 						if ( debug_level >= DEBUG_LEVEL_ISR )
+ 							printk("CTS tx start...");
+-			 			info->port.tty->hw_stopped = 0;
++			 			info->port.hw_stopped = 0;
+ 						tx_start(info);
+ 						info->pending_bh |= BH_TRANSMIT;
+ 						return;
+@@ -2494,7 +2494,7 @@ static void isr_io_pin( SLMP_INFO *info, u16 status )
+ 					if (!(status & SerialSignal_CTS)) {
+ 						if ( debug_level >= DEBUG_LEVEL_ISR )
+ 							printk("CTS tx stop...");
+-			 			info->port.tty->hw_stopped = 1;
++			 			info->port.hw_stopped = 1;
+ 						tx_stop(info);
+ 					}
+ 				}
 diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 3b0de8ac7ee4..524df94ed437 100644
+index 73a8c38987f5..3b0de8ac7ee4 100644
 --- a/include/linux/tty.h
 +++ b/include/linux/tty.h
-@@ -256,6 +256,8 @@ struct tty_port {
- #define TTY_PORT_CTS_FLOW	3	/* h/w flow control enabled */
- #define TTY_PORT_CHECK_CD	4	/* carrier detect enabled */
- 
-+#define TTY_PORT_IO_ERROR	3	/* device has I/O error */
-+
- /*
-  * Where all of the state associated with a tty is kept while the tty
-  * is open.  Since the termios state should be kept even if the tty
-@@ -347,7 +349,6 @@ struct tty_file_private {
-  * clear_bit() to make things atomic.
-  */
- #define TTY_THROTTLED 		0	/* Call unthrottle() at threshold min */
--#define TTY_IO_ERROR 		1	/* Cause an I/O error (may be no ldisc too) */
- #define TTY_OTHER_CLOSED 	2	/* Other side (if any) has closed */
- #define TTY_EXCLUSIVE 		3	/* Exclusive open mode */
- #define TTY_DO_WRITE_WAKEUP 	5	/* Call write_wakeup after queuing new */
-@@ -374,7 +375,7 @@ static inline void tty_set_flow_change(struct tty_struct *tty, int val)
- 
- static inline bool tty_io_error(struct tty_struct *tty)
- {
--	return test_bit(TTY_IO_ERROR, &tty->flags);
-+	return test_bit(TTY_PORT_IO_ERROR, &tty->port->flags);
- }
- 
- static inline bool tty_throttled(struct tty_struct *tty)
-diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
-index 8e385a0ae60e..dfb177f1d5ae 100644
---- a/net/bluetooth/rfcomm/tty.c
-+++ b/net/bluetooth/rfcomm/tty.c
-@@ -115,7 +115,7 @@ static int rfcomm_dev_activate(struct tty_port *port, struct tty_struct *tty)
- 
- 	err = rfcomm_dlc_open(dev->dlc, &dev->src, &dev->dst, dev->channel);
- 	if (err)
--		set_bit(TTY_IO_ERROR, &tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &tty->port->iflags);
- 	return err;
- }
- 
+@@ -228,6 +228,7 @@ struct tty_port {
+ 	int			count;		/* Usage count */
+ 	wait_queue_head_t	open_wait;	/* Open waiters */
+ 	wait_queue_head_t	delta_msr_wait;	/* Modem status change */
++	int hw_stopped;
+ 	unsigned long		flags;		/* User TTY flags ASYNC_ */
+ 	unsigned long		iflags;		/* Internal flags TTY_PORT_ */
+ 	unsigned char		console:1,	/* port is a console */
+@@ -300,7 +301,6 @@ struct tty_struct {
+ 	unsigned long stopped:1,	/* flow_lock */
+ 		      flow_stopped:1,
+ 		      unused:BITS_PER_LONG - 2;
+-	int hw_stopped;
+ 	unsigned long ctrl_status:8,	/* ctrl_lock */
+ 		      packet:1,
+ 		      unused_ctrl:BITS_PER_LONG - 9;
 diff --git a/net/irda/ircomm/ircomm_tty.c b/net/irda/ircomm/ircomm_tty.c
-index c55dd956d309..3ee3b75f6d22 100644
+index ccfff1c1d278..c55dd956d309 100644
 --- a/net/irda/ircomm/ircomm_tty.c
 +++ b/net/irda/ircomm/ircomm_tty.c
-@@ -927,7 +927,7 @@ static void ircomm_tty_hangup(struct tty_struct *tty)
- 
- 	spin_lock_irqsave(&port->lock, flags);
- 	if (port->tty) {
--		set_bit(TTY_IO_ERROR, &port->tty->flags);
-+		set_bit(TTY_PORT_IO_ERROR, &port->iflags);
- 		tty_kref_put(port->tty);
+@@ -552,7 +552,7 @@ static void ircomm_tty_do_softint(struct work_struct *work)
+ 		dev_kfree_skb(ctrl_skb);
  	}
- 	port->tty = NULL;
+ 
+-	if (tty->hw_stopped)
++	if (tty->port->hw_stopped)
+ 		goto put;
+ 
+ 	/* Unlink transmit buffer */
+@@ -595,7 +595,7 @@ static int ircomm_tty_write(struct tty_struct *tty,
+ 	int size;
+ 
+ 	pr_debug("%s(), count=%d, hw_stopped=%d\n", __func__ , count,
+-		 tty->hw_stopped);
++		 tty->port->hw_stopped);
+ 
+ 	IRDA_ASSERT(self != NULL, return -1;);
+ 	IRDA_ASSERT(self->magic == IRCOMM_TTY_MAGIC, return -1;);
+@@ -736,7 +736,7 @@ static int ircomm_tty_write_room(struct tty_struct *tty)
+ 	/* Check if we are allowed to transmit any data.
+ 	 * hw_stopped is the regular flow control.
+ 	 * Jean II */
+-	if (tty->hw_stopped)
++	if (tty->port->hw_stopped)
+ 		ret = 0;
+ 	else {
+ 		spin_lock_irqsave(&self->spinlock, flags);
+@@ -1016,10 +1016,10 @@ void ircomm_tty_check_modem_status(struct ircomm_tty_cb *self)
+ 		}
+ 	}
+ 	if (tty && tty_port_cts_enabled(&self->port)) {
+-		if (tty->hw_stopped) {
++		if (tty->port->hw_stopped) {
+ 			if (status & IRCOMM_CTS) {
+ 				pr_debug("%s(), CTS tx start...\n", __func__);
+-				tty->hw_stopped = 0;
++				tty->port->hw_stopped = 0;
+ 
+ 				/* Wake up processes blocked on open */
+ 				wake_up_interruptible(&self->port.open_wait);
+@@ -1030,7 +1030,7 @@ void ircomm_tty_check_modem_status(struct ircomm_tty_cb *self)
+ 		} else {
+ 			if (!(status & IRCOMM_CTS)) {
+ 				pr_debug("%s(), CTS tx stop...\n", __func__);
+-				tty->hw_stopped = 1;
++				tty->port->hw_stopped = 1;
+ 			}
+ 		}
+ 	}
+@@ -1066,7 +1066,7 @@ static int ircomm_tty_data_indication(void *instance, void *sap,
+ 	 * Devices like WinCE can do this, and since they don't send any
+ 	 * params, we can just as well declare the hardware for running.
+ 	 */
+-	if (tty->hw_stopped && (self->flow == FLOW_START)) {
++	if (tty->port->hw_stopped && (self->flow == FLOW_START)) {
+ 		pr_debug("%s(), polling for line settings!\n", __func__);
+ 		ircomm_param_request(self, IRCOMM_POLL, TRUE);
+ 
+@@ -1136,7 +1136,7 @@ static void ircomm_tty_flow_indication(void *instance, void *sap,
+ 	case FLOW_START:
+ 		pr_debug("%s(), hw start!\n", __func__);
+ 		if (tty)
+-			tty->hw_stopped = 0;
++			tty->port->hw_stopped = 0;
+ 
+ 		/* ircomm_tty_do_softint will take care of the rest */
+ 		schedule_work(&self->tqueue);
+@@ -1145,7 +1145,7 @@ static void ircomm_tty_flow_indication(void *instance, void *sap,
+ 	case FLOW_STOP:
+ 		pr_debug("%s(), hw stopped!\n", __func__);
+ 		if (tty)
+-			tty->hw_stopped = 1;
++			tty->port->hw_stopped = 1;
+ 		break;
+ 	}
+ 
+@@ -1282,7 +1282,7 @@ static void ircomm_tty_line_info(struct ircomm_tty_cb *self, struct seq_file *m)
+ 	tty = tty_port_tty_get(&self->port);
+ 	if (tty) {
+ 		seq_printf(m, "Hardware: %s\n",
+-			       tty->hw_stopped ? "Stopped" : "Running");
++			       tty->port->hw_stopped ? "Stopped" : "Running");
+ 		tty_kref_put(tty);
+ 	}
+ }
+diff --git a/net/irda/ircomm/ircomm_tty_attach.c b/net/irda/ircomm/ircomm_tty_attach.c
+index 0a411019c098..36a3ec31bb71 100644
+--- a/net/irda/ircomm/ircomm_tty_attach.c
++++ b/net/irda/ircomm/ircomm_tty_attach.c
+@@ -140,7 +140,7 @@ int ircomm_tty_attach_cable(struct ircomm_tty_cb *self)
+ 	/* Make sure nobody tries to write before the link is up */
+ 	tty = tty_port_tty_get(&self->port);
+ 	if (tty) {
+-		tty->hw_stopped = 1;
++		tty->port->hw_stopped = 1;
+ 		tty_kref_put(tty);
+ 	}
+ 
+@@ -405,7 +405,7 @@ void ircomm_tty_disconnect_indication(void *instance, void *sap,
+ 	self->flow = FLOW_STOP;
+ 
+ 	/* Stop data transfers */
+-	tty->hw_stopped = 1;
++	tty->port->hw_stopped = 1;
+ 
+ 	ircomm_tty_do_event(self, IRCOMM_TTY_DISCONNECT_INDICATION, NULL,
+ 			    NULL);
+@@ -563,7 +563,7 @@ void ircomm_tty_link_established(struct ircomm_tty_cb *self)
+ 	} else {
+ 		pr_debug("%s(), starting hardware!\n", __func__);
+ 
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 
+ 		/* Wake up processes blocked on open */
+ 		wake_up_interruptible(&self->port.open_wait);
+diff --git a/net/irda/ircomm/ircomm_tty_ioctl.c b/net/irda/ircomm/ircomm_tty_ioctl.c
+index 78349fc346f3..25e143c95caa 100644
+--- a/net/irda/ircomm/ircomm_tty_ioctl.c
++++ b/net/irda/ircomm/ircomm_tty_ioctl.c
+@@ -170,7 +170,7 @@ void ircomm_tty_set_termios(struct tty_struct *tty,
+ 	/* Handle turning off CRTSCTS */
+ 	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(&tty->termios))
+ 	{
+-		tty->hw_stopped = 0;
++		tty->port->hw_stopped = 0;
+ 		ircomm_tty_start(tty);
+ 	}
+ }
 -- 
 2.9.3
