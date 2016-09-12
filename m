@@ -1,70 +1,59 @@
-From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
-Subject: [PATCH] serial: core: Fix handling of options after MMIO address
-Date: Mon, 12 Sep 2016 13:29:29 +0200
-Message-ID: <5e28d338-7667-f889-fae2-5aba0fdeb647@nokia.com>
-References: <af0e6790-c9e0-a3ed-ac17-1a6a56d954ce@nokia.com>
- <20160911004554.GA3562@roeck-us.net>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] BUG: atmel_serial: Interrupts not disabled on close
+Date: Mon, 12 Sep 2016 16:12:45 +0200
+Message-ID: <20160912141245.u6h6ugvuybc2lr66@pengutronix.de>
+References: <20160912133441.14597-1-richard.genoud@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160911004554.GA3562@roeck-us.net>
+Content-Disposition: inline
+In-Reply-To: <20160912133441.14597-1-richard.genoud@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Guenter Roeck reported a regression caused by commit "serial: earlycon:
-Extend earlycon command line option to support 64-bit addresses":
+On Mon, Sep 12, 2016 at 03:34:41PM +0200, Richard Genoud wrote:
+> Since commit 18dfef9c7f87 ("serial: atmel: convert to irq handling
+> provided mctrl-gpio"), interrupts from GPIOs are not disabled any more
+> when the serial port is closed, leading to an oops when the one of the
+> input pin is toggled (CTS/DSR/DCD/RNG).
+> 
+> This is only the case if those pins are used as GPIOs, i.e. declared
+> like that:
+> usart1: serial@f8020000 {
+>         /* CTS and DTS will be handled by GPIO */
+>         status = "okay";
+>         rts-gpios = <&pioB 17 GPIO_ACTIVE_LOW>;
+>         cts-gpios = <&pioB 16 GPIO_ACTIVE_LOW>;
+>         dtr-gpios = <&pioB 14 GPIO_ACTIVE_LOW>;
+>         dsr-gpios = <&pioC 31 GPIO_ACTIVE_LOW>;
+>         rng-gpios = <&pioB 12 GPIO_ACTIVE_LOW>;
+>         dcd-gpios = <&pioB 15 GPIO_ACTIVE_LOW>;
+> };
+> 
+> That's because modem interrupts used to be freed in atmel_shutdown().
+> After commit 18dfef9c7f87 ("serial: atmel: convert to irq handling
+> provided mctrl-gpio"), this code was just removed.
+> Calling atmel_disable_ms() disables the interrupts and everything works
+> fine again.
+> 
+> Tested on at91sam9g35-cm
+> 
+> (This patch doesn't apply on -stable kernels, fixes for 4.4 and 4.7 will
+> be sent after this one is applied.)
+AFAIK this is no reason to not put stable on Cc. If then
+$stablemaintainer fails to backport the change, he will contact you.
 
-console= and earlycon= options have the following format:
-...,<addr>,<options>
+> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+> Fixes: 18dfef9c7f87 ("serial: atmel: convert to irq handling provided mctrl-gpio")
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Historically used here simple_strtoul() had no problems with comma, but the
-new and recommended kstrtoull() requires null-terminated string and returns
--EINVAL in case there are "options" at the end. There is no recommended to
-use function currently that will support it, so stick to obsolete
-simple_strtoull() variant.
+Thanks for caring
+Uwe
 
-Signed-off-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
----
- drivers/tty/serial/serial_core.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 89f5d6a..f2c8a8d 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1938,14 +1938,11 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
-  *	   console=<name>,0x<addr>,<options>
-  *	is also accepted; the returned @iotype will be UPIO_MEM.
-  *
-- *	Returns 0 on success, -EINVAL or -ERANGE on failure
-+ *	Returns 0 on success or -EINVAL on failure
-  */
- int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
- 			char **options)
- {
--	int ret;
--	unsigned long long tmp;
--
- 	if (strncmp(p, "mmio,", 5) == 0) {
- 		*iotype = UPIO_MEM;
- 		p += 5;
-@@ -1971,10 +1968,11 @@ int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
- 		return -EINVAL;
- 	}
- 
--	ret = kstrtoull(p, 0, &tmp);
--	if (ret)
--		return ret;
--	*addr = tmp;
-+	/*
-+	 * Before you replace it with kstrtoull(), think about options separator
-+	 * (',') it will not tolerate
-+	 */
-+	*addr = simple_strtoull(p, NULL, 0);
- 	p = strchr(p, ',');
- 	if (p)
- 		p++;
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
