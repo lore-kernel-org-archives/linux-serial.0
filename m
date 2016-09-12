@@ -1,96 +1,54 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCHv2 3/3] tty/serial: at91: fix hardware handshake on SAM9x5
- (without GPIOs)
-Date: Mon, 12 Sep 2016 12:50:38 +0200
-Message-ID: <CACQ1gAhNdPgtkpt1QPaiKjKi5oaq5vHbt4kKL5tQfwLvDBDo0w@mail.gmail.com>
-References: <20160912094733.21501-1-richard.genoud@gmail.com>
- <20160912094733.21501-4-richard.genoud@gmail.com> <20160912095317.74e5xiedrq5nh3v4@piout.net>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 0/9] tty: tty_struct dependency clean-ups
+Date: Mon, 12 Sep 2016 12:46:55 +0100
+Message-ID: <20160912124655.6a698da0@lxorguk.ukuu.org.uk>
+References: <20160909223711.26238-1-robh@kernel.org>
+        <20160911221424.2d56682a@lxorguk.ukuu.org.uk>
+        <CAL_Jsq+tk2_p=pqJz_4iM-xcN5Ecfqhpc_oa0zbBRgS2dOpbOg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160912095317.74e5xiedrq5nh3v4@piout.net>
+In-Reply-To: <CAL_Jsq+tk2_p=pqJz_4iM-xcN5Ecfqhpc_oa0zbBRgS2dOpbOg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Cyrille Pitchen <cyrille.pitchen@atmel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-2016-09-12 11:53 GMT+02:00 Alexandre Belloni
-<alexandre.belloni@free-electrons.com>:
-> On 12/09/2016 at 11:47:33 +0200, Richard Genoud wrote :
->> Commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
->> hardware handshake is enabled") broke the hardware handshake on SAM9x5
->> platforms.
->>
->> On Atmel platforms, the USART can only handle the handware handshake
->> (ATMEL_US_USMODE_HWHS) if FIFOs or PDC are used.
->>
->> Thus, ATMEL_US_USMODE_HWHS mode should only be used in this case.
->>
->> For SAM9x5, there's no FIFOs nor PDC for the USART, so the mode should
->> be ATMEL_US_USMODE_NORMAL and the RTS pin should be controlled by the
->> driver.
->>
->> NB: -stable is not Cced because it doesn't cleanly apply on 4.1+
->>
->> Tested on SAM9G35-CM with and without DMA
->>
->> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
->> Fixes: 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when hardware handshake is enabled")
->> ---
->>  drivers/tty/serial/atmel_serial.c | 18 +++++++++++-------
->>  1 file changed, 11 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
->> index e9b4fbf88c2d..32154e7231ce 100644
->> --- a/drivers/tty/serial/atmel_serial.c
->> +++ b/drivers/tty/serial/atmel_serial.c
->> @@ -2130,15 +2130,19 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
->>       } else if ((termios->c_cflag & CRTSCTS) &&
->>                  !mctrl_gpio_use_rtscts(atmel_port->gpios)) {
->>               /*
->> -              * RS232 with hardware handshake (RTS/CTS)
->> -              * handled by the controller.
->> +              * Automatic hardware handshake (RTS/CTS) only work with
->> +              * FIFOs or PDC.
->> +              * Meaning that on SAM9x5 the controller can't handle
->> +              * the hardware handshake (no FIFOs nor PDC on these platforms).
->>                */
->> -             if (atmel_use_dma_rx(port) && !atmel_use_fifo(port)) {
->> -                     dev_info(port->dev, "not enabling hardware flow control because DMA is used");
->> -                     termios->c_cflag &= ~CRTSCTS;
->> -             } else {
->> +             if (atmel_use_pdc_rx(port) || atmel_use_fifo(port))
->>                       mode |= ATMEL_US_USMODE_HWHS;
->> -             }
->> +             else
->> +                     /*
->> +                      * The hardware handshake won't be handle by the
->> +                      * controller but by the driver.
->> +                      */
->> +                     mode |= ATMEL_US_USMODE_NORMAL;
->
-> You still need the case where HWHS is impossible and there are no gpio
-> configured. You need to inform userspace that the configuration was not
-> applied instead of silently ignoring the error.
+On Sun, 11 Sep 2016 22:05:07 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-Could you explain which case it is ?
-The only one I can see is when there's no GPIO declared for RTS/CTS
-AND, there's no pin muxed for RTS/CTS either.
+> On Sun, Sep 11, 2016 at 4:14 PM, One Thousand Gnomes
+> <gnomes@lxorguk.ukuu.org.uk> wrote:
+> > On Fri,  9 Sep 2016 17:37:01 -0500
+> > Rob Herring <robh@kernel.org> wrote:
+> >  
+> >> This patch series removes or prepares to remove some of the dependencies
+> >> on tty_struct within tty_port drivers. This will allow using tty_ports
+> >> directly for so called UART slave devices.  
+> >
+> > You can create a tty_struct kernel side with the two tiny changes I
+> > posted before. Why do you want to do invasive tree wide changes when you
+> > can do simple ones ?  
+> 
+> Well, I don't want to do invasive changes, but I thought the idea was
+> to use tty_port struct without a tty_struct.
 
-Have you got another example in mind ?
+I posted some tiny patches to break the file/tty requirement in the base
+tty code for comment a while ago and they were very tiny for most ldiscs
+(n_tty unsurprisingly wouldn't work this way but does anyone need kernel
+mode n_tty ?)
 
+Moving termios into the tty_port is IMHO a good thing to do whichever
+approach is taken.
 
->
->>       } else {
->>               /* RS232 without hadware handshake or controlled by GPIOs */
->>               mode |= ATMEL_US_USMODE_NORMAL;
->
-> --
-> Alexandre Belloni, Free Electrons
-> Embedded Linux and Kernel engineering
-> http://free-electrons.com
+> I was planning to keep termios out of tty_port and make clients of
+> tty_port carry it if for nothing else not quite understanding all the
+> details around the lifetime, init and locking of it. If there's always
+> a tty_struct then there's not much point moving it other than which
+> struct makes more sense. But that would cause some churn.
 
+The termios lifetime is the lifetime of the port, although it may get
+reset at some times.
 
-
--- 
-for me, ck means con kolivas and not calvin klein... does it mean I'm a geek ?
+Alan
