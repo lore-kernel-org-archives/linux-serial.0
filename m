@@ -1,54 +1,77 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 0/9] tty: tty_struct dependency clean-ups
-Date: Mon, 12 Sep 2016 12:46:55 +0100
-Message-ID: <20160912124655.6a698da0@lxorguk.ukuu.org.uk>
-References: <20160909223711.26238-1-robh@kernel.org>
-        <20160911221424.2d56682a@lxorguk.ukuu.org.uk>
-        <CAL_Jsq+tk2_p=pqJz_4iM-xcN5Ecfqhpc_oa0zbBRgS2dOpbOg@mail.gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] serial: core: Fix handling of options after MMIO address
+Date: Mon, 12 Sep 2016 06:27:21 -0700
+Message-ID: <82c71830-c19b-8eec-3281-13ee0f6514e4@roeck-us.net>
+References: <af0e6790-c9e0-a3ed-ac17-1a6a56d954ce@nokia.com>
+ <20160911004554.GA3562@roeck-us.net>
+ <5e28d338-7667-f889-fae2-5aba0fdeb647@nokia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_Jsq+tk2_p=pqJz_4iM-xcN5Ecfqhpc_oa0zbBRgS2dOpbOg@mail.gmail.com>
+In-Reply-To: <5e28d338-7667-f889-fae2-5aba0fdeb647@nokia.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Alan Cox <alan@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Alexander Sverdlin <alexander.sverdlin@nokia.com>, linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, 11 Sep 2016 22:05:07 -0500
-Rob Herring <robh@kernel.org> wrote:
+On 09/12/2016 04:29 AM, Alexander Sverdlin wrote:
+> Guenter Roeck reported a regression caused by commit "serial: earlycon:
+> Extend earlycon command line option to support 64-bit addresses":
+>
+> console= and earlycon= options have the following format:
+> ...,<addr>,<options>
+>
+> Historically used here simple_strtoul() had no problems with comma, but the
+> new and recommended kstrtoull() requires null-terminated string and returns
+> -EINVAL in case there are "options" at the end. There is no recommended to
+> use function currently that will support it, so stick to obsolete
+> simple_strtoull() variant.
+>
+> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+> Reported-by: Guenter Roeck <linux@roeck-us.net>
 
-> On Sun, Sep 11, 2016 at 4:14 PM, One Thousand Gnomes
-> <gnomes@lxorguk.ukuu.org.uk> wrote:
-> > On Fri,  9 Sep 2016 17:37:01 -0500
-> > Rob Herring <robh@kernel.org> wrote:
-> >  
-> >> This patch series removes or prepares to remove some of the dependencies
-> >> on tty_struct within tty_port drivers. This will allow using tty_ports
-> >> directly for so called UART slave devices.  
-> >
-> > You can create a tty_struct kernel side with the two tiny changes I
-> > posted before. Why do you want to do invasive tree wide changes when you
-> > can do simple ones ?  
-> 
-> Well, I don't want to do invasive changes, but I thought the idea was
-> to use tty_port struct without a tty_struct.
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-I posted some tiny patches to break the file/tty requirement in the base
-tty code for comment a while ago and they were very tiny for most ldiscs
-(n_tty unsurprisingly wouldn't work this way but does anyone need kernel
-mode n_tty ?)
-
-Moving termios into the tty_port is IMHO a good thing to do whichever
-approach is taken.
-
-> I was planning to keep termios out of tty_port and make clients of
-> tty_port carry it if for nothing else not quite understanding all the
-> details around the lifetime, init and locking of it. If there's always
-> a tty_struct then there's not much point moving it other than which
-> struct makes more sense. But that would cause some churn.
-
-The termios lifetime is the lifetime of the port, although it may get
-reset at some times.
-
-Alan
+> ---
+>  drivers/tty/serial/serial_core.c | 14 ++++++--------
+>  1 file changed, 6 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 89f5d6a..f2c8a8d 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1938,14 +1938,11 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
+>   *	   console=<name>,0x<addr>,<options>
+>   *	is also accepted; the returned @iotype will be UPIO_MEM.
+>   *
+> - *	Returns 0 on success, -EINVAL or -ERANGE on failure
+> + *	Returns 0 on success or -EINVAL on failure
+>   */
+>  int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
+>  			char **options)
+>  {
+> -	int ret;
+> -	unsigned long long tmp;
+> -
+>  	if (strncmp(p, "mmio,", 5) == 0) {
+>  		*iotype = UPIO_MEM;
+>  		p += 5;
+> @@ -1971,10 +1968,11 @@ int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
+>  		return -EINVAL;
+>  	}
+>
+> -	ret = kstrtoull(p, 0, &tmp);
+> -	if (ret)
+> -		return ret;
+> -	*addr = tmp;
+> +	/*
+> +	 * Before you replace it with kstrtoull(), think about options separator
+> +	 * (',') it will not tolerate
+> +	 */
+> +	*addr = simple_strtoull(p, NULL, 0);
+>  	p = strchr(p, ',');
+>  	if (p)
+>  		p++;
+>
