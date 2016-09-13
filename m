@@ -1,40 +1,56 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCHv2 0/3] serial: dw8250: ACPI tuning
-Date: Tue, 13 Sep 2016 00:11:48 +0200
-Message-ID: <2065510.Ra7hIhvnf9@vostro.rjw.lan>
-References: <1471941208-27963-1-git-send-email-heikki.krogerus@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1471941208-27963-1-git-send-email-heikki.krogerus@linux.intel.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
+From: Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
+Subject: [PATCH 1/1] serial: imx: Replace dmaengine old API
+Date: Tue, 13 Sep 2016 10:17:05 +0200
+Message-ID: <1473754625-7268-1-git-send-email-fabien.lahoudere@collabora.co.uk>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday, August 23, 2016 11:33:25 AM Heikki Krogerus wrote:
-> Hi,
-> 
-> Since we now have the build-in properties available, using those when
-> ever possible to get the details the driver expects and when they are
-> not being provided by the fw. Right now there is only one exception
-> ACPI enumerated board where we have no means to provide the properties
-> with build-in ones, so simply handling that as an exception in
-> dw8250_quirks().
-> 
-> Changes since v1:
-> - Fix a compiler error in acpi_apd.c found by kbuild test robot
-> - ACK from Mika
-> 
-> 
-> Heikki Krogerus (3):
->   ACPI / APD: Provide build-in properties of the UART
->   ACPI / LPSS: Provide build-in properties of the UART
->   serial: 8250_dw: Add quirk for APM X-Gene SoC
+dmaengine_terminate_all() is deprecated and should be replaced by
+dmaengine_terminate_sync() in non-atomic context or dmaengine_terminate_async()
+with dmaengine_synchronize().
 
-Whole series applied.
+See commit b36f09c3c441 ("dmaengine: Add transfer termination synchronization support")
 
-Thanks,
-Rafael
+Signed-off-by: Fabien Lahoudere <fabien.lahoudere@collabora.co.uk>
+---
+ drivers/tty/serial/imx.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index d9a0c87..1ae3c0c 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1122,7 +1122,7 @@ static void imx_setup_ufcr(struct imx_port *sport,
+ static void imx_uart_dma_exit(struct imx_port *sport)
+ {
+ 	if (sport->dma_chan_rx) {
+-		dmaengine_terminate_all(sport->dma_chan_rx);
++		dmaengine_terminate_sync(sport->dma_chan_rx);
+ 		dma_release_channel(sport->dma_chan_rx);
+ 		sport->dma_chan_rx = NULL;
+ 		sport->rx_cookie = -EINVAL;
+@@ -1131,7 +1131,7 @@ static void imx_uart_dma_exit(struct imx_port *sport)
+ 	}
+ 
+ 	if (sport->dma_chan_tx) {
+-		dmaengine_terminate_all(sport->dma_chan_tx);
++		dmaengine_terminate_sync(sport->dma_chan_tx);
+ 		dma_release_channel(sport->dma_chan_tx);
+ 		sport->dma_chan_tx = NULL;
+ 	}
+@@ -1351,8 +1351,8 @@ static void imx_shutdown(struct uart_port *port)
+ 	if (sport->dma_is_enabled) {
+ 		sport->dma_is_rxing = 0;
+ 		sport->dma_is_txing = 0;
+-		dmaengine_terminate_all(sport->dma_chan_tx);
+-		dmaengine_terminate_all(sport->dma_chan_rx);
++		dmaengine_terminate_sync(sport->dma_chan_tx);
++		dmaengine_terminate_sync(sport->dma_chan_rx);
+ 
+ 		spin_lock_irqsave(&sport->port.lock, flags);
+ 		imx_stop_tx(port);
+-- 
+2.1.4
