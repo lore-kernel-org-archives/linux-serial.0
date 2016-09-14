@@ -1,59 +1,49 @@
-From: Mark Salter <msalter@redhat.com>
-Subject: Re: [PATCH v10 3/4] ARM64: ACPI: enable ACPI_SPCR_TABLE
-Date: Tue, 13 Sep 2016 14:45:56 -0400
-Message-ID: <1473792356.31972.0.camel@redhat.com>
-References: <20160905123617.18775-1-aleksey.makarov@linaro.org>
-         <20160905123617.18775-4-aleksey.makarov@linaro.org>
-         <7e5486cc-4080-2d1e-8f6d-98874379887d@gmail.com>
-         <20160908111654.GH1493@arm.com> <1473352456.21193.8.camel@redhat.com>
-         <706e4bc9-1010-ba2d-55ec-dc6f24611bd3@linaro.org>
+From: Rob Landley <rob@landley.net>
+Subject: Re: [RFC] fs: add userspace critical mounts event support
+Date: Tue, 13 Sep 2016 21:38:17 -0500
+Message-ID: <6332a54e-74c6-eafd-368e-71e87a3fa34e@landley.net>
+References: <1466117661-22075-1-git-send-email-mcgrof@kernel.org>
+ <1466117661-22075-3-git-send-email-mcgrof@kernel.org>
+ <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
+ <20160824203901.GT3296@wotan.suse.de>
+ <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
+ <20160825194133.GC3296@wotan.suse.de> <20160902235916.GO3296@wotan.suse.de>
+ <20160903002014.GP3296@wotan.suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <706e4bc9-1010-ba2d-55ec-dc6f24611bd3@linaro.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Hanjun Guo <hanjun.guo@linaro.org>, Will Deacon <will.deacon@arm.com>, Aleksey Makarov <amakarov.linux@gmail.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, "Zheng, Lv" <lv.zheng@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-kernel@vger.kernel.org, Leif Lindholm <leif.lindholm@linaro.org>, linux-acpi@vger.kernel.org, Yury Norov <ynorov@caviumnetworks.com>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Al Stone <ahs3@redhat.com>, linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20160903002014.GP3296@wotan.suse.de>
+Sender: linux-doc-owner@vger.kernel.org
+To: "Luis R. Rodriguez" <mcgrof@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, Mimi Zohar <zohar@linux.vnet.ibm.com>, Felix Fietkau <nbd@nbd.name>, David Woodhouse <dwmw2@infradead.org>, Roman Pen <r.peniaev@gmail.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Ming Lei <ming.lei@canonical.com>, Andrew Morton <akpm@linux-foundation.org>, Michal Marek <mmarek@suse.com>, Greg KH <gregkh@linuxfoundation.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Vikram Mulukutla <markivx@codeaurora.org>, Stephen Boyd <stephen.boyd@linaro.org>, Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.de>, Johannes Berg <johannes@sipsolutions.net>, Christian Lamparter <chunkeey@googlemail.com>, hauke@hauke-m.de, Josh Boyer <jwboyer@fedoraproject.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, jslaby@suse.com, Linus Torvalds <torvalds@linux-foundation.org>, Andy Lutomirski <luto@amacapital.net>, Wu Fengguang <fengguang.wu@intel.com>, rpurdie@rpsys.net, Jeff Mahoney <jeffm@suse.com>, j.anaszewski@samsung.com, Abhay_Salunke@dell.com, Julia Lawall <Julia.Lawall@lip6.fr>, Gilles.Muller@lip6.fr, nicolas.palix@imag.fr, Tom Gundersen <teg@jklm.no>, Kay Sievers <kay@vrfy.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2016-09-09 at 17:28 +0800, Hanjun Guo wrote:
-> On 2016/9/9 0:34, Mark Salter wrote:
-> > 
-> > On Thu, 2016-09-08 at 12:16 +0100, Will Deacon wrote:
-> > > 
-> > > On Wed, Sep 07, 2016 at 12:30:19PM +0300, Aleksey Makarov wrote:
-> > > > 
-> > > > 
-> > > > 
-> > > > On 09/05/2016 03:36 PM, Aleksey Makarov wrote:
-> > > > > 
-> > > > > 
-> > > > > SBBR mentions SPCR as a mandatory ACPI table.  So enable it for ARM64
-> > > > > 
-> > > > > Earlycon should be set up as early as possible.  ACPI boot tables are
-> > > > > mapped in arch/arm64/kernel/acpi.c:acpi_boot_table_init() that
-> > > > > is called from setup_arch() and that's where we parse SPCR.
-> > > > > So it has to be opted-in per-arch.
-> > > > > 
-> > > > > When ACPI_SPCR_TABLE is defined initialization of DT earlycon is
-> > > > > deferred until the DT/ACPI decision is done.  Initialize DT earlycon
-> > > > > if ACPI is disabled.
-> > > > Hi Will, Catalin,
-> > > > 
-> > > > Can you review this patch and consider ACKing it please?
-> > > Hanjun, Al, Mark, Graeme -- any comments on this?
-> > > 
-> > > Will
-> > I think there is a problem still with systems using 32-bit access to 8250
-> > UARTs (i.e. Mustang) but that will need a DBG2 table spec change and
-> > followup patch to resolve.
-> Hmm, I think you mean we can add patches later with the spec updated,
-> and this patch works with SBSA pl011 can go for now?
+On 09/02/2016 07:20 PM, Luis R. Rodriguez wrote:
+> kernel_read_file_from_path() can try to read a file from
+> the system's filesystem. This is typically done for firmware
+> for instance, which lives in /lib/firmware. One issue with
+> this is that the kernel cannot know for sure when the real
+> final /lib/firmare/ is ready, and even if you use initramfs
+> drivers are currently initialized *first* prior to the initramfs
+> kicking off.
 
-Yes, I think this series is fine for now.
+Why?
 
-> 
-> Thanks
-> Hanjun
+> During init we run through all init calls first
+> (do_initcalls()) and finally the initramfs is processed via
+> prepare_namespace():
 
+What's the downside of moving initramfs cpio extraction earlier in the boot?
+
+I did some shuffling around of those code to make initmpfs work, does
+anybody know why initramfs extraction _before_ we initialize drivers
+would be a bad thing? (The cpio is in memory, either linked into the
+kernel or from the bootloader. No drivers are needed to extract it,
+that's sort of the point.)
+
+The only things I can think of are memory churn (large contiguous
+physical page allocations), or if a driver somehow got us access to more
+physical memory?
+
+Rob
