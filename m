@@ -1,58 +1,50 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
-Date: Thu, 15 Sep 2016 10:22:23 +0200
-Message-ID: <8360154.kzsE8V8pTW@wuerfel>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
- <5869118.UilSPY9Sai@wuerfel>
- <EE11001F9E5DDD47B7634E2F8A612F2E1F871B01@lhreml507-mbx>
+From: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2 2/3] devicetree: bindings: uart: Add new compatible string for ZynqMP
+Date: Thu, 15 Sep 2016 14:45:30 +0530
+Message-ID: <1473930931-1034-2-git-send-email-navam@xilinx.com>
+References: <1473930931-1034-1-git-send-email-navam@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F871B01@lhreml507-mbx>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yuanzhichang <yuanzhichang@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "xuwei (O)" <xuwei5@hisilicon.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "liviu.dudau@arm.com" <liviu.dudau@arm.com>, "kantyzc@163.com" <kantyzc@163.com>, "zhichang.yuan02@gmail.com" <zhichang.yuan02@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-ar>
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1473930931-1034-1-git-send-email-navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, michal.simek-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, soren.brinkmann-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, punnaia-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org
+Cc: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, Nava kishore Manne <navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, Scott Telford <stelford-vna1KIf7WgpBDgjK7y7TUQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thursday, September 15, 2016 8:02:27 AM CEST Gabriele Paoloni wrote:
-> 
-> From <<3.1.1. Open Firmware Properties for Bus Nodes>> in 
-> http://www.firmware.org/1275/bindings/isa/isa0_4d.ps
-> 
-> I quote:
-> "There shall be an entry in the "ranges" property for each
-> of the Memory and/or I/O spaces if that address space is
-> mapped through the bridge."
-> 
-> It seems to me that it is ok to have 1:1 address mapping and that
-> therefore of_translate_address() should fail if "ranges" is not
-> present.
+From: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
 
-The key here is the definition of "mapped through the bridge".
-I can only understand this as "directly mapped", i.e. an I/O
-port of the child bus corresponds directly to a memory address
-on the parent bus, but this is not the case here.
+Signed-off-by: Nava kishore Manne <navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Michal Simek <michal.simek-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+[stelford-vna1KIf7WgpBDgjK7y7TUQ@public.gmane.org: cherry picked from
+https://github.com/Xilinx/linux-xlnx commit
+37b8a9780766422b2437f5166ddef3767bb60887]
+Signed-off-by: Scott Telford <stelford-vna1KIf7WgpBDgjK7y7TUQ@public.gmane.org>
+---
+Changes for v2:
+		-None
 
-The problem with adding the mapping here is that it looks
-like it should be valid to create a page table entry for
-the address returned from the translation and access it through
-a pointer dereference, but that is clearly not possible.
+ Documentation/devicetree/bindings/serial/cdns,uart.txt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> This is also explained quite well in
-> http://lxr.free-electrons.com/source/drivers/of/address.c#L490
-> 
-> what do you think?
+diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+index a3eb154..4fe7aae 100644
+--- a/Documentation/devicetree/bindings/serial/cdns,uart.txt
++++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+@@ -1,7 +1,8 @@
+ Binding for Cadence UART Controller
+ 
+ Required properties:
+-- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
++- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps" for Zynq and
++               "cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC uart controller.
+ - reg: Should contain UART controller registers location and length.
+ - interrupts: Should contain UART controller interrupts.
+ - clocks: Must contain phandles to the UART clocks
+-- 
+2.1.2
 
-This is a separate issue, and only relevant for Apple Macintosh
-machines as well as the PA-Semi sdc.
-
-	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
