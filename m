@@ -1,59 +1,37 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] BUG: atmel_serial: Interrupts not disabled on close
-Date: Thu, 15 Sep 2016 12:33:28 +0200
-Message-ID: <20160915103328.GA23118@kroah.com>
-References: <20160912133441.14597-1-richard.genoud@gmail.com>
- <c98f5e6a-a971-aee1-cd9b-16a2ef36d9f8@atmel.com>
+Subject: Re: [PATCH 0/9] tty: tty_struct dependency clean-ups
+Date: Thu, 15 Sep 2016 12:43:15 +0200
+Message-ID: <20160915104315.GA4607@kroah.com>
+References: <20160909223711.26238-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <c98f5e6a-a971-aee1-cd9b-16a2ef36d9f8@atmel.com>
+In-Reply-To: <20160909223711.26238-1-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: Alan Cox <alan@linux.intel.com>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Sep 12, 2016 at 05:22:58PM +0200, Nicolas Ferre wrote:
-> Le 12/09/2016 à 15:34, Richard Genoud a écrit :
-> > Since commit 18dfef9c7f87 ("serial: atmel: convert to irq handling
-> > provided mctrl-gpio"), interrupts from GPIOs are not disabled any more
-> > when the serial port is closed, leading to an oops when the one of the
-> > input pin is toggled (CTS/DSR/DCD/RNG).
-> > 
-> > This is only the case if those pins are used as GPIOs, i.e. declared
-> > like that:
-> > usart1: serial@f8020000 {
-> >         /* CTS and DTS will be handled by GPIO */
-> >         status = "okay";
-> >         rts-gpios = <&pioB 17 GPIO_ACTIVE_LOW>;
-> >         cts-gpios = <&pioB 16 GPIO_ACTIVE_LOW>;
-> >         dtr-gpios = <&pioB 14 GPIO_ACTIVE_LOW>;
-> >         dsr-gpios = <&pioC 31 GPIO_ACTIVE_LOW>;
-> >         rng-gpios = <&pioB 12 GPIO_ACTIVE_LOW>;
-> >         dcd-gpios = <&pioB 15 GPIO_ACTIVE_LOW>;
-> > };
-> > 
-> > That's because modem interrupts used to be freed in atmel_shutdown().
-> > After commit 18dfef9c7f87 ("serial: atmel: convert to irq handling
-> > provided mctrl-gpio"), this code was just removed.
-> > Calling atmel_disable_ms() disables the interrupts and everything works
-> > fine again.
-> > 
-> > Tested on at91sam9g35-cm
-> > 
-> > (This patch doesn't apply on -stable kernels, fixes for 4.4 and 4.7 will
-> > be sent after this one is applied.)
-> > 
-> > Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
-> > Fixes: 18dfef9c7f87 ("serial: atmel: convert to irq handling provided mctrl-gpio")
+On Fri, Sep 09, 2016 at 05:37:01PM -0500, Rob Herring wrote:
+> This patch series removes or prepares to remove some of the dependencies 
+> on tty_struct within tty_port drivers. This will allow using tty_ports 
+> directly for so called UART slave devices. 
 > 
-> I thinks it's a bit late for "4.8-fixes".
+> The first patch fixes a regression from the last round with tty 
+> closing. Patches 2-4 are mechanical conversions generated with 
+> coccinelle. This is my first adventure into coccinelle, so hopefully I 
+> didn't screw things up. :) Only serial_core has some of its tty_struct 
+> dependencies removed as those are the drivers we immediately care about 
+> supporting slave devices with.
 > 
-> Greg, tell me if you want that I add the Cc: stable tag to this patch
-> (as advised by Uwe) and re-send?
+> Next up after this are moving some functions to the tty_port ops. I've 
+> got some WIP patches for some of that, but nothing ready to send out 
+> quite yet.
 
-I'll add it, no worries.
+I've applied the first patch here, and wanted to apply patch 3, but it
+depended on #2, so I'll wait for your next round of patches.
+
+thanks,
 
 greg k-h
