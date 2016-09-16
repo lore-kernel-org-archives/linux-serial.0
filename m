@@ -1,77 +1,39 @@
-From: Thor Thayer <tthayer@opensource.altera.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 Subject: Re: [PATCH 2/4] serial: 8250: of: Load TX FIFO Load Size from DT
-Date: Fri, 16 Sep 2016 15:52:55 -0500
-Message-ID: <2e79f6cc-8d9a-b9b7-884c-6916b2e74d64@opensource.altera.com>
-References: <1473351141-9239-1-git-send-email-tthayer@opensource.altera.com>
- <1473351141-9239-3-git-send-email-tthayer@opensource.altera.com>
- <20160916192039.GB30710@rob-hp-laptop>
-Reply-To: <tthayer@opensource.altera.com>
+Date: Fri, 16 Sep 2016 22:51:54 +0200
+Message-ID: <2077078.euc60HfglH@wuerfel>
+References: <1473351141-9239-1-git-send-email-tthayer@opensource.altera.com> <20160916192039.GB30710@rob-hp-laptop> <2e79f6cc-8d9a-b9b7-884c-6916b2e74d64@opensource.altera.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160916192039.GB30710@rob-hp-laptop>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: gregkh@linuxfoundation.org, mark.rutland@arm.com, lftan@altera.com, jslaby@suse.com, arnd@arndb.de, peter@hurleysoftware.com, andriy.shevchenko@linux.intel.com, anton.wuerfel@fau.de, phillip.raffeck@fau.de, yegorslists@googlemail.com, matwey@sai.msu.ru, mail@maciej.szmigiero.name, peter.ujfalusi@ti.com, jonathanh@nvidia.com, dongsheng.wang@nxp.com, luis@debethencourt.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, tthayer.linux@gmail.com, nios2-dev@lists.rocketboards.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <2e79f6cc-8d9a-b9b7-884c-6916b2e74d64-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, anton.wuerfel-d40JDW7QUjc@public.gmane.org, phillip.raffeck-d40JDW7QUjc@public.gmane.org, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org, matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org, mail-APzI5cXaD1zVlRWJc41N0YvC60bnQu0Y@public.gmane.org, peter.ujfalusi-l0cyMroinI0@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, dongsheng.wang-3arQi8VN3Tc@public.gmane.org, luis-HiykPkW1eAzzDCI4PIEvbQC/G2K4zDHf@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tthayer.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
+On Friday, September 16, 2016 3:52:55 PM CEST Thor Thayer wrote:
+> >
+> >
+> Yes, I originally had it implemented using that function but then I 
+> realized the port8250.tx_loadsz is an unsigned int and therefore can 
+> change size on different platforms.
+> 
+> The assignment handles that. In retrospect, I should probably change 
+> this to a of_property_read_u8() anyway so that it won't cause compile 
+> warnings in the smaller architectures.
+> 
+> Thank you for reviewing and the comments.
 
-On 09/16/2016 02:20 PM, Rob Herring wrote:
-> On Thu, Sep 08, 2016 at 11:12:19AM -0500, tthayer@opensource.altera.com wrote:
->> From: Thor Thayer <tthayer@opensource.altera.com>
->>
->> Initialize the tx_loadsz parameter if it is defined in the
->> device tree.
->>
->> Signed-off-by: Thor Thayer <tthayer@opensource.altera.com>
->> ---
->>  drivers/tty/serial/8250/8250_of.c |    6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
->> index 38963d7..3e4be2f 100644
->> --- a/drivers/tty/serial/8250/8250_of.c
->> +++ b/drivers/tty/serial/8250/8250_of.c
->> @@ -195,6 +195,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
->>  	switch (port_type) {
->>  	case PORT_8250 ... PORT_MAX_8250:
->>  	{
->> +		u32 prop;
->>  		struct uart_8250_port port8250;
->>  		memset(&port8250, 0, sizeof(port8250));
->>  		port8250.port = port;
->> @@ -202,6 +203,11 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
->>  		if (port.fifosize)
->>  			port8250.capabilities = UART_CAP_FIFO;
->>
->> +		/* Check for TX fifo load size */
->> +		if (of_property_read_u32(ofdev->dev.of_node,
->> +					 "tx-loadsz", &prop) == 0)
->> +			port8250.tx_loadsz = prop;
->
-> This can be simplified to:
->
-> of_property_read_u32(ofdev->dev.of_node, "tx-loadsz", &port8250.tx_loadsz);
->
->
-Yes, I originally had it implemented using that function but then I 
-realized the port8250.tx_loadsz is an unsigned int and therefore can 
-change size on different platforms.
+We don't support architectures with 'int' types other than 32 bits,
+so the version that Rob suggested is guaranteed to work everywhere.
 
-The assignment handles that. In retrospect, I should probably change 
-this to a of_property_read_u8() anyway so that it won't cause compile 
-warnings in the smaller architectures.
+Using u8 properties seems like a bad idea in general, better stay
+with 32-bit units for consistency.
 
-Thank you for reviewing and the comments.
-
-Thor
-
->> +
->>  		if (of_property_read_bool(ofdev->dev.of_node,
->>  					  "auto-flow-control"))
->>  			port8250.capabilities |= UART_CAP_AFE;
->> --
->> 1.7.9.5
->>
+	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
