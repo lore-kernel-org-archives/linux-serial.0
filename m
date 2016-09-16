@@ -1,111 +1,114 @@
-From: Sudeep Holla <sudeep.holla@arm.com>
-Subject: Re: [PATCH v3 1/3] tty: amba-pl011: define flag register bits for ZTE
- device
-Date: Fri, 16 Sep 2016 15:23:57 +0100
-Message-ID: <b549cd51-a81f-b693-e3c2-9e3c598d3d9e@arm.com>
-References: <1467968441-4056-1-git-send-email-shawn.guo@linaro.org>
- <1467968441-4056-2-git-send-email-shawn.guo@linaro.org>
+From: Julio Guerra <julio-wf23HAOg02MWenYVfaLwtA@public.gmane.org>
+Subject: Re: cdc_acm bug? read buffer bytes shifted
+Date: Fri, 16 Sep 2016 18:24:35 +0200
+Message-ID: <f97a97ee-4d22-145c-5f73-472ee4f03968@farjump.io>
+References: <2c59e268-9fd6-172b-1803-074aa4e11f27@farjump.io>
+ <1471692758.29854.0.camel@suse.com>
+ <4bffb2dd-de01-8819-cf44-c4fb1357ecd4@farjump.io>
+ <1471874667.17783.19.camel@suse.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1467968441-4056-2-git-send-email-shawn.guo@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Shawn Guo <shawn.guo@linaro.org>, Russell King <linux@armlinux.org.uk>
-Cc: xie.baoyou@zte.com.cn, Peter Hurley <peter@hurleysoftware.com>, Jason Liu <jason.liu@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Timur Tabi <timur@codeaurora.org>, Sudeep Holla <sudeep.holla@arm.com>, linux-serial@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>, Jun Nie <jun.nie@linaro.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="SdoBQdRSaHDWoRs7TXF9HAj8jGResctqB"
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1471874667.17783.19.camel-IBi9RG/b67k@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Shawn, Russell,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--SdoBQdRSaHDWoRs7TXF9HAj8jGResctqB
+Content-Type: multipart/mixed; boundary="axBp3wdrQCcHjkFrgPUXcSsEADwehpbPf";
+ protected-headers="v1"
+From: Julio Guerra <julio-wf23HAOg02MWenYVfaLwtA@public.gmane.org>
+To: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Message-ID: <f97a97ee-4d22-145c-5f73-472ee4f03968-wf23HAOg02MWenYVfaLwtA@public.gmane.org>
+Subject: Re: cdc_acm bug? read buffer bytes shifted
+References: <2c59e268-9fd6-172b-1803-074aa4e11f27-wf23HAOg02MWenYVfaLwtA@public.gmane.org>
+ <1471692758.29854.0.camel-IBi9RG/b67k@public.gmane.org>
+ <4bffb2dd-de01-8819-cf44-c4fb1357ecd4-wf23HAOg02MWenYVfaLwtA@public.gmane.org>
+ <1471874667.17783.19.camel-IBi9RG/b67k@public.gmane.org>
+In-Reply-To: <1471874667.17783.19.camel-IBi9RG/b67k@public.gmane.org>
 
-I noticed this change is in linux-next and but I happen to hit an issue
-with this as I tested it with earlycon enabled today for the first time.
+--axBp3wdrQCcHjkFrgPUXcSsEADwehpbPf
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 08/07/16 10:00, Shawn Guo wrote:
-> For some reason we do not really understand, ZTE hardware designers
-> choose to define PL011 Flag Register bit positions differently from
-> standard ones as below.
->
-> 	Bit		Standard	ZTE
-> 	-----------------------------------
-> 	CTS		0		1
-> 	DSR		1		3
-> 	BUSY		3		8
-> 	RI		8		0
->
-> Let's define these bits into vendor data and get ZTE PL011 supported
-> properly.
->
-> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+> On Sat, 2016-08-20 at 14:14 +0200, Julio Guerra wrote:
+>>>> Another example:
+>>>>> 00 00 00 00 00 00 00 01
+>>>> ...
+>>>>> 01 00 00 00 00 00 00 00
+>>>> ...
+>>>>> 00 01 00 00 00 00 00 00
+>>>> ...
+>>>>> 00 00 01 00 00 00 00 00
+>>>> after a random number of times, while usbmon shows the usb payload
+>>>> "00 00 00 00 00 00 00 01".
+>>>
+>>> Hi, how many bytes does read() return?
+>>>
+>>
+>> Exactly 8 bytes, always. I set the tty in raw non-canonical mode with
+>> vmin =3D 8 and vtime =3D 0. I also tried with vmin =3D 1 and did the c=
+opy of
+>> exactly 8 bytes by looping in userspace, without any improvement.
+>>
+>> I wrote a small workaround for now that detects this problem (because =
+I
+>> exactly know what the buffer is supposed to look like) to close() and
+>> re-open() the device. The next read buffer is then correct.
+>>
+>=20
+> Please activate dynamic debugging for the tty and cdc_acm driver.
+> We need to know where the corruption happens.
+>=20
 
-[...]
+I didn't find anything helpful in /sys/kernel/debug/dynamic_debug
+regarging the tty module (I enabled tty_io debugs and it doesn't appear
+in the logs), but I enabled cdc_acm debugs. Nothing is observable in the
+logs when the bug appears. I logged everything as a comment of the gist:
+https://gist.github.com/Julio-Guerra/b6529994f814771c825649bdb8d927c2#gis=
+tcomment-1875985
 
-> @@ -2303,13 +2325,16 @@ static struct console amba_console = {
->
->  static void pl011_putc(struct uart_port *port, int c)
->  {
-> +	struct uart_amba_port *uap =
-> +		container_of(port, struct uart_amba_port, port);
-> +
->  	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
->  		cpu_relax();
->  	if (port->iotype == UPIO_MEM32)
->  		writel(c, port->membase + UART01x_DR);
->  	else
->  		writeb(c, port->membase + UART01x_DR);
-> -	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
-> +	while (readl(port->membase + UART01x_FR) & uap->vendor->fr_busy)
->  		cpu_relax();
->  }
+Note that re-running the script restarts the underlying kernel buffer
+correctly, it does not restart from its previous bugged state.
 
-The above hunk won't work for early console devices. The earlycon_device
-just has uart_port and is not uart_amba_port. I don't know how to fix
-this properly but I thought we could reuse private_data in uart_port for
-early_con devices. Something like below(incomplete for other vendors,
-works only for ARM)
+Let me know if you want other debug traces enabled.
 
-Regards,
-Sudeep
+--=20
+Julio Guerra
 
--->8
 
-diff --git i/drivers/tty/serial/amba-pl011.c 
-w/drivers/tty/serial/amba-pl011.c
-index 0b78b04e895e..abe88223790c 100644
---- i/drivers/tty/serial/amba-pl011.c
-+++ w/drivers/tty/serial/amba-pl011.c
-@@ -2330,8 +2330,7 @@ static struct console amba_console = {
+--axBp3wdrQCcHjkFrgPUXcSsEADwehpbPf--
 
-  static void pl011_putc(struct uart_port *port, int c)
-  {
--       struct uart_amba_port *uap =
--               container_of(port, struct uart_amba_port, port);
-+       struct vendor_data *vendor = port->private_data;
+--SdoBQdRSaHDWoRs7TXF9HAj8jGResctqB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-         while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
-                 cpu_relax();
-@@ -2339,7 +2338,7 @@ static void pl011_putc(struct uart_port *port, int c)
-                 writel(c, port->membase + UART01x_DR);
-         else
-                 writeb(c, port->membase + UART01x_DR);
--       while (readl(port->membase + UART01x_FR) & uap->vendor->fr_busy)
-+       while (readl(port->membase + UART01x_FR) & vendor->fr_busy)
-                 cpu_relax();
-  }
+-----BEGIN PGP SIGNATURE-----
+Comment: GPGTools - https://gpgtools.org
 
-@@ -2356,6 +2355,7 @@ static int __init pl011_early_console_setup(struct 
-earlycon_device *device,
-         if (!device->port.membase)
-                 return -ENODEV;
+iQIcBAEBCgAGBQJX3BzfAAoJEBh1WakJKS6kgPgP/RxB6ulzdA7tO2WyBDgKhFmk
+H0t0xRKA5t3uPbbKRNNvjSLrPdBAJFRriz3ZyTCx1FJoUrA51Yn0YJBO0Gp35G6I
+yZsak6PsAvlIpLNAvHC6sFOdezYfm51JBJmnwMvCz0S5EFqD0bxlQviwKnB+tSA1
+KVqR/wQpHKNbs+nl/cHh+/Ty2YJINyuwQymQ/YJ8PrzbvLrBkQ8zZvhMmNOTInp+
+X80yQHK/2Lf9/3n4Vxp0uVQMZUcsKHo4lEV0RQmkFpJXeurtUyRZxUqj/r6nBJB7
+T/1F3LQ0M+nL0T7C2KfHCpomts8I/EJEK9Ykfe9lGZk60fNmnbMXf0XeLqcXFpMi
+AYOqvDEsWgq6pnalcf9WRBuoASb60vn/iQRTU2zXs0BoHFbk+CzTT8wGihJoyygi
+dAuZ/xW9ycmuzw5oeMuMPUzetUO/XgmBlfHhdM96fTt5TvyEHVn3WlWm3MbXFny0
+5Oa7cm79KQ2/YrsX+iOzWFVXnUelr77BiikqLTRiTYD3cOMFtujV0/lm7XyHXV+d
+9Zf5ipl+uujvO2ebGzn6EjzWR84X44+BoULoFXt1VKFw2e40JZENW2Cl8fZFmFmP
+hH6ArfC+YY5QAX9QyMRmWYsEHGTTEV66UoI6piJbrfHyibpixgziiz15zBa1fOGS
+qjeQtAVoEfzkt+8tjwre
+=LuH+
+-----END PGP SIGNATURE-----
 
-+       device->port.private_data = &vendor_arm;
-         device->con->write = pl011_early_write;
-         return 0;
-  }
+--SdoBQdRSaHDWoRs7TXF9HAj8jGResctqB--
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
