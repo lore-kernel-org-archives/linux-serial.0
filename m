@@ -1,39 +1,62 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH 2/4] serial: 8250: of: Load TX FIFO Load Size from DT
-Date: Fri, 16 Sep 2016 22:51:54 +0200
-Message-ID: <2077078.euc60HfglH@wuerfel>
-References: <1473351141-9239-1-git-send-email-tthayer@opensource.altera.com> <20160916192039.GB30710@rob-hp-laptop> <2e79f6cc-8d9a-b9b7-884c-6916b2e74d64@opensource.altera.com>
+From: Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH v3 1/3] tty: amba-pl011: define flag register bits for
+ ZTE device
+Date: Sat, 17 Sep 2016 13:26:05 +0800
+Message-ID: <20160917052605.GF7398@tiger>
+References: <1467968441-4056-1-git-send-email-shawn.guo@linaro.org>
+ <1467968441-4056-2-git-send-email-shawn.guo@linaro.org>
+ <b549cd51-a81f-b693-e3c2-9e3c598d3d9e@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <2e79f6cc-8d9a-b9b7-884c-6916b2e74d64-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, anton.wuerfel-d40JDW7QUjc@public.gmane.org, phillip.raffeck-d40JDW7QUjc@public.gmane.org, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org, matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org, mail-APzI5cXaD1zVlRWJc41N0YvC60bnQu0Y@public.gmane.org, peter.ujfalusi-l0cyMroinI0@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, dongsheng.wang-3arQi8VN3Tc@public.gmane.org, luis-HiykPkW1eAzzDCI4PIEvbQC/G2K4zDHf@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tthayer.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <b549cd51-a81f-b693-e3c2-9e3c598d3d9e@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Jason Liu <jason.liu@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Timur Tabi <timur@codeaurora.org>, xie.baoyou@zte.com.cn, Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>, Jun Nie <jun.nie@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Friday, September 16, 2016 3:52:55 PM CEST Thor Thayer wrote:
+On Fri, Sep 16, 2016 at 03:23:57PM +0100, Sudeep Holla wrote:
+> >@@ -2303,13 +2325,16 @@ static struct console amba_console = {
 > >
-> >
-> Yes, I originally had it implemented using that function but then I 
-> realized the port8250.tx_loadsz is an unsigned int and therefore can 
-> change size on different platforms.
+> > static void pl011_putc(struct uart_port *port, int c)
+> > {
+> >+	struct uart_amba_port *uap =
+> >+		container_of(port, struct uart_amba_port, port);
+> >+
+> > 	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
+> > 		cpu_relax();
+> > 	if (port->iotype == UPIO_MEM32)
+> > 		writel(c, port->membase + UART01x_DR);
+> > 	else
+> > 		writeb(c, port->membase + UART01x_DR);
+> >-	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
+> >+	while (readl(port->membase + UART01x_FR) & uap->vendor->fr_busy)
+> > 		cpu_relax();
+> > }
 > 
-> The assignment handles that. In retrospect, I should probably change 
-> this to a of_property_read_u8() anyway so that it won't cause compile 
-> warnings in the smaller architectures.
-> 
-> Thank you for reviewing and the comments.
+> The above hunk won't work for early console devices. The earlycon_device
+> just has uart_port and is not uart_amba_port. I don't know how to fix
+> this properly but I thought we could reuse private_data in uart_port for
+> early_con devices. Something like below(incomplete for other vendors,
+> works only for ARM)
 
-We don't support architectures with 'int' types other than 32 bits,
-so the version that Rob suggested is guaranteed to work everywhere.
+Hi Sudeep,
 
-Using u8 properties seems like a bad idea in general, better stay
-with 32-bit units for consistency.
+Thanks much for the report.  I think the best way to fix this is that we
+revert the change for pl011_putc() function, and figure out a correct
+approach adding earlycon support for ZTE hardware later.
 
-	Arnd
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I will send a patch to revert pl011_putc() changes shortly.
+
+Thanks,
+Shawn
