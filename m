@@ -1,17 +1,19 @@
 From: Shawn Guo <shawnguo@kernel.org>
 Subject: Re: [PATCH v3 1/3] tty: amba-pl011: define flag register bits for
  ZTE device
-Date: Sat, 17 Sep 2016 13:26:05 +0800
-Message-ID: <20160917052605.GF7398@tiger>
+Date: Sat, 17 Sep 2016 13:37:53 +0800
+Message-ID: <20160917053753.GG7398@tiger>
 References: <1467968441-4056-1-git-send-email-shawn.guo@linaro.org>
  <1467968441-4056-2-git-send-email-shawn.guo@linaro.org>
  <b549cd51-a81f-b693-e3c2-9e3c598d3d9e@arm.com>
+ <20160916163952.GH1041@n2100.armlinux.org.uk>
+ <57DC27A9.3060307@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <b549cd51-a81f-b693-e3c2-9e3c598d3d9e@arm.com>
+In-Reply-To: <57DC27A9.3060307@codeaurora.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,42 +23,29 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sudeep Holla <sudeep.holla@arm.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Jason Liu <jason.liu@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Timur Tabi <timur@codeaurora.org>, xie.baoyou@zte.com.cn, Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>, Jun Nie <jun.nie@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
+To: Timur Tabi <timur@codeaurora.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Jason Liu <jason.liu@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, xie.baoyou@zte.com.cn, Russell King - ARM Linux <linux@armlinux.org.uk>, Andre Przywara <andre.przywara@arm.com>, linux-serial@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Jun Nie <jun.nie@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 16, 2016 at 03:23:57PM +0100, Sudeep Holla wrote:
-> >@@ -2303,13 +2325,16 @@ static struct console amba_console = {
-> >
-> > static void pl011_putc(struct uart_port *port, int c)
-> > {
-> >+	struct uart_amba_port *uap =
-> >+		container_of(port, struct uart_amba_port, port);
-> >+
-> > 	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
-> > 		cpu_relax();
-> > 	if (port->iotype == UPIO_MEM32)
-> > 		writel(c, port->membase + UART01x_DR);
-> > 	else
-> > 		writeb(c, port->membase + UART01x_DR);
-> >-	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
-> >+	while (readl(port->membase + UART01x_FR) & uap->vendor->fr_busy)
-> > 		cpu_relax();
-> > }
+On Fri, Sep 16, 2016 at 12:11:05PM -0500, Timur Tabi wrote:
+> Russell King - ARM Linux wrote:
+> >Maybe what we should've done with ZTE is insisted that they implement
+> >a complete new driver, rather than trying to shoe-horn it into PL011
+> >even though it is in theory PL011.
 > 
-> The above hunk won't work for early console devices. The earlycon_device
-> just has uart_port and is not uart_amba_port. I don't know how to fix
-> this properly but I thought we could reuse private_data in uart_port for
-> early_con devices. Something like below(incomplete for other vendors,
-> works only for ARM)
+> When I suggested that a year ago, I was shot down:
+> 
+> http://www.spinics.net/lists/arm-kernel/msg455888.html
 
-Hi Sudeep,
+I still think that's a bad idea.  ZTE is not the first one making such
+small customization on PL011, and likely won't be the last one.  We
+don't want to clone PL011 driver every time there is a such vendor
+hardware coming out, do we?  Having PL011 driver being able to handle
+different register layout is very helpful to handle such vendor
+variants, IMHO.
 
-Thanks much for the report.  I think the best way to fix this is that we
-revert the change for pl011_putc() function, and figure out a correct
-approach adding earlycon support for ZTE hardware later.
+I still appreciate rmk's insistence to handle ZTE device with PL011
+driver, and the effort of adding a little "infrastructure" to handle
+all such possible variants.
 
-I will send a patch to revert pl011_putc() changes shortly.
-
-Thanks,
 Shawn
