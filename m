@@ -1,61 +1,163 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: [PATCH v3 1/3] tty: amba-pl011: define flag register bits for
- ZTE device
-Date: Sat, 17 Sep 2016 10:17:54 +0100
-Message-ID: <20160917091753.GJ1041@n2100.armlinux.org.uk>
-References: <1467968441-4056-1-git-send-email-shawn.guo@linaro.org>
- <1467968441-4056-2-git-send-email-shawn.guo@linaro.org>
- <b549cd51-a81f-b693-e3c2-9e3c598d3d9e@arm.com>
- <20160916163952.GH1041@n2100.armlinux.org.uk>
- <57DC27A9.3060307@codeaurora.org> <20160917053753.GG7398@tiger>
+From: zhichang <zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH V3 1/4] ARM64 LPC: Indirect ISA port IO introduced
+Date: Sun, 18 Sep 2016 11:38:45 +0800
+Message-ID: <9ffcda2a-9a2b-7151-dfd9-e2bf6594c842@gmail.com>
+References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
+ <8337589.pzGt0MZ9xn@wuerfel> <57D95BBC.9030405@hisilicon.com>
+ <5264074.nuyDhEuOR4@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20160917053753.GG7398@tiger>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Shawn Guo <shawnguo@kernel.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Jason Liu <jason.liu@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Timur Tabi <timur@codeaurora.org>, xie.baoyou@zte.com.cn, Andre Przywara <andre.przywara@arm.com>, linux-serial@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Jun Nie <jun.nie@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5264074.nuyDhEuOR4@wuerfel>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Sep 17, 2016 at 01:37:53PM +0800, Shawn Guo wrote:
-> I still think that's a bad idea.  ZTE is not the first one making such
-> small customization on PL011, and likely won't be the last one.  We
-> don't want to clone PL011 driver every time there is a such vendor
-> hardware coming out, do we?  Having PL011 driver being able to handle
-> different register layout is very helpful to handle such vendor
-> variants, IMHO.
+Hi, Arnd,
 
-Well, it's turning out that handling ZTE in PL011 is turning into a
-bad idea as well - we keep getting these breakages each time we try.
 
-I think ZTE is sufficiently different from PL011 with the different
-register layout _and_ the different bits, _and_ the pain that this
-is causing, that it should have been a separate driver.
+On 2016年09月14日 22:23, Arnd Bergmann wrote:
+> On Wednesday, September 14, 2016 10:16:28 PM CEST zhichang.yuan wrote:
+>>>
+>>> No need to guard includes with an #ifdef.
+>> If remove #ifdef here, extio.h should not contain any function external declarations whose definitions are in
+>> extio.c compiled only when CONFIG_ARM64_INDIRECT_PIO is yes.
+>  
+> There is no problem with making declarations visible for functions that
+> are not part of the kernel, we do that all the time.
+> 
+>>>> +#define BUILDS_RW(bwl, type)                                                \
+>>>> +static inline void reads##bwl(const volatile void __iomem *addr,    \
+>>>> +                            void *buffer, unsigned int count)       \
+>>>> +{                                                                   \
+>>>> +    if (count) {                                                    \
+>>>> +            type *buf = buffer;                                     \
+>>>> +                                                                    \
+>>>> +            do {                                                    \
+>>>> +                    type x = __raw_read##bwl(addr);                 \
+>>>> +                    *buf++ = x;                                     \
+>>>> +            } while (--count);                                      \
+>>>> +    }                                                               \
+>>>> +}                                                                   \
+>>>> +                                                                    \
+>>>> +static inline void writes##bwl(volatile void __iomem *addr,         \
+>>>> +                            const void *buffer, unsigned int count) \
+>>>> +{                                                                   \
+>>>> +    if (count) {                                                    \
+>>>> +            const type *buf = buffer;                               \
+>>>> +                                                                    \
+>>>> +            do {                                                    \
+>>>> +                    __raw_write##bwl(*buf++, addr);                 \
+>>>> +            } while (--count);                                      \
+>>>> +    }                                                               \
+>>>> +}
+>>>> +
+>>>> +BUILDS_RW(b, u8)
+>>>
+>>> Why is this in here?
+>> the readsb/writesb are defined in asm-generic/io.h which is included later, but the redefined insb/outsb need
+>> to call them. Without these readsb/writesb definition before insb/outsb redefined, compile error occur.
+>>
+>> It seems that copy all the definitions of "asm-generic/io.h" is not a good idea, so I move the definitions of
+>> those function needed here....
+>>
+>> Ok. I think your idea below defining in(s)/out(s) in a c file can solve this issue.
+>>
+>> #ifdef CONFIG_ARM64_INDIRECT_PIO
+>> #define inb inb
+>> extern u8 inb(unsigned long addr);
+>>
+>> #define outb outb
+>> extern void outb(u8 value, unsigned long addr);
+>>
+>> #define insb insb
+>> extern void insb(unsigned long addr, void *buffer, unsigned int count);
+>>
+>> #define outsb outsb
+>> extern void outsb(unsigned long addr, const void *buffer, unsigned int count);
+>> #endif
+>>
+>> and definitions of all these functions are in extio.c :
+>>
+>> u8 inb(unsigned long addr)
+>> {
+>>         if (!arm64_extio_ops || arm64_extio_ops->start > addr ||
+>>                         arm64_extio_ops->end < addr)
+>>                 return readb(PCI_IOBASE + addr);
+>>         else
+>>                 return arm64_extio_ops->pfin ?
+>>                         arm64_extio_ops->pfin(arm64_extio_ops->devpara,
+>>                                 addr + arm64_extio_ops->ptoffset, NULL,
+>>                                 sizeof(u8), 1) : -1;
+>> }
+>> .....
+> 
+> Yes, sounds good.
+> 
+>>>> @@ -149,6 +185,60 @@ static inline u64 __raw_readq(const volatile void __iomem *addr)
+>>>>  #define IO_SPACE_LIMIT              (PCI_IO_SIZE - 1)
+>>>>  #define PCI_IOBASE          ((void __iomem *)PCI_IO_START)
+>>>>  
+>>>> +
+>>>> +/*
+>>>> + * redefine the in(s)b/out(s)b for indirect-IO.
+>>>> + */
+>>>> +#define inb inb
+>>>> +static inline u8 inb(unsigned long addr)
+>>>> +{
+>>>> +#ifdef CONFIG_ARM64_INDIRECT_PIO
+>>>> +    if (arm64_extio_ops && arm64_extio_ops->start <= addr &&
+>>>> +                    addr <= arm64_extio_ops->end)
+>>>> +            return extio_inb(addr);
+>>>> +#endif
+>>>> +    return readb(PCI_IOBASE + addr);
+>>>> +}
+>>>> +
+>>>
+>>> Looks ok, but you only seem to do this for the 8-bit
+>>> accessors, when it should be done for 16-bit and 32-bit
+>>> ones as well for consistency.
+>> Hip06 LPC only support 8-bit I/O operations on the designated port.
+> 
+> That is an interesting limitation. Maybe still call the extio operations
+> and have them do WARN_ON_ONCE() instead?
+> 
+> If you get a driver that calls inw/outw on the range that is owned
+> by the LPC bus, you otherwise get an unhandled page fault in kernel
+> space, which is not as nice.
+> 
+Yes. It probably cause kernel panic.
+Will define the extio operations for other IO length and add the corresponding WARNINGS.
 
-The only way I can think of dealing with the console issue is to
-replicate the console code, once for the PL011 variant and then
-again for the ZTE variant.  We can't _both_ give them the same names
-_and_ register them together - we either have to give them different
-names, which makes it confusing because one name won't match the
-userspace name for the UART, or we need the driver to detect the
-port type early.  That's made much more difficult because ZTE didn't
-bother with the ID registers, unlike every other vendor.
+Best,
+Zhichang
 
-Serial drivers are not that complex anymore, compared to how they
-were back before serial_core happened, so having it as a separate
-driver isn't that big a deal.
 
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+>>>> diff --git a/drivers/bus/extio.c b/drivers/bus/extio.c
+>>>> new file mode 100644
+>>>> index 0000000..1e7a9c5
+>>>> --- /dev/null
+>>>> +++ b/drivers/bus/extio.c
+>>>> @@ -0,0 +1,66 @@
+>>>
+>>> This is in a globally visible directory
+>>>
+>>>> +
+>>>> +struct extio_ops *arm64_extio_ops;
+>>>
+>>> But the identifier uses an architecture specific prefix. Either
+>>> move the whole file into arch/arm64, or make the naming so that
+>>> it can be used for everything.
+>>
+>> I perfer to move the whole file into arch/arm64, extio.h will be moved to arch/arm64/include/asm;
+> 
+> Ok, that simplifies it a lot, you can just do everything in asm/io.h then.
+> 
+> 	Arnd
+> 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
