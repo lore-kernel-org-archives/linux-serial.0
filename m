@@ -1,71 +1,46 @@
-From: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
-Subject: Re: cdc_acm bug? read buffer bytes shifted
-Date: Tue, 20 Sep 2016 10:45:34 +0200
-Message-ID: <1474361134.4358.7.camel@suse.com>
-References: <2c59e268-9fd6-172b-1803-074aa4e11f27@farjump.io>
-         <1471692758.29854.0.camel@suse.com>
-         <4bffb2dd-de01-8819-cf44-c4fb1357ecd4@farjump.io>
-         <1471874667.17783.19.camel@suse.com>
-         <f97a97ee-4d22-145c-5f73-472ee4f03968@farjump.io>
+From: Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH] tty: amba-pl011: uart_amba_port is not available with
+ earlycon function
+Date: Tue, 20 Sep 2016 21:05:04 +0800
+Message-ID: <20160920130504.GF3744@tiger>
+References: <1474092878-30034-1-git-send-email-shawn.guo@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <f97a97ee-4d22-145c-5f73-472ee4f03968-wf23HAOg02MWenYVfaLwtA@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Julio Guerra <julio-wf23HAOg02MWenYVfaLwtA@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1474092878-30034-1-git-send-email-shawn.guo@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Jason Liu <jason.liu@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Timur Tabi <timur@codeaurora.org>, xie.baoyou@zte.com.cn, Russell King - ARM Linux <linux@armlinux.org.uk>, linux-serial@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>, Jun Nie <jun.nie@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2016-09-16 at 18:24 +0200, Julio Guerra wrote:
-> > On Sat, 2016-08-20 at 14:14 +0200, Julio Guerra wrote:
-> >>>> Another example:
-> >>>>> 00 00 00 00 00 00 00 01
-> >>>> ...
-> >>>>> 01 00 00 00 00 00 00 00
-> >>>> ...
-> >>>>> 00 01 00 00 00 00 00 00
-> >>>> ...
-> >>>>> 00 00 01 00 00 00 00 00
-> >>>> after a random number of times, while usbmon shows the usb payload
-> >>>> "00 00 00 00 00 00 00 01".
-> >>>
-> >>> Hi, how many bytes does read() return?
-> >>>
-> >>
-> >> Exactly 8 bytes, always. I set the tty in raw non-canonical mode with
-> >> vmin = 8 and vtime = 0. I also tried with vmin = 1 and did the copy of
-> >> exactly 8 bytes by looping in userspace, without any improvement.
-> >>
-> >> I wrote a small workaround for now that detects this problem (because I
-> >> exactly know what the buffer is supposed to look like) to close() and
-> >> re-open() the device. The next read buffer is then correct.
-> >>
-> > 
-> > Please activate dynamic debugging for the tty and cdc_acm driver.
-> > We need to know where the corruption happens.
-> > 
+On Sat, Sep 17, 2016 at 02:14:38PM +0800, Shawn Guo wrote:
+> Commit 0e125a5facf8 ("tty: amba-pl011: define flag register bits for ZTE
+> device") changes earlycon function pl011_putc() to use a pointer to
+> uart_amba_port.  This causes a regression when earlycon is enabled,
+> because uart_amba_port is not available yet at earlycon time.  Let's
+> revert the change on pl011_putc() to fix the regression.
 > 
-> I didn't find anything helpful in /sys/kernel/debug/dynamic_debug
-> regarging the tty module (I enabled tty_io debugs and it doesn't appear
-> in the logs), but I enabled cdc_acm debugs. Nothing is observable in the
-> logs when the bug appears. I logged everything as a comment of the gist:
-> https://gist.github.com/Julio-Guerra/b6529994f814771c825649bdb8d927c2#gistcomment-1875985
+> The earlycon support for ZTE device can probably be added later by
+> declaring a new earlycon setup function with a vendor specific
+> compatible.
 > 
-> Note that re-running the script restarts the underlying kernel buffer
-> correctly, it does not restart from its previous bugged state.
-> 
-> Let me know if you want other debug traces enabled.
-> 
+> Reported-by: Sudeep Holla <sudeep.holla@arm.com>
+> Fixes: 0e125a5facf8 ("tty: amba-pl011: define flag register bits for ZTE device")
+> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
 
-Can you modify the tty layer to print out the buffer?
-It is unclear from the logs where the shift happens.
+Hi Sudeep,
 
-	Regards
-		Oliver
+Can you please confirm if the patch fixes your problem, so that Greg
+knows whether it should be applied?  Thanks.
 
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Shawn
