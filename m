@@ -1,164 +1,138 @@
 From: zhichang <zhichang.yuan02@gmail.com>
-Subject: Re: [PATCH V3 1/4] ARM64 LPC: Indirect ISA port IO introduced
-Date: Wed, 21 Sep 2016 17:26:06 +0800
-Message-ID: <c6fe6d43-5e8b-ee88-a328-83d998b51c5a@gmail.com>
+Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
+Date: Wed, 21 Sep 2016 18:09:11 +0800
+Message-ID: <e246c886-e0eb-b635-01ae-f00bbfcfb56b@gmail.com>
 References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
- <8337589.pzGt0MZ9xn@wuerfel> <57D95BBC.9030405@hisilicon.com>
- <5264074.nuyDhEuOR4@wuerfel>
+ <8360154.kzsE8V8pTW@wuerfel>
+ <EE11001F9E5DDD47B7634E2F8A612F2E1F871F72@lhreml507-mbx>
+ <26171742.fWcrANu6EP@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5264074.nuyDhEuOR4@wuerfel>
+In-Reply-To: <26171742.fWcrANu6EP@wuerfel>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, minyard@acm.org, linux-pci@vger.kernel.org, gabriele.paoloni@huawei.com, john.garry@huawei.com, will.deacon@arm.com, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, zourongrong@gmail.com, liviu.dudau@arm.com, kantyzc@163.com
+To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
+Cc: Gabriele Paoloni <gabriele.paoloni@huawei.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yuanzhichang <yuanzhichang@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "xuwei (O)" <xuwei5@hisilicon.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "liviu.dudau@arm.com" <liviu.dudau@ar>
 List-Id: linux-serial@vger.kernel.org
 
 Hi, Arnd,
 
 
-On 2016年09月14日 22:23, Arnd Bergmann wrote:
-> On Wednesday, September 14, 2016 10:16:28 PM CEST zhichang.yuan wrote:
->>>
->>> No need to guard includes with an #ifdef.
->> If remove #ifdef here, extio.h should not contain any function external declarations whose definitions are in
->> extio.c compiled only when CONFIG_ARM64_INDIRECT_PIO is yes.
->  
-> There is no problem with making declarations visible for functions that
-> are not part of the kernel, we do that all the time.
-> 
->>>> +#define BUILDS_RW(bwl, type)                                                \
->>>> +static inline void reads##bwl(const volatile void __iomem *addr,    \
->>>> +                            void *buffer, unsigned int count)       \
->>>> +{                                                                   \
->>>> +    if (count) {                                                    \
->>>> +            type *buf = buffer;                                     \
->>>> +                                                                    \
->>>> +            do {                                                    \
->>>> +                    type x = __raw_read##bwl(addr);                 \
->>>> +                    *buf++ = x;                                     \
->>>> +            } while (--count);                                      \
->>>> +    }                                                               \
->>>> +}                                                                   \
->>>> +                                                                    \
->>>> +static inline void writes##bwl(volatile void __iomem *addr,         \
->>>> +                            const void *buffer, unsigned int count) \
->>>> +{                                                                   \
->>>> +    if (count) {                                                    \
->>>> +            const type *buf = buffer;                               \
->>>> +                                                                    \
->>>> +            do {                                                    \
->>>> +                    __raw_write##bwl(*buf++, addr);                 \
->>>> +            } while (--count);                                      \
->>>> +    }                                                               \
->>>> +}
->>>> +
->>>> +BUILDS_RW(b, u8)
->>>
->>> Why is this in here?
->> the readsb/writesb are defined in asm-generic/io.h which is included later, but the redefined insb/outsb need
->> to call them. Without these readsb/writesb definition before insb/outsb redefined, compile error occur.
->>
->> It seems that copy all the definitions of "asm-generic/io.h" is not a good idea, so I move the definitions of
->> those function needed here....
->>
->> Ok. I think your idea below defining in(s)/out(s) in a c file can solve this issue.
->>
->> #ifdef CONFIG_ARM64_INDIRECT_PIO
->> #define inb inb
->> extern u8 inb(unsigned long addr);
->>
->> #define outb outb
->> extern void outb(u8 value, unsigned long addr);
->>
->> #define insb insb
->> extern void insb(unsigned long addr, void *buffer, unsigned int count);
->>
->> #define outsb outsb
->> extern void outsb(unsigned long addr, const void *buffer, unsigned int count);
->> #endif
->>
->> and definitions of all these functions are in extio.c :
->>
->> u8 inb(unsigned long addr)
->> {
->>         if (!arm64_extio_ops || arm64_extio_ops->start > addr ||
->>                         arm64_extio_ops->end < addr)
->>                 return readb(PCI_IOBASE + addr);
->>         else
->>                 return arm64_extio_ops->pfin ?
->>                         arm64_extio_ops->pfin(arm64_extio_ops->devpara,
->>                                 addr + arm64_extio_ops->ptoffset, NULL,
->>                                 sizeof(u8), 1) : -1;
->> }
->> .....
-> 
-> Yes, sounds good.
-> 
->>>> @@ -149,6 +185,60 @@ static inline u64 __raw_readq(const volatile void __iomem *addr)
->>>>  #define IO_SPACE_LIMIT              (PCI_IO_SIZE - 1)
->>>>  #define PCI_IOBASE          ((void __iomem *)PCI_IO_START)
->>>>  
->>>> +
->>>> +/*
->>>> + * redefine the in(s)b/out(s)b for indirect-IO.
->>>> + */
->>>> +#define inb inb
->>>> +static inline u8 inb(unsigned long addr)
->>>> +{
->>>> +#ifdef CONFIG_ARM64_INDIRECT_PIO
->>>> +    if (arm64_extio_ops && arm64_extio_ops->start <= addr &&
->>>> +                    addr <= arm64_extio_ops->end)
->>>> +            return extio_inb(addr);
->>>> +#endif
->>>> +    return readb(PCI_IOBASE + addr);
->>>> +}
->>>> +
->>>
->>> Looks ok, but you only seem to do this for the 8-bit
->>> accessors, when it should be done for 16-bit and 32-bit
->>> ones as well for consistency.
->> Hip06 LPC only support 8-bit I/O operations on the designated port.
-> 
-> That is an interesting limitation. Maybe still call the extio operations
-> and have them do WARN_ON_ONCE() instead?
-> 
-> If you get a driver that calls inw/outw on the range that is owned
-> by the LPC bus, you otherwise get an unhandled page fault in kernel
-> space, which is not as nice.
 
-As for this issue, I provided a wrong reply in the last email.
-After double-checking with SoC guys, the inw(l)/outw(l) are OK with multiple 8-bit transfers to consecutive
-I/O addresses.
+On 2016年09月15日 20:24, Arnd Bergmann wrote:
+> On Thursday, September 15, 2016 12:05:51 PM CEST Gabriele Paoloni wrote:
+>>> -----Original Message-----
+>>> On Thursday, September 15, 2016 8:02:27 AM CEST Gabriele Paoloni wrote:
+>>>>
+>>>> From <<3.1.1. Open Firmware Properties for Bus Nodes>> in
+>>>> http://www.firmware.org/1275/bindings/isa/isa0_4d.ps
+>>>>
+>>>> I quote:
+>>>> "There shall be an entry in the "ranges" property for each
+>>>> of the Memory and/or I/O spaces if that address space is
+>>>> mapped through the bridge."
+>>>>
+>>>> It seems to me that it is ok to have 1:1 address mapping and that
+>>>> therefore of_translate_address() should fail if "ranges" is not
+>>>> present.
+>>>
+>>> The key here is the definition of "mapped through the bridge".
+>>> I can only understand this as "directly mapped", i.e. an I/O
+>>> port of the child bus corresponds directly to a memory address
+>>> on the parent bus, but this is not the case here.
+>>>
+>>> The problem with adding the mapping here is that it looks
+>>> like it should be valid to create a page table entry for
+>>> the address returned from the translation and access it through
+>>> a pointer dereference, but that is clearly not possible.
+>>
+>> I understand that somehow we are abusing of the ranges property
+>> here however the point is that with the current implementation ranges
+>> is needed because otherwise the ipmi driver probe will fail here:
+>>
+>> of_ipmi_probe -> of_address_to_resource -> __of_address_to_resource
+>> -> of_translate_address -> __of_translate_address
+>>
+>> Now we had a bit of discussion internally and to avoid
+>> having ranges we came up with two possible solutions:
+>>
+>> 1) Using bit 3 of phys.hi cell in 2.2.1 of
+>> http://www.firmware.org/1275/bindings/isa/isa0_4d.ps
+>> This would mean reworking of_bus_isa_get_flags in 
+>> http://lxr.free-electrons.com/source/drivers/of/address.c#L398
+>> and setting a new flag to be checked in __of_address_to_resource
+>>
+>> 2) Adding a property in the bindings of each device that is
+>> a child of our LPC bus and modify __of_address_to_resource
+>> to check if the property is in the DT and eventually bypass
+>> of_translate_address
+>>
+>> However in both 1) and 2) there are some issues:
+>> in 1) we are not complying with the isa binding doc (we use
+>> a bit that should be zero); in 2) we need to modify the
+>> bindings documentation of the devices that are connected
+>> to our LPC controller (therefore modifying other devices
+>> bindings to fit our special case).
+>>
+>> I think that maybe having the 1:1 range mapping doesn't
+>> reflect well the reality but it is the less painful
+>> solution...
+>>
+>> What's your view?
+> 
+> We can check the 'i' bit for I/O space in of_bus_isa_get_flags,
+> and that should be enough to translate the I/O port number.
+> 
+> The only part we need to change here is to not go through
+> the crazy conversion all the way from PCI I/O space to a
+> physical address and back to a (logical) port number
+> that we do today with of_translate_address/pci_address_to_pio.
+> 
+Sorry for the late response! Several days' leave....
+Do you want to bypass of_translate_address and pci_address_to_pio for the registered specific PIO?
+I think the bypass for of_translate_address is ok, but worry some new issues will emerge without the
+conversion between physical address and logical/linux port number.
 
-Sorry for the wrong information!
-Will support inw(l)/outw(l) in V4.
+When PCI host bridge which support IO operations is configured and enabled, the pci_address_to_pio will
+populate the logical IO range from ZERO for the first host bridge. Our LPC will also use part of the IO range
+started from ZERO. It will make in/out enter the wrong branch possibly.
+
+In V2, the 0 - 0x1000 logical IO range is reserved for LPC use only. But it seems not so good. In this way,
+PCI has no chance to use low 4K IO range(logical).
+
+So, in V3, applying the conversion from physical/cpu address to logical/linux IO port for any IO ranges,
+including the LPC, but recorded the logical IO range for LPC. When calling in/out with a logical port address,
+we can check this port fall into LPC logical IO range and get back the real IO.
+
+Do you have further comments about this??
+
+
+> I can think of a several of ways to fix __of_address_to_resource
+> to just do the right thing according to the ISA binding to
+> make the normal drivers work.
+> 
+> The easiest solution is probably to hook into the
+> "taddr == OF_BAD_ADDR" case in __of_address_to_resource
+> and add a lookup for ISA buses there, and instead check
+> if some special I/O port operations were registered
+> for the port number, using an architecture specific
+> function that arm64 implements. Other architectures
+> like x86 that don't have a direct mapping between I/O
+> ports and MMIO addresses would implement that same
+> function differently.
+
+What about add the specific quirk for Hip06 LPC in of_empty_ranges_quirk()??
+
+you know, there are several cases in which of_translate_address return OF_BAD_ADDR.
+And if we only check the special port range, it seems a bit risky. If some device want to use this port range
+when no hip06 LPC is configured, the checking does not work. I think we should also check the relevant device.
+
 
 Best,
 Zhichang
 
 
-> 
->>>> diff --git a/drivers/bus/extio.c b/drivers/bus/extio.c
->>>> new file mode 100644
->>>> index 0000000..1e7a9c5
->>>> --- /dev/null
->>>> +++ b/drivers/bus/extio.c
->>>> @@ -0,0 +1,66 @@
->>>
->>> This is in a globally visible directory
->>>
->>>> +
->>>> +struct extio_ops *arm64_extio_ops;
->>>
->>> But the identifier uses an architecture specific prefix. Either
->>> move the whole file into arch/arm64, or make the naming so that
->>> it can be used for everything.
->>
->> I perfer to move the whole file into arch/arm64, extio.h will be moved to arch/arm64/include/asm;
-> 
-> Ok, that simplifies it a lot, you can just do everything in asm/io.h then.
 > 
 > 	Arnd
 > 
