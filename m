@@ -1,40 +1,67 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
 Subject: Re: [PATCH v10 0/4] ACPI: parse the SPCR table
-Date: Wed, 21 Sep 2016 18:38:23 +0200
-Message-ID: <20160921163823.GB9373@kroah.com>
+Date: Wed, 21 Sep 2016 20:22:54 +0300
+Message-ID: <98ed1e6b-0994-4429-c085-2293b4a89edf@linaro.org>
 References: <20160905123617.18775-1-aleksey.makarov@linaro.org>
  <25d32778-e708-6763-7cb2-4ddbeebc844b@linaro.org>
  <20160921103749.GA7993@kroah.com>
  <CAOZdJXV2KyZAbrRxQ_zmFNd3Gn4vyuqSsUfJMTU8wpiOtjyE=g@mail.gmail.com>
+ <20160921163823.GB9373@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAOZdJXV2KyZAbrRxQ_zmFNd3Gn4vyuqSsUfJMTU8wpiOtjyE=g@mail.gmail.com>
+In-Reply-To: <20160921163823.GB9373@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Timur Tabi <timur@codeaurora.org>
-Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Mark Salter <msalter@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Lorenzo Pieralisi <lorenzo.pieralis>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Timur Tabi <timur@codeaurora.org>
+Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Mark Salter <msalter@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Sep 21, 2016 at 11:19:35AM -0500, Timur Tabi wrote:
-> On Wed, Sep 21, 2016 at 5:37 AM, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > I thought you asked Rafael to take them, they are not in my queue
-> > anymore because of that.  Don't try to shop-around for maintainers
-> > please, that's kind of rude...
+
+
+On 09/21/2016 07:38 PM, Greg Kroah-Hartman wrote:
+> On Wed, Sep 21, 2016 at 11:19:35AM -0500, Timur Tabi wrote:
+>> On Wed, Sep 21, 2016 at 5:37 AM, Greg Kroah-Hartman
+>> <gregkh@linuxfoundation.org> wrote:
+>>>
+>>> I thought you asked Rafael to take them, they are not in my queue
+>>> anymore because of that.  Don't try to shop-around for maintainers
+>>> please, that's kind of rude...
+>>
+>> In Aleksey's defense, these patches have been floating around for far
+>> too long, so I can understand his frustration.
 > 
-> In Aleksey's defense, these patches have been floating around for far
-> too long, so I can understand his frustration.
+> I understand the frustration as well, cross-maintainer messy patches
+> like this are hard to get merged at times at they fall between the
+> cracks a lot.
+> 
+>> But as you said, I really hope Rafael picks these up for 4.9.  We need
+>> these patches for ARM server.
+> 
+> I thought I saw an email saying he would do so, but it might have been
+> for some other patchset, sorry...
 
-I understand the frustration as well, cross-maintainer messy patches
-like this are hard to get merged at times at they fall between the
-cracks a lot.
+This can be for "ACPI: ARM64: support for ACPI_TABLE_UPGRADE":
 
-> But as you said, I really hope Rafael picks these up for 4.9.  We need
-> these patches for ARM server.
+	https://lkml.kernel.org/r/CAJZ5v0goXsQ2umcDXU0six+QtxcKGZq7mxhgxuvXTH2iZt6YNA@mail.gmail.com
 
-I thought I saw an email saying he would do so, but it might have been
-for some other patchset, sorry...
+As for this patchset, Rafael ACKed the ACPI part:
 
-greg k-h
+	https://lkml.kernel.org/r/CAJZ5v0hdoLTfjrD8+WxSoxM48dqbZK2KwY_h+63kHKHKgO=JFA@mail.gmail.com
+
+but I can not find any acknowledge from him that he is ready to merge the series.
+On the contrary, he expressed his doubt that he is "the right maintainer to send this to":
+
+	https://lkml.kernel.org/r/CAJZ5v0gzjtFzig7nEumr83+J2dGb+OA8GNR2i45ZqznfV_hA-A@mail.gmail.com
+
+I asked the ARM64 people, they said they prefer Rafael to do that:
+
+	https://lkml.kernel.org/r/20160909151758.GA11418@arm.com
+
+I interpreted the silence from Rafael as unwillingness to pull the series 
+and thought it's OK to ask you.
+
+I am sorry if this looks rude for Rafael, I did not mean that.
+
+Thank you
+Aleksey Makarov
