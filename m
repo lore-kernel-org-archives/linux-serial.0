@@ -1,67 +1,50 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: Re: [PATCH v10 0/4] ACPI: parse the SPCR table
-Date: Wed, 21 Sep 2016 20:22:54 +0300
-Message-ID: <98ed1e6b-0994-4429-c085-2293b4a89edf@linaro.org>
-References: <20160905123617.18775-1-aleksey.makarov@linaro.org>
- <25d32778-e708-6763-7cb2-4ddbeebc844b@linaro.org>
- <20160921103749.GA7993@kroah.com>
- <CAOZdJXV2KyZAbrRxQ_zmFNd3Gn4vyuqSsUfJMTU8wpiOtjyE=g@mail.gmail.com>
- <20160921163823.GB9373@kroah.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH V3 3/4] ARM64 LPC: support serial based on low-pin-count
+Date: Wed, 21 Sep 2016 21:29:22 +0200
+Message-ID: <4518414.hTLWuvFlBl@wuerfel>
+References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com> <5525856.MfDSSsiP5d@wuerfel> <815bebc1-96c9-2131-930d-bccdd4bf1c55@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160921163823.GB9373@kroah.com>
+In-Reply-To: <815bebc1-96c9-2131-930d-bccdd4bf1c55@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Timur Tabi <timur@codeaurora.org>
-Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Mark Salter <msalter@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: zhichang <zhichang.yuan02@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, "zhichang.yuan" <yuanzhichang@hisilicon.com>, devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gabriele.paoloni@huawei.com, minyard@acm.org, gregkh@linuxfoundation.org, benh@kernel.crashing.org, john.garry@huawei.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, xuwei5@hisilicon.com, linuxarm@huawei.com, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, zourongrong@gmail.com, liviu.dudau@arm.com, kantyzc@163.com
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 09/21/2016 07:38 PM, Greg Kroah-Hartman wrote:
-> On Wed, Sep 21, 2016 at 11:19:35AM -0500, Timur Tabi wrote:
->> On Wed, Sep 21, 2016 at 5:37 AM, Greg Kroah-Hartman
->> <gregkh@linuxfoundation.org> wrote:
->>>
->>> I thought you asked Rafael to take them, they are not in my queue
->>> anymore because of that.  Don't try to shop-around for maintainers
->>> please, that's kind of rude...
->>
->> In Aleksey's defense, these patches have been floating around for far
->> too long, so I can understand his frustration.
+On Wednesday, September 21, 2016 6:12:28 PM CEST zhichang wrote:
+> On 2016年09月15日 05:33, Arnd Bergmann wrote:
+> > On Wednesday, September 14, 2016 11:04:33 PM CEST zhichang.yuan wrote:
+> >> The 8250_hisi_lpc.c support both ACPI and dts similar to 8250_dw :
+> >>
+> >> +static struct platform_driver hs_lpc8250_driver = {
+> >> +       .driver = {
+> >> +               .name           = "hisi-lpc-uart",
+> >> +               .of_match_table = hs8250_of_match,
+> >> +               .acpi_match_table = ACPI_PTR(hs8250_acpi_match),
+> >>
+> >> So, I am a little confused why we need to support dts in 8250_of.c and support ACPI in another
+> >> driver file.
+> >>
+> > 
+> > After looking again, I'm pretty sure that drivers/tty/serial/8250/8250_pnp.c
+> > will handle the ACPI case without modifications, you just need to adapt
+> > the 8250_of driver to handle IORESOURCE_IO ports. This will be required
+> > anyway with the next version once the LPC bridge is on the PCI bus.
+> > 
 > 
-> I understand the frustration as well, cross-maintainer messy patches
-> like this are hard to get merged at times at they fall between the
-> cracks a lot.
+> Yes. You are right.
 > 
->> But as you said, I really hope Rafael picks these up for 4.9.  We need
->> these patches for ARM server.
+> When the indirectIO patch is accepted, no much changes needed in these two file to support LPC UART.
 > 
-> I thought I saw an email saying he would do so, but it might have been
-> for some other patchset, sorry...
+> BTW, what is your target to change these two files to support LPC uart?
+> Do you think we don't need to add many new c files??
 
-This can be for "ACPI: ARM64: support for ACPI_TABLE_UPGRADE":
+I think by modifying 8250_of.c, you should be able to make any UART on
+some LPC bus work, regardless of what controller is used.
 
-	https://lkml.kernel.org/r/CAJZ5v0goXsQ2umcDXU0six+QtxcKGZq7mxhgxuvXTH2iZt6YNA@mail.gmail.com
+The ACPI version (8250_pnp.c) shouldn't need any changes at all if I
+read that correctly.
 
-As for this patchset, Rafael ACKed the ACPI part:
-
-	https://lkml.kernel.org/r/CAJZ5v0hdoLTfjrD8+WxSoxM48dqbZK2KwY_h+63kHKHKgO=JFA@mail.gmail.com
-
-but I can not find any acknowledge from him that he is ready to merge the series.
-On the contrary, he expressed his doubt that he is "the right maintainer to send this to":
-
-	https://lkml.kernel.org/r/CAJZ5v0gzjtFzig7nEumr83+J2dGb+OA8GNR2i45ZqznfV_hA-A@mail.gmail.com
-
-I asked the ARM64 people, they said they prefer Rafael to do that:
-
-	https://lkml.kernel.org/r/20160909151758.GA11418@arm.com
-
-I interpreted the silence from Rafael as unwillingness to pull the series 
-and thought it's OK to ask you.
-
-I am sorry if this looks rude for Rafael, I did not mean that.
-
-Thank you
-Aleksey Makarov
+	Arnd
