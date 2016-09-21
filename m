@@ -1,50 +1,109 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V3 3/4] ARM64 LPC: support serial based on low-pin-count
-Date: Wed, 21 Sep 2016 21:29:22 +0200
-Message-ID: <4518414.hTLWuvFlBl@wuerfel>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com> <5525856.MfDSSsiP5d@wuerfel> <815bebc1-96c9-2131-930d-bccdd4bf1c55@gmail.com>
+Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
+Date: Wed, 21 Sep 2016 22:18:16 +0200
+Message-ID: <3538381.vOsx75UXVU@wuerfel>
+References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
+ <e246c886-e0eb-b635-01ae-f00bbfcfb56b@gmail.com>
+ <EE11001F9E5DDD47B7634E2F8A612F2E1F87D223@lhreml507-mbx>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <815bebc1-96c9-2131-930d-bccdd4bf1c55@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: zhichang <zhichang.yuan02@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org, "zhichang.yuan" <yuanzhichang@hisilicon.com>, devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gabriele.paoloni@huawei.com, minyard@acm.org, gregkh@linuxfoundation.org, benh@kernel.crashing.org, john.garry@huawei.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, xuwei5@hisilicon.com, linuxarm@huawei.com, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, zourongrong@gmail.com, liviu.dudau@arm.com, kantyzc@163.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F87D223@lhreml507-mbx>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "minyard@acm.org" <minyard@acm.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yuanzhichang <yuanzhichang@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "xuwei (O)" <xuwei5@hisilicon.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, zhichang <zhichang.yuan02@gmail.com>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "liviu.dudau@arm.com" <liviu.dudau@arm.com>, "kantyzc@163.com" <kantyzc@163.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infr>
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday, September 21, 2016 6:12:28 PM CEST zhichang wrote:
-> On 2016年09月15日 05:33, Arnd Bergmann wrote:
-> > On Wednesday, September 14, 2016 11:04:33 PM CEST zhichang.yuan wrote:
-> >> The 8250_hisi_lpc.c support both ACPI and dts similar to 8250_dw :
-> >>
-> >> +static struct platform_driver hs_lpc8250_driver = {
-> >> +       .driver = {
-> >> +               .name           = "hisi-lpc-uart",
-> >> +               .of_match_table = hs8250_of_match,
-> >> +               .acpi_match_table = ACPI_PTR(hs8250_acpi_match),
-> >>
-> >> So, I am a little confused why we need to support dts in 8250_of.c and support ACPI in another
-> >> driver file.
-> >>
-> > 
-> > After looking again, I'm pretty sure that drivers/tty/serial/8250/8250_pnp.c
-> > will handle the ACPI case without modifications, you just need to adapt
-> > the 8250_of driver to handle IORESOURCE_IO ports. This will be required
-> > anyway with the next version once the LPC bridge is on the PCI bus.
-> > 
-> 
-> Yes. You are right.
-> 
-> When the indirectIO patch is accepted, no much changes needed in these two file to support LPC UART.
-> 
-> BTW, what is your target to change these two files to support LPC uart?
-> Do you think we don't need to add many new c files??
-
-I think by modifying 8250_of.c, you should be able to make any UART on
-some LPC bus work, regardless of what controller is used.
-
-The ACPI version (8250_pnp.c) shouldn't need any changes at all if I
-read that correctly.
-
-	Arnd
+T24gV2VkbmVzZGF5LCBTZXB0ZW1iZXIgMjEsIDIwMTYgNDoyMDo1NSBQTSBDRVNUIEdhYnJpZWxl
+IFBhb2xvbmkgd3JvdGU6Cj4gPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+ID4gRnJvbTog
+emhpY2hhbmcgW21haWx0bzp6aGljaGFuZy55dWFuMDJAZ21haWwuY29tXQo+ID4gT24gMjAxNuW5
+tDA55pyIMTXml6UgMjA6MjQsIEFybmQgQmVyZ21hbm4gd3JvdGU6Cj4gPiA+IE9uIFRodXJzZGF5
+LCBTZXB0ZW1iZXIgMTUsIDIwMTYgMTI6MDU6NTEgUE0gQ0VTVCBHYWJyaWVsZSBQYW9sb25pCj4g
+PiB3cm90ZToKPiA+ID4+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+ID4gPj4+IE9uIFRo
+dXJzZGF5LCBTZXB0ZW1iZXIgMTUsIDIwMTYgODowMjoyNyBBTSBDRVNUIEdhYnJpZWxlIFBhb2xv
+bmkKPiA+IHdyb3RlOgo+ID4gPj4gSSB0aGluayB0aGF0IG1heWJlIGhhdmluZyB0aGUgMToxIHJh
+bmdlIG1hcHBpbmcgZG9lc24ndAo+ID4gPj4gcmVmbGVjdCB3ZWxsIHRoZSByZWFsaXR5IGJ1dCBp
+dCBpcyB0aGUgbGVzcyBwYWluZnVsCj4gPiA+PiBzb2x1dGlvbi4uLgo+ID4gPj4KPiA+ID4+IFdo
+YXQncyB5b3VyIHZpZXc/Cj4gPiA+Cj4gPiA+IFdlIGNhbiBjaGVjayB0aGUgJ2knIGJpdCBmb3Ig
+SS9PIHNwYWNlIGluIG9mX2J1c19pc2FfZ2V0X2ZsYWdzLAo+ID4gPiBhbmQgdGhhdCBzaG91bGQg
+YmUgZW5vdWdoIHRvIHRyYW5zbGF0ZSB0aGUgSS9PIHBvcnQgbnVtYmVyLgo+ID4gPgo+ID4gPiBU
+aGUgb25seSBwYXJ0IHdlIG5lZWQgdG8gY2hhbmdlIGhlcmUgaXMgdG8gbm90IGdvIHRocm91Z2gK
+PiA+ID4gdGhlIGNyYXp5IGNvbnZlcnNpb24gYWxsIHRoZSB3YXkgZnJvbSBQQ0kgSS9PIHNwYWNl
+IHRvIGEKPiA+ID4gcGh5c2ljYWwgYWRkcmVzcyBhbmQgYmFjayB0byBhIChsb2dpY2FsKSBwb3J0
+IG51bWJlcgo+ID4gPiB0aGF0IHdlIGRvIHRvZGF5IHdpdGggb2ZfdHJhbnNsYXRlX2FkZHJlc3Mv
+cGNpX2FkZHJlc3NfdG9fcGlvLgo+ID4gPgo+ID4gU29ycnkgZm9yIHRoZSBsYXRlIHJlc3BvbnNl
+ISBTZXZlcmFsIGRheXMnIGxlYXZlLi4uLgo+ID4gRG8geW91IHdhbnQgdG8gYnlwYXNzIG9mX3Ry
+YW5zbGF0ZV9hZGRyZXNzIGFuZCBwY2lfYWRkcmVzc190b19waW8gZm9yCj4gPiB0aGUgcmVnaXN0
+ZXJlZCBzcGVjaWZpYyBQSU8/Cj4gPiBJIHRoaW5rIHRoZSBieXBhc3MgZm9yIG9mX3RyYW5zbGF0
+ZV9hZGRyZXNzIGlzIG9rLCBidXQgd29ycnkgc29tZSBuZXcKPiA+IGlzc3VlcyB3aWxsIGVtZXJn
+ZSB3aXRob3V0IHRoZQo+ID4gY29udmVyc2lvbiBiZXR3ZWVuIHBoeXNpY2FsIGFkZHJlc3MgYW5k
+IGxvZ2ljYWwvbGludXggcG9ydCBudW1iZXIuCgpUaGUgc2FtZSBmdW5jdGlvbiB0aGF0IGhhbmRs
+ZXMgdGhlIG5vbi10cmFuc2xhdGVkIHJlZ2lvbiB3b3VsZApkbyB0aGF0IGNvbnZlcnNpb24uCgo+
+ID4gV2hlbiBQQ0kgaG9zdCBicmlkZ2Ugd2hpY2ggc3VwcG9ydCBJTyBvcGVyYXRpb25zIGlzIGNv
+bmZpZ3VyZWQgYW5kCj4gPiBlbmFibGVkLCB0aGUgcGNpX2FkZHJlc3NfdG9fcGlvIHdpbGwKPiA+
+IHBvcHVsYXRlIHRoZSBsb2dpY2FsIElPIHJhbmdlIGZyb20gWkVSTyBmb3IgdGhlIGZpcnN0IGhv
+c3QgYnJpZGdlLiBPdXIKPiA+IExQQyB3aWxsIGFsc28gdXNlIHBhcnQgb2YgdGhlIElPIHJhbmdl
+Cj4gPiBzdGFydGVkIGZyb20gWkVSTy4gSXQgd2lsbCBtYWtlIGluL291dCBlbnRlciB0aGUgd3Jv
+bmcgYnJhbmNoIHBvc3NpYmx5Lgo+ID4gCj4gPiBJbiBWMiwgdGhlIDAgLSAweDEwMDAgbG9naWNh
+bCBJTyByYW5nZSBpcyByZXNlcnZlZCBmb3IgTFBDIHVzZSBvbmx5Lgo+ID4gQnV0IGl0IHNlZW1z
+IG5vdCBzbyBnb29kLiBJbiB0aGlzIHdheSwKPiA+IFBDSSBoYXMgbm8gY2hhbmNlIHRvIHVzZSBs
+b3cgNEsgSU8gcmFuZ2UobG9naWNhbCkuCj4gPiAKPiA+IFNvLCBpbiBWMywgYXBwbHlpbmcgdGhl
+IGNvbnZlcnNpb24gZnJvbSBwaHlzaWNhbC9jcHUgYWRkcmVzcyB0bwo+ID4gbG9naWNhbC9saW51
+eCBJTyBwb3J0IGZvciBhbnkgSU8gcmFuZ2VzLAo+ID4gaW5jbHVkaW5nIHRoZSBMUEMsIGJ1dCBy
+ZWNvcmRlZCB0aGUgbG9naWNhbCBJTyByYW5nZSBmb3IgTFBDLiBXaGVuCj4gPiBjYWxsaW5nIGlu
+L291dCB3aXRoIGEgbG9naWNhbCBwb3J0IGFkZHJlc3MsCj4gPiB3ZSBjYW4gY2hlY2sgdGhpcyBw
+b3J0IGZhbGwgaW50byBMUEMgbG9naWNhbCBJTyByYW5nZSBhbmQgZ2V0IGJhY2sgdGhlCj4gPiBy
+ZWFsIElPLgoKUmlnaHQsIGFuZCB0aGUgc2FtZSB0cmFuc2xhdGlvbiBjYW4gYmUgdXNlZCBpbiBf
+X29mX2FkZHJlc3NfdG9fcmVzb3VyY2UoKQpnb2luZyB0aGUgb3Bwb3NpdGUgd2F5LgoKPiA+IERv
+IHlvdSBoYXZlIGZ1cnRoZXIgY29tbWVudHMgYWJvdXQgdGhpcz8/Cj4gCj4gSSB0aGluayB0aGVy
+ZSBhcmUgdHdvIHNlcGFyYXRlIGlzc3VlcyB0byBiZSBkaXNjdXNzZWQ6Cj4gCj4gVGhlIGZpcnN0
+IGlzc3VlIGlzIGFib3V0IGhhdmluZyBvZl90cmFuc2xhdGVfYWRkcmVzcyBmYWlsaW5nIGR1ZSB0
+bwo+ICJyYW5nZSIgbWlzc2luZy4gQWJvdXQgdGhpcyBBcm5kIHN1Z2dlc3RlZCB0aGF0IGl0IGlz
+IG5vdCBhcHByb3ByaWF0ZQo+IHRvIGhhdmUgYSByYW5nZSBkZXNjcmliaW5nIGEgYnJpZGdlIDE6
+MSBtYXBwaW5nIGFuZCB0aGlzIHdhcyBkaXNjdXNzZWQKPiBiZWZvcmUgaW4gdGhpcyB0aHJlYWQu
+IEFybmQgaGFkIGEgc3VnZ2VzdGlvbiBhYm91dCB0aGlzIChzZWUgYmVsb3cpIAo+IGhvd2V2ZXIg
+KGxvb2tpbmcgdHdpY2UgYXQgdGhlIGNvZGUpIGl0IHNlZW1zIHRvIG1lIHRoYXQgc3VjaCBzb2x1
+dGlvbiAKPiB3b3VsZCBsZWFkIHRvIHF1aXRlIHNvbWUgZHVwbGljYXRpb24gZnJvbSBfX29mX3Ry
+YW5zbGF0ZV9hZGRyZXNzKCkKPiBpbiBvcmRlciB0byByZXRyaWV2ZSB0aGUgYWN0dWFsIGFkZHIg
+ZnJvbSBkdC4uLgoKSSBkb24ndCB0aGluayB3ZSBuZWVkIHRvIGR1cGxpY2F0ZSBtdWNoLCB3ZSBj
+YW4gcHJvYmFibHkgc2FmZWx5CmFzc3VtZSB0aGF0IHRoZXJlIGFyZSBubyBub250cml2aWFsIHJh
+bmdlcyBpbiBkZXZpY2VzIGJlbG93IHRoZSBMUEMKbm9kZSwgc28gd2UganVzdCB3YWxrIHVwIHRo
+ZSBidXMgdG8gc2VlIGlmIHRoZSBub2RlIGlzIGEgY2hpbGQKKG9yIHBvc3NpYmx5IGdyYW5kY2hp
+bGQgZXRjKSBvZiB0aGUgTFBDIGJ1cywgYW5kIHRyZWF0IGFueSBJTyBwb3J0Cm51bWJlciB1bmRl
+ciB0aGVyZSBhcyBhIHBoeXNpY2FsIHBvcnQgbnVtYmVyLCB3aGljaCBoYXMgYSBrbm93bgpvZmZz
+ZXQgZnJvbSB0aGUgTGludXggSS9PIHBvcnQgbnVtYmVyLgoKPiBJIHRoaW5rIGV4dGVuZGluZyBv
+Zl9lbXB0eV9yYW5nZXNfcXVpcmsoKSBtYXkgYmUgYSByZWFzb25hYmxlIHNvbHV0aW9uLgo+IFdo
+YXQgZG8geW91IHRoaW5rIEFybmQ/CgpJIGRvbid0IHJlYWxseSBsaWtlIHRoYXQgaWRlYSwgdGhh
+dCBxdWlyayBpcyBtZWFudCB0byB3b3JrIGFyb3VuZApicm9rZW4gRFRzLCBidXQgd2UgY2FuIGp1
+c3QgbWFrZSB0aGUgRFQgdmFsaWQgYW5kIGltcGxlbWVudCB0aGUKY29kZSBwcm9wZXJseS4KCj4g
+VGhlIHNlY29uZCBpc3N1ZSBpcyBhIGNvbmZsaWN0IGJldHdlZW4gY3B1IGFkZHJlc3NlcyB1c2Vk
+IGJ5IHRoZSBMUEMKPiBjb250cm9sbGVyIGFuZCBpL28gdG9rZW5zIGZyb20gcGNpIGVuZHBvaW50
+cy4KPiAKPiBBYm91dCB0aGlzIHdoYXQgaWYgd2UgbW9kaWZ5IGFybW42NF9leHRpb19vcHMgdG8g
+aGF2ZSBhIGxpc3Qgb2YgcmFuZ2VzCj4gcmF0aGVyIHRoYW4gb25seSBvbmUgcmFuZ2UgKG5vdyB3
+ZSBoYXZlIGp1c3Qgc3RhcnQvZW5kKTsgdGhlbiBpbiB0aGUKPiBMUEMgZHJpdmVyIHdlIGNhbiBz
+Y2FuIHRoZSBMUEMgY2hpbGQgZGV2aWNlcyBhbmQgCj4gMSkgcG9wdWxhdGUgc3VjaCBsaXN0IG9m
+IHJhbmdlcwo+IDIpIGNhbGwgcGNpX3JlZ2lzdGVyX2lvX3JhbmdlIGZvciBzdWNoIHJhbmdlcwoK
+U2Nhbm5pbmcgdGhlIGNoaWxkIGRldmljZXMgc291bmRzIHJlYWxseSB3cm9uZywgcGxlYXNlIHJl
+Z2lzdGVyIGp1c3QKb25lIHJhbmdlIHRoYXQgY292ZXJzIHRoZSBidXMgdG8ga2VlcCB0aGUgd29y
+a2Fyb3VuZCBhcyBzaW1wbGUKYXMgcG9zc2libGUuCgo+IFRoZW4gd2hlbiBjYWxsaW5nIF9fb2Zf
+YWRkcmVzc190b19yZXNvdXJjZSB3ZSByZXRyaWV2ZSBJL08gdG9rZW5zIAo+IGZvciB0aGUgZGV2
+aWNlcyBvbiB0b3Agb2YgdGhlIExQQyBkcml2ZXIgYW5kIGluIHRoZSBJL08gYWNjZXNzb3JzCj4g
+d2UgY2FsbCBwY2lfcGlvX3RvX2FkZHJlc3MgdG8gZmlndXJlIG91dCB0aGUgY3B1IGFkZHJlc3Mg
+YW5kIGNvbXBhcmUKPiBpdCB0byB0aGUgbGlzdCBvZiByYW5nZXMgaW4gYXJtbjY0X2V4dGlvX29w
+cy4KPiAgIAo+IFdoYXQgYWJvdXQgdGhpcz8KClRoYXQgc2VlbXMgcmVhbGx5IGNvbXBsZXggZm9y
+IHNvbWV0aGluZyB0aGF0IGNhbiBiZSBxdWl0ZSBzaW1wbGUuClRoZSBvbmx5IHRoaW5nIHdlIG5l
+ZWQgdG8gd29ycnkgYWJvdXQgaXMgdGhhdCB0aGUgaW9fcmFuZ2VfbGlzdApjb250YWlucyBhbiBl
+bnRyeSBmb3IgdGhlIExQQyBidXMgc28gd2UgZG9uJ3QgY29uZmxpY3Qgd2l0aCB0aGUKUENJIGJ1
+c2VzLgoKCUFybmQKCglBcm5kCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVs
+QGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
