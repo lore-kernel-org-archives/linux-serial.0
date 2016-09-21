@@ -1,63 +1,41 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: [PATCH] tty/serial: atmel: fix fractional baud rate computation
-Date: Wed, 21 Sep 2016 12:44:14 +0200
-Message-ID: <20160921104414.16241-1-nicolas.ferre@atmel.com>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: Re: [PATCH v10 0/4] ACPI: parse the SPCR table
+Date: Wed, 21 Sep 2016 11:19:35 -0500
+Message-ID: <CAOZdJXV2KyZAbrRxQ_zmFNd3Gn4vyuqSsUfJMTU8wpiOtjyE=g@mail.gmail.com>
+References: <20160905123617.18775-1-aleksey.makarov@linaro.org>
+ <25d32778-e708-6763-7cb2-4ddbeebc844b@linaro.org>
+ <20160921103749.GA7993@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: aystarik@gmail.com, Ludovic Desroches <ludovic.desroches@atmel.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, richard.genoud@gmail.com, linux-serial@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Cyrille Pitchen <cyrille.pitchen@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160921103749.GA7993@kroah.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Zheng, Lv" <lv.zheng@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Graeme Gregory <graeme.gregory@linaro.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, lkml <linux-kernel@vger.kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, linux-acpi@vger.kernel.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Yury Norov <ynorov@caviumnetworks.com>, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Mark Salter <msalter@redhat.com>, Al Stone <ahs3@redhat.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Alexey Starikovskiy <aystarik@gmail.com>
+On Wed, Sep 21, 2016 at 5:37 AM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> I thought you asked Rafael to take them, they are not in my queue
+> anymore because of that.  Don't try to shop-around for maintainers
+> please, that's kind of rude...
 
-The problem with previous code was it rounded values in wrong
-place and produced wrong baud rate in some cases.
+In Aleksey's defense, these patches have been floating around for far
+too long, so I can understand his frustration.  But as you said, I
+really hope Rafael picks these up for 4.9.  We need these patches for
+ARM server.
 
-Signed-off-by: Alexey Starikovskiy <aystarik@gmail.com>
-[nicolas.ferre@atmel.com: port to newer kernel and add commit log]
-Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
----
- drivers/tty/serial/atmel_serial.c | 10 ++++++----
- include/linux/atmel_serial.h      |  1 +
- 2 files changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 5f550d9feed9..fd8aa1f4ba78 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -2170,13 +2170,15 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 * accurately. This feature is enabled only when using normal mode.
- 	 * baudrate = selected clock / (8 * (2 - OVER) * (CD + FP / 8))
- 	 * Currently, OVER is always set to 0 so we get
--	 * baudrate = selected clock (16 * (CD + FP / 8))
-+	 * baudrate = selected clock / (16 * (CD + FP / 8))
-+	 * then
-+	 * 8 CD + FP = selected clock / (2 * baudrate)
- 	 */
- 	if (atmel_port->has_frac_baudrate &&
- 	    (mode & ATMEL_US_USMODE) == ATMEL_US_USMODE_NORMAL) {
--		div = DIV_ROUND_CLOSEST(port->uartclk, baud);
--		cd = div / 16;
--		fp = DIV_ROUND_CLOSEST(div % 16, 2);
-+		div = DIV_ROUND_CLOSEST(port->uartclk, baud * 2);
-+		cd = div >> 3;
-+		fp = div & ATMEL_US_FP_MASK;
- 	} else {
- 		cd = uart_get_divisor(port, baud);
- 	}
-diff --git a/include/linux/atmel_serial.h b/include/linux/atmel_serial.h
-index f8e452aa48d7..bd2560502f3c 100644
---- a/include/linux/atmel_serial.h
-+++ b/include/linux/atmel_serial.h
-@@ -119,6 +119,7 @@
- #define ATMEL_US_BRGR		0x20	/* Baud Rate Generator Register */
- #define	ATMEL_US_CD		GENMASK(15, 0)	/* Clock Divider */
- #define ATMEL_US_FP_OFFSET	16	/* Fractional Part */
-+#define ATMEL_US_FP_MASK	0x7
- 
- #define ATMEL_US_RTOR		0x24	/* Receiver Time-out Register for USART */
- #define ATMEL_UA_RTOR		0x28	/* Receiver Time-out Register for UART */
 -- 
-2.9.0
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project.
