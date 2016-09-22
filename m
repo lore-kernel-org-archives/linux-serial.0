@@ -1,106 +1,60 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
-Date: Thu, 22 Sep 2016 14:14:31 +0200
-Message-ID: <9178320.n4yHmfyPA3@wuerfel>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com> <3538381.vOsx75UXVU@wuerfel> <EE11001F9E5DDD47B7634E2F8A612F2E1F881744@lhreml507-mbx>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCHv2 1/3] serial: mctrl_gpio: implement mctrl_gpio_use_rtscts
+Date: Thu, 22 Sep 2016 15:14:05 +0200
+Message-ID: <20160922131405.y4wvgd3n534jbdv5@pengutronix.de>
+References: <20160912094733.21501-1-richard.genoud@gmail.com>
+ <20160912094733.21501-2-richard.genoud@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F881744@lhreml507-mbx>
+Content-Disposition: inline
+In-Reply-To: <20160912094733.21501-2-richard.genoud@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Cc: zhichang <zhichang.yuan02@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yuanzhichang <yuanzhichang@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "xuwei (O)" <xuwei5@hisilicon.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, zourong
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Cyrille Pitchen <cyrille.pitchen@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thursday, September 22, 2016 11:55:45 AM CEST Gabriele Paoloni wrote:
-> > > I think extending of_empty_ranges_quirk() may be a reasonable
-> > solution.
-> > > What do you think Arnd?
-> > 
-> > I don't really like that idea, that quirk is meant to work around
-> > broken DTs, but we can just make the DT valid and implement the
-> > code properly.
+On Mon, Sep 12, 2016 at 11:47:31AM +0200, Richard Genoud wrote:
+> This function returns true if CTS and RTS are used as GPIOs.
+> Some drivers (like atmel_serial) needs to know if the flow control is
+> handled by the controller or by GPIOs.
 > 
-> Ok  I understand your point where it is not right to use of_empty_ranges_quirk()
-> As a quirk is used to work around broken HW or broken FW (as in this case)
-> rather than to fix code
+> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+> ---
+>  drivers/tty/serial/serial_mctrl_gpio.c |  8 ++++++++
+>  drivers/tty/serial/serial_mctrl_gpio.h | 10 ++++++++++
+>  2 files changed, 18 insertions(+)
 > 
-> What about the following? I think adding the check you suggested next to
-> of_empty_ranges_quirk() is adding the case we need in the right point (thus
-> avoiding any duplication)
->  
-> --- a/drivers/of/address.c
-> +++ b/drivers/of/address.c
-> @@ -457,6 +457,15 @@ static struct of_bus *of_match_bus(struct device_node *np)
->         return NULL;
+> diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+> index d2da6aa7f27d..93bed8c99796 100644
+> --- a/drivers/tty/serial/serial_mctrl_gpio.c
+> +++ b/drivers/tty/serial/serial_mctrl_gpio.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/err.h>
+>  #include <linux/device.h>
+>  #include <linux/irq.h>
+> +#include <linux/err.h>
+>  #include <linux/gpio/consumer.h>
+>  #include <linux/termios.h>
+>  #include <linux/serial_core.h>
+> @@ -72,6 +73,13 @@ struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
 >  }
+>  EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
 >  
-> +static inline int of_isa_indirect_io(struct device_node *np)
+> +bool mctrl_gpio_use_rtscts(struct mctrl_gpios *gpios)
 > +{
-> +       /*
-> +        * check if the current node is an isa bus and if indirectio operation
-> +        * are registered
-> +        */
-> +       return (of_bus_isa_match(np) && arm64_extio_ops);
-> +}
-> +
->  static int of_empty_ranges_quirk(struct device_node *np)
->  {
->         if (IS_ENABLED(CONFIG_PPC)) {
-> @@ -503,7 +512,7 @@ static int of_translate_one(struct device_node *parent, struct of_bus *bus,
->          * This code is only enabled on powerpc. --gcl
->          */
->         ranges = of_get_property(parent, rprop, &rlen);
-> -       if (ranges == NULL && !of_empty_ranges_quirk(parent)) {
-> +       if (ranges == NULL && !of_empty_ranges_quirk(parent) && !of_isa_indirect_io(parent)) {
->                 pr_debug("OF: no ranges; cannot translate\n");
->                 return 1;
->         }
+> +	return !IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS)) &&
+> +		!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_RTS));
 
-I don't see what effect that would have. What do you want to
-achieve with this?
+mctrl_gpio_to_gpiod cannot return an error pointer. So this is
+(surprise!) a wrong usage of IS_ERR_OR_NULL.
 
-I think all we need from this function is to return '1' if
-we hit an ISA I/O window, and that should happen for the two
-interesting cases, either no 'ranges' at all, or no translation
-for the range in question, so that __of_translate_address can
-return OF_BAD_ADDR, and we can enter the special case
-handling in the caller, that handles it like
-
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 02b2903fe9d2..a18d96843fae 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -685,17 +685,24 @@ static int __of_address_to_resource(struct device_node *dev,
- 	if ((flags & (IORESOURCE_IO | IORESOURCE_MEM)) == 0)
- 		return -EINVAL;
- 	taddr = of_translate_address(dev, addrp);
--	if (taddr == OF_BAD_ADDR)
--		return -EINVAL;
- 	memset(r, 0, sizeof(struct resource));
-+
- 	if (flags & IORESOURCE_IO) {
- 		unsigned long port;
--		port = pci_address_to_pio(taddr);
-+
-+		if (taddr == OF_BAD_ADDR)
-+			port = arch_of_address_to_pio(dev, addrp)
-+		else
-+			port = pci_address_to_pio(taddr);
-+
- 		if (port == (unsigned long)-1)
- 			return -EINVAL;
- 		r->start = port;
- 		r->end = port + size - 1;
- 	} else {
-+		if (taddr == OF_BAD_ADDR)
-+			return -EINVAL;
-+
- 		r->start = taddr;
- 		r->end = taddr + size - 1;
- 	}
+Best regards
+Uwe
 
 
-
-	Arnd
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
