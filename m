@@ -1,114 +1,161 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCHv2 2/3] tty/serial: at91: fix hardware handshake with GPIOs
-Date: Thu, 22 Sep 2016 15:20:45 +0200
-Message-ID: <20160922132045.tbrd5u56qasaf7gn@pengutronix.de>
-References: <20160912094733.21501-1-richard.genoud@gmail.com>
- <20160912094733.21501-3-richard.genoud@gmail.com>
+From: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+Subject: RE: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
+Date: Thu, 22 Sep 2016 14:47:14 +0000
+Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F882AD3@lhreml507-mbx>
+References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
+ <3538381.vOsx75UXVU@wuerfel>
+ <EE11001F9E5DDD47B7634E2F8A612F2E1F881744@lhreml507-mbx>
+ <9178320.n4yHmfyPA3@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20160912094733.21501-3-richard.genoud@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-serial@vger.kernel.org, Cyrille Pitchen <cyrille.pitchen@atmel.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <9178320.n4yHmfyPA3@wuerfel>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: zhichang <zhichang.yuan02@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yuanzhichang <yuanzhichang@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "xuwei (O)" <xuwei5@hisilicon.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, zourong
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Sep 12, 2016 at 11:47:32AM +0200, Richard Genoud wrote:
-> Commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
-> hardware handshake is enabled") broke the hardware handshake when GPIOs
-> where used.
+Hi Arnd
 
-s/where/were/
+> -----Original Message-----
+> From: Arnd Bergmann [mailto:arnd@arndb.de]
+> Sent: 22 September 2016 13:15
+> To: Gabriele Paoloni
+> Cc: zhichang; linux-arm-kernel@lists.infradead.org;
+> devicetree@vger.kernel.org; lorenzo.pieralisi@arm.com; minyard@acm.org;
+> linux-pci@vger.kernel.org; gregkh@linuxfoundation.org; John Garry;
+> will.deacon@arm.com; linux-kernel@vger.kernel.org; Yuanzhichang;
+> Linuxarm; xuwei (O); linux-serial@vger.kernel.org;
+> benh@kernel.crashing.org; zourongrong@gmail.com; liviu.dudau@arm.com;
+> kantyzc@163.com
+> Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on
+> Hip06
+> 
+> On Thursday, September 22, 2016 11:55:45 AM CEST Gabriele Paoloni
+> wrote:
+> > > > I think extending of_empty_ranges_quirk() may be a reasonable
+> > > solution.
+> > > > What do you think Arnd?
+> > >
+> > > I don't really like that idea, that quirk is meant to work around
+> > > broken DTs, but we can just make the DT valid and implement the
+> > > code properly.
+> >
+> > Ok  I understand your point where it is not right to use
+> of_empty_ranges_quirk()
+> > As a quirk is used to work around broken HW or broken FW (as in this
+> case)
+> > rather than to fix code
+> >
+> > What about the following? I think adding the check you suggested next
+> to
+> > of_empty_ranges_quirk() is adding the case we need in the right point
+> (thus
+> > avoiding any duplication)
+> >
+> > --- a/drivers/of/address.c
+> > +++ b/drivers/of/address.c
+> > @@ -457,6 +457,15 @@ static struct of_bus *of_match_bus(struct
+> device_node *np)
+> >         return NULL;
+> >  }
+> >
+> > +static inline int of_isa_indirect_io(struct device_node *np)
+> > +{
+> > +       /*
+> > +        * check if the current node is an isa bus and if indirectio
+> operation
+> > +        * are registered
+> > +        */
+> > +       return (of_bus_isa_match(np) && arm64_extio_ops);
+> > +}
+> > +
+> >  static int of_empty_ranges_quirk(struct device_node *np)
+> >  {
+> >         if (IS_ENABLED(CONFIG_PPC)) {
+> > @@ -503,7 +512,7 @@ static int of_translate_one(struct device_node
+> *parent, struct of_bus *bus,
+> >          * This code is only enabled on powerpc. --gcl
+> >          */
+> >         ranges = of_get_property(parent, rprop, &rlen);
+> > -       if (ranges == NULL && !of_empty_ranges_quirk(parent)) {
+> > +       if (ranges == NULL && !of_empty_ranges_quirk(parent) &&
+> !of_isa_indirect_io(parent)) {
+> >                 pr_debug("OF: no ranges; cannot translate\n");
+> >                 return 1;
+> >         }
+> 
+> I don't see what effect that would have. What do you want to
+> achieve with this?
 
-> Hardware handshake with GPIOs used to work before this commit because
-> the CRTSCTS flag (termios->c_cflag) was set, but not the
-> ATMEL_US_USMODE_HWHS flag (controller register) ; so hardware handshake
-> enabled, but not handled by the controller.
-> =
+If I read the code correctly adding the function above would end
+up in a 1:1 mapping:
+http://lxr.free-electrons.com/source/drivers/of/address.c#L513
 
-> This commit restores this behaviour.
-> =
+so taddr will be assigned with the cpu address space specified
+in the children nodes of LPC and we are not using a quirk function
+(we are just checking that we have the indirect io assigned and
+that we are on a ISA bus). Now probably there is a nit in my 
+code sketch where of_isa_indirect_io should be probably an architecture
+specific function...
 
-> NB: -stable is not Cced because it doesn't cleanly apply on 4.1+
-> and it will also need previous commit:
-> "serial: mctrl_gpio: implement mctrl_gpio_use_rtscts"
-> =
+> 
+> I think all we need from this function is to return '1' if
+> we hit an ISA I/O window, and that should happen for the two
+> interesting cases, either no 'ranges' at all, or no translation
+> for the range in question, so that __of_translate_address can
+> return OF_BAD_ADDR, and we can enter the special case
+> handling in the caller, that handles it like
+> 
 
-> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
-> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> Fixes: 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when hard=
-ware handshake is enabled")
-> ---
->  drivers/tty/serial/atmel_serial.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
-> =
+I don't think this is very right as you may fail for different
+reasons other than a missing range property, e.g:
+http://lxr.free-electrons.com/source/drivers/of/address.c#L575
 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel=
-_serial.c
-> index 2eaa18ddef61..e9b4fbf88c2d 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2025,6 +2025,7 @@ static void atmel_serial_pm(struct uart_port *port,=
- unsigned int state,
->  static void atmel_set_termios(struct uart_port *port, struct ktermios *t=
-ermios,
->  			      struct ktermios *old)
->  {
-> +	struct atmel_uart_port *atmel_port =3D to_atmel_uart_port(port);
->  	unsigned long flags;
->  	unsigned int old_mode, mode, imr, quot, baud;
->  =
+And even if the only failure case was a missing range if in the
+future __of_translate_address had to be reworked we would again
+make a wrong assumption...you get my point?
 
-> @@ -2126,8 +2127,12 @@ static void atmel_set_termios(struct uart_port *po=
-rt, struct ktermios *termios,
->  		atmel_uart_writel(port, ATMEL_US_TTGR,
->  				  port->rs485.delay_rts_after_send);
->  		mode |=3D ATMEL_US_USMODE_RS485;
-> -	} else if (termios->c_cflag & CRTSCTS) {
-> -		/* RS232 with hardware handshake (RTS/CTS) */
-> +	} else if ((termios->c_cflag & CRTSCTS) &&
-> +		   !mctrl_gpio_use_rtscts(atmel_port->gpios)) {
+Thanks
 
-IMHO the behaviour of the hw controlled pins shouldn't change when
-mctrl_gpio is in use (if possible). But I don't understand the issue so
-I guess you need a better changelog.
+Gab
 
-
-> +		/*
-> +		 * RS232 with hardware handshake (RTS/CTS)
-> +		 * handled by the controller.
-> +		 */
->  		if (atmel_use_dma_rx(port) && !atmel_use_fifo(port)) {
->  			dev_info(port->dev, "not enabling hardware flow control because DMA i=
-s used");
->  			termios->c_cflag &=3D ~CRTSCTS;
-> @@ -2135,7 +2140,7 @@ static void atmel_set_termios(struct uart_port *por=
-t, struct ktermios *termios,
->  			mode |=3D ATMEL_US_USMODE_HWHS;
->  		}
+> diff --git a/drivers/of/address.c b/drivers/of/address.c
+> index 02b2903fe9d2..a18d96843fae 100644
+> --- a/drivers/of/address.c
+> +++ b/drivers/of/address.c
+> @@ -685,17 +685,24 @@ static int __of_address_to_resource(struct
+> device_node *dev,
+>  	if ((flags & (IORESOURCE_IO | IORESOURCE_MEM)) == 0)
+>  		return -EINVAL;
+>  	taddr = of_translate_address(dev, addrp);
+> -	if (taddr == OF_BAD_ADDR)
+> -		return -EINVAL;
+>  	memset(r, 0, sizeof(struct resource));
+> +
+>  	if (flags & IORESOURCE_IO) {
+>  		unsigned long port;
+> -		port = pci_address_to_pio(taddr);
+> +
+> +		if (taddr == OF_BAD_ADDR)
+> +			port = arch_of_address_to_pio(dev, addrp)
+> +		else
+> +			port = pci_address_to_pio(taddr);
+> +
+>  		if (port == (unsigned long)-1)
+>  			return -EINVAL;
+>  		r->start = port;
+>  		r->end = port + size - 1;
 >  	} else {
-> -		/* RS232 without hadware handshake */
-> +		/* RS232 without hadware handshake or controlled by GPIOs */
-
-When touching this line, please also do s/hadware/hardware/.
-
->  		mode |=3D ATMEL_US_USMODE_NORMAL;
+> +		if (taddr == OF_BAD_ADDR)
+> +			return -EINVAL;
+> +
+>  		r->start = taddr;
+>  		r->end = taddr + size - 1;
 >  	}
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> 
+> 
+> 
+> 	Arnd
