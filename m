@@ -1,7 +1,7 @@
 From: <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
-Subject: [PATCHv2 2/4] serial: 8250: of: Load TX FIFO Threshold from DT
-Date: Thu, 22 Sep 2016 14:56:15 -0500
-Message-ID: <1474574177-4984-3-git-send-email-tthayer@opensource.altera.com>
+Subject: [PATCHv2 4/4] nios2: dts: 10m50: Add tx-threshold parameter
+Date: Thu, 22 Sep 2016 14:56:17 -0500
+Message-ID: <1474574177-4984-5-git-send-email-tthayer@opensource.altera.com>
 References: <1474574177-4984-1-git-send-email-tthayer@opensource.altera.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -14,44 +14,28 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
 
-Initialize the tx_loadsz parameter from passed in devicetree
-tx-threshold parameter.
-The tx_loadsz is calculated as the number of bytes to fill FIFO
-when tx-threshold is triggered.
+The tx-threshold parameter sets the TX FIFO low water threshold
+trigger for the Altera 16550-FIFO32 soft IP.
 
 Signed-off-by: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
 ---
-v2  Change from reading tx-loadsz parameter to reading
-    tx-threshold and calculating tx_loadsz.
+v2   Change from tx-loadsz to tx-threshold
 ---
- drivers/tty/serial/8250/8250_of.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/nios2/boot/dts/10m50_devboard.dts |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 38963d7..7a8b5fc 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -195,6 +195,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 	switch (port_type) {
- 	case PORT_8250 ... PORT_MAX_8250:
- 	{
-+		u32 tx_threshold;
- 		struct uart_8250_port port8250;
- 		memset(&port8250, 0, sizeof(port8250));
- 		port8250.port = port;
-@@ -202,6 +203,12 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 		if (port.fifosize)
- 			port8250.capabilities = UART_CAP_FIFO;
+diff --git a/arch/nios2/boot/dts/10m50_devboard.dts b/arch/nios2/boot/dts/10m50_devboard.dts
+index 3e411c6..f362b22 100755
+--- a/arch/nios2/boot/dts/10m50_devboard.dts
++++ b/arch/nios2/boot/dts/10m50_devboard.dts
+@@ -83,6 +83,7 @@
+ 			fifo-size = <32>;
+ 			reg-io-width = <4>;
+ 			reg-shift = <2>;
++			tx-threshold = <16>;
+ 		};
  
-+		/* Check for TX FIFO threshold & set tx_loadsz */
-+		if ((of_property_read_u32(ofdev->dev.of_node, "tx-threshold",
-+					  &tx_threshold) == 0) &&
-+		    (tx_threshold < port.fifosize))
-+			port8250.tx_loadsz = port.fifosize - tx_threshold;
-+
- 		if (of_property_read_bool(ofdev->dev.of_node,
- 					  "auto-flow-control"))
- 			port8250.capabilities |= UART_CAP_AFE;
+ 		sysid: sysid@18001528 {
 -- 
 1.7.9.5
 
