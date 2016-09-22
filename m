@@ -1,45 +1,110 @@
-From: <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
-Subject: [PATCHv2 0/4] Add TX FIFO Threshold for Altera 16550-FIFOxx
-Date: Thu, 22 Sep 2016 14:56:13 -0500
-Message-ID: <1474574177-4984-1-git-send-email-tthayer@opensource.altera.com>
+From: <tthayer@opensource.altera.com>
+Subject: [PATCHv2 3/4] serial: 8250: Set Altera 16550 TX FIFO Threshold
+Date: Thu, 22 Sep 2016 14:56:16 -0500
+Message-ID: <1474574177-4984-4-git-send-email-tthayer@opensource.altera.com>
+References: <1474574177-4984-1-git-send-email-tthayer@opensource.altera.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, anton.wuerfel-d40JDW7QUjc@public.gmane.org, phillip.raffeck-d40JDW7QUjc@public.gmane.org, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org, matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org, mail-APzI5cXaD1zVlRWJc41N0YvC60bnQu0Y@public.gmane.org
-Cc: peter.ujfalusi-l0cyMroinI0@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, dongsheng.wang-3arQi8VN3Tc@public.gmane.org, luis-HiykPkW1eAzzDCI4PIEvbQC/G2K4zDHf@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tthayer.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1474574177-4984-1-git-send-email-tthayer@opensource.altera.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, lftan@altera.com, jslaby@suse.com, arnd@arndb.de, peter@hurleysoftware.com, andriy.shevchenko@linux.intel.com, anton.wuerfel@fau.de, phillip.raffeck@fau.de, yegorslists@googlemail.com, matwey@sai.msu.ru, mail@maciej.szmigiero.name
+Cc: peter.ujfalusi@ti.com, jonathanh@nvidia.com, dongsheng.wang@nxp.com, luis@debethencourt.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, tthayer.linux@gmail.com, tthayer@opensource.altera.com, nios2-dev@lists.rocketboards.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+From: Thor Thayer <tthayer@opensource.altera.com>
 
-Some variants of the 16550 have a programmable TX FIFO threshold that
-will trigger an IRQ when the FIFO drops below the threshold. The Altera
-16550 compatible soft IP supports programmable TX FIFO thresholds.
+The Altera 16550 soft IP UART requires 2 additional registers for
+TX FIFO threshold support. These 2 registers enable the TX FIFO
+Low Watermark and set the TX FIFO Low Watermark.
+Set the TX FIFO threshold to the FIFO size - tx_loadsz.
 
-This patch series adds the tx-threshold parameter to the device tree.
-The tx_loadsz variable is amount of data that can be loaded into the
-FIFO on an IRQ and is updated based on the tx-threshold value.
+Signed-off-by: Thor Thayer <tthayer@opensource.altera.com>
+---
+v2  Add bounds checking of tx threshold value.
+---
+ drivers/tty/serial/8250/8250_port.c |   43 +++++++++++++++++++++++++++++++++++
+ include/uapi/linux/serial_reg.h     |    8 +++++++
+ 2 files changed, 51 insertions(+)
 
-This patch series also adds support for the TX FIFO threshold registers
-in the Altera 16550-FIFOxx soft IP.
-
-Thor Thayer (4):
-  Documentation: dt: serial: Add TX FIFO threshold parameter
-  serial: 8250: of: Load TX FIFO Threshold from DT
-  serial: 8250: Set Altera 16550 TX FIFO Threshold
-  nios2: dts: 10m50: Add tx-threshold parameter
-
- Documentation/devicetree/bindings/serial/8250.txt |    2 +
- arch/nios2/boot/dts/10m50_devboard.dts            |    1 +
- drivers/tty/serial/8250/8250_of.c                 |    7 ++++
- drivers/tty/serial/8250/8250_port.c               |   43 +++++++++++++++++++++
- include/uapi/linux/serial_reg.h                   |    8 ++++
- 5 files changed, 61 insertions(+)
-
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index ae3a104..24ef65a 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1870,6 +1870,30 @@ static int exar_handle_irq(struct uart_port *port)
+ 	return ret;
+ }
+ 
++/*
++ * Newer 16550 compatible parts such as the SC16C650 & Altera 16550 Soft IP
++ * have a programmable TX threshold that triggers the THRE interrupt in
++ * the IIR register. In this case, the THRE interrupt indicates the FIFO
++ * has space available. Load it up with tx_loadsz bytes.
++ */
++static int serial8250_tx_threshold_handle_irq(struct uart_port *port)
++{
++	unsigned long flags;
++	unsigned int iir = serial_port_in(port, UART_IIR);
++
++	/* TX Threshold IRQ triggered so load up FIFO */
++	if ((iir & UART_IIR_ID) == UART_IIR_THRI) {
++		struct uart_8250_port *up = up_to_u8250p(port);
++
++		spin_lock_irqsave(&port->lock, flags);
++		serial8250_tx_chars(up);
++		spin_unlock_irqrestore(&port->lock, flags);
++	}
++
++	iir = serial_port_in(port, UART_IIR);
++	return serial8250_handle_irq(port, iir);
++}
++
+ static unsigned int serial8250_tx_empty(struct uart_port *port)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+@@ -2158,6 +2182,25 @@ int serial8250_do_startup(struct uart_port *port)
+ 		serial_port_out(port, UART_LCR, 0);
+ 	}
+ 
++	/*
++	 * For the Altera 16550 variants, set TX threshold trigger level.
++	 */
++	if (((port->type == PORT_ALTR_16550_F32) ||
++	     (port->type == PORT_ALTR_16550_F64) ||
++	     (port->type == PORT_ALTR_16550_F128)) && (port->fifosize > 1)) {
++		/* Bounds checking of TX threshold (valid 0 to fifosize-2) */
++		if ((up->tx_loadsz < 2) || (up->tx_loadsz > port->fifosize)) {
++			pr_err("ttyS%d TX FIFO Threshold errors, skipping\n",
++			       serial_index(port));
++		} else {
++			serial_port_out(port, UART_ALTR_AFR,
++					UART_ALTR_EN_TXFIFO_LW);
++			serial_port_out(port, UART_ALTR_TX_LOW,
++					port->fifosize - up->tx_loadsz);
++			port->handle_irq = serial8250_tx_threshold_handle_irq;
++		}
++	}
++
+ 	if (port->irq) {
+ 		unsigned char iir1;
+ 		/*
+diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+index 1e5ac4e7..b4c0484 100644
+--- a/include/uapi/linux/serial_reg.h
++++ b/include/uapi/linux/serial_reg.h
+@@ -376,5 +376,13 @@
+ #define UART_EXAR_TXTRG		0x0a	/* Tx FIFO trigger level write-only */
+ #define UART_EXAR_RXTRG		0x0b	/* Rx FIFO trigger level write-only */
+ 
++/*
++ * These are definitions for the Altera ALTR_16550_F32/F64/F128
++ * Normalized from 0x100 to 0x40 because of shift by 2 (32 bit regs).
++ */
++#define UART_ALTR_AFR		0x40	/* Additional Features Register */
++#define UART_ALTR_EN_TXFIFO_LW	0x01	/* Enable the TX FIFO Low Watermark */
++#define UART_ALTR_TX_LOW	0x41	/* Tx FIFO Low Watermark */
++
+ #endif /* _LINUX_SERIAL_REG_H */
+ 
 -- 
 1.7.9.5
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
