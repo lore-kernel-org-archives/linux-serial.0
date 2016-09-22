@@ -1,146 +1,106 @@
-From: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Subject: RE: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
-Date: Thu, 22 Sep 2016 11:55:45 +0000
-Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F881744@lhreml507-mbx>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
- <e246c886-e0eb-b635-01ae-f00bbfcfb56b@gmail.com>
- <EE11001F9E5DDD47B7634E2F8A612F2E1F87D223@lhreml507-mbx>
- <3538381.vOsx75UXVU@wuerfel>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
+Date: Thu, 22 Sep 2016 14:14:31 +0200
+Message-ID: <9178320.n4yHmfyPA3@wuerfel>
+References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com> <3538381.vOsx75UXVU@wuerfel> <EE11001F9E5DDD47B7634E2F8A612F2E1F881744@lhreml507-mbx>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <3538381.vOsx75UXVU@wuerfel>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F881744@lhreml507-mbx>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Gabriele Paoloni <gabriele.paoloni@huawei.com>
 Cc: zhichang <zhichang.yuan02@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yuanzhichang <yuanzhichang@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "xuwei (O)" <xuwei5@hisilicon.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, zourong
 List-Id: linux-serial@vger.kernel.org
 
-SGkgQXJuZA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEFybmQgQmVy
-Z21hbm4gW21haWx0bzphcm5kQGFybmRiLmRlXQ0KPiBTZW50OiAyMSBTZXB0ZW1iZXIgMjAxNiAy
-MToxOA0KPiBUbzogR2FicmllbGUgUGFvbG9uaQ0KPiBDYzogemhpY2hhbmc7IGxpbnV4LWFybS1r
-ZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7
-IGxvcmVuem8ucGllcmFsaXNpQGFybS5jb207IG1pbnlhcmRAYWNtLm9yZzsNCj4gbGludXgtcGNp
-QHZnZXIua2VybmVsLm9yZzsgZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc7IEpvaG4gR2Fycnk7
-DQo+IHdpbGwuZGVhY29uQGFybS5jb207IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IFl1
-YW56aGljaGFuZzsNCj4gTGludXhhcm07IHh1d2VpIChPKTsgbGludXgtc2VyaWFsQHZnZXIua2Vy
-bmVsLm9yZzsNCj4gYmVuaEBrZXJuZWwuY3Jhc2hpbmcub3JnOyB6b3Vyb25ncm9uZ0BnbWFpbC5j
-b207IGxpdml1LmR1ZGF1QGFybS5jb207DQo+IGthbnR5emNAMTYzLmNvbQ0KPiBTdWJqZWN0OiBS
-ZTogW1BBVENIIFYzIDIvNF0gQVJNNjQgTFBDOiBMUEMgZHJpdmVyIGltcGxlbWVudGF0aW9uIG9u
-DQo+IEhpcDA2DQo+IA0KPiBPbiBXZWRuZXNkYXksIFNlcHRlbWJlciAyMSwgMjAxNiA0OjIwOjU1
-IFBNIENFU1QgR2FicmllbGUgUGFvbG9uaQ0KPiB3cm90ZToNCj4gPiA+IC0tLS0tT3JpZ2luYWwg
-TWVzc2FnZS0tLS0tDQo+ID4gPiBGcm9tOiB6aGljaGFuZyBbbWFpbHRvOnpoaWNoYW5nLnl1YW4w
-MkBnbWFpbC5jb21dDQo+ID4gPiBPbiAyMDE25bm0MDnmnIgxNeaXpSAyMDoyNCwgQXJuZCBCZXJn
-bWFubiB3cm90ZToNCj4gPiA+ID4gT24gVGh1cnNkYXksIFNlcHRlbWJlciAxNSwgMjAxNiAxMjow
-NTo1MSBQTSBDRVNUIEdhYnJpZWxlIFBhb2xvbmkNCj4gPiA+IHdyb3RlOg0KPiA+ID4gPj4+IC0t
-LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiA+Pj4gT24gVGh1cnNkYXksIFNlcHRlbWJl
-ciAxNSwgMjAxNiA4OjAyOjI3IEFNIENFU1QgR2FicmllbGUNCj4gUGFvbG9uaQ0KPiA+ID4gd3Jv
-dGU6DQo+ID4gPiA+PiBJIHRoaW5rIHRoYXQgbWF5YmUgaGF2aW5nIHRoZSAxOjEgcmFuZ2UgbWFw
-cGluZyBkb2Vzbid0DQo+ID4gPiA+PiByZWZsZWN0IHdlbGwgdGhlIHJlYWxpdHkgYnV0IGl0IGlz
-IHRoZSBsZXNzIHBhaW5mdWwNCj4gPiA+ID4+IHNvbHV0aW9uLi4uDQo+ID4gPiA+Pg0KPiA+ID4g
-Pj4gV2hhdCdzIHlvdXIgdmlldz8NCj4gPiA+ID4NCj4gPiA+ID4gV2UgY2FuIGNoZWNrIHRoZSAn
-aScgYml0IGZvciBJL08gc3BhY2UgaW4gb2ZfYnVzX2lzYV9nZXRfZmxhZ3MsDQo+ID4gPiA+IGFu
-ZCB0aGF0IHNob3VsZCBiZSBlbm91Z2ggdG8gdHJhbnNsYXRlIHRoZSBJL08gcG9ydCBudW1iZXIu
-DQo+ID4gPiA+DQo+ID4gPiA+IFRoZSBvbmx5IHBhcnQgd2UgbmVlZCB0byBjaGFuZ2UgaGVyZSBp
-cyB0byBub3QgZ28gdGhyb3VnaA0KPiA+ID4gPiB0aGUgY3JhenkgY29udmVyc2lvbiBhbGwgdGhl
-IHdheSBmcm9tIFBDSSBJL08gc3BhY2UgdG8gYQ0KPiA+ID4gPiBwaHlzaWNhbCBhZGRyZXNzIGFu
-ZCBiYWNrIHRvIGEgKGxvZ2ljYWwpIHBvcnQgbnVtYmVyDQo+ID4gPiA+IHRoYXQgd2UgZG8gdG9k
-YXkgd2l0aCBvZl90cmFuc2xhdGVfYWRkcmVzcy9wY2lfYWRkcmVzc190b19waW8uDQo+ID4gPiA+
-DQo+ID4gPiBTb3JyeSBmb3IgdGhlIGxhdGUgcmVzcG9uc2UhIFNldmVyYWwgZGF5cycgbGVhdmUu
-Li4uDQo+ID4gPiBEbyB5b3Ugd2FudCB0byBieXBhc3Mgb2ZfdHJhbnNsYXRlX2FkZHJlc3MgYW5k
-IHBjaV9hZGRyZXNzX3RvX3Bpbw0KPiBmb3INCj4gPiA+IHRoZSByZWdpc3RlcmVkIHNwZWNpZmlj
-IFBJTz8NCj4gPiA+IEkgdGhpbmsgdGhlIGJ5cGFzcyBmb3Igb2ZfdHJhbnNsYXRlX2FkZHJlc3Mg
-aXMgb2ssIGJ1dCB3b3JyeSBzb21lDQo+IG5ldw0KPiA+ID4gaXNzdWVzIHdpbGwgZW1lcmdlIHdp
-dGhvdXQgdGhlDQo+ID4gPiBjb252ZXJzaW9uIGJldHdlZW4gcGh5c2ljYWwgYWRkcmVzcyBhbmQg
-bG9naWNhbC9saW51eCBwb3J0IG51bWJlci4NCj4gDQo+IFRoZSBzYW1lIGZ1bmN0aW9uIHRoYXQg
-aGFuZGxlcyB0aGUgbm9uLXRyYW5zbGF0ZWQgcmVnaW9uIHdvdWxkDQo+IGRvIHRoYXQgY29udmVy
-c2lvbi4NCj4gDQo+ID4gPiBXaGVuIFBDSSBob3N0IGJyaWRnZSB3aGljaCBzdXBwb3J0IElPIG9w
-ZXJhdGlvbnMgaXMgY29uZmlndXJlZCBhbmQNCj4gPiA+IGVuYWJsZWQsIHRoZSBwY2lfYWRkcmVz
-c190b19waW8gd2lsbA0KPiA+ID4gcG9wdWxhdGUgdGhlIGxvZ2ljYWwgSU8gcmFuZ2UgZnJvbSBa
-RVJPIGZvciB0aGUgZmlyc3QgaG9zdCBicmlkZ2UuDQo+IE91cg0KPiA+ID4gTFBDIHdpbGwgYWxz
-byB1c2UgcGFydCBvZiB0aGUgSU8gcmFuZ2UNCj4gPiA+IHN0YXJ0ZWQgZnJvbSBaRVJPLiBJdCB3
-aWxsIG1ha2UgaW4vb3V0IGVudGVyIHRoZSB3cm9uZyBicmFuY2gNCj4gcG9zc2libHkuDQo+ID4g
-Pg0KPiA+ID4gSW4gVjIsIHRoZSAwIC0gMHgxMDAwIGxvZ2ljYWwgSU8gcmFuZ2UgaXMgcmVzZXJ2
-ZWQgZm9yIExQQyB1c2UNCj4gb25seS4NCj4gPiA+IEJ1dCBpdCBzZWVtcyBub3Qgc28gZ29vZC4g
-SW4gdGhpcyB3YXksDQo+ID4gPiBQQ0kgaGFzIG5vIGNoYW5jZSB0byB1c2UgbG93IDRLIElPIHJh
-bmdlKGxvZ2ljYWwpLg0KPiA+ID4NCj4gPiA+IFNvLCBpbiBWMywgYXBwbHlpbmcgdGhlIGNvbnZl
-cnNpb24gZnJvbSBwaHlzaWNhbC9jcHUgYWRkcmVzcyB0bw0KPiA+ID4gbG9naWNhbC9saW51eCBJ
-TyBwb3J0IGZvciBhbnkgSU8gcmFuZ2VzLA0KPiA+ID4gaW5jbHVkaW5nIHRoZSBMUEMsIGJ1dCBy
-ZWNvcmRlZCB0aGUgbG9naWNhbCBJTyByYW5nZSBmb3IgTFBDLiBXaGVuDQo+ID4gPiBjYWxsaW5n
-IGluL291dCB3aXRoIGEgbG9naWNhbCBwb3J0IGFkZHJlc3MsDQo+ID4gPiB3ZSBjYW4gY2hlY2sg
-dGhpcyBwb3J0IGZhbGwgaW50byBMUEMgbG9naWNhbCBJTyByYW5nZSBhbmQgZ2V0IGJhY2sNCj4g
-dGhlDQo+ID4gPiByZWFsIElPLg0KPiANCj4gUmlnaHQsIGFuZCB0aGUgc2FtZSB0cmFuc2xhdGlv
-biBjYW4gYmUgdXNlZCBpbg0KPiBfX29mX2FkZHJlc3NfdG9fcmVzb3VyY2UoKQ0KPiBnb2luZyB0
-aGUgb3Bwb3NpdGUgd2F5Lg0KPiANCj4gPiA+IERvIHlvdSBoYXZlIGZ1cnRoZXIgY29tbWVudHMg
-YWJvdXQgdGhpcz8/DQo+ID4NCj4gPiBJIHRoaW5rIHRoZXJlIGFyZSB0d28gc2VwYXJhdGUgaXNz
-dWVzIHRvIGJlIGRpc2N1c3NlZDoNCj4gPg0KPiA+IFRoZSBmaXJzdCBpc3N1ZSBpcyBhYm91dCBo
-YXZpbmcgb2ZfdHJhbnNsYXRlX2FkZHJlc3MgZmFpbGluZyBkdWUgdG8NCj4gPiAicmFuZ2UiIG1p
-c3NpbmcuIEFib3V0IHRoaXMgQXJuZCBzdWdnZXN0ZWQgdGhhdCBpdCBpcyBub3QgYXBwcm9wcmlh
-dGUNCj4gPiB0byBoYXZlIGEgcmFuZ2UgZGVzY3JpYmluZyBhIGJyaWRnZSAxOjEgbWFwcGluZyBh
-bmQgdGhpcyB3YXMNCj4gZGlzY3Vzc2VkDQo+ID4gYmVmb3JlIGluIHRoaXMgdGhyZWFkLiBBcm5k
-IGhhZCBhIHN1Z2dlc3Rpb24gYWJvdXQgdGhpcyAoc2VlIGJlbG93KQ0KPiA+IGhvd2V2ZXIgKGxv
-b2tpbmcgdHdpY2UgYXQgdGhlIGNvZGUpIGl0IHNlZW1zIHRvIG1lIHRoYXQgc3VjaCBzb2x1dGlv
-bg0KPiA+IHdvdWxkIGxlYWQgdG8gcXVpdGUgc29tZSBkdXBsaWNhdGlvbiBmcm9tIF9fb2ZfdHJh
-bnNsYXRlX2FkZHJlc3MoKQ0KPiA+IGluIG9yZGVyIHRvIHJldHJpZXZlIHRoZSBhY3R1YWwgYWRk
-ciBmcm9tIGR0Li4uDQo+IA0KPiBJIGRvbid0IHRoaW5rIHdlIG5lZWQgdG8gZHVwbGljYXRlIG11
-Y2gsIHdlIGNhbiBwcm9iYWJseSBzYWZlbHkNCj4gYXNzdW1lIHRoYXQgdGhlcmUgYXJlIG5vIG5v
-bnRyaXZpYWwgcmFuZ2VzIGluIGRldmljZXMgYmVsb3cgdGhlIExQQw0KPiBub2RlLCBzbyB3ZSBq
-dXN0IHdhbGsgdXAgdGhlIGJ1cyB0byBzZWUgaWYgdGhlIG5vZGUgaXMgYSBjaGlsZA0KPiAob3Ig
-cG9zc2libHkgZ3JhbmRjaGlsZCBldGMpIG9mIHRoZSBMUEMgYnVzLCBhbmQgdHJlYXQgYW55IElP
-IHBvcnQNCj4gbnVtYmVyIHVuZGVyIHRoZXJlIGFzIGEgcGh5c2ljYWwgcG9ydCBudW1iZXIsIHdo
-aWNoIGhhcyBhIGtub3duDQo+IG9mZnNldCBmcm9tIHRoZSBMaW51eCBJL08gcG9ydCBudW1iZXIu
-DQo+IA0KPiA+IEkgdGhpbmsgZXh0ZW5kaW5nIG9mX2VtcHR5X3Jhbmdlc19xdWlyaygpIG1heSBi
-ZSBhIHJlYXNvbmFibGUNCj4gc29sdXRpb24uDQo+ID4gV2hhdCBkbyB5b3UgdGhpbmsgQXJuZD8N
-Cj4gDQo+IEkgZG9uJ3QgcmVhbGx5IGxpa2UgdGhhdCBpZGVhLCB0aGF0IHF1aXJrIGlzIG1lYW50
-IHRvIHdvcmsgYXJvdW5kDQo+IGJyb2tlbiBEVHMsIGJ1dCB3ZSBjYW4ganVzdCBtYWtlIHRoZSBE
-VCB2YWxpZCBhbmQgaW1wbGVtZW50IHRoZQ0KPiBjb2RlIHByb3Blcmx5Lg0KDQpPayAgSSB1bmRl
-cnN0YW5kIHlvdXIgcG9pbnQgd2hlcmUgaXQgaXMgbm90IHJpZ2h0IHRvIHVzZSBvZl9lbXB0eV9y
-YW5nZXNfcXVpcmsoKQ0KQXMgYSBxdWlyayBpcyB1c2VkIHRvIHdvcmsgYXJvdW5kIGJyb2tlbiBI
-VyBvciBicm9rZW4gRlcgKGFzIGluIHRoaXMgY2FzZSkNCnJhdGhlciB0aGFuIHRvIGZpeCBjb2Rl
-DQoNCldoYXQgYWJvdXQgdGhlIGZvbGxvd2luZz8gSSB0aGluayBhZGRpbmcgdGhlIGNoZWNrIHlv
-dSBzdWdnZXN0ZWQgbmV4dCB0bw0Kb2ZfZW1wdHlfcmFuZ2VzX3F1aXJrKCkgaXMgYWRkaW5nIHRo
-ZSBjYXNlIHdlIG5lZWQgaW4gdGhlIHJpZ2h0IHBvaW50ICh0aHVzDQphdm9pZGluZyBhbnkgZHVw
-bGljYXRpb24pDQogDQotLS0gYS9kcml2ZXJzL29mL2FkZHJlc3MuYw0KKysrIGIvZHJpdmVycy9v
-Zi9hZGRyZXNzLmMNCkBAIC00NTcsNiArNDU3LDE1IEBAIHN0YXRpYyBzdHJ1Y3Qgb2ZfYnVzICpv
-Zl9tYXRjaF9idXMoc3RydWN0IGRldmljZV9ub2RlICpucCkNCiAgICAgICAgcmV0dXJuIE5VTEw7
-DQogfQ0KIA0KK3N0YXRpYyBpbmxpbmUgaW50IG9mX2lzYV9pbmRpcmVjdF9pbyhzdHJ1Y3QgZGV2
-aWNlX25vZGUgKm5wKQ0KK3sNCisgICAgICAgLyoNCisgICAgICAgICogY2hlY2sgaWYgdGhlIGN1
-cnJlbnQgbm9kZSBpcyBhbiBpc2EgYnVzIGFuZCBpZiBpbmRpcmVjdGlvIG9wZXJhdGlvbg0KKyAg
-ICAgICAgKiBhcmUgcmVnaXN0ZXJlZA0KKyAgICAgICAgKi8NCisgICAgICAgcmV0dXJuIChvZl9i
-dXNfaXNhX21hdGNoKG5wKSAmJiBhcm02NF9leHRpb19vcHMpOw0KK30NCisNCiBzdGF0aWMgaW50
-IG9mX2VtcHR5X3Jhbmdlc19xdWlyayhzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wKQ0KIHsNCiAgICAg
-ICAgaWYgKElTX0VOQUJMRUQoQ09ORklHX1BQQykpIHsNCkBAIC01MDMsNyArNTEyLDcgQEAgc3Rh
-dGljIGludCBvZl90cmFuc2xhdGVfb25lKHN0cnVjdCBkZXZpY2Vfbm9kZSAqcGFyZW50LCBzdHJ1
-Y3Qgb2ZfYnVzICpidXMsDQogICAgICAgICAqIFRoaXMgY29kZSBpcyBvbmx5IGVuYWJsZWQgb24g
-cG93ZXJwYy4gLS1nY2wNCiAgICAgICAgICovDQogICAgICAgIHJhbmdlcyA9IG9mX2dldF9wcm9w
-ZXJ0eShwYXJlbnQsIHJwcm9wLCAmcmxlbik7DQotICAgICAgIGlmIChyYW5nZXMgPT0gTlVMTCAm
-JiAhb2ZfZW1wdHlfcmFuZ2VzX3F1aXJrKHBhcmVudCkpIHsNCisgICAgICAgaWYgKHJhbmdlcyA9
-PSBOVUxMICYmICFvZl9lbXB0eV9yYW5nZXNfcXVpcmsocGFyZW50KSAmJiAhb2ZfaXNhX2luZGly
-ZWN0X2lvKHBhcmVudCkpIHsNCiAgICAgICAgICAgICAgICBwcl9kZWJ1ZygiT0Y6IG5vIHJhbmdl
-czsgY2Fubm90IHRyYW5zbGF0ZVxuIik7DQogICAgICAgICAgICAgICAgcmV0dXJuIDE7DQogICAg
-ICAgIH0NCg0KDQo+IA0KPiA+IFRoZSBzZWNvbmQgaXNzdWUgaXMgYSBjb25mbGljdCBiZXR3ZWVu
-IGNwdSBhZGRyZXNzZXMgdXNlZCBieSB0aGUgTFBDDQo+ID4gY29udHJvbGxlciBhbmQgaS9vIHRv
-a2VucyBmcm9tIHBjaSBlbmRwb2ludHMuDQo+ID4NCj4gPiBBYm91dCB0aGlzIHdoYXQgaWYgd2Ug
-bW9kaWZ5IGFybW42NF9leHRpb19vcHMgdG8gaGF2ZSBhIGxpc3Qgb2YNCj4gcmFuZ2VzDQo+ID4g
-cmF0aGVyIHRoYW4gb25seSBvbmUgcmFuZ2UgKG5vdyB3ZSBoYXZlIGp1c3Qgc3RhcnQvZW5kKTsg
-dGhlbiBpbiB0aGUNCj4gPiBMUEMgZHJpdmVyIHdlIGNhbiBzY2FuIHRoZSBMUEMgY2hpbGQgZGV2
-aWNlcyBhbmQNCj4gPiAxKSBwb3B1bGF0ZSBzdWNoIGxpc3Qgb2YgcmFuZ2VzDQo+ID4gMikgY2Fs
-bCBwY2lfcmVnaXN0ZXJfaW9fcmFuZ2UgZm9yIHN1Y2ggcmFuZ2VzDQo+IA0KPiBTY2FubmluZyB0
-aGUgY2hpbGQgZGV2aWNlcyBzb3VuZHMgcmVhbGx5IHdyb25nLCBwbGVhc2UgcmVnaXN0ZXIganVz
-dA0KPiBvbmUgcmFuZ2UgdGhhdCBjb3ZlcnMgdGhlIGJ1cyB0byBrZWVwIHRoZSB3b3JrYXJvdW5k
-IGFzIHNpbXBsZQ0KPiBhcyBwb3NzaWJsZS4NCj4gDQo+ID4gVGhlbiB3aGVuIGNhbGxpbmcgX19v
-Zl9hZGRyZXNzX3RvX3Jlc291cmNlIHdlIHJldHJpZXZlIEkvTyB0b2tlbnMNCj4gPiBmb3IgdGhl
-IGRldmljZXMgb24gdG9wIG9mIHRoZSBMUEMgZHJpdmVyIGFuZCBpbiB0aGUgSS9PIGFjY2Vzc29y
-cw0KPiA+IHdlIGNhbGwgcGNpX3Bpb190b19hZGRyZXNzIHRvIGZpZ3VyZSBvdXQgdGhlIGNwdSBh
-ZGRyZXNzIGFuZCBjb21wYXJlDQo+ID4gaXQgdG8gdGhlIGxpc3Qgb2YgcmFuZ2VzIGluIGFybW42
-NF9leHRpb19vcHMuDQo+ID4NCj4gPiBXaGF0IGFib3V0IHRoaXM/DQo+IA0KPiBUaGF0IHNlZW1z
-IHJlYWxseSBjb21wbGV4IGZvciBzb21ldGhpbmcgdGhhdCBjYW4gYmUgcXVpdGUgc2ltcGxlLg0K
-PiBUaGUgb25seSB0aGluZyB3ZSBuZWVkIHRvIHdvcnJ5IGFib3V0IGlzIHRoYXQgdGhlIGlvX3Jh
-bmdlX2xpc3QNCj4gY29udGFpbnMgYW4gZW50cnkgZm9yIHRoZSBMUEMgYnVzIHNvIHdlIGRvbid0
-IGNvbmZsaWN0IHdpdGggdGhlDQo+IFBDSSBidXNlcy4NCg0KVGhhbmtzDQoNCkkgZGlzY3Vzc2Vk
-IHdpdGggWmhpY2hhbmcgYW5kIHdlIGFncmVlZCB0byB1c2Ugb25seSBvbmUgTFBDIHJhbmdlDQp0
-byBiZSByZWdpc3RlcmVkIHdpdGggcGNpX3JlZ2lzdGVyX2lvX3JhbmdlLg0KDQpXZSdsbCByZXdv
-cmsgdGhlIGFjY2Vzc29ycyB0byBjaGVjayBpZiB0aGUgcmV0cmlldmVkIEkvTyB0b2tlbnMNCmJl
-bG9uZyB0byBMUEMgb3IgUENJIElPIHJhbmdlLi4uDQoNCkNoZWVycw0KDQpHYWINCg0KDQo+IA0K
-PiAJQXJuZA0KPiANCj4gCUFybmQNCg==
+On Thursday, September 22, 2016 11:55:45 AM CEST Gabriele Paoloni wrote:
+> > > I think extending of_empty_ranges_quirk() may be a reasonable
+> > solution.
+> > > What do you think Arnd?
+> > 
+> > I don't really like that idea, that quirk is meant to work around
+> > broken DTs, but we can just make the DT valid and implement the
+> > code properly.
+> 
+> Ok  I understand your point where it is not right to use of_empty_ranges_quirk()
+> As a quirk is used to work around broken HW or broken FW (as in this case)
+> rather than to fix code
+> 
+> What about the following? I think adding the check you suggested next to
+> of_empty_ranges_quirk() is adding the case we need in the right point (thus
+> avoiding any duplication)
+>  
+> --- a/drivers/of/address.c
+> +++ b/drivers/of/address.c
+> @@ -457,6 +457,15 @@ static struct of_bus *of_match_bus(struct device_node *np)
+>         return NULL;
+>  }
+>  
+> +static inline int of_isa_indirect_io(struct device_node *np)
+> +{
+> +       /*
+> +        * check if the current node is an isa bus and if indirectio operation
+> +        * are registered
+> +        */
+> +       return (of_bus_isa_match(np) && arm64_extio_ops);
+> +}
+> +
+>  static int of_empty_ranges_quirk(struct device_node *np)
+>  {
+>         if (IS_ENABLED(CONFIG_PPC)) {
+> @@ -503,7 +512,7 @@ static int of_translate_one(struct device_node *parent, struct of_bus *bus,
+>          * This code is only enabled on powerpc. --gcl
+>          */
+>         ranges = of_get_property(parent, rprop, &rlen);
+> -       if (ranges == NULL && !of_empty_ranges_quirk(parent)) {
+> +       if (ranges == NULL && !of_empty_ranges_quirk(parent) && !of_isa_indirect_io(parent)) {
+>                 pr_debug("OF: no ranges; cannot translate\n");
+>                 return 1;
+>         }
+
+I don't see what effect that would have. What do you want to
+achieve with this?
+
+I think all we need from this function is to return '1' if
+we hit an ISA I/O window, and that should happen for the two
+interesting cases, either no 'ranges' at all, or no translation
+for the range in question, so that __of_translate_address can
+return OF_BAD_ADDR, and we can enter the special case
+handling in the caller, that handles it like
+
+diff --git a/drivers/of/address.c b/drivers/of/address.c
+index 02b2903fe9d2..a18d96843fae 100644
+--- a/drivers/of/address.c
++++ b/drivers/of/address.c
+@@ -685,17 +685,24 @@ static int __of_address_to_resource(struct device_node *dev,
+ 	if ((flags & (IORESOURCE_IO | IORESOURCE_MEM)) == 0)
+ 		return -EINVAL;
+ 	taddr = of_translate_address(dev, addrp);
+-	if (taddr == OF_BAD_ADDR)
+-		return -EINVAL;
+ 	memset(r, 0, sizeof(struct resource));
++
+ 	if (flags & IORESOURCE_IO) {
+ 		unsigned long port;
+-		port = pci_address_to_pio(taddr);
++
++		if (taddr == OF_BAD_ADDR)
++			port = arch_of_address_to_pio(dev, addrp)
++		else
++			port = pci_address_to_pio(taddr);
++
+ 		if (port == (unsigned long)-1)
+ 			return -EINVAL;
+ 		r->start = port;
+ 		r->end = port + size - 1;
+ 	} else {
++		if (taddr == OF_BAD_ADDR)
++			return -EINVAL;
++
+ 		r->start = taddr;
+ 		r->end = taddr + size - 1;
+ 	}
+
+
+
+	Arnd
