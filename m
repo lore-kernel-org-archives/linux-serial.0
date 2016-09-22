@@ -1,109 +1,86 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
-Date: Wed, 21 Sep 2016 22:18:16 +0200
-Message-ID: <3538381.vOsx75UXVU@wuerfel>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
- <e246c886-e0eb-b635-01ae-f00bbfcfb56b@gmail.com>
- <EE11001F9E5DDD47B7634E2F8A612F2E1F87D223@lhreml507-mbx>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] tty/serial: atmel: fix fractional baud rate computation
+Date: Thu, 22 Sep 2016 09:07:46 +0200
+Message-ID: <20160922070746.65nzezj3fwunu55s@pengutronix.de>
+References: <20160921104414.16241-1-nicolas.ferre@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F87D223@lhreml507-mbx>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "minyard@acm.org" <minyard@acm.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yuanzhichang <yuanzhichang@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "xuwei (O)" <xuwei5@hisilicon.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, zhichang <zhichang.yuan02@gmail.com>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "liviu.dudau@arm.com" <liviu.dudau@arm.com>, "kantyzc@163.com" <kantyzc@163.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infr>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160921104414.16241-1-nicolas.ferre@atmel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: aystarik@gmail.com, Ludovic Desroches <ludovic.desroches@atmel.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, richard.genoud@gmail.com, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-T24gV2VkbmVzZGF5LCBTZXB0ZW1iZXIgMjEsIDIwMTYgNDoyMDo1NSBQTSBDRVNUIEdhYnJpZWxl
-IFBhb2xvbmkgd3JvdGU6Cj4gPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+ID4gRnJvbTog
-emhpY2hhbmcgW21haWx0bzp6aGljaGFuZy55dWFuMDJAZ21haWwuY29tXQo+ID4gT24gMjAxNuW5
-tDA55pyIMTXml6UgMjA6MjQsIEFybmQgQmVyZ21hbm4gd3JvdGU6Cj4gPiA+IE9uIFRodXJzZGF5
-LCBTZXB0ZW1iZXIgMTUsIDIwMTYgMTI6MDU6NTEgUE0gQ0VTVCBHYWJyaWVsZSBQYW9sb25pCj4g
-PiB3cm90ZToKPiA+ID4+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+ID4gPj4+IE9uIFRo
-dXJzZGF5LCBTZXB0ZW1iZXIgMTUsIDIwMTYgODowMjoyNyBBTSBDRVNUIEdhYnJpZWxlIFBhb2xv
-bmkKPiA+IHdyb3RlOgo+ID4gPj4gSSB0aGluayB0aGF0IG1heWJlIGhhdmluZyB0aGUgMToxIHJh
-bmdlIG1hcHBpbmcgZG9lc24ndAo+ID4gPj4gcmVmbGVjdCB3ZWxsIHRoZSByZWFsaXR5IGJ1dCBp
-dCBpcyB0aGUgbGVzcyBwYWluZnVsCj4gPiA+PiBzb2x1dGlvbi4uLgo+ID4gPj4KPiA+ID4+IFdo
-YXQncyB5b3VyIHZpZXc/Cj4gPiA+Cj4gPiA+IFdlIGNhbiBjaGVjayB0aGUgJ2knIGJpdCBmb3Ig
-SS9PIHNwYWNlIGluIG9mX2J1c19pc2FfZ2V0X2ZsYWdzLAo+ID4gPiBhbmQgdGhhdCBzaG91bGQg
-YmUgZW5vdWdoIHRvIHRyYW5zbGF0ZSB0aGUgSS9PIHBvcnQgbnVtYmVyLgo+ID4gPgo+ID4gPiBU
-aGUgb25seSBwYXJ0IHdlIG5lZWQgdG8gY2hhbmdlIGhlcmUgaXMgdG8gbm90IGdvIHRocm91Z2gK
-PiA+ID4gdGhlIGNyYXp5IGNvbnZlcnNpb24gYWxsIHRoZSB3YXkgZnJvbSBQQ0kgSS9PIHNwYWNl
-IHRvIGEKPiA+ID4gcGh5c2ljYWwgYWRkcmVzcyBhbmQgYmFjayB0byBhIChsb2dpY2FsKSBwb3J0
-IG51bWJlcgo+ID4gPiB0aGF0IHdlIGRvIHRvZGF5IHdpdGggb2ZfdHJhbnNsYXRlX2FkZHJlc3Mv
-cGNpX2FkZHJlc3NfdG9fcGlvLgo+ID4gPgo+ID4gU29ycnkgZm9yIHRoZSBsYXRlIHJlc3BvbnNl
-ISBTZXZlcmFsIGRheXMnIGxlYXZlLi4uLgo+ID4gRG8geW91IHdhbnQgdG8gYnlwYXNzIG9mX3Ry
-YW5zbGF0ZV9hZGRyZXNzIGFuZCBwY2lfYWRkcmVzc190b19waW8gZm9yCj4gPiB0aGUgcmVnaXN0
-ZXJlZCBzcGVjaWZpYyBQSU8/Cj4gPiBJIHRoaW5rIHRoZSBieXBhc3MgZm9yIG9mX3RyYW5zbGF0
-ZV9hZGRyZXNzIGlzIG9rLCBidXQgd29ycnkgc29tZSBuZXcKPiA+IGlzc3VlcyB3aWxsIGVtZXJn
-ZSB3aXRob3V0IHRoZQo+ID4gY29udmVyc2lvbiBiZXR3ZWVuIHBoeXNpY2FsIGFkZHJlc3MgYW5k
-IGxvZ2ljYWwvbGludXggcG9ydCBudW1iZXIuCgpUaGUgc2FtZSBmdW5jdGlvbiB0aGF0IGhhbmRs
-ZXMgdGhlIG5vbi10cmFuc2xhdGVkIHJlZ2lvbiB3b3VsZApkbyB0aGF0IGNvbnZlcnNpb24uCgo+
-ID4gV2hlbiBQQ0kgaG9zdCBicmlkZ2Ugd2hpY2ggc3VwcG9ydCBJTyBvcGVyYXRpb25zIGlzIGNv
-bmZpZ3VyZWQgYW5kCj4gPiBlbmFibGVkLCB0aGUgcGNpX2FkZHJlc3NfdG9fcGlvIHdpbGwKPiA+
-IHBvcHVsYXRlIHRoZSBsb2dpY2FsIElPIHJhbmdlIGZyb20gWkVSTyBmb3IgdGhlIGZpcnN0IGhv
-c3QgYnJpZGdlLiBPdXIKPiA+IExQQyB3aWxsIGFsc28gdXNlIHBhcnQgb2YgdGhlIElPIHJhbmdl
-Cj4gPiBzdGFydGVkIGZyb20gWkVSTy4gSXQgd2lsbCBtYWtlIGluL291dCBlbnRlciB0aGUgd3Jv
-bmcgYnJhbmNoIHBvc3NpYmx5Lgo+ID4gCj4gPiBJbiBWMiwgdGhlIDAgLSAweDEwMDAgbG9naWNh
-bCBJTyByYW5nZSBpcyByZXNlcnZlZCBmb3IgTFBDIHVzZSBvbmx5Lgo+ID4gQnV0IGl0IHNlZW1z
-IG5vdCBzbyBnb29kLiBJbiB0aGlzIHdheSwKPiA+IFBDSSBoYXMgbm8gY2hhbmNlIHRvIHVzZSBs
-b3cgNEsgSU8gcmFuZ2UobG9naWNhbCkuCj4gPiAKPiA+IFNvLCBpbiBWMywgYXBwbHlpbmcgdGhl
-IGNvbnZlcnNpb24gZnJvbSBwaHlzaWNhbC9jcHUgYWRkcmVzcyB0bwo+ID4gbG9naWNhbC9saW51
-eCBJTyBwb3J0IGZvciBhbnkgSU8gcmFuZ2VzLAo+ID4gaW5jbHVkaW5nIHRoZSBMUEMsIGJ1dCBy
-ZWNvcmRlZCB0aGUgbG9naWNhbCBJTyByYW5nZSBmb3IgTFBDLiBXaGVuCj4gPiBjYWxsaW5nIGlu
-L291dCB3aXRoIGEgbG9naWNhbCBwb3J0IGFkZHJlc3MsCj4gPiB3ZSBjYW4gY2hlY2sgdGhpcyBw
-b3J0IGZhbGwgaW50byBMUEMgbG9naWNhbCBJTyByYW5nZSBhbmQgZ2V0IGJhY2sgdGhlCj4gPiBy
-ZWFsIElPLgoKUmlnaHQsIGFuZCB0aGUgc2FtZSB0cmFuc2xhdGlvbiBjYW4gYmUgdXNlZCBpbiBf
-X29mX2FkZHJlc3NfdG9fcmVzb3VyY2UoKQpnb2luZyB0aGUgb3Bwb3NpdGUgd2F5LgoKPiA+IERv
-IHlvdSBoYXZlIGZ1cnRoZXIgY29tbWVudHMgYWJvdXQgdGhpcz8/Cj4gCj4gSSB0aGluayB0aGVy
-ZSBhcmUgdHdvIHNlcGFyYXRlIGlzc3VlcyB0byBiZSBkaXNjdXNzZWQ6Cj4gCj4gVGhlIGZpcnN0
-IGlzc3VlIGlzIGFib3V0IGhhdmluZyBvZl90cmFuc2xhdGVfYWRkcmVzcyBmYWlsaW5nIGR1ZSB0
-bwo+ICJyYW5nZSIgbWlzc2luZy4gQWJvdXQgdGhpcyBBcm5kIHN1Z2dlc3RlZCB0aGF0IGl0IGlz
-IG5vdCBhcHByb3ByaWF0ZQo+IHRvIGhhdmUgYSByYW5nZSBkZXNjcmliaW5nIGEgYnJpZGdlIDE6
-MSBtYXBwaW5nIGFuZCB0aGlzIHdhcyBkaXNjdXNzZWQKPiBiZWZvcmUgaW4gdGhpcyB0aHJlYWQu
-IEFybmQgaGFkIGEgc3VnZ2VzdGlvbiBhYm91dCB0aGlzIChzZWUgYmVsb3cpIAo+IGhvd2V2ZXIg
-KGxvb2tpbmcgdHdpY2UgYXQgdGhlIGNvZGUpIGl0IHNlZW1zIHRvIG1lIHRoYXQgc3VjaCBzb2x1
-dGlvbiAKPiB3b3VsZCBsZWFkIHRvIHF1aXRlIHNvbWUgZHVwbGljYXRpb24gZnJvbSBfX29mX3Ry
-YW5zbGF0ZV9hZGRyZXNzKCkKPiBpbiBvcmRlciB0byByZXRyaWV2ZSB0aGUgYWN0dWFsIGFkZHIg
-ZnJvbSBkdC4uLgoKSSBkb24ndCB0aGluayB3ZSBuZWVkIHRvIGR1cGxpY2F0ZSBtdWNoLCB3ZSBj
-YW4gcHJvYmFibHkgc2FmZWx5CmFzc3VtZSB0aGF0IHRoZXJlIGFyZSBubyBub250cml2aWFsIHJh
-bmdlcyBpbiBkZXZpY2VzIGJlbG93IHRoZSBMUEMKbm9kZSwgc28gd2UganVzdCB3YWxrIHVwIHRo
-ZSBidXMgdG8gc2VlIGlmIHRoZSBub2RlIGlzIGEgY2hpbGQKKG9yIHBvc3NpYmx5IGdyYW5kY2hp
-bGQgZXRjKSBvZiB0aGUgTFBDIGJ1cywgYW5kIHRyZWF0IGFueSBJTyBwb3J0Cm51bWJlciB1bmRl
-ciB0aGVyZSBhcyBhIHBoeXNpY2FsIHBvcnQgbnVtYmVyLCB3aGljaCBoYXMgYSBrbm93bgpvZmZz
-ZXQgZnJvbSB0aGUgTGludXggSS9PIHBvcnQgbnVtYmVyLgoKPiBJIHRoaW5rIGV4dGVuZGluZyBv
-Zl9lbXB0eV9yYW5nZXNfcXVpcmsoKSBtYXkgYmUgYSByZWFzb25hYmxlIHNvbHV0aW9uLgo+IFdo
-YXQgZG8geW91IHRoaW5rIEFybmQ/CgpJIGRvbid0IHJlYWxseSBsaWtlIHRoYXQgaWRlYSwgdGhh
-dCBxdWlyayBpcyBtZWFudCB0byB3b3JrIGFyb3VuZApicm9rZW4gRFRzLCBidXQgd2UgY2FuIGp1
-c3QgbWFrZSB0aGUgRFQgdmFsaWQgYW5kIGltcGxlbWVudCB0aGUKY29kZSBwcm9wZXJseS4KCj4g
-VGhlIHNlY29uZCBpc3N1ZSBpcyBhIGNvbmZsaWN0IGJldHdlZW4gY3B1IGFkZHJlc3NlcyB1c2Vk
-IGJ5IHRoZSBMUEMKPiBjb250cm9sbGVyIGFuZCBpL28gdG9rZW5zIGZyb20gcGNpIGVuZHBvaW50
-cy4KPiAKPiBBYm91dCB0aGlzIHdoYXQgaWYgd2UgbW9kaWZ5IGFybW42NF9leHRpb19vcHMgdG8g
-aGF2ZSBhIGxpc3Qgb2YgcmFuZ2VzCj4gcmF0aGVyIHRoYW4gb25seSBvbmUgcmFuZ2UgKG5vdyB3
-ZSBoYXZlIGp1c3Qgc3RhcnQvZW5kKTsgdGhlbiBpbiB0aGUKPiBMUEMgZHJpdmVyIHdlIGNhbiBz
-Y2FuIHRoZSBMUEMgY2hpbGQgZGV2aWNlcyBhbmQgCj4gMSkgcG9wdWxhdGUgc3VjaCBsaXN0IG9m
-IHJhbmdlcwo+IDIpIGNhbGwgcGNpX3JlZ2lzdGVyX2lvX3JhbmdlIGZvciBzdWNoIHJhbmdlcwoK
-U2Nhbm5pbmcgdGhlIGNoaWxkIGRldmljZXMgc291bmRzIHJlYWxseSB3cm9uZywgcGxlYXNlIHJl
-Z2lzdGVyIGp1c3QKb25lIHJhbmdlIHRoYXQgY292ZXJzIHRoZSBidXMgdG8ga2VlcCB0aGUgd29y
-a2Fyb3VuZCBhcyBzaW1wbGUKYXMgcG9zc2libGUuCgo+IFRoZW4gd2hlbiBjYWxsaW5nIF9fb2Zf
-YWRkcmVzc190b19yZXNvdXJjZSB3ZSByZXRyaWV2ZSBJL08gdG9rZW5zIAo+IGZvciB0aGUgZGV2
-aWNlcyBvbiB0b3Agb2YgdGhlIExQQyBkcml2ZXIgYW5kIGluIHRoZSBJL08gYWNjZXNzb3JzCj4g
-d2UgY2FsbCBwY2lfcGlvX3RvX2FkZHJlc3MgdG8gZmlndXJlIG91dCB0aGUgY3B1IGFkZHJlc3Mg
-YW5kIGNvbXBhcmUKPiBpdCB0byB0aGUgbGlzdCBvZiByYW5nZXMgaW4gYXJtbjY0X2V4dGlvX29w
-cy4KPiAgIAo+IFdoYXQgYWJvdXQgdGhpcz8KClRoYXQgc2VlbXMgcmVhbGx5IGNvbXBsZXggZm9y
-IHNvbWV0aGluZyB0aGF0IGNhbiBiZSBxdWl0ZSBzaW1wbGUuClRoZSBvbmx5IHRoaW5nIHdlIG5l
-ZWQgdG8gd29ycnkgYWJvdXQgaXMgdGhhdCB0aGUgaW9fcmFuZ2VfbGlzdApjb250YWlucyBhbiBl
-bnRyeSBmb3IgdGhlIExQQyBidXMgc28gd2UgZG9uJ3QgY29uZmxpY3Qgd2l0aCB0aGUKUENJIGJ1
-c2VzLgoKCUFybmQKCglBcm5kCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVs
-QGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+On Wed, Sep 21, 2016 at 12:44:14PM +0200, Nicolas Ferre wrote:
+> From: Alexey Starikovskiy <aystarik@gmail.com>
+> 
+> The problem with previous code was it rounded values in wrong
+> place and produced wrong baud rate in some cases.
+> 
+> Signed-off-by: Alexey Starikovskiy <aystarik@gmail.com>
+> [nicolas.ferre@atmel.com: port to newer kernel and add commit log]
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> ---
+>  drivers/tty/serial/atmel_serial.c | 10 ++++++----
+>  include/linux/atmel_serial.h      |  1 +
+>  2 files changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 5f550d9feed9..fd8aa1f4ba78 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -2170,13 +2170,15 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+>  	 * accurately. This feature is enabled only when using normal mode.
+>  	 * baudrate = selected clock / (8 * (2 - OVER) * (CD + FP / 8))
+>  	 * Currently, OVER is always set to 0 so we get
+> -	 * baudrate = selected clock (16 * (CD + FP / 8))
+> +	 * baudrate = selected clock / (16 * (CD + FP / 8))
+> +	 * then
+> +	 * 8 CD + FP = selected clock / (2 * baudrate)
+>  	 */
+>  	if (atmel_port->has_frac_baudrate &&
+>  	    (mode & ATMEL_US_USMODE) == ATMEL_US_USMODE_NORMAL) {
+> -		div = DIV_ROUND_CLOSEST(port->uartclk, baud);
+> -		cd = div / 16;
+> -		fp = DIV_ROUND_CLOSEST(div % 16, 2);
+> +		div = DIV_ROUND_CLOSEST(port->uartclk, baud * 2);
+> +		cd = div >> 3;
+> +		fp = div & ATMEL_US_FP_MASK;
+
+given baud = 115200 and uartclk = 5414300 this results in:
+
+	div = DIV_ROUND_CLOSEST(5414300, 115200 * 2) = 23
+	cd = 2
+	fp = 7
+
+which yields a rate of 5414300 / 46 = 117702.17. With cd = 3 and fp = 0
+however the resulting rate is 5414300 / 48 = 112797.92.
+
+Which one is better?
+
+>  	} else {
+>  		cd = uart_get_divisor(port, baud);
+>  	}
+> diff --git a/include/linux/atmel_serial.h b/include/linux/atmel_serial.h
+> index f8e452aa48d7..bd2560502f3c 100644
+> --- a/include/linux/atmel_serial.h
+> +++ b/include/linux/atmel_serial.h
+> @@ -119,6 +119,7 @@
+>  #define ATMEL_US_BRGR		0x20	/* Baud Rate Generator Register */
+>  #define	ATMEL_US_CD		GENMASK(15, 0)	/* Clock Divider */
+>  #define ATMEL_US_FP_OFFSET	16	/* Fractional Part */
+> +#define ATMEL_US_FP_MASK	0x7
+
+Is there another user of this header? If not, this can be folded into
+the driver.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
