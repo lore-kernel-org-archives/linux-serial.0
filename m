@@ -1,124 +1,61 @@
-From: "zhichang.yuan" <zhichang.yuan02@gmail.com>
-Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
-Date: Fri, 23 Sep 2016 00:27:17 +0800
-Message-ID: <57E40665.8080005@gmail.com>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com> <3538381.vOsx75UXVU@wuerfel> <EE11001F9E5DDD47B7634E2F8A612F2E1F881744@lhreml507-mbx> <9178320.n4yHmfyPA3@wuerfel>
+From: <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+Subject: [PATCHv2 2/4] serial: 8250: of: Load TX FIFO Threshold from DT
+Date: Thu, 22 Sep 2016 14:56:15 -0500
+Message-ID: <1474574177-4984-3-git-send-email-tthayer@opensource.altera.com>
+References: <1474574177-4984-1-git-send-email-tthayer@opensource.altera.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <9178320.n4yHmfyPA3@wuerfel>
-Sender: linux-pci-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yuanzhichang <yuanzhichang@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "xuwei (O)" <xuwei5@hisilicon.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "zourongrong@gmail.com" <zourongrong@gmail.com>
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1474574177-4984-1-git-send-email-tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, anton.wuerfel-d40JDW7QUjc@public.gmane.org, phillip.raffeck-d40JDW7QUjc@public.gmane.org, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org, matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org, mail-APzI5cXaD1zVlRWJc41N0YvC60bnQu0Y@public.gmane.org
+Cc: peter.ujfalusi-l0cyMroinI0@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, dongsheng.wang-3arQi8VN3Tc@public.gmane.org, luis-HiykPkW1eAzzDCI4PIEvbQC/G2K4zDHf@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tthayer.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
+From: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
 
-On 09/22/2016 08:14 PM, Arnd Bergmann wrote:
-> On Thursday, September 22, 2016 11:55:45 AM CEST Gabriele Paoloni wrote:
->>>> I think extending of_empty_ranges_quirk() may be a reasonable
->>> solution.
->>>> What do you think Arnd?
->>> I don't really like that idea, that quirk is meant to work around
->>> broken DTs, but we can just make the DT valid and implement the
->>> code properly.
->> Ok  I understand your point where it is not right to use of_empty_ranges_quirk()
->> As a quirk is used to work around broken HW or broken FW (as in this case)
->> rather than to fix code
->>
->> What about the following? I think adding the check you suggested next to
->> of_empty_ranges_quirk() is adding the case we need in the right point (thus
->> avoiding any duplication)
->>   
->> --- a/drivers/of/address.c
->> +++ b/drivers/of/address.c
->> @@ -457,6 +457,15 @@ static struct of_bus *of_match_bus(struct device_node *np)
->>          return NULL;
->>   }
->>   
->> +static inline int of_isa_indirect_io(struct device_node *np)
->> +{
->> +       /*
->> +        * check if the current node is an isa bus and if indirectio operation
->> +        * are registered
->> +        */
->> +       return (of_bus_isa_match(np) && arm64_extio_ops);
->> +}
->> +
->>   static int of_empty_ranges_quirk(struct device_node *np)
->>   {
->>          if (IS_ENABLED(CONFIG_PPC)) {
->> @@ -503,7 +512,7 @@ static int of_translate_one(struct device_node *parent, struct of_bus *bus,
->>           * This code is only enabled on powerpc. --gcl
->>           */
->>          ranges = of_get_property(parent, rprop, &rlen);
->> -       if (ranges == NULL && !of_empty_ranges_quirk(parent)) {
->> +       if (ranges == NULL && !of_empty_ranges_quirk(parent) && !of_isa_indirect_io(parent)) {
->>                  pr_debug("OF: no ranges; cannot translate\n");
->>                  return 1;
->>          }
-> I don't see what effect that would have. What do you want to
-> achieve with this?
->
-> I think all we need from this function is to return '1' if
-> we hit an ISA I/O window, and that should happen for the two
-> interesting cases, either no 'ranges' at all, or no translation
-> for the range in question, so that __of_translate_address can
-> return OF_BAD_ADDR, and we can enter the special case
-> handling in the caller, that handles it like
->
-> diff --git a/drivers/of/address.c b/drivers/of/address.c
-> index 02b2903fe9d2..a18d96843fae 100644
-> --- a/drivers/of/address.c
-> +++ b/drivers/of/address.c
-> @@ -685,17 +685,24 @@ static int __of_address_to_resource(struct device_node *dev,
->   	if ((flags & (IORESOURCE_IO | IORESOURCE_MEM)) == 0)
->   		return -EINVAL;
->   	taddr = of_translate_address(dev, addrp);
-> -	if (taddr == OF_BAD_ADDR)
-> -		return -EINVAL;
->   	memset(r, 0, sizeof(struct resource));
-> +
->   	if (flags & IORESOURCE_IO) {
->   		unsigned long port;
-> -		port = pci_address_to_pio(taddr);
-> +
-> +		if (taddr == OF_BAD_ADDR)
-> +			port = arch_of_address_to_pio(dev, addrp)
-> +		else
-> +			port = pci_address_to_pio(taddr);
-> +
->   		if (port == (unsigned long)-1)
->   			return -EINVAL;
->   		r->start = port;
->   		r->end = port + size - 1;
->   	} else {
-> +		if (taddr == OF_BAD_ADDR)
-> +			return -EINVAL;
-> +
->   		r->start = taddr;
->   		r->end = taddr + size - 1;
->   	}
->
-For this patch sketch, I have a question.
-Do we call pci_address_to_pio in arch_of_address_to_pio to get the 
-corresponding logical IO port
-for LPC??
+Initialize the tx_loadsz parameter from passed in devicetree
+tx-threshold parameter.
+The tx_loadsz is calculated as the number of bytes to fill FIFO
+when tx-threshold is triggered.
 
-If we don't, it seems the LPC specific IO address will conflict with PCI 
-host bridges' logical IO.
-Supposed our LPC populated the IO range from 0x100 to 0x3FF( this is 
-normal for ISA similar
-devices), after arch_of_address_to_pio(), the r->start will be set as 
-0x100, r->end will be set as
-0x3FF.  And if there is one PCI host bridge who request a IO window size 
-over 0x400 at the same
-time, the  corresponding r->start and r->end will be set as 0x0, 0x3FF 
-after of_address_to_resource
-for this host bridge.  Then the IO conflict happens.
+Signed-off-by: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+---
+v2  Change from reading tx-loadsz parameter to reading
+    tx-threshold and calculating tx_loadsz.
+---
+ drivers/tty/serial/8250/8250_of.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-cheers,
-Zhichang
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 38963d7..7a8b5fc 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -195,6 +195,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	switch (port_type) {
+ 	case PORT_8250 ... PORT_MAX_8250:
+ 	{
++		u32 tx_threshold;
+ 		struct uart_8250_port port8250;
+ 		memset(&port8250, 0, sizeof(port8250));
+ 		port8250.port = port;
+@@ -202,6 +203,12 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 		if (port.fifosize)
+ 			port8250.capabilities = UART_CAP_FIFO;
+ 
++		/* Check for TX FIFO threshold & set tx_loadsz */
++		if ((of_property_read_u32(ofdev->dev.of_node, "tx-threshold",
++					  &tx_threshold) == 0) &&
++		    (tx_threshold < port.fifosize))
++			port8250.tx_loadsz = port.fifosize - tx_threshold;
++
+ 		if (of_property_read_bool(ofdev->dev.of_node,
+ 					  "auto-flow-control"))
+ 			port8250.capabilities |= UART_CAP_AFE;
+-- 
+1.7.9.5
 
->
-> 	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
