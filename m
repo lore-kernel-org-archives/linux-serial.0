@@ -1,146 +1,83 @@
-From: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
-Date: Fri, 23 Sep 2016 14:59:55 +0000
-Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F8850F2@lhreml507-mbx>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
- <1760643.vMTR5o5E9g@wuerfel>
- <EE11001F9E5DDD47B7634E2F8A612F2E1F8842B6@lhreml507-mbx>
- <10705430.q2aqv5uYO3@wuerfel>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 02/11] DOCUMENTATION: dt-bindings: Document the STM32
+ USART bindings
+Date: Fri, 23 Sep 2016 10:29:07 -0500
+Message-ID: <20160923152907.GA19206@rob-hp-laptop>
+References: <1473957763-30629-1-git-send-email-alexandre.torgue@st.com>
+ <1473957763-30629-3-git-send-email-alexandre.torgue@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <10705430.q2aqv5uYO3@wuerfel>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1473957763-30629-3-git-send-email-alexandre.torgue-qxv4g6HH51o@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: "zhichang.yuan" <zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "minyard-HInyCGIudOg@public.gmane.org" <minyard-HInyCGIudOg@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yuanzhichang <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "xuwei (O)" <xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+To: Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>
+Cc: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, gerald.baeza-qxv4g6HH51o@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd
+On Thu, Sep 15, 2016 at 06:42:34PM +0200, Alexandre TORGUE wrote:
+> This adds documentation of device tree bindings for the
+> STM32 USART
 
-> -----Original Message-----
-> From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
-> Sent: 23 September 2016 14:43
-> To: Gabriele Paoloni
-> Cc: zhichang.yuan; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org;
-> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org; minyard-HInyCGIudOg@public.gmane.org;
-> linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; John Garry;
-> will.deacon-5wv7dgnIgG8@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Yuanzhichang;
-> Linuxarm; xuwei (O); linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; liviu.dudau-5wv7dgnIgG8@public.gmane.org;
-> kantyzc-9Onoh4P/yGk@public.gmane.org
-> Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on
-> Hip06
-> 
-> On Friday, September 23, 2016 10:23:30 AM CEST Gabriele Paoloni wrote:
-> > Hi Arnd
-> >
-> > > -----Original Message-----
-> > > From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
-> > > Sent: 23 September 2016 10:52
-> > > To: zhichang.yuan
-> > > Cc: Gabriele Paoloni; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org;
-> > > devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org;
-> minyard-HInyCGIudOg@public.gmane.org;
-> > > linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; John Garry;
-> > > will.deacon-5wv7dgnIgG8@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Yuanzhichang;
-> > > Linuxarm; xuwei (O); linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org; zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org;
-> liviu.dudau-5wv7dgnIgG8@public.gmane.org;
-> > > kantyzc-9Onoh4P/yGk@public.gmane.org
-> > > Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on
-> > > Hip06
-> > >
-> > > On Friday, September 23, 2016 12:27:17 AM CEST zhichang.yuan wrote:
-> > > > For this patch sketch, I have a question.
-> > > > Do we call pci_address_to_pio in arch_of_address_to_pio to get
-> the
-> > > > corresponding logical IO port
-> > > > for LPC??
-> > >
-> > >
-> > > No, of course not, that would be silly:
-> > >
-> > > The argument to pci_address_to_pio() is a phys_addr_t, and we we
-> don't
-> > > have one because there is no address associated with your PIO, that
-> > > is the entire point of your driver!
-> > >
-> > > Also, we already know the mapping because this is what the inb/outb
-> > > workaround is looking at, so there is absolutely no reason to call
-> it
-> > > either.
-> >
-> > Ok assume that we do not call pci_address_to_pio() for the ISA bus...
-> > The LPC driver will register its phys address range in io_range_list,
-> > then the IPMI driver probe will retrieve its physical address calling
-> > of_address_to_resource and will use the indirect io to access this
-> > address.
-> >
-> > From the perspective of the indirect IO function the input parameter
-> > is an unsigned long addr that (now) can be either:
-> > 1) an IO token coming from a legacy pci device
-> > 2) a phys address that lives on the LPC bus
-> >
-> > These are conceptually two separate address spaces (and actually they
-> > both start from 0).
-> 
-> Why? Any IORESOURCE_IO address always refers to the logical I/O port
-> range in Linux, not the physical address that is used on a bus.
-
-If I read the code correctly when you get an I/O token you just add it
-to PCI_IOBASE.
-This is enough since pci_remap_iospace set the virtual address to 
-PCI_IOBASE + the I/O token offset; so we can read/write to
-vaddr = PCI_IOBASE + token as pci_remap_iospace has mapped it correctly
-to the respective PCI cpu address (that is set in the I/O range property
-of the host controller)
-
-In the patchset accessors LPC operates directly on the cpu addresses
-and the input parameter of the accessors can be either an IO token or
-a cpu address
-
-+static inline void outb(u8 value, unsigned long addr)
-+{
-+#ifdef CONFIG_ARM64_INDIRECT_PIO
-+	if (arm64_extio_ops && arm64_extio_ops->start <= addr &&
-+			addr <= arm64_extio_ops->end)
-
-Here below we operate on cpu address
-
-+		extio_outb(value, addr);
-+	else
-+#endif
-
-In the case below we have an I/O token added to PCI_IOBASE
-to calculate the virtual address 
-
-+		writeb(value, PCI_IOBASE + addr);
-+}
-
-My point is that if do not call pci_address_to_pio() in 
-__of_address_to_resource for the ISA LPC exception then the accessors
-are called either by passing an IO token or a cpu address...and from
-the accessors perspective we do not know...
-
-Thanks
-Gab 
+Please make your subject prefixes consistent and drop "DOCUMENTATION".
 
 > 
-> > If the input parameter can live on different address spaces that are
-> > overlapped, even if I save the used LPC range in arm64_extio_ops-
-> >start/end
-> > there is no way for the indirect IO to tell if the input parameter is
-> > an I/O token or a phys address that belongs to LPC...
+> Signed-off-by: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>
 > 
-> The start address is the offset: if you get an address between 'start'
-> and 'end', you subtract the 'start' from it, and use that to call
-> the registered driver function. That works because we can safely
-> assume that the bus address range that the LPC driver registers starts
-> zero.
+> diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+> new file mode 100644
+> index 0000000..75b1400
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+> @@ -0,0 +1,34 @@
+> +* STMicroelectronics STM32 USART
+> +
+> +Required properties:
+> +- compatible: Can be either "st,stm32-usart", "st,stm32-uart",
+> +"st,stm32f7-usart" or "st,stm32f7-uart" depending on whether
+> +the device supports synchronous mode and is compatible with
+> +stm32(f4) or stm32f7.
+
+Why not put f4 in the compatible string. stm32 is too generic.
+
+What determines sync mode or not? If it is IP configuration fixed in the 
+design, then this is fine. If it is user choice or board dependent, then 
+use a separate property.
+
+> +- reg: The address and length of the peripheral registers space
+> +- interrupts: The interrupt line of the USART instance
+> +- clocks: The input clock of the USART instance
+> +
+> +Optional properties:
+> +- pinctrl: The reference on the pins configuration
+> +- st,hw-flow-ctrl: bool flag to enable hardware flow control.
+> +
+> +Examples:
+> +usart4: serial@40004c00 {
+> +	compatible = "st,stm32-uart";
+> +	reg = <0x40004c00 0x400>;
+> +	interrupts = <52>;
+> +	clocks = <&clk_pclk1>;
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&pinctrl_usart4>;
+> +};
+> +
+> +usart2: serial@40004400 {
+> +	compatible = "st,stm32-usart", "st,stm32-uart";
+
+What are valid combinations? usart is sync only, not sync and async?
+
+> +	reg = <0x40004400 0x400>;
+> +	interrupts = <38>;
+> +	clocks = <&clk_pclk1>;
+> +	st,hw-flow-ctrl;
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&pinctrl_usart2 &pinctrl_usart2_rtscts>;
+> +};
+> -- 
+> 1.9.1
 > 
-> 	Arnd
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
