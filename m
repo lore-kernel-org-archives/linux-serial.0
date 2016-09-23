@@ -1,62 +1,35 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] serial: stm32: use mapbase instead of membase for DMA
-Date: Fri, 23 Sep 2016 21:38:51 +0200
-Message-ID: <20160923193935.3726427-1-arnd@arndb.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Gerald Baeza <gerald.baeza@st.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCHv2 1/4] Documentation: dt: serial: Add TX FIFO threshold
+ parameter
+Date: Fri, 23 Sep 2016 16:47:09 -0500
+Message-ID: <20160923214709.GA9181@rob-hp-laptop>
+References: <1474574177-4984-1-git-send-email-tthayer@opensource.altera.com>
+ <1474574177-4984-2-git-send-email-tthayer@opensource.altera.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1474574177-4984-2-git-send-email-tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, anton.wuerfel-d40JDW7QUjc@public.gmane.org, phillip.raffeck-d40JDW7QUjc@public.gmane.org, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org, matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org, mail-APzI5cXaD1zVlRWJc41N0YvC60bnQu0Y@public.gmane.org, peter.ujfalusi-l0cyMroinI0@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, dongsheng.wang-3arQi8VN3Tc@public.gmane.org, luis-HiykPkW1eAzzDCI4PIEvbQC/G2K4zDHf@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tthayer.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Building this driver with a 64-bit dma_addr_t type results in
-a compiler warning:
+On Thu, Sep 22, 2016 at 02:56:14PM -0500, tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org wrote:
+> From: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+> 
+> Add the device tree binding needed to support the TX FIFO threshold
+> parameter.
+> 
+> Signed-off-by: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+> ---
+> v2  Change parameter name from tx-loadsz to tx-threshold
+> ---
+>  Documentation/devicetree/bindings/serial/8250.txt |    2 ++
+>  1 file changed, 2 insertions(+)
 
-drivers/tty/serial/stm32-usart.c: In function 'stm32_of_dma_rx_probe':
-drivers/tty/serial/stm32-usart.c:746:20: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
-drivers/tty/serial/stm32-usart.c: In function 'stm32_of_dma_tx_probe':
-drivers/tty/serial/stm32-usart.c:818:20: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
-
-While the type conversion here is harmless, this hints at a different
-problem: we pass an __iomem pointer into a DMA engine, which expects
-a phys_addr_t. This happens to work because stm32 has no MMU and
-ioremap() is an identity mapping here, but it's still an incorrect
-API use. Using dma_addr_t is doubly wrong here, because that would
-be the result of dma_map_single() rather than the physical address.
-
-Using the mapbase instead fixes multiple issues:
-
-- the warning is gone
-- we don't go through ioremap in error
-- the cast is gone, making it use the correct resource_size_t/phys_addr_t
-  type in the process.
-
-Fixes: 3489187204eb ("serial: stm32: adding dma support")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/tty/serial/stm32-usart.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 4d3001b77e7e..2adb678a863b 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -743,7 +743,7 @@ static int stm32_of_dma_rx_probe(struct stm32_port *stm32port,
- 
- 	/* Configure DMA channel */
- 	memset(&config, 0, sizeof(config));
--	config.src_addr = (dma_addr_t)port->membase + ofs->rdr;
-+	config.src_addr = port->mapbase + ofs->rdr;
- 	config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
- 
- 	ret = dmaengine_slave_config(stm32port->rx_ch, &config);
-@@ -815,7 +815,7 @@ static int stm32_of_dma_tx_probe(struct stm32_port *stm32port,
- 
- 	/* Configure DMA channel */
- 	memset(&config, 0, sizeof(config));
--	config.dst_addr = (dma_addr_t)port->membase + ofs->tdr;
-+	config.dst_addr = port->mapbase + ofs->tdr;
- 	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
- 
- 	ret = dmaengine_slave_config(stm32port->tx_ch, &config);
--- 
-2.9.0
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
