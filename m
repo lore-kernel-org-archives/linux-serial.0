@@ -1,34 +1,59 @@
 From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCHv2 1/4] Documentation: dt: serial: Add TX FIFO threshold
- parameter
-Date: Fri, 23 Sep 2016 16:47:09 -0500
-Message-ID: <20160923214709.GA9181@rob-hp-laptop>
-References: <1474574177-4984-1-git-send-email-tthayer@opensource.altera.com>
- <1474574177-4984-2-git-send-email-tthayer@opensource.altera.com>
+Subject: Re: [PATCH v4] devicetree: bindings: uart: Add new compatible string
+ for ZynqMP
+Date: Fri, 23 Sep 2016 17:37:48 -0500
+Message-ID: <20160923223747.GA1163@rob-hp-laptop>
+References: <1474629948-9780-1-git-send-email-navam@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1474574177-4984-2-git-send-email-tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+In-Reply-To: <1474629948-9780-1-git-send-email-navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, anton.wuerfel-d40JDW7QUjc@public.gmane.org, phillip.raffeck-d40JDW7QUjc@public.gmane.org, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org, matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org, mail-APzI5cXaD1zVlRWJc41N0YvC60bnQu0Y@public.gmane.org, peter.ujfalusi-l0cyMroinI0@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, dongsheng.wang-3arQi8VN3Tc@public.gmane.org, luis-HiykPkW1eAzzDCI4PIEvbQC/G2K4zDHf@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tthayer.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org
+To: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, michal.simek-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, soren.brinkmann-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, punnaia-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, Nava kishore Manne <navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Sep 22, 2016 at 02:56:14PM -0500, tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org wrote:
-> From: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+On Fri, Sep 23, 2016 at 04:55:48PM +0530, Nava kishore Manne wrote:
+> From: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
 > 
-> Add the device tree binding needed to support the TX FIFO threshold
-> parameter.
+> This patch Adds the new compatible string for ZynqMP.
 > 
-> Signed-off-by: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+> Signed-off-by: Nava kishore Manne <navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
 > ---
-> v2  Change parameter name from tx-loadsz to tx-threshold
-> ---
->  Documentation/devicetree/bindings/serial/8250.txt |    2 ++
->  1 file changed, 2 insertions(+)
+> Changes for v4:
+> 		-Modified the ChangeLog comment.
+> Changes for v3:
+> 		-Added changeLog comment.
+> Changes for v2:
+>                 -None
+> 
+>  Documentation/devicetree/bindings/serial/cdns,uart.txt | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> index a3eb154..4fe7aae 100644
+> --- a/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> @@ -1,7 +1,8 @@
+>  Binding for Cadence UART Controller
+>  
+>  Required properties:
+> -- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
+> +- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps" for Zynq and
+> +               "cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC uart controller.
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Please format this as one valid combination per line.
+
+xuartps is not very specific. It needs some abbreviation of "Zynq 
+Ultrascale+ MPSoC" in it.
+
+>  - reg: Should contain UART controller registers location and length.
+>  - interrupts: Should contain UART controller interrupts.
+>  - clocks: Must contain phandles to the UART clocks
+> -- 
+> 2.1.2
+> 
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
