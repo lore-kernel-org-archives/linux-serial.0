@@ -1,7 +1,7 @@
 From: "Herbert, Marc" <marc.herbert@intel.com>
 Subject: Re: [RFC] fs: add userspace critical mounts event support
 Date: Fri, 23 Sep 2016 18:37:28 -0700
-Message-ID: <2deae6da-dd43-7bff-e1fd-ffd26946b928__16402.1819866777$1474682448$gmane$org@intel.com>
+Message-ID: <2deae6da-dd43-7bff-e1fd-ffd26946b928__24322.024282492$1474683075$gmane$org@intel.com>
 References: <1466117661-22075-3-git-send-email-mcgrof@kernel.org>
  <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
  <20160824203901.GT3296@wotan.suse.de>
@@ -17,11 +17,19 @@ References: <1466117661-22075-3-git-send-email-mcgrof@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <CAKdAkRTv5Fv54wetBqkS+EyEuP_k5exJat+QXBLtTkFLO_-maQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-doc@vger.kernel.org, cocci@systeme.lip6.fr, linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.orglinux-doc@vger.kernel.orgcocci@systeme.lip6.frlinux-serial@vger.kernel.orgcocci@systeme.lip6.frlinuxppc-dev@ozlabs.orglinux-serial@vger.kernel.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Cc: linuxppc-dev@ozlabs.org, linux-kernel@vger.kernel.org, cocci@systeme.lip6.fr, linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 On 03/09/2016 11:10, Dmitry Torokhov wrote:
