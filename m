@@ -1,60 +1,43 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v4] devicetree: bindings: uart: Add new compatible string
- for ZynqMP
-Date: Fri, 23 Sep 2016 17:37:48 -0500
-Message-ID: <20160923223747.GA1163@rob-hp-laptop>
-References: <1474629948-9780-1-git-send-email-navam@xilinx.com>
+From: "Herbert, Marc" <marc.herbert@intel.com>
+Subject: Re: [RFC] fs: add userspace critical mounts event support
+Date: Fri, 23 Sep 2016 18:37:28 -0700
+Message-ID: <2deae6da-dd43-7bff-e1fd-ffd26946b928__16402.1819866777$1474682448$gmane$org@intel.com>
+References: <1466117661-22075-3-git-send-email-mcgrof@kernel.org>
+ <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
+ <20160824203901.GT3296@wotan.suse.de>
+ <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
+ <20160825194133.GC3296@wotan.suse.de> <20160902235916.GO3296@wotan.suse.de>
+ <20160903002014.GP3296@wotan.suse.de>
+ <CA+55aFy4_QLYiQxtKpq0FJD7eSBRZ8nXS=Ruuz1TYodHdE_dCA@mail.gmail.com>
+ <CAKdAkRSQmz3FoP8Z2ONm7-_A9RHF2Ox6snaCpsyS6HA7=+RerQ@mail.gmail.com>
+ <CA+55aFz4q5peXAeY9h8o3he7R=wXrBSYkOjMM9TehOw=pPoS+Q@mail.gmail.com>
+ <20160903174939.GB32345@dtor-ws>
+ <CA+55aFwLrXRUO9n75Sthu+g73BEjskAgUkguyLwU=JA_PNzdOQ@mail.gmail.com>
+ <CAKdAkRTv5Fv54wetBqkS+EyEuP_k5exJat+QXBLtTkFLO_-maQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1474629948-9780-1-git-send-email-navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, michal.simek-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, soren.brinkmann-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, punnaia-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, Nava kishore Manne <navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAKdAkRTv5Fv54wetBqkS+EyEuP_k5exJat+QXBLtTkFLO_-maQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-doc@vger.kernel.org, cocci@systeme.lip6.fr, linuxppc-dev@ozlabs.org, linux-serial@vger.kernel.orglinux-doc@vger.kernel.orgcocci@systeme.lip6.frlinux-serial@vger.kernel.orgcocci@systeme.lip6.frlinuxppc-dev@ozlabs.orglinux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 23, 2016 at 04:55:48PM +0530, Nava kishore Manne wrote:
-> From: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
-> 
-> This patch Adds the new compatible string for ZynqMP.
-> 
-> Signed-off-by: Nava kishore Manne <navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
-> ---
-> Changes for v4:
-> 		-Modified the ChangeLog comment.
-> Changes for v3:
-> 		-Added changeLog comment.
-> Changes for v2:
->                 -None
-> 
->  Documentation/devicetree/bindings/serial/cdns,uart.txt | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/Documentation/devicetree/bindings/serial/cdns,uart.txt
-> index a3eb154..4fe7aae 100644
-> --- a/Documentation/devicetree/bindings/serial/cdns,uart.txt
-> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
-> @@ -1,7 +1,8 @@
->  Binding for Cadence UART Controller
->  
->  Required properties:
-> -- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
-> +- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps" for Zynq and
-> +               "cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC uart controller.
+On 03/09/2016 11:10, Dmitry Torokhov wrote:
+> I was thinking if we kernel could post
+> "conditions" (maybe simple stings) that it waits for, and userspace
+> could unlock these "conditions". One of them might be "firmware
+> available".
 
-Please format this as one valid combination per line.
+On idea offered by Josh Triplett that seems to overlap with this one
+is to have something similar to the (deprecated) userhelper with
+*per-blob* requests and notifications except for one major difference:
+userspace would not anymore be in charge of *providing* the blob but
+would instead only *signal* when a given blob becomes available and is
+either found or found missing. Then the kernel loads the blob _by
+itself_; unlike the userhelper. No new “critical filesystem” concept
+and a *per-blob basis*, allowing any variation of blob locations
+across any number of initramfs and filesystems.
 
-xuartps is not very specific. It needs some abbreviation of "Zynq 
-Ultrascale+ MPSoC" in it.
-
->  - reg: Should contain UART controller registers location and length.
->  - interrupts: Should contain UART controller interrupts.
->  - clocks: Must contain phandles to the UART clocks
-> -- 
-> 2.1.2
-> 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Could this one fly?
