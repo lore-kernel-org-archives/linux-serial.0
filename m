@@ -1,28 +1,34 @@
-From: Fabio Estevam <festevam@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH] serial: imx: Fix DCD reading
-Date: Mon, 26 Sep 2016 11:08:20 -0300
-Message-ID: <CAOMZO5Cdime2w+R=UirP68ibKogYn2iuzGmuWt4yakQ+kmPDXw@mail.gmail.com>
+Date: Mon, 26 Sep 2016 16:09:38 +0200
+Message-ID: <20160926140938.ikjatvprk3t4lsed@pengutronix.de>
 References: <20160926135531.31888-1-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <20160926135531.31888-1-s.hauer@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Sascha Hauer <kernel@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sascha,
+Hallo,
 
-On Mon, Sep 26, 2016 at 10:55 AM, Sascha Hauer <s.hauer@pengutronix.de> wrote:
+On Mon, Sep 26, 2016 at 03:55:31PM +0200, Sascha Hauer wrote:
 > The USR2_DCDIN bit is tested for in register usr1. As the name
 > suggests the usr2 register should be used instead. This fixes
 > reading the Carrier detect status.
->
+> 
 > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Fixes: 90ebc4838666 ("serial: imx: repair and complete handshaking")
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Good catch:
+Thanks
+Uwe
 
-Reviewed-by: Fabio Estevam <fabio.estevam@nxp.com>
-
-Shouldn't this have stable on Cc?
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
