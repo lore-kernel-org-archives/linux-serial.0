@@ -1,51 +1,84 @@
-From: Baoyou Xie <baoyou.xie@linaro.org>
-Subject: [PATCH] serial: stm32: mark symbols static where possible
-Date: Mon, 26 Sep 2016 19:58:56 +0800
-Message-ID: <1474891136-16602-1-git-send-email-baoyou.xie@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, arnd@arndb.de, baoyou.xie@linaro.org, xie.baoyou@zte.com.cn, han.fei@zte.com.cn, tang.qiang007@zte.com.cn
+From: Nava kishore Manne <nava.manne@xilinx.com>
+Subject: RE: [PATCH v4] devicetree: bindings: uart: Add new compatible
+ string for ZynqMP
+Date: Mon, 26 Sep 2016 12:49:49 +0000
+Message-ID: <C89496FEAE474D468F30D558A9468D9F26D192EF@XAP-PVEXMBX01.xlnx.xilinx.com>
+References: <1474629948-9780-1-git-send-email-navam@xilinx.com>
+ <20160923223747.GA1163@rob-hp-laptop>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160923223747.GA1163@rob-hp-laptop>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "michal.simek@xilinx.com" <michal.simek@xilinx.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Soren Brinkmann <sorenb@xilinx.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, Punnaiah Choudary Kalluri <punnaia@xilinx.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-We get 2 warnings when building kernel with W=1:
-drivers/tty/serial/stm32-usart.c:63:5: warning: no previous prototype for 'stm32_pending_rx' [-Wmissing-prototypes]
-drivers/tty/serial/stm32-usart.c:88:15: warning: no previous prototype for 'stm32_get_char' [-Wmissing-prototypes]
 
-In fact, these two functions are only used in the file in which they are
-declared and don't need a declaration, but can be made static.
 
-So this patch marks these functions with 'static'.
+> -----Original Message-----
+> From: Rob Herring [mailto:robh@kernel.org]
+> Sent: Saturday, September 24, 2016 4:08 AM
+> To: Nava kishore Manne <navam@xilinx.com>
+> Cc: gregkh@linuxfoundation.org; mark.rutland@arm.com; jslaby@suse.com;
+> michal.simek@xilinx.com; Soren Brinkmann <sorenb@xilinx.com>; linux-
+> serial@vger.kernel.org; devicetree@vger.kernel.org; linux-
+> kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org; Punnaiah
+> Choudary Kalluri <punnaia@xilinx.com>; Nava kishore Manne
+> <navam@xilinx.com>
+> Subject: Re: [PATCH v4] devicetree: bindings: uart: Add new compatible
+> string for ZynqMP
+>
+> On Fri, Sep 23, 2016 at 04:55:48PM +0530, Nava kishore Manne wrote:
+> > From: Nava kishore Manne <nava.manne@xilinx.com>
+> >
+> > This patch Adds the new compatible string for ZynqMP.
+> >
+> > Signed-off-by: Nava kishore Manne <navam@xilinx.com>
+> > ---
+> > Changes for v4:
+> >             -Modified the ChangeLog comment.
+> > Changes for v3:
+> >             -Added changeLog comment.
+> > Changes for v2:
+> >                 -None
+> >
+> >  Documentation/devicetree/bindings/serial/cdns,uart.txt | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> > index a3eb154..4fe7aae 100644
+> > --- a/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> > +++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> > @@ -1,7 +1,8 @@
+> >  Binding for Cadence UART Controller
+> >
+> >  Required properties:
+> > -- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
+> > +- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps" for Zynq and
+> > +               "cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC uart controller.
+>
+> Please format this as one valid combination per line.
+>
+> xuartps is not very specific. It needs some abbreviation of "Zynq
+> Ultrascale+ MPSoC" in it.
+>
 
-Signed-off-by: Baoyou Xie <baoyou.xie@linaro.org>
----
- drivers/tty/serial/stm32-usart.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Will fix the above comments in the next version.
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 4d3001b..bb9b5e9 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -60,8 +60,8 @@ static void stm32_clr_bits(struct uart_port *port, u32 reg, u32 bits)
- 	writel_relaxed(val, port->membase + reg);
- }
- 
--int stm32_pending_rx(struct uart_port *port, u32 *sr, int *last_res,
--		     bool threaded)
-+static int stm32_pending_rx(struct uart_port *port, u32 *sr, int *last_res,
-+			    bool threaded)
- {
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
-@@ -85,7 +85,8 @@ int stm32_pending_rx(struct uart_port *port, u32 *sr, int *last_res,
- 	return 0;
- }
- 
--unsigned long stm32_get_char(struct uart_port *port, u32 *sr, int *last_res)
-+static unsigned long
-+stm32_get_char(struct uart_port *port, u32 *sr, int *last_res)
- {
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
--- 
-2.7.4
+Regards,
+Navakishore.
+
+
+This email and any attachments are intended for the sole use of the named recipient(s) and contain(s) confidential information that may be proprietary, privileged or copyrighted under applicable law. If you are not the intended recipient, do not read, copy, or forward this email message or any attachments. Delete this email message and any attachments immediately.
