@@ -1,40 +1,52 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH] serial: imx: Fix DCD reading
-Date: Mon, 26 Sep 2016 15:55:31 +0200
-Message-ID: <20160926135531.31888-1-s.hauer@pengutronix.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>
+From: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v5] devicetree: bindings: uart: Add new compatible string for ZynqMP
+Date: Mon, 26 Sep 2016 19:36:41 +0530
+Message-ID: <1474898801-36571-1-git-send-email-navam@xilinx.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, michal.simek-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, soren.brinkmann-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, punnaia-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org
+Cc: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, Nava kishore Manne <navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-The USR2_DCDIN bit is tested for in register usr1. As the name
-suggests the usr2 register should be used instead. This fixes
-reading the Carrier detect status.
+From: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+This patch Adds the new compatible string for ZynqMP SoC.
+
+Signed-off-by: Nava kishore Manne <navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/tty/serial/imx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Changes for v5:
+		-Fixed some minor comments.
+Changes for v4:
+                -Modified the ChangeLog comment.
+Changes for v3:
+                -Added changeLog comment.
+Changes for v2:
+                -None
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 0df2b1c..615c027 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -740,12 +740,13 @@ static unsigned int imx_get_hwmctrl(struct imx_port *sport)
- {
- 	unsigned int tmp = TIOCM_DSR;
- 	unsigned usr1 = readl(sport->port.membase + USR1);
-+	unsigned usr2 = readl(sport->port.membase + USR2);
+ Documentation/devicetree/bindings/serial/cdns,uart.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+index a3eb154..30c885c 100644
+--- a/Documentation/devicetree/bindings/serial/cdns,uart.txt
++++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+@@ -1,7 +1,9 @@
+ Binding for Cadence UART Controller
  
- 	if (usr1 & USR1_RTSS)
- 		tmp |= TIOCM_CTS;
- 
- 	/* in DCE mode DCDIN is always 0 */
--	if (!(usr1 & USR2_DCDIN))
-+	if (!(usr2 & USR2_DCDIN))
- 		tmp |= TIOCM_CAR;
- 
- 	if (sport->dte_mode)
+ Required properties:
+-- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
++- compatible :
++  Use "cdns,uart-r1p8", or "xlnx,xuartps" for Zynq-7xxx SoC.
++  Use "cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC.
+ - reg: Should contain UART controller registers location and length.
+ - interrupts: Should contain UART controller interrupts.
+ - clocks: Must contain phandles to the UART clocks
 -- 
-2.9.3
+2.1.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
