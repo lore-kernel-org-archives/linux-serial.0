@@ -1,52 +1,28 @@
-From: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5] devicetree: bindings: uart: Add new compatible string for ZynqMP
-Date: Mon, 26 Sep 2016 19:36:41 +0530
-Message-ID: <1474898801-36571-1-git-send-email-navam@xilinx.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH] serial: imx: Fix DCD reading
+Date: Mon, 26 Sep 2016 11:08:20 -0300
+Message-ID: <CAOMZO5Cdime2w+R=UirP68ibKogYn2iuzGmuWt4yakQ+kmPDXw@mail.gmail.com>
+References: <20160926135531.31888-1-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, michal.simek-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, soren.brinkmann-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, punnaia-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org
-Cc: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, Nava kishore Manne <navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160926135531.31888-1-s.hauer@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: linux-kernel <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Sascha Hauer <kernel@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Hi Sascha,
 
-This patch Adds the new compatible string for ZynqMP SoC.
+On Mon, Sep 26, 2016 at 10:55 AM, Sascha Hauer <s.hauer@pengutronix.de> wrote:
+> The USR2_DCDIN bit is tested for in register usr1. As the name
+> suggests the usr2 register should be used instead. This fixes
+> reading the Carrier detect status.
+>
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 
-Signed-off-by: Nava kishore Manne <navam-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
----
-Changes for v5:
-		-Fixed some minor comments.
-Changes for v4:
-                -Modified the ChangeLog comment.
-Changes for v3:
-                -Added changeLog comment.
-Changes for v2:
-                -None
+Good catch:
 
- Documentation/devicetree/bindings/serial/cdns,uart.txt | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Reviewed-by: Fabio Estevam <fabio.estevam@nxp.com>
 
-diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/Documentation/devicetree/bindings/serial/cdns,uart.txt
-index a3eb154..30c885c 100644
---- a/Documentation/devicetree/bindings/serial/cdns,uart.txt
-+++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
-@@ -1,7 +1,9 @@
- Binding for Cadence UART Controller
- 
- Required properties:
--- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
-+- compatible :
-+  Use "cdns,uart-r1p8", or "xlnx,xuartps" for Zynq-7xxx SoC.
-+  Use "cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC.
- - reg: Should contain UART controller registers location and length.
- - interrupts: Should contain UART controller interrupts.
- - clocks: Must contain phandles to the UART clocks
--- 
-2.1.2
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Shouldn't this have stable on Cc?
