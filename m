@@ -1,47 +1,42 @@
-From: =?UTF-8?B?64Ko7JiB66+8?= <youngmin.nam@samsung.com>
-Subject: [PATCH] serial: samsung: add clock controls in
- s3c24xx_serial_resume_noirq()
-Date: Tue, 27 Sep 2016 22:43:54 +0900
-Message-ID: <000d01d218c5$3069cdf0$913d69d0$@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-language: ko
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: [PATCHv3 0/3] Fix hardware handshake on SAM9x5 platforms
+Date: Tue, 27 Sep 2016 16:13:10 +0200
+Message-ID: <20160927141313.27668-1-richard.genoud@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds clock controls in s3c24xx_serial_resume_noirq()
-to set S3C64XX_UINTM register.
+Since commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
+hardware handshake is enabled"), hardware handshake is not working
+anymore on SAM9x5/SAMA5D3/SAM9 platforms.
 
-Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
----
- drivers/tty/serial/samsung.c | 3 +++
- 1 file changed, 3 insertions(+)
+The first two patches fix the hardware handshake when CTS/RTS pins are
+handled by GPIOs.
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index ae2095a..97f7b3b 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1921,6 +1921,7 @@ static int s3c24xx_serial_resume(struct device *dev)
- static int s3c24xx_serial_resume_noirq(struct device *dev)
- {
- 	struct uart_port *port = s3c24xx_dev_to_port(dev);
-+	struct s3c24xx_uart_port *ourport = to_ourport(port);
- 
- 	if (port) {
- 		/* restore IRQ mask */
-@@ -1930,7 +1931,9 @@ static int s3c24xx_serial_resume_noirq(struct device *dev)
- 				uintm &= ~S3C64XX_UINTM_TXD_MSK;
- 			if (rx_enabled(port))
- 				uintm &= ~S3C64XX_UINTM_RXD_MSK;
-+			clk_prepare_enable(ourport->clk);
- 			wr_regl(port, S3C64XX_UINTM, uintm);
-+			clk_disable_unprepare(ourport->clk);
- 		}
- 	}
- 
--- 
-2.8.1
+The last patch fixes hardware handshake when CTS/RTS pins are not GPIOs.
+
+Changes since v2:
+ - remove IS_ERR_OR_NULL() test in patch 1/3 as Uwe suggested.
+ - fix typos in patch 2/3
+ - rebase on next-20160927
+ - simplify the logic in patch 3/3.
+
+Changes since v1:
+ - Correct patch 1 with the error found by kbuild.
+ - Add Alexandre's Acked-by on patch 2
+ - Rewrite patch 3 logic in the light of the on-going discussion
+   with Cyrille and Alexandre.
+
+NB: patch 2 NEEDS patch 1 to compile.
+
+Richard Genoud (3):
+  serial: mctrl_gpio: implement mctrl_gpio_use_rtscts
+  tty/serial: at91: fix hardware handshake with GPIOs
+  tty/serial: at91: fix hardware handshake on SAM9x5 (without GPIOs)
+
+ drivers/tty/serial/atmel_serial.c      | 26 +++++++++++++++++---------
+ drivers/tty/serial/serial_mctrl_gpio.c |  8 ++++++++
+ drivers/tty/serial/serial_mctrl_gpio.h | 10 ++++++++++
+ 3 files changed, 35 insertions(+), 9 deletions(-)
