@@ -1,76 +1,111 @@
-From: Niklas =?iso-8859-1?Q?S=F6derlund?=
-        <niklas.soderlund@ragnatech.se>
-Subject: Re: Problem with 761ed4a (tty: serial_core: convert uart_close to
- use tty_port_close)
-Date: Tue, 27 Sep 2016 19:16:33 +0200
-Message-ID: <20160927171633.GH16263@bigcity.dyn.berto.se>
-References: <20160927110140.GG16263@bigcity.dyn.berto.se>
- <CAL_JsqKWjJ3Qo44=gjqLVJK6utUtrJF5nB=EVEE1wOmFpqw-+A@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqKWjJ3Qo44=gjqLVJK6utUtrJF5nB=EVEE1wOmFpqw-+A@mail.gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Vinod Koul <vinod.koul@intel.com>, "open list:MEDIA DRIVERS FOR RENESAS - FCP" <linux-renesas-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>
+From: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v11 1/4] of/serial: move earlycon early_param handling to serial
+Date: Tue, 27 Sep 2016 23:54:12 +0300
+Message-ID: <20160927205418.31529-1-aleksey.makarov@linaro.org>
+References: <20160927151953.GB4371@kroah.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160927151953.GB4371-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: "Rafael J . Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Len Brown <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Graeme Gregory <graeme.gregory-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Al Stone <ahs3-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Christopher Covington <cov-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Yury Norov <ynorov-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Zheng, Lv" <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
+From: Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-Thanks for your reply.
+We have multiple "earlycon" early_param handlers - merge the DT one into
+the main earlycon one.  It's a cleanup that also will be useful
+to defer setting up DT console until ACPI/DT decision is made.
 
-On 2016-09-27 10:57:56 -0500, Rob Herring wrote:
-> On Tue, Sep 27, 2016 at 6:01 AM, Niklas Söderlund
-> <niklas.soderlund@ragnatech.se> wrote:
-> > Hi Rob and Vinod,
-> >
-> > While testing on Renesas Koelsch board Vinods 'next' branch at
-> >
-> > git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/slave-dma.git
-> >
-> > I ran into some problems with Robs patch 761ed4a (tty: serial_core:
-> > convert uart_close to use tty_port_close) and my systemd based init
-> > system. The kernel starts fine, mounts the NFS root and starts init but
-> > then the serial console go silent and I'm not able to communicate with
-> > the system.
-> 
-> There's a fix later in Greg's tree that's not in this tree. If that
-> doesn't fix it, can you try reverting the hunk that sets the
-> tty_port.console flag.
+Rename the exported function to avoid clashing with the function from
+arch/microblaze/kernel/prom.c
 
-I tried Greg's branch tty-next from 
+Signed-off-by: Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Tested-by: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Tested-by: Christopher Covington <cov-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/of/fdt.c              | 11 +----------
+ drivers/tty/serial/earlycon.c |  2 +-
+ include/linux/of_fdt.h        |  3 +++
+ 3 files changed, 5 insertions(+), 11 deletions(-)
 
-git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-
-Which contains the commit I think you are referring to, a5a2b13 (serial: 
-core: fix potential NULL pointer dereference). Unfortunately it dose not 
-fix the problem I see.
-
-I also tried your other suggestion by reverting the chunk that sets the 
-tty_port.console flag (on top of tty-next branch), like this:
-
-@@ -2746,8 +2746,6 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
-        uport->cons = drv->cons;
-        uport->minor = drv->tty_driver->minor_start + uport->line;
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 085c638..c89d5d2 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -924,7 +924,7 @@ static inline void early_init_dt_check_for_initrd(unsigned long node)
  
--       port->console = uart_console(uport);
+ #ifdef CONFIG_SERIAL_EARLYCON
+ 
+-static int __init early_init_dt_scan_chosen_serial(void)
++int __init early_init_dt_scan_chosen_stdout(void)
+ {
+ 	int offset;
+ 	const char *p, *q, *options = NULL;
+@@ -968,15 +968,6 @@ static int __init early_init_dt_scan_chosen_serial(void)
+ 	}
+ 	return -ENODEV;
+ }
 -
-        /*
-         * If this port is a console, then the spinlock is already
-         * initialised.
-
-The problem still unfortunately persists :-(
-
-I can still revert the commits a5a2b13 (serial: core: fix potential NULL 
-pointer dereference) and 761ed4a (tty: serial_core: convert uart_close 
-to use tty_port_close) from the top of the tty-next branch and the 
-system boots fine.
-
-The configuration I'm using for all tests are shmobile_defconfig + 
-CONFIG_CGROUPS + CONFIG_SECCOMP. 
-
+-static int __init setup_of_earlycon(char *buf)
+-{
+-	if (buf)
+-		return 0;
+-
+-	return early_init_dt_scan_chosen_serial();
+-}
+-early_param("earlycon", setup_of_earlycon);
+ #endif
+ 
+ /**
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 067783f..7aae655 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -209,7 +209,7 @@ static int __init param_setup_earlycon(char *buf)
+ 	 * don't generate a warning from parse_early_params() in that case
+ 	 */
+ 	if (!buf || !buf[0])
+-		return 0;
++		return early_init_dt_scan_chosen_stdout();
+ 
+ 	err = setup_earlycon(buf);
+ 	if (err == -ENOENT || err == -EALREADY)
+diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
+index 26c3302..4341f32 100644
+--- a/include/linux/of_fdt.h
++++ b/include/linux/of_fdt.h
+@@ -14,6 +14,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/init.h>
++#include <linux/errno.h>
+ 
+ /* Definitions used by the flattened device tree */
+ #define OF_DT_HEADER		0xd00dfeed	/* marker */
+@@ -66,6 +67,7 @@ extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
+ 				     int depth, void *data);
+ extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
+ 				     int depth, void *data);
++extern int early_init_dt_scan_chosen_stdout(void);
+ extern void early_init_fdt_scan_reserved_mem(void);
+ extern void early_init_fdt_reserve_self(void);
+ extern void early_init_dt_add_memory_arch(u64 base, u64 size);
+@@ -94,6 +96,7 @@ extern void early_get_first_memblock_info(void *, phys_addr_t *);
+ extern u64 of_flat_dt_translate_address(unsigned long node);
+ extern void of_fdt_limit_memory(int limit);
+ #else /* CONFIG_OF_FLATTREE */
++static inline int early_init_dt_scan_chosen_stdout(void) { return -ENODEV; }
+ static inline void early_init_fdt_scan_reserved_mem(void) {}
+ static inline void early_init_fdt_reserve_self(void) {}
+ static inline const char *of_flat_dt_get_machine_name(void) { return NULL; }
 -- 
-Regards,
-Niklas Söderlund
+2.10.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
