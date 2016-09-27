@@ -1,111 +1,271 @@
-From: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v11 1/4] of/serial: move earlycon early_param handling to serial
-Date: Tue, 27 Sep 2016 23:54:12 +0300
-Message-ID: <20160927205418.31529-1-aleksey.makarov@linaro.org>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: [PATCH v11 2/4] ACPI: parse SPCR and enable matching console
+Date: Tue, 27 Sep 2016 23:54:13 +0300
+Message-ID: <20160927205418.31529-2-aleksey.makarov@linaro.org>
 References: <20160927151953.GB4371@kroah.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160927151953.GB4371-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: "Rafael J . Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Len Brown <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Graeme Gregory <graeme.gregory-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Al Stone <ahs3-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Christopher Covington <cov-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Yury Norov <ynorov-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Zheng, Lv" <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri
+ <20160927205418.31529-1-aleksey.makarov@linaro.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20160927205418.31529-1-aleksey.makarov@linaro.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Len Brown <lenb@kernel.org>, Leif Lindholm <leif.lindholm@linaro.org>, Graeme Gregory <graeme.gregory@linaro.org>, Al Stone <ahs3@redhat.com>, Christopher Covington <cov@codeaurora.org>, Yury Norov <ynorov@caviumnetworks.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, "Zheng, Lv" <lv.zheng@intel.com>, Mark Salter <msalter@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+'ARM Server Base Boot Requiremets' [1] mentions SPCR (Serial Port
+Console Redirection Table) [2] as a mandatory ACPI table that
+specifies the configuration of serial console.
 
-We have multiple "earlycon" early_param handlers - merge the DT one into
-the main earlycon one.  It's a cleanup that also will be useful
-to defer setting up DT console until ACPI/DT decision is made.
+Defer initialization of DT earlycon until ACPI/DT decision is made.
 
-Rename the exported function to avoid clashing with the function from
-arch/microblaze/kernel/prom.c
+Parse the ACPI SPCR table, setup earlycon if required,
+enable specified console.
 
-Signed-off-by: Leif Lindholm <leif.lindholm-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Signed-off-by: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Reviewed-by: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Tested-by: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Tested-by: Christopher Covington <cov-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Thanks to Peter Hurley for explaining how this should work.
+
+[1] http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0044a/index.html
+[2] https://msdn.microsoft.com/en-us/library/windows/hardware/dn639132(v=vs.85).aspx
+
+Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Tested-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Tested-by: Christopher Covington <cov@codeaurora.org>
 ---
- drivers/of/fdt.c              | 11 +----------
- drivers/tty/serial/earlycon.c |  2 +-
- include/linux/of_fdt.h        |  3 +++
- 3 files changed, 5 insertions(+), 11 deletions(-)
+ drivers/acpi/Kconfig          |   3 ++
+ drivers/acpi/Makefile         |   1 +
+ drivers/acpi/spcr.c           | 111 ++++++++++++++++++++++++++++++++++++++++++
+ drivers/tty/serial/earlycon.c |  19 +++++++-
+ include/linux/acpi.h          |   6 +++
+ include/linux/serial_core.h   |   9 +++-
+ 6 files changed, 146 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/acpi/spcr.c
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 085c638..c89d5d2 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -924,7 +924,7 @@ static inline void early_init_dt_check_for_initrd(unsigned long node)
+diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
+index 6cef2d1..4a269f9 100644
+--- a/drivers/acpi/Kconfig
++++ b/drivers/acpi/Kconfig
+@@ -77,6 +77,9 @@ config ACPI_DEBUGGER_USER
  
- #ifdef CONFIG_SERIAL_EARLYCON
+ endif
  
--static int __init early_init_dt_scan_chosen_serial(void)
-+int __init early_init_dt_scan_chosen_stdout(void)
- {
- 	int offset;
- 	const char *p, *q, *options = NULL;
-@@ -968,15 +968,6 @@ static int __init early_init_dt_scan_chosen_serial(void)
- 	}
- 	return -ENODEV;
- }
--
--static int __init setup_of_earlycon(char *buf)
--{
--	if (buf)
--		return 0;
--
--	return early_init_dt_scan_chosen_serial();
--}
--early_param("earlycon", setup_of_earlycon);
- #endif
++config ACPI_SPCR_TABLE
++	bool
++
+ config ACPI_SLEEP
+ 	bool
+ 	depends on SUSPEND || HIBERNATION
+diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
+index e5ada78..d799593 100644
+--- a/drivers/acpi/Makefile
++++ b/drivers/acpi/Makefile
+@@ -81,6 +81,7 @@ obj-$(CONFIG_ACPI_EC_DEBUGFS)	+= ec_sys.o
+ obj-$(CONFIG_ACPI_CUSTOM_METHOD)+= custom_method.o
+ obj-$(CONFIG_ACPI_BGRT)		+= bgrt.o
+ obj-$(CONFIG_ACPI_CPPC_LIB)	+= cppc_acpi.o
++obj-$(CONFIG_ACPI_SPCR_TABLE)	+= spcr.o
+ obj-$(CONFIG_ACPI_DEBUGGER_USER) += acpi_dbg.o
  
- /**
+ # processor has its own "processor." module_param namespace
+diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+new file mode 100644
+index 0000000..e8d7bc7
+--- /dev/null
++++ b/drivers/acpi/spcr.c
+@@ -0,0 +1,111 @@
++/*
++ * Copyright (c) 2012, Intel Corporation
++ * Copyright (c) 2015, Red Hat, Inc.
++ * Copyright (c) 2015, 2016 Linaro Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++
++#define pr_fmt(fmt) "ACPI: SPCR: " fmt
++
++#include <linux/acpi.h>
++#include <linux/console.h>
++#include <linux/kernel.h>
++#include <linux/serial_core.h>
++
++/**
++ * parse_spcr() - parse ACPI SPCR table and add preferred console
++ *
++ * @earlycon: set up earlycon for the console specified by the table
++ *
++ * For the architectures with support for ACPI, CONFIG_ACPI_SPCR_TABLE may be
++ * defined to parse ACPI SPCR table.  As a result of the parsing preferred
++ * console is registered and if @earlycon is true, earlycon is set up.
++ *
++ * When CONFIG_ACPI_SPCR_TABLE is defined, this function should be called
++ * from arch inintialization code as soon as the DT/ACPI decision is made.
++ *
++ */
++int __init parse_spcr(bool earlycon)
++{
++	static char opts[64];
++	struct acpi_table_spcr *table;
++	acpi_size table_size;
++	acpi_status status;
++	char *uart;
++	char *iotype;
++	int baud_rate;
++	int err;
++
++	if (acpi_disabled)
++		return -ENODEV;
++
++	status = acpi_get_table_with_size(ACPI_SIG_SPCR, 0,
++					  (struct acpi_table_header **)&table,
++					  &table_size);
++
++	if (ACPI_FAILURE(status))
++		return -ENOENT;
++
++	if (table->header.revision < 2) {
++		err = -ENOENT;
++		pr_err("wrong table version\n");
++		goto done;
++	}
++
++	iotype = table->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY ?
++			"mmio" : "io";
++
++	switch (table->interface_type) {
++	case ACPI_DBG2_ARM_SBSA_32BIT:
++		iotype = "mmio32";
++		/* fall through */
++	case ACPI_DBG2_ARM_PL011:
++	case ACPI_DBG2_ARM_SBSA_GENERIC:
++	case ACPI_DBG2_BCM2835:
++		uart = "pl011";
++		break;
++	case ACPI_DBG2_16550_COMPATIBLE:
++	case ACPI_DBG2_16550_SUBSET:
++		uart = "uart";
++		break;
++	default:
++		err = -ENOENT;
++		goto done;
++	}
++
++	switch (table->baud_rate) {
++	case 3:
++		baud_rate = 9600;
++		break;
++	case 4:
++		baud_rate = 19200;
++		break;
++	case 6:
++		baud_rate = 57600;
++		break;
++	case 7:
++		baud_rate = 115200;
++		break;
++	default:
++		err = -ENOENT;
++		goto done;
++	}
++
++	snprintf(opts, sizeof(opts), "%s,%s,0x%llx,%d", uart, iotype,
++		 table->serial_port.address, baud_rate);
++
++	pr_info("console: %s\n", opts);
++
++	if (earlycon)
++		setup_earlycon(opts);
++
++	err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
++
++done:
++	early_acpi_os_unmap_memory((void __iomem *)table, table_size);
++	return err;
++}
 diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 067783f..7aae655 100644
+index 7aae655..ea00b9f 100644
 --- a/drivers/tty/serial/earlycon.c
 +++ b/drivers/tty/serial/earlycon.c
-@@ -209,7 +209,7 @@ static int __init param_setup_earlycon(char *buf)
+@@ -21,6 +21,7 @@
+ #include <linux/sizes.h>
+ #include <linux/of.h>
+ #include <linux/of_fdt.h>
++#include <linux/acpi.h>
+ 
+ #ifdef CONFIG_FIX_EARLYCON_MEM
+ #include <asm/fixmap.h>
+@@ -199,6 +200,14 @@ int __init setup_earlycon(char *buf)
+ 	return -ENOENT;
+ }
+ 
++/*
++ * When CONFIG_ACPI_SPCR_TABLE is defined, "earlycon" without parameters in
++ * command line does not start DT earlycon immediately, instead it defers
++ * starting it until DT/ACPI decision is made.  At that time if ACPI is enabled
++ * call parse_spcr(), else call early_init_dt_scan_chosen_stdout()
++ */
++bool earlycon_init_is_deferred __initdata;
++
+ /* early_param wrapper for setup_earlycon() */
+ static int __init param_setup_earlycon(char *buf)
+ {
+@@ -208,8 +217,14 @@ static int __init param_setup_earlycon(char *buf)
+ 	 * Just 'earlycon' is a valid param for devicetree earlycons;
  	 * don't generate a warning from parse_early_params() in that case
  	 */
- 	if (!buf || !buf[0])
--		return 0;
-+		return early_init_dt_scan_chosen_stdout();
+-	if (!buf || !buf[0])
+-		return early_init_dt_scan_chosen_stdout();
++	if (!buf || !buf[0]) {
++		if (IS_ENABLED(CONFIG_ACPI_SPCR_TABLE)) {
++			earlycon_init_is_deferred = true;
++			return 0;
++		} else {
++			return early_init_dt_scan_chosen_stdout();
++		}
++	}
  
  	err = setup_earlycon(buf);
  	if (err == -ENOENT || err == -EALREADY)
-diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
-index 26c3302..4341f32 100644
---- a/include/linux/of_fdt.h
-+++ b/include/linux/of_fdt.h
-@@ -14,6 +14,7 @@
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index c5eaf2f..2353827 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -1074,4 +1074,10 @@ void acpi_table_upgrade(void);
+ static inline void acpi_table_upgrade(void) { }
+ #endif
  
- #include <linux/types.h>
- #include <linux/init.h>
-+#include <linux/errno.h>
++#ifdef CONFIG_ACPI_SPCR_TABLE
++int parse_spcr(bool earlycon);
++#else
++static inline int parse_spcr(bool earlycon) { return 0; }
++#endif
++
+ #endif	/*_LINUX_ACPI_H*/
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 2f44e20..9e84cff 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -367,11 +367,18 @@ extern const struct earlycon_id __earlycon_table_end[];
  
- /* Definitions used by the flattened device tree */
- #define OF_DT_HEADER		0xd00dfeed	/* marker */
-@@ -66,6 +67,7 @@ extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
- 				     int depth, void *data);
- extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
- 				     int depth, void *data);
-+extern int early_init_dt_scan_chosen_stdout(void);
- extern void early_init_fdt_scan_reserved_mem(void);
- extern void early_init_fdt_reserve_self(void);
- extern void early_init_dt_add_memory_arch(u64 base, u64 size);
-@@ -94,6 +96,7 @@ extern void early_get_first_memblock_info(void *, phys_addr_t *);
- extern u64 of_flat_dt_translate_address(unsigned long node);
- extern void of_fdt_limit_memory(int limit);
- #else /* CONFIG_OF_FLATTREE */
-+static inline int early_init_dt_scan_chosen_stdout(void) { return -ENODEV; }
- static inline void early_init_fdt_scan_reserved_mem(void) {}
- static inline void early_init_fdt_reserve_self(void) {}
- static inline const char *of_flat_dt_get_machine_name(void) { return NULL; }
+ #define EARLYCON_DECLARE(_name, fn)	OF_EARLYCON_DECLARE(_name, "", fn)
+ 
+-extern int setup_earlycon(char *buf);
+ extern int of_setup_earlycon(const struct earlycon_id *match,
+ 			     unsigned long node,
+ 			     const char *options);
+ 
++#ifdef CONFIG_SERIAL_EARLYCON
++extern bool earlycon_init_is_deferred __initdata;
++int setup_earlycon(char *buf);
++#else
++static const bool earlycon_init_is_deferred;
++static inline int setup_earlycon(char *buf) { return 0; }
++#endif
++
+ struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+ 				   struct console *c);
+ int uart_parse_earlycon(char *p, unsigned char *iotype, unsigned long *addr,
 -- 
 2.10.0
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
