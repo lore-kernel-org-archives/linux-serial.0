@@ -1,65 +1,76 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC] tty: serial_core: Move uart_console() check after console registration
-Date: Thu, 29 Sep 2016 17:31:04 +0200
-Message-ID: <1475163064-20399-1-git-send-email-geert+renesas@glider.be>
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: [PATCH] sh-sci: add R8A7743/5 support
+Date: Fri, 30 Sep 2016 00:37:13 +0300
+Message-ID: <2017044.9fZNuWa2OZ@wasted.cogentembedded.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>
-Cc: Takeshi Kihara <takeshi.kihara.df@renesas.com>, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+To: gregkh@linuxfoundation.org, jslaby@suse.cz, linux-serial@vger.kernel.org, robh+dt@kernel.org, mark.rutland@arm.com
+Cc: linux-renesas-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The port->console flag is always false, as uart_console() is called
-before the serial console has been registered.
+Renesas  RZ/G SoC also have the SCIF, SCIFA, SCIFB, and HSCIF ports.
+Document RZ/G1[ME] (also known as R8A774[35]) SoC bindings along with
+the RZ/G family bindings.  The driver itself also needs to recognize
+the latter binding for the SCIF ports, so teach it...
 
-Hence for a serial port used as the console, uart_tty_port_shutdown()
-will still be called when userspace closes the port, powering it down.
-This will lead to a system lock up when the serial console driver writes
-to the serial port's registers.
+Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 
-To fix this, move the setting of port->console after the call to
-uart_configure_port(), which registers the serial console.
-
-Fixes: 761ed4a94582ab29 ("tty: serial_core: convert uart_close to use tty_port_close")
-Reported-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Reported-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
-RFC because of the comment "If this port is a console, then the spinlock
-is already initialised", and the pre-existing code calling
-uart_console() before uart_configure_port().
+This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
 
-Can be reproduced on Renesas boards:
-  1. With systemd: hangs during boot,
-  2. Without systemd: "telinit n" to switch to a runlevel that doesn't
-     run a getty on ttySC0, and trigger kernel output.
----
- drivers/tty/serial/serial_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |   12 ++++++++++
+ drivers/tty/serial/sh-sci.c                                     |    3 ++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 6e4f63627479db8d..ce8899c13af3d97f 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2746,8 +2746,6 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	uport->cons = drv->cons;
- 	uport->minor = drv->tty_driver->minor_start + uport->line;
- 
--	port->console = uart_console(uport);
--
- 	/*
- 	 * If this port is a console, then the spinlock is already
- 	 * initialised.
-@@ -2761,6 +2759,8 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 
- 	uart_configure_port(drv, state, uport);
- 
-+	port->console = uart_console(uport);
-+
- 	num_groups = 2;
- 	if (uport->attr_group)
- 		num_groups++;
--- 
-1.9.1
+Index: tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+===================================================================
+--- tty.orig/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -9,6 +9,14 @@ Required properties:
+     - "renesas,scifb-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFB compatible UART.
+     - "renesas,scifa-r8a7740" for R8A7740 (R-Mobile A1) SCIFA compatible UART.
+     - "renesas,scifb-r8a7740" for R8A7740 (R-Mobile A1) SCIFB compatible UART.
++    - "renesas,scif-r8a7743" for R8A7743 (RZ/G1M) SCIF compatible UART.
++    - "renesas,scifa-r8a7743" for R8A7743 (RZ/G1M) SCIFA compatible UART.
++    - "renesas,scifb-r8a7743" for R8A7743 (RZ/G1M) SCIFB compatible UART.
++    - "renesas,hscif-r8a7743" for R8A7743 (RZ/G1M) HSCIF compatible UART.
++    - "renesas,scif-r8a7745" for R8A7745 (RZ/G1E) SCIF compatible UART.
++    - "renesas,scifa-r8a7745" for R8A7745 (RZ/G1E) SCIFA compatible UART.
++    - "renesas,scifb-r8a7745" for R8A7745 (RZ/G1E) SCIFB compatible UART.
++    - "renesas,hscif-r8a7745" for R8A7745 (RZ/G1E) HSCIF compatible UART.
+     - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
+     - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
+     - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
+@@ -38,11 +46,15 @@ Required properties:
+     - "renesas,rcar-gen1-scif" for R-Car Gen1 SCIF compatible UART,
+     - "renesas,rcar-gen2-scif" for R-Car Gen2 SCIF compatible UART,
+     - "renesas,rcar-gen3-scif" for R-Car Gen3 SCIF compatible UART,
++    - "renesas,rzg-scif" for RZ/G SCIF compatible UART.
+     - "renesas,rcar-gen2-scifa" for R-Car Gen2 SCIFA compatible UART,
++    - "renesas,rzg-scifa" for RZ/G SCIFA compatible UART.
+     - "renesas,rcar-gen2-scifb" for R-Car Gen2 SCIFB compatible UART,
++    - "renesas,rzg-scifb" for RZ/G SCIFB compatible UART.
+     - "renesas,rcar-gen1-hscif" for R-Car Gen1 HSCIF compatible UART,
+     - "renesas,rcar-gen2-hscif" for R-Car Gen2 HSCIF compatible UART,
+     - "renesas,rcar-gen3-hscif" for R-Car Gen3 HSCIF compatible UART,
++    - "renesas,rzg-hscif" for RZ/G HSCIF compatible UART.
+     - "renesas,scif" for generic SCIF compatible UART.
+     - "renesas,scifa" for generic SCIFA compatible UART.
+     - "renesas,scifb" for generic SCIFB compatible UART.
+Index: tty/drivers/tty/serial/sh-sci.c
+===================================================================
+--- tty.orig/drivers/tty/serial/sh-sci.c
++++ tty/drivers/tty/serial/sh-sci.c
+@@ -2950,6 +2950,9 @@ static const struct of_device_id of_sci_
+ 	}, {
+ 		.compatible = "renesas,rcar-gen3-scif",
+ 		.data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
++	}, {
++		.compatible = "renesas,rzg-scif",
++		.data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
+ 	},
+ 	/* Generic types */
+ 	{
