@@ -1,39 +1,34 @@
-From: Richard Genoud <richard.genoud@gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH] MAINTAINERS: update entry for atmel_serial driver
-Date: Thu, 29 Sep 2016 08:17:31 +0200
-Message-ID: <CACQ1gAiNNWqLmit-G4ch3eVJbBcB-QYa8eupRVqR8aVq6cjf7A@mail.gmail.com>
-References: <20160928154735.25265-1-nicolas.ferre@atmel.com> <1475078653.2685.1.camel@perches.com>
+Date: Thu, 29 Sep 2016 08:31:48 +0200
+Message-ID: <20160929063148.GA418@kroah.com>
+References: <20160928154735.25265-1-nicolas.ferre@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1475078653.2685.1.camel@perches.com>
+Content-Disposition: inline
+In-Reply-To: <20160928154735.25265-1-nicolas.ferre@atmel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joe Perches <joe@perches.com>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, richard.genoud@gmail.com, jslaby@suse.cz, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Cyrille Pitchen <cyrille.pitchen@atmel.com>
 List-Id: linux-serial@vger.kernel.org
 
-2016-09-28 18:04 GMT+02:00 Joe Perches <joe@perches.com>:
-> On Wed, 2016-09-28 at 17:47 +0200, Nicolas Ferre wrote:
->> Change maintainer for the serial driver found on most of the
->> Microchip / Atmel MPUs and take advantage of the move to rename
->> and reorder the entry.
-> []
->> diff --git a/MAINTAINERS b/MAINTAINERS
-> []
->> +MICROCHIP / ATMEL AT91 / AT32 SERIAL DRIVER
->> +M:   Richard Genoud <richard.genoud@gmail.com>
->> +S:   Maintained
->> +F:   drivers/tty/serial/atmel_serial.c
->> +F:   include/linux/atmel_serial.h
->
-> Thanks Richard.
->
-> include/linux is pretty cluttered with random files.
->
-> atmel_serial.h is #include exactly once.
->
-> Please move it out of include/linux and into
-> drivers/tty/serial/ one day.
-No problem, I'll add that to my TBD list !
+On Wed, Sep 28, 2016 at 05:47:35PM +0200, Nicolas Ferre wrote:
+> Change maintainer for the serial driver found on most of the
+> Microchip / Atmel MPUs and take advantage of the move to rename
+> and reorder the entry.
+> I'm happy that Richard is taking over the maintenance of this
+> driver.
+> 
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> Acked-by: Richard Genoud <richard.genoud@gmail.com>
+> ---
+>  MAINTAINERS | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
 
-Richard.
+This doesn't apply to my tty-next tree at all, what did you make it
+against?
+
+thanks,
+
+greg k-h
