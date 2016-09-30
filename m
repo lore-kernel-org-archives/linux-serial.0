@@ -1,68 +1,43 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: [PATCHv4 1/3] serial: mctrl_gpio: implement mctrl_gpio_use_rtscts
-Date: Fri, 30 Sep 2016 10:57:59 +0200
-Message-ID: <20160930085801.21497-2-richard.genoud@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCHv4 2/3] tty/serial: at91: fix hardware handshake with GPIOs
+Date: Fri, 30 Sep 2016 11:12:30 +0200
+Message-ID: <20160930091230.qzd42qnelylmkqxe@pengutronix.de>
 References: <20160930085801.21497-1-richard.genoud@gmail.com>
+ <20160930085801.21497-3-richard.genoud@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160930085801.21497-1-richard.genoud@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20160930085801.21497-3-richard.genoud@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-This function returns true if CTS and RTS are used as GPIOs.
-Some drivers (like atmel_serial) needs to know if the flow control is
-handled by the controller or by GPIOs.
+Hello Richard,
 
-Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
----
- drivers/tty/serial/serial_mctrl_gpio.c |  7 +++++++
- drivers/tty/serial/serial_mctrl_gpio.h | 10 ++++++++++
- 2 files changed, 17 insertions(+)
+On Fri, Sep 30, 2016 at 10:58:00AM +0200, Richard Genoud wrote:
+> Commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
+> hardware handshake is enabled") broke the hardware handshake when GPIOs
+> were used.
+> 
+> Hardware handshake with GPIOs used to work before this commit because
+> the CRTSCTS flag (termios->c_cflag) was set, but not the
+> ATMEL_US_USMODE_HWHS flag (controller register) ; so hardware handshake
+> enabled, but not handled by the controller.
 
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index d2da6aa7f27d..38e6e784faa2 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.c
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -72,6 +72,13 @@ struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
- }
- EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
- 
-+bool mctrl_gpio_use_rtscts(struct mctrl_gpios *gpios)
-+{
-+	return mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS) &&
-+		mctrl_gpio_to_gpiod(gpios, UART_GPIO_RTS);
-+}
-+EXPORT_SYMBOL_GPL(mctrl_gpio_use_rtscts);
-+
- unsigned int mctrl_gpio_get(struct mctrl_gpios *gpios, unsigned int *mctrl)
- {
- 	enum mctrl_gpio_idx i;
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
-index fa000bcff217..c34269733c62 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.h
-+++ b/drivers/tty/serial/serial_mctrl_gpio.h
-@@ -101,6 +101,11 @@ void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios);
-  */
- void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios);
- 
-+/*
-+ * Return true if both CTS and RTS are used with GPIOs
-+ */
-+bool mctrl_gpio_use_rtscts(struct mctrl_gpios *gpios);
-+
- #else /* GPIOLIB */
- 
- static inline
-@@ -152,6 +157,11 @@ static inline void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios)
- {
- }
- 
-+static inline bool mctrl_gpio_use_rtscts(struct mctrl_gpios *gpios)
-+{
-+	return false;
-+}
-+
- #endif /* GPIOLIB */
- 
- #endif
+What does the HWHS flag control? What if only RTS is a gpio and CTS is
+not? Or the other way round?
+
+What is the problematic setup? I guess it's RTS and CTS are gpios and
+with that setting ATMEL_US_USMODE_HWHS is wrong? What happens if that
+happens?
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
