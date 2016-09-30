@@ -1,43 +1,66 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCHv4 2/3] tty/serial: at91: fix hardware handshake with GPIOs
-Date: Fri, 30 Sep 2016 11:12:30 +0200
-Message-ID: <20160930091230.qzd42qnelylmkqxe@pengutronix.de>
-References: <20160930085801.21497-1-richard.genoud@gmail.com>
- <20160930085801.21497-3-richard.genoud@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH] serial: samsung: add clock controls in
+ s3c24xx_serial_resume_noirq()
+Date: Fri, 30 Sep 2016 12:34:34 +0200
+Message-ID: <20160930103434.GA4713@kozik-lap>
+References: <000d01d218c5$3069cdf0$913d69d0$@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160930085801.21497-3-richard.genoud@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <000d01d218c5$3069cdf0$913d69d0$@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: =?utf-8?B?64Ko7JiB66+8?= <youngmin.nam@samsung.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello Richard,
+On Tue, Sep 27, 2016 at 10:43:54PM +0900, 남영민 wrote:
+> This patch adds clock controls in s3c24xx_serial_resume_noirq()
+> to set S3C64XX_UINTM register.
 
-On Fri, Sep 30, 2016 at 10:58:00AM +0200, Richard Genoud wrote:
-> Commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
-> hardware handshake is enabled") broke the hardware handshake when GPIOs
-> were used.
+Code looks correct but the commit message is bogus. It does not bring
+any benefit over the code, not mentioning that it is quite cryptic (what
+does the "clock controls" mean?).
+
+Just describe here WHAT is the problem and WHY the fix is needed.
+
+Best regards,
+Krzysztof
+
 > 
-> Hardware handshake with GPIOs used to work before this commit because
-> the CRTSCTS flag (termios->c_cflag) was set, but not the
-> ATMEL_US_USMODE_HWHS flag (controller register) ; so hardware handshake
-> enabled, but not handled by the controller.
-
-What does the HWHS flag control? What if only RTS is a gpio and CTS is
-not? Or the other way round?
-
-What is the problematic setup? I guess it's RTS and CTS are gpios and
-with that setting ATMEL_US_USMODE_HWHS is wrong? What happens if that
-happens?
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-K�nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
+> ---
+>  drivers/tty/serial/samsung.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index ae2095a..97f7b3b 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -1921,6 +1921,7 @@ static int s3c24xx_serial_resume(struct device *dev)
+>  static int s3c24xx_serial_resume_noirq(struct device *dev)
+>  {
+>  	struct uart_port *port = s3c24xx_dev_to_port(dev);
+> +	struct s3c24xx_uart_port *ourport = to_ourport(port);
+>  
+>  	if (port) {
+>  		/* restore IRQ mask */
+> @@ -1930,7 +1931,9 @@ static int s3c24xx_serial_resume_noirq(struct device *dev)
+>  				uintm &= ~S3C64XX_UINTM_TXD_MSK;
+>  			if (rx_enabled(port))
+>  				uintm &= ~S3C64XX_UINTM_RXD_MSK;
+> +			clk_prepare_enable(ourport->clk);
+>  			wr_regl(port, S3C64XX_UINTM, uintm);
+> +			clk_disable_unprepare(ourport->clk);
+>  		}
+>  	}
+>  
+> -- 
+> 2.8.1
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
