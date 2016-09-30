@@ -1,99 +1,46 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] sh-sci: add R8A7743/5 support
-Date: Fri, 30 Sep 2016 10:38:48 +0200
-Message-ID: <CAMuHMdWEg8V81w=MT4akCaV=VUGopyWLJtSQC+KeWSpTR5dR_w@mail.gmail.com>
-References: <2017044.9fZNuWa2OZ@wasted.cogentembedded.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <2017044.9fZNuWa2OZ@wasted.cogentembedded.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: [PATCHv4 0/3] Fix hardware handshake on SAM9x5 platforms
+Date: Fri, 30 Sep 2016 10:57:58 +0200
+Message-ID: <20160930085801.21497-1-richard.genoud@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sergei,
+Since commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
+hardware handshake is enabled"), hardware handshake is not working
+anymore on SAM9x5/SAMA5D3/SAM9 platforms.
 
-On Thu, Sep 29, 2016 at 11:37 PM, Sergei Shtylyov
-<sergei.shtylyov@cogentembedded.com> wrote:
-> Renesas  RZ/G SoC also have the SCIF, SCIFA, SCIFB, and HSCIF ports.
-> Document RZ/G1[ME] (also known as R8A774[35]) SoC bindings along with
-> the RZ/G family bindings.  The driver itself also needs to recognize
-> the latter binding for the SCIF ports, so teach it...
->
-> Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
->
-> ---
-> This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
->
->  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |   12 ++++++++++
->  drivers/tty/serial/sh-sci.c                                     |    3 ++
->  2 files changed, 15 insertions(+)
->
-> Index: tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-> ===================================================================
-> --- tty.orig/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-> +++ tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-> @@ -9,6 +9,14 @@ Required properties:
->      - "renesas,scifb-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFB compatible UART.
->      - "renesas,scifa-r8a7740" for R8A7740 (R-Mobile A1) SCIFA compatible UART.
->      - "renesas,scifb-r8a7740" for R8A7740 (R-Mobile A1) SCIFB compatible UART.
-> +    - "renesas,scif-r8a7743" for R8A7743 (RZ/G1M) SCIF compatible UART.
-> +    - "renesas,scifa-r8a7743" for R8A7743 (RZ/G1M) SCIFA compatible UART.
-> +    - "renesas,scifb-r8a7743" for R8A7743 (RZ/G1M) SCIFB compatible UART.
-> +    - "renesas,hscif-r8a7743" for R8A7743 (RZ/G1M) HSCIF compatible UART.
-> +    - "renesas,scif-r8a7745" for R8A7745 (RZ/G1E) SCIF compatible UART.
-> +    - "renesas,scifa-r8a7745" for R8A7745 (RZ/G1E) SCIFA compatible UART.
-> +    - "renesas,scifb-r8a7745" for R8A7745 (RZ/G1E) SCIFB compatible UART.
-> +    - "renesas,hscif-r8a7745" for R8A7745 (RZ/G1E) HSCIF compatible UART.
->      - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
->      - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
->      - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
+The first two patches fix the hardware handshake when CTS/RTS pins are
+handled by GPIOs.
 
-For the part above:
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+The last patch fixes hardware handshake when CTS/RTS pins are not GPIOs.
 
-> @@ -38,11 +46,15 @@ Required properties:
->      - "renesas,rcar-gen1-scif" for R-Car Gen1 SCIF compatible UART,
->      - "renesas,rcar-gen2-scif" for R-Car Gen2 SCIF compatible UART,
->      - "renesas,rcar-gen3-scif" for R-Car Gen3 SCIF compatible UART,
-> +    - "renesas,rzg-scif" for RZ/G SCIF compatible UART.
->      - "renesas,rcar-gen2-scifa" for R-Car Gen2 SCIFA compatible UART,
-> +    - "renesas,rzg-scifa" for RZ/G SCIFA compatible UART.
->      - "renesas,rcar-gen2-scifb" for R-Car Gen2 SCIFB compatible UART,
-> +    - "renesas,rzg-scifb" for RZ/G SCIFB compatible UART.
->      - "renesas,rcar-gen1-hscif" for R-Car Gen1 HSCIF compatible UART,
->      - "renesas,rcar-gen2-hscif" for R-Car Gen2 HSCIF compatible UART,
->      - "renesas,rcar-gen3-hscif" for R-Car Gen3 HSCIF compatible UART,
-> +    - "renesas,rzg-hscif" for RZ/G HSCIF compatible UART.
->      - "renesas,scif" for generic SCIF compatible UART.
->      - "renesas,scifa" for generic SCIFA compatible UART.
->      - "renesas,scifb" for generic SCIFB compatible UART.
-> Index: tty/drivers/tty/serial/sh-sci.c
-> ===================================================================
-> --- tty.orig/drivers/tty/serial/sh-sci.c
-> +++ tty/drivers/tty/serial/sh-sci.c
-> @@ -2950,6 +2950,9 @@ static const struct of_device_id of_sci_
->         }, {
->                 .compatible = "renesas,rcar-gen3-scif",
->                 .data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
-> +       }, {
-> +               .compatible = "renesas,rzg-scif",
-> +               .data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
->         },
->         /* Generic types */
->         {
+Changes since v3:
+ - remove superfuous #include <linux/err.h> (thanks to Uwe)
+ - rebase on next-20160930
 
-However, I wouldn't bother adding RZ/G family-specific DT bindings, as
-RZ/G is a derivative of R-Car Gen2.
+Changes since v2:
+ - remove IS_ERR_OR_NULL() test in patch 1/3 as Uwe suggested.
+ - fix typos in patch 2/3
+ - rebase on next-20160927
+ - simplify the logic in patch 3/3.
 
-Gr{oetje,eeting}s,
+Changes since v1:
+ - Correct patch 1 with the error found by kbuild.
+ - Add Alexandre's Acked-by on patch 2
+ - Rewrite patch 3 logic in the light of the on-going discussion
+   with Cyrille and Alexandre.
 
-                        Geert
+NB: patch 2 NEEDS patch 1 to compile.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Richard Genoud (3):
+  serial: mctrl_gpio: implement mctrl_gpio_use_rtscts
+  tty/serial: at91: fix hardware handshake with GPIOs
+  tty/serial: at91: fix hardware handshake on SAM9x5 (without GPIOs)
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+ drivers/tty/serial/atmel_serial.c      | 26 +++++++++++++++++---------
+ drivers/tty/serial/serial_mctrl_gpio.c |  7 +++++++
+ drivers/tty/serial/serial_mctrl_gpio.h | 10 ++++++++++
+ 3 files changed, 34 insertions(+), 9 deletions(-)
