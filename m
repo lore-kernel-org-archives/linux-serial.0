@@ -1,56 +1,51 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCHv4 2/3] tty/serial: at91: fix hardware handshake with GPIOs
-Date: Fri, 30 Sep 2016 14:26:57 +0200
-Message-ID: <CACQ1gAju1VM0ZEKu76taCYVcjwddmYU0n3Co7tXJdxP7Ksfayw@mail.gmail.com>
-References: <20160930085801.21497-1-richard.genoud@gmail.com>
- <20160930085801.21497-3-richard.genoud@gmail.com> <20160930091230.qzd42qnelylmkqxe@pengutronix.de>
- <CACQ1gAgE+BvteH9y62PcRx_tA9_e2X11RCJ12PC98FK+5z98QQ@mail.gmail.com>
- <20160930111606.zcain6i4nsujsg5s@piout.net> <CACQ1gAg21UEeyT_yGed58HB1gkwfg4LA8u5AVMkKsY=d5-EbMQ@mail.gmail.com>
- <20160930115424.yhy6f72jomz5bknw@piout.net>
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: Re: [PATCH] sh-sci: add R8A7743/5 support
+Date: Fri, 30 Sep 2016 18:06:25 +0300
+Message-ID: <de1717e2-d54b-d3a3-4a7c-4a501d7ccd3b@cogentembedded.com>
+References: <2017044.9fZNuWa2OZ@wasted.cogentembedded.com>
+ <CAMuHMdWEg8V81w=MT4akCaV=VUGopyWLJtSQC+KeWSpTR5dR_w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160930115424.yhy6f72jomz5bknw@piout.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdWEg8V81w=MT4akCaV=VUGopyWLJtSQC+KeWSpTR5dR_w@mail.gmail.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-2016-09-30 13:54 GMT+02:00 Alexandre Belloni
-<alexandre.belloni@free-electrons.com>:
-> On 30/09/2016 at 13:45:47 +0200, Richard Genoud wrote :
->> 2016-09-30 13:16 GMT+02:00 Alexandre Belloni
->> <alexandre.belloni@free-electrons.com>:
->> > On 30/09/2016 at 13:04:28 +0200, Richard Genoud wrote :
->> >> Anyway, the problematics setups are all the setups with USMODE_HWHS
->> >> enabled on platform without Fifos or PDC,
->> >> i.e. all platforms but sama5d2 (Cyrille, correct me if I'm wrong).
->> >>
->> >
->> > This is a wrong assumption, at91rm9200 to at91sam9g45 all have a pdc.
->> > Please, don't break those platforms.
->> >
->> > The only affected platforms are sam9x5, sama5d3 and sama5d4.
->> Have you tested them ?
+On 09/30/2016 11:38 AM, Geert Uytterhoeven wrote:
+
+>> Renesas  RZ/G SoC also have the SCIF, SCIFA, SCIFB, and HSCIF ports.
+>> Document RZ/G1[ME] (also known as R8A774[35]) SoC bindings along with
+>> the RZ/G family bindings.  The driver itself also needs to recognize
+>> the latter binding for the SCIF ports, so teach it...
 >>
->> And why are you saying that rm9200 and g45 will be broken with this patch ?
->> If they have a pdc, they will fall in the case:
->> (atmel_use_pdc_rx(port) || atmel_use_fifo(port))
->> and thus use:
->> mode |= ATMEL_US_USMODE_HWHS;
->>
->> won't they ?
+>> Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+[...]
+
+>> ===================================================================
+>> --- tty.orig/drivers/tty/serial/sh-sci.c
+>> +++ tty/drivers/tty/serial/sh-sci.c
+>> @@ -2950,6 +2950,9 @@ static const struct of_device_id of_sci_
+>>         }, {
+>>                 .compatible = "renesas,rcar-gen3-scif",
+>>                 .data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
+>> +       }, {
+>> +               .compatible = "renesas,rzg-scif",
+>> +               .data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
+>>         },
+>>         /* Generic types */
+>>         {
 >
-> Well, this patch wouldn't have my ack if it was breaking them.
-It's not.
-Read the code.
+> However, I wouldn't bother adding RZ/G family-specific DT bindings, as
+> RZ/G is a derivative of R-Car Gen2.
 
->However, I'm still not sure about 3/3.
-As I said 2 weeks from now ( https://lkml.org/lkml/2016/9/14/263 ) the
-only case where
-we would want to drop the CRTSCTS flag is when there's no pin muxed
-for CTS/RTS nor GPIOs.
-Fell free to give a patch for that.
+    Then we shouldn't have added gen2/3 bindings too since they resolve to the 
+same register mapping as gen1. :-)
 
-To be clear : this patch (2/3) unbreaks ALL platforms with GPIOs as CTS/RTS
-and 3/3 unbreaks sam9x5 / sama5d3 / sama5d4 platform with CTS/RTS as !GPIOs.
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+
+MBR, Sergei
