@@ -1,51 +1,50 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH] sh-sci: add R8A7743/5 support
-Date: Fri, 30 Sep 2016 18:06:25 +0300
-Message-ID: <de1717e2-d54b-d3a3-4a7c-4a501d7ccd3b@cogentembedded.com>
-References: <2017044.9fZNuWa2OZ@wasted.cogentembedded.com>
- <CAMuHMdWEg8V81w=MT4akCaV=VUGopyWLJtSQC+KeWSpTR5dR_w@mail.gmail.com>
+From: Jon Masters <jcm@jonmasters.org>
+Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
+Date: Sun, 2 Oct 2016 15:03:58 -0700
+Message-ID: <2af4f2d8-e3a4-fa00-e700-60af70bf4560@jonmasters.org>
+References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
+ <5140357.dcW9ibtZJ6@wuerfel> <57D963C4.4010406@hisilicon.com>
+ <5869118.UilSPY9Sai@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdWEg8V81w=MT4akCaV=VUGopyWLJtSQC+KeWSpTR5dR_w@mail.gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <5869118.UilSPY9Sai@wuerfel>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gabriele.paoloni@huawei.com, minyard@acm.org, linux-pci@vger.kernel.org, gregkh@linuxfoundation.org, john.garry@huawei.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, "zhichang.yuan" <yuanzhichang@hisilicon.com>, linuxarm@huawei.com, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, benh@kernel.crashing.org, zourongrong@gmail.com, liviu.dudau@arm.com, kantyzc@163.com, zhichang.yuan02@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-On 09/30/2016 11:38 AM, Geert Uytterhoeven wrote:
+On 09/14/2016 02:32 PM, Arnd Bergmann wrote:
+> On Wednesday, September 14, 2016 10:50:44 PM CEST zhichang.yuan wrote:
 
->> Renesas  RZ/G SoC also have the SCIF, SCIFA, SCIFB, and HSCIF ports.
->> Document RZ/G1[ME] (also known as R8A774[35]) SoC bindings along with
->> the RZ/G family bindings.  The driver itself also needs to recognize
->> the latter binding for the SCIF ports, so teach it...
->>
->> Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-[...]
+>> And there are probably multiple child devices under LPC, the global arm64_extio_ops only can cover one PIO range. It is fortunate only ipmi driver can not support I/O
+>> operation registering, serial driver has serial_in/serial_out to
+>> be registered. So, only the PIO range for ipmi device is stored
+>> in arm64_extio_ops and the indirect-IO
+>> works well for ipmi device.
+> 
+> You should not do that in the serial driver, please just use the
+> normal 8250 driver that works fine once you handle the entire
+> port range.
 
->> ===================================================================
->> --- tty.orig/drivers/tty/serial/sh-sci.c
->> +++ tty/drivers/tty/serial/sh-sci.c
->> @@ -2950,6 +2950,9 @@ static const struct of_device_id of_sci_
->>         }, {
->>                 .compatible = "renesas,rcar-gen3-scif",
->>                 .data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
->> +       }, {
->> +               .compatible = "renesas,rzg-scif",
->> +               .data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
->>         },
->>         /* Generic types */
->>         {
->
-> However, I wouldn't bother adding RZ/G family-specific DT bindings, as
-> RZ/G is a derivative of R-Car Gen2.
+Just for the record, Arnd has the right idea. There is only one type of
+UART permitted by SBSA (PL011). We carved out an exception for a design
+that was already in flight and allowed it to be 16550. That other design
+was then corrected in future generations to be PL011 as we required it
+to be. Then there's the Hip06. I've given feedback elsewhere about the
+need for there to be (at most) two types of UART in the wild. This "LPC"
+stuff needs cleaning up (feedback given elsewhere already on that), but
+we won't be adding a third serial driver into the mix in order to make
+it work. There will be standard ARM servers. There will not be the
+kinda-sorta-standard. Thanks.
 
-    Then we shouldn't have added gen2/3 bindings too since they resolve to the 
-same register mapping as gen1. :-)
-
-> Gr{oetje,eeting}s,
->
->                         Geert
-
-MBR, Sergei
+Jon.
