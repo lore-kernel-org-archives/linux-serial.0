@@ -1,7 +1,7 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 4/7] tty: vt, compute vc offsets in advance
-Date: Mon,  3 Oct 2016 11:18:36 +0200
-Message-ID: <20161003091839.29379-4-jslaby@suse.cz>
+Subject: [PATCH 2/7] tty: vt, unify scrolling functions
+Date: Mon,  3 Oct 2016 11:18:34 +0200
+Message-ID: <20161003091839.29379-2-jslaby@suse.cz>
 References: <20161003091839.29379-1-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20161003091839.29379-1-jslaby@suse.cz>
@@ -10,48 +10,111 @@ To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-Only improves readability, no functional changes.
+Both scrup and scrdown are copies of the same code except source and
+destination pointers computation. Unify those functions into a single
+one named con_scroll.
+
+Note that scrdown used step to compute the destination, while scrup
+did the computation explicitly. We sticked to the latter here.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/vt.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/tty/vt/vt.c | 47 +++++++++++++++++------------------------------
+ 1 file changed, 17 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 397c72c2fcb8..3cd999ef5257 100644
+index a0ccb3950a50..ecabed91f444 100644
 --- a/drivers/tty/vt/vt.c
 +++ b/drivers/tty/vt/vt.c
-@@ -4279,6 +4279,9 @@ void vc_scrolldelta_helper(struct vc_data *c, int lines,
- 		unsigned int rolled_over, void *base, unsigned int size)
+@@ -315,40 +315,27 @@ void schedule_console_callback(void)
+ 	schedule_work(&console_work);
+ }
+ 
+-static void scrup(struct vc_data *vc, unsigned int t, unsigned int b,
+-		unsigned int nr)
++static void con_scroll(struct vc_data *vc, unsigned int t, unsigned int b,
++		enum con_scroll dir, unsigned int nr)
  {
- 	unsigned long ubase = (unsigned long)base;
-+	ptrdiff_t scr_end = (void *)c->vc_scr_end - base;
-+	ptrdiff_t vorigin = (void *)c->vc_visible_origin - base;
-+	ptrdiff_t origin = (void *)c->vc_origin - base;
- 	int margin = c->vc_size_row * 4;
- 	int ul, we, p, st;
+-	unsigned short *d, *s;
++	u16 *clear, *d, *s;
  
-@@ -4289,17 +4292,16 @@ void vc_scrolldelta_helper(struct vc_data *c, int lines,
- 	}
+-	if (t+nr >= b)
++	if (t + nr >= b)
+ 		nr = b - t - 1;
+ 	if (b > vc->vc_rows || t >= b || nr < 1)
+ 		return;
+-	if (con_is_visible(vc) && vc->vc_sw->con_scroll(vc, t, b, SM_UP, nr))
++	if (con_is_visible(vc) && vc->vc_sw->con_scroll(vc, t, b, dir, nr))
+ 		return;
+-	d = (unsigned short *)(vc->vc_origin + vc->vc_size_row * t);
+-	s = (unsigned short *)(vc->vc_origin + vc->vc_size_row * (t + nr));
+-	scr_memmovew(d, s, (b - t - nr) * vc->vc_size_row);
+-	scr_memsetw(d + (b - t - nr) * vc->vc_cols, vc->vc_video_erase_char,
+-		    vc->vc_size_row * nr);
+-}
  
- 	/* Do we have already enough to allow jumping from 0 to the end? */
--	if (rolled_over > (c->vc_scr_end - ubase) + margin) {
--		ul = c->vc_scr_end - ubase;
-+	if (rolled_over > scr_end + margin) {
-+		ul = scr_end;
- 		we = rolled_over + c->vc_size_row;
- 	} else {
- 		ul = 0;
- 		we = size;
- 	}
+-static void scrdown(struct vc_data *vc, unsigned int t, unsigned int b,
+-		unsigned int nr)
+-{
+-	unsigned short *s;
+-	unsigned int step;
++	s = clear = (u16 *)(vc->vc_origin + vc->vc_size_row * t);
++	d = (u16 *)(vc->vc_origin + vc->vc_size_row * (t + nr));
  
--	p = (c->vc_visible_origin - ubase - ul + we) % we +
--		lines * c->vc_size_row;
--	st = (c->vc_origin - ubase - ul + we) % we;
-+	p = (vorigin - ul + we) % we + lines * c->vc_size_row;
-+	st = (origin - ul + we) % we;
+-	if (t+nr >= b)
+-		nr = b - t - 1;
+-	if (b > vc->vc_rows || t >= b || nr < 1)
+-		return;
+-	if (con_is_visible(vc) && vc->vc_sw->con_scroll(vc, t, b, SM_DOWN, nr))
+-		return;
+-	s = (unsigned short *)(vc->vc_origin + vc->vc_size_row * t);
+-	step = vc->vc_cols * nr;
+-	scr_memmovew(s + step, s, (b - t - nr) * vc->vc_size_row);
+-	scr_memsetw(s, vc->vc_video_erase_char, 2 * step);
++	if (dir == SM_UP) {
++		clear = s + (b - t - nr) * vc->vc_cols;
++		swap(s, d);
++	}
++	scr_memmovew(d, s, (b - t - nr) * vc->vc_size_row);
++	scr_memsetw(clear, vc->vc_video_erase_char, vc->vc_size_row * nr);
+ }
  
- 	/* Only a little piece would be left? Show all incl. the piece! */
- 	if (st < 2 * margin)
+ static void do_update_region(struct vc_data *vc, unsigned long start, int count)
+@@ -1117,7 +1104,7 @@ static void lf(struct vc_data *vc)
+ 	 * if below scrolling region
+ 	 */
+     	if (vc->vc_y + 1 == vc->vc_bottom)
+-		scrup(vc, vc->vc_top, vc->vc_bottom, 1);
++		con_scroll(vc, vc->vc_top, vc->vc_bottom, SM_UP, 1);
+ 	else if (vc->vc_y < vc->vc_rows - 1) {
+ 	    	vc->vc_y++;
+ 		vc->vc_pos += vc->vc_size_row;
+@@ -1132,7 +1119,7 @@ static void ri(struct vc_data *vc)
+ 	 * if above scrolling region
+ 	 */
+ 	if (vc->vc_y == vc->vc_top)
+-		scrdown(vc, vc->vc_top, vc->vc_bottom, 1);
++		con_scroll(vc, vc->vc_top, vc->vc_bottom, SM_DOWN, 1);
+ 	else if (vc->vc_y > 0) {
+ 		vc->vc_y--;
+ 		vc->vc_pos -= vc->vc_size_row;
+@@ -1628,7 +1615,7 @@ static void csi_L(struct vc_data *vc, unsigned int nr)
+ 		nr = vc->vc_rows - vc->vc_y;
+ 	else if (!nr)
+ 		nr = 1;
+-	scrdown(vc, vc->vc_y, vc->vc_bottom, nr);
++	con_scroll(vc, vc->vc_y, vc->vc_bottom, SM_DOWN, nr);
+ 	vc->vc_need_wrap = 0;
+ }
+ 
+@@ -1649,7 +1636,7 @@ static void csi_M(struct vc_data *vc, unsigned int nr)
+ 		nr = vc->vc_rows - vc->vc_y;
+ 	else if (!nr)
+ 		nr=1;
+-	scrup(vc, vc->vc_y, vc->vc_bottom, nr);
++	con_scroll(vc, vc->vc_y, vc->vc_bottom, SM_UP, nr);
+ 	vc->vc_need_wrap = 0;
+ }
+ 
 -- 
 2.10.0
