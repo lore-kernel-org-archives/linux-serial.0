@@ -1,50 +1,42 @@
-From: Jon Masters <jcm@jonmasters.org>
-Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
-Date: Sun, 2 Oct 2016 15:03:58 -0700
-Message-ID: <2af4f2d8-e3a4-fa00-e700-60af70bf4560@jonmasters.org>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
- <5140357.dcW9ibtZJ6@wuerfel> <57D963C4.4010406@hisilicon.com>
- <5869118.UilSPY9Sai@wuerfel>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH] tty: vt, fix bogus division in csi_J
+Date: Mon,  3 Oct 2016 11:00:17 +0200
+Message-ID: <20161003090017.16090-1-jslaby@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <5869118.UilSPY9Sai@wuerfel>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
-Cc: devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gabriele.paoloni@huawei.com, minyard@acm.org, linux-pci@vger.kernel.org, gregkh@linuxfoundation.org, john.garry@huawei.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, "zhichang.yuan" <yuanzhichang@hisilicon.com>, linuxarm@huawei.com, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, benh@kernel.crashing.org, zourongrong@gmail.com, liviu.dudau@arm.com, kantyzc@163.com, zhichang.yuan02@gmail.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, =?UTF-8?q?Petr=20P=C3=ADsa=C5=99?= <ppisar@redhat.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 09/14/2016 02:32 PM, Arnd Bergmann wrote:
-> On Wednesday, September 14, 2016 10:50:44 PM CEST zhichang.yuan wrote:
+In csi_J(3), the third parameter of scr_memsetw (vc_screenbuf_size) is
+divided by 2 inappropriatelly. But scr_memsetw expects size, not
+count, because it divides the size by 2 on its own before doing actual
+memset-by-words.
 
->> And there are probably multiple child devices under LPC, the global arm64_extio_ops only can cover one PIO range. It is fortunate only ipmi driver can not support I/O
->> operation registering, serial driver has serial_in/serial_out to
->> be registered. So, only the PIO range for ipmi device is stored
->> in arm64_extio_ops and the indirect-IO
->> works well for ipmi device.
-> 
-> You should not do that in the serial driver, please just use the
-> normal 8250 driver that works fine once you handle the entire
-> port range.
+So remove the bogus division.
 
-Just for the record, Arnd has the right idea. There is only one type of
-UART permitted by SBSA (PL011). We carved out an exception for a design
-that was already in flight and allowed it to be 16550. That other design
-was then corrected in future generations to be PL011 as we required it
-to be. Then there's the Hip06. I've given feedback elsewhere about the
-need for there to be (at most) two types of UART in the wild. This "LPC"
-stuff needs cleaning up (feedback given elsewhere already on that), but
-we won't be adding a third serial driver into the mix in order to make
-it work. There will be standard ARM servers. There will not be the
-kinda-sorta-standard. Thanks.
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Petr Písař <ppisar@redhat.com>
+Fixes: f8df13e0a9 (tty: Clean console safely)
+---
+ drivers/tty/vt/vt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Jon.
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 6b55078bda3f..e2cad4c2ba5a 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -1176,7 +1176,7 @@ static void csi_J(struct vc_data *vc, int vpar)
+ 			break;
+ 		case 3: /* erase scroll-back buffer (and whole display) */
+ 			scr_memsetw(vc->vc_screenbuf, vc->vc_video_erase_char,
+-				    vc->vc_screenbuf_size >> 1);
++				    vc->vc_screenbuf_size);
+ 			set_origin(vc);
+ 			if (con_is_visible(vc))
+ 				update_screen(vc);
+-- 
+2.10.0
