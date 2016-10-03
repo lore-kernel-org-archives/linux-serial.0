@@ -1,42 +1,57 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH] tty: vt, fix bogus division in csi_J
-Date: Mon,  3 Oct 2016 11:00:17 +0200
-Message-ID: <20161003090017.16090-1-jslaby@suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH 4/7] tty: vt, compute vc offsets in advance
+Date: Mon,  3 Oct 2016 11:18:36 +0200
+Message-ID: <20161003091839.29379-4-jslaby@suse.cz>
+References: <20161003091839.29379-1-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20161003091839.29379-1-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, =?UTF-8?q?Petr=20P=C3=ADsa=C5=99?= <ppisar@redhat.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-In csi_J(3), the third parameter of scr_memsetw (vc_screenbuf_size) is
-divided by 2 inappropriatelly. But scr_memsetw expects size, not
-count, because it divides the size by 2 on its own before doing actual
-memset-by-words.
-
-So remove the bogus division.
+Only improves readability, no functional changes.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Petr Písař <ppisar@redhat.com>
-Fixes: f8df13e0a9 (tty: Clean console safely)
 ---
- drivers/tty/vt/vt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/vt/vt.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 6b55078bda3f..e2cad4c2ba5a 100644
+index 397c72c2fcb8..3cd999ef5257 100644
 --- a/drivers/tty/vt/vt.c
 +++ b/drivers/tty/vt/vt.c
-@@ -1176,7 +1176,7 @@ static void csi_J(struct vc_data *vc, int vpar)
- 			break;
- 		case 3: /* erase scroll-back buffer (and whole display) */
- 			scr_memsetw(vc->vc_screenbuf, vc->vc_video_erase_char,
--				    vc->vc_screenbuf_size >> 1);
-+				    vc->vc_screenbuf_size);
- 			set_origin(vc);
- 			if (con_is_visible(vc))
- 				update_screen(vc);
+@@ -4279,6 +4279,9 @@ void vc_scrolldelta_helper(struct vc_data *c, int lines,
+ 		unsigned int rolled_over, void *base, unsigned int size)
+ {
+ 	unsigned long ubase = (unsigned long)base;
++	ptrdiff_t scr_end = (void *)c->vc_scr_end - base;
++	ptrdiff_t vorigin = (void *)c->vc_visible_origin - base;
++	ptrdiff_t origin = (void *)c->vc_origin - base;
+ 	int margin = c->vc_size_row * 4;
+ 	int ul, we, p, st;
+ 
+@@ -4289,17 +4292,16 @@ void vc_scrolldelta_helper(struct vc_data *c, int lines,
+ 	}
+ 
+ 	/* Do we have already enough to allow jumping from 0 to the end? */
+-	if (rolled_over > (c->vc_scr_end - ubase) + margin) {
+-		ul = c->vc_scr_end - ubase;
++	if (rolled_over > scr_end + margin) {
++		ul = scr_end;
+ 		we = rolled_over + c->vc_size_row;
+ 	} else {
+ 		ul = 0;
+ 		we = size;
+ 	}
+ 
+-	p = (c->vc_visible_origin - ubase - ul + we) % we +
+-		lines * c->vc_size_row;
+-	st = (c->vc_origin - ubase - ul + we) % we;
++	p = (vorigin - ul + we) % we + lines * c->vc_size_row;
++	st = (origin - ul + we) % we;
+ 
+ 	/* Only a little piece would be left? Show all incl. the piece! */
+ 	if (st < 2 * margin)
 -- 
 2.10.0
