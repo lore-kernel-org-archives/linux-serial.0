@@ -1,70 +1,48 @@
-From: Julia Cartwright <julia@ni.com>
-Subject: [PATCH] sc16is7xx: Drop bogus use of IRQF_ONESHOT
-Date: Mon, 3 Oct 2016 10:14:32 -0500
-Message-ID: <20161003151432.17828-1-julia@ni.com>
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, Sean Nyekjaer <sean.nyekjaer@prevas.dk>, Josh Cartwright <joshc@ni.com>, linux-rt-users@vger.kernel.org, Jakub Kicinski <moorray3@wp.pl>, stable@vger.kernel.org, linux-serial@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH/RFC] tty: serial_core: Move uart_console() check after
+ console registration
+Date: Mon, 3 Oct 2016 13:25:30 -0500
+Message-ID: <CAL_JsqK9JL6UmCzi-szPSakVNp1Cv4-ZVrGnrQ6hdKt_8VJQSQ@mail.gmail.com>
+References: <1475163064-20399-1-git-send-email-geert+renesas@glider.be>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1475163064-20399-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>, =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "open list:MEDIA DRIVERS FOR RENESAS - FCP" <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-The use of IRQF_ONESHOT when registering an interrupt handler with
-request_irq() is non-sensical.
+On Thu, Sep 29, 2016 at 10:31 AM, Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
+> The port->console flag is always false, as uart_console() is called
+> before the serial console has been registered.
 
-Not only that, it also prevents the handler from being threaded when it
-otherwise should be w/ IRQ_FORCED_THREADING is enabled.  This causes the
-following deadlock observed by Sean Nyekjaer on -rt:
+I'm not seeing how that is. Everything uart_console() depends on
+(port->cons, port->cons->index, and port->line) should be set already.
+Maybe you pass in -1 for index which gets changed to 0 is the only
+thing I can see. Is doing that valid if you have multiple ports?
 
-Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
-[..]
-   rt_spin_lock_slowlock from queue_kthread_work
-   queue_kthread_work from sc16is7xx_irq
-   sc16is7xx_irq [sc16is7xx] from handle_irq_event_percpu
-   handle_irq_event_percpu from handle_irq_event
-   handle_irq_event from handle_level_irq
-   handle_level_irq from generic_handle_irq
-   generic_handle_irq from mxc_gpio_irq_handler
-   mxc_gpio_irq_handler from mx3_gpio_irq_handler
-   mx3_gpio_irq_handler from generic_handle_irq
-   generic_handle_irq from __handle_domain_irq
-   __handle_domain_irq from gic_handle_irq
-   gic_handle_irq from __irq_svc
-   __irq_svc from rt_spin_unlock
-   rt_spin_unlock from kthread_worker_fn
-   kthread_worker_fn from kthread
-   kthread from ret_from_fork
+> Hence for a serial port used as the console, uart_tty_port_shutdown()
+> will still be called when userspace closes the port, powering it down.
+> This will lead to a system lock up when the serial console driver writes
+> to the serial port's registers.
+>
+> To fix this, move the setting of port->console after the call to
+> uart_configure_port(), which registers the serial console.
+>
+> Fixes: 761ed4a94582ab29 ("tty: serial_core: convert uart_close to use tty_port_close")
+> Reported-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+> Reported-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> RFC because of the comment "If this port is a console, then the spinlock
+> is already initialised", and the pre-existing code calling
+> uart_console() before uart_configure_port().
 
-Fixes: 9e6f4ca3e567 ("sc16is7xx: use kthread_worker for tx_work and irq")
-Reported-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Signed-off-by: Josh Cartwright <joshc@ni.com>
-Cc: linux-rt-users@vger.kernel.org
-Cc: Jakub Kicinski <moorray3@wp.pl>
-Cc: stable@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Julia Cartwright <julia@ni.com>
----
-This patch has been in -rt for a little while, but it isn't -rt specific.
+So the spinlock is initialized twice which is probably harmless? If
+the spinlock was initialized by the console, then the index would
+probably not be -1.
 
-See relevant bug report thread which starts here:
-
-  http://www.spinics.net/lists/linux-rt-users/msg14620.html
-
- drivers/tty/serial/sc16is7xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index a9d94f7..96a374d 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1260,7 +1260,7 @@ static int sc16is7xx_probe(struct device *dev,
- 
- 	/* Setup interrupt */
- 	ret = devm_request_irq(dev, irq, sc16is7xx_irq,
--			       IRQF_ONESHOT | flags, dev_name(dev), s);
-+			       flags, dev_name(dev), s);
- 	if (!ret)
- 		return 0;
- 
--- 
-2.9.3
+Rob
