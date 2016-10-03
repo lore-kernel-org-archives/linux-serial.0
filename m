@@ -1,48 +1,66 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH/RFC] tty: serial_core: Move uart_console() check after
- console registration
-Date: Mon, 3 Oct 2016 13:25:30 -0500
-Message-ID: <CAL_JsqK9JL6UmCzi-szPSakVNp1Cv4-ZVrGnrQ6hdKt_8VJQSQ@mail.gmail.com>
-References: <1475163064-20399-1-git-send-email-geert+renesas@glider.be>
+Subject: Re: [PATCH v5] devicetree: bindings: uart: Add new compatible string
+ for ZynqMP
+Date: Mon, 3 Oct 2016 13:42:34 -0500
+Message-ID: <20161003184234.GA13165@rob-hp-laptop>
+References: <1474898801-36571-1-git-send-email-navam@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1475163064-20399-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>, =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "open list:MEDIA DRIVERS FOR RENESAS - FCP" <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1474898801-36571-1-git-send-email-navam@xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nava kishore Manne <nava.manne@xilinx.com>
+Cc: gregkh@linuxfoundation.org, mark.rutland@arm.com, jslaby@suse.com, michal.simek@xilinx.com, soren.brinkmann@xilinx.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, punnaia@xilinx.com, Nava kishore Manne <navam@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Sep 29, 2016 at 10:31 AM, Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
-> The port->console flag is always false, as uart_console() is called
-> before the serial console has been registered.
-
-I'm not seeing how that is. Everything uart_console() depends on
-(port->cons, port->cons->index, and port->line) should be set already.
-Maybe you pass in -1 for index which gets changed to 0 is the only
-thing I can see. Is doing that valid if you have multiple ports?
-
-> Hence for a serial port used as the console, uart_tty_port_shutdown()
-> will still be called when userspace closes the port, powering it down.
-> This will lead to a system lock up when the serial console driver writes
-> to the serial port's registers.
->
-> To fix this, move the setting of port->console after the call to
-> uart_configure_port(), which registers the serial console.
->
-> Fixes: 761ed4a94582ab29 ("tty: serial_core: convert uart_close to use tty_port_close")
-> Reported-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-> Reported-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Mon, Sep 26, 2016 at 07:36:41PM +0530, Nava kishore Manne wrote:
+> From: Nava kishore Manne <nava.manne@xilinx.com>
+> 
+> This patch Adds the new compatible string for ZynqMP SoC.
+> 
+> Signed-off-by: Nava kishore Manne <navam@xilinx.com>
 > ---
-> RFC because of the comment "If this port is a console, then the spinlock
-> is already initialised", and the pre-existing code calling
-> uart_console() before uart_configure_port().
+> Changes for v5:
+> 		-Fixed some minor comments.
 
-So the spinlock is initialized twice which is probably harmless? If
-the spinlock was initialized by the console, then the index would
-probably not be -1.
+Not a useful changelog. The point of these comments is to remind the 
+reviewers of what they commented on.
+
+> Changes for v4:
+>                 -Modified the ChangeLog comment.
+> Changes for v3:
+>                 -Added changeLog comment.
+> Changes for v2:
+>                 -None
+> 
+>  Documentation/devicetree/bindings/serial/cdns,uart.txt | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.txt b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> index a3eb154..30c885c 100644
+> --- a/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.txt
+> @@ -1,7 +1,9 @@
+>  Binding for Cadence UART Controller
+>  
+>  Required properties:
+> -- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
+> +- compatible :
+> +  Use "cdns,uart-r1p8", or "xlnx,xuartps" for Zynq-7xxx SoC.
+
+This is still not right. It was wrong before, but you are touching it so 
+make it right. 
+
+OR doesn't match the dts files. It is AND and the opposite order.
+
+xlnx,xuartps wasn't the best naming, but it's in use so we'll have to 
+live with it for zynq-7xxx.
+
+> +  Use "cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC.
+
+What I meant here was this should have something like "xlnx,mpsoc-uart" 
+as the first compatible with "cdns,uart-r1p12" as the second. Not sure 
+if "mpsoc" is the best name here. 
 
 Rob
