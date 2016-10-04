@@ -1,69 +1,119 @@
-From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
-Date: Tue, 4 Oct 2016 13:02:25 +0100
-Message-ID: <6bbfeb57-7a55-6a3e-60b2-3f44525e5882@huawei.com>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
- <5140357.dcW9ibtZJ6@wuerfel> <57D963C4.4010406@hisilicon.com>
- <5869118.UilSPY9Sai@wuerfel>
- <2af4f2d8-e3a4-fa00-e700-60af70bf4560@jonmasters.org>
+From: Nicolae Rosia <nicolae.rosia.oss@gmail.com>
+Subject: [PATCH 1/2] tty: serial: fsl_lpuart: add polled console functions
+Date: Tue,  4 Oct 2016 15:46:16 +0300
+Message-ID: <1475585177-28777-2-git-send-email-nicolae.rosia.oss@gmail.com>
+References: <1475585177-28777-1-git-send-email-nicolae.rosia.oss@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <2af4f2d8-e3a4-fa00-e700-60af70bf4560-Zp4isUonpHBD60Wz+7aTrA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jon Masters <jcm-Zp4isUonpHBD60Wz+7aTrA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1475585177-28777-1-git-send-email-nicolae.rosia.oss@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org
+Cc: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stefan Agner <stefan@agner.ch>, Stefan Golinschi <stefan.golinschi@gmail.com>, Jiri Slaby <jslaby@suse.com>, Nicolae Rosia <nicolae_rosia@mentor.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 02/10/2016 23:03, Jon Masters wrote:
-> On 09/14/2016 02:32 PM, Arnd Bergmann wrote:
->> On Wednesday, September 14, 2016 10:50:44 PM CEST zhichang.yuan wrote:
->
->>> And there are probably multiple child devices under LPC, the global arm64_extio_ops only can cover one PIO range. It is fortunate only ipmi driver can not support I/O
->>> operation registering, serial driver has serial_in/serial_out to
->>> be registered. So, only the PIO range for ipmi device is stored
->>> in arm64_extio_ops and the indirect-IO
->>> works well for ipmi device.
->>
->> You should not do that in the serial driver, please just use the
->> normal 8250 driver that works fine once you handle the entire
->> port range.
->
-> Just for the record, Arnd has the right idea. There is only one type of
-> UART permitted by SBSA (PL011). We carved out an exception for a design
-> that was already in flight and allowed it to be 16550. That other design
-> was then corrected in future generations to be PL011 as we required it
-> to be. Then there's the Hip06. I've given feedback elsewhere about the
-> need for there to be (at most) two types of UART in the wild. This "LPC"
-> stuff needs cleaning up (feedback given elsewhere already on that), but
-> we won't be adding a third serial driver into the mix in order to make
-> it work. There will be standard ARM servers. There will not be the
-> kinda-sorta-standard. Thanks.
->
+From: Nicolae Rosia <nicolae_rosia@mentor.com>
 
-Right, so I think Zhichang can make the necessary generic changes to 
-8250 OF driver to support IO port as well as MMIO-based.
+This adds polling functions as used by kgdb.
 
-However an LPC-based earlycon driver is still required.
+Signed-off-by: Nicolae Rosia <nicolae_rosia@mentor.com>
+Signed-off-by: Stefan Golinschi <stefan.golinschi@gmail.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 66 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
 
-A note on hip07-based D05 (for those unaware): this does not use 
-LPC-based uart. It uses PL011. The hardware guys have managed some 
-trickery where they loopback the serial line around the BMC/CPLD. But we 
-still need it for hip06 D03 and any other boards which want to use LPC 
-bus for uart.
-
-A question on SBSA: does it propose how to provide serial via BMC for SOL?
-
-
-> Jon.
->
->
-> .
->
-
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index de9d510..49d7526 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -431,6 +431,67 @@ static void lpuart_flush_buffer(struct uart_port *port)
+ 	}
+ }
+ 
++#if defined(CONFIG_CONSOLE_POLL)
++
++static int lpuart_poll_init(struct uart_port *port)
++{
++	struct lpuart_port *sport = container_of(port,
++					struct lpuart_port, port);
++	unsigned long flags;
++	unsigned char temp;
++
++	sport->port.fifosize = 0;
++
++	spin_lock_irqsave(&sport->port.lock, flags);
++	/* Disable Rx & Tx */
++	writeb(0, sport->port.membase + UARTCR2);
++
++	temp = readb(sport->port.membase + UARTPFIFO);
++	/* Enable Rx and Tx FIFO */
++	writeb(temp | UARTPFIFO_RXFE | UARTPFIFO_TXFE,
++			sport->port.membase + UARTPFIFO);
++
++	/* flush Tx and Rx FIFO */
++	writeb(UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH,
++			sport->port.membase + UARTCFIFO);
++
++	/* explicitly clear RDRF */
++	if (readb(sport->port.membase + UARTSR1) & UARTSR1_RDRF) {
++		readb(sport->port.membase + UARTDR);
++		writeb(UARTSFIFO_RXUF, sport->port.membase + UARTSFIFO);
++	}
++
++	writeb(0, sport->port.membase + UARTTWFIFO);
++	writeb(1, sport->port.membase + UARTRWFIFO);
++
++	/* Enable Rx and Tx */
++	writeb(UARTCR2_RE | UARTCR2_TE, sport->port.membase + UARTCR2);
++	spin_unlock_irqrestore(&sport->port.lock, flags);
++
++	return 0;
++}
++
++static void lpuart_poll_put_char(struct uart_port *port, unsigned char c)
++{
++	unsigned int status;
++
++	/* drain */
++	while (!(readb(port->membase + UARTSR1) & UARTSR1_TDRE))
++		barrier();
++
++	writeb(c, port->membase + UARTDR);
++}
++
++static int lpuart_poll_get_char(struct uart_port *port)
++{
++	if (!(readb(port->membase + UARTSR1) & UARTSR1_RDRF))
++		return NO_POLL_CHAR;
++
++	return readb(port->membase + UARTDR);
++}
++
++#endif
++
+ static inline void lpuart_transmit_buffer(struct lpuart_port *sport)
+ {
+ 	struct circ_buf *xmit = &sport->port.state->xmit;
+@@ -1596,6 +1657,11 @@ static const struct uart_ops lpuart_pops = {
+ 	.config_port	= lpuart_config_port,
+ 	.verify_port	= lpuart_verify_port,
+ 	.flush_buffer	= lpuart_flush_buffer,
++#if defined(CONFIG_CONSOLE_POLL)
++	.poll_init	= lpuart_poll_init,
++	.poll_get_char	= lpuart_poll_get_char,
++	.poll_put_char	= lpuart_poll_put_char,
++#endif
+ };
+ 
+ static const struct uart_ops lpuart32_pops = {
+-- 
+2.5.5
