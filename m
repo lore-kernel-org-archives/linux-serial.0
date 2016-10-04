@@ -1,45 +1,105 @@
-From: Ley Foon Tan <lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv2 4/4] nios2: dts: 10m50: Add tx-threshold parameter
-Date: Tue, 4 Oct 2016 14:17:58 +0800
-Message-ID: <CAFiDJ5_Cyw3jQSMyThRow8iY_dDPELR-e-EHRD3CTY0zaCvo_Q@mail.gmail.com>
-References: <1474574177-4984-1-git-send-email-tthayer@opensource.altera.com> <1474574177-4984-5-git-send-email-tthayer@opensource.altera.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1474574177-4984-5-git-send-email-tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org
-Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, jslaby-IBi9RG/b67k@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, anton.wuerfel-d40JDW7QUjc@public.gmane.org, phillip.raffeck-d40JDW7QUjc@public.gmane.org, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org, matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org, mail-APzI5cXaD1zVlRWJc41N0YvC60bnQu0Y@public.gmane.org, peter.ujfalusi-l0cyMroinI0@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, dongsheng.wang-3arQi8VN3Tc@public.gmane.org, luis-HiykPkW1eAzzDCI4PIEvbQC/G2K4zDHf@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tthayer.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, "nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org" <nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: [PATCH] serial: pl011: add console matching function
+Date: Tue,  4 Oct 2016 10:15:32 +0300
+Message-ID: <20161004071547.19224-1-aleksey.makarov@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Christopher Covington <cov@codeaurora.org>, Peter Hurley <peter@hurleysoftware.com>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 23, 2016 at 3:56 AM,  <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org> wrote:
-> From: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
->
-> The tx-threshold parameter sets the TX FIFO low water threshold
-> trigger for the Altera 16550-FIFO32 soft IP.
->
-> Signed-off-by: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
-> ---
-> v2   Change from tx-loadsz to tx-threshold
-> ---
->  arch/nios2/boot/dts/10m50_devboard.dts |    1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/arch/nios2/boot/dts/10m50_devboard.dts b/arch/nios2/boot/dts/10m50_devboard.dts
-> index 3e411c6..f362b22 100755
-> --- a/arch/nios2/boot/dts/10m50_devboard.dts
-> +++ b/arch/nios2/boot/dts/10m50_devboard.dts
-> @@ -83,6 +83,7 @@
->                         fifo-size = <32>;
->                         reg-io-width = <4>;
->                         reg-shift = <2>;
-> +                       tx-threshold = <16>;
->                 };
->
->                 sysid: sysid@18001528 {
+This patch adds function pl011_console_match() that implements
+method match of struct console.  It allows to match consoles against
+data specified in a string, for example taken from command line or
+compiled by ACPI SPCR table handler.
 
-Acked-by: Ley Foon Tan <lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org>
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+This patch was merged to tty-next but then reverted because of
+conflict with
+
+commit 46e36683f433 ("serial: earlycon: Extend earlycon command line option to support 64-bit addresses")
+
+Now it is fixed.
+
+Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
+Tested-by: Christopher Covington <cov@codeaurora.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/amba-pl011.c | 55 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index e2c33b9..c00ab22 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2315,12 +2315,67 @@ static int __init pl011_console_setup(struct console *co, char *options)
+ 	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
+ }
+ 
++/**
++ *	pl011_console_match - non-standard console matching
++ *	@co:	  registering console
++ *	@name:	  name from console command line
++ *	@idx:	  index from console command line
++ *	@options: ptr to option string from console command line
++ *
++ *	Only attempts to match console command lines of the form:
++ *	    console=pl011,mmio|mmio32,<addr>[,<options>]
++ *	    console=pl011,0x<addr>[,<options>]
++ *	This form is used to register an initial earlycon boot console and
++ *	replace it with the amba_console at pl011 driver init.
++ *
++ *	Performs console setup for a match (as required by interface)
++ *	If no <options> are specified, then assume the h/w is already setup.
++ *
++ *	Returns 0 if console matches; otherwise non-zero to use default matching
++ */
++static int __init pl011_console_match(struct console *co, char *name, int idx,
++				      char *options)
++{
++	unsigned char iotype;
++	resource_size_t addr;
++	int i;
++
++	if (strcmp(name, "pl011") != 0)
++		return -ENODEV;
++
++	if (uart_parse_earlycon(options, &iotype, &addr, &options))
++		return -ENODEV;
++
++	if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
++		return -ENODEV;
++
++	/* try to match the port specified on the command line */
++	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
++		struct uart_port *port;
++
++		if (!amba_ports[i])
++			continue;
++
++		port = &amba_ports[i]->port;
++
++		if (port->mapbase != addr)
++			continue;
++
++		co->index = i;
++		port->cons = co;
++		return pl011_console_setup(co, options);
++	}
++
++	return -ENODEV;
++}
++
+ static struct uart_driver amba_reg;
+ static struct console amba_console = {
+ 	.name		= "ttyAMA",
+ 	.write		= pl011_console_write,
+ 	.device		= uart_console_device,
+ 	.setup		= pl011_console_setup,
++	.match		= pl011_console_match,
+ 	.flags		= CON_PRINTBUFFER,
+ 	.index		= -1,
+ 	.data		= &amba_reg,
+-- 
+2.10.0
