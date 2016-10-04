@@ -1,7 +1,7 @@
 From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Subject: [PATCH V2 6/6] serial: 8250_fintek: Add F81865 Support
-Date: Tue,  4 Oct 2016 16:28:04 +0800
-Message-ID: <1475569684-10930-7-git-send-email-hpeter+linux_kernel@gmail.com>
+Subject: [PATCH V2 3/6] serial: 8250_fintek: Set maximum FIFO of F81216H
+Date: Tue,  4 Oct 2016 16:28:01 +0800
+Message-ID: <1475569684-10930-4-git-send-email-hpeter+linux_kernel@gmail.com>
 References: <1475569684-10930-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1475569684-10930-1-git-send-email-hpeter+linux_kernel@gmail.com>
@@ -10,74 +10,90 @@ To: gregkh@linuxfoundation.org, jslaby@suse.com, ricardo.ribalda@gmail.com
 Cc: arnd@arndb.de, peter@hurleysoftware.com, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Fintek F81865 is a LPC to 6 UARTs SuperIO. It has less functional UARTs
-likes F81866. It's also need check the IRQ mode with system assigned,
-but the configuration is not the same with F81216 series.
+The Fintek F81216H had maximum 128Bytes FIFO, but some BIOS configurated
+as normal 16Bytes FIFO. This patch will set 128Bytes FIFO and trigger
+level multiplier as 4x when F81216H detected.
 
-F81865 IRQ Mode setting:
-    0xf0
-            Bit1: IRQ_MODE0
-            Bit0: Share mode (always on)
-
-    Level/Low: IRQ_MODE0:0
-    Edge/High: IRQ_MODE0:1
-
-The following list is brief descriptions of F81865:
-
-F81865 (0704)
-    9Bit(not implements with mainline)
-    RS485(implemented)
+Default 16550A trigger level is 8Bytes. When this patch applied, the
+trigger level will change to 8Byte x 4 = 32Byte. It can be reduce the RX
+incoming interrupts.
 
 Suggested-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/tty/serial/8250/8250_fintek.c | 29 ++++++++++++++++++++++++++---
+ 1 file changed, 26 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index ff4286b..b67e7a5 100644
+index deccd0e..e039a33 100644
 --- a/drivers/tty/serial/8250/8250_fintek.c
 +++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -21,6 +21,7 @@
+@@ -21,8 +21,8 @@
  #define EXIT_KEY 0xAA
  #define CHIP_ID1  0x20
  #define CHIP_ID2  0x21
-+#define CHIP_ID_F81865 0x0407
- #define CHIP_ID_F81866 0x1010
- #define CHIP_ID_F81216AD 0x1602
- #define CHIP_ID_F81216H 0x0501
-@@ -130,6 +131,7 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
+-#define CHIP_ID_0 0x1602
+-#define CHIP_ID_1 0x0501
++#define CHIP_ID_F81216AD 0x1602
++#define CHIP_ID_F81216H 0x0501
+ #define VENDOR_ID1 0x23
+ #define VENDOR_ID1_VAL 0x19
+ #define VENDOR_ID2 0x24
+@@ -43,7 +43,14 @@
+ #define RXW4C_IRA BIT(3)
+ #define TXW4C_IRA BIT(2)
+ 
++#define FIFO_CTRL		0xF6
++#define FIFO_MODE_MASK		(BIT(1) | BIT(0))
++#define FIFO_MODE_128		(BIT(1) | BIT(0))
++#define RXFTHR_MODE_MASK	(BIT(5) | BIT(4))
++#define RXFTHR_MODE_4X		BIT(5)
++
+ struct fintek_8250 {
++	u16 pid;
+ 	u16 base_port;
+ 	u8 index;
+ 	u8 key;
+@@ -100,9 +107,10 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
+ 	chip = sio_read_reg(pdata, CHIP_ID1);
  	chip |= sio_read_reg(pdata, CHIP_ID2) << 8;
  
- 	switch (chip) {
-+	case CHIP_ID_F81865:
- 	case CHIP_ID_F81866:
- 	case CHIP_ID_F81216AD:
- 	case CHIP_ID_F81216H:
-@@ -147,6 +149,7 @@ static int fintek_8250_get_ldn_range(struct fintek_8250 *pdata, int *min,
- 				     int *max)
- {
- 	switch (pdata->pid) {
-+	case CHIP_ID_F81865:
- 	case CHIP_ID_F81866:
- 		*min = F81866_LDN_LOW;
- 		*max = F81866_LDN_HIGH;
-@@ -219,6 +222,8 @@ static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool is_level)
- 	case CHIP_ID_F81866:
- 		sio_write_mask_reg(pdata, F81866_FIFO_CTRL, F81866_IRQ_MODE1,
- 				   0);
-+		/* fall through */
-+	case CHIP_ID_F81865:
- 		sio_write_mask_reg(pdata, F81866_IRQ_MODE, F81866_IRQ_SHARE,
- 				   F81866_IRQ_SHARE);
- 		sio_write_mask_reg(pdata, F81866_IRQ_MODE, F81866_IRQ_MODE0,
-@@ -311,6 +316,7 @@ static void fintek_8250_set_rs485_handler(struct uart_8250_port *uart)
- 	case CHIP_ID_F81216AD:
- 	case CHIP_ID_F81216H:
- 	case CHIP_ID_F81866:
-+	case CHIP_ID_F81865:
- 		uart->port.rs485_config = fintek_8250_rs485_config;
- 		break;
+-	if (chip != CHIP_ID_0 && chip != CHIP_ID_1)
++	if (chip != CHIP_ID_F81216AD && chip != CHIP_ID_F81216H)
+ 		return -ENODEV;
  
++	pdata->pid = chip;
+ 	return 0;
+ }
+ 
+@@ -162,6 +170,20 @@ static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool is_level)
+ 			   is_level ? IRQ_LEVEL_LOW : IRQ_EDGE_HIGH);
+ }
+ 
++static void fintek_8250_set_max_fifo(struct fintek_8250 *pdata)
++{
++	switch (pdata->pid) {
++	case CHIP_ID_F81216H: /* 128Bytes FIFO */
++		sio_write_mask_reg(pdata, FIFO_CTRL,
++				   FIFO_MODE_MASK | RXFTHR_MODE_MASK,
++				   FIFO_MODE_128 | RXFTHR_MODE_4X);
++		break;
++
++	default: /* Default 16Bytes FIFO */
++		break;
++	}
++}
++
+ static int probe_setup_port(struct fintek_8250 *pdata, u16 io_address,
+ 			  unsigned int irq)
+ {
+@@ -200,6 +222,7 @@ static int probe_setup_port(struct fintek_8250 *pdata, u16 io_address,
+ 						irqd_is_level_type(irq_data);
+ 
+ 				fintek_8250_set_irq_mode(pdata, level_mode);
++				fintek_8250_set_max_fifo(pdata);
+ 				fintek_8250_exit_key(addr[i]);
+ 
+ 				return 0;
 -- 
 1.9.1
