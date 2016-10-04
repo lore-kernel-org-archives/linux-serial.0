@@ -1,105 +1,64 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH] serial: pl011: add console matching function
-Date: Tue,  4 Oct 2016 10:15:32 +0300
-Message-ID: <20161004071547.19224-1-aleksey.makarov@linaro.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCHv4 2/3] tty/serial: at91: fix hardware handshake with GPIOs
+Date: Tue, 4 Oct 2016 09:25:25 +0200
+Message-ID: <20161004072525.josgoglunmvufcn2@pengutronix.de>
+References: <20160930085801.21497-1-richard.genoud@gmail.com>
+ <20160930085801.21497-3-richard.genoud@gmail.com>
+ <20160930091230.qzd42qnelylmkqxe@pengutronix.de>
+ <CACQ1gAgE+BvteH9y62PcRx_tA9_e2X11RCJ12PC98FK+5z98QQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CACQ1gAgE+BvteH9y62PcRx_tA9_e2X11RCJ12PC98FK+5z98QQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Russell King <linux@arm.linux.org.uk>, Christopher Covington <cov@codeaurora.org>, Peter Hurley <peter@hurleysoftware.com>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds function pl011_console_match() that implements
-method match of struct console.  It allows to match consoles against
-data specified in a string, for example taken from command line or
-compiled by ACPI SPCR table handler.
+On Fri, Sep 30, 2016 at 01:04:28PM +0200, Richard Genoud wrote:
+> 2016-09-30 11:12 GMT+02:00 Uwe Kleine-König <u.kleine-koenig@pengutronix.de>:
+> > Hello Richard,
+> >
+> > On Fri, Sep 30, 2016 at 10:58:00AM +0200, Richard Genoud wrote:
+> >> Commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when
+> >> hardware handshake is enabled") broke the hardware handshake when GPIOs
+> >> were used.
+> >>
+> >> Hardware handshake with GPIOs used to work before this commit because
+> >> the CRTSCTS flag (termios->c_cflag) was set, but not the
+> >> ATMEL_US_USMODE_HWHS flag (controller register) ; so hardware handshake
+> >> enabled, but not handled by the controller.
+> >
+> > What does the HWHS flag control? What if only RTS is a gpio and CTS is
+> > not? Or the other way round?
+> First, HWHS flag is used only in SAMA5D2. (if I correctly understood
+> Atmel HW guys,
+> all other platforms (sam9, sam9x5, sama5d3...) have this flag, but it
+> is unusable,
+> because they don't have Fifos nor PDC).
+> So, on SAMA5D2, the HWHS flag tells the controller to drive the RTS
+> pin according to
+> the number of char present in the rx fifo (cf Figure 44-29 §44.7.3.15 p.1438 of
+>  http://www.atmel.com/Images/Atmel-11267-32-bit-Cortex-A5-Microcontroller-SAMA5D2_Datasheet.pdf).
+> The controller will also start/stop the transmission on CTS changes.
+> But, as I haven't got this hard, I couldn't test it. (but Cyrille did I guess).
+> With this flag set, It's mandatory to have CTS and RTS not handled via
+> GPIO, because if
+> they were, the controller couldn't, well, control them.
 
-This patch was merged to tty-next but then reverted because of
-conflict with
+Assuming the respective pin doesn't reach the hardware both are no
+problem though. And it would keep the driver simpler to just ignore
+this. There would be no need for patch 1 and also this patch could be
+dropped. So I guess there is really something to fix, otherwise you
+wouldn't start patching the driver. But I don't understand the issue, so
+I'd like to have a better picture.
 
-commit 46e36683f433 ("serial: earlycon: Extend earlycon command line option to support 64-bit addresses")
+Best regards
+Uwe
 
-Now it is fixed.
-
-Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
-Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
-Tested-by: Christopher Covington <cov@codeaurora.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/amba-pl011.c | 55 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index e2c33b9..c00ab22 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2315,12 +2315,67 @@ static int __init pl011_console_setup(struct console *co, char *options)
- 	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
- }
- 
-+/**
-+ *	pl011_console_match - non-standard console matching
-+ *	@co:	  registering console
-+ *	@name:	  name from console command line
-+ *	@idx:	  index from console command line
-+ *	@options: ptr to option string from console command line
-+ *
-+ *	Only attempts to match console command lines of the form:
-+ *	    console=pl011,mmio|mmio32,<addr>[,<options>]
-+ *	    console=pl011,0x<addr>[,<options>]
-+ *	This form is used to register an initial earlycon boot console and
-+ *	replace it with the amba_console at pl011 driver init.
-+ *
-+ *	Performs console setup for a match (as required by interface)
-+ *	If no <options> are specified, then assume the h/w is already setup.
-+ *
-+ *	Returns 0 if console matches; otherwise non-zero to use default matching
-+ */
-+static int __init pl011_console_match(struct console *co, char *name, int idx,
-+				      char *options)
-+{
-+	unsigned char iotype;
-+	resource_size_t addr;
-+	int i;
-+
-+	if (strcmp(name, "pl011") != 0)
-+		return -ENODEV;
-+
-+	if (uart_parse_earlycon(options, &iotype, &addr, &options))
-+		return -ENODEV;
-+
-+	if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
-+		return -ENODEV;
-+
-+	/* try to match the port specified on the command line */
-+	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
-+		struct uart_port *port;
-+
-+		if (!amba_ports[i])
-+			continue;
-+
-+		port = &amba_ports[i]->port;
-+
-+		if (port->mapbase != addr)
-+			continue;
-+
-+		co->index = i;
-+		port->cons = co;
-+		return pl011_console_setup(co, options);
-+	}
-+
-+	return -ENODEV;
-+}
-+
- static struct uart_driver amba_reg;
- static struct console amba_console = {
- 	.name		= "ttyAMA",
- 	.write		= pl011_console_write,
- 	.device		= uart_console_device,
- 	.setup		= pl011_console_setup,
-+	.match		= pl011_console_match,
- 	.flags		= CON_PRINTBUFFER,
- 	.index		= -1,
- 	.data		= &amba_reg,
 -- 
-2.10.0
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
