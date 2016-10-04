@@ -1,79 +1,45 @@
-From: =?UTF-8?B?64Ko7JiB66+8?= <youngmin.nam@samsung.com>
-Subject: RE: [PATCH] serial: samsung: add clock controls in
- s3c24xx_serial_resume_noirq()
-Date: Tue, 04 Oct 2016 14:04:59 +0900
-Message-ID: <000401d21dfc$dba89bb0$92f9d310$@samsung.com>
-References: <000d01d218c5$3069cdf0$913d69d0$@samsung.com>
- <CGME20160930103448epcas2p4e2ee38332ad98ad3cb1e07866d4337d8@epcas2p4.samsung.com>
- <20160930103434.GA4713@kozik-lap>
+From: Ley Foon Tan <lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv2 4/4] nios2: dts: 10m50: Add tx-threshold parameter
+Date: Tue, 4 Oct 2016 14:17:58 +0800
+Message-ID: <CAFiDJ5_Cyw3jQSMyThRow8iY_dDPELR-e-EHRD3CTY0zaCvo_Q@mail.gmail.com>
+References: <1474574177-4984-1-git-send-email-tthayer@opensource.altera.com> <1474574177-4984-5-git-send-email-tthayer@opensource.altera.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <20160930103434.GA4713@kozik-lap>
-Content-language: ko
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: 'Krzysztof Kozlowski' <krzk@kernel.org>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1474574177-4984-5-git-send-email-tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org
+Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, jslaby-IBi9RG/b67k@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, anton.wuerfel-d40JDW7QUjc@public.gmane.org, phillip.raffeck-d40JDW7QUjc@public.gmane.org, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org, matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org, mail-APzI5cXaD1zVlRWJc41N0YvC60bnQu0Y@public.gmane.org, peter.ujfalusi-l0cyMroinI0@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, dongsheng.wang-3arQi8VN3Tc@public.gmane.org, luis-HiykPkW1eAzzDCI4PIEvbQC/G2K4zDHf@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tthayer.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, "nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org" <nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
-
->On Tue, Sep 27, 2016 at 10:43:54PM +0900, 남영민 wrote:
->> This patch adds clock controls in s3c24xx_serial_resume_noirq() to set
->> S3C64XX_UINTM register.
+On Fri, Sep 23, 2016 at 3:56 AM,  <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org> wrote:
+> From: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
 >
->Code looks correct but the commit message is bogus. It does not bring any
->benefit over the code, not mentioning that it is quite cryptic (what does
->the "clock controls" mean?).
+> The tx-threshold parameter sets the TX FIFO low water threshold
+> trigger for the Altera 16550-FIFO32 soft IP.
 >
->Just describe here WHAT is the problem and WHY the fix is needed.
+> Signed-off-by: Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>
+> ---
+> v2   Change from tx-loadsz to tx-threshold
+> ---
+>  arch/nios2/boot/dts/10m50_devboard.dts |    1 +
+>  1 file changed, 1 insertion(+)
 >
->Best regards,
->Krzysztof
+> diff --git a/arch/nios2/boot/dts/10m50_devboard.dts b/arch/nios2/boot/dts/10m50_devboard.dts
+> index 3e411c6..f362b22 100755
+> --- a/arch/nios2/boot/dts/10m50_devboard.dts
+> +++ b/arch/nios2/boot/dts/10m50_devboard.dts
+> @@ -83,6 +83,7 @@
+>                         fifo-size = <32>;
+>                         reg-io-width = <4>;
+>                         reg-shift = <2>;
+> +                       tx-threshold = <16>;
+>                 };
 >
+>                 sysid: sysid@18001528 {
 
-Thank you for taking your time for the review.
-I will improve the commit message applying your suggestions and resend this patch.
-
-Best regards,
-Youngmin Nam
-
-
->>
->> Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
->> ---
->>  drivers/tty/serial/samsung.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/tty/serial/samsung.c
->> b/drivers/tty/serial/samsung.c index ae2095a..97f7b3b 100644
->> --- a/drivers/tty/serial/samsung.c
->> +++ b/drivers/tty/serial/samsung.c
->> @@ -1921,6 +1921,7 @@ static int s3c24xx_serial_resume(struct device
->> *dev)  static int s3c24xx_serial_resume_noirq(struct device *dev)  {
->>  	struct uart_port *port = s3c24xx_dev_to_port(dev);
->> +	struct s3c24xx_uart_port *ourport = to_ourport(port);
->>
->>  	if (port) {
->>  		/* restore IRQ mask */
->> @@ -1930,7 +1931,9 @@ static int s3c24xx_serial_resume_noirq(struct
->device *dev)
->>  				uintm &= ~S3C64XX_UINTM_TXD_MSK;
->>  			if (rx_enabled(port))
->>  				uintm &= ~S3C64XX_UINTM_RXD_MSK;
->> +			clk_prepare_enable(ourport->clk);
->>  			wr_regl(port, S3C64XX_UINTM, uintm);
->> +			clk_disable_unprepare(ourport->clk);
->>  		}
->>  	}
->>
->> --
->> 2.8.1
->>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe
->> linux-samsung-soc" in the body of a message to
->> majordomo@vger.kernel.org More majordomo info at
->http://vger.kernel.org/majordomo-info.html
+Acked-by: Ley Foon Tan <lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
