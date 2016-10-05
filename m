@@ -1,113 +1,65 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 02/11] DOCUMENTATION: dt-bindings: Document the STM32
- USART bindings
-Date: Wed, 5 Oct 2016 10:13:12 -0500
-Message-ID: <CAL_JsqK=VCHcPbupnwLVEWehqJbXfGD1CSZT++A4+N6DD6VqxA@mail.gmail.com>
-References: <1473957763-30629-1-git-send-email-alexandre.torgue@st.com>
- <1473957763-30629-3-git-send-email-alexandre.torgue@st.com>
- <20160923152907.GA19206@rob-hp-laptop> <dd28f224-3e3b-0a00-f978-16861b946fd1@st.com>
+From: "Luis R. Rodriguez" <mcgrof@kernel.org>
+Subject: Re: [RFC] fs: add userspace critical mounts event support
+Date: Wed, 5 Oct 2016 20:00:17 +0200
+Message-ID: <20161005180017.GD3296@wotan.suse.de>
+References: <1466117661-22075-1-git-send-email-mcgrof@kernel.org>
+ <1466117661-22075-3-git-send-email-mcgrof@kernel.org>
+ <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
+ <20160824203901.GT3296@wotan.suse.de>
+ <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
+ <20160825194133.GC3296@wotan.suse.de>
+ <20160902235916.GO3296@wotan.suse.de>
+ <20160903002014.GP3296@wotan.suse.de>
+ <6332a54e-74c6-eafd-368e-71e87a3fa34e@landley.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <dd28f224-3e3b-0a00-f978-16861b946fd1-qxv4g6HH51o@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>
-Cc: Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <6332a54e-74c6-eafd-368e-71e87a3fa34e@landley.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Landley <rob@landley.net>
+Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, Mimi Zohar <zohar@linux.vnet.ibm.com>, Felix Fietkau <nbd@nbd.name>, David Woodhouse <dwmw2@infradead.org>, Roman Pen <r.peniaev@gmail.com>, Bjorn Andersson <bjorn.andersson@linaro.org>, Ming Lei <ming.lei@canonical.com>, Andrew Morton <akpm@linux-foundation.org>, Michal Marek <mmarek@suse.com>, Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Vikram Mulukutla <markivx@codeaurora.org>, Stephen Boyd <stephen.boyd@linaro.org>, Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.de>, Johannes Berg <johannes@sipsolutions.net>, Christian Lamparter <chunkeey@googlemail.com>, hauke@hauke-m.de, Josh Boyer <jwboyer@fedoraprojec>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 5, 2016 at 9:09 AM, Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org> wrote:
-> On 09/23/2016 05:29 PM, Rob Herring wrote:
->>
->> On Thu, Sep 15, 2016 at 06:42:34PM +0200, Alexandre TORGUE wrote:
->>>
->>> This adds documentation of device tree bindings for the
->>> STM32 USART
->>
->>
->> Please make your subject prefixes consistent and drop "DOCUMENTATION".
->>
->
-> Ok, thanks
->
->>>
->>> Signed-off-by: Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->>> Signed-off-by: Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>
->>>
->>> diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
->>> b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
->>> new file mode 100644
->>> index 0000000..75b1400
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
->>> @@ -0,0 +1,34 @@
->>> +* STMicroelectronics STM32 USART
->>> +
->>> +Required properties:
->>> +- compatible: Can be either "st,stm32-usart", "st,stm32-uart",
->>> +"st,stm32f7-usart" or "st,stm32f7-uart" depending on whether
->>> +the device supports synchronous mode and is compatible with
->>> +stm32(f4) or stm32f7.
->>
->>
->> Why not put f4 in the compatible string. stm32 is too generic.
->
->
-> The initial binding is not in current kernel so it has been put in this
-> serie as PATCH 07/11. It will be squashed with this one, as you requested.
->
-> But the driver tty/serial/stm32-usart.c was already upstreamed and it
-> already mentions the "st,stm32-usart" and "st,stm32-uart" for stm32f4 so I
-> kept this as it for backward compatibility for those who already use the
-> driver.
->
-> I do not have the history to explain this inconsistency but can you confirm
-> that keeping the existing compatible values from the driver is the good
-> approach please?
+On Tue, Sep 13, 2016 at 09:38:17PM -0500, Rob Landley wrote:
+> On 09/02/2016 07:20 PM, Luis R. Rodriguez wrote:
+> > kernel_read_file_from_path() can try to read a file from
+> > the system's filesystem. This is typically done for firmware
+> > for instance, which lives in /lib/firmware. One issue with
+> > this is that the kernel cannot know for sure when the real
+> > final /lib/firmare/ is ready, and even if you use initramfs
+> > drivers are currently initialized *first* prior to the initramfs
+> > kicking off.
+> 
+> Why?
 
-Yes, keep it as it. Please reformat 1 valid combination per line.
+do_initcalls() is called prior to prepare_namespace(), other than that
+we have no strict rules over where the real rootfs should be, and since
+we have pivot_root() its up to userspace to decide when/how the real
+rootfs goes. This and the fact that its also up to userspace to design
+what files to place in initramfs of further rootfs -- only userspace
+will know for sure when all firmware for all drivers is really ready.
 
->> What determines sync mode or not? If it is IP configuration fixed in the
->> design, then this is fine. If it is user choice or board dependent, then
->> use a separate property.
->
->
-> This is IP configuration fixed in the design, indeed.
->
->>> +- reg: The address and length of the peripheral registers space
->>> +- interrupts: The interrupt line of the USART instance
->>> +- clocks: The input clock of the USART instance
->>> +
->>> +Optional properties:
->>> +- pinctrl: The reference on the pins configuration
->>> +- st,hw-flow-ctrl: bool flag to enable hardware flow control.
->>> +
->>> +Examples:
->>> +usart4: serial@40004c00 {
->>> +       compatible = "st,stm32-uart";
->>> +       reg = <0x40004c00 0x400>;
->>> +       interrupts = <52>;
->>> +       clocks = <&clk_pclk1>;
->>> +       pinctrl-names = "default";
->>> +       pinctrl-0 = <&pinctrl_usart4>;
->>> +};
->>> +
->>> +usart2: serial@40004400 {
->>> +       compatible = "st,stm32-usart", "st,stm32-uart";
->>
->>
->> What are valid combinations? usart is sync only, not sync and async?
->
->
-> usart (sync and async) is a superset of uart (async).
-> But the current driver does not use the synchronous mode, so the distinction
-> is just here to be consistent with the reference manual instances naming (so
-> configuration).
+> > During init we run through all init calls first
+> > (do_initcalls()) and finally the initramfs is processed via
+> > prepare_namespace():
+> 
+> What's the downside of moving initramfs cpio extraction earlier in the boot?
 
-Okay, but this point is not clear in the compatible text. The
-description should allow me to validate the example or a dts file.
+That would help users of initrafms, some folks seem to not want to use
+initramfs, one of such users are that of the large firmwares for remote-proc
+(Documentation/remoteproc.txt), we're talking about over 200 MiB for some
+firmware for example.
 
-Rob
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> I did some shuffling around of those code to make initmpfs work, does
+> anybody know why initramfs extraction _before_ we initialize drivers
+> would be a bad thing?
+
+No, but it seems sensible to me, if its done before do_initcalls()
+that should resolve the race for initramfs users but -- so long
+as the drivers that need firmware early are dumped into initramfs.
+We have no assurances/warnings for this, but we can add such things
+if we want them. This would not resolve the race for non-initramfs
+users / pivot_root() changes.
+
+  Luis
