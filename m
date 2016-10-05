@@ -1,64 +1,59 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5] devicetree: bindings: uart: Add new compatible string
- for ZynqMP
-Date: Wed, 5 Oct 2016 07:52:09 -0500
-Message-ID: <CAL_Jsq+RJbHmayX8HdoWzPxxCrGKZjjyRQrwPzSmdOnHTKkC2Q@mail.gmail.com>
-References: <1474898801-36571-1-git-send-email-navam@xilinx.com>
- <20161003184234.GA13165@rob-hp-laptop> <C89496FEAE474D468F30D558A9468D9F26D2AB89@XAP-PVEXMBX01.xlnx.xilinx.com>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH] sh-sci: add R8A7743/5 support
+Date: Wed, 5 Oct 2016 08:28:05 -0500
+Message-ID: <CAL_Jsq+p35REB_Lwm2vhGEKiTQHCawAXqYeJ1Yq5o3WEad9K8Q@mail.gmail.com>
+References: <2017044.9fZNuWa2OZ@wasted.cogentembedded.com> <CAMuHMdWEg8V81w=MT4akCaV=VUGopyWLJtSQC+KeWSpTR5dR_w@mail.gmail.com>
+ <2254757.qf3e5qBuAz@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <C89496FEAE474D468F30D558A9468D9F26D2AB89-4lKfpRxZ5enZMOc0yg5rMog+Gb3gawCHQz34XiSyOiE@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Nava kishore Manne <nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
-Cc: "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "jslaby-IBi9RG/b67k@public.gmane.org" <jslaby-IBi9RG/b67k@public.gmane.org>, "michal.simek-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <michal.simek-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, Soren Brinkmann <sorenb-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Punnaiah Choudary Kalluri <punnaia-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <2254757.qf3e5qBuAz@avalon>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 5, 2016 at 7:23 AM, Nava kishore Manne
-<nava.manne-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org> wrote:
-> Hi Rob,
+On Wed, Oct 5, 2016 at 4:55 AM, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+> On Friday 30 Sep 2016 10:38:48 Geert Uytterhoeven wrote:
+>> On Thu, Sep 29, 2016 at 11:37 PM, Sergei Shtylyov wrote:
+>> > Renesas  RZ/G SoC also have the SCIF, SCIFA, SCIFB, and HSCIF ports.
+>> > Document RZ/G1[ME] (also known as R8A774[35]) SoC bindings along with
+>> > the RZ/G family bindings.  The driver itself also needs to recognize
+>> > the latter binding for the SCIF ports, so teach it...
+>> >
+>> > Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+>> >
+>> > ---
+>> > This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
+>> >
+>> >  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |   12
+>> >  ++++++++++
+>> >  drivers/tty/serial/sh-sci.c                                     |    3 ++
+>> >  2 files changed, 15 insertions(+)
+>> >
+>> > Index: tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+>> > ===================================================================
+>> > ---
+>> > tty.orig/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+>> > +++ tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt>
+>> > @@ -9,6 +9,14 @@ Required properties:
+>> >      - "renesas,scifb-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFB
+>> >      compatible UART. - "renesas,scifa-r8a7740" for R8A7740 (R-Mobile A1)
+>> >      SCIFA compatible UART. - "renesas,scifb-r8a7740" for R8A7740
+>> >      (R-Mobile A1) SCIFB compatible UART.>
+>> > +    - "renesas,scif-r8a7743" for R8A7743 (RZ/G1M) SCIF compatible UART.
+>> > +    - "renesas,scifa-r8a7743" for R8A7743 (RZ/G1M) SCIFA compatible UART.
+>> > +    - "renesas,scifb-r8a7743" for R8A7743 (RZ/G1M) SCIFB compatible UART.
+>> > +    - "renesas,hscif-r8a7743" for R8A7743 (RZ/G1M) HSCIF compatible UART.
+>> > +    - "renesas,scif-r8a7745" for R8A7745 (RZ/G1E) SCIF compatible UART.
+>> > +    - "renesas,scifa-r8a7745" for R8A7745 (RZ/G1E) SCIFA compatible UART.
+>> > +    - "renesas,scifb-r8a7745" for R8A7745 (RZ/G1E) SCIFB compatible UART.
+>> > +    - "renesas,hscif-r8a7745" for R8A7745 (RZ/G1E) HSCIF compatible UART.
 >
->         Thanks for the review...
->
->> > Changes for v5:
->> >             -Fixed some minor comments.
->>
->> Not a useful changelog. The point of these comments is to remind the
->> reviewers of what they commented on.
->
-> Ok will take care from next version onwards...
->
->> >  Required properties:
->> > -- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
->> > +- compatible :
->> > +  Use "cdns,uart-r1p8", or "xlnx,xuartps" for Zynq-7xxx SoC.
->>
->> This is still not right. It was wrong before, but you are touching it so make it
->> right.
->>
->> OR doesn't match the dts files. It is AND and the opposite order.
->>
->> xlnx,xuartps wasn't the best naming, but it's in use so we'll have to live with it
->> for zynq-7xxx.
->>
->> > +  Use "cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC.
->>
->> What I meant here was this should have something like "xlnx,mpsoc-uart"
->> as the first compatible with "cdns,uart-r1p12" as the second. Not sure if
->> "mpsoc" is the best name here.
->
-> You mean something like below
->  Use "xlnx,xuartps" or "cdns,uart-r1p8" for Zynq-7xxx SoC.
+> Are we *really* going to add four compat string for each RZ/G* SoC ? We're
+> reaching the limit of sanity...
 
-As I said, it is not an OR condition. 'Use "xlnx,xuartps",
-"cdns,uart-r1p8" for Zynq-7xxx SoC
-
-> Use "xlnx,zynqmp-uart" or " cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC.
-
-Yes, but as above.
+Is it really 4 distinct UARTs on a chip? DT can't fix that insanity.
 
 Rob
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
