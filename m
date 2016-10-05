@@ -1,96 +1,103 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH/RFC] tty: serial_core: Move uart_console() check after
- console registration
-Date: Wed, 5 Oct 2016 09:50:30 +0200
-Message-ID: <CAMuHMdXJpJQ8aAqgLneXT13kW1ZnF9gPKF9u9kJ61bVTJAF8Ow@mail.gmail.com>
-References: <1475163064-20399-1-git-send-email-geert+renesas@glider.be>
- <CAL_JsqK9JL6UmCzi-szPSakVNp1Cv4-ZVrGnrQ6hdKt_8VJQSQ@mail.gmail.com>
- <CAMuHMdXzqW2FfYKwBGevBCbA5f4m7+p+hGF7XJpppDz=VNMs1w@mail.gmail.com> <CAL_Jsq+g7xcaWA3ys9B0Ro-BuGHWFGi9g4BBj3mYyvz7oqxppw@mail.gmail.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH] sh-sci: add R8A7743/5 support
+Date: Wed, 05 Oct 2016 12:55:07 +0300
+Message-ID: <2254757.qf3e5qBuAz@avalon>
+References: <2017044.9fZNuWa2OZ@wasted.cogentembedded.com> <CAMuHMdWEg8V81w=MT4akCaV=VUGopyWLJtSQC+KeWSpTR5dR_w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <CAL_Jsq+g7xcaWA3ys9B0Ro-BuGHWFGi9g4BBj3mYyvz7oqxppw@mail.gmail.com>
+In-Reply-To: <CAMuHMdWEg8V81w=MT4akCaV=VUGopyWLJtSQC+KeWSpTR5dR_w@mail.gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>, =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "open list:MEDIA DRIVERS FOR RENESAS - FCP" <linux-renesas-soc@vger.kernel.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
+On Friday 30 Sep 2016 10:38:48 Geert Uytterhoeven wrote:
+> On Thu, Sep 29, 2016 at 11:37 PM, Sergei Shtylyov wrote:
+> > Renesas  RZ/G SoC also have the SCIF, SCIFA, SCIFB, and HSCIF ports.
+> > Document RZ/G1[ME] (also known as R8A774[35]) SoC bindings along with
+> > the RZ/G family bindings.  The driver itself also needs to recognize
+> > the latter binding for the SCIF ports, so teach it...
+> > 
+> > Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+> > 
+> > ---
+> > This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
+> > 
+> >  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |   12
+> >  ++++++++++
+> >  drivers/tty/serial/sh-sci.c                                     |    3 ++
+> >  2 files changed, 15 insertions(+)
+> > 
+> > Index: tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> > ===================================================================
+> > ---
+> > tty.orig/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> > +++ tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt> 
+> > @@ -9,6 +9,14 @@ Required properties:
+> >      - "renesas,scifb-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFB
+> >      compatible UART. - "renesas,scifa-r8a7740" for R8A7740 (R-Mobile A1)
+> >      SCIFA compatible UART. - "renesas,scifb-r8a7740" for R8A7740
+> >      (R-Mobile A1) SCIFB compatible UART.> 
+> > +    - "renesas,scif-r8a7743" for R8A7743 (RZ/G1M) SCIF compatible UART.
+> > +    - "renesas,scifa-r8a7743" for R8A7743 (RZ/G1M) SCIFA compatible UART.
+> > +    - "renesas,scifb-r8a7743" for R8A7743 (RZ/G1M) SCIFB compatible UART.
+> > +    - "renesas,hscif-r8a7743" for R8A7743 (RZ/G1M) HSCIF compatible UART.
+> > +    - "renesas,scif-r8a7745" for R8A7745 (RZ/G1E) SCIF compatible UART.
+> > +    - "renesas,scifa-r8a7745" for R8A7745 (RZ/G1E) SCIFA compatible UART.
+> > +    - "renesas,scifb-r8a7745" for R8A7745 (RZ/G1E) SCIFB compatible UART.
+> > +    - "renesas,hscif-r8a7745" for R8A7745 (RZ/G1E) HSCIF compatible UART.
 
-On Mon, Oct 3, 2016 at 10:30 PM, Rob Herring <robh@kernel.org> wrote:
-> On Mon, Oct 3, 2016 at 2:42 PM, Geert Uytterhoeven <geert@linux-m68k.org>=
- wrote:
->> On Mon, Oct 3, 2016 at 8:25 PM, Rob Herring <robh@kernel.org> wrote:
->>> On Thu, Sep 29, 2016 at 10:31 AM, Geert Uytterhoeven
->>> <geert+renesas@glider.be> wrote:
->>>> The port->console flag is always false, as uart_console() is called
->>>> before the serial console has been registered.
->>>
->>> I'm not seeing how that is. Everything uart_console() depends on
->>> (port->cons, port->cons->index, and port->line) should be set already.
->>> Maybe you pass in -1 for index which gets changed to 0 is the only
->>> thing I can see. Is doing that valid if you have multiple ports?
->>
->> Isn't .index always initialized to -1, and set to the actual line number=
- when
->> the console is registered? That's how I remember it from when
->> register_console() was introduced (in 2.1)...
->
-> Okay, the index is also set and gets marked enabled when specified on
-> the command line (or DT).
+Are we *really* going to add four compat string for each RZ/G* SoC ? We're 
+reaching the limit of sanity...
 
-I'm using DT and stdout-path. Where is the index set?
+> >      - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
+> >      - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
+> >      - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
+> 
+> For the part above:
+> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> 
+> > @@ -38,11 +46,15 @@ Required properties:
+> >      - "renesas,rcar-gen1-scif" for R-Car Gen1 SCIF compatible UART,
+> >      - "renesas,rcar-gen2-scif" for R-Car Gen2 SCIF compatible UART,
+> >      - "renesas,rcar-gen3-scif" for R-Car Gen3 SCIF compatible UART,
+> > +    - "renesas,rzg-scif" for RZ/G SCIF compatible UART.
+> >      - "renesas,rcar-gen2-scifa" for R-Car Gen2 SCIFA compatible UART,
+> > +    - "renesas,rzg-scifa" for RZ/G SCIFA compatible UART.
+> >      - "renesas,rcar-gen2-scifb" for R-Car Gen2 SCIFB compatible UART,
+> > +    - "renesas,rzg-scifb" for RZ/G SCIFB compatible UART.
+> >      - "renesas,rcar-gen1-hscif" for R-Car Gen1 HSCIF compatible UART,
+> >      - "renesas,rcar-gen2-hscif" for R-Car Gen2 HSCIF compatible UART,
+> >      - "renesas,rcar-gen3-hscif" for R-Car Gen3 HSCIF compatible UART,
+> > +    - "renesas,rzg-hscif" for RZ/G HSCIF compatible UART.
+> >      - "renesas,scif" for generic SCIF compatible UART.
+> >      - "renesas,scifa" for generic SCIFA compatible UART.
+> >      - "renesas,scifb" for generic SCIFB compatible UART.
+> > 
+> > Index: tty/drivers/tty/serial/sh-sci.c
+> > ===================================================================
+> > --- tty.orig/drivers/tty/serial/sh-sci.c
+> > +++ tty/drivers/tty/serial/sh-sci.c
+> > @@ -2950,6 +2950,9 @@ static const struct of_device_id of_sci_
+> >         }, {
+> >                 .compatible = "renesas,rcar-gen3-scif",
+> >                 .data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
+> > 
+> > +       }, {
+> > +               .compatible = "renesas,rzg-scif",
+> > +               .data = SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_BRG_REGTYPE),
+> >         },
+> >         /* Generic types */
+> >         {
+> 
+> However, I wouldn't bother adding RZ/G family-specific DT bindings, as
+> RZ/G is a derivative of R-Car Gen2.
 
->>>> Hence for a serial port used as the console, uart_tty_port_shutdown()
->>>> will still be called when userspace closes the port, powering it down.
->>>> This will lead to a system lock up when the serial console driver writ=
-es
->>>> to the serial port's registers.
->>>>
->>>> To fix this, move the setting of port->console after the call to
->>>> uart_configure_port(), which registers the serial console.
->>>>
->>>> Fixes: 761ed4a94582ab29 ("tty: serial_core: convert uart_close to use =
-tty_port_close")
->>>> Reported-by: Niklas S=C3=B6derlund <niklas.soderlund+renesas@ragnatech=
-.se>
->>>> Reported-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
->>>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->>>> ---
->>>> RFC because of the comment "If this port is a console, then the spinlo=
-ck
->>>> is already initialised", and the pre-existing code calling
->>>> uart_console() before uart_configure_port().
->>>
->>> So the spinlock is initialized twice which is probably harmless? If
->>> the spinlock was initialized by the console, then the index would
->>> probably not be -1.
->>
->> Shouldn't a double initialization cause a warning, with DEBUG_SPINLOCK=
-=3Dy
->> (which I have enabled)?
->
-> I though only missing init caused warnings.
->
-> Anyway, we can't really re-order things as uart_configure_port uses
-> the spinlock. This has existed this way for some time and is all an
-> independent of my change and your fix. So for your fix:
->
-> Acked-by: Rob Herring <robh@kernel.org>
+I agree, we need to stop the compat string proliferation madness.
 
-Thanks!
+-- 
+Regards,
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Laurent Pinchart
