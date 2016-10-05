@@ -1,75 +1,65 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] sh-sci: add R8A7743/5 support
-Date: Wed, 5 Oct 2016 12:03:24 +0200
-Message-ID: <CAMuHMdWG3R9FzFakx8eccYXXFMP_8_JH0Q0f8W8n1uZrOdygtg@mail.gmail.com>
-References: <2017044.9fZNuWa2OZ@wasted.cogentembedded.com> <CAMuHMdWEg8V81w=MT4akCaV=VUGopyWLJtSQC+KeWSpTR5dR_w@mail.gmail.com>
- <2254757.qf3e5qBuAz@avalon>
+From: Nava kishore Manne <nava.manne@xilinx.com>
+Subject: RE: [PATCH v5] devicetree: bindings: uart: Add new compatible
+ string for ZynqMP
+Date: Wed, 5 Oct 2016 12:23:15 +0000
+Message-ID: <C89496FEAE474D468F30D558A9468D9F26D2AB89@XAP-PVEXMBX01.xlnx.xilinx.com>
+References: <1474898801-36571-1-git-send-email-navam@xilinx.com>
+ <20161003184234.GA13165@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <2254757.qf3e5qBuAz@avalon>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20161003184234.GA13165@rob-hp-laptop>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "michal.simek@xilinx.com" <michal.simek@xilinx.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Soren Brinkmann <sorenb@xilinx.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, Punnaiah Choudary Kalluri <punnaia@xilinx.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Laurent,
+Hi Rob,
 
-On Wed, Oct 5, 2016 at 11:55 AM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> On Friday 30 Sep 2016 10:38:48 Geert Uytterhoeven wrote:
->> On Thu, Sep 29, 2016 at 11:37 PM, Sergei Shtylyov wrote:
->> > Renesas  RZ/G SoC also have the SCIF, SCIFA, SCIFB, and HSCIF ports.
->> > Document RZ/G1[ME] (also known as R8A774[35]) SoC bindings along with
->> > the RZ/G family bindings.  The driver itself also needs to recognize
->> > the latter binding for the SCIF ports, so teach it...
->> >
->> > Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
->> >
->> > ---
->> > This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
->> >
->> >  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |   12
->> >  ++++++++++
->> >  drivers/tty/serial/sh-sci.c                                     |    3 ++
->> >  2 files changed, 15 insertions(+)
->> >
->> > Index: tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->> > ===================================================================
->> > ---
->> > tty.orig/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->> > +++ tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt>
->> > @@ -9,6 +9,14 @@ Required properties:
->> >      - "renesas,scifb-r8a73a4" for R8A73A4 (R-Mobile APE6) SCIFB
->> >      compatible UART. - "renesas,scifa-r8a7740" for R8A7740 (R-Mobile A1)
->> >      SCIFA compatible UART. - "renesas,scifb-r8a7740" for R8A7740
->> >      (R-Mobile A1) SCIFB compatible UART.>
->> > +    - "renesas,scif-r8a7743" for R8A7743 (RZ/G1M) SCIF compatible UART.
->> > +    - "renesas,scifa-r8a7743" for R8A7743 (RZ/G1M) SCIFA compatible UART.
->> > +    - "renesas,scifb-r8a7743" for R8A7743 (RZ/G1M) SCIFB compatible UART.
->> > +    - "renesas,hscif-r8a7743" for R8A7743 (RZ/G1M) HSCIF compatible UART.
->> > +    - "renesas,scif-r8a7745" for R8A7745 (RZ/G1E) SCIF compatible UART.
->> > +    - "renesas,scifa-r8a7745" for R8A7745 (RZ/G1E) SCIFA compatible UART.
->> > +    - "renesas,scifb-r8a7745" for R8A7745 (RZ/G1E) SCIFB compatible UART.
->> > +    - "renesas,hscif-r8a7745" for R8A7745 (RZ/G1E) HSCIF compatible UART.
->
-> Are we *really* going to add four compat string for each RZ/G* SoC ? We're
-> reaching the limit of sanity...
+	Thanks for the review...
 
-Soon we can use soc_device_match(), if we ever need to handle r8a7743 or
-r8a7745 quirks?
+> > Changes for v5:
+> > 		-Fixed some minor comments.
+> 
+> Not a useful changelog. The point of these comments is to remind the
+> reviewers of what they commented on.
 
-Declaring it is compatible with renesas,rcar-gen2-scif is still good/needed for
-the BRG (Baud Rate Generator for External Clock), which is not present on e.g.
-RZ/A1H.
+Ok will take care from next version onwards...
 
-Gr{oetje,eeting}s,
+> >  Required properties:
+> > -- compatible : should be "cdns,uart-r1p8", or "xlnx,xuartps"
+> > +- compatible :
+> > +  Use "cdns,uart-r1p8", or "xlnx,xuartps" for Zynq-7xxx SoC.
+> 
+> This is still not right. It was wrong before, but you are touching it so make it
+> right.
+> 
+> OR doesn't match the dts files. It is AND and the opposite order.
+> 
+> xlnx,xuartps wasn't the best naming, but it's in use so we'll have to live with it
+> for zynq-7xxx.
+> 
+> > +  Use "cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC.
+> 
+> What I meant here was this should have something like "xlnx,mpsoc-uart"
+> as the first compatible with "cdns,uart-r1p12" as the second. Not sure if
+> "mpsoc" is the best name here.
 
-                        Geert
+You mean something like below
+ Use "xlnx,xuartps" or "cdns,uart-r1p8" for Zynq-7xxx SoC.
+Use "xlnx,zynqmp-uart" or " cdns,uart-r1p12" for Zynq Ultrascale+ MPSoC.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Please correct me if my understanding is wrong.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Regards,
+Navakishore.
