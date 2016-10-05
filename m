@@ -1,63 +1,96 @@
-From: Nicolae Rosia <nicolae.rosia.oss@gmail.com>
-Subject: [PATCH 2/2] tty: serial: Makefile: move kgdb to be initialized last
-Date: Tue,  4 Oct 2016 15:46:17 +0300
-Message-ID: <1475585177-28777-3-git-send-email-nicolae.rosia.oss@gmail.com>
-References: <1475585177-28777-1-git-send-email-nicolae.rosia.oss@gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH/RFC] tty: serial_core: Move uart_console() check after
+ console registration
+Date: Wed, 5 Oct 2016 09:50:30 +0200
+Message-ID: <CAMuHMdXJpJQ8aAqgLneXT13kW1ZnF9gPKF9u9kJ61bVTJAF8Ow@mail.gmail.com>
+References: <1475163064-20399-1-git-send-email-geert+renesas@glider.be>
+ <CAL_JsqK9JL6UmCzi-szPSakVNp1Cv4-ZVrGnrQ6hdKt_8VJQSQ@mail.gmail.com>
+ <CAMuHMdXzqW2FfYKwBGevBCbA5f4m7+p+hGF7XJpppDz=VNMs1w@mail.gmail.com> <CAL_Jsq+g7xcaWA3ys9B0Ro-BuGHWFGi9g4BBj3mYyvz7oqxppw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1475585177-28777-1-git-send-email-nicolae.rosia.oss@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org
-Cc: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stefan Agner <stefan@agner.ch>, Stefan Golinschi <stefan.golinschi@gmail.com>, Jiri Slaby <jslaby@suse.com>, Nicolae Rosia <nicolae_rosia@mentor.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <CAL_Jsq+g7xcaWA3ys9B0Ro-BuGHWFGi9g4BBj3mYyvz7oqxppw@mail.gmail.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>, =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "open list:MEDIA DRIVERS FOR RENESAS - FCP" <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Nicolae Rosia <nicolae_rosia@mentor.com>
+Hi Rob,
 
-fsl_lpuart cannot be used with kgdb because the kgdb
-initcall is called before the driver's init.
-Move kgdb to be initialized after all serial drivers
-have been inited.
+On Mon, Oct 3, 2016 at 10:30 PM, Rob Herring <robh@kernel.org> wrote:
+> On Mon, Oct 3, 2016 at 2:42 PM, Geert Uytterhoeven <geert@linux-m68k.org>=
+ wrote:
+>> On Mon, Oct 3, 2016 at 8:25 PM, Rob Herring <robh@kernel.org> wrote:
+>>> On Thu, Sep 29, 2016 at 10:31 AM, Geert Uytterhoeven
+>>> <geert+renesas@glider.be> wrote:
+>>>> The port->console flag is always false, as uart_console() is called
+>>>> before the serial console has been registered.
+>>>
+>>> I'm not seeing how that is. Everything uart_console() depends on
+>>> (port->cons, port->cons->index, and port->line) should be set already.
+>>> Maybe you pass in -1 for index which gets changed to 0 is the only
+>>> thing I can see. Is doing that valid if you have multiple ports?
+>>
+>> Isn't .index always initialized to -1, and set to the actual line number=
+ when
+>> the console is registered? That's how I remember it from when
+>> register_console() was introduced (in 2.1)...
+>
+> Okay, the index is also set and gets marked enabled when specified on
+> the command line (or DT).
 
-Signed-off-by: Nicolae Rosia <nicolae_rosia@mentor.com>
-Signed-off-by: Stefan Golinschi <stefan.golinschi@gmail.com>
----
- drivers/tty/serial/Makefile | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+I'm using DT and stdout-path. Where is the index set?
 
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 1278d37..8016ef9 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -62,13 +62,11 @@ obj-$(CONFIG_SERIAL_ATMEL) += atmel_serial.o
- obj-$(CONFIG_SERIAL_UARTLITE) += uartlite.o
- obj-$(CONFIG_SERIAL_MSM) += msm_serial.o
- obj-$(CONFIG_SERIAL_NETX) += netx-serial.o
--obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
- obj-$(CONFIG_SERIAL_KS8695) += serial_ks8695.o
- obj-$(CONFIG_SERIAL_OMAP) += omap-serial.o
- obj-$(CONFIG_SERIAL_ALTERA_UART) += altera_uart.o
- obj-$(CONFIG_SERIAL_ST_ASC) += st-asc.o
- obj-$(CONFIG_SERIAL_TILEGX) += tilegx.o
--obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
- obj-$(CONFIG_SERIAL_QE) += ucc_uart.o
- obj-$(CONFIG_SERIAL_TIMBERDALE)	+= timbuart.o
- obj-$(CONFIG_SERIAL_GRLIB_GAISLER_APBUART) += apbuart.o
-@@ -96,3 +94,6 @@ obj-$(CONFIG_SERIAL_MPS2_UART)	+= mps2-uart.o
- 
- # GPIOLIB helpers for modem control lines
- obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
-+
-+obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
-+obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
--- 
-2.5.5
+>>>> Hence for a serial port used as the console, uart_tty_port_shutdown()
+>>>> will still be called when userspace closes the port, powering it down.
+>>>> This will lead to a system lock up when the serial console driver writ=
+es
+>>>> to the serial port's registers.
+>>>>
+>>>> To fix this, move the setting of port->console after the call to
+>>>> uart_configure_port(), which registers the serial console.
+>>>>
+>>>> Fixes: 761ed4a94582ab29 ("tty: serial_core: convert uart_close to use =
+tty_port_close")
+>>>> Reported-by: Niklas S=C3=B6derlund <niklas.soderlund+renesas@ragnatech=
+.se>
+>>>> Reported-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+>>>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>>>> ---
+>>>> RFC because of the comment "If this port is a console, then the spinlo=
+ck
+>>>> is already initialised", and the pre-existing code calling
+>>>> uart_console() before uart_configure_port().
+>>>
+>>> So the spinlock is initialized twice which is probably harmless? If
+>>> the spinlock was initialized by the console, then the index would
+>>> probably not be -1.
+>>
+>> Shouldn't a double initialization cause a warning, with DEBUG_SPINLOCK=
+=3Dy
+>> (which I have enabled)?
+>
+> I though only missing init caused warnings.
+>
+> Anyway, we can't really re-order things as uart_configure_port uses
+> the spinlock. This has existed this way for some time and is all an
+> independent of my change and your fix. So for your fix:
+>
+> Acked-by: Rob Herring <robh@kernel.org>
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
