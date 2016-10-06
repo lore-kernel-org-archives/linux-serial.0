@@ -1,50 +1,47 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
-Date: Thu, 6 Oct 2016 14:31:52 +0100
-Message-ID: <3bab676a-2b65-8f27-d414-9cacc055094e@huawei.com>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
- <5140357.dcW9ibtZJ6@wuerfel> <57D963C4.4010406@hisilicon.com>
- <5869118.UilSPY9Sai@wuerfel>
- <2af4f2d8-e3a4-fa00-e700-60af70bf4560@jonmasters.org>
- <6bbfeb57-7a55-6a3e-60b2-3f44525e5882@huawei.com>
- <1475713112.3784.183.camel@kernel.crashing.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] serial: stm32: Fix comparisons with undefined register
+Date: Thu,  6 Oct 2016 15:42:54 +0200
+Message-ID: <1475761374-13576-1-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1475713112.3784.183.camel@kernel.crashing.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Jon Masters <jcm@jonmasters.org>, Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
-Cc: "zhichang.yuan" <yuanzhichang@hisilicon.com>, devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gabriele.paoloni@huawei.com, minyard@acm.org, gregkh@linuxfoundation.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, xuwei5@hisilicon.com, linuxarm@huawei.com, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, zourongrong@gmail.com, liviu.dudau@arm.com, kantyzc@163.com, zhichang.yuan02@gmail.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Gerald Baeza <gerald.baeza@st.com>
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 06/10/2016 01:18, Benjamin Herrenschmidt wrote:
-> On Tue, 2016-10-04 at 13:02 +0100, John Garry wrote:
->> Right, so I think Zhichang can make the necessary generic changes to
->> 8250 OF driver to support IO port as well as MMIO-based.
->>
->> However an LPC-based earlycon driver is still required.
->>
->> A note on hip07-based D05 (for those unaware): this does not use
->> LPC-based uart. It uses PL011. The hardware guys have managed some
->> trickery where they loopback the serial line around the BMC/CPLD. But we
->> still need it for hip06 D03 and any other boards which want to use LPC
->> bus for uart.
->>
->> A question on SBSA: does it propose how to provide serial via BMC for SOL?
->
-> Probably another reason to keep 8250 as a legal option ... The (very
-> popular) Aspeed BMCs tend to do this via a 8250-looking virtual UART on
-> LPC.
->
-> Cheers,
-> Ben,
+    drivers/tty/serial/stm32-usart.c: In function ‘stm32_receive_chars’:
+    drivers/tty/serial/stm32-usart.c:130: warning: comparison is always true due to limited range of data type
+    drivers/tty/serial/stm32-usart.c: In function ‘stm32_tx_dma_complete’:
+    drivers/tty/serial/stm32-usart.c:177: warning: comparison is always false due to limited range of data type
 
-I think we're talking about the same thing for our LPC-based UART.
+stm32_usart_offsets.icr is u8, while UNDEF_REG = ~0 is int, and thus
+0xffffffff.
 
-John
+As all registers in stm32_usart_offsets are u8, change the definition of
+UNDEF_REG to 0xff to fix this.
 
->
->
-> .
->
+Fixes: ada8618ff3bfe183 ("serial: stm32: adding support for stm32f7")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+Untested due to lack of hardware.
+---
+ drivers/tty/serial/stm32-usart.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index 41d97492310271db..cd97ceb76e4ffe6f 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -31,7 +31,7 @@ struct stm32_usart_info {
+ 	struct stm32_usart_config cfg;
+ };
+ 
+-#define UNDEF_REG ~0
++#define UNDEF_REG 0xff
+ 
+ /* Register offsets */
+ struct stm32_usart_info stm32f4_info = {
+-- 
+1.9.1
