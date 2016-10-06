@@ -1,42 +1,50 @@
-From: Alexandre TORGUE <alexandre.torgue@st.com>
-Subject: [PATCH -next] serial: stm32: fix build failure
-Date: Thu, 6 Oct 2016 11:33:33 +0200
-Message-ID: <1475746413-18301-1-git-send-email-alexandre.torgue@st.com>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
+Date: Thu, 6 Oct 2016 14:31:52 +0100
+Message-ID: <3bab676a-2b65-8f27-d414-9cacc055094e@huawei.com>
+References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
+ <5140357.dcW9ibtZJ6@wuerfel> <57D963C4.4010406@hisilicon.com>
+ <5869118.UilSPY9Sai@wuerfel>
+ <2af4f2d8-e3a4-fa00-e700-60af70bf4560@jonmasters.org>
+ <6bbfeb57-7a55-6a3e-60b2-3f44525e5882@huawei.com>
+ <1475713112.3784.183.camel@kernel.crashing.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>, gerald.baeza@st.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1475713112.3784.183.camel@kernel.crashing.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Jon Masters <jcm@jonmasters.org>, Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
+Cc: "zhichang.yuan" <yuanzhichang@hisilicon.com>, devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gabriele.paoloni@huawei.com, minyard@acm.org, gregkh@linuxfoundation.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, xuwei5@hisilicon.com, linuxarm@huawei.com, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, zourongrong@gmail.com, liviu.dudau@arm.com, kantyzc@163.com, zhichang.yuan02@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-While building m32r config the build failed with:
-ERROR: stm32-usart.c:(.text+0xdc988): undefined reference to `bad_dma_ops'
+On 06/10/2016 01:18, Benjamin Herrenschmidt wrote:
+> On Tue, 2016-10-04 at 13:02 +0100, John Garry wrote:
+>> Right, so I think Zhichang can make the necessary generic changes to
+>> 8250 OF driver to support IO port as well as MMIO-based.
+>>
+>> However an LPC-based earlycon driver is still required.
+>>
+>> A note on hip07-based D05 (for those unaware): this does not use
+>> LPC-based uart. It uses PL011. The hardware guys have managed some
+>> trickery where they loopback the serial line around the BMC/CPLD. But we
+>> still need it for hip06 D03 and any other boards which want to use LPC
+>> bus for uart.
+>>
+>> A question on SBSA: does it propose how to provide serial via BMC for SOL?
+>
+> Probably another reason to keep 8250 as a legal option ... The (very
+> popular) Aspeed BMCs tend to do this via a 8250-looking virtual UART on
+> LPC.
+>
+> Cheers,
+> Ben,
 
-To satisfy the dependency CONFIG_SERIAL_STM32 should depend on HAS_DMA.
+I think we're talking about the same thing for our LPC-based UART.
 
-Signed-off-by: Alexandre TORGUE <alexandre.torgue@st.com>
+John
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index c783140..8a261c0 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1624,6 +1624,7 @@ config SERIAL_SPRD_CONSOLE
- 
- config SERIAL_STM32
- 	tristate "STMicroelectronics STM32 serial port support"
-+	depends on HAS_DMA
- 	select SERIAL_CORE
- 	depends on ARM || COMPILE_TEST
- 	help
--- 
-1.9.1
+>
+>
+> .
+>
