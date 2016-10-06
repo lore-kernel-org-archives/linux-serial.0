@@ -1,46 +1,53 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] sh-sci: add R8A7743/5 support
-Date: Thu, 6 Oct 2016 22:55:59 +0200
-Message-ID: <CAMuHMdUVj485ok3UoTSixGU_dYaRr8QJrAnOO56_TDPWT=seCA@mail.gmail.com>
-References: <2017044.9fZNuWa2OZ@wasted.cogentembedded.com> <2254757.qf3e5qBuAz@avalon>
- <CAL_Jsq+p35REB_Lwm2vhGEKiTQHCawAXqYeJ1Yq5o3WEad9K8Q@mail.gmail.com> <7496008.sErWcihIz4@avalon>
+From: Aaron Brice <aaron.brice@datasoft.com>
+Subject: [PATCH] tty: serial: fsl_lpuart: Fix Tx DMA edge case
+Date: Thu,  6 Oct 2016 15:13:04 -0700
+Message-ID: <1475791984-17705-1-git-send-email-aaron.brice@datasoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <7496008.sErWcihIz4@avalon>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, bhuvanchandra.dv@toradex.com, stefan@agner.ch
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 5, 2016 at 3:37 PM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> On Wednesday 05 Oct 2016 08:28:05 Rob Herring wrote:
->> Is it really 4 distinct UARTs on a chip? DT can't fix that insanity.
->
-> It's really 4 different UART types on a chip, yes. We have actually 5
-> different UART types, named SCI, SCIF, SCIFA, SCIFB and HSCIF. Only the last 4
-> are used on R-Car SoCs.
+In the case where head == 0 on the circular buffer, there should be one
+DMA buffer, not two.  The second zero-length buffer would break the
+lpuart driver, transfer would never complete.
 
-And even that is a simplification ;-)
+Signed-off-by: Aaron Brice <aaron.brice@datasoft.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-AFAIU, evolution seems to have been
-
-    SCI --> SCIF ---> SCIF + BRG ---> HSCIF
-              |
-              +---> SCIFA ---> SCIFB
-
-Now, that's a simplication, too ;-) There are many intermediate variants
-with slightly different features and register bits,esp. on SuperH.
-They're all handled by the same sh-sci.c driver.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index de9d510..76103f2 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -328,7 +328,7 @@ static void lpuart_dma_tx(struct lpuart_port *sport)
+ 
+ 	sport->dma_tx_bytes = uart_circ_chars_pending(xmit);
+ 
+-	if (xmit->tail < xmit->head) {
++	if (xmit->tail < xmit->head || xmit->head == 0) {
+ 		sport->dma_tx_nents = 1;
+ 		sg_init_one(sgl, xmit->buf + xmit->tail, sport->dma_tx_bytes);
+ 	} else {
+@@ -359,7 +359,6 @@ static void lpuart_dma_tx(struct lpuart_port *sport)
+ 	sport->dma_tx_in_progress = true;
+ 	sport->dma_tx_cookie = dmaengine_submit(sport->dma_tx_desc);
+ 	dma_async_issue_pending(sport->dma_tx_chan);
+-
+ }
+ 
+ static void lpuart_dma_tx_complete(void *arg)
+-- 
+2.7.4
