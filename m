@@ -1,39 +1,56 @@
-From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Subject: Re: [PATCH V3 2/4] ARM64 LPC: LPC driver implementation on Hip06
-Date: Thu, 06 Oct 2016 11:18:32 +1100
-Message-ID: <1475713112.3784.183.camel@kernel.crashing.org>
-References: <1473855354-150093-1-git-send-email-yuanzhichang@hisilicon.com>
-         <5140357.dcW9ibtZJ6@wuerfel> <57D963C4.4010406@hisilicon.com>
-         <5869118.UilSPY9Sai@wuerfel>
-         <2af4f2d8-e3a4-fa00-e700-60af70bf4560@jonmasters.org>
-         <6bbfeb57-7a55-6a3e-60b2-3f44525e5882@huawei.com>
+From: Robert Jarzmik <robert.jarzmik@free.fr>
+Subject: Re: [PATCH v6 RESEND] serial: rewrite pxa2xx-uart to use 8250_core
+Date: Thu, 06 Oct 2016 08:25:35 +0200
+Message-ID: <87shsa804g.fsf@belgarion.home>
+References: <1474993396-525-1-git-send-email-robert.jarzmik@free.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <6bbfeb57-7a55-6a3e-60b2-3f44525e5882@huawei.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: John Garry <john.garry@huawei.com>, Jon Masters <jcm@jonmasters.org>, Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
-Cc: "zhichang.yuan" <yuanzhichang@hisilicon.com>, devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gabriele.paoloni@huawei.com, minyard@acm.org, gregkh@linuxfoundation.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, xuwei5@hisilicon.com, linuxarm@huawei.com, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, zourongrong@gmail.com, liviu.dudau@arm.com, kantyzc@163.com, zhichang.yuan02@gmail.com
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1474993396-525-1-git-send-email-robert.jarzmik@free.fr> (Robert
+        Jarzmik's message of "Tue, 27 Sep 2016 18:23:16 +0200")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sergey Yanovich <ynvich@gmail.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, James Cameron <quozl@laptop.org>, Russell King <linux@arm.linux.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2016-10-04 at 13:02 +0100, John Garry wrote:
-> Right, so I think Zhichang can make the necessary generic changes to 
-> 8250 OF driver to support IO port as well as MMIO-based.
-> 
-> However an LPC-based earlycon driver is still required.
-> 
-> A note on hip07-based D05 (for those unaware): this does not use 
-> LPC-based uart. It uses PL011. The hardware guys have managed some 
-> trickery where they loopback the serial line around the BMC/CPLD. But we 
-> still need it for hip06 D03 and any other boards which want to use LPC 
-> bus for uart.
-> 
-> A question on SBSA: does it propose how to provide serial via BMC for SOL?
+Robert Jarzmik <robert.jarzmik@free.fr> writes:
 
-Probably another reason to keep 8250 as a legal option ... The (very
-popular) Aspeed BMCs tend to do this via a 8250-looking virtual UART on
-LPC.
+> From: Sergey Yanovich <ynvich@gmail.com>
+>
+> pxa2xx-uart was a separate uart platform driver. It was declaring
+> the same device names and numbers as 8250 driver. As a result,
+> it was impossible to use 8250 driver on PXA SoCs.
+>
+> Upon closer examination pxa2xx-uart turned out to be a clone of
+> 8250_core driver.
+>
+> Workaround for Erratum #19 according to Marvel(R) PXA270M Processor
+> Specification Update (April 19, 2010) is dropped. 8250_core reads
+> from FIFO immediately after checking DR bit in LSR.
+>
+> The patch leaves the original SERIAL_PXA driver around. The original
+> driver is just marked DEPRECATED in Kconfig and C source. When
+> the original driver is considered safe to remove, no changes
+> to SERIAL_8250 will be necessary.
+>
+> Compiling SERIAL_8250_CONSOLE and SERIAL_PXA_CONSOLE even without
+> SERIAL_8250_PXA breaks console for SERIAL_PXA. For this reasons, the new
+> and the original drivers are made mutually exclusive.
+>
+> Signed-off-by: Sergei Ianovich <ynvich@gmail.com>
+> CC: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> CC: James Cameron <quozl@laptop.org>
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> CC: Robert Jarzmik <robert.jarzmik@free.fr>
+> CC: Russell King <linux@arm.linux.org.uk>
+> Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> [rebased on v4.8]
+> Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
+> Signed-off-by: Robert Jarzmik <robert.jarzmik@free.fr>
 
-Cheers,
-Ben,
+Greg, can you take that into you tty tree please ?
+
+Cheers.
+
+--
+Robert
