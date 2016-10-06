@@ -1,51 +1,46 @@
-From: Alexandre Torgue <alexandre.torgue@st.com>
-Subject: Re: [PATCH -next] serial: stm32: fix build failure
-Date: Thu, 6 Oct 2016 16:09:57 +0200
-Message-ID: <2289a67f-ec12-a19b-750c-3cd4980ec311@st.com>
-References: <1475746413-18301-1-git-send-email-alexandre.torgue@st.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] sh-sci: add R8A7743/5 support
+Date: Thu, 6 Oct 2016 22:55:59 +0200
+Message-ID: <CAMuHMdUVj485ok3UoTSixGU_dYaRr8QJrAnOO56_TDPWT=seCA@mail.gmail.com>
+References: <2017044.9fZNuWa2OZ@wasted.cogentembedded.com> <2254757.qf3e5qBuAz@avalon>
+ <CAL_Jsq+p35REB_Lwm2vhGEKiTQHCawAXqYeJ1Yq5o3WEad9K8Q@mail.gmail.com> <7496008.sErWcihIz4@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1475746413-18301-1-git-send-email-alexandre.torgue@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Maxime Coquelin <mcoquelin.stm32@gmail.com>, gerald.baeza@st.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <7496008.sErWcihIz4@avalon>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+On Wed, Oct 5, 2016 at 3:37 PM, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+> On Wednesday 05 Oct 2016 08:28:05 Rob Herring wrote:
+>> Is it really 4 distinct UARTs on a chip? DT can't fix that insanity.
+>
+> It's really 4 different UART types on a chip, yes. We have actually 5
+> different UART types, named SCI, SCIF, SCIFA, SCIFB and HSCIF. Only the last 4
+> are used on R-Car SoCs.
 
+And even that is a simplification ;-)
 
-On 10/06/2016 11:33 AM, Alexandre TORGUE wrote:
-> While building m32r config the build failed with:
-> ERROR: stm32-usart.c:(.text+0xdc988): undefined reference to `bad_dma_ops'
->
-> To satisfy the dependency CONFIG_SERIAL_STM32 should depend on HAS_DMA.
->
-> Signed-off-by: Alexandre TORGUE <alexandre.torgue@st.com>
->
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index c783140..8a261c0 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1624,6 +1624,7 @@ config SERIAL_SPRD_CONSOLE
->
->  config SERIAL_STM32
->  	tristate "STMicroelectronics STM32 serial port support"
-> +	depends on HAS_DMA
->  	select SERIAL_CORE
->  	depends on ARM || COMPILE_TEST
->  	help
->
-Same patch has been sent in same time. Please abandon this one.
+AFAIU, evolution seems to have been
 
-Regards
-Alex
+    SCI --> SCIF ---> SCIF + BRG ---> HSCIF
+              |
+              +---> SCIFA ---> SCIFB
+
+Now, that's a simplication, too ;-) There are many intermediate variants
+with slightly different features and register bits,esp. on SuperH.
+They're all handled by the same sh-sci.c driver.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
