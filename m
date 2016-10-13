@@ -1,41 +1,30 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [patch] serial: stm32: fix a type issue
-Date: Wed, 12 Oct 2016 12:11:11 +0300
-Message-ID: <20161012091111.GC5687@mwanda>
-References: <20161012062103.GS12841@mwanda>
- <20161012085239.GD1041@n2100.armlinux.org.uk>
+From: Jakub Kicinski <kubakici@wp.pl>
+Subject: Re: [PATCH] sc16is7xx: Drop bogus use of IRQF_ONESHOT
+Date: Thu, 13 Oct 2016 01:48:20 +0100
+Message-ID: <20161013014820.241424bf@laptop>
+References: <20161003151432.17828-1-julia@ni.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20161012085239.GD1041@n2100.armlinux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@armlinux.org.uk>
-Cc: Alexandre TORGUE <alexandre.torgue@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, kernel-janitors@vger.kernel.org, Maxime Coquelin <mcoquelin.stm32@gmail.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20161003151432.17828-1-julia@ni.com>
+Sender: stable-owner@vger.kernel.org
+To: Julia Cartwright <julia@ni.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Sean Nyekjaer <sean.nyekjaer@prevas.dk>, Josh Cartwright <joshc@ni.com>, linux-rt-users@vger.kernel.org, stable@vger.kernel.org, linux-serial@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 12, 2016 at 09:52:39AM +0100, Russell King - ARM Linux wrote:
-> On Wed, Oct 12, 2016 at 09:21:03AM +0300, Dan Carpenter wrote:
-> > We store UNDEF_REG in a u8.  It causes a problem in functions like
-> > stm32_tx_dma_complete() where we check "if (ofs->icr == UNDEF_REG)".
-> > 
-> > Fixes: 3489187204eb ('serial: stm32: adding dma support')
-> 
-> Correct form is:
-> 
-> Fixes: 12-digit-hash ("summary line")
+On Mon, 3 Oct 2016 10:14:32 -0500, Julia Cartwright wrote:
+> The use of IRQF_ONESHOT when registering an interrupt handler with
+> request_irq() is non-sensical.
+> ...
 
-When I originally created the Fixes tag format, I used single quotes.
-I don't remember why though and I can change with the times.  :)
+Disabling the irq when kthread is pending as mentioned here:
 
-regards,
-dan carpenter
+http://www.spinics.net/lists/linux-rt-users/msg14673.html
+
+could be beneficial but this is definitely a step in the right
+direction!
+
+Acked-by: Jakub Kicinski <kubakici@wp.pl>
+
+Thanks a lot Julia!
