@@ -1,38 +1,29 @@
-From: David Singleton <davsingl@cisco.com>
-Subject: [PATCH] tty: serial: 8250: 8250_core: NXP SC16C2552 workaround
-Date: Mon, 17 Oct 2016 09:51:05 -0700
-Message-ID: <20161017165108.29718-2-davsingl@cisco.com>
+From: Mugunthan V N <mugunthanvnm@ti.com>
+Subject: seeing some junk characters on boot console with v4.9-rc1-3-g14155ca
+Date: Tue, 18 Oct 2016 17:38:57 +0530
+Message-ID: <7940c6b1-22df-90f9-4ef8-43b707db6f68@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Steve Shih <sshih@cisco.com>, xe-kernel@external.cisco.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Rob Herring <robh@kernel.org>, Tony Lindgren <tony@atomide.com>
+Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Steve Shih <sshih@cisco.com>
+Hi
 
-NXP SC16C2552 requires that we always write a reset to the RX FIFO and
-TX FIFO whenever we enable the FIFOs
+I am seeing some junk characters on uart boot console on DRA72x platform
+[1] and even on other TI platforms, did a bisect and found the commit
+"761ed4a94582" broke it first.
 
-Cc: xe-kernel@external.cisco.com
-Signed-off-by: Steve Shih <sshih@cisco.com>
-Signed-off-by: David Singleton <davsingl@cisco.com>
----
- drivers/tty/serial/8250/8250_port.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+By reverting below two commit, I don't see the issue logs [2].
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 1bfb6fd..1731b98 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -83,7 +83,8 @@ static const struct serial8250_config uart_config[] = {
- 		.name		= "16550A",
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
--		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
-+				  UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
- 		.rxtrig_bytes	= {1, 4, 8, 14},
- 		.flags		= UART_CAP_FIFO,
- 	},
--- 
-2.9.3
+761ed4a94582 "tty:serial_core: convert uart_close to use tty_port_close"
+a5a2b13074fd "serial: core: fix potential NULL pointer dereference"
+
+[1] - http://pastebin.ubuntu.com/23343431/
+[2] - http://pastebin.ubuntu.com/23343435/
+
+Regards
+Mugunthan V N
