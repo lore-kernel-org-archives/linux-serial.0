@@ -1,29 +1,40 @@
-From: Mugunthan V N <mugunthanvnm@ti.com>
-Subject: seeing some junk characters on boot console with v4.9-rc1-3-g14155ca
-Date: Tue, 18 Oct 2016 17:38:57 +0530
-Message-ID: <7940c6b1-22df-90f9-4ef8-43b707db6f68@ti.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v6 2/2] devicetree: bindings: uart: Add new compatible
+ string for ZynqMP
+Date: Tue, 18 Oct 2016 08:04:22 -0500
+Message-ID: <20161018130422.2zjasatazwmmbsss@rob-hp-laptop>
+References: <1476258448-20483-1-git-send-email-navam@xilinx.com>
+ <1476258448-20483-2-git-send-email-navam@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1476258448-20483-2-git-send-email-navam@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Rob Herring <robh@kernel.org>, Tony Lindgren <tony@atomide.com>
-Cc: linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>
+To: Nava kishore Manne <nava.manne@xilinx.com>
+Cc: gregkh@linuxfoundation.org, mark.rutland@arm.com, jslaby@suse.com, michal.simek@xilinx.com, soren.brinkmann@xilinx.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, punnaia@xilinx.com, Nava kishore Manne <navam@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi
+On Wed, Oct 12, 2016 at 01:17:28PM +0530, Nava kishore Manne wrote:
+> From: Nava kishore Manne <nava.manne@xilinx.com>
+> 
+> This patch Adds the new compatible string for ZynqMP SoC.
+> 
+> Signed-off-by: Nava kishore Manne <navam@xilinx.com>
+> ---
+> Changes for v6:
+> 		-Added New compatiable string for ZynqMP SoC as
+> 		 suggested by Rob Herring.
+> Changes for v5:
+> 		-Mofified the compatible session.
+> Changes for v4:
+>                 -Modified the ChangeLog comment.
+> Changes for v3:
+>                 -Added changeLog comment.
+> Changes for v2:
+>                 -None
+> 
+>  Documentation/devicetree/bindings/serial/cdns,uart.txt | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
-I am seeing some junk characters on uart boot console on DRA72x platform
-[1] and even on other TI platforms, did a bisect and found the commit
-"761ed4a94582" broke it first.
-
-By reverting below two commit, I don't see the issue logs [2].
-
-761ed4a94582 "tty:serial_core: convert uart_close to use tty_port_close"
-a5a2b13074fd "serial: core: fix potential NULL pointer dereference"
-
-[1] - http://pastebin.ubuntu.com/23343431/
-[2] - http://pastebin.ubuntu.com/23343435/
-
-Regards
-Mugunthan V N
+Acked-by: Rob Herring <robh@kernel.org>
