@@ -1,69 +1,56 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH] tty: serial: 8250: add CON_CONSDEV to
- flags
-Date: Tue, 18 Oct 2016 18:57:45 +0200
-Message-ID: <048721f0-d3f1-c029-2349-044015ef9d8d@suse.cz>
-References: <1466522389-26943-1-git-send-email-matthew.leach@codethink.co.uk>
- <40b80b82-531d-d9e8-0b4d-bdd559ad5044@suse.cz>
- <1452ffb1-429b-65e8-3c5d-76a03ea4eb4a@codethink.co.uk>
+From: Sean Young <sean@mess.org>
+Subject: Re: console issue since 3.6, console=ttyS1 hangs
+Date: Tue, 18 Oct 2016 19:05:18 +0100
+Message-ID: <20161018180518.GA28700@gofer.mess.org>
+References: <20161017144951.GA235535@stormcage.americas.sgi.com>
+ <20161017151906.GA19082@gofer.mess.org>
+ <20161017164140.GA35950@stormcage.americas.sgi.com>
+ <20161018164004.GA159046@stormcage.americas.sgi.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1452ffb1-429b-65e8-3c5d-76a03ea4eb4a@codethink.co.uk>
+Content-Disposition: inline
+In-Reply-To: <20161018164004.GA159046@stormcage.americas.sgi.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ben Dooks <ben.dooks@codethink.co.uk>, Matthew Leach <matthew.leach@codethink.co.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@lists.codethink.co.uk, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Nathan Zimmer <nzimmer@sgi.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, alan@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
 
-On 10/18/2016, 06:23 PM, Ben Dooks wrote:
-> On 18/10/16 17:15, Jiri Slaby wrote:
->> On 06/21/2016, 05:19 PM, Matthew Leach wrote:
->>> When using the 8250 as a boot console and the main console results in
->>> messages being printed twice.  The console framework will only
->>> unregister boot consoles if a new console is registered with the
->>> CON_CONSDEV flag set.
->>>
->>> Set this flag for the univ8250 console to prevent double-registration.
->>>
->>> Signed-off-by: Matthew Leach <matthew.leach@codethink.co.uk>
->>> ---
->>>  drivers/tty/serial/8250/8250_core.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/tty/serial/8250/8250_core.c
->>> b/drivers/tty/serial/8250/8250_core.c
->>> index 2f4f5ee..7a7453d 100644
->>> --- a/drivers/tty/serial/8250/8250_core.c
->>> +++ b/drivers/tty/serial/8250/8250_core.c
->>> @@ -675,7 +675,7 @@ static struct console univ8250_console = {
->>>      .device        = uart_console_device,
->>>      .setup        = univ8250_console_setup,
->>>      .match        = univ8250_console_match,
->>> -    .flags        = CON_PRINTBUFFER | CON_ANYTIME,
->>> +    .flags        = CON_PRINTBUFFER | CON_ANYTIME | CON_CONSDEV,
->>
->> This patch breaks console= parameter handling. Passing:
->>   console=ttyS0 console=tty0
->> no longer means /dev/console is tty0 and it should be as is documented.
->>
->> I have not investigated further yet.
+On Tue, Oct 18, 2016 at 11:40:04AM -0500, Nathan Zimmer wrote:
+> 3.7.0
+> cat /sys/bus/pnp/drivers/serial/*/resources
+> state = active
+> io 0x2f8-0x2ff
+> irq 12
+> dma disabled
 > 
-> Ok, thanks.
-> I'll need to find Matthew Leach's new address as he's moved jobs.
+> 3.6.0
+> :~ # cat /sys/bus/pnp/drivers/serial/*/resources
+> cat: /sys/bus/pnp/drivers/serial/*/resources: No such file or directory
 
-Oh sure:
-#define CON_CONSDEV     (2) /* Last on the command line */
+irq 12 for ttyS1? That should be irq 3. The bios is putting bogus information
+in pnp. Maybe there is rubbish in the bios setup or maybe it's fixed in a 
+newer bios update.
 
-Why it should be set in struct console statically? The patch is
-obviously incorrect. And I do not understand from the vague commit log
-what the problem actually was.
+So before this change, the kernel would assume irq 3. After this change,
+the kernel first uses the information in pnp to see where the serial
+port is. It gets told that it's irq 12 and presumably it runs into all
+sorts of problems then. If memory serves that's the irq for the ps/2 mouse.
 
-So for the time being, Greg, please revert it (d03516df8375873) and we
-can come with something better, when we understand the issue. Please CC
-stable (4.8+).
+The interesting bit is in 3.6.0:
 
-thanks,
--- 
-js
-suse labs
+setserial
+/dev/ttyS1, UART: 16550A, Port: 0x02f8, IRQ: 3
+
+becomes in 3.7.0:
+
+setserial
+/dev/ttyS1, UART: 16550A, Port: 0x02f8, IRQ: 12
+
+You should be able to set the right irq with setserial, but obviously
+that doesn't help you if it fails in early boot. It's not immediately
+obvious to me what can be done in the kernel for this. Maybe the dmesg
+output could inspire, thanks.
+
+
+Sean
