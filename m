@@ -1,54 +1,65 @@
-From: Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: Re: [PATCH] tty: serial: 8250: add CON_CONSDEV to
- flags
-Date: Tue, 18 Oct 2016 17:23:05 +0100
-Message-ID: <1452ffb1-429b-65e8-3c5d-76a03ea4eb4a@codethink.co.uk>
-References: <1466522389-26943-1-git-send-email-matthew.leach@codethink.co.uk>
- <40b80b82-531d-d9e8-0b4d-bdd559ad5044@suse.cz>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2] tty: serial_core: Fix serial console crash on port shutdown
+Date: Tue, 18 Oct 2016 18:35:40 +0200
+Message-ID: <1476808540-2757-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <40b80b82-531d-d9e8-0b4d-bdd559ad5044@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>, Matthew Leach <matthew.leach@codethink.co.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-kernel@lists.codethink.co.uk, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-On 18/10/16 17:15, Jiri Slaby wrote:
-> On 06/21/2016, 05:19 PM, Matthew Leach wrote:
->> When using the 8250 as a boot console and the main console results in
->> messages being printed twice.  The console framework will only
->> unregister boot consoles if a new console is registered with the
->> CON_CONSDEV flag set.
->>
->> Set this flag for the univ8250 console to prevent double-registration.
->>
->> Signed-off-by: Matthew Leach <matthew.leach@codethink.co.uk>
->> ---
->>  drivers/tty/serial/8250/8250_core.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
->> index 2f4f5ee..7a7453d 100644
->> --- a/drivers/tty/serial/8250/8250_core.c
->> +++ b/drivers/tty/serial/8250/8250_core.c
->> @@ -675,7 +675,7 @@ static struct console univ8250_console = {
->>  	.device		= uart_console_device,
->>  	.setup		= univ8250_console_setup,
->>  	.match		= univ8250_console_match,
->> -	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
->> +	.flags		= CON_PRINTBUFFER | CON_ANYTIME | CON_CONSDEV,
->
-> This patch breaks console= parameter handling. Passing:
->   console=ttyS0 console=tty0
-> no longer means /dev/console is tty0 and it should be as is documented.
->
-> I have not investigated further yet.
+The port->console flag is always false, as uart_console() is called
+before the serial console has been registered.
 
-Ok, thanks.
-I'll need to find Matthew Leach's new address as he's moved jobs.
+Hence for a serial port used as the console, uart_tty_port_shutdown()
+will still be called when userspace closes the port, powering it down.
+This may lead to a system lock up when the serial console driver writes
+to the serial port's registers.
 
+To fix this, move the setting of port->console after the call to
+uart_configure_port(), which registers the serial console.
+
+Fixes: 761ed4a94582ab29 ("tty: serial_core: convert uart_close to use tty_port_close")
+Reported-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+v2:
+  - Add Acked-by,
+  - Reworded one-line summary (incl. magic word "fix").
+
+Can easily be reproduced on Renesas boards:
+  1. With systemd: hangs during boot,
+  2. Without systemd: "telinit n" to switch to a runlevel that doesn't
+     run a getty on ttySC0, and trigger kernel console output => hang.
+---
+ drivers/tty/serial/serial_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 6e4f63627479db8d..ce8899c13af3d97f 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2746,8 +2746,6 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	uport->cons = drv->cons;
+ 	uport->minor = drv->tty_driver->minor_start + uport->line;
+ 
+-	port->console = uart_console(uport);
+-
+ 	/*
+ 	 * If this port is a console, then the spinlock is already
+ 	 * initialised.
+@@ -2761,6 +2759,8 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 
+ 	uart_configure_port(drv, state, uport);
+ 
++	port->console = uart_console(uport);
++
+ 	num_groups = 2;
+ 	if (uport->attr_group)
+ 		num_groups++;
 -- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
+1.9.1
