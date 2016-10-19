@@ -1,82 +1,45 @@
-From: "Niklas =?iso-8859-1?Q?S=F6derlund?=" <niklas.soderlund@ragnatech.se>
-Subject: Re: [PATCH v2] tty: serial_core: Fix serial console crash on port
- shutdown
-Date: Wed, 19 Oct 2016 10:17:06 +0200
-Message-ID: <20161019081706.GC8106@bigcity.dyn.berto.se>
-References: <1476808540-2757-1-git-send-email-geert+renesas@glider.be>
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Subject: Re: drivers/tty/serial/max310x doesn't support latest UART revision
+ of MAX14830
+Date: Wed, 19 Oct 2016 18:03:07 +0200
+Message-ID: <20161019160307.GB5533@kroah.com>
+References: <VI1PR0501MB2093567C1DB630B743CD0A0092D20@VI1PR0501MB2093.eurprd05.prod.outlook.com>
+ <20161019081859.GA5747@kroah.com>
+ <20161019150344.5t56nl6zjxltuzbv@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1476808540-2757-1-git-send-email-geert+renesas@glider.be>
+In-Reply-To: <20161019150344.5t56nl6zjxltuzbv@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <alan@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Roberto Manuel SARA <rmsara@matis.onmicrosoft.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert,
+On Wed, Oct 19, 2016 at 05:03:44PM +0200, Uwe Kleine-König wrote:
+> On Wed, Oct 19, 2016 at 10:18:59AM +0200, gregkh@linuxfoundation.org wrote:
+> > On Wed, Oct 19, 2016 at 08:12:13AM +0000, Roberto Manuel SARA wrote:
+> > > Confidentiality Warning: This message and any
+> > > attachments are intended only for the use of the intended recipient(s), are
+> > > confidential, and may be privileged. If you are not the intended recipient, you
+> > > are hereby notified that any review, retransmission, conversion to hard copy,
+> > > copying, circulation or other use of this message and any attachments is
+> > > strictly prohibited. If you are not the intended recipient, please notify the
+> > > sender immediately by return e-mail, and delete this message and any
+> > > attachments from your system. Thank-you.
+> > 
+> > I am not allowed to respond to such emails as it is not compatible with
+> > doing work in the open for Linux.  Please remove and I will be glad to
+> > reply.
+> 
+> INAL, but from a logical POV: When this mail was sent to a public
+> mailing list, everyone could consider itself being an "intended
+> recipient" which would lift all limitations. :-)
 
-On 2016-10-18 18:35:40 +0200, Geert Uytterhoeven wrote:
-> The port->console flag is always false, as uart_console() is called
-> before the serial console has been registered.
-> 
-> Hence for a serial port used as the console, uart_tty_port_shutdown()
-> will still be called when userspace closes the port, powering it down.
-> This may lead to a system lock up when the serial console driver writes
-> to the serial port's registers.
-> 
-> To fix this, move the setting of port->console after the call to
-> uart_configure_port(), which registers the serial console.
-> 
-> Fixes: 761ed4a94582ab29 ("tty: serial_core: convert uart_close to use tty_port_close")
-> Reported-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Acked-by: Rob Herring <robh@kernel.org>
+Not according to my lawyer, who is one, and whom I trust better than
+random people claiming not to be one :)
 
-It fixes the issue I was seeing with systemd as a init system.
+thanks,
 
-Tested-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-
-> ---
-> v2:
->   - Add Acked-by,
->   - Reworded one-line summary (incl. magic word "fix").
-> 
-> Can easily be reproduced on Renesas boards:
->   1. With systemd: hangs during boot,
->   2. Without systemd: "telinit n" to switch to a runlevel that doesn't
->      run a getty on ttySC0, and trigger kernel console output => hang.
-> ---
->  drivers/tty/serial/serial_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 6e4f63627479db8d..ce8899c13af3d97f 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2746,8 +2746,6 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
->  	uport->cons = drv->cons;
->  	uport->minor = drv->tty_driver->minor_start + uport->line;
->  
-> -	port->console = uart_console(uport);
-> -
->  	/*
->  	 * If this port is a console, then the spinlock is already
->  	 * initialised.
-> @@ -2761,6 +2759,8 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
->  
->  	uart_configure_port(drv, state, uport);
->  
-> +	port->console = uart_console(uport);
-> +
->  	num_groups = 2;
->  	if (uport->attr_group)
->  		num_groups++;
-> -- 
-> 1.9.1
-> 
-
--- 
-Regards,
-Niklas Söderlund
+greg k-h
