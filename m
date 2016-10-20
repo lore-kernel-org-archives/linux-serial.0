@@ -1,7 +1,7 @@
 From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Subject: [PATCH V4 3/3] ARM64 LPC: LPC driver implementation on Hip06
-Date: Thu, 20 Oct 2016 17:15:40 +0800
-Message-ID: <1476954940-242159-4-git-send-email-yuanzhichang@hisilicon.com>
+Subject: [PATCH V4 1/3] ARM64 LPC: Indirect ISA port IO introduced
+Date: Thu, 20 Oct 2016 17:15:38 +0800
+Message-ID: <1476954940-242159-2-git-send-email-yuanzhichang@hisilicon.com>
 References: <1476954940-242159-1-git-send-email-yuanzhichang@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,122 +12,58 @@ To: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, bhelgaas@g
 Cc: lorenzo.pieralisi@arm.com, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, benh@kernel.crashing.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, "zhichang.yuan" <yuanzhichang@hisilicon.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Hip06, the accesses to LPC peripherals work in an indirect way. A
-corresponding LPC driver configure some registers in LPC master at first, then
-the real accesses on LPC slave devices are finished by the LPC master, which
-is transparent to LPC driver.
-This patch implement the relevant driver for Hip06 LPC. Cooperating with
-indirect-IO, ipmi messages is in service without any changes on ipmi driver.
+For arm64, there is no I/O space as other architectural platforms, such as
+X86. Most I/O accesses are achieved based on MMIO. But for some arm64 SoCs,
+such as Hip06, when accessing some legacy ISA devices connected to LPC, those
+known port addresses are used to control the corresponding target devices, for
+example, 0x2f8 is for UART, 0xe4 is for ipmi-bt. It is different from the
+normal MMIO mode in using.
+
+To drive these devices, this patch introduces a method named indirect-IO.
+In this method the in/out pair in arch/arm64/include/asm/io.h will be
+redefined. When upper layer drivers call in/out with those known legacy port
+addresses to access the peripherals, the hooking functions corrresponding to
+those target peripherals will be called. Through this way, those upper layer
+drivers which depend on in/out can run on Hip06 without any changes.
 
 Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
 Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
 ---
- .../arm/hisilicon/hisilicon-low-pin-count.txt      |  31 ++
- MAINTAINERS                                        |   8 +
- drivers/bus/Kconfig                                |   8 +
- drivers/bus/Makefile                               |   1 +
- drivers/bus/hisi_lpc.c                             | 501 +++++++++++++++++++++
- 5 files changed, 549 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
- create mode 100644 drivers/bus/hisi_lpc.c
+ arch/arm64/Kconfig             |  6 +++
+ arch/arm64/include/asm/extio.h | 94 ++++++++++++++++++++++++++++++++++++++++++
+ arch/arm64/include/asm/io.h    | 29 +++++++++++++
+ arch/arm64/kernel/Makefile     |  1 +
+ arch/arm64/kernel/extio.c      | 29 +++++++++++++
+ 5 files changed, 159 insertions(+)
+ create mode 100644 arch/arm64/include/asm/extio.h
+ create mode 100644 arch/arm64/kernel/extio.c
 
-diff --git a/Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt b/Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
-new file mode 100644
-index 0000000..e681419
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
-@@ -0,0 +1,31 @@
-+Hisilicon Hip06 low-pin-count device
-+  Usually LPC controller is part of PCI host bridge, so the legacy ISA ports
-+  locate on LPC bus can be accessed direclty. But some SoCs have independent
-+  LPC controller, and access the legacy ports by triggering LPC I/O cycles.
-+  Hisilicon Hip06 implements this LPC device.
-+
-+Required properties:
-+- compatible: should be "hisilicon,low-pin-count"
-+- #address-cells: must be 2 which stick to the ISA/EISA binding doc.
-+- #size-cells: must be 1 which stick to the ISA/EISA binding doc.
-+- reg: base memory range where the register set for this device is mapped.
-+
-+Note:
-+  The node name before '@' must be "isa" to represent the binding stick to the
-+  ISA/EISA binding specification.
-+
-+Example:
-+
-+isa@a01b0000 {
-+	compatible = "hisilicom,low-pin-count";
-+	#address-cells = <2>;
-+	#size-cells = <1>;
-+	reg = <0x0 0xa01b0000 0x0 0x1000>;
-+
-+	ipmi0: bt@e4 {
-+		compatible = "ipmi-bt";
-+		device_type = "ipmi";
-+		reg = <0x01 0xe4 0x04>;
-+		status = "disabled";
-+	};
-+};
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1cd38a7..7c69410 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5716,6 +5716,14 @@ F:	include/uapi/linux/if_hippi.h
- F:	net/802/hippi.c
- F:	drivers/net/hippi/
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 30398db..103dbea 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -163,6 +163,12 @@ config ARCH_MMAP_RND_COMPAT_BITS_MIN
+ config ARCH_MMAP_RND_COMPAT_BITS_MAX
+        default 16
  
-+HISILICON LPC BUS DRIVER
-+M:	Zhichang Yuan <yuanzhichang@hisilicon.com>
-+L:	linux-arm-kernel@lists.infradead.org
-+W:	http://www.hisilicon.com
-+S:	Maintained
-+F:	drivers/bus/hisi_lpc.c
-+F:	Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
-+
- HISILICON NETWORK SUBSYSTEM DRIVER
- M:	Yisen Zhuang <yisen.zhuang@huawei.com>
- M:	Salil Mehta <salil.mehta@huawei.com>
-diff --git a/drivers/bus/Kconfig b/drivers/bus/Kconfig
-index 7010dca..a108abc 100644
---- a/drivers/bus/Kconfig
-+++ b/drivers/bus/Kconfig
-@@ -64,6 +64,14 @@ config BRCMSTB_GISB_ARB
- 	  arbiter. This driver provides timeout and target abort error handling
- 	  and internal bus master decoding.
- 
-+config HISILICON_LPC
-+	bool "Workaround for nonstandard ISA I/O space on Hisilicon Hip0X"
-+	depends on (ARCH_HISI || COMPILE_TEST) && ARM64
-+	select ARM64_INDIRECT_PIO
++config ARM64_INDIRECT_PIO
++	bool "access peripherals with legacy I/O port"
 +	help
-+	  Driver needed for some legacy ISA devices attached to Low-Pin-Count
-+	  on Hisilicon Hip0X SoC.
++	  Support special accessors for ISA I/O devices. This is needed for
++	  SoCs that do not support standard read/write for the ISA range.
 +
- config IMX_WEIM
- 	bool "Freescale EIM DRIVER"
- 	depends on ARCH_MXC
-diff --git a/drivers/bus/Makefile b/drivers/bus/Makefile
-index c6cfa6b..10b4983 100644
---- a/drivers/bus/Makefile
-+++ b/drivers/bus/Makefile
-@@ -7,6 +7,7 @@ obj-$(CONFIG_ARM_CCI)		+= arm-cci.o
- obj-$(CONFIG_ARM_CCN)		+= arm-ccn.o
+ config NO_IOPORT_MAP
+ 	def_bool y if !PCI
  
- obj-$(CONFIG_BRCMSTB_GISB_ARB)	+= brcmstb_gisb.o
-+obj-$(CONFIG_HISILICON_LPC)	+= hisi_lpc.o
- obj-$(CONFIG_IMX_WEIM)		+= imx-weim.o
- obj-$(CONFIG_MIPS_CDMM)		+= mips_cdmm.o
- obj-$(CONFIG_MVEBU_MBUS) 	+= mvebu-mbus.o
-diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
+diff --git a/arch/arm64/include/asm/extio.h b/arch/arm64/include/asm/extio.h
 new file mode 100644
-index 0000000..9f48a1a
+index 0000000..6ae0787
 --- /dev/null
-+++ b/drivers/bus/hisi_lpc.c
-@@ -0,0 +1,501 @@
++++ b/arch/arm64/include/asm/extio.h
+@@ -0,0 +1,94 @@
 +/*
 + * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
 + * Author: Zhichang Yuan <yuanzhichang@hisilicon.com>
-+ * Author: Zou Rongrong <zourongrong@huawei.com>
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License version 2 as
@@ -142,488 +78,176 @@ index 0000000..9f48a1a
 + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 + */
 +
-+#include <linux/acpi.h>
-+#include <linux/console.h>
-+#include <linux/delay.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_platform.h>
-+#include <linux/pci.h>
-+#include <linux/serial_8250.h>
-+#include <linux/slab.h>
++#ifndef __LINUX_EXTIO_H
++#define __LINUX_EXTIO_H
++
++struct extio_ops {
++	unsigned long start;/* inclusive, sys io addr */
++	unsigned long end;/* inclusive, sys io addr */
++
++	u64 (*pfin)(void *devobj, unsigned long ptaddr,	size_t dlen);
++	void (*pfout)(void *devobj, unsigned long ptaddr, u32 outval,
++					size_t dlen);
++	u64 (*pfins)(void *devobj, unsigned long ptaddr, void *inbuf,
++				size_t dlen, unsigned int count);
++	void (*pfouts)(void *devobj, unsigned long ptaddr,
++				const void *outbuf, size_t dlen,
++				unsigned int count);
++	void *devpara;
++};
++
++extern struct extio_ops *arm64_extio_ops;
++
++#define DECLARE_EXTIO(bw, type)						\
++extern type in##bw(unsigned long addr);					\
++extern void out##bw(type value, unsigned long addr);			\
++extern void ins##bw(unsigned long addr, void *buffer, unsigned int count);\
++extern void outs##bw(unsigned long addr, const void *buffer, unsigned int count);
++
++#define BUILD_EXTIO(bw, type)						\
++type in##bw(unsigned long addr)						\
++{									\
++	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
++			arm64_extio_ops->end < addr)			\
++		return read##bw(PCI_IOBASE + addr);			\
++	return arm64_extio_ops->pfin ?					\
++		arm64_extio_ops->pfin(arm64_extio_ops->devpara,		\
++			addr, sizeof(type)) : -1;			\
++}									\
++									\
++void out##bw(type value, unsigned long addr)				\
++{									\
++	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
++			arm64_extio_ops->end < addr)			\
++		write##bw(value, PCI_IOBASE + addr);			\
++	else								\
++		if (arm64_extio_ops->pfout)				\
++			arm64_extio_ops->pfout(arm64_extio_ops->devpara,\
++				addr, value, sizeof(type));		\
++}									\
++									\
++void ins##bw(unsigned long addr, void *buffer, unsigned int count)	\
++{									\
++	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
++			arm64_extio_ops->end < addr)			\
++		reads##bw(PCI_IOBASE + addr, buffer, count);		\
++	else								\
++		if (arm64_extio_ops->pfins)				\
++			arm64_extio_ops->pfins(arm64_extio_ops->devpara,\
++				addr, buffer, sizeof(type), count);	\
++}									\
++									\
++void outs##bw(unsigned long addr, const void *buffer, unsigned int count)	\
++{									\
++	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
++			arm64_extio_ops->end < addr)			\
++		writes##bw(PCI_IOBASE + addr, buffer, count);		\
++	else								\
++		if (arm64_extio_ops->pfouts)				\
++			arm64_extio_ops->pfouts(arm64_extio_ops->devpara,\
++				addr, buffer, sizeof(type), count);	\
++}
++
++static inline void arm64_set_extops(struct extio_ops *ops)
++{
++	if (ops)
++		WRITE_ONCE(arm64_extio_ops, ops);
++}
++
++#endif /* __LINUX_EXTIO_H*/
+diff --git a/arch/arm64/include/asm/io.h b/arch/arm64/include/asm/io.h
+index 0bba427..136735d 100644
+--- a/arch/arm64/include/asm/io.h
++++ b/arch/arm64/include/asm/io.h
+@@ -31,6 +31,7 @@
+ #include <asm/early_ioremap.h>
+ #include <asm/alternative.h>
+ #include <asm/cpufeature.h>
++#include <asm/extio.h>
+ 
+ #include <xen/xen.h>
+ 
+@@ -149,6 +150,34 @@ static inline u64 __raw_readq(const volatile void __iomem *addr)
+ #define IO_SPACE_LIMIT		(PCI_IO_SIZE - 1)
+ #define PCI_IOBASE		((void __iomem *)PCI_IO_START)
+ 
 +
 +/*
-+ * this bit set means each IO operation will target to different port address;
-+ * 0 means repeatly IO operations will be sticked on the same port, such as BT;
++ * redefine the in(s)b/out(s)b for indirect-IO.
 + */
-+#define FG_INCRADDR_LPC		0x02
++#ifdef CONFIG_ARM64_INDIRECT_PIO
++#define inb inb
++#define outb outb
++#define insb insb
++#define outsb outsb
++/* external declaration */
++DECLARE_EXTIO(b, u8)
 +
-+struct lpc_cycle_para {
-+	unsigned int opflags;
-+	unsigned int csize;/* the data length of each operation */
-+};
++#define inw inw
++#define outw outw
++#define insw insw
++#define outsw outsw
 +
-+struct hisilpc_dev {
-+	spinlock_t cycle_lock;
-+	void __iomem  *membase;
-+	struct extio_ops io_ops;
-+};
++DECLARE_EXTIO(w, u16)
 +
++#define inl inl
++#define outl outl
++#define insl insl
++#define outsl outsl
 +
-+/* The maximum continous operations*/
-+#define LPC_MAX_OPCNT	16
-+/* only support IO data unit length is four at maximum */
-+#define LPC_MAX_DULEN	4
-+#if LPC_MAX_DULEN > LPC_MAX_OPCNT
-+#error "LPC.. MAX_DULEN must be not bigger than MAX_OPCNT!"
++DECLARE_EXTIO(l, u32)
 +#endif
 +
-+#define LPC_REG_START		0x00/* start a new LPC cycle */
-+#define LPC_REG_OP_STATUS	0x04/* the current LPC status */
-+#define LPC_REG_IRQ_ST		0x08/* interrupt enable&status */
-+#define LPC_REG_OP_LEN		0x10/* how many LPC cycles each start */
-+#define LPC_REG_CMD		0x14/* command for the required LPC cycle */
-+#define LPC_REG_ADDR		0x20/* LPC target address */
-+#define LPC_REG_WDATA		0x24/* data to be written */
-+#define LPC_REG_RDATA		0x28/* data coming from peer */
 +
-+
-+/* The command register fields*/
-+#define LPC_CMD_SAMEADDR	0x08
-+#define LPC_CMD_TYPE_IO		0x00
-+#define LPC_CMD_WRITE		0x01
-+#define LPC_CMD_READ		0x00
-+/* the bit attribute is W1C. 1 represents OK. */
-+#define LPC_STAT_BYIRQ		0x02
-+
-+#define LPC_STATUS_IDLE		0x01
-+#define LPC_OP_FINISHED		0x02
-+
-+#define START_WORK		0x01
-+
+ /*
+  * String version of I/O memory access operations.
+  */
+diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
+index 7d66bba..60e0482 100644
+--- a/arch/arm64/kernel/Makefile
++++ b/arch/arm64/kernel/Makefile
+@@ -31,6 +31,7 @@ arm64-obj-$(CONFIG_COMPAT)		+= sys32.o kuser32.o signal32.o 	\
+ 					   sys_compat.o entry32.o
+ arm64-obj-$(CONFIG_FUNCTION_TRACER)	+= ftrace.o entry-ftrace.o
+ arm64-obj-$(CONFIG_MODULES)		+= arm64ksyms.o module.o
++arm64-obj-$(CONFIG_ARM64_INDIRECT_PIO)	+= extio.o
+ arm64-obj-$(CONFIG_ARM64_MODULE_PLTS)	+= module-plts.o
+ arm64-obj-$(CONFIG_PERF_EVENTS)		+= perf_regs.o perf_callchain.o
+ arm64-obj-$(CONFIG_HW_PERF_EVENTS)	+= perf_event.o
+diff --git a/arch/arm64/kernel/extio.c b/arch/arm64/kernel/extio.c
+new file mode 100644
+index 0000000..80cafd5
+--- /dev/null
++++ b/arch/arm64/kernel/extio.c
+@@ -0,0 +1,29 @@
 +/*
-+ * The minimal waiting interval... Suggest it is not less than 10.
-+ * Bigger value probably will lower the performance.
++ * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
++ * Author: Zhichang Yuan <yuanzhichang@hisilicon.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 + */
-+#define LPC_NSEC_PERWAIT	100
-+/*
-+ * The maximum waiting time is about 128us.
-+ * The fastest IO cycle time is about 390ns, but the worst case will wait
-+ * for extra 256 lpc clocks, so (256 + 13) * 30ns = 8 us. The maximum
-+ * burst cycles is 16. So, the maximum waiting time is about 128us under
-+ * worst case.
-+ * choose 1300 as the maximum.
-+ */
-+#define LPC_MAX_WAITCNT		1300
-+/* About 10us. This is specfic for single IO operation, such as inb. */
-+#define LPC_PEROP_WAITCNT	100
 +
++#include <linux/io.h>
 +
-+static inline int wait_lpc_idle(unsigned char *mbase,
-+				unsigned int waitcnt) {
-+	u32 opstatus;
++struct extio_ops *arm64_extio_ops;
 +
-+	while (waitcnt--) {
-+		ndelay(LPC_NSEC_PERWAIT);
-+		opstatus = readl(mbase + LPC_REG_OP_STATUS);
-+		if (opstatus & LPC_STATUS_IDLE)
-+			return (opstatus & LPC_OP_FINISHED) ? 0 : (-EIO);
-+	}
-+	return -ETIME;
-+}
 +
++BUILD_EXTIO(b, u8)
 +
-+/**
-+ * hisilpc_target_in - trigger a series of lpc cycles to read required data
-+ *		  from target periperal.
-+ * @pdev: pointer to hisi lpc device
-+ * @para: some paramerters used to control the lpc I/O operations
-+ * @ptaddr: the lpc I/O target port address
-+ * @buf: where the read back data is stored
-+ * @opcnt: how many I/O operations required in this calling
-+ *
-+ * only one byte data is read each I/O operation.
-+ *
-+ * Returns 0 on success, non-zero on fail.
-+ *
-+ */
-+static int hisilpc_target_in(struct hisilpc_dev *pdev,
-+				struct lpc_cycle_para *para,
-+				unsigned long ptaddr, unsigned char *buf,
-+				unsigned long opcnt)
-+{
-+	unsigned int cmd_word;
-+	unsigned int waitcnt;
-+	int retval;
-+	unsigned long flags;
-+	unsigned long cnt_per_trans;
++BUILD_EXTIO(w, u16)
 +
-+	if (!buf || !opcnt || !para || !para->csize || !pdev)
-+		return -EINVAL;
++BUILD_EXTIO(l, u32)
 +
-+	if (opcnt  > LPC_MAX_OPCNT)
-+		return -EINVAL;
-+
-+	cmd_word = LPC_CMD_TYPE_IO | LPC_CMD_READ;
-+	waitcnt = (LPC_PEROP_WAITCNT);
-+	if (!(para->opflags & FG_INCRADDR_LPC)) {
-+		cmd_word |= LPC_CMD_SAMEADDR;
-+		waitcnt = LPC_MAX_WAITCNT;
-+	}
-+
-+	retval = 0;
-+	cnt_per_trans = (para->csize == 1) ? opcnt : para->csize;
-+	for (; opcnt && !retval; cnt_per_trans = para->csize) {
-+		/* whole operation must be atomic */
-+		spin_lock_irqsave(&pdev->cycle_lock, flags);
-+
-+		writel(cnt_per_trans, pdev->membase + LPC_REG_OP_LEN);
-+
-+		writel(cmd_word, pdev->membase + LPC_REG_CMD);
-+
-+		writel(ptaddr, pdev->membase + LPC_REG_ADDR);
-+
-+		writel(START_WORK, pdev->membase + LPC_REG_START);
-+
-+		/* whether the operation is finished */
-+		retval = wait_lpc_idle(pdev->membase, waitcnt);
-+		if (!retval) {
-+			opcnt -= cnt_per_trans;
-+			for (; cnt_per_trans--; buf++)
-+				*buf = readl(pdev->membase + LPC_REG_RDATA);
-+		}
-+
-+		spin_unlock_irqrestore(&pdev->cycle_lock, flags);
-+	}
-+
-+	return retval;
-+}
-+
-+/**
-+ * hisilpc_target_out - trigger a series of lpc cycles to write required data
-+ *		  to target periperal.
-+ * @pdev: pointer to hisi lpc device
-+ * @para: some paramerters used to control the lpc I/O operations
-+ * @ptaddr: the lpc I/O target port address
-+ * @buf: where the data to be written is stored
-+ * @opcnt: how many I/O operations required
-+ *
-+ * only one byte data is read each I/O operation.
-+ *
-+ * Returns 0 on success, non-zero on fail.
-+ *
-+ */
-+static int hisilpc_target_out(struct hisilpc_dev *pdev,
-+				struct lpc_cycle_para *para,
-+				unsigned long ptaddr,
-+				const unsigned char *buf,
-+				unsigned long opcnt)
-+{
-+	unsigned int cmd_word;
-+	unsigned int waitcnt;
-+	int retval;
-+	unsigned long flags;
-+	unsigned long cnt_per_trans;
-+
-+	if (!buf || !opcnt || !para || !pdev)
-+		return -EINVAL;
-+
-+	if (opcnt > LPC_MAX_OPCNT)
-+		return -EINVAL;
-+	/* default is increasing address */
-+	cmd_word = LPC_CMD_TYPE_IO | LPC_CMD_WRITE;
-+	waitcnt = (LPC_PEROP_WAITCNT);
-+	if (!(para->opflags & FG_INCRADDR_LPC)) {
-+		cmd_word |= LPC_CMD_SAMEADDR;
-+		waitcnt = LPC_MAX_WAITCNT;
-+	}
-+
-+	retval = 0;
-+	cnt_per_trans = (para->csize == 1) ? opcnt : para->csize;
-+	for (; opcnt && !retval; cnt_per_trans = para->csize) {
-+		spin_lock_irqsave(&pdev->cycle_lock, flags);
-+
-+		writel(cnt_per_trans, pdev->membase + LPC_REG_OP_LEN);
-+		opcnt -= cnt_per_trans;
-+		for (; cnt_per_trans--; buf++)
-+			writel(*buf, pdev->membase + LPC_REG_WDATA);
-+
-+		writel(cmd_word, pdev->membase + LPC_REG_CMD);
-+
-+		writel(ptaddr, pdev->membase + LPC_REG_ADDR);
-+
-+		writel(START_WORK, pdev->membase + LPC_REG_START);
-+
-+		/* whether the operation is finished */
-+		retval = wait_lpc_idle(pdev->membase, waitcnt);
-+
-+		spin_unlock_irqrestore(&pdev->cycle_lock, flags);
-+	}
-+
-+	return retval;
-+}
-+
-+
-+/**
-+ * hisilpc_comm_in - read/input the data from the I/O peripheral through LPC.
-+ * @devobj: pointer to the device information relevant to LPC controller.
-+ * @ptaddr: the target I/O port address.
-+ * @dlen: the data length required to read from the target I/O port.
-+ *
-+ * when succeed, the data read back is stored in buffer pointed by inbuf.
-+ * For inb, return the data read from I/O or -1 when error occur.
-+ */
-+static u64 hisilpc_comm_in(void *devobj, unsigned long ptaddr, size_t dlen)
-+{
-+	struct hisilpc_dev *lpcdev;
-+	struct lpc_cycle_para iopara;
-+	u32 rd_data;
-+	unsigned char *newbuf;
-+	int ret = 0;
-+
-+	if (!devobj || !dlen || dlen > LPC_MAX_DULEN ||	(dlen & (dlen - 1)))
-+		return -1;
-+
-+	/* the local buffer must be enough for one data unit */
-+	if (sizeof(rd_data) < dlen)
-+		return -1;
-+
-+	newbuf = (unsigned char *)&rd_data;
-+
-+	lpcdev = (struct hisilpc_dev *)devobj;
-+
-+	iopara.opflags = FG_INCRADDR_LPC;
-+	iopara.csize = dlen;
-+
-+	ret = hisilpc_target_in(lpcdev, &iopara, ptaddr, newbuf, dlen);
-+	if (ret)
-+		return -1;
-+
-+	return le32_to_cpu(rd_data);
-+}
-+
-+/**
-+ * hisilpc_comm_out - write/output the data whose maximal length is four bytes to
-+ *		the I/O peripheral through LPC.
-+ * @devobj: pointer to the device information relevant to LPC controller.
-+ * @outval: a value to be outputed from caller, maximum is four bytes.
-+ * @ptaddr: the target I/O port address.
-+ * @dlen: the data length required writing to the target I/O port .
-+ *
-+ * This function is corresponding to out(b,w,l) only
-+ *
-+ */
-+static void hisilpc_comm_out(void *devobj, unsigned long ptaddr,
-+				u32 outval, size_t dlen)
-+{
-+	struct hisilpc_dev *lpcdev;
-+	struct lpc_cycle_para iopara;
-+	const unsigned char *newbuf;
-+
-+	if (!devobj || !dlen || dlen > LPC_MAX_DULEN)
-+		return;
-+
-+	if (sizeof(outval) < dlen)
-+		return;
-+
-+	outval = cpu_to_le32(outval);
-+
-+	newbuf = (const unsigned char *)&outval;
-+	lpcdev = (struct hisilpc_dev *)devobj;
-+
-+	iopara.opflags = FG_INCRADDR_LPC;
-+	iopara.csize = dlen;
-+
-+	hisilpc_target_out(lpcdev, &iopara, ptaddr, newbuf, dlen);
-+}
-+
-+
-+/**
-+ * hisilpc_comm_ins - read/input the data in buffer to the I/O peripheral
-+ *		    through LPC, it corresponds to ins(b,w,l)
-+ * @devobj: pointer to the device information relevant to LPC controller.
-+ * @ptaddr: the target I/O port address.
-+ * @inbuf: a buffer where read/input data bytes are stored.
-+ * @dlen: the data length required writing to the target I/O port .
-+ * @count: how many data units whose length is dlen will be read.
-+ *
-+ */
-+static u64 hisilpc_comm_ins(void *devobj, unsigned long ptaddr,
-+			void *inbuf, size_t dlen, unsigned int count)
-+{
-+	struct hisilpc_dev *lpcdev;
-+	struct lpc_cycle_para iopara;
-+	unsigned char *newbuf;
-+	unsigned int loopcnt, cntleft;
-+	unsigned int max_perburst;
-+	int ret = 0;
-+
-+	if (!devobj || !inbuf || !count || !dlen ||
-+			dlen > LPC_MAX_DULEN || (dlen & (dlen - 1)))
-+		return -1;
-+
-+	iopara.opflags = 0;
-+	if (dlen > 1)
-+		iopara.opflags |= FG_INCRADDR_LPC;
-+	iopara.csize = dlen;
-+
-+	lpcdev = (struct hisilpc_dev *)devobj;
-+	newbuf = (unsigned char *)inbuf;
-+	/*
-+	 * ensure data stream whose lenght is multiple of dlen to be processed
-+	 * each IO input
-+	 */
-+	max_perburst = LPC_MAX_OPCNT & (~(dlen - 1));
-+	cntleft = count * dlen;
-+	do {
-+		loopcnt = (cntleft >= max_perburst) ? max_perburst : cntleft;
-+		ret = hisilpc_target_in(lpcdev, &iopara, ptaddr, newbuf,
-+						loopcnt);
-+		if (ret)
-+			break;
-+		newbuf += loopcnt;
-+		cntleft -= loopcnt;
-+	} while (cntleft);
-+
-+	return ret;
-+}
-+
-+/**
-+ * hisilpc_comm_outs - write/output the data in buffer to the I/O peripheral
-+ *		    through LPC, it corresponds to outs(b,w,l)
-+ * @devobj: pointer to the device information relevant to LPC controller.
-+ * @ptaddr: the target I/O port address.
-+ * @outbuf: a buffer where write/output data bytes are stored.
-+ * @dlen: the data length required writing to the target I/O port .
-+ * @count: how many data units whose length is dlen will be written.
-+ *
-+ */
-+static void hisilpc_comm_outs(void *devobj, unsigned long ptaddr,
-+			const void *outbuf, size_t dlen, unsigned int count)
-+{
-+	struct hisilpc_dev *lpcdev;
-+	struct lpc_cycle_para iopara;
-+	const unsigned char *newbuf;
-+	unsigned int loopcnt, cntleft;
-+	unsigned int max_perburst;
-+	int ret = 0;
-+
-+	if (!devobj || !outbuf || !count || !dlen ||
-+			dlen > LPC_MAX_DULEN || (dlen & (dlen - 1)))
-+		return;
-+
-+	iopara.opflags = 0;
-+	if (dlen > 1)
-+		iopara.opflags |= FG_INCRADDR_LPC;
-+	iopara.csize = dlen;
-+
-+	lpcdev = (struct hisilpc_dev *)devobj;
-+	newbuf = (unsigned char *)outbuf;
-+	/*
-+	 * ensure data stream whose lenght is multiple of dlen to be processed
-+	 * each IO input
-+	 */
-+	max_perburst = LPC_MAX_OPCNT & (~(dlen - 1));
-+	cntleft = count * dlen;
-+	do {
-+		loopcnt = (cntleft >= max_perburst) ? max_perburst : cntleft;
-+		ret = hisilpc_target_out(lpcdev, &iopara, ptaddr, newbuf,
-+						loopcnt);
-+		if (ret)
-+			break;
-+		newbuf += loopcnt;
-+		cntleft -= loopcnt;
-+	} while (cntleft);
-+}
-+
-+
-+/**
-+ * hisilpc_probe - the probe callback function for hisi lpc device,
-+ *		will finish all the intialization.
-+ * @pdev: the platform device corresponding to hisi lpc
-+ *
-+ * Returns 0 on success, non-zero on fail.
-+ *
-+ */
-+static int hisilpc_probe(struct platform_device *pdev)
-+{
-+	struct resource *iores;
-+	struct hisilpc_dev *lpcdev;
-+	int ret;
-+
-+	dev_info(&pdev->dev, "hslpc start probing...\n");
-+
-+	lpcdev = devm_kzalloc(&pdev->dev,
-+				sizeof(struct hisilpc_dev), GFP_KERNEL);
-+	if (!lpcdev)
-+		return -ENOMEM;
-+
-+	spin_lock_init(&lpcdev->cycle_lock);
-+	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	lpcdev->membase = devm_ioremap_resource(&pdev->dev, iores);
-+	if (IS_ERR(lpcdev->membase)) {
-+		dev_err(&pdev->dev, "No mem resource for memory mapping!\n");
-+		return PTR_ERR(lpcdev->membase);
-+	}
-+	/*
-+	 * The first PCIBIOS_MIN_IO is reserved specific for indirectIO.
-+	 * It will separate indirectIO range from pci host bridge to
-+	 * avoid the possible PIO conflict.
-+	 * Set the indirectIO range directly here.
-+	 */
-+	lpcdev->io_ops.start = 0;
-+	lpcdev->io_ops.end = PCIBIOS_MIN_IO - 1;
-+	lpcdev->io_ops.devpara = lpcdev;
-+	lpcdev->io_ops.pfin = hisilpc_comm_in;
-+	lpcdev->io_ops.pfout = hisilpc_comm_out;
-+	lpcdev->io_ops.pfins = hisilpc_comm_ins;
-+	lpcdev->io_ops.pfouts = hisilpc_comm_outs;
-+
-+	platform_set_drvdata(pdev, lpcdev);
-+
-+	arm64_set_extops(&lpcdev->io_ops);
-+
-+	/*
-+	 * The children scanning is only for dts mode. For ACPI children,
-+	 * the corresponding devices had be created during acpi scanning.
-+	 */
-+	ret = 0;
-+	if (!has_acpi_companion(&pdev->dev))
-+		ret = of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
-+
-+	if (!ret)
-+		dev_info(&pdev->dev, "hslpc end probing. range[0x%lx - %lx]\n",
-+			arm64_extio_ops->start, arm64_extio_ops->end);
-+	else
-+		dev_info(&pdev->dev, "hslpc probing is fail(%d)\n", ret);
-+
-+	return ret;
-+}
-+
-+static const struct of_device_id hisilpc_of_match[] = {
-+	{
-+		.compatible = "hisilicon,low-pin-count",
-+	},
-+	{},
-+};
-+
-+static const struct acpi_device_id hisilpc_acpi_match[] = {
-+	{"HISI0191", },
-+	{},
-+};
-+
-+static struct platform_driver hisilpc_driver = {
-+	.driver = {
-+		.name           = "hisi_lpc",
-+		.of_match_table = hisilpc_of_match,
-+		.acpi_match_table = hisilpc_acpi_match,
-+	},
-+	.probe = hisilpc_probe,
-+};
-+
-+
-+builtin_platform_driver(hisilpc_driver);
++#endif
 -- 
 1.9.1
