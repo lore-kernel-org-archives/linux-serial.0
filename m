@@ -1,253 +1,63 @@
-From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Subject: [PATCH V4 1/3] ARM64 LPC: Indirect ISA port IO introduced
-Date: Thu, 20 Oct 2016 17:15:38 +0800
-Message-ID: <1476954940-242159-2-git-send-email-yuanzhichang@hisilicon.com>
-References: <1476954940-242159-1-git-send-email-yuanzhichang@hisilicon.com>
+From: Sean Young <sean@mess.org>
+Subject: Re: console issue since 3.6, console=ttyS1 hangs
+Date: Thu, 20 Oct 2016 21:10:51 +0100
+Message-ID: <20161020201051.GA29324@gofer.mess.org>
+References: <20161017144951.GA235535@stormcage.americas.sgi.com>
+ <20161017151906.GA19082@gofer.mess.org>
+ <20161017164140.GA35950@stormcage.americas.sgi.com>
+ <20161018164004.GA159046@stormcage.americas.sgi.com>
+ <20161018180518.GA28700@gofer.mess.org>
+ <20161018192930.GA207959@stormcage.americas.sgi.com>
+ <20161019090719.GA1764@gofer.mess.org>
+ <29b311e3-a26e-81de-82cf-e0a202db6d96@sgi.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1476954940-242159-1-git-send-email-yuanzhichang@hisilicon.com>
+Content-Disposition: inline
+In-Reply-To: <29b311e3-a26e-81de-82cf-e0a202db6d96@sgi.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, bhelgaas@google.com, mark.rutland@arm.com, arnd@arndb.de, linux-arm-kernel@lists.infradead.org
-Cc: lorenzo.pieralisi@arm.com, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, benh@kernel.crashing.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, "zhichang.yuan" <yuanzhichang@hisilicon.com>
+To: Nathan Zimmer <nzimmer@sgi.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, alan@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
 
-For arm64, there is no I/O space as other architectural platforms, such as
-X86. Most I/O accesses are achieved based on MMIO. But for some arm64 SoCs,
-such as Hip06, when accessing some legacy ISA devices connected to LPC, those
-known port addresses are used to control the corresponding target devices, for
-example, 0x2f8 is for UART, 0xe4 is for ipmi-bt. It is different from the
-normal MMIO mode in using.
+On Wed, Oct 19, 2016 at 05:13:41PM -0500, Nathan Zimmer wrote:
+> On 10/19/2016 04:07 AM, Sean Young wrote:
+> >So with 3.6.0:
+> >
+> >>[    2.079980] Serial: 8250/16550 driver, 8 ports, IRQ sharing disabled
+> >>[    2.100887] serial8250: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+> >>[    2.101715] serial 00:04: unable to assign resources
+> >>[    2.102174] serial: probe of 00:04 failed with error -16
+> >The pnp probe fails for some reason. I don't understand why.
+> >
+> >With 3.7.0:
+> >
+> >>[    2.062700] Serial: 8250/16550 driver, 8 ports, IRQ sharing disabled
+> >>[    2.063250] serial 00:04: [io  0x02f8-0x02ff]
+> >>[    2.063875] serial 00:04: [irq 12]
+> >>[    2.064345] serial 00:04: [dma 18446744073709551615 disabled]
+> >>[    2.065540] serial 00:04: activated
+> >>[    2.086442] 00:04: ttyS1 at I/O 0x2f8 (irq = 12) is a 16550A
+> >Now the pnp probe succeeds (with broken irq from pnp).
+> >
+> >Can you please check if there is a wrong irq configured in the bios setup
+> >or if there is a bios update available? I don't know why this worked in
+> >the first place.
+> 
+> Apparently this is the latest bios available for these nodes.
+> Also in the bios setup screens I don't see anything for changing irq numbers
+> for serial console.
+> But this is a cluster so sometimes thing get hidden to keep everything
+> uniform as possible.
+> 
+> If you want to point me to the pnp probe code you would be suspicious of I
+> can try to debug and see what is going there.
 
-To drive these devices, this patch introduces a method named indirect-IO.
-In this method the in/out pair in arch/arm64/include/asm/io.h will be
-redefined. When upper layer drivers call in/out with those known legacy port
-addresses to access the peripherals, the hooking functions corrresponding to
-those target peripherals will be called. Through this way, those upper layer
-drivers which depend on in/out can run on Hip06 without any changes.
+That would be great, thanks. A good start would be to boot 3.6.0 with 
+"loglevel=7 pnp.debug=1" and hopefully that will show why the probe
+used to fail.
 
-Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
-Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
----
- arch/arm64/Kconfig             |  6 +++
- arch/arm64/include/asm/extio.h | 94 ++++++++++++++++++++++++++++++++++++++++++
- arch/arm64/include/asm/io.h    | 29 +++++++++++++
- arch/arm64/kernel/Makefile     |  1 +
- arch/arm64/kernel/extio.c      | 29 +++++++++++++
- 5 files changed, 159 insertions(+)
- create mode 100644 arch/arm64/include/asm/extio.h
- create mode 100644 arch/arm64/kernel/extio.c
+Also, does the issue still exist with a more contemporary kernel?
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 30398db..103dbea 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -163,6 +163,12 @@ config ARCH_MMAP_RND_COMPAT_BITS_MIN
- config ARCH_MMAP_RND_COMPAT_BITS_MAX
-        default 16
- 
-+config ARM64_INDIRECT_PIO
-+	bool "access peripherals with legacy I/O port"
-+	help
-+	  Support special accessors for ISA I/O devices. This is needed for
-+	  SoCs that do not support standard read/write for the ISA range.
-+
- config NO_IOPORT_MAP
- 	def_bool y if !PCI
- 
-diff --git a/arch/arm64/include/asm/extio.h b/arch/arm64/include/asm/extio.h
-new file mode 100644
-index 0000000..6ae0787
---- /dev/null
-+++ b/arch/arm64/include/asm/extio.h
-@@ -0,0 +1,94 @@
-+/*
-+ * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
-+ * Author: Zhichang Yuan <yuanzhichang@hisilicon.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+#ifndef __LINUX_EXTIO_H
-+#define __LINUX_EXTIO_H
-+
-+struct extio_ops {
-+	unsigned long start;/* inclusive, sys io addr */
-+	unsigned long end;/* inclusive, sys io addr */
-+
-+	u64 (*pfin)(void *devobj, unsigned long ptaddr,	size_t dlen);
-+	void (*pfout)(void *devobj, unsigned long ptaddr, u32 outval,
-+					size_t dlen);
-+	u64 (*pfins)(void *devobj, unsigned long ptaddr, void *inbuf,
-+				size_t dlen, unsigned int count);
-+	void (*pfouts)(void *devobj, unsigned long ptaddr,
-+				const void *outbuf, size_t dlen,
-+				unsigned int count);
-+	void *devpara;
-+};
-+
-+extern struct extio_ops *arm64_extio_ops;
-+
-+#define DECLARE_EXTIO(bw, type)						\
-+extern type in##bw(unsigned long addr);					\
-+extern void out##bw(type value, unsigned long addr);			\
-+extern void ins##bw(unsigned long addr, void *buffer, unsigned int count);\
-+extern void outs##bw(unsigned long addr, const void *buffer, unsigned int count);
-+
-+#define BUILD_EXTIO(bw, type)						\
-+type in##bw(unsigned long addr)						\
-+{									\
-+	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
-+			arm64_extio_ops->end < addr)			\
-+		return read##bw(PCI_IOBASE + addr);			\
-+	return arm64_extio_ops->pfin ?					\
-+		arm64_extio_ops->pfin(arm64_extio_ops->devpara,		\
-+			addr, sizeof(type)) : -1;			\
-+}									\
-+									\
-+void out##bw(type value, unsigned long addr)				\
-+{									\
-+	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
-+			arm64_extio_ops->end < addr)			\
-+		write##bw(value, PCI_IOBASE + addr);			\
-+	else								\
-+		if (arm64_extio_ops->pfout)				\
-+			arm64_extio_ops->pfout(arm64_extio_ops->devpara,\
-+				addr, value, sizeof(type));		\
-+}									\
-+									\
-+void ins##bw(unsigned long addr, void *buffer, unsigned int count)	\
-+{									\
-+	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
-+			arm64_extio_ops->end < addr)			\
-+		reads##bw(PCI_IOBASE + addr, buffer, count);		\
-+	else								\
-+		if (arm64_extio_ops->pfins)				\
-+			arm64_extio_ops->pfins(arm64_extio_ops->devpara,\
-+				addr, buffer, sizeof(type), count);	\
-+}									\
-+									\
-+void outs##bw(unsigned long addr, const void *buffer, unsigned int count)	\
-+{									\
-+	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
-+			arm64_extio_ops->end < addr)			\
-+		writes##bw(PCI_IOBASE + addr, buffer, count);		\
-+	else								\
-+		if (arm64_extio_ops->pfouts)				\
-+			arm64_extio_ops->pfouts(arm64_extio_ops->devpara,\
-+				addr, buffer, sizeof(type), count);	\
-+}
-+
-+static inline void arm64_set_extops(struct extio_ops *ops)
-+{
-+	if (ops)
-+		WRITE_ONCE(arm64_extio_ops, ops);
-+}
-+
-+#endif /* __LINUX_EXTIO_H*/
-diff --git a/arch/arm64/include/asm/io.h b/arch/arm64/include/asm/io.h
-index 0bba427..136735d 100644
---- a/arch/arm64/include/asm/io.h
-+++ b/arch/arm64/include/asm/io.h
-@@ -31,6 +31,7 @@
- #include <asm/early_ioremap.h>
- #include <asm/alternative.h>
- #include <asm/cpufeature.h>
-+#include <asm/extio.h>
- 
- #include <xen/xen.h>
- 
-@@ -149,6 +150,34 @@ static inline u64 __raw_readq(const volatile void __iomem *addr)
- #define IO_SPACE_LIMIT		(PCI_IO_SIZE - 1)
- #define PCI_IOBASE		((void __iomem *)PCI_IO_START)
- 
-+
-+/*
-+ * redefine the in(s)b/out(s)b for indirect-IO.
-+ */
-+#ifdef CONFIG_ARM64_INDIRECT_PIO
-+#define inb inb
-+#define outb outb
-+#define insb insb
-+#define outsb outsb
-+/* external declaration */
-+DECLARE_EXTIO(b, u8)
-+
-+#define inw inw
-+#define outw outw
-+#define insw insw
-+#define outsw outsw
-+
-+DECLARE_EXTIO(w, u16)
-+
-+#define inl inl
-+#define outl outl
-+#define insl insl
-+#define outsl outsl
-+
-+DECLARE_EXTIO(l, u32)
-+#endif
-+
-+
- /*
-  * String version of I/O memory access operations.
-  */
-diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
-index 7d66bba..60e0482 100644
---- a/arch/arm64/kernel/Makefile
-+++ b/arch/arm64/kernel/Makefile
-@@ -31,6 +31,7 @@ arm64-obj-$(CONFIG_COMPAT)		+= sys32.o kuser32.o signal32.o 	\
- 					   sys_compat.o entry32.o
- arm64-obj-$(CONFIG_FUNCTION_TRACER)	+= ftrace.o entry-ftrace.o
- arm64-obj-$(CONFIG_MODULES)		+= arm64ksyms.o module.o
-+arm64-obj-$(CONFIG_ARM64_INDIRECT_PIO)	+= extio.o
- arm64-obj-$(CONFIG_ARM64_MODULE_PLTS)	+= module-plts.o
- arm64-obj-$(CONFIG_PERF_EVENTS)		+= perf_regs.o perf_callchain.o
- arm64-obj-$(CONFIG_HW_PERF_EVENTS)	+= perf_event.o
-diff --git a/arch/arm64/kernel/extio.c b/arch/arm64/kernel/extio.c
-new file mode 100644
-index 0000000..80cafd5
---- /dev/null
-+++ b/arch/arm64/kernel/extio.c
-@@ -0,0 +1,29 @@
-+/*
-+ * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
-+ * Author: Zhichang Yuan <yuanzhichang@hisilicon.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+#include <linux/io.h>
-+
-+struct extio_ops *arm64_extio_ops;
-+
-+
-+BUILD_EXTIO(b, u8)
-+
-+BUILD_EXTIO(w, u16)
-+
-+BUILD_EXTIO(l, u32)
-+
-+#endif
--- 
-1.9.1
+
+Sean
