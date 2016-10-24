@@ -1,68 +1,46 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [serial: 8250_lpss] a13e19cf3d: BUG: kernel hang in boot stage
-Date: Mon, 24 Oct 2016 12:18:09 +0300
-Message-ID: <1477300689.6423.44.camel@linux.intel.com>
-References: <57ca88ec.8Uwmgj9cHsfC4q6Q%fengguang.wu@intel.com>
-         <1473088503.11323.8.camel@linux.intel.com>
-         <1477154414.6423.34.camel@linux.intel.com>
-         <20161024021353.ij63ldkfl7cigcwr@wfg-t540p.sh.intel.com>
+From: Sean Young <sean@mess.org>
+Subject: Re: console issue since 3.6, console=ttyS1 hangs
+Date: Mon, 24 Oct 2016 14:52:35 +0100
+Message-ID: <20161024135235.GA29984@gofer.mess.org>
+References: <20161017144951.GA235535@stormcage.americas.sgi.com>
+ <20161017151906.GA19082@gofer.mess.org>
+ <20161017164140.GA35950@stormcage.americas.sgi.com>
+ <20161018164004.GA159046@stormcage.americas.sgi.com>
+ <20161018180518.GA28700@gofer.mess.org>
+ <20161018192930.GA207959@stormcage.americas.sgi.com>
+ <20161019090719.GA1764@gofer.mess.org>
+ <29b311e3-a26e-81de-82cf-e0a202db6d96@sgi.com>
+ <20161020201051.GA29324@gofer.mess.org>
+ <49f038af-5cb7-e76f-e4e9-57fad876710d@sgi.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161024021353.ij63ldkfl7cigcwr@wfg-t540p.sh.intel.com>
+Content-Disposition: inline
+In-Reply-To: <49f038af-5cb7-e76f-e4e9-57fad876710d@sgi.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fengguang Wu <fengguang.wu@intel.com>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, LKP <lkp@01.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Nathan Zimmer <nzimmer@sgi.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, alan@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2016-10-24 at 10:13 +0800, Fengguang Wu wrote:
-> Hi Andy,
+On Fri, Oct 21, 2016 at 10:55:40AM -0500, Nathan Zimmer wrote:
+> It didn't seem to make a difference as far as output.
+> Did I miss a config option? or something else?
 > 
-> On Sat, Oct 22, 2016 at 07:40:14PM +0300, Andy Shevchenko wrote:
-> > On Mon, 2016-09-05 at 18:15 +0300, Andy Shevchenko wrote:
-> > > +Heikki
-> > > 
-> > > On Sat, 2016-09-03 at 16:25 +0800, kernel test robot wrote:
-> > > > Greetings,
-> > > > 
-> > > > 0day kernel testing robot got the below dmesg and the first bad
-> > > > commit
-> > > > is
-> > > 
-> > > Briefly tested I have hang issues *with* or *without* the
-> > > mentioned
-> > > commit if under hang you meant no getty available on serial
-> > > console.
-> > > Otherwise I see output from kernel till 
-> > > 
-> > > [   61.625900] raid6test: complete (2429 tests, 0 failures)
-> > > [   61.671165] BIOS EDD facility v0.16 2004-Jun-25, 0 devices
-> > > found
-> > > [   61.678004] EDD information not available.
-> > > [   61.714036] ALSA device list:
-> > > [   61.717459]   #0: Dummy 1
-> > > [   61.720480]   #1: MTPAV on parallel port at 0x378
-> > > 
-> > > Attached defconfigs per commit I have tested (also diff between
-> > > mine
-> > > and
-> > > yours when I did make savedefconfig).
-> > > 
-> > > So, may I ask what exact hardware you are using to test this one?
-> > 
-> > May I ask beloved LKP team what the status of the issue is? Shall we
-> > close it or there is more information coming?
-> 
-> Please close the issue.
-> 
-> I tried rebuild the kernel and redo the tests, and find the new kernel
-> no longer has early boot hang. Sorry for the noise!
+> [    0.000000] Linux version 3.6.0 (root@r1i2n0) (gcc version 4.3.4
+> [gcc-4_3-branch revision 152973] (SUSE Linux) ) #3 SMP Mon Oct 17 20:43:34
+> EDT 2016
+> [    0.000000] Command line:
+> root=/dev/disk/by-id/ata-WDC_WD5000BHTZ-04JCPV1_WD-WXA1E54KKR60-part2
+> resume=/dev/disk/by-id/ata-WDC_WD5000BHTZ-04JCPV1_WD-WXA1E54KKR60-part1
+> crashkernel=256M-:128M loglevel=8 pnp.debug=1
+> ...
+> [    2.076084] Serial: 8250/16550 driver, 8 ports, IRQ sharing disabled
+> [    2.097001] serial8250: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+> [    2.097844] serial 00:04: unable to assign resources
+> [    2.098303] serial: probe of 00:04 failed with error -16
 
-Thank you for confirming!
+Ehm is this kernel compiled with CONFIG_PNP_DEBUG_MESSAGES? Are you 
+getting any debug messages? You could try ignore_loglevel. 
 
-It's really good that we have 0-day LKP testing established.
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Sean
