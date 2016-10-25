@@ -1,62 +1,96 @@
-From: Sean Young <sean@mess.org>
-Subject: Re: console issue since 3.6, console=ttyS1 hangs
-Date: Tue, 25 Oct 2016 21:41:40 +0100
-Message-ID: <20161025204139.GA22268@gofer.mess.org>
-References: <20161017164140.GA35950@stormcage.americas.sgi.com>
- <20161018164004.GA159046@stormcage.americas.sgi.com>
- <20161018180518.GA28700@gofer.mess.org>
- <20161018192930.GA207959@stormcage.americas.sgi.com>
- <20161019090719.GA1764@gofer.mess.org>
- <29b311e3-a26e-81de-82cf-e0a202db6d96@sgi.com>
- <20161020201051.GA29324@gofer.mess.org>
- <49f038af-5cb7-e76f-e4e9-57fad876710d@sgi.com>
- <20161024135235.GA29984@gofer.mess.org>
- <20161024214925.GA143272@stormcage.americas.sgi.com>
+From: Sebastian Reichel <sre@kernel.org>
+Subject: Re: [RFC PATCH 0/6] UART slave devices using serio
+Date: Tue, 25 Oct 2016 23:55:22 +0200
+Message-ID: <20161025215521.5a5uxjpujmoatgor@earth>
+References: <20160824232437.9446-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="oos4rvddas6w76gt"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20161024214925.GA143272@stormcage.americas.sgi.com>
+In-Reply-To: <20160824232437.9446-1-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nathan Zimmer <nzimmer@sgi.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, alan@linux.intel.com
+To: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Oct 24, 2016 at 04:49:25PM -0500, Nathan Zimmer wrote:
-> [    0.974874] system 00:03: Plug and Play ACPI device, IDs PNP0c02 (active)
-> [    0.975038] pnp 00:04: parse resource options
-> [    0.975048] pnp 00:04:   dependent set 0 (acceptable) io  min 0x2f8 max 0x2f8 align 1 size 8 flags 0x1
-> [    0.975056] pnp 00:04:   dependent set 0 (acceptable) irq 3 4 5 6 7 10 11 12 flags 0x1
-> [    0.975060] pnp 00:04:   dependent set 0 (acceptable) dma <none> (bitmask 0x0) flags 0x0
 
-So here the bios claims that the serial port can use any of 3 to 12 irqs.
+--oos4rvddas6w76gt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> [    1.543636] Serial: 8250/16550 driver, 8 ports, IRQ sharing disabled
+Hi,
 
-Why is this kernel compiled with irq sharing disabled?
+On Wed, Aug 24, 2016 at 06:24:30PM -0500, Rob Herring wrote:
+> This is a new approach to supporting UART slave devices using the
+> existing serio bus. After Arnd's proding, I took another look at serio
+> and decided extending it does make sense. Using serio primarily requires
+> adding DT based device matching and supporting buffer based write and
+> receive.
+>=20
+> Currently, I'm using the existing serio serport ldisc for testing. This
+> requires using inputattach to open the tty and set the ldisc which in
+> turn registers a serio port with the serio core:
+>=20
+> inputattach -bare /dev/ttyAMA1
+>=20
+> Once a tty_port based serio port driver is in place, this step will not
+> be needed. Supporting cases like a USB UART will also work if the USB
+> UART is described in DT. If not described in DT, I'm not sure if the
+> existing serio manual binding is sufficient (Need to figure out how that
+> works). Slave drivers also need other ways to specify additional data
+> using module params perhaps. Getting DT overlays to work for
+> non-discoverable devices behind discoverable buses (i.e. detached from
+> a base DT) is another option, but that's not yet supported in general.
+>=20
+> I've done all the serio changes in place, but ultimately I think at
+> least the core of serio should be moved out of drivers/input/. I don't
+> think it belongs under drivers/tty/ or drivers/tty/serial/, so
+> drivers/serio/?
+>=20
+> BT is working under QEMU to the point a slave driver can bind to a
+> serio port device via DT, register as a BT device, start sending out
+> initial packets and receive data (typed at a terminal). Now I need to
+> find a real device.
 
-> [    1.565062] serial8250: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+I had a more detailed look at the series during the last two weeks.
+For me the approach looks ok and it should work for the nokia bluetooth
+use case. Actually my work on that driver is more or less stalled until
+this is solved, so it would be nice to get this forward. Whose feedback
+is this waiting from? I guess
 
-The isa probe driver find the serial port.
+ * Alan & Greg for the serial parts
+ * Marcel for the bluetooth parts
+ * Dmitry for the serio parts
 
-> [    1.566453] serial 00:04: pnp_assign_resources, try dependent set 0
-> [    1.567383] serial 00:04:   couldn't assign io 0 (min 0x2f8 max 0x2f8)
+Maybe you can try to find some minutes at the Kernel Summit to talk
+about this?
 
-But then decides that the port is already in use (the existing serial driver).
+Anyways, for the series:
 
-> [    1.568366] serial 00:04: pnp_assign_resources failed (-16)
-> [    1.569188] serial 00:04: unable to assign resources
-> [    1.569924] serial: probe of 00:04 failed with error -16
+Tested-By: Sebastian Reichel <sre@kernel.org>
 
-Please try and boot 3.7.0 with "8250.share_irqs=1", maybe it will pick
-irq 3 and it will be happy again, but that is just a guess.
+-- Sebastian
 
-I think I have not fully understood what the failure is. Does the serial
-port not work or does the boot hang? What are the symptoms?
+--oos4rvddas6w76gt
+Content-Type: application/pgp-signature; name="signature.asc"
 
-We might be able to fix the problem with a pnp quirk but 3.7 is has not had
-any releases for a long time. We will need a reproduction on a concurrent
-kernel so a patch can be written for that.
+-----BEGIN PGP SIGNATURE-----
 
+iQIcBAABCgAGBQJYD9TGAAoJENju1/PIO/qaRqAP/j4zrkQLbKdrC3HSAbtS4Nxa
+x7rDhnT7+U+1XXGoSJH7D7+YS3xJmpencIeilmGU4JmD9dlHV1aR6QdYB+y7qtHr
+PyRcEz8ZPrOk/UnQc2vf1rbfCRtupScGSE0Hno8S0WbXtHLszWoNmdXyuZCCg/pu
+0lQ3sOtopzCxCEkQhrbpJUQzyXUk+kgfo2OVFVWElmtTobX+y10vG3gW473R+zEu
+UMSMElaRMWqDDtuReNpbRx1vD6WttyYvxNaWQDNkwHE5nCWHUW4CVY1u+0lOMp+v
++/jQdkLHLCS0Y/M6MkrXhACghe72P4pBvR2zREvx1LzRHp9sykyukJ+u23xegToQ
+8MOlXVOdZt8+ZDN4gKsO67yOoLU/ga/wpZrIW1qLyaDdRexikgf/abZ32mXOK70I
+FK1259CbdhdhV2z9YyXqkxzS15c1+zi35cQ1HL3f5Y5xQUKDy+ABY665KeSBi5mP
+XZmebGSHXAuVVZwCV+yzpAWM452W2s3Pv0XaGnmOXnNcaPv6DjJdDL1cudpCue9P
+jJADYA71up63S84HlyCHY4fOMC+GLQHTH/dj32TelX9pVf3ep9ulWvZvlArby+TG
+4sQZGr0tkT2Hys1/1ztEXAXX+SbsOIsn0Wdf0fOr1knotKaRvDv6tNwhtrjbaYS6
+ap6OedlzwPAVS+6j+gBD
+=4bvf
+-----END PGP SIGNATURE-----
 
-Sean
+--oos4rvddas6w76gt--
