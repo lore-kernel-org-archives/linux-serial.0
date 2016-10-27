@@ -1,87 +1,70 @@
-From: Ed Blake <ed.blake@imgtec.com>
-Subject: Re: [PATCH 2/2] serial: 8250_dw: Add support for IrDA SIR mode
-Date: Thu, 27 Oct 2016 18:33:45 +0100
-Message-ID: <58123A79.3080905@imgtec.com>
-References: <1477586286-15748-1-git-send-email-ed.blake@imgtec.com> <1477587370.5295.37.camel@linux.intel.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v6] tty/serial: at91: fix hardware handshake on Atmel
+ platforms
+Date: Thu, 27 Oct 2016 20:02:29 +0200
+Message-ID: <20161027180229.5faqrvxa2a4pos7i@pengutronix.de>
+References: <20161027160406.25738-1-richard.genoud@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1477587370.5295.37.camel@linux.intel.com>
+Content-Disposition: inline
+In-Reply-To: <20161027160406.25738-1-richard.genoud@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, wangkefeng.wang@huawei.com, heikki.krogerus@linux.intel.com, noamc@ezchip.com, annie.wang@amd.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, james.hartley@imgtec.com
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "#4 . 4+" <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/27/16 17:56, Andy Shevchenko wrote:
-> On Thu, 2016-10-27 at 17:38 +0100, Ed Blake wrote:
->> Add a set_ldisc function to enable/disable IrDA SIR mode according to
->> the new line discipline.
-> Thanks for the patch.
->
-> Consider that not all implementations based on 8250_dw support IRDA
-> feature. I suppose you need to read capability register bits 6 and 7,
-> set flag and then based on the value accept or reject IRDA mode.
+Hello Richard,
 
-Thanks for the review, I'll add this for the second version.
+On Thu, Oct 27, 2016 at 06:04:06PM +0200, Richard Genoud wrote:
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index fd8aa1f4ba78..168b10cad47b 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -2132,11 +2132,29 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+>  		mode |= ATMEL_US_USMODE_RS485;
+>  	} else if (termios->c_cflag & CRTSCTS) {
+>  		/* RS232 with hardware handshake (RTS/CTS) */
+> -		if (atmel_use_dma_rx(port) && !atmel_use_fifo(port)) {
+> -			dev_info(port->dev, "not enabling hardware flow control because DMA is used");
+> -			termios->c_cflag &= ~CRTSCTS;
+> -		} else {
+> +		if (atmel_use_fifo(port) &&
+> +		    !mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)) {
+> +			/*
+> +			 * with ATMEL_US_USMODE_HWHS set, the controller will
+> +			 * be able to drive the RTS pin high/low when the RX
+> +			 * FIFO is above RXFTHRES/below RXFTHRES2.
+> +			 * It will also disable the transmitter when the CTS
+> +			 * pin is high.
+> +			 * This mode is not activated if CTS pin is a GPIO
+> +			 * because in this case, the transmitter is always
+> +			 * disabled (there must be an internal pull-up
+> +			 * responsible for this behaviour).
+> +			 * If the RTS pin is a GPIO, the controller won't be
+> +			 * able to drive it according to the FIFO thresholds,
+> +			 * but it will be handled by the driver.
+> +			 */
+>  			mode |= ATMEL_US_USMODE_HWHS;
 
-Ed.
+You use
 
->
-> P.S. Use -n when prepare patches to link them if you consider them
-> dependent.
->
->> Signed-off-by: Ed Blake <ed.blake@imgtec.com>
->> ---
->>   drivers/tty/serial/8250/8250_dw.c | 17 +++++++++++++++++
->>   1 file changed, 17 insertions(+)
->>
->> diff --git a/drivers/tty/serial/8250/8250_dw.c
->> b/drivers/tty/serial/8250/8250_dw.c
->> index 459d726..7dd5369 100644
->> --- a/drivers/tty/serial/8250/8250_dw.c
->> +++ b/drivers/tty/serial/8250/8250_dw.c
->> @@ -53,6 +53,8 @@
->>   /* Helper for fifo size calculation */
->>   #define DW_UART_CPR_FIFO_SIZE(a)	(((a >> 16) & 0xff) * 16)
->>   
->> +/* DesignWare specific register fields */
->> +#define DW_UART_MCR_SIRE		BIT(6)
->>   
->>   struct dw8250_data {
->>   	u8			usr_reg;
->> @@ -254,6 +256,20 @@ static void dw8250_set_termios(struct uart_port
->> *p, struct ktermios *termios,
->>   	serial8250_do_set_termios(p, termios, old);
->>   }
->>   
->> +static void dw8250_set_ldisc(struct uart_port *p, struct ktermios
->> *termios)
->> +{
->> +	unsigned int mcr = p->serial_in(p, UART_MCR);
->> +
->> +	if (termios->c_line == N_IRDA)
->> +		mcr |= DW_UART_MCR_SIRE;
->> +	else
->> +		mcr &= ~DW_UART_MCR_SIRE;
->> +
->> +	p->serial_out(p, UART_MCR, mcr);
->> +
->> +	serial8250_do_set_ldisc(p, termios);
->> +}
->> +
->>   /*
->>    * dw8250_fallback_dma_filter will prevent the UART from getting just
->> any free
->>    * channel on platforms that have DMA engines, but don't have any
->> channels
->> @@ -392,6 +408,7 @@ static int dw8250_probe(struct platform_device
->> *pdev)
->>   	p->iotype	= UPIO_MEM;
->>   	p->serial_in	= dw8250_serial_in;
->>   	p->serial_out	= dw8250_serial_out;
->> +	p->set_ldisc	= dw8250_set_ldisc;
->>   
->>   	p->membase = devm_ioremap(dev, regs->start,
->> resource_size(regs));
->>   	if (!p->membase)
+	!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)
+
+as indicator that the cts mode of the respective pin is used. Is this
+reliable? (It's not if there are machines that don't use CTS, neither as
+gpio nor using the hardware function.) Maybe this needs a dt property to
+indicate that there is no (hw)handshaking available?
+
+> +		} else {
+> +			...
+>  		}
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
