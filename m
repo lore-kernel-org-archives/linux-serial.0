@@ -1,276 +1,159 @@
-From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Subject: Re: [PATCH V4 2/3] ARM64 LPC: Add missing range exception for special
- ISA
-Date: Thu, 27 Oct 2016 17:30:35 +0800
-Message-ID: <5811C93B.8070703@hisilicon.com>
-References: <1476954940-242159-1-git-send-email-yuanzhichang@hisilicon.com>
- <1476954940-242159-3-git-send-email-yuanzhichang@hisilicon.com>
- <20161026222542.g4etrqesqb7febid@rob-hp-laptop>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20161026222542.g4etrqesqb7febid@rob-hp-laptop>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>, catalin.marinas@arm.com, will.deacon@arm.com, bhelgaas@google.com, mark.rutland@arm.com
-Cc: devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, minyard@acm.org, arnd@arndb.de, linux-pci@vger.kernel.org, gabriele.paoloni@huawei.com, john.garry@huawei.com, liviu.dudau@arm.com, linuxarm@huawei.com, xuwei5@hisilicon.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, benh@kernel.crashing.org, zourongrong@gmail.com, kantyzc@163.com, zhichang.yuan02@gmail.com, linux-arm-kernel@lists.infradead.org
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: [PATCH v6] tty/serial: at91: fix hardware handshake on Atmel platforms
+Date: Thu, 27 Oct 2016 18:04:06 +0200
+Message-ID: <20161027160406.25738-1-richard.genoud@gmail.com>
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nicolas Ferre <nicolas.ferre@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Genoud <richard.genoud@gmail.com>, "#4 . 4+" <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Rob,
+After commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management
+when hardware handshake is enabled"), the hardware handshake wasn't
+functional anymore on Atmel platforms (beside SAMA5D2).
 
-Thanks for your comments!
-Please check the response blow.
+To understand why, one has to understand the flag ATMEL_US_USMODE_HWHS
+first:
+Before commit 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management
+when hardware handshake is enabled"), this flag was never set.
+Thus, the CTS/RTS where only handled by serial_core (and everything
+worked just fine).
 
-BTW, Are there any comments from other maintainers/hackers??
-Thanks in advance!
+This commit introduced the use of the ATMEL_US_USMODE_HWHS flag,
+enabling it for all boards when the user space enables flow control.
 
+When the ATMEL_US_USMODE_HWHS is set, the Atmel USART controller
+handles a part of the flow control job:
+- disable the transmitter when the CTS pin gets high.
+- drive the RTS pin high when the DMA buffer transfer is completed or
+  PDC RX buffer full or RX FIFO is beyond threshold. (depending on the
+  controller version).
 
-On 2016/10/27 6:25, Rob Herring wrote:
-> On Thu, Oct 20, 2016 at 05:15:39PM +0800, zhichang.yuan wrote:
->> Currently if the range property is not specified of_translate_one
->> returns an error. There are some special devices that work on a
->> range of I/O ports where it's is not correct to specify a range
->> property as the cpu addresses are used by special accessors.
->> Here we add a new exception in of_translate_one to return
->> the cpu address if the range property is not there. The exception
->> checks if the parent bus is ISA and if the special accessors are
->> defined.
->>
->> Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
->> Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
->> ---
->>  arch/arm64/include/asm/io.h |  7 +++++++
->>  arch/arm64/kernel/extio.c   | 24 +++++++++++++++++++++++
->>  drivers/of/address.c        | 47 +++++++++++++++++++++++++++++++++++++++++++--
->>  drivers/pci/pci.c           |  6 +++---
->>  include/linux/of_address.h  | 17 ++++++++++++++++
->>  5 files changed, 96 insertions(+), 5 deletions(-)
->>
->> diff --git a/arch/arm64/include/asm/io.h b/arch/arm64/include/asm/io.h
->> index 136735d..e480199 100644
->> --- a/arch/arm64/include/asm/io.h
->> +++ b/arch/arm64/include/asm/io.h
->> @@ -175,6 +175,13 @@ static inline u64 __raw_readq(const volatile void __iomem *addr)
->>  #define outsl outsl
->>  
->>  DECLARE_EXTIO(l, u32)
->> +
->> +
->> +#define indirect_io_ison indirect_io_ison
->> +extern int indirect_io_ison(void);
->> +
->> +#define chk_indirect_range chk_indirect_range
->> +extern int chk_indirect_range(u64 taddr);
->>  #endif
->>  
->>  
->> diff --git a/arch/arm64/kernel/extio.c b/arch/arm64/kernel/extio.c
->> index 80cafd5..55df8dc 100644
->> --- a/arch/arm64/kernel/extio.c
->> +++ b/arch/arm64/kernel/extio.c
->> @@ -19,6 +19,30 @@
->>  
->>  struct extio_ops *arm64_extio_ops;
->>  
->> +/**
->> + * indirect_io_ison - check whether indirectIO can work well. This function only call
->> + *		before the target I/O address was obtained.
->> + *
->> + * Returns 1 when indirectIO can work.
->> + */
->> +int indirect_io_ison()
->> +{
->> +	return arm64_extio_ops ? 1 : 0;
->> +}
->> +
->> +/**
->> + * check_indirect_io - check whether the input taddr is for indirectIO.
->> + * @taddr: the io address to be checked.
->> + *
->> + * Returns 1 when taddr is in the range; otherwise return 0.
->> + */
->> +int chk_indirect_range(u64 taddr)
->> +{
->> +	if (arm64_extio_ops->start > taddr || arm64_extio_ops->end < taddr)
->> +		return 0;
->> +
->> +	return 1;
->> +}
->>  
->>  BUILD_EXTIO(b, u8)
->>  
->> diff --git a/drivers/of/address.c b/drivers/of/address.c
->> index 02b2903..0bee822 100644
->> --- a/drivers/of/address.c
->> +++ b/drivers/of/address.c
->> @@ -479,6 +479,39 @@ static int of_empty_ranges_quirk(struct device_node *np)
->>  	return false;
->>  }
->>  
->> +
->> +/*
->> + * Check whether the current device being translating use indirectIO.
->> + *
->> + * return 1 if the check is past, or 0 represents fail checking.
->> + */
->> +static int of_isa_indirect_io(struct device_node *parent,
-> 
-> Make the return bool.
-ok. will update it.
+NB: This feature is *not* mandatory for the flow control to work.
+(Nevertheless, it's very useful if low latencies are needed.)
 
-> 
->> +				struct of_bus *bus, __be32 *addr,
->> +				int na, u64 *presult)
->> +{
->> +	unsigned int flags;
->> +	unsigned int rlen;
->> +
->> +	/* whether support indirectIO */
->> +	if (!indirect_io_ison())
-> 
-> indirect_io_is_enabled() would be a bit more readable.
-Ok.
-> 
->> +		return 0;
->> +
->> +	if (!of_bus_isa_match(parent))
->> +		return 0;
->> +
->> +	flags = bus->get_flags(addr);
->> +	if (!(flags & IORESOURCE_IO))
->> +		return 0;
->> +
->> +	/* there is ranges property, apply the normal translation directly. */
->> +	if (of_get_property(parent, "ranges", &rlen))
->> +		return 0;
->> +
->> +	*presult = of_read_number(addr + 1, na - 1);
->> +
->> +	return chk_indirect_range(*presult);
->> +}
->> +
->>  static int of_translate_one(struct device_node *parent, struct of_bus *bus,
->>  			    struct of_bus *pbus, __be32 *addr,
->>  			    int na, int ns, int pna, const char *rprop)
->> @@ -532,7 +565,7 @@ static int of_translate_one(struct device_node *parent, struct of_bus *bus,
->>  	}
->>  	memcpy(addr, ranges + na, 4 * pna);
->>  
->> - finish:
->> +finish:
-> 
-> This hunk is unrelated. Drop it.
-Yes. Will drop this change.
-> 
->>  	of_dump_addr("parent translation for:", addr, pna);
->>  	pr_debug("with offset: %llx\n", (unsigned long long)offset);
->>  
->> @@ -595,6 +628,15 @@ static u64 __of_translate_address(struct device_node *dev,
->>  			result = of_read_number(addr, na);
->>  			break;
->>  		}
->> +		/*
->> +		 * For indirectIO device which has no ranges property, get
->> +		 * the address from reg directly.
->> +		 */
->> +		if (of_isa_indirect_io(dev, bus, addr, na, &result)) {
->> +			pr_info("isa indirectIO matched(%s)..addr = 0x%llx\n",
->> +				of_node_full_name(dev), result);
-> 
-> This should be debugging.
-ok. will replace with pr_debug.
+Now, the specifics of the ATMEL_US_USMODE_HWHS flag:
+
+- For platforms with DMAC and no FIFOs (sam9x25, sam9x35, sama5D3,
+sama5D4, sam9g15, sam9g25, sam9g35)* this feature simply doesn't work.
+( source: https://lkml.org/lkml/2016/9/7/598 )
+Tested it on sam9g35, the RTS pins always stays up, even when RXEN=1
+or a new DMA transfer descriptor is set.
+=> ATMEL_US_USMODE_HWHS must not be used for those platforms
+
+- For platforms with a PDC (sam926{0,1,3}, sam9g10, sam9g20, sam9g45,
+sam9g46)*, there's another kind of problem. Once the flag
+ATMEL_US_USMODE_HWHS is set, the RTS pin can't be driven anymore via
+RTSEN/RTSDIS in USART Control Register. The RTS pin can only be driven
+by enabling/disabling the receiver or setting RCR=RNCR=0 in the PDC
+(Receive (Next) Counter Register).
+=> Doing this is beyond the scope of this patch and could add other
+bugs, so the original (and working) behaviour should be set for those
+platforms (meaning ATMEL_US_USMODE_HWHS flag should be unset).
+
+- For platforms with a FIFO (sama5d2)*, the RTS pin is driven according
+to the RX FIFO thresholds, and can be also driven by RTSEN/RTSDIS in
+USART Control Register. No problem here.
+(This was the use case of commit 1cf6e8fc8341 ("tty/serial: at91: fix
+RTS line management when hardware handshake is enabled"))
+NB: If the CTS pin declared as a GPIO in the DTS, (for instance
+cts-gpios = <&pioA PIN_PB31 GPIO_ACTIVE_LOW>), the transmitter will be
+disabled.
+=> ATMEL_US_USMODE_HWHS flag can be set for this platform ONLY IF the
+CTS pin is not a GPIO.
+
+So, the only case when ATMEL_US_USMODE_HWHS can be enabled is when
+(atmel_use_fifo(port) &&
+ !mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS))
+
+Tested on all Atmel USART controller flavours:
+AT91SAM9G35-CM (DMAC flavour), AT91SAM9G20-EK (PDC flavour),
+SAMA5D2xplained (FIFO flavour).
+
+* the list may not be exhaustive
+
+Cc: <stable@vger.kernel.org> #4.4+ (beware, missing atmel_port variable)
+Fixes: 1cf6e8fc8341 ("tty/serial: at91: fix RTS line management when hardware handshake is enabled")
+Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ drivers/tty/serial/atmel_serial.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
+
+Note for -stable:
+This patch will apply on 4.4.x/4.8.x but compilation will fail due to
+a missing variable atmel_port (introduced in 4.9-rc1):
+
+ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			      struct ktermios *old)
+ {
++	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+ 	unsigned long flags;
+ 	unsigned int old_mode, mode, imr, quot, baud;
+
+Changes since v5:
+ - fix typos
+ - increase commentary
+
+Changes since v4:
+ - the mctrl_gpio_use_rtscts() is gone since it was atmel_serial
+ specific. (so patch 1 is gone)
+ - patches 2 and 3 have been merged together since it didn't make
+ a lot of sense to correct the GPIO case in one separate patch.
+ - ATMEL_US_USMODE_HWHS is now unset for platform with PDC
+
+Changes since v3:
+ - remove superfluous #include <linux/err.h> (thanks to Uwe)
+ - rebase on next-20160930
+
+Changes since v2:
+ - remove IS_ERR_OR_NULL() test in patch 1/3 as Uwe suggested.
+ - fix typos in patch 2/3
+ - rebase on next-20160927
+ - simplify the logic in patch 3/3.
+
+Changes since v1:
+ - Correct patch 1 with the error found by kbuild.
+ - Add Alexandre's Acked-by on patch 2
+ - Rewrite patch 3 logic in the light of the on-going discussion
+   with Cyrille and Alexandre.
 
 
-thanks!
-Zhichang
-
-> 
->> +			break;
->> +		}
->>  
->>  		/* Get new parent bus and counts */
->>  		pbus = of_match_bus(parent);
->> @@ -688,8 +730,9 @@ static int __of_address_to_resource(struct device_node *dev,
->>  	if (taddr == OF_BAD_ADDR)
->>  		return -EINVAL;
->>  	memset(r, 0, sizeof(struct resource));
->> -	if (flags & IORESOURCE_IO) {
->> +	if (flags & IORESOURCE_IO && taddr >= PCIBIOS_MIN_IO) {
->>  		unsigned long port;
->> +
->>  		port = pci_address_to_pio(taddr);
->>  		if (port == (unsigned long)-1)
->>  			return -EINVAL;
->> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
->> index ba34907..1a08511 100644
->> --- a/drivers/pci/pci.c
->> +++ b/drivers/pci/pci.c
->> @@ -3263,7 +3263,7 @@ int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
->>  
->>  #ifdef PCI_IOBASE
->>  	struct io_range *range;
->> -	resource_size_t allocated_size = 0;
->> +	resource_size_t allocated_size = PCIBIOS_MIN_IO;
->>  
->>  	/* check if the range hasn't been previously recorded */
->>  	spin_lock(&io_range_lock);
->> @@ -3312,7 +3312,7 @@ phys_addr_t pci_pio_to_address(unsigned long pio)
->>  
->>  #ifdef PCI_IOBASE
->>  	struct io_range *range;
->> -	resource_size_t allocated_size = 0;
->> +	resource_size_t allocated_size = PCIBIOS_MIN_IO;
->>  
->>  	if (pio > IO_SPACE_LIMIT)
->>  		return address;
->> @@ -3335,7 +3335,7 @@ unsigned long __weak pci_address_to_pio(phys_addr_t address)
->>  {
->>  #ifdef PCI_IOBASE
->>  	struct io_range *res;
->> -	resource_size_t offset = 0;
->> +	resource_size_t offset = PCIBIOS_MIN_IO;
->>  	unsigned long addr = -1;
->>  
->>  	spin_lock(&io_range_lock);
->> diff --git a/include/linux/of_address.h b/include/linux/of_address.h
->> index 3786473..0ba7e21 100644
->> --- a/include/linux/of_address.h
->> +++ b/include/linux/of_address.h
->> @@ -24,6 +24,23 @@ struct of_pci_range {
->>  #define for_each_of_pci_range(parser, range) \
->>  	for (; of_pci_range_parser_one(parser, range);)
->>  
->> +
->> +#ifndef indirect_io_ison
->> +#define indirect_io_ison indirect_io_ison
->> +static inline int indirect_io_ison(void)
->> +{
->> +	return 0;
->> +}
->> +#endif
->> +
->> +#ifndef chk_indirect_range
->> +#define chk_indirect_range chk_indirect_range
->> +static inline int chk_indirect_range(u64 taddr)
->> +{
->> +	return 0;
->> +}
->> +#endif
->> +
->>  /* Translate a DMA address from device space to CPU space */
->>  extern u64 of_translate_dma_address(struct device_node *dev,
->>  				    const __be32 *in_addr);
->> -- 
->> 1.9.1
->>
-> 
-> .
-> 
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index fd8aa1f4ba78..168b10cad47b 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2132,11 +2132,29 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		mode |= ATMEL_US_USMODE_RS485;
+ 	} else if (termios->c_cflag & CRTSCTS) {
+ 		/* RS232 with hardware handshake (RTS/CTS) */
+-		if (atmel_use_dma_rx(port) && !atmel_use_fifo(port)) {
+-			dev_info(port->dev, "not enabling hardware flow control because DMA is used");
+-			termios->c_cflag &= ~CRTSCTS;
+-		} else {
++		if (atmel_use_fifo(port) &&
++		    !mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)) {
++			/*
++			 * with ATMEL_US_USMODE_HWHS set, the controller will
++			 * be able to drive the RTS pin high/low when the RX
++			 * FIFO is above RXFTHRES/below RXFTHRES2.
++			 * It will also disable the transmitter when the CTS
++			 * pin is high.
++			 * This mode is not activated if CTS pin is a GPIO
++			 * because in this case, the transmitter is always
++			 * disabled (there must be an internal pull-up
++			 * responsible for this behaviour).
++			 * If the RTS pin is a GPIO, the controller won't be
++			 * able to drive it according to the FIFO thresholds,
++			 * but it will be handled by the driver.
++			 */
+ 			mode |= ATMEL_US_USMODE_HWHS;
++		} else {
++			/*
++			 * For platforms without FIFO, the flow control is
++			 * handled by the driver.
++			 */
++			mode |= ATMEL_US_USMODE_NORMAL;
+ 		}
+ 	} else {
+ 		/* RS232 without hadware handshake */
