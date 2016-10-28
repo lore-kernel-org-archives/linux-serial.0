@@ -1,27 +1,34 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/2] uart_close related fixes
-Date: Fri, 28 Oct 2016 08:13:49 -0400
-Message-ID: <20161028121349.GA11555@kroah.com>
-References: <20161028120748.27763-1-robh@kernel.org>
+From: Ed Blake <ed.blake@imgtec.com>
+Subject: [PATCH v2 0/2] serial: Add IrDA support to 8250_dw driver
+Date: Fri, 28 Oct 2016 18:04:32 +0100
+Message-ID: <1477674274-16283-1-git-send-email-ed.blake@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20161028120748.27763-1-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Borislav Petkov <bp@alien8.de>, Mike Galbraith <mgalbraith@suse.de>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Geert Uytterhoeven <geert+renesas@glider.be>, Mugunthan V N <mugunthanvnm@ti.com>
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, andriy.shevchenko@linux.intel.com, wangkefeng.wang@huawei.com, heikki.krogerus@linux.intel.com, noamc@ezchip.com, annie.wang@amd.com, anton.wuerfel@fau.de, phillip.raffeck@fau.de, peter@hurleysoftware.com, alexander.sverdlin@nokia.com, yegorslists@googlemail.com, matwey@sai.msu.ru, yamada.masahiro@socionext.com, tthayer@opensource.altera.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, james.hartley@imgtec.com, Ed Blake <ed.blake@imgtec.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Oct 28, 2016 at 07:07:46AM -0500, Rob Herring wrote:
-> Greg,
-> 
-> As discussed, these are the 2 fixes needed to fix regressions with 
-> 761ed4a94582ab29 ("tty: serial_core: convert uart_close to use 
-> tty_port_close"). Hopefully these fix all the fallout.
-> 
-> These apply on top of the previous patch from me which you applied.
+This patch set adds IrDA support to the 8250_dw driver. The first patch exposes
+the set_ldisc() function in the 8250 driver so it can be overridden, and the
+second patch adds a set_ldisc() function to the 8250_dw driver which enables /
+disables IrDA SIR mode if supported.
 
-Thanks for them, all now applied.
+v2:
+  The 8250_dw set_ldisc() function no longer tries to enable/disable IrDA SIR
+  mode if not supported by the hardware configuration.
 
-greg k-h
+Ed Blake (2):
+  serial: 8250: Expose set_ldisc function
+  serial: 8250_dw: Add support for IrDA SIR mode
+
+ drivers/tty/serial/8250/8250_core.c |  3 +++
+ drivers/tty/serial/8250/8250_dw.c   | 24 ++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c | 12 ++++++++++--
+ include/linux/serial_8250.h         |  4 ++++
+ include/linux/serial_core.h         |  2 ++
+ 5 files changed, 43 insertions(+), 2 deletions(-)
+
+-- 
+1.9.1
