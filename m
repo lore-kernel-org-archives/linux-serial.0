@@ -1,7 +1,7 @@
 From: Ed Blake <ed.blake@imgtec.com>
-Subject: [PATCH v2 1/2] serial: 8250: Expose set_ldisc function
-Date: Fri, 28 Oct 2016 18:04:33 +0100
-Message-ID: <1477674274-16283-2-git-send-email-ed.blake@imgtec.com>
+Subject: [PATCH v2 2/2] serial: 8250_dw: Add support for IrDA SIR mode
+Date: Fri, 28 Oct 2016 18:04:34 +0100
+Message-ID: <1477674274-16283-3-git-send-email-ed.blake@imgtec.com>
 References: <1477674274-16283-1-git-send-email-ed.blake@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,103 +12,84 @@ To: gregkh@linuxfoundation.org
 Cc: jslaby@suse.com, andriy.shevchenko@linux.intel.com, wangkefeng.wang@huawei.com, heikki.krogerus@linux.intel.com, noamc@ezchip.com, annie.wang@amd.com, anton.wuerfel@fau.de, phillip.raffeck@fau.de, peter@hurleysoftware.com, alexander.sverdlin@nokia.com, yegorslists@googlemail.com, matwey@sai.msu.ru, yamada.masahiro@socionext.com, tthayer@opensource.altera.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, james.hartley@imgtec.com, Ed Blake <ed.blake@imgtec.com>
 List-Id: linux-serial@vger.kernel.org
 
-Expose set_ldisc() function so that it can be overridden with a
-platform specific implementation.
+Add a set_ldisc function to enable/disable IrDA SIR mode according to
+the new line discipline, if IrDA SIR mode is supported by the hardware
+configuration.
 
 Signed-off-by: Ed Blake <ed.blake@imgtec.com>
 ---
- drivers/tty/serial/8250/8250_core.c |  3 +++
- drivers/tty/serial/8250/8250_port.c | 12 ++++++++++--
- include/linux/serial_8250.h         |  4 ++++
- include/linux/serial_core.h         |  2 ++
- 4 files changed, 19 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_dw.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 240a361..3ad8c80 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -830,6 +830,7 @@ static int serial8250_probe(struct platform_device *dev)
- 		uart.port.handle_irq	= p->handle_irq;
- 		uart.port.handle_break	= p->handle_break;
- 		uart.port.set_termios	= p->set_termios;
-+		uart.port.set_ldisc	= p->set_ldisc;
- 		uart.port.get_mctrl	= p->get_mctrl;
- 		uart.port.pm		= p->pm;
- 		uart.port.dev		= &dev->dev;
-@@ -1023,6 +1024,8 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
- 		/*  Possibly override set_termios call */
- 		if (up->port.set_termios)
- 			uart->port.set_termios = up->port.set_termios;
-+		if (up->port.set_ldisc)
-+			uart->port.set_ldisc = up->port.set_ldisc;
- 		if (up->port.get_mctrl)
- 			uart->port.get_mctrl = up->port.get_mctrl;
- 		if (up->port.set_mctrl)
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 1bfb6fd..38c5856 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2690,8 +2690,7 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 		serial8250_do_set_termios(port, termios, old);
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 459d726..d6d41d6 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -53,6 +53,8 @@
+ /* Helper for fifo size calculation */
+ #define DW_UART_CPR_FIFO_SIZE(a)	(((a >> 16) & 0xff) * 16)
+ 
++/* DesignWare specific register fields */
++#define DW_UART_MCR_SIRE		BIT(6)
+ 
+ struct dw8250_data {
+ 	u8			usr_reg;
+@@ -66,6 +68,7 @@ struct dw8250_data {
+ 
+ 	unsigned int		skip_autocfg:1;
+ 	unsigned int		uart_16550_compatible:1;
++	unsigned int		sir_mode_supported:1;
+ };
+ 
+ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
+@@ -254,6 +257,22 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
+ 	serial8250_do_set_termios(p, termios, old);
  }
  
--static void
--serial8250_set_ldisc(struct uart_port *port, struct ktermios *termios)
-+void serial8250_do_set_ldisc(struct uart_port *port, struct ktermios *termios)
- {
- 	if (termios->c_line == N_PPS) {
- 		port->flags |= UPF_HARDPPS_CD;
-@@ -2707,7 +2706,16 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 		}
- 	}
- }
-+EXPORT_SYMBOL(serial8250_do_set_ldisc);
- 
-+static void
-+serial8250_set_ldisc(struct uart_port *port, struct ktermios *termios)
++static void dw8250_set_ldisc(struct uart_port *p, struct ktermios *termios)
 +{
-+	if (port->set_ldisc)
-+		port->set_ldisc(port, termios);
-+	else
-+		serial8250_do_set_ldisc(port, termios);
++	struct dw8250_data *data = p->private_data;
++	unsigned int mcr = p->serial_in(p, UART_MCR);
++
++	if (data->sir_mode_supported) {
++		if (termios->c_line == N_IRDA)
++			mcr |= DW_UART_MCR_SIRE;
++		else
++			mcr &= ~DW_UART_MCR_SIRE;
++
++		p->serial_out(p, UART_MCR, mcr);
++	}
++	serial8250_do_set_ldisc(p, termios);
 +}
++
+ /*
+  * dw8250_fallback_dma_filter will prevent the UART from getting just any free
+  * channel on platforms that have DMA engines, but don't have any channels
+@@ -324,6 +343,7 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ static void dw8250_setup_port(struct uart_port *p)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(p);
++	struct dw8250_data *data = p->private_data;
+ 	u32 reg;
  
- void serial8250_do_pm(struct uart_port *port, unsigned int state,
- 		      unsigned int oldstate)
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 48ec765..f350bf4 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -36,6 +36,8 @@ struct plat_serial8250_port {
- 	void		(*set_termios)(struct uart_port *,
- 			               struct ktermios *new,
- 			               struct ktermios *old);
-+	void		(*set_ldisc)(struct uart_port *,
-+				     struct ktermios *);
- 	unsigned int	(*get_mctrl)(struct uart_port *);
- 	int		(*handle_irq)(struct uart_port *);
- 	void		(*pm)(struct uart_port *, unsigned int state,
-@@ -149,6 +151,8 @@ extern int early_serial8250_setup(struct earlycon_device *device,
- 					 const char *options);
- extern void serial8250_do_set_termios(struct uart_port *port,
- 		struct ktermios *termios, struct ktermios *old);
-+extern void serial8250_do_set_ldisc(struct uart_port *port,
-+				    struct ktermios *termios);
- extern unsigned int serial8250_do_get_mctrl(struct uart_port *port);
- extern int serial8250_do_startup(struct uart_port *port);
- extern void serial8250_do_shutdown(struct uart_port *port);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 3442014..5d49488 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -123,6 +123,8 @@ struct uart_port {
- 	void			(*set_termios)(struct uart_port *,
- 				               struct ktermios *new,
- 				               struct ktermios *old);
-+	void			(*set_ldisc)(struct uart_port *,
-+					     struct ktermios *);
- 	unsigned int		(*get_mctrl)(struct uart_port *);
- 	void			(*set_mctrl)(struct uart_port *, unsigned int);
- 	int			(*startup)(struct uart_port *port);
+ 	/*
+@@ -357,6 +377,9 @@ static void dw8250_setup_port(struct uart_port *p)
+ 
+ 	if (reg & DW_UART_CPR_AFCE_MODE)
+ 		up->capabilities |= UART_CAP_AFE;
++
++	if (reg & DW_UART_CPR_SIR_MODE)
++		data->sir_mode_supported = true;
+ }
+ 
+ static int dw8250_probe(struct platform_device *pdev)
+@@ -392,6 +415,7 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	p->iotype	= UPIO_MEM;
+ 	p->serial_in	= dw8250_serial_in;
+ 	p->serial_out	= dw8250_serial_out;
++	p->set_ldisc	= dw8250_set_ldisc;
+ 
+ 	p->membase = devm_ioremap(dev, regs->start, resource_size(regs));
+ 	if (!p->membase)
 -- 
 1.9.1
