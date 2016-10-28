@@ -1,70 +1,44 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH v6] tty/serial: at91: fix hardware handshake on Atmel
- platforms
-Date: Fri, 28 Oct 2016 01:13:31 +0200
-Message-ID: <20161027231331.gngekbg22wfvnolr@piout.net>
-References: <20161027160406.25738-1-richard.genoud@gmail.com>
- <20161027180229.5faqrvxa2a4pos7i@pengutronix.de>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH 2/2] serial: 8250_dw: Add support for IrDA SIR mode
+Date: Fri, 28 Oct 2016 11:20:40 +0300
+Message-ID: <20161028082040.GA31275@kuha.fi.intel.com>
+References: <1477586286-15748-1-git-send-email-ed.blake@imgtec.com>
+ <1477587370.5295.37.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20161027180229.5faqrvxa2a4pos7i@pengutronix.de>
-Sender: stable-owner@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "#4 . 4+" <stable@vger.kernel.org>
+In-Reply-To: <1477587370.5295.37.camel@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Ed Blake <ed.blake@imgtec.com>, gregkh@linuxfoundation.org, jslaby@suse.com, wangkefeng.wang@huawei.com, noamc@ezchip.com, annie.wang@amd.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, james.hartley@imgtec.com
 List-Id: linux-serial@vger.kernel.org
 
-On 27/10/2016 at 20:02:29 +0200, Uwe Kleine-König wrote :
-> Hello Richard,
-> 
-> On Thu, Oct 27, 2016 at 06:04:06PM +0200, Richard Genoud wrote:
-> > diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> > index fd8aa1f4ba78..168b10cad47b 100644
-> > --- a/drivers/tty/serial/atmel_serial.c
-> > +++ b/drivers/tty/serial/atmel_serial.c
-> > @@ -2132,11 +2132,29 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
-> >  		mode |= ATMEL_US_USMODE_RS485;
-> >  	} else if (termios->c_cflag & CRTSCTS) {
-> >  		/* RS232 with hardware handshake (RTS/CTS) */
-> > -		if (atmel_use_dma_rx(port) && !atmel_use_fifo(port)) {
-> > -			dev_info(port->dev, "not enabling hardware flow control because DMA is used");
-> > -			termios->c_cflag &= ~CRTSCTS;
-> > -		} else {
-> > +		if (atmel_use_fifo(port) &&
-> > +		    !mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)) {
-> > +			/*
-> > +			 * with ATMEL_US_USMODE_HWHS set, the controller will
-> > +			 * be able to drive the RTS pin high/low when the RX
-> > +			 * FIFO is above RXFTHRES/below RXFTHRES2.
-> > +			 * It will also disable the transmitter when the CTS
-> > +			 * pin is high.
-> > +			 * This mode is not activated if CTS pin is a GPIO
-> > +			 * because in this case, the transmitter is always
-> > +			 * disabled (there must be an internal pull-up
-> > +			 * responsible for this behaviour).
-> > +			 * If the RTS pin is a GPIO, the controller won't be
-> > +			 * able to drive it according to the FIFO thresholds,
-> > +			 * but it will be handled by the driver.
-> > +			 */
-> >  			mode |= ATMEL_US_USMODE_HWHS;
-> 
-> You use
-> 
-> 	!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)
-> 
-> as indicator that the cts mode of the respective pin is used. Is this
-> reliable? (It's not if there are machines that don't use CTS, neither as
-> gpio nor using the hardware function.) Maybe this needs a dt property to
-> indicate that there is no (hw)handshaking available?
-> 
+Hi Andy,
 
-We had a call today were we agreed that this should be added in a future
-patch. Let's fix the regression for now.
+On Thu, Oct 27, 2016 at 07:56:10PM +0300, Andy Shevchenko wrote:
+> On Thu, 2016-10-27 at 17:38 +0100, Ed Blake wrote:
+> > Add a set_ldisc function to enable/disable IrDA SIR mode according to
+> > the new line discipline.
+> 
+> Thanks for the patch.
+> 
+> Consider that not all implementations based on 8250_dw support IRDA
+> feature. I suppose you need to read capability register bits 6 and 7,
+> set flag and then based on the value accept or reject IRDA mode.
+> 
+> P.S. Use -n when prepare patches to link them if you consider them
+> dependent.
 
+These are numbered? Or do you mean that please prefer sending
+series of patches as threads?
+
+        % git send-email --thread...
+
+Or something like that? I guess coverletter would be nice too.
+
+
+Thanks,
 
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+heikki
