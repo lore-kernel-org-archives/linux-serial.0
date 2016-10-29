@@ -1,102 +1,63 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial driver fixes for 4.9-rc3
-Date: Sat, 29 Oct 2016 12:45:55 -0400
-Message-ID: <20161029164555.GA4394@kroah.com>
+From: Sean Young <sean@mess.org>
+Subject: Re: console issue since 3.6, console=ttyS1 hangs
+Date: Sat, 29 Oct 2016 22:16:47 +0100
+Message-ID: <20161029211647.GA25740@gofer.mess.org>
+References: <20161019090719.GA1764@gofer.mess.org>
+ <29b311e3-a26e-81de-82cf-e0a202db6d96@sgi.com>
+ <20161020201051.GA29324@gofer.mess.org>
+ <49f038af-5cb7-e76f-e4e9-57fad876710d@sgi.com>
+ <20161024135235.GA29984@gofer.mess.org>
+ <20161024214925.GA143272@stormcage.americas.sgi.com>
+ <20161025204139.GA22268@gofer.mess.org>
+ <fb8f3b77-6095-c14b-02e8-deb595777f23@sgi.com>
+ <20161027201916.GA7718@gofer.mess.org>
+ <20161028194225.GA233549@stormcage.americas.sgi.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <20161028194225.GA233549@stormcage.americas.sgi.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Nathan Zimmer <nzimmer@sgi.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, alan@linux.intel.com, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit 07d9a380680d1c0eb51ef87ff2eab5c994949e69:
+On Fri, Oct 28, 2016 at 02:42:25PM -0500, Nathan Zimmer wrote:
+> On Thu, Oct 27, 2016 at 09:19:16PM +0100, Sean Young wrote:
+> > On Wed, Oct 26, 2016 at 01:16:16PM -0500, Nathan Zimmer wrote:
+> > > On 10/25/2016 03:41 PM, Sean Young wrote:
+> > > >On Mon, Oct 24, 2016 at 04:49:25PM -0500, Nathan Zimmer wrote:
+> > > >>[    1.565062] serial8250: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+> > > >The isa probe driver find the serial port.
+> > > >
+> > > >>[    1.566453] serial 00:04: pnp_assign_resources, try dependent set 0
+> > > >>[    1.567383] serial 00:04:   couldn't assign io 0 (min 0x2f8 max 0x2f8)
+> > > >But then decides that the port is already in use (the existing serial driver).
+> > > >>[    1.568366] serial 00:04: pnp_assign_resources failed (-16)
+> > > >>[    1.569188] serial 00:04: unable to assign resources
+> > > >>[    1.569924] serial: probe of 00:04 failed with error -16
+> > > >Please try and boot 3.7.0 with "8250.share_irqs=1", maybe it will pick
+> > > >irq 3 and it will be happy again, but that is just a guess.
+> > > >
+> > > >I think I have not fully understood what the failure is. Does the serial
+> > > >port not work or does the boot hang? What are the symptoms?
+> > > With console=ttyS1 the boot will "hang", sometimes it makes it all the way
+> > > through but may take 30 minutes, instead of the 2-4 minutes this box
+> > 
+> > Where does it hang? Any error messages?
+> > 
+> 
+> Shortly after mounting the root.
+> After that I get no more output...
+> 
+> Here is a failure log from 4.8.
 
-  Linux 4.9-rc2 (2016-10-23 17:10:14 -0700)
+So does the console on the serial port work on 4.8? Also what does 
+"cat /proc/interrupts" say with and without my change of ordering the
+serial pnp probe before the isa probe?
 
-are available in the git repository at:
+It could be that the serial driver picking a different irq caused another
+driver to be forced to pick another irq which does not work.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.9-rc3
 
-for you to fetch changes up to d0f4bce2bce7e998abc906f3590e9032af7a41ba:
-
-  tty: serial_core: fix NULL struct tty pointer access in uart_write_wakeup (2016-10-28 08:13:07 -0400)
-
-----------------------------------------------------------------
-tty/serial driver fixes for 4.9-rc3
-
-Here are a number of small tty and serial driver fixes for reported
-issues for 4.9-rc3.  Nothing major, but they do resolve a bunch of
-problems with the tty core changes that are in 4.9-rc1, and finally the
-atmel serial driver is back working properly.
-
-All have been in linux-next with no reported issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Aaron Brice (1):
-      tty: serial: fsl_lpuart: Fix Tx DMA edge case
-
-Andy Shevchenko (1):
-      serial: 8250_lpss: enable MSI for sure
-
-Denys Vlasenko (1):
-      serial: 8250_uniphier: fix more unterminated string
-
-Dmitry Vyukov (1):
-      tty: limit terminal size to 4M chars
-
-Francois Berder (1):
-      sc16is7xx: always write state when configuring GPIO as an output
-
-Geert Uytterhoeven (3):
-      serial: stm32: Fix comparisons with undefined register
-      serial: SERIAL_STM32 should depend on HAS_DMA
-      tty: serial_core: Fix serial console crash on port shutdown
-
-Jiri Slaby (1):
-      tty: vt, fix bogus division in csi_J
-
-Masahiro Yamada (1):
-      serial: 8250_uniphier: fix clearing divisor latch access bit
-
-Nava kishore Manne (2):
-      serial: xuartps: Add new compatible string for ZynqMP
-      devicetree: bindings: uart: Add new compatible string for ZynqMP
-
-Richard Genoud (1):
-      tty/serial: at91: fix hardware handshake on Atmel platforms
-
-Rob Herring (2):
-      serial: core: fix console problems on uart_close
-      tty: serial_core: fix NULL struct tty pointer access in uart_write_wakeup
-
-Scot Doyle (1):
-      vt: clear selection before resizing
-
-Sergei Shtylyov (1):
-      sh-sci: document R8A7743/5 support
-
-Steve Shih (1):
-      tty: serial: 8250: 8250_core: NXP SC16C2552 workaround
-
-Wei Yongjun (1):
-      serial: pch_uart: add terminate entry for dmi_system_id tables
-
- .../devicetree/bindings/serial/cdns,uart.txt       |  4 +++-
- .../bindings/serial/renesas,sci-serial.txt         |  8 +++++++
- drivers/tty/serial/8250/8250_lpss.c                |  2 +-
- drivers/tty/serial/8250/8250_port.c                |  3 ++-
- drivers/tty/serial/8250/8250_uniphier.c            |  4 ++--
- drivers/tty/serial/Kconfig                         |  1 +
- drivers/tty/serial/atmel_serial.c                  | 26 ++++++++++++++++++----
- drivers/tty/serial/fsl_lpuart.c                    |  3 +--
- drivers/tty/serial/pch_uart.c                      |  1 +
- drivers/tty/serial/sc16is7xx.c                     |  8 +++++--
- drivers/tty/serial/serial_core.c                   |  8 +++----
- drivers/tty/serial/stm32-usart.h                   |  2 +-
- drivers/tty/serial/xilinx_uartps.c                 |  2 ++
- drivers/tty/vt/vt.c                                |  7 +++++-
- 14 files changed, 60 insertions(+), 19 deletions(-)
+Sean
