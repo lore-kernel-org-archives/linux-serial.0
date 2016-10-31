@@ -1,68 +1,31 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH] tty: serial: make crisv10 explicitly non-modular
-Date: Mon, 31 Oct 2016 13:42:16 -0400
-Message-ID: <20161031174216.900-1-paul.gortmaker@windriver.com>
+From: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] UART slave devices using serio
+Date: Mon, 31 Oct 2016 14:08:13 -0600
+Message-ID: <CAKU3ayVSrrWVbYukiTF+6rrAoQJGZ3guGYnmTrSYu84S8YwYmA@mail.gmail.com>
+References: <20160824232437.9446-1-robh@kernel.org> <20161025215521.5a5uxjpujmoatgor@earth>
+ <CAL_JsqJQqkyz99SY=RcQ22ZzsQSuCjFkjEPLdEqLmJU-usBf-g@mail.gmail.com> <CAKU3ayV7vLSaNJGzV2MoCyT2GopReS55DCH4MPtSmGiHEUKdXw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAKU3ayV7vLSaNJGzV2MoCyT2GopReS55DCH4MPtSmGiHEUKdXw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-The Kconfig currently controlling compilation of this code is:
+[ this time w/o the html ]
 
-arch/cris/arch-v10/drivers/Kconfig:config ETRAX_SERIAL
-arch/cris/arch-v10/drivers/Kconfig:     bool "Serial-port support"
+On Tue, Oct 25, 2016 at 4:02 PM, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> > Maybe you can try to find some minutes at the Kernel Summit to talk
+> > about this?
+>
+> Still waiting for my invite...
+>
+> But I will be at Plumbers if folks want to discuss this.
 
-...meaning that it currently is not being built as a module by anyone.
+Hey Rob,
 
-Lets remove the couple traces of modular infrastructure use, so that
-when reading the driver there is no doubt it is builtin-only.
+I'm here so let's make time to discuss this.
 
-Since module_init translates to device_initcall in the non-modular
-case, the init ordering remains unchanged with this commit.
-
-We don't replace module.h with init.h since the file already has that.
-
-Cc: Mikael Starvik <starvik@axis.com>
-Cc: Jesper Nilsson <jesper.nilsson@axis.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-cris-kernel@axis.com
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
----
- drivers/tty/serial/crisv10.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
-index 315c84979b18..6450a38cb1aa 100644
---- a/drivers/tty/serial/crisv10.c
-+++ b/drivers/tty/serial/crisv10.c
-@@ -28,7 +28,6 @@ static char *serial_version = "$Revision: 1.25 $";
- #include <linux/bitops.h>
- #include <linux/seq_file.h>
- #include <linux/delay.h>
--#include <linux/module.h>
- #include <linux/uaccess.h>
- #include <linux/io.h>
- 
-@@ -4098,7 +4097,7 @@ static void show_serial_version(void)
- 	       &serial_version[11]); /* "$Revision: x.yy" */
- }
- 
--/* rs_init inits the driver at boot (using the module_init chain) */
-+/* rs_init inits the driver at boot (using the initcall chain) */
- 
- static const struct tty_operations rs_ops = {
- 	.open = rs_open,
-@@ -4247,5 +4246,4 @@ static int __init rs_init(void)
- }
- 
- /* this makes sure that rs_init is called during kernel boot */
--
--module_init(rs_init);
-+device_initcall(rs_init);
--- 
-2.8.4
+Regards,
+Peter Hurley
