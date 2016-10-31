@@ -1,39 +1,68 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2] sh-sci: document R8A7743/5 support
-Date: Sun, 30 Oct 2016 15:41:29 -0500
-Message-ID: <20161030204129.3aimogcpr6p352uv@rob-hp-laptop>
-References: <4258682.UW6HhKP1CC@wasted.cogentembedded.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH] tty: serial: make crisv10 explicitly non-modular
+Date: Mon, 31 Oct 2016 13:42:16 -0400
+Message-ID: <20161031174216.900-1-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <4258682.UW6HhKP1CC-gHKXc3Y1Z8zGSmamagVegGFoWSdPRAKMAL8bYrjMMd8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-cris-kernel@axis.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Oct 21, 2016 at 11:00:43PM +0300, Sergei Shtylyov wrote:
-> Renesas RZ/G SoC also have the SCIF, SCIFA, SCIFB, and HSCIF ports and
-> they  seem compatible with the R-Car gen2 SoC  in this respect...
-> Document RZ/G1[ME] (also known as R8A774[35]) SoC bindings.
-> 
-> Signed-off-by: Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
-> Acked-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-> Acked-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-> 
-> ---
-> This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
-> 
-> Changes in version 2:
-> - removed the RZ/G  family specific bindings, renamed the patch;
-> - added Simon's and Geert's ACKs.
-> 
->  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |    8 ++++++++
->  1 file changed, 8 insertions(+)
+The Kconfig currently controlling compilation of this code is:
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+arch/cris/arch-v10/drivers/Kconfig:config ETRAX_SERIAL
+arch/cris/arch-v10/drivers/Kconfig:     bool "Serial-port support"
+
+...meaning that it currently is not being built as a module by anyone.
+
+Lets remove the couple traces of modular infrastructure use, so that
+when reading the driver there is no doubt it is builtin-only.
+
+Since module_init translates to device_initcall in the non-modular
+case, the init ordering remains unchanged with this commit.
+
+We don't replace module.h with init.h since the file already has that.
+
+Cc: Mikael Starvik <starvik@axis.com>
+Cc: Jesper Nilsson <jesper.nilsson@axis.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-cris-kernel@axis.com
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+---
+ drivers/tty/serial/crisv10.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
+index 315c84979b18..6450a38cb1aa 100644
+--- a/drivers/tty/serial/crisv10.c
++++ b/drivers/tty/serial/crisv10.c
+@@ -28,7 +28,6 @@ static char *serial_version = "$Revision: 1.25 $";
+ #include <linux/bitops.h>
+ #include <linux/seq_file.h>
+ #include <linux/delay.h>
+-#include <linux/module.h>
+ #include <linux/uaccess.h>
+ #include <linux/io.h>
+ 
+@@ -4098,7 +4097,7 @@ static void show_serial_version(void)
+ 	       &serial_version[11]); /* "$Revision: x.yy" */
+ }
+ 
+-/* rs_init inits the driver at boot (using the module_init chain) */
++/* rs_init inits the driver at boot (using the initcall chain) */
+ 
+ static const struct tty_operations rs_ops = {
+ 	.open = rs_open,
+@@ -4247,5 +4246,4 @@ static int __init rs_init(void)
+ }
+ 
+ /* this makes sure that rs_init is called during kernel boot */
+-
+-module_init(rs_init);
++device_initcall(rs_init);
+-- 
+2.8.4
