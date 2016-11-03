@@ -1,370 +1,210 @@
-From: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Subject: RE: [PATCH/RESEND V4 2/3] ARM64 LPC: Add missing range exception
- for special ISA
-Date: Wed, 2 Nov 2016 21:51:08 +0000
-Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F8E0398@lhreml507-mbx>
-References: <1478006926-240933-1-git-send-email-yuanzhichang@hisilicon.com>
- <1478006926-240933-3-git-send-email-yuanzhichang@hisilicon.com>
- <20161101165934.GA5149@bhelgaas-glaptop.roam.corp.google.com>
+From: Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH] ACPI / platform: Add support for build-in properties
+Date: Thu,  3 Nov 2016 16:21:26 +0200
+Message-ID: <20161103142126.87413-1-heikki.krogerus@linux.intel.com>
+References: <20161102154139.GD11523@kuha.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20161101165934.GA5149@bhelgaas-glaptop.roam.corp.google.com>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <helgaas@kernel.org>, Yuanzhichang <yuanzhichang@hisilicon.com>
-Cc: "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linuxarm <linuxarm@huawei.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "minyard@acm.org" <minyard@acm.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20161102154139.GD11523-FZxXFokcWpatqXYlAKuG4QC/G2K4zDHf@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?UTF-8?q?J=C3=A9r=C3=B4me=20de=20Bretagne?= <jerome.debretagne-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Feng Kan <fkan-qTEPVZfXA3Y@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Bjorn
+We have a couple of drivers, acpi_apd.c and acpi_lpss.c,
+that need to pass extra build-in properties to the devices
+they create. Previously the drivers added those properties
+to the struct device which is member of the struct
+acpi_device, but that does not work. Those properties need
+to be assigned to the struct device of the platform device
+instead in order for them to become available to the
+drivers.
 
-Many Thanks for reviewing this
+To fix this, this patch changes acpi_create_platform_device
+function to take struct property_entry pointer as parameter.
 
-> -----Original Message-----
-> From: Bjorn Helgaas [mailto:helgaas@kernel.org]
-> Sent: 01 November 2016 17:00
-> To: Yuanzhichang
-> Cc: catalin.marinas@arm.com; will.deacon@arm.com; robh+dt@kernel.org;
-> bhelgaas@google.com; mark.rutland@arm.com; arnd@arndb.de; linux-arm-
-> kernel@lists.infradead.org; lorenzo.pieralisi@arm.com; linux-
-> kernel@vger.kernel.org; Linuxarm; devicetree@vger.kernel.org; linux-
-> pci@vger.kernel.org; linux-serial@vger.kernel.org; minyard@acm.org;
-> benh@kernel.crashing.org; liviu.dudau@arm.com; zourongrong@gmail.com;
-> John Garry; Gabriele Paoloni; zhichang.yuan02@gmail.com;
-> kantyzc@163.com; xuwei (O)
-> Subject: Re: [PATCH/RESEND V4 2/3] ARM64 LPC: Add missing range
-> exception for special ISA
-> 
-> On Tue, Nov 01, 2016 at 09:28:45PM +0800, zhichang.yuan wrote:
-> > Currently if the range property is not specified of_translate_one
-> > returns an error. There are some special devices that work on a
-> > range of I/O ports where it's is not correct to specify a range
-> > property as the cpu addresses are used by special accessors.
-> > Here we add a new exception in of_translate_one to return
-> > the cpu address if the range property is not there. The exception
-> > checks if the parent bus is ISA and if the special accessors are
-> > defined.
-> 
-> Using "()" after function names helps distinguish them from text.
-> 
-> s/it's is/it's/
+Fixes: 20a875e2e86e ("serial: 8250_dw: Add quirk for APM X-Gene SoC")
+Signed-off-by: Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ drivers/acpi/acpi_apd.c             | 10 ++--------
+ drivers/acpi/acpi_lpss.c            | 10 ++--------
+ drivers/acpi/acpi_platform.c        |  5 ++++-
+ drivers/acpi/dptf/int340x_thermal.c |  4 ++--
+ drivers/acpi/scan.c                 |  2 +-
+ drivers/platform/x86/intel-hid.c    |  2 +-
+ drivers/platform/x86/intel-vbtn.c   |  2 +-
+ include/linux/acpi.h                |  3 ++-
+ 8 files changed, 15 insertions(+), 23 deletions(-)
 
-Sure we'll fix above nits in the next version
+Hi,
 
-> 
-> I haven't been paying attention, so I missed the context.  But "as the
-> cpu addresses are used by special accessors" doesn't really make sense
-> to me.  In general, *most* acccessors use CPU addresses, i.e.,
-> resource addresses.  Accessors don't use bus addresses because we may
-> have multiple instances of a bus, and we may reuse bus address ranges
-> on the different instances.
+Found the problem, and this is my proposal for a fix.
 
-Basically our LPC device use a CPU address range (not a bus range as
-a bus range is supposed to be remapped into a cpu range using the range
-property).
+Jérôme, please test it when you have time.
 
-This CPIU address range is [0, PCIBIOS_MIN_IO-1].
-This patch effectively does 2 things:
-1) reserve the cpu physical range [0, PCIBIOS_MIN_IO-1] so that it cannot
-   be used by PCI I/O space (see drivers/pci/pci.c)
 
-2) Avoid to translate the cpu addresses that belongs to LPC (in fact
-   for this device we do not specify a range property in the DT): see
-   changes in __of_translate_address()
+Thanks,
 
-3) Do not retrieve an I/O token for I/O addresses that belong to LPC
-   (in fact LPC accessors work directly on the CPU physical addresses):
-   see change in __of_address_to_resource()
-
-Probably 1) and 3) can be put in a separate patch with respect to 2)...
-
-What do you think?
-
-> 
-> In the patch, I see a check for "parent bus is ISA"
-> ("of_bus_isa_match(parent)"), but I don't see the check for whether
-> the special accessors are defined, so I can't quite connect the dots.
-
-See of_isa_indirect_io() called just before of_bus_isa_match(parent)... 
-
-> 
-> > Cc: Bjorn Helgaas <bhelgaas@google.com>
-> > Cc: Rob Herring <robh+dt@kernel.org>
-> > Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
-> > Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-> > ---
-> >  arch/arm64/include/asm/io.h |  7 +++++++
-> >  arch/arm64/kernel/extio.c   | 24 +++++++++++++++++++++++
-> >  drivers/of/address.c        | 47
-> +++++++++++++++++++++++++++++++++++++++++++--
-> >  drivers/pci/pci.c           |  6 +++---
-> >  include/linux/of_address.h  | 17 ++++++++++++++++
-> >  5 files changed, 96 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/arch/arm64/include/asm/io.h
-> b/arch/arm64/include/asm/io.h
-> > index 136735d..e480199 100644
-> > --- a/arch/arm64/include/asm/io.h
-> > +++ b/arch/arm64/include/asm/io.h
-> > @@ -175,6 +175,13 @@ static inline u64 __raw_readq(const volatile
-> void __iomem *addr)
-> >  #define outsl outsl
-> >
-> >  DECLARE_EXTIO(l, u32)
-> > +
-> > +
-> > +#define indirect_io_ison indirect_io_ison
-> > +extern int indirect_io_ison(void);
-> 
-> This makes it look like "ison" is some new word I'm not familiar with.
-> "indirect_io_is_on()" or even "indirect_io_enabled()" would be more
-> readable.
-
-Sure agreed
-
-> 
-> > +
-> > +#define chk_indirect_range chk_indirect_range
-> > +extern int chk_indirect_range(u64 taddr);
-> >  #endif
-> >
-> >
-> > diff --git a/arch/arm64/kernel/extio.c b/arch/arm64/kernel/extio.c
-> > index 80cafd5..55df8dc 100644
-> > --- a/arch/arm64/kernel/extio.c
-> > +++ b/arch/arm64/kernel/extio.c
-> > @@ -19,6 +19,30 @@
-> >
-> >  struct extio_ops *arm64_extio_ops;
-> >
-> > +/**
-> > + * indirect_io_ison - check whether indirectIO can work well. This
-> function only call
-> > + *		before the target I/O address was obtained.
-> > + *
-> > + * Returns 1 when indirectIO can work.
-> > + */
-> > +int indirect_io_ison()
-> > +{
-> > +	return arm64_extio_ops ? 1 : 0;
-> > +}
-> > +
-> > +/**
-> > + * check_indirect_io - check whether the input taddr is for
-> indirectIO.
-> 
-> Comment name ("check_indirect_io") doesn't match actual function name
-> ("chk_indirect_range").
-> 
-> One of my pet peeves: "check" is completely worthless as part of a
-> function name because it doesn't help the reader figure out the sense
-> of the result.  What does a "true" result mean?  Name it something
-> like "address_is_indirect()" so it reads naturally when the caller
-> does something like "if (address_is_indirect())"
-
-Yes it makes sense, we can change to " address_is_indirect"
-
-> 
-> > + * @taddr: the io address to be checked.
-> > + *
-> > + * Returns 1 when taddr is in the range; otherwise return 0.
-> > + */
-> > +int chk_indirect_range(u64 taddr)
-> > +{
-> > +	if (arm64_extio_ops->start > taddr || arm64_extio_ops->end <
-> taddr)
-> > +		return 0;
-> > +
-> > +	return 1;
-> > +}
-> >
-> >  BUILD_EXTIO(b, u8)
-> >
-> > diff --git a/drivers/of/address.c b/drivers/of/address.c
-> > index 02b2903..0bee822 100644
-> > --- a/drivers/of/address.c
-> > +++ b/drivers/of/address.c
-> > @@ -479,6 +479,39 @@ static int of_empty_ranges_quirk(struct
-> device_node *np)
-> >  	return false;
-> >  }
-> >
-> > +
-> > +/*
-> > + * Check whether the current device being translating use
-> indirectIO.
-> 
-> What does "the current device" mean?  I assume you're talking about
-> "any device on 'bus'"?  And apparently the caller is inquiring about a
-> particular address, too?
-
-Effectively we check if the device is lying on a ISA bus, if the accessors
-struct pointer is set, if the parent device is an ISA bus and if the device
-physical addresses are within the range reserved for LPC...
-
-So we check all the conditions that allow us to say that this device
-is lying on a special ISA bus device
-
-> 
-> > + * return 1 if the check is past, or 0 represents fail checking.
-> 
-> This doesn't really make sense.  I assume you mean something like
-> "return 1 if 'address' uses indirectIO; 0 otherwise"?
-
-Yes the comment is quite bad; we'll change this in the next version
-
-> 
-> > + */
-> > +static int of_isa_indirect_io(struct device_node *parent,
-> > +				struct of_bus *bus, __be32 *addr,
-> > +				int na, u64 *presult)
-> > +{
-> > +	unsigned int flags;
-> > +	unsigned int rlen;
-> > +
-> > +	/* whether support indirectIO */
-> > +	if (!indirect_io_ison())
-> > +		return 0;
-> > +
-> > +	if (!of_bus_isa_match(parent))
-> > +		return 0;
-> > +
-> > +	flags = bus->get_flags(addr);
-> > +	if (!(flags & IORESOURCE_IO))
-> > +		return 0;
-> > +
-> > +	/* there is ranges property, apply the normal translation
-> directly. */
-> > +	if (of_get_property(parent, "ranges", &rlen))
-> > +		return 0;
-> > +
-> > +	*presult = of_read_number(addr + 1, na - 1);
-> > +
-> > +	return chk_indirect_range(*presult);
-> > +}
-> > +
-> >  static int of_translate_one(struct device_node *parent, struct
-> of_bus *bus,
-> >  			    struct of_bus *pbus, __be32 *addr,
-> >  			    int na, int ns, int pna, const char *rprop)
-> > @@ -532,7 +565,7 @@ static int of_translate_one(struct device_node
-> *parent, struct of_bus *bus,
-> >  	}
-> >  	memcpy(addr, ranges + na, 4 * pna);
-> >
-> > - finish:
-> > +finish:
-> >  	of_dump_addr("parent translation for:", addr, pna);
-> >  	pr_debug("with offset: %llx\n", (unsigned long long)offset);
-> >
-> > @@ -595,6 +628,15 @@ static u64 __of_translate_address(struct
-> device_node *dev,
-> >  			result = of_read_number(addr, na);
-> >  			break;
-> >  		}
-> > +		/*
-> > +		 * For indirectIO device which has no ranges property, get
-> > +		 * the address from reg directly.
-> > +		 */
-> > +		if (of_isa_indirect_io(dev, bus, addr, na, &result)) {
-> > +			pr_info("isa indirectIO matched(%s)..addr =
-> 0x%llx\n",
-> > +				of_node_full_name(dev), result);
-> > +			break;
-> > +		}
-> >
-> >  		/* Get new parent bus and counts */
-> >  		pbus = of_match_bus(parent);
-> > @@ -688,8 +730,9 @@ static int __of_address_to_resource(struct
-> device_node *dev,
-> >  	if (taddr == OF_BAD_ADDR)
-> >  		return -EINVAL;
-> >  	memset(r, 0, sizeof(struct resource));
-> > -	if (flags & IORESOURCE_IO) {
-> > +	if (flags & IORESOURCE_IO && taddr >= PCIBIOS_MIN_IO) {
-> >  		unsigned long port;
-> > +
-> >  		port = pci_address_to_pio(taddr);
-> >  		if (port == (unsigned long)-1)
-> >  			return -EINVAL;
-> > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> > index ba34907..1a08511 100644
-> > --- a/drivers/pci/pci.c
-> > +++ b/drivers/pci/pci.c
-> > @@ -3263,7 +3263,7 @@ int __weak pci_register_io_range(phys_addr_t
-> addr, resource_size_t size)
-> >
-> >  #ifdef PCI_IOBASE
-> >  	struct io_range *range;
-> > -	resource_size_t allocated_size = 0;
-> > +	resource_size_t allocated_size = PCIBIOS_MIN_IO;
-> 
-> I don't understand what's going on here.  PCIBIOS_MIN_IO is an
-> *address*, so you're setting a *size* to an address.  Maybe this just
-> needs an explanation.  The connection to the rest of this patch isn't
-> obvious.  If it could be split to a separate patch, so much the
-> better; then you'd have a nice place to describe it.
-
-Please see my first comment above...this is needed to reserve the
-cpu address range for the LPC...
-
-> 
-> >  	/* check if the range hasn't been previously recorded */
-> >  	spin_lock(&io_range_lock);
-> > @@ -3312,7 +3312,7 @@ phys_addr_t pci_pio_to_address(unsigned long
-> pio)
-> >
-> >  #ifdef PCI_IOBASE
-> >  	struct io_range *range;
-> > -	resource_size_t allocated_size = 0;
-> > +	resource_size_t allocated_size = PCIBIOS_MIN_IO;
-> >
-> >  	if (pio > IO_SPACE_LIMIT)
-> >  		return address;
-> > @@ -3335,7 +3335,7 @@ unsigned long __weak
-> pci_address_to_pio(phys_addr_t address)
-> >  {
-> >  #ifdef PCI_IOBASE
-> >  	struct io_range *res;
-> > -	resource_size_t offset = 0;
-> > +	resource_size_t offset = PCIBIOS_MIN_IO;
-> >  	unsigned long addr = -1;
-> >
-> >  	spin_lock(&io_range_lock);
-> > diff --git a/include/linux/of_address.h b/include/linux/of_address.h
-> > index 3786473..0ba7e21 100644
-> > --- a/include/linux/of_address.h
-> > +++ b/include/linux/of_address.h
-> > @@ -24,6 +24,23 @@ struct of_pci_range {
-> >  #define for_each_of_pci_range(parser, range) \
-> >  	for (; of_pci_range_parser_one(parser, range);)
-> >
-> > +
-> > +#ifndef indirect_io_ison
-> > +#define indirect_io_ison indirect_io_ison
-> > +static inline int indirect_io_ison(void)
-> > +{
-> > +	return 0;
-> > +}
-> > +#endif
-> > +
-> > +#ifndef chk_indirect_range
-> > +#define chk_indirect_range chk_indirect_range
-> > +static inline int chk_indirect_range(u64 taddr)
-> > +{
-> > +	return 0;
-> > +}
-> > +#endif
-> > +
-> >  /* Translate a DMA address from device space to CPU space */
-> >  extern u64 of_translate_dma_address(struct device_node *dev,
-> >  				    const __be32 *in_addr);
-> > --
-> > 1.9.1
-> >
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-pci"
-> in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
+index 5ec7f3a..26696b6 100644
+--- a/drivers/acpi/acpi_apd.c
++++ b/drivers/acpi/acpi_apd.c
+@@ -127,7 +127,7 @@ static int acpi_apd_create_device(struct acpi_device *adev,
+ 	int ret;
+ 
+ 	if (!dev_desc) {
+-		pdev = acpi_create_platform_device(adev);
++		pdev = acpi_create_platform_device(adev, NULL);
+ 		return IS_ERR_OR_NULL(pdev) ? PTR_ERR(pdev) : 1;
+ 	}
+ 
+@@ -144,14 +144,8 @@ static int acpi_apd_create_device(struct acpi_device *adev,
+ 			goto err_out;
+ 	}
+ 
+-	if (dev_desc->properties) {
+-		ret = device_add_properties(&adev->dev, dev_desc->properties);
+-		if (ret)
+-			goto err_out;
+-	}
+-
+ 	adev->driver_data = pdata;
+-	pdev = acpi_create_platform_device(adev);
++	pdev = acpi_create_platform_device(adev, dev_desc->properties);
+ 	if (!IS_ERR_OR_NULL(pdev))
+ 		return 1;
+ 
+diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
+index 5520102..373657f 100644
+--- a/drivers/acpi/acpi_lpss.c
++++ b/drivers/acpi/acpi_lpss.c
+@@ -395,7 +395,7 @@ static int acpi_lpss_create_device(struct acpi_device *adev,
+ 
+ 	dev_desc = (const struct lpss_device_desc *)id->driver_data;
+ 	if (!dev_desc) {
+-		pdev = acpi_create_platform_device(adev);
++		pdev = acpi_create_platform_device(adev, NULL);
+ 		return IS_ERR_OR_NULL(pdev) ? PTR_ERR(pdev) : 1;
+ 	}
+ 	pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
+@@ -451,14 +451,8 @@ static int acpi_lpss_create_device(struct acpi_device *adev,
+ 		goto err_out;
+ 	}
+ 
+-	if (dev_desc->properties) {
+-		ret = device_add_properties(&adev->dev, dev_desc->properties);
+-		if (ret)
+-			goto err_out;
+-	}
+-
+ 	adev->driver_data = pdata;
+-	pdev = acpi_create_platform_device(adev);
++	pdev = acpi_create_platform_device(adev, dev_desc->properties);
+ 	if (!IS_ERR_OR_NULL(pdev)) {
+ 		return 1;
+ 	}
+diff --git a/drivers/acpi/acpi_platform.c b/drivers/acpi/acpi_platform.c
+index b200ae1..b4c1a6a 100644
+--- a/drivers/acpi/acpi_platform.c
++++ b/drivers/acpi/acpi_platform.c
+@@ -50,6 +50,7 @@ static void acpi_platform_fill_resource(struct acpi_device *adev,
+ /**
+  * acpi_create_platform_device - Create platform device for ACPI device node
+  * @adev: ACPI device node to create a platform device for.
++ * @properties: Optional collection of build-in properties.
+  *
+  * Check if the given @adev can be represented as a platform device and, if
+  * that's the case, create and register a platform device, populate its common
+@@ -57,7 +58,8 @@ static void acpi_platform_fill_resource(struct acpi_device *adev,
+  *
+  * Name of the platform device will be the same as @adev's.
+  */
+-struct platform_device *acpi_create_platform_device(struct acpi_device *adev)
++struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
++					struct property_entry *properties)
+ {
+ 	struct platform_device *pdev = NULL;
+ 	struct platform_device_info pdevinfo;
+@@ -106,6 +108,7 @@ struct platform_device *acpi_create_platform_device(struct acpi_device *adev)
+ 	pdevinfo.res = resources;
+ 	pdevinfo.num_res = count;
+ 	pdevinfo.fwnode = acpi_fwnode_handle(adev);
++	pdevinfo.properties = properties;
+ 
+ 	if (acpi_dma_supported(adev))
+ 		pdevinfo.dma_mask = DMA_BIT_MASK(32);
+diff --git a/drivers/acpi/dptf/int340x_thermal.c b/drivers/acpi/dptf/int340x_thermal.c
+index 33505c6..8636409 100644
+--- a/drivers/acpi/dptf/int340x_thermal.c
++++ b/drivers/acpi/dptf/int340x_thermal.c
+@@ -34,11 +34,11 @@ static int int340x_thermal_handler_attach(struct acpi_device *adev,
+ 					const struct acpi_device_id *id)
+ {
+ 	if (IS_ENABLED(CONFIG_INT340X_THERMAL))
+-		acpi_create_platform_device(adev);
++		acpi_create_platform_device(adev, NULL);
+ 	/* Intel SoC DTS thermal driver needs INT3401 to set IRQ descriptor */
+ 	else if (IS_ENABLED(CONFIG_INTEL_SOC_DTS_THERMAL) &&
+ 		 id->driver_data == INT3401_DEVICE)
+-		acpi_create_platform_device(adev);
++		acpi_create_platform_device(adev, NULL);
+ 	return 1;
+ }
+ 
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 035ac64..3d1856f 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1734,7 +1734,7 @@ static void acpi_default_enumeration(struct acpi_device *device)
+ 			       &is_spi_i2c_slave);
+ 	acpi_dev_free_resource_list(&resource_list);
+ 	if (!is_spi_i2c_slave) {
+-		acpi_create_platform_device(device);
++		acpi_create_platform_device(device, NULL);
+ 		acpi_device_set_enumerated(device);
+ 	} else {
+ 		blocking_notifier_call_chain(&acpi_reconfig_chain,
+diff --git a/drivers/platform/x86/intel-hid.c b/drivers/platform/x86/intel-hid.c
+index ed58742..12dbb50 100644
+--- a/drivers/platform/x86/intel-hid.c
++++ b/drivers/platform/x86/intel-hid.c
+@@ -264,7 +264,7 @@ check_acpi_dev(acpi_handle handle, u32 lvl, void *context, void **rv)
+ 		return AE_OK;
+ 
+ 	if (acpi_match_device_ids(dev, ids) == 0)
+-		if (acpi_create_platform_device(dev))
++		if (acpi_create_platform_device(dev, NULL))
+ 			dev_info(&dev->dev,
+ 				 "intel-hid: created platform device\n");
+ 
+diff --git a/drivers/platform/x86/intel-vbtn.c b/drivers/platform/x86/intel-vbtn.c
+index 146d02f..7808076 100644
+--- a/drivers/platform/x86/intel-vbtn.c
++++ b/drivers/platform/x86/intel-vbtn.c
+@@ -164,7 +164,7 @@ check_acpi_dev(acpi_handle handle, u32 lvl, void *context, void **rv)
+ 		return AE_OK;
+ 
+ 	if (acpi_match_device_ids(dev, ids) == 0)
+-		if (acpi_create_platform_device(dev))
++		if (acpi_create_platform_device(dev, NULL))
+ 			dev_info(&dev->dev,
+ 				 "intel-vbtn: created platform device\n");
+ 
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index 689a8b9..61a3d90 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -555,7 +555,8 @@ int acpi_device_uevent_modalias(struct device *, struct kobj_uevent_env *);
+ int acpi_device_modalias(struct device *, char *, int);
+ void acpi_walk_dep_device_list(acpi_handle handle);
+ 
+-struct platform_device *acpi_create_platform_device(struct acpi_device *);
++struct platform_device *acpi_create_platform_device(struct acpi_device *,
++						    struct property_entry *);
+ #define ACPI_PTR(_ptr)	(_ptr)
+ 
+ static inline void acpi_device_set_enumerated(struct acpi_device *adev)
+-- 
+2.9.3
