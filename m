@@ -1,40 +1,55 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: Re: console issue since 3.6, console=ttyS1 hangs
-Date: Sat, 5 Nov 2016 23:44:34 +0000 (GMT)
-Message-ID: <alpine.LFD.2.20.1611052336380.17811@eddie.linux-mips.org>
-References: <20161024135235.GA29984@gofer.mess.org> <20161024214925.GA143272@stormcage.americas.sgi.com> <20161025204139.GA22268@gofer.mess.org> <fb8f3b77-6095-c14b-02e8-deb595777f23@sgi.com> <20161027201916.GA7718@gofer.mess.org> <c73bc50a-51fb-78db-b872-277af3fb06bc@sgi.com>
- <20161031202706.GA10263@gofer.mess.org> <CAKU3ayXn4y+_Amu0FzL5ZhF2W8vFuEb0RR8b2hTBZ6rd+YZMqg@mail.gmail.com> <20161102152951.GA107664@stormcage.americas.sgi.com> <CAKU3ayVEsv0Qpk7AU9NwbAX5nOBkHVaj0SA2QnYFuHCQSWjv7A@mail.gmail.com>
- <20161104213348.GA30383@stormcage.americas.sgi.com> <CAKU3ayWH9najj+Gpw8Zmpxgq40s8J_dXAyo9oBbbdG55brO6Sw@mail.gmail.com>
+From: =?ISO-8859-1?Q?J=E9r=F4me?= de Bretagne
+        <jerome.debretagne@gmail.com>
+Subject: Re: [PATCH] ACPI / platform: Add support for build-in properties
+Date: Sun, 06 Nov 2016 17:09:34 +0100
+Message-ID: <1478448574.1591.2.camel@gmail.com>
+References: <20161102154139.GD11523@kuha.fi.intel.com>
+         <20161103142126.87413-1-heikki.krogerus@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Received: from localhost.localdomain ([127.0.0.1]:34790 "EHLO
-        localhost.localdomain" rhost-flags-OK-OK-OK-OK)
-        by eddie.linux-mips.org with ESMTP id S23993135AbcKEXoeTgYvZ (ORCPT
-        <rfc822;linux-serial@vger.kernel.org> + 1 other);
-        Sun, 6 Nov 2016 00:44:34 +0100
-In-Reply-To: <CAKU3ayWH9najj+Gpw8Zmpxgq40s8J_dXAyo9oBbbdG55brO6Sw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>
-Cc: Nathan Zimmer <nzimmer@sgi.com>, Sean Young <sean@mess.org>, Linux kernel mailing list <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20161103142126.87413-1-heikki.krogerus@linux.intel.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kefeng Wang <wangkefeng.wang@huawei.com>, Feng Kan <fkan@apm.com>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-bluetooth@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 4 Nov 2016, Peter Hurley wrote:
-
-> > These bios screens do not have any mention of PNP settings.
-> > I am getting output over the console (via ipmi) until the boot hangs.
+Le jeudi 03 novembre 2016 à 16:21 +0200, Heikki Krogerus a écrit :
+> We have a couple of drivers, acpi_apd.c and acpi_lpss.c,
+> that need to pass extra build-in properties to the devices
+> they create. Previously the drivers added those properties
+> to the struct device which is member of the struct
+> acpi_device, but that does not work. Those properties need
+> to be assigned to the struct device of the platform device
+> instead in order for them to become available to the
+> drivers.
 > 
-> Yeah, probably the device actually decodes io address access anyway,
-> but in the disabled state probably has not routed IRQ.
+> To fix this, this patch changes acpi_create_platform_device
+> function to take struct property_entry pointer as parameter.
 > 
-> I have no idea how to help you with the bios, sorry.
+> Fixes: 20a875e2e86e ("serial: 8250_dw: Add quirk for APM X-Gene SoC")
+> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> ---
+> 
+> Hi,
+> 
+> Found the problem, and this is my proposal for a fix.
+> 
+> Jérôme, please test it when you have time.
+> 
 
- I'd look out for serial port, Super-I/O or COM1 port (which is how PC-DOS 
-named the device some 35 years ago) settings rather than anything to do 
-with PNP.  Typically you'd be able to choose from a few classic combined 
-I/O space address and IRQ assignments in addition to a `Disabled' setting.
+Hi Heikki,
 
- There might be a genuine BIOS bug there as well of course as serial ports 
-seem to be less used these days and the issue may have escaped validation.
+I can confirm that this patch fixes the issue I've reported on the Lenovo
+ThinkPad 8 tablet. You were fast to find the root cause, impressive, really
+appreciated.
 
-  Maciej
+Feel free to add:
+Tested-by: Jérôme de Bretagne <jerome.debretagne@gmail.com> 
+
+Let's hope it can still make it during the remaining 4.9 rc timing.
+
+Cheers,
+Jérôme
+
