@@ -1,54 +1,26 @@
-From: Nathan Zimmer <nzimmer@sgi.com>
-Subject: Re: console issue since 3.6, console=ttyS1 hangs
-Date: Mon, 7 Nov 2016 09:40:32 -0600
-Message-ID: <93b11bd3-6ae1-f710-d151-748ce392d666@sgi.com>
-References: <20161024135235.GA29984@gofer.mess.org>
- <20161024214925.GA143272@stormcage.americas.sgi.com>
- <20161025204139.GA22268@gofer.mess.org>
- <fb8f3b77-6095-c14b-02e8-deb595777f23@sgi.com>
- <20161027201916.GA7718@gofer.mess.org>
- <c73bc50a-51fb-78db-b872-277af3fb06bc@sgi.com>
- <20161031202706.GA10263@gofer.mess.org>
- <CAKU3ayXn4y+_Amu0FzL5ZhF2W8vFuEb0RR8b2hTBZ6rd+YZMqg@mail.gmail.com>
- <20161102152951.GA107664@stormcage.americas.sgi.com>
- <CAKU3ayVEsv0Qpk7AU9NwbAX5nOBkHVaj0SA2QnYFuHCQSWjv7A@mail.gmail.com>
- <20161104213348.GA30383@stormcage.americas.sgi.com>
- <CAKU3ayWH9najj+Gpw8Zmpxgq40s8J_dXAyo9oBbbdG55brO6Sw@mail.gmail.com>
- <alpine.LFD.2.20.1611052336380.17811@eddie.linux-mips.org>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH/RFC] arm64: dts: r8a7796-salvator-x: Disable sdr104 of
+ SDHI
+Date: Mon, 7 Nov 2016 16:41:38 +0100
+Message-ID: <20161107154137.GC9233@verge.net.au>
+References: <1478532814-8652-1-git-send-email-horms@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.LFD.2.20.1611052336380.17811@eddie.linux-mips.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Maciej W. Rozycki" <macro@linux-mips.org>, Peter Hurley <peter@hurleysoftware.com>
-Cc: Sean Young <sean@mess.org>, Linux kernel mailing list <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1478532814-8652-1-git-send-email-horms@verge.net.au>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Wolfram Sang <wsa@sang-engineering.com>, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On Mon, Nov 07, 2016 at 04:33:34PM +0100, Simon Horman wrote:
+> From: Masaharu Hayakawa <masaharu.hayakawa.ry@renesas.com>
+> 
+> The problem which the card inserted in the slot of SDHI{0,3} does not
+> recognize in the combination of some boards and UHS-I sdcard occurred.
+> 
+> Therefore, this patch repealed SDR104 of SDHI0 and SDHI3.
 
-
-On 11/05/2016 06:44 PM, Maciej W. Rozycki wrote:
-> On Fri, 4 Nov 2016, Peter Hurley wrote:
->
->>> These bios screens do not have any mention of PNP settings.
->>> I am getting output over the console (via ipmi) until the boot hangs.
->> Yeah, probably the device actually decodes io address access anyway,
->> but in the disabled state probably has not routed IRQ.
->>
->> I have no idea how to help you with the bios, sorry.
->   I'd look out for serial port, Super-I/O or COM1 port (which is how PC-DOS
-> named the device some 35 years ago) settings rather than anything to do
-> with PNP.  Typically you'd be able to choose from a few classic combined
-> I/O space address and IRQ assignments in addition to a `Disabled' setting.
->
->   There might be a genuine BIOS bug there as well of course as serial ports
-> seem to be less used these days and the issue may have escaped validation.
->
->    Maciej
-
-Given they hid some of the setting in the bios to keep these boxes 
-uniform I will have to talk with the bios guys more about that.
-Last time they were certain it wasn't a big deal.
-
-Thanks,
-Nate
+Sorry, I withdraw this patch; it is not relevant to mainline.
+I meant to send a completely different patch.
