@@ -1,58 +1,64 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Fix deadlock caused by serial output
- request
-Date: Mon, 7 Nov 2016 16:44:19 +0100
-Message-ID: <20161107154418.GA10737@verge.net.au>
-References: <1478531681-1561-1-git-send-email-horms+renesas@verge.net.au>
- <CAMuHMdW8VPo5Vx08CdN9ZHw=ujamNc+Th5VftE5CxJdxbGwZVg@mail.gmail.com>
- <20161107154000.GB9233@verge.net.au>
- <CAMuHMdWXEx0OSs_eedL+kzAqJ-=odOV90mE-+CCYM=a9qDbeTg@mail.gmail.com>
+From: Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [PATCH/RFC] serial: sh-sci: Fix unlocked access to SCSCR register
+Date: Mon, 7 Nov 2016 16:52:09 +0100
+Message-ID: <20161107155209.GC5140@katana>
+References: <1478533373-10643-1-git-send-email-horms+renesas@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="ncSAzJYg3Aa9+CRW"
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdWXEx0OSs_eedL+kzAqJ-=odOV90mE-+CCYM=a9qDbeTg@mail.gmail.com>
+In-Reply-To: <1478533373-10643-1-git-send-email-horms+renesas@verge.net.au>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Wolfram Sang <wsa@sang-engineering.com>, Magnus Damm <magnus.damm@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+To: Simon Horman <horms+renesas@verge.net.au>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Nov 07, 2016 at 04:42:39PM +0100, Geert Uytterhoeven wrote:
-> Hi Simon,
-> 
-> On Mon, Nov 7, 2016 at 4:40 PM, Simon Horman <horms@verge.net.au> wrote:
-> > On Mon, Nov 07, 2016 at 04:20:56PM +0100, Geert Uytterhoeven wrote:
-> >> On Mon, Nov 7, 2016 at 4:14 PM, Simon Horman <horms+renesas@verge.net.au> wrote:
-> >> > From: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>
-> >> >
-> >> > While spin is already locked, serial output request causes the deadlock,
-> >> > because serial output process also tries to lock the spin.
-> >> > This patch removes serial output with spin locked.
-> >> >
-> >> > Signed-off-by: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>
-> >> > Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
-> >> > Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
-> >>
-> >> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> >>
-> >> Gr{oetje,eeting}s,
-> >
-> > Thanks. Will you pass this on to Greg or should I do so?
-> 
-> Feel free to pass to Greg (doesn't he use patchwork on linux-serial?).
-> Thanks!
 
-Probably. I'll repost it as a non-RFC just to be on the safe side.
+--ncSAzJYg3Aa9+CRW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
-> 
+On Mon, Nov 07, 2016 at 04:42:53PM +0100, Simon Horman wrote:
+> From: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>
+>=20
+> The SCSCR register access in sci_break_ctl() is not locked.
+>=20
+> sci_start_tx() and sci_set_termios() changes the SCSCR register,
+> but does not lock sci_port.
+
+Maybe naive question: Shouldn't stop_tx and/or (start|stop)_rx be
+protected, too? They change SCSCR as well?
+
+> Therefore, this patch adds lock during register access.
+>=20
+> Also, remove the log output that leads to a double lock.
+>=20
+> Signed-off-by: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutio=
+ns.com>
+> Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+
+--ncSAzJYg3Aa9+CRW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJYIKMpAAoJEBQN5MwUoCm2B1gP/0DdfxqYf88a2izUVETW5seF
+LIbDGzTSQC/dyIlzzw5v7/7XjtMVWMjALq/mVk6eml5Ov5GvNQvpLNbxFjzbsykU
+1fyaYUvUqywrtwi0Nl583B7fEgRHMuohTDIH77sGkerCCzbb06tPDLb0aRtUsHgL
+6gkCARppa/B7HJSrlg+FJKMO0bK+4TYhaJ8LANyqohvwkIj2K7xtaEFkDnfgrfc+
+9vvYXmnEwMenxTG4gXN28+pLo9uqPqVKfDTHhh4eLaD0a7Psqoc7qKheeDuPbS8j
+AEqzfTezvPDqtUcS369fduvREd2VmRcSQEgzqahf0gCKK/Z4do538zlTX7E7MP6E
+UK8LBuDDrHkYcdNurNYyrLmTT6NT0stvHLNeVOGV244mjV/Z9+kxCOP5zOSz7Gz9
+uiQMD43zQGKgCMd9RV5HjWWW4zOlY3EU1QFa1DSq+rlE01nJOFQ4wBTizyQoVIOQ
+6bqjmIdZpINqHv104MAw1YFXxcG2ZlmTSF4ixN3KK3wPxk6LptNJJSOMucyfYoNH
+p8jDwN9cd062UHfGdrydbCgm/INtJQV0iKDlkH5FKAIupRp8qzabKMN/GdsPiBOk
+rqiPW5Zdpf0pqXFddI8loR2cx+PxDXBNp3pqMPcwNQddegNMCHJRyIofoyvT8BsH
+f5L9P25h++OkB0oANesx
+=Z+80
+-----END PGP SIGNATURE-----
+
+--ncSAzJYg3Aa9+CRW--
