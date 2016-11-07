@@ -1,64 +1,118 @@
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [PATCH/RFC] serial: sh-sci: Fix unlocked access to SCSCR register
-Date: Mon, 7 Nov 2016 16:52:09 +0100
-Message-ID: <20161107155209.GC5140@katana>
-References: <1478533373-10643-1-git-send-email-horms+renesas@verge.net.au>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="ncSAzJYg3Aa9+CRW"
+From: Simon Horman <horms+renesas@verge.net.au>
+Subject: [PATCH] serial: sh-sci: Fix deadlock caused by serial output request
+Date: Mon,  7 Nov 2016 16:56:50 +0100
+Message-ID: <1478534210-14124-1-git-send-email-horms+renesas@verge.net.au>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1478533373-10643-1-git-send-email-horms+renesas@verge.net.au>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Magnus Damm <magnus.damm@gmail.com>, linux-renesas-soc@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>
 List-Id: linux-serial@vger.kernel.org
 
+From: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>
 
---ncSAzJYg3Aa9+CRW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+While spin is already locked, serial output request causes the deadlock,
+because serial output process also tries to lock the spin.
+This patch removes serial output with spin locked.
 
-On Mon, Nov 07, 2016 at 04:42:53PM +0100, Simon Horman wrote:
-> From: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>
->=20
-> The SCSCR register access in sci_break_ctl() is not locked.
->=20
-> sci_start_tx() and sci_set_termios() changes the SCSCR register,
-> but does not lock sci_port.
+Signed-off-by: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>
+Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ drivers/tty/serial/sh-sci.c | 20 +++++---------------
+ 1 file changed, 5 insertions(+), 15 deletions(-)
 
-Maybe naive question: Shouldn't stop_tx and/or (start|stop)_rx be
-protected, too? They change SCSCR as well?
+Changes since RFC:
+* Add tags from Geert and Wolgram
+* Drop RFC designation
 
-> Therefore, this patch adds lock during register access.
->=20
-> Also, remove the log output that leads to a double lock.
->=20
-> Signed-off-by: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutio=
-ns.com>
-> Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
-> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
-
---ncSAzJYg3Aa9+CRW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJYIKMpAAoJEBQN5MwUoCm2B1gP/0DdfxqYf88a2izUVETW5seF
-LIbDGzTSQC/dyIlzzw5v7/7XjtMVWMjALq/mVk6eml5Ov5GvNQvpLNbxFjzbsykU
-1fyaYUvUqywrtwi0Nl583B7fEgRHMuohTDIH77sGkerCCzbb06tPDLb0aRtUsHgL
-6gkCARppa/B7HJSrlg+FJKMO0bK+4TYhaJ8LANyqohvwkIj2K7xtaEFkDnfgrfc+
-9vvYXmnEwMenxTG4gXN28+pLo9uqPqVKfDTHhh4eLaD0a7Psqoc7qKheeDuPbS8j
-AEqzfTezvPDqtUcS369fduvREd2VmRcSQEgzqahf0gCKK/Z4do538zlTX7E7MP6E
-UK8LBuDDrHkYcdNurNYyrLmTT6NT0stvHLNeVOGV244mjV/Z9+kxCOP5zOSz7Gz9
-uiQMD43zQGKgCMd9RV5HjWWW4zOlY3EU1QFa1DSq+rlE01nJOFQ4wBTizyQoVIOQ
-6bqjmIdZpINqHv104MAw1YFXxcG2ZlmTSF4ixN3KK3wPxk6LptNJJSOMucyfYoNH
-p8jDwN9cd062UHfGdrydbCgm/INtJQV0iKDlkH5FKAIupRp8qzabKMN/GdsPiBOk
-rqiPW5Zdpf0pqXFddI8loR2cx+PxDXBNp3pqMPcwNQddegNMCHJRyIofoyvT8BsH
-f5L9P25h++OkB0oANesx
-=Z+80
------END PGP SIGNATURE-----
-
---ncSAzJYg3Aa9+CRW--
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 4b26252c2885..91e7dddbf72c 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1142,11 +1142,8 @@ static int sci_dma_rx_push(struct sci_port *s, void *buf, size_t count)
+ 	int copied;
+ 
+ 	copied = tty_insert_flip_string(tport, buf, count);
+-	if (copied < count) {
+-		dev_warn(port->dev, "Rx overrun: dropping %zu bytes\n",
+-			 count - copied);
++	if (copied < count)
+ 		port->icount.buf_overrun++;
+-	}
+ 
+ 	port->icount.rx += copied;
+ 
+@@ -1161,8 +1158,6 @@ static int sci_dma_rx_find_active(struct sci_port *s)
+ 		if (s->active_rx == s->cookie_rx[i])
+ 			return i;
+ 
+-	dev_err(s->port.dev, "%s: Rx cookie %d not found!\n", __func__,
+-		s->active_rx);
+ 	return -1;
+ }
+ 
+@@ -1223,9 +1218,9 @@ static void sci_dma_rx_complete(void *arg)
+ 
+ 	dma_async_issue_pending(chan);
+ 
++	spin_unlock_irqrestore(&port->lock, flags);
+ 	dev_dbg(port->dev, "%s: cookie %d #%d, new active cookie %d\n",
+ 		__func__, s->cookie_rx[active], active, s->active_rx);
+-	spin_unlock_irqrestore(&port->lock, flags);
+ 	return;
+ 
+ fail:
+@@ -1273,8 +1268,6 @@ static void sci_submit_rx(struct sci_port *s)
+ 		if (dma_submit_error(s->cookie_rx[i]))
+ 			goto fail;
+ 
+-		dev_dbg(s->port.dev, "%s(): cookie %d to #%d\n", __func__,
+-			s->cookie_rx[i], i);
+ 	}
+ 
+ 	s->active_rx = s->cookie_rx[0];
+@@ -1288,7 +1281,6 @@ static void sci_submit_rx(struct sci_port *s)
+ 	for (i = 0; i < 2; i++)
+ 		s->cookie_rx[i] = -EINVAL;
+ 	s->active_rx = -EINVAL;
+-	dev_warn(s->port.dev, "Failed to re-start Rx DMA, using PIO\n");
+ 	sci_rx_dma_release(s, true);
+ }
+ 
+@@ -1358,10 +1350,10 @@ static void rx_timer_fn(unsigned long arg)
+ 	int active, count;
+ 	u16 scr;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+-
+ 	dev_dbg(port->dev, "DMA Rx timed out\n");
+ 
++	spin_lock_irqsave(&port->lock, flags);
++
+ 	active = sci_dma_rx_find_active(s);
+ 	if (active < 0) {
+ 		spin_unlock_irqrestore(&port->lock, flags);
+@@ -1370,9 +1362,9 @@ static void rx_timer_fn(unsigned long arg)
+ 
+ 	status = dmaengine_tx_status(s->chan_rx, s->active_rx, &state);
+ 	if (status == DMA_COMPLETE) {
++		spin_unlock_irqrestore(&port->lock, flags);
+ 		dev_dbg(port->dev, "Cookie %d #%d has already completed\n",
+ 			s->active_rx, active);
+-		spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 		/* Let packet complete handler take care of the packet */
+ 		return;
+@@ -1396,8 +1388,6 @@ static void rx_timer_fn(unsigned long arg)
+ 	/* Handle incomplete DMA receive */
+ 	dmaengine_terminate_all(s->chan_rx);
+ 	read = sg_dma_len(&s->sg_rx[active]) - state.residue;
+-	dev_dbg(port->dev, "Read %u bytes with cookie %d\n", read,
+-		s->active_rx);
+ 
+ 	if (read) {
+ 		count = sci_dma_rx_push(s, s->rx_buf[active], read);
+-- 
+2.7.0.rc3.207.g0ac5344
