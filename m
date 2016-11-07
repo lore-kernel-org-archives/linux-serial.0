@@ -1,118 +1,86 @@
-From: Simon Horman <horms+renesas@verge.net.au>
-Subject: [PATCH] serial: sh-sci: Fix deadlock caused by serial output request
-Date: Mon,  7 Nov 2016 16:56:50 +0100
-Message-ID: <1478534210-14124-1-git-send-email-horms+renesas@verge.net.au>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Magnus Damm <magnus.damm@gmail.com>, linux-renesas-soc@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>
+From: Julia Lawall <julia.lawall@lip6.fr>
+Subject: Re: [PATCH] serial: sirf: Simplify a test
+Date: Mon, 7 Nov 2016 18:19:45 +0100 (CET)
+Message-ID: <alpine.DEB.2.10.1611071816140.3128@hadrien>
+References: <20161101070333.12255-1-christophe.jaillet@wanadoo.fr> <2916662.De1FDumaQl@wuerfel>
+Mime-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+In-Reply-To: <2916662.De1FDumaQl@wuerfel>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>, gregkh@linuxfoundation.org, jslaby@suse.com, baohua@kernel.org, kernel-janitors@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>
 
-While spin is already locked, serial output request causes the deadlock,
-because serial output process also tries to lock the spin.
-This patch removes serial output with spin locked.
 
-Signed-off-by: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>
-Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
-Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- drivers/tty/serial/sh-sci.c | 20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
+On Mon, 7 Nov 2016, Arnd Bergmann wrote:
 
-Changes since RFC:
-* Add tags from Geert and Wolgram
-* Drop RFC designation
+> On Tuesday, November 1, 2016 8:03:33 AM CET Christophe JAILLET wrote:
+> > 'dmaengine_prep_dma_cyclic()' does not return an error pointer, so the test
+> > can be simplified to be more consistent.
+> >
+> > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>
+> The change looks correct in principle. It would be good to automate looking
+> for other instances of this bug. How did you find it? Do you have e.g. a
+> coccinelle script or did you just stumble over the issue by accident?
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 4b26252c2885..91e7dddbf72c 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1142,11 +1142,8 @@ static int sci_dma_rx_push(struct sci_port *s, void *buf, size_t count)
- 	int copied;
- 
- 	copied = tty_insert_flip_string(tport, buf, count);
--	if (copied < count) {
--		dev_warn(port->dev, "Rx overrun: dropping %zu bytes\n",
--			 count - copied);
-+	if (copied < count)
- 		port->icount.buf_overrun++;
--	}
- 
- 	port->icount.rx += copied;
- 
-@@ -1161,8 +1158,6 @@ static int sci_dma_rx_find_active(struct sci_port *s)
- 		if (s->active_rx == s->cookie_rx[i])
- 			return i;
- 
--	dev_err(s->port.dev, "%s: Rx cookie %d not found!\n", __func__,
--		s->active_rx);
- 	return -1;
- }
- 
-@@ -1223,9 +1218,9 @@ static void sci_dma_rx_complete(void *arg)
- 
- 	dma_async_issue_pending(chan);
- 
-+	spin_unlock_irqrestore(&port->lock, flags);
- 	dev_dbg(port->dev, "%s: cookie %d #%d, new active cookie %d\n",
- 		__func__, s->cookie_rx[active], active, s->active_rx);
--	spin_unlock_irqrestore(&port->lock, flags);
- 	return;
- 
- fail:
-@@ -1273,8 +1268,6 @@ static void sci_submit_rx(struct sci_port *s)
- 		if (dma_submit_error(s->cookie_rx[i]))
- 			goto fail;
- 
--		dev_dbg(s->port.dev, "%s(): cookie %d to #%d\n", __func__,
--			s->cookie_rx[i], i);
- 	}
- 
- 	s->active_rx = s->cookie_rx[0];
-@@ -1288,7 +1281,6 @@ static void sci_submit_rx(struct sci_port *s)
- 	for (i = 0; i < 2; i++)
- 		s->cookie_rx[i] = -EINVAL;
- 	s->active_rx = -EINVAL;
--	dev_warn(s->port.dev, "Failed to re-start Rx DMA, using PIO\n");
- 	sci_rx_dma_release(s, true);
- }
- 
-@@ -1358,10 +1350,10 @@ static void rx_timer_fn(unsigned long arg)
- 	int active, count;
- 	u16 scr;
- 
--	spin_lock_irqsave(&port->lock, flags);
--
- 	dev_dbg(port->dev, "DMA Rx timed out\n");
- 
-+	spin_lock_irqsave(&port->lock, flags);
-+
- 	active = sci_dma_rx_find_active(s);
- 	if (active < 0) {
- 		spin_unlock_irqrestore(&port->lock, flags);
-@@ -1370,9 +1362,9 @@ static void rx_timer_fn(unsigned long arg)
- 
- 	status = dmaengine_tx_status(s->chan_rx, s->active_rx, &state);
- 	if (status == DMA_COMPLETE) {
-+		spin_unlock_irqrestore(&port->lock, flags);
- 		dev_dbg(port->dev, "Cookie %d #%d has already completed\n",
- 			s->active_rx, active);
--		spin_unlock_irqrestore(&port->lock, flags);
- 
- 		/* Let packet complete handler take care of the packet */
- 		return;
-@@ -1396,8 +1388,6 @@ static void rx_timer_fn(unsigned long arg)
- 	/* Handle incomplete DMA receive */
- 	dmaengine_terminate_all(s->chan_rx);
- 	read = sg_dma_len(&s->sg_rx[active]) - state.residue;
--	dev_dbg(port->dev, "Read %u bytes with cookie %d\n", read,
--		s->active_rx);
- 
- 	if (read) {
- 		count = sci_dma_rx_push(s, s->rx_buf[active], read);
--- 
-2.7.0.rc3.207.g0ac5344
+I'm working on collecting this information in a more general way.  It is
+complicated by the fact that there are some functions that have the same
+names but different behaviors, and I want to be clear about when that is
+an issue.  There are nevertheless limits to the accuracy that can be
+obtained with Coccinelle, because Coccinelle doesn't take values into
+account.  Sometimes a variable is initialized to NULL, just to have a
+starting value, but in practice the only way to reach an error return is
+via conditionals that have the effect of ensuring that the value is
+ERR_PTR.  So at least the cases that are reported as being able to return
+both NULL and ERR_PTR will need some careful checking.
+
+julia
+
+>
+> There is one problem with your patch:
+>
+> >  drivers/tty/serial/sirfsoc_uart.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+> > index b186c9c4f850..666ca3156961 100644
+> > --- a/drivers/tty/serial/sirfsoc_uart.c
+> > +++ b/drivers/tty/serial/sirfsoc_uart.c
+> > @@ -609,7 +609,7 @@ static void sirfsoc_uart_start_next_rx_dma(struct uart_port *port)
+> >                 sirfport->rx_dma_items.dma_addr, SIRFSOC_RX_DMA_BUF_SIZE,
+> >                 SIRFSOC_RX_DMA_BUF_SIZE / 2,
+> >                 DMA_DEV_TO_MEM, DMA_PREP_INTERRUPT);
+> > -       if (IS_ERR_OR_NULL(sirfport->rx_dma_items.desc)) {
+> > +       if (!sirfport->rx_dma_items.desc) {
+> >                 dev_err(port->dev, "DMA slave single fail\n");
+> >                 return;
+> >         }
+>
+> The serial driver is for the sirf platform, which uses the sirf-dma
+> dmaengine driver, and that particular driver has an incorrect
+> dma_prep_cyclic implementation, so I think we also need this fix:
+>
+> diff --git a/drivers/dma/sirf-dma.c b/drivers/dma/sirf-dma.c
+> index 8f62edad51be..220c611c89ae 100644
+> --- a/drivers/dma/sirf-dma.c
+> +++ b/drivers/dma/sirf-dma.c
+> @@ -775,7 +775,7 @@ sirfsoc_dma_prep_cyclic(struct dma_chan *chan, dma_addr_t addr,
+>  	 * BUFB
+>  	 */
+>  	if (buf_len !=  2 * period_len)
+> -		return ERR_PTR(-EINVAL);
+> +		return NULL;
+>
+>  	/* Get free descriptor */
+>  	spin_lock_irqsave(&schan->lock, iflags);
+>
+>
+> 	Arnd
+> --
+> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
