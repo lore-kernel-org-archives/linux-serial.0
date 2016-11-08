@@ -1,35 +1,40 @@
-From: Robert Jarzmik <robert.jarzmik@free.fr>
-Subject: Re: [PATCH 2/2] serial: pxa2xx: mark PM functions as __maybe_unused
-Date: Tue, 08 Nov 2016 18:30:43 +0100
-Message-ID: <87shr1yj3w.fsf@belgarion.home>
-References: <20161108145130.3502815-1-arnd@arndb.de>
-        <20161108145130.3502815-2-arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH V5 1/3] ARM64 LPC: Indirect ISA port IO introduced
+Date: Tue, 08 Nov 2016 23:35:27 +0100
+Message-ID: <2479288.4UmF9SBrq1@wuerfel>
+References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <8adfe182-4939-479d-6013-25ec40021b20@huawei.com> <20161108164948.GG20591@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161108145130.3502815-2-arnd@arndb.de> (Arnd Bergmann's message
-        of "Tue, 8 Nov 2016 15:50:42 +0100")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sergey Yanovich <ynvich@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20161108164948.GG20591@arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Will Deacon <will.deacon@arm.com>, John Garry <john.garry@huawei.com>, mark.rutland@arm.com, catalin.marinas@arm.com, gabriele.paoloni@huawei.com, linux-pci@vger.kernel.org, liviu.dudau@arm.com, linuxarm@huawei.com, lorenzo.pieralisi@arm.com, minyard@acm.org, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, benh@kernel.crashing.org, devicetree@vger.kernel.org, zhichang.yuan02@gmail.com, olof@lixom.net, robh+dt@kernel.org, bhelgaas@google.com, kantyzc@163.com, linux-kernel@vger.kernel.org, "zhichang.yuan" <yuanzhichang@hisilicon.com>, zourongrong@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-Arnd Bergmann <arnd@arndb.de> writes:
+On Tuesday, November 8, 2016 4:49:49 PM CET Will Deacon wrote:
+> On Tue, Nov 08, 2016 at 04:33:44PM +0000, John Garry wrote:
+> > On 08/11/2016 16:12, Will Deacon wrote:
+> > >On Tue, Nov 08, 2016 at 11:47:07AM +0800, zhichang.yuan wrote:
 
-> The fresh new serial driver for pxa produces warnings when
-> CONFIG_PM_SLEEP is disabled:
->
-> drivers/tty/serial/8250/8250_pxa.c:50:12: error: 'serial_pxa_resume' defined but not used [-Werror=unused-function]
-> drivers/tty/serial/8250/8250_pxa.c:41:12: error: 'serial_pxa_suspend' defined but not used [-Werror=unused-function]
->
-> This removes the #ifdef around the two functions and instead marks both
-> as __maybe_unused, which is more robust and avoids the warning.
->
-> Fixes: ab28f51c77cd ("serial: rewrite pxa2xx-uart to use 8250_core")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
+> > >Is there no way to make this slightly more generic, so that it can be
+> > >re-used elsewhere? For example, if struct extio_ops was common, then
+> > >you could have the singleton (which maybe should be an interval tree?),
+> > >type definition, setter function and the BUILD_EXTIO invocations
+> > >somewhere generic, rather than squirelled away in the arch backend.
+> > >
+> > The concern would be that some architecture which uses generic higher-level
+> > ISA accessor ops, but have IO space, could be affected.
+> 
+> You're already adding a Kconfig symbol for this stuff, so you can keep
+> that if you don't want it on other architectures. I'm just arguing that
+> plumbing drivers directly into arch code via arm64_set_extops is not
+> something I'm particularly fond of, especially when it looks like it
+> could be avoided with a small amount of effort.
 
-Cheers.
+Agreed, I initially suggested putting this into arch/arm64/, but there isn't
+really a reason why it couldn't just live in lib/ with the header file
+bits moved to include/asm-generic/io.h which we already use.
 
---
-Robert
+	Arnd
