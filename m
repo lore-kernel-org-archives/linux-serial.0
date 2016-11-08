@@ -1,106 +1,64 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH V5 1/3] ARM64 LPC: Indirect ISA port IO introduced
-Date: Tue, 8 Nov 2016 17:05:50 +0000
-Message-ID: <ecf81900-8116-2ef7-8ebb-e5739cc91de7@huawei.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for
+ special ISA
+Date: Tue, 8 Nov 2016 17:10:04 +0000
+Message-ID: <20161108171004.GF15297@leverpostej>
 References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
- <1478576829-112707-2-git-send-email-yuanzhichang@hisilicon.com>
- <20161108161245.GD20591@arm.com>
- <8adfe182-4939-479d-6013-25ec40021b20@huawei.com>
- <20161108164948.GG20591@arm.com>
+ <1478576829-112707-3-git-send-email-yuanzhichang@hisilicon.com>
+ <20161108114953.GB15297@leverpostej>
+ <2368890.jTbyGqYR0M@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20161108164948.GG20591@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: "zhichang.yuan" <yuanzhichang@hisilicon.com>, mark.rutland@arm.com, devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, minyard@acm.org, arnd@arndb.de, catalin.marinas@arm.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, liviu.dudau@arm.com, linux-kernel@vger.kernel.org, xuwei5@hisilicon.com, linuxarm@huawei.com, olof@lixom.net, robh+dt@kernel.org, zourongrong@gmail.com, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, bhelgaas@google.com, kantyzc@163.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <2368890.jTbyGqYR0M@wuerfel>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 08/11/2016 16:49, Will Deacon wrote:
-> On Tue, Nov 08, 2016 at 04:33:44PM +0000, John Garry wrote:
->> On 08/11/2016 16:12, Will Deacon wrote:
->>> On Tue, Nov 08, 2016 at 11:47:07AM +0800, zhichang.yuan wrote:
->>>> +static inline void arm64_set_extops(struct extio_ops *ops)
->>>> +{
->>>> +	if (ops)
->>>> +		WRITE_ONCE(arm64_extio_ops, ops);
->>>
->>> Why does this need to be WRITE_ONCE? You don't have READ_ONCE on the reader
->>> side. Also, what if multiple drivers want to set different ops for distinct
->>> address ranges?
->>
->> I think that the idea here is that we only have possibly one master in the
->> system which offers indirectIO backend, so another one could not possibly
->> re-set this value.
->
-> Why is that assumption valid, and why does WRITE_ONCE help there? It's not
-> ONCE as in WARN_ONCE, more ONCE as in exactly-once-per-invocation.
+On Tue, Nov 08, 2016 at 05:19:54PM +0100, Arnd Bergmann wrote:
+> On Tuesday, November 8, 2016 11:49:53 AM CET Mark Rutland wrote:
+> > My understanding of ISA (which may be flawed) is that it's not part of
+> > the PCI host bridge, but rather on x86 it happens to share the IO space
+> > with PCI.
+> 
+> On normal systems, ISA or LPC are behind a PCI bridge device, which
+> passes down both low addresses of I/O space and memory space.
 
-It's only valid based on the inherent assumption that all indirectIO is 
-redirected to one backend master, i.e. LPC driver.
+Ok, so the use of those address spaces is an artifact of the ISA
+controller being a device under the PCI host bridge.
 
-Anyway, right, I don't think that WRITE_ONCE is correct. Zhichang was 
-looking for something which would only allow the pointer to be written 
-once ever.
+Given we can have multiple domains, surely that implies we can have
+multiple ISA controllers in general?
 
->
->>>> diff --git a/arch/arm64/kernel/extio.c b/arch/arm64/kernel/extio.c
->>>> new file mode 100644
->>>> index 0000000..647b3fa
->>>> --- /dev/null
->>>> +++ b/arch/arm64/kernel/extio.c
->>>> @@ -0,0 +1,27 @@
->>>> +/*
->>>> + * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
->>>> + * Author: Zhichang Yuan <yuanzhichang@hisilicon.com>
->>>> + *
->>>> + * This program is free software; you can redistribute it and/or modify
->>>> + * it under the terms of the GNU General Public License version 2 as
->>>> + * published by the Free Software Foundation.
->>>> + *
->>>> + * This program is distributed in the hope that it will be useful,
->>>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->>>> + * GNU General Public License for more details.
->>>> + *
->>>> + * You should have received a copy of the GNU General Public License
->>>> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
->>>> + */
->>>> +
->>>> +#include <linux/io.h>
->>>> +
->>>> +struct extio_ops *arm64_extio_ops;
->>>> +
->>>> +
->>>> +BUILD_EXTIO(b, u8)
->>>> +
->>>> +BUILD_EXTIO(w, u16)
->>>> +
->>>> +BUILD_EXTIO(l, u32)
->>>
->>> Is there no way to make this slightly more generic, so that it can be
->>> re-used elsewhere? For example, if struct extio_ops was common, then
->>> you could have the singleton (which maybe should be an interval tree?),
->>> type definition, setter function and the BUILD_EXTIO invocations
->>> somewhere generic, rather than squirelled away in the arch backend.
->>>
->> The concern would be that some architecture which uses generic higher-level
->> ISA accessor ops, but have IO space, could be affected.
->
-> You're already adding a Kconfig symbol for this stuff, so you can keep
-> that if you don't want it on other architectures. I'm just arguing that
-> plumbing drivers directly into arch code via arm64_set_extops is not
-> something I'm particularly fond of, especially when it looks like it
-> could be avoided with a small amount of effort.
+> > I believe that we could theoretically have multiple independent LPC/ISA
+> > busses, as is possible with PCI on !x86 systems. If the current ISA code
+> > assumes a singleton bus, I think that's something that needs to be fixed
+> > up more generically.
+> > 
+> > I don't see why we should need any architecture-specific code here. Why
+> > can we not fix up the ISA bus code in drivers/of/address.c such that it
+> > handles multiple ISA bus instances, and translates all sub-device
+> > addresses relative to the specific bus instance?
+> 
+> I think it is a relatively safe assumption that there is only one
+> ISA bridge. A lot of old drivers hardcode PIO or memory addresses
+> when talking to an ISA device, so having multiple instances is
+> already problematic.
 
-We'll check this.
+I'm worried that this might not be a safe assumption. Hardware these
+days has a habit of pushing the boundaries of our expectations.
 
-Cheers,
-John
+If we're going to assume that, I'd certainly want the kernel to verify
+that it's true for all instanciated ISA/LPC devices. Otherwise, I can
+imagine people relying on (or working around) that assumption in ACPI
+tables and DTs, and that will be a nightmare (at best) to untangle in
+future.
 
->
-> Will
->
-> .
->
+Thanks,
+Mark.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
