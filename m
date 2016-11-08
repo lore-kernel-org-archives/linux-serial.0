@@ -1,190 +1,137 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for
- special ISA
-Date: Tue, 8 Nov 2016 11:49:53 +0000
-Message-ID: <20161108114953.GB15297@leverpostej>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V5 1/3] ARM64 LPC: Indirect ISA port IO introduced
+Date: Tue, 8 Nov 2016 12:03:23 +0000
+Message-ID: <20161108120323.GC15297@leverpostej>
 References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
- <1478576829-112707-3-git-send-email-yuanzhichang@hisilicon.com>
+ <1478576829-112707-2-git-send-email-yuanzhichang@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1478576829-112707-3-git-send-email-yuanzhichang@hisilicon.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Cc: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, bhelgaas@google.com, olof@lixom.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, lorenzo.pieralisi@arm.com, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, benh@kernel.crashing.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, marc.zyngier@arm.com
+In-Reply-To: <1478576829-112707-2-git-send-email-yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Nov 08, 2016 at 11:47:08AM +0800, zhichang.yuan wrote:
-> +Hisilicon Hip06 low-pin-count device
-> +  Usually LPC controller is part of PCI host bridge, so the legacy ISA ports
-> +  locate on LPC bus can be accessed direclty. But some SoCs have independent
-> +  LPC controller, and access the legacy ports by triggering LPC I/O cycles.
-> +  Hisilicon Hip06 implements this LPC device.
+On Tue, Nov 08, 2016 at 11:47:07AM +0800, zhichang.yuan wrote:
+> For arm64, there is no I/O space as other architectural platforms, such as
+> X86. Most I/O accesses are achieved based on MMIO. But for some arm64 SoCs,
+> such as Hip06, when accessing some legacy ISA devices connected to LPC, those
+> known port addresses are used to control the corresponding target devices, for
+> example, 0x2f8 is for UART, 0xe4 is for ipmi-bt. It is different from the
+> normal MMIO mode in using.
 
-s/direclty/directly/
+This has nothing to do with arm64. Hardware with this kind of indirect
+bus access could be integrated with a variety of CPU architectures. It
+simply hasn't been, yet.
 
-My understanding of ISA (which may be flawed) is that it's not part of
-the PCI host bridge, but rather on x86 it happens to share the IO space
-with PCI.
+> To drive these devices, this patch introduces a method named indirect-IO.
+> In this method the in/out pair in arch/arm64/include/asm/io.h will be
+> redefined. When upper layer drivers call in/out with those known legacy port
+> addresses to access the peripherals, the hooking functions corrresponding to
+> those target peripherals will be called. Through this way, those upper layer
+> drivers which depend on in/out can run on Hip06 without any changes.
 
-So, how about this becomes:
+As above, this has nothing to do with arm64, and as such, should live in
+generic code, exactly as we would do if we had higher-level ISA
+accessor ops.
 
-  Hisilicon Hip06 SoCs implement a Low Pin Count (LPC) controller, which
-  provides access to some legacy ISA devices.
-
-I believe that we could theoretically have multiple independent LPC/ISA
-busses, as is possible with PCI on !x86 systems. If the current ISA code
-assumes a singleton bus, I think that's something that needs to be fixed
-up more generically.
-
-I don't see why we should need any architecture-specific code here. Why
-can we not fix up the ISA bus code in drivers/of/address.c such that it
-handles multiple ISA bus instances, and translates all sub-device
-addresses relative to the specific bus instance?
-
-> +Required properties:
-> +- compatible: should be "hisilicon,low-pin-count"
-
-This would be better as something like:
-
-	"hisilicon,hip06-lpc-controller"
-
-If it's reused in other SoCs, we can add more strings as we usually do.
-
-> +- #address-cells: must be 2 which stick to the ISA/EISA binding doc.
-> +- #size-cells: must be 1 which stick to the ISA/EISA binding doc.
-> +- reg: base memory range where the register set of this device is mapped.
-> +
-> +Note:
-> +  The node name before '@' must be "isa" to represent the binding stick to the
-> +  ISA/EISA binding specification.
-> +
-> +Example:
-> +
-> +isa@a01b0000 {
-> +	compatible = "hisilicom,low-pin-count";
-
-s/hisilicom/hisilicon/
-
-My comment above on the compatible string also applies.
-
-> +	#address-cells = <2>;
-> +	#size-cells = <1>;
-> +	reg = <0x0 0xa01b0000 0x0 0x1000>;
-> +
-> +	ipmi0: bt@e4 {
-> +		compatible = "ipmi-bt";
-> +		device_type = "ipmi";
-> +		reg = <0x01 0xe4 0x04>;
-> +		status = "disabled";
-> +	};
-> +};
-
-Please remove the status property; it's irrelevant to the example.
+Regardless, given the multi-instance case, I don't think this is
+sufficient in general (and I think we need higher-level ISA accessors
+to handle the indirection).
 
 [...]
 
-> +/**
-> + * indirect_io_enabled - check whether indirectIO is enabled.
-> + *	arm64_extio_ops will be set only when indirectIO mechanism had been
-> + *	initialized.
-> + *
-> + * Returns true when indirectIO is enabled.
-> + */
-> +bool indirect_io_enabled(void)
-> +{
-> +	return arm64_extio_ops ? true : false;
-> +}
+> diff --git a/arch/arm64/include/asm/extio.h b/arch/arm64/include/asm/extio.h
+> new file mode 100644
+> index 0000000..6ae0787
+> --- /dev/null
+> +++ b/arch/arm64/include/asm/extio.h
 
-	return !!arm64_extio_ops;
+> +#ifndef __LINUX_EXTIO_H
+> +#define __LINUX_EXTIO_H
 
-> +/**
-> + * addr_is_indirect_io - check whether the input taddr is for indirectIO.
-> + * @taddr: the io address to be checked.
-> + *
-> + * Returns 1 when taddr is in the range; otherwise return 0.
-> + */
-> +int addr_is_indirect_io(u64 taddr)
-> +{
-> +	if (arm64_extio_ops->start > taddr || arm64_extio_ops->end < taddr)
-> +		return 0;
-> +
-> +	return 1;
-> +}
+This doesn't match the file naming, __ASM_EXTIO_H would be consistent
+with other arm64 headers.
 
-Why not bool?
+> +
+> +struct extio_ops {
+> +	unsigned long start;/* inclusive, sys io addr */
+> +	unsigned long end;/* inclusive, sys io addr */
 
-I don't think this is the right thing to do, regardless.
+Please put whitespace before inline comments.
 
-> + * of_isa_indirect_io - get the IO address from some isa reg property value.
-> + *	For some isa/lpc devices, no ranges property in ancestor node.
-> + *	The device addresses are described directly in their regs property.
-> + *	This fixup function will be called to get the IO address of isa/lpc
-> + *	devices when the normal of_translation failed.
-> + *
-> + * @parent:	points to the parent dts node;
-> + * @bus:		points to the of_bus which can be used to parse address;
-> + * @addr:	the address from reg property;
-> + * @na:		the address cell counter of @addr;
-> + * @presult:	store the address paresed from @addr;
-> + *
-> + * return 1 when successfully get the I/O address;
-> + * 0 will return for some failures.
-> + */
-> +static int of_get_isa_indirect_io(struct device_node *parent,
-> +				struct of_bus *bus, __be32 *addr,
-> +				int na, u64 *presult)
-> +{
-> +	unsigned int flags;
-> +	unsigned int rlen;
-> +
-> +	/* whether support indirectIO */
-> +	if (!indirect_io_enabled())
-> +		return 0;
-> +
-> +	if (!of_bus_isa_match(parent))
-> +		return 0;
-> +
-> +	flags = bus->get_flags(addr);
-> +	if (!(flags & IORESOURCE_IO))
-> +		return 0;
-> +
-> +	/* there is ranges property, apply the normal translation directly. */
-> +	if (of_get_property(parent, "ranges", &rlen))
-> +		return 0;
-> +
-> +	*presult = of_read_number(addr + 1, na - 1);
-> +	/* this fixup is only valid for specific I/O range. */
-> +	return addr_is_indirect_io(*presult);
+[...]
+
+> +type in##bw(unsigned long addr)						\
+> +{									\
+> +	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
+> +			arm64_extio_ops->end < addr)			\
+> +		return read##bw(PCI_IOBASE + addr);			\
+> +	return arm64_extio_ops->pfin ?					\
+> +		arm64_extio_ops->pfin(arm64_extio_ops->devpara,		\
+> +			addr, sizeof(type)) : -1;			\
+> +}									\
+> +									\
+> +void out##bw(type value, unsigned long addr)				\
+> +{									\
+> +	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
+> +			arm64_extio_ops->end < addr)			\
+> +		write##bw(value, PCI_IOBASE + addr);			\
+> +	else								\
+> +		if (arm64_extio_ops->pfout)				\
+> +			arm64_extio_ops->pfout(arm64_extio_ops->devpara,\
+> +				addr, value, sizeof(type));		\
+> +}									\
+> +									\
+> +void ins##bw(unsigned long addr, void *buffer, unsigned int count)	\
+> +{									\
+> +	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
+> +			arm64_extio_ops->end < addr)			\
+> +		reads##bw(PCI_IOBASE + addr, buffer, count);		\
+> +	else								\
+> +		if (arm64_extio_ops->pfins)				\
+> +			arm64_extio_ops->pfins(arm64_extio_ops->devpara,\
+> +				addr, buffer, sizeof(type), count);	\
+> +}									\
+> +									\
+> +void outs##bw(unsigned long addr, const void *buffer, unsigned int count)	\
+> +{									\
+> +	if (!arm64_extio_ops || arm64_extio_ops->start > addr ||	\
+> +			arm64_extio_ops->end < addr)			\
+> +		writes##bw(PCI_IOBASE + addr, buffer, count);		\
+> +	else								\
+> +		if (arm64_extio_ops->pfouts)				\
+> +			arm64_extio_ops->pfouts(arm64_extio_ops->devpara,\
+> +				addr, buffer, sizeof(type), count);	\
 > +}
 > +
->  static int of_translate_one(struct device_node *parent, struct of_bus *bus,
->  			    struct of_bus *pbus, __be32 *addr,
->  			    int na, int ns, int pna, const char *rprop)
-> @@ -595,6 +639,15 @@ static u64 __of_translate_address(struct device_node *dev,
->  			result = of_read_number(addr, na);
->  			break;
->  		}
-> +		/*
-> +		 * For indirectIO device which has no ranges property, get
-> +		 * the address from reg directly.
-> +		 */
-> +		if (of_get_isa_indirect_io(dev, bus, addr, na, &result)) {
-> +			pr_debug("isa indirectIO matched(%s)..addr = 0x%llx\n",
-> +				of_node_full_name(dev), result);
-> +			break;
-> +		}
 
-I don't believe this is the right place for this to live. This should
-live in the isa of_bus, matched in the usual way with of_match_bus(),
-and used in pbus->translate() in of_translate_one().
+So all PCI I/O will be slowed down by irrelevant checks when this is
+enabled?
 
-If we need to extend the prototypes of those functions, we should do so.
+[...]
 
-If we need to be able to register instance-specific translations or
-indirection, we should build the infrastructure for that rather than
-forcing a singleton translation in here.
+> +static inline void arm64_set_extops(struct extio_ops *ops)
+> +{
+> +	if (ops)
+> +		WRITE_ONCE(arm64_extio_ops, ops);
+> +}
+
+Why WRITE_ONCE()?
+
+Is this not protected/propagated by some synchronisation mechanism?
+
+WRITE_ONCE() is not sufficient to ensure that this is consistently
+observed by readers, and regardless, I don't see READ_ONCE() anywhere in
+this patch.
+
+This looks very suspicious.
 
 Thanks,
 Mark.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
