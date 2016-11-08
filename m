@@ -1,32 +1,60 @@
-From: Jesper Nilsson <jesper.nilsson@axis.com>
-Subject: Re: [PATCH 3/3] serial: crisv10: fix invalid user-pointer check
-Date: Tue, 8 Nov 2016 13:51:50 +0100
-Message-ID: <20161108125150.GY30704@axis.com>
-References: <1478607895-23447-1-git-send-email-johan@kernel.org>
- <1478607895-23447-4-git-send-email-johan@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 2/2] serial: pxa2xx: mark PM functions as __maybe_unused
+Date: Tue,  8 Nov 2016 15:50:42 +0100
+Message-ID: <20161108145130.3502815-2-arnd@arndb.de>
+References: <20161108145130.3502815-1-arnd@arndb.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1478607895-23447-4-git-send-email-johan@kernel.org>
+In-Reply-To: <20161108145130.3502815-1-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jespern@axis.com>, linux-cris-kernel@axis.com
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Sergey Yanovich <ynvich@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Nov 08, 2016 at 01:24:55PM +0100, Johan Hovold wrote:
-> Drop invalid user-pointer check from TIOCGSERIAL handler.
-> 
-> A NULL-pointer can be valid in user space and copy_to_user() takes care
-> of sanity checking.
-> 
-> Cc: Mikael Starvik <starvik@axis.com>
+The fresh new serial driver for pxa produces warnings when
+CONFIG_PM_SLEEP is disabled:
 
-Acked-by: Jesper Nilsson <jesper.nilsson@axis.com>
+drivers/tty/serial/8250/8250_pxa.c:50:12: error: 'serial_pxa_resume' defined but not used [-Werror=unused-function]
+drivers/tty/serial/8250/8250_pxa.c:41:12: error: 'serial_pxa_suspend' defined but not used [-Werror=unused-function]
 
-> Cc: linux-cris-kernel@axis.com
-> Signed-off-by: Johan Hovold <johan@kernel.org>
+This removes the #ifdef around the two functions and instead marks both
+as __maybe_unused, which is more robust and avoids the warning.
 
-/^JN - Jesper Nilsson
+Fixes: ab28f51c77cd ("serial: rewrite pxa2xx-uart to use 8250_core")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/tty/serial/8250/8250_pxa.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
+index 3b08f342851a..31f27d95d8b4 100644
+--- a/drivers/tty/serial/8250/8250_pxa.c
++++ b/drivers/tty/serial/8250/8250_pxa.c
+@@ -37,8 +37,7 @@ struct pxa8250_data {
+ 	struct clk		*clk;
+ };
+ 
+-#ifdef CONFIG_PM
+-static int serial_pxa_suspend(struct device *dev)
++static int __maybe_unused serial_pxa_suspend(struct device *dev)
+ {
+ 	struct pxa8250_data *data = dev_get_drvdata(dev);
+ 
+@@ -47,7 +46,7 @@ static int serial_pxa_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int serial_pxa_resume(struct device *dev)
++static int __maybe_unused serial_pxa_resume(struct device *dev)
+ {
+ 	struct pxa8250_data *data = dev_get_drvdata(dev);
+ 
+@@ -55,7 +54,6 @@ static int serial_pxa_resume(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+ static const struct dev_pm_ops serial_pxa_pm_ops = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(serial_pxa_suspend, serial_pxa_resume)
 -- 
-               Jesper Nilsson -- jesper.nilsson@axis.com
+2.9.0
