@@ -1,64 +1,35 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for
- special ISA
-Date: Tue, 8 Nov 2016 17:10:04 +0000
-Message-ID: <20161108171004.GF15297@leverpostej>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
- <1478576829-112707-3-git-send-email-yuanzhichang@hisilicon.com>
- <20161108114953.GB15297@leverpostej>
- <2368890.jTbyGqYR0M@wuerfel>
+From: Robert Jarzmik <robert.jarzmik@free.fr>
+Subject: Re: [PATCH 2/2] serial: pxa2xx: mark PM functions as __maybe_unused
+Date: Tue, 08 Nov 2016 18:30:43 +0100
+Message-ID: <87shr1yj3w.fsf@belgarion.home>
+References: <20161108145130.3502815-1-arnd@arndb.de>
+        <20161108145130.3502815-2-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <2368890.jTbyGqYR0M@wuerfel>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20161108145130.3502815-2-arnd@arndb.de> (Arnd Bergmann's message
+        of "Tue, 8 Nov 2016 15:50:42 +0100")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sergey Yanovich <ynvich@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Nov 08, 2016 at 05:19:54PM +0100, Arnd Bergmann wrote:
-> On Tuesday, November 8, 2016 11:49:53 AM CET Mark Rutland wrote:
-> > My understanding of ISA (which may be flawed) is that it's not part of
-> > the PCI host bridge, but rather on x86 it happens to share the IO space
-> > with PCI.
-> 
-> On normal systems, ISA or LPC are behind a PCI bridge device, which
-> passes down both low addresses of I/O space and memory space.
+Arnd Bergmann <arnd@arndb.de> writes:
 
-Ok, so the use of those address spaces is an artifact of the ISA
-controller being a device under the PCI host bridge.
+> The fresh new serial driver for pxa produces warnings when
+> CONFIG_PM_SLEEP is disabled:
+>
+> drivers/tty/serial/8250/8250_pxa.c:50:12: error: 'serial_pxa_resume' defined but not used [-Werror=unused-function]
+> drivers/tty/serial/8250/8250_pxa.c:41:12: error: 'serial_pxa_suspend' defined but not used [-Werror=unused-function]
+>
+> This removes the #ifdef around the two functions and instead marks both
+> as __maybe_unused, which is more robust and avoids the warning.
+>
+> Fixes: ab28f51c77cd ("serial: rewrite pxa2xx-uart to use 8250_core")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
 
-Given we can have multiple domains, surely that implies we can have
-multiple ISA controllers in general?
+Cheers.
 
-> > I believe that we could theoretically have multiple independent LPC/ISA
-> > busses, as is possible with PCI on !x86 systems. If the current ISA code
-> > assumes a singleton bus, I think that's something that needs to be fixed
-> > up more generically.
-> > 
-> > I don't see why we should need any architecture-specific code here. Why
-> > can we not fix up the ISA bus code in drivers/of/address.c such that it
-> > handles multiple ISA bus instances, and translates all sub-device
-> > addresses relative to the specific bus instance?
-> 
-> I think it is a relatively safe assumption that there is only one
-> ISA bridge. A lot of old drivers hardcode PIO or memory addresses
-> when talking to an ISA device, so having multiple instances is
-> already problematic.
-
-I'm worried that this might not be a safe assumption. Hardware these
-days has a habit of pushing the boundaries of our expectations.
-
-If we're going to assume that, I'd certainly want the kernel to verify
-that it's true for all instanciated ISA/LPC devices. Otherwise, I can
-imagine people relying on (or working around) that assumption in ACPI
-tables and DTs, and that will be a nightmare (at best) to untangle in
-future.
-
-Thanks,
-Mark.
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Robert
