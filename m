@@ -1,13 +1,14 @@
-From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Subject: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
-Date: Tue, 8 Nov 2016 11:47:09 +0800
-Message-ID: <1478576829-112707-4-git-send-email-yuanzhichang@hisilicon.com>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
+From: kbuild test robot <lkp@intel.com>
+Subject: Re: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for
+ special ISA
+Date: Tue, 8 Nov 2016 13:17:02 +0800
+Message-ID: <201611081319.MFXrz420%fengguang.wu@intel.com>
+References: <1478576829-112707-3-git-send-email-yuanzhichang@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="J/dobhs11T7y2rNN"
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
+Content-Disposition: inline
+In-Reply-To: <1478576829-112707-3-git-send-email-yuanzhichang@hisilicon.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,583 +18,314 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, bhelgaas@google.com, mark.rutland@arm.com, olof@lixom.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org
-Cc: devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gabriele.paoloni@huawei.com, minyard@acm.org, linux-pci@vger.kernel.org, john.garry@huawei.com, liviu.dudau@arm.com, linux-kernel@vger.kernel.org, xuwei5@hisilicon.com, linuxarm@huawei.com, "zhichang.yuan" <yuanzhichang@hisilicon.com>, linux-serial@vger.kernel.org, benh@kernel.crashing.org, zourongrong@gmail.com, kantyzc@163.com, zhichang.yuan02@gmail.com
+Cc: mark.rutland@arm.com, gabriele.paoloni@huawei.com, benh@kernel.crashing.org, will.deacon@arm.com, linuxarm@huawei.com, lorenzo.pieralisi@arm.com, arnd@arndb.de, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, catalin.marinas@arm.com, devicetree@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, john.garry@huawei.com, olof@lixom.net, robh+dt@kernel.org, bhelgaas@google.com, kantyzc@163.com, zhichang.yuan02@gmail.com, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, "zhichang.yuan" <yuanzhichang@hisilicon.com>, kbuild-all@01.org, zourongrong@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-On hip06, the accesses to LPC peripherals work in an indirect way. A
-corresponding LPC driver configure some registers in LPC master at first, then
-the real accesses on LPC slave devices are finished by the LPC master, which
-is transparent to LPC driver.
-This patch implement the relevant driver for Hip06 LPC. Cooperating with
-indirect-IO, ipmi messages is in service without any changes on ipmi driver.
 
-Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
-Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+--J/dobhs11T7y2rNN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi zhichang.yuan,
+
+[auto build test ERROR on arm64/for-next/core]
+[also build test ERROR on v4.9-rc4 next-20161028]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+
+url:    https://github.com/0day-ci/linux/commits/zhichang-yuan/ARM64-LPC-legacy-ISA-I-O-support/20161108-114742
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
+config: mips-ath25_defconfig (attached as .config)
+compiler: mips-linux-gnu-gcc (Debian 6.1.1-9) 6.1.1 20160705
+reproduce:
+        wget https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/plain/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # save the attached .config to linux build tree
+        make.cross ARCH=mips 
+
+All error/warnings (new ones prefixed by >>):
+
+   In file included from arch/mips/pci/pci.c:18:0:
+>> include/linux/pci.h:2113:25: error: expected identifier or '(' before numeric constant
+    #define PCIBIOS_MIN_IO  0
+                            ^
+>> arch/mips/pci/pci.c:34:15: note: in expansion of macro 'PCIBIOS_MIN_IO'
+    unsigned long PCIBIOS_MIN_IO;
+                  ^~~~~~~~~~~~~~
+   In file included from include/linux/linkage.h:6:0,
+                    from include/linux/kernel.h:6,
+                    from include/asm-generic/bug.h:13,
+                    from arch/mips/include/asm/bug.h:41,
+                    from include/linux/bug.h:4,
+                    from arch/mips/pci/pci.c:11:
+>> include/linux/pci.h:2113:25: error: expected identifier or '(' before numeric constant
+    #define PCIBIOS_MIN_IO  0
+                            ^
+   include/linux/export.h:57:21: note: in definition of macro '___EXPORT_SYMBOL'
+     extern typeof(sym) sym;     \
+                        ^~~
+>> arch/mips/pci/pci.c:326:1: note: in expansion of macro 'EXPORT_SYMBOL'
+    EXPORT_SYMBOL(PCIBIOS_MIN_IO);
+    ^~~~~~~~~~~~~
+   arch/mips/pci/pci.c:326:15: note: in expansion of macro 'PCIBIOS_MIN_IO'
+    EXPORT_SYMBOL(PCIBIOS_MIN_IO);
+                  ^~~~~~~~~~~~~~
+>> include/linux/export.h:66:21: error: lvalue required as unary '&' operand
+     = { (unsigned long)&sym, __kstrtab_##sym }
+                        ^
+>> include/linux/export.h:94:25: note: in expansion of macro '___EXPORT_SYMBOL'
+    #define __EXPORT_SYMBOL ___EXPORT_SYMBOL
+                            ^~~~~~~~~~~~~~~~
+   include/linux/export.h:98:2: note: in expansion of macro '__EXPORT_SYMBOL'
+     __EXPORT_SYMBOL(sym, "")
+     ^~~~~~~~~~~~~~~
+>> arch/mips/pci/pci.c:326:1: note: in expansion of macro 'EXPORT_SYMBOL'
+    EXPORT_SYMBOL(PCIBIOS_MIN_IO);
+    ^~~~~~~~~~~~~
+
+vim +2113 include/linux/pci.h
+
+  2107	
+  2108	/*
+  2109	 * define this macro here to refrain from compilation error for some
+  2110	 * platforms. Please keep this macro at the end of this header file.
+  2111	 */
+  2112	#ifndef PCIBIOS_MIN_IO
+> 2113	#define PCIBIOS_MIN_IO		0
+  2114	#endif
+  2115	
+  2116	#endif /* LINUX_PCI_H */
+
 ---
- MAINTAINERS            |   8 +
- drivers/bus/Kconfig    |   8 +
- drivers/bus/Makefile   |   1 +
- drivers/bus/hisi_lpc.c | 501 +++++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 518 insertions(+)
- create mode 100644 drivers/bus/hisi_lpc.c
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ccae35b..4c7a350 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5729,6 +5729,14 @@ F:	include/uapi/linux/if_hippi.h
- F:	net/802/hippi.c
- F:	drivers/net/hippi/
- 
-+HISILICON LPC BUS DRIVER
-+M:	Zhichang Yuan <yuanzhichang@hisilicon.com>
-+L:	linux-arm-kernel@lists.infradead.org
-+W:	http://www.hisilicon.com
-+S:	Maintained
-+F:	drivers/bus/hisi_lpc.c
-+F:	Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
-+
- HISILICON NETWORK SUBSYSTEM DRIVER
- M:	Yisen Zhuang <yisen.zhuang@huawei.com>
- M:	Salil Mehta <salil.mehta@huawei.com>
-diff --git a/drivers/bus/Kconfig b/drivers/bus/Kconfig
-index 7875105..4fa8ab4 100644
---- a/drivers/bus/Kconfig
-+++ b/drivers/bus/Kconfig
-@@ -64,6 +64,14 @@ config BRCMSTB_GISB_ARB
- 	  arbiter. This driver provides timeout and target abort error handling
- 	  and internal bus master decoding.
- 
-+config HISILICON_LPC
-+	bool "Workaround for nonstandard ISA I/O space on Hisilicon Hip0X"
-+	depends on (ARCH_HISI || COMPILE_TEST) && ARM64
-+	select ARM64_INDIRECT_PIO
-+	help
-+	  Driver needed for some legacy ISA devices attached to Low-Pin-Count
-+	  on Hisilicon Hip0X SoC.
-+
- config IMX_WEIM
- 	bool "Freescale EIM DRIVER"
- 	depends on ARCH_MXC
-diff --git a/drivers/bus/Makefile b/drivers/bus/Makefile
-index c6cfa6b..10b4983 100644
---- a/drivers/bus/Makefile
-+++ b/drivers/bus/Makefile
-@@ -7,6 +7,7 @@ obj-$(CONFIG_ARM_CCI)		+= arm-cci.o
- obj-$(CONFIG_ARM_CCN)		+= arm-ccn.o
- 
- obj-$(CONFIG_BRCMSTB_GISB_ARB)	+= brcmstb_gisb.o
-+obj-$(CONFIG_HISILICON_LPC)	+= hisi_lpc.o
- obj-$(CONFIG_IMX_WEIM)		+= imx-weim.o
- obj-$(CONFIG_MIPS_CDMM)		+= mips_cdmm.o
- obj-$(CONFIG_MVEBU_MBUS) 	+= mvebu-mbus.o
-diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-new file mode 100644
-index 0000000..47dc081
---- /dev/null
-+++ b/drivers/bus/hisi_lpc.c
-@@ -0,0 +1,501 @@
-+/*
-+ * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
-+ * Author: Zhichang Yuan <yuanzhichang@hisilicon.com>
-+ * Author: Zou Rongrong <zourongrong@huawei.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+#include <linux/acpi.h>
-+#include <linux/console.h>
-+#include <linux/delay.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_platform.h>
-+#include <linux/pci.h>
-+#include <linux/serial_8250.h>
-+#include <linux/slab.h>
-+
-+/*
-+ * setting this bit means each IO operation will target to different port address;
-+ * 0 means repeatly IO operations will be sticked on the same port, such as BT;
-+ */
-+#define FG_INCRADDR_LPC		0x02
-+
-+struct lpc_cycle_para {
-+	unsigned int opflags;
-+	unsigned int csize; /* the data length of each operation */
-+};
-+
-+struct hisilpc_dev {
-+	spinlock_t cycle_lock;
-+	void __iomem  *membase;
-+	struct extio_ops io_ops;
-+};
-+
-+
-+/* The maximum continous operations*/
-+#define LPC_MAX_OPCNT	16
-+/* only support IO data unit length is four at maximum */
-+#define LPC_MAX_DULEN	4
-+#if LPC_MAX_DULEN > LPC_MAX_OPCNT
-+#error "LPC.. MAX_DULEN must be not bigger than MAX_OPCNT!"
-+#endif
-+
-+#define LPC_REG_START		0x00 /* start a new LPC cycle */
-+#define LPC_REG_OP_STATUS	0x04 /* the current LPC status */
-+#define LPC_REG_IRQ_ST		0x08 /* interrupt enable&status */
-+#define LPC_REG_OP_LEN		0x10 /* how many LPC cycles each start */
-+#define LPC_REG_CMD		0x14 /* command for the required LPC cycle */
-+#define LPC_REG_ADDR		0x20 /* LPC target address */
-+#define LPC_REG_WDATA		0x24 /* data to be written */
-+#define LPC_REG_RDATA		0x28 /* data coming from peer */
-+
-+
-+/* The command register fields*/
-+#define LPC_CMD_SAMEADDR	0x08
-+#define LPC_CMD_TYPE_IO		0x00
-+#define LPC_CMD_WRITE		0x01
-+#define LPC_CMD_READ		0x00
-+/* the bit attribute is W1C. 1 represents OK. */
-+#define LPC_STAT_BYIRQ		0x02
-+
-+#define LPC_STATUS_IDLE		0x01
-+#define LPC_OP_FINISHED		0x02
-+
-+#define START_WORK		0x01
-+
-+/*
-+ * The minimal waiting interval... Suggest it is not less than 10.
-+ * Bigger value probably will lower the performance.
-+ */
-+#define LPC_NSEC_PERWAIT	100
-+/*
-+ * The maximum waiting time is about 128us.
-+ * The fastest IO cycle time is about 390ns, but the worst case will wait
-+ * for extra 256 lpc clocks, so (256 + 13) * 30ns = 8 us. The maximum
-+ * burst cycles is 16. So, the maximum waiting time is about 128us under
-+ * worst case.
-+ * choose 1300 as the maximum.
-+ */
-+#define LPC_MAX_WAITCNT		1300
-+/* About 10us. This is specfic for single IO operation, such as inb. */
-+#define LPC_PEROP_WAITCNT	100
-+
-+
-+static inline int wait_lpc_idle(unsigned char *mbase,
-+				unsigned int waitcnt) {
-+	u32 opstatus;
-+
-+	while (waitcnt--) {
-+		ndelay(LPC_NSEC_PERWAIT);
-+		opstatus = readl(mbase + LPC_REG_OP_STATUS);
-+		if (opstatus & LPC_STATUS_IDLE)
-+			return (opstatus & LPC_OP_FINISHED) ? 0 : (-EIO);
-+	}
-+	return -ETIME;
-+}
-+
-+/**
-+ * hisilpc_target_in - trigger a series of lpc cycles to read required data
-+ *		  from target periperal.
-+ * @pdev: pointer to hisi lpc device
-+ * @para: some paramerters used to control the lpc I/O operations
-+ * @ptaddr: the lpc I/O target port address
-+ * @buf: where the read back data is stored
-+ * @opcnt: how many I/O operations required in this calling
-+ *
-+ * only one byte data is read each I/O operation.
-+ *
-+ * Returns 0 on success, non-zero on fail.
-+ *
-+ */
-+static int hisilpc_target_in(struct hisilpc_dev *lpcdev,
-+				struct lpc_cycle_para *para,
-+				unsigned long ptaddr, unsigned char *buf,
-+				unsigned long opcnt)
-+{
-+	unsigned long cnt_per_trans;
-+	unsigned int cmd_word;
-+	unsigned int waitcnt;
-+	int ret;
-+
-+	if (!buf || !opcnt || !para || !para->csize || !lpcdev)
-+		return -EINVAL;
-+
-+	if (opcnt  > LPC_MAX_OPCNT)
-+		return -EINVAL;
-+
-+	cmd_word = LPC_CMD_TYPE_IO | LPC_CMD_READ;
-+	waitcnt = (LPC_PEROP_WAITCNT);
-+	if (!(para->opflags & FG_INCRADDR_LPC)) {
-+		cmd_word |= LPC_CMD_SAMEADDR;
-+		waitcnt = LPC_MAX_WAITCNT;
-+	}
-+
-+	ret = 0;
-+	cnt_per_trans = (para->csize == 1) ? opcnt : para->csize;
-+	for (; opcnt && !ret; cnt_per_trans = para->csize) {
-+		unsigned long flags;
-+
-+		/* whole operation must be atomic */
-+		spin_lock_irqsave(&lpcdev->cycle_lock, flags);
-+
-+		writel(cnt_per_trans, lpcdev->membase + LPC_REG_OP_LEN);
-+
-+		writel(cmd_word, lpcdev->membase + LPC_REG_CMD);
-+
-+		writel(ptaddr, lpcdev->membase + LPC_REG_ADDR);
-+
-+		writel(START_WORK, lpcdev->membase + LPC_REG_START);
-+
-+		/* whether the operation is finished */
-+		ret = wait_lpc_idle(lpcdev->membase, waitcnt);
-+		if (!ret) {
-+			opcnt -= cnt_per_trans;
-+			for (; cnt_per_trans--; buf++)
-+				*buf = readl(lpcdev->membase + LPC_REG_RDATA);
-+		}
-+
-+		spin_unlock_irqrestore(&lpcdev->cycle_lock, flags);
-+	}
-+
-+	return ret;
-+}
-+
-+/**
-+ * hisilpc_target_out - trigger a series of lpc cycles to write required data
-+ *		  to target periperal.
-+ * @pdev: pointer to hisi lpc device
-+ * @para: some paramerters used to control the lpc I/O operations
-+ * @ptaddr: the lpc I/O target port address
-+ * @buf: where the data to be written is stored
-+ * @opcnt: how many I/O operations required
-+ *
-+ * only one byte data is read each I/O operation.
-+ *
-+ * Returns 0 on success, non-zero on fail.
-+ *
-+ */
-+static int hisilpc_target_out(struct hisilpc_dev *lpcdev,
-+				struct lpc_cycle_para *para,
-+				unsigned long ptaddr,
-+				const unsigned char *buf,
-+				unsigned long opcnt)
-+{
-+	unsigned long cnt_per_trans;
-+	unsigned int cmd_word;
-+	unsigned int waitcnt;
-+	int ret;
-+
-+	if (!buf || !opcnt || !para || !lpcdev)
-+		return -EINVAL;
-+
-+	if (opcnt > LPC_MAX_OPCNT)
-+		return -EINVAL;
-+	/* default is increasing address */
-+	cmd_word = LPC_CMD_TYPE_IO | LPC_CMD_WRITE;
-+	waitcnt = (LPC_PEROP_WAITCNT);
-+	if (!(para->opflags & FG_INCRADDR_LPC)) {
-+		cmd_word |= LPC_CMD_SAMEADDR;
-+		waitcnt = LPC_MAX_WAITCNT;
-+	}
-+
-+	ret = 0;
-+	cnt_per_trans = (para->csize == 1) ? opcnt : para->csize;
-+	for (; opcnt && !ret; cnt_per_trans = para->csize) {
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&lpcdev->cycle_lock, flags);
-+
-+		writel(cnt_per_trans, lpcdev->membase + LPC_REG_OP_LEN);
-+		opcnt -= cnt_per_trans;
-+		for (; cnt_per_trans--; buf++)
-+			writel(*buf, lpcdev->membase + LPC_REG_WDATA);
-+
-+		writel(cmd_word, lpcdev->membase + LPC_REG_CMD);
-+
-+		writel(ptaddr, lpcdev->membase + LPC_REG_ADDR);
-+
-+		writel(START_WORK, lpcdev->membase + LPC_REG_START);
-+
-+		/* whether the operation is finished */
-+		ret = wait_lpc_idle(lpcdev->membase, waitcnt);
-+
-+		spin_unlock_irqrestore(&lpcdev->cycle_lock, flags);
-+	}
-+
-+	return ret;
-+}
-+
-+/**
-+ * hisilpc_comm_in - read/input the data from the I/O peripheral through LPC.
-+ * @devobj: pointer to the device information relevant to LPC controller.
-+ * @ptaddr: the target I/O port address.
-+ * @dlen: the data length required to read from the target I/O port.
-+ *
-+ * when succeed, the data read back is stored in buffer pointed by inbuf.
-+ * For inb, return the data read from I/O or -1 when error occur.
-+ */
-+static u64 hisilpc_comm_in(void *devobj, unsigned long ptaddr, size_t dlen)
-+{
-+	struct hisilpc_dev *lpcdev;
-+	struct lpc_cycle_para iopara;
-+	u32 rd_data;
-+	unsigned char *newbuf;
-+	int ret = 0;
-+
-+	if (!devobj || !dlen || dlen > LPC_MAX_DULEN ||	(dlen & (dlen - 1)))
-+		return -1;
-+
-+	/* the local buffer must be enough for one data unit */
-+	if (sizeof(rd_data) < dlen)
-+		return -1;
-+
-+	newbuf = (unsigned char *)&rd_data;
-+
-+	lpcdev = (struct hisilpc_dev *)devobj;
-+
-+	iopara.opflags = FG_INCRADDR_LPC;
-+	iopara.csize = dlen;
-+
-+	ret = hisilpc_target_in(lpcdev, &iopara, ptaddr, newbuf, dlen);
-+	if (ret)
-+		return -1;
-+
-+	return le32_to_cpu(rd_data);
-+}
-+
-+/**
-+ * hisilpc_comm_out - write/output the data whose maximal length is four bytes to
-+ *		the I/O peripheral through LPC.
-+ * @devobj: pointer to the device information relevant to LPC controller.
-+ * @outval: a value to be outputed from caller, maximum is four bytes.
-+ * @ptaddr: the target I/O port address.
-+ * @dlen: the data length required writing to the target I/O port .
-+ *
-+ * This function is corresponding to out(b,w,l) only
-+ *
-+ */
-+static void hisilpc_comm_out(void *devobj, unsigned long ptaddr,
-+				u32 outval, size_t dlen)
-+{
-+	struct hisilpc_dev *lpcdev;
-+	struct lpc_cycle_para iopara;
-+	const unsigned char *newbuf;
-+
-+	if (!devobj || !dlen || dlen > LPC_MAX_DULEN)
-+		return;
-+
-+	if (sizeof(outval) < dlen)
-+		return;
-+
-+	outval = cpu_to_le32(outval);
-+
-+	newbuf = (const unsigned char *)&outval;
-+	lpcdev = (struct hisilpc_dev *)devobj;
-+
-+	iopara.opflags = FG_INCRADDR_LPC;
-+	iopara.csize = dlen;
-+
-+	hisilpc_target_out(lpcdev, &iopara, ptaddr, newbuf, dlen);
-+}
-+
-+/**
-+ * hisilpc_comm_ins - read/input the data in buffer to the I/O peripheral
-+ *		    through LPC, it corresponds to ins(b,w,l)
-+ * @devobj: pointer to the device information relevant to LPC controller.
-+ * @ptaddr: the target I/O port address.
-+ * @inbuf: a buffer where read/input data bytes are stored.
-+ * @dlen: the data length required writing to the target I/O port.
-+ * @count: how many data units whose length is dlen will be read.
-+ *
-+ */
-+static u64 hisilpc_comm_ins(void *devobj, unsigned long ptaddr,
-+			void *inbuf, size_t dlen, unsigned int count)
-+{
-+	struct hisilpc_dev *lpcdev;
-+	struct lpc_cycle_para iopara;
-+	unsigned char *newbuf;
-+	unsigned int loopcnt, cntleft;
-+	unsigned int max_perburst;
-+	int ret = 0;
-+
-+	if (!devobj || !inbuf || !count || !dlen ||
-+			dlen > LPC_MAX_DULEN || (dlen & (dlen - 1)))
-+		return -1;
-+
-+	iopara.opflags = 0;
-+	if (dlen > 1)
-+		iopara.opflags |= FG_INCRADDR_LPC;
-+	iopara.csize = dlen;
-+
-+	lpcdev = (struct hisilpc_dev *)devobj;
-+	newbuf = (unsigned char *)inbuf;
-+	/*
-+	 * ensure data stream whose length is multiple of dlen to be processed
-+	 * each IO input
-+	 */
-+	max_perburst = LPC_MAX_OPCNT & (~(dlen - 1));
-+	cntleft = count * dlen;
-+	do {
-+		loopcnt = (cntleft >= max_perburst) ? max_perburst : cntleft;
-+		ret = hisilpc_target_in(lpcdev, &iopara, ptaddr, newbuf,
-+						loopcnt);
-+		if (ret)
-+			break;
-+		newbuf += loopcnt;
-+		cntleft -= loopcnt;
-+	} while (cntleft);
-+
-+	return ret;
-+}
-+
-+/**
-+ * hisilpc_comm_outs - write/output the data in buffer to the I/O peripheral
-+ *		    through LPC, it corresponds to outs(b,w,l)
-+ * @devobj: pointer to the device information relevant to LPC controller.
-+ * @ptaddr: the target I/O port address.
-+ * @outbuf: a buffer where write/output data bytes are stored.
-+ * @dlen: the data length required writing to the target I/O port .
-+ * @count: how many data units whose length is dlen will be written.
-+ *
-+ */
-+static void hisilpc_comm_outs(void *devobj, unsigned long ptaddr,
-+			const void *outbuf, size_t dlen, unsigned int count)
-+{
-+	struct hisilpc_dev *lpcdev;
-+	struct lpc_cycle_para iopara;
-+	const unsigned char *newbuf;
-+	unsigned int loopcnt, cntleft;
-+	unsigned int max_perburst;
-+	int ret = 0;
-+
-+	if (!devobj || !outbuf || !count || !dlen ||
-+			dlen > LPC_MAX_DULEN || (dlen & (dlen - 1)))
-+		return;
-+
-+	iopara.opflags = 0;
-+	if (dlen > 1)
-+		iopara.opflags |= FG_INCRADDR_LPC;
-+	iopara.csize = dlen;
-+
-+	lpcdev = (struct hisilpc_dev *)devobj;
-+	newbuf = (unsigned char *)outbuf;
-+	/*
-+	 * ensure data stream whose lenght is multiple of dlen to be processed
-+	 * each IO input
-+	 */
-+	max_perburst = LPC_MAX_OPCNT & (~(dlen - 1));
-+	cntleft = count * dlen;
-+	do {
-+		loopcnt = (cntleft >= max_perburst) ? max_perburst : cntleft;
-+		ret = hisilpc_target_out(lpcdev, &iopara, ptaddr, newbuf,
-+						loopcnt);
-+		if (ret)
-+			break;
-+		newbuf += loopcnt;
-+		cntleft -= loopcnt;
-+	} while (cntleft);
-+}
-+
-+/**
-+ * hisilpc_probe - the probe callback function for hisi lpc device,
-+ *		will finish all the intialization.
-+ * @pdev: the platform device corresponding to hisi lpc
-+ *
-+ * Returns 0 on success, non-zero on fail.
-+ *
-+ */
-+static int hisilpc_probe(struct platform_device *pdev)
-+{
-+	struct resource *iores;
-+	struct hisilpc_dev *lpcdev;
-+	int ret;
-+
-+	dev_info(&pdev->dev, "probing hslpc...\n");
-+
-+	lpcdev = devm_kzalloc(&pdev->dev,
-+				sizeof(struct hisilpc_dev), GFP_KERNEL);
-+	if (!lpcdev)
-+		return -ENOMEM;
-+
-+	spin_lock_init(&lpcdev->cycle_lock);
-+	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	lpcdev->membase = devm_ioremap_resource(&pdev->dev, iores);
-+	if (IS_ERR(lpcdev->membase)) {
-+		dev_err(&pdev->dev, "ioremap memory FAIL(%d)!\n",
-+				PTR_ERR(lpcdev->membase));
-+		return PTR_ERR(lpcdev->membase);
-+	}
-+	/*
-+	 * The first PCIBIOS_MIN_IO is reserved specifically for indirectIO.
-+	 * It will separate indirectIO range from pci host bridge to
-+	 * avoid the possible PIO conflict.
-+	 * Set the indirectIO range directly here.
-+	 */
-+	lpcdev->io_ops.start = 0;
-+	lpcdev->io_ops.end = PCIBIOS_MIN_IO - 1;
-+	lpcdev->io_ops.devpara = lpcdev;
-+	lpcdev->io_ops.pfin = hisilpc_comm_in;
-+	lpcdev->io_ops.pfout = hisilpc_comm_out;
-+	lpcdev->io_ops.pfins = hisilpc_comm_ins;
-+	lpcdev->io_ops.pfouts = hisilpc_comm_outs;
-+
-+	platform_set_drvdata(pdev, lpcdev);
-+
-+	arm64_set_extops(&lpcdev->io_ops);
-+
-+	/*
-+	 * The children scanning is only for dts mode. For ACPI children,
-+	 * the corresponding devices had be created during acpi scanning.
-+	 */
-+	ret = 0;
-+	if (!has_acpi_companion(&pdev->dev))
-+		ret = of_platform_populate(pdev->dev.of_node, NULL, NULL,
-+				&pdev->dev);
-+
-+	if (!ret)
-+		dev_info(&pdev->dev, "hslpc end probing. range[0x%lx - %lx]\n",
-+			arm64_extio_ops->start, arm64_extio_ops->end);
-+	else
-+		dev_info(&pdev->dev, "hslpc probing is fail(%d)\n", ret);
-+
-+	return ret;
-+}
-+
-+static const struct of_device_id hisilpc_of_match[] = {
-+	{
-+		.compatible = "hisilicon,hip06-lpc",
-+	},
-+	{},
-+};
-+
-+static const struct acpi_device_id hisilpc_acpi_match[] = {
-+	{"HISI0191", },
-+	{},
-+};
-+
-+static struct platform_driver hisilpc_driver = {
-+	.driver = {
-+		.name           = "hisi_lpc",
-+		.of_match_table = hisilpc_of_match,
-+		.acpi_match_table = hisilpc_acpi_match,
-+	},
-+	.probe = hisilpc_probe,
-+};
-+
-+
-+builtin_platform_driver(hisilpc_driver);
--- 
-1.9.1
+--J/dobhs11T7y2rNN
+Content-Type: application/gzip
+Content-Disposition: attachment; filename=".config.gz"
+Content-Transfer-Encoding: base64
+
+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
+
+--J/dobhs11T7y2rNN
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--J/dobhs11T7y2rNN--
