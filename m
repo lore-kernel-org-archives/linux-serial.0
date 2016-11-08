@@ -1,60 +1,40 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 2/2] serial: pxa2xx: mark PM functions as __maybe_unused
-Date: Tue,  8 Nov 2016 15:50:42 +0100
-Message-ID: <20161108145130.3502815-2-arnd@arndb.de>
-References: <20161108145130.3502815-1-arnd@arndb.de>
+Subject: [PATCH 1/2] serial: pxa2xx: remove __deprecated annotation
+Date: Tue,  8 Nov 2016 15:50:41 +0100
+Message-ID: <20161108145130.3502815-1-arnd@arndb.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161108145130.3502815-1-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Sergey Yanovich <ynvich@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Sergey Yanovich <ynvich@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The fresh new serial driver for pxa produces warnings when
-CONFIG_PM_SLEEP is disabled:
+An otherwise very nice cleanup of the pxa2xx uart support marked the
+init function of this driver as __deprecated:
 
-drivers/tty/serial/8250/8250_pxa.c:50:12: error: 'serial_pxa_resume' defined but not used [-Werror=unused-function]
-drivers/tty/serial/8250/8250_pxa.c:41:12: error: 'serial_pxa_suspend' defined but not used [-Werror=unused-function]
+drivers/tty/serial/pxa.c:944:1: error: 'serial_pxa_init' is deprecated [-Werror=deprecated-declarations]
 
-This removes the #ifdef around the two functions and instead marks both
-as __maybe_unused, which is more robust and avoids the warning.
+This seems unhelpful to me, as we now warn for every allmodconfig build,
+which is otherwise free of warnings on most architectures. Let's
+remove the annotation again.
 
 Fixes: ab28f51c77cd ("serial: rewrite pxa2xx-uart to use 8250_core")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/tty/serial/8250/8250_pxa.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/serial/pxa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
-index 3b08f342851a..31f27d95d8b4 100644
---- a/drivers/tty/serial/8250/8250_pxa.c
-+++ b/drivers/tty/serial/8250/8250_pxa.c
-@@ -37,8 +37,7 @@ struct pxa8250_data {
- 	struct clk		*clk;
- };
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index b9dd787cb561..75952811c0da 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -927,7 +927,7 @@ static struct platform_driver serial_pxa_driver = {
  
--#ifdef CONFIG_PM
--static int serial_pxa_suspend(struct device *dev)
-+static int __maybe_unused serial_pxa_suspend(struct device *dev)
+ 
+ /* 8250 driver for PXA serial ports should be used */
+-static int __deprecated __init serial_pxa_init(void)
++static int __init serial_pxa_init(void)
  {
- 	struct pxa8250_data *data = dev_get_drvdata(dev);
+ 	int ret;
  
-@@ -47,7 +46,7 @@ static int serial_pxa_suspend(struct device *dev)
- 	return 0;
- }
- 
--static int serial_pxa_resume(struct device *dev)
-+static int __maybe_unused serial_pxa_resume(struct device *dev)
- {
- 	struct pxa8250_data *data = dev_get_drvdata(dev);
- 
-@@ -55,7 +54,6 @@ static int serial_pxa_resume(struct device *dev)
- 
- 	return 0;
- }
--#endif
- 
- static const struct dev_pm_ops serial_pxa_pm_ops = {
- 	SET_SYSTEM_SLEEP_PM_OPS(serial_pxa_suspend, serial_pxa_resume)
 -- 
 2.9.0
