@@ -1,32 +1,60 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for special ISA
-Date: Wed, 09 Nov 2016 22:38:32 +0100
-Message-ID: <5900275.i4NZvtxTcC@wuerfel>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <2368890.jTbyGqYR0M@wuerfel> <20161109135453.2e5402bd@lxorguk.ukuu.org.uk>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH] ACPI / platform: Add support for build-in properties
+Date: Thu, 10 Nov 2016 00:40:51 +0100
+Message-ID: <CAJZ5v0iALibO6Nub_Q4oZvY+SgehTQHrAZQG32ar8R281_NyAw@mail.gmail.com>
+References: <20161102154139.GD11523@kuha.fi.intel.com> <20161103142126.87413-1-heikki.krogerus@linux.intel.com>
+ <1478448574.1591.2.camel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20161109135453.2e5402bd@lxorguk.ukuu.org.uk>
-Sender: linux-pci-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Mark Rutland <mark.rutland@arm.com>, "zhichang.yuan" <yuanzhichang@hisilicon.com>, catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, bhelgaas@google.com, olof@lixom.net, linux-arm-kernel@lists.infradead.org, lorenzo.pieralisi@arm.com, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, benh@kernel.crashing.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, marc.zyngier@arm.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1478448574.1591.2.camel@gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: =?UTF-8?B?SsOpcsO0bWUgZGUgQnJldGFnbmU=?= <jerome.debretagne@gmail.com>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kefeng Wang <wangkefeng.wang@huawei.com>, Feng Kan <fkan@apm.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday, November 9, 2016 1:54:53 PM CET One Thousand Gnomes wrote:
-> > I think it is a relatively safe assumption that there is only one
-> > ISA bridge. A lot of old drivers hardcode PIO or memory addresses
-> 
-> It's not a safe assumption for x86 at least. There are a few systems with
-> multiple ISA busses particularly older laptops with a docking station.
+On Sun, Nov 6, 2016 at 5:09 PM, J=C3=A9r=C3=B4me de Bretagne
+<jerome.debretagne@gmail.com> wrote:
+> Le jeudi 03 novembre 2016 =C3=A0 16:21 +0200, Heikki Krogerus a =C3=A9cri=
+t :
+>> We have a couple of drivers, acpi_apd.c and acpi_lpss.c,
+>> that need to pass extra build-in properties to the devices
+>> they create. Previously the drivers added those properties
+>> to the struct device which is member of the struct
+>> acpi_device, but that does not work. Those properties need
+>> to be assigned to the struct device of the platform device
+>> instead in order for them to become available to the
+>> drivers.
+>>
+>> To fix this, this patch changes acpi_create_platform_device
+>> function to take struct property_entry pointer as parameter.
+>>
+>> Fixes: 20a875e2e86e ("serial: 8250_dw: Add quirk for APM X-Gene SoC")
+>> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+>> ---
+>>
+>> Hi,
+>>
+>> Found the problem, and this is my proposal for a fix.
+>>
+>> J=C3=A9r=C3=B4me, please test it when you have time.
+>>
+>
+> Hi Heikki,
+>
+> I can confirm that this patch fixes the issue I've reported on the Lenovo
+> ThinkPad 8 tablet. You were fast to find the root cause, impressive, real=
+ly
+> appreciated.
+>
+> Feel free to add:
+> Tested-by: J=C3=A9r=C3=B4me de Bretagne <jerome.debretagne@gmail.com>
+>
+> Let's hope it can still make it during the remaining 4.9 rc timing.
 
-But do they have multiple ISA domains? There is no real harm in supporting
-it, the (small) downsides I can think of are:
+It's in my linux-next branch now (it should hit linux-next on Friday)
+and I'm going to push it for -rc5 if it doesn't lead to problems.
 
-- a few extra cycles for the lookup, from possibly walking a linked list
-  to find the correct set of helpers and MMIO addresses
-- making it too general could invite more people to design hardware
-  around the infrastructure when we really want them to stop adding
-  stuff like this.
-
-	Arnd
+Thanks,
+Rafael
