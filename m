@@ -1,49 +1,32 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
-Date: Wed, 09 Nov 2016 22:34:38 +0100
-Message-ID: <2825537.ADCNsGqGxn@wuerfel>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <1555494.4IFvGxvsfe@wuerfel> <EE11001F9E5DDD47B7634E2F8A612F2E1F8F1A7A@lhreml507-mbx>
+Subject: Re: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for special ISA
+Date: Wed, 09 Nov 2016 22:38:32 +0100
+Message-ID: <5900275.i4NZvtxTcC@wuerfel>
+References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <2368890.jTbyGqYR0M@wuerfel> <20161109135453.2e5402bd@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F8F1A7A@lhreml507-mbx>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Gabriele Paoloni <gabriele.paoloni@huawei.com>, Yuanzhichang <yuanzhichang@hisilicon.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "minyard@acm.org" <minyard@acm.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "xuwei (O)" <xuwei5@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "olof@lixom.net" <olof@lixom.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "zourongrong@gmail.com" <zourongrong@gmail.com>"linux-serial@vger.kernel.org" <linux->
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20161109135453.2e5402bd@lxorguk.ukuu.org.uk>
+Sender: linux-pci-owner@vger.kernel.org
+To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Cc: Mark Rutland <mark.rutland@arm.com>, "zhichang.yuan" <yuanzhichang@hisilicon.com>, catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, bhelgaas@google.com, olof@lixom.net, linux-arm-kernel@lists.infradead.org, lorenzo.pieralisi@arm.com, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, benh@kernel.crashing.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, marc.zyngier@arm.com
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday, November 9, 2016 12:10:43 PM CET Gabriele Paoloni wrote:
-> > On Tuesday, November 8, 2016 11:47:09 AM CET zhichang.yuan wrote:
-> > > +       /*
-> > > +        * The first PCIBIOS_MIN_IO is reserved specifically for
-> > indirectIO.
-> > > +        * It will separate indirectIO range from pci host bridge to
-> > > +        * avoid the possible PIO conflict.
-> > > +        * Set the indirectIO range directly here.
-> > > +        */
-> > > +       lpcdev->io_ops.start = 0;
-> > > +       lpcdev->io_ops.end = PCIBIOS_MIN_IO - 1;
-> > > +       lpcdev->io_ops.devpara = lpcdev;
-> > > +       lpcdev->io_ops.pfin = hisilpc_comm_in;
-> > > +       lpcdev->io_ops.pfout = hisilpc_comm_out;
-> > > +       lpcdev->io_ops.pfins = hisilpc_comm_ins;
-> > > +       lpcdev->io_ops.pfouts = hisilpc_comm_outs;
-> > 
-> > I have to look at patch 2 in more detail again, after missing a few
-> > review
-> > rounds. I'm still a bit skeptical about hardcoding a logical I/O port
-> > range here, and would hope that we can just go through the same
-> > assignment of logical port ranges that we have for PCI buses,
-> > decoupling
-> > the bus addresses from the linux-internal ones.
+On Wednesday, November 9, 2016 1:54:53 PM CET One Thousand Gnomes wrote:
+> > I think it is a relatively safe assumption that there is only one
+> > ISA bridge. A lot of old drivers hardcode PIO or memory addresses
 > 
-> The point here is that we want to avoid any conflict/overlap between
-> the LPC I/O space and the PCI I/O space. With the assignment above
-> we make sure that LPC never interfere with PCI I/O space.
+> It's not a safe assumption for x86 at least. There are a few systems with
+> multiple ISA busses particularly older laptops with a docking station.
 
-But we already abstract the PCI I/O space using dynamic registration.
-There is no need to hardcode the logical address for ISA, though
-I think we can hardcode the bus address to start at zero here.
+But do they have multiple ISA domains? There is no real harm in supporting
+it, the (small) downsides I can think of are:
+
+- a few extra cycles for the lookup, from possibly walking a linked list
+  to find the correct set of helpers and MMIO addresses
+- making it too general could invite more people to design hardware
+  around the infrastructure when we really want them to stop adding
+  stuff like this.
 
 	Arnd
