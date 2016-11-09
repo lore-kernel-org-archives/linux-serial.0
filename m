@@ -1,52 +1,49 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V5 1/3] ARM64 LPC: Indirect ISA port IO introduced
-Date: Wed, 09 Nov 2016 22:33:17 +0100
-Message-ID: <2939462.W2yy62pjEE@wuerfel>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <2479288.4UmF9SBrq1@wuerfel> <6dee9821-5145-2113-e391-6317e4533c06@huawei.com>
+Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
+Date: Wed, 09 Nov 2016 22:34:38 +0100
+Message-ID: <2825537.ADCNsGqGxn@wuerfel>
+References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <1555494.4IFvGxvsfe@wuerfel> <EE11001F9E5DDD47B7634E2F8A612F2E1F8F1A7A@lhreml507-mbx>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <6dee9821-5145-2113-e391-6317e4533c06@huawei.com>
-Sender: linux-pci-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F8F1A7A@lhreml507-mbx>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org
-Cc: John Garry <john.garry@huawei.com>, mark.rutland@arm.com, devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, minyard@acm.org, gabriele.paoloni@huawei.com, catalin.marinas@arm.com, zhichang.yuan02@gmail.com, liviu.dudau@arm.com, linuxarm@huawei.com, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, zourongrong@gmail.com, bhelgaas@google.com, robh+dt@kernel.org, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, olof@lixom.net, kantyzc@163.com, "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Cc: Gabriele Paoloni <gabriele.paoloni@huawei.com>, Yuanzhichang <yuanzhichang@hisilicon.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "minyard@acm.org" <minyard@acm.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "xuwei (O)" <xuwei5@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "olof@lixom.net" <olof@lixom.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "zourongrong@gmail.com" <zourongrong@gmail.com>"linux-serial@vger.kernel.org" <linux->
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday, November 9, 2016 11:29:46 AM CET John Garry wrote:
-> On 08/11/2016 22:35, Arnd Bergmann wrote:
-> > On Tuesday, November 8, 2016 4:49:49 PM CET Will Deacon wrote:
-> >> On Tue, Nov 08, 2016 at 04:33:44PM +0000, John Garry wrote:
-> >>> On 08/11/2016 16:12, Will Deacon wrote:
-> >>>> On Tue, Nov 08, 2016 at 11:47:07AM +0800, zhichang.yuan wrote:
-> >
-> >>>> Is there no way to make this slightly more generic, so that it can be
-> >>>> re-used elsewhere? For example, if struct extio_ops was common, then
-> >>>> you could have the singleton (which maybe should be an interval tree?),
-> >>>> type definition, setter function and the BUILD_EXTIO invocations
-> >>>> somewhere generic, rather than squirelled away in the arch backend.
-> >>>>
-> >>> The concern would be that some architecture which uses generic higher-level
-> >>> ISA accessor ops, but have IO space, could be affected.
-> >>
-> >> You're already adding a Kconfig symbol for this stuff, so you can keep
-> >> that if you don't want it on other architectures. I'm just arguing that
-> >> plumbing drivers directly into arch code via arm64_set_extops is not
-> >> something I'm particularly fond of, especially when it looks like it
-> >> could be avoided with a small amount of effort.
-> >
-> > Agreed, I initially suggested putting this into arch/arm64/, but there isn't
-> > really a reason why it couldn't just live in lib/ with the header file
-> > bits moved to include/asm-generic/io.h which we already use.
-> >
+On Wednesday, November 9, 2016 12:10:43 PM CET Gabriele Paoloni wrote:
+> > On Tuesday, November 8, 2016 11:47:09 AM CET zhichang.yuan wrote:
+> > > +       /*
+> > > +        * The first PCIBIOS_MIN_IO is reserved specifically for
+> > indirectIO.
+> > > +        * It will separate indirectIO range from pci host bridge to
+> > > +        * avoid the possible PIO conflict.
+> > > +        * Set the indirectIO range directly here.
+> > > +        */
+> > > +       lpcdev->io_ops.start = 0;
+> > > +       lpcdev->io_ops.end = PCIBIOS_MIN_IO - 1;
+> > > +       lpcdev->io_ops.devpara = lpcdev;
+> > > +       lpcdev->io_ops.pfin = hisilpc_comm_in;
+> > > +       lpcdev->io_ops.pfout = hisilpc_comm_out;
+> > > +       lpcdev->io_ops.pfins = hisilpc_comm_ins;
+> > > +       lpcdev->io_ops.pfouts = hisilpc_comm_outs;
+> > 
+> > I have to look at patch 2 in more detail again, after missing a few
+> > review
+> > rounds. I'm still a bit skeptical about hardcoding a logical I/O port
+> > range here, and would hope that we can just go through the same
+> > assignment of logical port ranges that we have for PCI buses,
+> > decoupling
+> > the bus addresses from the linux-internal ones.
 > 
-> Right, Zhichang will check the logistics of this. The generic io.h is 
-> quite clean, so as long as you don't mind new build switches of this 
-> nature being added, it should be ok; and we'll plan on moving extio.h 
-> into include/asm-generic as well.
+> The point here is that we want to avoid any conflict/overlap between
+> the LPC I/O space and the PCI I/O space. With the assignment above
+> we make sure that LPC never interfere with PCI I/O space.
 
-I think all we need is an #ifdef CONFIG_something around the existing
-defintion, with the alternative being "extern" declarations, after that
-all the interesting logic can sit in a file in lib/.
+But we already abstract the PCI I/O space using dynamic registration.
+There is no need to hardcode the logical address for ISA, though
+I think we can hardcode the bus address to start at zero here.
 
 	Arnd
