@@ -1,60 +1,47 @@
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH] ACPI / platform: Add support for build-in properties
-Date: Thu, 10 Nov 2016 00:40:51 +0100
-Message-ID: <CAJZ5v0iALibO6Nub_Q4oZvY+SgehTQHrAZQG32ar8R281_NyAw@mail.gmail.com>
-References: <20161102154139.GD11523@kuha.fi.intel.com> <20161103142126.87413-1-heikki.krogerus@linux.intel.com>
- <1478448574.1591.2.camel@gmail.com>
+From: "Luis R. Rodriguez" <mcgrof@kernel.org>
+Subject: Re: [RFC] fs: add userspace critical mounts event support
+Date: Wed, 9 Nov 2016 15:40:45 -0800
+Message-ID: <CAB=NE6WgZKivDO0LJUf6Eeh3+g0uVmewOsdwKiNyQ+BEQ_To4w@mail.gmail.com>
+References: <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
+ <20160824203901.GT3296@wotan.suse.de> <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
+ <20160825194133.GC3296@wotan.suse.de> <20160902235916.GO3296@wotan.suse.de>
+ <20160903002014.GP3296@wotan.suse.de> <6332a54e-74c6-eafd-368e-71e87a3fa34e@landley.net>
+ <20161005180017.GD3296@wotan.suse.de> <CA+55aFzrRekSrEczdtGb3RuOeJttJ7i7dQJxiTOXz8V+kr=hdA@mail.gmail.com>
+ <20161005194633.GE3296@wotan.suse.de> <20161108224726.GD13978@wotan.suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1478448574.1591.2.camel@gmail.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: =?UTF-8?B?SsOpcsO0bWUgZGUgQnJldGFnbmU=?= <jerome.debretagne@gmail.com>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kefeng Wang <wangkefeng.wang@huawei.com>, Feng Kan <fkan@apm.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20161108224726.GD13978@wotan.suse.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Kosina <jkosina@suse.cz>, Johannes Berg <johannes@sipsolutions.net>, Jouni Malinen <j@w1.fi>, Seth Forshee <seth.forshee@canonical.com>, Tom Gundersen <teg@jklm.no>, Kay Sievers <kay@vrfy.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Wagner <wagi@monom.org>, Daniel Wagner <daniel.wagner@bmw-carit.de>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Harald Hoyer <harald@redhat.com>
+Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>, "Herbert, Marc" <marc.herbert@intel.com>, Daniel Vetter <daniel.vetter@ffwll.ch>, Rob Landley <rob@landley.net>, Mimi Zohar <zohar@linux.vnet.ibm.com>, Felix Fietkau <nbd@nbd.name>, David Woodhouse <dwmw2@infradead.org>, Roman Pen <r.peniaev@gmail.com>, Ming Lei <ming.lei@canonical.com>, Andrew Morton <akpm@linux-foundation.org>, Michal Marek <mmarek@suse.com>, Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Vikram Mulukutla <markivx@codeaurora.org>, Stephen Boyd <stephen.boyd@linaro.org>, Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.de>, Christian Lamparter <chunkeey@googlemail.com>, Hauke Mehrtens <hauke@hauke-m.de>, Josh Boyer <jwboyer@fed>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Nov 6, 2016 at 5:09 PM, J=C3=A9r=C3=B4me de Bretagne
-<jerome.debretagne@gmail.com> wrote:
-> Le jeudi 03 novembre 2016 =C3=A0 16:21 +0200, Heikki Krogerus a =C3=A9cri=
-t :
->> We have a couple of drivers, acpi_apd.c and acpi_lpss.c,
->> that need to pass extra build-in properties to the devices
->> they create. Previously the drivers added those properties
->> to the struct device which is member of the struct
->> acpi_device, but that does not work. Those properties need
->> to be assigned to the struct device of the platform device
->> instead in order for them to become available to the
->> drivers.
->>
->> To fix this, this patch changes acpi_create_platform_device
->> function to take struct property_entry pointer as parameter.
->>
->> Fixes: 20a875e2e86e ("serial: 8250_dw: Add quirk for APM X-Gene SoC")
->> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
->> ---
->>
->> Hi,
->>
->> Found the problem, and this is my proposal for a fix.
->>
->> J=C3=A9r=C3=B4me, please test it when you have time.
->>
->
-> Hi Heikki,
->
-> I can confirm that this patch fixes the issue I've reported on the Lenovo
-> ThinkPad 8 tablet. You were fast to find the root cause, impressive, real=
-ly
-> appreciated.
->
-> Feel free to add:
-> Tested-by: J=C3=A9r=C3=B4me de Bretagne <jerome.debretagne@gmail.com>
->
-> Let's hope it can still make it during the remaining 4.9 rc timing.
+On Tue, Nov 8, 2016 at 2:47 PM, Luis R. Rodriguez <mcgrof@kernel.org> wrote:
+> Whatever the outcome of this discussion is -- Johannes seemed to *want*
+> to further use the UMH by default on *all* async alls... even if the
+> driver did not explicitly requested it -- I'm concerned about this given
+> all the above and the existing flip/flop on systemd for it. Whatever
+> we try to dream up here, please consider all the above as well.
 
-It's in my linux-next branch now (it should hit linux-next on Friday)
-and I'm going to push it for -rc5 if it doesn't lead to problems.
+One addition to this: the current API does not always require the UMH
+firmware fallback, for most distributions that do not enable
+CONFIG_FW_LOADER_USER_HELPER_FALLBACK but do enable
+CONFIG_FW_LOADER_USER_HELPER we only require the UMH firmware fallback
+*iff* the driver explicitly requests it. For kernels with
+CONFIG_FW_LOADER_USER_HELPER_FALLBACK enabled we *always* use the UMH
+fallback. By fallback note that this means its used only if the first
+direct filesystem request failed. For further details on complexities
+of the UMH refer to two ongoing threads [0] [1] about it.
 
-Thanks,
-Rafael
+Johannes, you seemed to note you added some uevent classifier for
+async requests, I checked and it seems this was with commit
+e9045f9178f3e ("firmware class: export nowait to userspace") was this
+the change you were referring to ? Even with all these complexities
+annotated, do you still believe we need the UMH always for all async
+calls ?
+
+[0] https://lkml.kernel.org/r/20161109211741.GI13978@wotan.suse.de
+[1] https://lkml.kernel.org/r/20161109220210.GJ13978@wotan.suse.de
+
+  Luis
