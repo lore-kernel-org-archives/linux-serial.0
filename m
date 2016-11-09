@@ -1,267 +1,304 @@
-From: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Subject: RE: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for
+From: "liviu.dudau-5wv7dgnIgG8@public.gmane.org" <liviu.dudau-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for
  special ISA
-Date: Wed, 9 Nov 2016 16:16:17 +0000
-Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F8F27C0@lhreml507-mbx>
+Date: Wed, 9 Nov 2016 16:50:44 +0000
+Message-ID: <20161109165044.GE10219@e106497-lin.cambridge.arm.com>
 References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
  <1478576829-112707-3-git-send-email-yuanzhichang@hisilicon.com>
  <20161109113955.GD10219@e106497-lin.cambridge.arm.com>
+ <EE11001F9E5DDD47B7634E2F8A612F2E1F8F27C0@lhreml507-mbx>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20161109113955.GD10219@e106497-lin.cambridge.arm.com>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: "liviu.dudau@arm.com" <liviu.dudau@arm.com>, Yuanzhichang <yuanzhichang@hisilicon.com>
-Cc: "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "olof@lixom.net" <olof@lixom.net>, "arnd@arndb.de" <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linuxarm <linuxarm@huawei.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "minyard@acm.org" <minyard@acm.org>, benh@kernel.crashing.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F8F27C0@lhreml507-mbx>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: Yuanzhichang <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "minyard-HInyCGIudOg@public.gmane.org" <mi>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgTGl2aXUNCg0KVGhhbmtzIGZvciByZXZpZXdpbmcNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3Nh
-Z2UtLS0tLQ0KPiBGcm9tOiBsaXZpdS5kdWRhdUBhcm0uY29tIFttYWlsdG86bGl2aXUuZHVkYXVA
-YXJtLmNvbV0NCj4gU2VudDogMDkgTm92ZW1iZXIgMjAxNiAxMTo0MA0KPiBUbzogWXVhbnpoaWNo
-YW5nDQo+IENjOiBjYXRhbGluLm1hcmluYXNAYXJtLmNvbTsgd2lsbC5kZWFjb25AYXJtLmNvbTsg
-cm9iaCtkdEBrZXJuZWwub3JnOw0KPiBiaGVsZ2Fhc0Bnb29nbGUuY29tOyBtYXJrLnJ1dGxhbmRA
-YXJtLmNvbTsgb2xvZkBsaXhvbS5uZXQ7DQo+IGFybmRAYXJuZGIuZGU7IGxpbnV4LWFybS1rZXJu
-ZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gbG9yZW56by5waWVyYWxpc2lAYXJtLmNvbTsgbGlu
-dXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgTGludXhhcm07DQo+IGRldmljZXRyZWVAdmdlci5r
-ZXJuZWwub3JnOyBsaW51eC1wY2lAdmdlci5rZXJuZWwub3JnOyBsaW51eC0NCj4gc2VyaWFsQHZn
-ZXIua2VybmVsLm9yZzsgbWlueWFyZEBhY20ub3JnOyBiZW5oQGtlcm5lbC5jcmFzaGluZy5vcmc7
-DQo+IHpvdXJvbmdyb25nQGdtYWlsLmNvbTsgSm9obiBHYXJyeTsgR2FicmllbGUgUGFvbG9uaTsN
-Cj4gemhpY2hhbmcueXVhbjAyQGdtYWlsLmNvbTsga2FudHl6Y0AxNjMuY29tOyB4dXdlaSAoTykN
-Cj4gU3ViamVjdDogUmU6IFtQQVRDSCBWNSAyLzNdIEFSTTY0IExQQzogQWRkIG1pc3NpbmcgcmFu
-Z2UgZXhjZXB0aW9uIGZvcg0KPiBzcGVjaWFsIElTQQ0KPiANCj4gT24gVHVlLCBOb3YgMDgsIDIw
-MTYgYXQgMTE6NDc6MDhBTSArMDgwMCwgemhpY2hhbmcueXVhbiB3cm90ZToNCj4gPiBUaGlzIHBh
-dGNoIHNvbHZlcyB0d28gaXNzdWVzOg0KPiA+IDEpIHBhcnNlIGFuZCBnZXQgdGhlIHJpZ2h0IEkv
-TyByYW5nZSBmcm9tIERUUyBub2RlIHdob3NlIHBhcmVudCBkb2VzDQo+IG5vdA0KPiA+IGRlZmlu
-ZSB0aGUgY29ycmVzcG9uZGluZyByYW5nZXMgcHJvcGVydHk7DQo+ID4NCj4gPiBUaGVyZSBhcmUg
-c29tZSBzcGVjaWFsIElTQS9MUEMgZGV2aWNlcyB0aGF0IHdvcmsgb24gYSBzcGVjaWZpYyBJL08N
-Cj4gcmFuZ2Ugd2hlcmUNCj4gPiBpdCBpcyBub3QgY29ycmVjdCB0byBzcGVjaWZ5IGEgcmFuZ2Vz
-IHByb3BlcnR5IGluIERUUyBwYXJlbnQgbm9kZSBhcw0KPiBjcHUNCj4gPiBhZGRyZXNzZXMgdHJh
-bnNsYXRlZCBmcm9tIERUUyBub2RlIGFyZSBvbmx5IGZvciBtZW1vcnkgc3BhY2Ugb24gc29tZQ0K
-PiA+IGFyY2hpdGVjdHVyZXMsIHN1Y2ggYXMgQXJtNjQuIFdpdGhvdXQgdGhlIHBhcmVudCAncmFu
-Z2VzJyBwcm9wZXJ0eSwNCj4gY3VycmVudA0KPiA+IG9mX3RyYW5zbGF0ZV9hZGRyZXNzKCkgcmV0
-dXJuIGFuIGVycm9yLg0KPiA+IEhlcmUgd2UgYWRkIGEgZml4dXAgZnVuY3Rpb24sIG9mX2dldF9p
-c2FfaW5kaXJlY3RfaW8oKS4gRHVyaW5nIHRoZSBPRg0KPiBhZGRyZXNzDQo+ID4gdHJhbnNsYXRp
-b24sIHRoaXMgZml4dXAgd2lsbCBiZSBjYWxsZWQgdG8gY2hlY2sgdGhlICdyZWcnIGFkZHJlc3Mg
-dG8NCj4gYmUNCj4gPiB0cmFuc2xhdGluZyBpcyBmb3IgdGhvc2Ugc2VwY2lhbCBJU0EvTFBDIGRl
-dmljZXMgYW5kIGdldCB0aGUgSS9PDQo+IHJhbmdlDQo+ID4gZGlyZWN0bHkgZnJvbSB0aGUgJ3Jl
-ZycgcHJvcGVydHkuDQo+ID4NCj4gPiAyKSBlbGltaW5hdGUgdGhlIEkvTyByYW5nZSBjb25mbGlj
-dCByaXNrIHdpdGggUENJL1BDSUUgbGVhZ2VjeSBJL08NCj4gZGV2aWNlOw0KPiA+DQo+ID4gVGhl
-IGN1cnJlbnQgX19vZl9hZGRyZXNzX3RvX3Jlc291cmNlKCkgYWx3YXlzIHRyYW5zbGF0ZXMgdGhl
-IEkvTw0KPiByYW5nZSB0byBQSU8uDQo+ID4gQnV0IHRoaXMgcHJvY2Vzc2luZyBpcyBub3Qgc3Vp
-dGFibGUgZm9yIG91ciBJU0EvTFBDIGRldmljZXMgd2hvc2UgSS9PDQo+IHJhbmdlIGlzDQo+ID4g
-bm90IGNwdSBhZGRyZXNzKEFybmQgaGFkIHN0cmVzc2VkIHRoaXMgaW4gaGlzIGNvbW1lbnRzIG9u
-IFYyLFYzDQo+IHBhdGNoLXNldCkuDQo+ID4gSGVyZSwgd2UgYnlwYXNzIHRoZSBtYXBwaW5nIGJl
-dHdlZW4gY3B1IGFkZHJlc3MgYW5kIFBJTyBmb3IgdGhlDQo+IHNwZWNpYWwNCj4gPiBJU0EvTFBD
-IGRldmljZXMuIEJ1dCB0byBkcml2ZSB0aGVzZSBJU0EvTFBDIGRldmljZXMsIGEgSS9PIHBvcnQN
-Cj4gYWRkcmVzcyBiZWxvdw0KPiA+IFBDSUJJT1NfTUlOX0lPIGlzIG5lZWRlZCBieSBpbiovb3V0
-KigpLiBXaGljaCBtZWFucyB0aGVyZSBpcyBjb25mbGljdA0KPiByaXNrDQo+ID4gYmV0d2VlbiBJ
-L08gcmFuZ2Ugb2YgWzAsIFBDSUJJT1NfTUlOX0lPKSBhbmQgUENJL1BDSUUgbGVnYWN5IEkvTw0K
-PiByYW5nZSBvZiBbMCwNCj4gPiBJT19TUEFDRV9MSU1JVCkuDQo+ID4gVG8gYXZvaWQgdGhlIEkv
-TyBjb25mbGljdCwgdGhpcyBwYXRjaCByZXNlcnZlIHRoZSBJL08gcmFuZ2UgYmVsb3cNCj4gPiBQ
-Q0lCSU9TX01JTl9JTy4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IHpoaWNoYW5nLnl1YW4gPHl1
-YW56aGljaGFuZ0BoaXNpbGljb24uY29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEdhYnJpZWxlIFBh
-b2xvbmkgPGdhYnJpZWxlLnBhb2xvbmlAaHVhd2VpLmNvbT4NCj4gPiAtLS0NCj4gPiAgLi4uL2Fy
-bS9oaXNpbGljb24vaGlzaWxpY29uLWxvdy1waW4tY291bnQudHh0ICAgICAgfCAzMSArKysrKysr
-KysrKysNCj4gPiAgYXJjaC9hcm02NC9pbmNsdWRlL2FzbS9pby5oICAgICAgICAgICAgICAgICAg
-ICAgICAgfCAgNiArKysNCj4gPiAgYXJjaC9hcm02NC9rZXJuZWwvZXh0aW8uYyAgICAgICAgICAg
-ICAgICAgICAgICAgICAgfCAyNSArKysrKysrKysrDQo+ID4gIGRyaXZlcnMvb2YvYWRkcmVzcy5j
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgNTYNCj4gKysrKysrKysrKysrKysrKysr
-KysrLQ0KPiA+ICBkcml2ZXJzL3BjaS9wY2kuYyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICB8ICA2ICstLQ0KPiA+ICBpbmNsdWRlL2xpbnV4L29mX2FkZHJlc3MuaCAgICAgICAgICAg
-ICAgICAgICAgICAgICB8IDE3ICsrKysrKysNCj4gPiAgaW5jbHVkZS9saW51eC9wY2kuaCAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgOCArKysrDQo+ID4gIDcgZmlsZXMgY2hhbmdl
-ZCwgMTQ1IGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pDQo+ID4gIGNyZWF0ZSBtb2RlIDEw
-MDY0NA0KPiBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvYXJtL2hpc2lsaWNvbi9o
-aXNpbGljb24tbG93LXBpbi0NCj4gY291bnQudHh0DQo+ID4NCj4gPiBkaWZmIC0tZ2l0DQo+IGEv
-RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2FybS9oaXNpbGljb24vaGlzaWxpY29u
-LWxvdy1waW4tDQo+IGNvdW50LnR4dCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
-cy9hcm0vaGlzaWxpY29uL2hpc2lsaWNvbi0NCj4gbG93LXBpbi1jb3VudC50eHQNCj4gPiBuZXcg
-ZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAuLjEzYzhkZGQNCj4gPiAtLS0gL2Rl
-di9udWxsDQo+ID4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2FybS9o
-aXNpbGljb24vaGlzaWxpY29uLWxvdy0NCj4gcGluLWNvdW50LnR4dA0KPiA+IEBAIC0wLDAgKzEs
-MzEgQEANCj4gPiArSGlzaWxpY29uIEhpcDA2IGxvdy1waW4tY291bnQgZGV2aWNlDQo+ID4gKyAg
-VXN1YWxseSBMUEMgY29udHJvbGxlciBpcyBwYXJ0IG9mIFBDSSBob3N0IGJyaWRnZSwgc28gdGhl
-IGxlZ2FjeQ0KPiBJU0EgcG9ydHMNCj4gPiArICBsb2NhdGUgb24gTFBDIGJ1cyBjYW4gYmUgYWNj
-ZXNzZWQgZGlyZWNsdHkuIEJ1dCBzb21lIFNvQ3MgaGF2ZQ0KPiBpbmRlcGVuZGVudA0KPiA+ICsg
-IExQQyBjb250cm9sbGVyLCBhbmQgYWNjZXNzIHRoZSBsZWdhY3kgcG9ydHMgYnkgdHJpZ2dlcmlu
-ZyBMUEMgSS9PDQo+IGN5Y2xlcy4NCj4gPiArICBIaXNpbGljb24gSGlwMDYgaW1wbGVtZW50cyB0
-aGlzIExQQyBkZXZpY2UuDQo+ID4gKw0KPiA+ICtSZXF1aXJlZCBwcm9wZXJ0aWVzOg0KPiA+ICst
-IGNvbXBhdGlibGU6IHNob3VsZCBiZSAiaGlzaWxpY29uLGxvdy1waW4tY291bnQiDQo+ID4gKy0g
-I2FkZHJlc3MtY2VsbHM6IG11c3QgYmUgMiB3aGljaCBzdGljayB0byB0aGUgSVNBL0VJU0EgYmlu
-ZGluZyBkb2MuDQo+ID4gKy0gI3NpemUtY2VsbHM6IG11c3QgYmUgMSB3aGljaCBzdGljayB0byB0
-aGUgSVNBL0VJU0EgYmluZGluZyBkb2MuDQo+ID4gKy0gcmVnOiBiYXNlIG1lbW9yeSByYW5nZSB3
-aGVyZSB0aGUgcmVnaXN0ZXIgc2V0IG9mIHRoaXMgZGV2aWNlIGlzDQo+IG1hcHBlZC4NCj4gPiAr
-DQo+ID4gK05vdGU6DQo+ID4gKyAgVGhlIG5vZGUgbmFtZSBiZWZvcmUgJ0AnIG11c3QgYmUgImlz
-YSIgdG8gcmVwcmVzZW50IHRoZSBiaW5kaW5nDQo+IHN0aWNrIHRvIHRoZQ0KPiA+ICsgIElTQS9F
-SVNBIGJpbmRpbmcgc3BlY2lmaWNhdGlvbi4NCj4gPiArDQo+ID4gK0V4YW1wbGU6DQo+ID4gKw0K
-PiA+ICtpc2FAYTAxYjAwMDAgew0KPiA+ICsJY29tcGF0aWJsZSA9ICJoaXNpbGljb20sbG93LXBp
-bi1jb3VudCI7DQo+ID4gKwkjYWRkcmVzcy1jZWxscyA9IDwyPjsNCj4gPiArCSNzaXplLWNlbGxz
-ID0gPDE+Ow0KPiA+ICsJcmVnID0gPDB4MCAweGEwMWIwMDAwIDB4MCAweDEwMDA+Ow0KPiA+ICsN
-Cj4gPiArCWlwbWkwOiBidEBlNCB7DQo+ID4gKwkJY29tcGF0aWJsZSA9ICJpcG1pLWJ0IjsNCj4g
-PiArCQlkZXZpY2VfdHlwZSA9ICJpcG1pIjsNCj4gPiArCQlyZWcgPSA8MHgwMSAweGU0IDB4MDQ+
-Ow0KPiA+ICsJCXN0YXR1cyA9ICJkaXNhYmxlZCI7DQo+ID4gKwl9Ow0KPiA+ICt9Ow0KPiANCj4g
-DQo+IFRoaXMgZG9jdW1lbnRhdGlvbiBmaWxlIG5lZWRzIHRvIGJlIHBhcnQgb2YgdGhlIG5leHQg
-cGF0Y2guIEl0IGhhcw0KPiBub3RoaW5nIHRvIGRvIHdpdGgNCj4gd2hhdCB5b3UgYXJlIHRyeWlu
-ZyB0byBmaXggaGVyZS4NCg0KWWVzIHlvdSdyZSByaWdodC4uLndlJ2xsIG1vdmUgaXQgdG8gbmV4
-dCBvbmUNCg0KPiANCj4gDQo+ID4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtNjQvaW5jbHVkZS9hc20v
-aW8uaA0KPiBiL2FyY2gvYXJtNjQvaW5jbHVkZS9hc20vaW8uaA0KPiA+IGluZGV4IDEzNjczNWQu
-LmMyNmI3Y2MgMTAwNjQ0DQo+ID4gLS0tIGEvYXJjaC9hcm02NC9pbmNsdWRlL2FzbS9pby5oDQo+
-ID4gKysrIGIvYXJjaC9hcm02NC9pbmNsdWRlL2FzbS9pby5oDQo+ID4gQEAgLTE3NSw2ICsxNzUs
-MTIgQEAgc3RhdGljIGlubGluZSB1NjQgX19yYXdfcmVhZHEoY29uc3Qgdm9sYXRpbGUNCj4gdm9p
-ZCBfX2lvbWVtICphZGRyKQ0KPiA+ICAjZGVmaW5lIG91dHNsIG91dHNsDQo+ID4NCj4gPiAgREVD
-TEFSRV9FWFRJTyhsLCB1MzIpDQo+ID4gKw0KPiA+ICsjZGVmaW5lIGluZGlyZWN0X2lvX2VuYWJs
-ZWQgaW5kaXJlY3RfaW9fZW5hYmxlZA0KPiA+ICtleHRlcm4gYm9vbCBpbmRpcmVjdF9pb19lbmFi
-bGVkKHZvaWQpOw0KPiA+ICsNCj4gPiArI2RlZmluZSBhZGRyX2lzX2luZGlyZWN0X2lvIGFkZHJf
-aXNfaW5kaXJlY3RfaW8NCj4gPiArZXh0ZXJuIGludCBhZGRyX2lzX2luZGlyZWN0X2lvKHU2NCB0
-YWRkcik7DQo+ID4gICNlbmRpZg0KPiA+DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm02
-NC9rZXJuZWwvZXh0aW8uYyBiL2FyY2gvYXJtNjQva2VybmVsL2V4dGlvLmMNCj4gPiBpbmRleCA2
-NDdiM2ZhLi4zZDQ1ZmE4IDEwMDY0NA0KPiA+IC0tLSBhL2FyY2gvYXJtNjQva2VybmVsL2V4dGlv
-LmMNCj4gPiArKysgYi9hcmNoL2FybTY0L2tlcm5lbC9leHRpby5jDQo+ID4gQEAgLTE5LDYgKzE5
-LDMxIEBADQo+ID4NCj4gPiAgc3RydWN0IGV4dGlvX29wcyAqYXJtNjRfZXh0aW9fb3BzOw0KPiA+
-DQo+ID4gKy8qKg0KPiA+ICsgKiBpbmRpcmVjdF9pb19lbmFibGVkIC0gY2hlY2sgd2hldGhlciBp
-bmRpcmVjdElPIGlzIGVuYWJsZWQuDQo+ID4gKyAqCWFybTY0X2V4dGlvX29wcyB3aWxsIGJlIHNl
-dCBvbmx5IHdoZW4gaW5kaXJlY3RJTyBtZWNoYW5pc20gaGFkDQo+IGJlZW4NCj4gPiArICoJaW5p
-dGlhbGl6ZWQuDQo+ID4gKyAqDQo+ID4gKyAqIFJldHVybnMgdHJ1ZSB3aGVuIGluZGlyZWN0SU8g
-aXMgZW5hYmxlZC4NCj4gPiArICovDQo+ID4gK2Jvb2wgaW5kaXJlY3RfaW9fZW5hYmxlZCh2b2lk
-KQ0KPiA+ICt7DQo+ID4gKwlyZXR1cm4gYXJtNjRfZXh0aW9fb3BzID8gdHJ1ZSA6IGZhbHNlOw0K
-PiA+ICt9DQo+ID4gKw0KPiA+ICsvKioNCj4gPiArICogYWRkcl9pc19pbmRpcmVjdF9pbyAtIGNo
-ZWNrIHdoZXRoZXIgdGhlIGlucHV0IHRhZGRyIGlzIGZvcg0KPiBpbmRpcmVjdElPLg0KPiA+ICsg
-KiBAdGFkZHI6IHRoZSBpbyBhZGRyZXNzIHRvIGJlIGNoZWNrZWQuDQo+ID4gKyAqDQo+ID4gKyAq
-IFJldHVybnMgMSB3aGVuIHRhZGRyIGlzIGluIHRoZSByYW5nZTsgb3RoZXJ3aXNlIHJldHVybiAw
-Lg0KPiA+ICsgKi8NCj4gPiAraW50IGFkZHJfaXNfaW5kaXJlY3RfaW8odTY0IHRhZGRyKQ0KPiA+
-ICt7DQo+ID4gKwlpZiAoYXJtNjRfZXh0aW9fb3BzLT5zdGFydCA+IHRhZGRyIHx8IGFybTY0X2V4
-dGlvX29wcy0+ZW5kIDwNCj4gdGFkZHIpDQo+IA0KPiBzdGFydCA+PSB0YWRkciA/DQoNCk5vcGUu
-Li4gaWYgICh0YWRkciA8IGFybTY0X2V4dGlvX29wcy0+c3RhcnQgfHwgdGFkZHIgPiBhcm02NF9l
-eHRpb19vcHMtPmVuZCkNCnRoZW4gdGFkZHIgaXMgb3V0c2lkZSB0aGUgcmFuZ2UgW3N0YXJ0OyBl
-bmRdIGFuZCB3aWxsIHJldHVybiAwOyBvdGhlcndpc2UNCml0IHdpbGwgcmV0dXJuIDEuLi4NCg0K
-PiANCj4gPiArCQlyZXR1cm4gMDsNCj4gPiArDQo+ID4gKwlyZXR1cm4gMTsNCj4gPiArfQ0KPiA+
-DQo+ID4gIEJVSUxEX0VYVElPKGIsIHU4KQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-b2YvYWRkcmVzcy5jIGIvZHJpdmVycy9vZi9hZGRyZXNzLmMNCj4gPiBpbmRleCAwMmIyOTAzLi5j
-YzJhMDVkIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvb2YvYWRkcmVzcy5jDQo+ID4gKysrIGIv
-ZHJpdmVycy9vZi9hZGRyZXNzLmMNCj4gPiBAQCAtNDc5LDYgKzQ3OSw1MCBAQCBzdGF0aWMgaW50
-IG9mX2VtcHR5X3Jhbmdlc19xdWlyayhzdHJ1Y3QNCj4gZGV2aWNlX25vZGUgKm5wKQ0KPiA+ICAJ
-cmV0dXJuIGZhbHNlOw0KPiA+ICB9DQo+ID4NCj4gPiArDQo+ID4gKy8qDQo+ID4gKyAqIG9mX2lz
-YV9pbmRpcmVjdF9pbyAtIGdldCB0aGUgSU8gYWRkcmVzcyBmcm9tIHNvbWUgaXNhIHJlZw0KPiBw
-cm9wZXJ0eSB2YWx1ZS4NCj4gPiArICoJRm9yIHNvbWUgaXNhL2xwYyBkZXZpY2VzLCBubyByYW5n
-ZXMgcHJvcGVydHkgaW4gYW5jZXN0b3Igbm9kZS4NCj4gPiArICoJVGhlIGRldmljZSBhZGRyZXNz
-ZXMgYXJlIGRlc2NyaWJlZCBkaXJlY3RseSBpbiB0aGVpciByZWdzDQo+IHByb3BlcnR5Lg0KPiA+
-ICsgKglUaGlzIGZpeHVwIGZ1bmN0aW9uIHdpbGwgYmUgY2FsbGVkIHRvIGdldCB0aGUgSU8gYWRk
-cmVzcyBvZg0KPiBpc2EvbHBjDQo+ID4gKyAqCWRldmljZXMgd2hlbiB0aGUgbm9ybWFsIG9mX3Ry
-YW5zbGF0aW9uIGZhaWxlZC4NCj4gPiArICoNCj4gPiArICogQHBhcmVudDoJcG9pbnRzIHRvIHRo
-ZSBwYXJlbnQgZHRzIG5vZGU7DQo+ID4gKyAqIEBidXM6CQlwb2ludHMgdG8gdGhlIG9mX2J1cyB3
-aGljaCBjYW4gYmUgdXNlZCB0byBwYXJzZQ0KPiBhZGRyZXNzOw0KPiA+ICsgKiBAYWRkcjoJdGhl
-IGFkZHJlc3MgZnJvbSByZWcgcHJvcGVydHk7DQo+ID4gKyAqIEBuYToJCXRoZSBhZGRyZXNzIGNl
-bGwgY291bnRlciBvZiBAYWRkcjsNCj4gPiArICogQHByZXN1bHQ6CXN0b3JlIHRoZSBhZGRyZXNz
-IHBhcmVzZWQgZnJvbSBAYWRkcjsNCj4gPiArICoNCj4gPiArICogcmV0dXJuIDEgd2hlbiBzdWNj
-ZXNzZnVsbHkgZ2V0IHRoZSBJL08gYWRkcmVzczsNCj4gPiArICogMCB3aWxsIHJldHVybiBmb3Ig
-c29tZSBmYWlsdXJlcy4NCj4gDQo+IEJhaCwgeW91IGFyZSByZXR1cm5pbmcgYSBzaWduZWQgaW50
-LCB3aHkgMCBmb3IgZmFpbHVyZT8gUmV0dXJuIGENCj4gbmVnYXRpdmUgdmFsdWUgd2l0aA0KPiBl
-cnJvciBjb2Rlcy4gT3RoZXJ3aXNlIGNoYW5nZSB0aGUgcmV0dXJuIHZhbHVlIGludG8gYSBib29s
-Lg0KDQpZZXMgd2UnbGwgbW92ZSB0byBib29sDQoNCj4gDQo+ID4gKyAqLw0KPiA+ICtzdGF0aWMg
-aW50IG9mX2dldF9pc2FfaW5kaXJlY3RfaW8oc3RydWN0IGRldmljZV9ub2RlICpwYXJlbnQsDQo+
-ID4gKwkJCQlzdHJ1Y3Qgb2ZfYnVzICpidXMsIF9fYmUzMiAqYWRkciwNCj4gPiArCQkJCWludCBu
-YSwgdTY0ICpwcmVzdWx0KQ0KPiA+ICt7DQo+ID4gKwl1bnNpZ25lZCBpbnQgZmxhZ3M7DQo+ID4g
-Kwl1bnNpZ25lZCBpbnQgcmxlbjsNCj4gPiArDQo+ID4gKwkvKiB3aGV0aGVyIHN1cHBvcnQgaW5k
-aXJlY3RJTyAqLw0KPiA+ICsJaWYgKCFpbmRpcmVjdF9pb19lbmFibGVkKCkpDQo+ID4gKwkJcmV0
-dXJuIDA7DQo+ID4gKw0KPiA+ICsJaWYgKCFvZl9idXNfaXNhX21hdGNoKHBhcmVudCkpDQo+ID4g
-KwkJcmV0dXJuIDA7DQo+ID4gKw0KPiA+ICsJZmxhZ3MgPSBidXMtPmdldF9mbGFncyhhZGRyKTsN
-Cj4gPiArCWlmICghKGZsYWdzICYgSU9SRVNPVVJDRV9JTykpDQo+ID4gKwkJcmV0dXJuIDA7DQo+
-ID4gKw0KPiA+ICsJLyogdGhlcmUgaXMgcmFuZ2VzIHByb3BlcnR5LCBhcHBseSB0aGUgbm9ybWFs
-IHRyYW5zbGF0aW9uDQo+IGRpcmVjdGx5LiAqLw0KPiANCj4gcy90aGVyZSBpcyByYW5nZXMvaWYg
-d2UgaGF2ZSBhICdyYW5nZXMnLw0KDQpUaGFua3MgZm9yIHNwb3R0aW5nIHRoaXMNCg0KPiANCj4g
-PiArCWlmIChvZl9nZXRfcHJvcGVydHkocGFyZW50LCAicmFuZ2VzIiwgJnJsZW4pKQ0KPiA+ICsJ
-CXJldHVybiAwOw0KPiA+ICsNCj4gPiArCSpwcmVzdWx0ID0gb2ZfcmVhZF9udW1iZXIoYWRkciAr
-IDEsIG5hIC0gMSk7DQo+ID4gKwkvKiB0aGlzIGZpeHVwIGlzIG9ubHkgdmFsaWQgZm9yIHNwZWNp
-ZmljIEkvTyByYW5nZS4gKi8NCj4gPiArCXJldHVybiBhZGRyX2lzX2luZGlyZWN0X2lvKCpwcmVz
-dWx0KTsNCj4gPiArfQ0KPiA+ICsNCj4gPiAgc3RhdGljIGludCBvZl90cmFuc2xhdGVfb25lKHN0
-cnVjdCBkZXZpY2Vfbm9kZSAqcGFyZW50LCBzdHJ1Y3QNCj4gb2ZfYnVzICpidXMsDQo+ID4gIAkJ
-CSAgICBzdHJ1Y3Qgb2ZfYnVzICpwYnVzLCBfX2JlMzIgKmFkZHIsDQo+ID4gIAkJCSAgICBpbnQg
-bmEsIGludCBucywgaW50IHBuYSwgY29uc3QgY2hhciAqcnByb3ApDQo+ID4gQEAgLTU5NSw2ICs2
-MzksMTUgQEAgc3RhdGljIHU2NCBfX29mX3RyYW5zbGF0ZV9hZGRyZXNzKHN0cnVjdA0KPiBkZXZp
-Y2Vfbm9kZSAqZGV2LA0KPiA+ICAJCQlyZXN1bHQgPSBvZl9yZWFkX251bWJlcihhZGRyLCBuYSk7
-DQo+ID4gIAkJCWJyZWFrOw0KPiA+ICAJCX0NCj4gPiArCQkvKg0KPiA+ICsJCSAqIEZvciBpbmRp
-cmVjdElPIGRldmljZSB3aGljaCBoYXMgbm8gcmFuZ2VzIHByb3BlcnR5LCBnZXQNCj4gPiArCQkg
-KiB0aGUgYWRkcmVzcyBmcm9tIHJlZyBkaXJlY3RseS4NCj4gPiArCQkgKi8NCj4gPiArCQlpZiAo
-b2ZfZ2V0X2lzYV9pbmRpcmVjdF9pbyhkZXYsIGJ1cywgYWRkciwgbmEsICZyZXN1bHQpKSB7DQo+
-ID4gKwkJCXByX2RlYnVnKCJpc2EgaW5kaXJlY3RJTyBtYXRjaGVkKCVzKS4uYWRkciA9DQo+IDB4
-JWxseFxuIiwNCj4gPiArCQkJCW9mX25vZGVfZnVsbF9uYW1lKGRldiksIHJlc3VsdCk7DQo+ID4g
-KwkJCWJyZWFrOw0KPiA+ICsJCX0NCj4gPg0KPiA+ICAJCS8qIEdldCBuZXcgcGFyZW50IGJ1cyBh
-bmQgY291bnRzICovDQo+ID4gIAkJcGJ1cyA9IG9mX21hdGNoX2J1cyhwYXJlbnQpOw0KPiA+IEBA
-IC02ODgsOCArNzQxLDkgQEAgc3RhdGljIGludCBfX29mX2FkZHJlc3NfdG9fcmVzb3VyY2Uoc3Ry
-dWN0DQo+IGRldmljZV9ub2RlICpkZXYsDQo+ID4gIAlpZiAodGFkZHIgPT0gT0ZfQkFEX0FERFIp
-DQo+ID4gIAkJcmV0dXJuIC1FSU5WQUw7DQo+ID4gIAltZW1zZXQociwgMCwgc2l6ZW9mKHN0cnVj
-dCByZXNvdXJjZSkpOw0KPiA+IC0JaWYgKGZsYWdzICYgSU9SRVNPVVJDRV9JTykgew0KPiA+ICsJ
-aWYgKGZsYWdzICYgSU9SRVNPVVJDRV9JTyAmJiB0YWRkciA+PSBQQ0lCSU9TX01JTl9JTykgew0K
-PiA+ICAJCXVuc2lnbmVkIGxvbmcgcG9ydDsNCj4gPiArDQo+ID4gIAkJcG9ydCA9IHBjaV9hZGRy
-ZXNzX3RvX3Bpbyh0YWRkcik7DQo+ID4gIAkJaWYgKHBvcnQgPT0gKHVuc2lnbmVkIGxvbmcpLTEp
-DQo+ID4gIAkJCXJldHVybiAtRUlOVkFMOw0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3BjaS9w
-Y2kuYyBiL2RyaXZlcnMvcGNpL3BjaS5jDQo+ID4gaW5kZXggYmEzNDkwNy4uMWEwODUxMSAxMDA2
-NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3BjaS9wY2kuYw0KPiA+ICsrKyBiL2RyaXZlcnMvcGNpL3Bj
-aS5jDQo+ID4gQEAgLTMyNjMsNyArMzI2Myw3IEBAIGludCBfX3dlYWsgcGNpX3JlZ2lzdGVyX2lv
-X3JhbmdlKHBoeXNfYWRkcl90DQo+IGFkZHIsIHJlc291cmNlX3NpemVfdCBzaXplKQ0KPiA+DQo+
-ID4gICNpZmRlZiBQQ0lfSU9CQVNFDQo+ID4gIAlzdHJ1Y3QgaW9fcmFuZ2UgKnJhbmdlOw0KPiA+
-IC0JcmVzb3VyY2Vfc2l6ZV90IGFsbG9jYXRlZF9zaXplID0gMDsNCj4gPiArCXJlc291cmNlX3Np
-emVfdCBhbGxvY2F0ZWRfc2l6ZSA9IFBDSUJJT1NfTUlOX0lPOw0KPiA+DQo+ID4gIAkvKiBjaGVj
-ayBpZiB0aGUgcmFuZ2UgaGFzbid0IGJlZW4gcHJldmlvdXNseSByZWNvcmRlZCAqLw0KPiA+ICAJ
-c3Bpbl9sb2NrKCZpb19yYW5nZV9sb2NrKTsNCj4gPiBAQCAtMzMxMiw3ICszMzEyLDcgQEAgcGh5
-c19hZGRyX3QgcGNpX3Bpb190b19hZGRyZXNzKHVuc2lnbmVkIGxvbmcNCj4gcGlvKQ0KPiA+DQo+
-ID4gICNpZmRlZiBQQ0lfSU9CQVNFDQo+ID4gIAlzdHJ1Y3QgaW9fcmFuZ2UgKnJhbmdlOw0KPiA+
-IC0JcmVzb3VyY2Vfc2l6ZV90IGFsbG9jYXRlZF9zaXplID0gMDsNCj4gPiArCXJlc291cmNlX3Np
-emVfdCBhbGxvY2F0ZWRfc2l6ZSA9IFBDSUJJT1NfTUlOX0lPOw0KPiANCj4gSGF2ZSB5b3UgY2hl
-Y2tlZCB0aGF0IHBjaV9waW9fdG9fYWRkcmVzcyBzdGlsbCByZXR1cm5zIHZhbGlkIHZhbHVlcw0K
-PiBhZnRlciB0aGlzPyBJIGtub3cgdGhhdA0KPiB5b3UgYXJlIHRyeWluZyB0byB0YWtlIGludG8g
-YWNjb3VudCBQQ0lCSU9TX01JTl9JTyBsaW1pdCB3aGVuDQo+IGFsbG9jYXRpbmcgcmVzZXJ2aW5n
-IHRoZSBJTyByYW5nZXMsDQo+IGJ1dCB0aGUgdmFsdWVzIGFkZGVkIGluIHRoZSBpb19yYW5nZV9s
-aXN0IGFyZSBzdGlsbCBzdGFydGluZyBmcm9tIHplcm8sDQo+IG5vIGZyb20gUENJQklPU19NSU5f
-SU8sDQoNCkkgdGhpbmsgeW91J3JlIHdyb25nIGhlcmUgYXMgaW4gcGNpX2FkZHJlc3NfdG9fcGlv
-IHdlIGhhdmU6DQorCXJlc291cmNlX3NpemVfdCBvZmZzZXQgPSBQQ0lCSU9TX01JTl9JTzsNCg0K
-VGhpcyBzaG91bGQgYmUgZW5vdWdoIHRvIGd1YXJhbnRlZSB0aGF0IHRoZSBQSU9zIHN0YXJ0IGF0
-DQpQQ0lCSU9TX01JTl9JTy4uLnJpZ2h0Pw0KDQoNCj4gc28gdGhlIGNhbGN1bGF0aW9uIG9mIHRo
-ZSBhZGRyZXNzIGluIHRoaXMgZnVuY3Rpb24gY291bGQgcmV0dXJuDQo+IG5lZ2F0aXZlIHZhbHVl
-cyBjYXN0ZWQgdG8gcGNpX2FkZHJfdC4NCj4gDQo+IE1heWJlIHlvdSB3YW50IHRvIGFkanVzdCB0
-aGUgcmFuZ2UtPnN0YXJ0IHZhbHVlIGluDQo+IHBjaV9yZWdpc3Rlcl9pb19yYW5nZSgpIGFzIHdl
-bGwgdG8gaGF2ZSBpdA0KPiBvZmZzZXQgYnkgUENJQklPU19NSU5fSU8gYXMgd2VsbC4NCj4gDQo+
-IEJlc3QgcmVnYXJkcywNCj4gTGl2aXUNCj4gDQo+ID4NCj4gPiAgCWlmIChwaW8gPiBJT19TUEFD
-RV9MSU1JVCkNCj4gPiAgCQlyZXR1cm4gYWRkcmVzczsNCj4gPiBAQCAtMzMzNSw3ICszMzM1LDcg
-QEAgdW5zaWduZWQgbG9uZyBfX3dlYWsNCj4gcGNpX2FkZHJlc3NfdG9fcGlvKHBoeXNfYWRkcl90
-IGFkZHJlc3MpDQo+ID4gIHsNCj4gPiAgI2lmZGVmIFBDSV9JT0JBU0UNCj4gPiAgCXN0cnVjdCBp
-b19yYW5nZSAqcmVzOw0KPiA+IC0JcmVzb3VyY2Vfc2l6ZV90IG9mZnNldCA9IDA7DQo+ID4gKwly
-ZXNvdXJjZV9zaXplX3Qgb2Zmc2V0ID0gUENJQklPU19NSU5fSU87DQo+ID4gIAl1bnNpZ25lZCBs
-b25nIGFkZHIgPSAtMTsNCj4gPg0KPiA+ICAJc3Bpbl9sb2NrKCZpb19yYW5nZV9sb2NrKTsNCj4g
-PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9vZl9hZGRyZXNzLmggYi9pbmNsdWRlL2xpbnV4
-L29mX2FkZHJlc3MuaA0KPiA+IGluZGV4IDM3ODY0NzMuLmRlZWM0NjkgMTAwNjQ0DQo+ID4gLS0t
-IGEvaW5jbHVkZS9saW51eC9vZl9hZGRyZXNzLmgNCj4gPiArKysgYi9pbmNsdWRlL2xpbnV4L29m
-X2FkZHJlc3MuaA0KPiA+IEBAIC0yNCw2ICsyNCwyMyBAQCBzdHJ1Y3Qgb2ZfcGNpX3JhbmdlIHsN
-Cj4gPiAgI2RlZmluZSBmb3JfZWFjaF9vZl9wY2lfcmFuZ2UocGFyc2VyLCByYW5nZSkgXA0KPiA+
-ICAJZm9yICg7IG9mX3BjaV9yYW5nZV9wYXJzZXJfb25lKHBhcnNlciwgcmFuZ2UpOykNCj4gPg0K
-PiA+ICsNCj4gPiArI2lmbmRlZiBpbmRpcmVjdF9pb19lbmFibGVkDQo+ID4gKyNkZWZpbmUgaW5k
-aXJlY3RfaW9fZW5hYmxlZCBpbmRpcmVjdF9pb19lbmFibGVkDQo+ID4gK3N0YXRpYyBpbmxpbmUg
-Ym9vbCBpbmRpcmVjdF9pb19lbmFibGVkKHZvaWQpDQo+ID4gK3sNCj4gPiArCXJldHVybiBmYWxz
-ZTsNCj4gPiArfQ0KPiA+ICsjZW5kaWYNCj4gPiArDQo+ID4gKyNpZm5kZWYgYWRkcl9pc19pbmRp
-cmVjdF9pbw0KPiA+ICsjZGVmaW5lIGFkZHJfaXNfaW5kaXJlY3RfaW8gYWRkcl9pc19pbmRpcmVj
-dF9pbw0KPiA+ICtzdGF0aWMgaW5saW5lIGludCBhZGRyX2lzX2luZGlyZWN0X2lvKHU2NCB0YWRk
-cikNCj4gPiArew0KPiA+ICsJcmV0dXJuIDA7DQo+ID4gK30NCj4gPiArI2VuZGlmDQo+ID4gKw0K
-PiA+ICAvKiBUcmFuc2xhdGUgYSBETUEgYWRkcmVzcyBmcm9tIGRldmljZSBzcGFjZSB0byBDUFUg
-c3BhY2UgKi8NCj4gPiAgZXh0ZXJuIHU2NCBvZl90cmFuc2xhdGVfZG1hX2FkZHJlc3Moc3RydWN0
-IGRldmljZV9ub2RlICpkZXYsDQo+ID4gIAkJCQkgICAgY29uc3QgX19iZTMyICppbl9hZGRyKTsN
-Cj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9wY2kuaCBiL2luY2x1ZGUvbGludXgvcGNp
-LmgNCj4gPiBpbmRleCAwZTQ5ZjcwLi43ZjZiYmI2IDEwMDY0NA0KPiA+IC0tLSBhL2luY2x1ZGUv
-bGludXgvcGNpLmgNCj4gPiArKysgYi9pbmNsdWRlL2xpbnV4L3BjaS5oDQo+ID4gQEAgLTIxMzAs
-NCArMjEzMCwxMiBAQCBzdGF0aWMgaW5saW5lIGJvb2wgcGNpX2FyaV9lbmFibGVkKHN0cnVjdA0K
-PiBwY2lfYnVzICpidXMpDQo+ID4gIC8qIHByb3ZpZGUgdGhlIGxlZ2FjeSBwY2lfZG1hXyogQVBJ
-ICovDQo+ID4gICNpbmNsdWRlIDxsaW51eC9wY2ktZG1hLWNvbXBhdC5oPg0KPiA+DQo+ID4gKy8q
-DQo+ID4gKyAqIGRlZmluZSB0aGlzIG1hY3JvIGhlcmUgdG8gcmVmcmFpbiBmcm9tIGNvbXBpbGF0
-aW9uIGVycm9yIGZvciBzb21lDQo+ID4gKyAqIHBsYXRmb3Jtcy4gUGxlYXNlIGtlZXAgdGhpcyBt
-YWNybyBhdCB0aGUgZW5kIG9mIHRoaXMgaGVhZGVyIGZpbGUuDQo+ID4gKyAqLw0KPiA+ICsjaWZu
-ZGVmIFBDSUJJT1NfTUlOX0lPDQo+ID4gKyNkZWZpbmUgUENJQklPU19NSU5fSU8JCTANCj4gPiAr
-I2VuZGlmDQo+ID4gKw0KPiA+ICAjZW5kaWYgLyogTElOVVhfUENJX0ggKi8NCj4gPiAtLQ0KPiA+
-IDEuOS4xDQo+ID4NCj4gPiAtLQ0KPiA+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBsaXN0OiBz
-ZW5kIHRoZSBsaW5lICJ1bnN1YnNjcmliZSBsaW51eC1wY2kiDQo+IGluDQo+ID4gdGhlIGJvZHkg
-b2YgYSBtZXNzYWdlIHRvIG1ham9yZG9tb0B2Z2VyLmtlcm5lbC5vcmcNCj4gPiBNb3JlIG1ham9y
-ZG9tbyBpbmZvIGF0ICBodHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwN
-Cj4gDQo+IC0tDQo+ID09PT09PT09PT09PT09PT09PT09DQo+IHwgSSB3b3VsZCBsaWtlIHRvIHwN
-Cj4gfCBmaXggdGhlIHdvcmxkLCAgfA0KPiB8IGJ1dCB0aGV5J3JlIG5vdCB8DQo+IHwgZ2l2aW5n
-IG1lIHRoZSAgIHwNCj4gIFwgc291cmNlIGNvZGUhICAvDQo+ICAgLS0tLS0tLS0tLS0tLS0tDQo+
-ICAgICDCr1xfKOODhClfL8KvDQo=
+On Wed, Nov 09, 2016 at 04:16:17PM +0000, Gabriele Paoloni wrote:
+> Hi Liviu
+> 
+> Thanks for reviewing
+> 
+
+[removed some irrelevant part of discussion, avoid crazy formatting]
+
+> > > +/**
+> > > + * addr_is_indirect_io - check whether the input taddr is for
+> > indirectIO.
+> > > + * @taddr: the io address to be checked.
+> > > + *
+> > > + * Returns 1 when taddr is in the range; otherwise return 0.
+> > > + */
+> > > +int addr_is_indirect_io(u64 taddr)
+> > > +{
+> > > +	if (arm64_extio_ops->start > taddr || arm64_extio_ops->end <
+> > taddr)
+> > 
+> > start >= taddr ?
+> 
+> Nope... if  (taddr < arm64_extio_ops->start || taddr > arm64_extio_ops->end)
+> then taddr is outside the range [start; end] and will return 0; otherwise
+> it will return 1...
+
+Oops, sorry, did not pay attention to the returned value. The check is
+correct as it is, no need to change then.
+
+> 
+> > 
+> > > +		return 0;
+> > > +
+> > > +	return 1;
+> > > +}
+> > >
+> > >  BUILD_EXTIO(b, u8)
+> > >
+> > > diff --git a/drivers/of/address.c b/drivers/of/address.c
+> > > index 02b2903..cc2a05d 100644
+> > > --- a/drivers/of/address.c
+> > > +++ b/drivers/of/address.c
+> > > @@ -479,6 +479,50 @@ static int of_empty_ranges_quirk(struct
+> > device_node *np)
+> > >  	return false;
+> > >  }
+> > >
+> > > +
+> > > +/*
+> > > + * of_isa_indirect_io - get the IO address from some isa reg
+> > property value.
+> > > + *	For some isa/lpc devices, no ranges property in ancestor node.
+> > > + *	The device addresses are described directly in their regs
+> > property.
+> > > + *	This fixup function will be called to get the IO address of
+> > isa/lpc
+> > > + *	devices when the normal of_translation failed.
+> > > + *
+> > > + * @parent:	points to the parent dts node;
+> > > + * @bus:		points to the of_bus which can be used to parse
+> > address;
+> > > + * @addr:	the address from reg property;
+> > > + * @na:		the address cell counter of @addr;
+> > > + * @presult:	store the address paresed from @addr;
+> > > + *
+> > > + * return 1 when successfully get the I/O address;
+> > > + * 0 will return for some failures.
+> > 
+> > Bah, you are returning a signed int, why 0 for failure? Return a
+> > negative value with
+> > error codes. Otherwise change the return value into a bool.
+> 
+> Yes we'll move to bool
+> 
+> > 
+> > > + */
+> > > +static int of_get_isa_indirect_io(struct device_node *parent,
+> > > +				struct of_bus *bus, __be32 *addr,
+> > > +				int na, u64 *presult)
+> > > +{
+> > > +	unsigned int flags;
+> > > +	unsigned int rlen;
+> > > +
+> > > +	/* whether support indirectIO */
+> > > +	if (!indirect_io_enabled())
+> > > +		return 0;
+> > > +
+> > > +	if (!of_bus_isa_match(parent))
+> > > +		return 0;
+> > > +
+> > > +	flags = bus->get_flags(addr);
+> > > +	if (!(flags & IORESOURCE_IO))
+> > > +		return 0;
+> > > +
+> > > +	/* there is ranges property, apply the normal translation
+> > directly. */
+> > 
+> > s/there is ranges/if we have a 'ranges'/
+> 
+> Thanks for spotting this
+> 
+> > 
+> > > +	if (of_get_property(parent, "ranges", &rlen))
+> > > +		return 0;
+> > > +
+> > > +	*presult = of_read_number(addr + 1, na - 1);
+> > > +	/* this fixup is only valid for specific I/O range. */
+> > > +	return addr_is_indirect_io(*presult);
+> > > +}
+> > > +
+> > >  static int of_translate_one(struct device_node *parent, struct
+> > of_bus *bus,
+> > >  			    struct of_bus *pbus, __be32 *addr,
+> > >  			    int na, int ns, int pna, const char *rprop)
+> > > @@ -595,6 +639,15 @@ static u64 __of_translate_address(struct
+> > device_node *dev,
+> > >  			result = of_read_number(addr, na);
+> > >  			break;
+> > >  		}
+> > > +		/*
+> > > +		 * For indirectIO device which has no ranges property, get
+> > > +		 * the address from reg directly.
+> > > +		 */
+> > > +		if (of_get_isa_indirect_io(dev, bus, addr, na, &result)) {
+> > > +			pr_debug("isa indirectIO matched(%s)..addr =
+> > 0x%llx\n",
+> > > +				of_node_full_name(dev), result);
+> > > +			break;
+> > > +		}
+> > >
+> > >  		/* Get new parent bus and counts */
+> > >  		pbus = of_match_bus(parent);
+> > > @@ -688,8 +741,9 @@ static int __of_address_to_resource(struct
+> > device_node *dev,
+> > >  	if (taddr == OF_BAD_ADDR)
+> > >  		return -EINVAL;
+> > >  	memset(r, 0, sizeof(struct resource));
+> > > -	if (flags & IORESOURCE_IO) {
+> > > +	if (flags & IORESOURCE_IO && taddr >= PCIBIOS_MIN_IO) {
+> > >  		unsigned long port;
+> > > +
+> > >  		port = pci_address_to_pio(taddr);
+> > >  		if (port == (unsigned long)-1)
+> > >  			return -EINVAL;
+> > > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> > > index ba34907..1a08511 100644
+> > > --- a/drivers/pci/pci.c
+> > > +++ b/drivers/pci/pci.c
+> > > @@ -3263,7 +3263,7 @@ int __weak pci_register_io_range(phys_addr_t
+> > addr, resource_size_t size)
+> > >
+> > >  #ifdef PCI_IOBASE
+> > >  	struct io_range *range;
+> > > -	resource_size_t allocated_size = 0;
+> > > +	resource_size_t allocated_size = PCIBIOS_MIN_IO;
+> > >
+> > >  	/* check if the range hasn't been previously recorded */
+> > >  	spin_lock(&io_range_lock);
+> > > @@ -3312,7 +3312,7 @@ phys_addr_t pci_pio_to_address(unsigned long
+> > pio)
+> > >
+> > >  #ifdef PCI_IOBASE
+> > >  	struct io_range *range;
+> > > -	resource_size_t allocated_size = 0;
+> > > +	resource_size_t allocated_size = PCIBIOS_MIN_IO;
+> > 
+> > Have you checked that pci_pio_to_address still returns valid values
+> > after this? I know that
+> > you are trying to take into account PCIBIOS_MIN_IO limit when
+> > allocating reserving the IO ranges,
+> > but the values added in the io_range_list are still starting from zero,
+> > no from PCIBIOS_MIN_IO,
+> 
+> I think you're wrong here as in pci_address_to_pio we have:
+> +	resource_size_t offset = PCIBIOS_MIN_IO;
+> 
+> This should be enough to guarantee that the PIOs start at
+> PCIBIOS_MIN_IO...right?
+
+I don't think you can guarantee that the pio value that gets passed into
+pci_pio_to_address() always comes from a previously returned value by
+pci_address_to_pio(). Maybe you can add a check in pci_pio_to_address()
+
+	if (pio < PCIBIOS_MIN_IO)
+		return address;
+
+to avoid adding more checks in the list_for_each_entry() loop.
+
+Best regards,
+Liviu
+
+> 
+> 
+> > so the calculation of the address in this function could return
+> > negative values casted to pci_addr_t.
+> > 
+> > Maybe you want to adjust the range->start value in
+> > pci_register_io_range() as well to have it
+> > offset by PCIBIOS_MIN_IO as well.
+> > 
+> > Best regards,
+> > Liviu
+> > 
+> > >
+> > >  	if (pio > IO_SPACE_LIMIT)
+> > >  		return address;
+> > > @@ -3335,7 +3335,7 @@ unsigned long __weak
+> > pci_address_to_pio(phys_addr_t address)
+> > >  {
+> > >  #ifdef PCI_IOBASE
+> > >  	struct io_range *res;
+> > > -	resource_size_t offset = 0;
+> > > +	resource_size_t offset = PCIBIOS_MIN_IO;
+> > >  	unsigned long addr = -1;
+> > >
+> > >  	spin_lock(&io_range_lock);
+> > > diff --git a/include/linux/of_address.h b/include/linux/of_address.h
+> > > index 3786473..deec469 100644
+> > > --- a/include/linux/of_address.h
+> > > +++ b/include/linux/of_address.h
+> > > @@ -24,6 +24,23 @@ struct of_pci_range {
+> > >  #define for_each_of_pci_range(parser, range) \
+> > >  	for (; of_pci_range_parser_one(parser, range);)
+> > >
+> > > +
+> > > +#ifndef indirect_io_enabled
+> > > +#define indirect_io_enabled indirect_io_enabled
+> > > +static inline bool indirect_io_enabled(void)
+> > > +{
+> > > +	return false;
+> > > +}
+> > > +#endif
+> > > +
+> > > +#ifndef addr_is_indirect_io
+> > > +#define addr_is_indirect_io addr_is_indirect_io
+> > > +static inline int addr_is_indirect_io(u64 taddr)
+> > > +{
+> > > +	return 0;
+> > > +}
+> > > +#endif
+> > > +
+> > >  /* Translate a DMA address from device space to CPU space */
+> > >  extern u64 of_translate_dma_address(struct device_node *dev,
+> > >  				    const __be32 *in_addr);
+> > > diff --git a/include/linux/pci.h b/include/linux/pci.h
+> > > index 0e49f70..7f6bbb6 100644
+> > > --- a/include/linux/pci.h
+> > > +++ b/include/linux/pci.h
+> > > @@ -2130,4 +2130,12 @@ static inline bool pci_ari_enabled(struct
+> > pci_bus *bus)
+> > >  /* provide the legacy pci_dma_* API */
+> > >  #include <linux/pci-dma-compat.h>
+> > >
+> > > +/*
+> > > + * define this macro here to refrain from compilation error for some
+> > > + * platforms. Please keep this macro at the end of this header file.
+> > > + */
+> > > +#ifndef PCIBIOS_MIN_IO
+> > > +#define PCIBIOS_MIN_IO		0
+> > > +#endif
+> > > +
+> > >  #endif /* LINUX_PCI_H */
+> > > --
+> > > 1.9.1
+> > >
+> > > --
+> > > To unsubscribe from this list: send the line "unsubscribe linux-pci"
+> > in
+> > > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+-- 
+====================
+| I would like to |
+| fix the world,  |
+| but they're not |
+| giving me the   |
+ \ source code!  /
+  ---------------
+    ¯\_(ツ)_/¯
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
