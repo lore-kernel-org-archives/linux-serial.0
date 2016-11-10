@@ -1,75 +1,91 @@
-From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
-Date: Thu, 10 Nov 2016 20:36:24 +0800
-Message-ID: <582469C8.9090609@hisilicon.com>
+From: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+Subject: RE: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
+Date: Thu, 10 Nov 2016 15:36:49 +0000
+Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F8F5D75@lhreml507-mbx>
 References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
  <2825537.ADCNsGqGxn@wuerfel> <5824165A.4040303@hisilicon.com>
  <17821285.aIcTyCGn5n@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pci-owner@vger.kernel.org>
 In-Reply-To: <17821285.aIcTyCGn5n@wuerfel>
+Content-Language: en-US
 Sender: linux-pci-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
-Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "xuwei (O)" <xuwei5@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "kantyzc@163.com" <kantyzc@163.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, catalin.mar
+To: Arnd Bergmann <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: Yuanzhichang <yuanzhichang@hisilicon.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "xuwei (O)" <xuwei5@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "kantyzc@163.com" <kantyzc@163.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, catalin.marinas@
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Arnd,
+Hi Arnd
 
-On 2016/11/10 17:12, Arnd Bergmann wrote:
+> -----Original Message-----
+> From: Arnd Bergmann [mailto:arnd@arndb.de]
+> Sent: 10 November 2016 09:12
+> To: linux-arm-kernel@lists.infradead.org
+> Cc: Yuanzhichang; mark.rutland@arm.com; devicetree@vger.kernel.org;
+> lorenzo.pieralisi@arm.com; Gabriele Paoloni; minyard@acm.org; linux-
+> pci@vger.kernel.org; benh@kernel.crashing.org; John Garry;
+> will.deacon@arm.com; linux-kernel@vger.kernel.org; xuwei (O); Linuxarm;
+> zourongrong@gmail.com; robh+dt@kernel.org; kantyzc@163.com; linux-
+> serial@vger.kernel.org; catalin.marinas@arm.com; olof@lixom.net;
+> liviu.dudau@arm.com; bhelgaas@google.com; zhichang.yuan02@gmail.com
+> Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on
+> Hip06
+> 
 > On Thursday, November 10, 2016 2:40:26 PM CET zhichang.yuan wrote:
->> On 2016/11/10 5:34, Arnd Bergmann wrote:
->>> On Wednesday, November 9, 2016 12:10:43 PM CET Gabriele Paoloni wrote:
->>>>> On Tuesday, November 8, 2016 11:47:09 AM CET zhichang.yuan wrote:
->>>>>> +       /*
->>>>>> +        * The first PCIBIOS_MIN_IO is reserved specifically for
->>>>> indirectIO.
->>>>>> +        * It will separate indirectIO range from pci host bridge to
->>>>>> +        * avoid the possible PIO conflict.
->>>>>> +        * Set the indirectIO range directly here.
->>>>>> +        */
->>>>>> +       lpcdev->io_ops.start = 0;
->>>>>> +       lpcdev->io_ops.end = PCIBIOS_MIN_IO - 1;
->>>>>> +       lpcdev->io_ops.devpara = lpcdev;
->>>>>> +       lpcdev->io_ops.pfin = hisilpc_comm_in;
->>>>>> +       lpcdev->io_ops.pfout = hisilpc_comm_out;
->>>>>> +       lpcdev->io_ops.pfins = hisilpc_comm_ins;
->>>>>> +       lpcdev->io_ops.pfouts = hisilpc_comm_outs;
->>>>>
->>>>> I have to look at patch 2 in more detail again, after missing a few
->>>>> review
->>>>> rounds. I'm still a bit skeptical about hardcoding a logical I/O port
->>>>> range here, and would hope that we can just go through the same
->>>>> assignment of logical port ranges that we have for PCI buses,
->>>>> decoupling
->>>>> the bus addresses from the linux-internal ones.
->>>>
->>>> The point here is that we want to avoid any conflict/overlap between
->>>> the LPC I/O space and the PCI I/O space. With the assignment above
->>>> we make sure that LPC never interfere with PCI I/O space.
->>>
->>> But we already abstract the PCI I/O space using dynamic registration.
->>> There is no need to hardcode the logical address for ISA, though
->>> I think we can hardcode the bus address to start at zero here.
->>
->> Do you means that we can pick up the maximal I/O address from all children's
->> device resources??
+> > On 2016/11/10 5:34, Arnd Bergmann wrote:
+> > > On Wednesday, November 9, 2016 12:10:43 PM CET Gabriele Paoloni
+> wrote:
+> > >>> On Tuesday, November 8, 2016 11:47:09 AM CET zhichang.yuan wrote:
+> > >>>> +       /*
+> > >>>> +        * The first PCIBIOS_MIN_IO is reserved specifically for
+> > >>> indirectIO.
+> > >>>> +        * It will separate indirectIO range from pci host
+> bridge to
+> > >>>> +        * avoid the possible PIO conflict.
+> > >>>> +        * Set the indirectIO range directly here.
+> > >>>> +        */
+> > >>>> +       lpcdev->io_ops.start = 0;
+> > >>>> +       lpcdev->io_ops.end = PCIBIOS_MIN_IO - 1;
+> > >>>> +       lpcdev->io_ops.devpara = lpcdev;
+> > >>>> +       lpcdev->io_ops.pfin = hisilpc_comm_in;
+> > >>>> +       lpcdev->io_ops.pfout = hisilpc_comm_out;
+> > >>>> +       lpcdev->io_ops.pfins = hisilpc_comm_ins;
+> > >>>> +       lpcdev->io_ops.pfouts = hisilpc_comm_outs;
+> > >>>
+> > >>> I have to look at patch 2 in more detail again, after missing a
+> few
+> > >>> review
+> > >>> rounds. I'm still a bit skeptical about hardcoding a logical I/O
+> port
+> > >>> range here, and would hope that we can just go through the same
+> > >>> assignment of logical port ranges that we have for PCI buses,
+> > >>> decoupling
+> > >>> the bus addresses from the linux-internal ones.
+> > >>
+> > >> The point here is that we want to avoid any conflict/overlap
+> between
+> > >> the LPC I/O space and the PCI I/O space. With the assignment above
+> > >> we make sure that LPC never interfere with PCI I/O space.
+> > >
+> > > But we already abstract the PCI I/O space using dynamic
+> registration.
+> > > There is no need to hardcode the logical address for ISA, though
+> > > I think we can hardcode the bus address to start at zero here.
+> >
+> > Do you means that we can pick up the maximal I/O address from all
+> children's
+> > device resources??
 > 
 > The driver should not look at the resources of its children, just
 > register a range of addresses dynamically, as I suggested in an
 > earlier review.
->
-Sorry! I can't catch your idea yet:(
 
-When to register the I/O range? Is it done just after the successfully
-of_translate_address() during the children scanning?
+Where should we get the range from? For LPC we know that it is going
+Work on anything that is not used by PCI I/O space, and this is 
+why we use [0, PCIBIOS_MIN_IO]
 
-If yes, when a child is scanning, there is no range data in arm64_extio_ops. The
-addr_is_indirect_io() calling in of_get_isa_indirect_io() don't need. All we can
-check is just whether the address to be translated is IO and is under a parent
-device which has no 'ranges' property.
-
+> 
 > 
 > Your current version has
 > 
@@ -79,34 +95,26 @@ device which has no 'ranges' property.
 > 
 > Instead, just subtract the start of the range from the logical
 > port number to transform it back into a bus-local port number:
+
+These accessors do not operate on IO tokens:
+
+If (arm64_extio_ops->start > addr || arm64_extio_ops->end < addr)
+addr is not going to be an I/O token; in fact patch 2/3 imposes that
+the I/O tokens will start at PCIBIOS_MIN_IO. So from 0 to PCIBIOS_MIN_IO
+we have free physical addresses that the accessors can operate on.
+
+Thanks
+
+Gab 
+
 > 
 >         if (arm64_extio_ops->pfout)                             \
 >                 arm64_extio_ops->pfout(arm64_extio_ops->devpara,\
->                        addr - arm64_extio_ops->start, value, sizeof(type)); \
+>                        addr - arm64_extio_ops->start, value,
+> sizeof(type)); \
 > 
-I think there is some information needed sync.
-In the old patch-set, we don't bypass the pci_address_to_pio() after
-successfully of_translate_address(). In this way, we don't need to reserve any
-PIO space for our LPC since the logical port are from the same mapping
-algorithm. Based on this way, the port number in the device resource is logical
-one, then we need to subtract the start of the resource to get back the
-bus-local port.
-
->From V3, we don't apply the mapping based on pci_address_to_pio(), the
-of_translate_address() return the bus-local port directly and store into
-relevant device resource. So, in the current arm64_extio_ops->pfout(), the
-reverse translation don't need anymore. The input "addr" is bus-local port now.
-
-
-Thanks,
-Zhichang
-
-
 > We know that the ISA/LPC bus can only have up to 65536 ports,
 > so you can register all of those, or possibly limit it further to
 > 1024 or 4096 ports, whichever matches the bus implementation.
 > 
 > 	Arnd
-> 
-> .
-> 
