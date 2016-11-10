@@ -1,68 +1,36 @@
-From: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
-Date: Thu, 10 Nov 2016 14:40:26 +0800
-Message-ID: <5824165A.4040303@hisilicon.com>
+From: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for
+ special ISA
+Date: Thu, 10 Nov 2016 18:08:27 +1100
+Message-ID: <1478761707.7430.119.camel@kernel.crashing.org>
 References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
- <1555494.4IFvGxvsfe@wuerfel>
- <EE11001F9E5DDD47B7634E2F8A612F2E1F8F1A7A@lhreml507-mbx>
- <2825537.ADCNsGqGxn@wuerfel>
+         <1478576829-112707-3-git-send-email-yuanzhichang@hisilicon.com>
+         <20161108114953.GB15297@leverpostej>
+         <1478646779.7430.66.camel@kernel.crashing.org>
+         <20161109111959.GB17020@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <2825537.ADCNsGqGxn@wuerfel>
+In-Reply-To: <20161109111959.GB17020@leverpostej>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "minyard-HInyCGIudOg@public.gmane.org" <minyard-HInyCGIudOg@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuwei (O)" <xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-pci-fy+rA21nqHI@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Arnd,
+On Wed, 2016-11-09 at 11:20 +0000, Mark Rutland wrote:
+> The big change would be to handle !MMIO translations, for which we'd
+> need a runtime registry of ISA bus instance to find the relevant
+> accessor ops and instance-specific data.
 
-On 2016/11/10 5:34, Arnd Bergmann wrote:
-> On Wednesday, November 9, 2016 12:10:43 PM CET Gabriele Paoloni wrote:
->>> On Tuesday, November 8, 2016 11:47:09 AM CET zhichang.yuan wrote:
->>>> +       /*
->>>> +        * The first PCIBIOS_MIN_IO is reserved specifically for
->>> indirectIO.
->>>> +        * It will separate indirectIO range from pci host bridge to
->>>> +        * avoid the possible PIO conflict.
->>>> +        * Set the indirectIO range directly here.
->>>> +        */
->>>> +       lpcdev->io_ops.start = 0;
->>>> +       lpcdev->io_ops.end = PCIBIOS_MIN_IO - 1;
->>>> +       lpcdev->io_ops.devpara = lpcdev;
->>>> +       lpcdev->io_ops.pfin = hisilpc_comm_in;
->>>> +       lpcdev->io_ops.pfout = hisilpc_comm_out;
->>>> +       lpcdev->io_ops.pfins = hisilpc_comm_ins;
->>>> +       lpcdev->io_ops.pfouts = hisilpc_comm_outs;
->>>
->>> I have to look at patch 2 in more detail again, after missing a few
->>> review
->>> rounds. I'm still a bit skeptical about hardcoding a logical I/O port
->>> range here, and would hope that we can just go through the same
->>> assignment of logical port ranges that we have for PCI buses,
->>> decoupling
->>> the bus addresses from the linux-internal ones.
->>
->> The point here is that we want to avoid any conflict/overlap between
->> the LPC I/O space and the PCI I/O space. With the assignment above
->> we make sure that LPC never interfere with PCI I/O space.
-> 
-> But we already abstract the PCI I/O space using dynamic registration.
-> There is no need to hardcode the logical address for ISA, though
-> I think we can hardcode the bus address to start at zero here.
+Yes. We do something a bit like that on ppc, we find the PCI bus
+for which the IO ports match and I have a hook to register the
+special indirect ISA.
 
-Do you means that we can pick up the maximal I/O address from all children's
-device resources??
+It's a bit messy, we could do something nicer generically.
 
-Thanks,
-Zhichang
-
-> 
-> 	Arnd
-> 
-> .
-> 
+Cheers,
+Ben.
 
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
