@@ -1,120 +1,210 @@
-From: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Subject: RE: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
-Date: Thu, 10 Nov 2016 15:36:49 +0000
-Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F8F5D75@lhreml507-mbx>
+From: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: RE: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for
+ special ISA
+Date: Thu, 10 Nov 2016 16:06:40 +0000
+Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F8F5F06@lhreml507-mbx>
 References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
- <2825537.ADCNsGqGxn@wuerfel> <5824165A.4040303@hisilicon.com>
- <17821285.aIcTyCGn5n@wuerfel>
+ <1478576829-112707-3-git-send-email-yuanzhichang@hisilicon.com>
+ <20161109113955.GD10219@e106497-lin.cambridge.arm.com>
+ <EE11001F9E5DDD47B7634E2F8A612F2E1F8F27C0@lhreml507-mbx>
+ <20161109165044.GE10219@e106497-lin.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <17821285.aIcTyCGn5n@wuerfel>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20161109165044.GE10219-2JSQmVVBSi7ZROr8t4l/smS4ubULX0JqMm0uRHvK7Nw@public.gmane.org>
 Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Cc: Yuanzhichang <yuanzhichang@hisilicon.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "xuwei (O)" <xuwei5@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "kantyzc@163.com" <kantyzc@163.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, catalin.marinas@
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "liviu.dudau-5wv7dgnIgG8@public.gmane.org" <liviu.dudau-5wv7dgnIgG8@public.gmane.org>
+Cc: Yuanzhichang <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org" <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "minyard-HInyCGIudOg@public.gmane.org" <mi>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd
-
-> -----Original Message-----
-> From: Arnd Bergmann [mailto:arnd@arndb.de]
-> Sent: 10 November 2016 09:12
-> To: linux-arm-kernel@lists.infradead.org
-> Cc: Yuanzhichang; mark.rutland@arm.com; devicetree@vger.kernel.org;
-> lorenzo.pieralisi@arm.com; Gabriele Paoloni; minyard@acm.org; linux-
-> pci@vger.kernel.org; benh@kernel.crashing.org; John Garry;
-> will.deacon@arm.com; linux-kernel@vger.kernel.org; xuwei (O); Linuxarm;
-> zourongrong@gmail.com; robh+dt@kernel.org; kantyzc@163.com; linux-
-> serial@vger.kernel.org; catalin.marinas@arm.com; olof@lixom.net;
-> liviu.dudau@arm.com; bhelgaas@google.com; zhichang.yuan02@gmail.com
-> Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on
-> Hip06
-> 
-> On Thursday, November 10, 2016 2:40:26 PM CET zhichang.yuan wrote:
-> > On 2016/11/10 5:34, Arnd Bergmann wrote:
-> > > On Wednesday, November 9, 2016 12:10:43 PM CET Gabriele Paoloni
-> wrote:
-> > >>> On Tuesday, November 8, 2016 11:47:09 AM CET zhichang.yuan wrote:
-> > >>>> +       /*
-> > >>>> +        * The first PCIBIOS_MIN_IO is reserved specifically for
-> > >>> indirectIO.
-> > >>>> +        * It will separate indirectIO range from pci host
-> bridge to
-> > >>>> +        * avoid the possible PIO conflict.
-> > >>>> +        * Set the indirectIO range directly here.
-> > >>>> +        */
-> > >>>> +       lpcdev->io_ops.start = 0;
-> > >>>> +       lpcdev->io_ops.end = PCIBIOS_MIN_IO - 1;
-> > >>>> +       lpcdev->io_ops.devpara = lpcdev;
-> > >>>> +       lpcdev->io_ops.pfin = hisilpc_comm_in;
-> > >>>> +       lpcdev->io_ops.pfout = hisilpc_comm_out;
-> > >>>> +       lpcdev->io_ops.pfins = hisilpc_comm_ins;
-> > >>>> +       lpcdev->io_ops.pfouts = hisilpc_comm_outs;
-> > >>>
-> > >>> I have to look at patch 2 in more detail again, after missing a
-> few
-> > >>> review
-> > >>> rounds. I'm still a bit skeptical about hardcoding a logical I/O
-> port
-> > >>> range here, and would hope that we can just go through the same
-> > >>> assignment of logical port ranges that we have for PCI buses,
-> > >>> decoupling
-> > >>> the bus addresses from the linux-internal ones.
-> > >>
-> > >> The point here is that we want to avoid any conflict/overlap
-> between
-> > >> the LPC I/O space and the PCI I/O space. With the assignment above
-> > >> we make sure that LPC never interfere with PCI I/O space.
-> > >
-> > > But we already abstract the PCI I/O space using dynamic
-> registration.
-> > > There is no need to hardcode the logical address for ISA, though
-> > > I think we can hardcode the bus address to start at zero here.
-> >
-> > Do you means that we can pick up the maximal I/O address from all
-> children's
-> > device resources??
-> 
-> The driver should not look at the resources of its children, just
-> register a range of addresses dynamically, as I suggested in an
-> earlier review.
-
-Where should we get the range from? For LPC we know that it is going
-Work on anything that is not used by PCI I/O space, and this is 
-why we use [0, PCIBIOS_MIN_IO]
-
-> 
-> 
-> Your current version has
-> 
->         if (arm64_extio_ops->pfout)                             \
->                 arm64_extio_ops->pfout(arm64_extio_ops->devpara,\
->                        addr, value, sizeof(type));             \
-> 
-> Instead, just subtract the start of the range from the logical
-> port number to transform it back into a bus-local port number:
-
-These accessors do not operate on IO tokens:
-
-If (arm64_extio_ops->start > addr || arm64_extio_ops->end < addr)
-addr is not going to be an I/O token; in fact patch 2/3 imposes that
-the I/O tokens will start at PCIBIOS_MIN_IO. So from 0 to PCIBIOS_MIN_IO
-we have free physical addresses that the accessors can operate on.
-
-Thanks
-
-Gab 
-
-> 
->         if (arm64_extio_ops->pfout)                             \
->                 arm64_extio_ops->pfout(arm64_extio_ops->devpara,\
->                        addr - arm64_extio_ops->start, value,
-> sizeof(type)); \
-> 
-> We know that the ISA/LPC bus can only have up to 65536 ports,
-> so you can register all of those, or possibly limit it further to
-> 1024 or 4096 ports, whichever matches the bus implementation.
-> 
-> 	Arnd
+SGkgTGl2aXUNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBsaXZpdS5k
+dWRhdUBhcm0uY29tIFttYWlsdG86bGl2aXUuZHVkYXVAYXJtLmNvbV0NCj4gU2VudDogMDkgTm92
+ZW1iZXIgMjAxNiAxNjo1MQ0KPiBUbzogR2FicmllbGUgUGFvbG9uaQ0KPiBDYzogWXVhbnpoaWNo
+YW5nOyBjYXRhbGluLm1hcmluYXNAYXJtLmNvbTsgd2lsbC5kZWFjb25AYXJtLmNvbTsNCj4gcm9i
+aCtkdEBrZXJuZWwub3JnOyBiaGVsZ2Fhc0Bnb29nbGUuY29tOyBtYXJrLnJ1dGxhbmRAYXJtLmNv
+bTsNCj4gb2xvZkBsaXhvbS5uZXQ7IGFybmRAYXJuZGIuZGU7IGxpbnV4LWFybS1rZXJuZWxAbGlz
+dHMuaW5mcmFkZWFkLm9yZzsNCj4gbG9yZW56by5waWVyYWxpc2lAYXJtLmNvbTsgbGludXgta2Vy
+bmVsQHZnZXIua2VybmVsLm9yZzsgTGludXhhcm07DQo+IGRldmljZXRyZWVAdmdlci5rZXJuZWwu
+b3JnOyBsaW51eC1wY2lAdmdlci5rZXJuZWwub3JnOyBsaW51eC0NCj4gc2VyaWFsQHZnZXIua2Vy
+bmVsLm9yZzsgbWlueWFyZEBhY20ub3JnOyBiZW5oQGtlcm5lbC5jcmFzaGluZy5vcmc7DQo+IHpv
+dXJvbmdyb25nQGdtYWlsLmNvbTsgSm9obiBHYXJyeTsgemhpY2hhbmcueXVhbjAyQGdtYWlsLmNv
+bTsNCj4ga2FudHl6Y0AxNjMuY29tOyB4dXdlaSAoTykNCj4gU3ViamVjdDogUmU6IFtQQVRDSCBW
+NSAyLzNdIEFSTTY0IExQQzogQWRkIG1pc3NpbmcgcmFuZ2UgZXhjZXB0aW9uIGZvcg0KPiBzcGVj
+aWFsIElTQQ0KPiANCj4gT24gV2VkLCBOb3YgMDksIDIwMTYgYXQgMDQ6MTY6MTdQTSArMDAwMCwg
+R2FicmllbGUgUGFvbG9uaSB3cm90ZToNCj4gPiBIaSBMaXZpdQ0KPiA+DQo+ID4gVGhhbmtzIGZv
+ciByZXZpZXdpbmcNCj4gPg0KPiANCj4gW3JlbW92ZWQgc29tZSBpcnJlbGV2YW50IHBhcnQgb2Yg
+ZGlzY3Vzc2lvbiwgYXZvaWQgY3JhenkgZm9ybWF0dGluZ10NCj4gDQo+ID4gPiA+ICsvKioNCj4g
+PiA+ID4gKyAqIGFkZHJfaXNfaW5kaXJlY3RfaW8gLSBjaGVjayB3aGV0aGVyIHRoZSBpbnB1dCB0
+YWRkciBpcyBmb3INCj4gPiA+IGluZGlyZWN0SU8uDQo+ID4gPiA+ICsgKiBAdGFkZHI6IHRoZSBp
+byBhZGRyZXNzIHRvIGJlIGNoZWNrZWQuDQo+ID4gPiA+ICsgKg0KPiA+ID4gPiArICogUmV0dXJu
+cyAxIHdoZW4gdGFkZHIgaXMgaW4gdGhlIHJhbmdlOyBvdGhlcndpc2UgcmV0dXJuIDAuDQo+ID4g
+PiA+ICsgKi8NCj4gPiA+ID4gK2ludCBhZGRyX2lzX2luZGlyZWN0X2lvKHU2NCB0YWRkcikNCj4g
+PiA+ID4gK3sNCj4gPiA+ID4gKwlpZiAoYXJtNjRfZXh0aW9fb3BzLT5zdGFydCA+IHRhZGRyIHx8
+IGFybTY0X2V4dGlvX29wcy0+ZW5kDQo+IDwNCj4gPiA+IHRhZGRyKQ0KPiA+ID4NCj4gPiA+IHN0
+YXJ0ID49IHRhZGRyID8NCj4gPg0KPiA+IE5vcGUuLi4gaWYgICh0YWRkciA8IGFybTY0X2V4dGlv
+X29wcy0+c3RhcnQgfHwgdGFkZHIgPg0KPiBhcm02NF9leHRpb19vcHMtPmVuZCkNCj4gPiB0aGVu
+IHRhZGRyIGlzIG91dHNpZGUgdGhlIHJhbmdlIFtzdGFydDsgZW5kXSBhbmQgd2lsbCByZXR1cm4g
+MDsNCj4gb3RoZXJ3aXNlDQo+ID4gaXQgd2lsbCByZXR1cm4gMS4uLg0KPiANCj4gT29wcywgc29y
+cnksIGRpZCBub3QgcGF5IGF0dGVudGlvbiB0byB0aGUgcmV0dXJuZWQgdmFsdWUuIFRoZSBjaGVj
+ayBpcw0KPiBjb3JyZWN0IGFzIGl0IGlzLCBubyBuZWVkIHRvIGNoYW5nZSB0aGVuLg0KPiANCj4g
+Pg0KPiA+ID4NCj4gPiA+ID4gKwkJcmV0dXJuIDA7DQo+ID4gPiA+ICsNCj4gPiA+ID4gKwlyZXR1
+cm4gMTsNCj4gPiA+ID4gK30NCj4gPiA+ID4NCj4gPiA+ID4gIEJVSUxEX0VYVElPKGIsIHU4KQ0K
+PiA+ID4gPg0KPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9vZi9hZGRyZXNzLmMgYi9kcml2
+ZXJzL29mL2FkZHJlc3MuYw0KPiA+ID4gPiBpbmRleCAwMmIyOTAzLi5jYzJhMDVkIDEwMDY0NA0K
+PiA+ID4gPiAtLS0gYS9kcml2ZXJzL29mL2FkZHJlc3MuYw0KPiA+ID4gPiArKysgYi9kcml2ZXJz
+L29mL2FkZHJlc3MuYw0KPiA+ID4gPiBAQCAtNDc5LDYgKzQ3OSw1MCBAQCBzdGF0aWMgaW50IG9m
+X2VtcHR5X3Jhbmdlc19xdWlyayhzdHJ1Y3QNCj4gPiA+IGRldmljZV9ub2RlICpucCkNCj4gPiA+
+ID4gIAlyZXR1cm4gZmFsc2U7DQo+ID4gPiA+ICB9DQo+ID4gPiA+DQo+ID4gPiA+ICsNCj4gPiA+
+ID4gKy8qDQo+ID4gPiA+ICsgKiBvZl9pc2FfaW5kaXJlY3RfaW8gLSBnZXQgdGhlIElPIGFkZHJl
+c3MgZnJvbSBzb21lIGlzYSByZWcNCj4gPiA+IHByb3BlcnR5IHZhbHVlLg0KPiA+ID4gPiArICoJ
+Rm9yIHNvbWUgaXNhL2xwYyBkZXZpY2VzLCBubyByYW5nZXMgcHJvcGVydHkgaW4gYW5jZXN0b3IN
+Cj4gbm9kZS4NCj4gPiA+ID4gKyAqCVRoZSBkZXZpY2UgYWRkcmVzc2VzIGFyZSBkZXNjcmliZWQg
+ZGlyZWN0bHkgaW4gdGhlaXIgcmVncw0KPiA+ID4gcHJvcGVydHkuDQo+ID4gPiA+ICsgKglUaGlz
+IGZpeHVwIGZ1bmN0aW9uIHdpbGwgYmUgY2FsbGVkIHRvIGdldCB0aGUgSU8gYWRkcmVzcyBvZg0K
+PiA+ID4gaXNhL2xwYw0KPiA+ID4gPiArICoJZGV2aWNlcyB3aGVuIHRoZSBub3JtYWwgb2ZfdHJh
+bnNsYXRpb24gZmFpbGVkLg0KPiA+ID4gPiArICoNCj4gPiA+ID4gKyAqIEBwYXJlbnQ6CXBvaW50
+cyB0byB0aGUgcGFyZW50IGR0cyBub2RlOw0KPiA+ID4gPiArICogQGJ1czoJCXBvaW50cyB0byB0
+aGUgb2ZfYnVzIHdoaWNoIGNhbiBiZSB1c2VkIHRvIHBhcnNlDQo+ID4gPiBhZGRyZXNzOw0KPiA+
+ID4gPiArICogQGFkZHI6CXRoZSBhZGRyZXNzIGZyb20gcmVnIHByb3BlcnR5Ow0KPiA+ID4gPiAr
+ICogQG5hOgkJdGhlIGFkZHJlc3MgY2VsbCBjb3VudGVyIG9mIEBhZGRyOw0KPiA+ID4gPiArICog
+QHByZXN1bHQ6CXN0b3JlIHRoZSBhZGRyZXNzIHBhcmVzZWQgZnJvbSBAYWRkcjsNCj4gPiA+ID4g
+KyAqDQo+ID4gPiA+ICsgKiByZXR1cm4gMSB3aGVuIHN1Y2Nlc3NmdWxseSBnZXQgdGhlIEkvTyBh
+ZGRyZXNzOw0KPiA+ID4gPiArICogMCB3aWxsIHJldHVybiBmb3Igc29tZSBmYWlsdXJlcy4NCj4g
+PiA+DQo+ID4gPiBCYWgsIHlvdSBhcmUgcmV0dXJuaW5nIGEgc2lnbmVkIGludCwgd2h5IDAgZm9y
+IGZhaWx1cmU/IFJldHVybiBhDQo+ID4gPiBuZWdhdGl2ZSB2YWx1ZSB3aXRoDQo+ID4gPiBlcnJv
+ciBjb2Rlcy4gT3RoZXJ3aXNlIGNoYW5nZSB0aGUgcmV0dXJuIHZhbHVlIGludG8gYSBib29sLg0K
+PiA+DQo+ID4gWWVzIHdlJ2xsIG1vdmUgdG8gYm9vbA0KPiA+DQo+ID4gPg0KPiA+ID4gPiArICov
+DQo+ID4gPiA+ICtzdGF0aWMgaW50IG9mX2dldF9pc2FfaW5kaXJlY3RfaW8oc3RydWN0IGRldmlj
+ZV9ub2RlICpwYXJlbnQsDQo+ID4gPiA+ICsJCQkJc3RydWN0IG9mX2J1cyAqYnVzLCBfX2JlMzIg
+KmFkZHIsDQo+ID4gPiA+ICsJCQkJaW50IG5hLCB1NjQgKnByZXN1bHQpDQo+ID4gPiA+ICt7DQo+
+ID4gPiA+ICsJdW5zaWduZWQgaW50IGZsYWdzOw0KPiA+ID4gPiArCXVuc2lnbmVkIGludCBybGVu
+Ow0KPiA+ID4gPiArDQo+ID4gPiA+ICsJLyogd2hldGhlciBzdXBwb3J0IGluZGlyZWN0SU8gKi8N
+Cj4gPiA+ID4gKwlpZiAoIWluZGlyZWN0X2lvX2VuYWJsZWQoKSkNCj4gPiA+ID4gKwkJcmV0dXJu
+IDA7DQo+ID4gPiA+ICsNCj4gPiA+ID4gKwlpZiAoIW9mX2J1c19pc2FfbWF0Y2gocGFyZW50KSkN
+Cj4gPiA+ID4gKwkJcmV0dXJuIDA7DQo+ID4gPiA+ICsNCj4gPiA+ID4gKwlmbGFncyA9IGJ1cy0+
+Z2V0X2ZsYWdzKGFkZHIpOw0KPiA+ID4gPiArCWlmICghKGZsYWdzICYgSU9SRVNPVVJDRV9JTykp
+DQo+ID4gPiA+ICsJCXJldHVybiAwOw0KPiA+ID4gPiArDQo+ID4gPiA+ICsJLyogdGhlcmUgaXMg
+cmFuZ2VzIHByb3BlcnR5LCBhcHBseSB0aGUgbm9ybWFsIHRyYW5zbGF0aW9uDQo+ID4gPiBkaXJl
+Y3RseS4gKi8NCj4gPiA+DQo+ID4gPiBzL3RoZXJlIGlzIHJhbmdlcy9pZiB3ZSBoYXZlIGEgJ3Jh
+bmdlcycvDQo+ID4NCj4gPiBUaGFua3MgZm9yIHNwb3R0aW5nIHRoaXMNCj4gPg0KPiA+ID4NCj4g
+PiA+ID4gKwlpZiAob2ZfZ2V0X3Byb3BlcnR5KHBhcmVudCwgInJhbmdlcyIsICZybGVuKSkNCj4g
+PiA+ID4gKwkJcmV0dXJuIDA7DQo+ID4gPiA+ICsNCj4gPiA+ID4gKwkqcHJlc3VsdCA9IG9mX3Jl
+YWRfbnVtYmVyKGFkZHIgKyAxLCBuYSAtIDEpOw0KPiA+ID4gPiArCS8qIHRoaXMgZml4dXAgaXMg
+b25seSB2YWxpZCBmb3Igc3BlY2lmaWMgSS9PIHJhbmdlLiAqLw0KPiA+ID4gPiArCXJldHVybiBh
+ZGRyX2lzX2luZGlyZWN0X2lvKCpwcmVzdWx0KTsNCj4gPiA+ID4gK30NCj4gPiA+ID4gKw0KPiA+
+ID4gPiAgc3RhdGljIGludCBvZl90cmFuc2xhdGVfb25lKHN0cnVjdCBkZXZpY2Vfbm9kZSAqcGFy
+ZW50LCBzdHJ1Y3QNCj4gPiA+IG9mX2J1cyAqYnVzLA0KPiA+ID4gPiAgCQkJICAgIHN0cnVjdCBv
+Zl9idXMgKnBidXMsIF9fYmUzMiAqYWRkciwNCj4gPiA+ID4gIAkJCSAgICBpbnQgbmEsIGludCBu
+cywgaW50IHBuYSwgY29uc3QgY2hhciAqcnByb3ApDQo+ID4gPiA+IEBAIC01OTUsNiArNjM5LDE1
+IEBAIHN0YXRpYyB1NjQgX19vZl90cmFuc2xhdGVfYWRkcmVzcyhzdHJ1Y3QNCj4gPiA+IGRldmlj
+ZV9ub2RlICpkZXYsDQo+ID4gPiA+ICAJCQlyZXN1bHQgPSBvZl9yZWFkX251bWJlcihhZGRyLCBu
+YSk7DQo+ID4gPiA+ICAJCQlicmVhazsNCj4gPiA+ID4gIAkJfQ0KPiA+ID4gPiArCQkvKg0KPiA+
+ID4gPiArCQkgKiBGb3IgaW5kaXJlY3RJTyBkZXZpY2Ugd2hpY2ggaGFzIG5vIHJhbmdlcw0KPiBw
+cm9wZXJ0eSwgZ2V0DQo+ID4gPiA+ICsJCSAqIHRoZSBhZGRyZXNzIGZyb20gcmVnIGRpcmVjdGx5
+Lg0KPiA+ID4gPiArCQkgKi8NCj4gPiA+ID4gKwkJaWYgKG9mX2dldF9pc2FfaW5kaXJlY3RfaW8o
+ZGV2LCBidXMsIGFkZHIsIG5hLA0KPiAmcmVzdWx0KSkgew0KPiA+ID4gPiArCQkJcHJfZGVidWco
+ImlzYSBpbmRpcmVjdElPIG1hdGNoZWQoJXMpLi5hZGRyID0NCj4gPiA+IDB4JWxseFxuIiwNCj4g
+PiA+ID4gKwkJCQlvZl9ub2RlX2Z1bGxfbmFtZShkZXYpLCByZXN1bHQpOw0KPiA+ID4gPiArCQkJ
+YnJlYWs7DQo+ID4gPiA+ICsJCX0NCj4gPiA+ID4NCj4gPiA+ID4gIAkJLyogR2V0IG5ldyBwYXJl
+bnQgYnVzIGFuZCBjb3VudHMgKi8NCj4gPiA+ID4gIAkJcGJ1cyA9IG9mX21hdGNoX2J1cyhwYXJl
+bnQpOw0KPiA+ID4gPiBAQCAtNjg4LDggKzc0MSw5IEBAIHN0YXRpYyBpbnQgX19vZl9hZGRyZXNz
+X3RvX3Jlc291cmNlKHN0cnVjdA0KPiA+ID4gZGV2aWNlX25vZGUgKmRldiwNCj4gPiA+ID4gIAlp
+ZiAodGFkZHIgPT0gT0ZfQkFEX0FERFIpDQo+ID4gPiA+ICAJCXJldHVybiAtRUlOVkFMOw0KPiA+
+ID4gPiAgCW1lbXNldChyLCAwLCBzaXplb2Yoc3RydWN0IHJlc291cmNlKSk7DQo+ID4gPiA+IC0J
+aWYgKGZsYWdzICYgSU9SRVNPVVJDRV9JTykgew0KPiA+ID4gPiArCWlmIChmbGFncyAmIElPUkVT
+T1VSQ0VfSU8gJiYgdGFkZHIgPj0gUENJQklPU19NSU5fSU8pIHsNCj4gPiA+ID4gIAkJdW5zaWdu
+ZWQgbG9uZyBwb3J0Ow0KPiA+ID4gPiArDQo+ID4gPiA+ICAJCXBvcnQgPSBwY2lfYWRkcmVzc190
+b19waW8odGFkZHIpOw0KPiA+ID4gPiAgCQlpZiAocG9ydCA9PSAodW5zaWduZWQgbG9uZyktMSkN
+Cj4gPiA+ID4gIAkJCXJldHVybiAtRUlOVkFMOw0KPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9wY2kvcGNpLmMgYi9kcml2ZXJzL3BjaS9wY2kuYw0KPiA+ID4gPiBpbmRleCBiYTM0OTA3Li4x
+YTA4NTExIDEwMDY0NA0KPiA+ID4gPiAtLS0gYS9kcml2ZXJzL3BjaS9wY2kuYw0KPiA+ID4gPiAr
+KysgYi9kcml2ZXJzL3BjaS9wY2kuYw0KPiA+ID4gPiBAQCAtMzI2Myw3ICszMjYzLDcgQEAgaW50
+IF9fd2Vhaw0KPiBwY2lfcmVnaXN0ZXJfaW9fcmFuZ2UocGh5c19hZGRyX3QNCj4gPiA+IGFkZHIs
+IHJlc291cmNlX3NpemVfdCBzaXplKQ0KPiA+ID4gPg0KPiA+ID4gPiAgI2lmZGVmIFBDSV9JT0JB
+U0UNCj4gPiA+ID4gIAlzdHJ1Y3QgaW9fcmFuZ2UgKnJhbmdlOw0KPiA+ID4gPiAtCXJlc291cmNl
+X3NpemVfdCBhbGxvY2F0ZWRfc2l6ZSA9IDA7DQo+ID4gPiA+ICsJcmVzb3VyY2Vfc2l6ZV90IGFs
+bG9jYXRlZF9zaXplID0gUENJQklPU19NSU5fSU87DQo+ID4gPiA+DQo+ID4gPiA+ICAJLyogY2hl
+Y2sgaWYgdGhlIHJhbmdlIGhhc24ndCBiZWVuIHByZXZpb3VzbHkgcmVjb3JkZWQgKi8NCj4gPiA+
+ID4gIAlzcGluX2xvY2soJmlvX3JhbmdlX2xvY2spOw0KPiA+ID4gPiBAQCAtMzMxMiw3ICszMzEy
+LDcgQEAgcGh5c19hZGRyX3QgcGNpX3Bpb190b19hZGRyZXNzKHVuc2lnbmVkDQo+IGxvbmcNCj4g
+PiA+IHBpbykNCj4gPiA+ID4NCj4gPiA+ID4gICNpZmRlZiBQQ0lfSU9CQVNFDQo+ID4gPiA+ICAJ
+c3RydWN0IGlvX3JhbmdlICpyYW5nZTsNCj4gPiA+ID4gLQlyZXNvdXJjZV9zaXplX3QgYWxsb2Nh
+dGVkX3NpemUgPSAwOw0KPiA+ID4gPiArCXJlc291cmNlX3NpemVfdCBhbGxvY2F0ZWRfc2l6ZSA9
+IFBDSUJJT1NfTUlOX0lPOw0KPiA+ID4NCj4gPiA+IEhhdmUgeW91IGNoZWNrZWQgdGhhdCBwY2lf
+cGlvX3RvX2FkZHJlc3Mgc3RpbGwgcmV0dXJucyB2YWxpZCB2YWx1ZXMNCj4gPiA+IGFmdGVyIHRo
+aXM/IEkga25vdyB0aGF0DQo+ID4gPiB5b3UgYXJlIHRyeWluZyB0byB0YWtlIGludG8gYWNjb3Vu
+dCBQQ0lCSU9TX01JTl9JTyBsaW1pdCB3aGVuDQo+ID4gPiBhbGxvY2F0aW5nIHJlc2VydmluZyB0
+aGUgSU8gcmFuZ2VzLA0KPiA+ID4gYnV0IHRoZSB2YWx1ZXMgYWRkZWQgaW4gdGhlIGlvX3Jhbmdl
+X2xpc3QgYXJlIHN0aWxsIHN0YXJ0aW5nIGZyb20NCj4gemVybywNCj4gPiA+IG5vIGZyb20gUENJ
+QklPU19NSU5fSU8sDQo+ID4NCj4gPiBJIHRoaW5rIHlvdSdyZSB3cm9uZyBoZXJlIGFzIGluIHBj
+aV9hZGRyZXNzX3RvX3BpbyB3ZSBoYXZlOg0KPiA+ICsJcmVzb3VyY2Vfc2l6ZV90IG9mZnNldCA9
+IFBDSUJJT1NfTUlOX0lPOw0KPiA+DQo+ID4gVGhpcyBzaG91bGQgYmUgZW5vdWdoIHRvIGd1YXJh
+bnRlZSB0aGF0IHRoZSBQSU9zIHN0YXJ0IGF0DQo+ID4gUENJQklPU19NSU5fSU8uLi5yaWdodD8N
+Cj4gDQo+IEkgZG9uJ3QgdGhpbmsgeW91IGNhbiBndWFyYW50ZWUgdGhhdCB0aGUgcGlvIHZhbHVl
+IHRoYXQgZ2V0cyBwYXNzZWQNCj4gaW50bw0KPiBwY2lfcGlvX3RvX2FkZHJlc3MoKSBhbHdheXMg
+Y29tZXMgZnJvbSBhIHByZXZpb3VzbHkgcmV0dXJuZWQgdmFsdWUgYnkNCj4gcGNpX2FkZHJlc3Nf
+dG9fcGlvKCkuIE1heWJlIHlvdSBjYW4gYWRkIGEgY2hlY2sgaW4gcGNpX3Bpb190b19hZGRyZXNz
+KCkNCg0KTWF5YmUgSSBhbSBtaXNzaW5nIHNvbWV0aGluZy4uLmNvdWxkIHlvdSBtYWtlIGFuIGV4
+YW1wbGVvZiBhIGNhc2UNCndoZXJlIGFuIElPIHRva2UgZG9lc27igJl0IGNvbWUgZnJvbSBwY2lf
+YWRkcmVzc190b19waW8oKSA/DQoNClRoYW5rcw0KDQpHYWINCg0KDQo+IA0KPiAJaWYgKHBpbyA8
+IFBDSUJJT1NfTUlOX0lPKQ0KPiAJCXJldHVybiBhZGRyZXNzOw0KPiANCj4gdG8gYXZvaWQgYWRk
+aW5nIG1vcmUgY2hlY2tzIGluIHRoZSBsaXN0X2Zvcl9lYWNoX2VudHJ5KCkgbG9vcC4NCj4gDQo+
+IEJlc3QgcmVnYXJkcywNCj4gTGl2aXUNCj4gDQo+ID4NCj4gPg0KPiA+ID4gc28gdGhlIGNhbGN1
+bGF0aW9uIG9mIHRoZSBhZGRyZXNzIGluIHRoaXMgZnVuY3Rpb24gY291bGQgcmV0dXJuDQo+ID4g
+PiBuZWdhdGl2ZSB2YWx1ZXMgY2FzdGVkIHRvIHBjaV9hZGRyX3QuDQo+ID4gPg0KPiA+ID4gTWF5
+YmUgeW91IHdhbnQgdG8gYWRqdXN0IHRoZSByYW5nZS0+c3RhcnQgdmFsdWUgaW4NCj4gPiA+IHBj
+aV9yZWdpc3Rlcl9pb19yYW5nZSgpIGFzIHdlbGwgdG8gaGF2ZSBpdA0KPiA+ID4gb2Zmc2V0IGJ5
+IFBDSUJJT1NfTUlOX0lPIGFzIHdlbGwuDQo+ID4gPg0KPiA+ID4gQmVzdCByZWdhcmRzLA0KPiA+
+ID4gTGl2aXUNCj4gPiA+DQo+ID4gPiA+DQo+ID4gPiA+ICAJaWYgKHBpbyA+IElPX1NQQUNFX0xJ
+TUlUKQ0KPiA+ID4gPiAgCQlyZXR1cm4gYWRkcmVzczsNCj4gPiA+ID4gQEAgLTMzMzUsNyArMzMz
+NSw3IEBAIHVuc2lnbmVkIGxvbmcgX193ZWFrDQo+ID4gPiBwY2lfYWRkcmVzc190b19waW8ocGh5
+c19hZGRyX3QgYWRkcmVzcykNCj4gPiA+ID4gIHsNCj4gPiA+ID4gICNpZmRlZiBQQ0lfSU9CQVNF
+DQo+ID4gPiA+ICAJc3RydWN0IGlvX3JhbmdlICpyZXM7DQo+ID4gPiA+IC0JcmVzb3VyY2Vfc2l6
+ZV90IG9mZnNldCA9IDA7DQo+ID4gPiA+ICsJcmVzb3VyY2Vfc2l6ZV90IG9mZnNldCA9IFBDSUJJ
+T1NfTUlOX0lPOw0KPiA+ID4gPiAgCXVuc2lnbmVkIGxvbmcgYWRkciA9IC0xOw0KPiA+ID4gPg0K
+PiA+ID4gPiAgCXNwaW5fbG9jaygmaW9fcmFuZ2VfbG9jayk7DQo+ID4gPiA+IGRpZmYgLS1naXQg
+YS9pbmNsdWRlL2xpbnV4L29mX2FkZHJlc3MuaA0KPiBiL2luY2x1ZGUvbGludXgvb2ZfYWRkcmVz
+cy5oDQo+ID4gPiA+IGluZGV4IDM3ODY0NzMuLmRlZWM0NjkgMTAwNjQ0DQo+ID4gPiA+IC0tLSBh
+L2luY2x1ZGUvbGludXgvb2ZfYWRkcmVzcy5oDQo+ID4gPiA+ICsrKyBiL2luY2x1ZGUvbGludXgv
+b2ZfYWRkcmVzcy5oDQo+ID4gPiA+IEBAIC0yNCw2ICsyNCwyMyBAQCBzdHJ1Y3Qgb2ZfcGNpX3Jh
+bmdlIHsNCj4gPiA+ID4gICNkZWZpbmUgZm9yX2VhY2hfb2ZfcGNpX3JhbmdlKHBhcnNlciwgcmFu
+Z2UpIFwNCj4gPiA+ID4gIAlmb3IgKDsgb2ZfcGNpX3JhbmdlX3BhcnNlcl9vbmUocGFyc2VyLCBy
+YW5nZSk7KQ0KPiA+ID4gPg0KPiA+ID4gPiArDQo+ID4gPiA+ICsjaWZuZGVmIGluZGlyZWN0X2lv
+X2VuYWJsZWQNCj4gPiA+ID4gKyNkZWZpbmUgaW5kaXJlY3RfaW9fZW5hYmxlZCBpbmRpcmVjdF9p
+b19lbmFibGVkDQo+ID4gPiA+ICtzdGF0aWMgaW5saW5lIGJvb2wgaW5kaXJlY3RfaW9fZW5hYmxl
+ZCh2b2lkKQ0KPiA+ID4gPiArew0KPiA+ID4gPiArCXJldHVybiBmYWxzZTsNCj4gPiA+ID4gK30N
+Cj4gPiA+ID4gKyNlbmRpZg0KPiA+ID4gPiArDQo+ID4gPiA+ICsjaWZuZGVmIGFkZHJfaXNfaW5k
+aXJlY3RfaW8NCj4gPiA+ID4gKyNkZWZpbmUgYWRkcl9pc19pbmRpcmVjdF9pbyBhZGRyX2lzX2lu
+ZGlyZWN0X2lvDQo+ID4gPiA+ICtzdGF0aWMgaW5saW5lIGludCBhZGRyX2lzX2luZGlyZWN0X2lv
+KHU2NCB0YWRkcikNCj4gPiA+ID4gK3sNCj4gPiA+ID4gKwlyZXR1cm4gMDsNCj4gPiA+ID4gK30N
+Cj4gPiA+ID4gKyNlbmRpZg0KPiA+ID4gPiArDQo+ID4gPiA+ICAvKiBUcmFuc2xhdGUgYSBETUEg
+YWRkcmVzcyBmcm9tIGRldmljZSBzcGFjZSB0byBDUFUgc3BhY2UgKi8NCj4gPiA+ID4gIGV4dGVy
+biB1NjQgb2ZfdHJhbnNsYXRlX2RtYV9hZGRyZXNzKHN0cnVjdCBkZXZpY2Vfbm9kZSAqZGV2LA0K
+PiA+ID4gPiAgCQkJCSAgICBjb25zdCBfX2JlMzIgKmluX2FkZHIpOw0KPiA+ID4gPiBkaWZmIC0t
+Z2l0IGEvaW5jbHVkZS9saW51eC9wY2kuaCBiL2luY2x1ZGUvbGludXgvcGNpLmgNCj4gPiA+ID4g
+aW5kZXggMGU0OWY3MC4uN2Y2YmJiNiAxMDA2NDQNCj4gPiA+ID4gLS0tIGEvaW5jbHVkZS9saW51
+eC9wY2kuaA0KPiA+ID4gPiArKysgYi9pbmNsdWRlL2xpbnV4L3BjaS5oDQo+ID4gPiA+IEBAIC0y
+MTMwLDQgKzIxMzAsMTIgQEAgc3RhdGljIGlubGluZSBib29sIHBjaV9hcmlfZW5hYmxlZChzdHJ1
+Y3QNCj4gPiA+IHBjaV9idXMgKmJ1cykNCj4gPiA+ID4gIC8qIHByb3ZpZGUgdGhlIGxlZ2FjeSBw
+Y2lfZG1hXyogQVBJICovDQo+ID4gPiA+ICAjaW5jbHVkZSA8bGludXgvcGNpLWRtYS1jb21wYXQu
+aD4NCj4gPiA+ID4NCj4gPiA+ID4gKy8qDQo+ID4gPiA+ICsgKiBkZWZpbmUgdGhpcyBtYWNybyBo
+ZXJlIHRvIHJlZnJhaW4gZnJvbSBjb21waWxhdGlvbiBlcnJvciBmb3INCj4gc29tZQ0KPiA+ID4g
+PiArICogcGxhdGZvcm1zLiBQbGVhc2Uga2VlcCB0aGlzIG1hY3JvIGF0IHRoZSBlbmQgb2YgdGhp
+cyBoZWFkZXINCj4gZmlsZS4NCj4gPiA+ID4gKyAqLw0KPiA+ID4gPiArI2lmbmRlZiBQQ0lCSU9T
+X01JTl9JTw0KPiA+ID4gPiArI2RlZmluZSBQQ0lCSU9TX01JTl9JTwkJMA0KPiA+ID4gPiArI2Vu
+ZGlmDQo+ID4gPiA+ICsNCj4gPiA+ID4gICNlbmRpZiAvKiBMSU5VWF9QQ0lfSCAqLw0KPiA+ID4g
+PiAtLQ0KPiA+ID4gPiAxLjkuMQ0KPiA+ID4gPg0KPiA+ID4gPiAtLQ0KPiA+ID4gPiBUbyB1bnN1
+YnNjcmliZSBmcm9tIHRoaXMgbGlzdDogc2VuZCB0aGUgbGluZSAidW5zdWJzY3JpYmUgbGludXgt
+DQo+IHBjaSINCj4gPiA+IGluDQo+ID4gPiA+IHRoZSBib2R5IG9mIGEgbWVzc2FnZSB0byBtYWpv
+cmRvbW9Admdlci5rZXJuZWwub3JnDQo+ID4gPiA+IE1vcmUgbWFqb3Jkb21vIGluZm8gYXQgIGh0
+dHA6Ly92Z2VyLmtlcm5lbC5vcmcvbWFqb3Jkb21vLQ0KPiBpbmZvLmh0bWwNCj4gDQo+IC0tDQo+
+ID09PT09PT09PT09PT09PT09PT09DQo+IHwgSSB3b3VsZCBsaWtlIHRvIHwNCj4gfCBmaXggdGhl
+IHdvcmxkLCAgfA0KPiB8IGJ1dCB0aGV5J3JlIG5vdCB8DQo+IHwgZ2l2aW5nIG1lIHRoZSAgIHwN
+Cj4gIFwgc291cmNlIGNvZGUhICAvDQo+ICAgLS0tLS0tLS0tLS0tLS0tDQo+ICAgICDCr1xfKOOD
+hClfL8KvDQo=
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
