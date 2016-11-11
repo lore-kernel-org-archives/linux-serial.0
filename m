@@ -1,7 +1,7 @@
-From: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Subject: RE: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
-Date: Fri, 11 Nov 2016 15:53:53 +0000
-Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F8F9909@lhreml507-mbx>
+From: "zhichang.yuan" <zhichang.yuan02@gmail.com>
+Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
+Date: Sat, 12 Nov 2016 00:54:05 +0800
+Message-ID: <1eae3951-f1d9-c1c5-f70c-33150bc514ea@gmail.com>
 References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
  <17821285.aIcTyCGn5n@wuerfel>
  <EE11001F9E5DDD47B7634E2F8A612F2E1F8F5D75@lhreml507-mbx>
@@ -9,157 +9,205 @@ References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
  <EE11001F9E5DDD47B7634E2F8A612F2E1F8F900A@lhreml507-mbx>
  <20161111144539.GL10219@e106497-lin.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20161111144539.GL10219@e106497-lin.cambridge.arm.com>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: "liviu.dudau@arm.com" <liviu.dudau@arm.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Yuanzhichang <yuanzhichang@hisilicon.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "xuwei (O)" <xuwei5@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: "liviu.dudau@arm.com" <liviu.dudau@arm.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "bhelgaas@googl e.com" <bhelgaas@google.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "minyard@acm.org" <minyard@acm.org>, Arnd Bergmann <arnd@arndb.de>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yuanzhichang <yuanzhichang@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "olof@lixom.net" <olof@lixom.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "xuwei (O)" <xuwei5@hisilicon.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "zourongrong@gmail.com" <zourongrong@gmai>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgTGl2aXUNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBsaXZpdS5k
-dWRhdUBhcm0uY29tIFttYWlsdG86bGl2aXUuZHVkYXVAYXJtLmNvbV0NCj4gU2VudDogMTEgTm92
-ZW1iZXIgMjAxNiAxNDo0Ng0KPiBUbzogR2FicmllbGUgUGFvbG9uaQ0KPiBDYzogQXJuZCBCZXJn
-bWFubjsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBZdWFuemhpY2hhbmc7
-DQo+IG1hcmsucnV0bGFuZEBhcm0uY29tOyBkZXZpY2V0cmVlQHZnZXIua2VybmVsLm9yZzsNCj4g
-bG9yZW56by5waWVyYWxpc2lAYXJtLmNvbTsgbWlueWFyZEBhY20ub3JnOyBsaW51eC1wY2lAdmdl
-ci5rZXJuZWwub3JnOw0KPiBiZW5oQGtlcm5lbC5jcmFzaGluZy5vcmc7IEpvaG4gR2Fycnk7IHdp
-bGwuZGVhY29uQGFybS5jb207IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJuZWwub3JnOyB4dXdl
-aSAoTyk7IExpbnV4YXJtOyB6b3Vyb25ncm9uZ0BnbWFpbC5jb207DQo+IHJvYmgrZHRAa2VybmVs
-Lm9yZzsga2FudHl6Y0AxNjMuY29tOyBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOw0KPiBj
-YXRhbGluLm1hcmluYXNAYXJtLmNvbTsgb2xvZkBsaXhvbS5uZXQ7IGJoZWxnYWFzQGdvb2dsIGUu
-Y29tOw0KPiB6aGljaGFuZy55dWFuMDJAZ21haWwuY29tDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0gg
-VjUgMy8zXSBBUk02NCBMUEM6IExQQyBkcml2ZXIgaW1wbGVtZW50YXRpb24gb24NCj4gSGlwMDYN
-Cj4gDQo+IE9uIEZyaSwgTm92IDExLCAyMDE2IGF0IDAxOjM5OjM1UE0gKzAwMDAsIEdhYnJpZWxl
-IFBhb2xvbmkgd3JvdGU6DQo+ID4gSGkgQXJuZA0KPiA+DQo+ID4gPiAtLS0tLU9yaWdpbmFsIE1l
-c3NhZ2UtLS0tLQ0KPiA+ID4gRnJvbTogQXJuZCBCZXJnbWFubiBbbWFpbHRvOmFybmRAYXJuZGIu
-ZGVdDQo+ID4gPiBTZW50OiAxMCBOb3ZlbWJlciAyMDE2IDE2OjA3DQo+ID4gPiBUbzogR2Ficmll
-bGUgUGFvbG9uaQ0KPiA+ID4gQ2M6IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9y
-ZzsgWXVhbnpoaWNoYW5nOw0KPiA+ID4gbWFyay5ydXRsYW5kQGFybS5jb207IGRldmljZXRyZWVA
-dmdlci5rZXJuZWwub3JnOw0KPiA+ID4gbG9yZW56by5waWVyYWxpc2lAYXJtLmNvbTsgbWlueWFy
-ZEBhY20ub3JnOyBsaW51eC0NCj4gcGNpQHZnZXIua2VybmVsLm9yZzsNCj4gPiA+IGJlbmhAa2Vy
-bmVsLmNyYXNoaW5nLm9yZzsgSm9obiBHYXJyeTsgd2lsbC5kZWFjb25AYXJtLmNvbTsgbGludXgt
-DQo+ID4gPiBrZXJuZWxAdmdlci5rZXJuZWwub3JnOyB4dXdlaSAoTyk7IExpbnV4YXJtOyB6b3Vy
-b25ncm9uZ0BnbWFpbC5jb207DQo+ID4gPiByb2JoK2R0QGtlcm5lbC5vcmc7IGthbnR5emNAMTYz
-LmNvbTsgbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZzsNCj4gPiA+IGNhdGFsaW4ubWFyaW5h
-c0Bhcm0uY29tOyBvbG9mQGxpeG9tLm5ldDsgbGl2aXUuZHVkYXVAYXJtLmNvbTsNCj4gPiA+IGJo
-ZWxnYWFzQGdvb2dsIGUuY29tOyB6aGljaGFuZy55dWFuMDJAZ21haWwuY29tDQo+ID4gPiBTdWJq
-ZWN0OiBSZTogW1BBVENIIFY1IDMvM10gQVJNNjQgTFBDOiBMUEMgZHJpdmVyIGltcGxlbWVudGF0
-aW9uIG9uDQo+ID4gPiBIaXAwNg0KPiA+ID4NCj4gPiA+IE9uIFRodXJzZGF5LCBOb3ZlbWJlciAx
-MCwgMjAxNiAzOjM2OjQ5IFBNIENFVCBHYWJyaWVsZSBQYW9sb25pDQo+IHdyb3RlOg0KPiA+ID4g
-Pg0KPiA+ID4gPiBXaGVyZSBzaG91bGQgd2UgZ2V0IHRoZSByYW5nZSBmcm9tPyBGb3IgTFBDIHdl
-IGtub3cgdGhhdCBpdCBpcw0KPiBnb2luZw0KPiA+ID4gPiBXb3JrIG9uIGFueXRoaW5nIHRoYXQg
-aXMgbm90IHVzZWQgYnkgUENJIEkvTyBzcGFjZSwgYW5kIHRoaXMgaXMNCj4gPiA+ID4gd2h5IHdl
-IHVzZSBbMCwgUENJQklPU19NSU5fSU9dDQo+ID4gPg0KPiA+ID4gSXQgc2hvdWxkIGJlIGFsbG9j
-YXRlZCB0aGUgc2FtZSB3YXkgd2UgYWxsb2NhdGUgUENJIGNvbmZpZyBzcGFjZQ0KPiA+ID4gc2Vn
-bWVudHMuIFRoaXMgaXMgY3VycmVudGx5IGRvbmUgd2l0aCB0aGUgaW9fcmFuZ2UgbGlzdCBpbg0K
-PiA+ID4gZHJpdmVycy9wY2kvcGNpLmMsIHdoaWNoIGlzbid0IHBlcmZlY3QgYnV0IGNvdWxkIGJl
-IGV4dGVuZGVkDQo+ID4gPiBpZiBuZWNlc3NhcnkuIEJhc2VkIG9uIHdoYXQgb3RoZXJzIGNvbW1l
-bnRlZCBoZXJlLCBJJ2QgcmF0aGVyDQo+ID4gPiBtYWtlIHRoZSBkaWZmZXJlbmNlcyBiZXR3ZWVu
-IElTQS9MUEMgYW5kIFBDSSBJL08gcmFuZ2VzIHNtYWxsZXINCj4gPiA+IHRoYW4gbGFyZ2VyLg0K
-PiANCj4gR2FicmllbGUsDQo+IA0KPiA+DQo+ID4gSSBhbSBub3Qgc3VyZSB0aGlzIHdvdWxkIG1h
-a2Ugc2Vuc2UuLi4NCj4gPg0KPiA+IElNSE8gYWxsIHRoZSBtZWNoYW5pc20gYXJvdW5kIGlvX3Jh
-bmdlX2xpc3QgaXMgbmVlZGVkIHRvIHByb3ZpZGUgdGhlDQo+ID4gIm1hcHBpbmciIGJldHdlZW4g
-SS9PIHRva2VucyBhbmQgcGh5c2ljYWwgQ1BVIGFkZHJlc3Nlcy4NCj4gPg0KPiA+IEN1cnJlbnRs
-eSB0aGUgYXZhaWxhYmxlIHRva2VucyByYW5nZSBmcm9tIDAgdG8gSU9fU1BBQ0VfTElNSVQuDQo+
-ID4NCj4gPiBBcyB5b3Uga25vdyB0aGUgSS9PIG1lbW9yeSBhY2Nlc3NvcnMgb3BlcmF0ZSBvbiB3
-aGF0ZXZlcg0KPiA+IF9fb2ZfYWRkcmVzc190b19yZXNvdXJjZSBzZXRzIGludG8gdGhlIHJlc291
-cmNlIChzdGFydCwgZW5kKS4NCj4gPg0KPiA+IFdpdGggdGhpcyBzcGVjaWFsIGRldmljZSBpbiBw
-bGFjZSB3ZSBjYW5ub3Qga25vdyBpZiBhIHJlc291cmNlIGlzDQo+ID4gYXNzaWduZWQgd2l0aCBh
-biBJL08gdG9rZW4gb3IgYSBwaHlzaWNhbCBhZGRyZXNzLCB1bmxlc3Mgd2UgZm9yYmlkDQo+ID4g
-dGhlIEkvTyB0b2tlbnMgdG8gYmUgaW4gYSBzcGVjaWZpYyByYW5nZS4NCj4gPg0KPiA+IFNvIHRo
-aXMgaXMgd2h5IHdlIGFyZSBjaGFuZ2luZyB0aGUgb2Zmc2V0cyBvZiBhbGwgdGhlIGZ1bmN0aW9u
-cw0KPiA+IGhhbmRsaW5nIGlvX3JhbmdlX2xpc3QgKHRvIG1ha2Ugc3VyZSB0aGF0IGEgcmFuZ2Ug
-aXMgZm9yYmlkZGVuIHRvDQo+ID4gdGhlIHRva2VucyBhbmQgaXMgYXZhaWxhYmxlIHRvIHRoZSBw
-aHlzaWNhbCBhZGRyZXNzZXMpLg0KPiA+DQo+ID4gV2UgaGF2ZSBjaG9zZW4gdGhpcyBmb3JiaWRk
-ZW4gcmFuZ2UgdG8gYmUgWzAsIFBDSUJJT1NfTUlOX0lPKQ0KPiA+IGJlY2F1c2UgdGhpcyBpcyB0
-aGUgbWF4aW11bSBwaHlzaWNhbCBJL08gcmFuZ2UgdGhhdCBhIG5vbiBQQ0kgZGV2aWNlDQo+ID4g
-Y2FuIG9wZXJhdGUgb24gYW5kIGJlY2F1c2Ugd2UgYmVsaWV2ZSB0aGlzIGRvZXMgbm90IGltcG9z
-ZSBtdWNoDQo+ID4gcmVzdHJpY3Rpb24gb24gdGhlIGF2YWlsYWJsZSBJL08gdG9rZW4gcmFuZ2U7
-IHRoYXQgbm93IGlzDQo+ID4gW1BDSUJJT1NfTUlOX0lPLCBJT19TUEFDRV9MSU1JVF0uDQo+ID4g
-U28gd2UgYmVsaWV2ZSB0aGF0IHRoZSBjaG9zZW4gZm9yYmlkZGVuIHJhbmdlIGNhbiBhY2NvbW1v
-ZGF0ZQ0KPiA+IGFueSBzcGVjaWFsIElTQSBidXMgZGV2aWNlIHdpdGggbm8gbXVjaCBjb25zdHJh
-aW50IG9uIHRoZSByZXN0DQo+ID4gb2YgSS9PIHRva2Vucy4uLg0KPiANCj4gWW91ciBpZGVhIGlz
-IGEgZ29vZCBvbmUsIGhvd2V2ZXIgeW91IGFyZSBhYnVzaW5nIFBDSUJJT1NfTUlOX0lPIGFuZCB5
-b3UNCj4gYWN0dWFsbHkgbmVlZCBhbm90aGVyIHZhcmlhYmxlIGZvciAicmVzZXJ2aW5nIiBhbiBh
-cmVhIGluIHRoZSBJL08gc3BhY2UNCj4gdGhhdCBjYW4gYmUgdXNlZCBmb3IgcGh5c2ljYWwgYWRk
-cmVzc2VzIHJhdGhlciB0aGFuIEkvTyB0b2tlbnMuDQo+IA0KPiBUaGUgb25lIGdvb2QgZXhhbXBs
-ZSBmb3IgdXNpbmcgUENJQklPU19NSU5fSU8gaXMgd2hlbiB5b3VyDQo+IHBsYXRmb3JtL2FyY2hp
-dGVjdHVyZQ0KPiBkb2VzIG5vdCBzdXBwb3J0IGxlZ2FjeSBJU0Egb3BlcmF0aW9ucyAqYXQgYWxs
-Ki4gSW4gdGhhdCBjYXNlIHNvbWVvbmUNCj4gc2V0cyB0aGUgUENJQklPU19NSU5fSU8gdG8gYSBu
-b24temVybyB2YWx1ZSB0byByZXNlcnZlIHRoYXQgSS9PIHJhbmdlDQo+IHNvIHRoYXQgaXQgZG9l
-c24ndCBnZXQgdXNlZC4gV2l0aCBaaGljaGFuZydzIHBhdGNoIHlvdSBub3cgc3RhcnQNCj4gZm9y
-Y2luZw0KPiB0aG9zZSBwbGF0Zm9ybXMgdG8gaGF2ZSBhIHZhbGlkIGFkZHJlc3MgYmVsb3cgUENJ
-QklPU19NSU5fSU8uDQoNCkJ1dCBpZiBQQ0lCSU9TX01JTl9JTyBpcyAwIHRoZW4gaXQgbWVhbnMg
-dGhhdCBhbGwgSS9PIHNwYWNlIGlzIHRvIGJlIHVzZWQNCmJ5IFBDSSBjb250cm9sbGVycyBvbmx5
-Li4uc28gaWYgeW91IGhhdmUgYSBzcGVjaWFsIGJ1cyBkZXZpY2UgdXNpbmcNCmFuIEkvTyByYW5n
-ZSBpbiB0aGlzIGNhc2Ugc2hvdWxkIGJlIGEgUENJIGNvbnRyb2xsZXIuLi5pLmUuIEkgd291bGQN
-CmV4cGVjdCBpdCB0byBmYWxsIGJhY2sgaW50byB0aGUgY2FzZSBvZiBJL08gdG9rZW5zIHJlZGly
-ZWN0aW9uIHJhdGhlciB0aGFuDQpwaHlzaWNhbCBhZGRyZXNzZXMgcmVkaXJlY3Rpb24gKGFzIG1l
-bnRpb25lZCBiZWxvdyBmcm9tIG15IHByZXZpb3VzIHJlcGx5KS4NCldoYXQgZG8geW91IHRoaW5r
-Pw0KDQpUaGFua3MNCg0KR2FiDQoNCg0KPiANCj4gRm9yIHRoZSBnZW5lcmFsIGNhc2UgeW91IGFs
-c28gaGF2ZSB0byBiZWFyIGluIG1pbmQgdGhhdCBQQ0lCSU9TX01JTl9JTw0KPiBjb3VsZA0KPiBi
-ZSB6ZXJvLiBJbiB0aGF0IGNhc2UsIHdoYXQgaXMgeW91ciAiZm9yYmlkZGVuIiByYW5nZT8gWzAs
-IDApID8gU28gaXQNCj4gbWFrZXMNCj4gc2Vuc2UgdG8gYWRkIGEgbmV3ICNkZWZpbmUgdGhhdCBz
-aG91bGQgb25seSBiZSBkZWZpbmVkIGJ5IHRob3NlDQo+IGFyY2hpdGVjdHVyZXMvDQo+IHBsYXRm
-b3JtcyB0aGF0IHdhbnQgdG8gcmVzZXJ2ZSBvbiB0b3Agb2YgUENJQklPU19NSU5fSU8gYW5vdGhl
-ciByZWdpb24NCj4gd2hlcmUgSS9PIHRva2VucyBjYW4ndCBiZSBnZW5lcmF0ZWQgZm9yLg0KPiAN
-Cj4gQmVzdCByZWdhcmRzLA0KPiBMaXZpdQ0KPiANCj4gPg0KPiA+ID4NCj4gPiA+ID4gPiBZb3Vy
-IGN1cnJlbnQgdmVyc2lvbiBoYXMNCj4gPiA+ID4gPg0KPiA+ID4gPiA+ICAgICAgICAgaWYgKGFy
-bTY0X2V4dGlvX29wcy0+cGZvdXQpDQo+IFwNCj4gPiA+ID4gPiAgICAgICAgICAgICAgICAgYXJt
-NjRfZXh0aW9fb3BzLT5wZm91dChhcm02NF9leHRpb19vcHMtDQo+ID5kZXZwYXJhLFwNCj4gPiA+
-ID4gPiAgICAgICAgICAgICAgICAgICAgICAgIGFkZHIsIHZhbHVlLCBzaXplb2YodHlwZSkpOw0K
-PiBcDQo+ID4gPiA+ID4NCj4gPiA+ID4gPiBJbnN0ZWFkLCBqdXN0IHN1YnRyYWN0IHRoZSBzdGFy
-dCBvZiB0aGUgcmFuZ2UgZnJvbSB0aGUgbG9naWNhbA0KPiA+ID4gPiA+IHBvcnQgbnVtYmVyIHRv
-IHRyYW5zZm9ybSBpdCBiYWNrIGludG8gYSBidXMtbG9jYWwgcG9ydCBudW1iZXI6DQo+ID4gPiA+
-DQo+ID4gPiA+IFRoZXNlIGFjY2Vzc29ycyBkbyBub3Qgb3BlcmF0ZSBvbiBJTyB0b2tlbnM6DQo+
-ID4gPiA+DQo+ID4gPiA+IElmIChhcm02NF9leHRpb19vcHMtPnN0YXJ0ID4gYWRkciB8fCBhcm02
-NF9leHRpb19vcHMtPmVuZCA8IGFkZHIpDQo+ID4gPiA+IGFkZHIgaXMgbm90IGdvaW5nIHRvIGJl
-IGFuIEkvTyB0b2tlbjsgaW4gZmFjdCBwYXRjaCAyLzMgaW1wb3Nlcw0KPiB0aGF0DQo+ID4gPiA+
-IHRoZSBJL08gdG9rZW5zIHdpbGwgc3RhcnQgYXQgUENJQklPU19NSU5fSU8uIFNvIGZyb20gMCB0
-bw0KPiA+ID4gUENJQklPU19NSU5fSU8NCj4gPiA+ID4gd2UgaGF2ZSBmcmVlIHBoeXNpY2FsIGFk
-ZHJlc3NlcyB0aGF0IHRoZSBhY2Nlc3NvcnMgY2FuIG9wZXJhdGUNCj4gb24uDQo+ID4gPg0KPiA+
-ID4gQWgsIEkgbWlzc2VkIHRoYXQgcGFydC4gSSdkIHJhdGhlciBub3QgdXNlIFBDSUJJT1NfTUlO
-X0lPIHRvIHJlZmVyDQo+IHRvDQo+ID4gPiB0aGUgbG9naWNhbCBJL08gdG9rZW5zLCB0aGUgcHVy
-cG9zZSBvZiB0aGF0IG1hY3JvIGlzIHJlYWxseSBtZWFudA0KPiA+ID4gZm9yIGFsbG9jYXRpbmcg
-UENJIEkvTyBwb3J0IG51bWJlcnMgd2l0aGluIHRoZSBhZGRyZXNzIHNwYWNlIG9mDQo+ID4gPiBv
-bmUgYnVzLg0KPiA+DQo+ID4gQXMgSSBtZW50aW9uZWQgYWJvdmUsIHNwZWNpYWwgZGV2aWNlcyBv
-cGVyYXRlIG9uIENQVSBhZGRyZXNzZXMNCj4gZGlyZWN0bHksDQo+ID4gbm90IEkvTyB0b2tlbnMu
-IEZvciB0aGVtIHRoZXJlIGlzIG5vIHdheSB0byBkaXN0aW5ndWlzaC4uLi4NCj4gPg0KPiA+ID4N
-Cj4gPiA+IE5vdGUgdGhhdCBpdCdzIGVxdWFsbHkgbGlrZWx5IHRoYXQgd2hpY2hldmVyIG5leHQg
-cGxhdGZvcm0gbmVlZHMNCj4gPiA+IG5vbi1tYXBwZWQgSS9PIGFjY2VzcyBsaWtlIHRoaXMgYWN0
-dWFsbHkgbmVlZHMgdGhlbSBmb3IgUENJIEkvTw0KPiBzcGFjZSwNCj4gPiA+IGFuZCB0aGF0IHdp
-bGwgdXNlIGl0IG9uIGFkZHJlc3NlcyByZWdpc3RlcmVkIHRvIGEgUENJIGhvc3QgYnJpZGdlLg0K
-PiA+DQo+ID4gT2sgc28gaGVyZSB5b3UgYXJlIHRhbGtpbmcgYWJvdXQgYSBwbGF0Zm9ybSB0aGF0
-IGhhcyBnb3QgYW4gSS9PIHJhbmdlDQo+ID4gdW5kZXIgdGhlIFBDSSBob3N0IGNvbnRyb2xsZXIs
-IHJpZ2h0Pw0KPiA+IEFuZCB0aGlzIEkvTyByYW5nZSBjYW5ub3QgYmUgZGlyZWN0bHkgbWVtb3J5
-IG1hcHBlZCBidXQgbmVlZHMgc3BlY2lhbA0KPiA+IHJlZGlyZWN0aW9ucyBmb3IgdGhlIEkvTyB0
-b2tlbnMsIHJpZ2h0Pw0KPiA+DQo+ID4gSW4gdGhpcyBzY2VuYXJpbyByZWdpc3RlcmluZyB0aGUg
-SS9PIHJhbmdlcyB3aXRoIHRoZSBmb3JiaWRkZW4gcmFuZ2UNCj4gPiBpbXBsZW1lbnRlZCBieSB0
-aGUgY3VycmVudCBwYXRjaCB3b3VsZCBzdGlsbCBhbGxvdyB0byByZWRpcmVjdCBJL08NCj4gPiB0
-b2tlbnMgYXMgbG9uZyBhcyBhcm02NF9leHRpb19vcHMtPnN0YXJ0ID49IFBDSUJJT1NfTUlOX0lP
-DQo+ID4NCj4gPiBTbyBlZmZlY3RpdmVseSB0aGUgc3BlY2lhbCBQQ0kgaG9zdCBjb250cm9sbGVy
-DQo+ID4gMSkga25vd3MgdGhlIHBoeXNpY2FsIHJhbmdlIHRoYXQgbmVlZHMgc3BlY2lhbCByZWRp
-cmVjdGlvbg0KPiA+IDIpIHJlZ2lzdGVyIHN1Y2ggcmFuZ2UNCj4gPiAzKSB1c2VzIHBjaV9waW9f
-dG9fYWRkcmVzcygpIHRvIHJldHJpZXZlIHRoZSBJTyB0b2tlbnMgZm9yIHRoZQ0KPiA+ICAgIHNw
-ZWNpYWwgYWNjZXNzb3JzDQo+ID4gNCkgc2V0cyBhcm02NF9leHRpb19vcHMtPnN0YXJ0L2VuZCB0
-byB0aGUgSU8gdG9rZW5zIHJldHJpZXZlZCBpbiAzKQ0KPiA+DQo+ID4gU28gdG8gYmUgaG9uZXN0
-IEkgdGhpbmsgdGhpcyBwYXRjaCBjYW4gZml0IHdlbGwgYm90aCB3aXRoDQo+ID4gc3BlY2lhbCBQ
-Q0kgY29udHJvbGxlcnMgdGhhdCBuZWVkIEkvTyB0b2tlbnMgcmVkaXJlY3Rpb24gYW5kIHdpdGgN
-Cj4gPiBzcGVjaWFsIG5vbi1QQ0kgY29udHJvbGxlcnMgdGhhdCBuZWVkIG5vbi1QQ0kgSS9PIHBo
-eXNpY2FsDQo+ID4gYWRkcmVzcyByZWRpcmVjdGlvbi4uLg0KPiA+DQo+ID4gVGhhbmtzIChhbmQg
-c29ycnkgZm9yIHRoZSBsb25nIHJlcGx5IGJ1dCBJIGRpZG4ndCBrbm93IGhvdw0KPiA+IHRvIG1h
-a2UgdGhlIGV4cGxhbmF0aW9uIHNob3J0ZXIgOikgKQ0KPiA+DQo+ID4gR2FiDQo+ID4NCj4gPiA+
-DQo+ID4gPiBJZiB3ZSBzZXBhcmF0ZSB0aGUgdHdvIHN0ZXBzOg0KPiA+ID4NCj4gPiA+IGEpIGFz
-c2lnbiBhIHJhbmdlIG9mIGxvZ2ljYWwgSS9PIHBvcnQgbnVtYmVycyB0byBhIGJ1cw0KPiA+ID4g
-YikgcmVnaXN0ZXIgYSBzZXQgb2YgaGVscGVycyBmb3IgcmVkaXJlY3RpbmcgbG9naWNhbCBJL08N
-Cj4gPiA+ICAgIHBvcnQgdG8gYSBoZWxwZXIgZnVuY3Rpb24NCj4gPiA+DQo+ID4gPiB0aGVuIEkg
-dGhpbmsgdGhlIGNvZGUgd2lsbCBnZXQgY2xlYW5lciBhbmQgbW9yZSBmbGV4aWJsZS4NCj4gPiA+
-IEl0IHNob3VsZCBhY3R1YWxseSB0aGVuIGJlIGFibGUgdG8gcmVwbGFjZSB0aGUgcG93ZXJwYw0K
-PiA+ID4gc3BlY2lmaWMgaW1wbGVtZW50YXRpb24uDQo+ID4gPg0KPiA+ID4gCUFybmQNCj4gDQo+
-IC0tDQo+ID09PT09PT09PT09PT09PT09PT09DQo+IHwgSSB3b3VsZCBsaWtlIHRvIHwNCj4gfCBm
-aXggdGhlIHdvcmxkLCAgfA0KPiB8IGJ1dCB0aGV5J3JlIG5vdCB8DQo+IHwgZ2l2aW5nIG1lIHRo
-ZSAgIHwNCj4gIFwgc291cmNlIGNvZGUhICAvDQo+ICAgLS0tLS0tLS0tLS0tLS0tDQo+ICAgICDC
-r1xfKOODhClfL8KvDQo=
+Hi, Liviu,
+
+
+On 11/11/2016 10:45 PM, liviu.dudau@arm.com wrote:
+> On Fri, Nov 11, 2016 at 01:39:35PM +0000, Gabriele Paoloni wrote:
+>> Hi Arnd
+>>
+>>> -----Original Message-----
+>>> From: Arnd Bergmann [mailto:arnd@arndb.de]
+>>> Sent: 10 November 2016 16:07
+>>> To: Gabriele Paoloni
+>>> Cc: linux-arm-kernel@lists.infradead.org; Yuanzhichang;
+>>> mark.rutland@arm.com; devicetree@vger.kernel.org;
+>>> lorenzo.pieralisi@arm.com; minyard@acm.org; linux-pci@vger.kernel.org;
+>>> benh@kernel.crashing.org; John Garry; will.deacon@arm.com; linux-
+>>> kernel@vger.kernel.org; xuwei (O); Linuxarm; zourongrong@gmail.com;
+>>> robh+dt@kernel.org; kantyzc@163.com; linux-serial@vger.kernel.org;
+>>> catalin.marinas@arm.com; olof@lixom.net; liviu.dudau@arm.com;
+>>> bhelgaas@googl e.com; zhichang.yuan02@gmail.com
+>>> Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on
+>>> Hip06
+>>>
+>>> On Thursday, November 10, 2016 3:36:49 PM CET Gabriele Paoloni wrote:
+>>>>
+>>>> Where should we get the range from? For LPC we know that it is going
+>>>> Work on anything that is not used by PCI I/O space, and this is
+>>>> why we use [0, PCIBIOS_MIN_IO]
+>>>
+>>> It should be allocated the same way we allocate PCI config space
+>>> segments. This is currently done with the io_range list in
+>>> drivers/pci/pci.c, which isn't perfect but could be extended
+>>> if necessary. Based on what others commented here, I'd rather
+>>> make the differences between ISA/LPC and PCI I/O ranges smaller
+>>> than larger.
+> 
+> Gabriele,
+> 
+>>
+>> I am not sure this would make sense...
+>>
+>> IMHO all the mechanism around io_range_list is needed to provide the
+>> "mapping" between I/O tokens and physical CPU addresses.
+>>
+>> Currently the available tokens range from 0 to IO_SPACE_LIMIT.
+>>
+>> As you know the I/O memory accessors operate on whatever
+>> __of_address_to_resource sets into the resource (start, end).
+>>
+>> With this special device in place we cannot know if a resource is
+>> assigned with an I/O token or a physical address, unless we forbid
+>> the I/O tokens to be in a specific range.
+>>
+>> So this is why we are changing the offsets of all the functions
+>> handling io_range_list (to make sure that a range is forbidden to
+>> the tokens and is available to the physical addresses).
+>>
+>> We have chosen this forbidden range to be [0, PCIBIOS_MIN_IO)
+>> because this is the maximum physical I/O range that a non PCI device
+>> can operate on and because we believe this does not impose much
+>> restriction on the available I/O token range; that now is 
+>> [PCIBIOS_MIN_IO, IO_SPACE_LIMIT].
+>> So we believe that the chosen forbidden range can accommodate
+>> any special ISA bus device with no much constraint on the rest
+>> of I/O tokens...
+> 
+> Your idea is a good one, however you are abusing PCIBIOS_MIN_IO and you
+> actually need another variable for "reserving" an area in the I/O space
+> that can be used for physical addresses rather than I/O tokens.
+> 
+I think selecting PCIBIOS_MIN_IO as the separator of mapped and non-mapped I/O
+range probably is not so reasonable.
+PCIBIOS_MIN_IN is specific to PCI devices, it seems as the recommended minimal
+start I/O address when assigning the pci device I/O region. It is probably not
+defined in some platforms/architectures when no PCI is needed there. That is why
+my patch caused some compile error on some archs;
+
+But more important thing is that the PCIBIOS_MIN_IO has different value on
+different platforms/architectures. On Arm64, it is 4K currently, but in other
+archs, it is not true. And the maximum LPC I/O address should be 64K
+theoretically, although for compatible ISA, 2K is enough.
+So, It means using PCIBIOS_MIN_IO on arm64 can match our I/O reservation
+require. But we can not make this indirectIO work well on other architectures.
+
+I am thinking Arnd's suggestion. But I worry about I haven't completely
+understood his idea. What about create a new bus host for LPC/ISA whose I/O
+range can be 64KB? This LPC/ISA I/O range works similar to PCI host bridge's I/O
+window, all the downstream devices under LPC/ISA should request I/O from that
+root resource. But it seems Arnd want this root resource registered dynamically,
+I am not sure how to do...
+
+Anyway, if we have this root I/O resource, we don't need any new macro or
+variable for the LPC/ISA I/O reservation.
+
+Hope my thought is right.
+
+Best,
+Zhichang
+
+
+> The one good example for using PCIBIOS_MIN_IO is when your platform/architecture
+> does not support legacy ISA operations *at all*. In that case someone
+> sets the PCIBIOS_MIN_IO to a non-zero value to reserve that I/O range
+> so that it doesn't get used. With Zhichang's patch you now start forcing
+> those platforms to have a valid address below PCIBIOS_MIN_IO.
+> 
+> For the general case you also have to bear in mind that PCIBIOS_MIN_IO could
+> be zero. In that case, what is your "forbidden" range? [0, 0) ? So it makes
+> sense to add a new #define that should only be defined by those architectures/
+> platforms that want to reserve on top of PCIBIOS_MIN_IO another region
+> where I/O tokens can't be generated for.
+> 
+> Best regards,
+> Liviu
+> 
+>>
+>>>
+>>>>> Your current version has
+>>>>>
+>>>>>         if (arm64_extio_ops->pfout)                             \
+>>>>>                 arm64_extio_ops->pfout(arm64_extio_ops->devpara,\
+>>>>>                        addr, value, sizeof(type));             \
+>>>>>
+>>>>> Instead, just subtract the start of the range from the logical
+>>>>> port number to transform it back into a bus-local port number:
+>>>>
+>>>> These accessors do not operate on IO tokens:
+>>>>
+>>>> If (arm64_extio_ops->start > addr || arm64_extio_ops->end < addr)
+>>>> addr is not going to be an I/O token; in fact patch 2/3 imposes that
+>>>> the I/O tokens will start at PCIBIOS_MIN_IO. So from 0 to
+>>> PCIBIOS_MIN_IO
+>>>> we have free physical addresses that the accessors can operate on.
+>>>
+>>> Ah, I missed that part. I'd rather not use PCIBIOS_MIN_IO to refer to
+>>> the logical I/O tokens, the purpose of that macro is really meant
+>>> for allocating PCI I/O port numbers within the address space of
+>>> one bus.
+>>
+>> As I mentioned above, special devices operate on CPU addresses directly,
+>> not I/O tokens. For them there is no way to distinguish....
+>>
+>>>
+>>> Note that it's equally likely that whichever next platform needs
+>>> non-mapped I/O access like this actually needs them for PCI I/O space,
+>>> and that will use it on addresses registered to a PCI host bridge.
+>>
+>> Ok so here you are talking about a platform that has got an I/O range
+>> under the PCI host controller, right?
+>> And this I/O range cannot be directly memory mapped but needs special
+>> redirections for the I/O tokens, right?
+>>
+>> In this scenario registering the I/O ranges with the forbidden range
+>> implemented by the current patch would still allow to redirect I/O
+>> tokens as long as arm64_extio_ops->start >= PCIBIOS_MIN_IO
+>>
+>> So effectively the special PCI host controller
+>> 1) knows the physical range that needs special redirection
+>> 2) register such range
+>> 3) uses pci_pio_to_address() to retrieve the IO tokens for the
+>>    special accessors
+>> 4) sets arm64_extio_ops->start/end to the IO tokens retrieved in 3)
+>>
+>> So to be honest I think this patch can fit well both with
+>> special PCI controllers that need I/O tokens redirection and with
+>> special non-PCI controllers that need non-PCI I/O physical
+>> address redirection...
+>>
+>> Thanks (and sorry for the long reply but I didn't know how
+>> to make the explanation shorter :) )
+>>
+>> Gab
+>>
+>>>
+>>> If we separate the two steps:
+>>>
+>>> a) assign a range of logical I/O port numbers to a bus
+>>> b) register a set of helpers for redirecting logical I/O
+>>>    port to a helper function
+>>>
+>>> then I think the code will get cleaner and more flexible.
+>>> It should actually then be able to replace the powerpc
+>>> specific implementation.
+>>>
+>>> 	Arnd
+> 
