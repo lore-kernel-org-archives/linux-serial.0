@@ -1,51 +1,86 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] Revert "tty: serial: 8250: add CON_CONSDEV to flags"
-Date: Mon, 14 Nov 2016 12:49:50 +0100
-Message-ID: <20161114114950.GA13920@kroah.com>
-References: <1479092021-14885-1-git-send-email-chenhc@lemote.com>
+From: Johannes Berg <johannes@sipsolutions.net>
+Subject: Re: [RFC] fs: add userspace critical mounts event support
+Date: Tue, 15 Nov 2016 10:28:45 +0100
+Message-ID: <1479202125.12007.24.camel@sipsolutions.net>
+References: <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
+         <20160824203901.GT3296@wotan.suse.de>
+         <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
+         <20160825194133.GC3296@wotan.suse.de> <20160902235916.GO3296@wotan.suse.de>
+         <20160903002014.GP3296@wotan.suse.de>
+         <6332a54e-74c6-eafd-368e-71e87a3fa34e@landley.net>
+         <20161005180017.GD3296@wotan.suse.de>
+         <CA+55aFzrRekSrEczdtGb3RuOeJttJ7i7dQJxiTOXz8V+kr=hdA@mail.gmail.com>
+         <20161005194633.GE3296@wotan.suse.de>
+         <20161108224726.GD13978@wotan.suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1479092021-14885-1-git-send-email-chenhc@lemote.com>
-Sender: stable-owner@vger.kernel.org
-To: Huacai Chen <chenhc@lemote.com>
-Cc: linux-serial@vger.kernel.org, Matthew Leach <matthew.leach@codethink.co.uk>, stable@vger.kernel.org, Ce Sun <sunc@lemote.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20161108224726.GD13978@wotan.suse.de>
+Sender: linux-doc-owner@vger.kernel.org
+To: "Luis R. Rodriguez" <mcgrof@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Jiri Kosina <jkosina@suse.cz>, Jouni Malinen <j@w1.fi>, Seth Forshee <seth.forshee@canonical.com>, Tom Gundersen <teg@jklm.no>, Kay Sievers <kay@vrfy.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Wagner <wagi@monom.org>, Daniel Wagner <daniel.wagner@bmw-carit.de>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: "Herbert, Marc" <marc.herbert@intel.com>, Daniel Vetter <daniel.vetter@ffwll.ch>, Rob Landley <rob@landley.net>, Mimi Zohar <zohar@linux.vnet.ibm.com>, Felix Fietkau <nbd@nbd.name>, David Woodhouse <dwmw2@infradead.org>, Roman Pen <r.peniaev@gmail.com>, Ming Lei <ming.lei@canonical.com>, Andrew Morton <akpm@linux-foundation.org>, Michal Marek <mmarek@suse.com>, Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Vikram Mulukutla <markivx@codeaurora.org>, Stephen Boyd <stephen.boyd@linaro.org>, Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.de>, Christian Lamparter <chunkeey@googlemail.com>, Hauke Mehrtens <hauke@hauke-m.de>, Josh Boyer <jwboyer@fedoraproject.org>, Dmitry Torokhov <dmitry.>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Nov 14, 2016 at 10:53:41AM +0800, Huacai Chen wrote:
-> This reverts commit d03516df837587368fc6e75591f6329c072b9eb5. From
-> Documentation/serial-console.txt we can know that serial port becomes
-> the system console only when it appears in the kernel parameters as the
-> last console device. But commit d03516df837587 adds a CON_CONSDEV flag
-> to univ8250_console and breaks this convention. After that either we
-> use "console=tty console=ttyS0" or "console=ttyS0 console=tty", serial
-> port will always be the system console.
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Ce Sun <sunc@lemote.com>
-> Signed-off-by: Huacai Chen <chenhc@lemote.com>
-> ---
->  drivers/tty/serial/8250/8250_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 240a361..e8819aa 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -675,7 +675,7 @@ static struct console univ8250_console = {
->  	.device		= uart_console_device,
->  	.setup		= univ8250_console_setup,
->  	.match		= univ8250_console_match,
-> -	.flags		= CON_PRINTBUFFER | CON_ANYTIME | CON_CONSDEV,
-> +	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
->  	.index		= -1,
->  	.data		= &serial8250_reg,
->  };
+On Tue, 2016-11-08 at 23:47 +0100, Luis R. Rodriguez wrote:
 
-Odd.  Matthew, any thoughts here?  This seems to be the opposite of why
-you submitted this change...
+> This issue still stands. At Plumbers Johannes Berg did indicate to me
+> he had a simple elegant solution in mind. He suggested that since the
+> usermode helper was available, he had added support to be able to
+> differentiate async firmware request calls form sync requests,
 
-thanks,
+For reference:
 
-greg k-h
+commit e9045f9178f3e3445a3a5b85206f8681b3869562
+Author: Johannes Berg <johannes.berg@intel.com>
+Date:   Mon Mar 29 17:57:20 2010 +0200
+
+    firmware class: export nowait to userspace
+
+> it can determine we're initramfs. The semantics issue is the same
+> though, is there a generic way to determine we're initramfs ? What if
+> we move multiple levels? Anyway -- provided we could figure this out,
+> userspace would simply yield and wait until the real rootfs is met. 
+
+One way or another we have to have this kind of information somewhere.
+I don't actually know how/where though.
+
+> Upon pivot_root() the assumption is all previous udev events pending
+> would be re-triggered and finally udev could finally confirm/deny if
+> the firmware was present.
+
+The retriggering is already the case, as far as I know, if only to load
+modules that weren't part of initramfs.
+
+> note Johannes was asking for *all* async firmware requests to always
+> rely on the kernel syfs UMH fallback -- this suggestion is against
+> the direction we've been taking to eventually compartamentalize the
+> kernel UMH code, so whatever we decide to do, lets please take a
+> breather and seriously address this properly *with* systemd folks.
+
+I was saying that because that's the only way you can actually rely on
+this functionality as a system integrator. If drivers have to opt in or
+can opt out then you'll always end up chasing the drivers around.
+
+My argument basically goes like this:
+
+First, given good drivers (i.e. using request_firmware_nowait())
+putting firmware even for a built-in driver into initramfs or not
+should be a system integrator decision. If they don't need the device
+that early, it should be possible for them to delay it. Or, perhaps, if
+the firmware is too big, etc. I'm sure we can all come up with more
+examples of why you'd want to do it one way or another.
+
+Second, all of this can be solved in other ways by adding logic to the
+kernel, like the rejected proposal to add a "rootfs available" bit
+somewhere, that would cause async requests to behave similarly within
+the kernel (don't return "not found" until they time out or this bit is
+set, and retry loading when the bit gets set)
+
+Third, having this in place can be more friendly to users who play with
+kernel compilation, modules, etc. This is a fringe group in some ways,
+but it is (was?) actually a relatively common complaint that drivers
+built into the kernel wouldn't work - we'd always have to direct users
+to do magic steps like rebuilding initramfs with the right options etc.
+
+johannes
