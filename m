@@ -1,86 +1,41 @@
-From: Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [RFC] fs: add userspace critical mounts event support
-Date: Tue, 15 Nov 2016 10:28:45 +0100
-Message-ID: <1479202125.12007.24.camel@sipsolutions.net>
-References: <CAKMK7uGAacZ5Lc1n5CiCVKgKWMS-H3S=8muD-LO+wQjpGnOdJw@mail.gmail.com>
-         <20160824203901.GT3296@wotan.suse.de>
-         <CAKMK7uEJtEr91SM6V3hZzwMyzTVXJanMtPcWM81RFH_Xyq9KVQ@mail.gmail.com>
-         <20160825194133.GC3296@wotan.suse.de> <20160902235916.GO3296@wotan.suse.de>
-         <20160903002014.GP3296@wotan.suse.de>
-         <6332a54e-74c6-eafd-368e-71e87a3fa34e@landley.net>
-         <20161005180017.GD3296@wotan.suse.de>
-         <CA+55aFzrRekSrEczdtGb3RuOeJttJ7i7dQJxiTOXz8V+kr=hdA@mail.gmail.com>
-         <20161005194633.GE3296@wotan.suse.de>
-         <20161108224726.GD13978@wotan.suse.de>
+From: Wolfgang Ocker <weo@reccoware.de>
+Subject: [PATCH] mxs-auart: count FIFO overrun errors
+Date: Tue, 15 Nov 2016 12:05:29 +0100
+Message-ID: <1479207929.4985.25.camel@reccoware.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20161108224726.GD13978@wotan.suse.de>
-Sender: linux-doc-owner@vger.kernel.org
-To: "Luis R. Rodriguez" <mcgrof@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Jiri Kosina <jkosina@suse.cz>, Jouni Malinen <j@w1.fi>, Seth Forshee <seth.forshee@canonical.com>, Tom Gundersen <teg@jklm.no>, Kay Sievers <kay@vrfy.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Daniel Wagner <wagi@monom.org>, Daniel Wagner <daniel.wagner@bmw-carit.de>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: "Herbert, Marc" <marc.herbert@intel.com>, Daniel Vetter <daniel.vetter@ffwll.ch>, Rob Landley <rob@landley.net>, Mimi Zohar <zohar@linux.vnet.ibm.com>, Felix Fietkau <nbd@nbd.name>, David Woodhouse <dwmw2@infradead.org>, Roman Pen <r.peniaev@gmail.com>, Ming Lei <ming.lei@canonical.com>, Andrew Morton <akpm@linux-foundation.org>, Michal Marek <mmarek@suse.com>, Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Vikram Mulukutla <markivx@codeaurora.org>, Stephen Boyd <stephen.boyd@linaro.org>, Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.de>, Christian Lamparter <chunkeey@googlemail.com>, Hauke Mehrtens <hauke@hauke-m.de>, Josh Boyer <jwboyer@fedoraproject.org>, Dmitry Torokhov <dmitry.>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2016-11-08 at 23:47 +0100, Luis R. Rodriguez wrote:
-
-> This issue still stands. At Plumbers Johannes Berg did indicate to me
-> he had a simple elegant solution in mind. He suggested that since the
-> usermode helper was available, he had added support to be able to
-> differentiate async firmware request calls form sync requests,
-
-For reference:
-
-commit e9045f9178f3e3445a3a5b85206f8681b3869562
-Author: Johannes Berg <johannes.berg@intel.com>
-Date:   Mon Mar 29 17:57:20 2010 +0200
-
-    firmware class: export nowait to userspace
-
-> it can determine we're initramfs. The semantics issue is the same
-> though, is there a generic way to determine we're initramfs ? What if
-> we move multiple levels? Anyway -- provided we could figure this out,
-> userspace would simply yield and wait until the real rootfs is met. 
-
-One way or another we have to have this kind of information somewhere.
-I don't actually know how/where though.
-
-> Upon pivot_root() the assumption is all previous udev events pending
-> would be re-triggered and finally udev could finally confirm/deny if
-> the firmware was present.
-
-The retriggering is already the case, as far as I know, if only to load
-modules that weren't part of initramfs.
-
-> note Johannes was asking for *all* async firmware requests to always
-> rely on the kernel syfs UMH fallback -- this suggestion is against
-> the direction we've been taking to eventually compartamentalize the
-> kernel UMH code, so whatever we decide to do, lets please take a
-> breather and seriously address this properly *with* systemd folks.
-
-I was saying that because that's the only way you can actually rely on
-this functionality as a system integrator. If drivers have to opt in or
-can opt out then you'll always end up chasing the drivers around.
-
-My argument basically goes like this:
-
-First, given good drivers (i.e. using request_firmware_nowait())
-putting firmware even for a built-in driver into initramfs or not
-should be a system integrator decision. If they don't need the device
-that early, it should be possible for them to delay it. Or, perhaps, if
-the firmware is too big, etc. I'm sure we can all come up with more
-examples of why you'd want to do it one way or another.
-
-Second, all of this can be solved in other ways by adding logic to the
-kernel, like the rejected proposal to add a "rootfs available" bit
-somewhere, that would cause async requests to behave similarly within
-the kernel (don't return "not found" until they time out or this bit is
-set, and retry loading when the bit gets set)
-
-Third, having this in place can be more friendly to users who play with
-kernel compilation, modules, etc. This is a fringe group in some ways,
-but it is (was?) actually a relatively common complaint that drivers
-built into the kernel wouldn't work - we'd always have to direct users
-to do magic steps like rebuilding initramfs with the right options etc.
-
-johannes
+VGhlIG14cy1hdWFydCBkcml2ZXIgZG9lcyBub3QgY291bnQgRklGTyBvdmVycnVuIGVycm9ycy4g
+VGhlc2UgZXJyb3JzIG5ldmVyCmFwcGVhciBpbiAvcHJvYy90dHkvZHJpdmVyL3R0eUFQUC4gVGhp
+cyBpcyBiZWNhdXNlIHRoZSBPRVJSIHN0YXR1cyBiaXQgaXMKbWFza2VkIGJ5IHJlYWRfc3RhdHVz
+X21hc2sgaW4gdGhlIHJ4IGludGVycnVwdCBmdW5jdGlvbiwgYnV0IHRoZQpBVUFSVF9TVEFUX09F
+UlIgYml0IGlzIG5ldmVyIHNldCBpbiByZWFkX3N0YXR1c19tYXNrLiBUaGUgcGF0Y2ggZW5hYmxl
+cyB0aGUKY291bnRpbmcgb2Ygb3ZlcnJ1biBlcnJvcnMuCgpTaWduZWQtb2ZmLWJ5OiBXb2xmZ2Fu
+ZyBPY2tlciA8d2VvQHJlY2Nvd2FyZS5kZT4KLS0tCsKgZHJpdmVycy90dHkvc2VyaWFsL214cy1h
+dWFydC5jIHwgMiArLQrCoDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlv
+bigtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9teHMtYXVhcnQuYyBiL2RyaXZl
+cnMvdHR5L3NlcmlhbC9teHMtYXVhcnQuYwppbmRleCA3NzA0NTRlMGRmYTMuLjhjMWM5MTEyYjNm
+ZCAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL214cy1hdWFydC5jCisrKyBiL2RyaXZl
+cnMvdHR5L3NlcmlhbC9teHMtYXVhcnQuYwpAQCAtMTAxNiw3ICsxMDE2LDcgQEAgc3RhdGljIHZv
+aWQgbXhzX2F1YXJ0X3NldHRlcm1pb3Moc3RydWN0IHVhcnRfcG9ydCAqdSwKwqAJCQljdHJsIHw9
+IEFVQVJUX0xJTkVDVFJMX0VQUzsKwqAJfQrCoAotCXUtPnJlYWRfc3RhdHVzX21hc2sgPSAwOwor
+CXUtPnJlYWRfc3RhdHVzX21hc2sgPSBBVUFSVF9TVEFUX09FUlI7CsKgCsKgCWlmICh0ZXJtaW9z
+LT5jX2lmbGFnICYgSU5QQ0spCsKgCQl1LT5yZWFkX3N0YXR1c19tYXNrIHw9IEFVQVJUX1NUQVRf
+UEVSUjsKLS3CoAoyLjEwLjAKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVs
+QGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
