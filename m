@@ -1,49 +1,50 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V5 1/3] ARM64 LPC: Indirect ISA port IO introduced
-Date: Fri, 18 Nov 2016 10:20:49 +0100
-Message-ID: <2436881.9RqUVYxmDf@wuerfel>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <1478806353.7430.137.camel@kernel.crashing.org> <5825984B.3030303@hisilicon.com>
+Subject: Re: [PATCH V5 2/3] ARM64 LPC: Add missing range exception for special
+ ISA
+Date: Fri, 18 Nov 2016 10:22:46 +0100
+Message-ID: <11716372.n451O5j8Vs@wuerfel>
+References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
+ <5900275.i4NZvtxTcC@wuerfel> <20161114111111.1b753dc3@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <5825984B.3030303@hisilicon.com>
-Sender: linux-pci-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20161114111111.1b753dc3@lxorguk.ukuu.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-arm-kernel@lists.infradead.org
-Cc: "zhichang.yuan" <yuanzhichang@hisilicon.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mark Rutland <mark.rutland@arm.com>, gabriele.paoloni@huawei.com, catalin.marinas@arm.com, will.deacon@arm.com, linuxarm@huawei.com, lorenzo.pieralisi@arm.com, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, minyard@acm.org, marc.zyngier@arm.com, liviu.dudau@arm.com, john.garry@huawei.com, zourongrong@gmail.com, robh+dt@kernel.org, bhelgaas@google.com, kantyzc@163.com, zhichang.yuan02@gmail.com, linux-kernel@vger.kernel.org, olof@lixom.net
+Cc: Mark Rutland <mark.rutland@arm.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, catalin.marinas@arm.com, gabriele.paoloni@huawei.com, benh@kernel.crashing.org, will.deacon@arm.com, linuxarm@huawei.com, lorenzo.pieralisi@arm.com, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, minyard@acm.org, marc.zyngier@arm.com, liviu.dudau@arm.com, john.garry@huawei.com, olof@lixom.net, robh+dt@kernel.org, bhelgaas@google.com, kantyzc@163.com, zhichang.yuan02@gmail.com, linux-kernel@vger.kernel.org, "zhichang.yuan" <yuanzhichang@hisilicon.com>, zourongrong@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-On Friday, November 11, 2016 6:07:07 PM CET zhichang.yuan wrote:
+On Monday, November 14, 2016 11:11:11 AM CET One Thousand Gnomes wrote:
+> > > It's not a safe assumption for x86 at least. There are a few systems with
+> > > multiple ISA busses particularly older laptops with a docking station.  
+> > 
+> > But do they have multiple ISA domains? There is no real harm in supporting
+> > it, the (small) downsides I can think of are:
 > 
-> I have similar idea as your PPC MMIO.
+> I don't believe they x86 class ones have multiple ISA domains. But as
+> I've said I don't know how the electronics in the older ThinkPad worked
+> when it used two PIIX4s with some LPC or ISA stuff on each.
 > 
-> We notice the prototype of {in/out()} is something like that:
+> It works in DOS and unmodified Linux so I'm pretty sure there are no
+> additional domains. Likewise the various x86 schemes that route some bits
+> of ISA bus off into strange places work in DOS and don't have any
+> overlaps.
 > 
-> static inline u8 inb(unsigned long addr)
-> static inline void outb(u8 value, unsigned long addr)
-> 
-> The type of parameter 'addr' is unsigned long. For I/O space, it is big enough.
-> So, could you divide this 'addr' into several bit segments? The top 8 bits is
-> defined as bus index. For normal direct IO, the bus index is 0. For those bus
-> device which need indirectIO or some special I/O accessors, when these devices
-> are initializing, can request to allocate an unique ID to them, and register
-> their own accessors to the entry which is corresponding to the ID.
+> yenta_socket handles PCI/PCMCIA bridging and routes a range of that flat
+> ISA space appropriately to the card.
 
-Ah, have you looked at the IA64 code? It does exactly this.
-For ARM64 we decided to use the same basic approach as powerpc with
-a single range of virtual memory for mapping it as that somewhat
-simplified all cases we knew about at the time.
-
-> In this way, we can support multiple domains, I think.
-> But I am not sure whether it is feasible, for example, are there some
-> architectures/platforms had populated the top 8 bits? Do we need to request IO
-> region from ioport_resource for those devices?  etc...
-
-On a 64-bit architecture, the top 32 bits of the port number are
-definitely free to use for this, and 8 bits are probably sufficient.
-
-Even on 32 bit architectures, I can't see why we'd ever need more than
-16 bits worth of addressing within a domain, so using 8 bit domain
-and 16 bit address leaves 8 or 40 unused bits.
+Right, that's what I had expected, so we still don't even
+need to handle multiple ISA I/O address spaces for the
+only known case of multiple ISA buses, though we may decide
+to generalize the code like that anyway.
 
 	Arnd
