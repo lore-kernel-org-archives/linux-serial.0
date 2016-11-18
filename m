@@ -1,92 +1,66 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V5 1/3] ARM64 LPC: Indirect ISA port IO introduced
-Date: Fri, 18 Nov 2016 12:38:49 +0100
-Message-ID: <6279668.zEh0VO1Gaf@wuerfel>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <2436881.9RqUVYxmDf@wuerfel> <582EE223.4090605@hisilicon.com>
+Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
+Date: Fri, 18 Nov 2016 12:46:21 +0100
+Message-ID: <2565107.vdSUAxpRt4@wuerfel>
+References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <17821285.aIcTyCGn5n@wuerfel> <582469C8.9090609@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <582EE223.4090605@hisilicon.com>
-Sender: linux-pci-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <582469C8.9090609@hisilicon.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Cc: linux-arm-kernel@lists.infradead.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mark Rutland <mark.rutland@arm.com>, gabriele.paoloni@huawei.com, catalin.marinas@arm.com, will.deacon@arm.com, linuxarm@huawei.com, lorenzo.pieralisi@arm.com, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, minyard@acm.org, marc.zyngier@arm.com, liviu.dudau@arm.com, john.garry@huawei.com, zourongrong@gmail.com, robh+dt@kernel.org, bhelgaas@google.com, kantyzc@163.com, zhichang.yuan02@gmail.com, linux-kernel@vger.kernel.org, olof@lixom.net
+Cc: linux-arm-kernel@lists.infradead.org, "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, "minyard@acm.org" <minyard@acm.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, John Garry <john.garry@huawei.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "xuwei (O)" <xuwei5@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "kantyzc@163.com" <kantyzc@163.com>"linux-serial@vger.kernel.org" <linux>
 List-Id: linux-serial@vger.kernel.org
 
-On Friday, November 18, 2016 7:12:35 PM CET zhichang.yuan wrote:
-> Hi, Arnd,
+[found this old mail in my drafts folder, might as well send it now]
+
+On Thursday, November 10, 2016 8:36:24 PM CET zhichang.yuan wrote:
+> Sorry! I can't catch your idea yet:(
 > 
-> 
-> On 2016/11/18 17:20, Arnd Bergmann wrote:
-> > On Friday, November 11, 2016 6:07:07 PM CET zhichang.yuan wrote:
-> >>
-> >> I have similar idea as your PPC MMIO.
-> >>
-> >> We notice the prototype of {in/out()} is something like that:
-> >>
-> >> static inline u8 inb(unsigned long addr)
-> >> static inline void outb(u8 value, unsigned long addr)
-> >>
-> >> The type of parameter 'addr' is unsigned long. For I/O space, it is big enough.
-> >> So, could you divide this 'addr' into several bit segments? The top 8 bits is
-> >> defined as bus index. For normal direct IO, the bus index is 0. For those bus
-> >> device which need indirectIO or some special I/O accessors, when these devices
-> >> are initializing, can request to allocate an unique ID to them, and register
-> >> their own accessors to the entry which is corresponding to the ID.
+> When to register the I/O range? Is it done just after the successfully
+> of_translate_address() during the children scanning?
+
+No, you do it when first finding the bus itself, just like we do for
+PCI host bridges.
+
+> If yes, when a child is scanning, there is no range data in arm64_extio_ops. The
+> addr_is_indirect_io() calling in of_get_isa_indirect_io() don't need. All we can
+> check is just whether the address to be translated is IO and is under a parent
+> device which has no 'ranges' property.
+
+The children should only be scanned after the I/O range has been
+registered for the parent.
+
+> > Your current version has
 > > 
-> > Ah, have you looked at the IA64 code? It does exactly this.
-> > For ARM64 we decided to use the same basic approach as powerpc with
-> > a single range of virtual memory for mapping it as that somewhat
-> > simplified all cases we knew about at the time.
-> 
-> Yes. I spent some time to trace how to work on PPC. But the code is a bit long,
-> I am not clear on how the indirectIO there was supported.
-> 
-> I noticed there are CONFIG_PPC_INDIRECT_PIO and CONFIG_PPC_INDIRECT_MMIO on PPC.
-> It seems that only CONFIG_PPC_INDIRECT_MMIO applied some MSB to store the bus
-> tokens which are used to get iowa_busses[] for specific operation helpers.
-> I can not find how CONFIG_PPC_INDIRECT_PIO support multiple ISA domains. It
-> seems only Opal-lpc.c adopt this INDIRECT_PIO method.
-> 
-> Although CONFIG_PPC_INDIRECT_MMIO is for MMIO, seems not suitable for ISA/LPC
-> I/O. But this idea is helpful.
-> 
-> what else did I miss??
-
-I mentioned two different things here: ia64 IIRC uses some bits of the
-port number to look up the domain, while powerpc traditionally had no
-support for any such lookup, it did the same thing as ARM64 with
-virtual remapping of MMIO ranges into an address range starting at
-a fixed virtual address.
-
-CONFIG_PPC_INDIRECT_PIO is a fairly recent addition, I was not thinking
-of that.
-
-> >> In this way, we can support multiple domains, I think.
-> >> But I am not sure whether it is feasible, for example, are there some
-> >> architectures/platforms had populated the top 8 bits? Do we need to request IO
-> >> region from ioport_resource for those devices?  etc...
+> >         if (arm64_extio_ops->pfout)                             \
+> >                 arm64_extio_ops->pfout(arm64_extio_ops->devpara,\
+> >                        addr, value, sizeof(type));             \
 > > 
-> > On a 64-bit architecture, the top 32 bits of the port number are
-> > definitely free to use for this, and 8 bits are probably sufficient.
+> > Instead, just subtract the start of the range from the logical
+> > port number to transform it back into a bus-local port number:
 > > 
-> > Even on 32 bit architectures, I can't see why we'd ever need more than
-> > 16 bits worth of addressing within a domain, so using 8 bit domain
-> > and 16 bit address leaves 8 or 40 unused bits.
+> >         if (arm64_extio_ops->pfout)                             \
+> >                 arm64_extio_ops->pfout(arm64_extio_ops->devpara,\
+> >                        addr - arm64_extio_ops->start, value, sizeof(type)); \
+> > 
+> I think there is some information needed sync.
+> In the old patch-set, we don't bypass the pci_address_to_pio() after
+> successfully of_translate_address(). In this way, we don't need to reserve any
+> PIO space for our LPC since the logical port are from the same mapping
+> algorithm. Based on this way, the port number in the device resource is logical
+> one, then we need to subtract the start of the resource to get back the
+> bus-local port.
 > 
-> Yes. 8 bits are enough.
-> But the maximal PIO on some architectures are defined as ~0 or -1. There is no
-> any bare space left. Probably we can not ensure the upper 8 bits available.
+> From V3, we don't apply the mapping based on pci_address_to_pio(), the
+> of_translate_address() return the bus-local port directly and store into
+> relevant device resource. So, in the current arm64_extio_ops->pfout(), the
+> reverse translation don't need anymore. The input "addr" is bus-local port now.
 
-Right, we clearly can't use it across all architectures. The trick with
-architectures using ULONG_MAX as the limit for port numbers is that they
-treat it as a 1:1 mapping between port numbers and virtual addresses,
-which is yet another way to handle the MMIO-based devices, but that has
-a number of downsides we don't need to get into now.
-
-What I think the code should do is a generic workaround handling that
-architectures can opt-in to. We'd start doing this on ARM64 only,
-and can then decide whether to change ARM or PowerPC over to use
-that as well.
+Ok, so this would have to be changed again: If we want to support multiple
+bus domains, of_translate_address() must translate between the bus specific
+address and the general Linux I/O port number. Even without doing that,
+it seems nicer to not overlap the range of the first PCI host bridge.
 
 	Arnd
