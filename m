@@ -1,94 +1,87 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
-Date: Fri, 18 Nov 2016 11:17:57 +0100
-Message-ID: <2281986.miqFuFkAbO@wuerfel>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <EE11001F9E5DDD47B7634E2F8A612F2E1F90EA45@lhreml507-mbx> <20161114112625.GO10219@e106497-lin.cambridge.arm.com>
+From: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Subject: Re: [PATCH V5 1/3] ARM64 LPC: Indirect ISA port IO introduced
+Date: Fri, 18 Nov 2016 19:12:35 +0800
+Message-ID: <582EE223.4090605@hisilicon.com>
+References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1478806353.7430.137.camel@kernel.crashing.org>
+ <5825984B.3030303@hisilicon.com> <2436881.9RqUVYxmDf@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20161114112625.GO10219-2JSQmVVBSi7ZROr8t4l/smS4ubULX0JqMm0uRHvK7Nw@public.gmane.org>
+In-Reply-To: <2436881.9RqUVYxmDf@wuerfel>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "liviu.dudau-5wv7dgnIgG8@public.gmane.org" <liviu.dudau-5wv7dgnIgG8@public.gmane.org>
-Cc: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Yuanzhichang <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "minyard-HInyCGIudOg@public.gmane.org" <minyard-HInyCGIudOg@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuwei (O)" <xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt@ke>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Monday, November 14, 2016 11:26:25 AM CET liviu.dudau-5wv7dgnIgG8@public.gmane.org wrote:
-> On Mon, Nov 14, 2016 at 08:26:42AM +0000, Gabriele Paoloni wrote:
-> > > Nope, that is not what it means. It means that PCI devices can see I/O
-> > > addresses
-> > > on the bus that start from 0. There never was any usage for non-PCI
-> > > controllers
-> > 
-> > So I am a bit confused...
-> > From http://www.firmware.org/1275/bindings/isa/isa0_4d.ps
-> > It seems that ISA buses operate on cpu I/O address range [0, 0xFFF].
-> > I thought that was the reason why for most architectures we have
-> > PCIBIOS_MIN_IO equal to 0x1000 (so I thought that ISA controllers
-> > usually use [0, PCIBIOS_MIN_IO - 1] )
+Hi, Arnd,
+
+
+On 2016/11/18 17:20, Arnd Bergmann wrote:
+> On Friday, November 11, 2016 6:07:07 PM CET zhichang.yuan wrote:
+>>
+>> I have similar idea as your PPC MMIO.
+>>
+>> We notice the prototype of {in/out()} is something like that:
+>>
+>> static inline u8 inb(unsigned long addr)
+>> static inline void outb(u8 value, unsigned long addr)
+>>
+>> The type of parameter 'addr' is unsigned long. For I/O space, it is big enough.
+>> So, could you divide this 'addr' into several bit segments? The top 8 bits is
+>> defined as bus index. For normal direct IO, the bus index is 0. For those bus
+>> device which need indirectIO or some special I/O accessors, when these devices
+>> are initializing, can request to allocate an unique ID to them, and register
+>> their own accessors to the entry which is corresponding to the ID.
 > 
-> First of all, cpu I/O addresses is an x86-ism. ARM architectures and others
->  have no separate address space for I/O, it is all merged into one unified
-> address space. So, on arm/arm64 for example, PCIBIOS_MIN_IO = 0 could mean
-> that we don't care about ISA I/O because the platform does not support having
-> an ISA bus (e.g.).
+> Ah, have you looked at the IA64 code? It does exactly this.
+> For ARM64 we decided to use the same basic approach as powerpc with
+> a single range of virtual memory for mapping it as that somewhat
+> simplified all cases we knew about at the time.
 
-I think to be more specific, PCIBIOS_MIN_IO=0 would indicate that you cannot
-have a PCI-to-ISA or PCI-to-LPC bridge in any PCI domain. This is different
-from having an LPC master outside of PCI, as that lives in its own domain
-and has a separately addressable I/O space.
+Yes. I spent some time to trace how to work on PPC. But the code is a bit long,
+I am not clear on how the indirectIO there was supported.
 
-> > As said before this series forbid IO tokens to be in [0, PCIBIOS_MIN_IO)
-> > to allow special ISA controllers to use that range with special
-> > accessors.
-> > Having a variable threshold would make life much more difficult
-> > as there would be a probe dependency between the PCI controller and
-> > the special ISA one (PCI to wait for the special ISA device to be
-> > probed and set the right threshold value from DT or ACPI table).
-> > 
-> > Instead using PCIBIOS_MIN_IO is easier and should not impose much
-> > constraint as [PCIBIOS_MIN_IO, IO_SPACE_LIMIT] is available to
-> > the PCI controller for I/O tokens...
+I noticed there are CONFIG_PPC_INDIRECT_PIO and CONFIG_PPC_INDIRECT_MMIO on PPC.
+It seems that only CONFIG_PPC_INDIRECT_MMIO applied some MSB to store the bus
+tokens which are used to get iowa_busses[] for specific operation helpers.
+I can not find how CONFIG_PPC_INDIRECT_PIO support multiple ISA domains. It
+seems only Opal-lpc.c adopt this INDIRECT_PIO method.
+
+Although CONFIG_PPC_INDIRECT_MMIO is for MMIO, seems not suitable for ISA/LPC
+I/O. But this idea is helpful.
+
+what else did I miss??
+
 > 
-> What I am suggesting is to leave PCIBIOS_MIN_IO alone which still reserves
-> space for ISA controller and add a PCIBIOS_MIN_DIRECT_IO that will reserve
-> space for your direct address I/O on top of PCIBIOS_MIN_IO.
+>> In this way, we can support multiple domains, I think.
+>> But I am not sure whether it is feasible, for example, are there some
+>> architectures/platforms had populated the top 8 bits? Do we need to request IO
+>> region from ioport_resource for those devices?  etc...
+> 
+> On a 64-bit architecture, the top 32 bits of the port number are
+> definitely free to use for this, and 8 bits are probably sufficient.
+> 
+> Even on 32 bit architectures, I can't see why we'd ever need more than
+> 16 bits worth of addressing within a domain, so using 8 bit domain
+> and 16 bit address leaves 8 or 40 unused bits.
 
-The PCIBIOS_MIN_DIRECT_IO name still suggests having something related to
-PCIBIOS_MIN_IO, but it really isn't. We are talking about multiple
-concepts here that are not the same but that are somewhat related:
+Yes. 8 bits are enough.
+But the maximal PIO on some architectures are defined as ~0 or -1. There is no
+any bare space left. Probably we can not ensure the upper 8 bits available.
 
-a) keeping PCI devices from allocating low I/O ports on the PCI bus
-   that would conflict with ISA devices behind a bridge of the
-   same bus.
 
-b) reserving the low 0x0-0xfff range of the Linux-internal I/O
-   space abstraction to a particular LPC or PCI domain to make
-   legacy device drivers work that hardcode a particular port
-   number.
+Thanks,
+Zhichang
 
-c) Redirecting inb/outb to call a domain-specific accessor function
-   rather than doing the normal MMIO window for an LPC master or
-   more generally any arbitrary LPC or PCI domain that has a
-   nonstandard I/O space. 
-   [side note: actually if we generalized this, we could avoid
-    assigning an MMIO range for the I/O space on the pci-mvebu
-    driver, and that would help free up some other remapping
-    windows]
 
-I think there is no need to change a) here, we have PCIBIOS_MIN_IO
-today and even if we don't need it, there is no obvious downside.
-I would also argue that we can ignore b) for the discussion of
-the HiSilicon LPC driver, we just need to assign some range
-of logical addresses to each domain.
+> 
+> 	Arnd
+> 
+> .
+> 
 
-That means solving c) is the important problem here, and it
-shouldn't be so hard.  We can do this either with a single
-special domain as in the v5 patch series, or by generalizing it
-so that any I/O space mapping gets looked up through the device
-pointer of the bus master.
-
-	Arnd
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
