@@ -1,62 +1,57 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: serial: imx: regression triggered by newly introduced DSR irq
- handling
-Date: Mon, 21 Nov 2016 12:07:13 +0100
-Message-ID: <20161121110713.prjwxrvh66bztvbe@pengutronix.de>
-References: <1458825865-7434-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <1458825865-7434-7-git-send-email-u.kleine-koenig@pengutronix.de>
- <1470350663.26773.41.camel@googlemail.com>
- <20160805065845.GI17874@pengutronix.de>
- <1479726011.2807.11.camel@googlemail.com>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH V5 1/3] ARM64 LPC: Indirect ISA port IO introduced
+Date: Mon, 21 Nov 2016 12:58:28 +0000
+Message-ID: <79d73f93-1cf8-19db-ca5c-8fb6257edd6c@huawei.com>
+References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1478576829-112707-2-git-send-email-yuanzhichang@hisilicon.com>
+ <20161108120323.GC15297@leverpostej>
+ <1478647002.7430.69.camel@kernel.crashing.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1479726011.2807.11.camel@googlemail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Christoph Fritz <chf.fritz@googlemail.com>
-Cc: Martin Fuzzey <mfuzzey@parkeon.com>, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1478647002.7430.69.camel@kernel.crashing.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mark Rutland <mark.rutland@arm.com>, "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Cc: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, bhelgaas@google.com, olof@lixom.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, lorenzo.pieralisi@arm.com, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, marc.zyngier@arm.com
 List-Id: linux-serial@vger.kernel.org
 
-Hello Christoph,
+On 08/11/2016 23:16, Benjamin Herrenschmidt wrote:
+> On Tue, 2016-11-08 at 12:03 +0000, Mark Rutland wrote:
+>> On Tue, Nov 08, 2016 at 11:47:07AM +0800, zhichang.yuan wrote:
+>>>
+>>> For arm64, there is no I/O space as other architectural platforms, such as
+>>> X86. Most I/O accesses are achieved based on MMIO. But for some arm64 SoCs,
+>>> such as Hip06, when accessing some legacy ISA devices connected to LPC, those
+>>> known port addresses are used to control the corresponding target devices, for
+>>> example, 0x2f8 is for UART, 0xe4 is for ipmi-bt. It is different from the
+>>> normal MMIO mode in using.
+>>
+>> This has nothing to do with arm64. Hardware with this kind of indirect
+>> bus access could be integrated with a variety of CPU architectures. It
+>> simply hasn't been, yet.
+>
+> On some ppc's we also use similar indirect access methods for IOs. We
+> have a generic infrastructure for re-routing some memory or IO regions
+> to hooks.
+>
+> On POWER8, our PCIe doesn't do IO at all, but we have an LPC bus behind
+> firmware calls ;-) We use that infrastructure to plumb in the LPC bus.
+>
+Hi,
 
-On Mon, Nov 21, 2016 at 12:00:11PM +0100, Christoph Fritz wrote:
-> On Fri, 2016-08-05 at 08:58 +0200, Uwe Kleine-K=F6nig wrote:
-> > Once this is done (and still an issue)
-> =
+I would like to mention another topic on supporting LPC, and this is 
+regard to eSPI support.
+eSPI is seen as the successor for LPC, and some BMCs already support it.
 
-> Yes, patch b5ca028fe9ba2090a (ARM: dts: imx6sx: document SION necessity
-> of ENET1_REF_CLK1) is done and mainline and DSR irq handling is still an
-> issue.
-> =
+I had a chat with Arnd on this, and the idea to model LPC as a SPI bus 
+adpater (and also eSPI).
 
-> >  I'd suggest to standardize a dt
-> > property
-> > =
+However it seems to me that most platforms will/should support eSPI as a 
+transparent bridge, same as LPC on x86. So I don't think that this is 
+much point in modelling LPC/eSPI as a bus.
 
-> > 	disable-dsr;
-> =
+So we shall continue with indriect-IO support...
 
-> Would you go forward?
-
-Currently I don't have the need and time to do this myself. So if you
-want to propose a patch and send if for review to the dt and serial MLs
-that would be a good next step. If you add me to Cc (or To) I can take a
-look.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Thanks,
+John
