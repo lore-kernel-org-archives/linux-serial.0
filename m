@@ -1,57 +1,57 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH V5 1/3] ARM64 LPC: Indirect ISA port IO introduced
-Date: Mon, 21 Nov 2016 12:58:28 +0000
-Message-ID: <79d73f93-1cf8-19db-ca5c-8fb6257edd6c@huawei.com>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
- <1478576829-112707-2-git-send-email-yuanzhichang@hisilicon.com>
- <20161108120323.GC15297@leverpostej>
- <1478647002.7430.69.camel@kernel.crashing.org>
+From: Nathan Zimmer <nzimmer@sgi.com>
+Subject: Re: console issue since 3.6, console=ttyS1 hangs
+Date: Tue, 22 Nov 2016 09:30:52 -0600
+Message-ID: <52b88ea1-2aa2-3b1d-5f97-7cec25665256@sgi.com>
+References: <20161024135235.GA29984@gofer.mess.org>
+ <20161024214925.GA143272@stormcage.americas.sgi.com>
+ <20161025204139.GA22268@gofer.mess.org>
+ <fb8f3b77-6095-c14b-02e8-deb595777f23@sgi.com>
+ <20161027201916.GA7718@gofer.mess.org>
+ <c73bc50a-51fb-78db-b872-277af3fb06bc@sgi.com>
+ <20161031202706.GA10263@gofer.mess.org>
+ <CAKU3ayXn4y+_Amu0FzL5ZhF2W8vFuEb0RR8b2hTBZ6rd+YZMqg@mail.gmail.com>
+ <20161102152951.GA107664@stormcage.americas.sgi.com>
+ <CAKU3ayVEsv0Qpk7AU9NwbAX5nOBkHVaj0SA2QnYFuHCQSWjv7A@mail.gmail.com>
+ <20161104213348.GA30383@stormcage.americas.sgi.com>
+ <CAKU3ayWH9najj+Gpw8Zmpxgq40s8J_dXAyo9oBbbdG55brO6Sw@mail.gmail.com>
+ <alpine.LFD.2.20.1611052336380.17811@eddie.linux-mips.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1478647002.7430.69.camel@kernel.crashing.org>
+In-Reply-To: <alpine.LFD.2.20.1611052336380.17811@eddie.linux-mips.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mark Rutland <mark.rutland@arm.com>, "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Cc: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, bhelgaas@google.com, olof@lixom.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, lorenzo.pieralisi@arm.com, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, marc.zyngier@arm.com
+To: "Maciej W. Rozycki" <macro@linux-mips.org>, Peter Hurley <peter@hurleysoftware.com>
+Cc: Sean Young <sean@mess.org>, Linux kernel mailing list <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <alan@linux.intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 08/11/2016 23:16, Benjamin Herrenschmidt wrote:
-> On Tue, 2016-11-08 at 12:03 +0000, Mark Rutland wrote:
->> On Tue, Nov 08, 2016 at 11:47:07AM +0800, zhichang.yuan wrote:
->>>
->>> For arm64, there is no I/O space as other architectural platforms, such as
->>> X86. Most I/O accesses are achieved based on MMIO. But for some arm64 SoCs,
->>> such as Hip06, when accessing some legacy ISA devices connected to LPC, those
->>> known port addresses are used to control the corresponding target devices, for
->>> example, 0x2f8 is for UART, 0xe4 is for ipmi-bt. It is different from the
->>> normal MMIO mode in using.
+
+
+On 11/05/2016 06:44 PM, Maciej W. Rozycki wrote:
+> On Fri, 4 Nov 2016, Peter Hurley wrote:
+>
+>>> These bios screens do not have any mention of PNP settings.
+>>> I am getting output over the console (via ipmi) until the boot hangs.
+>> Yeah, probably the device actually decodes io address access anyway,
+>> but in the disabled state probably has not routed IRQ.
 >>
->> This has nothing to do with arm64. Hardware with this kind of indirect
->> bus access could be integrated with a variety of CPU architectures. It
->> simply hasn't been, yet.
+>> I have no idea how to help you with the bios, sorry.
+>   I'd look out for serial port, Super-I/O or COM1 port (which is how PC-DOS
+> named the device some 35 years ago) settings rather than anything to do
+> with PNP.  Typically you'd be able to choose from a few classic combined
+> I/O space address and IRQ assignments in addition to a `Disabled' setting.
 >
-> On some ppc's we also use similar indirect access methods for IOs. We
-> have a generic infrastructure for re-routing some memory or IO regions
-> to hooks.
+>   There might be a genuine BIOS bug there as well of course as serial ports
+> seem to be less used these days and the issue may have escaped validation.
 >
-> On POWER8, our PCIe doesn't do IO at all, but we have an LPC bus behind
-> firmware calls ;-) We use that infrastructure to plumb in the LPC bus.
->
-Hi,
+>    Maciej
 
-I would like to mention another topic on supporting LPC, and this is 
-regard to eSPI support.
-eSPI is seen as the successor for LPC, and some BMCs already support it.
+After getting back to this after some other hot issues came up I am sure 
+there is a bios bug, comparing acpidump of this box to other boxes 
+really makes it obvious.
 
-I had a chat with Arnd on this, and the idea to model LPC as a SPI bus 
-adpater (and also eSPI).
+I found pnpacpi=off allows me to boot fine and get console traffic.
+However I was hoping to find something that cast a little narrower net.
 
-However it seems to me that most platforms will/should support eSPI as a 
-transparent bridge, same as LPC on x86. So I don't think that this is 
-much point in modelling LPC/eSPI as a bus.
 
-So we shall continue with indriect-IO support...
-
-Thanks,
-John
+Nate
