@@ -1,85 +1,100 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 1/4] serial: core: Add LED trigger support
-Date: Wed, 23 Nov 2016 11:18:27 +0100
-Message-ID: <20161123101827.5c3n5mrezyyw2us3@pengutronix.de>
-References: <20161123100106.15969-1-s.hauer@pengutronix.de>
- <20161123100106.15969-2-s.hauer@pengutronix.de>
- <20161123100819.GA20137@kroah.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
+Date: Wed, 23 Nov 2016 15:16:07 +0100
+Message-ID: <2359248.XjnRfPbj1B@wuerfel>
+References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <2364530.A9QSbaqvfm@wuerfel> <EE11001F9E5DDD47B7634E2F8A612F2E1F921A0F@lhreml507-mbx>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20161123100819.GA20137@kroah.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, kernel@pengutronix.de
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F921A0F@lhreml507-mbx>
+Sender: linux-pci-owner@vger.kernel.org
+To: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "liviu.dudau@arm.com" <liviu.dudau@arm.com>, Linuxarm <linuxarm@huawei.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "xuwei (O)" <xuwei5@hisilicon.com>, Jason Gunthorpe <jgunthorpe@obsidianresearch.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "minyard@acm.org" <minyard@acm.org>, "will.deacon@arm.com" <will.deacon@arm.com>, John Garry <john.garry@huawei.com>, zourongrong@gm
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 23, 2016 at 11:08:19AM +0100, Greg Kroah-Hartman wrote:
-> On Wed, Nov 23, 2016 at 11:01:03AM +0100, Sascha Hauer wrote:
-> > With this patch the serial core provides LED triggers for RX and TX.
+On Friday, November 18, 2016 5:03:11 PM CET Gabriele Paoloni wrote:
+> > On Friday, November 18, 2016 4:18:07 PM CET Gabriele Paoloni wrote:
+> > > From: Arnd Bergmann [mailto:arnd@arndb.de]
+> > > > On Friday, November 18, 2016 12:53:08 PM CET Gabriele Paoloni
+> > wrote:
+> > > > For the ISA/LPC spaces there are only 4k of addresses, they
+> > > > the bus addresses always overlap, but we can trivially
+> > > > figure out the bus address from Linux I/O port number
+> > > > by subtracting the start of the range.
+> > >
+> > > Are you saying that our LPC controller should specify a
+> > > range property to map bus addresses into a cpu address range?
 > > 
-> > As the serial core layer does not know when the hardware actually sends
-> > or receives characters, this needs help from the UART drivers. The
-> > LED triggers are registered in uart_add_led_triggers() called from
-> > the UART drivers which want to support LED triggers. All the driver
-> > has to do then is to call uart_led_trigger_[tx|rx] to indicate
-> > activity.
+> > No. There is not CPU address associated with it, because it's
+> > not memory mapped.
 > > 
-> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> > ---
-> >  drivers/tty/serial/serial_core.c | 73 ++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/serial_core.h      | 10 ++++++
-> >  2 files changed, 83 insertions(+)
-> > 
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> > index f2303f3..3e8afb7 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -34,6 +34,7 @@
-> >  #include <linux/serial_core.h>
-> >  #include <linux/delay.h>
-> >  #include <linux/mutex.h>
-> > +#include <linux/leds.h>
-> >  
-> >  #include <asm/irq.h>
-> >  #include <asm/uaccess.h>
-> > @@ -2703,6 +2704,77 @@ static const struct attribute_group tty_dev_attr_group = {
-> >  	.attrs = tty_dev_attrs,
-> >  	};
-> >  
-> > +void uart_led_trigger_tx(struct uart_port *uport)
-> > +{
-> > +	unsigned long delay = 50;
-> > +
-> > +	led_trigger_blink_oneshot(uport->led_trigger_tx, &delay, &delay, 0);
-> > +}
-> > +
-> > +void uart_led_trigger_rx(struct uart_port *uport)
-> > +{
-> > +	unsigned long delay = 50;
-> > +
-> > +	led_trigger_blink_oneshot(uport->led_trigger_rx, &delay, &delay, 0);
-> > +}
+> > Instead, we need to associate a bus address with a logical
+> > Linux port number, both in of_address_to_resource and
+> > in inb()/outb().
 > 
-> Don't these functions need an EXPORT_SYMBOL_GPL() to work properly with
-> uart drivers being built as a module?
+> I think this is effectively what we are doing so far with patch 2/3.
+> The problem with this patch is that we are carving out a "forbidden"
+> IO tokens range that goes from 0 to PCIBIOS_MIN_IO.
+> 
+> I think that the proper solution would be to have the LPC driver to
+> set the carveout threshold used in pci_register_io_range(), 
+> pci_pio_to_address(), pci_address_to_pio(), but this would impose
+> a probe dependency on the LPC itself that should be probed before
+> the PCI controller (or before any other devices calling these
+> functions...)
 
-Yes, for sure. Will fix in next version.
+Why do you think the order matters? My point was that we should
+be able to register any region of logical port numbers for any
+bus here.
 
-Sascha
 
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+> > > > > To be honest with you I would keep things simple for this
+> > > > > LPC and introduce more complex reworks later if more devices
+> > > > > need to be introduced.
+> > > > >
+> > > > > What if we stick on a single domain now where we introduce a
+> > > > > reserved threshold for the IO space (say INDIRECT_MAX_IO).
+> > > >
+> > > > I said having a single domain is fine, but I still don't
+> > > > like the idea of reserving low port numbers for this hack,
+> > > > it would mean that the numbers change for everyone else.
+> > >
+> > > I don't get this much...I/O tokens that are passed to the I/O
+> > > accessors are not fixed anyway and they vary depending on the order
+> > > of adding ranges to io_range_list...so I don't see a big issue
+> > > with this...
+> > 
+> > On machines with a legacy devices behind the PCI bridge,
+> > there may still be a reason to have the low I/O port range
+> > reserved for the primary bus, e.g. to get a VGA text console
+> > to work.
+> > 
+> > On powerpc, this is called the "primary" PCI host, i.e. the
+> > only one that is allowed to have an ISA bridge.
+> 
+> Yes but
+> 1) isn't the PCI controller range property that defines how IO bus address
+>    map into physical CPU addresses?
+
+Correct, but the DT knows nothing about logical port numbers in Linux.
+
+> 2) How can you guarantee that the cpu range associated with this
+>    IO bus range is the first to be registered in pci_register_io_range()?
+>    ( i.e. are you saying that they are just relying on the fact that it is the
+>      only IO range in the system and by chance the IO tokens and corresponding
+>      bus addresses are the same? )
+
+To clarify: the special properties of having the first 0x1000 logical
+port numbers go to a particular physical bus are very obscure. I think
+it's more important to not change the behavior for existing systems
+that might rely on it than for new systems that have no such legacy.
+
+The ipmi and uart drivers in particular will get the port numbers filled
+in their platform device from the DT bus scanning, so they don't care
+at all about having the same numeric value for port numbers on the bus
+and logical numbers, but other drivers might rely on particular ports
+to be mapped on a specific PCI host, especially when those drivers
+are  used only on systems that don't have more than one PCI domain.
+
+	Arnd
