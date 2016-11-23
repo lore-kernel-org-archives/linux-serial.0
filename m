@@ -1,174 +1,97 @@
-From: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Subject: RE: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
-Date: Wed, 23 Nov 2016 15:22:33 +0000
-Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F931E08@lhreml507-mbx>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
- <2364530.A9QSbaqvfm@wuerfel>
- <EE11001F9E5DDD47B7634E2F8A612F2E1F921A0F@lhreml507-mbx>
- <2359248.XjnRfPbj1B@wuerfel>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
+Date: Wed, 23 Nov 2016 18:07:11 +0100
+Message-ID: <2168980.T3HadihU3R@wuerfel>
+References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <2359248.XjnRfPbj1B@wuerfel> <EE11001F9E5DDD47B7634E2F8A612F2E1F931E08@lhreml507-mbx>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <2359248.XjnRfPbj1B@wuerfel>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "liviu.dudau@arm.com" <liviu.dudau@arm.com>, Linuxarm <linuxarm@huawei.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "xuwei (O)" <xuwei5@hisilicon.com>, Jason Gunthorpe <jgunthorpe@obsidianresearch.com>, T homas Petazzoni <thomas.petazzo.ni@free-electrons.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "minyard@acm.org" <minyard@acm.org>, "will.deacon@arm.com" <will.deacon@arm.com>, John Garry <john.garry@huawei.com>, "olof@lixom.net" <olof@lixom.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@go og le.com" <bhelgaas@google.com>, "kantyzc@163.com" <kan>
+Content-Transfer-Encoding: 7Bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F931E08@lhreml507-mbx>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "liviu.dudau-5wv7dgnIgG8@public.gmane.org" <liviu.dudau-5wv7dgnIgG8@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "xuwei (O)" <xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Jason Gunthorpe <jgunthorpe-ePGOBjL8dl3ta4EC/59zMFaTQe2KTcn/@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "minyard-HInyCGIudOg@public.gmane.org" <minyard-HInyCGIudOg@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, zourongrong@gm
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd
+On Wednesday, November 23, 2016 3:22:33 PM CET Gabriele Paoloni wrote:
+> From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
+> > On Friday, November 18, 2016 5:03:11 PM CET Gabriele Paoloni wrote:
 
-> -----Original Message-----
-> From: Arnd Bergmann [mailto:arnd@arndb.de]
-> Sent: 23 November 2016 14:16
-> To: Gabriele Paoloni
-> Cc: linux-arm-kernel@lists.infradead.org; mark.rutland@arm.com;
-> benh@kernel.crashing.org; catalin.marinas@arm.com; liviu.dudau@arm.com;
-> Linuxarm; lorenzo.pieralisi@arm.com; xuwei (O); Jason Gunthorpe; linux-
-> serial@vger.kernel.org; linux-pci@vger.kernel.org;
-> devicetree@vger.kernel.org; minyard@acm.org; will.deacon@arm.com; John
-> Garry; zourongrong@gmail.com; robh+dt@kernel.org; bhelgaas@go og
-> le.com; kantyzc@163.com; zhichang.yuan02@gmail.com; T homas Petazzoni;
-> linux-kernel@vger.kernel.org; Yuanzhichang; olof@lixom.net
-> Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on
-> Hip06
-> 
-> On Friday, November 18, 2016 5:03:11 PM CET Gabriele Paoloni wrote:
-> > > On Friday, November 18, 2016 4:18:07 PM CET Gabriele Paoloni wrote:
-> > > > From: Arnd Bergmann [mailto:arnd@arndb.de]
-> > > > > On Friday, November 18, 2016 12:53:08 PM CET Gabriele Paoloni
-> > > wrote:
-> > > > > For the ISA/LPC spaces there are only 4k of addresses, they
-> > > > > the bus addresses always overlap, but we can trivially
-> > > > > figure out the bus address from Linux I/O port number
-> > > > > by subtracting the start of the range.
-> > > >
-> > > > Are you saying that our LPC controller should specify a
-> > > > range property to map bus addresses into a cpu address range?
+> > > I think this is effectively what we are doing so far with patch 2/3.
+> > > The problem with this patch is that we are carving out a "forbidden"
+> > > IO tokens range that goes from 0 to PCIBIOS_MIN_IO.
 > > >
-> > > No. There is not CPU address associated with it, because it's
-> > > not memory mapped.
-> > >
-> > > Instead, we need to associate a bus address with a logical
-> > > Linux port number, both in of_address_to_resource and
-> > > in inb()/outb().
-> >
-> > I think this is effectively what we are doing so far with patch 2/3.
-> > The problem with this patch is that we are carving out a "forbidden"
-> > IO tokens range that goes from 0 to PCIBIOS_MIN_IO.
-> >
-> > I think that the proper solution would be to have the LPC driver to
-> > set the carveout threshold used in pci_register_io_range(),
-> > pci_pio_to_address(), pci_address_to_pio(), but this would impose
-> > a probe dependency on the LPC itself that should be probed before
-> > the PCI controller (or before any other devices calling these
-> > functions...)
+> > > I think that the proper solution would be to have the LPC driver to
+> > > set the carveout threshold used in pci_register_io_range(),
+> > > pci_pio_to_address(), pci_address_to_pio(), but this would impose
+> > > a probe dependency on the LPC itself that should be probed before
+> > > the PCI controller (or before any other devices calling these
+> > > functions...)
+> > 
+> > Why do you think the order matters? My point was that we should
+> > be able to register any region of logical port numbers for any
+> > bus here.
 > 
-> Why do you think the order matters? My point was that we should
-> be able to register any region of logical port numbers for any
-> bus here.
-
-Maybe I have not followed well so let's roll back to your previous
-comment...
-
-"we need to associate a bus address with a logical Linux port number,
-both in of_address_to_resource and in inb()/outb()"
-
-Actually of_address_to_resource() returns the port number to used
-in inb/outb(); inb() and outb() add the port number to PCI_IOBASE
-to rd/wr to the right virtual address.
-
-Our LPC cannot operate on the virtual address and it operates on
-a bus address range that for LPC is also equal to the cpu address
-range and goes from 0 to 0x1000.
-
-Now as I understand it is risky and not appropriate to reserve
-the logical port numbers from 0 to 0x1000 or to whatever other
-upper bound because existing systems may rely on these port numbers
-retrieved by __of_address_to_resource().
-
-In this scenario I think the best thing to do would be
-in the probe function of the LPC driver:
-1) call pci_register_io_range() passing [0, 0x1000] (that is the
-   range for LPC)
-2) retrieve the logical port numbers associated to the LPC range
-   by calling pci_address_to_pio() for 0 and 0x1000 and assign
-   them to extio_ops_node->start and extio_ops_node->end
-3) implement the LPC accessors to operate on the logical ports
-   associated to the LPC range (in practice in the accessors
-   implementation we will call pci_pio_to_address to retrieve
-   the cpu address to operate on)
-
-What do you think?
-
-Thanks
-
-Gab
-
-
+> Maybe I have not followed well so let's roll back to your previous
+> comment...
 > 
->
-> > > > > > To be honest with you I would keep things simple for this
-> > > > > > LPC and introduce more complex reworks later if more devices
-> > > > > > need to be introduced.
-> > > > > >
-> > > > > > What if we stick on a single domain now where we introduce a
-> > > > > > reserved threshold for the IO space (say INDIRECT_MAX_IO).
-> > > > >
-> > > > > I said having a single domain is fine, but I still don't
-> > > > > like the idea of reserving low port numbers for this hack,
-> > > > > it would mean that the numbers change for everyone else.
-> > > >
-> > > > I don't get this much...I/O tokens that are passed to the I/O
-> > > > accessors are not fixed anyway and they vary depending on the
-> order
-> > > > of adding ranges to io_range_list...so I don't see a big issue
-> > > > with this...
-> > >
-> > > On machines with a legacy devices behind the PCI bridge,
-> > > there may still be a reason to have the low I/O port range
-> > > reserved for the primary bus, e.g. to get a VGA text console
-> > > to work.
-> > >
-> > > On powerpc, this is called the "primary" PCI host, i.e. the
-> > > only one that is allowed to have an ISA bridge.
-> >
-> > Yes but
-> > 1) isn't the PCI controller range property that defines how IO bus
-> address
-> >    map into physical CPU addresses?
+> "we need to associate a bus address with a logical Linux port number,
+> both in of_address_to_resource and in inb()/outb()"
 > 
-> Correct, but the DT knows nothing about logical port numbers in Linux.
-> 
-> > 2) How can you guarantee that the cpu range associated with this
-> >    IO bus range is the first to be registered in
-> pci_register_io_range()?
-> >    ( i.e. are you saying that they are just relying on the fact that
-> it is the
-> >      only IO range in the system and by chance the IO tokens and
-> corresponding
-> >      bus addresses are the same? )
-> 
-> To clarify: the special properties of having the first 0x1000 logical
-> port numbers go to a particular physical bus are very obscure. I think
-> it's more important to not change the behavior for existing systems
-> that might rely on it than for new systems that have no such legacy.
-> 
-> The ipmi and uart drivers in particular will get the port numbers
-> filled
-> in their platform device from the DT bus scanning, so they don't care
-> at all about having the same numeric value for port numbers on the bus
-> and logical numbers, but other drivers might rely on particular ports
-> to be mapped on a specific PCI host, especially when those drivers
-> are  used only on systems that don't have more than one PCI domain.
-> 
-> 	Arnd
+> Actually of_address_to_resource() returns the port number to used
+> in inb/outb(); inb() and outb() add the port number to PCI_IOBASE
+> to rd/wr to the right virtual address.
+
+Correct.
+
+> Our LPC cannot operate on the virtual address and it operates on
+> a bus address range that for LPC is also equal to the cpu address
+> range and goes from 0 to 0x1000.
+
+There is no "cpu address" here, otherwise this is correct.
+
+> Now as I understand it is risky and not appropriate to reserve
+> the logical port numbers from 0 to 0x1000 or to whatever other
+> upper bound because existing systems may rely on these port numbers
+> retrieved by __of_address_to_resource().
+
+Right again.
+
+> In this scenario I think the best thing to do would be
+> in the probe function of the LPC driver:
+> 1) call pci_register_io_range() passing [0, 0x1000] (that is the
+>    range for LPC)
+
+pci_register_io_range() takes a physical address, not a port number,
+so that would not be appropriate as you say above. We can however
+add a variant that reserves a range of port numbers in io_range_list
+for an indirect access method.
+
+> 2) retrieve the logical port numbers associated to the LPC range
+>    by calling pci_address_to_pio() for 0 and 0x1000 and assign
+>    them to extio_ops_node->start and extio_ops_node->end
+
+Again, calling pci_address_to_pio() doesn't seem right here, because
+we don't have a phys_addr_t address
+
+> 3) implement the LPC accessors to operate on the logical ports
+>    associated to the LPC range (in practice in the accessors
+>    implementation we will call pci_pio_to_address to retrieve
+>    the cpu address to operate on)
+
+Please don't proliferate the use of
+pci_pio_to_address/pci_address_to_pio here, computing the physical
+address from the logical address is trivial, you just need to
+subtract the start of the range that you already use when matching
+the port number range.
+
+The only thing we need here is to make of_address_to_resource()
+return the correct logical port number that was registered for
+a given host device when asked to translate an address that
+does not have a CPU address associated with it.
+
+	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
