@@ -1,95 +1,99 @@
 From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH 2/4] serial: 8250: Add LED trigger support
-Date: Wed, 23 Nov 2016 11:01:04 +0100
-Message-ID: <20161123100106.15969-3-s.hauer@pengutronix.de>
+Subject: [PATCH 4/4] serial: imx: Add LED trigger support
+Date: Wed, 23 Nov 2016 11:01:06 +0100
+Message-ID: <20161123100106.15969-5-s.hauer@pengutronix.de>
 References: <20161123100106.15969-1-s.hauer@pengutronix.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20161123100106.15969-1-s.hauer@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Sascha Hauer <s.hauer@pengutronix.de>
+Cc: kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
 Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 ---
- drivers/tty/serial/8250/8250_core.c | 12 ++++++++++--
- drivers/tty/serial/8250/8250_port.c |  4 ++++
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ drivers/tty/serial/imx.c | 24 ++++++++++++++++++++++--
+ 1 file changed, 22 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 240a361..bbcd2539 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -581,6 +581,7 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
- 			up->port.flags |= UPF_NO_TXEN_TEST;
- 
- 		uart_add_one_port(drv, &up->port);
-+		uart_add_led_triggers(drv, &up->port);
- 	}
- }
- 
-@@ -974,8 +975,10 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
- 
- 	uart = serial8250_find_match_or_unused(&up->port);
- 	if (uart && uart->port.type != PORT_8250_CIR) {
--		if (uart->port.dev)
-+		if (uart->port.dev) {
- 			uart_remove_one_port(&serial8250_reg, &uart->port);
-+			uart_remove_led_triggers(&uart->port);
-+		}
- 
- 		uart->port.iobase       = up->port.iobase;
- 		uart->port.membase      = up->port.membase;
-@@ -1047,8 +1050,11 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
- 
- 			ret = uart_add_one_port(&serial8250_reg,
- 						&uart->port);
--			if (ret == 0)
-+			if (ret == 0) {
-+				uart_add_led_triggers(&serial8250_reg,
-+						&uart->port);
- 				ret = uart->port.line;
-+			}
- 		} else {
- 			dev_info(uart->port.dev,
- 				"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
-@@ -1087,6 +1093,7 @@ void serial8250_unregister_port(int line)
- 	}
- 
- 	uart_remove_one_port(&serial8250_reg, &uart->port);
-+	uart_remove_led_triggers(&uart->port);
- 	if (serial8250_isa_devs) {
- 		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
- 		if (skip_txen_test)
-@@ -1095,6 +1102,7 @@ void serial8250_unregister_port(int line)
- 		uart->port.dev = &serial8250_isa_devs->dev;
- 		uart->capabilities = 0;
- 		uart_add_one_port(&serial8250_reg, &uart->port);
-+		uart_add_led_triggers(&serial8250_reg, &uart->port);
- 	} else {
- 		uart->port.dev = NULL;
- 	}
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 1731b98..c301ec1 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1703,6 +1703,8 @@ unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr)
- 	struct uart_port *port = &up->port;
- 	int max_count = 256;
- 
-+	uart_led_trigger_rx(port);
-+
- 	do {
- 		serial8250_read_char(up, lsr);
- 		if (--max_count == 0)
-@@ -1736,6 +1738,8 @@ void serial8250_tx_chars(struct uart_8250_port *up)
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index a70356d..5eaf576 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -444,6 +444,8 @@ static inline void imx_transmit_buffer(struct imx_port *sport)
  		return;
  	}
  
-+	uart_led_trigger_tx(port);
++	uart_led_trigger_tx(&sport->port);
 +
- 	count = up->tx_loadsz;
- 	do {
- 		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
+ 	if (sport->dma_is_enabled) {
+ 		/*
+ 		 * We've just sent a X-char Ensure the TX DMA is enabled
+@@ -569,6 +571,7 @@ static void imx_dma_tx(struct imx_port *sport)
+ 	/* fire it */
+ 	sport->dma_is_txing = 1;
+ 	dmaengine_submit(desc);
++	uart_led_trigger_tx(&sport->port);
+ 	dma_async_issue_pending(chan);
+ 	return;
+ }
+@@ -655,6 +658,8 @@ static irqreturn_t imx_rxint(int irq, void *dev_id)
+ 	struct tty_port *port = &sport->port.state->port;
+ 	unsigned long flags, temp;
+ 
++	uart_led_trigger_rx(&sport->port);
++
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	while (readl(sport->port.membase + USR2) & USR2_RDR) {
+@@ -729,6 +734,8 @@ static void imx_dma_rxint(struct imx_port *sport)
+ 	unsigned long temp;
+ 	unsigned long flags;
+ 
++	uart_led_trigger_rx(&sport->port);
++
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	temp = readl(sport->port.membase + USR2);
+@@ -2184,14 +2191,27 @@ static int serial_imx_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, sport);
+ 
+-	return uart_add_one_port(&imx_reg, &sport->port);
++	ret = uart_add_one_port(&imx_reg, &sport->port);
++	if (ret)
++		return ret;
++
++	uart_add_led_triggers(&imx_reg, &sport->port);
++
++	return 0;
+ }
+ 
+ static int serial_imx_remove(struct platform_device *pdev)
+ {
+ 	struct imx_port *sport = platform_get_drvdata(pdev);
++	int ret;
+ 
+-	return uart_remove_one_port(&imx_reg, &sport->port);
++	ret = uart_remove_one_port(&imx_reg, &sport->port);
++	if (ret)
++		return ret;
++
++	uart_remove_led_triggers(&sport->port);
++
++	return 0;
+ }
+ 
+ static void serial_imx_restore_context(struct imx_port *sport)
 -- 
 2.10.2
