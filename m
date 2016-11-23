@@ -1,97 +1,187 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
-Date: Wed, 23 Nov 2016 18:07:11 +0100
-Message-ID: <2168980.T3HadihU3R@wuerfel>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com> <2359248.XjnRfPbj1B@wuerfel> <EE11001F9E5DDD47B7634E2F8A612F2E1F931E08@lhreml507-mbx>
+From: Mathieu Poirier <mathieu.poirier@linaro.org>
+Subject: Re: [PATCH 1/4] serial: core: Add LED trigger support
+Date: Wed, 23 Nov 2016 10:13:02 -0700
+Message-ID: <20161123171302.GD19856@linaro.org>
+References: <20161123100106.15969-1-s.hauer@pengutronix.de>
+ <20161123100106.15969-2-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <EE11001F9E5DDD47B7634E2F8A612F2E1F931E08@lhreml507-mbx>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "liviu.dudau-5wv7dgnIgG8@public.gmane.org" <liviu.dudau-5wv7dgnIgG8@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "xuwei (O)" <xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Jason Gunthorpe <jgunthorpe-ePGOBjL8dl3ta4EC/59zMFaTQe2KTcn/@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "minyard-HInyCGIudOg@public.gmane.org" <minyard-HInyCGIudOg@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, zourongrong@gm
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20161123100106.15969-2-s.hauer@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday, November 23, 2016 3:22:33 PM CET Gabriele Paoloni wrote:
-> From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
-> > On Friday, November 18, 2016 5:03:11 PM CET Gabriele Paoloni wrote:
-
-> > > I think this is effectively what we are doing so far with patch 2/3.
-> > > The problem with this patch is that we are carving out a "forbidden"
-> > > IO tokens range that goes from 0 to PCIBIOS_MIN_IO.
-> > >
-> > > I think that the proper solution would be to have the LPC driver to
-> > > set the carveout threshold used in pci_register_io_range(),
-> > > pci_pio_to_address(), pci_address_to_pio(), but this would impose
-> > > a probe dependency on the LPC itself that should be probed before
-> > > the PCI controller (or before any other devices calling these
-> > > functions...)
-> > 
-> > Why do you think the order matters? My point was that we should
-> > be able to register any region of logical port numbers for any
-> > bus here.
+On Wed, Nov 23, 2016 at 11:01:03AM +0100, Sascha Hauer wrote:
+> With this patch the serial core provides LED triggers for RX and TX.
 > 
-> Maybe I have not followed well so let's roll back to your previous
-> comment...
+> As the serial core layer does not know when the hardware actually sends
+> or receives characters, this needs help from the UART drivers. The
+> LED triggers are registered in uart_add_led_triggers() called from
+> the UART drivers which want to support LED triggers. All the driver
+> has to do then is to call uart_led_trigger_[tx|rx] to indicate
+> activite.
+
+Hello Sascha,
+
 > 
-> "we need to associate a bus address with a logical Linux port number,
-> both in of_address_to_resource and in inb()/outb()"
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+>  drivers/tty/serial/serial_core.c | 73 ++++++++++++++++++++++++++++++++++++++++
+>  include/linux/serial_core.h      | 10 ++++++
+>  2 files changed, 83 insertions(+)
 > 
-> Actually of_address_to_resource() returns the port number to used
-> in inb/outb(); inb() and outb() add the port number to PCI_IOBASE
-> to rd/wr to the right virtual address.
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index f2303f3..3e8afb7 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -34,6 +34,7 @@
+>  #include <linux/serial_core.h>
+>  #include <linux/delay.h>
+>  #include <linux/mutex.h>
+> +#include <linux/leds.h>
+>  
+>  #include <asm/irq.h>
+>  #include <asm/uaccess.h>
+> @@ -2703,6 +2704,77 @@ static const struct attribute_group tty_dev_attr_group = {
+>  	.attrs = tty_dev_attrs,
+>  	};
+>  
+> +void uart_led_trigger_tx(struct uart_port *uport)
+> +{
+> +	unsigned long delay = 50;
+> +
+> +	led_trigger_blink_oneshot(uport->led_trigger_tx, &delay, &delay, 0);
+> +}
+> +
+> +void uart_led_trigger_rx(struct uart_port *uport)
+> +{
+> +	unsigned long delay = 50;
+> +
+> +	led_trigger_blink_oneshot(uport->led_trigger_rx, &delay, &delay, 0);
 
-Correct.
+For both rx/tx the core constrains the delay_on/off along with the inversion.
+Instead of adding the led_trigger_rx/tx and led_trigger_rx/tx_name to the 
+struct uart_port, wouldn't it be better to add a new struct led_trigger that
+would encapsulate those along wit the on/off delay and the inversion?
 
-> Our LPC cannot operate on the virtual address and it operates on
-> a bus address range that for LPC is also equal to the cpu address
-> range and goes from 0 to 0x1000.
+That way those values could be communicated to the core at registration time
+instead of hard-coding things.
+ 
+> +}
+> +
+> +/**
+> + *	uart_add_led_triggers - register LED triggers for a UART
+> + *	@drv: pointer to the uart low level driver structure for this port
+> + *	@uport: uart port structure to use for this port.
+> + *
+> + *	Called by the driver to register LED triggers for a UART. It's the
+> + *	drivers responsibility to call uart_led_trigger_rx/tx on received
+> + *	and transmitted chars then.
+> + */
+> +int uart_add_led_triggers(struct uart_driver *drv, struct uart_port *uport)
+> +{
+> +	int ret;
+> +
+> +	if (!IS_ENABLED(CONFIG_LEDS_TRIGGERS))
+> +		return 0;
 
-There is no "cpu address" here, otherwise this is correct.
+Since this is a public interface, checking for valid led_trigger_tx/rx before
+moving on with the rest of the initialisation is probably a good idea.
 
-> Now as I understand it is risky and not appropriate to reserve
-> the logical port numbers from 0 to 0x1000 or to whatever other
-> upper bound because existing systems may rely on these port numbers
-> retrieved by __of_address_to_resource().
+Thanks,
+Mathieu
 
-Right again.
-
-> In this scenario I think the best thing to do would be
-> in the probe function of the LPC driver:
-> 1) call pci_register_io_range() passing [0, 0x1000] (that is the
->    range for LPC)
-
-pci_register_io_range() takes a physical address, not a port number,
-so that would not be appropriate as you say above. We can however
-add a variant that reserves a range of port numbers in io_range_list
-for an indirect access method.
-
-> 2) retrieve the logical port numbers associated to the LPC range
->    by calling pci_address_to_pio() for 0 and 0x1000 and assign
->    them to extio_ops_node->start and extio_ops_node->end
-
-Again, calling pci_address_to_pio() doesn't seem right here, because
-we don't have a phys_addr_t address
-
-> 3) implement the LPC accessors to operate on the logical ports
->    associated to the LPC range (in practice in the accessors
->    implementation we will call pci_pio_to_address to retrieve
->    the cpu address to operate on)
-
-Please don't proliferate the use of
-pci_pio_to_address/pci_address_to_pio here, computing the physical
-address from the logical address is trivial, you just need to
-subtract the start of the range that you already use when matching
-the port number range.
-
-The only thing we need here is to make of_address_to_resource()
-return the correct logical port number that was registered for
-a given host device when asked to translate an address that
-does not have a CPU address associated with it.
-
-	Arnd
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> +
+> +	uport->led_trigger_tx_name = kasprintf(GFP_KERNEL, "%s%d-tx",
+> +					       drv->dev_name, uport->line);
+> +	uport->led_trigger_rx_name = kasprintf(GFP_KERNEL, "%s%d-rx",
+> +					       drv->dev_name, uport->line);
+> +	if (!uport->led_trigger_tx_name || !uport->led_trigger_rx_name) {
+> +		ret = -ENOMEM;
+> +		goto err_alloc;
+> +	}
+> +
+> +	led_trigger_register_simple(uport->led_trigger_tx_name,
+> +				    &uport->led_trigger_tx);
+> +	led_trigger_register_simple(uport->led_trigger_rx_name,
+> +				    &uport->led_trigger_rx);
+> +
+> +	return 0;
+> +
+> +err_alloc:
+> +	kfree(uport->led_trigger_tx_name);
+> +	kfree(uport->led_trigger_rx_name);
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + *	uart_remove_led_triggers - remove LED triggers
+> + *	@drv: pointer to the uart low level driver structure for this port
+> + *	@uport: uart port structure to use for this port.
+> + *
+> + *	Remove LED triggers previously registered with uart_add_led_triggers
+> + */
+> +void uart_remove_led_triggers(struct uart_port *uport)
+> +{
+> +	if (uport->led_trigger_rx)
+> +		led_trigger_unregister_simple(uport->led_trigger_rx);
+> +	kfree(uport->led_trigger_rx_name);
+> +
+> +	if (uport->led_trigger_tx)
+> +		led_trigger_unregister_simple(uport->led_trigger_tx);
+> +	kfree(uport->led_trigger_tx_name);
+> +}
+> +
+>  /**
+>   *	uart_add_one_port - attach a driver-defined port structure
+>   *	@drv: pointer to the uart low level driver structure for this port
+> @@ -2872,6 +2944,7 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+>  	WARN_ON(atomic_dec_return(&state->refcount) < 0);
+>  	wait_event(state->remove_wait, !atomic_read(&state->refcount));
+>  	state->uart_port = NULL;
+> +
+>  	mutex_unlock(&port->mutex);
+>  out:
+>  	mutex_unlock(&port_mutex);
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index 3442014..1b0a169 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -29,6 +29,7 @@
+>  #include <linux/tty.h>
+>  #include <linux/mutex.h>
+>  #include <linux/sysrq.h>
+> +#include <linux/leds.h>
+>  #include <uapi/linux/serial_core.h>
+>  
+>  #ifdef CONFIG_SERIAL_CORE_CONSOLE
+> @@ -249,6 +250,10 @@ struct uart_port {
+>  	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
+>  	struct serial_rs485     rs485;
+>  	void			*private_data;		/* generic platform data pointer */
+> +	struct led_trigger	*led_trigger_rx;
+> +	char			*led_trigger_rx_name;
+> +	struct led_trigger	*led_trigger_tx;
+> +	char			*led_trigger_tx_name;
+>  };
+>  
+>  static inline int serial_port_in(struct uart_port *up, int offset)
+> @@ -392,6 +397,11 @@ void uart_console_write(struct uart_port *port, const char *s,
+>  			unsigned int count,
+>  			void (*putchar)(struct uart_port *, int));
+>  
+> +int uart_add_led_triggers(struct uart_driver *drv, struct uart_port *uport);
+> +void uart_remove_led_triggers(struct uart_port *uport);
+> +void uart_led_trigger_tx(struct uart_port *port);
+> +void uart_led_trigger_rx(struct uart_port *port);
+> +
+>  /*
+>   * Port/driver registration/removal
+>   */
+> -- 
+> 2.10.2
+> 
