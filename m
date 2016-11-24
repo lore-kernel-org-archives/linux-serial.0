@@ -1,117 +1,67 @@
 From: Sascha Hauer <s.hauer@pengutronix.de>
 Subject: Re: [PATCH 1/4] serial: core: Add LED trigger support
-Date: Thu, 24 Nov 2016 07:41:37 +0100
-Message-ID: <20161124064137.l3i3p3brbyz74cd5@pengutronix.de>
+Date: Thu, 24 Nov 2016 09:17:48 +0100
+Message-ID: <20161124081748.fx3xm5ww64ngn5it@pengutronix.de>
 References: <20161123100106.15969-1-s.hauer@pengutronix.de>
  <20161123100106.15969-2-s.hauer@pengutronix.de>
- <20161123171302.GD19856@linaro.org>
+ <e9fc12b8-d4a7-067d-ef87-03f0aae39bd7@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20161123171302.GD19856@linaro.org>
+In-Reply-To: <e9fc12b8-d4a7-067d-ef87-03f0aae39bd7@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+To: Florian Fainelli <f.fainelli@gmail.com>
+Cc: linux-serial@vger.kernel.org, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 23, 2016 at 10:13:02AM -0700, Mathieu Poirier wrote:
-> On Wed, Nov 23, 2016 at 11:01:03AM +0100, Sascha Hauer wrote:
+On Wed, Nov 23, 2016 at 10:57:13AM -0800, Florian Fainelli wrote:
+> On 11/23/2016 02:01 AM, Sascha Hauer wrote:
 > > With this patch the serial core provides LED triggers for RX and TX.
 > > 
 > > As the serial core layer does not know when the hardware actually sends
-> > or receives characters, this needs help from the UART drivers. The
-> > LED triggers are registered in uart_add_led_triggers() called from
+> > or receives characters, this needs help from the UART drivers.
+> 
+> Looking at 8250, we call serial8250_tx_chars from __start_tx which is
+> called form the uart_ops::start_tx, for RX I sort of agree, since this
+> happens in interrupt handler. I suppose some drivers could actually
+> queue work but not do it right away though?
+
+RX is not the problem. When characters are received all drivers call
+tty_flip_buffer_push() which could be used for LED triggering (either
+directly or we replace the calls to tty_flip_buffer_push() with some
+wrapper function).
+The problem comes with TX. The serial core has a FIFO which gets
+characters from the tty layer. There is no function which the serial
+drivers could call to read from this FIFO, instead they have to open code
+this.
+Continuing with the 8250 driver serial8250_tx_chars() is not only called
+from __start_tx(), but also from the interrupt handler. Transmission
+works without the serial_core ever noticing.
+
+> 
+> > The LED triggers are registered in uart_add_led_triggers() called from
 > > the UART drivers which want to support LED triggers. All the driver
 > > has to do then is to call uart_led_trigger_[tx|rx] to indicate
-> > activite.
+> > activity.
 > 
-> Hello Sascha,
-> 
-> > 
-> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> > ---
-> >  drivers/tty/serial/serial_core.c | 73 ++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/serial_core.h      | 10 ++++++
-> >  2 files changed, 83 insertions(+)
-> > 
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> > index f2303f3..3e8afb7 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -34,6 +34,7 @@
-> >  #include <linux/serial_core.h>
-> >  #include <linux/delay.h>
-> >  #include <linux/mutex.h>
-> > +#include <linux/leds.h>
-> >  
-> >  #include <asm/irq.h>
-> >  #include <asm/uaccess.h>
-> > @@ -2703,6 +2704,77 @@ static const struct attribute_group tty_dev_attr_group = {
-> >  	.attrs = tty_dev_attrs,
-> >  	};
-> >  
-> > +void uart_led_trigger_tx(struct uart_port *uport)
-> > +{
-> > +	unsigned long delay = 50;
-> > +
-> > +	led_trigger_blink_oneshot(uport->led_trigger_tx, &delay, &delay, 0);
-> > +}
-> > +
-> > +void uart_led_trigger_rx(struct uart_port *uport)
-> > +{
-> > +	unsigned long delay = 50;
-> > +
-> > +	led_trigger_blink_oneshot(uport->led_trigger_rx, &delay, &delay, 0);
-> 
-> For both rx/tx the core constrains the delay_on/off along with the inversion.
-> Instead of adding the led_trigger_rx/tx and led_trigger_rx/tx_name to the 
-> struct uart_port, wouldn't it be better to add a new struct led_trigger that
-> would encapsulate those along wit the on/off delay and the inversion?
-> 
-> That way those values could be communicated to the core at registration time
-> instead of hard-coding things.
+> Could we somehow remedy the lack of knowledge from the core as whether
+> the HW sends/receives characters first before adding support for LED
+> triggers? It would be more generic and future proof to require UART
+> drivers to report to the core when they actually TX/RX, and then at the
+> core level, utilize that knowledge to perform the LED trigger.
 
-Not sure this goes into the right direction. Looking at the other
-callers of led_trigger_blink_oneshot() most of them use an arbitrary
-blink time of 30 or 50ms and the users seem to be happy with it. There
-doesn't seem to be the desire to make that value configurable. If we
-want to make it configurable, it's probably better to move the option
-to the led device rather than putting the burden on every user of the
-led triggers.
+Maybe we could introduce a function to read from the TX FIFO. Having
+open coded this in each and every driver is not nice anyway.
 
-I don't think the inversion flag is meant for being configurable. It's
-rather used for the default state of the LED. The CAN layer for example
-turns the LED on when the interface is up and then blinks (turns off and
-on again) on activity. For this it uses the inversion flag.
-
->  
-> > +}
-> > +
-> > +/**
-> > + *	uart_add_led_triggers - register LED triggers for a UART
-> > + *	@drv: pointer to the uart low level driver structure for this port
-> > + *	@uport: uart port structure to use for this port.
-> > + *
-> > + *	Called by the driver to register LED triggers for a UART. It's the
-> > + *	drivers responsibility to call uart_led_trigger_rx/tx on received
-> > + *	and transmitted chars then.
-> > + */
-> > +int uart_add_led_triggers(struct uart_driver *drv, struct uart_port *uport)
-> > +{
-> > +	int ret;
-> > +
-> > +	if (!IS_ENABLED(CONFIG_LEDS_TRIGGERS))
-> > +		return 0;
 > 
-> Since this is a public interface, checking for valid led_trigger_tx/rx before
-> moving on with the rest of the initialisation is probably a good idea.
+> Side note: are you positive using drv->dev_name is robust enough on
+> systems with many different UART drivers, yet all of them being ttyS*?
 
-What do you mean? Should we return an error when CONFIG_LEDS_TRIGGERS is
-disabled?
+If we have different UART drivers, only one of them provides ttyS*, no?
+Other drivers will have to use another namespace.
 
 Sascha
-
 
 -- 
 Pengutronix e.K.                           |                             |
