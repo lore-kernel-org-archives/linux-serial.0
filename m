@@ -1,18 +1,17 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 1/4] serial: core: Add LED trigger support
-Date: Fri, 25 Nov 2016 13:49:08 +0100
-Message-ID: <20161125124908.xlgtnik5c2rfqi6l@pengutronix.de>
-References: <20161123100106.15969-1-s.hauer@pengutronix.de>
- <20161123100106.15969-2-s.hauer@pengutronix.de>
- <20161123171302.GD19856@linaro.org>
- <20161124064137.l3i3p3brbyz74cd5@pengutronix.de>
- <20161124154543.GA8937@linaro.org>
+From: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+Subject: RE: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on Hip06
+Date: Fri, 25 Nov 2016 16:27:40 +0000
+Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F93B05D@lhreml507-mbx>
+References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
+ <4675465.4Qhqy6WU4X@wuerfel>
+ <EE11001F9E5DDD47B7634E2F8A612F2E1F939E0A@lhreml507-mbx>
+ <107039805.6PaPa1fbx1@wuerfel>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20161124154543.GA8937@linaro.org>
+In-Reply-To: <107039805.6PaPa1fbx1@wuerfel>
+Content-Language: en-US
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,129 +21,307 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, kernel@pengutronix.de
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "liviu.dudau@arm.com" <liviu.dudau@arm.com>, Linuxarm <linuxarm@huawei.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "xuwei (O)" <xuwei5@hisilicon.com>, Jason Gunthorpe <jgunthorpe@obsidianresearch.com>, T homas Petazzoni <thomas.petazzo.ni@free-electrons.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "minyard@acm.org" <minyard@acm.org>, "will.deacon@arm.com" <will.deacon@arm.com>, John Garry <john.garry@huawei.com>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@go og le.com" <bhelgaas@google.com>, "kantyzc@163.com" <kantyzc@163.com>, zhichang.yuan
+ 02@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Nov 24, 2016 at 08:45:43AM -0700, Mathieu Poirier wrote:
-> On Thu, Nov 24, 2016 at 07:41:37AM +0100, Sascha Hauer wrote:
-> > On Wed, Nov 23, 2016 at 10:13:02AM -0700, Mathieu Poirier wrote:
-> > > On Wed, Nov 23, 2016 at 11:01:03AM +0100, Sascha Hauer wrote:
-> > > > With this patch the serial core provides LED triggers for RX and TX.
-> > > > 
-> > > > As the serial core layer does not know when the hardware actually sends
-> > > > or receives characters, this needs help from the UART drivers. The
-> > > > LED triggers are registered in uart_add_led_triggers() called from
-> > > > the UART drivers which want to support LED triggers. All the driver
-> > > > has to do then is to call uart_led_trigger_[tx|rx] to indicate
-> > > > activite.
-> > > 
-> > > Hello Sascha,
-> > > 
-> > > > 
-> > > > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> > > > ---
-> > > >  drivers/tty/serial/serial_core.c | 73 ++++++++++++++++++++++++++++++++++++++++
-> > > >  include/linux/serial_core.h      | 10 ++++++
-> > > >  2 files changed, 83 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> > > > index f2303f3..3e8afb7 100644
-> > > > --- a/drivers/tty/serial/serial_core.c
-> > > > +++ b/drivers/tty/serial/serial_core.c
-> > > > @@ -34,6 +34,7 @@
-> > > >  #include <linux/serial_core.h>
-> > > >  #include <linux/delay.h>
-> > > >  #include <linux/mutex.h>
-> > > > +#include <linux/leds.h>
-> > > >  
-> > > >  #include <asm/irq.h>
-> > > >  #include <asm/uaccess.h>
-> > > > @@ -2703,6 +2704,77 @@ static const struct attribute_group tty_dev_attr_group = {
-> > > >  	.attrs = tty_dev_attrs,
-> > > >  	};
-> > > >  
-> > > > +void uart_led_trigger_tx(struct uart_port *uport)
-> > > > +{
-> > > > +	unsigned long delay = 50;
-> > > > +
-> > > > +	led_trigger_blink_oneshot(uport->led_trigger_tx, &delay, &delay, 0);
-> > > > +}
-> > > > +
-> > > > +void uart_led_trigger_rx(struct uart_port *uport)
-> > > > +{
-> > > > +	unsigned long delay = 50;
-> > > > +
-> > > > +	led_trigger_blink_oneshot(uport->led_trigger_rx, &delay, &delay, 0);
-> > > 
-> > > For both rx/tx the core constrains the delay_on/off along with the inversion.
-> > > Instead of adding the led_trigger_rx/tx and led_trigger_rx/tx_name to the 
-> > > struct uart_port, wouldn't it be better to add a new struct led_trigger that
-> > > would encapsulate those along wit the on/off delay and the inversion?
-> > > 
-> > > That way those values could be communicated to the core at registration time
-> > > instead of hard-coding things.
-> > 
-> > Not sure this goes into the right direction. Looking at the other
-> > callers of led_trigger_blink_oneshot() most of them use an arbitrary
-> > blink time of 30 or 50ms and the users seem to be happy with it. There
-> > doesn't seem to be the desire to make that value configurable. If we
-> > want to make it configurable, it's probably better to move the option
-> > to the led device rather than putting the burden on every user of the
-> > led triggers.
+Hi Arnd
+
+> -----Original Message-----
+> From: Arnd Bergmann [mailto:arnd@arndb.de]
+> Sent: 25 November 2016 12:04
+> To: Gabriele Paoloni
+> Cc: linux-arm-kernel@lists.infradead.org; mark.rutland@arm.com;
+> catalin.marinas@arm.com; linux-pci@vger.kernel.org;
+> liviu.dudau@arm.com; Linuxarm; lorenzo.pieralisi@arm.com; xuwei (O);
+> Jason Gunthorpe; T homas Petazzoni; linux-serial@vger.kernel.org;
+> benh@kernel.crashing.org; devicetree@vger.kernel.org; minyard@acm.org;
+> will.deacon@arm.com; John Garry; olof@lixom.net; robh+dt@kernel.org;
+> bhelgaas@go og le.com; kantyzc@163.com; zhichang.yuan 02@gmail.com;
+> linux-kernel@vger.kernel.org; Yuanzhichang; zourongrong@gmail.com
+> Subject: Re: [PATCH V5 3/3] ARM64 LPC: LPC driver implementation on
+> Hip06
 > 
-> So you did find instances where the blink time wasn't 50ms.  To me that's
-> a valid reason to not hard code the blink time and proceed differently.
+> On Friday, November 25, 2016 8:46:11 AM CET Gabriele Paoloni wrote:
+> > > From: Arnd Bergmann [mailto:arnd@arndb.de]
+> > >
+> > > On Wednesday, November 23, 2016 6:07:11 PM CET Arnd Bergmann wrote:
+> > > > On Wednesday, November 23, 2016 3:22:33 PM CET Gabriele Paoloni
+> > > wrote:
+> > > > > From: Arnd Bergmann [mailto:arnd@arndb.de]
+> > > > > > On Friday, November 18, 2016 5:03:11 PM CET Gabriele Paoloni
+> > >  /*
+> > > @@ -549,9 +548,14 @@ static int of_translate_one(struct device_node
+> > > *parent, struct of_bus *bus,
+> > >   * that translation is impossible (that is we are not dealing with
+> a
+> > > value
+> > >   * that can be mapped to a cpu physical address). This is not
+> really
+> > > specified
+> > >   * that way, but this is traditionally the way IBM at least do
+> things
+> > > + *
+> > > + * Whenever the translation fails, the *host pointer will be set
+> to
+> > > the
+> > > + * device that lacks a tranlation, and the return code is relative
+> to
+> > > + * that node.
+> >
+> > This seems to be wrong to me. We are abusing of the error conditions.
+> > So effectively if there is a buggy DT for an IO resource we end up
+> > assuming that we are using a special IO device with unmapped
+> addresses.
+> >
+> > The patch at the bottom apply on top of this one and I think is a
+> more
+> > reasonable approach
+> 
+> It was meant as a logical extension to the existing interface,
+> translating the address as far as we can, and reporting back
+> how far we got.
+> 
+> Maybe we can return 'of_root' by instead of NULL to signify
+> that we have converted all the way to the root of the DT?
+> That would make it more consistent, but slightly more complicated
+> for the common case.
 
-But they are hardcoded to these values. My gut feeling is that the
-authors had to pick a value and some used 30ms while others used 50ms.
+Mmm not sure really...the point is that now the **host parameter is
+used both as a flag and also in of_translate_ioport...the problem
+that I see is where we set the "host" parameter...I have a proposal
+below...
 
-Making this configurable to me only means that it will be harder to
-cleanup later. I'd rather wait until someone comes along who really
-can present good reasons to make that configurable.
+[...]
+
+> pci_bus_alloc_resource(struct
+> > > pci_bus *bus,
+> > >  			void *alignf_data);
+> 
+> [Many lines of reply trimmed here, please make sure you don't quote too
+> much context when you reply, it's really annoying to read through
+> it otherwise]
+
+Sorry! I'll take care of this in the future...
 
 > 
-> > 
-> > I don't think the inversion flag is meant for being configurable. It's
-> > rather used for the default state of the LED. The CAN layer for example
-> > turns the LED on when the interface is up and then blinks (turns off and
-> > on again) on activity. For this it uses the inversion flag.
-> > 
-> > >  
-> > > > +}
-> > > > +
-> > > > +/**
-> > > > + *	uart_add_led_triggers - register LED triggers for a UART
-> > > > + *	@drv: pointer to the uart low level driver structure for this port
-> > > > + *	@uport: uart port structure to use for this port.
-> > > > + *
-> > > > + *	Called by the driver to register LED triggers for a UART. It's the
-> > > > + *	drivers responsibility to call uart_led_trigger_rx/tx on received
-> > > > + *	and transmitted chars then.
-> > > > + */
-> > > > +int uart_add_led_triggers(struct uart_driver *drv, struct uart_port *uport)
-> > > > +{
-> > > > +	int ret;
-> > > > +
-> > > > +	if (!IS_ENABLED(CONFIG_LEDS_TRIGGERS))
-> > > > +		return 0;
-> > > 
-> > > Since this is a public interface, checking for valid led_trigger_tx/rx before
-> > > moving on with the rest of the initialisation is probably a good idea.
-> > 
-> > What do you mean? Should we return an error when CONFIG_LEDS_TRIGGERS is
-> > disabled?
+> >  /*
+> > + * of_isa_indirect_io - get the IO address from some isa reg
+> property value.
+> > + *	For some isa/lpc devices, no ranges property in ancestor node.
+> > + *	The device addresses are described directly in their regs
+> property.
+> > + *	This fixup function will be called to get the IO address of
+> isa/lpc
+> > + *	devices when the normal of_translation failed.
+> > + *
+> > + * @parent:	points to the parent dts node;
+> > + * @bus:		points to the of_bus which can be used to parse
+> address;
+> > + * @addr:	the address from reg property;
+> > + * @na:		the address cell counter of @addr;
+> > + * @presult:	store the address paresed from @addr;
+> > + *
+> > + * return 1 when successfully get the I/O address;
+> > + * 0 will return for some failures.
+> > + */
+> > +static int of_get_isa_indirect_io(struct device_node *parent,
+> > +				struct of_bus *bus, __be32 *addr,
+> > +				int na, u64 *presult)
+> > +{
+> > +	unsigned int flags;
+> > +	unsigned int rlen;
+> > +
+> > +	/* whether support indirectIO */
+> > +	if (!indirect_io_enabled())
+> > +		return 0;
+> > +
+> > +	if (!of_bus_isa_match(parent))
+> > +		return 0;
+> > +
+> > +	flags = bus->get_flags(addr);
+> > +	if (!(flags & IORESOURCE_IO))
+> > +		return 0;
+> > +
+> > +	/* there is ranges property, apply the normal translation
+> directly. */
+> > +	if (of_get_property(parent, "ranges", &rlen))
+> > +		return 0;
+> > +
+> > +	*presult = of_read_number(addr + 1, na - 1);
+> > +	/* this fixup is only valid for specific I/O range. */
+> > +	return addr_is_indirect_io(*presult);
+> > +}
 > 
->         if (!uport->led_trigger_rx || !uport->led_triggertx)
->                 return -EINVAL;
+> Right, this would work. The reason I didn't go down this route is
+> that I wanted to keep it generic enough to allow doing the same
+> for PCI host bridges with a nonlinear mapping of the I/O space.
+> 
+> There isn't really anything special about ISA here, other than the
+> fact that the one driver that needs it happens to be for ISA rather
+> than PCI.
 
-uport->led_trigger_rx|tx are structs allocated in this function. It's
-the normal case that they are NULL.
+Yes I see your point please consider the patch at the bottom...
 
-Sascha
+> 
+> > +/*
+> >   * Translate an address from the device-tree into a CPU physical
+> address,
+> >   * this walks up the tree and applies the various bus mappings on
+> the
+> >   * way.
+> > @@ -600,14 +643,23 @@ static u64 __of_translate_address(struct
+> device_node *dev,
+> >  			result = of_read_number(addr, na);
+> >  			break;
+> >  		}
+> > +		/*
+> > +		 * For indirectIO device which has no ranges property, get
+> > +		 * the address from reg directly.
+> > +		 */
+> > +		if (of_get_isa_indirect_io(dev, bus, addr, na, &result)) {
+> > +			pr_debug("isa indirectIO matched(%s)..addr =
+> 0x%llx\n",
+> > +				of_node_full_name(dev), result);
+> > +			*host = of_node_get(parent);
+> > +			break;
+> > +		}
+> >
+> 
+> If we do the special case for ISA as you suggest above, I would still
+> want
+> to keep it in of_translate_ioport(), I think that's a useful change by
+> itself in my patch.
 
+This comes without saying...the patch I proposed here already applied on
+top of your changes and, in fact, you can see that I set 
+"*host = of_node_get(parent);" above in my patch to be used by 
+of_translate_ioport()
+ 
+> 
+> 	Arnde
+> 
+> 
+> 
+
+Below I have reworked my patch (that still applies on top of your one) to
+make it not ISA specific.
+Notice that of_translate_ioport() still stands and that in addr_is_indirect_io()
+we make sure the bus address to be in the bus address range that the special
+host operates on...
+
+---
+ drivers/of/address.c       | 56 ++++++++++++++++++++++++++++++++++++++++++++--
+ include/linux/of_address.h | 17 ++++++++++++++
+ 2 files changed, 71 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/of/address.c b/drivers/of/address.c
+index 5decaba..2b34931 100644
+--- a/drivers/of/address.c
++++ b/drivers/of/address.c
+@@ -540,6 +540,48 @@ static u64 of_translate_one(struct device_node *parent, struct of_bus *bus,
+ }
+ 
+ /*
++ * of_get_indirect_io - get the IO address from some reg property value.
++ *	For some special host devices, we have no ranges property node and
++ *	we directly use the bus addresses of the children regs property.
++ *	This fixup function will be called to get the IO address of isa/lpc
++ *	devices when the normal of_translation failed.
++ *
++ * @parent:	points to the parent dts node;
++ * @bus:		points to the of_bus which can be used to parse address;
++ * @addr:	the address from reg property;
++ * @na:		the address cell counter of @addr;
++ * @presult:	store the address parsed from @addr;
++ *
++ * return 1 when successfully get the I/O address;
++ * 0 will return for some failures.
++ */
++static int of_get_indirect_io(struct device_node *parent,
++				struct of_bus *bus, __be32 *addr,
++				int na, u64 *presult)
++{
++	unsigned int flags;
++	unsigned int rlen;
++
++	/* whether support indirectIO */
++	if (!indirect_io_enabled())
++		return 0;
++
++	flags = bus->get_flags(addr);
++	if (!(flags & IORESOURCE_IO))
++		return 0;
++
++	/* there is ranges property, apply the normal translation directly. */
++	if (of_get_property(parent, "ranges", &rlen))
++		return 0;
++
++	*presult = of_read_number(addr + 1, na - 1);
++
++	/* check if the bus address falls into the range of
++	 * the special host device*/
++	return addr_is_indirect_io(*presult);
++}
++
++/*
+  * Translate an address from the device-tree into a CPU physical address,
+  * this walks up the tree and applies the various bus mappings on the
+  * way.
+@@ -601,13 +643,23 @@ static u64 __of_translate_address(struct device_node *dev,
+ 			break;
+ 		}
+ 
++		/*
++		 * For indirectIO device which has no ranges property, get
++		 * the address from reg directly.
++		 */
++		if (of_get_indirect_io(dev, bus, addr, na, &result)) {
++			pr_debug("isa indirectIO matched(%s)..addr = 0x%llx\n",
++				of_node_full_name(dev), result);
++			*host = of_node_get(parent);
++			break;
++		}
++
+ 		/* Get new parent bus and counts */
+ 		pbus = of_match_bus(parent);
+ 		pbus->count_cells(dev, &pna, &pns);
+ 		if (!OF_CHECK_COUNTS(pna, pns)) {
+-			pr_debug("Bad cell count for %s\n",
++			pr_err("Bad cell count for %s\n",
+ 				 of_node_full_name(dev));
+-			*host = of_node_get(parent);
+ 			break;
+ 		}
+ 
+diff --git a/include/linux/of_address.h b/include/linux/of_address.h
+index 3786473..14848d8 100644
+--- a/include/linux/of_address.h
++++ b/include/linux/of_address.h
+@@ -24,6 +24,23 @@ struct of_pci_range {
+ #define for_each_of_pci_range(parser, range) \
+ 	for (; of_pci_range_parser_one(parser, range);)
+ 
++#ifndef indirect_io_enabled
++#define indirect_io_enabled indirect_io_enabled
++static inline bool indirect_io_enabled(void)
++{
++	return false;
++}
++#endif
++
++#ifndef addr_is_indirect_io
++#define addr_is_indirect_io addr_is_indirect_io
++static inline int addr_is_indirect_io(u64 taddr)
++{
++	return 0;
++}
++#endif
++
++
+ /* Translate a DMA address from device space to CPU space */
+ extern u64 of_translate_dma_address(struct device_node *dev,
+ 				    const __be32 *in_addr);
 -- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.7.4
