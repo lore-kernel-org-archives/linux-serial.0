@@ -1,81 +1,107 @@
-From: Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH 1/4] serial: core: Add LED trigger support
-Date: Sun, 27 Nov 2016 20:39:38 -0800
-Message-ID: <9225f2da-c6c4-73c8-829a-1033716b4c71@gmail.com>
-References: <20161123100106.15969-1-s.hauer@pengutronix.de>
- <20161123100106.15969-2-s.hauer@pengutronix.de>
- <e9fc12b8-d4a7-067d-ef87-03f0aae39bd7@gmail.com>
- <20161124081748.fx3xm5ww64ngn5it@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH v2, variant B] tty: nozomi: avoid sprintf buffer overflow
+Date: Tue, 29 Nov 2016 12:51:04 +0100
+Message-ID: <20161129115104.1755786-2-arnd@arndb.de>
+References: <20161129115104.1755786-1-arnd@arndb.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161124081748.fx3xm5ww64ngn5it@pengutronix.de>
+In-Reply-To: <20161129115104.1755786-1-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: linux-serial@vger.kernel.org, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
+Testing with a gcc-7 snapshot produced an internal compiler error
+for this file:
 
+drivers/tty/nozomi.c: In function 'receive_flow_control':
+drivers/tty/nozomi.c:919:12: internal compiler error: in get_substring_ranges_for_loc, at input.c:1388
+ static int receive_flow_control(struct nozomi *dc)
 
-On 11/24/2016 12:17 AM, Sascha Hauer wrote:
-> On Wed, Nov 23, 2016 at 10:57:13AM -0800, Florian Fainelli wrote:
->> On 11/23/2016 02:01 AM, Sascha Hauer wrote:
->>> With this patch the serial core provides LED triggers for RX and TX.
->>>
->>> As the serial core layer does not know when the hardware actually sends
->>> or receives characters, this needs help from the UART drivers.
->>
->> Looking at 8250, we call serial8250_tx_chars from __start_tx which is
->> called form the uart_ops::start_tx, for RX I sort of agree, since this
->> happens in interrupt handler. I suppose some drivers could actually
->> queue work but not do it right away though?
-> 
-> RX is not the problem. When characters are received all drivers call
-> tty_flip_buffer_push() which could be used for LED triggering (either
-> directly or we replace the calls to tty_flip_buffer_push() with some
-> wrapper function).
-> The problem comes with TX. The serial core has a FIFO which gets
-> characters from the tty layer. There is no function which the serial
-> drivers could call to read from this FIFO, instead they have to open code
-> this.
-> Continuing with the 8250 driver serial8250_tx_chars() is not only called
-> from __start_tx(), but also from the interrupt handler. Transmission
-> works without the serial_core ever noticing.
-> 
->>
->>> The LED triggers are registered in uart_add_led_triggers() called from
->>> the UART drivers which want to support LED triggers. All the driver
->>> has to do then is to call uart_led_trigger_[tx|rx] to indicate
->>> activity.
->>
->> Could we somehow remedy the lack of knowledge from the core as whether
->> the HW sends/receives characters first before adding support for LED
->> triggers? It would be more generic and future proof to require UART
->> drivers to report to the core when they actually TX/RX, and then at the
->> core level, utilize that knowledge to perform the LED trigger.
-> 
-> Maybe we could introduce a function to read from the TX FIFO. Having
-> open coded this in each and every driver is not nice anyway.
+I've reported this at https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78569
+but also noticed that the code line contains a stack overflow, as it prints
+a string into a slightly shorter fixed-length 'tmp' variable.
 
-Something like that could be nice to have yes.
+A lot of the code here is unnecessary and can be expressed in a simpler
+way, relying on the fact that removing the 'DEBUG' macro will also get
+rid of all pr_debug() calls. This change should not change any of the
+output but avoids both the stack overflow and the gcc crash.
 
-> 
->>
->> Side note: are you positive using drv->dev_name is robust enough on
->> systems with many different UART drivers, yet all of them being ttyS*?
-> 
-> If we have different UART drivers, only one of them provides ttyS*, no?
-> Other drivers will have to use another namespace.
+The stack overflow will not happen unless a module load parameter is
+also set to enable the debug messages.
 
-I remember this was a problem a couple of years ago last I tried, with
-the 8250 driver being actually preventing other drivers from using
-ttyS*, but if you don't have 8250 taking over the low ttyS numbers, you
-may run into a case where several drivers successfully register their
-character devices under a ttyS* numbering scheme.
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/tty/nozomi.c | 47 ++++++++++++-----------------------------------
+ 1 file changed, 12 insertions(+), 35 deletions(-)
 
-Whether this is hypothetical or not nowadays, it may be nicer to provide
-a more uniquely distinct name like what dev_name() returns, or
-ttyS*-driver-tx for instance?
+diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
+index e2020a691058..39b3723a32a6 100644
+--- a/drivers/tty/nozomi.c
++++ b/drivers/tty/nozomi.c
+@@ -63,44 +63,23 @@
+ 
+ #define VERSION_STRING DRIVER_DESC " 2.1d"
+ 
+-/*    Macros definitions */
+-
+ /* Default debug printout level */
+ #define NOZOMI_DEBUG_LEVEL 0x00
+-
+-#define P_BUF_SIZE 128
+-#define NFO(_err_flag_, args...)				\
+-do {								\
+-	char tmp[P_BUF_SIZE];					\
+-	snprintf(tmp, sizeof(tmp), ##args);			\
+-	printk(_err_flag_ "[%d] %s(): %s\n", __LINE__,		\
+-		__func__, tmp);				\
+-} while (0)
+-
+-#define DBG1(args...) D_(0x01, ##args)
+-#define DBG2(args...) D_(0x02, ##args)
+-#define DBG3(args...) D_(0x04, ##args)
+-#define DBG4(args...) D_(0x08, ##args)
+-#define DBG5(args...) D_(0x10, ##args)
+-#define DBG6(args...) D_(0x20, ##args)
+-#define DBG7(args...) D_(0x40, ##args)
+-#define DBG8(args...) D_(0x80, ##args)
+-
+-#ifdef DEBUG
+-/* Do we need this settable at runtime? */
+ static int debug = NOZOMI_DEBUG_LEVEL;
++module_param(debug, int, S_IRUGO | S_IWUSR);
+ 
+-#define D(lvl, args...)  do \
+-			{if (lvl & debug) NFO(KERN_DEBUG, ##args); } \
+-			while (0)
+-#define D_(lvl, args...) D(lvl, ##args)
+-
+-/* These printouts are always printed */
++/*    Macros definitions */
++#define DBG_(lvl, fmt, args...)				\
++do {							\
++	if (lvl & debug)				\
++		pr_debug("[%d] %s(): " fmt "\n",	\
++			 __LINE__, __func__,  ##args);	\
++} while (0)
+ 
+-#else
+-static int debug;
+-#define D_(lvl, args...)
+-#endif
++#define DBG1(args...) DBG_(0x01, ##args)
++#define DBG2(args...) DBG_(0x02, ##args)
++#define DBG3(args...) DBG_(0x04, ##args)
++#define DBG4(args...) DBG_(0x08, ##args)
+ 
+ /* TODO: rewrite to optimize macros... */
+ 
+@@ -1943,7 +1922,5 @@ static __exit void nozomi_exit(void)
+ module_init(nozomi_init);
+ module_exit(nozomi_exit);
+ 
+-module_param(debug, int, S_IRUGO | S_IWUSR);
+-
+ MODULE_LICENSE("Dual BSD/GPL");
+ MODULE_DESCRIPTION(DRIVER_DESC);
 -- 
-Florian
+2.9.0
