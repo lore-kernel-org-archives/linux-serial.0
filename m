@@ -1,89 +1,82 @@
-From: "Luis R. Rodriguez" <mcgrof@kernel.org>
-Subject: Re: [RFC] fs: add userspace critical mounts event support
-Date: Tue, 29 Nov 2016 22:54:28 +0100
-Message-ID: <20161129215428.GK1402@wotan.suse.de>
-References: <20160825194133.GC3296@wotan.suse.de>
- <20160902235916.GO3296@wotan.suse.de>
- <20160903002014.GP3296@wotan.suse.de>
- <6332a54e-74c6-eafd-368e-71e87a3fa34e@landley.net>
- <20161005180017.GD3296@wotan.suse.de>
- <CA+55aFzrRekSrEczdtGb3RuOeJttJ7i7dQJxiTOXz8V+kr=hdA@mail.gmail.com>
- <20161005194633.GE3296@wotan.suse.de>
- <20161108224726.GD13978@wotan.suse.de>
- <cdd43459-346f-c8e9-e8fc-25bd81e9f0ea@bmw-carit.de>
- <CALCETrVtuiKaJ+z3hSLGYs3robuORJv+N5Z19t0XUzUNynqZDA@mail.gmail.com>
+From: Song liwei <liwei.song@windriver.com>
+Subject: [PATCH] serial: 8250_mid fix calltrace when hotplug 8250 serial controller
+Date: Wed, 30 Nov 2016 01:25:25 -0500
+Message-ID: <1480487125-214457-1-git-send-email-liwei.song@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-Content-Disposition: inline
-In-Reply-To: <CALCETrVtuiKaJ+z3hSLGYs3robuORJv+N5Z19t0XUzUNynqZDA@mail.gmail.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Andy Lutomirski <luto@amacapital.net>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Gilles.Muller@lip6.fr, Takashi Iwai <tiwai@suse.de>, Daniel Wagner <wagi@monom.org>, Ming Lei <ming.lei@canonical.com>, Stephen Boyd <stephen.boyd@linaro.org>, Kay Sievers <kay@vrfy.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Tom Gundersen <teg@jklm.no>, Alessandro Rubini <rubini@gnudd.com>, Christian Lamparter <chunkeey@googlemail.com>, Josh Boyer <jwboyer@fedoraproject.org>, Jonathan Corbet <corbet@lwn.net>, Kevin Cernekee <cernekee@gmail.com>, Jacek Anaszewski <j.anaszewski@samsung.com>, Thierry Martinez <martinez@nsup.org>, linux-serial <linux-serial@vger.kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Mimi Zohar <zohar@linux.vnet.ibm.com>, David Woodhouse <dwmw2@infradead.org>, Jeff Mahoney <jeffm@suse.com>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Chuah Kim Tatt <kim.tatt.chuah@intel.com>, Vinod Koul <vinod.koul@intel.com>, liwei.song@windriver.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 09, 2016 at 03:21:07AM -0800, Andy Lutomirski wrote:
-> On Wed, Nov 9, 2016 at 1:13 AM, Daniel Wagner
-> <daniel.wagner@bmw-carit.de> wrote:
-> > [CC: added Harald]
-> >
-> > As Harald pointed out over a beer yesterday evening, there is at least
-> > one more reason why UMH isn't obsolete. The ordering of the firmware loading
-> > might be of important. Say you want to greet the user with a splash screen
-> > really early on, the graphic card firmware should be loaded first. Also the
-> > automotive world has this fancy requirement that rear camera must be on the
-> > screen within 2 seconds. So controlling the firmware loading order is of
-> > importance (e.g. also do not overcommit the I/O bandwith not so important
-> > firmwares). A user space helper is able to prioritize the request
-> > accordingly the use case.
-> 
-> That seems like a valid problem, but I don't think that UMH adequately
-> solves it.  Sure, loading firmware in the right order avoids a >2sec
-> delay due to firmware loading, but what happens when you have a slow
-> USB device that *doesn't* need firmware plugged in to your car's shiny
-> USB port when you start the car?
-> 
-> It seems to me that this use case requires explicit control over
-> device probing and, if that gets added, you get your firmware ordering
-> for free (just probe the important devices first).
+From: Liwei Song <liwei.song@windriver.com>
 
-In theory this is correct, the problem comes with the flexibility we have
-created with pivot_root() and friends (another is mount on /lib/firmware) which
-enables system integrators to pick and choose the "real rootfs" to be a few
-layers away from the first fs picked up by the kernel. In providing this
-flexibility we did not envision nor have devised signals to enable a
-deterministic lookup due to the requirements such lookups might have --
-in this case the requirements are that direct fs is ready and kosher
-all the paths possible for firmware are ready. As you can imagine first race is
-not only an issue for firmware but a generic issue.
+Fix the following Calltrace:
+[   77.768221] WARNING: CPU: 5 PID: 645 at drivers/dma/dmaengine.c:1069 dma_async_device_unregister+0xe2/0xf0
+[   77.775058] dma_async_device_unregister called while 1 clients hold a reference
+[   77.825048] CPU: 5 PID: 645 Comm: sh Not tainted 4.8.8-WR9.0.0.0_standard+ #3
+[   77.832550] Hardware name: Intel Corp. Aspen Cove/Server, BIOS HAVLCRB1.X64.0012.D58.1604140405 04/14/2016
+[   77.840396]  0000000000000000 ffffc90008adbc80 ffffffff81403456 ffffc90008adbcd0
+[   77.848245]  0000000000000000 ffffc90008adbcc0 ffffffff8105e2e1 0000042d08adbf20
+[   77.855934]  ffff88046a861c18 ffff88046a85c420 ffffffff820d4200 ffff88046ae92318
+[   77.863601] Call Trace:
+[   77.871113]  [<ffffffff81403456>] dump_stack+0x4f/0x69
+[   77.878655]  [<ffffffff8105e2e1>] __warn+0xd1/0xf0
+[   77.886102]  [<ffffffff8105e34f>] warn_slowpath_fmt+0x4f/0x60
+[   77.893508]  [<ffffffff814187a9>] ? find_next_bit+0x19/0x20
+[   77.900730]  [<ffffffff814bf83e>] ? dma_channel_rebalance+0x23e/0x270
+[   77.907814]  [<ffffffff814bfee2>] dma_async_device_unregister+0xe2/0xf0
+[   77.914992]  [<ffffffff814c53aa>] hsu_dma_remove+0x1a/0x60
+[   77.921977]  [<ffffffff814ee14c>] dnv_exit+0x1c/0x20
+[   77.928752]  [<ffffffff814edff6>] mid8250_remove+0x26/0x40
+[   77.935607]  [<ffffffff8144f1b9>] pci_device_remove+0x39/0xc0
+[   77.942292]  [<ffffffff8160cfea>] __device_release_driver+0x9a/0x140
+[   77.948836]  [<ffffffff8160d0b3>] device_release_driver+0x23/0x30
+[   77.955364]  [<ffffffff81447dcc>] pci_stop_bus_device+0x8c/0xa0
+[   77.961769]  [<ffffffff81447f0a>] pci_stop_and_remove_bus_device_locked+0x1a/0x30
+[   77.968113]  [<ffffffff81450d4e>] remove_store+0x5e/0x70
+[   77.974267]  [<ffffffff81607ed8>] dev_attr_store+0x18/0x30
+[   77.980243]  [<ffffffff8123006a>] sysfs_kf_write+0x3a/0x50
+[   77.986180]  [<ffffffff8122f5ab>] kernfs_fop_write+0x10b/0x190
+[   77.992118]  [<ffffffff811bf1c8>] __vfs_write+0x18/0x40
+[   77.998032]  [<ffffffff811bfdee>] vfs_write+0xae/0x190
+[   78.003747]  [<ffffffff811c1016>] SyS_write+0x46/0xb0
+[   78.009234]  [<ffffffff81a4c31b>] entry_SYSCALL_64_fastpath+0x13/0x8f
+[   78.014809] ---[ end trace 0c36dd73b7408eb2 ]---
 
-The generic race on the fs lookup requires a fs availability event, and
-addressing fs suspend. I'll note that the race on init is addressed today
-*only* by the firmware UMH (its UMH is kobject uevent and optionally a custom
-binary) by using the UMH lock. During a cleanup by Daniel recently I
-realized it was bogus to use the UMH of the UMH was not used, turns out
-this would still expose the direct FS lookup to a race though. This
-begs the question if the UMH lock either be removed / shared with the
-other kernel UMHs or a generic solution provided for direct fs lookup
-with some requirements specified.
+This happens when the 8250 serial controller is hotplugged as follows:
+echo 1 > /sys/bus/pci/devices/0000:00:1a.0/remove
 
-This is all a mess so I've documented each component and issues / ideas
-we've discussed so far separately, the firmware UMH (which we should
-probably rebrand to firmware kobject uevent helper to avoid confusion)
-[0], the real kernel usermode helper [1], the new common kernel file
-loader [2]
+This trace happens due to the serial port still holding a reference when
+the dma device is unregistered.
+The dma unregister routine will check if there is still a reference exist,
+if so it will give the WARNING(here serial port still was not unregister).
 
-[0] https://kernelnewbies.org/KernelProjects/firmware-class-enhancements
-[1] https://kernelnewbies.org/KernelProjects/usermode-helper-enhancements
-[2] https://kernelnewbies.org/KernelProjects/common-kernel-loader
+To fix this, We need to unregister the serial port first, then do DMA
+device unregister to make sure there is no reference when to DMA routine.
 
-  Luis
+Signed-off-by: Liwei Song <liwei.song@windriver.com>
+---
+ drivers/tty/serial/8250/8250_mid.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
+index 39c2324..ac013edf 100644
+--- a/drivers/tty/serial/8250/8250_mid.c
++++ b/drivers/tty/serial/8250/8250_mid.c
+@@ -303,10 +303,10 @@ static void mid8250_remove(struct pci_dev *pdev)
+ {
+ 	struct mid8250 *mid = pci_get_drvdata(pdev);
+ 
++	serial8250_unregister_port(mid->line);
++
+ 	if (mid->board->exit)
+ 		mid->board->exit(mid);
+-
+-	serial8250_unregister_port(mid->line);
+ }
+ 
+ static const struct mid8250_board pnw_board = {
+-- 
+2.9.3
