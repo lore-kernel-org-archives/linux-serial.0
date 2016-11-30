@@ -1,71 +1,111 @@
-From: Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [RFC] fs: add userspace critical mounts event support
-Date: Wed, 30 Nov 2016 09:18:29 +0100
-Message-ID: <1480493909.9990.31.camel@sipsolutions.net>
-References: <20160825194133.GC3296@wotan.suse.de>
- <20160902235916.GO3296@wotan.suse.de> <20160903002014.GP3296@wotan.suse.de>
- <6332a54e-74c6-eafd-368e-71e87a3fa34e@landley.net>
- <20161005180017.GD3296@wotan.suse.de>
- <CA+55aFzrRekSrEczdtGb3RuOeJttJ7i7dQJxiTOXz8V+kr=hdA@mail.gmail.com>
- <20161005194633.GE3296@wotan.suse.de>
- <20161108224726.GD13978@wotan.suse.de>
- <1479202125.12007.24.camel@sipsolutions.net>
- <CAG-2HqVf=YQk2iLFhpsKFZd3HZTG6XG7xY6B4YeX5-bFrwMJFA@mail.gmail.com>
- <20161129213739.GJ1402@wotan.suse.de>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] serial: 8250_mid fix calltrace when hotplug 8250 serial
+ controller
+Date: Wed, 30 Nov 2016 18:14:49 +0200
+Message-ID: <1480522489.21899.55.camel@linux.intel.com>
+References: <1480487125-214457-1-git-send-email-liwei.song@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20161129213739.GJ1402@wotan.suse.de>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: "Luis R. Rodriguez" <mcgrof@kernel.org>, Tom Gundersen <teg@jklm.no>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Gilles.Muller@lip6.fr, Takashi Iwai <tiwai@suse.de>, Daniel Wagner <daniel.wagner@bmw-carit.de>, Ming Lei <ming.lei@canonical.com>, Stephen Boyd <stephen.boyd@linaro.org>, Kay Sievers <kay@vrfy.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, David Howells <dhowells@redhat.com>, Alessandro Rubini <rubini@gnudd.com>, Christian Lamparter <chunkeey@googlemail.com>, Kees Cook <keescook@chromium.org>, Josh Boyer <jwboyer@fedoraproject.org>, Jonathan Corbet <corbet@lwn.net>, Kevin Cernekee <cernekee@gmail.com>, Thierry Martinez <martinez@nsup.org>, linux-serial <linux-serial@vger.kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, Mimi Zohar <zohar@linux.vnet.ibm.com>, David Woodhouse <dwmw2@infradead.org>, Jeff Mahoney <jeffm@suse.com>, Daniel Wagner <wagi@monom.org>, Jouni
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1480487125-214457-1-git-send-email-liwei.song@windriver.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Song liwei <liwei.song@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Chuah Kim Tatt <kim.tatt.chuah@intel.com>, Vinod Koul <vinod.koul@intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2016-11-29 at 22:37 +0100, Luis R. Rodriguez wrote:
-> On Tue, Nov 29, 2016 at 10:10:56PM +0100, Tom Gundersen wrote:
-> > 
-> > On Tue, Nov 15, 2016 at 10:28 AM, Johannes Berg
-> > <johannes@sipsolutions.net> wrote:
-> > > 
-> > > My argument basically goes like this:
-> > > 
-> > > First, given good drivers (i.e. using request_firmware_nowait())
-> > > putting firmware even for a built-in driver into initramfs or not
-> > > should be a system integrator decision. If they don't need the
-> > > device
-> > > that early, it should be possible for them to delay it. Or,
-> > > perhaps, if
-> > > the firmware is too big, etc. I'm sure we can all come up with
-> > > more
-> > > examples of why you'd want to do it one way or another.
-> > 
-> > This is how I understood the the situation, but I never quite
-> > bought
-> > it. What is wrong with the kernel saying "you must put your module
-> > and
-> > your firmware together"? Sure, people may want to do things
-> > differently, but what is the real blocker?
+On Wed, 2016-11-30 at 01:25 -0500, Song liwei wrote:
+> From: Liwei Song <liwei.song@windriver.com>
 > 
-> 0) Firmware upgrades are possible
-> 1) Some firmware is optional
-> 2) Firmware licenses may often not be GPLv2 compatible
-> 3) Some firmwares may be stupid large (remote-proc) as such
->    neither built-in firmware nor using the firmware in initramfs
->    is reasonable.
+> Fix the following Calltrace:
+> [   77.768221] WARNING: CPU: 5 PID: 645 at
+> drivers/dma/dmaengine.c:1069 dma_async_device_unregister+0xe2/0xf0
+> [   77.775058] dma_async_device_unregister called while 1 clients hold
+> a reference
+> [   77.825048] CPU: 5 PID: 645 Comm: sh Not tainted 4.8.8-
+> WR9.0.0.0_standard+ #3
+> [   77.832550] Hardware name: Intel Corp. Aspen Cove/Server, BIOS
+> HAVLCRB1.X64.0012.D58.1604140405 04/14/2016
+> [   77.840396]  0000000000000000 ffffc90008adbc80 ffffffff81403456
+> ffffc90008adbcd0
+> [   77.848245]  0000000000000000 ffffc90008adbcc0 ffffffff8105e2e1
+> 0000042d08adbf20
+> [   77.855934]  ffff88046a861c18 ffff88046a85c420 ffffffff820d4200
+> ffff88046ae92318
+> [   77.863601] Call Trace:
+> [   77.871113]  [<ffffffff81403456>] dump_stack+0x4f/0x69
+> [   77.878655]  [<ffffffff8105e2e1>] __warn+0xd1/0xf0
+> [   77.886102]  [<ffffffff8105e34f>] warn_slowpath_fmt+0x4f/0x60
+> [   77.893508]  [<ffffffff814187a9>] ? find_next_bit+0x19/0x20
+> [   77.900730]  [<ffffffff814bf83e>] ?
+> dma_channel_rebalance+0x23e/0x270
+> [   77.907814]  [<ffffffff814bfee2>]
+> dma_async_device_unregister+0xe2/0xf0
+> [   77.914992]  [<ffffffff814c53aa>] hsu_dma_remove+0x1a/0x60
+> [   77.921977]  [<ffffffff814ee14c>] dnv_exit+0x1c/0x20
+> [   77.928752]  [<ffffffff814edff6>] mid8250_remove+0x26/0x40
+> [   77.935607]  [<ffffffff8144f1b9>] pci_device_remove+0x39/0xc0
+> [   77.942292]  [<ffffffff8160cfea>]
+> __device_release_driver+0x9a/0x140
+> [   77.948836]  [<ffffffff8160d0b3>] device_release_driver+0x23/0x30
+> [   77.955364]  [<ffffffff81447dcc>] pci_stop_bus_device+0x8c/0xa0
+> [   77.961769]  [<ffffffff81447f0a>]
+> pci_stop_and_remove_bus_device_locked+0x1a/0x30
+> [   77.968113]  [<ffffffff81450d4e>] remove_store+0x5e/0x70
+> [   77.974267]  [<ffffffff81607ed8>] dev_attr_store+0x18/0x30
+> [   77.980243]  [<ffffffff8123006a>] sysfs_kf_write+0x3a/0x50
+> [   77.986180]  [<ffffffff8122f5ab>] kernfs_fop_write+0x10b/0x190
+> [   77.992118]  [<ffffffff811bf1c8>] __vfs_write+0x18/0x40
+> [   77.998032]  [<ffffffff811bfdee>] vfs_write+0xae/0x190
+> [   78.003747]  [<ffffffff811c1016>] SyS_write+0x46/0xb0
+> [   78.009234]  [<ffffffff81a4c31b>]
+> entry_SYSCALL_64_fastpath+0x13/0x8f
+> [   78.014809] ---[ end trace 0c36dd73b7408eb2 ]---
+> 
+> This happens when the 8250 serial controller is hotplugged as follows:
+> echo 1 > /sys/bus/pci/devices/0000:00:1a.0/remove
+> 
+> This trace happens due to the serial port still holding a reference
+> when
+> the dma device is unregistered.
+> The dma unregister routine will check if there is still a reference
+> exist,
+> if so it will give the WARNING(here serial port still was not
+> unregister).
+> 
+> To fix this, We need to unregister the serial port first, then do DMA
+> device unregister to make sure there is no reference when to DMA
+> routine.
+> 
 
-4) "firmware" may be on a separate flash partition because it's really
-   calibration data required by the (wifi) chip/driver
-   (to allow kernel updates without having to taylor the kernel image
-   to each and every device!!
+Good catch, thanks!
 
-johannes
+Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Signed-off-by: Liwei Song <liwei.song@windriver.com>
+> ---
+>  drivers/tty/serial/8250/8250_mid.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_mid.c
+> b/drivers/tty/serial/8250/8250_mid.c
+> index 39c2324..ac013edf 100644
+> --- a/drivers/tty/serial/8250/8250_mid.c
+> +++ b/drivers/tty/serial/8250/8250_mid.c
+> @@ -303,10 +303,10 @@ static void mid8250_remove(struct pci_dev *pdev)
+>  {
+>  	struct mid8250 *mid = pci_get_drvdata(pdev);
+>  
+> +	serial8250_unregister_port(mid->line);
+> +
+>  	if (mid->board->exit)
+>  		mid->board->exit(mid);
+> -
+> -	serial8250_unregister_port(mid->line);
+>  }
+>  
+>  static const struct mid8250_board pnw_board = {
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
