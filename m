@@ -1,111 +1,156 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250_mid fix calltrace when hotplug 8250 serial
- controller
-Date: Wed, 30 Nov 2016 18:14:49 +0200
-Message-ID: <1480522489.21899.55.camel@linux.intel.com>
-References: <1480487125-214457-1-git-send-email-liwei.song@windriver.com>
+From: David Howells <dhowells@redhat.com>
+Subject: [PATCH 32/39] Annotate hardware config module parameters in
+ drivers/tty/
+Date: Thu, 01 Dec 2016 12:33:54 +0000
+Message-ID: <148059563433.31612.11409694377610141671.stgit@warthog.procyon.org.uk>
+References: <148059537897.31612.9461043954611464597.stgit@warthog.procyon.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1480487125-214457-1-git-send-email-liwei.song@windriver.com>
+In-Reply-To: <148059537897.31612.9461043954611464597.stgit@warthog.procyon.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Song liwei <liwei.song@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Chuah Kim Tatt <kim.tatt.chuah@intel.com>, Vinod Koul <vinod.koul@intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: gnomes@lxorguk.ukuu.org.uk, minyard@acm.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dhowells@redhat.com, linux-security-module@vger.kernel.org, keyrings@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2016-11-30 at 01:25 -0500, Song liwei wrote:
-> From: Liwei Song <liwei.song@windriver.com>
-> 
-> Fix the following Calltrace:
-> [   77.768221] WARNING: CPU: 5 PID: 645 at
-> drivers/dma/dmaengine.c:1069 dma_async_device_unregister+0xe2/0xf0
-> [   77.775058] dma_async_device_unregister called while 1 clients hold
-> a reference
-> [   77.825048] CPU: 5 PID: 645 Comm: sh Not tainted 4.8.8-
-> WR9.0.0.0_standard+ #3
-> [   77.832550] Hardware name: Intel Corp. Aspen Cove/Server, BIOS
-> HAVLCRB1.X64.0012.D58.1604140405 04/14/2016
-> [   77.840396]  0000000000000000 ffffc90008adbc80 ffffffff81403456
-> ffffc90008adbcd0
-> [   77.848245]  0000000000000000 ffffc90008adbcc0 ffffffff8105e2e1
-> 0000042d08adbf20
-> [   77.855934]  ffff88046a861c18 ffff88046a85c420 ffffffff820d4200
-> ffff88046ae92318
-> [   77.863601] Call Trace:
-> [   77.871113]  [<ffffffff81403456>] dump_stack+0x4f/0x69
-> [   77.878655]  [<ffffffff8105e2e1>] __warn+0xd1/0xf0
-> [   77.886102]  [<ffffffff8105e34f>] warn_slowpath_fmt+0x4f/0x60
-> [   77.893508]  [<ffffffff814187a9>] ? find_next_bit+0x19/0x20
-> [   77.900730]  [<ffffffff814bf83e>] ?
-> dma_channel_rebalance+0x23e/0x270
-> [   77.907814]  [<ffffffff814bfee2>]
-> dma_async_device_unregister+0xe2/0xf0
-> [   77.914992]  [<ffffffff814c53aa>] hsu_dma_remove+0x1a/0x60
-> [   77.921977]  [<ffffffff814ee14c>] dnv_exit+0x1c/0x20
-> [   77.928752]  [<ffffffff814edff6>] mid8250_remove+0x26/0x40
-> [   77.935607]  [<ffffffff8144f1b9>] pci_device_remove+0x39/0xc0
-> [   77.942292]  [<ffffffff8160cfea>]
-> __device_release_driver+0x9a/0x140
-> [   77.948836]  [<ffffffff8160d0b3>] device_release_driver+0x23/0x30
-> [   77.955364]  [<ffffffff81447dcc>] pci_stop_bus_device+0x8c/0xa0
-> [   77.961769]  [<ffffffff81447f0a>]
-> pci_stop_and_remove_bus_device_locked+0x1a/0x30
-> [   77.968113]  [<ffffffff81450d4e>] remove_store+0x5e/0x70
-> [   77.974267]  [<ffffffff81607ed8>] dev_attr_store+0x18/0x30
-> [   77.980243]  [<ffffffff8123006a>] sysfs_kf_write+0x3a/0x50
-> [   77.986180]  [<ffffffff8122f5ab>] kernfs_fop_write+0x10b/0x190
-> [   77.992118]  [<ffffffff811bf1c8>] __vfs_write+0x18/0x40
-> [   77.998032]  [<ffffffff811bfdee>] vfs_write+0xae/0x190
-> [   78.003747]  [<ffffffff811c1016>] SyS_write+0x46/0xb0
-> [   78.009234]  [<ffffffff81a4c31b>]
-> entry_SYSCALL_64_fastpath+0x13/0x8f
-> [   78.014809] ---[ end trace 0c36dd73b7408eb2 ]---
-> 
-> This happens when the 8250 serial controller is hotplugged as follows:
-> echo 1 > /sys/bus/pci/devices/0000:00:1a.0/remove
-> 
-> This trace happens due to the serial port still holding a reference
-> when
-> the dma device is unregistered.
-> The dma unregister routine will check if there is still a reference
-> exist,
-> if so it will give the WARNING(here serial port still was not
-> unregister).
-> 
-> To fix this, We need to unregister the serial port first, then do DMA
-> device unregister to make sure there is no reference when to DMA
-> routine.
-> 
+When the kernel is running in secure boot mode, we lock down the kernel to
+prevent userspace from modifying the running kernel image.  Whilst this
+includes prohibiting access to things like /dev/mem, it must also prevent
+access by means of configuring driver modules in such a way as to cause a
+device to access or modify the kernel image.
 
-Good catch, thanks!
+To this end, annotate module_param* statements that refer to hardware
+configuration and indicate for future reference what type of parameter they
+specify.  The parameter parser in the core sees this information and can
+skip such parameters with an error message if the kernel is locked down.
+The module initialisation then runs as normal, but just sees whatever the
+default values for those parameters is.
 
-Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Note that we do still need to do the module initialisation because some
+drivers have viable defaults set in case parameters aren't specified and
+some drivers support automatic configuration (e.g. PNP or PCI) in addition
+to manually coded parameters.
 
-> Signed-off-by: Liwei Song <liwei.song@windriver.com>
-> ---
->  drivers/tty/serial/8250/8250_mid.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_mid.c
-> b/drivers/tty/serial/8250/8250_mid.c
-> index 39c2324..ac013edf 100644
-> --- a/drivers/tty/serial/8250/8250_mid.c
-> +++ b/drivers/tty/serial/8250/8250_mid.c
-> @@ -303,10 +303,10 @@ static void mid8250_remove(struct pci_dev *pdev)
->  {
->  	struct mid8250 *mid = pci_get_drvdata(pdev);
->  
-> +	serial8250_unregister_port(mid->line);
-> +
->  	if (mid->board->exit)
->  		mid->board->exit(mid);
-> -
-> -	serial8250_unregister_port(mid->line);
->  }
->  
->  static const struct mid8250_board pnw_board = {
+This patch annotates drivers in drivers/tty/.
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Suggested-by: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc: Jiri Slaby <jslaby@suse.com>
+cc: linux-serial@vger.kernel.org
+---
+
+ drivers/tty/cyclades.c              |    4 ++--
+ drivers/tty/moxa.c                  |    2 +-
+ drivers/tty/mxser.c                 |    2 +-
+ drivers/tty/rocket.c                |   10 +++++-----
+ drivers/tty/serial/8250/8250_core.c |    4 ++--
+ drivers/tty/synclink.c              |    6 +++---
+ 6 files changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/tty/cyclades.c b/drivers/tty/cyclades.c
+index 5e4fa9206861..104f09c58163 100644
+--- a/drivers/tty/cyclades.c
++++ b/drivers/tty/cyclades.c
+@@ -156,8 +156,8 @@ static unsigned int cy_isa_addresses[] = {
+ static long maddr[NR_CARDS];
+ static int irq[NR_CARDS];
+ 
+-module_param_array(maddr, long, NULL, 0);
+-module_param_array(irq, int, NULL, 0);
++module_param_hw_array(maddr, long, iomem, NULL, 0);
++module_param_hw_array(irq, int, irq, NULL, 0);
+ 
+ #endif				/* CONFIG_ISA */
+ 
+diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
+index 60d37b225589..055acf6acfc0 100644
+--- a/drivers/tty/moxa.c
++++ b/drivers/tty/moxa.c
+@@ -179,7 +179,7 @@ MODULE_FIRMWARE("c320tunx.cod");
+ 
+ module_param_array(type, uint, NULL, 0);
+ MODULE_PARM_DESC(type, "card type: C218=2, C320=4");
+-module_param_array(baseaddr, ulong, NULL, 0);
++module_param_hw_array(baseaddr, ulong, ioport, NULL, 0);
+ MODULE_PARM_DESC(baseaddr, "base address");
+ module_param_array(numports, uint, NULL, 0);
+ MODULE_PARM_DESC(numports, "numports (ignored for C218)");
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index 69294ae154be..80770da545dd 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -183,7 +183,7 @@ static int ttymajor = MXSERMAJOR;
+ 
+ MODULE_AUTHOR("Casper Yang");
+ MODULE_DESCRIPTION("MOXA Smartio/Industio Family Multiport Board Device Driver");
+-module_param_array(ioaddr, ulong, NULL, 0);
++module_param_hw_array(ioaddr, ulong, ioport, NULL, 0);
+ MODULE_PARM_DESC(ioaddr, "ISA io addresses to look for a moxa board");
+ module_param(ttymajor, int, 0);
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/tty/rocket.c b/drivers/tty/rocket.c
+index b0cc47c77b40..44f6c3383c33 100644
+--- a/drivers/tty/rocket.c
++++ b/drivers/tty/rocket.c
+@@ -250,15 +250,15 @@ static int sReadAiopNumChan(WordIO_t io);
+ 
+ MODULE_AUTHOR("Theodore Ts'o");
+ MODULE_DESCRIPTION("Comtrol RocketPort driver");
+-module_param(board1, ulong, 0);
++module_param_hw(board1, ulong, ioport, 0);
+ MODULE_PARM_DESC(board1, "I/O port for (ISA) board #1");
+-module_param(board2, ulong, 0);
++module_param_hw(board2, ulong, ioport, 0);
+ MODULE_PARM_DESC(board2, "I/O port for (ISA) board #2");
+-module_param(board3, ulong, 0);
++module_param_hw(board3, ulong, ioport, 0);
+ MODULE_PARM_DESC(board3, "I/O port for (ISA) board #3");
+-module_param(board4, ulong, 0);
++module_param_hw(board4, ulong, ioport, 0);
+ MODULE_PARM_DESC(board4, "I/O port for (ISA) board #4");
+-module_param(controller, ulong, 0);
++module_param_hw(controller, ulong, ioport, 0);
+ MODULE_PARM_DESC(controller, "I/O port for (ISA) rocketport controller");
+ module_param(support_low_speed, bool, 0);
+ MODULE_PARM_DESC(support_low_speed, "1 means support 50 baud, 0 means support 460400 baud");
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 240a361b674f..414af45dc16e 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1188,7 +1188,7 @@ module_exit(serial8250_exit);
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Generic 8250/16x50 serial driver");
+ 
+-module_param(share_irqs, uint, 0644);
++module_param_hw(share_irqs, uint, other, 0644);
+ MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices (unsafe)");
+ 
+ module_param(nr_uarts, uint, 0644);
+@@ -1198,7 +1198,7 @@ module_param(skip_txen_test, uint, 0644);
+ MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
+ 
+ #ifdef CONFIG_SERIAL_8250_RSA
+-module_param_array(probe_rsa, ulong, &probe_rsa_count, 0444);
++module_param_hw_array(probe_rsa, ulong, ioport, &probe_rsa_count, 0444);
+ MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
+ #endif
+ MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
+diff --git a/drivers/tty/synclink.c b/drivers/tty/synclink.c
+index c13e27ecb0b7..71dd598d76a0 100644
+--- a/drivers/tty/synclink.c
++++ b/drivers/tty/synclink.c
+@@ -869,9 +869,9 @@ static int txholdbufs[MAX_TOTAL_DEVICES];
+ 	
+ module_param(break_on_load, bool, 0);
+ module_param(ttymajor, int, 0);
+-module_param_array(io, int, NULL, 0);
+-module_param_array(irq, int, NULL, 0);
+-module_param_array(dma, int, NULL, 0);
++module_param_hw_array(io, int, ioport, NULL, 0);
++module_param_hw_array(irq, int, irq, NULL, 0);
++module_param_hw_array(dma, int, dma, NULL, 0);
+ module_param(debug_level, int, 0);
+ module_param_array(maxframe, int, NULL, 0);
+ module_param_array(txdmabufs, int, NULL, 0);
