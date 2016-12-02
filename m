@@ -1,74 +1,68 @@
-From: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Subject: [PATCH] tty: serial: fsl_lpuart: fix del_timer_sync() vs timer routine deadlock
-Date: Fri,  2 Dec 2016 13:28:10 +0300
-Message-ID: <1480674490-24718-1-git-send-email-nikita.yoush@cogentembedded.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Stefan Agner <stefan@agner.ch>, Wei Yongjun <weiyongjun1@huawei.com>, Aaron Brice <aaron.brice@datasoft.com>, Nicolae Rosia <nicolae_rosia@mentor.com>, linux-serial@vger.kernel.org
-Cc: Chris Healy <cphealy@gmail.com>, linux-kernel@vger.kernel.org, Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 2/2] serial: sh-sci: Fix hang in sci_reset()
+Date: Fri,  2 Dec 2016 13:35:11 +0100
+Message-ID: <1480682111-9299-3-git-send-email-geert+renesas@glider.be>
+References: <1480682111-9299-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1480682111-9299-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Christoph Baumann <cbaumann@visteon.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Problem found via lockdep:
+When the .set_termios() callback resets the UART, it first waits until
+all characters in the transmit FIFO have been transmitted, to prevent a
+port configuration change from impacting these characters.
 
-- lpuart_set_termios() calls del_timer_sync(&sport->lpuart_timer) while
-  holding sport->port.lock
+However, if the previous user of the UART had dedicated RTS/CTS hardware
+flow control enabled, these characters may have been stuck in the FIFO
+due to CTS not being asserted. When the new user opens the port,
+.set_termios() is called while transmission is still disabled, leading
+to an infinite loop:
 
-- sport->lpuart_timer routine is lpuart_timer_func() that calls
-  lpuart_copy_rx_to_tty() that acquires same lock.
+    NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s!
 
-To fix, move Rx DMA stopping out of lock, as it already is in other places
-in the same file.
+This has been observed with SCIFA (on r8a7740/armadillo) and SCIFB (on
+r8a7791/koelsch).
 
-While at it, also make Rx DMA start/stop code to look the same is in
-other places in the same file.
+The issue does not seem to happen when using:
+  - GPIO RTS/CTS hardware flow control,
+  - No hardware flow control,
+  - HSCIF (on r8a7791/koelsch).
 
-Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+To fix this, wait for the draining of the transmit FIFO only if
+transmission is already enabled.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/fsl_lpuart.c | 25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+To reproduce:
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index a1c6519837a4..81100c40f33b 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1407,6 +1407,18 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/* ask the core to calculate the divisor */
- 	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
+    stty -echo < /dev/scifb0
+    stty crtscts < /dev/scifb0
+    echo hello > /dev/scifb0	# returns early (wrote to FIFO)
+    echo hello > /dev/scifb0	# hangs
+
+ drivers/tty/serial/sh-sci.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index c503db1900f003ed..db5de80c5399a7bd 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2137,9 +2137,11 @@ static void sci_reset(struct uart_port *port)
+ 	const struct plat_sci_reg *reg;
+ 	unsigned int status;
  
-+	/*
-+	 * Need to update the Ring buffer length according to the selected
-+	 * baud rate and restart Rx DMA path.
-+	 *
-+	 * Since timer function acqures sport->port.lock, need to stop before
-+	 * acquring same lock because otherwise del_timer_sync() can deadlock.
-+	 */
-+	if (sport->lpuart_dma_rx_use) {
-+		del_timer_sync(&sport->lpuart_timer);
-+		lpuart_dma_rx_free(&sport->port);
+-	do {
+-		status = serial_port_in(port, SCxSR);
+-	} while (!(status & SCxSR_TEND(port)));
++	if (serial_port_in(port, SCSCR) & SCSCR_TE) {
++		do {
++			status = serial_port_in(port, SCxSR);
++		} while (!(status & SCxSR_TEND(port)));
 +	}
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
  
- 	sport->port.read_status_mask = 0;
-@@ -1456,17 +1468,8 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/* restore control register */
- 	writeb(old_cr2, sport->port.membase + UARTCR2);
+ 	serial_port_out(port, SCSCR, 0x00);	/* TE=0, RE=0, CKE1=0 */
  
--	/*
--	 * If new baud rate is set, we will also need to update the Ring buffer
--	 * length according to the selected baud rate and restart Rx DMA path.
--	 */
--	if (old) {
--		if (sport->lpuart_dma_rx_use) {
--			del_timer_sync(&sport->lpuart_timer);
--			lpuart_dma_rx_free(&sport->port);
--		}
--
--		if (sport->dma_rx_chan && !lpuart_start_rx_dma(sport)) {
-+	if (sport->lpuart_dma_rx_use) {
-+		if (!lpuart_start_rx_dma(sport)) {
- 			sport->lpuart_dma_rx_use = true;
- 			rx_dma_timer_init(sport);
- 		} else {
 -- 
-2.1.4
+1.9.1
