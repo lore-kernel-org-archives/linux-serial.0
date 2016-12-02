@@ -1,58 +1,74 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 32/39] Annotate hardware config module parameters in
- drivers/tty/
-Date: Thu, 1 Dec 2016 16:02:52 +0100
-Message-ID: <20161201150252.GA10786@kroah.com>
-References: <148059537897.31612.9461043954611464597.stgit@warthog.procyon.org.uk>
- <148059563433.31612.11409694377610141671.stgit@warthog.procyon.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Subject: [PATCH] tty: serial: fsl_lpuart: fix del_timer_sync() vs timer routine deadlock
+Date: Fri,  2 Dec 2016 13:28:10 +0300
+Message-ID: <1480674490-24718-1-git-send-email-nikita.yoush@cogentembedded.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <148059563433.31612.11409694377610141671.stgit@warthog.procyon.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: David Howells <dhowells@redhat.com>
-Cc: linux-kernel@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, minyard@acm.org, linux-security-module@vger.kernel.org, keyrings@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Stefan Agner <stefan@agner.ch>, Wei Yongjun <weiyongjun1@huawei.com>, Aaron Brice <aaron.brice@datasoft.com>, Nicolae Rosia <nicolae_rosia@mentor.com>, linux-serial@vger.kernel.org
+Cc: Chris Healy <cphealy@gmail.com>, linux-kernel@vger.kernel.org, Nikita Yushchenko <nikita.yoush@cogentembedded.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Dec 01, 2016 at 12:33:54PM +0000, David Howells wrote:
-> When the kernel is running in secure boot mode, we lock down the kernel to
-> prevent userspace from modifying the running kernel image.  Whilst this
-> includes prohibiting access to things like /dev/mem, it must also prevent
-> access by means of configuring driver modules in such a way as to cause a
-> device to access or modify the kernel image.
-> 
-> To this end, annotate module_param* statements that refer to hardware
-> configuration and indicate for future reference what type of parameter they
-> specify.  The parameter parser in the core sees this information and can
-> skip such parameters with an error message if the kernel is locked down.
-> The module initialisation then runs as normal, but just sees whatever the
-> default values for those parameters is.
-> 
-> Note that we do still need to do the module initialisation because some
-> drivers have viable defaults set in case parameters aren't specified and
-> some drivers support automatic configuration (e.g. PNP or PCI) in addition
-> to manually coded parameters.
-> 
-> This patch annotates drivers in drivers/tty/.
-> 
-> Suggested-by: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> cc: Jiri Slaby <jslaby@suse.com>
-> cc: linux-serial@vger.kernel.org
-> ---
-> 
->  drivers/tty/cyclades.c              |    4 ++--
->  drivers/tty/moxa.c                  |    2 +-
->  drivers/tty/mxser.c                 |    2 +-
->  drivers/tty/rocket.c                |   10 +++++-----
->  drivers/tty/serial/8250/8250_core.c |    4 ++--
->  drivers/tty/synclink.c              |    6 +++---
->  6 files changed, 14 insertions(+), 14 deletions(-)
+Problem found via lockdep:
 
-NAK, see my response to patch 1 of this series.
+- lpuart_set_termios() calls del_timer_sync(&sport->lpuart_timer) while
+  holding sport->port.lock
 
-thanks,
+- sport->lpuart_timer routine is lpuart_timer_func() that calls
+  lpuart_copy_rx_to_tty() that acquires same lock.
 
-greg k-h
+To fix, move Rx DMA stopping out of lock, as it already is in other places
+in the same file.
+
+While at it, also make Rx DMA start/stop code to look the same is in
+other places in the same file.
+
+Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 25 ++++++++++++++-----------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index a1c6519837a4..81100c40f33b 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1407,6 +1407,18 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	/* ask the core to calculate the divisor */
+ 	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
+ 
++	/*
++	 * Need to update the Ring buffer length according to the selected
++	 * baud rate and restart Rx DMA path.
++	 *
++	 * Since timer function acqures sport->port.lock, need to stop before
++	 * acquring same lock because otherwise del_timer_sync() can deadlock.
++	 */
++	if (sport->lpuart_dma_rx_use) {
++		del_timer_sync(&sport->lpuart_timer);
++		lpuart_dma_rx_free(&sport->port);
++	}
++
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	sport->port.read_status_mask = 0;
+@@ -1456,17 +1468,8 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	/* restore control register */
+ 	writeb(old_cr2, sport->port.membase + UARTCR2);
+ 
+-	/*
+-	 * If new baud rate is set, we will also need to update the Ring buffer
+-	 * length according to the selected baud rate and restart Rx DMA path.
+-	 */
+-	if (old) {
+-		if (sport->lpuart_dma_rx_use) {
+-			del_timer_sync(&sport->lpuart_timer);
+-			lpuart_dma_rx_free(&sport->port);
+-		}
+-
+-		if (sport->dma_rx_chan && !lpuart_start_rx_dma(sport)) {
++	if (sport->lpuart_dma_rx_use) {
++		if (!lpuart_start_rx_dma(sport)) {
+ 			sport->lpuart_dma_rx_use = true;
+ 			rx_dma_timer_init(sport);
+ 		} else {
+-- 
+2.1.4
