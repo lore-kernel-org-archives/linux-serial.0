@@ -1,69 +1,83 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 1/2] serial: sh-sci: Fix early deassertion of dedicated RTS
-Date: Fri,  2 Dec 2016 13:35:10 +0100
-Message-ID: <1480682111-9299-2-git-send-email-geert+renesas@glider.be>
-References: <1480682111-9299-1-git-send-email-geert+renesas@glider.be>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 2/3] serial: st-asc: Provide RTS functionality
+Date: Fri,  2 Dec 2016 14:11:45 +0000
+Message-ID: <20161202141146.31281-2-lee.jones@linaro.org>
+References: <20161202141146.31281-1-lee.jones@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1480682111-9299-1-git-send-email-geert+renesas@glider.be>
+In-Reply-To: <20161202141146.31281-1-lee.jones@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Christoph Baumann <cbaumann@visteon.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+To: gregkh@linuxfoundation.org, jslaby@suse.com, patrice.chotard@st.com
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, linux-serial@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-If a UART has dedicated RTS/CTS pins, there are some issues:
+Until this point, it has not been possible for serial applications
+to toggle the UART RTS line.  This can be useful with certain
+configurations. For example, when using a Mezzanine on a Linaro
+96board, RTS line is used to take the the on-board microcontroller
+in and out of reset.
 
-1. When changing hardware control flow, the new AUTORTS state is not
-   immediately reflected in the hardware, but only when RTS is raised.
-   However, the serial core doesn't call .set_mctrl() after
-   .set_termios(), hence AUTORTS may only become effective when the port
-   is closed, and reopened later.
-   Note that this problem does not happen when manually using stty to
-   change CRTSCTS, as AUTORTS will work fine on next open.
-
-2. When hardware control flow is disabled (or AUTORTS is not yet
-   effective), changing any serial port configuration deasserts RTS, as
-   .set_termios() calls sci_init_pins().
-
-To fix both issues, call .set_mctrl() from .set_termios() when dedicated
-RTS/CTS pins are present, to refresh the AUTORTS or RTS state.
-This is similar to what other drivers supporting AUTORTS do (e.g.
-omap-serial).
-
-Reported-by: Baumann, Christoph (C.) <cbaumann@visteon.com> (issue 1)
-Fixes: 33f50ffc253854cf ("serial: sh-sci: Fix support for hardware-assisted RTS/CTS")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
-Tested on r8a7791/koelsch with HSCIF1 (GPIO hardware flow control),
-and HSCIF2 and SCIFB0 (dedicated hardware flow control).
+ drivers/tty/serial/st-asc.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-A simple test program (basically "cat" with CRTSCTS configuration
-capability) can be found at https://github.com/geertu/sercat
-
-Without this patch the following will fail:
-
-  1. sercat -f /dev/hscif2 &
-     seq 100 120 | sercat -f -w /dev/hscif1 # hangs
-
-  2. seq 200 220 | sercat -f -w /dev/hscif2 &
-     sercat -f /dev/hscif1 # no data received
----
- drivers/tty/serial/sh-sci.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 91e7dddbf72cd3de..c503db1900f003ed 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2340,6 +2340,10 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 379e5bd..ce46898 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -30,6 +30,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/serial_core.h>
+ #include <linux/clk.h>
++#include <linux/gpio/consumer.h>
  
- 		serial_port_out(port, SCFCR, ctrl);
- 	}
-+	if (port->flags & UPF_HARD_FLOW) {
-+		/* Refresh (Auto) RTS */
-+		sci_set_mctrl(port, port->mctrl);
+ #define DRIVER_NAME "st-asc"
+ #define ASC_SERIAL_NAME "ttyAS"
+@@ -38,6 +39,7 @@
+ 
+ struct asc_port {
+ 	struct uart_port port;
++	struct gpio_desc *rts;
+ 	struct clk *clk;
+ 	unsigned int hw_flow_control:1;
+ 	unsigned int force_m1:1;
+@@ -381,12 +383,16 @@ static unsigned int asc_tx_empty(struct uart_port *port)
+ 
+ static void asc_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
++	struct asc_port *ascport = to_asc_port(port);
++
+ 	/*
+ 	 * This routine is used for seting signals of: DTR, DCD, CTS/RTS
+ 	 * We use ASC's hardware for CTS/RTS, so don't need any for that.
+ 	 * Some boards have DTR and DCD implemented using PIO pins,
+ 	 * code to do this should be hooked in here.
+ 	 */
++
++	gpiod_set_value(ascport->rts, mctrl & TIOCM_RTS);
+ }
+ 
+ static unsigned int asc_get_mctrl(struct uart_port *port)
+@@ -731,12 +737,20 @@ MODULE_DEVICE_TABLE(of, asc_match);
+ static int asc_serial_probe(struct platform_device *pdev)
+ {
+ 	int ret;
++	struct device_node *np = pdev->dev.of_node;
+ 	struct asc_port *ascport;
++	struct gpio_desc *gpiod;
+ 
+ 	ascport = asc_of_get_asc_port(pdev);
+ 	if (!ascport)
+ 		return -ENODEV;
+ 
++	gpiod = devm_get_gpiod_from_child(&pdev->dev, "rts", &np->fwnode);
++	if (!IS_ERR(gpiod)) {
++		gpiod_direction_output(gpiod, 0);
++		ascport->rts = gpiod;
 +	}
- 
- 	scr_val |= s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0);
- 	dev_dbg(port->dev, "SCSCR 0x%x\n", scr_val);
++
+ 	ret = asc_init_port(ascport, pdev);
+ 	if (ret)
+ 		return ret;
 -- 
-1.9.1
+2.10.2
