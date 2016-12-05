@@ -1,46 +1,100 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH] SPCR: check bit width for the 16550 UART
-Date: Mon,  5 Dec 2016 19:05:12 +0600
-Message-ID: <20161205130534.11080-1-aleksey.makarov@linaro.org>
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: "Rafael J . Wysocki" <rjw@rjwysocki.net>
-Cc: linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, Jon Masters <jcm@redhat.com>, Mark Salter <msalter@redhat.com>, Duc Dang <dhdang@apm.com>, Graeme Gregory <graeme.gregory@linaro.org>, Len Brown <lenb@kernel.org>
+From: Patrice Chotard <patrice.chotard@st.com>
+Subject: Re: [PATCH 2/3] serial: st-asc: Provide RTS functionality
+Date: Mon, 5 Dec 2016 15:11:49 +0100
+Message-ID: <5e652529-8dcb-568e-a748-0ec745099211@st.com>
+References: <20161202141146.31281-1-lee.jones@linaro.org>
+ <20161202141146.31281-2-lee.jones@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20161202141146.31281-2-lee.jones@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Lee Jones <lee.jones@linaro.org>, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@stlinux.com
 List-Id: linux-serial@vger.kernel.org
 
-Check the 'Register Bit Width' field of the ACPI Generic Address
-Structure that specifies the address of the UART registers to
-decide if the driver should use "mmio32" access instead of "mmio".
+Hi Lee
 
-If the driver is other than 16550 the access with is defined
-by the Interface Type field of the SPCR table.
+On 12/02/2016 03:11 PM, Lee Jones wrote:
+> Until this point, it has not been possible for serial applications
+> to toggle the UART RTS line.  This can be useful with certain
+> configurations. For example, when using a Mezzanine on a Linaro
+> 96board, RTS line is used to take the the on-board microcontroller
 
-For discussion:
+typo "the the on"
 
-https://lkml.kernel.org/r/7fa523de-3fbb-1566-f521-927143f73d1e@redhat.com
-
-Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
-Reported-by: Heyi Guo <heyi.guo@linaro.org>
----
- drivers/acpi/spcr.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-index e8d7bc7..6c6710b 100644
---- a/drivers/acpi/spcr.c
-+++ b/drivers/acpi/spcr.c
-@@ -70,6 +70,10 @@ int __init parse_spcr(bool earlycon)
- 		break;
- 	case ACPI_DBG2_16550_COMPATIBLE:
- 	case ACPI_DBG2_16550_SUBSET:
-+		if (table->serial_port.space_id ==
-+			ACPI_ADR_SPACE_SYSTEM_MEMORY &&
-+		    table->serial_port.bit_width == 32)
-+			iotype = "mmio32";
- 		uart = "uart";
- 		break;
- 	default:
--- 
-2.10.2
-
+> in and out of reset.
+> 
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  drivers/tty/serial/st-asc.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> index 379e5bd..ce46898 100644
+> --- a/drivers/tty/serial/st-asc.c
+> +++ b/drivers/tty/serial/st-asc.c
+> @@ -30,6 +30,7 @@
+>  #include <linux/of_platform.h>
+>  #include <linux/serial_core.h>
+>  #include <linux/clk.h>
+> +#include <linux/gpio/consumer.h>
+>  
+>  #define DRIVER_NAME "st-asc"
+>  #define ASC_SERIAL_NAME "ttyAS"
+> @@ -38,6 +39,7 @@
+>  
+>  struct asc_port {
+>  	struct uart_port port;
+> +	struct gpio_desc *rts;
+>  	struct clk *clk;
+>  	unsigned int hw_flow_control:1;
+>  	unsigned int force_m1:1;
+> @@ -381,12 +383,16 @@ static unsigned int asc_tx_empty(struct uart_port *port)
+>  
+>  static void asc_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  {
+> +	struct asc_port *ascport = to_asc_port(port);
+> +
+>  	/*
+>  	 * This routine is used for seting signals of: DTR, DCD, CTS/RTS
+>  	 * We use ASC's hardware for CTS/RTS, so don't need any for that.
+>  	 * Some boards have DTR and DCD implemented using PIO pins,
+>  	 * code to do this should be hooked in here.
+>  	 */
+> +
+> +	gpiod_set_value(ascport->rts, mctrl & TIOCM_RTS);
+>  }
+>  
+>  static unsigned int asc_get_mctrl(struct uart_port *port)
+> @@ -731,12 +737,20 @@ MODULE_DEVICE_TABLE(of, asc_match);
+>  static int asc_serial_probe(struct platform_device *pdev)
+>  {
+>  	int ret;
+> +	struct device_node *np = pdev->dev.of_node;
+>  	struct asc_port *ascport;
+> +	struct gpio_desc *gpiod;
+>  
+>  	ascport = asc_of_get_asc_port(pdev);
+>  	if (!ascport)
+>  		return -ENODEV;
+>  
+> +	gpiod = devm_get_gpiod_from_child(&pdev->dev, "rts", &np->fwnode);
+> +	if (!IS_ERR(gpiod)) {
+> +		gpiod_direction_output(gpiod, 0);
+> +		ascport->rts = gpiod;
+> +	}
+> +
+>  	ret = asc_init_port(ascport, pdev);
+>  	if (ret)
+>  		return ret;
+> 
