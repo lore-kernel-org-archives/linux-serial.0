@@ -1,49 +1,58 @@
-From: Timur Tabi <timur@tabi.org>
-Subject: Re: [PATCH 1/1] serial/uuc_uart: Set shutdown timeout to CONFIG_HZ
- independent 2ms
-Date: Mon, 5 Dec 2016 10:04:27 -0600
-Message-ID: <5845900B.5010108@tabi.org>
-References: <1480953058-4958-1-git-send-email-alexander.stein@systec-electronic.com>
+From: Duc Dang <dhdang@apm.com>
+Subject: Re: [PATCH] SPCR: check bit width for the 16550 UART
+Date: Mon, 5 Dec 2016 10:51:28 -0800
+Message-ID: <CADaLND=cpfnrNUAR+hHBjMk=ei50Z=TFhgzDy0T+EkqUuM7ZWQ@mail.gmail.com>
+References: <20161205130534.11080-1-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <1480953058-4958-1-git-send-email-alexander.stein@systec-electronic.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Alexander Stein <alexander.stein@systec-electronic.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20161205130534.11080-1-aleksey.makarov@linaro.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Jon Masters <jcm@redhat.com>, Mark Salter <msalter@redhat.com>, Graeme Gregory <graeme.gregory@linaro.org>, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Alexander Stein wrote:
-> -		schedule_timeout(2);
-> +		schedule_timeout(msecs_to_jiffies(2));
+On Mon, Dec 5, 2016 at 5:05 AM, Aleksey Makarov
+<aleksey.makarov@linaro.org> wrote:
+> Check the 'Register Bit Width' field of the ACPI Generic Address
+> Structure that specifies the address of the UART registers to
+> decide if the driver should use "mmio32" access instead of "mmio".
+>
+> If the driver is other than 16550 the access with is defined
+> by the Interface Type field of the SPCR table.
+>
+> For discussion:
+>
+> https://lkml.kernel.org/r/7fa523de-3fbb-1566-f521-927143f73d1e@redhat.com
 
-NACK.
+Tested on X-Gene 1 and X-Gene 2 platforms.
 
-So I don't remember why I wrote this code, but I don't think I was 
-expecting it to be 2ms.  Instead, I think I just wanted it to be some 
-delay, but I believed that schedule_timeout(1) was too short or would be 
-"optimized" out somehow.
-
-Note that right below this, I do:
-
-	if (qe_port->wait_closing) {
-		/* Wait a bit longer */
-		set_current_state(TASK_UNINTERRUPTIBLE);
-		schedule_timeout(qe_port->wait_closing);
-	}
-
-And wait_closing is a number of jiffies, so I knew that 
-schedule_timeout() took jiffies as a parameter.
-
-So I think I'm going to NACK this patch, since I believe I knew what I 
-was doing when I wrote it five years ago.
+Tested-by: Duc Dang <dhdang@apm.com>
+>
+> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+> Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
+> Reported-by: Heyi Guo <heyi.guo@linaro.org>
+> ---
+>  drivers/acpi/spcr.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+> index e8d7bc7..6c6710b 100644
+> --- a/drivers/acpi/spcr.c
+> +++ b/drivers/acpi/spcr.c
+> @@ -70,6 +70,10 @@ int __init parse_spcr(bool earlycon)
+>                 break;
+>         case ACPI_DBG2_16550_COMPATIBLE:
+>         case ACPI_DBG2_16550_SUBSET:
+> +               if (table->serial_port.space_id ==
+> +                       ACPI_ADR_SPACE_SYSTEM_MEMORY &&
+> +                   table->serial_port.bit_width == 32)
+> +                       iotype = "mmio32";
+>                 uart = "uart";
+>                 break;
+>         default:
+> --
+> 2.10.2
+>
+Thanks,
+Duc Dang.
