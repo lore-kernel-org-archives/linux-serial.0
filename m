@@ -1,99 +1,46 @@
-From: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Subject: [PATCH v2] tty: serial: fsl_lpuart: fix del_timer_sync() vs timer routine deadlock
-Date: Sun,  4 Dec 2016 18:49:28 +0300
-Message-ID: <1480866568-15725-1-git-send-email-nikita.yoush@cogentembedded.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Stefan Agner <stefan@agner.ch>, Wei Yongjun <weiyongjun1@huawei.com>, Aaron Brice <aaron.brice@datasoft.com>, Nicolae Rosia <nicolae_rosia@mentor.com>, linux-serial@vger.kernel.org
-Cc: Chris Healy <cphealy@gmail.com>, linux-kernel@vger.kernel.org, Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: [PATCH] SPCR: check bit width for the 16550 UART
+Date: Mon,  5 Dec 2016 19:05:12 +0600
+Message-ID: <20161205130534.11080-1-aleksey.makarov@linaro.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: "Rafael J . Wysocki" <rjw@rjwysocki.net>
+Cc: linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, Jon Masters <jcm@redhat.com>, Mark Salter <msalter@redhat.com>, Duc Dang <dhdang@apm.com>, Graeme Gregory <graeme.gregory@linaro.org>, Len Brown <lenb@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Problem found via lockdep:
+Check the 'Register Bit Width' field of the ACPI Generic Address
+Structure that specifies the address of the UART registers to
+decide if the driver should use "mmio32" access instead of "mmio".
 
-- lpuart_set_termios() calls del_timer_sync(&sport->lpuart_timer) while
-  holding sport->port.lock
+If the driver is other than 16550 the access with is defined
+by the Interface Type field of the SPCR table.
 
-- sport->lpuart_timer routine is lpuart_timer_func() that calls
-  lpuart_copy_rx_to_tty() that acquires same lock.
+For discussion:
 
-To fix, move Rx DMA stopping out of lock, as it already is in other places
-in the same file.
+https://lkml.kernel.org/r/7fa523de-3fbb-1566-f521-927143f73d1e@redhat.com
 
-While at it, also make Rx DMA start/stop code to look the same is in
-other places in the same file.
-
-Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+Signed-off-by: Graeme Gregory <graeme.gregory@linaro.org>
+Reported-by: Heyi Guo <heyi.guo@linaro.org>
 ---
-Changes from v1:
-- keep reallocation of Rx DMA buffer conditional on 'old'
-- do not set sport->lpuart_dma_rx_use to true when it is already true
+ drivers/acpi/spcr.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
- drivers/tty/serial/fsl_lpuart.c | 35 +++++++++++++++++------------------
- 1 file changed, 17 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index a1c6519837a4..f02934ffb329 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1407,6 +1407,18 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/* ask the core to calculate the divisor */
- 	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
- 
-+	/*
-+	 * Need to update the Ring buffer length according to the selected
-+	 * baud rate and restart Rx DMA path.
-+	 *
-+	 * Since timer function acqures sport->port.lock, need to stop before
-+	 * acquring same lock because otherwise del_timer_sync() can deadlock.
-+	 */
-+	if (old && sport->lpuart_dma_rx_use) {
-+		del_timer_sync(&sport->lpuart_timer);
-+		lpuart_dma_rx_free(&sport->port);
-+	}
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	sport->port.read_status_mask = 0;
-@@ -1456,22 +1468,11 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/* restore control register */
- 	writeb(old_cr2, sport->port.membase + UARTCR2);
- 
--	/*
--	 * If new baud rate is set, we will also need to update the Ring buffer
--	 * length according to the selected baud rate and restart Rx DMA path.
--	 */
--	if (old) {
--		if (sport->lpuart_dma_rx_use) {
--			del_timer_sync(&sport->lpuart_timer);
--			lpuart_dma_rx_free(&sport->port);
--		}
--
--		if (sport->dma_rx_chan && !lpuart_start_rx_dma(sport)) {
--			sport->lpuart_dma_rx_use = true;
-+	if (old && sport->lpuart_dma_rx_use) {
-+		if (!lpuart_start_rx_dma(sport))
- 			rx_dma_timer_init(sport);
--		} else {
-+		else
- 			sport->lpuart_dma_rx_use = false;
--		}
- 	}
- 
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
-@@ -2131,12 +2132,10 @@ static int lpuart_resume(struct device *dev)
- 
- 	if (sport->lpuart_dma_rx_use) {
- 		if (sport->port.irq_wake) {
--			if (!lpuart_start_rx_dma(sport)) {
--				sport->lpuart_dma_rx_use = true;
-+			if (!lpuart_start_rx_dma(sport))
- 				rx_dma_timer_init(sport);
--			} else {
-+			else
- 				sport->lpuart_dma_rx_use = false;
--			}
- 		}
- 	}
- 
+diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+index e8d7bc7..6c6710b 100644
+--- a/drivers/acpi/spcr.c
++++ b/drivers/acpi/spcr.c
+@@ -70,6 +70,10 @@ int __init parse_spcr(bool earlycon)
+ 		break;
+ 	case ACPI_DBG2_16550_COMPATIBLE:
+ 	case ACPI_DBG2_16550_SUBSET:
++		if (table->serial_port.space_id ==
++			ACPI_ADR_SPACE_SYSTEM_MEMORY &&
++		    table->serial_port.bit_width == 32)
++			iotype = "mmio32";
+ 		uart = "uart";
+ 		break;
+ 	default:
 -- 
-2.1.4
+2.10.2
+
