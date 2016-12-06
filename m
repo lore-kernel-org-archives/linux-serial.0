@@ -1,7 +1,7 @@
 From: Jon Masters <jcm@redhat.com>
 Subject: Re: [PATCH] SPCR: check bit width for the 16550 UART
-Date: Mon, 5 Dec 2016 19:03:25 -0500
-Message-ID: <0ac8dc36-38d9-0f08-9f5f-021f40b8ea7d@redhat.com>
+Date: Mon, 5 Dec 2016 19:05:01 -0500
+Message-ID: <7dc247ac-e557-a750-d23d-92c55630cb1d@redhat.com>
 References: <20161205130534.11080-1-aleksey.makarov@linaro.org>
  <CADaLND=cpfnrNUAR+hHBjMk=ei50Z=TFhgzDy0T+EkqUuM7ZWQ@mail.gmail.com>
  <c5bc8527-4dbc-8411-a441-7e7aebcbbfed@redhat.com>
@@ -17,44 +17,19 @@ Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, "Rafael J . Wysocki" <rjw@rjwy
 List-Id: linux-serial@vger.kernel.org
 
 On 12/05/2016 06:52 PM, Duc Dang wrote:
-> Hi Jon,
-> 
-> On Mon, Dec 5, 2016 at 3:27 PM, Jon Masters <jcm@redhat.com> wrote:
->> Duc, Aleksey, all,
->>
->> I have a question about this...
->>
->> On 12/05/2016 01:51 PM, Duc Dang wrote:
->>> On Mon, Dec 5, 2016 at 5:05 AM, Aleksey Makarov
->>> <aleksey.makarov@linaro.org> wrote:
->>>> Check the 'Register Bit Width' field of the ACPI Generic Address
->>>> Structure that specifies the address of the UART registers to
->>>> decide if the driver should use "mmio32" access instead of "mmio".
->>>>
->>>> If the driver is other than 16550 the access with is defined
->>>> by the Interface Type field of the SPCR table.
->>
->> I have two questions about this:
->>
->> 1). Why is this not a full 16550 (ACPI_DBG2_16550_COMPATIBLE)?
->>
->> 2). Why is it a ACPI_DBG2_16550_SUBSET you are assuming here?
-> 
-> The patch is actually applied for both ACPI_DBG2_16550_COMPATIBLE and
-> ACPI_DBG2_16500_SUBSET. Or I misunderstood your question?
 
-No, I had missed the fall through for both conditions since it hadn't
-worked in my quick boot test with the other type earlier. It's probably
-only applicable in the general 16550 case, not in the subset case,
-but I don't have any objections at this. My bad.
+> But I am still curious why setting subtype to '0' does not work on
+> your board. Are you using Mustang or m400?
 
-Now as to why it's not actually triggering on my test machine is
-something I'll check. I set the port width in the address struct
-in the ACPI table to 32-bit and it didn't see mmio32 just mmio, so
-I then re-read the patch itself and had assumed Aleksey meant it
-to be only for the subtype. Be right back after I poke...
+m400 with updated tables (that are correctly overriding not appending)
+provided via INITRD override. I am looking at why it's not working.
+
+[    0.000000] ACPI: Table Upgrade: override [SPCR-HPE   -ProLiant]
+[    0.000000] ACPI: SPCR 0x0000004FF7F30000 Physical table override, new table: 0x0000004FFFFF0000
+[    0.000000] ACPI: SPCR 0x0000004FFFFF0000 000050 (v02 HPE    ProLiant 00001337 INTL 20160527)
 
 Jon.
 
 -- 
 Computer Architect | Sent from my Fedora powered laptop
+
