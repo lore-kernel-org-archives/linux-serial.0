@@ -1,103 +1,34 @@
-From: Peter Griffin <peter.griffin@linaro.org>
-Subject: Re: [STLinux Kernel] [PATCH 2/3] serial: st-asc: Provide RTS
- functionality
-Date: Tue, 6 Dec 2016 13:03:52 +0000
-Message-ID: <20161206130352.GA17980@griffinp-ThinkPad-X1-Carbon-2nd>
-References: <20161202141146.31281-1-lee.jones@linaro.org>
- <20161202141146.31281-2-lee.jones@linaro.org>
- <5e652529-8dcb-568e-a748-0ec745099211@st.com>
- <20161206123131.GA15382@griffinp-ThinkPad-X1-Carbon-2nd>
- <20161206124543.GC25385@dell.home>
- <20161206124808.GD25385@dell.home>
+From: Timur Tabi <timur@tabi.org>
+Subject: Re: [PATCH 1/1] serial/uuc_uart: Set shutdown timeout to CONFIG_HZ
+ independent 2ms
+Date: Tue, 6 Dec 2016 07:35:43 -0600
+Message-ID: <5846BEAF.3040003@tabi.org>
+References: <1480953058-4958-1-git-send-email-alexander.stein@systec-electronic.com>
+ <5845900B.5010108@tabi.org> <18303458.zhjk47K7B1@ws-stein>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20161206124808.GD25385@dell.home>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Patrice Chotard <patrice.chotard@st.com>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@stlinux.com
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <18303458.zhjk47K7B1@ws-stein>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: Alexander Stein <alexander.stein@systec-electronic.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Lee,
+Alexander Stein wrote:
+> Okay, I was just wondering why the timeout is dependant on the timer tick.
+> That didn't seem obvious to me.
+> Rethinking about this, I would rather replace those lines with msleep instead.
 
-On Tue, 06 Dec 2016, Lee Jones wrote:
-
-> On Tue, 06 Dec 2016, Lee Jones wrote:
-> 
-> > On Tue, 06 Dec 2016, Peter Griffin wrote:
-> > > On Mon, 05 Dec 2016, Patrice Chotard wrote:
-> > > > On 12/02/2016 03:11 PM, Lee Jones wrote:
-> > > > > Until this point, it has not been possible for serial applications
-> > > > > to toggle the UART RTS line.  This can be useful with certain
-> > > > > configurations. For example, when using a Mezzanine on a Linaro
-> > > > > 96board, RTS line is used to take the the on-board microcontroller
-> > > > 
-> > > > typo "the the on"
-> > > > 
-> > > > > in and out of reset.
-> > > > > 
-> > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > > > ---
-> > > > >  drivers/tty/serial/st-asc.c | 14 ++++++++++++++
-> > > > >  1 file changed, 14 insertions(+)
-> > > > > 
-> > > > > diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-> > > > > index 379e5bd..ce46898 100644
-> > > > > --- a/drivers/tty/serial/st-asc.c
-> > > > > +++ b/drivers/tty/serial/st-asc.c
-> > > > > @@ -30,6 +30,7 @@
-> > > > >  #include <linux/of_platform.h>
-> > > > >  #include <linux/serial_core.h>
-> > > > >  #include <linux/clk.h>
-> > > > > +#include <linux/gpio/consumer.h>
-> > > > >  
-> > > > >  #define DRIVER_NAME "st-asc"
-> > > > >  #define ASC_SERIAL_NAME "ttyAS"
-> > > > > @@ -38,6 +39,7 @@
-> > > > >  
-> > > > >  struct asc_port {
-> > > > >  	struct uart_port port;
-> > > > > +	struct gpio_desc *rts;
-> > > > >  	struct clk *clk;
-> > > > >  	unsigned int hw_flow_control:1;
-> > > > >  	unsigned int force_m1:1;
-> > > > > @@ -381,12 +383,16 @@ static unsigned int asc_tx_empty(struct uart_port *port)
-> > > > >  
-> > > > >  static void asc_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> > > > >  {
-> > > > > +	struct asc_port *ascport = to_asc_port(port);
-> > > > > +
-> > > > >  	/*
-> > > > >  	 * This routine is used for seting signals of: DTR, DCD, CTS/RTS
-> > > > >  	 * We use ASC's hardware for CTS/RTS, so don't need any for that.
-> > > > >  	 * Some boards have DTR and DCD implemented using PIO pins,
-> > > > >  	 * code to do this should be hooked in here.
-> > > > >  	 */
-> > > > > +
-> > > > > +	gpiod_set_value(ascport->rts, mctrl & TIOCM_RTS);
-> > > 
-> > > This now puts the code and the comment above out of sync with each
-> > > other.
-> > > 
-> > > However just checking the stih410 datasheet and I don't think this patch
-> > > to control RTS via a GPIO is required anyway.
-> > > 
-> > > The correct way of handling this is to add UART10_RTS and UART10_CTS pins
-> > > to the pinctrl_serial0 group so they are properly configured for their cts/rts
-> > > alternate function. Once the pins are correctly configured, the IP block should
-> > > control the signals correctly like the comment says.
-> > 
-> > That was the first thing I tried.  It didn't work.
-> 
->        cts = <&pio17 2 ALT1 IN>;
->        rts = <&pio17 3 ALT1 OUT>;
->
-
-That implies that either some additional configuration of the IP is required in
-st-asc to get the IP to control those signals or that there is a bug in the
-ST pinctrl driver and the correct settings aren't being applied.
-
-regards,
-
-Peter.
+What's wrong with leaving it as-is?  The code is five years old, and 
+Freescale/NXP barely uses the QE any more.  I don't have access to any 
+hardware to test any changes you would propose.
