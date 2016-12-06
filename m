@@ -1,65 +1,88 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: [PATCH] tty/serial: atmel: RS485 half duplex w/DMA: enable RX after TX is done
-Date: Tue,  6 Dec 2016 13:05:33 +0100
-Message-ID: <20161206120533.14505-1-richard.genoud@gmail.com>
+From: Peter Griffin <peter.griffin@linaro.org>
+Subject: Re: [STLinux Kernel] [PATCH 2/3] serial: st-asc: Provide RTS
+ functionality
+Date: Tue, 6 Dec 2016 12:31:31 +0000
+Message-ID: <20161206123131.GA15382@griffinp-ThinkPad-X1-Carbon-2nd>
+References: <20161202141146.31281-1-lee.jones@linaro.org>
+ <20161202141146.31281-2-lee.jones@linaro.org>
+ <5e652529-8dcb-568e-a748-0ec745099211@st.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5e652529-8dcb-568e-a748-0ec745099211@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Gil Weber <webergil@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Genoud <richard.genoud@gmail.com>, stable@vger.kernel.org
+To: Patrice Chotard <patrice.chotard@st.com>
+Cc: Lee Jones <lee.jones@linaro.org>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@stlinux.com
 List-Id: linux-serial@vger.kernel.org
 
-When using RS485 in half duplex, RX should be enabled when TX is
-finished, and stopped when TX starts.
+Hi Lee,
 
-Before commit 0058f0871efe7b01c6 ("tty/serial: atmel: fix RS485 half
-duplex with DMA"), RX was not disabled in atmel_start_tx() if the DMA
-was used. So, collisions could happened.
+On Mon, 05 Dec 2016, Patrice Chotard wrote:
 
-But disabling RX in atmel_start_tx() uncovered another bug:
-RX was enabled again in the wrong place (in atmel_tx_dma) instead of
-being enabled when TX is finished (in atmel_complete_tx_dma), so the
-transmission simply stopped.
+> Hi Lee
+> 
+> On 12/02/2016 03:11 PM, Lee Jones wrote:
+> > Until this point, it has not been possible for serial applications
+> > to toggle the UART RTS line.  This can be useful with certain
+> > configurations. For example, when using a Mezzanine on a Linaro
+> > 96board, RTS line is used to take the the on-board microcontroller
+> 
+> typo "the the on"
+> 
+> > in and out of reset.
+> > 
+> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > ---
+> >  drivers/tty/serial/st-asc.c | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> > 
+> > diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> > index 379e5bd..ce46898 100644
+> > --- a/drivers/tty/serial/st-asc.c
+> > +++ b/drivers/tty/serial/st-asc.c
+> > @@ -30,6 +30,7 @@
+> >  #include <linux/of_platform.h>
+> >  #include <linux/serial_core.h>
+> >  #include <linux/clk.h>
+> > +#include <linux/gpio/consumer.h>
+> >  
+> >  #define DRIVER_NAME "st-asc"
+> >  #define ASC_SERIAL_NAME "ttyAS"
+> > @@ -38,6 +39,7 @@
+> >  
+> >  struct asc_port {
+> >  	struct uart_port port;
+> > +	struct gpio_desc *rts;
+> >  	struct clk *clk;
+> >  	unsigned int hw_flow_control:1;
+> >  	unsigned int force_m1:1;
+> > @@ -381,12 +383,16 @@ static unsigned int asc_tx_empty(struct uart_port *port)
+> >  
+> >  static void asc_set_mctrl(struct uart_port *port, unsigned int mctrl)
+> >  {
+> > +	struct asc_port *ascport = to_asc_port(port);
+> > +
+> >  	/*
+> >  	 * This routine is used for seting signals of: DTR, DCD, CTS/RTS
+> >  	 * We use ASC's hardware for CTS/RTS, so don't need any for that.
+> >  	 * Some boards have DTR and DCD implemented using PIO pins,
+> >  	 * code to do this should be hooked in here.
+> >  	 */
+> > +
+> > +	gpiod_set_value(ascport->rts, mctrl & TIOCM_RTS);
 
-This bug was not triggered before commit 0058f0871efe7b01c6
-("tty/serial: atmel: fix RS485 half duplex with DMA") because RX was
-never disabled before.
+This now puts the code and the comment above out of sync with each
+other.
 
-Moving atmel_start_rx() in atmel_complete_tx_dma() corrects the problem.
+However just checking the stih410 datasheet and I don't think this patch
+to control RTS via a GPIO is required anyway.
 
-Cc: stable@vger.kernel.org
-Reported-by: Gil Weber <webergil@gmail.com>
-Tested-by: Gil Weber <webergil@gmail.com>
-Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
----
- drivers/tty/serial/atmel_serial.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+The correct way of handling this is to add UART10_RTS and UART10_CTS pins
+to the pinctrl_serial0 group so they are properly configured for their cts/rts
+alternate function. Once the pins are correctly configured, the IP block should
+control the signals correctly like the comment says.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 168b10cad47b..11c0117af80b 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -798,6 +798,11 @@ static void atmel_complete_tx_dma(void *arg)
- 	 */
- 	if (!uart_circ_empty(xmit))
- 		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
-+	else if ((port->rs485.flags & SER_RS485_ENABLED) &&
-+		 !(port->rs485.flags & SER_RS485_RX_DURING_TX)) {
-+		/* DMA done, stop TX, start RX for RS485 */
-+		atmel_start_rx(port);
-+	}
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
-@@ -900,12 +905,6 @@ static void atmel_tx_dma(struct uart_port *port)
- 		desc->callback = atmel_complete_tx_dma;
- 		desc->callback_param = atmel_port;
- 		atmel_port->cookie_tx = dmaengine_submit(desc);
--
--	} else {
--		if (port->rs485.flags & SER_RS485_ENABLED) {
--			/* DMA done, stop TX, start RX for RS485 */
--			atmel_start_rx(port);
--		}
- 	}
- 
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+regards,
+
+Peter.
