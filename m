@@ -1,58 +1,52 @@
-From: Alexander Stein <alexander.stein@systec-electronic.com>
-Subject: Re: [PATCH 1/1] serial/uuc_uart: Set shutdown timeout to CONFIG_HZ
- independent 2ms
-Date: Tue, 06 Dec 2016 08:36:22 +0100
-Message-ID: <18303458.zhjk47K7B1@ws-stein>
-References: <1480953058-4958-1-git-send-email-alexander.stein@systec-electronic.com>
- <5845900B.5010108@tabi.org>
+From: Patrice Chotard <patrice.chotard@st.com>
+Subject: Re: [PATCH 1/3] ARM: dts: STiH410-b2260: Identify the UART RTS line
+Date: Tue, 6 Dec 2016 09:39:11 +0100
+Message-ID: <8bda7a96-cd16-f245-f2d8-296816aaafb1@st.com>
+References: <20161202141146.31281-1-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <5845900B.5010108@tabi.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Timur Tabi <timur@tabi.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20161202141146.31281-1-lee.jones@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Lee Jones <lee.jones@linaro.org>, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@stlinux.com
 List-Id: linux-serial@vger.kernel.org
 
-On Monday 05 December 2016 10:04:27, Timur Tabi wrote:
-> Alexander Stein wrote:
-> > -		schedule_timeout(2);
-> > +		schedule_timeout(msecs_to_jiffies(2));
-> 
-> NACK.
-> 
-> So I don't remember why I wrote this code, but I don't think I was
-> expecting it to be 2ms.  Instead, I think I just wanted it to be some
-> delay, but I believed that schedule_timeout(1) was too short or would be
-> "optimized" out somehow.
-> 
-> Note that right below this, I do:
-> 
-> 	if (qe_port->wait_closing) {
-> 		/* Wait a bit longer */
-> 		set_current_state(TASK_UNINTERRUPTIBLE);
-> 		schedule_timeout(qe_port->wait_closing);
-> 	}
-> 
-> And wait_closing is a number of jiffies, so I knew that
-> schedule_timeout() took jiffies as a parameter.
-> 
-> So I think I'm going to NACK this patch, since I believe I knew what I
-> was doing when I wrote it five years ago.
+Hi Lee
 
-Okay, I was just wondering why the timeout is dependant on the timer tick. 
-That didn't seem obvious to me.
-Rethinking about this, I would rather replace those lines with msleep instead.
+Except the typo in patch 2
 
-Best regards,
-Alexander
+Acked-by: Patrice Chotard <patrice.chotard@st.com>
+
+Thanks
+
+On 12/02/2016 03:11 PM, Lee Jones wrote:
+> Configure the UART RTS line as a GPIO for manipulation within the UART driver.
+> 
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  arch/arm/boot/dts/stih410-b2260.dts | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
+> index 7fb507f..f46603f 100644
+> --- a/arch/arm/boot/dts/stih410-b2260.dts
+> +++ b/arch/arm/boot/dts/stih410-b2260.dts
+> @@ -63,6 +63,7 @@
+>  		uart0: serial@9830000 {
+>  			label = "LS-UART0";
+>  			status = "okay";
+> +			rts-gpios = <&pio17 3 GPIO_ACTIVE_LOW>;
+>  		};
+>  
+>  		/* Low speed expansion connector */
+> 
