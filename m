@@ -1,66 +1,35 @@
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [RFC v2 3/4] ACPI: DBG2: add 16550 UART with 32-bit access
-Date: Tue, 6 Dec 2016 22:19:06 +0100
-Message-ID: <CAJZ5v0gnMb=eEJ1c_mWZyRvy6xNZxx=_E78D0fksKJTWwGKGLg@mail.gmail.com>
-References: <20161206175830.6989-1-aleksey.makarov@linaro.org>
- <20161206175830.6989-4-aleksey.makarov@linaro.org> <CAJZ5v0gqHSSYEFkQu_1c=MZeV8xaZjmLRAmtwDcHf8ctGstpvw@mail.gmail.com>
- <B3FFAD47-041F-48DC-B305-AABA420D6E27@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <B3FFAD47-041F-48DC-B305-AABA420D6E27@redhat.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Jon Masters <jcm@redhat.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Aleksey Makarov <aleksey.makarov@linaro.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@arm.linux.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Mark Salter <msalter@redhat.com>, Duc Dang <dhdang@apm.com>, Rob Herring <robh@kernel.org>, Robert Moore <robert.moore@intel.com>, Lv Zheng <lv.zheng@intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Len Brown <lenb@kernel.org>, "devel@acpica.org" <devel@acpica.org>
+From: Jason Uy <jason.uy@broadcom.com>
+Subject: [PATCH v1 0/1] serial: 8250_dw: Allow hardware flow control to be used
+Date: Tue,  6 Dec 2016 14:34:02 -0800
+Message-ID: <1481063643-11951-1-git-send-email-jason.uy@broadcom.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Noam Camus <noamc@ezchip.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Wang Hongcheng <annie.wang@amd.com>, Jason Uy <jason.uy@broadcom.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Dec 6, 2016 at 10:15 PM, Jon Masters <jcm@redhat.com> wrote:
-> Quick note - specifically, Rafael, this is not currently part of the SPCR specification and
-> should not be considered for inclusion in Linux until that is decided. Once it is determined
-> what the fix for SPCR is, that should then be driven into the component architecture and
-> proposed here.
+This patchset contains changes to allow AUTOCTS to be set for the Synopsys DW UART driver.  There is currently no way to set AUTOCTS unless the platform adds a quirk entry and sets the termios callback function.  
 
-OK, good to know, thanks!
+There was a discussion about a similar proposed patch change.  It was mentioned in the discussion that the reason set_termios hook was not set by default is because someone might be using a certain type of clock that can't handle rate rounding and ended up using improper clock frequency for some baud rates.  See discussion thread here.
+
+https://groups.google.com/forum/#!topic/fa.linux.kernel/oWrFOsw3rpQ
+
+The current dw8250_set_termios is set such that it always call the standard serial8250_do_set_termios.  So if there are clock frequency issues, this will be resolved in serial8250_do_set_termios.
+
+This patchset has been tested on Cygnus VOIP board bcm911360_entphn board.
+
+This patchset is based on v4.9-rc1
+
+repo: https://github.com/Broadcom/cygnus-linux.git
+
+branch: cygnus-tty-v1
 
 
-> --
-> Computer Architect | Sent from my 64-bit #ARM Powered phone
->
->> On Dec 6, 2016, at 16:00, Rafael J. Wysocki <rafael@kernel.org> wrote:
->>
->> On Tue, Dec 6, 2016 at 6:58 PM, Aleksey Makarov
->> <aleksey.makarov@linaro.org> wrote:
->>> It was suggested to add a new Microsoft Debug Port Table 2
->>> (DBG2) (the table used to enumerate the various subtypes of serial
->>> port covered by the SPCR) 16550 UART subtype that may be needed for
->>> some additional platforms, such as those based upon AppliedMicro
->>> X-Gene ARMv8 SoCs.  This new subtype would be 16550-compatible
->>> with 32-bit access.  There already exists 32-bit variant
->>> ACPI_DBG2_ARM_SBSA_32BIT of SBSA console ACPI_DBG2_ARM_SBSA_GENERIC.
->>>
->>> This patch introduces it to Linux kernel.
->>>
->>> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
->>> ---
->>> include/acpi/actbl2.h | 1 +
->>> 1 file changed, 1 insertion(+)
->>>
->>> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
->>> index c93dbad..f219b04 100644
->>> --- a/include/acpi/actbl2.h
->>> +++ b/include/acpi/actbl2.h
->>> @@ -371,6 +371,7 @@ struct acpi_dbg2_device {
->>>
->>> #define ACPI_DBG2_16550_COMPATIBLE  0x0000
->>> #define ACPI_DBG2_16550_SUBSET      0x0001
->>> +#define ACPI_DBG2_16550_32BIT       0x0002
->>> #define ACPI_DBG2_ARM_PL011         0x0003
->>> #define ACPI_DBG2_ARM_SBSA_32BIT    0x000D
->>> #define ACPI_DBG2_ARM_SBSA_GENERIC  0x000E
->>> --
->>
->> This is an ACPICA change and it first needs to be made to the upstream
->> ACPICA code base.
->>
->> Thanks,
->> Rafael
+Jason Uy (1):
+  serial: 8250_dw: Allow hardware flow control to be used
+
+ drivers/tty/serial/8250/8250_dw.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+-- 
+1.9.1
