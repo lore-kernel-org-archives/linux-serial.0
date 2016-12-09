@@ -1,56 +1,87 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH 0/7] Renesas *SCIF* RX FIFO support
-Date: Fri,  9 Dec 2016 13:36:04 +0100
-Message-ID: <1481286971-16667-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH 3/7] serial: sh-sci: implement FIFO threshold register setting
+Date: Fri,  9 Dec 2016 13:36:07 +0100
+Message-ID: <1481286971-16667-4-git-send-email-ulrich.hecht+renesas@gmail.com>
+References: <1481286971-16667-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1481286971-16667-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
 To: linux-renesas-soc@vger.kernel.org, wsa@the-dreams.de, geert@linux-m68k.org
 Cc: linux-serial@vger.kernel.org, magnus.damm@gmail.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi!
+Sets the closest match for a desired RX trigger level.
 
-This series implements support for using RX FIFO thresholds higher than one
-in PIO mode on SCIF, HSCIF, SCIFA and SCIFB serial ports.
+Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+---
+ drivers/tty/serial/sh-sci.c | 55 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 
-This was originally implemented to fulfill a request for a software
-timer-based solution, but I have found that it is not sensible to implement
-such a feature on SCIF and HSCIF. These IPs do not support disabling of the
-hardware timeout feature that all SCIFs have, and that triggers an interrupt
-if no new data has arrived for more than 1.5 frames.
-
-This series therefore enables the hardware timeout for SCIFs and HSCIFs, and
-the software timeout for SCIFAs and SCIFBs only.
-
-(Hardware timeout on SCIFA/B is possible, but has not been implemented here
-due to a lack of time. The same goes for the limited amount of tuning of
-the hardware timeout that is possible on HSCIF ports.)
-
-Two sysfs attributes are added to tune the FIFO behavior:
-
-- rx_fifo_trigger: Controls the trigger level at which an interrupt is
-  forced. Works for both hardware and software timeout.
-- rx_fifo_timeout: Software timeout in frames upon which the FIFOs are
-  checked even if no interrupt is triggered. Zero (default) disables the
-  timeout. (SCIFA and SCIFB only)
-
-CU
-Uli
-
-
-Ulrich Hecht (7):
-  serial: sh-sci: add FIFO trigger bits
-  serial: sh-sci: consider DR (data ready) bit adequately
-  serial: sh-sci: implement FIFO threshold register setting
-  serial: sh-sci: increase RX FIFO trigger defaults for (H)SCIF
-  serial: sh-sci: SCIFA/B RX FIFO software timeout
-  serial: sh-sci: make RX FIFO parameters tunable via sysfs
-  arm64: dts: r8a7796: salvator-x: add SCIF1 (DEBUG1)
-
- arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts |  12 +
- drivers/tty/serial/sh-sci.c                        | 254 ++++++++++++++++++---
- drivers/tty/serial/sh-sci.h                        |   7 +
- 3 files changed, 238 insertions(+), 35 deletions(-)
-
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index de25db8..844288f 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1103,6 +1103,61 @@ static int sci_handle_breaks(struct uart_port *port)
+ 	return copied;
+ }
+ 
++static int scif_set_rtrg(struct uart_port *port, int rx_trig)
++{
++	unsigned int bits;
++
++	if (rx_trig < 1)
++		rx_trig = 1;
++	if (rx_trig >= port->fifosize)
++		rx_trig = port->fifosize;
++
++	/* HSCIF can be set to an arbitrary level. */
++	if (sci_getreg(port, HSRTRGR)->size) {
++		serial_port_out(port, HSRTRGR, rx_trig);
++		return rx_trig;
++	}
++
++	if (port->type == PORT_SCIF) {
++		if (rx_trig < 4) {
++			bits = 0;
++			rx_trig = 1;
++		} else if (rx_trig < 8) {
++			bits = SCFCR_RTRG0;
++			rx_trig = 4;
++		} else if (rx_trig < 14) {
++			bits = SCFCR_RTRG1;
++			rx_trig = 8;
++		} else {
++			bits = SCFCR_RTRG0 | SCFCR_RTRG1;
++			rx_trig = 14;
++		}
++	} else if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
++		if (rx_trig < 16) {
++			bits = 0;
++			rx_trig = 1;
++		} else if (rx_trig < 32) {
++			bits = SCFCR_RTRG0;
++			rx_trig = 16;
++		} else if (rx_trig < 48) {
++			bits = SCFCR_RTRG1;
++			rx_trig = 32;
++		} else {
++			bits = SCFCR_RTRG0 | SCFCR_RTRG1;
++			rx_trig = 48;
++		}
++	} else {
++		WARN(1, "unknown FIFO configuration");
++		return 1;
++	}
++
++	serial_port_out(port, SCFCR,
++		(serial_port_in(port, SCFCR) &
++		~(SCFCR_RTRG1 | SCFCR_RTRG0)) | bits);
++
++	return rx_trig;
++}
++
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+ static void sci_dma_tx_complete(void *arg)
+ {
 -- 
 2.7.4
