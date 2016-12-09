@@ -1,7 +1,7 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH 2/7] serial: sh-sci: consider DR (data ready) bit adequately
-Date: Fri,  9 Dec 2016 13:36:06 +0100
-Message-ID: <1481286971-16667-3-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH 1/7] serial: sh-sci: add FIFO trigger bits
+Date: Fri,  9 Dec 2016 13:36:05 +0100
+Message-ID: <1481286971-16667-2-git-send-email-ulrich.hecht+renesas@gmail.com>
 References: <1481286971-16667-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1481286971-16667-1-git-send-email-ulrich.hecht+renesas@gmail.com>
@@ -10,70 +10,51 @@ To: linux-renesas-soc@vger.kernel.org, wsa@the-dreams.de, geert@linux-m68k.org
 Cc: linux-serial@vger.kernel.org, magnus.damm@gmail.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-To allow operation with a higher RX FIFO interrupt threshold in PIO
-mode, it is necessary to consider the DR bit ("FIFO not full, but no
-data received for 1.5 frames") as an indicator that data can be read.
-Otherwise the driver will let data rot in the FIFO until the threshold
-is reached.
+Defines the bits controlling FIFO thresholds, adds the additional
+HSCIF registers to the register map.
 
 Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 ---
- drivers/tty/serial/sh-sci.c | 9 +++++----
- drivers/tty/serial/sh-sci.h | 1 +
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/tty/serial/sh-sci.c | 2 ++
+ drivers/tty/serial/sh-sci.h | 6 ++++++
+ 2 files changed, 8 insertions(+)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 385afbe..de25db8 100644
+index 4b26252..385afbe 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -677,7 +677,7 @@ static int sci_poll_get_char(struct uart_port *port)
- 		break;
- 	} while (1);
+@@ -377,6 +377,8 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 		[SCPDR]		= sci_reg_invalid,
+ 		[SCDL]		= { 0x30, 16 },
+ 		[SCCKS]		= { 0x34, 16 },
++		[HSRTRGR]	= { 0x54, 16 },
++		[HSTTRGR]	= { 0x58, 16 },
+ 	},
  
--	if (!(status & SCxSR_RDxF(port)))
-+	if (!(status & (SCxSR_RDxF(port) | SCxSR_DR(port))))
- 		return NO_POLL_CHAR;
- 
- 	c = serial_port_in(port, SCxRDR);
-@@ -773,7 +773,8 @@ static int sci_rxfill(struct uart_port *port)
- 	if (reg->size)
- 		return serial_port_in(port, SCFDR) & ((port->fifosize << 1) - 1);
- 
--	return (serial_port_in(port, SCxSR) & SCxSR_RDxF(port)) != 0;
-+	return (serial_port_in(port, SCxSR) &
-+		(SCxSR_RDxF(port) | SCxSR_DR(port))) != 0;
- }
- 
- /*
-@@ -864,7 +865,7 @@ static void sci_receive_chars(struct uart_port *port)
- 	unsigned char flag;
- 
- 	status = serial_port_in(port, SCxSR);
--	if (!(status & SCxSR_RDxF(port)))
-+	if (!(status & (SCxSR_RDxF(port) | SCxSR_DR(port))))
- 		return;
- 
- 	while (1) {
-@@ -1672,7 +1673,7 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
- 	 * Rx Interrupt: if we're using DMA, the DMA controller clears RDF /
- 	 * DR flags
- 	 */
--	if (((ssr_status & SCxSR_RDxF(port)) || s->chan_rx) &&
-+	if (((ssr_status & (SCxSR_RDxF(port) | SCxSR_DR(port))) || s->chan_rx) &&
- 	    (scr_status & SCSCR_RIE))
- 		ret = sci_rx_interrupt(irq, ptr);
- 
+ 	/*
 diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
-index f51f919..44997a5 100644
+index ffa6d68..f51f919 100644
 --- a/drivers/tty/serial/sh-sci.h
 +++ b/drivers/tty/serial/sh-sci.h
-@@ -156,6 +156,7 @@ enum {
- #define SCxSR_FER(port)		(((port)->type == PORT_SCI) ? SCI_FER    : SCIF_FER)
- #define SCxSR_PER(port)		(((port)->type == PORT_SCI) ? SCI_PER    : SCIF_PER)
- #define SCxSR_BRK(port)		(((port)->type == PORT_SCI) ? 0x00       : SCIF_BRK)
-+#define SCxSR_DR(port)		(((port)->type == PORT_SCI) ? 0x00       : SCIF_DR)
+@@ -29,6 +29,8 @@ enum {
+ 	SCPDR,				/* Serial Port Data Register */
+ 	SCDL,				/* BRG Frequency Division Register */
+ 	SCCKS,				/* BRG Clock Select Register */
++	HSRTRGR,			/* Receive FIFO Data Count Register */
++	HSTTRGR,			/* Transmit FIFO Data Count Register */
  
- #define SCxSR_ERRORS(port)	(to_sci_port(port)->error_mask)
+ 	SCIx_NR_REGS,
+ };
+@@ -99,6 +101,10 @@ enum {
+ #define SCIF_BREAK_CLEAR	(u32)(~(SCIF_PER | SCIF_FER | SCIF_BRK))
  
+ /* SCFCR (FIFO Control Register) */
++#define SCFCR_RTRG1	BIT(7)	/* Receive FIFO Data Count Trigger */
++#define SCFCR_RTRG0	BIT(6)
++#define SCFCR_TTRG1	BIT(5)	/* Transmit FIFO Data Count Trigger */
++#define SCFCR_TTRG0	BIT(4)
+ #define SCFCR_MCE	BIT(3)	/* Modem Control Enable */
+ #define SCFCR_TFRST	BIT(2)	/* Transmit FIFO Data Register Reset */
+ #define SCFCR_RFRST	BIT(1)	/* Receive FIFO Data Register Reset */
 -- 
 2.7.4
