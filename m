@@ -1,51 +1,124 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] Revert "tty: serial: 8250: add CON_CONSDEV to flags"
-Date: Sun, 11 Dec 2016 08:12:34 +0100
-Message-ID: <20161211071234.GC32092@kroah.com>
-References: <20161211020549.GA1321@gondor.apana.org.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20161211020549.GA1321@gondor.apana.org.au>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Matthew Leach <matthew.leach@codethink.co.uk>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH] tty: serial: lantiq: implement earlycon support
+Date: Sun, 11 Dec 2016 21:42:23 +0100
+Message-ID: <20161211204223.7906-1-martin.blumenstingl@googlemail.com>
+Return-path: <linux-doc-owner@vger.kernel.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, corbet@lwn.net, jslaby@suse.com
+Cc: linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, john@phrozen.org, hauke@hauke-m.de, Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Dec 11, 2016 at 10:05:49AM +0800, Herbert Xu wrote:
-> This commit needs to be reverted because it prevents people from
-> using the serial console as a secondary console with input being
-> directed to tty0.
-> 
-> IOW, if you boot with console=ttyS0 console=tty0 then all kernels
-> prior to this commit will produce output on both ttyS0 and tty0
-> but input will only be taken from tty0.  With this patch the serial
-> console will always be the primary console instead of tty0,
-> potentially preventing people from getting into their machines in
-> emergency situations.
-> 
-> Fixes: d03516df8375 ("tty: serial: 8250: add CON_CONSDEV to flags")
-> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 240a361..e8819aa 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -675,7 +675,7 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
->  	.device		= uart_console_device,
->  	.setup		= univ8250_console_setup,
->  	.match		= univ8250_console_match,
-> -	.flags		= CON_PRINTBUFFER | CON_ANYTIME | CON_CONSDEV,
-> +	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
->  	.index		= -1,
->  	.data		= &serial8250_reg,
->  };
+This allows enabling earlycon for devices with a Lantiq serial console
+by splitting lqasc_serial_port_write() from lqasc_console_write() and
+re-using the new function for earlycon's write callback.
 
-Ok, this is the second time this has been reported.  Matthew seems to be
-ignoring my email about this, so I guess I'll just revert the patch, as
-it's obviously causing problems...
+The kernel-parameter name matches the driver name ("lantiq"), similar
+to how other drivers implement this.
 
-thanks,
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ Documentation/kernel-parameters.txt |  6 ++++++
+ drivers/tty/serial/Kconfig          |  1 +
+ drivers/tty/serial/lantiq.c         | 38 ++++++++++++++++++++++++++++++-------
+ 3 files changed, 38 insertions(+), 7 deletions(-)
 
-greg k-h
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 37babf9..72fd841 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -1156,6 +1156,12 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 			serial port must already be setup and configured.
+ 			Options are not yet supported.
+ 
++		lantiq,<addr>
++			Start an early, polled-mode console on a lantiq serial
++			(lqasc) port at the specified address. The serial port
++			must already be setup and configured. Options are not
++			yet supported.
++
+ 		lpuart,<addr>
+ 		lpuart32,<addr>
+ 			Use early console provided by Freescale LP UART driver
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 25c1d7b..13e280d 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1148,6 +1148,7 @@ config SERIAL_LANTIQ
+ 	depends on LANTIQ
+ 	select SERIAL_CORE
+ 	select SERIAL_CORE_CONSOLE
++	select SERIAL_EARLYCON
+ 	help
+ 	  Support for console and UART on Lantiq SoCs.
+ 
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index b88832e..7c9a3f2 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -590,13 +590,20 @@ lqasc_console_putchar(struct uart_port *port, int ch)
+ 	ltq_w8(ch, port->membase + LTQ_ASC_TBUF);
+ }
+ 
++static void lqasc_serial_port_write(struct uart_port *port, const char *s,
++				    u_int count)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&ltq_asc_lock, flags);
++	uart_console_write(port, s, count, lqasc_console_putchar);
++	spin_unlock_irqrestore(&ltq_asc_lock, flags);
++}
+ 
+ static void
+ lqasc_console_write(struct console *co, const char *s, u_int count)
+ {
+ 	struct ltq_uart_port *ltq_port;
+-	struct uart_port *port;
+-	unsigned long flags;
+ 
+ 	if (co->index >= MAXPORTS)
+ 		return;
+@@ -605,11 +612,7 @@ lqasc_console_write(struct console *co, const char *s, u_int count)
+ 	if (!ltq_port)
+ 		return;
+ 
+-	port = &ltq_port->port;
+-
+-	spin_lock_irqsave(&ltq_asc_lock, flags);
+-	uart_console_write(port, s, count, lqasc_console_putchar);
+-	spin_unlock_irqrestore(&ltq_asc_lock, flags);
++	lqasc_serial_port_write(&ltq_port->port, s, count);
+ }
+ 
+ static int __init
+@@ -659,6 +662,27 @@ lqasc_console_init(void)
+ }
+ console_initcall(lqasc_console_init);
+ 
++static void lqasc_serial_early_console_write(struct console *co,
++					     const char *s,
++					     u_int count)
++{
++	struct earlycon_device *dev = co->data;
++
++	lqasc_serial_port_write(&dev->port, s, count);
++}
++
++static int __init
++lqasc_serial_early_console_setup(struct earlycon_device *device,
++				 const char *opt)
++{
++	if (!device->port.membase)
++		return -ENODEV;
++
++	device->con->write = lqasc_serial_early_console_write;
++	return 0;
++}
++OF_EARLYCON_DECLARE(lantiq, DRVNAME, lqasc_serial_early_console_setup);
++
+ static struct uart_driver lqasc_reg = {
+ 	.owner =	THIS_MODULE,
+ 	.driver_name =	DRVNAME,
+-- 
+2.10.2
+
