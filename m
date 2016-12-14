@@ -1,55 +1,45 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 4/7] serial: sh-sci: increase RX FIFO trigger defaults for (H)SCIF
-Date: Wed, 14 Dec 2016 14:58:04 +0100
-Message-ID: <CAMuHMdVoa53E8SOhgQwN+L337rbiUvUxTwAaQGju6GkWJ6ff2w@mail.gmail.com>
-References: <1481286971-16667-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1481286971-16667-5-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: Re: [PATCH 5/7] serial: sh-sci: SCIFA/B RX FIFO software timeout
+Date: Wed, 14 Dec 2016 15:02:28 +0100
+Message-ID: <CAMuHMdWmCgiAH3hnAQJVxhz70bLOMccsWOR1gmSmbKeEwW_Fgg@mail.gmail.com>
+References: <1481286971-16667-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1481286971-16667-6-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1481286971-16667-5-git-send-email-ulrich.hecht+renesas@gmail.com>
+In-Reply-To: <1481286971-16667-6-git-send-email-ulrich.hecht+renesas@gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
 To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Wolfram Sang <wsa@the-dreams.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Uli,
+Hi Uli.
 
 On Fri, Dec 9, 2016 at 1:36 PM, Ulrich Hecht
 <ulrich.hecht+renesas@gmail.com> wrote:
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-> ---
->  drivers/tty/serial/sh-sci.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
+> Implements support for FIFO fill thresholds greater than one with software
+> timeout.
 >
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 844288f..ce3cf03 100644
+> This mechanism is not possible (or at least not useful) on SCIF family
+> hardware other than SCIFA and SCIFB because they do not support turning off
+> the DR hardware timeout interrupt separately from the RI interrupt.
+
+What about HSCIF? Your code does handle HSCIF (cfr. HSRTRGR below)?
+
 > --- a/drivers/tty/serial/sh-sci.c
 > +++ b/drivers/tty/serial/sh-sci.c
 
-> @@ -2729,6 +2734,7 @@ static int sci_init_single(struct platform_device *dev,
->                 sci_port->overrun_reg = SCLSR;
->                 sci_port->overrun_mask = SCLSR_ORER;
->                 sci_port->sampling_rate_mask = SCI_SR_RANGE(8, 32);
-> +               sci_port->rx_trigger = 64;
->                 break;
->         case PORT_SCIFA:
->                 port->fifosize = 64;
-> @@ -2747,12 +2753,14 @@ static int sci_init_single(struct platform_device *dev,
->                         sci_port->overrun_mask = SCLSR_ORER;
->                         sci_port->sampling_rate_mask = SCI_SR(32);
->                 }
-> +               sci_port->rx_trigger = 8;
-
-PORT_SCIF is also used with SCIx_SH7705_SCIF_REGTYPE, so this should
-be moved inside the "else" branch above.
-Then, what to do with the "if" branch?
-
->From the sh7705/sh7720/sh7721 datasheets, it looks a lot like SCIFA, and thus
-would need "sci_port->rx_trigger = 32", and the same handling as SCIFA in
-scif_set_rtrg().
-
-See also "[RFC] serial: sh-sci: Correct FIFO stages on sh7705/sh7720/sh7721"
-(https://patchwork.kernel.org/patch/6810191/).
+> @@ -1159,6 +1162,24 @@ static int scif_set_rtrg(struct uart_port *port, int rx_trig)
+>         return rx_trig;
+>  }
+>
+> +static int scif_rtrg_enabled(struct uart_port *port)
+> +{
+> +       if (sci_getreg(port, HSRTRGR)->size)
+> +               return serial_port_in(port, HSRTRGR) != 0;
+> +       else
+> +               return (serial_port_in(port, SCFCR) &
+> +                       (SCFCR_RTRG0 | SCFCR_RTRG1)) != 0;
+> +}
 
 Gr{oetje,eeting}s,
 
