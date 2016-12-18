@@ -1,26 +1,41 @@
-From: Sylwester Nawrocki <s.nawrocki@samsung.com>
-Subject: Re: [PATCH] serial: samsung: Simplify DMA engine initialization code
-Date: Fri, 16 Dec 2016 11:50:33 +0100
-Message-ID: <4075921b-ab30-7527-e96a-5bdfdc5893e3@samsung.com>
-References: <CGME20161216095843epcas1p45f9de00cb1c809931da69ffab0c83279@epcas1p4.samsung.com>
- <1481882213-10856-1-git-send-email-m.szyprowski@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1481882213-10856-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] serial: pic32_uart: Fix 'request_irq' and 'free_irq' inconsistancy
+Date: Sun, 18 Dec 2016 07:38:11 +0100
+Message-ID: <20161218063811.17307-1-christophe.jaillet@wanadoo.fr>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 List-Id: linux-serial@vger.kernel.org
 
-On 12/16/2016 10:56 AM, Marek Szyprowski wrote:
-> dma_request_slave_channel_compat() requires filter function and mask, which
-> are not needed on device tree based platforms, so simplify the code by
-> calling the more appropriate dma_request_chan() function. This additionally
-> gives us proper error handling, because the new function returns error
-> codes instead of NULL on failure.
-> 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+'request_irq' and 'free_irq' should have the same 'dev_id'.
+Here one uses 'port', and the other one uses 'sport'.
 
-Reviewed-by: Sylwester Nawrocki <s.nawrocki@samsung.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/tty/serial/pic32_uart.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
+index 7f8e99bbcb73..00a33eb859d3 100644
+--- a/drivers/tty/serial/pic32_uart.c
++++ b/drivers/tty/serial/pic32_uart.c
+@@ -495,13 +495,13 @@ static int pic32_uart_startup(struct uart_port *port)
+ 
+ out_t:
+ 	kfree(sport->irq_tx_name);
+-	free_irq(sport->irq_tx, sport);
++	free_irq(sport->irq_tx, port);
+ out_r:
+ 	kfree(sport->irq_rx_name);
+-	free_irq(sport->irq_rx, sport);
++	free_irq(sport->irq_rx, port);
+ out_f:
+ 	kfree(sport->irq_fault_name);
+-	free_irq(sport->irq_fault, sport);
++	free_irq(sport->irq_fault, port);
+ out_done:
+ 	return ret;
+ }
+-- 
+2.9.3
