@@ -1,33 +1,34 @@
-From: John Crispin <john@phrozen.org>
-Subject: [PATCH] tty: update my email address
-Date: Tue, 20 Dec 2016 20:01:45 +0100
-Message-ID: <1482260505-61688-1-git-send-email-john@phrozen.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, John Crispin <john@phrozen.org>
+From: David Lechner <david-nq/r/kbU++upp/zk7JDF2g@public.gmane.org>
+Subject: [PATCH 0/3] TI DA8xx/OMAPL13x/AM17xx/AM18xx UART
+Date: Tue, 20 Dec 2016 14:23:01 -0600
+Message-ID: <1482265384-715-1-git-send-email-david@lechnology.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: David Lechner <david-nq/r/kbU++upp/zk7JDF2g@public.gmane.org>, Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Axel Haslam <ahaslam-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Alexandre Bailon <abailon-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-This patch updates my email address as I no longer have access to the old
-one.
+This series adds a new UART port type for TI DA8xx/OMAPL13x/AM17xx/AM18xx UART.
+This SoCs have a non-standard register for UART power management that needs
+special handling in the UART driver.
 
-Signed-off-by: John Crispin <john@phrozen.org>
----
- drivers/tty/serial/lantiq.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+David Lechner (3):
+  doc: DT: Add ti,da830-uart to serial/8250 bindings
+  serial: 8250: Add new port type for TI DA8xx/OMAPL13x/AM17xx/AM18xx
+  ARM: da850: Add ti,da830-uart compatible for serial ports
 
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index b88832e..2d9843d 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -16,7 +16,7 @@
-  *
-  * Copyright (C) 2004 Infineon IFAP DC COM CPE
-  * Copyright (C) 2007 Felix Fietkau <nbd@openwrt.org>
-- * Copyright (C) 2007 John Crispin <blogic@openwrt.org>
-+ * Copyright (C) 2007 John Crispin <john@phrozen.org>
-  * Copyright (C) 2010 Thomas Langer, <thomas.langer@lantiq.com>
-  */
- 
+ Documentation/devicetree/bindings/serial/8250.txt |  1 +
+ arch/arm/boot/dts/da850.dtsi                      |  9 ++++++---
+ drivers/tty/serial/8250/8250_of.c                 |  1 +
+ drivers/tty/serial/8250/8250_port.c               | 22 ++++++++++++++++++++++
+ include/uapi/linux/serial_core.h                  |  3 ++-
+ include/uapi/linux/serial_reg.h                   |  8 ++++++++
+ 6 files changed, 40 insertions(+), 4 deletions(-)
+
 -- 
-1.7.10.4
+2.7.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
