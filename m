@@ -1,30 +1,60 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/3] doc: DT: Add ti,da830-uart to serial/8250 bindings
-Date: Thu, 22 Dec 2016 15:18:52 -0600
-Message-ID: <20161222211852.4r6cpi5tzoc2qbyt@rob-hp-laptop>
-References: <1482265384-715-1-git-send-email-david@lechnology.com>
- <1482265384-715-2-git-send-email-david@lechnology.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1482265384-715-2-git-send-email-david-nq/r/kbU++upp/zk7JDF2g@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: David Lechner <david-nq/r/kbU++upp/zk7JDF2g@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Sekhar Nori <nsekhar-l0cyMroinI0@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Axel Haslam <ahaslam-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Alexandre Bailon <abailon-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Bartosz Golaszewski <bgolaszewski-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Subject: [PATCH] serial: 8250_fintek: Add resource check for Fintek F81504/508/512
+Date: Fri, 23 Dec 2016 09:41:20 +0800
+Message-ID: <1482457280-2135-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, andriy.shevchenko@linux.intel.com, phillip.raffeck@fau.de, anton.wuerfel@fau.de, heikki.krogerus@linux.intel.com, jdamon@accesio.com, jan.kiszka@siemens.com, buttiangelo@gmail.com, mika.westerberg@linux.intel.com, JBeulich@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, tom_tsai@fintek.com.tw, peter_hong@fintek.com.tw, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Dec 20, 2016 at 02:23:02PM -0600, David Lechner wrote:
-> This adds the ti,da830-uart compatible string to serial 8250 UART bindings.
-> 
-> Signed-off-by: David Lechner <david-nq/r/kbU++upp/zk7JDF2g@public.gmane.org>
-> ---
->  Documentation/devicetree/bindings/serial/8250.txt | 1 +
->  1 file changed, 1 insertion(+)
+Add resource type check for Fintek F81504/508/512, BAR3/4/5 must be
+IORESOURCE_IO.
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Fintek is trying to make F81504/508/512 works on MMIO interface, but
+it's still in progress. We found some issue when the experiment IC
+when the BAR3/4/5 is IORESOURCE_MEM. It'll cause wrong operation with
+IO resource. So we'll add the resource check for this.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index aa0166b..29198b9 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1477,11 +1477,16 @@ static int pci_fintek_init(struct pci_dev *dev)
+ {
+ 	unsigned long iobase;
+ 	u32 max_port, i;
+-	u32 bar_data[3];
++	resource_size_t bar_data[3];
+ 	u8 config_base;
+ 	struct serial_private *priv = pci_get_drvdata(dev);
+ 	struct uart_8250_port *port;
+ 
++	if (!(pci_resource_flags(dev, 5) & IORESOURCE_IO) ||
++			!(pci_resource_flags(dev, 4) & IORESOURCE_IO) ||
++			!(pci_resource_flags(dev, 3) & IORESOURCE_IO))
++		return -ENODEV;
++
+ 	switch (dev->device) {
+ 	case 0x1104: /* 4 ports */
+ 	case 0x1108: /* 8 ports */
+@@ -1495,9 +1500,9 @@ static int pci_fintek_init(struct pci_dev *dev)
+ 	}
+ 
+ 	/* Get the io address dispatch from the BIOS */
+-	pci_read_config_dword(dev, 0x24, &bar_data[0]);
+-	pci_read_config_dword(dev, 0x20, &bar_data[1]);
+-	pci_read_config_dword(dev, 0x1c, &bar_data[2]);
++	bar_data[0] = pci_resource_start(dev, 5);
++	bar_data[1] = pci_resource_start(dev, 4);
++	bar_data[2] = pci_resource_start(dev, 3);
+ 
+ 	for (i = 0; i < max_port; ++i) {
+ 		/* UART0 configuration offset start from 0x40 */
+-- 
+1.9.1
