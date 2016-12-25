@@ -1,44 +1,56 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH] serial: 8250: use initializer instead of memset to clear
- local struct
-Date: Sat, 24 Dec 2016 15:47:19 +0900
-Message-ID: <CAK7LNARpDFDc9ntf3g03+Vz1gejzDVOpEkA1mRmA6sduNsDKWg@mail.gmail.com>
-References: <1482463308-28968-1-git-send-email-yamada.masahiro@socionext.com> <20161223072026.GA23895@kroah.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH 1/4] serial: core: Add LED trigger support
+Date: Sun, 25 Dec 2016 22:20:38 +0100
+Message-ID: <20161225212038.GD26891@amd>
+References: <20161123100106.15969-1-s.hauer@pengutronix.de>
+ <20161123100106.15969-2-s.hauer@pengutronix.de>
+ <e9fc12b8-d4a7-067d-ef87-03f0aae39bd7@gmail.com>
+ <20161124081748.fx3xm5ww64ngn5it@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="kvUQC+jR9YzypDnK"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161223072026.GA23895@kroah.com>
+Content-Disposition: inline
+In-Reply-To: <20161124081748.fx3xm5ww64ngn5it@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-parisc@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Joachim Eastwood <manabian@gmail.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Florian Fainelli <f.fainelli@gmail.com>, linux-serial@vger.kernel.org, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
 
+--kvUQC+jR9YzypDnK
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-2016-12-23 16:20 GMT+09:00 Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
-> On Fri, Dec 23, 2016 at 12:21:48PM +0900, Masahiro Yamada wrote:
->> Leave the way of zero-out to the compiler's decision; the compiler
->> may know a more optimized way than calling memset().
->
-> But no, it doesn't, it will leave "blank" areas in the structure with
-> bad data in it, which is why we do memset.  See the tree-wide fixups we
-> made about a year ago for this very issue.  Are you sure none of these
-> structures get copied to userspace?
+Hi!
 
-I have to admit no security consideration was in my mind.
+> > Could we somehow remedy the lack of knowledge from the core as whether
+> > the HW sends/receives characters first before adding support for LED
+> > triggers? It would be more generic and future proof to require UART
+> > drivers to report to the core when they actually TX/RX, and then at the
+> > core level, utilize that knowledge to perform the LED trigger.
+>=20
+> Maybe we could introduce a function to read from the TX FIFO. Having
+> open coded this in each and every driver is not nice anyway.
 
-If we talk about the particular case of struct uart_8250_port,
-this structure is allocated in the stack temporarily,
-then serial8250_register_8250_port() copies its members to another
-structure one by one.  So no "blank" area is exposed to the user-space,
-I think.
+Yes, please.
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
 
-Having said that, we have no good reason to take a risk for this.
+--kvUQC+jR9YzypDnK
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-So, please feel free to discard this patch.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
+iEYEARECAAYFAlhgOCYACgkQMOfwapXb+vJWMgCfZz9Sd2cLLrB8yH+76+z42zH3
+PvwAniSO0xrs/q1/XwDzzezHTt9byxM2
+=l7QB
+-----END PGP SIGNATURE-----
 
--- 
-Best Regards
-Masahiro Yamada
+--kvUQC+jR9YzypDnK--
