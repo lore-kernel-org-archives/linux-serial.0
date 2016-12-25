@@ -1,56 +1,80 @@
 From: Pavel Machek <pavel@ucw.cz>
 Subject: Re: [PATCH 1/4] serial: core: Add LED trigger support
-Date: Sun, 25 Dec 2016 22:20:38 +0100
-Message-ID: <20161225212038.GD26891@amd>
+Date: Sun, 25 Dec 2016 22:20:35 +0100
+Message-ID: <20161225212034.GC26891@amd>
 References: <20161123100106.15969-1-s.hauer@pengutronix.de>
  <20161123100106.15969-2-s.hauer@pengutronix.de>
- <e9fc12b8-d4a7-067d-ef87-03f0aae39bd7@gmail.com>
- <20161124081748.fx3xm5ww64ngn5it@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="kvUQC+jR9YzypDnK"
+        protocol="application/pgp-signature"; boundary="lMM8JwqTlfDpEaS6"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20161124081748.fx3xm5ww64ngn5it@pengutronix.de>
+In-Reply-To: <20161123100106.15969-2-s.hauer@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Florian Fainelli <f.fainelli@gmail.com>, linux-serial@vger.kernel.org, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
 
---kvUQC+jR9YzypDnK
+--lMM8JwqTlfDpEaS6
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi!
 
-> > Could we somehow remedy the lack of knowledge from the core as whether
-> > the HW sends/receives characters first before adding support for LED
-> > triggers? It would be more generic and future proof to require UART
-> > drivers to report to the core when they actually TX/RX, and then at the
-> > core level, utilize that knowledge to perform the LED trigger.
+> As the serial core layer does not know when the hardware actually sends
+> or receives characters, this needs help from the UART drivers. The
+> LED triggers are registered in uart_add_led_triggers() called from
+> the UART drivers which want to support LED triggers. All the driver
+> has to do then is to call uart_led_trigger_[tx|rx] to indicate
+> activity.
 >=20
-> Maybe we could introduce a function to read from the TX FIFO. Having
-> open coded this in each and every driver is not nice anyway.
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+>  drivers/tty/serial/serial_core.c | 73 ++++++++++++++++++++++++++++++++++=
+++++++
+>  include/linux/serial_core.h      | 10 ++++++
+>  2 files changed, 83 insertions(+)
+>=20
 
-Yes, please.
+> +	if (!IS_ENABLED(CONFIG_LEDS_TRIGGERS))
+> +		return 0;
+> +
+> +	uport->led_trigger_tx_name =3D kasprintf(GFP_KERNEL, "%s%d-tx",
+> +					       drv->dev_name, uport->line);
+> +	uport->led_trigger_rx_name =3D kasprintf(GFP_KERNEL, "%s%d-rx",
+> +					       drv->dev_name, uport->line);
+
+Is it neccessary to have separate triggers for rx and tx?
+
+Won't most common application be "light a led for rx _or_ tx", which
+is something this can not do?
+
+If I have system with 200 serials, this creates 400 triggers, each
+trigger name will be about 10 characters AFAICT... and we'll overflow
+some buffer when doing "cat triggers", no?
+
+Would it be enough to have 3 triggers? (Any activity, any rx, any tx)?
+
+Thanks,
 									Pavel
+
 --=20
 (english) http://www.livejournal.com/~pavelmachek
 (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
 g.html
 
---kvUQC+jR9YzypDnK
+--lMM8JwqTlfDpEaS6
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iEYEARECAAYFAlhgOCYACgkQMOfwapXb+vJWMgCfZz9Sd2cLLrB8yH+76+z42zH3
-PvwAniSO0xrs/q1/XwDzzezHTt9byxM2
-=l7QB
+iEYEARECAAYFAlhgOCIACgkQMOfwapXb+vJbMQCginbIjK2OxemgW1ZOlCYq5jHD
+6RMAoLKNHP6HFHWUJ40k3KaHl4yeip3i
+=ICme
 -----END PGP SIGNATURE-----
 
---kvUQC+jR9YzypDnK--
+--lMM8JwqTlfDpEaS6--
