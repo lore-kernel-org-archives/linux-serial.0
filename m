@@ -1,81 +1,49 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH] tty/serial: atmel_serial: BUG: stop DMA from transmitting
- in stop_tx
-Date: Mon, 2 Jan 2017 15:16:46 +0100
-Message-ID: <CACQ1gAiVc56TosMLMB-GSYW9M5m3Zy04RoPr=raoW-PpYEkgXA@mail.gmail.com>
-References: <20161213162756.16139-1-richard.genoud@gmail.com> <059a5366-c0d4-ab89-d64a-dcf007bc9e91@atmel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <059a5366-c0d4-ab89-d64a-dcf007bc9e91@atmel.com>
-Sender: stable-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "beware, this won't apply before 4.3" <stable@vger.kernel.org>
+From: Javier Martinez Canillas <javier@osg.samsung.com>
+Subject: [PATCH] tty: serial: msm: Fix module autoload
+Date: Mon,  2 Jan 2017 11:57:20 -0300
+Message-ID: <1483369040-21442-1-git-send-email-javier@osg.samsung.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Javier Martinez Canillas <javier@osg.samsung.com>, Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-2017-01-02 12:13 GMT+01:00 Nicolas Ferre <nicolas.ferre@atmel.com>:
-> Le 13/12/2016 =C3=A0 17:27, Richard Genoud a =C3=A9crit :
->> If we don't disable the transmitter in atmel_stop_tx, the DMA buffer
->> continues to send data until it is emptied.
->> This cause problems with the flow control (CTS is asserted and data are
->> still sent).
->>
->> So, disabling the transmitter in atmel_stop_tx is a sane thing to do.
->>
->> Tested on at91sam9g35-cm(DMA)
->> Tested for regressions on sama5d2-xplained(Fifo) and at91sam9g20ek(PDC)
->>
->> Cc: <stable@vger.kernel.org> (beware, this won't apply before 4.3)
->> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
->
-> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
->
->> ---
->>  drivers/tty/serial/atmel_serial.c | 11 +++++++++++
->>  1 file changed, 11 insertions(+)
->>
->> NB: this is not for the 4.10 merge window, I'm just sending it now to
->> have some comments if someone is againts it.
->>
->> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atme=
-l_serial.c
->> index 168b10cad47b..f9d42de5ab2d 100644
->> --- a/drivers/tty/serial/atmel_serial.c
->> +++ b/drivers/tty/serial/atmel_serial.c
->> @@ -481,6 +481,14 @@ static void atmel_stop_tx(struct uart_port *port)
->>               /* disable PDC transmit */
->>               atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTDIS);
->>       }
->> +
->> +     /*
->> +      * Disable the transmitter.
->> +      * This is mandatory when DMA is used, otherwise the DMA buffer
->> +      * is fully transmitted.
->> +      */
->> +     atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS);
->> +
->>       /* Disable interrupts */
->>       atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
->>
->> @@ -513,6 +521,9 @@ static void atmel_start_tx(struct uart_port *port)
->>
->>       /* Enable interrupts */
->>       atmel_uart_writel(port, ATMEL_US_IER, atmel_port->tx_done_mask);
->> +
->> +     /* re-enable the transmitter */
->> +     atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
->>  }
->>
->>  /*
->>
->
->
-> --
-> Nicolas Ferre
+If the driver is built as a module, autoload won't work because the module
+alias information is not filled. So user-space can't match the registered
+device with the corresponding module.
 
-Greg, could you also take this patch in your tree ?
+Export the module alias information using the MODULE_DEVICE_TABLE() macro.
 
-Thanks !
+Before this patch:
 
-Richard.
+$ modinfo drivers/tty/serial/msm_serial.ko | grep alias
+$
+
+After this patch:
+
+$ modinfo drivers/tty/serial/msm_serial.ko | grep alias
+alias:          of:N*T*Cqcom,msm-uartdmC*
+alias:          of:N*T*Cqcom,msm-uartdm
+alias:          of:N*T*Cqcom,msm-uartC*
+alias:          of:N*T*Cqcom,msm-uart
+
+Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
+---
+
+ drivers/tty/serial/msm_serial.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 7312e7e01b7e..6788e7532dff 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1809,6 +1809,7 @@ static const struct of_device_id msm_match_table[] = {
+ 	{ .compatible = "qcom,msm-uartdm" },
+ 	{}
+ };
++MODULE_DEVICE_TABLE(of, msm_match_table);
+ 
+ static struct platform_driver msm_platform_driver = {
+ 	.remove = msm_serial_remove,
+-- 
+2.7.4
