@@ -1,66 +1,44 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: [PATCH] serial: 8250: use initializer instead of memset to clear
- local struct
-Date: Mon, 2 Jan 2017 13:27:20 +0000
-Message-ID: <20170102132719.GD14217@n2100.armlinux.org.uk>
-References: <1482463308-28968-1-git-send-email-yamada.masahiro@socionext.com>
- <20161223072026.GA23895@kroah.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH] tty/serial: atmel: RS485 half duplex w/DMA: enable RX
+ after TX is done
+Date: Mon, 2 Jan 2017 15:14:37 +0100
+Message-ID: <CACQ1gAifm3nWOyfGbugHf4pFDQ7NCks+H+cjZcwEhjPqfJ=5Mw@mail.gmail.com>
+References: <20161206120533.14505-1-richard.genoud@gmail.com> <20170102115326.mfly6w5k3dllfpur@piout.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-parisc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20161223072026.GA23895@kroah.com>
-Sender: linux-parisc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, linux-parisc@vger.kernel.org, Helge Deller <deller@gmx.de>, "James E.J. Bottomley" <jejb@parisc-linux.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Joachim Eastwood <manabian@gmail.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170102115326.mfly6w5k3dllfpur@piout.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Gil Weber <webergil@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "#4 . 4+" <stable@vger.kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Dec 23, 2016 at 08:20:26AM +0100, Greg Kroah-Hartman wrote:
-> On Fri, Dec 23, 2016 at 12:21:48PM +0900, Masahiro Yamada wrote:
-> > Leave the way of zero-out to the compiler's decision; the compiler
-> > may know a more optimized way than calling memset().
-> 
-> But no, it doesn't, it will leave "blank" areas in the structure with
-> bad data in it, which is why we do memset.  See the tree-wide fixups we
-> made about a year ago for this very issue.  Are you sure none of these
-> structures get copied to userspace?
-> 
-> > It may end up with memset() for big structures like this after all,
-> > but the code will be cleaner at least.
-> 
-> Please leave it as-is, unless you see a measured speedup.
-
-We can probably have both... we have an "optimisation" in ARM for
-zero-based memset()s which was beneficial with older compilers, but
-I suspect GCC 4 does a much better job itself of optimising
-memset().  arch/arm/include/asm/string.h:
-
-#define memset(p,v,n)                                                   \
-        ({                                                              \
-                void *__p = (p); size_t __n = n;                        \
-                if ((__n) != 0) {                                       \
-                        if (__builtin_constant_p((v)) && (v) == 0)      \
-                                __memzero((__p),(__n));                 \
-                        else                                            \
-                                memset((__p),(v),(__n));                \
-                }                                                       \
-                (__p);                                                  \
-        })
-
-I suspect we should get rid of that with GCC >= 4.
-
-I also suspect that it'll make no difference for uart_8250_port, as
-it's rather large, but for smaller structures (eg, up to a cache line)
-GCC can probably optimise to inline initialisation.
-
-So, probably something for resulting code and performance analysis...
-
-It's worth noting that 32-bit x86 always uses __builtin_memset() for
-memset() on GCC >= 4, so GCC's memset() optimisations must be safe for
-structures copied to userspace, or if not, 32-bit x86 is probably
-rather buggy.
-
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+2017-01-02 12:53 GMT+01:00 Alexandre Belloni
+<alexandre.belloni@free-electrons.com>:
+> On 06/12/2016 at 13:05:33 +0100, Richard Genoud wrote :
+>> When using RS485 in half duplex, RX should be enabled when TX is
+>> finished, and stopped when TX starts.
+>>
+>> Before commit 0058f0871efe7b01c6 ("tty/serial: atmel: fix RS485 half
+>> duplex with DMA"), RX was not disabled in atmel_start_tx() if the DMA
+>> was used. So, collisions could happened.
+>>
+>> But disabling RX in atmel_start_tx() uncovered another bug:
+>> RX was enabled again in the wrong place (in atmel_tx_dma) instead of
+>> being enabled when TX is finished (in atmel_complete_tx_dma), so the
+>> transmission simply stopped.
+>>
+>> This bug was not triggered before commit 0058f0871efe7b01c6
+>> ("tty/serial: atmel: fix RS485 half duplex with DMA") because RX was
+>> never disabled before.
+>>
+>> Moving atmel_start_rx() in atmel_complete_tx_dma() corrects the problem.
+>>
+>> Cc: stable@vger.kernel.org
+>> Reported-by: Gil Weber <webergil@gmail.com>
+>> Tested-by: Gil Weber <webergil@gmail.com>
+>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+>
+> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+>
+Greg, could you take this patch in your tree ?
