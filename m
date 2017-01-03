@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 19/19] serial: sh-sci: Compute the regshift value for SCI ports
-Date: Wed,  4 Jan 2017 01:06:39 +0200
-Message-ID: <20170103230639.19660-20-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 16/19] serial: sh-sci: Remove the platform data dma slave rx/tx channel IDs
+Date: Wed,  4 Jan 2017 01:06:36 +0200
+Message-ID: <20170103230639.19660-17-laurent.pinchart+renesas@ideasonboard.com>
 References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,80 +10,93 @@ To: linux-renesas-soc@vger.kernel.org
 Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-SCI instances found in SH SoCs have different spacing between registers
-depending on the SoC. The platform data contains a regshift field that
-tells the driver by how many bits to shift the register offset to
-compute its address. We can compute the regshift value automatically
-based on the memory resource size, there's no need to pass the value
-through platform data.
+Only SH platforms still use platform data for the sh-sci, and none of
+them declare DMA channels connected to the SCI. Remove the corresponding
+platform data fields and simplify the driver accordingly.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/tty/serial/sh-sci.c | 25 +++++++++++++++----------
- include/linux/serial_sci.h  |  1 -
- 2 files changed, 15 insertions(+), 11 deletions(-)
+ drivers/tty/serial/sh-sci.c | 23 ++++++-----------------
+ include/linux/serial_sci.h  |  3 ---
+ 2 files changed, 6 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 5fc2606fc525..fbffe89b493f 100644
+index 010422ae88ff..671b6068c58b 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -187,19 +187,18 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
- 	},
+@@ -1388,20 +1388,14 @@ static void rx_timer_fn(unsigned long arg)
+ }
  
- 	/*
--	 * Common definitions for legacy IrDA ports, dependent on
--	 * regshift value.
-+	 * Common definitions for legacy IrDA ports.
- 	 */
- 	[SCIx_IRDA_REGTYPE] = {
- 		.regs = {
- 			[SCSMR]		= { 0x00,  8 },
--			[SCBRR]		= { 0x01,  8 },
--			[SCSCR]		= { 0x02,  8 },
--			[SCxTDR]	= { 0x03,  8 },
--			[SCxSR]		= { 0x04,  8 },
--			[SCxRDR]	= { 0x05,  8 },
--			[SCFCR]		= { 0x06,  8 },
--			[SCFDR]		= { 0x07, 16 },
-+			[SCBRR]		= { 0x02,  8 },
-+			[SCSCR]		= { 0x04,  8 },
-+			[SCxTDR]	= { 0x06,  8 },
-+			[SCxSR]		= { 0x08, 16 },
-+			[SCxRDR]	= { 0x0a,  8 },
-+			[SCFCR]		= { 0x0c,  8 },
-+			[SCFDR]		= { 0x0e, 16 },
- 		},
- 		.fifosize = 1,
- 		.overrun_reg = SCxSR,
-@@ -2573,9 +2572,15 @@ static int sci_init_single(struct platform_device *dev,
+ static struct dma_chan *sci_request_dma_chan(struct uart_port *port,
+-					     enum dma_transfer_direction dir,
+-					     unsigned int id)
++					     enum dma_transfer_direction dir)
+ {
+-	dma_cap_mask_t mask;
+ 	struct dma_chan *chan;
+ 	struct dma_slave_config cfg;
+ 	int ret;
  
- 	port->type		= p->type;
- 	port->flags		= UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | p->flags;
--	port->regshift		= p->regshift;
- 	port->fifosize		= sci_port->params->fifosize;
+-	dma_cap_zero(mask);
+-	dma_cap_set(DMA_SLAVE, mask);
+-
+-	chan = dma_request_slave_channel_compat(mask, shdma_chan_filter,
+-					(void *)(unsigned long)id, port->dev,
+-					dir == DMA_MEM_TO_DEV ? "tx" : "rx");
++	chan = dma_request_slave_channel(port->dev,
++					 dir == DMA_MEM_TO_DEV ? "tx" : "rx");
+ 	if (!chan) {
+ 		dev_warn(port->dev,
+ 			 "dma_request_slave_channel_compat failed\n");
+@@ -1437,12 +1431,11 @@ static void sci_request_dma(struct uart_port *port)
  
-+	if (port->type == PORT_SCI) {
-+		if (sci_port->reg_size >= 0x20)
-+			port->regshift = 2;
-+		else
-+			port->regshift = 1;
-+	}
-+
- 	/*
- 	 * The UART port needs an IRQ value, so we peg this to the RX IRQ
- 	 * for the multi-IRQ ports, which is where we are primarily
+ 	dev_dbg(port->dev, "%s: port %d\n", __func__, port->line);
+ 
+-	if (!port->dev->of_node &&
+-	    (s->cfg->dma_slave_tx <= 0 || s->cfg->dma_slave_rx <= 0))
++	if (!port->dev->of_node)
+ 		return;
+ 
+ 	s->cookie_tx = -EINVAL;
+-	chan = sci_request_dma_chan(port, DMA_MEM_TO_DEV, s->cfg->dma_slave_tx);
++	chan = sci_request_dma_chan(port, DMA_MEM_TO_DEV);
+ 	dev_dbg(port->dev, "%s: TX: got channel %p\n", __func__, chan);
+ 	if (chan) {
+ 		s->chan_tx = chan;
+@@ -1464,7 +1457,7 @@ static void sci_request_dma(struct uart_port *port)
+ 		INIT_WORK(&s->work_tx, work_fn_tx);
+ 	}
+ 
+-	chan = sci_request_dma_chan(port, DMA_DEV_TO_MEM, s->cfg->dma_slave_rx);
++	chan = sci_request_dma_chan(port, DMA_DEV_TO_MEM);
+ 	dev_dbg(port->dev, "%s: RX: got channel %p\n", __func__, chan);
+ 	if (chan) {
+ 		unsigned int i;
+@@ -2705,10 +2698,6 @@ static int sci_init_single(struct platform_device *dev,
+ 	port->serial_in		= sci_serial_in;
+ 	port->serial_out	= sci_serial_out;
+ 
+-	if (p->dma_slave_tx > 0 && p->dma_slave_rx > 0)
+-		dev_dbg(port->dev, "DMA tx %d, rx %d\n",
+-			p->dma_slave_tx, p->dma_slave_rx);
+-
+ 	return 0;
+ }
+ 
 diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index f9a4526f4ec5..e598eaef3962 100644
+index 9f2bfd055742..1a894c47bfc0 100644
 --- a/include/linux/serial_sci.h
 +++ b/include/linux/serial_sci.h
-@@ -56,7 +56,6 @@ struct plat_sci_port {
- 	/*
- 	 * Platform overrides if necessary, defaults otherwise.
- 	 */
--	unsigned char	regshift;
+@@ -71,9 +71,6 @@ struct plat_sci_port {
  	unsigned char	regtype;
  
  	struct plat_sci_port_ops	*ops;
+-
+-	unsigned int	dma_slave_tx;
+-	unsigned int	dma_slave_rx;
+ };
+ 
+ #endif /* __LINUX_SERIAL_SCI_H */
 -- 
 Regards,
 
