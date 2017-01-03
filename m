@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 17/19] serial: sh-sci: Remove manual break debouncing
-Date: Wed,  4 Jan 2017 01:06:37 +0200
-Message-ID: <20170103230639.19660-18-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 15/19] serial: sh-sci: Extend sci_port_params with more port parameters
+Date: Wed,  4 Jan 2017 01:06:35 +0200
+Message-ID: <20170103230639.19660-16-laurent.pinchart+renesas@ideasonboard.com>
 References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,257 +10,403 @@ To: linux-renesas-soc@vger.kernel.org
 Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The sh-sci driver implements manual break debouncing for a few SH
-platforms by reading the value of the RX pin port register. This feature
-is optional and the driver considers all negative or zero values of the
-platform data port_reg field as invalid. As the four platforms that set
-the field to a register address all use an address higher than
-0x7fffffff, the driver will always consider the value as invalid and
-never perform debouncing. The feature is unused, remove it.
-
-Debouncing could be implemented properly in the future using the pinctrl
-and GPIO APIs if desired.
+The fifo size, overrun register and mask, sampling rate mask and error
+mask all depend on the port type only and don't need to be computed at
+runtime. Add them to the sci_port_parameters structure.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/tty/serial/sh-sci.c | 124 +++-----------------------------------------
- include/linux/serial_sci.h  |   5 --
- 2 files changed, 7 insertions(+), 122 deletions(-)
+ drivers/tty/serial/sh-sci.c | 181 ++++++++++++++++++++++++--------------------
+ drivers/tty/serial/sh-sci.h |   4 +-
+ 2 files changed, 102 insertions(+), 83 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 671b6068c58b..1f3025f2d21d 100644
+index 285d0c726ca3..010422ae88ff 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -125,10 +125,6 @@ struct sci_port {
+@@ -107,6 +107,12 @@ struct plat_sci_reg {
+ 
+ struct sci_port_params {
+ 	const struct plat_sci_reg regs[SCIx_NR_REGS];
++	unsigned int fifosize;
++	unsigned int overrun_reg;
++	unsigned int overrun_mask;
++	unsigned int sampling_rate_mask;
++	unsigned int error_mask;
++	unsigned int error_clear;
+ };
+ 
+ struct sci_port {
+@@ -115,10 +121,6 @@ struct sci_port {
+ 	/* Platform configuration */
+ 	const struct sci_port_params *params;
+ 	const struct plat_sci_port *cfg;
+-	unsigned int		overrun_reg;
+-	unsigned int		overrun_mask;
+-	unsigned int		error_mask;
+-	unsigned int		error_clear;
+ 	unsigned int		sampling_rate_mask;
  	resource_size_t		reg_size;
  	struct mctrl_gpios	*gpios;
+@@ -179,6 +181,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCxSR]		= { 0x04,  8 },
+ 			[SCxRDR]	= { 0x05,  8 },
+ 		},
++		.fifosize = 1,
++		.overrun_reg = SCxSR,
++		.overrun_mask = SCI_ORER,
++		.sampling_rate_mask = SCI_SR(32),
++		.error_mask = SCI_DEFAULT_ERROR_MASK | SCI_ORER,
++		.error_clear = SCI_ERROR_CLEAR & ~SCI_ORER,
+ 	},
  
--	/* Break timer */
--	struct timer_list	break_timer;
--	int			break_flag;
--
- 	/* Clocks */
- 	struct clk		*clks[SCI_NUM_CLKS];
- 	unsigned long		clk_rates[SCI_NUM_CLKS];
-@@ -518,14 +514,6 @@ static void sci_port_disable(struct sci_port *sci_port)
- 	if (!sci_port->port.dev)
- 		return;
+ 	/*
+@@ -196,6 +204,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCFCR]		= { 0x06,  8 },
+ 			[SCFDR]		= { 0x07, 16 },
+ 		},
++		.fifosize = 1,
++		.overrun_reg = SCxSR,
++		.overrun_mask = SCI_ORER,
++		.sampling_rate_mask = SCI_SR(32),
++		.error_mask = SCI_DEFAULT_ERROR_MASK | SCI_ORER,
++		.error_clear = SCI_ERROR_CLEAR & ~SCI_ORER,
+ 	},
  
--	/* Cancel the break timer to ensure that the timer handler will not try
--	 * to access the hardware with clocks and power disabled. Reset the
--	 * break flag to make the break debouncing state machine ready for the
--	 * next break.
--	 */
--	del_timer_sync(&sci_port->break_timer);
--	sci_port->break_flag = 0;
--
- 	for (i = SCI_NUM_CLKS; i-- > 0; )
- 		clk_disable_unprepare(sci_port->clks[i]);
+ 	/*
+@@ -214,6 +228,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCPCR]		= { 0x30, 16 },
+ 			[SCPDR]		= { 0x34, 16 },
+ 		},
++		.fifosize = 64,
++		.overrun_reg = SCxSR,
++		.overrun_mask = SCIFA_ORER,
++		.sampling_rate_mask = SCI_SR_SCIFAB,
++		.error_mask = SCIF_DEFAULT_ERROR_MASK | SCIFA_ORER,
++		.error_clear = SCIF_ERROR_CLEAR & ~SCIFA_ORER,
+ 	},
  
-@@ -752,20 +740,6 @@ static int sci_rxfill(struct uart_port *port)
+ 	/*
+@@ -233,6 +253,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCPCR]		= { 0x30, 16 },
+ 			[SCPDR]		= { 0x34, 16 },
+ 		},
++		.fifosize = 256,
++		.overrun_reg = SCxSR,
++		.overrun_mask = SCIFA_ORER,
++		.sampling_rate_mask = SCI_SR_SCIFAB,
++		.error_mask = SCIF_DEFAULT_ERROR_MASK | SCIFA_ORER,
++		.error_clear = SCIF_ERROR_CLEAR & ~SCIFA_ORER,
+ 	},
+ 
+ 	/*
+@@ -252,6 +278,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCSPTR]	= { 0x20, 16 },
+ 			[SCLSR]		= { 0x24, 16 },
+ 		},
++		.fifosize = 16,
++		.overrun_reg = SCLSR,
++		.overrun_mask = SCLSR_ORER,
++		.sampling_rate_mask = SCI_SR(32),
++		.error_mask = SCIF_DEFAULT_ERROR_MASK,
++		.error_clear = SCIF_ERROR_CLEAR,
+ 	},
+ 
+ 	/*
+@@ -268,6 +300,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCFCR]		= { 0x0c,  8 },
+ 			[SCFDR]		= { 0x0e, 16 },
+ 		},
++		.fifosize = 16,
++		.overrun_reg = SCLSR,
++		.overrun_mask = SCLSR_ORER,
++		.sampling_rate_mask = SCI_SR(32),
++		.error_mask = SCIF_DEFAULT_ERROR_MASK,
++		.error_clear = SCIF_ERROR_CLEAR,
+ 	},
+ 
+ 	/*
+@@ -286,6 +324,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCSPTR]	= { 0x20, 16 },
+ 			[SCLSR]		= { 0x24, 16 },
+ 		},
++		.fifosize = 16,
++		.overrun_reg = SCLSR,
++		.overrun_mask = SCLSR_ORER,
++		.sampling_rate_mask = SCI_SR(32),
++		.error_mask = SCIF_DEFAULT_ERROR_MASK,
++		.error_clear = SCIF_ERROR_CLEAR,
+ 	},
+ 
+ 	/*
+@@ -307,6 +351,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCDL]		= { 0x30, 16 },
+ 			[SCCKS]		= { 0x34, 16 },
+ 		},
++		.fifosize = 16,
++		.overrun_reg = SCLSR,
++		.overrun_mask = SCLSR_ORER,
++		.sampling_rate_mask = SCI_SR(32),
++		.error_mask = SCIF_DEFAULT_ERROR_MASK,
++		.error_clear = SCIF_ERROR_CLEAR,
+ 	},
+ 
+ 	/*
+@@ -328,6 +378,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCDL]		= { 0x30, 16 },
+ 			[SCCKS]		= { 0x34, 16 },
+ 		},
++		.fifosize = 128,
++		.overrun_reg = SCLSR,
++		.overrun_mask = SCLSR_ORER,
++		.sampling_rate_mask = SCI_SR_RANGE(8, 32),
++		.error_mask = SCIF_DEFAULT_ERROR_MASK,
++		.error_clear = SCIF_ERROR_CLEAR,
+ 	},
+ 
+ 	/*
+@@ -346,6 +402,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCFDR]		= { 0x1c, 16 },
+ 			[SCLSR]		= { 0x24, 16 },
+ 		},
++		.fifosize = 16,
++		.overrun_reg = SCLSR,
++		.overrun_mask = SCLSR_ORER,
++		.sampling_rate_mask = SCI_SR(32),
++		.error_mask = SCIF_DEFAULT_ERROR_MASK,
++		.error_clear = SCIF_ERROR_CLEAR,
+ 	},
+ 
+ 	/*
+@@ -367,6 +429,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCSPTR]	= { 0x24, 16 },
+ 			[SCLSR]		= { 0x28, 16 },
+ 		},
++		.fifosize = 16,
++		.overrun_reg = SCLSR,
++		.overrun_mask = SCLSR_ORER,
++		.sampling_rate_mask = SCI_SR(32),
++		.error_mask = SCIF_DEFAULT_ERROR_MASK,
++		.error_clear = SCIF_ERROR_CLEAR,
+ 	},
+ 
+ 	/*
+@@ -384,6 +452,12 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 			[SCFCR]		= { 0x18, 16 },
+ 			[SCFDR]		= { 0x1c, 16 },
+ 		},
++		.fifosize = 16,
++		.overrun_reg = SCxSR,
++		.overrun_mask = SCIFA_ORER,
++		.sampling_rate_mask = SCI_SR(16),
++		.error_mask = SCIF_DEFAULT_ERROR_MASK | SCIFA_ORER,
++		.error_clear = SCIF_ERROR_CLEAR & ~SCIFA_ORER,
+ 	},
+ };
+ 
+@@ -546,7 +620,7 @@ static void sci_clear_SCxSR(struct uart_port *port, unsigned int mask)
+ 	if (port->type == PORT_SCI) {
+ 		/* Just store the mask */
+ 		serial_port_out(port, SCxSR, mask);
+-	} else if (to_sci_port(port)->overrun_mask == SCIFA_ORER) {
++	} else if (to_sci_port(port)->params->overrun_mask == SCIFA_ORER) {
+ 		/* SCIFA/SCIFB and SCIF on SH7705/SH7720/SH7721 */
+ 		/* Only clear the status bits we want to clear */
+ 		serial_port_out(port, SCxSR,
+@@ -641,11 +715,13 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
+ 
+ static int sci_txfill(struct uart_port *port)
+ {
++	struct sci_port *s = to_sci_port(port);
++	unsigned int fifo_mask = (s->params->fifosize << 1) - 1;
+ 	const struct plat_sci_reg *reg;
+ 
+ 	reg = sci_getreg(port, SCTFDR);
+ 	if (reg->size)
+-		return serial_port_in(port, SCTFDR) & ((port->fifosize << 1) - 1);
++		return serial_port_in(port, SCTFDR) & fifo_mask;
+ 
+ 	reg = sci_getreg(port, SCFDR);
+ 	if (reg->size)
+@@ -661,15 +737,17 @@ static int sci_txroom(struct uart_port *port)
+ 
+ static int sci_rxfill(struct uart_port *port)
+ {
++	struct sci_port *s = to_sci_port(port);
++	unsigned int fifo_mask = (s->params->fifosize << 1) - 1;
+ 	const struct plat_sci_reg *reg;
+ 
+ 	reg = sci_getreg(port, SCRFDR);
+ 	if (reg->size)
+-		return serial_port_in(port, SCRFDR) & ((port->fifosize << 1) - 1);
++		return serial_port_in(port, SCRFDR) & fifo_mask;
+ 
+ 	reg = sci_getreg(port, SCFDR);
+ 	if (reg->size)
+-		return serial_port_in(port, SCFDR) & ((port->fifosize << 1) - 1);
++		return serial_port_in(port, SCFDR) & fifo_mask;
+ 
  	return (serial_port_in(port, SCxSR) & SCxSR_RDxF(port)) != 0;
  }
+@@ -880,7 +958,7 @@ static int sci_handle_errors(struct uart_port *port)
+ 	struct sci_port *s = to_sci_port(port);
  
--/*
-- * SCI helper for checking the state of the muxed port/RXD pins.
-- */
--static inline int sci_rxd_in(struct uart_port *port)
--{
--	struct sci_port *s = to_sci_port(port);
--
--	if (s->cfg->port_reg <= 0)
--		return 1;
--
--	/* Cast for ARM damage */
--	return !!__raw_readb((void __iomem *)(uintptr_t)s->cfg->port_reg);
--}
--
- /* ********************************************************************** *
-  *                   the interrupt related routines                       *
-  * ********************************************************************** */
-@@ -833,7 +807,6 @@ static void sci_transmit_chars(struct uart_port *port)
+ 	/* Handle overruns */
+-	if (status & s->overrun_mask) {
++	if (status & s->params->overrun_mask) {
+ 		port->icount.overrun++;
  
- static void sci_receive_chars(struct uart_port *port)
- {
--	struct sci_port *sci_port = to_sci_port(port);
- 	struct tty_port *tport = &port->state->port;
- 	int i, count, copied = 0;
- 	unsigned short status;
-@@ -853,8 +826,7 @@ static void sci_receive_chars(struct uart_port *port)
- 
- 		if (port->type == PORT_SCI) {
- 			char c = serial_port_in(port, SCxRDR);
--			if (uart_handle_sysrq_char(port, c) ||
--			    sci_port->break_flag)
-+			if (uart_handle_sysrq_char(port, c))
- 				count = 0;
- 			else
- 				tty_insert_flip_char(tport, c, TTY_NORMAL);
-@@ -863,25 +835,6 @@ static void sci_receive_chars(struct uart_port *port)
- 				char c = serial_port_in(port, SCxRDR);
- 
- 				status = serial_port_in(port, SCxSR);
--#if defined(CONFIG_CPU_SH3)
--				/* Skip "chars" during break */
--				if (sci_port->break_flag) {
--					if ((c == 0) &&
--					    (status & SCxSR_FER(port))) {
--						count--; i--;
--						continue;
--					}
--
--					/* Nonzero => end-of-break */
--					dev_dbg(port->dev, "debounce<%02x>\n", c);
--					sci_port->break_flag = 0;
--
--					if (STEPFN(c)) {
--						count--; i--;
--						continue;
--					}
--				}
--#endif /* CONFIG_CPU_SH3 */
- 				if (uart_handle_sysrq_char(port, c)) {
- 					count--; i--;
- 					continue;
-@@ -919,37 +872,6 @@ static void sci_receive_chars(struct uart_port *port)
- 	}
- }
- 
--#define SCI_BREAK_JIFFIES (HZ/20)
--
--/*
-- * The sci generates interrupts during the break,
-- * 1 per millisecond or so during the break period, for 9600 baud.
-- * So dont bother disabling interrupts.
-- * But dont want more than 1 break event.
-- * Use a kernel timer to periodically poll the rx line until
-- * the break is finished.
-- */
--static inline void sci_schedule_break_timer(struct sci_port *port)
--{
--	mod_timer(&port->break_timer, jiffies + SCI_BREAK_JIFFIES);
--}
--
--/* Ensure that two consecutive samples find the break over. */
--static void sci_break_timer(unsigned long data)
--{
--	struct sci_port *port = (struct sci_port *)data;
--
--	if (sci_rxd_in(&port->port) == 0) {
--		port->break_flag = 1;
--		sci_schedule_break_timer(port);
--	} else if (port->break_flag == 1) {
--		/* break is over. */
--		port->break_flag = 2;
--		sci_schedule_break_timer(port);
--	} else
--		port->break_flag = 0;
--}
--
- static int sci_handle_errors(struct uart_port *port)
- {
+ 		/* overrun error */
+@@ -946,14 +1024,14 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
  	int copied = 0;
-@@ -969,35 +891,13 @@ static int sci_handle_errors(struct uart_port *port)
- 	}
+ 	u16 status;
  
- 	if (status & SCxSR_FER(port)) {
--		if (sci_rxd_in(port) == 0) {
--			/* Notify of BREAK */
--			struct sci_port *sci_port = to_sci_port(port);
--
--			if (!sci_port->break_flag) {
--				port->icount.brk++;
--
--				sci_port->break_flag = 1;
--				sci_schedule_break_timer(sci_port);
--
--				/* Do sysrq handling. */
--				if (uart_handle_break(port))
--					return 0;
--
--				dev_dbg(port->dev, "BREAK detected\n");
--
--				if (tty_insert_flip_char(tport, 0, TTY_BREAK))
--					copied++;
--			}
--
--		} else {
--			/* frame error */
--			port->icount.frame++;
-+		/* frame error */
-+		port->icount.frame++;
- 
--			if (tty_insert_flip_char(tport, 0, TTY_FRAME))
--				copied++;
-+		if (tty_insert_flip_char(tport, 0, TTY_FRAME))
-+			copied++;
- 
--			dev_notice(port->dev, "frame error\n");
--		}
-+		dev_notice(port->dev, "frame error\n");
- 	}
- 
- 	if (status & SCxSR_PER(port)) {
-@@ -1050,17 +950,11 @@ static int sci_handle_breaks(struct uart_port *port)
- 	int copied = 0;
- 	unsigned short status = serial_port_in(port, SCxSR);
- 	struct tty_port *tport = &port->state->port;
--	struct sci_port *s = to_sci_port(port);
- 
- 	if (uart_handle_break(port))
+-	reg = sci_getreg(port, s->overrun_reg);
++	reg = sci_getreg(port, s->params->overrun_reg);
+ 	if (!reg->size)
  		return 0;
  
--	if (!s->break_flag && status & SCxSR_BRK(port)) {
--#if defined(CONFIG_CPU_SH3)
--		/* Debounce break */
--		s->break_flag = 1;
--#endif
--
-+	if (status & SCxSR_BRK(port)) {
- 		port->icount.brk++;
+-	status = serial_port_in(port, s->overrun_reg);
+-	if (status & s->overrun_mask) {
+-		status &= ~s->overrun_mask;
+-		serial_port_out(port, s->overrun_reg, status);
++	status = serial_port_in(port, s->params->overrun_reg);
++	if (status & s->params->overrun_mask) {
++		status &= ~s->params->overrun_mask;
++		serial_port_out(port, s->params->overrun_reg, status);
  
- 		/* Notify of BREAK */
-@@ -2676,10 +2570,6 @@ static int sci_init_single(struct platform_device *dev,
- 		pm_runtime_enable(&dev->dev);
+ 		port->icount.overrun++;
+ 
+@@ -1542,12 +1620,10 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ 
+ 	ssr_status = serial_port_in(port, SCxSR);
+ 	scr_status = serial_port_in(port, SCSCR);
+-	if (s->overrun_reg == SCxSR)
++	if (s->params->overrun_reg == SCxSR)
+ 		orer_status = ssr_status;
+-	else {
+-		if (sci_getreg(port, s->overrun_reg)->size)
+-			orer_status = serial_port_in(port, s->overrun_reg);
+-	}
++	else if (sci_getreg(port, s->params->overrun_reg)->size)
++		orer_status = serial_port_in(port, s->params->overrun_reg);
+ 
+ 	err_enabled = scr_status & port_rx_irq_mask(port);
+ 
+@@ -1573,7 +1649,7 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ 		ret = sci_br_interrupt(irq, ptr);
+ 
+ 	/* Overrun Interrupt */
+-	if (orer_status & s->overrun_mask) {
++	if (orer_status & s->params->overrun_mask) {
+ 		sci_handle_fifo_overrun(port);
+ 		ret = IRQ_HANDLED;
  	}
+@@ -2589,51 +2665,13 @@ static int sci_init_single(struct platform_device *dev,
+ 	if (unlikely(sci_port->params == NULL))
+ 		return -EINVAL;
  
--	sci_port->break_timer.data = (unsigned long)sci_port;
--	sci_port->break_timer.function = sci_break_timer;
--	init_timer(&sci_port->break_timer);
+-	switch (p->type) {
+-	case PORT_SCIFB:
+-		port->fifosize = 256;
+-		sci_port->overrun_reg = SCxSR;
+-		sci_port->overrun_mask = SCIFA_ORER;
+-		sci_port->sampling_rate_mask = SCI_SR_SCIFAB;
+-		break;
+-	case PORT_HSCIF:
+-		port->fifosize = 128;
+-		sci_port->overrun_reg = SCLSR;
+-		sci_port->overrun_mask = SCLSR_ORER;
+-		sci_port->sampling_rate_mask = SCI_SR_RANGE(8, 32);
+-		break;
+-	case PORT_SCIFA:
+-		port->fifosize = 64;
+-		sci_port->overrun_reg = SCxSR;
+-		sci_port->overrun_mask = SCIFA_ORER;
+-		sci_port->sampling_rate_mask = SCI_SR_SCIFAB;
+-		break;
+-	case PORT_SCIF:
+-		port->fifosize = 16;
+-		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE) {
+-			sci_port->overrun_reg = SCxSR;
+-			sci_port->overrun_mask = SCIFA_ORER;
+-			sci_port->sampling_rate_mask = SCI_SR(16);
+-		} else {
+-			sci_port->overrun_reg = SCLSR;
+-			sci_port->overrun_mask = SCLSR_ORER;
+-			sci_port->sampling_rate_mask = SCI_SR(32);
+-		}
+-		break;
+-	default:
+-		port->fifosize = 1;
+-		sci_port->overrun_reg = SCxSR;
+-		sci_port->overrun_mask = SCI_ORER;
+-		sci_port->sampling_rate_mask = SCI_SR(32);
+-		break;
+-	}
+-
+ 	/* SCIFA on sh7723 and sh7724 need a custom sampling rate that doesn't
+ 	 * match the SoC datasheet, this should be investigated. Let platform
+ 	 * data override the sampling rate for now.
+ 	 */
+-	if (p->sampling_rate)
+-		sci_port->sampling_rate_mask = SCI_SR(p->sampling_rate);
++	sci_port->sampling_rate_mask = p->sampling_rate
++				     ? SCI_SR(p->sampling_rate)
++				     : sci_port->params->sampling_rate_mask;
+ 
+ 	if (!early) {
+ 		ret = sci_init_clocks(sci_port, &dev->dev);
+@@ -2649,29 +2687,10 @@ static int sci_init_single(struct platform_device *dev,
+ 	sci_port->break_timer.function = sci_break_timer;
+ 	init_timer(&sci_port->break_timer);
+ 
+-	/*
+-	 * Establish some sensible defaults for the error detection.
+-	 */
+-	if (p->type == PORT_SCI) {
+-		sci_port->error_mask = SCI_DEFAULT_ERROR_MASK;
+-		sci_port->error_clear = SCI_ERROR_CLEAR;
+-	} else {
+-		sci_port->error_mask = SCIF_DEFAULT_ERROR_MASK;
+-		sci_port->error_clear = SCIF_ERROR_CLEAR;
+-	}
+-
+-	/*
+-	 * Make the error mask inclusive of overrun detection, if
+-	 * supported.
+-	 */
+-	if (sci_port->overrun_reg == SCxSR) {
+-		sci_port->error_mask |= sci_port->overrun_mask;
+-		sci_port->error_clear &= ~sci_port->overrun_mask;
+-	}
 -
  	port->type		= p->type;
  	port->flags		= UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | p->flags;
  	port->regshift		= p->regshift;
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index 1a894c47bfc0..b4419931bf4c 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -9,8 +9,6 @@
-  * Generic header for SuperH (H)SCI(F) (used by sh/sh64 and related parts)
-  */
++	port->fifosize		= sci_port->params->fifosize;
  
--#define SCIx_NOT_SUPPORTED	(-1)
--
- /* Serial Control Register (@ = not supported by all parts) */
- #define SCSCR_TIE	BIT(7)	/* Transmit Interrupt Enable */
- #define SCSCR_RIE	BIT(6)	/* Receive Interrupt Enable */
-@@ -41,8 +39,6 @@ enum {
- 	SCIx_NR_REGTYPES,
- };
- 
--struct device;
--
- struct plat_sci_port_ops {
- 	void (*init_pins)(struct uart_port *, unsigned int cflag);
- };
-@@ -66,7 +62,6 @@ struct plat_sci_port {
  	/*
- 	 * Platform overrides if necessary, defaults otherwise.
- 	 */
--	int		port_reg;
- 	unsigned char	regshift;
- 	unsigned char	regtype;
+ 	 * The UART port needs an IRQ value, so we peg this to the RX IRQ
+diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
+index ffa6d688c335..08073f0db732 100644
+--- a/drivers/tty/serial/sh-sci.h
++++ b/drivers/tty/serial/sh-sci.h
+@@ -151,12 +151,12 @@ enum {
+ #define SCxSR_PER(port)		(((port)->type == PORT_SCI) ? SCI_PER    : SCIF_PER)
+ #define SCxSR_BRK(port)		(((port)->type == PORT_SCI) ? 0x00       : SCIF_BRK)
  
+-#define SCxSR_ERRORS(port)	(to_sci_port(port)->error_mask)
++#define SCxSR_ERRORS(port)	(to_sci_port(port)->params->error_mask)
+ 
+ #define SCxSR_RDxF_CLEAR(port) \
+ 	(((port)->type == PORT_SCI) ? SCI_RDxF_CLEAR : SCIF_RDxF_CLEAR)
+ #define SCxSR_ERROR_CLEAR(port) \
+-	(to_sci_port(port)->error_clear)
++	(to_sci_port(port)->params->error_clear)
+ #define SCxSR_TDxE_CLEAR(port) \
+ 	(((port)->type == PORT_SCI) ? SCI_TDxE_CLEAR : SCIF_TDxE_CLEAR)
+ #define SCxSR_BREAK_CLEAR(port) \
 -- 
 Regards,
 
