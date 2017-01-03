@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 01/19] serial: sh-sci: Set the SCSCR TE and RE bits in the driver
-Date: Wed,  4 Jan 2017 01:06:21 +0200
-Message-ID: <20170103230639.19660-2-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 04/19] sh: Don't set sh-sci pdata scscr TIE and RIE bits
+Date: Wed,  4 Jan 2017 01:06:24 +0200
+Message-ID: <20170103230639.19660-5-laurent.pinchart+renesas@ideasonboard.com>
 References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,60 +10,243 @@ To: linux-renesas-soc@vger.kernel.org
 Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The Transmit Enable and Receive Enable bits are set in the scscr field
-of all instances of the sh-sci platform data. Set them in the driver
-directly to prepare for their removal from platform data.
+The scscr platform data field is used by the driver in three locations.
+One of them masks out all bits except SCSCR_REIE. The two other are the
+set_termios handler and the console write handler.
+
+The set_termios handler calls sci_start_rx() to enable the receiver,
+which sets the RIE bit unconditionally. It then calls sci_port_disable()
+that effectively disables both the transmitter and the receiver. The
+TIE bit will thus get set later when the serial cores reenables the
+serial port.
+
+The console write handler runs with interrupts disabled, and saves and
+restores the SCSCR register value. The RIE and TIE bits are thus not
+needed there.
+
+The bits are thus not necessary in platform data, remove them.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/tty/serial/sh-sci.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ arch/sh/kernel/cpu/sh2a/setup-sh7203.c |  8 ++++----
+ arch/sh/kernel/cpu/sh2a/setup-sh7264.c | 16 ++++++++--------
+ arch/sh/kernel/cpu/sh2a/setup-sh7269.c | 16 ++++++++--------
+ arch/sh/kernel/cpu/sh3/setup-sh7705.c  |  3 +--
+ 4 files changed, 21 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 91e7dddbf72c..1e573611719e 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2341,7 +2341,8 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 		serial_port_out(port, SCFCR, ctrl);
- 	}
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7203.c b/arch/sh/kernel/cpu/sh2a/setup-sh7203.c
+index d0d1a36d1264..146a7d9a20fd 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-sh7203.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-sh7203.c
+@@ -175,7 +175,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7203", vectors, groups,
  
--	scr_val |= s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0);
-+	scr_val |= SCSCR_RE | SCSCR_TE |
-+		   (s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0));
- 	dev_dbg(port->dev, "SCSCR 0x%x\n", scr_val);
- 	serial_port_out(port, SCSCR, scr_val);
- 	if ((srr + 1 == 5) &&
-@@ -2791,7 +2792,8 @@ static void serial_console_write(struct console *co, const char *s,
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -197,7 +197,7 @@ static struct platform_device scif0_device = {
  
- 	/* first save SCSCR then disable interrupts, keep clock source */
- 	ctrl = serial_port_in(port, SCSCR);
--	ctrl_temp = (sci_port->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0)) |
-+	ctrl_temp = SCSCR_RE | SCSCR_TE |
-+		    (sci_port->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0)) |
- 		    (ctrl & (SCSCR_CKE1 | SCSCR_CKE0));
- 	serial_port_out(port, SCSCR, ctrl_temp);
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -219,7 +219,7 @@ static struct platform_device scif1_device = {
  
-@@ -2994,7 +2996,6 @@ sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
- 	p->flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
- 	p->type = SCI_OF_TYPE(match->data);
- 	p->regtype = SCI_OF_REGTYPE(match->data);
--	p->scscr = SCSCR_RE | SCSCR_TE;
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -241,7 +241,7 @@ static struct platform_device scif2_device = {
  
- 	if (of_find_property(np, "uart-has-rtscts", NULL))
- 		p->capabilities |= SCIx_HAVE_RTSCTS;
-@@ -3162,9 +3163,9 @@ static int __init early_console_setup(struct earlycon_device *device,
- 	sci_ports[0].cfg = &port_cfg;
- 	sci_ports[0].cfg->type = type;
- 	sci_probe_regmap(sci_ports[0].cfg);
--	port_cfg.scscr = sci_serial_in(&sci_ports[0].port, SCSCR) |
--			 SCSCR_RE | SCSCR_TE;
--	sci_serial_out(&sci_ports[0].port, SCSCR, port_cfg.scscr);
-+	port_cfg.scscr = sci_serial_in(&sci_ports[0].port, SCSCR);
-+	sci_serial_out(&sci_ports[0].port, SCSCR,
-+		       SCSCR_RE | SCSCR_TE | port_cfg.scscr);
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7264.c b/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
+index 0d66fd664836..f111c20177ea 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
+@@ -227,7 +227,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7264", vectors, groups,
  
- 	device->con->write = serial_console_write;
- 	return 0;
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -252,7 +252,7 @@ static struct platform_device scif0_device = {
+ 
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -277,7 +277,7 @@ static struct platform_device scif1_device = {
+ 
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -302,7 +302,7 @@ static struct platform_device scif2_device = {
+ 
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -327,7 +327,7 @@ static struct platform_device scif3_device = {
+ 
+ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -352,7 +352,7 @@ static struct platform_device scif4_device = {
+ 
+ static struct plat_sci_port scif5_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -377,7 +377,7 @@ static struct platform_device scif5_device = {
+ 
+ static struct plat_sci_port scif6_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -402,7 +402,7 @@ static struct platform_device scif6_device = {
+ 
+ static struct plat_sci_port scif7_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7269.c b/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
+index 26abbfbeb99a..b3445e59841a 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
+@@ -249,7 +249,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7269", vectors, groups,
+ 
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -274,7 +274,7 @@ static struct platform_device scif0_device = {
+ 
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -299,7 +299,7 @@ static struct platform_device scif1_device = {
+ 
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -324,7 +324,7 @@ static struct platform_device scif2_device = {
+ 
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -349,7 +349,7 @@ static struct platform_device scif3_device = {
+ 
+ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -374,7 +374,7 @@ static struct platform_device scif4_device = {
+ 
+ static struct plat_sci_port scif5_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -399,7 +399,7 @@ static struct platform_device scif5_device = {
+ 
+ static struct plat_sci_port scif6_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -424,7 +424,7 @@ static struct platform_device scif6_device = {
+ 
+ static struct plat_sci_port scif7_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE | SCSCR_TOIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh3/setup-sh7705.c b/arch/sh/kernel/cpu/sh3/setup-sh7705.c
+index 62b1559dbe99..4f7b4f9b7d02 100644
+--- a/arch/sh/kernel/cpu/sh3/setup-sh7705.c
++++ b/arch/sh/kernel/cpu/sh3/setup-sh7705.c
+@@ -71,7 +71,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7705", vectors, NULL,
+ 
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_TIE | SCSCR_RIE | SCSCR_CKE1 | SCSCR_CKE0,
++	.scscr		= SCSCR_CKE1 | SCSCR_CKE0,
+ 	.type		= PORT_SCIF,
+ 	.ops		= &sh770x_sci_port_ops,
+ 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
+@@ -94,7 +94,6 @@ static struct platform_device scif0_device = {
+ 
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_TIE | SCSCR_RIE,
+ 	.type		= PORT_SCIF,
+ 	.ops		= &sh770x_sci_port_ops,
+ 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
 -- 
 Regards,
 
