@@ -1,254 +1,109 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 04/19] sh: Don't set sh-sci pdata scscr TIE and RIE bits
-Date: Wed,  4 Jan 2017 01:06:24 +0200
-Message-ID: <20170103230639.19660-5-laurent.pinchart+renesas@ideasonboard.com>
-References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
+Subject: [PATCH 00/19] sh-sci: Platform data simplification
+Date: Wed,  4 Jan 2017 01:06:20 +0200
+Message-ID: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
 To: linux-renesas-soc@vger.kernel.org
 Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The scscr platform data field is used by the driver in three locations.
-One of them masks out all bits except SCSCR_REIE. The two other are the
-set_termios handler and the console write handler.
+Hello,
 
-The set_termios handler calls sci_start_rx() to enable the receiver,
-which sets the RIE bit unconditionally. It then calls sci_port_disable()
-that effectively disables both the transmitter and the receiver. The
-TIE bit will thus get set later when the serial cores reenables the
-serial port.
+Most of the patches in this series have been sitting in my development tree
+for three years now. While rebasing all my development branches I decided it
+was time to send them out in case they're considered useful. I've then thrown
+a few additional patches in to move the driver further in the right direction
+(or at least the direction I consider right).
 
-The console write handler runs with interrupts disabled, and saves and
-restores the SCSCR register value. The RIE and TIE bits are thus not
-needed there.
+The idea behind this series is to move towards removal of the sh-sci platform
+data. This won't be possible until SH platforms move to DT (and I won't hold
+my breath), but we can get rid of most of the platform data fields already and
+cleanup the sh-sci driver at the same time.
 
-The bits are thus not necessary in platform data, remove them.
+The series already removes the capabilities, port_reg, regshift, dma_slave_tx
+and dma_slave_rx fields. We should be able to go further:
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
----
- arch/sh/kernel/cpu/sh2a/setup-sh7203.c |  8 ++++----
- arch/sh/kernel/cpu/sh2a/setup-sh7264.c | 16 ++++++++--------
- arch/sh/kernel/cpu/sh2a/setup-sh7269.c | 16 ++++++++--------
- arch/sh/kernel/cpu/sh3/setup-sh7705.c  |  3 +--
- 4 files changed, 21 insertions(+), 22 deletions(-)
+- The flags field is only used by sh5 to set UPF_IOREMAP. It should be
+  possible to find another way to determine in the driver whether to ioremap
+  the registers.
 
-diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7203.c b/arch/sh/kernel/cpu/sh2a/setup-sh7203.c
-index d0d1a36d1264..146a7d9a20fd 100644
---- a/arch/sh/kernel/cpu/sh2a/setup-sh7203.c
-+++ b/arch/sh/kernel/cpu/sh2a/setup-sh7203.c
-@@ -175,7 +175,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7203", vectors, groups,
- 
- static struct plat_sci_port scif0_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -197,7 +197,7 @@ static struct platform_device scif0_device = {
- 
- static struct plat_sci_port scif1_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -219,7 +219,7 @@ static struct platform_device scif1_device = {
- 
- static struct plat_sci_port scif2_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -241,7 +241,7 @@ static struct platform_device scif2_device = {
- 
- static struct plat_sci_port scif3_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7264.c b/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
-index 0d66fd664836..f111c20177ea 100644
---- a/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
-+++ b/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
-@@ -227,7 +227,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7264", vectors, groups,
- 
- static struct plat_sci_port scif0_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -252,7 +252,7 @@ static struct platform_device scif0_device = {
- 
- static struct plat_sci_port scif1_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -277,7 +277,7 @@ static struct platform_device scif1_device = {
- 
- static struct plat_sci_port scif2_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -302,7 +302,7 @@ static struct platform_device scif2_device = {
- 
- static struct plat_sci_port scif3_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -327,7 +327,7 @@ static struct platform_device scif3_device = {
- 
- static struct plat_sci_port scif4_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -352,7 +352,7 @@ static struct platform_device scif4_device = {
- 
- static struct plat_sci_port scif5_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -377,7 +377,7 @@ static struct platform_device scif5_device = {
- 
- static struct plat_sci_port scif6_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -402,7 +402,7 @@ static struct platform_device scif6_device = {
- 
- static struct plat_sci_port scif7_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7269.c b/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
-index 26abbfbeb99a..b3445e59841a 100644
---- a/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
-+++ b/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
-@@ -249,7 +249,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7269", vectors, groups,
- 
- static struct plat_sci_port scif0_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -274,7 +274,7 @@ static struct platform_device scif0_device = {
- 
- static struct plat_sci_port scif1_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -299,7 +299,7 @@ static struct platform_device scif1_device = {
- 
- static struct plat_sci_port scif2_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -324,7 +324,7 @@ static struct platform_device scif2_device = {
- 
- static struct plat_sci_port scif3_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -349,7 +349,7 @@ static struct platform_device scif3_device = {
- 
- static struct plat_sci_port scif4_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -374,7 +374,7 @@ static struct platform_device scif4_device = {
- 
- static struct plat_sci_port scif5_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -399,7 +399,7 @@ static struct platform_device scif5_device = {
- 
- static struct plat_sci_port scif6_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -424,7 +424,7 @@ static struct platform_device scif6_device = {
- 
- static struct plat_sci_port scif7_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_RIE | SCSCR_TIE | SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE | SCSCR_TOIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-diff --git a/arch/sh/kernel/cpu/sh3/setup-sh7705.c b/arch/sh/kernel/cpu/sh3/setup-sh7705.c
-index 62b1559dbe99..4f7b4f9b7d02 100644
---- a/arch/sh/kernel/cpu/sh3/setup-sh7705.c
-+++ b/arch/sh/kernel/cpu/sh3/setup-sh7705.c
-@@ -71,7 +71,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7705", vectors, NULL,
- 
- static struct plat_sci_port scif0_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_TIE | SCSCR_RIE | SCSCR_CKE1 | SCSCR_CKE0,
-+	.scscr		= SCSCR_CKE1 | SCSCR_CKE0,
- 	.type		= PORT_SCIF,
- 	.ops		= &sh770x_sci_port_ops,
- 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
-@@ -94,7 +94,6 @@ static struct platform_device scif0_device = {
- 
- static struct plat_sci_port scif1_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_TIE | SCSCR_RIE,
- 	.type		= PORT_SCIF,
- 	.ops		= &sh770x_sci_port_ops,
- 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
+- The sampling_rate field is only used by sh7723 and sh7724 to override the
+  value hardcoded in the driver, even though the datasheets of those SoCs
+  don't mention any restriction. This might not be needed and should be
+  investigated.
+
+- The scscr REIE bit should be possible to compute in the driver, as it's set
+  for all SCIF ports except SCIx_SH3_SCIF_REGTYPE, SCIx_SH7705_SCIF_REGTYPE,
+  and the sh7343 SCIx_SH4_SCIF_REGTYPE. The latter will be trickier to handle.
+
+- Now that we have support for baud rate generators and externel clocks, the
+  scscr CKE1 bit should be computed in the driver in all cases.
+
+- The scscr TOIE bit doesn't seem to follow a clear rule, but given that it's
+  the last scscr bit to handle I'm sure we'll find something :-)
+
+- It might make sense to merge the type and regtype fields in a single type.
+
+Finally, it might be time to drop support for the SH platforms that would get
+in the way of sh-sci cleanup.
+
+Laurent Pinchart (19):
+  serial: sh-sci: Set the SCSCR TE and RE bits in the driver
+  serial: sh-sci: Don't rely on platform data flags when not needed
+  sh: Don't set sh-sci pdata scscr TE and RE bits
+  sh: Don't set sh-sci pdata scscr TIE and RIE bits
+  sh: sh726[49]: Don't set sh-sci pdata scscr TOIE bit
+  sh: Don't set the sh-sci pdata UPF_BOOT_AUTOCONF flags
+  sh: Don't set sh-sci port_reg
+  sh: sh3: sh770x: Fix platform data for the IRDA serial port
+  sh: Don't set the sh-sci platform data regshift field
+  sh: Don't set the sh-sci platform data scscr CKE0 bit
+  sh: Don't set the sh-sci platform data REIE bit when not implemented
+  serial: sh-sci: Remove initialization of zero fields in
+    sci_port_params
+  serial: sh-sci: Replace regmap array with port parameters
+  serial: sh-sci: Constify platform data
+  serial: sh-sci: Extend sci_port_params with more port parameters
+  serial: sh-sci: Remove the platform data dma slave rx/tx channel IDs
+  serial: sh-sci: Remove manual break debouncing
+  serial: sh-sci: Remove unused platform data capabilities field
+  serial: sh-sci: Compute the regshift value for SCI ports
+
+ arch/sh/kernel/cpu/sh2/setup-sh7619.c  |   9 +-
+ arch/sh/kernel/cpu/sh2a/setup-mxg.c    |   3 +-
+ arch/sh/kernel/cpu/sh2a/setup-sh7201.c |  24 +-
+ arch/sh/kernel/cpu/sh2a/setup-sh7203.c |  16 +-
+ arch/sh/kernel/cpu/sh2a/setup-sh7206.c |  12 +-
+ arch/sh/kernel/cpu/sh2a/setup-sh7264.c |  32 +-
+ arch/sh/kernel/cpu/sh2a/setup-sh7269.c |  32 +-
+ arch/sh/kernel/cpu/sh3/setup-sh7705.c  |   6 +-
+ arch/sh/kernel/cpu/sh3/setup-sh770x.c  |  12 +-
+ arch/sh/kernel/cpu/sh3/setup-sh7710.c  |   8 +-
+ arch/sh/kernel/cpu/sh3/setup-sh7720.c  |   4 -
+ arch/sh/kernel/cpu/sh4/setup-sh4-202.c |   3 +-
+ arch/sh/kernel/cpu/sh4/setup-sh7750.c  |   9 +-
+ arch/sh/kernel/cpu/sh4/setup-sh7760.c  |  21 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7343.c |  12 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7366.c |   4 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7722.c |   9 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7723.c |  21 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7724.c |  21 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7734.c |  18 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7757.c |   9 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7763.c |   9 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7770.c |  30 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7780.c |   6 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7785.c |  18 +-
+ arch/sh/kernel/cpu/sh4a/setup-sh7786.c |  18 +-
+ arch/sh/kernel/cpu/sh4a/setup-shx3.c   |   9 +-
+ arch/sh/kernel/cpu/sh5/setup-sh5.c     |   4 +-
+ drivers/tty/serial/sh-sci.c            | 831 ++++++++++++++-------------------
+ drivers/tty/serial/sh-sci.h            |   4 +-
+ include/linux/serial_sci.h             |  15 -
+ 31 files changed, 449 insertions(+), 780 deletions(-)
+
 -- 
 Regards,
 
 Laurent Pinchart
-
