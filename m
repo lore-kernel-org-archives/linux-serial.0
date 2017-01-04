@@ -1,48 +1,38 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] serial: 8250_lpss: Unconditionally set PCI master for Quark
-Date: Wed, 4 Jan 2017 21:48:33 +0100
-Message-ID: <1d0224cc-10ee-df69-b383-c687e08ed44d@siemens.com>
+From: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Subject: Re: [PATCH v2 4/4] ARM: dts: keystone: Add "ti, da830-uart" compatible
+ string
+Date: Wed, 4 Jan 2017 14:00:01 -0800
+Message-ID: <93c4aed0-6faa-2c27-7931-454fc1f48e79@oracle.com>
+References: <1483561814-21953-1-git-send-email-david@lechnology.com>
+ <1483561814-21953-5-git-send-email-david@lechnology.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1483561814-21953-5-git-send-email-david@lechnology.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: David Lechner <david@lechnology.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sekhar Nori <nsekhar@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Axel Haslam <ahaslam@baylibre.com>, Kevin Hilman <khilman@kernel.org>, linux-kernel@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Alexandre Bailon <abailon@baylibre.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Franklin S Cooper Jr <fcooper@ti.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-MSI needs it as well.
-
-Should have no practical impact, though, as DMA is always available on
-the Quark. But given the few users of pci_alloc_irq_vectors so far, this
-incorrect pattern may spread otherwise.
-
-Fixes: 3f3a46951e02 ("serial: 8250_lpss: set PCI master only for private DMA")
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- drivers/tty/serial/8250/8250_lpss.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index f09f68a..9315197 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -183,7 +183,6 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
- 	if (ret)
- 		return;
- 
--	pci_set_master(pdev);
- 	pci_try_set_mwi(pdev);
- 
- 	/* Special DMA address for UART */
-@@ -216,6 +215,8 @@ static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- 	struct pci_dev *pdev = to_pci_dev(port->dev);
- 	int ret;
- 
-+	pci_set_master(pdev);
-+
- 	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
- 	if (ret < 0)
- 		return ret;
--- 
-2.1.4
+On 1/4/2017 12:30 PM, David Lechner wrote:
+> The TI Keystone SoCs have extra UART registers beyond the standard 8250
+> registers, so we need a new compatible string to indicate this. Also, at
+> least one of these registers uses the full 32 bits, so we need to specify
+> reg-io-width in addition to reg-shift.
+>
+> "ns16550a" is left in the compatible specification since it does work as
+> long as the bootloader configures the SoC UART power management registers.
+>
+NAK!!
+We can't break the booting boards with existing boot loaders.
+I suggest you to first get the driver updated to take care of
+the UART PM register and then enable the support for it.
