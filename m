@@ -1,49 +1,54 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH] serial: 8250_lpss: Release Quark MSI vectors on exit
-Date: Thu, 5 Jan 2017 08:03:13 +0100
-Message-ID: <bec9b233-5069-c54a-4c11-9e6c33e7ef9a@siemens.com>
-References: <0250c46e-da6c-71f3-50ae-b7c17fd0bd2c@siemens.com>
- <CAHp75VdyJXGUp0YOX_15wM0Fv+arnQNEcLN6+OMtXGBgG-6jrA@mail.gmail.com>
- <daaa7a86-9987-911b-24ee-21d5107f0d7a@siemens.com>
- <20170105052546.GA10503@lst.de>
+From: Sekhar Nori <nsekhar@ti.com>
+Subject: Re: [PATCH v2 2/4] serial: 8250: Add new port type for TI
+ DA8xx/OMAPL13x/AM17xx/AM18xx/C66x
+Date: Thu, 5 Jan 2017 13:51:50 +0530
+Message-ID: <7b175d65-7193-32e4-999b-e3cdd0005c3a@ti.com>
+References: <1483561814-21953-1-git-send-email-david@lechnology.com>
+ <1483561814-21953-3-git-send-email-david@lechnology.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170105052546.GA10503@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1483561814-21953-3-git-send-email-david@lechnology.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: David Lechner <david@lechnology.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Santosh Shilimkar <ssantosh@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Axel Haslam <ahaslam@baylibre.com>, Kevin Hilman <khilman@kernel.org>, linux-kernel@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Alexandre Bailon <abailon@baylibre.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Franklin S Cooper Jr <fcooper@ti.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2017-01-05 06:25, Christoph Hellwig wrote:
-> On Wed, Jan 04, 2017 at 11:46:58PM +0100, Jan Kiszka wrote:
->>> I NAKed already third patch related to PCI managed resources (couple
->>> of those regarding to pci_irq_* API)/
->>>
->>
->> Ah, there are resources that are managed without being allocated
->> explicitly that way. Hmm, not very intuitive. Are MSI / MSI-X vectors
->> the only such cases?
+On Thursday 05 January 2017 02:00 AM, David Lechner wrote:
+> This adds a new UART port type for TI DA8xx/OMAPL13x/AM17xx/AM18xx/C66x.
+
+The Keystone2 processors do include the C66x DSP. But the SoCs being
+targeted with this patch are the ARM + DSP variants. Using 66AK2x is
+more appropriate.
+
+http://www.ti.com/lsds/ti/processors/dsp/c6000_dsp-arm/66ak2x/overview.page
+
+Also, DA8xx includes DA830 which is pin-compatible with AM17x. So you
+can shorten the list of supported processors to DA8xx/66AK2x.
+
+> These SoCs have standard 8250 registers plus some extra non-standard
+> registers.
 > 
-> MSI/MSI-X resources are not managed that way and an explicit call to
-> pci_free_irq_vectors is required from the API standpoint.  It might not
-> actually free memory in many cases, but it still is a symmetric API.
+> The UART will not function unless the non-standard Power and Emulation
+> Management Register (PWREMU_MGMT) is configured correctly. This is
+> currently handled in arch/arm/mach-davinci/serial.c for non-device-tree
+> boards. Making this part of the UART driver will allow UART to work on
+> device-tree boards as well and the mach code can eventually be removed.
 > 
+> Signed-off-by: David Lechner <david@lechnology.com>
 
-Andy is referring to the following:
-- pcim_enable_device registers pci_devres with the devres subsystem
-- on device release, devres_release_all is invoked, and that calls
-  pcim_release
-- the latter will invoke pci_disable_msi and pci_disable_msix if any of
-  them is enabled
+Looks good to me, apart from the minor change above.
 
-The user will still call the same pci_msi_enable, pci_alloc_irq_vectors
-etc., but they are now "magically" managed with pcim_enable_device being
-used. Same for pci_request_region.
+Acked-by: Sekhar Nori <nsekhar@ti.com>
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Thanks,
+Sekhar
