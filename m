@@ -1,54 +1,40 @@
-From: Sekhar Nori <nsekhar@ti.com>
-Subject: Re: [PATCH v2 2/4] serial: 8250: Add new port type for TI
- DA8xx/OMAPL13x/AM17xx/AM18xx/C66x
-Date: Thu, 5 Jan 2017 13:51:50 +0530
-Message-ID: <7b175d65-7193-32e4-999b-e3cdd0005c3a@ti.com>
-References: <1483561814-21953-1-git-send-email-david@lechnology.com>
- <1483561814-21953-3-git-send-email-david@lechnology.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] serial: 8250_lpss: Release Quark MSI vectors on exit
+Date: Thu, 05 Jan 2017 11:01:52 +0200
+Message-ID: <1483606912.9552.226.camel@linux.intel.com>
+References: <0250c46e-da6c-71f3-50ae-b7c17fd0bd2c@siemens.com>
+         <20170105052515.GA3280@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1483561814-21953-3-git-send-email-david@lechnology.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: David Lechner <david@lechnology.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Santosh Shilimkar <ssantosh@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Axel Haslam <ahaslam@baylibre.com>, Kevin Hilman <khilman@kernel.org>, linux-kernel@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Alexandre Bailon <abailon@baylibre.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Franklin S Cooper Jr <fcooper@ti.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170105052515.GA3280@infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thursday 05 January 2017 02:00 AM, David Lechner wrote:
-> This adds a new UART port type for TI DA8xx/OMAPL13x/AM17xx/AM18xx/C66x.
-
-The Keystone2 processors do include the C66x DSP. But the SoCs being
-targeted with this patch are the ARM + DSP variants. Using 66AK2x is
-more appropriate.
-
-http://www.ti.com/lsds/ti/processors/dsp/c6000_dsp-arm/66ak2x/overview.page
-
-Also, DA8xx includes DA830 which is pin-compatible with AM17x. So you
-can shorten the list of supported processors to DA8xx/66AK2x.
-
-> These SoCs have standard 8250 registers plus some extra non-standard
-> registers.
+On Wed, 2017-01-04 at 21:25 -0800, Christoph Hellwig wrote:
+> On Wed, Jan 04, 2017 at 08:36:51PM +0100, Jan Kiszka wrote:
+> > No one seems to do this magically in the background, so we have to
+> > do
+> > the job in the exit handler that corresponds to the board setup
+> > handler.
+> > 
+> > Fixes: 60a9244a5d14 ("serial: 8250_lpss: enable MSI for Intel
+> > Quark")
+> > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > 
-> The UART will not function unless the non-standard Power and Emulation
-> Management Register (PWREMU_MGMT) is configured correctly. This is
-> currently handled in arch/arm/mach-davinci/serial.c for non-device-tree
-> boards. Making this part of the UART driver will allow UART to work on
-> device-tree boards as well and the mach code can eventually be removed.
+> Looks good.   I already pointed out to Andy that we need this anyway.
 > 
-> Signed-off-by: David Lechner <david@lechnology.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
 
-Looks good to me, apart from the minor change above.
+No, we don't.
 
-Acked-by: Sekhar Nori <nsekhar@ti.com>
+Jan already pointed out how it works right now.
 
-Thanks,
-Sekhar
+That's why I'm asking to fix documentation.
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
