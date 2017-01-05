@@ -1,58 +1,40 @@
-From: Sekhar Nori <nsekhar@ti.com>
-Subject: Re: [PATCH v2 4/4] ARM: dts: keystone: Add "ti, da830-uart" compatible
- string
-Date: Thu, 5 Jan 2017 14:34:10 +0530
-Message-ID: <824238e0-b710-7146-b67b-b2135c2a8bd2@ti.com>
-References: <1483561814-21953-1-git-send-email-david@lechnology.com>
- <1483561814-21953-5-git-send-email-david@lechnology.com>
- <93c4aed0-6faa-2c27-7931-454fc1f48e79@oracle.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <93c4aed0-6faa-2c27-7931-454fc1f48e79@oracle.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Santosh Shilimkar <santosh.shilimkar@oracle.com>, David Lechner <david@lechnology.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Santosh Shilimkar <ssantosh@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Axel Haslam <ahaslam@baylibre.com>, Kevin Hilman <khilman@kernel.org>, linux-kernel@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Alexandre Bailon <abailon@baylibre.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Franklin S Cooper Jr <fcooper@ti.com>, linux-arm-kernel@lists.infradead.org
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH v6 0/3] add gpio support to exar
+Date: Thu,  5 Jan 2017 10:19:59 +0000
+Message-ID: <1483611602-5560-1-git-send-email-sudipm.mukherjee@gmail.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, gnomes@lxorguk.ukuu.org.uk
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Santosh,
+Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
+can be controlled using gpio interface.
 
-On Thursday 05 January 2017 03:30 AM, Santosh Shilimkar wrote:
-> On 1/4/2017 12:30 PM, David Lechner wrote:
->> The TI Keystone SoCs have extra UART registers beyond the standard 8250
->> registers, so we need a new compatible string to indicate this. Also, at
->> least one of these registers uses the full 32 bits, so we need to specify
->> reg-io-width in addition to reg-shift.
->>
->> "ns16550a" is left in the compatible specification since it does work as
->> long as the bootloader configures the SoC UART power management
->> registers.
->>
-> NAK!!
-> We can't break the booting boards with existing boot loaders.
+v5 was sent in January, 2016 and after reviews it was suggested to
+split the exar code out of 8250_pci and make its own driver.
 
-Sorry, but it not clear to me how this breaks booting with older
-bootloaders? If older DTB is ROM'ed, it will continue to work because of
-match with ns16550a.
+For reference it is at https://patchwork.kernel.org/patch/8058311/
 
-I just verified boot on K2E with these patches applied and using 2016.05
-based U-Boot from a TI release.
+regards
+sudip
 
-http://pastebin.ubuntu.com/23744719/
+Sudip Mukherjee (3):
+  gpio: exar: add gpio for exar cards
+  serial: exar: split out the exar code from 8250_pci
+  serial: 8250_pci: remove exar code
 
-> I suggest you to first get the driver updated to take care of
-> the UART PM register and then enable the support for it.
+ drivers/gpio/Kconfig                |   7 +
+ drivers/gpio/Makefile               |   1 +
+ drivers/gpio/gpio-exar.c            | 264 ++++++++++++++
+ drivers/tty/serial/8250/8250_exar.c | 706 ++++++++++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pci.c  | 309 +---------------
+ drivers/tty/serial/8250/Kconfig     |   4 +
+ drivers/tty/serial/8250/Makefile    |   1 +
+ 7 files changed, 989 insertions(+), 303 deletions(-)
+ create mode 100644 drivers/gpio/gpio-exar.c
+ create mode 100644 drivers/tty/serial/8250/8250_exar.c
 
-Isn't that what patch 2/4 is doing?
+-- 
+1.9.1
 
-Thanks,
-Sekhar
