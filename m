@@ -1,62 +1,93 @@
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: Re: [PATCH] serial/8250: remove comment about schedule_timeout
-Date: Thu, 5 Jan 2017 15:17:45 -0200
-Message-ID: <20170105171744.qgax752sxcwqod2w@calabresa>
-References: <20170105154840.24795-1-cascardo@canonical.com>
- <20170105164016.79c6e594@lxorguk.ukuu.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: David Lechner <david@lechnology.com>
+Subject: [PATCH v3 4/4] ARM: dts: keystone: Add "ti,da830-uart" compatible string
+Date: Thu,  5 Jan 2017 12:54:20 -0600
+Message-ID: <1483642460-6891-5-git-send-email-david@lechnology.com>
+References: <1483642460-6891-1-git-send-email-david@lechnology.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170105164016.79c6e594@lxorguk.ukuu.org.uk>
+In-Reply-To: <1483642460-6891-1-git-send-email-david@lechnology.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>, Theodore Ts'o <tytso@mit.edu>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sekhar Nori <nsekhar@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>
+Cc: David Lechner <david@lechnology.com>, Franklin S Cooper Jr <fcooper@ti.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Kevin Hilman <khilman@kernel.org>, Axel Haslam <ahaslam@baylibre.com>, Alexandre Bailon <abailon@baylibre.com>, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 05, 2017 at 04:40:16PM +0000, One Thousand Gnomes wrote:
-> On Thu,  5 Jan 2017 13:48:40 -0200
-> Thadeu Lima de Souza Cascardo <cascardo@canonical.com> wrote:
-> 
-> > Ted T'so has added the function size_fifo in 1999 for the 2.3 series
-> > [1], a long time ago.
-> > 
-> > During the 2.5 cycle, Russell King has restructured the serial drivers
-> > and, in that process, has suggested using schedule_timeout instead of
-> > mdelay in size_fifo. [2]
-> > 
-> > It was only at 2.6.7 that Greg Kroah-Hartman added the msleep function
-> > to the core kernel, as people were starting to duplicate it. [3]
-> > 
-> > However, as size_fifo is called under a spinlock from the autoconfig
-> > function, we might not use msleep here, so removing that comment is the
-> > appropriate thing to do.
-> 
-> No.. it's still a flaw in the driver that we can't use msleep here. It's
-> one of those things that people want to know if the probe locking ever
-> gets restructured.
-> 
-> Alan
+The TI Keystone SoCs have extra UART registers beyond the standard 8250
+registers, so we need a new compatible string to indicate this. Also, at
+least one of these registers uses the full 32 bits, so we need to specify
+reg-io-width in addition to reg-shift.
 
-Okay. At first, I wanted to simply use msleep there, then realized there
-was the spinlock. I thought I got a good writeup of the history that was
-not in git yet, maybe we should just add a better comment and more
-details in the commit log. How about this as the comment?
+"ns16550a" is left in the compatible specification since it does work as
+long as the bootloader configures the SoC UART power management registers.
 
-Cascardo.
-
+Signed-off-by: David Lechner <david@lechnology.com>
 ---
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 1731b98d2471..51efbfcfb922 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -796,7 +796,8 @@ static int size_fifo(struct uart_8250_port *up)
- 	serial_out(up, UART_LCR, 0x03);
- 	for (count = 0; count < 256; count++)
- 		serial_out(up, UART_TX, count);
--	mdelay(20);/* FIXME - schedule_timeout */
-+	/* FIXME - use msleep when probe locking is restructured */
-+	mdelay(20);
- 	for (count = 0; (serial_in(up, UART_LSR) & UART_LSR_DR) &&
- 	     (count < 256); count++)
- 		serial_in(up, UART_RX);
+
+v3 changes:
+* None
+
+v2 changes:
+* This is a new patch in v2
+
+ arch/arm/boot/dts/keystone-k2g.dtsi | 2 +-
+ arch/arm/boot/dts/keystone-k2l.dtsi | 4 ++--
+ arch/arm/boot/dts/keystone.dtsi     | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/boot/dts/keystone-k2g.dtsi b/arch/arm/boot/dts/keystone-k2g.dtsi
+index 63c7cf0c..7d7b9a8 100644
+--- a/arch/arm/boot/dts/keystone-k2g.dtsi
++++ b/arch/arm/boot/dts/keystone-k2g.dtsi
+@@ -90,7 +90,7 @@
+ 		};
+ 
+ 		uart0: serial@02530c00 {
+-			compatible = "ns16550a";
++			compatible = "ti,da830-uart", "ns16550a";
+ 			current-speed = <115200>;
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+diff --git a/arch/arm/boot/dts/keystone-k2l.dtsi b/arch/arm/boot/dts/keystone-k2l.dtsi
+index 0c5e74e..e91633f 100644
+--- a/arch/arm/boot/dts/keystone-k2l.dtsi
++++ b/arch/arm/boot/dts/keystone-k2l.dtsi
+@@ -35,7 +35,7 @@
+ 		/include/ "keystone-k2l-clocks.dtsi"
+ 
+ 		uart2: serial@02348400 {
+-			compatible = "ns16550a";
++			compatible = "ti,da830-uart", "ns16550a";
+ 			current-speed = <115200>;
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+@@ -45,7 +45,7 @@
+ 		};
+ 
+ 		uart3:	serial@02348800 {
+-			compatible = "ns16550a";
++			compatible = "ti,da830-uart", "ns16550a";
+ 			current-speed = <115200>;
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+diff --git a/arch/arm/boot/dts/keystone.dtsi b/arch/arm/boot/dts/keystone.dtsi
+index 02708ba..9152610 100644
+--- a/arch/arm/boot/dts/keystone.dtsi
++++ b/arch/arm/boot/dts/keystone.dtsi
+@@ -98,7 +98,7 @@
+ 		/include/ "keystone-clocks.dtsi"
+ 
+ 		uart0: serial@02530c00 {
+-			compatible = "ns16550a";
++			compatible = "ti,da830-uart", "ns16550a";
+ 			current-speed = <115200>;
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+@@ -108,7 +108,7 @@
+ 		};
+ 
+ 		uart1:	serial@02531000 {
+-			compatible = "ns16550a";
++			compatible = "ti,da830-uart", "ns16550a";
+ 			current-speed = <115200>;
+ 			reg-shift = <2>;
+ 			reg-io-width = <4>;
+-- 
+2.7.4
