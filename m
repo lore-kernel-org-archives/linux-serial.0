@@ -1,34 +1,42 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH] serial: 8250_lpss: Unconditionally set PCI master for Quark
-Date: Thu, 5 Jan 2017 23:56:42 +0200
-Message-ID: <CAHp75VdC_4GUgDzatu2CfRL8nfo4PZMWiV6t=CbU6QVuhZLRmg@mail.gmail.com>
-References: <1d0224cc-10ee-df69-b383-c687e08ed44d@siemens.com> <CAHp75Vf9h51xXU9HguU+XuqLAS4Zs7WWFBNT+rwccTdSWdwpYg@mail.gmail.com>
+From: Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH] serial/8250: remove comment about schedule_timeout
+Date: Thu, 5 Jan 2017 16:59:40 -0500
+Message-ID: <20170105215940.nzezqi5qmubaw56x@thunk.org>
+References: <20170105154840.24795-1-cascardo@canonical.com>
+ <20170105164016.79c6e594@lxorguk.ukuu.org.uk>
+ <20170105171744.qgax752sxcwqod2w@calabresa>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Vf9h51xXU9HguU+XuqLAS4Zs7WWFBNT+rwccTdSWdwpYg@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20170105171744.qgax752sxcwqod2w@calabresa>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 5, 2017 at 1:56 AM, Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Wed, Jan 4, 2017 at 10:48 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->> MSI needs it as well.
->>
->> Should have no practical impact, though, as DMA is always available on
->> the Quark. But given the few users of pci_alloc_irq_vectors so far, this
->> incorrect pattern may spread otherwise.
->
-> This looks valid, but let me review it later, need some sleep.
->
+On Thu, Jan 05, 2017 at 03:17:45PM -0200, Thadeu Lima de Souza Cascardo wrote:
+> Okay. At first, I wanted to simply use msleep there, then realized there
+> was the spinlock. I thought I got a good writeup of the history that was
+> not in git yet, maybe we should just add a better comment and more
+> details in the commit log. How about this as the comment?
 
-Ah, Jan, perhaps you would like to comment on this one as well
-http://marc.info/?l=linux-serial&m=148334902916347&w=2
+Could you look at fixing this, instead?  I was taking a look at the
+code, and it so very.... 1990's.  It looks like it was written during
+the days before SMP, and then locking was smashed in a very
+blunt-force way ---- probably because that's how it happened.  :-)
 
-?
+What we should **really** be doing with autoconfiguration, is instead
+of using the spinlock to prevent it from being accessed, is to lock
+out any attempt to transmit from the top-half, and remove it from the
+linked list of ports to prevent the interrupt handler from accessing
+it, make sure that any active interrupt handler has exited (and you
+can use the spinlock for the preceeding bits), but then we can safely
+do the autoconfiguration without having the deal with the spinlock at
+all, afterwards.
 
--- 
-With Best Regards,
-Andy Shevchenko
+It should't be *that* hard to just fix it for real.
+
+Cheers,
+
+						- Ted
