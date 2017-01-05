@@ -1,48 +1,53 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v6 3/3] serial: 8250_pci: remove exar code
-Date: Thu, 5 Jan 2017 16:37:06 +0200
-Message-ID: <CAHp75Vft_6_yM7Khjmnv1WYzSZ0rb_UJP-SVay5e3uK1_3YBRA@mail.gmail.com>
-References: <1483611602-5560-1-git-send-email-sudipm.mukherjee@gmail.com>
- <1483611602-5560-4-git-send-email-sudipm.mukherjee@gmail.com> <CAHp75Vdcniuuv3xV_o89i5_MpV_OGfbwE0yyDsRAFYjaxwOUDA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Vdcniuuv3xV_o89i5_MpV_OGfbwE0yyDsRAFYjaxwOUDA@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH] serial/8250: remove comment about schedule_timeout
+Date: Thu,  5 Jan 2017 13:48:40 -0200
+Message-ID: <20170105154840.24795-1-cascardo@canonical.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>, Theodore Ts'o <tytso@mit.edu>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 5, 2017 at 4:35 PM, Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Thu, Jan 5, 2017 at 12:20 PM, Sudip Mukherjee
-> <sudipm.mukherjee@gmail.com> wrote:
->> Remove the exar specific codes from 8250_pci and blacklist those chips
->> so that the exar serial binds to the devices.
->
-> exar -> Exar ?
->
->> +#define PCI_DEVICE_ID_COMMTECH_4222PCI335 0x0004
->> +#define PCI_DEVICE_ID_COMMTECH_4224PCI335 0x0002
->> +#define PCI_DEVICE_ID_COMMTECH_2324PCI335 0x000a
->> +#define PCI_DEVICE_ID_COMMTECH_2328PCI335 0x000b
->
-> This is not related to the patch. Create a separate one.
->
->> @@ -3734,6 +3538,8 @@ enum pci_board_num_t {
->>         { PCI_VDEVICE(INTEL, 0x228c), },
->>         { PCI_VDEVICE(INTEL, 0x9ce3), },
->>         { PCI_VDEVICE(INTEL, 0x9ce4), },
->
-> + empty line
->
->> +       /* Exar devices */
->> +       { PCI_VDEVICE(EXAR, PCI_ANY_ID), },
->>  };
+Ted T'so has added the function size_fifo in 1999 for the 2.3 series
+[1], a long time ago.
 
-Ah, one more. Set default for your new driver to be SERIAL_8250.
-Otherwise users will lost it, right?
+During the 2.5 cycle, Russell King has restructured the serial drivers
+and, in that process, has suggested using schedule_timeout instead of
+mdelay in size_fifo. [2]
 
+It was only at 2.6.7 that Greg Kroah-Hartman added the msleep function
+to the core kernel, as people were starting to duplicate it. [3]
+
+However, as size_fifo is called under a spinlock from the autoconfig
+function, we might not use msleep here, so removing that comment is the
+appropriate thing to do.
+
+[1] http://lkml.iu.edu/hypermail/linux/kernel/9908.3/1229.html
+[2] https://git.kernel.org/cgit/linux/kernel/git/tglx/history.git/commit/?id=33c0d1b0c3ebb61243d9b19ce70d9063acff2aac
+[3] https://git.kernel.org/cgit/linux/kernel/git/tglx/history.git/commit/?id=8365c315507fe10925bb3281d74444fe02935b25
+
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Cc: Russell King <rmk+kernel@armlinux.org.uk>
+Cc: Theodore Ts'o <tytso@mit.edu>
+---
+ drivers/tty/serial/8250/8250_port.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 1731b98d2471..645daf551fdf 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -796,7 +796,7 @@ static int size_fifo(struct uart_8250_port *up)
+ 	serial_out(up, UART_LCR, 0x03);
+ 	for (count = 0; count < 256; count++)
+ 		serial_out(up, UART_TX, count);
+-	mdelay(20);/* FIXME - schedule_timeout */
++	mdelay(20);
+ 	for (count = 0; (serial_in(up, UART_LSR) & UART_LSR_DR) &&
+ 	     (count < 256); count++)
+ 		serial_in(up, UART_RX);
 -- 
-With Best Regards,
-Andy Shevchenko
+2.11.0
