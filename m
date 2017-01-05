@@ -1,328 +1,422 @@
 From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH v6 1/3] gpio: exar: add gpio for exar cards
-Date: Thu,  5 Jan 2017 10:20:00 +0000
-Message-ID: <1483611602-5560-2-git-send-email-sudipm.mukherjee@gmail.com>
+Subject: [PATCH v6 3/3] serial: 8250_pci: remove exar code
+Date: Thu,  5 Jan 2017 10:20:02 +0000
+Message-ID: <1483611602-5560-4-git-send-email-sudipm.mukherjee@gmail.com>
 References: <1483611602-5560-1-git-send-email-sudipm.mukherjee@gmail.com>
-Return-path: <linux-gpio-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1483611602-5560-1-git-send-email-sudipm.mukherjee@gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, gnomes@lxorguk.ukuu.org.uk
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
-can be controlled using gpio interface.
-
-Add the gpio specific code.
+Remove the exar specific codes from 8250_pci and blacklist those chips
+so that the exar serial binds to the devices.
 
 Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 ---
- drivers/gpio/Kconfig     |   7 ++
- drivers/gpio/Makefile    |   1 +
- drivers/gpio/gpio-exar.c | 264 +++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 272 insertions(+)
- create mode 100644 drivers/gpio/gpio-exar.c
+ drivers/tty/serial/8250/8250_pci.c | 309 +------------------------------------
+ 1 file changed, 6 insertions(+), 303 deletions(-)
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index d5d3654..eaf8d29 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -185,6 +185,13 @@ config GPIO_ETRAXFS
- 	help
- 	  Say yes here to support the GPIO controller on Axis ETRAX FS SoCs.
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index aa0166b..8393acb 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1605,8 +1605,10 @@ static int pci_eg20t_init(struct pci_dev *dev)
+ #endif
+ }
  
-+config GPIO_EXAR
-+	tristate "Support for GPIO pins on XR17V352/354/358"
-+	depends on SERIAL_8250_EXAR
-+	help
-+	  Selecting this option will enable handling of GPIO pins present
-+	  on Exar XR17V352/354/358 chips.
-+
- config GPIO_GE_FPGA
- 	bool "GE FPGA based GPIO"
- 	depends on GE_FPGA
-diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
-index a7676b8..09f6aebb 100644
---- a/drivers/gpio/Makefile
-+++ b/drivers/gpio/Makefile
-@@ -46,6 +46,7 @@ obj-$(CONFIG_GPIO_DWAPB)	+= gpio-dwapb.o
- obj-$(CONFIG_GPIO_EM)		+= gpio-em.o
- obj-$(CONFIG_GPIO_EP93XX)	+= gpio-ep93xx.o
- obj-$(CONFIG_GPIO_ETRAXFS)	+= gpio-etraxfs.o
-+obj-$(CONFIG_GPIO_EXAR)		+= gpio-exar.o
- obj-$(CONFIG_GPIO_F7188X)	+= gpio-f7188x.o
- obj-$(CONFIG_GPIO_GE_FPGA)	+= gpio-ge.o
- obj-$(CONFIG_GPIO_GPIO_MM)	+= gpio-gpio-mm.o
-diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
-new file mode 100644
-index 0000000..429fc51
---- /dev/null
-+++ b/drivers/gpio/gpio-exar.c
-@@ -0,0 +1,264 @@
-+/*
-+ * GPIO driver for Exar XR17V35X chip
-+ *
-+ * Copyright (C) 2015 Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+#include <linux/platform_device.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/device.h>
-+#include <linux/pci.h>
-+#include <linux/gpio.h>
-+
-+#define EXAR_OFFSET_MPIOLVL_LO 0x90
-+#define EXAR_OFFSET_MPIOSEL_LO 0x93
-+#define EXAR_OFFSET_MPIOLVL_HI 0x96
-+#define EXAR_OFFSET_MPIOSEL_HI 0x99
-+
-+static LIST_HEAD(exar_list);
-+static DEFINE_MUTEX(exar_list_mtx);
-+static struct ida ida_index;
-+
-+struct exar_gpio_chip {
-+	struct gpio_chip gpio_chip;
-+	struct mutex lock;
-+	struct list_head list;
-+	int index;
-+	void __iomem *regs;
-+	char name[16];
-+};
-+
-+#define to_exar_chip(n) container_of(n, struct exar_gpio_chip, gpio_chip)
-+
-+static inline unsigned int read_exar_reg(struct exar_gpio_chip *chip,
-+					 int offset)
-+{
-+	dev_dbg(chip->gpio_chip.parent, "%s regs=%p offset=%x\n",
-+		__func__, chip->regs, offset);
-+
-+	return readb(chip->regs + offset);
-+}
-+
-+static inline void write_exar_reg(struct exar_gpio_chip *chip, int offset,
-+				  int value)
-+{
-+	dev_dbg(chip->gpio_chip.parent,
-+		"%s regs=%p value=%x offset=%x\n",
-+		__func__, chip->regs, value, offset);
-+	writeb(value, chip->regs + offset);
-+}
-+
-+static void exar_update(struct gpio_chip *chip, unsigned int reg, int val,
-+			unsigned int offset)
-+{
-+	struct exar_gpio_chip *exar_gpio = to_exar_chip(chip);
-+	int temp;
-+
-+	mutex_lock(&exar_gpio->lock);
-+	temp = read_exar_reg(exar_gpio, reg);
-+	temp &= ~(1 << offset);
-+	temp |= val << offset;
-+	write_exar_reg(exar_gpio, reg, temp);
-+	mutex_unlock(&exar_gpio->lock);
-+}
-+
-+static int exar_set_direction(struct gpio_chip *chip, int direction,
-+			      unsigned int offset)
-+{
-+	if (offset < 8)
-+		exar_update(chip, EXAR_OFFSET_MPIOSEL_LO, direction,
-+			    offset);
-+	else
-+		exar_update(chip, EXAR_OFFSET_MPIOSEL_HI, direction,
-+			    offset - 8);
-+	return 0;
-+}
-+
-+static int exar_direction_output(struct gpio_chip *chip, unsigned int offset,
-+				 int value)
-+{
-+	return exar_set_direction(chip, 0, offset);
-+}
-+
-+static int exar_direction_input(struct gpio_chip *chip, unsigned int offset)
-+{
-+	return exar_set_direction(chip, 1, offset);
-+}
-+
-+static int exar_get(struct gpio_chip *chip, unsigned int reg)
-+{
-+	struct exar_gpio_chip *exar_gpio = to_exar_chip(chip);
-+	int value;
-+
-+	mutex_lock(&exar_gpio->lock);
-+	value = read_exar_reg(exar_gpio, reg);
-+	mutex_unlock(&exar_gpio->lock);
-+
-+	return value;
-+}
-+
-+static int exar_get_direction(struct gpio_chip *chip, unsigned int offset)
-+{
-+	int val;
-+
-+	if (offset < 8)
-+		val = exar_get(chip, EXAR_OFFSET_MPIOSEL_LO) >> offset;
-+	else
-+		val = exar_get(chip, EXAR_OFFSET_MPIOSEL_HI) >>
-+			       (offset - 8);
-+
-+	return val & 0x01;
-+}
-+
-+static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
-+{
-+	int val;
-+
-+	if (offset < 8)
-+		val = exar_get(chip, EXAR_OFFSET_MPIOLVL_LO) >> offset;
-+	else
-+		val = exar_get(chip, EXAR_OFFSET_MPIOLVL_HI) >>
-+			       (offset - 8);
-+	return val & 0x01;
-+}
-+
-+static void exar_set_value(struct gpio_chip *chip, unsigned int offset,
-+			   int value)
-+{
-+	if (offset < 8)
-+		exar_update(chip, EXAR_OFFSET_MPIOLVL_LO, value,
-+			    offset);
-+	else
-+		exar_update(chip, EXAR_OFFSET_MPIOLVL_HI, value,
-+			    offset - 8);
-+}
-+
-+static int gpio_exar_probe(struct platform_device *pdev)
-+{
-+	struct pci_dev *dev = platform_get_drvdata(pdev);
-+	struct exar_gpio_chip *exar_gpio, *exar_temp;
-+	void __iomem *p;
-+	int index = 1;
-+	int ret;
-+
-+	if (dev->vendor != PCI_VENDOR_ID_EXAR)
-+		return -ENODEV;
-+
-+	p = pci_ioremap_bar(dev, 0);
-+	if (!p)
-+		return -ENOMEM;
-+
-+	exar_gpio = devm_kzalloc(&dev->dev, sizeof(*exar_gpio), GFP_KERNEL);
-+	if (!exar_gpio) {
-+		ret = -ENOMEM;
-+		goto err_unmap;
-+	}
-+
-+	mutex_init(&exar_gpio->lock);
-+	INIT_LIST_HEAD(&exar_gpio->list);
-+
-+	index = ida_simple_get(&ida_index, 0, 0, GFP_KERNEL);
-+	mutex_lock(&exar_list_mtx);
-+
-+	sprintf(exar_gpio->name, "exar_gpio%d", index);
-+	exar_gpio->gpio_chip.label = exar_gpio->name;
-+	exar_gpio->gpio_chip.parent = &dev->dev;
-+	exar_gpio->gpio_chip.direction_output = exar_direction_output;
-+	exar_gpio->gpio_chip.direction_input = exar_direction_input;
-+	exar_gpio->gpio_chip.get_direction = exar_get_direction;
-+	exar_gpio->gpio_chip.get = exar_get_value;
-+	exar_gpio->gpio_chip.set = exar_set_value;
-+	exar_gpio->gpio_chip.base = -1;
-+	exar_gpio->gpio_chip.ngpio = 16;
-+	exar_gpio->gpio_chip.owner = THIS_MODULE;
-+	exar_gpio->regs = p;
-+	exar_gpio->index = index;
-+
-+	ret = gpiochip_add(&exar_gpio->gpio_chip);
-+	if (ret)
-+		goto err_destroy;
-+
-+	list_add_tail(&exar_gpio->list, &exar_list);
-+	mutex_unlock(&exar_list_mtx);
-+
-+	platform_set_drvdata(pdev, exar_gpio);
-+
-+	return 0;
-+
-+err_destroy:
-+	mutex_unlock(&exar_list_mtx);
-+	mutex_destroy(&exar_gpio->lock);
-+err_unmap:
-+	iounmap(p);
-+	return ret;
-+}
-+
-+static int gpio_exar_remove(struct platform_device *pdev)
-+{
-+	struct exar_gpio_chip *exar_gpio, *exar_temp1, *exar_temp2;
-+	struct pci_dev *pcidev;
-+	int index;
-+
-+	exar_gpio = platform_get_drvdata(pdev);
-+	pcidev = to_pci_dev(exar_gpio->gpio_chip.parent);
-+	index = exar_gpio->index;
-+
-+	mutex_lock(&exar_list_mtx);
-+	list_for_each_entry_safe(exar_temp1, exar_temp2, &exar_list, list) {
-+		if (exar_temp1->index == exar_gpio->index) {
-+			list_del(&exar_temp1->list);
-+			break;
-+		}
-+	}
-+	mutex_unlock(&exar_list_mtx);
-+
-+	gpiochip_remove(&exar_gpio->gpio_chip);
-+	mutex_destroy(&exar_gpio->lock);
-+	iounmap(exar_gpio->regs);
-+	ida_simple_remove(&ida_index, index);
-+	platform_set_drvdata(pdev, pcidev);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver gpio_exar_driver = {
-+	.probe	= gpio_exar_probe,
-+	.remove	= gpio_exar_remove,
-+	.driver	= {
-+		.name = "gpio_exar",
-+	},
-+};
-+
-+static const struct platform_device_id gpio_exar_id[] = {
-+	{ "gpio_exar", 0},
-+	{ },
-+};
-+
-+MODULE_DEVICE_TABLE(platform, gpio_exar_id);
-+
-+static int __init exar_gpio_init(void)
-+{
-+	ida_init(&ida_index);
-+	platform_driver_register(&gpio_exar_driver);
-+	return 0;
-+}
-+
-+static void __exit exar_gpio_exit(void)
-+{
-+	platform_driver_unregister(&gpio_exar_driver);
-+	ida_destroy(&ida_index);
-+}
-+
-+module_init(exar_gpio_init);
-+module_exit(exar_gpio_exit);
-+
-+MODULE_DESCRIPTION("Exar GPIO driver");
-+MODULE_AUTHOR("Sudip Mukherjee <sudipm.mukherjee@gmail.com>");
-+MODULE_LICENSE("GPL");
+-#define PCI_DEVICE_ID_EXAR_XR17V4358	0x4358
+-#define PCI_DEVICE_ID_EXAR_XR17V8358	0x8358
++#define PCI_DEVICE_ID_COMMTECH_4222PCI335 0x0004
++#define PCI_DEVICE_ID_COMMTECH_4224PCI335 0x0002
++#define PCI_DEVICE_ID_COMMTECH_2324PCI335 0x000a
++#define PCI_DEVICE_ID_COMMTECH_2328PCI335 0x000b
+ 
+ #define UART_EXAR_MPIOINT_7_0	0x8f	/* MPIOINT[7:0] */
+ #define UART_EXAR_MPIOLVL_7_0	0x90	/* MPIOLVL[7:0] */
+@@ -1622,75 +1624,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
+ #define UART_EXAR_MPIOOD_15_8	0x9a	/* MPIOOD[15:8] */
+ 
+ static int
+-pci_xr17c154_setup(struct serial_private *priv,
+-		  const struct pciserial_board *board,
+-		  struct uart_8250_port *port, int idx)
+-{
+-	port->port.flags |= UPF_EXAR_EFR;
+-	return pci_default_setup(priv, board, port, idx);
+-}
+-
+-static inline int
+-xr17v35x_has_slave(struct serial_private *priv)
+-{
+-	const int dev_id = priv->dev->device;
+-
+-	return ((dev_id == PCI_DEVICE_ID_EXAR_XR17V4358) ||
+-		(dev_id == PCI_DEVICE_ID_EXAR_XR17V8358));
+-}
+-
+-static int
+-pci_xr17v35x_setup(struct serial_private *priv,
+-		  const struct pciserial_board *board,
+-		  struct uart_8250_port *port, int idx)
+-{
+-	u8 __iomem *p;
+-
+-	p = pci_ioremap_bar(priv->dev, 0);
+-	if (p == NULL)
+-		return -ENOMEM;
+-
+-	port->port.flags |= UPF_EXAR_EFR;
+-
+-	/*
+-	 * Setup the uart clock for the devices on expansion slot to
+-	 * half the clock speed of the main chip (which is 125MHz)
+-	 */
+-	if (xr17v35x_has_slave(priv) && idx >= 8)
+-		port->port.uartclk = (7812500 * 16 / 2);
+-
+-	/*
+-	 * Setup Multipurpose Input/Output pins.
+-	 */
+-	if (idx == 0) {
+-		writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
+-		writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
+-		writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
+-		writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
+-		writeb(0x00, p + UART_EXAR_MPIOSEL_15_8);
+-		writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
+-	}
+-	writeb(0x00, p + UART_EXAR_8XMODE);
+-	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
+-	writeb(128, p + UART_EXAR_TXTRG);
+-	writeb(128, p + UART_EXAR_RXTRG);
+-	iounmap(p);
+-
+-	return pci_default_setup(priv, board, port, idx);
+-}
+-
+-#define PCI_DEVICE_ID_COMMTECH_4222PCI335 0x0004
+-#define PCI_DEVICE_ID_COMMTECH_4224PCI335 0x0002
+-#define PCI_DEVICE_ID_COMMTECH_2324PCI335 0x000a
+-#define PCI_DEVICE_ID_COMMTECH_2328PCI335 0x000b
+-
+-static int
+ pci_fastcom335_setup(struct serial_private *priv,
+ 		  const struct pciserial_board *board,
+ 		  struct uart_8250_port *port, int idx)
+@@ -1809,9 +1742,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
+ #define PCI_VENDOR_ID_AGESTAR		0x5372
+ #define PCI_DEVICE_ID_AGESTAR_9375	0x6872
+ #define PCI_VENDOR_ID_ASIX		0x9710
+-#define PCI_DEVICE_ID_COMMTECH_4224PCIE	0x0020
+-#define PCI_DEVICE_ID_COMMTECH_4228PCIE	0x0021
+-#define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
+ #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
+ #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
+ 
+@@ -2273,65 +2203,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
+ 		.setup		= pci_timedia_setup,
+ 	},
+ 	/*
+-	 * Exar cards
+-	 */
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17C152,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17c154_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17C154,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17c154_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17C158,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17c154_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17V352,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17V354,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17V358,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17V4358,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17V8358,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	/*
+ 	 * Xircom cards
+ 	 */
+ 	{
+@@ -2587,27 +2458,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_fastcom335_setup,
+ 	},
+-	{
+-		.vendor = PCI_VENDOR_ID_COMMTECH,
+-		.device = PCI_DEVICE_ID_COMMTECH_4222PCIE,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_COMMTECH,
+-		.device = PCI_DEVICE_ID_COMMTECH_4224PCIE,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_COMMTECH,
+-		.device = PCI_DEVICE_ID_COMMTECH_4228PCIE,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+ 	/*
+ 	 * Broadcom TruManage (NetXtreme)
+ 	 */
+@@ -2820,15 +2670,9 @@ enum pci_board_num_t {
+ 	pbn_computone_6,
+ 	pbn_computone_8,
+ 	pbn_sbsxrsio,
+-	pbn_exar_XR17C152,
+-	pbn_exar_XR17C154,
+-	pbn_exar_XR17C158,
+ 	pbn_exar_XR17V352,
+ 	pbn_exar_XR17V354,
+ 	pbn_exar_XR17V358,
+-	pbn_exar_XR17V4358,
+-	pbn_exar_XR17V8358,
+-	pbn_exar_ibm_saturn,
+ 	pbn_pasemi_1682M,
+ 	pbn_ni8430_2,
+ 	pbn_ni8430_4,
+@@ -3473,24 +3317,6 @@ enum pci_board_num_t {
+ 	 *  Only basic 16550A support.
+ 	 *  XR17C15[24] are not tested, but they should work.
+ 	 */
+-	[pbn_exar_XR17C152] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 2,
+-		.base_baud	= 921600,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_exar_XR17C154] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 4,
+-		.base_baud	= 921600,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_exar_XR17C158] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 8,
+-		.base_baud	= 921600,
+-		.uart_offset	= 0x200,
+-	},
+ 	[pbn_exar_XR17V352] = {
+ 		.flags		= FL_BASE0,
+ 		.num_ports	= 2,
+@@ -3515,28 +3341,6 @@ enum pci_board_num_t {
+ 		.reg_shift	= 0,
+ 		.first_offset	= 0,
+ 	},
+-	[pbn_exar_XR17V4358] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 12,
+-		.base_baud	= 7812500,
+-		.uart_offset	= 0x400,
+-		.reg_shift	= 0,
+-		.first_offset	= 0,
+-	},
+-	[pbn_exar_XR17V8358] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 16,
+-		.base_baud	= 7812500,
+-		.uart_offset	= 0x400,
+-		.reg_shift	= 0,
+-		.first_offset	= 0,
+-	},
+-	[pbn_exar_ibm_saturn] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 1,
+-		.base_baud	= 921600,
+-		.uart_offset	= 0x200,
+-	},
+ 
+ 	/*
+ 	 * PA Semi PWRficient PA6T-1682M on-chip UART
+@@ -3734,6 +3538,8 @@ enum pci_board_num_t {
+ 	{ PCI_VDEVICE(INTEL, 0x228c), },
+ 	{ PCI_VDEVICE(INTEL, 0x9ce3), },
+ 	{ PCI_VDEVICE(INTEL, 0x9ce4), },
++	/* Exar devices */
++	{ PCI_VDEVICE(EXAR, PCI_ANY_ID), },
+ };
+ 
+ /*
+@@ -4159,58 +3965,6 @@ static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
+ 		PCI_VENDOR_ID_AFAVLAB,
+ 		PCI_SUBDEVICE_ID_AFAVLAB_P061, 0, 0,
+ 		pbn_b0_4_1152000 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_232, 0, 0,
+-		pbn_b0_2_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_232, 0, 0,
+-		pbn_b0_4_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_232, 0, 0,
+-		pbn_b0_8_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_1_1, 0, 0,
+-		pbn_b0_2_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_2, 0, 0,
+-		pbn_b0_4_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4, 0, 0,
+-		pbn_b0_8_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2, 0, 0,
+-		pbn_b0_2_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4, 0, 0,
+-		pbn_b0_4_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8, 0, 0,
+-		pbn_b0_8_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_485, 0, 0,
+-		pbn_b0_2_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_485, 0, 0,
+-		pbn_b0_4_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_485, 0, 0,
+-		pbn_b0_8_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_VENDOR_ID_IBM, PCI_SUBDEVICE_ID_IBM_SATURN_SERIAL_ONE_PORT,
+-		0, 0, pbn_exar_ibm_saturn },
+-
+ 	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_U530,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_b2_bt_1_115200 },
+@@ -4938,45 +4692,6 @@ static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
+ 	{	PCI_VENDOR_ID_DCI, PCI_DEVICE_ID_DCI_PCCOM8,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_b3_8_115200 },
+-
+-	/*
+-	 * Exar Corp. XR17C15[248] Dual/Quad/Octal UART
+-	 */
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17C152 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17C154 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17C158 },
+-	/*
+-	 * Exar Corp. XR17V[48]35[248] Dual/Quad/Octal/Hexa PCIe UARTs
+-	 */
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V352,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V352 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V354,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V354 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V358,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V358 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V4358,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V4358 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V8358,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V8358 },
+ 	/*
+ 	 * Pericom PI7C9X795[1248] Uno/Dual/Quad/Octal UART
+ 	 */
+@@ -5571,18 +5286,6 @@ static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0,
+ 		0, pbn_b0_8_1152000_200 },
+-	{	PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_4222PCIE,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V352 },
+-	{	PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_4224PCIE,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V354 },
+-	{	PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_4228PCIE,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V358 },
+ 
+ 	/* Fintek PCI serial cards */
+ 	{ PCI_DEVICE(0x1c29, 0x1104), .driver_data = pbn_fintek_4 },
 -- 
 1.9.1
-
