@@ -1,7 +1,7 @@
 From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 9/9] tty_port: register tty ports with serdev bus
-Date: Fri,  6 Jan 2017 10:26:35 -0600
-Message-ID: <20170106162635.19677-10-robh@kernel.org>
+Subject: [PATCH 4/9] tty: constify tty_ldisc_receive_buf buffer pointer
+Date: Fri,  6 Jan 2017 10:26:30 -0600
+Message-ID: <20170106162635.19677-5-robh@kernel.org>
 References: <20170106162635.19677-1-robh@kernel.org>
 Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20170106162635.19677-1-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
@@ -10,56 +10,42 @@ To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 Cc: Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Register a serdev controller with the serdev bus when a tty_port is
-registered. This creates the serdev controller and create's serdev
-devices for any DT child nodes of the tty_port's parent (i.e. the UART
-device).
+This is needed to work with the client operations which uses const ptrs.
+
+Really, the flags pointer could be const, too, but this would be a tree
+wide fix.
 
 Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
- drivers/tty/tty_port.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/tty/tty_buffer.c | 2 +-
+ include/linux/tty.h      | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 232a8cbf47bc..032786e5509e 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -16,6 +16,7 @@
- #include <linux/bitops.h>
- #include <linux/delay.h>
- #include <linux/module.h>
-+#include <linux/serdev.h>
- 
- static int tty_port_default_receive_buf(struct tty_port *port,
- 					const unsigned char *p,
-@@ -125,9 +126,17 @@ struct device *tty_port_register_device_attr(struct tty_port *port,
- 		struct device *device, void *drvdata,
- 		const struct attribute_group **attr_grp)
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index aa80dc94ddc2..f4dc3e296dd5 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -422,7 +422,7 @@ EXPORT_SYMBOL_GPL(tty_prepare_flip_string);
+  *
+  *	Returns the number of bytes not processed
+  */
+-int tty_ldisc_receive_buf(struct tty_ldisc *ld, unsigned char *p,
++int tty_ldisc_receive_buf(struct tty_ldisc *ld, const unsigned char *p,
+ 			  char *f, int count)
  {
-+	struct device *ttydev;
-+
- 	tty_port_link_device(port, driver, index);
--	return tty_register_device_attr(driver, index, device, drvdata,
-+	ttydev = tty_register_device_attr(driver, index, device, drvdata,
- 			attr_grp);
-+	if (!ttydev)
-+		return NULL;
-+
-+	serdev_tty_port_register(port, device, driver, index);
-+	return ttydev;
-+
- }
- EXPORT_SYMBOL_GPL(tty_port_register_device_attr);
+ 	if (ld->ops->receive_buf2)
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 86c7853282b7..21c0fabfed60 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -657,7 +657,7 @@ extern int tty_ldisc_setup(struct tty_struct *tty, struct tty_struct *o_tty);
+ extern void tty_ldisc_release(struct tty_struct *tty);
+ extern void tty_ldisc_init(struct tty_struct *tty);
+ extern void tty_ldisc_deinit(struct tty_struct *tty);
+-extern int tty_ldisc_receive_buf(struct tty_ldisc *ld, unsigned char *p,
++extern int tty_ldisc_receive_buf(struct tty_ldisc *ld, const unsigned char *p,
+ 				 char *f, int count);
  
-@@ -177,6 +186,9 @@ static void tty_port_destructor(struct kref *kref)
- 	/* check if last port ref was dropped before tty release */
- 	if (WARN_ON(port->itty))
- 		return;
-+
-+	serdev_tty_port_unregister(port);
-+
- 	if (port->xmit_buf)
- 		free_page((unsigned long)port->xmit_buf);
- 	tty_port_destroy(port);
+ /* n_tty.c */
 -- 
 2.10.1
