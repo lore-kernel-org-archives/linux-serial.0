@@ -1,18 +1,18 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.8 54/96] sc16is7xx: Drop bogus use of IRQF_ONESHOT
-Date: Fri,  6 Jan 2017 22:43:42 +0100
-Message-ID: <20170106214229.903947950@linuxfoundation.org>
-References: <20170106214227.601120243@linuxfoundation.org>
+Subject: [PATCH 4.4 36/58] sc16is7xx: Drop bogus use of IRQF_ONESHOT
+Date: Fri,  6 Jan 2017 22:44:21 +0100
+Message-ID: <20170106213908.179250922@linuxfoundation.org>
+References: <20170106213906.290654840@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-rt-users-owner@vger.kernel.org>
-In-Reply-To: <20170106214227.601120243@linuxfoundation.org>
-Sender: linux-rt-users-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20170106213906.290654840@linuxfoundation.org>
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Sean Nyekjaer <sean.nyekjaer@prevas.dk>, Josh Cartwright <joshc@ni.com>, linux-rt-users@vger.kernel.org, Jakub Kicinski <moorray3@wp.pl>, linux-serial@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Julia Cartwright <julia@ni.com>, Jakub Kicinski <kubakici@wp.pl>
 List-Id: linux-serial@vger.kernel.org
 
-4.8-stable review patch.  If anyone has any objections, please let me know.
+4.4-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -64,7 +64,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1240,7 +1240,7 @@ static int sc16is7xx_probe(struct device
+@@ -1230,7 +1230,7 @@ static int sc16is7xx_probe(struct device
  
  	/* Setup interrupt */
  	ret = devm_request_irq(dev, irq, sc16is7xx_irq,
@@ -73,5 +73,3 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	if (!ret)
  		return 0;
  
-
-
