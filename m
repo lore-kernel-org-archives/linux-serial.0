@@ -1,63 +1,33 @@
-From: Thadeu Lima de Souza Cascardo <cascardo@cascardo.eti.br>
-Subject: [PATCH] serial: core: remove silly test for uart_state
-Date: Fri,  6 Jan 2017 00:45:10 -0200
-Message-ID: <20170106024510.22369-1-cascardo@cascardo.eti.br>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Thadeu Lima de Souza Cascardo <cascardo@cascardo.eti.br>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 03/19] sh: Don't set sh-sci pdata scscr TE and RE bits
+Date: Fri, 6 Jan 2017 11:11:42 +0100
+Message-ID: <CAMuHMdVNOO7XvUSbY+q9n4iZVKPEvG1nP30Rq86Nyr_v850Nmw@mail.gmail.com>
+References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com> <20170103230639.19660-4-laurent.pinchart+renesas@ideasonboard.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20170103230639.19660-4-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The polling functions were checking for a NULL uart_state, which is
-indexed from uart_driver->state. It should be always allocated and
-non-NULL when the tty_driver is registered, and line should not be
-larger than the tty_driver->num anyways.
+On Wed, Jan 4, 2017 at 12:06 AM, Laurent Pinchart
+<laurent.pinchart+renesas@ideasonboard.com> wrote:
+> The bits are set by the driver internally, don't set them in platform
+> data.
+>
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@cascardo.eti.br>
----
- drivers/tty/serial/serial_core.c | 16 ++++------------
- 1 file changed, 4 insertions(+), 12 deletions(-)
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 9939c3d9912b..6f7247114ef8 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2330,9 +2330,6 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
- 	int flow = 'n';
- 	int ret = 0;
- 
--	if (!state)
--		return -1;
--
- 	tport = &state->port;
- 	mutex_lock(&tport->mutex);
- 
-@@ -2367,12 +2364,10 @@ static int uart_poll_get_char(struct tty_driver *driver, int line)
- 	struct uart_port *port;
- 	int ret = -1;
- 
--	if (state) {
--		port = uart_port_ref(state);
--		if (port) {
--			ret = port->ops->poll_get_char(port);
--			uart_port_deref(port);
--		}
-+	port = uart_port_ref(state);
-+	if (port) {
-+		ret = port->ops->poll_get_char(port);
-+		uart_port_deref(port);
- 	}
- 	return ret;
- }
-@@ -2383,9 +2378,6 @@ static void uart_poll_put_char(struct tty_driver *driver, int line, char ch)
- 	struct uart_state *state = drv->state + line;
- 	struct uart_port *port;
- 
--	if (!state)
--		return;
--
- 	port = uart_port_ref(state);
- 	if (!port)
- 		return;
--- 
-2.11.0
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
