@@ -1,48 +1,37 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 17/19] serial: sh-sci: Remove manual break debouncing
-Date: Fri, 6 Jan 2017 11:57:48 +0100
-Message-ID: <CAMuHMdVw+1n=yNm7mDhDmdgShKQ5Ef74=k-i+kgaDL8VKBuqCg@mail.gmail.com>
-References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com> <20170103230639.19660-18-laurent.pinchart+renesas@ideasonboard.com>
+Subject: Re: [PATCH 00/19] sh-sci: Platform data simplification
+Date: Fri, 6 Jan 2017 12:01:40 +0100
+Message-ID: <CAMuHMdU+e+_2b7N258zGYgyw_abGrkug_kH_f_2jBP-QArK4fw@mail.gmail.com>
+References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <20170103230639.19660-18-laurent.pinchart+renesas@ideasonboard.com>
+In-Reply-To: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
 To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
+Hi Laurent,
+
 On Wed, Jan 4, 2017 at 12:06 AM, Laurent Pinchart
 <laurent.pinchart+renesas@ideasonboard.com> wrote:
-> The sh-sci driver implements manual break debouncing for a few SH
-> platforms by reading the value of the RX pin port register. This feature
-> is optional and the driver considers all negative or zero values of the
-> platform data port_reg field as invalid. As the four platforms that set
-> the field to a register address all use an address higher than
-> 0x7fffffff, the driver will always consider the value as invalid and
-> never perform debouncing. The feature is unused, remove it.
+> Most of the patches in this series have been sitting in my development tree
+> for three years now. While rebasing all my development branches I decided it
+> was time to send them out in case they're considered useful. I've then thrown
+> a few additional patches in to move the driver further in the right direction
+> (or at least the direction I consider right).
 >
-> Debouncing could be implemented properly in the future using the pinctrl
-> and GPIO APIs if desired.
->
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+> The idea behind this series is to move towards removal of the sh-sci platform
+> data. This won't be possible until SH platforms move to DT (and I won't hold
+> my breath), but we can get rid of most of the platform data fields already and
+> cleanup the sh-sci driver at the same time.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Thanks for your series!
 
-> --- a/include/linux/serial_sci.h
-> +++ b/include/linux/serial_sci.h
+Most of it looks sane to me (cfr. my Reviewed-by tags).
 
-> @@ -41,8 +39,6 @@ enum {
->         SCIx_NR_REGTYPES,
->  };
->
-> -struct device;
-> -
-
-<ignore_me>
-Unrelated change (missed in commit 937bb6e4c676 ("serial: sh-sci: don't
-filter on DMA device, use only channel ID")
-</ignore_me>
+Who's got a SuperH farm to regression test this? ;-)
 
 Gr{oetje,eeting}s,
 
