@@ -1,126 +1,81 @@
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v1.1 19/19] serial: sh-sci: Compute the regshift value for SCI ports
-Date: Fri,  6 Jan 2017 14:21:29 +0200
-Message-ID: <20170106122129.8554-1-laurent.pinchart+renesas@ideasonboard.com>
-References: <CAMuHMdVgTMb56mogTSCA0ePCMoy4SCW-5qKCasZYDPU3TJRsKQ@mail.gmail.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdVgTMb56mogTSCA0ePCMoy4SCW-5qKCasZYDPU3TJRsKQ@mail.gmail.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: linux-renesas-soc@vger.kernel.org
-Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 2/2] serial: sh-sci: Fix hang in sci_reset()
+Date: Fri, 06 Jan 2017 14:31:28 +0200
+Message-ID: <52992122.70bgT4fDeQ@avalon>
+References: <1480682111-9299-1-git-send-email-geert+renesas@glider.be> <1480682111-9299-3-git-send-email-geert+renesas@glider.be>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1480682111-9299-3-git-send-email-geert+renesas@glider.be>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Christoph Baumann <cbaumann@visteon.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-SCI instances found in SH SoCs have different spacing between registers
-depending on the SoC. The platform data contains a regshift field that
-tells the driver by how many bits to shift the register offset to
-compute its address. We can compute the regshift value automatically
-based on the memory resource size, there's no need to pass the value
-through platform data.
+Hi Geert,
 
-Fix the sh7750 SCI and sh7760 SIM port memory resources length to ensure
-proper computation of the regshift value.
+Thank you for the patch.
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
----
- arch/sh/kernel/cpu/sh3/setup-sh770x.c |  1 -
- arch/sh/kernel/cpu/sh4/setup-sh7750.c |  3 +--
- arch/sh/kernel/cpu/sh4/setup-sh7760.c | 10 ++++++++--
- drivers/tty/serial/sh-sci.c           |  8 +++++++-
- include/linux/serial_sci.h            |  1 -
- 5 files changed, 16 insertions(+), 7 deletions(-)
+On Friday 02 Dec 2016 13:35:11 Geert Uytterhoeven wrote:
+> When the .set_termios() callback resets the UART, it first waits until
+> all characters in the transmit FIFO have been transmitted, to prevent a
+> port configuration change from impacting these characters.
+> 
+> However, if the previous user of the UART had dedicated RTS/CTS hardware
+> flow control enabled, these characters may have been stuck in the FIFO
+> due to CTS not being asserted. When the new user opens the port,
+> .set_termios() is called while transmission is still disabled, leading
+> to an infinite loop:
+> 
+>     NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s!
+> 
+> This has been observed with SCIFA (on r8a7740/armadillo) and SCIFB (on
+> r8a7791/koelsch).
+> 
+> The issue does not seem to happen when using:
+>   - GPIO RTS/CTS hardware flow control,
+>   - No hardware flow control,
+>   - HSCIF (on r8a7791/koelsch).
+> 
+> To fix this, wait for the draining of the transmit FIFO only if
+> transmission is already enabled.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> To reproduce:
+> 
+>     stty -echo < /dev/scifb0
+>     stty crtscts < /dev/scifb0
+>     echo hello > /dev/scifb0	# returns early (wrote to FIFO)
+>     echo hello > /dev/scifb0	# hangs
+> 
+>  drivers/tty/serial/sh-sci.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index c503db1900f003ed..db5de80c5399a7bd 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -2137,9 +2137,11 @@ static void sci_reset(struct uart_port *port)
+>  	const struct plat_sci_reg *reg;
+>  	unsigned int status;
+> 
+> -	do {
+> -		status = serial_port_in(port, SCxSR);
+> -	} while (!(status & SCxSR_TEND(port)));
+> +	if (serial_port_in(port, SCSCR) & SCSCR_TE) {
+> +		do {
+> +			status = serial_port_in(port, SCxSR);
+> +		} while (!(status & SCxSR_TEND(port)));
 
-This combines the previous 09/19 and 19/19 patches, with the IRDA hunk split
-off.
+Won't we still loop forever if the remote side never asserts CTS ?
 
-diff --git a/arch/sh/kernel/cpu/sh3/setup-sh770x.c b/arch/sh/kernel/cpu/sh3/setup-sh770x.c
-index 592cd9ab30c4..59a88611df55 100644
---- a/arch/sh/kernel/cpu/sh3/setup-sh770x.c
-+++ b/arch/sh/kernel/cpu/sh3/setup-sh770x.c
-@@ -111,7 +111,6 @@ static struct platform_device rtc_device = {
- static struct plat_sci_port scif0_platform_data = {
- 	.type		= PORT_SCI,
- 	.ops		= &sh770x_sci_port_ops,
--	.regshift	= 1,
- };
- 
- static struct resource scif0_resources[] = {
-diff --git a/arch/sh/kernel/cpu/sh4/setup-sh7750.c b/arch/sh/kernel/cpu/sh4/setup-sh7750.c
-index d98a55416306..57d30689204d 100644
---- a/arch/sh/kernel/cpu/sh4/setup-sh7750.c
-+++ b/arch/sh/kernel/cpu/sh4/setup-sh7750.c
-@@ -39,11 +39,10 @@ static struct platform_device rtc_device = {
- 
- static struct plat_sci_port sci_platform_data = {
- 	.type		= PORT_SCI,
--	.regshift	= 2,
- };
- 
- static struct resource sci_resources[] = {
--	DEFINE_RES_MEM(0xffe00000, 0x100),
-+	DEFINE_RES_MEM(0xffe00000, 0x20),
- 	DEFINE_RES_IRQ(evt2irq(0x4e0)),
- };
- 
-diff --git a/arch/sh/kernel/cpu/sh4/setup-sh7760.c b/arch/sh/kernel/cpu/sh4/setup-sh7760.c
-index 0c0cdfc69dcc..e51fe1734e13 100644
---- a/arch/sh/kernel/cpu/sh4/setup-sh7760.c
-+++ b/arch/sh/kernel/cpu/sh4/setup-sh7760.c
-@@ -200,12 +200,18 @@ static struct platform_device scif2_device = {
- };
- 
- static struct plat_sci_port scif3_platform_data = {
-+	/*
-+	 * This is actually a SIM card module serial port, based on an SCI with
-+	 * additional registers. The sh-sci driver doesn't support the SIM port
-+	 * type, declare it as a SCI. Don't declare the additional registers in
-+	 * the memory resource or the driver will compute an incorrect regshift
-+	 * value.
-+	 */
- 	.type		= PORT_SCI,
--	.regshift	= 2,
- };
- 
- static struct resource scif3_resources[] = {
--	DEFINE_RES_MEM(0xfe480000, 0x100),
-+	DEFINE_RES_MEM(0xfe480000, 0x10),
- 	DEFINE_RES_IRQ(evt2irq(0xc00)),
- 	DEFINE_RES_IRQ(evt2irq(0xc20)),
- 	DEFINE_RES_IRQ(evt2irq(0xc40)),
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 9999a27449fa..50fffa1f5a33 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2572,9 +2572,15 @@ static int sci_init_single(struct platform_device *dev,
- 
- 	port->type		= p->type;
- 	port->flags		= UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | p->flags;
--	port->regshift		= p->regshift;
- 	port->fifosize		= sci_port->params->fifosize;
- 
-+	if (port->type == PORT_SCI) {
-+		if (sci_port->reg_size >= 0x20)
-+			port->regshift = 2;
-+		else
-+			port->regshift = 1;
-+	}
-+
- 	/*
- 	 * The UART port needs an IRQ value, so we peg this to the RX IRQ
- 	 * for the multi-IRQ ports, which is where we are primarily
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index f9a4526f4ec5..e598eaef3962 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -56,7 +56,6 @@ struct plat_sci_port {
- 	/*
- 	 * Platform overrides if necessary, defaults otherwise.
- 	 */
--	unsigned char	regshift;
- 	unsigned char	regtype;
- 
- 	struct plat_sci_port_ops	*ops;
+> +	}
+> 
+>  	serial_port_out(port, SCSCR, 0x00);	/* TE=0, RE=0, CKE1=0 */
+
 -- 
 Regards,
 
 Laurent Pinchart
-
