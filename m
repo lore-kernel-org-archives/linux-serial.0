@@ -1,46 +1,70 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V5 1/3] ARM64 LPC: Indirect ISA port IO introduced
-Date: Fri, 06 Jan 2017 12:43:32 +0100
-Message-ID: <4069640.PHLdmY3C6P@wuerfel>
-References: <1478576829-112707-1-git-send-email-yuanzhichang@hisilicon.com>
- <1478576829-112707-2-git-send-email-yuanzhichang@hisilicon.com>
- <CACVXFVNS9n9_ty8y3CyqfRaLitqDKdk1mMOrQHM-enOgJtUBeQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CACVXFVNS9n9_ty8y3CyqfRaLitqDKdk1mMOrQHM-enOgJtUBeQ@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, gabriele.paoloni@huawei.com, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linuxarm@huawei.com, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Ming Lei <tom.leiming@gmail.com>, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, minyard@acm.org, Liviu Dudau <liviu.dudau@arm.com>, john.garry@huawei.com, Olof Johansson <olof@lixom.net>, Rob Herring <robh+dt@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, kantyzc@163.com, zhichang.yuan02@gmail.com, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "zhichang.yuan" <yuanzhichang@hisilicon.com>, zourongrong@gmail.com
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v1.1 08/19] serial: sh-sci: Fix register offsets for the IRDA serial port
+Date: Fri,  6 Jan 2017 13:52:35 +0200
+Message-ID: <20170106115235.3919-1-laurent.pinchart+renesas@ideasonboard.com>
+References: <CAMuHMdVzm4D=Pdd6PoGzXUoO8Va4g1Y5KncaRS19PnSeGUn9Gw@mail.gmail.com>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdVzm4D=Pdd6PoGzXUoO8Va4g1Y5KncaRS19PnSeGUn9Gw@mail.gmail.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: linux-renesas-soc@vger.kernel.org
+Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-On Thursday, December 22, 2016 4:15:57 PM CET Ming Lei wrote:
-> ERROR: "inb" [drivers/watchdog/wdt_pci.ko] undefined!
-> ERROR: "outb" [drivers/watchdog/wdt_pci.ko] undefined!
-> ERROR: "outb" [drivers/watchdog/pcwd_pci.ko] undefined!
-> ERROR: "inb" [drivers/watchdog/pcwd_pci.ko] undefined!
-> ERROR: "outw" [drivers/video/vgastate.ko] undefined!
-> ERROR: "outb" [drivers/video/vgastate.ko] undefined!
-> ERROR: "inb" [drivers/video/vgastate.ko] undefined!
-> ERROR: "outw" [drivers/video/fbdev/vt8623fb.ko] undefined!
-> ERROR: "inb" [drivers/video/fbdev/vt8623fb.ko] undefined!
-> ERROR: "outb" [drivers/video/fbdev/vt8623fb.ko] undefined!
-> ERROR: "outw" [drivers/video/fbdev/tridentfb.ko] undefined!
-> ERROR: "inb" [drivers/video/fbdev/tridentfb.ko] undefined!
-> ERROR: "outb" [drivers/video/fbdev/tridentfb.ko] undefined!
-> ERROR: "inb" [drivers/video/fbdev/tdfxfb.ko] undefined!
-> 
+Even though most of its registers are 8-bit wide, the IRDA has two
+16-bit registers that make it a 16-bit peripheral and not a 8-bit
+peripheral with addresses shifted by one. Fix the registers offset in
+the driver and the platform data regshift value.
 
-In case you haven't figured it out by now, the new code is simply
-missing a few "EXPORT_SYMBOL" lines.
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+---
+ arch/sh/kernel/cpu/sh3/setup-sh770x.c |  1 -
+ drivers/tty/serial/sh-sci.c           | 17 ++++++++---------
+ 2 files changed, 8 insertions(+), 10 deletions(-)
 
-	Arnd
+diff --git a/arch/sh/kernel/cpu/sh3/setup-sh770x.c b/arch/sh/kernel/cpu/sh3/setup-sh770x.c
+index e1e54258b822..592cd9ab30c4 100644
+--- a/arch/sh/kernel/cpu/sh3/setup-sh770x.c
++++ b/arch/sh/kernel/cpu/sh3/setup-sh770x.c
+@@ -157,7 +157,6 @@ static struct platform_device scif1_device = {
+ static struct plat_sci_port scif2_platform_data = {
+ 	.type		= PORT_IRDA,
+ 	.ops		= &sh770x_sci_port_ops,
+-	.regshift	= 1,
+ };
+ 
+ static struct resource scif2_resources[] = {
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 8c58c43fc85d..1eb91ba43b2e 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -193,18 +193,17 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 	},
+ 
+ 	/*
+-	 * Common definitions for legacy IrDA ports, dependent on
+-	 * regshift value.
++	 * Common definitions for legacy IrDA ports.
+ 	 */
+ 	[SCIx_IRDA_REGTYPE] = {
+ 		[SCSMR]		= { 0x00,  8 },
+-		[SCBRR]		= { 0x01,  8 },
+-		[SCSCR]		= { 0x02,  8 },
+-		[SCxTDR]	= { 0x03,  8 },
+-		[SCxSR]		= { 0x04,  8 },
+-		[SCxRDR]	= { 0x05,  8 },
+-		[SCFCR]		= { 0x06,  8 },
+-		[SCFDR]		= { 0x07, 16 },
++		[SCBRR]		= { 0x02,  8 },
++		[SCSCR]		= { 0x04,  8 },
++		[SCxTDR]	= { 0x06,  8 },
++		[SCxSR]		= { 0x08,  8 },
++		[SCxRDR]	= { 0x0a,  8 },
++		[SCFCR]		= { 0x0c,  8 },
++		[SCFDR]		= { 0x0e, 16 },
+ 		[SCTFDR]	= sci_reg_invalid,
+ 		[SCRFDR]	= sci_reg_invalid,
+ 		[SCSPTR]	= sci_reg_invalid,
+-- 
+Regards,
+
+Laurent Pinchart
