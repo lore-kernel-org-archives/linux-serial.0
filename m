@@ -1,21 +1,34 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 03/19] sh: Don't set sh-sci pdata scscr TE and RE bits
-Date: Fri, 6 Jan 2017 11:11:42 +0100
-Message-ID: <CAMuHMdVNOO7XvUSbY+q9n4iZVKPEvG1nP30Rq86Nyr_v850Nmw@mail.gmail.com>
-References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com> <20170103230639.19660-4-laurent.pinchart+renesas@ideasonboard.com>
+Subject: Re: [PATCH 04/19] sh: Don't set sh-sci pdata scscr TIE and RIE bits
+Date: Fri, 6 Jan 2017 11:11:56 +0100
+Message-ID: <CAMuHMdVw5icWzY0G8b1QW+EsNG_u-8F=CP1B9a_odBQWCKzEfw@mail.gmail.com>
+References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com> <20170103230639.19660-5-laurent.pinchart+renesas@ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <20170103230639.19660-4-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20170103230639.19660-5-laurent.pinchart+renesas@ideasonboard.com>
+Sender: linux-sh-owner@vger.kernel.org
 To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
 On Wed, Jan 4, 2017 at 12:06 AM, Laurent Pinchart
 <laurent.pinchart+renesas@ideasonboard.com> wrote:
-> The bits are set by the driver internally, don't set them in platform
-> data.
+> The scscr platform data field is used by the driver in three locations.
+> One of them masks out all bits except SCSCR_REIE. The two other are the
+> set_termios handler and the console write handler.
+>
+> The set_termios handler calls sci_start_rx() to enable the receiver,
+> which sets the RIE bit unconditionally. It then calls sci_port_disable()
+> that effectively disables both the transmitter and the receiver. The
+> TIE bit will thus get set later when the serial cores reenables the
+> serial port.
+>
+> The console write handler runs with interrupts disabled, and saves and
+> restores the SCSCR register value. The RIE and TIE bits are thus not
+> needed there.
+>
+> The bits are thus not necessary in platform data, remove them.
 >
 > Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
