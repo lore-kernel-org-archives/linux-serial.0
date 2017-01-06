@@ -1,189 +1,65 @@
-From: Rob Herring <robh@kernel.org>
-Subject: [PATCH 5/9] tty_port: Add port client functions
-Date: Fri,  6 Jan 2017 10:26:31 -0600
-Message-ID: <20170106162635.19677-6-robh@kernel.org>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 9/9] tty_port: register tty ports with serdev bus
+Date: Fri,  6 Jan 2017 10:26:35 -0600
+Message-ID: <20170106162635.19677-10-robh@kernel.org>
 References: <20170106162635.19677-1-robh@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170106162635.19677-1-robh@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170106162635.19677-1-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Introduce a client (upward direction) operations struct for tty_port
-clients. Initially supported operations are for receiving data and write
-wake-up. This will allow for having clients other than an ldisc.
+Register a serdev controller with the serdev bus when a tty_port is
+registered. This creates the serdev controller and create's serdev
+devices for any DT child nodes of the tty_port's parent (i.e. the UART
+device).
 
-Convert the calls to the ldisc to use the client ops as the default
-operations.
-
-Signed-off-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
+ drivers/tty/tty_port.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-The major change here is the access of the tty ptr and the reference taken
-on the ldisc are moved into the client_ops rx function for the the ldisc.
-I *think* this should be okay, but no doubt I don't understand all the
-intricacies of the locking here. It does make the implementation a bit
-cleaner in that the tty buffer handling is free from struct tty and the
-ldisc.
-
-
- drivers/tty/tty_buffer.c | 17 +++--------------
- drivers/tty/tty_port.c   | 39 ++++++++++++++++++++++++++++++++++++++-
- include/linux/tty.h      |  9 ++++++++-
- 3 files changed, 49 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index f4dc3e296dd5..4e7a4e9dcf4d 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -437,7 +437,7 @@ int tty_ldisc_receive_buf(struct tty_ldisc *ld, const unsigned char *p,
- EXPORT_SYMBOL_GPL(tty_ldisc_receive_buf);
-
- static int
--receive_buf(struct tty_ldisc *ld, struct tty_buffer *head, int count)
-+receive_buf(struct tty_port *port, struct tty_buffer *head, int count)
- {
- 	unsigned char *p = char_buf_ptr(head, head->read);
- 	char	      *f = NULL;
-@@ -445,7 +445,7 @@ receive_buf(struct tty_ldisc *ld, struct tty_buffer *head, int count)
- 	if (~head->flags & TTYB_NORMAL)
- 		f = flag_buf_ptr(head, head->read);
-
--	return tty_ldisc_receive_buf(ld, p, f, count);
-+	return port->client_ops->receive_buf(port, p, f, count);
- }
-
- /**
-@@ -465,16 +465,6 @@ static void flush_to_ldisc(struct work_struct *work)
- {
- 	struct tty_port *port = container_of(work, struct tty_port, buf.work);
- 	struct tty_bufhead *buf = &port->buf;
--	struct tty_struct *tty;
--	struct tty_ldisc *disc;
--
--	tty = READ_ONCE(port->itty);
--	if (tty == NULL)
--		return;
--
--	disc = tty_ldisc_ref(tty);
--	if (disc == NULL)
--		return;
-
- 	mutex_lock(&buf->lock);
-
-@@ -504,7 +494,7 @@ static void flush_to_ldisc(struct work_struct *work)
- 			continue;
- 		}
-
--		count = receive_buf(disc, head, count);
-+		count = receive_buf(port, head, count);
- 		if (!count)
- 			break;
- 		head->read += count;
-@@ -512,7 +502,6 @@ static void flush_to_ldisc(struct work_struct *work)
-
- 	mutex_unlock(&buf->lock);
-
--	tty_ldisc_deref(disc);
- }
-
- /**
 diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 1d8804843103..232a8cbf47bc 100644
+index 232a8cbf47bc..032786e5509e 100644
 --- a/drivers/tty/tty_port.c
 +++ b/drivers/tty/tty_port.c
-@@ -17,6 +17,41 @@
+@@ -16,6 +16,7 @@
+ #include <linux/bitops.h>
  #include <linux/delay.h>
  #include <linux/module.h>
-
-+static int tty_port_default_receive_buf(struct tty_port *port,
-+					const unsigned char *p,
-+					const unsigned char *f, size_t count)
-+{
-+	int ret;
-+	struct tty_struct *tty;
-+	struct tty_ldisc *disc;
-+
-+	tty = READ_ONCE(port->itty);
-+	if (!tty)
-+		return 0;
-+
-+	disc = tty_ldisc_ref(tty);
-+	if (!disc)
-+		return 0;
-+
-+	ret = tty_ldisc_receive_buf(disc, p, (char *)f, count);
-+
-+	tty_ldisc_deref(disc);
-+
-+	return ret;
-+}
-+
-+static void tty_port_default_wakeup(struct tty_port *port)
-+{
-+	/* tty_port_tty_wakeup already took a reference to the tty */
-+	tty_wakeup(port->tty);
-+}
-+
-+static const struct tty_port_client_operations default_client_ops = {
-+	.receive_buf = tty_port_default_receive_buf,
-+	.write_wakeup = tty_port_default_wakeup,
-+};
-+
-+
- void tty_port_init(struct tty_port *port)
++#include <linux/serdev.h>
+ 
+ static int tty_port_default_receive_buf(struct tty_port *port,
+ 					const unsigned char *p,
+@@ -125,9 +126,17 @@ struct device *tty_port_register_device_attr(struct tty_port *port,
+ 		struct device *device, void *drvdata,
+ 		const struct attribute_group **attr_grp)
  {
- 	memset(port, 0, sizeof(*port));
-@@ -28,6 +63,7 @@ void tty_port_init(struct tty_port *port)
- 	spin_lock_init(&port->lock);
- 	port->close_delay = (50 * HZ) / 100;
- 	port->closing_wait = (3000 * HZ) / 100;
-+	port->client_ops = &default_client_ops;
- 	kref_init(&port->kref);
- }
- EXPORT_SYMBOL(tty_port_init);
-@@ -275,7 +311,8 @@ void tty_port_tty_wakeup(struct tty_port *port)
- 	struct tty_struct *tty = tty_port_tty_get(port);
-
- 	if (tty) {
--		tty_wakeup(tty);
-+		if (test_bit(TTY_DO_WRITE_WAKEUP, &tty->flags))
-+			port->client_ops->write_wakeup(port);
- 		tty_kref_put(tty);
- 	}
- }
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 21c0fabfed60..1017e904c0a3 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -217,12 +217,18 @@ struct tty_port_operations {
- 	/* Called on the final put of a port */
- 	void (*destruct)(struct tty_port *port);
- };
--
++	struct device *ttydev;
 +
-+struct tty_port_client_operations {
-+	int (*receive_buf)(struct tty_port *port, const unsigned char *, const unsigned char *, size_t);
-+	void (*write_wakeup)(struct tty_port *port);
-+};
+ 	tty_port_link_device(port, driver, index);
+-	return tty_register_device_attr(driver, index, device, drvdata,
++	ttydev = tty_register_device_attr(driver, index, device, drvdata,
+ 			attr_grp);
++	if (!ttydev)
++		return NULL;
 +
- struct tty_port {
- 	struct tty_bufhead	buf;		/* Locked internally */
- 	struct tty_struct	*tty;		/* Back pointer */
- 	struct tty_struct	*itty;		/* internal back ptr */
- 	const struct tty_port_operations *ops;	/* Port operations */
-+	const struct tty_port_client_operations *client_ops; /* Port client operations */
- 	spinlock_t		lock;		/* Lock protecting tty field */
- 	int			blocked_open;	/* Waiting to open */
- 	int			count;		/* Usage count */
-@@ -241,6 +247,7 @@ struct tty_port {
- 						   based drain is needed else
- 						   set to size of fifo */
- 	struct kref		kref;		/* Ref counter */
-+	void 			*client_data;
- };
-
- /* tty_port::iflags bits -- use atomic bit ops */
---
++	serdev_tty_port_register(port, device, driver, index);
++	return ttydev;
++
+ }
+ EXPORT_SYMBOL_GPL(tty_port_register_device_attr);
+ 
+@@ -177,6 +186,9 @@ static void tty_port_destructor(struct kref *kref)
+ 	/* check if last port ref was dropped before tty release */
+ 	if (WARN_ON(port->itty))
+ 		return;
++
++	serdev_tty_port_unregister(port);
++
+ 	if (port->xmit_buf)
+ 		free_page((unsigned long)port->xmit_buf);
+ 	tty_port_destroy(port);
+-- 
 2.10.1
