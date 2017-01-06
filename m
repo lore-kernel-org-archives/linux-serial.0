@@ -1,75 +1,106 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.9 069/116] sc16is7xx: Drop bogus use of IRQF_ONESHOT
-Date: Fri,  6 Jan 2017 22:43:51 +0100
-Message-ID: <20170106213911.954571943@linuxfoundation.org>
-References: <20170106213908.681421800@linuxfoundation.org>
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: Re: imx: RS-485 problems during TX, maybe DMA related
+Date: Fri, 6 Jan 2017 23:50:26 +0100
+Message-ID: <20170106225026.GA3804@archie.localdomain>
+References: <20170104160024.GA13442@archie.localdomain>
+ <CAOMZO5C3enuThR1DpcwNnqFdxd8tGoBwd76O62Gnviz8x1_a9w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170106213908.681421800@linuxfoundation.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Sean Nyekjaer <sean.nyekjaer@prevas.dk>, Josh Cartwright <joshc@ni.com>, linux-rt-users@vger.kernel.org, Jakub Kicinski <moorray3@wp.pl>, linux-serial@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Julia Cartwright <julia@ni.com>, Jakub Kicinski <kubakici@wp.pl>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <CAOMZO5C3enuThR1DpcwNnqFdxd8tGoBwd76O62Gnviz8x1_a9w@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org
+Cc: Fabio Estevam <fabio.estevam@freescale.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, linux-kernel@vger.kernel.org, Nandor Han <nandor.han@ge.com>, linux-arm-kernel@lists.infradead.org, Lucas Stach <l.stach@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-4.9-stable review patch.  If anyone has any objections, please let me know.
+Hi Fabio,
 
-------------------
+On Fri, Jan 06, 2017 at 07:22:32PM -0200, Fabio Estevam wrote:
+> Hi Clemens,
+> 
+> On Wed, Jan 4, 2017 at 2:00 PM, Clemens Gruber
+> <clemens.gruber@pqgruber.com> wrote:
+> > Hi,
+> >
+> > I observed odd behavior of the current tty/serial/imx.c driver in RS-485
+> > mode.
+> >
+> > RX works fine, but TX does not: When sending data, it arrives multiple
+> 
+> I am also trying to get rs485 in half-duplex mode to work on mx6dl
+> with kernel 4.9.
 
-From: Josh Cartwright <joshc@ni.com>
+I am glad I am not the only one working on this. Maybe we can figure it
+out together :)
 
-commit 04da73803c05dc1150ccc31cbf93e8cd56679c09 upstream.
+> 
+> RX also works for me, but TX does not.
+> 
+> On my board it is the MX6QDL_PAD_CSI0_DAT16__UART4_RTS_B pin that
+> controls the rs485 transceiver flow, but I do not
+> see RTS to toggle to 1 during transmit. It stays always at 0.
+> 
+> I see you use CTS pin instead, but I thought RTS pin should be used.
 
-The use of IRQF_ONESHOT when registering an interrupt handler with
-request_irq() is non-sensical.
+I am pretty sure that CTS is the correct signal to control the
+transceiver. In the reference manual on page 5231 (section 64.7.1) it
+says: "The CTS_B pin can be used to control RS-485 output driver outside
+the chip."
+Maybe it is only called RTS in struct serial_rs485 because of DTE mode
+where RX, TX, RTS and CTS are interchanged? Very confusing.
 
-Not only that, it also prevents the handler from being threaded when it
-otherwise should be w/ IRQ_FORCED_THREADING is enabled.  This causes the
-following deadlock observed by Sean Nyekjaer on -rt:
+I am muxing MX6QDL_PAD_CSI0_DAT16__UART4_RTS_B and
+MX6QDL_PAD_CSI0_DAT17__UART4_CTS_B because the transceiver-enable signal
+is connected to ball L3 (CSI0_DAT17).
 
-Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
-[..]
-   rt_spin_lock_slowlock from queue_kthread_work
-   queue_kthread_work from sc16is7xx_irq
-   sc16is7xx_irq [sc16is7xx] from handle_irq_event_percpu
-   handle_irq_event_percpu from handle_irq_event
-   handle_irq_event from handle_level_irq
-   handle_level_irq from generic_handle_irq
-   generic_handle_irq from mxc_gpio_irq_handler
-   mxc_gpio_irq_handler from mx3_gpio_irq_handler
-   mx3_gpio_irq_handler from generic_handle_irq
-   generic_handle_irq from __handle_domain_irq
-   __handle_domain_irq from gic_handle_irq
-   gic_handle_irq from __irq_svc
-   __irq_svc from rt_spin_unlock
-   rt_spin_unlock from kthread_worker_fn
-   kthread_worker_fn from kthread
-   kthread from ret_from_fork
+But according to the i.MX Pins tool, they can be muxed vice-versa too.
+So if you connected the transceiver-enable to ball L4 (CSI0_DAT16), you
+could mux MX6QDL_PAD_CSI0_DAT16__UART4_CTS_B and
+MX6QDL_PAD_CSI0_DAT17__UART4_RTS_B instead?
 
-Fixes: 9e6f4ca3e567 ("sc16is7xx: use kthread_worker for tx_work and irq")
-Reported-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Signed-off-by: Josh Cartwright <joshc@ni.com>
-Cc: linux-rt-users@vger.kernel.org
-Cc: Jakub Kicinski <moorray3@wp.pl>
-Cc: linux-serial@vger.kernel.org
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Julia Cartwright <julia@ni.com>
-Acked-by: Jakub Kicinski <kubakici@wp.pl>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+As far as I understand, RTS is an input which is not used for RS-485, so
+it is a no-connect on our board.
 
----
- drivers/tty/serial/sc16is7xx.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> On my userspace application I have:
+> 
+> /* enable RS485 mode: */
+> rs485conf.flags |= SER_RS485_ENABLED;
+> 
+> /* set logical level for RTS pin equal to 1 when sending: */
+> rs485conf.flags |= SER_RS485_RTS_ON_SEND;
+> 
+> /* set logical level for RTS pin equal to 0 after sending: */
+> rs485conf.flags &= ~(SER_RS485_RTS_AFTER_SEND);
 
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1264,7 +1264,7 @@ static int sc16is7xx_probe(struct device
- 
- 	/* Setup interrupt */
- 	ret = devm_request_irq(dev, irq, sc16is7xx_irq,
--			       IRQF_ONESHOT | flags, dev_name(dev), s);
-+			       flags, dev_name(dev), s);
- 	if (!ret)
- 		return 0;
- 
+This is similar to my config, however I had to also enable
+SER_RS485_RX_DURING_TX, otherwise TX would not work at all.
+Also, due to the active-low signal output on UART4_CTS_B, I use
+~SER_RS485_RTS_ON_SEND and SER_RS485_RTS_AFTER_SEND.
+
+--
+
+Do you have an idea what could cause this doubling of the transmitted
+characters and extra data I described?
+
+Maybe you will see that effect too after you changed the pinmuxing.
+
+At the moment I am trying to understand the interaction between the SDMA
+engine and the imx UART driver. But this is the first time I dig into
+DMA parts of the kernel and i.MX6/SDMA.. very challenging imho.
+
+What's odd is that in RS-232 mode, everything works fine. This
+buffer/DMA? problem only appears in RS-485 mode.
+
+Regards,
+Clemens
