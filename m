@@ -1,334 +1,189 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 8/9] serdev: add a tty port controller driver
-Date: Fri,  6 Jan 2017 10:26:34 -0600
-Message-ID: <20170106162635.19677-9-robh@kernel.org>
+From: Rob Herring <robh@kernel.org>
+Subject: [PATCH 5/9] tty_port: Add port client functions
+Date: Fri,  6 Jan 2017 10:26:31 -0600
+Message-ID: <20170106162635.19677-6-robh@kernel.org>
 References: <20170106162635.19677-1-robh@kernel.org>
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170106162635.19677-1-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Cc: Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170106162635.19677-1-robh@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Cc: Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add a serdev controller driver for tty ports.
+Introduce a client (upward direction) operations struct for tty_port
+clients. Initially supported operations are for receiving data and write
+wake-up. This will allow for having clients other than an ldisc.
 
-The controller is registered with serdev when tty ports are registered
-with the TTY core. As the TTY core is built-in only, this has the side
-effect of making serdev built-in as well.
+Convert the calls to the ldisc to use the client ops as the default
+operations.
 
-Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/tty/serdev/Kconfig          |   8 ++
- drivers/tty/serdev/Makefile         |   2 +
- drivers/tty/serdev/serdev-ttyport.c | 244 ++++++++++++++++++++++++++++++++++++
- include/linux/serdev.h              |  20 +++
- 4 files changed, 274 insertions(+)
- create mode 100644 drivers/tty/serdev/serdev-ttyport.c
 
-diff --git a/drivers/tty/serdev/Kconfig b/drivers/tty/serdev/Kconfig
-index 3b6ecd187bef..7eac4cc42785 100644
---- a/drivers/tty/serdev/Kconfig
-+++ b/drivers/tty/serdev/Kconfig
-@@ -6,3 +6,11 @@ menuconfig SERIAL_DEV_BUS
- 	help
- 	  Core support for devices connected via a serial port.
- 
-+if SERIAL_DEV_BUS
-+
-+config SERIAL_DEV_CTRL_TTYPORT
-+	bool "Serial device TTY port controller"
-+	depends on TTY
-+	depends on SERIAL_DEV_BUS=y
-+
-+endif
-diff --git a/drivers/tty/serdev/Makefile b/drivers/tty/serdev/Makefile
-index 01a9b62183f4..0cbdb9444d9d 100644
---- a/drivers/tty/serdev/Makefile
-+++ b/drivers/tty/serdev/Makefile
-@@ -1,3 +1,5 @@
- serdev-objs := core.o
- 
- obj-$(CONFIG_SERIAL_DEV_BUS) += serdev.o
-+
-+obj-$(CONFIG_SERIAL_DEV_CTRL_TTYPORT) += serdev-ttyport.o
-diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-new file mode 100644
-index 000000000000..ed6fd675ece6
---- /dev/null
-+++ b/drivers/tty/serdev/serdev-ttyport.c
-@@ -0,0 +1,244 @@
-+/*
-+ * Copyright (C) 2016 Linaro Ltd., Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 and
-+ * only version 2 as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/serdev.h>
-+#include <linux/tty.h>
-+#include <linux/tty_driver.h>
-+
-+#define SERPORT_BUSY	1
-+#define SERPORT_ACTIVE	2
-+#define SERPORT_DEAD	3
-+
-+struct serport {
-+	struct tty_port *port;
-+	struct tty_struct *tty;
-+	struct tty_driver *tty_drv;
-+	int tty_idx;
-+	struct mutex lock;
-+	unsigned long flags;
-+};
-+
-+/*
-+ * Callback functions from the tty port.
-+ */
-+
-+static int ttyport_receive_buf(struct tty_port *port, const unsigned char *cp,
-+				const unsigned char *fp, size_t count)
+The major change here is the access of the tty ptr and the reference taken
+on the ldisc are moved into the client_ops rx function for the the ldisc.
+I *think* this should be okay, but no doubt I don't understand all the
+intricacies of the locking here. It does make the implementation a bit
+cleaner in that the tty buffer handling is free from struct tty and the
+ldisc.
+
+
+ drivers/tty/tty_buffer.c | 17 +++--------------
+ drivers/tty/tty_port.c   | 39 ++++++++++++++++++++++++++++++++++++++-
+ include/linux/tty.h      |  9 ++++++++-
+ 3 files changed, 49 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index f4dc3e296dd5..4e7a4e9dcf4d 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -437,7 +437,7 @@ int tty_ldisc_receive_buf(struct tty_ldisc *ld, const unsigned char *p,
+ EXPORT_SYMBOL_GPL(tty_ldisc_receive_buf);
+
+ static int
+-receive_buf(struct tty_ldisc *ld, struct tty_buffer *head, int count)
++receive_buf(struct tty_port *port, struct tty_buffer *head, int count)
+ {
+ 	unsigned char *p = char_buf_ptr(head, head->read);
+ 	char	      *f = NULL;
+@@ -445,7 +445,7 @@ receive_buf(struct tty_ldisc *ld, struct tty_buffer *head, int count)
+ 	if (~head->flags & TTYB_NORMAL)
+ 		f = flag_buf_ptr(head, head->read);
+
+-	return tty_ldisc_receive_buf(ld, p, f, count);
++	return port->client_ops->receive_buf(port, p, f, count);
+ }
+
+ /**
+@@ -465,16 +465,6 @@ static void flush_to_ldisc(struct work_struct *work)
+ {
+ 	struct tty_port *port = container_of(work, struct tty_port, buf.work);
+ 	struct tty_bufhead *buf = &port->buf;
+-	struct tty_struct *tty;
+-	struct tty_ldisc *disc;
+-
+-	tty = READ_ONCE(port->itty);
+-	if (tty == NULL)
+-		return;
+-
+-	disc = tty_ldisc_ref(tty);
+-	if (disc == NULL)
+-		return;
+
+ 	mutex_lock(&buf->lock);
+
+@@ -504,7 +494,7 @@ static void flush_to_ldisc(struct work_struct *work)
+ 			continue;
+ 		}
+
+-		count = receive_buf(disc, head, count);
++		count = receive_buf(port, head, count);
+ 		if (!count)
+ 			break;
+ 		head->read += count;
+@@ -512,7 +502,6 @@ static void flush_to_ldisc(struct work_struct *work)
+
+ 	mutex_unlock(&buf->lock);
+
+-	tty_ldisc_deref(disc);
+ }
+
+ /**
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 1d8804843103..232a8cbf47bc 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -17,6 +17,41 @@
+ #include <linux/delay.h>
+ #include <linux/module.h>
+
++static int tty_port_default_receive_buf(struct tty_port *port,
++					const unsigned char *p,
++					const unsigned char *f, size_t count)
 +{
-+	struct serdev_controller *ctrl = port->client_data;
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+
-+	mutex_lock(&serport->lock);
-+
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		goto out;
-+
-+	serdev_controller_receive_buf(ctrl, cp, count);
-+
-+out:
-+	mutex_unlock(&serport->lock);
-+	return count;
-+}
-+
-+static void ttyport_write_wakeup(struct tty_port *port)
-+{
-+	struct serdev_controller *ctrl = port->client_data;
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+
-+	clear_bit(TTY_DO_WRITE_WAKEUP, &port->tty->flags);
-+
-+	if (test_bit(SERPORT_ACTIVE, &serport->flags))
-+		serdev_controller_write_wakeup(ctrl);
-+}
-+
-+static const struct tty_port_client_operations client_ops = {
-+	.receive_buf = ttyport_receive_buf,
-+	.write_wakeup = ttyport_write_wakeup,
-+};
-+
-+/*
-+ * Callback functions from the serdev core.
-+ */
-+
-+static int ttyport_write_buf(struct serdev_controller *ctrl, const unsigned char *data, size_t len)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+
-+	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
-+	return serport->tty->ops->write(serport->tty, data, len);
-+}
-+
-+static void ttyport_write_flush(struct serdev_controller *ctrl)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+
-+	tty_driver_flush_buffer(tty);
-+}
-+
-+static int ttyport_write_room(struct serdev_controller *ctrl)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+
-+	return tty_write_room(tty);
-+}
-+
-+
-+static int ttyport_open(struct serdev_controller *ctrl)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty;
-+	struct ktermios ktermios;
-+
-+	tty = tty_init_dev(serport->tty_drv, serport->tty_idx);
-+	serport->tty = tty;
-+
-+	serport->port->client_ops = &client_ops;
-+	serport->port->client_data = ctrl;
-+
-+	tty->receive_room = 65536;
-+
-+	if (tty->ops->open)
-+		tty->ops->open(serport->tty, NULL);
-+	else
-+		tty_port_open(serport->port, tty, NULL);
-+
-+	/* Bring the UART into a known 8 bits no parity hw fc state */
-+	ktermios = tty->termios;
-+	ktermios.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP |
-+			      INLCR | IGNCR | ICRNL | IXON);
-+	ktermios.c_oflag &= ~OPOST;
-+	ktermios.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-+	ktermios.c_cflag &= ~(CSIZE | PARENB);
-+	ktermios.c_cflag |= CS8;
-+	ktermios.c_cflag |= CRTSCTS;
-+	tty_set_termios(tty, &ktermios);
-+
-+	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
-+
-+	mutex_lock(&serport->lock);
-+	set_bit(SERPORT_ACTIVE, &serport->flags);
-+	mutex_unlock(&serport->lock);
-+
-+	tty_unlock(serport->tty);
-+	return 0;
-+}
-+
-+static void ttyport_close(struct serdev_controller *ctrl)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+
-+	mutex_lock(&serport->lock);
-+
-+	if (tty->ops->close)
-+		tty->ops->close(tty, NULL);
-+
-+	tty_release_struct(tty, serport->tty_idx);
-+
-+	clear_bit(SERPORT_ACTIVE, &serport->flags);
-+	mutex_unlock(&serport->lock);
-+}
-+
-+static unsigned int ttyport_set_baudrate(struct serdev_controller *ctrl, unsigned int speed)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+	struct ktermios ktermios = tty->termios;
-+
-+	ktermios.c_cflag &= ~CBAUD;
-+	tty_termios_encode_baud_rate(&ktermios, speed, speed);
-+
-+	/* tty_set_termios() return not checked as it is always 0 */
-+	tty_set_termios(tty, &ktermios);
-+	return speed;
-+}
-+
-+static void ttyport_set_flow_control(struct serdev_controller *ctrl, bool enable)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+	struct ktermios ktermios = tty->termios;
-+
-+	if (enable)
-+		ktermios.c_cflag |= CRTSCTS;
-+	else
-+		ktermios.c_cflag &= ~CRTSCTS;
-+
-+	tty_set_termios(tty, &ktermios);
-+}
-+
-+struct serdev_controller_ops ctrl_ops = {
-+	.write_buf = ttyport_write_buf,
-+	.write_flush = ttyport_write_flush,
-+	.write_room = ttyport_write_room,
-+	.open = ttyport_open,
-+	.close = ttyport_close,
-+	.set_flow_control = ttyport_set_flow_control,
-+	.set_baudrate = ttyport_set_baudrate,
-+};
-+
-+int serdev_tty_port_register(struct tty_port *port, struct device *parent,
-+			    struct tty_driver *drv, int idx)
-+{
-+	struct serdev_controller *ctrl;
-+	struct serport *serport;
 +	int ret;
++	struct tty_struct *tty;
++	struct tty_ldisc *disc;
 +
-+	if (!port || !drv || !parent || !parent->of_node)
-+		return -ENODEV;
++	tty = READ_ONCE(port->itty);
++	if (!tty)
++		return 0;
 +
-+	ctrl = serdev_controller_alloc(parent, sizeof(struct serport));
-+	if (!ctrl)
-+		return -ENOMEM;
-+	serport = serdev_controller_get_drvdata(ctrl);
++	disc = tty_ldisc_ref(tty);
++	if (!disc)
++		return 0;
 +
-+	mutex_init(&serport->lock);
-+	serport->port = port;
-+	serport->tty_idx = idx;
-+	serport->tty_drv = drv;
++	ret = tty_ldisc_receive_buf(disc, p, (char *)f, count);
 +
-+	ctrl->ops = &ctrl_ops;
++	tty_ldisc_deref(disc);
 +
-+	ret = serdev_controller_add(ctrl);
-+	if (ret)
-+		goto err;
-+
-+	printk(KERN_INFO "serdev: Serial port %s\n", drv->name);
-+	return 0;
-+
-+err:
-+	serdev_controller_put(ctrl);
 +	return ret;
 +}
 +
-+void serdev_tty_port_unregister(struct tty_port *port)
++static void tty_port_default_wakeup(struct tty_port *port)
 +{
-+	struct serdev_controller *ctrl = port->client_data;
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+
-+	if (!serport)
-+		return;
-+
-+	serdev_controller_remove(ctrl);
-+	port->client_ops = NULL;
-+	port->client_data = NULL;
-+	serdev_controller_put(ctrl);
++	/* tty_port_tty_wakeup already took a reference to the tty */
++	tty_wakeup(port->tty);
 +}
 +
-+MODULE_AUTHOR("Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org");
-+MODULE_DESCRIPTION("TTY port serial bus controller");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index 4dc4ee62c2bb..d0e396744da5 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -204,4 +204,24 @@ static inline int serdev_controller_receive_buf(struct serdev_controller *ctrl,
- 	return 0;
++static const struct tty_port_client_operations default_client_ops = {
++	.receive_buf = tty_port_default_receive_buf,
++	.write_wakeup = tty_port_default_wakeup,
++};
++
++
+ void tty_port_init(struct tty_port *port)
+ {
+ 	memset(port, 0, sizeof(*port));
+@@ -28,6 +63,7 @@ void tty_port_init(struct tty_port *port)
+ 	spin_lock_init(&port->lock);
+ 	port->close_delay = (50 * HZ) / 100;
+ 	port->closing_wait = (3000 * HZ) / 100;
++	port->client_ops = &default_client_ops;
+ 	kref_init(&port->kref);
  }
- 
-+/*
-+ * serdev hooks into TTY core
-+ */
-+struct tty_port;
-+struct tty_driver;
+ EXPORT_SYMBOL(tty_port_init);
+@@ -275,7 +311,8 @@ void tty_port_tty_wakeup(struct tty_port *port)
+ 	struct tty_struct *tty = tty_port_tty_get(port);
+
+ 	if (tty) {
+-		tty_wakeup(tty);
++		if (test_bit(TTY_DO_WRITE_WAKEUP, &tty->flags))
++			port->client_ops->write_wakeup(port);
+ 		tty_kref_put(tty);
+ 	}
+ }
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 21c0fabfed60..1017e904c0a3 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -217,12 +217,18 @@ struct tty_port_operations {
+ 	/* Called on the final put of a port */
+ 	void (*destruct)(struct tty_port *port);
+ };
+-
 +
-+#ifdef CONFIG_SERIAL_DEV_CTRL_TTYPORT
-+int serdev_tty_port_register(struct tty_port *port, struct device *parent,
-+			    struct tty_driver *drv, int idx);
-+void serdev_tty_port_unregister(struct tty_port *port);
-+#else
-+static inline int serdev_tty_port_register(struct tty_port *port,
-+					   struct device *parent,
-+					   struct tty_driver *drv, int idx)
-+{
-+	return -ENODEV;
-+}
-+static inline void serdev_tty_port_unregister(struct tty_port *port) {}
-+#endif
++struct tty_port_client_operations {
++	int (*receive_buf)(struct tty_port *port, const unsigned char *, const unsigned char *, size_t);
++	void (*write_wakeup)(struct tty_port *port);
++};
 +
- #endif
--- 
+ struct tty_port {
+ 	struct tty_bufhead	buf;		/* Locked internally */
+ 	struct tty_struct	*tty;		/* Back pointer */
+ 	struct tty_struct	*itty;		/* internal back ptr */
+ 	const struct tty_port_operations *ops;	/* Port operations */
++	const struct tty_port_client_operations *client_ops; /* Port client operations */
+ 	spinlock_t		lock;		/* Lock protecting tty field */
+ 	int			blocked_open;	/* Waiting to open */
+ 	int			count;		/* Usage count */
+@@ -241,6 +247,7 @@ struct tty_port {
+ 						   based drain is needed else
+ 						   set to size of fifo */
+ 	struct kref		kref;		/* Ref counter */
++	void 			*client_data;
+ };
+
+ /* tty_port::iflags bits -- use atomic bit ops */
+--
 2.10.1
