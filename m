@@ -1,51 +1,77 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: imx: RS-485 problems during TX, maybe DMA related
-Date: Fri, 6 Jan 2017 19:22:32 -0200
-Message-ID: <CAOMZO5C3enuThR1DpcwNnqFdxd8tGoBwd76O62Gnviz8x1_a9w@mail.gmail.com>
-References: <20170104160024.GA13442@archie.localdomain>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 4.8 54/96] sc16is7xx: Drop bogus use of IRQF_ONESHOT
+Date: Fri,  6 Jan 2017 22:43:42 +0100
+Message-ID: <20170106214229.903947950@linuxfoundation.org>
+References: <20170106214227.601120243@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170104160024.GA13442@archie.localdomain>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nandor Han <nandor.han@ge.com>, Lucas Stach <l.stach@pengutronix.de>, Fabio Estevam <fabio.estevam@freescale.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Return-path: <linux-rt-users-owner@vger.kernel.org>
+In-Reply-To: <20170106214227.601120243@linuxfoundation.org>
+Sender: linux-rt-users-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Sean Nyekjaer <sean.nyekjaer@prevas.dk>, Josh Cartwright <joshc@ni.com>, linux-rt-users@vger.kernel.org, Jakub Kicinski <moorray3@wp.pl>, linux-serial@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Julia Cartwright <julia@ni.com>, Jakub Kicinski <kubakici@wp.pl>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Clemens,
+4.8-stable review patch.  If anyone has any objections, please let me know.
 
-On Wed, Jan 4, 2017 at 2:00 PM, Clemens Gruber
-<clemens.gruber@pqgruber.com> wrote:
-> Hi,
->
-> I observed odd behavior of the current tty/serial/imx.c driver in RS-485
-> mode.
->
-> RX works fine, but TX does not: When sending data, it arrives multiple
+------------------
 
-I am also trying to get rs485 in half-duplex mode to work on mx6dl
-with kernel 4.9.
+From: Josh Cartwright <joshc@ni.com>
 
-RX also works for me, but TX does not.
+commit 04da73803c05dc1150ccc31cbf93e8cd56679c09 upstream.
 
-On my board it is the MX6QDL_PAD_CSI0_DAT16__UART4_RTS_B pin that
-controls the rs485 transceiver flow, but I do not
-see RTS to toggle to 1 during transmit. It stays always at 0.
+The use of IRQF_ONESHOT when registering an interrupt handler with
+request_irq() is non-sensical.
 
-I see you use CTS pin instead, but I thought RTS pin should be used.
+Not only that, it also prevents the handler from being threaded when it
+otherwise should be w/ IRQ_FORCED_THREADING is enabled.  This causes the
+following deadlock observed by Sean Nyekjaer on -rt:
 
-On my userspace application I have:
+Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
+[..]
+   rt_spin_lock_slowlock from queue_kthread_work
+   queue_kthread_work from sc16is7xx_irq
+   sc16is7xx_irq [sc16is7xx] from handle_irq_event_percpu
+   handle_irq_event_percpu from handle_irq_event
+   handle_irq_event from handle_level_irq
+   handle_level_irq from generic_handle_irq
+   generic_handle_irq from mxc_gpio_irq_handler
+   mxc_gpio_irq_handler from mx3_gpio_irq_handler
+   mx3_gpio_irq_handler from generic_handle_irq
+   generic_handle_irq from __handle_domain_irq
+   __handle_domain_irq from gic_handle_irq
+   gic_handle_irq from __irq_svc
+   __irq_svc from rt_spin_unlock
+   rt_spin_unlock from kthread_worker_fn
+   kthread_worker_fn from kthread
+   kthread from ret_from_fork
 
-/* enable RS485 mode: */
-rs485conf.flags |= SER_RS485_ENABLED;
+Fixes: 9e6f4ca3e567 ("sc16is7xx: use kthread_worker for tx_work and irq")
+Reported-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Signed-off-by: Josh Cartwright <joshc@ni.com>
+Cc: linux-rt-users@vger.kernel.org
+Cc: Jakub Kicinski <moorray3@wp.pl>
+Cc: linux-serial@vger.kernel.org
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Julia Cartwright <julia@ni.com>
+Acked-by: Jakub Kicinski <kubakici@wp.pl>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-/* set logical level for RTS pin equal to 1 when sending: */
-rs485conf.flags |= SER_RS485_RTS_ON_SEND;
+---
+ drivers/tty/serial/sc16is7xx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-/* set logical level for RTS pin equal to 0 after sending: */
-rs485conf.flags &= ~(SER_RS485_RTS_AFTER_SEND);
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1240,7 +1240,7 @@ static int sc16is7xx_probe(struct device
+ 
+ 	/* Setup interrupt */
+ 	ret = devm_request_irq(dev, irq, sc16is7xx_irq,
+-			       IRQF_ONESHOT | flags, dev_name(dev), s);
++			       flags, dev_name(dev), s);
+ 	if (!ret)
+ 		return 0;
+ 
 
-Any ideas as to how to make RTS go to one so that the data can go
-through the rs485 transceiver?
 
-Thanks
