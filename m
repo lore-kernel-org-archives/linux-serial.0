@@ -1,42 +1,63 @@
-From: Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH] serial/8250: remove comment about schedule_timeout
-Date: Thu, 5 Jan 2017 16:59:40 -0500
-Message-ID: <20170105215940.nzezqi5qmubaw56x@thunk.org>
-References: <20170105154840.24795-1-cascardo@canonical.com>
- <20170105164016.79c6e594@lxorguk.ukuu.org.uk>
- <20170105171744.qgax752sxcwqod2w@calabresa>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Thadeu Lima de Souza Cascardo <cascardo@cascardo.eti.br>
+Subject: [PATCH] serial: core: remove silly test for uart_state
+Date: Fri,  6 Jan 2017 00:45:10 -0200
+Message-ID: <20170106024510.22369-1-cascardo@cascardo.eti.br>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170105171744.qgax752sxcwqod2w@calabresa>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>
+To: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Thadeu Lima de Souza Cascardo <cascardo@cascardo.eti.br>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 05, 2017 at 03:17:45PM -0200, Thadeu Lima de Souza Cascardo wrote:
-> Okay. At first, I wanted to simply use msleep there, then realized there
-> was the spinlock. I thought I got a good writeup of the history that was
-> not in git yet, maybe we should just add a better comment and more
-> details in the commit log. How about this as the comment?
+The polling functions were checking for a NULL uart_state, which is
+indexed from uart_driver->state. It should be always allocated and
+non-NULL when the tty_driver is registered, and line should not be
+larger than the tty_driver->num anyways.
 
-Could you look at fixing this, instead?  I was taking a look at the
-code, and it so very.... 1990's.  It looks like it was written during
-the days before SMP, and then locking was smashed in a very
-blunt-force way ---- probably because that's how it happened.  :-)
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@cascardo.eti.br>
+---
+ drivers/tty/serial/serial_core.c | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
 
-What we should **really** be doing with autoconfiguration, is instead
-of using the spinlock to prevent it from being accessed, is to lock
-out any attempt to transmit from the top-half, and remove it from the
-linked list of ports to prevent the interrupt handler from accessing
-it, make sure that any active interrupt handler has exited (and you
-can use the spinlock for the preceeding bits), but then we can safely
-do the autoconfiguration without having the deal with the spinlock at
-all, afterwards.
-
-It should't be *that* hard to just fix it for real.
-
-Cheers,
-
-						- Ted
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 9939c3d9912b..6f7247114ef8 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2330,9 +2330,6 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
+ 	int flow = 'n';
+ 	int ret = 0;
+ 
+-	if (!state)
+-		return -1;
+-
+ 	tport = &state->port;
+ 	mutex_lock(&tport->mutex);
+ 
+@@ -2367,12 +2364,10 @@ static int uart_poll_get_char(struct tty_driver *driver, int line)
+ 	struct uart_port *port;
+ 	int ret = -1;
+ 
+-	if (state) {
+-		port = uart_port_ref(state);
+-		if (port) {
+-			ret = port->ops->poll_get_char(port);
+-			uart_port_deref(port);
+-		}
++	port = uart_port_ref(state);
++	if (port) {
++		ret = port->ops->poll_get_char(port);
++		uart_port_deref(port);
+ 	}
+ 	return ret;
+ }
+@@ -2383,9 +2378,6 @@ static void uart_poll_put_char(struct tty_driver *driver, int line, char ch)
+ 	struct uart_state *state = drv->state + line;
+ 	struct uart_port *port;
+ 
+-	if (!state)
+-		return;
+-
+ 	port = uart_port_ref(state);
+ 	if (!port)
+ 		return;
+-- 
+2.11.0
