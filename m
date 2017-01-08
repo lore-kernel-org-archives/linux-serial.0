@@ -1,7 +1,7 @@
-From: Clemens Gruber <clemens.gruber@pqgruber.com>
+From: Fabio Estevam <festevam@gmail.com>
 Subject: Re: imx: RS-485 problems during TX, maybe DMA related
-Date: Sun, 8 Jan 2017 19:06:09 +0100
-Message-ID: <20170108180609.GB24155@archie.localdomain>
+Date: Sun, 8 Jan 2017 19:46:29 -0200
+Message-ID: <CAOMZO5AYha+SwS4761XxOnUtT1DYhHH69UpXmQzcmEdfC++JKQ@mail.gmail.com>
 References: <20170106225026.GA3804@archie.localdomain>
  <CAOMZO5CywajwZEL8K2ATfS80WzqY69YVX+3S7hq9_HmNdNAwaw@mail.gmail.com>
  <20170107134557.GA12299@archie.localdomain>
@@ -12,142 +12,76 @@ References: <20170106225026.GA3804@archie.localdomain>
  <CAOMZO5D00YFLS=pddAqPo_FUoP6MF-juAef2H71-Wx_NQArdpw@mail.gmail.com>
  <20170107230624.GA21729@archie.localdomain>
  <CAOMZO5DedNURGV_k5Y=nt1O98SojsvrOd69PEPEzi8F7N3dJuw@mail.gmail.com>
+ <20170108180609.GB24155@archie.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAOMZO5DedNURGV_k5Y=nt1O98SojsvrOd69PEPEzi8F7N3dJuw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Nandor Han <nandor.han@ge.com>, Lucas Stach <l.stach@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170108180609.GB24155@archie.localdomain>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Clemens Gruber <clemens.gruber@pqgruber.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-kernel <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Nandor Han <nandor.han@ge.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Lucas Stach <l.stach@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Fabio,
+On Sun, Jan 8, 2017 at 4:06 PM, Clemens Gruber
+<clemens.gruber@pqgruber.com> wrote:
 
-On Sun, Jan 08, 2017 at 12:30:24AM -0200, Fabio Estevam wrote:
-> Hi Clemens,
-> 
-> On Sat, Jan 7, 2017 at 9:06 PM, Clemens Gruber
-> <clemens.gruber@pqgruber.com> wrote:
-> 
-> > Just remuxed GPIO signals to these pads, applied your two patches and
-> > used rts-gpios in the DT but I still see the same problem :/
-> >
-> > When transmit something, I get doubled characters, then zeros and at the
-> > end garbled data of previous transmissions, same as described in my
-> > first post (Logic analyzer: https://pqgruber.com/rs485_results.png)
-> > The data is always 4096 bytes long, this explains why the echo command
-> > is blocking for about 4 seconds (<- 4096 bytes at a baudrate of 9600).
-> > The TE line is also high until all 4096 bytes are sent.
-> >
-> > I think this comes from the UART_XMIT_SIZE which is defined to the page
-> > size.
-> > Maybe there is something wrong in imx_transmit_buffer and leads to the
-> > whole circular buffer being sent out all the time, not stopping..
-> >
-> > Do these debug logs tell you anything?
-> > https://gist.github.com/clemensg/1ac5ee8a8ea32acc9145c5aa8407aea5
-> >
-> > I am analyzing the signals coming directly from the i.MX6Q, so this must
-> > be a software problem, but I don't understand why it works for you, if
-> > we use the same software.
-> >
-> > Do you use any other patches on top of mainline and do you use the SDMA
-> > scripts from the ROM?
-> 
-> No, I use the original 4.9 + the two patches I sent. Yes, I do use the
-> SDMA scripts from ROM.
-> 
-> Here is the procedure I did to try to reproduce the issue you reported:
-> 
-> (The rs485conf is available at:
-> https://github.com/mniestroj/rs485conf/blob/master/main.c )
-> 
-> First of all I enable rs485 for ttymxc3 using the rs485conf application:
-> 
-> root@imx6qsabresd:/home# ./rs485conf  /dev/ttymxc3 -e 1
-> [   27.106517] random: crng init done
-> = Current configuration:
-> RS485 enabled:                false
-> RTS on send:                  high
-> RTS after send:               low
-> RTS delay before send:        0
-> RTS delay after send:         0
-> Receive during sending data:  true
-> 
-> = New configuration:
-> RS485 enabled:                true
-> RTS on send:                  high
-> RTS after send:               low
-> RTS delay before send:        0
-> RTS delay after send:         0
-> Receive during sending data:  true
-> 
-> = Saved configuration:
-> RS485 enabled:                true
-> RTS on send:                  high
-> RTS after send:               low
-> RTS delay before send:        0
-> RTS delay after send:         0
-> Receive during sending data:  true
-> root@imx6qsabresd:/ho
-> 
-> Then
-> 
-> root@imx6qsabresd:/home# echo A > /dev/ttymxc3
-> 
-> (wait 10 seconds)
-> 
-> root@imx6qsabresd:/home# echo B > /dev/ttymxc3
-> 
-> (wait 10 seconds)
-> 
-> root@imx6qsabresd:/home# echo C > /dev/ttymxc3
-> 
-> On the serial console at 9600bps only the:
-> A
-> B
-> C
-> 
-> are seen, so not duplicated characters, nor noise is seen on the console.
+> I just did the experiment with your configuration and the rs485conf tool
+> you mentioned.
+> But still, no luck :(
+>
+> What's the revision of the i.MX6Q on your board? Mine is 1.5 (TO 1.3)
 
-I just did the experiment with your configuration and the rs485conf tool
-you mentioned.
-But still, no luck :(
+Mine is a mx6solo rev1.1.
 
-What's the revision of the i.MX6Q on your board? Mine is 1.5 (TO 1.3)
+> Another example: If I run the following on the board..
+>
+> while true; do
+>   echo ABCDEFGHIJKLM > /dev/ttymxc4
+>   sleep 0.5
+>   echo abc > /dev/ttymxc4 > /dev/ttymxc4
 
-Another example: If I run the following on the board..
+There is a typo here, this should be:
+echo abc > /dev/ttymxc4
 
-while true; do
-  echo ABCDEFGHIJKLM > /dev/ttymxc4
-  sleep 0.5
-  echo abc > /dev/ttymxc4 > /dev/ttymxc4
-  sleep 0.5
-done
+Fixed it locally.
 
-Many transmits contain garbled (doubled and sometimes also extended to
-a length of 4096 bytes, containing zeros) data.
-I can see a few transmissions that are sent correctly, though.
+>   sleep 0.5
+> done
+>
+> Many transmits contain garbled (doubled and sometimes also extended to
+> a length of 4096 bytes, containing zeros) data.
+> I can see a few transmissions that are sent correctly, though.
 
-Interesting side note: With the following patch, the problems disappear:
+This script runs correctly here and no issue is seen on the console.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 451e50f6d77a..eb9f0ce6c34a 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1270,8 +1270,10 @@ static int imx_startup(struct uart_port *port)
- 	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
- 
- 	/* Can we enable the DMA support? */
-+#if 0
- 	if (!uart_console(port) && !sport->dma_is_inited)
- 		imx_uart_dma_init(sport);
-+#endif
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 	/* Reset fifo's and state machines */
---
+Not sure why you get TXEN high for so long in your case.
+
+> Interesting side note: With the following patch, the problems disappear:
+>
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 451e50f6d77a..eb9f0ce6c34a 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1270,8 +1270,10 @@ static int imx_startup(struct uart_port *port)
+>         writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
+>
+>         /* Can we enable the DMA support? */
+> +#if 0
+>         if (!uart_console(port) && !sport->dma_is_inited)
+>                 imx_uart_dma_init(sport);
+> +#endif
+
+Looks like you disabled DMA.
 
 Regards,
-Clemens
+
+Fabio Estevam
