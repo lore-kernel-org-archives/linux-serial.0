@@ -1,87 +1,301 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: imx: RS-485 problems during TX, maybe DMA related
-Date: Sun, 8 Jan 2017 19:46:29 -0200
-Message-ID: <CAOMZO5AYha+SwS4761XxOnUtT1DYhHH69UpXmQzcmEdfC++JKQ@mail.gmail.com>
-References: <20170106225026.GA3804@archie.localdomain>
- <CAOMZO5CywajwZEL8K2ATfS80WzqY69YVX+3S7hq9_HmNdNAwaw@mail.gmail.com>
- <20170107134557.GA12299@archie.localdomain>
- <CAOMZO5ALSQj3C6Yn-avMZdzTvtWCZPQ5+pNdzYi03G-GZB_t+w@mail.gmail.com>
- <20170107153434.GA13307@archie.localdomain>
- <CAOMZO5CY3ys6moE133LwSKcS4egv56JdmhPMRG0TmAnfD+ZBAw@mail.gmail.com>
- <20170107205930.GA12367@archie.localdomain>
- <CAOMZO5D00YFLS=pddAqPo_FUoP6MF-juAef2H71-Wx_NQArdpw@mail.gmail.com>
- <20170107230624.GA21729@archie.localdomain>
- <CAOMZO5DedNURGV_k5Y=nt1O98SojsvrOd69PEPEzi8F7N3dJuw@mail.gmail.com>
- <20170108180609.GB24155@archie.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170108180609.GB24155@archie.localdomain>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-kernel <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Nandor Han <nandor.han@ge.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Lucas Stach <l.stach@pengutronix.de>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH v8 1/3] gpio: exar: add gpio for exar cards
+Date: Sun,  8 Jan 2017 22:32:05 +0000
+Message-ID: <1483914727-6076-1-git-send-email-sudipm.mukherjee@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, gnomes@lxorguk.ukuu.org.uk
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Jan 8, 2017 at 4:06 PM, Clemens Gruber
-<clemens.gruber@pqgruber.com> wrote:
+From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
-> I just did the experiment with your configuration and the rs485conf tool
-> you mentioned.
-> But still, no luck :(
->
-> What's the revision of the i.MX6Q on your board? Mine is 1.5 (TO 1.3)
+Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
+can be controlled using gpio interface.
 
-Mine is a mx6solo rev1.1.
+Add the gpio specific code.
 
-> Another example: If I run the following on the board..
->
-> while true; do
->   echo ABCDEFGHIJKLM > /dev/ttymxc4
->   sleep 0.5
->   echo abc > /dev/ttymxc4 > /dev/ttymxc4
+Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+---
+ drivers/gpio/Kconfig     |   7 ++
+ drivers/gpio/Makefile    |   1 +
+ drivers/gpio/gpio-exar.c | 238 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 246 insertions(+)
+ create mode 100644 drivers/gpio/gpio-exar.c
 
-There is a typo here, this should be:
-echo abc > /dev/ttymxc4
-
-Fixed it locally.
-
->   sleep 0.5
-> done
->
-> Many transmits contain garbled (doubled and sometimes also extended to
-> a length of 4096 bytes, containing zeros) data.
-> I can see a few transmissions that are sent correctly, though.
-
-This script runs correctly here and no issue is seen on the console.
-
-Not sure why you get TXEN high for so long in your case.
-
-> Interesting side note: With the following patch, the problems disappear:
->
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 451e50f6d77a..eb9f0ce6c34a 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -1270,8 +1270,10 @@ static int imx_startup(struct uart_port *port)
->         writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
->
->         /* Can we enable the DMA support? */
-> +#if 0
->         if (!uart_console(port) && !sport->dma_is_inited)
->                 imx_uart_dma_init(sport);
-> +#endif
-
-Looks like you disabled DMA.
-
-Regards,
-
-Fabio Estevam
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index d5d3654..eaf8d29 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -185,6 +185,13 @@ config GPIO_ETRAXFS
+ 	help
+ 	  Say yes here to support the GPIO controller on Axis ETRAX FS SoCs.
+ 
++config GPIO_EXAR
++	tristate "Support for GPIO pins on XR17V352/354/358"
++	depends on SERIAL_8250_EXAR
++	help
++	  Selecting this option will enable handling of GPIO pins present
++	  on Exar XR17V352/354/358 chips.
++
+ config GPIO_GE_FPGA
+ 	bool "GE FPGA based GPIO"
+ 	depends on GE_FPGA
+diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
+index a7676b8..09f6aebb 100644
+--- a/drivers/gpio/Makefile
++++ b/drivers/gpio/Makefile
+@@ -46,6 +46,7 @@ obj-$(CONFIG_GPIO_DWAPB)	+= gpio-dwapb.o
+ obj-$(CONFIG_GPIO_EM)		+= gpio-em.o
+ obj-$(CONFIG_GPIO_EP93XX)	+= gpio-ep93xx.o
+ obj-$(CONFIG_GPIO_ETRAXFS)	+= gpio-etraxfs.o
++obj-$(CONFIG_GPIO_EXAR)		+= gpio-exar.o
+ obj-$(CONFIG_GPIO_F7188X)	+= gpio-f7188x.o
+ obj-$(CONFIG_GPIO_GE_FPGA)	+= gpio-ge.o
+ obj-$(CONFIG_GPIO_GPIO_MM)	+= gpio-gpio-mm.o
+diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
+new file mode 100644
+index 0000000..b7d1363
+--- /dev/null
++++ b/drivers/gpio/gpio-exar.c
+@@ -0,0 +1,238 @@
++/*
++ * GPIO driver for Exar XR17V35X chip
++ *
++ * Copyright (C) 2015 Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++#include <linux/device.h>
++#include <linux/gpio.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/platform_device.h>
++
++#define EXAR_OFFSET_MPIOLVL_LO 0x90
++#define EXAR_OFFSET_MPIOSEL_LO 0x93
++#define EXAR_OFFSET_MPIOLVL_HI 0x96
++#define EXAR_OFFSET_MPIOSEL_HI 0x99
++
++#define DRIVER_NAME "gpio_exar"
++
++static LIST_HEAD(exar_list);
++static DEFINE_MUTEX(exar_list_mtx);
++DEFINE_IDA(ida_index);
++
++struct exar_gpio_chip {
++	struct gpio_chip gpio_chip;
++	struct pci_dev *pcidev;
++	struct mutex lock;
++	struct list_head list;
++	int index;
++	void __iomem *regs;
++	char name[16];
++};
++
++#define to_exar_chip(n) container_of(n, struct exar_gpio_chip, gpio_chip)
++
++static inline unsigned int read_exar_reg(struct exar_gpio_chip *chip,
++					 int offset)
++{
++	dev_dbg(chip->gpio_chip.parent, "regs=%p offset=%x\n",
++		chip->regs, offset);
++
++	return readb(chip->regs + offset);
++}
++
++static inline void write_exar_reg(struct exar_gpio_chip *chip, int offset,
++				  int value)
++{
++	dev_dbg(chip->gpio_chip.parent,
++		"regs=%p value=%x offset=%x\n", chip->regs, value,
++		offset);
++	writeb(value, chip->regs + offset);
++}
++
++static void exar_update(struct gpio_chip *chip, unsigned int reg, int val,
++			unsigned int offset)
++{
++	struct exar_gpio_chip *exar_gpio = to_exar_chip(chip);
++	int temp;
++
++	mutex_lock(&exar_gpio->lock);
++	temp = read_exar_reg(exar_gpio, reg);
++	temp &= ~(1 << offset);
++	temp |= val << offset;
++	write_exar_reg(exar_gpio, reg, temp);
++	mutex_unlock(&exar_gpio->lock);
++}
++
++static int exar_set_direction(struct gpio_chip *chip, int direction,
++			      unsigned int offset)
++{
++	if (offset < 8)
++		exar_update(chip, EXAR_OFFSET_MPIOSEL_LO, direction,
++			    offset);
++	else
++		exar_update(chip, EXAR_OFFSET_MPIOSEL_HI, direction,
++			    offset - 8);
++	return 0;
++}
++
++static int exar_direction_output(struct gpio_chip *chip, unsigned int offset,
++				 int value)
++{
++	return exar_set_direction(chip, 0, offset);
++}
++
++static int exar_direction_input(struct gpio_chip *chip, unsigned int offset)
++{
++	return exar_set_direction(chip, 1, offset);
++}
++
++static int exar_get(struct gpio_chip *chip, unsigned int reg)
++{
++	struct exar_gpio_chip *exar_gpio = to_exar_chip(chip);
++	int value;
++
++	mutex_lock(&exar_gpio->lock);
++	value = read_exar_reg(exar_gpio, reg);
++	mutex_unlock(&exar_gpio->lock);
++
++	return value;
++}
++
++static int exar_get_direction(struct gpio_chip *chip, unsigned int offset)
++{
++	int val;
++
++	if (offset < 8)
++		val = exar_get(chip, EXAR_OFFSET_MPIOSEL_LO) >> offset;
++	else
++		val = exar_get(chip, EXAR_OFFSET_MPIOSEL_HI) >>
++			       (offset - 8);
++
++	return val & 0x01;
++}
++
++static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
++{
++	int val;
++
++	if (offset < 8)
++		val = exar_get(chip, EXAR_OFFSET_MPIOLVL_LO) >> offset;
++	else
++		val = exar_get(chip, EXAR_OFFSET_MPIOLVL_HI) >>
++			       (offset - 8);
++	return val & 0x01;
++}
++
++static void exar_set_value(struct gpio_chip *chip, unsigned int offset,
++			   int value)
++{
++	if (offset < 8)
++		exar_update(chip, EXAR_OFFSET_MPIOLVL_LO, value,
++			    offset);
++	else
++		exar_update(chip, EXAR_OFFSET_MPIOLVL_HI, value,
++			    offset - 8);
++}
++
++static int gpio_exar_probe(struct platform_device *pdev)
++{
++	struct pci_dev *dev = platform_get_drvdata(pdev);
++	struct exar_gpio_chip *exar_gpio;
++	void __iomem *p;
++	int index = 1;
++	int ret;
++
++	if (dev->vendor != PCI_VENDOR_ID_EXAR)
++		return -ENODEV;
++
++	p = pci_ioremap_bar(dev, 0);
++	if (!p)
++		return -ENOMEM;
++
++	exar_gpio = devm_kzalloc(&dev->dev, sizeof(*exar_gpio), GFP_KERNEL);
++	if (!exar_gpio)
++		return -ENOMEM;
++
++	mutex_init(&exar_gpio->lock);
++	INIT_LIST_HEAD(&exar_gpio->list);
++
++	index = ida_simple_get(&ida_index, 0, 0, GFP_KERNEL);
++	mutex_lock(&exar_list_mtx);
++
++	sprintf(exar_gpio->name, "exar_gpio%d", index);
++	exar_gpio->gpio_chip.label = exar_gpio->name;
++	exar_gpio->gpio_chip.parent = &dev->dev;
++	exar_gpio->gpio_chip.direction_output = exar_direction_output;
++	exar_gpio->gpio_chip.direction_input = exar_direction_input;
++	exar_gpio->gpio_chip.get_direction = exar_get_direction;
++	exar_gpio->gpio_chip.get = exar_get_value;
++	exar_gpio->gpio_chip.set = exar_set_value;
++	exar_gpio->gpio_chip.base = -1;
++	exar_gpio->gpio_chip.ngpio = 16;
++	exar_gpio->regs = p;
++	exar_gpio->index = index;
++	exar_gpio->pcidev = dev;
++
++	ret = gpiochip_add(&exar_gpio->gpio_chip);
++	if (ret)
++		goto err_destroy;
++
++	list_add_tail(&exar_gpio->list, &exar_list);
++	mutex_unlock(&exar_list_mtx);
++
++	return 0;
++
++err_destroy:
++	mutex_unlock(&exar_list_mtx);
++	mutex_destroy(&exar_gpio->lock);
++	return ret;
++}
++
++static int gpio_exar_remove(struct platform_device *pdev)
++{
++	struct exar_gpio_chip *exar_gpio, *exar_temp;
++	struct pci_dev *pcidev;
++	int index;
++
++	pcidev = platform_get_drvdata(pdev);
++
++	mutex_lock(&exar_list_mtx);
++	list_for_each_entry_safe(exar_gpio, exar_temp, &exar_list, list) {
++		if (exar_gpio->pcidev == pcidev) {
++			list_del(&exar_gpio->list);
++			break;
++		}
++	}
++	mutex_unlock(&exar_list_mtx);
++
++	index = exar_gpio->index;
++	gpiochip_remove(&exar_gpio->gpio_chip);
++	mutex_destroy(&exar_gpio->lock);
++	ida_simple_remove(&ida_index, index);
++
++	return 0;
++}
++
++static struct platform_driver gpio_exar_driver = {
++	.probe	= gpio_exar_probe,
++	.remove	= gpio_exar_remove,
++	.driver	= {
++		.name = DRIVER_NAME,
++	},
++};
++
++module_platform_driver(gpio_exar_driver);
++
++MODULE_ALIAS("platform:" DRIVER_NAME);
++MODULE_DESCRIPTION("Exar GPIO driver");
++MODULE_AUTHOR("Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>");
++MODULE_LICENSE("GPL");
+-- 
+2.7.4
