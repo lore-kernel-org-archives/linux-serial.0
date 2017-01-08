@@ -1,108 +1,28 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: imx: RS-485 problems during TX, maybe DMA related
-Date: Sun, 8 Jan 2017 00:30:24 -0200
-Message-ID: <CAOMZO5DedNURGV_k5Y=nt1O98SojsvrOd69PEPEzi8F7N3dJuw@mail.gmail.com>
-References: <20170104160024.GA13442@archie.localdomain> <CAOMZO5C3enuThR1DpcwNnqFdxd8tGoBwd76O62Gnviz8x1_a9w@mail.gmail.com>
- <20170106225026.GA3804@archie.localdomain> <CAOMZO5CywajwZEL8K2ATfS80WzqY69YVX+3S7hq9_HmNdNAwaw@mail.gmail.com>
- <20170107134557.GA12299@archie.localdomain> <CAOMZO5ALSQj3C6Yn-avMZdzTvtWCZPQ5+pNdzYi03G-GZB_t+w@mail.gmail.com>
- <20170107153434.GA13307@archie.localdomain> <CAOMZO5CY3ys6moE133LwSKcS4egv56JdmhPMRG0TmAnfD+ZBAw@mail.gmail.com>
- <20170107205930.GA12367@archie.localdomain> <CAOMZO5D00YFLS=pddAqPo_FUoP6MF-juAef2H71-Wx_NQArdpw@mail.gmail.com>
- <20170107230624.GA21729@archie.localdomain>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH] serial: 8250_lpss: Release Quark MSI vectors on exit
+Date: Sun, 8 Jan 2017 02:24:59 -0800
+Message-ID: <20170108102459.GA3644@infradead.org>
+References: <0250c46e-da6c-71f3-50ae-b7c17fd0bd2c@siemens.com>
+ <CAHp75VdyJXGUp0YOX_15wM0Fv+arnQNEcLN6+OMtXGBgG-6jrA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170107230624.GA21729@archie.localdomain>
+Content-Disposition: inline
+In-Reply-To: <CAHp75VdyJXGUp0YOX_15wM0Fv+arnQNEcLN6+OMtXGBgG-6jrA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nandor Han <nandor.han@ge.com>, Lucas Stach <l.stach@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Christoph Hellwig <hch@lst.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Clemens,
+On Thu, Jan 05, 2017 at 12:19:56AM +0200, Andy Shevchenko wrote:
+> NAK, check the PCI devres code, please.
 
-On Sat, Jan 7, 2017 at 9:06 PM, Clemens Gruber
-<clemens.gruber@pqgruber.com> wrote:
+Releasing something through devres that wasn't allocated using a devm_* or
+pcim_* function isn't expected, and we should fix that instead.
+pci_free_irq_vectors is _currently_ implemented by calling
+pci_disable_msi and pci_disable_msix, but there is no guarantee for that
+in the API.
 
-> Just remuxed GPIO signals to these pads, applied your two patches and
-> used rts-gpios in the DT but I still see the same problem :/
->
-> When transmit something, I get doubled characters, then zeros and at the
-> end garbled data of previous transmissions, same as described in my
-> first post (Logic analyzer: https://pqgruber.com/rs485_results.png)
-> The data is always 4096 bytes long, this explains why the echo command
-> is blocking for about 4 seconds (<- 4096 bytes at a baudrate of 9600).
-> The TE line is also high until all 4096 bytes are sent.
->
-> I think this comes from the UART_XMIT_SIZE which is defined to the page
-> size.
-> Maybe there is something wrong in imx_transmit_buffer and leads to the
-> whole circular buffer being sent out all the time, not stopping..
->
-> Do these debug logs tell you anything?
-> https://gist.github.com/clemensg/1ac5ee8a8ea32acc9145c5aa8407aea5
->
-> I am analyzing the signals coming directly from the i.MX6Q, so this must
-> be a software problem, but I don't understand why it works for you, if
-> we use the same software.
->
-> Do you use any other patches on top of mainline and do you use the SDMA
-> scripts from the ROM?
-
-No, I use the original 4.9 + the two patches I sent. Yes, I do use the
-SDMA scripts from ROM.
-
-Here is the procedure I did to try to reproduce the issue you reported:
-
-(The rs485conf is available at:
-https://github.com/mniestroj/rs485conf/blob/master/main.c )
-
-First of all I enable rs485 for ttymxc3 using the rs485conf application:
-
-root@imx6qsabresd:/home# ./rs485conf  /dev/ttymxc3 -e 1
-[   27.106517] random: crng init done
-= Current configuration:
-RS485 enabled:                false
-RTS on send:                  high
-RTS after send:               low
-RTS delay before send:        0
-RTS delay after send:         0
-Receive during sending data:  true
-
-= New configuration:
-RS485 enabled:                true
-RTS on send:                  high
-RTS after send:               low
-RTS delay before send:        0
-RTS delay after send:         0
-Receive during sending data:  true
-
-= Saved configuration:
-RS485 enabled:                true
-RTS on send:                  high
-RTS after send:               low
-RTS delay before send:        0
-RTS delay after send:         0
-Receive during sending data:  true
-root@imx6qsabresd:/ho
-
-Then
-
-root@imx6qsabresd:/home# echo A > /dev/ttymxc3
-
-(wait 10 seconds)
-
-root@imx6qsabresd:/home# echo B > /dev/ttymxc3
-
-(wait 10 seconds)
-
-root@imx6qsabresd:/home# echo C > /dev/ttymxc3
-
-On the serial console at 9600bps only the:
-A
-B
-C
-
-are seen, so not duplicated characters, nor noise is seen on the console.
-
-Regards,
-
-Fabio Estevam
+Your code works by accident, not by design.  If you want the resources
+to be auto-released you need to add a proper pcim_alloc_irq_vectors
+API.
