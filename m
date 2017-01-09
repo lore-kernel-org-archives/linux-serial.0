@@ -1,45 +1,60 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH] serial: 8250_lpss: Unconditionally set PCI master for
- Quark
-Date: Mon, 9 Jan 2017 18:11:05 +0100
-Message-ID: <ea0f58b8-6cd0-f990-ab89-799713151e52@siemens.com>
-References: <1d0224cc-10ee-df69-b383-c687e08ed44d@siemens.com>
- <CAHp75Vf9h51xXU9HguU+XuqLAS4Zs7WWFBNT+rwccTdSWdwpYg@mail.gmail.com>
- <CAHp75VdC_4GUgDzatu2CfRL8nfo4PZMWiV6t=CbU6QVuhZLRmg@mail.gmail.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH v7 1/3] gpio: exar: add gpio for exar cards
+Date: Mon, 09 Jan 2017 21:18:20 +0000
+Message-ID: <5873FE1C.8060407@gmail.com>
+References: <1483833469-11422-1-git-send-email-sudipm.mukherjee@gmail.com> <1483833469-11422-2-git-send-email-sudipm.mukherjee@gmail.com> <CACRpkdaBJteocVSUazhz0zYtXeBKSVekEkxGfpDNAoqN04A77Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75VdC_4GUgDzatu2CfRL8nfo4PZMWiV6t=CbU6QVuhZLRmg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <CACRpkdaBJteocVSUazhz0zYtXeBKSVekEkxGfpDNAoqN04A77Q@mail.gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 2017-01-05 22:56, Andy Shevchenko wrote:
-> On Thu, Jan 5, 2017 at 1:56 AM, Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
->> On Wed, Jan 4, 2017 at 10:48 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>> MSI needs it as well.
->>>
->>> Should have no practical impact, though, as DMA is always available on
->>> the Quark. But given the few users of pci_alloc_irq_vectors so far, this
->>> incorrect pattern may spread otherwise.
+On Monday 09 January 2017 10:35 AM, Linus Walleij wrote:
+> On Sun, Jan 8, 2017 at 12:57 AM, Sudip Mukherjee
+> <sudipm.mukherjee@gmail.com> wrote:
+>
+>> Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
+>> can be controlled using gpio interface.
 >>
->> This looks valid, but let me review it later, need some sleep.
+>> Add the gpio specific code.
 >>
-> 
-> Ah, Jan, perhaps you would like to comment on this one as well
-> http://marc.info/?l=linux-serial&m=148334902916347&w=2
-> 
-> ?
-> 
+>> Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+>
+> Will I be able to merge this independently to the GPIO trees
+> once we are done with review? (Looks like so...)
 
-http://marc.info/?l=linux-serial&m=148334905916354&w=2 enables MSI, but
-that's only for Denverton, and there it is unconditional. So this is ok.
+Yes, there should not be any dependency on the tty.
 
-Jan
+>
+>> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>
+> Is this really useful?
 
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+no, initially I used pr_*, but then that was converted to dev_*.
+
+>
+>> +#include <linux/device.h>
+>> +#include <linux/gpio.h>
+>
+> No use:
+> #include <linux/gpio/driver.h>
+> ONLY
+>
+>> +static LIST_HEAD(exar_list);
+>> +static DEFINE_MUTEX(exar_list_mtx);
+>> +DEFINE_IDA(ida_index);
+>
+> What is this? A local list? I can understand the IDA index but in
+> general, follow the state container pattern instead:
+> Documentation/driver-model/design-patterns.txt
+
+The local list is not doing anything now, after I have moved to using 
+ida. But I will need the ida_index here to have the device number incase 
+of multiple devices.
+
+regards
+sudip
