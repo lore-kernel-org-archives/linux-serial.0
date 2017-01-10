@@ -1,41 +1,77 @@
-From: Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [PATCH 0/9] Serial slave device bus
-Date: Tue, 10 Jan 2017 13:05:34 +0100
-Message-ID: <30AE636D-CE43-4972-8BA5-575C9B515157@holtmann.org>
-References: <20170106162635.19677-1-robh@kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 10.2 \(3259\))
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] serial: 8250_lpss: Unconditionally set PCI master for
+ Quark
+Date: Tue, 10 Jan 2017 14:06:22 +0200
+Message-ID: <1484049982.2133.5.camel@linux.intel.com>
+References: <1d0224cc-10ee-df69-b383-c687e08ed44d@siemens.com>
+         <CAHp75VdVagWk1P2X7Tp3mgGGeJoU_dbxyTiyZ-Hz=VxjF2VX3g@mail.gmail.com>
+         <99156264-8525-f5b6-9a67-735bcdd6f399@siemens.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170106162635.19677-1-robh@kernel.org>
+In-Reply-To: <99156264-8525-f5b6-9a67-735bcdd6f399@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
-
-> Here goes another attempt at a serial device bus (aka uart slaves, tty
-> slaves, etc.).
+On Mon, 2017-01-09 at 18:00 +0100, Jan Kiszka wrote:
+> On 2017-01-05 22:54, Andy Shevchenko wrote:
+> > On Wed, Jan 4, 2017 at 10:48 PM, Jan Kiszka <jan.kiszka@siemens.com>
+> > wrote:
+> > > MSI needs it as well.
+> > > 
+> > > Should have no practical impact, though, as DMA is always
+> > > available on
+> > > the Quark. But given the few users of pci_alloc_irq_vectors so
+> > > far, this
+> > > incorrect pattern may spread otherwise.
+> > > 
+> > 
+> > One question below.
+> > 
+> > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > 
+> > > Fixes: 3f3a46951e02 ("serial: 8250_lpss: set PCI master only for
+> > > private DMA")
+> > > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> > > ---
+> > >  drivers/tty/serial/8250/8250_lpss.c | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/tty/serial/8250/8250_lpss.c
+> > > b/drivers/tty/serial/8250/8250_lpss.c
+> > > index f09f68a..9315197 100644
+> > > --- a/drivers/tty/serial/8250/8250_lpss.c
+> > > +++ b/drivers/tty/serial/8250/8250_lpss.c
+> > > @@ -183,7 +183,6 @@ static void qrk_serial_setup_dma(struct
+> > > lpss8250 *lpss, struct uart_port *port)
+> > >         if (ret)
+> > >                 return;
+> > > 
+> > > -       pci_set_master(pdev);
+> > >         pci_try_set_mwi(pdev);
+> > 
+> > Does it make sense to move MWI there as well?
 > 
-> After some discussions with Dmitry at LPC, I decided to move away from
-> extending serio and moved back to making a new bus type instead. He didn't
-> think using serio was a good fit, and serio has a number of peculiarities
-> in regards to sysfs and it's driver model. I don't think we want to inherit
-> those for serial slave devices.
-> 
-> This version sits on top of tty_port rather than uart_port as Alan
-> requested. Once I created a struct tty rather than moving everything
-> needed to tty_port, it became a lot easier and less invasive to the tty
-> core code.
-> 
-> I have hacked up versions of the BT ldisc and TI ST drivers moved over to
-> use the serdev bus. I have BT working on the HiKey board which has TI BT.
-> With the serdev bus support, it eliminates the need for the TI userspace
-> UIM daemon.
+> TBH, I didn't come across the need to enable this bit so far,
+> specifically not for doing MSI transactions. Is MWI used at all for
+> MSI
+> (spec says that MSI is "using a PCI DWORD memory write transaction")?
 
-thanks for looking at the TI ST driver. That thing has been a thorn in my eyes for years. It has been such a hack job and I wanted to get rid of the double line disciplines for a long time now. Even using HCI line discipline as we have to day would be way better than dealing with the UIM daemon. The hacked around issues that have been solved cleanly in the Bluetooth subsystem.
+No, it can't. PCIe has no MWI feature at all, but you may have MSI
+there.
 
-Regards
+> That question is better answered by someone more familiar with such
+> PCI
+> details.
 
-Marcel
+In most (modern) cases trying MWI is no-op.
+
+So, I think you may send v2 of this with my tag without any changes in
+the code. Thanks!
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
