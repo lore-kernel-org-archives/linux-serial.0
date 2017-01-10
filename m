@@ -1,74 +1,74 @@
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: Re: [PATCH 0/9] Serial slave device bus
-Date: Tue, 10 Jan 2017 13:40:21 +0100
-Message-ID: <ABB60E46-46B5-4F8B-9458-83F61785A2BF@goldelico.com>
-References: <20170106162635.19677-1-robh@kernel.org> <8E1651EC-E9E5-4BB5-84CB-8CFEE08009BA@goldelico.com> <D24F4B26-1F83-4154-A183-791C5C20DD1F@holtmann.org> <6C3E6EA6-5B22-47E8-B2B2-C37D4D080505@goldelico.com> <1484050829.2133.9.camel@linux.intel.com>
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
+From: Alexey Brodkin <Alexey.Brodkin@synopsys.com>
+Subject: [PATCH] serial: 8250_port: Remove dangerous pr_debug()
+Date: Tue, 10 Jan 2017 18:11:29 +0300
+Message-ID: <1484061089-20070-1-git-send-email-abrodkin@synopsys.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1484050829.2133.9.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Alexey Brodkin <Alexey.Brodkin@synopsys.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Phillip Raffeck <phillip.raffeck@fau.de>, Anton Wuerfel <anton.wuerfel@fau.de>, "Matwey V. Kornilov" <matwey@sai.msu.ru>, Yegor Yefremov <yegorslists@googlemail.com>, Thor Thayer <tthayer@opensource.altera.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
+With CONFIG_DYNAMIC_DEBUG if dyndbg enables debug output in
+8250_port.c deadlock happens inevitably on UART IRQ handling.
 
-> Am 10.01.2017 um 13:20 schrieb Andy Shevchenko =
-<andriy.shevchenko@linux.intel.com>:
->=20
-> On Tue, 2017-01-10 at 13:10 +0100, H. Nikolaus Schaller wrote:
->=20
->>> So the question is really if a driver only needs to do power
->>> management on open() and close() or if it also has to translate or
->>> transform the packets. There are devices who speak NMEA and all is
->>> good.
->>=20
->> The device I want to upstream the driver speaks NMEA but should be
->> powered down unless accessed...
->=20
-> By the way, have you seen the series [1] I'm working on towards =
-bringing
-> runtime PM for all (current) serial drivers?
->=20
-> [1] https://www.spinics.net/lists/linux-serial/msg24025.html
+That's the problematic execution path:
+---------------------------->8------------------------
+UART IRQ:
+  serial8250_interrupt() ->
+    serial8250_handle_irq(): lock "port->lock" ->
+      pr_debug() ->
+        serial8250_console_write(): bump in locked "port->lock".
 
-sorry no.
+      OR (if above pr_debug() gets removed):
+      serial8250_tx_chars() ->
+        pr_debug() ->
+          serial8250_console_write(): bump in locked "port->lock".
+---------------------------->8------------------------
 
-Interesting: "The series has been tested on our hardware with serial =
-console and RxD
-used as GPIO to wake it."
+So let's get rid of those not that much useful debug entries.
 
-We had implemented a driver ca. 5 years ago (Neil Brown did it) for our =
-GPS chip by
-doing exactly this (setting the RxD to GPIO and interrupt mode to know =
-when it sends
-data but the UART is off).
+Discussed problem could be easily reproduced with QEMU for x86_64.
+As well as this fix could be mimicked with muting of dynamic debug for
+the problematic lines as simple as:
+---------------------------->8------------------------
+dyndbg="+p; file 8250_port.c line 1756 -p; file 8250_port.c line 1822 -p"
+---------------------------->8------------------------
 
-This would have been completely based on existing APIs (pinmux states, =
-gpio)
-and would not even have needed any general serial device bus driver API =
-because
-it did not tamper with the UART+tty layers but the RxD line.
+Signed-off-by: Alexey Brodkin <abrodkin@synopsys.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Phillip Raffeck <phillip.raffeck@fau.de>
+Cc: Anton Wuerfel <anton.wuerfel@fau.de>
+Cc: "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Cc: Yegor Yefremov <yegorslists@googlemail.com>
+Cc: Thor Thayer <tthayer@opensource.altera.com>
+---
+ drivers/tty/serial/8250/8250_port.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-So from a viewpoint of encapsulation it would have done what it should =
-inside the
-driver.
-
-But there was no consensus to accept that to mainline.
-
-What we need for this chip is quite special regarding PM. It is not =
-about knowing
-when to suspend/resume or power down/up the UART or host.
-
-It is about that the chip might be in the wrong state, i.e. powered on =
-when it
-should be off and vice versa. This can only be detected by monitoring =
-RxD
-activity and taking action if it is in the unexpected state. And that =
-must
-be possible independently of some user space having /dev/ttyO1 opened.
-
-BR,
-Nikolaus
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index fe4399b41df6..3cfdd745a97a 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1753,8 +1753,6 @@ void serial8250_tx_chars(struct uart_8250_port *up)
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+ 
+-	pr_debug("%s: THRE\n", __func__);
+-
+ 	/*
+ 	 * With RPM enabled, we have to wait until the FIFO is empty before the
+ 	 * HW can go idle. So we get here once again with empty FIFO and disable
+@@ -1819,8 +1817,6 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 
+ 	status = serial_port_in(port, UART_LSR);
+ 
+-	pr_debug("%s: status = %x\n", __func__, status);
+-
+ 	if (status & (UART_LSR_DR | UART_LSR_BI)) {
+ 		if (!up->dma || handle_rx_dma(up, iir))
+ 			status = serial8250_rx_chars(up, status);
+-- 
+2.7.4
