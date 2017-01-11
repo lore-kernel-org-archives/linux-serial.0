@@ -1,41 +1,36 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Allow hardware flow control to
- be used
-Date: Wed, 11 Jan 2017 09:00:55 +0100
-Message-ID: <20170111080055.GA8548@kroah.com>
-References: <1481063643-11951-1-git-send-email-jason.uy@broadcom.com>
- <1481063643-11951-2-git-send-email-jason.uy@broadcom.com>
+Subject: Re: [PATCH v3 0/4] TI DA8xx/OMAPL13x/AM17xx/AM18xx/66AK2x UART
+Date: Wed, 11 Jan 2017 09:06:30 +0100
+Message-ID: <20170111080630.GA28580@kroah.com>
+References: <1483642460-6891-1-git-send-email-david@lechnology.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1481063643-11951-2-git-send-email-jason.uy@broadcom.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jason Uy <jason.uy@broadcom.com>
-Cc: Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Noam Camus <noamc@ezchip.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Wang Hongcheng <annie.wang@amd.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
+In-Reply-To: <1483642460-6891-1-git-send-email-david@lechnology.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: David Lechner <david@lechnology.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Axel Haslam <ahaslam@baylibre.com>, Kevin Hilman <khilman@kernel.org>, Jiri Slaby <jslaby@suse.com>, Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Alexandre Bailon <abailon@baylibre.com>, linux-serial@vger.kernel.org, Santosh Shilimkar <ssantosh@kernel.org>, Franklin S Cooper Jr <fcooper@ti.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Dec 06, 2016 at 02:34:03PM -0800, Jason Uy wrote:
-> In the most common use case, the Synopsys DW UART driver does not
-> set the set_termios callback function.  This prevents UPSTAT_AUTOCTS
-> from being set when the UART flag CRTSCTS is set.  As a result, the
-> driver will use software flow control as opposed to hardware flow
-> control.
+On Thu, Jan 05, 2017 at 12:54:16PM -0600, David Lechner wrote:
+> This series adds a new UART port type for TI DA8xx/OMAPL13x/AM17xx/AM18xx/66AK2x
+> UART. These SoCs have a non-standard register for UART power management that
+> needs special handling in the UART driver.
 > 
-> To fix the problem, the set_termios callback function is set to the
-> DW specific function.  The logic to set UPSTAT_AUTOCTS is moved so
-> that any clock error will not affect setting the hardware flow
-> control.
-> 
-> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
-> Signed-off-by: Jason Uy <jason.uy@broadcom.com>
-> ---
->  drivers/tty/serial/8250/8250_dw.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+> Greg, the first two patches will need to go through your tree. Sekhar and
+> Santosh will pick up the 3 and 4 patches respectively.
 
-This patch doesn't apply at all to the latest kernel tree.  Can you
-please refresh it and resend?
+Ok, I've now taken those two.
 
 thanks,
 
