@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v2 15/18] serial: sh-sci: Remove the platform data dma slave rx/tx channel IDs
-Date: Wed, 11 Jan 2017 16:43:37 +0200
-Message-ID: <20170111144340.29074-16-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 12/18] serial: sh-sci: Replace regmap array with port parameters
+Date: Wed, 11 Jan 2017 16:43:34 +0200
+Message-ID: <20170111144340.29074-13-laurent.pinchart+renesas@ideasonboard.com>
 References: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,94 +10,409 @@ To: linux-renesas-soc@vger.kernel.org
 Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Only SH platforms still use platform data for the sh-sci, and none of
-them declare DMA channels connected to the SCI. Remove the corresponding
-platform data fields and simplify the driver accordingly.
+Turn the regmap two-dimensional array to an array of port parameters and
+store a pointer to the port parameters in the sci_port structure. This
+will allow handling additional port type dependent parameters.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.c | 23 ++++++-----------------
- include/linux/serial_sci.h  |  3 ---
- 2 files changed, 6 insertions(+), 20 deletions(-)
+ drivers/tty/serial/sh-sci.c | 278 ++++++++++++++++++++++++--------------------
+ 1 file changed, 155 insertions(+), 123 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 3bbb7b4b2f19..fcedb96fe324 100644
+index b99664046263..ca68a7d562ea 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -1387,20 +1387,14 @@ static void rx_timer_fn(unsigned long arg)
+@@ -101,10 +101,19 @@ enum SCI_CLKS {
+ 	for ((_sr) = max_sr(_port); (_sr) >= min_sr(_port); (_sr)--)	\
+ 		if ((_port)->sampling_rate_mask & SCI_SR((_sr)))
+ 
++struct plat_sci_reg {
++	u8 offset, size;
++};
++
++struct sci_port_params {
++	const struct plat_sci_reg regs[SCIx_NR_REGS];
++};
++
+ struct sci_port {
+ 	struct uart_port	port;
+ 
+ 	/* Platform configuration */
++	const struct sci_port_params *params;
+ 	struct plat_sci_port	*cfg;
+ 	unsigned int		overrun_reg;
+ 	unsigned int		overrun_mask;
+@@ -156,69 +165,73 @@ to_sci_port(struct uart_port *uart)
+ 	return container_of(uart, struct sci_port, port);
  }
  
- static struct dma_chan *sci_request_dma_chan(struct uart_port *port,
--					     enum dma_transfer_direction dir,
--					     unsigned int id)
-+					     enum dma_transfer_direction dir)
- {
--	dma_cap_mask_t mask;
- 	struct dma_chan *chan;
- 	struct dma_slave_config cfg;
- 	int ret;
- 
--	dma_cap_zero(mask);
--	dma_cap_set(DMA_SLAVE, mask);
+-struct plat_sci_reg {
+-	u8 offset, size;
+-};
 -
--	chan = dma_request_slave_channel_compat(mask, shdma_chan_filter,
--					(void *)(unsigned long)id, port->dev,
--					dir == DMA_MEM_TO_DEV ? "tx" : "rx");
-+	chan = dma_request_slave_channel(port->dev,
-+					 dir == DMA_MEM_TO_DEV ? "tx" : "rx");
- 	if (!chan) {
- 		dev_warn(port->dev,
- 			 "dma_request_slave_channel_compat failed\n");
-@@ -1436,12 +1430,11 @@ static void sci_request_dma(struct uart_port *port)
+-static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
++static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 	/*
+ 	 * Common SCI definitions, dependent on the port's regshift
+ 	 * value.
+ 	 */
+ 	[SCIx_SCI_REGTYPE] = {
+-		[SCSMR]		= { 0x00,  8 },
+-		[SCBRR]		= { 0x01,  8 },
+-		[SCSCR]		= { 0x02,  8 },
+-		[SCxTDR]	= { 0x03,  8 },
+-		[SCxSR]		= { 0x04,  8 },
+-		[SCxRDR]	= { 0x05,  8 },
++		.regs = {
++			[SCSMR]		= { 0x00,  8 },
++			[SCBRR]		= { 0x01,  8 },
++			[SCSCR]		= { 0x02,  8 },
++			[SCxTDR]	= { 0x03,  8 },
++			[SCxSR]		= { 0x04,  8 },
++			[SCxRDR]	= { 0x05,  8 },
++		},
+ 	},
  
- 	dev_dbg(port->dev, "%s: port %d\n", __func__, port->line);
+ 	/*
+ 	 * Common definitions for legacy IrDA ports.
+ 	 */
+ 	[SCIx_IRDA_REGTYPE] = {
+-		[SCSMR]		= { 0x00,  8 },
+-		[SCBRR]		= { 0x02,  8 },
+-		[SCSCR]		= { 0x04,  8 },
+-		[SCxTDR]	= { 0x06,  8 },
+-		[SCxSR]		= { 0x08, 16 },
+-		[SCxRDR]	= { 0x0a,  8 },
+-		[SCFCR]		= { 0x0c,  8 },
+-		[SCFDR]		= { 0x0e, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00,  8 },
++			[SCBRR]		= { 0x02,  8 },
++			[SCSCR]		= { 0x04,  8 },
++			[SCxTDR]	= { 0x06,  8 },
++			[SCxSR]		= { 0x08, 16 },
++			[SCxRDR]	= { 0x0a,  8 },
++			[SCFCR]		= { 0x0c,  8 },
++			[SCFDR]		= { 0x0e, 16 },
++		},
+ 	},
  
--	if (!port->dev->of_node &&
--	    (s->cfg->dma_slave_tx <= 0 || s->cfg->dma_slave_rx <= 0))
-+	if (!port->dev->of_node)
- 		return;
+ 	/*
+ 	 * Common SCIFA definitions.
+ 	 */
+ 	[SCIx_SCIFA_REGTYPE] = {
+-		[SCSMR]		= { 0x00, 16 },
+-		[SCBRR]		= { 0x04,  8 },
+-		[SCSCR]		= { 0x08, 16 },
+-		[SCxTDR]	= { 0x20,  8 },
+-		[SCxSR]		= { 0x14, 16 },
+-		[SCxRDR]	= { 0x24,  8 },
+-		[SCFCR]		= { 0x18, 16 },
+-		[SCFDR]		= { 0x1c, 16 },
+-		[SCPCR]		= { 0x30, 16 },
+-		[SCPDR]		= { 0x34, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00, 16 },
++			[SCBRR]		= { 0x04,  8 },
++			[SCSCR]		= { 0x08, 16 },
++			[SCxTDR]	= { 0x20,  8 },
++			[SCxSR]		= { 0x14, 16 },
++			[SCxRDR]	= { 0x24,  8 },
++			[SCFCR]		= { 0x18, 16 },
++			[SCFDR]		= { 0x1c, 16 },
++			[SCPCR]		= { 0x30, 16 },
++			[SCPDR]		= { 0x34, 16 },
++		},
+ 	},
  
- 	s->cookie_tx = -EINVAL;
--	chan = sci_request_dma_chan(port, DMA_MEM_TO_DEV, s->cfg->dma_slave_tx);
-+	chan = sci_request_dma_chan(port, DMA_MEM_TO_DEV);
- 	dev_dbg(port->dev, "%s: TX: got channel %p\n", __func__, chan);
- 	if (chan) {
- 		s->chan_tx = chan;
-@@ -1463,7 +1456,7 @@ static void sci_request_dma(struct uart_port *port)
- 		INIT_WORK(&s->work_tx, work_fn_tx);
- 	}
+ 	/*
+ 	 * Common SCIFB definitions.
+ 	 */
+ 	[SCIx_SCIFB_REGTYPE] = {
+-		[SCSMR]		= { 0x00, 16 },
+-		[SCBRR]		= { 0x04,  8 },
+-		[SCSCR]		= { 0x08, 16 },
+-		[SCxTDR]	= { 0x40,  8 },
+-		[SCxSR]		= { 0x14, 16 },
+-		[SCxRDR]	= { 0x60,  8 },
+-		[SCFCR]		= { 0x18, 16 },
+-		[SCTFDR]	= { 0x38, 16 },
+-		[SCRFDR]	= { 0x3c, 16 },
+-		[SCPCR]		= { 0x30, 16 },
+-		[SCPDR]		= { 0x34, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00, 16 },
++			[SCBRR]		= { 0x04,  8 },
++			[SCSCR]		= { 0x08, 16 },
++			[SCxTDR]	= { 0x40,  8 },
++			[SCxSR]		= { 0x14, 16 },
++			[SCxRDR]	= { 0x60,  8 },
++			[SCFCR]		= { 0x18, 16 },
++			[SCTFDR]	= { 0x38, 16 },
++			[SCRFDR]	= { 0x3c, 16 },
++			[SCPCR]		= { 0x30, 16 },
++			[SCPDR]		= { 0x34, 16 },
++		},
+ 	},
  
--	chan = sci_request_dma_chan(port, DMA_DEV_TO_MEM, s->cfg->dma_slave_rx);
-+	chan = sci_request_dma_chan(port, DMA_DEV_TO_MEM);
- 	dev_dbg(port->dev, "%s: RX: got channel %p\n", __func__, chan);
- 	if (chan) {
- 		unsigned int i;
-@@ -2704,10 +2697,6 @@ static int sci_init_single(struct platform_device *dev,
- 	port->serial_in		= sci_serial_in;
- 	port->serial_out	= sci_serial_out;
+ 	/*
+@@ -226,46 +239,52 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 	 * count registers.
+ 	 */
+ 	[SCIx_SH2_SCIF_FIFODATA_REGTYPE] = {
+-		[SCSMR]		= { 0x00, 16 },
+-		[SCBRR]		= { 0x04,  8 },
+-		[SCSCR]		= { 0x08, 16 },
+-		[SCxTDR]	= { 0x0c,  8 },
+-		[SCxSR]		= { 0x10, 16 },
+-		[SCxRDR]	= { 0x14,  8 },
+-		[SCFCR]		= { 0x18, 16 },
+-		[SCFDR]		= { 0x1c, 16 },
+-		[SCSPTR]	= { 0x20, 16 },
+-		[SCLSR]		= { 0x24, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00, 16 },
++			[SCBRR]		= { 0x04,  8 },
++			[SCSCR]		= { 0x08, 16 },
++			[SCxTDR]	= { 0x0c,  8 },
++			[SCxSR]		= { 0x10, 16 },
++			[SCxRDR]	= { 0x14,  8 },
++			[SCFCR]		= { 0x18, 16 },
++			[SCFDR]		= { 0x1c, 16 },
++			[SCSPTR]	= { 0x20, 16 },
++			[SCLSR]		= { 0x24, 16 },
++		},
+ 	},
  
--	if (p->dma_slave_tx > 0 && p->dma_slave_rx > 0)
--		dev_dbg(port->dev, "DMA tx %d, rx %d\n",
--			p->dma_slave_tx, p->dma_slave_rx);
--
- 	return 0;
- }
+ 	/*
+ 	 * Common SH-3 SCIF definitions.
+ 	 */
+ 	[SCIx_SH3_SCIF_REGTYPE] = {
+-		[SCSMR]		= { 0x00,  8 },
+-		[SCBRR]		= { 0x02,  8 },
+-		[SCSCR]		= { 0x04,  8 },
+-		[SCxTDR]	= { 0x06,  8 },
+-		[SCxSR]		= { 0x08, 16 },
+-		[SCxRDR]	= { 0x0a,  8 },
+-		[SCFCR]		= { 0x0c,  8 },
+-		[SCFDR]		= { 0x0e, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00,  8 },
++			[SCBRR]		= { 0x02,  8 },
++			[SCSCR]		= { 0x04,  8 },
++			[SCxTDR]	= { 0x06,  8 },
++			[SCxSR]		= { 0x08, 16 },
++			[SCxRDR]	= { 0x0a,  8 },
++			[SCFCR]		= { 0x0c,  8 },
++			[SCFDR]		= { 0x0e, 16 },
++		},
+ 	},
  
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index 9f2bfd055742..1a894c47bfc0 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -71,9 +71,6 @@ struct plat_sci_port {
- 	unsigned char	regtype;
+ 	/*
+ 	 * Common SH-4(A) SCIF(B) definitions.
+ 	 */
+ 	[SCIx_SH4_SCIF_REGTYPE] = {
+-		[SCSMR]		= { 0x00, 16 },
+-		[SCBRR]		= { 0x04,  8 },
+-		[SCSCR]		= { 0x08, 16 },
+-		[SCxTDR]	= { 0x0c,  8 },
+-		[SCxSR]		= { 0x10, 16 },
+-		[SCxRDR]	= { 0x14,  8 },
+-		[SCFCR]		= { 0x18, 16 },
+-		[SCFDR]		= { 0x1c, 16 },
+-		[SCSPTR]	= { 0x20, 16 },
+-		[SCLSR]		= { 0x24, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00, 16 },
++			[SCBRR]		= { 0x04,  8 },
++			[SCSCR]		= { 0x08, 16 },
++			[SCxTDR]	= { 0x0c,  8 },
++			[SCxSR]		= { 0x10, 16 },
++			[SCxRDR]	= { 0x14,  8 },
++			[SCFCR]		= { 0x18, 16 },
++			[SCFDR]		= { 0x1c, 16 },
++			[SCSPTR]	= { 0x20, 16 },
++			[SCLSR]		= { 0x24, 16 },
++		},
+ 	},
  
- 	struct plat_sci_port_ops	*ops;
--
--	unsigned int	dma_slave_tx;
--	unsigned int	dma_slave_rx;
+ 	/*
+@@ -273,37 +292,41 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 	 * External Clock (BRG).
+ 	 */
+ 	[SCIx_SH4_SCIF_BRG_REGTYPE] = {
+-		[SCSMR]		= { 0x00, 16 },
+-		[SCBRR]		= { 0x04,  8 },
+-		[SCSCR]		= { 0x08, 16 },
+-		[SCxTDR]	= { 0x0c,  8 },
+-		[SCxSR]		= { 0x10, 16 },
+-		[SCxRDR]	= { 0x14,  8 },
+-		[SCFCR]		= { 0x18, 16 },
+-		[SCFDR]		= { 0x1c, 16 },
+-		[SCSPTR]	= { 0x20, 16 },
+-		[SCLSR]		= { 0x24, 16 },
+-		[SCDL]		= { 0x30, 16 },
+-		[SCCKS]		= { 0x34, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00, 16 },
++			[SCBRR]		= { 0x04,  8 },
++			[SCSCR]		= { 0x08, 16 },
++			[SCxTDR]	= { 0x0c,  8 },
++			[SCxSR]		= { 0x10, 16 },
++			[SCxRDR]	= { 0x14,  8 },
++			[SCFCR]		= { 0x18, 16 },
++			[SCFDR]		= { 0x1c, 16 },
++			[SCSPTR]	= { 0x20, 16 },
++			[SCLSR]		= { 0x24, 16 },
++			[SCDL]		= { 0x30, 16 },
++			[SCCKS]		= { 0x34, 16 },
++		},
+ 	},
+ 
+ 	/*
+ 	 * Common HSCIF definitions.
+ 	 */
+ 	[SCIx_HSCIF_REGTYPE] = {
+-		[SCSMR]		= { 0x00, 16 },
+-		[SCBRR]		= { 0x04,  8 },
+-		[SCSCR]		= { 0x08, 16 },
+-		[SCxTDR]	= { 0x0c,  8 },
+-		[SCxSR]		= { 0x10, 16 },
+-		[SCxRDR]	= { 0x14,  8 },
+-		[SCFCR]		= { 0x18, 16 },
+-		[SCFDR]		= { 0x1c, 16 },
+-		[SCSPTR]	= { 0x20, 16 },
+-		[SCLSR]		= { 0x24, 16 },
+-		[HSSRR]		= { 0x40, 16 },
+-		[SCDL]		= { 0x30, 16 },
+-		[SCCKS]		= { 0x34, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00, 16 },
++			[SCBRR]		= { 0x04,  8 },
++			[SCSCR]		= { 0x08, 16 },
++			[SCxTDR]	= { 0x0c,  8 },
++			[SCxSR]		= { 0x10, 16 },
++			[SCxRDR]	= { 0x14,  8 },
++			[SCFCR]		= { 0x18, 16 },
++			[SCFDR]		= { 0x1c, 16 },
++			[SCSPTR]	= { 0x20, 16 },
++			[SCLSR]		= { 0x24, 16 },
++			[HSSRR]		= { 0x40, 16 },
++			[SCDL]		= { 0x30, 16 },
++			[SCCKS]		= { 0x34, 16 },
++		},
+ 	},
+ 
+ 	/*
+@@ -311,15 +334,17 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 	 * register.
+ 	 */
+ 	[SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE] = {
+-		[SCSMR]		= { 0x00, 16 },
+-		[SCBRR]		= { 0x04,  8 },
+-		[SCSCR]		= { 0x08, 16 },
+-		[SCxTDR]	= { 0x0c,  8 },
+-		[SCxSR]		= { 0x10, 16 },
+-		[SCxRDR]	= { 0x14,  8 },
+-		[SCFCR]		= { 0x18, 16 },
+-		[SCFDR]		= { 0x1c, 16 },
+-		[SCLSR]		= { 0x24, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00, 16 },
++			[SCBRR]		= { 0x04,  8 },
++			[SCSCR]		= { 0x08, 16 },
++			[SCxTDR]	= { 0x0c,  8 },
++			[SCxSR]		= { 0x10, 16 },
++			[SCxRDR]	= { 0x14,  8 },
++			[SCFCR]		= { 0x18, 16 },
++			[SCFDR]		= { 0x1c, 16 },
++			[SCLSR]		= { 0x24, 16 },
++		},
+ 	},
+ 
+ 	/*
+@@ -327,18 +352,20 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 	 * count registers.
+ 	 */
+ 	[SCIx_SH4_SCIF_FIFODATA_REGTYPE] = {
+-		[SCSMR]		= { 0x00, 16 },
+-		[SCBRR]		= { 0x04,  8 },
+-		[SCSCR]		= { 0x08, 16 },
+-		[SCxTDR]	= { 0x0c,  8 },
+-		[SCxSR]		= { 0x10, 16 },
+-		[SCxRDR]	= { 0x14,  8 },
+-		[SCFCR]		= { 0x18, 16 },
+-		[SCFDR]		= { 0x1c, 16 },
+-		[SCTFDR]	= { 0x1c, 16 },	/* aliased to SCFDR */
+-		[SCRFDR]	= { 0x20, 16 },
+-		[SCSPTR]	= { 0x24, 16 },
+-		[SCLSR]		= { 0x28, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00, 16 },
++			[SCBRR]		= { 0x04,  8 },
++			[SCSCR]		= { 0x08, 16 },
++			[SCxTDR]	= { 0x0c,  8 },
++			[SCxSR]		= { 0x10, 16 },
++			[SCxRDR]	= { 0x14,  8 },
++			[SCFCR]		= { 0x18, 16 },
++			[SCFDR]		= { 0x1c, 16 },
++			[SCTFDR]	= { 0x1c, 16 },	/* aliased to SCFDR */
++			[SCRFDR]	= { 0x20, 16 },
++			[SCSPTR]	= { 0x24, 16 },
++			[SCLSR]		= { 0x28, 16 },
++		},
+ 	},
+ 
+ 	/*
+@@ -346,18 +373,20 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
+ 	 * registers.
+ 	 */
+ 	[SCIx_SH7705_SCIF_REGTYPE] = {
+-		[SCSMR]		= { 0x00, 16 },
+-		[SCBRR]		= { 0x04,  8 },
+-		[SCSCR]		= { 0x08, 16 },
+-		[SCxTDR]	= { 0x20,  8 },
+-		[SCxSR]		= { 0x14, 16 },
+-		[SCxRDR]	= { 0x24,  8 },
+-		[SCFCR]		= { 0x18, 16 },
+-		[SCFDR]		= { 0x1c, 16 },
++		.regs = {
++			[SCSMR]		= { 0x00, 16 },
++			[SCBRR]		= { 0x04,  8 },
++			[SCSCR]		= { 0x08, 16 },
++			[SCxTDR]	= { 0x20,  8 },
++			[SCxSR]		= { 0x14, 16 },
++			[SCxRDR]	= { 0x24,  8 },
++			[SCFCR]		= { 0x18, 16 },
++			[SCFDR]		= { 0x1c, 16 },
++		},
+ 	},
  };
  
- #endif /* __LINUX_SERIAL_SCI_H */
+-#define sci_getreg(up, offset)		(sci_regmap[to_sci_port(up)->cfg->regtype] + offset)
++#define sci_getreg(up, offset)		(&to_sci_port(up)->params->regs[offset])
+ 
+ /*
+  * The "offset" here is rather misleading, in that it refers to an enum
+@@ -2555,6 +2584,8 @@ static int sci_init_single(struct platform_device *dev,
+ 			return ret;
+ 	}
+ 
++	sci_port->params = &sci_port_params[p->regtype];
++
+ 	switch (p->type) {
+ 	case PORT_SCIFB:
+ 		port->fifosize = 256;
+@@ -3067,6 +3098,7 @@ static int __init early_console_setup(struct earlycon_device *device,
+ 	sci_ports[0].cfg = &port_cfg;
+ 	sci_ports[0].cfg->type = type;
+ 	sci_probe_regmap(sci_ports[0].cfg);
++	sci_ports[0].params = &sci_port_params[sci_ports[0].cfg->regtype];
+ 	port_cfg.scscr = sci_serial_in(&sci_ports[0].port, SCSCR);
+ 	sci_serial_out(&sci_ports[0].port, SCSCR,
+ 		       SCSCR_RE | SCSCR_TE | port_cfg.scscr);
 -- 
 Regards,
 
