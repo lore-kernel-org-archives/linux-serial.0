@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v2 05/18] sh: sh726[49]: Don't set sh-sci pdata scscr TOIE bit
-Date: Wed, 11 Jan 2017 16:43:27 +0200
-Message-ID: <20170111144340.29074-6-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 16/18] serial: sh-sci: Remove manual break debouncing
+Date: Wed, 11 Jan 2017 16:43:38 +0200
+Message-ID: <20170111144340.29074-17-laurent.pinchart+renesas@ideasonboard.com>
 References: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,168 +10,258 @@ To: linux-renesas-soc@vger.kernel.org
 Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The SCIF ports on sh7264 and sh7269 don't support the TOIE bit according
-to the datasheets.
+The sh-sci driver implements manual break debouncing for a few SH
+platforms by reading the value of the RX pin port register. This feature
+is optional and the driver considers all negative or zero values of the
+platform data port_reg field as invalid. As the four platforms that set
+the field to a register address all use an address higher than
+0x7fffffff, the driver will always consider the value as invalid and
+never perform debouncing. The feature is unused, remove it.
+
+Debouncing could be implemented properly in the future using the pinctrl
+and GPIO APIs if desired.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- arch/sh/kernel/cpu/sh2a/setup-sh7264.c | 16 ++++++++--------
- arch/sh/kernel/cpu/sh2a/setup-sh7269.c | 16 ++++++++--------
- 2 files changed, 16 insertions(+), 16 deletions(-)
+ drivers/tty/serial/sh-sci.c | 124 +++-----------------------------------------
+ include/linux/serial_sci.h  |   5 --
+ 2 files changed, 7 insertions(+), 122 deletions(-)
 
-diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7264.c b/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
-index f111c20177ea..aebaa7a4da46 100644
---- a/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
-+++ b/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
-@@ -227,7 +227,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7264", vectors, groups,
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index fcedb96fe324..d2de169326d8 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -125,10 +125,6 @@ struct sci_port {
+ 	resource_size_t		reg_size;
+ 	struct mctrl_gpios	*gpios;
  
- static struct plat_sci_port scif0_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -252,7 +252,7 @@ static struct platform_device scif0_device = {
+-	/* Break timer */
+-	struct timer_list	break_timer;
+-	int			break_flag;
+-
+ 	/* Clocks */
+ 	struct clk		*clks[SCI_NUM_CLKS];
+ 	unsigned long		clk_rates[SCI_NUM_CLKS];
+@@ -517,14 +513,6 @@ static void sci_port_disable(struct sci_port *sci_port)
+ 	if (!sci_port->port.dev)
+ 		return;
  
- static struct plat_sci_port scif1_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -277,7 +277,7 @@ static struct platform_device scif1_device = {
+-	/* Cancel the break timer to ensure that the timer handler will not try
+-	 * to access the hardware with clocks and power disabled. Reset the
+-	 * break flag to make the break debouncing state machine ready for the
+-	 * next break.
+-	 */
+-	del_timer_sync(&sci_port->break_timer);
+-	sci_port->break_flag = 0;
+-
+ 	for (i = SCI_NUM_CLKS; i-- > 0; )
+ 		clk_disable_unprepare(sci_port->clks[i]);
  
- static struct plat_sci_port scif2_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -302,7 +302,7 @@ static struct platform_device scif2_device = {
+@@ -751,20 +739,6 @@ static int sci_rxfill(struct uart_port *port)
+ 	return (serial_port_in(port, SCxSR) & SCxSR_RDxF(port)) != 0;
+ }
  
- static struct plat_sci_port scif3_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -327,7 +327,7 @@ static struct platform_device scif3_device = {
+-/*
+- * SCI helper for checking the state of the muxed port/RXD pins.
+- */
+-static inline int sci_rxd_in(struct uart_port *port)
+-{
+-	struct sci_port *s = to_sci_port(port);
+-
+-	if (s->cfg->port_reg <= 0)
+-		return 1;
+-
+-	/* Cast for ARM damage */
+-	return !!__raw_readb((void __iomem *)(uintptr_t)s->cfg->port_reg);
+-}
+-
+ /* ********************************************************************** *
+  *                   the interrupt related routines                       *
+  * ********************************************************************** */
+@@ -832,7 +806,6 @@ static void sci_transmit_chars(struct uart_port *port)
  
- static struct plat_sci_port scif4_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -352,7 +352,7 @@ static struct platform_device scif4_device = {
+ static void sci_receive_chars(struct uart_port *port)
+ {
+-	struct sci_port *sci_port = to_sci_port(port);
+ 	struct tty_port *tport = &port->state->port;
+ 	int i, count, copied = 0;
+ 	unsigned short status;
+@@ -852,8 +825,7 @@ static void sci_receive_chars(struct uart_port *port)
  
- static struct plat_sci_port scif5_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -377,7 +377,7 @@ static struct platform_device scif5_device = {
+ 		if (port->type == PORT_SCI) {
+ 			char c = serial_port_in(port, SCxRDR);
+-			if (uart_handle_sysrq_char(port, c) ||
+-			    sci_port->break_flag)
++			if (uart_handle_sysrq_char(port, c))
+ 				count = 0;
+ 			else
+ 				tty_insert_flip_char(tport, c, TTY_NORMAL);
+@@ -862,25 +834,6 @@ static void sci_receive_chars(struct uart_port *port)
+ 				char c = serial_port_in(port, SCxRDR);
  
- static struct plat_sci_port scif6_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -402,7 +402,7 @@ static struct platform_device scif6_device = {
+ 				status = serial_port_in(port, SCxSR);
+-#if defined(CONFIG_CPU_SH3)
+-				/* Skip "chars" during break */
+-				if (sci_port->break_flag) {
+-					if ((c == 0) &&
+-					    (status & SCxSR_FER(port))) {
+-						count--; i--;
+-						continue;
+-					}
+-
+-					/* Nonzero => end-of-break */
+-					dev_dbg(port->dev, "debounce<%02x>\n", c);
+-					sci_port->break_flag = 0;
+-
+-					if (STEPFN(c)) {
+-						count--; i--;
+-						continue;
+-					}
+-				}
+-#endif /* CONFIG_CPU_SH3 */
+ 				if (uart_handle_sysrq_char(port, c)) {
+ 					count--; i--;
+ 					continue;
+@@ -918,37 +871,6 @@ static void sci_receive_chars(struct uart_port *port)
+ 	}
+ }
  
- static struct plat_sci_port scif7_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7269.c b/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
-index b3445e59841a..6d7ac07b4e54 100644
---- a/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
-+++ b/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
-@@ -249,7 +249,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7269", vectors, groups,
+-#define SCI_BREAK_JIFFIES (HZ/20)
+-
+-/*
+- * The sci generates interrupts during the break,
+- * 1 per millisecond or so during the break period, for 9600 baud.
+- * So dont bother disabling interrupts.
+- * But dont want more than 1 break event.
+- * Use a kernel timer to periodically poll the rx line until
+- * the break is finished.
+- */
+-static inline void sci_schedule_break_timer(struct sci_port *port)
+-{
+-	mod_timer(&port->break_timer, jiffies + SCI_BREAK_JIFFIES);
+-}
+-
+-/* Ensure that two consecutive samples find the break over. */
+-static void sci_break_timer(unsigned long data)
+-{
+-	struct sci_port *port = (struct sci_port *)data;
+-
+-	if (sci_rxd_in(&port->port) == 0) {
+-		port->break_flag = 1;
+-		sci_schedule_break_timer(port);
+-	} else if (port->break_flag == 1) {
+-		/* break is over. */
+-		port->break_flag = 2;
+-		sci_schedule_break_timer(port);
+-	} else
+-		port->break_flag = 0;
+-}
+-
+ static int sci_handle_errors(struct uart_port *port)
+ {
+ 	int copied = 0;
+@@ -968,35 +890,13 @@ static int sci_handle_errors(struct uart_port *port)
+ 	}
  
- static struct plat_sci_port scif0_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -274,7 +274,7 @@ static struct platform_device scif0_device = {
+ 	if (status & SCxSR_FER(port)) {
+-		if (sci_rxd_in(port) == 0) {
+-			/* Notify of BREAK */
+-			struct sci_port *sci_port = to_sci_port(port);
+-
+-			if (!sci_port->break_flag) {
+-				port->icount.brk++;
+-
+-				sci_port->break_flag = 1;
+-				sci_schedule_break_timer(sci_port);
+-
+-				/* Do sysrq handling. */
+-				if (uart_handle_break(port))
+-					return 0;
+-
+-				dev_dbg(port->dev, "BREAK detected\n");
+-
+-				if (tty_insert_flip_char(tport, 0, TTY_BREAK))
+-					copied++;
+-			}
+-
+-		} else {
+-			/* frame error */
+-			port->icount.frame++;
++		/* frame error */
++		port->icount.frame++;
  
- static struct plat_sci_port scif1_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -299,7 +299,7 @@ static struct platform_device scif1_device = {
+-			if (tty_insert_flip_char(tport, 0, TTY_FRAME))
+-				copied++;
++		if (tty_insert_flip_char(tport, 0, TTY_FRAME))
++			copied++;
  
- static struct plat_sci_port scif2_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -324,7 +324,7 @@ static struct platform_device scif2_device = {
+-			dev_notice(port->dev, "frame error\n");
+-		}
++		dev_notice(port->dev, "frame error\n");
+ 	}
  
- static struct plat_sci_port scif3_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -349,7 +349,7 @@ static struct platform_device scif3_device = {
+ 	if (status & SCxSR_PER(port)) {
+@@ -1049,17 +949,11 @@ static int sci_handle_breaks(struct uart_port *port)
+ 	int copied = 0;
+ 	unsigned short status = serial_port_in(port, SCxSR);
+ 	struct tty_port *tport = &port->state->port;
+-	struct sci_port *s = to_sci_port(port);
  
- static struct plat_sci_port scif4_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -374,7 +374,7 @@ static struct platform_device scif4_device = {
+ 	if (uart_handle_break(port))
+ 		return 0;
  
- static struct plat_sci_port scif5_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -399,7 +399,7 @@ static struct platform_device scif5_device = {
+-	if (!s->break_flag && status & SCxSR_BRK(port)) {
+-#if defined(CONFIG_CPU_SH3)
+-		/* Debounce break */
+-		s->break_flag = 1;
+-#endif
+-
++	if (status & SCxSR_BRK(port)) {
+ 		port->icount.brk++;
  
- static struct plat_sci_port scif6_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
- };
-@@ -424,7 +424,7 @@ static struct platform_device scif6_device = {
+ 		/* Notify of BREAK */
+@@ -2675,10 +2569,6 @@ static int sci_init_single(struct platform_device *dev,
+ 		pm_runtime_enable(&dev->dev);
+ 	}
  
- static struct plat_sci_port scif7_platform_data = {
- 	.flags		= UPF_BOOT_AUTOCONF,
--	.scscr		= SCSCR_REIE | SCSCR_TOIE,
-+	.scscr		= SCSCR_REIE,
- 	.type		= PORT_SCIF,
- 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+-	sci_port->break_timer.data = (unsigned long)sci_port;
+-	sci_port->break_timer.function = sci_break_timer;
+-	init_timer(&sci_port->break_timer);
+-
+ 	port->type		= p->type;
+ 	port->flags		= UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | p->flags;
+ 	port->regshift		= p->regshift;
+diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
+index 1a894c47bfc0..b4419931bf4c 100644
+--- a/include/linux/serial_sci.h
++++ b/include/linux/serial_sci.h
+@@ -9,8 +9,6 @@
+  * Generic header for SuperH (H)SCI(F) (used by sh/sh64 and related parts)
+  */
+ 
+-#define SCIx_NOT_SUPPORTED	(-1)
+-
+ /* Serial Control Register (@ = not supported by all parts) */
+ #define SCSCR_TIE	BIT(7)	/* Transmit Interrupt Enable */
+ #define SCSCR_RIE	BIT(6)	/* Receive Interrupt Enable */
+@@ -41,8 +39,6 @@ enum {
+ 	SCIx_NR_REGTYPES,
  };
+ 
+-struct device;
+-
+ struct plat_sci_port_ops {
+ 	void (*init_pins)(struct uart_port *, unsigned int cflag);
+ };
+@@ -66,7 +62,6 @@ struct plat_sci_port {
+ 	/*
+ 	 * Platform overrides if necessary, defaults otherwise.
+ 	 */
+-	int		port_reg;
+ 	unsigned char	regshift;
+ 	unsigned char	regtype;
+ 
 -- 
 Regards,
 
