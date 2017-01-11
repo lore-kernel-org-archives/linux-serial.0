@@ -1,63 +1,105 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 00/19] sh-sci: Platform data simplification
-Date: Wed, 11 Jan 2017 09:04:37 +0100
-Message-ID: <20170111080437.GA24055@kroah.com>
-References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 2/2] serial: sh-sci: Fix hang in sci_reset()
+Date: Wed, 11 Jan 2017 10:04:27 +0100
+Message-ID: <CAMuHMdWXjz69eRmT-RrvAhK_Xjnxz_FAy0WC9hw4=U0MOhJgUA@mail.gmail.com>
+References: <1480682111-9299-1-git-send-email-geert+renesas@glider.be>
+ <1480682111-9299-3-git-send-email-geert+renesas@glider.be> <52992122.70bgT4fDeQ@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Cc: linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <52992122.70bgT4fDeQ@avalon>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Christoph Baumann <cbaumann@visteon.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 04, 2017 at 01:06:20AM +0200, Laurent Pinchart wrote:
-> Hello,
-> 
-> Most of the patches in this series have been sitting in my development tree
-> for three years now. While rebasing all my development branches I decided it
-> was time to send them out in case they're considered useful. I've then thrown
-> a few additional patches in to move the driver further in the right direction
-> (or at least the direction I consider right).
-> 
-> The idea behind this series is to move towards removal of the sh-sci platform
-> data. This won't be possible until SH platforms move to DT (and I won't hold
-> my breath), but we can get rid of most of the platform data fields already and
-> cleanup the sh-sci driver at the same time.
-> 
-> The series already removes the capabilities, port_reg, regshift, dma_slave_tx
-> and dma_slave_rx fields. We should be able to go further:
-> 
-> - The flags field is only used by sh5 to set UPF_IOREMAP. It should be
->   possible to find another way to determine in the driver whether to ioremap
->   the registers.
-> 
-> - The sampling_rate field is only used by sh7723 and sh7724 to override the
->   value hardcoded in the driver, even though the datasheets of those SoCs
->   don't mention any restriction. This might not be needed and should be
->   investigated.
-> 
-> - The scscr REIE bit should be possible to compute in the driver, as it's set
->   for all SCIF ports except SCIx_SH3_SCIF_REGTYPE, SCIx_SH7705_SCIF_REGTYPE,
->   and the sh7343 SCIx_SH4_SCIF_REGTYPE. The latter will be trickier to handle.
-> 
-> - Now that we have support for baud rate generators and externel clocks, the
->   scscr CKE1 bit should be computed in the driver in all cases.
-> 
-> - The scscr TOIE bit doesn't seem to follow a clear rule, but given that it's
->   the last scscr bit to handle I'm sure we'll find something :-)
-> 
-> - It might make sense to merge the type and regtype fields in a single type.
-> 
-> Finally, it might be time to drop support for the SH platforms that would get
-> in the way of sh-sci cleanup.
+Hi Laurent,
 
-I've merged patches 1, 2, 12, 13, 14, 15, 16, 17, and 18 in my tty tree.
+On Fri, Jan 6, 2017 at 1:31 PM, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+> On Friday 02 Dec 2016 13:35:11 Geert Uytterhoeven wrote:
+>> When the .set_termios() callback resets the UART, it first waits until
+>> all characters in the transmit FIFO have been transmitted, to prevent a
+>> port configuration change from impacting these characters.
+>>
+>> However, if the previous user of the UART had dedicated RTS/CTS hardware
+>> flow control enabled, these characters may have been stuck in the FIFO
+>> due to CTS not being asserted. When the new user opens the port,
+>> .set_termios() is called while transmission is still disabled, leading
+>> to an infinite loop:
+>>
+>>     NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s!
+>>
+>> This has been observed with SCIFA (on r8a7740/armadillo) and SCIFB (on
+>> r8a7791/koelsch).
+>>
+>> The issue does not seem to happen when using:
+>>   - GPIO RTS/CTS hardware flow control,
+>>   - No hardware flow control,
+>>   - HSCIF (on r8a7791/koelsch).
+>>
+>> To fix this, wait for the draining of the transmit FIFO only if
+>> transmission is already enabled.
+>>
+>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>> ---
+>> To reproduce:
+>>
+>>     stty -echo < /dev/scifb0
+>>     stty crtscts < /dev/scifb0
+>>     echo hello > /dev/scifb0  # returns early (wrote to FIFO)
+>>     echo hello > /dev/scifb0  # hangs
+>>
+>>  drivers/tty/serial/sh-sci.c | 8 +++++---
+>>  1 file changed, 5 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+>> index c503db1900f003ed..db5de80c5399a7bd 100644
+>> --- a/drivers/tty/serial/sh-sci.c
+>> +++ b/drivers/tty/serial/sh-sci.c
+>> @@ -2137,9 +2137,11 @@ static void sci_reset(struct uart_port *port)
+>>       const struct plat_sci_reg *reg;
+>>       unsigned int status;
+>>
+>> -     do {
+>> -             status = serial_port_in(port, SCxSR);
+>> -     } while (!(status & SCxSR_TEND(port)));
+>> +     if (serial_port_in(port, SCSCR) & SCSCR_TE) {
+>> +             do {
+>> +                     status = serial_port_in(port, SCxSR);
+>> +             } while (!(status & SCxSR_TEND(port)));
+>
+> Won't we still loop forever if the remote side never asserts CTS ?
 
-If I should take any others there as well, please let me know.
+Thanks, you're right.
 
-thanks,
+While my patch fixes the issue for a new user opening the port, I managed
+to trigger the issue when changing the UART speed after writing some data
+to an otherwise disconnected SCIFB0.
 
-greg k-h
+Now, how do other drivers handle this (if they handle it at all)?
+As CTS is under control of the remote side, set_termios() may be blocked
+for an arbitrary period of time. set_termios() also returns void, so it
+cannot return e.g. -ERESTARTSYS from wait_event_interruptible().
+
+Or is it considered a bug for userspace to change the terminal settings
+without flushing the output buffer? In that case, we can just drop the
+loop, and zap the FIFO regardless.
+
+Thanks for your comments!
+
+>
+>> +     }
+>>
+>>       serial_port_out(port, SCSCR, 0x00);     /* TE=0, RE=0, CKE1=0 */
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
