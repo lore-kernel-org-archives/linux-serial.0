@@ -1,82 +1,68 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty/serial: atmel_serial: BUG: stop DMA from
- transmitting in stop_tx
-Date: Wed, 11 Jan 2017 08:09:21 +0100
-Message-ID: <20170111070921.GB24787@kroah.com>
-References: <20161213162756.16139-1-richard.genoud@gmail.com>
- <059a5366-c0d4-ab89-d64a-dcf007bc9e91@atmel.com>
- <CACQ1gAiVc56TosMLMB-GSYW9M5m3Zy04RoPr=raoW-PpYEkgXA@mail.gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: fsl_lpuart: Remove the alias node dependence
+Date: Wed, 11 Jan 2017 08:24:50 +0100
+Message-ID: <20170111072450.GA9980@kroah.com>
+References: <1481704412-19208-1-git-send-email-yao.yuan@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CACQ1gAiVc56TosMLMB-GSYW9M5m3Zy04RoPr=raoW-PpYEkgXA@mail.gmail.com>
+In-Reply-To: <1481704412-19208-1-git-send-email-yao.yuan@freescale.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "beware, this won't apply before 4.3" <stable@vger.kernel.org>
+To: Yuan Yao <yao.yuan@freescale.com>
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, yao.yuan@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 02, 2017 at 03:16:46PM +0100, Richard Genoud wrote:
-> 2017-01-02 12:13 GMT+01:00 Nicolas Ferre <nicolas.ferre@atmel.com>:
-> > Le 13/12/2016 à 17:27, Richard Genoud a écrit :
-> >> If we don't disable the transmitter in atmel_stop_tx, the DMA buffer
-> >> continues to send data until it is emptied.
-> >> This cause problems with the flow control (CTS is asserted and data are
-> >> still sent).
-> >>
-> >> So, disabling the transmitter in atmel_stop_tx is a sane thing to do.
-> >>
-> >> Tested on at91sam9g35-cm(DMA)
-> >> Tested for regressions on sama5d2-xplained(Fifo) and at91sam9g20ek(PDC)
-> >>
-> >> Cc: <stable@vger.kernel.org> (beware, this won't apply before 4.3)
-> >> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
-> >
-> > Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-> >
-> >> ---
-> >>  drivers/tty/serial/atmel_serial.c | 11 +++++++++++
-> >>  1 file changed, 11 insertions(+)
-> >>
-> >> NB: this is not for the 4.10 merge window, I'm just sending it now to
-> >> have some comments if someone is againts it.
-> >>
-> >> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> >> index 168b10cad47b..f9d42de5ab2d 100644
-> >> --- a/drivers/tty/serial/atmel_serial.c
-> >> +++ b/drivers/tty/serial/atmel_serial.c
-> >> @@ -481,6 +481,14 @@ static void atmel_stop_tx(struct uart_port *port)
-> >>               /* disable PDC transmit */
-> >>               atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTDIS);
-> >>       }
-> >> +
-> >> +     /*
-> >> +      * Disable the transmitter.
-> >> +      * This is mandatory when DMA is used, otherwise the DMA buffer
-> >> +      * is fully transmitted.
-> >> +      */
-> >> +     atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS);
-> >> +
-> >>       /* Disable interrupts */
-> >>       atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
-> >>
-> >> @@ -513,6 +521,9 @@ static void atmel_start_tx(struct uart_port *port)
-> >>
-> >>       /* Enable interrupts */
-> >>       atmel_uart_writel(port, ATMEL_US_IER, atmel_port->tx_done_mask);
-> >> +
-> >> +     /* re-enable the transmitter */
-> >> +     atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
-> >>  }
-> >>
-> >>  /*
-> >>
-> >
-> >
-> > --
-> > Nicolas Ferre
+On Wed, Dec 14, 2016 at 04:33:32PM +0800, Yuan Yao wrote:
+> From: Yuan Yao <yao.yuan@nxp.com>
 > 
-> Greg, could you also take this patch in your tree ?
+> Numbering the ttyLPn space should not depend on the generic name
+> "serial<n>".
+> 
+> If don't add the alias node like:"serial0 = &lpuart0;", then lpuart
+> will probe failed:
+> [    0.773410] fsl-lpuart 2950000.serial: failed to get alias id, errno -19
+> 
+> So remove the alias node dependence, and add the support for allocate the
+> line port automatically.
+> 
+> Signed-off-by: Yuan Yao <yao.yuan@nxp.com>
+> ---
+>  drivers/tty/serial/fsl_lpuart.c | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index a1c6519..c6d639f 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -231,6 +231,8 @@
+>  #define DEV_NAME	"ttyLP"
+>  #define UART_NR		6
+>  
+> +static DECLARE_BITMAP(linemap, UART_NR);
 
-Yup!
+Why a bitmap?
+
+> +
+>  struct lpuart_port {
+>  	struct uart_port	port;
+>  	struct clk		*clk;
+> @@ -1963,9 +1965,13 @@ static int lpuart_probe(struct platform_device *pdev)
+>  
+>  	ret = of_alias_get_id(np, "serial");
+>  	if (ret < 0) {
+> -		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
+> -		return ret;
+> +		ret = find_first_zero_bit(linemap, UART_NR);
+> +		if (ret >= UART_NR) {
+> +			dev_err(&pdev->dev, "port line is full, add device failed\n");
+> +			return ret;
+> +		}
+
+Does this really remove the alias dependancy?
+
+Please use an idr or ida for this instead of a bitmap.
+
+thanks,
+
+greg k-h
