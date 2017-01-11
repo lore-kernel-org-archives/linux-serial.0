@@ -1,230 +1,105 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v2 11/18] serial: sh-sci: Remove initialization of zero fields in sci_port_params
-Date: Wed, 11 Jan 2017 16:43:33 +0200
-Message-ID: <20170111144340.29074-12-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 15/18] serial: sh-sci: Remove the platform data dma slave rx/tx channel IDs
+Date: Wed, 11 Jan 2017 16:43:37 +0200
+Message-ID: <20170111144340.29074-16-laurent.pinchart+renesas@ideasonboard.com>
 References: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 To: linux-renesas-soc@vger.kernel.org
 Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The compiler zeros uninitialized fields, don't zero them manually.
+Only SH platforms still use platform data for the sh-sci, and none of
+them declare DMA channels connected to the SCI. Remove the corresponding
+platform data fields and simplify the driver accordingly.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.c | 94 ---------------------------------------------
- 1 file changed, 94 deletions(-)
+ drivers/tty/serial/sh-sci.c | 23 ++++++-----------------
+ include/linux/serial_sci.h  |  3 ---
+ 2 files changed, 6 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 56ad899973d6..b99664046263 100644
+index 3bbb7b4b2f19..fcedb96fe324 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -160,14 +160,7 @@ struct plat_sci_reg {
- 	u8 offset, size;
+@@ -1387,20 +1387,14 @@ static void rx_timer_fn(unsigned long arg)
+ }
+ 
+ static struct dma_chan *sci_request_dma_chan(struct uart_port *port,
+-					     enum dma_transfer_direction dir,
+-					     unsigned int id)
++					     enum dma_transfer_direction dir)
+ {
+-	dma_cap_mask_t mask;
+ 	struct dma_chan *chan;
+ 	struct dma_slave_config cfg;
+ 	int ret;
+ 
+-	dma_cap_zero(mask);
+-	dma_cap_set(DMA_SLAVE, mask);
+-
+-	chan = dma_request_slave_channel_compat(mask, shdma_chan_filter,
+-					(void *)(unsigned long)id, port->dev,
+-					dir == DMA_MEM_TO_DEV ? "tx" : "rx");
++	chan = dma_request_slave_channel(port->dev,
++					 dir == DMA_MEM_TO_DEV ? "tx" : "rx");
+ 	if (!chan) {
+ 		dev_warn(port->dev,
+ 			 "dma_request_slave_channel_compat failed\n");
+@@ -1436,12 +1430,11 @@ static void sci_request_dma(struct uart_port *port)
+ 
+ 	dev_dbg(port->dev, "%s: port %d\n", __func__, port->line);
+ 
+-	if (!port->dev->of_node &&
+-	    (s->cfg->dma_slave_tx <= 0 || s->cfg->dma_slave_rx <= 0))
++	if (!port->dev->of_node)
+ 		return;
+ 
+ 	s->cookie_tx = -EINVAL;
+-	chan = sci_request_dma_chan(port, DMA_MEM_TO_DEV, s->cfg->dma_slave_tx);
++	chan = sci_request_dma_chan(port, DMA_MEM_TO_DEV);
+ 	dev_dbg(port->dev, "%s: TX: got channel %p\n", __func__, chan);
+ 	if (chan) {
+ 		s->chan_tx = chan;
+@@ -1463,7 +1456,7 @@ static void sci_request_dma(struct uart_port *port)
+ 		INIT_WORK(&s->work_tx, work_fn_tx);
+ 	}
+ 
+-	chan = sci_request_dma_chan(port, DMA_DEV_TO_MEM, s->cfg->dma_slave_rx);
++	chan = sci_request_dma_chan(port, DMA_DEV_TO_MEM);
+ 	dev_dbg(port->dev, "%s: RX: got channel %p\n", __func__, chan);
+ 	if (chan) {
+ 		unsigned int i;
+@@ -2704,10 +2697,6 @@ static int sci_init_single(struct platform_device *dev,
+ 	port->serial_in		= sci_serial_in;
+ 	port->serial_out	= sci_serial_out;
+ 
+-	if (p->dma_slave_tx > 0 && p->dma_slave_rx > 0)
+-		dev_dbg(port->dev, "DMA tx %d, rx %d\n",
+-			p->dma_slave_tx, p->dma_slave_rx);
+-
+ 	return 0;
+ }
+ 
+diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
+index 9f2bfd055742..1a894c47bfc0 100644
+--- a/include/linux/serial_sci.h
++++ b/include/linux/serial_sci.h
+@@ -71,9 +71,6 @@ struct plat_sci_port {
+ 	unsigned char	regtype;
+ 
+ 	struct plat_sci_port_ops	*ops;
+-
+-	unsigned int	dma_slave_tx;
+-	unsigned int	dma_slave_rx;
  };
  
--/* Helper for invalidating specific entries of an inherited map. */
--#define sci_reg_invalid	{ .offset = 0, .size = 0 }
--
- static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
--	[SCIx_PROBE_REGTYPE] = {
--		[0 ... SCIx_NR_REGS - 1] = sci_reg_invalid,
--	},
--
- 	/*
- 	 * Common SCI definitions, dependent on the port's regshift
- 	 * value.
-@@ -179,17 +172,6 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxTDR]	= { 0x03,  8 },
- 		[SCxSR]		= { 0x04,  8 },
- 		[SCxRDR]	= { 0x05,  8 },
--		[SCFCR]		= sci_reg_invalid,
--		[SCFDR]		= sci_reg_invalid,
--		[SCTFDR]	= sci_reg_invalid,
--		[SCRFDR]	= sci_reg_invalid,
--		[SCSPTR]	= sci_reg_invalid,
--		[SCLSR]		= sci_reg_invalid,
--		[HSSRR]		= sci_reg_invalid,
--		[SCPCR]		= sci_reg_invalid,
--		[SCPDR]		= sci_reg_invalid,
--		[SCDL]		= sci_reg_invalid,
--		[SCCKS]		= sci_reg_invalid,
- 	},
- 
- 	/*
-@@ -204,15 +186,6 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxRDR]	= { 0x0a,  8 },
- 		[SCFCR]		= { 0x0c,  8 },
- 		[SCFDR]		= { 0x0e, 16 },
--		[SCTFDR]	= sci_reg_invalid,
--		[SCRFDR]	= sci_reg_invalid,
--		[SCSPTR]	= sci_reg_invalid,
--		[SCLSR]		= sci_reg_invalid,
--		[HSSRR]		= sci_reg_invalid,
--		[SCPCR]		= sci_reg_invalid,
--		[SCPDR]		= sci_reg_invalid,
--		[SCDL]		= sci_reg_invalid,
--		[SCCKS]		= sci_reg_invalid,
- 	},
- 
- 	/*
-@@ -227,15 +200,8 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxRDR]	= { 0x24,  8 },
- 		[SCFCR]		= { 0x18, 16 },
- 		[SCFDR]		= { 0x1c, 16 },
--		[SCTFDR]	= sci_reg_invalid,
--		[SCRFDR]	= sci_reg_invalid,
--		[SCSPTR]	= sci_reg_invalid,
--		[SCLSR]		= sci_reg_invalid,
--		[HSSRR]		= sci_reg_invalid,
- 		[SCPCR]		= { 0x30, 16 },
- 		[SCPDR]		= { 0x34, 16 },
--		[SCDL]		= sci_reg_invalid,
--		[SCCKS]		= sci_reg_invalid,
- 	},
- 
- 	/*
-@@ -249,16 +215,10 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxSR]		= { 0x14, 16 },
- 		[SCxRDR]	= { 0x60,  8 },
- 		[SCFCR]		= { 0x18, 16 },
--		[SCFDR]		= sci_reg_invalid,
- 		[SCTFDR]	= { 0x38, 16 },
- 		[SCRFDR]	= { 0x3c, 16 },
--		[SCSPTR]	= sci_reg_invalid,
--		[SCLSR]		= sci_reg_invalid,
--		[HSSRR]		= sci_reg_invalid,
- 		[SCPCR]		= { 0x30, 16 },
- 		[SCPDR]		= { 0x34, 16 },
--		[SCDL]		= sci_reg_invalid,
--		[SCCKS]		= sci_reg_invalid,
- 	},
- 
- 	/*
-@@ -274,15 +234,8 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxRDR]	= { 0x14,  8 },
- 		[SCFCR]		= { 0x18, 16 },
- 		[SCFDR]		= { 0x1c, 16 },
--		[SCTFDR]	= sci_reg_invalid,
--		[SCRFDR]	= sci_reg_invalid,
- 		[SCSPTR]	= { 0x20, 16 },
- 		[SCLSR]		= { 0x24, 16 },
--		[HSSRR]		= sci_reg_invalid,
--		[SCPCR]		= sci_reg_invalid,
--		[SCPDR]		= sci_reg_invalid,
--		[SCDL]		= sci_reg_invalid,
--		[SCCKS]		= sci_reg_invalid,
- 	},
- 
- 	/*
-@@ -297,15 +250,6 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxRDR]	= { 0x0a,  8 },
- 		[SCFCR]		= { 0x0c,  8 },
- 		[SCFDR]		= { 0x0e, 16 },
--		[SCTFDR]	= sci_reg_invalid,
--		[SCRFDR]	= sci_reg_invalid,
--		[SCSPTR]	= sci_reg_invalid,
--		[SCLSR]		= sci_reg_invalid,
--		[HSSRR]		= sci_reg_invalid,
--		[SCPCR]		= sci_reg_invalid,
--		[SCPDR]		= sci_reg_invalid,
--		[SCDL]		= sci_reg_invalid,
--		[SCCKS]		= sci_reg_invalid,
- 	},
- 
- 	/*
-@@ -320,15 +264,8 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxRDR]	= { 0x14,  8 },
- 		[SCFCR]		= { 0x18, 16 },
- 		[SCFDR]		= { 0x1c, 16 },
--		[SCTFDR]	= sci_reg_invalid,
--		[SCRFDR]	= sci_reg_invalid,
- 		[SCSPTR]	= { 0x20, 16 },
- 		[SCLSR]		= { 0x24, 16 },
--		[HSSRR]		= sci_reg_invalid,
--		[SCPCR]		= sci_reg_invalid,
--		[SCPDR]		= sci_reg_invalid,
--		[SCDL]		= sci_reg_invalid,
--		[SCCKS]		= sci_reg_invalid,
- 	},
- 
- 	/*
-@@ -344,13 +281,8 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxRDR]	= { 0x14,  8 },
- 		[SCFCR]		= { 0x18, 16 },
- 		[SCFDR]		= { 0x1c, 16 },
--		[SCTFDR]	= sci_reg_invalid,
--		[SCRFDR]	= sci_reg_invalid,
- 		[SCSPTR]	= { 0x20, 16 },
- 		[SCLSR]		= { 0x24, 16 },
--		[HSSRR]		= sci_reg_invalid,
--		[SCPCR]		= sci_reg_invalid,
--		[SCPDR]		= sci_reg_invalid,
- 		[SCDL]		= { 0x30, 16 },
- 		[SCCKS]		= { 0x34, 16 },
- 	},
-@@ -367,13 +299,9 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxRDR]	= { 0x14,  8 },
- 		[SCFCR]		= { 0x18, 16 },
- 		[SCFDR]		= { 0x1c, 16 },
--		[SCTFDR]	= sci_reg_invalid,
--		[SCRFDR]	= sci_reg_invalid,
- 		[SCSPTR]	= { 0x20, 16 },
- 		[SCLSR]		= { 0x24, 16 },
- 		[HSSRR]		= { 0x40, 16 },
--		[SCPCR]		= sci_reg_invalid,
--		[SCPDR]		= sci_reg_invalid,
- 		[SCDL]		= { 0x30, 16 },
- 		[SCCKS]		= { 0x34, 16 },
- 	},
-@@ -391,15 +319,7 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxRDR]	= { 0x14,  8 },
- 		[SCFCR]		= { 0x18, 16 },
- 		[SCFDR]		= { 0x1c, 16 },
--		[SCTFDR]	= sci_reg_invalid,
--		[SCRFDR]	= sci_reg_invalid,
--		[SCSPTR]	= sci_reg_invalid,
- 		[SCLSR]		= { 0x24, 16 },
--		[HSSRR]		= sci_reg_invalid,
--		[SCPCR]		= sci_reg_invalid,
--		[SCPDR]		= sci_reg_invalid,
--		[SCDL]		= sci_reg_invalid,
--		[SCCKS]		= sci_reg_invalid,
- 	},
- 
- 	/*
-@@ -419,11 +339,6 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCRFDR]	= { 0x20, 16 },
- 		[SCSPTR]	= { 0x24, 16 },
- 		[SCLSR]		= { 0x28, 16 },
--		[HSSRR]		= sci_reg_invalid,
--		[SCPCR]		= sci_reg_invalid,
--		[SCPDR]		= sci_reg_invalid,
--		[SCDL]		= sci_reg_invalid,
--		[SCCKS]		= sci_reg_invalid,
- 	},
- 
- 	/*
-@@ -439,15 +354,6 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 		[SCxRDR]	= { 0x24,  8 },
- 		[SCFCR]		= { 0x18, 16 },
- 		[SCFDR]		= { 0x1c, 16 },
--		[SCTFDR]	= sci_reg_invalid,
--		[SCRFDR]	= sci_reg_invalid,
--		[SCSPTR]	= sci_reg_invalid,
--		[SCLSR]		= sci_reg_invalid,
--		[HSSRR]		= sci_reg_invalid,
--		[SCPCR]		= sci_reg_invalid,
--		[SCPDR]		= sci_reg_invalid,
--		[SCDL]		= sci_reg_invalid,
--		[SCCKS]		= sci_reg_invalid,
- 	},
- };
- 
+ #endif /* __LINUX_SERIAL_SCI_H */
 -- 
 Regards,
 
 Laurent Pinchart
+
