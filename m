@@ -1,55 +1,40 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 00/19] sh-sci: Platform data simplification
-Date: Wed, 11 Jan 2017 13:06:04 +0200
-Message-ID: <5841958.hiJOh53K3Y@avalon>
-References: <20170103230639.19660-1-laurent.pinchart+renesas@ideasonboard.com> <CAMuHMdU1EqrSXrBsgej0r1TqUYn2QQd3v5RqxOs73iG3YeSG0g@mail.gmail.com> <20170111104330.GA26128@kroah.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: imx: RS-485 problems during TX, maybe DMA related
+Date: Wed, 11 Jan 2017 09:51:29 -0200
+Message-ID: <CAOMZO5CGoq6FKSE6n9CyQycdtuJ6dAjSL7vJU4ZtXjAPWvdAug@mail.gmail.com>
+References: <20170107134557.GA12299@archie.localdomain> <CAOMZO5ALSQj3C6Yn-avMZdzTvtWCZPQ5+pNdzYi03G-GZB_t+w@mail.gmail.com>
+ <20170107153434.GA13307@archie.localdomain> <CAOMZO5CY3ys6moE133LwSKcS4egv56JdmhPMRG0TmAnfD+ZBAw@mail.gmail.com>
+ <20170107205930.GA12367@archie.localdomain> <CAOMZO5D00YFLS=pddAqPo_FUoP6MF-juAef2H71-Wx_NQArdpw@mail.gmail.com>
+ <20170107230624.GA21729@archie.localdomain> <CAOMZO5DedNURGV_k5Y=nt1O98SojsvrOd69PEPEzi8F7N3dJuw@mail.gmail.com>
+ <20170108180609.GB24155@archie.localdomain> <CAOMZO5AYha+SwS4761XxOnUtT1DYhHH69UpXmQzcmEdfC++JKQ@mail.gmail.com>
+ <20170111003319.GA25265@archie.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <20170111104330.GA26128@kroah.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Greg KH <greg@kroah.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170111003319.GA25265@archie.localdomain>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Clemens Gruber <clemens.gruber@pqgruber.com>, Tim Harvey <tharvey@gateworks.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Nandor Han <nandor.han@ge.com>, Lucas Stach <l.stach@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+Hi Clemens,
 
-On Wednesday 11 Jan 2017 11:43:30 Greg KH wrote:
-> On Wed, Jan 11, 2017 at 11:38:15AM +0100, Geert Uytterhoeven wrote:
-> > On Wed, Jan 11, 2017 at 9:04 AM, Greg KH <greg@kroah.com> wrote:
-> >> On Wed, Jan 04, 2017 at 01:06:20AM +0200, Laurent Pinchart wrote:
-> >>> Most of the patches in this series have been sitting in my development
-> >>> tree for three years now. While rebasing all my development branches I
-> >>> decided it was time to send them out in case they're considered
-> >>> useful. I've then thrown a few additional patches in to move the
-> >>> driver further in the right direction (or at least the direction I
-> >>> consider right).
-> >>> 
-> >>> The idea behind this series is to move towards removal of the sh-sci
-> >>> platform data. This won't be possible until SH platforms move to DT
-> >>> (and I won't hold my breath), but we can get rid of most of the
-> >>> platform data fields already and cleanup the sh-sci driver at the same
-> >>> time.
-> >> 
-> >> I've merged patches 1, 2, 12, 13, 14, 15, 16, 17, and 18 in my tty tree.
-> >> 
-> >> If I should take any others there as well, please let me know.
-> >
-> > As reported by the kbuild test robot, patch 17 ("serial: sh-sci: Remove
-> > manual break debouncing") depends on patch 7 ("sh: Don't set sh-sci
-> > port_reg").
-> 
-> Ugh, ok, I can't take all of these.
-> 
-> What do you all suggest?
+On Tue, Jan 10, 2017 at 10:33 PM, Clemens Gruber
+<clemens.gruber@pqgruber.com> wrote:
+> Hi Fabio,
+>
+> On Sun, Jan 08, 2017 at 07:46:29PM -0200, Fabio Estevam wrote:
+>> > What's the revision of the i.MX6Q on your board? Mine is 1.5 (TO 1.3)
+>>
+>> Mine is a mx6solo rev1.1.
+>
+> Could it be dependent upon SMP? Do you have an i.MX6Q board around to
+> try?
 
-There are two patches still missing acks from Geert. I'll repost the whole 
-series when he will be done with reviewing them, and you could take it all in 
-your tree. The arch/sh/ parts won't conflict, they only touch Renesas platform 
-code that nobody has modified for a long time.
+Unfortunately the only hardware I can test RS485 is based on mx6solo.
 
--- 
+Adding Tim Harvey, who could probably test RS485 on MX6Q.
+
 Regards,
 
-Laurent Pinchart
+Fabio Estevam
