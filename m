@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v2 07/18] sh: Don't set sh-sci port_reg
-Date: Wed, 11 Jan 2017 16:43:29 +0200
-Message-ID: <20170111144340.29074-8-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 08/18] sh: Don't set the sh-sci platform data scscr CKE0 bit
+Date: Wed, 11 Jan 2017 16:43:30 +0200
+Message-ID: <20170111144340.29074-9-laurent.pinchart+renesas@ideasonboard.com>
 References: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,176 +10,52 @@ To: linux-renesas-soc@vger.kernel.org
 Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-The driver considers all negative or zero values of the port_reg field
-as invalid. The four platforms that set the field to a register address
-all use an address higher than 0x7fffffff, which is thus considered by
-the driver as invalid. The feature is thus never used, remove it.
-
-The feature could be implemented properly in the future using the
-pinctrl and GPIO APIs if desired.
-
-While at it, don't set the field to SCIx_NOT_SUPPORTED (-1) either,
-leaving it unset leads to the same result. This will allow removing the
-SCIx_NOT_SUPPORTED macro.
+The bit is only set by platforms that also set the CKE1 but, in which
+case its value is ignored by the device. Don't set it, this simplifies
+platform data and only leaves the CKE1 bit to be handled.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- arch/sh/kernel/cpu/sh3/setup-sh770x.c  | 2 --
- arch/sh/kernel/cpu/sh4/setup-sh7750.c  | 1 -
- arch/sh/kernel/cpu/sh4a/setup-sh7366.c | 1 -
- arch/sh/kernel/cpu/sh4a/setup-sh7723.c | 6 ------
- arch/sh/kernel/cpu/sh4a/setup-sh7724.c | 6 ------
- 5 files changed, 16 deletions(-)
+ arch/sh/kernel/cpu/sh3/setup-sh7705.c | 2 +-
+ arch/sh/kernel/cpu/sh3/setup-sh7710.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/sh/kernel/cpu/sh3/setup-sh770x.c b/arch/sh/kernel/cpu/sh3/setup-sh770x.c
-index e64fe24d860c..e1e54258b822 100644
---- a/arch/sh/kernel/cpu/sh3/setup-sh770x.c
-+++ b/arch/sh/kernel/cpu/sh3/setup-sh770x.c
-@@ -109,7 +109,6 @@ static struct platform_device rtc_device = {
+diff --git a/arch/sh/kernel/cpu/sh3/setup-sh7705.c b/arch/sh/kernel/cpu/sh3/setup-sh7705.c
+index a60edd8f3db7..f6e392e0d27e 100644
+--- a/arch/sh/kernel/cpu/sh3/setup-sh7705.c
++++ b/arch/sh/kernel/cpu/sh3/setup-sh7705.c
+@@ -70,7 +70,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7705", vectors, NULL,
+ 			 NULL, prio_registers, NULL);
+ 
+ static struct plat_sci_port scif0_platform_data = {
+-	.scscr		= SCSCR_CKE1 | SCSCR_CKE0,
++	.scscr		= SCSCR_CKE1,
+ 	.type		= PORT_SCIF,
+ 	.ops		= &sh770x_sci_port_ops,
+ 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
+diff --git a/arch/sh/kernel/cpu/sh3/setup-sh7710.c b/arch/sh/kernel/cpu/sh3/setup-sh7710.c
+index ac2a0aabcec5..ea52410b430d 100644
+--- a/arch/sh/kernel/cpu/sh3/setup-sh7710.c
++++ b/arch/sh/kernel/cpu/sh3/setup-sh7710.c
+@@ -98,7 +98,7 @@ static struct platform_device rtc_device = {
  };
  
  static struct plat_sci_port scif0_platform_data = {
--	.port_reg	= 0xa4000136,
- 	.type		= PORT_SCI,
- 	.ops		= &sh770x_sci_port_ops,
- 	.regshift	= 1,
-@@ -156,7 +155,6 @@ static struct platform_device scif1_device = {
- #if defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-     defined(CONFIG_CPU_SUBTYPE_SH7709)
- static struct plat_sci_port scif2_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.type		= PORT_IRDA,
- 	.ops		= &sh770x_sci_port_ops,
- 	.regshift	= 1,
-diff --git a/arch/sh/kernel/cpu/sh4/setup-sh7750.c b/arch/sh/kernel/cpu/sh4/setup-sh7750.c
-index f693f122a286..d98a55416306 100644
---- a/arch/sh/kernel/cpu/sh4/setup-sh7750.c
-+++ b/arch/sh/kernel/cpu/sh4/setup-sh7750.c
-@@ -38,7 +38,6 @@ static struct platform_device rtc_device = {
- };
- 
- static struct plat_sci_port sci_platform_data = {
--	.port_reg	= 0xffe0001C,
- 	.type		= PORT_SCI,
- 	.regshift	= 2,
- };
-diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7366.c b/arch/sh/kernel/cpu/sh4a/setup-sh7366.c
-index 3fc1a3ab634e..646918713d9a 100644
---- a/arch/sh/kernel/cpu/sh4a/setup-sh7366.c
-+++ b/arch/sh/kernel/cpu/sh4a/setup-sh7366.c
-@@ -20,7 +20,6 @@
- #include <asm/clock.h>
- 
- static struct plat_sci_port scif0_platform_data = {
--	.port_reg	= 0xa405013e,
- 	.scscr		= SCSCR_REIE,
+-	.scscr		= SCSCR_REIE | SCSCR_CKE1 | SCSCR_CKE0,
++	.scscr		= SCSCR_REIE | SCSCR_CKE1,
  	.type		= PORT_SCIF,
  };
-diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7723.c b/arch/sh/kernel/cpu/sh4a/setup-sh7723.c
-index 9f47ec950af8..6c5cb234aa33 100644
---- a/arch/sh/kernel/cpu/sh4a/setup-sh7723.c
-+++ b/arch/sh/kernel/cpu/sh4a/setup-sh7723.c
-@@ -23,7 +23,6 @@
  
- /* Serial */
- static struct plat_sci_port scif0_platform_data = {
--	.port_reg	= 0xa4050160,
- 	.scscr		= SCSCR_REIE,
- 	.type           = PORT_SCIF,
- 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
-@@ -45,7 +44,6 @@ static struct platform_device scif0_device = {
+@@ -118,7 +118,7 @@ static struct platform_device scif0_device = {
  };
  
  static struct plat_sci_port scif1_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.scscr		= SCSCR_REIE,
- 	.type           = PORT_SCIF,
- 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
-@@ -67,7 +65,6 @@ static struct platform_device scif1_device = {
+-	.scscr		= SCSCR_REIE | SCSCR_CKE1 | SCSCR_CKE0,
++	.scscr		= SCSCR_REIE | SCSCR_CKE1,
+ 	.type		= PORT_SCIF,
  };
  
- static struct plat_sci_port scif2_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.scscr		= SCSCR_REIE,
- 	.type           = PORT_SCIF,
- 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
-@@ -89,7 +86,6 @@ static struct platform_device scif2_device = {
- };
- 
- static struct plat_sci_port scif3_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.scscr		= SCSCR_REIE,
- 	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
-@@ -111,7 +107,6 @@ static struct platform_device scif3_device = {
- };
- 
- static struct plat_sci_port scif4_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.scscr		= SCSCR_REIE,
- 	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
-@@ -133,7 +128,6 @@ static struct platform_device scif4_device = {
- };
- 
- static struct plat_sci_port scif5_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.scscr		= SCSCR_REIE,
- 	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
-diff --git a/arch/sh/kernel/cpu/sh4a/setup-sh7724.c b/arch/sh/kernel/cpu/sh4a/setup-sh7724.c
-index 3ce55884c787..c20258b18775 100644
---- a/arch/sh/kernel/cpu/sh4a/setup-sh7724.c
-+++ b/arch/sh/kernel/cpu/sh4a/setup-sh7724.c
-@@ -290,7 +290,6 @@ static struct platform_device dma1_device = {
- 
- /* Serial */
- static struct plat_sci_port scif0_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.scscr		= SCSCR_REIE,
- 	.type           = PORT_SCIF,
- 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
-@@ -312,7 +311,6 @@ static struct platform_device scif0_device = {
- };
- 
- static struct plat_sci_port scif1_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.scscr		= SCSCR_REIE,
- 	.type           = PORT_SCIF,
- 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
-@@ -334,7 +332,6 @@ static struct platform_device scif1_device = {
- };
- 
- static struct plat_sci_port scif2_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.scscr		= SCSCR_REIE,
- 	.type           = PORT_SCIF,
- 	.regtype	= SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
-@@ -356,7 +353,6 @@ static struct platform_device scif2_device = {
- };
- 
- static struct plat_sci_port scif3_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
- };
-@@ -377,7 +373,6 @@ static struct platform_device scif3_device = {
- };
- 
- static struct plat_sci_port scif4_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
- };
-@@ -398,7 +393,6 @@ static struct platform_device scif4_device = {
- };
- 
- static struct plat_sci_port scif5_platform_data = {
--	.port_reg	= SCIx_NOT_SUPPORTED,
- 	.sampling_rate	= 8,
- 	.type           = PORT_SCIFA,
- };
 -- 
 Regards,
 
