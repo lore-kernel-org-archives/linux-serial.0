@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v2 18/18] serial: sh-sci: Compute the regshift value for SCI ports
-Date: Wed, 11 Jan 2017 16:43:40 +0200
-Message-ID: <20170111144340.29074-19-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 13/18] serial: sh-sci: Constify platform data
+Date: Wed, 11 Jan 2017 16:43:35 +0200
+Message-ID: <20170111144340.29074-14-laurent.pinchart+renesas@ideasonboard.com>
 References: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,113 +10,161 @@ To: linux-renesas-soc@vger.kernel.org
 Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-SCI instances found in SH SoCs have different spacing between registers
-depending on the SoC. The platform data contains a regshift field that
-tells the driver by how many bits to shift the register offset to
-compute its address. We can compute the regshift value automatically
-based on the memory resource size, there's no need to pass the value
-through platform data.
-
-Fix the sh7750 SCI and sh7760 SIM port memory resources length to ensure
-proper computation of the regshift value.
+The driver modifies platform data for internal purpose only. Fix that
+and make the platform data structure const.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- arch/sh/kernel/cpu/sh3/setup-sh770x.c |  1 -
- arch/sh/kernel/cpu/sh4/setup-sh7750.c |  3 +--
- arch/sh/kernel/cpu/sh4/setup-sh7760.c | 10 ++++++++--
- drivers/tty/serial/sh-sci.c           |  8 +++++++-
- include/linux/serial_sci.h            |  1 -
- 5 files changed, 16 insertions(+), 7 deletions(-)
+ drivers/tty/serial/sh-sci.c | 97 +++++++++++++++++++++++----------------------
+ 1 file changed, 49 insertions(+), 48 deletions(-)
 
-diff --git a/arch/sh/kernel/cpu/sh3/setup-sh770x.c b/arch/sh/kernel/cpu/sh3/setup-sh770x.c
-index 592cd9ab30c4..59a88611df55 100644
---- a/arch/sh/kernel/cpu/sh3/setup-sh770x.c
-+++ b/arch/sh/kernel/cpu/sh3/setup-sh770x.c
-@@ -111,7 +111,6 @@ static struct platform_device rtc_device = {
- static struct plat_sci_port scif0_platform_data = {
- 	.type		= PORT_SCI,
- 	.ops		= &sh770x_sci_port_ops,
--	.regshift	= 1,
- };
- 
- static struct resource scif0_resources[] = {
-diff --git a/arch/sh/kernel/cpu/sh4/setup-sh7750.c b/arch/sh/kernel/cpu/sh4/setup-sh7750.c
-index d98a55416306..57d30689204d 100644
---- a/arch/sh/kernel/cpu/sh4/setup-sh7750.c
-+++ b/arch/sh/kernel/cpu/sh4/setup-sh7750.c
-@@ -39,11 +39,10 @@ static struct platform_device rtc_device = {
- 
- static struct plat_sci_port sci_platform_data = {
- 	.type		= PORT_SCI,
--	.regshift	= 2,
- };
- 
- static struct resource sci_resources[] = {
--	DEFINE_RES_MEM(0xffe00000, 0x100),
-+	DEFINE_RES_MEM(0xffe00000, 0x20),
- 	DEFINE_RES_IRQ(evt2irq(0x4e0)),
- };
- 
-diff --git a/arch/sh/kernel/cpu/sh4/setup-sh7760.c b/arch/sh/kernel/cpu/sh4/setup-sh7760.c
-index 0c0cdfc69dcc..e51fe1734e13 100644
---- a/arch/sh/kernel/cpu/sh4/setup-sh7760.c
-+++ b/arch/sh/kernel/cpu/sh4/setup-sh7760.c
-@@ -200,12 +200,18 @@ static struct platform_device scif2_device = {
- };
- 
- static struct plat_sci_port scif3_platform_data = {
-+	/*
-+	 * This is actually a SIM card module serial port, based on an SCI with
-+	 * additional registers. The sh-sci driver doesn't support the SIM port
-+	 * type, declare it as a SCI. Don't declare the additional registers in
-+	 * the memory resource or the driver will compute an incorrect regshift
-+	 * value.
-+	 */
- 	.type		= PORT_SCI,
--	.regshift	= 2,
- };
- 
- static struct resource scif3_resources[] = {
--	DEFINE_RES_MEM(0xfe480000, 0x100),
-+	DEFINE_RES_MEM(0xfe480000, 0x10),
- 	DEFINE_RES_IRQ(evt2irq(0xc00)),
- 	DEFINE_RES_IRQ(evt2irq(0xc20)),
- 	DEFINE_RES_IRQ(evt2irq(0xc40)),
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 7906255b097c..fbffe89b493f 100644
+index ca68a7d562ea..4a54fd5909ed 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -2572,9 +2572,15 @@ static int sci_init_single(struct platform_device *dev,
+@@ -114,7 +114,7 @@ struct sci_port {
  
- 	port->type		= p->type;
- 	port->flags		= UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | p->flags;
--	port->regshift		= p->regshift;
- 	port->fifosize		= sci_port->params->fifosize;
+ 	/* Platform configuration */
+ 	const struct sci_port_params *params;
+-	struct plat_sci_port	*cfg;
++	const struct plat_sci_port *cfg;
+ 	unsigned int		overrun_reg;
+ 	unsigned int		overrun_mask;
+ 	unsigned int		error_mask;
+@@ -420,41 +420,6 @@ static void sci_serial_out(struct uart_port *p, int offset, int value)
+ 		WARN(1, "Invalid register access\n");
+ }
  
-+	if (port->type == PORT_SCI) {
-+		if (sci_port->reg_size >= 0x20)
-+			port->regshift = 2;
-+		else
-+			port->regshift = 1;
+-static int sci_probe_regmap(struct plat_sci_port *cfg)
+-{
+-	switch (cfg->type) {
+-	case PORT_SCI:
+-		cfg->regtype = SCIx_SCI_REGTYPE;
+-		break;
+-	case PORT_IRDA:
+-		cfg->regtype = SCIx_IRDA_REGTYPE;
+-		break;
+-	case PORT_SCIFA:
+-		cfg->regtype = SCIx_SCIFA_REGTYPE;
+-		break;
+-	case PORT_SCIFB:
+-		cfg->regtype = SCIx_SCIFB_REGTYPE;
+-		break;
+-	case PORT_SCIF:
+-		/*
+-		 * The SH-4 is a bit of a misnomer here, although that's
+-		 * where this particular port layout originated. This
+-		 * configuration (or some slight variation thereof)
+-		 * remains the dominant model for all SCIFs.
+-		 */
+-		cfg->regtype = SCIx_SH4_SCIF_REGTYPE;
+-		break;
+-	case PORT_HSCIF:
+-		cfg->regtype = SCIx_HSCIF_REGTYPE;
+-		break;
+-	default:
+-		pr_err("Can't probe register map for given port\n");
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+ static void sci_port_enable(struct sci_port *sci_port)
+ {
+ 	unsigned int i;
+@@ -2539,9 +2504,50 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
+ 	return 0;
+ }
+ 
++static const struct sci_port_params *
++sci_probe_regmap(const struct plat_sci_port *cfg)
++{
++	unsigned int regtype;
++
++	if (cfg->regtype != SCIx_PROBE_REGTYPE)
++		return &sci_port_params[cfg->regtype];
++
++	switch (cfg->type) {
++	case PORT_SCI:
++		regtype = SCIx_SCI_REGTYPE;
++		break;
++	case PORT_IRDA:
++		regtype = SCIx_IRDA_REGTYPE;
++		break;
++	case PORT_SCIFA:
++		regtype = SCIx_SCIFA_REGTYPE;
++		break;
++	case PORT_SCIFB:
++		regtype = SCIx_SCIFB_REGTYPE;
++		break;
++	case PORT_SCIF:
++		/*
++		 * The SH-4 is a bit of a misnomer here, although that's
++		 * where this particular port layout originated. This
++		 * configuration (or some slight variation thereof)
++		 * remains the dominant model for all SCIFs.
++		 */
++		regtype = SCIx_SH4_SCIF_REGTYPE;
++		break;
++	case PORT_HSCIF:
++		regtype = SCIx_HSCIF_REGTYPE;
++		break;
++	default:
++		pr_err("Can't probe register map for given port\n");
++		return NULL;
 +	}
 +
- 	/*
- 	 * The UART port needs an IRQ value, so we peg this to the RX IRQ
- 	 * for the multi-IRQ ports, which is where we are primarily
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index f9a4526f4ec5..e598eaef3962 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -56,7 +56,6 @@ struct plat_sci_port {
- 	/*
- 	 * Platform overrides if necessary, defaults otherwise.
- 	 */
--	unsigned char	regshift;
- 	unsigned char	regtype;
++	return &sci_port_params[regtype];
++}
++
+ static int sci_init_single(struct platform_device *dev,
+ 			   struct sci_port *sci_port, unsigned int index,
+-			   struct plat_sci_port *p, bool early)
++			   const struct plat_sci_port *p, bool early)
+ {
+ 	struct uart_port *port = &sci_port->port;
+ 	const struct resource *res;
+@@ -2578,13 +2584,9 @@ static int sci_init_single(struct platform_device *dev,
+ 		sci_port->irqs[3] = sci_port->irqs[0];
+ 	}
  
- 	struct plat_sci_port_ops	*ops;
+-	if (p->regtype == SCIx_PROBE_REGTYPE) {
+-		ret = sci_probe_regmap(p);
+-		if (unlikely(ret))
+-			return ret;
+-	}
+-
+-	sci_port->params = &sci_port_params[p->regtype];
++	sci_port->params = sci_probe_regmap(p);
++	if (unlikely(sci_port->params == NULL))
++		return -EINVAL;
+ 
+ 	switch (p->type) {
+ 	case PORT_SCIFB:
+@@ -2804,7 +2806,7 @@ static char early_serial_buf[32];
+ 
+ static int sci_probe_earlyprintk(struct platform_device *pdev)
+ {
+-	struct plat_sci_port *cfg = dev_get_platdata(&pdev->dev);
++	const struct plat_sci_port *cfg = dev_get_platdata(&pdev->dev);
+ 
+ 	if (early_serial_console.data)
+ 		return -EEXIST;
+@@ -3095,10 +3097,9 @@ static int __init early_console_setup(struct earlycon_device *device,
+ 	device->port.serial_out	= sci_serial_out;
+ 	device->port.type = type;
+ 	memcpy(&sci_ports[0].port, &device->port, sizeof(struct uart_port));
++	port_cfg.type = type;
+ 	sci_ports[0].cfg = &port_cfg;
+-	sci_ports[0].cfg->type = type;
+-	sci_probe_regmap(sci_ports[0].cfg);
+-	sci_ports[0].params = &sci_port_params[sci_ports[0].cfg->regtype];
++	sci_ports[0].params = sci_probe_regmap(&port_cfg);
+ 	port_cfg.scscr = sci_serial_in(&sci_ports[0].port, SCSCR);
+ 	sci_serial_out(&sci_ports[0].port, SCSCR,
+ 		       SCSCR_RE | SCSCR_TE | port_cfg.scscr);
 -- 
 Regards,
 
