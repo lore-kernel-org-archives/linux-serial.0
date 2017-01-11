@@ -1,52 +1,82 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty/serial: atmel: RS485 half duplex w/DMA: enable RX
- after TX is done
-Date: Wed, 11 Jan 2017 08:09:09 +0100
-Message-ID: <20170111070909.GA24787@kroah.com>
-References: <20161206120533.14505-1-richard.genoud@gmail.com>
- <20170102115326.mfly6w5k3dllfpur@piout.net>
- <CACQ1gAifm3nWOyfGbugHf4pFDQ7NCks+H+cjZcwEhjPqfJ=5Mw@mail.gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty/serial: atmel_serial: BUG: stop DMA from
+ transmitting in stop_tx
+Date: Wed, 11 Jan 2017 08:09:21 +0100
+Message-ID: <20170111070921.GB24787@kroah.com>
+References: <20161213162756.16139-1-richard.genoud@gmail.com>
+ <059a5366-c0d4-ab89-d64a-dcf007bc9e91@atmel.com>
+ <CACQ1gAiVc56TosMLMB-GSYW9M5m3Zy04RoPr=raoW-PpYEkgXA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CACQ1gAifm3nWOyfGbugHf4pFDQ7NCks+H+cjZcwEhjPqfJ=5Mw@mail.gmail.com>
+In-Reply-To: <CACQ1gAiVc56TosMLMB-GSYW9M5m3Zy04RoPr=raoW-PpYEkgXA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Gil Weber <webergil@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "#4 . 4+" <stable@vger.kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "beware, this won't apply before 4.3" <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 02, 2017 at 03:14:37PM +0100, Richard Genoud wrote:
-> 2017-01-02 12:53 GMT+01:00 Alexandre Belloni
-> <alexandre.belloni@free-electrons.com>:
-> > On 06/12/2016 at 13:05:33 +0100, Richard Genoud wrote :
-> >> When using RS485 in half duplex, RX should be enabled when TX is
-> >> finished, and stopped when TX starts.
+On Mon, Jan 02, 2017 at 03:16:46PM +0100, Richard Genoud wrote:
+> 2017-01-02 12:13 GMT+01:00 Nicolas Ferre <nicolas.ferre@atmel.com>:
+> > Le 13/12/2016 à 17:27, Richard Genoud a écrit :
+> >> If we don't disable the transmitter in atmel_stop_tx, the DMA buffer
+> >> continues to send data until it is emptied.
+> >> This cause problems with the flow control (CTS is asserted and data are
+> >> still sent).
 > >>
-> >> Before commit 0058f0871efe7b01c6 ("tty/serial: atmel: fix RS485 half
-> >> duplex with DMA"), RX was not disabled in atmel_start_tx() if the DMA
-> >> was used. So, collisions could happened.
+> >> So, disabling the transmitter in atmel_stop_tx is a sane thing to do.
 > >>
-> >> But disabling RX in atmel_start_tx() uncovered another bug:
-> >> RX was enabled again in the wrong place (in atmel_tx_dma) instead of
-> >> being enabled when TX is finished (in atmel_complete_tx_dma), so the
-> >> transmission simply stopped.
+> >> Tested on at91sam9g35-cm(DMA)
+> >> Tested for regressions on sama5d2-xplained(Fifo) and at91sam9g20ek(PDC)
 > >>
-> >> This bug was not triggered before commit 0058f0871efe7b01c6
-> >> ("tty/serial: atmel: fix RS485 half duplex with DMA") because RX was
-> >> never disabled before.
-> >>
-> >> Moving atmel_start_rx() in atmel_complete_tx_dma() corrects the problem.
-> >>
-> >> Cc: stable@vger.kernel.org
-> >> Reported-by: Gil Weber <webergil@gmail.com>
-> >> Tested-by: Gil Weber <webergil@gmail.com>
+> >> Cc: <stable@vger.kernel.org> (beware, this won't apply before 4.3)
 > >> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 > >
-> > Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> > Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 > >
-> Greg, could you take this patch in your tree ?
+> >> ---
+> >>  drivers/tty/serial/atmel_serial.c | 11 +++++++++++
+> >>  1 file changed, 11 insertions(+)
+> >>
+> >> NB: this is not for the 4.10 merge window, I'm just sending it now to
+> >> have some comments if someone is againts it.
+> >>
+> >> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> >> index 168b10cad47b..f9d42de5ab2d 100644
+> >> --- a/drivers/tty/serial/atmel_serial.c
+> >> +++ b/drivers/tty/serial/atmel_serial.c
+> >> @@ -481,6 +481,14 @@ static void atmel_stop_tx(struct uart_port *port)
+> >>               /* disable PDC transmit */
+> >>               atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTDIS);
+> >>       }
+> >> +
+> >> +     /*
+> >> +      * Disable the transmitter.
+> >> +      * This is mandatory when DMA is used, otherwise the DMA buffer
+> >> +      * is fully transmitted.
+> >> +      */
+> >> +     atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS);
+> >> +
+> >>       /* Disable interrupts */
+> >>       atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
+> >>
+> >> @@ -513,6 +521,9 @@ static void atmel_start_tx(struct uart_port *port)
+> >>
+> >>       /* Enable interrupts */
+> >>       atmel_uart_writel(port, ATMEL_US_IER, atmel_port->tx_done_mask);
+> >> +
+> >> +     /* re-enable the transmitter */
+> >> +     atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
+> >>  }
+> >>
+> >>  /*
+> >>
+> >
+> >
+> > --
+> > Nicolas Ferre
+> 
+> Greg, could you also take this patch in your tree ?
 
-Yes, will do so, thanks.
-
-greg k-h
+Yup!
