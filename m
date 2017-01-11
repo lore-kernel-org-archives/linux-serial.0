@@ -1,7 +1,7 @@
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v2 12/18] serial: sh-sci: Replace regmap array with port parameters
-Date: Wed, 11 Jan 2017 16:43:34 +0200
-Message-ID: <20170111144340.29074-13-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 05/18] sh: sh726[49]: Don't set sh-sci pdata scscr TOIE bit
+Date: Wed, 11 Jan 2017 16:43:27 +0200
+Message-ID: <20170111144340.29074-6-laurent.pinchart+renesas@ideasonboard.com>
 References: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
 Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
@@ -10,409 +10,168 @@ To: linux-renesas-soc@vger.kernel.org
 Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Turn the regmap two-dimensional array to an array of port parameters and
-store a pointer to the port parameters in the sci_port structure. This
-will allow handling additional port type dependent parameters.
+The SCIF ports on sh7264 and sh7269 don't support the TOIE bit according
+to the datasheets.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.c | 278 ++++++++++++++++++++++++--------------------
- 1 file changed, 155 insertions(+), 123 deletions(-)
+ arch/sh/kernel/cpu/sh2a/setup-sh7264.c | 16 ++++++++--------
+ arch/sh/kernel/cpu/sh2a/setup-sh7269.c | 16 ++++++++--------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index b99664046263..ca68a7d562ea 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -101,10 +101,19 @@ enum SCI_CLKS {
- 	for ((_sr) = max_sr(_port); (_sr) >= min_sr(_port); (_sr)--)	\
- 		if ((_port)->sampling_rate_mask & SCI_SR((_sr)))
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7264.c b/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
+index f111c20177ea..aebaa7a4da46 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-sh7264.c
+@@ -227,7 +227,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7264", vectors, groups,
  
-+struct plat_sci_reg {
-+	u8 offset, size;
-+};
-+
-+struct sci_port_params {
-+	const struct plat_sci_reg regs[SCIx_NR_REGS];
-+};
-+
- struct sci_port {
- 	struct uart_port	port;
- 
- 	/* Platform configuration */
-+	const struct sci_port_params *params;
- 	struct plat_sci_port	*cfg;
- 	unsigned int		overrun_reg;
- 	unsigned int		overrun_mask;
-@@ -156,69 +165,73 @@ to_sci_port(struct uart_port *uart)
- 	return container_of(uart, struct sci_port, port);
- }
- 
--struct plat_sci_reg {
--	u8 offset, size;
--};
--
--static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
-+static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
- 	/*
- 	 * Common SCI definitions, dependent on the port's regshift
- 	 * value.
- 	 */
- 	[SCIx_SCI_REGTYPE] = {
--		[SCSMR]		= { 0x00,  8 },
--		[SCBRR]		= { 0x01,  8 },
--		[SCSCR]		= { 0x02,  8 },
--		[SCxTDR]	= { 0x03,  8 },
--		[SCxSR]		= { 0x04,  8 },
--		[SCxRDR]	= { 0x05,  8 },
-+		.regs = {
-+			[SCSMR]		= { 0x00,  8 },
-+			[SCBRR]		= { 0x01,  8 },
-+			[SCSCR]		= { 0x02,  8 },
-+			[SCxTDR]	= { 0x03,  8 },
-+			[SCxSR]		= { 0x04,  8 },
-+			[SCxRDR]	= { 0x05,  8 },
-+		},
- 	},
- 
- 	/*
- 	 * Common definitions for legacy IrDA ports.
- 	 */
- 	[SCIx_IRDA_REGTYPE] = {
--		[SCSMR]		= { 0x00,  8 },
--		[SCBRR]		= { 0x02,  8 },
--		[SCSCR]		= { 0x04,  8 },
--		[SCxTDR]	= { 0x06,  8 },
--		[SCxSR]		= { 0x08, 16 },
--		[SCxRDR]	= { 0x0a,  8 },
--		[SCFCR]		= { 0x0c,  8 },
--		[SCFDR]		= { 0x0e, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00,  8 },
-+			[SCBRR]		= { 0x02,  8 },
-+			[SCSCR]		= { 0x04,  8 },
-+			[SCxTDR]	= { 0x06,  8 },
-+			[SCxSR]		= { 0x08, 16 },
-+			[SCxRDR]	= { 0x0a,  8 },
-+			[SCFCR]		= { 0x0c,  8 },
-+			[SCFDR]		= { 0x0e, 16 },
-+		},
- 	},
- 
- 	/*
- 	 * Common SCIFA definitions.
- 	 */
- 	[SCIx_SCIFA_REGTYPE] = {
--		[SCSMR]		= { 0x00, 16 },
--		[SCBRR]		= { 0x04,  8 },
--		[SCSCR]		= { 0x08, 16 },
--		[SCxTDR]	= { 0x20,  8 },
--		[SCxSR]		= { 0x14, 16 },
--		[SCxRDR]	= { 0x24,  8 },
--		[SCFCR]		= { 0x18, 16 },
--		[SCFDR]		= { 0x1c, 16 },
--		[SCPCR]		= { 0x30, 16 },
--		[SCPDR]		= { 0x34, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00, 16 },
-+			[SCBRR]		= { 0x04,  8 },
-+			[SCSCR]		= { 0x08, 16 },
-+			[SCxTDR]	= { 0x20,  8 },
-+			[SCxSR]		= { 0x14, 16 },
-+			[SCxRDR]	= { 0x24,  8 },
-+			[SCFCR]		= { 0x18, 16 },
-+			[SCFDR]		= { 0x1c, 16 },
-+			[SCPCR]		= { 0x30, 16 },
-+			[SCPDR]		= { 0x34, 16 },
-+		},
- 	},
- 
- 	/*
- 	 * Common SCIFB definitions.
- 	 */
- 	[SCIx_SCIFB_REGTYPE] = {
--		[SCSMR]		= { 0x00, 16 },
--		[SCBRR]		= { 0x04,  8 },
--		[SCSCR]		= { 0x08, 16 },
--		[SCxTDR]	= { 0x40,  8 },
--		[SCxSR]		= { 0x14, 16 },
--		[SCxRDR]	= { 0x60,  8 },
--		[SCFCR]		= { 0x18, 16 },
--		[SCTFDR]	= { 0x38, 16 },
--		[SCRFDR]	= { 0x3c, 16 },
--		[SCPCR]		= { 0x30, 16 },
--		[SCPDR]		= { 0x34, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00, 16 },
-+			[SCBRR]		= { 0x04,  8 },
-+			[SCSCR]		= { 0x08, 16 },
-+			[SCxTDR]	= { 0x40,  8 },
-+			[SCxSR]		= { 0x14, 16 },
-+			[SCxRDR]	= { 0x60,  8 },
-+			[SCFCR]		= { 0x18, 16 },
-+			[SCTFDR]	= { 0x38, 16 },
-+			[SCRFDR]	= { 0x3c, 16 },
-+			[SCPCR]		= { 0x30, 16 },
-+			[SCPDR]		= { 0x34, 16 },
-+		},
- 	},
- 
- 	/*
-@@ -226,46 +239,52 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 	 * count registers.
- 	 */
- 	[SCIx_SH2_SCIF_FIFODATA_REGTYPE] = {
--		[SCSMR]		= { 0x00, 16 },
--		[SCBRR]		= { 0x04,  8 },
--		[SCSCR]		= { 0x08, 16 },
--		[SCxTDR]	= { 0x0c,  8 },
--		[SCxSR]		= { 0x10, 16 },
--		[SCxRDR]	= { 0x14,  8 },
--		[SCFCR]		= { 0x18, 16 },
--		[SCFDR]		= { 0x1c, 16 },
--		[SCSPTR]	= { 0x20, 16 },
--		[SCLSR]		= { 0x24, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00, 16 },
-+			[SCBRR]		= { 0x04,  8 },
-+			[SCSCR]		= { 0x08, 16 },
-+			[SCxTDR]	= { 0x0c,  8 },
-+			[SCxSR]		= { 0x10, 16 },
-+			[SCxRDR]	= { 0x14,  8 },
-+			[SCFCR]		= { 0x18, 16 },
-+			[SCFDR]		= { 0x1c, 16 },
-+			[SCSPTR]	= { 0x20, 16 },
-+			[SCLSR]		= { 0x24, 16 },
-+		},
- 	},
- 
- 	/*
- 	 * Common SH-3 SCIF definitions.
- 	 */
- 	[SCIx_SH3_SCIF_REGTYPE] = {
--		[SCSMR]		= { 0x00,  8 },
--		[SCBRR]		= { 0x02,  8 },
--		[SCSCR]		= { 0x04,  8 },
--		[SCxTDR]	= { 0x06,  8 },
--		[SCxSR]		= { 0x08, 16 },
--		[SCxRDR]	= { 0x0a,  8 },
--		[SCFCR]		= { 0x0c,  8 },
--		[SCFDR]		= { 0x0e, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00,  8 },
-+			[SCBRR]		= { 0x02,  8 },
-+			[SCSCR]		= { 0x04,  8 },
-+			[SCxTDR]	= { 0x06,  8 },
-+			[SCxSR]		= { 0x08, 16 },
-+			[SCxRDR]	= { 0x0a,  8 },
-+			[SCFCR]		= { 0x0c,  8 },
-+			[SCFDR]		= { 0x0e, 16 },
-+		},
- 	},
- 
- 	/*
- 	 * Common SH-4(A) SCIF(B) definitions.
- 	 */
- 	[SCIx_SH4_SCIF_REGTYPE] = {
--		[SCSMR]		= { 0x00, 16 },
--		[SCBRR]		= { 0x04,  8 },
--		[SCSCR]		= { 0x08, 16 },
--		[SCxTDR]	= { 0x0c,  8 },
--		[SCxSR]		= { 0x10, 16 },
--		[SCxRDR]	= { 0x14,  8 },
--		[SCFCR]		= { 0x18, 16 },
--		[SCFDR]		= { 0x1c, 16 },
--		[SCSPTR]	= { 0x20, 16 },
--		[SCLSR]		= { 0x24, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00, 16 },
-+			[SCBRR]		= { 0x04,  8 },
-+			[SCSCR]		= { 0x08, 16 },
-+			[SCxTDR]	= { 0x0c,  8 },
-+			[SCxSR]		= { 0x10, 16 },
-+			[SCxRDR]	= { 0x14,  8 },
-+			[SCFCR]		= { 0x18, 16 },
-+			[SCFDR]		= { 0x1c, 16 },
-+			[SCSPTR]	= { 0x20, 16 },
-+			[SCLSR]		= { 0x24, 16 },
-+		},
- 	},
- 
- 	/*
-@@ -273,37 +292,41 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 	 * External Clock (BRG).
- 	 */
- 	[SCIx_SH4_SCIF_BRG_REGTYPE] = {
--		[SCSMR]		= { 0x00, 16 },
--		[SCBRR]		= { 0x04,  8 },
--		[SCSCR]		= { 0x08, 16 },
--		[SCxTDR]	= { 0x0c,  8 },
--		[SCxSR]		= { 0x10, 16 },
--		[SCxRDR]	= { 0x14,  8 },
--		[SCFCR]		= { 0x18, 16 },
--		[SCFDR]		= { 0x1c, 16 },
--		[SCSPTR]	= { 0x20, 16 },
--		[SCLSR]		= { 0x24, 16 },
--		[SCDL]		= { 0x30, 16 },
--		[SCCKS]		= { 0x34, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00, 16 },
-+			[SCBRR]		= { 0x04,  8 },
-+			[SCSCR]		= { 0x08, 16 },
-+			[SCxTDR]	= { 0x0c,  8 },
-+			[SCxSR]		= { 0x10, 16 },
-+			[SCxRDR]	= { 0x14,  8 },
-+			[SCFCR]		= { 0x18, 16 },
-+			[SCFDR]		= { 0x1c, 16 },
-+			[SCSPTR]	= { 0x20, 16 },
-+			[SCLSR]		= { 0x24, 16 },
-+			[SCDL]		= { 0x30, 16 },
-+			[SCCKS]		= { 0x34, 16 },
-+		},
- 	},
- 
- 	/*
- 	 * Common HSCIF definitions.
- 	 */
- 	[SCIx_HSCIF_REGTYPE] = {
--		[SCSMR]		= { 0x00, 16 },
--		[SCBRR]		= { 0x04,  8 },
--		[SCSCR]		= { 0x08, 16 },
--		[SCxTDR]	= { 0x0c,  8 },
--		[SCxSR]		= { 0x10, 16 },
--		[SCxRDR]	= { 0x14,  8 },
--		[SCFCR]		= { 0x18, 16 },
--		[SCFDR]		= { 0x1c, 16 },
--		[SCSPTR]	= { 0x20, 16 },
--		[SCLSR]		= { 0x24, 16 },
--		[HSSRR]		= { 0x40, 16 },
--		[SCDL]		= { 0x30, 16 },
--		[SCCKS]		= { 0x34, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00, 16 },
-+			[SCBRR]		= { 0x04,  8 },
-+			[SCSCR]		= { 0x08, 16 },
-+			[SCxTDR]	= { 0x0c,  8 },
-+			[SCxSR]		= { 0x10, 16 },
-+			[SCxRDR]	= { 0x14,  8 },
-+			[SCFCR]		= { 0x18, 16 },
-+			[SCFDR]		= { 0x1c, 16 },
-+			[SCSPTR]	= { 0x20, 16 },
-+			[SCLSR]		= { 0x24, 16 },
-+			[HSSRR]		= { 0x40, 16 },
-+			[SCDL]		= { 0x30, 16 },
-+			[SCCKS]		= { 0x34, 16 },
-+		},
- 	},
- 
- 	/*
-@@ -311,15 +334,17 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 	 * register.
- 	 */
- 	[SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE] = {
--		[SCSMR]		= { 0x00, 16 },
--		[SCBRR]		= { 0x04,  8 },
--		[SCSCR]		= { 0x08, 16 },
--		[SCxTDR]	= { 0x0c,  8 },
--		[SCxSR]		= { 0x10, 16 },
--		[SCxRDR]	= { 0x14,  8 },
--		[SCFCR]		= { 0x18, 16 },
--		[SCFDR]		= { 0x1c, 16 },
--		[SCLSR]		= { 0x24, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00, 16 },
-+			[SCBRR]		= { 0x04,  8 },
-+			[SCSCR]		= { 0x08, 16 },
-+			[SCxTDR]	= { 0x0c,  8 },
-+			[SCxSR]		= { 0x10, 16 },
-+			[SCxRDR]	= { 0x14,  8 },
-+			[SCFCR]		= { 0x18, 16 },
-+			[SCFDR]		= { 0x1c, 16 },
-+			[SCLSR]		= { 0x24, 16 },
-+		},
- 	},
- 
- 	/*
-@@ -327,18 +352,20 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 	 * count registers.
- 	 */
- 	[SCIx_SH4_SCIF_FIFODATA_REGTYPE] = {
--		[SCSMR]		= { 0x00, 16 },
--		[SCBRR]		= { 0x04,  8 },
--		[SCSCR]		= { 0x08, 16 },
--		[SCxTDR]	= { 0x0c,  8 },
--		[SCxSR]		= { 0x10, 16 },
--		[SCxRDR]	= { 0x14,  8 },
--		[SCFCR]		= { 0x18, 16 },
--		[SCFDR]		= { 0x1c, 16 },
--		[SCTFDR]	= { 0x1c, 16 },	/* aliased to SCFDR */
--		[SCRFDR]	= { 0x20, 16 },
--		[SCSPTR]	= { 0x24, 16 },
--		[SCLSR]		= { 0x28, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00, 16 },
-+			[SCBRR]		= { 0x04,  8 },
-+			[SCSCR]		= { 0x08, 16 },
-+			[SCxTDR]	= { 0x0c,  8 },
-+			[SCxSR]		= { 0x10, 16 },
-+			[SCxRDR]	= { 0x14,  8 },
-+			[SCFCR]		= { 0x18, 16 },
-+			[SCFDR]		= { 0x1c, 16 },
-+			[SCTFDR]	= { 0x1c, 16 },	/* aliased to SCFDR */
-+			[SCRFDR]	= { 0x20, 16 },
-+			[SCSPTR]	= { 0x24, 16 },
-+			[SCLSR]		= { 0x28, 16 },
-+		},
- 	},
- 
- 	/*
-@@ -346,18 +373,20 @@ static const struct plat_sci_reg sci_regmap[SCIx_NR_REGTYPES][SCIx_NR_REGS] = {
- 	 * registers.
- 	 */
- 	[SCIx_SH7705_SCIF_REGTYPE] = {
--		[SCSMR]		= { 0x00, 16 },
--		[SCBRR]		= { 0x04,  8 },
--		[SCSCR]		= { 0x08, 16 },
--		[SCxTDR]	= { 0x20,  8 },
--		[SCxSR]		= { 0x14, 16 },
--		[SCxRDR]	= { 0x24,  8 },
--		[SCFCR]		= { 0x18, 16 },
--		[SCFDR]		= { 0x1c, 16 },
-+		.regs = {
-+			[SCSMR]		= { 0x00, 16 },
-+			[SCBRR]		= { 0x04,  8 },
-+			[SCSCR]		= { 0x08, 16 },
-+			[SCxTDR]	= { 0x20,  8 },
-+			[SCxSR]		= { 0x14, 16 },
-+			[SCxRDR]	= { 0x24,  8 },
-+			[SCFCR]		= { 0x18, 16 },
-+			[SCFDR]		= { 0x1c, 16 },
-+		},
- 	},
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
  };
+@@ -252,7 +252,7 @@ static struct platform_device scif0_device = {
  
--#define sci_getreg(up, offset)		(sci_regmap[to_sci_port(up)->cfg->regtype] + offset)
-+#define sci_getreg(up, offset)		(&to_sci_port(up)->params->regs[offset])
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -277,7 +277,7 @@ static struct platform_device scif1_device = {
  
- /*
-  * The "offset" here is rather misleading, in that it refers to an enum
-@@ -2555,6 +2584,8 @@ static int sci_init_single(struct platform_device *dev,
- 			return ret;
- 	}
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -302,7 +302,7 @@ static struct platform_device scif2_device = {
  
-+	sci_port->params = &sci_port_params[p->regtype];
-+
- 	switch (p->type) {
- 	case PORT_SCIFB:
- 		port->fifosize = 256;
-@@ -3067,6 +3098,7 @@ static int __init early_console_setup(struct earlycon_device *device,
- 	sci_ports[0].cfg = &port_cfg;
- 	sci_ports[0].cfg->type = type;
- 	sci_probe_regmap(sci_ports[0].cfg);
-+	sci_ports[0].params = &sci_port_params[sci_ports[0].cfg->regtype];
- 	port_cfg.scscr = sci_serial_in(&sci_ports[0].port, SCSCR);
- 	sci_serial_out(&sci_ports[0].port, SCSCR,
- 		       SCSCR_RE | SCSCR_TE | port_cfg.scscr);
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -327,7 +327,7 @@ static struct platform_device scif3_device = {
+ 
+ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -352,7 +352,7 @@ static struct platform_device scif4_device = {
+ 
+ static struct plat_sci_port scif5_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -377,7 +377,7 @@ static struct platform_device scif5_device = {
+ 
+ static struct plat_sci_port scif6_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -402,7 +402,7 @@ static struct platform_device scif6_device = {
+ 
+ static struct plat_sci_port scif7_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+diff --git a/arch/sh/kernel/cpu/sh2a/setup-sh7269.c b/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
+index b3445e59841a..6d7ac07b4e54 100644
+--- a/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
++++ b/arch/sh/kernel/cpu/sh2a/setup-sh7269.c
+@@ -249,7 +249,7 @@ static DECLARE_INTC_DESC(intc_desc, "sh7269", vectors, groups,
+ 
+ static struct plat_sci_port scif0_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -274,7 +274,7 @@ static struct platform_device scif0_device = {
+ 
+ static struct plat_sci_port scif1_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -299,7 +299,7 @@ static struct platform_device scif1_device = {
+ 
+ static struct plat_sci_port scif2_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -324,7 +324,7 @@ static struct platform_device scif2_device = {
+ 
+ static struct plat_sci_port scif3_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -349,7 +349,7 @@ static struct platform_device scif3_device = {
+ 
+ static struct plat_sci_port scif4_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -374,7 +374,7 @@ static struct platform_device scif4_device = {
+ 
+ static struct plat_sci_port scif5_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -399,7 +399,7 @@ static struct platform_device scif5_device = {
+ 
+ static struct plat_sci_port scif6_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
+@@ -424,7 +424,7 @@ static struct platform_device scif6_device = {
+ 
+ static struct plat_sci_port scif7_platform_data = {
+ 	.flags		= UPF_BOOT_AUTOCONF,
+-	.scscr		= SCSCR_REIE | SCSCR_TOIE,
++	.scscr		= SCSCR_REIE,
+ 	.type		= PORT_SCIF,
+ 	.regtype	= SCIx_SH2_SCIF_FIFODATA_REGTYPE,
+ };
 -- 
 Regards,
 
