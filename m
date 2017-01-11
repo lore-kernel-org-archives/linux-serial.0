@@ -1,67 +1,41 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: fsl_lpuart: Remove the alias node dependence
-Date: Wed, 11 Jan 2017 08:24:50 +0100
-Message-ID: <20170111072450.GA9980@kroah.com>
-References: <1481704412-19208-1-git-send-email-yao.yuan@freescale.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Allow hardware flow control to
+ be used
+Date: Wed, 11 Jan 2017 09:00:55 +0100
+Message-ID: <20170111080055.GA8548@kroah.com>
+References: <1481063643-11951-1-git-send-email-jason.uy@broadcom.com>
+ <1481063643-11951-2-git-send-email-jason.uy@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1481704412-19208-1-git-send-email-yao.yuan@freescale.com>
+In-Reply-To: <1481063643-11951-2-git-send-email-jason.uy@broadcom.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yuan Yao <yao.yuan@freescale.com>
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, yao.yuan@nxp.com
+To: Jason Uy <jason.uy@broadcom.com>
+Cc: Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Noam Camus <noamc@ezchip.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Wang Hongcheng <annie.wang@amd.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Dec 14, 2016 at 04:33:32PM +0800, Yuan Yao wrote:
-> From: Yuan Yao <yao.yuan@nxp.com>
+On Tue, Dec 06, 2016 at 02:34:03PM -0800, Jason Uy wrote:
+> In the most common use case, the Synopsys DW UART driver does not
+> set the set_termios callback function.  This prevents UPSTAT_AUTOCTS
+> from being set when the UART flag CRTSCTS is set.  As a result, the
+> driver will use software flow control as opposed to hardware flow
+> control.
 > 
-> Numbering the ttyLPn space should not depend on the generic name
-> "serial<n>".
+> To fix the problem, the set_termios callback function is set to the
+> DW specific function.  The logic to set UPSTAT_AUTOCTS is moved so
+> that any clock error will not affect setting the hardware flow
+> control.
 > 
-> If don't add the alias node like:"serial0 = &lpuart0;", then lpuart
-> will probe failed:
-> [    0.773410] fsl-lpuart 2950000.serial: failed to get alias id, errno -19
-> 
-> So remove the alias node dependence, and add the support for allocate the
-> line port automatically.
-> 
-> Signed-off-by: Yuan Yao <yao.yuan@nxp.com>
+> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+> Signed-off-by: Jason Uy <jason.uy@broadcom.com>
 > ---
->  drivers/tty/serial/fsl_lpuart.c | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index a1c6519..c6d639f 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -231,6 +231,8 @@
->  #define DEV_NAME	"ttyLP"
->  #define UART_NR		6
->  
-> +static DECLARE_BITMAP(linemap, UART_NR);
+>  drivers/tty/serial/8250/8250_dw.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 
-Why a bitmap?
-
-> +
->  struct lpuart_port {
->  	struct uart_port	port;
->  	struct clk		*clk;
-> @@ -1963,9 +1965,13 @@ static int lpuart_probe(struct platform_device *pdev)
->  
->  	ret = of_alias_get_id(np, "serial");
->  	if (ret < 0) {
-> -		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-> -		return ret;
-> +		ret = find_first_zero_bit(linemap, UART_NR);
-> +		if (ret >= UART_NR) {
-> +			dev_err(&pdev->dev, "port line is full, add device failed\n");
-> +			return ret;
-> +		}
-
-Does this really remove the alias dependancy?
-
-Please use an idr or ida for this instead of a bitmap.
+This patch doesn't apply at all to the latest kernel tree.  Can you
+please refresh it and resend?
 
 thanks,
 
