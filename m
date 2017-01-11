@@ -1,69 +1,20 @@
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH v2 02/18] serial: sh-sci: Don't rely on platform data flags when not needed
-Date: Wed, 11 Jan 2017 16:43:24 +0200
-Message-ID: <20170111144340.29074-3-laurent.pinchart+renesas@ideasonboard.com>
-References: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20170111144340.29074-1-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: linux-renesas-soc@vger.kernel.org
-Cc: linux-sh@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Jason Uy <jason.uy@broadcom.com>
+Subject: [PATCH v2 0/1] Allow hardware flow control to be used
+Date: Wed, 11 Jan 2017 11:48:19 -0800
+Message-ID: <1484164100-9805-1-git-send-email-jason.uy@broadcom.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Noam Camus <noamc@ezchip.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Wang Hongcheng <annie.wang@amd.com>, Jason Uy <jason.uy@broadcom.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
 List-Id: linux-serial@vger.kernel.org
 
-The UPF_BOOT_AUTOCONF platform data flag is set by all platforms,
-hardcode it.
+<clip: as before>
 
-The UPF_IOREMAP flag is set by a single SH platform and thus needs to be
-kept. However, for ARM platforms, we can base the decision on whether an
-OF node is present and bypass the platform data flags completely.
+Changes from v1:
+ - Rebased to v4.10-rc4
+ - repo: https://github.com/torvalds/linux.git
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/tty/serial/sh-sci.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 1e573611719e..8c58c43fc85d 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2453,7 +2453,7 @@ static int sci_remap_port(struct uart_port *port)
- 	if (port->membase)
- 		return 0;
- 
--	if (port->flags & UPF_IOREMAP) {
-+	if (port->dev->of_node || (port->flags & UPF_IOREMAP)) {
- 		port->membase = ioremap_nocache(port->mapbase, sport->reg_size);
- 		if (unlikely(!port->membase)) {
- 			dev_err(port->dev, "can't remap port#%d\n", port->line);
-@@ -2475,7 +2475,7 @@ static void sci_release_port(struct uart_port *port)
- {
- 	struct sci_port *sport = to_sci_port(port);
- 
--	if (port->flags & UPF_IOREMAP) {
-+	if (port->dev->of_node || (port->flags & UPF_IOREMAP)) {
- 		iounmap(port->membase);
- 		port->membase = NULL;
- 	}
-@@ -2731,7 +2731,7 @@ static int sci_init_single(struct platform_device *dev,
- 	}
- 
- 	port->type		= p->type;
--	port->flags		= UPF_FIXED_PORT | p->flags;
-+	port->flags		= UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | p->flags;
- 	port->regshift		= p->regshift;
- 
- 	/*
-@@ -2993,7 +2993,6 @@ sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
- 
- 	*dev_id = id;
- 
--	p->flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
- 	p->type = SCI_OF_TYPE(match->data);
- 	p->regtype = SCI_OF_REGTYPE(match->data);
- 
--- 
 Regards,
-
-Laurent Pinchart
-
+Jason
+-- 
+1.9.1
