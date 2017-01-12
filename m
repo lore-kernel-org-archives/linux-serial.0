@@ -1,90 +1,123 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: fsl_lpuart: Remove the alias node dependence
-Date: Thu, 12 Jan 2017 08:26:34 +0100
-Message-ID: <20170112072634.GA21645@kroah.com>
-References: <1481704412-19208-1-git-send-email-yao.yuan@freescale.com>
- <20170111072450.GA9980@kroah.com>
- <AM5PR0402MB2900E8FCF2807A52E28B94B289790@AM5PR0402MB2900.eurprd04.prod.outlook.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 8/9] serdev: add a tty port controller driver
+Date: Thu, 12 Jan 2017 10:01:45 -0600
+Message-ID: <CAL_JsqJtJaadieC2PSe6YV9pvvv8TXTM-hSDR5MZR+n-aRWo1g@mail.gmail.com>
+References: <20170106162635.19677-1-robh@kernel.org> <20170106162635.19677-9-robh@kernel.org>
+ <1483798314.26691.3.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <AM5PR0402MB2900E8FCF2807A52E28B94B289790@AM5PR0402MB2900.eurprd04.prod.outlook.com>
+In-Reply-To: <1483798314.26691.3.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yao Yuan <yao.yuan@nxp.com>
-Cc: Yuan Yao <yao.yuan@freescale.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 12, 2017 at 02:27:45AM +0000, Yao Yuan wrote:
-> On Wed, Jan 11, 2016 at 04:33:32PM +0800, Greg KH wrote:
-> > On Wed, Dec 14, 2016 at 04:33:32PM +0800, Yuan Yao wrote:
-> > > From: Yuan Yao <yao.yuan@nxp.com>
-> > >
-> > > Numbering the ttyLPn space should not depend on the generic name
-> > > "serial<n>".
-> > >
-> > > If don't add the alias node like:"serial0 = &lpuart0;", then lpuart
-> > > will probe failed:
-> > > [    0.773410] fsl-lpuart 2950000.serial: failed to get alias id, errno -19
-> > >
-> > > So remove the alias node dependence, and add the support for allocate
-> > > the line port automatically.
-> > >
-> > > Signed-off-by: Yuan Yao <yao.yuan@nxp.com>
-> > > ---
-> > >  drivers/tty/serial/fsl_lpuart.c | 11 +++++++++--
-> > >  1 file changed, 9 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/tty/serial/fsl_lpuart.c
-> > > b/drivers/tty/serial/fsl_lpuart.c index a1c6519..c6d639f 100644
-> > > --- a/drivers/tty/serial/fsl_lpuart.c
-> > > +++ b/drivers/tty/serial/fsl_lpuart.c
-> > > @@ -231,6 +231,8 @@
-> > >  #define DEV_NAME	"ttyLP"
-> > >  #define UART_NR		6
-> > >
-> > > +static DECLARE_BITMAP(linemap, UART_NR);
-> > 
-> > Why a bitmap?
-> 
-> Because I think the bitmap is enough to meet the need.
-> Are there any shortcomings for bitmap used here?
-> 
-> > 
-> > > +
-> > >  struct lpuart_port {
-> > >  	struct uart_port	port;
-> > >  	struct clk		*clk;
-> > > @@ -1963,9 +1965,13 @@ static int lpuart_probe(struct platform_device
-> > > *pdev)
-> > >
-> > >  	ret = of_alias_get_id(np, "serial");
-> > >  	if (ret < 0) {
-> > > -		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-> > > -		return ret;
-> > > +		ret = find_first_zero_bit(linemap, UART_NR);
-> > > +		if (ret >= UART_NR) {
-> > > +			dev_err(&pdev->dev, "port line is full, add device
-> > failed\n");
-> > > +			return ret;
-> > > +		}
-> > 
-> > Does this really remove the alias dependancy?
-> > 
-> > Please use an idr or ida for this instead of a bitmap.
-> > 
-> 
-> Hi Greg,
-> 
-> Thanks for your review.
-> 
-> Is there any advantage for use an idr or ida instead of bitmap?
+On Sat, Jan 7, 2017 at 8:11 AM, Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+> On Fri, 2017-01-06 at 10:26 -0600, Rob Herring wrote:
+>> Add a serdev controller driver for tty ports.
+>>
+>> The controller is registered with serdev when tty ports are registered
+>> with the TTY core. As the TTY core is built-in only, this has the side
+>> effect of making serdev built-in as well.
+>>
+>>
+>
+>> +if SERIAL_DEV_BUS
+>> +
+>> +config SERIAL_DEV_CTRL_TTYPORT
+>> +     bool "Serial device TTY port controller"
+>> +     depends on TTY
+>
+>> +     depends on SERIAL_DEV_BUS=y
+>
+> Do you need one?
 
-Yes, it makes it so that we don't have to hand-audit your code for
-proper use of a bitmap.  Using an idr is easy, and is obvious when you
-do it correctly.  That's why using common apis is good for everyone, you
-want someone else to be able to review your code.
+Yes, otherwise the bus can be built as a module and this driver can
+still be enabled breaking the build. I could drop supporting building
+the bus as a module because as long as this is the only controller
+driver, it all has to be built-in. Is there any desire/plan to make
+the TTY layer buildable as a module?
 
-thanks,
 
-greg k-h
+>> +     mutex_unlock(&serport->lock);
+>> +     return count;
+>> +}
+>> +
+>> +static void ttyport_write_wakeup(struct tty_port *port)
+>> +{
+>> +     struct serdev_controller *ctrl = port->client_data;
+>> +     struct serport *serport =
+>> serdev_controller_get_drvdata(ctrl);
+>> +
+>> +     clear_bit(TTY_DO_WRITE_WAKEUP, &port->tty->flags);
+>
+> This doesn't prevent to be called this function in parallel. Is it okay?
+
+I believe it should be fine. This is essentially what all the wakeup
+callbacks do for the ldisc based drivers.
+
+
+>> +int serdev_tty_port_register(struct tty_port *port, struct device
+>> *parent,
+>> +                         struct tty_driver *drv, int idx)
+>> +{
+>> +     struct serdev_controller *ctrl;
+>> +     struct serport *serport;
+>> +     int ret;
+>> +
+>> +     if (!port || !drv || !parent || !parent->of_node)
+>
+> And if it's ACPI? Perhaps last is redundant.
+
+Yes, fixed. We should only have the matching details in the core.
+
+>
+>> +             return -ENODEV;
+>> +
+>> +     ctrl = serdev_controller_alloc(parent, sizeof(struct
+>> serport));
+>> +     if (!ctrl)
+>> +             return -ENOMEM;
+>> +     serport = serdev_controller_get_drvdata(ctrl);
+>> +
+>> +     mutex_init(&serport->lock);
+>> +     serport->port = port;
+>> +     serport->tty_idx = idx;
+>> +     serport->tty_drv = drv;
+>> +
+>> +     ctrl->ops = &ctrl_ops;
+>> +
+>> +     ret = serdev_controller_add(ctrl);
+>> +     if (ret)
+>> +             goto err;
+>> +
+>> +     printk(KERN_INFO "serdev: Serial port %s\n", drv->name);
+>
+> Hmm... It's not a debug message, why not use pr_info()?
+
+Converted to dev_info().
+
+
+>> +     serdev_controller_put(ctrl);
+>> +     return ret;
+>> +}
+>> +
+>> +void serdev_tty_port_unregister(struct tty_port *port)
+>> +{
+>> +     struct serdev_controller *ctrl = port->client_data;
+>> +     struct serport *serport =
+>> serdev_controller_get_drvdata(ctrl);
+>> +
+>>
+>
+>> +     if (!serport)
+>> +             return;
+>
+> Same question, whose responsibility to do this?
+
+I don't get the question. ctrl and serport can be NULL here so the
+caller can call this unconditionally.
+
+Rob
