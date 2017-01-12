@@ -1,123 +1,32 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 8/9] serdev: add a tty port controller driver
-Date: Thu, 12 Jan 2017 10:01:45 -0600
-Message-ID: <CAL_JsqJtJaadieC2PSe6YV9pvvv8TXTM-hSDR5MZR+n-aRWo1g@mail.gmail.com>
-References: <20170106162635.19677-1-robh@kernel.org> <20170106162635.19677-9-robh@kernel.org>
- <1483798314.26691.3.camel@linux.intel.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 7/9] serdev: Introduce new bus for serial attached devices
+Date: Thu, 12 Jan 2017 13:53:15 -0600
+Message-ID: <CAL_Jsq+geRqdkDwn6Coukin5EeA2aZreK81KpHx+u0SDkgoJvQ@mail.gmail.com>
+References: <20170106162635.19677-1-robh@kernel.org> <20170106162635.19677-8-robh@kernel.org>
+ <20170110214617.GB2053@amd>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1483798314.26691.3.camel@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170110214617.GB2053@amd>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Jan 7, 2017 at 8:11 AM, Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> On Fri, 2017-01-06 at 10:26 -0600, Rob Herring wrote:
->> Add a serdev controller driver for tty ports.
->>
->> The controller is registered with serdev when tty ports are registered
->> with the TTY core. As the TTY core is built-in only, this has the side
->> effect of making serdev built-in as well.
->>
->>
+On Tue, Jan 10, 2017 at 3:46 PM, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org> wrote:
+> Hi!
 >
->> +if SERIAL_DEV_BUS
->> +
->> +config SERIAL_DEV_CTRL_TTYPORT
->> +     bool "Serial device TTY port controller"
->> +     depends on TTY
->
->> +     depends on SERIAL_DEV_BUS=y
->
-> Do you need one?
-
-Yes, otherwise the bus can be built as a module and this driver can
-still be enabled breaking the build. I could drop supporting building
-the bus as a module because as long as this is the only controller
-driver, it all has to be built-in. Is there any desire/plan to make
-the TTY layer buildable as a module?
-
-
->> +     mutex_unlock(&serport->lock);
->> +     return count;
+>> +static void serdev_ctrl_release(struct device *dev)
+>> +{
+>> +     struct serdev_controller *ctrl = to_serdev_controller(dev);
+>> +     ida_simple_remove(&ctrl_ida, ctrl->nr);
+>> +     kfree(ctrl);
 >> +}
->> +
->> +static void ttyport_write_wakeup(struct tty_port *port)
->> +{
->> +     struct serdev_controller *ctrl = port->client_data;
->> +     struct serport *serport =
->> serdev_controller_get_drvdata(ctrl);
->> +
->> +     clear_bit(TTY_DO_WRITE_WAKEUP, &port->tty->flags);
 >
-> This doesn't prevent to be called this function in parallel. Is it okay?
+> Would it make sense to do something like to_serdev_controller(dev) =
+> NULL; there?
 
-I believe it should be fine. This is essentially what all the wakeup
-callbacks do for the ldisc based drivers.
-
-
->> +int serdev_tty_port_register(struct tty_port *port, struct device
->> *parent,
->> +                         struct tty_driver *drv, int idx)
->> +{
->> +     struct serdev_controller *ctrl;
->> +     struct serport *serport;
->> +     int ret;
->> +
->> +     if (!port || !drv || !parent || !parent->of_node)
->
-> And if it's ACPI? Perhaps last is redundant.
-
-Yes, fixed. We should only have the matching details in the core.
-
->
->> +             return -ENODEV;
->> +
->> +     ctrl = serdev_controller_alloc(parent, sizeof(struct
->> serport));
->> +     if (!ctrl)
->> +             return -ENOMEM;
->> +     serport = serdev_controller_get_drvdata(ctrl);
->> +
->> +     mutex_init(&serport->lock);
->> +     serport->port = port;
->> +     serport->tty_idx = idx;
->> +     serport->tty_drv = drv;
->> +
->> +     ctrl->ops = &ctrl_ops;
->> +
->> +     ret = serdev_controller_add(ctrl);
->> +     if (ret)
->> +             goto err;
->> +
->> +     printk(KERN_INFO "serdev: Serial port %s\n", drv->name);
->
-> Hmm... It's not a debug message, why not use pr_info()?
-
-Converted to dev_info().
-
-
->> +     serdev_controller_put(ctrl);
->> +     return ret;
->> +}
->> +
->> +void serdev_tty_port_unregister(struct tty_port *port)
->> +{
->> +     struct serdev_controller *ctrl = port->client_data;
->> +     struct serport *serport =
->> serdev_controller_get_drvdata(ctrl);
->> +
->>
->
->> +     if (!serport)
->> +             return;
->
-> Same question, whose responsibility to do this?
-
-I don't get the question. ctrl and serport can be NULL here so the
-caller can call this unconditionally.
+That would be the same as adding "ctrl = NULL;" which would be
+pointless. The struct device is embedded into serdev_controller.
 
 Rob
