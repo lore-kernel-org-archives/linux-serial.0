@@ -1,51 +1,35 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/9] tty_port: allow a port to be opened with a tty that
- has no file handle
-Date: Fri, 13 Jan 2017 10:46:05 -0600
-Message-ID: <CAL_JsqLE_QRtoFPOsMgG+mumb=+zf1JFR4F7u4fuoBb+2on3VQ@mail.gmail.com>
-References: <20170106162635.19677-1-robh@kernel.org> <20170106162635.19677-3-robh@kernel.org>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 0/3] tty: serial: 8250_omap: Enable DMA support
+Date: Fri, 13 Jan 2017 10:20:21 -0800
+Message-ID: <20170113182021.GD2630@atomide.com>
+References: <20170113080201.6515-1-vigneshr@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170106162635.19677-3-robh@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170113080201.6515-1-vigneshr@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Pavel Machek <pavel@ucw.cz>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alan Cox <alan@linux.intel.com>, NeilBrown <neil@brown.name>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Reichel <sre@kernel.org>, Jiri Slaby <jslaby@suse.com>, Marcel Holtmann <marcel@holtmann.org>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jan 6, 2017 at 10:26 AM, Rob Herring <robh@kernel.org> wrote:
-> From: Alan Cox <alan@linux.intel.com>
->
-> Let us create tty objects entirely in kernel space. Untested proposal to
-> show why all the ideas around rewriting half the uart stack are not needed.
->
-> With this a kernel created non file backed tty object could be used to handle
-> data, and set terminal modes. Not all ldiscs can cope with this as N_TTY in
-> particular has to work back to the fs/tty layer.
->
-> The tty_port code is however otherwise clean of file handles as far as I can
-> tell as is the low level tty port write path used by the ldisc, the
-> configuration low level interfaces and most of the ldiscs.
->
-> Currently you don't have any exposure to see tty hangups because those are
-> built around the file layer. However a) it's a fixed port so you probably
-> don't care about that b) if you do we can add a callback and c) you almost
-> certainly don't want the userspace tear down/rebuild behaviour anyway.
->
-> This should however be sufficient if we wanted for example to enumerate all
-> the bluetooth bound fixed ports via ACPI and make them directly available.
-> It doesn't deal with the case of a user opening a port that's also kernel
-> opened and that would need some locking out (so it returned EBUSY if bound
-> to a kernel device of some kind). That needs resolving along with how you
-> "up" or "down" your new bluetooth device, or enumerate it while providing
-> the existing tty API to avoid regressions (and to debug).
->
-> Alan
-> ---
->
-> Alan, I need a proper patch with your S-O-B for this one.
+* Vignesh R <vigneshr@ti.com> [170113 00:03]:
+> This patch series re enables DMA support for UART 8250_omap driver.
+> 
+> Tested on AM335x, AM437x that use EDMA and OMAP5 and DRA74 EVM with
+> SDMA.
 
-Alan, can I get your S-o-B on this? Any comments on patches 1-5 in
-particular (mostly #5) before I send out updated series?
+Is 8250_omap serial console working for you on omap5 in general?
 
-Rob
+I've noticed that it's really unresponsive for me as if the FIFO
+interrupt was not working. For example logging in might take several
+attempts and a long time with each character showing up much later
+after some timeout.
+
+TX on the uart on omap5 seems to work OK, I do see all the console
+messages fine. And these patches do not make the issue better or
+worse.
+
+Regards,
+
+Tony
