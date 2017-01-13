@@ -1,113 +1,81 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 7/9] serdev: Introduce new bus for serial attached devices
-Date: Thu, 12 Jan 2017 14:13:42 -0600
-Message-ID: <CAL_JsqJsCRgM2pkkvPyimhTi1SFVosas=6VwDyd5ZiOVbD_2tQ@mail.gmail.com>
-References: <20170106162635.19677-1-robh@kernel.org> <20170106162635.19677-8-robh@kernel.org>
- <1483797771.26691.1.camel@linux.intel.com>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v2 1/1] serial: 8250_dw: Allow hardware flow control to be
+ used
+Date: Fri, 13 Jan 2017 09:33:35 +0800
+Message-ID: <84277e28-d203-333f-eea0-a3d2fc4a52f3@huawei.com>
+References: <1484164100-9805-1-git-send-email-jason.uy@broadcom.com>
+ <1484164100-9805-2-git-send-email-jason.uy@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1483797771.26691.1.camel@linux.intel.com>
+In-Reply-To: <1484164100-9805-2-git-send-email-jason.uy@broadcom.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Jason Uy <jason.uy@broadcom.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Noam Camus <noamc@ezchip.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Wang Hongcheng <annie.wang@amd.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Jan 7, 2017 at 8:02 AM, Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> On Fri, 2017-01-06 at 10:26 -0600, Rob Herring wrote:
->> The serdev bus is designed for devices such as Bluetooth, WiFi, GPS
->> and NFC connected to UARTs on host processors. Tradionally these have
->> been handled with tty line disciplines, rfkill, and userspace glue
->> such
->> as hciattach. This approach has many drawbacks since it doesn't fit
->> into the Linux driver model. Handling of sideband signals, power
->> control
->> and firmware loading are the main issues.
->>
->> This creates a serdev bus with controllers (i.e. host serial ports)
->> and
->> attached devices. Typically, these are point to point connections, but
->> some devices have muxing protocols or a h/w mux is conceivable. Any
->> muxing is not yet supported with the serdev bus.
 
-[...]
 
->> +static int of_serdev_register_devices(struct serdev_controller *ctrl)
->> +{
->> +     struct device_node *node;
->> +     struct serdev_device *serdev = NULL;
->> +     int err;
->> +     bool found = false;
->> +
->> +     for_each_available_child_of_node(ctrl->dev.of_node, node) {
->> +             if (!of_get_property(node, "compatible", NULL))
->> +                     continue;
->> +
->> +             dev_dbg(&ctrl->dev, "adding child %s\n", node-
->> >full_name);
->> +
->> +             serdev = serdev_device_alloc(ctrl);
->> +             if (!serdev)
->> +                     continue;
->> +
->> +             serdev->dev.of_node = node;
->> +
->> +             err = serdev_device_add(serdev);
->> +             if (err) {
->> +                     dev_err(&serdev->dev,
->> +                             "failure adding device. status %d\n",
->> err);
->> +                     serdev_device_put(serdev);
->> +             }
->>
->
->> +             found = true;
->
-> Perhaps
->
-> } else if (!found)
->  found = true;
->
-> Otherwise if we end up with all devices not being added, called will not
-> know about it.
+On 2017/1/12 3:48, Jason Uy wrote:
+> In the most common use case, the Synopsys DW UART driver does not
+> set the set_termios callback function.  This prevents UPSTAT_AUTOCTS
+> from being set when the UART flag CRTSCTS is set.  As a result, the
+> driver will use software flow control as opposed to hardware flow
+> control.
+> 
+> To fix the problem, the set_termios callback function is set to the
+> DW specific function.  The logic to set UPSTAT_AUTOCTS is moved so
+> that any clock error will not affect setting the hardware flow
+> control.
+> 
+> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+> Signed-off-by: Jason Uy <jason.uy@broadcom.com>
 
-At least for now, we really only support 1 device attached. I'm sure
-someone will come up with h/w with more than one device. RS-485 allows
-it I think or someone could have muxed access.
+Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-I just did "else found = true;" as there's no need to check the condition.
-
->
->
->> +     }
->> +     if (!found)
->> +             return -ENODEV;
->> +
->> +     return 0;
->> +}
->>
->
->
-> +/**
->> + * serdev_controller_remove(): remove an serdev controller
->> + * @ctrl:    controller to remove
->> + *
->> + * Remove a serdev controller.  Caller is responsible for calling
->> + * serdev_controller_put() to discard the allocated controller.
->> + */
->> +void serdev_controller_remove(struct serdev_controller *ctrl)
->> +{
->> +     int dummy;
->> +
->>
->
->> +     if (!ctrl)
->> +             return;
->
-> By the way, should we take care or caller? What is the best practice
-> here?
-
-If the caller, then every caller has to check. Better to check in one place.
-
-Rob
+> ---
+>  drivers/tty/serial/8250/8250_dw.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index c89fafc..c89ae45 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -248,11 +248,11 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
+>  	if (!ret)
+>  		p->uartclk = rate;
+>  
+> +out:
+>  	p->status &= ~UPSTAT_AUTOCTS;
+>  	if (termios->c_cflag & CRTSCTS)
+>  		p->status |= UPSTAT_AUTOCTS;
+>  
+> -out:
+>  	serial8250_do_set_termios(p, termios, old);
+>  }
+>  
+> @@ -326,13 +326,11 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+>  			p->serial_in = dw8250_serial_in32;
+>  			data->uart_16550_compatible = true;
+>  		}
+> -		p->set_termios = dw8250_set_termios;
+>  	}
+>  
+>  	/* Platforms with iDMA */
+>  	if (platform_get_resource_byname(to_platform_device(p->dev),
+>  					 IORESOURCE_MEM, "lpss_priv")) {
+> -		p->set_termios = dw8250_set_termios;
+>  		data->dma.rx_param = p->dev->parent;
+>  		data->dma.tx_param = p->dev->parent;
+>  		data->dma.fn = dw8250_idma_filter;
+> @@ -414,6 +412,7 @@ static int dw8250_probe(struct platform_device *pdev)
+>  	p->serial_in	= dw8250_serial_in;
+>  	p->serial_out	= dw8250_serial_out;
+>  	p->set_ldisc	= dw8250_set_ldisc;
+> +	p->set_termios	= dw8250_set_termios;
+>  
+>  	p->membase = devm_ioremap(dev, regs->start, resource_size(regs));
+>  	if (!p->membase)
+> 
