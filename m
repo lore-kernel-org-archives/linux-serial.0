@@ -1,26 +1,40 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 8/9] serdev: add a tty port controller driver
-Date: Fri, 13 Jan 2017 20:54:59 -0600
-Message-ID: <CAL_JsqKFL_19p9rsXAuc=c2SpHZK0zGW4zkqwLUX+uA81c8iXQ@mail.gmail.com>
-References: <20170106162635.19677-1-robh@kernel.org> <20170106162635.19677-9-robh@kernel.org>
- <20170110220445.GC2053@amd>
+From: "Matwey V. Kornilov" <matwey.kornilov@gmail.com>
+Subject: Re: [PATCH v3] tty: serial: 8250: add MOXA Smartio MUE boards support
+Date: Sat, 14 Jan 2017 21:38:02 +0300
+Message-ID: <CAJs94EaztHrH1WD7RurYhzjavj=21_wSTwJzm+fF8Hs22YZ6ew@mail.gmail.com>
+References: <1456341022-8897-1-git-send-email-m.othacehe@gmail.com>
+ <56E68636.8000002@gmail.com> <20160319090723.GA8678@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170110220445.GC2053@amd>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160319090723.GA8678@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Mathieu OTHACEHE <m.othacehe@gmail.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, anton.wuerfel@fau.de, phillip.raffeck@fau.de, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter H <hpeter@gmail.com>, Soeren Grunewald <soeren.grunewald@desy.de>, Wang YanQing <udknight@gmail.com>, Jan Beulich <JBeulich@suse.com>, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 10, 2017 at 4:04 PM, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org> wrote:
-> Hi!
->
->> +MODULE_AUTHOR("Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org");
->
-> Missing ">".
+Hi,
 
-Actually, this I should drop because this driver can not be a module.
-The bus can be though.
+I am currently reading misc stuff in serial/8250/.
+What is the reason why 8250_moxa ever exists? I mean, it seems that
+8250_pci module does the same as 8250_moxa does.
 
-Rob
+2016-03-19 12:07 GMT+03:00 Mathieu OTHACEHE <m.othacehe@gmail.com>:
+> Hi,
+>
+> Sorry about late reply.
+>
+> No I haven't planned to do it soon. Your board is supported by mxser driver (drivers/tty/mxser.c).
+> I think it would be nice to move everything from mxser.c to 8250_moxa.c.
+>
+> The problem is mxser supports ISA and PCI boards and I don't have the hardware to test it.
+>
+> Mathieu
+
+
+
+-- 
+With best regards,
+Matwey V. Kornilov
+http://blog.matwey.name
+xmpp://0x2207@jabber.ru
