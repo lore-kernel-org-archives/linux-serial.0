@@ -1,45 +1,61 @@
-From: Bhumika Goyal <bhumirks@gmail.com>
-Subject: [PATCH] tty: serial: constify dev_pm_ops structures
-Date: Sun, 15 Jan 2017 16:30:30 +0530
-Message-ID: <1484478030-5946-1-git-send-email-bhumirks@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial driver changes for 4.10-rc4
+Date: Sun, 15 Jan 2017 13:40:14 +0100
+Message-ID: <20170115124014.GA8090@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: julia.lawall@lip6.fr, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org
-Cc: Bhumika Goyal <bhumirks@gmail.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Declare dev_pm_ops structures as const as they are only stored in the pm
-field of a device_driver structure. This field is of type const, so
-dev_pm_ops structures having similar properties can be declared const
-too.
+The following changes since commit a121103c922847ba5010819a3f250f1f7fc84ab8:
 
-Size details after cross compiling the .o file for blackfin architecture.
+  Linux 4.10-rc3 (2017-01-08 14:18:17 -0800)
 
-File size before:
-  text	   data	    bss	    dec	    hex	filename
-   3572	    320	     16	   3908	    f44 tty/serial/bfin_sport_uart.o
+are available in the git repository at:
 
-File size after:
-   text	   data	    bss	    dec	    hex	filename
-   3664	    228	     16	   3908	    f44 tty/serial/bfin_sport_uart.o
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.10-rc4
 
-Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
----
- drivers/tty/serial/bfin_sport_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+for you to fetch changes up to 802c03881f29844af0252b6e22be5d2f65f93fd0:
 
-diff --git a/drivers/tty/serial/bfin_sport_uart.c b/drivers/tty/serial/bfin_sport_uart.c
-index 984e1c0..6b03fb1 100644
---- a/drivers/tty/serial/bfin_sport_uart.c
-+++ b/drivers/tty/serial/bfin_sport_uart.c
-@@ -740,7 +740,7 @@ static int sport_uart_resume(struct device *dev)
- 	return 0;
- }
- 
--static struct dev_pm_ops bfin_sport_uart_dev_pm_ops = {
-+static const struct dev_pm_ops bfin_sport_uart_dev_pm_ops = {
- 	.suspend	= sport_uart_suspend,
- 	.resume		= sport_uart_resume,
- };
--- 
-1.9.1
+  sysrq: attach sysrq handler correctly for 32-bit kernel (2017-01-11 09:22:54 +0100)
+
+----------------------------------------------------------------
+TTY/serial fixes for 4.10-rc4
+
+Here are some small tty/serial driver fixes for 4.10-rc4 to resolve a
+number of reported issues.
+
+Nothing major here at all, one revert of a problematic patch, and some
+other tiny bugfixes.  Full details are in the shortlog below.
+
+All have been in linux-next with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Akinobu Mita (1):
+      sysrq: attach sysrq handler correctly for 32-bit kernel
+
+Daniel Jedrychowski (1):
+      Clearing FIFOs in RS485 emulation mode causes subsequent transmits to break
+
+Gabriel Krisman Bertazi (1):
+      8250_pci: Fix potential use-after-free in error path
+
+Herbert Xu (1):
+      Revert "tty: serial: 8250: add CON_CONSDEV to flags"
+
+Richard Genoud (2):
+      tty/serial: atmel_serial: BUG: stop DMA from transmitting in stop_tx
+      tty/serial: atmel: RS485 half duplex w/DMA: enable RX after TX is done
+
+ drivers/tty/serial/8250/8250_core.c |  2 +-
+ drivers/tty/serial/8250/8250_pci.c  | 12 +++++-------
+ drivers/tty/serial/8250/8250_port.c |  2 +-
+ drivers/tty/serial/atmel_serial.c   | 22 ++++++++++++++++------
+ drivers/tty/sysrq.c                 |  4 ++--
+ 5 files changed, 25 insertions(+), 17 deletions(-)
