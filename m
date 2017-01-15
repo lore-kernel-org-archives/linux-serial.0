@@ -1,195 +1,47 @@
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 2/4] ARM64: dts: meson-gx: add the serial CTS and RTS pin
- groups
-Date: Sun, 15 Jan 2017 23:32:53 +0100
-Message-ID: <20170115223255.10350-3-martin.blumenstingl@googlemail.com>
+From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH 1/4] tty: serial: meson: allow baud-rates higher than
+ 115200
+Date: Sun, 15 Jan 2017 23:48:36 +0100
+Message-ID: <2a53ef47-a9b5-4015-49a1-dafeb53020eb@suse.de>
 References: <20170115223255.10350-1-martin.blumenstingl@googlemail.com>
+ <20170115223255.10350-2-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170115223255.10350-1-martin.blumenstingl@googlemail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, jslaby@suse.com, gregkh@linuxfoundation.org, khilman@baylibre.com, carlo@caione.org
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170115223255.10350-2-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-This adds pinctrl group nodes for the CTS and RTS pins of each serial
-controller. This makes it possible to enable the CTS and RTS pins which
-are controlled by the serial controller hardware (through the meson_uart
-driver).
+Am 15.01.2017 um 23:32 schrieb Martin Blumenstingl:
+> The vendor driver allows setting baud-rates higher than 115200 baud.
+> There is a check in the vendor driver which prevents using more than
+> 115200 baud during startup, however it does not have such a check in
+> .set_termios.
+> Higher baud-rates are often used by the bluetooth modules embedded into
+> the SDIO wifi chips (Amlogic devices use brcmfmac based wifi chips quite
+> often, 2000000 baud seems to be a common value for the UART baud-rate in
+> Amlogic's "libbt").
+> 
+> I have tested this on a Meson GXL device with uart_A (to which the
+> bluetooth module is connected, where initialization times out with
+> 115200 baud) and uart_AO (which I manually set to 2000000 baud  and then
+> connected with my USB UART adapter to that).
+> 
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi | 40 +++++++++++++++++++++++++++++
- arch/arm64/boot/dts/amlogic/meson-gxl.dtsi  | 40 +++++++++++++++++++++++++++++
- 2 files changed, 80 insertions(+)
+Tested-by: Andreas Färber <afaerber-l3A5Bk7waGM@public.gmane.org>
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-index 474435e21759..f001c4d007bc 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-@@ -138,6 +138,14 @@
- 			};
- 		};
- 
-+		uart_ao_a_cts_rts_pins: uart_ao_a_cts_rts {
-+			mux {
-+				groups = "uart_cts_ao_a",
-+				       "uart_rts_ao_a";
-+				function = "uart_ao";
-+			};
-+		};
-+
- 		uart_ao_b_pins: uart_ao_b {
- 			mux {
- 				groups = "uart_tx_ao_b", "uart_rx_ao_b";
-@@ -145,6 +153,14 @@
- 			};
- 		};
- 
-+		uart_ao_b_cts_rts_pins: uart_ao_b_cts_rts {
-+			mux {
-+				groups = "uart_cts_ao_b",
-+				       "uart_rts_ao_b";
-+				function = "uart_ao_b";
-+			};
-+		};
-+
- 		remote_input_ao_pins: remote_input_ao {
- 			mux {
- 				groups = "remote_input_ao";
-@@ -290,6 +306,14 @@
- 			};
- 		};
- 
-+		uart_a_cts_rts_pins: uart_a_cts_rts {
-+			mux {
-+				groups = "uart_cts_a",
-+				       "uart_rts_a";
-+				function = "uart_a";
-+			};
-+		};
-+
- 		uart_b_pins: uart_b {
- 			mux {
- 				groups = "uart_tx_b",
-@@ -298,6 +322,14 @@
- 			};
- 		};
- 
-+		uart_b_cts_rts_pins: uart_b_cts_rts {
-+			mux {
-+				groups = "uart_cts_b",
-+				       "uart_rts_b";
-+				function = "uart_b";
-+			};
-+		};
-+
- 		uart_c_pins: uart_c {
- 			mux {
- 				groups = "uart_tx_c",
-@@ -306,6 +338,14 @@
- 			};
- 		};
- 
-+		uart_c_cts_rts_pins: uart_c_cts_rts {
-+			mux {
-+				groups = "uart_cts_c",
-+				       "uart_rts_c";
-+				function = "uart_c";
-+			};
-+		};
-+
- 		i2c_a_pins: i2c_a {
- 			mux {
- 				groups = "i2c_sck_a",
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-index 53ed7a5f50ab..7d7fd87f094b 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-@@ -82,6 +82,14 @@
- 			};
- 		};
- 
-+		uart_ao_a_cts_rts_pins: uart_ao_a_cts_rts {
-+			mux {
-+				groups = "uart_cts_ao_a",
-+				       "uart_rts_ao_a";
-+				function = "uart_ao";
-+			};
-+		};
-+
- 		uart_ao_b_pins: uart_ao_b {
- 			mux {
- 				groups = "uart_tx_ao_b", "uart_rx_ao_b";
-@@ -89,6 +97,14 @@
- 			};
- 		};
- 
-+		uart_ao_b_cts_rts_pins: uart_ao_b_cts_rts {
-+			mux {
-+				groups = "uart_cts_ao_b",
-+				       "uart_rts_ao_b";
-+				function = "uart_ao_b";
-+			};
-+		};
-+
- 		remote_input_ao_pins: remote_input_ao {
- 			mux {
- 				groups = "remote_input_ao";
-@@ -164,6 +180,14 @@
- 			};
- 		};
- 
-+		uart_a_cts_rts_pins: uart_a_cts_rts {
-+			mux {
-+				groups = "uart_cts_a",
-+				       "uart_rts_a";
-+				function = "uart_a";
-+			};
-+		};
-+
- 		uart_b_pins: uart_b {
- 			mux {
- 				groups = "uart_tx_b",
-@@ -172,6 +196,14 @@
- 			};
- 		};
- 
-+		uart_b_cts_rts_pins: uart_b_cts_rts {
-+			mux {
-+				groups = "uart_cts_b",
-+				       "uart_rts_b";
-+				function = "uart_b";
-+			};
-+		};
-+
- 		uart_c_pins: uart_c {
- 			mux {
- 				groups = "uart_tx_c",
-@@ -180,6 +212,14 @@
- 			};
- 		};
- 
-+		uart_c_cts_rts_pins: uart_c_cts_rts {
-+			mux {
-+				groups = "uart_cts_c",
-+				       "uart_rts_c";
-+				function = "uart_c";
-+			};
-+		};
-+
- 		i2c_a_pins: i2c_a {
- 			mux {
- 				groups = "i2c_sck_a",
+Thanks,
+Andreas
+
 -- 
-2.11.0
+SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
+GF: Felix Imendörffer, Jane Smithard, Graham Norton
+HRB 21284 (AG Nürnberg)
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
