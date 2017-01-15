@@ -1,61 +1,146 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial driver changes for 4.10-rc4
-Date: Sun, 15 Jan 2017 13:40:14 +0100
-Message-ID: <20170115124014.GA8090@kroah.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v9 1/3] gpio: exar: add gpio for exar cards
+Date: Sun, 15 Jan 2017 16:57:32 +0200
+Message-ID: <CAHp75VfcUr-1sjh+xySHMaeNEi7QxHANvqbHGwt9=uWeOvMCJQ@mail.gmail.com>
+References: <1484434252-7663-1-git-send-email-sudipm.mukherjee@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <1484434252-7663-1-git-send-email-sudipm.mukherjee@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit a121103c922847ba5010819a3f250f1f7fc84ab8:
+On Sun, Jan 15, 2017 at 12:50 AM, Sudip Mukherjee
+<sudipm.mukherjee@gmail.com> wrote:
+> From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+>
+> Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
+> can be controlled using gpio interface.
+>
+> Add the gpio specific code.
 
-  Linux 4.10-rc3 (2017-01-08 14:18:17 -0800)
+Thanks for an updated code.
+Briefly looking into first two patches v10 would be needed.
 
-are available in the git repository at:
+Here one important line is missed, nevertheless I'll go to comment
+some minor stuff as well.
+Overall looks good!
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.10-rc4
+> name[16] should be enough. Maximum of 12 char will be used.
 
-for you to fetch changes up to 802c03881f29844af0252b6e22be5d2f65f93fd0:
+Better to use enough space, otherwise there is a room for a bug.
+So, you need to understand that kernel might crash in such cases,
+though it's minor for now.
 
-  sysrq: attach sysrq handler correctly for 32-bit kernel (2017-01-11 09:22:54 +0100)
+> +++ b/drivers/gpio/gpio-exar.c
+> @@ -0,0 +1,199 @@
 
-----------------------------------------------------------------
-TTY/serial fixes for 4.10-rc4
+> +static void exar_update(struct gpio_chip *chip, unsigned int reg, int val,
+> +                       unsigned int offset)
+> +{
+> +       struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
+> +       int temp;
+> +
+> +       mutex_lock(&exar_gpio->lock);
+> +       temp = readb(exar_gpio->regs + reg);
+> +       temp &= ~BIT(offset);
 
-Here are some small tty/serial driver fixes for 4.10-rc4 to resolve a
-number of reported issues.
+> +       if (val)
+> +               temp |= BIT(offset);
 
-Nothing major here at all, one revert of a problematic patch, and some
-other tiny bugfixes.  Full details are in the shortlog below.
+You would do this in one line, but I dunno which style Linus prefers more
 
-All have been in linux-next with no reported issues.
+temp |= val ? BIT(...) : 0;
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> +{
+> +       unsigned int addr;
+> +
+> +       addr = offset / 8 ? EXAR_OFFSET_MPIOSEL_HI :
+> +                               EXAR_OFFSET_MPIOSEL_LO;
 
-----------------------------------------------------------------
-Akinobu Mita (1):
-      sysrq: attach sysrq handler correctly for 32-bit kernel
+Would it be one line?
 
-Daniel Jedrychowski (1):
-      Clearing FIFOs in RS485 emulation mode causes subsequent transmits to break
+Also you can consider
 
-Gabriel Krisman Bertazi (1):
-      8250_pci: Fix potential use-after-free in error path
+unsigned int bank = offset / 8;
+unsigned int addr;
 
-Herbert Xu (1):
-      Revert "tty: serial: 8250: add CON_CONSDEV to flags"
+addr = bank ? _HI : _LO;
 
-Richard Genoud (2):
-      tty/serial: atmel_serial: BUG: stop DMA from transmitting in stop_tx
-      tty/serial: atmel: RS485 half duplex w/DMA: enable RX after TX is done
+Same amount of lines, but a bit more readable. All other places as well.
 
- drivers/tty/serial/8250/8250_core.c |  2 +-
- drivers/tty/serial/8250/8250_pci.c  | 12 +++++-------
- drivers/tty/serial/8250/8250_port.c |  2 +-
- drivers/tty/serial/atmel_serial.c   | 22 ++++++++++++++++------
- drivers/tty/sysrq.c                 |  4 ++--
- 5 files changed, 25 insertions(+), 17 deletions(-)
+> +static int gpio_exar_probe(struct platform_device *pdev)
+> +{
+> +       struct pci_dev *pcidev = platform_get_drvdata(pdev);
+> +       struct exar_gpio_chip *exar_gpio;
+> +       void __iomem *p;
+> +       int index, ret;
+> +
+> +       if (pcidev->vendor != PCI_VENDOR_ID_EXAR)
+> +               return -ENODEV;
+> +
+> +       /*
+> +        * Map the pci device to get the register addresses
+> +        * We will need to read and write those registers to control
+> +        * the GPIO pins.
+> +        * Using managed functions will save us from unmaping on exit.
+
+Yes, and "we may do that because UART driver enables managed functions".
+
+> +        */
+
+> +
+
+Redundant empty line.
+
+> +       p = pcim_iomap(pcidev, 0, 0);
+> +       if (!p)
+> +               return -ENOMEM;
+> +
+> +       exar_gpio = devm_kzalloc(&pcidev->dev, sizeof(*exar_gpio), GFP_KERNEL);
+> +       if (!exar_gpio)
+> +               return -ENOMEM;
+> +
+> +       mutex_init(&exar_gpio->lock);
+> +
+> +       index = ida_simple_get(&ida_index, 0, 0, GFP_KERNEL);
+> +
+> +       sprintf(exar_gpio->name, "exar_gpio%d", index);
+> +       exar_gpio->gpio_chip.label = exar_gpio->name;
+> +       exar_gpio->gpio_chip.parent = &pcidev->dev;
+> +       exar_gpio->gpio_chip.direction_output = exar_direction_output;
+> +       exar_gpio->gpio_chip.direction_input = exar_direction_input;
+> +       exar_gpio->gpio_chip.get_direction = exar_get_direction;
+> +       exar_gpio->gpio_chip.get = exar_get_value;
+> +       exar_gpio->gpio_chip.set = exar_set_value;
+> +       exar_gpio->gpio_chip.base = -1;
+> +       exar_gpio->gpio_chip.ngpio = 16;
+> +       exar_gpio->regs = p;
+> +       exar_gpio->index = index;
+> +
+> +       ret = devm_gpiochip_add_data(&pcidev->dev,
+> +                                    &exar_gpio->gpio_chip, exar_gpio);
+> +       if (ret)
+> +               goto err_destroy;
+> +
+> +       platform_set_drvdata(pdev, exar_gpio);
+> +
+> +       return 0;
+> +
+> +err_destroy:
+
+> +       mutex_destroy(&exar_gpio->lock);
+
+Important!
+You missed ida_simple_remove(); here
+
+And as side effect you might overflow name and crash kernel due to this bug.
+
+> +       return ret;
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
