@@ -1,50 +1,53 @@
 From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Subject: [PATCH 0/4] Bluetooth support for GXBB/GXL/GXM based devices
-Date: Sun, 15 Jan 2017 23:32:51 +0100
-Message-ID: <20170115223255.10350-1-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 4/4] ARM64: dts: meson-gxbb-vega-s95: enable the Bluetooth module
+Date: Sun, 15 Jan 2017 23:32:55 +0100
+Message-ID: <20170115223255.10350-5-martin.blumenstingl@googlemail.com>
+References: <20170115223255.10350-1-martin.blumenstingl@googlemail.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170115223255.10350-1-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org
 Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-This adds the missing kernel bits for Bluetooth support on the
-Tronsmart Vega S95 (GXBB based) boards as well as for the GXL
-P230/P231 and GXM Q200/Q201 reference boards.
+This takes the Bluetooth module out of reset (the reset line is
+connected to GPIOX_20) and enables uart_A which is used to configure the
+module. This is common for all Vega S95 boards.
+The device can then be initialized by running the hciattach tool:
+hciattach -s115200 /dev/ttyAML1 bcm43xx 2000000 flow -
 
-The Bluetooth functionality on these boards is provided by the
-SDIO wifi/Bluetooth combo-chip (Broadcom bcm43xx based). The
-Bluetooth module on that combo-chip has to be taken out of reset,
-which is taken care of the GPIO in the sdio_pwrseq.
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+---
+ arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Once the module is taken out of reset it can be set up from userspace
-using the "hciattach" tool from bluez, which talks to the Bluetooth
-module which is connected to one of the serial ports (in our case
-uart_A). To get the Bluetooth module initialized within the timeout
-defined by "hciattach" (and to achieve usable speeds for Bluetooth
-transfers) the communication uses a speed of 2000000 baud, which was
-not supported by meson_uart before.
-
-NOTE: The .dts-changes from this series depends on my previous series
-"add support for uart_AO_B" - see [0]
-
-
-[0] http://lists.infradead.org/pipermail/linux-amlogic/2017-January/001982.html
-
-
-Martin Blumenstingl (4):
-  tty: serial: meson: allow baud-rates higher than 115200
-  ARM64: dts: meson-gx: add the serial CTS and RTS pin groups
-  ARM64: dts: meson-gx-p23x-q20x: enable the Bluetooth module
-  ARM64: dts: meson-gxbb-vega-s95: enable the Bluetooth module
-
- .../arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi | 12 ++++++-
- .../boot/dts/amlogic/meson-gxbb-vega-s95.dtsi      |  9 +++++
- arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi        | 40 ++++++++++++++++++++++
- arch/arm64/boot/dts/amlogic/meson-gxl.dtsi         | 40 ++++++++++++++++++++++
- drivers/tty/serial/meson_uart.c                    |  2 +-
- 5 files changed, 101 insertions(+), 2 deletions(-)
-
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi
+index ab497126c9a3..9e0a13b1ac93 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi
+@@ -47,6 +47,7 @@
+ 
+ 	aliases {
+ 		serial0 = &uart_AO;
++		serial1 = &uart_A;
+ 	};
+ 
+ 	chosen {
+@@ -100,6 +101,14 @@
+ 	};
+ };
+ 
++/* This is connected to the Bluetooth module of the wifi/BT combo chip: */
++&uart_A {
++	status = "okay";
++	pinctrl-0 = <&uart_a_pins &uart_a_cts_rts_pins>;
++	pinctrl-names = "default";
++	uart-has-rtscts;
++};
++
+ &uart_AO {
+ 	status = "okay";
+ 	pinctrl-0 = <&uart_ao_a_pins>;
 -- 
 2.11.0
 
