@@ -1,97 +1,88 @@
-From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Subject: Re: [PATCH 3/4] ARM64: dts: meson-gx-p23x-q20x: enable the Bluetooth module
-Date: Mon, 16 Jan 2017 10:44:36 +0100
-Message-ID: <CAFBinCC2SzLtq9-tUFUu5CH_Q8tJSdJHc_93UmcgoTOOxnD5=Q@mail.gmail.com>
-References: <20170115223255.10350-1-martin.blumenstingl@googlemail.com>
- <20170115223255.10350-4-martin.blumenstingl@googlemail.com> <042e2824-0772-cf27-ffa5-4c3b2af7c92b@suse.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <042e2824-0772-cf27-ffa5-4c3b2af7c92b-l3A5Bk7waGM@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 2/9] tty_port: allow a port to be opened with a tty that has no file handle
+Date: Mon, 16 Jan 2017 16:54:29 -0600
+Message-ID: <20170116225436.17505-3-robh@kernel.org>
+References: <20170116225436.17505-1-robh@kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170116225436.17505-1-robh@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Cc: Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 16, 2017 at 1:47 AM, Andreas F=C3=A4rber <afaerber-l3A5Bk7waGM@public.gmane.org> wro=
-te:
-> Am 15.01.2017 um 23:32 schrieb Martin Blumenstingl:
->> This takes the Bluetooth module out of reset (the reset line is
->> connected to GPIOX_17) and enables uart_A which is used to configure the
->> module.
->> This is identical for all boards which inherit meson-gx-p23x-q20x:
->> - GXL S905D P230
->> - GXL S905D P231
->> - GXM S912 Q200
->> - GXM S912 Q201
->>
->> To get the HCI interface up one has to install bluez-utils and run:
->> hciattach -s115200 /dev/ttyAML1 bcm43xx 2000000 flow -
->>
->> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
->> ---
->>  arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi | 12 +++++++++++-
->>  1 file changed, 11 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi b/arch/=
-arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
->> index 7a078bef04cd..7db779048091 100644
->> --- a/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
->> +++ b/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
->> @@ -48,6 +48,7 @@
->>  / {
->>       aliases {
->>               serial0 =3D &uart_AO;
->> +             serial1 =3D &uart_A;
->>       };
->>
->>       chosen {
->> @@ -94,12 +95,21 @@
->>
->>       sdio_pwrseq: sdio-pwrseq {
->>               compatible =3D "mmc-pwrseq-simple";
->> -             reset-gpios =3D <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
->> +             reset-gpios =3D <&gpio GPIOX_6 GPIO_ACTIVE_LOW>,
->> +                           <&gpio GPIOX_17 GPIO_ACTIVE_LOW>;
->>               clocks =3D <&wifi32k>;
->>               clock-names =3D "ext_clock";
->>       };
->>  };
->>
->> +/* This is connected to the Bluetooth module of the wifi/BT combo chip:=
- */
->> +&uart_A {
->> +     status =3D "okay";
->> +     pinctrl-0 =3D <&uart_a_pins &uart_a_cts_rts_pins>;
->
-> Nit: <&uart_a_pins>, <&uart_a_cts_rts_pins> please, like you've done for
-> reset-gpios above.
-indeed, not sure why I mixed it up. should I also send an update for
-the pinctrl-documentation (as it seems to use the same pattern): [0]?
+From: Alan Cox <alan@linux.intel.com>
 
-> Regards,
-> Andreas
->
->> +     pinctrl-names =3D "default";
->> +     uart-has-rtscts;
->> +};
->> +
->>  /* This UART is brought out to the DB9 connector */
->>  &uart_AO {
->>       status =3D "okay";
->>
->
->
-> --
-> SUSE Linux GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
-> GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton
-> HRB 21284 (AG N=C3=BCrnberg)
+Let us create tty objects entirely in kernel space. Untested proposal to
+show why all the ideas around rewriting half the uart stack are not needed.
 
+With this a kernel created non file backed tty object could be used to handle
+data, and set terminal modes. Not all ldiscs can cope with this as N_TTY in
+particular has to work back to the fs/tty layer.
 
-[0] http://lxr.free-electrons.com/source/Documentation/devicetree/bindings/=
-pinctrl/pinctrl-bindings.txt?v=3D4.9#L74
+The tty_port code is however otherwise clean of file handles as far as I can
+tell as is the low level tty port write path used by the ldisc, the
+configuration low level interfaces and most of the ldiscs.
+
+Currently you don't have any exposure to see tty hangups because those are
+built around the file layer. However a) it's a fixed port so you probably
+don't care about that b) if you do we can add a callback and c) you almost
+certainly don't want the userspace tear down/rebuild behaviour anyway.
+
+This should however be sufficient if we wanted for example to enumerate all
+the bluetooth bound fixed ports via ACPI and make them directly available.
+It doesn't deal with the case of a user opening a port that's also kernel
+opened and that would need some locking out (so it returned EBUSY if bound
+to a kernel device of some kind). That needs resolving along with how you
+"up" or "down" your new bluetooth device, or enumerate it while providing
+the existing tty API to avoid regressions (and to debug).
+
+Alan
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-By: Sebastian Reichel <sre@kernel.org>
+---
+Alan, Need your SoB here.
+
+v2:
+- no change
+
+ drivers/tty/tty_io.c   | 2 +-
+ drivers/tty/tty_port.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 4790c0fb5a45..a1fd3f7d487a 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -855,7 +855,7 @@ static void tty_vhangup_session(struct tty_struct *tty)
+
+ int tty_hung_up_p(struct file *filp)
+ {
+-	return (filp->f_op == &hung_up_tty_fops);
++	return (filp && filp->f_op == &hung_up_tty_fops);
+ }
+
+ EXPORT_SYMBOL(tty_hung_up_p);
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index c3f9d93ba227..606d9e5bf28f 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -335,7 +335,7 @@ EXPORT_SYMBOL(tty_port_lower_dtr_rts);
+  *	tty_port_block_til_ready	-	Waiting logic for tty open
+  *	@port: the tty port being opened
+  *	@tty: the tty device being bound
+- *	@filp: the file pointer of the opener
++ *	@filp: the file pointer of the opener or NULL
+  *
+  *	Implement the core POSIX/SuS tty behaviour when opening a tty device.
+  *	Handles:
+@@ -369,7 +369,7 @@ int tty_port_block_til_ready(struct tty_port *port,
+ 		tty_port_set_active(port, 1);
+ 		return 0;
+ 	}
+-	if (filp->f_flags & O_NONBLOCK) {
++	if (filp == NULL || (filp->f_flags & O_NONBLOCK)) {
+ 		/* Indicate we are open */
+ 		if (C_BAUD(tty))
+ 			tty_port_raise_dtr_rts(port);
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.10.1
