@@ -1,7 +1,7 @@
 From: Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 4/9] tty: constify tty_ldisc_receive_buf buffer pointer
-Date: Mon, 16 Jan 2017 16:54:31 -0600
-Message-ID: <20170116225436.17505-5-robh@kernel.org>
+Subject: [PATCH v2 3/9] tty_port: make tty_port_register_device wrap tty_port_register_device_attr
+Date: Mon, 16 Jan 2017 16:54:30 -0600
+Message-ID: <20170116225436.17505-4-robh@kernel.org>
 References: <20170116225436.17505-1-robh@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170116225436.17505-1-robh@kernel.org>
@@ -10,10 +10,10 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@hol
 Cc: Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This is needed to work with the client operations which uses const ptrs.
-
-Really, the flags pointer could be const, too, but this would be a tree
-wide fix.
+tty_register_device is just a wrapper for tty_register_device_attr with
+NULL passed for drvdata and attr_grp. So similarly make
+tty_port_register_device a wrapper of tty_port_register_device_attr so that
+additions don't have to be made in both functions.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
@@ -22,35 +22,22 @@ Reviewed-By: Sebastian Reichel <sre@kernel.org>
 v2:
 - no change
 
- drivers/tty/tty_buffer.c | 2 +-
- include/linux/tty.h      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/tty_port.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index aa80dc94ddc2..f4dc3e296dd5 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -422,7 +422,7 @@ EXPORT_SYMBOL_GPL(tty_prepare_flip_string);
-  *
-  *	Returns the number of bytes not processed
-  */
--int tty_ldisc_receive_buf(struct tty_ldisc *ld, unsigned char *p,
-+int tty_ldisc_receive_buf(struct tty_ldisc *ld, const unsigned char *p,
- 			  char *f, int count)
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 606d9e5bf28f..1d8804843103 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -67,8 +67,7 @@ struct device *tty_port_register_device(struct tty_port *port,
+ 		struct tty_driver *driver, unsigned index,
+ 		struct device *device)
  {
- 	if (ld->ops->receive_buf2)
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 86c7853282b7..21c0fabfed60 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -657,7 +657,7 @@ extern int tty_ldisc_setup(struct tty_struct *tty, struct tty_struct *o_tty);
- extern void tty_ldisc_release(struct tty_struct *tty);
- extern void tty_ldisc_init(struct tty_struct *tty);
- extern void tty_ldisc_deinit(struct tty_struct *tty);
--extern int tty_ldisc_receive_buf(struct tty_ldisc *ld, unsigned char *p,
-+extern int tty_ldisc_receive_buf(struct tty_ldisc *ld, const unsigned char *p,
- 				 char *f, int count);
+-	tty_port_link_device(port, driver, index);
+-	return tty_register_device(driver, index, device);
++	return tty_port_register_device_attr(port, driver, index, device, NULL, NULL);
+ }
+ EXPORT_SYMBOL_GPL(tty_port_register_device);
 
- /* n_tty.c */
 --
 2.10.1
