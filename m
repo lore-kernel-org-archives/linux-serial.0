@@ -1,47 +1,47 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH 0/3] tty: serial: 8250_omap: Enable DMA support
-Date: Tue, 17 Jan 2017 15:35:28 +0530
-Message-ID: <f978273d-39eb-e5d7-a95e-4a2e4be9e23c@ti.com>
-References: <20170113080201.6515-1-vigneshr@ti.com>
- <20170113182021.GD2630@atomide.com>
- <b27b95a9-40b8-ebef-3457-ce87db6b26e5@ti.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v2 0/9] Serial slave device bus
+Date: Tue, 17 Jan 2017 12:07:22 +0100
+Message-ID: <20170117110722.GB26116@xo-6d-61-c0.localdomain>
+References: <20170116225436.17505-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <b27b95a9-40b8-ebef-3457-ce87db6b26e5@ti.com>
+Content-Disposition: inline
+In-Reply-To: <20170116225436.17505-1-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+Hi!
 
+> Here's a new version of the serdev bus support with all the review
+> feedback so far incorporated. I've left it named serdev for now pending
+> any further votes one way or the other, but I did rename the sysfs visible
+> portions to "serial".
+> 
+> There's still some discussion about what to do with devices that pass thru
+> data to userspace unmodified like GPS and could still use tty device for
+> the data path. IMO, we should treat this as a separate problem following
+> this series. Drivers we want to convert to serdev and already in the
+> kernel don't need this functionality.
+> 
+> I need a SoB from Alan on his patch 2 and would like review from Alan and/or
+> Peter on the locking in patch 5.
+> 
+> I have hacked up versions of the BT ldisc and TI ST drivers moved over to
+> use the serdev bus. I have BT working on the HiKey board which has TI BT.
+> With the serdev bus support, it eliminates the need for the TI userspace
+> UIM daemon. I've made some progress cleaning up the TI-ST into proper
+> patches and also got it working at 3Mbps.
+> 
+> Changelog is in individual patches. Previous version is here[1]. This
+> series and the mentioned drivers can be found here[2].
 
-On Tuesday 17 January 2017 11:36 AM, Vignesh R wrote:
-> 
-> 
-> On Friday 13 January 2017 11:50 PM, Tony Lindgren wrote:
->> * Vignesh R <vigneshr@ti.com> [170113 00:03]:
->>> This patch series re enables DMA support for UART 8250_omap driver.
->>>
->>> Tested on AM335x, AM437x that use EDMA and OMAP5 and DRA74 EVM with
->>> SDMA.
->>
->> Is 8250_omap serial console working for you on omap5 in general?
->>
->> I've noticed that it's really unresponsive for me as if the FIFO
->> interrupt was not working. For example logging in might take several
->> attempts and a long time with each character showing up much later
->> after some timeout.
->>
-> 
-> Yes, I did face the same issue on omap5 using 8250_omap driver for
-> console. Looks like this bug has existed all along.
-> 
+Series looks good to me. Thanks for doing the work.
 
-This looks a separate issue, I don't see any errata specific errata wrt
-UART on OMAP5. I will try to debug further.
-
+Best regards,
+									Pavel
 -- 
-Regards
-Vignesh
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
