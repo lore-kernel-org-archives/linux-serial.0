@@ -1,46 +1,53 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH 0/3] tty: serial: 8250_omap: Enable DMA support
-Date: Tue, 17 Jan 2017 11:36:17 +0530
-Message-ID: <b27b95a9-40b8-ebef-3457-ce87db6b26e5@ti.com>
-References: <20170113080201.6515-1-vigneshr@ti.com>
- <20170113182021.GD2630@atomide.com>
+From: "=?utf-8?B?6ZmI5Y2O5omN?=" <chenhc@lemote.com>
+Subject: Re: [PATCH] Revert "tty: serial: 8250: add CON_CONSDEV to flags"
+Date: Tue, 17 Jan 2017 15:34:07 +0800
+Message-ID: <tencent_1B50C7A330CBEE4F4B1DA527@qq.com>
+References: <1479092021-14885-1-git-send-email-chenhc@lemote.com>
+        <20161114114950.GA13920@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170113182021.GD2630@atomide.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20161114114950.GA13920@kroah.com>
+Sender: stable-owner@vger.kernel.org
+To: =?utf-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>
+Cc: =?utf-8?B?bGludXgtc2VyaWFs?= <linux-serial@vger.kernel.org>, =?utf-8?B?TWF0dGhldyBMZWFjaA==?= <matthew.leach@codethink.co.uk>, =?utf-8?B?c3RhYmxl?= <stable@vger.kernel.org>, =?utf-8?B?Q2UgU3Vu?= <sunc@lemote.com>
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On Friday 13 January 2017 11:50 PM, Tony Lindgren wrote:
-> * Vignesh R <vigneshr@ti.com> [170113 00:03]:
->> This patch series re enables DMA support for UART 8250_omap driver.
->>
->> Tested on AM335x, AM437x that use EDMA and OMAP5 and DRA74 EVM with
->> SDMA.
-> 
-> Is 8250_omap serial console working for you on omap5 in general?
-> 
-> I've noticed that it's really unresponsive for me as if the FIFO
-> interrupt was not working. For example logging in might take several
-> attempts and a long time with each character showing up much later
-> after some timeout.
-> 
-
-Yes, I did face the same issue on omap5 using 8250_omap driver for
-console. Looks like this bug has existed all along.
-
-> TX on the uart on omap5 seems to work OK, I do see all the console
-> messages fine. And these patches do not make the issue better or
-> worse.
-> 
-
-True.
-
--- 
-Regards
-Vignesh
+UGluZz8gDQogDQogDQotLS0tLS0tLS0tLS0tLS0tLS0gT3JpZ2luYWwgLS0tLS0tLS0tLS0t
+LS0tLS0tDQpGcm9tOiAgIkdyZWcgS3JvYWgtSGFydG1hbiI8Z3JlZ2toQGxpbnV4Zm91bmRh
+dGlvbi5vcmc+Ow0KRGF0ZTogIE1vbiwgTm92IDE0LCAyMDE2IDA3OjQ5IFBNDQpUbzogICJI
+dWFjYWkgQ2hlbiI8Y2hlbmhjQGxlbW90ZS5jb20+OyANCkNjOiAgImxpbnV4LXNlcmlhbCI8
+bGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZz47ICJNYXR0aGV3IExlYWNoIjxtYXR0aGV3
+LmxlYWNoQGNvZGV0aGluay5jby51az47ICJzdGFibGUiPHN0YWJsZUB2Z2VyLmtlcm5lbC5v
+cmc+OyAiQ2UgU3VuIjxzdW5jQGxlbW90ZS5jb20+OyANClN1YmplY3Q6ICBSZTogW1BBVENI
+XSBSZXZlcnQgInR0eTogc2VyaWFsOiA4MjUwOiBhZGQgQ09OX0NPTlNERVYgdG8gZmxhZ3Mi
+DQoNCiANCk9uIE1vbiwgTm92IDE0LCAyMDE2IGF0IDEwOjUzOjQxQU0gKzA4MDAsIEh1YWNh
+aSBDaGVuIHdyb3RlOg0KPiBUaGlzIHJldmVydHMgY29tbWl0IGQwMzUxNmRmODM3NTg3MzY4
+ZmM2ZTc1NTkxZjYzMjljMDcyYjllYjUuIEZyb20NCj4gRG9jdW1lbnRhdGlvbi9zZXJpYWwt
+Y29uc29sZS50eHQgd2UgY2FuIGtub3cgdGhhdCBzZXJpYWwgcG9ydCBiZWNvbWVzDQo+IHRo
+ZSBzeXN0ZW0gY29uc29sZSBvbmx5IHdoZW4gaXQgYXBwZWFycyBpbiB0aGUga2VybmVsIHBh
+cmFtZXRlcnMgYXMgdGhlDQo+IGxhc3QgY29uc29sZSBkZXZpY2UuIEJ1dCBjb21taXQgZDAz
+NTE2ZGY4Mzc1ODcgYWRkcyBhIENPTl9DT05TREVWIGZsYWcNCj4gdG8gdW5pdjgyNTBfY29u
+c29sZSBhbmQgYnJlYWtzIHRoaXMgY29udmVudGlvbi4gQWZ0ZXIgdGhhdCBlaXRoZXIgd2UN
+Cj4gdXNlICJjb25zb2xlPXR0eSBjb25zb2xlPXR0eVMwIiBvciAiY29uc29sZT10dHlTMCBj
+b25zb2xlPXR0eSIsIHNlcmlhbA0KPiBwb3J0IHdpbGwgYWx3YXlzIGJlIHRoZSBzeXN0ZW0g
+Y29uc29sZS4NCj4gDQo+IENjOiBzdGFibGVAdmdlci5rZXJuZWwub3JnDQo+IFNpZ25lZC1v
+ZmYtYnk6IENlIFN1biA8c3VuY0BsZW1vdGUuY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBIdWFj
+YWkgQ2hlbiA8Y2hlbmhjQGxlbW90ZS5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy90dHkvc2Vy
+aWFsLzgyNTAvODI1MF9jb3JlLmMgfCAyICstDQo+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNl
+cnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0
+eS9zZXJpYWwvODI1MC84MjUwX2NvcmUuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgy
+NTBfY29yZS5jDQo+IGluZGV4IDI0MGEzNjEuLmU4ODE5YWEgMTAwNjQ0DQo+IC0tLSBhL2Ry
+aXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfY29yZS5jDQo+ICsrKyBiL2RyaXZlcnMvdHR5
+L3NlcmlhbC84MjUwLzgyNTBfY29yZS5jDQo+IEBAIC02NzUsNyArNjc1LDcgQEAgc3RhdGlj
+IHN0cnVjdCBjb25zb2xlIHVuaXY4MjUwX2NvbnNvbGUgPSB7DQo+ICAJLmRldmljZQkJPSB1
+YXJ0X2NvbnNvbGVfZGV2aWNlLA0KPiAgCS5zZXR1cAkJPSB1bml2ODI1MF9jb25zb2xlX3Nl
+dHVwLA0KPiAgCS5tYXRjaAkJPSB1bml2ODI1MF9jb25zb2xlX21hdGNoLA0KPiAtCS5mbGFn
+cwkJPSBDT05fUFJJTlRCVUZGRVIgfCBDT05fQU5ZVElNRSB8IENPTl9DT05TREVWLA0KPiAr
+CS5mbGFncwkJPSBDT05fUFJJTlRCVUZGRVIgfCBDT05fQU5ZVElNRSwNCj4gIAkuaW5kZXgJ
+CT0gLTEsDQo+ICAJLmRhdGEJCT0gJnNlcmlhbDgyNTBfcmVnLA0KPiAgfTsNCg0KT2RkLiAg
+TWF0dGhldywgYW55IHRob3VnaHRzIGhlcmU/ICBUaGlzIHNlZW1zIHRvIGJlIHRoZSBvcHBv
+c2l0ZSBvZiB3aHkNCnlvdSBzdWJtaXR0ZWQgdGhpcyBjaGFuZ2UuLi4NCg0KdGhhbmtzLA0K
+DQpncmVnIGstaA==
