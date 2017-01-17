@@ -1,32 +1,47 @@
-From: "=?utf-8?B?6ZmI5Y2O5omN?=" <chenhc@lemote.com>
-Subject: Re: [PATCH] Revert "tty: serial: 8250: add CON_CONSDEV to flags"
-Date: Tue, 17 Jan 2017 16:01:14 +0800
-Message-ID: <tencent_66FA02AF2D1D4ECD1C23365C@qq.com>
-References: <1479092021-14885-1-git-send-email-chenhc@lemote.com>
-        <20161114114950.GA13920@kroah.com>
-        <tencent_1B50C7A330CBEE4F4B1DA527@qq.com>
-        <20170117075421.GA29720@kroah.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH 0/3] tty: serial: 8250_omap: Enable DMA support
+Date: Tue, 17 Jan 2017 15:35:28 +0530
+Message-ID: <f978273d-39eb-e5d7-a95e-4a2e4be9e23c@ti.com>
+References: <20170113080201.6515-1-vigneshr@ti.com>
+ <20170113182021.GD2630@atomide.com>
+ <b27b95a9-40b8-ebef-3457-ce87db6b26e5@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20170117075421.GA29720@kroah.com>
-Sender: stable-owner@vger.kernel.org
-To: =?utf-8?B?R3JlZyBLcm9haC1IYXJ0bWFu?= <gregkh@linuxfoundation.org>
-Cc: =?utf-8?B?bGludXgtc2VyaWFs?= <linux-serial@vger.kernel.org>, =?utf-8?B?TWF0dGhldyBMZWFjaA==?= <matthew.leach@codethink.co.uk>, =?utf-8?B?c3RhYmxl?= <stable@vger.kernel.org>, =?utf-8?B?Q2UgU3Vu?= <sunc@lemote.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <b27b95a9-40b8-ebef-3457-ce87db6b26e5@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-T2gsIEknbSBzb3JyeS4gSSBoYXZuJ3Qgc2VlbiB0aGF0IHNvbWUgb3RoZXJzIHN1Ym1pdHRl
-ZCBhIHNhbWUgcGF0Y2guDQogDQpIdWFjYWkNCiANCi0tLS0tLS0tLS0tLS0tLS0tLSBPcmln
-aW5hbCAtLS0tLS0tLS0tLS0tLS0tLS0NCkZyb206ICAiR3JlZyBLcm9haC1IYXJ0bWFuIjxn
-cmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz47DQpEYXRlOiAgVHVlLCBKYW4gMTcsIDIwMTcg
-MDM6NTQgUE0NClRvOiAgIumZiOWNjuaJjSI8Y2hlbmhjQGxlbW90ZS5jb20+OyANCkNjOiAg
-ImxpbnV4LXNlcmlhbCI8bGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZz47ICJNYXR0aGV3
-IExlYWNoIjxtYXR0aGV3LmxlYWNoQGNvZGV0aGluay5jby51az47ICJzdGFibGUiPHN0YWJs
-ZUB2Z2VyLmtlcm5lbC5vcmc+OyAiQ2UgU3VuIjxzdW5jQGxlbW90ZS5jb20+OyANClN1Ympl
-Y3Q6ICBSZTogW1BBVENIXSBSZXZlcnQgInR0eTogc2VyaWFsOiA4MjUwOiBhZGQgQ09OX0NP
-TlNERVYgdG8gZmxhZ3MiDQoNCiANCk9uIFR1ZSwgSmFuIDE3LCAyMDE3IGF0IDAzOjM0OjA3
-UE0gKzA4MDAsIOmZiOWNjuaJjSB3cm90ZToNCj4gUGluZz8gDQoNCkh1aD8gIFRoaXMgaXMg
-bm93IGluIDQuMTAtcmM0LCByaWdodD8gIFdoYXQgYXJlIHlvdSBwaW5naW5nIGZvcj8NCg0K
-Y29uZnVzZWQsDQoNCmdyZWcgay1o
+
+
+On Tuesday 17 January 2017 11:36 AM, Vignesh R wrote:
+> 
+> 
+> On Friday 13 January 2017 11:50 PM, Tony Lindgren wrote:
+>> * Vignesh R <vigneshr@ti.com> [170113 00:03]:
+>>> This patch series re enables DMA support for UART 8250_omap driver.
+>>>
+>>> Tested on AM335x, AM437x that use EDMA and OMAP5 and DRA74 EVM with
+>>> SDMA.
+>>
+>> Is 8250_omap serial console working for you on omap5 in general?
+>>
+>> I've noticed that it's really unresponsive for me as if the FIFO
+>> interrupt was not working. For example logging in might take several
+>> attempts and a long time with each character showing up much later
+>> after some timeout.
+>>
+> 
+> Yes, I did face the same issue on omap5 using 8250_omap driver for
+> console. Looks like this bug has existed all along.
+> 
+
+This looks a separate issue, I don't see any errata specific errata wrt
+UART on OMAP5. I will try to debug further.
+
+-- 
+Regards
+Vignesh
