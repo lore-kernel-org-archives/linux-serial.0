@@ -1,55 +1,55 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH v2 2/9] tty_port: allow a port to be opened with a tty
- that has no file handle
-Date: Tue, 17 Jan 2017 14:57:29 +0000
-Message-ID: <20170117145729.6c3a9413@lxorguk.ukuu.org.uk>
-References: <20170116225436.17505-1-robh@kernel.org>
-        <20170116225436.17505-3-robh@kernel.org>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 0/3] tty: serial: 8250_omap: Enable DMA support
+Date: Tue, 17 Jan 2017 15:25:37 -0800
+Message-ID: <20170117232536.GZ7403@atomide.com>
+References: <20170113080201.6515-1-vigneshr@ti.com>
+ <20170113182021.GD2630@atomide.com>
+ <b27b95a9-40b8-ebef-3457-ce87db6b26e5@ti.com>
+ <f978273d-39eb-e5d7-a95e-4a2e4be9e23c@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170116225436.17505-3-robh@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <f978273d-39eb-e5d7-a95e-4a2e4be9e23c@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 16 Jan 2017 16:54:29 -0600
-Rob Herring <robh@kernel.org> wrote:
+* Vignesh R <vigneshr@ti.com> [170117 02:06]:
+> 
+> 
+> On Tuesday 17 January 2017 11:36 AM, Vignesh R wrote:
+> > 
+> > 
+> > On Friday 13 January 2017 11:50 PM, Tony Lindgren wrote:
+> >> * Vignesh R <vigneshr@ti.com> [170113 00:03]:
+> >>> This patch series re enables DMA support for UART 8250_omap driver.
+> >>>
+> >>> Tested on AM335x, AM437x that use EDMA and OMAP5 and DRA74 EVM with
+> >>> SDMA.
+> >>
+> >> Is 8250_omap serial console working for you on omap5 in general?
+> >>
+> >> I've noticed that it's really unresponsive for me as if the FIFO
+> >> interrupt was not working. For example logging in might take several
+> >> attempts and a long time with each character showing up much later
+> >> after some timeout.
+> >>
+> > 
+> > Yes, I did face the same issue on omap5 using 8250_omap driver for
+> > console. Looks like this bug has existed all along.
+> > 
+> 
+> This looks a separate issue, I don't see any errata specific errata wrt
+> UART on OMAP5. I will try to debug further.
 
-> From: Alan Cox <alan@linux.intel.com>
-> 
-> Let us create tty objects entirely in kernel space. Untested proposal to
-> show why all the ideas around rewriting half the uart stack are not needed.
-> 
-> With this a kernel created non file backed tty object could be used to handle
-> data, and set terminal modes. Not all ldiscs can cope with this as N_TTY in
-> particular has to work back to the fs/tty layer.
-> 
-> The tty_port code is however otherwise clean of file handles as far as I can
-> tell as is the low level tty port write path used by the ldisc, the
-> configuration low level interfaces and most of the ldiscs.
-> 
-> Currently you don't have any exposure to see tty hangups because those are
-> built around the file layer. However a) it's a fixed port so you probably
-> don't care about that b) if you do we can add a callback and c) you almost
-> certainly don't want the userspace tear down/rebuild behaviour anyway.
-> 
-> This should however be sufficient if we wanted for example to enumerate all
-> the bluetooth bound fixed ports via ACPI and make them directly available.
-> It doesn't deal with the case of a user opening a port that's also kernel
-> opened and that would need some locking out (so it returned EBUSY if bound
-> to a kernel device of some kind). That needs resolving along with how you
-> "up" or "down" your new bluetooth device, or enumerate it while providing
-> the existing tty API to avoid regressions (and to debug).
-> 
-> Alan
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-By: Sebastian Reichel <sre@kernel.org>
-> ---
-> Alan, Need your SoB here.
+OK maybe it's something configured or not configured by the bootloader
+that we're missing in the Linux driver?
 
-Signed-off-by: Alan Cox <alan@linux.intel.com>
+Other than the omap5 issue, 8250_OMAP seems to behave on all variants
+that I've tried it with so far.
 
-Alan
+Regards,
+
+Tony
