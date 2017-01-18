@@ -1,56 +1,39 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 7/9] serdev: Introduce new bus for serial attached devices
-Date: Wed, 18 Jan 2017 15:26:03 -0600
-Message-ID: <CAL_JsqJCg9wXA8hvo1TDPtyRN+ydMs1_S7yzwggvZAnq1aRgag@mail.gmail.com>
-References: <20170116225436.17505-1-robh@kernel.org> <20170116225436.17505-8-robh@kernel.org>
- <09cdab76-ee1a-45da-699f-a66bf7148579@gmail.com>
+From: Kevin Hilman <khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH 1/4] tty: serial: meson: allow baud-rates higher than 115200
+Date: Wed, 18 Jan 2017 13:44:42 -0800
+Message-ID: <m2o9z4yred.fsf@baylibre.com>
+References: <20170115223255.10350-1-martin.blumenstingl@googlemail.com>
+        <20170115223255.10350-2-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <09cdab76-ee1a-45da-699f-a66bf7148579-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?UTF-8?B?RnLDqWTDqXJpYyBEYW5pcw==?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <stephen.boyd-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170115223255.10350-2-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+        (Martin Blumenstingl's message of "Sun, 15 Jan 2017 23:32:52 +0100")
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 18, 2017 at 5:53 AM, Frédéric Danis
-<frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> Hello,
->
-> Le 16/01/2017 à 23:54, Rob Herring a écrit :
->>
->> ---
->> v2:
->> - Add modalias sysfs attr and uevent hook
->
-> ...
->>
->> +static int serdev_uevent(struct device *dev, struct kobj_uevent_env *env)
->> +{
->> +       /* TODO: ACPI and platform modalias */
->> +       return of_device_uevent_modalias(dev, env);
->> +}
->
-> ...
->>
->> +static ssize_t modalias_show(struct device *dev,
->> +                            struct device_attribute *attr, char *buf)
->> +{
->> +       ssize_t len = of_device_get_modalias(dev, buf, PAGE_SIZE - 2);
->> +       buf[len] = '\n';
->> +       buf[len+1] = 0;
->> +       return len+1;
->> +}
->
->
-> This prevents from building serdev as a module with following errors:
->   ERROR: "of_device_uevent_modalias" [drivers/tty/serdev/serdev.ko]
-> undefined!
->   ERROR: "of_device_get_modalias" [drivers/tty/serdev/serdev.ko] undefined!
+Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org> writes:
 
-Turns out, there's a fix already[1] that should be going in via Greg's tree.
+> The vendor driver allows setting baud-rates higher than 115200 baud.
+> There is a check in the vendor driver which prevents using more than
+> 115200 baud during startup, however it does not have such a check in
+> .set_termios.
+> Higher baud-rates are often used by the bluetooth modules embedded into
+> the SDIO wifi chips (Amlogic devices use brcmfmac based wifi chips quite
+> often, 2000000 baud seems to be a common value for the UART baud-rate in
+> Amlogic's "libbt").
+>
+> I have tested this on a Meson GXL device with uart_A (to which the
+> bluetooth module is connected, where initialization times out with
+> 115200 baud) and uart_AO (which I manually set to 2000000 baud  and then
+> connected with my USB UART adapter to that).
+>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 
-Rob
-
-[1] https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1299121.html
+Acked-by: Kevin Hilman <khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
