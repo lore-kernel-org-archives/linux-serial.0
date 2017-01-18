@@ -1,70 +1,56 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 0/3] tty: serial: 8250_omap: Enable DMA support
-Date: Wed, 18 Jan 2017 09:07:26 -0800
-Message-ID: <20170118170726.GE7403@atomide.com>
-References: <20170113080201.6515-1-vigneshr@ti.com>
- <20170113182021.GD2630@atomide.com>
- <b27b95a9-40b8-ebef-3457-ce87db6b26e5@ti.com>
- <f978273d-39eb-e5d7-a95e-4a2e4be9e23c@ti.com>
- <20170117232536.GZ7403@atomide.com>
- <a3055b9c-613b-6c64-db17-05b32ec24457@ti.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 7/9] serdev: Introduce new bus for serial attached devices
+Date: Wed, 18 Jan 2017 15:26:03 -0600
+Message-ID: <CAL_JsqJCg9wXA8hvo1TDPtyRN+ydMs1_S7yzwggvZAnq1aRgag@mail.gmail.com>
+References: <20170116225436.17505-1-robh@kernel.org> <20170116225436.17505-8-robh@kernel.org>
+ <09cdab76-ee1a-45da-699f-a66bf7148579@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <a3055b9c-613b-6c64-db17-05b32ec24457@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vignesh R <vigneshr@ti.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <09cdab76-ee1a-45da-699f-a66bf7148579-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?UTF-8?B?RnLDqWTDqXJpYyBEYW5pcw==?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <stephen.boyd-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-* Vignesh R <vigneshr@ti.com> [170118 04:04]:
-> 
-> 
-> On Wednesday 18 January 2017 04:55 AM, Tony Lindgren wrote:
-> > * Vignesh R <vigneshr@ti.com> [170117 02:06]:
-> >>
-> >>
-> >> On Tuesday 17 January 2017 11:36 AM, Vignesh R wrote:
-> >>>
-> >>>
-> >>> On Friday 13 January 2017 11:50 PM, Tony Lindgren wrote:
-> >>>> * Vignesh R <vigneshr@ti.com> [170113 00:03]:
-> >>>>> This patch series re enables DMA support for UART 8250_omap driver.
-> >>>>>
-> >>>>> Tested on AM335x, AM437x that use EDMA and OMAP5 and DRA74 EVM with
-> >>>>> SDMA.
-> >>>>
-> >>>> Is 8250_omap serial console working for you on omap5 in general?
-> >>>>
-> >>>> I've noticed that it's really unresponsive for me as if the FIFO
-> >>>> interrupt was not working. For example logging in might take several
-> >>>> attempts and a long time with each character showing up much later
-> >>>> after some timeout.
-> >>>>
-> >>>
-> >>> Yes, I did face the same issue on omap5 using 8250_omap driver for
-> >>> console. Looks like this bug has existed all along.
-> >>>
-> >>
-> >> This looks a separate issue, I don't see any errata specific errata wrt
-> >> UART on OMAP5. I will try to debug further.
-> > 
-> > OK maybe it's something configured or not configured by the bootloader
-> > that we're missing in the Linux driver?
-> > 
-> 
-> omap-serial uses a UART RX FIFO trigger of 1 byte whereas 8250_omap
-> driver uses a RX FIFO trigger of 48 bytes. If less than 48 bytes is
-> received then RX Timeout interrupt is raised which will help the driver
-> to flush the FIFO. It seems like RX timeout does not seem to bring out
-> UART IP from idle state on OMAP5.
-> 
-> I have posted a fix based on what is done for DRA7 in hwmod code:
-> http://lists.infradead.org/pipermail/linux-arm-kernel/2017-January/480619.html
+On Wed, Jan 18, 2017 at 5:53 AM, Frédéric Danis
+<frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> Hello,
+>
+> Le 16/01/2017 à 23:54, Rob Herring a écrit :
+>>
+>> ---
+>> v2:
+>> - Add modalias sysfs attr and uevent hook
+>
+> ...
+>>
+>> +static int serdev_uevent(struct device *dev, struct kobj_uevent_env *env)
+>> +{
+>> +       /* TODO: ACPI and platform modalias */
+>> +       return of_device_uevent_modalias(dev, env);
+>> +}
+>
+> ...
+>>
+>> +static ssize_t modalias_show(struct device *dev,
+>> +                            struct device_attribute *attr, char *buf)
+>> +{
+>> +       ssize_t len = of_device_get_modalias(dev, buf, PAGE_SIZE - 2);
+>> +       buf[len] = '\n';
+>> +       buf[len+1] = 0;
+>> +       return len+1;
+>> +}
+>
+>
+> This prevents from building serdev as a module with following errors:
+>   ERROR: "of_device_uevent_modalias" [drivers/tty/serdev/serdev.ko]
+> undefined!
+>   ERROR: "of_device_get_modalias" [drivers/tty/serdev/serdev.ko] undefined!
 
-OK great, thanks for fixing that! Will give it a try a bit later today.
+Turns out, there's a fix already[1] that should be going in via Greg's tree.
 
-Regards,
+Rob
 
-Tony
+[1] https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1299121.html
