@@ -1,39 +1,40 @@
-From: Kevin Hilman <khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 1/4] tty: serial: meson: allow baud-rates higher than 115200
-Date: Wed, 18 Jan 2017 13:44:42 -0800
-Message-ID: <m2o9z4yred.fsf@baylibre.com>
+From: Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [PATCH 2/4] ARM64: dts: meson-gx: add the serial CTS and RTS pin
+ groups
+Date: Wed, 18 Jan 2017 13:52:26 -0800
+Message-ID: <m2k29syr1h.fsf@baylibre.com>
 References: <20170115223255.10350-1-martin.blumenstingl@googlemail.com>
-        <20170115223255.10350-2-martin.blumenstingl@googlemail.com>
+ <20170115223255.10350-3-martin.blumenstingl@googlemail.com>
+ <b74ed3d7-ea69-5a5b-a313-baab3a9e2396@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170115223255.10350-2-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-        (Martin Blumenstingl's message of "Sun, 15 Jan 2017 23:32:52 +0100")
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <b74ed3d7-ea69-5a5b-a313-baab3a9e2396@suse.de> ("Andreas
+ =?utf-8?Q?F=C3=A4rber=22's?= message of "Sun, 15 Jan 2017 23:50:17 +0100")
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, catalin.marinas@arm.com, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, gregkh@linuxfoundation.org, will.deacon@arm.com, robh+dt@kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, carlo@caione.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org> writes:
-
-> The vendor driver allows setting baud-rates higher than 115200 baud.
-> There is a check in the vendor driver which prevents using more than
-> 115200 baud during startup, however it does not have such a check in
-> .set_termios.
-> Higher baud-rates are often used by the bluetooth modules embedded into
-> the SDIO wifi chips (Amlogic devices use brcmfmac based wifi chips quite
-> often, 2000000 baud seems to be a common value for the UART baud-rate in
-> Amlogic's "libbt").
->
-> I have tested this on a Meson GXL device with uart_A (to which the
-> bluetooth module is connected, where initialization times out with
-> 115200 baud) and uart_AO (which I manually set to 2000000 baud  and then
-> connected with my USB UART adapter to that).
->
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-
-Acked-by: Kevin Hilman <khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+QW5kcmVhcyBGw6RyYmVyIDxhZmFlcmJlckBzdXNlLmRlPiB3cml0ZXM6Cgo+IEFtIDE1LjAxLjIw
+MTcgdW0gMjM6MzIgc2NocmllYiBNYXJ0aW4gQmx1bWVuc3RpbmdsOgo+PiBUaGlzIGFkZHMgcGlu
+Y3RybCBncm91cCBub2RlcyBmb3IgdGhlIENUUyBhbmQgUlRTIHBpbnMgb2YgZWFjaCBzZXJpYWwK
+Pj4gY29udHJvbGxlci4gVGhpcyBtYWtlcyBpdCBwb3NzaWJsZSB0byBlbmFibGUgdGhlIENUUyBh
+bmQgUlRTIHBpbnMgd2hpY2gKPj4gYXJlIGNvbnRyb2xsZWQgYnkgdGhlIHNlcmlhbCBjb250cm9s
+bGVyIGhhcmR3YXJlICh0aHJvdWdoIHRoZSBtZXNvbl91YXJ0Cj4+IGRyaXZlcikuCj4+IAo+PiBT
+aWduZWQtb2ZmLWJ5OiBNYXJ0aW4gQmx1bWVuc3RpbmdsIDxtYXJ0aW4uYmx1bWVuc3RpbmdsQGdv
+b2dsZW1haWwuY29tPgo+Cj4gVGVzdGVkLWJ5OiBBbmRyZWFzIEbDpHJiZXIgPGFmYWVyYmVyQHN1
+c2UuZGU+CgpBcHBsaWVkIHRvIHY0LjExL2R0NjQgd2l0aCBBbmRyZWFzJyBhY2suCgpLZXZpbgoK
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFy
+bS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9y
+ZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1r
+ZXJuZWwK
