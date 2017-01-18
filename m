@@ -1,147 +1,70 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 8/9] serdev: add a tty port controller driver
-Date: Wed, 18 Jan 2017 09:03:20 -0600
-Message-ID: <CAL_JsqKhmMa3Vs7fnfqzVYJbz-0=AwT6DckxSuf5ykDvCmNqBQ@mail.gmail.com>
-References: <20170116225436.17505-1-robh@kernel.org> <20170116225436.17505-9-robh@kernel.org>
- <1484743377.2133.204.camel@linux.intel.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 0/3] tty: serial: 8250_omap: Enable DMA support
+Date: Wed, 18 Jan 2017 09:07:26 -0800
+Message-ID: <20170118170726.GE7403@atomide.com>
+References: <20170113080201.6515-1-vigneshr@ti.com>
+ <20170113182021.GD2630@atomide.com>
+ <b27b95a9-40b8-ebef-3457-ce87db6b26e5@ti.com>
+ <f978273d-39eb-e5d7-a95e-4a2e4be9e23c@ti.com>
+ <20170117232536.GZ7403@atomide.com>
+ <a3055b9c-613b-6c64-db17-05b32ec24457@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1484743377.2133.204.camel@linux.intel.com>
+Content-Disposition: inline
+In-Reply-To: <a3055b9c-613b-6c64-db17-05b32ec24457@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 18, 2017 at 6:42 AM, Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> On Mon, 2017-01-16 at 16:54 -0600, Rob Herring wrote:
->> Add a serdev controller driver for tty ports.
->>
->> The controller is registered with serdev when tty ports are registered
->> with the TTY core. As the TTY core is built-in only, this has the side
->> effect of making serdev built-in as well.
->>
->
->>
->> +if SERIAL_DEV_BUS
->> +
->> +config SERIAL_DEV_CTRL_TTYPORT
->> +     bool "Serial device TTY port controller"
->> +     depends on TTY
->
->
->> +     depends on SERIAL_DEV_BUS != m
->
-> Since you have this line the
->  if SERIAL_DEV_BUS
-> is redundant for it.
+* Vignesh R <vigneshr@ti.com> [170118 04:04]:
+> 
+> 
+> On Wednesday 18 January 2017 04:55 AM, Tony Lindgren wrote:
+> > * Vignesh R <vigneshr@ti.com> [170117 02:06]:
+> >>
+> >>
+> >> On Tuesday 17 January 2017 11:36 AM, Vignesh R wrote:
+> >>>
+> >>>
+> >>> On Friday 13 January 2017 11:50 PM, Tony Lindgren wrote:
+> >>>> * Vignesh R <vigneshr@ti.com> [170113 00:03]:
+> >>>>> This patch series re enables DMA support for UART 8250_omap driver.
+> >>>>>
+> >>>>> Tested on AM335x, AM437x that use EDMA and OMAP5 and DRA74 EVM with
+> >>>>> SDMA.
+> >>>>
+> >>>> Is 8250_omap serial console working for you on omap5 in general?
+> >>>>
+> >>>> I've noticed that it's really unresponsive for me as if the FIFO
+> >>>> interrupt was not working. For example logging in might take several
+> >>>> attempts and a long time with each character showing up much later
+> >>>> after some timeout.
+> >>>>
+> >>>
+> >>> Yes, I did face the same issue on omap5 using 8250_omap driver for
+> >>> console. Looks like this bug has existed all along.
+> >>>
+> >>
+> >> This looks a separate issue, I don't see any errata specific errata wrt
+> >> UART on OMAP5. I will try to debug further.
+> > 
+> > OK maybe it's something configured or not configured by the bootloader
+> > that we're missing in the Linux driver?
+> > 
+> 
+> omap-serial uses a UART RX FIFO trigger of 1 byte whereas 8250_omap
+> driver uses a RX FIFO trigger of 48 bytes. If less than 48 bytes is
+> received then RX Timeout interrupt is raised which will help the driver
+> to flush the FIFO. It seems like RX timeout does not seem to bring out
+> UART IP from idle state on OMAP5.
+> 
+> I have posted a fix based on what is done for DRA7 in hwmod code:
+> http://lists.infradead.org/pipermail/linux-arm-kernel/2017-January/480619.html
 
-It is not. It is the standard pattern of
+OK great, thanks for fixing that! Will give it a try a bit later today.
 
-menuconfig BLAH
+Regards,
 
-if BLAH
-...
-endif
-<EOF>
-
-If I remove the "if", then SERIAL_DEV_CTRL_TTYPORT can be enabled when
-SERIAL_DEV_BUS=n which breaks the build
-
-
-> So, leave either one or another (as an example you can look at
-> DMADEVICES).
->
->> +
->> +#define SERPORT_BUSY 1
->> +#define SERPORT_ACTIVE       2
->> +#define SERPORT_DEAD 3
->> +
->> +struct serport {
->> +     struct tty_port *port;
->> +     struct tty_struct *tty;
->
->> +     struct tty_driver *tty_drv;
->> +     int tty_idx;
->
-> Do you need tty_ prefix for them?
-
-It's just to be clear it's the tty driver and index rather than this
-driver's driver or index.
-
-
->> +static int ttyport_open(struct serdev_controller *ctrl)
->> +{
->> +     struct serport *serport =
->> serdev_controller_get_drvdata(ctrl);
->> +     struct tty_struct *tty;
->> +     struct ktermios ktermios;
->> +
->> +     tty = tty_init_dev(serport->tty_drv, serport->tty_idx);
->> +     serport->tty = tty;
->> +
->> +     serport->port->client_ops = &client_ops;
->> +     serport->port->client_data = ctrl;
->> +
->>
->
->> +     tty->receive_room = 65536;
->
-> Magic?
-
-Probably. It's just what every ldisc uses. I suppose we could need
-clients to set this, but we can add that as needed.
-
->> +     if (tty->ops->open)
->> +             tty->ops->open(serport->tty, NULL);
->> +     else
->> +             tty_port_open(serport->port, tty, NULL);
->> +
->> +     /* Bring the UART into a known 8 bits no parity hw fc state
->> */
->> +     ktermios = tty->termios;
->> +     ktermios.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP |
->> +                           INLCR | IGNCR | ICRNL | IXON);
->> +     ktermios.c_oflag &= ~OPOST;
->> +     ktermios.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG |
->> IEXTEN);
->> +     ktermios.c_cflag &= ~(CSIZE | PARENB);
->> +     ktermios.c_cflag |= CS8;
->> +     ktermios.c_cflag |= CRTSCTS;
->> +     tty_set_termios(tty, &ktermios);
->> +
->> +     set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
->> +
->>
->
->> +     mutex_lock(&serport->lock);
->> +     set_bit(SERPORT_ACTIVE, &serport->flags);
->> +     mutex_unlock(&serport->lock);
->
-> So, some clarification would be good to have to understand why you need
-> mutex _and_ atomic operation together.
->
-> What does mutex protect?
-
-Paranoia. Actually, looking at this closer, we can get rid of the
-mutex altogether.
-
-
->> +void serdev_tty_port_unregister(struct tty_port *port)
->> +{
->> +     struct serdev_controller *ctrl = port->client_data;
->> +     struct serport *serport =
->> serdev_controller_get_drvdata(ctrl);
->> +
->
->> +     if (!serport)
->> +             return;
->
-> What this check prevents from?
-
-Didn't you ask this last time? See patch #9. tty_port_destructor()
-calls this unconditionally as it doesn't know whether there's a serdev
-or not. ctrl may be NULL, and then serport may be NULL.
-
-Rob
+Tony
