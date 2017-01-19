@@ -1,256 +1,67 @@
-From: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH V6 1/5] LIB: Indirect ISA/LPC port IO introduced
-Date: Tue, 31 Jan 2017 20:37:28 +0100
-Message-ID: <1a1f1e70-b6e7-f3c6-2b86-348b3d28edfe@suse.de>
-References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
- <1485241525-201782-2-git-send-email-yuanzhichang@hisilicon.com>
- <5dc0dc9c-124e-398f-a3b2-40059268e859@suse.de>
- <6d5523be-1841-18b9-9b83-6f7e591ed66b@huawei.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/9] tty_port: allow a port to be opened with a tty
+ that has no file handle
+Date: Thu, 19 Jan 2017 09:23:00 -0600
+Message-ID: <CAL_Jsq+BGBgYDa5WX=7d7y9iew6NNc8Z0=A_Qt9pCM1u_=pxaw@mail.gmail.com>
+References: <20170116225436.17505-1-robh@kernel.org> <20170116225436.17505-3-robh@kernel.org>
+ <20170119133718.GA6072@kroah.com> <CAL_JsqL6jiGxardwVQEaXr4-NJPZM=UN+-DucSniyOdnpR_BOg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <6d5523be-1841-18b9-9b83-6f7e591ed66b-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAL_JsqL6jiGxardwVQEaXr4-NJPZM=UN+-DucSniyOdnpR_BOg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 31/01/2017 14:32, John Garry wrote:
-> On 30/01/2017 17:12, Alexander Graf wrote:
->> On 01/24/2017 08:05 AM, zhichang.yuan wrote:
->>> Low-pin-count interface is integrated into some SoCs. The accesses to
->>> those
->>> peripherals under LPC make use of I/O ports rather than the memory
->>> mapped I/O.
+On Thu, Jan 19, 2017 at 9:05 AM, Rob Herring <robh@kernel.org> wrote:
+> On Thu, Jan 19, 2017 at 7:37 AM, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+>> On Mon, Jan 16, 2017 at 04:54:29PM -0600, Rob Herring wrote:
+>>> From: Alan Cox <alan@linux.intel.com>
 >>>
->>> To drive these devices, this patch introduces a method named
->>> indirect-IO.
->>> In this method the in/out() accessor in include/asm-generic/io.h will be
->>> redefined. When upper layer drivers call in/out() with those known
->>> legacy port
->>> addresses to access the peripherals, the I/O operations will be routed
->>> to the
->>> right hooks which are registered specific to the host device, such as
->>> LPC.
->>> Then the hardware relevant manupulations are finished by the
->>> corresponding
->>> host.
+>>> Let us create tty objects entirely in kernel space. Untested proposal to
+>>> show why all the ideas around rewriting half the uart stack are not needed.
 >>>
->>> According to the comments on V5, this patch adds a common indirect-IO
->>> driver
->>> which support this I/O indirection to the generic directory.
+>>> With this a kernel created non file backed tty object could be used to handle
+>>> data, and set terminal modes. Not all ldiscs can cope with this as N_TTY in
+>>> particular has to work back to the fs/tty layer.
 >>>
->>> In the later pathches, some host-relevant drivers are implemented to
->>> support
->>> the specific I/O hooks and register them.
->>> Based on these, the upper layer drivers which depend on in/out() can
->>> work well
->>> without any extra work or any changes.
+>>> The tty_port code is however otherwise clean of file handles as far as I can
+>>> tell as is the low level tty port write path used by the ldisc, the
+>>> configuration low level interfaces and most of the ldiscs.
 >>>
->>> Signed-off-by: zhichang.yuan <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
->>> Signed-off-by: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->>> Signed-off-by: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->>
->> I like the extio idea. That allows us to handle all PIO requests on
->> platforms that don't have native PIO support via different routes
->> depending on the region they're in. Unfortunately we now we have 2
->> frameworks for handling sparse PIO regions: One in extio, one in PCI.
->>
->> Why don't we just merge the two? Most of the code that has #ifdef
->> PCI_IOBASE throughout the code base sounds like an ideal candidate to
->> get migrated to extio instead. Then we only have a single framework to
->> worry about ...
->
-> To be clear, are you suggesting we merge the functionality from
-> pci_register_io_range(), pci_pio_to_address(), pci_address_to_pio() into
-> extio, so extio manages all PIO?
-
-Yes, I guess so.
-
-> And having a single type of node to
-> register PIO ranges, by amalgamating struct extio_node and io_range (as
-> Bjorn mentioned)?
-
-I'm not quite sure I follow you here. Basically I think you want a 
-generic "non-x86 PIO" framework that PCI just plugs into.
-
-I don't think that necessarily means you want to statically allocate 
-regions of that PIO space to separate (pseudo-)devices. Instead, 
-everyone shares that space and should be able to fail gracefully if some 
-space is already occupied.
-
-> It would make sense. We would be somewhat decoupling PIO from PCI.
-
-Yes :).
-
-> I think that other architectures, like PPC, and other code would need to
-> be fixed up to handle this.
-
-I think only PPC, Microblaze and ARM are using this. Grep for 
-PCI_IOBASE. It's not that many.
-
-> We need to consider all the other challenges/obstacles to this.
-
-Well, getting our abstraction levels right to me sounds like it's worth 
-the obstacles.
-
->
->>
+>>> Currently you don't have any exposure to see tty hangups because those are
+>>> built around the file layer. However a) it's a fixed port so you probably
+>>> don't care about that b) if you do we can add a callback and c) you almost
+>>> certainly don't want the userspace tear down/rebuild behaviour anyway.
+>>>
+>>> This should however be sufficient if we wanted for example to enumerate all
+>>> the bluetooth bound fixed ports via ACPI and make them directly available.
+>>> It doesn't deal with the case of a user opening a port that's also kernel
+>>> opened and that would need some locking out (so it returned EBUSY if bound
+>>> to a kernel device of some kind). That needs resolving along with how you
+>>> "up" or "down" your new bluetooth device, or enumerate it while providing
+>>> the existing tty API to avoid regressions (and to debug).
+>>>
+>>> Alan
+>>> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>>> Reviewed-By: Sebastian Reichel <sre@kernel.org>
 >>> ---
->>>   include/asm-generic/io.h |  50 ++++++++++++++++
->>>   include/linux/extio.h    |  85 +++++++++++++++++++++++++++
->>>   include/linux/io.h       |   1 +
->>>   lib/Kconfig              |   8 +++
->>>   lib/Makefile             |   2 +
->>>   lib/extio.c              | 147
->>> +++++++++++++++++++++++++++++++++++++++++++++++ xc>>   create mode
->>> 100644 include/linux/extio.h
->>>   create mode 100644 lib/extio.c
->>>
->
-> <snip>
->
->>> + * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
->>> + * Author: Zhichang Yuan <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify
->>> + * it under the terms of the GNU General Public License version 2 as
->>> + * published by the Free Software Foundation.
->>> + *
->>> + * This program is distributed in the hope that it will be useful,
->>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->>> + * GNU General Public License for more details.
->>> + *
->>> + * You should have received a copy of the GNU General Public License
->>> + * along with this program.  If not, see
->>> <http://www.gnu.org/licenses/>.
->>> + */
->>> +
->>> +#include <linux/io.h>
->>> +#include <linux/spinlock.h>
->>> +
->>> +static LIST_HEAD(extio_dev_list);
->>> +static DEFINE_RWLOCK(extio_list_lock);
+>>> Alan, Need your SoB here.
 >>
->> Why not just make the list an RCU list? Then you don't need read locks.
->> We also wouldn't create potential lock contention between devices that
->> could easily have parallel PIO operations (say a PCI device and an LPC
->> device).
->>
+>> Rob, as this patch is flowing through you, I need your signed-off-by as
+>> well if I am to take it.
 >
-> OK
->
->>> +
->>> +void register_extio(struct extio_node *node)
->>> +{
->>> +    write_lock(&extio_list_lock);
->>> +    list_add_tail(&node->list, &extio_dev_list);
->>> +    write_unlock(&extio_list_lock);
->>> +}
->>> +
->>> +static struct extio_node *find_extio_token(unsigned long addr)
->>> +{
->>> +    struct extio_node *extio_entry;
->>> +
->>> +    read_lock(&extio_list_lock);
->>> +    list_for_each_entry(extio_entry, &extio_dev_list, list) {
->>> +        if ((addr < extio_entry->io_start + extio_entry->range_size) &&
->>> +            (addr >= extio_entry->io_start))
->>> +            break;
->>> +    }
->>> +    read_unlock(&extio_list_lock);
->>> +    return (&extio_entry->list == &extio_dev_list) ? NULL :
->>> extio_entry;
->>> +}
->>> +
->>> +struct extio_node *extio_find_node(struct fwnode_handle *node)
->>> +{
->>> +    struct extio_node *entry;
->>> +
->>> +    read_lock(&extio_list_lock);
->>> +    list_for_each_entry(entry, &extio_dev_list, list) {
->>> +        if (entry->fwnode == node)
->>> +            break;
->>> +    }
->>> +    read_unlock(&extio_list_lock);
->>> +
->>> +    return (&entry->list == &extio_dev_list) ? NULL : entry;
->>> +}
->>> +
->>> +unsigned long extio_translate(struct fwnode_handle *node,
->>> +        unsigned long bus_addr)
->>> +{
->>> +    struct extio_node *entry;
->>> +    unsigned long port_id = -1;
->>> +
->>> +    read_lock(&extio_list_lock);
->>> +    list_for_each_entry(entry, &extio_dev_list, list) {
->>> +        if (entry->fwnode == node &&
->>> +            bus_addr >= entry->bus_start &&
->>> +            bus_addr - entry->bus_start < entry->range_size)
->>> +            port_id = entry->io_start + bus_addr -
->>> +                    entry->bus_start;
->>> +    }
->>> +    read_unlock(&extio_list_lock);
->>> +
->>> +    return port_id;
->>> +}
->>> +
->>> +#ifdef PCI_IOBASE
->>> +
->>> +#define BUILD_EXTIO(bw, type)                        \
->>> +type extio_in##bw(unsigned long addr)                    \
->>> +{                                    \
->>> +    struct extio_node *extio_entry = find_extio_token(addr);    \
->>> +                                    \
->>> +    if (!extio_entry)                        \
->>> +        return read##bw(PCI_IOBASE + addr);            \
->>> +    return extio_entry->ops->pfin ?                    \
->>> +            extio_entry->ops->pfin(extio_entry->devpara,    \
->>> +            addr, sizeof(type)) : -1;            \
->>> +}                                    \
->>> +                                    \
->>> +void extio_out##bw(type value, unsigned long addr)            \
->>> +{                                    \
->>> +    struct extio_node *extio_entry = find_extio_token(addr);    \
->>> +                                    \
->>> +    if (!extio_entry)                        \
->>> +        write##bw(value, PCI_IOBASE + addr);            \
->>
->> All of the fallback code would also disappear as a nice side effect of
->> making pci pio handling a user of extio :).
->
-> Is your idea that PCI IO space will also register accessors, which would
-> be the same read{b,w,l}/write{b,w,l}?
+> Right. I've added both for the next version.
 
-Yes. If you need to later on accelerate that bit, you can always do 
-something like
+Oh, I see you applied the 1st patch. Thanks. If you want to apply this
+one now here's my S-o-B:
 
-   if (extio_entry->ops->pfin == pci_extio_in)
-     return pci_extio_in(...);
+Signed-off-by: Rob Herring <robh@kernel.org>
 
-which should get you all the prefetcher and branch prediction benefits 
-that the current version gives you. But for starters I'd leave that out, 
-since I doubt it'll have measurable performance impact to go via an 
-indirect function call.
+Patches 3 and 4 can be applied too.
 
->
->>
->
-> It would be nice to have a quicker way to so the lookup from address to
-> node, as we loop all nodes in find_extio_token() every single time.
+For patch 5, I'd really like someone with more tty knowledge to comment on.
 
-You can always replace the search with a tree. But to me that's an 
-implementation detail that's easy enough to replace in a follow-up patch 
-series.
-
-
-Alex
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Rob
