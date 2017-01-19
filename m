@@ -1,93 +1,65 @@
-From: Lokesh Vutla <lokeshvutla@ti.com>
-Subject: [PATCH] serial: omap: Add omapserial earlycon
-Date: Thu, 19 Jan 2017 15:29:38 +0530
-Message-ID: <20170119095938.30976-1-lokeshvutla@ti.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v9 1/3] gpio: exar: add gpio for exar cards
+Date: Thu, 19 Jan 2017 14:22:01 +0100
+Message-ID: <20170119132201.GA29998@kroah.com>
+References: <1484434252-7663-1-git-send-email-sudipm.mukherjee@gmail.com>
+ <CAHp75VfcUr-1sjh+xySHMaeNEi7QxHANvqbHGwt9=uWeOvMCJQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAHp75VfcUr-1sjh+xySHMaeNEi7QxHANvqbHGwt9=uWeOvMCJQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-kernel@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-serial@vger.kernel.org, Tero Kristo <t-kristo@ti.com>, Sekhar Nori <nsekhar@ti.com>, Tony Lindgren <tony@atomide.com>, Lokesh Vutla <lokeshvutla@ti.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Jiri Slaby <jslaby@suse.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add DT earlycon for omap_serial driver. This boot console is included
-with CONFIG_SERIAL_EARLYCON=y, CONFIG_OF=y, CONFIG_SERIAL_OMAP=y, and
-CONFIG_OF_EARLY_FLATTREE=y.
+On Sun, Jan 15, 2017 at 04:57:32PM +0200, Andy Shevchenko wrote:
+> On Sun, Jan 15, 2017 at 12:50 AM, Sudip Mukherjee
+> <sudipm.mukherjee@gmail.com> wrote:
+> > From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+> >
+> > Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
+> > can be controlled using gpio interface.
+> >
+> > Add the gpio specific code.
+> 
+> Thanks for an updated code.
+> Briefly looking into first two patches v10 would be needed.
+> 
+> Here one important line is missed, nevertheless I'll go to comment
+> some minor stuff as well.
+> Overall looks good!
+> 
+> > name[16] should be enough. Maximum of 12 char will be used.
+> 
+> Better to use enough space, otherwise there is a room for a bug.
+> So, you need to understand that kernel might crash in such cases,
+> though it's minor for now.
+> 
+> > +++ b/drivers/gpio/gpio-exar.c
+> > @@ -0,0 +1,199 @@
+> 
+> > +static void exar_update(struct gpio_chip *chip, unsigned int reg, int val,
+> > +                       unsigned int offset)
+> > +{
+> > +       struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
+> > +       int temp;
+> > +
+> > +       mutex_lock(&exar_gpio->lock);
+> > +       temp = readb(exar_gpio->regs + reg);
+> > +       temp &= ~BIT(offset);
+> 
+> > +       if (val)
+> > +               temp |= BIT(offset);
+> 
+> You would do this in one line, but I dunno which style Linus prefers more
+> 
+> temp |= val ? BIT(...) : 0;
 
-This boot console is enabled with the command line option "earlycon"
-(without "=<name>...") when the DT 'stdout-path' property matches a
-compatible uart.
+Use the if () format, it's easier to read and understand, which is more
+important overall.
 
-Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
----
- drivers/tty/serial/omap-serial.c | 55 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+thanks,
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index a2a529994ba5..3bbc4b5b6245 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1234,6 +1234,61 @@ static int serial_omap_poll_get_char(struct uart_port *port)
- 
- #ifdef CONFIG_SERIAL_OMAP_CONSOLE
- 
-+#ifdef CONFIG_SERIAL_EARLYCON
-+static unsigned int __init omap_serial_early_in(struct uart_port *port,
-+						int offset)
-+{
-+	offset <<= port->regshift;
-+	return readw(port->membase + offset);
-+}
-+
-+static void __init omap_serial_early_out(struct uart_port *port, int offset,
-+					 int value)
-+{
-+	offset <<= port->regshift;
-+	writew(value, port->membase + offset);
-+}
-+
-+static void __init omap_serial_early_putc(struct uart_port *port, int c)
-+{
-+	unsigned int status;
-+
-+	for (;;) {
-+		status = omap_serial_early_in(port, UART_LSR);
-+		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
-+			break;
-+		cpu_relax();
-+	}
-+	omap_serial_early_out(port, UART_TX, c);
-+}
-+
-+static void __init early_omap_serial_write(struct console *console,
-+					   const char *s, unsigned int count)
-+{
-+	struct earlycon_device *device = console->data;
-+	struct uart_port *port = &device->port;
-+
-+	uart_console_write(port, s, count, omap_serial_early_putc);
-+}
-+
-+static int __init early_omap_serial_setup(struct earlycon_device *device,
-+					  const char *options)
-+{
-+	struct uart_port *port = &device->port;
-+
-+	if (!(device->port.membase || device->port.iobase))
-+		return -ENODEV;
-+
-+	port->regshift = 2;
-+	device->con->write = early_omap_serial_write;
-+	return 0;
-+}
-+
-+OF_EARLYCON_DECLARE(omapserial, "ti,omap2-uart", early_omap_serial_setup);
-+OF_EARLYCON_DECLARE(omapserial, "ti,omap3-uart", early_omap_serial_setup);
-+OF_EARLYCON_DECLARE(omapserial, "ti,omap4-uart", early_omap_serial_setup);
-+#endif /* CONFIG_SERIAL_EARLYCON */
-+
- static struct uart_omap_port *serial_omap_console_ports[OMAP_MAX_HSUART_PORTS];
- 
- static struct uart_driver serial_omap_reg;
--- 
-2.11.0
+greg k-h
