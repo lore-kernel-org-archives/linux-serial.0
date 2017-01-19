@@ -1,468 +1,264 @@
 From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH v10 2/3] serial: exar: split out the exar code from 8250_pci
-Date: Thu, 19 Jan 2017 22:23:21 +0000
-Message-ID: <1484864602-5266-2-git-send-email-sudipm.mukherjee@gmail.com>
-References: <1484864602-5266-1-git-send-email-sudipm.mukherjee@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1484864602-5266-1-git-send-email-sudipm.mukherjee@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH v10 1/3] gpio: exar: add gpio for exar cards
+Date: Thu, 19 Jan 2017 22:23:20 +0000
+Message-ID: <1484864602-5266-1-git-send-email-sudipm.mukherjee@gmail.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
 To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, gnomes@lxorguk.ukuu.org.uk
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
-Add the serial driver for the Exar chips. And also register the
-platform device for the GPIO provided by the Exar chips.
+Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
+can be controlled using gpio interface.
+
+Add the gpio specific code.
 
 Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 ---
+ drivers/gpio/Kconfig     |   7 ++
+ drivers/gpio/Makefile    |   1 +
+ drivers/gpio/gpio-exar.c | 200 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 208 insertions(+)
+ create mode 100644 drivers/gpio/gpio-exar.c
 
-Andy,
-Having 3 setup hooks and assigning everything there was becoming too
-complicated for me to follow, so i left it as it is. Though some more
-parts from the board setup has been removed. uart_offset has been
-completely removed.
-
-To answer your questions:
-1. In pci_xr17v35x_exit() pdev can be NULL if xr17v35x_register_gpio()
-failed while it was called. And if the gpio fails to register then we
-should not try to unregister it afterwards.
-2. A working GPIO driver without serial does not make sense. I think
-I will send a patch afterwards to change that.
-
- drivers/tty/serial/8250/8250_exar.c | 394 ++++++++++++++++++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig     |   4 +
- drivers/tty/serial/8250/Makefile    |   1 +
- 3 files changed, 399 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_exar.c
-
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index ed37e59..89033d6 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -185,6 +185,13 @@ config GPIO_ETRAXFS
+ 	help
+ 	  Say yes here to support the GPIO controller on Axis ETRAX FS SoCs.
+ 
++config GPIO_EXAR
++	tristate "Support for GPIO pins on XR17V352/354/358"
++	depends on SERIAL_8250_EXAR
++	help
++	  Selecting this option will enable handling of GPIO pins present
++	  on Exar XR17V352/354/358 chips.
++
+ config GPIO_GE_FPGA
+ 	bool "GE FPGA based GPIO"
+ 	depends on GE_FPGA
+diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
+index d074c22..d4d44f8 100644
+--- a/drivers/gpio/Makefile
++++ b/drivers/gpio/Makefile
+@@ -44,6 +44,7 @@ obj-$(CONFIG_GPIO_DWAPB)	+= gpio-dwapb.o
+ obj-$(CONFIG_GPIO_EM)		+= gpio-em.o
+ obj-$(CONFIG_GPIO_EP93XX)	+= gpio-ep93xx.o
+ obj-$(CONFIG_GPIO_ETRAXFS)	+= gpio-etraxfs.o
++obj-$(CONFIG_GPIO_EXAR)		+= gpio-exar.o
+ obj-$(CONFIG_GPIO_F7188X)	+= gpio-f7188x.o
+ obj-$(CONFIG_GPIO_GE_FPGA)	+= gpio-ge.o
+ obj-$(CONFIG_GPIO_GPIO_MM)	+= gpio-gpio-mm.o
+diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
 new file mode 100644
-index 0000000..fd5598d
+index 0000000..05c8946
 --- /dev/null
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -0,0 +1,394 @@
++++ b/drivers/gpio/gpio-exar.c
+@@ -0,0 +1,200 @@
 +/*
-+ *  Probe module for 8250/16550-type Exar chips PCI serial ports.
++ * GPIO driver for Exar XR17V35X chip
 + *
-+ *  Based on drivers/tty/serial/8250/8250_pci.c,
-+ *
-+ *  Copyright (C) 2017 Sudip Mukherjee, All Rights Reserved.
++ * Copyright (C) 2015 Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 + *
 + * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License.
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
 + */
-+#include <linux/io.h>
++#include <linux/bitops.h>
++#include <linux/device.h>
++#include <linux/gpio/driver.h>
++#include <linux/init.h>
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +#include <linux/pci.h>
-+#include <linux/serial_core.h>
-+#include <linux/serial_reg.h>
-+#include <linux/slab.h>
-+#include <linux/string.h>
-+#include <linux/tty.h>
-+#include <linux/8250_pci.h>
++#include <linux/platform_device.h>
 +
-+#include <asm/byteorder.h>
++#define EXAR_OFFSET_MPIOLVL_LO 0x90
++#define EXAR_OFFSET_MPIOSEL_LO 0x93
++#define EXAR_OFFSET_MPIOLVL_HI 0x96
++#define EXAR_OFFSET_MPIOSEL_HI 0x99
 +
-+#include "8250.h"
++#define DRIVER_NAME "gpio_exar"
 +
-+#define PCI_DEVICE_ID_COMMTECH_4224PCIE	0x0020
-+#define PCI_DEVICE_ID_COMMTECH_4228PCIE	0x0021
-+#define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
-+#define PCI_DEVICE_ID_EXAR_XR17V4358	0x4358
-+#define PCI_DEVICE_ID_EXAR_XR17V8358	0x8358
++static DEFINE_IDA(ida_index);
 +
-+#define UART_EXAR_MPIOINT_7_0	0x8f	/* MPIOINT[7:0] */
-+#define UART_EXAR_MPIOLVL_7_0	0x90	/* MPIOLVL[7:0] */
-+#define UART_EXAR_MPIO3T_7_0	0x91	/* MPIO3T[7:0] */
-+#define UART_EXAR_MPIOINV_7_0	0x92	/* MPIOINV[7:0] */
-+#define UART_EXAR_MPIOSEL_7_0	0x93	/* MPIOSEL[7:0] */
-+#define UART_EXAR_MPIOOD_7_0	0x94	/* MPIOOD[7:0] */
-+#define UART_EXAR_MPIOINT_15_8	0x95	/* MPIOINT[15:8] */
-+#define UART_EXAR_MPIOLVL_15_8	0x96	/* MPIOLVL[15:8] */
-+#define UART_EXAR_MPIO3T_15_8	0x97	/* MPIO3T[15:8] */
-+#define UART_EXAR_MPIOINV_15_8	0x98	/* MPIOINV[15:8] */
-+#define UART_EXAR_MPIOSEL_15_8	0x99	/* MPIOSEL[15:8] */
-+#define UART_EXAR_MPIOOD_15_8	0x9a	/* MPIOOD[15:8] */
-+
-+struct exar8250;
-+
-+/**
-+ * struct exar8250_board - board information
-+ * @num_ports: number of serial ports
-+ * @base_baud: baudrate
-+ * @reg_shift: describes UART register mapping in PCI memory
-+ */
-+struct exar8250_board {
-+	unsigned int num_ports;
-+	unsigned int base_baud;
-+	unsigned int reg_shift;
-+	bool has_slave;
-+	int	(*setup)(struct exar8250 *, struct pci_dev *,
-+			 const struct exar8250_board *,
-+			 struct uart_8250_port *, int);
-+	void	(*exit)(struct pci_dev *pcidev);
++struct exar_gpio_chip {
++	struct gpio_chip gpio_chip;
++	struct mutex lock;
++	int index;
++	void __iomem *regs;
++	char name[20];
 +};
 +
-+struct exar8250 {
-+	unsigned int		nr;
-+	struct exar8250_board	*board;
-+	int			line[0];
-+};
-+
-+static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-+			 const struct exar8250_board *board, int idx,
-+			 unsigned int offset, struct uart_8250_port *port)
++static void exar_update(struct gpio_chip *chip, unsigned int reg, int val,
++			unsigned int offset)
 +{
-+	unsigned int bar = 0;
++	struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
++	int temp;
 +
-+	port->port.iotype = UPIO_MEM;
-+	port->port.mapbase = pci_resource_start(pcidev, bar) + offset;
-+	port->port.membase = pcim_iomap_table(pcidev)[bar] + offset;
-+	port->port.regshift = board->reg_shift;
++	mutex_lock(&exar_gpio->lock);
++	temp = readb(exar_gpio->regs + reg);
++	temp &= ~BIT(offset);
++	if (val)
++		temp |= BIT(offset);
++	writeb(temp, exar_gpio->regs + reg);
++	mutex_unlock(&exar_gpio->lock);
++}
 +
++static int exar_set_direction(struct gpio_chip *chip, int direction,
++			      unsigned int offset)
++{
++	unsigned int bank = offset / 8;
++	unsigned int addr;
++
++	addr = bank ? EXAR_OFFSET_MPIOSEL_HI : EXAR_OFFSET_MPIOSEL_LO;
++	exar_update(chip, addr, direction, offset % 8);
 +	return 0;
 +}
 +
-+static int
-+pci_xr17c154_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-+		   const struct exar8250_board *board,
-+		   struct uart_8250_port *port, int idx)
++static int exar_direction_output(struct gpio_chip *chip, unsigned int offset,
++				 int value)
 +{
-+	unsigned int offset = idx * 0x200;
-+
-+	port->port.flags |= UPF_EXAR_EFR;
-+	return default_setup(priv, pcidev, board, idx, offset, port);
++	return exar_set_direction(chip, 0, offset);
 +}
 +
-+static void setup_gpio(u8 __iomem *p)
++static int exar_direction_input(struct gpio_chip *chip, unsigned int offset)
 +{
-+	writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
-+	writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
-+	writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
-+	writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
-+	writeb(0x00, p + UART_EXAR_MPIOSEL_15_8);
-+	writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
++	return exar_set_direction(chip, 1, offset);
 +}
 +
-+static void *
-+xr17v35x_register_gpio(struct pci_dev *pcidev)
++static int exar_get(struct gpio_chip *chip, unsigned int reg)
 +{
-+	struct platform_device *pdev;
++	struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
++	int value;
 +
-+	pdev = platform_device_alloc("gpio_exar", PLATFORM_DEVID_AUTO);
-+	if (!pdev)
-+		return NULL;
++	mutex_lock(&exar_gpio->lock);
++	value = readb(exar_gpio->regs + reg);
++	mutex_unlock(&exar_gpio->lock);
 +
-+	platform_set_drvdata(pdev, pcidev);
-+	if (platform_device_add(pdev) < 0) {
-+		platform_device_put(pdev);
-+		return NULL;
-+	}
-+
-+	return pdev;
++	return !!value;
 +}
 +
-+static int
-+pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-+		   const struct exar8250_board *board,
-+		   struct uart_8250_port *port, int idx)
++static int exar_get_direction(struct gpio_chip *chip, unsigned int offset)
 +{
-+	unsigned int offset = idx * 0x400;
-+	u8 __iomem *p;
-+	int ret;
++	unsigned int bank = offset / 8;
++	unsigned int addr;
++	int val;
 +
-+	port->port.flags |= UPF_EXAR_EFR;
++	addr = bank ? EXAR_OFFSET_MPIOSEL_HI : EXAR_OFFSET_MPIOSEL_LO;
++	val = exar_get(chip, addr) >> (offset % 8);
++
++	return !!val;
++}
++
++static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
++{
++	unsigned int bank = offset / 8;
++	unsigned int addr;
++	int val;
++
++	addr = bank ? EXAR_OFFSET_MPIOLVL_LO : EXAR_OFFSET_MPIOLVL_HI;
++	val = exar_get(chip, addr) >> (offset % 8);
++
++	return !!val;
++}
++
++static void exar_set_value(struct gpio_chip *chip, unsigned int offset,
++			   int value)
++{
++	unsigned int bank = offset / 8;
++	unsigned int addr;
++
++	addr = bank ? EXAR_OFFSET_MPIOLVL_HI : EXAR_OFFSET_MPIOLVL_LO;
++	exar_update(chip, addr, value, offset % 8);
++}
++
++static int gpio_exar_probe(struct platform_device *pdev)
++{
++	struct pci_dev *pcidev = platform_get_drvdata(pdev);
++	struct exar_gpio_chip *exar_gpio;
++	void __iomem *p;
++	int index, ret;
++
++	if (pcidev->vendor != PCI_VENDOR_ID_EXAR)
++		return -ENODEV;
 +
 +	/*
-+	 * Setup the uart clock for the devices on expansion slot to
-+	 * half the clock speed of the main chip (which is 125MHz)
++	 * Map the pci device to get the register addresses.
++	 * We will need to read and write those registers to control
++	 * the GPIO pins.
++	 * Using managed functions will save us from unmaping on exit.
++	 * As the device is enabled using managed functions by the
++	 * UART driver we can also use managed functions here.
 +	 */
-+	if (board->has_slave && idx >= 8)
-+		port->port.uartclk = (7812500 * 16 / 2);
-+
-+	p = pci_ioremap_bar(pcidev, 0);
++	p = pcim_iomap(pcidev, 0, 0);
 +	if (!p)
 +		return -ENOMEM;
 +
-+	/* Setup Multipurpose Input/Output pins. */
-+	if (idx == 0)
-+		setup_gpio(p);
-+
-+	writeb(0x00, p + UART_EXAR_8XMODE);
-+	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
-+	writeb(128, p + UART_EXAR_TXTRG);
-+	writeb(128, p + UART_EXAR_RXTRG);
-+	iounmap(p);
-+
-+	ret = default_setup(priv, pcidev, board, idx, offset, port);
-+	if (ret)
-+		return ret;
-+
-+	if (idx == 0)
-+		port->port.private_data =
-+			xr17v35x_register_gpio(pcidev);
-+
-+	return 0;
-+}
-+
-+static void pci_xr17v35x_exit(struct pci_dev *pcidev)
-+{
-+	struct exar8250 *priv = pci_get_drvdata(pcidev);
-+	struct uart_8250_port *port = serial8250_get_port(priv->line[0]);
-+	struct platform_device *pdev = port->port.private_data;
-+
-+	if (!pdev)
-+		return;
-+
-+	platform_device_unregister(pdev);
-+	port->port.private_data = NULL;
-+}
-+
-+static int
-+exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
-+{
-+	unsigned int nr_ports, i, bar = 0, maxnr;
-+	struct exar8250_board *board;
-+	struct uart_8250_port uart;
-+	struct exar8250 *priv;
-+	int rc;
-+
-+	rc = pcim_enable_device(pcidev);
-+	if (rc)
-+		return rc;
-+
-+	board = (struct exar8250_board *)ent->driver_data;
-+	if (!board) {
-+		board = devm_kzalloc(&pcidev->dev, sizeof(*board),
-+				     GFP_KERNEL);
-+		board->base_baud = 1843200;
-+	}
-+
-+	maxnr = pci_resource_len(pcidev, bar) >> (board->reg_shift + 3);
-+
-+	nr_ports = board->num_ports ? board->num_ports : pcidev->device & 0x0f;
-+
-+	priv = devm_kzalloc(&pcidev->dev, sizeof(*priv) +
-+			    sizeof(unsigned int) * nr_ports,
-+			    GFP_KERNEL);
-+	if (!priv)
++	exar_gpio = devm_kzalloc(&pcidev->dev, sizeof(*exar_gpio), GFP_KERNEL);
++	if (!exar_gpio)
 +		return -ENOMEM;
 +
-+	priv->board = board;
++	mutex_init(&exar_gpio->lock);
 +
-+	memset(&uart, 0, sizeof(uart));
-+	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
-+	uart.port.uartclk = board->base_baud * 16;
-+	uart.port.irq = pcidev->irq;
-+	uart.port.dev = &pcidev->dev;
++	index = ida_simple_get(&ida_index, 0, 0, GFP_KERNEL);
 +
-+	for (i = 0; i < nr_ports && i < maxnr; i++) {
-+		if (board->setup)
-+			rc = board->setup(priv, pcidev, board, &uart, i);
-+		else
-+			rc = pci_xr17c154_setup(priv, pcidev, board, &uart, i);
-+		if (rc) {
-+			dev_err(&pcidev->dev, "Failed to setup port %u\n", i);
-+			break;
-+		}
++	sprintf(exar_gpio->name, "exar_gpio%d", index);
++	exar_gpio->gpio_chip.label = exar_gpio->name;
++	exar_gpio->gpio_chip.parent = &pcidev->dev;
++	exar_gpio->gpio_chip.direction_output = exar_direction_output;
++	exar_gpio->gpio_chip.direction_input = exar_direction_input;
++	exar_gpio->gpio_chip.get_direction = exar_get_direction;
++	exar_gpio->gpio_chip.get = exar_get_value;
++	exar_gpio->gpio_chip.set = exar_set_value;
++	exar_gpio->gpio_chip.base = -1;
++	exar_gpio->gpio_chip.ngpio = 16;
++	exar_gpio->regs = p;
++	exar_gpio->index = index;
 +
-+		dev_dbg(&pcidev->dev, "Setup PCI port: port %lx, irq %d, type %d\n",
-+			uart.port.iobase, uart.port.irq, uart.port.iotype);
++	ret = devm_gpiochip_add_data(&pcidev->dev,
++				     &exar_gpio->gpio_chip, exar_gpio);
++	if (ret)
++		goto err_destroy;
 +
-+		priv->line[i] = serial8250_register_8250_port(&uart);
-+		if (priv->line[i] < 0) {
-+			dev_err(&pcidev->dev,
-+				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
-+				uart.port.iobase, uart.port.irq,
-+				uart.port.iotype, priv->line[i]);
-+			break;
-+		}
-+	}
-+	priv->nr = i;
-+	pci_set_drvdata(pcidev, priv);
++	platform_set_drvdata(pdev, exar_gpio);
++
 +	return 0;
++
++err_destroy:
++	ida_simple_remove(&ida_index, index);
++	mutex_destroy(&exar_gpio->lock);
++	return ret;
 +}
 +
-+static void exar_pci_remove(struct pci_dev *pcidev)
++static int gpio_exar_remove(struct platform_device *pdev)
 +{
-+	struct exar8250 *priv = pci_get_drvdata(pcidev);
-+	unsigned int i;
++	struct exar_gpio_chip *exar_gpio = platform_get_drvdata(pdev);
 +
-+	for (i = 0; i < priv->nr; i++)
-+		serial8250_unregister_port(priv->line[i]);
-+
-+	if (priv->board->exit)
-+		priv->board->exit(pcidev);
-+}
-+
-+static int __maybe_unused exar_suspend(struct device *dev)
-+{
-+	struct pci_dev *pcidev = to_pci_dev(dev);
-+	struct exar8250 *priv = pci_get_drvdata(pcidev);
-+	unsigned int i;
-+
-+	for (i = 0; i < priv->nr; i++)
-+		if (priv->line[i] >= 0)
-+			serial8250_suspend_port(priv->line[i]);
-+
-+	/* Ensure that every init quirk is properly torn down */
-+	if (priv->board->exit)
-+		priv->board->exit(pcidev);
++	ida_simple_remove(&ida_index, exar_gpio->index);
++	mutex_destroy(&exar_gpio->lock);
 +
 +	return 0;
 +}
 +
-+static int __maybe_unused exar_resume(struct device *dev)
-+{
-+	struct pci_dev *pcidev = to_pci_dev(dev);
-+	struct exar8250 *priv = pci_get_drvdata(pcidev);
-+	unsigned int i;
-+
-+	for (i = 0; i < priv->nr; i++)
-+		if (priv->line[i] >= 0)
-+			serial8250_resume_port(priv->line[i]);
-+
-+	return 0;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(exar_pci_pm, exar_suspend, exar_resume);
-+
-+static const struct exar8250_board pbn_exar_ibm_saturn = {
-+	.num_ports	= 1,
-+	.base_baud	= 921600,
-+};
-+
-+static const struct exar8250_board pbn_exar_XR17C15x = {
-+	.base_baud	= 921600,
-+};
-+
-+static const struct exar8250_board pbn_exar_XR17V35x = {
-+	.base_baud	= 7812500,
-+	.setup		= pci_xr17v35x_setup,
-+	.exit		= pci_xr17v35x_exit,
-+};
-+
-+static const struct exar8250_board pbn_exar_XR17V4358 = {
-+	.num_ports	= 12,
-+	.base_baud	= 7812500,
-+	.has_slave	= true,
-+	.setup		= pci_xr17v35x_setup,
-+	.exit		= pci_xr17v35x_exit,
-+};
-+
-+static const struct exar8250_board pbn_exar_XR17V8358 = {
-+	.num_ports	= 16,
-+	.base_baud	= 7812500,
-+	.has_slave	= true,
-+	.setup		= pci_xr17v35x_setup,
-+	.exit		= pci_xr17v35x_exit,
-+};
-+
-+#define CONNECT_DEVICE(devid, sdevid) {				\
-+	PCI_DEVICE_SUB(						\
-+		PCI_VENDOR_ID_EXAR,				\
-+		PCI_DEVICE_ID_EXAR_##devid,			\
-+		PCI_SUBVENDOR_ID_CONNECT_TECH,			\
-+		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_##sdevid)	\
-+	}
-+
-+#define EXAR_DEVICE(vend, devid, bd) {					\
-+	PCI_VDEVICE(vend, PCI_DEVICE_ID_##devid), (kernel_ulong_t)&bd	\
-+	}
-+
-+#define IBM_DEVICE(devid, sdevid, bd) {			\
-+	PCI_DEVICE_SUB(					\
-+		PCI_VENDOR_ID_EXAR,			\
-+		PCI_DEVICE_ID_EXAR_##devid,		\
-+		PCI_VENDOR_ID_IBM,			\
-+		PCI_SUBDEVICE_ID_IBM_##sdevid), 0, 0,	\
-+		(kernel_ulong_t)&bd			\
-+	}
-+
-+static struct pci_device_id exar_pci_tbl[] = {
-+	CONNECT_DEVICE(XR17C152, UART_2_232),
-+	CONNECT_DEVICE(XR17C154, UART_4_232),
-+	CONNECT_DEVICE(XR17C158, UART_8_232),
-+	CONNECT_DEVICE(XR17C152, UART_1_1),
-+	CONNECT_DEVICE(XR17C154, UART_2_2),
-+	CONNECT_DEVICE(XR17C158, UART_4_4),
-+	CONNECT_DEVICE(XR17C152, UART_2),
-+	CONNECT_DEVICE(XR17C154, UART_4),
-+	CONNECT_DEVICE(XR17C158, UART_8),
-+	CONNECT_DEVICE(XR17C152, UART_2_485),
-+	CONNECT_DEVICE(XR17C154, UART_4_485),
-+	CONNECT_DEVICE(XR17C158, UART_8_485),
-+
-+	IBM_DEVICE(XR17C152, SATURN_SERIAL_ONE_PORT, pbn_exar_ibm_saturn),
-+
-+	/* Exar Corp. XR17C15[248] Dual/Quad/Octal UART */
-+	EXAR_DEVICE(EXAR, EXAR_XR17C152, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(EXAR, EXAR_XR17C154, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(EXAR, EXAR_XR17C158, pbn_exar_XR17C15x),
-+
-+	/* Exar Corp. XR17V[48]35[248] Dual/Quad/Octal/Hexa PCIe UARTs */
-+	EXAR_DEVICE(EXAR, EXAR_XR17V352, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(EXAR, EXAR_XR17V354, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(EXAR, EXAR_XR17V358, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(EXAR, EXAR_XR17V4358, pbn_exar_XR17V4358),
-+	EXAR_DEVICE(EXAR, EXAR_XR17V8358, pbn_exar_XR17V8358),
-+	EXAR_DEVICE(COMMTECH, COMMTECH_4222PCIE, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(COMMTECH, COMMTECH_4224PCIE, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(COMMTECH, COMMTECH_4228PCIE, pbn_exar_XR17V35x),
-+	{ 0, }
-+};
-+MODULE_DEVICE_TABLE(pci, exar_pci_tbl);
-+
-+static struct pci_driver exar_pci_driver = {
-+	.name		= "exar_serial",
-+	.probe		= exar_pci_probe,
-+	.remove		= exar_pci_remove,
-+	.driver         = {
-+		.pm     = &exar_pci_pm,
++static struct platform_driver gpio_exar_driver = {
++	.probe	= gpio_exar_probe,
++	.remove	= gpio_exar_remove,
++	.driver	= {
++		.name = DRIVER_NAME,
 +	},
-+	.id_table	= exar_pci_tbl,
 +};
-+module_pci_driver(exar_pci_driver);
 +
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Exar Serial Dricer");
++module_platform_driver(gpio_exar_driver);
++
++MODULE_ALIAS("platform:" DRIVER_NAME);
++MODULE_DESCRIPTION("Exar GPIO driver");
 +MODULE_AUTHOR("Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>");
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 8998347..62a3766 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -127,6 +127,10 @@ config SERIAL_8250_PCI
- 	  Note that serial ports on NetMos 9835 Multi-I/O cards are handled
- 	  by the parport_serial driver, enabled with CONFIG_PARPORT_SERIAL.
- 
-+config SERIAL_8250_EXAR
-+        tristate "8250/16550 PCI device support"
-+        depends on SERIAL_8250_PCI
-+
- config SERIAL_8250_HP300
- 	tristate
- 	depends on SERIAL_8250 && HP300
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index 276c6fb..b771d37 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_SERIAL_8250)		+= 8250.o 8250_base.o
- 8250_base-$(CONFIG_SERIAL_8250_FINTEK)	+= 8250_fintek.o
- obj-$(CONFIG_SERIAL_8250_GSC)		+= 8250_gsc.o
- obj-$(CONFIG_SERIAL_8250_PCI)		+= 8250_pci.o
-+obj-$(CONFIG_SERIAL_8250_EXAR)		+= 8250_exar.o
- obj-$(CONFIG_SERIAL_8250_HP300)		+= 8250_hp300.o
- obj-$(CONFIG_SERIAL_8250_CS)		+= serial_cs.o
- obj-$(CONFIG_SERIAL_8250_ACORN)		+= 8250_acorn.o
++MODULE_LICENSE("GPL");
 -- 
 1.9.1
+
