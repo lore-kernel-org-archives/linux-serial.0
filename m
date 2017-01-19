@@ -1,64 +1,55 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v9 1/3] gpio: exar: add gpio for exar cards
-Date: Thu, 19 Jan 2017 14:22:01 +0100
-Message-ID: <20170119132201.GA29998@kroah.com>
-References: <1484434252-7663-1-git-send-email-sudipm.mukherjee@gmail.com>
- <CAHp75VfcUr-1sjh+xySHMaeNEi7QxHANvqbHGwt9=uWeOvMCJQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/9] tty_port: allow a port to be opened with a tty
+ that has no file handle
+Date: Thu, 19 Jan 2017 14:37:18 +0100
+Message-ID: <20170119133718.GA6072@kroah.com>
+References: <20170116225436.17505-1-robh@kernel.org>
+ <20170116225436.17505-3-robh@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAHp75VfcUr-1sjh+xySHMaeNEi7QxHANvqbHGwt9=uWeOvMCJQ@mail.gmail.com>
+In-Reply-To: <20170116225436.17505-3-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Jiri Slaby <jslaby@suse.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Jan 15, 2017 at 04:57:32PM +0200, Andy Shevchenko wrote:
-> On Sun, Jan 15, 2017 at 12:50 AM, Sudip Mukherjee
-> <sudipm.mukherjee@gmail.com> wrote:
-> > From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-> >
-> > Exar XR17V352/354/358 chips have 16 multi-purpose inputs/outputs which
-> > can be controlled using gpio interface.
-> >
-> > Add the gpio specific code.
+On Mon, Jan 16, 2017 at 04:54:29PM -0600, Rob Herring wrote:
+> From: Alan Cox <alan@linux.intel.com>
 > 
-> Thanks for an updated code.
-> Briefly looking into first two patches v10 would be needed.
+> Let us create tty objects entirely in kernel space. Untested proposal to
+> show why all the ideas around rewriting half the uart stack are not needed.
 > 
-> Here one important line is missed, nevertheless I'll go to comment
-> some minor stuff as well.
-> Overall looks good!
+> With this a kernel created non file backed tty object could be used to handle
+> data, and set terminal modes. Not all ldiscs can cope with this as N_TTY in
+> particular has to work back to the fs/tty layer.
 > 
-> > name[16] should be enough. Maximum of 12 char will be used.
+> The tty_port code is however otherwise clean of file handles as far as I can
+> tell as is the low level tty port write path used by the ldisc, the
+> configuration low level interfaces and most of the ldiscs.
 > 
-> Better to use enough space, otherwise there is a room for a bug.
-> So, you need to understand that kernel might crash in such cases,
-> though it's minor for now.
+> Currently you don't have any exposure to see tty hangups because those are
+> built around the file layer. However a) it's a fixed port so you probably
+> don't care about that b) if you do we can add a callback and c) you almost
+> certainly don't want the userspace tear down/rebuild behaviour anyway.
 > 
-> > +++ b/drivers/gpio/gpio-exar.c
-> > @@ -0,0 +1,199 @@
+> This should however be sufficient if we wanted for example to enumerate all
+> the bluetooth bound fixed ports via ACPI and make them directly available.
+> It doesn't deal with the case of a user opening a port that's also kernel
+> opened and that would need some locking out (so it returned EBUSY if bound
+> to a kernel device of some kind). That needs resolving along with how you
+> "up" or "down" your new bluetooth device, or enumerate it while providing
+> the existing tty API to avoid regressions (and to debug).
 > 
-> > +static void exar_update(struct gpio_chip *chip, unsigned int reg, int val,
-> > +                       unsigned int offset)
-> > +{
-> > +       struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
-> > +       int temp;
-> > +
-> > +       mutex_lock(&exar_gpio->lock);
-> > +       temp = readb(exar_gpio->regs + reg);
-> > +       temp &= ~BIT(offset);
-> 
-> > +       if (val)
-> > +               temp |= BIT(offset);
-> 
-> You would do this in one line, but I dunno which style Linus prefers more
-> 
-> temp |= val ? BIT(...) : 0;
+> Alan
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-By: Sebastian Reichel <sre@kernel.org>
+> ---
+> Alan, Need your SoB here.
 
-Use the if () format, it's easier to read and understand, which is more
-important overall.
+Rob, as this patch is flowing through you, I need your signed-off-by as
+well if I am to take it.
 
 thanks,
 
