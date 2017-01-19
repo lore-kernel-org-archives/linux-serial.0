@@ -1,29 +1,45 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 4/9] tty: constify tty_ldisc_receive_buf buffer pointer
-Date: Thu, 19 Jan 2017 17:24:03 +0100
-Message-ID: <20170119162403.GA22571@kroah.com>
-References: <20170116225436.17505-1-robh@kernel.org>
- <20170116225436.17505-5-robh@kernel.org>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v1] tty: serial: 8250: 8250_gsc:- Handle return NULL error
+ from ioremap_nocache
+Date: Thu, 19 Jan 2017 20:48:07 +0200
+Message-ID: <CAHp75VfNwkBK2E1bJxCP+-3iv4+GBztVi=Mum1LYe=VunqpxMA@mail.gmail.com>
+References: <1484812844-10598-1-git-send-email-arvind.yadav.cs@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170116225436.17505-5-robh@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <1484812844-10598-1-git-send-email-arvind.yadav.cs@gmail.com>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Arvind Yadav <arvind.yadav.cs@gmail.com>
+Cc: jejb@parisc-linux.org, Helge Deller <deller@gmx.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-parisc@vger.kernel.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 16, 2017 at 04:54:31PM -0600, Rob Herring wrote:
-> This is needed to work with the client operations which uses const ptrs.
-> 
-> Really, the flags pointer could be const, too, but this would be a tree
-> wide fix.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-By: Sebastian Reichel <sre@kernel.org>
+On Thu, Jan 19, 2017 at 10:00 AM, Arvind Yadav
+<arvind.yadav.cs@gmail.com> wrote:
+> Here, If ioremap_nocache will fail. It will return NULL.
+> Kernel can run into a NULL-pointer dereference.
+> This error check will avoid NULL pointer dereference.
 
-I've applied the first 4 patches in this series to my tree now, thanks.
+>         uart.port.mapbase       = address;
+>         uart.port.membase       = ioremap_nocache(address, 16);
+> +       if (!uart.port.membase) {
+> +               dev_warn(&dev->dev, "Failed to map memory\n");
+> +               return -ENOMEM;
+> +       }
 
-greg k-h
+You also may do something like
+
+void __iomem *base;
+...
+
+base = ioremap_nocache(...);
+if (!base)
+ return -ENOMEM;
+// I doubt the message is useful, up to you
+
+memset(&uart, 0, sizeof(uart));
+...
+uart.port.membase       = base;
+
+-- 
+With Best Regards,
+Andy Shevchenko
