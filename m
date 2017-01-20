@@ -1,44 +1,57 @@
 From: Vignesh R <vigneshr@ti.com>
-Subject: [PATCH RESEND 3/3] serial: 8250_omap: Remove rx_dma_broken flag
-Date: Fri, 20 Jan 2017 13:46:54 +0530
-Message-ID: <20170120081654.21858-4-vigneshr@ti.com>
-References: <20170120081654.21858-1-vigneshr@ti.com>
+Subject: Re: [PATCH 0/3] tty: serial: 8250_omap: Enable DMA support
+Date: Fri, 20 Jan 2017 13:52:47 +0530
+Message-ID: <9b8ae62f-5676-aa81-97cb-396de80fff7a@ti.com>
+References: <20170113080201.6515-1-vigneshr@ti.com>
+ <20170113182021.GD2630@atomide.com> <20170119132448.GC29998@kroah.com>
+ <20170119145423.GQ7403@atomide.com> <20170119153549.GA10560@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170120081654.21858-1-vigneshr@ti.com>
+In-Reply-To: <20170119153549.GA10560@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Vignesh R <vigneshr@ti.com>, Tony Lindgren <tony@atomide.com>, bigeasy@linutronix.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Lindgren <tony@atomide.com>
+Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-8250 UART DMA support was marked broken by default as it was not
-possible to pause ongoing RX DMA transfer. Now that both SDMA and
-EDMA can support pause operation for RX DMA transactions, don't set
-rx_dma_broken to true by default. With this patch 8250_omap driver will
-use DMA by default.
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
-Acked-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/8250/8250_omap.c | 5 -----
- 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 97766dcd67d4..68a6393d9636 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1221,11 +1221,6 @@ static int omap8250_probe(struct platform_device *pdev)
- 			priv->omap8250_dma.rx_size = RX_TRIGGER;
- 			priv->omap8250_dma.rxconf.src_maxburst = RX_TRIGGER;
- 			priv->omap8250_dma.txconf.dst_maxburst = TX_TRIGGER;
--			/*
--			 * pause is currently not supported atleast on omap-sdma
--			 * and edma on most earlier kernels.
--			 */
--			priv->rx_dma_broken = true;
- 		}
- 	}
- #endif
+On Thursday 19 January 2017 09:05 PM, Greg Kroah-Hartman wrote:
+> On Thu, Jan 19, 2017 at 06:54:23AM -0800, Tony Lindgren wrote:
+>> * Greg Kroah-Hartman <gregkh@linuxfoundation.org> [170119 05:25]:
+>>> On Fri, Jan 13, 2017 at 10:20:21AM -0800, Tony Lindgren wrote:
+>>>> * Vignesh R <vigneshr@ti.com> [170113 00:03]:
+>>>>> This patch series re enables DMA support for UART 8250_omap driver.
+>>>>>
+>>>>> Tested on AM335x, AM437x that use EDMA and OMAP5 and DRA74 EVM with
+>>>>> SDMA.
+>>>>
+>>>> Is 8250_omap serial console working for you on omap5 in general?
+>>>>
+>>>> I've noticed that it's really unresponsive for me as if the FIFO
+>>>> interrupt was not working. For example logging in might take several
+>>>> attempts and a long time with each character showing up much later
+>>>> after some timeout.
+>>>>
+>>>> TX on the uart on omap5 seems to work OK, I do see all the console
+>>>> messages fine. And these patches do not make the issue better or
+>>>> worse.
+>>>
+>>> Ok, I'm dropping them from my review queue then.
+>>
+>> It turned out to be not related to this set of patches, Vignesh
+>> posted a fix for it. For this set:
+>>
+>> Acked-by: Tony Lindgren <tony@atomide.com>
+> 
+> Ugh, these are now gone from my queue, can someone resend them with this
+> acked-by added?
+> 
+
+I have resent this series with the Ack:
+http://marc.info/?l=linux-serial&m=148490028003788&w=2
+
 -- 
-2.11.0
+Regards
+Vignesh
