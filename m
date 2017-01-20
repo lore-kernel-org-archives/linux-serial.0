@@ -1,40 +1,25 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: GPS drivers (was Re: [PATCH v2 0/9] Serial slave device bus)
-Date: Fri, 20 Jan 2017 18:16:11 +0200
-Message-ID: <1484928971.2133.273.camel@linux.intel.com>
-References: <20170116225436.17505-1-robh@kernel.org>
-         <CACRpkdaf6uy6C6J5mcVF4dDPG7gwJ2vkR4ECLYSsT5-DRNNfcA@mail.gmail.com>
-         <20170120142242.GC5241@amd>
-         <CACRpkdYi=OQ2fyvOvmo+8b4nAOsSjW_-EdHXyGnYf2PNZB5C9Q@mail.gmail.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH] serial: omap: Add omapserial earlycon
+Date: Fri, 20 Jan 2017 10:32:35 -0800
+Message-ID: <20170120183235.GG7403@atomide.com>
+References: <20170119095938.30976-1-lokeshvutla@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdYi=OQ2fyvOvmo+8b4nAOsSjW_-EdHXyGnYf2PNZB5C9Q@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20170119095938.30976-1-lokeshvutla@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>, Pavel Machek <pavel@ucw.cz>
-Cc: Rob Herring <robh@kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, NeilBrown <neil@brown.name>, "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Lokesh Vutla <lokeshvutla@ti.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-serial@vger.kernel.org, Tero Kristo <t-kristo@ti.com>, Sekhar Nori <nsekhar@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2017-01-20 at 16:26 +0100, Linus Walleij wrote:
-
-> > Now, NMEA knows about some of the complexity (not AGPS), but gets
-> > the
-> > details wrong. In particular, it would be good to have error
-> > estimates
-> > and velocities from the same moment you get position estimates.
+* Lokesh Vutla <lokeshvutla@ti.com> [170119 02:02]:
+> Add DT earlycon for omap_serial driver. This boot console is included
+> with CONFIG_SERIAL_EARLYCON=y, CONFIG_OF=y, CONFIG_SERIAL_OMAP=y, and
+> CONFIG_OF_EARLY_FLATTREE=y.
 > 
-> NMEA if it is this:
-> https://en.wikipedia.org/wiki/NMEA_0183
-> 
-> Seems to be a high-level format such as XML or CSV or any other
-> $FAVOURITE_ASCII_TRANSPORT format.
+> This boot console is enabled with the command line option "earlycon"
+> (without "=<name>...") when the DT 'stdout-path' property matches a
+> compatible uart.
 
-Not exactly. It depends on device settings.
-Old GPS I used to play with have AT command to switch between ASCII and
-binary format. Some of the devices might use non-standard binary
-protocols (however, representable as NMEA), etc.
-
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Acked-by: Tony Lindgren <tony@atomide.com>
