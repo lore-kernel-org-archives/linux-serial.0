@@ -1,55 +1,58 @@
-From: msuchanek <msuchanek-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH v2 0/9] Serial slave device bus
-Date: Fri, 20 Jan 2017 02:36:12 +0100
-Message-ID: <7d6a8a629f8b618cdb09c9112d1e5986@suse.de>
-References: <20170116225436.17505-1-robh@kernel.org>
+From: Vignesh R <vigneshr@ti.com>
+Subject: [PATCH RESEND 1/3] serial: 8250_omap: pause DMA only if DMA transfer in progress
+Date: Fri, 20 Jan 2017 13:46:52 +0530
+Message-ID: <20170120081654.21858-2-vigneshr@ti.com>
+References: <20170120081654.21858-1-vigneshr@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170116225436.17505-1-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170120081654.21858-1-vigneshr@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Vignesh R <vigneshr@ti.com>, Tony Lindgren <tony@atomide.com>, bigeasy@linutronix.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2017-01-16 23:54, Rob Herring wrote:
-> Here's a new version of the serdev bus support with all the review
-> feedback so far incorporated. I've left it named serdev for now pending
-> any further votes one way or the other, but I did rename the sysfs 
-> visible
-> portions to "serial".
-> 
-> There's still some discussion about what to do with devices that pass 
-> thru
-> data to userspace unmodified like GPS and could still use tty device 
-> for
-> the data path. IMO, we should treat this as a separate problem 
-> following
-> this series. Drivers we want to convert to serdev and already in the
-> kernel don't need this functionality.
+It is possible that DMA transfer is already complete but, completion
+handler is yet to be called, when dmaengine_pause() is called in case of
+error condition(like break/rx timeout). This leads to dmaengine_pause()
+API to return EINVAL (as descriptor is already NULL) causing
+rx_dma_broken flag to be set and effectively disabling RX DMA.
+Fix this by calling dmaengine_pause() only when transfer is in progress.
 
-The whole point of the serial bus is to simplify and clean up support 
-for
-serial devices.
-If tty users cannot use the kernel support for automagic kill
-switches/resets/whatever with kernel GPIO or whatever framework and must
-continue supporting userspace GPIO and hacks for writing IO space from
-userland for their devices there is just no point.
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+Acked-by: Tony Lindgren <tony@atomide.com>
+---
+ drivers/tty/serial/8250/8250_omap.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-I mean it's fine to add support for your single pet device but if you 
-are
-to support non-trivial number of devices they don't get all perfect 
-kernel
-driver overnight. And if you need userspace GPIO for half of your 
-devices
-you can just continue using it for all to *simplify* your userspace 
-code.
-
-It has already happened for SPI devices and the implementation of the
-userspace access to SPI is dragging for years.
-
-Thanks
-
-Michal
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 61ad6c3b20a0..4ad1934ef6ed 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -790,6 +790,7 @@ static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
+ {
+ 	struct omap8250_priv	*priv = p->port.private_data;
+ 	struct uart_8250_dma	*dma = p->dma;
++	struct dma_tx_state     state;
+ 	unsigned long		flags;
+ 	int ret;
+ 
+@@ -800,10 +801,12 @@ static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
+ 		return;
+ 	}
+ 
+-	ret = dmaengine_pause(dma->rxchan);
+-	if (WARN_ON_ONCE(ret))
+-		priv->rx_dma_broken = true;
+-
++	ret = dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
++	if (ret == DMA_IN_PROGRESS) {
++		ret = dmaengine_pause(dma->rxchan);
++		if (WARN_ON_ONCE(ret))
++			priv->rx_dma_broken = true;
++	}
+ 	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
+ 
+ 	__dma_rx_do_complete(p);
+-- 
+2.11.0
