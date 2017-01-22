@@ -1,49 +1,46 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH v10 2/3] serial: exar: split out the exar code from 8250_pci
-Date: Fri, 20 Jan 2017 23:55:53 +0000
-Message-ID: <5882A389.1070701@gmail.com>
-References: <1484864602-5266-1-git-send-email-sudipm.mukherjee@gmail.com> <1484864602-5266-2-git-send-email-sudipm.mukherjee@gmail.com> <CAHp75VeQOHdKd7C_yO-ts9W_Gv5BYJSUp+JdpkhvaJFSYnFpzw@mail.gmail.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH] serial: hp300: mask the warning for people just doing build coverage
+Date: Sat, 21 Jan 2017 22:08:25 -0500
+Message-ID: <20170122030825.26709-1-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75VeQOHdKd7C_yO-ts9W_Gv5BYJSUp+JdpkhvaJFSYnFpzw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+Content-Type: text/plain
+Return-path: <linux-m68k-owner@vger.kernel.org>
+Sender: linux-m68k-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Friday 20 January 2017 10:25 PM, Andy Shevchenko wrote:
-> On Fri, Jan 20, 2017 at 12:23 AM, Sudip Mukherjee
-> <sudipm.mukherjee@gmail.com> wrote:
->> From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
->>
->> Add the serial driver for the Exar chips. And also register the
->> platform device for the GPIO provided by the Exar chips.
->
-> Thanks, this is indeed much cleaner that v6 I saw couple of weeks before!
->
->> Andy,
->> Having 3 setup hooks and assigning everything there was becoming too
->> complicated for me to follow, so i left it as it is. Though some more
->> parts from the board setup has been removed. uart_offset has been
->> completely removed.
->
-> Yes, what about baudrate?
-> I will check later, but for me it seems other way, i.e. simpler to
-> have just 3 setup functions in a row than one is lurking somewhere
-> with allocation et al.
->
-<snip>
->> +       CONNECT_DEVICE(XR17C154, UART_4_485),
->> +       CONNECT_DEVICE(XR17C158, UART_8_485),
->
-> Perhaps it takes few LOC more, but having same defined struct here
-> with dedicated ->setup() looks cleaner to me.
->
+Currently this warning is triggered for allmodconfig on m68k.  It is
+well intentioned, in that if you are building the driver but not
+enabling one of the platforms where the hardware exists, you get a
+warning.
 
-I think now I understand the 3 different setup functions. Let me try v11 
-(hopefully the last one).
+The warning dates back to pre-git days, and now we have COMPILE_TEST
+so we can use that to mask the warning for people who are obviously
+just doing build coverage on tree wide changes.
 
-Regards
-Sudip
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+---
+ drivers/tty/serial/8250/8250_hp300.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_hp300.c b/drivers/tty/serial/8250/8250_hp300.c
+index 38166db2b824..115190b7962a 100644
+--- a/drivers/tty/serial/8250/8250_hp300.c
++++ b/drivers/tty/serial/8250/8250_hp300.c
+@@ -19,7 +19,7 @@
+ 
+ #include "8250.h"
+ 
+-#if !defined(CONFIG_HPDCA) && !defined(CONFIG_HPAPCI)
++#if !defined(CONFIG_HPDCA) && !defined(CONFIG_HPAPCI) && !defined(CONFIG_COMPILE_TEST)
+ #warning CONFIG_SERIAL_8250 defined but neither CONFIG_HPDCA nor CONFIG_HPAPCI defined, are you sure?
+ #endif
+ 
+-- 
+2.11.0
