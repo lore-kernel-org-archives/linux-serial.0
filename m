@@ -1,92 +1,51 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH v2 3/7] serial: sh-sci: implement FIFO threshold register setting
-Date: Mon, 23 Jan 2017 17:04:14 +0100
-Message-ID: <1485187458-8195-4-git-send-email-ulrich.hecht+renesas@gmail.com>
-References: <1485187458-8195-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: Re: [PATCH 5/7] serial: sh-sci: SCIFA/B RX FIFO software timeout
+Date: Mon, 23 Jan 2017 17:04:13 +0100
+Message-ID: <CAO3366wp6AfBwO8zt7T325xM38Wy4mG0CNjCZ39czUO07CtM2A@mail.gmail.com>
+References: <1481286971-16667-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <1481286971-16667-6-git-send-email-ulrich.hecht+renesas@gmail.com> <CAMuHMdWmCgiAH3hnAQJVxhz70bLOMccsWOR1gmSmbKeEwW_Fgg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1485187458-8195-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+In-Reply-To: <CAMuHMdWmCgiAH3hnAQJVxhz70bLOMccsWOR1gmSmbKeEwW_Fgg@mail.gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: linux-renesas-soc@vger.kernel.org, wsa@the-dreams.de, geert@linux-m68k.org
-Cc: linux-serial@vger.kernel.org, magnus.damm@gmail.com, sergei.shtylyov@cogentembedded.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Wolfram Sang <wsa@the-dreams.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Sets the closest match for a desired RX trigger level.
+On Wed, Dec 14, 2016 at 3:02 PM, Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
+> On Fri, Dec 9, 2016 at 1:36 PM, Ulrich Hecht
+> <ulrich.hecht+renesas@gmail.com> wrote:
+>> Implements support for FIFO fill thresholds greater than one with software
+>> timeout.
+>>
+>> This mechanism is not possible (or at least not useful) on SCIF family
+>> hardware other than SCIFA and SCIFB because they do not support turning off
+>> the DR hardware timeout interrupt separately from the RI interrupt.
+>
+> What about HSCIF? Your code does handle HSCIF (cfr. HSRTRGR below)?
 
-Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/tty/serial/sh-sci.c | 59 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 59 insertions(+)
+Same as the other non-A/B SCIFs.
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 3a9c001..39734cc 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1102,6 +1102,65 @@ static int sci_handle_breaks(struct uart_port *port)
- 	return copied;
- }
- 
-+static int scif_set_rtrg(struct uart_port *port, int rx_trig)
-+{
-+	unsigned int bits;
-+
-+	if (rx_trig < 1)
-+		rx_trig = 1;
-+	if (rx_trig >= port->fifosize)
-+		rx_trig = port->fifosize;
-+
-+	/* HSCIF can be set to an arbitrary level. */
-+	if (sci_getreg(port, HSRTRGR)->size) {
-+		serial_port_out(port, HSRTRGR, rx_trig);
-+		return rx_trig;
-+	}
-+
-+	switch (port->type) {
-+	case PORT_SCIF:
-+		if (rx_trig < 4) {
-+			bits = 0;
-+			rx_trig = 1;
-+		} else if (rx_trig < 8) {
-+			bits = SCFCR_RTRG0;
-+			rx_trig = 4;
-+		} else if (rx_trig < 14) {
-+			bits = SCFCR_RTRG1;
-+			rx_trig = 8;
-+		} else {
-+			bits = SCFCR_RTRG0 | SCFCR_RTRG1;
-+			rx_trig = 14;
-+		}
-+		break;
-+	case PORT_SCIFA:
-+	case PORT_SCIFB:
-+		if (rx_trig < 16) {
-+			bits = 0;
-+			rx_trig = 1;
-+		} else if (rx_trig < 32) {
-+			bits = SCFCR_RTRG0;
-+			rx_trig = 16;
-+		} else if (rx_trig < 48) {
-+			bits = SCFCR_RTRG1;
-+			rx_trig = 32;
-+		} else {
-+			bits = SCFCR_RTRG0 | SCFCR_RTRG1;
-+			rx_trig = 48;
-+		}
-+		break;
-+	default:
-+		WARN(1, "unknown FIFO configuration");
-+		return 1;
-+	}
-+
-+	serial_port_out(port, SCFCR,
-+		(serial_port_in(port, SCFCR) &
-+		~(SCFCR_RTRG1 | SCFCR_RTRG0)) | bits);
-+
-+	return rx_trig;
-+}
-+
- #ifdef CONFIG_SERIAL_SH_SCI_DMA
- static void sci_dma_tx_complete(void *arg)
- {
--- 
-2.7.4
+>> --- a/drivers/tty/serial/sh-sci.c
+>> +++ b/drivers/tty/serial/sh-sci.c
+>
+>> @@ -1159,6 +1162,24 @@ static int scif_set_rtrg(struct uart_port *port, int rx_trig)
+>>         return rx_trig;
+>>  }
+>>
+>> +static int scif_rtrg_enabled(struct uart_port *port)
+>> +{
+>> +       if (sci_getreg(port, HSRTRGR)->size)
+>> +               return serial_port_in(port, HSRTRGR) != 0;
+>> +       else
+>> +               return (serial_port_in(port, SCFCR) &
+>> +                       (SCFCR_RTRG0 | SCFCR_RTRG1)) != 0;
+>> +}
+
+I implemented this to work with all SCIFs, but ATM it is only used in
+the "SCIFA/B, software timeout" case.
+
+CU
+Uli
