@@ -1,7 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 4/8] serial: st-asc: (De)Register GPIOD and swap Pinctrl profiles
-Date: Tue, 24 Jan 2017 13:43:06 +0000
-Message-ID: <20170124134310.27512-5-lee.jones@linaro.org>
+Subject: [PATCH 5/8] ARM: dts: STiH410-b2260: Identify the UART RTS line
+Date: Tue, 24 Jan 2017 13:43:07 +0000
+Message-ID: <20170124134310.27512-6-lee.jones@linaro.org>
 References: <20170124134310.27512-1-lee.jones@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170124134310.27512-1-lee.jones@linaro.org>
@@ -14,63 +14,25 @@ When hardware flow-control is disabled, manual toggling of the UART's
 reset line (RTS) using userland applications (e.g. stty) is not
 possible, since the ASC IP does not provide this functionality in the
 same was as some other IPs do.  Thus, we have to do this manually.
-
-This patch ensures that when HW flow-control is disabled the RTS/CTS
-lines are free to be registered via the GPIO API.  It also ensures
-any registered GPIO lines are unregistered when HW flow-control is
-requested, allowing the IP to control them automatically.
+This patch configures the UART RTS line as a GPIO for manipulation
+within the UART driver when HW flow-control is not enabled.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/tty/serial/st-asc.c | 27 ++++++++++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/stih410-b2260.dts | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index 03801ed..2c4b5f5 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -512,6 +512,8 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
- 			    struct ktermios *old)
- {
- 	struct asc_port *ascport = to_asc_port(port);
-+	struct device_node *np = port->dev->of_node;
-+	struct gpio_desc *gpiod;
- 	unsigned int baud;
- 	u32 ctrl_val;
- 	tcflag_t cflag;
-@@ -555,9 +557,32 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
- 		ctrl_val |= ASC_CTL_PARITYODD;
+diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
+index 06b0696..fa16aba 100644
+--- a/arch/arm/boot/dts/stih410-b2260.dts
++++ b/arch/arm/boot/dts/stih410-b2260.dts
+@@ -63,6 +63,7 @@
+ 		uart0: serial@9830000 {
+ 			label = "LS-UART0";
+ 			status = "okay";
++			rts-gpios = <&pio17 3 GPIO_ACTIVE_LOW>;
+ 		};
  
- 	/* hardware flow control */
--	if ((cflag & CRTSCTS))
-+	if ((cflag & CRTSCTS)) {
- 		ctrl_val |= ASC_CTL_CTSENABLE;
- 
-+		/* If flow-control selected, stop handling RTS manually */
-+		if (ascport->rts) {
-+			devm_gpiod_put(port->dev, ascport->rts);
-+			ascport->rts = NULL;
-+
-+			pinctrl_select_state(ascport->pinctrl,
-+					     ascport->states[DEFAULT]);
-+		}
-+	} else {
-+		/* If flow-control disabled, it's safe to handle RTS manually */
-+		if (!ascport->rts && ascport->states[MANUAL_RTS]) {
-+			pinctrl_select_state(ascport->pinctrl,
-+					     ascport->states[MANUAL_RTS]);
-+
-+			gpiod =	devm_get_gpiod_from_child(port->dev, "rts",
-+							  &np->fwnode);
-+			if (!IS_ERR(gpiod)) {
-+				gpiod_direction_output(gpiod, 0);
-+				ascport->rts = gpiod;
-+			}
-+		}
-+	}
-+
- 	if ((baud < 19200) && !ascport->force_m1) {
- 		asc_out(port, ASC_BAUDRATE, (port->uartclk / (16 * baud)));
- 	} else {
+ 		/* Low speed expansion connector */
 -- 
 2.10.2
