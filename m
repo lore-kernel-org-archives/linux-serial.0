@@ -1,19 +1,20 @@
-From: kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH 3/8] serial: st-asc: Read in all Pinctrl states
-Date: Wed, 25 Jan 2017 05:28:10 +0800
-Message-ID: <201701250559.iD93QYdx%fengguang.wu@intel.com>
-References: <20170124134310.27512-4-lee.jones@linaro.org>
+From: kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 4/8] serial: st-asc: (De)Register GPIOD and swap Pinctrl
+ profiles
+Date: Wed, 25 Jan 2017 06:00:59 +0800
+Message-ID: <201701250500.AYU14KMP%fengguang.wu@intel.com>
+References: <20170124134310.27512-5-lee.jones@linaro.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="/9DWx/yDrRhgMJTb"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="tKW2IUtsqtDRztdT"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170124134310.27512-4-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-Cc: kbuild-all@01.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, patrice.chotard@st.com, Lee Jones <lee.jones@linaro.org>
+In-Reply-To: <20170124134310.27512-5-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: kbuild-all-JC7UmRfGjtg@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
 
---/9DWx/yDrRhgMJTb
+--tKW2IUtsqtDRztdT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -33,56 +34,53 @@ reproduce:
         # save the attached .config to linux build tree
         make.cross ARCH=alpha 
 
-All error/warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
+   drivers/tty/serial/st-asc.c: In function 'asc_set_termios':
+>> drivers/tty/serial/st-asc.c:568:4: error: implicit declaration of function 'pinctrl_select_state' [-Werror=implicit-function-declaration]
+       pinctrl_select_state(ascport->pinctrl,
+       ^~~~~~~~~~~~~~~~~~~~
    drivers/tty/serial/st-asc.c: In function 'asc_init_port':
->> drivers/tty/serial/st-asc.c:730:21: error: implicit declaration of function 'devm_pinctrl_get' [-Werror=implicit-function-declaration]
+   drivers/tty/serial/st-asc.c:755:21: error: implicit declaration of function 'devm_pinctrl_get' [-Werror=implicit-function-declaration]
      ascport->pinctrl = devm_pinctrl_get(&pdev->dev);
                         ^~~~~~~~~~~~~~~~
->> drivers/tty/serial/st-asc.c:730:19: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+   drivers/tty/serial/st-asc.c:755:19: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
      ascport->pinctrl = devm_pinctrl_get(&pdev->dev);
                       ^
->> drivers/tty/serial/st-asc.c:737:3: error: implicit declaration of function 'pinctrl_lookup_state' [-Werror=implicit-function-declaration]
+   drivers/tty/serial/st-asc.c:762:3: error: implicit declaration of function 'pinctrl_lookup_state' [-Werror=implicit-function-declaration]
       pinctrl_lookup_state(ascport->pinctrl, "default");
       ^~~~~~~~~~~~~~~~~~~~
-   drivers/tty/serial/st-asc.c:736:27: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+   drivers/tty/serial/st-asc.c:761:27: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
      ascport->states[DEFAULT] =
                               ^
-   drivers/tty/serial/st-asc.c:746:30: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+   drivers/tty/serial/st-asc.c:771:30: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
      ascport->states[MANUAL_RTS] =
                                  ^
    cc1: some warnings being treated as errors
 
-vim +/devm_pinctrl_get +730 drivers/tty/serial/st-asc.c
+vim +/pinctrl_select_state +568 drivers/tty/serial/st-asc.c
 
-   724		/* ensure that clk rate is correct by enabling the clk */
-   725		clk_prepare_enable(ascport->clk);
-   726		ascport->port.uartclk = clk_get_rate(ascport->clk);
-   727		WARN_ON(ascport->port.uartclk == 0);
-   728		clk_disable_unprepare(ascport->clk);
-   729	
- > 730		ascport->pinctrl = devm_pinctrl_get(&pdev->dev);
-   731		if (IS_ERR(ascport->pinctrl)) {
-   732			ret = PTR_ERR(ascport->pinctrl);
-   733			dev_err(&pdev->dev, "Failed to get Pinctrl: %d\n", ret);
-   734		}
-   735	
-   736		ascport->states[DEFAULT] =
- > 737			pinctrl_lookup_state(ascport->pinctrl, "default");
-   738		if (IS_ERR(ascport->states[DEFAULT])) {
-   739			ret = PTR_ERR(ascport->states[DEFAULT]);
-   740			dev_err(&pdev->dev,
+   562	
+   563			/* If flow-control selected, stop handling RTS manually */
+   564			if (ascport->rts) {
+   565				devm_gpiod_put(port->dev, ascport->rts);
+   566				ascport->rts = NULL;
+   567	
+ > 568				pinctrl_select_state(ascport->pinctrl,
+   569						     ascport->states[DEFAULT]);
+   570			}
+   571		} else {
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---/9DWx/yDrRhgMJTb
+--tKW2IUtsqtDRztdT
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICHG6h1gAAy5jb25maWcAlFxLd9w2k93nV/RxZjGzSGy1lI4zc7QASbCJNEnQBNgtacMj
+H4sICGjLh1gAAy5jb25maWcAlFxLd9w2k93nV/RxZjGzSGy1lI4zc7QASbCJNEnQBNgtacMj
 y21HJ7LkT2pnJvPrpwp8FR6kMgsfi/cWQDwKhaoC2D/+8OOKfT89fb093d/dPjz8vfpyfDw+
 356On1af7x+O/7VK5KqUesUToX8G4fz+8fv/vL19+PbH7eri57N3P7/76fnuYrU7Pj8eH1bx
 0+Pn+y/fofz90+MPP/4QyzIV25blVcYu/x4eNxeR0NNjUTTTQ31QvGiv4mzLkgQKbmUtdFaA
@@ -984,4 +982,8 @@ lE3r3kdKbtqa+maEeRlRUxPPIY+tVl6iRUvqkRaaX971vxHoq4jUCiPEYUCuqqbb36s8q/17
 YIhWDtP5z3MPoWPNQKc/We5xhM5+Ui97A2FAwEQoUEErZAKO13zb5U/hZVPvSzKhVoDO5j9p
 0hADz6Y/aej6Cv2zEpbIFSMAmoC73CkAB1qFw0vpTPLyGhwp/h9LGw7+8goDAA==
 
---/9DWx/yDrRhgMJTb--
+--tKW2IUtsqtDRztdT--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
