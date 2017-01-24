@@ -1,36 +1,37 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 2/7] serial: sh-sci: consider DR (data ready) bit adequately
-Date: Tue, 24 Jan 2017 08:57:05 +0100
-Message-ID: <CAMuHMdULr-PF4eGhi3R7smGj_g3QNHgFxNABmALv3HM2_WyZ2w@mail.gmail.com>
-References: <1485187458-8195-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1485187458-8195-3-git-send-email-ulrich.hecht+renesas@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1485187458-8195-3-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Wolfram Sang <wsa@the-dreams.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 0/8] serial: st-asc: Allow handling of RTS line
+Date: Tue, 24 Jan 2017 13:43:02 +0000
+Message-ID: <20170124134310.27512-1-lee.jones@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, patrice.chotard@st.com, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 23, 2017 at 5:04 PM, Ulrich Hecht
-<ulrich.hecht+renesas@gmail.com> wrote:
-> To allow operation with a higher RX FIFO interrupt threshold in PIO
-> mode, it is necessary to consider the DR bit ("FIFO not full, but no
-> data received for 1.5 frames") as an indicator that data can be read.
-> Otherwise the driver will let data rot in the FIFO until the threshold
-> is reached.
->
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+When hardware flow-control is disabled, manual toggling of the UART's
+reset line (RTS) using userland applications (e.g. stty) is not
+possible, since the ASC IP does not provide this functionality in the
+same was as some other IPs do.  Thus, we have to do this manually.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+This set ensures the correct Pinctrl groups are configured and
+obtained for both manual toggling of the RTS line and for the IP to
+take over the lines when HW flow-control is requested by the user.
 
-Gr{oetje,eeting}s,
+Lee Jones (8):
+  serial: st-asc: Ignore the parity error bit if 8-bit mode is enabled
+  serial: st-asc: Provide RTS functionality
+  serial: st-asc: Read in all Pinctrl states
+  serial: st-asc: (De)Register GPIOD and swap Pinctrl profiles
+  ARM: dts: STiH410-b2260: Identify the UART RTS line
+  ARM: dts: STiH407-pinctrl: Add Pinctrl group for HW flow-control
+  ARM: dts: STiH407-family: Use new Pinctrl groups
+  ARM: dts: STiH407-family: Enable HW flow-control
 
-                        Geert
+ arch/arm/boot/dts/stih407-family.dtsi  |  7 +--
+ arch/arm/boot/dts/stih407-pinctrl.dtsi | 12 ++++-
+ arch/arm/boot/dts/stih410-b2260.dts    |  1 +
+ drivers/tty/serial/st-asc.c            | 98 +++++++++++++++++++++++++++++++---
+ 4 files changed, 105 insertions(+), 13 deletions(-)
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+2.10.2
