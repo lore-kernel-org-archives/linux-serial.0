@@ -1,38 +1,42 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 5/8] ARM: dts: STiH410-b2260: Identify the UART RTS line
-Date: Tue, 24 Jan 2017 13:43:07 +0000
-Message-ID: <20170124134310.27512-6-lee.jones@linaro.org>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 8/8] ARM: dts: STiH407-family: Enable HW flow-control
+Date: Tue, 24 Jan 2017 13:43:10 +0000
+Message-ID: <20170124134310.27512-9-lee.jones@linaro.org>
 References: <20170124134310.27512-1-lee.jones@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170124134310.27512-1-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, patrice.chotard@st.com, Lee Jones <lee.jones@linaro.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170124134310.27512-1-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-When hardware flow-control is disabled, manual toggling of the UART's
-reset line (RTS) using userland applications (e.g. stty) is not
-possible, since the ASC IP does not provide this functionality in the
-same was as some other IPs do.  Thus, we have to do this manually.
-This patch configures the UART RTS line as a GPIO for manipulation
-within the UART driver when HW flow-control is not enabled.
+Hardware flow-control capability must be specified at a platform
+level in order to inform the ASC driver that the platform is capable
+(i.e. are the lines wired up, etc).  STiH4{07,10} devices are indeed
+capable, so let's provide the property.
 
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 ---
- arch/arm/boot/dts/stih410-b2260.dts | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/stih407-family.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
-index 06b0696..fa16aba 100644
---- a/arch/arm/boot/dts/stih410-b2260.dts
-+++ b/arch/arm/boot/dts/stih410-b2260.dts
-@@ -63,6 +63,7 @@
- 		uart0: serial@9830000 {
- 			label = "LS-UART0";
- 			status = "okay";
-+			rts-gpios = <&pio17 3 GPIO_ACTIVE_LOW>;
+diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
+index 9789978..7ada8ea 100644
+--- a/arch/arm/boot/dts/stih407-family.dtsi
++++ b/arch/arm/boot/dts/stih407-family.dtsi
+@@ -226,7 +226,7 @@
+ 			pinctrl-0 = <&pinctrl_serial0_flowctrl>;
+ 			pinctrl-1 = <&pinctrl_serial0>;
+ 			clocks = <&clk_s_c0_flexgen CLK_EXT2F_A9>;
+-
++			st,hw-flow-control;
+ 			status = "disabled";
  		};
  
- 		/* Low speed expansion connector */
 -- 
 2.10.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
