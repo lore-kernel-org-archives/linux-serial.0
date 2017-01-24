@@ -1,39 +1,65 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 7/8] ARM: dts: STiH407-family: Use new Pinctrl groups
-Date: Tue, 24 Jan 2017 13:43:09 +0000
-Message-ID: <20170124134310.27512-8-lee.jones@linaro.org>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 1/8] serial: st-asc: Ignore the parity error bit if 8-bit mode is enabled
+Date: Tue, 24 Jan 2017 13:43:03 +0000
+Message-ID: <20170124134310.27512-2-lee.jones@linaro.org>
 References: <20170124134310.27512-1-lee.jones@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170124134310.27512-1-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, patrice.chotard@st.com, Lee Jones <lee.jones@linaro.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170124134310.27512-1-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Having just defined some new Pinctrl groups for when when HW flow-
-control is {en,dis}abled, let's reference them for use within the
-driver.
+The datasheet states:
 
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+"If the MODE field selects an 8-bit frame then this [parity error] bit
+ is undefined. Software should ignore this bit when reading 8-bit frames."
+
+Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 ---
- arch/arm/boot/dts/stih407-family.dtsi | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/st-asc.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
-index c8b2944..9789978 100644
---- a/arch/arm/boot/dts/stih407-family.dtsi
-+++ b/arch/arm/boot/dts/stih407-family.dtsi
-@@ -222,8 +222,9 @@
- 			compatible = "st,asc";
- 			reg = <0x9830000 0x2c>;
- 			interrupts = <GIC_SPI 122 IRQ_TYPE_NONE>;
--			pinctrl-names = "default";
--			pinctrl-0 = <&pinctrl_serial0>;
-+			pinctrl-names = "default", "manual-rts";
-+			pinctrl-0 = <&pinctrl_serial0_flowctrl>;
-+			pinctrl-1 = <&pinctrl_serial0>;
- 			clocks = <&clk_s_c0_flexgen CLK_EXT2F_A9>;
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 379e5bd..69e6232 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -287,9 +287,19 @@ static void asc_transmit_chars(struct uart_port *port)
+ static void asc_receive_chars(struct uart_port *port)
+ {
+ 	struct tty_port *tport = &port->state->port;
+-	unsigned long status;
++	unsigned long status, mode;
+ 	unsigned long c = 0;
+ 	char flag;
++	bool ignore_pe = false;
++
++	/*
++	 * Datasheet states: If the MODE field selects an 8-bit frame then
++	 * this [parity error] bit is undefined. Software should ignore this
++	 * bit when reading 8-bit frames.
++	 */
++	mode = asc_in(port, ASC_CTL) & ASC_CTL_MODE_MSK;
++	if (mode == ASC_CTL_MODE_8BIT || mode == ASC_CTL_MODE_8BIT_PAR)
++		ignore_pe = true;
  
- 			status = "disabled";
+ 	if (port->irq_wake)
+ 		pm_wakeup_event(tport->tty->dev, 0);
+@@ -299,8 +309,8 @@ static void asc_receive_chars(struct uart_port *port)
+ 		flag = TTY_NORMAL;
+ 		port->icount.rx++;
+ 
+-		if ((c & (ASC_RXBUF_FE | ASC_RXBUF_PE)) ||
+-			status & ASC_STA_OE) {
++		if (status & ASC_STA_OE || c & ASC_RXBUF_FE ||
++		    (c & ASC_RXBUF_PE && !ignore_pe)) {
+ 
+ 			if (c & ASC_RXBUF_FE) {
+ 				if (c == (ASC_RXBUF_FE | ASC_RXBUF_DUMMY_RX)) {
 -- 
 2.10.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
