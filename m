@@ -1,7 +1,7 @@
 From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Subject: [PATCH V6 2/5] PCI: Adapt pci_register_io_range() for indirect-IO and  PCI I/O translation
-Date: Tue, 24 Jan 2017 15:05:22 +0800
-Message-ID: <1485241525-201782-3-git-send-email-yuanzhichang@hisilicon.com>
+Subject: [PATCH V5 5/5] LPC: Add the ACPI LPC support
+Date: Tue, 24 Jan 2017 15:05:25 +0800
+Message-ID: <1485241525-201782-6-git-send-email-yuanzhichang@hisilicon.com>
 References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,222 +12,314 @@ To: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.li
 Cc: lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, "zhichang.yuan" <yuanzhichang@hisilicon.com>
 List-Id: linux-serial@vger.kernel.org
 
-After indirect-IO is introduced, system must can assigned indirect-IO devices
-with logical I/O ranges which are different from those for PCI I/O devices.
-Otherwise, I/O accessors can't identify whether the I/O port is for memory
-mapped I/O or indirect-IO.
-As current helper, pci_register_io_range(), is used for PCI I/O ranges
-registration and translation, indirect-IO devices should also apply these
-helpers to manage the I/O ranges. It will be easy to ensure the assigned
-logical I/O ranges unique.
-But for indirect-IO devices, there is no cpu address. The current
-pci_register_io_range() can not work for this case.
-
-This patch makes some changes on the pci_register_io_range() to support the
-I/O range registration with device's fwnode also. After this, the indirect-IO
-devices can register the device-local I/O range to system logical I/O and
-easily perform the translation between device-local I/O range and sytem
-logical I/O range.
+The patch update the _CRS of LPC children with the system logical I/O resource
+after the translation from LPC-local I/O. Then the ACPI platform device
+enumeration for LPC can apply the right I/O resource to request the system I/O
+space.
 
 Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
-Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/acpi/pci_root.c | 12 +++++-------
- drivers/of/address.c    |  8 ++------
- drivers/pci/pci.c       | 44 ++++++++++++++++++++++++++++++++++++++++----
- include/linux/pci.h     |  7 +++++--
- 4 files changed, 52 insertions(+), 19 deletions(-)
+ drivers/bus/hisi_lpc.c |  26 ++++++
+ include/linux/extio.h  |   4 +
+ lib/extio.c            | 228 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 258 insertions(+)
 
-diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-index bf601d4..6cadf05 100644
---- a/drivers/acpi/pci_root.c
-+++ b/drivers/acpi/pci_root.c
-@@ -730,7 +730,8 @@ static void acpi_pci_root_validate_resources(struct device *dev,
- 	}
+diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
+index a96e384..8d52666 100644
+--- a/drivers/bus/hisi_lpc.c
++++ b/drivers/bus/hisi_lpc.c
+@@ -583,6 +583,32 @@ static int hisilpc_bus_platform_notify(struct notifier_block *nb,
+ 	/* register the linux virtual IO range node to list. */
+ 	register_extio(io_node);
+ 
++	/*
++	 * For ACPI children, translate the bus-local I/O range to logical
++	 * I/O range and set it as the current resource before the children
++	 * are enumerated.
++	 */
++	if (has_acpi_companion(dev)) {
++		struct acpi_device *root, *child;
++
++		root = to_acpi_device_node(dev->fwnode);
++		/* For hisilpc, only care about the sons of host. */
++		list_for_each_entry(child, &root->children, node) {
++			ret = acpi_set_extio_resource(child, root);
++			if (ret) {
++				dev_err(dev, "set resource failed..\n");
++				break;
++			}
++		}
++
++		if (ret) {
++			list_del(&io_node->list);
++			kfree(io_node);
++			dev_err(dev, "notify handling failed..\n");
++			return NOTIFY_DONE;
++		}
++	}
++
+ 	return NOTIFY_OK;
  }
  
--static void acpi_pci_root_remap_iospace(struct resource_entry *entry)
-+static void acpi_pci_root_remap_iospace(struct fwnode_handle *node,
-+					struct resource_entry *entry)
- {
- #ifdef PCI_IOBASE
- 	struct resource *res = entry->res;
-@@ -739,11 +740,7 @@ static void acpi_pci_root_remap_iospace(struct resource_entry *entry)
- 	resource_size_t length = resource_size(res);
- 	unsigned long port;
+diff --git a/include/linux/extio.h b/include/linux/extio.h
+index 2ca7eab..c07607e 100644
+--- a/include/linux/extio.h
++++ b/include/linux/extio.h
+@@ -20,6 +20,7 @@
  
--	if (pci_register_io_range(cpu_addr, length))
--		goto err;
--
--	port = pci_address_to_pio(cpu_addr);
--	if (port == (unsigned long)-1)
-+	if (pci_register_io_range(node, cpu_addr, length, &port))
- 		goto err;
+ #ifdef __KERNEL__
  
- 	res->start = port;
-@@ -781,7 +778,8 @@ int acpi_pci_probe_root_resources(struct acpi_pci_root_info *info)
- 	else {
- 		resource_list_for_each_entry_safe(entry, tmp, list) {
- 			if (entry->res->flags & IORESOURCE_IO)
--				acpi_pci_root_remap_iospace(entry);
-+				acpi_pci_root_remap_iospace(&device->fwnode,
-+							    entry);
++#include <linux/acpi.h>
+ #include <linux/fwnode.h>
  
- 			if (entry->res->flags & IORESOURCE_DISABLED)
- 				resource_list_destroy_entry(entry);
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 02b2903..d85d228 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -2,6 +2,7 @@
- #define pr_fmt(fmt)	"OF: " fmt
- 
- #include <linux/device.h>
-+#include <linux/fwnode.h>
- #include <linux/io.h>
- #include <linux/ioport.h>
- #include <linux/module.h>
-@@ -323,14 +324,9 @@ int of_pci_range_to_resource(struct of_pci_range *range,
- 
- 	if (res->flags & IORESOURCE_IO) {
- 		unsigned long port;
--		err = pci_register_io_range(range->cpu_addr, range->size);
-+		err = pci_register_io_range(&np->fwnode, range->cpu_addr, range->size, &port);
- 		if (err)
- 			goto invalid_range;
--		port = pci_address_to_pio(range->cpu_addr);
--		if (port == (unsigned long)-1) {
--			err = -EINVAL;
--			goto invalid_range;
--		}
- 		res->start = port;
- 	} else {
- 		if ((sizeof(resource_size_t) < 8) &&
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index a881c0d..5289221 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -3241,6 +3241,7 @@ int pci_request_regions_exclusive(struct pci_dev *pdev, const char *res_name)
- #ifdef PCI_IOBASE
- struct io_range {
- 	struct list_head list;
-+	struct fwnode_handle *node;
- 	phys_addr_t start;
- 	resource_size_t size;
- };
-@@ -3253,7 +3254,8 @@ struct io_range {
-  * Record the PCI IO range (expressed as CPU physical address + size).
-  * Return a negative value if an error has occured, zero otherwise
-  */
--int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
-+int __weak pci_register_io_range(struct fwnode_handle *node, phys_addr_t addr,
-+				 resource_size_t size, unsigned long *port)
- {
- 	int err = 0;
- 
-@@ -3261,10 +3263,31 @@ int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
- 	struct io_range *range;
- 	resource_size_t allocated_size = 0;
- 
-+	/*
-+	 * As indirect-IO which support multiple bus instances is introduced,
-+	 * the input 'addr' is probably not page-aligned. If the PCI I/O
-+	 * ranges are registered after indirect-IO, there is risk that the
-+	 * start logical PIO assigned to PCI I/O is not page-aligned.
-+	 * This will cause some I/O subranges are not remapped or overlapped
-+	 * in pci_remap_iospace() handling.
-+	 */
-+	WARN_ON(addr != IO_RANGE_IOEXT && !(addr & PAGE_MASK));
-+	/*
-+	 * MMIO will call ioremap, it is better to align size with PAGE_SIZE,
-+	 * then the return linux virtual PIO is page-aligned.
-+	 */
-+	if (size & PAGE_MASK)
-+		size = PAGE_ALIGN(size);
-+
- 	/* check if the range hasn't been previously recorded */
- 	spin_lock(&io_range_lock);
- 	list_for_each_entry(range, &io_range_list, list) {
--		if (addr >= range->start && addr + size <= range->start + size) {
-+		if (node == range->node)
-+			goto end_register;
-+
-+		if (addr != IO_RANGE_IOEXT &&
-+		    addr >= range->start &&
-+		    addr + size <= range->start + size) {
- 			/* range already registered, bail out */
- 			goto end_register;
- 		}
-@@ -3290,6 +3313,7 @@ int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
- 		goto end_register;
- 	}
- 
-+	range->node = node;
- 	range->start = addr;
- 	range->size = size;
- 
-@@ -3297,6 +3321,14 @@ int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
- 
- end_register:
- 	spin_unlock(&io_range_lock);
-+
-+	*port = allocated_size;
-+#else
-+	/*
-+	 * powerpc and microblaze have their own registration,
-+	 * just look up the value here
-+	 */
-+	*port = pci_address_to_pio(addr);
+ struct extio_ops {
+@@ -81,5 +82,8 @@ static inline struct extio_node *extio_find_node(struct fwnode_handle *node)
  #endif
+ extern void register_extio(struct extio_node *node);
  
- 	return err;
-@@ -3315,7 +3347,9 @@ phys_addr_t pci_pio_to_address(unsigned long pio)
++extern int acpi_set_extio_resource(struct acpi_device *adev,
++		struct acpi_device *host);
++
+ #endif /* __KERNEL__ */
+ #endif /* __LINUX_EXTIO_H */
+diff --git a/lib/extio.c b/lib/extio.c
+index 46228de..47f5913 100644
+--- a/lib/extio.c
++++ b/lib/extio.c
+@@ -75,6 +75,234 @@ unsigned long extio_translate(struct fwnode_handle *node,
+ 	return port_id;
+ }
  
- 	spin_lock(&io_range_lock);
- 	list_for_each_entry(range, &io_range_list, list) {
--		if (pio >= allocated_size && pio < allocated_size + range->size) {
-+		if (range->start != IO_RANGE_IOEXT &&
-+			pio >= allocated_size &&
-+			pio < allocated_size + range->size) {
- 			address = range->start + pio - allocated_size;
- 			break;
- 		}
-@@ -3336,7 +3370,9 @@ unsigned long __weak pci_address_to_pio(phys_addr_t address)
++static inline bool acpi_extio_supported_resource(struct acpi_resource *res)
++{
++	switch (res->type) {
++	case ACPI_RESOURCE_TYPE_ADDRESS16:
++	case ACPI_RESOURCE_TYPE_ADDRESS32:
++	case ACPI_RESOURCE_TYPE_ADDRESS64:
++		return true;
++	}
++	return false;
++}
++
++static acpi_status acpi_count_extiores(struct acpi_resource *res,
++					   void *data)
++{
++	int *res_cnt = data;
++
++	if (acpi_extio_supported_resource(res) &&
++		!acpi_dev_filter_resource_type(res, IORESOURCE_IO))
++		(*res_cnt)++;
++
++	return AE_OK;
++}
++
++static acpi_status acpi_read_one_extiores(struct acpi_resource *res,
++		void *data)
++{
++	struct acpi_resource **resource = data;
++
++	if (acpi_extio_supported_resource(res) &&
++		!acpi_dev_filter_resource_type(res, IORESOURCE_IO)) {
++		memcpy((*resource), res, sizeof(struct acpi_resource));
++		(*resource)->length = sizeof(struct acpi_resource);
++		(*resource)->type = res->type;
++		(*resource)++;
++	}
++
++	return AE_OK;
++}
++
++static acpi_status
++acpi_build_extiores_template(struct acpi_device *adev,
++			struct acpi_buffer *buffer)
++{
++	acpi_handle handle = adev->handle;
++	struct acpi_resource *resource;
++	acpi_status status;
++	int res_cnt = 0;
++
++	status = acpi_walk_resources(handle, METHOD_NAME__PRS,
++				     acpi_count_extiores, &res_cnt);
++	if (ACPI_FAILURE(status) || !res_cnt) {
++		dev_err(&adev->dev, "can't evaluate _CRS: %d\n", status);
++		return -EINVAL;
++	}
++
++	buffer->length = sizeof(struct acpi_resource) * (res_cnt + 1) + 1;
++	buffer->pointer = kzalloc(buffer->length - 1, GFP_KERNEL);
++	if (!buffer->pointer)
++		return -ENOMEM;
++
++	resource = (struct acpi_resource *)buffer->pointer;
++	status = acpi_walk_resources(handle, METHOD_NAME__PRS,
++				     acpi_read_one_extiores, &resource);
++	if (ACPI_FAILURE(status)) {
++		kfree(buffer->pointer);
++		dev_err(&adev->dev, "can't evaluate _PRS: %d\n", status);
++		return -EINVAL;
++	}
++
++	resource->type = ACPI_RESOURCE_TYPE_END_TAG;
++	resource->length = sizeof(struct acpi_resource);
++
++	return 0;
++}
++
++static int acpi_translate_extiores(struct acpi_device *adev,
++		struct acpi_device *host, struct acpi_buffer *buffer)
++{
++	int res_cnt = (buffer->length - 1) / sizeof(struct acpi_resource) - 1;
++	struct acpi_resource *resource = buffer->pointer;
++	struct acpi_resource_address64 addr;
++	unsigned long sys_port;
++	struct device *dev = &adev->dev;
++
++	/* only one I/O resource now */
++	if (res_cnt != 1) {
++		dev_err(dev, "encode %d resources whose type is(%d)!\n",
++			res_cnt, resource->type);
++		return -EINVAL;
++	}
++
++	if (ACPI_FAILURE(acpi_resource_to_address64(resource, &addr))) {
++		dev_err(dev, "convert acpi resource(%d) as addr64 FAIL!\n",
++			resource->type);
++		return -EFAULT;
++	}
++
++	/* For indirect-IO, addr length must be fixed. (>0, 0, 0) */
++	if (!addr.address.address_length || addr.min_address_fixed ||
++		addr.max_address_fixed) {
++		dev_warn(dev, "variable I/O resource is invalid!\n");
++		return -EINVAL;
++	}
++
++	sys_port = extio_translate(&host->fwnode, addr.address.minimum);
++	if (sys_port == -1) {
++		dev_err(dev, "translate bus-addr(0x%llx) fail!\n",
++			addr.address.minimum);
++		return -EFAULT;
++	}
++
++	switch (resource->type) {
++	case ACPI_RESOURCE_TYPE_ADDRESS16:
++	{
++		struct acpi_resource_address16 *out_res;
++
++		out_res = &resource->data.address16;
++		out_res->address.minimum = sys_port;
++		out_res->address.maximum = sys_port +
++			addr.address.address_length - 1;
++
++		dev_info(dev, "_SRS 16IO: [0x%x - 0x%x]\n",
++			out_res->address.minimum,
++			out_res->address.maximum);
++
++		break;
++	}
++
++	case ACPI_RESOURCE_TYPE_ADDRESS32:
++	{
++		struct acpi_resource_address32 *out_res;
++
++		out_res = &resource->data.address32;
++		out_res->address.minimum = sys_port;
++		out_res->address.maximum = sys_port +
++			addr.address.address_length - 1;
++
++		dev_info(dev, "_SRS 32IO: [0x%x - 0x%x]\n",
++			out_res->address.minimum,
++			out_res->address.maximum);
++
++		break;
++	}
++
++	case ACPI_RESOURCE_TYPE_ADDRESS64:
++	{
++		struct acpi_resource_address64 *out_res;
++
++		out_res = &resource->data.address64;
++		out_res->address.minimum = sys_port;
++		out_res->address.maximum = sys_port +
++			addr.address.address_length - 1;
++
++		dev_info(dev, "_SRS 64IO: [0x%llx - 0x%llx]\n",
++			out_res->address.minimum,
++			out_res->address.maximum);
++
++		break;
++	}
++
++	default:
++		return -EINVAL;
++
++	}
++
++	return 0;
++}
++
++/*
++ * update/set the current I/O resource of the designated device node.
++ * after this calling, the enumeration can be started as the I/O resource
++ * had been translated to logicial I/O from bus-local I/O.
++ *
++ * @adev: the device node to be updated the I/O resource;
++ * @host: the device node where 'adev' is attached, which can be not
++ *	the parent of 'adev';
++ *
++ * return 0 when successful, negative is for failure.
++ */
++int acpi_set_extio_resource(struct acpi_device *adev,
++		struct acpi_device *host)
++{
++	struct device *dev = &adev->dev;
++	struct acpi_buffer buffer;
++	acpi_status status;
++	int ret;
++
++	if (!host)
++		return -EINVAL;
++
++	/* check the device state */
++	if (!adev->status.present) {
++		dev_info(dev, "ACPI: device is not present!\n");
++		return 0;
++	}
++	/* whether the child had been enumerated? */
++	if (acpi_device_enumerated(adev)) {
++		dev_info(dev, "ACPI: had been enumerated!\n");
++		return 0;
++	}
++
++	/* read the _PRS and convert as acpi_buffer */
++	status = acpi_build_extiores_template(adev, &buffer);
++	if (ACPI_FAILURE(status)) {
++		dev_warn(dev, "Failure evaluating %s\n",
++				METHOD_NAME__PRS);
++		return -ENODEV;
++	}
++
++	/* translate the I/O resources */
++	ret = acpi_translate_extiores(adev, host, &buffer);
++	if (ret) {
++		kfree(buffer.pointer);
++		dev_err(dev, "Translate I/O range FAIL!\n");
++		return ret;
++	}
++
++	/* set current resource... */
++	status = acpi_set_current_resources(adev->handle, &buffer);
++	kfree(buffer.pointer);
++	if (ACPI_FAILURE(status)) {
++		dev_err(dev, "Error evaluating _SRS (0x%x)\n", status);
++		ret = -EIO;
++	}
++
++	return ret;
++}
++
+ #ifdef PCI_IOBASE
  
- 	spin_lock(&io_range_lock);
- 	list_for_each_entry(res, &io_range_list, list) {
--		if (address >= res->start && address < res->start + res->size) {
-+		if (res->start != IO_RANGE_IOEXT &&
-+			address >= res->start &&
-+			address < res->start + res->size) {
- 			addr = address - res->start + offset;
- 			break;
- 		}
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index e2d1a12..8d91af8 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -34,6 +34,9 @@
- 
- #include <linux/pci_ids.h>
- 
-+/* the macro below flags an invalid cpu address
-+ * and is used by IO special hosts              */
-+#define IO_RANGE_IOEXT (resource_size_t)(-1ull)
- /*
-  * The PCI interface treats multi-function devices as independent
-  * devices.  The slot/function address of each device is encoded
-@@ -1197,8 +1200,8 @@ int __must_check pci_bus_alloc_resource(struct pci_bus *bus,
- 						  resource_size_t),
- 			void *alignf_data);
- 
--
--int pci_register_io_range(phys_addr_t addr, resource_size_t size);
-+int pci_register_io_range(struct fwnode_handle *node, phys_addr_t addr,
-+			  resource_size_t size, unsigned long *port);
- unsigned long pci_address_to_pio(phys_addr_t addr);
- phys_addr_t pci_pio_to_address(unsigned long pio);
- int pci_remap_iospace(const struct resource *res, phys_addr_t phys_addr);
+ #define BUILD_EXTIO(bw, type)						\
 -- 
 1.9.1
