@@ -1,86 +1,119 @@
-From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH v2 4/7] serial: sh-sci: increase RX FIFO trigger defaults for (H)SCIF
-Date: Mon, 23 Jan 2017 17:04:15 +0100
-Message-ID: <1485187458-8195-5-git-send-email-ulrich.hecht+renesas@gmail.com>
-References: <1485187458-8195-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1485187458-8195-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: linux-renesas-soc@vger.kernel.org, wsa@the-dreams.de, geert@linux-m68k.org
-Cc: linux-serial@vger.kernel.org, magnus.damm@gmail.com, sergei.shtylyov@cogentembedded.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Subject: [PATCH V6 0/5] LPC: legacy ISA I/O support
+Date: Tue, 24 Jan 2017 15:05:20 +0800
+Message-ID: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, brian.starkey@arm.com, olof@lixom.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org
+Cc: lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, "zhichang.yuan" <yuanzhichang@hisilicon.com>
 List-Id: linux-serial@vger.kernel.org
 
-Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
----
- drivers/tty/serial/sh-sci.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+This patch supports the IPMI-bt device attached to the Low-Pin-Count interface
+implemented on Hisilicon Hip06/Hip07 SoC.
+	                -----------
+			| LPC host|
+	                |         |
+	                -----------
+	                     |
+ 	        _____________V_______________LPC
+                  |			  |
+                  V	                  V
+			             ------------
+			             |  BT(ipmi)|
+			             ------------
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 39734cc..c7e2d0d 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -141,6 +141,7 @@ struct sci_port {
- 	struct timer_list		rx_timer;
- 	unsigned int			rx_timeout;
- #endif
-+	int				rx_trigger;
- 
- 	bool autorts;
- };
-@@ -2197,6 +2198,7 @@ static void sci_reset(struct uart_port *port)
- {
- 	const struct plat_sci_reg *reg;
- 	unsigned int status;
-+	struct sci_port *s = to_sci_port(port);
- 
- 	if (serial_port_in(port, SCSCR) & SCSCR_TE) {
- 		do {
-@@ -2218,6 +2220,9 @@ static void sci_reset(struct uart_port *port)
- 		status &= ~(SCLSR_TO | SCLSR_ORER);
- 		serial_port_out(port, SCLSR, status);
- 	}
-+
-+	if (s->rx_trigger > 1)
-+		scif_set_rtrg(port, s->rx_trigger);
- }
- 
- static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
-@@ -2728,6 +2733,7 @@ static int sci_init_single(struct platform_device *dev,
- 		sci_port->overrun_reg = SCLSR;
- 		sci_port->overrun_mask = SCLSR_ORER;
- 		sci_port->sampling_rate_mask = SCI_SR_RANGE(8, 32);
-+		sci_port->rx_trigger = 64;
- 		break;
- 	case PORT_SCIFA:
- 		port->fifosize = 64;
-@@ -2736,15 +2742,19 @@ static int sci_init_single(struct platform_device *dev,
- 		sci_port->sampling_rate_mask = SCI_SR_SCIFAB;
- 		break;
- 	case PORT_SCIF:
--		port->fifosize = 16;
- 		if (p->regtype == SCIx_SH7705_SCIF_REGTYPE) {
-+			port->fifosize = 64;
- 			sci_port->overrun_reg = SCxSR;
- 			sci_port->overrun_mask = SCIFA_ORER;
- 			sci_port->sampling_rate_mask = SCI_SR(16);
-+			/* RX triggering not implemented for this IP */
-+			sci_port->rx_trigger = 1;
- 		} else {
-+			port->fifosize = 16;
- 			sci_port->overrun_reg = SCLSR;
- 			sci_port->overrun_mask = SCLSR_ORER;
- 			sci_port->sampling_rate_mask = SCI_SR(32);
-+			sci_port->rx_trigger = 8;
- 		}
- 		break;
- 	default:
-@@ -2752,6 +2762,7 @@ static int sci_init_single(struct platform_device *dev,
- 		sci_port->overrun_reg = SCxSR;
- 		sci_port->overrun_mask = SCI_ORER;
- 		sci_port->sampling_rate_mask = SCI_SR(32);
-+		sci_port->rx_trigger = 1;
- 		break;
- 	}
- 
+When master accesses those peripherals beneath the Hip06 LPC, a specific LPC
+driver is needed to make LPC host generate the standard LPC I/O cycles with
+the target peripherals'I/O port addresses. But on curent arm64 world, there is
+no real I/O accesses. All the I/O operations through in/out pair are based on
+MMIO which is not satisfied the I/O mechanism on Hip06 LPC.
+To solve this issue and keep the relevant existing peripherals' driver
+untouched, this patch set redefines the in/out() pair to support both the IO
+operations for Hip06 LPC and the original MMIO. The way specific to Hip06 is
+named as indirect-IO in this patchset.
+
+Changes from V5:
+  - Made the extio driver more generic and locate in lib/;
+  - Supported multiple indirect-IO bus instances;
+  - Extended the pci_register_io_range() to support indirect-IO, then dropped
+  the I/O reservation used in previous patchset;
+  - Reimplemented the ACPI LPC support;
+  - Fixed some bugs, including the compile error on other archs, the module
+  building failure found by Ming Lei, etc;
+
+Changes from V4:
+  - Some revises based on the comments from Bjorn, Rob on V4;
+  - Fixed the compile error on some platforms, such as openrisc;
+
+Changes from V3:
+  - UART support deferred to a separate patchset; This patchset only support
+  ipmi device under LPC;
+  - LPC bus I/O range is fixed to 0 ~ (PCIBIOS_MIN_IO - 1), which is separeted
+  from PCI/PCIE PIO space;
+  - Based on Arnd's remarks, removed the ranges property from Hip06 lpc dts and
+  added a new fixup function, of_isa_indirect_io(), to get the I/O address
+  directly from LPC dts configurations;
+  - Support in(w,l)/out(w,l) for Hip06 lpc I/O;
+  - Decouple the header file dependency on the gerenic io.h by defining in/out
+  as normal functions in c file;
+  - removed unused macro definitions in the LPC driver;
+
+Changes from V2:
+  - Support the PIO retrieval from the linux PIO generated by
+  pci_address_to_pio. This method replace the 4K PIO reservation in V2;
+  - Support the flat-tree earlycon;
+  - Some revises based on Arnd's remarks;
+  - Make sure the linux PIO range allocated to Hip06 LPC peripherals starts
+  from non-ZERO;
+
+Changes from V1:
+  - Support the ACPI LPC device;
+  - Optimize the dts LPC driver in ISA compatible mode;
+  - Reserve the IO range below 4K in avoid the possible conflict with PCI host
+  IO ranges;
+  - Support the LPC uart and relevant earlycon;
+
+
+v5 thread here: https://lkml.org/lkml/2016/11/7/955
+v4 thread here: https://lkml.org/lkml/2016/10/20/149
+v3 thread here: https://lkml.org/lkml/2016/9/14/326
+v2 thread here: https://lkml.org/lkml/2016/9/7/356
+v1 thread here: https://lkml.org/lkml/2015/12/29/154
+
+
+Signed-off-by: Zhichang Yuan <yuanzhichang@hisilicon.com>
+zhichang.yuan (5):
+  LIB: Indirect ISA/LPC port IO introduced
+  PCI: Adapt pci_register_io_range() for indirect-IO and PCI I/O
+    translation
+  OF: Add missing I/O range exception for indirect-IO devices
+  LPC: Support the device-tree LPC host on Hip06/Hip07
+  LPC: Add the ACPI LPC support
+
+ .../arm/hisilicon/hisilicon-low-pin-count.txt      |  33 ++
+ MAINTAINERS                                        |   9 +
+ arch/arm64/boot/dts/hisilicon/hip06-d03.dts        |   4 +
+ arch/arm64/boot/dts/hisilicon/hip06.dtsi           |  14 +
+ drivers/acpi/pci_root.c                            |  12 +-
+ drivers/bus/Kconfig                                |   8 +
+ drivers/bus/Makefile                               |   1 +
+ drivers/bus/hisi_lpc.c                             | 625 +++++++++++++++++++++
+ drivers/of/address.c                               |  95 +++-
+ drivers/pci/pci.c                                  |  44 +-
+ include/asm-generic/io.h                           |  50 ++
+ include/linux/extio.h                              |  89 +++
+ include/linux/io.h                                 |   1 +
+ include/linux/pci.h                                |   7 +-
+ lib/Kconfig                                        |   8 +
+ lib/Makefile                                       |   2 +
+ lib/extio.c                                        | 375 +++++++++++++
+ 17 files changed, 1342 insertions(+), 35 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
+ create mode 100644 drivers/bus/hisi_lpc.c
+ create mode 100644 include/linux/extio.h
+ create mode 100644 lib/extio.c
+
 -- 
-2.7.4
+1.9.1
