@@ -1,196 +1,192 @@
-From: Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 1/5] tty_port: Add port client functions
-Date: Wed, 25 Jan 2017 14:23:39 -0600
-Message-ID: <20170125202343.30923-2-robh@kernel.org>
-References: <20170125202343.30923-1-robh@kernel.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] 8250: of: remove remnants of generic of_serial driver
+Date: Wed, 25 Jan 2017 23:19:01 +0100
+Message-ID: <20170125221919.1153682-1-arnd@arndb.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170125202343.30923-1-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jslaby@suse.com>, Thierry Reding <treding@nvidia.com>, David Lechner <david@lechnology.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Introduce a client (upward direction) operations struct for tty_port
-clients. Initially supported operations are for receiving data and write
-wake-up. This will allow for having clients other than an ldisc.
+During build testing, I ran into a warning in a driver that I
+had written myself at some point:
 
-Convert the calls to the ldisc to use the client ops as the default
-operations.
+drivers/tty/serial/8250/8250_of.c: In function 'of_platform_serial_probe':
+drivers/tty/serial/8250/8250_of.c:233:1: error: the frame size of 1200 bytes is larger than 1152 bytes [-Werror=frame-larger-than=]
 
-Signed-off-by: Rob Herring <robh@kernel.org>
-Reviewed-By: Sebastian Reichel <sre@kernel.org>
+This is harmless by itself, but it shows two other problems in
+the driver:
+
+- It still tries to be generic enough to handle all kinds of serial
+  ports, where in reality the driver has been 8250-only for a while,
+  and every other uart has its own DT support
+
+- As a result of that generalization, we keep two copies of
+  'struct uart_port' on the stack during probe(). This is completely
+  unnessary.
+
+Removing the last code dealing with unsupported port_type values
+solves both problems nicely, and reduces the stack size.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
-v3:
-- Restructured wakeup handling. We need to maintain the behavior of getting
-  the tty ptr only once, otherwise the serial port can get in a bad state
-  and stops responding.
+ drivers/tty/serial/8250/8250_of.c | 93 ++++++++++-----------------------------
+ 1 file changed, 24 insertions(+), 69 deletions(-)
 
-v2:
-- no change
-
- drivers/tty/tty_buffer.c | 17 +++--------------
- drivers/tty/tty_port.c   | 46 ++++++++++++++++++++++++++++++++++++++++------
- include/linux/tty.h      |  9 ++++++++-
- 3 files changed, 51 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index f4dc3e296dd5..4e7a4e9dcf4d 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -437,7 +437,7 @@ int tty_ldisc_receive_buf(struct tty_ldisc *ld, const unsigned char *p,
- EXPORT_SYMBOL_GPL(tty_ldisc_receive_buf);
-
- static int
--receive_buf(struct tty_ldisc *ld, struct tty_buffer *head, int count)
-+receive_buf(struct tty_port *port, struct tty_buffer *head, int count)
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 7ff72a978f39..c792e65d92b8 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -168,7 +168,8 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
  {
- 	unsigned char *p = char_buf_ptr(head, head->read);
- 	char	      *f = NULL;
-@@ -445,7 +445,7 @@ receive_buf(struct tty_ldisc *ld, struct tty_buffer *head, int count)
- 	if (~head->flags & TTYB_NORMAL)
- 		f = flag_buf_ptr(head, head->read);
-
--	return tty_ldisc_receive_buf(ld, p, f, count);
-+	return port->client_ops->receive_buf(port, p, f, count);
- }
-
- /**
-@@ -465,16 +465,6 @@ static void flush_to_ldisc(struct work_struct *work)
- {
- 	struct tty_port *port = container_of(work, struct tty_port, buf.work);
- 	struct tty_bufhead *buf = &port->buf;
--	struct tty_struct *tty;
--	struct tty_ldisc *disc;
+ 	const struct of_device_id *match;
+ 	struct of_serial_info *info;
+-	struct uart_port port;
++	struct uart_8250_port port8250;
++	u32 tx_threshold;
+ 	int port_type;
+ 	int ret;
+ 
+@@ -184,41 +185,24 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 		return -ENOMEM;
+ 
+ 	port_type = (unsigned long)match->data;
+-	ret = of_platform_serial_setup(ofdev, port_type, &port, info);
++	memset(&port8250, 0, sizeof(port8250));
++	ret = of_platform_serial_setup(ofdev, port_type, &port8250.port, info);
+ 	if (ret)
+ 		goto out;
+ 
+-	switch (port_type) {
+-	case PORT_8250 ... PORT_MAX_8250:
+-	{
+-		u32 tx_threshold;
+-		struct uart_8250_port port8250;
+-		memset(&port8250, 0, sizeof(port8250));
+-		port8250.port = port;
++	if (port8250.port.fifosize)
++		port8250.capabilities = UART_CAP_FIFO;
+ 
+-		if (port.fifosize)
+-			port8250.capabilities = UART_CAP_FIFO;
++	/* Check for TX FIFO threshold & set tx_loadsz */
++	if ((of_property_read_u32(ofdev->dev.of_node, "tx-threshold",
++				  &tx_threshold) == 0) &&
++	    (tx_threshold < port8250.port.fifosize))
++		port8250.tx_loadsz = port8250.port.fifosize - tx_threshold;
+ 
+-		/* Check for TX FIFO threshold & set tx_loadsz */
+-		if ((of_property_read_u32(ofdev->dev.of_node, "tx-threshold",
+-					  &tx_threshold) == 0) &&
+-		    (tx_threshold < port.fifosize))
+-			port8250.tx_loadsz = port.fifosize - tx_threshold;
++	if (of_property_read_bool(ofdev->dev.of_node, "auto-flow-control"))
++		port8250.capabilities |= UART_CAP_AFE;
+ 
+-		if (of_property_read_bool(ofdev->dev.of_node,
+-					  "auto-flow-control"))
+-			port8250.capabilities |= UART_CAP_AFE;
 -
--	tty = READ_ONCE(port->itty);
--	if (tty == NULL)
--		return;
--
--	disc = tty_ldisc_ref(tty);
--	if (disc == NULL)
--		return;
-
- 	mutex_lock(&buf->lock);
-
-@@ -504,7 +494,7 @@ static void flush_to_ldisc(struct work_struct *work)
- 			continue;
- 		}
-
--		count = receive_buf(disc, head, count);
-+		count = receive_buf(port, head, count);
- 		if (!count)
- 			break;
- 		head->read += count;
-@@ -512,7 +502,6 @@ static void flush_to_ldisc(struct work_struct *work)
-
- 	mutex_unlock(&buf->lock);
-
--	tty_ldisc_deref(disc);
- }
-
- /**
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 1d8804843103..8d9886b06037 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -17,6 +17,44 @@
- #include <linux/delay.h>
- #include <linux/module.h>
-
-+static int tty_port_default_receive_buf(struct tty_port *port,
-+					const unsigned char *p,
-+					const unsigned char *f, size_t count)
-+{
-+	int ret;
-+	struct tty_struct *tty;
-+	struct tty_ldisc *disc;
-+
-+	tty = READ_ONCE(port->itty);
-+	if (!tty)
-+		return 0;
-+
-+	disc = tty_ldisc_ref(tty);
-+	if (!disc)
-+		return 0;
-+
-+	ret = tty_ldisc_receive_buf(disc, p, (char *)f, count);
-+
-+	tty_ldisc_deref(disc);
-+
-+	return ret;
-+}
-+
-+static void tty_port_default_wakeup(struct tty_port *port)
-+{
-+	struct tty_struct *tty = tty_port_tty_get(port);
-+
-+	if (tty) {
-+		tty_wakeup(tty);
-+		tty_kref_put(tty);
-+	}
-+}
-+
-+static const struct tty_port_client_operations default_client_ops = {
-+	.receive_buf = tty_port_default_receive_buf,
-+	.write_wakeup = tty_port_default_wakeup,
-+};
-+
- void tty_port_init(struct tty_port *port)
- {
- 	memset(port, 0, sizeof(*port));
-@@ -28,6 +66,7 @@ void tty_port_init(struct tty_port *port)
- 	spin_lock_init(&port->lock);
- 	port->close_delay = (50 * HZ) / 100;
- 	port->closing_wait = (3000 * HZ) / 100;
-+	port->client_ops = &default_client_ops;
- 	kref_init(&port->kref);
- }
- EXPORT_SYMBOL(tty_port_init);
-@@ -272,12 +311,7 @@ EXPORT_SYMBOL_GPL(tty_port_tty_hangup);
-  */
- void tty_port_tty_wakeup(struct tty_port *port)
- {
--	struct tty_struct *tty = tty_port_tty_get(port);
--
--	if (tty) {
--		tty_wakeup(tty);
--		tty_kref_put(tty);
+-		ret = serial8250_register_8250_port(&port8250);
+-		break;
 -	}
-+	port->client_ops->write_wakeup(port);
+-	default:
+-		/* need to add code for these */
+-	case PORT_UNKNOWN:
+-		dev_info(&ofdev->dev, "Unknown serial port found, ignored\n");
+-		ret = -ENODEV;
+-		break;
+-	}
++	ret = serial8250_register_8250_port(&port8250);
+ 	if (ret < 0)
+ 		goto out;
+ 
+@@ -228,7 +212,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	return 0;
+ out:
+ 	kfree(info);
+-	irq_dispose_mapping(port.irq);
++	irq_dispose_mapping(port8250.port.irq);
+ 	return ret;
  }
- EXPORT_SYMBOL_GPL(tty_port_tty_wakeup);
-
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 21c0fabfed60..1017e904c0a3 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -217,12 +217,18 @@ struct tty_port_operations {
- 	/* Called on the final put of a port */
- 	void (*destruct)(struct tty_port *port);
- };
+ 
+@@ -238,14 +222,8 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ static int of_platform_serial_remove(struct platform_device *ofdev)
+ {
+ 	struct of_serial_info *info = platform_get_drvdata(ofdev);
+-	switch (info->type) {
+-	case PORT_8250 ... PORT_MAX_8250:
+-		serial8250_unregister_port(info->line);
+-		break;
+-	default:
+-		/* need to add code for these */
+-		break;
+-	}
++
++	serial8250_unregister_port(info->line);
+ 
+ 	if (info->clk)
+ 		clk_disable_unprepare(info->clk);
+@@ -254,18 +232,23 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+-static void of_serial_suspend_8250(struct of_serial_info *info)
++static int of_serial_suspend(struct device *dev)
+ {
++	struct of_serial_info *info = dev_get_drvdata(dev);
+ 	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
+ 	struct uart_port *port = &port8250->port;
+ 
+ 	serial8250_suspend_port(info->line);
++
+ 	if (info->clk && (!uart_console(port) || console_suspend_enabled))
+ 		clk_disable_unprepare(info->clk);
++
++	return 0;
+ }
+ 
+-static void of_serial_resume_8250(struct of_serial_info *info)
++static int of_serial_resume(struct device *dev)
+ {
++	struct of_serial_info *info = dev_get_drvdata(dev);
+ 	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
+ 	struct uart_port *port = &port8250->port;
+ 
+@@ -273,34 +256,6 @@ static void of_serial_resume_8250(struct of_serial_info *info)
+ 		clk_prepare_enable(info->clk);
+ 
+ 	serial8250_resume_port(info->line);
+-}
 -
-+
-+struct tty_port_client_operations {
-+	int (*receive_buf)(struct tty_port *port, const unsigned char *, const unsigned char *, size_t);
-+	void (*write_wakeup)(struct tty_port *port);
-+};
-+
- struct tty_port {
- 	struct tty_bufhead	buf;		/* Locked internally */
- 	struct tty_struct	*tty;		/* Back pointer */
- 	struct tty_struct	*itty;		/* internal back ptr */
- 	const struct tty_port_operations *ops;	/* Port operations */
-+	const struct tty_port_client_operations *client_ops; /* Port client operations */
- 	spinlock_t		lock;		/* Lock protecting tty field */
- 	int			blocked_open;	/* Waiting to open */
- 	int			count;		/* Usage count */
-@@ -241,6 +247,7 @@ struct tty_port {
- 						   based drain is needed else
- 						   set to size of fifo */
- 	struct kref		kref;		/* Ref counter */
-+	void 			*client_data;
- };
-
- /* tty_port::iflags bits -- use atomic bit ops */
---
-2.10.1
+-static int of_serial_suspend(struct device *dev)
+-{
+-	struct of_serial_info *info = dev_get_drvdata(dev);
+-
+-	switch (info->type) {
+-	case PORT_8250 ... PORT_MAX_8250:
+-		of_serial_suspend_8250(info);
+-		break;
+-	default:
+-		break;
+-	}
+-
+-	return 0;
+-}
+-
+-static int of_serial_resume(struct device *dev)
+-{
+-	struct of_serial_info *info = dev_get_drvdata(dev);
+-
+-	switch (info->type) {
+-	case PORT_8250 ... PORT_MAX_8250:
+-		of_serial_resume_8250(info);
+-		break;
+-	default:
+-		break;
+-	}
+ 
+ 	return 0;
+ }
+-- 
+2.9.0
