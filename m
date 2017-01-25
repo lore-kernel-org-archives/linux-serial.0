@@ -1,58 +1,70 @@
 From: Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 0/5] Serial slave device bus
-Date: Wed, 25 Jan 2017 14:23:38 -0600
-Message-ID: <20170125202343.30923-1-robh@kernel.org>
+Subject: [PATCH v3 5/5] tty_port: register tty ports with serdev bus
+Date: Wed, 25 Jan 2017 14:23:43 -0600
+Message-ID: <20170125202343.30923-6-robh@kernel.org>
+References: <20170125202343.30923-1-robh@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170125202343.30923-1-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>
 Cc: Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Here's V3 of the serdev bus support with all the review feedback so far
-incorporated. Greg applied the first 4 patches already. I also found a
-problem in the tty_port_wakeup changes and have fixed that.
+Register a serdev controller with the serdev bus when a tty_port is
+registered. This creates the serdev controller and create's serdev
+devices for any DT child nodes of the tty_port's parent (i.e. the UART
+device).
 
-I've added serdev support to the BT hci_ll.c driver as it turns out it works
-on newer TI chips too, but just needed firmware loading. That avoids the
-impossible mess of cleaning up the TI-ST driver, and it's in a much closer
-state to being ready for upstream. I've sent that out separately.
+Signed-off-by: Rob Herring <robh@kernel.org>
+Reviewed-By: Sebastian Reichel <sre@kernel.org>
+---
+v3:
+- no change
 
-Changelog is in individual patches. Previous versions are here[1][2]. This
-series and the mentioned drivers can be found here[3].
+v2:
+- Skip creating the tty device file node when serdev_tty_port_register
+  finds slave devices.
 
-Rob
+ drivers/tty/tty_port.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-[1] http://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1304151.html
-[2] http://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1311650.html
-[3] git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git serial-bus-v4
-
-
-Rob Herring (5):
-  tty_port: Add port client functions
-  dt/bindings: Add a serial/UART attached device binding
-  serdev: Introduce new bus for serial attached devices
-  serdev: add a tty port controller driver
-  tty_port: register tty ports with serdev bus
-
- .../devicetree/bindings/serial/slave-device.txt    |  36 ++
- MAINTAINERS                                        |   8 +
- drivers/char/Kconfig                               |   1 +
- drivers/tty/Makefile                               |   1 +
- drivers/tty/serdev/Kconfig                         |  16 +
- drivers/tty/serdev/Makefile                        |   5 +
- drivers/tty/serdev/core.c                          | 421 +++++++++++++++++++++
- drivers/tty/serdev/serdev-ttyport.c                | 226 +++++++++++
- drivers/tty/tty_buffer.c                           |  17 +-
- drivers/tty/tty_port.c                             |  58 ++-
- include/linux/serdev.h                             | 262 +++++++++++++
- include/linux/tty.h                                |   9 +-
- 12 files changed, 1039 insertions(+), 21 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/slave-device.txt
- create mode 100644 drivers/tty/serdev/Kconfig
- create mode 100644 drivers/tty/serdev/Makefile
- create mode 100644 drivers/tty/serdev/core.c
- create mode 100644 drivers/tty/serdev/serdev-ttyport.c
- create mode 100644 include/linux/serdev.h
-
---
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 8d9886b06037..5cd3cd932293 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -16,6 +16,7 @@
+ #include <linux/bitops.h>
+ #include <linux/delay.h>
+ #include <linux/module.h>
++#include <linux/serdev.h>
+ 
+ static int tty_port_default_receive_buf(struct tty_port *port,
+ 					const unsigned char *p,
+@@ -128,7 +129,15 @@ struct device *tty_port_register_device_attr(struct tty_port *port,
+ 		struct device *device, void *drvdata,
+ 		const struct attribute_group **attr_grp)
+ {
++	struct device *dev;
++
+ 	tty_port_link_device(port, driver, index);
++
++	dev = serdev_tty_port_register(port, device, driver, index);
++	if (PTR_ERR(dev) != -ENODEV)
++		/* Skip creating cdev if we registered a serdev device */
++		return dev;
++
+ 	return tty_register_device_attr(driver, index, device, drvdata,
+ 			attr_grp);
+ }
+@@ -180,6 +189,9 @@ static void tty_port_destructor(struct kref *kref)
+ 	/* check if last port ref was dropped before tty release */
+ 	if (WARN_ON(port->itty))
+ 		return;
++
++	serdev_tty_port_unregister(port);
++
+ 	if (port->xmit_buf)
+ 		free_page((unsigned long)port->xmit_buf);
+ 	tty_port_destroy(port);
+-- 
 2.10.1
