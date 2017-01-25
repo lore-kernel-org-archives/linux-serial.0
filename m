@@ -1,71 +1,56 @@
 From: Peter Griffin <peter.griffin@linaro.org>
-Subject: Re: [STLinux Kernel] [PATCH 8/8] ARM: dts: STiH407-family: Enable HW
- flow-control
-Date: Wed, 25 Jan 2017 11:40:02 +0000
-Message-ID: <20170125114002.GG5680@griffinp-ThinkPad-X1-Carbon-2nd>
+Subject: Re: [STLinux Kernel] [PATCH 7/8] ARM: dts: STiH407-family: Use new
+ Pinctrl groups
+Date: Wed, 25 Jan 2017 11:54:26 +0000
+Message-ID: <20170125115426.GH5680@griffinp-ThinkPad-X1-Carbon-2nd>
 References: <20170124134310.27512-1-lee.jones@linaro.org>
- <20170124134310.27512-9-lee.jones@linaro.org>
- <20170125105912.GA5680@griffinp-ThinkPad-X1-Carbon-2nd>
+ <20170124134310.27512-8-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170125105912.GA5680@griffinp-ThinkPad-X1-Carbon-2nd>
+In-Reply-To: <20170124134310.27512-8-lee.jones@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Lee Jones <lee.jones@linaro.org>
 Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@stlinux.com
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 25 Jan 2017, Peter Griffin wrote:
+Hi Lee,
 
-> Hi Lee,
-> 
-> On Tue, 24 Jan 2017, Lee Jones wrote:
-> 
-> > Hardware flow-control capability must be specified at a platform
-> > level in order to inform the ASC driver that the platform is capable
-> > (i.e. are the lines wired up, etc).  STiH4{07,10} devices are indeed
-> > capable, so let's provide the property.
-> > 
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> >  arch/arm/boot/dts/stih407-family.dtsi | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
-> > index 9789978..7ada8ea 100644
-> > --- a/arch/arm/boot/dts/stih407-family.dtsi
-> > +++ b/arch/arm/boot/dts/stih407-family.dtsi
-> > @@ -226,7 +226,7 @@
-> >  			pinctrl-0 = <&pinctrl_serial0_flowctrl>;
-> >  			pinctrl-1 = <&pinctrl_serial0>;
-> >  			clocks = <&clk_s_c0_flexgen CLK_EXT2F_A9>;
-> > -
-> > +			st,hw-flow-control;
-> 
-> There is a generic serial binding for this already. As this ST property
-> hasn't been used upstream, it seems like it would be worth dropping it
-> and switching to the generic uart-has-rtscts one.
-> 
-> See Documentation/devicetree/bindings/serial/serial.txt
-> 
->   - uart-has-rtscts: The presence of this property indicates that the
->     UART has dedicated lines for RTS/CTS hardware flow control, and that
->     they are available for use (wired and enabled by pinmux configuration).
->     This depends on both the UART hardware and the board wiring.
->     Note that this property is mutually-exclusive with "cts-gpios" and
->     "rts-gpios" above.
+On Tue, 24 Jan 2017, Lee Jones wrote:
 
-Thinking some more this generic binding definition is a bit restrictive,
-particularly the "Note that this property is mutually-exclusive with "cts-gpios"
-and "rts-gpios"" part.
+> Having just defined some new Pinctrl groups for when when HW flow-
+> control is {en,dis}abled, let's reference them for use within the
+> driver.
+> 
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
 
-As with this series we will have dynamic on-the-fly changing from hw flow
-control to gpio control for other configs which the HW IP doesn't support.
-
-IMO the uart-has-rtscts definition should be updated to reflect that they can
-be used together in certain circumstances.
+Same as previous comment, your enabling hw flow control for all
+stih407 family boards. I've not checked the schematics for them
+but as hw flow control is dependent on board wiring, IMO this
+should be added in board specific file.
 
 regards,
 
 Peter.
+
+> ---
+>  arch/arm/boot/dts/stih407-family.dtsi | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
+> index c8b2944..9789978 100644
+> --- a/arch/arm/boot/dts/stih407-family.dtsi
+> +++ b/arch/arm/boot/dts/stih407-family.dtsi
+> @@ -222,8 +222,9 @@
+>  			compatible = "st,asc";
+>  			reg = <0x9830000 0x2c>;
+>  			interrupts = <GIC_SPI 122 IRQ_TYPE_NONE>;
+> -			pinctrl-names = "default";
+> -			pinctrl-0 = <&pinctrl_serial0>;
+> +			pinctrl-names = "default", "manual-rts";
+> +			pinctrl-0 = <&pinctrl_serial0_flowctrl>;
+> +			pinctrl-1 = <&pinctrl_serial0>;
+>  			clocks = <&clk_s_c0_flexgen CLK_EXT2F_A9>;
+>  
+>  			status = "disabled";
