@@ -1,56 +1,38 @@
-From: Peter Griffin <peter.griffin@linaro.org>
-Subject: Re: [STLinux Kernel] [PATCH 7/8] ARM: dts: STiH407-family: Use new
- Pinctrl groups
-Date: Wed, 25 Jan 2017 11:54:26 +0000
-Message-ID: <20170125115426.GH5680@griffinp-ThinkPad-X1-Carbon-2nd>
-References: <20170124134310.27512-1-lee.jones@linaro.org>
- <20170124134310.27512-8-lee.jones@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170124134310.27512-8-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@stlinux.com
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: sh-sci: Reformat sci_parse_dt() for git diff
+Date: Wed, 25 Jan 2017 15:55:49 +0100
+Message-ID: <1485356149-2731-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Lee,
+As the function header of sci_parse_dt() is split in an unusual way,
+"git diff" gets confused when changes to the body of the function are
+made, and attributes them to the wrong function.
 
-On Tue, 24 Jan 2017, Lee Jones wrote:
+Reformat the function header to fix this.
 
-> Having just defined some new Pinctrl groups for when when HW flow-
-> control is {en,dis}abled, let's reference them for use within the
-> driver.
-> 
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/tty/serial/sh-sci.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Same as previous comment, your enabling hw flow control for all
-stih407 family boards. I've not checked the schematics for them
-but as hw flow control is dependent on board wiring, IMO this
-should be added in board specific file.
-
-regards,
-
-Peter.
-
-> ---
->  arch/arm/boot/dts/stih407-family.dtsi | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
-> index c8b2944..9789978 100644
-> --- a/arch/arm/boot/dts/stih407-family.dtsi
-> +++ b/arch/arm/boot/dts/stih407-family.dtsi
-> @@ -222,8 +222,9 @@
->  			compatible = "st,asc";
->  			reg = <0x9830000 0x2c>;
->  			interrupts = <GIC_SPI 122 IRQ_TYPE_NONE>;
-> -			pinctrl-names = "default";
-> -			pinctrl-0 = <&pinctrl_serial0>;
-> +			pinctrl-names = "default", "manual-rts";
-> +			pinctrl-0 = <&pinctrl_serial0_flowctrl>;
-> +			pinctrl-1 = <&pinctrl_serial0>;
->  			clocks = <&clk_s_c0_flexgen CLK_EXT2F_A9>;
->  
->  			status = "disabled";
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 9bc9756a2d15d574..a589544f320661f5 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2816,8 +2816,8 @@ static int sci_remove(struct platform_device *dev)
+ };
+ MODULE_DEVICE_TABLE(of, of_sci_match);
+ 
+-static struct plat_sci_port *
+-sci_parse_dt(struct platform_device *pdev, unsigned int *dev_id)
++static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
++					  unsigned int *dev_id)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	const struct of_device_id *match;
+-- 
+1.9.1
