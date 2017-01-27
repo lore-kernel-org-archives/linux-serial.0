@@ -1,44 +1,54 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH V6 3/5] OF: Add missing I/O range exception for
- indirect-IO  devices
-Date: Fri, 27 Jan 2017 16:03:57 -0600
-Message-ID: <20170127220357.3lpavvyeymlhvlfg@rob-hp-laptop>
+Subject: Re: [PATCH V6 4/5] LPC: Support the device-tree LPC host on
+ Hip06/Hip07
+Date: Fri, 27 Jan 2017 16:12:26 -0600
+Message-ID: <20170127221226.wlii3fv7tm4to7ie@rob-hp-laptop>
 References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
- <1485241525-201782-4-git-send-email-yuanzhichang@hisilicon.com>
+ <1485241525-201782-5-git-send-email-yuanzhichang@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1485241525-201782-4-git-send-email-yuanzhichang@hisilicon.com>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <1485241525-201782-5-git-send-email-yuanzhichang@hisilicon.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Cc: catalin.marinas@arm.com, will.deacon@arm.com, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, brian.starkey@arm.com, olof@lixom.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com
+Cc: mark.rutland@arm.com, benh@kernel.crashing.org, gabriele.paoloni@huawei.com, rafael@kernel.org, linux-pci@vger.kernel.org, will.deacon@arm.com, linuxarm@huawei.com, frowand.list@gmail.com, lorenzo.pieralisi@arm.com, arnd@arndb.de, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, catalin.marinas@arm.com, devicetree@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, john.garry@huawei.com, zourongrong@gmail.com, bhelgaas@google.com, kantyzc@163.com, zhichang.yuan02@gmail.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, olof@lixom.net, brian.starkey@arm.com
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 24, 2017 at 03:05:23PM +0800, zhichang.yuan wrote:
-> There are some special ISA/LPC devices that work on a specific I/O range where
-> it is not correct to specify a 'ranges' property in DTS parent node as cpu
-> addresses translated from DTS node are only for memory space on some
-> architectures, such as Arm64. Without the parent 'ranges' property, current
-> of_translate_address() return an error.
-> Here we add special handlings for this case.
-> During the OF address translation, some checkings will be perfromed to
-> identify whether the device node is registered as indirect-IO. If yes, the I/O
-> translation will be done in a different way from that one of PCI MMIO.
-> In this way, the I/O 'reg' property of the special ISA/LPC devices will be
-> parsed correctly.
+On Tue, Jan 24, 2017 at 03:05:24PM +0800, zhichang.yuan wrote:
+> The low-pin-count(LPC) interface of Hip06/Hip07 accesses the peripherals in
+> I/O port addresses. This patch implements the LPC host controller driver which
+> perform the I/O operations on the underlying hardware.
+> We don't want to touch those existing peripherals' driver, such as ipmi-bt. So
+> this driver applies the indirect-IO introduced in the previous patch after
+> registering an indirect-IO node to the indirect-IO devices list which will be
+> searched in the I/O accessors.
+> As the I/O translations for LPC children depend on the host I/O registration,
+> we should ensure the host I/O registration is finished before all the LPC
+> children scanning. That is why an arch_init() hook was added in this patch.
 > 
 > Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
 > Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
-Shouldn't this be Reviewed-by?
-
-Otherwise, looks fine to me.
+> ---
+>  .../arm/hisilicon/hisilicon-low-pin-count.txt      |  33 ++
+>  MAINTAINERS                                        |   9 +
+>  arch/arm64/boot/dts/hisilicon/hip06-d03.dts        |   4 +
+>  arch/arm64/boot/dts/hisilicon/hip06.dtsi           |  14 +
 
 Acked-by: Rob Herring <robh@kernel.org>
 
-> ---
->  drivers/of/address.c | 87 ++++++++++++++++++++++++++++++++++++++++++----------
->  1 file changed, 71 insertions(+), 16 deletions(-)
-> 
+>  drivers/bus/Kconfig                                |   8 +
+>  drivers/bus/Makefile                               |   1 +
+>  drivers/bus/hisi_lpc.c                             | 599 +++++++++++++++++++++
+>  7 files changed, 668 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
+>  create mode 100644 drivers/bus/hisi_lpc.c
