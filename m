@@ -1,97 +1,58 @@
-From: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
-Subject: Re: [PATCH] serial: samsung: add clock controls in
- s3c24xx_serial_resume_noirq()
-Date: Thu, 26 Jan 2017 14:40:52 +0100
-Message-ID: <43f1d7da-9857-4f0e-12b9-ff0f241de762@math.uni-bielefeld.de>
-References: <000d01d218c5$3069cdf0$913d69d0$@samsung.com>
- <CGME20160930103448epcas2p4e2ee38332ad98ad3cb1e07866d4337d8@epcas2p4.samsung.com>
- <20160930103434.GA4713@kozik-lap>
- <000401d21dfc$dba89bb0$92f9d310$@samsung.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [STLinux Kernel] [PATCH 7/8] ARM: dts: STiH407-family: Use new
+ Pinctrl groups
+Date: Fri, 27 Jan 2017 11:03:04 +0000
+Message-ID: <20170127110304.qitnkupjqe42tby7@dell>
+References: <20170124134310.27512-1-lee.jones@linaro.org>
+ <20170124134310.27512-8-lee.jones@linaro.org>
+ <20170125115426.GH5680@griffinp-ThinkPad-X1-Carbon-2nd>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <000401d21dfc$dba89bb0$92f9d310$@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: =?UTF-8?B?64Ko7JiB66+8?= <youngmin.nam@samsung.com>, 'Krzysztof Kozlowski' <krzk@kernel.org>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20170125115426.GH5680@griffinp-ThinkPad-X1-Carbon-2nd>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Peter Griffin <peter.griffin@linaro.org>
+Cc: devicetree@vger.kernel.org, kernel@stlinux.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
-
-was going through my mail folder and I don't think that this patch was
-ever applied (or resent).
-
-Just wondering if it is still necessary.
-
-- Tobias
-
-
-남영민 wrote:
-> Hello,
-> 
->> On Tue, Sep 27, 2016 at 10:43:54PM +0900, 남영민 wrote:
->>> This patch adds clock controls in s3c24xx_serial_resume_noirq() to set
->>> S3C64XX_UINTM register.
->>
->> Code looks correct but the commit message is bogus. It does not bring any
->> benefit over the code, not mentioning that it is quite cryptic (what does
->> the "clock controls" mean?).
->>
->> Just describe here WHAT is the problem and WHY the fix is needed.
->>
->> Best regards,
->> Krzysztof
->>
-> 
-> Thank you for taking your time for the review.
-> I will improve the commit message applying your suggestions and resend this patch.
-> 
-> Best regards,
-> Youngmin Nam
-> 
-> 
->>>
->>> Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
->>> ---
->>>  drivers/tty/serial/samsung.c | 3 +++
->>>  1 file changed, 3 insertions(+)
->>>
->>> diff --git a/drivers/tty/serial/samsung.c
->>> b/drivers/tty/serial/samsung.c index ae2095a..97f7b3b 100644
->>> --- a/drivers/tty/serial/samsung.c
->>> +++ b/drivers/tty/serial/samsung.c
->>> @@ -1921,6 +1921,7 @@ static int s3c24xx_serial_resume(struct device
->>> *dev)  static int s3c24xx_serial_resume_noirq(struct device *dev)  {
->>>  	struct uart_port *port = s3c24xx_dev_to_port(dev);
->>> +	struct s3c24xx_uart_port *ourport = to_ourport(port);
->>>
->>>  	if (port) {
->>>  		/* restore IRQ mask */
->>> @@ -1930,7 +1931,9 @@ static int s3c24xx_serial_resume_noirq(struct
->> device *dev)
->>>  				uintm &= ~S3C64XX_UINTM_TXD_MSK;
->>>  			if (rx_enabled(port))
->>>  				uintm &= ~S3C64XX_UINTM_RXD_MSK;
->>> +			clk_prepare_enable(ourport->clk);
->>>  			wr_regl(port, S3C64XX_UINTM, uintm);
->>> +			clk_disable_unprepare(ourport->clk);
->>>  		}
->>>  	}
->>>
->>> --
->>> 2.8.1
->>>
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe
->>> linux-samsung-soc" in the body of a message to
->>> majordomo@vger.kernel.org More majordomo info at
->> http://vger.kernel.org/majordomo-info.html
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+T24gV2VkLCAyNSBKYW4gMjAxNywgUGV0ZXIgR3JpZmZpbiB3cm90ZToKCj4gSGkgTGVlLAo+IAo+
+IE9uIFR1ZSwgMjQgSmFuIDIwMTcsIExlZSBKb25lcyB3cm90ZToKPiAKPiA+IEhhdmluZyBqdXN0
+IGRlZmluZWQgc29tZSBuZXcgUGluY3RybCBncm91cHMgZm9yIHdoZW4gd2hlbiBIVyBmbG93LQo+
+ID4gY29udHJvbCBpcyB7ZW4sZGlzfWFibGVkLCBsZXQncyByZWZlcmVuY2UgdGhlbSBmb3IgdXNl
+IHdpdGhpbiB0aGUKPiA+IGRyaXZlci4KPiA+IAo+ID4gU2lnbmVkLW9mZi1ieTogTGVlIEpvbmVz
+IDxsZWUuam9uZXNAbGluYXJvLm9yZz4KPiAKPiBTYW1lIGFzIHByZXZpb3VzIGNvbW1lbnQsIHlv
+dXIgZW5hYmxpbmcgaHcgZmxvdyBjb250cm9sIGZvciBhbGwKPiBzdGloNDA3IGZhbWlseSBib2Fy
+ZHMuIEkndmUgbm90IGNoZWNrZWQgdGhlIHNjaGVtYXRpY3MgZm9yIHRoZW0KPiBidXQgYXMgaHcg
+ZmxvdyBjb250cm9sIGlzIGRlcGVuZGVudCBvbiBib2FyZCB3aXJpbmcsIElNTyB0aGlzCj4gc2hv
+dWxkIGJlIGFkZGVkIGluIGJvYXJkIHNwZWNpZmljIGZpbGUuCgpGYWlyIHNob3V0LgoKT24gdGhl
+IEIyMTIwIFVBUlQwIGlzIGhvb2tlZCB1cCB0byB0aGUgU21hcnQgQ2FyZCBSZWFkZXIuCgpXaWxs
+IGZpeC4KCj4gPiAtLS0KPiA+ICBhcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWZhbWlseS5kdHNp
+IHwgNSArKystLQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDIgZGVsZXRp
+b25zKC0pCj4gPiAKPiA+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWZh
+bWlseS5kdHNpIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQwNy1mYW1pbHkuZHRzaQo+ID4gaW5k
+ZXggYzhiMjk0NC4uOTc4OTk3OCAxMDA2NDQKPiA+IC0tLSBhL2FyY2gvYXJtL2Jvb3QvZHRzL3N0
+aWg0MDctZmFtaWx5LmR0c2kKPiA+ICsrKyBiL2FyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MDctZmFt
+aWx5LmR0c2kKPiA+IEBAIC0yMjIsOCArMjIyLDkgQEAKPiA+ICAJCQljb21wYXRpYmxlID0gInN0
+LGFzYyI7Cj4gPiAgCQkJcmVnID0gPDB4OTgzMDAwMCAweDJjPjsKPiA+ICAJCQlpbnRlcnJ1cHRz
+ID0gPEdJQ19TUEkgMTIyIElSUV9UWVBFX05PTkU+Owo+ID4gLQkJCXBpbmN0cmwtbmFtZXMgPSAi
+ZGVmYXVsdCI7Cj4gPiAtCQkJcGluY3RybC0wID0gPCZwaW5jdHJsX3NlcmlhbDA+Owo+ID4gKwkJ
+CXBpbmN0cmwtbmFtZXMgPSAiZGVmYXVsdCIsICJtYW51YWwtcnRzIjsKPiA+ICsJCQlwaW5jdHJs
+LTAgPSA8JnBpbmN0cmxfc2VyaWFsMF9mbG93Y3RybD47Cj4gPiArCQkJcGluY3RybC0xID0gPCZw
+aW5jdHJsX3NlcmlhbDA+Owo+ID4gIAkJCWNsb2NrcyA9IDwmY2xrX3NfYzBfZmxleGdlbiBDTEtf
+RVhUMkZfQTk+Owo+ID4gIAo+ID4gIAkJCXN0YXR1cyA9ICJkaXNhYmxlZCI7CgotLSAKTGVlIEpv
+bmVzCkxpbmFybyBTVE1pY3JvZWxlY3Ryb25pY3MgTGFuZGluZyBUZWFtIExlYWQKTGluYXJvLm9y
+ZyDilIIgT3BlbiBzb3VyY2Ugc29mdHdhcmUgZm9yIEFSTSBTb0NzCkZvbGxvdyBMaW5hcm86IEZh
+Y2Vib29rIHwgVHdpdHRlciB8IEJsb2cKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1r
+ZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
