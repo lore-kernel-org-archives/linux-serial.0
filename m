@@ -1,58 +1,35 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [STLinux Kernel] [PATCH 7/8] ARM: dts: STiH407-family: Use new
- Pinctrl groups
-Date: Fri, 27 Jan 2017 11:03:04 +0000
-Message-ID: <20170127110304.qitnkupjqe42tby7@dell>
-References: <20170124134310.27512-1-lee.jones@linaro.org>
- <20170124134310.27512-8-lee.jones@linaro.org>
- <20170125115426.GH5680@griffinp-ThinkPad-X1-Carbon-2nd>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20170125115426.GH5680@griffinp-ThinkPad-X1-Carbon-2nd>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Peter Griffin <peter.griffin@linaro.org>
-Cc: devicetree@vger.kernel.org, kernel@stlinux.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
+From: Shailendra Verma <shailendra.v@samsung.com>
+Subject: [PATCH] Tty: serial - Fix possible NULL derefrence.
+Date: Fri, 27 Jan 2017 16:46:13 +0530
+Message-ID: <1485515773-3542-1-git-send-email-shailendra.v@samsung.com>
+References: <CGME20170127111619epcas4p44c21059f85b7aa091016019c98d42939@epcas4p4.samsung.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, p.shailesh@samsung.com, ashish.kalra@samsung.com, Shailendra Verma <shailendra.v@samsung.com>, Shailendra Verma <shailendra.capricorn@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-T24gV2VkLCAyNSBKYW4gMjAxNywgUGV0ZXIgR3JpZmZpbiB3cm90ZToKCj4gSGkgTGVlLAo+IAo+
-IE9uIFR1ZSwgMjQgSmFuIDIwMTcsIExlZSBKb25lcyB3cm90ZToKPiAKPiA+IEhhdmluZyBqdXN0
-IGRlZmluZWQgc29tZSBuZXcgUGluY3RybCBncm91cHMgZm9yIHdoZW4gd2hlbiBIVyBmbG93LQo+
-ID4gY29udHJvbCBpcyB7ZW4sZGlzfWFibGVkLCBsZXQncyByZWZlcmVuY2UgdGhlbSBmb3IgdXNl
-IHdpdGhpbiB0aGUKPiA+IGRyaXZlci4KPiA+IAo+ID4gU2lnbmVkLW9mZi1ieTogTGVlIEpvbmVz
-IDxsZWUuam9uZXNAbGluYXJvLm9yZz4KPiAKPiBTYW1lIGFzIHByZXZpb3VzIGNvbW1lbnQsIHlv
-dXIgZW5hYmxpbmcgaHcgZmxvdyBjb250cm9sIGZvciBhbGwKPiBzdGloNDA3IGZhbWlseSBib2Fy
-ZHMuIEkndmUgbm90IGNoZWNrZWQgdGhlIHNjaGVtYXRpY3MgZm9yIHRoZW0KPiBidXQgYXMgaHcg
-ZmxvdyBjb250cm9sIGlzIGRlcGVuZGVudCBvbiBib2FyZCB3aXJpbmcsIElNTyB0aGlzCj4gc2hv
-dWxkIGJlIGFkZGVkIGluIGJvYXJkIHNwZWNpZmljIGZpbGUuCgpGYWlyIHNob3V0LgoKT24gdGhl
-IEIyMTIwIFVBUlQwIGlzIGhvb2tlZCB1cCB0byB0aGUgU21hcnQgQ2FyZCBSZWFkZXIuCgpXaWxs
-IGZpeC4KCj4gPiAtLS0KPiA+ICBhcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWZhbWlseS5kdHNp
-IHwgNSArKystLQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDIgZGVsZXRp
-b25zKC0pCj4gPiAKPiA+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWZh
-bWlseS5kdHNpIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQwNy1mYW1pbHkuZHRzaQo+ID4gaW5k
-ZXggYzhiMjk0NC4uOTc4OTk3OCAxMDA2NDQKPiA+IC0tLSBhL2FyY2gvYXJtL2Jvb3QvZHRzL3N0
-aWg0MDctZmFtaWx5LmR0c2kKPiA+ICsrKyBiL2FyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MDctZmFt
-aWx5LmR0c2kKPiA+IEBAIC0yMjIsOCArMjIyLDkgQEAKPiA+ICAJCQljb21wYXRpYmxlID0gInN0
-LGFzYyI7Cj4gPiAgCQkJcmVnID0gPDB4OTgzMDAwMCAweDJjPjsKPiA+ICAJCQlpbnRlcnJ1cHRz
-ID0gPEdJQ19TUEkgMTIyIElSUV9UWVBFX05PTkU+Owo+ID4gLQkJCXBpbmN0cmwtbmFtZXMgPSAi
-ZGVmYXVsdCI7Cj4gPiAtCQkJcGluY3RybC0wID0gPCZwaW5jdHJsX3NlcmlhbDA+Owo+ID4gKwkJ
-CXBpbmN0cmwtbmFtZXMgPSAiZGVmYXVsdCIsICJtYW51YWwtcnRzIjsKPiA+ICsJCQlwaW5jdHJs
-LTAgPSA8JnBpbmN0cmxfc2VyaWFsMF9mbG93Y3RybD47Cj4gPiArCQkJcGluY3RybC0xID0gPCZw
-aW5jdHJsX3NlcmlhbDA+Owo+ID4gIAkJCWNsb2NrcyA9IDwmY2xrX3NfYzBfZmxleGdlbiBDTEtf
-RVhUMkZfQTk+Owo+ID4gIAo+ID4gIAkJCXN0YXR1cyA9ICJkaXNhYmxlZCI7CgotLSAKTGVlIEpv
-bmVzCkxpbmFybyBTVE1pY3JvZWxlY3Ryb25pY3MgTGFuZGluZyBUZWFtIExlYWQKTGluYXJvLm9y
-ZyDilIIgT3BlbiBzb3VyY2Ugc29mdHdhcmUgZm9yIEFSTSBTb0NzCkZvbGxvdyBMaW5hcm86IEZh
-Y2Vib29rIHwgVHdpdHRlciB8IEJsb2cKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1r
-ZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+of_match_device could return NULL, and so can cause a NULL
+pointer dereference later.
+
+Signed-off-by: Shailendra Verma <shailendra.v@samsung.com>
+---
+ drivers/tty/serial/max310x.c |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 8a3e926..a94d147 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1323,6 +1323,10 @@ static int max310x_spi_probe(struct spi_device *spi)
+ 	if (spi->dev.of_node) {
+ 		const struct of_device_id *of_id =
+ 			of_match_device(max310x_dt_ids, &spi->dev);
++		if (!of_id) {
++			dev_err(&spi->dev, "Error: No device match found\n");
++			return -ENODEV;
++		}
+ 
+ 		devtype = (struct max310x_devtype *)of_id->data;
+ 	} else {
+-- 
+1.7.9.5
