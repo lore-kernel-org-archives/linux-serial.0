@@ -1,489 +1,136 @@
-From: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH V6 1/5] LIB: Indirect ISA/LPC port IO introduced
-Date: Mon, 30 Jan 2017 18:12:21 +0100
-Message-ID: <5dc0dc9c-124e-398f-a3b2-40059268e859@suse.de>
-References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
- <1485241525-201782-2-git-send-email-yuanzhichang@hisilicon.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [STLinux Kernel] [PATCH 3/8] serial: st-asc: Read in all Pinctrl
+ states
+Date: Mon, 30 Jan 2017 19:11:59 +0000
+Message-ID: <20170130191159.zv5jegvu4fetcmzo@dell>
+References: <20170124134310.27512-1-lee.jones@linaro.org>
+ <20170124134310.27512-4-lee.jones@linaro.org>
+ <20170125112142.GE5680@griffinp-ThinkPad-X1-Carbon-2nd>
+ <20170127115458.k4edg42nnna3bv4v@dell>
+ <20170130142356.GA18710@griffinp-ThinkPad-X1-Carbon-2nd>
+ <20170130153211.j75qemvwsq3cwqve@dell>
+ <20170130161041.GA21001@griffinp-ThinkPad-X1-Carbon-2nd>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1485241525-201782-2-git-send-email-yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20170130161041.GA21001@griffinp-ThinkPad-X1-Carbon-2nd>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Peter Griffin <peter.griffin@linaro.org>
+Cc: devicetree@vger.kernel.org, kernel@stlinux.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 01/24/2017 08:05 AM, zhichang.yuan wrote:
-> Low-pin-count interface is integrated into some SoCs. The accesses to those
-> peripherals under LPC make use of I/O ports rather than the memory mapped I/O.
->
-> To drive these devices, this patch introduces a method named indirect-IO.
-> In this method the in/out() accessor in include/asm-generic/io.h will be
-> redefined. When upper layer drivers call in/out() with those known legacy port
-> addresses to access the peripherals, the I/O operations will be routed to the
-> right hooks which are registered specific to the host device, such as LPC.
-> Then the hardware relevant manupulations are finished by the corresponding
-> host.
->
-> According to the comments on V5, this patch adds a common indirect-IO driver
-> which support this I/O indirection to the generic directory.
->
-> In the later pathches, some host-relevant drivers are implemented to support
-> the specific I/O hooks and register them.
-> Based on these, the upper layer drivers which depend on in/out() can work well
-> without any extra work or any changes.
->
-> Signed-off-by: zhichang.yuan <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> Signed-off-by: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-
-I like the extio idea. That allows us to handle all PIO requests on 
-platforms that don't have native PIO support via different routes 
-depending on the region they're in. Unfortunately we now we have 2 
-frameworks for handling sparse PIO regions: One in extio, one in PCI.
-
-Why don't we just merge the two? Most of the code that has #ifdef 
-PCI_IOBASE throughout the code base sounds like an ideal candidate to 
-get migrated to extio instead. Then we only have a single framework to 
-worry about ...
-
-> ---
->   include/asm-generic/io.h |  50 ++++++++++++++++
->   include/linux/extio.h    |  85 +++++++++++++++++++++++++++
->   include/linux/io.h       |   1 +
->   lib/Kconfig              |   8 +++
->   lib/Makefile             |   2 +
->   lib/extio.c              | 147 +++++++++++++++++++++++++++++++++++++++++++++++
->   6 files changed, 293 insertions(+)
->   create mode 100644 include/linux/extio.h
->   create mode 100644 lib/extio.c
->
-> diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
-> index 7ef015e..c0d6db1 100644
-> --- a/include/asm-generic/io.h
-> +++ b/include/asm-generic/io.h
-> @@ -21,6 +21,8 @@
->   
->   #include <asm-generic/pci_iomap.h>
->   
-> +#include <linux/extio.h>
-> +
->   #ifndef mmiowb
->   #define mmiowb() do {} while (0)
->   #endif
-> @@ -358,51 +360,75 @@ static inline void writesq(volatile void __iomem *addr, const void *buffer,
->    */
->   
->   #ifndef inb
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define inb extio_inb
-> +#else
->   #define inb inb
->   static inline u8 inb(unsigned long addr)
->   {
->   	return readb(PCI_IOBASE + addr);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
-
-... we would also get rid of all of these constructs. Instead, every 
-architecture that doesn't implement native PIO defines would end up in 
-extio and we would enable it unconditionally for them.
-
->   #endif
->   
->   #ifndef inw
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define inw extio_inw
-> +#else
->   #define inw inw
->   static inline u16 inw(unsigned long addr)
->   {
->   	return readw(PCI_IOBASE + addr);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef inl
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define inl extio_inl
-> +#else
->   #define inl inl
->   static inline u32 inl(unsigned long addr)
->   {
->   	return readl(PCI_IOBASE + addr);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef outb
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define outb extio_outb
-> +#else
->   #define outb outb
->   static inline void outb(u8 value, unsigned long addr)
->   {
->   	writeb(value, PCI_IOBASE + addr);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef outw
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define outw extio_outw
-> +#else
->   #define outw outw
->   static inline void outw(u16 value, unsigned long addr)
->   {
->   	writew(value, PCI_IOBASE + addr);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef outl
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define outl extio_outl
-> +#else
->   #define outl outl
->   static inline void outl(u32 value, unsigned long addr)
->   {
->   	writel(value, PCI_IOBASE + addr);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef inb_p
-> @@ -459,54 +485,78 @@ static inline void outl_p(u32 value, unsigned long addr)
->    */
->   
->   #ifndef insb
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define insb extio_insb
-> +#else
->   #define insb insb
->   static inline void insb(unsigned long addr, void *buffer, unsigned int count)
->   {
->   	readsb(PCI_IOBASE + addr, buffer, count);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef insw
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define insw extio_insw
-> +#else
->   #define insw insw
->   static inline void insw(unsigned long addr, void *buffer, unsigned int count)
->   {
->   	readsw(PCI_IOBASE + addr, buffer, count);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef insl
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define insl extio_insl
-> +#else
->   #define insl insl
->   static inline void insl(unsigned long addr, void *buffer, unsigned int count)
->   {
->   	readsl(PCI_IOBASE + addr, buffer, count);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef outsb
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define outsb extio_outsb
-> +#else
->   #define outsb outsb
->   static inline void outsb(unsigned long addr, const void *buffer,
->   			 unsigned int count)
->   {
->   	writesb(PCI_IOBASE + addr, buffer, count);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef outsw
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define outsw extio_outsw
-> +#else
->   #define outsw outsw
->   static inline void outsw(unsigned long addr, const void *buffer,
->   			 unsigned int count)
->   {
->   	writesw(PCI_IOBASE + addr, buffer, count);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef outsl
-> +#ifdef CONFIG_INDIRECT_PIO
-> +#define outsl extio_outsl
-> +#else
->   #define outsl outsl
->   static inline void outsl(unsigned long addr, const void *buffer,
->   			 unsigned int count)
->   {
->   	writesl(PCI_IOBASE + addr, buffer, count);
->   }
-> +#endif /* CONFIG_INDIRECT_PIO */
->   #endif
->   
->   #ifndef insb_p
-> diff --git a/include/linux/extio.h b/include/linux/extio.h
-> new file mode 100644
-> index 0000000..2ca7eab
-> --- /dev/null
-> +++ b/include/linux/extio.h
-> @@ -0,0 +1,85 @@
-> +/*
-> + * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
-> + * Author: Zhichang Yuan <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + * You should have received a copy of the GNU General Public License
-> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-> + */
-> +
-> +#ifndef __LINUX_EXTIO_H
-> +#define __LINUX_EXTIO_H
-> +
-> +#ifdef __KERNEL__
-> +
-> +#include <linux/fwnode.h>
-> +
-> +struct extio_ops {
-> +	u64 (*pfin)(void *devobj, unsigned long ptaddr,	size_t dlen);
-> +	void (*pfout)(void *devobj, unsigned long ptaddr, u32 outval,
-> +					size_t dlen);
-> +	u64 (*pfins)(void *devobj, unsigned long ptaddr, void *inbuf,
-> +				size_t dlen, unsigned int count);
-> +	void (*pfouts)(void *devobj, unsigned long ptaddr,
-> +				const void *outbuf, size_t dlen,
-> +				unsigned int count);
-> +};
-> +
-> +struct extio_node {
-> +	unsigned long bus_start;	/* bus start address */
-> +	unsigned long io_start;	/* io port token corresponding to bus_start */
-> +	size_t range_size;	/* size of the extio node operating range */
-> +	struct fwnode_handle *fwnode;
-> +	struct list_head list;
-> +	struct extio_ops *ops;	/* ops operating on this node */
-> +	void *devpara;	/* private parameter of the host device */
-> +};
-> +
-> +extern u8 extio_inb(unsigned long addr);
-> +extern void extio_outb(u8 value, unsigned long addr);
-> +extern void extio_outw(u16 value, unsigned long addr);
-> +extern void extio_outl(u32 value, unsigned long addr);
-> +extern u16 extio_inw(unsigned long addr);
-> +extern u32 extio_inl(unsigned long addr);
-> +extern void extio_outb(u8 value, unsigned long addr);
-> +extern void extio_outw(u16 value, unsigned long addr);
-> +extern void extio_outl(u32 value, unsigned long addr);
-> +extern void extio_insb(unsigned long addr, void *buffer, unsigned int count);
-> +extern void extio_insl(unsigned long addr, void *buffer, unsigned int count);
-> +extern void extio_insw(unsigned long addr, void *buffer, unsigned int count);
-> +extern void extio_outsb(unsigned long addr, const void *buffer,
-> +			unsigned int count);
-> +extern void extio_outsw(unsigned long addr, const void *buffer,
-> +			unsigned int count);
-> +extern void extio_outsl(unsigned long addr, const void *buffer,
-> +			unsigned int count);
-> +
-> +#ifdef CONFIG_INDIRECT_PIO
-> +extern struct extio_node *extio_find_node(struct fwnode_handle *node);
-> +
-> +extern unsigned long
-> +extio_translate(struct fwnode_handle *node, unsigned long bus_addr);
-> +#else
-> +static inline struct extio_node *extio_find_node(struct fwnode_handle *node)
-> +{
-> +	return NULL;
-> +}
-> +
-> +static inline unsigned long
-> +extio_translate(struct fwnode_handle *node, unsigned long bus_addr)
-> +{
-> +	return -1;
-> +}
-> +#endif
-> +extern void register_extio(struct extio_node *node);
-> +
-> +#endif /* __KERNEL__ */
-> +#endif /* __LINUX_EXTIO_H */
-> diff --git a/include/linux/io.h b/include/linux/io.h
-> index 82ef36e..6c68478 100644
-> --- a/include/linux/io.h
-> +++ b/include/linux/io.h
-> @@ -24,6 +24,7 @@
->   #include <linux/err.h>
->   #include <asm/io.h>
->   #include <asm/page.h>
-> +#include <linux/extio.h>
->   
->   struct device;
->   struct resource;
-> diff --git a/lib/Kconfig b/lib/Kconfig
-> index 260a80e..1d27c44 100644
-> --- a/lib/Kconfig
-> +++ b/lib/Kconfig
-> @@ -59,6 +59,14 @@ config ARCH_USE_CMPXCHG_LOCKREF
->   config ARCH_HAS_FAST_MULTIPLIER
->   	bool
->   
-> +config INDIRECT_PIO
-> +	bool "access peripherals with legacy I/O port"
-> +	depends on PCI
-> +	help
-> +	  Support special accessors for ISA I/O devices. This is needed for
-> +	  SoCs that have not I/O space and do not support standard MMIO
-> +	  read/write for the ISA range.
-> +
->   config CRC_CCITT
->   	tristate "CRC-CCITT functions"
->   	help
-> diff --git a/lib/Makefile b/lib/Makefile
-> index bc4073a..bf03e05 100644
-> --- a/lib/Makefile
-> +++ b/lib/Makefile
-> @@ -70,6 +70,8 @@ obj-$(CONFIG_HAS_IOMEM) += iomap_copy.o devres.o
->   obj-$(CONFIG_CHECK_SIGNATURE) += check_signature.o
->   obj-$(CONFIG_DEBUG_LOCKING_API_SELFTESTS) += locking-selftest.o
->   
-> +obj-$(CONFIG_INDIRECT_PIO)	+= extio.o
-> +
->   obj-$(CONFIG_GENERIC_HWEIGHT) += hweight.o
->   
->   obj-$(CONFIG_BTREE) += btree.o
-> diff --git a/lib/extio.c b/lib/extio.c
-> new file mode 100644
-> index 0000000..46228de
-> --- /dev/null
-> +++ b/lib/extio.c
-> @@ -0,0 +1,147 @@
-> +/*
-> + * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
-> + * Author: Zhichang Yuan <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + * You should have received a copy of the GNU General Public License
-> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-> + */
-> +
-> +#include <linux/io.h>
-> +#include <linux/spinlock.h>
-> +
-> +static LIST_HEAD(extio_dev_list);
-> +static DEFINE_RWLOCK(extio_list_lock);
-
-Why not just make the list an RCU list? Then you don't need read locks. 
-We also wouldn't create potential lock contention between devices that 
-could easily have parallel PIO operations (say a PCI device and an LPC 
-device).
-
-> +
-> +void register_extio(struct extio_node *node)
-> +{
-> +	write_lock(&extio_list_lock);
-> +	list_add_tail(&node->list, &extio_dev_list);
-> +	write_unlock(&extio_list_lock);
-> +}
-> +
-> +static struct extio_node *find_extio_token(unsigned long addr)
-> +{
-> +	struct extio_node *extio_entry;
-> +
-> +	read_lock(&extio_list_lock);
-> +	list_for_each_entry(extio_entry, &extio_dev_list, list) {
-> +		if ((addr < extio_entry->io_start + extio_entry->range_size) &&
-> +			(addr >= extio_entry->io_start))
-> +			break;
-> +	}
-> +	read_unlock(&extio_list_lock);
-> +	return (&extio_entry->list == &extio_dev_list) ? NULL : extio_entry;
-> +}
-> +
-> +struct extio_node *extio_find_node(struct fwnode_handle *node)
-> +{
-> +	struct extio_node *entry;
-> +
-> +	read_lock(&extio_list_lock);
-> +	list_for_each_entry(entry, &extio_dev_list, list) {
-> +		if (entry->fwnode == node)
-> +			break;
-> +	}
-> +	read_unlock(&extio_list_lock);
-> +
-> +	return (&entry->list == &extio_dev_list) ? NULL : entry;
-> +}
-> +
-> +unsigned long extio_translate(struct fwnode_handle *node,
-> +		unsigned long bus_addr)
-> +{
-> +	struct extio_node *entry;
-> +	unsigned long port_id = -1;
-> +
-> +	read_lock(&extio_list_lock);
-> +	list_for_each_entry(entry, &extio_dev_list, list) {
-> +		if (entry->fwnode == node &&
-> +			bus_addr >= entry->bus_start &&
-> +			bus_addr - entry->bus_start < entry->range_size)
-> +			port_id = entry->io_start + bus_addr -
-> +					entry->bus_start;
-> +	}
-> +	read_unlock(&extio_list_lock);
-> +
-> +	return port_id;
-> +}
-> +
-> +#ifdef PCI_IOBASE
-> +
-> +#define BUILD_EXTIO(bw, type)						\
-> +type extio_in##bw(unsigned long addr)					\
-> +{									\
-> +	struct extio_node *extio_entry = find_extio_token(addr);	\
-> +									\
-> +	if (!extio_entry)						\
-> +		return read##bw(PCI_IOBASE + addr);			\
-> +	return extio_entry->ops->pfin ?					\
-> +			extio_entry->ops->pfin(extio_entry->devpara,	\
-> +			addr, sizeof(type)) : -1;			\
-> +}									\
-> +									\
-> +void extio_out##bw(type value, unsigned long addr)			\
-> +{									\
-> +	struct extio_node *extio_entry = find_extio_token(addr);	\
-> +									\
-> +	if (!extio_entry)						\
-> +		write##bw(value, PCI_IOBASE + addr);			\
-
-All of the fallback code would also disappear as a nice side effect of 
-making pci pio handling a user of extio :).
-
-
-Alex
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+T24gTW9uLCAzMCBKYW4gMjAxNywgUGV0ZXIgR3JpZmZpbiB3cm90ZToKPiBPbiBNb24sIDMwIEph
+biAyMDE3LCBMZWUgSm9uZXMgd3JvdGU6Cj4gPiBPbiBNb24sIDMwIEphbiAyMDE3LCBQZXRlciBH
+cmlmZmluIHdyb3RlOgo+ID4gPiBPbiBGcmksIDI3IEphbiAyMDE3LCBMZWUgSm9uZXMgd3JvdGU6
+Cj4gPiA+ID4gT24gV2VkLCAyNSBKYW4gMjAxNywgUGV0ZXIgR3JpZmZpbiB3cm90ZToKPiA+ID4g
+PiA+IE9uIFR1ZSwgMjQgSmFuIDIwMTcsIExlZSBKb25lcyB3cm90ZToKPiA+ID4gPiA+IAo+ID4g
+PiA+ID4gPiBUaGVyZSBhcmUgbm93IDIgcG9zc2libGUgc2VwYXJhdGUvZGlmZmVyZW50IFBpbmN0
+cmwgc3RhdGVzIHdoaWNoIGNhbgo+ID4gPiA+ID4gPiBiZSBwcm92aWRlZCBmcm9tIHBsYXRmb3Jt
+IGRhdGEuICBPbmUgd2hpY2ggZW5jb21wYXNzZXMgdGhlIGxpbmVzCj4gPiA+ID4gPiA+IHJlcXVp
+cmVkIGZvciBIVyBmbG93LWNvbnRyb2wgKENUUy9SVFMpIGFuZCBhbm90aGVyIHdoaWNoIGRvZXMg
+bm90Cj4gPiA+ID4gPiA+IHNwZWNpZnkgdGhlc2UgbGluZXMsIHN1Y2ggdGhhdCB0aGV5IGNhbiBi
+ZSB1c2VkIHZpYSBHUElPIG1lY2hhbmlzbXMKPiA+ID4gPiA+ID4gZm9yIG1hbnVhbGx5IHRvZ2ds
+aW5nIChpLmUuIGZyb20gYSByZXF1ZXN0IGJ5IGBzdHR5YCkuCj4gPiA+ID4gPiA+IAo+ID4gPiA+
+ID4gPiBTaWduZWQtb2ZmLWJ5OiBMZWUgSm9uZXMgPGxlZS5qb25lc0BsaW5hcm8ub3JnPgo+ID4g
+PiA+ID4gPiAtLS0KPiA+ID4gPiA+ID4gIGRyaXZlcnMvdHR5L3NlcmlhbC9zdC1hc2MuYyB8IDI4
+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysKPiA+ID4gPiA+ID4gIDEgZmlsZSBjaGFuZ2Vk
+LCAyOCBpbnNlcnRpb25zKCspCj4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy90dHkvc2VyaWFsL3N0LWFzYy5jIGIvZHJpdmVycy90dHkvc2VyaWFsL3N0LWFzYy5j
+Cj4gPiA+ID4gPiA+IGluZGV4IDM5N2RmNTAuLjAzODAxZWQgMTAwNjQ0Cj4gPiA+ID4gPiA+IC0t
+LSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zdC1hc2MuYwo+ID4gPiA+ID4gPiArKysgYi9kcml2ZXJz
+L3R0eS9zZXJpYWwvc3QtYXNjLmMKClsuLi5dCgo+ID4gPiA+ID4gPiArCQlwaW5jdHJsX2xvb2t1
+cF9zdGF0ZShhc2Nwb3J0LT5waW5jdHJsLCAibWFudWFsLXJ0cyIpOwo+ID4gPiA+ID4gPiArCWlm
+IChJU19FUlIoYXNjcG9ydC0+c3RhdGVzW01BTlVBTF9SVFNdKSkKPiA+ID4gPiA+ID4gKwkJYXNj
+cG9ydC0+c3RhdGVzW01BTlVBTF9SVFNdID0gTlVMTDsKPiA+ID4gPiA+ID4gKwo+ID4gPiA+ID4g
+Cj4gPiA+ID4gPiBUaGUgZGlmZmVyZW50IHBpbmN0cmwgc3RhdGVzIGxvb2tzIGxpa2UgYSBuZWF0
+IHNvbHV0aW9uIHRvIHRoZSBwcm9ibGVtLgo+ID4gPiA+ID4gCj4gPiA+ID4gPiBNeSBvbmx5IGNv
+bmNlcm4gaGVyZSBpcyB0aGF0ICdkZWZhdWx0JyBzdGF0ZSBpcyBpbXBseWluZyBhIGh3LWZsb3ct
+Y29udHJvbAo+ID4gPiA+ID4gcGlubXV4IGNvbmZpZywgYW5kIG1hbnVhbC1ydHMgaXMgaW1wbHlp
+bmcgd2hhdCBpcyB0aGUgY3VycmVudCB1cHN0cmVhbQo+ID4gPiA+ID4gJ2RlZmF1bHQnIHBpbm11
+eCBjb25maWcuCj4gPiA+ID4gPiAKPiA+ID4gPiA+IFdoaWNoIG1heWJlIG9rIGlmIHlvdSB1cGRh
+dGUgYWxsIHVhcnRzLCBidXQgY3VycmVudGx5IG9ubHkgc2VyaWFsMAo+ID4gPiA+ID4gaXMgdXBk
+YXRlZC4gU28gdGhlIG90aGVyIHVhcnRzIGN1cnJlbnQgJ2RlZmF1bHQnIGlzIGFjdHVhbGx5IHRo
+ZSBzYW1lIGFzIHNlcmlhbDAKPiA+ID4gPiA+ICdtYW51YWwtcnRzJyBncm91cGluZywgd2hpY2gg
+Y29uY2VwdHVhbGx5IGlzIG9kZC4KPiA+ID4gPiA+IAo+ID4gPiA+ID4gV291bGQgaXQgbm90IGJl
+IGJldHRlciB0byBtYWtlICdtYW51YWwtcnRzJyB0aGUgZGVmYXVsdCBzdGF0ZT8gQXMgdGhhdCBh
+bGlnbnMKPiA+ID4gPiA+IHRvIHdoYXQgaXMgY3VycmVudGx5IGFscmVhZHkgdGhlIGRlZmF1bHQg
+Zm9yIHRoZSBvdGhlciBVQVJUUz8gQW5kIHRoZW4gbWFrZQo+ID4gPiA+ID4gaHctZmxvdy1jb250
+cm9sIHRoZSBvcHRpb25hbCBzdGF0ZSBmb3Igc2VyaWFsMD8KPiA+ID4gPiA+IAo+ID4gPiA+ID4g
+VGhhdCBhbHNvIGhhcyB0aGUgYWR2YW50YWdlIHRoYXQgJ2RlZmF1bHQnIGhhcyB0aGUgc2FtZSBt
+ZWFuaW5nIHdpdGggb2xkZXIgRFQncy4KPiA+ID4gPiAKPiA+ID4gPiBUaGUgcmVhc29uIGl0IHdh
+cyBkb25lIGlzIHRoaXMgd2FzIGJlY2F1c2Ugbm9uZSBvZiB0aGUgb3RoZXIgVUFSVHMKPiA+ID4g
+PiByZXF1aXJlIDIgc2VwYXJhdGUgUGluY3RybCBjb25maWd1cmF0aW9ucywgb25seSB0aGlzIG9u
+ZS4gIE1vcmVvdmVyLAo+ID4gPiA+IGlmIHRoZXkgc3VwcG9ydCBSVFMvQ1RTIHRoZW4gSSBiZWxp
+ZXZlIHRoYXQgdGhlIGxpbmVzIHNob3VsZCBiZQo+ID4gPiA+IGRlZmluZWQgaW4gUGluY3RybC4K
+PiA+ID4gCj4gPiA+IFllcyBJIGFncmVlIHdpdGggdGhhdC4KPiA+ID4gCj4gPiA+ID4gVGh1cywg
+aXQgd2FzIG15IHBsYW4gdG8gdXBkYXRlIGFsbCBVQVJUJ3MgZGVmYXVsdAo+ID4gPiA+IFBpbmN0
+cmwgY29uZmlncyB0byBpbmNsdWRlIHRoZSBSVFMvQ1RTIGxpbmVzLgo+ID4gPiA+IAo+ID4gPiAK
+PiA+ID4gSSBzdGlsbCBkb24ndCBzZWUgdGhlIHBvaW50IGluIGNoYW5naW5nIHRoZSBtZWFuaW5n
+IG9mICdkZWZhdWx0JyBncm91cCBhbmQgYnJlYWtpbmcKPiA+ID4gQUJJIGlmIHlvdSBkb24ndCBu
+ZWVkIHRvPwo+ID4gPiAKPiA+ID4gQXMgZmFyIGFzIEkgY2FuIHRlbGwgaWYgeW91IHN3YXAgdGhl
+IG1lYW5pbmcgb2YgJ2RlZmF1bHQnIGFuZCAnbWF1bmFsLXJ0cycKPiA+ID4gZ3JvdXBzIHlvdSBn
+ZXQgYWxsIHRoZSBiZW5lZml0cyBvZiB0aGlzIHNlcmllcyB3aGlsc3QgYWxzbyBtYWludGFpbmlu
+ZyBiYWNrd2FyZHMKPiA+ID4gY29tcGF0YmlsaXR5IHdpdGggb2xkZXIgRFQncy4KPiA+IAo+ID4g
+V2hhdCBtYWtlcyB5b3UgdGhpbmsgdGhpcyB3aWxsIGJyZWFrIEFCST8KPiAKPiBJJ3ZlIG5vdCB0
+cmllZCBpdCwgYnV0IGFuIG9sZGVyIERUIGRlZmluZXMgb25lIGdyb3VwLCAnZGVmYXVsdCcgd2hp
+Y2ggY29udGFpbnMKPiB0aGUgc2FtZSBwaW4gY29uZmlnIGFzIHlvdXIgbmV3IG9wdGlvbmFsICdt
+YW51YWwtcnRzJyBncm91cC4KPiAKPiBUaGUgZHJpdmVyIG5vdyByZWFkcyBsaWtlIHRoZSBtYW51
+YWwtcnRzIHBpbiBjb25maWcgaXMgb3B0aW9uYWwgYW5kIHNob3VsZCBiZSBzdG9yZWQgaW4KPiBh
+c2Nwb3J0LT5zdGF0ZXNbTUFOVUFMX1JUU10uIEFuIG9sZGVyIERUIHdpbGwgcGFzcyB0aGF0IHNh
+bWUgcGluIGNvbmZpZyBhcyB0aGUgZGVmYXVsdAo+IGdyb3VwIGFuZCBpdCB3aWxsIGJlIHN0b3Jl
+ZCBpbiBhc2Nwb3J0LT5zdGF0ZXNbREVGQVVMVF0uCj4gCj4gVGhhdCBzZWVtcyB3cm9uZyB0byBt
+ZSwgYW5kIGlmIGl0IGV4ZWN1dGVzIE9LIGl0IHdvdWxkbid0IGJlIHdoYXQgeW91Cj4gZXhwZWN0
+IGJ5IHJlYWRpbmcgdGhlIGNvZGUuCgpUaGlzIG1ha2VzIG5vIHNlbnNlIGF0IGEgZnVuY3Rpb25h
+bCBsZXZlbC4KCk9sZCBrZXJuZWwsIG9sZCBEVEI6CgpBU0MgZHJpdmVyIGRvZXNuJ3QgdW5kZXJz
+dGFuZCBQaW5jdHJsLCBidXQgc2luY2Ugb25seSB0aGUgImRlZmF1bHQiCnN0YXRlIGlzIGRlZmlu
+ZWQsIHRoYXQncyB3aGF0IHdpbGwgYmUgdXNlZCBhcyBhIG1hdHRlciBvZiBjb3Vyc2UuClJUUy9D
+VFMgYXJlbid0IGNvbmZpZ3VyZWQsIGJ1dCB0aGF0IGRvZXNuJ3QgbWF0dGVyIGJlY2F1c2UgdGhl
+IERUUwpkb2VzIG5vdCBhZHZlcnRpc2UgdGhhdCBIVyBmbG93LWNvbnRyb2wgaXMgYXZhaWxhYmxl
+LiAgSW4gdGhpcwp1c2UtY2FzZSBuZWl0aGVyIEhXIGZsb3ctY29udHJvbCwgbm9yIG1hbnVhbCB0
+b2dnbGluZyBvZiB0aGUgUlRTIGxpbmUKaXMgcG9zc2libGUuCgpOZXcga2VybmVsLCBvbGQgRFRC
+OgoKQVNDIGRyaXZlciBkZW1hbmRzICJkZWZhdWx0IiBhbmQgcmVxdWVzdHMgIm1hbnVhbC1ydHMi
+IFBpbmN0cmwgc3RhdGVzLApidXQgIm1hbnVhbC1ydHMiIGlzbid0IGF2YWlsYWJsZSBzbyAiZGVm
+YXVsdCIgd2lsbCBiZSB0aGUgb25seQp1dGlsaXNlZCBzdGF0ZS4gIFVubGlrZSB0aGUgZmlyc3Qg
+ZXhhbXBsZSBhYm92ZSwgImRlZmF1bHQiIG5vdwpjb250YWlucyB0aGUgUlRTIGFuZCBDVFMgbGlu
+ZXMsIGJ1dCBzaW5jZSB0aGUgRFRTIGRvZXMgbm90IGFkdmVydGlzZQpIVyBmbG93LWNvbnRyb2wg
+YXMgYXZhaWxhYmxlIHRoZXkgd2lsbCBiZSBoYXJtbGVzc2x5IHVudXNlZC4gIFRoaXMKY29uZmln
+dXJhdGlvbiBjdWxtaW5hdGVzIGluIHRoZSBzYW1lIHJlc3VsdCBhcyB0aGUgZmlyc3QgZXhhbXBs
+ZQppLmUuIG5vIEhXIGZsb3ctY29udHJvbCBhbmQgbm8gbWFudWFsIHRvZ2dsaW5nLiAgSG93ZXZl
+ciwgdGhlcmUgYXJlIG5vCmRldHJlbWVudGFsIGVmZmVjdHMgdG8gdGhlIGRyaXZlcidzIGZ1bmN0
+aW9ucy4gCgpPbGQga2VybmVsLCBuZXcgRFRCOgoKQVNDIGRvZXNuJ3QgdW5kZXJzdGFuZCBQaW5j
+dHJsLCBzbyB0aGUgImRlZmF1bHQiIHN0YXRlIHdpbGwgYmUgdXNlZCwKbWVhbmluZyB0aGF0IGFs
+bCBvZiB0aGUgbGluZXMgd2lsbCBiZSBjb25maWd1cmVkLiAgVGhlIERUQiBkb2VzCmFkdmVydGlz
+ZSBIVyBmbG93LWNvbnRyb2wgYXMgYmVpbmcgYXZhaWxhYmxlIHRoaXMgdGltZSwgYnV0IG5vdCBp
+biBhCndheSB0aGF0IHRoZSBvbGQgQVNDIGRyaXZlciB1bmRlcnN0YW5kcy4gIFRodXMsIGp1c3Qg
+YXMgaW4gdGhlIHR3bwpwcmVjZWRpbmcgZXhhbXBsZXMsIEhXIGZsb3ctY29udHJvbCBhbmQgbWFu
+dWFsIHRvZ2dsaW5nIG9mIHRoZSBSVFMKbGluZSBpcyBub3QgcG9zc2libGUsIGJ1dCBhZ2FpbiB0
+aGUgZHJpdmVyIGlzIG90aGVyd2lzZSBmdWxseQpmdW5jdGlvbmFsIGFuZCBkb2Vzbid0IHN1ZmZl
+ciBhbnkgaWxsIGVmZmVjdHMgZnJvbSB0aGUgUlRTIGFuZCBDVFMKbGluZXMgYmVpbmcgY29uZmln
+dXJlZC4KCk5ldyBrZXJuZWwsIG5ldyBEVEI6CgpBU0MgZHJpdmVyIGRlbWFuZHMgImRlZmF1bHQi
+IGFuZCByZXF1ZXN0cyAibWFudWFsLXJ0cyIgUGluY3RybApzdGF0ZXMuICBJZiBEVFMgYWR2ZXJ0
+aXNlcyB0aGF0IEhXIGZsb3ctY29udHJvbCBpcyBwb3NzaWJsZSBhbmQgdGhlCmNsaWVudCByZXF1
+ZXN0cyBpdCwgQVNDIHdpbGwgdXNlIHRoZSAiZGVmYXVsdCIgc3RhdGUgYW5kIEhXCmZsb3ctY29u
+dHJvbCB3aWxsIGNvbW1lbmNlLiAgSWYgSFcgZmxvdy1jb250cm9sIGlzIG5vdCByZXF1ZXN0ZWQg
+YnkKdGhlIGNsaWVudCBhbmQgIm1hbnVhbC1ydHMiIGlzIGF2YWlsYWJsZSwgdGhlbiBBU0Mgd2ls
+bCByZXF1ZXN0IHRoZQpSVFMgbGluZSBpcyBoYW5kbGVkIGJ5IEdQSU8gdW50aWwgc3VjaCB0aW1l
+cyBhcyB0aGUgY2xpZW50IHJlcXVlc3RzCkhXIGZsb3ctY29udHJvbCwgYXQgd2hpY2ggcG9pbnQg
+QVNDIHdpbGwgZGlzYWJsZSBHUElPIGFuZCByZXF1ZXN0IHRoZQoiZGVmYXVsdCIgc3RhdGUgYWdh
+aW4uCgpJdCBpcyBub3QgcG9zc2libGUgdG8gcmVhZCBDLWNvZGUgYW5kIG1ha2UgYXNzdW1wdGlv
+bnMgdGhhdCB0aGUgRFRCCndpbGwgYmUgaW4gYSBwYXJ0aWN1bGFyIHN0YXRlIGFzIHlvdSBzdWdn
+ZXN0LiAgTm8gZGlzcGFyaXR5IGV2ZXIKZXhpc3RzIGFuZCB0aGUgY29kZSBpcyBhbHdheXMgY2xl
+YXIgSU1ITy4KCi0tIApMZWUgSm9uZXMKTGluYXJvIFNUTWljcm9lbGVjdHJvbmljcyBMYW5kaW5n
+IFRlYW0gTGVhZApMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNv
+Q3MKRm9sbG93IExpbmFybzogRmFjZWJvb2sgfCBUd2l0dGVyIHwgQmxvZwoKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWls
+aW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0
+cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
