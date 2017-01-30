@@ -1,176 +1,455 @@
-From: Peter Griffin <peter.griffin-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [STLinux Kernel] [PATCH 3/8] serial: st-asc: Read in all Pinctrl
- states
-Date: Mon, 30 Jan 2017 22:35:21 +0000
-Message-ID: <20170130223521.GA12847@griffinp-ThinkPad-X1-Carbon-2nd>
-References: <20170124134310.27512-1-lee.jones@linaro.org>
- <20170124134310.27512-4-lee.jones@linaro.org>
- <20170125112142.GE5680@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170127115458.k4edg42nnna3bv4v@dell>
- <20170130142356.GA18710@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170130153211.j75qemvwsq3cwqve@dell>
- <20170130161041.GA21001@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170130191159.zv5jegvu4fetcmzo@dell>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170130191159.zv5jegvu4fetcmzo@dell>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH v13 2/2] serial: 8250_pci: remove exar code
+Date: Mon, 30 Jan 2017 22:28:22 +0000
+Message-ID: <1485815302-5708-2-git-send-email-sudipm.mukherjee@gmail.com>
+References: <1485815302-5708-1-git-send-email-sudipm.mukherjee@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1485815302-5708-1-git-send-email-sudipm.mukherjee@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Lee,
+From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
-On Mon, 30 Jan 2017, Lee Jones wrote:
+Remove the Exar specific codes from 8250_pci and blacklist those chips
+so that the new Exar serial driver binds to the devices.
 
-> On Mon, 30 Jan 2017, Peter Griffin wrote:
-> > On Mon, 30 Jan 2017, Lee Jones wrote:
-> > > On Mon, 30 Jan 2017, Peter Griffin wrote:
-> > > > On Fri, 27 Jan 2017, Lee Jones wrote:
-> > > > > On Wed, 25 Jan 2017, Peter Griffin wrote:
-> > > > > > On Tue, 24 Jan 2017, Lee Jones wrote:
-> > > > > > 
-> > > > > > > There are now 2 possible separate/different Pinctrl states which can
-> > > > > > > be provided from platform data.  One which encompasses the lines
-> > > > > > > required for HW flow-control (CTS/RTS) and another which does not
-> > > > > > > specify these lines, such that they can be used via GPIO mechanisms
-> > > > > > > for manually toggling (i.e. from a request by `stty`).
-> > > > > > > 
-> > > > > > > Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> > > > > > > ---
-> > > > > > >  drivers/tty/serial/st-asc.c | 28 ++++++++++++++++++++++++++++
-> > > > > > >  1 file changed, 28 insertions(+)
-> > > > > > > 
-> > > > > > > diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-> > > > > > > index 397df50..03801ed 100644
-> > > > > > > --- a/drivers/tty/serial/st-asc.c
-> > > > > > > +++ b/drivers/tty/serial/st-asc.c
-> 
-> [...]
-> 
-> > > > > > > +		pinctrl_lookup_state(ascport->pinctrl, "manual-rts");
-> > > > > > > +	if (IS_ERR(ascport->states[MANUAL_RTS]))
-> > > > > > > +		ascport->states[MANUAL_RTS] = NULL;
-> > > > > > > +
-> > > > > > 
-> > > > > > The different pinctrl states looks like a neat solution to the problem.
-> > > > > > 
-> > > > > > My only concern here is that 'default' state is implying a hw-flow-control
-> > > > > > pinmux config, and manual-rts is implying what is the current upstream
-> > > > > > 'default' pinmux config.
-> > > > > > 
-> > > > > > Which maybe ok if you update all uarts, but currently only serial0
-> > > > > > is updated. So the other uarts current 'default' is actually the same as serial0
-> > > > > > 'manual-rts' grouping, which conceptually is odd.
-> > > > > > 
-> > > > > > Would it not be better to make 'manual-rts' the default state? As that aligns
-> > > > > > to what is currently already the default for the other UARTS? And then make
-> > > > > > hw-flow-control the optional state for serial0?
-> > > > > > 
-> > > > > > That also has the advantage that 'default' has the same meaning with older DT's.
-> > > > > 
-> > > > > The reason it was done is this was because none of the other UARTs
-> > > > > require 2 separate Pinctrl configurations, only this one.  Moreover,
-> > > > > if they support RTS/CTS then I believe that the lines should be
-> > > > > defined in Pinctrl.
-> > > > 
-> > > > Yes I agree with that.
-> > > > 
-> > > > > Thus, it was my plan to update all UART's default
-> > > > > Pinctrl configs to include the RTS/CTS lines.
-> > > > > 
-> > > > 
-> > > > I still don't see the point in changing the meaning of 'default' group and breaking
-> > > > ABI if you don't need to?
-> > > > 
-> > > > As far as I can tell if you swap the meaning of 'default' and 'maunal-rts'
-> > > > groups you get all the benefits of this series whilst also maintaining backwards
-> > > > compatbility with older DT's.
-> > > 
-> > > What makes you think this will break ABI?
-> > 
-> > I've not tried it, but an older DT defines one group, 'default' which contains
-> > the same pin config as your new optional 'manual-rts' group.
-> > 
-> > The driver now reads like the manual-rts pin config is optional and should be stored in
-> > ascport->states[MANUAL_RTS]. An older DT will pass that same pin config as the default
-> > group and it will be stored in ascport->states[DEFAULT].
-> > 
-> > That seems wrong to me, and if it executes OK it wouldn't be what you
-> > expect by reading the code.
-> 
-> This makes no sense at a functional level.
-> 
-> Old kernel, old DTB:
-> 
-> ASC driver doesn't understand Pinctrl, but since only the "default"
-> state is defined, that's what will be used as a matter of course.
-> RTS/CTS aren't configured, but that doesn't matter because the DTS
-> does not advertise that HW flow-control is available.  In this
-> use-case neither HW flow-control, nor manual toggling of the RTS line
-> is possible.
-> 
-> New kernel, old DTB:
-> 
-> ASC driver demands "default" and requests "manual-rts" Pinctrl states,
-> but "manual-rts" isn't available so "default" will be the only
-> utilised state.  Unlike the first example above, "default" now
-> contains the RTS and CTS lines,
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+---
+ drivers/tty/serial/8250/8250_pci.c | 336 +------------------------------------
+ drivers/tty/serial/8250/Kconfig    |   1 +
+ 2 files changed, 4 insertions(+), 333 deletions(-)
 
-No it doesn't, default just contains 'tx' & 'rx' pins, as it has always
-done until now.
-
-Which is IMO where the condusion arises, as it is the same pin configuration
-as what you are now calling 'manual-rts' which the driver just tried and failed
-to obtain (although in reality it has actually obtained those pins but stored
-them in DEFAULT instead.
-
-I presume this is why it didn't make sense to you above.
-
->but since the DTS does not advertise
-> HW flow-control as available they will be harmlessly unused.  This
-> configuration culminates in the same result as the first example
-> i.e. no HW flow-control and no manual toggling.  However, there are no
-> detremental effects to the driver's functions. 
->
-
-<snip>
-
->New kernel, new DTB:
-> 
-> ASC driver demands "default" and requests "manual-rts" Pinctrl
-> states.  If DTS advertises that HW flow-control is possible and the
-> client requests it, ASC will use the "default" state and HW
-> flow-control will commence.  If HW flow-control is not requested by
-> the client and "manual-rts" is available, then ASC will request the
-> RTS line is handled by GPIO until such times as the client requests
-> HW flow-control, at which point ASC will disable GPIO and request the
-> "default" state again.
-
-Unless it is uart 1 or 2, in which case 'default' still only contains
-tx & rx pins, and you have the same situation as above. 
-
-> 
-> It is not possible to read C-code and make assumptions that the DTB
-> will be in a particular state as you suggest.
-> No disparity ever
-> exists and the code is always clear IMHO.
-> 
-
-Really?
-
-ascport->states[DEFAULT]: may contain "tx, rx" or "tx, rx, cts & rts"
-ascport->states[MANUAL_RTS]: may contain "tx, rx", or it could be stored in DEFAULT
-
-And as the series currently is you have a mixture of the two in the same kernel
-depending on what instance of the UART you are.
-
-regards,
-
-Peter.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index f7ee4e0..3eb638c 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1610,9 +1610,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
+ #endif
+ }
+ 
+-#define PCI_DEVICE_ID_EXAR_XR17V4358	0x4358
+-#define PCI_DEVICE_ID_EXAR_XR17V8358	0x8358
+-
+ #define UART_EXAR_MPIOINT_7_0	0x8f	/* MPIOINT[7:0] */
+ #define UART_EXAR_MPIOLVL_7_0	0x90	/* MPIOLVL[7:0] */
+ #define UART_EXAR_MPIO3T_7_0	0x91	/* MPIO3T[7:0] */
+@@ -1625,71 +1622,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
+ #define UART_EXAR_MPIOINV_15_8	0x98	/* MPIOINV[15:8] */
+ #define UART_EXAR_MPIOSEL_15_8	0x99	/* MPIOSEL[15:8] */
+ #define UART_EXAR_MPIOOD_15_8	0x9a	/* MPIOOD[15:8] */
+-
+-static int
+-pci_xr17c154_setup(struct serial_private *priv,
+-		  const struct pciserial_board *board,
+-		  struct uart_8250_port *port, int idx)
+-{
+-	port->port.flags |= UPF_EXAR_EFR;
+-	return pci_default_setup(priv, board, port, idx);
+-}
+-
+-static inline int
+-xr17v35x_has_slave(struct serial_private *priv)
+-{
+-	const int dev_id = priv->dev->device;
+-
+-	return ((dev_id == PCI_DEVICE_ID_EXAR_XR17V4358) ||
+-		(dev_id == PCI_DEVICE_ID_EXAR_XR17V8358));
+-}
+-
+-static int
+-pci_xr17v35x_setup(struct serial_private *priv,
+-		  const struct pciserial_board *board,
+-		  struct uart_8250_port *port, int idx)
+-{
+-	u8 __iomem *p;
+-
+-	p = pci_ioremap_bar(priv->dev, 0);
+-	if (p == NULL)
+-		return -ENOMEM;
+-
+-	port->port.flags |= UPF_EXAR_EFR;
+-
+-	/*
+-	 * Setup the uart clock for the devices on expansion slot to
+-	 * half the clock speed of the main chip (which is 125MHz)
+-	 */
+-	if (xr17v35x_has_slave(priv) && idx >= 8)
+-		port->port.uartclk = (7812500 * 16 / 2);
+-
+-	/*
+-	 * Setup Multipurpose Input/Output pins.
+-	 */
+-	if (idx == 0) {
+-		writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
+-		writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
+-		writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
+-		writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
+-		writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
+-		writeb(0x00, p + UART_EXAR_MPIOSEL_15_8);
+-		writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
+-	}
+-	writeb(0x00, p + UART_EXAR_8XMODE);
+-	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
+-	writeb(128, p + UART_EXAR_TXTRG);
+-	writeb(128, p + UART_EXAR_RXTRG);
+-	iounmap(p);
+-
+-	return pci_default_setup(priv, board, port, idx);
+-}
+-
+ #define PCI_DEVICE_ID_COMMTECH_4222PCI335 0x0004
+ #define PCI_DEVICE_ID_COMMTECH_4224PCI335 0x0002
+ #define PCI_DEVICE_ID_COMMTECH_2324PCI335 0x000a
+@@ -1814,9 +1746,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
+ #define PCI_VENDOR_ID_AGESTAR		0x5372
+ #define PCI_DEVICE_ID_AGESTAR_9375	0x6872
+ #define PCI_VENDOR_ID_ASIX		0x9710
+-#define PCI_DEVICE_ID_COMMTECH_4224PCIE	0x0020
+-#define PCI_DEVICE_ID_COMMTECH_4228PCIE	0x0021
+-#define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
+ #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
+ #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
+ 
+@@ -2278,65 +2207,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
+ 		.setup		= pci_timedia_setup,
+ 	},
+ 	/*
+-	 * Exar cards
+-	 */
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17C152,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17c154_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17C154,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17c154_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17C158,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17c154_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17V352,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17V354,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17V358,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17V4358,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_EXAR,
+-		.device = PCI_DEVICE_ID_EXAR_XR17V8358,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	/*
+ 	 * Xircom cards
+ 	 */
+ 	{
+@@ -2592,27 +2462,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_fastcom335_setup,
+ 	},
+-	{
+-		.vendor = PCI_VENDOR_ID_COMMTECH,
+-		.device = PCI_DEVICE_ID_COMMTECH_4222PCIE,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_COMMTECH,
+-		.device = PCI_DEVICE_ID_COMMTECH_4224PCIE,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+-	{
+-		.vendor = PCI_VENDOR_ID_COMMTECH,
+-		.device = PCI_DEVICE_ID_COMMTECH_4228PCIE,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.setup		= pci_xr17v35x_setup,
+-	},
+ 	/*
+ 	 * Broadcom TruManage (NetXtreme)
+ 	 */
+@@ -2825,15 +2674,6 @@ enum pci_board_num_t {
+ 	pbn_computone_6,
+ 	pbn_computone_8,
+ 	pbn_sbsxrsio,
+-	pbn_exar_XR17C152,
+-	pbn_exar_XR17C154,
+-	pbn_exar_XR17C158,
+-	pbn_exar_XR17V352,
+-	pbn_exar_XR17V354,
+-	pbn_exar_XR17V358,
+-	pbn_exar_XR17V4358,
+-	pbn_exar_XR17V8358,
+-	pbn_exar_ibm_saturn,
+ 	pbn_pasemi_1682M,
+ 	pbn_ni8430_2,
+ 	pbn_ni8430_4,
+@@ -3474,76 +3314,6 @@ enum pci_board_num_t {
+ 		.reg_shift	= 4,
+ 	},
+ 	/*
+-	 * Exar Corp. XR17C15[248] Dual/Quad/Octal UART
+-	 *  Only basic 16550A support.
+-	 *  XR17C15[24] are not tested, but they should work.
+-	 */
+-	[pbn_exar_XR17C152] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 2,
+-		.base_baud	= 921600,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_exar_XR17C154] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 4,
+-		.base_baud	= 921600,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_exar_XR17C158] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 8,
+-		.base_baud	= 921600,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_exar_XR17V352] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 2,
+-		.base_baud	= 7812500,
+-		.uart_offset	= 0x400,
+-		.reg_shift	= 0,
+-		.first_offset	= 0,
+-	},
+-	[pbn_exar_XR17V354] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 4,
+-		.base_baud	= 7812500,
+-		.uart_offset	= 0x400,
+-		.reg_shift	= 0,
+-		.first_offset	= 0,
+-	},
+-	[pbn_exar_XR17V358] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 8,
+-		.base_baud	= 7812500,
+-		.uart_offset	= 0x400,
+-		.reg_shift	= 0,
+-		.first_offset	= 0,
+-	},
+-	[pbn_exar_XR17V4358] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 12,
+-		.base_baud	= 7812500,
+-		.uart_offset	= 0x400,
+-		.reg_shift	= 0,
+-		.first_offset	= 0,
+-	},
+-	[pbn_exar_XR17V8358] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 16,
+-		.base_baud	= 7812500,
+-		.uart_offset	= 0x400,
+-		.reg_shift	= 0,
+-		.first_offset	= 0,
+-	},
+-	[pbn_exar_ibm_saturn] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 1,
+-		.base_baud	= 921600,
+-		.uart_offset	= 0x200,
+-	},
+-
+-	/*
+ 	 * PA Semi PWRficient PA6T-1682M on-chip UART
+ 	 */
+ 	[pbn_pasemi_1682M] = {
+@@ -3739,6 +3509,9 @@ enum pci_board_num_t {
+ 	{ PCI_VDEVICE(INTEL, 0x228c), },
+ 	{ PCI_VDEVICE(INTEL, 0x9ce3), },
+ 	{ PCI_VDEVICE(INTEL, 0x9ce4), },
++
++	/* Exar devices */
++	{ PCI_VDEVICE(EXAR, PCI_ANY_ID), },
+ };
+ 
+ /*
+@@ -4164,58 +3937,6 @@ static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
+ 		PCI_VENDOR_ID_AFAVLAB,
+ 		PCI_SUBDEVICE_ID_AFAVLAB_P061, 0, 0,
+ 		pbn_b0_4_1152000 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_232, 0, 0,
+-		pbn_b0_2_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_232, 0, 0,
+-		pbn_b0_4_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_232, 0, 0,
+-		pbn_b0_8_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_1_1, 0, 0,
+-		pbn_b0_2_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_2, 0, 0,
+-		pbn_b0_4_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4, 0, 0,
+-		pbn_b0_8_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2, 0, 0,
+-		pbn_b0_2_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4, 0, 0,
+-		pbn_b0_4_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8, 0, 0,
+-		pbn_b0_8_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_485, 0, 0,
+-		pbn_b0_2_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_485, 0, 0,
+-		pbn_b0_4_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,
+-		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_485, 0, 0,
+-		pbn_b0_8_1843200_200 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_VENDOR_ID_IBM, PCI_SUBDEVICE_ID_IBM_SATURN_SERIAL_ONE_PORT,
+-		0, 0, pbn_exar_ibm_saturn },
+-
+ 	{	PCI_VENDOR_ID_SEALEVEL, PCI_DEVICE_ID_SEALEVEL_U530,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_b2_bt_1_115200 },
+@@ -4943,45 +4664,6 @@ static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
+ 	{	PCI_VENDOR_ID_DCI, PCI_DEVICE_ID_DCI_PCCOM8,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_b3_8_115200 },
+-
+-	/*
+-	 * Exar Corp. XR17C15[248] Dual/Quad/Octal UART
+-	 */
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C152,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17C152 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C154,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17C154 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17C158,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17C158 },
+-	/*
+-	 * Exar Corp. XR17V[48]35[248] Dual/Quad/Octal/Hexa PCIe UARTs
+-	 */
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V352,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V352 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V354,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V354 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V358,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V358 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V4358,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V4358 },
+-	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V8358,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V8358 },
+ 	/*
+ 	 * Pericom PI7C9X795[1248] Uno/Dual/Quad/Octal UART
+ 	 */
+@@ -5576,18 +5258,6 @@ static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0,
+ 		0, pbn_b0_8_1152000_200 },
+-	{	PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_4222PCIE,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V352 },
+-	{	PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_4224PCIE,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V354 },
+-	{	PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_4228PCIE,
+-		PCI_ANY_ID, PCI_ANY_ID,
+-		0,
+-		0, pbn_exar_XR17V358 },
+ 
+ 	/* Fintek PCI serial cards */
+ 	{ PCI_DEVICE(0x1c29, 0x1104), .driver_data = pbn_fintek_4 },
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 2573ded..a65fb81 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -130,6 +130,7 @@ config SERIAL_8250_PCI
+ config SERIAL_8250_EXAR
+         tristate "8250/16550 PCI device support"
+         depends on SERIAL_8250_PCI
++	default SERIAL_8250
+ 
+ config SERIAL_8250_HP300
+ 	tristate
+-- 
+1.9.1
