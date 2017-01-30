@@ -1,17 +1,16 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V6 3/5] OF: Add missing I/O range exception for
- indirect-IO devices
-Date: Mon, 30 Jan 2017 11:08:20 +0100
-Message-ID: <CAK8P3a1JhrNcoQkspBE4Kzw2ETPtWRLcPARiOQB3eWoUx=LaFw@mail.gmail.com>
-References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
- <1485241525-201782-4-git-send-email-yuanzhichang@hisilicon.com>
- <20170127220357.3lpavvyeymlhvlfg@rob-hp-laptop>
- <645d40d8-0db6-1737-88f4-fd839933b2ea@huawei.com>
+From: Patrice CHOTARD <patrice.chotard@st.com>
+Subject: Re: [PATCH v2 09/10] ARM: dts: STiH407-family: Use new Pinctrl groups
+Date: Mon, 30 Jan 2017 10:10:39 +0000
+Message-ID: <ce65d79a-3697-40f8-edd5-026c68588489@st.com>
+References: <20170127172804.23881-1-lee.jones@linaro.org>
+ <20170127172804.23881-10-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <645d40d8-0db6-1737-88f4-fd839933b2ea@huawei.com>
+In-Reply-To: <20170127172804.23881-10-lee.jones@linaro.org>
+Content-Language: en-US
+Content-ID: <CD968295BC5BFB459938DF159DB06E1B@st.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,37 +20,56 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: John Garry <john.garry@huawei.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, gabriele.paoloni@huawei.com, rafael@kernel.org, linux-pci@vger.kernel.org, Will Deacon <will.deacon@arm.com>, linuxarm@huawei.com, frowand.list@gmail.com, Rob Herring <robh@kernel.org>, lorenzo.pieralisi@arm.com, Wei Xu <xuwei5@hisilicon.com>, linux-serial@vger.kernel.org, catalin.marinas@arm.com, devicetree@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zhichang.yuan02@gmail.com, zourongrong@gmail.com, bhelgaas@google.com, kantyzc@163.com, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "zhichang.yuan" <yuanzhichang@hisilicon.com>, Olof Johansson <olof@lixom.net>, brian.starkey@arm.com
+To: Lee Jones <lee.jones@linaro.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dt@kernel.org" <dt@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kernel@stlinux.com" <kernel@stlinux.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 30, 2017 at 9:57 AM, John Garry <john.garry@huawei.com> wrote:
-> On 27/01/2017 22:03, Rob Herring wrote:
->> On Tue, Jan 24, 2017 at 03:05:23PM +0800, zhichang.yuan wrote:
->>> Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
->>> Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
->>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->>
->>
->> Shouldn't this be Reviewed-by?
->>
+Hi Lee
+
+On 01/27/2017 06:28 PM, Lee Jones wrote:
+> Having just defined some new Pinctrl groups for when when HW flow-
+
+double "when"
+
+> control is {en,dis}abled, let's reference them for use within the
+> driver.
 >
-> The background is that Zhichang is following a sketch of a re-worked driver
-> from Arnd, which Arnd gave Signed-off-by. But this patch does not follow it
-> verbatim.
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  arch/arm/boot/dts/stih407-family.dtsi | 3 +--
+>  arch/arm/boot/dts/stih410-b2260.dts   | 5 ++++-
+>  2 files changed, 5 insertions(+), 3 deletions(-)
 >
-> I think this patchset should be resent without Arnd's signature. Or Arnd may
-> kindly review and say it's ok.
-
-My general recommendation is that whenever authorship  is not 100% obvious,
-then the changelog comment should explain in free form who did what. When
-you do that, please leave my Signed-off-by intact and put it on top.
-You can also (in addition to explaining it in the text) add an
-explanantion behind
-the address, such as
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de> # earlier draft
-
-I'll try to get around to do a full review of the series later today.
-
-    Arnd
+> diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
+> index c8b2944..e480e32 100644
+> --- a/arch/arm/boot/dts/stih407-family.dtsi
+> +++ b/arch/arm/boot/dts/stih407-family.dtsi
+> @@ -222,9 +222,8 @@
+>  			compatible = "st,asc";
+>  			reg = <0x9830000 0x2c>;
+>  			interrupts = <GIC_SPI 122 IRQ_TYPE_NONE>;
+> -			pinctrl-names = "default";
+> -			pinctrl-0 = <&pinctrl_serial0>;
+>  			clocks = <&clk_s_c0_flexgen CLK_EXT2F_A9>;
+> +			/* Pinctrl moved out to a per-board configuration */
+>
+>  			status = "disabled";
+>  		};
+> diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
+> index fa16aba..8deecf6 100644
+> --- a/arch/arm/boot/dts/stih410-b2260.dts
+> +++ b/arch/arm/boot/dts/stih410-b2260.dts
+> @@ -62,8 +62,11 @@
+>  		/* Low speed expansion connector */
+>  		uart0: serial@9830000 {
+>  			label = "LS-UART0";
+> -			status = "okay";
+> +			pinctrl-names = "default", "manual-rts";
+> +			pinctrl-0 = <&pinctrl_serial0_flowctrl>;
+> +			pinctrl-1 = <&pinctrl_serial0>;
+>  			rts-gpios = <&pio17 3 GPIO_ACTIVE_LOW>;
+> +			status = "okay";
+>  		};
+>
+>  		/* Low speed expansion connector */
+>
