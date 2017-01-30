@@ -1,167 +1,157 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v12 1/2] serial: exar: split out the exar code from 8250_pci
-Date: Mon, 30 Jan 2017 12:57:36 +0200
-Message-ID: <CAHp75VewLwJjRyQXNcKfV6-eFY4xgwkrUH7FVK4OGb-WjCgeBA@mail.gmail.com>
-References: <1485728541-8901-1-git-send-email-sudipm.mukherjee@gmail.com>
+From: Peter Griffin <peter.griffin@linaro.org>
+Subject: Re: [STLinux Kernel] [PATCH 3/8] serial: st-asc: Read in all Pinctrl
+ states
+Date: Mon, 30 Jan 2017 14:23:56 +0000
+Message-ID: <20170130142356.GA18710@griffinp-ThinkPad-X1-Carbon-2nd>
+References: <20170124134310.27512-1-lee.jones@linaro.org>
+ <20170124134310.27512-4-lee.jones@linaro.org>
+ <20170125112142.GE5680@griffinp-ThinkPad-X1-Carbon-2nd>
+ <20170127115458.k4edg42nnna3bv4v@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1485728541-8901-1-git-send-email-sudipm.mukherjee@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20170127115458.k4edg42nnna3bv4v@dell>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: devicetree@vger.kernel.org, kernel@stlinux.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 30, 2017 at 12:22 AM, Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
-> From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
->
-> Add the serial driver for the Exar chips. And also register the
-> platform device for the GPIO provided by the Exar chips.
+Hi Lee,
 
-Looks almost perfect, just few finishing strokes below and take my
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+On Fri, 27 Jan 2017, Lee Jones wrote:
 
-> +/**
-> + * struct exar8250_board - board information
-> + * @num_ports: number of serial ports
-> + * @reg_shift: describes UART register mapping in PCI memory
-> + */
-> +struct exar8250_board {
-> +       unsigned int num_ports;
-> +       unsigned int reg_shift;
-> +       bool has_slave;
-> +       int     (*setup)(struct exar8250 *, struct pci_dev *,
+> On Wed, 25 Jan 2017, Peter Griffin wrote:
+> 
+> > Hi Lee,
+> > 
+> > On Tue, 24 Jan 2017, Lee Jones wrote:
+> > 
+> > > There are now 2 possible separate/different Pinctrl states which can
+> > > be provided from platform data.  One which encompasses the lines
+> > > required for HW flow-control (CTS/RTS) and another which does not
+> > > specify these lines, such that they can be used via GPIO mechanisms
+> > > for manually toggling (i.e. from a request by `stty`).
+> > > 
+> > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > > ---
+> > >  drivers/tty/serial/st-asc.c | 28 ++++++++++++++++++++++++++++
+> > >  1 file changed, 28 insertions(+)
+> > > 
+> > > diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> > > index 397df50..03801ed 100644
+> > > --- a/drivers/tty/serial/st-asc.c
+> > > +++ b/drivers/tty/serial/st-asc.c
+> > > @@ -37,10 +37,16 @@
+> > >  #define ASC_FIFO_SIZE 16
+> > >  #define ASC_MAX_PORTS 8
+> > >  
+> > > +/* Pinctrl states */
+> > > +#define DEFAULT		0
+> > > +#define MANUAL_RTS	1
+> > 
+> > Nit: Would be better to have them aligned.
+> 
+> These are aligned in code.  The patch format throws things out.
+> 
+> Look, same lines with the "> > +" removed:
 
-> +                        const struct exar8250_board *,
+Ah OK.
 
-This is not needed. See below.
+> 
+> /* Pinctrl states */
+> #define DEFAULT		0
+> #define MANUAL_RTS	1
+> 
+> Try it.
+> 
+> > > +
+> > >  struct asc_port {
+> > >  	struct uart_port port;
+> > >  	struct gpio_desc *rts;
+> > >  	struct clk *clk;
+> > > +	struct pinctrl *pinctrl;
+> > > +	struct pinctrl_state *states[2];
+> > >  	unsigned int hw_flow_control:1;
+> > >  	unsigned int force_m1:1;
+> > >  };
+> > > @@ -694,6 +700,7 @@ static int asc_init_port(struct asc_port *ascport,
+> > >  {
+> > >  	struct uart_port *port = &ascport->port;
+> > >  	struct resource *res;
+> > > +	int ret;
+> > >  
+> > >  	port->iotype	= UPIO_MEM;
+> > >  	port->flags	= UPF_BOOT_AUTOCONF;
+> > > @@ -720,6 +727,27 @@ static int asc_init_port(struct asc_port *ascport,
+> > >  	WARN_ON(ascport->port.uartclk == 0);
+> > >  	clk_disable_unprepare(ascport->clk);
+> > >  
+> > > +	ascport->pinctrl = devm_pinctrl_get(&pdev->dev);
+> > > +	if (IS_ERR(ascport->pinctrl)) {
+> > > +		ret = PTR_ERR(ascport->pinctrl);
+> > > +		dev_err(&pdev->dev, "Failed to get Pinctrl: %d\n", ret);
+> > > +	}
+> > > +
+> > > +	ascport->states[DEFAULT] =
+> > > +		pinctrl_lookup_state(ascport->pinctrl, "default");
+> > > +	if (IS_ERR(ascport->states[DEFAULT])) {
+> > > +		ret = PTR_ERR(ascport->states[DEFAULT]);
+> > > +		dev_err(&pdev->dev,
+> > > +			"Failed to look up Pinctrl state 'default': %d\n", ret);
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	/* "manual-rts" state is optional */
+> > > +	ascport->states[MANUAL_RTS] =
+> > > +		pinctrl_lookup_state(ascport->pinctrl, "manual-rts");
+> > > +	if (IS_ERR(ascport->states[MANUAL_RTS]))
+> > > +		ascport->states[MANUAL_RTS] = NULL;
+> > > +
+> > 
+> > The different pinctrl states looks like a neat solution to the problem.
+> > 
+> > My only concern here is that 'default' state is implying a hw-flow-control
+> > pinmux config, and manual-rts is implying what is the current upstream
+> > 'default' pinmux config.
+> > 
+> > Which maybe ok if you update all uarts, but currently only serial0
+> > is updated. So the other uarts current 'default' is actually the same as serial0
+> > 'manual-rts' grouping, which conceptually is odd.
+> > 
+> > Would it not be better to make 'manual-rts' the default state? As that aligns
+> > to what is currently already the default for the other UARTS? And then make
+> > hw-flow-control the optional state for serial0?
+> > 
+> > That also has the advantage that 'default' has the same meaning with older DT's.
+> 
+> The reason it was done is this was because none of the other UARTs
+> require 2 separate Pinctrl configurations, only this one.  Moreover,
+> if they support RTS/CTS then I believe that the lines should be
+> defined in Pinctrl.
 
-> +                        struct uart_8250_port *, int);
-> +       void    (*exit)(struct pci_dev *pcidev);
-> +};
+Yes I agree with that.
 
-> +struct exar8250 {
-> +       unsigned int            nr;
+> Thus, it was my plan to update all UART's default
+> Pinctrl configs to include the RTS/CTS lines.
+> 
 
-> +       struct exar8250_board   *board;
+I still don't see the point in changing the meaning of 'default' group and breaking
+ABI if you don't need to?
 
-...since you have this one and continuing below...
+As far as I can tell if you swap the meaning of 'default' and 'maunal-rts'
+groups you get all the benefits of this series whilst also maintaining backwards
+compatbility with older DT's.
 
-> +       int                     line[0];
-> +};
+regards,
 
-> +static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-> +                        const struct exar8250_board *board, int idx,
-> +                        unsigned int offset, struct uart_8250_port *port)
-> +{
-
-const struct exar8250_board *board = priv->board;
-
-> +       unsigned int bar = 0;
-> +
-> +       port->port.iotype = UPIO_MEM;
-> +       port->port.mapbase = pci_resource_start(pcidev, bar) + offset;
-> +       port->port.membase = pcim_iomap_table(pcidev)[bar] + offset;
-> +       port->port.regshift = board->reg_shift;
-> +
-> +       return 0;
-> +}
-
-> +static int
-> +pci_connect_tech_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-
-> +                      const struct exar8250_board *board,
-
-Redundant.
-
-> +                      struct uart_8250_port *port, int idx)
-> +{
-> +       unsigned int offset = idx * 0x200;
-> +       unsigned int baud = 1843200;
-> +
-> +       port->port.uartclk = baud * 16;
-> +       return default_setup(priv, pcidev, board, idx, offset, port);
-> +}
-> +
-> +static int
-> +pci_xr17c154_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-> +                  const struct exar8250_board *board,
-
-Ditto.
-
-> +                  struct uart_8250_port *port, int idx)
-> +{
-> +       unsigned int offset = idx * 0x200;
-> +       unsigned int baud = 921600;
-> +
-> +       port->port.uartclk = baud * 16;
-> +       return default_setup(priv, pcidev, board, idx, offset, port);
-> +}
-
-> +static int
-> +pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-
-> +                  const struct exar8250_board *board,
-
-Ditto.
-
-> +                  struct uart_8250_port *port, int idx)
-> +{
-
-const struct exar8250_board *board = priv->board;
-
-> +       unsigned int offset = idx * 0x400;
-> +       unsigned int baud = 7812500;
-
-> +static int
-> +exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
-> +{
-> +       unsigned int nr_ports, i, bar = 0, maxnr;
-> +       struct exar8250_board *board;
-> +       struct uart_8250_port uart;
-> +       struct exar8250 *priv;
-> +       int rc;
-> +
-
-> +       board = (struct exar8250_board *)ent->driver_data;
-
-if (!board)
- return -EINVAL;
-
-board now is mandatory to have.
-
-> +       rc = pcim_enable_device(pcidev);
-> +       if (rc)
-> +               return rc;
-> +
-> +       maxnr = pci_resource_len(pcidev, bar) >> (board->reg_shift + 3);
-> +
-> +       nr_ports = board->num_ports ? board->num_ports : pcidev->device & 0x0f;
-> +
-> +       priv = devm_kzalloc(&pcidev->dev, sizeof(*priv) +
-> +                           sizeof(unsigned int) * nr_ports,
-> +                           GFP_KERNEL);
-> +       if (!priv)
-> +               return -ENOMEM;
-> +
-
-> +       priv->board = board;
-
-Yes! This what allows you to get rid of the above.
-
-> +static const struct exar8250_board pbn_connect = {
-> +       .setup          = pci_connect_tech_setup,
-> +};
-
-Yep! You got the idea.
-
-> +
-> +static const struct exar8250_board pbn_exar_ibm_saturn = {
-> +       .num_ports      = 1,
-> +       .setup          = pci_xr17c154_setup,
-> +};
-
--- 
-With Best Regards,
-Andy Shevchenko
+Peter.
