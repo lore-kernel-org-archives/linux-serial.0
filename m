@@ -1,117 +1,173 @@
-From: Lee Jones <lee.jones@linaro.org>
+From: Peter Griffin <peter.griffin-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Subject: Re: [STLinux Kernel] [PATCH 3/8] serial: st-asc: Read in all Pinctrl
  states
-Date: Mon, 30 Jan 2017 15:32:11 +0000
-Message-ID: <20170130153211.j75qemvwsq3cwqve@dell>
+Date: Mon, 30 Jan 2017 16:10:41 +0000
+Message-ID: <20170130161041.GA21001@griffinp-ThinkPad-X1-Carbon-2nd>
 References: <20170124134310.27512-1-lee.jones@linaro.org>
  <20170124134310.27512-4-lee.jones@linaro.org>
  <20170125112142.GE5680@griffinp-ThinkPad-X1-Carbon-2nd>
  <20170127115458.k4edg42nnna3bv4v@dell>
  <20170130142356.GA18710@griffinp-ThinkPad-X1-Carbon-2nd>
+ <20170130153211.j75qemvwsq3cwqve@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170130142356.GA18710@griffinp-ThinkPad-X1-Carbon-2nd>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Peter Griffin <peter.griffin@linaro.org>
-Cc: devicetree@vger.kernel.org, kernel@stlinux.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20170130153211.j75qemvwsq3cwqve@dell>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-T24gTW9uLCAzMCBKYW4gMjAxNywgUGV0ZXIgR3JpZmZpbiB3cm90ZToKCj4gSGkgTGVlLAo+IAo+
-IE9uIEZyaSwgMjcgSmFuIDIwMTcsIExlZSBKb25lcyB3cm90ZToKPiAKPiA+IE9uIFdlZCwgMjUg
-SmFuIDIwMTcsIFBldGVyIEdyaWZmaW4gd3JvdGU6Cj4gPiAKPiA+ID4gSGkgTGVlLAo+ID4gPiAK
-PiA+ID4gT24gVHVlLCAyNCBKYW4gMjAxNywgTGVlIEpvbmVzIHdyb3RlOgo+ID4gPiAKPiA+ID4g
-PiBUaGVyZSBhcmUgbm93IDIgcG9zc2libGUgc2VwYXJhdGUvZGlmZmVyZW50IFBpbmN0cmwgc3Rh
-dGVzIHdoaWNoIGNhbgo+ID4gPiA+IGJlIHByb3ZpZGVkIGZyb20gcGxhdGZvcm0gZGF0YS4gIE9u
-ZSB3aGljaCBlbmNvbXBhc3NlcyB0aGUgbGluZXMKPiA+ID4gPiByZXF1aXJlZCBmb3IgSFcgZmxv
-dy1jb250cm9sIChDVFMvUlRTKSBhbmQgYW5vdGhlciB3aGljaCBkb2VzIG5vdAo+ID4gPiA+IHNw
-ZWNpZnkgdGhlc2UgbGluZXMsIHN1Y2ggdGhhdCB0aGV5IGNhbiBiZSB1c2VkIHZpYSBHUElPIG1l
-Y2hhbmlzbXMKPiA+ID4gPiBmb3IgbWFudWFsbHkgdG9nZ2xpbmcgKGkuZS4gZnJvbSBhIHJlcXVl
-c3QgYnkgYHN0dHlgKS4KPiA+ID4gPiAKPiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBMZWUgSm9uZXMg
-PGxlZS5qb25lc0BsaW5hcm8ub3JnPgo+ID4gPiA+IC0tLQo+ID4gPiA+ICBkcml2ZXJzL3R0eS9z
-ZXJpYWwvc3QtYXNjLmMgfCAyOCArKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4gPiA+ID4g
-IDEgZmlsZSBjaGFuZ2VkLCAyOCBpbnNlcnRpb25zKCspCj4gPiA+ID4gCj4gPiA+ID4gZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zdC1hc2MuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9z
-dC1hc2MuYwo+ID4gPiA+IGluZGV4IDM5N2RmNTAuLjAzODAxZWQgMTAwNjQ0Cj4gPiA+ID4gLS0t
-IGEvZHJpdmVycy90dHkvc2VyaWFsL3N0LWFzYy5jCj4gPiA+ID4gKysrIGIvZHJpdmVycy90dHkv
-c2VyaWFsL3N0LWFzYy5jCj4gPiA+ID4gQEAgLTM3LDEwICszNywxNiBAQAo+ID4gPiA+ICAjZGVm
-aW5lIEFTQ19GSUZPX1NJWkUgMTYKPiA+ID4gPiAgI2RlZmluZSBBU0NfTUFYX1BPUlRTIDgKPiA+
-ID4gPiAgCj4gPiA+ID4gKy8qIFBpbmN0cmwgc3RhdGVzICovCj4gPiA+ID4gKyNkZWZpbmUgREVG
-QVVMVAkJMAo+ID4gPiA+ICsjZGVmaW5lIE1BTlVBTF9SVFMJMQo+ID4gPiAKPiA+ID4gTml0OiBX
-b3VsZCBiZSBiZXR0ZXIgdG8gaGF2ZSB0aGVtIGFsaWduZWQuCj4gPiAKPiA+IFRoZXNlIGFyZSBh
-bGlnbmVkIGluIGNvZGUuICBUaGUgcGF0Y2ggZm9ybWF0IHRocm93cyB0aGluZ3Mgb3V0Lgo+ID4g
-Cj4gPiBMb29rLCBzYW1lIGxpbmVzIHdpdGggdGhlICI+ID4gKyIgcmVtb3ZlZDoKPiAKPiBBaCBP
-Sy4KPiAKPiA+IAo+ID4gLyogUGluY3RybCBzdGF0ZXMgKi8KPiA+ICNkZWZpbmUgREVGQVVMVAkJ
-MAo+ID4gI2RlZmluZSBNQU5VQUxfUlRTCTEKPiA+IAo+ID4gVHJ5IGl0Lgo+ID4gCj4gPiA+ID4g
-Kwo+ID4gPiA+ICBzdHJ1Y3QgYXNjX3BvcnQgewo+ID4gPiA+ICAJc3RydWN0IHVhcnRfcG9ydCBw
-b3J0Owo+ID4gPiA+ICAJc3RydWN0IGdwaW9fZGVzYyAqcnRzOwo+ID4gPiA+ICAJc3RydWN0IGNs
-ayAqY2xrOwo+ID4gPiA+ICsJc3RydWN0IHBpbmN0cmwgKnBpbmN0cmw7Cj4gPiA+ID4gKwlzdHJ1
-Y3QgcGluY3RybF9zdGF0ZSAqc3RhdGVzWzJdOwo+ID4gPiA+ICAJdW5zaWduZWQgaW50IGh3X2Zs
-b3dfY29udHJvbDoxOwo+ID4gPiA+ICAJdW5zaWduZWQgaW50IGZvcmNlX20xOjE7Cj4gPiA+ID4g
-IH07Cj4gPiA+ID4gQEAgLTY5NCw2ICs3MDAsNyBAQCBzdGF0aWMgaW50IGFzY19pbml0X3BvcnQo
-c3RydWN0IGFzY19wb3J0ICphc2Nwb3J0LAo+ID4gPiA+ICB7Cj4gPiA+ID4gIAlzdHJ1Y3QgdWFy
-dF9wb3J0ICpwb3J0ID0gJmFzY3BvcnQtPnBvcnQ7Cj4gPiA+ID4gIAlzdHJ1Y3QgcmVzb3VyY2Ug
-KnJlczsKPiA+ID4gPiArCWludCByZXQ7Cj4gPiA+ID4gIAo+ID4gPiA+ICAJcG9ydC0+aW90eXBl
-CT0gVVBJT19NRU07Cj4gPiA+ID4gIAlwb3J0LT5mbGFncwk9IFVQRl9CT09UX0FVVE9DT05GOwo+
-ID4gPiA+IEBAIC03MjAsNiArNzI3LDI3IEBAIHN0YXRpYyBpbnQgYXNjX2luaXRfcG9ydChzdHJ1
-Y3QgYXNjX3BvcnQgKmFzY3BvcnQsCj4gPiA+ID4gIAlXQVJOX09OKGFzY3BvcnQtPnBvcnQudWFy
-dGNsayA9PSAwKTsKPiA+ID4gPiAgCWNsa19kaXNhYmxlX3VucHJlcGFyZShhc2Nwb3J0LT5jbGsp
-Owo+ID4gPiA+ICAKPiA+ID4gPiArCWFzY3BvcnQtPnBpbmN0cmwgPSBkZXZtX3BpbmN0cmxfZ2V0
-KCZwZGV2LT5kZXYpOwo+ID4gPiA+ICsJaWYgKElTX0VSUihhc2Nwb3J0LT5waW5jdHJsKSkgewo+
-ID4gPiA+ICsJCXJldCA9IFBUUl9FUlIoYXNjcG9ydC0+cGluY3RybCk7Cj4gPiA+ID4gKwkJZGV2
-X2VycigmcGRldi0+ZGV2LCAiRmFpbGVkIHRvIGdldCBQaW5jdHJsOiAlZFxuIiwgcmV0KTsKPiA+
-ID4gPiArCX0KPiA+ID4gPiArCj4gPiA+ID4gKwlhc2Nwb3J0LT5zdGF0ZXNbREVGQVVMVF0gPQo+
-ID4gPiA+ICsJCXBpbmN0cmxfbG9va3VwX3N0YXRlKGFzY3BvcnQtPnBpbmN0cmwsICJkZWZhdWx0
-Iik7Cj4gPiA+ID4gKwlpZiAoSVNfRVJSKGFzY3BvcnQtPnN0YXRlc1tERUZBVUxUXSkpIHsKPiA+
-ID4gPiArCQlyZXQgPSBQVFJfRVJSKGFzY3BvcnQtPnN0YXRlc1tERUZBVUxUXSk7Cj4gPiA+ID4g
-KwkJZGV2X2VycigmcGRldi0+ZGV2LAo+ID4gPiA+ICsJCQkiRmFpbGVkIHRvIGxvb2sgdXAgUGlu
-Y3RybCBzdGF0ZSAnZGVmYXVsdCc6ICVkXG4iLCByZXQpOwo+ID4gPiA+ICsJCXJldHVybiByZXQ7
-Cj4gPiA+ID4gKwl9Cj4gPiA+ID4gKwo+ID4gPiA+ICsJLyogIm1hbnVhbC1ydHMiIHN0YXRlIGlz
-IG9wdGlvbmFsICovCj4gPiA+ID4gKwlhc2Nwb3J0LT5zdGF0ZXNbTUFOVUFMX1JUU10gPQo+ID4g
-PiA+ICsJCXBpbmN0cmxfbG9va3VwX3N0YXRlKGFzY3BvcnQtPnBpbmN0cmwsICJtYW51YWwtcnRz
-Iik7Cj4gPiA+ID4gKwlpZiAoSVNfRVJSKGFzY3BvcnQtPnN0YXRlc1tNQU5VQUxfUlRTXSkpCj4g
-PiA+ID4gKwkJYXNjcG9ydC0+c3RhdGVzW01BTlVBTF9SVFNdID0gTlVMTDsKPiA+ID4gPiArCj4g
-PiA+IAo+ID4gPiBUaGUgZGlmZmVyZW50IHBpbmN0cmwgc3RhdGVzIGxvb2tzIGxpa2UgYSBuZWF0
-IHNvbHV0aW9uIHRvIHRoZSBwcm9ibGVtLgo+ID4gPiAKPiA+ID4gTXkgb25seSBjb25jZXJuIGhl
-cmUgaXMgdGhhdCAnZGVmYXVsdCcgc3RhdGUgaXMgaW1wbHlpbmcgYSBody1mbG93LWNvbnRyb2wK
-PiA+ID4gcGlubXV4IGNvbmZpZywgYW5kIG1hbnVhbC1ydHMgaXMgaW1wbHlpbmcgd2hhdCBpcyB0
-aGUgY3VycmVudCB1cHN0cmVhbQo+ID4gPiAnZGVmYXVsdCcgcGlubXV4IGNvbmZpZy4KPiA+ID4g
-Cj4gPiA+IFdoaWNoIG1heWJlIG9rIGlmIHlvdSB1cGRhdGUgYWxsIHVhcnRzLCBidXQgY3VycmVu
-dGx5IG9ubHkgc2VyaWFsMAo+ID4gPiBpcyB1cGRhdGVkLiBTbyB0aGUgb3RoZXIgdWFydHMgY3Vy
-cmVudCAnZGVmYXVsdCcgaXMgYWN0dWFsbHkgdGhlIHNhbWUgYXMgc2VyaWFsMAo+ID4gPiAnbWFu
-dWFsLXJ0cycgZ3JvdXBpbmcsIHdoaWNoIGNvbmNlcHR1YWxseSBpcyBvZGQuCj4gPiA+IAo+ID4g
-PiBXb3VsZCBpdCBub3QgYmUgYmV0dGVyIHRvIG1ha2UgJ21hbnVhbC1ydHMnIHRoZSBkZWZhdWx0
-IHN0YXRlPyBBcyB0aGF0IGFsaWducwo+ID4gPiB0byB3aGF0IGlzIGN1cnJlbnRseSBhbHJlYWR5
-IHRoZSBkZWZhdWx0IGZvciB0aGUgb3RoZXIgVUFSVFM/IEFuZCB0aGVuIG1ha2UKPiA+ID4gaHct
-Zmxvdy1jb250cm9sIHRoZSBvcHRpb25hbCBzdGF0ZSBmb3Igc2VyaWFsMD8KPiA+ID4gCj4gPiA+
-IFRoYXQgYWxzbyBoYXMgdGhlIGFkdmFudGFnZSB0aGF0ICdkZWZhdWx0JyBoYXMgdGhlIHNhbWUg
-bWVhbmluZyB3aXRoIG9sZGVyIERUJ3MuCj4gPiAKPiA+IFRoZSByZWFzb24gaXQgd2FzIGRvbmUg
-aXMgdGhpcyB3YXMgYmVjYXVzZSBub25lIG9mIHRoZSBvdGhlciBVQVJUcwo+ID4gcmVxdWlyZSAy
-IHNlcGFyYXRlIFBpbmN0cmwgY29uZmlndXJhdGlvbnMsIG9ubHkgdGhpcyBvbmUuICBNb3Jlb3Zl
-ciwKPiA+IGlmIHRoZXkgc3VwcG9ydCBSVFMvQ1RTIHRoZW4gSSBiZWxpZXZlIHRoYXQgdGhlIGxp
-bmVzIHNob3VsZCBiZQo+ID4gZGVmaW5lZCBpbiBQaW5jdHJsLgo+IAo+IFllcyBJIGFncmVlIHdp
-dGggdGhhdC4KPiAKPiA+IFRodXMsIGl0IHdhcyBteSBwbGFuIHRvIHVwZGF0ZSBhbGwgVUFSVCdz
-IGRlZmF1bHQKPiA+IFBpbmN0cmwgY29uZmlncyB0byBpbmNsdWRlIHRoZSBSVFMvQ1RTIGxpbmVz
-Lgo+ID4gCj4gCj4gSSBzdGlsbCBkb24ndCBzZWUgdGhlIHBvaW50IGluIGNoYW5naW5nIHRoZSBt
-ZWFuaW5nIG9mICdkZWZhdWx0JyBncm91cCBhbmQgYnJlYWtpbmcKPiBBQkkgaWYgeW91IGRvbid0
-IG5lZWQgdG8/Cj4gCj4gQXMgZmFyIGFzIEkgY2FuIHRlbGwgaWYgeW91IHN3YXAgdGhlIG1lYW5p
-bmcgb2YgJ2RlZmF1bHQnIGFuZCAnbWF1bmFsLXJ0cycKPiBncm91cHMgeW91IGdldCBhbGwgdGhl
-IGJlbmVmaXRzIG9mIHRoaXMgc2VyaWVzIHdoaWxzdCBhbHNvIG1haW50YWluaW5nIGJhY2t3YXJk
-cwo+IGNvbXBhdGJpbGl0eSB3aXRoIG9sZGVyIERUJ3MuCgpXaGF0IG1ha2VzIHlvdSB0aGluayB0
-aGlzIHdpbGwgYnJlYWsgQUJJPwoKLS0gCkxlZSBKb25lcwpMaW5hcm8gU1RNaWNyb2VsZWN0cm9u
-aWNzIExhbmRpbmcgVGVhbSBMZWFkCkxpbmFyby5vcmcg4pSCIE9wZW4gc291cmNlIHNvZnR3YXJl
-IGZvciBBUk0gU29DcwpGb2xsb3cgTGluYXJvOiBGYWNlYm9vayB8IFR3aXR0ZXIgfCBCbG9nCgpf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0t
-a2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcK
-aHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2Vy
-bmVsCg==
+Hi Lee,
+
+On Mon, 30 Jan 2017, Lee Jones wrote:
+
+> On Mon, 30 Jan 2017, Peter Griffin wrote:
+> 
+> > Hi Lee,
+> > 
+> > On Fri, 27 Jan 2017, Lee Jones wrote:
+> > 
+> > > On Wed, 25 Jan 2017, Peter Griffin wrote:
+> > > 
+> > > > Hi Lee,
+> > > > 
+> > > > On Tue, 24 Jan 2017, Lee Jones wrote:
+> > > > 
+> > > > > There are now 2 possible separate/different Pinctrl states which can
+> > > > > be provided from platform data.  One which encompasses the lines
+> > > > > required for HW flow-control (CTS/RTS) and another which does not
+> > > > > specify these lines, such that they can be used via GPIO mechanisms
+> > > > > for manually toggling (i.e. from a request by `stty`).
+> > > > > 
+> > > > > Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> > > > > ---
+> > > > >  drivers/tty/serial/st-asc.c | 28 ++++++++++++++++++++++++++++
+> > > > >  1 file changed, 28 insertions(+)
+> > > > > 
+> > > > > diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> > > > > index 397df50..03801ed 100644
+> > > > > --- a/drivers/tty/serial/st-asc.c
+> > > > > +++ b/drivers/tty/serial/st-asc.c
+> > > > > @@ -37,10 +37,16 @@
+> > > > >  #define ASC_FIFO_SIZE 16
+> > > > >  #define ASC_MAX_PORTS 8
+> > > > >  
+> > > > > +/* Pinctrl states */
+> > > > > +#define DEFAULT		0
+> > > > > +#define MANUAL_RTS	1
+> > > > 
+> > > > Nit: Would be better to have them aligned.
+> > > 
+> > > These are aligned in code.  The patch format throws things out.
+> > > 
+> > > Look, same lines with the "> > +" removed:
+> > 
+> > Ah OK.
+> > 
+> > > 
+> > > /* Pinctrl states */
+> > > #define DEFAULT		0
+> > > #define MANUAL_RTS	1
+> > > 
+> > > Try it.
+> > > 
+> > > > > +
+> > > > >  struct asc_port {
+> > > > >  	struct uart_port port;
+> > > > >  	struct gpio_desc *rts;
+> > > > >  	struct clk *clk;
+> > > > > +	struct pinctrl *pinctrl;
+> > > > > +	struct pinctrl_state *states[2];
+> > > > >  	unsigned int hw_flow_control:1;
+> > > > >  	unsigned int force_m1:1;
+> > > > >  };
+> > > > > @@ -694,6 +700,7 @@ static int asc_init_port(struct asc_port *ascport,
+> > > > >  {
+> > > > >  	struct uart_port *port = &ascport->port;
+> > > > >  	struct resource *res;
+> > > > > +	int ret;
+> > > > >  
+> > > > >  	port->iotype	= UPIO_MEM;
+> > > > >  	port->flags	= UPF_BOOT_AUTOCONF;
+> > > > > @@ -720,6 +727,27 @@ static int asc_init_port(struct asc_port *ascport,
+> > > > >  	WARN_ON(ascport->port.uartclk == 0);
+> > > > >  	clk_disable_unprepare(ascport->clk);
+> > > > >  
+> > > > > +	ascport->pinctrl = devm_pinctrl_get(&pdev->dev);
+> > > > > +	if (IS_ERR(ascport->pinctrl)) {
+> > > > > +		ret = PTR_ERR(ascport->pinctrl);
+> > > > > +		dev_err(&pdev->dev, "Failed to get Pinctrl: %d\n", ret);
+> > > > > +	}
+> > > > > +
+> > > > > +	ascport->states[DEFAULT] =
+> > > > > +		pinctrl_lookup_state(ascport->pinctrl, "default");
+> > > > > +	if (IS_ERR(ascport->states[DEFAULT])) {
+> > > > > +		ret = PTR_ERR(ascport->states[DEFAULT]);
+> > > > > +		dev_err(&pdev->dev,
+> > > > > +			"Failed to look up Pinctrl state 'default': %d\n", ret);
+> > > > > +		return ret;
+> > > > > +	}
+> > > > > +
+> > > > > +	/* "manual-rts" state is optional */
+> > > > > +	ascport->states[MANUAL_RTS] =
+> > > > > +		pinctrl_lookup_state(ascport->pinctrl, "manual-rts");
+> > > > > +	if (IS_ERR(ascport->states[MANUAL_RTS]))
+> > > > > +		ascport->states[MANUAL_RTS] = NULL;
+> > > > > +
+> > > > 
+> > > > The different pinctrl states looks like a neat solution to the problem.
+> > > > 
+> > > > My only concern here is that 'default' state is implying a hw-flow-control
+> > > > pinmux config, and manual-rts is implying what is the current upstream
+> > > > 'default' pinmux config.
+> > > > 
+> > > > Which maybe ok if you update all uarts, but currently only serial0
+> > > > is updated. So the other uarts current 'default' is actually the same as serial0
+> > > > 'manual-rts' grouping, which conceptually is odd.
+> > > > 
+> > > > Would it not be better to make 'manual-rts' the default state? As that aligns
+> > > > to what is currently already the default for the other UARTS? And then make
+> > > > hw-flow-control the optional state for serial0?
+> > > > 
+> > > > That also has the advantage that 'default' has the same meaning with older DT's.
+> > > 
+> > > The reason it was done is this was because none of the other UARTs
+> > > require 2 separate Pinctrl configurations, only this one.  Moreover,
+> > > if they support RTS/CTS then I believe that the lines should be
+> > > defined in Pinctrl.
+> > 
+> > Yes I agree with that.
+> > 
+> > > Thus, it was my plan to update all UART's default
+> > > Pinctrl configs to include the RTS/CTS lines.
+> > > 
+> > 
+> > I still don't see the point in changing the meaning of 'default' group and breaking
+> > ABI if you don't need to?
+> > 
+> > As far as I can tell if you swap the meaning of 'default' and 'maunal-rts'
+> > groups you get all the benefits of this series whilst also maintaining backwards
+> > compatbility with older DT's.
+> 
+> What makes you think this will break ABI?
+>
+
+I've not tried it, but an older DT defines one group, 'default' which contains
+the same pin config as your new optional 'manual-rts' group.
+
+The driver now reads like the manual-rts pin config is optional and should be stored in
+ascport->states[MANUAL_RTS]. An older DT will pass that same pin config as the default
+group and it will be stored in ascport->states[DEFAULT].
+
+That seems wrong to me, and if it executes OK it wouldn't be what you
+expect by reading the code.
+
+regards,
+
+Peter.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
