@@ -1,461 +1,245 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH v13 1/2] serial: exar: split out the exar code from 8250_pci
-Date: Mon, 30 Jan 2017 22:28:21 +0000
-Message-ID: <1485815302-5708-1-git-send-email-sudipm.mukherjee@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: Christopher Covington <cov@codeaurora.org>
+Subject: [RFC] tty: pl011: Work around stuck BUSY bit on QDF2400
+Date: Mon, 30 Jan 2017 18:44:17 -0500
+Message-ID: <20170130234417.20855-1-cov@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Peter Hurley <peter@hurleysoftware.com>, timur@codeaurora.org, pelcan@codeaurora.org, nleeder@codeaurora.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Christopher Covington <cov@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+N.B. I'm not confident that this patch is ready to be included as-is.
+Rather I'm hoping for guidance from reviewers and maintainers on
+broad implementation choices--whether A) the bitmask of flags to invert
+makes sense or B) vendor-specific is_busy() function pointers or C)
+hot-patching using the alternatives framework or D) some other
+approach would be best.
 
-Add the serial driver for the Exar chips. And also register the
-platform device for the GPIO provided by the Exar chips.
+The Qualcomm Datacenter Technologies QDF2400 family of SoCs contains a
+custom (non-PrimeCell) implementation of the SBSA UART. Occasionally the
+BUSY bit in the Flag Register gets stuck as 1, erratum 44 for both 2432v1
+and 2400v1 SoCs. Checking that the Transmit FIFO Empty (TXFE) bit is 0,
+instead of checking that the BUSY bit is 1, works around the issue. To
+facilitate this substitution, introduce vendor-specific inversion of
+Feature Register bits.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+Signed-off-by: Christopher Covington <cov@codeaurora.org>
 ---
+Based on https://git.kernel.org/cgit/linux/kernel/git/arm64/linux.git/log/?h=for-next/core
+---
+ Documentation/arm64/silicon-errata.txt |  2 ++
+ arch/arm64/Kconfig                     | 11 +++++++++
+ arch/arm64/include/asm/cpucaps.h       |  3 ++-
+ arch/arm64/include/asm/cputype.h       |  2 ++
+ arch/arm64/kernel/cpu_errata.c         | 16 +++++++++++++
+ drivers/tty/serial/amba-pl011.c        | 44 ++++++++++++++++++++++++++++++----
+ 6 files changed, 73 insertions(+), 5 deletions(-)
 
-Andy,
-I have added the if (!board) check, but I am not sure how board can be
-NULL here. If probe executes that will mean there was a match of the
-device id and so in that case board can not be NULL.
-
- drivers/tty/serial/8250/8250_exar.c | 396 ++++++++++++++++++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig     |   4 +
- drivers/tty/serial/8250/Makefile    |   1 +
- 3 files changed, 401 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_exar.c
-
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-new file mode 100644
-index 0000000..ba1f359
---- /dev/null
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -0,0 +1,396 @@
-+/*
-+ *  Probe module for 8250/16550-type Exar chips PCI serial ports.
-+ *
-+ *  Based on drivers/tty/serial/8250/8250_pci.c,
-+ *
-+ *  Copyright (C) 2017 Sudip Mukherjee, All Rights Reserved.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License.
-+ */
-+#include <linux/io.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+#include <linux/serial_core.h>
-+#include <linux/serial_reg.h>
-+#include <linux/slab.h>
-+#include <linux/string.h>
-+#include <linux/tty.h>
-+#include <linux/8250_pci.h>
-+
-+#include <asm/byteorder.h>
-+
-+#include "8250.h"
-+
-+#define PCI_DEVICE_ID_COMMTECH_4224PCIE	0x0020
-+#define PCI_DEVICE_ID_COMMTECH_4228PCIE	0x0021
-+#define PCI_DEVICE_ID_COMMTECH_4222PCIE	0x0022
-+#define PCI_DEVICE_ID_EXAR_XR17V4358	0x4358
-+#define PCI_DEVICE_ID_EXAR_XR17V8358	0x8358
-+
-+#define UART_EXAR_MPIOINT_7_0	0x8f	/* MPIOINT[7:0] */
-+#define UART_EXAR_MPIOLVL_7_0	0x90	/* MPIOLVL[7:0] */
-+#define UART_EXAR_MPIO3T_7_0	0x91	/* MPIO3T[7:0] */
-+#define UART_EXAR_MPIOINV_7_0	0x92	/* MPIOINV[7:0] */
-+#define UART_EXAR_MPIOSEL_7_0	0x93	/* MPIOSEL[7:0] */
-+#define UART_EXAR_MPIOOD_7_0	0x94	/* MPIOOD[7:0] */
-+#define UART_EXAR_MPIOINT_15_8	0x95	/* MPIOINT[15:8] */
-+#define UART_EXAR_MPIOLVL_15_8	0x96	/* MPIOLVL[15:8] */
-+#define UART_EXAR_MPIO3T_15_8	0x97	/* MPIO3T[15:8] */
-+#define UART_EXAR_MPIOINV_15_8	0x98	/* MPIOINV[15:8] */
-+#define UART_EXAR_MPIOSEL_15_8	0x99	/* MPIOSEL[15:8] */
-+#define UART_EXAR_MPIOOD_15_8	0x9a	/* MPIOOD[15:8] */
-+
-+struct exar8250;
-+
-+/**
-+ * struct exar8250_board - board information
-+ * @num_ports: number of serial ports
-+ * @reg_shift: describes UART register mapping in PCI memory
-+ */
-+struct exar8250_board {
-+	unsigned int num_ports;
-+	unsigned int reg_shift;
-+	bool has_slave;
-+	int	(*setup)(struct exar8250 *, struct pci_dev *,
-+			 struct uart_8250_port *, int);
-+	void	(*exit)(struct pci_dev *pcidev);
-+};
-+
-+struct exar8250 {
-+	unsigned int		nr;
-+	struct exar8250_board	*board;
-+	int			line[0];
-+};
-+
-+static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-+			 int idx, unsigned int offset,
-+			 struct uart_8250_port *port)
-+{
-+	const struct exar8250_board *board = priv->board;
-+	unsigned int bar = 0;
-+
-+	port->port.iotype = UPIO_MEM;
-+	port->port.mapbase = pci_resource_start(pcidev, bar) + offset;
-+	port->port.membase = pcim_iomap_table(pcidev)[bar] + offset;
-+	port->port.regshift = board->reg_shift;
-+
-+	return 0;
-+}
-+
-+static int
-+pci_connect_tech_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-+		       struct uart_8250_port *port, int idx)
-+{
-+	unsigned int offset = idx * 0x200;
-+	unsigned int baud = 1843200;
-+
-+	port->port.uartclk = baud * 16;
-+	return default_setup(priv, pcidev, idx, offset, port);
-+}
-+
-+static int
-+pci_xr17c154_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-+		   struct uart_8250_port *port, int idx)
-+{
-+	unsigned int offset = idx * 0x200;
-+	unsigned int baud = 921600;
-+
-+	port->port.uartclk = baud * 16;
-+	return default_setup(priv, pcidev, idx, offset, port);
-+}
-+
-+static void setup_gpio(u8 __iomem *p)
-+{
-+	writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
-+	writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
-+	writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
-+	writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
-+	writeb(0x00, p + UART_EXAR_MPIOSEL_15_8);
-+	writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
-+}
-+
-+static void *
-+xr17v35x_register_gpio(struct pci_dev *pcidev)
-+{
-+	struct platform_device *pdev;
-+
-+	pdev = platform_device_alloc("gpio_exar", PLATFORM_DEVID_AUTO);
-+	if (!pdev)
-+		return NULL;
-+
-+	platform_set_drvdata(pdev, pcidev);
-+	if (platform_device_add(pdev) < 0) {
-+		platform_device_put(pdev);
-+		return NULL;
-+	}
-+
-+	return pdev;
-+}
-+
-+static int
-+pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-+		   struct uart_8250_port *port, int idx)
-+{
-+	const struct exar8250_board *board = priv->board;
-+	unsigned int offset = idx * 0x400;
-+	unsigned int baud = 7812500;
-+	u8 __iomem *p;
-+	int ret;
-+
-+	port->port.uartclk = baud * 16;
-+	/*
-+	 * Setup the uart clock for the devices on expansion slot to
-+	 * half the clock speed of the main chip (which is 125MHz)
-+	 */
-+	if (board->has_slave && idx >= 8)
-+		port->port.uartclk /= 2;
-+
-+	p = pci_ioremap_bar(pcidev, 0);
-+	if (!p)
-+		return -ENOMEM;
-+
-+	/* Setup Multipurpose Input/Output pins. */
-+	if (idx == 0)
-+		setup_gpio(p);
-+
-+	writeb(0x00, p + UART_EXAR_8XMODE);
-+	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
-+	writeb(128, p + UART_EXAR_TXTRG);
-+	writeb(128, p + UART_EXAR_RXTRG);
-+	iounmap(p);
-+
-+	ret = default_setup(priv, pcidev, idx, offset, port);
-+	if (ret)
-+		return ret;
-+
-+	if (idx == 0)
-+		port->port.private_data =
-+			xr17v35x_register_gpio(pcidev);
-+
-+	return 0;
-+}
-+
-+static void pci_xr17v35x_exit(struct pci_dev *pcidev)
-+{
-+	struct exar8250 *priv = pci_get_drvdata(pcidev);
-+	struct uart_8250_port *port = serial8250_get_port(priv->line[0]);
-+	struct platform_device *pdev = port->port.private_data;
-+
-+	platform_device_unregister(pdev);
-+	port->port.private_data = NULL;
-+}
-+
-+static int
-+exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
-+{
-+	unsigned int nr_ports, i, bar = 0, maxnr;
-+	struct exar8250_board *board;
-+	struct uart_8250_port uart;
-+	struct exar8250 *priv;
-+	int rc;
-+
-+	board = (struct exar8250_board *)ent->driver_data;
-+	if (!board)
-+		return -EINVAL;
-+
-+	rc = pcim_enable_device(pcidev);
-+	if (rc)
-+		return rc;
-+
-+	maxnr = pci_resource_len(pcidev, bar) >> (board->reg_shift + 3);
-+
-+	nr_ports = board->num_ports ? board->num_ports : pcidev->device & 0x0f;
-+
-+	priv = devm_kzalloc(&pcidev->dev, sizeof(*priv) +
-+			    sizeof(unsigned int) * nr_ports,
-+			    GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->board = board;
-+
-+	memset(&uart, 0, sizeof(uart));
-+	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ
-+			  | UPF_EXAR_EFR;
-+	uart.port.irq = pcidev->irq;
-+	uart.port.dev = &pcidev->dev;
-+
-+	for (i = 0; i < nr_ports && i < maxnr; i++) {
-+		rc = board->setup(priv, pcidev, &uart, i);
-+		if (rc) {
-+			dev_err(&pcidev->dev, "Failed to setup port %u\n", i);
-+			break;
-+		}
-+
-+		dev_dbg(&pcidev->dev, "Setup PCI port: port %lx, irq %d, type %d\n",
-+			uart.port.iobase, uart.port.irq, uart.port.iotype);
-+
-+		priv->line[i] = serial8250_register_8250_port(&uart);
-+		if (priv->line[i] < 0) {
-+			dev_err(&pcidev->dev,
-+				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
-+				uart.port.iobase, uart.port.irq,
-+				uart.port.iotype, priv->line[i]);
-+			break;
-+		}
-+	}
-+	priv->nr = i;
-+	pci_set_drvdata(pcidev, priv);
-+	return 0;
-+}
-+
-+static void exar_pci_remove(struct pci_dev *pcidev)
-+{
-+	struct exar8250 *priv = pci_get_drvdata(pcidev);
-+	unsigned int i;
-+
-+	for (i = 0; i < priv->nr; i++)
-+		serial8250_unregister_port(priv->line[i]);
-+
-+	if (priv->board->exit)
-+		priv->board->exit(pcidev);
-+}
-+
-+static int __maybe_unused exar_suspend(struct device *dev)
-+{
-+	struct pci_dev *pcidev = to_pci_dev(dev);
-+	struct exar8250 *priv = pci_get_drvdata(pcidev);
-+	unsigned int i;
-+
-+	for (i = 0; i < priv->nr; i++)
-+		if (priv->line[i] >= 0)
-+			serial8250_suspend_port(priv->line[i]);
-+
-+	/* Ensure that every init quirk is properly torn down */
-+	if (priv->board->exit)
-+		priv->board->exit(pcidev);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused exar_resume(struct device *dev)
-+{
-+	struct pci_dev *pcidev = to_pci_dev(dev);
-+	struct exar8250 *priv = pci_get_drvdata(pcidev);
-+	unsigned int i;
-+
-+	for (i = 0; i < priv->nr; i++)
-+		if (priv->line[i] >= 0)
-+			serial8250_resume_port(priv->line[i]);
-+
-+	return 0;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(exar_pci_pm, exar_suspend, exar_resume);
-+
-+static const struct exar8250_board pbn_connect = {
-+	.setup		= pci_connect_tech_setup,
-+};
-+
-+static const struct exar8250_board pbn_exar_ibm_saturn = {
-+	.num_ports	= 1,
-+	.setup		= pci_xr17c154_setup,
-+};
-+
-+static const struct exar8250_board pbn_exar_XR17C15x = {
-+	.setup		= pci_xr17c154_setup,
-+};
-+
-+static const struct exar8250_board pbn_exar_XR17V35x = {
-+	.setup		= pci_xr17v35x_setup,
-+	.exit		= pci_xr17v35x_exit,
-+};
-+
-+static const struct exar8250_board pbn_exar_XR17V4358 = {
-+	.num_ports	= 12,
-+	.has_slave	= true,
-+	.setup		= pci_xr17v35x_setup,
-+	.exit		= pci_xr17v35x_exit,
-+};
-+
-+static const struct exar8250_board pbn_exar_XR17V8358 = {
-+	.num_ports	= 16,
-+	.has_slave	= true,
-+	.setup		= pci_xr17v35x_setup,
-+	.exit		= pci_xr17v35x_exit,
-+};
-+
-+#define CONNECT_DEVICE(devid, sdevid, bd) {				\
-+	PCI_DEVICE_SUB(							\
-+		PCI_VENDOR_ID_EXAR,					\
-+		PCI_DEVICE_ID_EXAR_##devid,				\
-+		PCI_SUBVENDOR_ID_CONNECT_TECH,				\
-+		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_##sdevid), 0, 0,	\
-+		(kernel_ulong_t)&bd					\
-+	}
-+
-+#define EXAR_DEVICE(vend, devid, bd) {					\
-+	PCI_VDEVICE(vend, PCI_DEVICE_ID_##devid), (kernel_ulong_t)&bd	\
-+	}
-+
-+#define IBM_DEVICE(devid, sdevid, bd) {			\
-+	PCI_DEVICE_SUB(					\
-+		PCI_VENDOR_ID_EXAR,			\
-+		PCI_DEVICE_ID_EXAR_##devid,		\
-+		PCI_VENDOR_ID_IBM,			\
-+		PCI_SUBDEVICE_ID_IBM_##sdevid), 0, 0,	\
-+		(kernel_ulong_t)&bd			\
-+	}
-+
-+static struct pci_device_id exar_pci_tbl[] = {
-+	CONNECT_DEVICE(XR17C152, UART_2_232, pbn_connect),
-+	CONNECT_DEVICE(XR17C154, UART_4_232, pbn_connect),
-+	CONNECT_DEVICE(XR17C158, UART_8_232, pbn_connect),
-+	CONNECT_DEVICE(XR17C152, UART_1_1, pbn_connect),
-+	CONNECT_DEVICE(XR17C154, UART_2_2, pbn_connect),
-+	CONNECT_DEVICE(XR17C158, UART_4_4, pbn_connect),
-+	CONNECT_DEVICE(XR17C152, UART_2, pbn_connect),
-+	CONNECT_DEVICE(XR17C154, UART_4, pbn_connect),
-+	CONNECT_DEVICE(XR17C158, UART_8, pbn_connect),
-+	CONNECT_DEVICE(XR17C152, UART_2_485, pbn_connect),
-+	CONNECT_DEVICE(XR17C154, UART_4_485, pbn_connect),
-+	CONNECT_DEVICE(XR17C158, UART_8_485, pbn_connect),
-+
-+	IBM_DEVICE(XR17C152, SATURN_SERIAL_ONE_PORT, pbn_exar_ibm_saturn),
-+
-+	/* Exar Corp. XR17C15[248] Dual/Quad/Octal UART */
-+	EXAR_DEVICE(EXAR, EXAR_XR17C152, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(EXAR, EXAR_XR17C154, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(EXAR, EXAR_XR17C158, pbn_exar_XR17C15x),
-+
-+	/* Exar Corp. XR17V[48]35[248] Dual/Quad/Octal/Hexa PCIe UARTs */
-+	EXAR_DEVICE(EXAR, EXAR_XR17V352, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(EXAR, EXAR_XR17V354, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(EXAR, EXAR_XR17V358, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(EXAR, EXAR_XR17V4358, pbn_exar_XR17V4358),
-+	EXAR_DEVICE(EXAR, EXAR_XR17V8358, pbn_exar_XR17V8358),
-+	EXAR_DEVICE(COMMTECH, COMMTECH_4222PCIE, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(COMMTECH, COMMTECH_4224PCIE, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(COMMTECH, COMMTECH_4228PCIE, pbn_exar_XR17V35x),
-+	{ 0, }
-+};
-+MODULE_DEVICE_TABLE(pci, exar_pci_tbl);
-+
-+static struct pci_driver exar_pci_driver = {
-+	.name		= "exar_serial",
-+	.probe		= exar_pci_probe,
-+	.remove		= exar_pci_remove,
-+	.driver         = {
-+		.pm     = &exar_pci_pm,
-+	},
-+	.id_table	= exar_pci_tbl,
-+};
-+module_pci_driver(exar_pci_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Exar Serial Dricer");
-+MODULE_AUTHOR("Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>");
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index c0bf996..2573ded 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -127,6 +127,10 @@ config SERIAL_8250_PCI
- 	  Note that serial ports on NetMos 9835 Multi-I/O cards are handled
- 	  by the parport_serial driver, enabled with CONFIG_PARPORT_SERIAL.
+diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
+index 50da8391e9dd..0993ebb3e86b 100644
+--- a/Documentation/arm64/silicon-errata.txt
++++ b/Documentation/arm64/silicon-errata.txt
+@@ -65,3 +65,5 @@ stable kernels.
+ | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585     |
+ | Qualcomm Tech. | Falkor v1       | E1003           | QCOM_FALKOR_ERRATUM_1003|
+ | Qualcomm Tech. | Falkor v1       | E1009           | QCOM_FALKOR_ERRATUM_1009|
++| Qualcomm Tech. | QDF2432v1 UART  | SoC E44         | QCOM_QDF2400_ERRATUM_44 |
++| Qualcomm Tech. | QDF2400v1 UART  | SoC E44         | QCOM_QDF2400_ERRATUM_44 |
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index b5284a79bada..f90d0670171d 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -501,6 +501,17 @@ config QCOM_FALKOR_ERRATUM_1009
  
-+config SERIAL_8250_EXAR
-+        tristate "8250/16550 PCI device support"
-+        depends on SERIAL_8250_PCI
+ 	  If unsure, say Y.
+ 
++config QCOM_QDF2400_ERRATUM_44
++	bool "QDF2400 E44: UART BUSY bit sticks as 1"
++	default y
++	help
++	  The BUSY bit in the Flag Register of the UART on the QDF2432v1 and
++	  QDF2400v1 SoCs may get stuck as 1, resulting in a hung serial console.
++	  Say Y here to work around the issue by checking TXFE == 0 instead of
++	  BUSY == 1 on affected systems.
 +
- config SERIAL_8250_HP300
- 	tristate
- 	depends on SERIAL_8250 && HP300
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index 850e721..2f30f9e 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_SERIAL_8250)		+= 8250.o 8250_base.o
- 8250_base-$(CONFIG_SERIAL_8250_FINTEK)	+= 8250_fintek.o
- obj-$(CONFIG_SERIAL_8250_GSC)		+= 8250_gsc.o
- obj-$(CONFIG_SERIAL_8250_PCI)		+= 8250_pci.o
-+obj-$(CONFIG_SERIAL_8250_EXAR)		+= 8250_exar.o
- obj-$(CONFIG_SERIAL_8250_HP300)		+= 8250_hp300.o
- obj-$(CONFIG_SERIAL_8250_CS)		+= serial_cs.o
- obj-$(CONFIG_SERIAL_8250_ACORN)		+= 8250_acorn.o
++	  If unsure, say Y.
++
+ endmenu
+ 
+ 
+diff --git a/arch/arm64/include/asm/cpucaps.h b/arch/arm64/include/asm/cpucaps.h
+index 55bcd02e4a3f..b0f2402f41a2 100644
+--- a/arch/arm64/include/asm/cpucaps.h
++++ b/arch/arm64/include/asm/cpucaps.h
+@@ -37,7 +37,8 @@
+ #define ARM64_HAS_NO_FPSIMD			16
+ #define ARM64_WORKAROUND_QCOM_FALKOR_E1003	17
+ #define ARM64_WORKAROUND_REPEAT_TLBI		18
++#define ARM64_WORKAROUND_QCOM_QDF2400_E44	19
+ 
+-#define ARM64_NCAPS				19
++#define ARM64_NCAPS				20
+ 
+ #endif /* __ASM_CPUCAPS_H */
+diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
+index fc502713ab37..cb399c7fe6ec 100644
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -88,12 +88,14 @@
+ 
+ #define BRCM_CPU_PART_VULCAN		0x516
+ 
++#define QCOM_CPU_PART_KRYO_V1		0x281
+ #define QCOM_CPU_PART_FALKOR_V1		0x800
+ 
+ #define MIDR_CORTEX_A53 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A53)
+ #define MIDR_CORTEX_A57 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A57)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
++#define MIDR_QCOM_KRYO_V1 MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_KRYO_V1)
+ #define MIDR_QCOM_FALKOR_V1 MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_FALKOR_V1)
+ 
+ #ifndef __ASSEMBLY__
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index f6cc67e7626e..1a8c2f2b9edf 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -151,6 +151,22 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
+ 			   MIDR_CPU_VAR_REV(0, 0)),
+ 	},
+ #endif
++#ifdef CONFIG_QCOM_QDF2400_ERRATUM_44
++	{
++		.desc = "Qualcomm Technologies QDF2432 SoC erratum 44",
++		.capability = ARM64_WORKAROUND_QCOM_QDF2400_E44,
++		MIDR_RANGE(MIDR_QCOM_KRYO_V1,
++			   MIDR_CPU_VAR_REV(0, 1),
++			   MIDR_CPU_VAR_REV(0, 1)),
++	},
++	{
++		.desc = "Qualcomm Technologies QDF2400 SoC erratum 44",
++		.capability = ARM64_WORKAROUND_QCOM_QDF2400_E44,
++		MIDR_RANGE(MIDR_QCOM_FALKOR_V1,
++			   MIDR_CPU_VAR_REV(0, 0),
++			   MIDR_CPU_VAR_REV(0, 0)),
++	},
++#endif
+ 	{
+ 	}
+ };
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index d4171d71a258..32ed6423a6ba 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -97,6 +97,7 @@ struct vendor_data {
+ 	unsigned int		fr_dsr;
+ 	unsigned int		fr_cts;
+ 	unsigned int		fr_ri;
++	unsigned int		inv_fr;
+ 	bool			access_32b;
+ 	bool			oversampling;
+ 	bool			dma_threshold;
+@@ -168,6 +169,32 @@ static u16 pl011_st_offsets[REG_ARRAY_SIZE] = {
+ 	[REG_ST_ABIMSC] = ST_UART011_ABIMSC,
+ };
+ 
++#ifdef CONFIG_QCOM_QDF2400_ERRATUM_44
++#define QDF2400_E44_BUSY	UART011_FR_TXFE
++#define QDF2400_E44_INV		UART011_FR_TXFE
++#else
++#define QDF2400_E44_BUSY	UART01x_FR_BUSY
++#define QDF2400_E44_INV		0
++#endif
++
++static struct vendor_data vendor_qdt = {
++	.reg_offset		= pl011_std_offsets,
++	.fr_busy		= QDF2400_E44_BUSY,
++	.fr_dsr			= UART01x_FR_DSR,
++	.fr_cts			= UART01x_FR_CTS,
++	.fr_ri			= UART011_FR_RI,
++	.inv_fr			= QDF2400_E44_INV,
++	.access_32b		= true,
++	.oversampling		= false,
++	.dma_threshold		= false,
++	.cts_event_workaround	= false,
++	.always_enabled		= true,
++	.fixed_options		= true,
++};
++
++#undef QDF2400_E44_BUSY
++#undef QDF2400_E44_INV
++
+ static unsigned int get_fifosize_st(struct amba_device *dev)
+ {
+ 	return 64;
+@@ -1518,7 +1545,7 @@ static unsigned int pl011_tx_empty(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap =
+ 	    container_of(port, struct uart_amba_port, port);
+-	unsigned int status = pl011_read(uap, REG_FR);
++	unsigned int status = pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr;
+ 	return status & (uap->vendor->fr_busy | UART01x_FR_TXFF) ?
+ 							0 : TIOCSER_TEMT;
+ }
+@@ -2218,7 +2245,8 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
+ 	 *	Finally, wait for transmitter to become empty
+ 	 *	and restore the TCR
+ 	 */
+-	while (pl011_read(uap, REG_FR) & uap->vendor->fr_busy)
++	while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr)
++						& uap->vendor->fr_busy)
+ 		cpu_relax();
+ 	if (!uap->vendor->always_enabled)
+ 		pl011_write(old_cr, uap, REG_CR);
+@@ -2385,13 +2413,17 @@ static struct console amba_console = {
+ 
+ static void pl011_putc(struct uart_port *port, int c)
+ {
++	struct uart_amba_port *uap =
++		container_of(port, struct uart_amba_port, port);
++
+ 	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
+ 		cpu_relax();
+ 	if (port->iotype == UPIO_MEM32)
+ 		writel(c, port->membase + UART01x_DR);
+ 	else
+ 		writeb(c, port->membase + UART01x_DR);
+-	while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
++	while ((readl(port->membase + UART01x_FR) ^ uap->vendor->inv_fr)
++							& uap->vendor->fr_busy)
+ 		cpu_relax();
+ }
+ 
+@@ -2645,12 +2677,16 @@ static int sbsa_uart_probe(struct platform_device *pdev)
+ 	uap->port.irq	= ret;
+ 
+ 	uap->reg_offset	= vendor_sbsa.reg_offset;
+-	uap->vendor	= &vendor_sbsa;
+ 	uap->fifosize	= 32;
+ 	uap->port.iotype = vendor_sbsa.access_32b ? UPIO_MEM32 : UPIO_MEM;
+ 	uap->port.ops	= &sbsa_uart_pops;
+ 	uap->fixed_baud = baudrate;
+ 
++	if (cpus_have_const_cap(ARM64_WORKAROUND_QCOM_QDF2400_E44))
++		uap->vendor = &vendor_qdt;
++	else
++		uap->vendor = &vendor_sbsa;
++
+ 	snprintf(uap->type, sizeof(uap->type), "SBSA");
+ 
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 -- 
-1.9.1
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm
+Technologies, Inc. Qualcomm Technologies, Inc. is a member of the Code Aurora
+Forum, a Linux Foundation Collaborative Project.
