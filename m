@@ -1,16 +1,17 @@
-From: John Garry <john.garry@huawei.com>
+From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH V6 3/5] OF: Add missing I/O range exception for
  indirect-IO devices
-Date: Mon, 30 Jan 2017 08:57:09 +0000
-Message-ID: <645d40d8-0db6-1737-88f4-fd839933b2ea@huawei.com>
+Date: Mon, 30 Jan 2017 11:08:20 +0100
+Message-ID: <CAK8P3a1JhrNcoQkspBE4Kzw2ETPtWRLcPARiOQB3eWoUx=LaFw@mail.gmail.com>
 References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
  <1485241525-201782-4-git-send-email-yuanzhichang@hisilicon.com>
  <20170127220357.3lpavvyeymlhvlfg@rob-hp-laptop>
+ <645d40d8-0db6-1737-88f4-fd839933b2ea@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170127220357.3lpavvyeymlhvlfg@rob-hp-laptop>
+In-Reply-To: <645d40d8-0db6-1737-88f4-fd839933b2ea@huawei.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,48 +21,37 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>, "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Cc: mark.rutland@arm.com, benh@kernel.crashing.org, gabriele.paoloni@huawei.com, rafael@kernel.org, linux-pci@vger.kernel.org, will.deacon@arm.com, linuxarm@huawei.com, frowand.list@gmail.com, lorenzo.pieralisi@arm.com, arnd@arndb.de, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, catalin.marinas@arm.com, devicetree@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zhichang.yuan02@gmail.com, zourongrong@gmail.com, bhelgaas@google.com, kantyzc@163.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, olof@lixom.net, brian.starkey@arm.com
+To: John Garry <john.garry@huawei.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, gabriele.paoloni@huawei.com, rafael@kernel.org, linux-pci@vger.kernel.org, Will Deacon <will.deacon@arm.com>, linuxarm@huawei.com, frowand.list@gmail.com, Rob Herring <robh@kernel.org>, lorenzo.pieralisi@arm.com, Wei Xu <xuwei5@hisilicon.com>, linux-serial@vger.kernel.org, catalin.marinas@arm.com, devicetree@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zhichang.yuan02@gmail.com, zourongrong@gmail.com, bhelgaas@google.com, kantyzc@163.com, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "zhichang.yuan" <yuanzhichang@hisilicon.com>, Olof Johansson <olof@lixom.net>, brian.starkey@arm.com
 List-Id: linux-serial@vger.kernel.org
 
-On 27/01/2017 22:03, Rob Herring wrote:
-> On Tue, Jan 24, 2017 at 03:05:23PM +0800, zhichang.yuan wrote:
->> There are some special ISA/LPC devices that work on a specific I/O range where
->> it is not correct to specify a 'ranges' property in DTS parent node as cpu
->> addresses translated from DTS node are only for memory space on some
->> architectures, such as Arm64. Without the parent 'ranges' property, current
->> of_translate_address() return an error.
->> Here we add special handlings for this case.
->> During the OF address translation, some checkings will be perfromed to
->> identify whether the device node is registered as indirect-IO. If yes, the I/O
->> translation will be done in a different way from that one of PCI MMIO.
->> In this way, the I/O 'reg' property of the special ISA/LPC devices will be
->> parsed correctly.
+On Mon, Jan 30, 2017 at 9:57 AM, John Garry <john.garry@huawei.com> wrote:
+> On 27/01/2017 22:03, Rob Herring wrote:
+>> On Tue, Jan 24, 2017 at 03:05:23PM +0800, zhichang.yuan wrote:
+>>> Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
+>>> Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+>>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 >>
->> Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
->> Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
->> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->
-> Shouldn't this be Reviewed-by?
->
-
-The background is that Zhichang is following a sketch of a re-worked 
-driver from Arnd, which Arnd gave Signed-off-by. But this patch does not 
-follow it verbatim.
-
-I think this patchset should be resent without Arnd's signature. Or Arnd 
-may kindly review and say it's ok.
-
-John
-
-> Otherwise, looks fine to me.
->
-> Acked-by: Rob Herring <robh@kernel.org>
->
->> ---
->>  drivers/of/address.c | 87 ++++++++++++++++++++++++++++++++++++++++++----------
->>  1 file changed, 71 insertions(+), 16 deletions(-)
+>>
+>> Shouldn't this be Reviewed-by?
 >>
 >
-> .
+> The background is that Zhichang is following a sketch of a re-worked driver
+> from Arnd, which Arnd gave Signed-off-by. But this patch does not follow it
+> verbatim.
 >
+> I think this patchset should be resent without Arnd's signature. Or Arnd may
+> kindly review and say it's ok.
+
+My general recommendation is that whenever authorship  is not 100% obvious,
+then the changelog comment should explain in free form who did what. When
+you do that, please leave my Signed-off-by intact and put it on top.
+You can also (in addition to explaining it in the text) add an
+explanantion behind
+the address, such as
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de> # earlier draft
+
+I'll try to get around to do a full review of the series later today.
+
+    Arnd
