@@ -1,136 +1,43 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [STLinux Kernel] [PATCH 3/8] serial: st-asc: Read in all Pinctrl
- states
-Date: Mon, 30 Jan 2017 19:11:59 +0000
-Message-ID: <20170130191159.zv5jegvu4fetcmzo@dell>
-References: <20170124134310.27512-1-lee.jones@linaro.org>
- <20170124134310.27512-4-lee.jones@linaro.org>
- <20170125112142.GE5680@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170127115458.k4edg42nnna3bv4v@dell>
- <20170130142356.GA18710@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170130153211.j75qemvwsq3cwqve@dell>
- <20170130161041.GA21001@griffinp-ThinkPad-X1-Carbon-2nd>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] Tty: serial - Fix possible NULL derefrence.
+Date: Mon, 30 Jan 2017 20:37:43 +0100
+Message-ID: <20170130193743.GB27138@kroah.com>
+References: <CGME20170127111619epcas4p44c21059f85b7aa091016019c98d42939@epcas4p4.samsung.com>
+ <1485515773-3542-1-git-send-email-shailendra.v@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170130161041.GA21001@griffinp-ThinkPad-X1-Carbon-2nd>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Peter Griffin <peter.griffin@linaro.org>
-Cc: devicetree@vger.kernel.org, kernel@stlinux.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <1485515773-3542-1-git-send-email-shailendra.v@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Shailendra Verma <shailendra.v@samsung.com>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, p.shailesh@samsung.com, ashish.kalra@samsung.com, Shailendra Verma <shailendra.capricorn@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-T24gTW9uLCAzMCBKYW4gMjAxNywgUGV0ZXIgR3JpZmZpbiB3cm90ZToKPiBPbiBNb24sIDMwIEph
-biAyMDE3LCBMZWUgSm9uZXMgd3JvdGU6Cj4gPiBPbiBNb24sIDMwIEphbiAyMDE3LCBQZXRlciBH
-cmlmZmluIHdyb3RlOgo+ID4gPiBPbiBGcmksIDI3IEphbiAyMDE3LCBMZWUgSm9uZXMgd3JvdGU6
-Cj4gPiA+ID4gT24gV2VkLCAyNSBKYW4gMjAxNywgUGV0ZXIgR3JpZmZpbiB3cm90ZToKPiA+ID4g
-PiA+IE9uIFR1ZSwgMjQgSmFuIDIwMTcsIExlZSBKb25lcyB3cm90ZToKPiA+ID4gPiA+IAo+ID4g
-PiA+ID4gPiBUaGVyZSBhcmUgbm93IDIgcG9zc2libGUgc2VwYXJhdGUvZGlmZmVyZW50IFBpbmN0
-cmwgc3RhdGVzIHdoaWNoIGNhbgo+ID4gPiA+ID4gPiBiZSBwcm92aWRlZCBmcm9tIHBsYXRmb3Jt
-IGRhdGEuICBPbmUgd2hpY2ggZW5jb21wYXNzZXMgdGhlIGxpbmVzCj4gPiA+ID4gPiA+IHJlcXVp
-cmVkIGZvciBIVyBmbG93LWNvbnRyb2wgKENUUy9SVFMpIGFuZCBhbm90aGVyIHdoaWNoIGRvZXMg
-bm90Cj4gPiA+ID4gPiA+IHNwZWNpZnkgdGhlc2UgbGluZXMsIHN1Y2ggdGhhdCB0aGV5IGNhbiBi
-ZSB1c2VkIHZpYSBHUElPIG1lY2hhbmlzbXMKPiA+ID4gPiA+ID4gZm9yIG1hbnVhbGx5IHRvZ2ds
-aW5nIChpLmUuIGZyb20gYSByZXF1ZXN0IGJ5IGBzdHR5YCkuCj4gPiA+ID4gPiA+IAo+ID4gPiA+
-ID4gPiBTaWduZWQtb2ZmLWJ5OiBMZWUgSm9uZXMgPGxlZS5qb25lc0BsaW5hcm8ub3JnPgo+ID4g
-PiA+ID4gPiAtLS0KPiA+ID4gPiA+ID4gIGRyaXZlcnMvdHR5L3NlcmlhbC9zdC1hc2MuYyB8IDI4
-ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysKPiA+ID4gPiA+ID4gIDEgZmlsZSBjaGFuZ2Vk
-LCAyOCBpbnNlcnRpb25zKCspCj4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy90dHkvc2VyaWFsL3N0LWFzYy5jIGIvZHJpdmVycy90dHkvc2VyaWFsL3N0LWFzYy5j
-Cj4gPiA+ID4gPiA+IGluZGV4IDM5N2RmNTAuLjAzODAxZWQgMTAwNjQ0Cj4gPiA+ID4gPiA+IC0t
-LSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zdC1hc2MuYwo+ID4gPiA+ID4gPiArKysgYi9kcml2ZXJz
-L3R0eS9zZXJpYWwvc3QtYXNjLmMKClsuLi5dCgo+ID4gPiA+ID4gPiArCQlwaW5jdHJsX2xvb2t1
-cF9zdGF0ZShhc2Nwb3J0LT5waW5jdHJsLCAibWFudWFsLXJ0cyIpOwo+ID4gPiA+ID4gPiArCWlm
-IChJU19FUlIoYXNjcG9ydC0+c3RhdGVzW01BTlVBTF9SVFNdKSkKPiA+ID4gPiA+ID4gKwkJYXNj
-cG9ydC0+c3RhdGVzW01BTlVBTF9SVFNdID0gTlVMTDsKPiA+ID4gPiA+ID4gKwo+ID4gPiA+ID4g
-Cj4gPiA+ID4gPiBUaGUgZGlmZmVyZW50IHBpbmN0cmwgc3RhdGVzIGxvb2tzIGxpa2UgYSBuZWF0
-IHNvbHV0aW9uIHRvIHRoZSBwcm9ibGVtLgo+ID4gPiA+ID4gCj4gPiA+ID4gPiBNeSBvbmx5IGNv
-bmNlcm4gaGVyZSBpcyB0aGF0ICdkZWZhdWx0JyBzdGF0ZSBpcyBpbXBseWluZyBhIGh3LWZsb3ct
-Y29udHJvbAo+ID4gPiA+ID4gcGlubXV4IGNvbmZpZywgYW5kIG1hbnVhbC1ydHMgaXMgaW1wbHlp
-bmcgd2hhdCBpcyB0aGUgY3VycmVudCB1cHN0cmVhbQo+ID4gPiA+ID4gJ2RlZmF1bHQnIHBpbm11
-eCBjb25maWcuCj4gPiA+ID4gPiAKPiA+ID4gPiA+IFdoaWNoIG1heWJlIG9rIGlmIHlvdSB1cGRh
-dGUgYWxsIHVhcnRzLCBidXQgY3VycmVudGx5IG9ubHkgc2VyaWFsMAo+ID4gPiA+ID4gaXMgdXBk
-YXRlZC4gU28gdGhlIG90aGVyIHVhcnRzIGN1cnJlbnQgJ2RlZmF1bHQnIGlzIGFjdHVhbGx5IHRo
-ZSBzYW1lIGFzIHNlcmlhbDAKPiA+ID4gPiA+ICdtYW51YWwtcnRzJyBncm91cGluZywgd2hpY2gg
-Y29uY2VwdHVhbGx5IGlzIG9kZC4KPiA+ID4gPiA+IAo+ID4gPiA+ID4gV291bGQgaXQgbm90IGJl
-IGJldHRlciB0byBtYWtlICdtYW51YWwtcnRzJyB0aGUgZGVmYXVsdCBzdGF0ZT8gQXMgdGhhdCBh
-bGlnbnMKPiA+ID4gPiA+IHRvIHdoYXQgaXMgY3VycmVudGx5IGFscmVhZHkgdGhlIGRlZmF1bHQg
-Zm9yIHRoZSBvdGhlciBVQVJUUz8gQW5kIHRoZW4gbWFrZQo+ID4gPiA+ID4gaHctZmxvdy1jb250
-cm9sIHRoZSBvcHRpb25hbCBzdGF0ZSBmb3Igc2VyaWFsMD8KPiA+ID4gPiA+IAo+ID4gPiA+ID4g
-VGhhdCBhbHNvIGhhcyB0aGUgYWR2YW50YWdlIHRoYXQgJ2RlZmF1bHQnIGhhcyB0aGUgc2FtZSBt
-ZWFuaW5nIHdpdGggb2xkZXIgRFQncy4KPiA+ID4gPiAKPiA+ID4gPiBUaGUgcmVhc29uIGl0IHdh
-cyBkb25lIGlzIHRoaXMgd2FzIGJlY2F1c2Ugbm9uZSBvZiB0aGUgb3RoZXIgVUFSVHMKPiA+ID4g
-PiByZXF1aXJlIDIgc2VwYXJhdGUgUGluY3RybCBjb25maWd1cmF0aW9ucywgb25seSB0aGlzIG9u
-ZS4gIE1vcmVvdmVyLAo+ID4gPiA+IGlmIHRoZXkgc3VwcG9ydCBSVFMvQ1RTIHRoZW4gSSBiZWxp
-ZXZlIHRoYXQgdGhlIGxpbmVzIHNob3VsZCBiZQo+ID4gPiA+IGRlZmluZWQgaW4gUGluY3RybC4K
-PiA+ID4gCj4gPiA+IFllcyBJIGFncmVlIHdpdGggdGhhdC4KPiA+ID4gCj4gPiA+ID4gVGh1cywg
-aXQgd2FzIG15IHBsYW4gdG8gdXBkYXRlIGFsbCBVQVJUJ3MgZGVmYXVsdAo+ID4gPiA+IFBpbmN0
-cmwgY29uZmlncyB0byBpbmNsdWRlIHRoZSBSVFMvQ1RTIGxpbmVzLgo+ID4gPiA+IAo+ID4gPiAK
-PiA+ID4gSSBzdGlsbCBkb24ndCBzZWUgdGhlIHBvaW50IGluIGNoYW5naW5nIHRoZSBtZWFuaW5n
-IG9mICdkZWZhdWx0JyBncm91cCBhbmQgYnJlYWtpbmcKPiA+ID4gQUJJIGlmIHlvdSBkb24ndCBu
-ZWVkIHRvPwo+ID4gPiAKPiA+ID4gQXMgZmFyIGFzIEkgY2FuIHRlbGwgaWYgeW91IHN3YXAgdGhl
-IG1lYW5pbmcgb2YgJ2RlZmF1bHQnIGFuZCAnbWF1bmFsLXJ0cycKPiA+ID4gZ3JvdXBzIHlvdSBn
-ZXQgYWxsIHRoZSBiZW5lZml0cyBvZiB0aGlzIHNlcmllcyB3aGlsc3QgYWxzbyBtYWludGFpbmlu
-ZyBiYWNrd2FyZHMKPiA+ID4gY29tcGF0YmlsaXR5IHdpdGggb2xkZXIgRFQncy4KPiA+IAo+ID4g
-V2hhdCBtYWtlcyB5b3UgdGhpbmsgdGhpcyB3aWxsIGJyZWFrIEFCST8KPiAKPiBJJ3ZlIG5vdCB0
-cmllZCBpdCwgYnV0IGFuIG9sZGVyIERUIGRlZmluZXMgb25lIGdyb3VwLCAnZGVmYXVsdCcgd2hp
-Y2ggY29udGFpbnMKPiB0aGUgc2FtZSBwaW4gY29uZmlnIGFzIHlvdXIgbmV3IG9wdGlvbmFsICdt
-YW51YWwtcnRzJyBncm91cC4KPiAKPiBUaGUgZHJpdmVyIG5vdyByZWFkcyBsaWtlIHRoZSBtYW51
-YWwtcnRzIHBpbiBjb25maWcgaXMgb3B0aW9uYWwgYW5kIHNob3VsZCBiZSBzdG9yZWQgaW4KPiBh
-c2Nwb3J0LT5zdGF0ZXNbTUFOVUFMX1JUU10uIEFuIG9sZGVyIERUIHdpbGwgcGFzcyB0aGF0IHNh
-bWUgcGluIGNvbmZpZyBhcyB0aGUgZGVmYXVsdAo+IGdyb3VwIGFuZCBpdCB3aWxsIGJlIHN0b3Jl
-ZCBpbiBhc2Nwb3J0LT5zdGF0ZXNbREVGQVVMVF0uCj4gCj4gVGhhdCBzZWVtcyB3cm9uZyB0byBt
-ZSwgYW5kIGlmIGl0IGV4ZWN1dGVzIE9LIGl0IHdvdWxkbid0IGJlIHdoYXQgeW91Cj4gZXhwZWN0
-IGJ5IHJlYWRpbmcgdGhlIGNvZGUuCgpUaGlzIG1ha2VzIG5vIHNlbnNlIGF0IGEgZnVuY3Rpb25h
-bCBsZXZlbC4KCk9sZCBrZXJuZWwsIG9sZCBEVEI6CgpBU0MgZHJpdmVyIGRvZXNuJ3QgdW5kZXJz
-dGFuZCBQaW5jdHJsLCBidXQgc2luY2Ugb25seSB0aGUgImRlZmF1bHQiCnN0YXRlIGlzIGRlZmlu
-ZWQsIHRoYXQncyB3aGF0IHdpbGwgYmUgdXNlZCBhcyBhIG1hdHRlciBvZiBjb3Vyc2UuClJUUy9D
-VFMgYXJlbid0IGNvbmZpZ3VyZWQsIGJ1dCB0aGF0IGRvZXNuJ3QgbWF0dGVyIGJlY2F1c2UgdGhl
-IERUUwpkb2VzIG5vdCBhZHZlcnRpc2UgdGhhdCBIVyBmbG93LWNvbnRyb2wgaXMgYXZhaWxhYmxl
-LiAgSW4gdGhpcwp1c2UtY2FzZSBuZWl0aGVyIEhXIGZsb3ctY29udHJvbCwgbm9yIG1hbnVhbCB0
-b2dnbGluZyBvZiB0aGUgUlRTIGxpbmUKaXMgcG9zc2libGUuCgpOZXcga2VybmVsLCBvbGQgRFRC
-OgoKQVNDIGRyaXZlciBkZW1hbmRzICJkZWZhdWx0IiBhbmQgcmVxdWVzdHMgIm1hbnVhbC1ydHMi
-IFBpbmN0cmwgc3RhdGVzLApidXQgIm1hbnVhbC1ydHMiIGlzbid0IGF2YWlsYWJsZSBzbyAiZGVm
-YXVsdCIgd2lsbCBiZSB0aGUgb25seQp1dGlsaXNlZCBzdGF0ZS4gIFVubGlrZSB0aGUgZmlyc3Qg
-ZXhhbXBsZSBhYm92ZSwgImRlZmF1bHQiIG5vdwpjb250YWlucyB0aGUgUlRTIGFuZCBDVFMgbGlu
-ZXMsIGJ1dCBzaW5jZSB0aGUgRFRTIGRvZXMgbm90IGFkdmVydGlzZQpIVyBmbG93LWNvbnRyb2wg
-YXMgYXZhaWxhYmxlIHRoZXkgd2lsbCBiZSBoYXJtbGVzc2x5IHVudXNlZC4gIFRoaXMKY29uZmln
-dXJhdGlvbiBjdWxtaW5hdGVzIGluIHRoZSBzYW1lIHJlc3VsdCBhcyB0aGUgZmlyc3QgZXhhbXBs
-ZQppLmUuIG5vIEhXIGZsb3ctY29udHJvbCBhbmQgbm8gbWFudWFsIHRvZ2dsaW5nLiAgSG93ZXZl
-ciwgdGhlcmUgYXJlIG5vCmRldHJlbWVudGFsIGVmZmVjdHMgdG8gdGhlIGRyaXZlcidzIGZ1bmN0
-aW9ucy4gCgpPbGQga2VybmVsLCBuZXcgRFRCOgoKQVNDIGRvZXNuJ3QgdW5kZXJzdGFuZCBQaW5j
-dHJsLCBzbyB0aGUgImRlZmF1bHQiIHN0YXRlIHdpbGwgYmUgdXNlZCwKbWVhbmluZyB0aGF0IGFs
-bCBvZiB0aGUgbGluZXMgd2lsbCBiZSBjb25maWd1cmVkLiAgVGhlIERUQiBkb2VzCmFkdmVydGlz
-ZSBIVyBmbG93LWNvbnRyb2wgYXMgYmVpbmcgYXZhaWxhYmxlIHRoaXMgdGltZSwgYnV0IG5vdCBp
-biBhCndheSB0aGF0IHRoZSBvbGQgQVNDIGRyaXZlciB1bmRlcnN0YW5kcy4gIFRodXMsIGp1c3Qg
-YXMgaW4gdGhlIHR3bwpwcmVjZWRpbmcgZXhhbXBsZXMsIEhXIGZsb3ctY29udHJvbCBhbmQgbWFu
-dWFsIHRvZ2dsaW5nIG9mIHRoZSBSVFMKbGluZSBpcyBub3QgcG9zc2libGUsIGJ1dCBhZ2FpbiB0
-aGUgZHJpdmVyIGlzIG90aGVyd2lzZSBmdWxseQpmdW5jdGlvbmFsIGFuZCBkb2Vzbid0IHN1ZmZl
-ciBhbnkgaWxsIGVmZmVjdHMgZnJvbSB0aGUgUlRTIGFuZCBDVFMKbGluZXMgYmVpbmcgY29uZmln
-dXJlZC4KCk5ldyBrZXJuZWwsIG5ldyBEVEI6CgpBU0MgZHJpdmVyIGRlbWFuZHMgImRlZmF1bHQi
-IGFuZCByZXF1ZXN0cyAibWFudWFsLXJ0cyIgUGluY3RybApzdGF0ZXMuICBJZiBEVFMgYWR2ZXJ0
-aXNlcyB0aGF0IEhXIGZsb3ctY29udHJvbCBpcyBwb3NzaWJsZSBhbmQgdGhlCmNsaWVudCByZXF1
-ZXN0cyBpdCwgQVNDIHdpbGwgdXNlIHRoZSAiZGVmYXVsdCIgc3RhdGUgYW5kIEhXCmZsb3ctY29u
-dHJvbCB3aWxsIGNvbW1lbmNlLiAgSWYgSFcgZmxvdy1jb250cm9sIGlzIG5vdCByZXF1ZXN0ZWQg
-YnkKdGhlIGNsaWVudCBhbmQgIm1hbnVhbC1ydHMiIGlzIGF2YWlsYWJsZSwgdGhlbiBBU0Mgd2ls
-bCByZXF1ZXN0IHRoZQpSVFMgbGluZSBpcyBoYW5kbGVkIGJ5IEdQSU8gdW50aWwgc3VjaCB0aW1l
-cyBhcyB0aGUgY2xpZW50IHJlcXVlc3RzCkhXIGZsb3ctY29udHJvbCwgYXQgd2hpY2ggcG9pbnQg
-QVNDIHdpbGwgZGlzYWJsZSBHUElPIGFuZCByZXF1ZXN0IHRoZQoiZGVmYXVsdCIgc3RhdGUgYWdh
-aW4uCgpJdCBpcyBub3QgcG9zc2libGUgdG8gcmVhZCBDLWNvZGUgYW5kIG1ha2UgYXNzdW1wdGlv
-bnMgdGhhdCB0aGUgRFRCCndpbGwgYmUgaW4gYSBwYXJ0aWN1bGFyIHN0YXRlIGFzIHlvdSBzdWdn
-ZXN0LiAgTm8gZGlzcGFyaXR5IGV2ZXIKZXhpc3RzIGFuZCB0aGUgY29kZSBpcyBhbHdheXMgY2xl
-YXIgSU1ITy4KCi0tIApMZWUgSm9uZXMKTGluYXJvIFNUTWljcm9lbGVjdHJvbmljcyBMYW5kaW5n
-IFRlYW0gTGVhZApMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNv
-Q3MKRm9sbG93IExpbmFybzogRmFjZWJvb2sgfCBUd2l0dGVyIHwgQmxvZwoKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWls
-aW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0
-cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On Fri, Jan 27, 2017 at 04:46:13PM +0530, Shailendra Verma wrote:
+> of_match_device could return NULL, and so can cause a NULL
+> pointer dereference later.
+> 
+> Signed-off-by: Shailendra Verma <shailendra.v@samsung.com>
+> ---
+>  drivers/tty/serial/max310x.c |    4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+> index 8a3e926..a94d147 100644
+> --- a/drivers/tty/serial/max310x.c
+> +++ b/drivers/tty/serial/max310x.c
+> @@ -1323,6 +1323,10 @@ static int max310x_spi_probe(struct spi_device *spi)
+>  	if (spi->dev.of_node) {
+>  		const struct of_device_id *of_id =
+>  			of_match_device(max310x_dt_ids, &spi->dev);
+> +		if (!of_id) {
+> +			dev_err(&spi->dev, "Error: No device match found\n");
+> +			return -ENODEV;
+> +		}
+
+Patch now dropped as this isn't possible.
+
+thanks,
+
+greg k-h
