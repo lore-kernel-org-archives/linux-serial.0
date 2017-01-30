@@ -1,172 +1,488 @@
-From: Peter Griffin <peter.griffin-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [STLinux Kernel] [PATCH 3/8] serial: st-asc: Read in all Pinctrl
- states
-Date: Mon, 30 Jan 2017 16:10:41 +0000
-Message-ID: <20170130161041.GA21001@griffinp-ThinkPad-X1-Carbon-2nd>
-References: <20170124134310.27512-1-lee.jones@linaro.org>
- <20170124134310.27512-4-lee.jones@linaro.org>
- <20170125112142.GE5680@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170127115458.k4edg42nnna3bv4v@dell>
- <20170130142356.GA18710@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170130153211.j75qemvwsq3cwqve@dell>
+From: Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH V6 1/5] LIB: Indirect ISA/LPC port IO introduced
+Date: Mon, 30 Jan 2017 18:12:21 +0100
+Message-ID: <5dc0dc9c-124e-398f-a3b2-40059268e859@suse.de>
+References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1485241525-201782-2-git-send-email-yuanzhichang@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170130153211.j75qemvwsq3cwqve@dell>
+In-Reply-To: <1485241525-201782-2-git-send-email-yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org
+To: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Lee,
-
-On Mon, 30 Jan 2017, Lee Jones wrote:
-
-> On Mon, 30 Jan 2017, Peter Griffin wrote:
-> 
-> > Hi Lee,
-> > 
-> > On Fri, 27 Jan 2017, Lee Jones wrote:
-> > 
-> > > On Wed, 25 Jan 2017, Peter Griffin wrote:
-> > > 
-> > > > Hi Lee,
-> > > > 
-> > > > On Tue, 24 Jan 2017, Lee Jones wrote:
-> > > > 
-> > > > > There are now 2 possible separate/different Pinctrl states which can
-> > > > > be provided from platform data.  One which encompasses the lines
-> > > > > required for HW flow-control (CTS/RTS) and another which does not
-> > > > > specify these lines, such that they can be used via GPIO mechanisms
-> > > > > for manually toggling (i.e. from a request by `stty`).
-> > > > > 
-> > > > > Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> > > > > ---
-> > > > >  drivers/tty/serial/st-asc.c | 28 ++++++++++++++++++++++++++++
-> > > > >  1 file changed, 28 insertions(+)
-> > > > > 
-> > > > > diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-> > > > > index 397df50..03801ed 100644
-> > > > > --- a/drivers/tty/serial/st-asc.c
-> > > > > +++ b/drivers/tty/serial/st-asc.c
-> > > > > @@ -37,10 +37,16 @@
-> > > > >  #define ASC_FIFO_SIZE 16
-> > > > >  #define ASC_MAX_PORTS 8
-> > > > >  
-> > > > > +/* Pinctrl states */
-> > > > > +#define DEFAULT		0
-> > > > > +#define MANUAL_RTS	1
-> > > > 
-> > > > Nit: Would be better to have them aligned.
-> > > 
-> > > These are aligned in code.  The patch format throws things out.
-> > > 
-> > > Look, same lines with the "> > +" removed:
-> > 
-> > Ah OK.
-> > 
-> > > 
-> > > /* Pinctrl states */
-> > > #define DEFAULT		0
-> > > #define MANUAL_RTS	1
-> > > 
-> > > Try it.
-> > > 
-> > > > > +
-> > > > >  struct asc_port {
-> > > > >  	struct uart_port port;
-> > > > >  	struct gpio_desc *rts;
-> > > > >  	struct clk *clk;
-> > > > > +	struct pinctrl *pinctrl;
-> > > > > +	struct pinctrl_state *states[2];
-> > > > >  	unsigned int hw_flow_control:1;
-> > > > >  	unsigned int force_m1:1;
-> > > > >  };
-> > > > > @@ -694,6 +700,7 @@ static int asc_init_port(struct asc_port *ascport,
-> > > > >  {
-> > > > >  	struct uart_port *port = &ascport->port;
-> > > > >  	struct resource *res;
-> > > > > +	int ret;
-> > > > >  
-> > > > >  	port->iotype	= UPIO_MEM;
-> > > > >  	port->flags	= UPF_BOOT_AUTOCONF;
-> > > > > @@ -720,6 +727,27 @@ static int asc_init_port(struct asc_port *ascport,
-> > > > >  	WARN_ON(ascport->port.uartclk == 0);
-> > > > >  	clk_disable_unprepare(ascport->clk);
-> > > > >  
-> > > > > +	ascport->pinctrl = devm_pinctrl_get(&pdev->dev);
-> > > > > +	if (IS_ERR(ascport->pinctrl)) {
-> > > > > +		ret = PTR_ERR(ascport->pinctrl);
-> > > > > +		dev_err(&pdev->dev, "Failed to get Pinctrl: %d\n", ret);
-> > > > > +	}
-> > > > > +
-> > > > > +	ascport->states[DEFAULT] =
-> > > > > +		pinctrl_lookup_state(ascport->pinctrl, "default");
-> > > > > +	if (IS_ERR(ascport->states[DEFAULT])) {
-> > > > > +		ret = PTR_ERR(ascport->states[DEFAULT]);
-> > > > > +		dev_err(&pdev->dev,
-> > > > > +			"Failed to look up Pinctrl state 'default': %d\n", ret);
-> > > > > +		return ret;
-> > > > > +	}
-> > > > > +
-> > > > > +	/* "manual-rts" state is optional */
-> > > > > +	ascport->states[MANUAL_RTS] =
-> > > > > +		pinctrl_lookup_state(ascport->pinctrl, "manual-rts");
-> > > > > +	if (IS_ERR(ascport->states[MANUAL_RTS]))
-> > > > > +		ascport->states[MANUAL_RTS] = NULL;
-> > > > > +
-> > > > 
-> > > > The different pinctrl states looks like a neat solution to the problem.
-> > > > 
-> > > > My only concern here is that 'default' state is implying a hw-flow-control
-> > > > pinmux config, and manual-rts is implying what is the current upstream
-> > > > 'default' pinmux config.
-> > > > 
-> > > > Which maybe ok if you update all uarts, but currently only serial0
-> > > > is updated. So the other uarts current 'default' is actually the same as serial0
-> > > > 'manual-rts' grouping, which conceptually is odd.
-> > > > 
-> > > > Would it not be better to make 'manual-rts' the default state? As that aligns
-> > > > to what is currently already the default for the other UARTS? And then make
-> > > > hw-flow-control the optional state for serial0?
-> > > > 
-> > > > That also has the advantage that 'default' has the same meaning with older DT's.
-> > > 
-> > > The reason it was done is this was because none of the other UARTs
-> > > require 2 separate Pinctrl configurations, only this one.  Moreover,
-> > > if they support RTS/CTS then I believe that the lines should be
-> > > defined in Pinctrl.
-> > 
-> > Yes I agree with that.
-> > 
-> > > Thus, it was my plan to update all UART's default
-> > > Pinctrl configs to include the RTS/CTS lines.
-> > > 
-> > 
-> > I still don't see the point in changing the meaning of 'default' group and breaking
-> > ABI if you don't need to?
-> > 
-> > As far as I can tell if you swap the meaning of 'default' and 'maunal-rts'
-> > groups you get all the benefits of this series whilst also maintaining backwards
-> > compatbility with older DT's.
-> 
-> What makes you think this will break ABI?
+On 01/24/2017 08:05 AM, zhichang.yuan wrote:
+> Low-pin-count interface is integrated into some SoCs. The accesses to those
+> peripherals under LPC make use of I/O ports rather than the memory mapped I/O.
 >
+> To drive these devices, this patch introduces a method named indirect-IO.
+> In this method the in/out() accessor in include/asm-generic/io.h will be
+> redefined. When upper layer drivers call in/out() with those known legacy port
+> addresses to access the peripherals, the I/O operations will be routed to the
+> right hooks which are registered specific to the host device, such as LPC.
+> Then the hardware relevant manupulations are finished by the corresponding
+> host.
+>
+> According to the comments on V5, this patch adds a common indirect-IO driver
+> which support this I/O indirection to the generic directory.
+>
+> In the later pathches, some host-relevant drivers are implemented to support
+> the specific I/O hooks and register them.
+> Based on these, the upper layer drivers which depend on in/out() can work well
+> without any extra work or any changes.
+>
+> Signed-off-by: zhichang.yuan <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+> Signed-off-by: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 
-I've not tried it, but an older DT defines one group, 'default' which contains
-the same pin config as your new optional 'manual-rts' group.
+I like the extio idea. That allows us to handle all PIO requests on 
+platforms that don't have native PIO support via different routes 
+depending on the region they're in. Unfortunately we now we have 2 
+frameworks for handling sparse PIO regions: One in extio, one in PCI.
 
-The driver now reads like the manual-rts pin config is optional and should be stored in
-ascport->states[MANUAL_RTS]. An older DT will pass that same pin config as the default
-group and it will be stored in ascport->states[DEFAULT].
+Why don't we just merge the two? Most of the code that has #ifdef 
+PCI_IOBASE throughout the code base sounds like an ideal candidate to 
+get migrated to extio instead. Then we only have a single framework to 
+worry about ...
 
-That seems wrong to me, and if it executes OK it wouldn't be what you
-expect by reading the code.
+> ---
+>   include/asm-generic/io.h |  50 ++++++++++++++++
+>   include/linux/extio.h    |  85 +++++++++++++++++++++++++++
+>   include/linux/io.h       |   1 +
+>   lib/Kconfig              |   8 +++
+>   lib/Makefile             |   2 +
+>   lib/extio.c              | 147 +++++++++++++++++++++++++++++++++++++++++++++++
+>   6 files changed, 293 insertions(+)
+>   create mode 100644 include/linux/extio.h
+>   create mode 100644 lib/extio.c
+>
+> diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
+> index 7ef015e..c0d6db1 100644
+> --- a/include/asm-generic/io.h
+> +++ b/include/asm-generic/io.h
+> @@ -21,6 +21,8 @@
+>   
+>   #include <asm-generic/pci_iomap.h>
+>   
+> +#include <linux/extio.h>
+> +
+>   #ifndef mmiowb
+>   #define mmiowb() do {} while (0)
+>   #endif
+> @@ -358,51 +360,75 @@ static inline void writesq(volatile void __iomem *addr, const void *buffer,
+>    */
+>   
+>   #ifndef inb
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define inb extio_inb
+> +#else
+>   #define inb inb
+>   static inline u8 inb(unsigned long addr)
+>   {
+>   	return readb(PCI_IOBASE + addr);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
 
-regards,
+... we would also get rid of all of these constructs. Instead, every 
+architecture that doesn't implement native PIO defines would end up in 
+extio and we would enable it unconditionally for them.
 
-Peter.
+>   #endif
+>   
+>   #ifndef inw
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define inw extio_inw
+> +#else
+>   #define inw inw
+>   static inline u16 inw(unsigned long addr)
+>   {
+>   	return readw(PCI_IOBASE + addr);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef inl
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define inl extio_inl
+> +#else
+>   #define inl inl
+>   static inline u32 inl(unsigned long addr)
+>   {
+>   	return readl(PCI_IOBASE + addr);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef outb
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define outb extio_outb
+> +#else
+>   #define outb outb
+>   static inline void outb(u8 value, unsigned long addr)
+>   {
+>   	writeb(value, PCI_IOBASE + addr);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef outw
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define outw extio_outw
+> +#else
+>   #define outw outw
+>   static inline void outw(u16 value, unsigned long addr)
+>   {
+>   	writew(value, PCI_IOBASE + addr);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef outl
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define outl extio_outl
+> +#else
+>   #define outl outl
+>   static inline void outl(u32 value, unsigned long addr)
+>   {
+>   	writel(value, PCI_IOBASE + addr);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef inb_p
+> @@ -459,54 +485,78 @@ static inline void outl_p(u32 value, unsigned long addr)
+>    */
+>   
+>   #ifndef insb
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define insb extio_insb
+> +#else
+>   #define insb insb
+>   static inline void insb(unsigned long addr, void *buffer, unsigned int count)
+>   {
+>   	readsb(PCI_IOBASE + addr, buffer, count);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef insw
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define insw extio_insw
+> +#else
+>   #define insw insw
+>   static inline void insw(unsigned long addr, void *buffer, unsigned int count)
+>   {
+>   	readsw(PCI_IOBASE + addr, buffer, count);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef insl
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define insl extio_insl
+> +#else
+>   #define insl insl
+>   static inline void insl(unsigned long addr, void *buffer, unsigned int count)
+>   {
+>   	readsl(PCI_IOBASE + addr, buffer, count);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef outsb
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define outsb extio_outsb
+> +#else
+>   #define outsb outsb
+>   static inline void outsb(unsigned long addr, const void *buffer,
+>   			 unsigned int count)
+>   {
+>   	writesb(PCI_IOBASE + addr, buffer, count);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef outsw
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define outsw extio_outsw
+> +#else
+>   #define outsw outsw
+>   static inline void outsw(unsigned long addr, const void *buffer,
+>   			 unsigned int count)
+>   {
+>   	writesw(PCI_IOBASE + addr, buffer, count);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef outsl
+> +#ifdef CONFIG_INDIRECT_PIO
+> +#define outsl extio_outsl
+> +#else
+>   #define outsl outsl
+>   static inline void outsl(unsigned long addr, const void *buffer,
+>   			 unsigned int count)
+>   {
+>   	writesl(PCI_IOBASE + addr, buffer, count);
+>   }
+> +#endif /* CONFIG_INDIRECT_PIO */
+>   #endif
+>   
+>   #ifndef insb_p
+> diff --git a/include/linux/extio.h b/include/linux/extio.h
+> new file mode 100644
+> index 0000000..2ca7eab
+> --- /dev/null
+> +++ b/include/linux/extio.h
+> @@ -0,0 +1,85 @@
+> +/*
+> + * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
+> + * Author: Zhichang Yuan <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+> + */
+> +
+> +#ifndef __LINUX_EXTIO_H
+> +#define __LINUX_EXTIO_H
+> +
+> +#ifdef __KERNEL__
+> +
+> +#include <linux/fwnode.h>
+> +
+> +struct extio_ops {
+> +	u64 (*pfin)(void *devobj, unsigned long ptaddr,	size_t dlen);
+> +	void (*pfout)(void *devobj, unsigned long ptaddr, u32 outval,
+> +					size_t dlen);
+> +	u64 (*pfins)(void *devobj, unsigned long ptaddr, void *inbuf,
+> +				size_t dlen, unsigned int count);
+> +	void (*pfouts)(void *devobj, unsigned long ptaddr,
+> +				const void *outbuf, size_t dlen,
+> +				unsigned int count);
+> +};
+> +
+> +struct extio_node {
+> +	unsigned long bus_start;	/* bus start address */
+> +	unsigned long io_start;	/* io port token corresponding to bus_start */
+> +	size_t range_size;	/* size of the extio node operating range */
+> +	struct fwnode_handle *fwnode;
+> +	struct list_head list;
+> +	struct extio_ops *ops;	/* ops operating on this node */
+> +	void *devpara;	/* private parameter of the host device */
+> +};
+> +
+> +extern u8 extio_inb(unsigned long addr);
+> +extern void extio_outb(u8 value, unsigned long addr);
+> +extern void extio_outw(u16 value, unsigned long addr);
+> +extern void extio_outl(u32 value, unsigned long addr);
+> +extern u16 extio_inw(unsigned long addr);
+> +extern u32 extio_inl(unsigned long addr);
+> +extern void extio_outb(u8 value, unsigned long addr);
+> +extern void extio_outw(u16 value, unsigned long addr);
+> +extern void extio_outl(u32 value, unsigned long addr);
+> +extern void extio_insb(unsigned long addr, void *buffer, unsigned int count);
+> +extern void extio_insl(unsigned long addr, void *buffer, unsigned int count);
+> +extern void extio_insw(unsigned long addr, void *buffer, unsigned int count);
+> +extern void extio_outsb(unsigned long addr, const void *buffer,
+> +			unsigned int count);
+> +extern void extio_outsw(unsigned long addr, const void *buffer,
+> +			unsigned int count);
+> +extern void extio_outsl(unsigned long addr, const void *buffer,
+> +			unsigned int count);
+> +
+> +#ifdef CONFIG_INDIRECT_PIO
+> +extern struct extio_node *extio_find_node(struct fwnode_handle *node);
+> +
+> +extern unsigned long
+> +extio_translate(struct fwnode_handle *node, unsigned long bus_addr);
+> +#else
+> +static inline struct extio_node *extio_find_node(struct fwnode_handle *node)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline unsigned long
+> +extio_translate(struct fwnode_handle *node, unsigned long bus_addr)
+> +{
+> +	return -1;
+> +}
+> +#endif
+> +extern void register_extio(struct extio_node *node);
+> +
+> +#endif /* __KERNEL__ */
+> +#endif /* __LINUX_EXTIO_H */
+> diff --git a/include/linux/io.h b/include/linux/io.h
+> index 82ef36e..6c68478 100644
+> --- a/include/linux/io.h
+> +++ b/include/linux/io.h
+> @@ -24,6 +24,7 @@
+>   #include <linux/err.h>
+>   #include <asm/io.h>
+>   #include <asm/page.h>
+> +#include <linux/extio.h>
+>   
+>   struct device;
+>   struct resource;
+> diff --git a/lib/Kconfig b/lib/Kconfig
+> index 260a80e..1d27c44 100644
+> --- a/lib/Kconfig
+> +++ b/lib/Kconfig
+> @@ -59,6 +59,14 @@ config ARCH_USE_CMPXCHG_LOCKREF
+>   config ARCH_HAS_FAST_MULTIPLIER
+>   	bool
+>   
+> +config INDIRECT_PIO
+> +	bool "access peripherals with legacy I/O port"
+> +	depends on PCI
+> +	help
+> +	  Support special accessors for ISA I/O devices. This is needed for
+> +	  SoCs that have not I/O space and do not support standard MMIO
+> +	  read/write for the ISA range.
+> +
+>   config CRC_CCITT
+>   	tristate "CRC-CCITT functions"
+>   	help
+> diff --git a/lib/Makefile b/lib/Makefile
+> index bc4073a..bf03e05 100644
+> --- a/lib/Makefile
+> +++ b/lib/Makefile
+> @@ -70,6 +70,8 @@ obj-$(CONFIG_HAS_IOMEM) += iomap_copy.o devres.o
+>   obj-$(CONFIG_CHECK_SIGNATURE) += check_signature.o
+>   obj-$(CONFIG_DEBUG_LOCKING_API_SELFTESTS) += locking-selftest.o
+>   
+> +obj-$(CONFIG_INDIRECT_PIO)	+= extio.o
+> +
+>   obj-$(CONFIG_GENERIC_HWEIGHT) += hweight.o
+>   
+>   obj-$(CONFIG_BTREE) += btree.o
+> diff --git a/lib/extio.c b/lib/extio.c
+> new file mode 100644
+> index 0000000..46228de
+> --- /dev/null
+> +++ b/lib/extio.c
+> @@ -0,0 +1,147 @@
+> +/*
+> + * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
+> + * Author: Zhichang Yuan <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+> + */
+> +
+> +#include <linux/io.h>
+> +#include <linux/spinlock.h>
+> +
+> +static LIST_HEAD(extio_dev_list);
+> +static DEFINE_RWLOCK(extio_list_lock);
+
+Why not just make the list an RCU list? Then you don't need read locks. 
+We also wouldn't create potential lock contention between devices that 
+could easily have parallel PIO operations (say a PCI device and an LPC 
+device).
+
+> +
+> +void register_extio(struct extio_node *node)
+> +{
+> +	write_lock(&extio_list_lock);
+> +	list_add_tail(&node->list, &extio_dev_list);
+> +	write_unlock(&extio_list_lock);
+> +}
+> +
+> +static struct extio_node *find_extio_token(unsigned long addr)
+> +{
+> +	struct extio_node *extio_entry;
+> +
+> +	read_lock(&extio_list_lock);
+> +	list_for_each_entry(extio_entry, &extio_dev_list, list) {
+> +		if ((addr < extio_entry->io_start + extio_entry->range_size) &&
+> +			(addr >= extio_entry->io_start))
+> +			break;
+> +	}
+> +	read_unlock(&extio_list_lock);
+> +	return (&extio_entry->list == &extio_dev_list) ? NULL : extio_entry;
+> +}
+> +
+> +struct extio_node *extio_find_node(struct fwnode_handle *node)
+> +{
+> +	struct extio_node *entry;
+> +
+> +	read_lock(&extio_list_lock);
+> +	list_for_each_entry(entry, &extio_dev_list, list) {
+> +		if (entry->fwnode == node)
+> +			break;
+> +	}
+> +	read_unlock(&extio_list_lock);
+> +
+> +	return (&entry->list == &extio_dev_list) ? NULL : entry;
+> +}
+> +
+> +unsigned long extio_translate(struct fwnode_handle *node,
+> +		unsigned long bus_addr)
+> +{
+> +	struct extio_node *entry;
+> +	unsigned long port_id = -1;
+> +
+> +	read_lock(&extio_list_lock);
+> +	list_for_each_entry(entry, &extio_dev_list, list) {
+> +		if (entry->fwnode == node &&
+> +			bus_addr >= entry->bus_start &&
+> +			bus_addr - entry->bus_start < entry->range_size)
+> +			port_id = entry->io_start + bus_addr -
+> +					entry->bus_start;
+> +	}
+> +	read_unlock(&extio_list_lock);
+> +
+> +	return port_id;
+> +}
+> +
+> +#ifdef PCI_IOBASE
+> +
+> +#define BUILD_EXTIO(bw, type)						\
+> +type extio_in##bw(unsigned long addr)					\
+> +{									\
+> +	struct extio_node *extio_entry = find_extio_token(addr);	\
+> +									\
+> +	if (!extio_entry)						\
+> +		return read##bw(PCI_IOBASE + addr);			\
+> +	return extio_entry->ops->pfin ?					\
+> +			extio_entry->ops->pfin(extio_entry->devpara,	\
+> +			addr, sizeof(type)) : -1;			\
+> +}									\
+> +									\
+> +void extio_out##bw(type value, unsigned long addr)			\
+> +{									\
+> +	struct extio_node *extio_entry = find_extio_token(addr);	\
+> +									\
+> +	if (!extio_entry)						\
+> +		write##bw(value, PCI_IOBASE + addr);			\
+
+All of the fallback code would also disappear as a nice side effect of 
+making pci pio handling a user of extio :).
+
+
+Alex
+
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
