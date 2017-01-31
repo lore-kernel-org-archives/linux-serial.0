@@ -1,133 +1,75 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH V6 2/5] PCI: Adapt pci_register_io_range() for indirect-IO
- and PCI I/O translation
-Date: Tue, 31 Jan 2017 13:39:09 +0000
-Message-ID: <f8a6c3ce-ba8e-c00e-8e6f-7c799fb4dd44@huawei.com>
-References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
- <1485241525-201782-3-git-send-email-yuanzhichang@hisilicon.com>
- <20170131001030.GB20550@bhelgaas-glaptop.roam.corp.google.com>
+From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v3 3/5] serdev: Introduce new bus for serial attached
+ devices
+Date: Tue, 31 Jan 2017 15:31:43 +0100
+Message-ID: <20170131143143.tvf4w7itfwqmweq4@earth>
+References: <20170125202343.30923-1-robh@kernel.org>
+ <20170125202343.30923-4-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170131001030.GB20550@bhelgaas-glaptop.roam.corp.google.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Bjorn Helgaas <helgaas@kernel.org>, "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Cc: mark.rutland@arm.com, benh@kernel.crashing.org, gabriele.paoloni@huawei.com, rafael@kernel.org, linux-pci@vger.kernel.org, will.deacon@arm.com, linuxarm@huawei.com, frowand.list@gmail.com, lorenzo.pieralisi@arm.com, arnd@arndb.de, xuwei5@hisilicon.com, linux-serial@vger.kernel.org, catalin.marinas@arm.com, devicetree@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zhichang.yuan02@gmail.com, zourongrong@gmail.com, robh+dt@kernel.org, bhelgaas@google.com, kantyzc@163.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, olof@lixom.net, brian.starkey@arm.com
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3cnesufgnubno33i"
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170125202343.30923-4-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 31/01/2017 00:10, Bjorn Helgaas wrote:
-> On Tue, Jan 24, 2017 at 03:05:22PM +0800, zhichang.yuan wrote:
->> After indirect-IO is introduced, system must can assigned indirect-IO devices
->> with logical I/O ranges which are different from those for PCI I/O devices.
->> Otherwise, I/O accessors can't identify whether the I/O port is for memory
->> mapped I/O or indirect-IO.
->
-> Maybe:
->
->   We must assign logical I/O port space for indirect I/O such that the
->   I/O accessors can tell whether a logical I/O port refers to memory-
->   mapped I/O space or indirect I/O space.
->
 
-It's better
+--3cnesufgnubno33i
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
->> As current helper, pci_register_io_range(), is used for PCI I/O ranges
->> registration and translation, indirect-IO devices should also apply these
->> helpers to manage the I/O ranges. It will be easy to ensure the assigned
->> logical I/O ranges unique.
->> But for indirect-IO devices, there is no cpu address. The current
->> pci_register_io_range() can not work for this case.
->>
->> This patch makes some changes on the pci_register_io_range() to support the
->> I/O range registration with device's fwnode also. After this, the indirect-IO
->> devices can register the device-local I/O range to system logical I/O and
->> easily perform the translation between device-local I/O range and sytem
->> logical I/O range.
->
->> -int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
->> +int __weak pci_register_io_range(struct fwnode_handle *node, phys_addr_t addr,
->> +				 resource_size_t size, unsigned long *port)
->
-> Why is this __weak?  It looks like it's been __weak since its
-> introduction by 41f8bba7f555 ("of/pci: Add pci_register_io_range() and
-> pci_pio_to_address()"), but I don't see any other implementations of
-> it.
->
-> Can you add a patch that does nothing but make this non-weak?
->
+Hi Rob,
 
-OK
+On Wed, Jan 25, 2017 at 02:23:41PM -0600, Rob Herring wrote:
+> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+> new file mode 100644
+> index 000000000000..4f8f76d02ca8
+> --- /dev/null
+> +++ b/include/linux/serdev.h
+>
+> [...]
+>
+> +#ifdef CONFIG_SERIAL_DEV_BUS
+>
+> [method definitions]
+>
+> #else
+>
+> [method stubs]
+>
+> #endif
+>
+> [...]
 
->> +#else
->> +	/*
->> +	 * powerpc and microblaze have their own registration,
->> +	 * just look up the value here
->
-> Can you include a pointer to the powerpc and microblaze registration
-> code here?  It's conceivable that somebody could generalize this
-> enough to support powerpc and microblaze as well.
->
+This should also test for SERIAL_DEV_BUS=m, so use
 
-It should be no problem
+#if IS_ENABLED(CONFIG_SERIAL_DEV_BUS)
 
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -34,6 +34,9 @@
->>
->>  #include <linux/pci_ids.h>
->>
->> +/* the macro below flags an invalid cpu address
->> + * and is used by IO special hosts              */
->
-> s/cpu/CPU/
->
+(This was found by the kbuild test robot)
 
-OK
+-- Sebastian
 
-> Use conventional multi-line comment style:
->
-> /*
->  * IO_RANGE_IOEXT flags an invalid CPU address ...
->  */
->
->> +#define IO_RANGE_IOEXT (resource_size_t)(-1ull)
->
-> And put this close to related things, e.g., pci_register_io_range(),
-> instead of just dropping it in at the top of the file.
+--3cnesufgnubno33i
+Content-Type: application/pgp-signature; name="signature.asc"
 
-OK
+-----BEGIN PGP SIGNATURE-----
 
->
->>  /*
->>   * The PCI interface treats multi-function devices as independent
->>   * devices.  The slot/function address of each device is encoded
->> @@ -1197,8 +1200,8 @@ int __must_check pci_bus_alloc_resource(struct pci_bus *bus,
->>  						  resource_size_t),
->>  			void *alignf_data);
->>
->> -
->> -int pci_register_io_range(phys_addr_t addr, resource_size_t size);
->> +int pci_register_io_range(struct fwnode_handle *node, phys_addr_t addr,
->> +			  resource_size_t size, unsigned long *port);
->>  unsigned long pci_address_to_pio(phys_addr_t addr);
->>  phys_addr_t pci_pio_to_address(unsigned long pio);
->>  int pci_remap_iospace(const struct resource *res, phys_addr_t phys_addr);
->> --
->> 1.9.1
->>
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAliQn8wACgkQ2O7X88g7
++pqQlg/8DSlRWrR4d3zPD34mACClm1NdayhnMs5tYAW/q+yvH3YA1joOE5g+9CbK
+X5QIczoFN/UNlFtA4Lg+8Dikgd49k8bB5zTvkXWCwznJ9UtbKtXlTSg1G4unGsKU
+qMRQ2a1JVOioHKT3JbHU/bVM7waFXI/5aX4SBrqRwngGorKH/J0LB2HPotLB40SN
+BKSZ47Rk06UZME2N7QDU8MsnGnMZL1SY26Ozf3JRpI7SRlArc0TRSBAlBHElWY+P
+URHWF9MAwZAWJ3GCalr9WKdNQe6qgQ9eA6oY4JF4SfGCAUMQs/K/MNJ2PpGLxlVa
+7XmRij2RQDwIbPEWnKV/1qiw5XSvz1M5ohGMCQAMq/KPpZkqA8cE6vI3AnKuTXWy
+tLwAVJh+mRnD4qiJMewCTAG7VF1v0ZjV4w92e7bYVtgxzAPPKBvjK3GDMPoFM2tJ
+HRBlXE7B6y3LCoXNig9dIY20virJpeKhvr0U1OOI6cuhuLF0IyLO6OVtTC9kKooW
+G+0q0dGlvCkLAFOjsdVKwuUgt3o+Uif33v7rKGWYDoJ6fjhFr0X51XwY9WnmOoNF
+kf5BHCDKOmtEAzSXGzhxmjfXJ7EwGznfvzYOccZ4ANDA6CyXwD9AQPu+IdETz5pv
+E0+taPA/18QUv8WoA5L6SkvCsK1tT41R7e8PR9ilIPG8tmcON2A=
+=vD/b
+-----END PGP SIGNATURE-----
 
-Thanks,
-John
-
->
-> .
->
+--3cnesufgnubno33i--
