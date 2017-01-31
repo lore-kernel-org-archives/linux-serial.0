@@ -1,95 +1,611 @@
-From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 0/5] Serial slave device bus
-Date: Tue, 31 Jan 2017 06:44:15 +0100
-Message-ID: <20170131054415.eiboj4ivumanxgso@earth>
-References: <20170125202343.30923-1-robh@kernel.org>
- <20170131030241.kehmuuxsbnbk5nnt@earth>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH V6 4/5] LPC: Support the device-tree LPC host on
+ Hip06/Hip07
+Date: Tue, 31 Jan 2017 10:07:08 +0000
+Message-ID: <55916a03-2710-c8bc-0894-5a58daf6da68@huawei.com>
+References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1485241525-201782-5-git-send-email-yuanzhichang@hisilicon.com>
+ <a5a24e73-013d-87b5-f65f-324417f4cc60@suse.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mvym7qs4yl5uwgha"
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170131030241.kehmuuxsbnbk5nnt@earth>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <a5a24e73-013d-87b5-f65f-324417f4cc60@suse.de>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alexander Graf <agraf@suse.de>, "zhichang.yuan" <yuanzhichang@hisilicon.com>, catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, brian.starkey@arm.com, olof@lixom.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org
+Cc: lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com
 List-Id: linux-serial@vger.kernel.org
 
+On 30/01/2017 20:08, Alexander Graf wrote:
+>
 
---mvym7qs4yl5uwgha
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Alex,
 
-Hi,
+Thanks for checking.
 
-On Tue, Jan 31, 2017 at 04:02:41AM +0100, Sebastian Reichel wrote:
-> On Wed, Jan 25, 2017 at 02:23:38PM -0600, Rob Herring wrote:
-> > Here's V3 of the serdev bus support with all the review feedback so far
-> > incorporated. Greg applied the first 4 patches already. I also found a
-> > problem in the tty_port_wakeup changes and have fixed that.
-> >=20
-> > I've added serdev support to the BT hci_ll.c driver as it turns out it =
-works
-> > on newer TI chips too, but just needed firmware loading. That avoids the
-> > impossible mess of cleaning up the TI-ST driver, and it's in a much clo=
-ser
-> > state to being ready for upstream. I've sent that out separately.
-> >=20
-> > Changelog is in individual patches. Previous versions are here[1][2]. T=
-his
-> > series and the mentioned drivers can be found here[3].
-> >=20
-> > Rob
-> >=20
-> > [1] http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1304151=
-=2Ehtml
-> > [2] http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1311650=
-=2Ehtml
-> > [3] git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git serial=
--bus-v4
->=20
-> I rebased my nokia bluetooth driver on top of [3]. It's not yet
-> working, but everything added by this patchset (and
-> "bluetooth: hci_uart: add serdev driver support library") seems
-> to work as expected, so for the whole series:
->=20
-> Tested-By: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>
+> On 24/01/2017 08:05, zhichang.yuan wrote:
+>> The low-pin-count(LPC) interface of Hip06/Hip07 accesses the
+>> peripherals in
+>> I/O port addresses. This patch implements the LPC host controller
+>> driver which
+>> perform the I/O operations on the underlying hardware.
+>> We don't want to touch those existing peripherals' driver, such as
+>> ipmi-bt. So
+>> this driver applies the indirect-IO introduced in the previous patch
+>> after
+>> registering an indirect-IO node to the indirect-IO devices list which
+>> will be
+>> searched in the I/O accessors.
+>> As the I/O translations for LPC children depend on the host I/O
+>> registration,
+>> we should ensure the host I/O registration is finished before all the LPC
+>> children scanning. That is why an arch_init() hook was added in this
+>> patch.
+>>
+>> Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
+>> Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+>> ---
+>>  .../arm/hisilicon/hisilicon-low-pin-count.txt      |  33 ++
+>>  MAINTAINERS                                        |   9 +
+>>  arch/arm64/boot/dts/hisilicon/hip06-d03.dts        |   4 +
+>>  arch/arm64/boot/dts/hisilicon/hip06.dtsi           |  14 +
+>>  drivers/bus/Kconfig                                |   8 +
+>>  drivers/bus/Makefile                               |   1 +
+>>  drivers/bus/hisi_lpc.c                             | 599
+>> +++++++++++++++++++++
+>>  7 files changed, 668 insertions(+)
+>>  create mode 100644
+>> Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
+>>
+>>  create mode 100644 drivers/bus/hisi_lpc.c
+>>
+>> diff --git
+>> a/Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
+>> b/Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
+>>
+>> new file mode 100644
+>> index 0000000..213181f
+>> --- /dev/null
+>> +++
+>> b/Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
+>>
+>> @@ -0,0 +1,33 @@
+>> +Hisilicon Hip06 low-pin-count device
+>> +  Hisilicon Hip06 SoCs implement a Low Pin Count (LPC) controller, which
+>> +  provides I/O access to some legacy ISA devices.
+>> +  Hip06 is based on arm64 architecture where there is no I/O space.
+>> So, the
+>> +  I/O ports here are not cpu addresses, and there is no 'ranges'
+>> property in
+>> +  LPC device node.
+>> +
+>> +Required properties:
+>> +- compatible:  value should be as follows:
+>> +    (a) "hisilicon,hip06-lpc"
+>> +    (b) "hisilicon,hip07-lpc"
+>> +- #address-cells: must be 2 which stick to the ISA/EISA binding doc.
+>> +- #size-cells: must be 1 which stick to the ISA/EISA binding doc.
+>> +- reg: base memory range where the LPC register set is mapped.
+>> +
+>> +Note:
+>> +  The node name before '@' must be "isa" to represent the binding
+>> stick to the
+>> +  ISA/EISA binding specification.
+>> +
+>> +Example:
+>> +
+>> +isa@a01b0000 {
+>> +    compatible = "hisilicon,hip06-lpc";
+>> +    #address-cells = <2>;
+>> +    #size-cells = <1>;
+>> +    reg = <0x0 0xa01b0000 0x0 0x1000>;
+>> +
+>> +    ipmi0: bt@e4 {
+>> +        compatible = "ipmi-bt";
+>> +        device_type = "ipmi";
+>> +        reg = <0x01 0xe4 0x04>;
+>> +    };
+>> +};
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index 26edd83..0153707 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -5855,6 +5855,15 @@ F:    include/uapi/linux/if_hippi.h
+>>  F:    net/802/hippi.c
+>>  F:    drivers/net/hippi/
+>>
+>> +HISILICON LPC BUS DRIVER
+>> +M:    Zhichang Yuan <yuanzhichang@hisilicon.com>
+>> +L:    linux-arm-kernel@lists.infradead.org
+>> +W:    http://www.hisilicon.com
+>> +S:    Maintained
+>> +F:    drivers/bus/hisi_lpc.c
+>> +F:    lib/extio.c
+>> +F:
+>> Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
+>>
+>> +
+>>  HISILICON NETWORK SUBSYSTEM DRIVER
+>>  M:    Yisen Zhuang <yisen.zhuang@huawei.com>
+>>  M:    Salil Mehta <salil.mehta@huawei.com>
+>> diff --git a/arch/arm64/boot/dts/hisilicon/hip06-d03.dts
+>> b/arch/arm64/boot/dts/hisilicon/hip06-d03.dts
+>> index 7c4114a..75b2b5c 100644
+>> --- a/arch/arm64/boot/dts/hisilicon/hip06-d03.dts
+>> +++ b/arch/arm64/boot/dts/hisilicon/hip06-d03.dts
+>> @@ -52,3 +52,7 @@
+>>  &usb_ehci {
+>>      status = "ok";
+>>  };
+>> +
+>> +&ipmi0 {
+>> +    status = "ok";
+>> +};
+>> diff --git a/arch/arm64/boot/dts/hisilicon/hip06.dtsi
+>> b/arch/arm64/boot/dts/hisilicon/hip06.dtsi
+>> index a049b64..c450f8d 100644
+>> --- a/arch/arm64/boot/dts/hisilicon/hip06.dtsi
+>> +++ b/arch/arm64/boot/dts/hisilicon/hip06.dtsi
+>> @@ -318,6 +318,20 @@
+>>          #size-cells = <2>;
+>>          ranges;
+>>
+>> +        isa@a01b0000 {
+>> +            compatible = "hisilicon,hip06-lpc";
+>> +            #size-cells = <1>;
+>> +            #address-cells = <2>;
+>> +            reg = <0x0 0xa01b0000 0x0 0x1000>;
+>> +
+>> +            ipmi0: bt@e4 {
+>> +                compatible = "ipmi-bt";
+>> +                device_type = "ipmi";
+>> +                reg = <0x01 0xe4 0x04>;
+>> +                status = "disabled";
+>> +            };
+>> +        };
+>> +
+>>          refclk: refclk {
+>>              compatible = "fixed-clock";
+>>              clock-frequency = <50000000>;
+>> diff --git a/drivers/bus/Kconfig b/drivers/bus/Kconfig
+>> index b9e8cfc..58cee84 100644
+>> --- a/drivers/bus/Kconfig
+>> +++ b/drivers/bus/Kconfig
+>> @@ -64,6 +64,14 @@ config BRCMSTB_GISB_ARB
+>>        arbiter. This driver provides timeout and target abort error
+>> handling
+>>        and internal bus master decoding.
+>>
+>> +config HISILICON_LPC
+>> +    bool "Workaround for nonstandard ISA I/O space on Hisilicon Hip0X"
+>
+> It's not a workaround, it's support. Better word it like
+>
+>   "Support for ISA I/O space on Hisilicon HIP0X"
+>
 
-FWIW, I got bluetooth on top of your patchset working on N950. N900
-is not yet tested and probably does not yet work (it's more picky
-about flow control and usage of the wakeup gpios). You can find a
-branch with the additional patches @ [4]. I had to add serdev
-functions to wait for TX buffer depletion and checking CTS. Apart
-=66rom that flow control only worked correctly when also taking care
-of RTS (like hci_uart_set_flow_control does).
+Agreed
 
-I noticed, that you did not yet write any DT bindings for your
-bluetooth slaves. Did you already decide for a location?
+>> +    depends on (ARM64 && ARCH_HISI && PCI) || COMPILE_TEST
+>> +    select INDIRECT_PIO
+>> +    help
+>> +      Driver needed for some legacy ISA devices attached to
+>> Low-Pin-Count
+>> +      on Hisilicon Hip0X SoC.
+>> +
+>>  config IMX_WEIM
+>>      bool "Freescale EIM DRIVER"
+>>      depends on ARCH_MXC
+>> diff --git a/drivers/bus/Makefile b/drivers/bus/Makefile
+>> index cc6364b..28e3862 100644
+>> --- a/drivers/bus/Makefile
+>> +++ b/drivers/bus/Makefile
+>> @@ -7,6 +7,7 @@ obj-$(CONFIG_ARM_CCI)        += arm-cci.o
+>>  obj-$(CONFIG_ARM_CCN)        += arm-ccn.o
+>>
+>>  obj-$(CONFIG_BRCMSTB_GISB_ARB)    += brcmstb_gisb.o
+>> +obj-$(CONFIG_HISILICON_LPC)    += hisi_lpc.o
+>>  obj-$(CONFIG_IMX_WEIM)        += imx-weim.o
+>>  obj-$(CONFIG_MIPS_CDMM)        += mips_cdmm.o
+>>  obj-$(CONFIG_MVEBU_MBUS)     += mvebu-mbus.o
+>> diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
+>> new file mode 100644
+>> index 0000000..a96e384
+>> --- /dev/null
+>> +++ b/drivers/bus/hisi_lpc.c
+>> @@ -0,0 +1,599 @@
+>> +/*
+>> + * Copyright (C) 2016 Hisilicon Limited, All Rights Reserved.
+>> + * Author: Zhichang Yuan <yuanzhichang@hisilicon.com>
+>> + * Author: Zou Rongrong <zourongrong@huawei.com>
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License version 2 as
+>> + * published by the Free Software Foundation.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + *
+>> + * You should have received a copy of the GNU General Public License
+>> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>> + */
+>> +
+>> +#include <linux/acpi.h>
+>> +#include <linux/console.h>
+>> +#include <linux/delay.h>
+>> +#include <linux/io.h>
+>> +#include <linux/module.h>
+>> +#include <linux/of.h>
+>> +#include <linux/of_address.h>
+>> +#include <linux/of_platform.h>
+>> +#include <linux/pci.h>
+>> +#include <linux/serial_8250.h>
+>> +#include <linux/slab.h>
+>> +
+>> +/*
+>> + * Setting this bit means each IO operation will target to a
+>> + * different port address:
+>> + * 0 means repeatedly IO operations will stick on the same port,
+>> + * such as BT;
+>> + */
+>> +#define FG_INCRADDR_LPC        0x02
+>> +
+>> +struct lpc_cycle_para {
+>> +    unsigned int opflags;
+>> +    unsigned int csize; /* the data length of each operation */
+>> +};
+>> +
+>> +struct hisilpc_dev {
+>> +    spinlock_t cycle_lock;
+>> +    void __iomem  *membase;
+>> +    struct extio_node *extio;
+>> +};
+>> +
+>> +/* bounds of the LPC bus address range */
+>> +#define LPC_MIN_BUS_RANGE    0x0
+>> +
+>> +/*
+>> + * The maximal IO size for each leagcy bus.
+>
+> legacy?
+>
+> I don't really understand why this bus is legacy though. It looks like a
+> simple MMIO-to-LPC bridge to me.
+>
 
-[4] git://git.kernel.org/pub/scm/linux/kernel/git/sre/linux-n900.git serial=
--bus-v4-nokia-bt
+I think that he means legacy ISA.
 
--- Sebastian
+>> + * The port size of legacy I/O devices is normally less than 0x400.
+>> + * Defining the I/O range size as 0x400 here should be sufficient for
+>> + * all peripherals under one bus.
+>> + */
+>
+> This comment doesn't make a lot of sense. What is the limit? Is there a
+> hardware limit?
+>
+> We don't dynamically allocate devices on the lpc bus, so why imply a
+> limit at all?
+>
 
---mvym7qs4yl5uwgha
-Content-Type: application/pgp-signature; name="signature.asc"
+IIRC from previously asking Zhichang this before, this is the upper 
+range we can address devices on the LPC bus. But the value was 0x1000 then.
 
------BEGIN PGP SIGNATURE-----
+>> +#define LPC_BUS_IO_SIZE        0x400
+>> +
+>> +/* The maximum continuous operations */
+>> +#define LPC_MAX_OPCNT    16
+>> +/* only support IO data unit length is four at maximum */
+>> +#define LPC_MAX_DULEN    4
+>> +#if LPC_MAX_DULEN > LPC_MAX_OPCNT
+>> +#error "LPC.. MAX_DULEN must be not bigger than MAX_OPCNT!"
+>> +#endif
+>> +
+>> +#define LPC_REG_START        0x00 /* start a new LPC cycle */
+>> +#define LPC_REG_OP_STATUS    0x04 /* the current LPC status */
+>> +#define LPC_REG_IRQ_ST        0x08 /* interrupt enable&status */
+>> +#define LPC_REG_OP_LEN        0x10 /* how many LPC cycles each start */
+>> +#define LPC_REG_CMD        0x14 /* command for the required LPC cycle */
+>> +#define LPC_REG_ADDR        0x20 /* LPC target address */
+>> +#define LPC_REG_WDATA        0x24 /* data to be written */
+>> +#define LPC_REG_RDATA        0x28 /* data coming from peer */
+>> +
+>> +
+>> +/* The command register fields */
+>> +#define LPC_CMD_SAMEADDR    0x08
+>> +#define LPC_CMD_TYPE_IO        0x00
+>> +#define LPC_CMD_WRITE        0x01
+>> +#define LPC_CMD_READ        0x00
+>> +/* the bit attribute is W1C. 1 represents OK. */
+>> +#define LPC_STAT_BYIRQ        0x02
+>> +
+>> +#define LPC_STATUS_IDLE        0x01
+>> +#define LPC_OP_FINISHED        0x02
+>> +
+>> +#define START_WORK        0x01
+>> +
+>> +/*
+>> + * The minimal waiting interval... Suggest it is not less than 10.
+>> + * Bigger value probably will lower the performance.
+>
+> Are you sure you want this comment to be upstream? :)
+>
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAliQJCkACgkQ2O7X88g7
-+ppqmw//Y68DsR1dMtQhXY+zBO/SpGDspAxvhspeyMkB9V6YdRpd4QRdwa8ZkxKZ
-p8jC0xSHj70uupNlYdhIV6y7ZdDPBskXbr/1VirlqteTnjSFoA84SpdDdiwIHb6I
-Ld/KRAZI6WTY2WqZnrPQ2RFcDOwPYj1AEeJn4CWFk8zCY6VrCF4IYHPUvUHj8WX8
-O7FQOLRzyKhkHCQSHIJh5T+M4B8C9gDnDVmqHJX7+NZr7zrqvBXhxChs3NVJltVQ
-B6V6lLQn1v4Bku99Ty+t4wswm35lZPOOO4vlnyCYPwyBoWjg23X3jMwuMMAt67kd
-u0MfvYAhImxEoMKiYAy9oSflffX8tl+6HGzEXjs/L1gRtOjhG/NqmAaTdIOAj1dh
-FyAYBWTrEZX7mqtrJl8h+YmmDa1ksqJ759fibkFEp1K8ODepnQbNGLwKLLcrViib
-b8rPomeDKO/YCvx2gYJC1nL1gvm4bxHVkdqw9sa2xGr49KGervc2z5pqtRMUel75
-fDklog04S2mtKpwLwMwRBjzIUoVAAEJDASd4dPidprLtFf5jgRwZCgSGtik9WMmP
-W3hf5qy2UcOQH4xEoCLsISWEt1/9x9233rybtGrsSX8UuuqUmKAl6YIKAsHD406C
-QdZJQ2T1lJzJ7b9z0u/dxiW6rwBYWO2vDBo2WPn+sgJsj5nW62o=
-=3JsV
------END PGP SIGNATURE-----
+We will remove or refine
 
---mvym7qs4yl5uwgha--
+>> + */
+>> +#define LPC_NSEC_PERWAIT    100
+>> +/*
+>> + * The maximum waiting time is about 128us.
+>> + * The fastest IO cycle time is about 390ns, but the worst case will
+>> wait
+>> + * for extra 256 lpc clocks, so (256 + 13) * 30ns = 8 us. The maximum
+>> + * burst cycles is 16. So, the maximum waiting time is about 128us under
+>> + * worst case.
+>> + * choose 1300 as the maximum.
+>> + */
+>> +#define LPC_MAX_WAITCNT        1300
+>> +/* About 10us. This is specific for single IO operation, such as inb. */
+>> +#define LPC_PEROP_WAITCNT    100
+>> +
+>> +
+>> +static inline int wait_lpc_idle(unsigned char *mbase,
+>
+> No need to specify inline.
+>
+
+Agreed
+
+>> +                unsigned int waitcnt) {
+>> +    u32 opstatus;
+>> +
+>> +    while (waitcnt--) {
+>> +        ndelay(LPC_NSEC_PERWAIT);
+>> +        opstatus = readl(mbase + LPC_REG_OP_STATUS);
+>> +        if (opstatus & LPC_STATUS_IDLE)
+>> +            return (opstatus & LPC_OP_FINISHED) ? 0 : (-EIO);
+>
+> It's a shame we have to busy loop, but I guess no calling code outside
+> is prepared for rescheduling at this point.
+>
+>> +    }
+>> +    return -ETIME;
+>> +}
+>> +
+>> +/*
+>> + * hisilpc_target_in - trigger a series of lpc cycles to read
+>> required data
+>> + *               from target peripheral.
+>> + * @pdev: pointer to hisi lpc device
+>> + * @para: some parameters used to control the lpc I/O operations
+>> + * @ptaddr: the lpc I/O target port address
+>> + * @buf: where the read back data is stored
+>> + * @opcnt: how many I/O operations required in this calling
+>> + *
+>> + * Only one byte data is read each I/O operation.
+>> + *
+>> + * Returns 0 on success, non-zero on fail.
+>> + *
+>> + */
+>> +static int
+>> +hisilpc_target_in(struct hisilpc_dev *lpcdev, struct lpc_cycle_para
+>> *para,
+>> +          unsigned long ptaddr, unsigned char *buf,
+>> +          unsigned long opcnt)
+>> +{
+>> +    unsigned long cnt_per_trans;
+>> +    unsigned int cmd_word;
+>> +    unsigned int waitcnt;
+>> +    int ret;
+>> +
+>> +    if (!buf || !opcnt || !para || !para->csize || !lpcdev)
+>> +        return -EINVAL;
+>> +
+>> +    if (opcnt  > LPC_MAX_OPCNT)
+>> +        return -EINVAL;
+>> +
+>> +    cmd_word = LPC_CMD_TYPE_IO | LPC_CMD_READ;
+>> +    waitcnt = LPC_PEROP_WAITCNT;
+>> +    if (!(para->opflags & FG_INCRADDR_LPC)) {
+>> +        cmd_word |= LPC_CMD_SAMEADDR;
+>> +        waitcnt = LPC_MAX_WAITCNT;
+>> +    }
+>> +
+>> +    ret = 0;
+>> +    cnt_per_trans = (para->csize == 1) ? opcnt : para->csize;
+>> +    for (; opcnt && !ret; cnt_per_trans = para->csize) {
+>> +        unsigned long flags;
+>> +
+>> +        /* whole operation must be atomic */
+>> +        spin_lock_irqsave(&lpcdev->cycle_lock, flags);
+>
+> Ouch. This is going to kill your RT jitter. Is there no better way?
+>
+
+Obviously the bus register driving is non-atomic, so we need some way to 
+lock out.
+
+I think that it is not so critical for low-speed/infrequent-access bus.
+
+If we were going to use virtual UART in the BMC on the LPC bus then we 
+could consider more.
+
+>> +
+>> +        writel(cnt_per_trans, lpcdev->membase + LPC_REG_OP_LEN);
+>> +
+>> +        writel(cmd_word, lpcdev->membase + LPC_REG_CMD);
+>> +
+>> +        writel(ptaddr, lpcdev->membase + LPC_REG_ADDR);
+>> +
+>> +        writel(START_WORK, lpcdev->membase + LPC_REG_START);
+>> +
+>> +        /* whether the operation is finished */
+>> +        ret = wait_lpc_idle(lpcdev->membase, waitcnt);
+>> +        if (!ret) {
+>> +            opcnt -= cnt_per_trans;
+>> +            for (; cnt_per_trans--; buf++)
+>> +                *buf = readl(lpcdev->membase + LPC_REG_RDATA);
+>> +        }
+>> +
+>> +        spin_unlock_irqrestore(&lpcdev->cycle_lock, flags);
+>> +    }
+>> +
+>> +    return ret;
+>> +}
+>> +
+>> +/**
+>> + * hisilpc_target_out - trigger a series of lpc cycles to write required
+>> + *            data to target peripheral.
+>> + * @pdev: pointer to hisi lpc device
+>> + * @para: some parameters used to control the lpc I/O operations
+>> + * @ptaddr: the lpc I/O target port address
+>> + * @buf: where the data to be written is stored
+>> + * @opcnt: how many I/O operations required
+>> + *
+>> + * Only one byte data is read each I/O operation.
+>> + *
+>> + * Returns 0 on success, non-zero on fail.
+>> + *
+>> + */
+>> +static int
+>> +hisilpc_target_out(struct hisilpc_dev *lpcdev, struct lpc_cycle_para
+>> *para,
+>> +           unsigned long ptaddr, const unsigned char *buf,
+>> +           unsigned long opcnt)
+>> +{
+>> +    unsigned long cnt_per_trans;
+>> +    unsigned int cmd_word;
+>> +    unsigned int waitcnt;
+>> +    int ret;
+>> +
+>> +    if (!buf || !opcnt || !para || !lpcdev)
+>> +        return -EINVAL;
+>> +
+>> +    if (opcnt > LPC_MAX_OPCNT)
+>> +        return -EINVAL;
+>> +    /* default is increasing address */
+>> +    cmd_word = LPC_CMD_TYPE_IO | LPC_CMD_WRITE;
+>> +    waitcnt = LPC_PEROP_WAITCNT;
+>> +    if (!(para->opflags & FG_INCRADDR_LPC)) {
+>> +        cmd_word |= LPC_CMD_SAMEADDR;
+>> +        waitcnt = LPC_MAX_WAITCNT;
+>> +    }
+>> +
+>> +    ret = 0;
+>> +    cnt_per_trans = (para->csize == 1) ? opcnt : para->csize;
+>> +    for (; opcnt && !ret; cnt_per_trans = para->csize) {
+>> +        unsigned long flags;
+>> +
+>> +        spin_lock_irqsave(&lpcdev->cycle_lock, flags);
+>
+> Same thing here
+>
+
+As above
+
+>> +
+>> +        writel(cnt_per_trans, lpcdev->membase + LPC_REG_OP_LEN);
+>> +        opcnt -= cnt_per_trans;
+>> +        for (; cnt_per_trans--; buf++)
+>> +            writel(*buf, lpcdev->membase + LPC_REG_WDATA);
+>> +
+>> +        writel(cmd_word, lpcdev->membase + LPC_REG_CMD);
+>> +
+>> +        writel(ptaddr, lpcdev->membase + LPC_REG_ADDR);
+>> +
+>> +        writel(START_WORK, lpcdev->membase + LPC_REG_START);
+>> +
+>> +        /* whether the operation is finished */
+>> +        ret = wait_lpc_idle(lpcdev->membase, waitcnt);
+>> +
+>> +        spin_unlock_irqrestore(&lpcdev->cycle_lock, flags);
+>> +    }
+>> +
+>> +    return ret;
+>> +}
+>> +
+>> +static inline unsigned long
+>
+> Don't explicitly mention inline, the compiler will figure that out for you.
+>
+
+Sure
+
+>> +hisi_lpc_pio_to_addr(struct hisilpc_dev *lpcdev, unsigned long pio)
+>> +{
+>> +    return pio - lpcdev->extio->io_start + lpcdev->extio->bus_start;
+>> +}
+>> +
+>> +
+>> +/**
+>> + * hisilpc_comm_in - read/input the data from the I/O peripheral
+>> + *             through LPC.
+>> + * @devobj: pointer to the device information relevant to LPC
+>> controller.
+>> + * @pio: the target I/O port address.
+>> + * @dlen: the data length required to read from the target I/O port.
+>> + *
+>> + * when succeed, the data read back is stored in buffer pointed by
+>> inbuf.
+>> + * For inb, return the data read from I/O or -1 when error occur.
+>> + */
+>> +static u64 hisilpc_comm_in(void *devobj, unsigned long pio, size_t dlen)
+>> +{
+>> +    struct hisilpc_dev *lpcdev = devobj;
+>> +    struct lpc_cycle_para iopara;
+>> +    u32 rd_data;
+>
+> rd_data needs to be initialized to 0. Otherwise it may contain stale
+> stack contents and corrupt non-32bit dlen returns.
+>
+
+I think so, since we read into this value byte-by-byte. We also seem to 
+return a 32b value but should return 64b value according to the prototype.
+
+>> +    unsigned char *newbuf;
+>> +    int ret = 0;
+>> +    unsigned long ptaddr;
+>> +
+>> +    if (!lpcdev || !dlen || dlen > LPC_MAX_DULEN ||    (dlen & (dlen
+>> - 1)))
+>> +        return -1;
+>
+> Isn't this -EINVAL?
+
+Not sure. This value is returned directly to the inb/outb caller, which 
+would not check this value for error.
+
+It could be argued that the checking is paranoia. If not, we should 
+treat the failure as a more severe event.
+
+>
+>> +
+>> +    /* the local buffer must be enough for one data unit */
+>> +    if (sizeof(rd_data) < dlen)
+>> +        return -1;
+>
+> Same here.
+>
+> Also, the above seems a very convoluted way of saying
+>
+>   switch (dlen) {
+>   case 1:
+>   case 2:
+>   case 4:
+
+It's better
+
+>     break;
+>   default:
+>     return -EINVAL;
+>   }
+>
+> But I guess the way you write it doesn't hurt ;)
+>
+>
+> Alex
+>
+> .
+>
