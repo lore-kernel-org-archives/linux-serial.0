@@ -1,75 +1,55 @@
-From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 3/5] serdev: Introduce new bus for serial attached
- devices
-Date: Tue, 31 Jan 2017 15:31:43 +0100
-Message-ID: <20170131143143.tvf4w7itfwqmweq4@earth>
-References: <20170125202343.30923-1-robh@kernel.org>
- <20170125202343.30923-4-robh@kernel.org>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [RFC] tty: pl011: Work around stuck BUSY bit on QDF2400
+Date: Tue, 31 Jan 2017 14:51:12 +0000
+Message-ID: <20170131145112.GF22283@arm.com>
+References: <20170130234417.20855-1-cov@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3cnesufgnubno33i"
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20170125202343.30923-4-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Dr . H . Nikolaus Schaller" <hns-xXXSsgcRVICgSpxsJD1C4w@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Loic Poulain <loic.poulain-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, NeilBrown <neil-+NVA1uvv1dVBDLzU/O5InQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20170130234417.20855-1-cov@codeaurora.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christopher Covington <cov@codeaurora.org>
+Cc: pelcan@codeaurora.org, Peter Hurley <peter@hurleysoftware.com>, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, timur@codeaurora.org, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org, Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, nleeder@codeaurora.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
+On Mon, Jan 30, 2017 at 06:44:17PM -0500, Christopher Covington wrote:
+> N.B. I'm not confident that this patch is ready to be included as-is.
+> Rather I'm hoping for guidance from reviewers and maintainers on
+> broad implementation choices--whether A) the bitmask of flags to invert
+> makes sense or B) vendor-specific is_busy() function pointers or C)
+> hot-patching using the alternatives framework or D) some other
+> approach would be best.
+> 
+> The Qualcomm Datacenter Technologies QDF2400 family of SoCs contains a
+> custom (non-PrimeCell) implementation of the SBSA UART. Occasionally the
+> BUSY bit in the Flag Register gets stuck as 1, erratum 44 for both 2432v1
+> and 2400v1 SoCs. Checking that the Transmit FIFO Empty (TXFE) bit is 0,
+> instead of checking that the BUSY bit is 1, works around the issue. To
+> facilitate this substitution, introduce vendor-specific inversion of
+> Feature Register bits.
+> 
+> Signed-off-by: Christopher Covington <cov@codeaurora.org>
+> ---
+> Based on https://git.kernel.org/cgit/linux/kernel/git/arm64/linux.git/log/?h=for-next/core
+> ---
+>  Documentation/arm64/silicon-errata.txt |  2 ++
+>  arch/arm64/Kconfig                     | 11 +++++++++
+>  arch/arm64/include/asm/cpucaps.h       |  3 ++-
+>  arch/arm64/include/asm/cputype.h       |  2 ++
+>  arch/arm64/kernel/cpu_errata.c         | 16 +++++++++++++
 
---3cnesufgnubno33i
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This isn't a bug in the CPU, so please don't reuse the CPU errata code to
+workaround it. You can handle it all privately in the pl011 driver, but
+do keep the update to silicon-errata.txt.
 
-Hi Rob,
-
-On Wed, Jan 25, 2017 at 02:23:41PM -0600, Rob Herring wrote:
-> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-> new file mode 100644
-> index 000000000000..4f8f76d02ca8
-> --- /dev/null
-> +++ b/include/linux/serdev.h
->
-> [...]
->
-> +#ifdef CONFIG_SERIAL_DEV_BUS
->
-> [method definitions]
->
-> #else
->
-> [method stubs]
->
-> #endif
->
-> [...]
-
-This should also test for SERIAL_DEV_BUS=m, so use
-
-#if IS_ENABLED(CONFIG_SERIAL_DEV_BUS)
-
-(This was found by the kbuild test robot)
-
--- Sebastian
-
---3cnesufgnubno33i
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAliQn8wACgkQ2O7X88g7
-+pqQlg/8DSlRWrR4d3zPD34mACClm1NdayhnMs5tYAW/q+yvH3YA1joOE5g+9CbK
-X5QIczoFN/UNlFtA4Lg+8Dikgd49k8bB5zTvkXWCwznJ9UtbKtXlTSg1G4unGsKU
-qMRQ2a1JVOioHKT3JbHU/bVM7waFXI/5aX4SBrqRwngGorKH/J0LB2HPotLB40SN
-BKSZ47Rk06UZME2N7QDU8MsnGnMZL1SY26Ozf3JRpI7SRlArc0TRSBAlBHElWY+P
-URHWF9MAwZAWJ3GCalr9WKdNQe6qgQ9eA6oY4JF4SfGCAUMQs/K/MNJ2PpGLxlVa
-7XmRij2RQDwIbPEWnKV/1qiw5XSvz1M5ohGMCQAMq/KPpZkqA8cE6vI3AnKuTXWy
-tLwAVJh+mRnD4qiJMewCTAG7VF1v0ZjV4w92e7bYVtgxzAPPKBvjK3GDMPoFM2tJ
-HRBlXE7B6y3LCoXNig9dIY20virJpeKhvr0U1OOI6cuhuLF0IyLO6OVtTC9kKooW
-G+0q0dGlvCkLAFOjsdVKwuUgt3o+Uif33v7rKGWYDoJ6fjhFr0X51XwY9WnmOoNF
-kf5BHCDKOmtEAzSXGzhxmjfXJ7EwGznfvzYOccZ4ANDA6CyXwD9AQPu+IdETz5pv
-E0+taPA/18QUv8WoA5L6SkvCsK1tT41R7e8PR9ilIPG8tmcON2A=
-=vD/b
------END PGP SIGNATURE-----
-
---3cnesufgnubno33i--
+Will
