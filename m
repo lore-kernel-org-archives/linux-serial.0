@@ -1,45 +1,49 @@
-From: Peter Griffin <peter.griffin@linaro.org>
-Subject: Re: [STLinux Kernel] [PATCH v2 05/10] serial: st-asc: Use generic DT
- binding for announcing RTS/CTS lines
-Date: Wed, 1 Feb 2017 14:56:54 +0000
-Message-ID: <20170201145654.GD28760@griffinp-ThinkPad-X1-Carbon-2nd>
+From: Peter Griffin <peter.griffin-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [STLinux Kernel] [PATCH v2 06/10] dt-bindings: serial: Update
+ 'uart-has-rtscts' description
+Date: Wed, 1 Feb 2017 14:57:16 +0000
+Message-ID: <20170201145716.GE28760@griffinp-ThinkPad-X1-Carbon-2nd>
 References: <20170201143145.31962-1-lee.jones@linaro.org>
- <20170201143145.31962-6-lee.jones@linaro.org>
+ <20170201143145.31962-7-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170201143145.31962-6-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, dt@kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@stlinux.com
+In-Reply-To: <20170201143145.31962-7-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 On Wed, 01 Feb 2017, Lee Jones wrote:
 
-> The initial binding 'st,hw-flow-control' isn't used anywhere, in neither
-> in upstream nor downstream kernels.  It isn't even documented in
-> dt-bindings, so we can safely assume it's safe to swap to the generic
-> one.
+> 'uart-has-rtscts' property and 'rts-gpios|cts-gpios' are normally
+> mutually exclusive, however it is possible for some drivers to have
+> a dynamic approach, meaning that both properties can be relevant.
 > 
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-Acked-by: Peter Griffin <peter.griffin@linaro.org>
+Acked-by: Peter Griffin <peter.griffin-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 > ---
->  drivers/tty/serial/st-asc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  Documentation/devicetree/bindings/serial/serial.txt | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-> index e521078..bcf1d33 100644
-> --- a/drivers/tty/serial/st-asc.c
-> +++ b/drivers/tty/serial/st-asc.c
-> @@ -794,7 +794,7 @@ static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
->  		return NULL;
+> diff --git a/Documentation/devicetree/bindings/serial/serial.txt b/Documentation/devicetree/bindings/serial/serial.txt
+> index fd970f7..b542a0e 100644
+> --- a/Documentation/devicetree/bindings/serial/serial.txt
+> +++ b/Documentation/devicetree/bindings/serial/serial.txt
+> @@ -23,7 +23,8 @@ Optional properties:
+>      they are available for use (wired and enabled by pinmux configuration).
+>      This depends on both the UART hardware and the board wiring.
+>      Note that this property is mutually-exclusive with "cts-gpios" and
+> -    "rts-gpios" above.
+> +    "rts-gpios" above, unless support is provided to switch between modes
+> +    dynamically.
 >  
->  	asc_ports[id].hw_flow_control = of_property_read_bool(np,
-> -							"st,hw-flow-control");
-> +							"uart-has-rtscts");
->  	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force_m1");
->  	asc_ports[id].port.line = id;
->  	asc_ports[id].rts = NULL;
+>  
+>  Examples:
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
