@@ -1,7 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v2 10/10] ARM: dts: STiH410-b2260: Enable HW flow-control
-Date: Wed,  1 Feb 2017 14:31:45 +0000
-Message-ID: <20170201143145.31962-11-lee.jones@linaro.org>
+Subject: [PATCH v2 09/10] ARM: dts: STiH407-family: Use new Pinctrl groups
+Date: Wed,  1 Feb 2017 14:31:44 +0000
+Message-ID: <20170201143145.31962-10-lee.jones@linaro.org>
 References: <20170201143145.31962-1-lee.jones@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170201143145.31962-1-lee.jones@linaro.org>
@@ -10,27 +10,46 @@ To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, d
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, patrice.chotard@st.com, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hardware flow-control capability must be specified at a platform
-level in order to inform the ASC driver that the platform is capable
-(i.e. are the lines wired up, etc).  STiH4{07,10} devices are indeed
-capable, so let's provide the property.
+Having just defined some new Pinctrl groups for when HW flow-control
+is {en,dis}abled, let's reference them for use within the driver.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- arch/arm/boot/dts/stih410-b2260.dts | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/stih407-family.dtsi | 3 +--
+ arch/arm/boot/dts/stih410-b2260.dts   | 5 ++++-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
+diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
+index c8b2944..e480e32 100644
+--- a/arch/arm/boot/dts/stih407-family.dtsi
++++ b/arch/arm/boot/dts/stih407-family.dtsi
+@@ -222,9 +222,8 @@
+ 			compatible = "st,asc";
+ 			reg = <0x9830000 0x2c>;
+ 			interrupts = <GIC_SPI 122 IRQ_TYPE_NONE>;
+-			pinctrl-names = "default";
+-			pinctrl-0 = <&pinctrl_serial0>;
+ 			clocks = <&clk_s_c0_flexgen CLK_EXT2F_A9>;
++			/* Pinctrl moved out to a per-board configuration */
+ 
+ 			status = "disabled";
+ 		};
 diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
-index cbcbcb4..93c14d1 100644
+index fa16aba..cbcbcb4 100644
 --- a/arch/arm/boot/dts/stih410-b2260.dts
 +++ b/arch/arm/boot/dts/stih410-b2260.dts
-@@ -66,6 +66,7 @@
- 			pinctrl-0 = <&pinctrl_serial0_hw_flowctrl>;
- 			pinctrl-1 = <&pinctrl_serial0>;
+@@ -62,8 +62,11 @@
+ 		/* Low speed expansion connector */
+ 		uart0: serial@9830000 {
+ 			label = "LS-UART0";
+-			status = "okay";
++			pinctrl-names = "default", "no-hw-flowctrl";
++			pinctrl-0 = <&pinctrl_serial0_hw_flowctrl>;
++			pinctrl-1 = <&pinctrl_serial0>;
  			rts-gpios = <&pio17 3 GPIO_ACTIVE_LOW>;
-+			uart-has-rtscts;
- 			status = "okay";
++			status = "okay";
  		};
  
+ 		/* Low speed expansion connector */
 -- 
 2.9.3
