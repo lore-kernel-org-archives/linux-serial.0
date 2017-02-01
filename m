@@ -1,67 +1,114 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 2/9] tty_port: allow a port to be opened with a tty
- that has no file handle
-Date: Thu, 19 Jan 2017 09:23:00 -0600
-Message-ID: <CAL_Jsq+BGBgYDa5WX=7d7y9iew6NNc8Z0=A_Qt9pCM1u_=pxaw@mail.gmail.com>
-References: <20170116225436.17505-1-robh@kernel.org> <20170116225436.17505-3-robh@kernel.org>
- <20170119133718.GA6072@kroah.com> <CAL_JsqL6jiGxardwVQEaXr4-NJPZM=UN+-DucSniyOdnpR_BOg@mail.gmail.com>
+From: =?UTF-8?B?64Ko7JiB66+8?= <youngmin.nam@samsung.com>
+Subject: RE: [PATCH] serial: samsung: add clock controls in
+ s3c24xx_serial_resume_noirq()
+Date: Wed, 01 Feb 2017 18:45:28 +0900
+Message-ID: <008b01d27c6f$ebce8500$c36b8f00$@samsung.com>
+References: <000d01d218c5$3069cdf0$913d69d0$@samsung.com>
+ <CGME20160930103448epcas2p4e2ee38332ad98ad3cb1e07866d4337d8@epcas2p4.samsung.com>
+ <20160930103434.GA4713@kozik-lap>
+ <000401d21dfc$dba89bb0$92f9d310$@samsung.com>
+ <43f1d7da-9857-4f0e-12b9-ff0f241de762@math.uni-bielefeld.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqL6jiGxardwVQEaXr4-NJPZM=UN+-DucSniyOdnpR_BOg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alan Cox <alan@linux.intel.com>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <43f1d7da-9857-4f0e-12b9-ff0f241de762@math.uni-bielefeld.de>
+Content-language: ko
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: 'Tobias Jakobi' <tjakobi@math.uni-bielefeld.de>, 'Krzysztof Kozlowski' <krzk@kernel.org>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 19, 2017 at 9:05 AM, Rob Herring <robh@kernel.org> wrote:
-> On Thu, Jan 19, 2017 at 7:37 AM, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
->> On Mon, Jan 16, 2017 at 04:54:29PM -0600, Rob Herring wrote:
->>> From: Alan Cox <alan@linux.intel.com>
->>>
->>> Let us create tty objects entirely in kernel space. Untested proposal to
->>> show why all the ideas around rewriting half the uart stack are not needed.
->>>
->>> With this a kernel created non file backed tty object could be used to handle
->>> data, and set terminal modes. Not all ldiscs can cope with this as N_TTY in
->>> particular has to work back to the fs/tty layer.
->>>
->>> The tty_port code is however otherwise clean of file handles as far as I can
->>> tell as is the low level tty port write path used by the ldisc, the
->>> configuration low level interfaces and most of the ldiscs.
->>>
->>> Currently you don't have any exposure to see tty hangups because those are
->>> built around the file layer. However a) it's a fixed port so you probably
->>> don't care about that b) if you do we can add a callback and c) you almost
->>> certainly don't want the userspace tear down/rebuild behaviour anyway.
->>>
->>> This should however be sufficient if we wanted for example to enumerate all
->>> the bluetooth bound fixed ports via ACPI and make them directly available.
->>> It doesn't deal with the case of a user opening a port that's also kernel
->>> opened and that would need some locking out (so it returned EBUSY if bound
->>> to a kernel device of some kind). That needs resolving along with how you
->>> "up" or "down" your new bluetooth device, or enumerate it while providing
->>> the existing tty API to avoid regressions (and to debug).
->>>
->>> Alan
->>> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->>> Reviewed-By: Sebastian Reichel <sre@kernel.org>
->>> ---
->>> Alan, Need your SoB here.
->>
->> Rob, as this patch is flowing through you, I need your signed-off-by as
->> well if I am to take it.
+Hello,
+
 >
-> Right. I've added both for the next version.
+>Hello,
+>
+>was going through my mail folder and I don't think that this patch was ever
+>applied (or resent).
+>
+>Just wondering if it is still necessary.
+>
+>- Tobias
+>
 
-Oh, I see you applied the 1st patch. Thanks. If you want to apply this
-one now here's my S-o-B:
+Sorry for late reply. I will resend the patch soon.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
+Thanks.
 
-Patches 3 and 4 can be applied too.
-
-For patch 5, I'd really like someone with more tty knowledge to comment on.
-
-Rob
+>
+>남영민 wrote:
+>> Hello,
+>>
+>>> On Tue, Sep 27, 2016 at 10:43:54PM +0900, 남영민 wrote:
+>>>> This patch adds clock controls in s3c24xx_serial_resume_noirq() to
+>>>> set S3C64XX_UINTM register.
+>>>
+>>> Code looks correct but the commit message is bogus. It does not bring
+>>> any benefit over the code, not mentioning that it is quite cryptic
+>>> (what does the "clock controls" mean?).
+>>>
+>>> Just describe here WHAT is the problem and WHY the fix is needed.
+>>>
+>>> Best regards,
+>>> Krzysztof
+>>>
+>>
+>> Thank you for taking your time for the review.
+>> I will improve the commit message applying your suggestions and resend
+>this patch.
+>>
+>> Best regards,
+>> Youngmin Nam
+>>
+>>
+>>>>
+>>>> Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
+>>>> ---
+>>>>  drivers/tty/serial/samsung.c | 3 +++
+>>>>  1 file changed, 3 insertions(+)
+>>>>
+>>>> diff --git a/drivers/tty/serial/samsung.c
+>>>> b/drivers/tty/serial/samsung.c index ae2095a..97f7b3b 100644
+>>>> --- a/drivers/tty/serial/samsung.c
+>>>> +++ b/drivers/tty/serial/samsung.c
+>>>> @@ -1921,6 +1921,7 @@ static int s3c24xx_serial_resume(struct device
+>>>> *dev)  static int s3c24xx_serial_resume_noirq(struct device *dev)  {
+>>>>  	struct uart_port *port = s3c24xx_dev_to_port(dev);
+>>>> +	struct s3c24xx_uart_port *ourport = to_ourport(port);
+>>>>
+>>>>  	if (port) {
+>>>>  		/* restore IRQ mask */
+>>>> @@ -1930,7 +1931,9 @@ static int s3c24xx_serial_resume_noirq(struct
+>>> device *dev)
+>>>>  				uintm &= ~S3C64XX_UINTM_TXD_MSK;
+>>>>  			if (rx_enabled(port))
+>>>>  				uintm &= ~S3C64XX_UINTM_RXD_MSK;
+>>>> +			clk_prepare_enable(ourport->clk);
+>>>>  			wr_regl(port, S3C64XX_UINTM, uintm);
+>>>> +			clk_disable_unprepare(ourport->clk);
+>>>>  		}
+>>>>  	}
+>>>>
+>>>> --
+>>>> 2.8.1
+>>>>
+>>>>
+>>>> --
+>>>> To unsubscribe from this list: send the line "unsubscribe
+>>>> linux-samsung-soc" in the body of a message to
+>>>> majordomo@vger.kernel.org More majordomo info at
+>>> http://vger.kernel.org/majordomo-info.html
+>>
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe
+>> linux-samsung-soc" in the body of a message to
+>> majordomo@vger.kernel.org More majordomo info at
+>> http://vger.kernel.org/majordomo-info.html
+>>
+>
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-samsung-
+>soc" in the body of a message to majordomo@vger.kernel.org More majordomo
+>info at  http://vger.kernel.org/majordomo-info.html
