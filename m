@@ -1,108 +1,91 @@
 From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [STLinux Kernel] [PATCH 3/8] serial: st-asc: Read in all Pinctrl
- states
-Date: Wed, 1 Feb 2017 12:47:51 +0000
-Message-ID: <20170201124751.f3r7l52vneqgilac@dell>
-References: <20170127115458.k4edg42nnna3bv4v@dell>
- <20170130142356.GA18710@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170130153211.j75qemvwsq3cwqve@dell>
- <20170130161041.GA21001@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170130191159.zv5jegvu4fetcmzo@dell>
- <20170130223521.GA12847@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170131101356.bpg5hamkfgprdbpt@dell>
- <20170131113131.GA6427@griffinp-ThinkPad-X1-Carbon-2nd>
- <20170131122717.cwyqezvca3gsti7t@dell>
- <20170201115006.GA23479@griffinp-ThinkPad-X1-Carbon-2nd>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH v2 02/10] serial: st-asc: Provide RTS functionality
+Date: Wed,  1 Feb 2017 14:31:37 +0000
+Message-ID: <20170201143145.31962-3-lee.jones@linaro.org>
+References: <20170201143145.31962-1-lee.jones@linaro.org>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170201115006.GA23479@griffinp-ThinkPad-X1-Carbon-2nd>
+In-Reply-To: <20170201143145.31962-1-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Peter Griffin <peter.griffin-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-> > > > Again, doesn't matter, since it's the DTB that provides the default
-> > > > state.  So, back when it was authored, the default state was HW
-> > > > flow-control disabled.  And in a newer DTB (again, until I follow-up
-> > > > with more changes), the defaults for UART 1 and UART 2 are HW
-> > > > flow-control disabled.
-> > > > 
-> > > > Your issue seems to be that you've assumed since we now provide the
-> > > > possibility of a "manual-rts" state, then the "default" state should
-> > > > *only* be HW flow-control capable, which is not the case.
-> > > 
-> > > No my feedback was that it would be clearer & simpler to make manual-rts the
-> > > 'default' state, and 'hw-flow-control' the optional state.
-> > 
-> > Absolutely not.  The use of "manual-rts" is the corner-case here and
-> > is not normally required.
-> 
-> See below.
-> 
-> > The "default" state should normally be
-> > populated with whatever pins are available i.e. all 4 pins (including
-> > "rts, cts") if they are wired up and only 2 pins (just "tx, rx") if
-> > they are not.
-> 
-> Yep OK, I agree :)
+Until this point, it has not been possible for userland serial
+applications (e.g. stty) to toggle the UART RTS line.  This can
+be useful with certain configurations. For example, when using
+a Mezzanine on a Linaro 96board, RTS line is used to take the
+on-board microcontroller in and out of reset.
 
-\o/
+Acked-by: Peter Griffin <peter.griffin-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+---
+ drivers/tty/serial/st-asc.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
 
-> > The submission of "manual-rts" is only required if the
-> > RTS pin is required for some other purpose e.g. resetting a uC on a
-> > draughtboard.
-> 
-> All UARTs the SoC have the same st-asc IP, which suffers from the same
-> hw flow control limitation. Also all instances on the SoC have rts/cts
-> pins, the only limitation is board wiring.
-> 
-> So I can't see why would you ever *not* want to deploy this dynamic pin
-> switching solution if rts/cts is wired up at board level now the facility
-> exists?
-
-Mainly because it's surplus to requirement, in that there is very
-seldom any point in manually toggling the RTS line (at least to my
-knowledge).  I figure we'd add >1 Pinctrl states only when the need
-arises, thus keeping the DTS' as simple as possible.
-
-> Also regarding the naming of the second pin group, 'manual-rts' seems like
-> a bad name as a logical extension of this set is to also offer the same
-> dynamic switching for the CTS line.
-> 
-> Maybe a better name would be 'tx-rx-only' or 'no-rts-cts'.
-
-Works for me.  Will fix.
-
-> > > > It's the
-> > > > 'uart-has-rtscts' property which determines this *not* whether the
-> > > > second state has been provided.
-> > > 
-> > > Yep, which is why IMO it makes more sense for the optional pin group to be the hw
-> > > flow control pins which are obtained if the uart-has-rtscts property is present.
-> > 
-> > There would normally only be one pin group.  Your method would insist
-> > we always provided 2, which would be surplus to requirement.
-> 
-> Yep OK, agree with your point.
-
-\o/
-
-> Yep OK, I agree.
-
-\o/
-
-> Yep OK, I agree.
-
-\o/
-
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 69e6232..397df50 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -30,6 +30,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/serial_core.h>
+ #include <linux/clk.h>
++#include <linux/gpio/consumer.h>
+ 
+ #define DRIVER_NAME "st-asc"
+ #define ASC_SERIAL_NAME "ttyAS"
+@@ -38,6 +39,7 @@
+ 
+ struct asc_port {
+ 	struct uart_port port;
++	struct gpio_desc *rts;
+ 	struct clk *clk;
+ 	unsigned int hw_flow_control:1;
+ 	unsigned int force_m1:1;
+@@ -391,12 +393,27 @@ static unsigned int asc_tx_empty(struct uart_port *port)
+ 
+ static void asc_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
++	struct asc_port *ascport = to_asc_port(port);
++
+ 	/*
+-	 * This routine is used for seting signals of: DTR, DCD, CTS/RTS
+-	 * We use ASC's hardware for CTS/RTS, so don't need any for that.
+-	 * Some boards have DTR and DCD implemented using PIO pins,
+-	 * code to do this should be hooked in here.
++	 * This routine is used for seting signals of: DTR, DCD, CTS and RTS.
++	 * We use ASC's hardware for CTS/RTS when hardware flow-control is
++	 * enabled, however if the RTS line is required for another purpose,
++	 * commonly controlled using HUP from userspace, then we need to toggle
++	 * it manually, using GPIO.
++	 *
++	 * Some boards also have DTR and DCD implemented using PIO pins, code to
++	 * do this should be hooked in here.
+ 	 */
++
++	if (!ascport->rts)
++		return;
++
++	/* If HW flow-control is enabled, we can't fiddle with the RTS line */
++	if (asc_in(port, ASC_CTL) & ASC_CTL_CTSENABLE)
++		return;
++
++	gpiod_set_value(ascport->rts, mctrl & TIOCM_RTS);
+ }
+ 
+ static unsigned int asc_get_mctrl(struct uart_port *port)
+@@ -726,6 +743,8 @@ static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
+ 							"st,hw-flow-control");
+ 	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force_m1");
+ 	asc_ports[id].port.line = id;
++	asc_ports[id].rts = NULL;
++
+ 	return &asc_ports[id];
+ }
+ 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.9.3
+
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
