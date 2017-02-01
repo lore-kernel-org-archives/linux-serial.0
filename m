@@ -1,96 +1,109 @@
-From: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Subject: RE: [PATCH V6 1/5] LIB: Indirect ISA/LPC port IO introduced
-Date: Wed, 1 Feb 2017 12:29:39 +0000
-Message-ID: <EE11001F9E5DDD47B7634E2F8A612F2E1F9FC04A@lhreml507-mbx>
-References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
- <1485241525-201782-2-git-send-email-yuanzhichang@hisilicon.com>
- <5dc0dc9c-124e-398f-a3b2-40059268e859@suse.de>
- <6d5523be-1841-18b9-9b83-6f7e591ed66b@huawei.com>
- <1a1f1e70-b6e7-f3c6-2b86-348b3d28edfe@suse.de>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [STLinux Kernel] [PATCH 3/8] serial: st-asc: Read in all Pinctrl
+ states
+Date: Wed, 1 Feb 2017 12:47:51 +0000
+Message-ID: <20170201124751.f3r7l52vneqgilac@dell>
+References: <20170127115458.k4edg42nnna3bv4v@dell>
+ <20170130142356.GA18710@griffinp-ThinkPad-X1-Carbon-2nd>
+ <20170130153211.j75qemvwsq3cwqve@dell>
+ <20170130161041.GA21001@griffinp-ThinkPad-X1-Carbon-2nd>
+ <20170130191159.zv5jegvu4fetcmzo@dell>
+ <20170130223521.GA12847@griffinp-ThinkPad-X1-Carbon-2nd>
+ <20170131101356.bpg5hamkfgprdbpt@dell>
+ <20170131113131.GA6427@griffinp-ThinkPad-X1-Carbon-2nd>
+ <20170131122717.cwyqezvca3gsti7t@dell>
+ <20170201115006.GA23479@griffinp-ThinkPad-X1-Carbon-2nd>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1a1f1e70-b6e7-f3c6-2b86-348b3d28edfe@suse.de>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Alexander Graf <agraf@suse.de>, John Garry <john.garry@huawei.com>, Yuanzhichang <yuanzhichang@hisilicon.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "frowand.list@gmail.com" <frowand.list@gmail.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "rafael@kernel.org" <rafael@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "brian.starkey@arm.com" <brian.starkey@arm.com>, "olof@lixom.net" <olof@lixom.net>, "arnd@arndb.de" <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "minyard@acm.org" <minyard@acm.org>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "zhichang.yuan02@gmail.com" <zhichang.yuan02@gmail.com>, "liviu.dudau@arm.com" <liviu.dudau@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "xuwei (O)" <xuwei5@hisilicon.com>, Linuxarm <linuxarm@huawei.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "zourongrong@gmail.com" <zourongrong@gmail.com>, "kantyzc@163.com" <kantyzc@163.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170201115006.GA23479@griffinp-ThinkPad-X1-Carbon-2nd>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peter Griffin <peter.griffin-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Alex
+> > > > Again, doesn't matter, since it's the DTB that provides the default
+> > > > state.  So, back when it was authored, the default state was HW
+> > > > flow-control disabled.  And in a newer DTB (again, until I follow-up
+> > > > with more changes), the defaults for UART 1 and UART 2 are HW
+> > > > flow-control disabled.
+> > > > 
+> > > > Your issue seems to be that you've assumed since we now provide the
+> > > > possibility of a "manual-rts" state, then the "default" state should
+> > > > *only* be HW flow-control capable, which is not the case.
+> > > 
+> > > No my feedback was that it would be clearer & simpler to make manual-rts the
+> > > 'default' state, and 'hw-flow-control' the optional state.
+> > 
+> > Absolutely not.  The use of "manual-rts" is the corner-case here and
+> > is not normally required.
+> 
+> See below.
+> 
+> > The "default" state should normally be
+> > populated with whatever pins are available i.e. all 4 pins (including
+> > "rts, cts") if they are wired up and only 2 pins (just "tx, rx") if
+> > they are not.
+> 
+> Yep OK, I agree :)
 
-> -----Original Message-----
-> From: Alexander Graf [mailto:agraf@suse.de]
+\o/
 
-[...]
+> > The submission of "manual-rts" is only required if the
+> > RTS pin is required for some other purpose e.g. resetting a uC on a
+> > draughtboard.
+> 
+> All UARTs the SoC have the same st-asc IP, which suffers from the same
+> hw flow control limitation. Also all instances on the SoC have rts/cts
+> pins, the only limitation is board wiring.
+> 
+> So I can't see why would you ever *not* want to deploy this dynamic pin
+> switching solution if rts/cts is wired up at board level now the facility
+> exists?
 
-> >>
-> >> I like the extio idea. That allows us to handle all PIO requests on
-> >> platforms that don't have native PIO support via different routes
-> >> depending on the region they're in. Unfortunately we now we have 2
-> >> frameworks for handling sparse PIO regions: One in extio, one in
-> PCI.
-> >>
-> >> Why don't we just merge the two? Most of the code that has #ifdef
-> >> PCI_IOBASE throughout the code base sounds like an ideal candidate
-> to
-> >> get migrated to extio instead. Then we only have a single framework
-> to
-> >> worry about ...
-> >
-> > To be clear, are you suggesting we merge the functionality from
-> > pci_register_io_range(), pci_pio_to_address(), pci_address_to_pio()
-> into
-> > extio, so extio manages all PIO?
-> 
-> Yes, I guess so.
-> 
-> > And having a single type of node to
-> > register PIO ranges, by amalgamating struct extio_node and io_range
-> (as
-> > Bjorn mentioned)?
-> 
-> I'm not quite sure I follow you here. Basically I think you want a
-> generic "non-x86 PIO" framework that PCI just plugs into.
-> 
-> I don't think that necessarily means you want to statically allocate
-> regions of that PIO space to separate (pseudo-)devices. Instead,
-> everyone shares that space and should be able to fail gracefully if
-> some
-> space is already occupied.
-> 
-> > It would make sense. We would be somewhat decoupling PIO from PCI.
-> 
-> Yes :).
-> 
-> > I think that other architectures, like PPC, and other code would need
-> to
-> > be fixed up to handle this.
-> 
-> I think only PPC, Microblaze and ARM are using this. Grep for
-> PCI_IOBASE. It's not that many.
-> 
-> > We need to consider all the other challenges/obstacles to this.
-> 
-> Well, getting our abstraction levels right to me sounds like it's worth
-> the obstacles.
-> 
+Mainly because it's surplus to requirement, in that there is very
+seldom any point in manually toggling the RTS line (at least to my
+knowledge).  I figure we'd add >1 Pinctrl states only when the need
+arises, thus keeping the DTS' as simple as possible.
 
-I have had a quick look and I think it should not be too difficult to
-unify the two frameworks.
+> Also regarding the naming of the second pin group, 'manual-rts' seems like
+> a bad name as a logical extension of this set is to also offer the same
+> dynamic switching for the CTS line.
+> 
+> Maybe a better name would be 'tx-rx-only' or 'no-rts-cts'.
 
-I'll follow up soon on this thread with a code sketch
+Works for me.  Will fix.
 
-Thanks
-Gab
+> > > > It's the
+> > > > 'uart-has-rtscts' property which determines this *not* whether the
+> > > > second state has been provided.
+> > > 
+> > > Yep, which is why IMO it makes more sense for the optional pin group to be the hw
+> > > flow control pins which are obtained if the uart-has-rtscts property is present.
+> > 
+> > There would normally only be one pin group.  Your method would insist
+> > we always provided 2, which would be surplus to requirement.
+> 
+> Yep OK, agree with your point.
 
-[...]
+\o/
+
+> Yep OK, I agree.
+
+\o/
+
+> Yep OK, I agree.
+
+\o/
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
