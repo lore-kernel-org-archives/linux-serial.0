@@ -1,67 +1,59 @@
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH] tty: serial: cpm_uart: make use of for_each_node_by_type()
-Date: Wed, 1 Feb 2017 15:20:12 -0800
-Message-ID: <20170201232012.GA35599@dtor-ws>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 00/10] serial: st-asc: Allow handling of RTS line
+Date: Thu, 2 Feb 2017 07:42:36 +0000
+Message-ID: <20170202074236.ni3tozz3er4g3t64@dell>
+References: <20170127172804.23881-1-lee.jones@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20170127172804.23881-1-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Instead of open-coding loop with of_find_node_by_type(), let's use canned
-macro.
+Hi Greg, Jiri,
 
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
----
- drivers/tty/serial/cpm_uart/cpm_uart_core.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+> When hardware flow-control is disabled, manual toggling of the UART's
+> reset line (RTS) using userland applications (e.g. stty) is not
+> possible, since the ASC IP does not provide this functionality in the
+> same was as some other IPs do.  Thus, we have to do this manually.
+> 
+> This set ensures the correct Pinctrl groups are configured and
+> obtained for both manual toggling of the RTS line and for the IP to
+> take over the lines when HW flow-control is requested by the user. 
+> 
+> Lee Jones (10):
+>   serial: st-asc: Ignore the parity error bit if 8-bit mode is enabled
+>   serial: st-asc: Provide RTS functionality
+>   serial: st-asc: Read in all Pinctrl states
+>   serial: st-asc: (De)Register GPIOD and swap Pinctrl profiles
+>   serial: st-asc: Use generic DT binding for announcing RTS/CTS lines
+>   dt-bindings: serial: Update 'uart-has-rtscts' description
+>   ARM: dts: STiH410-b2260: Identify the UART RTS line
+>   ARM: dts: STiH407-pinctrl: Add Pinctrl group for HW flow-control
+>   ARM: dts: STiH407-family: Use new Pinctrl groups
+>   ARM: dts: STiH410-b2260: Enable HW flow-control
+> 
+>  .../devicetree/bindings/serial/serial.txt          |   3 +-
+>  arch/arm/boot/dts/stih407-family.dtsi              |   3 +-
+>  arch/arm/boot/dts/stih407-pinctrl.dtsi             |  12 ++-
+>  arch/arm/boot/dts/stih410-b2260.dts                |   5 +
+>  drivers/tty/serial/st-asc.c                        | 101 +++++++++++++++++++--
+>  5 files changed, 110 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index d3e3d42c0c12..f6bcc19c99d5 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -1302,7 +1302,7 @@ static int __init cpm_uart_console_setup(struct console *co, char *options)
- 	struct uart_cpm_port *pinfo;
- 	struct uart_port *port;
- 
--	struct device_node *np = NULL;
-+	struct device_node *np;
- 	int i = 0;
- 
- 	if (co->index >= UART_NR) {
-@@ -1311,17 +1311,19 @@ static int __init cpm_uart_console_setup(struct console *co, char *options)
- 		return -ENODEV;
- 	}
- 
--	do {
--		np = of_find_node_by_type(np, "serial");
--		if (!np)
--			return -ENODEV;
--
-+	for_each_node_by_type(np, "serial") {
- 		if (!of_device_is_compatible(np, "fsl,cpm1-smc-uart") &&
- 		    !of_device_is_compatible(np, "fsl,cpm1-scc-uart") &&
- 		    !of_device_is_compatible(np, "fsl,cpm2-smc-uart") &&
- 		    !of_device_is_compatible(np, "fsl,cpm2-scc-uart"))
--			i--;
--	} while (i++ != co->index);
-+			continue;
-+
-+		if (i++ == co->index)
-+			break;
-+	}
-+
-+	if (!np)
-+		return -ENODEV;
- 
- 	pinfo = &cpm_uart_ports[co->index];
- 
--- 
-2.11.0.483.g087da7b7c-goog
+Looks like everyone is happy with the set.
 
+Are you planning to merge it?
 
 -- 
-Dmitry
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
