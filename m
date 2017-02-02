@@ -1,196 +1,245 @@
-From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH v3 5/7] serial: sh-sci: SCIFA/B RX FIFO software timeout
-Date: Thu,  2 Feb 2017 18:10:18 +0100
-Message-ID: <1486055420-31595-6-git-send-email-ulrich.hecht+renesas@gmail.com>
-References: <1486055420-31595-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1486055420-31595-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: linux-renesas-soc@vger.kernel.org, wsa@the-dreams.de, geert@linux-m68k.org
-Cc: linux-serial@vger.kernel.org, magnus.damm@gmail.com, sergei.shtylyov@cogentembedded.com, gregkh@linuxfoundation.org, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH V6 2/5] PCI: Adapt pci_register_io_range() for indirect-IO
+ and PCI I/O translation
+Date: Thu, 2 Feb 2017 17:36:16 +0000
+Message-ID: <068bbe37-42f4-e245-f900-c639c68404b9@huawei.com>
+References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1485241525-201782-3-git-send-email-yuanzhichang@hisilicon.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1485241525-201782-3-git-send-email-yuanzhichang@hisilicon.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: "zhichang.yuan" <yuanzhichang@hisilicon.com>, catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, brian.starkey@arm.com, olof@lixom.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org
+Cc: lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com
 List-Id: linux-serial@vger.kernel.org
 
-Implements support for FIFO fill thresholds greater than one with software
-timeout.
+Hi Rafael,
 
-This mechanism is not possible (or at least not useful) on SCIF family
-hardware other than SCIFA and SCIFB because they do not support turning off
-the DR hardware timeout interrupt separately from the RI interrupt.
+Could you kindly check the minor changes to drivers/acpi/pci_root.c?  It 
+would also be appreciated if you could review the ACPI-relevant parts in 
+lib/extio.c, in [PATCH V5 5/5] LPC: Add the ACPI LPC support
 
-Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
----
- drivers/tty/serial/sh-sci.c | 100 +++++++++++++++++++++++++++++---------------
- 1 file changed, 67 insertions(+), 33 deletions(-)
+Thanks,
+John
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index ae9b10a..17a2be3 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -148,7 +148,10 @@ struct sci_port {
- 	struct timer_list		rx_timer;
- 	unsigned int			rx_timeout;
- #endif
-+	unsigned int			rx_frame;
- 	int				rx_trigger;
-+	struct timer_list		rx_fifo_timer;
-+	int				rx_fifo_timeout;
- 
- 	bool has_rtscts;
- 	bool autorts;
-@@ -1034,6 +1037,24 @@ static int scif_set_rtrg(struct uart_port *port, int rx_trig)
- 	return rx_trig;
- }
- 
-+static int scif_rtrg_enabled(struct uart_port *port)
-+{
-+	if (sci_getreg(port, HSRTRGR)->size)
-+		return serial_port_in(port, HSRTRGR) != 0;
-+	else
-+		return (serial_port_in(port, SCFCR) &
-+			(SCFCR_RTRG0 | SCFCR_RTRG1)) != 0;
-+}
-+
-+static void rx_fifo_timer_fn(unsigned long arg)
-+{
-+	struct sci_port *s = (struct sci_port *)arg;
-+	struct uart_port *port = &s->port;
-+
-+	dev_dbg(port->dev, "Rx timed out\n");
-+	scif_set_rtrg(port, 1);
-+}
-+
- #ifdef CONFIG_SERIAL_SH_SCI_DMA
- static void sci_dma_tx_complete(void *arg)
- {
-@@ -1473,9 +1494,9 @@ static inline void sci_free_dma(struct uart_port *port)
- 
- static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
- {
--#ifdef CONFIG_SERIAL_SH_SCI_DMA
- 	struct uart_port *port = ptr;
- 	struct sci_port *s = to_sci_port(port);
-+#ifdef CONFIG_SERIAL_SH_SCI_DMA
- 
- 	if (s->chan_rx) {
- 		u16 scr = serial_port_in(port, SCSCR);
-@@ -1501,6 +1522,14 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
- 	}
- #endif
- 
-+	if (s->rx_trigger > 1 && s->rx_fifo_timeout > 0) {
-+		if (!scif_rtrg_enabled(port))
-+			scif_set_rtrg(port, s->rx_trigger);
-+
-+		mod_timer(&s->rx_fifo_timer, jiffies + DIV_ROUND_UP(
-+			  s->rx_frame * s->rx_fifo_timeout, 1000));
-+	}
-+
- 	/* I think sci_receive_chars has to be called irrespective
- 	 * of whether the I_IXOFF is set, otherwise, how is the interrupt
- 	 * to be disabled?
-@@ -2086,14 +2115,20 @@ static void sci_reset(struct uart_port *port)
- 		serial_port_out(port, SCLSR, status);
- 	}
- 
--	if (s->rx_trigger > 1)
--		scif_set_rtrg(port, s->rx_trigger);
-+	if (s->rx_trigger > 1) {
-+		if (s->rx_fifo_timeout) {
-+			scif_set_rtrg(port, 1);
-+			setup_timer(&s->rx_fifo_timer, rx_fifo_timer_fn,
-+				    (unsigned long)s);
-+		} else
-+			scif_set_rtrg(port, s->rx_trigger);
-+	}
- }
- 
- static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 			    struct ktermios *old)
- {
--	unsigned int baud, smr_val = SCSMR_ASYNC, scr_val = 0, i;
-+	unsigned int baud, smr_val = SCSMR_ASYNC, scr_val = 0, i, bits;
- 	unsigned int brr = 255, cks = 0, srr = 15, dl = 0, sccks = 0;
- 	unsigned int brr1 = 255, cks1 = 0, srr1 = 15, dl1 = 0;
- 	struct sci_port *s = to_sci_port(port);
-@@ -2293,7 +2328,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 		udelay(DIV_ROUND_UP(10 * 1000000, baud));
- 	}
- 
--#ifdef CONFIG_SERIAL_SH_SCI_DMA
- 	/*
- 	 * Calculate delay for 2 DMA buffers (4 FIFO).
- 	 * See serial_core.c::uart_update_timeout().
-@@ -2304,36 +2338,34 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 * value obtained by this formula is too small. Therefore, if the value
- 	 * is smaller than 20ms, use 20ms as the timeout value for DMA.
- 	 */
--	if (s->chan_rx) {
--		unsigned int bits;
-+	/* byte size and parity */
-+	switch (termios->c_cflag & CSIZE) {
-+	case CS5:
-+		bits = 7;
-+		break;
-+	case CS6:
-+		bits = 8;
-+		break;
-+	case CS7:
-+		bits = 9;
-+		break;
-+	default:
-+		bits = 10;
-+		break;
-+	}
- 
--		/* byte size and parity */
--		switch (termios->c_cflag & CSIZE) {
--		case CS5:
--			bits = 7;
--			break;
--		case CS6:
--			bits = 8;
--			break;
--		case CS7:
--			bits = 9;
--			break;
--		default:
--			bits = 10;
--			break;
--		}
-+	if (termios->c_cflag & CSTOPB)
-+		bits++;
-+	if (termios->c_cflag & PARENB)
-+		bits++;
- 
--		if (termios->c_cflag & CSTOPB)
--			bits++;
--		if (termios->c_cflag & PARENB)
--			bits++;
--		s->rx_timeout = DIV_ROUND_UP((s->buf_len_rx * 2 * bits * HZ) /
--					     (baud / 10), 10);
--		dev_dbg(port->dev, "DMA Rx t-out %ums, tty t-out %u jiffies\n",
--			s->rx_timeout * 1000 / HZ, port->timeout);
--		if (s->rx_timeout < msecs_to_jiffies(20))
--			s->rx_timeout = msecs_to_jiffies(20);
--	}
-+	s->rx_frame = (100 * bits * HZ) / (baud / 10);
-+#ifdef CONFIG_SERIAL_SH_SCI_DMA
-+	s->rx_timeout = DIV_ROUND_UP(s->buf_len_rx * 2 * s->rx_frame, 1000);
-+	dev_dbg(port->dev, "DMA Rx t-out %ums, tty t-out %u jiffies\n",
-+		s->rx_timeout * 1000 / HZ, port->timeout);
-+	if (s->rx_timeout < msecs_to_jiffies(20))
-+		s->rx_timeout = msecs_to_jiffies(20);
- #endif
- 
- 	if ((termios->c_cflag & CREAD) != 0)
-@@ -2648,6 +2680,8 @@ static int sci_init_single(struct platform_device *dev,
- 		break;
- 	}
- 
-+	sci_port->rx_fifo_timeout = 0;
-+
- 	/* SCIFA on sh7723 and sh7724 need a custom sampling rate that doesn't
- 	 * match the SoC datasheet, this should be investigated. Let platform
- 	 * data override the sampling rate for now.
--- 
-2.7.4
+On 24/01/2017 07:05, zhichang.yuan wrote:
+> After indirect-IO is introduced, system must can assigned indirect-IO devices
+> with logical I/O ranges which are different from those for PCI I/O devices.
+> Otherwise, I/O accessors can't identify whether the I/O port is for memory
+> mapped I/O or indirect-IO.
+> As current helper, pci_register_io_range(), is used for PCI I/O ranges
+> registration and translation, indirect-IO devices should also apply these
+> helpers to manage the I/O ranges. It will be easy to ensure the assigned
+> logical I/O ranges unique.
+> But for indirect-IO devices, there is no cpu address. The current
+> pci_register_io_range() can not work for this case.
+>
+> This patch makes some changes on the pci_register_io_range() to support the
+> I/O range registration with device's fwnode also. After this, the indirect-IO
+> devices can register the device-local I/O range to system logical I/O and
+> easily perform the translation between device-local I/O range and sytem
+> logical I/O range.
+>
+> Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
+> Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/acpi/pci_root.c | 12 +++++-------
+>  drivers/of/address.c    |  8 ++------
+>  drivers/pci/pci.c       | 44 ++++++++++++++++++++++++++++++++++++++++----
+>  include/linux/pci.h     |  7 +++++--
+>  4 files changed, 52 insertions(+), 19 deletions(-)
+>
+> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+> index bf601d4..6cadf05 100644
+> --- a/drivers/acpi/pci_root.c
+> +++ b/drivers/acpi/pci_root.c
+> @@ -730,7 +730,8 @@ static void acpi_pci_root_validate_resources(struct device *dev,
+>  	}
+>  }
+>
+> -static void acpi_pci_root_remap_iospace(struct resource_entry *entry)
+> +static void acpi_pci_root_remap_iospace(struct fwnode_handle *node,
+> +					struct resource_entry *entry)
+>  {
+>  #ifdef PCI_IOBASE
+>  	struct resource *res = entry->res;
+> @@ -739,11 +740,7 @@ static void acpi_pci_root_remap_iospace(struct resource_entry *entry)
+>  	resource_size_t length = resource_size(res);
+>  	unsigned long port;
+>
+> -	if (pci_register_io_range(cpu_addr, length))
+> -		goto err;
+> -
+> -	port = pci_address_to_pio(cpu_addr);
+> -	if (port == (unsigned long)-1)
+> +	if (pci_register_io_range(node, cpu_addr, length, &port))
+>  		goto err;
+>
+>  	res->start = port;
+> @@ -781,7 +778,8 @@ int acpi_pci_probe_root_resources(struct acpi_pci_root_info *info)
+>  	else {
+>  		resource_list_for_each_entry_safe(entry, tmp, list) {
+>  			if (entry->res->flags & IORESOURCE_IO)
+> -				acpi_pci_root_remap_iospace(entry);
+> +				acpi_pci_root_remap_iospace(&device->fwnode,
+> +							    entry);
+>
+>  			if (entry->res->flags & IORESOURCE_DISABLED)
+>  				resource_list_destroy_entry(entry);
+> diff --git a/drivers/of/address.c b/drivers/of/address.c
+> index 02b2903..d85d228 100644
+> --- a/drivers/of/address.c
+> +++ b/drivers/of/address.c
+> @@ -2,6 +2,7 @@
+>  #define pr_fmt(fmt)	"OF: " fmt
+>
+>  #include <linux/device.h>
+> +#include <linux/fwnode.h>
+>  #include <linux/io.h>
+>  #include <linux/ioport.h>
+>  #include <linux/module.h>
+> @@ -323,14 +324,9 @@ int of_pci_range_to_resource(struct of_pci_range *range,
+>
+>  	if (res->flags & IORESOURCE_IO) {
+>  		unsigned long port;
+> -		err = pci_register_io_range(range->cpu_addr, range->size);
+> +		err = pci_register_io_range(&np->fwnode, range->cpu_addr, range->size, &port);
+>  		if (err)
+>  			goto invalid_range;
+> -		port = pci_address_to_pio(range->cpu_addr);
+> -		if (port == (unsigned long)-1) {
+> -			err = -EINVAL;
+> -			goto invalid_range;
+> -		}
+>  		res->start = port;
+>  	} else {
+>  		if ((sizeof(resource_size_t) < 8) &&
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index a881c0d..5289221 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -3241,6 +3241,7 @@ int pci_request_regions_exclusive(struct pci_dev *pdev, const char *res_name)
+>  #ifdef PCI_IOBASE
+>  struct io_range {
+>  	struct list_head list;
+> +	struct fwnode_handle *node;
+>  	phys_addr_t start;
+>  	resource_size_t size;
+>  };
+> @@ -3253,7 +3254,8 @@ struct io_range {
+>   * Record the PCI IO range (expressed as CPU physical address + size).
+>   * Return a negative value if an error has occured, zero otherwise
+>   */
+> -int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
+> +int __weak pci_register_io_range(struct fwnode_handle *node, phys_addr_t addr,
+> +				 resource_size_t size, unsigned long *port)
+>  {
+>  	int err = 0;
+>
+> @@ -3261,10 +3263,31 @@ int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
+>  	struct io_range *range;
+>  	resource_size_t allocated_size = 0;
+>
+> +	/*
+> +	 * As indirect-IO which support multiple bus instances is introduced,
+> +	 * the input 'addr' is probably not page-aligned. If the PCI I/O
+> +	 * ranges are registered after indirect-IO, there is risk that the
+> +	 * start logical PIO assigned to PCI I/O is not page-aligned.
+> +	 * This will cause some I/O subranges are not remapped or overlapped
+> +	 * in pci_remap_iospace() handling.
+> +	 */
+> +	WARN_ON(addr != IO_RANGE_IOEXT && !(addr & PAGE_MASK));
+> +	/*
+> +	 * MMIO will call ioremap, it is better to align size with PAGE_SIZE,
+> +	 * then the return linux virtual PIO is page-aligned.
+> +	 */
+> +	if (size & PAGE_MASK)
+> +		size = PAGE_ALIGN(size);
+> +
+>  	/* check if the range hasn't been previously recorded */
+>  	spin_lock(&io_range_lock);
+>  	list_for_each_entry(range, &io_range_list, list) {
+> -		if (addr >= range->start && addr + size <= range->start + size) {
+> +		if (node == range->node)
+> +			goto end_register;
+> +
+> +		if (addr != IO_RANGE_IOEXT &&
+> +		    addr >= range->start &&
+> +		    addr + size <= range->start + size) {
+>  			/* range already registered, bail out */
+>  			goto end_register;
+>  		}
+> @@ -3290,6 +3313,7 @@ int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
+>  		goto end_register;
+>  	}
+>
+> +	range->node = node;
+>  	range->start = addr;
+>  	range->size = size;
+>
+> @@ -3297,6 +3321,14 @@ int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
+>
+>  end_register:
+>  	spin_unlock(&io_range_lock);
+> +
+> +	*port = allocated_size;
+> +#else
+> +	/*
+> +	 * powerpc and microblaze have their own registration,
+> +	 * just look up the value here
+> +	 */
+> +	*port = pci_address_to_pio(addr);
+>  #endif
+>
+>  	return err;
+> @@ -3315,7 +3347,9 @@ phys_addr_t pci_pio_to_address(unsigned long pio)
+>
+>  	spin_lock(&io_range_lock);
+>  	list_for_each_entry(range, &io_range_list, list) {
+> -		if (pio >= allocated_size && pio < allocated_size + range->size) {
+> +		if (range->start != IO_RANGE_IOEXT &&
+> +			pio >= allocated_size &&
+> +			pio < allocated_size + range->size) {
+>  			address = range->start + pio - allocated_size;
+>  			break;
+>  		}
+> @@ -3336,7 +3370,9 @@ unsigned long __weak pci_address_to_pio(phys_addr_t address)
+>
+>  	spin_lock(&io_range_lock);
+>  	list_for_each_entry(res, &io_range_list, list) {
+> -		if (address >= res->start && address < res->start + res->size) {
+> +		if (res->start != IO_RANGE_IOEXT &&
+> +			address >= res->start &&
+> +			address < res->start + res->size) {
+>  			addr = address - res->start + offset;
+>  			break;
+>  		}
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index e2d1a12..8d91af8 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -34,6 +34,9 @@
+>
+>  #include <linux/pci_ids.h>
+>
+> +/* the macro below flags an invalid cpu address
+> + * and is used by IO special hosts              */
+> +#define IO_RANGE_IOEXT (resource_size_t)(-1ull)
+>  /*
+>   * The PCI interface treats multi-function devices as independent
+>   * devices.  The slot/function address of each device is encoded
+> @@ -1197,8 +1200,8 @@ int __must_check pci_bus_alloc_resource(struct pci_bus *bus,
+>  						  resource_size_t),
+>  			void *alignf_data);
+>
+> -
+> -int pci_register_io_range(phys_addr_t addr, resource_size_t size);
+> +int pci_register_io_range(struct fwnode_handle *node, phys_addr_t addr,
+> +			  resource_size_t size, unsigned long *port);
+>  unsigned long pci_address_to_pio(phys_addr_t addr);
+>  phys_addr_t pci_pio_to_address(unsigned long pio);
+>  int pci_remap_iospace(const struct resource *res, phys_addr_t phys_addr);
+>
