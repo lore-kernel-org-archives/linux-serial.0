@@ -1,7 +1,7 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH v3 7/7] arm64: dts: r8a7796: salvator-x: add SCIF1 (DEBUG1)
-Date: Thu,  2 Feb 2017 18:10:20 +0100
-Message-ID: <1486055420-31595-8-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH v3 6/7] serial: sh-sci: make RX FIFO parameters tunable via sysfs
+Date: Thu,  2 Feb 2017 18:10:19 +0100
+Message-ID: <1486055420-31595-7-git-send-email-ulrich.hecht+renesas@gmail.com>
 References: <1486055420-31595-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1486055420-31595-1-git-send-email-ulrich.hecht+renesas@gmail.com>
@@ -10,52 +10,126 @@ To: linux-renesas-soc@vger.kernel.org, wsa@the-dreams.de, geert@linux-m68k.org
 Cc: linux-serial@vger.kernel.org, magnus.damm@gmail.com, sergei.shtylyov@cogentembedded.com, gregkh@linuxfoundation.org, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Enables the SCIF hooked up to the DEBUG1 connector.
+Allows tuning of the RX FIFO fill threshold and timeout. (The latter is
+only applicable to SCIFA and SCIFB).
 
 Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/tty/serial/sh-sci.c | 87 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 87 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-index c3e0b9e..6370b17 100644
---- a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-+++ b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-@@ -18,6 +18,7 @@
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 17a2be3..5bbcb3b 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1055,6 +1055,66 @@ static void rx_fifo_timer_fn(unsigned long arg)
+ 	scif_set_rtrg(port, 1);
+ }
  
- 	aliases {
- 		serial0 = &scif2;
-+		serial1 = &scif1;
- 		ethernet0 = &avb;
- 	};
- 
-@@ -113,6 +114,11 @@
- 		function = "avb";
- 	};
- 
-+	scif1_pins: scif1 {
-+		groups = "scif1_data_a", "scif1_ctrl";
-+		function = "scif1";
-+	};
++static ssize_t rx_trigger_show(struct device *dev,
++			       struct device_attribute *attr,
++			       char *buf)
++{
++	struct uart_port *port = dev_get_drvdata(dev);
++	struct sci_port *sci = to_sci_port(port);
 +
- 	scif2_pins: scif2 {
- 		groups = "scif2_data_a";
- 		function = "scif2";
-@@ -240,6 +246,14 @@
- 	status = "okay";
- };
++	return sprintf(buf, "%d\n", sci->rx_trigger);
++}
++
++static ssize_t rx_trigger_store(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf,
++				size_t count)
++{
++	struct uart_port *port = dev_get_drvdata(dev);
++	struct sci_port *sci = to_sci_port(port);
++	long r;
++
++	if (kstrtol(buf, 0, &r) == -EINVAL)
++		return -EINVAL;
++	sci->rx_trigger = scif_set_rtrg(port, r);
++	scif_set_rtrg(port, 1);
++	return count;
++}
++
++static DEVICE_ATTR(rx_fifo_trigger, 0644, rx_trigger_show, rx_trigger_store);
++
++static ssize_t rx_fifo_timeout_show(struct device *dev,
++			       struct device_attribute *attr,
++			       char *buf)
++{
++	struct uart_port *port = dev_get_drvdata(dev);
++	struct sci_port *sci = to_sci_port(port);
++
++	return sprintf(buf, "%d\n", sci->rx_fifo_timeout);
++}
++
++static ssize_t rx_fifo_timeout_store(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf,
++				size_t count)
++{
++	struct uart_port *port = dev_get_drvdata(dev);
++	struct sci_port *sci = to_sci_port(port);
++	long r;
++
++	if (kstrtol(buf, 0, &r) == -EINVAL)
++		return -EINVAL;
++	sci->rx_fifo_timeout = r;
++	scif_set_rtrg(port, 1);
++	if (r > 0)
++		setup_timer(&sci->rx_fifo_timer, rx_fifo_timer_fn,
++			    (unsigned long)sci);
++	return count;
++}
++
++static DEVICE_ATTR(rx_fifo_timeout, 0644, rx_fifo_timeout_show, rx_fifo_timeout_store);
++
++
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+ static void sci_dma_tx_complete(void *arg)
+ {
+@@ -2891,6 +2951,15 @@ static int sci_remove(struct platform_device *dev)
  
-+&scif1 {
-+	pinctrl-0 = <&scif1_pins>;
-+	pinctrl-names = "default";
+ 	sci_cleanup_single(port);
+ 
++	if (port->port.fifosize > 1) {
++		sysfs_remove_file(&dev->dev.kobj,
++				  &dev_attr_rx_fifo_trigger.attr);
++	}
++	if (port->port.type == PORT_SCIFA || port->port.type == PORT_SCIFB) {
++		sysfs_remove_file(&dev->dev.kobj,
++				  &dev_attr_rx_fifo_timeout.attr);
++	}
 +
-+	uart-has-rtscts;
-+	status = "okay";
-+};
+ 	return 0;
+ }
+ 
+@@ -3056,6 +3125,24 @@ static int sci_probe(struct platform_device *dev)
+ 	if (ret)
+ 		return ret;
+ 
++	if (sp->port.fifosize > 1) {
++		ret = sysfs_create_file(&dev->dev.kobj,
++				&dev_attr_rx_fifo_trigger.attr);
++		if (ret)
++			return ret;
++	}
++	if (sp->port.type == PORT_SCIFA || sp->port.type ==  PORT_SCIFB) {
++		ret = sysfs_create_file(&dev->dev.kobj,
++				&dev_attr_rx_fifo_timeout.attr);
++		if (ret) {
++			if (sp->port.fifosize > 1) {
++				sysfs_remove_file(&dev->dev.kobj,
++					&dev_attr_rx_fifo_trigger.attr);
++			}
++			return ret;
++		}
++	}
 +
- &scif2 {
- 	pinctrl-0 = <&scif2_pins>;
- 	pinctrl-names = "default";
+ #ifdef CONFIG_SH_STANDARD_BIOS
+ 	sh_bios_gdb_detach();
+ #endif
 -- 
 2.7.4
