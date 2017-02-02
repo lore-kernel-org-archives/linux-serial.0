@@ -1,7 +1,7 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH v3 6/7] serial: sh-sci: make RX FIFO parameters tunable via sysfs
-Date: Thu,  2 Feb 2017 18:10:19 +0100
-Message-ID: <1486055420-31595-7-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH v3 5/7] serial: sh-sci: SCIFA/B RX FIFO software timeout
+Date: Thu,  2 Feb 2017 18:10:18 +0100
+Message-ID: <1486055420-31595-6-git-send-email-ulrich.hecht+renesas@gmail.com>
 References: <1486055420-31595-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1486055420-31595-1-git-send-email-ulrich.hecht+renesas@gmail.com>
@@ -10,126 +10,187 @@ To: linux-renesas-soc@vger.kernel.org, wsa@the-dreams.de, geert@linux-m68k.org
 Cc: linux-serial@vger.kernel.org, magnus.damm@gmail.com, sergei.shtylyov@cogentembedded.com, gregkh@linuxfoundation.org, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Allows tuning of the RX FIFO fill threshold and timeout. (The latter is
-only applicable to SCIFA and SCIFB).
+Implements support for FIFO fill thresholds greater than one with software
+timeout.
+
+This mechanism is not possible (or at least not useful) on SCIF family
+hardware other than SCIFA and SCIFB because they do not support turning off
+the DR hardware timeout interrupt separately from the RI interrupt.
 
 Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.c | 87 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 87 insertions(+)
+ drivers/tty/serial/sh-sci.c | 100 +++++++++++++++++++++++++++++---------------
+ 1 file changed, 67 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 17a2be3..5bbcb3b 100644
+index ae9b10a..17a2be3 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -1055,6 +1055,66 @@ static void rx_fifo_timer_fn(unsigned long arg)
- 	scif_set_rtrg(port, 1);
+@@ -148,7 +148,10 @@ struct sci_port {
+ 	struct timer_list		rx_timer;
+ 	unsigned int			rx_timeout;
+ #endif
++	unsigned int			rx_frame;
+ 	int				rx_trigger;
++	struct timer_list		rx_fifo_timer;
++	int				rx_fifo_timeout;
+ 
+ 	bool has_rtscts;
+ 	bool autorts;
+@@ -1034,6 +1037,24 @@ static int scif_set_rtrg(struct uart_port *port, int rx_trig)
+ 	return rx_trig;
  }
  
-+static ssize_t rx_trigger_show(struct device *dev,
-+			       struct device_attribute *attr,
-+			       char *buf)
++static int scif_rtrg_enabled(struct uart_port *port)
 +{
-+	struct uart_port *port = dev_get_drvdata(dev);
-+	struct sci_port *sci = to_sci_port(port);
-+
-+	return sprintf(buf, "%d\n", sci->rx_trigger);
++	if (sci_getreg(port, HSRTRGR)->size)
++		return serial_port_in(port, HSRTRGR) != 0;
++	else
++		return (serial_port_in(port, SCFCR) &
++			(SCFCR_RTRG0 | SCFCR_RTRG1)) != 0;
 +}
 +
-+static ssize_t rx_trigger_store(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf,
-+				size_t count)
++static void rx_fifo_timer_fn(unsigned long arg)
 +{
-+	struct uart_port *port = dev_get_drvdata(dev);
-+	struct sci_port *sci = to_sci_port(port);
-+	long r;
++	struct sci_port *s = (struct sci_port *)arg;
++	struct uart_port *port = &s->port;
 +
-+	if (kstrtol(buf, 0, &r) == -EINVAL)
-+		return -EINVAL;
-+	sci->rx_trigger = scif_set_rtrg(port, r);
++	dev_dbg(port->dev, "Rx timed out\n");
 +	scif_set_rtrg(port, 1);
-+	return count;
 +}
-+
-+static DEVICE_ATTR(rx_fifo_trigger, 0644, rx_trigger_show, rx_trigger_store);
-+
-+static ssize_t rx_fifo_timeout_show(struct device *dev,
-+			       struct device_attribute *attr,
-+			       char *buf)
-+{
-+	struct uart_port *port = dev_get_drvdata(dev);
-+	struct sci_port *sci = to_sci_port(port);
-+
-+	return sprintf(buf, "%d\n", sci->rx_fifo_timeout);
-+}
-+
-+static ssize_t rx_fifo_timeout_store(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf,
-+				size_t count)
-+{
-+	struct uart_port *port = dev_get_drvdata(dev);
-+	struct sci_port *sci = to_sci_port(port);
-+	long r;
-+
-+	if (kstrtol(buf, 0, &r) == -EINVAL)
-+		return -EINVAL;
-+	sci->rx_fifo_timeout = r;
-+	scif_set_rtrg(port, 1);
-+	if (r > 0)
-+		setup_timer(&sci->rx_fifo_timer, rx_fifo_timer_fn,
-+			    (unsigned long)sci);
-+	return count;
-+}
-+
-+static DEVICE_ATTR(rx_fifo_timeout, 0644, rx_fifo_timeout_show, rx_fifo_timeout_store);
-+
 +
  #ifdef CONFIG_SERIAL_SH_SCI_DMA
  static void sci_dma_tx_complete(void *arg)
  {
-@@ -2891,6 +2951,15 @@ static int sci_remove(struct platform_device *dev)
+@@ -1473,9 +1494,9 @@ static inline void sci_free_dma(struct uart_port *port)
  
- 	sci_cleanup_single(port);
+ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+ {
+-#ifdef CONFIG_SERIAL_SH_SCI_DMA
+ 	struct uart_port *port = ptr;
+ 	struct sci_port *s = to_sci_port(port);
++#ifdef CONFIG_SERIAL_SH_SCI_DMA
  
-+	if (port->port.fifosize > 1) {
-+		sysfs_remove_file(&dev->dev.kobj,
-+				  &dev_attr_rx_fifo_trigger.attr);
-+	}
-+	if (port->port.type == PORT_SCIFA || port->port.type == PORT_SCIFB) {
-+		sysfs_remove_file(&dev->dev.kobj,
-+				  &dev_attr_rx_fifo_timeout.attr);
+ 	if (s->chan_rx) {
+ 		u16 scr = serial_port_in(port, SCSCR);
+@@ -1501,6 +1522,14 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+ 	}
+ #endif
+ 
++	if (s->rx_trigger > 1 && s->rx_fifo_timeout > 0) {
++		if (!scif_rtrg_enabled(port))
++			scif_set_rtrg(port, s->rx_trigger);
++
++		mod_timer(&s->rx_fifo_timer, jiffies + DIV_ROUND_UP(
++			  s->rx_frame * s->rx_fifo_timeout, 1000));
 +	}
 +
- 	return 0;
+ 	/* I think sci_receive_chars has to be called irrespective
+ 	 * of whether the I_IXOFF is set, otherwise, how is the interrupt
+ 	 * to be disabled?
+@@ -2086,14 +2115,20 @@ static void sci_reset(struct uart_port *port)
+ 		serial_port_out(port, SCLSR, status);
+ 	}
+ 
+-	if (s->rx_trigger > 1)
+-		scif_set_rtrg(port, s->rx_trigger);
++	if (s->rx_trigger > 1) {
++		if (s->rx_fifo_timeout) {
++			scif_set_rtrg(port, 1);
++			setup_timer(&s->rx_fifo_timer, rx_fifo_timer_fn,
++				    (unsigned long)s);
++		} else
++			scif_set_rtrg(port, s->rx_trigger);
++	}
  }
  
-@@ -3056,6 +3125,24 @@ static int sci_probe(struct platform_device *dev)
- 	if (ret)
- 		return ret;
+ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			    struct ktermios *old)
+ {
+-	unsigned int baud, smr_val = SCSMR_ASYNC, scr_val = 0, i;
++	unsigned int baud, smr_val = SCSMR_ASYNC, scr_val = 0, i, bits;
+ 	unsigned int brr = 255, cks = 0, srr = 15, dl = 0, sccks = 0;
+ 	unsigned int brr1 = 255, cks1 = 0, srr1 = 15, dl1 = 0;
+ 	struct sci_port *s = to_sci_port(port);
+@@ -2293,7 +2328,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		udelay(DIV_ROUND_UP(10 * 1000000, baud));
+ 	}
  
-+	if (sp->port.fifosize > 1) {
-+		ret = sysfs_create_file(&dev->dev.kobj,
-+				&dev_attr_rx_fifo_trigger.attr);
-+		if (ret)
-+			return ret;
+-#ifdef CONFIG_SERIAL_SH_SCI_DMA
+ 	/*
+ 	 * Calculate delay for 2 DMA buffers (4 FIFO).
+ 	 * See serial_core.c::uart_update_timeout().
+@@ -2304,36 +2338,34 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 * value obtained by this formula is too small. Therefore, if the value
+ 	 * is smaller than 20ms, use 20ms as the timeout value for DMA.
+ 	 */
+-	if (s->chan_rx) {
+-		unsigned int bits;
++	/* byte size and parity */
++	switch (termios->c_cflag & CSIZE) {
++	case CS5:
++		bits = 7;
++		break;
++	case CS6:
++		bits = 8;
++		break;
++	case CS7:
++		bits = 9;
++		break;
++	default:
++		bits = 10;
++		break;
 +	}
-+	if (sp->port.type == PORT_SCIFA || sp->port.type ==  PORT_SCIFB) {
-+		ret = sysfs_create_file(&dev->dev.kobj,
-+				&dev_attr_rx_fifo_timeout.attr);
-+		if (ret) {
-+			if (sp->port.fifosize > 1) {
-+				sysfs_remove_file(&dev->dev.kobj,
-+					&dev_attr_rx_fifo_trigger.attr);
-+			}
-+			return ret;
-+		}
-+	}
-+
- #ifdef CONFIG_SH_STANDARD_BIOS
- 	sh_bios_gdb_detach();
+ 
+-		/* byte size and parity */
+-		switch (termios->c_cflag & CSIZE) {
+-		case CS5:
+-			bits = 7;
+-			break;
+-		case CS6:
+-			bits = 8;
+-			break;
+-		case CS7:
+-			bits = 9;
+-			break;
+-		default:
+-			bits = 10;
+-			break;
+-		}
++	if (termios->c_cflag & CSTOPB)
++		bits++;
++	if (termios->c_cflag & PARENB)
++		bits++;
+ 
+-		if (termios->c_cflag & CSTOPB)
+-			bits++;
+-		if (termios->c_cflag & PARENB)
+-			bits++;
+-		s->rx_timeout = DIV_ROUND_UP((s->buf_len_rx * 2 * bits * HZ) /
+-					     (baud / 10), 10);
+-		dev_dbg(port->dev, "DMA Rx t-out %ums, tty t-out %u jiffies\n",
+-			s->rx_timeout * 1000 / HZ, port->timeout);
+-		if (s->rx_timeout < msecs_to_jiffies(20))
+-			s->rx_timeout = msecs_to_jiffies(20);
+-	}
++	s->rx_frame = (100 * bits * HZ) / (baud / 10);
++#ifdef CONFIG_SERIAL_SH_SCI_DMA
++	s->rx_timeout = DIV_ROUND_UP(s->buf_len_rx * 2 * s->rx_frame, 1000);
++	dev_dbg(port->dev, "DMA Rx t-out %ums, tty t-out %u jiffies\n",
++		s->rx_timeout * 1000 / HZ, port->timeout);
++	if (s->rx_timeout < msecs_to_jiffies(20))
++		s->rx_timeout = msecs_to_jiffies(20);
  #endif
+ 
+ 	if ((termios->c_cflag & CREAD) != 0)
+@@ -2648,6 +2680,8 @@ static int sci_init_single(struct platform_device *dev,
+ 		break;
+ 	}
+ 
++	sci_port->rx_fifo_timeout = 0;
++
+ 	/* SCIFA on sh7723 and sh7724 need a custom sampling rate that doesn't
+ 	 * match the SoC datasheet, this should be investigated. Let platform
+ 	 * data override the sampling rate for now.
 -- 
 2.7.4
