@@ -1,61 +1,52 @@
-From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH v2 00/10] serial: st-asc: Allow handling of RTS line
-Date: Thu, 2 Feb 2017 10:55:41 +0100
-Message-ID: <20170202095541.GB30437@kroah.com>
-References: <20170127172804.23881-1-lee.jones@linaro.org>
- <20170202074236.ni3tozz3er4g3t64@dell>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170202074236.ni3tozz3er4g3t64@dell>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org
+From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH v3 0/7] Renesas *SCIF* RX FIFO support
+Date: Thu,  2 Feb 2017 18:10:13 +0100
+Message-ID: <1486055420-31595-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: linux-renesas-soc@vger.kernel.org, wsa@the-dreams.de, geert@linux-m68k.org
+Cc: linux-serial@vger.kernel.org, magnus.damm@gmail.com, sergei.shtylyov@cogentembedded.com, gregkh@linuxfoundation.org, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Feb 02, 2017 at 07:42:36AM +0000, Lee Jones wrote:
-> Hi Greg, Jiri,
-> 
-> > When hardware flow-control is disabled, manual toggling of the UART's
-> > reset line (RTS) using userland applications (e.g. stty) is not
-> > possible, since the ASC IP does not provide this functionality in the
-> > same was as some other IPs do.  Thus, we have to do this manually.
-> > 
-> > This set ensures the correct Pinctrl groups are configured and
-> > obtained for both manual toggling of the RTS line and for the IP to
-> > take over the lines when HW flow-control is requested by the user. 
-> > 
-> > Lee Jones (10):
-> >   serial: st-asc: Ignore the parity error bit if 8-bit mode is enabled
-> >   serial: st-asc: Provide RTS functionality
-> >   serial: st-asc: Read in all Pinctrl states
-> >   serial: st-asc: (De)Register GPIOD and swap Pinctrl profiles
-> >   serial: st-asc: Use generic DT binding for announcing RTS/CTS lines
-> >   dt-bindings: serial: Update 'uart-has-rtscts' description
-> >   ARM: dts: STiH410-b2260: Identify the UART RTS line
-> >   ARM: dts: STiH407-pinctrl: Add Pinctrl group for HW flow-control
-> >   ARM: dts: STiH407-family: Use new Pinctrl groups
-> >   ARM: dts: STiH410-b2260: Enable HW flow-control
-> > 
-> >  .../devicetree/bindings/serial/serial.txt          |   3 +-
-> >  arch/arm/boot/dts/stih407-family.dtsi              |   3 +-
-> >  arch/arm/boot/dts/stih407-pinctrl.dtsi             |  12 ++-
-> >  arch/arm/boot/dts/stih410-b2260.dts                |   5 +
-> >  drivers/tty/serial/st-asc.c                        | 101 +++++++++++++++++++--
-> >  5 files changed, 110 insertions(+), 14 deletions(-)
-> 
-> Looks like everyone is happy with the set.
-> 
-> Are you planning to merge it?
+Hi!
 
-I'll take it in my next round of patches, give me a few days to sync up,
-I normally do serial patches once a week or so.
+This series implements support for using RX FIFO thresholds higher than one
+in PIO mode on SCIF, HSCIF, SCIFA and SCIFB serial ports.
 
-thanks,
+This revision has been rebased onto renesas-drivers-2017-01-24-v4.10-rc5 and
+adds the missing changelog for "serial: sh-sci: increase RX FIFO trigger
+defaults for (H)SCIF" requested by Geert and Greg.
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+CU
+Uli
+
+
+Changes since v2:
+- rebase
+- add missing changelog entry
+
+Changes since v1:
+- clarify HS trigger register enum
+- simplify DR bit handling
+- if() cascade -> switch()
+- disable RX trigger for SH77xx-style ports
+- clean up on failure to create sysfs attribute
+- r8a7796 DT: add control pins, rtscts flag
+
+
+Ulrich Hecht (7):
+  serial: sh-sci: add FIFO trigger bits
+  serial: sh-sci: consider DR (data ready) bit adequately
+  serial: sh-sci: implement FIFO threshold register setting
+  serial: sh-sci: increase RX FIFO trigger defaults for (H)SCIF
+  serial: sh-sci: SCIFA/B RX FIFO software timeout
+  serial: sh-sci: make RX FIFO parameters tunable via sysfs
+  arm64: dts: r8a7796: salvator-x: add SCIF1 (DEBUG1)
+
+ arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts |  14 ++
+ drivers/tty/serial/sh-sci.c                        | 273 ++++++++++++++++++---
+ drivers/tty/serial/sh-sci.h                        |   8 +-
+ 3 files changed, 262 insertions(+), 33 deletions(-)
+
+-- 
+2.7.4
