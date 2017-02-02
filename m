@@ -1,337 +1,280 @@
-From: Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 4/5] serdev: add a tty port controller driver
-Date: Thu,  2 Feb 2017 13:48:08 -0600
-Message-ID: <20170202194809.18274-5-robh@kernel.org>
-References: <20170202194809.18274-1-robh@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170202194809.18274-1-robh@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, "Dr . H . Nikolaus Schaller" <hns@goldelico.com>, Peter Hurley <peter@hurleysoftware.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Loic Poulain <loic.poulain@intel.com>, Pavel Machek <pavel@ucw.cz>, NeilBrown <neil@brown.name>, Linus Walleij <linus.walleij@linaro.org>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH V6 2/5] PCI: Adapt pci_register_io_range() for indirect-IO
+ and PCI I/O translation
+Date: Fri, 3 Feb 2017 00:00:20 +0100
+Message-ID: <CAJZ5v0ghZ-DHoBCJNX39A3EK1ogAO7Au4sZu37aCUTz1p9sy3A@mail.gmail.com>
+References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1485241525-201782-3-git-send-email-yuanzhichang@hisilicon.com> <068bbe37-42f4-e245-f900-c639c68404b9@huawei.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <068bbe37-42f4-e245-f900-c639c68404b9@huawei.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: John Garry <john.garry@huawei.com>
+Cc: "zhichang.yuan" <yuanzhichang@hisilicon.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Mark Rutland <mark.rutland@arm.com>, brian.starkey@arm.com, Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linuxarm@huawei.com, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linux PCI <linux-pci@vger.kernel.org>linux
 List-Id: linux-serial@vger.kernel.org
 
-Add a serdev controller driver for tty ports.
+On Thu, Feb 2, 2017 at 6:36 PM, John Garry <john.garry@huawei.com> wrote:
+> Hi Rafael,
+>
+> Could you kindly check the minor changes to drivers/acpi/pci_root.c?  It
+> would also be appreciated if you could review the ACPI-relevant parts in
+> lib/extio.c, in [PATCH V5 5/5] LPC: Add the ACPI LPC support
 
-The controller is registered with serdev when tty ports are registered
-with the TTY core. As the TTY core is built-in only, this has the side
-effect of making serdev built-in as well.
+If you want patches to be reviewed from the ACPI perspective, please
+CC them to linux-acpi.  I'm not the only person who may be interested
+in them.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
-Reviewed-By: Sebastian Reichel <sre@kernel.org>
-Tested-By: Sebastian Reichel <sre@kernel.org>
----
-v4:
-- Remove setting of tty->receive_room. Was only necessary for old 
-  ldisc->receive_buf() function.
-v3:
-- Handle testing TTY_DO_WRITE_WAKEUP in write_wakeup callback due to tty
-  core change in patch #1.
-- Remove the mutex. The atomic bit is enough.
-- Removed unused atomic bit defines.
-- Made ctrl_ops static and const.
+The change is pci_root.c looks OK to me, but it's Bjorn's call anyway.
 
-v2:
-- Sort includes
-- Made goto labels more descriptive
-- Use tty-> instead of serdev->tty-> where possible
-- Drop DT specific check in serdev_tty_port_register. DT specifics are only
-  in core bus code now.
-- Comments on #endif's
-- Use "depends on SERIAL_DEV_BUS != m" instead of "= y"
-- Dropped module properties (not a module)
+Thanks,
+Rafael
 
- drivers/tty/serdev/Kconfig          |   8 ++
- drivers/tty/serdev/Makefile         |   2 +
- drivers/tty/serdev/serdev-ttyport.c | 224 ++++++++++++++++++++++++++++++++++++
- include/linux/serdev.h              |  21 ++++
- 4 files changed, 255 insertions(+)
- create mode 100644 drivers/tty/serdev/serdev-ttyport.c
 
-diff --git a/drivers/tty/serdev/Kconfig b/drivers/tty/serdev/Kconfig
-index 3b6ecd187bef..cdc6b820cf93 100644
---- a/drivers/tty/serdev/Kconfig
-+++ b/drivers/tty/serdev/Kconfig
-@@ -6,3 +6,11 @@ menuconfig SERIAL_DEV_BUS
- 	help
- 	  Core support for devices connected via a serial port.
- 
-+if SERIAL_DEV_BUS
-+
-+config SERIAL_DEV_CTRL_TTYPORT
-+	bool "Serial device TTY port controller"
-+	depends on TTY
-+	depends on SERIAL_DEV_BUS != m
-+
-+endif
-diff --git a/drivers/tty/serdev/Makefile b/drivers/tty/serdev/Makefile
-index 01a9b62183f4..0cbdb9444d9d 100644
---- a/drivers/tty/serdev/Makefile
-+++ b/drivers/tty/serdev/Makefile
-@@ -1,3 +1,5 @@
- serdev-objs := core.o
- 
- obj-$(CONFIG_SERIAL_DEV_BUS) += serdev.o
-+
-+obj-$(CONFIG_SERIAL_DEV_CTRL_TTYPORT) += serdev-ttyport.o
-diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-new file mode 100644
-index 000000000000..683320b81a2b
---- /dev/null
-+++ b/drivers/tty/serdev/serdev-ttyport.c
-@@ -0,0 +1,224 @@
-+/*
-+ * Copyright (C) 2016-2017 Linaro Ltd., Rob Herring <robh@kernel.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 and
-+ * only version 2 as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+#include <linux/kernel.h>
-+#include <linux/serdev.h>
-+#include <linux/tty.h>
-+#include <linux/tty_driver.h>
-+
-+#define SERPORT_ACTIVE		1
-+
-+struct serport {
-+	struct tty_port *port;
-+	struct tty_struct *tty;
-+	struct tty_driver *tty_drv;
-+	int tty_idx;
-+	unsigned long flags;
-+};
-+
-+/*
-+ * Callback functions from the tty port.
-+ */
-+
-+static int ttyport_receive_buf(struct tty_port *port, const unsigned char *cp,
-+				const unsigned char *fp, size_t count)
-+{
-+	struct serdev_controller *ctrl = port->client_data;
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		return 0;
-+
-+	return serdev_controller_receive_buf(ctrl, cp, count);
-+}
-+
-+static void ttyport_write_wakeup(struct tty_port *port)
-+{
-+	struct serdev_controller *ctrl = port->client_data;
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+
-+	if (!test_and_clear_bit(TTY_DO_WRITE_WAKEUP, &port->tty->flags))
-+		return;
-+
-+	if (test_bit(SERPORT_ACTIVE, &serport->flags))
-+		serdev_controller_write_wakeup(ctrl);
-+}
-+
-+static const struct tty_port_client_operations client_ops = {
-+	.receive_buf = ttyport_receive_buf,
-+	.write_wakeup = ttyport_write_wakeup,
-+};
-+
-+/*
-+ * Callback functions from the serdev core.
-+ */
-+
-+static int ttyport_write_buf(struct serdev_controller *ctrl, const unsigned char *data, size_t len)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		return 0;
-+
-+	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
-+	return tty->ops->write(serport->tty, data, len);
-+}
-+
-+static void ttyport_write_flush(struct serdev_controller *ctrl)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+
-+	tty_driver_flush_buffer(tty);
-+}
-+
-+static int ttyport_write_room(struct serdev_controller *ctrl)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+
-+	return tty_write_room(tty);
-+}
-+
-+static int ttyport_open(struct serdev_controller *ctrl)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty;
-+	struct ktermios ktermios;
-+
-+	tty = tty_init_dev(serport->tty_drv, serport->tty_idx);
-+	serport->tty = tty;
-+
-+	serport->port->client_ops = &client_ops;
-+	serport->port->client_data = ctrl;
-+
-+	if (tty->ops->open)
-+		tty->ops->open(serport->tty, NULL);
-+	else
-+		tty_port_open(serport->port, tty, NULL);
-+
-+	/* Bring the UART into a known 8 bits no parity hw fc state */
-+	ktermios = tty->termios;
-+	ktermios.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP |
-+			      INLCR | IGNCR | ICRNL | IXON);
-+	ktermios.c_oflag &= ~OPOST;
-+	ktermios.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-+	ktermios.c_cflag &= ~(CSIZE | PARENB);
-+	ktermios.c_cflag |= CS8;
-+	ktermios.c_cflag |= CRTSCTS;
-+	tty_set_termios(tty, &ktermios);
-+
-+	set_bit(SERPORT_ACTIVE, &serport->flags);
-+
-+	tty_unlock(serport->tty);
-+	return 0;
-+}
-+
-+static void ttyport_close(struct serdev_controller *ctrl)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+
-+	clear_bit(SERPORT_ACTIVE, &serport->flags);
-+
-+	if (tty->ops->close)
-+		tty->ops->close(tty, NULL);
-+
-+	tty_release_struct(tty, serport->tty_idx);
-+}
-+
-+static unsigned int ttyport_set_baudrate(struct serdev_controller *ctrl, unsigned int speed)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+	struct ktermios ktermios = tty->termios;
-+
-+	ktermios.c_cflag &= ~CBAUD;
-+	tty_termios_encode_baud_rate(&ktermios, speed, speed);
-+
-+	/* tty_set_termios() return not checked as it is always 0 */
-+	tty_set_termios(tty, &ktermios);
-+	return speed;
-+}
-+
-+static void ttyport_set_flow_control(struct serdev_controller *ctrl, bool enable)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+	struct ktermios ktermios = tty->termios;
-+
-+	if (enable)
-+		ktermios.c_cflag |= CRTSCTS;
-+	else
-+		ktermios.c_cflag &= ~CRTSCTS;
-+
-+	tty_set_termios(tty, &ktermios);
-+}
-+
-+static const struct serdev_controller_ops ctrl_ops = {
-+	.write_buf = ttyport_write_buf,
-+	.write_flush = ttyport_write_flush,
-+	.write_room = ttyport_write_room,
-+	.open = ttyport_open,
-+	.close = ttyport_close,
-+	.set_flow_control = ttyport_set_flow_control,
-+	.set_baudrate = ttyport_set_baudrate,
-+};
-+
-+struct device *serdev_tty_port_register(struct tty_port *port,
-+					struct device *parent,
-+					struct tty_driver *drv, int idx)
-+{
-+	struct serdev_controller *ctrl;
-+	struct serport *serport;
-+	int ret;
-+
-+	if (!port || !drv || !parent)
-+		return ERR_PTR(-ENODEV);
-+
-+	ctrl = serdev_controller_alloc(parent, sizeof(struct serport));
-+	if (!ctrl)
-+		return ERR_PTR(-ENOMEM);
-+	serport = serdev_controller_get_drvdata(ctrl);
-+
-+	serport->port = port;
-+	serport->tty_idx = idx;
-+	serport->tty_drv = drv;
-+
-+	ctrl->ops = &ctrl_ops;
-+
-+	ret = serdev_controller_add(ctrl);
-+	if (ret)
-+		goto err_controller_put;
-+
-+	dev_info(&ctrl->dev, "tty port %s%d registered\n", drv->name, idx);
-+	return &ctrl->dev;
-+
-+err_controller_put:
-+	serdev_controller_put(ctrl);
-+	return ERR_PTR(ret);
-+}
-+
-+void serdev_tty_port_unregister(struct tty_port *port)
-+{
-+	struct serdev_controller *ctrl = port->client_data;
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+
-+	if (!serport)
-+		return;
-+
-+	serdev_controller_remove(ctrl);
-+	port->client_ops = NULL;
-+	port->client_data = NULL;
-+	serdev_controller_put(ctrl);
-+}
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index 3ac26c1a8aab..9519da6253a8 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -238,4 +238,25 @@ static inline int serdev_device_write_room(struct serdev_device *sdev)
- 
- #endif /* CONFIG_SERIAL_DEV_BUS */
- 
-+/*
-+ * serdev hooks into TTY core
-+ */
-+struct tty_port;
-+struct tty_driver;
-+
-+#ifdef CONFIG_SERIAL_DEV_CTRL_TTYPORT
-+struct device *serdev_tty_port_register(struct tty_port *port,
-+					struct device *parent,
-+					struct tty_driver *drv, int idx);
-+void serdev_tty_port_unregister(struct tty_port *port);
-+#else
-+static inline struct device *serdev_tty_port_register(struct tty_port *port,
-+					   struct device *parent,
-+					   struct tty_driver *drv, int idx)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+static inline void serdev_tty_port_unregister(struct tty_port *port) {}
-+#endif /* CONFIG_SERIAL_DEV_CTRL_TTYPORT */
-+
- #endif /*_LINUX_SERDEV_H */
--- 
-2.10.1
+
+> On 24/01/2017 07:05, zhichang.yuan wrote:
+>>
+>> After indirect-IO is introduced, system must can assigned indirect-IO
+>> devices
+>> with logical I/O ranges which are different from those for PCI I/O
+>> devices.
+>> Otherwise, I/O accessors can't identify whether the I/O port is for memory
+>> mapped I/O or indirect-IO.
+>> As current helper, pci_register_io_range(), is used for PCI I/O ranges
+>> registration and translation, indirect-IO devices should also apply these
+>> helpers to manage the I/O ranges. It will be easy to ensure the assigned
+>> logical I/O ranges unique.
+>> But for indirect-IO devices, there is no cpu address. The current
+>> pci_register_io_range() can not work for this case.
+>>
+>> This patch makes some changes on the pci_register_io_range() to support
+>> the
+>> I/O range registration with device's fwnode also. After this, the
+>> indirect-IO
+>> devices can register the device-local I/O range to system logical I/O and
+>> easily perform the translation between device-local I/O range and sytem
+>> logical I/O range.
+>>
+>> Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
+>> Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>> ---
+>>  drivers/acpi/pci_root.c | 12 +++++-------
+>>  drivers/of/address.c    |  8 ++------
+>>  drivers/pci/pci.c       | 44 ++++++++++++++++++++++++++++++++++++++++----
+>>  include/linux/pci.h     |  7 +++++--
+>>  4 files changed, 52 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+>> index bf601d4..6cadf05 100644
+>> --- a/drivers/acpi/pci_root.c
+>> +++ b/drivers/acpi/pci_root.c
+>> @@ -730,7 +730,8 @@ static void acpi_pci_root_validate_resources(struct
+>> device *dev,
+>>         }
+>>  }
+>>
+>> -static void acpi_pci_root_remap_iospace(struct resource_entry *entry)
+>> +static void acpi_pci_root_remap_iospace(struct fwnode_handle *node,
+>> +                                       struct resource_entry *entry)
+>>  {
+>>  #ifdef PCI_IOBASE
+>>         struct resource *res = entry->res;
+>> @@ -739,11 +740,7 @@ static void acpi_pci_root_remap_iospace(struct
+>> resource_entry *entry)
+>>         resource_size_t length = resource_size(res);
+>>         unsigned long port;
+>>
+>> -       if (pci_register_io_range(cpu_addr, length))
+>> -               goto err;
+>> -
+>> -       port = pci_address_to_pio(cpu_addr);
+>> -       if (port == (unsigned long)-1)
+>> +       if (pci_register_io_range(node, cpu_addr, length, &port))
+>>                 goto err;
+>>
+>>         res->start = port;
+>> @@ -781,7 +778,8 @@ int acpi_pci_probe_root_resources(struct
+>> acpi_pci_root_info *info)
+>>         else {
+>>                 resource_list_for_each_entry_safe(entry, tmp, list) {
+>>                         if (entry->res->flags & IORESOURCE_IO)
+>> -                               acpi_pci_root_remap_iospace(entry);
+>> +
+>> acpi_pci_root_remap_iospace(&device->fwnode,
+>> +                                                           entry);
+>>
+>>                         if (entry->res->flags & IORESOURCE_DISABLED)
+>>                                 resource_list_destroy_entry(entry);
+>> diff --git a/drivers/of/address.c b/drivers/of/address.c
+>> index 02b2903..d85d228 100644
+>> --- a/drivers/of/address.c
+>> +++ b/drivers/of/address.c
+>> @@ -2,6 +2,7 @@
+>>  #define pr_fmt(fmt)    "OF: " fmt
+>>
+>>  #include <linux/device.h>
+>> +#include <linux/fwnode.h>
+>>  #include <linux/io.h>
+>>  #include <linux/ioport.h>
+>>  #include <linux/module.h>
+>> @@ -323,14 +324,9 @@ int of_pci_range_to_resource(struct of_pci_range
+>> *range,
+>>
+>>         if (res->flags & IORESOURCE_IO) {
+>>                 unsigned long port;
+>> -               err = pci_register_io_range(range->cpu_addr, range->size);
+>> +               err = pci_register_io_range(&np->fwnode, range->cpu_addr,
+>> range->size, &port);
+>>                 if (err)
+>>                         goto invalid_range;
+>> -               port = pci_address_to_pio(range->cpu_addr);
+>> -               if (port == (unsigned long)-1) {
+>> -                       err = -EINVAL;
+>> -                       goto invalid_range;
+>> -               }
+>>                 res->start = port;
+>>         } else {
+>>                 if ((sizeof(resource_size_t) < 8) &&
+>> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+>> index a881c0d..5289221 100644
+>> --- a/drivers/pci/pci.c
+>> +++ b/drivers/pci/pci.c
+>> @@ -3241,6 +3241,7 @@ int pci_request_regions_exclusive(struct pci_dev
+>> *pdev, const char *res_name)
+>>  #ifdef PCI_IOBASE
+>>  struct io_range {
+>>         struct list_head list;
+>> +       struct fwnode_handle *node;
+>>         phys_addr_t start;
+>>         resource_size_t size;
+>>  };
+>> @@ -3253,7 +3254,8 @@ struct io_range {
+>>   * Record the PCI IO range (expressed as CPU physical address + size).
+>>   * Return a negative value if an error has occured, zero otherwise
+>>   */
+>> -int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
+>> +int __weak pci_register_io_range(struct fwnode_handle *node, phys_addr_t
+>> addr,
+>> +                                resource_size_t size, unsigned long
+>> *port)
+>>  {
+>>         int err = 0;
+>>
+>> @@ -3261,10 +3263,31 @@ int __weak pci_register_io_range(phys_addr_t addr,
+>> resource_size_t size)
+>>         struct io_range *range;
+>>         resource_size_t allocated_size = 0;
+>>
+>> +       /*
+>> +        * As indirect-IO which support multiple bus instances is
+>> introduced,
+>> +        * the input 'addr' is probably not page-aligned. If the PCI I/O
+>> +        * ranges are registered after indirect-IO, there is risk that the
+>> +        * start logical PIO assigned to PCI I/O is not page-aligned.
+>> +        * This will cause some I/O subranges are not remapped or
+>> overlapped
+>> +        * in pci_remap_iospace() handling.
+>> +        */
+>> +       WARN_ON(addr != IO_RANGE_IOEXT && !(addr & PAGE_MASK));
+>> +       /*
+>> +        * MMIO will call ioremap, it is better to align size with
+>> PAGE_SIZE,
+>> +        * then the return linux virtual PIO is page-aligned.
+>> +        */
+>> +       if (size & PAGE_MASK)
+>> +               size = PAGE_ALIGN(size);
+>> +
+>>         /* check if the range hasn't been previously recorded */
+>>         spin_lock(&io_range_lock);
+>>         list_for_each_entry(range, &io_range_list, list) {
+>> -               if (addr >= range->start && addr + size <= range->start +
+>> size) {
+>> +               if (node == range->node)
+>> +                       goto end_register;
+>> +
+>> +               if (addr != IO_RANGE_IOEXT &&
+>> +                   addr >= range->start &&
+>> +                   addr + size <= range->start + size) {
+>>                         /* range already registered, bail out */
+>>                         goto end_register;
+>>                 }
+>> @@ -3290,6 +3313,7 @@ int __weak pci_register_io_range(phys_addr_t addr,
+>> resource_size_t size)
+>>                 goto end_register;
+>>         }
+>>
+>> +       range->node = node;
+>>         range->start = addr;
+>>         range->size = size;
+>>
+>> @@ -3297,6 +3321,14 @@ int __weak pci_register_io_range(phys_addr_t addr,
+>> resource_size_t size)
+>>
+>>  end_register:
+>>         spin_unlock(&io_range_lock);
+>> +
+>> +       *port = allocated_size;
+>> +#else
+>> +       /*
+>> +        * powerpc and microblaze have their own registration,
+>> +        * just look up the value here
+>> +        */
+>> +       *port = pci_address_to_pio(addr);
+>>  #endif
+>>
+>>         return err;
+>> @@ -3315,7 +3347,9 @@ phys_addr_t pci_pio_to_address(unsigned long pio)
+>>
+>>         spin_lock(&io_range_lock);
+>>         list_for_each_entry(range, &io_range_list, list) {
+>> -               if (pio >= allocated_size && pio < allocated_size +
+>> range->size) {
+>> +               if (range->start != IO_RANGE_IOEXT &&
+>> +                       pio >= allocated_size &&
+>> +                       pio < allocated_size + range->size) {
+>>                         address = range->start + pio - allocated_size;
+>>                         break;
+>>                 }
+>> @@ -3336,7 +3370,9 @@ unsigned long __weak pci_address_to_pio(phys_addr_t
+>> address)
+>>
+>>         spin_lock(&io_range_lock);
+>>         list_for_each_entry(res, &io_range_list, list) {
+>> -               if (address >= res->start && address < res->start +
+>> res->size) {
+>> +               if (res->start != IO_RANGE_IOEXT &&
+>> +                       address >= res->start &&
+>> +                       address < res->start + res->size) {
+>>                         addr = address - res->start + offset;
+>>                         break;
+>>                 }
+>> diff --git a/include/linux/pci.h b/include/linux/pci.h
+>> index e2d1a12..8d91af8 100644
+>> --- a/include/linux/pci.h
+>> +++ b/include/linux/pci.h
+>> @@ -34,6 +34,9 @@
+>>
+>>  #include <linux/pci_ids.h>
+>>
+>> +/* the macro below flags an invalid cpu address
+>> + * and is used by IO special hosts              */
+>> +#define IO_RANGE_IOEXT (resource_size_t)(-1ull)
+>>  /*
+>>   * The PCI interface treats multi-function devices as independent
+>>   * devices.  The slot/function address of each device is encoded
+>> @@ -1197,8 +1200,8 @@ int __must_check pci_bus_alloc_resource(struct
+>> pci_bus *bus,
+>>                                                   resource_size_t),
+>>                         void *alignf_data);
+>>
+>> -
+>> -int pci_register_io_range(phys_addr_t addr, resource_size_t size);
+>> +int pci_register_io_range(struct fwnode_handle *node, phys_addr_t addr,
+>> +                         resource_size_t size, unsigned long *port);
+>>  unsigned long pci_address_to_pio(phys_addr_t addr);
+>>  phys_addr_t pci_pio_to_address(unsigned long pio);
+>>  int pci_remap_iospace(const struct resource *res, phys_addr_t phys_addr);
+>>
+>
+>
