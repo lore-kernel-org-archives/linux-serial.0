@@ -1,7 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v4 02/10] serial: st-asc: Provide RTS functionality
-Date: Fri,  3 Feb 2017 10:23:11 +0000
-Message-ID: <20170203102319.23489-3-lee.jones@linaro.org>
+Subject: [PATCH v4 05/10] serial: st-asc: Use generic DT binding for announcing RTS/CTS lines
+Date: Fri,  3 Feb 2017 10:23:14 +0000
+Message-ID: <20170203102319.23489-6-lee.jones@linaro.org>
 References: <20170203102319.23489-1-lee.jones@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170203102319.23489-1-lee.jones@linaro.org>
@@ -10,78 +10,29 @@ To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, d
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, patrice.chotard@st.com, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Until this point, it has not been possible for userland serial
-applications (e.g. stty) to toggle the UART RTS line.  This can
-be useful with certain configurations. For example, when using
-a Mezzanine on a Linaro 96board, RTS line is used to take the
-on-board microcontroller in and out of reset.
+The initial binding 'st,hw-flow-control' isn't used anywhere, in neither
+in upstream nor downstream kernels.  It isn't even documented in
+dt-bindings, so we can safely assume it's safe to swap to the generic
+one.
 
 Acked-by: Peter Griffin <peter.griffin@linaro.org>
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/tty/serial/st-asc.c | 27 +++++++++++++++++++++++----
- 1 file changed, 23 insertions(+), 4 deletions(-)
+ drivers/tty/serial/st-asc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index 69e6232..397df50 100644
+index e521078..bcf1d33 100644
 --- a/drivers/tty/serial/st-asc.c
 +++ b/drivers/tty/serial/st-asc.c
-@@ -30,6 +30,7 @@
- #include <linux/of_platform.h>
- #include <linux/serial_core.h>
- #include <linux/clk.h>
-+#include <linux/gpio/consumer.h>
+@@ -794,7 +794,7 @@ static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
+ 		return NULL;
  
- #define DRIVER_NAME "st-asc"
- #define ASC_SERIAL_NAME "ttyAS"
-@@ -38,6 +39,7 @@
- 
- struct asc_port {
- 	struct uart_port port;
-+	struct gpio_desc *rts;
- 	struct clk *clk;
- 	unsigned int hw_flow_control:1;
- 	unsigned int force_m1:1;
-@@ -391,12 +393,27 @@ static unsigned int asc_tx_empty(struct uart_port *port)
- 
- static void asc_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
-+	struct asc_port *ascport = to_asc_port(port);
-+
- 	/*
--	 * This routine is used for seting signals of: DTR, DCD, CTS/RTS
--	 * We use ASC's hardware for CTS/RTS, so don't need any for that.
--	 * Some boards have DTR and DCD implemented using PIO pins,
--	 * code to do this should be hooked in here.
-+	 * This routine is used for seting signals of: DTR, DCD, CTS and RTS.
-+	 * We use ASC's hardware for CTS/RTS when hardware flow-control is
-+	 * enabled, however if the RTS line is required for another purpose,
-+	 * commonly controlled using HUP from userspace, then we need to toggle
-+	 * it manually, using GPIO.
-+	 *
-+	 * Some boards also have DTR and DCD implemented using PIO pins, code to
-+	 * do this should be hooked in here.
- 	 */
-+
-+	if (!ascport->rts)
-+		return;
-+
-+	/* If HW flow-control is enabled, we can't fiddle with the RTS line */
-+	if (asc_in(port, ASC_CTL) & ASC_CTL_CTSENABLE)
-+		return;
-+
-+	gpiod_set_value(ascport->rts, mctrl & TIOCM_RTS);
- }
- 
- static unsigned int asc_get_mctrl(struct uart_port *port)
-@@ -726,6 +743,8 @@ static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
- 							"st,hw-flow-control");
+ 	asc_ports[id].hw_flow_control = of_property_read_bool(np,
+-							"st,hw-flow-control");
++							"uart-has-rtscts");
  	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force_m1");
  	asc_ports[id].port.line = id;
-+	asc_ports[id].rts = NULL;
-+
- 	return &asc_ports[id];
- }
- 
+ 	asc_ports[id].rts = NULL;
 -- 
 2.9.3
