@@ -1,18 +1,19 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Subject: Re: [PATCH v13 1/2] serial: exar: split out the exar code from 8250_pci
-Date: Fri, 3 Feb 2017 16:08:18 +0200
-Message-ID: <CAHp75VfDCVwd5Zim+dov4QtMBNyUGHP-HnmEHjKgWy7SsTBNag@mail.gmail.com>
+Date: Fri, 03 Feb 2017 21:31:14 +0000
+Message-ID: <5894F6A2.5000609@gmail.com>
 References: <1485815302-5708-1-git-send-email-sudipm.mukherjee@gmail.com> <d77cf226-a1bc-0f55-9f2b-af6a97f2f74b@siemens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <d77cf226-a1bc-0f55-9f2b-af6a97f2f74b@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 3, 2017 at 4:02 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+On Friday 03 February 2017 02:02 PM, Jan Kiszka wrote:
 > On 2017-01-30 23:28, Sudip Mukherjee wrote:
 >> From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 >>
@@ -23,12 +24,32 @@ On Fri, Feb 3, 2017 at 4:02 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
 > discussed and accepted in previous review rounds? If so, ignore my
 > comment, but I would have asked for two patches, one that just
 > translates the existing code and another that adds this new feature.
+>
 
-Since it's already in Greg's tty-next, no point to fix anymore this
-particular part.
-However, you are right that few lines of code might be split to a
-separate change.
+Like Andy replied, this is already in tty-next.
 
+>>
+>> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+>> Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+>> ---
+>>
+>> Andy,
+>> I have added the if (!board) check, but I am not sure how board can be
+>> NULL here. If probe executes that will mean there was a match of the
+>> device id and so in that case board can not be NULL.
+>>
+>>   drivers/tty/serial/8250/8250_exar.c | 396 ++++++++++++++++++++++++++++++++++++
+>>   drivers/tty/serial/8250/Kconfig     |   4 +
+>>   drivers/tty/serial/8250/Makefile    |   1 +
+>>   3 files changed, 401 insertions(+)
+>>   create mode 100644 drivers/tty/serial/8250/8250_exar.c
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+>> new file mode 100644
+>> index 0000000..ba1f359
+>> --- /dev/null
+>> +++ b/drivers/tty/serial/8250/8250_exar.c
+>> @@ -0,0 +1,396 @@
 >> +/*
 >> + *  Probe module for 8250/16550-type Exar chips PCI serial ports.
 >> + *
@@ -39,13 +60,19 @@ separate change.
 > It's legally cleaner to carry over the copyright notice from the
 > original file, unless you rewrote everything (unlikely on first glance).
 > You may still add yours to the list for the significant contributions.
+
+Should i send a separate patch to modify those? Andy?
+
 >
 > BTW, are you personally the copyright holder or your employer Codethink?
 > Depends on your contractual situation, but the former is less common.
 
-This is good comment and I think it needs to be addressed (as a
-separate change due to above).
+Well, Codethink has nothing to do with this patch. This was a voluntary 
+work started before I joined Codethink, but then I joined Codethink and 
+found very little time to finish this. So finally now its done.
 
--- 
-With Best Regards,
-Andy Shevchenko
+https://lists.kernelnewbies.org/pipermail/kernelnewbies/2015-November/015372.html
+
+
+Regards
+Sudip
