@@ -1,78 +1,91 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH v13 1/2] serial: exar: split out the exar code from 8250_pci
-Date: Fri, 03 Feb 2017 21:31:14 +0000
-Message-ID: <5894F6A2.5000609@gmail.com>
-References: <1485815302-5708-1-git-send-email-sudipm.mukherjee@gmail.com> <d77cf226-a1bc-0f55-9f2b-af6a97f2f74b@siemens.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH] tty/serial: atmel: ensure state is restored after suspending
+Date: Fri,  3 Feb 2017 23:53:16 +0100
+Message-ID: <20170203225316.10466-1-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d77cf226-a1bc-0f55-9f2b-af6a97f2f74b@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Friday 03 February 2017 02:02 PM, Jan Kiszka wrote:
-> On 2017-01-30 23:28, Sudip Mukherjee wrote:
->> From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
->>
->> Add the serial driver for the Exar chips. And also register the
->> platform device for the GPIO provided by the Exar chips.
->
-> "Also" means you are doing two things in one patch - was this already
-> discussed and accepted in previous review rounds? If so, ignore my
-> comment, but I would have asked for two patches, one that just
-> translates the existing code and another that adds this new feature.
->
+When going to suspend, the UART registers may be lost because the power to
+VDDcore is cut. This is not an issue in the normal case but when
+no_console_suspend is used, we need to restore the registers in order to
+get a functional console.
 
-Like Andy replied, this is already in tty-next.
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ drivers/tty/serial/atmel_serial.c | 44 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
->>
->> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
->> Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
->> ---
->>
->> Andy,
->> I have added the if (!board) check, but I am not sure how board can be
->> NULL here. If probe executes that will mean there was a match of the
->> device id and so in that case board can not be NULL.
->>
->>   drivers/tty/serial/8250/8250_exar.c | 396 ++++++++++++++++++++++++++++++++++++
->>   drivers/tty/serial/8250/Kconfig     |   4 +
->>   drivers/tty/serial/8250/Makefile    |   1 +
->>   3 files changed, 401 insertions(+)
->>   create mode 100644 drivers/tty/serial/8250/8250_exar.c
->>
->> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
->> new file mode 100644
->> index 0000000..ba1f359
->> --- /dev/null
->> +++ b/drivers/tty/serial/8250/8250_exar.c
->> @@ -0,0 +1,396 @@
->> +/*
->> + *  Probe module for 8250/16550-type Exar chips PCI serial ports.
->> + *
->> + *  Based on drivers/tty/serial/8250/8250_pci.c,
->> + *
->> + *  Copyright (C) 2017 Sudip Mukherjee, All Rights Reserved.
->
-> It's legally cleaner to carry over the copyright notice from the
-> original file, unless you rewrote everything (unlikely on first glance).
-> You may still add yours to the list for the significant contributions.
-
-Should i send a separate patch to modify those? Andy?
-
->
-> BTW, are you personally the copyright holder or your employer Codethink?
-> Depends on your contractual situation, but the former is less common.
-
-Well, Codethink has nothing to do with this patch. This was a voluntary 
-work started before I joined Codethink, but then I joined Codethink and 
-found very little time to finish this. So finally now its done.
-
-https://lists.kernelnewbies.org/pipermail/kernelnewbies/2015-November/015372.html
-
-
-Regards
-Sudip
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 168b10cad47b..22e0a73c0cb7 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -175,6 +175,17 @@ struct atmel_uart_port {
+ 	unsigned int		pending_status;
+ 	spinlock_t		lock_suspended;
+ 
++	struct {
++		u32		cr;
++		u32		mr;
++		u32		imr;
++		u32		brgr;
++		u32		rtor;
++		u32		ttgr;
++		u32		fmr;
++		u32		fimr;
++	} cache;
++
+ 	int (*prepare_rx)(struct uart_port *port);
+ 	int (*prepare_tx)(struct uart_port *port);
+ 	void (*schedule_rx)(struct uart_port *port);
+@@ -2649,6 +2660,20 @@ static int atmel_serial_suspend(struct platform_device *pdev,
+ 			cpu_relax();
+ 	}
+ 
++	if (atmel_is_console_port(port) && !console_suspend_enabled) {
++		/* Cache register values as we won't get a full shutdown/startup
++		 * cycle
++		 */
++		atmel_port->cache.mr = atmel_uart_readl(port, ATMEL_US_MR);
++		atmel_port->cache.imr = atmel_uart_readl(port, ATMEL_US_IMR);
++		atmel_port->cache.brgr = atmel_uart_readl(port, ATMEL_US_BRGR);
++		atmel_port->cache.rtor = atmel_uart_readl(port,
++							  atmel_port->rtor);
++		atmel_port->cache.ttgr = atmel_uart_readl(port, ATMEL_US_TTGR);
++		atmel_port->cache.fmr = atmel_uart_readl(port, ATMEL_US_FMR);
++		atmel_port->cache.fimr = atmel_uart_readl(port, ATMEL_US_FIMR);
++	}
++
+ 	/* we can not wake up if we're running on slow clock */
+ 	atmel_port->may_wakeup = device_may_wakeup(&pdev->dev);
+ 	if (atmel_serial_clk_will_stop()) {
+@@ -2671,6 +2696,25 @@ static int atmel_serial_resume(struct platform_device *pdev)
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+ 	unsigned long flags;
+ 
++	if (atmel_is_console_port(port) && !console_suspend_enabled) {
++		atmel_uart_writel(port, ATMEL_US_MR, atmel_port->cache.mr);
++		atmel_uart_writel(port, ATMEL_US_IER, atmel_port->cache.imr);
++		atmel_uart_writel(port, ATMEL_US_BRGR, atmel_port->cache.brgr);
++		atmel_uart_writel(port, atmel_port->rtor,
++				  atmel_port->cache.rtor);
++		atmel_uart_writel(port, ATMEL_US_TTGR, atmel_port->cache.ttgr);
++
++		if (atmel_port->fifo_size) {
++			atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_FIFOEN |
++					  ATMEL_US_RXFCLR | ATMEL_US_TXFLCLR);
++			atmel_uart_writel(port, ATMEL_US_FMR,
++					  atmel_port->cache.fmr);
++			atmel_uart_writel(port, ATMEL_US_FIER,
++					  atmel_port->cache.fimr);
++		}
++		atmel_start_rx(port);
++	}
++
+ 	spin_lock_irqsave(&atmel_port->lock_suspended, flags);
+ 	if (atmel_port->pending) {
+ 		atmel_handle_receive(port, atmel_port->pending);
+-- 
+2.11.0
