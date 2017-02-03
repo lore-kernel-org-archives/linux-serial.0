@@ -1,63 +1,69 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH v3 5/7] serial: sh-sci: SCIFA/B RX FIFO software timeout
-Date: Fri, 3 Feb 2017 12:18:26 +0300
-Message-ID: <838736ca-1c75-5ce6-c949-6fe00ff5627f@cogentembedded.com>
-References: <1486055420-31595-1-git-send-email-ulrich.hecht+renesas@gmail.com>
- <1486055420-31595-6-git-send-email-ulrich.hecht+renesas@gmail.com>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 00/10] serial: st-asc: Allow handling of RTS line
+Date: Fri, 3 Feb 2017 09:22:59 +0000
+Message-ID: <20170203092259.3opu2feqnco6gv2s@dell>
+References: <20170127172804.23881-1-lee.jones@linaro.org>
+ <20170202074236.ni3tozz3er4g3t64@dell>
+ <20170202095541.GB30437@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1486055420-31595-6-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, linux-renesas-soc@vger.kernel.org, wsa@the-dreams.de, geert@linux-m68k.org
-Cc: linux-serial@vger.kernel.org, magnus.damm@gmail.com, gregkh@linuxfoundation.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170202095541.GB30437-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: jslaby-IBi9RG/b67k@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello!
+On Thu, 02 Feb 2017, Greg KH wrote:
 
-On 2/2/2017 8:10 PM, Ulrich Hecht wrote:
+> On Thu, Feb 02, 2017 at 07:42:36AM +0000, Lee Jones wrote:
+> > Hi Greg, Jiri,
+> > 
+> > > When hardware flow-control is disabled, manual toggling of the UART's
+> > > reset line (RTS) using userland applications (e.g. stty) is not
+> > > possible, since the ASC IP does not provide this functionality in the
+> > > same was as some other IPs do.  Thus, we have to do this manually.
+> > > 
+> > > This set ensures the correct Pinctrl groups are configured and
+> > > obtained for both manual toggling of the RTS line and for the IP to
+> > > take over the lines when HW flow-control is requested by the user. 
+> > > 
+> > > Lee Jones (10):
+> > >   serial: st-asc: Ignore the parity error bit if 8-bit mode is enabled
+> > >   serial: st-asc: Provide RTS functionality
+> > >   serial: st-asc: Read in all Pinctrl states
+> > >   serial: st-asc: (De)Register GPIOD and swap Pinctrl profiles
+> > >   serial: st-asc: Use generic DT binding for announcing RTS/CTS lines
+> > >   dt-bindings: serial: Update 'uart-has-rtscts' description
+> > >   ARM: dts: STiH410-b2260: Identify the UART RTS line
+> > >   ARM: dts: STiH407-pinctrl: Add Pinctrl group for HW flow-control
+> > >   ARM: dts: STiH407-family: Use new Pinctrl groups
+> > >   ARM: dts: STiH410-b2260: Enable HW flow-control
+> > > 
+> > >  .../devicetree/bindings/serial/serial.txt          |   3 +-
+> > >  arch/arm/boot/dts/stih407-family.dtsi              |   3 +-
+> > >  arch/arm/boot/dts/stih407-pinctrl.dtsi             |  12 ++-
+> > >  arch/arm/boot/dts/stih410-b2260.dts                |   5 +
+> > >  drivers/tty/serial/st-asc.c                        | 101 +++++++++++++++++++--
+> > >  5 files changed, 110 insertions(+), 14 deletions(-)
+> > 
+> > Looks like everyone is happy with the set.
+> > 
+> > Are you planning to merge it?
+> 
+> I'll take it in my next round of patches, give me a few days to sync up,
+> I normally do serial patches once a week or so.
 
-> Implements support for FIFO fill thresholds greater than one with software
-> timeout.
->
-> This mechanism is not possible (or at least not useful) on SCIF family
-> hardware other than SCIFA and SCIFB because they do not support turning off
-> the DR hardware timeout interrupt separately from the RI interrupt.
->
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-[...]
-> @@ -1473,9 +1494,9 @@ static inline void sci_free_dma(struct uart_port *port)
->
->  static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
->  {
-> -#ifdef CONFIG_SERIAL_SH_SCI_DMA
->  	struct uart_port *port = ptr;
->  	struct sci_port *s = to_sci_port(port);
-> +#ifdef CONFIG_SERIAL_SH_SCI_DMA
+Works for me.  Thanks Greg.
 
-    Hm, I'd expect that #ifdef moved to just before the next statement...
-
->
->  	if (s->chan_rx) {
->  		u16 scr = serial_port_in(port, SCSCR);
-[...]
-> @@ -2086,14 +2115,20 @@ static void sci_reset(struct uart_port *port)
->  		serial_port_out(port, SCLSR, status);
->  	}
->
-> -	if (s->rx_trigger > 1)
-> -		scif_set_rtrg(port, s->rx_trigger);
-> +	if (s->rx_trigger > 1) {
-> +		if (s->rx_fifo_timeout) {
-> +			scif_set_rtrg(port, 1);
-> +			setup_timer(&s->rx_fifo_timer, rx_fifo_timer_fn,
-> +				    (unsigned long)s);
-> +		} else
-> +			scif_set_rtrg(port, s->rx_trigger);
-
-    CodingStyle: Need {} on the *else* branch as well since *if* uses {}.
-
-[...]
-
-MBR, Sergei
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
