@@ -1,91 +1,80 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH] tty/serial: atmel: ensure state is restored after suspending
-Date: Fri,  3 Feb 2017 23:53:16 +0100
-Message-ID: <20170203225316.10466-1-alexandre.belloni@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH V6 2/5] PCI: Adapt pci_register_io_range() for indirect-IO
+ and PCI I/O translation
+Date: Sat, 4 Feb 2017 12:59:57 +0000
+Message-ID: <af413460-35bb-30ee-05f2-4fc4293b0f31@huawei.com>
+References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1485241525-201782-3-git-send-email-yuanzhichang@hisilicon.com>
+ <20170131001551.GC20550@bhelgaas-glaptop.roam.corp.google.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170131001551.GC20550@bhelgaas-glaptop.roam.corp.google.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Bjorn Helgaas <helgaas@kernel.org>, "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Cc: mark.rutland@arm.com, benh@kernel.crashing.org, gabriele.paoloni@huawei.com, rafael@kernel.org, linux-pci@vger.kernel.org, will.deacon@arm.com, linuxarm@huawei.com, frowand.list@gmail.com, lorenzo.pieralisi@arm.com, arnd@arndb.de, xuwei5@hisilicon.com, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, catalin.marinas@arm.com, devicetree@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zhichang.yuan02@gmail.com, zourongrong@gmail.com, robh+dt@kernel.org, bhelgaas@google.com, kantyzc@163.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, olof@lixom.net, brian.starkey@arm.com
 List-Id: linux-serial@vger.kernel.org
 
-When going to suspend, the UART registers may be lost because the power to
-VDDcore is cut. This is not an issue in the normal case but when
-no_console_suspend is used, we need to restore the registers in order to
-get a functional console.
+On 31/01/2017 00:15, Bjorn Helgaas wrote:
+> On Tue, Jan 24, 2017 at 03:05:22PM +0800, zhichang.yuan wrote:
+>> After indirect-IO is introduced, system must can assigned indirect-IO devices
+>> with logical I/O ranges which are different from those for PCI I/O devices.
+>> Otherwise, I/O accessors can't identify whether the I/O port is for memory
+>> mapped I/O or indirect-IO.
+>> As current helper, pci_register_io_range(), is used for PCI I/O ranges
+>> registration and translation, indirect-IO devices should also apply these
+>> helpers to manage the I/O ranges. It will be easy to ensure the assigned
+>> logical I/O ranges unique.
+>> But for indirect-IO devices, there is no cpu address. The current
+>> pci_register_io_range() can not work for this case.
+>>
+>> This patch makes some changes on the pci_register_io_range() to support the
+>> I/O range registration with device's fwnode also. After this, the indirect-IO
+>> devices can register the device-local I/O range to system logical I/O and
+>> easily perform the translation between device-local I/O range and sytem
+>> logical I/O range.
+>>
+>> Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
+>> Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>
+> I had a couple trivial comments, but you can include my:
+>
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>	# drivers/pci parts
+>
+> in your next revision.  I don't know who you have in mind to merge this;
+> it doesn't really touch much of PCI.  But let me know if you need anything
+> else from me.
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- drivers/tty/serial/atmel_serial.c | 44 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+Thanks Bjorn.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 168b10cad47b..22e0a73c0cb7 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -175,6 +175,17 @@ struct atmel_uart_port {
- 	unsigned int		pending_status;
- 	spinlock_t		lock_suspended;
- 
-+	struct {
-+		u32		cr;
-+		u32		mr;
-+		u32		imr;
-+		u32		brgr;
-+		u32		rtor;
-+		u32		ttgr;
-+		u32		fmr;
-+		u32		fimr;
-+	} cache;
-+
- 	int (*prepare_rx)(struct uart_port *port);
- 	int (*prepare_tx)(struct uart_port *port);
- 	void (*schedule_rx)(struct uart_port *port);
-@@ -2649,6 +2660,20 @@ static int atmel_serial_suspend(struct platform_device *pdev,
- 			cpu_relax();
- 	}
- 
-+	if (atmel_is_console_port(port) && !console_suspend_enabled) {
-+		/* Cache register values as we won't get a full shutdown/startup
-+		 * cycle
-+		 */
-+		atmel_port->cache.mr = atmel_uart_readl(port, ATMEL_US_MR);
-+		atmel_port->cache.imr = atmel_uart_readl(port, ATMEL_US_IMR);
-+		atmel_port->cache.brgr = atmel_uart_readl(port, ATMEL_US_BRGR);
-+		atmel_port->cache.rtor = atmel_uart_readl(port,
-+							  atmel_port->rtor);
-+		atmel_port->cache.ttgr = atmel_uart_readl(port, ATMEL_US_TTGR);
-+		atmel_port->cache.fmr = atmel_uart_readl(port, ATMEL_US_FMR);
-+		atmel_port->cache.fimr = atmel_uart_readl(port, ATMEL_US_FIMR);
-+	}
-+
- 	/* we can not wake up if we're running on slow clock */
- 	atmel_port->may_wakeup = device_may_wakeup(&pdev->dev);
- 	if (atmel_serial_clk_will_stop()) {
-@@ -2671,6 +2696,25 @@ static int atmel_serial_resume(struct platform_device *pdev)
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
- 	unsigned long flags;
- 
-+	if (atmel_is_console_port(port) && !console_suspend_enabled) {
-+		atmel_uart_writel(port, ATMEL_US_MR, atmel_port->cache.mr);
-+		atmel_uart_writel(port, ATMEL_US_IER, atmel_port->cache.imr);
-+		atmel_uart_writel(port, ATMEL_US_BRGR, atmel_port->cache.brgr);
-+		atmel_uart_writel(port, atmel_port->rtor,
-+				  atmel_port->cache.rtor);
-+		atmel_uart_writel(port, ATMEL_US_TTGR, atmel_port->cache.ttgr);
-+
-+		if (atmel_port->fifo_size) {
-+			atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_FIFOEN |
-+					  ATMEL_US_RXFCLR | ATMEL_US_TXFLCLR);
-+			atmel_uart_writel(port, ATMEL_US_FMR,
-+					  atmel_port->cache.fmr);
-+			atmel_uart_writel(port, ATMEL_US_FIER,
-+					  atmel_port->cache.fimr);
-+		}
-+		atmel_start_rx(port);
-+	}
-+
- 	spin_lock_irqsave(&atmel_port->lock_suspended, flags);
- 	if (atmel_port->pending) {
- 		atmel_handle_receive(port, atmel_port->pending);
--- 
-2.11.0
+The current status is that we plan to send a new patchset early next 
+week with the suggested change to combine PCI+extio IO framework. The IO 
+space range stuff (pci_register_io_range() et al) will move from 
+drivers/pci/pci.c to new lib/libio.c (renamed from extio.c).
+
+We still need someone to merge (we are praying to make 4.11), and also 
+Arnd to kindly check the update from his sketch and also more reviews of 
+the ACPI part of what was extio.c 
+(http://www.spinics.net/lists/devicetree/msg160611.html, 5/5)
+
+Much appreciated,
+John
+
+>
+>> ---
+>>  drivers/acpi/pci_root.c | 12 +++++-------
+>>  drivers/of/address.c    |  8 ++------
+>>  drivers/pci/pci.c       | 44 ++++++++++++++++++++++++++++++++++++++++----
+>>  include/linux/pci.h     |  7 +++++--
+>>  4 files changed, 52 insertions(+), 19 deletions(-)
+>>
