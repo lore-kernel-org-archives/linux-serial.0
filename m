@@ -1,109 +1,61 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH] tty/serial: atmel: ensure state is restored after
- suspending
-Date: Mon, 6 Feb 2017 12:10:34 +0100
-Message-ID: <55a39641-87d4-4f61-11fa-54c8904ac40d@gmail.com>
-References: <20170203225316.10466-1-alexandre.belloni@free-electrons.com>
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: Fractional divider on the Atmel USART controller
+Date: Mon, 6 Feb 2017 12:56:42 +0100
+Message-ID: <CAGkQfmNshOGWT8Vs_J-49qq2UHoCMJ8cYb9jbjaDqM2YNy05rg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170203225316.10466-1-alexandre.belloni@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: Richard Genoud <richard.genoud@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Alexandre,
+Hello,
 
-On 03/02/2017 23:53, Alexandre Belloni wrote:
-> When going to suspend, the UART registers may be lost because the power to
-> VDDcore is cut. This is not an issue in the normal case but when
-> no_console_suspend is used, we need to restore the registers in order to
-> get a functional console.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> ---
->  drivers/tty/serial/atmel_serial.c | 44 +++++++++++++++++++++++++++++++++++++++
->  1 file changed, 44 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 168b10cad47b..22e0a73c0cb7 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -175,6 +175,17 @@ struct atmel_uart_port {
->  	unsigned int		pending_status;
->  	spinlock_t		lock_suspended;
->  
-> +	struct {
-> +		u32		cr;
-> +		u32		mr;
-> +		u32		imr;
-> +		u32		brgr;
-> +		u32		rtor;
-> +		u32		ttgr;
-> +		u32		fmr;
-> +		u32		fimr;
-> +	} cache;
-> +
-As struct cache is only used in suspend()/resume() we could add:
-#ifdef CONFIG_PM / #endif
-to remove it from atmel_uart_port when PM is not selected.
-Even if I'm not a big fan of ifdefs, the suspend code is already
-compiled out with #ifdef CONFIG_PM, so, at least, it would be consistent.
+On Atmel SAMA5D2, when trying to configure a serial port for 3 Mbauds
+operation, I do not always get the requested baud rate. If the hardware
+flow control is disabled by software, the line works correctly. But if I
+set the crtscts option, the line does not work, and after checking the
+line I can observe that the signal is sent at 2.6 Mbauds.
 
->  	int (*prepare_rx)(struct uart_port *port);
->  	int (*prepare_tx)(struct uart_port *port);
->  	void (*schedule_rx)(struct uart_port *port);
-> @@ -2649,6 +2660,20 @@ static int atmel_serial_suspend(struct platform_device *pdev,
->  			cpu_relax();
->  	}
->  
-> +	if (atmel_is_console_port(port) && !console_suspend_enabled) {
-> +		/* Cache register values as we won't get a full shutdown/startup
-> +		 * cycle
-> +		 */
-> +		atmel_port->cache.mr = atmel_uart_readl(port, ATMEL_US_MR);
-> +		atmel_port->cache.imr = atmel_uart_readl(port, ATMEL_US_IMR);
-> +		atmel_port->cache.brgr = atmel_uart_readl(port, ATMEL_US_BRGR);
-> +		atmel_port->cache.rtor = atmel_uart_readl(port,
-> +							  atmel_port->rtor);
-> +		atmel_port->cache.ttgr = atmel_uart_readl(port, ATMEL_US_TTGR);
-> +		atmel_port->cache.fmr = atmel_uart_readl(port, ATMEL_US_FMR);
-> +		atmel_port->cache.fimr = atmel_uart_readl(port, ATMEL_US_FIMR);
-> +	}
-> +
->  	/* we can not wake up if we're running on slow clock */
->  	atmel_port->may_wakeup = device_may_wakeup(&pdev->dev);
->  	if (atmel_serial_clk_will_stop()) {
-> @@ -2671,6 +2696,25 @@ static int atmel_serial_resume(struct platform_device *pdev)
->  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
->  	unsigned long flags;
->  
-> +	if (atmel_is_console_port(port) && !console_suspend_enabled) {
-> +		atmel_uart_writel(port, ATMEL_US_MR, atmel_port->cache.mr);
-> +		atmel_uart_writel(port, ATMEL_US_IER, atmel_port->cache.imr);
-> +		atmel_uart_writel(port, ATMEL_US_BRGR, atmel_port->cache.brgr);
-> +		atmel_uart_writel(port, atmel_port->rtor,
-> +				  atmel_port->cache.rtor);
-> +		atmel_uart_writel(port, ATMEL_US_TTGR, atmel_port->cache.ttgr);
-> +
-> +		if (atmel_port->fifo_size) {
-> +			atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_FIFOEN |
-> +					  ATMEL_US_RXFCLR | ATMEL_US_TXFLCLR);
-> +			atmel_uart_writel(port, ATMEL_US_FMR,
-> +					  atmel_port->cache.fmr);
-> +			atmel_uart_writel(port, ATMEL_US_FIER,
-> +					  atmel_port->cache.fimr);
-> +		}
-> +		atmel_start_rx(port);
-> +	}
-> +
->  	spin_lock_irqsave(&atmel_port->lock_suspended, flags);
->  	if (atmel_port->pending) {
->  		atmel_handle_receive(port, atmel_port->pending);
-> 
+This is due to the code used to manage fractional baud rate divisor: the
+existing code prevents the fractional bits from being used if the line
+is not configured in normal mode. This case occurs when the hardware
+flow control or the RS485 mode is set.
 
-Thanks !
+If I apply the following patch to drivers/tty/serial/atmel_serial.c,
+I get the required baudrate.
 
-Richard.
+8<----------------------------------------------------------------
+
+@@ -2204,14 +2204,13
+      * baudrate = selected clock / (8 * (2 - OVER) * (CD + FP / 8))
+      * Currently, OVER is always set to 0 so we get
+      * baudrate = selected clock / (16 * (CD + FP / 8))
+      * then
+      * 8 CD + FP = selected clock / (2 * baudrate)
+      */
+-    if (atmel_port->has_frac_baudrate &&
+-        (mode & ATMEL_US_USMODE) == ATMEL_US_USMODE_NORMAL) {
++    if (atmel_port->has_frac_baudrate) {
+         div = DIV_ROUND_CLOSEST(port->uartclk, baud * 2);
+         cd = div >> 3;
+         fp = div & ATMEL_US_FP_MASK;
+     } else {
+         cd = uart_get_divisor(port, baud);
+     }
+
+8<----------------------------------------------------------------
+
+Unfortunately, I know that this will work on SAMA5D2, but this driver is
+used for many other Atmel chips. I do not know if the existing code is
+meant to respect a known limitation on other devices that use the same
+controller, or if it is just a bug.
+
+Ludovic, Nicolas,  what is your opinion on that matter? Should I just
+propose this as a patch, or is it necessary to add a limitation for
+supported devices only ?
+
+Best regards,
+-- 
+Romain Izard
