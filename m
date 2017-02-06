@@ -1,21 +1,19 @@
-From: Ludovic Desroches <ludovic.desroches@microchip.com>
+From: Richard Genoud <richard.genoud@gmail.com>
 Subject: Re: Fractional divider on the Atmel USART controller
-Date: Mon, 6 Feb 2017 14:42:56 +0100
-Message-ID: <20170206134256.tp5rgx6axd532gp3@rfolt0960.corp.atmel.com>
+Date: Mon, 6 Feb 2017 14:47:12 +0100
+Message-ID: <d3562d2c-3402-4dfa-bb84-f4cce684df34@gmail.com>
 References: <CAGkQfmNshOGWT8Vs_J-49qq2UHoCMJ8cYb9jbjaDqM2YNy05rg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
 In-Reply-To: <CAGkQfmNshOGWT8Vs_J-49qq2UHoCMJ8cYb9jbjaDqM2YNy05rg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Romain Izard <romain.izard.pro@gmail.com>
-Cc: linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Richard Genoud <richard.genoud@gmail.com>
+To: Romain Izard <romain.izard.pro@gmail.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@microchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hello Romain,
-
-On Mon, Feb 06, 2017 at 12:56:42PM +0100, Romain Izard wrote:
+Hi Romain,
+On 06/02/2017 12:56, Romain Izard wrote:
 > Hello,
 > 
 > On Atmel SAMA5D2, when trying to configure a serial port for 3 Mbauds
@@ -57,27 +55,30 @@ On Mon, Feb 06, 2017 at 12:56:42PM +0100, Romain Izard wrote:
 > used for many other Atmel chips. I do not know if the existing code is
 > meant to respect a known limitation on other devices that use the same
 > controller, or if it is just a bug.
-
-It depends on the device used. In the SAMA5D4 datasheet, it is
-mentionned: "This feature is only available when using USART normal mode".
-
-In the SAMA5D2 datasheet, this constraint is no longer mentionned you
-confirm that is works, that is great.
-
 > 
 > Ludovic, Nicolas,  what is your opinion on that matter? Should I just
 > propose this as a patch, or is it necessary to add a limitation for
 > supported devices only ?
-
-Yes, only SAMA5D2 supports fractionnal baudrate in other modes than the
-normal one. A new compatible string may be added, I am not sure you have
-enough information in atmel_get_ip_name...
-
-Regards
-
-Ludovic
-
 > 
 > Best regards,
-> -- 
-> Romain Izard
+> 
+Looking at the SAMA5D3 datasheet §44.7.1.2 Fractional Baud Rate in
+Asynchronous Mode :
+[...] This feature is only available when using USART
+normal mode.
+Same for SAM9G20 (§31.6.1.3 Fractional Baud Rate in Asynchronous Mode)
+
+But this restriction doesn't seem to apply for SAMA5D2.
+I guess it's a new feature in the FLEXCOM.
+
+So, yes, your patch will break existing platforms, but something should
+definitely be done to make that work on SAMA5D2.
+
+One way to do that would be to modify the has_frac_baudrate into an enum
+(no_support, partial_support and full_support) and then fill the value
+according to the ATMEL_US_NAME/ATMEL_US_VERSION.
+But I'm not sure if we have enough information to sort this.
+I'll have a look on the different name/version we have on sama5D2 / D3 /
+g20.
+
+Richard.
