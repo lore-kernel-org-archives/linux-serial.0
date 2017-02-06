@@ -1,31 +1,28 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
+From: Richard Genoud <richard.genoud@gmail.com>
 Subject: Re: [PATCH] tty/serial: atmel: ensure state is restored after
  suspending
-Date: Mon, 6 Feb 2017 10:31:42 +0100
-Message-ID: <8d788b97-5dfa-1beb-e561-2a558a62e56b@atmel.com>
+Date: Mon, 6 Feb 2017 12:10:34 +0100
+Message-ID: <55a39641-87d4-4f61-11fa-54c8904ac40d@gmail.com>
 References: <20170203225316.10466-1-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170203225316.10466-1-alexandre.belloni@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Richard Genoud <richard.genoud@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Le 03/02/2017 à 23:53, Alexandre Belloni a écrit :
+Hi Alexandre,
+
+On 03/02/2017 23:53, Alexandre Belloni wrote:
 > When going to suspend, the UART registers may be lost because the power to
 > VDDcore is cut. This is not an issue in the normal case but when
 > no_console_suspend is used, we need to restore the registers in order to
 > get a functional console.
 > 
 > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-
-Reviewed-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-
-Thanks,
-
 > ---
 >  drivers/tty/serial/atmel_serial.c | 44 +++++++++++++++++++++++++++++++++++++++
 >  1 file changed, 44 insertions(+)
@@ -49,6 +46,12 @@ Thanks,
 > +		u32		fimr;
 > +	} cache;
 > +
+As struct cache is only used in suspend()/resume() we could add:
+#ifdef CONFIG_PM / #endif
+to remove it from atmel_uart_port when PM is not selected.
+Even if I'm not a big fan of ifdefs, the suspend code is already
+compiled out with #ifdef CONFIG_PM, so, at least, it would be consistent.
+
 >  	int (*prepare_rx)(struct uart_port *port);
 >  	int (*prepare_tx)(struct uart_port *port);
 >  	void (*schedule_rx)(struct uart_port *port);
@@ -101,6 +104,6 @@ Thanks,
 >  		atmel_handle_receive(port, atmel_port->pending);
 > 
 
+Thanks !
 
--- 
-Nicolas Ferre
+Richard.
