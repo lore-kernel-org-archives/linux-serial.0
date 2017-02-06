@@ -1,109 +1,159 @@
-From: Ludovic Desroches <ludovic.desroches@microchip.com>
-Subject: Re: Fractional divider on the Atmel USART controller
-Date: Mon, 6 Feb 2017 16:37:23 +0100
-Message-ID: <20170206153723.om7yen4laybhkm6d@rfolt0960.corp.atmel.com>
-References: <CAGkQfmNshOGWT8Vs_J-49qq2UHoCMJ8cYb9jbjaDqM2YNy05rg@mail.gmail.com>
- <20170206134256.tp5rgx6axd532gp3@rfolt0960.corp.atmel.com>
- <b32aeadb-57a3-f327-e387-e4bb720f9297@gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: [PATCH v13 1/2] serial: exar: split out the exar code from
+ 8250_pci
+Date: Mon, 6 Feb 2017 20:37:44 +0100
+Message-ID: <062c2d4f-8546-abdd-dbee-8f3871683147@siemens.com>
+References: <1485815302-5708-1-git-send-email-sudipm.mukherjee@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <b32aeadb-57a3-f327-e387-e4bb720f9297@gmail.com>
+In-Reply-To: <1485815302-5708-1-git-send-email-sudipm.mukherjee@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Romain Izard <romain.izard.pro@gmail.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@microchip.com>
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Feb 06, 2017 at 03:58:52PM +0100, Richard Genoud wrote:
-> Hi Ludovic,
+On 2017-01-30 23:28, Sudip Mukherjee wrote:
+> From: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 > 
-> On 06/02/2017 14:42, Ludovic Desroches wrote:
-> > Hello Romain,
-> > 
-> > On Mon, Feb 06, 2017 at 12:56:42PM +0100, Romain Izard wrote:
-> >> Hello,
-> >>
-> >> On Atmel SAMA5D2, when trying to configure a serial port for 3 Mbauds
-> >> operation, I do not always get the requested baud rate. If the hardware
-> >> flow control is disabled by software, the line works correctly. But if I
-> >> set the crtscts option, the line does not work, and after checking the
-> >> line I can observe that the signal is sent at 2.6 Mbauds.
-> >>
-> >> This is due to the code used to manage fractional baud rate divisor: the
-> >> existing code prevents the fractional bits from being used if the line
-> >> is not configured in normal mode. This case occurs when the hardware
-> >> flow control or the RS485 mode is set.
-> >>
-> >> If I apply the following patch to drivers/tty/serial/atmel_serial.c,
-> >> I get the required baudrate.
-> >>
-> >> 8<----------------------------------------------------------------
-> >>
-> >> @@ -2204,14 +2204,13
-> >>       * baudrate = selected clock / (8 * (2 - OVER) * (CD + FP / 8))
-> >>       * Currently, OVER is always set to 0 so we get
-> >>       * baudrate = selected clock / (16 * (CD + FP / 8))
-> >>       * then
-> >>       * 8 CD + FP = selected clock / (2 * baudrate)
-> >>       */
-> >> -    if (atmel_port->has_frac_baudrate &&
-> >> -        (mode & ATMEL_US_USMODE) == ATMEL_US_USMODE_NORMAL) {
-> >> +    if (atmel_port->has_frac_baudrate) {
-> >>          div = DIV_ROUND_CLOSEST(port->uartclk, baud * 2);
-> >>          cd = div >> 3;
-> >>          fp = div & ATMEL_US_FP_MASK;
-> >>      } else {
-> >>          cd = uart_get_divisor(port, baud);
-> >>      }
-> >>
-> >> 8<----------------------------------------------------------------
-> >>
-> >> Unfortunately, I know that this will work on SAMA5D2, but this driver is
-> >> used for many other Atmel chips. I do not know if the existing code is
-> >> meant to respect a known limitation on other devices that use the same
-> >> controller, or if it is just a bug.
-> > 
-> > It depends on the device used. In the SAMA5D4 datasheet, it is
-> > mentionned: "This feature is only available when using USART normal mode".
+> Add the serial driver for the Exar chips. And also register the
+> platform device for the GPIO provided by the Exar chips.
 > 
-> It seems you have an old datasheet version, because in table 60.2 (page 1784) of SAMA5D4 datasheet (rev D), there's :
-> 
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
-Right, it seems there was an update of all sama5 datasheet to remove
-this constraint. I don't know if it concerns also old devices, I'll try
-to get more information.
+...
 
-> Section 43.6.1.2 “Fractional Baud Rate in Asynchronous Mode”: added warning “When the value of field FP
-> is greater than 0...”; removed sentence “This feature is only available when using USART normal mode.”
-> 
-> So I guess this should also work on SAMA5D4 ? 
-> 
-> 
-> > In the SAMA5D2 datasheet, this constraint is no longer mentionned you
-> > confirm that is works, that is great.
-> > 
-> >>
-> >> Ludovic, Nicolas,  what is your opinion on that matter? Should I just
-> >> propose this as a patch, or is it necessary to add a limitation for
-> >> supported devices only ?
-> > 
-> > Yes, only SAMA5D2 supports fractionnal baudrate in other modes than the
-> > normal one. A new compatible string may be added, I am not sure you have
-> > enough information in atmel_get_ip_name...
-> 
-> I checked the version numbers on some atmel platforms I have:
-> 
-> AT91SAM9G35 / SAMA5D3: 0x502
-> AT91SAM9G20: 0x10330
-> SAMA5D2: 0x814
-> 
-> Ludovic, could you please check the version number of the SAMA5D4 USART (if you have one lying around) ?
-> 
+> +static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+> +			 int idx, unsigned int offset,
+> +			 struct uart_8250_port *port)
+> +{
+> +	const struct exar8250_board *board = priv->board;
+> +	unsigned int bar = 0;
+> +
+> +	port->port.iotype = UPIO_MEM;
+> +	port->port.mapbase = pci_resource_start(pcidev, bar) + offset;
+> +	port->port.membase = pcim_iomap_table(pcidev)[bar] + offset;
 
-SAMA5D4: 0x701
+This always gives you 0 for membase because you missed to call
+pcim_iomap for bar 0.
 
-Regards
+Sorry to pick on this piece-wise, but I just ran into this bug now while
+porting patches over.
 
-Ludovic
+> +	port->port.regshift = board->reg_shift;
+> +
+> +	return 0;
+> +}
+> +
+> +static int
+> +pci_connect_tech_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+> +		       struct uart_8250_port *port, int idx)
+> +{
+> +	unsigned int offset = idx * 0x200;
+> +	unsigned int baud = 1843200;
+> +
+> +	port->port.uartclk = baud * 16;
+> +	return default_setup(priv, pcidev, idx, offset, port);
+> +}
+> +
+> +static int
+> +pci_xr17c154_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+> +		   struct uart_8250_port *port, int idx)
+> +{
+> +	unsigned int offset = idx * 0x200;
+> +	unsigned int baud = 921600;
+> +
+> +	port->port.uartclk = baud * 16;
+> +	return default_setup(priv, pcidev, idx, offset, port);
+> +}
+> +
+> +static void setup_gpio(u8 __iomem *p)
+> +{
+> +	writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
+> +	writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
+> +	writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
+> +	writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
+> +	writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
+> +	writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
+> +	writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
+> +	writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
+> +	writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
+> +	writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
+> +	writeb(0x00, p + UART_EXAR_MPIOSEL_15_8);
+> +	writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
+> +}
+> +
+> +static void *
+> +xr17v35x_register_gpio(struct pci_dev *pcidev)
+> +{
+> +	struct platform_device *pdev;
+> +
+> +	pdev = platform_device_alloc("gpio_exar", PLATFORM_DEVID_AUTO);
+> +	if (!pdev)
+> +		return NULL;
+> +
+> +	platform_set_drvdata(pdev, pcidev);
+> +	if (platform_device_add(pdev) < 0) {
+> +		platform_device_put(pdev);
+> +		return NULL;
+> +	}
+> +
+> +	return pdev;
+> +}
+> +
+> +static int
+> +pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+> +		   struct uart_8250_port *port, int idx)
+> +{
+> +	const struct exar8250_board *board = priv->board;
+> +	unsigned int offset = idx * 0x400;
+> +	unsigned int baud = 7812500;
+> +	u8 __iomem *p;
+> +	int ret;
+> +
+> +	port->port.uartclk = baud * 16;
+> +	/*
+> +	 * Setup the uart clock for the devices on expansion slot to
+> +	 * half the clock speed of the main chip (which is 125MHz)
+> +	 */
+> +	if (board->has_slave && idx >= 8)
+> +		port->port.uartclk /= 2;
+> +
+> +	p = pci_ioremap_bar(pcidev, 0);
+
+If we move the default_setup before this, we can use pcim_iomap_table()
+and avoid this temporary mapping completely.
+
+> +	if (!p)
+> +		return -ENOMEM;
+> +
+> +	/* Setup Multipurpose Input/Output pins. */
+> +	if (idx == 0)
+> +		setup_gpio(p);
+> +
+> +	writeb(0x00, p + UART_EXAR_8XMODE);
+> +	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
+> +	writeb(128, p + UART_EXAR_TXTRG);
+> +	writeb(128, p + UART_EXAR_RXTRG);
+> +	iounmap(p);
+> +
+> +	ret = default_setup(priv, pcidev, idx, offset, port);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (idx == 0)
+> +		port->port.private_data =
+> +			xr17v35x_register_gpio(pcidev);
+> +
+> +	return 0;
+> +}
+
+I suppose I should still send patches on top, right?
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
