@@ -1,39 +1,53 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 3/7] serial: exar: Fix feature control register constants
-Date: Tue,  7 Feb 2017 17:10:00 +0100
-Message-ID: <2d1b9f9a78033664ee1afcd55b708602bc262c2e.1486483803.git.jan.kiszka@siemens.com>
-References: <cover.1486483803.git.jan.kiszka@siemens.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 1/7] serial: exar: Fix mapping of port I/O resources
+Date: Wed, 8 Feb 2017 00:40:21 +0200
+Message-ID: <CAHp75VfGpk_+m=yJAqGNWxVg01UvsFnw5HHOOSCbgXLMLeDUdg@mail.gmail.com>
+References: <cover.1486483803.git.jan.kiszka@siemens.com> <52dc04249d65a55fbf1e58c262ca23c4fcc20777.1486483803.git.jan.kiszka@siemens.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1486483803.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1486483803.git.jan.kiszka@siemens.com>
-References: <cover.1486483803.git.jan.kiszka@siemens.com>
+In-Reply-To: <52dc04249d65a55fbf1e58c262ca23c4fcc20777.1486483803.git.jan.kiszka@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-According to the XR17V352 manual, bit 4 is IrDA control and bit 5 for
-485. Fortunately, no driver used them so far.
+On Tue, Feb 7, 2017 at 6:09 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> pcim_iomap_table only returns the table of mapping, it does not perform
+> them. For that, we need to call pcim_iomap, but only if that mapping was
+> not done before.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/uapi/linux/serial_reg.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Basically by this change you answered to one of my question during review.
 
-diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-index 274d8fc..25b93a7 100644
---- a/include/uapi/linux/serial_reg.h
-+++ b/include/uapi/linux/serial_reg.h
-@@ -374,8 +374,8 @@
- #define UART_EXAR_DVID		0x8d	/* Device identification */
- 
- #define UART_EXAR_FCTR		0x08	/* Feature Control Register */
--#define UART_FCTR_EXAR_IRDA	0x08	/* IrDa data encode select */
--#define UART_FCTR_EXAR_485	0x10	/* Auto 485 half duplex dir ctl */
-+#define UART_FCTR_EXAR_IRDA	0x10	/* IrDa data encode select */
-+#define UART_FCTR_EXAR_485	0x20	/* Auto 485 half duplex dir ctl */
- #define UART_FCTR_EXAR_TRGA	0x00	/* FIFO trigger table A */
- #define UART_FCTR_EXAR_TRGB	0x60	/* FIFO trigger table B */
- #define UART_FCTR_EXAR_TRGC	0x80	/* FIFO trigger table C */
+FWIW:
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
+> Fixes: d0aeaa83f0b0 ("serial: exar: split out the exar code from 8250_pci")
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  drivers/tty/serial/8250/8250_exar.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+> index e6b44a7..58469d9 100644
+> --- a/drivers/tty/serial/8250/8250_exar.c
+> +++ b/drivers/tty/serial/8250/8250_exar.c
+> @@ -72,6 +72,9 @@ static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+>         const struct exar8250_board *board = priv->board;
+>         unsigned int bar = 0;
+>
+> +       if (!pcim_iomap_table(pcidev)[bar] && !pcim_iomap(pcidev, bar, 0))
+> +               return -ENOMEM;
+> +
+>         port->port.iotype = UPIO_MEM;
+>         port->port.mapbase = pci_resource_start(pcidev, bar) + offset;
+>         port->port.membase = pcim_iomap_table(pcidev)[bar] + offset;
+> --
+> 2.1.4
+>
+
+
+
 -- 
-2.1.4
+With Best Regards,
+Andy Shevchenko
