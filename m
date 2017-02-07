@@ -1,103 +1,57 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 4/7] serial: exar: Move Commtech adapters to 8250_exar as well
-Date: Wed, 8 Feb 2017 01:23:41 +0200
-Message-ID: <CAHp75Vf0vx5YXczvnUkkyp8=C397pYMvsf32sRAx0jU+Cgxb6w@mail.gmail.com>
-References: <cover.1486483803.git.jan.kiszka@siemens.com> <ccf49a203b0aa1861cbb8a6cfafdc22ba5ea120e.1486483804.git.jan.kiszka@siemens.com>
+Subject: Re: [PATCH 7/7] serial: exar: Enable MSI support
+Date: Wed, 8 Feb 2017 01:26:01 +0200
+Message-ID: <CAHp75VcNZt1M0OEGnJz6648JbFfotpsZBFYh46scTL6SW4KduA@mail.gmail.com>
+References: <cover.1486483803.git.jan.kiszka@siemens.com> <36c56cfae9e213661612327bef79729f5e25b481.1486483804.git.jan.kiszka@siemens.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ccf49a203b0aa1861cbb8a6cfafdc22ba5ea120e.1486483804.git.jan.kiszka@siemens.com>
+In-Reply-To: <36c56cfae9e213661612327bef79729f5e25b481.1486483804.git.jan.kiszka@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
 On Tue, Feb 7, 2017 at 6:10 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> Those are exar-based, too.
+> Use pci_alloc_irq_vectors to enable MSI when available. At least the
+> XR17V352 supports this.
+>
 
-Exar-based
+FWIW:
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-> With the required refactoring of the code to fit into 8250_exar, we
-> automatically fix the same issue pci_xr17v35x_setup had before: 8XMODE,
-> FCTL, TXTRG and RXTRG were always only set for port 0. Now they are
-> initialized for the correct target port by using port.membase.
-
-My comments below.
-
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  drivers/tty/serial/8250/8250_exar.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+> index 13cc1da..236de60 100644
 > --- a/drivers/tty/serial/8250/8250_exar.c
 > +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -24,11 +24,15 @@
+> @@ -284,10 +284,16 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 >
->  #include "8250.h"
+>         priv->board = board;
 >
-> -#define PCI_DEVICE_ID_COMMTECH_4224PCIE        0x0020
-> -#define PCI_DEVICE_ID_COMMTECH_4228PCIE        0x0021
-> -#define PCI_DEVICE_ID_COMMTECH_4222PCIE        0x0022
-> -#define PCI_DEVICE_ID_EXAR_XR17V4358   0x4358
-> -#define PCI_DEVICE_ID_EXAR_XR17V8358   0x8358
-
-> +#define PCI_DEVICE_ID_COMMTECH_4222PCI335      0x0004
-> +#define PCI_DEVICE_ID_COMMTECH_4224PCI335      0x0002
-
-I think you assumed ID ordered list?
-
-> +#define PCI_DEVICE_ID_COMMTECH_2324PCI335      0x000a
-> +#define PCI_DEVICE_ID_COMMTECH_2328PCI335      0x000b
-> +#define PCI_DEVICE_ID_COMMTECH_4224PCIE                0x0020
-> +#define PCI_DEVICE_ID_COMMTECH_4228PCIE                0x0021
-> +#define PCI_DEVICE_ID_COMMTECH_4222PCIE                0x0022
-> +#define PCI_DEVICE_ID_EXAR_XR17V4358           0x4358
-> +#define PCI_DEVICE_ID_EXAR_XR17V8358           0x8358
-
-> @@ -292,6 +345,21 @@ static int __maybe_unused exar_resume(struct device *dev)
-
-> +static const struct exar8250_board pbn_fastcom335_2 = {
-> +       .num_ports      = 2,
-> +       .setup          = pci_fastcom335_setup,
-> +};
+> +       pci_set_master(pcidev);
 > +
-> +static const struct exar8250_board pbn_fastcom335_4 = {
-> +       .num_ports      = 4,
-> +       .setup          = pci_fastcom335_setup,
-> +};
+> +       rc = pci_alloc_irq_vectors(pcidev, 1, 1, PCI_IRQ_ALL_TYPES);
+> +       if (rc < 0)
+> +               return rc;
 > +
-> +static const struct exar8250_board pbn_fastcom335_8 = {
-> +       .num_ports      = 8,
-> +       .setup          = pci_fastcom335_setup,
-> +};
+>         memset(&uart, 0, sizeof(uart));
+>         uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ
+>                           | UPF_EXAR_EFR;
+> -       uart.port.irq = pcidev->irq;
+> +       uart.port.irq = pci_irq_vector(pcidev, 0);
+>         uart.port.dev = &pcidev->dev;
+>
+>         for (i = 0; i < nr_ports && i < maxnr; i++) {
+> --
+> 2.1.4
+>
 
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1622,54 +1622,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
->  #define UART_EXAR_MPIOINV_15_8 0x98    /* MPIOINV[15:8] */
->  #define UART_EXAR_MPIOSEL_15_8 0x99    /* MPIOSEL[15:8] */
->  #define UART_EXAR_MPIOOD_15_8  0x9a    /* MPIOOD[15:8] */
 
-And why not to remove above constants?
-
-> -       /*
-> -        * Commtech, Inc. Fastcom adapters
-> -        */
-> -       {       PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_4222PCI335,
-> -               PCI_ANY_ID, PCI_ANY_ID,
-> -               0,
-> -               0, pbn_b0_2_1152000_200 },
-> -       {       PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_4224PCI335,
-> -               PCI_ANY_ID, PCI_ANY_ID,
-> -               0,
-> -               0, pbn_b0_4_1152000_200 },
-> -       {       PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_2324PCI335,
-> -               PCI_ANY_ID, PCI_ANY_ID,
-> -               0,
-> -               0, pbn_b0_4_1152000_200 },
-> -       {       PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_2328PCI335,
-> -               PCI_ANY_ID, PCI_ANY_ID,
-> -               0,
-> -               0, pbn_b0_8_1152000_200 },
-> -
-
-Check black list as well. I suppose now there is a bug and it's left
-even after this patch.
 
 -- 
 With Best Regards,
