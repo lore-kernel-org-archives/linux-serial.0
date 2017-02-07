@@ -1,83 +1,46 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v4 3/4] serial: sh-sci: make RX FIFO parameters tunable
- via sysfs
-Date: Tue, 7 Feb 2017 15:40:50 +0100
-Message-ID: <CAMuHMdVc3eyXCZfASUst4Kd93WWNVi05q-L32yta8rDDrBLhOQ@mail.gmail.com>
-References: <1486118300-12633-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1486118300-12633-4-git-send-email-ulrich.hecht+renesas@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1486118300-12633-4-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Wolfram Sang <wsa@the-dreams.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 7/7] serial: exar: Enable MSI support
+Date: Tue,  7 Feb 2017 17:10:04 +0100
+Message-ID: <36c56cfae9e213661612327bef79729f5e25b481.1486483804.git.jan.kiszka@siemens.com>
+References: <cover.1486483803.git.jan.kiszka@siemens.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1486483803.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1486483803.git.jan.kiszka@siemens.com>
+References: <cover.1486483803.git.jan.kiszka@siemens.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ulrich,
+Use pci_alloc_irq_vectors to enable MSI when available. At least the
+XR17V352 supports this.
 
-On Fri, Feb 3, 2017 at 11:38 AM, Ulrich Hecht
-<ulrich.hecht+renesas@gmail.com> wrote:
-> Allows tuning of the RX FIFO fill threshold and timeout. (The latter is
-> only applicable to SCIFA and SCIFB).
->
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  drivers/tty/serial/sh-sci.c | 87 +++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 87 insertions(+)
->
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 4a165ed..f95a56c 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -1055,6 +1055,66 @@ static void rx_fifo_timer_fn(unsigned long arg)
->         scif_set_rtrg(port, 1);
->  }
->
-> +static ssize_t rx_trigger_show(struct device *dev,
-> +                              struct device_attribute *attr,
-> +                              char *buf)
-> +{
-> +       struct uart_port *port = dev_get_drvdata(dev);
-> +       struct sci_port *sci = to_sci_port(port);
-> +
-> +       return sprintf(buf, "%d\n", sci->rx_trigger);
-> +}
-> +
-> +static ssize_t rx_trigger_store(struct device *dev,
-> +                               struct device_attribute *attr,
-> +                               const char *buf,
-> +                               size_t count)
-> +{
-> +       struct uart_port *port = dev_get_drvdata(dev);
-> +       struct sci_port *sci = to_sci_port(port);
-> +       long r;
-> +
-> +       if (kstrtol(buf, 0, &r) == -EINVAL)
-> +               return -EINVAL;
-> +       sci->rx_trigger = scif_set_rtrg(port, r);
-> +       scif_set_rtrg(port, 1);
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ drivers/tty/serial/8250/8250_exar.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-I seem to have missed the above function call during my earlier review.
-What's the purpose of resetting the trigger immediately to 1?
-
-This means I can change the value of scif->rx_trigger on the fly, but the
-actual value programmed in the hardware is always 1?
-
-I.e. "echo 1 > /sys/class/tty/ttySC0/device/rx_fifo_trigger" fixes serial
-console input on e.g. armadillo, but echoing 32 into rx_fifo_trigger doesn't
-break it again.
-
-> +       return count;
-> +}
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 13cc1da..236de60 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -284,10 +284,16 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
+ 
+ 	priv->board = board;
+ 
++	pci_set_master(pcidev);
++
++	rc = pci_alloc_irq_vectors(pcidev, 1, 1, PCI_IRQ_ALL_TYPES);
++	if (rc < 0)
++		return rc;
++
+ 	memset(&uart, 0, sizeof(uart));
+ 	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ
+ 			  | UPF_EXAR_EFR;
+-	uart.port.irq = pcidev->irq;
++	uart.port.irq = pci_irq_vector(pcidev, 0);
+ 	uart.port.dev = &pcidev->dev;
+ 
+ 	for (i = 0; i < nr_ports && i < maxnr; i++) {
+-- 
+2.1.4
