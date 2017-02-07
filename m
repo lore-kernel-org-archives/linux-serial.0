@@ -1,38 +1,114 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] serial: sh-sci: Temporarily Revert "implement FIFO
- threshold register setting"
-Date: Tue, 7 Feb 2017 14:06:18 +0100
-Message-ID: <CAMuHMdUGMFpfDyCmhj7VYT7UkA0hn9rPmZV4S_Ls4NSbXgn_JA@mail.gmail.com>
-References: <20170207130109.502274-1-arnd@arndb.de>
+Subject: Re: [PATCH v4 1/4] serial: sh-sci: increase RX FIFO trigger defaults
+ for (H)SCIF
+Date: Tue, 7 Feb 2017 15:40:13 +0100
+Message-ID: <CAMuHMdUPWx1REjEFKybEx48VbOtsLg=ZLkZb_g5VdFuSe793sA@mail.gmail.com>
+References: <1486118300-12633-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1486118300-12633-2-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170207130109.502274-1-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Peter Hurley <peter@hurleysoftware.com>, Simon Horman <horms+renesas@verge.net.au>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1486118300-12633-2-git-send-email-ulrich.hecht+renesas@gmail.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Wolfram Sang <wsa@the-dreams.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Arnd,
+Hi Ulrich,
 
-On Tue, Feb 7, 2017 at 2:00 PM, Arnd Bergmann <arnd@arndb.de> wrote:
-> Patch the first three patches out of seven were applied, up to commit
-> a380ed461f66 ("serial: sh-sci: implement FIFO threshold register setting"),
-> which introduces a new helper function. This is not called until the next
-> following patch, so we now get a build warning:
+On Fri, Feb 3, 2017 at 11:38 AM, Ulrich Hecht
+<ulrich.hecht+renesas@gmail.com> wrote:
+> Sets reasonable trigger defaults for the various SCIF variants.
+> Also corrects the FIFO size for SH7705-style ports.
 >
-> drivers/tty/serial/sh-sci.c:977:12: error: 'scif_set_rtrg' defined but not used [-Werror=unused-function]
->
-> The patch is good, but I think we should either apply the following patches
-> as well, or revert this one to get a clean build.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+This patch (which is now in tty-next) breaks serial console input on
+systems with a SCIFA serial port (r8a73a4/ape6evm, r8a7740/armadillo,
+and sh73a0/kzm9g).  Console input isn't received by the system, until
+more characters have been accumulated in the FIFO than the trigger value
+(32 on SCIFA), or until serial output is generated.
+
+Unfortunately the later patches in this series do not fix this (except
+by doing "echo 1 > /sys/class/tty/ttySC0/device/rx_fifo_trigger" manually).
+
+SCIF serial consoles (on R-Car Gen2 and Gen3) seem to keep on working
+fine.
+
 > ---
-> This is mainly a notification that I've applied the revert to my randconfig
-> test tree, if you plan to merge the following patches for 4.11, we won't
-> need this one.
-
-The follow-up commits were added to tty/tty-next earlier today.
+>  drivers/tty/serial/sh-sci.c | 29 ++++++++++++++++++++++++++++-
+>  1 file changed, 28 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 050d028..520e344 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -148,6 +148,7 @@ struct sci_port {
+>         struct timer_list               rx_timer;
+>         unsigned int                    rx_timeout;
+>  #endif
+> +       int                             rx_trigger;
+>
+>         bool has_rtscts;
+>         bool autorts;
+> @@ -450,7 +451,7 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+>                         [SCFCR]         = { 0x18, 16 },
+>                         [SCFDR]         = { 0x1c, 16 },
+>                 },
+> -               .fifosize = 16,
+> +               .fifosize = 64,
+>                 .overrun_reg = SCxSR,
+>                 .overrun_mask = SCIFA_ORER,
+>                 .sampling_rate_mask = SCI_SR(16),
+> @@ -2062,6 +2063,7 @@ static void sci_reset(struct uart_port *port)
+>  {
+>         const struct plat_sci_reg *reg;
+>         unsigned int status;
+> +       struct sci_port *s = to_sci_port(port);
+>
+>         do {
+>                 status = serial_port_in(port, SCxSR);
+> @@ -2081,6 +2083,9 @@ static void sci_reset(struct uart_port *port)
+>                 status &= ~(SCLSR_TO | SCLSR_ORER);
+>                 serial_port_out(port, SCLSR, status);
+>         }
+> +
+> +       if (s->rx_trigger > 1)
+> +               scif_set_rtrg(port, s->rx_trigger);
+>  }
+>
+>  static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+> @@ -2615,6 +2620,28 @@ static int sci_init_single(struct platform_device *dev,
+>         if (unlikely(sci_port->params == NULL))
+>                 return -EINVAL;
+>
+> +       switch (p->type) {
+> +       case PORT_SCIFB:
+> +               sci_port->rx_trigger = 48;
+> +               break;
+> +       case PORT_HSCIF:
+> +               sci_port->rx_trigger = 64;
+> +               break;
+> +       case PORT_SCIFA:
+> +               sci_port->rx_trigger = 32;
+> +               break;
+> +       case PORT_SCIF:
+> +               if (p->regtype == SCIx_SH7705_SCIF_REGTYPE)
+> +                       /* RX triggering not implemented for this IP */
+> +                       sci_port->rx_trigger = 1;
+> +               else
+> +                       sci_port->rx_trigger = 8;
+> +               break;
+> +       default:
+> +               sci_port->rx_trigger = 1;
+> +               break;
+> +       }
+> +
+>         /* SCIFA on sh7723 and sh7724 need a custom sampling rate that doesn't
+>          * match the SoC datasheet, this should be investigated. Let platform
+>          * data override the sampling rate for now.
+> --
+> 2.7.4
 
 Gr{oetje,eeting}s,
 
