@@ -1,39 +1,63 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 0/7] serial: exar: Fixes and cleanups
-Date: Tue,  7 Feb 2017 17:09:57 +0100
-Message-ID: <cover.1486483803.git.jan.kiszka@siemens.com>
+Subject: [PATCH 5/7] serial: pci: Remove unused pci_boards entries
+Date: Tue,  7 Feb 2017 17:10:02 +0100
+Message-ID: <96716a0622414661a9f678b3dfb49dea393ddb14.1486483804.git.jan.kiszka@siemens.com>
+References: <cover.1486483803.git.jan.kiszka@siemens.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1486483803.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1486483803.git.jan.kiszka@siemens.com>
+References: <cover.1486483803.git.jan.kiszka@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Fixes one fall-out from the exar split-up and two longer pending issue
-regarding the correct initialization of exar registers ports > 0.
-Furthermore, it moves remaining exar code over to the new module and
-also cleans up & fixes some registers defines.
+Became obsolete with the split-out of 8250_exar.
 
-This includes the previously posted "Fix EXAR feature control register
-constants".
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 22 ----------------------
+ 1 file changed, 22 deletions(-)
 
-Note that I have no chance to test the Commtech change on real hardware.
-
-Jan
-
-Jan Kiszka (7):
-  serial: exar: Fix mapping of port I/O resources
-  serial: exar: Fix initialization of EXAR registers for ports > 0
-  serial: exar: Fix feature control register constants
-  serial: exar: Move Commtech adapters to 8250_exar as well
-  serial: pci: Remove unused pci_boards entries
-  serial: exar: Move register defines from uapi header to consumer site
-  serial: exar: Enable MSI support
-
- drivers/tty/serial/8250/8250_exar.c | 126 ++++++++++++++++++++++++++-----
- drivers/tty/serial/8250/8250_pci.c  | 147 ------------------------------------
- drivers/tty/serial/8250/8250_port.c |   6 ++
- include/uapi/linux/serial_reg.h     |  18 -----
- 4 files changed, 115 insertions(+), 182 deletions(-)
-
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 50cd1cf..d365a57 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -2498,10 +2498,6 @@ enum pci_board_num_t {
+ 	pbn_b0_2_1843200,
+ 	pbn_b0_4_1843200,
+ 
+-	pbn_b0_2_1843200_200,
+-	pbn_b0_4_1843200_200,
+-	pbn_b0_8_1843200_200,
+-
+ 	pbn_b0_1_4000000,
+ 
+ 	pbn_b0_bt_1_115200,
+@@ -2716,24 +2712,6 @@ static struct pciserial_board pci_boards[] = {
+ 		.uart_offset	= 8,
+ 	},
+ 
+-	[pbn_b0_2_1843200_200] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 2,
+-		.base_baud	= 1843200,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_b0_4_1843200_200] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 4,
+-		.base_baud	= 1843200,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_b0_8_1843200_200] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 8,
+-		.base_baud	= 1843200,
+-		.uart_offset	= 0x200,
+-	},
+ 	[pbn_b0_1_4000000] = {
+ 		.flags		= FL_BASE0,
+ 		.num_ports	= 1,
 -- 
 2.1.4
