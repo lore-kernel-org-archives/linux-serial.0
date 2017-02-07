@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 5/7] serial: pci: Remove unused pci_boards entries
-Date: Tue,  7 Feb 2017 17:10:02 +0100
-Message-ID: <96716a0622414661a9f678b3dfb49dea393ddb14.1486483804.git.jan.kiszka@siemens.com>
+Subject: [PATCH 1/7] serial: exar: Fix mapping of port I/O resources
+Date: Tue,  7 Feb 2017 17:09:58 +0100
+Message-ID: <52dc04249d65a55fbf1e58c262ca23c4fcc20777.1486483803.git.jan.kiszka@siemens.com>
 References: <cover.1486483803.git.jan.kiszka@siemens.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1486483803.git.jan.kiszka@siemens.com>
@@ -12,52 +12,29 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Became obsolete with the split-out of 8250_exar.
+pcim_iomap_table only returns the table of mapping, it does not perform
+them. For that, we need to call pcim_iomap, but only if that mapping was
+not done before.
 
+Fixes: d0aeaa83f0b0 ("serial: exar: split out the exar code from 8250_pci")
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- drivers/tty/serial/8250/8250_pci.c | 22 ----------------------
- 1 file changed, 22 deletions(-)
+ drivers/tty/serial/8250/8250_exar.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 50cd1cf..d365a57 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -2498,10 +2498,6 @@ enum pci_board_num_t {
- 	pbn_b0_2_1843200,
- 	pbn_b0_4_1843200,
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index e6b44a7..58469d9 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -72,6 +72,9 @@ static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+ 	const struct exar8250_board *board = priv->board;
+ 	unsigned int bar = 0;
  
--	pbn_b0_2_1843200_200,
--	pbn_b0_4_1843200_200,
--	pbn_b0_8_1843200_200,
--
- 	pbn_b0_1_4000000,
- 
- 	pbn_b0_bt_1_115200,
-@@ -2716,24 +2712,6 @@ static struct pciserial_board pci_boards[] = {
- 		.uart_offset	= 8,
- 	},
- 
--	[pbn_b0_2_1843200_200] = {
--		.flags		= FL_BASE0,
--		.num_ports	= 2,
--		.base_baud	= 1843200,
--		.uart_offset	= 0x200,
--	},
--	[pbn_b0_4_1843200_200] = {
--		.flags		= FL_BASE0,
--		.num_ports	= 4,
--		.base_baud	= 1843200,
--		.uart_offset	= 0x200,
--	},
--	[pbn_b0_8_1843200_200] = {
--		.flags		= FL_BASE0,
--		.num_ports	= 8,
--		.base_baud	= 1843200,
--		.uart_offset	= 0x200,
--	},
- 	[pbn_b0_1_4000000] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 1,
++	if (!pcim_iomap_table(pcidev)[bar] && !pcim_iomap(pcidev, bar, 0))
++		return -ENOMEM;
++
+ 	port->port.iotype = UPIO_MEM;
+ 	port->port.mapbase = pci_resource_start(pcidev, bar) + offset;
+ 	port->port.membase = pcim_iomap_table(pcidev)[bar] + offset;
 -- 
 2.1.4
