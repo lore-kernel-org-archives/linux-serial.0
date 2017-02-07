@@ -1,86 +1,103 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 2/7] serial: exar: Fix initialization of EXAR registers
- for ports > 0
-Date: Wed, 8 Feb 2017 00:43:38 +0200
-Message-ID: <CAHp75VfWy8O4kT=DkJO6e3UejOtg7VM26PhHD2MQYPfWrBTQoQ@mail.gmail.com>
-References: <cover.1486483803.git.jan.kiszka@siemens.com> <88bf3d9a18ee847e7bd181c95b490a70931fb6df.1486483803.git.jan.kiszka@siemens.com>
+Subject: Re: [PATCH 4/7] serial: exar: Move Commtech adapters to 8250_exar as well
+Date: Wed, 8 Feb 2017 01:23:41 +0200
+Message-ID: <CAHp75Vf0vx5YXczvnUkkyp8=C397pYMvsf32sRAx0jU+Cgxb6w@mail.gmail.com>
+References: <cover.1486483803.git.jan.kiszka@siemens.com> <ccf49a203b0aa1861cbb8a6cfafdc22ba5ea120e.1486483804.git.jan.kiszka@siemens.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <88bf3d9a18ee847e7bd181c95b490a70931fb6df.1486483803.git.jan.kiszka@siemens.com>
+In-Reply-To: <ccf49a203b0aa1861cbb8a6cfafdc22ba5ea120e.1486483804.git.jan.kiszka@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Feb 7, 2017 at 6:09 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> So far, pci_xr17v35x_setup always initialized 8XMODE, FCTR & Co. for
-> port 0 because it used the address of that port instead of moving the
-> pointer according to the port number. Fix this and remove the unneeded
-> temporary ioremap by moving default_setup up and reusing the membase it
-> fills into the port structure.
+On Tue, Feb 7, 2017 at 6:10 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> Those are exar-based, too.
 
-FWIW:
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Exar-based
 
-One minor question below.
+> With the required refactoring of the code to fit into 8250_exar, we
+> automatically fix the same issue pci_xr17v35x_setup had before: 8XMODE,
+> FCTL, TXTRG and RXTRG were always only set for port 0. Now they are
+> initialized for the correct target port by using port.membase.
 
->
-> Fixes: 14faa8cce88e ("tty/8250 Add support for Commtech's Fastcom Async-335 and Fastcom Async-PCIe cards")
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  drivers/tty/serial/8250/8250_exar.c | 19 ++++++++-----------
->  1 file changed, 8 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> index 58469d9..d3e3a7d 100644
+My comments below.
+
 > --- a/drivers/tty/serial/8250/8250_exar.c
 > +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -157,27 +157,24 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
->         if (board->has_slave && idx >= 8)
->                 port->port.uartclk /= 2;
+> @@ -24,11 +24,15 @@
 >
-> -       p = pci_ioremap_bar(pcidev, 0);
-> -       if (!p)
-> -               return -ENOMEM;
-> +       ret = default_setup(priv, pcidev, idx, offset, port);
-> +       if (ret)
-> +               return ret;
+>  #include "8250.h"
 >
-> -       /* Setup Multipurpose Input/Output pins. */
-> -       if (idx == 0)
-> -               setup_gpio(p);
-> +       p = port->port.membase;
->
->         writeb(0x00, p + UART_EXAR_8XMODE);
->         writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
->         writeb(128, p + UART_EXAR_TXTRG);
->         writeb(128, p + UART_EXAR_RXTRG);
-> -       iounmap(p);
->
-> -       ret = default_setup(priv, pcidev, idx, offset, port);
-> -       if (ret)
-> -               return ret;
-> +       if (idx == 0) {
-> +               /* Setup Multipurpose Input/Output pins. */
-> +               setup_gpio(p);
->
-> -       if (idx == 0)
+> -#define PCI_DEVICE_ID_COMMTECH_4224PCIE        0x0020
+> -#define PCI_DEVICE_ID_COMMTECH_4228PCIE        0x0021
+> -#define PCI_DEVICE_ID_COMMTECH_4222PCIE        0x0022
+> -#define PCI_DEVICE_ID_EXAR_XR17V4358   0x4358
+> -#define PCI_DEVICE_ID_EXAR_XR17V8358   0x8358
 
->                 port->port.private_data =
->                         xr17v35x_register_gpio(pcidev);
+> +#define PCI_DEVICE_ID_COMMTECH_4222PCI335      0x0004
+> +#define PCI_DEVICE_ID_COMMTECH_4224PCI335      0x0002
 
-Can we do this on one line?
+I think you assumed ID ordered list?
 
-> +       }
->
->         return 0;
->  }
-> --
-> 2.1.4
->
+> +#define PCI_DEVICE_ID_COMMTECH_2324PCI335      0x000a
+> +#define PCI_DEVICE_ID_COMMTECH_2328PCI335      0x000b
+> +#define PCI_DEVICE_ID_COMMTECH_4224PCIE                0x0020
+> +#define PCI_DEVICE_ID_COMMTECH_4228PCIE                0x0021
+> +#define PCI_DEVICE_ID_COMMTECH_4222PCIE                0x0022
+> +#define PCI_DEVICE_ID_EXAR_XR17V4358           0x4358
+> +#define PCI_DEVICE_ID_EXAR_XR17V8358           0x8358
 
+> @@ -292,6 +345,21 @@ static int __maybe_unused exar_resume(struct device *dev)
 
+> +static const struct exar8250_board pbn_fastcom335_2 = {
+> +       .num_ports      = 2,
+> +       .setup          = pci_fastcom335_setup,
+> +};
+> +
+> +static const struct exar8250_board pbn_fastcom335_4 = {
+> +       .num_ports      = 4,
+> +       .setup          = pci_fastcom335_setup,
+> +};
+> +
+> +static const struct exar8250_board pbn_fastcom335_8 = {
+> +       .num_ports      = 8,
+> +       .setup          = pci_fastcom335_setup,
+> +};
+
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1622,54 +1622,6 @@ static int pci_eg20t_init(struct pci_dev *dev)
+>  #define UART_EXAR_MPIOINV_15_8 0x98    /* MPIOINV[15:8] */
+>  #define UART_EXAR_MPIOSEL_15_8 0x99    /* MPIOSEL[15:8] */
+>  #define UART_EXAR_MPIOOD_15_8  0x9a    /* MPIOOD[15:8] */
+
+And why not to remove above constants?
+
+> -       /*
+> -        * Commtech, Inc. Fastcom adapters
+> -        */
+> -       {       PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_4222PCI335,
+> -               PCI_ANY_ID, PCI_ANY_ID,
+> -               0,
+> -               0, pbn_b0_2_1152000_200 },
+> -       {       PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_4224PCI335,
+> -               PCI_ANY_ID, PCI_ANY_ID,
+> -               0,
+> -               0, pbn_b0_4_1152000_200 },
+> -       {       PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_2324PCI335,
+> -               PCI_ANY_ID, PCI_ANY_ID,
+> -               0,
+> -               0, pbn_b0_4_1152000_200 },
+> -       {       PCI_VENDOR_ID_COMMTECH, PCI_DEVICE_ID_COMMTECH_2328PCI335,
+> -               PCI_ANY_ID, PCI_ANY_ID,
+> -               0,
+> -               0, pbn_b0_8_1152000_200 },
+> -
+
+Check black list as well. I suppose now there is a bug and it's left
+even after this patch.
 
 -- 
 With Best Regards,
