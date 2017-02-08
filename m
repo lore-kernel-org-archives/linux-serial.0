@@ -1,73 +1,92 @@
 From: Christopher Covington <cov@codeaurora.org>
 Subject: Re: [PATCH 1/2] tty: pl011: Work around QDF2400 E44 stuck BUSY bit
-Date: Wed, 8 Feb 2017 16:57:35 -0500
-Message-ID: <bd59cc0d-fcd6-aa7e-409f-1e363599b1a1@codeaurora.org>
+Date: Wed, 8 Feb 2017 17:22:38 -0500
+Message-ID: <6afb0a98-0973-33ec-0b76-fc6378e64309@codeaurora.org>
 References: <20170208005736.18724-1-cov@codeaurora.org>
- <7151be59-000c-d50b-f8f5-5fef0c053d91@arm.com>
- <f9504cde-a87a-ba99-2f72-fc3029ef5fe5@codeaurora.org>
+ <bd4a0127-0f32-a8be-c8ee-34c1cccc6d5d@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <f9504cde-a87a-ba99-2f72-fc3029ef5fe5@codeaurora.org>
-Sender: linux-doc-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>
-Cc: Timur Tabi <timur@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Shanker Donthineni <shankerd@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org, Jon Masters <jcm@redhat.com>, Neil Leeder <nleeder@codeaurora.org>, Mark Langsdorf <mlangsdo@redhat.com>, Mark Salter <msalter@redhat.com>, Sameer Goel <sgoel@codeaurora.org>, Philip Elcan <pelcan@codeaurora.org>, Steve Ulrich <sulrich@codeaurora.org>, Richard Ruigrok <rruigrok@codeaurora.org>, Peter Hurley <peter@hurleysoftware.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <bd4a0127-0f32-a8be-c8ee-34c1cccc6d5d@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Timur Tabi <timur@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org, shankerd@codeaurora.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org
+Cc: Mark Langsdorf <mlangsdo@redhat.com>, Mark Salter <msalter@redhat.com>, Jon Masters <jcm@redhat.com>, Neil Leeder <nleeder@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+On 02/07/2017 11:05 PM, Timur Tabi wrote:
+> Christopher Covington wrote:
+>> The Qualcomm Datacenter Technologies QDF2400 family of SoCs contains a
+>> custom (non-PrimeCell) implementation of the SBSA UART. Occasionally the
+>> BUSY bit in the Flag Register gets stuck as 1, erratum 44 for both 2432v1
+>> and 2400v1 SoCs. Checking that the Transmit FIFO Empty (TXFE) bit is 0,
+>> instead of checking that the BUSY bit is 1, works around the issue. To
+>> facilitate this substitution when UART AMBA Port (UAP) data is available,
+>> introduce vendor-specific inversion of Feature Register bits. To keep the
+>> change small, this patch only works around the full console case, where UAP
+>> data is available, and does not handle the erratum for earlycon, as the UAP
+>> data is not available then.
 
-On 02/08/2017 08:27 AM, Timur Tabi wrote:
-> Robin Murphy wrote:
->> Is there a reason anyone would ever want to turn this off? AFAICS you
->> save a few dozen bytes in return for a kernel image which you know won't
->> work properly on some hardware. That doesn't seem particularly
->> worthwhile, and it's not like the PL011 driver isn't already ripe with
->> unconditional vendor-specific data.
-
-I'll make it unconditional in the next version.
-
->>> > +static bool qdf2400_e44(void) {
->>> > +    u32 cpu_var_model = read_cpuid_id() & ~MIDR_REVISION_MASK;
->>> > +
->>> > +    return (cpu_var_model == MIDR_QCOM_KRYO_V1 ||
->>> > +        cpu_var_model == MIDR_QCOM_FALKOR_V1);
+>> +#ifdef CONFIG_QCOM_QDF2400_ERRATUM_44
+>> +static struct vendor_data vendor_qdt_qdf2400_e44 = {
+>> +    .reg_offset        = pl011_std_offsets,
+>> +    .fr_busy        = UART011_FR_TXFE,
+>> +    .fr_dsr            = UART01x_FR_DSR,
+>> +    .fr_cts            = UART01x_FR_CTS,
+>> +    .fr_ri            = UART011_FR_RI,
+>> +    .inv_fr            = UART011_FR_TXFE,
+>> +    .access_32b        = true,
+>> +    .oversampling        = false,
+>> +    .dma_threshold        = false,
+>> +    .cts_event_workaround    = false,
+>> +    .always_enabled        = true,
+>> +    .fixed_options        = true,
+>> +};
+>> +#else
+>> +#define vendor_qdt_qdf2400_e44 vendor_sbsa
+>> +#endif
 > 
->> Are we to take it that every SoC now and always with any Kryo or Falkor
->> core which also has an SBSA UART will require this workaround?
+> Instead of the #else, just put the #ifdef inside qdf2400_e44(). That
+> way, the function always returns False if
+> CONFIG_QCOM_QDF2400_ERRATUM_44 is not defined.
 
-I should have matched full 32 bit MIDR values, but I masked off the revision
-number after careful investigation of current and future known MIDR values
-and system pairings because MIDR_FOO isn't actually a 32 bit MIDR value as
-the name would suggest but has variant and revision zeroed. The CPU in the
-QDF2432 has a non-zero revision number and I didn't want to try to add an
-unprecedented revision number to cputype.h after Will told me I wasn't
-allowed to play with CPU toys for SoC games.
+I'll consolidate the #ifdefery around qdf2400_e44().
 
-I'm going to stop using MIDR, but as an aside, there are two very different
-CPUs, which may require different CPU errata workarounds, that (by accident)
-only differ by the variant field. Robert Richter's recent MIDR_CPU_VAR_REV
-is a welcome clarification.
+> Also, don't you need to add a definition of .inv_fr in vendor_sbsa
+> and the other vendor_xxx structures?
 
-> No, only Kryo and Falkor V1 based SOCs have this problem. Falkor V2
-> will have this fixed.
+The current struct definitions appear to (ab)use implicit
+zero-initialization, so I did too.
 
-A year ago, we were operating under the incorrect-in-hindsight assumption
-that the QDF2400 v1 SoC with Falkor v1 CPU would have this fixed.
+>> +
+>>  static u16 pl011_st_offsets[REG_ARRAY_SIZE] = {
+>>      [REG_DR] = UART01x_DR,
+>>      [REG_ST_DMAWM] = ST_UART011_DMAWM,
+>> @@ -1518,7 +1538,7 @@ static unsigned int pl011_tx_empty(struct uart_port *port)
+>>  {
+>>      struct uart_amba_port *uap =
+>>          container_of(port, struct uart_amba_port, port);
+>> -    unsigned int status = pl011_read(uap, REG_FR);
+>> +    unsigned int status = pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr;
+>>      return status & (uap->vendor->fr_busy | UART01x_FR_TXFF) ?
+>>                              0 : TIOCSER_TEMT;
+>>  }
+>> @@ -2218,7 +2238,8 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
+>>       *    Finally, wait for transmitter to become empty
+>>       *    and restore the TCR
+>>       */
+>> -    while (pl011_read(uap, REG_FR) & uap->vendor->fr_busy)
+>> +    while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr)
+>> +                        & uap->vendor->fr_busy)
+> 
+> I really think the XOR logic needs to be documented wherever it's
+> used. It's just too confusing.
 
-As for alternative means of identifying the errant hardware, I think that I
-or a colleague will experiment with the approach used for ACPI PCI quirks:
-checking the OEM ID, OEM Table ID, and OEM Revision. In this case, those
-header fields would come from the Serial Port Console Redirection (SPCR)
-table, rather than the PCI-specific MCFG table.
+References such as the following for basic bit operations like
+setting, clearing, and toggling are easy enough to come by.
 
-http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=5b69b85ba1ddd36be01f5c57830b37a3c8256009
+http://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit-in-c-c
 
-Regarding ongoing support, I don't see any disagreement that the code must
-be supported and maintained for the life of the hardware, however many years
-that ends up being.
-
-Thanks,
 Cov
 
 -- 
