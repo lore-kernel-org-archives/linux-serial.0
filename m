@@ -1,64 +1,58 @@
-From: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
-Subject: Re: [RESEND PATCH] serial: samsung: enable clock before accessing
- interrupt mask resister
-Date: Wed, 8 Feb 2017 14:23:09 +0100
-Message-ID: <12209c5e-d19a-f3af-eedc-442afda4daa6@math.uni-bielefeld.de>
-References: <CGME20170201102546epcas1p25107505cc2ff66f06211f945d2ddd679@epcas1p2.samsung.com>
- <008c01d27c75$8cd73e60$a685bb20$@samsung.com>
+From: Marc Zyngier <marc.zyngier@arm.com>
+Subject: Re: [PATCH 1/2] tty: pl011: Work around QDF2400 E44 stuck BUSY bit
+Date: Wed, 08 Feb 2017 15:35:27 +0000
+Message-ID: <87lgtg7l1c.fsf@on-the-bus.cambridge.arm.com>
+References: <20170208005736.18724-1-cov@codeaurora.org>
+ <7151be59-000c-d50b-f8f5-5fef0c053d91@arm.com>
+ <f9504cde-a87a-ba99-2f72-fc3029ef5fe5@codeaurora.org>
+ <20170208133306.GE15459@leverpostej>
+ <e16986de-31fa-8d34-05be-aa8a585500d4@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <008c01d27c75$8cd73e60$a685bb20$@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: =?UTF-8?B?64Ko7JiB66+8?= <youngmin.nam@samsung.com>, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <e16986de-31fa-8d34-05be-aa8a585500d4@codeaurora.org> (Timur
+ Tabi's message of "Wed, 8 Feb 2017 08:09:12 -0600")
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Timur Tabi <timur@codeaurora.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, Mark Salter <msalter@redhat.com>, Mark Langsdorf <mlangsdo@redhat.com>, Jon Masters <jcm@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, Neil Leeder <nleeder@codeaurora.org>, linux-doc@vger.kernel.org, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>, shankerd@codeaurora.org, Christopher Covington <cov@codeaurora.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello Youngmin,
+On Wed, Feb 08 2017 at  2:09:12 pm GMT, Timur Tabi <timur@codeaurora.org> wrote:
+> Mark Rutland wrote:
+>
+>>> No, only Kryo and Falkor V1 based SOCs have this problem.  Falkor V2
+>>> will have this fixed.  We intend to revert these fixes after Falkor
+>>> V1 SOCs are no longer supported.
+>>
+>> Supported by whom?
+>
+> Qualcomm.
+>
+>> Generally, once something's upstreamed we expect it to remain supported.
+>
+> The V1 SOCs are technically pre-production, but still in wide use and
+> it will be a while before they are all replaced by V2 SOCs.  It's only
+> because of the "ugliness" of the erratum and its work-around that we
+> want to git rid of it when we can.
 
-I was wondering if this fixes an actual issue. The changes look sane,
-but shouldn't be current code trigger some imprecise external abort on
-system resume then?
+Interesting. How will you guarantee that nobody will ever want to run a
+mainline kernel on this box after a certain date? Self-destruct timer?
+;-)
 
-I'm asking because on my Exynos4412 board nothing like that happens on
-system resume. And if I read the code correctly,
-s3c24xx_serial_has_interrupt_mask() returns 1 in my case.
+As someone who runs mainline on HW that exceeded its "sell-by" date by a
+few decades, I'm genuinely interested.
 
-With best wishes,
-Tobias
+Thanks,
 
-
-남영민 wrote:
-> Ensure that the uart clock is enabled prior to writing to the
-> interrupt mask register in s3c24xx_serial_resume_noirq function.
-> Without enabing the uart clock, the uart register cannot be accessed.
-> 
-> Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
-> ---
->  drivers/tty/serial/samsung.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> index f44615f..06488fd 100644
-> --- a/drivers/tty/serial/samsung.c
-> +++ b/drivers/tty/serial/samsung.c
-> @@ -1921,6 +1921,7 @@ static int s3c24xx_serial_resume(struct device *dev)
->  static int s3c24xx_serial_resume_noirq(struct device *dev)
->  {
->  	struct uart_port *port = s3c24xx_dev_to_port(dev);
-> +	struct s3c24xx_uart_port *ourport = to_ourport(port);
->  
->  	if (port) {
->  		/* restore IRQ mask */
-> @@ -1930,7 +1931,9 @@ static int s3c24xx_serial_resume_noirq(struct device *dev)
->  				uintm &= ~S3C64XX_UINTM_TXD_MSK;
->  			if (rx_enabled(port))
->  				uintm &= ~S3C64XX_UINTM_RXD_MSK;
-> +			clk_prepare_enable(ourport->clk);
->  			wr_regl(port, S3C64XX_UINTM, uintm);
-> +			clk_disable_unprepare(ourport->clk);
->  		}
->  	}
->  
-> 
+	M.
+-- 
+Jazz is not dead, it just smell funny.
