@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 6/7] serial: exar: Move register defines from uapi header to consumer site
-Date: Wed,  8 Feb 2017 17:09:08 +0100
-Message-ID: <aa415b6761cb162b58b4ea29d5a9fbf715bd91ca.1486570149.git.jan.kiszka@siemens.com>
+Subject: [PATCH v2 2/7] serial: exar: Fix initialization of EXAR registers for ports > 0
+Date: Wed,  8 Feb 2017 17:09:04 +0100
+Message-ID: <d0cffd707a9b80418af28930defb3a29c7b49bbe.1486570149.git.jan.kiszka@siemens.com>
 References: <cover.1486570149.git.jan.kiszka@siemens.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1486570149.git.jan.kiszka@siemens.com>
@@ -12,84 +12,59 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-None of these registers is relevant for the userspace API.
+So far, pci_xr17v35x_setup always initialized 8XMODE, FCTR & Co. for
+port 0 because it used the address of that port instead of moving the
+pointer according to the port number. Fix this and remove the unneeded
+temporary ioremap by moving default_setup up and reusing the membase it
+fills into the port structure.
 
+Fixes: 14faa8cce88e ("tty/8250 Add support for Commtech's Fastcom Async-335 and Fastcom Async-PCIe cards")
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/tty/serial/8250/8250_exar.c | 13 +++++++++++++
- drivers/tty/serial/8250/8250_port.c |  6 ++++++
- include/uapi/linux/serial_reg.h     | 18 ------------------
- 3 files changed, 19 insertions(+), 18 deletions(-)
+ drivers/tty/serial/8250/8250_exar.c | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 9af4266..f612da3 100644
+index 58469d9..f489f25 100644
 --- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -34,6 +34,19 @@
- #define PCI_DEVICE_ID_EXAR_XR17V4358		0x4358
- #define PCI_DEVICE_ID_EXAR_XR17V8358		0x8358
+@@ -157,27 +157,23 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+ 	if (board->has_slave && idx >= 8)
+ 		port->port.uartclk /= 2;
  
-+#define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
-+
-+#define UART_EXAR_FCTR		0x08	/* Feature Control Register */
-+#define UART_FCTR_EXAR_IRDA	0x10	/* IrDa data encode select */
-+#define UART_FCTR_EXAR_485	0x20	/* Auto 485 half duplex dir ctl */
-+#define UART_FCTR_EXAR_TRGA	0x00	/* FIFO trigger table A */
-+#define UART_FCTR_EXAR_TRGB	0x60	/* FIFO trigger table B */
-+#define UART_FCTR_EXAR_TRGC	0x80	/* FIFO trigger table C */
-+#define UART_FCTR_EXAR_TRGD	0xc0	/* FIFO trigger table D programmable */
-+
-+#define UART_EXAR_TXTRG		0x0a	/* Tx FIFO trigger level write-only */
-+#define UART_EXAR_RXTRG		0x0b	/* Rx FIFO trigger level write-only */
-+
- #define UART_EXAR_MPIOINT_7_0	0x8f	/* MPIOINT[7:0] */
- #define UART_EXAR_MPIOLVL_7_0	0x90	/* MPIOLVL[7:0] */
- #define UART_EXAR_MPIO3T_7_0	0x91	/* MPIO3T[7:0] */
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index ec6b5e3..6119516 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -45,6 +45,12 @@
- #include "8250.h"
+-	p = pci_ioremap_bar(pcidev, 0);
+-	if (!p)
+-		return -ENOMEM;
++	ret = default_setup(priv, pcidev, idx, offset, port);
++	if (ret)
++		return ret;
  
- /*
-+ * These are definitions for the Exar XR17V35X and XR17(C|D)15X
-+ */
-+#define UART_EXAR_SLEEP		0x8b	/* Sleep mode */
-+#define UART_EXAR_DVID		0x8d	/* Device identification */
-+
-+/*
-  * Debugging.
-  */
- #if 0
-diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-index 25b93a7..5db7688 100644
---- a/include/uapi/linux/serial_reg.h
-+++ b/include/uapi/linux/serial_reg.h
-@@ -367,24 +367,6 @@
- #define UART_OMAP_MDR1_DISABLE		0x07	/* Disable (default state) */
+-	/* Setup Multipurpose Input/Output pins. */
+-	if (idx == 0)
+-		setup_gpio(p);
++	p = port->port.membase;
  
- /*
-- * These are definitions for the Exar XR17V35X and XR17(C|D)15X
-- */
--#define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
--#define UART_EXAR_SLEEP		0x8b	/* Sleep mode */
--#define UART_EXAR_DVID		0x8d	/* Device identification */
--
--#define UART_EXAR_FCTR		0x08	/* Feature Control Register */
--#define UART_FCTR_EXAR_IRDA	0x10	/* IrDa data encode select */
--#define UART_FCTR_EXAR_485	0x20	/* Auto 485 half duplex dir ctl */
--#define UART_FCTR_EXAR_TRGA	0x00	/* FIFO trigger table A */
--#define UART_FCTR_EXAR_TRGB	0x60	/* FIFO trigger table B */
--#define UART_FCTR_EXAR_TRGC	0x80	/* FIFO trigger table C */
--#define UART_FCTR_EXAR_TRGD	0xc0	/* FIFO trigger table D programmable */
--
--#define UART_EXAR_TXTRG		0x0a	/* Tx FIFO trigger level write-only */
--#define UART_EXAR_RXTRG		0x0b	/* Rx FIFO trigger level write-only */
--
--/*
-  * These are definitions for the Altera ALTR_16550_F32/F64/F128
-  * Normalized from 0x100 to 0x40 because of shift by 2 (32 bit regs).
-  */
+ 	writeb(0x00, p + UART_EXAR_8XMODE);
+ 	writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
+ 	writeb(128, p + UART_EXAR_TXTRG);
+ 	writeb(128, p + UART_EXAR_RXTRG);
+-	iounmap(p);
+ 
+-	ret = default_setup(priv, pcidev, idx, offset, port);
+-	if (ret)
+-		return ret;
++	if (idx == 0) {
++		/* Setup Multipurpose Input/Output pins. */
++		setup_gpio(p);
+ 
+-	if (idx == 0)
+-		port->port.private_data =
+-			xr17v35x_register_gpio(pcidev);
++		port->port.private_data = xr17v35x_register_gpio(pcidev);
++	}
+ 
+ 	return 0;
+ }
 -- 
 2.1.4
