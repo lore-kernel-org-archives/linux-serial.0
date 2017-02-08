@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 1/7] serial: exar: Fix mapping of port I/O resources
-Date: Wed,  8 Feb 2017 17:09:03 +0100
-Message-ID: <a359e4d7ce6ba5f2741ead10bdcca4ec5d2477b2.1486570149.git.jan.kiszka@siemens.com>
+Subject: [PATCH v2 5/7] serial: pci: Remove unused pci_boards entries
+Date: Wed,  8 Feb 2017 17:09:07 +0100
+Message-ID: <08c2c48bd66a6494bc59d40f52c349f834556c62.1486570149.git.jan.kiszka@siemens.com>
 References: <cover.1486570149.git.jan.kiszka@siemens.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1486570149.git.jan.kiszka@siemens.com>
@@ -12,30 +12,52 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-pcim_iomap_table only returns the table of mapping, it does not perform
-them. For that, we need to call pcim_iomap, but only if that mapping was
-not done before.
+Became obsolete with the split-out of 8250_exar.
 
-Fixes: d0aeaa83f0b0 ("serial: exar: split out the exar code from 8250_pci")
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/tty/serial/8250/8250_exar.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/8250/8250_pci.c | 22 ----------------------
+ 1 file changed, 22 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index e6b44a7..58469d9 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -72,6 +72,9 @@ static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
- 	const struct exar8250_board *board = priv->board;
- 	unsigned int bar = 0;
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 56768f5..d987cfe 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -2485,10 +2485,6 @@ enum pci_board_num_t {
+ 	pbn_b0_2_1843200,
+ 	pbn_b0_4_1843200,
  
-+	if (!pcim_iomap_table(pcidev)[bar] && !pcim_iomap(pcidev, bar, 0))
-+		return -ENOMEM;
-+
- 	port->port.iotype = UPIO_MEM;
- 	port->port.mapbase = pci_resource_start(pcidev, bar) + offset;
- 	port->port.membase = pcim_iomap_table(pcidev)[bar] + offset;
+-	pbn_b0_2_1843200_200,
+-	pbn_b0_4_1843200_200,
+-	pbn_b0_8_1843200_200,
+-
+ 	pbn_b0_1_4000000,
+ 
+ 	pbn_b0_bt_1_115200,
+@@ -2703,24 +2699,6 @@ static struct pciserial_board pci_boards[] = {
+ 		.uart_offset	= 8,
+ 	},
+ 
+-	[pbn_b0_2_1843200_200] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 2,
+-		.base_baud	= 1843200,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_b0_4_1843200_200] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 4,
+-		.base_baud	= 1843200,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_b0_8_1843200_200] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 8,
+-		.base_baud	= 1843200,
+-		.uart_offset	= 0x200,
+-	},
+ 	[pbn_b0_1_4000000] = {
+ 		.flags		= FL_BASE0,
+ 		.num_ports	= 1,
 -- 
 2.1.4
