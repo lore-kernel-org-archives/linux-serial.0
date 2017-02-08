@@ -1,48 +1,95 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2 0/7] serial: exar: Fixes and cleanups
-Date: Wed, 8 Feb 2017 18:24:09 +0200
-Message-ID: <CAHp75Vez0H6K8gQxOLRS0npCSe9jTXbFUmhTUQEbVuae6nvdig@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH v2 6/7] serial: exar: Move register defines from uapi header to consumer site
+Date: Wed,  8 Feb 2017 17:09:08 +0100
+Message-ID: <aa415b6761cb162b58b4ea29d5a9fbf715bd91ca.1486570149.git.jan.kiszka@siemens.com>
 References: <cover.1486570149.git.jan.kiszka@siemens.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1486570149.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1486570149.git.jan.kiszka@siemens.com>
+References: <cover.1486570149.git.jan.kiszka@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Feb 8, 2017 at 6:09 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> Changes in v2:
-> - line rewrapped in patch 2 [Andy]
-> - reordered PCI ID list [Andy]
-> - removed obsolete constants from 8250_pci [Andy]
-> - added Commtech devices to 8250_pci blacklist [Andy]
->
-> Original intro:
->
-> Fixes one fall-out from the exar split-up and two longer pending issue
-> regarding the correct initialization of exar registers ports > 0.
-> Furthermore, it moves remaining exar code over to the new module and
-> also cleans up & fixes some registers defines.
->
-> This includes the previously posted "Fix EXAR feature control register
-> constants".
->
-> Note that I have no chance to test the Commtech change on real hardware.
+None of these registers is relevant for the userspace API.
 
-Overall looks good, though I left two patches without tags since I'm
-not sure about them (Do we have any user space tool relied on those
-bits? Is it a good idea to remove those generic predefined
-descriptions? At least I'm okay with both of them, so, feel free to
-add my tag if Greg is okay with them)
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ drivers/tty/serial/8250/8250_exar.c | 13 +++++++++++++
+ drivers/tty/serial/8250/8250_port.c |  6 ++++++
+ include/uapi/linux/serial_reg.h     | 18 ------------------
+ 3 files changed, 19 insertions(+), 18 deletions(-)
 
->  4 files changed, 117 insertions(+), 197 deletions(-)
-
-Yoohoo! That's now realistic! I remember we started with Sudip from
-something like +~650 LOC overall, now we have new GPIO driver (+200
-LOC) and already -~20 LOC for the rest. And we have separate driver!
-
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 9af4266..f612da3 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -34,6 +34,19 @@
+ #define PCI_DEVICE_ID_EXAR_XR17V4358		0x4358
+ #define PCI_DEVICE_ID_EXAR_XR17V8358		0x8358
+ 
++#define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
++
++#define UART_EXAR_FCTR		0x08	/* Feature Control Register */
++#define UART_FCTR_EXAR_IRDA	0x10	/* IrDa data encode select */
++#define UART_FCTR_EXAR_485	0x20	/* Auto 485 half duplex dir ctl */
++#define UART_FCTR_EXAR_TRGA	0x00	/* FIFO trigger table A */
++#define UART_FCTR_EXAR_TRGB	0x60	/* FIFO trigger table B */
++#define UART_FCTR_EXAR_TRGC	0x80	/* FIFO trigger table C */
++#define UART_FCTR_EXAR_TRGD	0xc0	/* FIFO trigger table D programmable */
++
++#define UART_EXAR_TXTRG		0x0a	/* Tx FIFO trigger level write-only */
++#define UART_EXAR_RXTRG		0x0b	/* Rx FIFO trigger level write-only */
++
+ #define UART_EXAR_MPIOINT_7_0	0x8f	/* MPIOINT[7:0] */
+ #define UART_EXAR_MPIOLVL_7_0	0x90	/* MPIOLVL[7:0] */
+ #define UART_EXAR_MPIO3T_7_0	0x91	/* MPIO3T[7:0] */
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index ec6b5e3..6119516 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -45,6 +45,12 @@
+ #include "8250.h"
+ 
+ /*
++ * These are definitions for the Exar XR17V35X and XR17(C|D)15X
++ */
++#define UART_EXAR_SLEEP		0x8b	/* Sleep mode */
++#define UART_EXAR_DVID		0x8d	/* Device identification */
++
++/*
+  * Debugging.
+  */
+ #if 0
+diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+index 25b93a7..5db7688 100644
+--- a/include/uapi/linux/serial_reg.h
++++ b/include/uapi/linux/serial_reg.h
+@@ -367,24 +367,6 @@
+ #define UART_OMAP_MDR1_DISABLE		0x07	/* Disable (default state) */
+ 
+ /*
+- * These are definitions for the Exar XR17V35X and XR17(C|D)15X
+- */
+-#define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
+-#define UART_EXAR_SLEEP		0x8b	/* Sleep mode */
+-#define UART_EXAR_DVID		0x8d	/* Device identification */
+-
+-#define UART_EXAR_FCTR		0x08	/* Feature Control Register */
+-#define UART_FCTR_EXAR_IRDA	0x10	/* IrDa data encode select */
+-#define UART_FCTR_EXAR_485	0x20	/* Auto 485 half duplex dir ctl */
+-#define UART_FCTR_EXAR_TRGA	0x00	/* FIFO trigger table A */
+-#define UART_FCTR_EXAR_TRGB	0x60	/* FIFO trigger table B */
+-#define UART_FCTR_EXAR_TRGC	0x80	/* FIFO trigger table C */
+-#define UART_FCTR_EXAR_TRGD	0xc0	/* FIFO trigger table D programmable */
+-
+-#define UART_EXAR_TXTRG		0x0a	/* Tx FIFO trigger level write-only */
+-#define UART_EXAR_RXTRG		0x0b	/* Rx FIFO trigger level write-only */
+-
+-/*
+  * These are definitions for the Altera ALTR_16550_F32/F64/F128
+  * Normalized from 0x100 to 0x40 because of shift by 2 (32 bit regs).
+  */
 -- 
-With Best Regards,
-Andy Shevchenko
+2.1.4
