@@ -1,40 +1,47 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 3/7] serial: exar: Fix feature control register constants
-Date: Wed,  8 Feb 2017 17:09:05 +0100
-Message-ID: <da4f3f6fa3892ef46c4090055be53d38d32771c3.1486570149.git.jan.kiszka@siemens.com>
-References: <cover.1486570149.git.jan.kiszka@siemens.com>
+Subject: [PATCH v2 0/7] serial: exar: Fixes and cleanups
+Date: Wed,  8 Feb 2017 17:09:02 +0100
+Message-ID: <cover.1486570149.git.jan.kiszka@siemens.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1486570149.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1486570149.git.jan.kiszka@siemens.com>
-References: <cover.1486570149.git.jan.kiszka@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-According to the XR17V352 manual, bit 4 is IrDA control and bit 5 for
-485. Fortunately, no driver used them so far.
+Changes in v2:
+- line rewrapped in patch 2 [Andy]
+- reordered PCI ID list [Andy]
+- removed obsolete constants from 8250_pci [Andy]
+- added Commtech devices to 8250_pci blacklist [Andy]
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- include/uapi/linux/serial_reg.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Original intro:
 
-diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-index 274d8fc..25b93a7 100644
---- a/include/uapi/linux/serial_reg.h
-+++ b/include/uapi/linux/serial_reg.h
-@@ -374,8 +374,8 @@
- #define UART_EXAR_DVID		0x8d	/* Device identification */
- 
- #define UART_EXAR_FCTR		0x08	/* Feature Control Register */
--#define UART_FCTR_EXAR_IRDA	0x08	/* IrDa data encode select */
--#define UART_FCTR_EXAR_485	0x10	/* Auto 485 half duplex dir ctl */
-+#define UART_FCTR_EXAR_IRDA	0x10	/* IrDa data encode select */
-+#define UART_FCTR_EXAR_485	0x20	/* Auto 485 half duplex dir ctl */
- #define UART_FCTR_EXAR_TRGA	0x00	/* FIFO trigger table A */
- #define UART_FCTR_EXAR_TRGB	0x60	/* FIFO trigger table B */
- #define UART_FCTR_EXAR_TRGC	0x80	/* FIFO trigger table C */
+Fixes one fall-out from the exar split-up and two longer pending issue
+regarding the correct initialization of exar registers ports > 0.
+Furthermore, it moves remaining exar code over to the new module and
+also cleans up & fixes some registers defines.
+
+This includes the previously posted "Fix EXAR feature control register
+constants".
+
+Note that I have no chance to test the Commtech change on real hardware.
+
+Jan
+
+Jan Kiszka (7):
+  serial: exar: Fix mapping of port I/O resources
+  serial: exar: Fix initialization of EXAR registers for ports > 0
+  serial: exar: Fix feature control register constants
+  serial: exar: Move Commtech adapters to 8250_exar as well
+  serial: pci: Remove unused pci_boards entries
+  serial: exar: Move register defines from uapi header to consumer site
+  serial: exar: Enable MSI support
+
+ drivers/tty/serial/8250/8250_exar.c | 129 ++++++++++++++++++++++++-----
+ drivers/tty/serial/8250/8250_pci.c  | 161 +-----------------------------------
+ drivers/tty/serial/8250/8250_port.c |   6 ++
+ include/uapi/linux/serial_reg.h     |  18 ----
+ 4 files changed, 117 insertions(+), 197 deletions(-)
+
 -- 
 2.1.4
