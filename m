@@ -1,156 +1,95 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v4 3/4] serial: sh-sci: make RX FIFO parameters tunable via sysfs
-Date: Sun, 12 Feb 2017 18:04:52 +0200
-Message-ID: <1794065.DucaPDu9pY@avalon>
-References: <1486118300-12633-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1486118300-12633-4-git-send-email-ulrich.hecht+renesas@gmail.com>
+From: Wolfgang Schnitker <wolfgang.schnitker@gmx.de>
+Subject: Bug#854231: Fwd: Kernel 4.9 traces
+Date: Sun, 12 Feb 2017 17:45:06 +0100
+Message-ID: <eef42674-979f-1d56-8b71-2d8863f71dc7@gmx.de>
+References: <70847af1-5dd9-d799-1220-076668a7d26f@gmx.de>
+ <ed196ccd-6c86-9354-f503-9eaaa3cf7086@gmx.de>
+ <20170204115348.GA19932@kroah.com>
+ <5d1b3176-8c74-5495-28bb-4a6da64d78a6@gmx.de>
+ <20170204130540.GA21394@kroah.com>
+ <b1985aec-cb09-67e7-ec47-6e4013491081@gmx.de>
+Reply-To: Wolfgang Schnitker <wolfgang.schnitker@gmx.de>, 854231@bugs.debian.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1486118300-12633-4-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: linux-renesas-soc@vger.kernel.org, geert@linux-m68k.org, gregkh@linuxfoundation.org, wsa@the-dreams.de, linux-serial@vger.kernel.org, magnus.damm@gmail.com, sergei.shtylyov@cogentembedded.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <bounce-debian-bugs-dist=glddb-debian-bugs-dist=m.gmane.org@lists.debian.org>
+Resent-To: debian-bugs-dist@lists.debian.org
+Resent-Message-ID: <handler.854231.B854231.148691791625060@bugs.debian.org>
+In-Reply-To: <b1985aec-cb09-67e7-ec47-6e4013491081@gmx.de>
+List-URL: <https://lists.debian.org/debian-bugs-dist/>
+List-Post: <mailto:debian-bugs-dist@lists.debian.org>
+List-Help: <mailto:debian-bugs-dist-request@lists.debian.org?subject=help>
+List-Subscribe: <mailto:debian-bugs-dist-request@lists.debian.org?subject=subscribe>
+List-Unsubscribe: <mailto:debian-bugs-dist-request@lists.debian.org?subject=unsubscribe>
+To: linux-serial@vger.kernel.org
+Cc: Greg KH <gregkh@linuxfoundation.org>, 854231@bugs.debian.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ulrich,
+Dear serial developers,
 
-Thank you for the patch.
+my suggestion is now following:
 
-On Friday 03 Feb 2017 11:38:19 Ulrich Hecht wrote:
-> Allows tuning of the RX FIFO fill threshold and timeout. (The latter is
-> only applicable to SCIFA and SCIFB).
-> 
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  drivers/tty/serial/sh-sci.c | 87 ++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 87 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 4a165ed..f95a56c 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -1055,6 +1055,66 @@ static void rx_fifo_timer_fn(unsigned long arg)
->  	scif_set_rtrg(port, 1);
->  }
-> 
-> +static ssize_t rx_trigger_show(struct device *dev,
-> +			       struct device_attribute *attr,
-> +			       char *buf)
-> +{
-> +	struct uart_port *port = dev_get_drvdata(dev);
-> +	struct sci_port *sci = to_sci_port(port);
-> +
-> +	return sprintf(buf, "%d\n", sci->rx_trigger);
-> +}
-> +
-> +static ssize_t rx_trigger_store(struct device *dev,
-> +				struct device_attribute *attr,
-> +				const char *buf,
-> +				size_t count)
-> +{
-> +	struct uart_port *port = dev_get_drvdata(dev);
-> +	struct sci_port *sci = to_sci_port(port);
-> +	long r;
-> +
-> +	if (kstrtol(buf, 0, &r) == -EINVAL)
-> +		return -EINVAL;
-> +	sci->rx_trigger = scif_set_rtrg(port, r);
-> +	scif_set_rtrg(port, 1);
-> +	return count;
-> +}
-> +
-> +static DEVICE_ATTR(rx_fifo_trigger, 0644, rx_trigger_show,
-> rx_trigger_store); +
-> +static ssize_t rx_fifo_timeout_show(struct device *dev,
-> +			       struct device_attribute *attr,
-> +			       char *buf)
-> +{
-> +	struct uart_port *port = dev_get_drvdata(dev);
-> +	struct sci_port *sci = to_sci_port(port);
-> +
-> +	return sprintf(buf, "%d\n", sci->rx_fifo_timeout);
-> +}
-> +
-> +static ssize_t rx_fifo_timeout_store(struct device *dev,
-> +				struct device_attribute *attr,
-> +				const char *buf,
-> +				size_t count)
-> +{
-> +	struct uart_port *port = dev_get_drvdata(dev);
-> +	struct sci_port *sci = to_sci_port(port);
-> +	long r;
-> +
-> +	if (kstrtol(buf, 0, &r) == -EINVAL)
-> +		return -EINVAL;
-> +	sci->rx_fifo_timeout = r;
-> +	scif_set_rtrg(port, 1);
-> +	if (r > 0)
-> +		setup_timer(&sci->rx_fifo_timer, rx_fifo_timer_fn,
-> +			    (unsigned long)sci);
+My box has 3 physical serial IO ports, 1 on MB and 2 on PCI IO board.
 
-Where's the locking ?
+dmesg | grep ttyS shows this:
 
-> +	return count;
-> +}
-> +
-> +static DEVICE_ATTR(rx_fifo_timeout, 0644, rx_fifo_timeout_show,
-> rx_fifo_timeout_store); +
-> +
->  #ifdef CONFIG_SERIAL_SH_SCI_DMA
->  static void sci_dma_tx_complete(void *arg)
->  {
-> @@ -2886,6 +2946,15 @@ static int sci_remove(struct platform_device *dev)
-> 
->  	sci_cleanup_single(port);
-> 
-> +	if (port->port.fifosize > 1) {
-> +		sysfs_remove_file(&dev->dev.kobj,
-> +				  &dev_attr_rx_fifo_trigger.attr);
-> +	}
-> +	if (port->port.type == PORT_SCIFA || port->port.type == PORT_SCIFB) {
-> +		sysfs_remove_file(&dev->dev.kobj,
-> +				  &dev_attr_rx_fifo_timeout.attr);
-> +	}
+(rmmod parport_serial and modprobe it again)
 
-No need for curly braces.
+[    0.833923] 00:00: ttyS3 at I/O 0x2e8 (irq =3D 3, base_baud =3D 115200=
+)
+is a 16550A
+[    9.498473] 0000:03:00.0: ttyS0 at I/O 0xcc00 (irq =3D 17, base_baud =3D=
 
-> +
->  	return 0;
->  }
-> 
-> @@ -3051,6 +3120,24 @@ static int sci_probe(struct platform_device *dev)
->  	if (ret)
->  		return ret;
-> 
-> +	if (sp->port.fifosize > 1) {
-> +		ret = sysfs_create_file(&dev->dev.kobj,
-> +				&dev_attr_rx_fifo_trigger.attr);
+115200) is a 16550A
+[    9.519894] 0000:03:00.0: ttyS1 at I/O 0xc880 (irq =3D 17, base_baud =3D=
 
-You should use device_create_file for device attributes. Even better would be 
-to create an attribute group if possible.
+115200) is a 16550A
+[   17.519943] ttyS0: LSR safety check engaged!
+[   17.521182] ttyS0: LSR safety check engaged!
+[   30.043754] ttyS0: LSR safety check engaged!
+[   30.044734] ttyS0: LSR safety check engaged!
+[   30.044956] ttyS0: LSR safety check engaged!
+[   30.045153] ttyS0: LSR safety check engaged!
+[   30.045344] ttyS0: LSR safety check engaged!
+[   41.594802] ttyS0: LSR safety check engaged!
+[  273.130756] 0000:03:00.0: ttyS1 at I/O 0xcc00 (irq =3D 17, base_baud =3D=
 
-> +		if (ret)
-> +			return ret;
-> +	}
-> +	if (sp->port.type == PORT_SCIFA || sp->port.type ==  PORT_SCIFB) {
-> +		ret = sysfs_create_file(&dev->dev.kobj,
-> +				&dev_attr_rx_fifo_timeout.attr);
-> +		if (ret) {
-> +			if (sp->port.fifosize > 1) {
-> +				sysfs_remove_file(&dev->dev.kobj,
-> +					&dev_attr_rx_fifo_trigger.attr);
-> +			}
-> +			return ret;
-> +		}
-> +	}
-> +
->  #ifdef CONFIG_SH_STANDARD_BIOS
->  	sh_bios_gdb_detach();
->  #endif
+115200) is a 16550A
+[  273.153032] 0000:03:00.0: ttyS2 at I/O 0xc880 (irq =3D 17, base_baud =3D=
 
--- 
-Regards,
+115200) is a 16550A
 
-Laurent Pinchart
+ttyS3 is on the MB, ttyS0/S1 are the one on he IO card.
+
+It happens right after activating LSR safety check.
+
+[   16.522925] EXT4-fs (sda5): mounted filesystem with ordered data
+mode. Opts: (null)
+[   16.552462] EXT4-fs (sda7): mounted filesystem with ordered data
+mode. Opts: errors=3Dremount-ro
+[   17.097626] systemd-journald[216]: Received request to flush runtime
+journal from PID 1
+[   17.519943] ttyS0: LSR safety check engaged!
+[   17.521182] ttyS0: LSR safety check engaged!
+[   17.523884] ------------[ cut here ]------------
+
+So look up PCI values for this board:
+
+03:00.0 Communication controller: MosChip Semiconductor Technology Ltd.
+PCI 9835 Multi-I/O Controller (rev 01)
+    Subsystem: LSI Logic / Symbios Logic 1P2S
+    Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr-
+Stepping- SERR+ FastB2B- DisINTx-
+    Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=3Dmedium >TAbort-
+<TAbort- <MAbort- >SERR- <PERR- INTx-
+    Interrupt: pin A routed to IRQ 17
+    Region 0: I/O ports at cc00 [size=3D8]
+    Region 1: I/O ports at c880 [size=3D8]
+    Region 2: I/O ports at c800 [size=3D8]
+    Region 3: I/O ports at c480 [size=3D8]
+    Region 4: I/O ports at c400 [size=3D8]
+    Region 5: I/O ports at c080 [size=3D16]
+    Kernel driver in use: parport_serial
+=20
+
+Please tell me, if you need more information.
