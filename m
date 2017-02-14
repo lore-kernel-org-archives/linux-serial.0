@@ -1,43 +1,29 @@
 From: Christopher Covington <cov@codeaurora.org>
-Subject: Re: [PATCH 1/2] tty: pl011: Work around QDF2400 E44 stuck BUSY bit
-Date: Tue, 14 Feb 2017 18:43:06 -0500
-Message-ID: <5b771f8f-5a39-4c57-34a1-8e3f6d729a11@codeaurora.org>
+Subject: Re: [PATCH 2/2] tty: pl011: Work around QDF2400 E44 for earlycon
+Date: Tue, 14 Feb 2017 18:48:20 -0500
+Message-ID: <cb5e44c7-3be2-3b10-d133-aaea72c2a485@codeaurora.org>
 References: <20170208005736.18724-1-cov@codeaurora.org>
- <bd4a0127-0f32-a8be-c8ee-34c1cccc6d5d@codeaurora.org>
- <6afb0a98-0973-33ec-0b76-fc6378e64309@codeaurora.org>
- <5e18324f-d09d-d652-df23-d4a3f8f053fd@codeaurora.org>
+ <20170208005736.18724-2-cov@codeaurora.org>
+ <35007ccc-678d-0e2a-109b-4b5321c4fbff@codeaurora.org>
+ <0262b9d0-1fd1-ff56-a7c5-b9ab9dcea9a8@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <5e18324f-d09d-d652-df23-d4a3f8f053fd@codeaurora.org>
+In-Reply-To: <0262b9d0-1fd1-ff56-a7c5-b9ab9dcea9a8@codeaurora.org>
 Sender: linux-doc-owner@vger.kernel.org
-To: Timur Tabi <timur@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org, shankerd@codeaurora.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org
+To: shankerd@codeaurora.org, Timur Tabi <timur@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 Cc: Mark Langsdorf <mlangsdo@redhat.com>, Mark Salter <msalter@redhat.com>, Jon Masters <jcm@redhat.com>, Neil Leeder <nleeder@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 02/08/2017 06:04 PM, Timur Tabi wrote:
-> On 02/08/2017 04:22 PM, Christopher Covington wrote:
->>>> >> -    while (pl011_read(uap, REG_FR) & uap->vendor->fr_busy)
->>>> >> +    while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr)
->>>> >> +                        & uap->vendor->fr_busy)
->>> >
->>> > I really think the XOR logic needs to be documented wherever it's
->>> > used. It's just too confusing.
->> References such as the following for basic bit operations like
->> setting, clearing, and toggling are easy enough to come by.
->>
->> http://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit-in-c-c
+On 02/07/2017 11:31 PM, Shanker Donthineni wrote:
+> Hi Cov,
 > 
-> I know what XOR does. I was thinking a more high-level comment would
-> be appropriate. With E44, we want to ignore the BUSY bit and use TXFE
-> instead. So was hoping to a comment that says that:
-> 
-> /* Normally, we poll until BUSY=0, but E44 says we should poll until
-> TXFE=1 instead. So with E44, we set fr_busy to TXFE, but we have to
-> invert it. */
+> The same PL011 driver will be used in virtutal machine, make sure
+> your changes have no side effects in VM.
 
-Oh, yeah, that'd be good. I'll include better comments in v2.
+Fundamentally, this is the same workaround as has been tested in the qserver
+downstream kernel for over a year.
 
 Cheers,
 Cov
