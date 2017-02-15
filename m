@@ -1,155 +1,186 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: Re: [PATCH v2] tty: pl011: Work around QDF2400 E44 stuck BUSY bit
-Date: Tue, 14 Feb 2017 20:39:40 -0600
-Message-ID: <6a3ea0e5-f824-380e-1c4a-3e72b160e98a@codeaurora.org>
-References: <20170214235347.8812-1-cov@codeaurora.org>
+From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Subject: Re: [PATCH V6 4/5] LPC: Support the device-tree LPC host on
+ Hip06/Hip07
+Date: Wed, 15 Feb 2017 19:35:30 +0800
+Message-ID: <58A43D02.9040502@hisilicon.com>
+References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1485241525-201782-5-git-send-email-yuanzhichang@hisilicon.com>
+ <a5a24e73-013d-87b5-f65f-324417f4cc60@suse.de>
+ <58A1C50F.7090108@hisilicon.com>
+ <43b981bc-72c0-c6e7-d6f6-9ba9c63d9bdb@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170214235347.8812-1-cov@codeaurora.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Christopher Covington <cov@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Mark Rutland <mark.rutland@arm.com>, Peter Hurley <peter@hurleysoftware.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, shankerd@codeaurora.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Mark Langsdorf <mlangsdo@redhat.com>, Mark Salter <msalter@redhat.com>, Jon Masters <jcm@redhat.com>, Neil Leeder <nleeder@codeaurora.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <43b981bc-72c0-c6e7-d6f6-9ba9c63d9bdb@suse.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Alexander Graf <agraf@suse.de>, catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, brian.starkey@arm.com, olof@lixom.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gabriele.paoloni@huawei.com, minyard@acm.org, benh@kernel.crashing.org, john.garry@huawei.com, liviu.dudau@arm.com, linux-kernel@vger.kernel.org, xuwei5@hisilicon.com, linuxarm@huawei.com, "Daode Huang(allen)" <huangdaode@hisilicon.com>, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, zourongrong@gmail.com, kantyzc@163.com, zhichang.yuan02@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-Christopher Covington wrote:
-> The Qualcomm Datacenter Technologies QDF2400 family of SoCs contains a
-> custom (non-PrimeCell) implementation of the SBSA UART. Occasionally the
-> BUSY bit in the Flag Register gets stuck as 1, erratum 44 for both 2432v1
-> and 2400v1 SoCs. Checking that the Transmit FIFO Empty (TXFE) bit is 0,
-> instead of checking that the BUSY bit is 1, works around the issue. To
-> facilitate this substitution when UART AMBA Port (UAP) data is available,
-> introduce vendor-specific inversion of Feature Register bits. For the
-> earlycon case, implement alternative putc and early_write functions.
-> Similar to what how ARMv8 ACPI PCI quirks are detected during MCFG parsing,
-> check the OEM fields of the Serial Port Console Redirection (SPCR) ACPI
-> table to determine if the current platform is known to be affected by the
-> erratum.
-
-Please break this up into paragraphs.
+Hi, Alex,
 
 
-> +	if (!memcmp(table->header.oem_id, "QCOM  ", ACPI_OEM_ID_SIZE))
-> +		if (!memcmp(table->header.oem_table_id, "QDF2432 ",
-> +				ACPI_OEM_TABLE_ID_SIZE) ||
-> +				(!memcmp(table->header.oem_table_id,
-> +				"QDF2400 ", ACPI_OEM_TABLE_ID_SIZE) &&
-> +				table->header.oem_revision == 0))
-> +			uart = "qdf2400_e44";
-> +
+On 2017/2/14 21:29, Alexander Graf wrote:
+> 
+> 
+> On 13/02/2017 15:39, zhichang.yuan wrote:
+>> Hi, Alex,
+>>
+>> Thanks for your review!
+>>
+>> John had replied most of your comments, I only mentioned those which haven't made clear.
+>>
+>>
+>> On 2017/1/31 4:08, Alexander Graf wrote:
+>>>
+>>>
+>>> On 24/01/2017 08:05, zhichang.yuan wrote:
+>>>> The low-pin-count(LPC) interface of Hip06/Hip07 accesses the peripherals in
+>>>> I/O port addresses. This patch implements the LPC host controller driver which
+>>>> perform the I/O operations on the underlying hardware.
+>>>> We don't want to touch those existing peripherals' driver, such as ipmi-bt. So
+>>>> this driver applies the indirect-IO introduced in the previous patch after
+>>>> registering an indirect-IO node to the indirect-IO devices list which will be
+>>>> searched in the I/O accessors.
+>>>> As the I/O translations for LPC children depend on the host I/O registration,
+>>>> we should ensure the host I/O registration is finished before all the LPC
+>>>> children scanning. That is why an arch_init() hook was added in this patch.
+>>>>
+>>>> Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
+>>>> Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+>>>> ---
+snip
+>>>> +
+>>>> +struct lpc_cycle_para {
+>>>> +    unsigned int opflags;
+>>>> +    unsigned int csize; /* the data length of each operation */
+>>>> +};
+>>>> +
+>>>> +struct hisilpc_dev {
+>>>> +    spinlock_t cycle_lock;
+>>>> +    void __iomem  *membase;
+>>>> +    struct extio_node *extio;
+>>>> +};
+>>>> +
+>>>> +/* bounds of the LPC bus address range */
+>>>> +#define LPC_MIN_BUS_RANGE    0x0
+>>>> +
+>>>> +/*
+>>>> + * The maximal IO size for each leagcy bus.
+>>>
+>>> legacy?
+>>>
+>>> I don't really understand why this bus is legacy though. It looks like a simple MMIO-to-LPC bridge to me.
+>>
+>> yes. The LPC bus is MMIO-to-LPC bridge.
+>> My comment is not clear.
+>>
+>> How about "The maximal IO size of LPC bus"?
+> 
+> That sounds better, but doesn't really tell me what it's about yet ;).
+> 
+>>
+>>>
+>>>> + * The port size of legacy I/O devices is normally less than 0x400.
+>>>> + * Defining the I/O range size as 0x400 here should be sufficient for
+>>>> + * all peripherals under one bus.
+>>>> + */
+>>>
+>>> This comment doesn't make a lot of sense. What is the limit? Is there a hardware limit?
+>>>
+>>> We don't dynamically allocate devices on the lpc bus, so why imply a limit at all?
+>>
+>> The limit here is to define an IO window for LPC.
+>> It is not acceptable to describe the IO window with 'ranges' property in LPC host node, so we choose a fixable upper IO limit
+>> for the static LPC IO space. Without this, LPC can't register its IO space through extio helpers.
+>>
+>> Why 0x400 is chosen? For our LPC, 0x400 cover all the peripherals under the LPC.
+> 
+> This is information that should come from firmware then. Whether by coincidence addresses 0x0 - 0x400 include all devices is an implementation detail that the driver shouldn't have to know about.
 
-Hey, you just wrote this
-And it looks crazy
-But here's my function
-So call it, maybe?
 
-static bool needs_qdf2400_e44(struct acpi_table_header *h)
-{
-	const char *id;
+> 
+> That said, as mentioned elsewhere, we don't need to define single windows at all. Instead, can't we just do it like PCI BARs and declare all PIO regions we get from firmware as readily allocated? Then we only need to explicitly assign ports 0x80, 0x81, 0x99, etc to the LPC bridge and leave the rest for grabs (by PCI hotplug for example)
+> 
 
-	/* The erratum only applies to Qualcomm Technologies SOCs */
-	if (memcmp(h->oem_id, "QCOM  ", ACPI_OEM_ID_SIZE))
-		return False;
-
-	id = h->oem_table_id;
-
-	if (!memcmp(id, "QDF2432 ", ACPI_OEM_TABLE_ID_SIZE))
-		return True;
-
-	if (!memcmp(id, "QDF2000 ", ACPI_OEM_TABLE_ID_SIZE) &&
-		h->oem_revision == 0)
-		return True;
-	
-	return False;
-}
-
-...
-
-	if (needs_qdf2400_e44(&table->header))
-		uart = "qdf2400_e44";
+I worry I don't completely catch your idea.
+>From my understanding, each PCI host can parse its resource windows from firmware(such as ACPI, dts). But for our LPC, firmware configurations only tell kernel what is the IO resource of the peripherals under LPC. But to register the io range in the similar way of pci_register_io_range(), at least, we need to know the IO range size.
+So, how to know this?
+There is no similar BAR design in LPC, do we traverse all the peripherals to calculate that?
 
 
-> +/*
-> + * Erratum 44 for QDF2432v1 and QDF2400v1 SoCs describes the BUSY bit as
-> + * occasionally getting stuck as 1. To avoid the potential for a hang, check
-> + * TXFE == 0 instead of BUSY == 1. This may not be suitable for all UART
-> + * implementations, so only do so if an affected platform is detected in
-> + * parse_spcr().
-> + */
-> +static bool qdf2400_e44 = false;
+>>
+>>
+>>
+>>
+>>>
+>>>> +#define LPC_BUS_IO_SIZE        0x400
+>>>> +
+>>>> +/* The maximum continuous operations */
+>>>> +#define LPC_MAX_OPCNT    16
+>>>> +/* only support IO data unit length is four at maximum */
+>>>> +#define LPC_MAX_DULEN    4
+snip
+>>>> + */
+>>>> +static int
+>>>> +hisilpc_target_in(struct hisilpc_dev *lpcdev, struct lpc_cycle_para *para,
+>>>> +          unsigned long ptaddr, unsigned char *buf,
+>>>> +          unsigned long opcnt)
+>>>> +{
+>>>> +    unsigned long cnt_per_trans;
+>>>> +    unsigned int cmd_word;
+>>>> +    unsigned int waitcnt;
+>>>> +    int ret;
+>>>> +
+>>>> +    if (!buf || !opcnt || !para || !para->csize || !lpcdev)
+>>>> +        return -EINVAL;
+>>>> +
+>>>> +    if (opcnt  > LPC_MAX_OPCNT)
+>>>> +        return -EINVAL;
+>>>> +
+>>>> +    cmd_word = LPC_CMD_TYPE_IO | LPC_CMD_READ;
+>>>> +    waitcnt = LPC_PEROP_WAITCNT;
+>>>> +    if (!(para->opflags & FG_INCRADDR_LPC)) {
+>>>> +        cmd_word |= LPC_CMD_SAMEADDR;
+>>>> +        waitcnt = LPC_MAX_WAITCNT;
+>>>> +    }
+>>>> +
+>>>> +    ret = 0;
+>>>> +    cnt_per_trans = (para->csize == 1) ? opcnt : para->csize;
+>>>> +    for (; opcnt && !ret; cnt_per_trans = para->csize) {
+>>>> +        unsigned long flags;
+>>>> +
+>>>> +        /* whole operation must be atomic */
+>>>> +        spin_lock_irqsave(&lpcdev->cycle_lock, flags);
+>>>
+>>> Ouch. This is going to kill your RT jitter. Is there no better way?
+>>
+>> I think there is no other choices. We have to ensure the I/O cycles triggered in serial mode....
+> 
+> As nobody else accesses the LPC device in the meantime thanks to the lock, you don't need to disable interrupts, right?
 
-Please rename this to needs_qdf2400_e44
+O. Do you mean that we can replace spin_lock_irqsave with spin_lock?
 
->  static u16 pl011_st_offsets[REG_ARRAY_SIZE] = {
->  	[REG_DR] = UART01x_DR,
->  	[REG_ST_DMAWM] = ST_UART011_DMAWM,
-> @@ -1518,7 +1543,8 @@ static unsigned int pl011_tx_empty(struct uart_port *port)
->  {
->  	struct uart_amba_port *uap =
->  	    container_of(port, struct uart_amba_port, port);
-> -	unsigned int status = pl011_read(uap, REG_FR);
-> +	/* Allow feature register bits to be inverted to work around errata */
+As we can connect UART to LPC, I worry the LPC can be accessed in the interrupt context.
 
-Blank line above the comment, please.
 
-> +	unsigned int status = pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr;
->  	return status & (uap->vendor->fr_busy | UART01x_FR_TXFF) ?
->  							0 : TIOCSER_TEMT;
->  }
-> @@ -2215,10 +2241,12 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
->  	uart_console_write(&uap->port, s, count, pl011_console_putchar);
->
->  	/*
-> -	 *	Finally, wait for transmitter to become empty
-> -	 *	and restore the TCR
-> +	 *	Finally, wait for transmitter to become empty and restore the
-> +	 *	TCR. Allow feature register bits to be inverted to work around
-> +	 *	errata.
->  	 */
-> -	while (pl011_read(uap, REG_FR) & uap->vendor->fr_busy)
-> +	while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr)
-> +						& uap->vendor->fr_busy)
->  		cpu_relax();
->  	if (!uap->vendor->always_enabled)
->  		pl011_write(old_cr, uap, REG_CR);
-> @@ -2340,8 +2368,13 @@ static int __init pl011_console_match(struct console *co, char *name, int idx,
->  	resource_size_t addr;
->  	int i;
->
-> -	if (strcmp(name, "pl011") != 0)
-> +	if (strcmp(name, "qdf2400_e44") == 0) {
-> +		if (!qdf2400_e44)
-> +			pr_info("UART: Working around QDF2400 SoC erratum 44");
+Thanks,
+Zhichang
 
-Just use pr_once(), and you can skip the "if (!qdf2400_e44)".  Although I don't 
-understand why you need to do that.  pl011_console_match() should only be called 
-once anyway, right?
-
-> +		qdf2400_e44 = true;
-> +	} else if (strcmp(name, "pl011") != 0) {
->  		return -ENODEV;
-> +	}
->
->  	if (uart_parse_earlycon(options, &iotype, &addr, &options))
->  		return -ENODEV;
-> @@ -2383,6 +2416,25 @@ static struct console amba_console = {
->
->  #define AMBA_CONSOLE	(&amba_console)
->
-> +static void qdf2400_e44_putc(struct uart_port *port, int c)
-> +{
-> +	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
-> +		cpu_relax();
-> +	if (port->iotype == UPIO_MEM32)
-> +		writel(c, port->membase + UART01x_DR);
-> +	else
-> +		writeb(c, port->membase + UART01x_DR);
-
-I think you can ignore the UPIO_MEM32 test and always use writel(), even on the 
-QDF2400.
-
--- 
-Sent by an employee of the Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the
-Code Aurora Forum, hosted by The Linux Foundation.
+> 
+> IIRC in PREEMPT_RT, a normal spinlock becomes a mutex and allows for resched during the LPC transaction.
+> 
+> 
+> Alex
+> 
+> .
+> 
