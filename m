@@ -1,126 +1,221 @@
-From: =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>
-Subject: [PATCH 06/11] tty: serial: Add Actions Semi Owl UART earlycon
-Date: Wed, 15 Feb 2017 17:55:23 +0100
-Message-ID: <20170215165528.10052-7-afaerber@suse.de>
-References: <20170215165528.10052-1-afaerber@suse.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170215165528.10052-1-afaerber@suse.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: support@lemaker.org, info@ucrobotics.com, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, mp-cs@actions-semi.com, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>, contact@linux-xapple.org
+From: Christopher Covington <cov@codeaurora.org>
+Subject: [PATCH v3] tty: pl011: Work around QDF2400 E44 stuck BUSY bit
+Date: Wed, 15 Feb 2017 13:01:59 -0500
+Message-ID: <20170215180159.11359-1-cov@codeaurora.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jonathan Corbet <corbet@lwn.net>, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Mark Rutland <mark.rutland@arm.com>, Peter Hurley <peter@hurleysoftware.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, shankerd@codeaurora.org, timur@codeaurora.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Mark Langsdorf <mlangsdo@redhat.com>, Mark Salter <msalter@redhat.com>, Jon Masters <jcm@redhat.com>, Neil Leeder <nleeder@codeaurora.org>, Christopher Covington <cov@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-VGhpcyBpbXBsZW1lbnRzIGFuIGVhcmx5Y29uIGZvciBBY3Rpb25zIFNlbWkgUzUwMC9TOTAwIFNv
-Q3MuCgpCYXNlZCBvbiBMZU1ha2VyIGxpbnV4LWFjdGlvbnMgdHJlZS4KClNpZ25lZC1vZmYtYnk6
-IEFuZHJlYXMgRsOkcmJlciA8YWZhZXJiZXJAc3VzZS5kZT4KLS0tCiBkcml2ZXJzL3R0eS9zZXJp
-YWwvS2NvbmZpZyAgICB8ICAxOSArKysrKysKIGRyaXZlcnMvdHR5L3NlcmlhbC9NYWtlZmlsZSAg
-IHwgICAxICsKIGRyaXZlcnMvdHR5L3NlcmlhbC9vd2wtdWFydC5jIHwgMTM1ICsrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwogMyBmaWxlcyBjaGFuZ2VkLCAxNTUgaW5z
-ZXJ0aW9ucygrKQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvdHR5L3NlcmlhbC9vd2wtdWFy
-dC5jCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL0tjb25maWcgYi9kcml2ZXJzL3R0
-eS9zZXJpYWwvS2NvbmZpZwppbmRleCA2MTE3YWM4Li45ZDQyMTNjIDEwMDY0NAotLS0gYS9kcml2
-ZXJzL3R0eS9zZXJpYWwvS2NvbmZpZworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvS2NvbmZpZwpA
-QCAtMTY3Nyw2ICsxNjc3LDI1IEBAIGNvbmZpZyBTRVJJQUxfTVZFQlVfQ09OU09MRQogCSAgYW5k
-IHdhcm5pbmdzIGFuZCB3aGljaCBhbGxvd3MgbG9naW5zIGluIHNpbmdsZSB1c2VyIG1vZGUpCiAJ
-ICBPdGhlcndpc2UsIHNheSAnTicuCiAKK2NvbmZpZyBTRVJJQUxfT1dMCisJYm9vbCAiQWN0aW9u
-cyBTZW1pIE93bCBzZXJpYWwgcG9ydCBzdXBwb3J0IgorCWRlcGVuZHMgb24gQVJDSF9PV0wgfHwg
-Q09NUElMRV9URVNUCisJc2VsZWN0IFNFUklBTF9DT1JFCisJaGVscAorCSAgVGhpcyBkcml2ZXIg
-aXMgZm9yIEFjdGlvbnMgU2VtaSBTNTAwL1M5MDAgU29DJ3MgVUFSVC4KKwkgIFNheSAnWScgaGVy
-ZSBpZiB5b3Ugd2lzaCB0byB1c2UgdGhlIG9uLWJvYXJkIHNlcmlhbCBwb3J0LgorCSAgT3RoZXJ3
-aXNlLCBzYXkgJ04nLgorCitjb25maWcgU0VSSUFMX09XTF9DT05TT0xFCisJYm9vbCAiQ29uc29s
-ZSBvbiBBY3Rpb25zIFNlbWkgT3dsIHNlcmlhbCBwb3J0IgorCWRlcGVuZHMgb24gU0VSSUFMX09X
-TD15CisJc2VsZWN0IFNFUklBTF9DT1JFX0NPTlNPTEUKKwlzZWxlY3QgU0VSSUFMX0VBUkxZQ09O
-CisJZGVmYXVsdCB5CisJaGVscAorCSAgU2F5ICdZJyBoZXJlIGlmIHlvdSB3aXNoIHRvIHVzZSBB
-Y3Rpb25zIFNlbWkgUzUwMC9TOTAwIFVBUlQgYXMgdGhlCisJICBzeXN0ZW0gY29uc29sZS4KKwog
-ZW5kbWVudQogCiBjb25maWcgU0VSSUFMX01DVFJMX0dQSU8KZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-dHR5L3NlcmlhbC9NYWtlZmlsZSBiL2RyaXZlcnMvdHR5L3NlcmlhbC9NYWtlZmlsZQppbmRleCAy
-ZDYyODhiLi45MWYzNTcxIDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvTWFrZWZpbGUK
-KysrIGIvZHJpdmVycy90dHkvc2VyaWFsL01ha2VmaWxlCkBAIC05MSw2ICs5MSw3IEBAIG9iai0k
-KENPTkZJR19TRVJJQUxfU1RNMzIpCSs9IHN0bTMyLXVzYXJ0Lm8KIG9iai0kKENPTkZJR19TRVJJ
-QUxfTVZFQlVfVUFSVCkJKz0gbXZlYnUtdWFydC5vCiBvYmotJChDT05GSUdfU0VSSUFMX1BJQzMy
-KQkrPSBwaWMzMl91YXJ0Lm8KIG9iai0kKENPTkZJR19TRVJJQUxfTVBTMl9VQVJUKQkrPSBtcHMy
-LXVhcnQubworb2JqLSQoQ09ORklHX1NFUklBTF9PV0wpCSs9IG93bC11YXJ0Lm8KIAogIyBHUElP
-TElCIGhlbHBlcnMgZm9yIG1vZGVtIGNvbnRyb2wgbGluZXMKIG9iai0kKENPTkZJR19TRVJJQUxf
-TUNUUkxfR1BJTykJKz0gc2VyaWFsX21jdHJsX2dwaW8ubwpkaWZmIC0tZ2l0IGEvZHJpdmVycy90
-dHkvc2VyaWFsL293bC11YXJ0LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvb3dsLXVhcnQuYwpuZXcg
-ZmlsZSBtb2RlIDEwMDY0NAppbmRleCAwMDAwMDAwLi5mOGIxYmI2Ci0tLSAvZGV2L251bGwKKysr
-IGIvZHJpdmVycy90dHkvc2VyaWFsL293bC11YXJ0LmMKQEAgLTAsMCArMSwxMzUgQEAKKy8qCisg
-KiBBY3Rpb25zIFNlbWkgT3dsIGZhbWlseSBzZXJpYWwgY29uc29sZQorICoKKyAqIENvcHlyaWdo
-dCAyMDEzIEFjdGlvbnMgU2VtaSBJbmMuCisgKiBBdXRob3I6IEFjdGlvbnMgU2VtaSwgSW5jLgor
-ICoKKyAqIENvcHlyaWdodCAoYykgMjAxNi0yMDE3IEFuZHJlYXMgRsOkcmJlcgorICoKKyAqIFRo
-aXMgcHJvZ3JhbSBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSAgaXQgYW5k
-L29yIG1vZGlmeSBpdAorICogdW5kZXIgIHRoZSB0ZXJtcyBvZiAgdGhlIEdOVSBHZW5lcmFsICBQ
-dWJsaWMgTGljZW5zZSBhcyBwdWJsaXNoZWQgYnkgdGhlCisgKiBGcmVlIFNvZnR3YXJlIEZvdW5k
-YXRpb247ICBlaXRoZXIgdmVyc2lvbiAyIG9mIHRoZSAgTGljZW5zZSwgb3IgKGF0IHlvdXIKKyAq
-IG9wdGlvbikgYW55IGxhdGVyIHZlcnNpb24uCisgKgorICogVGhpcyBwcm9ncmFtIGlzIGRpc3Ry
-aWJ1dGVkIGluIHRoZSBob3BlIHRoYXQgaXQgd2lsbCBiZSB1c2VmdWwsCisgKiBidXQgV0lUSE9V
-VCBBTlkgV0FSUkFOVFk7IHdpdGhvdXQgZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZgorICog
-TUVSQ0hBTlRBQklMSVRZIG9yIEZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFLiBTZWUg
-dGhlCisgKiBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBmb3IgbW9yZSBkZXRhaWxzLgorICoK
-KyAqIFlvdSBzaG91bGQgaGF2ZSByZWNlaXZlZCBhIGNvcHkgb2YgdGhlIEdOVSBHZW5lcmFsIFB1
-YmxpYyBMaWNlbnNlCisgKiBhbG9uZyB3aXRoIHRoaXMgcHJvZ3JhbS4gSWYgbm90LCBzZWUgPGh0
-dHA6Ly93d3cuZ251Lm9yZy9saWNlbnNlcy8+LgorICovCisKKyNpbmNsdWRlIDxsaW51eC9jb25z
-b2xlLmg+CisjaW5jbHVkZSA8bGludXgvZGVsYXkuaD4KKyNpbmNsdWRlIDxsaW51eC9pby5oPgor
-I2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPgorI2luY2x1ZGUgPGxpbnV4L29mLmg+CisjaW5jbHVk
-ZSA8bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+CisjaW5jbHVkZSA8bGludXgvc2VyaWFsLmg+Cisj
-aW5jbHVkZSA8bGludXgvc2VyaWFsX2NvcmUuaD4KKworI2RlZmluZSBPV0xfVUFSVF9DVEwJMHgw
-MDAKKyNkZWZpbmUgT1dMX1VBUlRfVFhEQVQJMHgwMDgKKyNkZWZpbmUgT1dMX1VBUlRfU1RBVAkw
-eDAwYworCisjZGVmaW5lIE9XTF9VQVJUX0NUTF9UUkZTX1RYCQkoMSA8PCAxNCkKKyNkZWZpbmUg
-T1dMX1VBUlRfQ1RMX0VOCQkJKDEgPDwgMTUpCisjZGVmaW5lIE9XTF9VQVJUX0NUTF9SWElFCQko
-MSA8PCAxOCkKKyNkZWZpbmUgT1dMX1VBUlRfQ1RMX1RYSUUJCSgxIDw8IDE5KQorCisjZGVmaW5l
-IE9XTF9VQVJUX1NUQVRfUklQCQkoMSA8PCAwKQorI2RlZmluZSBPV0xfVUFSVF9TVEFUX1RJUAkJ
-KDEgPDwgMSkKKyNkZWZpbmUgT1dMX1VBUlRfU1RBVF9URkZVCQkoMSA8PCA2KQorI2RlZmluZSBP
-V0xfVUFSVF9TVEFUX1RSRkxfTUFTSwkJKDB4MWYgPDwgMTEpCisjZGVmaW5lIE9XTF9VQVJUX1NU
-QVRfVVRCQgkJKDEgPDwgMTcpCisKK3N0YXRpYyBpbmxpbmUgdm9pZCBvd2xfc2VyaWFsX3dyaXRl
-KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHUzMiB2YWwsIHVuc2lnbmVkIGludCBvZmYpCit7CisJ
-d3JpdGVsKHZhbCwgcG9ydC0+bWVtYmFzZSArIG9mZik7Cit9CisKK3N0YXRpYyBpbmxpbmUgdTMy
-IG93bF9zZXJpYWxfcmVhZChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LCB1bnNpZ25lZCBpbnQgb2Zm
-KQoreworCXJldHVybiByZWFkbChwb3J0LT5tZW1iYXNlICsgb2ZmKTsKK30KKworI2lmZGVmIENP
-TkZJR19TRVJJQUxfT1dMX0NPTlNPTEUKKworc3RhdGljIHZvaWQgb3dsX2NvbnNvbGVfcHV0Y2hh
-cihzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LCBpbnQgY2gpCit7CisJaWYgKCFwb3J0LT5tZW1iYXNl
-KQorCQlyZXR1cm47CisKKwl3aGlsZSAob3dsX3NlcmlhbF9yZWFkKHBvcnQsIE9XTF9VQVJUX1NU
-QVQpICYgT1dMX1VBUlRfU1RBVF9URkZVKQorCQljcHVfcmVsYXgoKTsKKworCW93bF9zZXJpYWxf
-d3JpdGUocG9ydCwgY2gsIE9XTF9VQVJUX1RYREFUKTsKK30KKworc3RhdGljIHZvaWQgb3dsX3Nl
-cmlhbF9wb3J0X3dyaXRlKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIGNvbnN0IGNoYXIgKnMsCisJ
-CQkJICB1X2ludCBjb3VudCkKK3sKKwl1MzIgb2xkX2N0bCwgdmFsOworCXVuc2lnbmVkIGxvbmcg
-ZmxhZ3M7CisJaW50IGxvY2tlZDsKKworCWxvY2FsX2lycV9zYXZlKGZsYWdzKTsKKworCWlmIChw
-b3J0LT5zeXNycSkKKwkJbG9ja2VkID0gMDsKKwllbHNlIGlmIChvb3BzX2luX3Byb2dyZXNzKQor
-CQlsb2NrZWQgPSBzcGluX3RyeWxvY2soJnBvcnQtPmxvY2spOworCWVsc2UgeworCQlzcGluX2xv
-Y2soJnBvcnQtPmxvY2spOworCQlsb2NrZWQgPSAxOworCX0KKworCW9sZF9jdGwgPSBvd2xfc2Vy
-aWFsX3JlYWQocG9ydCwgT1dMX1VBUlRfQ1RMKTsKKwl2YWwgPSBvbGRfY3RsIHwgT1dMX1VBUlRf
-Q1RMX1RSRlNfVFg7CisJLyogZGlzYWJsZSBJUlEgKi8KKwl2YWwgJj0gfihPV0xfVUFSVF9DVExf
-UlhJRSB8IE9XTF9VQVJUX0NUTF9UWElFKTsKKwlvd2xfc2VyaWFsX3dyaXRlKHBvcnQsIHZhbCwg
-T1dMX1VBUlRfQ1RMKTsKKworCXVhcnRfY29uc29sZV93cml0ZShwb3J0LCBzLCBjb3VudCwgb3ds
-X2NvbnNvbGVfcHV0Y2hhcik7CisKKwkvKiB3YWl0IHVudGlsIGFsbCBjb250ZW50cyBoYXZlIGJl
-ZW4gc2VudCBvdXQgKi8KKwl3aGlsZSAob3dsX3NlcmlhbF9yZWFkKHBvcnQsIE9XTF9VQVJUX1NU
-QVQpICYgT1dMX1VBUlRfU1RBVF9UUkZMX01BU0spCisJCWNwdV9yZWxheCgpOworCisJLyogY2xl
-YXIgSVJRIHBlbmRpbmcgKi8KKwl2YWwgPSBvd2xfc2VyaWFsX3JlYWQocG9ydCwgT1dMX1VBUlRf
-U1RBVCk7CisJdmFsIHw9IE9XTF9VQVJUX1NUQVRfVElQIHwgT1dMX1VBUlRfU1RBVF9SSVA7CisJ
-b3dsX3NlcmlhbF93cml0ZShwb3J0LCB2YWwsIE9XTF9VQVJUX1NUQVQpOworCisJb3dsX3Nlcmlh
-bF93cml0ZShwb3J0LCBvbGRfY3RsLCBPV0xfVUFSVF9DVEwpOworCisJaWYgKGxvY2tlZCkKKwkJ
-c3Bpbl91bmxvY2soJnBvcnQtPmxvY2spOworCisJbG9jYWxfaXJxX3Jlc3RvcmUoZmxhZ3MpOwor
-fQorCitzdGF0aWMgdm9pZCBvd2xfc2VyaWFsX2Vhcmx5X2NvbnNvbGVfd3JpdGUoc3RydWN0IGNv
-bnNvbGUgKmNvLAorCQkJCQkgICBjb25zdCBjaGFyICpzLAorCQkJCQkgICB1X2ludCBjb3VudCkK
-K3sKKwlzdHJ1Y3QgZWFybHljb25fZGV2aWNlICpkZXYgPSBjby0+ZGF0YTsKKworCW93bF9zZXJp
-YWxfcG9ydF93cml0ZSgmZGV2LT5wb3J0LCBzLCBjb3VudCk7Cit9CisKK3N0YXRpYyBpbnQgX19p
-bml0Citvd2xfc2VyaWFsX2Vhcmx5X2NvbnNvbGVfc2V0dXAoc3RydWN0IGVhcmx5Y29uX2Rldmlj
-ZSAqZGV2aWNlLCBjb25zdCBjaGFyICpvcHQpCit7CisJaWYgKCFkZXZpY2UtPnBvcnQubWVtYmFz
-ZSkKKwkJcmV0dXJuIC1FTk9ERVY7CisKKwlkZXZpY2UtPmNvbi0+d3JpdGUgPSBvd2xfc2VyaWFs
-X2Vhcmx5X2NvbnNvbGVfd3JpdGU7CisKKwlyZXR1cm4gMDsKK30KK09GX0VBUkxZQ09OX0RFQ0xB
-UkUob3dsLCAiYWN0cyxvd2wtdWFydCIsCisJCSAgICBvd2xfc2VyaWFsX2Vhcmx5X2NvbnNvbGVf
-c2V0dXApOworCisjZW5kaWYgLyogQ09ORklHX1NFUklBTF9PV0xfQ09OU09MRSAqLwotLSAKMi4x
-MC4yCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGlu
-dXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRl
-YWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgt
-YXJtLWtlcm5lbAo=
+The Qualcomm Datacenter Technologies QDF2400 family of SoCs contains a
+custom (non-PrimeCell) implementation of the SBSA UART. Occasionally the
+BUSY bit in the Flag Register gets stuck as 1, erratum 44 for both 2432v1
+and 2400v1 SoCs.Checking that the Transmit FIFO Empty (TXFE) bit is 0,
+instead of checking that the BUSY bit is 1, works around the issue.
+
+To facilitate this substitution of flags and values, introduce
+vendor-specific inversion of Feature Register bits when UART AMBA Port
+(UAP) data is available. For the earlycon case, prior to UAP availability,
+implement alternative putc and early_write functions.
+
+Similar to what how ARMv8 ACPI PCI quirks are detected during MCFG parsing,
+check the OEM fields of the Serial Port Console Redirection (SPCR) ACPI
+table to determine if the current platform is known to be affected by the
+erratum.
+
+Signed-off-by: Christopher Covington <cov@codeaurora.org>
+Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+Since v2: Formatting and other improvements per Timur's suggestions
+Due to known (although trivial) conflicts in silicon-errata.txt, based on
+http://git.kernel.org/cgit/linux/kernel/git/arm64/linux.git/log/?h=for-next/core
+---
+ Documentation/arm64/silicon-errata.txt |  2 ++
+ drivers/acpi/spcr.c                    | 23 ++++++++++++
+ drivers/tty/serial/amba-pl011.c        | 66 ++++++++++++++++++++++++++++++----
+ 3 files changed, 84 insertions(+), 7 deletions(-)
+
+diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
+index a71b8095dbd8..bc3d086bc624 100644
+--- a/Documentation/arm64/silicon-errata.txt
++++ b/Documentation/arm64/silicon-errata.txt
+@@ -68,3 +68,5 @@ stable kernels.
+ |                |                 |                 |                             |
+ | Qualcomm Tech. | Falkor v1       | E1003           | QCOM_FALKOR_ERRATUM_1003    |
+ | Qualcomm Tech. | Falkor v1       | E1009           | QCOM_FALKOR_ERRATUM_1009    |
++| Qualcomm Tech. | QDF2432v1 UART  | SoC E44         | N/A                         |
++| Qualcomm Tech. | QDF2400v1 UART  | SoC E44         | N/A                         |
+diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+index b8019c4c1d38..2b5d0fac81f0 100644
+--- a/drivers/acpi/spcr.c
++++ b/drivers/acpi/spcr.c
+@@ -16,6 +16,26 @@
+ #include <linux/kernel.h>
+ #include <linux/serial_core.h>
+ 
++/*
++ * Some Qualcomm Datacenter Technologies SoCs have a defective UART BUSY bit.
++ * Detect them by examining the OEM fields in the SPCR header, similiar to PCI
++ * quirk detection in pci_mcfg.c.
++ */
++static bool qdf2400_erratum_44_present(struct acpi_table_header *h)
++{
++	if (memcmp(h->oem_id, "QCOM  ", ACPI_OEM_ID_SIZE))
++		return false;
++
++	if (!memcmp(h->oem_table_id, "QDF2432 ", ACPI_OEM_TABLE_ID_SIZE))
++		return true;
++
++	if (!memcmp(h->oem_table_id, "QDF2400 ", ACPI_OEM_TABLE_ID_SIZE) &&
++			h->oem_revision == 0)
++		return true;
++
++	return false;
++}
++
+ /**
+  * parse_spcr() - parse ACPI SPCR table and add preferred console
+  *
+@@ -93,6 +113,9 @@ int __init parse_spcr(bool earlycon)
+ 		goto done;
+ 	}
+ 
++	if (qdf2400_erratum_44_present(&table->header))
++		uart = "qdf2400_e44";
++
+ 	snprintf(opts, sizeof(opts), "%s,%s,0x%llx,%d", uart, iotype,
+ 		 table->serial_port.address, baud_rate);
+ 
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index d4171d71a258..fbd1ea251854 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -97,6 +97,7 @@ struct vendor_data {
+ 	unsigned int		fr_dsr;
+ 	unsigned int		fr_cts;
+ 	unsigned int		fr_ri;
++	unsigned int		inv_fr;
+ 	bool			access_32b;
+ 	bool			oversampling;
+ 	bool			dma_threshold;
+@@ -141,6 +142,30 @@ static struct vendor_data vendor_sbsa = {
+ 	.fixed_options		= true,
+ };
+ 
++/*
++ * Erratum 44 for QDF2432v1 and QDF2400v1 SoCs describes the BUSY bit as
++ * occasionally getting stuck as 1. To avoid the potential for a hang, check
++ * TXFE == 0 instead of BUSY == 1. This may not be suitable for all UART
++ * implementations, so only do so if an affected platform is detected in
++ * parse_spcr().
++ */
++static bool qdf2400_e44_present = false;
++
++static struct vendor_data vendor_qdt_qdf2400_e44 = {
++	.reg_offset		= pl011_std_offsets,
++	.fr_busy		= UART011_FR_TXFE,
++	.fr_dsr			= UART01x_FR_DSR,
++	.fr_cts			= UART01x_FR_CTS,
++	.fr_ri			= UART011_FR_RI,
++	.inv_fr			= UART011_FR_TXFE,
++	.access_32b		= true,
++	.oversampling		= false,
++	.dma_threshold		= false,
++	.cts_event_workaround	= false,
++	.always_enabled		= true,
++	.fixed_options		= true,
++};
++
+ static u16 pl011_st_offsets[REG_ARRAY_SIZE] = {
+ 	[REG_DR] = UART01x_DR,
+ 	[REG_ST_DMAWM] = ST_UART011_DMAWM,
+@@ -1518,7 +1543,10 @@ static unsigned int pl011_tx_empty(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap =
+ 	    container_of(port, struct uart_amba_port, port);
+-	unsigned int status = pl011_read(uap, REG_FR);
++
++	/* Allow feature register bits to be inverted to work around errata */
++	unsigned int status = pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr;
++
+ 	return status & (uap->vendor->fr_busy | UART01x_FR_TXFF) ?
+ 							0 : TIOCSER_TEMT;
+ }
+@@ -2215,10 +2243,12 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
+ 	uart_console_write(&uap->port, s, count, pl011_console_putchar);
+ 
+ 	/*
+-	 *	Finally, wait for transmitter to become empty
+-	 *	and restore the TCR
++	 *	Finally, wait for transmitter to become empty and restore the
++	 *	TCR. Allow feature register bits to be inverted to work around
++	 *	errata.
+ 	 */
+-	while (pl011_read(uap, REG_FR) & uap->vendor->fr_busy)
++	while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr)
++						& uap->vendor->fr_busy)
+ 		cpu_relax();
+ 	if (!uap->vendor->always_enabled)
+ 		pl011_write(old_cr, uap, REG_CR);
+@@ -2340,8 +2370,12 @@ static int __init pl011_console_match(struct console *co, char *name, int idx,
+ 	resource_size_t addr;
+ 	int i;
+ 
+-	if (strcmp(name, "pl011") != 0)
++	if (strcmp(name, "qdf2400_e44") == 0) {
++		pr_info_once("UART: Working around QDF2400 SoC erratum 44");
++		qdf2400_e44_present = true;
++	} else if (strcmp(name, "pl011") != 0) {
+ 		return -ENODEV;
++	}
+ 
+ 	if (uart_parse_earlycon(options, &iotype, &addr, &options))
+ 		return -ENODEV;
+@@ -2383,6 +2417,22 @@ static struct console amba_console = {
+ 
+ #define AMBA_CONSOLE	(&amba_console)
+ 
++static void qdf2400_e44_putc(struct uart_port *port, int c)
++{
++	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
++		cpu_relax();
++	writel(c, port->membase + UART01x_DR);
++	while (!(readl(port->membase + UART01x_FR) & UART011_FR_TXFE))
++		cpu_relax();
++}
++
++static void qdf2400_e44_early_write(struct console *con, const char *s, unsigned n)
++{
++	struct earlycon_device *dev = con->data;
++
++	uart_console_write(&dev->port, s, n, qdf2400_e44_putc);
++}
++
+ static void pl011_putc(struct uart_port *port, int c)
+ {
+ 	while (readl(port->membase + UART01x_FR) & UART01x_FR_TXFF)
+@@ -2408,7 +2458,8 @@ static int __init pl011_early_console_setup(struct earlycon_device *device,
+ 	if (!device->port.membase)
+ 		return -ENODEV;
+ 
+-	device->con->write = pl011_early_write;
++	device->con->write = qdf2400_e44_present ?
++				qdf2400_e44_early_write : pl011_early_write;
+ 	return 0;
+ }
+ OF_EARLYCON_DECLARE(pl011, "arm,pl011", pl011_early_console_setup);
+@@ -2645,7 +2696,8 @@ static int sbsa_uart_probe(struct platform_device *pdev)
+ 	uap->port.irq	= ret;
+ 
+ 	uap->reg_offset	= vendor_sbsa.reg_offset;
+-	uap->vendor	= &vendor_sbsa;
++	uap->vendor	= qdf2400_e44_present ?
++					&vendor_qdt_qdf2400_e44 : &vendor_sbsa;
+ 	uap->fifosize	= 32;
+ 	uap->port.iotype = vendor_sbsa.access_32b ? UPIO_MEM32 : UPIO_MEM;
+ 	uap->port.ops	= &sbsa_uart_pops;
+-- 
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm
+Technologies, Inc. Qualcomm Technologies, Inc. is a member of the Code Aurora
+Forum, a Linux Foundation Collaborative Project.
