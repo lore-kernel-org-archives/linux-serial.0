@@ -1,203 +1,42 @@
-From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Subject: Re: [PATCH V6 4/5] LPC: Support the device-tree LPC host on
- Hip06/Hip07
-Date: Thu, 16 Feb 2017 16:59:05 +0800
-Message-ID: <58A569D9.1090701@hisilicon.com>
-References: <1485241525-201782-1-git-send-email-yuanzhichang@hisilicon.com>
- <1485241525-201782-5-git-send-email-yuanzhichang@hisilicon.com>
- <a5a24e73-013d-87b5-f65f-324417f4cc60@suse.de>
- <58A1C50F.7090108@hisilicon.com>
- <43b981bc-72c0-c6e7-d6f6-9ba9c63d9bdb@suse.de>
- <58A43D02.9040502@hisilicon.com>
- <acc432d9-f021-4eba-b48b-a8d0b4de1f78@suse.de>
+From: Long Cheng <long.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH 0/4] add uart DMA function
+Date: Thu, 16 Feb 2017 19:07:27 +0800
+Message-ID: <1487243251-964-1-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <acc432d9-f021-4eba-b48b-a8d0b4de1f78@suse.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Alexander Graf <agraf@suse.de>, catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, brian.starkey@arm.com, olof@lixom.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org
-Cc: devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gabriele.paoloni@huawei.com, minyard@acm.org, benh@kernel.crashing.org, john.garry@huawei.com, liviu.dudau@arm.com, linux-kernel@vger.kernel.org, xuwei5@hisilicon.com, linuxarm@huawei.com, "Daode Huang(allen)" <huangdaode@hisilicon.com>, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, zourongrong@gmail.com, kantyzc@163.com, zhichang.yuan02@gmail.com
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>
+Cc: dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Alex,
+In Mediatek SOCs, the uart can support DMA function.
+Base on DMA engine formwork, we add the DMA code to support uart. And put the code under drivers/dma.
 
-On 2017/2/15 19:53, Alexander Graf wrote:
-> 
-> 
-> On 15/02/2017 12:35, zhichang.yuan wrote:
->> Hi, Alex,
->>
->>
->> On 2017/2/14 21:29, Alexander Graf wrote:
->>>
->>>
->>> On 13/02/2017 15:39, zhichang.yuan wrote:
->>>> Hi, Alex,
->>>>
->>>> Thanks for your review!
->>>>
->>>> John had replied most of your comments, I only mentioned those which haven't made clear.
->>>>
->>>>
->>>> On 2017/1/31 4:08, Alexander Graf wrote:
->>>>>
->>>>>
->>>>> On 24/01/2017 08:05, zhichang.yuan wrote:
->>>>>> The low-pin-count(LPC) interface of Hip06/Hip07 accesses the peripherals in
->>>>>> I/O port addresses. This patch implements the LPC host controller driver which
->>>>>> perform the I/O operations on the underlying hardware.
->>>>>> We don't want to touch those existing peripherals' driver, such as ipmi-bt. So
->>>>>> this driver applies the indirect-IO introduced in the previous patch after
->>>>>> registering an indirect-IO node to the indirect-IO devices list which will be
->>>>>> searched in the I/O accessors.
->>>>>> As the I/O translations for LPC children depend on the host I/O registration,
->>>>>> we should ensure the host I/O registration is finished before all the LPC
->>>>>> children scanning. That is why an arch_init() hook was added in this patch.
->>>>>>
->>>>>> Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
->>>>>> Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
->>>>>> ---
->> snip
->>>>>> +
->>>>>> +struct lpc_cycle_para {
->>>>>> +    unsigned int opflags;
->>>>>> +    unsigned int csize; /* the data length of each operation */
->>>>>> +};
->>>>>> +
->>>>>> +struct hisilpc_dev {
->>>>>> +    spinlock_t cycle_lock;
->>>>>> +    void __iomem  *membase;
->>>>>> +    struct extio_node *extio;
->>>>>> +};
->>>>>> +
->>>>>> +/* bounds of the LPC bus address range */
->>>>>> +#define LPC_MIN_BUS_RANGE    0x0
->>>>>> +
->>>>>> +/*
->>>>>> + * The maximal IO size for each leagcy bus.
->>>>>
->>>>> legacy?
->>>>>
->>>>> I don't really understand why this bus is legacy though. It looks like a simple MMIO-to-LPC bridge to me.
->>>>
->>>> yes. The LPC bus is MMIO-to-LPC bridge.
->>>> My comment is not clear.
->>>>
->>>> How about "The maximal IO size of LPC bus"?
->>>
->>> That sounds better, but doesn't really tell me what it's about yet ;).
->>>
->>>>
->>>>>
->>>>>> + * The port size of legacy I/O devices is normally less than 0x400.
->>>>>> + * Defining the I/O range size as 0x400 here should be sufficient for
->>>>>> + * all peripherals under one bus.
->>>>>> + */
->>>>>
->>>>> This comment doesn't make a lot of sense. What is the limit? Is there a hardware limit?
->>>>>
->>>>> We don't dynamically allocate devices on the lpc bus, so why imply a limit at all?
->>>>
->>>> The limit here is to define an IO window for LPC.
->>>> It is not acceptable to describe the IO window with 'ranges' property in LPC host node, so we choose a fixable upper IO limit
->>>> for the static LPC IO space. Without this, LPC can't register its IO space through extio helpers.
->>>>
->>>> Why 0x400 is chosen? For our LPC, 0x400 cover all the peripherals under the LPC.
->>>
->>> This is information that should come from firmware then. Whether by coincidence addresses 0x0 - 0x400 include all devices is an implementation detail that the driver shouldn't have to know about.
->>
->>
->>>
->>> That said, as mentioned elsewhere, we don't need to define single windows at all. Instead, can't we just do it like PCI BARs and declare all PIO regions we get from firmware as readily allocated? Then we only need to explicitly assign ports 0x80, 0x81, 0x99, etc to the LPC bridge and leave the rest for grabs (by PCI hotplug for example)
->>>
->>
->> I worry I don't completely catch your idea.
->> From my understanding, each PCI host can parse its resource windows from firmware(such as ACPI, dts). But for our LPC, firmware configurations only tell kernel what is the IO resource of the peripherals under LPC. But to register the io range in the similar way of pci_register_io_range(), at least, we need to know the IO range size.
->> So, how to know this?
->> There is no similar BAR design in LPC, do we traverse all the peripherals to calculate that?
-> 
-> Yes, that's probably the most flexible approach. In fact, I would just traverse all peripherals (or have peripherals call register functions for PIO regions) and then dynamically allocate the PIO space for only those regions. I don't see why you should only have 1 window for your LPC bridge.
-> 
-> Alternatively you could just have firmware indicate the region size, similar to how it's done for PCI. Whatever you do, don't hard code it in the driver :).
-> 
->>
->>
->>>>
->>>>
->>>>
->>>>
->>>>>
->>>>>> +#define LPC_BUS_IO_SIZE        0x400
->>>>>> +
->>>>>> +/* The maximum continuous operations */
->>>>>> +#define LPC_MAX_OPCNT    16
->>>>>> +/* only support IO data unit length is four at maximum */
->>>>>> +#define LPC_MAX_DULEN    4
->> snip
->>>>>> + */
->>>>>> +static int
->>>>>> +hisilpc_target_in(struct hisilpc_dev *lpcdev, struct lpc_cycle_para *para,
->>>>>> +          unsigned long ptaddr, unsigned char *buf,
->>>>>> +          unsigned long opcnt)
->>>>>> +{
->>>>>> +    unsigned long cnt_per_trans;
->>>>>> +    unsigned int cmd_word;
->>>>>> +    unsigned int waitcnt;
->>>>>> +    int ret;
->>>>>> +
->>>>>> +    if (!buf || !opcnt || !para || !para->csize || !lpcdev)
->>>>>> +        return -EINVAL;
->>>>>> +
->>>>>> +    if (opcnt  > LPC_MAX_OPCNT)
->>>>>> +        return -EINVAL;
->>>>>> +
->>>>>> +    cmd_word = LPC_CMD_TYPE_IO | LPC_CMD_READ;
->>>>>> +    waitcnt = LPC_PEROP_WAITCNT;
->>>>>> +    if (!(para->opflags & FG_INCRADDR_LPC)) {
->>>>>> +        cmd_word |= LPC_CMD_SAMEADDR;
->>>>>> +        waitcnt = LPC_MAX_WAITCNT;
->>>>>> +    }
->>>>>> +
->>>>>> +    ret = 0;
->>>>>> +    cnt_per_trans = (para->csize == 1) ? opcnt : para->csize;
->>>>>> +    for (; opcnt && !ret; cnt_per_trans = para->csize) {
->>>>>> +        unsigned long flags;
->>>>>> +
->>>>>> +        /* whole operation must be atomic */
->>>>>> +        spin_lock_irqsave(&lpcdev->cycle_lock, flags);
->>>>>
->>>>> Ouch. This is going to kill your RT jitter. Is there no better way?
->>>>
->>>> I think there is no other choices. We have to ensure the I/O cycles triggered in serial mode....
->>>
->>> As nobody else accesses the LPC device in the meantime thanks to the lock, you don't need to disable interrupts, right?
->>
->> O. Do you mean that we can replace spin_lock_irqsave with spin_lock?
-> 
-> That would be a good step into the right direction I think, yes.
-> 
->> As we can connect UART to LPC, I worry the LPC can be accessed in the interrupt context.
-> 
-> In that case IRQs are already disabled for the non-preempt-rt case and in preempt-rt, interrupt context should mostly live in threads which are preemptible again.
-> 
+This series contains document bindings, Kconfig to control the function enable or not,
+device tree including interrupt and dma device node, the code of UART DMA function.
 
-When the IRQs are disabled? Do you mean the interrupt disable just before kernel enters the interrupt routine?
-It seems this processing can not protect a thread which had owned the LPC spin lock from being preempted.
+Long Cheng (4):
+  dt-bindings: dma: uart: add uart dma bindings
+  dmaengine: mtk_uart_dma: add Mediatek uart DMA support
+  serial: 8250-mtk: add uart DMA support
+  arm: dts: mt2701: add uart APDMA to device tree
 
+ .../devicetree/bindings/dma/mtk_uart_dma.txt       |   32 +
+ arch/arm/boot/dts/mt2701-evb.dts                   |   22 +
+ arch/arm/boot/dts/mt2701.dtsi                      |   29 +
+ drivers/dma/Kconfig                                |    9 +
+ drivers/dma/Makefile                               |    1 +
+ drivers/dma/mtk_uart_dma.c                         |  955 ++++++++++++++++++++
+ drivers/tty/serial/8250/8250_mtk.c                 |  194 +++-
+ 7 files changed, 1241 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/dma/mtk_uart_dma.txt
+ create mode 100644 drivers/dma/mtk_uart_dma.c
 
-Zhichang
+-- 
+1.7.9.5
 
-> 
-> Alex
-> 
-> .
-> 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
