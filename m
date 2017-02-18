@@ -1,53 +1,51 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 06/11] tty: serial: Add Actions Semi Owl UART earlycon
-Date: Thu, 16 Feb 2017 14:41:51 +0100
-Message-ID: <3685307.zVcugmQnxp@wuerfel>
-References: <20170215165528.10052-1-afaerber@suse.de>
- <20170215165528.10052-7-afaerber@suse.de>
+From: Wolfgang Schnitker <wolfgang.schnitker@gmx.de>
+Subject: Bug#854231: Fwd: Re: Fwd: Kernel 4.9 traces
+Date: Sat, 18 Feb 2017 11:51:18 +0100
+Message-ID: <606cd75b-63d4-d88e-c7c5-a7314a361c74@gmx.de>
+References: <198ddfc5-4d9d-bb70-a54b-ff38603099c6@gmx.de>
+Reply-To: Wolfgang Schnitker <wolfgang.schnitker@gmx.de>, 854231@bugs.debian.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170215165528.10052-7-afaerber@suse.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: support@lemaker.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, info@ucrobotics.com, linux-kernel@vger.kernel.org, mp-cs@actions-semi.com, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Andreas =?ISO-8859-1?Q?F=E4rber?= <afaerber@suse.de>, contact@linux-xapple.org
+Return-path: <bounce-debian-bugs-dist=glddb-debian-bugs-dist=m.gmane.org@lists.debian.org>
+Resent-To: debian-bugs-dist@lists.debian.org
+Resent-Message-ID: <handler.854231.B854231.148741508922881@bugs.debian.org>
+In-Reply-To: <198ddfc5-4d9d-bb70-a54b-ff38603099c6@gmx.de>
+List-URL: <https://lists.debian.org/debian-bugs-dist/>
+List-Post: <mailto:debian-bugs-dist@lists.debian.org>
+List-Help: <mailto:debian-bugs-dist-request@lists.debian.org?subject=help>
+List-Subscribe: <mailto:debian-bugs-dist-request@lists.debian.org?subject=subscribe>
+List-Unsubscribe: <mailto:debian-bugs-dist-request@lists.debian.org?subject=unsubscribe>
+To: linux-serial@vger.kernel.org, 854231@bugs.debian.org
+Cc: Greg KH <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday, February 15, 2017 5:55:23 PM CET Andreas F=E4rber wrote:
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 6117ac8..9d4213c 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1677,6 +1677,25 @@ config SERIAL_MVEBU_CONSOLE
->           and warnings and which allows logins in single user mode)
->           Otherwise, say 'N'.
->  =
+Additional information:
 
-> +config SERIAL_OWL
-> +       bool "Actions Semi Owl serial port support"
-> +       depends on ARCH_OWL || COMPILE_TEST
-> +       select SERIAL_CORE
-> +       help
-> +         This driver is for Actions Semi S500/S900 SoC's UART.
-> +         Say 'Y' here if you wish to use the on-board serial port.
-> +         Otherwise, say 'N'.
-> +
-> =
+Just checked this:
 
+setserial -g /dev/ttyS*
 
-This could maybe use a word of information about how there isn't
-actually a uart driver in this series, only an earlycon driver.
+/dev/ttyS0, UART: unknown, Port: 0x03f8, IRQ: 4
+/dev/ttyS1, UART: 16550A, Port: 0xcc00, IRQ: 17
+/dev/ttyS2, UART: 16550A, Port: 0xc880, IRQ: 17
+/dev/ttyS3, UART: 16550A, Port: 0x02e8, IRQ: 3
 
-Do you plan to add the actual tty driver soon? If not, maybe
-only add one Kconfig symbol for the earlycon support.
+Are we opening a non exsisting port?
 
-	Arnd
+Did an update-initrd for all kernels, reboot, errors while booting are go=
+ne.
+
+But still have 4 ttyS with only 3 physical ports.
+
+sudo dmesg| grep tty
+[    0.000000] console [tty0] enabled
+[    0.832371] 00:00: ttyS3 at I/O 0x2e8 (irq =3D 3, base_baud =3D 115200=
+) is a 16550A
+[    9.908812] 0000:03:00.0: ttyS0 at I/O 0xcc00 (irq =3D 17, base_baud =3D=
+ 115200) is a 16550A
+[    9.929450] 0000:03:00.0: ttyS1 at I/O 0xc880 (irq =3D 17, base_baud =3D=
+ 115200) is a 16550A
+
+ls /dev/ttyS*
+/dev/ttyS0  /dev/ttyS1  /dev/ttyS2  /dev/ttyS3
