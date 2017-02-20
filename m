@@ -1,63 +1,66 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 06/11] tty: serial: Add Actions Semi Owl UART earlycon
-Date: Mon, 20 Feb 2017 16:17:06 +0100
-Message-ID: <CAK8P3a3v=c4hNVotywiU7QmyhD5sFcqTWg2A=No-nzi235C9Fw@mail.gmail.com>
-References: <20170215165528.10052-1-afaerber@suse.de> <20170215165528.10052-7-afaerber@suse.de>
- <3685307.zVcugmQnxp@wuerfel> <072e4c03-74b7-c7d8-0e40-8944f8319159@suse.de>
+From: Baruch Siach <baruch@tkos.co.il>
+Subject: Re: imx: Race when disabling RX in IMX.6 UART in half duplex
+Date: Mon, 20 Feb 2017 21:20:01 +0200
+Message-ID: <20170220192001.eqomprbgrqkefkas@tarshish>
+References: <c07c95e2-3463-222b-c78a-b5716b4c5a14@camlintechnologies.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <072e4c03-74b7-c7d8-0e40-8944f8319159@suse.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
-Cc: Linux ARM <linux-arm-kernel@lists.infradead.org>, support@lemaker.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, info@ucrobotics.com, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, mp-cs@actions-semi.com, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <c07c95e2-3463-222b-c78a-b5716b4c5a14@camlintechnologies.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Piotr Figiel <p.figiel@camlintechnologies.com>
+Cc: Fabio Estevam <fabio.estevam@nxp.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Feb 20, 2017 at 2:40 PM, Andreas F=C3=A4rber <afaerber@suse.de> wro=
-te:
-> Am 16.02.2017 um 14:41 schrieb Arnd Bergmann:
->> On Wednesday, February 15, 2017 5:55:23 PM CET Andreas F=C3=A4rber wrote=
-:
->>> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
->>> index 6117ac8..9d4213c 100644
->>> --- a/drivers/tty/serial/Kconfig
->>> +++ b/drivers/tty/serial/Kconfig
->>> @@ -1677,6 +1677,25 @@ config SERIAL_MVEBU_CONSOLE
->>>           and warnings and which allows logins in single user mode)
->>>           Otherwise, say 'N'.
->>>
->>> +config SERIAL_OWL
->>> +       bool "Actions Semi Owl serial port support"
->>> +       depends on ARCH_OWL || COMPILE_TEST
->>> +       select SERIAL_CORE
->>> +       help
->>> +         This driver is for Actions Semi S500/S900 SoC's UART.
->>> +         Say 'Y' here if you wish to use the on-board serial port.
->>> +         Otherwise, say 'N'.
->>> +
->>>
->>
->> This could maybe use a word of information about how there isn't
->> actually a uart driver in this series, only an earlycon driver.
->
-> Yeah, I have added a sentence to the other one. Maybe also add a select?
+Hi Piotr,
 
-I generally only use 'select' to avoid build failures, not to save the user
-the time to make a choice.
+On Mon, Feb 20, 2017 at 02:54:02PM +0100, Piotr Figiel wrote:
+>  I'm looking to find a correct way to disable RX in the I.MX6 UART during
+> TX-ing. I stumbled on the issue described below when working on
+> ~SER_RS485_RX_DURING_TX on custom 3.10 tree (branched from Freescale's/NXP's
+> BSP release) independently to what is now in the main line imx.c, but I see
+> now that the implementation in mainline also seem to have the same problem
+> I'm trying to solve now. I would like to request for comments to
+> confirm/deny whether the issue I raise here is valid and how to best
+> approach this.
+> 
+>  I'm mostly concerned about the fact that the URXD register must not be
+> accessed (as documented in IMX.6 RM) when RX is disabled (RXEN=0). The issue
+> is that in the following sequence happening during imx_start_tx with
+> ~SER_RS485_RX_DURING_TX set:
+> 
+> 1. Acquire spinlock, disable local interrupts (from serial_core.c),
+> 2. Disable RX receiver (RXEN=0 in UCR2),
+> 3. Release spinlock, reenable interrupts.
+> 
+> The RX fifo may become not empty between #1 and #2. This will raise
+> interrupt which will be handled after re-enabling interrupts (after #3). ISR
+> in this case will check the status bit of the interrupt and fetch RX FIFO
+> contents, which I understand is forbidden by the documentation and may raise
+> error on the bus [1]. In addition disabling RX IRQ in this procedure, e.g.
+> after #1 doesn't seem to be enough, as the IRQ still may trigger after #1
+> and will need to be serviced.
 
->> Do you plan to add the actual tty driver soon? If not, maybe
->> only add one Kconfig symbol for the earlycon support.
->
-> So, I completed the driver the weekend and can see the full console
-> output, but there are still output glitches, possible locking issues up
-> to RCU stalls and soft lockups, and only stubbed out baudrate support.
->
-> Therefore I would rather keep the full driver as follow-up RFC in v2,
-> unless I get it fixed during Hackweek. In the earlycon I am confident,
-> and the only Kconfig change then is to switch from bool to tristate and
-> to drop the newly added sentence again.
+As I understand it, SER_RS485_RX_DURING_TX is for half-duplex RS-485 where 
+only one device is allowed to transmit at any given time. Higher level code 
+determines when any given device on the bus is allowed to transmit. If Rx FIFO 
+becomes non-empty during Tx enable, you have a contention problem to solve.
 
-Ok, sounds good.
+What is your use case?
 
-     Arnd
+baruch
+
+-- 
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
