@@ -1,36 +1,47 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: imx: Race when disabling RX in IMX.6 UART in half duplex
-Date: Tue, 21 Feb 2017 14:30:46 +0100
-Message-ID: <20170221133046.63guxqmcrd23aoy5@pengutronix.de>
-References: <c07c95e2-3463-222b-c78a-b5716b4c5a14@camlintechnologies.com>
+From: =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>
+Subject: [PATCH v2 3/8] tty: serial: 8250_pxa: Implement mmp earlycon
+Date: Wed, 22 Feb 2017 03:29:23 +0100
+Message-ID: <20170222022929.10540-4-afaerber@suse.de>
+References: <20170222022929.10540-1-afaerber@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <c07c95e2-3463-222b-c78a-b5716b4c5a14@camlintechnologies.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Piotr Figiel <p.figiel@camlintechnologies.com>
-Cc: Fabio Estevam <fabio.estevam@nxp.com>, baruch@tkos.co.il, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170222022929.10540-1-afaerber@suse.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, info@andromedabox.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+There is an early_pxa earlycon available for "mrvl,pxa-uart", but
+mmp2.dtsi and soon iap140.dtsi have only "mrvl,mmp-uart". The binding
+does not mandate to have the fallback, so add a second earlycon for this
+alternative compatible string.
 
-FTR: Sascha already saw (I think) this problem and already worked on a
-fix. He is not in the office today, maybe he can comment tomorrow.
+Signed-off-by: Andreas Färber <afaerber@suse.de>
+---
+ Note: early_pxa is not documented in kernel-parameters.txt, so not adding
+       mmp either for now.
+ 
+ Should early_pxa be renamed to / accompanied by pxa before it gets documented?
+ An early_ prefix seems uncommon and redundant, thus not adopting here for mmp.
+ 
+ v2: new
+ 
+ drivers/tty/serial/8250/8250_pxa.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
+index 4d68731..26ffa04 100644
+--- a/drivers/tty/serial/8250/8250_pxa.c
++++ b/drivers/tty/serial/8250/8250_pxa.c
+@@ -183,6 +183,7 @@ static int __init early_serial_pxa_setup(struct earlycon_device *device,
+ 	return early_serial8250_setup(device, NULL);
+ }
+ OF_EARLYCON_DECLARE(early_pxa, "mrvl,pxa-uart", early_serial_pxa_setup);
++OF_EARLYCON_DECLARE(mmp, "mrvl,mmp-uart", early_serial_pxa_setup);
+ #endif
+ 
+ MODULE_AUTHOR("Sergei Ianovich");
+-- 
+2.10.2
