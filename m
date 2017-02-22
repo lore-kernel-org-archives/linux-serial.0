@@ -1,7 +1,7 @@
 From: =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>
-Subject: [PATCH v2 3/8] tty: serial: 8250_pxa: Implement mmp earlycon
-Date: Wed, 22 Feb 2017 03:29:23 +0100
-Message-ID: <20170222022929.10540-4-afaerber@suse.de>
+Subject: [PATCH v2 2/8] tty: serial: Suppress deprecated SERIAL_PXA on arm64
+Date: Wed, 22 Feb 2017 03:29:22 +0100
+Message-ID: <20170222022929.10540-3-afaerber@suse.de>
 References: <20170222022929.10540-1-afaerber@suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -13,35 +13,29 @@ To: linux-arm-kernel@lists.infradead.org
 Cc: Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, info@andromedabox.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-There is an early_pxa earlycon available for "mrvl,pxa-uart", but
-mmp2.dtsi and soon iap140.dtsi have only "mrvl,mmp-uart". The binding
-does not mandate to have the fallback, so add a second earlycon for this
-alternative compatible string.
+With Marvell IAP140 being enabled as first arm64 MMP platform, don't
+make the deprecated SERIAL_PXA option available outside ARM.
 
 Signed-off-by: Andreas Färber <afaerber@suse.de>
 ---
- Note: early_pxa is not documented in kernel-parameters.txt, so not adding
-       mmp either for now.
+ v1 -> v2: split off
+ * Updated for ARCH_MMP
  
- Should early_pxa be renamed to / accompanied by pxa before it gets documented?
- An early_ prefix seems uncommon and redundant, thus not adopting here for mmp.
- 
- v2: new
- 
- drivers/tty/serial/8250/8250_pxa.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
-index 4d68731..26ffa04 100644
---- a/drivers/tty/serial/8250/8250_pxa.c
-+++ b/drivers/tty/serial/8250/8250_pxa.c
-@@ -183,6 +183,7 @@ static int __init early_serial_pxa_setup(struct earlycon_device *device,
- 	return early_serial8250_setup(device, NULL);
- }
- OF_EARLYCON_DECLARE(early_pxa, "mrvl,pxa-uart", early_serial_pxa_setup);
-+OF_EARLYCON_DECLARE(mmp, "mrvl,mmp-uart", early_serial_pxa_setup);
- #endif
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 6117ac8..db83085 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -439,7 +439,7 @@ config SERIAL_MPSC_CONSOLE
  
- MODULE_AUTHOR("Sergei Ianovich");
+ config SERIAL_PXA
+ 	bool "PXA serial port support (DEPRECATED)"
+-	depends on ARCH_PXA || ARCH_MMP
++	depends on ARCH_PXA || (ARCH_MMP && ARM)
+ 	select SERIAL_CORE
+ 	select SERIAL_8250_PXA if SERIAL_8250=y
+ 	select SERIAL_PXA_NON8250 if !SERIAL_8250=y
 -- 
 2.10.2
