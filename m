@@ -1,7 +1,7 @@
 From: =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>
-Subject: [PATCH v2 08/17] tty: serial: Add Actions Semi Owl UART earlycon
-Date: Fri, 24 Feb 2017 04:40:46 +0100
-Message-ID: <20170224034055.18807-9-afaerber@suse.de>
+Subject: [PATCH v2 15/17] tty: serial: owl: Implement console driver
+Date: Fri, 24 Feb 2017 04:40:53 +0100
+Message-ID: <20170224034055.18807-16-afaerber@suse.de>
 References: <20170224034055.18807-1-afaerber@suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -13,205 +13,678 @@ To: arm@kernel.org
 Cc: linux-arm-kernel@lists.infradead.org, mp-cs@actions-semi.com, 96boards@ucrobotics.com, support@lemaker.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This implements an earlycon for Actions Semi S500/S900 SoCs.
+Implement serial console driver to complement earlycon.
 
 Based on LeMaker linux-actions tree.
 
 Signed-off-by: Andreas Färber <afaerber@suse.de>
 ---
- v1 -> v2:
- * Extended Kconfig help to mention earlycon (Arnd)
- * Spelled out Actions Semiconductor in Kconfig help
- * Adopted "actions" vendor prefix
+ v2: new
  
- drivers/tty/serial/Kconfig    |  19 ++++++
- drivers/tty/serial/Makefile   |   1 +
- drivers/tty/serial/owl-uart.c | 135 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 155 insertions(+)
- create mode 100644 drivers/tty/serial/owl-uart.c
+ drivers/tty/serial/Kconfig       |   4 +-
+ drivers/tty/serial/owl-uart.c    | 574 ++++++++++++++++++++++++++++++++++++++-
+ include/uapi/linux/serial_core.h |   3 +
+ 3 files changed, 578 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 6117ac8..e145822 100644
+index e145822..ef232ac 100644
 --- a/drivers/tty/serial/Kconfig
 +++ b/drivers/tty/serial/Kconfig
-@@ -1677,6 +1677,25 @@ config SERIAL_MVEBU_CONSOLE
- 	  and warnings and which allows logins in single user mode)
+@@ -1678,7 +1678,7 @@ config SERIAL_MVEBU_CONSOLE
  	  Otherwise, say 'N'.
  
-+config SERIAL_OWL
-+	bool "Actions Semi Owl serial port support"
-+	depends on ARCH_ACTIONS || COMPILE_TEST
-+	select SERIAL_CORE
-+	help
-+	  This driver is for Actions Semiconductor S500/S900 SoC's UART.
-+	  Say 'Y' here if you wish to use the on-board serial port.
-+	  Otherwise, say 'N'.
-+
-+config SERIAL_OWL_CONSOLE
-+	bool "Console on Actions Semi Owl serial port"
-+	depends on SERIAL_OWL=y
-+	select SERIAL_CORE_CONSOLE
-+	select SERIAL_EARLYCON
-+	default y
-+	help
-+	  Say 'Y' here if you wish to use Actions Semiconductor S500/S900 UART
-+	  as the system console. Only earlycon is implemented currently.
-+
+ config SERIAL_OWL
+-	bool "Actions Semi Owl serial port support"
++	tristate "Actions Semi Owl serial port support"
+ 	depends on ARCH_ACTIONS || COMPILE_TEST
+ 	select SERIAL_CORE
+ 	help
+@@ -1694,7 +1694,7 @@ config SERIAL_OWL_CONSOLE
+ 	default y
+ 	help
+ 	  Say 'Y' here if you wish to use Actions Semiconductor S500/S900 UART
+-	  as the system console. Only earlycon is implemented currently.
++	  as the system console.
+ 
  endmenu
  
- config SERIAL_MCTRL_GPIO
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 2d6288b..91f3571 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -91,6 +91,7 @@ obj-$(CONFIG_SERIAL_STM32)	+= stm32-usart.o
- obj-$(CONFIG_SERIAL_MVEBU_UART)	+= mvebu-uart.o
- obj-$(CONFIG_SERIAL_PIC32)	+= pic32_uart.o
- obj-$(CONFIG_SERIAL_MPS2_UART)	+= mps2-uart.o
-+obj-$(CONFIG_SERIAL_OWL)	+= owl-uart.o
- 
- # GPIOLIB helpers for modem control lines
- obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
 diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
-new file mode 100644
-index 0000000..e097443
---- /dev/null
+index e097443..c249472 100644
+--- a/drivers/tty/serial/owl-uart.c
 +++ b/drivers/tty/serial/owl-uart.c
-@@ -0,0 +1,135 @@
-+/*
-+ * Actions Semi Owl family serial console
-+ *
-+ * Copyright 2013 Actions Semi Inc.
-+ * Author: Actions Semi, Inc.
-+ *
-+ * Copyright (c) 2016-2017 Andreas Färber
-+ *
-+ * This program is free software; you can redistribute  it and/or modify it
-+ * under  the terms of  the GNU General  Public License as published by the
-+ * Free Software Foundation;  either version 2 of the  License, or (at your
-+ * option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
-+ */
+@@ -20,6 +20,7 @@
+  * along with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
++#include <linux/clk.h>
+ #include <linux/console.h>
+ #include <linux/delay.h>
+ #include <linux/io.h>
+@@ -28,22 +29,52 @@
+ #include <linux/platform_device.h>
+ #include <linux/serial.h>
+ #include <linux/serial_core.h>
++#include <linux/tty.h>
++#include <linux/tty_flip.h>
 +
-+#include <linux/console.h>
-+#include <linux/delay.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/serial.h>
-+#include <linux/serial_core.h>
++#define OWL_UART_PORT_NUM 7
++#define OWL_UART_DEV_NAME "ttyOWL"
+ 
+ #define OWL_UART_CTL	0x000
++#define OWL_UART_RXDAT	0x004
+ #define OWL_UART_TXDAT	0x008
+ #define OWL_UART_STAT	0x00c
+ 
++#define OWL_UART_CTL_DWLS_MASK		(0x3 << 0)
++#define OWL_UART_CTL_DWLS_5BITS		(0x0 << 0)
++#define OWL_UART_CTL_DWLS_6BITS		(0x1 << 0)
++#define OWL_UART_CTL_DWLS_7BITS		(0x2 << 0)
++#define OWL_UART_CTL_DWLS_8BITS		(0x3 << 0)
++#define OWL_UART_CTL_STPS_2BITS		(1 << 2)
++#define OWL_UART_CTL_PRS_MASK		(0x7 << 4)
++#define OWL_UART_CTL_PRS_NONE		(0x0 << 4)
++#define OWL_UART_CTL_PRS_ODD		(0x4 << 4)
++#define OWL_UART_CTL_PRS_MARK		(0x5 << 4)
++#define OWL_UART_CTL_PRS_EVEN		(0x6 << 4)
++#define OWL_UART_CTL_PRS_SPACE		(0x7 << 4)
++#define OWL_UART_CTL_AFE		(1 << 12)
+ #define OWL_UART_CTL_TRFS_TX		(1 << 14)
+ #define OWL_UART_CTL_EN			(1 << 15)
++#define OWL_UART_CTL_RXDE		(1 << 16)
++#define OWL_UART_CTL_TXDE		(1 << 17)
+ #define OWL_UART_CTL_RXIE		(1 << 18)
+ #define OWL_UART_CTL_TXIE		(1 << 19)
+ 
+ #define OWL_UART_STAT_RIP		(1 << 0)
+ #define OWL_UART_STAT_TIP		(1 << 1)
++#define OWL_UART_STAT_RXER		(1 << 2)
++#define OWL_UART_STAT_TFER		(1 << 3)
++#define OWL_UART_STAT_RXST		(1 << 4)
++#define OWL_UART_STAT_RFEM		(1 << 5)
+ #define OWL_UART_STAT_TFFU		(1 << 6)
++#define OWL_UART_STAT_TFES		(1 << 10)
+ #define OWL_UART_STAT_TRFL_MASK		(0x1f << 11)
+ #define OWL_UART_STAT_UTBB		(1 << 17)
+ 
++static struct uart_driver owl_uart_driver;
 +
-+#define OWL_UART_CTL	0x000
-+#define OWL_UART_TXDAT	0x008
-+#define OWL_UART_STAT	0x00c
++static struct uart_port *owl_uart_ports[OWL_UART_PORT_NUM];
 +
-+#define OWL_UART_CTL_TRFS_TX		(1 << 14)
-+#define OWL_UART_CTL_EN			(1 << 15)
-+#define OWL_UART_CTL_RXIE		(1 << 18)
-+#define OWL_UART_CTL_TXIE		(1 << 19)
-+
-+#define OWL_UART_STAT_RIP		(1 << 0)
-+#define OWL_UART_STAT_TIP		(1 << 1)
-+#define OWL_UART_STAT_TFFU		(1 << 6)
-+#define OWL_UART_STAT_TRFL_MASK		(0x1f << 11)
-+#define OWL_UART_STAT_UTBB		(1 << 17)
-+
-+static inline void owl_uart_write(struct uart_port *port, u32 val, unsigned int off)
+ static inline void owl_uart_write(struct uart_port *port, u32 val, unsigned int off)
+ {
+ 	writel(val, port->membase + off);
+@@ -54,6 +85,377 @@ static inline u32 owl_uart_read(struct uart_port *port, unsigned int off)
+ 	return readl(port->membase + off);
+ }
+ 
++static void owl_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 +{
-+	writel(val, port->membase + off);
 +}
 +
-+static inline u32 owl_uart_read(struct uart_port *port, unsigned int off)
++static unsigned int owl_uart_get_mctrl(struct uart_port *port)
 +{
-+	return readl(port->membase + off);
++	return TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
 +}
 +
-+#ifdef CONFIG_SERIAL_OWL_CONSOLE
-+
-+static void owl_console_putchar(struct uart_port *port, int ch)
++static unsigned int owl_uart_tx_empty(struct uart_port *port)
 +{
-+	if (!port->membase)
-+		return;
-+
-+	while (owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_TFFU)
-+		cpu_relax();
-+
-+	owl_uart_write(port, ch, OWL_UART_TXDAT);
-+}
-+
-+static void owl_uart_port_write(struct uart_port *port, const char *s,
-+				u_int count)
-+{
-+	u32 old_ctl, val;
 +	unsigned long flags;
-+	int locked;
++	u32 val;
++	unsigned int ret;
 +
-+	local_irq_save(flags);
++	spin_lock_irqsave(&port->lock, flags);
 +
-+	if (port->sysrq)
-+		locked = 0;
-+	else if (oops_in_progress)
-+		locked = spin_trylock(&port->lock);
-+	else {
-+		spin_lock(&port->lock);
-+		locked = 1;
-+	}
++	val = owl_uart_read(port, OWL_UART_STAT);
++	ret = (val & OWL_UART_STAT_TFES) ? TIOCSER_TEMT : 0;
 +
-+	old_ctl = owl_uart_read(port, OWL_UART_CTL);
-+	val = old_ctl | OWL_UART_CTL_TRFS_TX;
-+	/* disable IRQ */
-+	val &= ~(OWL_UART_CTL_RXIE | OWL_UART_CTL_TXIE);
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	return ret;
++}
++
++static void owl_uart_stop_rx(struct uart_port *port)
++{
++	u32 val;
++
++	val = owl_uart_read(port, OWL_UART_CTL);
++	val &= ~(OWL_UART_CTL_RXIE | OWL_UART_CTL_RXDE);
 +	owl_uart_write(port, val, OWL_UART_CTL);
 +
-+	uart_console_write(port, s, count, owl_console_putchar);
-+
-+	/* wait until all contents have been sent out */
-+	while (owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_TRFL_MASK)
-+		cpu_relax();
-+
-+	/* clear IRQ pending */
 +	val = owl_uart_read(port, OWL_UART_STAT);
-+	val |= OWL_UART_STAT_TIP | OWL_UART_STAT_RIP;
++	val |= OWL_UART_STAT_RIP;
++	owl_uart_write(port, val, OWL_UART_STAT);
++}
++
++static void owl_uart_stop_tx(struct uart_port *port)
++{
++	u32 val;
++
++	val = owl_uart_read(port, OWL_UART_CTL);
++	val &= ~(OWL_UART_CTL_TXIE | OWL_UART_CTL_TXDE);
++	owl_uart_write(port, val, OWL_UART_CTL);
++
++	val = owl_uart_read(port, OWL_UART_STAT);
++	val |= OWL_UART_STAT_TIP;
++	owl_uart_write(port, val, OWL_UART_STAT);
++}
++
++static void owl_uart_start_tx(struct uart_port *port)
++{
++	u32 val;
++
++	if (uart_tx_stopped(port)) {
++		owl_uart_stop_tx(port);
++		return;
++	}
++
++	val = owl_uart_read(port, OWL_UART_STAT);
++	val |= OWL_UART_STAT_TIP;
 +	owl_uart_write(port, val, OWL_UART_STAT);
 +
-+	owl_uart_write(port, old_ctl, OWL_UART_CTL);
-+
-+	if (locked)
-+		spin_unlock(&port->lock);
-+
-+	local_irq_restore(flags);
++	val = owl_uart_read(port, OWL_UART_CTL);
++	val |= OWL_UART_CTL_TXIE;
++	owl_uart_write(port, val, OWL_UART_CTL);
 +}
 +
-+static void owl_uart_early_console_write(struct console *co,
-+					 const char *s,
-+					 u_int count)
++static void owl_uart_send_chars(struct uart_port *port)
 +{
-+	struct earlycon_device *dev = co->data;
++	struct circ_buf *xmit = &port->state->xmit;
++	unsigned int ch;
 +
-+	owl_uart_port_write(&dev->port, s, count);
++	if (uart_tx_stopped(port))
++		return;
++
++	if (port->x_char) {
++		while (!(owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_TFFU))
++			cpu_relax();
++		owl_uart_write(port, port->x_char, OWL_UART_TXDAT);
++		port->icount.tx++;
++		port->x_char = 0;
++	}
++
++	while (!(owl_uart_read(port, OWL_UART_STAT) & OWL_UART_STAT_TFFU)) {
++		if (uart_circ_empty(xmit))
++			break;
++
++		ch = xmit->buf[xmit->tail];
++		owl_uart_write(port, ch, OWL_UART_TXDAT);
++		xmit->tail = (xmit->tail + 1) & (SERIAL_XMIT_SIZE - 1);
++		port->icount.tx++;
++	}
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
++
++	if (uart_circ_empty(xmit))
++		owl_uart_stop_tx(port);
 +}
 +
-+static int __init
-+owl_uart_early_console_setup(struct earlycon_device *device, const char *opt)
++static void owl_uart_receive_chars(struct uart_port *port)
 +{
-+	if (!device->port.membase)
-+		return -ENODEV;
++	u32 stat, val;
 +
-+	device->con->write = owl_uart_early_console_write;
++	val = owl_uart_read(port, OWL_UART_CTL);
++	val &= ~OWL_UART_CTL_TRFS_TX;
++	owl_uart_write(port, val, OWL_UART_CTL);
++
++	stat = owl_uart_read(port, OWL_UART_STAT);
++	while (!(stat & OWL_UART_STAT_RFEM)) {
++		char flag = TTY_NORMAL;
++
++		if (stat & OWL_UART_STAT_RXER)
++			port->icount.overrun++;
++
++		if (stat & OWL_UART_STAT_RXST) {
++			/* We are not able to distinguish the error type. */
++			port->icount.brk++;
++			port->icount.frame++;
++
++			stat &= port->read_status_mask;
++			if (stat & OWL_UART_STAT_RXST)
++				flag = TTY_PARITY;
++		} else
++			port->icount.rx++;
++
++		val = owl_uart_read(port, OWL_UART_RXDAT);
++		val &= 0xff;
++
++		if ((stat & port->ignore_status_mask) == 0)
++			tty_insert_flip_char(&port->state->port, val, flag);
++
++		stat = owl_uart_read(port, OWL_UART_STAT);
++	}
++
++	spin_unlock(&port->lock);
++	tty_flip_buffer_push(&port->state->port);
++	spin_lock(&port->lock);
++}
++
++static irqreturn_t owl_uart_irq(int irq, void *dev_id)
++{
++	struct uart_port *port = (struct uart_port *)dev_id;
++	u32 stat;
++
++	spin_lock(&port->lock);
++
++	stat = owl_uart_read(port, OWL_UART_STAT);
++
++	if (stat & OWL_UART_STAT_RIP)
++		owl_uart_receive_chars(port);
++
++	if (stat & OWL_UART_STAT_TIP)
++		owl_uart_send_chars(port);
++
++	stat = owl_uart_read(port, OWL_UART_STAT);
++	stat |= OWL_UART_STAT_RIP | OWL_UART_STAT_TIP;
++	owl_uart_write(port, stat, OWL_UART_STAT);
++
++	spin_unlock(&port->lock);
++
++	return IRQ_HANDLED;
++}
++
++static void owl_uart_shutdown(struct uart_port *port)
++{
++	u32 val;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	val = owl_uart_read(port, OWL_UART_CTL);
++	val &= ~(OWL_UART_CTL_TXIE | OWL_UART_CTL_RXIE
++		| OWL_UART_CTL_TXDE | OWL_UART_CTL_RXDE | OWL_UART_CTL_EN);
++	owl_uart_write(port, val, OWL_UART_CTL);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	free_irq(port->irq, port);
++}
++
++static int owl_uart_startup(struct uart_port *port)
++{
++	u32 val;
++	unsigned long flags;
++	int ret;
++
++	ret = request_irq(port->irq, owl_uart_irq, IRQF_TRIGGER_HIGH,
++			"owl-uart", port);
++	if (ret)
++		return ret;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	val = owl_uart_read(port, OWL_UART_STAT);
++	val |= OWL_UART_STAT_RIP | OWL_UART_STAT_TIP
++		| OWL_UART_STAT_RXER | OWL_UART_STAT_TFER | OWL_UART_STAT_RXST;
++	owl_uart_write(port, val, OWL_UART_STAT);
++
++	val = owl_uart_read(port, OWL_UART_CTL);
++	val |= OWL_UART_CTL_RXIE | OWL_UART_CTL_TXIE;
++	val |= OWL_UART_CTL_EN;
++	owl_uart_write(port, val, OWL_UART_CTL);
++
++	spin_unlock_irqrestore(&port->lock, flags);
 +
 +	return 0;
 +}
-+OF_EARLYCON_DECLARE(owl, "actions,owl-uart",
-+		    owl_uart_early_console_setup);
 +
-+#endif /* CONFIG_SERIAL_OWL_CONSOLE */
++static void owl_uart_change_baudrate(struct uart_port *port, unsigned long baud)
++{
++}
++
++static void owl_uart_set_termios(struct uart_port *port,
++				 struct ktermios *termios,
++				 struct ktermios *old)
++{
++	unsigned int baud;
++	u32 ctl;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	/* We don't support modem control lines. */
++	termios->c_cflag &= ~(HUPCL | CMSPAR);
++	termios->c_cflag |= CLOCAL;
++
++	/* We don't support BREAK character recognition. */
++	termios->c_iflag &= ~(IGNBRK | BRKINT);
++
++	ctl = owl_uart_read(port, OWL_UART_CTL);
++
++	ctl &= ~OWL_UART_CTL_DWLS_MASK;
++	switch (termios->c_cflag & CSIZE) {
++	case CS5:
++		ctl |= OWL_UART_CTL_DWLS_5BITS;
++		break;
++	case CS6:
++		ctl |= OWL_UART_CTL_DWLS_6BITS;
++		break;
++	case CS7:
++		ctl |= OWL_UART_CTL_DWLS_7BITS;
++		break;
++	case CS8:
++	default:
++		ctl |= OWL_UART_CTL_DWLS_8BITS;
++		break;
++	}
++
++	if (termios->c_cflag & CSTOPB)
++		ctl |= OWL_UART_CTL_STPS_2BITS;
++	else
++		ctl &= ~OWL_UART_CTL_STPS_2BITS;
++
++	ctl &= ~OWL_UART_CTL_PRS_MASK;
++	if (termios->c_cflag & PARENB) {
++		if (termios->c_cflag & CMSPAR) {
++			if (termios->c_cflag & PARODD)
++				ctl |= OWL_UART_CTL_PRS_MARK;
++			else
++				ctl |= OWL_UART_CTL_PRS_SPACE;
++		} else if (termios->c_cflag & PARODD)
++			ctl |= OWL_UART_CTL_PRS_ODD;
++		else
++			ctl |= OWL_UART_CTL_PRS_EVEN;
++	} else
++		ctl |= OWL_UART_CTL_PRS_NONE;
++
++	if (termios->c_cflag & CRTSCTS)
++		ctl |= OWL_UART_CTL_AFE;
++	else
++		ctl &= ~OWL_UART_CTL_AFE;
++
++	owl_uart_write(port, ctl, OWL_UART_CTL);
++
++	baud = uart_get_baud_rate(port, termios, old, 9600, 3200000);
++	owl_uart_change_baudrate(port, baud);
++
++	port->read_status_mask |= OWL_UART_STAT_RXER;
++	if (termios->c_iflag & INPCK)
++		port->read_status_mask |= OWL_UART_STAT_RXST;
++
++	uart_update_timeout(port, termios->c_cflag, baud);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++static void owl_uart_release_port(struct uart_port *port)
++{
++	struct platform_device *pdev = to_platform_device(port->dev);
++	struct resource *res;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return;
++
++	if (port->flags & UPF_IOREMAP) {
++		devm_release_mem_region(port->dev, port->mapbase,
++			resource_size(res));
++		devm_iounmap(port->dev, port->membase);
++		port->membase = NULL;
++	}
++}
++
++static int owl_uart_request_port(struct uart_port *port)
++{
++	struct platform_device *pdev = to_platform_device(port->dev);
++	struct resource *res;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -ENXIO;
++
++	if (!devm_request_mem_region(port->dev, port->mapbase,
++			resource_size(res), dev_name(port->dev)))
++		return -EBUSY;
++
++	if (port->flags & UPF_IOREMAP) {
++		port->membase = devm_ioremap_nocache(port->dev, port->mapbase,
++				resource_size(res));
++		if (!port->membase)
++			return -EBUSY;
++	}
++
++	return 0;
++}
++
++static const char *owl_uart_type(struct uart_port *port)
++{
++	return (port->type == PORT_OWL) ? "owl-uart" : NULL;
++}
++
++static int owl_uart_verify_port(struct uart_port *port,
++				struct serial_struct *ser)
++{
++	if (port->type != PORT_OWL)
++		return -EINVAL;
++
++	if (port->irq != ser->irq)
++		return -EINVAL;
++
++	return 0;
++}
++
++static void owl_uart_config_port(struct uart_port *port, int flags)
++{
++	if (flags & UART_CONFIG_TYPE) {
++		port->type = PORT_OWL;
++		owl_uart_request_port(port);
++	}
++}
++
++static struct uart_ops owl_uart_ops = {
++	.set_mctrl = owl_uart_set_mctrl,
++	.get_mctrl = owl_uart_get_mctrl,
++	.tx_empty = owl_uart_tx_empty,
++	.start_tx = owl_uart_start_tx,
++	.stop_rx = owl_uart_stop_rx,
++	.stop_tx = owl_uart_stop_tx,
++	.startup = owl_uart_startup,
++	.shutdown = owl_uart_shutdown,
++	.set_termios = owl_uart_set_termios,
++	.type = owl_uart_type,
++	.config_port = owl_uart_config_port,
++	.request_port = owl_uart_request_port,
++	.release_port = owl_uart_release_port,
++	.verify_port = owl_uart_verify_port,
++};
++
+ #ifdef CONFIG_SERIAL_OWL_CONSOLE
+ 
+ static void owl_console_putchar(struct uart_port *port, int ch)
+@@ -110,6 +512,57 @@ static void owl_uart_port_write(struct uart_port *port, const char *s,
+ 	local_irq_restore(flags);
+ }
+ 
++static void owl_uart_console_write(struct console *co, const char *s,
++				   u_int count)
++{
++	struct uart_port *port;
++
++	port = owl_uart_ports[co->index];
++	if (!port)
++		return;
++
++	owl_uart_port_write(port, s, count);
++}
++
++static int owl_uart_console_setup(struct console *co, char *options)
++{
++	struct uart_port *port;
++	int baud = 115200;
++	int bits = 8;
++	int parity = 'n';
++	int flow = 'n';
++
++	if (co->index < 0 || co->index >= OWL_UART_PORT_NUM)
++		return -EINVAL;
++
++	port = owl_uart_ports[co->index];
++	if (!port || !port->membase)
++		return -ENODEV;
++
++	if (options)
++		uart_parse_options(options, &baud, &parity, &bits, &flow);
++
++	return uart_set_options(port, co, baud, parity, bits, flow);
++}
++
++static struct console owl_uart_console = {
++	.name = OWL_UART_DEV_NAME,
++	.write = owl_uart_console_write,
++	.device = uart_console_device,
++	.setup = owl_uart_console_setup,
++	.flags = CON_PRINTBUFFER,
++	.index = -1,
++	.data = &owl_uart_driver,
++};
++
++static int __init owl_uart_console_init(void)
++{
++	register_console(&owl_uart_console);
++
++	return 0;
++}
++console_initcall(owl_uart_console_init);
++
+ static void owl_uart_early_console_write(struct console *co,
+ 					 const char *s,
+ 					 u_int count)
+@@ -132,4 +585,123 @@ owl_uart_early_console_setup(struct earlycon_device *device, const char *opt)
+ OF_EARLYCON_DECLARE(owl, "actions,owl-uart",
+ 		    owl_uart_early_console_setup);
+ 
+-#endif /* CONFIG_SERIAL_OWL_CONSOLE */
++#define OWL_UART_CONSOLE (&owl_uart_console)
++#else
++#define OWL_UART_CONSOLE NULL
++#endif
++
++static struct uart_driver owl_uart_driver = {
++	.owner = THIS_MODULE,
++	.driver_name = "owl-uart",
++	.dev_name = OWL_UART_DEV_NAME,
++	.nr = OWL_UART_PORT_NUM,
++	.cons = OWL_UART_CONSOLE,
++};
++
++static int owl_uart_probe(struct platform_device *pdev)
++{
++	struct resource *res_mem, *res_irq;
++	struct uart_port *port;
++	struct clk *clk;
++	int ret;
++
++	if (pdev->dev.of_node)
++		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
++
++	if (pdev->id < 0 || pdev->id >= OWL_UART_PORT_NUM)
++		return -EINVAL;
++
++	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res_mem)
++		return -ENODEV;
++
++	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++	if (!res_irq)
++		return -ENODEV;
++
++	if (owl_uart_ports[pdev->id]) {
++		dev_err(&pdev->dev, "port %d already allocated\n", pdev->id);
++		return -EBUSY;
++	}
++
++	port = devm_kzalloc(&pdev->dev, sizeof(struct uart_port), GFP_KERNEL);
++	if (!port)
++		return -ENOMEM;
++
++	clk = clk_get(&pdev->dev, NULL);
++	if (IS_ERR(clk))
++		return PTR_ERR(clk);
++
++	port->dev = &pdev->dev;
++	port->line = pdev->id;
++	port->type = PORT_OWL;
++	port->iotype = UPIO_MEM;
++	port->mapbase = res_mem->start;
++	port->irq = res_irq->start;
++	port->uartclk = clk_get_rate(clk);
++	port->flags = UPF_BOOT_AUTOCONF | UPF_IOREMAP | UPF_LOW_LATENCY;
++	port->x_char = 0;
++	port->fifosize = 16;
++	port->ops = &owl_uart_ops;
++
++	owl_uart_ports[pdev->id] = port;
++	platform_set_drvdata(pdev, port);
++
++	ret = uart_add_one_port(&owl_uart_driver, port);
++	if (ret)
++		owl_uart_ports[pdev->id] = NULL;
++
++	return ret;
++}
++
++static int owl_uart_remove(struct platform_device *pdev)
++{
++	struct uart_port *port;
++
++	port = platform_get_drvdata(pdev);
++	uart_remove_one_port(&owl_uart_driver, port);
++	owl_uart_ports[pdev->id] = NULL;
++
++	return 0;
++}
++
++static const struct of_device_id owl_uart_dt_matches[] = {
++	{ .compatible = "actions,owl-uart" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, owl_uart_dt_matches);
++
++static struct platform_driver owl_uart_platform_driver = {
++	.probe = owl_uart_probe,
++	.remove = owl_uart_remove,
++	.driver = {
++		.name = "owl-uart",
++		.of_match_table = owl_uart_dt_matches,
++	},
++};
++
++static int __init owl_uart_init(void)
++{
++	int ret;
++
++	ret = uart_register_driver(&owl_uart_driver);
++	if (ret)
++		return ret;
++
++	ret = platform_driver_register(&owl_uart_platform_driver);
++	if (ret)
++		uart_unregister_driver(&owl_uart_driver);
++
++	return ret;
++}
++
++static void __init owl_uart_exit(void)
++{
++	platform_driver_unregister(&owl_uart_platform_driver);
++	uart_unregister_driver(&owl_uart_driver);
++}
++
++module_init(owl_uart_init);
++module_exit(owl_uart_exit);
++
++MODULE_LICENSE("GPL");
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index 9ec741b..5e850e6 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -271,4 +271,7 @@
+ /* MPS2 UART */
+ #define PORT_MPS2UART	116
+ 
++/* Actions Semi Owl UART */
++#define PORT_OWL	117
++
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
 -- 
 2.10.2
