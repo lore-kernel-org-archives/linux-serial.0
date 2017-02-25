@@ -1,14 +1,14 @@
 From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v2] serial: samsung: Continue to work if DMA request fails
-Date: Sat, 25 Feb 2017 18:26:22 +0200
-Message-ID: <20170225162622.32065-1-krzk@kernel.org>
+Subject: [PATCH v3] serial: samsung: Continue to work if DMA request fails
+Date: Sat, 25 Feb 2017 18:36:44 +0200
+Message-ID: <20170225163644.439-1-krzk@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <stable-owner@vger.kernel.org>
 Sender: stable-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: linux-samsung-soc@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>, stable@vger.kernel.org
+Cc: linux-samsung-soc@vger.kernel.org, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Krzysztof Kozlowski <krzk@kernel.org>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 If DMA is not available (even when configured in DeviceTree), the driver
@@ -30,6 +30,9 @@ Cc: <stable@vger.kernel.org>
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 
 ---
+
+Changes since v2:
+1. Fix patch corruption around NULL assignment (pointed by Tobias).
 
 Changes since v1:
 1. Fix tag "Fixes"
