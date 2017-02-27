@@ -1,61 +1,70 @@
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v3] serial: samsung: Continue to work if DMA request fails
-Date: Sat, 25 Feb 2017 18:36:44 +0200
-Message-ID: <20170225163644.439-1-krzk@kernel.org>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH] serial: sh-sci: Fix panic when serial console and DMA are enabled
+Date: Mon, 27 Feb 2017 15:56:31 +0900
+Message-ID: <1488178591-20408-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: linux-samsung-soc@vger.kernel.org, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Krzysztof Kozlowski <krzk@kernel.org>, stable@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: linux-renesas-soc@vger.kernel.org, Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 List-Id: linux-serial@vger.kernel.org
 
-If DMA is not available (even when configured in DeviceTree), the driver
-will fail the startup procedure thus making serial console not
-available.
+From: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>
 
-For example this causes boot failure on QEMU ARMv7 (Exynos4210, SMDKC210):
-    [    1.302575] OF: amba_device_add() failed (-19) for /amba/pdma@12680000
-    ...
-    [   11.435732] samsung-uart 13800000.serial: DMA request failed
-    [   72.963893] samsung-uart 13800000.serial: DMA request failed
-    [   73.143361] Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000000
+This patch fixes an issue that kernel panic happens when DMA is enabled
+and we press enter key while the kernel booting on the serial console.
 
-DMA is not necessary for serial to work, so continue with UART startup
-after emitting a warning.
+* An interrupt may occur after sci_request_irq().
+* DMA transfer area is initialized by setup_timer() in sci_request_dma()
+  and used in interrupt.
 
-Fixes: 62c37eedb74c ("serial: samsung: add dma reqest/release functions")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+If an interrupt occurred between sci_request_irq() and setup_timer() in
+sci_request_dma(), DMA transfer area has not been initialized yet.
+So, this patch changes the order of sci_request_irq() and
+sci_request_dma().
 
+Fixes: 73a19e4c0301 ("serial: sh-sci: Add DMA support.")
+Signed-off-by: Takatoshi Akiyama <takatoshi.akiyama.kj@ps.hitachi-solutions.com>
+[Shimoda changes the commit log]
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
+ This patch is based on the following repo and tag:
+  - renesas-drivers.git / renesas-drivers-2017-02-21-v4.10 tag
 
-Changes since v2:
-1. Fix patch corruption around NULL assignment (pointed by Tobias).
+ drivers/tty/serial/sh-sci.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Changes since v1:
-1. Fix tag "Fixes"
----
- drivers/tty/serial/samsung.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index b4f86c219db1..7a17aedbf902 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1031,8 +1031,10 @@ static int s3c64xx_serial_startup(struct uart_port *port)
- 	if (ourport->dma) {
- 		ret = s3c24xx_serial_request_dma(ourport);
- 		if (ret < 0) {
--			dev_warn(port->dev, "DMA request failed\n");
--			return ret;
-+			dev_warn(port->dev,
-+				 "DMA request failed, DMA will not be used\n");
-+			devm_kfree(port->dev, ourport->dma);
-+			ourport->dma = NULL;
- 		}
- 	}
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 1d6f953..681e469 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1985,11 +1985,13 @@ static int sci_startup(struct uart_port *port)
  
+ 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
+ 
++	sci_request_dma(port);
++
+ 	ret = sci_request_irq(s);
+-	if (unlikely(ret < 0))
++	if (unlikely(ret < 0)) {
++		sci_free_dma(port);
+ 		return ret;
+-
+-	sci_request_dma(port);
++	}
+ 
+ 	return 0;
+ }
+@@ -2021,8 +2023,8 @@ static void sci_shutdown(struct uart_port *port)
+ 	}
+ #endif
+ 
+-	sci_free_dma(port);
+ 	sci_free_irq(s);
++	sci_free_dma(port);
+ }
+ 
+ static int sci_sck_calc(struct sci_port *s, unsigned int bps,
 -- 
-2.9.3
+1.9.1
