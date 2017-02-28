@@ -1,50 +1,47 @@
-From: Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH] serial: 8250_dw: Honor clk_round_rate errors in dw8250_set_termios
-Date: Tue, 28 Feb 2017 04:17:57 +0100
-Message-ID: <20170228031757.4231-1-heiko@sntech.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>
+From: =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>
+Subject: [PATCH v3 08/25] dt-bindings: serial: Document Actions Semi Owl UARTs
+Date: Tue, 28 Feb 2017 07:35:18 +0100
+Message-ID: <20170228063535.32069-9-afaerber@suse.de>
+References: <20170228063535.32069-1-afaerber@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170228063535.32069-1-afaerber@suse.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: arm@kernel.org
+Cc: Mark Rutland <mark.rutland@arm.com>, support@lemaker.org, devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, mp-cs@actions-semi.com, linux-serial@vger.kernel.org, 96boards@ucrobotics.com, =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-clk_round_rate returns a signed long and may possibly return errors
-in it, for example if there is no possible rate.
-
-Till now dw8250_set_termios ignored any error, the signednes and would
-just use the value as input to clk_set_rate. This of course falls apart
-if there is an actual error, so check for errors and only try to set
-a rate if the value is actually valid.
-
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
----
- drivers/tty/serial/8250/8250_dw.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 6ee55a2d47bb..223ac234ddb2 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -257,7 +257,7 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
- {
- 	unsigned int baud = tty_termios_baud_rate(termios);
- 	struct dw8250_data *d = p->private_data;
--	unsigned int rate;
-+	long rate;
- 	int ret;
- 
- 	if (IS_ERR(d->clk) || !old)
-@@ -265,7 +265,10 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
- 
- 	clk_disable_unprepare(d->clk);
- 	rate = clk_round_rate(d->clk, baud * 16);
--	ret = clk_set_rate(d->clk, rate);
-+	if (rate < 0)
-+		ret = rate;
-+	else
-+		ret = clk_set_rate(d->clk, rate);
- 	clk_prepare_enable(d->clk);
- 
- 	if (!ret)
--- 
-2.11.0
+VGhpcyBVQVJUIGlzIGZvdW5kIG9uIFM1MDAgYW5kIFM5MDAgU29Dcy4KCkFja2VkLWJ5OiBSb2Ig
+SGVycmluZyA8cm9iaEBrZXJuZWwub3JnPgpTaWduZWQtb2ZmLWJ5OiBBbmRyZWFzIEbDpHJiZXIg
+PGFmYWVyYmVyQHN1c2UuZGU+Ci0tLQogdjIgLT4gdjM6IHVuY2hhbmdlZAogCiB2MSAtPiB2MjoK
+ICogQWRvcHRlZCAiYWN0aW9ucyIgdmVuZG9yIHByZWZpeAogCiAuLi4vZGV2aWNldHJlZS9iaW5k
+aW5ncy9zZXJpYWwvYWN0aW9ucyxvd2wtdWFydC50eHQgICAgICB8IDE2ICsrKysrKysrKysrKysr
+KysKIDEgZmlsZSBjaGFuZ2VkLCAxNiBpbnNlcnRpb25zKCspCiBjcmVhdGUgbW9kZSAxMDA2NDQg
+RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NlcmlhbC9hY3Rpb25zLG93bC11YXJ0
+LnR4dAoKZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJp
+YWwvYWN0aW9ucyxvd2wtdWFydC50eHQgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGlu
+Z3Mvc2VyaWFsL2FjdGlvbnMsb3dsLXVhcnQudHh0Cm5ldyBmaWxlIG1vZGUgMTAwNjQ0CmluZGV4
+IDAwMDAwMDAuLmFhODczZWEKLS0tIC9kZXYvbnVsbAorKysgYi9Eb2N1bWVudGF0aW9uL2Rldmlj
+ZXRyZWUvYmluZGluZ3Mvc2VyaWFsL2FjdGlvbnMsb3dsLXVhcnQudHh0CkBAIC0wLDAgKzEsMTYg
+QEAKK0FjdGlvbnMgU2VtaSBPd2wgVUFSVAorCitSZXF1aXJlZCBwcm9wZXJ0aWVzOgorLSBjb21w
+YXRpYmxlIDogICJhY3Rpb25zLHM1MDAtdWFydCIsICJhY3Rpb25zLG93bC11YXJ0IiBmb3IgUzUw
+MAorICAgICAgICAgICAgICAgICJhY3Rpb25zLHM5MDAtdWFydCIsICJhY3Rpb25zLG93bC11YXJ0
+IiBmb3IgUzkwMAorLSByZWcgICAgICAgIDogIE9mZnNldCBhbmQgbGVuZ3RoIG9mIHRoZSByZWdp
+c3RlciBzZXQgZm9yIHRoZSBkZXZpY2UuCistIGludGVycnVwdHMgOiAgU2hvdWxkIGNvbnRhaW4g
+VUFSVCBpbnRlcnJ1cHQuCisKKworRXhhbXBsZToKKworCQl1YXJ0Mzogc2VyaWFsQGIwMTI2MDAw
+IHsKKwkJCWNvbXBhdGlibGUgPSAiYWN0aW9ucyxzNTAwLXVhcnQiLCAiYWN0aW9ucyxvd2wtdWFy
+dCI7CisJCQlyZWcgPSA8MHhiMDEyNjAwMCAweDEwMDA+OworCQkJaW50ZXJydXB0cyA9IDxHSUNf
+U1BJIDMyIElSUV9UWVBFX0xFVkVMX0hJR0g+OworCQl9OwotLSAKMi4xMC4yCgoKX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBt
+YWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9s
+aXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
