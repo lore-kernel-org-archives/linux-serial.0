@@ -1,15 +1,12 @@
-From: dann frazier <dann.frazier@canonical.com>
-Subject: Re: [PATCH] tty: acpi/spcr: QDF2400 E44 checks for wrong OEM revision
-Date: Tue, 28 Feb 2017 13:25:19 -0700
-Message-ID: <CALdTtnsRnjqXZGh=EfVtg0wjFs+hcq5Z0Qy0Tqh7ZOGhbUaBww@mail.gmail.com>
-References: <1488252276-2425-1-git-send-email-timur@codeaurora.org>
- <CALdTtnsbh3fZF+Ci1JmQ=Awod5QPWB4+gTRWx0u9=xyaLfhNmw@mail.gmail.com>
- <ad478756-9b4d-79a0-1da3-a2265ba7ec49@codeaurora.org>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: [PATCH] [v2][for 4.11]tty: acpi/spcr: QDF2400 E44 checks for wrong
+ OEM revision
+Date: Tue, 28 Feb 2017 14:30:33 -0600
+Message-ID: <1488313833-12430-1-git-send-email-timur@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <ad478756-9b4d-79a0-1da3-a2265ba7ec49@codeaurora.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,34 +16,34 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Timur Tabi <timur@codeaurora.org>
-Cc: Greg Kroah-Hartman <greg@kroah.com>, Manoj Iyer <manoj.iyer@canonical.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, cov@mykolab.com
+To: Greg Kroah-Hartman <greg@kroah.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Christopher Covington <cov@mykolab.com>, manoj.iyer@canonical.com, dann.frazier@canonical.com
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Feb 28, 2017 at 1:23 PM, Timur Tabi <timur@codeaurora.org> wrote:
-> On 02/28/2017 02:19 PM, dann frazier wrote:
->>
->> On Mon, Feb 27, 2017 at 8:24 PM, Timur Tabi <timur@codeaurora.org> wrote:
->>>
->>> For Qualcomm Technologies QDF2400 SOCs that are affected by
->>> erratum E44, the ACPI oem_revision field is actually set to 1,
->>> not 0.
->>
->>
->> Should this 'Fixes: d8a4995bcea1 ("PCI: Add ACS quirk for Qualcomm
->> QDF2400 and QDF2432")' ?
->
->
-> Fixes: d8a4995bcea1 ("tty: pl011: Work around QDF2400 E44 stuck BUSY bit")
+For Qualcomm Technologies QDF2400 SOCs that are affected by erratum E44,
+the ACPI oem_revision field is actually set to 1, not 0.
 
-oops.. right.  Pulled the long line from my git --grep QDF2400 :(
+Fixes: d8a4995bcea1 ("tty: pl011: Work around QDF2400 E44 stuck BUSY bit")
 
-  -dann
+Tested-by: Manoj Iyer <manoj.iyer@canonical.com>
+Signed-off-by: Timur Tabi <timur@codeaurora.org>
+---
+ drivers/acpi/spcr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> I will post a v2.
->
->
-> --
-> Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm
-> Technologies, Inc.  Qualcomm Technologies, Inc. is a member of the
-> Code Aurora Forum, a Linux Foundation Collaborative Project.
+diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+index 2b5d0fa..2051a8c 100644
+--- a/drivers/acpi/spcr.c
++++ b/drivers/acpi/spcr.c
+@@ -30,7 +30,7 @@ static bool qdf2400_erratum_44_present(struct acpi_table_header *h)
+ 		return true;
+ 
+ 	if (!memcmp(h->oem_table_id, "QDF2400 ", ACPI_OEM_TABLE_ID_SIZE) &&
+-			h->oem_revision == 0)
++			h->oem_revision == 1)
+ 		return true;
+ 
+ 	return false;
+-- 
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm
+Technologies, Inc.  Qualcomm Technologies, Inc. is a member of the
+Code Aurora Forum, a Linux Foundation Collaborative Project.
