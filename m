@@ -1,49 +1,80 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: [PATCH] [v2][for 4.11]tty: acpi/spcr: QDF2400 E44 checks for wrong
- OEM revision
-Date: Tue, 28 Feb 2017 14:30:33 -0600
-Message-ID: <1488313833-12430-1-git-send-email-timur@codeaurora.org>
+From: Aleksey Makarov <amakarov.linux@gmail.com>
+Subject: Re: [PATCH] tty: serial: pl011: add ttyAMA for matching pl011 console
+Date: Wed, 1 Mar 2017 14:51:53 +0300
+Message-ID: <8a7074e1-b106-1847-f045-6400d6832110@gmail.com>
+References: <1485963998-921-1-git-send-email-sudeep.holla@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <greg@kroah.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Christopher Covington <cov@mykolab.com>, manoj.iyer@canonical.com, dann.frazier@canonical.com
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1485963998-921-1-git-send-email-sudeep.holla@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sudeep Holla <sudeep.holla@arm.com>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Aleksey Makarov <aleksey.makarov@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-For Qualcomm Technologies QDF2400 SOCs that are affected by erratum E44,
-the ACPI oem_revision field is actually set to 1, not 0.
 
-Fixes: d8a4995bcea1 ("tty: pl011: Work around QDF2400 E44 stuck BUSY bit")
 
-Tested-by: Manoj Iyer <manoj.iyer@canonical.com>
-Signed-off-by: Timur Tabi <timur@codeaurora.org>
----
- drivers/acpi/spcr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 02/01/2017 06:46 PM, Sudeep Holla wrote:
+> Commit c7cef0a84912 ("console: Add extensible console matching") added
+> match() method to struct console which allows the console to perform
+> console command line matching instead of (or in addition to) default
+> console matching (ie., by fixed name and index).
+> 
+> Commit ad1696f6f09d ("ACPI: parse SPCR and enable matching console")
+> introduced support for SPCR as matching console.
+> 
+> Commit 10879ae5f12e ("serial: pl011: add console matching function")
+> added the match method for pl011 console which checks for the console
+> string to be "pl011"
+> 
+> Now on a platform which has both SPCR in the ACPI tables and ttyAMA in
+> the command line, the ttyAMA is chosen as "selected console" but it
+> doesn't pass the matching console method which results in CON_CONSDEV
+> not being set on the "selected console".
+> 
+> As a result of that, the bootconsole(SPCR in the above case) is not
+> unregistered and all the beginning boot messages are seen twice.
+> 
+> This patch adds "ttyAMA" so that it's considered to match pl011 console.
+> 
+> Fixes: 10879ae5f12e ("serial: pl011: add console matching function")
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: Peter Hurley <peter@hurleysoftware.com>
+> Cc: Aleksey Makarov <aleksey.makarov@linaro.org>
+> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+> ---
+>  drivers/tty/serial/amba-pl011.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 963c2e5feedd..533b18d4a587 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2340,7 +2340,7 @@ static int __init pl011_console_match(struct console *co, char *name, int idx,
+>  	resource_size_t addr;
+>  	int i;
+> 
+> -	if (strcmp(name, "pl011") != 0)
+> +	if (strcmp(name, "pl011") != 0 || strcmp(name, "ttyAMA") != 0)
 
-diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-index 2b5d0fa..2051a8c 100644
---- a/drivers/acpi/spcr.c
-+++ b/drivers/acpi/spcr.c
-@@ -30,7 +30,7 @@ static bool qdf2400_erratum_44_present(struct acpi_table_header *h)
- 		return true;
- 
- 	if (!memcmp(h->oem_table_id, "QDF2400 ", ACPI_OEM_TABLE_ID_SIZE) &&
--			h->oem_revision == 0)
-+			h->oem_revision == 1)
- 		return true;
- 
- 	return false;
--- 
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm
-Technologies, Inc.  Qualcomm Technologies, Inc. is a member of the
-Code Aurora Forum, a Linux Foundation Collaborative Project.
+So the condition is always true now?
+
+The patch is obviously wrong and should be reverted ASAP.
+
+Thank you
+Aleksey Makarov
+
+>  		return -ENODEV;
+> 
+>  	if (uart_parse_earlycon(options, &iotype, &addr, &options))
+> --
+> 2.7.4
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
