@@ -1,12 +1,14 @@
 From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH] Revert "tty: serial: pl011: add ttyAMA for matching pl011
+Subject: [PATCH v2] Revert "tty: serial: pl011: add ttyAMA for matching pl011
  console"
-Date: Wed,  1 Mar 2017 15:26:01 +0300
-Message-ID: <20170301122602.30025-1-aleksey.makarov@linaro.org>
+Date: Wed,  1 Mar 2017 15:50:52 +0300
+Message-ID: <20170301125053.30480-1-aleksey.makarov@linaro.org>
+References: <20170301122602.30025-1-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170301122602.30025-1-aleksey.makarov@linaro.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -23,7 +25,11 @@ List-Id: linux-serial@vger.kernel.org
 The original patch makes condition always true, so it is wrong.
 
 This reverts commit aea9a80ba98a0c9b4de88850260e9fbdcc98360b.
+
+Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
 ---
+v2: add Signed-off-by:
+
  drivers/tty/serial/amba-pl011.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
