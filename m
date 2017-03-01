@@ -1,117 +1,65 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH 2/2] printk: fix double printing with earlycon
-Date: Wed,  1 Mar 2017 19:13:46 +0300
-Message-ID: <20170301161347.4202-3-aleksey.makarov@linaro.org>
-References: <20170301161347.4202-1-aleksey.makarov@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170301161347.4202-1-aleksey.makarov@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2 1/1] serial: 8250_dw: Allow hardware flow control to
+ be used
+Date: Wed, 01 Mar 2017 20:50:20 +0200
+Message-ID: <1488394220.20145.68.camel@linux.intel.com>
+References: <1484164100-9805-1-git-send-email-jason.uy@broadcom.com>
+         <1484164100-9805-2-git-send-email-jason.uy@broadcom.com>
+         <CAAG0J9-n0toSJL8Ze8Esq81dYnpfrTd42bMiR94zw_btBLjsww@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <CAAG0J9-n0toSJL8Ze8Esq81dYnpfrTd42bMiR94zw_btBLjsww@mail.gmail.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: James Hogan <james.hogan@imgtec.com>, Jason Uy <jason.uy@broadcom.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Noam Camus <noamc@ezchip.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Wang Hongcheng <annie.wang@amd.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, bcm-kernel-feedback-list@broadcom.com, Linux MIPS Mailing List <linux-mips@linux-mips.org>, David Daney <david.daney@cavium.com>
 List-Id: linux-serial@vger.kernel.org
 
-If a console was specified by ACPI SPCR table _and_
-command line parameters like "console=ttyAMA0" _and_ "earlycon"
-were specified, then log messages appears twice.
+On Wed, 2017-03-01 at 18:02 +0000, James Hogan wrote:
+> On 11 January 2017 at 19:48, Jason Uy <jason.uy@broadcom.com> wrote:
+> > In the most common use case, the Synopsys DW UART driver does not
+> > set the set_termios callback function.  This prevents UPSTAT_AUTOCTS
+> > from being set when the UART flag CRTSCTS is set.  As a result, the
+> > driver will use software flow control as opposed to hardware flow
+> > control.
+> > 
+> > To fix the problem, the set_termios callback function is set to the
+> > DW specific function.  The logic to set UPSTAT_AUTOCTS is moved so
+> > that any clock error will not affect setting the hardware flow
+> > control.
 
-The root cause is that the code traverse the list
-of specified consoles (the `console_cmdline` array) and stops at the
-first match.  But it may happen that the same console is referred by
-the elements of this array twice:
+> Bisection shows that this patch, commit
+> 6a171b29937984a5e0bf29d6577b055998f03edb, has broken boot of the
+> Cavium Octeon III based UTM-8 board (MIPS architecture).
+> 
+> I now get the following warning:
 
-	ttyAMA0 -- from command line
-	pl011,mmio,0x87e024000000,115200 -- from SPCR
+> [<ffffffff8149c2e4>] uart_get_baud_rate+0xfc/0x1f0
+> [<ffffffff814a5098>] serial8250_do_set_termios+0xb0/0x440
+> [<ffffffff8149c710>] uart_set_options+0xe8/0x190
+> [<ffffffff814a6cdc>] serial8250_console_setup+0x84/0x158
+> [<ffffffff814a11ec>] univ8250_console_setup+0x54/0x70
+> [<ffffffff811901a0>] register_console+0x1c8/0x418
+> [<ffffffff8149f004>] uart_add_one_port+0x434/0x4b0
+> [<ffffffff814a1af8>] serial8250_register_8250_port+0x2d8/0x440
+> [<ffffffff814aa620>] dw8250_probe+0x388/0x5e8
 
-but in this case `preferred_console` points to the second entry and
-the flag CON_CONSDEV is not set, so bootconsole is not deregistered.
+> Then it hangs and the watchdog restarts the machine.
+> 
+> Any ideas?
 
-To fix that, match the console against the `console_cmdline` entry
-pointed by `preferred_console` instead of the first match.
+1. Does it use clock on that platform?
+2. Check if termios is not NULL there.
 
-Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
----
- kernel/printk/printk.c | 52 ++++++++++++++++++++++++++++++--------------------
- 1 file changed, 31 insertions(+), 21 deletions(-)
-
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index ed2a9b31f214..92008ae9db3f 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2380,6 +2380,24 @@ static int __init keep_bootcon_setup(char *str)
- 
- early_param("keep_bootcon", keep_bootcon_setup);
- 
-+static int match_console(struct console *newcon, struct console_cmdline *c)
-+{
-+	if (!newcon->match ||
-+	    newcon->match(newcon, c->name, c->index, c->options) != 0) {
-+		/* default matching */
-+		BUILD_BUG_ON(sizeof(c->name) != sizeof(newcon->name));
-+		if (strcmp(c->name, newcon->name) != 0)
-+			return -ENODEV;
-+		if (newcon->index >= 0 &&
-+		    newcon->index != c->index)
-+			return -ENODEV;
-+		if (newcon->index < 0)
-+			newcon->index = c->index;
-+	}
-+
-+	return 0;
-+}
-+
- /*
-  * The console driver calls this routine during kernel initialization
-  * to register the console printing procedure with printk() and to
-@@ -2460,37 +2478,29 @@ void register_console(struct console *newcon)
- 	for (i = 0, c = console_cmdline;
- 	     i < MAX_CMDLINECONSOLES && c->name[0];
- 	     i++, c++) {
--		if (!newcon->match ||
--		    newcon->match(newcon, c->name, c->index, c->options) != 0) {
--			/* default matching */
--			BUILD_BUG_ON(sizeof(c->name) != sizeof(newcon->name));
--			if (strcmp(c->name, newcon->name) != 0)
--				continue;
--			if (newcon->index >= 0 &&
--			    newcon->index != c->index)
--				continue;
--			if (newcon->index < 0)
--				newcon->index = c->index;
-+		if (match_console(newcon, c))
-+			continue;
- 
--			if (_braille_register_console(newcon, c))
--				return;
-+		if (_braille_register_console(newcon, c))
-+			return;
- 
--			if (newcon->setup &&
--			    newcon->setup(newcon, c->options) != 0)
--				break;
--		}
-+		if (newcon->setup &&
-+		    newcon->setup(newcon, c->options) != 0)
-+			break;
- 
- 		newcon->flags |= CON_ENABLED;
--		if (i == preferred_console) {
--			newcon->flags |= CON_CONSDEV;
--			has_preferred = true;
--		}
- 		break;
- 	}
- 
- 	if (!(newcon->flags & CON_ENABLED))
- 		return;
- 
-+	if (preferred_console >= 0 &&
-+	    match_console(newcon, console_cmdline + preferred_console) == 0) {
-+		newcon->flags |= CON_CONSDEV;
-+		has_preferred = true;
-+	}
-+
- 	/*
- 	 * If we have a bootconsole, and are switching to a real console,
- 	 * don't print everything out again, since when the boot console, and
 -- 
-2.11.1
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
