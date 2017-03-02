@@ -1,65 +1,133 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 1/1] serial: 8250_dw: Allow hardware flow control to
- be used
-Date: Wed, 01 Mar 2017 20:50:20 +0200
-Message-ID: <1488394220.20145.68.camel@linux.intel.com>
-References: <1484164100-9805-1-git-send-email-jason.uy@broadcom.com>
-         <1484164100-9805-2-git-send-email-jason.uy@broadcom.com>
-         <CAAG0J9-n0toSJL8Ze8Esq81dYnpfrTd42bMiR94zw_btBLjsww@mail.gmail.com>
+From: Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 1/2] printk: fix name and type of some variables
+Date: Wed, 1 Mar 2017 21:24:35 -0500
+Message-ID: <20170301212435.79db12c6@grimm.local.home>
+References: <20170301161347.4202-1-aleksey.makarov@linaro.org>
+        <20170301161347.4202-2-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <CAAG0J9-n0toSJL8Ze8Esq81dYnpfrTd42bMiR94zw_btBLjsww@mail.gmail.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: James Hogan <james.hogan@imgtec.com>, Jason Uy <jason.uy@broadcom.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Noam Camus <noamc@ezchip.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Wang Hongcheng <annie.wang@amd.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, bcm-kernel-feedback-list@broadcom.com, Linux MIPS Mailing List <linux-mips@linux-mips.org>, David Daney <david.daney@cavium.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170301161347.4202-2-aleksey.makarov@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2017-03-01 at 18:02 +0000, James Hogan wrote:
-> On 11 January 2017 at 19:48, Jason Uy <jason.uy@broadcom.com> wrote:
-> > In the most common use case, the Synopsys DW UART driver does not
-> > set the set_termios callback function.  This prevents UPSTAT_AUTOCTS
-> > from being set when the UART flag CRTSCTS is set.  As a result, the
-> > driver will use software flow control as opposed to hardware flow
-> > control.
-> > 
-> > To fix the problem, the set_termios callback function is set to the
-> > DW specific function.  The logic to set UPSTAT_AUTOCTS is moved so
-> > that any clock error will not affect setting the hardware flow
-> > control.
+On Wed,  1 Mar 2017 19:13:45 +0300
+Aleksey Makarov <aleksey.makarov@linaro.org> wrote:
 
-> Bisection shows that this patch, commit
-> 6a171b29937984a5e0bf29d6577b055998f03edb, has broken boot of the
-> Cavium Octeon III based UTM-8 board (MIPS architecture).
+> The variable preferred_console is used only inside register_console()
+> and its semantics is boolean.  It is negative when no console has been
+> made preferred.
 > 
-> I now get the following warning:
-
-> [<ffffffff8149c2e4>] uart_get_baud_rate+0xfc/0x1f0
-> [<ffffffff814a5098>] serial8250_do_set_termios+0xb0/0x440
-> [<ffffffff8149c710>] uart_set_options+0xe8/0x190
-> [<ffffffff814a6cdc>] serial8250_console_setup+0x84/0x158
-> [<ffffffff814a11ec>] univ8250_console_setup+0x54/0x70
-> [<ffffffff811901a0>] register_console+0x1c8/0x418
-> [<ffffffff8149f004>] uart_add_one_port+0x434/0x4b0
-> [<ffffffff814a1af8>] serial8250_register_8250_port+0x2d8/0x440
-> [<ffffffff814aa620>] dw8250_probe+0x388/0x5e8
-
-> Then it hangs and the watchdog restarts the machine.
+> The variable selected_console holds an index into the console_cmdline
+> array, pointing to the console that was made preferred.
 > 
-> Any ideas?
+> Rename the variables:
+> selected_console -> preferred_console
+> preferred_console -> has_preferred
+> and make the new has_preferred local static bool.
 
-1. Does it use clock on that platform?
-2. Check if termios is not NULL there.
+I like the conversion to the boolean, but I'm thinking I prefer
+selected_console. The console command line is always confusing about
+which one it uses (I can't remember if it's the first or the last one),
+thus it may not really be preferred, and just selected ;-)
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+That said, I'm fine with the patch. What do others think? Keep
+"selected_console" over "preferred_console". Not to mention, that
+rename makes reviewing this patch a bit more complex.
+
+If anything, perhaps break this patch up into two. The
+non-controversial boolean change, and then the rename of
+selected_console to preferred_console. That way we can ack one and nak
+the other ;-)
+
+-- Steve
+
+> 
+> Renaming was suggested by Peter Hurley
+> 
+> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+> Tested-by: Christopher Covington <cov@codeaurora.org>
+> ---
+>  kernel/printk/printk.c | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
+> 
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index 34da86e73d00..ed2a9b31f214 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -267,7 +267,6 @@ static struct console *exclusive_console;
+>  
+>  static struct console_cmdline console_cmdline[MAX_CMDLINECONSOLES];
+>  
+> -static int selected_console = -1;
+>  static int preferred_console = -1;
+>  int console_set_on_cmdline;
+>  EXPORT_SYMBOL(console_set_on_cmdline);
+> @@ -1908,14 +1907,14 @@ static int __add_preferred_console(char *name, int idx, char *options,
+>  	     i++, c++) {
+>  		if (strcmp(c->name, name) == 0 && c->index == idx) {
+>  			if (!brl_options)
+> -				selected_console = i;
+> +				preferred_console = i;
+>  			return 0;
+>  		}
+>  	}
+>  	if (i == MAX_CMDLINECONSOLES)
+>  		return -E2BIG;
+>  	if (!brl_options)
+> -		selected_console = i;
+> +		preferred_console = i;
+>  	strlcpy(c->name, name, sizeof(c->name));
+>  	c->options = options;
+>  	braille_set_options(c, brl_options);
+> @@ -2406,6 +2405,7 @@ void register_console(struct console *newcon)
+>  	unsigned long flags;
+>  	struct console *bcon = NULL;
+>  	struct console_cmdline *c;
+> +	static bool has_preferred;
+>  
+>  	if (console_drivers)
+>  		for_each_console(bcon)
+> @@ -2432,15 +2432,15 @@ void register_console(struct console *newcon)
+>  	if (console_drivers && console_drivers->flags & CON_BOOT)
+>  		bcon = console_drivers;
+>  
+> -	if (preferred_console < 0 || bcon || !console_drivers)
+> -		preferred_console = selected_console;
+> +	if (!has_preferred || bcon || !console_drivers)
+> +		has_preferred = preferred_console >= 0;
+>  
+>  	/*
+>  	 *	See if we want to use this console driver. If we
+>  	 *	didn't select a console we take the first one
+>  	 *	that registers here.
+>  	 */
+> -	if (preferred_console < 0) {
+> +	if (!has_preferred) {
+>  		if (newcon->index < 0)
+>  			newcon->index = 0;
+>  		if (newcon->setup == NULL ||
+> @@ -2448,7 +2448,7 @@ void register_console(struct console *newcon)
+>  			newcon->flags |= CON_ENABLED;
+>  			if (newcon->device) {
+>  				newcon->flags |= CON_CONSDEV;
+> -				preferred_console = 0;
+> +				has_preferred = true;
+>  			}
+>  		}
+>  	}
+> @@ -2481,9 +2481,9 @@ void register_console(struct console *newcon)
+>  		}
+>  
+>  		newcon->flags |= CON_ENABLED;
+> -		if (i == selected_console) {
+> +		if (i == preferred_console) {
+>  			newcon->flags |= CON_CONSDEV;
+> -			preferred_console = selected_console;
+> +			has_preferred = true;
+>  		}
+>  		break;
+>  	}
