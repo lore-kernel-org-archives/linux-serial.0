@@ -1,8 +1,7 @@
 From: Richard Genoud <richard.genoud@gmail.com>
-Subject: [PATCH 1/4] tty/serial: atmel: move atmel_serial header into driver
- directory
-Date: Fri,  3 Mar 2017 15:13:44 +0100
-Message-ID: <20170303141344.14122-1-richard.genoud@gmail.com>
+Subject: [PATCH 2/4] tty/serial: atmel: remove uneeded IS_ERR_OR_NULL calls
+Date: Fri,  3 Mar 2017 15:17:02 +0100
+Message-ID: <20170303141702.15331-1-richard.genoud@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -17,55 +16,56 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Richard Genoud <richard.genoud@gmail.com>, linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@microchip.com>, linux-serial@vger.kernel.org, Joe Perches <joe@perches.com>, linux-arm-kernel@lists.infradead.org
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Richard Genoud <richard.genoud@gmail.com>, linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@microchip.com>, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-atmel_serial.h is only used by atmel_serial.c, so there's no need for
-it to lie in include/linux.
+Since commit 1d267ea6539f ("serial: mctrl-gpio: simplify init routine"),
+the mctrl_gpio_to_gpiod() function can't return an error anymore.
+So, just testing for a NULL pointer is ok.
 
-Suggested-by: Joe Perches <joe@perches.com>
 Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 ---
- MAINTAINERS                                          | 2 +-
- drivers/tty/serial/atmel_serial.c                    | 2 +-
- {include/linux => drivers/tty/serial}/atmel_serial.h | 0
- 3 files changed, 2 insertions(+), 2 deletions(-)
- rename {include/linux => drivers/tty/serial}/atmel_serial.h (100%)
+ drivers/tty/serial/atmel_serial.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ad4f2ce991ca..d7b07cb23cbe 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8218,7 +8218,7 @@ MICROCHIP / ATMEL AT91 / AT32 SERIAL DRIVER
- M:	Richard Genoud <richard.genoud@gmail.com>
- S:	Maintained
- F:	drivers/tty/serial/atmel_serial.c
--F:	include/linux/atmel_serial.h
-+F:	drivers/tty/serial/atmel_serial.h
- 
- MICROCHIP / ATMEL DMA DRIVER
- M:	Ludovic Desroches <ludovic.desroches@microchip.com>
 diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index dcebb28ffbc4..ad6c2bdea481 100644
+index ad6c2bdea481..e0f1955b3c7e 100644
 --- a/drivers/tty/serial/atmel_serial.c
 +++ b/drivers/tty/serial/atmel_serial.c
-@@ -38,7 +38,6 @@
- #include <linux/dma-mapping.h>
- #include <linux/dmaengine.h>
- #include <linux/atmel_pdc.h>
--#include <linux/atmel_serial.h>
- #include <linux/uaccess.h>
- #include <linux/platform_data/atmel.h>
- #include <linux/timer.h>
-@@ -71,6 +70,7 @@
- #include <linux/serial_core.h>
+@@ -315,32 +315,28 @@ static unsigned int atmel_get_lines_status(struct uart_port *port)
  
- #include "serial_mctrl_gpio.h"
-+#include "atmel_serial.h"
+ 	mctrl_gpio_get(atmel_port->gpios, &ret);
  
- static void atmel_start_rx(struct uart_port *port);
- static void atmel_stop_rx(struct uart_port *port);
-diff --git a/include/linux/atmel_serial.h b/drivers/tty/serial/atmel_serial.h
-similarity index 100%
-rename from include/linux/atmel_serial.h
-rename to drivers/tty/serial/atmel_serial.h
+-	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
+-						UART_GPIO_CTS))) {
++	if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)) {
+ 		if (ret & TIOCM_CTS)
+ 			status &= ~ATMEL_US_CTS;
+ 		else
+ 			status |= ATMEL_US_CTS;
+ 	}
+ 
+-	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
+-						UART_GPIO_DSR))) {
++	if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_DSR)) {
+ 		if (ret & TIOCM_DSR)
+ 			status &= ~ATMEL_US_DSR;
+ 		else
+ 			status |= ATMEL_US_DSR;
+ 	}
+ 
+-	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
+-						UART_GPIO_RI))) {
++	if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_RI)) {
+ 		if (ret & TIOCM_RI)
+ 			status &= ~ATMEL_US_RI;
+ 		else
+ 			status |= ATMEL_US_RI;
+ 	}
+ 
+-	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
+-						UART_GPIO_DCD))) {
++	if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_DCD)) {
+ 		if (ret & TIOCM_CD)
+ 			status &= ~ATMEL_US_DCD;
+ 		else
