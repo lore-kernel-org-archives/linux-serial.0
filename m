@@ -1,7 +1,7 @@
 From: Richard Genoud <richard.genoud@gmail.com>
-Subject: [PATCH 3/4] tty/serial: mxs-auart: remove uneeded IS_ERR_OR_NULL calls
-Date: Fri,  3 Mar 2017 15:20:31 +0100
-Message-ID: <20170303142031.16101-1-richard.genoud@gmail.com>
+Subject: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL calls
+Date: Fri,  3 Mar 2017 15:22:01 +0100
+Message-ID: <20170303142201.16452-1-richard.genoud@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,7 +16,7 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Richard Genoud <richard.genoud@gmail.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, linux-kernel@vger.kernel.org, Janusz Uzycki <j.uzycki@elproma.com.pl>, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
 Since commit 1d267ea6539f ("serial: mctrl-gpio: simplify init routine"),
@@ -25,23 +25,39 @@ So, just testing for a NULL pointer is ok.
 
 Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 ---
- drivers/tty/serial/mxs-auart.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/serial/sh-sci.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 6989b227d134..541933d8a5c6 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -973,10 +973,8 @@ static int mxs_auart_dma_init(struct mxs_auart_port *s)
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 9a47cc4f16a2..36fde6f24040 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1934,12 +1934,12 @@ static unsigned int sci_get_mctrl(struct uart_port *port)
+ 	if (s->autorts) {
+ 		if (sci_get_cts(port))
+ 			mctrl |= TIOCM_CTS;
+-	} else if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS))) {
++	} else if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS)) {
+ 		mctrl |= TIOCM_CTS;
+ 	}
+-	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_DSR)))
++	if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_DSR))
+ 		mctrl |= TIOCM_DSR;
+-	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_DCD)))
++	if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_DCD))
+ 		mctrl |= TIOCM_CAR;
  
- }
+ 	return mctrl;
+@@ -3072,10 +3072,8 @@ static int sci_probe_single(struct platform_device *dev,
+ 		return PTR_ERR(sciport->gpios);
  
--#define RTS_AT_AUART()	IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,	\
--							UART_GPIO_RTS))
--#define CTS_AT_AUART()	IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,	\
--							UART_GPIO_CTS))
-+#define RTS_AT_AUART() (mctrl_gpio_to_gpiod(s->gpios, UART_GPIO_RTS) == NULL)
-+#define CTS_AT_AUART() (mctrl_gpio_to_gpiod(s->gpios, UART_GPIO_CTS) == NULL)
- static void mxs_auart_settermios(struct uart_port *u,
- 				 struct ktermios *termios,
- 				 struct ktermios *old)
+ 	if (sciport->has_rtscts) {
+-		if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(sciport->gpios,
+-							UART_GPIO_CTS)) ||
+-		    !IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(sciport->gpios,
+-							UART_GPIO_RTS))) {
++		if (mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_CTS) ||
++		    mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_RTS)) {
+ 			dev_err(&dev->dev, "Conflicting RTS/CTS config\n");
+ 			return -EINVAL;
+ 		}
