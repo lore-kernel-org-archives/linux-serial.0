@@ -1,16 +1,16 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
  calls
-Date: Fri, 3 Mar 2017 20:12:48 +0100
-Message-ID: <20170303191248.wlwjri55ip2x5pgg@pengutronix.de>
+Date: Fri, 3 Mar 2017 20:21:05 +0100
+Message-ID: <CAMuHMdXFrwa2jCVDb+8ecqgARLG0oGrPp9pLs0b6vEiWeKJ+uA@mail.gmail.com>
 References: <20170303142201.16452-1-richard.genoud@gmail.com>
  <CAMuHMdX-K9B20Tu5NtHJRHmGGuT60OFu8TokZxsF8aSaS7HuHQ@mail.gmail.com>
+ <20170303191248.wlwjri55ip2x5pgg@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdX-K9B20Tu5NtHJRHmGGuT60OFu8TokZxsF8aSaS7HuHQ@mail.gmail.com>
+In-Reply-To: <20170303191248.wlwjri55ip2x5pgg@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,63 +20,51 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 03, 2017 at 07:58:36PM +0100, Geert Uytterhoeven wrote:
-> Hi Richard,
-> =
-
-> On Fri, Mar 3, 2017 at 3:22 PM, Richard Genoud <richard.genoud@gmail.com>=
- wrote:
-> > Since commit 1d267ea6539f ("serial: mctrl-gpio: simplify init routine"),
-> > the mctrl_gpio_to_gpiod() function can't return an error anymore.
-> > So, just testing for a NULL pointer is ok.
-> =
-
-> If CONFIG_GPIOLIB=3Dn, mctrl_gpio_to_gpiod() always returns ERR_PTR(-ENOS=
-YS).
-> That case should be handled correctly, too.
-
-The correct change to handle this is:
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 91e7dddbf72c..2f4cdd4e7b4f 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -3022,7 +3022,7 @@ static int sci_probe_single(struct platform_device *d=
-ev,
- 		return ret;
- =
-
- 	sciport->gpios =3D mctrl_gpio_init(&sciport->port, 0);
--	if (IS_ERR(sciport->gpios) && PTR_ERR(sciport->gpios) !=3D -ENOSYS)
-+	if (IS_ERR(sciport->gpios))
- 		return PTR_ERR(sciport->gpios);
- =
-
- 	if (p->capabilities & SCIx_HAVE_RTSCTS) {
-
-Then mctrl_gpio_to_gpiod isn't called. I don't have a machine to test
-this, but I think currently this makes the machine barf to continue
-here because with sciport->gpios =3D ERR_PTR(-ENOSYS) calling
-
-	mctrl_gpio_to_gpiod(sciport->gpios, ...)
-
-is a bad idea.
- =
-
-> Perhaps mctrl_gpio_to_gpiod() should always return NULL if !CONFIG_GPIOLI=
-B?
-
-No, mctrl_gpio_to_gpiod is right. You are only supposed to call it if
-mctrl_gpio_init succeeded.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGkgVXdlLAoKT24gRnJpLCBNYXIgMywgMjAxNyBhdCA4OjEyIFBNLCBVd2UgS2xlaW5lLUvDtm5p
+Zwo8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPiB3cm90ZToKPiBPbiBGcmksIE1hciAw
+MywgMjAxNyBhdCAwNzo1ODozNlBNICswMTAwLCBHZWVydCBVeXR0ZXJob2V2ZW4gd3JvdGU6Cj4+
+IE9uIEZyaSwgTWFyIDMsIDIwMTcgYXQgMzoyMiBQTSwgUmljaGFyZCBHZW5vdWQgPHJpY2hhcmQu
+Z2Vub3VkQGdtYWlsLmNvbT4gd3JvdGU6Cj4+ID4gU2luY2UgY29tbWl0IDFkMjY3ZWE2NTM5ZiAo
+InNlcmlhbDogbWN0cmwtZ3Bpbzogc2ltcGxpZnkgaW5pdCByb3V0aW5lIiksCj4+ID4gdGhlIG1j
+dHJsX2dwaW9fdG9fZ3Bpb2QoKSBmdW5jdGlvbiBjYW4ndCByZXR1cm4gYW4gZXJyb3IgYW55bW9y
+ZS4KPj4gPiBTbywganVzdCB0ZXN0aW5nIGZvciBhIE5VTEwgcG9pbnRlciBpcyBvay4KPj4KPj4g
+SWYgQ09ORklHX0dQSU9MSUI9biwgbWN0cmxfZ3Bpb190b19ncGlvZCgpIGFsd2F5cyByZXR1cm5z
+IEVSUl9QVFIoLUVOT1NZUykuCj4+IFRoYXQgY2FzZSBzaG91bGQgYmUgaGFuZGxlZCBjb3JyZWN0
+bHksIHRvby4KPgo+IFRoZSBjb3JyZWN0IGNoYW5nZSB0byBoYW5kbGUgdGhpcyBpczoKPgo+IGRp
+ZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2gtc2NpLmMgYi9kcml2ZXJzL3R0eS9zZXJp
+YWwvc2gtc2NpLmMKPiBpbmRleCA5MWU3ZGRkYmY3MmMuLjJmNGNkZDRlN2I0ZiAxMDA2NDQKPiAt
+LS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2gtc2NpLmMKPiArKysgYi9kcml2ZXJzL3R0eS9zZXJp
+YWwvc2gtc2NpLmMKPiBAQCAtMzAyMiw3ICszMDIyLDcgQEAgc3RhdGljIGludCBzY2lfcHJvYmVf
+c2luZ2xlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKmRldiwKPiAgICAgICAgICAgICAgICAgcmV0
+dXJuIHJldDsKPgo+ICAgICAgICAgc2NpcG9ydC0+Z3Bpb3MgPSBtY3RybF9ncGlvX2luaXQoJnNj
+aXBvcnQtPnBvcnQsIDApOwo+IC0gICAgICAgaWYgKElTX0VSUihzY2lwb3J0LT5ncGlvcykgJiYg
+UFRSX0VSUihzY2lwb3J0LT5ncGlvcykgIT0gLUVOT1NZUykKPiArICAgICAgIGlmIChJU19FUlIo
+c2NpcG9ydC0+Z3Bpb3MpKQo+ICAgICAgICAgICAgICAgICByZXR1cm4gUFRSX0VSUihzY2lwb3J0
+LT5ncGlvcyk7CgpOb3cgdGhlIHNoLXNjaSBkcml2ZXIgZmFpbHMgdG8gcHJvYmUgb24gbGVnYWN5
+IHBsYXRmb3JtcyB3aGVyZSBHUElPTElCPW4uClRoZSBjaGVjayBmb3IgLUVOT1NZUyBtYWRlIGl0
+IHN1Y2NlZWQgYmVmb3JlLgoKPiBUaGVuIG1jdHJsX2dwaW9fdG9fZ3Bpb2QgaXNuJ3QgY2FsbGVk
+LiBJIGRvbid0IGhhdmUgYSBtYWNoaW5lIHRvIHRlc3QKPiB0aGlzLCBidXQgSSB0aGluayBjdXJy
+ZW50bHkgdGhpcyBtYWtlcyB0aGUgbWFjaGluZSBiYXJmIHRvIGNvbnRpbnVlCj4gaGVyZSBiZWNh
+dXNlIHdpdGggc2NpcG9ydC0+Z3Bpb3MgPSBFUlJfUFRSKC1FTk9TWVMpIGNhbGxpbmcKPgo+ICAg
+ICAgICAgbWN0cmxfZ3Bpb190b19ncGlvZChzY2lwb3J0LT5ncGlvcywgLi4uKQo+Cj4gaXMgYSBi
+YWQgaWRlYS4KCklmIHNjaXBvcnQtPmdwaW9zID09IEVSUl9QVFIoLUVOT1NZUyksIENPTkZJR19H
+UElPTElCIGlzIG5vdCBlbmFibGVkLCB0aGUKZmVhdHVyZSBpcyBub3QgYXZhaWxhYmxlLCBhbmQg
+bWN0cmxfZ3Bpb190b19ncGlvZCgpIHdpbGwgbm90CmRlcmVmZXJlbmNlIHRoZSBlcnJvcgpwb2lu
+dGVyLgoKPj4gUGVyaGFwcyBtY3RybF9ncGlvX3RvX2dwaW9kKCkgc2hvdWxkIGFsd2F5cyByZXR1
+cm4gTlVMTCBpZiAhQ09ORklHX0dQSU9MSUI/Cj4KPiBObywgbWN0cmxfZ3Bpb190b19ncGlvZCBp
+cyByaWdodC4gWW91IGFyZSBvbmx5IHN1cHBvc2VkIHRvIGNhbGwgaXQgaWYKPiBtY3RybF9ncGlv
+X2luaXQgc3VjY2VlZGVkLgoKVGhlbiBJIGhhdmUgdG8gYWRkIGNoZWNrcyBmb3Igc2NpcG9ydC0+
+Z3Bpb3MgPT0gRVJSX1BUUigtRU5PU1lTKS4uLgoKR3J7b2V0amUsZWV0aW5nfXMsCgogICAgICAg
+ICAgICAgICAgICAgICAgICBHZWVydAoKLS0KR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJlJ3Mg
+bG90cyBvZiBMaW51eCBiZXlvbmQgaWEzMiAtLSBnZWVydEBsaW51eC1tNjhrLm9yZwoKSW4gcGVy
+c29uYWwgY29udmVyc2F0aW9ucyB3aXRoIHRlY2huaWNhbCBwZW9wbGUsIEkgY2FsbCBteXNlbGYg
+YSBoYWNrZXIuIEJ1dAp3aGVuIEknbSB0YWxraW5nIHRvIGpvdXJuYWxpc3RzIEkganVzdCBzYXkg
+InByb2dyYW1tZXIiIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuCiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgLS0gTGludXMgVG9ydmFsZHMKCl9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4
+LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9y
+Zy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
