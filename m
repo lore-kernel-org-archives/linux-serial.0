@@ -1,70 +1,84 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
  calls
-Date: Fri, 3 Mar 2017 20:21:05 +0100
-Message-ID: <CAMuHMdXFrwa2jCVDb+8ecqgARLG0oGrPp9pLs0b6vEiWeKJ+uA@mail.gmail.com>
+Date: Fri, 3 Mar 2017 20:44:14 +0100
+Message-ID: <20170303194414.n76tr3oa2mlrzjre@pengutronix.de>
 References: <20170303142201.16452-1-richard.genoud@gmail.com>
  <CAMuHMdX-K9B20Tu5NtHJRHmGGuT60OFu8TokZxsF8aSaS7HuHQ@mail.gmail.com>
  <20170303191248.wlwjri55ip2x5pgg@pengutronix.de>
+ <CAMuHMdXFrwa2jCVDb+8ecqgARLG0oGrPp9pLs0b6vEiWeKJ+uA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170303191248.wlwjri55ip2x5pgg@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdXFrwa2jCVDb+8ecqgARLG0oGrPp9pLs0b6vEiWeKJ+uA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Nicolas Ferre <nicolas.ferre@microchip.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgVXdlLAoKT24gRnJpLCBNYXIgMywgMjAxNyBhdCA4OjEyIFBNLCBVd2UgS2xlaW5lLUvDtm5p
-Zwo8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPiB3cm90ZToKPiBPbiBGcmksIE1hciAw
-MywgMjAxNyBhdCAwNzo1ODozNlBNICswMTAwLCBHZWVydCBVeXR0ZXJob2V2ZW4gd3JvdGU6Cj4+
-IE9uIEZyaSwgTWFyIDMsIDIwMTcgYXQgMzoyMiBQTSwgUmljaGFyZCBHZW5vdWQgPHJpY2hhcmQu
-Z2Vub3VkQGdtYWlsLmNvbT4gd3JvdGU6Cj4+ID4gU2luY2UgY29tbWl0IDFkMjY3ZWE2NTM5ZiAo
-InNlcmlhbDogbWN0cmwtZ3Bpbzogc2ltcGxpZnkgaW5pdCByb3V0aW5lIiksCj4+ID4gdGhlIG1j
-dHJsX2dwaW9fdG9fZ3Bpb2QoKSBmdW5jdGlvbiBjYW4ndCByZXR1cm4gYW4gZXJyb3IgYW55bW9y
-ZS4KPj4gPiBTbywganVzdCB0ZXN0aW5nIGZvciBhIE5VTEwgcG9pbnRlciBpcyBvay4KPj4KPj4g
-SWYgQ09ORklHX0dQSU9MSUI9biwgbWN0cmxfZ3Bpb190b19ncGlvZCgpIGFsd2F5cyByZXR1cm5z
-IEVSUl9QVFIoLUVOT1NZUykuCj4+IFRoYXQgY2FzZSBzaG91bGQgYmUgaGFuZGxlZCBjb3JyZWN0
-bHksIHRvby4KPgo+IFRoZSBjb3JyZWN0IGNoYW5nZSB0byBoYW5kbGUgdGhpcyBpczoKPgo+IGRp
-ZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2gtc2NpLmMgYi9kcml2ZXJzL3R0eS9zZXJp
-YWwvc2gtc2NpLmMKPiBpbmRleCA5MWU3ZGRkYmY3MmMuLjJmNGNkZDRlN2I0ZiAxMDA2NDQKPiAt
-LS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2gtc2NpLmMKPiArKysgYi9kcml2ZXJzL3R0eS9zZXJp
-YWwvc2gtc2NpLmMKPiBAQCAtMzAyMiw3ICszMDIyLDcgQEAgc3RhdGljIGludCBzY2lfcHJvYmVf
-c2luZ2xlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKmRldiwKPiAgICAgICAgICAgICAgICAgcmV0
-dXJuIHJldDsKPgo+ICAgICAgICAgc2NpcG9ydC0+Z3Bpb3MgPSBtY3RybF9ncGlvX2luaXQoJnNj
-aXBvcnQtPnBvcnQsIDApOwo+IC0gICAgICAgaWYgKElTX0VSUihzY2lwb3J0LT5ncGlvcykgJiYg
-UFRSX0VSUihzY2lwb3J0LT5ncGlvcykgIT0gLUVOT1NZUykKPiArICAgICAgIGlmIChJU19FUlIo
-c2NpcG9ydC0+Z3Bpb3MpKQo+ICAgICAgICAgICAgICAgICByZXR1cm4gUFRSX0VSUihzY2lwb3J0
-LT5ncGlvcyk7CgpOb3cgdGhlIHNoLXNjaSBkcml2ZXIgZmFpbHMgdG8gcHJvYmUgb24gbGVnYWN5
-IHBsYXRmb3JtcyB3aGVyZSBHUElPTElCPW4uClRoZSBjaGVjayBmb3IgLUVOT1NZUyBtYWRlIGl0
-IHN1Y2NlZWQgYmVmb3JlLgoKPiBUaGVuIG1jdHJsX2dwaW9fdG9fZ3Bpb2QgaXNuJ3QgY2FsbGVk
-LiBJIGRvbid0IGhhdmUgYSBtYWNoaW5lIHRvIHRlc3QKPiB0aGlzLCBidXQgSSB0aGluayBjdXJy
-ZW50bHkgdGhpcyBtYWtlcyB0aGUgbWFjaGluZSBiYXJmIHRvIGNvbnRpbnVlCj4gaGVyZSBiZWNh
-dXNlIHdpdGggc2NpcG9ydC0+Z3Bpb3MgPSBFUlJfUFRSKC1FTk9TWVMpIGNhbGxpbmcKPgo+ICAg
-ICAgICAgbWN0cmxfZ3Bpb190b19ncGlvZChzY2lwb3J0LT5ncGlvcywgLi4uKQo+Cj4gaXMgYSBi
-YWQgaWRlYS4KCklmIHNjaXBvcnQtPmdwaW9zID09IEVSUl9QVFIoLUVOT1NZUyksIENPTkZJR19H
-UElPTElCIGlzIG5vdCBlbmFibGVkLCB0aGUKZmVhdHVyZSBpcyBub3QgYXZhaWxhYmxlLCBhbmQg
-bWN0cmxfZ3Bpb190b19ncGlvZCgpIHdpbGwgbm90CmRlcmVmZXJlbmNlIHRoZSBlcnJvcgpwb2lu
-dGVyLgoKPj4gUGVyaGFwcyBtY3RybF9ncGlvX3RvX2dwaW9kKCkgc2hvdWxkIGFsd2F5cyByZXR1
-cm4gTlVMTCBpZiAhQ09ORklHX0dQSU9MSUI/Cj4KPiBObywgbWN0cmxfZ3Bpb190b19ncGlvZCBp
-cyByaWdodC4gWW91IGFyZSBvbmx5IHN1cHBvc2VkIHRvIGNhbGwgaXQgaWYKPiBtY3RybF9ncGlv
-X2luaXQgc3VjY2VlZGVkLgoKVGhlbiBJIGhhdmUgdG8gYWRkIGNoZWNrcyBmb3Igc2NpcG9ydC0+
-Z3Bpb3MgPT0gRVJSX1BUUigtRU5PU1lTKS4uLgoKR3J7b2V0amUsZWV0aW5nfXMsCgogICAgICAg
-ICAgICAgICAgICAgICAgICBHZWVydAoKLS0KR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJlJ3Mg
-bG90cyBvZiBMaW51eCBiZXlvbmQgaWEzMiAtLSBnZWVydEBsaW51eC1tNjhrLm9yZwoKSW4gcGVy
-c29uYWwgY29udmVyc2F0aW9ucyB3aXRoIHRlY2huaWNhbCBwZW9wbGUsIEkgY2FsbCBteXNlbGYg
-YSBoYWNrZXIuIEJ1dAp3aGVuIEknbSB0YWxraW5nIHRvIGpvdXJuYWxpc3RzIEkganVzdCBzYXkg
-InByb2dyYW1tZXIiIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuCiAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgLS0gTGludXMgVG9ydmFsZHMKCl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4
-LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+Hello Geert,
+
+On Fri, Mar 03, 2017 at 08:21:05PM +0100, Geert Uytterhoeven wrote:
+> > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> > index 91e7dddbf72c..2f4cdd4e7b4f 100644
+> > --- a/drivers/tty/serial/sh-sci.c
+> > +++ b/drivers/tty/serial/sh-sci.c
+> > @@ -3022,7 +3022,7 @@ static int sci_probe_single(struct platform_device *dev,
+> >                 return ret;
+> >
+> >         sciport->gpios = mctrl_gpio_init(&sciport->port, 0);
+> > -       if (IS_ERR(sciport->gpios) && PTR_ERR(sciport->gpios) != -ENOSYS)
+> > +       if (IS_ERR(sciport->gpios))
+> >                 return PTR_ERR(sciport->gpios);
+> 
+> Now the sh-sci driver fails to probe on legacy platforms where GPIOLIB=n.
+> The check for -ENOSYS made it succeed before.
+
+That's right, intended and the only option that's save (for some
+definition of save; the obvious downside is that there is no
+/dev/tty$whatever for you).
+
+Ignoring -ENOSYS is only ok if your device doesn't have a cts-gpio. If
+it has, ignoring -ENOSYS hides bugs because the driver sends data while
+it shouldn't or cannot signal the other side that it should stop (or
+start) a transmission.
+
+So the options are:
+ - enable GPIOLIB (maybe enforce that by letting the driver select it)
+ - introduce a CONFIG_HALFGPIOLIB that makes gpiod_get_optional and
+   mctrl_gpio_init return only then -ENOSYS if there is a gpio specified
+   and NULL otherwise.
+
+> > Then mctrl_gpio_to_gpiod isn't called. I don't have a machine to test
+> > this, but I think currently this makes the machine barf to continue
+> > here because with sciport->gpios = ERR_PTR(-ENOSYS) calling
+> >
+> >         mctrl_gpio_to_gpiod(sciport->gpios, ...)
+> >
+> > is a bad idea.
+> 
+> If sciport->gpios == ERR_PTR(-ENOSYS), CONFIG_GPIOLIB is not enabled, the
+> feature is not available, and mctrl_gpio_to_gpiod() will not
+> dereference the error
+> pointer.
+
+Ah, makes sense.
+
+> >> Perhaps mctrl_gpio_to_gpiod() should always return NULL if !CONFIG_GPIOLIB?
+> >
+> > No, mctrl_gpio_to_gpiod is right. You are only supposed to call it if
+> > mctrl_gpio_init succeeded.
+> 
+> Then I have to add checks for sciport->gpios == ERR_PTR(-ENOSYS)...
+
+No, ignoring -ENOSYS is wrong.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
