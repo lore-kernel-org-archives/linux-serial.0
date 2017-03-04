@@ -1,7 +1,7 @@
 From: Sebastian Reichel <sre@kernel.org>
-Subject: [PATCH 03/10] Bluetooth: hci_uart: add support for word alignment
-Date: Sat,  4 Mar 2017 12:58:26 +0100
-Message-ID: <20170304115833.3538-4-sre@kernel.org>
+Subject: [PATCH 02/10] ARM: dts: N900: Add bluetooth
+Date: Sat,  4 Mar 2017 12:58:25 +0100
+Message-ID: <20170304115833.3538-3-sre@kernel.org>
 References: <20170304115833.3538-1-sre@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170304115833.3538-1-sre@kernel.org>
@@ -10,87 +10,72 @@ To: Sebastian Reichel <sre@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, G
 Cc: Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This will be used by Nokia's H4+ protocol, which
-uses 2-byte aligned packets.
+Add bcm2048 node and its system clock to the N900 device tree file.
+Apart from that a reference to the new clock has been added to
+wl1251 (which uses it, too).
 
 Signed-off-by: Sebastian Reichel <sre@kernel.org>
 ---
- drivers/bluetooth/hci_h4.c    | 17 +++++++++++++++++
- drivers/bluetooth/hci_ldisc.c |  4 ++++
- drivers/bluetooth/hci_uart.h  |  3 +++
- 3 files changed, 24 insertions(+)
+ arch/arm/boot/dts/omap3-n900.dts | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/bluetooth/hci_h4.c b/drivers/bluetooth/hci_h4.c
-index 635597b6e168..9c59807ebbdd 100644
---- a/drivers/bluetooth/hci_h4.c
-+++ b/drivers/bluetooth/hci_h4.c
-@@ -171,9 +171,20 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
- 			    const unsigned char *buffer, int count,
- 			    const struct h4_recv_pkt *pkts, int pkts_count)
- {
-+	struct hci_uart *hu = hci_get_drvdata(hdev);
-+	uint8_t alignment = hu->alignment;
+diff --git a/arch/arm/boot/dts/omap3-n900.dts b/arch/arm/boot/dts/omap3-n900.dts
+index b64cfda8dbb7..473230d28782 100644
+--- a/arch/arm/boot/dts/omap3-n900.dts
++++ b/arch/arm/boot/dts/omap3-n900.dts
+@@ -155,6 +155,13 @@
+ 		compatible = "nokia,n900-ir";
+ 		pwms = <&pwm9 0 26316 0>; /* 38000 Hz */
+ 	};
 +
- 	while (count) {
- 		int i, len;
- 
-+		/* remove padding bytes from buffer */
-+		for (; hu->padding && count > 0; hu->padding--) {
-+			count--;
-+			buffer++;
-+		}
-+		if (!count)
-+			break;
-+
- 		if (!skb) {
- 			for (i = 0; i < pkts_count; i++) {
- 				if (buffer[0] != (&pkts[i])->type)
-@@ -253,11 +264,17 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
- 			}
- 
- 			if (!dlen) {
-+				hu->padding = (skb->len - 1) % alignment;
-+				hu->padding = (alignment - hu->padding) % alignment;
-+
- 				/* No more data, complete frame */
- 				(&pkts[i])->recv(hdev, skb);
- 				skb = NULL;
- 			}
- 		} else {
-+			hu->padding = (skb->len - 1) % alignment;
-+			hu->padding = (alignment - hu->padding) % alignment;
-+
- 			/* Complete frame */
- 			(&pkts[i])->recv(hdev, skb);
- 			skb = NULL;
-diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
-index 9497c469efd2..0ec8a94bd712 100644
---- a/drivers/bluetooth/hci_ldisc.c
-+++ b/drivers/bluetooth/hci_ldisc.c
-@@ -459,6 +459,10 @@ static int hci_uart_tty_open(struct tty_struct *tty)
- 	hu->tty = tty;
- 	tty->receive_room = 65536;
- 
-+	/* disable alignment support by default */
-+	hu->alignment = 1;
-+	hu->padding = 0;
-+
- 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
- 	INIT_WORK(&hu->write_work, hci_uart_write_work);
- 
-diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
-index 070139513e65..4aff50960cac 100644
---- a/drivers/bluetooth/hci_uart.h
-+++ b/drivers/bluetooth/hci_uart.h
-@@ -92,6 +92,9 @@ struct hci_uart {
- 
- 	unsigned int init_speed;
- 	unsigned int oper_speed;
-+
-+	u8			alignment;
-+	u8			padding;
++	/* controlled (enabled/disabled) directly by bcm2048 and wl1251 */
++	vctcxo: vctcxo {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <38400000>;
++	};
  };
  
- /* HCI_UART proto flag bits */
+ &omap3_pmx_core {
+@@ -162,8 +169,10 @@
+ 
+ 	uart2_pins: pinmux_uart2_pins {
+ 		pinctrl-single,pins = <
+-			OMAP3_CORE1_IOPAD(0x217a, PIN_INPUT | MUX_MODE0)		/* uart2_rx */
++			OMAP3_CORE1_IOPAD(0x2174, PIN_INPUT_PULLUP | MUX_MODE0)		/* uart2_cts */
++			OMAP3_CORE1_IOPAD(0x2176, PIN_OUTPUT | MUX_MODE0)		/* uart2_rts */
+ 			OMAP3_CORE1_IOPAD(0x2178, PIN_OUTPUT | MUX_MODE0)		/* uart2_tx */
++			OMAP3_CORE1_IOPAD(0x217a, PIN_INPUT | MUX_MODE0)		/* uart2_rx */
+ 		>;
+ 	};
+ 
+@@ -920,6 +929,8 @@
+ 
+ 		interrupt-parent = <&gpio2>;
+ 		interrupts = <10 IRQ_TYPE_NONE>; /* gpio line 42 */
++
++		clocks = <&vctcxo>;
+ 	};
+ };
+ 
+@@ -937,9 +948,17 @@
+ };
+ 
+ &uart2 {
+-	interrupts-extended = <&intc 73 &omap3_pmx_core OMAP3_UART2_RX>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart2_pins>;
++
++	bcm2048: bluetooth {
++		compatible = "nokia,brcm,bcm2048";
++		reset-gpios = <&gpio3 27 GPIO_ACTIVE_LOW>; /* 91 */
++		host-wakeup-gpios = <&gpio4 5 GPIO_ACTIVE_HIGH>; /* 101 */
++		bluetooth-wakeup-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>; /* 37 */
++		clocks = <&vctcxo>;
++		clock-names = "sysclk";
++	};
+ };
+ 
+ &uart3 {
 -- 
 2.11.0
