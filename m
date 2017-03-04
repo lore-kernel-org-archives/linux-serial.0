@@ -1,74 +1,36 @@
-From: Sebastian Reichel <sre@kernel.org>
-Subject: [PATCH 05/10] Bluetooth: hci_serdev: do not open device in hci open
-Date: Sat,  4 Mar 2017 12:58:28 +0100
-Message-ID: <20170304115833.3538-6-sre@kernel.org>
+From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 06/10] tty: serial: omap: add UPF_BOOT_AUTOCONF flag for DT init
+Date: Sat,  4 Mar 2017 12:58:29 +0100
+Message-ID: <20170304115833.3538-7-sre@kernel.org>
 References: <20170304115833.3538-1-sre@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170304115833.3538-1-sre@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sre@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>
-Cc: Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170304115833.3538-1-sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-The device driver may need to communicate with the UART
-device while the Bluetooth device is closed (e.g. due
-to interrupts).
+The UPF_BOOT_AUTOCONF flag is needed for proper
+flow control support.
 
-Signed-off-by: Sebastian Reichel <sre@kernel.org>
+Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
- drivers/bluetooth/hci_serdev.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ drivers/tty/serial/omap-serial.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
-index b2f7293a3162..b396d13a7b50 100644
---- a/drivers/bluetooth/hci_serdev.c
-+++ b/drivers/bluetooth/hci_serdev.c
-@@ -111,13 +111,9 @@ static void hci_uart_write_work(struct work_struct *work)
- /* Initialize device */
- static int hci_uart_open(struct hci_dev *hdev)
- {
--	struct hci_uart *hu  = hci_get_drvdata(hdev);
--
- 	BT_DBG("%s %p", hdev->name, hdev);
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 6c6f82ad8d5c..a4734649a0f0 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1597,6 +1597,9 @@ static struct omap_uart_port_info *of_get_uart_port_info(struct device *dev)
  
--	serdev_device_set_client_ops(hu->serdev, &hci_serdev_client_ops);
--
--	return serdev_device_open(hu->serdev);
-+	return 0;
- }
- 
- /* Reset device */
-@@ -143,15 +139,11 @@ static int hci_uart_flush(struct hci_dev *hdev)
- /* Close device */
- static int hci_uart_close(struct hci_dev *hdev)
- {
--	struct hci_uart *hu  = hci_get_drvdata(hdev);
--
- 	BT_DBG("hdev %p", hdev);
- 
- 	hci_uart_flush(hdev);
- 	hdev->flush = NULL;
- 
--	serdev_device_close(hu->serdev);
--
- 	return 0;
- }
- 
-@@ -298,6 +290,8 @@ int hci_uart_register_device(struct hci_uart *hu, const struct hci_uart_proto *p
- 
- 	BT_DBG("");
- 
-+	serdev_device_set_client_ops(hu->serdev, &hci_serdev_client_ops);
+ 	of_property_read_u32(dev->of_node, "clock-frequency",
+ 					 &omap_up_info->uartclk);
 +
- 	err = p->open(hu);
- 	if (err)
- 		return err;
-@@ -366,5 +360,6 @@ int hci_uart_register_device(struct hci_uart *hu, const struct hci_uart_proto *p
- err_alloc:
- 	clear_bit(HCI_UART_PROTO_READY, &hu->flags);
- 	p->close(hu);
++	omap_up_info->flags = UPF_BOOT_AUTOCONF;
 +
- 	return err;
+ 	return omap_up_info;
  }
+ 
 -- 
 2.11.0
