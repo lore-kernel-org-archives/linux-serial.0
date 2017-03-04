@@ -1,66 +1,96 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2 1/1] serial: 8250_dw: Allow hardware flow control to be used
-Date: Sat, 4 Mar 2017 04:56:48 +0200
-Message-ID: <CAHp75Ved2h2WyWBokEOsDmAyB3w3iM=uh-9Bq01mU1ST4FapWQ@mail.gmail.com>
-References: <1484164100-9805-1-git-send-email-jason.uy@broadcom.com>
- <1484164100-9805-2-git-send-email-jason.uy@broadcom.com> <CAAG0J9-n0toSJL8Ze8Esq81dYnpfrTd42bMiR94zw_btBLjsww@mail.gmail.com>
- <1488394220.20145.68.camel@linux.intel.com> <20170303002129.GS996@jhogan-linux.le.imgtec.org>
- <1488547866.20145.74.camel@linux.intel.com> <20170303232305.GU996@jhogan-linux.le.imgtec.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20170303232305.GU996@jhogan-linux.le.imgtec.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: James Hogan <james.hogan@imgtec.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Heiko Stuebner <heiko@sntech.de>, Jason Uy <jason.uy@broadcom.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Noam Camus <noamc@ezchip.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Wang Hongcheng <annie.wang@amd.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, David Daney <david.daney@cavium.com>, Russell King <linux@armlinux.org.uk>, linux-clk@vger.kernel.org, Viresh Kumar <viresh.kumar@st.com>
+From: Sebastian Reichel <sre@kernel.org>
+Subject: [PATCH 03/10] Bluetooth: hci_uart: add support for word alignment
+Date: Sat,  4 Mar 2017 12:58:26 +0100
+Message-ID: <20170304115833.3538-4-sre@kernel.org>
+References: <20170304115833.3538-1-sre@kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170304115833.3538-1-sre@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Reichel <sre@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Mar 4, 2017 at 1:23 AM, James Hogan <james.hogan@imgtec.com> wrote:
-> On Fri, Mar 03, 2017 at 03:31:06PM +0200, Andy Shevchenko wrote:
->> On Fri, 2017-03-03 at 00:21 +0000, James Hogan wrote:
->> > The CONFIG_HAVE_CLK=n implementation of devm_clk_get() in particular
->> > seems highly questionable to me, given that commit 93abe8e4b13a ("clk:
->> > add non CONFIG_HAVE_CLK routines") which added it 5 years ago says:
+This will be used by Nokia's H4+ protocol, which
+uses 2-byte aligned packets.
 
->> Btw, I hope you also noticed this one:
->>
->> http://www.spinics.net/lists/linux-serial/msg25314.html
->
-> Interesting.
->
-> Following Russel's past advise[1], the following patch on top of Heiko's
-> patch also fixes things for me on Octeon:
->
-> [1] https://lists.gt.net/linux/kernel/2102623
->
-> If thats an acceptable fix I'll post it properly. Thoughts?
+Signed-off-by: Sebastian Reichel <sre@kernel.org>
+---
+ drivers/bluetooth/hci_h4.c    | 17 +++++++++++++++++
+ drivers/bluetooth/hci_ldisc.c |  4 ++++
+ drivers/bluetooth/hci_uart.h  |  3 +++
+ 3 files changed, 24 insertions(+)
 
-Fine by me. Looks definitely better than IS_ERR_OR_NULL().
-
-Please, submit as usual with your SoB tag.
-
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index 223ac234ddb2..e65808c482f1 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -267,6 +267,8 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
->         rate = clk_round_rate(d->clk, baud * 16);
->         if (rate < 0)
->                 ret = rate;
-> +       else if (rate == 0)
-> +               ret = -ENOENT;
->         else
->                 ret = clk_set_rate(d->clk, rate);
->         clk_prepare_enable(d->clk);
-
+diff --git a/drivers/bluetooth/hci_h4.c b/drivers/bluetooth/hci_h4.c
+index 635597b6e168..9c59807ebbdd 100644
+--- a/drivers/bluetooth/hci_h4.c
++++ b/drivers/bluetooth/hci_h4.c
+@@ -171,9 +171,20 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
+ 			    const unsigned char *buffer, int count,
+ 			    const struct h4_recv_pkt *pkts, int pkts_count)
+ {
++	struct hci_uart *hu = hci_get_drvdata(hdev);
++	uint8_t alignment = hu->alignment;
++
+ 	while (count) {
+ 		int i, len;
+ 
++		/* remove padding bytes from buffer */
++		for (; hu->padding && count > 0; hu->padding--) {
++			count--;
++			buffer++;
++		}
++		if (!count)
++			break;
++
+ 		if (!skb) {
+ 			for (i = 0; i < pkts_count; i++) {
+ 				if (buffer[0] != (&pkts[i])->type)
+@@ -253,11 +264,17 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
+ 			}
+ 
+ 			if (!dlen) {
++				hu->padding = (skb->len - 1) % alignment;
++				hu->padding = (alignment - hu->padding) % alignment;
++
+ 				/* No more data, complete frame */
+ 				(&pkts[i])->recv(hdev, skb);
+ 				skb = NULL;
+ 			}
+ 		} else {
++			hu->padding = (skb->len - 1) % alignment;
++			hu->padding = (alignment - hu->padding) % alignment;
++
+ 			/* Complete frame */
+ 			(&pkts[i])->recv(hdev, skb);
+ 			skb = NULL;
+diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
+index 9497c469efd2..0ec8a94bd712 100644
+--- a/drivers/bluetooth/hci_ldisc.c
++++ b/drivers/bluetooth/hci_ldisc.c
+@@ -459,6 +459,10 @@ static int hci_uart_tty_open(struct tty_struct *tty)
+ 	hu->tty = tty;
+ 	tty->receive_room = 65536;
+ 
++	/* disable alignment support by default */
++	hu->alignment = 1;
++	hu->padding = 0;
++
+ 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
+ 	INIT_WORK(&hu->write_work, hci_uart_write_work);
+ 
+diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
+index 070139513e65..4aff50960cac 100644
+--- a/drivers/bluetooth/hci_uart.h
++++ b/drivers/bluetooth/hci_uart.h
+@@ -92,6 +92,9 @@ struct hci_uart {
+ 
+ 	unsigned int init_speed;
+ 	unsigned int oper_speed;
++
++	u8			alignment;
++	u8			padding;
+ };
+ 
+ /* HCI_UART proto flag bits */
 -- 
-With Best Regards,
-Andy Shevchenko
+2.11.0
