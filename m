@@ -1,11 +1,10 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
  calls
-Date: Mon, 6 Mar 2017 10:53:27 +0100
-Message-ID: <CAMuHMdWQuvANNU14A7NQuzv6AFp04bq4DG_oc7w9h4wUrG+4aQ@mail.gmail.com>
-References: <20170303142201.16452-1-richard.genoud@gmail.com>
- <CAMuHMdX-K9B20Tu5NtHJRHmGGuT60OFu8TokZxsF8aSaS7HuHQ@mail.gmail.com>
- <20170303191248.wlwjri55ip2x5pgg@pengutronix.de>
+Date: Mon, 6 Mar 2017 11:02:20 +0100
+Message-ID: <20170306100220.droey65uq2ew3mzu@pengutronix.de>
+References: <20170303191248.wlwjri55ip2x5pgg@pengutronix.de>
  <CAMuHMdXFrwa2jCVDb+8ecqgARLG0oGrPp9pLs0b6vEiWeKJ+uA@mail.gmail.com>
  <20170303194414.n76tr3oa2mlrzjre@pengutronix.de>
  <CAMuHMdXiz5hqW=fm-2H1aNKq_gXD2o0508jD2XjxYUvKoEvHdw@mail.gmail.com>
@@ -14,65 +13,78 @@ References: <20170303142201.16452-1-richard.genoud@gmail.com>
  <20170306085842.yijkfpqi3adcedmm@pengutronix.de>
  <CAMuHMdV2_vbocY4wCzvYtPAaF+QEX_Y4g6qVu5EqEBf5AnFdaw@mail.gmail.com>
  <20170306093043.ay4dz3ehp3aakwxh@pengutronix.de>
+ <CAMuHMdWQuvANNU14A7NQuzv6AFp04bq4DG_oc7w9h4wUrG+4aQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170306093043.ay4dz3ehp3aakwxh@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdWQuvANNU14A7NQuzv6AFp04bq4DG_oc7w9h4wUrG+4aQ@mail.gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Nicolas Ferre <nicolas.ferre@microchip.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgVXdlLAoKT24gTW9uLCBNYXIgNiwgMjAxNyBhdCAxMDozMCBBTSwgVXdlIEtsZWluZS1Lw7Zu
-aWcKPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JvdGU6Cj4gT24gTW9uLCBNYXIg
-MDYsIDIwMTcgYXQgMTA6MDk6NTBBTSArMDEwMCwgR2VlcnQgVXl0dGVyaG9ldmVuIHdyb3RlOgo+
-PiBPbiBNb24sIE1hciA2LCAyMDE3IGF0IDk6NTggQU0sIFV3ZSBLbGVpbmUtS8O2bmlnCj4+IDx1
-LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+IHdyb3RlOgo+PiA+IE9uIE1vbiwgTWFyIDA2
-LCAyMDE3IGF0IDA5OjQ5OjM5QU0gKzAxMDAsIEdlZXJ0IFV5dHRlcmhvZXZlbiB3cm90ZToKPj4g
-Pj4gPiBHaXZlbiB0aGF0IG1jdHJsLWdwaW8gY2FuIGJlIHVzZWZ1bCBvbiBsZWdhY3kgcGxhdGZv
-cm1zLCBhIGRldmljZSBjb3VsZAo+PiA+PiA+IHNpbGVudGx5IHJ1biB3aXRob3V0IGN0cy1ncGlv
-IGV2ZW4gdGhlcmUuCj4+ID4+Cj4+ID4+IE9uIHBsYXRmb3JtcyB3ZXJlIENPTkZJR19HUElPTElC
-PW4sIHRoaXMgaXMgbm90IHRydWUsIHNvIHRoZSBpc3N1ZSBpcyBtb290Lgo+PiA+Pgo+PiA+PiBB
-bGwgc2VyaWFsIGRyaXZlcnMgdXNpbmcgKG9wdGlvbmFsKSBtY3RybC1ncGlvIGhhdmUgdGhpcyBp
-biBLY29uZmlnOgo+PiA+Pgo+PiA+PiAgICAgc2VsZWN0IFNFUklBTF9NQ1RSTF9HUElPIGlmIEdQ
-SU9MSUIKPj4gPj4KPj4gPj4gU28gdGhleSB3aWxsIHVzZSBtY3RybC1ncGlvIHdoZW4gR1BJT0xJ
-QiBpcyBlbmFibGVkLgo+PiA+PiBJZiBHUElPUExJQiBpcyBkaXNhYmxlZCwgbm8gZmxvdyBjb250
-cm9sIEdQSU9zIGFyZSBleHBlY3RlZCwgYW5kIHRoZQo+PiA+PiBkcml2ZXIgc2hvdWxkIG5vdCBi
-cmVhayB0aGF0IGNhc2UuCj4+ID4KPj4gPiBTbyBpdCBhbGwgYm9pbHMgZG93biB0byB0aGUgcXVl
-c3Rpb246IElzIEdQSU9MSUI9biBlbm91Z2ggdG8gYXNzdW1lIG5vCj4+ID4gZ3BpbyBpcyBuZWVk
-ZWQ/Cj4+ID4KPj4gPiBJJ2Qgc2F5IGl0IGlzIG5vdC4KPj4KPj4gSG93IGRvZXMgdGhlIHBsYXRm
-b3JtIHJlZ2lzdGVyIHRoZXNlIEdQSU9zIHdoZW4gR1BJT1BMSUIgaXMgbm90IGVuYWJsZWQgYnkK
-Pj4gdGhlIHBsYXRmb3JtLCBhbmQgZ3Bpb2RfYWRkX2xvb2t1cF90YWJsZSgpIGlzIHRodXMgbm90
-IGF2YWlsYWJsZT8KPgo+IE9idmlvdXNseSB0aGUgcGxhdGZvcm1jb2RlIGNhbm5vdC4gSW4gdGhp
-cyBjYXNlIHlvdSBjb3VsZCBhcmd1ZSB0aGF0Cj4gcGxhdGZvcm1jb2RlIHNob3VsZG4ndCByZWdp
-c3RlciB0aGUgZGV2aWNlIGlmIGEgZ3BpbyBpcyBuZWNlc3NhcnkuIEJ1dAo+IHRoaXMgcmVhc29u
-aW5nIGRvZXNuJ3Qgd29yayBmb3IgKERUPXkgfHwgQUNQST15KSAmJiBHUElPTElCPW4uCj4KPiBJ
-IHdvdWxkbid0IHdhbnQgdG8gY29kZSB0aGlzIGluIGVhY2ggZHJpdmVyIChzb21ldGhpbmcgbGlr
-ZToKPgo+ICAgICAgICAgaWYgKElTX0VOQUJMRUQoR1BJT0xJQikgfHwgZGV2aWNlX2lzX2luc3Rh
-bnRpYXRlZF9ieV9kdChkZXYpIHx8IGRldmljZV9pc19pbnN0YW50aWF0ZWRfYnlfYWNwaShkZXYp
-KQo+ICAgICAgICAgICAgICAgICBncGlvcyA9IG1jdHJsX2dwaW9faW5pdCguLi4pOwo+ICAgICAg
-ICAgZWxzZQo+ICAgICAgICAgICAgICAgICBncGlvcyA9IE5VTEw7Cj4KPiApLiBQdXR0aW5nIHRo
-aXMgaW50byBHUElPTElCIGlzIHRoZSByaWdodCBhcHByb2FjaCwgYW5kIHNvIHRoaXMgaXMKPiBh
-bm90aGVyIGFyZ3VtZW50IGZvciBIQUxGR1BJT0xJQi4gVGhpcyB3b3VsZCBmaXggbWN0cmxfZ3Bp
-b19pbml0IGVuCj4gcGFzc2FudC4KCkRvIHdlIGhhdmUgcGxhdGZvcm1zIHdoZXJlIERUPXkgfHwg
-QUNQST15LCBidXQgR1BJT0xJQj1uPwpBaCwgeDg2IDstKQoKQW55d2F5LCBmb3Igc2gtc2NpLmMs
-IHBsYXRmb3JtcyBlaXRoZXIgaGF2ZSBEVCBhbmQgR1BJT0xJQiwgb3IgdGhleSBkbyBub3QKbmVl
-ZCBtY3RybC1ncGlvLgoKR3J7b2V0amUsZWV0aW5nfXMsCgogICAgICAgICAgICAgICAgICAgICAg
-ICBHZWVydAoKLS0KR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJlJ3MgbG90cyBvZiBMaW51eCBi
-ZXlvbmQgaWEzMiAtLSBnZWVydEBsaW51eC1tNjhrLm9yZwoKSW4gcGVyc29uYWwgY29udmVyc2F0
-aW9ucyB3aXRoIHRlY2huaWNhbCBwZW9wbGUsIEkgY2FsbCBteXNlbGYgYSBoYWNrZXIuIEJ1dAp3
-aGVuIEknbSB0YWxraW5nIHRvIGpvdXJuYWxpc3RzIEkganVzdCBzYXkgInByb2dyYW1tZXIiIG9y
-IHNvbWV0aGluZyBsaWtlIHRoYXQuCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLS0g
-TGludXMgVG9ydmFsZHMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlz
-dHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2xpbnV4LWFybS1rZXJuZWwK
+Cc += LinusW
+
+On Mon, Mar 06, 2017 at 10:53:27AM +0100, Geert Uytterhoeven wrote:
+> On Mon, Mar 6, 2017 at 10:30 AM, Uwe Kleine-König
+> <u.kleine-koenig@pengutronix.de> wrote:
+> > On Mon, Mar 06, 2017 at 10:09:50AM +0100, Geert Uytterhoeven wrote:
+> >> On Mon, Mar 6, 2017 at 9:58 AM, Uwe Kleine-König
+> >> <u.kleine-koenig@pengutronix.de> wrote:
+> >> > On Mon, Mar 06, 2017 at 09:49:39AM +0100, Geert Uytterhoeven wrote:
+> >> >> > Given that mctrl-gpio can be useful on legacy platforms, a device could
+> >> >> > silently run without cts-gpio even there.
+> >> >>
+> >> >> On platforms were CONFIG_GPIOLIB=n, this is not true, so the issue is moot.
+> >> >>
+> >> >> All serial drivers using (optional) mctrl-gpio have this in Kconfig:
+> >> >>
+> >> >>     select SERIAL_MCTRL_GPIO if GPIOLIB
+> >> >>
+> >> >> So they will use mctrl-gpio when GPIOLIB is enabled.
+> >> >> If GPIOPLIB is disabled, no flow control GPIOs are expected, and the
+> >> >> driver should not break that case.
+> >> >
+> >> > So it all boils down to the question: Is GPIOLIB=n enough to assume no
+> >> > gpio is needed?
+> >> >
+> >> > I'd say it is not.
+> >>
+> >> How does the platform register these GPIOs when GPIOPLIB is not enabled by
+> >> the platform, and gpiod_add_lookup_table() is thus not available?
+> >
+> > Obviously the platformcode cannot. In this case you could argue that
+> > platformcode shouldn't register the device if a gpio is necessary. But
+> > this reasoning doesn't work for (DT=y || ACPI=y) && GPIOLIB=n.
+> >
+> > I wouldn't want to code this in each driver (something like:
+> >
+> >         if (IS_ENABLED(GPIOLIB) || device_is_instantiated_by_dt(dev) || device_is_instantiated_by_acpi(dev))
+> >                 gpios = mctrl_gpio_init(...);
+> >         else
+> >                 gpios = NULL;
+> >
+> > ). Putting this into GPIOLIB is the right approach, and so this is
+> > another argument for HALFGPIOLIB. This would fix mctrl_gpio_init en
+> > passant.
+> 
+> Do we have platforms where DT=y || ACPI=y, but GPIOLIB=n?
+> Ah, x86 ;-)
+
+Yeah, and I think rm -r arch/x86 won't be acceptable :-) I assume you
+can also configure some arm or powerpc systems without GPIOLIB.
+
+> Anyway, for sh-sci.c, platforms either have DT and GPIOLIB, or they do not
+> need mctrl-gpio.
+
+So we're in agreement now that HALFGPIOLIB is the way to go?
+Linus, what do you think?
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
