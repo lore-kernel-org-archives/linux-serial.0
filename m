@@ -1,80 +1,97 @@
-From: Heiko Stuebner <heiko@sntech.de>
-Subject: Re: [PATCH] serial: 8250_dw: Fix breakage when HAVE_CLK=n
-Date: Sun, 05 Mar 2017 01:44:33 +0100
-Message-ID: <3772321.GSmxWtfp6p@phil>
-References: <CAHp75Ved2h2WyWBokEOsDmAyB3w3iM=uh-9Bq01mU1ST4FapWQ@mail.gmail.com> <20170304130958.23655-1-james.hogan@imgtec.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
+ calls
+Date: Mon, 6 Mar 2017 09:49:39 +0100
+Message-ID: <CAMuHMdX8BEnaTtNFAbcvfHwJH=oPUmQ2NB+jfouGyhQpJ_m_4A@mail.gmail.com>
+References: <20170303142201.16452-1-richard.genoud@gmail.com>
+ <CAMuHMdX-K9B20Tu5NtHJRHmGGuT60OFu8TokZxsF8aSaS7HuHQ@mail.gmail.com>
+ <20170303191248.wlwjri55ip2x5pgg@pengutronix.de>
+ <CAMuHMdXFrwa2jCVDb+8ecqgARLG0oGrPp9pLs0b6vEiWeKJ+uA@mail.gmail.com>
+ <20170303194414.n76tr3oa2mlrzjre@pengutronix.de>
+ <CAMuHMdXiz5hqW=fm-2H1aNKq_gXD2o0508jD2XjxYUvKoEvHdw@mail.gmail.com>
+ <20170304174819.esxhwwbsxzuq3vyc@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170304130958.23655-1-james.hogan@imgtec.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: James Hogan <james.hogan@imgtec.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jason Uy <jason.uy@broadcom.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, David Daney <david.daney@cavium.com>, Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, linux-mips@linux-mips.org, bcm-kernel-feedback-list@broadcom.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170304174819.esxhwwbsxzuq3vyc@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Am Samstag, 4. März 2017, 13:09:58 CET schrieb James Hogan:
-> Commit 6a171b299379 ("serial: 8250_dw: Allow hardware flow control to be
-> used") recently broke the 8250_dw driver on platforms which don't select
-> HAVE_CLK, as dw8250_set_termios() gets confused by the behaviour of the
-> fallback HAVE_CLK=n clock API in linux/clk.h which pretends everything
-> is fine but returns (valid) NULL clocks and 0 HZ clock rates.
-> 
-> That 0 rate is written into the uartclk resulting in a crash at boot,
-> e.g. on Cavium Octeon III based UTM-8 we get something like this:
-> 
-> 1180000000800.serial: ttyS0 at MMIO 0x1180000000800 (irq = 41, base_baud =
-> 25000000) is a OCTEON ------------[ cut here ]------------
-> WARNING: CPU: 2 PID: 1 at drivers/tty/serial/serial_core.c:441
-> uart_get_baud_rate+0xfc/0x1f0 ...
-> Call Trace:
-> ...
-> [<ffffffff8149c2e4>] uart_get_baud_rate+0xfc/0x1f0
-> [<ffffffff814a5098>] serial8250_do_set_termios+0xb0/0x440
-> [<ffffffff8149c710>] uart_set_options+0xe8/0x190
-> [<ffffffff814a6cdc>] serial8250_console_setup+0x84/0x158
-> [<ffffffff814a11ec>] univ8250_console_setup+0x54/0x70
-> [<ffffffff811901a0>] register_console+0x1c8/0x418
-> [<ffffffff8149f004>] uart_add_one_port+0x434/0x4b0
-> [<ffffffff814a1af8>] serial8250_register_8250_port+0x2d8/0x440
-> [<ffffffff814aa620>] dw8250_probe+0x388/0x5e8
-> ...
-> 
-> The clock API is defined such that NULL is a valid clock handle so it
-> wouldn't be right to check explicitly for NULL. Instead treat a
-> clk_round_rate() return value of 0 as an error which prevents uartclk
-> being overwritten.
-> 
-> Fixes: 6a171b299379 ("serial: 8250_dw: Allow hardware flow control to be
-> used") Signed-off-by: James Hogan <james.hogan@imgtec.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Jason Uy <jason.uy@broadcom.com>
-> Cc: Kefeng Wang <wangkefeng.wang@huawei.com>
-> Cc: Heiko Stuebner <heiko@sntech.de>
-> Cc: David Daney <david.daney@cavium.com>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: linux-serial@vger.kernel.org
-> Cc: linux-clk@vger.kernel.org
-> Cc: linux-mips@linux-mips.org
-> Cc: bcm-kernel-feedback-list@broadcom.com
-> ---
->  drivers/tty/serial/8250/8250_dw.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c
-> b/drivers/tty/serial/8250/8250_dw.c index 223ac234ddb2..e65808c482f1 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -267,6 +267,8 @@ static void dw8250_set_termios(struct uart_port *p,
-> struct ktermios *termios, rate = clk_round_rate(d->clk, baud * 16);
->  	if (rate < 0)
->  		ret = rate;
-> +	else if (rate == 0)
-> +		ret = -ENOENT;
->  	else
->  		ret = clk_set_rate(d->clk, rate);
->  	clk_prepare_enable(d->clk);
-
-Looks good
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+SGkgVXdlLAoKT24gU2F0LCBNYXIgNCwgMjAxNyBhdCA2OjQ4IFBNLCBVd2UgS2xlaW5lLUvDtm5p
+Zwo8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPiB3cm90ZToKPiBDYyArPSBsaW51eC1n
+cGlvQHZnZXIua2VybmVsLm9yZwo+Cj4gT24gU2F0LCBNYXIgMDQsIDIwMTcgYXQgMDQ6MzU6NDZQ
+TSArMDEwMCwgR2VlcnQgVXl0dGVyaG9ldmVuIHdyb3RlOgo+PiBPbiBGcmksIE1hciAzLCAyMDE3
+IGF0IDg6NDQgUE0sIFV3ZSBLbGVpbmUtS8O2bmlnCj4+IDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0
+cm9uaXguZGU+IHdyb3RlOgo+PiA+IE9uIEZyaSwgTWFyIDAzLCAyMDE3IGF0IDA4OjIxOjA1UE0g
+KzAxMDAsIEdlZXJ0IFV5dHRlcmhvZXZlbiB3cm90ZToKPj4gPj4gPiBkaWZmIC0tZ2l0IGEvZHJp
+dmVycy90dHkvc2VyaWFsL3NoLXNjaS5jIGIvZHJpdmVycy90dHkvc2VyaWFsL3NoLXNjaS5jCj4+
+ID4+ID4gaW5kZXggOTFlN2RkZGJmNzJjLi4yZjRjZGQ0ZTdiNGYgMTAwNjQ0Cj4+ID4+ID4gLS0t
+IGEvZHJpdmVycy90dHkvc2VyaWFsL3NoLXNjaS5jCj4+ID4+ID4gKysrIGIvZHJpdmVycy90dHkv
+c2VyaWFsL3NoLXNjaS5jCj4+ID4+ID4gQEAgLTMwMjIsNyArMzAyMiw3IEBAIHN0YXRpYyBpbnQg
+c2NpX3Byb2JlX3NpbmdsZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpkZXYsCj4+ID4+ID4gICAg
+ICAgICAgICAgICAgIHJldHVybiByZXQ7Cj4+ID4+ID4KPj4gPj4gPiAgICAgICAgIHNjaXBvcnQt
+PmdwaW9zID0gbWN0cmxfZ3Bpb19pbml0KCZzY2lwb3J0LT5wb3J0LCAwKTsKPj4gPj4gPiAtICAg
+ICAgIGlmIChJU19FUlIoc2NpcG9ydC0+Z3Bpb3MpICYmIFBUUl9FUlIoc2NpcG9ydC0+Z3Bpb3Mp
+ICE9IC1FTk9TWVMpCj4+ID4+ID4gKyAgICAgICBpZiAoSVNfRVJSKHNjaXBvcnQtPmdwaW9zKSkK
+Pj4gPj4gPiAgICAgICAgICAgICAgICAgcmV0dXJuIFBUUl9FUlIoc2NpcG9ydC0+Z3Bpb3MpOwo+
+PiA+Pgo+PiA+PiBOb3cgdGhlIHNoLXNjaSBkcml2ZXIgZmFpbHMgdG8gcHJvYmUgb24gbGVnYWN5
+IHBsYXRmb3JtcyB3aGVyZSBHUElPTElCPW4uCj4+ID4+IFRoZSBjaGVjayBmb3IgLUVOT1NZUyBt
+YWRlIGl0IHN1Y2NlZWQgYmVmb3JlLgo+PiA+Cj4+ID4gVGhhdCdzIHJpZ2h0LCBpbnRlbmRlZCBh
+bmQgdGhlIG9ubHkgb3B0aW9uIHRoYXQncyBzYXZlIChmb3Igc29tZQo+PiA+IGRlZmluaXRpb24g
+b2Ygc2F2ZTsgdGhlIG9idmlvdXMgZG93bnNpZGUgaXMgdGhhdCB0aGVyZSBpcyBubwo+PiA+IC9k
+ZXYvdHR5JHdoYXRldmVyIGZvciB5b3UpLgo+Pgo+PiBUaGF0J3Mgbm90IGp1c3QgYSBkb3duc2lk
+ZSwgYnV0IGEgcGxhaW4gcmVncmVzc2lvbiBvbiBsZWdhY3kgcGxhdGZvcm1zIHRoYXQKPj4gZG8g
+bm90IHVzZSBHUElPIGZsb3cgY29udHJvbC4KPgo+IFRoZSBvbmx5IHNhbmUgd2F5IG91dCBpcyB0
+aGF0IHRoZSBkcml2ZXIgc29tZWhvdyBmaW5kcyBvdXQgdGhhdCBubyBncGlvcwo+IGFyZSBzdXBw
+b3NlZCB0byBiZSBuZWVkZWQuIFNvIHlvdSBjYW4gcGFzcyBpbiB2aWEgcGxhdGZvcm1fZGF0YSB0
+aGF0IG5vCj4gZ3Bpb3MgYXJlIHN1cHBvc2VkIHRvIGJlIHVzZWQgaWYgeW91IGRvbid0IHdhbnQg
+dG8gZW5hYmxlIEdQSU9MSUIgKG9yCj4gaW1wbGVtZW50IENPTkZJR19IQUxGR1BJT0xJQikuIEJ1
+dCBJJ2Qgc2F5IHRoaXMgaXMgYSBxdWlyayB0aGF0IHNob3VsZAo+IGJldHRlciBiZSBmaXhlZCBn
+bG9iYWxseS4gU28gSSB0aGluayB3ZSBzaG91bGQgaW1wbGVtZW50IEhBTEZHUElPTElCCj4gdGhh
+dCBpbmNsdWRlcyB0aGUgbG9va3VwIHN0dWZmIGFuZCBzbyBjYW4gbWFrZSBncGlvZF9nZXRfb3B0
+aW9uYWwgYW5kCj4gZnJpZW5kcyByZXR1cm4gTlVMTCBpZiB0aGVyZSBpcyByZWFsbHkgbm8gR1BJ
+Ty4KCklmIENPTkZJR19HUElPTElCPW4sIG5vIGdwaW9zIGFyZSBzdXBwb3NlZCB0byBiZSBuZWVk
+ZWQuCgo+PiA+IElnbm9yaW5nIC1FTk9TWVMgaXMgb25seSBvayBpZiB5b3VyIGRldmljZSBkb2Vz
+bid0IGhhdmUgYSBjdHMtZ3Bpby4gSWYKPj4gPiBpdCBoYXMsIGlnbm9yaW5nIC1FTk9TWVMgaGlk
+ZXMgYnVncyBiZWNhdXNlIHRoZSBkcml2ZXIgc2VuZHMgZGF0YSB3aGlsZQo+PiA+IGl0IHNob3Vs
+ZG4ndCBvciBjYW5ub3Qgc2lnbmFsIHRoZSBvdGhlciBzaWRlIHRoYXQgaXQgc2hvdWxkIHN0b3Ag
+KG9yCj4+ID4gc3RhcnQpIGEgdHJhbnNtaXNzaW9uLgo+Pgo+PiBNY3RybF9ncGlvIHN1cHBvcnRz
+IG1vZGVybiBwbGF0Zm9ybXMgd2l0aCBHUElPTElCIGFuZCBEVCBvciBBQ1BJIG9ubHkuCj4KPiBU
+aGF0J3Mgd3JvbmcuIEV2ZW4gZm9yIGEgbGVnYWN5IGRldmljZSB5b3UgY2FuIG1ha2UgdXNlIG9m
+IEdQSU9zLiBTZWUKPiBhcmNoL2FybS9tYWNoLXRlZ3JhL2JvYXJkLXBhejAwLmMgZm9yIGEgc2lt
+cGxlIGV4YW1wbGUuCgpTb3JyeSwgZm9yZ290IGFib3V0IGdwaW9kX2xvb2t1cF90YWJsZS4gSXQn
+cyBub3QgdXNlZCBieSBhbnkgcGxhdGZvcm0gdXNpbmcKdGhlIHNoLXNjaSBzZXJpYWwgZHJpdmVy
+LgoKU3RpbGwsIHVzaW5nIGdwaW9kX2xvb2t1cF90YWJsZSBkZXBlbmRzIG9uIENPTkZJR19HUElP
+TElCPXkuCgo+PiBPbiBsZWdhY3kgcGxhdGZvcm1zLCB5b3UgY2Fubm90IHVzZSBHUElPIGZsb3cg
+Y29udHJvbCAoZXhjZXB0IHdoZW4gdXNpbmcgYQo+PiBjdXN0b20gaW1wbGVtZW50YXRpb24sIHdo
+aWNoIGlzIG91dC1vZi1zY29wZSBoZXJlKSwgc28gdGhlIGlzc3VlIG9mIHNpbGVudGx5Cj4+IHJ1
+bm5pbmcgd2l0aG91dCBjdHMtZ3BpbyBvbiB0aGVzZSBwbGF0Zm9ybXMgaXMgbW9vdC4KPgo+IEdp
+dmVuIHRoYXQgbWN0cmwtZ3BpbyBjYW4gYmUgdXNlZnVsIG9uIGxlZ2FjeSBwbGF0Zm9ybXMsIGEg
+ZGV2aWNlIGNvdWxkCj4gc2lsZW50bHkgcnVuIHdpdGhvdXQgY3RzLWdwaW8gZXZlbiB0aGVyZS4K
+Ck9uIHBsYXRmb3JtcyB3ZXJlIENPTkZJR19HUElPTElCPW4sIHRoaXMgaXMgbm90IHRydWUsIHNv
+IHRoZSBpc3N1ZSBpcyBtb290LgoKQWxsIHNlcmlhbCBkcml2ZXJzIHVzaW5nIChvcHRpb25hbCkg
+bWN0cmwtZ3BpbyBoYXZlIHRoaXMgaW4gS2NvbmZpZzoKCiAgICBzZWxlY3QgU0VSSUFMX01DVFJM
+X0dQSU8gaWYgR1BJT0xJQgoKU28gdGhleSB3aWxsIHVzZSBtY3RybC1ncGlvIHdoZW4gR1BJT0xJ
+QiBpcyBlbmFibGVkLgpJZiBHUElPUExJQiBpcyBkaXNhYmxlZCwgbm8gZmxvdyBjb250cm9sIEdQ
+SU9zIGFyZSBleHBlY3RlZCwgYW5kIHRoZQpkcml2ZXIgc2hvdWxkIG5vdCBicmVhayB0aGF0IGNh
+c2UuCgpHcntvZXRqZSxlZXRpbmd9cywKCiAgICAgICAgICAgICAgICAgICAgICAgIEdlZXJ0Cgot
+LQpHZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhlcmUncyBsb3RzIG9mIExpbnV4IGJleW9uZCBpYTMy
+IC0tIGdlZXJ0QGxpbnV4LW02OGsub3JnCgpJbiBwZXJzb25hbCBjb252ZXJzYXRpb25zIHdpdGgg
+dGVjaG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBhIGhhY2tlci4gQnV0CndoZW4gSSdtIHRh
+bGtpbmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNheSAicHJvZ3JhbW1lciIgb3Igc29tZXRoaW5n
+IGxpa2UgdGhhdC4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtLSBMaW51cyBUb3J2
+YWxkcwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGlu
+dXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRl
+YWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgt
+YXJtLWtlcm5lbAo=
