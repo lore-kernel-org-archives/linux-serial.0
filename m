@@ -1,32 +1,67 @@
-From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 02/10] ARM: dts: N900: Add bluetooth
-Date: Mon, 6 Mar 2017 08:08:42 -0800
-Message-ID: <20170306160841.GH20572@atomide.com>
-References: <20170304115833.3538-1-sre@kernel.org>
- <20170304115833.3538-3-sre@kernel.org>
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: Re: [PATCH 11/29] drivers, media: convert cx88_core.refcount from
+ atomic_t to refcount_t
+Date: Mon, 6 Mar 2017 19:26:23 +0300
+Message-ID: <c6987419-f708-9923-0f9f-87b715600045@cogentembedded.com>
+References: <1488810076-3754-1-git-send-email-elena.reshetova@intel.com>
+ <1488810076-3754-12-git-send-email-elena.reshetova@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170304115833.3538-3-sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+In-Reply-To: <1488810076-3754-12-git-send-email-elena.reshetova@intel.com>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Elena Reshetova <elena.reshetova@intel.com>, gregkh@linuxfoundation.org
+Cc: devel@driverdev.osuosl.org, linux-s390@vger.kernel.org, open-iscsi@googlegroups.com, Kees Cook <keescook@chromium.org>, linux-scsi@vger.kernel.org, David Windsor <dwindsor@gmail.com>, peterz@infradead.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, linux-bcache@vger.kernel.org, target-devel@vger.kernel.org, linux-serial@vger.kernel.org, devel@linuxdriverproject.org, fcoe-devel@open-fcoe.org, xen-devel@lists.xenproject.org, linux1394-devel@lists.sourceforge.net, Hans Liljestrand <ishkamiel@gmail.com>, linux-media@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-* Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> [170304 04:00]:
-> Add bcm2048 node and its system clock to the N900 device tree file.
-> Apart from that a reference to the new clock has been added to
-> wl1251 (which uses it, too).
-> 
-> Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Hello.
 
-Picking this patch into omap-for-v4.12/dt thanks.
+On 03/06/2017 05:20 PM, Elena Reshetova wrote:
 
-Regards,
+> refcount_t type and corresponding API should be
+> used instead of atomic_t when the variable is used as
+> a reference counter. This allows to avoid accidental
+> refcounter overflows that might lead to use-after-free
+> situations.
+>
+> Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
+> Signed-off-by: Hans Liljestrand <ishkamiel@gmail.com>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> Signed-off-by: David Windsor <dwindsor@gmail.com>
+[...]
+> diff --git a/drivers/media/pci/cx88/cx88.h b/drivers/media/pci/cx88/cx88.h
+> index 115414c..16c1313 100644
+> --- a/drivers/media/pci/cx88/cx88.h
+> +++ b/drivers/media/pci/cx88/cx88.h
+> @@ -24,6 +24,7 @@
+>  #include <linux/i2c-algo-bit.h>
+>  #include <linux/videodev2.h>
+>  #include <linux/kdev_t.h>
+> +#include <linux/refcount.h>
+>
+>  #include <media/v4l2-device.h>
+>  #include <media/v4l2-fh.h>
+> @@ -339,7 +340,7 @@ struct cx8802_dev;
+>
+>  struct cx88_core {
+>  	struct list_head           devlist;
+> -	atomic_t                   refcount;
+> +	refcount_t                   refcount;
 
-Tony
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+    Could you please keep the name aligned with above and below?
+
+>
+>  	/* board name */
+>  	int                        nr;
+>
+
+MBR, Sergei
