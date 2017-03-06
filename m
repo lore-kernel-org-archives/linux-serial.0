@@ -1,8 +1,9 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
  calls
-Date: Mon, 6 Mar 2017 09:49:39 +0100
-Message-ID: <CAMuHMdX8BEnaTtNFAbcvfHwJH=oPUmQ2NB+jfouGyhQpJ_m_4A@mail.gmail.com>
+Date: Mon, 6 Mar 2017 09:58:42 +0100
+Message-ID: <20170306085842.yijkfpqi3adcedmm@pengutronix.de>
 References: <20170303142201.16452-1-richard.genoud@gmail.com>
  <CAMuHMdX-K9B20Tu5NtHJRHmGGuT60OFu8TokZxsF8aSaS7HuHQ@mail.gmail.com>
  <20170303191248.wlwjri55ip2x5pgg@pengutronix.de>
@@ -10,88 +11,42 @@ References: <20170303142201.16452-1-richard.genoud@gmail.com>
  <20170303194414.n76tr3oa2mlrzjre@pengutronix.de>
  <CAMuHMdXiz5hqW=fm-2H1aNKq_gXD2o0508jD2XjxYUvKoEvHdw@mail.gmail.com>
  <20170304174819.esxhwwbsxzuq3vyc@pengutronix.de>
+ <CAMuHMdX8BEnaTtNFAbcvfHwJH=oPUmQ2NB+jfouGyhQpJ_m_4A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170304174819.esxhwwbsxzuq3vyc@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdX8BEnaTtNFAbcvfHwJH=oPUmQ2NB+jfouGyhQpJ_m_4A@mail.gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Nicolas Ferre <nicolas.ferre@microchip.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgVXdlLAoKT24gU2F0LCBNYXIgNCwgMjAxNyBhdCA2OjQ4IFBNLCBVd2UgS2xlaW5lLUvDtm5p
-Zwo8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPiB3cm90ZToKPiBDYyArPSBsaW51eC1n
-cGlvQHZnZXIua2VybmVsLm9yZwo+Cj4gT24gU2F0LCBNYXIgMDQsIDIwMTcgYXQgMDQ6MzU6NDZQ
-TSArMDEwMCwgR2VlcnQgVXl0dGVyaG9ldmVuIHdyb3RlOgo+PiBPbiBGcmksIE1hciAzLCAyMDE3
-IGF0IDg6NDQgUE0sIFV3ZSBLbGVpbmUtS8O2bmlnCj4+IDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0
-cm9uaXguZGU+IHdyb3RlOgo+PiA+IE9uIEZyaSwgTWFyIDAzLCAyMDE3IGF0IDA4OjIxOjA1UE0g
-KzAxMDAsIEdlZXJ0IFV5dHRlcmhvZXZlbiB3cm90ZToKPj4gPj4gPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy90dHkvc2VyaWFsL3NoLXNjaS5jIGIvZHJpdmVycy90dHkvc2VyaWFsL3NoLXNjaS5jCj4+
-ID4+ID4gaW5kZXggOTFlN2RkZGJmNzJjLi4yZjRjZGQ0ZTdiNGYgMTAwNjQ0Cj4+ID4+ID4gLS0t
-IGEvZHJpdmVycy90dHkvc2VyaWFsL3NoLXNjaS5jCj4+ID4+ID4gKysrIGIvZHJpdmVycy90dHkv
-c2VyaWFsL3NoLXNjaS5jCj4+ID4+ID4gQEAgLTMwMjIsNyArMzAyMiw3IEBAIHN0YXRpYyBpbnQg
-c2NpX3Byb2JlX3NpbmdsZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpkZXYsCj4+ID4+ID4gICAg
-ICAgICAgICAgICAgIHJldHVybiByZXQ7Cj4+ID4+ID4KPj4gPj4gPiAgICAgICAgIHNjaXBvcnQt
-PmdwaW9zID0gbWN0cmxfZ3Bpb19pbml0KCZzY2lwb3J0LT5wb3J0LCAwKTsKPj4gPj4gPiAtICAg
-ICAgIGlmIChJU19FUlIoc2NpcG9ydC0+Z3Bpb3MpICYmIFBUUl9FUlIoc2NpcG9ydC0+Z3Bpb3Mp
-ICE9IC1FTk9TWVMpCj4+ID4+ID4gKyAgICAgICBpZiAoSVNfRVJSKHNjaXBvcnQtPmdwaW9zKSkK
-Pj4gPj4gPiAgICAgICAgICAgICAgICAgcmV0dXJuIFBUUl9FUlIoc2NpcG9ydC0+Z3Bpb3MpOwo+
-PiA+Pgo+PiA+PiBOb3cgdGhlIHNoLXNjaSBkcml2ZXIgZmFpbHMgdG8gcHJvYmUgb24gbGVnYWN5
-IHBsYXRmb3JtcyB3aGVyZSBHUElPTElCPW4uCj4+ID4+IFRoZSBjaGVjayBmb3IgLUVOT1NZUyBt
-YWRlIGl0IHN1Y2NlZWQgYmVmb3JlLgo+PiA+Cj4+ID4gVGhhdCdzIHJpZ2h0LCBpbnRlbmRlZCBh
-bmQgdGhlIG9ubHkgb3B0aW9uIHRoYXQncyBzYXZlIChmb3Igc29tZQo+PiA+IGRlZmluaXRpb24g
-b2Ygc2F2ZTsgdGhlIG9idmlvdXMgZG93bnNpZGUgaXMgdGhhdCB0aGVyZSBpcyBubwo+PiA+IC9k
-ZXYvdHR5JHdoYXRldmVyIGZvciB5b3UpLgo+Pgo+PiBUaGF0J3Mgbm90IGp1c3QgYSBkb3duc2lk
-ZSwgYnV0IGEgcGxhaW4gcmVncmVzc2lvbiBvbiBsZWdhY3kgcGxhdGZvcm1zIHRoYXQKPj4gZG8g
-bm90IHVzZSBHUElPIGZsb3cgY29udHJvbC4KPgo+IFRoZSBvbmx5IHNhbmUgd2F5IG91dCBpcyB0
-aGF0IHRoZSBkcml2ZXIgc29tZWhvdyBmaW5kcyBvdXQgdGhhdCBubyBncGlvcwo+IGFyZSBzdXBw
-b3NlZCB0byBiZSBuZWVkZWQuIFNvIHlvdSBjYW4gcGFzcyBpbiB2aWEgcGxhdGZvcm1fZGF0YSB0
-aGF0IG5vCj4gZ3Bpb3MgYXJlIHN1cHBvc2VkIHRvIGJlIHVzZWQgaWYgeW91IGRvbid0IHdhbnQg
-dG8gZW5hYmxlIEdQSU9MSUIgKG9yCj4gaW1wbGVtZW50IENPTkZJR19IQUxGR1BJT0xJQikuIEJ1
-dCBJJ2Qgc2F5IHRoaXMgaXMgYSBxdWlyayB0aGF0IHNob3VsZAo+IGJldHRlciBiZSBmaXhlZCBn
-bG9iYWxseS4gU28gSSB0aGluayB3ZSBzaG91bGQgaW1wbGVtZW50IEhBTEZHUElPTElCCj4gdGhh
-dCBpbmNsdWRlcyB0aGUgbG9va3VwIHN0dWZmIGFuZCBzbyBjYW4gbWFrZSBncGlvZF9nZXRfb3B0
-aW9uYWwgYW5kCj4gZnJpZW5kcyByZXR1cm4gTlVMTCBpZiB0aGVyZSBpcyByZWFsbHkgbm8gR1BJ
-Ty4KCklmIENPTkZJR19HUElPTElCPW4sIG5vIGdwaW9zIGFyZSBzdXBwb3NlZCB0byBiZSBuZWVk
-ZWQuCgo+PiA+IElnbm9yaW5nIC1FTk9TWVMgaXMgb25seSBvayBpZiB5b3VyIGRldmljZSBkb2Vz
-bid0IGhhdmUgYSBjdHMtZ3Bpby4gSWYKPj4gPiBpdCBoYXMsIGlnbm9yaW5nIC1FTk9TWVMgaGlk
-ZXMgYnVncyBiZWNhdXNlIHRoZSBkcml2ZXIgc2VuZHMgZGF0YSB3aGlsZQo+PiA+IGl0IHNob3Vs
-ZG4ndCBvciBjYW5ub3Qgc2lnbmFsIHRoZSBvdGhlciBzaWRlIHRoYXQgaXQgc2hvdWxkIHN0b3Ag
-KG9yCj4+ID4gc3RhcnQpIGEgdHJhbnNtaXNzaW9uLgo+Pgo+PiBNY3RybF9ncGlvIHN1cHBvcnRz
-IG1vZGVybiBwbGF0Zm9ybXMgd2l0aCBHUElPTElCIGFuZCBEVCBvciBBQ1BJIG9ubHkuCj4KPiBU
-aGF0J3Mgd3JvbmcuIEV2ZW4gZm9yIGEgbGVnYWN5IGRldmljZSB5b3UgY2FuIG1ha2UgdXNlIG9m
-IEdQSU9zLiBTZWUKPiBhcmNoL2FybS9tYWNoLXRlZ3JhL2JvYXJkLXBhejAwLmMgZm9yIGEgc2lt
-cGxlIGV4YW1wbGUuCgpTb3JyeSwgZm9yZ290IGFib3V0IGdwaW9kX2xvb2t1cF90YWJsZS4gSXQn
-cyBub3QgdXNlZCBieSBhbnkgcGxhdGZvcm0gdXNpbmcKdGhlIHNoLXNjaSBzZXJpYWwgZHJpdmVy
-LgoKU3RpbGwsIHVzaW5nIGdwaW9kX2xvb2t1cF90YWJsZSBkZXBlbmRzIG9uIENPTkZJR19HUElP
-TElCPXkuCgo+PiBPbiBsZWdhY3kgcGxhdGZvcm1zLCB5b3UgY2Fubm90IHVzZSBHUElPIGZsb3cg
-Y29udHJvbCAoZXhjZXB0IHdoZW4gdXNpbmcgYQo+PiBjdXN0b20gaW1wbGVtZW50YXRpb24sIHdo
-aWNoIGlzIG91dC1vZi1zY29wZSBoZXJlKSwgc28gdGhlIGlzc3VlIG9mIHNpbGVudGx5Cj4+IHJ1
-bm5pbmcgd2l0aG91dCBjdHMtZ3BpbyBvbiB0aGVzZSBwbGF0Zm9ybXMgaXMgbW9vdC4KPgo+IEdp
-dmVuIHRoYXQgbWN0cmwtZ3BpbyBjYW4gYmUgdXNlZnVsIG9uIGxlZ2FjeSBwbGF0Zm9ybXMsIGEg
-ZGV2aWNlIGNvdWxkCj4gc2lsZW50bHkgcnVuIHdpdGhvdXQgY3RzLWdwaW8gZXZlbiB0aGVyZS4K
-Ck9uIHBsYXRmb3JtcyB3ZXJlIENPTkZJR19HUElPTElCPW4sIHRoaXMgaXMgbm90IHRydWUsIHNv
-IHRoZSBpc3N1ZSBpcyBtb290LgoKQWxsIHNlcmlhbCBkcml2ZXJzIHVzaW5nIChvcHRpb25hbCkg
-bWN0cmwtZ3BpbyBoYXZlIHRoaXMgaW4gS2NvbmZpZzoKCiAgICBzZWxlY3QgU0VSSUFMX01DVFJM
-X0dQSU8gaWYgR1BJT0xJQgoKU28gdGhleSB3aWxsIHVzZSBtY3RybC1ncGlvIHdoZW4gR1BJT0xJ
-QiBpcyBlbmFibGVkLgpJZiBHUElPUExJQiBpcyBkaXNhYmxlZCwgbm8gZmxvdyBjb250cm9sIEdQ
-SU9zIGFyZSBleHBlY3RlZCwgYW5kIHRoZQpkcml2ZXIgc2hvdWxkIG5vdCBicmVhayB0aGF0IGNh
-c2UuCgpHcntvZXRqZSxlZXRpbmd9cywKCiAgICAgICAgICAgICAgICAgICAgICAgIEdlZXJ0Cgot
-LQpHZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhlcmUncyBsb3RzIG9mIExpbnV4IGJleW9uZCBpYTMy
-IC0tIGdlZXJ0QGxpbnV4LW02OGsub3JnCgpJbiBwZXJzb25hbCBjb252ZXJzYXRpb25zIHdpdGgg
-dGVjaG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBhIGhhY2tlci4gQnV0CndoZW4gSSdtIHRh
-bGtpbmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNheSAicHJvZ3JhbW1lciIgb3Igc29tZXRoaW5n
-IGxpa2UgdGhhdC4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtLSBMaW51cyBUb3J2
-YWxkcwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGlu
-dXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRl
-YWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgt
-YXJtLWtlcm5lbAo=
+Hello Geert,
+
+On Mon, Mar 06, 2017 at 09:49:39AM +0100, Geert Uytterhoeven wrote:
+> > Given that mctrl-gpio can be useful on legacy platforms, a device could
+> > silently run without cts-gpio even there.
+> 
+> On platforms were CONFIG_GPIOLIB=n, this is not true, so the issue is moot.
+> 
+> All serial drivers using (optional) mctrl-gpio have this in Kconfig:
+> 
+>     select SERIAL_MCTRL_GPIO if GPIOLIB
+> 
+> So they will use mctrl-gpio when GPIOLIB is enabled.
+> If GPIOPLIB is disabled, no flow control GPIOs are expected, and the
+> driver should not break that case.
+
+So it all boils down to the question: Is GPIOLIB=n enough to assume no
+gpio is needed?
+
+I'd say it is not.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
