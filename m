@@ -1,119 +1,158 @@
-From: "Reshetova, Elena" <elena.reshetova@intel.com>
-Subject: RE: [PATCH 13/29] drivers, media: convert
- vb2_vmarea_handler.refcount from atomic_t to refcount_t
-Date: Tue, 7 Mar 2017 14:48:43 +0000
-Message-ID: <2236FBA76BA1254E88B949DDB74E612B41C558E6@IRSMSX102.ger.corp.intel.com>
-References: <1488810076-3754-1-git-send-email-elena.reshetova@intel.com>
- <1488810076-3754-14-git-send-email-elena.reshetova@intel.com>
- <20170307085005.GH3220@valkosipuli.retiisi.org.uk>
+From: Aleksey Makarov <amakarov.linux@gmail.com>
+Subject: Re: [PATCH v3 3/3] printk: fix double printing with earlycon
+Date: Tue, 7 Mar 2017 15:54:43 +0100
+Message-ID: <563502ae-1560-9dca-fe5b-4ec627c567f8@gmail.com>
+References: <20170302131153.22733-4-aleksey.makarov@linaro.org>
+ <20170303154946.15399-1-aleksey.makarov@linaro.org>
+ <20170306145933.GB425@tigerII.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <20170307085005.GH3220@valkosipuli.retiisi.org.uk>
-Content-Language: en-US
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Sakari Ailus <sakari.ailus@iki.fi>
-Cc: "peterz@infradead.org" <peterz@infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "target-devel@vger.kernel.org" <target-devel@vger.kernel.org>, "linux1394-devel@lists.sourceforge.net" <linux1394-devel@lists.sourceforge.net>, "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "fcoe-devel@open-fcoe.org" <fcoe-devel@open-fcoe.org>, "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, "open-iscsi@googlegroups.com" <open-iscsi@googlegroups.com>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, Kees Cook <keescook@chromium.org>, "linux-raid@vger.kernel.org" <linux-raid@vger.kernel.org>, "linux-bcache@vger.kernel.org" <linux-bcache@vger.kerne>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170306145933.GB425@tigerII.localdomain>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Petr Mladek <pmladek@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-> Hi Elena,
-> 
-> On Mon, Mar 06, 2017 at 04:21:00PM +0200, Elena Reshetova wrote:
-> > refcount_t type and corresponding API should be
-> > used instead of atomic_t when the variable is used as
-> > a reference counter. This allows to avoid accidental
-> > refcounter overflows that might lead to use-after-free
-> > situations.
-> >
-> > Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
-> > Signed-off-by: Hans Liljestrand <ishkamiel@gmail.com>
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > Signed-off-by: David Windsor <dwindsor@gmail.com>
-> > ---
-> >  drivers/media/v4l2-core/videobuf2-memops.c | 6 +++---
-> >  include/media/videobuf2-memops.h           | 3 ++-
-> >  2 files changed, 5 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/media/v4l2-core/videobuf2-memops.c b/drivers/media/v4l2-
-> core/videobuf2-memops.c
-> > index 1cd322e..4bb8424 100644
-> > --- a/drivers/media/v4l2-core/videobuf2-memops.c
-> > +++ b/drivers/media/v4l2-core/videobuf2-memops.c
-> > @@ -96,10 +96,10 @@ static void vb2_common_vm_open(struct
-> vm_area_struct *vma)
-> >  	struct vb2_vmarea_handler *h = vma->vm_private_data;
-> >
-> >  	pr_debug("%s: %p, refcount: %d, vma: %08lx-%08lx\n",
-> > -	       __func__, h, atomic_read(h->refcount), vma->vm_start,
-> > +	       __func__, h, refcount_read(h->refcount), vma->vm_start,
-> >  	       vma->vm_end);
-> >
-> > -	atomic_inc(h->refcount);
-> > +	refcount_inc(h->refcount);
-> >  }
-> >
-> >  /**
-> > @@ -114,7 +114,7 @@ static void vb2_common_vm_close(struct
-> vm_area_struct *vma)
-> >  	struct vb2_vmarea_handler *h = vma->vm_private_data;
-> >
-> >  	pr_debug("%s: %p, refcount: %d, vma: %08lx-%08lx\n",
-> > -	       __func__, h, atomic_read(h->refcount), vma->vm_start,
-> > +	       __func__, h, refcount_read(h->refcount), vma->vm_start,
-> >  	       vma->vm_end);
-> >
-> >  	h->put(h->arg);
-> > diff --git a/include/media/videobuf2-memops.h b/include/media/videobuf2-
-> memops.h
-> > index 36565c7a..a6ed091 100644
-> > --- a/include/media/videobuf2-memops.h
-> > +++ b/include/media/videobuf2-memops.h
-> > @@ -16,6 +16,7 @@
-> >
-> >  #include <media/videobuf2-v4l2.h>
-> >  #include <linux/mm.h>
-> > +#include <linux/refcount.h>
-> >
-> >  /**
-> >   * struct vb2_vmarea_handler - common vma refcount tracking handler
-> > @@ -25,7 +26,7 @@
-> >   * @arg:	argument for @put callback
-> >   */
-> >  struct vb2_vmarea_handler {
-> > -	atomic_t		*refcount;
-> > +	refcount_t		*refcount;
-> 
-> This is a pointer to refcount, not refcount itself. The refcount is part of
-> a memory type specific struct, the types that you change in the following
-> three patches. I guess it would still compile and work as separate patches
-> but you'd sure get warnings at least.
 
-Actually it doesn't compile without this patch if I remember it correctly back in past when I was initially splitting the patches per variable. 
 
-> 
-> How about merging this and the three following patches that change the memop
-> refcount types?
+On 03/06/2017 03:59 PM, Sergey Senozhatsky wrote:
+> On (03/03/17 18:49), Aleksey Makarov wrote:
+> [..]
+>> +static enum { CONSOLE_MATCH, CONSOLE_MATCH_RETURN, CONSOLE_MATCH_NEXT }
+>> +match_console(struct console *newcon, struct console_cmdline *c)
+>
+> that enum in function return is interesting :)
+> can we make it less hackish?
 
-Sounds good!
+We probably can, but I can not figure out how to do that.
+Suggestions will be appreciated.
+We should signal 3 different outcomes.
+I thought that using standard errnos is not quite desciptive.
 
-Best Regards,
-Elena.
-> 
-> >  	void			(*put)(void *arg);
-> >  	void			*arg;
-> >  };
-> 
+>> +	if (!newcon->match ||
+>> +	    newcon->match(newcon, c->name, c->index, c->options) != 0) {
+>> +		/* default matching */
+>> +		BUILD_BUG_ON(sizeof(c->name) != sizeof(newcon->name));
+>> +		if (strcmp(c->name, newcon->name) != 0)
+>> +			return CONSOLE_MATCH_NEXT;
+>> +		if (newcon->index >= 0 && newcon->index != c->index)
+>> +			return CONSOLE_MATCH_NEXT;
+>
+> who is checking CONSOLE_MATCH_NEXT?
+
+The caller checks two other values,  this one goes under the default case.
+Should I check it explicitly?
+
+>> +		if (newcon->index < 0)
+>> +			newcon->index = c->index;
+>> +
+>> +		if (_braille_register_console(newcon, c))
+>> +			return CONSOLE_MATCH_RETURN;
+>> +
+>> +		if (newcon->setup &&
+>> +		    newcon->setup(newcon, c->options) != 0)
+>> +			return CONSOLE_MATCH;
+>> +	}
+>> +
+>> +	newcon->flags |= CON_ENABLED;
+>> +	return CONSOLE_MATCH;
+>> +}
+>> +
+>>  /*
+>>   * The console driver calls this routine during kernel initialization
+>>   * to register the console printing procedure with printk() and to
+>> @@ -2454,40 +2480,50 @@ void register_console(struct console *newcon)
+>>  	}
+>>
+>>  	/*
+>> +	 * Check if this console was set as preferred by command line parameters
+>> +	 * or by call to add_preferred_console().  There may be several entries
+>> +	 * in the console_cmdline array matching with the same console so we
+>> +	 * can not just use the first match.  Instead check the entry pointed
+>> +	 * by preferred_console and then all other entries.
+>> +	 */
+>> +	if (preferred_console >= 0) {
+>> +		switch (match_console(newcon,
+>> +				      console_cmdline + preferred_console)) {
+>> +		case CONSOLE_MATCH:
+>> +			if (newcon->flags | CON_ENABLED) {
+>
+> 			newcon->flags & CON_ENABLED  ?
+
+Sure.  Thank you.
+
+>> +				newcon->flags |= CON_CONSDEV;
+>> +				has_preferred = true;
+>> +			}
+>> +			goto match;
+>> +		case CONSOLE_MATCH_RETURN:
+>> +			return;
+>> +		default:
+>> +			break;
+>> +		}
+>> +	}
+>> +
+>> +	/*
+>>  	 *	See if this console matches one we selected on
+>>  	 *	the command line.
+>>  	 */
+>>  	for (i = 0, c = console_cmdline;
+>>  	     i < MAX_CMDLINECONSOLES && c->name[0];
+>>  	     i++, c++) {
+>> -		if (!newcon->match ||
+>> -		    newcon->match(newcon, c->name, c->index, c->options) != 0) {
+>> -			/* default matching */
+>> -			BUILD_BUG_ON(sizeof(c->name) != sizeof(newcon->name));
+>> -			if (strcmp(c->name, newcon->name) != 0)
+>> -				continue;
+>> -			if (newcon->index >= 0 &&
+>> -			    newcon->index != c->index)
+>> -				continue;
+>> -			if (newcon->index < 0)
+>> -				newcon->index = c->index;
+>> -
+>> -			if (_braille_register_console(newcon, c))
+>> -				return;
+>>
+>> -			if (newcon->setup &&
+>> -			    newcon->setup(newcon, c->options) != 0)
+>> -				break;
+>> -		}
+>> +		if (preferred_console == i)
+>> +			continue;
+>>
+>> -		newcon->flags |= CON_ENABLED;
+>> -		if (i == preferred_console) {
+>> -			newcon->flags |= CON_CONSDEV;
+>> -			has_preferred = true;
+>> +		switch (match_console(newcon, c)) {
+>> +		case CONSOLE_MATCH:
+>> +			goto match;
+>> +		case CONSOLE_MATCH_RETURN:
+>> +			return;
+>> +		default:
+>> +			break;
+>
+> sorry, it was a rather long for me today. need to look more at this.
+> for what is now CONSOLE_MATCH_NEXT we used to have continue,
+
+CONSOLE_MATCH is for the case when the console matches against the description,
+CONSOLE_MATCH_NEXT - it does not, we should try next,
+CONSOLE_MATCH_RETURN - we should return as the braille console is registered now.
+
+> and now we break out of the loop?
+
+`goto match` or just when we have seen all the entries
+
+Thank you
+Aleksey Makarov
+
+>
+> 	-ss
 > --
-> Kind regards,
-> 
-> Sakari Ailus
-> e-mail: sakari.ailus@iki.fi	XMPP: sailus@retiisi.org.uk
+> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
