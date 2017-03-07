@@ -1,57 +1,67 @@
-From: Vinod Koul <vinod.koul@intel.com>
-Subject: Re: [PATCH 0/4] add uart DMA function
-Date: Tue, 7 Mar 2017 14:23:55 +0530
-Message-ID: <20170307085355.GI2843@localhost>
-References: <1487243251-964-1-git-send-email-long.cheng@mediatek.com>
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: Re: [PATCH 11/29] drivers, media: convert cx88_core.refcount from
+ atomic_t to refcount_t
+Date: Tue, 7 Mar 2017 13:40:07 +0300
+Message-ID: <71ea983c-c2e4-9145-634b-78aef993d982@cogentembedded.com>
+References: <1488810076-3754-1-git-send-email-elena.reshetova@intel.com>
+ <1488810076-3754-12-git-send-email-elena.reshetova@intel.com>
+ <c6987419-f708-9923-0f9f-87b715600045@cogentembedded.com>
+ <2236FBA76BA1254E88B949DDB74E612B41C556E2@IRSMSX102.ger.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1487243251-964-1-git-send-email-long.cheng@mediatek.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Long Cheng <long.cheng@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, srv_heupstream@mediatek.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+In-Reply-To: <2236FBA76BA1254E88B949DDB74E612B41C556E2@IRSMSX102.ger.corp.intel.com>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: "Reshetova, Elena" <elena.reshetova@intel.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "open-iscsi@googlegroups.com" <open-iscsi@googlegroups.com>, Kees Cook <keescook@chromium.org>, "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>, David Windsor <dwindsor@gmail.com>, "peterz@infradead.org" <peterz@infradead.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-raid@vger.kernel.org" <linux-raid@vger.kernel.org>, "linux-bcache@vger.kernel.org" <linux-bcache@vger.kernel.org>, "target-devel@vger.kernel.org" <target-devel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devel@linuxdriverproject.org" <devel@linuxdriver>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Feb 16, 2017 at 07:07:27PM +0800, Long Cheng wrote:
-> In Mediatek SOCs, the uart can support DMA function.
-> Base on DMA engine formwork, we add the DMA code to support uart. And put the code under drivers/dma.
+On 3/7/2017 10:52 AM, Reshetova, Elena wrote:
 
-Are these interdependent, if not can you send them separately please
+>>> refcount_t type and corresponding API should be
+>>> used instead of atomic_t when the variable is used as
+>>> a reference counter. This allows to avoid accidental
+>>> refcounter overflows that might lead to use-after-free
+>>> situations.
+>>>
+>>> Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
+>>> Signed-off-by: Hans Liljestrand <ishkamiel@gmail.com>
+>>> Signed-off-by: Kees Cook <keescook@chromium.org>
+>>> Signed-off-by: David Windsor <dwindsor@gmail.com>
+>> [...]
+>>> diff --git a/drivers/media/pci/cx88/cx88.h b/drivers/media/pci/cx88/cx88.h
+>>> index 115414c..16c1313 100644
+>>> --- a/drivers/media/pci/cx88/cx88.h
+>>> +++ b/drivers/media/pci/cx88/cx88.h
+[...]
+>>> @@ -339,7 +340,7 @@ struct cx8802_dev;
+>>>
+>>>  struct cx88_core {
+>>>  	struct list_head           devlist;
+>>> -	atomic_t                   refcount;
+>>> +	refcount_t                   refcount;
+>>
+>>     Could you please keep the name aligned with above and below?
+>
+> You mean "not aligned" to devlist, but with a shift like it was before?
 
-> 
-> This series contains document bindings, Kconfig to control the function enable or not,
-> device tree including interrupt and dma device node, the code of UART DMA function.
-> 
-> Long Cheng (4):
->   dt-bindings: dma: uart: add uart dma bindings
->   dmaengine: mtk_uart_dma: add Mediatek uart DMA support
->   serial: 8250-mtk: add uart DMA support
->   arm: dts: mt2701: add uart APDMA to device tree
-> 
->  .../devicetree/bindings/dma/mtk_uart_dma.txt       |   32 +
->  arch/arm/boot/dts/mt2701-evb.dts                   |   22 +
->  arch/arm/boot/dts/mt2701.dtsi                      |   29 +
->  drivers/dma/Kconfig                                |    9 +
->  drivers/dma/Makefile                               |    1 +
->  drivers/dma/mtk_uart_dma.c                         |  955 ++++++++++++++++++++
->  drivers/tty/serial/8250/8250_mtk.c                 |  194 +++-
->  7 files changed, 1241 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/devicetree/bindings/dma/mtk_uart_dma.txt
->  create mode 100644 drivers/dma/mtk_uart_dma.c
-> 
-> -- 
-> 1.7.9.5
-> 
+    I mean aligned, like it was before. :-)
 
--- 
-~Vinod
+> Sure, will fix. Is the patch ok otherwise?
+
+    I haven't noticed anything else...
+
+> Best Regards,
+> Elena.
+[...]
+
+MBR, Sergei
