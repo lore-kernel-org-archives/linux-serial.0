@@ -1,121 +1,103 @@
-From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 07/10] serdev: add serdev_device_wait_until_sent
-Date: Tue, 7 Mar 2017 16:55:08 +0100
-Message-ID: <20170307155508.olbiecapfs7ep6xm@earth>
-References: <20170304115833.3538-1-sre@kernel.org>
- <20170304115833.3538-8-sre@kernel.org>
- <CAL_Jsq+BCE1u6Ysz0FOdh--wHm-PZxqcmqTgQMyDcvQNkYp3gw@mail.gmail.com>
+From: Shaohua Li <shli@kernel.org>
+Subject: Re: [PATCH 08/29] drivers, md: convert mddev.active from atomic_t to
+ refcount_t
+Date: Tue, 7 Mar 2017 11:04:49 -0800
+Message-ID: <20170307190449.baceyzzngsz776x7@kernel.org>
+References: <1488810076-3754-1-git-send-email-elena.reshetova@intel.com>
+ <1488810076-3754-9-git-send-email-elena.reshetova@intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="d5vnixjkpbvf6nj5"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
 Content-Disposition: inline
-In-Reply-To: <CAL_Jsq+BCE1u6Ysz0FOdh--wHm-PZxqcmqTgQMyDcvQNkYp3gw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1488810076-3754-9-git-send-email-elena.reshetova@intel.com>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Elena Reshetova <elena.reshetova@intel.com>
+Cc: peterz@infradead.org, linux-pci@vger.kernel.org, target-devel@vger.kernel.org, linux1394-devel@lists.sourceforge.net, devel@driverdev.osuosl.org, linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, fcoe-devel@open-fcoe.org, xen-devel@lists.xenproject.org, open-iscsi@googlegroups.com, linux-media@vger.kernel.org, Kees Cook <keescook@chromium.org>, linux-raid@vger.kernel.org, linux-bcache@vger.kernel.org, Hans Liljestrand <ishkamiel@gmail.com>, David Windsor <dwindsor@gmail.com>, gregkh@linuxfoundation.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, devel@linuxdriverproject.org
 List-Id: linux-serial@vger.kernel.org
 
+On Mon, Mar 06, 2017 at 04:20:55PM +0200, Elena Reshetova wrote:
+> refcount_t type and corresponding API should be
+> used instead of atomic_t when the variable is used as
+> a reference counter. This allows to avoid accidental
+> refcounter overflows that might lead to use-after-free
+> situations.
 
---d5vnixjkpbvf6nj5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Tue, Mar 07, 2017 at 09:34:49AM -0600, Rob Herring wrote:
-> On Sat, Mar 4, 2017 at 5:58 AM, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> > Add method, which waits until the transmission buffer has been sent.
-> >
-> > Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> > ---
-> >  drivers/tty/serdev/core.c           | 11 +++++++++++
-> >  drivers/tty/serdev/serdev-ttyport.c | 15 ++++++++++++++-
-> >  include/linux/serdev.h              |  3 +++
-> >  3 files changed, 28 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> > index f4c6c90add78..a63b74031e22 100644
-> > --- a/drivers/tty/serdev/core.c
-> > +++ b/drivers/tty/serdev/core.c
-> > @@ -173,6 +173,17 @@ void serdev_device_set_flow_control(struct serdev_=
-device *serdev, bool enable)
-> >  }
-> >  EXPORT_SYMBOL_GPL(serdev_device_set_flow_control);
-> >
-> > +void serdev_device_wait_until_sent(struct serdev_device *serdev, long =
-timeout)
-> > +{
-> > +       struct serdev_controller *ctrl =3D serdev->ctrl;
-> > +
-> > +       if (!ctrl || !ctrl->ops->wait_until_sent)
-> > +               return;
-> > +
-> > +       ctrl->ops->wait_until_sent(ctrl, timeout);
-> > +}
-> > +EXPORT_SYMBOL_GPL(serdev_device_wait_until_sent);
-> > +
-> >  static int serdev_drv_probe(struct device *dev)
-> >  {
-> >         const struct serdev_device_driver *sdrv =3D to_serdev_device_dr=
-iver(dev->driver);
-> > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/s=
-erdev-ttyport.c
-> > index d05393594f15..db2bc601e554 100644
-> > --- a/drivers/tty/serdev/serdev-ttyport.c
-> > +++ b/drivers/tty/serdev/serdev-ttyport.c
-> > @@ -14,6 +14,7 @@
-> >  #include <linux/serdev.h>
-> >  #include <linux/tty.h>
-> >  #include <linux/tty_driver.h>
-> > +#include <linux/poll.h>
-> >
-> >  #define SERPORT_ACTIVE         1
-> >
-> > @@ -47,10 +48,13 @@ static void ttyport_write_wakeup(struct tty_port *p=
-ort)
-> >         struct serport *serport =3D serdev_controller_get_drvdata(ctrl);
-> >
-> >         if (!test_and_clear_bit(TTY_DO_WRITE_WAKEUP, &port->tty->flags))
-> > -               return;
-> > +               goto out;
-> >
-> >         if (test_bit(SERPORT_ACTIVE, &serport->flags))
-> >                 serdev_controller_write_wakeup(ctrl);
-> > +
-> > +out:
-> > +       wake_up_interruptible_poll(&port->tty->write_wait, POLLOUT);
->=20
-> Shouldn't this be separate patch?
-
-That change is needed for tty_wait_until_sent to work correctly, which
-starts with a wait_event_interruptible_timeout() on write_wait.
-
--- Sebastian
-
---d5vnixjkpbvf6nj5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAli+19gACgkQ2O7X88g7
-+po/Dg/+Lc+HV/AnuGNS86mcWDpTy4vnuO0kBGVV1HNIIQDbjF+iP55WNP3fznfE
-H5YSznVCzHe4YGpImqkRmiu+u6Ffdr+Y75gx0UrG0yIqWTWUT2u45KyzGtw23Km0
-3bMPk7kye6hYawhGwCeKqECd1l8uBcnQOitHBqCDmb6OoxQELn3Z0SkAesS9Ui6a
-KZrj8L16f6d/msSXoMbJqmFG9yblStavqAYbHI3m0699hlbGE7jUC85CVsqO4UYB
-pgekUZqzsNP8OZWMaSUlxomV2Axb/5MN1QYSfX/MPzwueZh+n4IaXHghDfgElG0Q
-AQ48UAn4cBm3NcVGzAOF5xN0YMzpvqBqhtXPqo5GbeqfDjOjgC+iPUzlXvVOcy2C
-JRHqQANmXgbY/Rqx+fTG7BdCTPo2xRjFZKGXkeC0fPTkmhlFym1iZiqaB4DzBp03
-KxUrfAZgiABeYxHO+umHg5g6GaNzlpZqLSPDiEuluXMT4nb3VbeeE6e0QM2VxT05
-4YcLRN+YSZMCpL0LlamkNlcDQEyk9DUZEnKhpLv3O/7YAU00E1waprNKXy0fMzBc
-897H0Ol99yY9atAgI2JIkBQvmGvnLg1rkdGmQErKJhhA2O5HaoY6mULyZw7XLXBb
-NUgFKvqVHGlS+LBguGA4CsahQxJyCqdm8oc9kxcsoBm/+2/sNMU=
-=N8fg
------END PGP SIGNATURE-----
-
---d5vnixjkpbvf6nj5--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Looks good. Let me know how do you want to route the patch to upstream.
+ 
+> Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
+> Signed-off-by: Hans Liljestrand <ishkamiel@gmail.com>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> Signed-off-by: David Windsor <dwindsor@gmail.com>
+> ---
+>  drivers/md/md.c | 6 +++---
+>  drivers/md/md.h | 3 ++-
+>  2 files changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/md/md.c b/drivers/md/md.c
+> index 985374f..94c8ebf 100644
+> --- a/drivers/md/md.c
+> +++ b/drivers/md/md.c
+> @@ -449,7 +449,7 @@ EXPORT_SYMBOL(md_unplug);
+>  
+>  static inline struct mddev *mddev_get(struct mddev *mddev)
+>  {
+> -	atomic_inc(&mddev->active);
+> +	refcount_inc(&mddev->active);
+>  	return mddev;
+>  }
+>  
+> @@ -459,7 +459,7 @@ static void mddev_put(struct mddev *mddev)
+>  {
+>  	struct bio_set *bs = NULL;
+>  
+> -	if (!atomic_dec_and_lock(&mddev->active, &all_mddevs_lock))
+> +	if (!refcount_dec_and_lock(&mddev->active, &all_mddevs_lock))
+>  		return;
+>  	if (!mddev->raid_disks && list_empty(&mddev->disks) &&
+>  	    mddev->ctime == 0 && !mddev->hold_active) {
+> @@ -495,7 +495,7 @@ void mddev_init(struct mddev *mddev)
+>  	INIT_LIST_HEAD(&mddev->all_mddevs);
+>  	setup_timer(&mddev->safemode_timer, md_safemode_timeout,
+>  		    (unsigned long) mddev);
+> -	atomic_set(&mddev->active, 1);
+> +	refcount_set(&mddev->active, 1);
+>  	atomic_set(&mddev->openers, 0);
+>  	atomic_set(&mddev->active_io, 0);
+>  	spin_lock_init(&mddev->lock);
+> diff --git a/drivers/md/md.h b/drivers/md/md.h
+> index b8859cb..4811663 100644
+> --- a/drivers/md/md.h
+> +++ b/drivers/md/md.h
+> @@ -22,6 +22,7 @@
+>  #include <linux/list.h>
+>  #include <linux/mm.h>
+>  #include <linux/mutex.h>
+> +#include <linux/refcount.h>
+>  #include <linux/timer.h>
+>  #include <linux/wait.h>
+>  #include <linux/workqueue.h>
+> @@ -360,7 +361,7 @@ struct mddev {
+>  	 */
+>  	struct mutex			open_mutex;
+>  	struct mutex			reconfig_mutex;
+> -	atomic_t			active;		/* general refcount */
+> +	refcount_t			active;		/* general refcount */
+>  	atomic_t			openers;	/* number of active opens */
+>  
+>  	int				changed;	/* True if we might need to
+> -- 
+> 2.7.4
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-raid" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
