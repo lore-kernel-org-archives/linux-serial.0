@@ -1,158 +1,74 @@
-From: Aleksey Makarov <amakarov.linux@gmail.com>
-Subject: Re: [PATCH v3 3/3] printk: fix double printing with earlycon
-Date: Tue, 7 Mar 2017 15:54:43 +0100
-Message-ID: <563502ae-1560-9dca-fe5b-4ec627c567f8@gmail.com>
-References: <20170302131153.22733-4-aleksey.makarov@linaro.org>
- <20170303154946.15399-1-aleksey.makarov@linaro.org>
- <20170306145933.GB425@tigerII.localdomain>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 07/10] serdev: add serdev_device_wait_until_sent
+Date: Tue, 7 Mar 2017 09:34:49 -0600
+Message-ID: <CAL_Jsq+BCE1u6Ysz0FOdh--wHm-PZxqcmqTgQMyDcvQNkYp3gw@mail.gmail.com>
+References: <20170304115833.3538-1-sre@kernel.org> <20170304115833.3538-8-sre@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170306145933.GB425@tigerII.localdomain>
+In-Reply-To: <20170304115833.3538-8-sre@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Aleksey Makarov <aleksey.makarov@linaro.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Petr Mladek <pmladek@suse.com>
+To: Sebastian Reichel <sre@kernel.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 03/06/2017 03:59 PM, Sergey Senozhatsky wrote:
-> On (03/03/17 18:49), Aleksey Makarov wrote:
-> [..]
->> +static enum { CONSOLE_MATCH, CONSOLE_MATCH_RETURN, CONSOLE_MATCH_NEXT }
->> +match_console(struct console *newcon, struct console_cmdline *c)
+On Sat, Mar 4, 2017 at 5:58 AM, Sebastian Reichel <sre@kernel.org> wrote:
+> Add method, which waits until the transmission buffer has been sent.
 >
-> that enum in function return is interesting :)
-> can we make it less hackish?
-
-We probably can, but I can not figure out how to do that.
-Suggestions will be appreciated.
-We should signal 3 different outcomes.
-I thought that using standard errnos is not quite desciptive.
-
->> +	if (!newcon->match ||
->> +	    newcon->match(newcon, c->name, c->index, c->options) != 0) {
->> +		/* default matching */
->> +		BUILD_BUG_ON(sizeof(c->name) != sizeof(newcon->name));
->> +		if (strcmp(c->name, newcon->name) != 0)
->> +			return CONSOLE_MATCH_NEXT;
->> +		if (newcon->index >= 0 && newcon->index != c->index)
->> +			return CONSOLE_MATCH_NEXT;
+> Signed-off-by: Sebastian Reichel <sre@kernel.org>
+> ---
+>  drivers/tty/serdev/core.c           | 11 +++++++++++
+>  drivers/tty/serdev/serdev-ttyport.c | 15 ++++++++++++++-
+>  include/linux/serdev.h              |  3 +++
+>  3 files changed, 28 insertions(+), 1 deletion(-)
 >
-> who is checking CONSOLE_MATCH_NEXT?
-
-The caller checks two other values,  this one goes under the default case.
-Should I check it explicitly?
-
->> +		if (newcon->index < 0)
->> +			newcon->index = c->index;
->> +
->> +		if (_braille_register_console(newcon, c))
->> +			return CONSOLE_MATCH_RETURN;
->> +
->> +		if (newcon->setup &&
->> +		    newcon->setup(newcon, c->options) != 0)
->> +			return CONSOLE_MATCH;
->> +	}
->> +
->> +	newcon->flags |= CON_ENABLED;
->> +	return CONSOLE_MATCH;
->> +}
->> +
->>  /*
->>   * The console driver calls this routine during kernel initialization
->>   * to register the console printing procedure with printk() and to
->> @@ -2454,40 +2480,50 @@ void register_console(struct console *newcon)
->>  	}
->>
->>  	/*
->> +	 * Check if this console was set as preferred by command line parameters
->> +	 * or by call to add_preferred_console().  There may be several entries
->> +	 * in the console_cmdline array matching with the same console so we
->> +	 * can not just use the first match.  Instead check the entry pointed
->> +	 * by preferred_console and then all other entries.
->> +	 */
->> +	if (preferred_console >= 0) {
->> +		switch (match_console(newcon,
->> +				      console_cmdline + preferred_console)) {
->> +		case CONSOLE_MATCH:
->> +			if (newcon->flags | CON_ENABLED) {
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index f4c6c90add78..a63b74031e22 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -173,6 +173,17 @@ void serdev_device_set_flow_control(struct serdev_device *serdev, bool enable)
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_device_set_flow_control);
 >
-> 			newcon->flags & CON_ENABLED  ?
-
-Sure.  Thank you.
-
->> +				newcon->flags |= CON_CONSDEV;
->> +				has_preferred = true;
->> +			}
->> +			goto match;
->> +		case CONSOLE_MATCH_RETURN:
->> +			return;
->> +		default:
->> +			break;
->> +		}
->> +	}
->> +
->> +	/*
->>  	 *	See if this console matches one we selected on
->>  	 *	the command line.
->>  	 */
->>  	for (i = 0, c = console_cmdline;
->>  	     i < MAX_CMDLINECONSOLES && c->name[0];
->>  	     i++, c++) {
->> -		if (!newcon->match ||
->> -		    newcon->match(newcon, c->name, c->index, c->options) != 0) {
->> -			/* default matching */
->> -			BUILD_BUG_ON(sizeof(c->name) != sizeof(newcon->name));
->> -			if (strcmp(c->name, newcon->name) != 0)
->> -				continue;
->> -			if (newcon->index >= 0 &&
->> -			    newcon->index != c->index)
->> -				continue;
->> -			if (newcon->index < 0)
->> -				newcon->index = c->index;
->> -
->> -			if (_braille_register_console(newcon, c))
->> -				return;
->>
->> -			if (newcon->setup &&
->> -			    newcon->setup(newcon, c->options) != 0)
->> -				break;
->> -		}
->> +		if (preferred_console == i)
->> +			continue;
->>
->> -		newcon->flags |= CON_ENABLED;
->> -		if (i == preferred_console) {
->> -			newcon->flags |= CON_CONSDEV;
->> -			has_preferred = true;
->> +		switch (match_console(newcon, c)) {
->> +		case CONSOLE_MATCH:
->> +			goto match;
->> +		case CONSOLE_MATCH_RETURN:
->> +			return;
->> +		default:
->> +			break;
+> +void serdev_device_wait_until_sent(struct serdev_device *serdev, long timeout)
+> +{
+> +       struct serdev_controller *ctrl = serdev->ctrl;
+> +
+> +       if (!ctrl || !ctrl->ops->wait_until_sent)
+> +               return;
+> +
+> +       ctrl->ops->wait_until_sent(ctrl, timeout);
+> +}
+> +EXPORT_SYMBOL_GPL(serdev_device_wait_until_sent);
+> +
+>  static int serdev_drv_probe(struct device *dev)
+>  {
+>         const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+> index d05393594f15..db2bc601e554 100644
+> --- a/drivers/tty/serdev/serdev-ttyport.c
+> +++ b/drivers/tty/serdev/serdev-ttyport.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/serdev.h>
+>  #include <linux/tty.h>
+>  #include <linux/tty_driver.h>
+> +#include <linux/poll.h>
 >
-> sorry, it was a rather long for me today. need to look more at this.
-> for what is now CONSOLE_MATCH_NEXT we used to have continue,
-
-CONSOLE_MATCH is for the case when the console matches against the description,
-CONSOLE_MATCH_NEXT - it does not, we should try next,
-CONSOLE_MATCH_RETURN - we should return as the braille console is registered now.
-
-> and now we break out of the loop?
-
-`goto match` or just when we have seen all the entries
-
-Thank you
-Aleksey Makarov
-
+>  #define SERPORT_ACTIVE         1
 >
-> 	-ss
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> @@ -47,10 +48,13 @@ static void ttyport_write_wakeup(struct tty_port *port)
+>         struct serport *serport = serdev_controller_get_drvdata(ctrl);
 >
+>         if (!test_and_clear_bit(TTY_DO_WRITE_WAKEUP, &port->tty->flags))
+> -               return;
+> +               goto out;
+>
+>         if (test_bit(SERPORT_ACTIVE, &serport->flags))
+>                 serdev_controller_write_wakeup(ctrl);
+> +
+> +out:
+> +       wake_up_interruptible_poll(&port->tty->write_wait, POLLOUT);
+
+Shouldn't this be separate patch?
+
+Rob
