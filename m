@@ -1,91 +1,64 @@
-From: Jason Uy <jason.uy@broadcom.com>
-Subject: RE: [PATCH] serial: 8250_dw: Fix breakage when HAVE_CLK=n
-Date: Mon, 6 Mar 2017 15:38:47 -0800
-Message-ID: <18720dd546d32a1455fb17ad46ee73e4@mail.gmail.com>
-References: <CAHp75Ved2h2WyWBokEOsDmAyB3w3iM=uh-9Bq01mU1ST4FapWQ@mail.gmail.com>
- <20170304130958.23655-1-james.hogan@imgtec.com> <CAHp75Vc=VmxvkqjP7nY6K4CKXBJC-NND0CUMbzwjV2nmQ-5OTw@mail.gmail.com>
- <20170306101603.GW996@jhogan-linux.le.imgtec.org>
+From: "Reshetova, Elena" <elena.reshetova-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH 21/29] drivers, s390: convert fc_fcp_pkt.ref_cnt from
+ atomic_t to refcount_t
+Date: Tue, 7 Mar 2017 07:50:16 +0000
+Message-ID: <2236FBA76BA1254E88B949DDB74E612B41C556BD@IRSMSX102.ger.corp.intel.com>
+References: <1488810076-3754-1-git-send-email-elena.reshetova@intel.com>
+ <1488810076-3754-22-git-send-email-elena.reshetova@intel.com>
+ <536a58ba-8896-5639-cab9-bd2f13bed325@suse.de>
+Reply-To: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20170306101603.GW996@jhogan-linux.le.imgtec.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: James Hogan <james.hogan@imgtec.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Heiko Stuebner <heiko@sntech.de>, David Daney <david.daney@cavium.com>, Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, linux-mips@linux-mips.org, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <open-iscsi+bncBCWONPVE7ANRBPWM7HCQKGQELWQBKFY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <536a58ba-8896-5639-cab9-bd2f13bed325-l3A5Bk7waGM@public.gmane.org>
+Content-Language: en-US
+List-Post: <https://groups.google.com/group/open-iscsi/post>, <mailto:open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:open-iscsi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/open-iscsi
+List-Subscribe: <https://groups.google.com/group/open-iscsi/subscribe>, <mailto:open-iscsi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+856124926423+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/open-iscsi/subscribe>
+To: Johannes Thumshirn <jthumshirn-l3A5Bk7waGM@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, "linux-bcache-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-bcache-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-raid-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-raid-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devel-tBiZLqfeLfOHmIFyCCdPziST3g8Odh+X@public.gmane.org" <devel-tBiZLqfeLfOHmIFyCCdPziST3g8Odh+X@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "fcoe-devel-s9riP+hp16TNLxjTenLetw@public.gmane.org" <fcoe-devel-s9riP+hp16TNLxjTenLetw@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, "devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org" <devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org>, target-devel-u79uwXL29TZNg+MwTxZMZA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Looks good
-Reviewed-by: Jason Uy <jason.uy@broadcom.com>
+> On 03/06/2017 03:21 PM, Elena Reshetova wrote:
+> > refcount_t type and corresponding API should be
+> > used instead of atomic_t when the variable is used as
+> > a reference counter. This allows to avoid accidental
+> > refcounter overflows that might lead to use-after-free
+> > situations.
+>=20
+> The subject is wrong, should be something like "scsi: libfc convert
+> fc_fcp_pkt.ref_cnt from atomic_t to refcount_t" but not s390.
 
------Original Message-----
-From: James Hogan [mailto:james.hogan@imgtec.com]
-Sent: March-06-17 2:16 AM
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: linux-kernel@vger.kernel.org; Greg Kroah-Hartman
-<gregkh@linuxfoundation.org>; Andy Shevchenko
-<andriy.shevchenko@linux.intel.com>; Jason Uy <jason.uy@broadcom.com>;
-Kefeng Wang <wangkefeng.wang@huawei.com>; Heiko Stuebner <heiko@sntech.de>;
-David Daney <david.daney@cavium.com>; Russell King <linux@armlinux.org.uk>;
-linux-serial@vger.kernel.org; linux-clk@vger.kernel.org;
-linux-mips@linux-mips.org; bcm-kernel-feedback-list
-<bcm-kernel-feedback-list@broadcom.com>
-Subject: Re: [PATCH] serial: 8250_dw: Fix breakage when HAVE_CLK=n
+Very sorry about this: the error in the subject got from the time when I wa=
+s trying to break the bigger drivers patch set into per-variable part and t=
+rying to automate the process too much :(
+I will fix it in the end version!
 
-On Sat, Mar 04, 2017 at 04:37:17PM +0200, Andy Shevchenko wrote:
-> On Sat, Mar 4, 2017 at 3:09 PM, James Hogan <james.hogan@imgtec.com>
-> wrote:
-> > Commit 6a171b299379 ("serial: 8250_dw: Allow hardware flow control
-> > to be
-> > used") recently broke the 8250_dw driver on platforms which don't
-> > select HAVE_CLK, as dw8250_set_termios() gets confused by the
-> > behaviour of the fallback HAVE_CLK=n clock API in linux/clk.h which
-> > pretends everything is fine but returns (valid) NULL clocks and 0 HZ
-> > clock rates.
-> >
-> > That 0 rate is written into the uartclk resulting in a crash at
-> > boot, e.g. on Cavium Octeon III based UTM-8 we get something like this:
-> >
-> > 1180000000800.serial: ttyS0 at MMIO 0x1180000000800 (irq = 41,
-> > base_baud = 25000000) is a OCTEON ------------[ cut here
-> > ]------------
-> > WARNING: CPU: 2 PID: 1 at drivers/tty/serial/serial_core.c:441
-> > uart_get_baud_rate+0xfc/0x1f0 ...
-> > Call Trace:
-> > ...
-> > [<ffffffff8149c2e4>] uart_get_baud_rate+0xfc/0x1f0
-> > [<ffffffff814a5098>] serial8250_do_set_termios+0xb0/0x440
-> > [<ffffffff8149c710>] uart_set_options+0xe8/0x190
-> > [<ffffffff814a6cdc>] serial8250_console_setup+0x84/0x158
-> > [<ffffffff814a11ec>] univ8250_console_setup+0x54/0x70
-> > [<ffffffff811901a0>] register_console+0x1c8/0x418
-> > [<ffffffff8149f004>] uart_add_one_port+0x434/0x4b0
-> > [<ffffffff814a1af8>] serial8250_register_8250_port+0x2d8/0x440
-> > [<ffffffff814aa620>] dw8250_probe+0x388/0x5e8 ...
-> >
-> > The clock API is defined such that NULL is a valid clock handle so
-> > it wouldn't be right to check explicitly for NULL. Instead treat a
-> > clk_round_rate() return value of 0 as an error which prevents
-> > uartclk being overwritten.
-> >
->
-> You forgot to add that it is dependent to Heiko's patch
-> http://www.spinics.net/lists/linux-serial/msg25314.html
+Best Regards,
+Elena
 
-Indeed I did. Sorry about that.
+>=20
+> Other than that
+> Acked-by: Johannes Thumshirn <jth-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>=20
+> --
+> Johannes Thumshirn                                          Storage
+> jthumshirn-l3A5Bk7waGM@public.gmane.org                                +49 911 74053 689
+> SUSE LINUX GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg
+> GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton
+> HRB 21284 (AG N=C3=BCrnberg)
+> Key fingerprint =3D EC38 9CAB C2C4 F25D 8600 D0D0 0393 969D 2D76 0850
 
->
-> Patch looks good to me and shouldn't bring any regression to Intel
-> hardware (x86 is using clock framework).
->
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
-Thanks
-James
+--=20
+You received this message because you are subscribed to the Google Groups "=
+open-iscsi" group.
+To unsubscribe from this group and stop receiving emails from it, send an e=
+mail to open-iscsi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+To post to this group, send email to open-iscsi-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+Visit this group at https://groups.google.com/group/open-iscsi.
+For more options, visit https://groups.google.com/d/optout.
