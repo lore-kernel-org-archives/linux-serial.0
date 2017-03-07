@@ -1,106 +1,351 @@
-From: Sakari Ailus <sakari.ailus@iki.fi>
-Subject: Re: [PATCH 13/29] drivers, media: convert
- vb2_vmarea_handler.refcount from atomic_t to refcount_t
-Date: Tue, 7 Mar 2017 10:50:05 +0200
-Message-ID: <20170307085005.GH3220@valkosipuli.retiisi.org.uk>
-References: <1488810076-3754-1-git-send-email-elena.reshetova@intel.com>
- <1488810076-3754-14-git-send-email-elena.reshetova@intel.com>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 2/4] dmaengine: mtk_uart_dma: add Mediatek uart DMA support
+Date: Tue, 7 Mar 2017 14:22:53 +0530
+Message-ID: <20170307085253.GH2843@localhost>
+References: <1487243251-964-1-git-send-email-long.cheng@mediatek.com>
+ <1487243251-964-3-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1488810076-3754-14-git-send-email-elena.reshetova@intel.com>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Elena Reshetova <elena.reshetova@intel.com>
-Cc: peterz@infradead.org, linux-pci@vger.kernel.org, target-devel@vger.kernel.org, linux1394-devel@lists.sourceforge.net, devel@driverdev.osuosl.org, linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, fcoe-devel@open-fcoe.org, xen-devel@lists.xenproject.org, open-iscsi@googlegroups.com, linux-media@vger.kernel.org, Kees Cook <keescook@chromium.org>, linux-raid@vger.kernel.org, linux-bcache@vger.kernel.org, Hans Liljestrand <ishkamiel@gmail.com>, David Windsor <dwindsor@gmail.com>, gregkh@linuxfoundation.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, devel@linuxdriverproject.org
+In-Reply-To: <1487243251-964-3-git-send-email-long.cheng@mediatek.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Long Cheng <long.cheng@mediatek.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, srv_heupstream@mediatek.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Elena,
+On Thu, Feb 16, 2017 at 07:07:29PM +0800, Long Cheng wrote:
+> In DMA engine framework, add 8250 mtk dma to support it.
 
-On Mon, Mar 06, 2017 at 04:21:00PM +0200, Elena Reshetova wrote:
-> refcount_t type and corresponding API should be
-> used instead of atomic_t when the variable is used as
-> a reference counter. This allows to avoid accidental
-> refcounter overflows that might lead to use-after-free
-> situations.
-> 
-> Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
-> Signed-off-by: Hans Liljestrand <ishkamiel@gmail.com>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> Signed-off-by: David Windsor <dwindsor@gmail.com>
-> ---
->  drivers/media/v4l2-core/videobuf2-memops.c | 6 +++---
->  include/media/videobuf2-memops.h           | 3 ++-
->  2 files changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/media/v4l2-core/videobuf2-memops.c b/drivers/media/v4l2-core/videobuf2-memops.c
-> index 1cd322e..4bb8424 100644
-> --- a/drivers/media/v4l2-core/videobuf2-memops.c
-> +++ b/drivers/media/v4l2-core/videobuf2-memops.c
-> @@ -96,10 +96,10 @@ static void vb2_common_vm_open(struct vm_area_struct *vma)
->  	struct vb2_vmarea_handler *h = vma->vm_private_data;
->  
->  	pr_debug("%s: %p, refcount: %d, vma: %08lx-%08lx\n",
-> -	       __func__, h, atomic_read(h->refcount), vma->vm_start,
-> +	       __func__, h, refcount_read(h->refcount), vma->vm_start,
->  	       vma->vm_end);
->  
-> -	atomic_inc(h->refcount);
-> +	refcount_inc(h->refcount);
->  }
->  
->  /**
-> @@ -114,7 +114,7 @@ static void vb2_common_vm_close(struct vm_area_struct *vma)
->  	struct vb2_vmarea_handler *h = vma->vm_private_data;
->  
->  	pr_debug("%s: %p, refcount: %d, vma: %08lx-%08lx\n",
-> -	       __func__, h, atomic_read(h->refcount), vma->vm_start,
-> +	       __func__, h, refcount_read(h->refcount), vma->vm_start,
->  	       vma->vm_end);
->  
->  	h->put(h->arg);
-> diff --git a/include/media/videobuf2-memops.h b/include/media/videobuf2-memops.h
-> index 36565c7a..a6ed091 100644
-> --- a/include/media/videobuf2-memops.h
-> +++ b/include/media/videobuf2-memops.h
-> @@ -16,6 +16,7 @@
->  
->  #include <media/videobuf2-v4l2.h>
->  #include <linux/mm.h>
-> +#include <linux/refcount.h>
->  
->  /**
->   * struct vb2_vmarea_handler - common vma refcount tracking handler
-> @@ -25,7 +26,7 @@
->   * @arg:	argument for @put callback
->   */
->  struct vb2_vmarea_handler {
-> -	atomic_t		*refcount;
-> +	refcount_t		*refcount;
+Can you please describe the controller here
 
-This is a pointer to refcount, not refcount itself. The refcount is part of
-a memory type specific struct, the types that you change in the following
-three patches. I guess it would still compile and work as separate patches
-but you'd sure get warnings at least.
+> +/*
+> + * MTK DMAengine support
+> + *
+> + * Copyright (c) 2016 MediaTek Inc.
 
-How about merging this and the three following patches that change the memop
-refcount types?
+we are in 2017 now
 
->  	void			(*put)(void *arg);
->  	void			*arg;
->  };
+> +#define VFF_INT_FLAG_CLR_B	0
+> +/*VFF_INT_EN*/
+> +#define VFF_RX_INT_EN0_B	BIT(0)
+> +#define VFF_RX_INT_EN1_B	BIT(1)
+> +#define VFF_TX_INT_EN_B		BIT(0)
+> +#define VFF_INT_EN_CLR_B	0
+
+empty line after each logical bloock helps in readablity
+
+> +/*VFF_RST*/
+> +#define VFF_WARM_RST_B		BIT(0)
+> +/*VFF_EN*/
+> +#define VFF_EN_B		BIT(0)
+> +/*VFF_STOP*/
+> +#define VFF_STOP_B		BIT(0)
+> +#define VFF_STOP_CLR_B		0
+> +/*VFF_FLUSH*/
+> +#define VFF_FLUSH_B		BIT(0)
+> +#define VFF_FLUSH_CLR_B		0
+
+please align all these
+> +
+> +#define VFF_TX_THRE(n)		((n)*7/8)
+> +#define VFF_RX_THRE(n)		((n)*3/4)
+
+can you describe this
+
+> +static bool mtk_dma_filter_fn(struct dma_chan *chan, void *param);
+
+is there a reason for this, we can move the filer fn here!
+
+> +static int mtk_dma_tx_write(struct dma_chan *chan)
+> +{
+> +	struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +	struct mtk_dmadev *mtkd = to_mtk_dma_dev(chan->device);
+> +	struct timespec a, b;
+> +	int txcount = c->remain_size;
+> +	unsigned int tx_size = c->cfg.dst_addr_width*1024;
+> +	unsigned int len, left;
+> +	unsigned int wpt;
+> +	ktime_t begin, end;
+> +
+> +	if (atomic_inc_and_test(&c->entry) > 1) {
+
+why are we using atomic variables
+
+> +		if (vchan_issue_pending(&c->vc) && !c->desc) {
+> +			spin_lock(&mtkd->lock);
+> +			list_add_tail(&c->node, &mtkd->pending);
+> +			spin_unlock(&mtkd->lock);
+> +			tasklet_schedule(&mtkd->task);
+> +		}
+> +	} else {
+> +		while (mtk_dma_chan_read(c, VFF_LEFT_SIZE) >= c->trig) {
+> +			left = tx_size - mtk_dma_chan_read(c, VFF_VALID_SIZE);
+> +			left = (left > 16) ? (left - 16) : (0);
+> +			len = left < c->remain_size ? left : c->remain_size;
+
+?? can you explain this
+
+> +
+> +			begin = ktime_get();
+> +			a = ktime_to_timespec(begin);
+
+more alarm bells now!
+
+> +			while (len--) {
+> +				/*
+> +				 * DMA limitation.
+> +				 * Workaround: Polling flush bit to zero,
+> +				 * set 1s timeout
+> +				 */
+
+1sec is ***VERY*** large, does the device recommend that?
+
+> +				while (mtk_dma_chan_read(c, VFF_FLUSH)) {
+> +					end = ktime_get();
+> +					b = ktime_to_timespec(end);
+> +					if ((b.tv_sec - a.tv_sec) > 1 ||
+> +						((b.tv_sec - a.tv_sec) == 1 &&
+> +						b.tv_nsec > a.tv_nsec)) {
+> +						dev_info(chan->device->dev,
+> +							"[UART] Polling flush timeout\n");
+> +						return 0;
+> +					}
+> +				}
+
+No this is not how you implement a time out. Hint use jiffes and count them.
+
+> +
+> +				wpt = mtk_dma_chan_read(c, VFF_WPT);
+> +
+> +				if ((wpt & 0x0000ffffl) ==
+
+magic number?
+
+> +static void mtk_dma_start_tx(struct mtk_chan *c)
+> +{
+> +	if (mtk_dma_chan_read(c, VFF_LEFT_SIZE) == 0) {
+> +		dev_info(c->vc.chan.device->dev, "%s maybe need fix? %d @L %d\n",
+> +				__func__, mtk_dma_chan_read(c, VFF_LEFT_SIZE),
+> +				__LINE__);
+> +		mtk_dma_chan_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
+> +	} else {
+> +		reinit_completion(&c->done);
+> +		atomic_inc(&c->loopcnt);
+> +		atomic_inc(&c->loopcnt);
+
+why would you increment twice
+
+> +static void mtk_dma_reset(struct mtk_chan *c)
+> +{
+> +	struct timespec a, b;
+> +	ktime_t begin, end;
+> +
+> +	mtk_dma_chan_write(c, VFF_ADDR, 0);
+> +	mtk_dma_chan_write(c, VFF_THRE, 0);
+> +	mtk_dma_chan_write(c, VFF_LEN, 0);
+> +	mtk_dma_chan_write(c, VFF_RST, VFF_WARM_RST_B);
+> +
+> +	begin = ktime_get();
+> +	a = ktime_to_timespec(begin);
+> +	while (mtk_dma_chan_read(c, VFF_EN)) {
+> +		end = ktime_get();
+> +		b = ktime_to_timespec(end);
+> +		if ((b.tv_sec - a.tv_sec) > 1 ||
+> +			((b.tv_sec - a.tv_sec) == 1 &&
+> +			b.tv_nsec > a.tv_nsec)) {
+> +			dev_info(c->vc.chan.device->dev,
+> +				"[UART] Polling VFF EN timeout\n");
+> +			return;
+> +		}
+
+and here we go again
+
+> +static void mtk_dma_stop(struct mtk_chan *c)
+> +{
+> +	int polling_cnt;
+> +
+> +	mtk_dma_chan_write(c, VFF_FLUSH, VFF_FLUSH_CLR_B);
+> +
+> +	polling_cnt = 0;
+> +	while (mtk_dma_chan_read(c, VFF_FLUSH))	{
+> +		polling_cnt++;
+> +		if (polling_cnt > MTK_POLLING_CNT) {
+> +			dev_info(c->vc.chan.device->dev, "mtk_uart_stop_dma: polling VFF_FLUSH fail VFF_DEBUG_STATUS=0x%x\n",
+
+126 chars, surely that must be a record!
+
+> +					mtk_dma_chan_read(c, VFF_DEBUG_STATUS));
+> +			break;
+> +		}
+> +	}
+> +
+> +	polling_cnt = 0;
+> +	/*set stop as 1 -> wait until en is 0 -> set stop as 0*/
+> +	mtk_dma_chan_write(c, VFF_STOP, VFF_STOP_B);
+> +	while (mtk_dma_chan_read(c, VFF_EN)) {
+> +		polling_cnt++;
+> +		if (polling_cnt > MTK_POLLING_CNT) {
+> +			dev_info(c->vc.chan.device->dev, "mtk_uart_stop_dma: polling VFF_EN fail VFF_DEBUG_STATUS=0x%x\n",
+
+and here
+
+> +					mtk_dma_chan_read(c, VFF_DEBUG_STATUS));
+> +			break;
+> +		}
+> +	}
+> +	mtk_dma_chan_write(c, VFF_STOP, VFF_STOP_CLR_B);
+> +	mtk_dma_chan_write(c, VFF_INT_EN, VFF_INT_EN_CLR_B);
+> +	mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_INT_FLAG_CLR_B);
+> +
+> +	c->paused = true;
+> +}
+> +
+> +/*
+> + * This callback schedules all pending channels. We could be more
+> + * clever here by postponing allocation of the real DMA channels to
+> + * this point, and freeing them when our virtual channel becomes idle.
+
+yeah sounds good to me :)
+
+> +static int mtk_dma_alloc_chan_resources(struct dma_chan *chan)
+> +{
+> +	struct mtk_dmadev *mtkd = to_mtk_dma_dev(chan->device);
+> +	struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +	int ret;
+> +
+> +	ret = -EBUSY;
+> +
+> +	if (mtkd->lch_map[c->dma_ch] == NULL) {
+> +		c->channel_base = mtkd->base + 0x80 * c->dma_ch;
+
+this should be probe thingy, why are we doing this here?
+
+> +static enum dma_status mtk_dma_tx_status(struct dma_chan *chan,
+> +	dma_cookie_t cookie, struct dma_tx_state *txstate)
+> +{
+> +	struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +	enum dma_status ret;
+> +	unsigned long flags;
+> +
+> +	ret = dma_cookie_status(chan, cookie, txstate);
+> +
+> +	spin_lock_irqsave(&c->vc.lock, flags);
+> +
+> +	if (ret == DMA_IN_PROGRESS) {
+> +		c->rx_ptr = mtk_dma_chan_read(c, VFF_RPT) & 0x0000ffffl;
+
+magic!!
+
+> +		txstate->residue = c->rx_ptr;
+> +	} else if (ret == DMA_COMPLETE && c->cfg.direction == DMA_DEV_TO_MEM) {
+> +		txstate->residue = c->remain_size;
+
+this seems incorrect, if it is complete then why residue?
+
+> +	} else {
+> +		txstate->residue = 0;
+
+which is a no-op
+
+
+> +static struct dma_async_tx_descriptor *mtk_dma_prep_slave_sg(
+> +	struct dma_chan *chan, struct scatterlist *sgl, unsigned int sglen,
+> +	enum dma_transfer_direction dir, unsigned long tx_flags, void *context)
+> +{
+> +	struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +	enum dma_slave_buswidth dev_width;
+> +	struct scatterlist *sgent;
+> +	struct mtk_desc *d;
+> +	dma_addr_t dev_addr;
+> +	unsigned int i, j, en, frame_bytes;
+> +
+> +	en = frame_bytes = 1;
+> +
+> +	if (dir == DMA_DEV_TO_MEM) {
+> +		dev_addr = c->cfg.src_addr;
+> +		dev_width = c->cfg.src_addr_width;
+> +	} else if (dir == DMA_MEM_TO_DEV) {
+> +		dev_addr = c->cfg.dst_addr;
+> +		dev_width = c->cfg.dst_addr_width;
+> +	} else {
+> +		dev_err(chan->device->dev, "%s: bad direction?\n", __func__);
+> +		return NULL;
+> +	}
+> +
+> +	/* Now allocate and setup the descriptor. */
+> +	d = kmalloc(sizeof(*d) + sglen * sizeof(d->sg[0]),
+> +				GFP_KERNEL | ___GFP_ZERO);
+
+why ___GFP_ZERO? why not GFP_NOATOMIC?
+
+> +static int
+> +mtk_dma_slave_config(struct dma_chan *chan, struct dma_slave_config *cfg)
+> +{
+> +	struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +	struct mtk_dmadev *mtkd = to_mtk_dma_dev(c->vc.chan.device);
+> +	int ret;
+> +
+> +	memcpy(&c->cfg, cfg, sizeof(c->cfg));
+> +
+> +	if (cfg->direction == DMA_DEV_TO_MEM) {
+> +		mtk_dma_chan_write(c, VFF_ADDR, cfg->src_addr);
+> +		mtk_dma_chan_write(c, VFF_LEN, cfg->src_addr_width*1024);
+> +		mtk_dma_chan_write(c, VFF_THRE,
+> +					VFF_RX_THRE(cfg->src_addr_width*1024));
+> +		mtk_dma_chan_write(c, VFF_INT_EN,
+> +					VFF_RX_INT_EN0_B | VFF_RX_INT_EN1_B);
+> +		mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_INT_FLAG_CLR_B);
+> +		mtk_dma_chan_write(c, VFF_EN, VFF_EN_B);
+
+this is wrong, you dont program channel here, but upon the descriptor issue.
+The values should be stored locally and used to prepare.
+
+> +static int mtk_dma_pause(struct dma_chan *chan)
+> +{
+> +	/* Pause/Resume only allowed with cyclic mode */
+> +	return -EINVAL;
+> +}
+
+then remove it
+
+> +	dma_cap_set(DMA_SLAVE, mtkd->ddev.cap_mask);
+> +	mtkd->ddev.device_alloc_chan_resources = mtk_dma_alloc_chan_resources;
+> +	mtkd->ddev.device_free_chan_resources = mtk_dma_free_chan_resources;
+> +	mtkd->ddev.device_tx_status = mtk_dma_tx_status;
+> +	mtkd->ddev.device_issue_pending = mtk_dma_issue_pending;
+> +	mtkd->ddev.device_prep_slave_sg = mtk_dma_prep_slave_sg;
+> +	mtkd->ddev.device_config = mtk_dma_slave_config;
+> +	mtkd->ddev.device_pause = mtk_dma_pause;
+> +	mtkd->ddev.device_resume = mtk_dma_resume;
+> +	mtkd->ddev.device_terminate_all = mtk_dma_terminate_all;
+> +	mtkd->ddev.src_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE);
+> +	mtkd->ddev.dst_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE);
+
+1bytes width, are you sure about that?
+
+> +static int mtk_dma_init(void)
+> +{
+> +	return platform_driver_register(&mtk_dma_driver);
+> +}
+> +subsys_initcall(mtk_dma_init);
+> +
+> +static void __exit mtk_dma_exit(void)
+> +{
+> +	platform_driver_unregister(&mtk_dma_driver);
+> +}
+> +module_exit(mtk_dma_exit);
+
+platform_driver_register() pls
 
 -- 
-Kind regards,
-
-Sakari Ailus
-e-mail: sakari.ailus@iki.fi	XMPP: sailus@retiisi.org.uk
+~Vinod
