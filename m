@@ -1,53 +1,54 @@
-From: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 08/10] serdev: add serdev_device_get_cts
-Date: Wed, 8 Mar 2017 09:13:56 -0600
-Message-ID: <CAL_JsqL86La9R=mcnC9Hgba9yWV8Zpbewpiir5_=P7pwiDqkXA@mail.gmail.com>
-References: <20170304115833.3538-1-sre@kernel.org> <20170304115833.3538-9-sre@kernel.org>
- <CAL_Jsq+6NCC35zBMhvNhXug2sYmBqBoJ20pgdREhvRPGzePNkw@mail.gmail.com> <20170307211243.zecbitmkbozd3s2j@earth>
+From: Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [Xen-devel] [PATCH 29/29] drivers, xen: convert grant_map.users
+ from atomic_t to refcount_t
+Date: Wed, 8 Mar 2017 12:45:23 -0500
+Message-ID: <c4ea3925-f505-3c5b-a9fc-c74ea5a7cbe9@oracle.com>
+References: <1488810076-3754-1-git-send-email-elena.reshetova@intel.com>
+ <1488810076-3754-30-git-send-email-elena.reshetova@intel.com>
+ <99270126-7751-eed0-5efa-fc695ff3be25@oracle.com>
+ <2236FBA76BA1254E88B949DDB74E612B41C56177@IRSMSX102.ger.corp.intel.com>
+Reply-To: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170307211243.zecbitmkbozd3s2j@earth>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sre@kernel.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Return-path: <open-iscsi+bncBC3JRV7SWYEBB3UFQHDAKGQESVTIKEI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <2236FBA76BA1254E88B949DDB74E612B41C56177-kPTMFJFq+rFP9JyJpTNKArfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+List-Post: <https://groups.google.com/group/open-iscsi/post>, <mailto:open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:open-iscsi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/open-iscsi
+List-Subscribe: <https://groups.google.com/group/open-iscsi/subscribe>, <mailto:open-iscsi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+856124926423+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/open-iscsi/subscribe>
+To: "Reshetova, Elena" <elena.reshetova-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: "peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "target-devel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <target-devel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, "devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org" <devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "fcoe-devel-s9riP+hp16TNLxjTenLetw@public.gmane.org" <fcoe-devel-s9riP+hp16TNLxjTenLetw@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, "linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-raid-u79uwXL29TasMV2rI37PzA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Mar 7, 2017 at 3:12 PM, Sebastian Reichel <sre@kernel.org> wrote:
-> Hi Rob,
+On 03/08/2017 08:49 AM, Reshetova, Elena wrote:
+>> On 03/06/2017 09:21 AM, Elena Reshetova wrote:
+>>> refcount_t type and corresponding API should be
+>>> used instead of atomic_t when the variable is used as
+>>> a reference counter. This allows to avoid accidental
+>>> refcounter overflows that might lead to use-after-free
+>>> situations.
+>>>
+>>> Signed-off-by: Elena Reshetova <elena.reshetova-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>>> Signed-off-by: Hans Liljestrand <ishkamiel-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>>> Signed-off-by: Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>>> Signed-off-by: David Windsor <dwindsor-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>>> ---
+>>>  drivers/xen/gntdev.c | 11 ++++++-----
+>>>  1 file changed, 6 insertions(+), 5 deletions(-)
+>> Reviewed-by: Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> Is there a tree that can take this change? Turns out it is better to propagate changes via separate trees and only leftovers can be taken via Greg's tree.  
 >
-> On Tue, Mar 07, 2017 at 10:03:37AM -0600, Rob Herring wrote:
->> On Sat, Mar 4, 2017 at 5:58 AM, Sebastian Reichel <sre@kernel.org> wrote:
->> > Add method to get current CTS line state.
->> >
->> > Signed-off-by: Sebastian Reichel <sre@kernel.org>
->> > ---
->> >  drivers/tty/serdev/core.c           | 11 +++++++++++
->> >  drivers/tty/serdev/serdev-ttyport.c | 15 +++++++++++++++
->> >  include/linux/serdev.h              |  6 ++++++
->> >  3 files changed, 32 insertions(+)
->> >
->> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
->> > index a63b74031e22..36eb3dfb1477 100644
->> > --- a/drivers/tty/serdev/core.c
->> > +++ b/drivers/tty/serdev/core.c
->> > @@ -184,6 +184,17 @@ void serdev_device_wait_until_sent(struct serdev_device *serdev, long timeout)
->> >  }
->> >  EXPORT_SYMBOL_GPL(serdev_device_wait_until_sent);
->> >
->> > +bool serdev_device_get_cts(struct serdev_device *serdev)
->>
->> I wonder if this should just be the wait for cts in the core. I think
->> that would be the common use for reading the CTS state. IIRC, I saw
->> some other device needing the same thing.
->
-> mh. I think it fits nicely to serdev_device_set_rts(). But I guess
-> it makes sense to have the wait feature directly in serdev. So I
-> suggest to add the function in addition to the simple get_cts
-> function. Does that make sense to you?
 
-Sure. You should be able to implement that just in the core. Then the
-host driver stays simple and we're not duplicating the wait in host
-drivers (not that we expect to have lots of host drivers).
+Sure, we can take it via Xen tree for rc3.
 
-Rob
+-boris
+
+-- 
+You received this message because you are subscribed to the Google Groups "open-iscsi" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to open-iscsi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+To post to this group, send email to open-iscsi-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+Visit this group at https://groups.google.com/group/open-iscsi.
+For more options, visit https://groups.google.com/d/optout.
