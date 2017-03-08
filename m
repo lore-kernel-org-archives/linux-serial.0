@@ -1,69 +1,86 @@
-From: Johannes Thumshirn <jthumshirn-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH 21/29] drivers, s390: convert fc_fcp_pkt.ref_cnt from
- atomic_t to refcount_t
-Date: Wed, 8 Mar 2017 15:06:53 +0100
-Message-ID: <36e6c54c-5e4b-fe16-86e2-fdef7a52d048@suse.de>
-References: <1488810076-3754-1-git-send-email-elena.reshetova@intel.com>
- <1488810076-3754-22-git-send-email-elena.reshetova@intel.com>
- <536a58ba-8896-5639-cab9-bd2f13bed325@suse.de>
- <2236FBA76BA1254E88B949DDB74E612B41C5615F@IRSMSX102.ger.corp.intel.com>
-Reply-To: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 10/10] Bluetooth: add nokia driver
+Date: Wed, 8 Mar 2017 08:26:33 -0600
+Message-ID: <CAL_JsqJwqoTkFGKGx4g5Fvq=R1SnQ=bB0z0=UxNA2uGTJ6ngOA@mail.gmail.com>
+References: <20170304115833.3538-1-sre@kernel.org> <20170304115833.3538-11-sre@kernel.org>
+ <CAL_Jsq+PvqS_tU6wRzpcsdESYxOOU_JJqsacEc9qLDs2PB2VLw@mail.gmail.com> <20170307210837.w5fdwc2sy3xmzci7@earth>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Return-path: <open-iscsi+bncBDVNRMMDUUIBB747QDDAKGQEYPGNNBQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <2236FBA76BA1254E88B949DDB74E612B41C5615F-kPTMFJFq+rFP9JyJpTNKArfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-List-Post: <https://groups.google.com/group/open-iscsi/post>, <mailto:open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:open-iscsi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/open-iscsi
-List-Subscribe: <https://groups.google.com/group/open-iscsi/subscribe>, <mailto:open-iscsi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+856124926423+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/open-iscsi/subscribe>
-To: "Reshetova, Elena" <elena.reshetova-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, "linux-bcache-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-bcache-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-raid-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-raid-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devel-tBiZLqfeLfOHmIFyCCdPziST3g8Odh+X@public.gmane.org" <devel-tBiZLqfeLfOHmIFyCCdPziST3g8Odh+X@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "fcoe-devel-s9riP+hp16TNLxjTenLetw@public.gmane.org" <fcoe-devel-s9riP+hp16TNLxjTenLetw@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, "devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org" <devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org>, target-devel-u79uwXL29Tb/PtFMR13I2A@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170307210837.w5fdwc2sy3xmzci7@earth>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Reichel <sre@kernel.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/08/2017 02:48 PM, Reshetova, Elena wrote:
->> On 03/06/2017 03:21 PM, Elena Reshetova wrote:
->>> refcount_t type and corresponding API should be
->>> used instead of atomic_t when the variable is used as
->>> a reference counter. This allows to avoid accidental
->>> refcounter overflows that might lead to use-after-free
->>> situations.
->>
->> The subject is wrong, should be something like "scsi: libfc convert
->> fc_fcp_pkt.ref_cnt from atomic_t to refcount_t" but not s390.
->>
->> Other than that
->> Acked-by: Johannes Thumshirn <jth-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+On Tue, Mar 7, 2017 at 3:08 PM, Sebastian Reichel <sre@kernel.org> wrote:
+> Hi Rob,
 >
-> Turns out that it is better that all these patches go through the respect=
-ive maintainer trees, if present.
-> If I send an updated patch (with subject fixed), could you merge it throu=
-gh your tree?
+> On Tue, Mar 07, 2017 at 10:30:51AM -0600, Rob Herring wrote:
+>> On Sat, Mar 4, 2017 at 5:58 AM, Sebastian Reichel <sre@kernel.org> wrote:
+>> > This adds a driver for the Nokia H4+ protocol, which is used
+>> > at least on the Nokia N9, N900 & N950.
+>> >
+>> > Signed-off-by: Sebastian Reichel <sre@kernel.org>
+>> > ---
+>> >  .../devicetree/bindings/net/nokia-bluetooth.txt    |  51 ++
+>>
+>> This should be separate and before the dts files.
+>>
+>> >  drivers/bluetooth/Kconfig                          |  12 +
+>> >  drivers/bluetooth/Makefile                         |   2 +
+>> >  drivers/bluetooth/hci_nokia.c                      | 839 +++++++++++++++++++++
+>> >  4 files changed, 904 insertions(+)
+>> >  create mode 100644 Documentation/devicetree/bindings/net/nokia-bluetooth.txt
+>> >  create mode 100644 drivers/bluetooth/hci_nokia.c
+>> >
+>> > diff --git a/Documentation/devicetree/bindings/net/nokia-bluetooth.txt b/Documentation/devicetree/bindings/net/nokia-bluetooth.txt
+>> > new file mode 100644
+>> > index 000000000000..6c80a92f31e2
+>> > --- /dev/null
+>> > +++ b/Documentation/devicetree/bindings/net/nokia-bluetooth.txt
+>> > @@ -0,0 +1,51 @@
+>> > +Nokia Bluetooth Chips
+>> > +---------------------
+>> > +
+>> > +Nokia phones often come with UART connected bluetooth chips from different
+>> > +vendors and modified device API. Those devices speak a protocol named H4+
+>> > +by Nokia, which is similar to the H4 protocol from the Bluetooth standard.
+>> > +In addition to the H4 protocol it specifies two more UART status lines for
+>> > +wakeup of UART transceivers to improve power management and a few new packet
+>> > +types used to negotiate uart speed.
+>> > +
+>> > +Required properties:
+>> > +
+>> > + - compatible: should be one of the following:
+>> > +   * "nokia,brcm,bcm2048"
+>> > +   * "nokia,ti,wl1271-bluetooth"
+>>
+>> Drop the chip vendors' prefix here. I don't really want to start a
+>> pattern of 2 vendor prefixes.
+>
+> Right, I think we discussed this before, but I don't remember the
+> result. How about
+>
+> - compatible: should contain "nokia,h4p-bluetooth" as well as one of the following:
+>  * "brcm,bcm2048-nokia"
+>  * "ti,wl1271-blueooth-nokia"
 
-Yes, but this would be the normal scsi tree from Martin and James.
+Sure, that's fine (other than the typo).
 
-Please include my Ack in the re-sends.
+> For the driver it should be enough to know "nokia,h4p-bluetooth"
+> actually. The device identifies itself in the negotiation reply.
+>
+>> > + - reset-gpios: GPIO specifier, used to reset the BT module
+>>
+>> Need to state active state.
+>
+> ok. Any suggestion about the wording? The BT chips use usually
+> active low reset pin. The driver handles all GPIOs as active
+> high with the DT binding translating this transparently.
 
-Thanks a lot,
-	Johannes
+Just having "active low" in there is enough.
 
+Personally I find the GPIO translating confusing...
 
---=20
-Johannes Thumshirn                                          Storage
-jthumshirn-l3A5Bk7waGM@public.gmane.org                                +49 911 74053 689
-SUSE LINUX GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg
-GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton
-HRB 21284 (AG N=C3=BCrnberg)
-Key fingerprint =3D EC38 9CAB C2C4 F25D 8600 D0D0 0393 969D 2D76 0850
-
---=20
-You received this message because you are subscribed to the Google Groups "=
-open-iscsi" group.
-To unsubscribe from this group and stop receiving emails from it, send an e=
-mail to open-iscsi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-To post to this group, send email to open-iscsi-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-Visit this group at https://groups.google.com/group/open-iscsi.
-For more options, visit https://groups.google.com/d/optout.
+Rob
