@@ -1,86 +1,162 @@
-From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 10/10] Bluetooth: add nokia driver
-Date: Wed, 8 Mar 2017 00:06:09 +0100
-Message-ID: <20170307230609.kpw3y2pkfka6kgo5@earth>
-References: <20170304115833.3538-1-sre@kernel.org>
- <20170304115833.3538-11-sre@kernel.org>
- <CAL_Jsq+PvqS_tU6wRzpcsdESYxOOU_JJqsacEc9qLDs2PB2VLw@mail.gmail.com>
- <20170307210837.w5fdwc2sy3xmzci7@earth>
- <65D9766C-9BED-42D5-931C-65044530E215@holtmann.org>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [PATCH v3 3/3] printk: fix double printing with earlycon
+Date: Wed, 8 Mar 2017 14:33:37 +0900
+Message-ID: <20170308053337.GA6776@jagdpanzerIV.localdomain>
+References: <20170302131153.22733-4-aleksey.makarov@linaro.org>
+ <20170303154946.15399-1-aleksey.makarov@linaro.org>
+ <20170306145933.GB425@tigerII.localdomain>
+ <563502ae-1560-9dca-fe5b-4ec627c567f8@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="yjbcw4gvvbbzjx7v"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <65D9766C-9BED-42D5-931C-65044530E215-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <563502ae-1560-9dca-fe5b-4ec627c567f8@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Aleksey Makarov <amakarov.linux@gmail.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Petr Mladek <pmladek@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
+Hello,
 
---yjbcw4gvvbbzjx7v
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+sorry for the delay.
 
-Hi Marcel,
+On (03/07/17 15:54), Aleksey Makarov wrote:
+> On 03/06/2017 03:59 PM, Sergey Senozhatsky wrote:
+> > On (03/03/17 18:49), Aleksey Makarov wrote:
+> > [..]
+> > > +static enum { CONSOLE_MATCH, CONSOLE_MATCH_RETURN, CONSOLE_MATCH_NEXT }
+> > > +match_console(struct console *newcon, struct console_cmdline *c)
+> > 
+> > that enum in function return is interesting :)
+> > can we make it less hackish?
+> We probably can, but I can not figure out how to do that.
+> Suggestions will be appreciated.
+> We should signal 3 different outcomes.
+> I thought that using standard errnos is not quite desciptive.
 
-On Tue, Mar 07, 2017 at 10:20:27PM +0100, Marcel Holtmann wrote:
->> [...]
->>
->> - compatible: should contain "nokia,h4p-bluetooth" as well as one of the=
- following:
->> * "brcm,bcm2048-nokia"
->> * "ti,wl1271-blueooth-nokia=E2=80=9D
->=20
-> I never liked the term =E2=80=9Ch4p=E2=80=9D. It is fundamentally just
-> =E2=80=9Cbluetooth=E2=80=9D.
+no problems with the enum on its own. errnos probably can also do
+the trick.
 
-It's not me, that came up with the term, Nokia called their protocol
-H4+ (for DT people not familiar with bluetooth - the standard
-bluetooth UART protocol is named H4). I agree, that H4+ is
-ambiguous, but with the "nokia," prefix it should be clear what
-protocol is meant. I don't really mind, though. We can also just
-list the individual chips and add all compatible strings to the
-driver.
+the way it's defined, however, is a bit unusual and may be
+inconvenient - we can add, say, 5 more CONSOLE_MATCH_FOO someday
+in the future and match_console() function definition thus will be:
 
-FWIW I remove the term from the driver leaving only a single
-instance in the header ("AKA H4+").
+static enum { CONSOLE_MATCH, CONSOLE_MATCH_RETURN, CONSOLE_MATCH_NEXT,
+		CONSOLE_MATCH_FOO1, CONSOLE_MATCH_FOO2,
+		CONSOLE_MATCH_FOO3, CONSOLE_MATCH_FOO4,
+		CONSOLE_MATCH_FOO5}
+match_console(struct console *newcon, struct console_cmdline *c)
+{
+	...
+}
 
-> What are our plans for Broadcom, Intel etc. Bluetooth UARTs?
+or something like this
 
-I think drivers, that need extra resources (like GPIOs) can switch to
-serdev exclusively. The kernel needs ACPI/DT/boardcode data for those
-devices anyways.
+static enum { CONSOLE_MATCH,
+	CONSOLE_MATCH_RETURN,
+	CONSOLE_MATCH_NEXT,
+	CONSOLE_MATCH_FOO1,
+	CONSOLE_MATCH_FOO2,
+	CONSOLE_MATCH_FOO3,
+	CONSOLE_MATCH_FOO4,
+	CONSOLE_MATCH_FOO5 }
+match_console(struct console *newcon, struct console_cmdline *c)
+{
+	..
+}
 
-Iirc Rob is working on serdev patches for Broadcom and TI BT, so he may
-provide more information.
+or anything else. which is, to my admittedly imperfect taste, slightly
+"unpretty".
 
--- Sebastian
+[..]
+> > > +	/*
+> > >  	 *	See if this console matches one we selected on
+> > >  	 *	the command line.
+> > >  	 */
+> > >  	for (i = 0, c = console_cmdline;
+> > >  	     i < MAX_CMDLINECONSOLES && c->name[0];
+> > >  	     i++, c++) {
+> > > -		if (!newcon->match ||
+> > > -		    newcon->match(newcon, c->name, c->index, c->options) != 0) {
+> > > -			/* default matching */
+> > > -			BUILD_BUG_ON(sizeof(c->name) != sizeof(newcon->name));
+> > > -			if (strcmp(c->name, newcon->name) != 0)
+> > > -				continue;
+> > > -			if (newcon->index >= 0 &&
+> > > -			    newcon->index != c->index)
+> > > -				continue;
+> > > -			if (newcon->index < 0)
+> > > -				newcon->index = c->index;
+> > > -
+> > > -			if (_braille_register_console(newcon, c))
+> > > -				return;
+> > > 
+> > > -			if (newcon->setup &&
+> > > -			    newcon->setup(newcon, c->options) != 0)
+> > > -				break;
+> > > -		}
+> > > +		if (preferred_console == i)
+> > > +			continue;
+> > > 
+> > > -		newcon->flags |= CON_ENABLED;
+> > > -		if (i == preferred_console) {
+> > > -			newcon->flags |= CON_CONSDEV;
+> > > -			has_preferred = true;
+> > > +		switch (match_console(newcon, c)) {
+> > > +		case CONSOLE_MATCH:
+> > > +			goto match;
+> > > +		case CONSOLE_MATCH_RETURN:
+> > > +			return;
+> > > +		default:
+> > > +			break;
+> > 
+> > sorry, it was a rather long for me today. need to look more at this.
+> > for what is now CONSOLE_MATCH_NEXT we used to have continue,
+> 
+> CONSOLE_MATCH is for the case when the console matches against the description,
+> CONSOLE_MATCH_NEXT - it does not, we should try next,
 
---yjbcw4gvvbbzjx7v
-Content-Type: application/pgp-signature; name="signature.asc"
+my bad, sorry. I misread the patch: there was another `break' right after
+that switch, that you have removed; and I just wrongly concluded that
+CONSOLE_MATCH_NEXT would now 'break' from 'default' label *and* `break'
+from the console_cmdline loop right after it.
 
------BEGIN PGP SIGNATURE-----
+bikeshedding:
+may be explicit CONSOLE_MATCH_NEXT test will save us from problems (in
+case if match_console() will return more codes someday), may be it won't.
+hard to say. 'default: continue' is probably OK. or may be can do without
+that 'match' label at all. something like this (_may be_)
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAli/PN4ACgkQ2O7X88g7
-+pplCA//RECW46Q3/61zbH1prx80b7exC1YSCIfcaEvTnzmmwrFM4tTjVB/KdSXL
-IhV06OCdcOwr9c1viXO6L4KRevFEA8V46rH0XMpQFUPmgSB/HGYVb+12tlTjcXNO
-pU0qKLqGAjqGM9kY/xhzoELnnIhwcRvkonpyx8dRNJSobgodOJvatJLgYQkqs74u
-wO26/W8DhuRTYpYU4XZEmURlcNil1NYHIRSm7hEaDooAg1jsLj9yqXRImzhnXrGo
-A0dkpvlmybHrhKJHzJXTlj2MsbjqGlapaJa2Kbi8qc7O6jgm0F65qsD0Tzbggcaj
-5XB8FAIjWOYdD6qXh2vopZ0lJU5cHpWZvajdS3LbLIsW6BE/6rJPj+ej34XzGN0y
-enA27o2y/uPuI2q6YzhtI1sGbdk2NxsytZXSZsPfOnsB9p1cBefmcISEWoPfwuUj
-tKVofnkhfHpaq/j+VhkkvtsuVIM2knLzSNAKojBQ4VrRvKtlgInflq1EiU4Wc8GY
-qtSgCk3m6vXDa2ctiqvVGO6qMliniNkLx5I2K8pUghTBAYRxa4dTWoVG0Re6RWqp
-evj9gzigQvWV2pKPsIWWrZ/9LEB2OF3xPp6T4rBl6rbEJQMCH5dY+hg1zgo2FxKe
-m0C4PUyNMVFB28J6MZbF11Bu4IsTgnHhLuQsKoVwcAycr8boFWc=
-=Io95
------END PGP SIGNATURE-----
+	for (i = 0, c = console_cmdline; ... ) {
+		if (preferred_console == i)
+			continue;
 
---yjbcw4gvvbbzjx7v--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+		match = match_console(newcon, c);
+		if (match == CONSOLE_MATCH_NEXT)
+			continue;
+		if (match == CONSOLE_MATCH_FOUND)
+			break;
+		if (match == CONSOLE_MATCH_STOP)
+			return;
+	}
+	...
+
+
+
+CONSOLE_MATCH_RETURN  -  basically means that we should stop matching.
+can we thus rename it to CONSOLE_MATCH_STOP, or similar?
+
+	match_console() returned CONSOLE_MATCH_STOP
+
+is a bit better than
+
+	match_console() returned CONSOLE_MATCH_RETURN.
+
+isn't it? :)
+
+
+// I also used CONSOLE_MATCH_FOUND in the example above instead of
+// CONSOLE_MATCH. not insisting that CONSOLE_MATCH_FOUND is much
+// better than CONSOLE_MATCH though.
+
+	-ss
