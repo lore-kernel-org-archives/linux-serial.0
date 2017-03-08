@@ -1,162 +1,51 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [PATCH v3 3/3] printk: fix double printing with earlycon
-Date: Wed, 8 Mar 2017 14:33:37 +0900
-Message-ID: <20170308053337.GA6776@jagdpanzerIV.localdomain>
-References: <20170302131153.22733-4-aleksey.makarov@linaro.org>
- <20170303154946.15399-1-aleksey.makarov@linaro.org>
- <20170306145933.GB425@tigerII.localdomain>
- <563502ae-1560-9dca-fe5b-4ec627c567f8@gmail.com>
+From: "Nicholas A. Bellinger" <nab-IzHhD5pYlfBP7FQvKIMDCQ@public.gmane.org>
+Subject: Re: [PATCH 24/29] drivers: convert iblock_req.pending from atomic_t
+ to refcount_t
+Date: Tue, 07 Mar 2017 23:37:04 -0800
+Message-ID: <1488958624.10589.10.camel@haakon3.risingtidesystems.com>
+References: <1488810076-3754-1-git-send-email-elena.reshetova@intel.com>
+	 <1488810076-3754-25-git-send-email-elena.reshetova@intel.com>
+Reply-To: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <563502ae-1560-9dca-fe5b-4ec627c567f8@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Aleksey Makarov <amakarov.linux@gmail.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Petr Mladek <pmladek@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <open-iscsi+bncBDAIFWGVYMJRBI7J73CQKGQE7C5YECQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <1488810076-3754-25-git-send-email-elena.reshetova-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Post: <https://groups.google.com/group/open-iscsi/post>, <mailto:open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:open-iscsi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/open-iscsi
+List-Subscribe: <https://groups.google.com/group/open-iscsi/subscribe>, <mailto:open-iscsi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+856124926423+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/open-iscsi/subscribe>
+To: Elena Reshetova <elena.reshetova-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-bcache-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-raid-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devel-tBiZLqfeLfOHmIFyCCdPziST3g8Odh+X@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, fcoe-devel-s9riP+hp16TNLxjTenLetw@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, target-devel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Hans Liljestrand <ishkamiel-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, David Windsor <dwindsor-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+Hi Elena,
 
-sorry for the delay.
-
-On (03/07/17 15:54), Aleksey Makarov wrote:
-> On 03/06/2017 03:59 PM, Sergey Senozhatsky wrote:
-> > On (03/03/17 18:49), Aleksey Makarov wrote:
-> > [..]
-> > > +static enum { CONSOLE_MATCH, CONSOLE_MATCH_RETURN, CONSOLE_MATCH_NEXT }
-> > > +match_console(struct console *newcon, struct console_cmdline *c)
-> > 
-> > that enum in function return is interesting :)
-> > can we make it less hackish?
-> We probably can, but I can not figure out how to do that.
-> Suggestions will be appreciated.
-> We should signal 3 different outcomes.
-> I thought that using standard errnos is not quite desciptive.
-
-no problems with the enum on its own. errnos probably can also do
-the trick.
-
-the way it's defined, however, is a bit unusual and may be
-inconvenient - we can add, say, 5 more CONSOLE_MATCH_FOO someday
-in the future and match_console() function definition thus will be:
-
-static enum { CONSOLE_MATCH, CONSOLE_MATCH_RETURN, CONSOLE_MATCH_NEXT,
-		CONSOLE_MATCH_FOO1, CONSOLE_MATCH_FOO2,
-		CONSOLE_MATCH_FOO3, CONSOLE_MATCH_FOO4,
-		CONSOLE_MATCH_FOO5}
-match_console(struct console *newcon, struct console_cmdline *c)
-{
-	...
-}
-
-or something like this
-
-static enum { CONSOLE_MATCH,
-	CONSOLE_MATCH_RETURN,
-	CONSOLE_MATCH_NEXT,
-	CONSOLE_MATCH_FOO1,
-	CONSOLE_MATCH_FOO2,
-	CONSOLE_MATCH_FOO3,
-	CONSOLE_MATCH_FOO4,
-	CONSOLE_MATCH_FOO5 }
-match_console(struct console *newcon, struct console_cmdline *c)
-{
-	..
-}
-
-or anything else. which is, to my admittedly imperfect taste, slightly
-"unpretty".
-
-[..]
-> > > +	/*
-> > >  	 *	See if this console matches one we selected on
-> > >  	 *	the command line.
-> > >  	 */
-> > >  	for (i = 0, c = console_cmdline;
-> > >  	     i < MAX_CMDLINECONSOLES && c->name[0];
-> > >  	     i++, c++) {
-> > > -		if (!newcon->match ||
-> > > -		    newcon->match(newcon, c->name, c->index, c->options) != 0) {
-> > > -			/* default matching */
-> > > -			BUILD_BUG_ON(sizeof(c->name) != sizeof(newcon->name));
-> > > -			if (strcmp(c->name, newcon->name) != 0)
-> > > -				continue;
-> > > -			if (newcon->index >= 0 &&
-> > > -			    newcon->index != c->index)
-> > > -				continue;
-> > > -			if (newcon->index < 0)
-> > > -				newcon->index = c->index;
-> > > -
-> > > -			if (_braille_register_console(newcon, c))
-> > > -				return;
-> > > 
-> > > -			if (newcon->setup &&
-> > > -			    newcon->setup(newcon, c->options) != 0)
-> > > -				break;
-> > > -		}
-> > > +		if (preferred_console == i)
-> > > +			continue;
-> > > 
-> > > -		newcon->flags |= CON_ENABLED;
-> > > -		if (i == preferred_console) {
-> > > -			newcon->flags |= CON_CONSDEV;
-> > > -			has_preferred = true;
-> > > +		switch (match_console(newcon, c)) {
-> > > +		case CONSOLE_MATCH:
-> > > +			goto match;
-> > > +		case CONSOLE_MATCH_RETURN:
-> > > +			return;
-> > > +		default:
-> > > +			break;
-> > 
-> > sorry, it was a rather long for me today. need to look more at this.
-> > for what is now CONSOLE_MATCH_NEXT we used to have continue,
+On Mon, 2017-03-06 at 16:21 +0200, Elena Reshetova wrote:
+> refcount_t type and corresponding API should be
+> used instead of atomic_t when the variable is used as
+> a reference counter. This allows to avoid accidental
+> refcounter overflows that might lead to use-after-free
+> situations.
 > 
-> CONSOLE_MATCH is for the case when the console matches against the description,
-> CONSOLE_MATCH_NEXT - it does not, we should try next,
+> Signed-off-by: Elena Reshetova <elena.reshetova-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Hans Liljestrand <ishkamiel-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> Signed-off-by: David Windsor <dwindsor-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/target/target_core_iblock.c | 12 ++++++------
+>  drivers/target/target_core_iblock.h |  3 ++-
+>  2 files changed, 8 insertions(+), 7 deletions(-)
 
-my bad, sorry. I misread the patch: there was another `break' right after
-that switch, that you have removed; and I just wrongly concluded that
-CONSOLE_MATCH_NEXT would now 'break' from 'default' label *and* `break'
-from the console_cmdline loop right after it.
+For the target_core_iblock part:
 
-bikeshedding:
-may be explicit CONSOLE_MATCH_NEXT test will save us from problems (in
-case if match_console() will return more codes someday), may be it won't.
-hard to say. 'default: continue' is probably OK. or may be can do without
-that 'match' label at all. something like this (_may be_)
+Acked-by: Nicholas Bellinger <nab-IzHhD5pYlfBP7FQvKIMDCQ@public.gmane.org>
 
-	for (i = 0, c = console_cmdline; ... ) {
-		if (preferred_console == i)
-			continue;
-
-		match = match_console(newcon, c);
-		if (match == CONSOLE_MATCH_NEXT)
-			continue;
-		if (match == CONSOLE_MATCH_FOUND)
-			break;
-		if (match == CONSOLE_MATCH_STOP)
-			return;
-	}
-	...
-
-
-
-CONSOLE_MATCH_RETURN  -  basically means that we should stop matching.
-can we thus rename it to CONSOLE_MATCH_STOP, or similar?
-
-	match_console() returned CONSOLE_MATCH_STOP
-
-is a bit better than
-
-	match_console() returned CONSOLE_MATCH_RETURN.
-
-isn't it? :)
-
-
-// I also used CONSOLE_MATCH_FOUND in the example above instead of
-// CONSOLE_MATCH. not insisting that CONSOLE_MATCH_FOUND is much
-// better than CONSOLE_MATCH though.
-
-	-ss
+-- 
+You received this message because you are subscribed to the Google Groups "open-iscsi" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to open-iscsi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+To post to this group, send email to open-iscsi-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+Visit this group at https://groups.google.com/group/open-iscsi.
+For more options, visit https://groups.google.com/d/optout.
