@@ -1,55 +1,47 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH] serial: 8250: 8250_core: Use dev_name() during
- request_irq()
-Date: Thu, 9 Mar 2017 20:07:24 +0530
-Message-ID: <435d73f7-d057-631b-8d00-8639d764414f@ti.com>
-References: <20170308121943.29340-1-vigneshr@ti.com>
- <20170308123417.GA3981@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial driver fixes for 4.11-rc2
+Date: Sat, 11 Mar 2017 08:18:31 +0100
+Message-ID: <20170311071831.GA8363@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170308123417.GA3981@kroah.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+The following changes since commit c1ae3cfa0e89fa1a7ecc4c99031f5e9ae99d9201:
 
-On Wednesday 08 March 2017 06:04 PM, Greg Kroah-Hartman wrote:
-> On Wed, Mar 08, 2017 at 05:49:43PM +0530, Vignesh R wrote:
->> Passing "serial" as name during request_irq() results in all serial port
->> irqs have same name. This does not help much to easily identify which
->> irq belongs to which serial port instance. Therefore pass dev_name()
->> during request_irq() so that better identifiable name is listed for
->> serial ports in cat /proc/interrupts output.
->>
->> Output of cat /proc/interrupts
->> Before this patch:
->>  26:        689          0     GICv2 309 Edge      serial
->> After this patch:
->>  26:        696          0     GICv2 309 Edge      2530c00.serial
->>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> 
-> I need a "full" name here, unless you really do sign legal documents
-> with just one letter as a last/sur-name?
-> 
+  Linux 4.11-rc1 (2017-03-05 12:59:56 -0800)
 
-Its perfectly alright not to expand surname here in India. FWIW, my ID
-cards also have the same name.
-I have been contributing to the kernel with above Signed-off-by line in
-the past and would want to continue to use the same.
+are available in the git repository at:
 
--- 
-Regards
-Vignesh
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.11-rc2
+
+for you to fetch changes up to f98c7bce570bdbe344b74ff5daa7dfeef3f22929:
+
+  serial: samsung: Continue to work if DMA request fails (2017-03-07 19:58:37 +0100)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 4.11-rc2
+
+Here are 2 bugfixes for tty stuff for 4.11-rc2.  One of them resolves
+the pretty bad bug in the n_hdlc code that Alexander Popov found and
+fixed and has been reported everywhere.  The other just fixes a samsung
+serial driver issue when DMA fails on some systems.
+
+Both have been in linux-next with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Alexander Popov (1):
+      tty: n_hdlc: get rid of racy n_hdlc.tbuf
+
+Krzysztof Kozlowski (1):
+      serial: samsung: Continue to work if DMA request fails
+
+ drivers/tty/n_hdlc.c         | 132 ++++++++++++++++++++++---------------------
+ drivers/tty/serial/samsung.c |   6 +-
+ 2 files changed, 73 insertions(+), 65 deletions(-)
