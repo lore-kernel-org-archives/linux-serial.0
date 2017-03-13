@@ -1,241 +1,93 @@
-From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Subject: [PATCH V7 2/7] PCI: Apply the new generic I/O management on PCI IO hosts
-Date: Mon, 13 Mar 2017 10:42:38 +0800
-Message-ID: <1489372963-9000-3-git-send-email-yuanzhichang@hisilicon.com>
+From: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Subject: [PATCH V7 5/7] ACPI: Delay the enumeration on the devices whose  dependency has not met
+Date: Mon, 13 Mar 2017 10:42:41 +0800
+Message-ID: <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
 References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, rjw@rjwysocki.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org
-Cc: linux-acpi@vger.kernel.org, lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1489372963-9000-1-git-send-email-yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-After introducing the new generic I/O space management(LIBIO), the original PCI
-MMIO relevant helpers need to be updated based on the new interfaces defined in
-LIBIO.
-This patch adapts the corresponding code to match the changes introduced by
-LIBIO.
+In commit 40e7fcb1929(ACPI: Add _DEP support to fix battery issue on Asus
+T100TA), the '_DEP' was supported to solve the dependency of Asus battery. But
+this patch is specific to Asus battery device.
+In the real world, there are other devices which need the dependency to play the
+role on the enumeration order. For example, all the Hip06 LPC
+periperals(IPMI-BT, uart, etc) must be scanned after the LPC host driver
+finished the probing. So, it makes sense to add a checking whether the ACPI
+device meet all the dependencies during its enumeration slot, if not, the
+enumeration will be delayed till all dependency master finish their work.
 
-Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
-Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>        #earlier draft
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>       #drivers/pci parts
+This patch adds the dependency checking in ACPI enumeration, also the
+corresponding handling to retrigger the Hip06 LPC peripherals' scanning.
+
+Signed-off-by: zhichang.yuan <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
 ---
- drivers/acpi/pci_root.c |  8 +++--
- drivers/of/address.c    |  4 ++-
- drivers/pci/pci.c       | 96 +++++++++++--------------------------------------
- include/linux/pci.h     |  3 +-
- 4 files changed, 30 insertions(+), 81 deletions(-)
+ drivers/acpi/battery.c |  3 ---
+ drivers/acpi/scan.c    |  3 +++
+ drivers/bus/hisi_lpc.c | 12 +++++++++++-
+ 3 files changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-index 919be0a..4d8cc24 100644
---- a/drivers/acpi/pci_root.c
-+++ b/drivers/acpi/pci_root.c
-@@ -730,7 +730,8 @@ static void acpi_pci_root_validate_resources(struct device *dev,
- 	}
- }
+diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
+index 4ef1e46..e8d1af1 100644
+--- a/drivers/acpi/battery.c
++++ b/drivers/acpi/battery.c
+@@ -1210,9 +1210,6 @@ static int acpi_battery_add(struct acpi_device *device)
+ 	if (!device)
+ 		return -EINVAL;
  
--static void acpi_pci_root_remap_iospace(struct resource_entry *entry)
-+static void acpi_pci_root_remap_iospace(struct fwnode_handle *fwnode,
-+			struct resource_entry *entry)
- {
- #ifdef PCI_IOBASE
- 	struct resource *res = entry->res;
-@@ -739,7 +740,7 @@ static void acpi_pci_root_remap_iospace(struct resource_entry *entry)
- 	resource_size_t length = resource_size(res);
- 	unsigned long port;
- 
--	if (pci_register_io_range(cpu_addr, length))
-+	if (pci_register_io_range(fwnode, cpu_addr, length))
- 		goto err;
- 
- 	port = pci_address_to_pio(cpu_addr);
-@@ -781,7 +782,8 @@ int acpi_pci_probe_root_resources(struct acpi_pci_root_info *info)
- 	else {
- 		resource_list_for_each_entry_safe(entry, tmp, list) {
- 			if (entry->res->flags & IORESOURCE_IO)
--				acpi_pci_root_remap_iospace(entry);
-+				acpi_pci_root_remap_iospace(&device->fwnode,
-+						entry);
- 
- 			if (entry->res->flags & IORESOURCE_DISABLED)
- 				resource_list_destroy_entry(entry);
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 02b2903..fb5d16a 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -2,6 +2,7 @@
- #define pr_fmt(fmt)	"OF: " fmt
- 
- #include <linux/device.h>
-+#include <linux/fwnode.h>
- #include <linux/io.h>
- #include <linux/ioport.h>
- #include <linux/module.h>
-@@ -323,7 +324,8 @@ int of_pci_range_to_resource(struct of_pci_range *range,
- 
- 	if (res->flags & IORESOURCE_IO) {
- 		unsigned long port;
--		err = pci_register_io_range(range->cpu_addr, range->size);
-+		err = pci_register_io_range(&np->fwnode, range->cpu_addr,
-+				range->size);
- 		if (err)
- 			goto invalid_range;
- 		port = pci_address_to_pio(range->cpu_addr);
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 7904d02..079319f 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -3238,65 +3238,37 @@ int pci_request_regions_exclusive(struct pci_dev *pdev, const char *res_name)
- }
- EXPORT_SYMBOL(pci_request_regions_exclusive);
- 
--#ifdef PCI_IOBASE
--struct io_range {
--	struct list_head list;
--	phys_addr_t start;
--	resource_size_t size;
--};
+-	if (device->dep_unmet)
+-		return -EPROBE_DEFER;
 -
--static LIST_HEAD(io_range_list);
--static DEFINE_SPINLOCK(io_range_lock);
--#endif
--
- /*
-  * Record the PCI IO range (expressed as CPU physical address + size).
-  * Return a negative value if an error has occured, zero otherwise
-  */
--int __weak pci_register_io_range(phys_addr_t addr, resource_size_t size)
-+int pci_register_io_range(struct fwnode_handle *fwnode, phys_addr_t addr,
-+			resource_size_t	size)
- {
- 	int err = 0;
+ 	battery = kzalloc(sizeof(struct acpi_battery), GFP_KERNEL);
+ 	if (!battery)
+ 		return -ENOMEM;
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 1926918..97721b1 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1843,6 +1843,9 @@ static void acpi_bus_attach(struct acpi_device *device)
+ 	if (device->handler)
+ 		goto ok;
  
- #ifdef PCI_IOBASE
--	struct io_range *range;
--	resource_size_t allocated_size = 0;
--
--	/* check if the range hasn't been previously recorded */
--	spin_lock(&io_range_lock);
--	list_for_each_entry(range, &io_range_list, list) {
--		if (addr >= range->start && addr + size <= range->start + size) {
--			/* range already registered, bail out */
--			goto end_register;
--		}
--		allocated_size += range->size;
--	}
--
--	/* range not registed yet, check for available space */
--	if (allocated_size + size - 1 > IO_SPACE_LIMIT) {
--		/* if it's too big check if 64K space can be reserved */
--		if (allocated_size + SZ_64K - 1 > IO_SPACE_LIMIT) {
--			err = -E2BIG;
--			goto end_register;
--		}
-+	struct libio_range *range, *tmprange;
++	if (device->dep_unmet)
++		return;
++
+ 	if (!device->flags.initialized) {
+ 		device->flags.power_manageable =
+ 			device->power.states[ACPI_STATE_D0].flags.valid;
+diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
+index 03cf19a..345ea12 100644
+--- a/drivers/bus/hisi_lpc.c
++++ b/drivers/bus/hisi_lpc.c
+@@ -516,8 +516,18 @@ static int hisilpc_probe(struct platform_device *pdev)
  
--		size = SZ_64K;
--		pr_warn("Requested IO range too big, new size set to 64K\n");
--	}
-+	if (!size || addr + size < addr)
-+		return -EINVAL;
- 
--	/* add the range to the list */
--	range = kzalloc(sizeof(*range), GFP_ATOMIC);
--	if (!range) {
--		err = -ENOMEM;
--		goto end_register;
--	}
-+	WARN_ON(!PAGE_ALIGNED(addr) || !PAGE_ALIGNED(size));
- 
--	range->start = addr;
-+	range = kzalloc(sizeof(*range), GFP_KERNEL);
-+	if (!range)
-+		return -ENOMEM;
-+	range->node = fwnode;
-+	range->flags = IO_CPU_MMIO;
- 	range->size = size;
-+	range->hw_start = addr;
- 
--	list_add_tail(&range->list, &io_range_list);
--
--end_register:
--	spin_unlock(&io_range_lock);
-+	tmprange = register_libio_range(range);
-+	if (tmprange != range) {
-+		kfree(range);
-+		if (!IS_ERR(tmprange))
-+			err = 0;
-+	}
- #endif
- 
- 	return err;
-@@ -3307,21 +3279,10 @@ phys_addr_t pci_pio_to_address(unsigned long pio)
- 	phys_addr_t address = (phys_addr_t)OF_BAD_ADDR;
- 
- #ifdef PCI_IOBASE
--	struct io_range *range;
--	resource_size_t allocated_size = 0;
--
- 	if (pio > IO_SPACE_LIMIT)
- 		return address;
- 
--	spin_lock(&io_range_lock);
--	list_for_each_entry(range, &io_range_list, list) {
--		if (pio >= allocated_size && pio < allocated_size + range->size) {
--			address = range->start + pio - allocated_size;
--			break;
--		}
--		allocated_size += range->size;
--	}
--	spin_unlock(&io_range_lock);
-+	address = libio_to_hwaddr(pio);
- #endif
- 
- 	return address;
-@@ -3330,25 +3291,8 @@ phys_addr_t pci_pio_to_address(unsigned long pio)
- unsigned long __weak pci_address_to_pio(phys_addr_t address)
- {
- #ifdef PCI_IOBASE
--	struct io_range *res;
--	resource_size_t offset = 0;
--	unsigned long addr = -1;
--
--	spin_lock(&io_range_lock);
--	list_for_each_entry(res, &io_range_list, list) {
--		if (address >= res->start && address < res->start + res->size) {
--			addr = address - res->start + offset;
--			break;
--		}
--		offset += res->size;
--	}
--	spin_unlock(&io_range_lock);
--
--	return addr;
-+	return libio_translate_cpuaddr(address);
- #else
--	if (address > IO_SPACE_LIMIT)
--		return (unsigned long)-1;
--
- 	return (unsigned long) address;
- #endif
- }
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index eb3da1a..6401327 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1194,7 +1194,8 @@ int __must_check pci_bus_alloc_resource(struct pci_bus *bus,
- 			void *alignf_data);
- 
- 
--int pci_register_io_range(phys_addr_t addr, resource_size_t size);
-+int pci_register_io_range(struct fwnode_handle *fwnode, phys_addr_t addr,
-+			resource_size_t size);
- unsigned long pci_address_to_pio(phys_addr_t addr);
- phys_addr_t pci_pio_to_address(unsigned long pio);
- int pci_remap_iospace(const struct resource *res, phys_addr_t phys_addr);
+ 	/*
+ 	 * It is time to start the children scannings....
++	 * For ACPI children, the corresponding devices will be created after
++	 * retriggering the ACPI scanning by removing the dependency blocking.
+ 	 */
+-	if (!has_acpi_companion(dev)) {
++	if (has_acpi_companion(dev)) {
++		struct acpi_device *adev;
++
++		adev = to_acpi_device_node(dev->fwnode);
++		if (!adev)
++			ret = -ENODEV;
++		else
++			acpi_walk_dep_device_list(adev->handle);
++	} else {
+ 		ret = of_platform_populate(dev->of_node, NULL, NULL, dev);
+ 		if (ret)
+ 			dev_err(dev, "OF: enumerate LPC bus fail(%d)\n", ret);
 -- 
 1.9.1
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
