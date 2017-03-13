@@ -1,70 +1,34 @@
-From: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
-Subject: [RFC RESEND] serdev binding for QCA7000 UART driver
-Date: Mon, 13 Mar 2017 17:16:07 +0100
-Message-ID: <b2273c4a-069b-0b9a-83d3-aed782920c34@i2se.com>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [PATCH V7 5/7] ACPI: Delay the enumeration on the devices whose  dependency has not met
+Date: Mon, 13 Mar 2017 22:24:34 +0100
+Message-ID: <4600523.rWNiWKrYZC@aspire.rjw.lan>
+References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com> <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Cc: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
+On Monday, March 13, 2017 10:42:41 AM zhichang.yuan wrote:
+> In commit 40e7fcb1929(ACPI: Add _DEP support to fix battery issue on Asus
+> T100TA), the '_DEP' was supported to solve the dependency of Asus battery. But
+> this patch is specific to Asus battery device.
+> In the real world, there are other devices which need the dependency to play the
+> role on the enumeration order. For example, all the Hip06 LPC
+> periperals(IPMI-BT, uart, etc) must be scanned after the LPC host driver
+> finished the probing. So, it makes sense to add a checking whether the ACPI
+> device meet all the dependencies during its enumeration slot, if not, the
+> enumeration will be delayed till all dependency master finish their work.
+> 
+> This patch adds the dependency checking in ACPI enumeration, also the
+> corresponding handling to retrigger the Hip06 LPC peripherals' scanning.
 
-since serdev has been merged, i'm currently working on a
-suitable ethernet driver for the QCA7000 [1]. In order to provide a plug
-and play solution for the network interface i suggest the following
-binding, which uses common properties for UART configuration:
+AFAICS, _DEP is generally abused in the wild and cannot be made generic.  Sorry.
 
-* Qualcomm QCA7000 (Ethernet over UART protocol)
+Thanks,
+Rafael
 
-Note: The QCA7000 is also useable as a UART slave device.
-
-Required properties:
-- compatible        : Should be "qca,qca7000-uart"
-
-Optional properties:
-- local-mac-address : 6 bytes, Specifies MAC address
-- current-speed     : Specifies current serial device speed in
-                      bits per second (default = 115200)
-- data-bits         : Specifies number of data bits (default = 8)
-- use-parity        : If present, this enables the parity
-                      error detection (default = off)
-- odd-parity        : If present, this specifies that the parity
-                      of each character must be odd (default = even)
-
-Example:
-
-/* Freescale i.MX28 UART */
-auart0: serial@8006a000 {
-    compatible = "fsl,imx28-auart", "fsl,imx23-auart";
-    reg = <0x8006a000 0x2000>;
-    pinctrl-names = "default";
-    pinctrl-0 = <&auart0_2pins_a>;
-    status = "okay";
-
-    qca7000: ethernet {
-        compatible = "qca,qca7000-uart";
-        local-mac-address = [ A0 B0 C0 D0 E0 F0 ];
-        current-speed = <38400>;
-        data-bits = <8>;
-        use-parity;
-        odd-parity;
-    };
-};
-
-Is it okay for you or do you want a different kind of configuration?
-Are there any plans for parity handling?
-
-Thanks
-Stefan
-
-P.S.: Sorry for the broken version
-
-[1] - https://lwn.net/Articles/701225/
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
