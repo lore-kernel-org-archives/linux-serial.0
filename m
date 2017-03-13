@@ -1,143 +1,190 @@
 From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Subject: [PATCH V7 0/7] LPC: legacy ISA I/O support
-Date: Mon, 13 Mar 2017 10:42:36 +0800
-Message-ID: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
+Subject: [PATCH V7 3/7] OF: Add missing I/O range exception for indirect-IO   devices
+Date: Mon, 13 Mar 2017 10:42:39 +0800
+Message-ID: <1489372963-9000-4-git-send-email-yuanzhichang@hisilicon.com>
+References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-Sender: linux-pci-owner@vger.kernel.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
+Sender: linux-acpi-owner@vger.kernel.org
 To: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, rjw@rjwysocki.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org
 Cc: linux-acpi@vger.kernel.org, lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, "zhichang.yuan" <yuanzhichang@hisilicon.com>
 List-Id: linux-serial@vger.kernel.org
 
-This patchset supports the IPMI-bt device attached to the Low-Pin-Count
-interface implemented on Hisilicon Hip06/Hip07 SoC.
-	                -----------
-			| LPC host|
-	                |         |
-	                -----------
-	                     |
- 	        _____________V_______________LPC
-                  |			  |
-                  V	                  V
-			             ------------
-			             |  BT(ipmi)|
-			             ------------
+There are some special ISA/LPC devices that work on a specific I/O range where
+it is not correct to specify a 'ranges' property in DTS parent node as cpu
+addresses translated from DTS node are only for memory space on some
+architectures, such as Arm64. Without the parent 'ranges' property, current
+of_translate_address() return an error.
+Here we add special handlings for this case.
+During the OF address translation, some checkings will be perfromed to
+identify whether the device node is registered as indirect-IO. If yes, the I/O
+translation will be done in a different way from that one of PCI MMIO.
+In this way, the I/O 'reg' property of the special ISA/LPC devices will be
+parsed correctly.
 
-When master accesses those peripherals beneath the Hip06/Hip07 LPC, a specific
-LPC driver is needed to make LPC host generate the standard LPC I/O cycles with
-the target peripherals'I/O port addresses. But on curent arm64 world, there is
-no real I/O accesses. All the I/O operations through in/out pair are based on
-MMIO which is not satisfied the I/O mechanism on Hip06/Hip07 LPC.
-To solve this issue and keep the relevant existing peripherals' driver
-untouched, this patchset implements:
-  - introduces a generic I/O space management framwork, LIBIO, to support I/O
-    operations of both MMIO buses and the host controllers which access their
-    peripherals with host local I/O addresses;
-  - redefines the in/out accessors to provide unified interfaces for MMIO and
-    legacy I/O. Based on the LIBIO, the calling of in/out() from upper-layer
-    drivers, such as ipmi-si, will be redirected to the corresponding
-    device-specific I/O hooks to perfrom the I/O accesses.
-Based on this patch-set, all the I/O accesses to Hip06/Hip07 LPC peripherals
-can be supported without any changes on the existing ipmi-si driver.
+Signed-off-by: zhichang.yuan <yuanzhichang@hisilicon.com>
+Signed-off-by: Gabriele Paoloni <gabriele.paoloni@huawei.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>    #earlier draft
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ drivers/of/address.c | 90 ++++++++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 74 insertions(+), 16 deletions(-)
 
-Changes from V6:
-  - According to the comments from Bjorn and Alex, merge PCI IO and indirect-IO
-    into a generic I/O space management, LIBIO;
-  - Adopted the '_DEP' to replace the platform bus notifier. In this way, we
-    can ensure the LPC peripherals' I/O resources had been translated to
-    logical IO before the LPC peripheral enumeration;
-  - Replaced the rwlock with rcu list based on Alex's suggestion;
-  - Applied relaxed write/read to LPC driver;
-  - Some bugs fixing and some optimazations based on the comments of V6;
-
-Changes from V5:
-  - Made the extio driver more generic and locate in lib/;
-  - Supported multiple indirect-IO bus instances;
-  - Extended the pci_register_io_range() to support indirect-IO, then dropped
-  the I/O reservation used in previous patchset;
-  - Reimplemented the ACPI LPC support;
-  - Fixed some bugs, including the compile error on other archs, the module
-  building failure found by Ming Lei, etc;
-
-Changes from V4:
-  - Some revises based on the comments from Bjorn, Rob on V4;
-  - Fixed the compile error on some platforms, such as openrisc;
-
-Changes from V3:
-  - UART support deferred to a separate patchset; This patchset only support
-  ipmi device under LPC;
-  - LPC bus I/O range is fixed to 0 ~ (PCIBIOS_MIN_IO - 1), which is separeted
-  from PCI/PCIE PIO space;
-  - Based on Arnd's remarks, removed the ranges property from Hip06 lpc dts and
-  added a new fixup function, of_isa_indirect_io(), to get the I/O address
-  directly from LPC dts configurations;
-  - Support in(w,l)/out(w,l) for Hip06 lpc I/O;
-  - Decouple the header file dependency on the gerenic io.h by defining in/out
-  as normal functions in c file;
-  - removed unused macro definitions in the LPC driver;
-
-Changes from V2:
-  - Support the PIO retrieval from the linux PIO generated by
-  pci_address_to_pio. This method replace the 4K PIO reservation in V2;
-  - Support the flat-tree earlycon;
-  - Some revises based on Arnd's remarks;
-  - Make sure the linux PIO range allocated to Hip06 LPC peripherals starts
-  from non-ZERO;
-
-Changes from V1:
-  - Support the ACPI LPC device;
-  - Optimize the dts LPC driver in ISA compatible mode;
-  - Reserve the IO range below 4K in avoid the possible conflict with PCI host
-  IO ranges;
-  - Support the LPC uart and relevant earlycon;
-
-v6 thread here: https://lkml.org/lkml/2017/1/24/25
-v5 thread here: https://lkml.org/lkml/2016/11/7/955
-v4 thread here: https://lkml.org/lkml/2016/10/20/149
-v3 thread here: https://lkml.org/lkml/2016/9/14/326
-v2 thread here: https://lkml.org/lkml/2016/9/7/356
-v1 thread here: https://lkml.org/lkml/2015/12/29/154
-
-
-Signed-off-by: Zhichang Yuan <yuanzhichang@hisilicon.com>
-zhichang.yuan (7):
-  LIBIO: Introduce a generic PIO mapping method
-  PCI: Apply the new generic I/O management on PCI IO hosts
-  OF: Add missing I/O range exception for indirect-IO  devices
-  LPC: Support the device-tree LPC host on Hip06/Hip07
-  ACPI: Delay the enumeration on the devices whose dependency has not
-    met
-  LIBIO: Support the dynamically logical PIO registration of ACPI host
-    I/O
-  LPC: Add the ACPI LPC support
-
- .../arm/hisilicon/hisilicon-low-pin-count.txt      |  33 ++
- MAINTAINERS                                        |   8 +
- arch/arm64/boot/dts/hisilicon/hip06-d03.dts        |   4 +
- arch/arm64/boot/dts/hisilicon/hip06.dtsi           |  14 +
- arch/arm64/boot/dts/hisilicon/hip07-d05.dts        |   4 +
- arch/arm64/boot/dts/hisilicon/hip07.dtsi           |  14 +
- drivers/acpi/battery.c                             |   3 -
- drivers/acpi/pci_root.c                            |   8 +-
- drivers/acpi/scan.c                                |   3 +
- drivers/bus/Kconfig                                |   8 +
- drivers/bus/Makefile                               |   1 +
- drivers/bus/hisi_lpc.c                             | 608 +++++++++++++++++++++
- drivers/of/address.c                               |  94 +++-
- drivers/pci/pci.c                                  |  96 +---
- include/asm-generic/io.h                           |  50 ++
- include/linux/io.h                                 |   1 +
- include/linux/libio.h                              |  98 ++++
- include/linux/pci.h                                |   3 +-
- lib/Kconfig                                        |  14 +
- lib/Makefile                                       |   2 +
- lib/libio.c                                        | 548 +++++++++++++++++++
- 21 files changed, 1514 insertions(+), 100 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
- create mode 100644 drivers/bus/hisi_lpc.c
- create mode 100644 include/linux/libio.h
- create mode 100644 lib/libio.c
-
+diff --git a/drivers/of/address.c b/drivers/of/address.c
+index fb5d16a..676e474 100644
+--- a/drivers/of/address.c
++++ b/drivers/of/address.c
+@@ -551,9 +551,14 @@ static int of_translate_one(struct device_node *parent, struct of_bus *bus,
+  * that translation is impossible (that is we are not dealing with a value
+  * that can be mapped to a cpu physical address). This is not really specified
+  * that way, but this is traditionally the way IBM at least do things
++ *
++ * Whenever the translation fails, the *host pointer will be set to the
++ * device that had registered logical PIO mapping, and the return code is relative to
++ * that node.
+  */
+ static u64 __of_translate_address(struct device_node *dev,
+-				  const __be32 *in_addr, const char *rprop)
++				  const __be32 *in_addr, const char *rprop,
++				  struct device_node **host)
+ {
+ 	struct device_node *parent = NULL;
+ 	struct of_bus *bus, *pbus;
+@@ -566,6 +571,7 @@ static u64 __of_translate_address(struct device_node *dev,
+ 	/* Increase refcount at current level */
+ 	of_node_get(dev);
+ 
++	*host = NULL;
+ 	/* Get parent & match bus type */
+ 	parent = of_get_parent(dev);
+ 	if (parent == NULL)
+@@ -586,6 +592,8 @@ static u64 __of_translate_address(struct device_node *dev,
+ 
+ 	/* Translate */
+ 	for (;;) {
++		struct libio_range *iorange;
++
+ 		/* Switch to parent bus */
+ 		of_node_put(dev);
+ 		dev = parent;
+@@ -598,6 +606,19 @@ static u64 __of_translate_address(struct device_node *dev,
+ 			break;
+ 		}
+ 
++		/*
++		 * For indirectIO device which has no ranges property, get
++		 * the address from reg directly.
++		 */
++		iorange = find_io_range_from_fwnode(&dev->fwnode);
++		if (iorange && !(iorange->flags & IO_CPU_MMIO)) {
++			result = of_read_number(addr + 1, na - 1);
++			pr_debug("indirectIO matched(%s) 0x%llx\n",
++					of_node_full_name(dev), result);
++			*host = of_node_get(dev);
++			break;
++		}
++
+ 		/* Get new parent bus and counts */
+ 		pbus = of_match_bus(parent);
+ 		pbus->count_cells(dev, &pna, &pns);
+@@ -630,13 +651,32 @@ static u64 __of_translate_address(struct device_node *dev,
+ 
+ u64 of_translate_address(struct device_node *dev, const __be32 *in_addr)
+ {
+-	return __of_translate_address(dev, in_addr, "ranges");
++	struct device_node *host;
++	u64 ret;
++
++	ret =  __of_translate_address(dev, in_addr, "ranges", &host);
++	if (host) {
++		of_node_put(host);
++		return OF_BAD_ADDR;
++	}
++
++	return ret;
+ }
+ EXPORT_SYMBOL(of_translate_address);
+ 
+ u64 of_translate_dma_address(struct device_node *dev, const __be32 *in_addr)
+ {
+-	return __of_translate_address(dev, in_addr, "dma-ranges");
++	struct device_node *host;
++	u64 ret;
++
++	ret = __of_translate_address(dev, in_addr, "dma-ranges", &host);
++
++	if (host) {
++		of_node_put(host);
++		return OF_BAD_ADDR;
++	}
++
++	return ret;
+ }
+ EXPORT_SYMBOL(of_translate_dma_address);
+ 
+@@ -678,29 +718,47 @@ const __be32 *of_get_address(struct device_node *dev, int index, u64 *size,
+ }
+ EXPORT_SYMBOL(of_get_address);
+ 
++static u64 of_translate_ioport(struct device_node *dev, const __be32 *in_addr)
++{
++	u64 taddr;
++	unsigned long port;
++	struct device_node *host;
++
++	taddr = __of_translate_address(dev, in_addr, "ranges", &host);
++	if (host) {
++		/* host specific port access */
++		port = libio_translate_hwaddr(&host->fwnode, taddr);
++		of_node_put(host);
++	} else {
++		/* memory mapped I/O range */
++		port = pci_address_to_pio(taddr);
++	}
++
++	if (port == (unsigned long)-1)
++		return OF_BAD_ADDR;
++
++	return port;
++}
++
+ static int __of_address_to_resource(struct device_node *dev,
+ 		const __be32 *addrp, u64 size, unsigned int flags,
+ 		const char *name, struct resource *r)
+ {
+ 	u64 taddr;
+ 
+-	if ((flags & (IORESOURCE_IO | IORESOURCE_MEM)) == 0)
++	if (flags & IORESOURCE_MEM)
++		taddr = of_translate_address(dev, addrp);
++	else if (flags & IORESOURCE_IO)
++		taddr = of_translate_ioport(dev, addrp);
++	else
+ 		return -EINVAL;
+-	taddr = of_translate_address(dev, addrp);
++
+ 	if (taddr == OF_BAD_ADDR)
+ 		return -EINVAL;
+ 	memset(r, 0, sizeof(struct resource));
+-	if (flags & IORESOURCE_IO) {
+-		unsigned long port;
+-		port = pci_address_to_pio(taddr);
+-		if (port == (unsigned long)-1)
+-			return -EINVAL;
+-		r->start = port;
+-		r->end = port + size - 1;
+-	} else {
+-		r->start = taddr;
+-		r->end = taddr + size - 1;
+-	}
++
++	r->start = taddr;
++	r->end = taddr + size - 1;
+ 	r->flags = flags;
+ 	r->name = name ? name : dev->full_name;
+ 
 -- 
 1.9.1
+
