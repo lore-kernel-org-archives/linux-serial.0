@@ -1,93 +1,143 @@
-From: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: [PATCH V7 5/7] ACPI: Delay the enumeration on the devices whose  dependency has not met
-Date: Mon, 13 Mar 2017 10:42:41 +0800
-Message-ID: <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
-References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
+From: "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Subject: [PATCH V7 0/7] LPC: legacy ISA I/O support
+Date: Mon, 13 Mar 2017 10:42:36 +0800
+Message-ID: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1489372963-9000-1-git-send-email-yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, rjw@rjwysocki.net, arnd@arndb.de, linux-arm-kernel@lists.infradead.org
+Cc: linux-acpi@vger.kernel.org, lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com, "zhichang.yuan" <yuanzhichang@hisilicon.com>
 List-Id: linux-serial@vger.kernel.org
 
-In commit 40e7fcb1929(ACPI: Add _DEP support to fix battery issue on Asus
-T100TA), the '_DEP' was supported to solve the dependency of Asus battery. But
-this patch is specific to Asus battery device.
-In the real world, there are other devices which need the dependency to play the
-role on the enumeration order. For example, all the Hip06 LPC
-periperals(IPMI-BT, uart, etc) must be scanned after the LPC host driver
-finished the probing. So, it makes sense to add a checking whether the ACPI
-device meet all the dependencies during its enumeration slot, if not, the
-enumeration will be delayed till all dependency master finish their work.
+This patchset supports the IPMI-bt device attached to the Low-Pin-Count
+interface implemented on Hisilicon Hip06/Hip07 SoC.
+	                -----------
+			| LPC host|
+	                |         |
+	                -----------
+	                     |
+ 	        _____________V_______________LPC
+                  |			  |
+                  V	                  V
+			             ------------
+			             |  BT(ipmi)|
+			             ------------
 
-This patch adds the dependency checking in ACPI enumeration, also the
-corresponding handling to retrigger the Hip06 LPC peripherals' scanning.
+When master accesses those peripherals beneath the Hip06/Hip07 LPC, a specific
+LPC driver is needed to make LPC host generate the standard LPC I/O cycles with
+the target peripherals'I/O port addresses. But on curent arm64 world, there is
+no real I/O accesses. All the I/O operations through in/out pair are based on
+MMIO which is not satisfied the I/O mechanism on Hip06/Hip07 LPC.
+To solve this issue and keep the relevant existing peripherals' driver
+untouched, this patchset implements:
+  - introduces a generic I/O space management framwork, LIBIO, to support I/O
+    operations of both MMIO buses and the host controllers which access their
+    peripherals with host local I/O addresses;
+  - redefines the in/out accessors to provide unified interfaces for MMIO and
+    legacy I/O. Based on the LIBIO, the calling of in/out() from upper-layer
+    drivers, such as ipmi-si, will be redirected to the corresponding
+    device-specific I/O hooks to perfrom the I/O accesses.
+Based on this patch-set, all the I/O accesses to Hip06/Hip07 LPC peripherals
+can be supported without any changes on the existing ipmi-si driver.
 
-Signed-off-by: zhichang.yuan <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
----
- drivers/acpi/battery.c |  3 ---
- drivers/acpi/scan.c    |  3 +++
- drivers/bus/hisi_lpc.c | 12 +++++++++++-
- 3 files changed, 14 insertions(+), 4 deletions(-)
+Changes from V6:
+  - According to the comments from Bjorn and Alex, merge PCI IO and indirect-IO
+    into a generic I/O space management, LIBIO;
+  - Adopted the '_DEP' to replace the platform bus notifier. In this way, we
+    can ensure the LPC peripherals' I/O resources had been translated to
+    logical IO before the LPC peripheral enumeration;
+  - Replaced the rwlock with rcu list based on Alex's suggestion;
+  - Applied relaxed write/read to LPC driver;
+  - Some bugs fixing and some optimazations based on the comments of V6;
 
-diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
-index 4ef1e46..e8d1af1 100644
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -1210,9 +1210,6 @@ static int acpi_battery_add(struct acpi_device *device)
- 	if (!device)
- 		return -EINVAL;
- 
--	if (device->dep_unmet)
--		return -EPROBE_DEFER;
--
- 	battery = kzalloc(sizeof(struct acpi_battery), GFP_KERNEL);
- 	if (!battery)
- 		return -ENOMEM;
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 1926918..97721b1 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -1843,6 +1843,9 @@ static void acpi_bus_attach(struct acpi_device *device)
- 	if (device->handler)
- 		goto ok;
- 
-+	if (device->dep_unmet)
-+		return;
-+
- 	if (!device->flags.initialized) {
- 		device->flags.power_manageable =
- 			device->power.states[ACPI_STATE_D0].flags.valid;
-diff --git a/drivers/bus/hisi_lpc.c b/drivers/bus/hisi_lpc.c
-index 03cf19a..345ea12 100644
---- a/drivers/bus/hisi_lpc.c
-+++ b/drivers/bus/hisi_lpc.c
-@@ -516,8 +516,18 @@ static int hisilpc_probe(struct platform_device *pdev)
- 
- 	/*
- 	 * It is time to start the children scannings....
-+	 * For ACPI children, the corresponding devices will be created after
-+	 * retriggering the ACPI scanning by removing the dependency blocking.
- 	 */
--	if (!has_acpi_companion(dev)) {
-+	if (has_acpi_companion(dev)) {
-+		struct acpi_device *adev;
-+
-+		adev = to_acpi_device_node(dev->fwnode);
-+		if (!adev)
-+			ret = -ENODEV;
-+		else
-+			acpi_walk_dep_device_list(adev->handle);
-+	} else {
- 		ret = of_platform_populate(dev->of_node, NULL, NULL, dev);
- 		if (ret)
- 			dev_err(dev, "OF: enumerate LPC bus fail(%d)\n", ret);
+Changes from V5:
+  - Made the extio driver more generic and locate in lib/;
+  - Supported multiple indirect-IO bus instances;
+  - Extended the pci_register_io_range() to support indirect-IO, then dropped
+  the I/O reservation used in previous patchset;
+  - Reimplemented the ACPI LPC support;
+  - Fixed some bugs, including the compile error on other archs, the module
+  building failure found by Ming Lei, etc;
+
+Changes from V4:
+  - Some revises based on the comments from Bjorn, Rob on V4;
+  - Fixed the compile error on some platforms, such as openrisc;
+
+Changes from V3:
+  - UART support deferred to a separate patchset; This patchset only support
+  ipmi device under LPC;
+  - LPC bus I/O range is fixed to 0 ~ (PCIBIOS_MIN_IO - 1), which is separeted
+  from PCI/PCIE PIO space;
+  - Based on Arnd's remarks, removed the ranges property from Hip06 lpc dts and
+  added a new fixup function, of_isa_indirect_io(), to get the I/O address
+  directly from LPC dts configurations;
+  - Support in(w,l)/out(w,l) for Hip06 lpc I/O;
+  - Decouple the header file dependency on the gerenic io.h by defining in/out
+  as normal functions in c file;
+  - removed unused macro definitions in the LPC driver;
+
+Changes from V2:
+  - Support the PIO retrieval from the linux PIO generated by
+  pci_address_to_pio. This method replace the 4K PIO reservation in V2;
+  - Support the flat-tree earlycon;
+  - Some revises based on Arnd's remarks;
+  - Make sure the linux PIO range allocated to Hip06 LPC peripherals starts
+  from non-ZERO;
+
+Changes from V1:
+  - Support the ACPI LPC device;
+  - Optimize the dts LPC driver in ISA compatible mode;
+  - Reserve the IO range below 4K in avoid the possible conflict with PCI host
+  IO ranges;
+  - Support the LPC uart and relevant earlycon;
+
+v6 thread here: https://lkml.org/lkml/2017/1/24/25
+v5 thread here: https://lkml.org/lkml/2016/11/7/955
+v4 thread here: https://lkml.org/lkml/2016/10/20/149
+v3 thread here: https://lkml.org/lkml/2016/9/14/326
+v2 thread here: https://lkml.org/lkml/2016/9/7/356
+v1 thread here: https://lkml.org/lkml/2015/12/29/154
+
+
+Signed-off-by: Zhichang Yuan <yuanzhichang@hisilicon.com>
+zhichang.yuan (7):
+  LIBIO: Introduce a generic PIO mapping method
+  PCI: Apply the new generic I/O management on PCI IO hosts
+  OF: Add missing I/O range exception for indirect-IO  devices
+  LPC: Support the device-tree LPC host on Hip06/Hip07
+  ACPI: Delay the enumeration on the devices whose dependency has not
+    met
+  LIBIO: Support the dynamically logical PIO registration of ACPI host
+    I/O
+  LPC: Add the ACPI LPC support
+
+ .../arm/hisilicon/hisilicon-low-pin-count.txt      |  33 ++
+ MAINTAINERS                                        |   8 +
+ arch/arm64/boot/dts/hisilicon/hip06-d03.dts        |   4 +
+ arch/arm64/boot/dts/hisilicon/hip06.dtsi           |  14 +
+ arch/arm64/boot/dts/hisilicon/hip07-d05.dts        |   4 +
+ arch/arm64/boot/dts/hisilicon/hip07.dtsi           |  14 +
+ drivers/acpi/battery.c                             |   3 -
+ drivers/acpi/pci_root.c                            |   8 +-
+ drivers/acpi/scan.c                                |   3 +
+ drivers/bus/Kconfig                                |   8 +
+ drivers/bus/Makefile                               |   1 +
+ drivers/bus/hisi_lpc.c                             | 608 +++++++++++++++++++++
+ drivers/of/address.c                               |  94 +++-
+ drivers/pci/pci.c                                  |  96 +---
+ include/asm-generic/io.h                           |  50 ++
+ include/linux/io.h                                 |   1 +
+ include/linux/libio.h                              |  98 ++++
+ include/linux/pci.h                                |   3 +-
+ lib/Kconfig                                        |  14 +
+ lib/Makefile                                       |   2 +
+ lib/libio.c                                        | 548 +++++++++++++++++++
+ 21 files changed, 1514 insertions(+), 100 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/hisilicon/hisilicon-low-pin-count.txt
+ create mode 100644 drivers/bus/hisi_lpc.c
+ create mode 100644 include/linux/libio.h
+ create mode 100644 lib/libio.c
+
 -- 
 1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
