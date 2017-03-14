@@ -1,71 +1,76 @@
-From: Samuel Thibault <samuel.thibault@ens-lyon.org>
-Subject: Re: [patch 0/7] staging: speakup: introduce tty-based comms
-Date: Tue, 14 Mar 2017 02:18:14 +0100
-Message-ID: <20170314011814.p3t4zfcx3cxhgvwl@var.youpi.perso.aquilenet.fr>
-References: <20170313220551.312820470@gmail.com>
- <20170313221404.GA22871@kroah.com>
- <20170314004701.kuecu2zu4md5ccrq@var.youpi.perso.aquilenet.fr>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: 8250_dw: Fix breakage when HAVE_CLK=n
+Date: Tue, 14 Mar 2017 10:21:10 +0800
+Message-ID: <20170314022110.GA27262@kroah.com>
+References: <CAHp75Ved2h2WyWBokEOsDmAyB3w3iM=uh-9Bq01mU1ST4FapWQ@mail.gmail.com>
+ <20170304130958.23655-1-james.hogan@imgtec.com>
+ <20170313111407.GJ2878@jhogan-linux.le.imgtec.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-clk-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170314004701.kuecu2zu4md5ccrq@var.youpi.perso.aquilenet.fr>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, okash.khawaja@gmail.com, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, Kirk Reiser <kirk@reisers.ca>, Chris Brannon <chris@the-brannons.com>, speakup@linux-speakup.org
+In-Reply-To: <20170313111407.GJ2878@jhogan-linux.le.imgtec.org>
+Sender: linux-clk-owner@vger.kernel.org
+To: James Hogan <james.hogan@imgtec.com>
+Cc: linux-kernel@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jason Uy <jason.uy@broadcom.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Heiko Stuebner <heiko@sntech.de>, David Daney <david.daney@cavium.com>, Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, linux-mips@linux-mips.org, bcm-kernel-feedback-list@broadcom.com
 List-Id: linux-serial@vger.kernel.org
 
-Samuel Thibault, on mar. 14 mars 2017 01:47:01 +0100, wrote:
-> Greg KH, on mar. 14 mars 2017 06:14:04 +0800, wrote:
-> > On Mon, Mar 13, 2017 at 10:05:51PM +0000, okash.khawaja@gmail.com wrote:
-> > > This patchset introduces a TTY-based way for the synths to communicate
-> > > with devices as an alternate for direct serial comms used by the synths
-> > > at the moment. It then migrates some of the synths to the TTY-based
-> > > comms. Synths migrated in this patchset are dummy, acntsa, bns and
-> > > txprt.
+On Mon, Mar 13, 2017 at 11:14:07AM +0000, James Hogan wrote:
+> Hi Greg,
+> 
+> On Sat, Mar 04, 2017 at 01:09:58PM +0000, James Hogan wrote:
+> > Commit 6a171b299379 ("serial: 8250_dw: Allow hardware flow control to be
+> > used") recently broke the 8250_dw driver on platforms which don't select
+> > HAVE_CLK, as dw8250_set_termios() gets confused by the behaviour of the
+> > fallback HAVE_CLK=n clock API in linux/clk.h which pretends everything
+> > is fine but returns (valid) NULL clocks and 0 HZ clock rates.
 > > 
-> > What about using the serbus code that is now in the tree?  That should
-> > make this a lot easier than your patchset from what I can see.
+> > That 0 rate is written into the uartclk resulting in a crash at boot,
+> > e.g. on Cavium Octeon III based UTM-8 we get something like this:
+> > 
+> > 1180000000800.serial: ttyS0 at MMIO 0x1180000000800 (irq = 41, base_baud = 25000000) is a OCTEON
+> > ------------[ cut here ]------------
+> > WARNING: CPU: 2 PID: 1 at drivers/tty/serial/serial_core.c:441 uart_get_baud_rate+0xfc/0x1f0
+> > ...
+> > Call Trace:
+> > ...
+> > [<ffffffff8149c2e4>] uart_get_baud_rate+0xfc/0x1f0
+> > [<ffffffff814a5098>] serial8250_do_set_termios+0xb0/0x440
+> > [<ffffffff8149c710>] uart_set_options+0xe8/0x190
+> > [<ffffffff814a6cdc>] serial8250_console_setup+0x84/0x158
+> > [<ffffffff814a11ec>] univ8250_console_setup+0x54/0x70
+> > [<ffffffff811901a0>] register_console+0x1c8/0x418
+> > [<ffffffff8149f004>] uart_add_one_port+0x434/0x4b0
+> > [<ffffffff814a1af8>] serial8250_register_8250_port+0x2d8/0x440
+> > [<ffffffff814aa620>] dw8250_probe+0x388/0x5e8
+> > ...
+> > 
+> > The clock API is defined such that NULL is a valid clock handle so it
+> > wouldn't be right to check explicitly for NULL. Instead treat a
+> > clk_round_rate() return value of 0 as an error which prevents uartclk
+> > being overwritten.
+> > 
+> > Fixes: 6a171b299379 ("serial: 8250_dw: Allow hardware flow control to be used")
+> > Signed-off-by: James Hogan <james.hogan@imgtec.com>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Cc: Jason Uy <jason.uy@broadcom.com>
+> > Cc: Kefeng Wang <wangkefeng.wang@huawei.com>
+> > Cc: Heiko Stuebner <heiko@sntech.de>
+> > Cc: David Daney <david.daney@cavium.com>
+> > Cc: Russell King <linux@armlinux.org.uk>
+> > Cc: linux-serial@vger.kernel.org
+> > Cc: linux-clk@vger.kernel.org
+> > Cc: linux-mips@linux-mips.org
+> > Cc: bcm-kernel-feedback-list@broadcom.com
 > 
-> Mmm... AIUI from reading tty_port_register_device_attr, one
-> would have to have registered a speakup serdev device driver
-> *before* tty_port_register_device_attr gets called, so that
-> serdev_tty_port_register matches the driver in the loop of
-> of_serdev_register_devices, and no TTY cdev is created?
+> Any chance we could have this patch in v4.11-rc3?
 > 
-> That would mean that speakup can not be loaded as a module after ttyS0
-> initialization, that won't fly for our use needs. The line discipline
-> mechanism allows us to attach ourself to an existing tty.  Could we
-> imagine a tty_port function which removes the cdev and tries to register
-> the tty port again to serdev?
-> 
-> What we basically need to be able to say on speakup module load is
-> e.g. "I'm now attaching a device to ttyS0, use this serdev_device_ops to
-> discuss with it".
+> As Andy pointed out, it depends on Heiko's patch:
+> https://www.spinics.net/lists/linux-serial/msg25483.html
 
-That for_each_available_child_of_node loop is really way more complex
-than what we need.  And what's more, it's not working without CONFIG_OF
-(!)
+Yes, will be queueing both up soon.
 
-It would really make sense to me to have a
+thanks,
 
-serdev_device *tty_port_register_serdev_device(tty, device)
-
-which unregisters the character device of the tty, and creates instead a
-controler with the given device plugged to it. Really much like a line
-discipline, but way simpler :)
-
-The issue that remains is the "tty" part: we'd need there the tty_port,
-the parent device, the tty driver, the idx. All we know when we load
-speakup is "ttyS0". That's where going through the cdev to attach a line
-discipline was simpler :)
-
-Samuel
+greg k-h
