@@ -1,34 +1,55 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH V7 5/7] ACPI: Delay the enumeration on the devices whose  dependency has not met
-Date: Mon, 13 Mar 2017 22:24:34 +0100
-Message-ID: <4600523.rWNiWKrYZC@aspire.rjw.lan>
-References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com> <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Subject: Re: [patch 0/7] staging: speakup: introduce tty-based comms
+Date: Tue, 14 Mar 2017 01:47:01 +0100
+Message-ID: <20170314004701.kuecu2zu4md5ccrq@var.youpi.perso.aquilenet.fr>
+References: <20170313220551.312820470@gmail.com>
+ <20170313221404.GA22871@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Cc: catalin.marinas@arm.com, will.deacon@arm.com, robh+dt@kernel.org, frowand.list@gmail.com, bhelgaas@google.com, rafael@kernel.org, mark.rutland@arm.com, arnd@arndb.de, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, lorenzo.pieralisi@arm.com, benh@kernel.crashing.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, minyard@acm.org, liviu.dudau@arm.com, zourongrong@gmail.com, john.garry@huawei.com, gabriele.paoloni@huawei.com, zhichang.yuan02@gmail.com, kantyzc@163.com, xuwei5@hisilicon.com
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+Content-Disposition: inline
+In-Reply-To: <20170313221404.GA22871@kroah.com>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devel@driverdev.osuosl.org, Rob Herring <robh@kernel.org>, okash.khawaja@gmail.com, Kirk Reiser <kirk@reisers.ca>, speakup@linux-speakup.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Chris Brannon <chris@the-brannons.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Monday, March 13, 2017 10:42:41 AM zhichang.yuan wrote:
-> In commit 40e7fcb1929(ACPI: Add _DEP support to fix battery issue on Asus
-> T100TA), the '_DEP' was supported to solve the dependency of Asus battery. But
-> this patch is specific to Asus battery device.
-> In the real world, there are other devices which need the dependency to play the
-> role on the enumeration order. For example, all the Hip06 LPC
-> periperals(IPMI-BT, uart, etc) must be scanned after the LPC host driver
-> finished the probing. So, it makes sense to add a checking whether the ACPI
-> device meet all the dependencies during its enumeration slot, if not, the
-> enumeration will be delayed till all dependency master finish their work.
+Hello,
+
+Greg KH, on mar. 14 mars 2017 06:14:04 +0800, wrote:
+> On Mon, Mar 13, 2017 at 10:05:51PM +0000, okash.khawaja@gmail.com wrote:
+> > This patchset introduces a TTY-based way for the synths to communicate
+> > with devices as an alternate for direct serial comms used by the synths
+> > at the moment. It then migrates some of the synths to the TTY-based
+> > comms. Synths migrated in this patchset are dummy, acntsa, bns and
+> > txprt.
 > 
-> This patch adds the dependency checking in ACPI enumeration, also the
-> corresponding handling to retrigger the Hip06 LPC peripherals' scanning.
+> What about using the serbus code that is now in the tree?  That should
+> make this a lot easier than your patchset from what I can see.
 
-AFAICS, _DEP is generally abused in the wild and cannot be made generic.  Sorry.
+Mmm... AIUI from reading tty_port_register_device_attr, one
+would have to have registered a speakup serdev device driver
+*before* tty_port_register_device_attr gets called, so that
+serdev_tty_port_register matches the driver in the loop of
+of_serdev_register_devices, and no TTY cdev is created?
 
-Thanks,
-Rafael
+That would mean that speakup can not be loaded as a module after ttyS0
+initialization, that won't fly for our use needs. The line discipline
+mechanism allows us to attach ourself to an existing tty.  Could we
+imagine a tty_port function which removes the cdev and tries to register
+the tty port again to serdev?
 
+What we basically need to be able to say on speakup module load is
+e.g. "I'm now attaching a device to ttyS0, use this serdev_device_ops to
+discuss with it".
+
+Samuel
