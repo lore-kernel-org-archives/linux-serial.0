@@ -1,64 +1,92 @@
-From: Sudeep Holla <sudeep.holla@arm.com>
-Subject: Re: [PATCH v2 0/3] printk: fix double printing with earlycon
-Date: Tue, 14 Mar 2017 16:17:59 +0000
-Message-ID: <f6d929e6-0acc-3654-7d61-e0f1c67642f5@arm.com>
-References: <20170302131153.22733-1-aleksey.makarov@linaro.org>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH 1/4] ARM64: Prepare Marvell IAP140 aka PXA1908
+Date: Tue, 14 Mar 2017 17:30:34 +0100
+Message-ID: <CAPDyKFoy-dKTk=t6cmwzbjyntZHrkSyZbtpJ0wAMUDJ5xz4viA@mail.gmail.com>
+References: <20170219032000.4674-1-afaerber@suse.de> <20170219032000.4674-2-afaerber@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170302131153.22733-1-aleksey.makarov@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-serial@vger.kernel.org
-Cc: Sudeep Holla <sudeep.holla@arm.com>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <20170219032000.4674-2-afaerber@suse.de>
+Sender: linux-mmc-owner@vger.kernel.org
+To: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jisheng Zhang <jszhang@marvell.com>, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Eric Miao <eric.y.miao@gmail.com>, info@andromedabox.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Aleksey,
+On 19 February 2017 at 04:19, Andreas F=C3=A4rber <afaerber@suse.de> wrote:
+> Suppress COMMON_CLK_PXA and MMC_PXA for now as they don't build on arm64.
+> Also suppress the deprecated SERIAL_PXA in favor of SERIAL_8250_PXA.
+>
+> Signed-off-by: Andreas F=C3=A4rber <afaerber@suse.de>
+> ---
+>  arch/arm64/Kconfig.platforms | 5 +++++
+>  drivers/clk/Kconfig          | 2 +-
+>  drivers/mmc/host/Kconfig     | 2 +-
+>  drivers/tty/serial/Kconfig   | 2 +-
+>  4 files changed, 8 insertions(+), 3 deletions(-)
 
-(Sorry for the delayed response, was on vacation)
+Please try split this up so it can be applied on each subsystem independent=
+ly.
 
-On 02/03/17 13:11, Aleksey Makarov wrote:
-> If a console was specified by ACPI SPCR table _and_ command line parameters like
-> "console=ttyAMA0" _and_ "earlycon" were specified, then log messages
-> appear twice.
-> 
-> This issue was addressed in the patch [1] but the approach was wrong and
-> a revert [2] was suggested.
-> 
-> First two patches "printk: fix name/type/scope of preferred_console var" and
-> "printk: rename selected_console -> preferred_console" were sent sent some
-> time ago as one patch "printk: fix name and type of some variables" [3].
-> They fix name/type/scope of some variables without changing the logic.
-> 
-> The real fix is in the second patch.  The root cause is that the code traverses
-> the list of specified consoles (the `console_cmdline` array) and stops at the
-> first match.  But it may happen that the same console is referred by
-> the elements of this array twice:
-> 
-> 	pl011,mmio,0x87e024000000,115200 -- from SPCR
-> 	ttyAMA0 -- from command line
-> 
-> but in this case `preferred_console` points to the second entry and
-> the flag CON_CONSDEV is not set, so bootconsole is not deregistered.
-> 
-> To fix that, match the console against the `console_cmdline` entry
-> pointed by `preferred_console` instead of the first match.
-> 
-> v2:
-> - split the patch that renames `selected_console` and `preferred_console`
->   into two patches (Steven Rostedt)
-> - add a comment explaining why we need a separate match to check for
->   preferred_console (Steven Rostedt)
-> - v1 of this patchset changed the logic of console initialization a bit.
->   That could lead to bugs/incompatibilities.  Use the exactly the same
->   logic as in the original code.
-> 
+Kind regards
+Uffe
 
-Tested the series(v3 of patch 3) and works as expected. Thanks for the
-proper fix.
-
-Tested-by: Sudeep Holla <sudeep.holla@arm.com>
-
--- 
-Regards,
-Sudeep
+>
+> diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+> index 129cc5a..841b6c8 100644
+> --- a/arch/arm64/Kconfig.platforms
+> +++ b/arch/arm64/Kconfig.platforms
+> @@ -111,6 +111,11 @@ config ARCH_MVEBU
+>            - Armada 7K SoC Family
+>            - Armada 8K SoC Family
+>
+> +config ARCH_PXA
+> +       bool "Marvell PXA SoC Family"
+> +       help
+> +         This enables support for the Marvell PXA family.
+> +
+>  config ARCH_QCOM
+>         bool "Qualcomm Platforms"
+>         select GPIOLIB
+> diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
+> index 9356ab4..3d25f20 100644
+> --- a/drivers/clk/Kconfig
+> +++ b/drivers/clk/Kconfig
+> @@ -185,7 +185,7 @@ config COMMON_CLK_PWM
+>           at 50% duty cycle.
+>
+>  config COMMON_CLK_PXA
+> -       def_bool COMMON_CLK && ARCH_PXA
+> +       def_bool COMMON_CLK && ARCH_PXA && ARM
+>         ---help---
+>           Support for the Marvell PXA SoC.
+>
+> diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
+> index f08691a..a650eca 100644
+> --- a/drivers/mmc/host/Kconfig
+> +++ b/drivers/mmc/host/Kconfig
+> @@ -27,7 +27,7 @@ config MMC_QCOM_DML
+>
+>  config MMC_PXA
+>         tristate "Intel PXA25x/26x/27x Multimedia Card Interface support"
+> -       depends on ARCH_PXA
+> +       depends on ARCH_PXA && ARM
+>         help
+>           This selects the Intel(R) PXA(R) Multimedia card Interface.
+>           If you have a PXA(R) platform with a Multimedia Card slot,
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 6117ac8..0713a05 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -439,7 +439,7 @@ config SERIAL_MPSC_CONSOLE
+>
+>  config SERIAL_PXA
+>         bool "PXA serial port support (DEPRECATED)"
+> -       depends on ARCH_PXA || ARCH_MMP
+> +       depends on (ARCH_PXA && ARM) || ARCH_MMP
+>         select SERIAL_CORE
+>         select SERIAL_8250_PXA if SERIAL_8250=3Dy
+>         select SERIAL_PXA_NON8250 if !SERIAL_8250=3Dy
+> --
+> 2.10.2
+>
