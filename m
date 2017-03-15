@@ -1,88 +1,82 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V7 0/7] LPC: legacy ISA I/O support
-Date: Wed, 15 Mar 2017 14:23:12 +0100
-Message-ID: <CAK8P3a3NJCndFJED4wDcvYndiJHbfTEHjTnPjBUQK6UguOswmg@mail.gmail.com>
-References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
- <CAK8P3a1f33ipk3Q8+wj9L6zP=ccn_AuhTfV0CC0+wAqrO-2beg@mail.gmail.com> <58C8BD7D.7040207@hisilicon.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH] tty/serial: atmel_serial: BUG: stop DMA from transmitting
+ in stop_tx
+Date: Wed, 15 Mar 2017 14:36:27 +0100
+Message-ID: <CACQ1gAgW4aGJSxSAXDWL7td9eV12UV=Xv=PZR58BqqHxEeRH0g@mail.gmail.com>
+References: <20161213162756.16139-1-richard.genoud@gmail.com>
+ <c5c0cdcf-d4da-a8c0-4161-85535ecf88ec@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <58C8BD7D.7040207@hisilicon.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Rafael Wysocki <rafael@kernel.org>, Mark Rutland <mark.rutland@arm.com>, rjw@rjwysocki.net, Linux ARM <linux-arm-kernel@lists.infradead.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci <linux-pci@vger.kernel.org>, linux-serial@vger.kernel.org, Corey Minyard <minyard@acm.org>, liviu.dudau@arm.com, Zou Rongrong <zourongrong@gmail.com>, John Garry <john.ga>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <c5c0cdcf-d4da-a8c0-4161-85535ecf88ec@atmel.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 15, 2017 at 5:05 AM, zhichang.yuan
-<yuanzhichang@hisilicon.com> wrote:
->> - I think the libio framework is more generic than it needs to be, but as
->>   Alex really liked it this way and it was done like this based on his earlier
->>   comments, I think that's ok.
->>
->> - after we went back and forth on the ACPI implementation, we concluded
->>   that it is correct to do the same as on DT and completely abstract the
->>   number space for I/O ports. No code should rely on a Linux port number
->>   to have any particular relation to the physical address or the the address
->>   on a PCI or LPC bus.
-> Thanks again for your helps in Linaro Connect!
-> I think we are heading for this direction, is it?
-
-Yes, I think so.
-
->> - I'm pretty sure the current implementation is broken for the ioport_map
->>   function that tries to turn an IORESOURCE_IO number into a pointer.
->>   Forcing CONFIG_GENERIC_IOMAP on would solve this, but also
->>   make all MMIO operations slower, which we probably don't want.
->>   It's probably enough to add a check in ioport_map() to see if the range
->>   is mapped into a virtual address or not.
->
->
-> Yes, I think our LIBIO will break the ioport_map() at this moment.
-> I try to solve this issue. Could you help to check the following ideas?
-> I am not deeper understanding the whole I/O framework, the following maybe not correct:(
->
-> ioport_map seems architecture-dependent. For our LIBIO, we don't want to replace the existing I/O
-> frameworks which support MMIO at this moment. Can we add these two revise to solve this issue?
-> 1) Make LIBIO only target for non GENERIC_IOMAP platforms
->
-> config LIBIO
->         bool "Generic logical IO management"
->         depends on !GENERIC_IOMAP
-
-I don't think there is even a problem with GENERIC_IOMAP: If both are
-set, passing a low number as a pointer will turn an ioread32() into an
-inl(), which is implemented by libio.
-
->         def_bool y if PCI && (ARC || MN10300 || UNICORE32 || SPARC || MICROBLAZE || S390 || AVR32 || CRIS || BLACKFIN || XTENSA || ARM64)
-
-I think most of these architectures just use their own inb/outb functions,
-and should not use libio at all.
-
-It's also possible that they use an older way of mapping I/O ports by calling
-ioremap() on the physical address and treating the pointer as a 32-bit
-I/O port number (relying on the PCI_IOBASE=0 default). Architectures doing
-that might have other issues with libio, and I wouldn't try converting those.
-
-> 2) Modify the ioport_map() defined in asm-generic/io.h
-> Add the checks to identify the input 'port' is MMIO, otherwise, return NULL;
-
-This seems fine.
-
->> - We could simplify the lookup a bit by using the trick from arch/ia64
->>   of using an array instead of linked list for walking the port numbers.
->>   There, the upper bits of the port number refer to an address space
->>   number while the lower bits refer to the bus address within that
->>   address space. This should work just as well as the current
->>   implementation but would be a little easier to understand. Maybe
->>   Bjorn can comment on this too, as I think he was involved with the
->>   ia64 implementation.
->>
-> Yes, It will be more efficient.
->
-> But the issue remained here is still how to coexist with the existing I/O frameworks.
-> I will continue to look into.
-
-Ok. Let's wait for Bjorn to reply on this idea before you spend too much time
-on this though.
-
-      Arnd
+MjAxNy0wMy0xNSAxMjozNyBHTVQrMDE6MDAgTmljb2xhcyBGZXJyZSA8bmljb2xhcy5mZXJyZUBh
+dG1lbC5jb20+Ogo+IExlIDEzLzEyLzIwMTYgw6AgMTc6MjcsIFJpY2hhcmQgR2Vub3VkIGEgw6lj
+cml0IDoKPj4gSWYgd2UgZG9uJ3QgZGlzYWJsZSB0aGUgdHJhbnNtaXR0ZXIgaW4gYXRtZWxfc3Rv
+cF90eCwgdGhlIERNQSBidWZmZXIKPj4gY29udGludWVzIHRvIHNlbmQgZGF0YSB1bnRpbCBpdCBp
+cyBlbXB0aWVkLgo+PiBUaGlzIGNhdXNlIHByb2JsZW1zIHdpdGggdGhlIGZsb3cgY29udHJvbCAo
+Q1RTIGlzIGFzc2VydGVkIGFuZCBkYXRhIGFyZQo+PiBzdGlsbCBzZW50KS4KPj4KPj4gU28sIGRp
+c2FibGluZyB0aGUgdHJhbnNtaXR0ZXIgaW4gYXRtZWxfc3RvcF90eCBpcyBhIHNhbmUgdGhpbmcg
+dG8gZG8uCj4+Cj4+IFRlc3RlZCBvbiBhdDkxc2FtOWczNS1jbShETUEpCj4+IFRlc3RlZCBmb3Ig
+cmVncmVzc2lvbnMgb24gc2FtYTVkMi14cGxhaW5lZChGaWZvKSBhbmQgYXQ5MXNhbTlnMjBlayhQ
+REMpCj4+Cj4+IENjOiA8c3RhYmxlQHZnZXIua2VybmVsLm9yZz4gKGJld2FyZSwgdGhpcyB3b24n
+dCBhcHBseSBiZWZvcmUgNC4zKQo+PiBTaWduZWQtb2ZmLWJ5OiBSaWNoYXJkIEdlbm91ZCA8cmlj
+aGFyZC5nZW5vdWRAZ21haWwuY29tPgo+PiAtLS0KPj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9hdG1l
+bF9zZXJpYWwuYyB8IDExICsrKysrKysrKysrCj4+ICAxIGZpbGUgY2hhbmdlZCwgMTEgaW5zZXJ0
+aW9ucygrKQo+Pgo+PiBOQjogdGhpcyBpcyBub3QgZm9yIHRoZSA0LjEwIG1lcmdlIHdpbmRvdywg
+SSdtIGp1c3Qgc2VuZGluZyBpdCBub3cgdG8KPj4gaGF2ZSBzb21lIGNvbW1lbnRzIGlmIHNvbWVv
+bmUgaXMgYWdhaW50cyBpdC4KPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9h
+dG1lbF9zZXJpYWwuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+PiBpbmRl
+eCAxNjhiMTBjYWQ0N2IuLmY5ZDQyZGU1YWIyZCAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy90dHkv
+c2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9z
+ZXJpYWwuYwo+PiBAQCAtNDgxLDYgKzQ4MSwxNCBAQCBzdGF0aWMgdm9pZCBhdG1lbF9zdG9wX3R4
+KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCj4+ICAgICAgICAgICAgICAgLyogZGlzYWJsZSBQREMg
+dHJhbnNtaXQgKi8KPj4gICAgICAgICAgICAgICBhdG1lbF91YXJ0X3dyaXRlbChwb3J0LCBBVE1F
+TF9QRENfUFRDUiwgQVRNRUxfUERDX1RYVERJUyk7Cj4+ICAgICAgIH0KPj4gKwo+PiArICAgICAv
+Kgo+PiArICAgICAgKiBEaXNhYmxlIHRoZSB0cmFuc21pdHRlci4KPj4gKyAgICAgICogVGhpcyBp
+cyBtYW5kYXRvcnkgd2hlbiBETUEgaXMgdXNlZCwgb3RoZXJ3aXNlIHRoZSBETUEgYnVmZmVyCj4+
+ICsgICAgICAqIGlzIGZ1bGx5IHRyYW5zbWl0dGVkLgo+PiArICAgICAgKi8KPj4gKyAgICAgYXRt
+ZWxfdWFydF93cml0ZWwocG9ydCwgQVRNRUxfVVNfQ1IsIEFUTUVMX1VTX1RYRElTKTsKPj4gKwo+
+PiAgICAgICAvKiBEaXNhYmxlIGludGVycnVwdHMgKi8KPj4gICAgICAgYXRtZWxfdWFydF93cml0
+ZWwocG9ydCwgQVRNRUxfVVNfSURSLCBhdG1lbF9wb3J0LT50eF9kb25lX21hc2spOwo+Pgo+PiBA
+QCAtNTEzLDYgKzUyMSw5IEBAIHN0YXRpYyB2b2lkIGF0bWVsX3N0YXJ0X3R4KHN0cnVjdCB1YXJ0
+X3BvcnQgKnBvcnQpCj4+Cj4+ICAgICAgIC8qIEVuYWJsZSBpbnRlcnJ1cHRzICovCj4+ICAgICAg
+IGF0bWVsX3VhcnRfd3JpdGVsKHBvcnQsIEFUTUVMX1VTX0lFUiwgYXRtZWxfcG9ydC0+dHhfZG9u
+ZV9tYXNrKTsKPj4gKwo+PiArICAgICAvKiByZS1lbmFibGUgdGhlIHRyYW5zbWl0dGVyICovCj4+
+ICsgICAgIGF0bWVsX3VhcnRfd3JpdGVsKHBvcnQsIEFUTUVMX1VTX0NSLCBBVE1FTF9VU19UWEVO
+KTsKPj4gIH0KPj4KPj4gIC8qCj4KPiBIaSBSaWNoYXJkLApIaSAhCj4KPiBJJ3ZlIGp1c3QgZGlz
+Y292ZXJlZCB0aGF0IEkgaGF2ZSBzb21lIHdlaXJkIGJlaGF2aW9yIHdpdGggdGhpcyBwYXRjaC4g
+T24KPiBjdXJyZW50IExpbnVzJyB0cmVlLCB3aXRoIHNhbWE1ZDIgKyBETUEsIEkgc2VlIHNvbWUg
+Z2FyYmFnZSBjaGFyYWN0ZXJzCj4gY29taW5nIG91dCBvZiB0aGUgY29uc29sZSB3aGVuIEkgdHJ5
+IHRvIHN0b3AgbXkgc3lzdGVtIChyZWJvb3QvaGFsdCkgWzFdLgpZZXMsIEkndmUgYWxzbyBzZWVu
+IHRoYXQgb24gbXkgYm9hcmQsIGl0IHdhcyBvbiBteSB0b2RvIGxpc3QuCihBbHRob3VnaCBJIGRp
+ZG4ndCBrbm93IHRoaXMgcGF0Y2ggd2FzIHRoZSBjdWxwcml0ICEpCgo+Cj4gTW9yZW92ZXIsIGFu
+ZCBJIGRvIHVuZGVyc3RhbmQgdGhhdCBpdCdzIG5vdCB0aGUgcHJvYmxlbSByaWdodCBoZXJlLCB3
+aGVuCj4gYXBwbGllZCBvbiBvdXIgbGludXgtNC40LWF0OTEgYnJhbmNoIChvdXIgdmVuZG9yIHRy
+ZWUgYWN0dWFsbHkpLCBpdAo+IGhhbmdzIHRoZSBib290IHByb2Nlc3MgYXMgaXQgc2VlbXMgdGhh
+dCBhIGJ1cnN0IG9mIG9wZW4vY2xvc2Ugb2YgdGhlCj4gc2VyaWFsIHBvcnQgaGFwcGVucyB3aGls
+ZSBzdGFydGluZyB0aGUgcm9vdGZzLiBJdCdzIGRlZmluaXRpdmVseSBteSBvd24KPiBwcm9ibGVt
+LCBidXQgaXQgY2FuIGJyaW5nIGxpZ2h0IHRvIHdoYXQgd2UgYXJlIHNlZWluZyBvbiBNYWlubGlu
+ZS4uLgphw69lICEKVGhpcyBpcyBjbGVhcmx5IHNvbWV0aGluZyB3ZSdsbCBoYXZlIHRvIHVuZGVy
+c3RhbmQgIQoKPiBJIHRoaW5rIHRoYXQgd2UgbWF5IG5lZWQgdG8gZmx1c2ggdGhlIERNQSBjaGFu
+bmVsIGluIHRoaXMKPiBhdG1lbF9zdG9wX3R4KCkgZnVuY3Rpb24uCj4KeWVzLCBJJ2xsIGxvb2sg
+aW50byB0aGF0LgoKPiBCZXN0IHJlZ2FyZHMsCj4KPiBbMV0gSWYgeW91IHdhbnQgdG8gdGVzdCwg
+eW91IG5lZWQgdG8gYXBwbHkgdGhpcyBwYXRjaCBmb3IgZU1NQyBCVFc6Cj4gaHR0cHM6Ly9wYXRj
+aHdvcmsua2VybmVsLm9yZy9wYXRjaC85NjE3NDg5Lwo+Cj4gLS0KPiBOaWNvbGFzIEZlcnJlCgpU
+aGFua3MgIQoKUmljaGFyZC4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxA
+bGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
