@@ -1,86 +1,75 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH v5 2/3] printk: rename selected_console -> preferred_console
-Date: Wed, 15 Mar 2017 13:28:51 +0300
-Message-ID: <20170315102854.1763-3-aleksey.makarov@linaro.org>
-References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 1/1] tty: serial_core, remove state checks in uart_poll*
+Date: Wed, 15 Mar 2017 12:00:23 +0100
+Message-ID: <20170315110023.7806-1-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170315102854.1763-1-aleksey.makarov@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>
+To: gregkh@linuxfoundation.org
+Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Jason Wessel <jason.wessel@windriver.com>, kgdb-bugreport@lists.sourceforge.net
 List-Id: linux-serial@vger.kernel.org
 
-The variable selected_console is set in __add_preferred_console()
-to point to the last console parameter that was added to the
-console_cmdline array.
+Coverity complains about uart_state checks in polling functions. And it
+is indeed correct. We do something like this:
+	struct uart_state *state = drv->state + line;
+	if (!state)
+		return;
 
-Rename it to preferred_console so that the name reflects the usage.
+Adding 'line' to drv->state would move the potential NULL pointer to
+something near NULL and the check is useless. Even if we checked pure
+drv->state, nothing guarantees it is not freed and NULLed after the
+check. So if the only user of this interface (kgdboc) needs to assure
+something, this is neither the correct thing, nor place to do so.
 
-Petr Mladek:
-"[..] the selected_console/preferred_console
-value is used to keep the console first in the console_drivers list.
-IMHO, the main effect is that each line will first appear on this
-console, see call_console_drivers(). But the message will still
-appear also on all other enabled consoles. From this point,
-the name "preferred" sounds better to me. More consoles
-are selected (enabled) and only one is preferred (first)."
-
-Acked-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-Acked-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Suggested-by: Peter Hurley <peter@hurleysoftware.com>
-Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Cc: kgdb-bugreport@lists.sourceforge.net
 ---
- kernel/printk/printk.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/serial/serial_core.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 80bc1b72d03d..fd752f0c8ef1 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -270,7 +270,7 @@ static struct console *exclusive_console;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index f93106e26dd1..aa31ee0fd324 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2323,9 +2323,6 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
+ 	int flow = 'n';
+ 	int ret = 0;
  
- static struct console_cmdline console_cmdline[MAX_CMDLINECONSOLES];
+-	if (!state)
+-		return -1;
+-
+ 	tport = &state->port;
+ 	mutex_lock(&tport->mutex);
  
--static int selected_console = -1;
-+static int preferred_console = -1;
- int console_set_on_cmdline;
- EXPORT_SYMBOL(console_set_on_cmdline);
+@@ -2360,13 +2357,12 @@ static int uart_poll_get_char(struct tty_driver *driver, int line)
+ 	struct uart_port *port;
+ 	int ret = -1;
  
-@@ -1910,14 +1910,14 @@ static int __add_preferred_console(char *name, int idx, char *options,
- 	     i++, c++) {
- 		if (strcmp(c->name, name) == 0 && c->index == idx) {
- 			if (!brl_options)
--				selected_console = i;
-+				preferred_console = i;
- 			return 0;
- 		}
+-	if (state) {
+-		port = uart_port_ref(state);
+-		if (port) {
+-			ret = port->ops->poll_get_char(port);
+-			uart_port_deref(port);
+-		}
++	port = uart_port_ref(state);
++	if (port) {
++		ret = port->ops->poll_get_char(port);
++		uart_port_deref(port);
  	}
- 	if (i == MAX_CMDLINECONSOLES)
- 		return -E2BIG;
- 	if (!brl_options)
--		selected_console = i;
-+		preferred_console = i;
- 	strlcpy(c->name, name, sizeof(c->name));
- 	c->options = options;
- 	braille_set_options(c, brl_options);
-@@ -2436,7 +2436,7 @@ void register_console(struct console *newcon)
- 		bcon = console_drivers;
++
+ 	return ret;
+ }
  
- 	if (!has_preferred || bcon || !console_drivers)
--		has_preferred = selected_console >= 0;
-+		has_preferred = preferred_console >= 0;
+@@ -2376,9 +2372,6 @@ static void uart_poll_put_char(struct tty_driver *driver, int line, char ch)
+ 	struct uart_state *state = drv->state + line;
+ 	struct uart_port *port;
  
- 	/*
- 	 *	See if we want to use this console driver. If we
-@@ -2484,7 +2484,7 @@ void register_console(struct console *newcon)
- 		}
- 
- 		newcon->flags |= CON_ENABLED;
--		if (i == selected_console) {
-+		if (i == preferred_console) {
- 			newcon->flags |= CON_CONSDEV;
- 			has_preferred = true;
- 		}
+-	if (!state)
+-		return;
+-
+ 	port = uart_port_ref(state);
+ 	if (!port)
+ 		return;
 -- 
 2.12.0
