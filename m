@@ -1,82 +1,164 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH] tty/serial: atmel_serial: BUG: stop DMA from transmitting
- in stop_tx
-Date: Wed, 15 Mar 2017 14:36:27 +0100
-Message-ID: <CACQ1gAgW4aGJSxSAXDWL7td9eV12UV=Xv=PZR58BqqHxEeRH0g@mail.gmail.com>
-References: <20161213162756.16139-1-richard.genoud@gmail.com>
- <c5c0cdcf-d4da-a8c0-4161-85535ecf88ec@atmel.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/2] serdev: Add serdev_device_write subroutine
+Date: Wed, 15 Mar 2017 09:18:36 -0500
+Message-ID: <CAL_JsqKxFBFz-SHRQaDS0P4P_emBVBpkQFb0jN3oH6WM99t59g@mail.gmail.com>
+References: <20170314134819.19476-1-andrew.smirnov@gmail.com> <20170314134819.19476-2-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <c5c0cdcf-d4da-a8c0-4161-85535ecf88ec@atmel.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170314134819.19476-2-andrew.smirnov@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andrey Smirnov <andrew.smirnov@gmail.com>
+Cc: Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-MjAxNy0wMy0xNSAxMjozNyBHTVQrMDE6MDAgTmljb2xhcyBGZXJyZSA8bmljb2xhcy5mZXJyZUBh
-dG1lbC5jb20+Ogo+IExlIDEzLzEyLzIwMTYgw6AgMTc6MjcsIFJpY2hhcmQgR2Vub3VkIGEgw6lj
-cml0IDoKPj4gSWYgd2UgZG9uJ3QgZGlzYWJsZSB0aGUgdHJhbnNtaXR0ZXIgaW4gYXRtZWxfc3Rv
-cF90eCwgdGhlIERNQSBidWZmZXIKPj4gY29udGludWVzIHRvIHNlbmQgZGF0YSB1bnRpbCBpdCBp
-cyBlbXB0aWVkLgo+PiBUaGlzIGNhdXNlIHByb2JsZW1zIHdpdGggdGhlIGZsb3cgY29udHJvbCAo
-Q1RTIGlzIGFzc2VydGVkIGFuZCBkYXRhIGFyZQo+PiBzdGlsbCBzZW50KS4KPj4KPj4gU28sIGRp
-c2FibGluZyB0aGUgdHJhbnNtaXR0ZXIgaW4gYXRtZWxfc3RvcF90eCBpcyBhIHNhbmUgdGhpbmcg
-dG8gZG8uCj4+Cj4+IFRlc3RlZCBvbiBhdDkxc2FtOWczNS1jbShETUEpCj4+IFRlc3RlZCBmb3Ig
-cmVncmVzc2lvbnMgb24gc2FtYTVkMi14cGxhaW5lZChGaWZvKSBhbmQgYXQ5MXNhbTlnMjBlayhQ
-REMpCj4+Cj4+IENjOiA8c3RhYmxlQHZnZXIua2VybmVsLm9yZz4gKGJld2FyZSwgdGhpcyB3b24n
-dCBhcHBseSBiZWZvcmUgNC4zKQo+PiBTaWduZWQtb2ZmLWJ5OiBSaWNoYXJkIEdlbm91ZCA8cmlj
-aGFyZC5nZW5vdWRAZ21haWwuY29tPgo+PiAtLS0KPj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9hdG1l
-bF9zZXJpYWwuYyB8IDExICsrKysrKysrKysrCj4+ICAxIGZpbGUgY2hhbmdlZCwgMTEgaW5zZXJ0
-aW9ucygrKQo+Pgo+PiBOQjogdGhpcyBpcyBub3QgZm9yIHRoZSA0LjEwIG1lcmdlIHdpbmRvdywg
-SSdtIGp1c3Qgc2VuZGluZyBpdCBub3cgdG8KPj4gaGF2ZSBzb21lIGNvbW1lbnRzIGlmIHNvbWVv
-bmUgaXMgYWdhaW50cyBpdC4KPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9h
-dG1lbF9zZXJpYWwuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+PiBpbmRl
-eCAxNjhiMTBjYWQ0N2IuLmY5ZDQyZGU1YWIyZCAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy90dHkv
-c2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9z
-ZXJpYWwuYwo+PiBAQCAtNDgxLDYgKzQ4MSwxNCBAQCBzdGF0aWMgdm9pZCBhdG1lbF9zdG9wX3R4
-KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCj4+ICAgICAgICAgICAgICAgLyogZGlzYWJsZSBQREMg
-dHJhbnNtaXQgKi8KPj4gICAgICAgICAgICAgICBhdG1lbF91YXJ0X3dyaXRlbChwb3J0LCBBVE1F
-TF9QRENfUFRDUiwgQVRNRUxfUERDX1RYVERJUyk7Cj4+ICAgICAgIH0KPj4gKwo+PiArICAgICAv
-Kgo+PiArICAgICAgKiBEaXNhYmxlIHRoZSB0cmFuc21pdHRlci4KPj4gKyAgICAgICogVGhpcyBp
-cyBtYW5kYXRvcnkgd2hlbiBETUEgaXMgdXNlZCwgb3RoZXJ3aXNlIHRoZSBETUEgYnVmZmVyCj4+
-ICsgICAgICAqIGlzIGZ1bGx5IHRyYW5zbWl0dGVkLgo+PiArICAgICAgKi8KPj4gKyAgICAgYXRt
-ZWxfdWFydF93cml0ZWwocG9ydCwgQVRNRUxfVVNfQ1IsIEFUTUVMX1VTX1RYRElTKTsKPj4gKwo+
-PiAgICAgICAvKiBEaXNhYmxlIGludGVycnVwdHMgKi8KPj4gICAgICAgYXRtZWxfdWFydF93cml0
-ZWwocG9ydCwgQVRNRUxfVVNfSURSLCBhdG1lbF9wb3J0LT50eF9kb25lX21hc2spOwo+Pgo+PiBA
-QCAtNTEzLDYgKzUyMSw5IEBAIHN0YXRpYyB2b2lkIGF0bWVsX3N0YXJ0X3R4KHN0cnVjdCB1YXJ0
-X3BvcnQgKnBvcnQpCj4+Cj4+ICAgICAgIC8qIEVuYWJsZSBpbnRlcnJ1cHRzICovCj4+ICAgICAg
-IGF0bWVsX3VhcnRfd3JpdGVsKHBvcnQsIEFUTUVMX1VTX0lFUiwgYXRtZWxfcG9ydC0+dHhfZG9u
-ZV9tYXNrKTsKPj4gKwo+PiArICAgICAvKiByZS1lbmFibGUgdGhlIHRyYW5zbWl0dGVyICovCj4+
-ICsgICAgIGF0bWVsX3VhcnRfd3JpdGVsKHBvcnQsIEFUTUVMX1VTX0NSLCBBVE1FTF9VU19UWEVO
-KTsKPj4gIH0KPj4KPj4gIC8qCj4KPiBIaSBSaWNoYXJkLApIaSAhCj4KPiBJJ3ZlIGp1c3QgZGlz
-Y292ZXJlZCB0aGF0IEkgaGF2ZSBzb21lIHdlaXJkIGJlaGF2aW9yIHdpdGggdGhpcyBwYXRjaC4g
-T24KPiBjdXJyZW50IExpbnVzJyB0cmVlLCB3aXRoIHNhbWE1ZDIgKyBETUEsIEkgc2VlIHNvbWUg
-Z2FyYmFnZSBjaGFyYWN0ZXJzCj4gY29taW5nIG91dCBvZiB0aGUgY29uc29sZSB3aGVuIEkgdHJ5
-IHRvIHN0b3AgbXkgc3lzdGVtIChyZWJvb3QvaGFsdCkgWzFdLgpZZXMsIEkndmUgYWxzbyBzZWVu
-IHRoYXQgb24gbXkgYm9hcmQsIGl0IHdhcyBvbiBteSB0b2RvIGxpc3QuCihBbHRob3VnaCBJIGRp
-ZG4ndCBrbm93IHRoaXMgcGF0Y2ggd2FzIHRoZSBjdWxwcml0ICEpCgo+Cj4gTW9yZW92ZXIsIGFu
-ZCBJIGRvIHVuZGVyc3RhbmQgdGhhdCBpdCdzIG5vdCB0aGUgcHJvYmxlbSByaWdodCBoZXJlLCB3
-aGVuCj4gYXBwbGllZCBvbiBvdXIgbGludXgtNC40LWF0OTEgYnJhbmNoIChvdXIgdmVuZG9yIHRy
-ZWUgYWN0dWFsbHkpLCBpdAo+IGhhbmdzIHRoZSBib290IHByb2Nlc3MgYXMgaXQgc2VlbXMgdGhh
-dCBhIGJ1cnN0IG9mIG9wZW4vY2xvc2Ugb2YgdGhlCj4gc2VyaWFsIHBvcnQgaGFwcGVucyB3aGls
-ZSBzdGFydGluZyB0aGUgcm9vdGZzLiBJdCdzIGRlZmluaXRpdmVseSBteSBvd24KPiBwcm9ibGVt
-LCBidXQgaXQgY2FuIGJyaW5nIGxpZ2h0IHRvIHdoYXQgd2UgYXJlIHNlZWluZyBvbiBNYWlubGlu
-ZS4uLgphw69lICEKVGhpcyBpcyBjbGVhcmx5IHNvbWV0aGluZyB3ZSdsbCBoYXZlIHRvIHVuZGVy
-c3RhbmQgIQoKPiBJIHRoaW5rIHRoYXQgd2UgbWF5IG5lZWQgdG8gZmx1c2ggdGhlIERNQSBjaGFu
-bmVsIGluIHRoaXMKPiBhdG1lbF9zdG9wX3R4KCkgZnVuY3Rpb24uCj4KeWVzLCBJJ2xsIGxvb2sg
-aW50byB0aGF0LgoKPiBCZXN0IHJlZ2FyZHMsCj4KPiBbMV0gSWYgeW91IHdhbnQgdG8gdGVzdCwg
-eW91IG5lZWQgdG8gYXBwbHkgdGhpcyBwYXRjaCBmb3IgZU1NQyBCVFc6Cj4gaHR0cHM6Ly9wYXRj
-aHdvcmsua2VybmVsLm9yZy9wYXRjaC85NjE3NDg5Lwo+Cj4gLS0KPiBOaWNvbGFzIEZlcnJlCgpU
-aGFua3MgIQoKUmljaGFyZC4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxA
-bGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+On Tue, Mar 14, 2017 at 8:48 AM, Andrey Smirnov
+<andrew.smirnov@gmail.com> wrote:
+> Add serdev_device_write() which is a blocking call allowing to transfer
+> arbitraty amount of data (potentially exceeding amount that
+> serdev_device_write_buf can process in a single call)
+>
+> Cc: cphealy@gmail.com
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+> ---
+>  drivers/tty/serdev/core.c | 37 +++++++++++++++++++++++++++++++++++++
+>  include/linux/serdev.h    | 23 +++++++++++++++++------
+>  2 files changed, 54 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index f4c6c90..759e834 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -128,6 +128,41 @@ int serdev_device_write_buf(struct serdev_device *serdev,
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_device_write_buf);
+>
+> +int serdev_device_write(struct serdev_device *serdev,
+> +                       const unsigned char *buf, size_t count)
+
+_write vs. _write_buf are not all that clear what the difference is.
+but I don't have a better name.
+
+Perhaps a timeout param is needed? This could never complete if CTS
+remains deasserted.
+
+> +{
+> +       int ret = count;
+> +
+> +       if (serdev->ops->write_wakeup)
+> +               return -EINVAL;
+> +
+> +       mutex_lock(&serdev->write_lock);
+> +
+> +       for (;;) {
+> +               size_t chunk;
+> +
+> +               reinit_completion(&serdev->write_wakeup);
+
+Perhaps write_comp instead as write_wakeup is already a function name.
+
+> +
+> +               chunk = serdev_device_write_buf(serdev, buf, count);
+> +               if (chunk < 0) {
+> +                       ret = chunk;
+> +                       goto done;
+> +               }
+> +
+> +               buf   += chunk;
+> +               count -= chunk;
+> +
+> +               if (!count)
+> +                       break;
+> +
+> +               wait_for_completion(&serdev->write_wakeup);
+> +       }
+> +done:
+> +       mutex_unlock(&serdev->write_lock);
+> +       return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(serdev_device_write);
+> +
+>  void serdev_device_write_flush(struct serdev_device *serdev)
+>  {
+>         struct serdev_controller *ctrl = serdev->ctrl;
+> @@ -232,6 +267,8 @@ struct serdev_device *serdev_device_alloc(struct serdev_controller *ctrl)
+>         serdev->dev.parent = &ctrl->dev;
+>         serdev->dev.bus = &serdev_bus_type;
+>         serdev->dev.type = &serdev_device_type;
+> +       init_completion(&serdev->write_wakeup);
+> +       mutex_init(&serdev->write_lock);
+>         return serdev;
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_device_alloc);
+> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+> index 5176cdc..8f7aa35 100644
+> --- a/include/linux/serdev.h
+> +++ b/include/linux/serdev.h
+> @@ -35,16 +35,19 @@ struct serdev_device_ops {
+>
+>  /**
+>   * struct serdev_device - Basic representation of an serdev device
+> - * @dev:       Driver model representation of the device.
+> - * @nr:                Device number on serdev bus.
+> - * @ctrl:      serdev controller managing this device.
+> - * @ops:       Device operations.
+> + * @dev:        Driver model representation of the device.
+> + * @nr:                 Device number on serdev bus.
+> + * @ctrl:       serdev controller managing this device.
+> + * @ops:        Device operations.
+> + * @write_wakeup Completion used by serdev_device_write internally
+>   */
+>  struct serdev_device {
+>         struct device dev;
+>         int nr;
+>         struct serdev_controller *ctrl;
+>         const struct serdev_device_ops *ops;
+> +       struct completion write_wakeup;
+> +       struct mutex write_lock;
+>  };
+>
+>  static inline struct serdev_device *to_serdev_device(struct device *d)
+> @@ -162,10 +165,13 @@ static inline void serdev_controller_write_wakeup(struct serdev_controller *ctrl
+>  {
+>         struct serdev_device *serdev = ctrl->serdev;
+>
+> -       if (!serdev || !serdev->ops->write_wakeup)
+> +       if (!serdev)
+>                 return;
+>
+> -       serdev->ops->write_wakeup(serdev);
+> +       if (serdev->ops->write_wakeup)
+> +               serdev->ops->write_wakeup(serdev);
+> +       else
+> +               complete(&serdev->write_wakeup);
+>  }
+>
+>  static inline int serdev_controller_receive_buf(struct serdev_controller *ctrl,
+> @@ -187,6 +193,7 @@ void serdev_device_close(struct serdev_device *);
+>  unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
+>  void serdev_device_set_flow_control(struct serdev_device *, bool);
+>  int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
+> +int serdev_device_write(struct serdev_device *serdev, const unsigned char *buf, size_t count);
+
+Drop the param names to be consistent with the rest of the declarations.
+
+>  void serdev_device_write_flush(struct serdev_device *);
+>  int serdev_device_write_room(struct serdev_device *);
+>
+> @@ -227,6 +234,10 @@ static inline int serdev_device_write_buf(struct serdev_device *sdev, const unsi
+>  {
+>         return -ENODEV;
+>  }
+> +static inline int serdev_device_write(struct serdev_device *sdev, const unsigned char *buf, size_t count)
+> +{
+> +       return -ENODEV;
+> +}
+>  static inline void serdev_device_write_flush(struct serdev_device *sdev) {}
+>  static inline int serdev_device_write_room(struct serdev_device *sdev)
+>  {
+> --
+> 2.9.3
+>
