@@ -1,86 +1,62 @@
-From: Samuel Thibault <samuel.thibault@ens-lyon.org>
-Subject: Re: [patch 0/7] staging: speakup: introduce tty-based comms
-Date: Wed, 15 Mar 2017 16:03:23 +0100
-Message-ID: <20170315150323.pjda5qnxauxk5pcf@var.youpi.perso.aquilenet.fr>
-References: <20170313220551.312820470@gmail.com>
- <20170313221404.GA22871@kroah.com>
- <20170314004701.kuecu2zu4md5ccrq@var.youpi.perso.aquilenet.fr>
- <20170314011814.p3t4zfcx3cxhgvwl@var.youpi.perso.aquilenet.fr>
- <CAL_JsqJVfG2pFoNtj89e0E9OKye4wGEUi98NOnMBwNF+Yp-rPA@mail.gmail.com>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: [RFC PATCH] tty/serial: atmel: fix TX path in atmel_console_write()
+Date: Wed, 15 Mar 2017 16:29:48 +0100
+Message-ID: <20170315152948.10978-1-nicolas.ferre@microchip.com>
+References: <CACQ1gAgW4aGJSxSAXDWL7td9eV12UV=Xv=PZR58BqqHxEeRH0g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqJVfG2pFoNtj89e0E9OKye4wGEUi98NOnMBwNF+Yp-rPA@mail.gmail.com>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Rob Herring <robh@kernel.org>
-Cc: devel@driverdev.osuosl.org, Kirk Reiser <kirk@reisers.ca>, okash.khawaja@gmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, speakup@linux-speakup.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, Chris Brannon <chris@the-brannons.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CACQ1gAgW4aGJSxSAXDWL7td9eV12UV=Xv=PZR58BqqHxEeRH0g@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Richard Genoud <richard.genoud@gmail.com>, linux-serial@vger.kernel.org
+Cc: "stable # 4 . 4+" <stable@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Rob Herring, on mer. 15 mars 2017 09:45:59 -0500, wrote:
-> On Mon, Mar 13, 2017 at 8:18 PM, Samuel Thibault
-> <samuel.thibault@ens-lyon.org> wrote:
-> > Samuel Thibault, on mar. 14 mars 2017 01:47:01 +0100, wrote:
-> >> Greg KH, on mar. 14 mars 2017 06:14:04 +0800, wrote:
-> >> > On Mon, Mar 13, 2017 at 10:05:51PM +0000, okash.khawaja@gmail.com wrote:
-> >> > > This patchset introduces a TTY-based way for the synths to communicate
-> >> > > with devices as an alternate for direct serial comms used by the synths
-> >> > > at the moment. It then migrates some of the synths to the TTY-based
-> >> > > comms. Synths migrated in this patchset are dummy, acntsa, bns and
-> >> > > txprt.
-> >> >
-> >> > What about using the serbus code that is now in the tree?  That should
-> >> > make this a lot easier than your patchset from what I can see.
-> >>
-> >> Mmm... AIUI from reading tty_port_register_device_attr, one
-> >> would have to have registered a speakup serdev device driver
-> >> *before* tty_port_register_device_attr gets called, so that
-> >> serdev_tty_port_register matches the driver in the loop of
-> >> of_serdev_register_devices, and no TTY cdev is created?
-> 
-> Not exactly. The driver doesn't have to be registered nor loaded, but
-> the device does have to be present so no tty cdev is created. The only
-> way a device is present currently is when a node is in the DT. I
-> expect the x86 folks will be adding ACPI support soon.
+A side effect of 89d8232411a8 ("tty/serial: atmel_serial: BUG: stop DMA
+from transmitting in stop_tx") is that the console can be called with
+TX path disabled. Then the system would hang trying to push charecters
+out in atmel_console_putchar().
 
-Ok, but in our case there is no hardware device that the system can
-see/probe, it's just plugged externally.
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Fixes: 89d8232411a8 ("tty/serial: atmel_serial: BUG: stop DMA from transmitting
+in stop_tx")
+Cc: stable <stable@vger.kernel.org> # 4.4+
+---
+Hi Richard,
 
-> >> That would mean that speakup can not be loaded as a module after ttyS0
-> >> initialization, that won't fly for our use needs. The line discipline
-> >> mechanism allows us to attach ourself to an existing tty.  Could we
-> >> imagine a tty_port function which removes the cdev and tries to register
-> >> the tty port again to serdev?
-> >>
-> >> What we basically need to be able to say on speakup module load is
-> >> e.g. "I'm now attaching a device to ttyS0, use this serdev_device_ops to
-> >> discuss with it".
-> >
-> > That for_each_available_child_of_node loop is really way more complex
-> > than what we need.  And what's more, it's not working without CONFIG_OF
-> > (!)
-> >
-> > It would really make sense to me to have a
-> >
-> > serdev_device *tty_port_register_serdev_device(tty, device)
-> >
-> > which unregisters the character device of the tty, and creates instead a
-> > controler with the given device plugged to it. Really much like a line
-> > discipline, but way simpler :)
-> 
-> What would trigger calling this function?
+I found this to fix the problem with system hang in my linux-4.4-at91 branch
+(in the atmel_console_putchar() waiting loop actually). I'm open to more
+insignt.
+As we cannot figure out if this bit is set or not, I didn't preserve the
+current status...
 
->From the user point of view, loading the speakup module for the external
-device, typically, with "ttyS0" as module parameter. Then the speakup
-init function can do whatever it needs to achieve this :)
+Regards,
 
-Samuel
+ drivers/tty/serial/atmel_serial.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index dcebb28ffbc4..7372dbdb7a4c 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2483,6 +2483,9 @@ static void atmel_console_write(struct console *co, const char *s, u_int count)
+ 	pdc_tx = atmel_uart_readl(port, ATMEL_PDC_PTSR) & ATMEL_PDC_TXTEN;
+ 	atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTDIS);
+ 
++	/* Make sure that tx path is actually able to send characters */
++	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
++
+ 	uart_console_write(port, s, count, atmel_console_putchar);
+ 
+ 	/*
+-- 
+2.9.0
