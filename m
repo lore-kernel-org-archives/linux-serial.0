@@ -1,97 +1,68 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v5 3/3] printk: fix double printing with earlycon
-Date: Wed, 15 Mar 2017 17:58:58 +0100
-Message-ID: <20170315165858.GJ3977@pathway.suse.cz>
-References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
- <20170315102854.1763-4-aleksey.makarov@linaro.org>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: Re: [RFC PATCH] tty/serial: atmel: fix TX path in
+ atmel_console_write()
+Date: Wed, 15 Mar 2017 17:56:11 +0100
+Message-ID: <d3abc5aa-b010-a6cc-4ab9-74078149a692@microchip.com>
+References: <CACQ1gAgW4aGJSxSAXDWL7td9eV12UV=Xv=PZR58BqqHxEeRH0g@mail.gmail.com>
+ <20170315152948.10978-1-nicolas.ferre@microchip.com>
+ <074d057e-4971-a325-e985-3f5046536225@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170315102854.1763-4-aleksey.makarov@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <074d057e-4971-a325-e985-3f5046536225@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Richard Genoud <richard.genoud@gmail.com>, linux-serial@vger.kernel.org
+Cc: "stable # 4 . 4+" <stable@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed 2017-03-15 13:28:52, Aleksey Makarov wrote:
-> If a console was specified by ACPI SPCR table _and_ command line
-> parameters like "console=ttyAMA0" _and_ "earlycon" were specified,
-> then log messages appear twice.
-> 
-> The root cause is that the code traverses the list of specified
-> consoles (the `console_cmdline` array) and stops at the first match.
-> But it may happen that the same console is referred by the elements
-> of this array twice:
-> 
-> 	pl011,mmio,0x87e024000000,115200 -- from SPCR
-> 	ttyAMA0 -- from command line
-> 
-> but in this case `preferred_console` points to the second entry and
-> the flag CON_CONSDEV is not set, so bootconsole is not deregistered.
-> 
-> To fix that, introduce an invariant "The last non-braille console
-> is always the preferred one" on the entries of the console_cmdline
-> array and don't try to check for double entries.  Then traverse it
-> in reverse order to be sure that if the console is preferred then
-> it will be the first matching entry.
-> 
-> Reported-by: Sudeep Holla <sudeep.holla@arm.com>
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-> ---
->  kernel/printk/printk.c | 45 +++++++++++++++++++++++++++++----------------
->  1 file changed, 29 insertions(+), 16 deletions(-)
-> 
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index fd752f0c8ef1..7dc53b2831fb 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -1902,20 +1902,25 @@ static int __add_preferred_console(char *name, int idx, char *options,
->  	int i;
->  
->  	/*
-> -	 *	See if this tty is not yet registered, and
-> -	 *	if we have a slot free.
-> +	 * Don't check if the console has already been registered, because it is
-> +	 * pointless.  After all, we can not check if two entries refer to
-> +	 * the same console if one is matched with console->match(), and another
-> +	 * by name/index:
-> +	 *
-> +	 *	pl011,mmio,0x87e024000000,115200 -- added from SPCR
-> +	 *	ttyAMA0 -- added from command line
-> +	 *
-> +	 * Also this allows to maintain an invariant that will help to find if
-> +	 * the matching console is preferred, see register_console():
-
-It is an interesting idea.
-
-I just wonder if the check for duplicates was there for a serious
-reason. It is hard to say because it was already in the initial git
-commit. In each case, MAX_CMDLINECONSOLES is 8. There is not much
-space for duplicates.
-
-Note that add_preferred_console() is called also from _probe() calls,
-see
-
-   uart_add_one_port() -> of_console_check()
-   sunserial_console_match() -> add_preferred_console()
-
-I wonder they might be called repeatedly, for example because
-of suspend/restore, hotplug, module load/unload.
-
-I would feel more comfortable if we keep the check for
-duplicates here.
-
-It is a pity that the console->match() calls have side effects.
-I still wonder if the 4th version might be more safe. The
-newcon->setup() call is called only when the console matches.
-AFAIK, there is only one braille console. We should be on
-the safe side if this one does not implement the match()
-callback. Or is it even more complicated?
-
-To be honest, I am not much familiar with the console registration
-code. I am still trying to get a better picture. It is pity that
-many function have unexpected side effects.
-
-Best Regards,
-Petr
+TGUgMTUvMDMvMjAxNyDDoCAxNzoxOSwgUmljaGFyZCBHZW5vdWQgYSDDqWNyaXQgOgo+IE9uIDE1
+LzAzLzIwMTcgMTY6MjksIE5pY29sYXMgRmVycmUgd3JvdGU6Cj4+IEEgc2lkZSBlZmZlY3Qgb2Yg
+ODlkODIzMjQxMWE4ICgidHR5L3NlcmlhbDogYXRtZWxfc2VyaWFsOiBCVUc6IHN0b3AgRE1BCj4+
+IGZyb20gdHJhbnNtaXR0aW5nIGluIHN0b3BfdHgiKSBpcyB0aGF0IHRoZSBjb25zb2xlIGNhbiBi
+ZSBjYWxsZWQgd2l0aAo+PiBUWCBwYXRoIGRpc2FibGVkLiBUaGVuIHRoZSBzeXN0ZW0gd291bGQg
+aGFuZyB0cnlpbmcgdG8gcHVzaCBjaGFyZWN0ZXJzCj4+IG91dCBpbiBhdG1lbF9jb25zb2xlX3B1
+dGNoYXIoKS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogTmljb2xhcyBGZXJyZSA8bmljb2xhcy5mZXJy
+ZUBtaWNyb2NoaXAuY29tPgo+PiBGaXhlczogODlkODIzMjQxMWE4ICgidHR5L3NlcmlhbDogYXRt
+ZWxfc2VyaWFsOiBCVUc6IHN0b3AgRE1BIGZyb20gdHJhbnNtaXR0aW5nCj4+IGluIHN0b3BfdHgi
+KQo+PiBDYzogc3RhYmxlIDxzdGFibGVAdmdlci5rZXJuZWwub3JnPiAjIDQuNCsKPj4gLS0tCj4+
+IEhpIFJpY2hhcmQsCj4+Cj4+IEkgZm91bmQgdGhpcyB0byBmaXggdGhlIHByb2JsZW0gd2l0aCBz
+eXN0ZW0gaGFuZyBpbiBteSBsaW51eC00LjQtYXQ5MSBicmFuY2gKPj4gKGluIHRoZSBhdG1lbF9j
+b25zb2xlX3B1dGNoYXIoKSB3YWl0aW5nIGxvb3AgYWN0dWFsbHkpLiBJJ20gb3BlbiB0byBtb3Jl
+Cj4+IGluc2lnbnQuCj4+IEFzIHdlIGNhbm5vdCBmaWd1cmUgb3V0IGlmIHRoaXMgYml0IGlzIHNl
+dCBvciBub3QsIEkgZGlkbid0IHByZXNlcnZlIHRoZQo+PiBjdXJyZW50IHN0YXR1cy4uLgo+Pgo+
+PiBSZWdhcmRzLAo+IAo+IFNvLCBJJ20gZ3Vlc3NpbmcgdGhhdCB5b3UgbWF5IHNlZSBzb21lIGxp
+bmVzL2NoYXJhY3RlcnMgcHJpbnRlZCB0d2ljZSBvbgo+IHRoZSBzY3JlZW4sIGRvbid0IHlvdSA/
+CgpXZWxsLCBhY3R1YWxseSwgSSBkb24ndCB0aGluayBzbyBiZWNhdXNlIHRoZSByZXBldGl0aW9u
+cyB0aGF0IEkgc2VlIGFyZQpwcm9iYWJseSBkdWUgdG8gb3Blbi9jbG9zZS9vcGVuL2Nsb3NlL3Jl
+LW9wZW4vLi4uIG9mIHRoZSBzZXJpYWwgY29uc29sZQppdHNlbGYuCgpTYW1lIHdpdGggdGhlIGxp
+bmUgInJhbmRvbTogdWRldmQ6IHVuaW5pdGlhbGl6ZWQgdXJhbmRvbSByZWFkICgxNiBieXRlcwpy
+ZWFkLCAyMSBiaXRzIG9mIGVudHJvcHkgYXZhaWxhYmxlKSIsIHRoZXkgaGFwcGVuIGF0IGRpZmZl
+cmVudCBtb21lbnQgaW4KdGltZSA9PiB0aGUgcHJpbnRrIGxvZyB0aW1lc3RhbXBpbmcgc2VlbSB0
+byBpbmRpY2F0ZSB0aGF0IHRoZXkgYXJlCmRpZmZlcmVudC4KCkhlcmUgaXMgbXkgbG9nOgpodHRw
+Oi8vY29kZS5idWxpeC5vcmcvYm9rMjNuLTEyMzA1NgoKUmVnYXJkcywKCj4+ICBkcml2ZXJzL3R0
+eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMgfCAzICsrKwo+PiAgMSBmaWxlIGNoYW5nZWQsIDMgaW5z
+ZXJ0aW9ucygrKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3Nl
+cmlhbC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4+IGluZGV4IGRjZWJi
+MjhmZmJjNC4uNzM3MmRiZGI3YTRjIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwv
+YXRtZWxfc2VyaWFsLmMKPj4gKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5j
+Cj4+IEBAIC0yNDgzLDYgKzI0ODMsOSBAQCBzdGF0aWMgdm9pZCBhdG1lbF9jb25zb2xlX3dyaXRl
+KHN0cnVjdCBjb25zb2xlICpjbywgY29uc3QgY2hhciAqcywgdV9pbnQgY291bnQpCj4+ICAJcGRj
+X3R4ID0gYXRtZWxfdWFydF9yZWFkbChwb3J0LCBBVE1FTF9QRENfUFRTUikgJiBBVE1FTF9QRENf
+VFhURU47Cj4+ICAJYXRtZWxfdWFydF93cml0ZWwocG9ydCwgQVRNRUxfUERDX1BUQ1IsIEFUTUVM
+X1BEQ19UWFRESVMpOwo+PiAgCj4+ICsJLyogTWFrZSBzdXJlIHRoYXQgdHggcGF0aCBpcyBhY3R1
+YWxseSBhYmxlIHRvIHNlbmQgY2hhcmFjdGVycyAqLwo+PiArCWF0bWVsX3VhcnRfd3JpdGVsKHBv
+cnQsIEFUTUVMX1VTX0NSLCBBVE1FTF9VU19UWEVOKTsKPj4gKwo+PiAgCXVhcnRfY29uc29sZV93
+cml0ZShwb3J0LCBzLCBjb3VudCwgYXRtZWxfY29uc29sZV9wdXRjaGFyKTsKPj4gIAo+PiAgCS8q
+Cj4+Cj4gCj4gUmljaGFyZC4KPiAKCgotLSAKTmljb2xhcyBGZXJyZQoKX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5n
+IGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5p
+bmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
