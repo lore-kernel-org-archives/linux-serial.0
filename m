@@ -1,66 +1,88 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH] serial: 8250: 8250_core: Use dev_name() during
- request_irq()
-Date: Wed, 15 Mar 2017 17:12:17 +0530
-Message-ID: <01911ed2-d64b-6f81-5ca2-7efa9b63d70f@ti.com>
-References: <20170308121943.29340-1-vigneshr@ti.com>
- <CAHp75VeFKSbk9hvoJXdK6uOz+JYATD8D057iNv0JDuEnBFS=yw@mail.gmail.com>
- <2a0cf043-6e3f-6807-0794-d9d6f46b77f5@ti.com>
- <CAHp75Vc0Ap53s=6SU2o5QjgdaBDWKC24bym7HUt6jQ69HrpdCg@mail.gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH V7 0/7] LPC: legacy ISA I/O support
+Date: Wed, 15 Mar 2017 14:23:12 +0100
+Message-ID: <CAK8P3a3NJCndFJED4wDcvYndiJHbfTEHjTnPjBUQK6UguOswmg@mail.gmail.com>
+References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
+ <CAK8P3a1f33ipk3Q8+wj9L6zP=ccn_AuhTfV0CC0+wAqrO-2beg@mail.gmail.com> <58C8BD7D.7040207@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAHp75Vc0Ap53s=6SU2o5QjgdaBDWKC24bym7HUt6jQ69HrpdCg@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <58C8BD7D.7040207@hisilicon.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Rafael Wysocki <rafael@kernel.org>, Mark Rutland <mark.rutland@arm.com>, rjw@rjwysocki.net, Linux ARM <linux-arm-kernel@lists.infradead.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci <linux-pci@vger.kernel.org>, linux-serial@vger.kernel.org, Corey Minyard <minyard@acm.org>, liviu.dudau@arm.com, Zou Rongrong <zourongrong@gmail.com>, John Garry <john.ga>
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On Tuesday 14 March 2017 09:29 PM, Andy Shevchenko wrote:
-> On Tue, Mar 14, 2017 at 3:44 PM, Vignesh R <vigneshr@ti.com> wrote:
->> On Monday 13 March 2017 01:35 AM, Andy Shevchenko wrote:
->>> On Wed, Mar 8, 2017 at 2:19 PM, Vignesh R <vigneshr@ti.com> wrote:
->>>> Passing "serial" as name during request_irq() results in all serial port
->>>> irqs have same name. This does not help much to easily identify which
->>>> irq belongs to which serial port instance. Therefore pass dev_name()
->>>> during request_irq() so that better identifiable name is listed for
->>>> serial ports in cat /proc/interrupts output.
->>>>
->>>> Output of cat /proc/interrupts
->>>> Before this patch:
->>>>  26:        689          0     GICv2 309 Edge      serial
->>>> After this patch:
->>>>  26:        696          0     GICv2 309 Edge      2530c00.serial
-> 
->>  But, this change is making interrupt name more descriptive
-> 
-> It doesn't in PCI case, it makes it worse.
-> 
-> (The world is not DT-centric)
-> 
->>> Besides that imagine what would be the name of PCI device here.
->>> I would suggest adding ID if you need one in a form like
->>> "serial%d", where ID may or may not be supplied by the actual 8250 drivers.
->>>
+On Wed, Mar 15, 2017 at 5:05 AM, zhichang.yuan
+<yuanzhichang@hisilicon.com> wrote:
+>> - I think the libio framework is more generic than it needs to be, but as
+>>   Alex really liked it this way and it was done like this based on his earlier
+>>   comments, I think that's ok.
 >>
->> Are you suggesting to use serial_index() as ID?
-> 
-> Yes.
-> 
+>> - after we went back and forth on the ACPI implementation, we concluded
+>>   that it is correct to do the same as on DT and completely abstract the
+>>   number space for I/O ports. No code should rely on a Linux port number
+>>   to have any particular relation to the physical address or the the address
+>>   on a PCI or LPC bus.
+> Thanks again for your helps in Linaro Connect!
+> I think we are heading for this direction, is it?
 
-Ok thanks, I will send on incremental fix as this patch is already applied.
+Yes, I think so.
 
--- 
-Regards
-Vignesh
+>> - I'm pretty sure the current implementation is broken for the ioport_map
+>>   function that tries to turn an IORESOURCE_IO number into a pointer.
+>>   Forcing CONFIG_GENERIC_IOMAP on would solve this, but also
+>>   make all MMIO operations slower, which we probably don't want.
+>>   It's probably enough to add a check in ioport_map() to see if the range
+>>   is mapped into a virtual address or not.
+>
+>
+> Yes, I think our LIBIO will break the ioport_map() at this moment.
+> I try to solve this issue. Could you help to check the following ideas?
+> I am not deeper understanding the whole I/O framework, the following maybe not correct:(
+>
+> ioport_map seems architecture-dependent. For our LIBIO, we don't want to replace the existing I/O
+> frameworks which support MMIO at this moment. Can we add these two revise to solve this issue?
+> 1) Make LIBIO only target for non GENERIC_IOMAP platforms
+>
+> config LIBIO
+>         bool "Generic logical IO management"
+>         depends on !GENERIC_IOMAP
+
+I don't think there is even a problem with GENERIC_IOMAP: If both are
+set, passing a low number as a pointer will turn an ioread32() into an
+inl(), which is implemented by libio.
+
+>         def_bool y if PCI && (ARC || MN10300 || UNICORE32 || SPARC || MICROBLAZE || S390 || AVR32 || CRIS || BLACKFIN || XTENSA || ARM64)
+
+I think most of these architectures just use their own inb/outb functions,
+and should not use libio at all.
+
+It's also possible that they use an older way of mapping I/O ports by calling
+ioremap() on the physical address and treating the pointer as a 32-bit
+I/O port number (relying on the PCI_IOBASE=0 default). Architectures doing
+that might have other issues with libio, and I wouldn't try converting those.
+
+> 2) Modify the ioport_map() defined in asm-generic/io.h
+> Add the checks to identify the input 'port' is MMIO, otherwise, return NULL;
+
+This seems fine.
+
+>> - We could simplify the lookup a bit by using the trick from arch/ia64
+>>   of using an array instead of linked list for walking the port numbers.
+>>   There, the upper bits of the port number refer to an address space
+>>   number while the lower bits refer to the bus address within that
+>>   address space. This should work just as well as the current
+>>   implementation but would be a little easier to understand. Maybe
+>>   Bjorn can comment on this too, as I think he was involved with the
+>>   ia64 implementation.
+>>
+> Yes, It will be more efficient.
+>
+> But the issue remained here is still how to coexist with the existing I/O frameworks.
+> I will continue to look into.
+
+Ok. Let's wait for Bjorn to reply on this idea before you spend too much time
+on this though.
+
+      Arnd
