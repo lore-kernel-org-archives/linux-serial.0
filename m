@@ -1,14 +1,17 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH] tty/serial: atmel_serial: BUG: stop DMA from transmitting
- in stop_tx
-Date: Wed, 15 Mar 2017 12:37:46 +0100
-Message-ID: <c5c0cdcf-d4da-a8c0-4161-85535ecf88ec@atmel.com>
-References: <20161213162756.16139-1-richard.genoud@gmail.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH] serial: 8250: 8250_core: Use dev_name() during
+ request_irq()
+Date: Wed, 15 Mar 2017 17:12:17 +0530
+Message-ID: <01911ed2-d64b-6f81-5ca2-7efa9b63d70f@ti.com>
+References: <20170308121943.29340-1-vigneshr@ti.com>
+ <CAHp75VeFKSbk9hvoJXdK6uOz+JYATD8D057iNv0JDuEnBFS=yw@mail.gmail.com>
+ <2a0cf043-6e3f-6807-0794-d9d6f46b77f5@ti.com>
+ <CAHp75Vc0Ap53s=6SU2o5QjgdaBDWKC24bym7HUt6jQ69HrpdCg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20161213162756.16139-1-richard.genoud@gmail.com>
+In-Reply-To: <CAHp75Vc0Ap53s=6SU2o5QjgdaBDWKC24bym7HUt6jQ69HrpdCg@mail.gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,89 +21,46 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Richard Genoud <richard.genoud@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, linux-arm-kernel@lists.infradead.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Le 13/12/2016 =E0 17:27, Richard Genoud a =E9crit :
-> If we don't disable the transmitter in atmel_stop_tx, the DMA buffer
-> continues to send data until it is emptied.
-> This cause problems with the flow control (CTS is asserted and data are
-> still sent).
-> =
 
-> So, disabling the transmitter in atmel_stop_tx is a sane thing to do.
-> =
 
-> Tested on at91sam9g35-cm(DMA)
-> Tested for regressions on sama5d2-xplained(Fifo) and at91sam9g20ek(PDC)
-> =
+On Tuesday 14 March 2017 09:29 PM, Andy Shevchenko wrote:
+> On Tue, Mar 14, 2017 at 3:44 PM, Vignesh R <vigneshr@ti.com> wrote:
+>> On Monday 13 March 2017 01:35 AM, Andy Shevchenko wrote:
+>>> On Wed, Mar 8, 2017 at 2:19 PM, Vignesh R <vigneshr@ti.com> wrote:
+>>>> Passing "serial" as name during request_irq() results in all serial port
+>>>> irqs have same name. This does not help much to easily identify which
+>>>> irq belongs to which serial port instance. Therefore pass dev_name()
+>>>> during request_irq() so that better identifiable name is listed for
+>>>> serial ports in cat /proc/interrupts output.
+>>>>
+>>>> Output of cat /proc/interrupts
+>>>> Before this patch:
+>>>>  26:        689          0     GICv2 309 Edge      serial
+>>>> After this patch:
+>>>>  26:        696          0     GICv2 309 Edge      2530c00.serial
+> 
+>>  But, this change is making interrupt name more descriptive
+> 
+> It doesn't in PCI case, it makes it worse.
+> 
+> (The world is not DT-centric)
+> 
+>>> Besides that imagine what would be the name of PCI device here.
+>>> I would suggest adding ID if you need one in a form like
+>>> "serial%d", where ID may or may not be supplied by the actual 8250 drivers.
+>>>
+>>
+>> Are you suggesting to use serial_index() as ID?
+> 
+> Yes.
+> 
 
-> Cc: <stable@vger.kernel.org> (beware, this won't apply before 4.3)
-> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
-> ---
->  drivers/tty/serial/atmel_serial.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> =
+Ok thanks, I will send on incremental fix as this patch is already applied.
 
-> NB: this is not for the 4.10 merge window, I'm just sending it now to
-> have some comments if someone is againts it.
-> =
-
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel=
-_serial.c
-> index 168b10cad47b..f9d42de5ab2d 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -481,6 +481,14 @@ static void atmel_stop_tx(struct uart_port *port)
->  		/* disable PDC transmit */
->  		atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTDIS);
->  	}
-> +
-> +	/*
-> +	 * Disable the transmitter.
-> +	 * This is mandatory when DMA is used, otherwise the DMA buffer
-> +	 * is fully transmitted.
-> +	 */
-> +	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS);
-> +
->  	/* Disable interrupts */
->  	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
->  =
-
-> @@ -513,6 +521,9 @@ static void atmel_start_tx(struct uart_port *port)
->  =
-
->  	/* Enable interrupts */
->  	atmel_uart_writel(port, ATMEL_US_IER, atmel_port->tx_done_mask);
-> +
-> +	/* re-enable the transmitter */
-> +	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
->  }
->  =
-
->  /*
-
-Hi Richard,
-
-I've just discovered that I have some weird behavior with this patch. On
-current Linus' tree, with sama5d2 + DMA, I see some garbage characters
-coming out of the console when I try to stop my system (reboot/halt) [1].
-
-Moreover, and I do understand that it's not the problem right here, when
-applied on our linux-4.4-at91 branch (our vendor tree actually), it
-hangs the boot process as it seems that a burst of open/close of the
-serial port happens while starting the rootfs. It's definitively my own
-problem, but it can bring light to what we are seeing on Mainline...
-
-I think that we may need to flush the DMA channel in this
-atmel_stop_tx() function.
-
-Best regards,
-
-[1] If you want to test, you need to apply this patch for eMMC BTW:
-https://patchwork.kernel.org/patch/9617489/
-
--- =
-
-Nicolas Ferre
+-- 
+Regards
+Vignesh
