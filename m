@@ -1,15 +1,13 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH] serial: 8250: 8250_core: Fix irq name for 8250 serial irq
-Date: Thu, 16 Mar 2017 22:58:54 +0200
-Message-ID: <CAHp75Vd7Q_0MZ69kojA_S_A4OOgdD5sR1MKW_NLXrZa6h+3GSA@mail.gmail.com>
+Date: Thu, 16 Mar 2017 22:46:06 +0100
+Message-ID: <6515939.2USCG1AhyO@wuerfel>
 References: <20170316122653.19930-1-vigneshr@ti.com>
- <20170316133632.GV21222@n2100.armlinux.org.uk>
- <9a6dcf55-0ace-e617-73bc-0472a939b36c@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <9a6dcf55-0ace-e617-73bc-0472a939b36c@arm.com>
+In-Reply-To: <20170316122653.19930-1-vigneshr@ti.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,43 +17,43 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jisheng Zhang <jszhang@marvell.com>, Vignesh R <vigneshr@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Jisheng Zhang <jszhang@marvell.com>, Vignesh R <vigneshr@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-T24gVGh1LCBNYXIgMTYsIDIwMTcgYXQgNDo1NSBQTSwgUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJw
-aHlAYXJtLmNvbT4gd3JvdGU6Cj4gT24gMTYvMDMvMTcgMTM6MzYsIFJ1c3NlbGwgS2luZyAtIEFS
-TSBMaW51eCB3cm90ZToKPj4gT24gVGh1LCBNYXIgMTYsIDIwMTcgYXQgMDU6NTY6NTNQTSArMDUz
-MCwgVmlnbmVzaCBSIHdyb3RlOgo+Pj4gVXNpbmcgZGV2X25hbWUoKSBhcyBpcnEgbmFtZSBkdXJp
-bmcgcmVxdWVzdF9pcnEoKSBtaWdodCBiZSBtaXNsZWFkaW5nIGluCj4+PiBjYXNlIG9mIHNlcmlh
-bCBvdmVyIFBDSS4gVGhlcmVmb3JlIHVzZSBhIGJldHRlciBhbHRlcm5hdGl2ZSBuYW1lIGZvcgo+
-Pj4gaWRlbnRpZnlpbmcgc2VyaWFsIHBvcnQgaXJxcyBhcyAic2VyaWFsIiBhcHBlbmRlZCB3aXRo
-IHNlcmlhbF9pbmRleCBvZgo+Pj4gdGhlIHBvcnQuIFRoaXMgZW5zdXJlcyB0aGF0ICJzZXJpYWwi
-IHN0cmluZyBpcyBhbHdheXMgcHJlc2VudCBpbiBpcnEKPj4+IG5hbWUgd2hpbGUgcG9ydCBpbmRl
-eCB3aWxsIGhlbHAgaW4gZGlzdGluZ3Vpc2hpbmcgYi93IGRpZmZlcmVudCBwb3J0cy4KPj4KPj4g
-V291bGRuJ3QgaXQgYmUgYmV0dGVyIHRvIHVzZSB0aGUgZGV2aWNlIG5hbWUgKGlvdywgdHR5U3gp
-IHJhdGhlciB0aGFuCj4+ICJzZXJpYWx4IiA/Cj4+Cj4+IE1heWJlIGEgaGVscGVyIGZ1bmN0aW9u
-IGluIHNlcmlhbF9jb3JlLmMgdG8gZm9ybWF0IHRoZSBkZXZpY2UgbmFtZSBpbnRvCj4+IGEgc3Vw
-cGxpZWQgc3RyaW5nLCB3aGljaCBjYW4gYmUgcmUtdXNlZCBlbHNld2hlcmUsIGVnLCB1YXJ0X3Jl
-cG9ydF9wb3J0KCkKPj4gYW5kIHVhcnRfc3VzcGVuZF9wb3J0KCkuICBJT1c6Cj4+Cj4+IGNvbnN0
-IGNoYXIgKnVhcnRfcG9ydF9uYW1lKGNoYXIgKmJ1Ziwgc2l6ZV90IG4sIHN0cnVjdCB1YXJ0X2Ry
-aXZlciAqZHJ2LAo+PiAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IHVhcnRfcG9ydCAq
-cG9ydCkKPj4gewo+PiAgICAgICBzbnByaW50ZihidWYsIG4sICIlcyVkIiwgZHJ2LT5kZXZfbmFt
-ZSwKPj4gICAgICAgICAgICAgICAgZHJ2LT50dHlfZHJpdmVyLT5uYW1lX2Jhc2UgKyBwb3J0LT5s
-aW5lKTsKPj4KPj4gICAgICAgcmV0dXJuIGJ1ZjsKPj4gfQo+Pgo+PiB3aGljaCBtZWFucyB5b3Ug
-Y2FuIGRvIHRoaXM6Cj4+Cj4+ICAgICAgIGNoYXIgbmFtZVsxNl07Cj4+Cj4+ICAgICAgIHJlcXVl
-c3RfaXJxKC4uLiwgdWFydF9wb3J0X25hbWUobmFtZSwgc2l6ZW9mKG5hbWUpLCBkcml2ZXIsIHBv
-cnQpLCAuLi4pCj4+Cj4+IHdoaWNoIGFsc28gYXZvaWRzIHRoZSBhbGxvY2F0aW9uLgo+Cj4gLi4u
-YW5kIG1ha2VzICdjYXQgL3Byb2MvaW50ZXJydXB0cycgcGFydGljdWxhcmx5IGZ1biBsYXRlcjoK
-Pgo+ICAgODogICAgICAgICAgMCAgICAgICAgICBHSUN2MiAgNzIgTGV2ZWwgICAgIO+/vSDvv71o
-ICAgICAgIO+/ve+/ve+/ve+/vVYhCj4KPiBVbmxlc3MgYSBzdWl0YWJseSBsb25nLWxpdmVkIHN0
-cmluZyBhbHJlYWR5IGV4aXN0cyBzb21ld2hlcmUgZWxzZSBpbiB0aGUKPiBzZXJpYWwgY29yZSwg
-dGhlIGFsbG9jYXRpb24gaXMgdW5hdm9pZGFibGUsIGFsdGhvdWdoIGthc3ByaW50ZigpIChvciBp
-dHMKPiBkZXZtXyB2YXJpYW50KSBtaWdodCBtYWtlIG1hdHRlcnMgYSBsaXR0bGUgc2ltcGxlci4K
-CldoYXQgcHJldmVudHMgdXMgdG8gY3JlYXRlIGEgZmllbGQgaW4gdWFydF9wb3J0ICh1YXJ0ODI1
-MF9wb3J0Pykgd2hlcmUKd2UgcHV0IHRoZSB1YXJ0X3BvcnRfbmFtZSgpIGZvciBmdXR1cmUgdXNl
-IGFzIGxvbmcgYXMgdWFydF9wb3J0IGlzCmFsaXZlPwoKCi0tIApXaXRoIEJlc3QgUmVnYXJkcywK
-QW5keSBTaGV2Y2hlbmtvCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxp
-c3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0
-aW5mby9saW51eC1hcm0ta2VybmVsCg==
+On Thursday, March 16, 2017 5:56:53 PM CET Vignesh R wrote:
+> Using dev_name() as irq name during request_irq() might be misleading in
+> case of serial over PCI. Therefore use a better alternative name for
+> identifying serial port irqs as "serial" appended with serial_index of
+> the port. This ensures that "serial" string is always present in irq
+> name while port index will help in distinguishing b/w different ports.
+> 
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> ---
+> 
+> Based on top of tty-next.
+> 
+>  drivers/tty/serial/8250/8250_core.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index f83b69f30987..78bf621d6827 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -213,12 +213,20 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
+>  
+>  		ret = 0;
+>  	} else {
+> +		char *irqname = kmalloc(20, GFP_KERNEL);
+> +		if (!irqname) {
+> +			spin_unlock_irq(&i->lock);
+> +			return -ENOMEM;
+> +		}
+> +		snprintf(irqname, 20,
+> +			 "serial%d", serial_index(&up->port));
+
+kasprintf()?
+
+Also, you need to free the memory after free_irq().
+
+	Arnd
