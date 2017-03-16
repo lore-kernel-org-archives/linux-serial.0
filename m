@@ -1,54 +1,178 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH] serial: 8250: 8250_core: Fix irq name for 8250 serial irq
-Date: Thu, 16 Mar 2017 13:54:57 +0100
-Message-ID: <5abf2394-78b5-9b6d-25f6-fe50f5580775@suse.cz>
-References: <20170316122653.19930-1-vigneshr@ti.com>
- <051d7223-84d4-b120-f757-abded9c738cb@suse.cz>
+From: Andrey Smirnov <andrew.smirnov@gmail.com>
+Subject: Re: [PATCH 1/2] serdev: Add serdev_device_write subroutine
+Date: Thu, 16 Mar 2017 06:33:22 -0700
+Message-ID: <CAHQ1cqEb1vBX3dV2K9nmtV+7wTDFjAREJhViGWGp9HXB5VQDSw@mail.gmail.com>
+References: <20170314134819.19476-1-andrew.smirnov@gmail.com>
+ <20170314134819.19476-2-andrew.smirnov@gmail.com> <CAL_JsqKxFBFz-SHRQaDS0P4P_emBVBpkQFb0jN3oH6WM99t59g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <051d7223-84d4-b120-f757-abded9c738cb@suse.cz>
+In-Reply-To: <CAL_JsqKxFBFz-SHRQaDS0P4P_emBVBpkQFb0jN3oH6WM99t59g@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vignesh R <vigneshr@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, linux-arm-kernel@lists.infradead.org, Jisheng Zhang <jszhang@marvell.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 03/16/2017, 01:46 PM, Jiri Slaby wrote:
-> On 03/16/2017, 01:26 PM, Vignesh R wrote:
->> Using dev_name() as irq name during request_irq() might be misleading in
->> case of serial over PCI. Therefore use a better alternative name for
->> identifying serial port irqs as "serial" appended with serial_index of
->> the port. This ensures that "serial" string is always present in irq
->> name while port index will help in distinguishing b/w different ports.
+On Wed, Mar 15, 2017 at 7:18 AM, Rob Herring <robh@kernel.org> wrote:
+> On Tue, Mar 14, 2017 at 8:48 AM, Andrey Smirnov
+> <andrew.smirnov@gmail.com> wrote:
+>> Add serdev_device_write() which is a blocking call allowing to transfer
+>> arbitraty amount of data (potentially exceeding amount that
+>> serdev_device_write_buf can process in a single call)
 >>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
+>> Cc: cphealy@gmail.com
+>> Cc: Guenter Roeck <linux@roeck-us.net>
+>> Cc: linux-serial@vger.kernel.org
+>> Cc: linux-kernel@vger.kernel.org
+>> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 >> ---
+>>  drivers/tty/serdev/core.c | 37 +++++++++++++++++++++++++++++++++++++
+>>  include/linux/serdev.h    | 23 +++++++++++++++++------
+>>  2 files changed, 54 insertions(+), 6 deletions(-)
 >>
->> Based on top of tty-next.
+>> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+>> index f4c6c90..759e834 100644
+>> --- a/drivers/tty/serdev/core.c
+>> +++ b/drivers/tty/serdev/core.c
+>> @@ -128,6 +128,41 @@ int serdev_device_write_buf(struct serdev_device *serdev,
+>>  }
+>>  EXPORT_SYMBOL_GPL(serdev_device_write_buf);
 >>
->>  drivers/tty/serial/8250/8250_core.c | 10 +++++++++-
->>  1 file changed, 9 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
->> index f83b69f30987..78bf621d6827 100644
->> --- a/drivers/tty/serial/8250/8250_core.c
->> +++ b/drivers/tty/serial/8250/8250_core.c
->> @@ -213,12 +213,20 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
->>  
->>  		ret = 0;
->>  	} else {
->> +		char *irqname = kmalloc(20, GFP_KERNEL);
->> +		if (!irqname) {
->> +			spin_unlock_irq(&i->lock);
-> 
-> GFP_KERNEL and spin_lock won't play well together.
+>> +int serdev_device_write(struct serdev_device *serdev,
+>> +                       const unsigned char *buf, size_t count)
+>
+> _write vs. _write_buf are not all that clear what the difference is.
+> but I don't have a better name.
+>
 
-And you never free the memory. Given we have struct device, can we use
-devm_kmalloc after spin_unlock_irq (you have to check if we cannot
-allocate multiple times)?
+serdev_device_send?
 
-thanks,
--- 
-js
-suse labs
+> Perhaps a timeout param is needed? This could never complete if CTS
+> remains deasserted.
+
+Yeah, I think it is a good idea, I'll add that in v2.
+
+>
+>> +{
+>> +       int ret = count;
+>> +
+>> +       if (serdev->ops->write_wakeup)
+>> +               return -EINVAL;
+>> +
+>> +       mutex_lock(&serdev->write_lock);
+>> +
+>> +       for (;;) {
+>> +               size_t chunk;
+>> +
+>> +               reinit_completion(&serdev->write_wakeup);
+>
+> Perhaps write_comp instead as write_wakeup is already a function name.
+>
+
+OK, will do.
+
+>> +
+>> +               chunk = serdev_device_write_buf(serdev, buf, count);
+>> +               if (chunk < 0) {
+>> +                       ret = chunk;
+>> +                       goto done;
+>> +               }
+>> +
+>> +               buf   += chunk;
+>> +               count -= chunk;
+>> +
+>> +               if (!count)
+>> +                       break;
+>> +
+>> +               wait_for_completion(&serdev->write_wakeup);
+>> +       }
+>> +done:
+>> +       mutex_unlock(&serdev->write_lock);
+>> +       return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(serdev_device_write);
+>> +
+>>  void serdev_device_write_flush(struct serdev_device *serdev)
+>>  {
+>>         struct serdev_controller *ctrl = serdev->ctrl;
+>> @@ -232,6 +267,8 @@ struct serdev_device *serdev_device_alloc(struct serdev_controller *ctrl)
+>>         serdev->dev.parent = &ctrl->dev;
+>>         serdev->dev.bus = &serdev_bus_type;
+>>         serdev->dev.type = &serdev_device_type;
+>> +       init_completion(&serdev->write_wakeup);
+>> +       mutex_init(&serdev->write_lock);
+>>         return serdev;
+>>  }
+>>  EXPORT_SYMBOL_GPL(serdev_device_alloc);
+>> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+>> index 5176cdc..8f7aa35 100644
+>> --- a/include/linux/serdev.h
+>> +++ b/include/linux/serdev.h
+>> @@ -35,16 +35,19 @@ struct serdev_device_ops {
+>>
+>>  /**
+>>   * struct serdev_device - Basic representation of an serdev device
+>> - * @dev:       Driver model representation of the device.
+>> - * @nr:                Device number on serdev bus.
+>> - * @ctrl:      serdev controller managing this device.
+>> - * @ops:       Device operations.
+>> + * @dev:        Driver model representation of the device.
+>> + * @nr:                 Device number on serdev bus.
+>> + * @ctrl:       serdev controller managing this device.
+>> + * @ops:        Device operations.
+>> + * @write_wakeup Completion used by serdev_device_write internally
+>>   */
+>>  struct serdev_device {
+>>         struct device dev;
+>>         int nr;
+>>         struct serdev_controller *ctrl;
+>>         const struct serdev_device_ops *ops;
+>> +       struct completion write_wakeup;
+>> +       struct mutex write_lock;
+>>  };
+>>
+>>  static inline struct serdev_device *to_serdev_device(struct device *d)
+>> @@ -162,10 +165,13 @@ static inline void serdev_controller_write_wakeup(struct serdev_controller *ctrl
+>>  {
+>>         struct serdev_device *serdev = ctrl->serdev;
+>>
+>> -       if (!serdev || !serdev->ops->write_wakeup)
+>> +       if (!serdev)
+>>                 return;
+>>
+>> -       serdev->ops->write_wakeup(serdev);
+>> +       if (serdev->ops->write_wakeup)
+>> +               serdev->ops->write_wakeup(serdev);
+>> +       else
+>> +               complete(&serdev->write_wakeup);
+>>  }
+>>
+>>  static inline int serdev_controller_receive_buf(struct serdev_controller *ctrl,
+>> @@ -187,6 +193,7 @@ void serdev_device_close(struct serdev_device *);
+>>  unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
+>>  void serdev_device_set_flow_control(struct serdev_device *, bool);
+>>  int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
+>> +int serdev_device_write(struct serdev_device *serdev, const unsigned char *buf, size_t count);
+>
+> Drop the param names to be consistent with the rest of the declarations.
+
+OK, will do.
+
+>
+>>  void serdev_device_write_flush(struct serdev_device *);
+>>  int serdev_device_write_room(struct serdev_device *);
+>>
+>> @@ -227,6 +234,10 @@ static inline int serdev_device_write_buf(struct serdev_device *sdev, const unsi
+>>  {
+>>         return -ENODEV;
+>>  }
+>> +static inline int serdev_device_write(struct serdev_device *sdev, const unsigned char *buf, size_t count)
+>> +{
+>> +       return -ENODEV;
+>> +}
+>>  static inline void serdev_device_write_flush(struct serdev_device *sdev) {}
+>>  static inline int serdev_device_write_room(struct serdev_device *sdev)
+>>  {
+>> --
+>> 2.9.3
+>>
