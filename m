@@ -1,164 +1,173 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: Does braille console work?
-Date: Thu, 16 Mar 2017 17:02:53 +0300
-Message-ID: <1bb67bee-b8f9-2835-725a-f36fda085216@linaro.org>
+From: Andrey Smirnov <andrew.smirnov@gmail.com>
+Subject: Re: [PATCH 1/2] serdev: Add serdev_device_write subroutine
+Date: Thu, 16 Mar 2017 07:23:16 -0700
+Message-ID: <CAHQ1cqH4uz2GZLkis16ZusYAcVKp8dcbXe_hA-jg_v2UB1E2tg@mail.gmail.com>
+References: <20170314134819.19476-1-andrew.smirnov@gmail.com>
+ <20170314134819.19476-2-andrew.smirnov@gmail.com> <CAHp75VfWCCS6L1fFi0Gq0r-CTQbaLk8pos+NWz5R_b0uBt6K1w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAHp75VfWCCS6L1fFi0Gq0r-CTQbaLk8pos+NWz5R_b0uBt6K1w@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Joe Perches <joe@perches.com>, Samuel Thibault <samuel.thibault@ens-lyon.org>, linux-kernel@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+On Tue, Mar 14, 2017 at 4:17 PM, Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Tue, Mar 14, 2017 at 3:48 PM, Andrey Smirnov
+> <andrew.smirnov@gmail.com> wrote:
+>> Add serdev_device_write() which is a blocking call allowing to transfer
+>> arbitraty amount of data (potentially exceeding amount that
+>> serdev_device_write_buf can process in a single call)
+>
+>> +int serdev_device_write(struct serdev_device *serdev,
+>> +                       const unsigned char *buf, size_t count)
+>> +{
+>
+>> +       int ret = count;
+>
+> If count by some reason bigger than INT_MAX...
+>
 
-I am looking at the braille console code and don't understand how its
-initialization works.
+True, I was merely copying type signature of serdev_device_write_buf,
+which would have the same problem. I can add an appropriate check to
+the code, but at the same time, I'd love to know why it wasn't a
+concern in the latter function.
 
-This is from kernel/printk/braille.c:
+>> +
+>> +       if (serdev->ops->write_wakeup)
+>> +               return -EINVAL;
+>> +
+>> +       mutex_lock(&serdev->write_lock);
+>> +
+>> +       for (;;) {
+>> +               size_t chunk;
+>> +
+>> +               reinit_completion(&serdev->write_wakeup);
+>> +
+>> +               chunk = serdev_device_write_buf(serdev, buf, count);
+>
+>
+>> +               if (chunk < 0) {
+>
+> This will never happen. What kind of test did you try?
+>
 
-char *_braille_console_setup(char **str, char **brl_options)
-{
-	if (!strncmp(*str, "brl,", 4)) {
-		*brl_options = "";
-		*str += 4;                                     (3)
-	} else if (!strncmp(*str, "brl=", 4)) {
-		*brl_options = *str + 4;
-		*str = strchr(*brl_options, ',');
-		if (!*str)
-			pr_err("need port name after brl=\n"); (2)
-		else
-			*((*str)++) = 0;                       (3)
-	} else
-		return NULL;                                   (1)
+None of my code using that function ever hit that condition, OTOH, I
+am not sure why I should ignore the API's signed return type, which I
+assume is so in order to facilitate negative error returns. My
+thinking is that even if in the current codebase is incapable of ever
+returning negative result today, that doesn't mean it won't ever be,
+and IMHO the chances of that are no different from the chances of
+someone passing 'count' that is bigger than INT_MAX. Given that I'd
+rather keep the check until the type signature of
+serdev_device_write_buf changes.
 
-	return *str;
-}
+>> +                       ret = chunk;
+>> +                       goto done;
+>> +               }
+>
+>
+>> +
+>> +               buf   += chunk;
+>> +               count -= chunk;
+>> +
+>
+>> +               if (!count)
+>
+> What is supposed to be returned? Initial count? Does it make any sense?
+>
 
-There can be 3 outcomes from this function:
-1) it returns NULL and does not set brl_options
-2) it returns NULL and set the variable pointed by str to NULL
-3) it returns non-NULL
+That part of this code is not very well thought out. I think returning
+number of bytes successfully written would make more sense. I'll
+change it to do that in v2, but I am open to suggestions.
 
-And this is how it is called in a __setup() function from kernel/printk/printk.c:
+>> +                       break;
+>
+> Perhaps you need to refactor this function.
+>
+>> +
+>> +               wait_for_completion(&serdev->write_wakeup);
+>> +       }
+>
+>> +done:
+>
+> It would be nice to have a suffix, like
+>
+> done_unlock:
+>
+>
+> But I'm pretty sure if you refactor the code in a smart way you will
+> not need it.
+>
 
-static int __init console_setup(char *str)
-{
-	char buf[sizeof(console_cmdline[0].name) + 4]; /* 4 for "ttyS" */
-	char *s, *options, *brl_options = NULL;
-	int idx;
+Yeah, I agree, it should be possible to make that loop more concise.
+I'll give it a try in v2.
 
-	if (_braille_console_setup(&str, &brl_options))
-		return 1;
+>> +       mutex_unlock(&serdev->write_lock);
+>> +       return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(serdev_device_write);
+>
+>>  /**
+>>   * struct serdev_device - Basic representation of an serdev device
+>> - * @dev:       Driver model representation of the device.
+>> - * @nr:                Device number on serdev bus.
+>> - * @ctrl:      serdev controller managing this device.
+>> - * @ops:       Device operations.
+>> + * @dev:        Driver model representation of the device.
+>> + * @nr:                 Device number on serdev bus.
+>> + * @ctrl:       serdev controller managing this device.
+>> + * @ops:        Device operations.
+>
+> Does it make sense to shift? I would think of shorter field names instead.
 
-	/*
-	 * Decode str into name, index, options.
-	 */
-	if (str[0] >= '0' && str[0] <= '9') {
-		strcpy(buf, "ttyS");
-		strncpy(buf + 4, str, sizeof(buf) - 5);
-	} else {
-		strncpy(buf, str, sizeof(buf) - 1);
-	}
+I can see how that might make the diff look nice, but OTOH, I'd rather
+not limit myself to only ~4 letters.
 
-	[... Parse other console options here ...]
+>
+>> + * @write_wakeup Completion used by serdev_device_write internally
+>
+> Colon is missed.
+>
+> Another filed is missed.
 
+Yep, thank you, will fix in v2.
 
-	__add_preferred_console(buf, idx, options, brl_options);
-	console_set_on_cmdline = 1;
-	return 1;
-}
-__setup("console=", console_setup);
+>
+>>   */
+>>  struct serdev_device {
+>>         struct device dev;
+>>         int nr;
+>>         struct serdev_controller *ctrl;
+>>         const struct serdev_device_ops *ops;
+>> +       struct completion write_wakeup;
+>> +       struct mutex write_lock;
+>>  };
+>>
+>>  static inline struct serdev_device *to_serdev_device(struct device *d)
+>> @@ -162,10 +165,13 @@ static inline void serdev_controller_write_wakeup(struct serdev_controller *ctrl
+>>  {
+>>         struct serdev_device *serdev = ctrl->serdev;
+>>
+>> -       if (!serdev || !serdev->ops->write_wakeup)
+>> +       if (!serdev)
+>>                 return;
+>>
+>> -       serdev->ops->write_wakeup(serdev);
+>> +       if (serdev->ops->write_wakeup)
+>> +               serdev->ops->write_wakeup(serdev);
+>> +       else
+>> +               complete(&serdev->write_wakeup);
+>
+> By the way does this changes the possible context of application
+> (atomic / non-atomic)?
 
-To register a braille console (i. e. to call __add_preferred_console()
-with non-NULL brl_options) function _braille_console_setup() should
-return NULL and initialize brl_options. 
+It should be possible to call complete() in atomic context, so I don't
+think it does.
 
-1) in this case brl_options is NULL and non-braille console is registered
-2) kernel produces oops later in console_setup().  I reproduced it
-   passing "console=brl=aaa" parameter to kernel, see below.
-3) no console is registered
-
-So braille console registration should not work.  What do I miss?
-
-The code was changed in July/August 2013 in commits
-
-commit bbeddf52adc1 ("printk: move braille console support into separate braille.[ch] files")
-commit 2cfe6c4ac7ee ("printk: Fix return of braille_register_console()")
-
-So it looks like braille console has not been used for more than 3 years.
-Should we remote it?
-
-------------------------------------------------------------
-
-Kernel command line: systemd.show_status=no rootwait rw root=/dev/sda7 acpi=force earlycon console=brl=aaa
-braille: need port name after brl=
-Unable to handle kernel NULL pointer dereference at virtual address 00000000
-pgd = fffffc00089b0000
-[00000000] *pgd=0000001ffffe0003, *pud=0000001ffffe0003, *pmd=0000001ffffe0003, *pte=0000000000000000
-Internal error: Oops: 96000006 [#1] PREEMPT SMP
-Modules linked in:
-CPU: 0 PID: 0 Comm: swapper Not tainted 4.11.0-rc2-07-00033-g417d6c6d1a16-dirty #727
-Hardware name: Cavium ThunderX CN88XX board (DT)
-task: fffffc0008868000 task.stack: fffffc0008840000
-PC is at console_setup+0x28/0x108
-LR is at console_setup+0x20/0x108
-pc : [<fffffc00087cd71c>] lr : [<fffffc00087cd714>] pstate: 800000c5
-sp : fffffc0008843e70
-x29: fffffc0008843e70 x28: 0000000000000000 
-x27: fffffc00087a7b18 x26: 0000000000000001 
-x25: fffffc000880ccb9 x24: 0000000000000008 
-x23: fffffc0008812b40 x22: 0000000000000000 
-x21: fffffe1ffffafece x20: fffffe1ffffafec6 
-x19: 0000000000000000 x18: 0000000000000001 
-x17: 0000000000000000 x16: 0000000000000018 
-x15: 0000000000020000 x14: 00000000fffffff0 
-x13: fffffc0008873158 x12: fffffc00088fc82a 
-x11: 0000000000000000 x10: 000000000000002d 
-x9 : 0000000000000023 x8 : 7262207265746661 
-x7 : 20656d616e207472 x6 : 000000000000002e 
-x5 : 0000000000000400 x4 : 0000000000000000 
-x3 : 0000000000000002 x2 : 0000000000000002 
-x1 : 0000000000000001 x0 : 0000000000000000 
-
-Process swapper (pid: 0, stack limit = 0xfffffc0008840000)
-Stack: (0xfffffc0008843e70 to 0xfffffc0008844000)
-3e60:                                   fffffc0008843ec0 fffffc00087c0600
-3e80: fffffc0008812330 fffffe1ffffafec6 fffffc0008812060 0000000000000000
-3ea0: fffffe1ffffafed2 fffffc00087c0598 fffffc0008811f40 fffffe1ffffafec6
-3ec0: fffffc0008843f10 fffffc00080c816c fffffc0008623558 fffffe1ffffafec6
-3ee0: fffffc00087a7b18 fffffe1ffffafece 0000000000000080 fffffc0008707130
-3f00: 00000000000000bc fffffe1ffffafed5 fffffc0008843fa0 fffffc00087c094c
-3f20: fffffc00087f3948 fffffc00088d0000 fffffc0008863000 fffffc00088d0000
-3f40: fffffe1ffffafe80 fffffc00087f3948 0000000000000174 0000001fffaf51a0
-3f60: 0000001fffa38d00 0000000001bc0018 fffffc000886e6f0 fffffc000870e560
-3f80: ffffffffffffffff fffffc00087c0558 0000000000000000 fffffc00087a5db8
-3fa0: fffffc0008843ff0 fffffc00087c01e8 0000001ffa3d0a18 0000000021200000
-3fc0: 0000000021200000 000000074fb10f48 0000000000000000 0000000000000000
-3fe0: 0000000000000000 fffffc00087f3948 0000000000000000 000000000192c27c
-Call trace:
-Exception stack(0xfffffc0008843ca0 to 0xfffffc0008843dd0)
-3ca0: 0000000000000000 0000040000000000 fffffc0008843e70 fffffc00087cd71c
-3cc0: fffffc0008843e00 00000000ffffffc8 fffffc0008843d00 fffffc00080f6a80
-3ce0: fffffc0008843e40 fffffc0008843e40 fffffc0008843e00 00000000ffffffc8
-3d00: fffffc0008843db0 fffffc000813a418 fffffc0008843e98 fffffe1ffffafece
-3d20: fffffc0008843ea0 0000000000000000 fffffc0008812b40 0000000000000008
-3d40: 0000000000000000 0000000000000001 0000000000000002 0000000000000002
-3d60: 0000000000000000 0000000000000400 000000000000002e 20656d616e207472
-3d80: 7262207265746661 0000000000000023 000000000000002d 0000000000000000
-3da0: fffffc00088fc82a fffffc0008873158 00000000fffffff0 0000000000020000
-3dc0: 0000000000000018 0000000000000000
-[<fffffc00087cd71c>] console_setup+0x28/0x108
-[<fffffc00087c0600>] unknown_bootoption+0xa8/0x1d0
-[<fffffc00080c816c>] parse_args+0x2a4/0x4a8
-[<fffffc00087c094c>] start_kernel+0x180/0x378
-[<fffffc00087c01e8>] __primary_switched+0x64/0x6c
-Code: f81e0c3f 97e4a534 b50006c0 f94017b3 (39400260) 
----[ end trace 0000000000000000 ]---
-Kernel panic - not syncing: Attempted to kill the idle task!
----[ end Kernel panic - not syncing: Attempted to kill the idle task!
-
--- 
-All the best
-Alekséy Makárov
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
