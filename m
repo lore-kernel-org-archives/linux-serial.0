@@ -1,69 +1,51 @@
-From: Aleksey Makarov <amakarov.linux@gmail.com>
-Subject: Re: [PATCH v3] Revert "tty: serial: pl011: add ttyAMA for matching
- pl011 console"
-Date: Thu, 16 Mar 2017 12:31:53 +0300
-Message-ID: <008d062d-1095-5a65-3a69-33bee1f648d7@gmail.com>
-References: <20170301122602.30025-1-aleksey.makarov@linaro.org>
- <20170301152304.29635-1-aleksey.makarov@linaro.org>
- <d1e067f1-e82f-7692-bcc2-e3549887be63@arm.com>
- <CA+7sy7C6zp3giR+ypFXqbsNY_C3ggUgegS1zEWOAybkRBtCn4w@mail.gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH V7 5/7] ACPI: Delay the enumeration on the devices whose
+ dependency has not met
+Date: Thu, 16 Mar 2017 11:13:01 +0100
+Message-ID: <CAK8P3a2QZ_j9RQ0U=4MoAAcRcZyu0L5AiYM22QZkiRxh7Ca-iA@mail.gmail.com>
+References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
+ <4600523.rWNiWKrYZC@aspire.rjw.lan> <58C9F6C6.4090700@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CA+7sy7C6zp3giR+ypFXqbsNY_C3ggUgegS1zEWOAybkRBtCn4w@mail.gmail.com>
+In-Reply-To: <58C9F6C6.4090700@hisilicon.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Jayachandran C." <c.jayachandran@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, Sudeep Holla <sudeep.holla@arm.com>
+To: "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Rafael Wysocki <rafael@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linuxarm@huawei.com, devicetree@vger.kernel.org, linux-pci <linux-pci@vger.kernel.org>, linux-serial@vger.kernel.org, Corey Minyard <minyard@acm.org>, liviu.dudau@arm.com, Zou Rongrong <zourongrong@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 03/16/2017 10:11 AM, Jayachandran C. wrote:
-> Hi Greg,
-> 
-> On Tue, Mar 14, 2017 at 9:44 PM, Sudeep Holla <sudeep.holla@arm.com> wrote:
->>
->>
->> On 01/03/17 15:23, Aleksey Makarov wrote:
->>> The original patch makes the condition always true, so it is wrong.
+On Thu, Mar 16, 2017 at 3:21 AM, zhichang.yuan
+<yuanzhichang@hisilicon.com> wrote:
+> Hi, Rafael,
+>
+> Thanks for your review!
+>
+> On 2017/3/14 5:24, Rafael J. Wysocki wrote:
+>> On Monday, March 13, 2017 10:42:41 AM zhichang.yuan wrote:
+>>> In commit 40e7fcb1929(ACPI: Add _DEP support to fix battery issue on Asus
+>>> T100TA), the '_DEP' was supported to solve the dependency of Asus battery. But
+>>> this patch is specific to Asus battery device.
+>>> In the real world, there are other devices which need the dependency to play the
+>>> role on the enumeration order. For example, all the Hip06 LPC
+>>> periperals(IPMI-BT, uart, etc) must be scanned after the LPC host driver
+>>> finished the probing. So, it makes sense to add a checking whether the ACPI
+>>> device meet all the dependencies during its enumeration slot, if not, the
+>>> enumeration will be delayed till all dependency master finish their work.
 >>>
->>> It masks (but not fixes) the bug described in the commit message
->>> but introduces a regression (no console is selected by SPCR)
->>> in regular (no 'console=ttyAMA') case.
->>>
->>> s/||/&&/ would not fix the problem as the root cause was identified
->>> incorrectly.
->>>
->>> This reverts commit aea9a80ba98a0c9b4de88850260e9fbdcc98360b.
->>>
+>>> This patch adds the dependency checking in ACPI enumeration, also the
+>>> corresponding handling to retrigger the Hip06 LPC peripherals' scanning.
 >>
->> Sorry for that, I will test your patches and respond to that. For this
->> patch:
+>> AFAICS, _DEP is generally abused in the wild and cannot be made generic.  Sorry.
 >>
->> Acked-by: Sudeep Holla <sudeep.holla@arm.com>
->>
-> 
-> This fixes a regression I see in v4.11-rc2
-> 
-> Tested-by: Jayachandran C <jnair@caviumnetworks.com>
-> 
-> I don't see it in the tty/serial tree yet
+>
+> From the ACPI specification, _DEP is for operation region accesses.
+> You are right...
+>
+> How about we add a ACPI handler for our LPC bus?? Just like amba.
+> In this way, we also can solve the issue about LPC enumeration order.
 
-It's commit 713b93f1b849 from tty-next branch of 
-https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+As far as I can tell, PCI and LPC have exactly the same requirement here,
+so whatever you end up doing for one should be used for the other as well.
 
-So it looks like it is scheduled for 4.12
-
-Greg, this is a fix for regression.  Can it be applied to 4.11-rcX?
-
-Thank you
-Aleksey Makarov
-
-> 
-> JC.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+      Arnd
