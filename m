@@ -1,14 +1,17 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] serial: 8250: 8250_core: Fix irq name for 8250 serial irq
-Date: Thu, 16 Mar 2017 14:55:18 +0000
-Message-ID: <9a6dcf55-0ace-e617-73bc-0472a939b36c@arm.com>
-References: <20170316122653.19930-1-vigneshr@ti.com>
- <20170316133632.GV21222@n2100.armlinux.org.uk>
+From: "zhichang.yuan" <zhichang.yuan02@gmail.com>
+Subject: Re: [PATCH V7 5/7] ACPI: Delay the enumeration on the devices whose
+ dependency has not met
+Date: Thu, 16 Mar 2017 22:56:52 +0800
+Message-ID: <592befcb-8b52-3a3a-323f-55566f61c7df@gmail.com>
+References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
+ <4600523.rWNiWKrYZC@aspire.rjw.lan> <58C9F6C6.4090700@hisilicon.com>
+ <CAK8P3a2QZ_j9RQ0U=4MoAAcRcZyu0L5AiYM22QZkiRxh7Ca-iA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170316133632.GV21222@n2100.armlinux.org.uk>
+In-Reply-To: <CAK8P3a2QZ_j9RQ0U=4MoAAcRcZyu0L5AiYM22QZkiRxh7Ca-iA@mail.gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,42 +21,60 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@armlinux.org.uk>, Vignesh R <vigneshr@ti.com>
-Cc: Jisheng Zhang <jszhang@marvell.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
+To: Arnd Bergmann <arnd@arndb.de>, "zhichang.yuan" <yuanzhichang@hisilicon.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, Rafael Wysocki <rafael@kernel.org>, linux-pci <linux-pci@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, linuxarm@huawei.com, Frank Rowand <frowand.list@gmail.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Wei Xu <xuwei5@hisilicon.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, devicetree@vger.kernel.org, Corey Minyard <minyard@acm.org>, liviu.dudau@arm.com, John Garry <john.garry@huawei.com>, Rob Herring <robh+dt@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, kantyzc@163.com, Linux ARM <linux-arm-kernel@lists.infradead.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>Zou Rongrong <zo>
 List-Id: linux-serial@vger.kernel.org
 
-T24gMTYvMDMvMTcgMTM6MzYsIFJ1c3NlbGwgS2luZyAtIEFSTSBMaW51eCB3cm90ZToKPiBPbiBU
-aHUsIE1hciAxNiwgMjAxNyBhdCAwNTo1Njo1M1BNICswNTMwLCBWaWduZXNoIFIgd3JvdGU6Cj4+
-IFVzaW5nIGRldl9uYW1lKCkgYXMgaXJxIG5hbWUgZHVyaW5nIHJlcXVlc3RfaXJxKCkgbWlnaHQg
-YmUgbWlzbGVhZGluZyBpbgo+PiBjYXNlIG9mIHNlcmlhbCBvdmVyIFBDSS4gVGhlcmVmb3JlIHVz
-ZSBhIGJldHRlciBhbHRlcm5hdGl2ZSBuYW1lIGZvcgo+PiBpZGVudGlmeWluZyBzZXJpYWwgcG9y
-dCBpcnFzIGFzICJzZXJpYWwiIGFwcGVuZGVkIHdpdGggc2VyaWFsX2luZGV4IG9mCj4+IHRoZSBw
-b3J0LiBUaGlzIGVuc3VyZXMgdGhhdCAic2VyaWFsIiBzdHJpbmcgaXMgYWx3YXlzIHByZXNlbnQg
-aW4gaXJxCj4+IG5hbWUgd2hpbGUgcG9ydCBpbmRleCB3aWxsIGhlbHAgaW4gZGlzdGluZ3Vpc2hp
-bmcgYi93IGRpZmZlcmVudCBwb3J0cy4KPiAKPiBXb3VsZG4ndCBpdCBiZSBiZXR0ZXIgdG8gdXNl
-IHRoZSBkZXZpY2UgbmFtZSAoaW93LCB0dHlTeCkgcmF0aGVyIHRoYW4KPiAic2VyaWFseCIgPwo+
-IAo+IE1heWJlIGEgaGVscGVyIGZ1bmN0aW9uIGluIHNlcmlhbF9jb3JlLmMgdG8gZm9ybWF0IHRo
-ZSBkZXZpY2UgbmFtZSBpbnRvCj4gYSBzdXBwbGllZCBzdHJpbmcsIHdoaWNoIGNhbiBiZSByZS11
-c2VkIGVsc2V3aGVyZSwgZWcsIHVhcnRfcmVwb3J0X3BvcnQoKQo+IGFuZCB1YXJ0X3N1c3BlbmRf
-cG9ydCgpLiAgSU9XOgo+IAo+IGNvbnN0IGNoYXIgKnVhcnRfcG9ydF9uYW1lKGNoYXIgKmJ1Ziwg
-c2l6ZV90IG4sIHN0cnVjdCB1YXJ0X2RyaXZlciAqZHJ2LAo+IAkJCSAgIHN0cnVjdCB1YXJ0X3Bv
-cnQgKnBvcnQpCj4gewo+IAlzbnByaW50ZihidWYsIG4sICIlcyVkIiwgZHJ2LT5kZXZfbmFtZSwK
-PiAJCSBkcnYtPnR0eV9kcml2ZXItPm5hbWVfYmFzZSArIHBvcnQtPmxpbmUpOwo+IAo+IAlyZXR1
-cm4gYnVmOwo+IH0KPiAKPiB3aGljaCBtZWFucyB5b3UgY2FuIGRvIHRoaXM6Cj4gCj4gCWNoYXIg
-bmFtZVsxNl07Cj4gCj4gCXJlcXVlc3RfaXJxKC4uLiwgdWFydF9wb3J0X25hbWUobmFtZSwgc2l6
-ZW9mKG5hbWUpLCBkcml2ZXIsIHBvcnQpLCAuLi4pCj4gCj4gd2hpY2ggYWxzbyBhdm9pZHMgdGhl
-IGFsbG9jYXRpb24uCgouLi5hbmQgbWFrZXMgJ2NhdCAvcHJvYy9pbnRlcnJ1cHRzJyBwYXJ0aWN1
-bGFybHkgZnVuIGxhdGVyOgoKICA4OiAgICAgICAgICAwICAgICAgICAgIEdJQ3YyICA3MiBMZXZl
-bCAgICAg77+9BO+/vWgJ77+977+977+977+9ViEKClVubGVzcyBhIHN1aXRhYmx5IGxvbmctbGl2
-ZWQgc3RyaW5nIGFscmVhZHkgZXhpc3RzIHNvbWV3aGVyZSBlbHNlIGluIHRoZQpzZXJpYWwgY29y
-ZSwgdGhlIGFsbG9jYXRpb24gaXMgdW5hdm9pZGFibGUsIGFsdGhvdWdoIGthc3ByaW50ZigpIChv
-ciBpdHMKZGV2bV8gdmFyaWFudCkgbWlnaHQgbWFrZSBtYXR0ZXJzIGEgbGl0dGxlIHNpbXBsZXIu
-CgpSb2Jpbi4KCj4gIDgyNTAgZGV2aWNlIG5hbWVzIGFyZSBhbHdheXMgInR0eVMiCj4gcGx1cyBh
-IG51bWJlciwgc28gMTYgY2hhcmFjdGVycyAoaW5jbHVkaW5nIE5VTEwgdGVybWluYXRvcikgc2hv
-dWxkIGJlCj4gbW9yZSB0aGFuIHN1ZmZpY2llbnQsIGFuZCB0aGF0J3MgbW9zdCBsaWtlbHkgdHJ1
-ZSBvZiBhbGwgc2VyaWFsIGRyaXZlcnMuCj4gKFRoZSBsb25nZXN0IGRldmljZSBuYW1lIEknbSBh
-d2FyZSBvZiBpcyB0dHlBTUEgcGx1cyBhIHNtYWxsIGludGVnZXIKPiBmb3IgUEwwMTEgcG9ydHMu
-KQo+IAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxp
-bnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFk
-ZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4
-LWFybS1rZXJuZWwK
+Hi, Arnd,
+
+
+
+On 03/16/2017 06:13 PM, Arnd Bergmann wrote:
+> On Thu, Mar 16, 2017 at 3:21 AM, zhichang.yuan
+> <yuanzhichang@hisilicon.com> wrote:
+>> Hi, Rafael,
+>>
+>> Thanks for your review!
+>>
+>> On 2017/3/14 5:24, Rafael J. Wysocki wrote:
+>>> On Monday, March 13, 2017 10:42:41 AM zhichang.yuan wrote:
+>>>> In commit 40e7fcb1929(ACPI: Add _DEP support to fix battery issue on Asus
+>>>> T100TA), the '_DEP' was supported to solve the dependency of Asus battery. But
+>>>> this patch is specific to Asus battery device.
+>>>> In the real world, there are other devices which need the dependency to play the
+>>>> role on the enumeration order. For example, all the Hip06 LPC
+>>>> periperals(IPMI-BT, uart, etc) must be scanned after the LPC host driver
+>>>> finished the probing. So, it makes sense to add a checking whether the ACPI
+>>>> device meet all the dependencies during its enumeration slot, if not, the
+>>>> enumeration will be delayed till all dependency master finish their work.
+>>>>
+>>>> This patch adds the dependency checking in ACPI enumeration, also the
+>>>> corresponding handling to retrigger the Hip06 LPC peripherals' scanning.
+>>>
+>>> AFAICS, _DEP is generally abused in the wild and cannot be made generic.  Sorry.
+>>>
+>>
+>> From the ACPI specification, _DEP is for operation region accesses.
+>> You are right...
+>>
+>> How about we add a ACPI handler for our LPC bus?? Just like amba.
+>> In this way, we also can solve the issue about LPC enumeration order.
+> 
+> As far as I can tell, PCI and LPC have exactly the same requirement here,
+> so whatever you end up doing for one should be used for the other as well.
+> 
+
+Thanks for your remind!
+
+To some extend, our LPC is similar to PCI. We also need to setup the host
+resources before scanning the children. For PCI, there is an ACPI handler of
+pci_root_handler. Although our LPC is not so complicated and powerful as PCI(for
+example, LPC can't probe downside devices), I think, we can still make LPC host
+ready to work in its own ACPI handler callback....
+
+Cheers,
+Zhichang
+
+
+>       Arnd
+> 
