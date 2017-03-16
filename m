@@ -1,80 +1,83 @@
-From: "zhichang.yuan" <zhichang.yuan02@gmail.com>
-Subject: Re: [PATCH V7 5/7] ACPI: Delay the enumeration on the devices whose
- dependency has not met
-Date: Thu, 16 Mar 2017 22:56:52 +0800
-Message-ID: <592befcb-8b52-3a3a-323f-55566f61c7df@gmail.com>
-References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
- <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
- <4600523.rWNiWKrYZC@aspire.rjw.lan> <58C9F6C6.4090700@hisilicon.com>
- <CAK8P3a2QZ_j9RQ0U=4MoAAcRcZyu0L5AiYM22QZkiRxh7Ca-iA@mail.gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 1/2] serdev: Add serdev_device_write subroutine
+Date: Thu, 16 Mar 2017 17:09:32 +0200
+Message-ID: <CAHp75Vd=bD6H3yLCtwtBcw+AxG-F6sWKvCqz3NwZ8+G-5gFcUw@mail.gmail.com>
+References: <20170314134819.19476-1-andrew.smirnov@gmail.com>
+ <20170314134819.19476-2-andrew.smirnov@gmail.com> <CAHp75VfWCCS6L1fFi0Gq0r-CTQbaLk8pos+NWz5R_b0uBt6K1w@mail.gmail.com>
+ <CAHQ1cqH4uz2GZLkis16ZusYAcVKp8dcbXe_hA-jg_v2UB1E2tg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAK8P3a2QZ_j9RQ0U=4MoAAcRcZyu0L5AiYM22QZkiRxh7Ca-iA@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>, "zhichang.yuan" <yuanzhichang@hisilicon.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, Rafael Wysocki <rafael@kernel.org>, linux-pci <linux-pci@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, linuxarm@huawei.com, Frank Rowand <frowand.list@gmail.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Wei Xu <xuwei5@hisilicon.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, devicetree@vger.kernel.org, Corey Minyard <minyard@acm.org>, liviu.dudau@arm.com, John Garry <john.garry@huawei.com>, Rob Herring <robh+dt@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, kantyzc@163.com, Linux ARM <linux-arm-kernel@lists.infradead.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>Zou Rongrong <zo>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAHQ1cqH4uz2GZLkis16ZusYAcVKp8dcbXe_hA-jg_v2UB1E2tg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andrey Smirnov <andrew.smirnov@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Arnd,
+On Thu, Mar 16, 2017 at 4:23 PM, Andrey Smirnov
+<andrew.smirnov@gmail.com> wrote:
+> On Tue, Mar 14, 2017 at 4:17 PM, Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+>> On Tue, Mar 14, 2017 at 3:48 PM, Andrey Smirnov
+>> <andrew.smirnov@gmail.com> wrote:
 
-
-
-On 03/16/2017 06:13 PM, Arnd Bergmann wrote:
-> On Thu, Mar 16, 2017 at 3:21 AM, zhichang.yuan
-> <yuanzhichang@hisilicon.com> wrote:
->> Hi, Rafael,
+>>> +int serdev_device_write(struct serdev_device *serdev,
+>>> +                       const unsigned char *buf, size_t count)
+>>> +{
 >>
->> Thanks for your review!
+>>> +       int ret = count;
 >>
->> On 2017/3/14 5:24, Rafael J. Wysocki wrote:
->>> On Monday, March 13, 2017 10:42:41 AM zhichang.yuan wrote:
->>>> In commit 40e7fcb1929(ACPI: Add _DEP support to fix battery issue on Asus
->>>> T100TA), the '_DEP' was supported to solve the dependency of Asus battery. But
->>>> this patch is specific to Asus battery device.
->>>> In the real world, there are other devices which need the dependency to play the
->>>> role on the enumeration order. For example, all the Hip06 LPC
->>>> periperals(IPMI-BT, uart, etc) must be scanned after the LPC host driver
->>>> finished the probing. So, it makes sense to add a checking whether the ACPI
->>>> device meet all the dependencies during its enumeration slot, if not, the
->>>> enumeration will be delayed till all dependency master finish their work.
->>>>
->>>> This patch adds the dependency checking in ACPI enumeration, also the
->>>> corresponding handling to retrigger the Hip06 LPC peripherals' scanning.
->>>
->>> AFAICS, _DEP is generally abused in the wild and cannot be made generic.  Sorry.
->>>
+>> If count by some reason bigger than INT_MAX...
+
+> True, I was merely copying type signature of serdev_device_write_buf,
+> which would have the same problem. I can add an appropriate check to
+> the code, but at the same time, I'd love to know why it wasn't a
+> concern in the latter function.
+
+Perhaps we may survive without changing it, just document that count
+should not be bigger than INT_MAX.
+OTOH it's counter intuitive to have size_t type which is used as int.
+
+>>> +       for (;;) {
+>>> +               size_t chunk;
+>>> +
+>>> +               reinit_completion(&serdev->write_wakeup);
+>>> +
+>>> +               chunk = serdev_device_write_buf(serdev, buf, count);
 >>
->> From the ACPI specification, _DEP is for operation region accesses.
->> You are right...
 >>
->> How about we add a ACPI handler for our LPC bus?? Just like amba.
->> In this way, we also can solve the issue about LPC enumeration order.
-> 
-> As far as I can tell, PCI and LPC have exactly the same requirement here,
-> so whatever you end up doing for one should be used for the other as well.
-> 
+>>> +               if (chunk < 0) {
+>>
+>> This will never happen. What kind of test did you try?
 
-Thanks for your remind!
+> None of my code using that function ever hit that condition, OTOH, I
+> am not sure why I should ignore the API's signed return type, which I
+> assume is so in order to facilitate negative error returns. My
+> thinking is that even if in the current codebase is incapable of ever
+> returning negative result today, that doesn't mean it won't ever be,
+> and IMHO the chances of that are no different from the chances of
+> someone passing 'count' that is bigger than INT_MAX. Given that I'd
+> rather keep the check until the type signature of
+> serdev_device_write_buf changes.
 
-To some extend, our LPC is similar to PCI. We also need to setup the host
-resources before scanning the children. For PCI, there is an ACPI handler of
-pci_root_handler. Although our LPC is not so complicated and powerful as PCI(for
-example, LPC can't probe downside devices), I think, we can still make LPC host
-ready to work in its own ACPI handler callback....
+You missed the point
 
-Cheers,
-Zhichang
+size_t is *unsigned* type!
 
+>>> +               if (!count)
+>>
+>> What is supposed to be returned? Initial count? Does it make any sense?
 
->       Arnd
-> 
+> I'll change it to do that in v2, but I am open to suggestions.
+
+Since function lacks of description (or I missed it?) I am out of
+knowledge what you are trying to achieve here.
+
+> I can see how that might make the diff look nice, but OTOH, I'd rather
+> not limit myself to only ~4 letters.
+
+Up to you and Rob.
+
+-- 
+With Best Regards,
+Andy Shevchenko
