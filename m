@@ -1,68 +1,61 @@
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: Re: [RFC PATCH] tty/serial: atmel: fix TX path in
- atmel_console_write()
-Date: Wed, 15 Mar 2017 17:56:11 +0100
-Message-ID: <d3abc5aa-b010-a6cc-4ab9-74078149a692@microchip.com>
-References: <CACQ1gAgW4aGJSxSAXDWL7td9eV12UV=Xv=PZR58BqqHxEeRH0g@mail.gmail.com>
- <20170315152948.10978-1-nicolas.ferre@microchip.com>
- <074d057e-4971-a325-e985-3f5046536225@gmail.com>
+From: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Subject: Re: [PATCH V7 5/7] ACPI: Delay the enumeration on the devices whose
+ dependency has not met
+Date: Thu, 16 Mar 2017 10:21:58 +0800
+Message-ID: <58C9F6C6.4090700@hisilicon.com>
+References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
+ <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
+ <4600523.rWNiWKrYZC@aspire.rjw.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <074d057e-4971-a325-e985-3f5046536225@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Richard Genoud <richard.genoud@gmail.com>, linux-serial@vger.kernel.org
-Cc: "stable # 4 . 4+" <stable@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <4600523.rWNiWKrYZC-yvgW3jdyMHm1GS7QM15AGw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-TGUgMTUvMDMvMjAxNyDDoCAxNzoxOSwgUmljaGFyZCBHZW5vdWQgYSDDqWNyaXQgOgo+IE9uIDE1
-LzAzLzIwMTcgMTY6MjksIE5pY29sYXMgRmVycmUgd3JvdGU6Cj4+IEEgc2lkZSBlZmZlY3Qgb2Yg
-ODlkODIzMjQxMWE4ICgidHR5L3NlcmlhbDogYXRtZWxfc2VyaWFsOiBCVUc6IHN0b3AgRE1BCj4+
-IGZyb20gdHJhbnNtaXR0aW5nIGluIHN0b3BfdHgiKSBpcyB0aGF0IHRoZSBjb25zb2xlIGNhbiBi
-ZSBjYWxsZWQgd2l0aAo+PiBUWCBwYXRoIGRpc2FibGVkLiBUaGVuIHRoZSBzeXN0ZW0gd291bGQg
-aGFuZyB0cnlpbmcgdG8gcHVzaCBjaGFyZWN0ZXJzCj4+IG91dCBpbiBhdG1lbF9jb25zb2xlX3B1
-dGNoYXIoKS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogTmljb2xhcyBGZXJyZSA8bmljb2xhcy5mZXJy
-ZUBtaWNyb2NoaXAuY29tPgo+PiBGaXhlczogODlkODIzMjQxMWE4ICgidHR5L3NlcmlhbDogYXRt
-ZWxfc2VyaWFsOiBCVUc6IHN0b3AgRE1BIGZyb20gdHJhbnNtaXR0aW5nCj4+IGluIHN0b3BfdHgi
-KQo+PiBDYzogc3RhYmxlIDxzdGFibGVAdmdlci5rZXJuZWwub3JnPiAjIDQuNCsKPj4gLS0tCj4+
-IEhpIFJpY2hhcmQsCj4+Cj4+IEkgZm91bmQgdGhpcyB0byBmaXggdGhlIHByb2JsZW0gd2l0aCBz
-eXN0ZW0gaGFuZyBpbiBteSBsaW51eC00LjQtYXQ5MSBicmFuY2gKPj4gKGluIHRoZSBhdG1lbF9j
-b25zb2xlX3B1dGNoYXIoKSB3YWl0aW5nIGxvb3AgYWN0dWFsbHkpLiBJJ20gb3BlbiB0byBtb3Jl
-Cj4+IGluc2lnbnQuCj4+IEFzIHdlIGNhbm5vdCBmaWd1cmUgb3V0IGlmIHRoaXMgYml0IGlzIHNl
-dCBvciBub3QsIEkgZGlkbid0IHByZXNlcnZlIHRoZQo+PiBjdXJyZW50IHN0YXR1cy4uLgo+Pgo+
-PiBSZWdhcmRzLAo+IAo+IFNvLCBJJ20gZ3Vlc3NpbmcgdGhhdCB5b3UgbWF5IHNlZSBzb21lIGxp
-bmVzL2NoYXJhY3RlcnMgcHJpbnRlZCB0d2ljZSBvbgo+IHRoZSBzY3JlZW4sIGRvbid0IHlvdSA/
-CgpXZWxsLCBhY3R1YWxseSwgSSBkb24ndCB0aGluayBzbyBiZWNhdXNlIHRoZSByZXBldGl0aW9u
-cyB0aGF0IEkgc2VlIGFyZQpwcm9iYWJseSBkdWUgdG8gb3Blbi9jbG9zZS9vcGVuL2Nsb3NlL3Jl
-LW9wZW4vLi4uIG9mIHRoZSBzZXJpYWwgY29uc29sZQppdHNlbGYuCgpTYW1lIHdpdGggdGhlIGxp
-bmUgInJhbmRvbTogdWRldmQ6IHVuaW5pdGlhbGl6ZWQgdXJhbmRvbSByZWFkICgxNiBieXRlcwpy
-ZWFkLCAyMSBiaXRzIG9mIGVudHJvcHkgYXZhaWxhYmxlKSIsIHRoZXkgaGFwcGVuIGF0IGRpZmZl
-cmVudCBtb21lbnQgaW4KdGltZSA9PiB0aGUgcHJpbnRrIGxvZyB0aW1lc3RhbXBpbmcgc2VlbSB0
-byBpbmRpY2F0ZSB0aGF0IHRoZXkgYXJlCmRpZmZlcmVudC4KCkhlcmUgaXMgbXkgbG9nOgpodHRw
-Oi8vY29kZS5idWxpeC5vcmcvYm9rMjNuLTEyMzA1NgoKUmVnYXJkcywKCj4+ICBkcml2ZXJzL3R0
-eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMgfCAzICsrKwo+PiAgMSBmaWxlIGNoYW5nZWQsIDMgaW5z
-ZXJ0aW9ucygrKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3Nl
-cmlhbC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4+IGluZGV4IGRjZWJi
-MjhmZmJjNC4uNzM3MmRiZGI3YTRjIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwv
-YXRtZWxfc2VyaWFsLmMKPj4gKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5j
-Cj4+IEBAIC0yNDgzLDYgKzI0ODMsOSBAQCBzdGF0aWMgdm9pZCBhdG1lbF9jb25zb2xlX3dyaXRl
-KHN0cnVjdCBjb25zb2xlICpjbywgY29uc3QgY2hhciAqcywgdV9pbnQgY291bnQpCj4+ICAJcGRj
-X3R4ID0gYXRtZWxfdWFydF9yZWFkbChwb3J0LCBBVE1FTF9QRENfUFRTUikgJiBBVE1FTF9QRENf
-VFhURU47Cj4+ICAJYXRtZWxfdWFydF93cml0ZWwocG9ydCwgQVRNRUxfUERDX1BUQ1IsIEFUTUVM
-X1BEQ19UWFRESVMpOwo+PiAgCj4+ICsJLyogTWFrZSBzdXJlIHRoYXQgdHggcGF0aCBpcyBhY3R1
-YWxseSBhYmxlIHRvIHNlbmQgY2hhcmFjdGVycyAqLwo+PiArCWF0bWVsX3VhcnRfd3JpdGVsKHBv
-cnQsIEFUTUVMX1VTX0NSLCBBVE1FTF9VU19UWEVOKTsKPj4gKwo+PiAgCXVhcnRfY29uc29sZV93
-cml0ZShwb3J0LCBzLCBjb3VudCwgYXRtZWxfY29uc29sZV9wdXRjaGFyKTsKPj4gIAo+PiAgCS8q
-Cj4+Cj4gCj4gUmljaGFyZC4KPiAKCgotLSAKTmljb2xhcyBGZXJyZQoKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5n
-IGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5p
-bmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+Hi, Rafael,
+
+Thanks for your review!
+
+On 2017/3/14 5:24, Rafael J. Wysocki wrote:
+> On Monday, March 13, 2017 10:42:41 AM zhichang.yuan wrote:
+>> In commit 40e7fcb1929(ACPI: Add _DEP support to fix battery issue on Asus
+>> T100TA), the '_DEP' was supported to solve the dependency of Asus battery. But
+>> this patch is specific to Asus battery device.
+>> In the real world, there are other devices which need the dependency to play the
+>> role on the enumeration order. For example, all the Hip06 LPC
+>> periperals(IPMI-BT, uart, etc) must be scanned after the LPC host driver
+>> finished the probing. So, it makes sense to add a checking whether the ACPI
+>> device meet all the dependencies during its enumeration slot, if not, the
+>> enumeration will be delayed till all dependency master finish their work.
+>>
+>> This patch adds the dependency checking in ACPI enumeration, also the
+>> corresponding handling to retrigger the Hip06 LPC peripherals' scanning.
+> 
+> AFAICS, _DEP is generally abused in the wild and cannot be made generic.  Sorry.
+> 
+
+>From the ACPI specification, _DEP is for operation region accesses.
+You are right...
+
+How about we add a ACPI handler for our LPC bus?? Just like amba.
+In this way, we also can solve the issue about LPC enumeration order.
+
+Thanks,
+Zhichang
+
+
+> Thanks,
+> Rafael
+> 
+> 
+> .
+> 
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
