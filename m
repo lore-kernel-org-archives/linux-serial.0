@@ -1,36 +1,59 @@
-From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: Re: [PATCH 2/2] serdev: Add minimal bus locking API
-Date: Thu, 16 Mar 2017 07:37:59 -0700
-Message-ID: <CAHQ1cqGkWaZYkopXign9dxaAUv4Jbe5Kee8j-5Fkh6LX4r1i0A@mail.gmail.com>
-References: <20170314134819.19476-1-andrew.smirnov@gmail.com>
- <20170314134819.19476-3-andrew.smirnov@gmail.com> <CAHp75VdtSCyr+8WeB_dHuo-P3LddA8sRDeFJh0FS92E_Rhijcg@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] serial: 8250: 8250_core: Fix irq name for 8250 serial irq
+Date: Thu, 16 Mar 2017 14:55:18 +0000
+Message-ID: <9a6dcf55-0ace-e617-73bc-0472a939b36c@arm.com>
+References: <20170316122653.19930-1-vigneshr@ti.com>
+ <20170316133632.GV21222@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75VdtSCyr+8WeB_dHuo-P3LddA8sRDeFJh0FS92E_Rhijcg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170316133632.GV21222@n2100.armlinux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux <linux@armlinux.org.uk>, Vignesh R <vigneshr@ti.com>
+Cc: Jisheng Zhang <jszhang@marvell.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Mar 14, 2017 at 4:20 PM, Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Tue, Mar 14, 2017 at 3:48 PM, Andrey Smirnov
-> <andrew.smirnov@gmail.com> wrote:
->> Add minimal bus locking API which is useful for serial devices that
->> implement request-reply protocol
->
-> Can you put an example here?
->
-> I'm not sure mutex is needed at all.
-
-My use case is a "supervisory" microcontroller connected to SoC via
-UART various aspects of which are exposed via MFD. I saw this kind of
-"device design pattern" a number of times in my career, so I thought
-and abstraction to help dealing with cases like that might be useful.
-
-However, since Rob mentioned that API's expectation is that any such
-locking is driver's responsibility, I'll drop this patch.
-
-Thanks,
-Andrey Smirnov
+T24gMTYvMDMvMTcgMTM6MzYsIFJ1c3NlbGwgS2luZyAtIEFSTSBMaW51eCB3cm90ZToKPiBPbiBU
+aHUsIE1hciAxNiwgMjAxNyBhdCAwNTo1Njo1M1BNICswNTMwLCBWaWduZXNoIFIgd3JvdGU6Cj4+
+IFVzaW5nIGRldl9uYW1lKCkgYXMgaXJxIG5hbWUgZHVyaW5nIHJlcXVlc3RfaXJxKCkgbWlnaHQg
+YmUgbWlzbGVhZGluZyBpbgo+PiBjYXNlIG9mIHNlcmlhbCBvdmVyIFBDSS4gVGhlcmVmb3JlIHVz
+ZSBhIGJldHRlciBhbHRlcm5hdGl2ZSBuYW1lIGZvcgo+PiBpZGVudGlmeWluZyBzZXJpYWwgcG9y
+dCBpcnFzIGFzICJzZXJpYWwiIGFwcGVuZGVkIHdpdGggc2VyaWFsX2luZGV4IG9mCj4+IHRoZSBw
+b3J0LiBUaGlzIGVuc3VyZXMgdGhhdCAic2VyaWFsIiBzdHJpbmcgaXMgYWx3YXlzIHByZXNlbnQg
+aW4gaXJxCj4+IG5hbWUgd2hpbGUgcG9ydCBpbmRleCB3aWxsIGhlbHAgaW4gZGlzdGluZ3Vpc2hp
+bmcgYi93IGRpZmZlcmVudCBwb3J0cy4KPiAKPiBXb3VsZG4ndCBpdCBiZSBiZXR0ZXIgdG8gdXNl
+IHRoZSBkZXZpY2UgbmFtZSAoaW93LCB0dHlTeCkgcmF0aGVyIHRoYW4KPiAic2VyaWFseCIgPwo+
+IAo+IE1heWJlIGEgaGVscGVyIGZ1bmN0aW9uIGluIHNlcmlhbF9jb3JlLmMgdG8gZm9ybWF0IHRo
+ZSBkZXZpY2UgbmFtZSBpbnRvCj4gYSBzdXBwbGllZCBzdHJpbmcsIHdoaWNoIGNhbiBiZSByZS11
+c2VkIGVsc2V3aGVyZSwgZWcsIHVhcnRfcmVwb3J0X3BvcnQoKQo+IGFuZCB1YXJ0X3N1c3BlbmRf
+cG9ydCgpLiAgSU9XOgo+IAo+IGNvbnN0IGNoYXIgKnVhcnRfcG9ydF9uYW1lKGNoYXIgKmJ1Ziwg
+c2l6ZV90IG4sIHN0cnVjdCB1YXJ0X2RyaXZlciAqZHJ2LAo+IAkJCSAgIHN0cnVjdCB1YXJ0X3Bv
+cnQgKnBvcnQpCj4gewo+IAlzbnByaW50ZihidWYsIG4sICIlcyVkIiwgZHJ2LT5kZXZfbmFtZSwK
+PiAJCSBkcnYtPnR0eV9kcml2ZXItPm5hbWVfYmFzZSArIHBvcnQtPmxpbmUpOwo+IAo+IAlyZXR1
+cm4gYnVmOwo+IH0KPiAKPiB3aGljaCBtZWFucyB5b3UgY2FuIGRvIHRoaXM6Cj4gCj4gCWNoYXIg
+bmFtZVsxNl07Cj4gCj4gCXJlcXVlc3RfaXJxKC4uLiwgdWFydF9wb3J0X25hbWUobmFtZSwgc2l6
+ZW9mKG5hbWUpLCBkcml2ZXIsIHBvcnQpLCAuLi4pCj4gCj4gd2hpY2ggYWxzbyBhdm9pZHMgdGhl
+IGFsbG9jYXRpb24uCgouLi5hbmQgbWFrZXMgJ2NhdCAvcHJvYy9pbnRlcnJ1cHRzJyBwYXJ0aWN1
+bGFybHkgZnVuIGxhdGVyOgoKICA4OiAgICAgICAgICAwICAgICAgICAgIEdJQ3YyICA3MiBMZXZl
+bCAgICAg77+9BO+/vWgJ77+977+977+977+9ViEKClVubGVzcyBhIHN1aXRhYmx5IGxvbmctbGl2
+ZWQgc3RyaW5nIGFscmVhZHkgZXhpc3RzIHNvbWV3aGVyZSBlbHNlIGluIHRoZQpzZXJpYWwgY29y
+ZSwgdGhlIGFsbG9jYXRpb24gaXMgdW5hdm9pZGFibGUsIGFsdGhvdWdoIGthc3ByaW50ZigpIChv
+ciBpdHMKZGV2bV8gdmFyaWFudCkgbWlnaHQgbWFrZSBtYXR0ZXJzIGEgbGl0dGxlIHNpbXBsZXIu
+CgpSb2Jpbi4KCj4gIDgyNTAgZGV2aWNlIG5hbWVzIGFyZSBhbHdheXMgInR0eVMiCj4gcGx1cyBh
+IG51bWJlciwgc28gMTYgY2hhcmFjdGVycyAoaW5jbHVkaW5nIE5VTEwgdGVybWluYXRvcikgc2hv
+dWxkIGJlCj4gbW9yZSB0aGFuIHN1ZmZpY2llbnQsIGFuZCB0aGF0J3MgbW9zdCBsaWtlbHkgdHJ1
+ZSBvZiBhbGwgc2VyaWFsIGRyaXZlcnMuCj4gKFRoZSBsb25nZXN0IGRldmljZSBuYW1lIEknbSBh
+d2FyZSBvZiBpcyB0dHlBTUEgcGx1cyBhIHNtYWxsIGludGVnZXIKPiBmb3IgUEwwMTEgcG9ydHMu
+KQo+IAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxp
+bnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFk
+ZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4
+LWFybS1rZXJuZWwK
