@@ -1,61 +1,47 @@
-From: "zhichang.yuan" <yuanzhichang-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: Re: [PATCH V7 5/7] ACPI: Delay the enumeration on the devices whose
- dependency has not met
-Date: Thu, 16 Mar 2017 10:21:58 +0800
-Message-ID: <58C9F6C6.4090700@hisilicon.com>
-References: <1489372963-9000-1-git-send-email-yuanzhichang@hisilicon.com>
- <1489372963-9000-6-git-send-email-yuanzhichang@hisilicon.com>
- <4600523.rWNiWKrYZC@aspire.rjw.lan>
+From: "Jayachandran C." <c.jayachandran@gmail.com>
+Subject: Re: [PATCH v3] Revert "tty: serial: pl011: add ttyAMA for matching
+ pl011 console"
+Date: Thu, 16 Mar 2017 12:41:18 +0530
+Message-ID: <CA+7sy7C6zp3giR+ypFXqbsNY_C3ggUgegS1zEWOAybkRBtCn4w@mail.gmail.com>
+References: <20170301122602.30025-1-aleksey.makarov@linaro.org>
+ <20170301152304.29635-1-aleksey.makarov@linaro.org> <d1e067f1-e82f-7692-bcc2-e3549887be63@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <4600523.rWNiWKrYZC-yvgW3jdyMHm1GS7QM15AGw@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, minyard-HInyCGIudOg@public.gmane.org, liviu.dudau-5wv7dgnIgG8@public.gmane.org, zourongrong-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhichang.yuan02-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kantyzc-9Onoh4P/yGk@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <d1e067f1-e82f-7692-bcc2-e3549887be63@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, Sudeep Holla <sudeep.holla@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Rafael,
+Hi Greg,
 
-Thanks for your review!
-
-On 2017/3/14 5:24, Rafael J. Wysocki wrote:
-> On Monday, March 13, 2017 10:42:41 AM zhichang.yuan wrote:
->> In commit 40e7fcb1929(ACPI: Add _DEP support to fix battery issue on Asus
->> T100TA), the '_DEP' was supported to solve the dependency of Asus battery. But
->> this patch is specific to Asus battery device.
->> In the real world, there are other devices which need the dependency to play the
->> role on the enumeration order. For example, all the Hip06 LPC
->> periperals(IPMI-BT, uart, etc) must be scanned after the LPC host driver
->> finished the probing. So, it makes sense to add a checking whether the ACPI
->> device meet all the dependencies during its enumeration slot, if not, the
->> enumeration will be delayed till all dependency master finish their work.
+On Tue, Mar 14, 2017 at 9:44 PM, Sudeep Holla <sudeep.holla@arm.com> wrote:
+>
+>
+> On 01/03/17 15:23, Aleksey Makarov wrote:
+>> The original patch makes the condition always true, so it is wrong.
 >>
->> This patch adds the dependency checking in ACPI enumeration, also the
->> corresponding handling to retrigger the Hip06 LPC peripherals' scanning.
-> 
-> AFAICS, _DEP is generally abused in the wild and cannot be made generic.  Sorry.
-> 
+>> It masks (but not fixes) the bug described in the commit message
+>> but introduces a regression (no console is selected by SPCR)
+>> in regular (no 'console=ttyAMA') case.
+>>
+>> s/||/&&/ would not fix the problem as the root cause was identified
+>> incorrectly.
+>>
+>> This reverts commit aea9a80ba98a0c9b4de88850260e9fbdcc98360b.
+>>
+>
+> Sorry for that, I will test your patches and respond to that. For this
+> patch:
+>
+> Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+>
 
->From the ACPI specification, _DEP is for operation region accesses.
-You are right...
+This fixes a regression I see in v4.11-rc2
 
-How about we add a ACPI handler for our LPC bus?? Just like amba.
-In this way, we also can solve the issue about LPC enumeration order.
+Tested-by: Jayachandran C <jnair@caviumnetworks.com>
 
-Thanks,
-Zhichang
+I don't see it in the tty/serial tree yet
 
-
-> Thanks,
-> Rafael
-> 
-> 
-> .
-> 
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+JC.
