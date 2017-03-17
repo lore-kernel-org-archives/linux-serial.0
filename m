@@ -1,54 +1,64 @@
-From: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-Subject: Re: [PATCH 02/10] ARM: dts: N900: Add bluetooth
-Date: Fri, 17 Mar 2017 16:25:47 +0100
-Message-ID: <20170317152547.GC8723@amd>
-References: <20170304115833.3538-1-sre@kernel.org>
- <20170304115833.3538-3-sre@kernel.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/2] serdev: Add serdev_device_write subroutine
+Date: Fri, 17 Mar 2017 11:31:31 -0500
+Message-ID: <CAL_JsqJG3=KiPASd4=yOLxC2CryBuZQPT4MPevXqQjBpdjzmXw@mail.gmail.com>
+References: <20170314134819.19476-1-andrew.smirnov@gmail.com>
+ <20170314134819.19476-2-andrew.smirnov@gmail.com> <CAL_JsqKxFBFz-SHRQaDS0P4P_emBVBpkQFb0jN3oH6WM99t59g@mail.gmail.com>
+ <CAHQ1cqEb1vBX3dV2K9nmtV+7wTDFjAREJhViGWGp9HXB5VQDSw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="8X7/QrJGcKSMr1RN"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170304115833.3538-3-sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAHQ1cqEb1vBX3dV2K9nmtV+7wTDFjAREJhViGWGp9HXB5VQDSw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andrey Smirnov <andrew.smirnov@gmail.com>
+Cc: Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+On Thu, Mar 16, 2017 at 8:33 AM, Andrey Smirnov
+<andrew.smirnov@gmail.com> wrote:
+> On Wed, Mar 15, 2017 at 7:18 AM, Rob Herring <robh@kernel.org> wrote:
+>> On Tue, Mar 14, 2017 at 8:48 AM, Andrey Smirnov
+>> <andrew.smirnov@gmail.com> wrote:
+>>> Add serdev_device_write() which is a blocking call allowing to transfer
+>>> arbitraty amount of data (potentially exceeding amount that
+>>> serdev_device_write_buf can process in a single call)
+>>>
+>>> Cc: cphealy@gmail.com
+>>> Cc: Guenter Roeck <linux@roeck-us.net>
+>>> Cc: linux-serial@vger.kernel.org
+>>> Cc: linux-kernel@vger.kernel.org
+>>> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+>>> ---
+>>>  drivers/tty/serdev/core.c | 37 +++++++++++++++++++++++++++++++++++++
+>>>  include/linux/serdev.h    | 23 +++++++++++++++++------
+>>>  2 files changed, 54 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+>>> index f4c6c90..759e834 100644
+>>> --- a/drivers/tty/serdev/core.c
+>>> +++ b/drivers/tty/serdev/core.c
+>>> @@ -128,6 +128,41 @@ int serdev_device_write_buf(struct serdev_device *serdev,
+>>>  }
+>>>  EXPORT_SYMBOL_GPL(serdev_device_write_buf);
+>>>
+>>> +int serdev_device_write(struct serdev_device *serdev,
+>>> +                       const unsigned char *buf, size_t count)
+>>
+>> _write vs. _write_buf are not all that clear what the difference is.
+>> but I don't have a better name.
+>>
+>
+> serdev_device_send?
 
---8X7/QrJGcKSMr1RN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+send vs. write_buf? Still not that clear.
 
-On Sat 2017-03-04 12:58:25, Sebastian Reichel wrote:
-> Add bcm2048 node and its system clock to the N900 device tree file.
-> Apart from that a reference to the new clock has been added to
-> wl1251 (which uses it, too).
->=20
-> Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>> Perhaps a timeout param is needed? This could never complete if CTS
+>> remains deasserted.
+>
+> Yeah, I think it is a good idea, I'll add that in v2.
 
-Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
+Maybe just combine the 2 functions and a timeout of 0 follows the
+original behavior of serdev_device_write_buf. I'm not sure if we could
+handle write_wakeup in that case though.
 
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---8X7/QrJGcKSMr1RN
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAljL//sACgkQMOfwapXb+vLeDACgxIxA8ZkWurp0JVqG3fR3xgSY
-gAYAoJgDJ0JUZ77Ewxb4bABD09TyYc9/
-=bv0M
------END PGP SIGNATURE-----
-
---8X7/QrJGcKSMr1RN--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Rob
