@@ -1,64 +1,98 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/2] serdev: Add serdev_device_write subroutine
-Date: Fri, 17 Mar 2017 11:31:31 -0500
-Message-ID: <CAL_JsqJG3=KiPASd4=yOLxC2CryBuZQPT4MPevXqQjBpdjzmXw@mail.gmail.com>
-References: <20170314134819.19476-1-andrew.smirnov@gmail.com>
- <20170314134819.19476-2-andrew.smirnov@gmail.com> <CAL_JsqKxFBFz-SHRQaDS0P4P_emBVBpkQFb0jN3oH6WM99t59g@mail.gmail.com>
- <CAHQ1cqEb1vBX3dV2K9nmtV+7wTDFjAREJhViGWGp9HXB5VQDSw@mail.gmail.com>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: Re: [RFC PATCH] tty/serial: atmel: fix TX path in
+ atmel_console_write()
+Date: Fri, 17 Mar 2017 18:16:31 +0100
+Message-ID: <9b13c00d-ed52-4c8d-8690-16e25886437f@microchip.com>
+References: <CACQ1gAgW4aGJSxSAXDWL7td9eV12UV=Xv=PZR58BqqHxEeRH0g@mail.gmail.com>
+ <20170315152948.10978-1-nicolas.ferre@microchip.com>
+ <074d057e-4971-a325-e985-3f5046536225@gmail.com>
+ <d3abc5aa-b010-a6cc-4ab9-74078149a692@microchip.com>
+ <6fc2b136-3717-df85-92ec-55bb7b91971b@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHQ1cqEb1vBX3dV2K9nmtV+7wTDFjAREJhViGWGp9HXB5VQDSw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andrey Smirnov <andrew.smirnov@gmail.com>
-Cc: Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <6fc2b136-3717-df85-92ec-55bb7b91971b@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: "stable # 4 . 4+" <stable@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 16, 2017 at 8:33 AM, Andrey Smirnov
-<andrew.smirnov@gmail.com> wrote:
-> On Wed, Mar 15, 2017 at 7:18 AM, Rob Herring <robh@kernel.org> wrote:
->> On Tue, Mar 14, 2017 at 8:48 AM, Andrey Smirnov
->> <andrew.smirnov@gmail.com> wrote:
->>> Add serdev_device_write() which is a blocking call allowing to transfer
->>> arbitraty amount of data (potentially exceeding amount that
->>> serdev_device_write_buf can process in a single call)
->>>
->>> Cc: cphealy@gmail.com
->>> Cc: Guenter Roeck <linux@roeck-us.net>
->>> Cc: linux-serial@vger.kernel.org
->>> Cc: linux-kernel@vger.kernel.org
->>> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
->>> ---
->>>  drivers/tty/serdev/core.c | 37 +++++++++++++++++++++++++++++++++++++
->>>  include/linux/serdev.h    | 23 +++++++++++++++++------
->>>  2 files changed, 54 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
->>> index f4c6c90..759e834 100644
->>> --- a/drivers/tty/serdev/core.c
->>> +++ b/drivers/tty/serdev/core.c
->>> @@ -128,6 +128,41 @@ int serdev_device_write_buf(struct serdev_device *serdev,
->>>  }
->>>  EXPORT_SYMBOL_GPL(serdev_device_write_buf);
->>>
->>> +int serdev_device_write(struct serdev_device *serdev,
->>> +                       const unsigned char *buf, size_t count)
->>
->> _write vs. _write_buf are not all that clear what the difference is.
->> but I don't have a better name.
->>
->
-> serdev_device_send?
-
-send vs. write_buf? Still not that clear.
-
->> Perhaps a timeout param is needed? This could never complete if CTS
->> remains deasserted.
->
-> Yeah, I think it is a good idea, I'll add that in v2.
-
-Maybe just combine the 2 functions and a timeout of 0 follows the
-original behavior of serdev_device_write_buf. I'm not sure if we could
-handle write_wakeup in that case though.
-
-Rob
+TGUgMTcvMDMvMjAxNyDDoCAxNjoxMSwgUmljaGFyZCBHZW5vdWQgYSDDqWNyaXQgOgo+IDIwMTct
+MDMtMTUgMTc6NTYgR01UKzAxOjAwIE5pY29sYXMgRmVycmUgPG5pY29sYXMuZmVycmVAbWljcm9j
+aGlwLmNvbT46Cj4+IExlIDE1LzAzLzIwMTcgw6AgMTc6MTksIFJpY2hhcmQgR2Vub3VkIGEgw6lj
+cml0IDoKPj4+IE9uIDE1LzAzLzIwMTcgMTY6MjksIE5pY29sYXMgRmVycmUgd3JvdGU6Cj4+Pj4g
+QSBzaWRlIGVmZmVjdCBvZiA4OWQ4MjMyNDExYTggKCJ0dHkvc2VyaWFsOiBhdG1lbF9zZXJpYWw6
+IEJVRzogc3RvcCBETUEKPj4+PiBmcm9tIHRyYW5zbWl0dGluZyBpbiBzdG9wX3R4IikgaXMgdGhh
+dCB0aGUgY29uc29sZSBjYW4gYmUgY2FsbGVkIHdpdGgKPj4+PiBUWCBwYXRoIGRpc2FibGVkLiBU
+aGVuIHRoZSBzeXN0ZW0gd291bGQgaGFuZyB0cnlpbmcgdG8gcHVzaCBjaGFyZWN0ZXJzCj4+Pj4g
+b3V0IGluIGF0bWVsX2NvbnNvbGVfcHV0Y2hhcigpLgo+Pj4+Cj4+Pj4gU2lnbmVkLW9mZi1ieTog
+Tmljb2xhcyBGZXJyZSA8bmljb2xhcy5mZXJyZUBtaWNyb2NoaXAuY29tPgo+Pj4+IEZpeGVzOiA4
+OWQ4MjMyNDExYTggKCJ0dHkvc2VyaWFsOiBhdG1lbF9zZXJpYWw6IEJVRzogc3RvcCBETUEgZnJv
+bSB0cmFuc21pdHRpbmcKPj4+PiBpbiBzdG9wX3R4IikKPj4+PiBDYzogc3RhYmxlIDxzdGFibGVA
+dmdlci5rZXJuZWwub3JnPiAjIDQuNCsKPj4+PiAtLS0KPj4+PiBIaSBSaWNoYXJkLAo+Pj4+Cj4+
+Pj4gSSBmb3VuZCB0aGlzIHRvIGZpeCB0aGUgcHJvYmxlbSB3aXRoIHN5c3RlbSBoYW5nIGluIG15
+IGxpbnV4LTQuNC1hdDkxIGJyYW5jaAo+Pj4+IChpbiB0aGUgYXRtZWxfY29uc29sZV9wdXRjaGFy
+KCkgd2FpdGluZyBsb29wIGFjdHVhbGx5KS4gSSdtIG9wZW4gdG8gbW9yZQo+Pj4+IGluc2lnbnQu
+Cj4+Pj4gQXMgd2UgY2Fubm90IGZpZ3VyZSBvdXQgaWYgdGhpcyBiaXQgaXMgc2V0IG9yIG5vdCwg
+SSBkaWRuJ3QgcHJlc2VydmUgdGhlCj4+Pj4gY3VycmVudCBzdGF0dXMuLi4KPj4+Pgo+Pj4+IFJl
+Z2FyZHMsCj4+Pgo+Pj4gU28sIEknbSBndWVzc2luZyB0aGF0IHlvdSBtYXkgc2VlIHNvbWUgbGlu
+ZXMvY2hhcmFjdGVycyBwcmludGVkIHR3aWNlIG9uCj4+PiB0aGUgc2NyZWVuLCBkb24ndCB5b3Ug
+Pwo+Pgo+PiBXZWxsLCBhY3R1YWxseSwgSSBkb24ndCB0aGluayBzbyBiZWNhdXNlIHRoZSByZXBl
+dGl0aW9ucyB0aGF0IEkgc2VlIGFyZQo+PiBwcm9iYWJseSBkdWUgdG8gb3Blbi9jbG9zZS9vcGVu
+L2Nsb3NlL3JlLW9wZW4vLi4uIG9mIHRoZSBzZXJpYWwgY29uc29sZQo+PiBpdHNlbGYuCj4+Cj4+
+IFNhbWUgd2l0aCB0aGUgbGluZSAicmFuZG9tOiB1ZGV2ZDogdW5pbml0aWFsaXplZCB1cmFuZG9t
+IHJlYWQgKDE2IGJ5dGVzCj4+IHJlYWQsIDIxIGJpdHMgb2YgZW50cm9weSBhdmFpbGFibGUpIiwg
+dGhleSBoYXBwZW4gYXQgZGlmZmVyZW50IG1vbWVudCBpbgo+PiB0aW1lID0+IHRoZSBwcmludGsg
+bG9nIHRpbWVzdGFtcGluZyBzZWVtIHRvIGluZGljYXRlIHRoYXQgdGhleSBhcmUKPj4gZGlmZmVy
+ZW50Lgo+IEhpIE5pY29sYXMsCj4gCj4gSXQgc2VlbXMgdGhhdCB0aGUgcHJvYmxlbSBpcyBiZXR3
+ZWVuIGF0bWVsX3R4X2RtYSgpIGFuZCBpdHMgY2FsbGJhY2sKPiBhdG1lbF9jb21wbGV0ZV90eF9k
+bWEoKS4KPiAKPiBBdCBzb21lIHBvaW50LCBhdG1lbF90eF9kbWEoKSBpcyBjYWxsZWQsIGRvZXMg
+dGhlIGpvYiwgYW5kIHRoZW4sIGp1c3QKPiBiZWZvcmUgdGhlIGNhbGxiYWNrIGlzIGNhbGxlZCwg
+dGhlIHhtaXQtPmhlYWQgYW5kIHhtaXQtPnRhaWwgcG9pbnRlcnMKPiBhcmUgc2V0IHRvIHplcm8g
+KGJ5IHVhcnRfZmx1c2hfYnVmZmVyKCkpCj4gU28sIHdoZW4gYXRtZWxfY29tcGxldGVfdHhfZG1h
+KCkgaXMgY2FsbGVkLCBpdCBkb2VzOgo+IHhtaXQtPnRhaWwgKz0gYXRtZWxfcG9ydC0+dHhfbGVu
+Owo+IG5vdCBrbm93aW5nIHRoYXQgdGhlIGhlYWQgYW5kIHRhaWwgcG9pbnRlcnMgaGF2ZSBiZWVu
+IHJlc2V0ZWQuCj4gPT4gaXQncyBsaWtlIHRoZXJlJ3MgKFVBUlRfWE1JVF9TSVpFIC0gYXRtZWxf
+cG9ydC0+dHhfbGVuKSBjaGFyYWN0ZXJzIHRvCj4gdHJhbnNtaXQgb24gdGhlIHNlcmlhbCBsaW5l
+Lgo+IAo+IFBTOiBJIGNhbiB0cmlnZ2VyIHRoaXMgYnVnIGJ5IGhvbGRpbmcgZG93biB0aGUgZCBr
+ZXkgYXQgbG9naW4gYW5kIHRoZW4KPiBjdHJsIC0gYmFzaWNhbGx5LCBhIGN0cmwtZCBqdXN0IGFm
+dGVyIHNlbmRpbmcgdGV4dCAtIHdpdGggYSByYXRlIHN1Y2Nlc3MKPiBvZiBhYm91dCAxLzUgOikK
+PiAKPiBDb3VsZCB5b3UgdHJ5IHRoaXMgcGF0Y2ggdG8gc2VlIGlmIGl0IGNvcnJlY3RzIGFsc28g
+eW91ciBzeXN0ZW0gaGFuZyA/CgpKdXN0IHRyaWVkLCBpdCBkb2Vzbid0IGZpeCB0aGUgc3lzdGVt
+IGhhbmcuCgpCdXQgaXQgc2VlbXMgdG8gc29sdmUgdGhlIGlzc3VlIHRoYXQgSSBoYWQgd2hpbGUg
+aGFsdGluZyB0aGUgc3lzdGVtOiBhCmtpbmQgb2YgZmx1c2ggb2YgYSBwcmV2aW91cyBidWZmZXIg
+aW4gdGhlIGNvbnNvbGUuClNvLCBJIHRoaW5rIGl0IGRvZXMgc29sdmUgc29tZXRoaW5nLgoKU28s
+IHdpdGggYm90aCBteSBwYXRjaCBhbmQgeW91cnM6ClRlc3RlZC1ieTogTmljb2xhcyBGZXJyZSA8
+bmljb2xhcy5mZXJyZUBtaWNyb2NoaXAuY29tPgoKUmVnYXJkcywKCj4gKFRoZSBwYXRjaCBpcyBz
+bWFsbCwgYnV0IHRoZSBidWcgaHVudCB3YXMgYSBoZWFkYWNoZSA6KSkKPiAKPiBbUEFUQ0hdIHR0
+eS9zZXJpYWw6IGF0bWVsOiBmaXggcmFjZSBjb25kaXRpb24gKFRYK0RNQSkKPiAKPiBJZiB1YXJ0
+X2ZsdXNoX2J1ZmZlcigpIGlzIGNhbGxlZCBiZXR3ZWVuIGF0bWVsX3R4X2RtYSgpIGFuZAo+IGF0
+bWVsX2NvbXBsZXRlX3R4X2RtYSgpLCB0aGUgY2lyY3VsYXIgYnVmZmVyIGhhcyBiZWVuIGNsZWFy
+ZWQsIGJ1dCBub3QKPiBhdG1lbF9wb3J0LT50eF9sZW4uCj4gVGhhdCBsZWFkcyB0byBhIGNpcmN1
+bGFyIGJ1ZmZlciBvdmVyZmxvdyAoZHVtcGluZyAoVUFSVF9YTUlUX1NJWkUgLQo+IGF0bWVsX3Bv
+cnQtPnR4X2xlbikgYnl0ZXMpLgo+IAo+IFNpZ25lZC1vZmYtYnk6IFJpY2hhcmQgR2Vub3VkIDxy
+aWNoYXJkLmdlbm91ZEBnbWFpbC5jb20+Cj4gLS0tCj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9hdG1l
+bF9zZXJpYWwuYyB8IDUgKysrKysKPiAgMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQo+
+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMKPiBiL2Ry
+aXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+IGluZGV4IDgzM2QzZDgwNDQ2Zi4uODk1
+NTIxNTdlMzM0IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwu
+Ywo+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+IEBAIC0xOTM0LDYg
+KzE5MzQsMTEgQEAgc3RhdGljIHZvaWQgYXRtZWxfZmx1c2hfYnVmZmVyKHN0cnVjdCB1YXJ0X3Bv
+cnQKPiAqcG9ydCkKPiAgCQlhdG1lbF91YXJ0X3dyaXRlbChwb3J0LCBBVE1FTF9QRENfVENSLCAw
+KTsKPiAgCQlhdG1lbF9wb3J0LT5wZGNfdHgub2ZzID0gMDsKPiAgCX0KPiArCS8qCj4gKwkgKiBp
+biB1YXJ0X2ZsdXNoX2J1ZmZlcigpLCB0aGUgeG1pdCBjaXJjdWxhciBidWZmZXIgaGFzIGp1c3QK
+PiArCSAqIGJlZW4gY2xlYXJlZCwgc28gd2UgaGF2ZSB0byByZXNldCB0eF9sZW4gYWNjb3JkaW5n
+bHkuCj4gKwkgKi8KPiArCWF0bWVsX3BvcnQtPnR4X2xlbiA9IDA7Cj4gIH0KPiAKPiAgLyoKPiAK
+CgotLSAKTmljb2xhcyBGZXJyZQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5l
+bEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4v
+bGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
