@@ -1,122 +1,70 @@
 From: Aleksey Makarov <amakarov.linux@gmail.com>
-Subject: Re: [PATCH v5 3/3] printk: fix double printing with earlycon
-Date: Fri, 17 Mar 2017 13:32:23 +0300
-Message-ID: <a22a7007-1781-399e-4d75-2696db2d2e02@gmail.com>
-References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
- <20170315102854.1763-4-aleksey.makarov@linaro.org>
- <20170315165858.GJ3977@pathway.suse.cz>
- <19bad64a-f334-05f7-fb92-520ffc5c0b90@linaro.org>
- <20170316135422.GK3977@pathway.suse.cz>
+Subject: Re: Does braille console work?
+Date: Fri, 17 Mar 2017 12:00:02 +0300
+Message-ID: <6657242f-e4a9-f142-a6eb-f0c07a7d04f3@gmail.com>
+References: <1bb67bee-b8f9-2835-725a-f36fda085216@linaro.org>
+ <20170317005355.xwym3zpamym3rwp6@var.youpi.perso.aquilenet.fr>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170316135422.GK3977@pathway.suse.cz>
+In-Reply-To: <20170317005355.xwym3zpamym3rwp6@var.youpi.perso.aquilenet.fr>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>, Aleksey Makarov <aleksey.makarov@linaro.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>, Aleksey Makarov <aleksey.makarov@linaro.org>, linux-serial@vger.kernel.org, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 
 
-On 03/16/2017 04:54 PM, Petr Mladek wrote:
-> On Thu 2017-03-16 13:36:35, Aleksey Makarov wrote:
+On 03/17/2017 03:53 AM, Samuel Thibault wrote:
+> Hello,
+> 
+> Aleksey Makarov, on jeu. 16 mars 2017 17:02:53 +0300, wrote:
+>> There can be 3 outcomes from this function:
+>> 1) it returns NULL and does not set brl_options
+>> 2) it returns NULL and set the variable pointed by str to NULL
+>> 3) it returns non-NULL
+> 
+> Uh, that's odd indeed, the intent was that it'd return an error code
+> only.
+> 
+>> To register a braille console (i. e. to call __add_preferred_console()
+>> with non-NULL brl_options) function _braille_console_setup() should
+>> return NULL and initialize brl_options. 
+> 
+> return 0 (as in no error), actually, in the intent.
+> 
+>> 1) in this case brl_options is NULL and non-braille console is registered
+>> 2) kernel produces oops later in console_setup().  I reproduced it
+>>    passing "console=brl=aaa" parameter to kernel, see below.
+>> 3) no console is registered
 >>
->>
->> On 03/15/2017 07:58 PM, Petr Mladek wrote:
->>> On Wed 2017-03-15 13:28:52, Aleksey Makarov wrote:
-
-[..]
-
-> I personally prefer v4. The braille console adds an unexpected
-> twist into the code because it skips the rest of the function.
-> IMHO, it is better when it is is tested separately with clear
-> conditions and comments.
+>> So braille console registration should not work.  What do I miss?
 > 
-> I would personally add the following into
-> kernel/printk/console_cmdline.h
-> 
-> #define for_each_console_cmdline(c, i) \
-> 	for (i = 0, c = console_cmdline;		\
-> 	     i < MAX_CMDLINECONSOLES && c->name[0];	\
-> 	     i++, c++)
-> 
-> It can be used in both __add_preferred_console()
-> and register_console().
+> Nothing, the code transformation was broken :/
 
-Ok
+So the kernel contains seemingly unmaintained code that does not work
+for at least 3 years.  Its parts in printk.c considerably complicate
+code support.
 
-> Also I would add the following into kernel/printk/braille.h
+>> So it looks like braille console has not been used for more than 3 years.
+>> Should we remote it?
 > 
-> static inline bool
-> is_braille_console(struct console_cmdline *c)
-> {
-> 	return !!c->brl_options;
-> }
+> Please, no :)
 > 
-> Then the braille-specific code in register_console() might
-> look like:
-> 
-> 	/*
-> 	 * Braille console is handled a very special way.
-> 	 * Is is not listed in the console_drivers list.
-> 	 * Instead it registers its own keyboard and vt notifiers.
-> 	 *
-> 	 * Be careful and avoid calling c->match() here
-> 	 * because it might have side effects!
-> 	 */
-> 	if (is_braille_console(c) &&
-> 	    match_console_name(newcon, c) &&
-> 	    _braille_register_console(newcon, c))
-> 		return;
+> It is indeed not often useful, since one would usually use a userland
+> daemon to access the system, but when one's system does not boot
+> properly or something similar, it's useful to have the braille
+> console. That's just very not often useful.
 
-Yes, this is exactly what I was going to do.
-
-> Finally, I would prefer to move
-> 
-> 	newcon->flags |= CON_ENABLED;
-> 
-> outside the match_console() function. The function will still
-> have side effects because of the c->match() calls. But we should
-> not make it worse. In fact, it would be great to remove side effects
-> from the c->match() functions in the long term (not in this patch set).
-
-I see the motivation but I am afraid this is not possible until
-side effects are removed from newcon->match() and match_console().
-The point is that match_console() also calls newcon->setup() (side effect)
-and this CON_ENABLED flag indicates if this call was successful.
-
->> I am going to fix v5 preserving both the check for duplicates
->> and the invariant, but tell me please if you prefer the v4 approach.
-> 
-> I guess that you planed to shuffle console_cmdline entries to keep
-> the preferred console first/last. I am afraid that it won't be
-> a nice code either. But I might be wrong.
-
-You are right, I tried that, the code was awful.
+Why should we keep the code which does not work?  And which is used
+more than 3 years ago and usage requires patching.
+I think removing it is a good idea
 
 Thank you
 Aleksey Makarov
 
->>> The
->>> newcon->setup() call is called only when the console matches.
->>> AFAIK, there is only one braille console. We should be on
->>> the safe side if this one does not implement the match()
->>> callback. Or is it even more complicated?
->>
->> As you can see from the original code, the check for braille console
->> was performed in that branch of code where we missed newcon->match(),
->> so yes, it looks like braille console(s) does not have the match() method.
->> I used that in v4 to factor out matching for braille from the loop.
-> 
-> The check for blr_options is sufficient and better.
-> 
-> I suggest to wait at least two days until you spend to much time
-> on reshuffling the code. It is possible that others would prefer
-> v5 or suggest even other solution.
-> 
-> Best Regards,
-> Petr
+> Samuel
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-serial" in
 > the body of a message to majordomo@vger.kernel.org
