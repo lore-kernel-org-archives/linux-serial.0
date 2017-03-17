@@ -1,128 +1,54 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH 10/10] Bluetooth: add nokia driver
-Date: Fri, 17 Mar 2017 16:26:19 +0100
-Message-ID: <20170317152619.GF8723@amd>
+From: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
+Subject: Re: [PATCH 02/10] ARM: dts: N900: Add bluetooth
+Date: Fri, 17 Mar 2017 16:25:47 +0100
+Message-ID: <20170317152547.GC8723@amd>
 References: <20170304115833.3538-1-sre@kernel.org>
- <20170304115833.3538-11-sre@kernel.org>
+ <20170304115833.3538-3-sre@kernel.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="udcq9yAoWb9A4FsZ"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="8X7/QrJGcKSMr1RN"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170304115833.3538-11-sre@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sre@kernel.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20170304115833.3538-3-sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 
---udcq9yAoWb9A4FsZ
+--8X7/QrJGcKSMr1RN
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi!
+On Sat 2017-03-04 12:58:25, Sebastian Reichel wrote:
+> Add bcm2048 node and its system clock to the N900 device tree file.
+> Apart from that a reference to the new clock has been added to
+> wl1251 (which uses it, too).
+>=20
+> Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
-> +struct hci_nokia_neg_hdr {
-> +	__u8	dlen;
-> +} __packed;
-> +
-> +struct hci_nokia_neg_cmd {
-> +	__u8	ack;
-> +	__u16	baud;
-> +	__u16	unused1;
-> +	__u8	proto;
-> +	__u16	sys_clk;
-> +	__u16	unused2;
-> +} __packed;
+Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
 
-__u8 -> u8? This is not exported to userspace...
-
-> +#define BT_BAUDRATE_DIVIDER	384000000
-
-Is this really divider?
-
-> +	int init_error;
-> +	struct completion init_completion;
-> +
-> +	uint8_t man_id;
-> +	uint8_t ver_id;
-
-u8...
-
-> +static int nokia_wait_for_cts(struct hci_uart *hu, bool state,
-> +				 int timeout_ms)
-> +{
-> +	struct nokia_bt_dev *btdev =3D hu->priv;
-> +	struct device *dev =3D &btdev->serdev->dev;
-> +	unsigned long timeout;
-> +	bool signal;
-> +
-> +	timeout =3D jiffies + msecs_to_jiffies(timeout_ms);
-> +	while (!time_after(jiffies, timeout)) {
-> +		signal =3D serdev_device_get_cts(btdev->serdev);
-> +		if (signal =3D=3D state) {
-> +			dev_dbg(dev, "wait for cts... received!");
-> +			return 0;
-> +		}
-> +		usleep_range(1000, 2000);
-> +	}
-> +
-> +	return -ETIMEDOUT;
-> +}
-
-Do we have devices where cts triggers interrupt?
-
-> +	if (btdev->init_error < 0)
-> +		return btdev->init_error;
-> +
-> +	/* Change to previously negotiated speed. Flow Control
-> +	 * is disabled until bluetooth adapter is ready to avoid
-> +	 * broken bytes being ready by the bluetooth adapter
-> +	 */
-
-Umm. I'd at dot at end of sentence... but still can't understand the
-sentence.
-
-"to avoid broken bytes being received."?
-
-> +	evt =3D (struct hci_nokia_neg_evt *)skb_pull(skb, sizeof(*hdr));
-> +
-> +	if (evt->ack !=3D NOKIA_NEG_ACK) {
-> +		dev_err(dev, "Negotiation received: wrong reply");
-> +		btdev->init_error =3D -EINVAL;
-> +	}
-
-But we still return success and trust the man_id / ver_id?
-
-> +	pkt =3D (struct hci_nokia_alive_pkt *)skb_pull(skb, sizeof(*hdr));
-> +
-> +	if (pkt->mid !=3D NOKIA_ALIVE_RESP) {
-> +		dev_err(dev, "Alive received: invalid response: 0x%02x!",
-> +			pkt->mid);
-> +		btdev->init_error =3D -EINVAL;
-> +		goto finish_alive;
-> +	}
-
-ret =3D -EINVAL?
-
-Thanks!
-									Pavel
 --=20
 (english) http://www.livejournal.com/~pavelmachek
 (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
 g.html
 
---udcq9yAoWb9A4FsZ
+--8X7/QrJGcKSMr1RN
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iEYEARECAAYFAljMABsACgkQMOfwapXb+vLqIgCdGcfKH2gQi7bP+cJnVv90ATLg
-YJUAniSb34AHdNnj++MIT+omkqxySvZ6
-=daMY
+iEYEARECAAYFAljL//sACgkQMOfwapXb+vLeDACgxIxA8ZkWurp0JVqG3fR3xgSY
+gAYAoJgDJ0JUZ77Ewxb4bABD09TyYc9/
+=bv0M
 -----END PGP SIGNATURE-----
 
---udcq9yAoWb9A4FsZ--
+--8X7/QrJGcKSMr1RN--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
