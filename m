@@ -1,129 +1,106 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: [PATCH v7 3/3] printk: fix double printing with earlycon
-Date: Fri, 17 Mar 2017 16:43:45 +0300
-Message-ID: <20170317134352.5725-1-aleksey.makarov@linaro.org>
-References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170315102854.1763-1-aleksey.makarov@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Aleksey Makarov <aleksey.makarov@linaro.org>, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [RFC PATCH] tty/serial: atmel: fix TX path in
+ atmel_console_write()
+Date: Fri, 17 Mar 2017 16:11:49 +0100
+Message-ID: <6fc2b136-3717-df85-92ec-55bb7b91971b@gmail.com>
+References: <CACQ1gAgW4aGJSxSAXDWL7td9eV12UV=Xv=PZR58BqqHxEeRH0g@mail.gmail.com>
+ <20170315152948.10978-1-nicolas.ferre@microchip.com>
+ <074d057e-4971-a325-e985-3f5046536225@gmail.com>
+ <d3abc5aa-b010-a6cc-4ab9-74078149a692@microchip.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <d3abc5aa-b010-a6cc-4ab9-74078149a692@microchip.com>
+Sender: stable-owner@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stable # 4 . 4+" <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-If a console was specified by ACPI SPCR table _and_ command line
-parameters like "console=ttyAMA0" _and_ "earlycon" were specified,
-then log messages appear twice.
+2017-03-15 17:56 GMT+01:00 Nicolas Ferre <nicolas.ferre@microchip.com>:
+> Le 15/03/2017 à 17:19, Richard Genoud a écrit :
+>> On 15/03/2017 16:29, Nicolas Ferre wrote:
+>>> A side effect of 89d8232411a8 ("tty/serial: atmel_serial: BUG: stop DMA
+>>> from transmitting in stop_tx") is that the console can be called with
+>>> TX path disabled. Then the system would hang trying to push charecters
+>>> out in atmel_console_putchar().
+>>>
+>>> Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+>>> Fixes: 89d8232411a8 ("tty/serial: atmel_serial: BUG: stop DMA from transmitting
+>>> in stop_tx")
+>>> Cc: stable <stable@vger.kernel.org> # 4.4+
+>>> ---
+>>> Hi Richard,
+>>>
+>>> I found this to fix the problem with system hang in my linux-4.4-at91 branch
+>>> (in the atmel_console_putchar() waiting loop actually). I'm open to more
+>>> insignt.
+>>> As we cannot figure out if this bit is set or not, I didn't preserve the
+>>> current status...
+>>>
+>>> Regards,
+>>
+>> So, I'm guessing that you may see some lines/characters printed twice on
+>> the screen, don't you ?
+>
+> Well, actually, I don't think so because the repetitions that I see are
+> probably due to open/close/open/close/re-open/... of the serial console
+> itself.
+>
+> Same with the line "random: udevd: uninitialized urandom read (16 bytes
+> read, 21 bits of entropy available)", they happen at different moment in
+> time => the printk log timestamping seem to indicate that they are
+> different.
+Hi Nicolas,
 
-The root cause is that the code traverses the list of specified
-consoles (the `console_cmdline` array) and stops at the first match.
-But it may happen that the same console is referred by the elements
-of this array twice:
+It seems that the problem is between atmel_tx_dma() and its callback
+atmel_complete_tx_dma().
 
-	pl011,mmio,0x87e024000000,115200 -- from SPCR
-	ttyAMA0 -- from command line
+At some point, atmel_tx_dma() is called, does the job, and then, just
+before the callback is called, the xmit->head and xmit->tail pointers
+are set to zero (by uart_flush_buffer())
+So, when atmel_complete_tx_dma() is called, it does:
+xmit->tail += atmel_port->tx_len;
+not knowing that the head and tail pointers have been reseted.
+=> it's like there's (UART_XMIT_SIZE - atmel_port->tx_len) characters to
+transmit on the serial line.
 
-but in this case `preferred_console` points to the second entry and
-the flag CON_CONSDEV is not set, so bootconsole is not deregistered.
+PS: I can trigger this bug by holding down the d key at login and then
+ctrl - basically, a ctrl-d just after sending text - with a rate success
+of about 1/5 :)
 
-To fix that, introduce an invariant "The last non-braille console
-is always the preferred one" on the entries of the console_cmdline
-array.  Then traverse it in reverse order to be sure that if
-the console is preferred then it will be the first matching entry.
+Could you try this patch to see if it corrects also your system hang ?
 
-Reported-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+(The patch is small, but the bug hunt was a headache :))
+
+[PATCH] tty/serial: atmel: fix race condition (TX+DMA)
+
+If uart_flush_buffer() is called between atmel_tx_dma() and
+atmel_complete_tx_dma(), the circular buffer has been cleared, but not
+atmel_port->tx_len.
+That leads to a circular buffer overflow (dumping (UART_XMIT_SIZE -
+atmel_port->tx_len) bytes).
+
+Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 ---
+ drivers/tty/serial/atmel_serial.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-v6 -> v7:
-- return back to v5 :)
-- leave the check for already registered entries and add a function that
-  maintains the invariant.
-
-v5 -> v6:
-- drop v5 and continue to work on v4:
-- introduce _braille_is_braille_console(). It helps to split original loop
-  into three parts: 1) search for braille console, 2) check for
-  preferred_console, 3) match other entries so that these three parts do not
-  intersect.
-- introduce for_each_console_cmdline() macros to traverse console_cmdline
-  (Petr Mladek)
-
- kernel/printk/printk.c | 48 ++++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 42 insertions(+), 6 deletions(-)
-
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index fd752f0c8ef1..88f86fb23bc4 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -1895,6 +1895,34 @@ asmlinkage __visible void early_printk(const char *fmt, ...)
+diff --git a/drivers/tty/serial/atmel_serial.c
+b/drivers/tty/serial/atmel_serial.c
+index 833d3d80446f..89552157e334 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1934,6 +1934,11 @@ static void atmel_flush_buffer(struct uart_port
+*port)
+ 		atmel_uart_writel(port, ATMEL_PDC_TCR, 0);
+ 		atmel_port->pdc_tx.ofs = 0;
+ 	}
++	/*
++	 * in uart_flush_buffer(), the xmit circular buffer has just
++	 * been cleared, so we have to reset tx_len accordingly.
++	 */
++	atmel_port->tx_len = 0;
  }
- #endif
- 
-+/*
-+ * This function maintains an invariant that will help to find if
-+ * the matching console is preferred, see register_console():
-+ *
-+ *      The last non-braille console is always the preferred one.
-+ */
-+static void ensure_preferred_is_last(int i)
-+{
-+	int last;
-+
-+	for (last = MAX_CMDLINECONSOLES - 1;
-+	     last >= 0 && !console_cmdline[last].name[0];
-+	     last--)
-+		;
-+
-+	BUG_ON(last < 0);
-+
-+	if (i != last) {
-+		struct console_cmdline t;
-+
-+		t = console_cmdline[i];
-+		console_cmdline[i] = console_cmdline[last];
-+		console_cmdline[last] = t;
-+	}
-+
-+	preferred_console = last;
-+}
-+
- static int __add_preferred_console(char *name, int idx, char *options,
- 				   char *brl_options)
- {
-@@ -1910,7 +1938,7 @@ static int __add_preferred_console(char *name, int idx, char *options,
- 	     i++, c++) {
- 		if (strcmp(c->name, name) == 0 && c->index == idx) {
- 			if (!brl_options)
--				preferred_console = i;
-+				ensure_preferred_is_last(i);
- 			return 0;
- 		}
- 	}
-@@ -2457,12 +2485,20 @@ void register_console(struct console *newcon)
- 	}
- 
- 	/*
--	 *	See if this console matches one we selected on
--	 *	the command line.
-+	 * See if this console matches one we selected on the command line.
-+	 *
-+	 * The console_cmdline array is traversed in the reverse order because
-+	 * we want to be sure that if this console is preferred then it will be
-+	 * the first matching entry.  We use the invariant that is maintained in
-+	 * __add_preferred_console().
- 	 */
--	for (i = 0, c = console_cmdline;
--	     i < MAX_CMDLINECONSOLES && c->name[0];
--	     i++, c++) {
-+	for (i = MAX_CMDLINECONSOLES - 1; i >= 0; i--) {
-+
-+		if (!console_cmdline[i].name[0])
-+			continue;
-+
-+		c = console_cmdline + i;
-+
- 		if (!newcon->match ||
- 		    newcon->match(newcon, c->name, c->index, c->options) != 0) {
- 			/* default matching */
--- 
-2.12.0
+
+ /*
