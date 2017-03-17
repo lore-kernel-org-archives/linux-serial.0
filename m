@@ -1,39 +1,42 @@
-From: Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: Does braille console work?
-Date: Fri, 17 Mar 2017 09:02:08 -0400
-Message-ID: <20170317090208.437d4e10@gandalf.local.home>
-References: <1bb67bee-b8f9-2835-725a-f36fda085216@linaro.org>
-        <20170317005355.xwym3zpamym3rwp6@var.youpi.perso.aquilenet.fr>
-        <20170317093544.GN3977@pathway.suse.cz>
-        <20170317094051.lpdu4pjloboaikgr@var.youpi.perso.aquilenet.fr>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: Console stops with calltrace on cavium octeon2 68XX EVB
+Date: Fri, 17 Mar 2017 15:18:00 +0200
+Message-ID: <1489756680.19767.55.camel@linux.intel.com>
+References: <CAFdej01TKnVy0=SrtDAwnsmaqzq2xnEM3bB2+CCFjp2rDCn2rQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170317094051.lpdu4pjloboaikgr@var.youpi.perso.aquilenet.fr>
+In-Reply-To: <CAFdej01TKnVy0=SrtDAwnsmaqzq2xnEM3bB2+CCFjp2rDCn2rQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Samuel Thibault <samuel.thibault@ens-lyon.org>
-Cc: Petr Mladek <pmladek@suse.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, linux-serial@vger.kernel.org, Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org
+To: Arun Chandran <achandran@mvista.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+Cc: jason.uy@broadcom.com, scott.branden@broadcom.com, ray.jui@broadcom.com, wangkefeng.wang@huawei.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, heikki.krogerus@linux.intel.com
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 17 Mar 2017 10:40:51 +0100
-Samuel Thibault <samuel.thibault@ens-lyon.org> wrote:
-
-> Petr Mladek, on ven. 17 mars 2017 10:35:44 +0100, wrote:
-> > Anyway, the feature is not usable at the moment. Samuel, would
-> > you be able to fix and test it, please?  
+On Fri, 2017-03-17 at 18:30 +0530, Arun Chandran wrote:
+> Hi,
 > 
-> Sure, it's already on my TODO list, I will do when I get the time.
->
+> I got this on my cavium octeon2 68XX EVB console when booting the
+> latest kernel(4.11.0-rc2-00235-gd528ae0).
 
-Yes please. There's no reason to keep that code if it's been broken for
-3 years and nobody noticed. In fact, keeping it may actually make it
-more difficult to add accessibility in the future. Methodologies may
-change and the old broken code (that we've been complicating all other
-code with), may actually become a hindrance to a new methodology.
-Either keep it updated, or get rid of it. Getting rid of the
-complications it adds to the core code, and let the core code become
-more simplified may actually end up being easier to add accessibility
-in the future, than keeping the old cruft around.
+> And I bisected and reached at this commit
+> "6a171b2 serial: 8250_dw: Allow hardware flow control to be used"
+> 
+> When I printed the value of my "d->clk" inside dw8250_set_termios() it
+> was zero.
+> Then the below change is solving the problem for me.(No calltrace
+> console works fine)
 
--- Steve
+> Can anybody please comment on this?
+
+Have you seen
+
+https://www.spinics.net/lists/linux-serial/msg25483.html
+
+https://patchwork.kernel.org/patch/9603947/
+
+?
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
