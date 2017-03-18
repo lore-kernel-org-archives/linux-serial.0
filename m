@@ -1,63 +1,56 @@
-From: Sebastian Reichel <sre@kernel.org>
-Subject: Re: [PATCH 01/10] ARM: dts: N9/N950: add bluetooth
-Date: Sat, 18 Mar 2017 01:58:24 +0100
-Message-ID: <20170318005824.ax2pgx4sl4tbwz6o@earth>
-References: <20170304115833.3538-1-sre@kernel.org>
- <20170304115833.3538-2-sre@kernel.org>
- <20170317152529.GA8723@amd>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: Expected behavior of set_termios() w.r.t. TX FIFO?
+Date: Sat, 18 Mar 2017 18:57:54 +0800
+Message-ID: <20170318105754.GA19937@kroah.com>
+References: <CAMuHMdWVOFVxb4bfexg5ZPOdC6Yig4g5Rd+5rRAOfrhH3W83GQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="xygpnfdwh4gfkf27"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170317152529.GA8723@amd>
+In-Reply-To: <CAMuHMdWVOFVxb4bfexg5ZPOdC6Yig4g5Rd+5rRAOfrhH3W83GQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Pavel Machek <pavel@ucw.cz>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+On Fri, Mar 17, 2017 at 01:28:39PM +0100, Geert Uytterhoeven wrote:
+> Hi Greg, Jiri, Peter,
+> 
+> I'm wondering what is the expected behavior of calling
+> uart_ops.set_termios() w.r.t. characters that are already queued in the
+> UART's TX FIFO.
+> 
+>   - Should it wait (block) until all queued characters have been
+>     transmitted, before changing the UART's settings?
+>   - Should it apply the new settings immediately, affecting the already
+>     queued characters?
+>   - Should it apply the new settings, dropping the already queued
+>     characters?
+>   - Is calling uart_ops.set_termios() while the TX FIFO isn't empty
+>     allowed (this can be triggered easily from userspace)?
+> 
+> uart_ops.set_termios() returns void, so there's no way to return an error.
+> 
+> Currently the sh-sci driver blocks until the TX FIFO has been emptied,
+> which may never happen if hardware flow control is enabled, and the remote
+> side never asserts CTS, leading to:
+> 
+>         NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s!
+> 
+> See also "[PATCH 2/2] serial: sh-sci: Fix hang in sci_reset()",
+> https://lkml.org/lkml/2016/12/2/225).
+> 
+> Thanks for your answer!
 
---xygpnfdwh4gfkf27
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I think this has come up in the past, and due to the problem you have
+found (could be waiting forever due to flow control), the answer was
+just to set the new settings and not wait for anything to be flushed out
+of the uart.
 
-Hi,
+If a user sends a bunch of data, and then changes settings, without
+first waiting for the data to be sent, then I feel they deserve the
+uncertainty they will get :)
 
-On Fri, Mar 17, 2017 at 04:25:29PM +0100, Pavel Machek wrote:
-> Hi!
->=20
-> > The Nokia N950 and N9 have a wl1271 (with nokia bootloader) bluetooth
-> > module connected to second UART.
->=20
-> I don't get it. We are describing hardware, what does it have to do
-> with bootloader? Is there something not described here, because it is
-> already initialized by bootloader?
+Hope this helps,
 
-This is about the wl1271 "bootloader"/low-level interface. The same
-chip exists with a TI low-level interface, which requires a
-different driver/firmware.
-
--- Sebastian
-
---xygpnfdwh4gfkf27
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAljMhioACgkQ2O7X88g7
-+pq9xBAAlRf1BMRW1SR5qz7WsJXVvbK5+fD5G07NvDI2jX13p5PY/pQcnm4BlGMi
-jK3wSkN1+t/6G5YoKS3zkP5qkbtvR0g4k3qtYeLIWHDMJFy5mptfeloPRc8LF3yO
-YiXSrWAt0ye/jSecjZJMRU7unobms/x4xkJ56pM5pxUUTJOJwwiZm5xSEj3CfXC0
-vRC005rDWi9+S3RsjKis9AqEwahp0opaIURavutL+4+uz0H4qCzhlIrXw9x6Rn0q
-r1O0lNfVqRdygvPokzN3WzyH3y/vR7NtWBCFJbOVr7+/7S8RQa7w10+AOVFbohWU
-qbD5DllS/pgB2SvkQi8aIQKf7879JU71jh1BrcwRrUPaFRC6/ZfcRfobZ3IwaeSz
-v+l/dDo7OWA8nBYRPdf4SRXHH4bHtQooZJMww6Y+fTE1ETnrBbhH2aro+HoMbQWE
-hDUaB34tFPZwI7dSkeHsGGQ+/YTkhcD9Ywjk8EC71PIddqDtN5Aha6YpNaDGwlss
-9Tx2QvvovYRwhLi4je+KIFrMoM1Do6xqyt5/0xVfkIHwDI3eCfO6YK3Tnnaxuevn
-N20yxh5VSB6QdIGD2hnuhgV1JiEM2YUdOGZCt23zNfP0vzG+nyVCYoNU7+C4wDLZ
-OQLOXCeOOehFdeYtAykmjfQuSgR5I/WBxZ1SxZaUgvsVMat6HXo=
-=MAbP
------END PGP SIGNATURE-----
-
---xygpnfdwh4gfkf27--
+greg k-h
