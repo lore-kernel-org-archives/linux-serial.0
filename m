@@ -1,98 +1,63 @@
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: Re: [RFC PATCH] tty/serial: atmel: fix TX path in
- atmel_console_write()
-Date: Fri, 17 Mar 2017 18:16:31 +0100
-Message-ID: <9b13c00d-ed52-4c8d-8690-16e25886437f@microchip.com>
-References: <CACQ1gAgW4aGJSxSAXDWL7td9eV12UV=Xv=PZR58BqqHxEeRH0g@mail.gmail.com>
- <20170315152948.10978-1-nicolas.ferre@microchip.com>
- <074d057e-4971-a325-e985-3f5046536225@gmail.com>
- <d3abc5aa-b010-a6cc-4ab9-74078149a692@microchip.com>
- <6fc2b136-3717-df85-92ec-55bb7b91971b@gmail.com>
+From: Sebastian Reichel <sre@kernel.org>
+Subject: Re: [PATCH 01/10] ARM: dts: N9/N950: add bluetooth
+Date: Sat, 18 Mar 2017 01:58:24 +0100
+Message-ID: <20170318005824.ax2pgx4sl4tbwz6o@earth>
+References: <20170304115833.3538-1-sre@kernel.org>
+ <20170304115833.3538-2-sre@kernel.org>
+ <20170317152529.GA8723@amd>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <6fc2b136-3717-df85-92ec-55bb7b91971b@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: "stable # 4 . 4+" <stable@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xygpnfdwh4gfkf27"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170317152529.GA8723@amd>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Pavel Machek <pavel@ucw.cz>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-TGUgMTcvMDMvMjAxNyDDoCAxNjoxMSwgUmljaGFyZCBHZW5vdWQgYSDDqWNyaXQgOgo+IDIwMTct
-MDMtMTUgMTc6NTYgR01UKzAxOjAwIE5pY29sYXMgRmVycmUgPG5pY29sYXMuZmVycmVAbWljcm9j
-aGlwLmNvbT46Cj4+IExlIDE1LzAzLzIwMTcgw6AgMTc6MTksIFJpY2hhcmQgR2Vub3VkIGEgw6lj
-cml0IDoKPj4+IE9uIDE1LzAzLzIwMTcgMTY6MjksIE5pY29sYXMgRmVycmUgd3JvdGU6Cj4+Pj4g
-QSBzaWRlIGVmZmVjdCBvZiA4OWQ4MjMyNDExYTggKCJ0dHkvc2VyaWFsOiBhdG1lbF9zZXJpYWw6
-IEJVRzogc3RvcCBETUEKPj4+PiBmcm9tIHRyYW5zbWl0dGluZyBpbiBzdG9wX3R4IikgaXMgdGhh
-dCB0aGUgY29uc29sZSBjYW4gYmUgY2FsbGVkIHdpdGgKPj4+PiBUWCBwYXRoIGRpc2FibGVkLiBU
-aGVuIHRoZSBzeXN0ZW0gd291bGQgaGFuZyB0cnlpbmcgdG8gcHVzaCBjaGFyZWN0ZXJzCj4+Pj4g
-b3V0IGluIGF0bWVsX2NvbnNvbGVfcHV0Y2hhcigpLgo+Pj4+Cj4+Pj4gU2lnbmVkLW9mZi1ieTog
-Tmljb2xhcyBGZXJyZSA8bmljb2xhcy5mZXJyZUBtaWNyb2NoaXAuY29tPgo+Pj4+IEZpeGVzOiA4
-OWQ4MjMyNDExYTggKCJ0dHkvc2VyaWFsOiBhdG1lbF9zZXJpYWw6IEJVRzogc3RvcCBETUEgZnJv
-bSB0cmFuc21pdHRpbmcKPj4+PiBpbiBzdG9wX3R4IikKPj4+PiBDYzogc3RhYmxlIDxzdGFibGVA
-dmdlci5rZXJuZWwub3JnPiAjIDQuNCsKPj4+PiAtLS0KPj4+PiBIaSBSaWNoYXJkLAo+Pj4+Cj4+
-Pj4gSSBmb3VuZCB0aGlzIHRvIGZpeCB0aGUgcHJvYmxlbSB3aXRoIHN5c3RlbSBoYW5nIGluIG15
-IGxpbnV4LTQuNC1hdDkxIGJyYW5jaAo+Pj4+IChpbiB0aGUgYXRtZWxfY29uc29sZV9wdXRjaGFy
-KCkgd2FpdGluZyBsb29wIGFjdHVhbGx5KS4gSSdtIG9wZW4gdG8gbW9yZQo+Pj4+IGluc2lnbnQu
-Cj4+Pj4gQXMgd2UgY2Fubm90IGZpZ3VyZSBvdXQgaWYgdGhpcyBiaXQgaXMgc2V0IG9yIG5vdCwg
-SSBkaWRuJ3QgcHJlc2VydmUgdGhlCj4+Pj4gY3VycmVudCBzdGF0dXMuLi4KPj4+Pgo+Pj4+IFJl
-Z2FyZHMsCj4+Pgo+Pj4gU28sIEknbSBndWVzc2luZyB0aGF0IHlvdSBtYXkgc2VlIHNvbWUgbGlu
-ZXMvY2hhcmFjdGVycyBwcmludGVkIHR3aWNlIG9uCj4+PiB0aGUgc2NyZWVuLCBkb24ndCB5b3Ug
-Pwo+Pgo+PiBXZWxsLCBhY3R1YWxseSwgSSBkb24ndCB0aGluayBzbyBiZWNhdXNlIHRoZSByZXBl
-dGl0aW9ucyB0aGF0IEkgc2VlIGFyZQo+PiBwcm9iYWJseSBkdWUgdG8gb3Blbi9jbG9zZS9vcGVu
-L2Nsb3NlL3JlLW9wZW4vLi4uIG9mIHRoZSBzZXJpYWwgY29uc29sZQo+PiBpdHNlbGYuCj4+Cj4+
-IFNhbWUgd2l0aCB0aGUgbGluZSAicmFuZG9tOiB1ZGV2ZDogdW5pbml0aWFsaXplZCB1cmFuZG9t
-IHJlYWQgKDE2IGJ5dGVzCj4+IHJlYWQsIDIxIGJpdHMgb2YgZW50cm9weSBhdmFpbGFibGUpIiwg
-dGhleSBoYXBwZW4gYXQgZGlmZmVyZW50IG1vbWVudCBpbgo+PiB0aW1lID0+IHRoZSBwcmludGsg
-bG9nIHRpbWVzdGFtcGluZyBzZWVtIHRvIGluZGljYXRlIHRoYXQgdGhleSBhcmUKPj4gZGlmZmVy
-ZW50Lgo+IEhpIE5pY29sYXMsCj4gCj4gSXQgc2VlbXMgdGhhdCB0aGUgcHJvYmxlbSBpcyBiZXR3
-ZWVuIGF0bWVsX3R4X2RtYSgpIGFuZCBpdHMgY2FsbGJhY2sKPiBhdG1lbF9jb21wbGV0ZV90eF9k
-bWEoKS4KPiAKPiBBdCBzb21lIHBvaW50LCBhdG1lbF90eF9kbWEoKSBpcyBjYWxsZWQsIGRvZXMg
-dGhlIGpvYiwgYW5kIHRoZW4sIGp1c3QKPiBiZWZvcmUgdGhlIGNhbGxiYWNrIGlzIGNhbGxlZCwg
-dGhlIHhtaXQtPmhlYWQgYW5kIHhtaXQtPnRhaWwgcG9pbnRlcnMKPiBhcmUgc2V0IHRvIHplcm8g
-KGJ5IHVhcnRfZmx1c2hfYnVmZmVyKCkpCj4gU28sIHdoZW4gYXRtZWxfY29tcGxldGVfdHhfZG1h
-KCkgaXMgY2FsbGVkLCBpdCBkb2VzOgo+IHhtaXQtPnRhaWwgKz0gYXRtZWxfcG9ydC0+dHhfbGVu
-Owo+IG5vdCBrbm93aW5nIHRoYXQgdGhlIGhlYWQgYW5kIHRhaWwgcG9pbnRlcnMgaGF2ZSBiZWVu
-IHJlc2V0ZWQuCj4gPT4gaXQncyBsaWtlIHRoZXJlJ3MgKFVBUlRfWE1JVF9TSVpFIC0gYXRtZWxf
-cG9ydC0+dHhfbGVuKSBjaGFyYWN0ZXJzIHRvCj4gdHJhbnNtaXQgb24gdGhlIHNlcmlhbCBsaW5l
-Lgo+IAo+IFBTOiBJIGNhbiB0cmlnZ2VyIHRoaXMgYnVnIGJ5IGhvbGRpbmcgZG93biB0aGUgZCBr
-ZXkgYXQgbG9naW4gYW5kIHRoZW4KPiBjdHJsIC0gYmFzaWNhbGx5LCBhIGN0cmwtZCBqdXN0IGFm
-dGVyIHNlbmRpbmcgdGV4dCAtIHdpdGggYSByYXRlIHN1Y2Nlc3MKPiBvZiBhYm91dCAxLzUgOikK
-PiAKPiBDb3VsZCB5b3UgdHJ5IHRoaXMgcGF0Y2ggdG8gc2VlIGlmIGl0IGNvcnJlY3RzIGFsc28g
-eW91ciBzeXN0ZW0gaGFuZyA/CgpKdXN0IHRyaWVkLCBpdCBkb2Vzbid0IGZpeCB0aGUgc3lzdGVt
-IGhhbmcuCgpCdXQgaXQgc2VlbXMgdG8gc29sdmUgdGhlIGlzc3VlIHRoYXQgSSBoYWQgd2hpbGUg
-aGFsdGluZyB0aGUgc3lzdGVtOiBhCmtpbmQgb2YgZmx1c2ggb2YgYSBwcmV2aW91cyBidWZmZXIg
-aW4gdGhlIGNvbnNvbGUuClNvLCBJIHRoaW5rIGl0IGRvZXMgc29sdmUgc29tZXRoaW5nLgoKU28s
-IHdpdGggYm90aCBteSBwYXRjaCBhbmQgeW91cnM6ClRlc3RlZC1ieTogTmljb2xhcyBGZXJyZSA8
-bmljb2xhcy5mZXJyZUBtaWNyb2NoaXAuY29tPgoKUmVnYXJkcywKCj4gKFRoZSBwYXRjaCBpcyBz
-bWFsbCwgYnV0IHRoZSBidWcgaHVudCB3YXMgYSBoZWFkYWNoZSA6KSkKPiAKPiBbUEFUQ0hdIHR0
-eS9zZXJpYWw6IGF0bWVsOiBmaXggcmFjZSBjb25kaXRpb24gKFRYK0RNQSkKPiAKPiBJZiB1YXJ0
-X2ZsdXNoX2J1ZmZlcigpIGlzIGNhbGxlZCBiZXR3ZWVuIGF0bWVsX3R4X2RtYSgpIGFuZAo+IGF0
-bWVsX2NvbXBsZXRlX3R4X2RtYSgpLCB0aGUgY2lyY3VsYXIgYnVmZmVyIGhhcyBiZWVuIGNsZWFy
-ZWQsIGJ1dCBub3QKPiBhdG1lbF9wb3J0LT50eF9sZW4uCj4gVGhhdCBsZWFkcyB0byBhIGNpcmN1
-bGFyIGJ1ZmZlciBvdmVyZmxvdyAoZHVtcGluZyAoVUFSVF9YTUlUX1NJWkUgLQo+IGF0bWVsX3Bv
-cnQtPnR4X2xlbikgYnl0ZXMpLgo+IAo+IFNpZ25lZC1vZmYtYnk6IFJpY2hhcmQgR2Vub3VkIDxy
-aWNoYXJkLmdlbm91ZEBnbWFpbC5jb20+Cj4gLS0tCj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9hdG1l
-bF9zZXJpYWwuYyB8IDUgKysrKysKPiAgMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQo+
-IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMKPiBiL2Ry
-aXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+IGluZGV4IDgzM2QzZDgwNDQ2Zi4uODk1
-NTIxNTdlMzM0IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwu
-Ywo+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+IEBAIC0xOTM0LDYg
-KzE5MzQsMTEgQEAgc3RhdGljIHZvaWQgYXRtZWxfZmx1c2hfYnVmZmVyKHN0cnVjdCB1YXJ0X3Bv
-cnQKPiAqcG9ydCkKPiAgCQlhdG1lbF91YXJ0X3dyaXRlbChwb3J0LCBBVE1FTF9QRENfVENSLCAw
-KTsKPiAgCQlhdG1lbF9wb3J0LT5wZGNfdHgub2ZzID0gMDsKPiAgCX0KPiArCS8qCj4gKwkgKiBp
-biB1YXJ0X2ZsdXNoX2J1ZmZlcigpLCB0aGUgeG1pdCBjaXJjdWxhciBidWZmZXIgaGFzIGp1c3QK
-PiArCSAqIGJlZW4gY2xlYXJlZCwgc28gd2UgaGF2ZSB0byByZXNldCB0eF9sZW4gYWNjb3JkaW5n
-bHkuCj4gKwkgKi8KPiArCWF0bWVsX3BvcnQtPnR4X2xlbiA9IDA7Cj4gIH0KPiAKPiAgLyoKPiAK
-CgotLSAKTmljb2xhcyBGZXJyZQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5l
-bEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4v
-bGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+
+--xygpnfdwh4gfkf27
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Fri, Mar 17, 2017 at 04:25:29PM +0100, Pavel Machek wrote:
+> Hi!
+>=20
+> > The Nokia N950 and N9 have a wl1271 (with nokia bootloader) bluetooth
+> > module connected to second UART.
+>=20
+> I don't get it. We are describing hardware, what does it have to do
+> with bootloader? Is there something not described here, because it is
+> already initialized by bootloader?
+
+This is about the wl1271 "bootloader"/low-level interface. The same
+chip exists with a TI low-level interface, which requires a
+different driver/firmware.
+
+-- Sebastian
+
+--xygpnfdwh4gfkf27
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAljMhioACgkQ2O7X88g7
++pq9xBAAlRf1BMRW1SR5qz7WsJXVvbK5+fD5G07NvDI2jX13p5PY/pQcnm4BlGMi
+jK3wSkN1+t/6G5YoKS3zkP5qkbtvR0g4k3qtYeLIWHDMJFy5mptfeloPRc8LF3yO
+YiXSrWAt0ye/jSecjZJMRU7unobms/x4xkJ56pM5pxUUTJOJwwiZm5xSEj3CfXC0
+vRC005rDWi9+S3RsjKis9AqEwahp0opaIURavutL+4+uz0H4qCzhlIrXw9x6Rn0q
+r1O0lNfVqRdygvPokzN3WzyH3y/vR7NtWBCFJbOVr7+/7S8RQa7w10+AOVFbohWU
+qbD5DllS/pgB2SvkQi8aIQKf7879JU71jh1BrcwRrUPaFRC6/ZfcRfobZ3IwaeSz
+v+l/dDo7OWA8nBYRPdf4SRXHH4bHtQooZJMww6Y+fTE1ETnrBbhH2aro+HoMbQWE
+hDUaB34tFPZwI7dSkeHsGGQ+/YTkhcD9Ywjk8EC71PIddqDtN5Aha6YpNaDGwlss
+9Tx2QvvovYRwhLi4je+KIFrMoM1Do6xqyt5/0xVfkIHwDI3eCfO6YK3Tnnaxuevn
+N20yxh5VSB6QdIGD2hnuhgV1JiEM2YUdOGZCt23zNfP0vzG+nyVCYoNU7+C4wDLZ
+OQLOXCeOOehFdeYtAykmjfQuSgR5I/WBxZ1SxZaUgvsVMat6HXo=
+=MAbP
+-----END PGP SIGNATURE-----
+
+--xygpnfdwh4gfkf27--
