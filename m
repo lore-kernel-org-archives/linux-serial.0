@@ -1,56 +1,102 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Expected behavior of set_termios() w.r.t. TX FIFO?
-Date: Sat, 18 Mar 2017 18:57:54 +0800
-Message-ID: <20170318105754.GA19937@kroah.com>
-References: <CAMuHMdWVOFVxb4bfexg5ZPOdC6Yig4g5Rd+5rRAOfrhH3W83GQ@mail.gmail.com>
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Subject: [PATCH] braille-console: Fix value returned by _braille_console_setup
+Date: Sun, 19 Mar 2017 15:37:26 +0100
+Message-ID: <20170319143726.p6motwasbc2lfdao@var.youpi.perso.aquilenet.fr>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdWVOFVxb4bfexg5ZPOdC6Yig4g5Rd+5rRAOfrhH3W83GQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Steven Rostedt <rostedt@goodmis.org>, Petr Mladek <pmladek@suse.com>, Ming Lei <ming.lei@canonical.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, linux-serial@vger.kernel.org, Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 17, 2017 at 01:28:39PM +0100, Geert Uytterhoeven wrote:
-> Hi Greg, Jiri, Peter,
-> 
-> I'm wondering what is the expected behavior of calling
-> uart_ops.set_termios() w.r.t. characters that are already queued in the
-> UART's TX FIFO.
-> 
->   - Should it wait (block) until all queued characters have been
->     transmitted, before changing the UART's settings?
->   - Should it apply the new settings immediately, affecting the already
->     queued characters?
->   - Should it apply the new settings, dropping the already queued
->     characters?
->   - Is calling uart_ops.set_termios() while the TX FIFO isn't empty
->     allowed (this can be triggered easily from userspace)?
-> 
-> uart_ops.set_termios() returns void, so there's no way to return an error.
-> 
-> Currently the sh-sci driver blocks until the TX FIFO has been emptied,
-> which may never happen if hardware flow control is enabled, and the remote
-> side never asserts CTS, leading to:
-> 
->         NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s!
-> 
-> See also "[PATCH 2/2] serial: sh-sci: Fix hang in sci_reset()",
-> https://lkml.org/lkml/2016/12/2/225).
-> 
-> Thanks for your answer!
+commit bbeddf52adc1 ("printk: move braille console support into
+separate braille.[ch] files") introduced _braille_console_setup()
+to outline the braille initialization code.  There was however some
+confusion over the value it was supposed to return. commit 2cfe6c4ac7ee
+("printk: Fix return of braille_register_console()") tried to fix it
+but failed to.
 
-I think this has come up in the past, and due to the problem you have
-found (could be waiting forever due to flow control), the answer was
-just to set the new settings and not wait for anything to be flushed out
-of the uart.
+This fixes and documents the returned value according to the use
+in printk.c: non-zero return means a parsing error, and thus this
+console configuration should be ignored.
 
-If a user sends a bunch of data, and then changes settings, without
-first waiting for the data to be sent, then I feel they deserve the
-uncertainty they will get :)
+Signed-off-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: Joe Perches <joe@perches.com>
+Cc: Ming Lei <ming.lei@canonical.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Petr Mladek <pmladek@suse.com>
 
-Hope this helps,
-
-greg k-h
+Index: linux-4.10/kernel/printk/braille.c
+===================================================================
+--- linux-4.10.orig/kernel/printk/braille.c
++++ linux-4.10/kernel/printk/braille.c
+@@ -2,12 +2,13 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/console.h>
++#include <linux/errno.h>
+ #include <linux/string.h>
+ 
+ #include "console_cmdline.h"
+ #include "braille.h"
+ 
+-char *_braille_console_setup(char **str, char **brl_options)
++int _braille_console_setup(char **str, char **brl_options)
+ {
+ 	if (!strncmp(*str, "brl,", 4)) {
+ 		*brl_options = "";
+@@ -15,14 +16,15 @@ char *_braille_console_setup(char **str,
+ 	} else if (!strncmp(*str, "brl=", 4)) {
+ 		*brl_options = *str + 4;
+ 		*str = strchr(*brl_options, ',');
+-		if (!*str)
++		if (!*str) {
+ 			pr_err("need port name after brl=\n");
++			return -EINVAL;
++		}
+ 		else
+ 			*((*str)++) = 0;
+-	} else
+-		return NULL;
++	}
+ 
+-	return *str;
++	return 0;
+ }
+ 
+ int
+Index: linux-4.10/kernel/printk/braille.h
+===================================================================
+--- linux-4.10.orig/kernel/printk/braille.h
++++ linux-4.10/kernel/printk/braille.h
+@@ -9,7 +9,14 @@ braille_set_options(struct console_cmdli
+ 	c->brl_options = brl_options;
+ }
+ 
+-char *
++/*
++ * Setup console according to braille options.
++ * Return -EINVAL on syntax error, 0 on success (or no braille option was
++ * actually given).
++ * Modifies str to point to the serial options
++ * Sets brl_options to the parsed braille options.
++ */
++int
+ _braille_console_setup(char **str, char **brl_options);
+ 
+ int
+@@ -25,10 +32,10 @@ braille_set_options(struct console_cmdli
+ {
+ }
+ 
+-static inline char *
++static inline int
+ _braille_console_setup(char **str, char **brl_options)
+ {
+-	return NULL;
++	return 0;
+ }
+ 
+ static inline int
