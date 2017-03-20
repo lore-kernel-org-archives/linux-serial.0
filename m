@@ -1,42 +1,42 @@
-From: Samuel Thibault <samuel.thibault@ens-lyon.org>
-Subject: Re: [PATCH] braille-console: Fix value returned by
- _braille_console_setup
-Date: Sun, 19 Mar 2017 16:50:49 +0100
-Message-ID: <20170319155049.ea7uau3gqkpnmemt@var.youpi.perso.aquilenet.fr>
-References: <20170319143726.p6motwasbc2lfdao@var.youpi.perso.aquilenet.fr>
- <0e1043b5-c585-5f4a-cde7-1afd60c0db56@linaro.org>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [PATCH v7 3/3] printk: fix double printing with earlycon
+Date: Mon, 20 Mar 2017 15:16:58 +0900
+Message-ID: <20170320061206.GA594@jagdpanzerIV.localdomain>
+References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
+ <20170317134352.5725-1-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <0e1043b5-c585-5f4a-cde7-1afd60c0db56@linaro.org>
+In-Reply-To: <20170317134352.5725-1-aleksey.makarov@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Aleksey Makarov <aleksey.makarov@linaro.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>, Petr Mladek <pmladek@suse.com>, Ming Lei <ming.lei@canonical.com>, linux-serial@vger.kernel.org, Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Aleksey Makarov, on dim. 19 mars 2017 18:44:23 +0300, wrote:
-> On 03/19/2017 05:37 PM, Samuel Thibault wrote:
-> > commit bbeddf52adc1 ("printk: move braille console support into
-> > separate braille.[ch] files") introduced _braille_console_setup()
-> > to outline the braille initialization code.  There was however some
-> > confusion over the value it was supposed to return. commit 2cfe6c4ac7ee
-> > ("printk: Fix return of braille_register_console()") tried to fix it
-> > but failed to.
-> > 
-> > This fixes and documents the returned value according to the use
-> > in printk.c: non-zero return means a parsing error, and thus this
-> > console configuration should be ignored.
-> 
-> Did you test the code on real braille hardware?
+Hello,
 
-Not on actual hardware, but I checked that the output on the serial port
-is what is expected.
+On (03/17/17 16:43), Aleksey Makarov wrote:
+[..]
+> +static void ensure_preferred_is_last(int i)
+> +{
+> +	int last;
+> +
+> +	for (last = MAX_CMDLINECONSOLES - 1;
+> +	     last >= 0 && !console_cmdline[last].name[0];
+> +	     last--)
+> +		;
+> +
+> +	BUG_ON(last < 0);
 
-> I am asking because there could also be other problems with the code
-> that have not been run for 3 years since it was changed.
+let's not panic().
 
-The code which actually implements the braille protocol has not changed
-since it was tested.
 
-Samuel
+a nitpick, console swap can be done as
+
+	if (i != last)
+		swap(console_cmdline[i], console_cmdline[last]);
+	preferred_console = last;
+
+
+		-ss
