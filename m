@@ -1,24 +1,15 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
- calls
-Date: Mon, 20 Mar 2017 11:31:13 +0100
-Message-ID: <20170320103113.tpveoq2onzrwmkdt@pengutronix.de>
-References: <20170304174819.esxhwwbsxzuq3vyc@pengutronix.de>
- <CAMuHMdX8BEnaTtNFAbcvfHwJH=oPUmQ2NB+jfouGyhQpJ_m_4A@mail.gmail.com>
- <20170306085842.yijkfpqi3adcedmm@pengutronix.de>
- <CAMuHMdV2_vbocY4wCzvYtPAaF+QEX_Y4g6qVu5EqEBf5AnFdaw@mail.gmail.com>
- <20170306093043.ay4dz3ehp3aakwxh@pengutronix.de>
- <CAMuHMdWQuvANNU14A7NQuzv6AFp04bq4DG_oc7w9h4wUrG+4aQ@mail.gmail.com>
- <20170306100220.droey65uq2ew3mzu@pengutronix.de>
- <CACRpkdYeFyr4yjQjDAUpPJwuD_NW2y=wXnzt1xSNoOX0SFCLmw@mail.gmail.com>
- <CAMuHMdWv-xs12UqutEtXJGR8qqgx6DeDhkKvvYhhyW+XTVsUNQ@mail.gmail.com>
- <CAMuHMdXGn35bEsJKnUi5o3AytL4AJN2fBfoB79v5W-jOVFQx6g@mail.gmail.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [RFC PATCH] tty/serial: atmel: fix TX path in
+ atmel_console_write()
+Date: Mon, 20 Mar 2017 11:33:30 +0100
+Message-ID: <05f5c67b-67d8-02b4-e170-52f2484d0927@gmail.com>
+References: <CACQ1gAgW4aGJSxSAXDWL7td9eV12UV=Xv=PZR58BqqHxEeRH0g@mail.gmail.com>
+ <20170315152948.10978-1-nicolas.ferre@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdXGn35bEsJKnUi5o3AytL4AJN2fBfoB79v5W-jOVFQx6g@mail.gmail.com>
+In-Reply-To: <20170315152948.10978-1-nicolas.ferre@microchip.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -28,33 +19,47 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Nicolas Ferre <nicolas.ferre@microchip.com>, linux-serial@vger.kernel.org
+Cc: "stable # 4 . 4+" <stable@vger.kernel.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello Geert,
-
-On Mon, Mar 20, 2017 at 10:56:14AM +0100, Geert Uytterhoeven wrote:
-> Documentation/gpio/consumer.txt rightfully sates:
-> | Note that gpio_get*_optional() functions (and their managed variants), =
-unlike
-> | the rest of gpiolib API, also return NULL when gpiolib support is disab=
-led.
-> | This is helpful to driver authors, since they do not need to special ca=
-se
-> | -ENOSYS return codes.  System integrators should however be careful to =
-enable
-> | gpiolib on systems that need it.
-
-I cannot find this paragraph in Documentation/gpio/consumer.txt:
-
-	$ git grep -e 'ENOSYS' v4.11-rc3 -- Documentation/gpio/
-	<void>
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+On 15/03/2017 16:29, Nicolas Ferre wrote:
+> A side effect of 89d8232411a8 ("tty/serial: atmel_serial: BUG: stop DMA
+> from transmitting in stop_tx") is that the console can be called with
+> TX path disabled. Then the system would hang trying to push charecters
+> out in atmel_console_putchar().
+> 
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> Fixes: 89d8232411a8 ("tty/serial: atmel_serial: BUG: stop DMA from transmitting
+> in stop_tx")
+> Cc: stable <stable@vger.kernel.org> # 4.4+
+> ---
+> Hi Richard,
+> 
+> I found this to fix the problem with system hang in my linux-4.4-at91 branch
+> (in the atmel_console_putchar() waiting loop actually). I'm open to more
+> insignt.
+> As we cannot figure out if this bit is set or not, I didn't preserve the
+> current status...
+> 
+> Regards,
+> 
+>  drivers/tty/serial/atmel_serial.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index dcebb28ffbc4..7372dbdb7a4c 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -2483,6 +2483,9 @@ static void atmel_console_write(struct console *co, const char *s, u_int count)
+>  	pdc_tx = atmel_uart_readl(port, ATMEL_PDC_PTSR) & ATMEL_PDC_TXTEN;
+>  	atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTDIS);
+>  
+> +	/* Make sure that tx path is actually able to send characters */
+> +	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
+> +
+>  	uart_console_write(port, s, count, atmel_console_putchar);
+>  
+>  	/*
+> 
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
