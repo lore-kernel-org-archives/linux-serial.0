@@ -1,24 +1,16 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
- calls
-Date: Mon, 20 Mar 2017 12:07:18 +0100
-Message-ID: <20170320110718.e44s2gip36m75bqj@pengutronix.de>
-References: <20170306085842.yijkfpqi3adcedmm@pengutronix.de>
- <CAMuHMdV2_vbocY4wCzvYtPAaF+QEX_Y4g6qVu5EqEBf5AnFdaw@mail.gmail.com>
- <20170306093043.ay4dz3ehp3aakwxh@pengutronix.de>
- <CAMuHMdWQuvANNU14A7NQuzv6AFp04bq4DG_oc7w9h4wUrG+4aQ@mail.gmail.com>
- <20170306100220.droey65uq2ew3mzu@pengutronix.de>
- <CACRpkdYeFyr4yjQjDAUpPJwuD_NW2y=wXnzt1xSNoOX0SFCLmw@mail.gmail.com>
- <CAMuHMdWv-xs12UqutEtXJGR8qqgx6DeDhkKvvYhhyW+XTVsUNQ@mail.gmail.com>
- <CAMuHMdXGn35bEsJKnUi5o3AytL4AJN2fBfoB79v5W-jOVFQx6g@mail.gmail.com>
- <20170320103113.tpveoq2onzrwmkdt@pengutronix.de>
- <CAMuHMdWbwA+3UGVnHYJOs26vTj13Yn+s4B8tE9kyy25JcjyZGg@mail.gmail.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH] serial: 8250: 8250_core: Fix irq name for 8250 serial irq
+Date: Mon, 20 Mar 2017 17:54:57 +0530
+Message-ID: <55b5a9d2-9416-3a3d-24ab-e819dae5f3fc@ti.com>
+References: <20170316122653.19930-1-vigneshr@ti.com>
+ <20170316133632.GV21222@n2100.armlinux.org.uk>
+ <9a6dcf55-0ace-e617-73bc-0472a939b36c@arm.com>
+ <CAHp75Vd7Q_0MZ69kojA_S_A4OOgdD5sR1MKW_NLXrZa6h+3GSA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWbwA+3UGVnHYJOs26vTj13Yn+s4B8tE9kyy25JcjyZGg@mail.gmail.com>
+In-Reply-To: <CAHp75Vd7Q_0MZ69kojA_S_A4OOgdD5sR1MKW_NLXrZa6h+3GSA@mail.gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -28,46 +20,47 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>, Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc: Jisheng Zhang <jszhang@marvell.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello Geert,
-
-On Mon, Mar 20, 2017 at 11:38:52AM +0100, Geert Uytterhoeven wrote:
-> On Mon, Mar 20, 2017 at 11:31 AM, Uwe Kleine-K=F6nig
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Mon, Mar 20, 2017 at 10:56:14AM +0100, Geert Uytterhoeven wrote:
-> >> Documentation/gpio/consumer.txt rightfully sates:
-> >> | Note that gpio_get*_optional() functions (and their managed variants=
-), unlike
-> >> | the rest of gpiolib API, also return NULL when gpiolib support is di=
-sabled.
-> >> | This is helpful to driver authors, since they do not need to special=
- case
-> >> | -ENOSYS return codes.  System integrators should however be careful =
-to enable
-> >> | gpiolib on systems that need it.
-> >
-> > I cannot find this paragraph in Documentation/gpio/consumer.txt:
-> >
-> >         $ git grep -e 'ENOSYS' v4.11-rc3 -- Documentation/gpio/
-> >         <void>
-> =
-
-> It was added by commit 22c403676dbbb7c6 ("gpio: return NULL from
-> gpiod_get_optional when GPIOLIB is disabled")
-
-Ah, that's in next.
-
-I still think this is wrong and I'm a bit disappointed that Linus merged
-this patch (without saying so in the thread even) as I thought Linus and
-I agreed on this being a bad idea.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+CgpPbiBGcmlkYXkgMTcgTWFyY2ggMjAxNyAwMjoyOCBBTSwgQW5keSBTaGV2Y2hlbmtvIHdyb3Rl
+Ogo+IE9uIFRodSwgTWFyIDE2LCAyMDE3IGF0IDQ6NTUgUE0sIFJvYmluIE11cnBoeSA8cm9iaW4u
+bXVycGh5QGFybS5jb20+IHdyb3RlOgo+PiBPbiAxNi8wMy8xNyAxMzozNiwgUnVzc2VsbCBLaW5n
+IC0gQVJNIExpbnV4IHdyb3RlOgo+Pj4gT24gVGh1LCBNYXIgMTYsIDIwMTcgYXQgMDU6NTY6NTNQ
+TSArMDUzMCwgVmlnbmVzaCBSIHdyb3RlOgo+Pj4+IFVzaW5nIGRldl9uYW1lKCkgYXMgaXJxIG5h
+bWUgZHVyaW5nIHJlcXVlc3RfaXJxKCkgbWlnaHQgYmUgbWlzbGVhZGluZyBpbgo+Pj4+IGNhc2Ug
+b2Ygc2VyaWFsIG92ZXIgUENJLiBUaGVyZWZvcmUgdXNlIGEgYmV0dGVyIGFsdGVybmF0aXZlIG5h
+bWUgZm9yCj4+Pj4gaWRlbnRpZnlpbmcgc2VyaWFsIHBvcnQgaXJxcyBhcyAic2VyaWFsIiBhcHBl
+bmRlZCB3aXRoIHNlcmlhbF9pbmRleCBvZgo+Pj4+IHRoZSBwb3J0LiBUaGlzIGVuc3VyZXMgdGhh
+dCAic2VyaWFsIiBzdHJpbmcgaXMgYWx3YXlzIHByZXNlbnQgaW4gaXJxCj4+Pj4gbmFtZSB3aGls
+ZSBwb3J0IGluZGV4IHdpbGwgaGVscCBpbiBkaXN0aW5ndWlzaGluZyBiL3cgZGlmZmVyZW50IHBv
+cnRzLgo+Pj4KPj4+IFdvdWxkbid0IGl0IGJlIGJldHRlciB0byB1c2UgdGhlIGRldmljZSBuYW1l
+IChpb3csIHR0eVN4KSByYXRoZXIgdGhhbgo+Pj4gInNlcmlhbHgiID8KPj4+Cj4+PiBNYXliZSBh
+IGhlbHBlciBmdW5jdGlvbiBpbiBzZXJpYWxfY29yZS5jIHRvIGZvcm1hdCB0aGUgZGV2aWNlIG5h
+bWUgaW50bwo+Pj4gYSBzdXBwbGllZCBzdHJpbmcsIHdoaWNoIGNhbiBiZSByZS11c2VkIGVsc2V3
+aGVyZSwgZWcsIHVhcnRfcmVwb3J0X3BvcnQoKQo+Pj4gYW5kIHVhcnRfc3VzcGVuZF9wb3J0KCku
+ICBJT1c6Cj4+Pgo+Pj4gY29uc3QgY2hhciAqdWFydF9wb3J0X25hbWUoY2hhciAqYnVmLCBzaXpl
+X3Qgbiwgc3RydWN0IHVhcnRfZHJpdmVyICpkcnYsCj4+PiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkKPj4+IHsKPj4+ICAgICAgIHNucHJpbnRmKGJ1Ziwg
+biwgIiVzJWQiLCBkcnYtPmRldl9uYW1lLAo+Pj4gICAgICAgICAgICAgICAgZHJ2LT50dHlfZHJp
+dmVyLT5uYW1lX2Jhc2UgKyBwb3J0LT5saW5lKTsKPj4+Cj4+PiAgICAgICByZXR1cm4gYnVmOwo+
+Pj4gfQo+Pj4KPj4+IHdoaWNoIG1lYW5zIHlvdSBjYW4gZG8gdGhpczoKPj4+Cj4+PiAgICAgICBj
+aGFyIG5hbWVbMTZdOwo+Pj4KPj4+ICAgICAgIHJlcXVlc3RfaXJxKC4uLiwgdWFydF9wb3J0X25h
+bWUobmFtZSwgc2l6ZW9mKG5hbWUpLCBkcml2ZXIsIHBvcnQpLCAuLi4pCj4+Pgo+Pj4gd2hpY2gg
+YWxzbyBhdm9pZHMgdGhlIGFsbG9jYXRpb24uCj4+Cj4+IC4uLmFuZCBtYWtlcyAnY2F0IC9wcm9j
+L2ludGVycnVwdHMnIHBhcnRpY3VsYXJseSBmdW4gbGF0ZXI6Cj4+Cj4+ICAgODogICAgICAgICAg
+MCAgICAgICAgICBHSUN2MiAgNzIgTGV2ZWwgICAgIO+/vSDvv71oICAgICAgIO+/ve+/ve+/ve+/
+vVYhCj4+Cj4+IFVubGVzcyBhIHN1aXRhYmx5IGxvbmctbGl2ZWQgc3RyaW5nIGFscmVhZHkgZXhp
+c3RzIHNvbWV3aGVyZSBlbHNlIGluIHRoZQo+PiBzZXJpYWwgY29yZSwgdGhlIGFsbG9jYXRpb24g
+aXMgdW5hdm9pZGFibGUsIGFsdGhvdWdoIGthc3ByaW50ZigpIChvciBpdHMKPj4gZGV2bV8gdmFy
+aWFudCkgbWlnaHQgbWFrZSBtYXR0ZXJzIGEgbGl0dGxlIHNpbXBsZXIuCj4gCj4gV2hhdCBwcmV2
+ZW50cyB1cyB0byBjcmVhdGUgYSBmaWVsZCBpbiB1YXJ0X3BvcnQgKHVhcnQ4MjUwX3BvcnQ/KSB3
+aGVyZQo+IHdlIHB1dCB0aGUgdWFydF9wb3J0X25hbWUoKSBmb3IgZnV0dXJlIHVzZSBhcyBsb25n
+IGFzIHVhcnRfcG9ydCBpcwo+IGFsaXZlPwo+IAoKVGhhbmtzIGZvciB0aGUgc3VnZ2VzdGlvbnMu
+IEkgd2lsbCBleHBsb3JlIGFkZGluZyBhIGZpZWxkIHRvIHVhcnRfcG9ydApzdHJ1Y3QgYW5kIHBy
+b3ZpZGUgYSBjb3JyZXNwb25kaW5nIGhlbHBlciBmdW5jdGlvbiB1YXJ0X3BvcnRfbmFtZSgpIGFu
+ZApjb21lIHVwIHdpdGggYSBwYXRjaC4KCgotLSAKUmVnYXJkcwpWaWduZXNoCgpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1h
+aWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xp
+c3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
