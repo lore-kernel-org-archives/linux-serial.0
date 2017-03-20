@@ -1,71 +1,46 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: [PATCH] serial: 8250: 8250_core: Fix irq name for 8250 serial irq
-Date: Mon, 20 Mar 2017 12:32:04 +0000
-Message-ID: <20170320123204.GI21222@n2100.armlinux.org.uk>
-References: <20170316122653.19930-1-vigneshr@ti.com>
- <20170316133632.GV21222@n2100.armlinux.org.uk>
- <9a6dcf55-0ace-e617-73bc-0472a939b36c@arm.com>
- <CAHp75Vd7Q_0MZ69kojA_S_A4OOgdD5sR1MKW_NLXrZa6h+3GSA@mail.gmail.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH] disable RTS override on LPSS UART with Auto Flow Control
+Date: Mon, 20 Mar 2017 16:15:53 +0200
+Message-ID: <20170320141553.GA29812@kuha.fi.intel.com>
+References: <1489587228-10764-1-git-send-email-dan@emutex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAHp75Vd7Q_0MZ69kojA_S_A4OOgdD5sR1MKW_NLXrZa6h+3GSA@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Jisheng Zhang <jszhang@marvell.com>, Vignesh R <vigneshr@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <1489587228-10764-1-git-send-email-dan@emutex.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Dan O'Donovan <dan@emutex.com>
+Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-T24gVGh1LCBNYXIgMTYsIDIwMTcgYXQgMTA6NTg6NTRQTSArMDIwMCwgQW5keSBTaGV2Y2hlbmtv
-IHdyb3RlOgo+IE9uIFRodSwgTWFyIDE2LCAyMDE3IGF0IDQ6NTUgUE0sIFJvYmluIE11cnBoeSA8
-cm9iaW4ubXVycGh5QGFybS5jb20+IHdyb3RlOgo+ID4gT24gMTYvMDMvMTcgMTM6MzYsIFJ1c3Nl
-bGwgS2luZyAtIEFSTSBMaW51eCB3cm90ZToKPiA+PiBPbiBUaHUsIE1hciAxNiwgMjAxNyBhdCAw
-NTo1Njo1M1BNICswNTMwLCBWaWduZXNoIFIgd3JvdGU6Cj4gPj4+IFVzaW5nIGRldl9uYW1lKCkg
-YXMgaXJxIG5hbWUgZHVyaW5nIHJlcXVlc3RfaXJxKCkgbWlnaHQgYmUgbWlzbGVhZGluZyBpbgo+
-ID4+PiBjYXNlIG9mIHNlcmlhbCBvdmVyIFBDSS4gVGhlcmVmb3JlIHVzZSBhIGJldHRlciBhbHRl
-cm5hdGl2ZSBuYW1lIGZvcgo+ID4+PiBpZGVudGlmeWluZyBzZXJpYWwgcG9ydCBpcnFzIGFzICJz
-ZXJpYWwiIGFwcGVuZGVkIHdpdGggc2VyaWFsX2luZGV4IG9mCj4gPj4+IHRoZSBwb3J0LiBUaGlz
-IGVuc3VyZXMgdGhhdCAic2VyaWFsIiBzdHJpbmcgaXMgYWx3YXlzIHByZXNlbnQgaW4gaXJxCj4g
-Pj4+IG5hbWUgd2hpbGUgcG9ydCBpbmRleCB3aWxsIGhlbHAgaW4gZGlzdGluZ3Vpc2hpbmcgYi93
-IGRpZmZlcmVudCBwb3J0cy4KPiA+Pgo+ID4+IFdvdWxkbid0IGl0IGJlIGJldHRlciB0byB1c2Ug
-dGhlIGRldmljZSBuYW1lIChpb3csIHR0eVN4KSByYXRoZXIgdGhhbgo+ID4+ICJzZXJpYWx4IiA/
-Cj4gPj4KPiA+PiBNYXliZSBhIGhlbHBlciBmdW5jdGlvbiBpbiBzZXJpYWxfY29yZS5jIHRvIGZv
-cm1hdCB0aGUgZGV2aWNlIG5hbWUgaW50bwo+ID4+IGEgc3VwcGxpZWQgc3RyaW5nLCB3aGljaCBj
-YW4gYmUgcmUtdXNlZCBlbHNld2hlcmUsIGVnLCB1YXJ0X3JlcG9ydF9wb3J0KCkKPiA+PiBhbmQg
-dWFydF9zdXNwZW5kX3BvcnQoKS4gIElPVzoKPiA+Pgo+ID4+IGNvbnN0IGNoYXIgKnVhcnRfcG9y
-dF9uYW1lKGNoYXIgKmJ1Ziwgc2l6ZV90IG4sIHN0cnVjdCB1YXJ0X2RyaXZlciAqZHJ2LAo+ID4+
-ICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQo+ID4+IHsK
-PiA+PiAgICAgICBzbnByaW50ZihidWYsIG4sICIlcyVkIiwgZHJ2LT5kZXZfbmFtZSwKPiA+PiAg
-ICAgICAgICAgICAgICBkcnYtPnR0eV9kcml2ZXItPm5hbWVfYmFzZSArIHBvcnQtPmxpbmUpOwo+
-ID4+Cj4gPj4gICAgICAgcmV0dXJuIGJ1ZjsKPiA+PiB9Cj4gPj4KPiA+PiB3aGljaCBtZWFucyB5
-b3UgY2FuIGRvIHRoaXM6Cj4gPj4KPiA+PiAgICAgICBjaGFyIG5hbWVbMTZdOwo+ID4+Cj4gPj4g
-ICAgICAgcmVxdWVzdF9pcnEoLi4uLCB1YXJ0X3BvcnRfbmFtZShuYW1lLCBzaXplb2YobmFtZSks
-IGRyaXZlciwgcG9ydCksIC4uLikKPiA+Pgo+ID4+IHdoaWNoIGFsc28gYXZvaWRzIHRoZSBhbGxv
-Y2F0aW9uLgo+ID4KPiA+IC4uLmFuZCBtYWtlcyAnY2F0IC9wcm9jL2ludGVycnVwdHMnIHBhcnRp
-Y3VsYXJseSBmdW4gbGF0ZXI6Cj4gPgo+ID4gICA4OiAgICAgICAgICAwICAgICAgICAgIEdJQ3Yy
-ICA3MiBMZXZlbCAgICAg77+9IO+/vWggICAgICAg77+977+977+977+9ViEKPiA+Cj4gPiBVbmxl
-c3MgYSBzdWl0YWJseSBsb25nLWxpdmVkIHN0cmluZyBhbHJlYWR5IGV4aXN0cyBzb21ld2hlcmUg
-ZWxzZSBpbiB0aGUKPiA+IHNlcmlhbCBjb3JlLCB0aGUgYWxsb2NhdGlvbiBpcyB1bmF2b2lkYWJs
-ZSwgYWx0aG91Z2gga2FzcHJpbnRmKCkgKG9yIGl0cwo+ID4gZGV2bV8gdmFyaWFudCkgbWlnaHQg
-bWFrZSBtYXR0ZXJzIGEgbGl0dGxlIHNpbXBsZXIuCj4gCj4gV2hhdCBwcmV2ZW50cyB1cyB0byBj
-cmVhdGUgYSBmaWVsZCBpbiB1YXJ0X3BvcnQgKHVhcnQ4MjUwX3BvcnQ/KSB3aGVyZQo+IHdlIHB1
-dCB0aGUgdWFydF9wb3J0X25hbWUoKSBmb3IgZnV0dXJlIHVzZSBhcyBsb25nIGFzIHVhcnRfcG9y
-dCBpcwo+IGFsaXZlPwoKUHJvYmFibHkgYSBnb29kIGlkZWEgLSBJIGRpZG4ndCBjaGVjayB3aGV0
-aGVyIHJlcXVlc3RfaXJxKCkganVzdCB1c2VzCnRoZSBwb2ludGVyIHRvIHRoZSBzdHJpbmcgb3Ig
-dGFrZXMgYSBjb3B5IG9mIHRoZSBzdHJpbmcgKEkgc2hvdWxkJ3ZlCmRvbmUgYmVmb3JlIG1ha2lu
-ZyB0aGUgc3VnZ2VzdGlvbi4uLikKCi0tIApSTUsncyBQYXRjaCBzeXN0ZW06IGh0dHA6Ly93d3cu
-YXJtbGludXgub3JnLnVrL2RldmVsb3Blci9wYXRjaGVzLwpGVFRDIGJyb2FkYmFuZCBmb3IgMC44
-bWlsZSBsaW5lOiBjdXJyZW50bHkgYXQgOS42TWJwcyBkb3duIDQwMGticHMgdXAKYWNjb3JkaW5n
-IHRvIHNwZWVkdGVzdC5uZXQuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVs
-QGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+On Wed, Mar 15, 2017 at 02:13:48PM +0000, Dan O'Donovan wrote:
+> Currently, Auto Flow Control is not working correctly on the Atom
+> X5-Z8350 "Cherry Trail" SoC, because an "RTS override" feature is
+> enabled in a vendor-specific register in the LPSS UART. The symptom
+> is that RTS is not de-asserted as it should be when RTS/CTS flow
+> control is enabled and the RX FIFO fills up.
+> 
+> This appears to be introduced by commit 1f47a77c4e49 ("ACPI / LPSS:
+> not using UART RTS override with Auto Flow Control").
+> 
+> To _disable_ the RTS override, bit 3 needs to be _set_ in the
+> "GENERAL" register at offset 808h.  The power-on default is 0. The
+> aforementioned commit appears to have assumed the inverse of this.
+
+True. That is what the public documentation for Atom Z8000
+(Cherrytrail/Braswell), and also Z36xx-Z37xx (Baytrail) say. The
+internal Lynxpoint PCH documentation I used describe the bit
+differently, but we should of course follow the public documentation.
+The LPSS block housing the UART is in any case the same in all these
+products.
+
+After addressing Andy's comments:
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+
+This should also go to stable.
+
+
+Thanks,
+
+-- 
+heikki
