@@ -1,71 +1,79 @@
-From: Sebastian Reichel <sre@kernel.org>
-Subject: [PATCHv2 07/11] serdev: add helpers for cts and rts handling
-Date: Tue, 21 Mar 2017 23:32:12 +0100
-Message-ID: <20170321223216.11733-8-sre@kernel.org>
+From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCHv2 11/11] ARM: dts: N9/N950: add bluetooth
+Date: Tue, 21 Mar 2017 23:32:16 +0100
+Message-ID: <20170321223216.11733-12-sre@kernel.org>
 References: <20170321223216.11733-1-sre@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170321223216.11733-1-sre@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sre@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>
-Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170321223216.11733-1-sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Samuel Thibault <samuel.thibault-vYW+cPY1g1pg9hUCZPvPmw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Add serdev helper functions for handling of cts and rts
-lines using the serdev's tiocm functions.
+The Nokia N950 and N9 have a wl1271 (with nokia bootloader) bluetooth
+module connected to second UART.
 
-Signed-off-by: Sebastian Reichel <sre@kernel.org>
+Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
- include/linux/serdev.h | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+Changes since PATCHv1:
+ - update compatible string
+---
+ arch/arm/boot/dts/omap3-n950-n9.dtsi | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index 3ad1d695f947..8cdce2ea0d51 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -16,6 +16,7 @@
- #include <linux/types.h>
- #include <linux/device.h>
- #include <asm-generic/termios.h>
-+#include <linux/delay.h>
+diff --git a/arch/arm/boot/dts/omap3-n950-n9.dtsi b/arch/arm/boot/dts/omap3-n950-n9.dtsi
+index 5d8c4b4a4205..df3366fa5409 100644
+--- a/arch/arm/boot/dts/omap3-n950-n9.dtsi
++++ b/arch/arm/boot/dts/omap3-n950-n9.dtsi
+@@ -58,6 +58,13 @@
+ 			pinctrl-0 = <&debug_leds>;
+ 		};
+ 	};
++
++	/* controlled (enabled/disabled) directly by wl1271 */
++	vctcxo: vctcxo {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <38400000>;
++	};
+ };
  
- struct serdev_controller;
- struct serdev_device;
-@@ -254,6 +255,36 @@ static inline int serdev_device_write_room(struct serdev_device *sdev)
+ &omap3_pmx_core {
+@@ -125,6 +132,15 @@
+ 			OMAP3_CORE1_IOPAD(0x210a, PIN_OUTPUT | MUX_MODE4)            /* gpio_93 (cmt_apeslpx) */
+ 		>;
+ 	};
++
++	uart2_pins: pinmux_uart2_pins {
++		pinctrl-single,pins = <
++			OMAP3_CORE1_IOPAD(0x2174, PIN_INPUT_PULLUP | MUX_MODE0)		/* uart2_cts */
++			OMAP3_CORE1_IOPAD(0x2176, PIN_OUTPUT | MUX_MODE0)		/* uart2_rts */
++			OMAP3_CORE1_IOPAD(0x2178, PIN_OUTPUT | MUX_MODE0)		/* uart2_tx */
++			OMAP3_CORE1_IOPAD(0x217a, PIN_INPUT | MUX_MODE0)		/* uart2_rx */
++		>;
++	};
+ };
  
- #endif /* CONFIG_SERIAL_DEV_BUS */
- 
-+static inline bool serdev_device_get_cts(struct serdev_device *serdev)
-+{
-+	int status = serdev_device_get_tiocm(serdev);
-+	return !!(status & TIOCM_CTS);
-+}
+ &omap3_pmx_core2 {
+@@ -435,3 +451,19 @@
+ &ssi_port2 {
+ 	status = "disabled";
+ };
 +
-+static inline int serdev_device_wait_for_cts(struct serdev_device *serdev, bool state, int timeout_ms)
-+{
-+	unsigned long timeout;
-+	bool signal;
++&uart2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart2_pins>;
 +
-+	timeout = jiffies + msecs_to_jiffies(timeout_ms);
-+	while (!time_after(jiffies, timeout)) {
-+		signal = serdev_device_get_cts(serdev);
-+		if (signal == state)
-+			return 0;
-+		usleep_range(1000, 2000);
-+	}
++	bluetooth {
++		compatible = "ti,wl1271-bluetooth-nokia", "nokia,h4p-bluetooth";
 +
-+	return -ETIMEDOUT;
-+}
++		reset-gpios = <&gpio1 26 GPIO_ACTIVE_LOW>; /* 26 */
++		host-wakeup-gpios = <&gpio4 5 GPIO_ACTIVE_HIGH>; /* 101 */
++		bluetooth-wakeup-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>; /* 37 */
 +
-+static inline int serdev_device_set_rts(struct serdev_device *serdev, bool enable)
-+{
-+	if (enable)
-+		return serdev_device_set_tiocm(serdev, TIOCM_OUT2 | TIOCM_RTS, 0);
-+	else
-+		return serdev_device_set_tiocm(serdev, 0, TIOCM_OUT2 | TIOCM_RTS);
-+}
-+
- /*
-  * serdev hooks into TTY core
-  */
++		clocks = <&vctcxo>;
++		clock-names = "sysclk";
++	};
++};
 -- 
 2.11.0
