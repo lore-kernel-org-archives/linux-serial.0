@@ -1,142 +1,55 @@
-From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH] serdev: Replace serdev_device_write_buf with serdev_device_write
-Date: Mon, 20 Mar 2017 09:56:28 -0700
-Message-ID: <20170320165628.26738-1-andrew.smirnov@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: "Nicholas A. Bellinger" <nab-IzHhD5pYlfBP7FQvKIMDCQ@public.gmane.org>
+Subject: Re: [PATCH 24/29] drivers: convert iblock_req.pending from atomic_t
+ to refcount_t
+Date: Tue, 21 Mar 2017 00:18:07 -0700
+Message-ID: <1490080687.8236.102.camel@haakon3.risingtidesystems.com>
+References: <1488810076-3754-1-git-send-email-elena.reshetova@intel.com>
+	 <1488810076-3754-25-git-send-email-elena.reshetova@intel.com>
+Reply-To: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <open-iscsi+bncBDAIFWGVYMJRBMVHYPDAKGQEK4CCSNA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <1488810076-3754-25-git-send-email-elena.reshetova-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Post: <https://groups.google.com/group/open-iscsi/post>, <mailto:open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:open-iscsi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/open-iscsi
+List-Subscribe: <https://groups.google.com/group/open-iscsi/subscribe>, <mailto:open-iscsi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+856124926423+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/open-iscsi/subscribe>
+To: Elena Reshetova <elena.reshetova-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-bcache-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-raid-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devel-tBiZLqfeLfOHmIFyCCdPziST3g8Odh+X@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, fcoe-devel-s9riP+hp16TNLxjTenLetw@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, open-iscsi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, target-devel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Hans Liljestrand <ishkamiel-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, David Windsor <dwindsor-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Convert serdev_device_write_buf's code to be able to transfer amount of
-data potentially exceeding "write room" at the moment of invocation.
+Hi Elena,
 
-To support that, also add serdev_device_write_wakeup.
+On Mon, 2017-03-06 at 16:21 +0200, Elena Reshetova wrote:
+> refcount_t type and corresponding API should be
+> used instead of atomic_t when the variable is used as
+> a reference counter. This allows to avoid accidental
+> refcounter overflows that might lead to use-after-free
+> situations.
+> 
+> Signed-off-by: Elena Reshetova <elena.reshetova-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Hans Liljestrand <ishkamiel-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> Signed-off-by: David Windsor <dwindsor-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/target/target_core_iblock.c | 12 ++++++------
+>  drivers/target/target_core_iblock.h |  3 ++-
+>  2 files changed, 8 insertions(+), 7 deletions(-)
 
-Drivers wanting to use full extent of serdev_device_write functionality
-asre expected to provide serdev_device_write_wakeup as a sole handler of
-.write_wakeup event or call it as a part of driver's custom
-.write_wakeup code.
+After reading up on this thread, it looks like various subsystem
+maintainers are now picking these atomic_t -> refcount_t conversions..
 
-Drivers wanting to retain old serdev_device_write_buf behaviour can
-replace those call to calls to serdev_device_write with timeout of
-0. Providing .write_wakeup handler in such case is optional.
+That said, applied to target-pending/for-next and will plan to include
+for v4.12-rc1 merge window.
 
-Cc: cphealy@gmail.com
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
----
- drivers/tty/serdev/core.c | 36 +++++++++++++++++++++++++++++++-----
- include/linux/serdev.h    | 11 +++++++++--
- 2 files changed, 40 insertions(+), 7 deletions(-)
+Thanks!
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index f4c6c90..9962d84 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -116,17 +116,41 @@ void serdev_device_close(struct serdev_device *serdev)
- }
- EXPORT_SYMBOL_GPL(serdev_device_close);
- 
--int serdev_device_write_buf(struct serdev_device *serdev,
--			    const unsigned char *buf, size_t count)
-+void serdev_device_write_wakeup(struct serdev_device *serdev)
-+{
-+	complete(&serdev->write_comp);
-+}
-+EXPORT_SYMBOL_GPL(serdev_device_write_wakeup);
-+
-+int serdev_device_write(struct serdev_device *serdev,
-+			const unsigned char *buf, size_t count,
-+			unsigned long timeout)
- {
- 	struct serdev_controller *ctrl = serdev->ctrl;
-+	int ret;
- 
--	if (!ctrl || !ctrl->ops->write_buf)
-+	if (!ctrl || !ctrl->ops->write_buf ||
-+	    (timeout && !serdev->ops->write_wakeup))
- 		return -EINVAL;
- 
--	return ctrl->ops->write_buf(ctrl, buf, count);
-+	mutex_lock(&serdev->write_lock);
-+	do {
-+		reinit_completion(&serdev->write_comp);
-+
-+		ret = ctrl->ops->write_buf(ctrl, buf, count);
-+		if (ret < 0)
-+			break;
-+
-+		buf   += ret;
-+		count -= ret;
-+
-+	} while (count &&
-+		 wait_for_completion_timeout(&serdev->write_comp,
-+					     timeout));
-+	mutex_unlock(&serdev->write_lock);
-+	return ret < 0 ? ret : (count ? -ETIMEDOUT : 0);
- }
--EXPORT_SYMBOL_GPL(serdev_device_write_buf);
-+EXPORT_SYMBOL_GPL(serdev_device_write);
- 
- void serdev_device_write_flush(struct serdev_device *serdev)
- {
-@@ -232,6 +256,8 @@ struct serdev_device *serdev_device_alloc(struct serdev_controller *ctrl)
- 	serdev->dev.parent = &ctrl->dev;
- 	serdev->dev.bus = &serdev_bus_type;
- 	serdev->dev.type = &serdev_device_type;
-+	init_completion(&serdev->write_comp);
-+	mutex_init(&serdev->write_lock);
- 	return serdev;
- }
- EXPORT_SYMBOL_GPL(serdev_device_alloc);
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index 5176cdc..18cbbed 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -39,12 +39,17 @@ struct serdev_device_ops {
-  * @nr:		Device number on serdev bus.
-  * @ctrl:	serdev controller managing this device.
-  * @ops:	Device operations.
-+ * @write_comp	Completion used by serdev_device_write internally
-+ * @write_lock	Mutext used to esure exclusive access to the bus when
-+ *		writing data with serdev_device_write()
-  */
- struct serdev_device {
- 	struct device dev;
- 	int nr;
- 	struct serdev_controller *ctrl;
- 	const struct serdev_device_ops *ops;
-+	struct completion write_comp;
-+	struct mutex write_lock;
- };
- 
- static inline struct serdev_device *to_serdev_device(struct device *d)
-@@ -186,10 +191,12 @@ int serdev_device_open(struct serdev_device *);
- void serdev_device_close(struct serdev_device *);
- unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
- void serdev_device_set_flow_control(struct serdev_device *, bool);
--int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
-+void serdev_device_write_wakeup(struct serdev_device *);
-+int serdev_device_write(struct serdev_device *, const unsigned char *, size_t, unsigned long);
- void serdev_device_write_flush(struct serdev_device *);
- int serdev_device_write_room(struct serdev_device *);
- 
-+
- /*
-  * serdev device driver functions
-  */
-@@ -223,7 +230,7 @@ static inline unsigned int serdev_device_set_baudrate(struct serdev_device *sdev
- 	return 0;
- }
- static inline void serdev_device_set_flow_control(struct serdev_device *sdev, bool enable) {}
--static inline int serdev_device_write_buf(struct serdev_device *sdev, const unsigned char *buf, size_t count)
-+static inline int serdev_device_write(struct serdev_device *sdev, const unsigned char *buf, size_t count)
- {
- 	return -ENODEV;
- }
 -- 
-2.9.3
+You received this message because you are subscribed to the Google Groups "open-iscsi" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to open-iscsi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+To post to this group, send email to open-iscsi-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+Visit this group at https://groups.google.com/group/open-iscsi.
+For more options, visit https://groups.google.com/d/optout.
