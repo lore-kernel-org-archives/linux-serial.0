@@ -1,7 +1,7 @@
 From: Sebastian Reichel <sre@kernel.org>
-Subject: [PATCHv2 08/11] dt-bindings: net: bluetooth: Add nokia-bluetooth
-Date: Tue, 21 Mar 2017 23:32:13 +0100
-Message-ID: <20170321223216.11733-9-sre@kernel.org>
+Subject: [PATCHv2 06/11] serdev: implement get/set tiocm
+Date: Tue, 21 Mar 2017 23:32:11 +0100
+Message-ID: <20170321223216.11733-7-sre@kernel.org>
 References: <20170321223216.11733-1-sre@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170321223216.11733-1-sre@kernel.org>
@@ -10,75 +10,134 @@ To: Sebastian Reichel <sre@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, G
 Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add binding document for serial bluetooth chips using
-Nokia H4+ protocol.
+Add method for getting and setting tiocm.
 
 Signed-off-by: Sebastian Reichel <sre@kernel.org>
 ---
-Changes since PATCHv1:
- * change compatible strings
- * mention active high/low state for GPIOs
----
- .../devicetree/bindings/net/nokia-bluetooth.txt    | 51 ++++++++++++++++++++++
- 1 file changed, 51 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/nokia-bluetooth.txt
+ drivers/tty/serdev/core.c           | 22 ++++++++++++++++++++++
+ drivers/tty/serdev/serdev-ttyport.c | 24 ++++++++++++++++++++++++
+ include/linux/serdev.h              | 13 +++++++++++++
+ 3 files changed, 59 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/nokia-bluetooth.txt b/Documentation/devicetree/bindings/net/nokia-bluetooth.txt
-new file mode 100644
-index 000000000000..42be7dc9a70b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/nokia-bluetooth.txt
-@@ -0,0 +1,51 @@
-+Nokia Bluetooth Chips
-+---------------------
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index a63b74031e22..1e1cbae3a0ea 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -184,6 +184,28 @@ void serdev_device_wait_until_sent(struct serdev_device *serdev, long timeout)
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_wait_until_sent);
+ 
++int serdev_device_get_tiocm(struct serdev_device *serdev)
++{
++	struct serdev_controller *ctrl = serdev->ctrl;
 +
-+Nokia phones often come with UART connected bluetooth chips from different
-+vendors and modified device API. Those devices speak a protocol named H4+
-+(also known as h4p) by Nokia, which is similar to the H4 protocol from the
-+Bluetooth standard. In addition to the H4 protocol it specifies two more
-+UART status lines for wakeup of UART transceivers to improve power management
-+and a few new packet types used to negotiate uart speed.
++	if (!ctrl || !ctrl->ops->get_tiocm)
++		return -ENOTSUPP;
 +
-+Required properties:
++	return ctrl->ops->get_tiocm(ctrl);
++}
++EXPORT_SYMBOL_GPL(serdev_device_get_tiocm);
 +
-+ - compatible: should contain "nokia,h4p-bluetooth" as well as one of the following:
-+   * "brcm,bcm2048-nokia"
-+   * "ti,wl1271-bluetooth-nokia"
-+ - reset-gpios: GPIO specifier, used to reset the BT module (active low)
-+ - bluetooth-wakeup-gpios: GPIO specifier, used to wakeup the BT module (active high)
-+ - host-wakeup-gpios: GPIO specifier, used to wakeup the host processor (active high)
-+ - clock-names: should be "sysclk"
-+ - clocks: should contain a clock specifier for every name in clock-names
++int serdev_device_set_tiocm(struct serdev_device *serdev, int set, int clear)
++{
++	struct serdev_controller *ctrl = serdev->ctrl;
 +
-+Optional properties:
++	if (!ctrl || !ctrl->ops->set_tiocm)
++		return -ENOTSUPP;
 +
-+ - None
++	return ctrl->ops->set_tiocm(ctrl, set, clear);
++}
++EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
 +
-+Example:
+ static int serdev_drv_probe(struct device *dev)
+ {
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index db2bc601e554..c5bdb901ff11 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -179,6 +179,28 @@ static void ttyport_wait_until_sent(struct serdev_controller *ctrl, long timeout
+ 	tty_wait_until_sent(tty, timeout);
+ }
+ 
++static int ttyport_get_tiocm(struct serdev_controller *ctrl)
++{
++	struct serport *serport = serdev_controller_get_drvdata(ctrl);
++	struct tty_struct *tty = serport->tty;
 +
-+/ {
-+       /* controlled (enabled/disabled) directly by BT module */
-+       bluetooth_clk: vctcxo {
-+               compatible = "fixed-clock";
-+               #clock-cells = <0>;
-+               clock-frequency = <38400000>;
-+       };
-+};
++	if (!tty->ops->tiocmget)
++		return -ENOTSUPP;
 +
-+&uart2 {
-+       pinctrl-names = "default";
-+       pinctrl-0 = <&uart2_pins>;
++	return tty->driver->ops->tiocmget(tty);
++}
 +
-+       bluetooth {
-+               compatible = "ti,wl1271-bluetooth-nokia", "nokia,h4p-bluetooth";
++static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, unsigned int clear)
++{
++	struct serport *serport = serdev_controller_get_drvdata(ctrl);
++	struct tty_struct *tty = serport->tty;
 +
-+               reset-gpios = <&gpio1 26 GPIO_ACTIVE_LOW>; /* gpio26 */
-+               host-wakeup-gpios = <&gpio4 5 GPIO_ACTIVE_HIGH>; /* gpio101 */
-+               bluetooth-wakeup-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>; /* gpio37 */
++	if (!tty->ops->tiocmset)
++		return -ENOTSUPP;
 +
-+               clocks = <&bluetooth_clk>;
-+               clock-names = "sysclk";
-+       };
-+};
++	return tty->driver->ops->tiocmset(tty, set, clear);
++}
++
+ static const struct serdev_controller_ops ctrl_ops = {
+ 	.write_buf = ttyport_write_buf,
+ 	.write_flush = ttyport_write_flush,
+@@ -188,6 +210,8 @@ static const struct serdev_controller_ops ctrl_ops = {
+ 	.set_flow_control = ttyport_set_flow_control,
+ 	.set_baudrate = ttyport_set_baudrate,
+ 	.wait_until_sent = ttyport_wait_until_sent,
++	.get_tiocm = ttyport_get_tiocm,
++	.set_tiocm = ttyport_set_tiocm,
+ };
+ 
+ struct device *serdev_tty_port_register(struct tty_port *port,
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index a308b206d204..3ad1d695f947 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -15,6 +15,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/device.h>
++#include <asm-generic/termios.h>
+ 
+ struct serdev_controller;
+ struct serdev_device;
+@@ -82,6 +83,8 @@ struct serdev_controller_ops {
+ 	void (*set_flow_control)(struct serdev_controller *, bool);
+ 	unsigned int (*set_baudrate)(struct serdev_controller *, unsigned int);
+ 	void (*wait_until_sent)(struct serdev_controller *, long);
++	int (*get_tiocm)(struct serdev_controller *);
++	int (*set_tiocm)(struct serdev_controller *, unsigned int, unsigned int);
+ };
+ 
+ /**
+@@ -188,6 +191,8 @@ void serdev_device_close(struct serdev_device *);
+ unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
+ void serdev_device_set_flow_control(struct serdev_device *, bool);
+ void serdev_device_wait_until_sent(struct serdev_device *, long);
++int serdev_device_get_tiocm(struct serdev_device *);
++int serdev_device_set_tiocm(struct serdev_device *, int, int);
+ int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
+ void serdev_device_write_flush(struct serdev_device *);
+ int serdev_device_write_room(struct serdev_device *);
+@@ -226,6 +231,14 @@ static inline unsigned int serdev_device_set_baudrate(struct serdev_device *sdev
+ }
+ static inline void serdev_device_set_flow_control(struct serdev_device *sdev, bool enable) {}
+ static inline void serdev_device_wait_until_sent(struct serdev_device *sdev, long timeout) {}
++static inline int serdev_device_get_tiocm(struct serdev_device *serdev)
++{
++	return -ENOTSUPP;
++}
++static inline int serdev_device_set_tiocm(struct serdev_controller *serdev, int set, int clear)
++{
++	return -ENOTSUPP;
++}
+ static inline int serdev_device_write_buf(struct serdev_device *sdev, const unsigned char *buf, size_t count)
+ {
+ 	return -ENODEV;
 -- 
 2.11.0
