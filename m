@@ -1,59 +1,100 @@
 From: Sebastian Reichel <sre@kernel.org>
-Subject: [PATCHv2 00/11] Nokia H4+ support
-Date: Tue, 21 Mar 2017 23:32:05 +0100
-Message-ID: <20170321223216.11733-1-sre@kernel.org>
+Subject: [PATCHv2 01/11] Bluetooth: hci_uart: add support for word alignment
+Date: Tue, 21 Mar 2017 23:32:06 +0100
+Message-ID: <20170321223216.11733-2-sre@kernel.org>
+References: <20170321223216.11733-1-sre@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170321223216.11733-1-sre@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Sebastian Reichel <sre@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>
 Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+This will be used by Nokia's H4+ protocol, which
+uses 2-byte aligned packets.
 
-This is the second revision from the Nokia H4+ bluetooth patchset. I fixed all
-comments I received and verified that scanning for bluetooth devices still
-works on N950.
+Acked-by: Pavel Machek <pavel@ucw.cz>
+Signed-off-by: Sebastian Reichel <sre@kernel.org>
+---
+Changes since PATCHv1:
+ * use u8 instead of uint8_t
+---
+ drivers/bluetooth/hci_h4.c    | 17 +++++++++++++++++
+ drivers/bluetooth/hci_ldisc.c |  4 ++++
+ drivers/bluetooth/hci_uart.h  |  3 +++
+ 3 files changed, 24 insertions(+)
 
-The patchset is based upon 4.11-rc1 and is also available from
-the following branch:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/sre/linux-n900.git nokia-bt-serdev-v2
-
--- Sebastian
-
-Rob Herring (1):
-  Bluetooth: hci_uart: add serdev driver support library
-
-Sebastian Reichel (10):
-  Bluetooth: hci_uart: add support for word alignment
-  Bluetooth: hci_serdev: do not open device in hci open
-  tty: serial: omap: add UPF_BOOT_AUTOCONF flag for DT init
-  serdev: add serdev_device_wait_until_sent
-  serdev: implement get/set tiocm
-  serdev: add helpers for cts and rts handling
-  dt-bindings: net: bluetooth: Add nokia-bluetooth
-  Bluetooth: add nokia driver
-  ARM: dts: N900: Add bluetooth
-  ARM: dts: N9/N950: add bluetooth
-
- .../devicetree/bindings/net/nokia-bluetooth.txt    |  51 ++
- arch/arm/boot/dts/omap3-n900.dts                   |  23 +-
- arch/arm/boot/dts/omap3-n950-n9.dtsi               |  32 +
- drivers/bluetooth/Kconfig                          |  12 +
- drivers/bluetooth/Makefile                         |   3 +
- drivers/bluetooth/hci_h4.c                         |  17 +
- drivers/bluetooth/hci_ldisc.c                      |   4 +
- drivers/bluetooth/hci_nokia.c                      | 819 +++++++++++++++++++++
- drivers/bluetooth/hci_serdev.c                     | 355 +++++++++
- drivers/bluetooth/hci_uart.h                       |   7 +
- drivers/tty/serdev/core.c                          |  33 +
- drivers/tty/serdev/serdev-ttyport.c                |  39 +-
- drivers/tty/serial/omap-serial.c                   |   3 +
- include/linux/serdev.h                             |  47 ++
- 14 files changed, 1442 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/nokia-bluetooth.txt
- create mode 100644 drivers/bluetooth/hci_nokia.c
- create mode 100644 drivers/bluetooth/hci_serdev.c
-
+diff --git a/drivers/bluetooth/hci_h4.c b/drivers/bluetooth/hci_h4.c
+index 635597b6e168..82e5a32b87a4 100644
+--- a/drivers/bluetooth/hci_h4.c
++++ b/drivers/bluetooth/hci_h4.c
+@@ -171,9 +171,20 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
+ 			    const unsigned char *buffer, int count,
+ 			    const struct h4_recv_pkt *pkts, int pkts_count)
+ {
++	struct hci_uart *hu = hci_get_drvdata(hdev);
++	u8 alignment = hu->alignment;
++
+ 	while (count) {
+ 		int i, len;
+ 
++		/* remove padding bytes from buffer */
++		for (; hu->padding && count > 0; hu->padding--) {
++			count--;
++			buffer++;
++		}
++		if (!count)
++			break;
++
+ 		if (!skb) {
+ 			for (i = 0; i < pkts_count; i++) {
+ 				if (buffer[0] != (&pkts[i])->type)
+@@ -253,11 +264,17 @@ struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
+ 			}
+ 
+ 			if (!dlen) {
++				hu->padding = (skb->len - 1) % alignment;
++				hu->padding = (alignment - hu->padding) % alignment;
++
+ 				/* No more data, complete frame */
+ 				(&pkts[i])->recv(hdev, skb);
+ 				skb = NULL;
+ 			}
+ 		} else {
++			hu->padding = (skb->len - 1) % alignment;
++			hu->padding = (alignment - hu->padding) % alignment;
++
+ 			/* Complete frame */
+ 			(&pkts[i])->recv(hdev, skb);
+ 			skb = NULL;
+diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
+index 9497c469efd2..0ec8a94bd712 100644
+--- a/drivers/bluetooth/hci_ldisc.c
++++ b/drivers/bluetooth/hci_ldisc.c
+@@ -459,6 +459,10 @@ static int hci_uart_tty_open(struct tty_struct *tty)
+ 	hu->tty = tty;
+ 	tty->receive_room = 65536;
+ 
++	/* disable alignment support by default */
++	hu->alignment = 1;
++	hu->padding = 0;
++
+ 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
+ 	INIT_WORK(&hu->write_work, hci_uart_write_work);
+ 
+diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
+index 070139513e65..4aff50960cac 100644
+--- a/drivers/bluetooth/hci_uart.h
++++ b/drivers/bluetooth/hci_uart.h
+@@ -92,6 +92,9 @@ struct hci_uart {
+ 
+ 	unsigned int init_speed;
+ 	unsigned int oper_speed;
++
++	u8			alignment;
++	u8			padding;
+ };
+ 
+ /* HCI_UART proto flag bits */
 -- 
 2.11.0
