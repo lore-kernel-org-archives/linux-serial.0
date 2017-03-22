@@ -1,93 +1,147 @@
-From: Samuel Thibault <samuel.thibault@ens-lyon.org>
-Subject: Re: [patch 0/7] staging: speakup: introduce tty-based comms
-Date: Wed, 22 Mar 2017 01:05:24 +0100
-Message-ID: <20170322000524.7k653z7ui2zzgan6@var.youpi.perso.aquilenet.fr>
-References: <20170313220551.312820470@gmail.com>
- <20170313221404.GA22871@kroah.com>
- <20170314004701.kuecu2zu4md5ccrq@var.youpi.perso.aquilenet.fr>
- <20170314011814.p3t4zfcx3cxhgvwl@var.youpi.perso.aquilenet.fr>
- <CAL_JsqJVfG2pFoNtj89e0E9OKye4wGEUi98NOnMBwNF+Yp-rPA@mail.gmail.com>
- <20170315150323.pjda5qnxauxk5pcf@var.youpi.perso.aquilenet.fr>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-Content-Disposition: inline
-In-Reply-To: <20170315150323.pjda5qnxauxk5pcf@var.youpi.perso.aquilenet.fr>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, okash.khawaja@gmail.com, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devel@driverdev.osuosl.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Kirk Reiser <kirk@reisers.ca>, Chris Brannon <chris@the-brannons.com>, speakup@linux-speakup.org
+From: Sebastian Reichel <sre@kernel.org>
+Subject: [PATCHv2.1] serdev: implement get/set tiocm
+Date: Wed, 22 Mar 2017 01:58:37 +0100
+Message-ID: <20170322005837.6047-1-sre@kernel.org>
+References: <20170321223216.11733-7-sre@kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170321223216.11733-7-sre@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Reichel <sre@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+Add method for getting and setting tiocm.
 
-So Rob, how do you see this going?  Shall we introduce a serdev_device
-*tty_port_register_serdev_device(tty, device)? Will you work on it or
-should I give it a try?
+Signed-off-by: Sebastian Reichel <sre@kernel.org>
+---
+Changes since PATCHv2:
+ * fix serdev_device_set_tiocm inline definition for disabled SERDEV
+ * use <linux/termios.h> instead of <asm-generic/termios.h>
+---
+ drivers/tty/serdev/core.c           | 22 ++++++++++++++++++++++
+ drivers/tty/serdev/serdev-ttyport.c | 24 ++++++++++++++++++++++++
+ include/linux/serdev.h              | 13 +++++++++++++
+ 3 files changed, 59 insertions(+)
 
-Samuel
-
-Samuel Thibault, on mer. 15 mars 2017 16:03:23 +0100, wrote:
-> Rob Herring, on mer. 15 mars 2017 09:45:59 -0500, wrote:
-> > On Mon, Mar 13, 2017 at 8:18 PM, Samuel Thibault
-> > <samuel.thibault@ens-lyon.org> wrote:
-> > > Samuel Thibault, on mar. 14 mars 2017 01:47:01 +0100, wrote:
-> > >> Greg KH, on mar. 14 mars 2017 06:14:04 +0800, wrote:
-> > >> > On Mon, Mar 13, 2017 at 10:05:51PM +0000, okash.khawaja@gmail.com wrote:
-> > >> > > This patchset introduces a TTY-based way for the synths to communicate
-> > >> > > with devices as an alternate for direct serial comms used by the synths
-> > >> > > at the moment. It then migrates some of the synths to the TTY-based
-> > >> > > comms. Synths migrated in this patchset are dummy, acntsa, bns and
-> > >> > > txprt.
-> > >> >
-> > >> > What about using the serbus code that is now in the tree?  That should
-> > >> > make this a lot easier than your patchset from what I can see.
-> > >>
-> > >> Mmm... AIUI from reading tty_port_register_device_attr, one
-> > >> would have to have registered a speakup serdev device driver
-> > >> *before* tty_port_register_device_attr gets called, so that
-> > >> serdev_tty_port_register matches the driver in the loop of
-> > >> of_serdev_register_devices, and no TTY cdev is created?
-> > 
-> > Not exactly. The driver doesn't have to be registered nor loaded, but
-> > the device does have to be present so no tty cdev is created. The only
-> > way a device is present currently is when a node is in the DT. I
-> > expect the x86 folks will be adding ACPI support soon.
-> 
-> Ok, but in our case there is no hardware device that the system can
-> see/probe, it's just plugged externally.
-> 
-> > >> That would mean that speakup can not be loaded as a module after ttyS0
-> > >> initialization, that won't fly for our use needs. The line discipline
-> > >> mechanism allows us to attach ourself to an existing tty.  Could we
-> > >> imagine a tty_port function which removes the cdev and tries to register
-> > >> the tty port again to serdev?
-> > >>
-> > >> What we basically need to be able to say on speakup module load is
-> > >> e.g. "I'm now attaching a device to ttyS0, use this serdev_device_ops to
-> > >> discuss with it".
-> > >
-> > > That for_each_available_child_of_node loop is really way more complex
-> > > than what we need.  And what's more, it's not working without CONFIG_OF
-> > > (!)
-> > >
-> > > It would really make sense to me to have a
-> > >
-> > > serdev_device *tty_port_register_serdev_device(tty, device)
-> > >
-> > > which unregisters the character device of the tty, and creates instead a
-> > > controler with the given device plugged to it. Really much like a line
-> > > discipline, but way simpler :)
-> > 
-> > What would trigger calling this function?
-> 
-> From the user point of view, loading the speakup module for the external
-> device, typically, with "ttyS0" as module parameter. Then the speakup
-> init function can do whatever it needs to achieve this :)
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index a63b74031e22..1e1cbae3a0ea 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -184,6 +184,28 @@ void serdev_device_wait_until_sent(struct serdev_device *serdev, long timeout)
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_wait_until_sent);
+ 
++int serdev_device_get_tiocm(struct serdev_device *serdev)
++{
++	struct serdev_controller *ctrl = serdev->ctrl;
++
++	if (!ctrl || !ctrl->ops->get_tiocm)
++		return -ENOTSUPP;
++
++	return ctrl->ops->get_tiocm(ctrl);
++}
++EXPORT_SYMBOL_GPL(serdev_device_get_tiocm);
++
++int serdev_device_set_tiocm(struct serdev_device *serdev, int set, int clear)
++{
++	struct serdev_controller *ctrl = serdev->ctrl;
++
++	if (!ctrl || !ctrl->ops->set_tiocm)
++		return -ENOTSUPP;
++
++	return ctrl->ops->set_tiocm(ctrl, set, clear);
++}
++EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
++
+ static int serdev_drv_probe(struct device *dev)
+ {
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index db2bc601e554..c5bdb901ff11 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -179,6 +179,28 @@ static void ttyport_wait_until_sent(struct serdev_controller *ctrl, long timeout
+ 	tty_wait_until_sent(tty, timeout);
+ }
+ 
++static int ttyport_get_tiocm(struct serdev_controller *ctrl)
++{
++	struct serport *serport = serdev_controller_get_drvdata(ctrl);
++	struct tty_struct *tty = serport->tty;
++
++	if (!tty->ops->tiocmget)
++		return -ENOTSUPP;
++
++	return tty->driver->ops->tiocmget(tty);
++}
++
++static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, unsigned int clear)
++{
++	struct serport *serport = serdev_controller_get_drvdata(ctrl);
++	struct tty_struct *tty = serport->tty;
++
++	if (!tty->ops->tiocmset)
++		return -ENOTSUPP;
++
++	return tty->driver->ops->tiocmset(tty, set, clear);
++}
++
+ static const struct serdev_controller_ops ctrl_ops = {
+ 	.write_buf = ttyport_write_buf,
+ 	.write_flush = ttyport_write_flush,
+@@ -188,6 +210,8 @@ static const struct serdev_controller_ops ctrl_ops = {
+ 	.set_flow_control = ttyport_set_flow_control,
+ 	.set_baudrate = ttyport_set_baudrate,
+ 	.wait_until_sent = ttyport_wait_until_sent,
++	.get_tiocm = ttyport_get_tiocm,
++	.set_tiocm = ttyport_set_tiocm,
+ };
+ 
+ struct device *serdev_tty_port_register(struct tty_port *port,
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index a308b206d204..e29a270f603c 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -15,6 +15,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/device.h>
++#include <linux/termios.h>
+ 
+ struct serdev_controller;
+ struct serdev_device;
+@@ -82,6 +83,8 @@ struct serdev_controller_ops {
+ 	void (*set_flow_control)(struct serdev_controller *, bool);
+ 	unsigned int (*set_baudrate)(struct serdev_controller *, unsigned int);
+ 	void (*wait_until_sent)(struct serdev_controller *, long);
++	int (*get_tiocm)(struct serdev_controller *);
++	int (*set_tiocm)(struct serdev_controller *, unsigned int, unsigned int);
+ };
+ 
+ /**
+@@ -188,6 +191,8 @@ void serdev_device_close(struct serdev_device *);
+ unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
+ void serdev_device_set_flow_control(struct serdev_device *, bool);
+ void serdev_device_wait_until_sent(struct serdev_device *, long);
++int serdev_device_get_tiocm(struct serdev_device *);
++int serdev_device_set_tiocm(struct serdev_device *, int, int);
+ int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
+ void serdev_device_write_flush(struct serdev_device *);
+ int serdev_device_write_room(struct serdev_device *);
+@@ -226,6 +231,14 @@ static inline unsigned int serdev_device_set_baudrate(struct serdev_device *sdev
+ }
+ static inline void serdev_device_set_flow_control(struct serdev_device *sdev, bool enable) {}
+ static inline void serdev_device_wait_until_sent(struct serdev_device *sdev, long timeout) {}
++static inline int serdev_device_get_tiocm(struct serdev_device *serdev)
++{
++	return -ENOTSUPP;
++}
++static inline int serdev_device_set_tiocm(struct serdev_device *serdev, int set, int clear)
++{
++	return -ENOTSUPP;
++}
+ static inline int serdev_device_write_buf(struct serdev_device *sdev, const unsigned char *buf, size_t count)
+ {
+ 	return -ENODEV;
+-- 
+2.11.0
