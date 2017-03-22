@@ -1,75 +1,49 @@
-From: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
-Subject: Re: [RFC RESEND] serdev binding for QCA7000 UART driver
-Date: Wed, 22 Mar 2017 16:26:59 +0100
-Message-ID: <a071486b-d789-341b-97a4-d74e07603cb0@i2se.com>
-References: <b2273c4a-069b-0b9a-83d3-aed782920c34@i2se.com>
+From: Greg Kroah-Hartman <greg@kroah.com>
+Subject: Re: [PATCH] [v2][for 4.11]tty: acpi/spcr: QDF2400 E44 checks for
+ wrong OEM revision
+Date: Wed, 22 Mar 2017 16:45:26 +0100
+Message-ID: <20170322154526.GA17123@kroah.com>
+References: <1488313833-12430-1-git-send-email-timur@codeaurora.org>
+ <CAOZdJXUVz8w2tQdgQ1CyQC9XZL=Gig5kaSEb3b+3Yjap0ExfGg@mail.gmail.com>
+ <CAOZdJXW6k=fwaD96dPSikK6kntbKFuhypALG8YGbcWcBcRcLiw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <b2273c4a-069b-0b9a-83d3-aed782920c34-eS4NqCHxEME@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <CAOZdJXW6k=fwaD96dPSikK6kntbKFuhypALG8YGbcWcBcRcLiw@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Timur Tabi <timur@codeaurora.org>
+Cc: Dann Frazier <dann.frazier@canonical.com>, Manoj Iyer <manoj.iyer@canonical.com>, linux-serial@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Christopher Covington <cov@mykolab.com>
 List-Id: linux-serial@vger.kernel.org
 
-Am 13.03.2017 um 17:16 schrieb Stefan Wahren:
-> Hi Rob,
->
-> since serdev has been merged, i'm currently working on a
-> suitable ethernet driver for the QCA7000 [1]. In order to provide a plug
-> and play solution for the network interface i suggest the following
-> binding, which uses common properties for UART configuration:
->
-> * Qualcomm QCA7000 (Ethernet over UART protocol)
->
-> Note: The QCA7000 is also useable as a UART slave device.
->
-> Required properties:
-> - compatible        : Should be "qca,qca7000-uart"
->
-> Optional properties:
-> - local-mac-address : 6 bytes, Specifies MAC address
-> - current-speed     : Specifies current serial device speed in
->                       bits per second (default = 115200)
-> - data-bits         : Specifies number of data bits (default = 8)
-> - use-parity        : If present, this enables the parity
->                       error detection (default = off)
-> - odd-parity        : If present, this specifies that the parity
->                       of each character must be odd (default = even)
->
-> Example:
->
-> /* Freescale i.MX28 UART */
-> auart0: serial@8006a000 {
->     compatible = "fsl,imx28-auart", "fsl,imx23-auart";
->     reg = <0x8006a000 0x2000>;
->     pinctrl-names = "default";
->     pinctrl-0 = <&auart0_2pins_a>;
->     status = "okay";
->
->     qca7000: ethernet {
->         compatible = "qca,qca7000-uart";
->         local-mac-address = [ A0 B0 C0 D0 E0 F0 ];
->         current-speed = <38400>;
->         data-bits = <8>;
->         use-parity;
->         odd-parity;
->     };
-> };
->
-> Is it okay for you or do you want a different kind of configuration?
-> Are there any plans for parity handling?
->
-> Thanks
-> Stefan
->
-> P.S.: Sorry for the broken version
->
-> [1] - https://lwn.net/Articles/701225/
+On Wed, Mar 22, 2017 at 10:13:00AM -0500, Timur Tabi wrote:
+> On Sun, Mar 12, 2017 at 11:19 PM, Timur Tabi <timur@codeaurora.org> wrote:
+> > On Tue, Feb 28, 2017 at 2:30 PM, Timur Tabi <timur@codeaurora.org> wrote:
+> >> For Qualcomm Technologies QDF2400 SOCs that are affected by erratum E44,
+> >> the ACPI oem_revision field is actually set to 1, not 0.
+> >>
+> >> Fixes: d8a4995bcea1 ("tty: pl011: Work around QDF2400 E44 stuck BUSY bit")
+> >>
+> >> Tested-by: Manoj Iyer <manoj.iyer@canonical.com>
+> >> Signed-off-by: Timur Tabi <timur@codeaurora.org>
+> >
+> > Greg, this is a critical fix for our platform.  Can you please pick it
+> > up for 4.11-rc3?  Thank you.
+> 
+> Ok, how about 4.11-rc4?
 
-gentle ping ...
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+It's in the queue in tty-linus, right?  If so, that should make it into
+4.11-final.
+
+thanks,
+
+greg k-h
