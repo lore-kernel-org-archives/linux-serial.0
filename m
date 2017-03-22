@@ -1,53 +1,38 @@
-From: Lionel Debieve <lionel.debieve@st.com>
-Subject: [PATCH 1/1] tty: serial: st-asc: Make the locking RT aware
-Date: Wed, 22 Mar 2017 18:12:31 +0100
-Message-ID: <1490202751-16581-1-git-send-email-lionel.debieve@st.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 1/2] tty: serial_core: Add name field to uart_port struct
+Date: Wed, 22 Mar 2017 20:45:51 +0200
+Message-ID: <CAHp75VfHtTV6L0GE61kMiHMCQrUSwGJPRxsiNuOCD9mY7MPpZQ@mail.gmail.com>
+References: <20170321133636.8814-1-vigneshr@ti.com> <20170321133636.8814-2-vigneshr@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170321133636.8814-2-vigneshr@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Patrice Chotard <patrice.chotard@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rt-users@vger.kernel.org, Lionel Debieve <lionel.debieve@st.com>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Jisheng Zhang <jszhang@marvell.com>
 List-Id: linux-serial@vger.kernel.org
 
-The lock is a sleeping lock and local_irq_save() is not the
-standard implementation now. Working for both -RT and non
-RT.
+On Tue, Mar 21, 2017 at 3:36 PM, Vignesh R <vigneshr@ti.com> wrote:
+> Introduce a field to store name of uart_port that can be used to easily
+> identify uart port instances on a system that has more than one uart
 
-Signed-off-by: Lionel Debieve <lionel.debieve@st.com>
----
- drivers/tty/serial/st-asc.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+uart -> UART
 
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index c334bcc..4889396 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -887,13 +887,12 @@ static void asc_console_write(struct console *co, const char *s, unsigned count)
- 	int locked = 1;
- 	u32 intenable;
- 
--	local_irq_save(flags);
- 	if (port->sysrq)
- 		locked = 0; /* asc_interrupt has already claimed the lock */
- 	else if (oops_in_progress)
--		locked = spin_trylock(&port->lock);
-+		locked = spin_trylock_irqsave(&port->lock, flags);
- 	else
--		spin_lock(&port->lock);
-+		spin_lock_irqsave(&port->lock, flags);
- 
- 	/*
- 	 * Disable interrupts so we don't get the IRQ line bouncing
-@@ -911,8 +910,7 @@ static void asc_console_write(struct console *co, const char *s, unsigned count)
- 	asc_out(port, ASC_INTEN, intenable);
- 
- 	if (locked)
--		spin_unlock(&port->lock);
--	local_irq_restore(flags);
-+		spin_unlock_irqrestore(&port->lock, flags);
- }
- 
- static int asc_console_setup(struct console *co, char *options)
+> instance. The name is of the form ttyXN(eg. ttyS0, ttyAMA0,..) where N
+> is number that particular uart instance.
+> This field will be useful when printing debug info for a particular port
+> or in register irqs with unique irq name. Port name is populated during
+
+irq(s) -> IRQ(s)
+
+> uart_add_one_port().
+
+> +       snprintf(uport->name, sizeof(uport->name), "%s%d", drv->dev_name,
+> +                drv->tty_driver->name_base + uport->line);
+
+This is fragile. dev_name is defined as pointer, so, it would be any length.
+So, better to use [devm_]kasprintf().
+
 -- 
-2.7.4
+With Best Regards,
+Andy Shevchenko
