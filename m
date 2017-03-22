@@ -1,58 +1,44 @@
-From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Subject: Re: [REGRESSION next-20170321] acbdad8dd1ab ("serial: 8250_dw:
- simplify optional reset handling") causes silent kernel.
-Date: Wed, 22 Mar 2017 16:11:21 +0100
-Message-ID: <20170322161121.2b0a4b17@gmail.com>
-References: <20170322152445.0b25f78c@gmail.com>
-        <1490193227.2285.39.camel@pengutronix.de>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: Re: [PATCH] [v2][for 4.11]tty: acpi/spcr: QDF2400 E44 checks for
+ wrong OEM revision
+Date: Wed, 22 Mar 2017 10:13:00 -0500
+Message-ID: <CAOZdJXW6k=fwaD96dPSikK6kntbKFuhypALG8YGbcWcBcRcLiw@mail.gmail.com>
+References: <1488313833-12430-1-git-send-email-timur@codeaurora.org>
+ <CAOZdJXUVz8w2tQdgQ1CyQC9XZL=Gig5kaSEb3b+3Yjap0ExfGg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1490193227.2285.39.camel@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAOZdJXUVz8w2tQdgQ1CyQC9XZL=Gig5kaSEb3b+3Yjap0ExfGg@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <greg@kroah.com>
+Cc: Dann Frazier <dann.frazier@canonical.com>, Manoj Iyer <manoj.iyer@canonical.com>, linux-serial@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Christopher Covington <cov@mykolab.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Philipp
+On Sun, Mar 12, 2017 at 11:19 PM, Timur Tabi <timur@codeaurora.org> wrote:
+> On Tue, Feb 28, 2017 at 2:30 PM, Timur Tabi <timur@codeaurora.org> wrote:
+>> For Qualcomm Technologies QDF2400 SOCs that are affected by erratum E44,
+>> the ACPI oem_revision field is actually set to 1, not 0.
+>>
+>> Fixes: d8a4995bcea1 ("tty: pl011: Work around QDF2400 E44 stuck BUSY bit")
+>>
+>> Tested-by: Manoj Iyer <manoj.iyer@canonical.com>
+>> Signed-off-by: Timur Tabi <timur@codeaurora.org>
+>
+> Greg, this is a critical fix for our platform.  Can you please pick it
+> up for 4.11-rc3?  Thank you.
 
-On Wed, 22 Mar 2017 15:33:47 +0100
-Philipp Zabel <p.zabel@pengutronix.de> wrote:
+Ok, how about 4.11-rc4?
 
-> Hi Ralph,
-> 
-> On Wed, 2017-03-22 at 15:24 +0100, Ralph Sennhauser wrote:
-> > Hi Philipp,
-> > 
-> > Commit acbdad8dd1ab ("serial: 8250_dw: simplify optional reset
-> > handling") causes the kernel to no longer print anything to the
-> > serial console on a Linksys WRT3200ACM (Armada-385, a similar board
-> > would be ./arch/arm/boot/dts/armada-385-linksys-cobra.dts). The
-> > last message from uboot is "Starting kernel ..." and then silence.
-> > The device boots all the way nonetheless.
-> > 
-> > Reverting the above commit gets the console output back.
-> > 
-> > Ralph  
-> 
-> Thank you for the report. I assume that you are compiling with the
-> RESET_CONTROLLER Kconfig option disabled? Does commit 0ca10b60ceeb
->  [1] in
-> the arm-soc fixes branch help with this issue?
-
-Yes, RESET_CONTROLLER is not set.
-
-Commit 0ca10b60ceeb ("reset: fix optional reset_control_get stubs to
-return NULL") fixes the issue for me.
-
-Thanks
-Ralph
-
-> 
-> [1]
-> https://git.kernel.org/pub/scm/linux/kernel/git/arm/arm-soc.git/commit/?h=fixes&id=0ca10b60ceeb5372da01798ca68c116ae45a6eb6
-> 
-> regards
-> Philipp
-> 
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project.
