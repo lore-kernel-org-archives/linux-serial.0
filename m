@@ -1,43 +1,63 @@
-From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCHv2 10/11] ARM: dts: N900: Add bluetooth
-Date: Wed, 22 Mar 2017 16:55:10 -0700
-Message-ID: <20170322235509.GH10760@atomide.com>
-References: <20170321223216.11733-1-sre@kernel.org>
- <20170321223216.11733-11-sre@kernel.org>
- <CAL_JsqLBNSWdbiO2A11c=BDWAKvWVGjOWafaNT+1OxoZgvH+fg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqLBNSWdbiO2A11c=BDWAKvWVGjOWafaNT+1OxoZgvH+fg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Samuel Thibault <samuel.thibault-vYW+cPY1g1pg9hUCZPvPmw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH 1/2] serial: samsung: Use right device for DMA-mapping calls
+Date: Thu, 23 Mar 2017 08:45:21 +0100
+Message-ID: <1490255131-9597-1-git-send-email-m.szyprowski@samsung.com>
+References: <CGME20170323074548eucas1p142511884e12d6211bebd9cbabde2f9c9@eucas1p1.samsung.com>
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Seung-Woo Kim <sw0312.kim@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Inki Dae <inki.dae@samsung.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-* Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> [170322 14:09]:
-> On Tue, Mar 21, 2017 at 5:32 PM, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> > Add bcm2048 node and its system clock to the N900 device tree file.
-> > Apart from that a reference to the new clock has been added to
-> > wl1251 (which uses it, too).
-> >
-> > Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-> > Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> > ---
-> > Changes since PATCHv1:
-> >  - update compatible string
-> > ---
-> >  arch/arm/boot/dts/omap3-n900.dts | 23 +++++++++++++++++++++--
-> >  1 file changed, 21 insertions(+), 2 deletions(-)
-> 
-> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Driver should provide its own struct device for all DMA-mapping calls instead
+of extracting device pointer from DMA engine channel.
 
-Picking patches 10 and 11 into omap-for-v4.12/dt-v2.
+Reported-by: Seung-Woo Kim <sw0312.kim@samsung.com>
+Fixes: 2c37eedb74c8 ("serial: samsung: add dma reqest/release functions")
+CC: stable@vger.kernel.org # v4.0+
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+ drivers/tty/serial/samsung.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Regards,
-
-Tony
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 7a17aedbf902..9f3759bdb44f 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -901,14 +901,13 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
+ 		return -ENOMEM;
+ 	}
+ 
+-	dma->rx_addr = dma_map_single(dma->rx_chan->device->dev, dma->rx_buf,
++	dma->rx_addr = dma_map_single(p->port.dev, dma->rx_buf,
+ 				dma->rx_size, DMA_FROM_DEVICE);
+ 
+ 	spin_lock_irqsave(&p->port.lock, flags);
+ 
+ 	/* TX buffer */
+-	dma->tx_addr = dma_map_single(dma->tx_chan->device->dev,
+-				p->port.state->xmit.buf,
++	dma->tx_addr = dma_map_single(p->port.dev, p->port.state->xmit.buf,
+ 				UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 
+ 	spin_unlock_irqrestore(&p->port.lock, flags);
+@@ -922,7 +921,7 @@ static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
+ 
+ 	if (dma->rx_chan) {
+ 		dmaengine_terminate_all(dma->rx_chan);
+-		dma_unmap_single(dma->rx_chan->device->dev, dma->rx_addr,
++		dma_unmap_single(p->port.dev, dma->rx_addr,
+ 				dma->rx_size, DMA_FROM_DEVICE);
+ 		kfree(dma->rx_buf);
+ 		dma_release_channel(dma->rx_chan);
+@@ -931,7 +930,7 @@ static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
+ 
+ 	if (dma->tx_chan) {
+ 		dmaengine_terminate_all(dma->tx_chan);
+-		dma_unmap_single(dma->tx_chan->device->dev, dma->tx_addr,
++		dma_unmap_single(p->port.dev, dma->tx_addr,
+ 				UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 		dma_release_channel(dma->tx_chan);
+ 		dma->tx_chan = NULL;
+-- 
+1.9.1
