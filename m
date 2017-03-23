@@ -1,103 +1,85 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH 2/2] serial: samsung: Add missing checks for dma_map_single
- failure
-Date: Thu, 23 Mar 2017 08:45:22 +0100
-Message-ID: <1490255131-9597-2-git-send-email-m.szyprowski@samsung.com>
-References: <1490255131-9597-1-git-send-email-m.szyprowski@samsung.com>
- <CGME20170323074553eucas1p110829c4ad1570104297df39c02cc59e5@eucas1p1.samsung.com>
-Return-path: <stable-owner@vger.kernel.org>
-In-reply-to: <1490255131-9597-1-git-send-email-m.szyprowski@samsung.com>
-Sender: stable-owner@vger.kernel.org
-To: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Seung-Woo Kim <sw0312.kim@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Inki Dae <inki.dae@samsung.com>, stable@vger.kernel.org
+From: =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss@gmail.com>
+Subject: Re: [PATCHv2 09/11] Bluetooth: add nokia driver
+Date: Thu, 23 Mar 2017 08:50:42 +0100
+Message-ID: <07cf4c22-b798-6e77-cca0-548e32e9de3f@gmail.com>
+References: <20170321223216.11733-1-sre@kernel.org>
+ <20170321223216.11733-10-sre@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170321223216.11733-10-sre@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Reichel <sre@kernel.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, frederic.danis.oss@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds missing checks for dma_map_single() failure and proper error
-reporting. While touching this part of the code, it also removes unnecessary
-spinlock calls around dma_map_single() for TX buffer. This finally solves all
-the issues reported by DMA API debug framework.
+Hello Sebastian,
 
-Reported-by: Seung-Woo Kim <sw0312.kim@samsung.com>
-Fixes: 2c37eedb74c8 ("serial: samsung: add dma reqest/release functions")
-CC: stable@vger.kernel.org # v4.10+
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
-This issue was there since adding DMA support, but this patch applies cleanly
-only to v4.10+ kernels due to other changes in the surrounding code.
----
- drivers/tty/serial/samsung.c | 35 ++++++++++++++++++++++++-----------
- 1 file changed, 24 insertions(+), 11 deletions(-)
+Le 21/03/2017 à 23:32, Sebastian Reichel a écrit :
+> This adds a driver for the Nokia H4+ protocol, which is used
+> at least on the Nokia N9, N900 & N950.
+>
+> Signed-off-by: Sebastian Reichel <sre@kernel.org>
+> ---
+> Changes since PATCHv1:
+>   * replace __u8 and uint8_t with u8
+>   * replace __u16 and uint16_t with u16
+>   * drop BT_BAUDRATE_DIVIDER and use btdev->sysclk_speed * 10 instead
+>   * fix wording of a sentence
+>   * fix error path of negotation & alive package receive functions
+>   * replaced nokia_wait_for_cts with newly introduced serdev function
+>   * use "nokia,h4p-bluetooth" as compatible string
+> ---
+>   drivers/bluetooth/Kconfig     |  12 +
+>   drivers/bluetooth/Makefile    |   2 +
+>   drivers/bluetooth/hci_nokia.c | 819 ++++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 833 insertions(+)
+>   create mode 100644 drivers/bluetooth/hci_nokia.c
+>
+> diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
+> index c2c14a12713b..2e3e4d3547ad 100644
+> --- a/drivers/bluetooth/Kconfig
+> +++ b/drivers/bluetooth/Kconfig
+> @@ -86,6 +86,18 @@ config BT_HCIUART_H4
+>   
+>   	  Say Y here to compile support for HCI UART (H4) protocol.
+>   
+> +config BT_HCIUART_NOKIA
+> +	tristate "UART Nokia H4+ protocol support"
+> +	depends on BT_HCIUART
+> +	depends on SERIAL_DEV_BUS
+> +	depends on PM
+> +	help
+> +	  Nokia H4+ is serial protocol for communication between Bluetooth
+> +	  device and host. This protocol is required for Bluetooth devices
+> +	  with UART interface in Nokia devices.
+> +
+> +	  Say Y here to compile support for Nokia's H4+ protocol.
+> +
+>   config BT_HCIUART_BCSP
+>   	bool "BCSP protocol support"
+>   	depends on BT_HCIUART
+> diff --git a/drivers/bluetooth/Makefile b/drivers/bluetooth/Makefile
+> index fd571689eed6..a7f237320f4b 100644
+> --- a/drivers/bluetooth/Makefile
+> +++ b/drivers/bluetooth/Makefile
+> @@ -25,6 +25,8 @@ obj-$(CONFIG_BT_BCM)		+= btbcm.o
+>   obj-$(CONFIG_BT_RTL)		+= btrtl.o
+>   obj-$(CONFIG_BT_QCA)		+= btqca.o
+>   
+> +obj-$(CONFIG_BT_HCIUART_NOKIA)	+= hci_nokia.o
+> +
+>   btmrvl-y			:= btmrvl_main.o
+>   btmrvl-$(CONFIG_DEBUG_FS)	+= btmrvl_debugfs.o
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 9f3759bdb44f..8aca18c4cdea 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -859,7 +859,7 @@ static void s3c24xx_serial_break_ctl(struct uart_port *port, int break_state)
- static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
- {
- 	struct s3c24xx_uart_dma	*dma = p->dma;
--	unsigned long flags;
-+	int ret;
- 
- 	/* Default slave configuration parameters */
- 	dma->rx_conf.direction		= DMA_DEV_TO_MEM;
-@@ -884,8 +884,8 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
- 
- 	dma->tx_chan = dma_request_chan(p->port.dev, "tx");
- 	if (IS_ERR(dma->tx_chan)) {
--		dma_release_channel(dma->rx_chan);
--		return PTR_ERR(dma->tx_chan);
-+		ret = PTR_ERR(dma->tx_chan);
-+		goto err_release_rx;
- 	}
- 
- 	dmaengine_slave_config(dma->tx_chan, &dma->tx_conf);
-@@ -894,25 +894,38 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
- 	dma->rx_size = PAGE_SIZE;
- 
- 	dma->rx_buf = kmalloc(dma->rx_size, GFP_KERNEL);
--
- 	if (!dma->rx_buf) {
--		dma_release_channel(dma->rx_chan);
--		dma_release_channel(dma->tx_chan);
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto err_release_tx;
- 	}
- 
- 	dma->rx_addr = dma_map_single(p->port.dev, dma->rx_buf,
- 				dma->rx_size, DMA_FROM_DEVICE);
--
--	spin_lock_irqsave(&p->port.lock, flags);
-+	if (dma_mapping_error(p->port.dev, dma->rx_addr)) {
-+		ret = -EIO;
-+		goto err_free_rx;
-+	}
- 
- 	/* TX buffer */
- 	dma->tx_addr = dma_map_single(p->port.dev, p->port.state->xmit.buf,
- 				UART_XMIT_SIZE, DMA_TO_DEVICE);
--
--	spin_unlock_irqrestore(&p->port.lock, flags);
-+	if (dma_mapping_error(p->port.dev, dma->tx_addr)) {
-+		ret = -EIO;
-+		goto err_unmap_rx;
-+	}
- 
- 	return 0;
-+
-+err_unmap_rx:
-+	dma_unmap_single(p->port.dev, dma->rx_addr, dma->rx_size,
-+			 DMA_FROM_DEVICE);
-+err_free_rx:
-+	kfree(dma->rx_buf);
-+err_release_tx:
-+	dma_release_channel(dma->tx_chan);
-+err_release_rx:
-+	dma_release_channel(dma->rx_chan);
-+	return ret;
- }
- 
- static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
--- 
-1.9.1
+This does not build as module with following error:
+ERROR: "hci_uart_tx_wakeup" [drivers/bluetooth/hci_nokia.ko] undefined!
+ERROR: "hci_uart_register_device" [drivers/bluetooth/hci_nokia.ko] 
+undefined!
+
+Should not hci_nokia be part of the hci_uart module?
+
+Regards,
+
+Fred
