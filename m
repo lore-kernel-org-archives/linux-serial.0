@@ -1,24 +1,15 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
- calls
-Date: Thu, 23 Mar 2017 13:03:56 +0100
-Message-ID: <CAMuHMdUWybAZXc2RbGMGyp4DYQZU9BS8MxXKE5Kfd+aH8+w9sA@mail.gmail.com>
-References: <20170306100220.droey65uq2ew3mzu@pengutronix.de>
- <CACRpkdYeFyr4yjQjDAUpPJwuD_NW2y=wXnzt1xSNoOX0SFCLmw@mail.gmail.com>
- <CAMuHMdWv-xs12UqutEtXJGR8qqgx6DeDhkKvvYhhyW+XTVsUNQ@mail.gmail.com>
- <CAMuHMdXGn35bEsJKnUi5o3AytL4AJN2fBfoB79v5W-jOVFQx6g@mail.gmail.com>
- <20170320103113.tpveoq2onzrwmkdt@pengutronix.de>
- <CAMuHMdWbwA+3UGVnHYJOs26vTj13Yn+s4B8tE9kyy25JcjyZGg@mail.gmail.com>
- <20170320110718.e44s2gip36m75bqj@pengutronix.de>
- <CACRpkdZy_uguiKfSH-0gdanjr-xkwxoANTx6Fb2VwsvzRwcPRA@mail.gmail.com>
- <20170323101045.u3uigdu5xfwjmjc7@pengutronix.de>
- <CAMuHMdWDUzwUqrchbhh-TkE3J9Xg4TrwTF6HreikUcNNTf_ozQ@mail.gmail.com>
- <20170323111106.7ogh6g2oa3m4cqc6@pengutronix.de>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH 1/2] tty: serial_core: Add name field to uart_port struct
+Date: Thu, 23 Mar 2017 17:43:36 +0530
+Message-ID: <61fd3976-1160-f0cb-15ce-91c46f3d749e@ti.com>
+References: <20170321133636.8814-1-vigneshr@ti.com>
+ <20170321133636.8814-2-vigneshr@ti.com>
+ <CAHp75VfHtTV6L0GE61kMiHMCQrUSwGJPRxsiNuOCD9mY7MPpZQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170323111106.7ogh6g2oa3m4cqc6@pengutronix.de>
+In-Reply-To: <CAHp75VfHtTV6L0GE61kMiHMCQrUSwGJPRxsiNuOCD9mY7MPpZQ@mail.gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -28,45 +19,38 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Jisheng Zhang <jszhang@marvell.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgVXdlLAoKT24gVGh1LCBNYXIgMjMsIDIwMTcgYXQgMTI6MTEgUE0sIFV3ZSBLbGVpbmUtS8O2
-bmlnCjx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+IHdyb3RlOgo+PiBNYWtlIHN1cmUg
-dG8gZW5hYmxlIGFsbCBkcml2ZXJzIGFuZCBzdWJzeXN0ZW1zIHlvdSBuZWVkIHdoZW4gYnVpbGRp
-bmcKPj4geW91ciBrZXJuZWwuIFRoYXQncyBhbHdheXMgdHJ1ZS4gQW5kIG1heSBpbmRlZWQgYmUg
-aGFyZCB0byBkZWJ1ZyAoZS5nLiB3aGF0Cj4+IGtlcm5lbCBvcHRpb25zIGRvIEkgbmVlZCB0byBt
-YWtlIHN5c3RlbWQgd29yaz8pLgo+Cj4gSXQncyB3b3JzZSBoZXJlLiBJZiB5b3UgZm9yZ2V0IHRv
-IGVuYWJsZSBhIGRyaXZlciB0aGUgZGV2aWNlIGlzbid0IGJvdW5kCj4gYW5kIHRoYXQncyBvYnZp
-b3VzIHRvIGRpYWdub3NlLiBXaGVuIGlnbm9yaW5nIGFuIG9wdGlvbmFsIEdQSU8gdGhlcmUKPiBt
-aWdodCBiZSBhIGRldmljZSB0aGF0IGNsYWltcyB0byB3b3JrIGJ1dCBmYWlscyB0byBkbyBzby4g
-KGUuZy4geW91Cj4gd3JpdGUgdG8gbWVtb3J5LCB3cml0ZSgpIHJldHVybnMgMCwgYnV0IHRoZSBk
-YXRhIG5ldmVyIGxhbmRlZCB0aGVyZS4pCj4KPj4gPiB3cml0ZSgyKSBhbmQgY2xvc2UoMikgc3Vj
-Y2VlZCBtb3N0IG9mIHRoZSB0aW1lLCB0b28uIFN0aWxsIGl0J3Mgbm90IGEKPj4gPiBnb29kIGlk
-ZWEgdG8gbm90IGNoZWNrIHRoZSByZXR1cm4gdmFsdWUuIE9yIGxldCB0aGUga2VybmVsIHJldHVy
-bgo+PiA+IHN1Y2Nlc3MgdW5jb25kaXRpb25hbGx5Lgo+Pgo+PiBXcml0aW5nIGFsbCBieXRlcyBw
-YXNzZWQgaW4gdGhlIGJ1ZmZlciBpcyAib3B0aW9uYWwiIGluIGFub3RoZXIgc2Vuc2UgdGhhbgo+
-PiBhbiAib3B0aW9uYWwiIEdQSU86IHlvdSBtdXN0IHJldHJ5IHRoZSB3cml0ZSwgd2hpbGUgeW91
-IGNhbiBjb250aW51ZSBpZgo+PiBhbiBvcHRpb25hbCBHUElPIGlzIG5vdCBwcmVzZW50Lgo+Cj4g
-QW5kIHRoYXQgaXMgdGhlIHBvaW50LiBZb3UgY2FuIGNvbnRpbnVlICppZmYqIHRoZSBvcHRpb25h
-bCBHUElPIGlzIG5vdAo+IHByZXNlbnQuIFRoZSBwYXRjaCBpbiBxdWVzdGlvbiByZW1vdmVzIHRo
-ZSBhYmlsaXR5IHRvIGRldGVybWluZSBpZiB0aGF0Cj4gR1BJTyBpcyBwcmVzZW50IGFuZCBjbGFp
-bXMgaXQgaXMgbm90IHByZXNlbnQuCgpJZiB5b3UgZm9yZ2V0IHRvIGVuYWJsZSBhIGRyaXZlci9z
-dWJzeXN0ZW0sIHlvdSBzb21ldGltZXMgY2Fubm90IGRldGVybWluZQppZiB0aGUgZGV2aWNlIGlz
-IHByZXNlbnQgb3Igbm90IG5laXRoZXIuCgpIZW5jZSBpdCBib2lscyBkb3duIHRvICJrbm93aW5n
-IiBpZiB0aGVyZSBpcyBhIEdQSU8gb3Igbm90LgpTbywgd2hlbiBjYW4gdGhlcmUgYmUgYSBHUElP
-PwogIDEuIFRoZSBHUElPIGlzIGRlc2NyaWJlZCBpbiBEVC4KICAgICA9PiBOb3QgYW4gaXNzdWUs
-IGFzIERUIEdQSU8gaW1wbGllcyBHUElPTElCLAogIDIuIFRoZSBHUElPIGlzIGRlc2NyaWJlZCBp
-biBsZWdhY3kgcGxhdGZvcm0gZGF0YS4KICAgICA9PiBUaGUgcGxhdGZvcm0gY29kZSBzaG91bGQg
-bWFrZSBzdXJlIEdQSU9MSUIgaXMgc2VsZWN0ZWQgd2hlbiBuZWVkZWQuCgpJc3N1ZSBzb2x2ZWQ/
-CgpHcntvZXRqZSxlZXRpbmd9cywKCiAgICAgICAgICAgICAgICAgICAgICAgIEdlZXJ0CgotLQpH
-ZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhlcmUncyBsb3RzIG9mIExpbnV4IGJleW9uZCBpYTMyIC0t
-IGdlZXJ0QGxpbnV4LW02OGsub3JnCgpJbiBwZXJzb25hbCBjb252ZXJzYXRpb25zIHdpdGggdGVj
-aG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBhIGhhY2tlci4gQnV0CndoZW4gSSdtIHRhbGtp
-bmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNheSAicHJvZ3JhbW1lciIgb3Igc29tZXRoaW5nIGxp
-a2UgdGhhdC4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxk
-cwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgt
-YXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQu
-b3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJt
-LWtlcm5lbAo=
+
+
+On Thursday 23 March 2017 12:15 AM, Andy Shevchenko wrote:
+> On Tue, Mar 21, 2017 at 3:36 PM, Vignesh R <vigneshr@ti.com> wrote:
+>> Introduce a field to store name of uart_port that can be used to easily
+>> identify uart port instances on a system that has more than one uart
+> 
+> uart -> UART
+> 
+>> instance. The name is of the form ttyXN(eg. ttyS0, ttyAMA0,..) where N
+>> is number that particular uart instance.
+>> This field will be useful when printing debug info for a particular port
+>> or in register irqs with unique irq name. Port name is populated during
+> 
+> irq(s) -> IRQ(s)
+> 
+>> uart_add_one_port().
+> 
+>> +       snprintf(uport->name, sizeof(uport->name), "%s%d", drv->dev_name,
+>> +                drv->tty_driver->name_base + uport->line);
+> 
+> This is fragile. dev_name is defined as pointer, so, it would be any length.
+> So, better to use [devm_]kasprintf().
+> 
+
+Ok, will you use kasprintf() (and corresponding kfree()) as device is
+not yet allocated at this stage to use devm_*.
+
+-- 
+Regards
+Vignesh
