@@ -1,107 +1,72 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v2 2/2] serial: samsung: Add missing checks for dma_map_single
- failure
-Date: Thu, 23 Mar 2017 13:01:53 +0100
-Message-ID: <1490270519-4046-2-git-send-email-m.szyprowski@samsung.com>
-References: <1490270519-4046-1-git-send-email-m.szyprowski@samsung.com>
- <CGME20170323120213eucas1p2f288fa4f85c8d0db098d3ca2bf378b34@eucas1p2.samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1490270519-4046-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Seung-Woo Kim <sw0312.kim@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Inki Dae <inki.dae@samsung.com>, stable@vger.kernel.org
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
+ calls
+Date: Thu, 23 Mar 2017 13:03:56 +0100
+Message-ID: <CAMuHMdUWybAZXc2RbGMGyp4DYQZU9BS8MxXKE5Kfd+aH8+w9sA@mail.gmail.com>
+References: <20170306100220.droey65uq2ew3mzu@pengutronix.de>
+ <CACRpkdYeFyr4yjQjDAUpPJwuD_NW2y=wXnzt1xSNoOX0SFCLmw@mail.gmail.com>
+ <CAMuHMdWv-xs12UqutEtXJGR8qqgx6DeDhkKvvYhhyW+XTVsUNQ@mail.gmail.com>
+ <CAMuHMdXGn35bEsJKnUi5o3AytL4AJN2fBfoB79v5W-jOVFQx6g@mail.gmail.com>
+ <20170320103113.tpveoq2onzrwmkdt@pengutronix.de>
+ <CAMuHMdWbwA+3UGVnHYJOs26vTj13Yn+s4B8tE9kyy25JcjyZGg@mail.gmail.com>
+ <20170320110718.e44s2gip36m75bqj@pengutronix.de>
+ <CACRpkdZy_uguiKfSH-0gdanjr-xkwxoANTx6Fb2VwsvzRwcPRA@mail.gmail.com>
+ <20170323101045.u3uigdu5xfwjmjc7@pengutronix.de>
+ <CAMuHMdWDUzwUqrchbhh-TkE3J9Xg4TrwTF6HreikUcNNTf_ozQ@mail.gmail.com>
+ <20170323111106.7ogh6g2oa3m4cqc6@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170323111106.7ogh6g2oa3m4cqc6@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds missing checks for dma_map_single() failure and proper error
-reporting. While touching this part of the code, it also removes unnecessary
-spinlock calls around dma_map_single() for TX buffer. This finally solves all
-the issues reported by DMA API debug framework.
-
-Reported-by: Seung-Woo Kim <sw0312.kim@samsung.com>
-Fixes: 62c37eedb74c8 ("serial: samsung: add dma reqest/release functions")
-CC: stable@vger.kernel.org # v4.10+
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
----
-This issue was there since adding DMA support, but this patch applies cleanly
-only to v4.10+ kernels due to other changes in the surrounding code.
-
-v2:
-- fixed commit id in 'fixes' tag, added 'reviewed-by' tag
----
- drivers/tty/serial/samsung.c | 35 ++++++++++++++++++++++++-----------
- 1 file changed, 24 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 9f3759bdb44f..8aca18c4cdea 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -859,7 +859,7 @@ static void s3c24xx_serial_break_ctl(struct uart_port *port, int break_state)
- static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
- {
- 	struct s3c24xx_uart_dma	*dma = p->dma;
--	unsigned long flags;
-+	int ret;
- 
- 	/* Default slave configuration parameters */
- 	dma->rx_conf.direction		= DMA_DEV_TO_MEM;
-@@ -884,8 +884,8 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
- 
- 	dma->tx_chan = dma_request_chan(p->port.dev, "tx");
- 	if (IS_ERR(dma->tx_chan)) {
--		dma_release_channel(dma->rx_chan);
--		return PTR_ERR(dma->tx_chan);
-+		ret = PTR_ERR(dma->tx_chan);
-+		goto err_release_rx;
- 	}
- 
- 	dmaengine_slave_config(dma->tx_chan, &dma->tx_conf);
-@@ -894,25 +894,38 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
- 	dma->rx_size = PAGE_SIZE;
- 
- 	dma->rx_buf = kmalloc(dma->rx_size, GFP_KERNEL);
--
- 	if (!dma->rx_buf) {
--		dma_release_channel(dma->rx_chan);
--		dma_release_channel(dma->tx_chan);
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto err_release_tx;
- 	}
- 
- 	dma->rx_addr = dma_map_single(p->port.dev, dma->rx_buf,
- 				dma->rx_size, DMA_FROM_DEVICE);
--
--	spin_lock_irqsave(&p->port.lock, flags);
-+	if (dma_mapping_error(p->port.dev, dma->rx_addr)) {
-+		ret = -EIO;
-+		goto err_free_rx;
-+	}
- 
- 	/* TX buffer */
- 	dma->tx_addr = dma_map_single(p->port.dev, p->port.state->xmit.buf,
- 				UART_XMIT_SIZE, DMA_TO_DEVICE);
--
--	spin_unlock_irqrestore(&p->port.lock, flags);
-+	if (dma_mapping_error(p->port.dev, dma->tx_addr)) {
-+		ret = -EIO;
-+		goto err_unmap_rx;
-+	}
- 
- 	return 0;
-+
-+err_unmap_rx:
-+	dma_unmap_single(p->port.dev, dma->rx_addr, dma->rx_size,
-+			 DMA_FROM_DEVICE);
-+err_free_rx:
-+	kfree(dma->rx_buf);
-+err_release_tx:
-+	dma_release_channel(dma->tx_chan);
-+err_release_rx:
-+	dma_release_channel(dma->rx_chan);
-+	return ret;
- }
- 
- static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
--- 
-1.9.1
+SGkgVXdlLAoKT24gVGh1LCBNYXIgMjMsIDIwMTcgYXQgMTI6MTEgUE0sIFV3ZSBLbGVpbmUtS8O2
+bmlnCjx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+IHdyb3RlOgo+PiBNYWtlIHN1cmUg
+dG8gZW5hYmxlIGFsbCBkcml2ZXJzIGFuZCBzdWJzeXN0ZW1zIHlvdSBuZWVkIHdoZW4gYnVpbGRp
+bmcKPj4geW91ciBrZXJuZWwuIFRoYXQncyBhbHdheXMgdHJ1ZS4gQW5kIG1heSBpbmRlZWQgYmUg
+aGFyZCB0byBkZWJ1ZyAoZS5nLiB3aGF0Cj4+IGtlcm5lbCBvcHRpb25zIGRvIEkgbmVlZCB0byBt
+YWtlIHN5c3RlbWQgd29yaz8pLgo+Cj4gSXQncyB3b3JzZSBoZXJlLiBJZiB5b3UgZm9yZ2V0IHRv
+IGVuYWJsZSBhIGRyaXZlciB0aGUgZGV2aWNlIGlzbid0IGJvdW5kCj4gYW5kIHRoYXQncyBvYnZp
+b3VzIHRvIGRpYWdub3NlLiBXaGVuIGlnbm9yaW5nIGFuIG9wdGlvbmFsIEdQSU8gdGhlcmUKPiBt
+aWdodCBiZSBhIGRldmljZSB0aGF0IGNsYWltcyB0byB3b3JrIGJ1dCBmYWlscyB0byBkbyBzby4g
+KGUuZy4geW91Cj4gd3JpdGUgdG8gbWVtb3J5LCB3cml0ZSgpIHJldHVybnMgMCwgYnV0IHRoZSBk
+YXRhIG5ldmVyIGxhbmRlZCB0aGVyZS4pCj4KPj4gPiB3cml0ZSgyKSBhbmQgY2xvc2UoMikgc3Vj
+Y2VlZCBtb3N0IG9mIHRoZSB0aW1lLCB0b28uIFN0aWxsIGl0J3Mgbm90IGEKPj4gPiBnb29kIGlk
+ZWEgdG8gbm90IGNoZWNrIHRoZSByZXR1cm4gdmFsdWUuIE9yIGxldCB0aGUga2VybmVsIHJldHVy
+bgo+PiA+IHN1Y2Nlc3MgdW5jb25kaXRpb25hbGx5Lgo+Pgo+PiBXcml0aW5nIGFsbCBieXRlcyBw
+YXNzZWQgaW4gdGhlIGJ1ZmZlciBpcyAib3B0aW9uYWwiIGluIGFub3RoZXIgc2Vuc2UgdGhhbgo+
+PiBhbiAib3B0aW9uYWwiIEdQSU86IHlvdSBtdXN0IHJldHJ5IHRoZSB3cml0ZSwgd2hpbGUgeW91
+IGNhbiBjb250aW51ZSBpZgo+PiBhbiBvcHRpb25hbCBHUElPIGlzIG5vdCBwcmVzZW50Lgo+Cj4g
+QW5kIHRoYXQgaXMgdGhlIHBvaW50LiBZb3UgY2FuIGNvbnRpbnVlICppZmYqIHRoZSBvcHRpb25h
+bCBHUElPIGlzIG5vdAo+IHByZXNlbnQuIFRoZSBwYXRjaCBpbiBxdWVzdGlvbiByZW1vdmVzIHRo
+ZSBhYmlsaXR5IHRvIGRldGVybWluZSBpZiB0aGF0Cj4gR1BJTyBpcyBwcmVzZW50IGFuZCBjbGFp
+bXMgaXQgaXMgbm90IHByZXNlbnQuCgpJZiB5b3UgZm9yZ2V0IHRvIGVuYWJsZSBhIGRyaXZlci9z
+dWJzeXN0ZW0sIHlvdSBzb21ldGltZXMgY2Fubm90IGRldGVybWluZQppZiB0aGUgZGV2aWNlIGlz
+IHByZXNlbnQgb3Igbm90IG5laXRoZXIuCgpIZW5jZSBpdCBib2lscyBkb3duIHRvICJrbm93aW5n
+IiBpZiB0aGVyZSBpcyBhIEdQSU8gb3Igbm90LgpTbywgd2hlbiBjYW4gdGhlcmUgYmUgYSBHUElP
+PwogIDEuIFRoZSBHUElPIGlzIGRlc2NyaWJlZCBpbiBEVC4KICAgICA9PiBOb3QgYW4gaXNzdWUs
+IGFzIERUIEdQSU8gaW1wbGllcyBHUElPTElCLAogIDIuIFRoZSBHUElPIGlzIGRlc2NyaWJlZCBp
+biBsZWdhY3kgcGxhdGZvcm0gZGF0YS4KICAgICA9PiBUaGUgcGxhdGZvcm0gY29kZSBzaG91bGQg
+bWFrZSBzdXJlIEdQSU9MSUIgaXMgc2VsZWN0ZWQgd2hlbiBuZWVkZWQuCgpJc3N1ZSBzb2x2ZWQ/
+CgpHcntvZXRqZSxlZXRpbmd9cywKCiAgICAgICAgICAgICAgICAgICAgICAgIEdlZXJ0CgotLQpH
+ZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhlcmUncyBsb3RzIG9mIExpbnV4IGJleW9uZCBpYTMyIC0t
+IGdlZXJ0QGxpbnV4LW02OGsub3JnCgpJbiBwZXJzb25hbCBjb252ZXJzYXRpb25zIHdpdGggdGVj
+aG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBhIGhhY2tlci4gQnV0CndoZW4gSSdtIHRhbGtp
+bmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNheSAicHJvZ3JhbW1lciIgb3Igc29tZXRoaW5nIGxp
+a2UgdGhhdC4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxk
+cwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgt
+YXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQu
+b3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJt
+LWtlcm5lbAo=
