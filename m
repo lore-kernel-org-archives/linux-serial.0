@@ -1,125 +1,85 @@
-From: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
-Subject: Re: [RFC RESEND] serdev binding for QCA7000 UART driver
-Date: Thu, 23 Mar 2017 16:13:27 +0100
-Message-ID: <9127690c-3b6e-d60d-6af1-97bb9ad34628@i2se.com>
-References: <b2273c4a-069b-0b9a-83d3-aed782920c34@i2se.com>
- <CAL_JsqJS05gw80B4oUWZHEHOg5iPpwKie8XdBr82UD=7WB1cdg@mail.gmail.com>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
+ calls
+Date: Thu, 23 Mar 2017 08:44:41 -0700
+Message-ID: <20170323154441.GA9460@dtor-ws>
+References: <CAMuHMdWbwA+3UGVnHYJOs26vTj13Yn+s4B8tE9kyy25JcjyZGg@mail.gmail.com>
+ <20170320110718.e44s2gip36m75bqj@pengutronix.de>
+ <CACRpkdZy_uguiKfSH-0gdanjr-xkwxoANTx6Fb2VwsvzRwcPRA@mail.gmail.com>
+ <20170323101045.u3uigdu5xfwjmjc7@pengutronix.de>
+ <CAMuHMdWDUzwUqrchbhh-TkE3J9Xg4TrwTF6HreikUcNNTf_ozQ@mail.gmail.com>
+ <20170323111106.7ogh6g2oa3m4cqc6@pengutronix.de>
+ <CAMuHMdUWybAZXc2RbGMGyp4DYQZU9BS8MxXKE5Kfd+aH8+w9sA@mail.gmail.com>
+ <20170323123437.uqdwhfmmsjke3f7s@pengutronix.de>
+ <CACRpkdZRfLh9RXRycW_cAxuTYE6tPd7LR32EkAW8y2fh=AxhXA@mail.gmail.com>
+ <20170323144325.GA952@dtor-ws>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAL_JsqJS05gw80B4oUWZHEHOg5iPpwKie8XdBr82UD=7WB1cdg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170323144325.GA952@dtor-ws>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Nicolas Ferre <nicolas.ferre@microchip.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
+On Thu, Mar 23, 2017 at 07:43:25AM -0700, Dmitry Torokhov wrote:
+> On Thu, Mar 23, 2017 at 02:41:53PM +0100, Linus Walleij wrote:
+> > On Thu, Mar 23, 2017 at 1:34 PM, Uwe Kleine-König
+> > <u.kleine-koenig@pengutronix.de> wrote:
+> > 
+> > > Maybe we can make gpiod_get_optional look like this:
+> > >
+> > >         if (!dev->of_node && isnt_a_acpi_device(dev) && !IS_ENABLED(GPIOLIB))
+> > >                 return NULL;
+> > >         else
+> > >                 return -ENOSYS;
+> > >
+> > > I don't know how isnt_a_acpi_device looks like, probably it involves
+> > > CONFIG_ACPI and/or dev->acpi_node.
+> > >
+> > > This should be safe and still comfortable for legacy platforms, isn't it?
+> > 
+> > I like the looks of this.
+> > 
+> > Can we revert Dmitry's patch and apply something like this instead?
+> > 
+> > Dmitry, how do you feel about this?
+> 
+> I frankly do not see the point. It still makes driver code more complex
+> for no good reason. I also think that not having optional GPIO is not an
+> error, so returning value from error space is not correct. NULL is value
+> from another space altogether.
+> 
+> Uwe seems to be concerned about case that I find extremely unlikely. We
+> are talking about a system that does not have GPIO support and behaves
+> just fine, with the exception that it actually has (physically) a
+> *single* GPIO, and that GPIO happens to be optional in a single driver,
+> but in this particular system is actually needed (but that need
+> manifests in a non-obvious way). And we have system integrator that has
+> no idea what they are doing (no schematic, etc).
+> 
+> I think that if there is one optional GPIO there will be mandatiry GPIOs
+> in such system as well and selection of GPIOLIB will be forced early on
+> in board bringup.
 
-Am 22.03.2017 um 21:32 schrieb Rob Herring:
-> On Mon, Mar 13, 2017 at 11:16 AM, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org> wrote:
->> Hi Rob,
->>
->> since serdev has been merged, i'm currently working on a
->> suitable ethernet driver for the QCA7000 [1]. In order to provide a plug
->> and play solution for the network interface i suggest the following
->> binding, which uses common properties for UART configuration:
->>
->> * Qualcomm QCA7000 (Ethernet over UART protocol)
->>
->> Note: The QCA7000 is also useable as a UART slave device.
-> Should this be s/UART/SPI/ ?
+One more thing: if we keep reporting -ENOSYS in case of !CONFIG_GPIOLIB,
+then most of the non platform-sepcific drivers will eventually gain code
+silently coping with this -ENOSYS:
 
-i rewrote this note in my second version below.
+	data->gpiod = gpiod_getptional(...);
+	if (IS_ERR(data->gpiod)) {
+		error = PTR_ERR(data->gpiod);
+		if (error != -ENOSYS)
+			return error;
 
->
->> Required properties:
->> - compatible        : Should be "qca,qca7000-uart"
->>
->> Optional properties:
->> - local-mac-address : 6 bytes, Specifies MAC address
->> - current-speed     : Specifies current serial device speed in
->>                       bits per second (default = 115200)
->> - data-bits         : Specifies number of data bits (default = 8)
->> - use-parity        : If present, this enables the parity
->>                       error detection (default = off)
->> - odd-parity        : If present, this specifies that the parity
->>                       of each character must be odd (default = even)
->>
->> Example:
->>
->> /* Freescale i.MX28 UART */
->> auart0: serial@8006a000 {
->>     compatible = "fsl,imx28-auart", "fsl,imx23-auart";
->>     reg = <0x8006a000 0x2000>;
->>     pinctrl-names = "default";
->>     pinctrl-0 = <&auart0_2pins_a>;
->>     status = "okay";
->>
->>     qca7000: ethernet {
->>         compatible = "qca,qca7000-uart";
->>         local-mac-address = [ A0 B0 C0 D0 E0 F0 ];
->>         current-speed = <38400>;
-> Unless this device supports auto-baud (generally only AT command set
-> devices do), this is setup by a bootloader (and you have no way to
-> reset the device), or the speed changes with different firmware, I
-> don't think you should need this. Devices typically have a fixed,
-> initial baudrate that is known, so the driver should know it.
+		data->gpiod = NULL; /* This GPIO _is_ optional */
+	}
 
-Unfortunately the QCA7000 firmware can be freely preconfigured to a
-fixed baudrate and there is no way to determine, because Ethernet frames
-are send nearly directly to the UART and vice versa. I agree this isn't
-best practice.
+which will negate Uwe's claim that it will help debugging issues.
 
->>         data-bits = <8>;
-> Nearly everything uses 8 bits, so this should be the default.
+Thanks.
 
-I will drop it completly.
-
->
->>         use-parity;
->>         odd-parity;
-> I don't think we need 2 properties here. "even-parity" and
-> "odd-parity" booleans should be enough to enable and set parity type.
-
-Your suggestion is better, but it's possible to define wrongly both
-which isn't nice per design.
-Anyway i decide to drop this, too. So it could be implemented later.
-
-So here is the new version:
-
-* Qualcomm QCA7000 (Ethernet over UART protocol)
-
-Note: This binding applies in case the QCA7000 is configured as a
-UART slave device. It is possible to preconfigure the UART settings
-of the QCA7000 firmware, which can't be changed during runtime.
-
-Required properties:
-- compatible        : Should be "qca,qca7000-uart"
-
-Optional properties:
-- local-mac-address : 6 bytes, Specifies MAC address
-- current-speed     : Specifies the serial device speed in
-                      bits per second (default = 115200), which is
-                      predefined by the QCA7000 firmware configuration
-
-Example:
-
-/* Freescale i.MX28 UART */
-auart0: serial@8006a000 {
-    compatible = "fsl,imx28-auart", "fsl,imx23-auart";
-    reg = <0x8006a000 0x2000>;
-    pinctrl-names = "default";
-    pinctrl-0 = <&auart0_2pins_a>;
-    status = "okay";
-
-    qca7000: ethernet {
-        compatible = "qca,qca7000-uart";
-        local-mac-address = [ A0 B0 C0 D0 E0 F0 ];
-        current-speed = <38400>;
-    };
-};
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Dmitry
