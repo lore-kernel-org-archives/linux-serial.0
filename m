@@ -1,119 +1,72 @@
-From: Sebastian Reichel <sre@kernel.org>
-Subject: Re: [PATCHv2 09/11] Bluetooth: add nokia driver
-Date: Thu, 23 Mar 2017 10:07:20 +0100
-Message-ID: <20170323090720.yuzh4kao6vdpghev@earth>
-References: <20170321223216.11733-1-sre@kernel.org>
- <20170321223216.11733-10-sre@kernel.org>
- <07cf4c22-b798-6e77-cca0-548e32e9de3f@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL calls
+Date: Thu, 23 Mar 2017 10:32:01 +0100
+Message-ID: <CACRpkdZy_uguiKfSH-0gdanjr-xkwxoANTx6Fb2VwsvzRwcPRA@mail.gmail.com>
+References: <20170306085842.yijkfpqi3adcedmm@pengutronix.de>
+ <CAMuHMdV2_vbocY4wCzvYtPAaF+QEX_Y4g6qVu5EqEBf5AnFdaw@mail.gmail.com>
+ <20170306093043.ay4dz3ehp3aakwxh@pengutronix.de> <CAMuHMdWQuvANNU14A7NQuzv6AFp04bq4DG_oc7w9h4wUrG+4aQ@mail.gmail.com>
+ <20170306100220.droey65uq2ew3mzu@pengutronix.de> <CACRpkdYeFyr4yjQjDAUpPJwuD_NW2y=wXnzt1xSNoOX0SFCLmw@mail.gmail.com>
+ <CAMuHMdWv-xs12UqutEtXJGR8qqgx6DeDhkKvvYhhyW+XTVsUNQ@mail.gmail.com>
+ <CAMuHMdXGn35bEsJKnUi5o3AytL4AJN2fBfoB79v5W-jOVFQx6g@mail.gmail.com>
+ <20170320103113.tpveoq2onzrwmkdt@pengutronix.de> <CAMuHMdWbwA+3UGVnHYJOs26vTj13Yn+s4B8tE9kyy25JcjyZGg@mail.gmail.com>
+ <20170320110718.e44s2gip36m75bqj@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ftfthg2oftcfmakd"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <07cf4c22-b798-6e77-cca0-548e32e9de3f@gmail.com>
+In-Reply-To: <20170320110718.e44s2gip36m75bqj@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Nicolas Ferre <nicolas.ferre@microchip.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+On Mon, Mar 20, 2017 at 12:07 PM, Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+> Hello Geert,
+>
+> On Mon, Mar 20, 2017 at 11:38:52AM +0100, Geert Uytterhoeven wrote:
+>> On Mon, Mar 20, 2017 at 11:31 AM, Uwe Kleine-K=C3=B6nig
+>> <u.kleine-koenig@pengutronix.de> wrote:
+>> > On Mon, Mar 20, 2017 at 10:56:14AM +0100, Geert Uytterhoeven wrote:
+>> >> Documentation/gpio/consumer.txt rightfully sates:
+>> >> | Note that gpio_get*_optional() functions (and their managed variant=
+s), unlike
+>> >> | the rest of gpiolib API, also return NULL when gpiolib support is d=
+isabled.
+>> >> | This is helpful to driver authors, since they do not need to specia=
+l case
+>> >> | -ENOSYS return codes.  System integrators should however be careful=
+ to enable
+>> >> | gpiolib on systems that need it.
+>> >
+>> > I cannot find this paragraph in Documentation/gpio/consumer.txt:
+>> >
+>> >         $ git grep -e 'ENOSYS' v4.11-rc3 -- Documentation/gpio/
+>> >         <void>
+>>
+>> It was added by commit 22c403676dbbb7c6 ("gpio: return NULL from
+>> gpiod_get_optional when GPIOLIB is disabled")
+>
+> Ah, that's in next.
+>
+> I still think this is wrong and I'm a bit disappointed that Linus merged
+> this patch (without saying so in the thread even) as I thought Linus and
+> I agreed on this being a bad idea.
 
---ftfthg2oftcfmakd
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I think it is not good, but what we have before this patch is worse.
 
-Hi,
+I.e. it is the lesser evil.
 
-On Thu, Mar 23, 2017 at 08:50:42AM +0100, Fr=E9d=E9ric Danis wrote:
-> Le 21/03/2017 =E0 23:32, Sebastian Reichel a =E9crit :
-> > This adds a driver for the Nokia H4+ protocol, which is used
-> > at least on the Nokia N9, N900 & N950.
-> >=20
-> > Signed-off-by: Sebastian Reichel <sre@kernel.org>
-> > ---
-> > Changes since PATCHv1:
-> >   * replace __u8 and uint8_t with u8
-> >   * replace __u16 and uint16_t with u16
-> >   * drop BT_BAUDRATE_DIVIDER and use btdev->sysclk_speed * 10 instead
-> >   * fix wording of a sentence
-> >   * fix error path of negotation & alive package receive functions
-> >   * replaced nokia_wait_for_cts with newly introduced serdev function
-> >   * use "nokia,h4p-bluetooth" as compatible string
-> > ---
-> >   drivers/bluetooth/Kconfig     |  12 +
-> >   drivers/bluetooth/Makefile    |   2 +
-> >   drivers/bluetooth/hci_nokia.c | 819 +++++++++++++++++++++++++++++++++=
-+++++++++
-> >   3 files changed, 833 insertions(+)
-> >   create mode 100644 drivers/bluetooth/hci_nokia.c
-> >=20
-> > diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
-> > index c2c14a12713b..2e3e4d3547ad 100644
-> > --- a/drivers/bluetooth/Kconfig
-> > +++ b/drivers/bluetooth/Kconfig
-> > @@ -86,6 +86,18 @@ config BT_HCIUART_H4
-> >   	  Say Y here to compile support for HCI UART (H4) protocol.
-> > +config BT_HCIUART_NOKIA
-> > +	tristate "UART Nokia H4+ protocol support"
-> > +	depends on BT_HCIUART
-> > +	depends on SERIAL_DEV_BUS
-> > +	depends on PM
-> > +	help
-> > +	  Nokia H4+ is serial protocol for communication between Bluetooth
-> > +	  device and host. This protocol is required for Bluetooth devices
-> > +	  with UART interface in Nokia devices.
-> > +
-> > +	  Say Y here to compile support for Nokia's H4+ protocol.
-> > +
-> >   config BT_HCIUART_BCSP
-> >   	bool "BCSP protocol support"
-> >   	depends on BT_HCIUART
-> > diff --git a/drivers/bluetooth/Makefile b/drivers/bluetooth/Makefile
-> > index fd571689eed6..a7f237320f4b 100644
-> > --- a/drivers/bluetooth/Makefile
-> > +++ b/drivers/bluetooth/Makefile
-> > @@ -25,6 +25,8 @@ obj-$(CONFIG_BT_BCM)		+=3D btbcm.o
-> >   obj-$(CONFIG_BT_RTL)		+=3D btrtl.o
-> >   obj-$(CONFIG_BT_QCA)		+=3D btqca.o
-> > +obj-$(CONFIG_BT_HCIUART_NOKIA)	+=3D hci_nokia.o
-> > +
-> >   btmrvl-y			:=3D btmrvl_main.o
-> >   btmrvl-$(CONFIG_DEBUG_FS)	+=3D btmrvl_debugfs.o
->=20
-> This does not build as module with following error:
-> ERROR: "hci_uart_tx_wakeup" [drivers/bluetooth/hci_nokia.ko] undefined!
-> ERROR: "hci_uart_register_device" [drivers/bluetooth/hci_nokia.ko]
-> undefined!
->=20
-> Should not hci_nokia be part of the hci_uart module?
+Before this patch the API is inconsistent: it gives NULL if GPIOLIB
+is defined and -ENOSYS if GPIOLIB is not defined.
 
-Yeah, I also received that from kbuild test robot after sending the
-patchset. I intentionally did not add this to hci_uart, so that I can
-use module_serdev_device_driver(). I think at least for serdev-only
-based bluetooth drivers it makes sense to have them in their own module.
-I already have added EXPORT_SYMBOL_GPL for those functions in the next
-version of this patchset.
+After this patch it gives NULL in both cases, and that is at least
+consistent.
 
--- Sebastian
+It would be great if someone steps in and fix it so as to return
+relevant errors (or error pointers rather) in both cases. However
+I guess it will lead a bunch of fallouts in the consumers, albeit
+they are not super-many.
 
---ftfthg2oftcfmakd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAljTkEUACgkQ2O7X88g7
-+pqHzw//S8VfPGWi0TCAw1EI5SRkBPZSVPM7aqufMYCKUJDsQEBRoJ+vUgOn+UIx
-p8iAgFbX2R6Ue3sOaar91fQrqTeJqwczEkQQYWwEgWN1z/FN25uy5BO3rxOGC4Ei
-0AmyIT7Vaos/hxuGllea4F7BWT9vqtYiWvdSnhSYFFIMoMn7Y8L84bK/j9gGOQ7H
-anMGSAOLm6Vu/EuXzptkLfD/zJQuEVO1TEVpV56SqiOE45n0l3W3Tgr2by3b2zsm
-1nzc7ZEnSlw+p8NqEuFUPto0GdiT1dWX038jVu7ULUgJrrMbIDvh4R3yrvgr6ZTU
-KBkloVsR/0J/qsrfbsfIEr6PVPpLEFjp79QAogH4rG0s3e7LTiG2TFvJTVnAe4DP
-BQrSgw+dZlU7asMUogdMC7Nn/Jy/QEbeECd1cRZLhBbMWRFXyGi1rKMYzLF8cw9R
-1Kor/lJO1YhkWOOpyZsP4Vd2abApHXwrA9BZeiy5weiXBYO84gjBb/SFR35UkhH3
-kJC94nJLO0JNbYnwQPkP0uedtDBnFY50jGHEqIHHIksdCDzfki5mf0pSWP5cAYy1
-XjAhey9vcnNkB3hIl1u05Fpy8Lrzwlw5ufm0meUcxvV0LSIWcJc4rXc1mw2HcaEI
-LR6+zLYH3wu63vjOA8IYdGkonM3ZuuJMYvRkXzA3thKGNaWfD84=
-=CTa/
------END PGP SIGNATURE-----
-
---ftfthg2oftcfmakd--
+Yours,
+Linus Walleij
