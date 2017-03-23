@@ -1,64 +1,52 @@
-From: Patrice CHOTARD <patrice.chotard@st.com>
-Subject: Re: [PATCH 1/1] tty: serial: st-asc: Make the locking RT aware
-Date: Thu, 23 Mar 2017 07:56:27 +0000
-Message-ID: <d592cad0-1509-4eec-1012-7af17f9e577c@st.com>
-References: <1490202751-16581-1-git-send-email-lionel.debieve@st.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH v2] serial: 8250_lpss: Unconditionally set PCI master for
+ Quark
+Date: Thu, 23 Mar 2017 09:26:42 +0100
+Message-ID: <14fd4986-c03a-9ef7-a368-98eb1ea5ca7b@siemens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1490202751-16581-1-git-send-email-lionel.debieve@st.com>
-Content-Language: en-US
-Content-ID: <39AE01551037084B8D4FD5D8BD671354@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lionel DEBIEVE <lionel.debieve@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-rt-users@vger.kernel.org" <linux-rt-users@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Lionel
+MSI needs it as well.
 
-On 03/22/2017 06:12 PM, Lionel Debieve wrote:
-> The lock is a sleeping lock and local_irq_save() is not the
-> standard implementation now. Working for both -RT and non
-> RT.
->
-> Signed-off-by: Lionel Debieve <lionel.debieve@st.com>
+Should have no practical impact, though, as DMA is always available on
+the Quark. But given the few users of pci_alloc_irq_vectors so far, this
+incorrect pattern may spread otherwise.
 
-Acked-by: Patrice Chotard <patrice.chotard@st.com>
+Fixes: 3f3a46951e02 ("serial: 8250_lpss: set PCI master only for private DMA")
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
 
+Just a repost, no code change - missed to do this with Andy's tag after
+the review.
 
-> ---
->  drivers/tty/serial/st-asc.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-> index c334bcc..4889396 100644
-> --- a/drivers/tty/serial/st-asc.c
-> +++ b/drivers/tty/serial/st-asc.c
-> @@ -887,13 +887,12 @@ static void asc_console_write(struct console *co, const char *s, unsigned count)
->  	int locked = 1;
->  	u32 intenable;
->
-> -	local_irq_save(flags);
->  	if (port->sysrq)
->  		locked = 0; /* asc_interrupt has already claimed the lock */
->  	else if (oops_in_progress)
-> -		locked = spin_trylock(&port->lock);
-> +		locked = spin_trylock_irqsave(&port->lock, flags);
->  	else
-> -		spin_lock(&port->lock);
-> +		spin_lock_irqsave(&port->lock, flags);
->
->  	/*
->  	 * Disable interrupts so we don't get the IRQ line bouncing
-> @@ -911,8 +910,7 @@ static void asc_console_write(struct console *co, const char *s, unsigned count)
->  	asc_out(port, ASC_INTEN, intenable);
->
->  	if (locked)
-> -		spin_unlock(&port->lock);
-> -	local_irq_restore(flags);
-> +		spin_unlock_irqrestore(&port->lock, flags);
->  }
->
->  static int asc_console_setup(struct console *co, char *options)
->
+ drivers/tty/serial/8250/8250_lpss.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index f3ea90f..7dddd7e 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -183,7 +183,6 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ 	if (ret)
+ 		return;
+ 
+-	pci_set_master(pdev);
+ 	pci_try_set_mwi(pdev);
+ 
+ 	/* Special DMA address for UART */
+@@ -216,6 +215,8 @@ static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	struct pci_dev *pdev = to_pci_dev(port->dev);
+ 	int ret;
+ 
++	pci_set_master(pdev);
++
+ 	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
+ 	if (ret < 0)
+ 		return ret;
