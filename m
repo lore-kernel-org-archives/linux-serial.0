@@ -1,8 +1,8 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH 4/4] tty/serial: sh-sci: remove uneeded IS_ERR_OR_NULL
  calls
-Date: Fri, 24 Mar 2017 09:00:06 +0100
-Message-ID: <20170324080006.tbhyqlgk35xybsna@pengutronix.de>
+Date: Fri, 24 Mar 2017 09:29:02 +0100
+Message-ID: <CAMuHMdXnUzjb5wzMtmzY2ojpGbhr_3KFGDYd2QKEawVipBhdbw@mail.gmail.com>
 References: <20170323101045.u3uigdu5xfwjmjc7@pengutronix.de>
  <CAMuHMdWDUzwUqrchbhh-TkE3J9Xg4TrwTF6HreikUcNNTf_ozQ@mail.gmail.com>
  <20170323111106.7ogh6g2oa3m4cqc6@pengutronix.de>
@@ -12,12 +12,12 @@ References: <20170323101045.u3uigdu5xfwjmjc7@pengutronix.de>
  <20170323144325.GA952@dtor-ws> <20170323154441.GA9460@dtor-ws>
  <20170323191020.nrstp2cfh7cuqvf3@pengutronix.de>
  <20170323195804.GA2502@dtor-ws>
+ <20170324080006.tbhyqlgk35xybsna@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20170323195804.GA2502@dtor-ws>
+In-Reply-To: <20170324080006.tbhyqlgk35xybsna@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -27,232 +27,87 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, Geert Uytterhoeven <geert@linux-m68k.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Janusz Uzycki <j.uzycki@elproma.com.pl>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello Dmitry,
-
-On Thu, Mar 23, 2017 at 12:58:04PM -0700, Dmitry Torokhov wrote:
-> On Thu, Mar 23, 2017 at 08:10:20PM +0100, Uwe Kleine-K=F6nig wrote:
-> > On Thu, Mar 23, 2017 at 08:44:41AM -0700, Dmitry Torokhov wrote:
-> > > On Thu, Mar 23, 2017 at 07:43:25AM -0700, Dmitry Torokhov wrote:
-> > > > On Thu, Mar 23, 2017 at 02:41:53PM +0100, Linus Walleij wrote:
-> > > > > On Thu, Mar 23, 2017 at 1:34 PM, Uwe Kleine-K=F6nig
-> > > > > <u.kleine-koenig@pengutronix.de> wrote:
-> > > > > =
-
-> > > > > > Maybe we can make gpiod_get_optional look like this:
-> > > > > >
-> > > > > >         if (!dev->of_node && isnt_a_acpi_device(dev) && !IS_ENA=
-BLED(GPIOLIB))
-> > > > > >                 return NULL;
-> > > > > >         else
-> > > > > >                 return -ENOSYS;
-> > > > > >
-> > > > > > I don't know how isnt_a_acpi_device looks like, probably it inv=
-olves
-> > > > > > CONFIG_ACPI and/or dev->acpi_node.
-> > > > > >
-> > > > > > This should be safe and still comfortable for legacy platforms,=
- isn't it?
-> > > > > =
-
-> > > > > I like the looks of this.
-> > > > > =
-
-> > > > > Can we revert Dmitry's patch and apply something like this instea=
-d?
-> > > > > =
-
-> > > > > Dmitry, how do you feel about this?
-> > > > =
-
-> > > > I frankly do not see the point. It still makes driver code more com=
-plex
-> > =
-
-> > Note that this code is in the gpio header, and not in driver code. So
-> > the driver just does
-> > =
-
-> > 	gpiod =3D gpiod_get_optional(...)
-> > 	if (IS_ERR(gpiod))
-> > 		return PTR_ERR(gpiod);
-> > =
-
-> > (as it is supposed to do now). I think that's nice.
-> =
-
-> Except that it breaks if !CONFIG_GPIOLIB which is legitimate config in
-> many cases. Can I have a DT platform or ACPI platform that does not
-> expose any GPIOs for kernel to control and thus want to disable GPIOLIB?
-> I can't see why not.
-> =
-
-> > =
-
-> > > > for no good reason. I also think that not having optional GPIO is n=
-ot an
-> > > > error, so returning value from error space is not correct. NULL is =
-value
-> > > > from another space altogether.
-> > =
-
-> > It seems you didn't understand my concern.
-> =
-
-> Likewise.
-
-OK, lets agree that we don't agree then. You think that if someone
-disabled GPIOLIB it should be safe to assume that there is no GPIO, I
-think that's wrong.
-
-Still I think it should be possible that we agree on my suggestion to
-return NULL in some cases only. Here is a prototype (not even compile
-tested without GPIOLIB):
-
-
-------->8--------
-From: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH] gpiod: let get_optional return NULL in some cases with GPI=
-OLIB disabled
-
-People disagree if gpiod_get_optional should return NULL or
-ERR_PTR(-ENOSYS) if GPIOLIB is disabled. The argument for NULL is that
-the person who decided to disable GPIOLIB is assumed to know that there
-is no GPIO. The reason to stick to ERR_PTR(-ENOSYS) is that it might
-introduce hard to debug problems if that decision is wrong.
-
-So this patch introduces a compromise and let gpiod_get_optional (and
-its variants) return NULL if the device in question cannot have an
-associated GPIO because it is neither instantiated by a device tree nor
-by ACPI.
-
-This should handle most cases that are argued about.
-
-Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
----
- include/linux/gpio/consumer.h | 55 ++++++++++++++++++++++++++++++++++++---=
-----
- 1 file changed, 46 insertions(+), 9 deletions(-)
-
-diff --git a/include/linux/gpio/consumer.h b/include/linux/gpio/consumer.h
-index fb0fde686cb1..0ca29889290d 100644
---- a/include/linux/gpio/consumer.h
-+++ b/include/linux/gpio/consumer.h
-@@ -161,20 +161,48 @@ gpiod_get_index(struct device *dev,
- 	return ERR_PTR(-ENOSYS);
- }
- =
-
--static inline struct gpio_desc *__must_check
--gpiod_get_optional(struct device *dev, const char *con_id,
--		   enum gpiod_flags flags)
-+static inline bool __gpiod_no_optional_possible(struct device *dev)
- {
--	return ERR_PTR(-ENOSYS);
-+	/*
-+	 * gpiod_get_optional et al can only provide a GPIO if at least one of
-+	 * the backends for specifing a GPIO is available. These are device
-+	 * tree, ACPI and gpiolib's lookup tables. The latter isn't available if
-+	 * GPIOLIB is disabled (which is the case here).
-+	 * So if the provided device is unrelated to device tree and ACPI, we
-+	 * can be sure that there is no optional GPIO and let gpiod_get_optional
-+	 * safely return NULL.
-+	 * Otherwise there is still a chance that there is no GPIO but we cannot
-+	 * be sure without having to enable a part of GPIOLIB (i.e. the lookup
-+	 * part). So lets play safe and return an error. (Though there are also
-+	 * arguments that returning NULL then would be beneficial.)
-+	 */
-+
-+	if (IS_ENABLED(CONFIG_OF) && dev && dev->of_node)
-+		return false;
-+
-+	if (IS_ENABLED(CONFIG_ACPI) && dev && ACPI_COMPANION(dev))
-+		return false;
-+
-+	return true;
- }
- =
-
- static inline struct gpio_desc *__must_check
- gpiod_get_index_optional(struct device *dev, const char *con_id,
- 			 unsigned int index, enum gpiod_flags flags)
- {
-+	if (__gpiod_no_optional_possible(dev))
-+		return NULL;
-+
- 	return ERR_PTR(-ENOSYS);
- }
- =
-
-+static inline struct gpio_desc *__must_check
-+gpiod_get_optional(struct device *dev, const char *con_id,
-+		   enum gpiod_flags flags)
-+{
-+	return gpiod_get_index_optional(dev, con_id, 0, flags);
-+}
-+
- static inline struct gpio_descs *__must_check
- gpiod_get_array(struct device *dev, const char *con_id,
- 		enum gpiod_flags flags)
-@@ -186,6 +214,9 @@ static inline struct gpio_descs *__must_check
- gpiod_get_array_optional(struct device *dev, const char *con_id,
- 			 enum gpiod_flags flags)
- {
-+	if (__gpiod_no_optional_possible(dev))
-+		return NULL;
-+
- 	return ERR_PTR(-ENOSYS);
- }
- =
-
-@@ -223,17 +254,20 @@ devm_gpiod_get_index(struct device *dev,
- }
- =
-
- static inline struct gpio_desc *__must_check
--devm_gpiod_get_optional(struct device *dev, const char *con_id,
--			  enum gpiod_flags flags)
-+devm_gpiod_get_index_optional(struct device *dev, const char *con_id,
-+			      unsigned int index, enum gpiod_flags flags)
- {
-+	if (__gpiod_no_optional_possible(dev))
-+		return NULL;
-+
- 	return ERR_PTR(-ENOSYS);
- }
- =
-
- static inline struct gpio_desc *__must_check
--devm_gpiod_get_index_optional(struct device *dev, const char *con_id,
--				unsigned int index, enum gpiod_flags flags)
-+devm_gpiod_get_optional(struct device *dev, const char *con_id,
-+			enum gpiod_flags flags)
- {
--	return ERR_PTR(-ENOSYS);
-+	return devm_gpiod_get_index_optional(dev, con_id, 0, flags);
- }
- =
-
- static inline struct gpio_descs *__must_check
-@@ -247,6 +281,9 @@ static inline struct gpio_descs *__must_check
- devm_gpiod_get_array_optional(struct device *dev, const char *con_id,
- 			      enum gpiod_flags flags)
- {
-+	if (__gpiod_no_optional_possible(dev))
-+		return NULL;
-+
- 	return ERR_PTR(-ENOSYS);
- }
- =
-
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGkgVXdlLAoKT24gRnJpLCBNYXIgMjQsIDIwMTcgYXQgOTowMCBBTSwgVXdlIEtsZWluZS1Lw7Zu
+aWcKPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JvdGU6Cj4gRnJvbTogVXdlIEts
+ZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KPiBTdWJqZWN0OiBb
+UEFUQ0hdIGdwaW9kOiBsZXQgZ2V0X29wdGlvbmFsIHJldHVybiBOVUxMIGluIHNvbWUgY2FzZXMg
+d2l0aCBHUElPTElCIGRpc2FibGVkCj4KPiBQZW9wbGUgZGlzYWdyZWUgaWYgZ3Bpb2RfZ2V0X29w
+dGlvbmFsIHNob3VsZCByZXR1cm4gTlVMTCBvcgo+IEVSUl9QVFIoLUVOT1NZUykgaWYgR1BJT0xJ
+QiBpcyBkaXNhYmxlZC4gVGhlIGFyZ3VtZW50IGZvciBOVUxMIGlzIHRoYXQKPiB0aGUgcGVyc29u
+IHdobyBkZWNpZGVkIHRvIGRpc2FibGUgR1BJT0xJQiBpcyBhc3N1bWVkIHRvIGtub3cgdGhhdCB0
+aGVyZQo+IGlzIG5vIEdQSU8uIFRoZSByZWFzb24gdG8gc3RpY2sgdG8gRVJSX1BUUigtRU5PU1lT
+KSBpcyB0aGF0IGl0IG1pZ2h0Cj4gaW50cm9kdWNlIGhhcmQgdG8gZGVidWcgcHJvYmxlbXMgaWYg
+dGhhdCBkZWNpc2lvbiBpcyB3cm9uZy4KPgo+IFNvIHRoaXMgcGF0Y2ggaW50cm9kdWNlcyBhIGNv
+bXByb21pc2UgYW5kIGxldCBncGlvZF9nZXRfb3B0aW9uYWwgKGFuZAo+IGl0cyB2YXJpYW50cykg
+cmV0dXJuIE5VTEwgaWYgdGhlIGRldmljZSBpbiBxdWVzdGlvbiBjYW5ub3QgaGF2ZSBhbgo+IGFz
+c29jaWF0ZWQgR1BJTyBiZWNhdXNlIGl0IGlzIG5laXRoZXIgaW5zdGFudGlhdGVkIGJ5IGEgZGV2
+aWNlIHRyZWUgbm9yCj4gYnkgQUNQSS4KPgo+IFRoaXMgc2hvdWxkIGhhbmRsZSBtb3N0IGNhc2Vz
+IHRoYXQgYXJlIGFyZ3VlZCBhYm91dC4KPgo+IFNpZ25lZC1vZmYtYnk6IFV3ZSBLbGVpbmUtS8O2
+bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+Cj4gLS0tCj4gIGluY2x1ZGUvbGlu
+dXgvZ3Bpby9jb25zdW1lci5oIHwgNTUgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrLS0tLS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwgNDYgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlv
+bnMoLSkKPgo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2dwaW8vY29uc3VtZXIuaCBiL2lu
+Y2x1ZGUvbGludXgvZ3Bpby9jb25zdW1lci5oCj4gaW5kZXggZmIwZmRlNjg2Y2IxLi4wY2EyOTg4
+OTI5MGQgMTAwNjQ0Cj4gLS0tIGEvaW5jbHVkZS9saW51eC9ncGlvL2NvbnN1bWVyLmgKPiArKysg
+Yi9pbmNsdWRlL2xpbnV4L2dwaW8vY29uc3VtZXIuaAo+IEBAIC0xNjEsMjAgKzE2MSw0OCBAQCBn
+cGlvZF9nZXRfaW5kZXgoc3RydWN0IGRldmljZSAqZGV2LAo+ICAgICAgICAgcmV0dXJuIEVSUl9Q
+VFIoLUVOT1NZUyk7Cj4gIH0KPgo+IC1zdGF0aWMgaW5saW5lIHN0cnVjdCBncGlvX2Rlc2MgKl9f
+bXVzdF9jaGVjawo+IC1ncGlvZF9nZXRfb3B0aW9uYWwoc3RydWN0IGRldmljZSAqZGV2LCBjb25z
+dCBjaGFyICpjb25faWQsCj4gLSAgICAgICAgICAgICAgICAgIGVudW0gZ3Bpb2RfZmxhZ3MgZmxh
+Z3MpCj4gK3N0YXRpYyBpbmxpbmUgYm9vbCBfX2dwaW9kX25vX29wdGlvbmFsX3Bvc3NpYmxlKHN0
+cnVjdCBkZXZpY2UgKmRldikKPiAgewo+IC0gICAgICAgcmV0dXJuIEVSUl9QVFIoLUVOT1NZUyk7
+Cj4gKyAgICAgICAvKgo+ICsgICAgICAgICogZ3Bpb2RfZ2V0X29wdGlvbmFsIGV0IGFsIGNhbiBv
+bmx5IHByb3ZpZGUgYSBHUElPIGlmIGF0IGxlYXN0IG9uZSBvZgo+ICsgICAgICAgICogdGhlIGJh
+Y2tlbmRzIGZvciBzcGVjaWZpbmcgYSBHUElPIGlzIGF2YWlsYWJsZS4gVGhlc2UgYXJlIGRldmlj
+ZQo+ICsgICAgICAgICogdHJlZSwgQUNQSSBhbmQgZ3Bpb2xpYidzIGxvb2t1cCB0YWJsZXMuIFRo
+ZSBsYXR0ZXIgaXNuJ3QgYXZhaWxhYmxlIGlmCj4gKyAgICAgICAgKiBHUElPTElCIGlzIGRpc2Fi
+bGVkICh3aGljaCBpcyB0aGUgY2FzZSBoZXJlKS4KPiArICAgICAgICAqIFNvIGlmIHRoZSBwcm92
+aWRlZCBkZXZpY2UgaXMgdW5yZWxhdGVkIHRvIGRldmljZSB0cmVlIGFuZCBBQ1BJLCB3ZQo+ICsg
+ICAgICAgICogY2FuIGJlIHN1cmUgdGhhdCB0aGVyZSBpcyBubyBvcHRpb25hbCBHUElPIGFuZCBs
+ZXQgZ3Bpb2RfZ2V0X29wdGlvbmFsCj4gKyAgICAgICAgKiBzYWZlbHkgcmV0dXJuIE5VTEwuCj4g
+KyAgICAgICAgKiBPdGhlcndpc2UgdGhlcmUgaXMgc3RpbGwgYSBjaGFuY2UgdGhhdCB0aGVyZSBp
+cyBubyBHUElPIGJ1dCB3ZSBjYW5ub3QKPiArICAgICAgICAqIGJlIHN1cmUgd2l0aG91dCBoYXZp
+bmcgdG8gZW5hYmxlIGEgcGFydCBvZiBHUElPTElCIChpLmUuIHRoZSBsb29rdXAKPiArICAgICAg
+ICAqIHBhcnQpLiBTbyBsZXRzIHBsYXkgc2FmZSBhbmQgcmV0dXJuIGFuIGVycm9yLiAoVGhvdWdo
+IHRoZXJlIGFyZSBhbHNvCj4gKyAgICAgICAgKiBhcmd1bWVudHMgdGhhdCByZXR1cm5pbmcgTlVM
+TCB0aGVuIHdvdWxkIGJlIGJlbmVmaWNpYWwuKQo+ICsgICAgICAgICovCj4gKwo+ICsgICAgICAg
+aWYgKElTX0VOQUJMRUQoQ09ORklHX09GKSAmJiBkZXYgJiYgZGV2LT5vZl9ub2RlKQo+ICsgICAg
+ICAgICAgICAgICByZXR1cm4gZmFsc2U7CgpBdCBmaXJzdCBzaWdodCwgSSB0aG91Z2ggdGhpcyB3
+YXMgT0s6CgogIDEuIE9uIEFSTSB3aXRoIERULCB3ZSBjYW4gYXNzdW1lIENPTkZJR19HUElPTE9C
+PXkuCgogIDIuIEkgbWFuYWdlZCB0byBjb25maWd1cmUgYW4gU0gga2VybmVsIHdpdGggQ09ORklH
+X0dQSU9MT0I9biwgQ09ORklHX09GPXksCiAgICAgYW5kIENPTkZJR19TRVJJQUxfU0hfU0NJPXks
+IGJ1dCBzaW5jZSBTSCBib2FyZHMgd2l0aCBTSC1TQ0kgVUFSVHMgZG8KICAgICBub3QgdXNlIERU
+ICh5ZXQpLCB0aGUgY2hlY2sgZm9yIGRldi0+b2Zfbm9kZSAoZmFsc2UpIHNob3VsZCBoYW5kbGUK
+ICAgICB0aGF0LgoKICAzLiBIb3dldmVyLCBJIG1hbmFnZWQgdG8gZG8gdGhlIHNhbWUgZm9yIGg4
+MzAwLCB3aGljaCBkb2VzIHVzZSBEVC4gSGVuY2UKICAgICBpZiBtY3RybF9ncGlvIHdvdWxkIHN0
+YXJ0IHJlbHlpbmcgb24gZ3Bpb2RfZ2V0X29wdGlvbmFsKCksIHRoaXMgd291bGQKICAgICBicmVh
+ayB0aGUgc2gtc2NpIGRyaXZlciBvbiBoODMwMCA6LSgKICAgICBOb3RlIHRoYXQgaDgzMDAgZG9l
+c24ndCBoYXZlIGFueSBHUElPIGRyaXZlcnMgKHlldD8pLCBzbwogICAgIENPTkZJR19HUElQT0xJ
+Qj1uIG1ha2VzIHBlcmZlY3Qgc2Vuc2UhCgpTbyBJJ20gYWZyYWlkIHRoZSBvbmx5IG9wdGlvbiBp
+cyB0byBhbHdheXMgcmV0dXJuIE5VTEwsIGFuZCBwdXQgdGhlCnJlc3BvbnNhYmlsaXR5IG9uIHRo
+ZSBzaG91bGRlcnMgb2YgdGhlIHN5c3RlbSBpbnRlZ3JhdG9yLi4uCgo+ICsgICAgICAgaWYgKElT
+X0VOQUJMRUQoQ09ORklHX0FDUEkpICYmIGRldiAmJiBBQ1BJX0NPTVBBTklPTihkZXYpKQo+ICsg
+ICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7CgpObyBjb21tZW50cyBhYm91dCB0aGUgQUNQSSBj
+YXNlLgoKPiAgc3RhdGljIGlubGluZSBzdHJ1Y3QgZ3Bpb19kZXNjICpfX211c3RfY2hlY2sKPiAg
+Z3Bpb2RfZ2V0X2luZGV4X29wdGlvbmFsKHN0cnVjdCBkZXZpY2UgKmRldiwgY29uc3QgY2hhciAq
+Y29uX2lkLAo+ICAgICAgICAgICAgICAgICAgICAgICAgICB1bnNpZ25lZCBpbnQgaW5kZXgsIGVu
+dW0gZ3Bpb2RfZmxhZ3MgZmxhZ3MpCj4gIHsKPiArICAgICAgIGlmIChfX2dwaW9kX25vX29wdGlv
+bmFsX3Bvc3NpYmxlKGRldikpCj4gKyAgICAgICAgICAgICAgIHJldHVybiBOVUxMOwo+ICsKPiAg
+ICAgICAgIHJldHVybiBFUlJfUFRSKC1FTk9TWVMpOwoKUmVnYXJkbGVzcyBvZiB0aGUgYWJvdmUs
+IGdpdmVuIHlvdSB1c2UgdGhlIGV4YWN0IHNhbWUgY29uc3RydWN0IGluIGZvdXIKbG9jYXRpb25z
+LCB3aGF0IGFib3V0IGxldHRpbmcgX19ncGlvZF9ub19vcHRpb25hbF9wb3NzaWJsZSgpIHJldHVy
+biB0aGUgTlVMTApvciBFUlJfUFRSIGl0c2VsZiwgYW5kIHJlbmFtaW5nIGl0IHRvIGUuZy4gX19n
+cGlvZF9ub19vcHRpb25hbF9yZXR1cm5fdmFsdWUoKT8KCkdye29ldGplLGVldGluZ31zLAoKICAg
+ICAgICAgICAgICAgICAgICAgICAgR2VlcnQKCi0tCkdlZXJ0IFV5dHRlcmhvZXZlbiAtLSBUaGVy
+ZSdzIGxvdHMgb2YgTGludXggYmV5b25kIGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4ay5vcmcKCklu
+IHBlcnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwgbXlz
+ZWxmIGEgaGFja2VyLiBCdXQKd2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qg
+c2F5ICJwcm9ncmFtbWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0LgogICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIC0tIExpbnVzIFRvcnZhbGRzCgpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdAps
+aW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVh
+ZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
