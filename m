@@ -1,104 +1,62 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH v2 1/2] tty: serial_core: Add name field to uart_port
- struct
-Date: Sat, 25 Mar 2017 16:03:31 +0530
-Message-ID: <eddbba43-eeb5-ab93-c486-f50a16eb077c@ti.com>
-References: <20170324052800.11526-1-vigneshr@ti.com>
- <20170324052800.11526-2-vigneshr@ti.com>
- <CAHp75VeRBq=VVgh7FaiuFF6GjTx98A2oEYyWaQVEPAmwPExMdg@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 0/2] Move uart_register_driver call to device probe for
+ pl010 and sh-sci
+Date: Sun, 26 Mar 2017 11:22:57 +0200
+Message-ID: <CAMuHMdUkfzJw6W0jQZPChN+Uqb0Ewkn86o0Pzd+9+Wi1-XZRAw@mail.gmail.com>
+References: <20170324162634.8880-1-sjoerd.simons@collabora.co.uk> <20170324164202.GI7909@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAHp75VeRBq=VVgh7FaiuFF6GjTx98A2oEYyWaQVEPAmwPExMdg@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Jisheng Zhang <jszhang@marvell.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20170324164202.GI7909@n2100.armlinux.org.uk>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc: Sjoerd Simons <sjoerd.simons@collabora.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
+Hi Russell, Sjoerd,
 
+On Fri, Mar 24, 2017 at 5:42 PM, Russell King - ARM Linux
+<linux@armlinux.org.uk> wrote:
+> On Fri, Mar 24, 2017 at 05:26:32PM +0100, Sjoerd Simons wrote:
+>> When testing on a Renesas board with the PL010 serial driver enabled
+>> serial output broke. Turns out the minor device numbers for both
+>> drivers happen to overlap, causing whichever driver happened to be the
+>> second one to register to fail.
+>
+> How the **** has the SH serial driver ended up with overlapping device
+> numbers?
 
-On 3/24/2017 5:16 PM, Andy Shevchenko wrote:
-> On Fri, Mar 24, 2017 at 7:27 AM, Vignesh R <vigneshr@ti.com> wrote:
->> Introduce a field to store name of uart_port that can be used to easily
->> identify UART port instances on a system that has more than one UART
->> instance. The name is of the form ttyXN(eg. ttyS0, ttyAMA0,..) where N
->> is number that particular UART instance.
->> This field will be useful when printing debug info for a particular port
->> or in register IRQs with unique IRQ name. Port name is populated during
->> uart_add_one_port().
->>
-> 
-> Looks good to me:
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> 
-> Just in case, have you checked if there any possible scenarios where
-> memory will be leaked?
+Interesting...
 
-I ran kmemleak scan after opening and closing a serial port and did not
-see any memleak report. Also uport->tty_groups is allocated and
-deallocated in the same functions uport->name.
+> What happened to our maintained list of allocated major/minor device
+> numbers, which is supposed to stop crap like this happening?
 
-> 
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
->> ---
->>
->> v2:
->> use kasprintf() instead of snprintf()
->> Fix up commit message.
->>
->>  drivers/tty/serial/serial_core.c | 7 +++++++
->>  include/linux/serial_core.h      | 1 +
->>  2 files changed, 8 insertions(+)
->>
->> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
->> index 0fb3f7cce62a..f5572e28d16a 100644
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
->> @@ -2744,6 +2744,12 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
->>         state->pm_state = UART_PM_STATE_UNDEFINED;
->>         uport->cons = drv->cons;
->>         uport->minor = drv->tty_driver->minor_start + uport->line;
->> +       uport->name = kasprintf(GFP_KERNEL, "%s%d", drv->dev_name,
->> +                               drv->tty_driver->name_base + uport->line);
->> +       if (!uport->name) {
->> +               ret = -ENOMEM;
->> +               goto out;
->> +       }
->>
->>         /*
->>          * If this port is a console, then the spinlock is already
->> @@ -2861,6 +2867,7 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
->>         if (uport->type != PORT_UNKNOWN && uport->ops->release_port)
->>                 uport->ops->release_port(uport);
->>         kfree(uport->tty_groups);
->> +       kfree(uport->name);
->>
->>         /*
->>          * Indicate that there isn't a port here anymore.
->> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
->> index 58484fb35cc8..60530678c633 100644
->> --- a/include/linux/serial_core.h
->> +++ b/include/linux/serial_core.h
->> @@ -247,6 +247,7 @@ struct uart_port {
->>         unsigned char           suspended;
->>         unsigned char           irq_wake;
->>         unsigned char           unused[2];
->> +       char                    *name;                  /* port name */
->>         struct attribute_group  *attr_group;            /* port specific attributes */
->>         const struct attribute_group **tty_groups;      /* all attributes (serial core use only) */
->>         struct serial_rs485     rs485;
->> --
->> 2.11.0
->>
-> 
-> 
-> 
+AMBA PL010 has been assigned major 204, minors 16..31,
+SCI has been assigned major 204, minors 8..11.
+
+Over the years, Renesas SoCs have been gaining more and more serial
+ports, leading to
+
+    #define SCI_NPORTS CONFIG_SERIAL_SH_SCI_NR_UARTS
+
+with CONFIG_SERIAL_SH_SCI_NR_UARTS=20 in shmobile_defconfig and
+multi_v7_defconfig (although the maximum value on any supported SoC is 18).
+
+But once the value becomes 5 or more, it starts overflowing into the ttyFWx
+and ttyAMx space.
+
+How to solve this?
+Time for the serial subsystem to switch to dynamic minors, and get rid of the
+what-is-your-serial-port-called-again-on-this-platform
+multi-million-euro question?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
