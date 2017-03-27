@@ -1,88 +1,114 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v8 3/3] printk: fix double printing with earlycon
-Date: Mon, 27 Mar 2017 16:14:33 +0200
-Message-ID: <20170327141432.GH2846@pathway.suse.cz>
-References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
- <20170320100302.8656-1-aleksey.makarov@linaro.org>
+From: Dan Williams <dcbw@redhat.com>
+Subject: Re: [PATCH RFC v4 06/10] net: qualcomm: make qca_common a separate
+ kernel module
+Date: Mon, 27 Mar 2017 10:44:04 -0500
+Message-ID: <1490629444.2719.3.camel@redhat.com>
+References: <1490621848-24828-1-git-send-email-stefan.wahren@i2se.com>
+         <1490621848-24828-7-git-send-email-stefan.wahren@i2se.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170320100302.8656-1-aleksey.makarov@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <1490621848-24828-7-git-send-email-stefan.wahren@i2se.com>
+Sender: netdev-owner@vger.kernel.org
+To: Stefan Wahren <stefan.wahren@i2se.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "David S. Miller" <davem@davemloft.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marcel Holtmann <marcel@holtmann.org>, Sebastian Reichel <sre@kernel.org>, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon 2017-03-20 13:03:00, Aleksey Makarov wrote:
-> If a console was specified by ACPI SPCR table _and_ command line
-> parameters like "console=ttyAMA0" _and_ "earlycon" were specified,
-> then log messages appear twice.
-> 
-> The root cause is that the code traverses the list of specified
-> consoles (the `console_cmdline` array) and stops at the first match.
-> But it may happen that the same console is referred by the elements
-> of this array twice:
-> 
-> 	pl011,mmio,0x87e024000000,115200 -- from SPCR
-> 	ttyAMA0 -- from command line
-> 
-> but in this case `preferred_console` points to the second entry and
-> the flag CON_CONSDEV is not set, so bootconsole is not deregistered.
-> 
-> To fix that, introduce an invariant "The last non-braille console
-> is always the preferred one" on the entries of the console_cmdline
-> array.  Then traverse it in reverse order to be sure that if
-> the console is preferred then it will be the first matching entry.
+On Mon, 2017-03-27 at 15:37 +0200, Stefan Wahren wrote:
+> In order to share common functions between QCA7000 SPI and UART
+> protocol
+> driver the qca_common needs to be a separate kernel module.
 
-Sigh, I am afraid that we need to go this way. I hate the side
-effects of the match() functions. It would be great to get
-rid of them. But it is non-trivial and out of scope for this fix.
+Maybe "qca_eth_common"?  There are many things Qualcomm, slightly fewer
+things Qualcomm Atheros, and "qca_common" isn't very descriptive.
 
+Dan
 
-> Reported-by: Sudeep Holla <sudeep.holla@arm.com>
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index fd752f0c8ef1..462036e7a767 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -1909,8 +1909,28 @@ static int __add_preferred_console(char *name, int idx, char *options,
->  	     i < MAX_CMDLINECONSOLES && c->name[0];
->  	     i++, c++) {
->  		if (strcmp(c->name, name) == 0 && c->index == idx) {
-> -			if (!brl_options)
-> -				preferred_console = i;
-> +			int last;
+> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+> ---
+>  drivers/net/ethernet/qualcomm/Kconfig      |  8 +++++++-
+>  drivers/net/ethernet/qualcomm/Makefile     |  5 +++--
+>  drivers/net/ethernet/qualcomm/qca_common.c | 10 ++++++++++
+>  3 files changed, 20 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qualcomm/Kconfig
+> b/drivers/net/ethernet/qualcomm/Kconfig
+> index d7720bf..b4c369d 100644
+> --- a/drivers/net/ethernet/qualcomm/Kconfig
+> +++ b/drivers/net/ethernet/qualcomm/Kconfig
+> @@ -16,7 +16,13 @@ config NET_VENDOR_QUALCOMM
+>  if NET_VENDOR_QUALCOMM
+>  
+>  config QCA7000
+> -	tristate "Qualcomm Atheros QCA7000 support"
+> +	tristate
+> +	help
+> +	  This enables support for the Qualcomm Atheros QCA7000.
 > +
-> +			if (brl_options)
-> +				return 0;
+> +config QCA7000_SPI
+> +	tristate "Qualcomm Atheros QCA7000 SPI support"
+> +	select QCA7000
+>  	depends on SPI_MASTER && OF
+>  	---help---
+>  	  This SPI protocol driver supports the Qualcomm Atheros
+> QCA7000.
+> diff --git a/drivers/net/ethernet/qualcomm/Makefile
+> b/drivers/net/ethernet/qualcomm/Makefile
+> index 8080570..00d8729 100644
+> --- a/drivers/net/ethernet/qualcomm/Makefile
+> +++ b/drivers/net/ethernet/qualcomm/Makefile
+> @@ -2,7 +2,8 @@
+>  # Makefile for the Qualcomm network device drivers.
+>  #
+>  
+> -obj-$(CONFIG_QCA7000) += qcaspi.o
+> -qcaspi-objs := qca_spi.o qca_common.o qca_7k.o qca_debug.o
+> +obj-$(CONFIG_QCA7000) += qca_common.o
+> +obj-$(CONFIG_QCA7000_SPI) += qcaspi.o
+> +qcaspi-objs := qca_7k.o qca_debug.o qca_spi.o
+>  
+>  obj-y += emac/
+> diff --git a/drivers/net/ethernet/qualcomm/qca_common.c
+> b/drivers/net/ethernet/qualcomm/qca_common.c
+> index d930524..f2c9e76 100644
+> --- a/drivers/net/ethernet/qualcomm/qca_common.c
+> +++ b/drivers/net/ethernet/qualcomm/qca_common.c
+> @@ -21,7 +21,9 @@
+>   *   by an atheros frame while transmitted over a serial channel;
+>   */
+>  
+> +#include <linux/init.h>
+>  #include <linux/kernel.h>
+> +#include <linux/module.h>
+>  
+>  #include "qca_common.h"
+>  
+> @@ -46,6 +48,7 @@ qcafrm_create_header(u8 *buf, u16 length)
+>  
+>  	return QCAFRM_HEADER_LEN;
+>  }
+> +EXPORT_SYMBOL_GPL(qcafrm_create_header);
+>  
+>  u16
+>  qcafrm_create_footer(u8 *buf)
+> @@ -57,6 +60,7 @@ qcafrm_create_footer(u8 *buf)
+>  	buf[1] = 0x55;
+>  	return QCAFRM_FOOTER_LEN;
+>  }
+> +EXPORT_SYMBOL_GPL(qcafrm_create_footer);
+>  
+>  /*   Gather received bytes and try to extract a full ethernet frame
+> by
+>   *   following a simple state machine.
+> @@ -154,3 +158,9 @@ qcafrm_fsm_decode(struct qcafrm_handle *handle,
+> u8 *buf, u16 buf_len, u8 recv_by
+>  
+>  	return ret;
+>  }
+> +EXPORT_SYMBOL_GPL(qcafrm_fsm_decode);
 > +
-> +			/*
-> +			 * Maintain an invariant that will help to find if
-> +			 * the matching console is preferred, see
-> +			 * register_console():
-> +			 *
-> +			 * The last non-braille console is always
-> +			 * the preferred one.
-> +			 */
-> +			for (last = MAX_CMDLINECONSOLES - 1;
-> +			     last >= 0 && !console_cmdline[last].name[0];
-> +			     last--)
-> +				;
-
-This is a rather non-trivial code to find the last element.
-I might make sense to count it in a global variable.
-Then we might remove the check for console_cmdline[i].name[0]
-also in the other for cycles and make them better readable.
-
-> +
-> +			if (i != last)
-> +				swap(console_cmdline[i], console_cmdline[last]);
-
-I was not aware of the swap() function. It is great to know ;-)
-
-Otherwise, I am find with this approach.
-
-Best Regards,
-Petr
+> +MODULE_DESCRIPTION("Qualcomm Atheros Common");
+> +MODULE_AUTHOR("Qualcomm Atheros Communications");
+> +MODULE_AUTHOR("Stefan Wahren <stefan.wahren@i2se.com>");
+> +MODULE_LICENSE("Dual BSD/GPL");
