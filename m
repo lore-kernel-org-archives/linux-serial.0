@@ -1,12 +1,14 @@
 From: Helmut Klein <hgkr.klein@gmail.com>
 Subject: [PATCH v2,
- 0/3] tty/serial: meson_uart: add support for core clock handling
-Date: Tue, 28 Mar 2017 11:25:42 +0200
-Message-ID: <20170328092545.4644-1-hgkr.klein@gmail.com>
+ 3/3] tty/serial: meson_uart: add the core clock handling to the driver
+Date: Tue, 28 Mar 2017 11:25:45 +0200
+Message-ID: <20170328092545.4644-4-hgkr.klein@gmail.com>
+References: <20170328092545.4644-1-hgkr.klein@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170328092545.4644-1-hgkr.klein@gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -16,41 +18,46 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Helmut Klein <hgkr.klein@gmail.com>, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: gregkh@linuxfoundation.org, carlo@caione.org, khilman@baylibre.com
+Cc: linux-amlogic@lists.infradead.org, Helmut Klein <hgkr.klein@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-To be able to use the three none AO uarts of the s905 SoCs (uart_A, uart_B
-& uart_C), the core clock has to be enabled. (see chapter 22.3 of the
-public s905 data sheet) At least the u-boot of my s905 based media player
-(netxeon minimx) doesn't do this. so the driver must do it.
+This patch gets the core clock as provided by the DT and enables it.
+The code was taken from Amlogic's serial driver, and was tested on my
+board.
 
-This patch set does:
-- exposes the clock ids to the dtb
-- adds documentation for the dt-bindings of meson_uart
-- adds the core clock handling to the driver
+Signed-off-by: Helmut Klein <hgkr.klein@gmail.com>
+---
+ drivers/tty/serial/meson_uart.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-The patchset is based on the branch master of the repository in [1]
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 60f16795d16b..cb99112288eb 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -600,6 +600,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+ 	struct resource *res_mem, *res_irq;
+ 	struct uart_port *port;
+ 	struct clk *clk;
++	struct clk *core_clk;
+ 	int ret = 0;
 
-Changes since v1
-- use git to produce the patch set
-- added the clock ids for uart_B and uart_C
+ 	if (pdev->dev.of_node)
+@@ -625,6 +626,15 @@ static int meson_uart_probe(struct platform_device *pdev)
+ 	if (!port)
+ 		return -ENOMEM;
 
-None of the available s905 dts use uart_A actively. So there is no patch
-for any of the existing dts files.
-
-[1] git://git.kernel.org/pub/scm/linux/kernel/git/khilman/linux-amlogic.git
-
-Helmut Klein (3):
-  tty/serial: meson_uart: expose CLKID_UARTx
-  tty/serial: meson_uart: add documentation for the dt-bindings
-  tty/serial: meson_uart: add the core clock handling to the driver
-
- .../bindings/serial/amlogic,meson_uart.txt         | 25 ++++++++++++++++++++++
- drivers/clk/meson/gxbb.h                           |  6 +++---
- drivers/tty/serial/meson_uart.c                    | 10 +++++++++
- include/dt-bindings/clock/gxbb-clkc.h              |  3 +++
- 4 files changed, 41 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson_uart.txt
-
++	core_clk = devm_clk_get(&pdev->dev, "core");
++	if (!IS_ERR(core_clk)) {
++		ret = clk_prepare_enable(core_clk);
++		if (ret) {
++			dev_err(&pdev->dev, "couldn't enable clkc\n");
++			return ret;
++		}
++	}
++
+ 	clk = clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(clk))
+ 		return PTR_ERR(clk);
 --
 2.11.0
