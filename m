@@ -1,454 +1,85 @@
 From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCHv3 06/10] Bluetooth: hci_uart: add serdev driver support library
-Date: Tue, 28 Mar 2017 17:59:35 +0200
-Message-ID: <20170328155939.31566-7-sre@kernel.org>
+Subject: [PATCHv3 09/10] dt-bindings: net: bluetooth: Add nokia-bluetooth
+Date: Tue, 28 Mar 2017 17:59:38 +0200
+Message-ID: <20170328155939.31566-10-sre@kernel.org>
 References: <20170328155939.31566-1-sre@kernel.org>
 Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20170328155939.31566-1-sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Samuel Thibault <samuel.thibault-vYW+cPY1g1pg9hUCZPvPmw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Samuel Thibault <samuel.thibault-vYW+cPY1g1pg9hUCZPvPmw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Add binding document for serial bluetooth chips using
+Nokia H4+ protocol.
 
-This adds library functions for serdev based BT drivers. This is largely
-copied from hci_ldisc.c and modified to use serdev calls. There's a little
-bit of duplication, but I avoided intermixing this as the ldisc code should
-eventually go away.
-
-Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Cc: Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>
-Cc: Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-[Fix style issues reported by Pavel]
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
----
-Changes since PATCHv1:
- * Drop FSF address from license section
- * Add error message if hu->proto->set_baudrate fails
- * Remove useless label/goto in hci_uart_setup
- * Use proper kerneldoc for hci_uart_write_wakeup
- * Use proper kerneldoc for hci_uart_receive_buf
- * Wrap hci_uart_register_device define to get < 80 chars
- * Use do..while instead of goto restart in hci_uart_write_work
- * The file checkpatch clean now
----
- drivers/bluetooth/Makefile     |   1 +
- drivers/bluetooth/hci_serdev.c | 361 +++++++++++++++++++++++++++++++++++++++++
- drivers/bluetooth/hci_uart.h   |   4 +
- 3 files changed, 366 insertions(+)
- create mode 100644 drivers/bluetooth/hci_serdev.c
 
-diff --git a/drivers/bluetooth/Makefile b/drivers/bluetooth/Makefile
-index 80627187c8b6..fd571689eed6 100644
---- a/drivers/bluetooth/Makefile
-+++ b/drivers/bluetooth/Makefile
-@@ -29,6 +29,7 @@ btmrvl-y			:= btmrvl_main.o
- btmrvl-$(CONFIG_DEBUG_FS)	+= btmrvl_debugfs.o
- 
- hci_uart-y				:= hci_ldisc.o
-+hci_uart-$(CONFIG_SERIAL_DEV_BUS)	+= hci_serdev.o
- hci_uart-$(CONFIG_BT_HCIUART_H4)	+= hci_h4.o
- hci_uart-$(CONFIG_BT_HCIUART_BCSP)	+= hci_bcsp.o
- hci_uart-$(CONFIG_BT_HCIUART_LL)	+= hci_ll.o
-diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
+Changes since PATCHv1:
+ * change compatible strings
+ * mention active high/low state for GPIOs
+---
+ .../devicetree/bindings/net/nokia-bluetooth.txt    | 51 ++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/nokia-bluetooth.txt
+
+diff --git a/Documentation/devicetree/bindings/net/nokia-bluetooth.txt b/Documentation/devicetree/bindings/net/nokia-bluetooth.txt
 new file mode 100644
-index 000000000000..f5ccb2c7ef92
+index 000000000000..42be7dc9a70b
 --- /dev/null
-+++ b/drivers/bluetooth/hci_serdev.c
-@@ -0,0 +1,361 @@
-+/*
-+ *  Bluetooth HCI serdev driver lib
-+ *
-+ *  Copyright (C) 2017  Linaro, Ltd., Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-+ *
-+ *  Based on hci_ldisc.c:
-+ *
-+ *  Copyright (C) 2000-2001  Qualcomm Incorporated
-+ *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk-zC7DfRvBq/JWk0Htik3J/w@public.gmane.org>
-+ *  Copyright (C) 2004-2005  Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ */
++++ b/Documentation/devicetree/bindings/net/nokia-bluetooth.txt
+@@ -0,0 +1,51 @@
++Nokia Bluetooth Chips
++---------------------
 +
-+#include <linux/kernel.h>
-+#include <linux/types.h>
-+#include <linux/serdev.h>
-+#include <linux/skbuff.h>
++Nokia phones often come with UART connected bluetooth chips from different
++vendors and modified device API. Those devices speak a protocol named H4+
++(also known as h4p) by Nokia, which is similar to the H4 protocol from the
++Bluetooth standard. In addition to the H4 protocol it specifies two more
++UART status lines for wakeup of UART transceivers to improve power management
++and a few new packet types used to negotiate uart speed.
 +
-+#include <net/bluetooth/bluetooth.h>
-+#include <net/bluetooth/hci_core.h>
++Required properties:
 +
-+#include "hci_uart.h"
++ - compatible: should contain "nokia,h4p-bluetooth" as well as one of the following:
++   * "brcm,bcm2048-nokia"
++   * "ti,wl1271-bluetooth-nokia"
++ - reset-gpios: GPIO specifier, used to reset the BT module (active low)
++ - bluetooth-wakeup-gpios: GPIO specifier, used to wakeup the BT module (active high)
++ - host-wakeup-gpios: GPIO specifier, used to wakeup the host processor (active high)
++ - clock-names: should be "sysclk"
++ - clocks: should contain a clock specifier for every name in clock-names
 +
-+struct serdev_device_ops hci_serdev_client_ops;
++Optional properties:
 +
-+static inline void hci_uart_tx_complete(struct hci_uart *hu, int pkt_type)
-+{
-+	struct hci_dev *hdev = hu->hdev;
++ - None
 +
-+	/* Update HCI stat counters */
-+	switch (pkt_type) {
-+	case HCI_COMMAND_PKT:
-+		hdev->stat.cmd_tx++;
-+		break;
++Example:
 +
-+	case HCI_ACLDATA_PKT:
-+		hdev->stat.acl_tx++;
-+		break;
-+
-+	case HCI_SCODATA_PKT:
-+		hdev->stat.sco_tx++;
-+		break;
-+	}
-+}
-+
-+static inline struct sk_buff *hci_uart_dequeue(struct hci_uart *hu)
-+{
-+	struct sk_buff *skb = hu->tx_skb;
-+
-+	if (!skb)
-+		skb = hu->proto->dequeue(hu);
-+	else
-+		hu->tx_skb = NULL;
-+
-+	return skb;
-+}
-+
-+static void hci_uart_write_work(struct work_struct *work)
-+{
-+	struct hci_uart *hu = container_of(work, struct hci_uart, write_work);
-+	struct serdev_device *serdev = hu->serdev;
-+	struct hci_dev *hdev = hu->hdev;
-+	struct sk_buff *skb;
-+
-+	/* REVISIT:
-+	 * should we cope with bad skbs or ->write() returning an error value?
-+	 */
-+	do {
-+		clear_bit(HCI_UART_TX_WAKEUP, &hu->tx_state);
-+
-+		while ((skb = hci_uart_dequeue(hu))) {
-+			int len;
-+
-+			len = serdev_device_write_buf(serdev,
-+						      skb->data, skb->len);
-+			hdev->stat.byte_tx += len;
-+
-+			skb_pull(skb, len);
-+			if (skb->len) {
-+				hu->tx_skb = skb;
-+				break;
-+			}
-+
-+			hci_uart_tx_complete(hu, hci_skb_pkt_type(skb));
-+			kfree_skb(skb);
-+		}
-+	} while(test_bit(HCI_UART_TX_WAKEUP, &hu->tx_state));
-+
-+	clear_bit(HCI_UART_SENDING, &hu->tx_state);
-+}
-+
-+/* ------- Interface to HCI layer ------ */
-+
-+/* Initialize device */
-+static int hci_uart_open(struct hci_dev *hdev)
-+{
-+	struct hci_uart *hu  = hci_get_drvdata(hdev);
-+
-+	BT_DBG("%s %p", hdev->name, hdev);
-+
-+	serdev_device_set_client_ops(hu->serdev, &hci_serdev_client_ops);
-+
-+	return serdev_device_open(hu->serdev);
-+}
-+
-+/* Reset device */
-+static int hci_uart_flush(struct hci_dev *hdev)
-+{
-+	struct hci_uart *hu  = hci_get_drvdata(hdev);
-+
-+	BT_DBG("hdev %p serdev %p", hdev, hu->serdev);
-+
-+	if (hu->tx_skb) {
-+		kfree_skb(hu->tx_skb); hu->tx_skb = NULL;
-+	}
-+
-+	/* Flush any pending characters in the driver and discipline. */
-+	serdev_device_write_flush(hu->serdev);
-+
-+	if (test_bit(HCI_UART_PROTO_READY, &hu->flags))
-+		hu->proto->flush(hu);
-+
-+	return 0;
-+}
-+
-+/* Close device */
-+static int hci_uart_close(struct hci_dev *hdev)
-+{
-+	struct hci_uart *hu  = hci_get_drvdata(hdev);
-+
-+	BT_DBG("hdev %p", hdev);
-+
-+	hci_uart_flush(hdev);
-+	hdev->flush = NULL;
-+
-+	serdev_device_close(hu->serdev);
-+
-+	return 0;
-+}
-+
-+/* Send frames from HCI layer */
-+static int hci_uart_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
-+{
-+	struct hci_uart *hu = hci_get_drvdata(hdev);
-+
-+	BT_DBG("%s: type %d len %d", hdev->name, hci_skb_pkt_type(skb),
-+	       skb->len);
-+
-+	hu->proto->enqueue(hu, skb);
-+
-+	hci_uart_tx_wakeup(hu);
-+
-+	return 0;
-+}
-+
-+static int hci_uart_setup(struct hci_dev *hdev)
-+{
-+	struct hci_uart *hu = hci_get_drvdata(hdev);
-+	struct hci_rp_read_local_version *ver;
-+	struct sk_buff *skb;
-+	unsigned int speed;
-+	int err;
-+
-+	/* Init speed if any */
-+	if (hu->init_speed)
-+		speed = hu->init_speed;
-+	else if (hu->proto->init_speed)
-+		speed = hu->proto->init_speed;
-+	else
-+		speed = 0;
-+
-+	if (speed)
-+		serdev_device_set_baudrate(hu->serdev, speed);
-+
-+	/* Operational speed if any */
-+	if (hu->oper_speed)
-+		speed = hu->oper_speed;
-+	else if (hu->proto->oper_speed)
-+		speed = hu->proto->oper_speed;
-+	else
-+		speed = 0;
-+
-+	if (hu->proto->set_baudrate && speed) {
-+		err = hu->proto->set_baudrate(hu, speed);
-+		if (err)
-+			BT_ERR("%s: failed to set baudrate", hdev->name);
-+		else
-+			serdev_device_set_baudrate(hu->serdev, speed);
-+	}
-+
-+	if (hu->proto->setup)
-+		return hu->proto->setup(hu);
-+
-+	if (!test_bit(HCI_UART_VND_DETECT, &hu->hdev_flags))
-+		return 0;
-+
-+	skb = __hci_cmd_sync(hdev, HCI_OP_READ_LOCAL_VERSION, 0, NULL,
-+			     HCI_INIT_TIMEOUT);
-+	if (IS_ERR(skb)) {
-+		BT_ERR("%s: Reading local version information failed (%ld)",
-+		       hdev->name, PTR_ERR(skb));
-+		return 0;
-+	}
-+
-+	if (skb->len != sizeof(*ver)) {
-+		BT_ERR("%s: Event length mismatch for version information",
-+		       hdev->name);
-+	}
-+
-+	kfree_skb(skb);
-+	return 0;
-+}
-+
-+/** hci_uart_write_wakeup - transmit buffer wakeup
-+ * @serdev: serial device
-+ *
-+ * This function is called by the serdev framework when it accepts
-+ * more data being sent.
-+ */
-+static void hci_uart_write_wakeup(struct serdev_device *serdev)
-+{
-+	struct hci_uart *hu = serdev_device_get_drvdata(serdev);
-+
-+	BT_DBG("");
-+
-+	if (!hu || serdev != hu->serdev) {
-+		WARN_ON(1);
-+		return;
-+	}
-+
-+	if (test_bit(HCI_UART_PROTO_READY, &hu->flags))
-+		hci_uart_tx_wakeup(hu);
-+}
-+
-+/** hci_uart_receive_buf - receive buffer wakeup
-+ * @serdev: serial device
-+ * @data:   pointer to received data
-+ * @count:  count of received data in bytes
-+ *
-+ * This function is called by the serdev framework when it received data
-+ * in the RX buffer.
-+ *
-+ * Return: number of processed bytes
-+ */
-+static int hci_uart_receive_buf(struct serdev_device *serdev, const u8 *data,
-+				   size_t count)
-+{
-+	struct hci_uart *hu = serdev_device_get_drvdata(serdev);
-+
-+	if (!hu || serdev != hu->serdev) {
-+		WARN_ON(1);
-+		return 0;
-+	}
-+
-+	if (!test_bit(HCI_UART_PROTO_READY, &hu->flags))
-+		return 0;
-+
-+	/* It does not need a lock here as it is already protected by a mutex in
-+	 * tty caller
-+	 */
-+	hu->proto->recv(hu, data, count);
-+
-+	if (hu->hdev)
-+		hu->hdev->stat.byte_rx += count;
-+
-+	return count;
-+}
-+
-+struct serdev_device_ops hci_serdev_client_ops = {
-+	.receive_buf = hci_uart_receive_buf,
-+	.write_wakeup = hci_uart_write_wakeup,
++/ {
++       /* controlled (enabled/disabled) directly by BT module */
++       bluetooth_clk: vctcxo {
++               compatible = "fixed-clock";
++               #clock-cells = <0>;
++               clock-frequency = <38400000>;
++       };
 +};
 +
-+int hci_uart_register_device(struct hci_uart *hu,
-+			     const struct hci_uart_proto *p)
-+{
-+	int err;
-+	struct hci_dev *hdev;
++&uart2 {
++       pinctrl-names = "default";
++       pinctrl-0 = <&uart2_pins>;
 +
-+	BT_DBG("");
++       bluetooth {
++               compatible = "ti,wl1271-bluetooth-nokia", "nokia,h4p-bluetooth";
 +
-+	err = p->open(hu);
-+	if (err)
-+		return err;
++               reset-gpios = <&gpio1 26 GPIO_ACTIVE_LOW>; /* gpio26 */
++               host-wakeup-gpios = <&gpio4 5 GPIO_ACTIVE_HIGH>; /* gpio101 */
++               bluetooth-wakeup-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>; /* gpio37 */
 +
-+	hu->proto = p;
-+	set_bit(HCI_UART_PROTO_READY, &hu->flags);
-+
-+	/* Initialize and register HCI device */
-+	hdev = hci_alloc_dev();
-+	if (!hdev) {
-+		BT_ERR("Can't allocate HCI device");
-+		err = -ENOMEM;
-+		goto err_alloc;
-+	}
-+
-+	hu->hdev = hdev;
-+
-+	hdev->bus = HCI_UART;
-+	hci_set_drvdata(hdev, hu);
-+
-+	INIT_WORK(&hu->write_work, hci_uart_write_work);
-+
-+	/* Only when vendor specific setup callback is provided, consider
-+	 * the manufacturer information valid. This avoids filling in the
-+	 * value for Ericsson when nothing is specified.
-+	 */
-+	if (hu->proto->setup)
-+		hdev->manufacturer = hu->proto->manufacturer;
-+
-+	hdev->open  = hci_uart_open;
-+	hdev->close = hci_uart_close;
-+	hdev->flush = hci_uart_flush;
-+	hdev->send  = hci_uart_send_frame;
-+	hdev->setup = hci_uart_setup;
-+	SET_HCIDEV_DEV(hdev, &hu->serdev->dev);
-+
-+	if (test_bit(HCI_UART_RAW_DEVICE, &hu->hdev_flags))
-+		set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
-+
-+	if (test_bit(HCI_UART_EXT_CONFIG, &hu->hdev_flags))
-+		set_bit(HCI_QUIRK_EXTERNAL_CONFIG, &hdev->quirks);
-+
-+	if (!test_bit(HCI_UART_RESET_ON_INIT, &hu->hdev_flags))
-+		set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
-+
-+	if (test_bit(HCI_UART_CREATE_AMP, &hu->hdev_flags))
-+		hdev->dev_type = HCI_AMP;
-+	else
-+		hdev->dev_type = HCI_PRIMARY;
-+
-+	if (test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
-+		return 0;
-+
-+	if (hci_register_dev(hdev) < 0) {
-+		BT_ERR("Can't register HCI device");
-+		err = -ENODEV;
-+		goto err_register;
-+	}
-+
-+	set_bit(HCI_UART_REGISTERED, &hu->flags);
-+
-+	return 0;
-+
-+err_register:
-+	hci_free_dev(hdev);
-+err_alloc:
-+	clear_bit(HCI_UART_PROTO_READY, &hu->flags);
-+	p->close(hu);
-+	return err;
-+}
-diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
-index 4aff50960cac..1b41c661bbb8 100644
---- a/drivers/bluetooth/hci_uart.h
-+++ b/drivers/bluetooth/hci_uart.h
-@@ -58,6 +58,7 @@
- #define HCI_UART_VND_DETECT	5
- 
- struct hci_uart;
-+struct serdev_device;
- 
- struct hci_uart_proto {
- 	unsigned int id;
-@@ -77,6 +78,7 @@ struct hci_uart_proto {
- 
- struct hci_uart {
- 	struct tty_struct	*tty;
-+	struct serdev_device	*serdev;
- 	struct hci_dev		*hdev;
- 	unsigned long		flags;
- 	unsigned long		hdev_flags;
-@@ -108,6 +110,8 @@ struct hci_uart {
- 
- int hci_uart_register_proto(const struct hci_uart_proto *p);
- int hci_uart_unregister_proto(const struct hci_uart_proto *p);
-+int hci_uart_register_device(struct hci_uart *hu, const struct hci_uart_proto *p);
-+
- int hci_uart_tx_wakeup(struct hci_uart *hu);
- int hci_uart_init_ready(struct hci_uart *hu);
- void hci_uart_init_tty(struct hci_uart *hu);
++               clocks = <&bluetooth_clk>;
++               clock-names = "sysclk";
++       };
++};
 -- 
 2.11.0
