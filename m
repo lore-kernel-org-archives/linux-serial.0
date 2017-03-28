@@ -1,60 +1,81 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH] serial: 8250_EXAR: fix duplicate Kconfig text and add missing help text
-Date: Mon, 27 Mar 2017 19:39:10 -0400
-Message-ID: <20170327233910.13122-1-paul.gortmaker@windriver.com>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [PATCH v8 3/3] printk: fix double printing with earlycon
+Date: Tue, 28 Mar 2017 11:04:04 +0900
+Message-ID: <20170328020404.GA10573@jagdpanzerIV.localdomain>
+References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
+ <20170320100302.8656-1-aleksey.makarov@linaro.org>
+ <20170327141432.GH2846@pathway.suse.cz>
+ <4b561f81-67af-f6a3-76c9-d0d8499c52bd@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <4b561f81-67af-f6a3-76c9-d0d8499c52bd@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: Petr Mladek <pmladek@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-In commit d0aeaa83f0b0f7a92615bbdd6b1f96812f7dcfd2 ("serial: exar:
-split out the exar code from 8250_pci") the exar driver got its own
-Kconfig.  However the text for the new option was never changed from
-the original 8250_PCI text, and hence it appears confusing when you
-get asked the same question twice:
+On (03/27/17 19:28), Aleksey Makarov wrote:
+[..]
+> > > +			/*
+> > > +			 * Maintain an invariant that will help to find if
+> > > +			 * the matching console is preferred, see
+> > > +			 * register_console():
+> > > +			 *
+> > > +			 * The last non-braille console is always
+> > > +			 * the preferred one.
+> > > +			 */
+> > > +			for (last = MAX_CMDLINECONSOLES - 1;
+> > > +			     last >= 0 && !console_cmdline[last].name[0];
+> > > +			     last--)
+> > > +				;
+> > 
+> > This is a rather non-trivial code to find the last element.
+> > I might make sense to count it in a global variable.
+> > Then we might remove the check for console_cmdline[i].name[0]
+> > also in the other for cycles and make them better readable.
+> 
+> Having an additional variable console_cmdline_last pointing to the last element
+> would require maintaining consistency between this variable and
+> contents of console_cmdline.  For the code we have it is not hard, but when code
+> is changed we need to check this.  Also there exists preferred_console that
+> has almost the same meaning but it points not to the last element, but to the
+> last non-braille element.  Also we need to have a special value (-1) for this
+> variable for empty array. So I personally would instead try to rewrite this:
+> 
+> 	for (last = MAX_CMDLINECONSOLES - 1; last >= 0; last--)
+> 		if (console_cmdline[last].name[0])
+> 			break;
+> 
+> Is it better?  If not, I will send a version with console_cmdline_last.
 
-  8250/16550 PCI device support (SERIAL_8250_PCI) [Y/n/m/?] (NEW)
-    8250/16550 PCI device support (SERIAL_8250_EXAR) [Y/n/m] (NEW)
+personally I'm fine with the nested loop. the latest version
+	"for (last = MAX_CMDLINECONSOLES - 1; last >= 0;..."
 
-Adding to the confusion, is that there is no help text for this new
-option to indicate it is specific to a certain family of cards.
+is even easier to read.
 
-Fix both issues at the same time, as well as the space vs. tab issues
-introduced in the same commit.
 
-Fixes: d0aeaa83f0b0 ("serial: exar: split out the exar code from 8250_pci")
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
----
- drivers/tty/serial/8250/Kconfig | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+so we do not just iterate console_cmdline anymore, but also modify it.
+this, probably, has impact on the following scenario
 
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index a65fb8197aec..0e3f529d50e9 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -128,9 +128,13 @@ config SERIAL_8250_PCI
- 	  by the parport_serial driver, enabled with CONFIG_PARPORT_SERIAL.
- 
- config SERIAL_8250_EXAR
--        tristate "8250/16550 PCI device support"
--        depends on SERIAL_8250_PCI
-+	tristate "8250/16550 Exar/Commtech PCI/PCIe device support"
-+	depends on SERIAL_8250_PCI
- 	default SERIAL_8250
-+	help
-+	  This builds support for XR17C1xx, XR17V3xx and some Commtech
-+	  422x PCIe serial cards that are not covered by the more generic
-+	  SERIAL_8250_PCI option.
- 
- config SERIAL_8250_HP300
- 	tristate
--- 
-2.11.0
+CPU0						CPU1
+
+add_preferred_console()			add_preferred_console()
+  __add_preferred_console()		  __add_preferred_console()
+      swap(i1, last)			    swap(i2, last)
+
+	temp1 = i1
+	i1 = last				temp2 = i2
+	last = temp1				i2 = last
+						last = temp2
+
+so both i1 and i2 will point to 'last' now, IOW, we will have two
+identical entries in console_cmdline, while i1 or i2 will be lost.
+
+
+neither add_preferred_console() nor __add_preferred_console() have any
+serialization. and I assume that we can call add_preferred_console()
+concurrently, can't we?
+
+	-ss
