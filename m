@@ -1,90 +1,129 @@
-From: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
-Subject: Re: [PATCH RFC v4 07/10] dt-bindings: net: add binding for QCA7000
- UART
-Date: Tue, 28 Mar 2017 18:18:03 +0200
-Message-ID: <9a094176-ebe7-d906-ca9c-967285e53b07@i2se.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [PATCH RFC v4 06/10] net: qualcomm: make qca_common a separate
+ kernel module
+Date: Tue, 28 Mar 2017 18:24:16 +0200
+Message-ID: <d90f8e33-8b86-2cf7-145b-b15997e152a7@i2se.com>
 References: <1490621848-24828-1-git-send-email-stefan.wahren@i2se.com>
- <1490621848-24828-8-git-send-email-stefan.wahren@i2se.com>
- <CAL_Jsq+gxS4u+b+C_eWeguFR0AFKuq8Hhe9Xo_5B_5w1hxvzEg@mail.gmail.com>
+ <1490621848-24828-7-git-send-email-stefan.wahren@i2se.com>
+ <1490629444.2719.3.camel@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAL_Jsq+gxS4u+b+C_eWeguFR0AFKuq8Hhe9Xo_5B_5w1hxvzEg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1490629444.2719.3.camel@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Dan Williams <dcbw@redhat.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "David S. Miller" <davem@davemloft.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marcel Holtmann <marcel@holtmann.org>, Sebastian Reichel <sre@kernel.org>, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Am 27.03.2017 um 22:30 schrieb Rob Herring:
-> On Mon, Mar 27, 2017 at 8:37 AM, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org> wrote:
->> This is the serdev binding for the QCA7000 UART driver (Ethernet over UART).
->>
->> Signed-off-by: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Am 27.03.2017 um 17:44 schrieb Dan Williams:
+> On Mon, 2017-03-27 at 15:37 +0200, Stefan Wahren wrote:
+>> In order to share common functions between QCA7000 SPI and UART
+>> protocol
+>> driver the qca_common needs to be a separate kernel module.
+> Maybe "qca_eth_common"?  There are many things Qualcomm, slightly fewer
+> things Qualcomm Atheros, and "qca_common" isn't very descriptive.
+
+Since it is a Homeplug powerline chip which doesn't have any physical
+connection to Ethernet only on protocol level, i wouldn't use eth in the
+module name.
+
+The code is very specific to the QCA7000, so how about "qca_7k_common"?
+
+>
+> Dan
+>
+>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 >> ---
+>>  drivers/net/ethernet/qualcomm/Kconfig      |  8 +++++++-
+>>  drivers/net/ethernet/qualcomm/Makefile     |  5 +++--
+>>  drivers/net/ethernet/qualcomm/qca_common.c | 10 ++++++++++
+>>  3 files changed, 20 insertions(+), 3 deletions(-)
 >>
->> According to this binding are still some questions:
->>
->> Where should be the optional hardware flow control defined (at master or slave side)?
-> Probably should be in the slave side. We already have uart-has-rtscts
-> and rts/cts-gpios for the UART. Those mean we have RTS/CTS, but not
-> necessarily that we want to enable them.
->
-> In many cases, the driver may know what it needs.
-
-Like all the other UART settings the hardware flow control can be
-configured in the QCA7000 firmware and the driver can't detect it.
-
-Property suggestion for the slave side:
-
-use-rtscts
-
-
->
->> Is it okay to have two bindings (qca-qca7000-spi and qca-qca7000-uart) or should they be merged?
-> Are they mutually-exclusive or both are used at the same time?
-
-They are mutually-exclusive because they use the same pins.
-
->  What
-> are the dependencies between the interfaces?
-
-Except they uses the same pins of the QCA7000, i can't see any dependency.
-
->
->>
->>  .../devicetree/bindings/net/qca-qca7000-uart.txt   | 31 ++++++++++++++++++++++
->>  1 file changed, 31 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/net/qca-qca7000-uart.txt
->>
->> diff --git a/Documentation/devicetree/bindings/net/qca-qca7000-uart.txt b/Documentation/devicetree/bindings/net/qca-qca7000-uart.txt
->> new file mode 100644
->> index 0000000..f2e0450
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/net/qca-qca7000-uart.txt
->> @@ -0,0 +1,31 @@
->> +* Qualcomm QCA7000 (Ethernet over UART protocol)
+>> diff --git a/drivers/net/ethernet/qualcomm/Kconfig
+>> b/drivers/net/ethernet/qualcomm/Kconfig
+>> index d7720bf..b4c369d 100644
+>> --- a/drivers/net/ethernet/qualcomm/Kconfig
+>> +++ b/drivers/net/ethernet/qualcomm/Kconfig
+>> @@ -16,7 +16,13 @@ config NET_VENDOR_QUALCOMM
+>>  if NET_VENDOR_QUALCOMM
+>>  
+>>  config QCA7000
+>> -	tristate "Qualcomm Atheros QCA7000 support"
+>> +	tristate
+>> +	help
+>> +	  This enables support for the Qualcomm Atheros QCA7000.
 >> +
->> +Note: This binding applies in case the QCA7000 is configured as a
->> +UART slave device. It is possible to preconfigure the UART settings
->> +of the QCA7000 firmware, which can't be changed during runtime.
+>> +config QCA7000_SPI
+>> +	tristate "Qualcomm Atheros QCA7000 SPI support"
+>> +	select QCA7000
+>>  	depends on SPI_MASTER && OF
+>>  	---help---
+>>  	  This SPI protocol driver supports the Qualcomm Atheros
+>> QCA7000.
+>> diff --git a/drivers/net/ethernet/qualcomm/Makefile
+>> b/drivers/net/ethernet/qualcomm/Makefile
+>> index 8080570..00d8729 100644
+>> --- a/drivers/net/ethernet/qualcomm/Makefile
+>> +++ b/drivers/net/ethernet/qualcomm/Makefile
+>> @@ -2,7 +2,8 @@
+>>  # Makefile for the Qualcomm network device drivers.
+>>  #
+>>  
+>> -obj-$(CONFIG_QCA7000) += qcaspi.o
+>> -qcaspi-objs := qca_spi.o qca_common.o qca_7k.o qca_debug.o
+>> +obj-$(CONFIG_QCA7000) += qca_common.o
+>> +obj-$(CONFIG_QCA7000_SPI) += qcaspi.o
+>> +qcaspi-objs := qca_7k.o qca_debug.o qca_spi.o
+>>  
+>>  obj-y += emac/
+>> diff --git a/drivers/net/ethernet/qualcomm/qca_common.c
+>> b/drivers/net/ethernet/qualcomm/qca_common.c
+>> index d930524..f2c9e76 100644
+>> --- a/drivers/net/ethernet/qualcomm/qca_common.c
+>> +++ b/drivers/net/ethernet/qualcomm/qca_common.c
+>> @@ -21,7 +21,9 @@
+>>   *   by an atheros frame while transmitted over a serial channel;
+>>   */
+>>  
+>> +#include <linux/init.h>
+>>  #include <linux/kernel.h>
+>> +#include <linux/module.h>
+>>  
+>>  #include "qca_common.h"
+>>  
+>> @@ -46,6 +48,7 @@ qcafrm_create_header(u8 *buf, u16 length)
+>>  
+>>  	return QCAFRM_HEADER_LEN;
+>>  }
+>> +EXPORT_SYMBOL_GPL(qcafrm_create_header);
+>>  
+>>  u16
+>>  qcafrm_create_footer(u8 *buf)
+>> @@ -57,6 +60,7 @@ qcafrm_create_footer(u8 *buf)
+>>  	buf[1] = 0x55;
+>>  	return QCAFRM_FOOTER_LEN;
+>>  }
+>> +EXPORT_SYMBOL_GPL(qcafrm_create_footer);
+>>  
+>>  /*   Gather received bytes and try to extract a full ethernet frame
+>> by
+>>   *   following a simple state machine.
+>> @@ -154,3 +158,9 @@ qcafrm_fsm_decode(struct qcafrm_handle *handle,
+>> u8 *buf, u16 buf_len, u8 recv_by
+>>  
+>>  	return ret;
+>>  }
+>> +EXPORT_SYMBOL_GPL(qcafrm_fsm_decode);
 >> +
->> +Required properties:
->> +- compatible        : Should be "qca,qca7000-uart"
->> +
->> +Optional properties:
->> +- local-mac-address : 6 bytes, Specifies MAC address
-> The description can be "see ./ethernet.txt"
->
->> +- current-speed     : Specifies the serial device speed in
->> +                     bits per second (default = 115200), which is
->> +                     predefined by the QCA7000 firmware configuration
-> Add this to the slave binding doc with some caveats as to when this
-> should or should not be used as we discussed.
->
-> Rob
+>> +MODULE_DESCRIPTION("Qualcomm Atheros Common");
+>> +MODULE_AUTHOR("Qualcomm Atheros Communications");
+>> +MODULE_AUTHOR("Stefan Wahren <stefan.wahren@i2se.com>");
+>> +MODULE_LICENSE("Dual BSD/GPL");
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+*** Diese E-Mail ist allein für den bezeichneten Adressaten bestimmt. Sie kann rechtlich vertrauliche Informationen enthalten. Wenn Sie diese E-Mail irrtümlich erhalten haben, informieren Sie bitte unverzüglich den Absender per E-Mail und löschen Sie diese E-Mail von Ihrem Computer, ohne Kopien anzufertigen.
+Vielen Dank. ***
+
+*** This email is for the exclusive use of the addressee. It may contain legally privileged information. If you have received this message in error, please notify the sender by email immediately and delete the message from your computer without making any copies.
+Thank you. ***
