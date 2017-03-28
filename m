@@ -1,127 +1,131 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v8 3/3] printk: fix double printing with earlycon
-Date: Tue, 28 Mar 2017 14:56:57 +0200
-Message-ID: <20170328125657.GJ2846@pathway.suse.cz>
-References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
- <20170320100302.8656-1-aleksey.makarov@linaro.org>
- <20170327141432.GH2846@pathway.suse.cz>
- <4b561f81-67af-f6a3-76c9-d0d8499c52bd@linaro.org>
- <20170328020404.GA10573@jagdpanzerIV.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170328020404.GA10573@jagdpanzerIV.localdomain>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCHv3 02/10] serdev: add serdev_device_wait_until_sent
+Date: Tue, 28 Mar 2017 17:59:31 +0200
+Message-ID: <20170328155939.31566-3-sre@kernel.org>
+References: <20170328155939.31566-1-sre@kernel.org>
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170328155939.31566-1-sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Samuel Thibault <samuel.thibault-vYW+cPY1g1pg9hUCZPvPmw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 2017-03-28 11:04:04, Sergey Senozhatsky wrote:
-> On (03/27/17 19:28), Aleksey Makarov wrote:
-> [..]
-> > > > +			/*
-> > > > +			 * Maintain an invariant that will help to find if
-> > > > +			 * the matching console is preferred, see
-> > > > +			 * register_console():
-> > > > +			 *
-> > > > +			 * The last non-braille console is always
-> > > > +			 * the preferred one.
-> > > > +			 */
-> > > > +			for (last = MAX_CMDLINECONSOLES - 1;
-> > > > +			     last >= 0 && !console_cmdline[last].name[0];
-> > > > +			     last--)
-> > > > +				;
-> > > 
-> > > This is a rather non-trivial code to find the last element.
-> > > I might make sense to count it in a global variable.
-> > > Then we might remove the check for console_cmdline[i].name[0]
-> > > also in the other for cycles and make them better readable.
-> > 
-> > Having an additional variable console_cmdline_last pointing to the last element
-> > would require maintaining consistency between this variable and
-> > contents of console_cmdline.  For the code we have it is not hard, but when code
-> > is changed we need to check this.  Also there exists preferred_console that
-> > has almost the same meaning but it points not to the last element, but to the
-> > last non-braille element.  Also we need to have a special value (-1) for this
-> > variable for empty array. So I personally would instead try to rewrite this:
-> > 
-> > 	for (last = MAX_CMDLINECONSOLES - 1; last >= 0; last--)
-> > 		if (console_cmdline[last].name[0])
-> > 			break;
-> > 
-> > Is it better?  If not, I will send a version with console_cmdline_last.
-> 
-> personally I'm fine with the nested loop. the latest version
-> 	"for (last = MAX_CMDLINECONSOLES - 1; last >= 0;..."
-> 
-> is even easier to read.
+Add method, which waits until the transmission buffer has been sent.
+Note, that the change in ttyport_write_wakeup is related, since
+tty_wait_until_sent will hang without that change.
 
-The number of elements is bumped on a single location, so there
-is not much to synchronize. The old approach was fine because
-the for cycles were needed anyway, they started on the 0th element,
-and NULL ended arrays are rather common practice.
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
+Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+Changes since PATCHv2:
+ * Avoid goto in ttyport_write_wakeup
+---
+ drivers/tty/serdev/core.c           | 11 +++++++++++
+ drivers/tty/serdev/serdev-ttyport.c | 18 ++++++++++++++----
+ include/linux/serdev.h              |  3 +++
+ 3 files changed, 28 insertions(+), 4 deletions(-)
 
-But we are searching the array from the end now. Also we use the
-for cycle just to get the number here. This is not a common
-practice and it makes the code more complicated and strange from
-my point of view.
-
-If you do not like -1, you could use console_cmdline_cnt and
-start with 0. I would actually do so because it is a common
-approach and easy to understand.
-
-> 
-> so we do not just iterate console_cmdline anymore, but also modify it.
-> this, probably, has impact on the following scenario
-> 
-> CPU0						CPU1
-> 
-> add_preferred_console()			add_preferred_console()
->   __add_preferred_console()		  __add_preferred_console()
->       swap(i1, last)			    swap(i2, last)
-> 
-> 	temp1 = i1
-> 	i1 = last				temp2 = i2
-> 	last = temp1				i2 = last
-> 						last = temp2
-> 
-> so both i1 and i2 will point to 'last' now, IOW, we will have two
-> identical entries in console_cmdline, while i1 or i2 will be lost.
-> 
-> 
-> neither add_preferred_console() nor __add_preferred_console() have any
-> serialization. and I assume that we can call add_preferred_console()
-> concurrently, can't we?
-
-Very good point!
-
-Well, if this race exists, it was racy even before. Of course,
-the old race was only when new entry was added. It would
-be more visible now because also shuffling would be racy.
-
-OK, most add_preferred_console() calls are in functions
-that are defined as console_initcall(). They seem to
-be defined only when the respective drivers are built in.
-It seems that these initcalls are serialized, see console_init().
-
-add_preferred_console() is used also in uart_add_one_port():
-
-   -> uart_add_one_port()
-    -> of_console_check()
-     -> add_preferred_console()
-
-But there the calls are synchronized as well via
-port_mutex.
-
-Finally, __add_preferred_console() is called also from
-console_setup(). It is called via do_early_param()
-even before the console_initcall() functions. It is
-serialized as well.
-
-If I did not miss anything, it would seem that
-__add_preferred_console() are called synchronously
-and only during boot by design.
-
-Best Regards,
-Petr
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index f4c6c90add78..a63b74031e22 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -173,6 +173,17 @@ void serdev_device_set_flow_control(struct serdev_device *serdev, bool enable)
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_set_flow_control);
+ 
++void serdev_device_wait_until_sent(struct serdev_device *serdev, long timeout)
++{
++	struct serdev_controller *ctrl = serdev->ctrl;
++
++	if (!ctrl || !ctrl->ops->wait_until_sent)
++		return;
++
++	ctrl->ops->wait_until_sent(ctrl, timeout);
++}
++EXPORT_SYMBOL_GPL(serdev_device_wait_until_sent);
++
+ static int serdev_drv_probe(struct device *dev)
+ {
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index d05393594f15..50dc75c4d204 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -14,6 +14,7 @@
+ #include <linux/serdev.h>
+ #include <linux/tty.h>
+ #include <linux/tty_driver.h>
++#include <linux/poll.h>
+ 
+ #define SERPORT_ACTIVE		1
+ 
+@@ -46,11 +47,11 @@ static void ttyport_write_wakeup(struct tty_port *port)
+ 	struct serdev_controller *ctrl = port->client_data;
+ 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+ 
+-	if (!test_and_clear_bit(TTY_DO_WRITE_WAKEUP, &port->tty->flags))
+-		return;
+-
+-	if (test_bit(SERPORT_ACTIVE, &serport->flags))
++	if (test_and_clear_bit(TTY_DO_WRITE_WAKEUP, &port->tty->flags) &&
++	    test_bit(SERPORT_ACTIVE, &serport->flags))
+ 		serdev_controller_write_wakeup(ctrl);
++
++	wake_up_interruptible_poll(&port->tty->write_wait, POLLOUT);
+ }
+ 
+ static const struct tty_port_client_operations client_ops = {
+@@ -167,6 +168,14 @@ static void ttyport_set_flow_control(struct serdev_controller *ctrl, bool enable
+ 	tty_set_termios(tty, &ktermios);
+ }
+ 
++static void ttyport_wait_until_sent(struct serdev_controller *ctrl, long timeout)
++{
++	struct serport *serport = serdev_controller_get_drvdata(ctrl);
++	struct tty_struct *tty = serport->tty;
++
++	tty_wait_until_sent(tty, timeout);
++}
++
+ static const struct serdev_controller_ops ctrl_ops = {
+ 	.write_buf = ttyport_write_buf,
+ 	.write_flush = ttyport_write_flush,
+@@ -175,6 +184,7 @@ static const struct serdev_controller_ops ctrl_ops = {
+ 	.close = ttyport_close,
+ 	.set_flow_control = ttyport_set_flow_control,
+ 	.set_baudrate = ttyport_set_baudrate,
++	.wait_until_sent = ttyport_wait_until_sent,
+ };
+ 
+ struct device *serdev_tty_port_register(struct tty_port *port,
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index 9519da6253a8..a308b206d204 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -81,6 +81,7 @@ struct serdev_controller_ops {
+ 	void (*close)(struct serdev_controller *);
+ 	void (*set_flow_control)(struct serdev_controller *, bool);
+ 	unsigned int (*set_baudrate)(struct serdev_controller *, unsigned int);
++	void (*wait_until_sent)(struct serdev_controller *, long);
+ };
+ 
+ /**
+@@ -186,6 +187,7 @@ int serdev_device_open(struct serdev_device *);
+ void serdev_device_close(struct serdev_device *);
+ unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
+ void serdev_device_set_flow_control(struct serdev_device *, bool);
++void serdev_device_wait_until_sent(struct serdev_device *, long);
+ int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
+ void serdev_device_write_flush(struct serdev_device *);
+ int serdev_device_write_room(struct serdev_device *);
+@@ -223,6 +225,7 @@ static inline unsigned int serdev_device_set_baudrate(struct serdev_device *sdev
+ 	return 0;
+ }
+ static inline void serdev_device_set_flow_control(struct serdev_device *sdev, bool enable) {}
++static inline void serdev_device_wait_until_sent(struct serdev_device *sdev, long timeout) {}
+ static inline int serdev_device_write_buf(struct serdev_device *sdev, const unsigned char *buf, size_t count)
+ {
+ 	return -ENODEV;
+-- 
+2.11.0
