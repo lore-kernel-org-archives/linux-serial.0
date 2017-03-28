@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 3/3] serial: sh-sci: Fix (AUTO)RTS in sci_init_pins()
-Date: Tue, 28 Mar 2017 11:13:46 +0200
-Message-ID: <1490692426-19252-4-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH v2 1/3] serial: sh-sci: Fix hang in sci_reset()
+Date: Tue, 28 Mar 2017 11:13:44 +0200
+Message-ID: <1490692426-19252-2-git-send-email-geert+renesas@glider.be>
 References: <1490692426-19252-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1490692426-19252-1-git-send-email-geert+renesas@glider.be>
@@ -10,72 +10,61 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Wolfram Sang <wsa@sang-engineering.com>, Christoph Baumann <cbaumann@visteon.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-If a UART has dedicated RTS/CTS pins, and hardware control flow is
-disabled (or AUTORTS is not yet effective), changing any serial port
-configuration deasserts RTS, as .set_termios() calls sci_init_pins().
+When the .set_termios() callback resets the UART, it first waits (busy
+loops) until all characters in the transmit FIFO have been transmitted,
+to prevent a port configuration change from impacting these characters.
 
-To fix this, consider the current (AUTO)RTS state when (re)initializing
-the pins.  Note that for SCIFA/SCIFB, AUTORTS needs explicit
-configuration of the RTS# pin function, while (H)SCIF handles this
-automatically.
+However, if the UART has dedicated RTS/CTS hardware flow control
+enabled, these characters may have been stuck in the FIFO due to CTS not
+being asserted by the remote side.
 
-Fixes: d2b9775d795ec05f ("serial: sh-sci: Correct pin initialization on (H)SCIF")
-Fixes: e9d7a45a03991349 ("serial: sh-sci: Add pin initialization for SCIFA/SCIFB")
+  - When a new user opens the port, .set_termios() is called while
+    transmission is still disabled, leading to an infinite loop:
+
+	NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s!
+
+  - When an active user changes port configuration without waiting for
+    the draining of the transmit FIFO, this may also block indefinitely,
+    until CTS is asserted by the remote side.
+
+This has been observed with SCIFA (on r8a7740/armadillo), and SCIFB and
+HSCIF (on r8a7791/koelsch).
+
+To fix this, remove the code that waits for the draining of the transmit
+FIFO.
+
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
+To reproduce:
+
+    stty -echo < /dev/scifb0
+    stty crtscts < /dev/scifb0
+    echo hello > /dev/scifb0	# returns early (wrote to FIFO)
+    echo hello > /dev/scifb0	# hangs
+
 v2:
-  - New.
+  - Remove the draining of the transmit FIFO completely, instead of
+    skipping it when tranmission was not enabled, as the hang could
+    still be reproduced when an active user changes port configuration
+    without waiting for the draining of the transmit FIFO.
 ---
- drivers/tty/serial/sh-sci.c | 25 +++++++++++++++++++------
- 1 file changed, 19 insertions(+), 6 deletions(-)
+ drivers/tty/serial/sh-sci.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 6e405fb5a23f0b4a..71707e8e6e3ffe76 100644
+index 1df57461ece4337b..446a23bee14008bb 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -683,24 +683,37 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
- 	}
+@@ -2159,10 +2159,6 @@ static void sci_reset(struct uart_port *port)
+ 	unsigned int status;
+ 	struct sci_port *s = to_sci_port(port);
  
- 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
-+		u16 data = serial_port_in(port, SCPDR);
- 		u16 ctrl = serial_port_in(port, SCPCR);
+-	do {
+-		status = serial_port_in(port, SCxSR);
+-	} while (!(status & SCxSR_TEND(port)));
+-
+ 	serial_port_out(port, SCSCR, 0x00);	/* TE=0, RE=0, CKE1=0 */
  
- 		/* Enable RXD and TXD pin functions */
- 		ctrl &= ~(SCPCR_RXDC | SCPCR_TXDC);
- 		if (to_sci_port(port)->has_rtscts) {
--			/* RTS# is output, driven 1 */
--			ctrl |= SCPCR_RTSC;
--			serial_port_out(port, SCPDR,
--				serial_port_in(port, SCPDR) | SCPDR_RTSD);
-+			/* RTS# is output, active low, unless autorts */
-+			if (!(port->mctrl & TIOCM_RTS)) {
-+				ctrl |= SCPCR_RTSC;
-+				data |= SCPDR_RTSD;
-+			} else if (!s->autorts) {
-+				ctrl |= SCPCR_RTSC;
-+				data &= ~SCPDR_RTSD;
-+			} else {
-+				/* Enable RTS# pin function */
-+				ctrl &= ~SCPCR_RTSC;
-+			}
- 			/* Enable CTS# pin function */
- 			ctrl &= ~SCPCR_CTSC;
- 		}
-+		serial_port_out(port, SCPDR, data);
- 		serial_port_out(port, SCPCR, ctrl);
- 	} else if (sci_getreg(port, SCSPTR)->size) {
- 		u16 status = serial_port_in(port, SCSPTR);
- 
--		/* RTS# is output, driven 1 */
--		status |= SCSPTR_RTSIO | SCSPTR_RTSDT;
-+		/* RTS# is always output; and active low, unless autorts */
-+		status |= SCSPTR_RTSIO;
-+		if (!(port->mctrl & TIOCM_RTS))
-+			status |= SCSPTR_RTSDT;
-+		else if (!s->autorts)
-+			status &= ~SCSPTR_RTSDT;
- 		/* CTS# and SCK are inputs */
- 		status &= ~(SCSPTR_CTSIO | SCSPTR_SCKIO);
- 		serial_port_out(port, SCSPTR, status);
+ 	reg = sci_getreg(port, SCFCR);
 -- 
 2.7.4
