@@ -1,68 +1,90 @@
-From: Sebastian Reichel <sre@kernel.org>
-Subject: [PATCHv3 07/10] Bluetooth: hci_serdev: do not open device in hci open
-Date: Tue, 28 Mar 2017 17:59:36 +0200
-Message-ID: <20170328155939.31566-8-sre@kernel.org>
-References: <20170328155939.31566-1-sre@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170328155939.31566-1-sre@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sre@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>
-Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Subject: Re: [PATCH RFC v4 07/10] dt-bindings: net: add binding for QCA7000
+ UART
+Date: Tue, 28 Mar 2017 18:18:03 +0200
+Message-ID: <9a094176-ebe7-d906-ca9c-967285e53b07@i2se.com>
+References: <1490621848-24828-1-git-send-email-stefan.wahren@i2se.com>
+ <1490621848-24828-8-git-send-email-stefan.wahren@i2se.com>
+ <CAL_Jsq+gxS4u+b+C_eWeguFR0AFKuq8Hhe9Xo_5B_5w1hxvzEg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAL_Jsq+gxS4u+b+C_eWeguFR0AFKuq8Hhe9Xo_5B_5w1hxvzEg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-The device driver may need to communicate with the UART
-device while the Bluetooth device is closed (e.g. due
-to interrupts).
+Am 27.03.2017 um 22:30 schrieb Rob Herring:
+> On Mon, Mar 27, 2017 at 8:37 AM, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org> wrote:
+>> This is the serdev binding for the QCA7000 UART driver (Ethernet over UART).
+>>
+>> Signed-off-by: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+>> ---
+>>
+>> According to this binding are still some questions:
+>>
+>> Where should be the optional hardware flow control defined (at master or slave side)?
+> Probably should be in the slave side. We already have uart-has-rtscts
+> and rts/cts-gpios for the UART. Those mean we have RTS/CTS, but not
+> necessarily that we want to enable them.
+>
+> In many cases, the driver may know what it needs.
 
-Acked-by: Pavel Machek <pavel@ucw.cz>
-Signed-off-by: Sebastian Reichel <sre@kernel.org>
----
- drivers/bluetooth/hci_serdev.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+Like all the other UART settings the hardware flow control can be
+configured in the QCA7000 firmware and the driver can't detect it.
 
-diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
-index f5ccb2c7ef92..3b8ac0ece3fb 100644
---- a/drivers/bluetooth/hci_serdev.c
-+++ b/drivers/bluetooth/hci_serdev.c
-@@ -104,13 +104,9 @@ static void hci_uart_write_work(struct work_struct *work)
- /* Initialize device */
- static int hci_uart_open(struct hci_dev *hdev)
- {
--	struct hci_uart *hu  = hci_get_drvdata(hdev);
--
- 	BT_DBG("%s %p", hdev->name, hdev);
- 
--	serdev_device_set_client_ops(hu->serdev, &hci_serdev_client_ops);
--
--	return serdev_device_open(hu->serdev);
-+	return 0;
- }
- 
- /* Reset device */
-@@ -136,15 +132,11 @@ static int hci_uart_flush(struct hci_dev *hdev)
- /* Close device */
- static int hci_uart_close(struct hci_dev *hdev)
- {
--	struct hci_uart *hu  = hci_get_drvdata(hdev);
--
- 	BT_DBG("hdev %p", hdev);
- 
- 	hci_uart_flush(hdev);
- 	hdev->flush = NULL;
- 
--	serdev_device_close(hu->serdev);
--
- 	return 0;
- }
- 
-@@ -289,6 +281,8 @@ int hci_uart_register_device(struct hci_uart *hu,
- 
- 	BT_DBG("");
- 
-+	serdev_device_set_client_ops(hu->serdev, &hci_serdev_client_ops);
-+
- 	err = p->open(hu);
- 	if (err)
- 		return err;
--- 
-2.11.0
+Property suggestion for the slave side:
+
+use-rtscts
+
+
+>
+>> Is it okay to have two bindings (qca-qca7000-spi and qca-qca7000-uart) or should they be merged?
+> Are they mutually-exclusive or both are used at the same time?
+
+They are mutually-exclusive because they use the same pins.
+
+>  What
+> are the dependencies between the interfaces?
+
+Except they uses the same pins of the QCA7000, i can't see any dependency.
+
+>
+>>
+>>  .../devicetree/bindings/net/qca-qca7000-uart.txt   | 31 ++++++++++++++++++++++
+>>  1 file changed, 31 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/net/qca-qca7000-uart.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/qca-qca7000-uart.txt b/Documentation/devicetree/bindings/net/qca-qca7000-uart.txt
+>> new file mode 100644
+>> index 0000000..f2e0450
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/net/qca-qca7000-uart.txt
+>> @@ -0,0 +1,31 @@
+>> +* Qualcomm QCA7000 (Ethernet over UART protocol)
+>> +
+>> +Note: This binding applies in case the QCA7000 is configured as a
+>> +UART slave device. It is possible to preconfigure the UART settings
+>> +of the QCA7000 firmware, which can't be changed during runtime.
+>> +
+>> +Required properties:
+>> +- compatible        : Should be "qca,qca7000-uart"
+>> +
+>> +Optional properties:
+>> +- local-mac-address : 6 bytes, Specifies MAC address
+> The description can be "see ./ethernet.txt"
+>
+>> +- current-speed     : Specifies the serial device speed in
+>> +                     bits per second (default = 115200), which is
+>> +                     predefined by the QCA7000 firmware configuration
+> Add this to the slave binding doc with some caveats as to when this
+> should or should not be used as we discussed.
+>
+> Rob
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
