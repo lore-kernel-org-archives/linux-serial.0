@@ -1,151 +1,55 @@
-From: Dan Williams <dcbw@redhat.com>
-Subject: Re: [PATCH RFC v4 06/10] net: qualcomm: make qca_common a separate
- kernel module
-Date: Tue, 28 Mar 2017 12:18:57 -0500
-Message-ID: <1490721537.4915.1.camel@redhat.com>
-References: <1490621848-24828-1-git-send-email-stefan.wahren@i2se.com>
-         <1490621848-24828-7-git-send-email-stefan.wahren@i2se.com>
-         <1490629444.2719.3.camel@redhat.com>
-         <d90f8e33-8b86-2cf7-145b-b15997e152a7@i2se.com>
+From: Jerome Brunet <jbrunet@baylibre.com>
+Subject: Re: [PATCH v2, 3/3] tty/serial: meson_uart: add the core clock
+ handling to the driver
+Date: Tue, 28 Mar 2017 21:16:02 +0200
+Message-ID: <1490728562.20764.9.camel@baylibre.com>
+References: <20170328092545.4644-1-hgkr.klein@gmail.com>
+ <20170328092545.4644-4-hgkr.klein@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d90f8e33-8b86-2cf7-145b-b15997e152a7@i2se.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Wahren <stefan.wahren@i2se.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "David S. Miller" <davem@davemloft.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marcel Holtmann <marcel@holtmann.org>, Sebastian Reichel <sre@kernel.org>, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170328092545.4644-4-hgkr.klein@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Helmut Klein <hgkr.klein@gmail.com>, gregkh@linuxfoundation.org, carlo@caione.org, khilman@baylibre.com
+Cc: linux-amlogic@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2017-03-28 at 18:24 +0200, Stefan Wahren wrote:
-> Am 27.03.2017 um 17:44 schrieb Dan Williams:
-> > On Mon, 2017-03-27 at 15:37 +0200, Stefan Wahren wrote:
-> > > In order to share common functions between QCA7000 SPI and UART
-> > > protocol
-> > > driver the qca_common needs to be a separate kernel module.
-> > 
-> > Maybe "qca_eth_common"?  There are many things Qualcomm, slightly
-> > fewer
-> > things Qualcomm Atheros, and "qca_common" isn't very descriptive.
-> 
-> Since it is a Homeplug powerline chip which doesn't have any physical
-> connection to Ethernet only on protocol level, i wouldn't use eth in
-> the
-> module name.
-> 
-> The code is very specific to the QCA7000, so how about
-> "qca_7k_common"?
-
-Sure; I just saw it was under drivers/net/ethernet, which kinda means
-it's ethernet-related...  But 7k common is fine.
-
-Dan
-
-> > 
-> > Dan
-> > 
-> > > Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> > > ---
-> > >  drivers/net/ethernet/qualcomm/Kconfig      |  8 +++++++-
-> > >  drivers/net/ethernet/qualcomm/Makefile     |  5 +++--
-> > >  drivers/net/ethernet/qualcomm/qca_common.c | 10 ++++++++++
-> > >  3 files changed, 20 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/qualcomm/Kconfig
-> > > b/drivers/net/ethernet/qualcomm/Kconfig
-> > > index d7720bf..b4c369d 100644
-> > > --- a/drivers/net/ethernet/qualcomm/Kconfig
-> > > +++ b/drivers/net/ethernet/qualcomm/Kconfig
-> > > @@ -16,7 +16,13 @@ config NET_VENDOR_QUALCOMM
-> > >  if NET_VENDOR_QUALCOMM
-> > >  
-> > >  config QCA7000
-> > > -	tristate "Qualcomm Atheros QCA7000 support"
-> > > +	tristate
-> > > +	help
-> > > +	  This enables support for the Qualcomm Atheros QCA7000.
-> > > +
-> > > +config QCA7000_SPI
-> > > +	tristate "Qualcomm Atheros QCA7000 SPI support"
-> > > +	select QCA7000
-> > >  	depends on SPI_MASTER && OF
-> > >  	---help---
-> > >  	  This SPI protocol driver supports the Qualcomm Atheros
-> > > QCA7000.
-> > > diff --git a/drivers/net/ethernet/qualcomm/Makefile
-> > > b/drivers/net/ethernet/qualcomm/Makefile
-> > > index 8080570..00d8729 100644
-> > > --- a/drivers/net/ethernet/qualcomm/Makefile
-> > > +++ b/drivers/net/ethernet/qualcomm/Makefile
-> > > @@ -2,7 +2,8 @@
-> > >  # Makefile for the Qualcomm network device drivers.
-> > >  #
-> > >  
-> > > -obj-$(CONFIG_QCA7000) += qcaspi.o
-> > > -qcaspi-objs := qca_spi.o qca_common.o qca_7k.o qca_debug.o
-> > > +obj-$(CONFIG_QCA7000) += qca_common.o
-> > > +obj-$(CONFIG_QCA7000_SPI) += qcaspi.o
-> > > +qcaspi-objs := qca_7k.o qca_debug.o qca_spi.o
-> > >  
-> > >  obj-y += emac/
-> > > diff --git a/drivers/net/ethernet/qualcomm/qca_common.c
-> > > b/drivers/net/ethernet/qualcomm/qca_common.c
-> > > index d930524..f2c9e76 100644
-> > > --- a/drivers/net/ethernet/qualcomm/qca_common.c
-> > > +++ b/drivers/net/ethernet/qualcomm/qca_common.c
-> > > @@ -21,7 +21,9 @@
-> > >   *   by an atheros frame while transmitted over a serial
-> > > channel;
-> > >   */
-> > >  
-> > > +#include <linux/init.h>
-> > >  #include <linux/kernel.h>
-> > > +#include <linux/module.h>
-> > >  
-> > >  #include "qca_common.h"
-> > >  
-> > > @@ -46,6 +48,7 @@ qcafrm_create_header(u8 *buf, u16 length)
-> > >  
-> > >  	return QCAFRM_HEADER_LEN;
-> > >  }
-> > > +EXPORT_SYMBOL_GPL(qcafrm_create_header);
-> > >  
-> > >  u16
-> > >  qcafrm_create_footer(u8 *buf)
-> > > @@ -57,6 +60,7 @@ qcafrm_create_footer(u8 *buf)
-> > >  	buf[1] = 0x55;
-> > >  	return QCAFRM_FOOTER_LEN;
-> > >  }
-> > > +EXPORT_SYMBOL_GPL(qcafrm_create_footer);
-> > >  
-> > >  /*   Gather received bytes and try to extract a full ethernet
-> > > frame
-> > > by
-> > >   *   following a simple state machine.
-> > > @@ -154,3 +158,9 @@ qcafrm_fsm_decode(struct qcafrm_handle
-> > > *handle,
-> > > u8 *buf, u16 buf_len, u8 recv_by
-> > >  
-> > >  	return ret;
-> > >  }
-> > > +EXPORT_SYMBOL_GPL(qcafrm_fsm_decode);
-> > > +
-> > > +MODULE_DESCRIPTION("Qualcomm Atheros Common");
-> > > +MODULE_AUTHOR("Qualcomm Atheros Communications");
-> > > +MODULE_AUTHOR("Stefan Wahren <stefan.wahren@i2se.com>");
-> > > +MODULE_LICENSE("Dual BSD/GPL");
-> 
-> 
-> *** Diese E-Mail ist allein für den bezeichneten Adressaten bestimmt.
-> Sie kann rechtlich vertrauliche Informationen enthalten. Wenn Sie
-> diese E-Mail irrtümlich erhalten haben, informieren Sie bitte
-> unverzüglich den Absender per E-Mail und löschen Sie diese E-Mail von
-> Ihrem Computer, ohne Kopien anzufertigen.
-> Vielen Dank. ***
-> 
-> *** This email is for the exclusive use of the addressee. It may
-> contain legally privileged information. If you have received this
-> message in error, please notify the sender by email immediately and
-> delete the message from your computer without making any copies.
-> Thank you. ***
-> 
+T24gVHVlLCAyMDE3LTAzLTI4IGF0IDExOjI1ICswMjAwLCBIZWxtdXQgS2xlaW4gd3JvdGU6Cj4g
+VGhpcyBwYXRjaCBnZXRzIHRoZSBjb3JlIGNsb2NrIGFzIHByb3ZpZGVkIGJ5IHRoZSBEVCBhbmQg
+ZW5hYmxlcyBpdC4KPiBUaGUgY29kZSB3YXMgdGFrZW4gZnJvbSBBbWxvZ2ljJ3Mgc2VyaWFsIGRy
+aXZlciwgYW5kIHdhcyB0ZXN0ZWQgb24gbXkKPiBib2FyZC4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBI
+ZWxtdXQgS2xlaW4gPGhna3Iua2xlaW5AZ21haWwuY29tPgo+IC0tLQo+IMKgZHJpdmVycy90dHkv
+c2VyaWFsL21lc29uX3VhcnQuYyB8IDEwICsrKysrKysrKysKPiDCoDEgZmlsZSBjaGFuZ2VkLCAx
+MCBpbnNlcnRpb25zKCspCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9tZXNv
+bl91YXJ0LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbWVzb25fdWFydC5jCj4gaW5kZXggNjBmMTY3
+OTVkMTZiLi5jYjk5MTEyMjg4ZWIgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL21l
+c29uX3VhcnQuYwo+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9tZXNvbl91YXJ0LmMKPiBAQCAt
+NjAwLDYgKzYwMCw3IEBAIHN0YXRpYyBpbnQgbWVzb25fdWFydF9wcm9iZShzdHJ1Y3QgcGxhdGZv
+cm1fZGV2aWNlICpwZGV2KQo+IMKgCXN0cnVjdCByZXNvdXJjZSAqcmVzX21lbSwgKnJlc19pcnE7
+Cj4gwqAJc3RydWN0IHVhcnRfcG9ydCAqcG9ydDsKPiDCoAlzdHJ1Y3QgY2xrICpjbGs7Cj4gKwlz
+dHJ1Y3QgY2xrICpjb3JlX2NsazsKPiDCoAlpbnQgcmV0ID0gMDsKPiAKPiDCoAlpZiAocGRldi0+
+ZGV2Lm9mX25vZGUpCj4gQEAgLTYyNSw2ICs2MjYsMTUgQEAgc3RhdGljIGludCBtZXNvbl91YXJ0
+X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4gwqAJaWYgKCFwb3J0KQo+IMKg
+CQlyZXR1cm4gLUVOT01FTTsKPiAKPiArCWNvcmVfY2xrID0gZGV2bV9jbGtfZ2V0KCZwZGV2LT5k
+ZXYsICJjb3JlIik7Cj4gKwlpZiAoIUlTX0VSUihjb3JlX2NsaykpIHsKPiArCQlyZXQgPSBjbGtf
+cHJlcGFyZV9lbmFibGUoY29yZV9jbGspOwo+ICsJCWlmIChyZXQpIHsKPiArCQkJZGV2X2Vycigm
+cGRldi0+ZGV2LCAiY291bGRuJ3QgZW5hYmxlIGNsa2NcbiIpOwo+ICsJCQlyZXR1cm4gcmV0Owo+
+ICsJCX0KPiArCX0KPiArCj4gwqAJY2xrID0gY2xrX2dldCgmcGRldi0+ZGV2LCBOVUxMKTsKTm93
+IHRoYXQgeW91IGhhdmUgMiBjbG9ja3MsIHNob3VsZG4ndCB0aGlzIGJlIG5hbWVkIGFzIHdlbGwg
+PwoKPiDCoAlpZiAoSVNfRVJSKGNsaykpCj4gwqAJCXJldHVybiBQVFJfRVJSKGNsayk7Cj4gLS0K
+PiAyLjExLjAKPiAKPiAKPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXwo+IGxpbnV4LWFtbG9naWMgbWFpbGluZyBsaXN0Cj4gbGludXgtYW1sb2dpY0BsaXN0
+cy5pbmZyYWRlYWQub3JnCj4gaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0
+aW5mby9saW51eC1hbWxvZ2ljCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVs
+QGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
