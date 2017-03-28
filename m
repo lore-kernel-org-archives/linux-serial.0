@@ -1,59 +1,55 @@
-From: Sebastian Reichel <sre@kernel.org>
-Subject: [PATCHv3 00/10] Nokia H4+ support
-Date: Tue, 28 Mar 2017 17:59:29 +0200
-Message-ID: <20170328155939.31566-1-sre@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sre@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>
-Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCHv3 08/10] Bluetooth: hci_serdev: allow modular drivers
+Date: Tue, 28 Mar 2017 17:59:37 +0200
+Message-ID: <20170328155939.31566-9-sre@kernel.org>
+References: <20170328155939.31566-1-sre@kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170328155939.31566-1-sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Samuel Thibault <samuel.thibault-vYW+cPY1g1pg9hUCZPvPmw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+For bluetooth protocol driver only supporting serdev it makes
+sense to follow common practice and built them into their own
+module.
 
-Here is PATCHv3 for the Nokia bluetooth patchset. I addressed all comments from
-Rob and Pavel regarding the serdev patches and dropped the *.dts patches, since
-they were queued by Tony. I also changed the patch order, so that the serdev
-patches come first. All of them have Acked-by from Rob, so I think it makes
-sense to merge them to serdev subsystem (now) and provide an immutable branch
-for the bluetooth subsystem.
+Such modules need access to hci_uart_register_device and
+hci_uart_tx_wakeup for using the common protocol helpers.
 
-The patchset is based upon 4.11-rc1 and is also available from the following
-branch:
+Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+New patch since patchset v2.
+---
+ drivers/bluetooth/hci_ldisc.c  | 1 +
+ drivers/bluetooth/hci_serdev.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-https://git.kernel.org/pub/scm/linux/kernel/git/sre/linux-n900.git/log/?h=nokia-bt-serdev-v3
-
--- Sebastian
-
-Rob Herring (1):
-  Bluetooth: hci_uart: add serdev driver support library
-
-Sebastian Reichel (9):
-  tty: serial: omap: add UPF_BOOT_AUTOCONF flag for DT init
-  serdev: add serdev_device_wait_until_sent
-  serdev: implement get/set tiocm
-  serdev: add helpers for cts and rts handling
-  Bluetooth: hci_uart: add support for word alignment
-  Bluetooth: hci_serdev: do not open device in hci open
-  Bluetooth: hci_serdev: allow modular drivers
-  dt-bindings: net: bluetooth: Add nokia-bluetooth
-  Bluetooth: add nokia driver
-
- .../devicetree/bindings/net/nokia-bluetooth.txt    |  51 ++
- drivers/bluetooth/Kconfig                          |  12 +
- drivers/bluetooth/Makefile                         |   3 +
- drivers/bluetooth/hci_h4.c                         |  17 +
- drivers/bluetooth/hci_ldisc.c                      |   5 +
- drivers/bluetooth/hci_nokia.c                      | 819 +++++++++++++++++++++
- drivers/bluetooth/hci_serdev.c                     | 356 +++++++++
- drivers/bluetooth/hci_uart.h                       |   7 +
- drivers/tty/serdev/core.c                          |  33 +
- drivers/tty/serdev/serdev-ttyport.c                |  42 +-
- drivers/tty/serial/omap-serial.c                   |   3 +
- include/linux/serdev.h                             |  47 ++
- 12 files changed, 1391 insertions(+), 4 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/nokia-bluetooth.txt
- create mode 100644 drivers/bluetooth/hci_nokia.c
- create mode 100644 drivers/bluetooth/hci_serdev.c
-
+diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
+index 0ec8a94bd712..17bcbc13623f 100644
+--- a/drivers/bluetooth/hci_ldisc.c
++++ b/drivers/bluetooth/hci_ldisc.c
+@@ -134,6 +134,7 @@ int hci_uart_tx_wakeup(struct hci_uart *hu)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(hci_uart_tx_wakeup);
+ 
+ static void hci_uart_write_work(struct work_struct *work)
+ {
+diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
+index 3b8ac0ece3fb..7de0edc0ff8c 100644
+--- a/drivers/bluetooth/hci_serdev.c
++++ b/drivers/bluetooth/hci_serdev.c
+@@ -353,3 +353,4 @@ int hci_uart_register_device(struct hci_uart *hu,
+ 	p->close(hu);
+ 	return err;
+ }
++EXPORT_SYMBOL_GPL(hci_uart_register_device);
 -- 
 2.11.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
