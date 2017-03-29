@@ -1,15 +1,16 @@
 From: Olliver Schinagl <o.schinagl-U3FVU11NWA554TAoqtyWWQ@public.gmane.org>
 Subject: Re: [PATCH] serial: 8250_dw: Minor code cleanup
-Date: Wed, 29 Mar 2017 19:10:06 +0200
-Message-ID: <86fcc347-6b9b-5046-b9fb-63a2c81f0a20@schinagl.nl>
+Date: Wed, 29 Mar 2017 19:20:18 +0200
+Message-ID: <cd2729ee-203a-ea59-9ad5-843a39caa2b5@schinagl.nl>
 References: <20170329100424.7439-1-oliver@schinagl.nl>
  <CAD=FV=XZFuZ-Zqv75wF7wj6AY35o9n4-zrbsVjNcFZ+DxS=fbQ@mail.gmail.com>
+ <86fcc347-6b9b-5046-b9fb-63a2c81f0a20@schinagl.nl>
 Reply-To: o.schinagl-U3FVU11NWA554TAoqtyWWQ@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Return-path: <linux-sunxi+bncBD7M3SWL7UKRB46U57DAKGQECTP3JBA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBD7M3SWL7UKRBWGZ57DAKGQECK6PVMY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <CAD=FV=XZFuZ-Zqv75wF7wj6AY35o9n4-zrbsVjNcFZ+DxS=fbQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <86fcc347-6b9b-5046-b9fb-63a2c81f0a20-dxLnbx3+1qmEVqv0pETR8A@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -22,91 +23,116 @@ List-Id: linux-serial@vger.kernel.org
 
 Hey Doug,
 
-On 29-03-17 17:50, Doug Anderson wrote:
-> Hi,
+On 29-03-17 19:10, Olliver Schinagl wrote:
+> Hey Doug,
 >
-> On Wed, Mar 29, 2017 at 3:04 AM, Olliver Schinagl <oliver-dxLnbx3+1qmEVqv0pETR8A@public.gmane.org> wrote:
->> Commit 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
->> added a bit check with quite a wide mask. To be concise with the other
->> similar calls in this driver, change it to mask against the flag we want to
->> check only. This thus removes a magic value/mask.
+> On 29-03-17 17:50, Doug Anderson wrote:
+>> Hi,
+>>
+>> On Wed, Mar 29, 2017 at 3:04 AM, Olliver Schinagl <oliver-dxLnbx3+1qmEVqv0pETR8A@public.gmane.org>
+>> wrote:
+>>> Commit 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from
+>>> bogus rx timeout interrupt")
+>>> added a bit check with quite a wide mask. To be concise with the other
+>>> similar calls in this driver, change it to mask against the flag we
+>>> want to
+>>> check only. This thus removes a magic value/mask.
+>>
+>> How certain are you that your patch is correct?  You are now basically
+>> checking to see if the bits "0xc" are set in the IIR.  Previously the
+>> patch ensured that the bits 0x33 were clear.
 >
-> How certain are you that your patch is correct?  You are now basically
-> checking to see if the bits "0xc" are set in the IIR.  Previously the
-> patch ensured that the bits 0x33 were clear.
-
-You raise a good point. And after writing two replies that made perfect 
-sense, I just realized looking at the table you wisely posted below, I 
-should have spotted that the interrupts are not bits! So very good catch 
-and my bad indeed.
-
+> You raise a good point. And after writing two replies that made perfect
+> sense, I just realized looking at the table you wisely posted below, I
+> should have spotted that the interrupts are not bits! So very good catch
+> and my bad indeed.
 >
-> Have you tried looking through the kernel for other places where
-> UART_IIR_RX_TIMEOUT is referenced?  In 8250_omap.c and 8250_port.c I
-> believe you'll find it masking against 0x3f.  In omap-serial.c you'll
-> see a mask against 0x3e.
+>>
+>> Have you tried looking through the kernel for other places where
+>> UART_IIR_RX_TIMEOUT is referenced?  In 8250_omap.c and 8250_port.c I
+>> believe you'll find it masking against 0x3f.  In omap-serial.c you'll
+>> see a mask against 0x3e.
+I just checked the 8250_omap case and the reason they mask against 0x3f 
+is because they have 2 extra bits in the iir, e.g. the 'reserved' bits 
+are not reserved there but used. So either 8250_omap is not based on the 
+same designware IP or they added it ontop of the DW ip.
+
+And thus, would the define be UART_IIR_MASK or UART_IIR_DW_MASK and 
+UART_IIR_OMAP_MASK? Or do we, as mentioned earlier, rely on the fact 
+that it is supposed to be reserved but always read as 0?
+
+The 0x3e case seems to be where the busy flag is to be always ignored, 
+so UART_IIR_NOBUSY_MASK? But also kind of ugly, as this is not a 
+bitfield irq! so it should be changed there to read:
+
+UART_IIR_BUSY: /* fallthrough */
+default:
+	break;
+
+right?
+
+>>
+>> Looking at the TRM for rk3399, I see that bits 4 and 5 (bitmask 0x30)
+>> as "reserved".  I see the following definitions for bits 3:0:
+>>
+>> 0000 = modem status
+>> 0001 = no interrupt pending
+>> 0010 = THR empty
+>> 0100 = received data available
+>> 0110 = receiver line status
+>> 0111 = busy detect
+>> 1100 = character timeout
+>>
+>> ...so while your patch will probably function OK, it would also
+>> function equally well to simply test bit 3 (0x80) and ignore
+>> everything else.  ...but IMHO it is more correct to at least mask the
+>> IIR with 0x0F and confirm that bits 2 and 3 are set and bits 0 and 1
+>> are zero.  ...and since the main 8250 code uses 0x3f, that seems even
+>> better to me (despite the fact that it seems to be relying on the fact
+>> that the "reserved" bits come back as 0).
 >
-> Looking at the TRM for rk3399, I see that bits 4 and 5 (bitmask 0x30)
-> as "reserved".  I see the following definitions for bits 3:0:
+> I strongly agree with you here, I did it wrong, but 0x3f really is wrong
+> too imo. The bits to look at are 3:0, bits 4:5 are reserved and we
+> should never look at those, as as you rightfully put it are being relied
+> on to be 0 (which may always be the case) but imo is still wrong and
+> thus the mask should be 0x0f.
 >
-> 0000 = modem status
-> 0001 = no interrupt pending
-> 0010 = THR empty
-> 0100 = received data available
-> 0110 = receiver line status
-> 0111 = busy detect
-> 1100 = character timeout
+> Going to the horse's mouth [0] which is the documentation of the IP
+> block used in all these designs, they also say the same thing. 4 bits
+> and while I don't have any of the other datasheets of other 8250 cores,
+> I bet they are the same?
 >
-> ...so while your patch will probably function OK, it would also
-> function equally well to simply test bit 3 (0x80) and ignore
-> everything else.  ...but IMHO it is more correct to at least mask the
-> IIR with 0x0F and confirm that bits 2 and 3 are set and bits 0 and 1
-> are zero.  ...and since the main 8250 code uses 0x3f, that seems even
-> better to me (despite the fact that it seems to be relying on the fact
-> that the "reserved" bits come back as 0).
-
-I strongly agree with you here, I did it wrong, but 0x3f really is wrong 
-too imo. The bits to look at are 3:0, bits 4:5 are reserved and we 
-should never look at those, as as you rightfully put it are being relied 
-on to be 0 (which may always be the case) but imo is still wrong and 
-thus the mask should be 0x0f.
-
-Going to the horse's mouth [0] which is the documentation of the IP 
-block used in all these designs, they also say the same thing. 4 bits 
-and while I don't have any of the other datasheets of other 8250 cores, 
-I bet they are the same?
-
-And then, the following is actually wrong on the same grounds, from the 
-8250_dw.c
-
-
-if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
-
-This just happens to work as it is the only way this can match, but 
-clearly it is wrong then, right?
-
-I'll check against the same mask of 0x0f here as well.
+> And then, the following is actually wrong on the same grounds, from the
+> 8250_dw.c
 >
 >
-> If you want to make a fix, I'd suggest adding a #define for 0x3f and
-> using it in various places.
-Yeah I'll do that, add the define next to the others for 0x0f, unless 
-someone says it is a good idea (or needed idea) to mask against the 
-reserved bits as well.
-
+> if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
 >
+> This just happens to work as it is the only way this can match, but
+> clearly it is wrong then, right?
 >
->> Some very minor code cleanups, such as including the bitops header for
->> DW_UART_MCR_SIRE, use the BIT() macro as suggested by checkpatc and
->> removed a whitespace to match other invocations.
+> I'll check against the same mask of 0x0f here as well.
+>>
+>>
+>> If you want to make a fix, I'd suggest adding a #define for 0x3f and
+>> using it in various places.
+> Yeah I'll do that, add the define next to the others for 0x0f, unless
+> someone says it is a good idea (or needed idea) to mask against the
+> reserved bits as well.
 >
-> Maybe it's just me, but it seems like a bad idea to combine these
-> cleanups in the same patch with a functional change..
-Well with the oversight of the bit check above, it becomes obvious that 
-it is a bigger change indeed. I will change it!
-
-Olliver
-
+>>
+>>
+>>> Some very minor code cleanups, such as including the bitops header for
+>>> DW_UART_MCR_SIRE, use the BIT() macro as suggested by checkpatc and
+>>> removed a whitespace to match other invocations.
+>>
+>> Maybe it's just me, but it seems like a bad idea to combine these
+>> cleanups in the same patch with a functional change..
+> Well with the oversight of the bit check above, it becomes obvious that
+> it is a bigger change indeed. I will change it!
 >
-
-[0] http://linux-sunxi.org/images/d/d2/Dw_apb_uart_db.pdf
+> Olliver
+>
+>>
+>
+> [0] http://linux-sunxi.org/images/d/d2/Dw_apb_uart_db.pdf
