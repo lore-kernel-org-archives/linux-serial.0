@@ -1,53 +1,55 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [PATCH v8 3/3] printk: fix double printing with earlycon
-Date: Thu, 30 Mar 2017 14:55:46 +0900
-Message-ID: <20170330055546.GD513@jagdpanzerIV.localdomain>
-References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
- <20170320100302.8656-1-aleksey.makarov@linaro.org>
- <20170327141432.GH2846@pathway.suse.cz>
- <4b561f81-67af-f6a3-76c9-d0d8499c52bd@linaro.org>
- <20170328020404.GA10573@jagdpanzerIV.localdomain>
- <20170328125657.GJ2846@pathway.suse.cz>
+From: Vignesh R <vigneshr-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH] serial: Do not treat the IIR register as a bitfield
+Date: Thu, 30 Mar 2017 11:45:29 +0530
+Message-ID: <6be65e8b-eea4-08ed-0b30-5c0608764a83@ti.com>
+References: <20170329184431.6226-1-oliver@schinagl.nl>
+Reply-To: vigneshr-l0cyMroinI0@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170328125657.GJ2846@pathway.suse.cz>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sunxi+bncBDRONT4W5UKRBSGF6LDAKGQE3VDBLWQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20170329184431.6226-1-oliver-dxLnbx3+1qmEVqv0pETR8A@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Olliver Schinagl <oliver-dxLnbx3+1qmEVqv0pETR8A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Cc: "dev-3kdeTeqwOZ9EV1b7eY7vFQ@public.gmane.org" <dev-3kdeTeqwOZ9EV1b7eY7vFQ@public.gmane.org>, Ed Blake <ed.blake-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alexander Sverdlin <alexander.sverdlin-xNZwKgViW5gAvxtiuMwx3w@public.gmane.org>, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, Wan Ahmad Zainie <wan.ahmad.zainie.wan.mohamad-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Jason Uy <jason.uy-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>, David Lechner <david-nq/r/kbU++upp/zk7JDF2g@public.gmane.org>, Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel
 List-Id: linux-serial@vger.kernel.org
 
-On (03/28/17 14:56), Petr Mladek wrote:
-[..]
-> > > Is it better?  If not, I will send a version with console_cmdline_last.
-> > 
-> > personally I'm fine with the nested loop. the latest version
-> > 	"for (last = MAX_CMDLINECONSOLES - 1; last >= 0;..."
-> > 
-> > is even easier to read.
-> 
-> The number of elements is bumped on a single location, so there
-> is not much to synchronize. The old approach was fine because
-> the for cycles were needed anyway, they started on the 0th element,
-> and NULL ended arrays are rather common practice.
-> 
-> But we are searching the array from the end now. Also we use the
-> for cycle just to get the number here. This is not a common
-> practice and it makes the code more complicated and strange from
-> my point of view.
+Hi,
 
-I'm fine with either way :)
+On Thursday 30 March 2017 12:14 AM, Olliver Schinagl wrote:
+> diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+> index 5db76880b4ad..489522389a10 100644
+> --- a/include/uapi/linux/serial_reg.h
+> +++ b/include/uapi/linux/serial_reg.h
+> @@ -31,18 +31,18 @@
+>  #define UART_IERX_SLEEP		0x10 /* Enable sleep mode */
+>  
+>  #define UART_IIR	2	/* In:  Interrupt ID Register */
+> -#define UART_IIR_NO_INT		0x01 /* No interrupts pending */
+> -#define UART_IIR_ID		0x0e /* Mask for the interrupt ID */
+>  #define UART_IIR_MSI		0x00 /* Modem status interrupt */
+> +#define UART_IIR_NO_INT		0x01 /* No interrupts pending */
+>  #define UART_IIR_THRI		0x02 /* Transmitter holding register empty */
+>  #define UART_IIR_RDI		0x04 /* Receiver data interrupt */
+>  #define UART_IIR_RLSI		0x06 /* Receiver line status interrupt */
+> -
+>  #define UART_IIR_BUSY		0x07 /* DesignWare APB Busy Detect */
+> +#define UART_IIR_RX_TIMEOUT	0x0c /* DesignWare RX Timeout interrupt */
+> +#define UART_IIR_MASK		0x0f /* DesignWare IIR mask */
+>  
+> -#define UART_IIR_RX_TIMEOUT	0x0c /* OMAP RX Timeout interrupt */
 
-[..]
-> > neither add_preferred_console() nor __add_preferred_console() have any
-> > serialization. and I assume that we can call add_preferred_console()
-> > concurrently, can't we?
-[..]
-> If I did not miss anything, it would seem that
-> __add_preferred_console() are called synchronously
-> and only during boot by design.
+You are removing UART_IIR_RX_TIMEOUT? Is this intended?
 
-thanks. I think you are right. it's console_initcall or __init.
+>  #define UART_IIR_XOFF		0x10 /* OMAP XOFF/Special Character */
+>  #define UART_IIR_CTS_RTS_DSR	0x20 /* OMAP CTS/RTS/DSR Change */
+> +#define UART_IIR_EXT_MASK	0x30 /* OMAP extended IIR mask */
 
-	-ss
+-- 
+Regards
+Vignesh
