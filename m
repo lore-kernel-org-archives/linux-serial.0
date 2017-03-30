@@ -1,75 +1,172 @@
-From: Olliver Schinagl <oliver@schinagl.nl>
-Subject: Re: [PATCH] serial: Do not treat the IIR register as a bitfield
-Date: Thu, 30 Mar 2017 17:39:39 +0200
-Message-ID: <97434C93-32EF-4742-838D-4C783E5ECC45@schinagl.nl>
-References: <20170329184431.6226-1-oliver@schinagl.nl> <6be65e8b-eea4-08ed-0b30-5c0608764a83@ti.com> <D694FA74-1F31-4B57-8858-2DBE8DE57D45@schinagl.nl> <2faa7420-0a54-e77f-0da2-80f6dfcf9710@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: Andrey Smirnov <andrew.smirnov@gmail.com>
+Subject: [PATCH v3] serdev: Add serdev_device_write subroutine
+Date: Thu, 30 Mar 2017 15:00:35 -0700
+Message-ID: <20170330220035.26649-1-andrew.smirnov@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2faa7420-0a54-e77f-0da2-80f6dfcf9710@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vignesh R <vigneshr@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Laxman Dewangan <ldewangan@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, "David S . Miller" <davem@davemloft.net>
-Cc: "dev@linux-sunxi.org" <dev@linux-sunxi.org>, Ed Blake <ed.blake@imgtec.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alexander Sverdlin <alexander.sverdlin@nokia.com>, Yegor Yefremov <yegorslists@googlemail.com>, Wan Ahmad Zainie <wan.ahmad.zainie.wan.mohamad@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Heiko Stuebner <heiko@sntech.de>, Jason Uy <jason.uy@broadcom.com>, Douglas Anderson <dianders@chromium.org>, Peter Hurley <peter@hurleysoftware.com>, Tony Lindgren <tony@atomide.com>, Thor Thayer <tthayer@opensource.altera.com>, David Lechner <david@lechnology.com>, Jan Kiszka <jan.kiszka@siemens.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-kernel@
+To: Rob Herring <robh@kernel.org>
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hey Vignesh,
+Add serdev_device_write() a blocking call allowing to transfer
+arbitraty amount of data (potentially exceeding amount that
+serdev_device_write_buf can process in a single call)
 
-On March 30, 2017 9:57:19 AM CEST, Vignesh R <vigneshr@ti=2Ecom> wrote:
->
->
->On Thursday 30 March 2017 12:13 PM, Olliver Schinagl wrote:
->>=20
->>=20
->> On March 30, 2017 8:15:29 AM CEST, Vignesh R <vigneshr@ti=2Ecom> wrote:
->>> Hi,
->>>
->>> On Thursday 30 March 2017 12:14 AM, Olliver Schinagl wrote:
->>>> diff --git a/include/uapi/linux/serial_reg=2Eh
->>> b/include/uapi/linux/serial_reg=2Eh
->>>> index 5db76880b4ad=2E=2E489522389a10 100644
->>>> --- a/include/uapi/linux/serial_reg=2Eh
->>>> +++ b/include/uapi/linux/serial_reg=2Eh
->>>> @@ -31,18 +31,18 @@
->>>>  #define UART_IERX_SLEEP		0x10 /* Enable sleep mode */
->>>> =20
->>>>  #define UART_IIR	2	/* In:  Interrupt ID Register */
->>>> -#define UART_IIR_NO_INT		0x01 /* No interrupts pending */
->>>> -#define UART_IIR_ID		0x0e /* Mask for the interrupt ID */
->>>>  #define UART_IIR_MSI		0x00 /* Modem status interrupt */
->>>> +#define UART_IIR_NO_INT		0x01 /* No interrupts pending */
->>>>  #define UART_IIR_THRI		0x02 /* Transmitter holding register empty
->*/
->>>>  #define UART_IIR_RDI		0x04 /* Receiver data interrupt */
->>>>  #define UART_IIR_RLSI		0x06 /* Receiver line status interrupt */
->>>> -
->>>>  #define UART_IIR_BUSY		0x07 /* DesignWare APB Busy Detect */
->>>> +#define UART_IIR_RX_TIMEOUT	0x0c /* DesignWare RX Timeout
->interrupt
->>> */
->> It was moved due to sorting=2E The comment could be changed maybe? I
->renamed it from omap to dw as i believe the omap also uses the dw ip=2E
->But i think it is a defacto standard mapping of the irr register?
->
->AFAIK, OMAP UART does not use DW core, please make these IDs generic to
->avoid confusion=2E
-The ids are genetic, the comments are not=2E Ill update the comments to be=
- generic, with the exception of the omap specific extended ones?
+To support that, also add serdev_device_write_wakeup().
 
-Olliver
->
->>=20
->>>> +#define UART_IIR_MASK		0x0f /* DesignWare IIR mask */
->>>> =20
->>>> -#define UART_IIR_RX_TIMEOUT	0x0c /* OMAP RX Timeout interrupt */
->>>
->>> You are removing UART_IIR_RX_TIMEOUT? Is this intended?
->>>
->>>>  #define UART_IIR_XOFF		0x10 /* OMAP XOFF/Special Character */
->>>>  #define UART_IIR_CTS_RTS_DSR	0x20 /* OMAP CTS/RTS/DSR Change */
->>>> +#define UART_IIR_EXT_MASK	0x30 /* OMAP extended IIR mask */
->>=20
+Drivers wanting to use full extent of serdev_device_write
+functionality are expected to provide serdev_device_write_wakeup() as
+a sole handler of .write_wakeup event or call it as a part of driver's
+custom .write_wakeup code.
 
---=20
-Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
+Because serdev_device_write() subroutine is a superset of
+serdev_device_write_buf() the patch re-impelements latter is terms of
+the former. For drivers watning to just use serdev_device_write_buf()
+.write_wakeup handler is optional.
+
+Cc: cphealy@gmail.com
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+---
+
+Changes since v2 (see [v2]):
+
+	- Changed subject and commit message wording to better reflect
+          nature of the patch
+
+	- Various spelling, formatting, documentation and wording
+          fixes as caught/suggested by Andy
+
+Changes since v1 (see [v1]):
+
+	- Make timeout to be a total(as opposed to per-iteration)
+          timeout
+
+	- Keep serdev_device_write_buf() as a wrapper arount
+          serdev_device_write() for compatibility
+
+[v2] https://lkml.org/lkml/2017/3/28/942
+[v1] https://lkml.org/lkml/2017/3/20/650
+
+ drivers/tty/serdev/core.c | 36 +++++++++++++++++++++++++++++++-----
+ include/linux/serdev.h    | 17 +++++++++++++++--
+ 2 files changed, 46 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index f4c6c90..6701d10 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -116,17 +116,41 @@ void serdev_device_close(struct serdev_device *serdev)
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_close);
+ 
+-int serdev_device_write_buf(struct serdev_device *serdev,
+-			    const unsigned char *buf, size_t count)
++void serdev_device_write_wakeup(struct serdev_device *serdev)
++{
++	complete(&serdev->write_comp);
++}
++EXPORT_SYMBOL_GPL(serdev_device_write_wakeup);
++
++int serdev_device_write(struct serdev_device *serdev,
++			const unsigned char *buf, size_t count,
++			unsigned long timeout)
+ {
+ 	struct serdev_controller *ctrl = serdev->ctrl;
++	int ret;
+ 
+-	if (!ctrl || !ctrl->ops->write_buf)
++	if (!ctrl || !ctrl->ops->write_buf ||
++	    (timeout && !serdev->ops->write_wakeup))
+ 		return -EINVAL;
+ 
+-	return ctrl->ops->write_buf(ctrl, buf, count);
++	mutex_lock(&serdev->write_lock);
++	do {
++		reinit_completion(&serdev->write_comp);
++
++		ret = ctrl->ops->write_buf(ctrl, buf, count);
++		if (ret < 0)
++			break;
++
++		buf += ret;
++		count -= ret;
++
++	} while (count &&
++		 (timeout = wait_for_completion_timeout(&serdev->write_comp,
++							timeout)));
++	mutex_unlock(&serdev->write_lock);
++	return ret < 0 ? ret : (count ? -ETIMEDOUT : 0);
+ }
+-EXPORT_SYMBOL_GPL(serdev_device_write_buf);
++EXPORT_SYMBOL_GPL(serdev_device_write);
+ 
+ void serdev_device_write_flush(struct serdev_device *serdev)
+ {
+@@ -232,6 +256,8 @@ struct serdev_device *serdev_device_alloc(struct serdev_controller *ctrl)
+ 	serdev->dev.parent = &ctrl->dev;
+ 	serdev->dev.bus = &serdev_bus_type;
+ 	serdev->dev.type = &serdev_device_type;
++	init_completion(&serdev->write_comp);
++	mutex_init(&serdev->write_lock);
+ 	return serdev;
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_alloc);
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index 5176cdc..0beaff8 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -39,12 +39,16 @@ struct serdev_device_ops {
+  * @nr:		Device number on serdev bus.
+  * @ctrl:	serdev controller managing this device.
+  * @ops:	Device operations.
++ * @write_comp	Completion used by serdev_device_write() internally
++ * @write_lock	Lock to serialize access when writing data
+  */
+ struct serdev_device {
+ 	struct device dev;
+ 	int nr;
+ 	struct serdev_controller *ctrl;
+ 	const struct serdev_device_ops *ops;
++	struct completion write_comp;
++	struct mutex write_lock;
+ };
+ 
+ static inline struct serdev_device *to_serdev_device(struct device *d)
+@@ -186,7 +190,8 @@ int serdev_device_open(struct serdev_device *);
+ void serdev_device_close(struct serdev_device *);
+ unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
+ void serdev_device_set_flow_control(struct serdev_device *, bool);
+-int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
++void serdev_device_write_wakeup(struct serdev_device *);
++int serdev_device_write(struct serdev_device *, const unsigned char *, size_t, unsigned long);
+ void serdev_device_write_flush(struct serdev_device *);
+ int serdev_device_write_room(struct serdev_device *);
+ 
+@@ -223,7 +228,8 @@ static inline unsigned int serdev_device_set_baudrate(struct serdev_device *sdev
+ 	return 0;
+ }
+ static inline void serdev_device_set_flow_control(struct serdev_device *sdev, bool enable) {}
+-static inline int serdev_device_write_buf(struct serdev_device *sdev, const unsigned char *buf, size_t count)
++static inline int serdev_device_write(struct serdev_device *sdev, const unsigned char *buf,
++				      size_t count, unsigned long timeout)
+ {
+ 	return -ENODEV;
+ }
+@@ -259,4 +265,11 @@ static inline struct device *serdev_tty_port_register(struct tty_port *port,
+ static inline void serdev_tty_port_unregister(struct tty_port *port) {}
+ #endif /* CONFIG_SERIAL_DEV_CTRL_TTYPORT */
+ 
++static inline int serdev_device_write_buf(struct serdev_device *serdev,
++					  const unsigned char *data,
++					  size_t count)
++{
++	return serdev_device_write(serdev, data, count, 0);
++}
++
+ #endif /*_LINUX_SERDEV_H */
+-- 
+2.9.3
