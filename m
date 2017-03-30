@@ -1,63 +1,50 @@
-From: Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH] serial: Do not treat the IIR register as a bitfield
-Date: Thu, 30 Mar 2017 10:11:53 -0400
-Message-ID: <20170330141153.mvxa6iqj72hnhlu3@thunk.org>
-References: <20170329184431.6226-1-oliver@schinagl.nl>
- <6be65e8b-eea4-08ed-0b30-5c0608764a83@ti.com>
- <D694FA74-1F31-4B57-8858-2DBE8DE57D45@schinagl.nl>
+From: Olliver Schinagl <oliver@schinagl.nl>
+Subject: Re: [PATCH] serial: tegra: Map the iir register to default defines
+Date: Thu, 30 Mar 2017 17:37:41 +0200
+Message-ID: <0DEBCDAD-C7D3-4DB9-B5F5-408951165662@schinagl.nl>
+References: <20170329184806.6577-1-oliver@schinagl.nl> <9eed3c8e-a7af-1e1f-659a-a092a89d1679@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <sparclinux-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <D694FA74-1F31-4B57-8858-2DBE8DE57D45@schinagl.nl>
-Sender: sparclinux-owner@vger.kernel.org
-To: Olliver Schinagl <oliver@schinagl.nl>
-Cc: Vignesh R <vigneshr@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Laxman Dewangan <ldewangan@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, "David S . Miller" <davem@davemloft.net>, "dev@linux-sunxi.org" <dev@linux-sunxi.org>, Ed Blake <ed.blake@imgtec.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alexander Sverdlin <alexander.sverdlin@nokia.com>, Yegor Yefremov <yegorslists@googlemail.com>, Wan Ahmad Zainie <wan.ahmad.zainie.wan.mohamad@intel.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Heiko Stuebner <heiko@sntech.de>, Jason Uy <jason.uy@broadcom.com>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <9eed3c8e-a7af-1e1f-659a-a092a89d1679@nvidia.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jon Hunter <jonathanh@nvidia.com>, Laxman Dewangan <ldewangan@nvidia.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Stephen Warren <swarren@wwwdotorg.org>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-While you're fixing this, there's a bug in samples/vfio-mdev/mtty.c:
+Hey Jon,
 
-		u8 ier = mdev_state->s[index].uart_reg[UART_IER];
-		*buf = 0;
+On March 30, 2017 3:42:19 PM CEST, Jon Hunter <jonathanh@nvidia=2Ecom> wro=
+te:
+>
+>On 29/03/17 19:48, Olliver Schinagl wrote:
+>> The tegra serial IP seems to be following the common layout and the
+>> interrupt ID's match up nicely=2E Replace the magic values to match the
+>> common serial_reg defines, with the addition of the Tegra unique End
+>of
+>> Data interrupt=2E
+>>=20
+>> Signed-off-by: Olliver Schinagl <oliver@schinagl=2Enl>
+>> ---
+>> Note I do not own any tegra hardware and just noticed it while
+>working on my
+>> somewhat related previous patch,
+>> "serial: Do not treat the IIR register as a bitfield"
+>>=20
+>> As such, this patch can only be applied after the aforementioned
+>patch or the
+>> iir variable will not have its mask applied yet=2E
+>
+>Nit-pick=2E If this is the case, then this should really be part of a
+>patch series so it is obvious to everyone that this should only be
+>applied after the other patch=2E
+Yes, and it was, but I did not want to have the really big list of names i=
+n this much smaller group=2E
+>
+>Cheers
+>Jon
 
-		mutex_lock(&mdev_state->rxtx_lock);
-		/* Interrupt priority 1: Parity, overrun, framing or break */
-		if ((ier & UART_IER_RLSI) && mdev_state->s[index].overrun)
-			*buf |= UART_IIR_RLSI;
-
-		/* Interrupt priority 2: Fifo trigger level reached */
-		if ((ier & UART_IER_RDI) &&
-		    (mdev_state->s[index].rxtx.count ==
-		      mdev_state->s[index].intr_trigger_level))
-			*buf |= UART_IIR_RDI;
-
-		/* Interrupt priotiry 3: transmitter holding register empty */
-		if ((ier & UART_IER_THRI) &&
-		    (mdev_state->s[index].rxtx.head ==
-				mdev_state->s[index].rxtx.tail))
-			*buf |= UART_IIR_THRI;
-
-		/* Interrupt priotiry 4: Modem status: CTS, DSR, RI or DCD  */
-		if ((ier & UART_IER_MSI) &&
-		    (mdev_state->s[index].uart_reg[UART_MCR] &
-				 (UART_MCR_RTS | UART_MCR_DTR)))
-			*buf |= UART_IIR_MSI;
-
-		/* bit0: 0=> interrupt pending, 1=> no interrupt is pending */
-		if (*buf == 0)
-			*buf = UART_IIR_NO_INT;
-
-It's treating the UART_IIR_* fields as a bitmask which is bad enough,
-but in the "Interrupt priority 4" case, UART_IIR_MSI is zero, so 
-"*buf |= UART_IIR_MSI" is a no-op.   And in the case where the modem
-status interrupt is the only thing set, *buf will be 0, and UART_IIR_NO_INT
-gets set erroneously.
-
-So this is another example of the bug of trying to treat the
-UART_IIR_* fields as a bitmask....
-
-Yes, it's only sample code, but best fix it now before it gets copied
-elsewhere and metastisizes.   :-)
-
-							- Ted
-							
+--=20
+Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
