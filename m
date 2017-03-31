@@ -1,67 +1,51 @@
-From: Olliver Schinagl <o.schinagl-U3FVU11NWA554TAoqtyWWQ@public.gmane.org>
-Subject: Re: [PATCH] serial: Do not treat the IIR register as a bitfield
-Date: Fri, 31 Mar 2017 15:54:52 +0200
-Message-ID: <b962b00c-64d7-0b55-2fde-5a3ea04d8671@schinagl.nl>
-References: <20170329184431.6226-1-oliver@schinagl.nl>
- <1490867763.708.62.camel@linux.intel.com>
-Reply-To: o.schinagl-U3FVU11NWA554TAoqtyWWQ@public.gmane.org
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v3] serdev: Add serdev_device_write subroutine
+Date: Fri, 31 Mar 2017 17:35:11 +0300
+Message-ID: <CAHp75VdPg3K2+TYN7UTKi3aiq5NVn4gRnM+SwpE9uYwO89G_bQ@mail.gmail.com>
+References: <20170330220035.26649-1-andrew.smirnov@gmail.com> <CAL_Jsq+W3UcmmRNuTALczAHCO_wHTDcDz4jXBJgJeB0X-3oGBA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Return-path: <linux-sunxi+bncBD7M3SWL7UKRBMN77HDAKGQEHVOUTKA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <1490867763.708.62.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
-Cc: dev-3kdeTeqwOZ9EV1b7eY7vFQ@public.gmane.org, Ed Blake <ed.blake-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Alexander Sverdlin <alexander.sverdlin-xNZwKgViW5gAvxtiuMwx3w@public.gmane.org>, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, Wan Ahmad Zainie <wan.ahmad.zainie.wan.mohamad-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Jason Uy <jason.uy-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Vignesh R <vigneshr-l0cyMroinI0@public.gmane.org>, Thor Thayer <tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org>, David Lechner <david-nq/r/kbU++upp/zk7JDF2g@public.gmane.org>, Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAL_Jsq+W3UcmmRNuTALczAHCO_wHTDcDz4jXBJgJeB0X-3oGBA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hey Andy,
+On Fri, Mar 31, 2017 at 4:22 PM, Rob Herring <robh@kernel.org> wrote:
+> On Thu, Mar 30, 2017 at 5:00 PM, Andrey Smirnov
+> <andrew.smirnov@gmail.com> wrote:
 
-On 30-03-17 11:56, Andy Shevchenko wrote:
-> On Wed, 2017-03-29 at 20:44 +0200, Olliver Schinagl wrote:
->> It seems that at some point, someone made the assumption that the UART
->> Interrupt ID Register was a bitfield and started to check if certain
->> bits where set.
+>> +int serdev_device_write(struct serdev_device *serdev,
+>> +                       const unsigned char *buf, size_t count,
+>> +                       unsigned long timeout)
+>>  {
+>>         struct serdev_controller *ctrl = serdev->ctrl;
+>> +       int ret;
 >>
->> Actually however the register contains interrupt ID's where only the
->> MSB
->> seems to be used singular and the rest share at least one bit. Thus
->> doing bitfield operations is wrong.
+>> +       if (!ctrl || !ctrl->ops->write_buf ||
+>> +           (timeout && !serdev->ops->write_wakeup))
+>>                 return -EINVAL;
 >>
->> This patch cleans up the serial_reg include file by ordering it and
->> replacing the UART_IIR_ID 'mask' with a proper mask for the register.
->> The OMAP uart appears to have used the two commonly 'reserved' bits 4
->> and 5 and thus get an UART_IIR_EXT_MASK for these two bits.
->>
->> This patch then goes over all UART_IIR_* users and changes the code
->> from
->> bitfield checking, to ID checking instead.
+>> +       mutex_lock(&serdev->write_lock);
+>> +       do {
+>> +               reinit_completion(&serdev->write_comp);
+>> +
+>> +               ret = ctrl->ops->write_buf(ctrl, buf, count);
+>> +               if (ret < 0)
+>> +                       break;
+>> +
+>> +               buf += ret;
+>> +               count -= ret;
+>> +
+>> +       } while (count &&
+>> +                (timeout = wait_for_completion_timeout(&serdev->write_comp,
+>> +                                                       timeout)));
 >
->
-> Looking to implementation I would rather go with some helper like
->
-> int serial_in_IIR(port, [additional mask])
-> {
->  return port->serial_in(port, UART_IIR) & (_IIR_MASK [| additional
-> mask]);
-> }
+> Need to test for timeout < 0 here and return timeout when < 0.
 
-As I just wrote a simply static inline helper function in serial_core.h, 
-I just figured that the helper will only work for some of the calls. All 
-interrupt checks in xxx_serial_in() obviously can't rely on this. So do 
-you still want this helper function added for the other cases? Or have 
-all implementations do the masking manually?
+It can't be the case since the variable is of unsigned type.
 
-And then, is iir = serial_port_in(up, UART_IIR) & UART_IIR_MASK; 
-preferred over splitting it over two lines, like I did?
-
-Finally, why rename it to _IIR_MASK, I assume a typo here?
-
-Olliver
-
->
+-- 
+With Best Regards,
+Andy Shevchenko
