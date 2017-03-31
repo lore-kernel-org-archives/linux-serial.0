@@ -1,53 +1,51 @@
 From: Helmut Klein <hgkr.klein@gmail.com>
-Subject: [PATCH v3 0/4] tty/serial: meson_uart: add support for core clock handling
-Date: Fri, 31 Mar 2017 18:54:33 +0200
-Message-ID: <20170331165437.26227-1-hgkr.klein@gmail.com>
-Return-path: <linux-clk-owner@vger.kernel.org>
-Sender: linux-clk-owner@vger.kernel.org
-Cc: Helmut Klein <hgkr.klein@gmail.com>, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v3 3/4] tty/serial: meson_uart: add the core clock handling to the driver
+Date: Fri, 31 Mar 2017 18:54:36 +0200
+Message-ID: <20170331165437.26227-4-hgkr.klein@gmail.com>
+References: <20170331165437.26227-1-hgkr.klein@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170331165437.26227-1-hgkr.klein@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, carlo@caione.org, khilman@baylibre.com
+Cc: Helmut Klein <hgkr.klein@gmail.com>, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-To be able to use the three none AO uarts of the meson gx SoCs (uart_A,
-uart_B & uart_C), the core clock has to be enabled (see chapter 22.3 of
-the public s905 data sheet).
-At least the u-boot of my s905 based media player (netxeon minimx-g)
-doesn't do this. so the driver must enable the clock.
+This patch gets the core clock as provided by the DT and enables it.
+The code was taken from Amlogic's serial driver, and was tested on my
+board.
 
-This patch set does:
-- exposes the UART clock ids to the dtb
-- adds documentation for the dt-bindings of meson_uart
-- adds the core clock handling to the driver
-- adds the core clock handling to meson-gxbb.dtsi and meson-gxl.dtsi
+Signed-off-by: Helmut Klein <hgkr.klein@gmail.com>
+---
+ drivers/tty/serial/meson_uart.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-The patchset is based on the branch "master" of the repository in [1]
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 60f16795d16b..cb99112288eb 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -600,6 +600,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+ 	struct resource *res_mem, *res_irq;
+ 	struct uart_port *port;
+ 	struct clk *clk;
++	struct clk *core_clk;
+ 	int ret = 0;
 
-Changes since v2
-- mail subjects reworked
-- add clocks/clock-names to the documentation
-- add core clock handling to meson-gxbb.dtsi & meson-gxl.dtsi
+ 	if (pdev->dev.of_node)
+@@ -625,6 +626,15 @@ static int meson_uart_probe(struct platform_device *pdev)
+ 	if (!port)
+ 		return -ENOMEM;
 
-Changes since v1
-- use git to produce the patch set
-- added the clock ids for uart_B and uart_C
-
-[1] git://git.kernel.org/pub/scm/linux/kernel/git/khilman/linux-amlogic.git
-
-Helmut Klein (4):
-  clk: meson: gxbb: expose CLKID_UARTx
-  dt-bindings: meson_uart: add documentation for meson UARTs
-  tty/serial: meson_uart: add the core clock handling to the driver
-  ARM64: dts: meson-gx: add core clock support for uart_A, uart_B and
-    uart_C
-
- .../bindings/serial/amlogic,meson_uart.txt         | 30 ++++++++++++++++++++++
- arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi        | 15 +++++++++++
- arch/arm64/boot/dts/amlogic/meson-gxl.dtsi         | 15 +++++++++++
- drivers/clk/meson/gxbb.h                           |  6 ++---
- drivers/tty/serial/meson_uart.c                    | 10 ++++++++
- include/dt-bindings/clock/gxbb-clkc.h              |  3 +++
- 6 files changed, 76 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson_uart.txt
-
++	core_clk = devm_clk_get(&pdev->dev, "core");
++	if (!IS_ERR(core_clk)) {
++		ret = clk_prepare_enable(core_clk);
++		if (ret) {
++			dev_err(&pdev->dev, "couldn't enable clkc\n");
++			return ret;
++		}
++	}
++
+ 	clk = clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(clk))
+ 		return PTR_ERR(clk);
 --
 2.11.0
-
