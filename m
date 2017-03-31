@@ -1,113 +1,65 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3] serdev: Add serdev_device_write subroutine
-Date: Fri, 31 Mar 2017 08:22:28 -0500
-Message-ID: <CAL_Jsq+W3UcmmRNuTALczAHCO_wHTDcDz4jXBJgJeB0X-3oGBA@mail.gmail.com>
-References: <20170330220035.26649-1-andrew.smirnov@gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 0/2] Move uart_register_driver call to device probe for
+ pl010 and sh-sci
+Date: Fri, 31 Mar 2017 15:27:42 +0200
+Message-ID: <20170331132742.GA23739@kroah.com>
+References: <20170324162634.8880-1-sjoerd.simons@collabora.co.uk>
+ <20170324164202.GI7909@n2100.armlinux.org.uk>
+ <CAMuHMdUkfzJw6W0jQZPChN+Uqb0Ewkn86o0Pzd+9+Wi1-XZRAw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170330220035.26649-1-andrew.smirnov@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andrey Smirnov <andrew.smirnov@gmail.com>
-Cc: Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, Andy Shevchenko <andy.shevchenko@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdUkfzJw6W0jQZPChN+Uqb0Ewkn86o0Pzd+9+Wi1-XZRAw@mail.gmail.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Russell King - ARM Linux <linux@armlinux.org.uk>, Sjoerd Simons <sjoerd.simons@collabora.co.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 30, 2017 at 5:00 PM, Andrey Smirnov
-<andrew.smirnov@gmail.com> wrote:
-> Add serdev_device_write() a blocking call allowing to transfer
-> arbitraty amount of data (potentially exceeding amount that
-> serdev_device_write_buf can process in a single call)
->
-> To support that, also add serdev_device_write_wakeup().
->
-> Drivers wanting to use full extent of serdev_device_write
-> functionality are expected to provide serdev_device_write_wakeup() as
-> a sole handler of .write_wakeup event or call it as a part of driver's
-> custom .write_wakeup code.
->
-> Because serdev_device_write() subroutine is a superset of
-> serdev_device_write_buf() the patch re-impelements latter is terms of
-> the former. For drivers watning to just use serdev_device_write_buf()
+On Sun, Mar 26, 2017 at 11:22:57AM +0200, Geert Uytterhoeven wrote:
+> Hi Russell, Sjoerd,
+> 
+> On Fri, Mar 24, 2017 at 5:42 PM, Russell King - ARM Linux
+> <linux@armlinux.org.uk> wrote:
+> > On Fri, Mar 24, 2017 at 05:26:32PM +0100, Sjoerd Simons wrote:
+> >> When testing on a Renesas board with the PL010 serial driver enabled
+> >> serial output broke. Turns out the minor device numbers for both
+> >> drivers happen to overlap, causing whichever driver happened to be the
+> >> second one to register to fail.
+> >
+> > How the **** has the SH serial driver ended up with overlapping device
+> > numbers?
+> 
+> Interesting...
+> 
+> > What happened to our maintained list of allocated major/minor device
+> > numbers, which is supposed to stop crap like this happening?
+> 
+> AMBA PL010 has been assigned major 204, minors 16..31,
+> SCI has been assigned major 204, minors 8..11.
+> 
+> Over the years, Renesas SoCs have been gaining more and more serial
+> ports, leading to
+> 
+>     #define SCI_NPORTS CONFIG_SERIAL_SH_SCI_NR_UARTS
+> 
+> with CONFIG_SERIAL_SH_SCI_NR_UARTS=20 in shmobile_defconfig and
+> multi_v7_defconfig (although the maximum value on any supported SoC is 18).
+> 
+> But once the value becomes 5 or more, it starts overflowing into the ttyFWx
+> and ttyAMx space.
+> 
+> How to solve this?
+> Time for the serial subsystem to switch to dynamic minors, and get rid of the
+> what-is-your-serial-port-called-again-on-this-platform
+> multi-million-euro question?
 
-typo
+Yes, please, we need to do that.  Let's provide a build option for it,
+like USB has had for over a decade.  If it's enabled, it's all dynamic,
+if not, the "old style" ones are used.  Then we don't accept any new
+reservations, making new drivers use the dynamic number, and over a long
+time, all should be good.
 
-> .write_wakeup handler is optional.
->
-> Cc: cphealy@gmail.com
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Cc: linux-serial@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
-> ---
->
-> Changes since v2 (see [v2]):
->
->         - Changed subject and commit message wording to better reflect
->           nature of the patch
->
->         - Various spelling, formatting, documentation and wording
->           fixes as caught/suggested by Andy
->
-> Changes since v1 (see [v1]):
->
->         - Make timeout to be a total(as opposed to per-iteration)
->           timeout
->
->         - Keep serdev_device_write_buf() as a wrapper arount
->           serdev_device_write() for compatibility
->
-> [v2] https://lkml.org/lkml/2017/3/28/942
-> [v1] https://lkml.org/lkml/2017/3/20/650
->
->  drivers/tty/serdev/core.c | 36 +++++++++++++++++++++++++++++++-----
->  include/linux/serdev.h    | 17 +++++++++++++++--
->  2 files changed, 46 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index f4c6c90..6701d10 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -116,17 +116,41 @@ void serdev_device_close(struct serdev_device *serdev)
->  }
->  EXPORT_SYMBOL_GPL(serdev_device_close);
->
-> -int serdev_device_write_buf(struct serdev_device *serdev,
-> -                           const unsigned char *buf, size_t count)
-> +void serdev_device_write_wakeup(struct serdev_device *serdev)
-> +{
-> +       complete(&serdev->write_comp);
-> +}
-> +EXPORT_SYMBOL_GPL(serdev_device_write_wakeup);
-> +
-> +int serdev_device_write(struct serdev_device *serdev,
-> +                       const unsigned char *buf, size_t count,
-> +                       unsigned long timeout)
->  {
->         struct serdev_controller *ctrl = serdev->ctrl;
-> +       int ret;
->
-> -       if (!ctrl || !ctrl->ops->write_buf)
-> +       if (!ctrl || !ctrl->ops->write_buf ||
-> +           (timeout && !serdev->ops->write_wakeup))
->                 return -EINVAL;
->
-> -       return ctrl->ops->write_buf(ctrl, buf, count);
-> +       mutex_lock(&serdev->write_lock);
-> +       do {
-> +               reinit_completion(&serdev->write_comp);
-> +
-> +               ret = ctrl->ops->write_buf(ctrl, buf, count);
-> +               if (ret < 0)
-> +                       break;
-> +
-> +               buf += ret;
-> +               count -= ret;
-> +
-> +       } while (count &&
-> +                (timeout = wait_for_completion_timeout(&serdev->write_comp,
-> +                                                       timeout)));
+thanks,
 
-Need to test for timeout < 0 here and return timeout when < 0.
-
-Rob
+greg k-h
