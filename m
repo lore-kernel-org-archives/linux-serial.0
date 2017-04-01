@@ -1,7 +1,7 @@
 From: Nicolas Pitre <nicolas.pitre@linaro.org>
-Subject: [PATCH v2 1/5] console: move console_init() out of tty_io.c
-Date: Sat,  1 Apr 2017 18:21:15 -0400
-Message-ID: <20170401222119.25106-2-nicolas.pitre@linaro.org>
+Subject: [PATCH v2 2/5] tty: move baudrate handling code to a file of its own
+Date: Sat,  1 Apr 2017 18:21:16 -0400
+Message-ID: <20170401222119.25106-3-nicolas.pitre@linaro.org>
 References: <20170401222119.25106-1-nicolas.pitre@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170401222119.25106-1-nicolas.pitre@linaro.org>
@@ -10,145 +10,497 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-All the console driver handling code lives in printk.c.
-Move console_init() there as well so console support can still be used
-when the TTY code is configured out.
+To allow reuse without the rest of the tty_ioctl code.
 
 Signed-off-by: Nicolas Pitre <nico@linaro.org>
 ---
- drivers/tty/tty_io.c    | 24 ------------------------
- include/linux/console.h |  2 ++
- include/linux/tty.h     |  7 ++++---
- init/main.c             |  2 +-
- kernel/printk/printk.c  | 24 ++++++++++++++++++++++++
- 5 files changed, 31 insertions(+), 28 deletions(-)
+ drivers/tty/Makefile       |   2 +-
+ drivers/tty/tty_baudrate.c | 232 +++++++++++++++++++++++++++++++++++++++++++++
+ drivers/tty/tty_ioctl.c    | 222 -------------------------------------------
+ 3 files changed, 233 insertions(+), 223 deletions(-)
+ create mode 100644 drivers/tty/tty_baudrate.c
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index e6d1a65108..2100295861 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -3578,30 +3578,6 @@ void tty_default_fops(struct file_operations *fops)
- 	*fops = tty_fops;
+diff --git a/drivers/tty/Makefile b/drivers/tty/Makefile
+index b95bed92da..1461be6b90 100644
+--- a/drivers/tty/Makefile
++++ b/drivers/tty/Makefile
+@@ -1,5 +1,5 @@
+ obj-$(CONFIG_TTY)		+= tty_io.o n_tty.o tty_ioctl.o tty_ldisc.o \
+-				   tty_buffer.o tty_port.o tty_mutex.o tty_ldsem.o
++				   tty_buffer.o tty_port.o tty_mutex.o tty_ldsem.o tty_baudrate.o
+ obj-$(CONFIG_LEGACY_PTYS)	+= pty.o
+ obj-$(CONFIG_UNIX98_PTYS)	+= pty.o
+ obj-$(CONFIG_AUDIT)		+= tty_audit.o
+diff --git a/drivers/tty/tty_baudrate.c b/drivers/tty/tty_baudrate.c
+new file mode 100644
+index 0000000000..5c33fd2567
+--- /dev/null
++++ b/drivers/tty/tty_baudrate.c
+@@ -0,0 +1,232 @@
++/*
++ *  Copyright (C) 1991, 1992, 1993, 1994  Linus Torvalds
++ */
++
++#include <linux/types.h>
++#include <linux/kernel.h>
++#include <linux/termios.h>
++#include <linux/tty.h>
++#include <linux/export.h>
++
++
++/*
++ * Routine which returns the baud rate of the tty
++ *
++ * Note that the baud_table needs to be kept in sync with the
++ * include/asm/termbits.h file.
++ */
++static const speed_t baud_table[] = {
++	0, 50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400, 4800,
++	9600, 19200, 38400, 57600, 115200, 230400, 460800,
++#ifdef __sparc__
++	76800, 153600, 307200, 614400, 921600
++#else
++	500000, 576000, 921600, 1000000, 1152000, 1500000, 2000000,
++	2500000, 3000000, 3500000, 4000000
++#endif
++};
++
++#ifndef __sparc__
++static const tcflag_t baud_bits[] = {
++	B0, B50, B75, B110, B134, B150, B200, B300, B600,
++	B1200, B1800, B2400, B4800, B9600, B19200, B38400,
++	B57600, B115200, B230400, B460800, B500000, B576000,
++	B921600, B1000000, B1152000, B1500000, B2000000, B2500000,
++	B3000000, B3500000, B4000000
++};
++#else
++static const tcflag_t baud_bits[] = {
++	B0, B50, B75, B110, B134, B150, B200, B300, B600,
++	B1200, B1800, B2400, B4800, B9600, B19200, B38400,
++	B57600, B115200, B230400, B460800, B76800, B153600,
++	B307200, B614400, B921600
++};
++#endif
++
++static int n_baud_table = ARRAY_SIZE(baud_table);
++
++/**
++ *	tty_termios_baud_rate
++ *	@termios: termios structure
++ *
++ *	Convert termios baud rate data into a speed. This should be called
++ *	with the termios lock held if this termios is a terminal termios
++ *	structure. May change the termios data. Device drivers can call this
++ *	function but should use ->c_[io]speed directly as they are updated.
++ *
++ *	Locking: none
++ */
++
++speed_t tty_termios_baud_rate(struct ktermios *termios)
++{
++	unsigned int cbaud;
++
++	cbaud = termios->c_cflag & CBAUD;
++
++#ifdef BOTHER
++	/* Magic token for arbitrary speed via c_ispeed/c_ospeed */
++	if (cbaud == BOTHER)
++		return termios->c_ospeed;
++#endif
++	if (cbaud & CBAUDEX) {
++		cbaud &= ~CBAUDEX;
++
++		if (cbaud < 1 || cbaud + 15 > n_baud_table)
++			termios->c_cflag &= ~CBAUDEX;
++		else
++			cbaud += 15;
++	}
++	return baud_table[cbaud];
++}
++EXPORT_SYMBOL(tty_termios_baud_rate);
++
++/**
++ *	tty_termios_input_baud_rate
++ *	@termios: termios structure
++ *
++ *	Convert termios baud rate data into a speed. This should be called
++ *	with the termios lock held if this termios is a terminal termios
++ *	structure. May change the termios data. Device drivers can call this
++ *	function but should use ->c_[io]speed directly as they are updated.
++ *
++ *	Locking: none
++ */
++
++speed_t tty_termios_input_baud_rate(struct ktermios *termios)
++{
++#ifdef IBSHIFT
++	unsigned int cbaud = (termios->c_cflag >> IBSHIFT) & CBAUD;
++
++	if (cbaud == B0)
++		return tty_termios_baud_rate(termios);
++
++	/* Magic token for arbitrary speed via c_ispeed*/
++	if (cbaud == BOTHER)
++		return termios->c_ispeed;
++
++	if (cbaud & CBAUDEX) {
++		cbaud &= ~CBAUDEX;
++
++		if (cbaud < 1 || cbaud + 15 > n_baud_table)
++			termios->c_cflag &= ~(CBAUDEX << IBSHIFT);
++		else
++			cbaud += 15;
++	}
++	return baud_table[cbaud];
++#else
++	return tty_termios_baud_rate(termios);
++#endif
++}
++EXPORT_SYMBOL(tty_termios_input_baud_rate);
++
++/**
++ *	tty_termios_encode_baud_rate
++ *	@termios: ktermios structure holding user requested state
++ *	@ispeed: input speed
++ *	@ospeed: output speed
++ *
++ *	Encode the speeds set into the passed termios structure. This is
++ *	used as a library helper for drivers so that they can report back
++ *	the actual speed selected when it differs from the speed requested
++ *
++ *	For maximal back compatibility with legacy SYS5/POSIX *nix behaviour
++ *	we need to carefully set the bits when the user does not get the
++ *	desired speed. We allow small margins and preserve as much of possible
++ *	of the input intent to keep compatibility.
++ *
++ *	Locking: Caller should hold termios lock. This is already held
++ *	when calling this function from the driver termios handler.
++ *
++ *	The ifdefs deal with platforms whose owners have yet to update them
++ *	and will all go away once this is done.
++ */
++
++void tty_termios_encode_baud_rate(struct ktermios *termios,
++				  speed_t ibaud, speed_t obaud)
++{
++	int i = 0;
++	int ifound = -1, ofound = -1;
++	int iclose = ibaud/50, oclose = obaud/50;
++	int ibinput = 0;
++
++	if (obaud == 0)			/* CD dropped 		  */
++		ibaud = 0;		/* Clear ibaud to be sure */
++
++	termios->c_ispeed = ibaud;
++	termios->c_ospeed = obaud;
++
++#ifdef BOTHER
++	/* If the user asked for a precise weird speed give a precise weird
++	   answer. If they asked for a Bfoo speed they may have problems
++	   digesting non-exact replies so fuzz a bit */
++
++	if ((termios->c_cflag & CBAUD) == BOTHER)
++		oclose = 0;
++	if (((termios->c_cflag >> IBSHIFT) & CBAUD) == BOTHER)
++		iclose = 0;
++	if ((termios->c_cflag >> IBSHIFT) & CBAUD)
++		ibinput = 1;	/* An input speed was specified */
++#endif
++	termios->c_cflag &= ~CBAUD;
++
++	/*
++	 *	Our goal is to find a close match to the standard baud rate
++	 *	returned. Walk the baud rate table and if we get a very close
++	 *	match then report back the speed as a POSIX Bxxxx value by
++	 *	preference
++	 */
++
++	do {
++		if (obaud - oclose <= baud_table[i] &&
++		    obaud + oclose >= baud_table[i]) {
++			termios->c_cflag |= baud_bits[i];
++			ofound = i;
++		}
++		if (ibaud - iclose <= baud_table[i] &&
++		    ibaud + iclose >= baud_table[i]) {
++			/* For the case input == output don't set IBAUD bits
++			   if the user didn't do so */
++			if (ofound == i && !ibinput)
++				ifound  = i;
++#ifdef IBSHIFT
++			else {
++				ifound = i;
++				termios->c_cflag |= (baud_bits[i] << IBSHIFT);
++			}
++#endif
++		}
++	} while (++i < n_baud_table);
++
++	/*
++	 *	If we found no match then use BOTHER if provided or warn
++	 *	the user their platform maintainer needs to wake up if not.
++	 */
++#ifdef BOTHER
++	if (ofound == -1)
++		termios->c_cflag |= BOTHER;
++	/* Set exact input bits only if the input and output differ or the
++	   user already did */
++	if (ifound == -1 && (ibaud != obaud || ibinput))
++		termios->c_cflag |= (BOTHER << IBSHIFT);
++#else
++	if (ifound == -1 || ofound == -1)
++		pr_warn_once("tty: Unable to return correct speed data as your architecture needs updating.\n");
++#endif
++}
++EXPORT_SYMBOL_GPL(tty_termios_encode_baud_rate);
++
++/**
++ *	tty_encode_baud_rate		-	set baud rate of the tty
++ *	@ibaud: input baud rate
++ *	@obad: output baud rate
++ *
++ *	Update the current termios data for the tty with the new speed
++ *	settings. The caller must hold the termios_rwsem for the tty in
++ *	question.
++ */
++
++void tty_encode_baud_rate(struct tty_struct *tty, speed_t ibaud, speed_t obaud)
++{
++	tty_termios_encode_baud_rate(&tty->termios, ibaud, obaud);
++}
++EXPORT_SYMBOL_GPL(tty_encode_baud_rate);
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index a9a978731c..efa96e6c4c 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -258,228 +258,6 @@ static void unset_locked_termios(struct tty_struct *tty, struct ktermios *old)
+ 	/* FIXME: What should we do for i/ospeed */
  }
  
 -/*
-- * Initialize the console device. This is called *early*, so
-- * we can't necessarily depend on lots of kernel help here.
-- * Just do some early initializations, and do the complex setup
-- * later.
+- * Routine which returns the baud rate of the tty
+- *
+- * Note that the baud_table needs to be kept in sync with the
+- * include/asm/termbits.h file.
 - */
--void __init console_init(void)
--{
--	initcall_t *call;
+-static const speed_t baud_table[] = {
+-	0, 50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400, 4800,
+-	9600, 19200, 38400, 57600, 115200, 230400, 460800,
+-#ifdef __sparc__
+-	76800, 153600, 307200, 614400, 921600
+-#else
+-	500000, 576000, 921600, 1000000, 1152000, 1500000, 2000000,
+-	2500000, 3000000, 3500000, 4000000
+-#endif
+-};
 -
--	/* Setup the default TTY line discipline. */
--	n_tty_init();
+-#ifndef __sparc__
+-static const tcflag_t baud_bits[] = {
+-	B0, B50, B75, B110, B134, B150, B200, B300, B600,
+-	B1200, B1800, B2400, B4800, B9600, B19200, B38400,
+-	B57600, B115200, B230400, B460800, B500000, B576000,
+-	B921600, B1000000, B1152000, B1500000, B2000000, B2500000,
+-	B3000000, B3500000, B4000000
+-};
+-#else
+-static const tcflag_t baud_bits[] = {
+-	B0, B50, B75, B110, B134, B150, B200, B300, B600,
+-	B1200, B1800, B2400, B4800, B9600, B19200, B38400,
+-	B57600, B115200, B230400, B460800, B76800, B153600,
+-	B307200, B614400, B921600
+-};
+-#endif
+-
+-static int n_baud_table = ARRAY_SIZE(baud_table);
+-
+-/**
+- *	tty_termios_baud_rate
+- *	@termios: termios structure
+- *
+- *	Convert termios baud rate data into a speed. This should be called
+- *	with the termios lock held if this termios is a terminal termios
+- *	structure. May change the termios data. Device drivers can call this
+- *	function but should use ->c_[io]speed directly as they are updated.
+- *
+- *	Locking: none
+- */
+-
+-speed_t tty_termios_baud_rate(struct ktermios *termios)
+-{
+-	unsigned int cbaud;
+-
+-	cbaud = termios->c_cflag & CBAUD;
+-
+-#ifdef BOTHER
+-	/* Magic token for arbitrary speed via c_ispeed/c_ospeed */
+-	if (cbaud == BOTHER)
+-		return termios->c_ospeed;
+-#endif
+-	if (cbaud & CBAUDEX) {
+-		cbaud &= ~CBAUDEX;
+-
+-		if (cbaud < 1 || cbaud + 15 > n_baud_table)
+-			termios->c_cflag &= ~CBAUDEX;
+-		else
+-			cbaud += 15;
+-	}
+-	return baud_table[cbaud];
+-}
+-EXPORT_SYMBOL(tty_termios_baud_rate);
+-
+-/**
+- *	tty_termios_input_baud_rate
+- *	@termios: termios structure
+- *
+- *	Convert termios baud rate data into a speed. This should be called
+- *	with the termios lock held if this termios is a terminal termios
+- *	structure. May change the termios data. Device drivers can call this
+- *	function but should use ->c_[io]speed directly as they are updated.
+- *
+- *	Locking: none
+- */
+-
+-speed_t tty_termios_input_baud_rate(struct ktermios *termios)
+-{
+-#ifdef IBSHIFT
+-	unsigned int cbaud = (termios->c_cflag >> IBSHIFT) & CBAUD;
+-
+-	if (cbaud == B0)
+-		return tty_termios_baud_rate(termios);
+-
+-	/* Magic token for arbitrary speed via c_ispeed*/
+-	if (cbaud == BOTHER)
+-		return termios->c_ispeed;
+-
+-	if (cbaud & CBAUDEX) {
+-		cbaud &= ~CBAUDEX;
+-
+-		if (cbaud < 1 || cbaud + 15 > n_baud_table)
+-			termios->c_cflag &= ~(CBAUDEX << IBSHIFT);
+-		else
+-			cbaud += 15;
+-	}
+-	return baud_table[cbaud];
+-#else
+-	return tty_termios_baud_rate(termios);
+-#endif
+-}
+-EXPORT_SYMBOL(tty_termios_input_baud_rate);
+-
+-/**
+- *	tty_termios_encode_baud_rate
+- *	@termios: ktermios structure holding user requested state
+- *	@ispeed: input speed
+- *	@ospeed: output speed
+- *
+- *	Encode the speeds set into the passed termios structure. This is
+- *	used as a library helper for drivers so that they can report back
+- *	the actual speed selected when it differs from the speed requested
+- *
+- *	For maximal back compatibility with legacy SYS5/POSIX *nix behaviour
+- *	we need to carefully set the bits when the user does not get the
+- *	desired speed. We allow small margins and preserve as much of possible
+- *	of the input intent to keep compatibility.
+- *
+- *	Locking: Caller should hold termios lock. This is already held
+- *	when calling this function from the driver termios handler.
+- *
+- *	The ifdefs deal with platforms whose owners have yet to update them
+- *	and will all go away once this is done.
+- */
+-
+-void tty_termios_encode_baud_rate(struct ktermios *termios,
+-				  speed_t ibaud, speed_t obaud)
+-{
+-	int i = 0;
+-	int ifound = -1, ofound = -1;
+-	int iclose = ibaud/50, oclose = obaud/50;
+-	int ibinput = 0;
+-
+-	if (obaud == 0)			/* CD dropped 		  */
+-		ibaud = 0;		/* Clear ibaud to be sure */
+-
+-	termios->c_ispeed = ibaud;
+-	termios->c_ospeed = obaud;
+-
+-#ifdef BOTHER
+-	/* If the user asked for a precise weird speed give a precise weird
+-	   answer. If they asked for a Bfoo speed they may have problems
+-	   digesting non-exact replies so fuzz a bit */
+-
+-	if ((termios->c_cflag & CBAUD) == BOTHER)
+-		oclose = 0;
+-	if (((termios->c_cflag >> IBSHIFT) & CBAUD) == BOTHER)
+-		iclose = 0;
+-	if ((termios->c_cflag >> IBSHIFT) & CBAUD)
+-		ibinput = 1;	/* An input speed was specified */
+-#endif
+-	termios->c_cflag &= ~CBAUD;
 -
 -	/*
--	 * set up the console device so that later boot sequences can
--	 * inform about problems etc..
+-	 *	Our goal is to find a close match to the standard baud rate
+-	 *	returned. Walk the baud rate table and if we get a very close
+-	 *	match then report back the speed as a POSIX Bxxxx value by
+-	 *	preference
 -	 */
--	call = __con_initcall_start;
--	while (call < __con_initcall_end) {
--		(*call)();
--		call++;
--	}
--}
 -
- static char *tty_devnode(struct device *dev, umode_t *mode)
- {
- 	if (!mode)
-diff --git a/include/linux/console.h b/include/linux/console.h
-index 5949d18555..b8920a031a 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -212,4 +212,6 @@ extern bool vgacon_text_force(void);
- static inline bool vgacon_text_force(void) { return false; }
- #endif
- 
-+extern void console_init(void);
-+
- #endif /* _LINUX_CONSOLE_H */
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 1017e904c0..f1106d7c73 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -390,7 +390,6 @@ static inline bool tty_throttled(struct tty_struct *tty)
- }
- 
- #ifdef CONFIG_TTY
--extern void console_init(void);
- extern void tty_kref_put(struct tty_struct *tty);
- extern struct pid *tty_get_pgrp(struct tty_struct *tty);
- extern void tty_vhangup_self(void);
-@@ -402,8 +401,6 @@ extern struct tty_struct *get_current_tty(void);
- extern int __init tty_init(void);
- extern const char *tty_name(const struct tty_struct *tty);
- #else
--static inline void console_init(void)
--{ }
- static inline void tty_kref_put(struct tty_struct *tty)
- { }
- static inline struct pid *tty_get_pgrp(struct tty_struct *tty)
-@@ -669,7 +666,11 @@ extern int tty_ldisc_receive_buf(struct tty_ldisc *ld, const unsigned char *p,
- 
- /* n_tty.c */
- extern void n_tty_inherit_ops(struct tty_ldisc_ops *ops);
-+#ifdef CONFIG_TTY
- extern void __init n_tty_init(void);
-+#else
-+static inline void n_tty_init(void) { }
-+#endif
- 
- /* tty_audit.c */
- #ifdef CONFIG_AUDIT
-diff --git a/init/main.c b/init/main.c
-index f9c9d99482..b9bd0edf21 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -27,7 +27,7 @@
- #include <linux/initrd.h>
- #include <linux/bootmem.h>
- #include <linux/acpi.h>
--#include <linux/tty.h>
-+#include <linux/console.h>
- #include <linux/nmi.h>
- #include <linux/percpu.h>
- #include <linux/kmod.h>
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 2984fb0f02..3a09406526 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2611,6 +2611,30 @@ int unregister_console(struct console *console)
- EXPORT_SYMBOL(unregister_console);
- 
- /*
-+ * Initialize the console device. This is called *early*, so
-+ * we can't necessarily depend on lots of kernel help here.
-+ * Just do some early initializations, and do the complex setup
-+ * later.
-+ */
-+void __init console_init(void)
-+{
-+	initcall_t *call;
-+
-+	/* Setup the default TTY line discipline. */
-+	n_tty_init();
-+
-+	/*
-+	 * set up the console device so that later boot sequences can
-+	 * inform about problems etc..
-+	 */
-+	call = __con_initcall_start;
-+	while (call < __con_initcall_end) {
-+		(*call)();
-+		call++;
-+	}
-+}
-+
-+/*
-  * Some boot consoles access data that is in the init section and which will
-  * be discarded after the initcalls have been run. To make sure that no code
-  * will access this data, unregister the boot consoles in a late initcall.
+-	do {
+-		if (obaud - oclose <= baud_table[i] &&
+-		    obaud + oclose >= baud_table[i]) {
+-			termios->c_cflag |= baud_bits[i];
+-			ofound = i;
+-		}
+-		if (ibaud - iclose <= baud_table[i] &&
+-		    ibaud + iclose >= baud_table[i]) {
+-			/* For the case input == output don't set IBAUD bits
+-			   if the user didn't do so */
+-			if (ofound == i && !ibinput)
+-				ifound  = i;
+-#ifdef IBSHIFT
+-			else {
+-				ifound = i;
+-				termios->c_cflag |= (baud_bits[i] << IBSHIFT);
+-			}
+-#endif
+-		}
+-	} while (++i < n_baud_table);
+-
+-	/*
+-	 *	If we found no match then use BOTHER if provided or warn
+-	 *	the user their platform maintainer needs to wake up if not.
+-	 */
+-#ifdef BOTHER
+-	if (ofound == -1)
+-		termios->c_cflag |= BOTHER;
+-	/* Set exact input bits only if the input and output differ or the
+-	   user already did */
+-	if (ifound == -1 && (ibaud != obaud || ibinput))
+-		termios->c_cflag |= (BOTHER << IBSHIFT);
+-#else
+-	if (ifound == -1 || ofound == -1)
+-		pr_warn_once("tty: Unable to return correct speed data as your architecture needs updating.\n");
+-#endif
+-}
+-EXPORT_SYMBOL_GPL(tty_termios_encode_baud_rate);
+-
+-/**
+- *	tty_encode_baud_rate		-	set baud rate of the tty
+- *	@ibaud: input baud rate
+- *	@obad: output baud rate
+- *
+- *	Update the current termios data for the tty with the new speed
+- *	settings. The caller must hold the termios_rwsem for the tty in
+- *	question.
+- */
+-
+-void tty_encode_baud_rate(struct tty_struct *tty, speed_t ibaud, speed_t obaud)
+-{
+-	tty_termios_encode_baud_rate(&tty->termios, ibaud, obaud);
+-}
+-EXPORT_SYMBOL_GPL(tty_encode_baud_rate);
+-
+ /**
+  *	tty_termios_copy_hw	-	copy hardware settings
+  *	@new: New termios
 -- 
 2.9.3
