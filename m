@@ -1,80 +1,61 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: [PATCH] tty: pl011: fix earlycon work-around for QDF2400 erratum 44
-Date: Fri, 31 Mar 2017 17:05:02 -0500
-Message-ID: <1490997902-4894-1-git-send-email-timur@codeaurora.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial driver fixes for 4.11-rc5
+Date: Sat, 1 Apr 2017 17:59:26 +0200
+Message-ID: <20170401155926.GA18354@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Shanker Donthineni <shankerd@codeaurora.org>, Christopher Covington <cov@mykolab.com>, Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, yousaf.kaukab@suse.com, agraf@suse.de, mbrugger@suse.com
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The work-around for the Qualcomm Datacenter Technologies QDF2400
-erratum 44 sets the "qdf2400_e44_present" global variable if the
-work-around is needed.  However, this check does not happen until after
-earlycon is initialized, which means the work-around is not
-used, and the console hangs as soon as it displays one character.
+The following changes since commit c02ed2e75ef4c74e41e421acb4ef1494671585e8:
 
-Fixes: d8a4995bcea1 ("tty: pl011: Work around QDF2400 E44 stuck BUSY bit")
-Signed-off-by: Timur Tabi <timur@codeaurora.org>
----
- drivers/tty/serial/amba-pl011.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+  Linux 4.11-rc4 (2017-03-26 14:15:16 -0700)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 56f92d7..b0a3777 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2452,18 +2452,37 @@ static void pl011_early_write(struct console *con, const char *s, unsigned n)
- 	uart_console_write(&dev->port, s, n, pl011_putc);
- }
- 
-+/*
-+ * On non-ACPI systems, earlycon is enabled by specifying
-+ * "earlycon=pl011,<address>" on the kernel command line.
-+ *
-+ * On ACPI ARM64 systems, an "early" console is enabled via the SPCR table,
-+ * by specifying only "earlycon" on the command line.  Because it requires
-+ * SPCR, the console starts after ACPI is parsed, which is later than a
-+ * traditional early console.
-+ *
-+ * To get the traditional early console that starts before ACPI is parsed,
-+ * specify the full "earlycon=pl011,<address>" option.
-+ */
- static int __init pl011_early_console_setup(struct earlycon_device *device,
- 					    const char *opt)
- {
- 	if (!device->port.membase)
- 		return -ENODEV;
- 
--	device->con->write = qdf2400_e44_present ?
--				qdf2400_e44_early_write : pl011_early_write;
-+	/* On QDF2400 SOCs affected by Erratum 44, the "qdf2400_e44" must
-+	 * also be specified, e.g. "earlycon=pl011,<address>,qdf2400_e44".
-+	 */
-+	if (!strcmp(device->options, "qdf2400_e44"))
-+		device->con->write = qdf2400_e44_early_write;
-+	else
-+		device->con->write = pl011_early_write;
-+
- 	return 0;
- }
- OF_EARLYCON_DECLARE(pl011, "arm,pl011", pl011_early_console_setup);
- OF_EARLYCON_DECLARE(pl011, "arm,sbsa-uart", pl011_early_console_setup);
-+EARLYCON_DECLARE(qdf2400_e44, pl011_early_console_setup);
- 
- #else
- #define AMBA_CONSOLE	NULL
--- 
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm
-Technologies, Inc.  Qualcomm Technologies, Inc. is a member of the
-Code Aurora Forum, a Linux Foundation Collaborative Project.
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.11-rc5
+
+for you to fetch changes up to e53e597fd4c4a0b6ae58e57d76a240927fd17eaa:
+
+  tty: pl011: fix earlycon work-around for QDF2400 erratum 44 (2017-04-01 11:07:29 +0200)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 4.11-rc5
+
+Here are some small fixes for some serial drivers and Kconfig help text
+for 4.11-rc5.  Nothing major here at all, a few things resolving
+reported bugs in some random serial drivers.
+
+I don't think these made the last linux-next due to me getting to them
+yesterday, but I am not sure, they might have snuck in.  The patches
+only affect drivers that the maintainers of sent me these patches for,
+so we should be safe here :)
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Nicolas Ferre (1):
+      tty/serial: atmel: fix TX path in atmel_console_write()
+
+Paul Gortmaker (1):
+      serial: 8250_EXAR: fix duplicate Kconfig text and add missing help text
+
+Richard Genoud (1):
+      tty/serial: atmel: fix race condition (TX+DMA)
+
+Timur Tabi (1):
+      tty: pl011: fix earlycon work-around for QDF2400 erratum 44
+
+Uwe Kleine-König (1):
+      serial: mxs-auart: Fix baudrate calculation
+
+ drivers/tty/serial/8250/Kconfig   |  8 ++++++--
+ drivers/tty/serial/amba-pl011.c   | 23 +++++++++++++++++++++--
+ drivers/tty/serial/atmel_serial.c |  8 ++++++++
+ drivers/tty/serial/mxs-auart.c    |  2 +-
+ 4 files changed, 36 insertions(+), 5 deletions(-)
