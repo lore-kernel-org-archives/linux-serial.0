@@ -1,32 +1,34 @@
-From: Andi Kleen <andi@firstfloor.org>
-Subject: Re: [PATCH v2 0/5] minitty: a minimal TTY layer alternative for embedded systems
-Date: Sun, 02 Apr 2017 13:47:42 -0700
-Message-ID: <87pogur0y9.fsf@firstfloor.org>
-References: <20170401222119.25106-1-nicolas.pitre@linaro.org>
+From: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH 2/2] drivers/serial: Add driver for Aspeed virtual UART
+Date: Mon, 03 Apr 2017 07:09:43 +1000
+Message-ID: <1491167383.26047.15.camel@kernel.crashing.org>
+References: <20170328054458.29341-1-joel@jms.id.au>
+         <20170328054458.29341-3-joel@jms.id.au>
+         <CAHp75VfmbHrPFXO3UFmSciCnVuoB+5vFxy7iOnwVS5YBSPO3+Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170401222119.25106-1-nicolas.pitre@linaro.org> (Nicolas
-        Pitre's message of "Sat, 1 Apr 2017 18:21:14 -0400")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Pitre <nicolas.pitre@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAHp75VfmbHrPFXO3UFmSciCnVuoB+5vFxy7iOnwVS5YBSPO3+Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jeremy Kerr <jk-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Nicolas Pitre <nicolas.pitre@linaro.org> writes:
->
-> Of course, making it "mini" means there are limitations to what it does:
->
-> - This supports serial ports only. No VT's, no PTY's.
+On Sun, 2017-04-02 at 16:07 +0300, Andy Shevchenko wrote:
+> > +       port.port.irqflags = IRQF_SHARED;
+> 
+> This is set by core. You already supplied correct flag for that
+> below.
 
-No PTYs seems like a big limitation. This means no sshd?
+Are you sure ? Where ?
 
-> But again, most small embedded systems simply don't need those things.
+We had a bug the other day because that wasn't being set...
 
-They don't need a (debug) way to login over the network? Hard to
-believe.
+Cheers,
+Ben.
 
-Most of the other stuff we could indeed do without even on larger
-systems.
-
--Andi
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
