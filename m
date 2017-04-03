@@ -1,102 +1,145 @@
 From: Shuah Khan <shuahkhan@gmail.com>
-Subject: Re: [PATCH v3 1/3] serial: samsung: Use right device for DMA-mapping calls
-Date: Mon, 3 Apr 2017 07:42:54 -0600
-Message-ID: <CAKocOONgzKoFrW1wfP3tsudd5ZiP-ovANORc67O=uCc99eVZnA@mail.gmail.com>
-References: <CGME20170403062115eucas1p25b1504b3441f1195129bbedad261494c@eucas1p2.samsung.com>
- <1491200468-28463-1-git-send-email-m.szyprowski@samsung.com>
+Subject: Re: [PATCH v3 2/3] serial: samsung: Add missing checks for
+ dma_map_single failure
+Date: Mon, 3 Apr 2017 07:50:44 -0600
+Message-ID: <CAKocOOO8irVarsM8xVvzHkoidEHXM_2F3jNXkDr1JEtiCBnsEg@mail.gmail.com>
+References: <CGME20170403062119eucas1p1fb7d0ceba0bc104d5e78cbc3343cf9fe@eucas1p1.samsung.com>
+ <1491200468-28463-1-git-send-email-m.szyprowski@samsung.com> <1491200468-28463-2-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <1491200468-28463-1-git-send-email-m.szyprowski@samsung.com>
+In-Reply-To: <1491200468-28463-2-git-send-email-m.szyprowski@samsung.com>
 Sender: stable-owner@vger.kernel.org
 To: Marek Szyprowski <m.szyprowski@samsung.com>
 Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, Sylwester Nawrocki <s.nawrocki@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Seung-Woo Kim <sw0312.kim@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Inki Dae <inki.dae@samsung.com>, stable <stable@vger.kernel.org>, shuahkh@osg.samsung.com
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Apr 3, 2017 at 12:20 AM, Marek Szyprowski
+Hi Marek,
+
+On Mon, Apr 3, 2017 at 12:21 AM, Marek Szyprowski
 <m.szyprowski@samsung.com> wrote:
-> Driver should provide its own struct device for all DMA-mapping calls instead
-> of extracting device pointer from DMA engine channel. Although this is harmless
-> from the driver operation perspective on ARM architecture, it is always good
-> to use the DMA mapping API in a proper way. This patch fixes following DMA API
-> debug warning:
+> This patch adds missing checks for dma_map_single() failure and proper error
+> reporting. Although this issue was harmless on ARM architecture, it is always
+> good to use the DMA mapping API in a proper way. This patch fixes the following
+> DMA API debug warning:
 >
-> WARNING: CPU: 0 PID: 0 at lib/dma-debug.c:1241 check_sync+0x520/0x9f4
-> samsung-uart 12c20000.serial: DMA-API: device driver tries to sync DMA memory it has not allocated [device address=0x000000006df0f580] [size=64 bytes]
+> WARNING: CPU: 1 PID: 3785 at lib/dma-debug.c:1171 check_unmap+0x8a0/0xf28
+> dma-pl330 121a0000.pdma: DMA-API: device driver failed to check map error[device address=0x000000006e0f9000] [size=4096 bytes] [mapped as single]
 > Modules linked in:
-> CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.11.0-rc1-00137-g07ca963 #51
+> CPU: 1 PID: 3785 Comm: (agetty) Tainted: G        W       4.11.0-rc1-00137-g07ca963-dirty #59
 > Hardware name: SAMSUNG EXYNOS (Flattened Device Tree)
 > [<c011aaa4>] (unwind_backtrace) from [<c01127c0>] (show_stack+0x20/0x24)
 > [<c01127c0>] (show_stack) from [<c06ba5d8>] (dump_stack+0x84/0xa0)
 > [<c06ba5d8>] (dump_stack) from [<c0139528>] (__warn+0x14c/0x180)
 > [<c0139528>] (__warn) from [<c01395a4>] (warn_slowpath_fmt+0x48/0x50)
-> [<c01395a4>] (warn_slowpath_fmt) from [<c0729058>] (check_sync+0x520/0x9f4)
-> [<c0729058>] (check_sync) from [<c072967c>] (debug_dma_sync_single_for_device+0x88/0xc8)
-> [<c072967c>] (debug_dma_sync_single_for_device) from [<c0803c10>] (s3c24xx_serial_start_tx_dma+0x100/0x2f8)
-> [<c0803c10>] (s3c24xx_serial_start_tx_dma) from [<c0804338>] (s3c24xx_serial_tx_chars+0x198/0x33c)
+> [<c01395a4>] (warn_slowpath_fmt) from [<c072a114>] (check_unmap+0x8a0/0xf28)
+> [<c072a114>] (check_unmap) from [<c072a834>] (debug_dma_unmap_page+0x98/0xc8)
+> [<c072a834>] (debug_dma_unmap_page) from [<c0803874>] (s3c24xx_serial_shutdown+0x314/0x52c)
+> [<c0803874>] (s3c24xx_serial_shutdown) from [<c07f5124>] (uart_port_shutdown+0x54/0x88)
+> [<c07f5124>] (uart_port_shutdown) from [<c07f522c>] (uart_shutdown+0xd4/0x110)
+> [<c07f522c>] (uart_shutdown) from [<c07f6a8c>] (uart_hangup+0x9c/0x208)
+> [<c07f6a8c>] (uart_hangup) from [<c07c426c>] (__tty_hangup+0x49c/0x634)
+> [<c07c426c>] (__tty_hangup) from [<c07c78ac>] (tty_ioctl+0xc88/0x16e4)
+> [<c07c78ac>] (tty_ioctl) from [<c03b5f2c>] (do_vfs_ioctl+0xc4/0xd10)
+> [<c03b5f2c>] (do_vfs_ioctl) from [<c03b6bf4>] (SyS_ioctl+0x7c/0x8c)
+> [<c03b6bf4>] (SyS_ioctl) from [<c010b4a0>] (ret_fast_syscall+0x0/0x3c)
 >
 > Reported-by: Seung-Woo Kim <sw0312.kim@samsung.com>
 > Fixes: 62c37eedb74c8 ("serial: samsung: add dma reqest/release functions")
-> CC: stable@vger.kernel.org # v4.0+
+> CC: stable@vger.kernel.org # v4.10+
 > Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 > Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
 
-The change looks good.
+Looks good.
 
-Reviewed-by: Shuah Khan <shuahkh@osg.samsung.com>
+Reviewed-by: shuahkh@osg.samsung.com
 
+thanks,
 -- Shuah
 
-> ---
+> This issue was there since adding DMA support, but this patch applies cleanly
+> only to v4.10+ kernels due to other changes in the surrounding code.
+>
 > v3:
-> - extended commit message
+> - moved spinlock removal to separate patch, extended commit message
 >
 > v2:
 > - fixed commit id in 'fixes' tag, added 'reviewed-by' tag
 > ---
->  drivers/tty/serial/samsung.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
+>  drivers/tty/serial/samsung.c | 31 ++++++++++++++++++++++++-------
+>  1 file changed, 24 insertions(+), 7 deletions(-)
 >
 > diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-> index 7a17aedbf902..9f3759bdb44f 100644
+> index 9f3759bdb44f..ca0bcd7fd61f 100644
 > --- a/drivers/tty/serial/samsung.c
 > +++ b/drivers/tty/serial/samsung.c
-> @@ -901,14 +901,13 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
->                 return -ENOMEM;
+> @@ -859,7 +859,7 @@ static void s3c24xx_serial_break_ctl(struct uart_port *port, int break_state)
+>  static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
+>  {
+>         struct s3c24xx_uart_dma *dma = p->dma;
+> -       unsigned long flags;
+> +       int ret;
+>
+>         /* Default slave configuration parameters */
+>         dma->rx_conf.direction          = DMA_DEV_TO_MEM;
+> @@ -884,8 +884,8 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
+>
+>         dma->tx_chan = dma_request_chan(p->port.dev, "tx");
+>         if (IS_ERR(dma->tx_chan)) {
+> -               dma_release_channel(dma->rx_chan);
+> -               return PTR_ERR(dma->tx_chan);
+> +               ret = PTR_ERR(dma->tx_chan);
+> +               goto err_release_rx;
 >         }
 >
-> -       dma->rx_addr = dma_map_single(dma->rx_chan->device->dev, dma->rx_buf,
-> +       dma->rx_addr = dma_map_single(p->port.dev, dma->rx_buf,
+>         dmaengine_slave_config(dma->tx_chan, &dma->tx_conf);
+> @@ -894,15 +894,17 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
+>         dma->rx_size = PAGE_SIZE;
+>
+>         dma->rx_buf = kmalloc(dma->rx_size, GFP_KERNEL);
+> -
+>         if (!dma->rx_buf) {
+> -               dma_release_channel(dma->rx_chan);
+> -               dma_release_channel(dma->tx_chan);
+> -               return -ENOMEM;
+> +               ret = -ENOMEM;
+> +               goto err_release_tx;
+>         }
+>
+>         dma->rx_addr = dma_map_single(p->port.dev, dma->rx_buf,
 >                                 dma->rx_size, DMA_FROM_DEVICE);
+> +       if (dma_mapping_error(p->port.dev, dma->rx_addr)) {
+> +               ret = -EIO;
+> +               goto err_free_rx;
+> +       }
 >
 >         spin_lock_irqsave(&p->port.lock, flags);
 >
->         /* TX buffer */
-> -       dma->tx_addr = dma_map_single(dma->tx_chan->device->dev,
-> -                               p->port.state->xmit.buf,
-> +       dma->tx_addr = dma_map_single(p->port.dev, p->port.state->xmit.buf,
+> @@ -911,8 +913,23 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
 >                                 UART_XMIT_SIZE, DMA_TO_DEVICE);
 >
 >         spin_unlock_irqrestore(&p->port.lock, flags);
-> @@ -922,7 +921,7 @@ static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
+> +       if (dma_mapping_error(p->port.dev, dma->tx_addr)) {
+> +               ret = -EIO;
+> +               goto err_unmap_rx;
+> +       }
 >
->         if (dma->rx_chan) {
->                 dmaengine_terminate_all(dma->rx_chan);
-> -               dma_unmap_single(dma->rx_chan->device->dev, dma->rx_addr,
-> +               dma_unmap_single(p->port.dev, dma->rx_addr,
->                                 dma->rx_size, DMA_FROM_DEVICE);
->                 kfree(dma->rx_buf);
->                 dma_release_channel(dma->rx_chan);
-> @@ -931,7 +930,7 @@ static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
+>         return 0;
+> +
+> +err_unmap_rx:
+> +       dma_unmap_single(p->port.dev, dma->rx_addr, dma->rx_size,
+> +                        DMA_FROM_DEVICE);
+> +err_free_rx:
+> +       kfree(dma->rx_buf);
+> +err_release_tx:
+> +       dma_release_channel(dma->tx_chan);
+> +err_release_rx:
+> +       dma_release_channel(dma->rx_chan);
+> +       return ret;
+>  }
 >
->         if (dma->tx_chan) {
->                 dmaengine_terminate_all(dma->tx_chan);
-> -               dma_unmap_single(dma->tx_chan->device->dev, dma->tx_addr,
-> +               dma_unmap_single(p->port.dev, dma->tx_addr,
->                                 UART_XMIT_SIZE, DMA_TO_DEVICE);
->                 dma_release_channel(dma->tx_chan);
->                 dma->tx_chan = NULL;
+>  static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
 > --
 > 1.9.1
 >
