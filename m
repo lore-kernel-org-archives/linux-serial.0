@@ -1,36 +1,46 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
+From: Alan Cox <alan@linux.intel.com>
 Subject: Re: [PATCH v2 0/5] minitty: a minimal TTY layer alternative for
  embedded systems
-Date: Mon, 3 Apr 2017 10:54:31 +0300
-Message-ID: <CAHp75VdgEcyXPxENS87nHLtCEHqB5Z-1_T_W1opSiKqqNpeU2A@mail.gmail.com>
+Date: Mon, 03 Apr 2017 13:56:26 +0100
+Message-ID: <1491224186.3704.11.camel@linux.intel.com>
 References: <20170401222119.25106-1-nicolas.pitre@linaro.org>
- <87pogur0y9.fsf@firstfloor.org> <alpine.LFD.2.20.1704021729470.1847@knanqh.ubzr>
+         <CAHp75VdGm2uVPBhfAge4Wx6WW2y52oddpOSfJgdYAfTUQPN7TQ@mail.gmail.com>
+         <alpine.LFD.2.20.1704021149550.1847@knanqh.ubzr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.LFD.2.20.1704021729470.1847@knanqh.ubzr>
+In-Reply-To: <alpine.LFD.2.20.1704021149550.1847@knanqh.ubzr>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Pitre <nicolas.pitre@linaro.org>
-Cc: Andi Kleen <andi@firstfloor.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+To: Nicolas Pitre <nicolas.pitre@linaro.org>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Apr 3, 2017 at 12:41 AM, Nicolas Pitre <nicolas.pitre@linaro.org> wrote:
-> On Sun, 2 Apr 2017, Andi Kleen wrote:
->> No PTYs seems like a big limitation. This means no sshd?
+On Sun, 2017-04-02 at 11:55 -0400, Nicolas Pitre wrote:
+> On Sun, 2 Apr 2017, Andy Shevchenko wrote:
+> 
+> > 
+> > +Cc people, who have a key roles in all TTY stuff (btw, why you did
+> > miss them?
+> 
+> I used what MAINTAINERS and get_maintainer.pl gave me.
+> 
 
-> Again, my ultimate system target is in the sub-megabyte of RAM.  I
-> really doubt you'll be able to fit an SSH server in there even if PTYs
-> were supported, unless sshd (or dropbear) can be made really tiny.
+I didn't see this until now as I'm mid house move so not following a
+lot of l/k.
 
-Are you sure you need Linux there? There is a nice Zephyr project
-(OpenSource RTOS, POSIX compatible) exactly for microcontrollers.
+If you need a tiny tiny tty layer console for some kind of not quite
+mini-Linux please just steal the one from Fuzix or something similar
+thats only a couple of K in size and only needs extremely simple send
+byte/rx byte type handlers.
 
-While I can agree on making Linux stuff less fatty, I can't agree on
-doing this way. We have for now two subsystems to serve for serial
-devices, you are proposing third one for only narrow class of devices.
->From my point of view is better to achive your goal with existing
-system (as a proof of concept maybe even with ugly #ifdef:fery).
+Alternatively just compile out tty support entirely. What do you
+actually need ? Console doesn't need tty layer and if you have a
+debug/management interface that doesn't have to be tty and text based
+either.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Being able to compile out tty support would be useful, having two tty
+layers that are intertwined and now both totally unmaintable is not
+IMHO progress.
+
+Alan
