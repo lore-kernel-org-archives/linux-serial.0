@@ -1,55 +1,88 @@
-From: Nicolas Pitre <nicolas.pitre@linaro.org>
-Subject: Re: [PATCH v2 0/5] minitty: a minimal TTY layer alternative for
- embedded systems
-Date: Sun, 2 Apr 2017 21:01:48 -0400 (EDT)
-Message-ID: <alpine.LFD.2.20.1704022040380.1847@knanqh.ubzr>
-References: <20170401222119.25106-1-nicolas.pitre@linaro.org> <87pogur0y9.fsf@firstfloor.org> <alpine.LFD.2.20.1704021729470.1847@knanqh.ubzr> <92fb1e4a-d6df-f55b-c0a1-9c1eb78e3943@longlandclan.id.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <92fb1e4a-d6df-f55b-c0a1-9c1eb78e3943@longlandclan.id.au>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Stuart Longland <stuartl@longlandclan.id.au>
-Cc: Andi Kleen <andi@firstfloor.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH v3 1/3] serial: samsung: Use right device for DMA-mapping calls
+Date: Mon, 03 Apr 2017 08:20:59 +0200
+Message-ID: <1491200468-28463-1-git-send-email-m.szyprowski@samsung.com>
+References: <CGME20170403062115eucas1p25b1504b3441f1195129bbedad261494c@eucas1p2.samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Seung-Woo Kim <sw0312.kim@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Inki Dae <inki.dae@samsung.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 3 Apr 2017, Stuart Longland wrote:
+Driver should provide its own struct device for all DMA-mapping calls instead
+of extracting device pointer from DMA engine channel. Although this is harmless
+from the driver operation perspective on ARM architecture, it is always good
+to use the DMA mapping API in a proper way. This patch fixes following DMA API
+debug warning:
 
-> On 03/04/17 07:41, Nicolas Pitre wrote:
-> >> No PTYs seems like a big limitation. This means no sshd?
-> > Again, my ultimate system target is in the sub-megabyte of RAM.  I 
-> > really doubt you'll be able to fit an SSH server in there even if PTYs 
-> > were supported, unless sshd (or dropbear) can be made really tiny. 
-> > Otherwise you most probably have sufficient resources to run the regular 
-> > TTY code.
-> 
-> Are we talking small microcontrollers here?  The smallest machine in
-> terms of RAM I ever recall running Linux on was a 386SX/25 MHz with 4MB
-> RAM, and that had a MMU.
+WARNING: CPU: 0 PID: 0 at lib/dma-debug.c:1241 check_sync+0x520/0x9f4
+samsung-uart 12c20000.serial: DMA-API: device driver tries to sync DMA memory it has not allocated [device address=0x000000006df0f580] [size=64 bytes]
+Modules linked in:
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.11.0-rc1-00137-g07ca963 #51
+Hardware name: SAMSUNG EXYNOS (Flattened Device Tree)
+[<c011aaa4>] (unwind_backtrace) from [<c01127c0>] (show_stack+0x20/0x24)
+[<c01127c0>] (show_stack) from [<c06ba5d8>] (dump_stack+0x84/0xa0)
+[<c06ba5d8>] (dump_stack) from [<c0139528>] (__warn+0x14c/0x180)
+[<c0139528>] (__warn) from [<c01395a4>] (warn_slowpath_fmt+0x48/0x50)
+[<c01395a4>] (warn_slowpath_fmt) from [<c0729058>] (check_sync+0x520/0x9f4)
+[<c0729058>] (check_sync) from [<c072967c>] (debug_dma_sync_single_for_device+0x88/0xc8)
+[<c072967c>] (debug_dma_sync_single_for_device) from [<c0803c10>] (s3c24xx_serial_start_tx_dma+0x100/0x2f8)
+[<c0803c10>] (s3c24xx_serial_start_tx_dma) from [<c0804338>] (s3c24xx_serial_tx_chars+0x198/0x33c)
 
-Not to repeat what I've said already, I invite you to have a look at 
-https://lkml.org/lkml/2017/3/24/634
+Reported-by: Seung-Woo Kim <sw0312.kim@samsung.com>
+Fixes: 62c37eedb74c8 ("serial: samsung: add dma reqest/release functions")
+CC: stable@vger.kernel.org # v4.0+
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+v3:
+- extended commit message
 
-> I recall Slackware requiring that you booted with a mounted floppy (no
-> ramdisk) and possibly even required that you had a second floppy drive
-> formatted as swap so you'd be able to get through the install without
-> oomkiller knocking on your door.
+v2:
+- fixed commit id in 'fixes' tag, added 'reviewed-by' tag
+---
+ drivers/tty/serial/samsung.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Did the oom killer even exist in those days? I don't remember.
-All I remember is the stack of 73 flopies or so to install Slackware... 
-and of course floppy #68 would have developed a bad sector preventing 
-you from completing the installation.
-
-> Sub-megabyte system support is a noble goal, but I'm wondering how
-> practical such systems would be, and whether an embedded real-time
-> kernel might be a better choice than Linux on such systems.
-
-Obviously, you need to leave the idea of a _distribution_ behind. If you 
-think of a single user app, and a kernel that only provides those 
-syscalls used by that app, and the minimal subset of kernel services 
-that such an app require, then nothing prevents such and app/kernel from 
-using the actual Linux API. And that's where you get a big advantage 
-over other RTOSes. See the link above for the full rationale.
-
-
-Nicolas
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 7a17aedbf902..9f3759bdb44f 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -901,14 +901,13 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
+ 		return -ENOMEM;
+ 	}
+ 
+-	dma->rx_addr = dma_map_single(dma->rx_chan->device->dev, dma->rx_buf,
++	dma->rx_addr = dma_map_single(p->port.dev, dma->rx_buf,
+ 				dma->rx_size, DMA_FROM_DEVICE);
+ 
+ 	spin_lock_irqsave(&p->port.lock, flags);
+ 
+ 	/* TX buffer */
+-	dma->tx_addr = dma_map_single(dma->tx_chan->device->dev,
+-				p->port.state->xmit.buf,
++	dma->tx_addr = dma_map_single(p->port.dev, p->port.state->xmit.buf,
+ 				UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 
+ 	spin_unlock_irqrestore(&p->port.lock, flags);
+@@ -922,7 +921,7 @@ static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
+ 
+ 	if (dma->rx_chan) {
+ 		dmaengine_terminate_all(dma->rx_chan);
+-		dma_unmap_single(dma->rx_chan->device->dev, dma->rx_addr,
++		dma_unmap_single(p->port.dev, dma->rx_addr,
+ 				dma->rx_size, DMA_FROM_DEVICE);
+ 		kfree(dma->rx_buf);
+ 		dma_release_channel(dma->rx_chan);
+@@ -931,7 +930,7 @@ static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
+ 
+ 	if (dma->tx_chan) {
+ 		dmaengine_terminate_all(dma->tx_chan);
+-		dma_unmap_single(dma->tx_chan->device->dev, dma->tx_addr,
++		dma_unmap_single(p->port.dev, dma->tx_addr,
+ 				UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 		dma_release_channel(dma->tx_chan);
+ 		dma->tx_chan = NULL;
+-- 
+1.9.1
