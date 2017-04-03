@@ -1,130 +1,147 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v3 2/3] serial: samsung: Add missing checks for dma_map_single
- failure
-Date: Mon, 03 Apr 2017 08:21:00 +0200
-Message-ID: <1491200468-28463-2-git-send-email-m.szyprowski@samsung.com>
-References: <1491200468-28463-1-git-send-email-m.szyprowski@samsung.com>
- <CGME20170403062119eucas1p1fb7d0ceba0bc104d5e78cbc3343cf9fe@eucas1p1.samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1491200468-28463-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Seung-Woo Kim <sw0312.kim@samsung.com>, Joonyoung Shim <jy0922.shim@samsung.com>, Inki Dae <inki.dae@samsung.com>, stable@vger.kernel.org
+From: Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>
+Subject: Re: [PATCH 2/2] drivers/serial: Add driver for Aspeed virtual UART
+Date: Mon, 3 Apr 2017 16:41:03 +0930
+Message-ID: <CACPK8Xd0U9sbWb-ScJ-MR8qwsXwxhP6_mrnEj4AXkGO66X=7kQ@mail.gmail.com>
+References: <20170328054458.29341-1-joel@jms.id.au> <20170328054458.29341-3-joel@jms.id.au>
+ <CAHp75VfmbHrPFXO3UFmSciCnVuoB+5vFxy7iOnwVS5YBSPO3+Q@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAHp75VfmbHrPFXO3UFmSciCnVuoB+5vFxy7iOnwVS5YBSPO3+Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jeremy Kerr <jk-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, OpenBMC Maillist <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds missing checks for dma_map_single() failure and proper error
-reporting. Although this issue was harmless on ARM architecture, it is always
-good to use the DMA mapping API in a proper way. This patch fixes the following
-DMA API debug warning:
+Hi Andy,
 
-WARNING: CPU: 1 PID: 3785 at lib/dma-debug.c:1171 check_unmap+0x8a0/0xf28
-dma-pl330 121a0000.pdma: DMA-API: device driver failed to check map error[device address=0x000000006e0f9000] [size=4096 bytes] [mapped as single]
-Modules linked in:
-CPU: 1 PID: 3785 Comm: (agetty) Tainted: G        W       4.11.0-rc1-00137-g07ca963-dirty #59
-Hardware name: SAMSUNG EXYNOS (Flattened Device Tree)
-[<c011aaa4>] (unwind_backtrace) from [<c01127c0>] (show_stack+0x20/0x24)
-[<c01127c0>] (show_stack) from [<c06ba5d8>] (dump_stack+0x84/0xa0)
-[<c06ba5d8>] (dump_stack) from [<c0139528>] (__warn+0x14c/0x180)
-[<c0139528>] (__warn) from [<c01395a4>] (warn_slowpath_fmt+0x48/0x50)
-[<c01395a4>] (warn_slowpath_fmt) from [<c072a114>] (check_unmap+0x8a0/0xf28)
-[<c072a114>] (check_unmap) from [<c072a834>] (debug_dma_unmap_page+0x98/0xc8)
-[<c072a834>] (debug_dma_unmap_page) from [<c0803874>] (s3c24xx_serial_shutdown+0x314/0x52c)
-[<c0803874>] (s3c24xx_serial_shutdown) from [<c07f5124>] (uart_port_shutdown+0x54/0x88)
-[<c07f5124>] (uart_port_shutdown) from [<c07f522c>] (uart_shutdown+0xd4/0x110)
-[<c07f522c>] (uart_shutdown) from [<c07f6a8c>] (uart_hangup+0x9c/0x208)
-[<c07f6a8c>] (uart_hangup) from [<c07c426c>] (__tty_hangup+0x49c/0x634)
-[<c07c426c>] (__tty_hangup) from [<c07c78ac>] (tty_ioctl+0xc88/0x16e4)
-[<c07c78ac>] (tty_ioctl) from [<c03b5f2c>] (do_vfs_ioctl+0xc4/0xd10)
-[<c03b5f2c>] (do_vfs_ioctl) from [<c03b6bf4>] (SyS_ioctl+0x7c/0x8c)
-[<c03b6bf4>] (SyS_ioctl) from [<c010b4a0>] (ret_fast_syscall+0x0/0x3c)
+Thanks for the review. I've incorporatd most of your comments in a v2
+that I'll send out once I've given it a spin on hardware.
 
-Reported-by: Seung-Woo Kim <sw0312.kim@samsung.com>
-Fixes: 62c37eedb74c8 ("serial: samsung: add dma reqest/release functions")
-CC: stable@vger.kernel.org # v4.10+
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
----
-This issue was there since adding DMA support, but this patch applies cleanly
-only to v4.10+ kernels due to other changes in the surrounding code.
+On Sun, Apr 2, 2017 at 10:37 PM, Andy Shevchenko
+<andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>> +static ssize_t ast_vuart_show_addr(struct device *dev,
+>> +               struct device_attribute *attr, char *buf)
+>> +{
+>> +       struct ast_vuart *vuart = dev_get_drvdata(dev);
+>> +       u16 addr;
+>> +
+>
+>> +       addr = (readb(vuart->regs + AST_VUART_ADDRH) << 8) |
+>> +               (readb(vuart->regs + AST_VUART_ADDRL));
+>
+> It looks like you have register shift 2 bits and byte accessors. We
+> have some helpers for that (serial_in() / serial_out() or alike).
 
-v3:
-- moved spinlock removal to separate patch, extended commit message
+Thanks for the pointer. I took a look at this. It looks like I need to
+define my own accessor?
 
-v2:
-- fixed commit id in 'fixes' tag, added 'reviewed-by' tag
----
- drivers/tty/serial/samsung.c | 31 ++++++++++++++++++++++++-------
- 1 file changed, 24 insertions(+), 7 deletions(-)
+I don't think it's worth it for the one read and one write we have in
+this driver.
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 9f3759bdb44f..ca0bcd7fd61f 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -859,7 +859,7 @@ static void s3c24xx_serial_break_ctl(struct uart_port *port, int break_state)
- static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
- {
- 	struct s3c24xx_uart_dma	*dma = p->dma;
--	unsigned long flags;
-+	int ret;
- 
- 	/* Default slave configuration parameters */
- 	dma->rx_conf.direction		= DMA_DEV_TO_MEM;
-@@ -884,8 +884,8 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
- 
- 	dma->tx_chan = dma_request_chan(p->port.dev, "tx");
- 	if (IS_ERR(dma->tx_chan)) {
--		dma_release_channel(dma->rx_chan);
--		return PTR_ERR(dma->tx_chan);
-+		ret = PTR_ERR(dma->tx_chan);
-+		goto err_release_rx;
- 	}
- 
- 	dmaengine_slave_config(dma->tx_chan, &dma->tx_conf);
-@@ -894,15 +894,17 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
- 	dma->rx_size = PAGE_SIZE;
- 
- 	dma->rx_buf = kmalloc(dma->rx_size, GFP_KERNEL);
--
- 	if (!dma->rx_buf) {
--		dma_release_channel(dma->rx_chan);
--		dma_release_channel(dma->tx_chan);
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto err_release_tx;
- 	}
- 
- 	dma->rx_addr = dma_map_single(p->port.dev, dma->rx_buf,
- 				dma->rx_size, DMA_FROM_DEVICE);
-+	if (dma_mapping_error(p->port.dev, dma->rx_addr)) {
-+		ret = -EIO;
-+		goto err_free_rx;
-+	}
- 
- 	spin_lock_irqsave(&p->port.lock, flags);
- 
-@@ -911,8 +913,23 @@ static int s3c24xx_serial_request_dma(struct s3c24xx_uart_port *p)
- 				UART_XMIT_SIZE, DMA_TO_DEVICE);
- 
- 	spin_unlock_irqrestore(&p->port.lock, flags);
-+	if (dma_mapping_error(p->port.dev, dma->tx_addr)) {
-+		ret = -EIO;
-+		goto err_unmap_rx;
-+	}
- 
- 	return 0;
-+
-+err_unmap_rx:
-+	dma_unmap_single(p->port.dev, dma->rx_addr, dma->rx_size,
-+			 DMA_FROM_DEVICE);
-+err_free_rx:
-+	kfree(dma->rx_buf);
-+err_release_tx:
-+	dma_release_channel(dma->tx_chan);
-+err_release_rx:
-+	dma_release_channel(dma->rx_chan);
-+	return ret;
- }
- 
- static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
--- 
-1.9.1
+>
+>> +
+>> +       return snprintf(buf, PAGE_SIZE - 1, "0x%x\n", addr);
+>> +}
+>> +
+
+>> +static int ast_vuart_probe(struct platform_device *pdev)
+>> +{
+>> +       struct uart_8250_port port;
+>> +       struct resource resource;
+>> +       struct ast_vuart *vuart;
+>> +       struct device_node *np;
+>> +       u32 clk, prop;
+>> +       int rc;
+>> +
+>
+>> +       np = pdev->dev.of_node;
+>
+> And if np == NULL?
+
+The driver will fail to probe due to the of_property_read_u32 calls
+returning an error.
+
+>> +       /* If current-speed was set, then try not to change it. */
+>> +       if (of_property_read_u32(np, "current-speed", &prop) == 0)
+>> +               port.port.custom_divisor = clk / (16 * prop);
+>> +
+>> +       /* Check for shifted address mapping */
+>> +       if (of_property_read_u32(np, "reg-offset", &prop) == 0)
+>> +               port.port.mapbase += prop;
+>> +
+>> +       /* Check for registers offset within the devices address range */
+>> +       if (of_property_read_u32(np, "reg-shift", &prop) == 0)
+>> +               port.port.regshift = prop;
+>> +
+>> +       /* Check for fifo size */
+>> +       if (of_property_read_u32(np, "fifo-size", &prop) == 0)
+>> +               port.port.fifosize = prop;
+>
+> Perhaps you need other way around, check for error and supply a
+> default in such case.
+
+We leave port.fifosize unmodified (set to zero) if there is no valid
+device tree property. As the property is optional, it's not an error
+if it's not present.
+
+>> +
+>> +       /* Check for a fixed line number */
+>> +       rc = of_alias_get_id(np, "serial");
+>> +       if (rc >= 0)
+>> +               port.port.line = rc;
+>> +
+>> +       port.port.irq = irq_of_parse_and_map(np, 0);
+>
+>> +       port.port.irqflags = IRQF_SHARED;
+>
+> This is set by core. You already supplied correct flag for that below.
+
+By setting UPF_SHARE_IRQ the core does correctly requset_irq with
+IRQF_SHARED set. However, it does not store this in in port->irqflags,
+so other tests in eg. serial8250_do_startup that test for IRQF_SHARED
+will fail. This is a bug that we hit the other day.
+
+Would you like a patch to the core that either tests for
+UPF_SHARE_IRQ, or set IRQF_SHARED early on?
+
+>
+>> +       port.port.iotype = UPIO_MEM;
+>> +       if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
+>
+> You hide an error code from of_property_read_u32() here. Why?
+
+The property is optional, so if it doesn't exist we want to continue
+without error.
+
+We return EINVAL if the property is invalid, as the device tree code
+will give us ENODATA or EOVERFLOW, which I don't think is informative
+for a driver to return.
+
+> And if there is an error you are continuing with what? 0?
+
+we continue with port.port.iotype = UPIO_MEM from above.
+
+>> +               switch (prop) {
+>> +               case 1:
+>> +                       port.port.iotype = UPIO_MEM;
+>> +                       break;
+>> +               case 4:
+>> +                       port.port.iotype = of_device_is_big_endian(np) ?
+>> +                                      UPIO_MEM32BE : UPIO_MEM32;
+>> +                       break;
+>> +               default:
+>> +                       dev_warn(&pdev->dev, "unsupported reg-io-width (%d)\n",
+>> +                                prop);
+>> +                       rc = -EINVAL;
+>> +                       goto err_clk_disable;
+>> +               }
+>> +       }
+
+Cheers,
+
+Joel
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
