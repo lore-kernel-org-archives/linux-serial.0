@@ -1,46 +1,62 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH v2 0/5] minitty: a minimal TTY layer alternative for
- embedded systems
-Date: Mon, 03 Apr 2017 13:56:26 +0100
-Message-ID: <1491224186.3704.11.camel@linux.intel.com>
-References: <20170401222119.25106-1-nicolas.pitre@linaro.org>
-         <CAHp75VdGm2uVPBhfAge4Wx6WW2y52oddpOSfJgdYAfTUQPN7TQ@mail.gmail.com>
-         <alpine.LFD.2.20.1704021149550.1847@knanqh.ubzr>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH RFC v4 07/10] dt-bindings: net: add binding for QCA7000
+ UART
+Date: Mon, 3 Apr 2017 08:23:23 -0500
+Message-ID: <20170403132323.vugelfs2pz3p5p6h@rob-hp-laptop>
+References: <1490621848-24828-1-git-send-email-stefan.wahren@i2se.com>
+ <1490621848-24828-8-git-send-email-stefan.wahren@i2se.com>
+ <CAL_Jsq+gxS4u+b+C_eWeguFR0AFKuq8Hhe9Xo_5B_5w1hxvzEg@mail.gmail.com>
+ <9a094176-ebe7-d906-ca9c-967285e53b07@i2se.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.LFD.2.20.1704021149550.1847@knanqh.ubzr>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Pitre <nicolas.pitre@linaro.org>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <9a094176-ebe7-d906-ca9c-967285e53b07-eS4NqCHxEME@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, 2017-04-02 at 11:55 -0400, Nicolas Pitre wrote:
-> On Sun, 2 Apr 2017, Andy Shevchenko wrote:
+On Tue, Mar 28, 2017 at 06:18:03PM +0200, Stefan Wahren wrote:
+> Am 27.03.2017 um 22:30 schrieb Rob Herring:
+> > On Mon, Mar 27, 2017 at 8:37 AM, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org> wrote:
+> >> This is the serdev binding for the QCA7000 UART driver (Ethernet over UART).
+> >>
+> >> Signed-off-by: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+> >> ---
+> >>
+> >> According to this binding are still some questions:
+> >>
+> >> Where should be the optional hardware flow control defined (at master or slave side)?
+> > Probably should be in the slave side. We already have uart-has-rtscts
+> > and rts/cts-gpios for the UART. Those mean we have RTS/CTS, but not
+> > necessarily that we want to enable them.
+> >
+> > In many cases, the driver may know what it needs.
 > 
-> > 
-> > +Cc people, who have a key roles in all TTY stuff (btw, why you did
-> > miss them?
+> Like all the other UART settings the hardware flow control can be
+> configured in the QCA7000 firmware and the driver can't detect it.
 > 
-> I used what MAINTAINERS and get_maintainer.pl gave me.
+> Property suggestion for the slave side:
 > 
+> use-rtscts
 
-I didn't see this until now as I'm mid house move so not following a
-lot of l/k.
+Okay.
 
-If you need a tiny tiny tty layer console for some kind of not quite
-mini-Linux please just steal the one from Fuzix or something similar
-thats only a couple of K in size and only needs extremely simple send
-byte/rx byte type handlers.
+> >> Is it okay to have two bindings (qca-qca7000-spi and qca-qca7000-uart) or should they be merged?
+> > Are they mutually-exclusive or both are used at the same time?
+> 
+> They are mutually-exclusive because they use the same pins.
+> 
+> >  What
+> > are the dependencies between the interfaces?
+> 
+> Except they uses the same pins of the QCA7000, i can't see any dependency.
 
-Alternatively just compile out tty support entirely. What do you
-actually need ? Console doesn't need tty layer and if you have a
-debug/management interface that doesn't have to be tty and text based
-either.
+I think they should be a single doc.
 
-Being able to compile out tty support would be useful, having two tty
-layers that are intertwined and now both totally unmaintable is not
-IMHO progress.
-
-Alan
+Rob
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
