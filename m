@@ -1,15 +1,17 @@
-From: Kevin Hilman <khilman@baylibre.com>
-Subject: Re: [PATCH v3 0/4] tty/serial: meson_uart: add support for core clock
- handling
-Date: Mon, 03 Apr 2017 08:44:16 -0700
-Message-ID: <m2lgrha433.fsf@baylibre.com>
-References: <20170331165437.26227-1-hgkr.klein@gmail.com>
+From: Nicolas Pitre <nicolas.pitre@linaro.org>
+Subject: Re: [PATCH v2 0/5] minitty: a minimal TTY layer alternative for
+ embedded systems
+Date: Mon, 3 Apr 2017 12:06:55 -0400 (EDT)
+Message-ID: <alpine.LFD.2.20.1704031121520.1847@knanqh.ubzr>
+References: <20170401222119.25106-1-nicolas.pitre@linaro.org>
+ <CAHp75VdGm2uVPBhfAge4Wx6WW2y52oddpOSfJgdYAfTUQPN7TQ@mail.gmail.com>
+ <alpine.LFD.2.20.1704021149550.1847@knanqh.ubzr>
+ <1491224186.3704.11.camel@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170331165437.26227-1-hgkr.klein@gmail.com> (Helmut Klein's
- message of "Fri, 31 Mar 2017 18:54:33 +0200")
+In-Reply-To: <1491224186.3704.11.camel@linux.intel.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,36 +21,48 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Helmut Klein <hgkr.klein@gmail.com>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Alan Cox <alan@linux.intel.com>
+Cc: Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Helmut Klein <hgkr.klein@gmail.com> writes:
+On Mon, 3 Apr 2017, Alan Cox wrote:
 
-> To be able to use the three none AO uarts of the meson gx SoCs (uart_A,
+> If you need a tiny tiny tty layer console for some kind of not quite
+> mini-Linux please just steal the one from Fuzix or something similar
+> thats only a couple of K in size and only needs extremely simple send
+> byte/rx byte type handlers.
 
-s/none/non/
+This, however, requires that every UART driver be rewritten to suit this 
+code. I don't want to lose one of Linux's best advantage which is 
+extensive hardware support. I want to reuse as much of the existing 
+hardware drivers as possible unchanged.
 
-> uart_B & uart_C), the core clock has to be enabled (see chapter 22.3 of
-> the public s905 data sheet).
-> At least the u-boot of my s905 based media player (netxeon minimx-g)
-> doesn't do this. so the driver must enable the clock.
+I already have code that fits the Linux model and it weights 
+only 8K.
 
-FYI: even if a booloader enablesq clocks, it's important that the kernel
-enable clocks that it uses so the kernel can be independent of any
-bootloader.
+> Alternatively just compile out tty support entirely. What do you
+> actually need ? Console doesn't need tty layer and if you have a
+> debug/management interface that doesn't have to be tty and text based
+> either.
 
-> This patch set does:
-> - exposes the UART clock ids to the dtb
-> - adds documentation for the dt-bindings of meson_uart
-> - adds the core clock handling to the driver
-> - adds the core clock handling to meson-gxbb.dtsi and meson-gxl.dtsi
->
-> The patchset is based on the branch "master" of the repository in [1]
+It is nevertheless very convenient to be able to use a standard shell 
+with it. I can easily remove canonical mode support and then it is down 
+to 7.3K. Modem line control and runtime baudrate handling could also 
+trivially be configured out for yet more saving.
 
-The master branch in my tree just tracks mainline master branch.
+> Being able to compile out tty support would be useful, having two tty
+> layers that are intertwined and now both totally unmaintable is not
+> IMHO progress.
 
-To avoid conflicts with other on-going DT changes, the DT patches should
-probably be based on top of my v4.12/dt64 branch.
+I beg to disagree here.  First, before you call my code "totally 
+unmaintainable" I'd politely ask you to have a look at it first.
 
-Kevin
+There is also very little intertwining here. My code does not rely on 
+the existing TTY code (except for the termios baudrate handling which I 
+factored out). I'm creating my own char devices on one end and 
+interacting with UART drivers using the same low-level call interface 
+used by the existing code at the other end. And given that it is much 
+simpler in termps of capabilities, it is also very easy to maintain.
+
+
+Nicolas
