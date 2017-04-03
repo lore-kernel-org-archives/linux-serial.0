@@ -1,68 +1,70 @@
 From: Nicolas Pitre <nicolas.pitre@linaro.org>
 Subject: Re: [PATCH v2 0/5] minitty: a minimal TTY layer alternative for
  embedded systems
-Date: Mon, 3 Apr 2017 12:06:55 -0400 (EDT)
-Message-ID: <alpine.LFD.2.20.1704031121520.1847@knanqh.ubzr>
-References: <20170401222119.25106-1-nicolas.pitre@linaro.org>
- <CAHp75VdGm2uVPBhfAge4Wx6WW2y52oddpOSfJgdYAfTUQPN7TQ@mail.gmail.com>
- <alpine.LFD.2.20.1704021149550.1847@knanqh.ubzr>
- <1491224186.3704.11.camel@linux.intel.com>
+Date: Mon, 3 Apr 2017 12:40:00 -0400 (EDT)
+Message-ID: <alpine.LFD.2.20.1704031208320.1847@knanqh.ubzr>
+References: <20170401222119.25106-1-nicolas.pitre@linaro.org> <87pogur0y9.fsf@firstfloor.org> <alpine.LFD.2.20.1704021729470.1847@knanqh.ubzr> <CAHp75VdgEcyXPxENS87nHLtCEHqB5Z-1_T_W1opSiKqqNpeU2A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1491224186.3704.11.camel@linux.intel.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAHp75VdgEcyXPxENS87nHLtCEHqB5Z-1_T_W1opSiKqqNpeU2A@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Andi Kleen <andi@firstfloor.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 3 Apr 2017, Alan Cox wrote:
+On Mon, 3 Apr 2017, Andy Shevchenko wrote:
 
-> If you need a tiny tiny tty layer console for some kind of not quite
-> mini-Linux please just steal the one from Fuzix or something similar
-> thats only a couple of K in size and only needs extremely simple send
-> byte/rx byte type handlers.
+> On Mon, Apr 3, 2017 at 12:41 AM, Nicolas Pitre <nicolas.pitre@linaro.org> wrote:
+> > On Sun, 2 Apr 2017, Andi Kleen wrote:
+> >> No PTYs seems like a big limitation. This means no sshd?
+> 
+> > Again, my ultimate system target is in the sub-megabyte of RAM.  I
+> > really doubt you'll be able to fit an SSH server in there even if PTYs
+> > were supported, unless sshd (or dropbear) can be made really tiny.
+> 
+> Are you sure you need Linux there? There is a nice Zephyr project
+> (OpenSource RTOS, POSIX compatible) exactly for microcontrollers.
 
-This, however, requires that every UART driver be rewritten to suit this 
-code. I don't want to lose one of Linux's best advantage which is 
-extensive hardware support. I want to reuse as much of the existing 
-hardware drivers as possible unchanged.
+I know that Zephyr is LF endorsed, aim to slow fragmentation in that 
+space, etc.  But it is in itself yet another RTOS. It doesn't look like 
+it is really POSIX compatible yet, and is certainly not Linux 
+compatible.
 
-I already have code that fits the Linux model and it weights 
-only 8K.
+I don't pretend that Linux should always be preferred to Zephyr. For 
+example, I don't think Linux could ever be used with 32KB of RAM while 
+Zephyr easily can.  However, in the hundreds of KB of RAM, given the 
+choice between Linux and anything else, I can tell you that many people 
+would go with Linux.
 
-> Alternatively just compile out tty support entirely. What do you
-> actually need ? Console doesn't need tty layer and if you have a
-> debug/management interface that doesn't have to be tty and text based
-> either.
+The goal is really to be able to leverage the existing Linux knowledge 
+and ecosystem. Be able to develop your application on your PC 
+workstation, singlestep it, strace it, validate the tiny version of 
+those kernel subsystems there too with existing fuzers, etc.  If a 
+security issue turns up in your product, you have plenty of people who 
+are already familiar with the Linux environment, much more than Zephyr 
+or any other RTOSes.
 
-It is nevertheless very convenient to be able to use a standard shell 
-with it. I can easily remove canonical mode support and then it is down 
-to 7.3K. Modem line control and runtime baudrate handling could also 
-trivially be configured out for yet more saving.
+> While I can agree on making Linux stuff less fatty, I can't agree on
+> doing this way. We have for now two subsystems to serve for serial
+> devices, you are proposing third one for only narrow class of devices.
+> From my point of view is better to achive your goal with existing
+> system (as a proof of concept maybe even with ugly #ifdef:fery).
 
-> Being able to compile out tty support would be useful, having two tty
-> layers that are intertwined and now both totally unmaintable is not
-> IMHO progress.
+Been there already. It doesn't work. The #ifdef:fery in the existing 
+code simply doesn't cut it. Because of its flexibility, the existing 
+code constitutes a stack of many layers each with its own interface and 
+buffering. It uses much more runtime memory simply because it can afford 
+it on all existing systems supported by Linux. It can drive a large bank 
+of modems without a single hiccup if you're still into running a BBS. 
+That's why the existing code is how it is.
 
-I beg to disagree here.  First, before you call my code "totally 
-unmaintainable" I'd politely ask you to have a look at it first.
-
-There is also very little intertwining here. My code does not rely on 
-the existing TTY code (except for the termios baudrate handling which I 
-factored out). I'm creating my own char devices on one end and 
-interacting with UART drivers using the same low-level call interface 
-used by the existing code at the other end. And given that it is much 
-simpler in termps of capabilities, it is also very easy to maintain.
+I don't want a proof of concept. I want something that is maintainable. 
+Adding #ifdef's to the existing code will make the end result way less 
+maintainable, either for the standard or the mini use case. By being 
+really small, the maintenance cost of a parallel implementation isn't 
+very high, certainly much less than trying to maintain a single version 
+that can scale to both extremes.
 
 
 Nicolas
