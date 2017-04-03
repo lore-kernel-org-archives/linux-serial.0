@@ -1,34 +1,54 @@
-From: Nicolas Pitre <nicolas.pitre@linaro.org>
+From: Alan Cox <alan@linux.intel.com>
 Subject: Re: [PATCH v2 0/5] minitty: a minimal TTY layer alternative for
  embedded systems
-Date: Mon, 3 Apr 2017 13:27:31 -0400 (EDT)
-Message-ID: <alpine.LFD.2.20.1704031304230.1847@knanqh.ubzr>
-References: <20170401222119.25106-1-nicolas.pitre@linaro.org> <87pogur0y9.fsf@firstfloor.org> <alpine.LFD.2.20.1704021729470.1847@knanqh.ubzr> <CAHp75VdgEcyXPxENS87nHLtCEHqB5Z-1_T_W1opSiKqqNpeU2A@mail.gmail.com> <20170403153103.GB22592@two.firstfloor.org>
+Date: Mon, 03 Apr 2017 19:05:19 +0100
+Message-ID: <1491242719.3704.33.camel@linux.intel.com>
+References: <20170401222119.25106-1-nicolas.pitre@linaro.org>
+         <CAHp75VdGm2uVPBhfAge4Wx6WW2y52oddpOSfJgdYAfTUQPN7TQ@mail.gmail.com>
+         <alpine.LFD.2.20.1704021149550.1847@knanqh.ubzr>
+         <1491224186.3704.11.camel@linux.intel.com>
+         <alpine.LFD.2.20.1704031121520.1847@knanqh.ubzr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170403153103.GB22592@two.firstfloor.org>
+In-Reply-To: <alpine.LFD.2.20.1704031121520.1847@knanqh.ubzr>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andi Kleen <andi@firstfloor.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+To: Nicolas Pitre <nicolas.pitre@linaro.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 3 Apr 2017, Andi Kleen wrote:
+> evertheless very convenient to be able to use a standard
+> shell 
+> with it.
 
-> I like the idea of mintty (if it supported ptys).
+A standard shell will work over things other than a tty device. It
+really doesn't care so long as it gets a stream of data punctuated by
+end of statement symbols. It'll work over pipes, sockets, from files.
 
-In fact PTYs could probably be implemented like another UART driver for 
-the master side.
+> I beg to disagree here.  First, before you call my code "totally 
+> unmaintainable" I'd politely ask you to have a look at it first.
 
-But that may come later.
+I said the combination makes it more unmaintainable. If you have two
+tty layers one of them faking the API of the other at various interface
+points then if the core tty layer wants to make a major change it no
+longer can - because it'll break the other tty layer. In addition I
+worry it won't be long before someone wants kgdb, gdbstubs and sysrq
+over the cut down console and on it will go.
 
-> Except for that (and possibly VT) it is unlikely that people really
-> rely on the obsolete terminal features from the 70ies. So it's a kind
-> of cleanup.
+The uart layer is also known broken as an API - it is itself bloated
+and over-locking (for example if it was being written today kfifo would
+be used). What happens if we want to abolish it or encourage people to
+move away from it (as we IMHO should be) ?
 
-I wouldn't push for replacing the existing code though. It is stable and 
-full featured. The mini version may well never be fully standard 
-compliant to keep the code small.
+The serio code started with exactly the same problem, but now at least
+talks tty layer. In your case you are tying it to something we
+eventually ought to get rid of.
 
+I also find the large scale need for it hard to believe. If you are
+within 64K of running out of memory on your debug/devel device how are
+you going to have space to fix security holes and do upgrades as they
+occur in production (where presumably you don't need the tty driver) ?
+The kernel doesn't exactly get smaller each release.
 
-Nicolas
+Alan
