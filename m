@@ -1,78 +1,64 @@
-From: Jerome Brunet <jbrunet@baylibre.com>
-Subject: Re: [PATCH v3 3/4] tty/serial: meson_uart: add the core clock
- handling to the driver
-Date: Mon, 03 Apr 2017 16:57:58 +0200
-Message-ID: <1491231478.3480.12.camel@baylibre.com>
-References: <20170331165437.26227-1-hgkr.klein@gmail.com>
-         <20170331165437.26227-4-hgkr.klein@gmail.com>
+From: Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH RFC] serial: imx: support an enable-gpio
+Date: Mon, 3 Apr 2017 12:01:11 -0300
+Message-ID: <CAOMZO5A4e7H-6feNN-cTABOKv+CUCU9Em_yFMhorZwXfeA-h0w@mail.gmail.com>
+References: <1468400495-10471-1-git-send-email-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170331165437.26227-4-hgkr.klein@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Helmut Klein <hgkr.klein@gmail.com>, gregkh@linuxfoundation.org, carlo@caione.org, khilman@baylibre.com
-Cc: linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1468400495-10471-1-git-send-email-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2017-03-31 at 18:54 +0200, Helmut Klein wrote:
-> This patch gets the core clock as provided by the DT and enables it.
-> The code was taken from Amlogic's serial driver, and was tested on my
-> board.
-> 
-> Signed-off-by: Helmut Klein <hgkr.klein@gmail.com>
-> ---
->  drivers/tty/serial/meson_uart.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index 60f16795d16b..cb99112288eb 100644
-> --- a/drivers/tty/serial/meson_uart.c
-> +++ b/drivers/tty/serial/meson_uart.c
-> @@ -600,6 +600,7 @@ static int meson_uart_probe(struct platform_device *pdev)
->  	struct resource *res_mem, *res_irq;
->  	struct uart_port *port;
->  	struct clk *clk;
-> +	struct clk *core_clk;
->  	int ret = 0;
-> 
->  	if (pdev->dev.of_node)
-> @@ -625,6 +626,15 @@ static int meson_uart_probe(struct platform_device *pdev)
->  	if (!port)
->  		return -ENOMEM;
-> 
-> +	core_clk = devm_clk_get(&pdev->dev, "core");
-> +	if (!IS_ERR(core_clk)) {
-> +		ret = clk_prepare_enable(core_clk);
+Hi Uwe,
 
-This needs to be balanced with a clk_disable_unprepare() in remove.
+On Wed, Jul 13, 2016 at 6:01 AM, Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org> wrote:
+> A part of my machine looks as follows (simplified):
+>
+> ,------------------------.
+> | ,---------.            |
+> | |  imx25  o--RX----=E2=97=81---o---
+> | |         o--GPIO--'   |
+> | `---------'            |
+> `------------------------'
+>
+> that is, there is a driver on the RX line that must be enabled before
+> the UART can be used. (That is necessary because the default mux of the
+> RX pad after reset is an output.)
+>
+> To represent this in the device tree I do:
+>
+>         pinctrl_uart5: uart5 {
+>                 fsl,pins =3D <
+>                         ...
+>                         MX25_PAD_LBA__UART5_RXD         0x00000000
+>                         MX25_PAD_CS5__GPIO_3_21         0x00002001
+>                         ...
+>         };
+>
+>         &uart5 {
+>                 pinctrl-names =3D "default";
+>                 pinctrl-0 =3D <&pinctrl_uart5>;
+>
+>                 enable-gpio =3D <&gpio3 21 GPIO_ACTIVE_LOW>;
+>                 ...
+>         };
+>
+> This way it's ensured that the gpio is only enabled when the LBA pad is
+> muxed as RX (together with the bootloader that sets the GPIO high).
+>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 
-You could try play with devm_add_action_or_reset, maybe like this:
+Since this is not imx serial specific it could be made more generic.
 
-devm_add_action_or_reset(dev,
-			(void(*)(void *))clk_disable_unprepare,
-			core_clk);
-
-Sorry I did not notice it on the v2.
-
-
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "couldn't enable clkc\n");
-> +			return ret;
-> +		}
-> +	}
-> +
->  	clk = clk_get(&pdev->dev, NULL);
-
-I still think you should name this one. Otherwise, what the non AO UART will get
-here will depends on the order it was declared in DT.
-
-To answer your question from the v2, yes I think it is ok to add clock-names to
-the AO-UART. You are doing it for non AO ones so, why not ?
-
-
->  	if (IS_ERR(clk))
->  		return PTR_ERR(clk);
-> --
-> 2.11.0
-> 
+What about extending
+Documentation/devicetree/bindings/serial/slave-device.txt to handle
+this GPIO, or maybe a regulator?
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
