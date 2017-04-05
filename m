@@ -1,156 +1,43 @@
-From: David Howells <dhowells@redhat.com>
-Subject: [PATCH 31/38] Annotate hardware config module parameters in
- drivers/tty/
-Date: Wed, 05 Apr 2017 18:01:26 +0100
-Message-ID: <149141168659.29162.541205367169653847.stgit@warthog.procyon.org.uk>
-References: <149141141298.29162.5612793122429261720.stgit@warthog.procyon.org.uk>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCHv3 00/10] Nokia H4+ support
+Date: Wed, 5 Apr 2017 13:16:58 -0500
+Message-ID: <CAL_Jsq+NU3M5yuBpK1UGgzCVvq0eABMApCqEe3_d5+tDaABsgQ@mail.gmail.com>
+References: <20170328155939.31566-1-sre@kernel.org> <CAL_JsqJcQ9ANtt71KRitOJ9spKD1SaeoL4RDftiCEPs8TjLJGA@mail.gmail.com>
+ <C1A408F2-1DF8-4F49-B399-B936542DE6BC@holtmann.org> <20170331133353.GA32267@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <149141141298.29162.5612793122429261720.stgit@warthog.procyon.org.uk>
+In-Reply-To: <20170331133353.GA32267@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: gnomes@lxorguk.ukuu.org.uk, gregkh@linuxfoundation.org, dhowells@redhat.com, linux-security-module@vger.kernel.org, keyrings@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Sebastian Reichel <sre@kernel.org>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>
 List-Id: linux-serial@vger.kernel.org
 
-When the kernel is running in secure boot mode, we lock down the kernel to
-prevent userspace from modifying the running kernel image.  Whilst this
-includes prohibiting access to things like /dev/mem, it must also prevent
-access by means of configuring driver modules in such a way as to cause a
-device to access or modify the kernel image.
+On Fri, Mar 31, 2017 at 8:33 AM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Wed, Mar 29, 2017 at 11:33:26PM +0200, Marcel Holtmann wrote:
+>> Hi Rob,
+>>
+>> >> Here is PATCHv3 for the Nokia bluetooth patchset. I addressed all comments from
+>> >> Rob and Pavel regarding the serdev patches and dropped the *.dts patches, since
+>> >> they were queued by Tony. I also changed the patch order, so that the serdev
+>> >> patches come first. All of them have Acked-by from Rob, so I think it makes
+>> >> sense to merge them to serdev subsystem (now) and provide an immutable branch
+>> >> for the bluetooth subsystem.
+>> >
+>> > Greg doesn't read cover letters generally and since the serdev patches
+>> > are Cc rather than To him, he's probably not planning to pick them up.
+>>
+>> I wonder actually if we should merge all of these via bluetooth-next
+>> tree with proper Ack from Greg. However it would be good to also get
+>> buy in from Dave for merging this ultimately through net-next.
+>
+> I don't really care where it goes.  I can take the whole thing in my
+> tty/serial tree now if no one objects and I get an ack from the relevant
+> maintainers {hint...}
 
-To this end, annotate module_param* statements that refer to hardware
-configuration and indicate for future reference what type of parameter they
-specify.  The parameter parser in the core sees this information and can
-skip such parameters with an error message if the kernel is locked down.
-The module initialisation then runs as normal, but just sees whatever the
-default values for those parameters is.
+I think it is better if it goes thru BT tree. I have another driver
+converted that is dependent on this series. There's a couple other
+serdev changes on the list too, but this shouldn't depend on them.
 
-Note that we do still need to do the module initialisation because some
-drivers have viable defaults set in case parameters aren't specified and
-some drivers support automatic configuration (e.g. PNP or PCI) in addition
-to manually coded parameters.
-
-This patch annotates drivers in drivers/tty/.
-
-Suggested-by: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc: Jiri Slaby <jslaby@suse.com>
-cc: linux-serial@vger.kernel.org
----
-
- drivers/tty/cyclades.c              |    4 ++--
- drivers/tty/moxa.c                  |    2 +-
- drivers/tty/mxser.c                 |    2 +-
- drivers/tty/rocket.c                |   10 +++++-----
- drivers/tty/serial/8250/8250_core.c |    4 ++--
- drivers/tty/synclink.c              |    6 +++---
- 6 files changed, 14 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/tty/cyclades.c b/drivers/tty/cyclades.c
-index 5e4fa9206861..104f09c58163 100644
---- a/drivers/tty/cyclades.c
-+++ b/drivers/tty/cyclades.c
-@@ -156,8 +156,8 @@ static unsigned int cy_isa_addresses[] = {
- static long maddr[NR_CARDS];
- static int irq[NR_CARDS];
- 
--module_param_array(maddr, long, NULL, 0);
--module_param_array(irq, int, NULL, 0);
-+module_param_hw_array(maddr, long, iomem, NULL, 0);
-+module_param_hw_array(irq, int, irq, NULL, 0);
- 
- #endif				/* CONFIG_ISA */
- 
-diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
-index 4caf0c3b1f99..3b251f4e5df0 100644
---- a/drivers/tty/moxa.c
-+++ b/drivers/tty/moxa.c
-@@ -179,7 +179,7 @@ MODULE_FIRMWARE("c320tunx.cod");
- 
- module_param_array(type, uint, NULL, 0);
- MODULE_PARM_DESC(type, "card type: C218=2, C320=4");
--module_param_array(baseaddr, ulong, NULL, 0);
-+module_param_hw_array(baseaddr, ulong, ioport, NULL, 0);
- MODULE_PARM_DESC(baseaddr, "base address");
- module_param_array(numports, uint, NULL, 0);
- MODULE_PARM_DESC(numports, "numports (ignored for C218)");
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 7b8f383fb090..8bd6fb6d9391 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -183,7 +183,7 @@ static int ttymajor = MXSERMAJOR;
- 
- MODULE_AUTHOR("Casper Yang");
- MODULE_DESCRIPTION("MOXA Smartio/Industio Family Multiport Board Device Driver");
--module_param_array(ioaddr, ulong, NULL, 0);
-+module_param_hw_array(ioaddr, ulong, ioport, NULL, 0);
- MODULE_PARM_DESC(ioaddr, "ISA io addresses to look for a moxa board");
- module_param(ttymajor, int, 0);
- MODULE_LICENSE("GPL");
-diff --git a/drivers/tty/rocket.c b/drivers/tty/rocket.c
-index d66c1edd9892..b51a877da986 100644
---- a/drivers/tty/rocket.c
-+++ b/drivers/tty/rocket.c
-@@ -250,15 +250,15 @@ static int sReadAiopNumChan(WordIO_t io);
- 
- MODULE_AUTHOR("Theodore Ts'o");
- MODULE_DESCRIPTION("Comtrol RocketPort driver");
--module_param(board1, ulong, 0);
-+module_param_hw(board1, ulong, ioport, 0);
- MODULE_PARM_DESC(board1, "I/O port for (ISA) board #1");
--module_param(board2, ulong, 0);
-+module_param_hw(board2, ulong, ioport, 0);
- MODULE_PARM_DESC(board2, "I/O port for (ISA) board #2");
--module_param(board3, ulong, 0);
-+module_param_hw(board3, ulong, ioport, 0);
- MODULE_PARM_DESC(board3, "I/O port for (ISA) board #3");
--module_param(board4, ulong, 0);
-+module_param_hw(board4, ulong, ioport, 0);
- MODULE_PARM_DESC(board4, "I/O port for (ISA) board #4");
--module_param(controller, ulong, 0);
-+module_param_hw(controller, ulong, ioport, 0);
- MODULE_PARM_DESC(controller, "I/O port for (ISA) rocketport controller");
- module_param(support_low_speed, bool, 0);
- MODULE_PARM_DESC(support_low_speed, "1 means support 50 baud, 0 means support 460400 baud");
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 76e03a7de9cc..89fde17d9617 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1191,7 +1191,7 @@ module_exit(serial8250_exit);
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Generic 8250/16x50 serial driver");
- 
--module_param(share_irqs, uint, 0644);
-+module_param_hw(share_irqs, uint, other, 0644);
- MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices (unsafe)");
- 
- module_param(nr_uarts, uint, 0644);
-@@ -1201,7 +1201,7 @@ module_param(skip_txen_test, uint, 0644);
- MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
- 
- #ifdef CONFIG_SERIAL_8250_RSA
--module_param_array(probe_rsa, ulong, &probe_rsa_count, 0444);
-+module_param_hw_array(probe_rsa, ulong, ioport, &probe_rsa_count, 0444);
- MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
- #endif
- MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
-diff --git a/drivers/tty/synclink.c b/drivers/tty/synclink.c
-index 657eed82eeb3..a2c308f7d637 100644
---- a/drivers/tty/synclink.c
-+++ b/drivers/tty/synclink.c
-@@ -869,9 +869,9 @@ static int txholdbufs[MAX_TOTAL_DEVICES];
- 	
- module_param(break_on_load, bool, 0);
- module_param(ttymajor, int, 0);
--module_param_array(io, int, NULL, 0);
--module_param_array(irq, int, NULL, 0);
--module_param_array(dma, int, NULL, 0);
-+module_param_hw_array(io, int, ioport, NULL, 0);
-+module_param_hw_array(irq, int, irq, NULL, 0);
-+module_param_hw_array(dma, int, dma, NULL, 0);
- module_param(debug_level, int, 0);
- module_param_array(maxframe, int, NULL, 0);
- module_param_array(txdmabufs, int, NULL, 0);
+Rob
