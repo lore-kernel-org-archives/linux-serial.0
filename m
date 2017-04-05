@@ -1,7 +1,7 @@
 From: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
 Subject: Re: No output on console despite ignore_loglevel earlyprintk
-Date: Wed, 5 Apr 2017 16:02:22 +0200
-Message-ID: <8cee6f0c-7348-3f67-38b0-84e5ce3ac16e@sigmadesigns.com>
+Date: Wed, 5 Apr 2017 18:37:20 +0200
+Message-ID: <4c5b6e15-a64b-81ea-b2e1-494dab304c47@sigmadesigns.com>
 References: <6d16a384-1a4c-bf27-fd81-ea3caf3de6b0@sigmadesigns.com>
  <20170303165548.GO21222@n2100.armlinux.org.uk>
  <3293964b-aec2-e8b8-46f5-49b0eacc4718@suse.de>
@@ -21,20 +21,23 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Russell King - ARM Linux <linux@armlinux.org.uk>, Andreas Farber <afaerber@suse.de>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thibaud Cornic <thibaud_cornic@sigmadesigns.com>, linux-serial <linux-serial@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+Cc: Rob Herring <robh@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thibaud Cornic <thibaud_cornic@sigmadesigns.com>, linux-serial <linux-serial@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
 On 03/03/2017 18:46, Russell King - ARM Linux wrote:
+
 > On Fri, Mar 03, 2017 at 06:26:28PM +0100, Andreas F=E4rber wrote:
+>
 >> Am 03.03.2017 um 17:55 schrieb Russell King - ARM Linux:
+>>
 >>> On Fri, Mar 03, 2017 at 05:42:02PM +0100, Marc Gonzalez wrote:
+>>>
 >>>> I'm confused about early consoles and earlyprintk, and all that good s=
 tuff.
 >>>> When my kernel panics, I don't get the expected output.
 >>>>
 >>>> Using "mem=3D256M ignore_loglevel earlyprintk"
 >>>>
->> [...]
 >>>> [    0.014325] Console: colour dummy device 80x30
 >>>> [    0.018885] console [tty0] enabled
 >>>> [    0.022396] bootconsole [earlycon0] disabled
@@ -142,11 +145,225 @@ ble))
 > Linux device driver name and index without the driver having been
 > initialised.
 
-One issue with earlyprintk is that one must hard-code the UART address
-directly into the kernel binary. If I build one kernel for two different
-boards that don't have the same UART address, I'm going to run into
-problems, right?
+Time for me to take another stab at this issue.
 
-Is early console a better solution for this use-case?
+
+Relevant parts of my DT:
+
+	aliases { serial =3D &uart; };
+
+	chosen { stdout-path =3D "serial:115200n8"; };
+
+		uart: serial@10700 {
+			compatible =3D "ralink,rt2880-uart";
+			reg =3D <0x10700 0x30>;
+			interrupts =3D <1 IRQ_TYPE_LEVEL_HIGH>;
+			clock-frequency =3D <7372800>;
+			reg-shift =3D <2>;
+		};
+
+
+Relevant part of my kernel config:
+
+CONFIG_FIX_EARLYCON_MEM=3Dy
+CONFIG_GENERIC_EARLY_IOREMAP=3Dy
+CONFIG_OF_EARLY_FLATTREE=3Dy
+
+#
+# Character devices
+#
+CONFIG_TTY=3Dy
+CONFIG_VT=3Dy
+CONFIG_CONSOLE_TRANSLATIONS=3Dy
+CONFIG_VT_CONSOLE=3Dy
+CONFIG_HW_CONSOLE=3Dy
+# CONFIG_VT_HW_CONSOLE_BINDING is not set
+CONFIG_UNIX98_PTYS=3Dy
+CONFIG_LEGACY_PTYS=3Dy
+CONFIG_LEGACY_PTY_COUNT=3D256
+# CONFIG_SERIAL_NONSTANDARD is not set
+
+#
+# Serial drivers
+#
+CONFIG_SERIAL_EARLYCON=3Dy
+CONFIG_SERIAL_8250=3Dy
+# CONFIG_SERIAL_8250_DEPRECATED_OPTIONS is not set
+# CONFIG_SERIAL_8250_FINTEK is not set
+CONFIG_SERIAL_8250_CONSOLE=3Dy
+CONFIG_SERIAL_8250_DMA=3Dy
+CONFIG_SERIAL_8250_PCI=3Dy
+CONFIG_SERIAL_8250_NR_UARTS=3D4
+CONFIG_SERIAL_8250_RUNTIME_UARTS=3D4
+# CONFIG_SERIAL_8250_EXTENDED is not set
+CONFIG_SERIAL_8250_FSL=3Dy
+# CONFIG_SERIAL_8250_DW is not set
+# CONFIG_SERIAL_8250_EM is not set
+CONFIG_SERIAL_8250_RT288X=3Dy
+# CONFIG_SERIAL_8250_MOXA is not set
+CONFIG_SERIAL_OF_PLATFORM=3Dy
+
+#
+# Non-8250 serial port support
+#
+# CONFIG_SERIAL_EARLYCON_ARM_SEMIHOST is not set
+# CONFIG_SERIAL_UARTLITE is not set
+CONFIG_SERIAL_CORE=3Dy
+CONFIG_SERIAL_CORE_CONSOLE=3Dy
+# CONFIG_SERIAL_JSM is not set
+# CONFIG_SERIAL_SCCNXP is not set
+# CONFIG_SERIAL_SC16IS7XX is not set
+# CONFIG_SERIAL_BCM63XX is not set
+# CONFIG_SERIAL_ALTERA_JTAGUART is not set
+# CONFIG_SERIAL_ALTERA_UART is not set
+# CONFIG_SERIAL_XILINX_PS_UART is not set
+# CONFIG_SERIAL_ARC is not set
+# CONFIG_SERIAL_RP2 is not set
+# CONFIG_SERIAL_FSL_LPUART is not set
+# CONFIG_SERIAL_CONEXANT_DIGICOLOR is not set
+# CONFIG_SERIAL_ST_ASC is not set
+# CONFIG_SERIAL_STM32 is not set
+# CONFIG_HVC_DCC is not set
+# CONFIG_IPMI_HANDLER is not set
+# CONFIG_HW_RANDOM is not set
+# CONFIG_R3964 is not set
+# CONFIG_APPLICOM is not set
+# CONFIG_RAW_DRIVER is not set
+# CONFIG_TCG_TPM is not set
+CONFIG_DEVPORT=3Dy
+# CONFIG_XILLYBUS is not set
+
+CONFIG_DEBUG_LL_INCLUDE=3D"mach/debug-macro.S"
+# CONFIG_DEBUG_UART_8250 is not set
+CONFIG_UNCOMPRESS_INCLUDE=3D"debug/uncompress.h"
+
+
+Booting with mem=3D256M console=3DttyS0,115200
+
+[    0.000213] Console: colour dummy device 80x30
+[    0.418383] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+[    0.419837] console [ttyS0] disabled
+[    0.419983] 10700.serial: ttyS0 at MMIO 0x10700 (irq =3D 20, base_baud =
+=3D 460800) is a Palmchip BK-3103
+[    1.000504] console [ttyS0] enabled
+
+
+Booting with mem=3D256M
+
+[    0.000212] Console: colour dummy device 80x30
+[    0.000547] console [tty0] enabled
+[    0.427260] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+[    0.428970] 10700.serial: ttyS0 at MMIO 0x10700 (irq =3D 20, base_baud =
+=3D 460800) is a Palmchip BK-3103
+[    1.007672] console [ttyS0] enabled
+
+
+Booting with mem=3D256M earlycon
+
+[    0.000000] ENTER param_setup_earlycon
+[    0.000000] ENTER early_init_dt_scan_chosen_stdout
+[    0.000000] early_init_dt_scan_chosen_stdout: scan __earlycon_table
+[    0.000000] name=3Duart compatible=3Dsnps,dw-apb-uart setup=3Dearly_seri=
+al8250_setup
+[    0.000000] name=3Duart compatible=3Dnvidia,tegra20-uart setup=3Dearly_s=
+erial8250_setup
+[    0.000000] name=3Dns16550a compatible=3Dns16550a setup=3Dearly_serial82=
+50_setup
+[    0.000000] name=3Dns16550 compatible=3Dns16550 setup=3Dearly_serial8250=
+_setup
+[    0.000000] early_init_dt_scan_chosen_stdout: NO MATCH, return ENODEV
+[    0.000000] Malformed early option 'earlycon'
+[    0.000215] Console: colour dummy device 80x30
+[    0.000583] console [tty0] enabled
+[    0.420043] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+[    0.421945] 10700.serial: ttyS0 at MMIO 0x10700 (irq =3D 20, base_baud =
+=3D 460800) is a Palmchip BK-3103
+[    1.014251] console [ttyS0] enabled
+
+
+drivers/tty/serial/8250/8250_early.c
+
+int __init early_serial8250_setup(struct earlycon_device *device, const cha=
+r *options)
+
+EARLYCON_DECLARE(uart8250, early_serial8250_setup);
+EARLYCON_DECLARE(uart, early_serial8250_setup);
+OF_EARLYCON_DECLARE(ns16550, "ns16550", early_serial8250_setup);
+OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
+OF_EARLYCON_DECLARE(uart, "nvidia,tegra20-uart", early_serial8250_setup);
+OF_EARLYCON_DECLARE(uart, "snps,dw-apb-uart", early_serial8250_setup);
+
+I'm not matching anything, because my UART compatible string is:
+
+		uart: serial@10700 {
+			compatible =3D "ralink,rt2880-uart";
+
+If I append "ns16550a" or "ns16550", the kernel hangs from the start:
+
+Starting kernel ...
+
+@
+
+
+But if I add DEBUG_LL support with
+
+CONFIG_DEBUG_LL=3Dy
+CONFIG_DEBUG_LL_UART_8250=3Dy
+CONFIG_DEBUG_UART_PHYS=3D0x10700
+CONFIG_DEBUG_UART_VIRT=3D0xf0010700
+CONFIG_DEBUG_UART_8250_WORD=3Dy
+CONFIG_DEBUG_UART_8250_PALMCHIP=3Dy
+
+and replace the implementation of vprintk_emit() with a very quick and dirty
+
+	char buf[400];
+	extern void printascii(const char *);
+	text_len =3D vsnprintf(buf, sizeof buf, fmt, args);
+	printascii(buf);
+	return text_len;
+
+then the kernel boots correctly, and I see the following relevant logs:
+
+ENTER param_setup_earlycon
+ENTER early_init_dt_scan_chosen_stdout
+early_init_dt_scan_chosen_stdout: scan __earlycon_table
+name=3Duart compatible=3Dsnps,dw-apb-uart setup=3Dearly_serial8250_setup
+name=3Duart compatible=3Dnvidia,tegra20-uart setup=3Dearly_serial8250_setup
+name=3Dns16550a compatible=3Dns16550a setup=3Dearly_serial8250_setup
+ENTER of_setup_earlycon
+earlycon: ns16550a0 at MMIO 0x00010700 (options '115200n8')
+bootconsole [ns16550a0] enabled
+Kernel command line: mem=3D256M earlycon
+Console: colour dummy device 80x30
+console [tty0] enabled
+bootconsole [ns16550a0] disabled
+Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+10700.serial: ttyS0 at MMIO 0x10700 (irq =3D 20, base_baud =3D 460800) is a=
+ Palmchip BK-3103
+console [ttyS0] enabled
+
+
+I think the problem is that my UART (Palmchip BK-3103) requires
+custom accessors to read/write 16550 registers. And these accessors
+are probably ignored this early in the boot.
+
+drivers/tty/serial/8250/8250_port.c
+
+#ifdef CONFIG_SERIAL_8250_RT288X
+
+/* Au1x00/RT288x UART hardware has a weird register layout */
+static const s8 au_io_in_map[8] =3D {
+	 0,	/* UART_RX  */
+	 2,	/* UART_IER */
+	 3,	/* UART_IIR */
+	 5,	/* UART_LCR */
+	 6,	/* UART_MCR */
+	 7,	/* UART_LSR */
+	 8,	/* UART_MSR */
+	-1,	/* UART_SCR (unmapped) */
+};
+
+It is likely that I need to register a specific OF_EARLYCON_DECLARE,
+like OMAP did?
 
 Regards.
