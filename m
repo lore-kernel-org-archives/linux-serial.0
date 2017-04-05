@@ -1,224 +1,152 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2 2/2] drivers/serial: Add driver for Aspeed virtual UART
-Date: Wed, 5 Apr 2017 13:54:20 +0300
-Message-ID: <CAHp75VckYiBccVN+_K+Tm38kcdC10=sekQZg7Uz_HwS4xyW2UA@mail.gmail.com>
-References: <20170405040352.5661-1-joel@jms.id.au> <20170405040352.5661-3-joel@jms.id.au>
+From: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
+Subject: Re: No output on console despite ignore_loglevel earlyprintk
+Date: Wed, 5 Apr 2017 16:02:22 +0200
+Message-ID: <8cee6f0c-7348-3f67-38b0-84e5ce3ac16e@sigmadesigns.com>
+References: <6d16a384-1a4c-bf27-fd81-ea3caf3de6b0@sigmadesigns.com>
+ <20170303165548.GO21222@n2100.armlinux.org.uk>
+ <3293964b-aec2-e8b8-46f5-49b0eacc4718@suse.de>
+ <20170303174643.GQ21222@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170405040352.5661-3-joel@jms.id.au>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joel Stanley <joel@jms.id.au>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Jeremy Kerr <jk@ozlabs.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, openbmc@lists.ozlabs.org
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170303174643.GQ21222@n2100.armlinux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux <linux@armlinux.org.uk>, Andreas Farber <afaerber@suse.de>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thibaud Cornic <thibaud_cornic@sigmadesigns.com>, linux-serial <linux-serial@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Apr 5, 2017 at 7:03 AM, Joel Stanley <joel@jms.id.au> wrote:
-> From: Jeremy Kerr <jk@ozlabs.org>
->
-> This change adds a driver for the 16550-based Aspeed virtual UART
-> device. We use a similar process to the of_serial driver for device
-> probe, but expose some VUART-specific functions through sysfs too.
+On 03/03/2017 18:46, Russell King - ARM Linux wrote:
+> On Fri, Mar 03, 2017 at 06:26:28PM +0100, Andreas F=E4rber wrote:
+>> Am 03.03.2017 um 17:55 schrieb Russell King - ARM Linux:
+>>> On Fri, Mar 03, 2017 at 05:42:02PM +0100, Marc Gonzalez wrote:
+>>>> I'm confused about early consoles and earlyprintk, and all that good s=
+tuff.
+>>>> When my kernel panics, I don't get the expected output.
+>>>>
+>>>> Using "mem=3D256M ignore_loglevel earlyprintk"
+>>>>
+>> [...]
+>>>> [    0.014325] Console: colour dummy device 80x30
+>>>> [    0.018885] console [tty0] enabled
+>>>> [    0.022396] bootconsole [earlycon0] disabled
+>>>>
+>>>> And it hangs there.
+>>>
+>>> tty0 is the kernel virtual terminal console, which is what appears on
+>>> VGA or framebuffers.  This is the default console if nothing else is
+>>> specified.
+>>>
+>>> What happened here is that the virtual terminal console registered, was
+>>> detected to be the system console, so early console was shut down, and
+>>> the boot messages logged to the virtual terminal console instead.
+>>
+>> Why does passing console=3D make a difference though?
+>>
+>> I expect stdout-path to have the same effect as the command line, and I
+>> am pretty sure that that was previous behavior in, e.g., v4.4.
+>>
+>> Note that I am using earlycon, as opposed to earlyprintk above.
+> =
 
-I would go with vUART abbreviation, but it's up to you.
+> The property is:
+> =
 
->
-> The VUART is two UART 'front ends' connected by their FIFO (no actual
-> serial line in between). One is on the BMC side (management controller)
-> and one is on the host CPU side.
->
-> This driver is for the BMC side. The sysfs files allow the BMC
-> userspace, which owns the system configuration policy, to specify at
-> what IO port and interrupt number the host side will appear to the host
-> on the Host <-> BMC LPC bus. It could be different on a different system
-> (though most of them use 3f8/4).
->
-> OpenPOWER host firmware doesn't like it when the host-side of the
-> VUART's FIFO is not drained. This driver only disables host TX discard
-> mode when the port is in use. We set the VUART enabled bit when we bind
-> to the device, and clear it on unbind.
->
-> We don't want to do this on open/release, as the host may be using this
-> bit to configure serial output modes, which is independent of whether
-> the devices has been opened by BMC userspace.
+> 	stdout-path =3D "dt-node-name:hw-parameters";
+> =
 
->  - Move to 8250 directory
->  - Rename ast -> aspeed to match other Aspeed drivers
+> and this is parsed by the code in drivers/of/fdt.c,
+> early_init_dt_scan_chosen_stdout() (briefly):
+> =
 
->  drivers/tty/serial/8250/aspeed-vuart.c             | 341 +++++++++++++++++++++
+>         offset =3D fdt_path_offset(fdt, "/chosen");
+>         p =3D fdt_getprop(fdt, offset, "stdout-path", &l);
+> =
 
-There is a pattern 8250_x[_y].c
-So, I would go with 8250_aspeed_virt.c or 8250_aspeed_vuart.c or alike.
+>         q =3D strchrnul(p, ':');
+>         if (*q !=3D '\0')
+>                 options =3D q + 1;
+>         l =3D q - p;
+> =
 
-> +config SERIAL_8250_ASPEED_VUART
-> +       tristate "Aspeed Virtual UART"
-> +       depends on SERIAL_8250
-> +       depends on OF
+>         /* Get the node specified by stdout-path */
+>         offset =3D fdt_path_offset_namelen(fdt, p, l);
+>         if (offset < 0) {
+>                 pr_warn("earlycon: stdout-path %.*s not found\n", l, p);
+> =
 
-> + *  2 of the License, or (at your option) any later version.
+> So here, offset points at the node named by "dt-node-name" above.
+> =
 
-> + *
+> This function then tries to patch the specified node's compatible with
+> the drivers in the __earlycon_table:
+> =
 
-Redundant line.
+>         for (match =3D __earlycon_table; match < __earlycon_table_end; ma=
+tch++) {
+>                 if (!match->compatible[0])
+>                         continue;
+> =
 
-> + */
-> +#include <linux/device.h>
-> +#include <linux/module.h>
-> +#include <linux/of_address.h>
-> +#include <linux/of_irq.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/clk.h>
+>                 if (fdt_node_check_compatible(fdt, offset, match->compati=
+ble))
+>                         continue;
+> =
 
-> +static void aspeed_vuart_set_host_tx_discard(struct aspeed_vuart *vuart,
-> +                                            bool discard)
-> +{
-> +       u8 reg;
-> +
-> +       reg = readb(vuart->regs + ASPEED_VUART_GCRA);
-> +
+> and when a match is found, calls:
+> =
 
-> +       /* if the HOST_TX_DISCARD bit is set, discard is *disabled* */
+>                 of_setup_earlycon(match, offset, options);
+> =
 
-Perhaps "disabled" for better readability?
+> Here, we go into the code in drivers/tty/serial/earlycon.c, which reads
+> the standard properties (like "reg", etc) filling out a uart_port
+> before calling the early console's ->setup method.  If everything goes
+> to plan, register_console() is called to register the early console.
+> =
 
-> +       reg &= ~ASPEED_VUART_GCRA_HOST_TX_DISCARD;
-> +       if (!discard)
-> +               reg |= ASPEED_VUART_GCRA_HOST_TX_DISCARD;
-> +
-> +       writeb(reg, vuart->regs + ASPEED_VUART_GCRA);
-> +}
+> So there's nothing there which changes the default system console.
+> =
 
-> +static int aspeed_vuart_probe(struct platform_device *pdev)
-> +{
-> +       struct uart_8250_port port;
+> The next place is of_alias_scan() in drivers/of/base.c.  This records
+> the device_node and options in of_stdout and of_stdout_options
+> respectively - it, again, does not change the default system console.
+> =
 
-> +       struct resource *res;
-> +       struct aspeed_vuart *vuart;
-> +       struct device_node *np;
+> When a serial console is initialised, of_console_check() gets called by
+> serial core to check whether the DT node for it is "of_stdout", and if
+> it matches, it modifies the preferred system console.
+> =
 
-Longest line upper.
+> This all looks good, and one might expect that it has the desired
+> effect, but this code is fatally flawed in design: the point at which
+> of_console_check() gets called is _way_ after consoles like the virtual
+> terminal console get initialised.  What this means is that, at the point
+> in time that the virtual terminal is initialised, as far as the console
+> system is concerned, the preferred console is still the virtual terminal.
+> It knows nothing about the desire for a different console.
+> =
 
-> +       u32 clk, prop;
-> +       int rc;
-> +
-> +       np = pdev->dev.of_node;
-> +
-> +       vuart = devm_kzalloc(&pdev->dev, sizeof(*vuart), GFP_KERNEL);
-> +       if (!vuart)
-> +               return -ENOMEM;
-> +
-> +       vuart->dev = &pdev->dev;
-> +
+> Given the current console handling, it's not easy to solve without
+> overhauling the way consoles are chosen - the root problem is that the
+> Linux console system works via Linux device driver names and indexes,
+> and there's no easy way to translate a DT stdout-path property to a
+> Linux device driver name and index without the driver having been
+> initialised.
 
-> +       /* The 8510 core creates the mapping, which we grab a reference to
-> +        * for VUART-specific registers */
+One issue with earlyprintk is that one must hard-code the UART address
+directly into the kernel binary. If I build one kernel for two different
+boards that don't have the same UART address, I'm going to run into
+problems, right?
 
-/*
- * Multi-line comments.
- * Look like this.
- */
+Is early console a better solution for this use-case?
 
-> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +       vuart->regs = devm_ioremap_resource(&pdev->dev, res);
-> +       if (IS_ERR(vuart->regs))
-> +               return PTR_ERR(vuart->regs);
-> +
-> +       memset(&port, 0, sizeof(port));
-> +       port.port.private_data = vuart;
-> +       port.port.membase = vuart->regs;
-> +       port.port.mapbase = res->start;
-> +       port.port.mapsize = resource_size(res);
-> +       port.port.startup = aspeed_vuart_startup;
-> +       port.port.shutdown = aspeed_vuart_shutdown;
-> +       port.port.dev = &pdev->dev;
-> +
-> +       rc = sysfs_create_group(&vuart->dev->kobj, &aspeed_vuart_attr_group);
-> +       if (rc < 0)
-> +               return rc;
-> +
-> +       if (of_property_read_u32(np, "clock-frequency", &clk)) {
-> +               vuart->clk = devm_clk_get(&pdev->dev, NULL);
-> +               if (IS_ERR(vuart->clk)) {
-> +                       dev_warn(&pdev->dev,
-> +                               "clk or clock-frequency not defined\n");
-> +                       return PTR_ERR(vuart->clk);
-> +               }
-> +
-> +               rc = clk_prepare_enable(vuart->clk);
-> +               if (rc < 0)
-> +                       return rc;
-> +
-> +               clk = clk_get_rate(vuart->clk);
-> +       }
-> +
-> +       /* If current-speed was set, then try not to change it. */
-> +       if (of_property_read_u32(np, "current-speed", &prop) == 0)
-> +               port.port.custom_divisor = clk / (16 * prop);
-> +
-> +       /* Check for shifted address mapping */
-> +       if (of_property_read_u32(np, "reg-offset", &prop) == 0)
-> +               port.port.mapbase += prop;
-> +
-> +       /* Check for registers offset within the devices address range */
-> +       if (of_property_read_u32(np, "reg-shift", &prop) == 0)
-> +               port.port.regshift = prop;
-> +
-> +       /* Check for fifo size */
-> +       if (of_property_read_u32(np, "fifo-size", &prop) == 0)
-> +               port.port.fifosize = prop;
-> +
-> +       /* Check for a fixed line number */
-> +       rc = of_alias_get_id(np, "serial");
-> +       if (rc >= 0)
-> +               port.port.line = rc;
-> +
-
-> +       port.port.irq = irq_of_parse_and_map(np, 0);
-
-Isn't better to get this via platform_get_irq() ?
-
-> +       port.port.irqflags = IRQF_SHARED;
-> +       port.port.iotype = UPIO_MEM;
-
-> +       if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
-
-I would still go with usual pattern.
-
-> +               switch (prop) {
-> +               case 1:
-> +                       port.port.iotype = UPIO_MEM;
-> +                       break;
-> +               case 4:
-
-> +                       port.port.iotype = of_device_is_big_endian(np) ?
-> +                                      UPIO_MEM32BE : UPIO_MEM32;
-
-Hmm... And this one is not in align with IO accessors used in this
-driver. (readx()/writex() are little endian IO accessors).
-
-> +                       break;
-> +               default:
-> +                       dev_warn(&pdev->dev, "unsupported reg-io-width (%d)\n",
-> +                                prop);
-> +                       rc = -EINVAL;
-> +                       goto err_clk_disable;
-> +               }
-> +       }
-> +
-> +       port.port.type = PORT_16550A;
-> +       port.port.uartclk = clk;
-> +       port.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF
-> +               | UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_NO_THRE_TEST;
-> +
-> +       if (of_property_read_bool(np, "no-loopback-test"))
-> +               port.port.flags |= UPF_SKIP_TEST;
-> +
-> +       if (port.port.fifosize)
-> +               port.capabilities = UART_CAP_FIFO;
-> +
-> +       if (of_property_read_bool(np, "auto-flow-control"))
-> +               port.capabilities |= UART_CAP_AFE;
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+Regards.
