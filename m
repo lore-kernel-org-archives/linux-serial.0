@@ -1,84 +1,161 @@
-From: Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH] format-security: move static strings to const
-Date: Thu, 6 Apr 2017 20:21:54 -0700
-Message-ID: <CAGXu5j+ms4KMy1Uh473r+2veTKnuHN4OuozS92WWwnycH-LGLw@mail.gmail.com>
-References: <20170405214711.GA5711@beast> <87mvbtzztb.fsf@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <87mvbtzztb.fsf@intel.com>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Jani Nikula <jani.nikula@linux.intel.com>
-Cc: Linux MIPS Mailing List <linux-mips@linux-mips.org>, linux-decnet-user@lists.sourceforge.net, Mugunthan V N <mugunthanvnm@ti.com>, Tony Lindgren <tony@atomide.com>, Viresh Kumar <viresh.kumar@linaro.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Maling list - DRI developers <dri-devel@lists.freedesktop.org>, LKML <linux-kernel@vger.kernel.org>, Eric Dumazet <edumazet@google.com>, "Maciej W. Rozycki" <macro@linux-mips.org>, Christian Gromm <christian.gromm@microchip.com>, Daniel Vetter <daniel.vetter@intel.com>, Ingo Molnar <mingo@kernel.org>, devel@driverdev.osuosl.org, Kejian Yan <yankejian@huawei.com>, Felipe Balbi <felipe.balbi@linux.intel.com>, Russell King <linux@armlinux.org.uk>, Jarod Wilson <jarod@redhat.com>, David Airlie <airlied@linux.ie>, Daode Huang <huangdaode@hisilicon.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Yisen Zhuang <yis>
+From: Peter Senna Tschudin <peter.senna@collabora.com>
+Subject: [PATCH] imx-serial: Reduce RX DMA startup latency when opening for reading
+Date: Fri,  7 Apr 2017 11:45:24 +0200
+Message-ID: <20170407094524.26390-1-peter.senna@collabora.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+Cc: Peter Senna Tschudin <peter.senna@collabora.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Apr 6, 2017 at 1:48 AM, Jani Nikula <jani.nikula@linux.intel.com> wrote:
-> On Thu, 06 Apr 2017, Kees Cook <keescook@chromium.org> wrote:
->> While examining output from trial builds with -Wformat-security enabled,
->> many strings were found that should be defined as "const", or as a char
->> array instead of char pointer. This makes some static analysis easier,
->> by producing fewer false positives.
->>
->> As these are all trivial changes, it seemed best to put them all in
->> a single patch rather than chopping them up per maintainer.
->
->> diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
->> index f6d4d9700734..1ff9d5912b83 100644
->> --- a/drivers/gpu/drm/drm_fb_helper.c
->> +++ b/drivers/gpu/drm/drm_fb_helper.c
->> @@ -2331,7 +2331,7 @@ EXPORT_SYMBOL(drm_fb_helper_hotplug_event);
->>  int __init drm_fb_helper_modinit(void)
->>  {
->>  #if defined(CONFIG_FRAMEBUFFER_CONSOLE_MODULE) && !defined(CONFIG_EXPERT)
->> -     const char *name = "fbcon";
->> +     const char name[] = "fbcon";
->
-> I'd always write the former out of habit. Why should I start using the
-> latter? What makes it better?
+Reduce RX DMA start latency for the first reception when port is opened
+for reading. Instead of waiting for an interrupt signaling data on RX
+FIFO or data too old on RX FIFO, start RX DMA immediately when the
+serial port is opened for reading.
 
-For me, it's mainly two reasons: sizeof() and -Wformat-security behavior.
+Before this patch, the average RX DMA latency for the first reception
+was 42489 microseconds with a standard deviation of 25721 microseconds
+in 36 samples.
 
-The compiler treats "sizeof" differently. E.g. "sizeof(var)" shows the
-allocation size for the array, and pointer size for the char pointer.
-When doing things like snprintf(buf, sizeof(buf), ...) will do the
-right thing, etc. (This is a poor example for a _const_ string, but
-the point is that some calculations still work better with the array
-over the pointer.)
+After the patch the average RX DMA latency for the first reception, when
+the serial port is opened for reading, is 653 microseconds with a
+standard deviation of 294 microseconds in 36 samples.
 
-The other situation (which is why I noted this to change them) is that
-gcc's handling of them is different when faced with -Wformat-security
-since it doesn't like to believe that const char pointers are actually
-const for the purposes of being a format string.
+Signed-off-by: Peter Senna Tschudin <peter.senna@collabora.com>
+---
 
-> What keeps the kernel from accumulating tons more of the former?
+RX DMA latency for the first reception was calculated as the time
+difference between the call to imx_startup() and the completion of
+start_rx_dma(). I used this patch for the measurement:
+	--- a/drivers/tty/serial/imx.c
+	+++ b/drivers/tty/serial/imx.c
+	@@ -238,6 +238,7 @@ struct imx_port {
+		wait_queue_head_t	dma_wait;
+		unsigned int            saved_reg[10];
+		bool			context_saved;
+	+	struct timespec 	ts;
+	 };
 
-Right now, nothing. The good news is that they're relatively rare, and
-I notice them when they're added (since I have a -Wformat-security
-tree). We could add a warning to checkpatch for suggesting const char
-var[] over const char *var, perhaps?
+	 struct imx_port_ucrs {
+	@@ -1059,6 +1060,7 @@ static int start_rx_dma(struct imx_port *sport)
+		struct dma_chan	*chan = sport->dma_chan_rx;
+		struct device *dev = sport->port.dev;
+		struct dma_async_tx_descriptor *desc;
+	+	struct timespec te;
+		int ret;
 
-> Here's an interesting comparison of the generated code. I'm a bit
-> surprised by what gcc does, I would have expected no difference, like
-> clang. https://godbolt.org/g/OdqUvN
+		sport->rx_ring.head = 0;
+	@@ -1087,6 +1089,10 @@ static int start_rx_dma(struct imx_port *sport)
+		sport->dma_is_rxing = 1;
+		sport->rx_cookie = dmaengine_submit(desc);
+		dma_async_issue_pending(chan);
+	+
+	+	getnstimeofday(&te);
+	+	dev_err(sport->port.dev, "DMA delay(microseconds): %lu\n", (te.tv_nsec - sport->ts.tv_nsec)/1000);
+	+
+		return 0;
+	 }
 
-Here's your example with sizeof() added, if you're curious...
-https://godbolt.org/g/U1zIZK
+	@@ -1286,6 +1292,8 @@ static int imx_startup(struct uart_port *port)
+		int retval, i, readcnt = 0;
+		unsigned long flags, temp;
 
-> The other changes adding const in this patch are, of course, good.
+	+	getnstimeofday(&sport->ts);
+	+
+		retval = clk_prepare_enable(sport->clk_per);
+		if (retval)
+			return retval;
 
-Thanks!
+ drivers/tty/serial/imx.c | 63 +++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 49 insertions(+), 14 deletions(-)
 
--Kees
-
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index e3e152c..b4340b5 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -719,6 +719,27 @@ static irqreturn_t imx_rxint(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
++static void imx_disable_rx_int(struct imx_port *sport)
++{
++	unsigned long temp;
++
++	sport->dma_is_rxing = 1;
++
++	/* disable the receiver ready and aging timer interrupts */
++	temp = readl(sport->port.membase + UCR1);
++	temp &= ~(UCR1_RRDYEN);
++	writel(temp, sport->port.membase + UCR1);
++
++	temp = readl(sport->port.membase + UCR2);
++	temp &= ~(UCR2_ATEN);
++	writel(temp, sport->port.membase + UCR2);
++
++	/* disable the rx errors interrupts */
++	temp = readl(sport->port.membase + UCR4);
++	temp &= ~UCR4_OREN;
++	writel(temp, sport->port.membase + UCR4);
++}
++
+ static void clear_rx_errors(struct imx_port *sport);
+ static int start_rx_dma(struct imx_port *sport);
+ /*
+@@ -734,21 +755,8 @@ static void imx_dma_rxint(struct imx_port *sport)
+ 
+ 	temp = readl(sport->port.membase + USR2);
+ 	if ((temp & USR2_RDR) && !sport->dma_is_rxing) {
+-		sport->dma_is_rxing = 1;
+ 
+-		/* disable the receiver ready and aging timer interrupts */
+-		temp = readl(sport->port.membase + UCR1);
+-		temp &= ~(UCR1_RRDYEN);
+-		writel(temp, sport->port.membase + UCR1);
+-
+-		temp = readl(sport->port.membase + UCR2);
+-		temp &= ~(UCR2_ATEN);
+-		writel(temp, sport->port.membase + UCR2);
+-
+-		/* disable the rx errors interrupts */
+-		temp = readl(sport->port.membase + UCR4);
+-		temp &= ~UCR4_OREN;
+-		writel(temp, sport->port.membase + UCR4);
++		imx_disable_rx_int(sport);
+ 
+ 		/* tell the DMA to receive the data. */
+ 		start_rx_dma(sport);
+@@ -1339,6 +1347,33 @@ static int imx_startup(struct uart_port *port)
+ 	 * Enable modem status interrupts
+ 	 */
+ 	imx_enable_ms(&sport->port);
++
++	/*
++	 * If the serial port is opened for reading start RX DMA immediately
++	 * instead of waiting for RX FIFO interrupts. In our iMX53 the average
++	 * delay for the first reception dropped from approximately 35000
++	 * microseconds to 1000 microseconds.
++	 */
++	if (sport->dma_is_enabled) {
++		struct tty_struct *tty = sport->port.state->port.tty;
++		struct tty_file_private *file_priv;
++		int readcnt = 0;
++
++		spin_lock(&tty->files_lock);
++
++		if (!list_empty(&tty->tty_files))
++			list_for_each_entry(file_priv, &tty->tty_files, list)
++				if (!(file_priv->file->f_flags & O_WRONLY))
++					readcnt++;
++
++		spin_unlock(&tty->files_lock);
++
++		if (readcnt > 0) {
++			imx_disable_rx_int(sport);
++			start_rx_dma(sport);
++		}
++	}
++
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+ 	return 0;
 -- 
-Kees Cook
-Pixel Security
+2.9.3
