@@ -1,46 +1,58 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 31/38] Annotate hardware config module parameters in
- drivers/tty/
-Date: Sat, 8 Apr 2017 17:19:16 +0200
-Message-ID: <20170408151916.GA7879@kroah.com>
-References: <149141141298.29162.5612793122429261720.stgit@warthog.procyon.org.uk>
- <149141168659.29162.541205367169653847.stgit@warthog.procyon.org.uk>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCHv3 02/10] serdev: add serdev_device_wait_until_sent
+Date: Sat, 8 Apr 2017 18:57:40 +0200
+Message-ID: <20170408165740.GA20058@kroah.com>
+References: <20170328155939.31566-1-sre@kernel.org>
+ <20170328155939.31566-3-sre@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-security-module-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <149141168659.29162.541205367169653847.stgit@warthog.procyon.org.uk>
-Sender: owner-linux-security-module@vger.kernel.org
-To: David Howells <dhowells@redhat.com>
-Cc: linux-kernel@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, linux-security-module@vger.kernel.org, keyrings@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+In-Reply-To: <20170328155939.31566-3-sre@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sebastian Reichel <sre@kernel.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Apr 05, 2017 at 06:01:26PM +0100, David Howells wrote:
-> When the kernel is running in secure boot mode, we lock down the kernel to
-> prevent userspace from modifying the running kernel image.  Whilst this
-> includes prohibiting access to things like /dev/mem, it must also prevent
-> access by means of configuring driver modules in such a way as to cause a
-> device to access or modify the kernel image.
+On Tue, Mar 28, 2017 at 05:59:31PM +0200, Sebastian Reichel wrote:
+> Add method, which waits until the transmission buffer has been sent.
+> Note, that the change in ttyport_write_wakeup is related, since
+> tty_wait_until_sent will hang without that change.
 > 
-> To this end, annotate module_param* statements that refer to hardware
-> configuration and indicate for future reference what type of parameter they
-> specify.  The parameter parser in the core sees this information and can
-> skip such parameters with an error message if the kernel is locked down.
-> The module initialisation then runs as normal, but just sees whatever the
-> default values for those parameters is.
+> Acked-by: Rob Herring <robh@kernel.org>
+> Acked-by: Pavel Machek <pavel@ucw.cz>
+> Signed-off-by: Sebastian Reichel <sre@kernel.org>
+> ---
+> Changes since PATCHv2:
+>  * Avoid goto in ttyport_write_wakeup
+> ---
+>  drivers/tty/serdev/core.c           | 11 +++++++++++
+>  drivers/tty/serdev/serdev-ttyport.c | 18 ++++++++++++++----
+>  include/linux/serdev.h              |  3 +++
+>  3 files changed, 28 insertions(+), 4 deletions(-)
 > 
-> Note that we do still need to do the module initialisation because some
-> drivers have viable defaults set in case parameters aren't specified and
-> some drivers support automatic configuration (e.g. PNP or PCI) in addition
-> to manually coded parameters.
-> 
-> This patch annotates drivers in drivers/tty/.
-> 
-> Suggested-by: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> cc: Jiri Slaby <jslaby@suse.com>
-> cc: linux-serial@vger.kernel.org
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index f4c6c90add78..a63b74031e22 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -173,6 +173,17 @@ void serdev_device_set_flow_control(struct serdev_device *serdev, bool enable)
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_device_set_flow_control);
+>  
+> +void serdev_device_wait_until_sent(struct serdev_device *serdev, long timeout)
+> +{
+> +	struct serdev_controller *ctrl = serdev->ctrl;
+> +
+> +	if (!ctrl || !ctrl->ops->wait_until_sent)
+> +		return;
+> +
+> +	ctrl->ops->wait_until_sent(ctrl, timeout);
+> +}
+> +EXPORT_SYMBOL_GPL(serdev_device_wait_until_sent);
 
+Is this still needed now that we have serdev_device_write() with an
+unlimited timeout available?
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+thanks,
+
+greg k-h
