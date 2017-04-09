@@ -1,58 +1,70 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCHv3 02/10] serdev: add serdev_device_wait_until_sent
-Date: Sat, 8 Apr 2017 18:57:40 +0200
-Message-ID: <20170408165740.GA20058@kroah.com>
-References: <20170328155939.31566-1-sre@kernel.org>
- <20170328155939.31566-3-sre@kernel.org>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: 8250: Possible race between console message vs DMA?
+Date: Sun, 9 Apr 2017 14:07:02 +0300
+Message-ID: <CAHp75Vfc6FznNByidzjRcgsj14=DLtwqb=wtut4Cb4gj5UO42w@mail.gmail.com>
+References: <7c75614c-71cb-0a4e-222c-713f65a89f23@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170328155939.31566-3-sre@kernel.org>
+In-Reply-To: <7c75614c-71cb-0a4e-222c-713f65a89f23@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sre@kernel.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Vignesh R <vigneshr@ti.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Mar 28, 2017 at 05:59:31PM +0200, Sebastian Reichel wrote:
-> Add method, which waits until the transmission buffer has been sent.
-> Note, that the change in ttyport_write_wakeup is related, since
-> tty_wait_until_sent will hang without that change.
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
-> Acked-by: Pavel Machek <pavel@ucw.cz>
-> Signed-off-by: Sebastian Reichel <sre@kernel.org>
-> ---
-> Changes since PATCHv2:
->  * Avoid goto in ttyport_write_wakeup
-> ---
->  drivers/tty/serdev/core.c           | 11 +++++++++++
->  drivers/tty/serdev/serdev-ttyport.c | 18 ++++++++++++++----
->  include/linux/serdev.h              |  3 +++
->  3 files changed, 28 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index f4c6c90add78..a63b74031e22 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -173,6 +173,17 @@ void serdev_device_set_flow_control(struct serdev_device *serdev, bool enable)
->  }
->  EXPORT_SYMBOL_GPL(serdev_device_set_flow_control);
->  
-> +void serdev_device_wait_until_sent(struct serdev_device *serdev, long timeout)
-> +{
-> +	struct serdev_controller *ctrl = serdev->ctrl;
-> +
-> +	if (!ctrl || !ctrl->ops->wait_until_sent)
-> +		return;
-> +
-> +	ctrl->ops->wait_until_sent(ctrl, timeout);
-> +}
-> +EXPORT_SYMBOL_GPL(serdev_device_wait_until_sent);
+On Fri, Apr 7, 2017 at 2:08 PM, Vignesh R <vigneshr@ti.com> wrote:
+> Hi All,
+>
+> I seem to be hitting a race condition using 8250_dma (and 8250_omap
+> specific dma) support:
+>
+> Kernel writes log messages to console via
+> serial8250_console_write()->serial8250_console_putchar() which directly
+> accesses UART_TX register with port->lock acquired.
+>
+> Now, if the same UART instance is being used by systemd/userspace,
+> characters are written to UART_TX register by serial8250_tx_chars(). The
+> concurrent access by serial8250_console_write() and
+> serial8250_tx_chars() is serialized by the use of port->lock spinlock
+> and hence there is no issue with` non DMA case.
+>
+> But when using DMA with 8250 UART, I see that port->lock is held before
+> scheduling of DMA TX transfer and released as soon as the transfer is
+> submitted. The lock is not held until the transfer actually completes
+> See,
+> uart_start()
+>   ->serial8250_start_tx()->
+>      __start_tx()
+>        ->up->dma->tx_dma(up)
+> Or
+> __dma_tx_complete() in 8250_dma.c that acquires and releases port->lock
+> once TX DMA transfer is submitted in serial8250_tx_dma()
+>
+> So, when the port->lock is released, it is quite possible that DMA is
+> still transferring data to UART TX FIFO and UART FIFO might be almost full.
+> I see that when DMA is writing to UART TX FIFO,
+> serial8250_console_write() may also write kernel log messages to UART TX
+> FIFO(as port->lock is now free to be acquired), which is leading to
+> overflow and lose of data. serial8250_console_write() checks for
+> UART_LSR_THRE to check if Transmit hold register is empty but that may
+> not be enough as DMA might put data before CPU write.
+>
+> It seems that both DMA and CPU might simultaneously put data to UART
+> FIFO and lead to potential loss of data.
+> Is the expectation that UART instance used to print kernel log messages
+> is not intended to use DMA? Or am I missing something?
+>
+>
+> Any help appreciated!
 
-Is this still needed now that we have serdev_device_write() with an
-unlimited timeout available?
+I have one patch in my tree for a long time already:
+https://bitbucket.org/andy-shev/linux/commits/9f86c648e53bd25b8ec374933764577b2a340468?at=topic/uart/rpm
 
-thanks,
+Besides that I have patch to disable power management on kernel
+console (and non-hackish implementation of runtime PM for UART is
+there in case you are wondering what that repository for).
 
-greg k-h
+
+-- 
+With Best Regards,
+Andy Shevchenko
