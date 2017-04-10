@@ -1,43 +1,106 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH 2/2] serial: omap: suspend device on probe errors
-Date: Mon, 10 Apr 2017 11:21:39 +0200
-Message-ID: <20170410092139.11441-2-johan@kernel.org>
-References: <20170410092139.11441-1-johan@kernel.org>
+From: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
+Subject: [PATCH v2] serial: 8250_early: Add earlycon support for Palmchip UART
+Date: Mon, 10 Apr 2017 11:47:09 +0200
+Message-ID: <7a016ff6-08fc-2811-92e0-7c4603fa8586@sigmadesigns.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170410092139.11441-1-johan@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>, Shubhrajyoti D <shubhrajyoti@ti.com>, Tony Lindgren <tony@atomide.com>
+To: linux-serial <linux-serial@vger.kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Russell King <linux@arm.linux.org.uk>, Andreas Farber <afaerber@suse.de>, Jean Delvare <jdelvare@suse.de>, Rob Herring <robh@kernel.org>, Mans Rullgard <mans@mansr.com>, Jiri Slaby <jslaby@suse.cz>, Masahiro Yamada <yamada.masahiro@socionext.com>, Vineet Gupta <vgupta@synopsys.com>, Scott Wood <scottwood@freescale.com>, Robin Murphy <robin.murphy@arm.com>, Thibaud Cornic <thibaud_cornic@sigmadesigns.com>, Mason <slash.tmp@free.fr>, Linux ARM <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Make sure to actually suspend the device before returning after a failed
-(or deferred) probe.
+Define an OF early console for Palmchip UART, which can be enabled
+by passing "earlycon" on the boot command line.
 
-Note that autosuspend must be disabled before runtime pm is disabled in
-order to balance the usage count due to a negative autosuspend delay as
-well as to make the final put suspend the device synchronously.
-
-Fixes: 388bc2622680 ("omap-serial: Fix the error handling in the omap_serial probe")
-Cc: Shubhrajyoti D <shubhrajyoti@ti.com>
-Cc: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
 ---
- drivers/tty/serial/omap-serial.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_early.c | 24 ++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c  |  4 ++--
+ 2 files changed, 26 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 8c2086e14b51..e4210b9ad0d3 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1767,7 +1767,8 @@ static int serial_omap_probe(struct platform_device *pdev)
- 	return 0;
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 85a12f032402..82fc48eca1df 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -39,6 +39,7 @@
  
- err_add_port:
--	pm_runtime_put(&pdev->dev);
-+	pm_runtime_dont_use_autosuspend(&pdev->dev);
-+	pm_runtime_put_sync(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
- 	pm_qos_remove_request(&up->pm_qos_request);
- 	device_init_wakeup(up->dev, false);
+ static unsigned int __init serial8250_early_in(struct uart_port *port, int offset)
+ {
++	int reg_offset = offset;
+ 	offset <<= port->regshift;
+ 
+ 	switch (port->iotype) {
+@@ -52,6 +53,8 @@ static unsigned int __init serial8250_early_in(struct uart_port *port, int offse
+ 		return ioread32be(port->membase + offset);
+ 	case UPIO_PORT:
+ 		return inb(port->iobase + offset);
++	case UPIO_AU:
++		return port->serial_in(port, reg_offset);
+ 	default:
+ 		return 0;
+ 	}
+@@ -59,6 +62,7 @@ static unsigned int __init serial8250_early_in(struct uart_port *port, int offse
+ 
+ static void __init serial8250_early_out(struct uart_port *port, int offset, int value)
+ {
++	int reg_offset = offset;
+ 	offset <<= port->regshift;
+ 
+ 	switch (port->iotype) {
+@@ -77,6 +81,9 @@ static void __init serial8250_early_out(struct uart_port *port, int offset, int
+ 	case UPIO_PORT:
+ 		outb(value, port->iobase + offset);
+ 		break;
++	case UPIO_AU:
++		port->serial_out(port, reg_offset, value);
++		break;
+ 	}
+ }
+ 
+@@ -172,3 +179,20 @@ OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
+ OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
+ 
+ #endif
++
++#ifdef CONFIG_SERIAL_8250_RT288X
++
++unsigned int au_serial_in(struct uart_port *p, int offset);
++void au_serial_out(struct uart_port *p, int offset, int value);
++
++static int __init early_au_setup(struct earlycon_device *dev, const char *opt)
++{
++	dev->port.serial_in = au_serial_in;
++	dev->port.serial_out = au_serial_out;
++	dev->port.iotype = UPIO_AU;
++	dev->con->write = early_serial8250_write;
++	return 0;
++}
++OF_EARLYCON_DECLARE(palmchip, "ralink,rt2880-uart", early_au_setup);
++
++#endif
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 080d5a59d0a7..1f08d22d1a80 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -313,7 +313,7 @@ static const s8 au_io_out_map[8] = {
+ 	-1,	/* UART_SCR (unmapped) */
+ };
+ 
+-static unsigned int au_serial_in(struct uart_port *p, int offset)
++unsigned int au_serial_in(struct uart_port *p, int offset)
+ {
+ 	if (offset >= ARRAY_SIZE(au_io_in_map))
+ 		return UINT_MAX;
+@@ -323,7 +323,7 @@ static unsigned int au_serial_in(struct uart_port *p, int offset)
+ 	return __raw_readl(p->membase + (offset << p->regshift));
+ }
+ 
+-static void au_serial_out(struct uart_port *p, int offset, int value)
++void au_serial_out(struct uart_port *p, int offset, int value)
+ {
+ 	if (offset >= ARRAY_SIZE(au_io_out_map))
+ 		return;
 -- 
-2.12.2
+2.11.0
