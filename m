@@ -1,73 +1,133 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCHv3 02/10] serdev: add serdev_device_wait_until_sent
-Date: Mon, 10 Apr 2017 16:03:13 +0200
-Message-ID: <20170410140313.GA31894@kroah.com>
-References: <20170328155939.31566-1-sre@kernel.org>
- <20170328155939.31566-3-sre@kernel.org>
- <20170408165740.GA20058@kroah.com>
- <CAL_JsqLK=pbF7Nx-2w98t62N53zbL1oGZpGEbZUK-xg5ms4AZw@mail.gmail.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH v9 3/3] printk: fix double printing with earlycon
+Date: Mon, 10 Apr 2017 16:22:14 +0200
+Message-ID: <20170410142214.GA3452@pathway.suse.cz>
+References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
+ <20170405202006.18234-1-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAL_JsqLK=pbF7Nx-2w98t62N53zbL1oGZpGEbZUK-xg5ms4AZw@mail.gmail.com>
+In-Reply-To: <20170405202006.18234-1-aleksey.makarov@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Sebastian Reichel <sre@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Samuel Thibault <samuel.thibault@ens-lyon.org>, Pavel Machek <pavel@ucw.cz>, Tony Lindgren <tony@atomide.com>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Apr 10, 2017 at 08:46:57AM -0500, Rob Herring wrote:
-> On Sat, Apr 8, 2017 at 11:57 AM, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> > On Tue, Mar 28, 2017 at 05:59:31PM +0200, Sebastian Reichel wrote:
-> >> Add method, which waits until the transmission buffer has been sent.
-> >> Note, that the change in ttyport_write_wakeup is related, since
-> >> tty_wait_until_sent will hang without that change.
-> >>
-> >> Acked-by: Rob Herring <robh@kernel.org>
-> >> Acked-by: Pavel Machek <pavel@ucw.cz>
-> >> Signed-off-by: Sebastian Reichel <sre@kernel.org>
-> >> ---
-> >> Changes since PATCHv2:
-> >>  * Avoid goto in ttyport_write_wakeup
-> >> ---
-> >>  drivers/tty/serdev/core.c           | 11 +++++++++++
-> >>  drivers/tty/serdev/serdev-ttyport.c | 18 ++++++++++++++----
-> >>  include/linux/serdev.h              |  3 +++
-> >>  3 files changed, 28 insertions(+), 4 deletions(-)
-> >>
-> >> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> >> index f4c6c90add78..a63b74031e22 100644
-> >> --- a/drivers/tty/serdev/core.c
-> >> +++ b/drivers/tty/serdev/core.c
-> >> @@ -173,6 +173,17 @@ void serdev_device_set_flow_control(struct serdev_device *serdev, bool enable)
-> >>  }
-> >>  EXPORT_SYMBOL_GPL(serdev_device_set_flow_control);
-> >>
-> >> +void serdev_device_wait_until_sent(struct serdev_device *serdev, long timeout)
-> >> +{
-> >> +     struct serdev_controller *ctrl = serdev->ctrl;
-> >> +
-> >> +     if (!ctrl || !ctrl->ops->wait_until_sent)
-> >> +             return;
-> >> +
-> >> +     ctrl->ops->wait_until_sent(ctrl, timeout);
-> >> +}
-> >> +EXPORT_SYMBOL_GPL(serdev_device_wait_until_sent);
-> >
-> > Is this still needed now that we have serdev_device_write() with an
-> > unlimited timeout available?
+On Wed 2017-04-05 23:20:00, Aleksey Makarov wrote:
+> If a console was specified by ACPI SPCR table _and_ command line
+> parameters like "console=ttyAMA0" _and_ "earlycon" were specified,
+> then log messages appear twice.
 > 
-> Yes, because only this waits until the data is on the wire.
+> The root cause is that the code traverses the list of specified
+> consoles (the `console_cmdline` array) and stops at the first match.
+> But it may happen that the same console is referred by the elements
+> of this array twice:
+> 
+> 	pl011,mmio,0x87e024000000,115200 -- from SPCR
+> 	ttyAMA0 -- from command line
+> 
+> but in this case `preferred_console` points to the second entry and
+> the flag CON_CONSDEV is not set, so bootconsole is not deregistered.
+> 
+> To fix that, introduce an invariant "The last non-braille console
+> is always the preferred one" on the entries of the console_cmdline
+> array.  Then traverse it in reverse order to be sure that if
+> the console is preferred then it will be the first matching entry.
+> Introduce variable console_cmdline_cnt that keeps the number
+> of elements of the console_cmdline array (Petr Mladek).  It helps
+> to get rid of the loop that searches for the end of this array.
+> 
+> Reported-by: Sudeep Holla <sudeep.holla@arm.com>
+> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
 
-What "wire" is that?  The serial wire?  How do you know this?  Many usb
-to serial devices have no way to determine this, given that there is
-another uart hanging off of the end of a USB connection.
+This version looks fine to me. Just a small nitpick below.
+Anyway:
 
-Doesn't serdev_device_write() return when the write is finished?  I
-think we need some good documentation here for all of the different
-variants of how to send data, as I'm sure confused...
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-thanks,
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index fd752f0c8ef1..be657af45758 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -269,6 +269,7 @@ static struct console *exclusive_console;
+>  #define MAX_CMDLINECONSOLES 8
+>  
+>  static struct console_cmdline console_cmdline[MAX_CMDLINECONSOLES];
+> +static int console_cmdline_cnt;
+>  
+>  static int preferred_console = -1;
+>  int console_set_on_cmdline;
+> @@ -1905,12 +1906,26 @@ static int __add_preferred_console(char *name, int idx, char *options,
+>  	 *	See if this tty is not yet registered, and
+>  	 *	if we have a slot free.
+>  	 */
+> -	for (i = 0, c = console_cmdline;
+> -	     i < MAX_CMDLINECONSOLES && c->name[0];
+> -	     i++, c++) {
+> +	for (i = 0, c = console_cmdline; i < console_cmdline_cnt; i++, c++) {
+>  		if (strcmp(c->name, name) == 0 && c->index == idx) {
+> -			if (!brl_options)
+> -				preferred_console = i;
+> +
 
-greg k-h
+This extra new line is non-standard and looks slightly weird to me.
+I just point it out. I personally do not mind ;-)
+
+
+> +			if (brl_options)
+> +				return 0;
+> +
+> +			/*
+> +			 * Maintain an invariant that will help to find if
+> +			 * the matching console is preferred, see
+> +			 * register_console():
+> +			 *
+> +			 * The last non-braille console is always
+> +			 * the preferred one.
+> +			 */
+> +			if (i != console_cmdline_cnt - 1)
+> +				swap(console_cmdline[i],
+> +				     console_cmdline[console_cmdline_cnt - 1]);
+> +
+> +			preferred_console = console_cmdline_cnt - 1;
+> +
+>  			return 0;
+>  		}
+>  	}
+> @@ -2457,12 +2473,24 @@ void register_console(struct console *newcon)
+>  	}
+>  
+>  	/*
+> -	 *	See if this console matches one we selected on
+> -	 *	the command line.
+> +	 * See if this console matches one we selected on the command line.
+> +	 *
+> +	 * There may be several entries in the console_cmdline array matching
+> +	 * with the same console, one with newcon->match(), another by
+> +	 * name/index:
+> +	 *
+> +	 *	pl011,mmio,0x87e024000000,115200 -- added from SPCR
+> +	 *	ttyAMA0 -- added from command line
+> +	 *
+> +	 * Traverse the console_cmdline array in reverse order to be
+> +	 * sure that if this console is preferred then it will be the first
+> +	 * matching entry.  We use the invariant that is maintained in
+> +	 * __add_preferred_console().
+>  	 */
+> -	for (i = 0, c = console_cmdline;
+> -	     i < MAX_CMDLINECONSOLES && c->name[0];
+> -	     i++, c++) {
+> +	for (i = console_cmdline_cnt - 1; i >= 0; i--) {
+> +
+
+Same here.
+
+> +		c = console_cmdline + i;
+> +
+>  		if (!newcon->match ||
+>  		    newcon->match(newcon, c->name, c->index, c->options) != 0) {
+>  			/* default matching */
+
+Best Regards,
+Petr
