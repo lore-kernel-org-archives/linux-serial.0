@@ -1,101 +1,52 @@
-From: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCHv3 02/10] serdev: add serdev_device_wait_until_sent
-Date: Mon, 10 Apr 2017 11:12:39 -0500
-Message-ID: <CAL_JsqJCjob6NDfHe0r7X3dXPEniKh5vChXhBxfyHZRu7Fov7A@mail.gmail.com>
-References: <20170328155939.31566-1-sre@kernel.org> <20170328155939.31566-3-sre@kernel.org>
- <20170408165740.GA20058@kroah.com> <CAL_JsqLK=pbF7Nx-2w98t62N53zbL1oGZpGEbZUK-xg5ms4AZw@mail.gmail.com>
- <20170410140313.GA31894@kroah.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 1/2] serial: omap: fix runtime-pm handling on unbind
+Date: Mon, 10 Apr 2017 09:15:24 -0700
+Message-ID: <20170410161524.GA5339@atomide.com>
+References: <20170410092139.11441-1-johan@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170410140313.GA31894-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Samuel Thibault <samuel.thibault-vYW+cPY1g1pg9hUCZPvPmw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrey Smirnov <andrew.smirnov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170410092139.11441-1-johan@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Johan Hovold <johan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Felipe Balbi <balbi@kernel.org>, Santosh Shilimkar <santosh.shilimkar@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-+ Andrey
+* Johan Hovold <johan@kernel.org> [170410 02:27]:
+> An unbalanced and misplaced synchronous put was used to suspend the
+> device on driver unbind, something which with a likewise misplaced
+> pm_runtime_disable leads to external aborts when an open port is being
+> removed.
+> 
+> Unhandled fault: external abort on non-linefetch (0x1028) at 0xfa024010
+> ...
+> [<c046e760>] (serial_omap_set_mctrl) from [<c046a064>] (uart_update_mctrl+0x50/0x60)
+> [<c046a064>] (uart_update_mctrl) from [<c046a400>] (uart_shutdown+0xbc/0x138)
+> [<c046a400>] (uart_shutdown) from [<c046bd2c>] (uart_hangup+0x94/0x190)
+> [<c046bd2c>] (uart_hangup) from [<c045b760>] (__tty_hangup+0x404/0x41c)
+> [<c045b760>] (__tty_hangup) from [<c045b794>] (tty_vhangup+0x1c/0x20)
+> [<c045b794>] (tty_vhangup) from [<c046ccc8>] (uart_remove_one_port+0xec/0x260)
+> [<c046ccc8>] (uart_remove_one_port) from [<c046ef4c>] (serial_omap_remove+0x40/0x60)
+> [<c046ef4c>] (serial_omap_remove) from [<c04845e8>] (platform_drv_remove+0x34/0x4c)
+> 
+> Fix this up by resuming the device before deregistering the port and by
+> suspending and disabling runtime pm only after the port has been
+> removed.
+> 
+> Also make sure to disable autosuspend before disabling runtime pm so
+> that the usage count is balanced and device actually suspended before
+> returning.
+> 
+> Note that due to a negative autosuspend delay being set in probe, the
+> unbalanced put would actually suspend the device on first driver unbind,
+> while rebinding and again unbinding would result in a negative
+> power.usage_count.
+> 
+> Fixes: 7e9c8e7dbf3b ("serial: omap: make sure to suspend device before remove")
+> Cc: Felipe Balbi <balbi@kernel.org>
+> Cc: Santosh Shilimkar <santosh.shilimkar@ti.com>
+> Cc: Tony Lindgren <tony@atomide.com>
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 
-On Mon, Apr 10, 2017 at 9:03 AM, Greg Kroah-Hartman
-<gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org> wrote:
-> On Mon, Apr 10, 2017 at 08:46:57AM -0500, Rob Herring wrote:
->> On Sat, Apr 8, 2017 at 11:57 AM, Greg Kroah-Hartman
->> <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org> wrote:
->> > On Tue, Mar 28, 2017 at 05:59:31PM +0200, Sebastian Reichel wrote:
->> >> Add method, which waits until the transmission buffer has been sent.
->> >> Note, that the change in ttyport_write_wakeup is related, since
->> >> tty_wait_until_sent will hang without that change.
->> >>
->> >> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->> >> Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
->> >> Signed-off-by: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->> >> ---
->> >> Changes since PATCHv2:
->> >>  * Avoid goto in ttyport_write_wakeup
->> >> ---
->> >>  drivers/tty/serdev/core.c           | 11 +++++++++++
->> >>  drivers/tty/serdev/serdev-ttyport.c | 18 ++++++++++++++----
->> >>  include/linux/serdev.h              |  3 +++
->> >>  3 files changed, 28 insertions(+), 4 deletions(-)
->> >>
->> >> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
->> >> index f4c6c90add78..a63b74031e22 100644
->> >> --- a/drivers/tty/serdev/core.c
->> >> +++ b/drivers/tty/serdev/core.c
->> >> @@ -173,6 +173,17 @@ void serdev_device_set_flow_control(struct serdev_device *serdev, bool enable)
->> >>  }
->> >>  EXPORT_SYMBOL_GPL(serdev_device_set_flow_control);
->> >>
->> >> +void serdev_device_wait_until_sent(struct serdev_device *serdev, long timeout)
->> >> +{
->> >> +     struct serdev_controller *ctrl = serdev->ctrl;
->> >> +
->> >> +     if (!ctrl || !ctrl->ops->wait_until_sent)
->> >> +             return;
->> >> +
->> >> +     ctrl->ops->wait_until_sent(ctrl, timeout);
->> >> +}
->> >> +EXPORT_SYMBOL_GPL(serdev_device_wait_until_sent);
->> >
->> > Is this still needed now that we have serdev_device_write() with an
->> > unlimited timeout available?
->>
->> Yes, because only this waits until the data is on the wire.
->
-> What "wire" is that?  The serial wire?  How do you know this?  Many usb
-> to serial devices have no way to determine this, given that there is
-> another uart hanging off of the end of a USB connection.
-
-Okay, maybe it's just out of linux s/w buffers for h/w which you don't
-know. It is the same semantics as tty_wait_until_sent which is
-documented as: "Wait for characters pending in a tty driver to hit the
-wire, or for a timeout to occur (eg due to flow control)"
-
-> Doesn't serdev_device_write() return when the write is finished?
-
-No, it returns when data is accepted by the tty layer (as serdev has
-no buffering of its own).
-
->  I
-> think we need some good documentation here for all of the different
-> variants of how to send data, as I'm sure confused...
-
-Fair enough. However, I think that's somewhat orthogonal to this function.
-
-There's 2 modes of sending data which are basically sync and async operation.
-
-- serdev_device_write_buf - Only sends what can be immediately
-accepted by lower layers. Caller should provide write_wakeup callback
-to be notified.
-
-- serdev_device_write - Sleeps until all data is accepted by lower
-layers or a timeout occurs.
-
-It's valid to call serdev_device_wait_until_sent in either case.
-
-
-Yes, the naming is not the best, but we kept serdev_device_write_buf
-to avoid any cross tree merges. We can remove or rename later as it is
-just a wrapper now for serdev_device_write.
-
-Rob
+Acked-by: Tony Lindgren <tony@atomide.com>
