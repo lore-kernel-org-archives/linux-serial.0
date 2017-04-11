@@ -1,7 +1,7 @@
 From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH 1/4] Revert "tty_port: register tty ports with serdev bus"
-Date: Tue, 11 Apr 2017 19:07:28 +0200
-Message-ID: <20170411170731.4085-2-johan@kernel.org>
+Subject: [PATCH 2/4] serdev: fix tty-port client deregistration
+Date: Tue, 11 Apr 2017 19:07:29 +0200
+Message-ID: <20170411170731.4085-3-johan@kernel.org>
 References: <20170411170731.4085-1-johan@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170411170731.4085-1-johan@kernel.org>
@@ -10,95 +10,69 @@ To: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.or
 Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-This reverts commit 8ee3fde047589dc9c201251f07d0ca1dc776feca.
+The port client data must be set when registering the serdev controller
+or client deregistration will fail (and the serdev devices are left
+registered and allocated) if the port was never opened in between.
 
-The new serdev bus hooked into the tty layer in
-tty_port_register_device() by registering a serdev controller instead of
-a tty device whenever a serdev client is present, and by deregistering
-the controller in the tty-port destructor. This is broken in several
-ways:
+Make sure to clear the port client data on any probe errors to avoid a
+use-after-free when the client is later deregistered unconditionally
+(e.g. in a tty-port deregistration helper).
 
-Firstly, it leads to a NULL-pointer dereference whenever a tty driver
-later deregisters its devices as no corresponding character device will
-exist.
+Also move port client operation initialisation to registration. Note
+that the client ops must be restored on failed probe.
 
-Secondly, far from every tty driver uses tty-port refcounting (e.g.
-serial core) so the serdev devices might never be deregistered or
-deallocated.
-
-Thirdly, deregistering at tty-port destruction is too late as the
-underlying device and structures may be long gone by then. A port is not
-released before an open tty device is closed, something which a
-registered serdev client can prevent from ever happening. A driver
-callback while the device is gone typically also leads to crashes.
-
-Many tty drivers even keep their ports around until the driver is
-unloaded (e.g. serial core), something which even if a late callback
-never happens, leads to leaks if a device is unbound from its driver and
-is later rebound.
-
-The right solution here is to add a new tty_port_unregister_device()
-helper and to never call tty_device_unregister() whenever the port has
-been claimed by serdev, but since this requires modifying just about
-every tty driver (and multiple subsystems) it will need to be done
-incrementally.
-
-Reverting the offending patch is the first step in fixing the broken
-lifetime assumptions. A follow-up patch will add a new pair of
-tty-device registration helpers, which a vetted tty driver can use to
-support serdev (initially serial core). When every tty driver uses the
-serdev helpers (at least for deregistration), we can add serdev
-registration to tty_port_register_device() again.
-
-Note that this also fixes another issue with serdev, which currently
-allocates and registers a serdev controller for every tty device
-registered using tty_port_device_register() only to immediately
-deregister and deallocate it when the corresponding OF node or serdev
-child node is missing. This should be addressed before enabling serdev
-for hot-pluggable buses.
-
+Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/tty/tty_port.c | 12 ------------
- 1 file changed, 12 deletions(-)
+ drivers/tty/serdev/serdev-ttyport.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 1d21a9c1d33e..0c880f17d27e 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -16,7 +16,6 @@
- #include <linux/bitops.h>
- #include <linux/delay.h>
- #include <linux/module.h>
--#include <linux/serdev.h>
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index d05393594f15..06e17faa6dfb 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -101,9 +101,6 @@ static int ttyport_open(struct serdev_controller *ctrl)
+ 		return PTR_ERR(tty);
+ 	serport->tty = tty;
  
- static int tty_port_default_receive_buf(struct tty_port *port,
- 					const unsigned char *p,
-@@ -129,15 +128,7 @@ struct device *tty_port_register_device_attr(struct tty_port *port,
- 		struct device *device, void *drvdata,
- 		const struct attribute_group **attr_grp)
+-	serport->port->client_ops = &client_ops;
+-	serport->port->client_data = ctrl;
+-
+ 	if (tty->ops->open)
+ 		tty->ops->open(serport->tty, NULL);
+ 	else
+@@ -181,6 +178,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
+ 					struct device *parent,
+ 					struct tty_driver *drv, int idx)
  {
--	struct device *dev;
--
- 	tty_port_link_device(port, driver, index);
--
--	dev = serdev_tty_port_register(port, device, driver, index);
--	if (PTR_ERR(dev) != -ENODEV)
--		/* Skip creating cdev if we registered a serdev device */
--		return dev;
--
- 	return tty_register_device_attr(driver, index, device, drvdata,
- 			attr_grp);
++	const struct tty_port_client_operations *old_ops;
+ 	struct serdev_controller *ctrl;
+ 	struct serport *serport;
+ 	int ret;
+@@ -199,15 +197,22 @@ struct device *serdev_tty_port_register(struct tty_port *port,
+ 
+ 	ctrl->ops = &ctrl_ops;
+ 
++	old_ops = port->client_ops;
++	port->client_ops = &client_ops;
++	port->client_data = ctrl;
++
+ 	ret = serdev_controller_add(ctrl);
+ 	if (ret)
+-		goto err_controller_put;
++		goto err_reset_data;
+ 
+ 	dev_info(&ctrl->dev, "tty port %s%d registered\n", drv->name, idx);
+ 	return &ctrl->dev;
+ 
+-err_controller_put:
++err_reset_data:
++	port->client_data = NULL;
++	port->client_ops = old_ops;
+ 	serdev_controller_put(ctrl);
++
+ 	return ERR_PTR(ret);
  }
-@@ -189,9 +180,6 @@ static void tty_port_destructor(struct kref *kref)
- 	/* check if last port ref was dropped before tty release */
- 	if (WARN_ON(port->itty))
- 		return;
--
--	serdev_tty_port_unregister(port);
--
- 	if (port->xmit_buf)
- 		free_page((unsigned long)port->xmit_buf);
- 	tty_port_destroy(port);
+ 
 -- 
 2.12.2
