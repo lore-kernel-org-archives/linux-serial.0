@@ -1,11 +1,13 @@
-From: Romain Perier <romain.perier@collabora.com>
-Subject: [PATCH] serial: imx: Enable RTSD only when needed
-Date: Wed, 12 Apr 2017 15:30:15 +0200
-Message-ID: <20170412133015.23185-1-romain.perier@collabora.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH] serial: imx: Enable RTSD only when needed
+Date: Wed, 12 Apr 2017 10:38:27 -0300
+Message-ID: <CAOMZO5Anz_C-pxPke_mqCtD_D9LBxTRWSk5fAZrr6KaMeMZGqQ@mail.gmail.com>
+References: <20170412133015.23185-1-romain.perier@collabora.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170412133015.23185-1-romain.perier@collabora.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -15,37 +17,20 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Romain Perier <romain.perier@collabora.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Nandor Han <nandor.han@ge.com>
+To: Romain Perier <romain.perier@collabora.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Nandor Han <nandor.han@ge.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Nandor Han <nandor.han@ge.com>
+On Wed, Apr 12, 2017 at 10:30 AM, Romain Perier
+<romain.perier@collabora.com> wrote:
+> From: Nandor Han <nandor.han@ge.com>
+>
+> Currently, this IRQ is always enabled. Some devices might mux these pins
+> to other I/Os, like I2C. This could lead to spurious interrupts.
+>
+> This commit makes this IRQ optional, by using the field have_rtscts.
+>
+> Signed-off-by: Nandor Han <nandor.han@ge.com>
+> Signed-off-by: Romain Perier <romain.perier@collabora.com>
 
-Currently, this IRQ is always enabled. Some devices might mux these pins
-to other I/Os, like I2C. This could lead to spurious interrupts.
-
-This commit makes this IRQ optional, by using the field have_rtscts.
-
-Signed-off-by: Nandor Han <nandor.han@ge.com>
-Signed-off-by: Romain Perier <romain.perier@collabora.com>
----
- drivers/tty/serial/imx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index e3e152cb..6dd674f 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1294,7 +1294,9 @@ static int imx_startup(struct uart_port *port)
- 		imx_enable_dma(sport);
- 
- 	temp = readl(sport->port.membase + UCR1);
--	temp |= UCR1_RRDYEN | UCR1_RTSDEN | UCR1_UARTEN;
-+	temp |= UCR1_RRDYEN | UCR1_UARTEN;
-+	if (sport->have_rtscts)
-+			temp |= UCR1_RTSDEN;
- 
- 	writel(temp, sport->port.membase + UCR1);
- 
--- 
-2.9.3
+Reviewed-by: Fabio Estevam <fabio.estevam@nxp.com>
