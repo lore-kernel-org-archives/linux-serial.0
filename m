@@ -1,104 +1,84 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH 1/4] Revert "tty_port: register tty ports with serdev bus"
-Date: Wed, 12 Apr 2017 16:39:05 +0200
-Message-ID: <20170412143905.GN3119@localhost>
-References: <20170411170731.4085-1-johan@kernel.org>
- <20170411170731.4085-2-johan@kernel.org>
- <CAL_JsqJhGDuaPwBH9z0xenr+u=wBp8X9WgDWAm8LuXxg6tA6mA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqJhGDuaPwBH9z0xenr+u=wBp8X9WgDWAm8LuXxg6tA6mA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCHv3 00/10] Nokia H4+ support
+Date: Wed, 12 Apr 2017 22:19:21 +0200
+Message-ID: <C16140C4-0264-411B-9058-0B9013AAC82F@holtmann.org>
+References: <20170328155939.31566-1-sre@kernel.org>
+ <CAL_JsqJcQ9ANtt71KRitOJ9spKD1SaeoL4RDftiCEPs8TjLJGA@mail.gmail.com>
+ <C1A408F2-1DF8-4F49-B399-B936542DE6BC@holtmann.org>
+ <20170331133353.GA32267@kroah.com>
+ <CAL_Jsq+NU3M5yuBpK1UGgzCVvq0eABMApCqEe3_d5+tDaABsgQ@mail.gmail.com>
+ <20170410231041.vz35anezpzhscu4t@earth>
+ <4FEFA1D8-BE23-40FB-BAA3-3EC910FE9F96@holtmann.org>
+ <20170411140637.GA4388@kroah.com>
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170411140637.GA4388-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Samuel Thibault <samuel.thibault-vYW+cPY1g1pg9hUCZPvPmw@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Apr 11, 2017 at 08:53:32PM -0500, Rob Herring wrote:
-> On Tue, Apr 11, 2017 at 12:07 PM, Johan Hovold <johan@kernel.org> wrote:
-> > This reverts commit 8ee3fde047589dc9c201251f07d0ca1dc776feca.
-> >
-> > The new serdev bus hooked into the tty layer in
-> > tty_port_register_device() by registering a serdev controller instead of
-> > a tty device whenever a serdev client is present, and by deregistering
-> > the controller in the tty-port destructor. This is broken in several
-> > ways:
+Hi Sebastian,
+
+>>>>>>>> Here is PATCHv3 for the Nokia bluetooth patchset. I addressed all comments from
+>>>>>>>> Rob and Pavel regarding the serdev patches and dropped the *.dts patches, since
+>>>>>>>> they were queued by Tony. I also changed the patch order, so that the serdev
+>>>>>>>> patches come first. All of them have Acked-by from Rob, so I think it makes
+>>>>>>>> sense to merge them to serdev subsystem (now) and provide an immutable branch
+>>>>>>>> for the bluetooth subsystem.
+>>>>>>> 
+>>>>>>> Greg doesn't read cover letters generally and since the serdev patches
+>>>>>>> are Cc rather than To him, he's probably not planning to pick them up.
+>>>>>> 
+>>>>>> I wonder actually if we should merge all of these via bluetooth-next
+>>>>>> tree with proper Ack from Greg. However it would be good to also get
+>>>>>> buy in from Dave for merging this ultimately through net-next.
+>>>>> 
+>>>>> I don't really care where it goes.  I can take the whole thing in my
+>>>>> tty/serial tree now if no one objects and I get an ack from the relevant
+>>>>> maintainers {hint...}
+>>>> 
+>>>> I think it is better if it goes thru BT tree. I have another driver
+>>>> converted that is dependent on this series. There's a couple other
+>>>> serdev changes on the list too, but this shouldn't depend on them.
+>>> 
+>>> Is this waiting for something, or could it be queued to
+>>> bluetooth-next then? It would be nice to finally have
+>>> this in 4.12 :)
+>> 
+>> I would prefer if we can get an ACK from Greg. Then I merge it through the bluetooth-next tree.
 > 
-> Just curious, how are you testing this? greybus?
-
-By unbinding a platform device from its serial driver, and by using some
-instrumentation code in USB serial.
-
-> > Firstly, it leads to a NULL-pointer dereference whenever a tty driver
-> > later deregisters its devices as no corresponding character device will
-> > exist.
-> >
-> > Secondly, far from every tty driver uses tty-port refcounting (e.g.
-> > serial core) so the serdev devices might never be deregistered or
-> > deallocated.
-> >
-> > Thirdly, deregistering at tty-port destruction is too late as the
-> > underlying device and structures may be long gone by then. A port is not
-> > released before an open tty device is closed, something which a
-> > registered serdev client can prevent from ever happening. A driver
-> > callback while the device is gone typically also leads to crashes.
-> >
-> > Many tty drivers even keep their ports around until the driver is
-> > unloaded (e.g. serial core), something which even if a late callback
-> > never happens, leads to leaks if a device is unbound from its driver and
-> > is later rebound.
+> Sorry thought this was coming through mine:
+> 	Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 > 
-> Isn't this something we want to fix? i.e. everything done in
-> probe/release rather than in init/exit.
+> Merge away!
 
-It keeps some buffers allocated for a while longer than necessary, sure.
-But there's quite a few drivers to change and for (non-hotpluggable)
-serial drivers it doesn't make that much of difference as I assume
-unbinding is mostly done for development purposes.
+so I have applied patches 1-8 to bluetooth-next tree.
 
-But we definitely need to make sure all drivers deregisters their
-tty/serdev devices before starting to release resources.
+The last 2 I left out since they do cause build issues on non-DT platforms. We need to be able to build the driver on all platforms so that sanity compile checks happen all the time.
 
-> > The right solution here is to add a new tty_port_unregister_device()
-> > helper and to never call tty_device_unregister() whenever the port has
-> > been claimed by serdev, but since this requires modifying just about
-> > every tty driver (and multiple subsystems) it will need to be done
-> > incrementally.
-> >
-> > Reverting the offending patch is the first step in fixing the broken
-> > lifetime assumptions. A follow-up patch will add a new pair of
-> > tty-device registration helpers, which a vetted tty driver can use to
-> > support serdev (initially serial core). When every tty driver uses the
-> > serdev helpers (at least for deregistration), we can add serdev
-> > registration to tty_port_register_device() again.
-> 
-> Reverting for 4.11 or not probably isn't that important. There aren't
-> any users. I guess if you have a DT with a device added, then you
-> could still have some problems.
+  CC      drivers/bluetooth/hci_nokia.o
+drivers/bluetooth/hci_nokia.c:802:34: error: array type has incomplete element type ‘struct of_device_id’
+ static const struct of_device_id nokia_bluetooth_of_match[] = {
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~
+drivers/bluetooth/hci_nokia.c:803:4: error: field name not in record or union initializer
+  { .compatible = "nokia,h4p-bluetooth", },
+    ^
+drivers/bluetooth/hci_nokia.c:803:4: note: (near initialization for ‘nokia_bluetooth_of_match’)
+drivers/bluetooth/hci_nokia.c:815:21: error: implicit declaration of function ‘of_match_ptr’ [-Werror=implicit-function-declaration]
+   .of_match_table = of_match_ptr(nokia_bluetooth_of_match),
+                     ^~~~~~~~~~~~
+drivers/bluetooth/hci_nokia.c:802:34: warning: ‘nokia_bluetooth_of_match’ defined but not used [-Wunused-variable]
+ static const struct of_device_id nokia_bluetooth_of_match[] = {
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~
 
-True, but it only takes a DT child node (with a compatible string) to
-trigger, and it's also the overhead added for all users of
-tty_port_register_device() (e.g. cdc-acm) mentioned below. And we'd also
-avoid enabling something in 4.11 which is then again disabled in 4.12
-(for most tty drivers).
+Regards
 
-> > Note that this also fixes another issue with serdev, which currently
-> > allocates and registers a serdev controller for every tty device
-> > registered using tty_port_device_register() only to immediately
-> > deregister and deallocate it when the corresponding OF node or serdev
-> > child node is missing. This should be addressed before enabling serdev
-> > for hot-pluggable buses.
-> 
-> Yeah, hot-plugging is definitely not supported ATM. Though folks are
-> already asking about it. We need to figure out how to switch between a
-> cdev and serdev.
+Marcel
 
-Yeah, we need to give hotplugging some thought so we don't paint
-ourselves into a corner here.
-
-> Generally, the series looks good to me. Thanks for finding and fixing
-> these issues. I'll give it a spin soon.
-
-Thanks,
-Johan
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
