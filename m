@@ -1,55 +1,51 @@
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
-Subject: Re: [PATCH v9 3/3] printk: fix double printing with earlycon
-Date: Wed, 12 Apr 2017 09:24:13 +0300
-Message-ID: <52661d42-b418-116a-0ee8-70cd0a24c51d@linaro.org>
-References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
- <20170405202006.18234-1-aleksey.makarov@linaro.org>
- <20170410142214.GA3452@pathway.suse.cz>
- <0514db53-4f8b-fa08-f461-902de85777ee@linaro.org>
- <20170411074325.GC3452@pathway.suse.cz>
+From: Romain Perier <romain.perier@collabora.com>
+Subject: [PATCH] serial: imx: Enable RTSD only when needed
+Date: Wed, 12 Apr 2017 15:30:15 +0200
+Message-ID: <20170412133015.23185-1-romain.perier@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170411074325.GC3452@pathway.suse.cz>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Romain Perier <romain.perier@collabora.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Nandor Han <nandor.han@ge.com>
 List-Id: linux-serial@vger.kernel.org
 
+From: Nandor Han <nandor.han@ge.com>
 
+Currently, this IRQ is always enabled. Some devices might mux these pins
+to other I/Os, like I2C. This could lead to spurious interrupts.
 
-On 04/11/2017 10:43 AM, Petr Mladek wrote:
-> On Mon 2017-04-10 21:00:35, Aleksey Makarov wrote:
->>
->>
->> On 04/10/2017 05:22 PM, Petr Mladek wrote:
->>> On Wed 2017-04-05 23:20:00, Aleksey Makarov wrote:
+This commit makes this IRQ optional, by using the field have_rtscts.
 
-[..]
+Signed-off-by: Nandor Han <nandor.han@ge.com>
+Signed-off-by: Romain Perier <romain.perier@collabora.com>
+---
+ drivers/tty/serial/imx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
->> Thank you for review.  Can you (or anybody else) ACK it?
->> I am going to resend the whole series without those empty lines.
->> May I add your Acked-by:?
-> 
-> Sure. Feel free to use:
-> 
-> Acked-by: Petr Mladek <pmladek@suse.com>
-> 
-> The meaning of the tags is a bit unclear. Acked-by means that
-> the maintainer agrees with the idea. But it does not necessarily
-> means that she reviewed the code in details. I agree with the idea
-> and did the review, so I used the Reviewed-by tag.
-> 
-> Also you do not need to resend the patchset just because the two
-> empty lines. Sergey agrees. I will wait day or two and push
-> all three patches into the printk.git if nobody complains
-> in the meantime. I could remove the two empty lines when doing so.
-
-Ok, then I will not resend it.
-
-> Thanks a lot for the fix and patience.
-
-Thank you for reviewing and acking it.
-Aleksey Makarov
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index e3e152cb..6dd674f 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1294,7 +1294,9 @@ static int imx_startup(struct uart_port *port)
+ 		imx_enable_dma(sport);
+ 
+ 	temp = readl(sport->port.membase + UCR1);
+-	temp |= UCR1_RRDYEN | UCR1_RTSDEN | UCR1_UARTEN;
++	temp |= UCR1_RRDYEN | UCR1_UARTEN;
++	if (sport->have_rtscts)
++			temp |= UCR1_RTSDEN;
+ 
+ 	writel(temp, sport->port.membase + UCR1);
+ 
+-- 
+2.9.3
