@@ -1,78 +1,55 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH 2/4] serdev: fix tty-port client deregistration
-Date: Tue, 11 Apr 2017 19:07:29 +0200
-Message-ID: <20170411170731.4085-3-johan@kernel.org>
-References: <20170411170731.4085-1-johan@kernel.org>
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
+Subject: Re: [PATCH v9 3/3] printk: fix double printing with earlycon
+Date: Wed, 12 Apr 2017 09:24:13 +0300
+Message-ID: <52661d42-b418-116a-0ee8-70cd0a24c51d@linaro.org>
+References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
+ <20170405202006.18234-1-aleksey.makarov@linaro.org>
+ <20170410142214.GA3452@pathway.suse.cz>
+ <0514db53-4f8b-fa08-f461-902de85777ee@linaro.org>
+ <20170411074325.GC3452@pathway.suse.cz>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170411170731.4085-1-johan@kernel.org>
+In-Reply-To: <20170411074325.GC3452@pathway.suse.cz>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
+To: Petr Mladek <pmladek@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-The port client data must be set when registering the serdev controller
-or client deregistration will fail (and the serdev devices are left
-registered and allocated) if the port was never opened in between.
 
-Make sure to clear the port client data on any probe errors to avoid a
-use-after-free when the client is later deregistered unconditionally
-(e.g. in a tty-port deregistration helper).
 
-Also move port client operation initialisation to registration. Note
-that the client ops must be restored on failed probe.
+On 04/11/2017 10:43 AM, Petr Mladek wrote:
+> On Mon 2017-04-10 21:00:35, Aleksey Makarov wrote:
+>>
+>>
+>> On 04/10/2017 05:22 PM, Petr Mladek wrote:
+>>> On Wed 2017-04-05 23:20:00, Aleksey Makarov wrote:
 
-Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/tty/serdev/serdev-ttyport.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+[..]
 
-diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-index d05393594f15..06e17faa6dfb 100644
---- a/drivers/tty/serdev/serdev-ttyport.c
-+++ b/drivers/tty/serdev/serdev-ttyport.c
-@@ -101,9 +101,6 @@ static int ttyport_open(struct serdev_controller *ctrl)
- 		return PTR_ERR(tty);
- 	serport->tty = tty;
- 
--	serport->port->client_ops = &client_ops;
--	serport->port->client_data = ctrl;
--
- 	if (tty->ops->open)
- 		tty->ops->open(serport->tty, NULL);
- 	else
-@@ -181,6 +178,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
- 					struct device *parent,
- 					struct tty_driver *drv, int idx)
- {
-+	const struct tty_port_client_operations *old_ops;
- 	struct serdev_controller *ctrl;
- 	struct serport *serport;
- 	int ret;
-@@ -199,15 +197,22 @@ struct device *serdev_tty_port_register(struct tty_port *port,
- 
- 	ctrl->ops = &ctrl_ops;
- 
-+	old_ops = port->client_ops;
-+	port->client_ops = &client_ops;
-+	port->client_data = ctrl;
-+
- 	ret = serdev_controller_add(ctrl);
- 	if (ret)
--		goto err_controller_put;
-+		goto err_reset_data;
- 
- 	dev_info(&ctrl->dev, "tty port %s%d registered\n", drv->name, idx);
- 	return &ctrl->dev;
- 
--err_controller_put:
-+err_reset_data:
-+	port->client_data = NULL;
-+	port->client_ops = old_ops;
- 	serdev_controller_put(ctrl);
-+
- 	return ERR_PTR(ret);
- }
- 
--- 
-2.12.2
+>> Thank you for review.  Can you (or anybody else) ACK it?
+>> I am going to resend the whole series without those empty lines.
+>> May I add your Acked-by:?
+> 
+> Sure. Feel free to use:
+> 
+> Acked-by: Petr Mladek <pmladek@suse.com>
+> 
+> The meaning of the tags is a bit unclear. Acked-by means that
+> the maintainer agrees with the idea. But it does not necessarily
+> means that she reviewed the code in details. I agree with the idea
+> and did the review, so I used the Reviewed-by tag.
+> 
+> Also you do not need to resend the patchset just because the two
+> empty lines. Sergey agrees. I will wait day or two and push
+> all three patches into the printk.git if nobody complains
+> in the meantime. I could remove the two empty lines when doing so.
+
+Ok, then I will not resend it.
+
+> Thanks a lot for the fix and patience.
+
+Thank you for reviewing and acking it.
+Aleksey Makarov
