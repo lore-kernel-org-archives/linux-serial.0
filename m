@@ -1,69 +1,88 @@
-From: Mason <slash.tmp@free.fr>
-Subject: Re: [PATCH v2] serial: 8250_early: Add earlycon support for Palmchip
- UART
-Date: Thu, 13 Apr 2017 15:22:15 +0200
-Message-ID: <01ed348b-1057-9089-bca3-433c7d7f9881@free.fr>
-References: <7a016ff6-08fc-2811-92e0-7c4603fa8586@sigmadesigns.com>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: [PATCH] tty: pl011: use "qdf2400_e44" as the earlycon name for
+ QDF2400 E44
+Date: Thu, 13 Apr 2017 08:55:08 -0500
+Message-ID: <1492091708-30593-1-git-send-email-timur@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7a016ff6-08fc-2811-92e0-7c4603fa8586@sigmadesigns.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Peter Hurley <peter@hurleysoftware.com>, Russell King <linux@arm.linux.org.uk>, Andreas Farber <afaerber@suse.de>, Jean Delvare <jdelvare@suse.de>, Rob Herring <robh@kernel.org>, Mans Rullgard <mans@mansr.com>, Jiri Slaby <jslaby@suse.cz>, Masahiro Yamada <yamada.masahiro@socionext.com>, Vineet Gupta <vgupta@synopsys.com>, Scott Wood <oss@buserror.net>, Robin Murphy <robin.murphy@arm.com>, Thibaud Cornic <thibaud_cornic@sigmadesigns.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shanker Donthineni <shankerd@codeaurora.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 10/04/2017 11:47, Marc Gonzalez wrote:
+Define a new early console name for Qualcomm Datacenter Technologies
+QDF2400 SOCs affected by erratum 44, instead of piggy-backing on "pl011".
+Previously, to enable traditional (non-SPCR) earlycon, the documentation
+said to specify "earlycon=pl011,<address>,qdf2400_e44", but the code was
+broken and this didn't actually work.
 
-> @@ -172,3 +179,20 @@ OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
->  OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
->  
->  #endif
-> +
-> +#ifdef CONFIG_SERIAL_8250_RT288X
-> +
-> +unsigned int au_serial_in(struct uart_port *p, int offset);
-> +void au_serial_out(struct uart_port *p, int offset, int value);
+So instead, the method for specifying the E44 work-around with traditional
+earlycon is "earlycon=qdf2400_e44,<address>".  Both methods of earlycon
+are now enabled with the same function.
 
-Hmmm, I'm thinking that putting declarations in a .c file might
-not be a very popular decision... ?
+Fixes: e53e597fd4c4 ("tty: pl011: fix earlycon work-around for QDF2400 erratum 44")
+Signed-off-by: Timur Tabi <timur@codeaurora.org>
+---
+ drivers/tty/serial/amba-pl011.c | 31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
-Would there be a header, shared by 8250_early.c and 8250_port.c
-where it might be appropriate to declare au_serial_in/out?
-
-
-> +static int __init early_au_setup(struct earlycon_device *dev, const char *opt)
-> +{
-> +	dev->port.serial_in = au_serial_in;
-> +	dev->port.serial_out = au_serial_out;
-> +	dev->port.iotype = UPIO_AU;
-> +	dev->con->write = early_serial8250_write;
-> +	return 0;
-> +}
-> +OF_EARLYCON_DECLARE(palmchip, "ralink,rt2880-uart", early_au_setup);
-> +
-> +#endif
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 080d5a59d0a7..1f08d22d1a80 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -313,7 +313,7 @@ static const s8 au_io_out_map[8] = {
->  	-1,	/* UART_SCR (unmapped) */
->  };
->  
-> -static unsigned int au_serial_in(struct uart_port *p, int offset)
-> +unsigned int au_serial_in(struct uart_port *p, int offset)
->  {
->  	if (offset >= ARRAY_SIZE(au_io_in_map))
->  		return UINT_MAX;
-> @@ -323,7 +323,7 @@ static unsigned int au_serial_in(struct uart_port *p, int offset)
->  	return __raw_readl(p->membase + (offset << p->regshift));
->  }
->  
-> -static void au_serial_out(struct uart_port *p, int offset, int value)
-> +void au_serial_out(struct uart_port *p, int offset, int value)
->  {
->  	if (offset >= ARRAY_SIZE(au_io_out_map))
->  		return;
-> 
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 2783539..0875f7d 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2470,19 +2470,34 @@ static int __init pl011_early_console_setup(struct earlycon_device *device,
+ 	if (!device->port.membase)
+ 		return -ENODEV;
+ 
+-	/* On QDF2400 SOCs affected by Erratum 44, the "qdf2400_e44" must
+-	 * also be specified, e.g. "earlycon=pl011,<address>,qdf2400_e44".
+-	 */
+-	if (!strcmp(device->options, "qdf2400_e44"))
+-		device->con->write = qdf2400_e44_early_write;
+-	else
+-		device->con->write = pl011_early_write;
++	device->con->write = pl011_early_write;
+ 
+ 	return 0;
+ }
+ OF_EARLYCON_DECLARE(pl011, "arm,pl011", pl011_early_console_setup);
+ OF_EARLYCON_DECLARE(pl011, "arm,sbsa-uart", pl011_early_console_setup);
+-EARLYCON_DECLARE(qdf2400_e44, pl011_early_console_setup);
++
++/*
++ * On Qualcomm Datacenter Technologies QDF2400 SOCs affected by
++ * Erratum 44, traditional earlycon can be enabled by specifying
++ * "earlycon=qdf2400_e44,<address>".  Any options are ignored.
++ *
++ * Alternatively, you can just specify "earlycon", and the early console
++ * will be enabled with the information from the SPCR table.  In this
++ * case, the SPCR code will detect the need for the E44 work-around,
++ * and set the console name to "qdf2400_e44".
++ */
++static int __init
++qdf2400_e44_early_console_setup(struct earlycon_device *device,
++				const char *opt)
++{
++	if (!device->port.membase)
++		return -ENODEV;
++
++	device->con->write = qdf2400_e44_early_write;
++	return 0;
++}
++EARLYCON_DECLARE(qdf2400_e44, qdf2400_e44_early_console_setup);
+ 
+ #else
+ #define AMBA_CONSOLE	NULL
+-- 
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm
+Technologies, Inc.  Qualcomm Technologies, Inc. is a member of the
+Code Aurora Forum, a Linux Foundation Collaborative Project.
