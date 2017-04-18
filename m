@@ -1,47 +1,39 @@
-From: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
-Subject: Re: [PATCH v2] serial: 8250_early: Add earlycon support for Palmchip
- UART
-Date: Tue, 18 Apr 2017 11:27:05 +0200
-Message-ID: <65f27cfb-5f5a-e64c-7785-8ca71c02ea45@sigmadesigns.com>
-References: <7a016ff6-08fc-2811-92e0-7c4603fa8586@sigmadesigns.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <7a016ff6-08fc-2811-92e0-7c4603fa8586@sigmadesigns.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial <linux-serial@vger.kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thibaud Cornic <thibaud_cornic@sigmadesigns.com>, Robin Murphy <robin.murphy@arm.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Mason <slash.tmp@free.fr>
+From: Alexey Ignatov <lexszero@gmail.com>
+Subject: [PATCH 1/2] serial: imx: support enabling rs485 at boot time with DT option
+Date: Tue, 18 Apr 2017 19:54:33 +0300
+Message-ID: <20170418165434.21252-1-lexszero@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Alexey Ignatov <lexszero@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-[ Trimming CC list to minimize noise ]
+Signed-off-by: Alexey Ignatov <lexszero@gmail.com>
+---
+ drivers/tty/serial/imx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-On 10/04/2017 11:47, Marc Gonzalez wrote:
-
-> Define an OF early console for Palmchip UART, which can be enabled
-> by passing "earlycon" on the boot command line.
-> 
-> Signed-off-by: Marc Gonzalez <marc_gonzalez@sigmadesigns.com>
-> ---
->  drivers/tty/serial/8250/8250_early.c | 24 ++++++++++++++++++++++++
->  drivers/tty/serial/8250/8250_port.c  |  4 ++--
->  2 files changed, 26 insertions(+), 2 deletions(-)
-
-Hello Greg,
-
-I'd really like to have earlycon support for this UART in v4.12
-
-Do you see anything wrong with this patch, preventing it from landing?
-
-Do you want me to move the function declarations to a header?
-(If so, which one?)
-
-Regards.
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index a70356dad1b7..38c55c309953 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2048,6 +2048,8 @@ static int serial_imx_probe_dt(struct imx_port *sport,
+ 	if (of_get_property(np, "fsl,dte-mode", NULL))
+ 		sport->dte_mode = 1;
+ 
++	if (of_property_read_bool(np, "linux,rs485-enabled-at-boot-time"))
++		sport->port.rs485.flags |= SER_RS485_ENABLED;
+ 	return 0;
+ }
+ #else
+@@ -2109,7 +2111,7 @@ static int serial_imx_probe(struct platform_device *pdev)
+ 	sport->port.fifosize = 32;
+ 	sport->port.ops = &imx_pops;
+ 	sport->port.rs485_config = imx_rs485_config;
+-	sport->port.rs485.flags =
++	sport->port.rs485.flags |=
+ 		SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX;
+ 	sport->port.flags = UPF_BOOT_AUTOCONF;
+ 	init_timer(&sport->timer);
+-- 
+2.12.2
