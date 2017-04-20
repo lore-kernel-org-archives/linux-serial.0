@@ -1,109 +1,130 @@
-From: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
-Subject: [PATCH v2 1/2] serial: pl010: Move uart_register_driver call to device probe
-Date: Thu, 20 Apr 2017 14:13:00 +0200
-Message-ID: <20170420121301.382-2-sjoerd.simons@collabora.co.uk>
-References: <20170420121301.382-1-sjoerd.simons@collabora.co.uk>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] RFC: serial: core: Dynamic minor support
+Date: Thu, 20 Apr 2017 14:15:44 +0200
+Message-ID: <20170420121544.GA1131@kroah.com>
+References: <20170420120357.18317-1-sjoerd.simons@collabora.co.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170420121301.382-1-sjoerd.simons@collabora.co.uk>
+Content-Disposition: inline
+In-Reply-To: <20170420120357.18317-1-sjoerd.simons@collabora.co.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>
+To: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+Cc: linux-serial@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-uart_register_driver call binds the driver to a specific device
-node through tty_register_driver call. This should typically
-happen during device probe call.
+On Thu, Apr 20, 2017 at 02:03:57PM +0200, Sjoerd Simons wrote:
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 3fe56894974a..37014c70dd69 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -44,6 +44,32 @@
+>   */
+>  static DEFINE_MUTEX(port_mutex);
+>  
+> +#ifdef CONFIG_SERIAL_DYNAMIC_MINORS
+> +/* List of uarts to allow for allocation of dynamic minor ranges*/
+> +LIST_HEAD(dynamic_uarts);
+> +DEFINE_MUTEX(dynamic_uarts_mutex);
 
-In a multiplatform scenario, it is possible that multiple serial
-drivers are part of the kernel. Currently the driver registration fails
-if multiple serial drivers with overlapping major/minor numbers are
-included.
+Both of these should be static.
 
-Signed-off-by: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+> +
+> +static void
+> +uart_setup_major_minor(struct uart_driver *drv)
+> +{
+> +	int start = 0;
+> +	struct uart_driver *d;
+> +
 
----
+Why not init the list head in here too?
 
-Changes in v2:
-- Add locking to prevent issues when two probes run in parallel
+> +	drv->major = LOW_DENSITY_UART_MAJOR;
+> +	mutex_lock(&dynamic_uarts_mutex);
+> +
+> +	list_for_each_entry(d, &dynamic_uarts, dynamic_uarts) {
+> +		if (start + drv->nr < d->minor)
+> +			break;
+> +		start = d->minor + d->nr;
+> +	}
+> +	list_add_tail(&drv->dynamic_uarts, &d->dynamic_uarts);
+> +	drv->minor = start;
+> +
+> +	mutex_unlock(&dynamic_uarts_mutex);
+> +}
+> +#endif
+> +
+>  /*
+>   * lockdep: port->lock is initialized in two places, but we
+>   *          want only one lock-class:
+> @@ -2458,6 +2484,11 @@ int uart_register_driver(struct uart_driver *drv)
+>  
+>  	BUG_ON(drv->state);
+>  
+> +#ifdef CONFIG_SERIAL_DYNAMIC_MINORS
+> +	INIT_LIST_HEAD(&drv->dynamic_uarts);
 
- drivers/tty/serial/amba-pl010.c | 31 +++++++++++++++++++++----------
- 1 file changed, 21 insertions(+), 10 deletions(-)
+That line should be in the function:
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index f2f251075109..24180adb1cbb 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -697,6 +697,7 @@ static struct console amba_console = {
- #define AMBA_CONSOLE	NULL
- #endif
- 
-+static DEFINE_MUTEX(amba_reg_lock);
- static struct uart_driver amba_reg = {
- 	.owner			= THIS_MODULE,
- 	.driver_name		= "ttyAM",
-@@ -749,6 +750,19 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
- 	amba_ports[i] = uap;
- 
- 	amba_set_drvdata(dev, uap);
-+
-+	mutex_lock(&amba_reg_lock);
-+	if (!amba_reg.state) {
-+		ret = uart_register_driver(&amba_reg);
-+		if (ret < 0) {
-+			mutex_unlock(&amba_reg_lock);
-+			dev_err(uap->port.dev,
-+				"Failed to register AMBA-PL010 driver\n");
-+			return ret;
-+		}
-+	}
-+	mutex_unlock(&amba_reg_lock);
-+
- 	ret = uart_add_one_port(&amba_reg, &uap->port);
- 	if (ret)
- 		amba_ports[i] = NULL;
-@@ -760,12 +774,18 @@ static int pl010_remove(struct amba_device *dev)
- {
- 	struct uart_amba_port *uap = amba_get_drvdata(dev);
- 	int i;
-+	bool busy = false;
- 
- 	uart_remove_one_port(&amba_reg, &uap->port);
- 
- 	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
- 		if (amba_ports[i] == uap)
- 			amba_ports[i] = NULL;
-+		else if (amba_ports[i])
-+			busy = true;
-+
-+	if (!busy)
-+		uart_unregister_driver(&amba_reg);
- 
- 	return 0;
- }
-@@ -816,23 +836,14 @@ static struct amba_driver pl010_driver = {
- 
- static int __init pl010_init(void)
- {
--	int ret;
--
- 	printk(KERN_INFO "Serial: AMBA driver\n");
- 
--	ret = uart_register_driver(&amba_reg);
--	if (ret == 0) {
--		ret = amba_driver_register(&pl010_driver);
--		if (ret)
--			uart_unregister_driver(&amba_reg);
--	}
--	return ret;
-+	return  amba_driver_register(&pl010_driver);
- }
- 
- static void __exit pl010_exit(void)
- {
- 	amba_driver_unregister(&pl010_driver);
--	uart_unregister_driver(&amba_reg);
- }
- 
- module_init(pl010_init);
--- 
-2.11.0
+> +	uart_setup_major_minor(drv);
+> +#endif
+
+And then provide a "empty" function for this if the option is not
+enabled, to keep the #ifdef out of the main flow of the code.
+
+> +
+>  	/*
+>  	 * Maybe we should be using a slab cache for this, especially if
+>  	 * we have a large number of ports to handle.
+> @@ -2527,6 +2558,13 @@ void uart_unregister_driver(struct uart_driver *drv)
+>  	put_tty_driver(p);
+>  	for (i = 0; i < drv->nr; i++)
+>  		tty_port_destroy(&drv->state[i].port);
+> +
+> +#ifdef CONFIG_SERIAL_DYNAMIC_MINORS
+> +	mutex_lock(&dynamic_uarts_mutex);
+> +	list_del(&drv->dynamic_uarts);
+> +	mutex_unlock(&dynamic_uarts_mutex);
+> +#endif
+
+Make this a function, like above, and do the same thing to keep #ifdef
+out of here.
+
+> +
+>  	kfree(drv->state);
+>  	drv->state = NULL;
+>  	drv->tty_driver = NULL;
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index 58484fb35cc8..890bbefb3f90 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -31,6 +31,8 @@
+>  #include <linux/sysrq.h>
+>  #include <uapi/linux/serial_core.h>
+>  
+> +#define LOW_DENSITY_UART_MAJOR 204
+
+Where are you stealing this from?
+
+
+
+> +
+>  #ifdef CONFIG_SERIAL_CORE_CONSOLE
+>  #define uart_console(port) \
+>  	((port)->cons && (port)->cons->index == (port)->line)
+> @@ -313,6 +315,10 @@ struct uart_driver {
+>  	 */
+>  	struct uart_state	*state;
+>  	struct tty_driver	*tty_driver;
+> +
+> +#ifdef CONFIG_SERIAL_DYNAMIC_MINORS
+> +	struct list_head	dynamic_uarts;
+> +#endif
+
+Why not just always have this?
+
+Nice first try though!
+
+thanks,
+
+greg k-h
