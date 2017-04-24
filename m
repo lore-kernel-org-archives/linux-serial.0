@@ -1,49 +1,52 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: [PATCH] serial: 8250: omap: Disable DMA for console UART
-Date: Sat, 22 Apr 2017 18:37:19 +0530
-Message-ID: <20170422130719.8366-1-vigneshr@ti.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH] tty/serial: atmel: use offset_in_page() macro
+Date: Mon, 24 Apr 2017 09:12:44 +0200
+Message-ID: <2c5f1602-c474-d3d3-01d3-03e7bc22f91f@gmail.com>
+References: <4dbc77ccaaed98b183cf4dba58a4fa325fd65048.1492758503.git.geliangtang@gmail.com>
+ <5faae8a0740a804663c1066b23e2d5e7e9ebcbd3.1492758735.git.geliangtang@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5faae8a0740a804663c1066b23e2d5e7e9ebcbd3.1492758735.git.geliangtang@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Vignesh R <vigneshr@ti.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Geliang Tang <geliangtang@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Kernel always writes log messages to console via
-serial8250_console_write()->serial8250_console_putchar() which directly
-accesses UART_TX register _without_ using DMA.
+On 22/04/2017 03:21, Geliang Tang wrote:
+> Use offset_in_page() macro instead of open-coding.
+> 
+> Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+> ---
+>  drivers/tty/serial/atmel_serial.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index c355ac9..f398db8 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -959,7 +959,7 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
+>  	sg_set_page(&atmel_port->sg_tx,
+>  			virt_to_page(port->state->xmit.buf),
+>  			UART_XMIT_SIZE,
+> -			(unsigned long)port->state->xmit.buf & ~PAGE_MASK);
+> +			offset_in_page(port->state->xmit.buf));
+>  	nent = dma_map_sg(port->dev,
+>  				&atmel_port->sg_tx,
+>  				1,
+> @@ -1141,7 +1141,7 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+>  	sg_set_page(&atmel_port->sg_rx,
+>  		    virt_to_page(ring->buf),
+>  		    sizeof(struct atmel_uart_char) * ATMEL_SERIAL_RINGSIZE,
+> -		    (unsigned long)ring->buf & ~PAGE_MASK);
+> +		    offset_in_page(ring->buf));
+>  	nent = dma_map_sg(port->dev,
+>  			  &atmel_port->sg_rx,
+>  			  1,
+> 
+I guess you want to #include <linux/mm.h>
+(even if it compiles ok without it)
 
-But, if other processes like systemd using same UART port, then these
-writes are handled by a different code flow using 8250_omap driver where
-there is provision to use DMA.
-
-It seems that it is possible that both DMA and CPU might simultaneously
-put data to UART FIFO and lead to potential loss of data due to FIFO
-overflow and weird data corruption. This happens when both kernel
-console and userspace tries to write simultaneously to the same UART
-port. Therefore, disable DMA on kernel console port to avoid potential
-race between CPU and DMA.
-
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
- drivers/tty/serial/8250/8250_omap.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index e7e64913a748..d81bac98d190 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -613,6 +613,10 @@ static int omap_8250_startup(struct uart_port *port)
- 	up->lsr_saved_flags = 0;
- 	up->msr_saved_flags = 0;
- 
-+	/* Disable DMA for console UART */
-+	if (uart_console(port))
-+		up->dma = NULL;
-+
- 	if (up->dma) {
- 		ret = serial8250_request_dma(up);
- 		if (ret) {
--- 
-2.11.0
+Regards,
+Richard.
