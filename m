@@ -1,117 +1,53 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2] serial: exar: Fix stuck MSIs
-Date: Mon, 24 Apr 2017 15:07:27 +0300
-Message-ID: <1493035647.24567.165.camel@linux.intel.com>
-References: <39750541-c6a9-0e49-59fa-9f0a2e202850@web.de>
-         <1493024379.24567.154.camel@linux.intel.com>
-         <d227c786-24eb-5acb-777d-02bd28d14254@web.de>
-         <1493027143.24567.155.camel@linux.intel.com>
-         <b76259dc-42bf-4b3c-8122-04e0b0d217a2@siemens.com>
+From: Rob Landley <rob@landley.net>
+Subject: Re: Commit 18e8cf159177 broke qemu-system-sh4 serial input.
+Date: Mon, 24 Apr 2017 15:46:06 -0500
+Message-ID: <e2896a92-389c-61f1-b9e7-4e039d6eb958@landley.net>
+References: <41d6bb75-5be0-c563-0569-ea37aab58f1e@landley.net>
+ <CAMuHMdWtBHTBCNo2-oO2Zv7O8McypcaEMh+_8DD+D1T7GTxAzw@mail.gmail.com>
+ <fc641b90-e939-e9cc-8621-f4f6d202b0da@landley.net>
+ <CAO3366wMgKrDXM5=HO27TiU7kZqBO-hFxuzVJkJLbNz82zAodw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <b76259dc-42bf-4b3c-8122-04e0b0d217a2@siemens.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <CAO3366wMgKrDXM5=HO27TiU7kZqBO-hFxuzVJkJLbNz82zAodw@mail.gmail.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Linux-sh list <linux-sh@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2017-04-24 at 12:30 +0200, Jan Kiszka wrote:
-> After migrating 8250_exar to MSI in 172c33cb61da, we can get stuck
-> without further interrupts because of the special wake-up event these
-> chips send. They are only cleared by reading INT0. As we fail to do so
-> during startup and shutdown, we can leave the interrupt line asserted,
-> which is fatal with edge-triggered MSIs.
+On 04/24/2017 02:23 AM, Ulrich Hecht wrote:
+> On Sat, Apr 22, 2017 at 10:49 AM, Rob Landley <rob@landley.net> wrote:
+>> On 04/21/2017 02:26 AM, Geert Uytterhoeven wrote:
+>>> According to the SH7751R datasheet, SCFCR does have the RTRG1 and RTRG0 bits.
+>>> I assume the problem goes away if you comment out the call to scif_set_rtrg()?
+>>
+>> The current code has been further complicated by two more commits
+>> (039403765 and 90afa5255) doing who knows what, but deleting the
+>> "scif_set_rtrg(port, s->rx_trigger);" from sci_reset() does appear to
+>> fix the problem.
 > 
-> Add the required reading of INT0 to startup and shutdown. Also account
-> for the fact that a pending wake-up interrupt means we have to return
-> 1
-> from exar_handle_irq. Drop the unneeded reading of INT1..3 along with
-> this - those never reset anything.
-> 
-> An alternative approach would have been disabling the wake-up
-> interrupt.
-> Unfortunately, this feature (REGB[17] = 1) is not available on the
-> XR17D15X.
+> Most(?) SCIFs have a feature that is always enabled and that asserts
+> DR even if the FIFO threshold has not been reached if no data is
+> received for 1.5 frames. Exceptions known to me are SCIFA/Bs, which
+> require special handling for it to work, and SH7705's SCIF, which does
+> not seem to have this at all. According to its datasheet, the
+> SH7751R's SCIF has the timeout feature, so I would have expected it to
+> work...
 
-FWIW:
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+QEMU is an emulator. I've run sh4 linux on it for about 10 years now.
+Sounds like they never implemented this feature because nothing used it
+before now.
 
-> 
-> Fixes: 172c33cb61da ("serial: exar: Enable MSI support")
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
-> 
-> Changes in v2:
->  - mention removal of INT1..3 reading in commit log [Andy]
->    (no functional changes)
-> 
->  drivers/tty/serial/8250/8250_port.c | 19 ++++++++++---------
->  1 file changed, 10 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c
-> b/drivers/tty/serial/8250/8250_port.c
-> index 6119516ef5fc..3a3667880fcf 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -47,6 +47,7 @@
->  /*
->   * These are definitions for the Exar XR17V35X and XR17(C|D)15X
->   */
-> +#define UART_EXAR_INT0		0x80
->  #define UART_EXAR_SLEEP		0x8b	/* Sleep mode */
->  #define UART_EXAR_DVID		0x8d	/* Device
-> identification */
->  
-> @@ -1869,17 +1870,13 @@ static int
-> serial8250_default_handle_irq(struct uart_port *port)
->  static int exar_handle_irq(struct uart_port *port)
->  {
->  	unsigned int iir = serial_port_in(port, UART_IIR);
-> -	int ret;
-> +	int ret = 0;
->  
-> -	ret = serial8250_handle_irq(port, iir);
-> +	if (((port->type == PORT_XR17V35X) || (port->type ==
-> PORT_XR17D15X)) &&
-> +	    serial_port_in(port, UART_EXAR_INT0) != 0)
-> +		ret = 1;
->  
-> -	if ((port->type == PORT_XR17V35X) ||
-> -	   (port->type == PORT_XR17D15X)) {
-> -		serial_port_in(port, 0x80);
-> -		serial_port_in(port, 0x81);
-> -		serial_port_in(port, 0x82);
-> -		serial_port_in(port, 0x83);
-> -	}
-> +	ret |= serial8250_handle_irq(port, iir);
->  
->  	return ret;
->  }
-> @@ -2177,6 +2174,8 @@ int serial8250_do_startup(struct uart_port
-> *port)
->  	serial_port_in(port, UART_RX);
->  	serial_port_in(port, UART_IIR);
->  	serial_port_in(port, UART_MSR);
-> +	if ((port->type == PORT_XR17V35X) || (port->type ==
-> PORT_XR17D15X))
-> +		serial_port_in(port, UART_EXAR_INT0);
->  
->  	/*
->  	 * At this point, there's no way the LSR could still be 0xff;
-> @@ -2335,6 +2334,8 @@ int serial8250_do_startup(struct uart_port
-> *port)
->  	serial_port_in(port, UART_RX);
->  	serial_port_in(port, UART_IIR);
->  	serial_port_in(port, UART_MSR);
-> +	if ((port->type == PORT_XR17V35X) || (port->type ==
-> PORT_XR17D15X))
-> +		serial_port_in(port, UART_EXAR_INT0);
->  	up->lsr_saved_flags = 0;
->  	up->msr_saved_flags = 0;
->  
+My general approach when dealing with this sort of thing is to point
+figures at the thing that changed, and caused "it was working" to go to
+"it's not working". When qemu broke this same sh4 serial port, I asked
+_them_ to fix it:
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+https://lists.nongnu.org/archive/html/qemu-devel/2012-07/msg03929.html
+
+Asking qemu to change means current kernels will never run on existing
+qemu installations again, when they did for a decade now, which seems
+like a regression to me?
+
+Rob
