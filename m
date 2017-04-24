@@ -1,52 +1,37 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH] tty/serial: atmel: use offset_in_page() macro
-Date: Mon, 24 Apr 2017 09:12:44 +0200
-Message-ID: <2c5f1602-c474-d3d3-01d3-03e7bc22f91f@gmail.com>
-References: <4dbc77ccaaed98b183cf4dba58a4fa325fd65048.1492758503.git.geliangtang@gmail.com>
- <5faae8a0740a804663c1066b23e2d5e7e9ebcbd3.1492758735.git.geliangtang@gmail.com>
+From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Subject: Re: Commit 18e8cf159177 broke qemu-system-sh4 serial input.
+Date: Mon, 24 Apr 2017 09:23:26 +0200
+Message-ID: <CAO3366wMgKrDXM5=HO27TiU7kZqBO-hFxuzVJkJLbNz82zAodw@mail.gmail.com>
+References: <41d6bb75-5be0-c563-0569-ea37aab58f1e@landley.net>
+ <CAMuHMdWtBHTBCNo2-oO2Zv7O8McypcaEMh+_8DD+D1T7GTxAzw@mail.gmail.com> <fc641b90-e939-e9cc-8621-f4f6d202b0da@landley.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5faae8a0740a804663c1066b23e2d5e7e9ebcbd3.1492758735.git.geliangtang@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Geliang Tang <geliangtang@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <fc641b90-e939-e9cc-8621-f4f6d202b0da@landley.net>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Rob Landley <rob@landley.net>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Linux-sh list <linux-sh@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 22/04/2017 03:21, Geliang Tang wrote:
-> Use offset_in_page() macro instead of open-coding.
-> 
-> Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-> ---
->  drivers/tty/serial/atmel_serial.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index c355ac9..f398db8 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -959,7 +959,7 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
->  	sg_set_page(&atmel_port->sg_tx,
->  			virt_to_page(port->state->xmit.buf),
->  			UART_XMIT_SIZE,
-> -			(unsigned long)port->state->xmit.buf & ~PAGE_MASK);
-> +			offset_in_page(port->state->xmit.buf));
->  	nent = dma_map_sg(port->dev,
->  				&atmel_port->sg_tx,
->  				1,
-> @@ -1141,7 +1141,7 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
->  	sg_set_page(&atmel_port->sg_rx,
->  		    virt_to_page(ring->buf),
->  		    sizeof(struct atmel_uart_char) * ATMEL_SERIAL_RINGSIZE,
-> -		    (unsigned long)ring->buf & ~PAGE_MASK);
-> +		    offset_in_page(ring->buf));
->  	nent = dma_map_sg(port->dev,
->  			  &atmel_port->sg_rx,
->  			  1,
-> 
-I guess you want to #include <linux/mm.h>
-(even if it compiles ok without it)
+On Sat, Apr 22, 2017 at 10:49 AM, Rob Landley <rob@landley.net> wrote:
+>
+>
+> On 04/21/2017 02:26 AM, Geert Uytterhoeven wrote:
+>> According to the SH7751R datasheet, SCFCR does have the RTRG1 and RTRG0 bits.
+>> I assume the problem goes away if you comment out the call to scif_set_rtrg()?
+>
+> The current code has been further complicated by two more commits
+> (039403765 and 90afa5255) doing who knows what, but deleting the
+> "scif_set_rtrg(port, s->rx_trigger);" from sci_reset() does appear to
+> fix the problem.
 
-Regards,
-Richard.
+Most(?) SCIFs have a feature that is always enabled and that asserts
+DR even if the FIFO threshold has not been reached if no data is
+received for 1.5 frames. Exceptions known to me are SCIFA/Bs, which
+require special handling for it to work, and SH7705's SCIF, which does
+not seem to have this at all. According to its datasheet, the
+SH7751R's SCIF has the timeout feature, so I would have expected it to
+work...
+
+CU
+Uli
