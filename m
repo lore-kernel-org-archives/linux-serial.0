@@ -1,39 +1,76 @@
-From: Rich Felker <dalias@libc.org>
-Subject: Re: Commit 18e8cf159177 broke qemu-system-sh4 serial input.
-Date: Mon, 24 Apr 2017 21:23:43 -0400
-Message-ID: <20170425012343.GS17319@brightrain.aerifal.cx>
-References: <41d6bb75-5be0-c563-0569-ea37aab58f1e@landley.net>
- <CAMuHMdWtBHTBCNo2-oO2Zv7O8McypcaEMh+_8DD+D1T7GTxAzw@mail.gmail.com>
- <f27afb36-f75c-0a03-dca2-8f318265f520@physik.fu-berlin.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: sh-sci: Fix race condition causing garbage during shutdown
+Date: Tue, 25 Apr 2017 20:15:35 +0200
+Message-ID: <1493144135-898-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <f27afb36-f75c-0a03-dca2-8f318265f520@physik.fu-berlin.de>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Rob Landley <rob@landley.net>, Linux-sh list <linux-sh@vger.kernel.org>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Apr 21, 2017 at 09:50:39AM +0200, John Paul Adrian Glaubitz wrote:
-> On 04/21/2017 09:26 AM, Geert Uytterhoeven wrote:
-> > Does anyone have access to real hardware to try?
-> > Adrian: does it work on your LANDISK, which also has SH7751R?
-> 
-> I can give it a try but that will take a few days since I am currently
-> not at home where my LANDISK boxes are. I also had issues with the
-> IDE driver in the past but Sato-san gave me some tips regarding it.
-> 
-> However, Rich also has a LANDISK device that I donated for him, so if his
-> hardware is currently ready to use, he could give it a try.
+If DMA is enabled and used, a burst of old data may be seen on the
+serial console during "poweroff" or "reboot".  uart_flush_buffer()
+clears the circular buffer, but sci_port.tx_dma_len is not reset.
+This leads to a circular buffer overflow, dumping (UART_XMIT_SIZE -
+sci_port.tx_dma_len) bytes.
 
-Presently my LANDISK is in storage along with lots of other stuff due
-to fire, but as far as I know it was not damaged. However I never got
-directions for how to install a new kernel and point the bootloader at
-it. It'll probably be another couple months before I get to moving
-back in and unpacking everything from storage, but if you or anyone
-else can get me the info between now and then on how to install new
-kernel rather than just dd'ing a whole disk image, I'll follow up as
-soon as I can.
+To fix this, add a .flush_buffer() callback that resets
+sci_port.tx_dma_len.
 
-Rich
+Inspired by commit 31ca2c63fdc0aee7 ("tty/serial: atmel: fix race
+condition (TX+DMA)").
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+A big thanks to Richard!
+I had no idea what was happening here, until I saw his patch passing by
+in a stable backport.
+
+In v4.3 and older, the field is called sg_len_tx.
+---
+ drivers/tty/serial/sh-sci.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 9a47cc4f16a2798f..a15739202d6c75f2 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1545,7 +1545,16 @@ static void sci_free_dma(struct uart_port *port)
+ 	if (s->chan_rx)
+ 		sci_rx_dma_release(s, false);
+ }
+-#else
++
++static void sci_flush_buffer(struct uart_port *port)
++{
++	/*
++	 * In uart_flush_buffer(), the xmit circular buffer has just been
++	 * cleared, so we have to reset tx_dma_len accordingly.
++	 */
++	to_sci_port(port)->tx_dma_len = 0;
++}
++#else /* !CONFIG_SERIAL_SH_SCI_DMA */
+ static inline void sci_request_dma(struct uart_port *port)
+ {
+ }
+@@ -1553,7 +1562,9 @@ static inline void sci_request_dma(struct uart_port *port)
+ static inline void sci_free_dma(struct uart_port *port)
+ {
+ }
+-#endif
++
++#define sci_flush_buffer	NULL
++#endif /* !CONFIG_SERIAL_SH_SCI_DMA */
+ 
+ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+ {
+@@ -2566,6 +2577,7 @@ static const struct uart_ops sci_uart_ops = {
+ 	.break_ctl	= sci_break_ctl,
+ 	.startup	= sci_startup,
+ 	.shutdown	= sci_shutdown,
++	.flush_buffer	= sci_flush_buffer,
+ 	.set_termios	= sci_set_termios,
+ 	.pm		= sci_pm,
+ 	.type		= sci_type,
+-- 
+2.7.4
