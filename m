@@ -1,39 +1,84 @@
-From: Romain Perier <romain.perier@collabora.com>
-Subject: Re: [PATCH] serial: imx: Enable RTSD only when needed
-Date: Wed, 26 Apr 2017 09:17:50 +0200
-Message-ID: <77d20ce7-d953-6de1-330a-b7a29811ca8f@collabora.com>
-References: <20170412133015.23185-1-romain.perier@collabora.com>
- <CAOMZO5Anz_C-pxPke_mqCtD_D9LBxTRWSk5fAZrr6KaMeMZGqQ@mail.gmail.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: Fix race condition causing garbage during
+ shutdown
+Date: Wed, 26 Apr 2017 12:08:28 +0200
+Message-ID: <fd16d1a4-674a-c1cf-d8ef-ab20796ec7e6@gmail.com>
+References: <1493144135-898-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAOMZO5Anz_C-pxPke_mqCtD_D9LBxTRWSk5fAZrr6KaMeMZGqQ@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Nandor Han <nandor.han@ge.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1493144135-898-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-SGVsbG8gYWxsLAoKCkxlIDEyLzA0LzIwMTcgw6AgMTU6MzgsIEZhYmlvIEVzdGV2YW0gYSDDqWNy
-aXQgOgo+IE9uIFdlZCwgQXByIDEyLCAyMDE3IGF0IDEwOjMwIEFNLCBSb21haW4gUGVyaWVyCj4g
-PHJvbWFpbi5wZXJpZXJAY29sbGFib3JhLmNvbT4gd3JvdGU6Cj4+IEZyb206IE5hbmRvciBIYW4g
-PG5hbmRvci5oYW5AZ2UuY29tPgo+Pgo+PiBDdXJyZW50bHksIHRoaXMgSVJRIGlzIGFsd2F5cyBl
-bmFibGVkLiBTb21lIGRldmljZXMgbWlnaHQgbXV4IHRoZXNlIHBpbnMKPj4gdG8gb3RoZXIgSS9P
-cywgbGlrZSBJMkMuIFRoaXMgY291bGQgbGVhZCB0byBzcHVyaW91cyBpbnRlcnJ1cHRzLgo+Pgo+
-PiBUaGlzIGNvbW1pdCBtYWtlcyB0aGlzIElSUSBvcHRpb25hbCwgYnkgdXNpbmcgdGhlIGZpZWxk
-IGhhdmVfcnRzY3RzLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBOYW5kb3IgSGFuIDxuYW5kb3IuaGFu
-QGdlLmNvbT4KPj4gU2lnbmVkLW9mZi1ieTogUm9tYWluIFBlcmllciA8cm9tYWluLnBlcmllckBj
-b2xsYWJvcmEuY29tPgo+IFJldmlld2VkLWJ5OiBGYWJpbyBFc3RldmFtIDxmYWJpby5lc3RldmFt
-QG54cC5jb20+CgpObyBtb3JlIGZlZWRiYWNrIG9uIHRoaXMgcGF0Y2ggPwoKUmVnYXJkcywKUm9t
-YWluCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGlu
-dXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRl
-YWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgt
-YXJtLWtlcm5lbAo=
+On 25/04/2017 20:15, Geert Uytterhoeven wrote:
+> If DMA is enabled and used, a burst of old data may be seen on the
+> serial console during "poweroff" or "reboot".  uart_flush_buffer()
+> clears the circular buffer, but sci_port.tx_dma_len is not reset.
+> This leads to a circular buffer overflow, dumping (UART_XMIT_SIZE -
+> sci_port.tx_dma_len) bytes.
+> 
+> To fix this, add a .flush_buffer() callback that resets
+> sci_port.tx_dma_len.
+> 
+> Inspired by commit 31ca2c63fdc0aee7 ("tty/serial: atmel: fix race
+> condition (TX+DMA)").
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> A big thanks to Richard!
+> I had no idea what was happening here, until I saw his patch passing by
+> in a stable backport.
+:)
+you're welcome !
+
+> In v4.3 and older, the field is called sg_len_tx.
+> ---
+>  drivers/tty/serial/sh-sci.c | 16 ++++++++++++++--
+>  1 file changed, 14 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 9a47cc4f16a2798f..a15739202d6c75f2 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -1545,7 +1545,16 @@ static void sci_free_dma(struct uart_port *port)
+>  	if (s->chan_rx)
+>  		sci_rx_dma_release(s, false);
+>  }
+> -#else
+> +
+> +static void sci_flush_buffer(struct uart_port *port)
+> +{
+> +	/*
+> +	 * In uart_flush_buffer(), the xmit circular buffer has just been
+> +	 * cleared, so we have to reset tx_dma_len accordingly.
+> +	 */
+> +	to_sci_port(port)->tx_dma_len = 0;
+> +}
+> +#else /* !CONFIG_SERIAL_SH_SCI_DMA */
+>  static inline void sci_request_dma(struct uart_port *port)
+>  {
+>  }
+> @@ -1553,7 +1562,9 @@ static inline void sci_request_dma(struct uart_port *port)
+>  static inline void sci_free_dma(struct uart_port *port)
+>  {
+>  }
+> -#endif
+> +
+> +#define sci_flush_buffer	NULL
+> +#endif /* !CONFIG_SERIAL_SH_SCI_DMA */
+>  
+>  static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+>  {
+> @@ -2566,6 +2577,7 @@ static const struct uart_ops sci_uart_ops = {
+>  	.break_ctl	= sci_break_ctl,
+>  	.startup	= sci_startup,
+>  	.shutdown	= sci_shutdown,
+> +	.flush_buffer	= sci_flush_buffer,
+>  	.set_termios	= sci_set_termios,
+>  	.pm		= sci_pm,
+>  	.type		= sci_type,
+> 
