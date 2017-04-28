@@ -1,67 +1,84 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH] tty: ehv_bytechan: clean up init error handling
-Date: Wed, 26 Apr 2017 12:30:04 +0200
-Message-ID: <20170426103004.30066-1-johan@kernel.org>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH] serdev: Restore serdev_device_write_buf for atomic context
+Date: Fri, 28 Apr 2017 13:47:21 +0200
+Message-ID: <1493380041-14710-1-git-send-email-stefan.wahren@i2se.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Timur Tabi <timur@codeaurora.org>, Johan Hovold <johan@kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Guenter Roeck <linux@roeck-us.net>, Andy Shevchenko <andy.shevchenko@gmail.com>, Andrey Smirnov <andrew.smirnov@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
 List-Id: linux-serial@vger.kernel.org
 
-Straighten out the initcall error handling to avoid deregistering a
-never-registered tty driver (something which would lead to a
-NULL-pointer dereference) in the most unlikely event that driver
-registration fails (e.g. we've run out of major numbers).
+Starting with commit 6fe729c4bdae ("serdev: Add serdev_device_write
+subroutine") the function serdev_device_write_buf cannot be used in
+atomic context anymore (mutex_lock is sleeping). So restore the old
+behavior.
 
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Fixes: 6fe729c4bdae ("serdev: Add serdev_device_write subroutine")
 ---
- drivers/tty/ehv_bytechan.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/tty/serdev/core.c | 12 ++++++++++++
+ include/linux/serdev.h    | 14 +++++++-------
+ 2 files changed, 19 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/ehv_bytechan.c b/drivers/tty/ehv_bytechan.c
-index 7ac9bcdf1e61..61fe8d6fd24e 100644
---- a/drivers/tty/ehv_bytechan.c
-+++ b/drivers/tty/ehv_bytechan.c
-@@ -764,7 +764,7 @@ static int __init ehv_bc_init(void)
- 	ehv_bc_driver = alloc_tty_driver(count);
- 	if (!ehv_bc_driver) {
- 		ret = -ENOMEM;
--		goto error;
-+		goto err_free_bcs;
- 	}
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 433de5e..f71b473 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -122,6 +122,18 @@ void serdev_device_write_wakeup(struct serdev_device *serdev)
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_write_wakeup);
  
- 	ehv_bc_driver->driver_name = "ehv-bc";
-@@ -778,24 +778,23 @@ static int __init ehv_bc_init(void)
- 	ret = tty_register_driver(ehv_bc_driver);
- 	if (ret) {
- 		pr_err("ehv-bc: could not register tty driver (ret=%i)\n", ret);
--		goto error;
-+		goto err_put_tty_driver;
- 	}
- 
- 	ret = platform_driver_register(&ehv_bc_tty_driver);
- 	if (ret) {
- 		pr_err("ehv-bc: could not register platform driver (ret=%i)\n",
- 		       ret);
--		goto error;
-+		goto err_deregister_tty_driver;
- 	}
- 
++int serdev_device_write_buf(struct serdev_device *serdev,
++			    const unsigned char *buf, size_t count)
++{
++	struct serdev_controller *ctrl = serdev->ctrl;
++
++	if (!ctrl || !ctrl->ops->write_buf)
++		return -EINVAL;
++
++	return ctrl->ops->write_buf(ctrl, buf, count);
++}
++EXPORT_SYMBOL_GPL(serdev_device_write_buf);
++
+ int serdev_device_write(struct serdev_device *serdev,
+ 			const unsigned char *buf, size_t count,
+ 			unsigned long timeout)
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index cda76c6..e2a225b 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -195,6 +195,7 @@ int serdev_device_open(struct serdev_device *);
+ void serdev_device_close(struct serdev_device *);
+ unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
+ void serdev_device_set_flow_control(struct serdev_device *, bool);
++int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
+ void serdev_device_wait_until_sent(struct serdev_device *, long);
+ int serdev_device_get_tiocm(struct serdev_device *);
+ int serdev_device_set_tiocm(struct serdev_device *, int, int);
+@@ -236,6 +237,12 @@ static inline unsigned int serdev_device_set_baudrate(struct serdev_device *sdev
  	return 0;
+ }
+ static inline void serdev_device_set_flow_control(struct serdev_device *sdev, bool enable) {}
++static inline int serdev_device_write_buf(struct serdev_device *serdev,
++					  const unsigned char *buf,
++					  size_t count)
++{
++	return -ENODEV;
++}
+ static inline void serdev_device_wait_until_sent(struct serdev_device *sdev, long timeout) {}
+ static inline int serdev_device_get_tiocm(struct serdev_device *serdev)
+ {
+@@ -312,11 +319,4 @@ static inline struct device *serdev_tty_port_register(struct tty_port *port,
+ static inline void serdev_tty_port_unregister(struct tty_port *port) {}
+ #endif /* CONFIG_SERIAL_DEV_CTRL_TTYPORT */
  
--error:
--	if (ehv_bc_driver) {
--		tty_unregister_driver(ehv_bc_driver);
--		put_tty_driver(ehv_bc_driver);
--	}
+-static inline int serdev_device_write_buf(struct serdev_device *serdev,
+-					  const unsigned char *data,
+-					  size_t count)
+-{
+-	return serdev_device_write(serdev, data, count, 0);
+-}
 -
-+err_deregister_tty_driver:
-+	tty_unregister_driver(ehv_bc_driver);
-+err_put_tty_driver:
-+	put_tty_driver(ehv_bc_driver);
-+err_free_bcs:
- 	kfree(bcs);
- 
- 	return ret;
+ #endif /*_LINUX_SERDEV_H */
 -- 
-2.12.2
+2.1.4
