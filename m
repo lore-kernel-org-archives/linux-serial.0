@@ -1,65 +1,74 @@
 From: Joel Stanley <joel@jms.id.au>
-Subject: [PATCH v4 1/2] serial: 8250: Add flag so drivers can avoid THRE probe
-Date: Tue,  2 May 2017 17:15:42 +0930
-Message-ID: <20170502074543.1380-2-joel@jms.id.au>
-References: <20170502074543.1380-1-joel@jms.id.au>
+Subject: Re: [PATCH v3 2/2] drivers/serial: Add driver for Aspeed virtual UART
+Date: Tue, 2 May 2017 17:15:36 +0930
+Message-ID: <CACPK8XfCLxRkdAdmtgNLrTMwXzk8cRsfV2e16SCY6O6e73JNyg@mail.gmail.com>
+References: <20170410040400.5509-1-joel@jms.id.au> <20170410040400.5509-3-joel@jms.id.au>
+ <CAHp75Vd=oONhzF34Pe8WwYKBWWxcsaQtgJy66aFD68iNKTxEfg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170502074543.1380-1-joel@jms.id.au>
+In-Reply-To: <CAHp75Vd=oONhzF34Pe8WwYKBWWxcsaQtgJy66aFD68iNKTxEfg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Jeremy Kerr <jk@ozlabs.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, openbmc@lists.ozlabs.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Jeremy Kerr <jk@ozlabs.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, OpenBMC Maillist <openbmc@lists.ozlabs.org>
 List-Id: linux-serial@vger.kernel.org
 
-The probing of THRE irq behaviour assumes the other end will be reading
-bytes out of the buffer in order to probe the port at driver init. In
-some cases the other end cannot be relied upon to read these bytes, so
-provide a flag for them to skip this step.
+On Tue, Apr 11, 2017 at 9:45 PM, Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Mon, Apr 10, 2017 at 7:04 AM, Joel Stanley <joel@jms.id.au> wrote:
+>> From: Jeremy Kerr <jk@ozlabs.org>
+>>
+>> This change adds a driver for the 16550-based Aspeed virtual UART
+>> device. We use a similar process to the of_serial driver for device
+>> probe, but expose some VUART-specific functions through sysfs too.
+>>
+>> The VUART is two UART 'front ends' connected by their FIFO (no actual
+>> serial line in between). One is on the BMC side (management controller)
+>> and one is on the host CPU side.
+>>
+>> This driver is for the BMC side. The sysfs files allow the BMC
+>> userspace, which owns the system configuration policy, to specify at
+>> what IO port and interrupt number the host side will appear to the host
+>> on the Host <-> BMC LPC bus. It could be different on a different system
+>> (though most of them use 3f8/4).
+>>
+>> OpenPOWER host firmware doesn't like it when the host-side of the
+>> VUART's FIFO is not drained. This driver only disables host TX discard
+>> mode when the port is in use. We set the VUART enabled bit when we bind
+>> to the device, and clear it on unbind.
+>>
+>> We don't want to do this on open/release, as the host may be using this
+>> bit to configure serial output modes, which is independent of whether
+>> the devices has been opened by BMC userspace.
+>
+>> +static void aspeed_vuart_set_enabled(struct aspeed_vuart *vuart, bool enabled)
+>> +{
+>> +       u8 reg;
+>> +
+>> +       reg = readb(vuart->regs + ASPEED_VUART_GCRA);
+>
+>> +       reg &= ~ASPEED_VUART_GCRA_VUART_EN;
+>> +       if (enabled)
+>> +               reg |= ASPEED_VUART_GCRA_VUART_EN;
+>
+> Usually the pattern is
+> if (something)
+>  set x bit;
+> else
+>  clear x bit;
+>
+> It would make it one operation in any case and a bit more understandable.
 
-Bit 19 was chosen as the flags are a int and the top bits are taken.
+I have made these ordering changes you requested.
 
-Acked-by: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+>
+>> +       port.port.irq = irq_of_parse_and_map(np, 0);
+>
+> The benefit of use platform_get_irq() is to get rid of some OF specific headers.
 
----
-v3:
- - No change
+It's an of driver, and this function does exactly what we require. I
+have left it in for v4.
 
-v3:
- - Correct the bit number in the changelog
+Cheers,
 
-v2:
- - No change
-
-Signed-off-by: Joel Stanley <joel@jms.id.au>
----
- drivers/tty/serial/8250/8250_port.c | 2 +-
- include/linux/serial_core.h         | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 6119516ef5fc..60a6c247340f 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2229,7 +2229,7 @@ int serial8250_do_startup(struct uart_port *port)
- 		}
- 	}
- 
--	if (port->irq) {
-+	if (port->irq && !(up->port.flags & UPF_NO_THRE_TEST)) {
- 		unsigned char iir1;
- 		/*
- 		 * Test for UARTs that do not reassert THRE when the
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 58484fb35cc8..260245deec94 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -195,6 +195,7 @@ struct uart_port {
- #define UPF_NO_TXEN_TEST	((__force upf_t) (1 << 15))
- #define UPF_MAGIC_MULTIPLIER	((__force upf_t) ASYNC_MAGIC_MULTIPLIER /* 16 */ )
- 
-+#define UPF_NO_THRE_TEST	((__force upf_t) (1 << 19))
- /* Port has hardware-assisted h/w flow control */
- #define UPF_AUTO_CTS		((__force upf_t) (1 << 20))
- #define UPF_AUTO_RTS		((__force upf_t) (1 << 21))
--- 
-2.11.0
+Joel
