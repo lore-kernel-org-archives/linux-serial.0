@@ -1,46 +1,85 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH] serdev: Restore serdev_device_write_buf for atomic
- context
-Date: Tue, 2 May 2017 15:18:54 +0200
-Message-ID: <20170502131854.GA17710@localhost>
-References: <1493380041-14710-1-git-send-email-stefan.wahren@i2se.com>
- <20170502090638.GB2973@localhost>
- <CAL_Jsq+QOv6G2EFX8RpE1gk2S9M5VrndwQNNCjM0GqZ+2PXz3A@mail.gmail.com>
+From: Dmitry Vyukov <dvyukov@google.com>
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 4.11-rc4
+Date: Tue, 2 May 2017 18:35:05 +0200
+Message-ID: <CACT4Y+acU1xTZEo+oeBvZL__c12bzcSPa0CBfDiw4j7+CUjfDg@mail.gmail.com>
+References: <20170326110432.GA9241@kroah.com> <CAOMGZ=F8xdUHnZaDo18DkkrYgacx6y8Cm=f8-8xnuvPupepnfg@mail.gmail.com>
+ <CA+55aFwgiAmy4Gw4RosbNVBJmOG-WQoZKOd76Ziuqx5CzPFMZQ@mail.gmail.com>
+ <20170413183403.GA16022@kroah.com> <CAOMGZ=G9t7ih=ydr=fkKn6cbgu5-qbdQs7XChmn=d598H95QVA@mail.gmail.com>
+ <20170414123029.GA17217@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAL_Jsq+QOv6G2EFX8RpE1gk2S9M5VrndwQNNCjM0GqZ+2PXz3A@mail.gmail.com>
+In-Reply-To: <20170414123029.GA17217@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Johan Hovold <johan@kernel.org>, Stefan Wahren <stefan.wahren@i2se.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Guenter Roeck <linux@roeck-us.net>, Andy Shevchenko <andy.shevchenko@gmail.com>, Andrey Smirnov <andrew.smirnov@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Vegard Nossum <vegard.nossum@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 02, 2017 at 07:41:34AM -0500, Rob Herring wrote:
-> On Tue, May 2, 2017 at 4:06 AM, Johan Hovold <johan@kernel.org> wrote:
-> > On Fri, Apr 28, 2017 at 01:47:21PM +0200, Stefan Wahren wrote:
-> >> Starting with commit 6fe729c4bdae ("serdev: Add serdev_device_write
-> >> subroutine") the function serdev_device_write_buf cannot be used in
-> >> atomic context anymore (mutex_lock is sleeping). So restore the old
-> >> behavior.
-> >
-> > Yeah, preventing use in atomic context seems unnecessary, although any
-> > clients writing must now deal with serialisation themselves (as before,
-> > and as they should).
-> 
-> We could just remove the mutex for serdev_device_write and always make
-> the client responsible for serialization.
+On Fri, Apr 14, 2017 at 2:30 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> On Fri, Apr 14, 2017 at 11:41:26AM +0200, Vegard Nossum wrote:
+>> On 13 April 2017 at 20:34, Greg KH <gregkh@linuxfoundation.org> wrote:
+>> > On Thu, Apr 13, 2017 at 09:07:40AM -0700, Linus Torvalds wrote:
+>> >> On Thu, Apr 13, 2017 at 3:50 AM, Vegard Nossum <vegard.nossum@gmail.com> wrote:
+>> >> >
+>> >> > I've bisected a syzkaller crash down to this commit
+>> >> > (5362544bebe85071188dd9e479b5a5040841c895). The crash is:
+>> >> >
+>> >> > [   25.137552] BUG: unable to handle kernel paging request at 0000000000002280
+>> >> > [   25.137579] IP: mutex_lock_interruptible+0xb/0x30
+>> >>
+>> >> It would seem to be the
+>> >>
+>> >>                 if (mutex_lock_interruptible(&ldata->atomic_read_lock))
+>> >>
+>> >> call in n_tty_read(), the offset is about right for a NULL 'ldata'
+>> >> pointer (it's a big structure, it has a couple of character buffers of
+>> >> size N_TTY_BUF_SIZE).
+>> >>
+>> >> I don't see the obvious fix, so I suspect at this point we should just
+>> >> revert, as that commit seems to introduce worse problems that it is
+>> >> supposed to fix. Greg?
+>> >
+>> > Unless Dmitry has a better idea, I will just revert it and send you the
+>> > pull request in a day or so.
+>>
+>> I don't think we need to rush a revert, I'd hope there's a way to fix
+>> it properly.
+>
+> For this late in the release cycle, for something as complex as tty
+> ldisc handling, for an issue that has been present for over a decade,
+> the safest thing right now is to go back to the old well-known code by
+> applying a revert :)
+>
+>> So the original problem is that the vmalloc() in n_tty_open() can
+>> fail, and that will panic in tty_set_ldisc()/tty_ldisc_restore()
+>> because of its unwillingness to proceed if the tty doesn't have an
+>> ldisc.
+>>
+>> Dmitry fixed this by allowing tty->ldisc == NULL in the case of memory
+>> allocation failure as we can see from the comment in tty_set_ldisc().
+>>
+>> Unfortunately, it would appear that some other bits of code do not
+>> like tty->ldisc == NULL (other than the crash in this thread, I saw
+>> 2-3 similar crashes in other functions, e.g. poll()). I see two
+>> possibilities:
+>>
+>> 1) make other code handle tty->ldisc == NULL.
+>>
+>> 2) don't close/free the old ldisc until the new one has been
+>> successfully created/initialised/opened/attached to the tty, and
+>> return an error to userspace if changing it failed.
+>>
+>> I'm leaning towards #2 as the more obviously correct fix, it makes
+>> tty_set_ldisc() transactional, the fix seems limited in scope to
+>> tty_set_ldisc() itself, and we don't need to make every other bit of
+>> code that uses tty->ldisc handle the NULL case.
+>
+> That sounds reasonable to me, care to work on a patch for this?
 
-That sounds reasonable.
-
-> > Calling wait_for_completion in the non-blocking case was also needlessly
-> > inefficient.
-> 
-> It won't be called because count should be 0.
-
-That's not guaranteed; count would be nonzero whenever the tty
-driver does not accept the full buffer and then we'd currently end up
-calling wait_for_completion_timeout() with a zero-timeout instead of
-just returning immediately.
-
-Johan
+Vegard, do you know how to do this?
+That was first thing that I tried, but I did not manage to make it
+work. disc is tied to tty, so it's not that one can create a fully
+initialized disc on the side and then simply swap pointers. Looking at
+the code now, there is at least TTY_LDISC_OPEN bit in tty. But as far
+as I remember there were more fundamental problems. Or maybe I just
+did not try too hard.
