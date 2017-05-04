@@ -1,46 +1,37 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: serdev: fix serdev_device_write return value
-Date: Wed, 3 May 2017 11:06:23 -0700
-Message-ID: <20170503180623.GA21159@kroah.com>
-References: <20170502001714.11576-1-robh@kernel.org>
- <20170502092527.GC2973@localhost>
- <CAHp75Vc+pK5cMkO=1dHR-Xx8zhe4RR0Zv5KDvChZE6MUfVQwcQ@mail.gmail.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [PATCH] serdev: Restore serdev_device_write_buf for atomic
+ context
+Date: Thu, 4 May 2017 18:22:31 +0200
+Message-ID: <b62674e7-5c50-585b-eade-7cef0a400d02@i2se.com>
+References: <1493380041-14710-1-git-send-email-stefan.wahren@i2se.com>
+ <20170502090638.GB2973@localhost>
+ <CAL_Jsq+QOv6G2EFX8RpE1gk2S9M5VrndwQNNCjM0GqZ+2PXz3A@mail.gmail.com>
+ <20170502131854.GA17710@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vc+pK5cMkO=1dHR-Xx8zhe4RR0Zv5KDvChZE6MUfVQwcQ@mail.gmail.com>
+In-Reply-To: <20170502131854.GA17710@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andrey Smirnov <andrew.smirnov@gmail.com>
+To: Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sebastian Reichel <sre@kernel.org>, Guenter Roeck <linux@roeck-us.net>, Andy Shevchenko <andy.shevchenko@gmail.com>, Andrey Smirnov <andrew.smirnov@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 03, 2017 at 08:44:07PM +0300, Andy Shevchenko wrote:
-> On Tue, May 2, 2017 at 12:25 PM, Johan Hovold <johan@kernel.org> wrote:
-> > On Mon, May 01, 2017 at 07:17:14PM -0500, Rob Herring wrote:
-> 
-> >> -     return ret < 0 ? ret : (count ? -ETIMEDOUT : 0);
-> >> +     return ret < 0 ? ret : (count ? -ETIMEDOUT : wr_cnt);
-> >
-> > That's some nasty use of the ternary operator. Ditching it completely
-> > would be more readable.
-> >
-> >         if (ret < 0)
-> >                 return ret;
-> >
-> >         if (count)
-> >                 return -ETIMEDOUT;
-> >
-> >         return wr_count;
-> 
-> 
-> While I agree on the first part, I would go still with one ternary at the end:
-> 
->             return count ? -ETIMEDOUT : wr_count;
+Am 02.05.2017 um 15:18 schrieb Johan Hovold:
+> On Tue, May 02, 2017 at 07:41:34AM -0500, Rob Herring wrote:
+>> On Tue, May 2, 2017 at 4:06 AM, Johan Hovold <johan@kernel.org> wrote:
+>>> On Fri, Apr 28, 2017 at 01:47:21PM +0200, Stefan Wahren wrote:
+>>>> Starting with commit 6fe729c4bdae ("serdev: Add serdev_device_write
+>>>> subroutine") the function serdev_device_write_buf cannot be used in
+>>>> atomic context anymore (mutex_lock is sleeping). So restore the old
+>>>> behavior.
+>>> Yeah, preventing use in atomic context seems unnecessary, although any
+>>> clients writing must now deal with serialisation themselves (as before,
+>>> and as they should).
+>> We could just remove the mutex for serdev_device_write and always make
+>> the client responsible for serialization.
+> That sounds reasonable.
 
-Ick, no, make it easy to read, we write code for developers first, the
-compiler second.  Ditching it completly is a good idea.
+So it's unwanted to have 2 write functions (non-atomic, atomic)?
 
-thanks,
-
-greg k-h
+Stefan
