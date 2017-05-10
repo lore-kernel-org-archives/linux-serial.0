@@ -1,77 +1,91 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [regression, bisected] 4.11+ imx uarts broken
-Date: Tue, 9 May 2017 16:31:29 +0200
-Message-ID: <20170509143129.qhv664qmedjwlaym@pengutronix.de>
-References: <f6fded83-f062-94da-ec1b-b2ab6e6c5101@nextfour.com>
- <20170509071435.kxt6pjlglzinf2w5@pengutronix.de>
- <a1fa7693-c9e9-fea8-fbb7-a20ebf1dd287@nextfour.com>
+From: Stefan Agner <stefan@agner.ch>
+Subject: Re: [PATCH 1/6] tty: serial: lpuart: introduce lpuart_soc_data to
+ represent SoC property
+Date: Tue, 09 May 2017 20:50:44 -0700
+Message-ID: <83e341e654f5e8e788ee684bf3de51e6@agner.ch>
+References: <1494316248-24052-1-git-send-email-aisheng.dong@nxp.com>
+ <1494316248-24052-2-git-send-email-aisheng.dong@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <a1fa7693-c9e9-fea8-fbb7-a20ebf1dd287@nextfour.com>
+In-Reply-To: <1494316248-24052-2-git-send-email-aisheng.dong@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>
-Cc: kernel@pengutronix.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Dong Aisheng <aisheng.dong@nxp.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, jslaby@suse.com, fugang.duan@nxp.com, Mingkai.Hu@nxp.com, yangbo.lu@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 09, 2017 at 10:25:40AM +0300, Mika Penttilä wrote:
-> On 05/09/2017 10:14 AM, Uwe Kleine-König wrote:
-> > Hello Mika,
-> > 
-> > On Tue, May 09, 2017 at 07:18:09AM +0300, Mika Penttilä wrote:
-> >> The following commit e61c38d85b7 makes the uarts on i.MX6 nonfunctional (no data transmitted or received). 
-> >> With e61c38d85b7 reverted the uarts work ok.
-> >>
-> >> -------------------
-> >> commit e61c38d85b7392e033ee03bca46f1d6006156175
-> >> Author: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> >> Date:   Tue Apr 4 11:18:51 2017 +0200
-> >>
-> >>     serial: imx: setup DCEDTE early and ensure DCD and RI irqs to be off
-> >>  
-> >> --------------------
-> > 
-> > are you operating the UART in DTE or DCE mode? Does this affect all
-> > UARTs or only those that are not used in the bootloader?
+On 2017-05-09 00:50, Dong Aisheng wrote:
+> This is used to dynamically check the SoC specific lpuart properies.
+> Currently only the checking of 32 bit register width is added which
+> functions the same as before. More will be added later for supporting
+> new chips.
 > 
-> I am operating in DCE mode. The debug/console uart works ok, but two others don't.
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: Fugang Duan <fugang.duan@nxp.com>
+> Cc: Stefan Agner <stefan@agner.ch>
+> Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
+> Cc: Yangbo Lu <yangbo.lu@nxp.com>
+> Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
+> ---
+>  drivers/tty/serial/fsl_lpuart.c | 25 ++++++++++++++++++-------
+>  1 file changed, 18 insertions(+), 7 deletions(-)
 > 
-> > 
-> > Looking at the patch I wonder if setting IMX21_UCR3_RXDMUXSEL |
-> > UCR3_ADNIMP is missing for you.
-> > 
-> 
-> Probably yes, but I can verify this later and get back to you.
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index 15df1ba7..cd4e905 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -258,13 +258,21 @@ struct lpuart_port {
+>  	wait_queue_head_t	dma_wait;
+>  };
+>  
+> +struct lpuart_soc_data {
+> +	bool	is_32;
+> +};
+> +
+> +static struct lpuart_soc_data vf_data = {
+> +	.is_32 = false,
+> +};
+> +
+> +static struct lpuart_soc_data ls_data = {
+> +	.is_32 = true,
+> +};
 
-can you please test this patch:
+This could be const I guess?
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 33509b4beaec..2182548ff0e1 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -2193,9 +2193,14 @@ static int serial_imx_probe(struct platform_device *pdev)
- 		 */
- 		writel(IMX21_UCR3_RXDMUXSEL | UCR3_ADNIMP | UCR3_DSR,
- 		       sport->port.membase + UCR3);
--
- 	} else {
-+		unsigned long ucr3 = UCR3_DSR;
-+
-+		if (!is_imx1_uart(sport))
-+			ucr3 |= IMX21_UCR3_RXDMUXSEL | UCR3_ADNIMP;
-+
- 		writel(0, sport->port.membase + UFCR);
-+		writel(ucr3, sport->port.membase + UCR3);
- 	}
- 
- 	clk_disable_unprepare(sport->clk_ipg);
+--
+Stefan
 
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> +
+>  static const struct of_device_id lpuart_dt_ids[] = {
+> -	{
+> -		.compatible = "fsl,vf610-lpuart",
+> -	},
+> -	{
+> -		.compatible = "fsl,ls1021a-lpuart",
+> -	},
+> +	{ .compatible = "fsl,vf610-lpuart", .data = &vf_data, },
+> +	{ .compatible = "fsl,ls1021a-lpuart", .data = &ls_data, },
+>  	{ /* sentinel */ }
+>  };
+>  MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
+> @@ -1971,6 +1979,9 @@ static struct uart_driver lpuart_reg = {
+>  
+>  static int lpuart_probe(struct platform_device *pdev)
+>  {
+> +	const struct of_device_id *of_id = of_match_device(lpuart_dt_ids,
+> +							   &pdev->dev);
+> +	const struct lpuart_soc_data *sdata = of_id->data;
+>  	struct device_node *np = pdev->dev.of_node;
+>  	struct lpuart_port *sport;
+>  	struct resource *res;
+> @@ -1988,7 +1999,7 @@ static int lpuart_probe(struct platform_device *pdev)
+>  		return ret;
+>  	}
+>  	sport->port.line = ret;
+> -	sport->lpuart32 = of_device_is_compatible(np, "fsl,ls1021a-lpuart");
+> +	sport->lpuart32 = sdata->is_32;
+>  
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	sport->port.membase = devm_ioremap_resource(&pdev->dev, res);
