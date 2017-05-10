@@ -1,98 +1,145 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH v5 11/17] net: qualcomm: make qca_7k_common a separate kernel module
-Date: Wed, 10 May 2017 10:53:22 +0200
-Message-ID: <1494406408-31760-12-git-send-email-stefan.wahren@i2se.com>
-References: <1494406408-31760-1-git-send-email-stefan.wahren@i2se.com>
+From: Stefan Agner <stefan@agner.ch>
+Subject: Re: [PATCH 4/6] tty: serial: lpuart: add imx7ulp support
+Date: Wed, 10 May 2017 13:37:07 -0700
+Message-ID: <434c613240c36181a828ea090938b8c1@agner.ch>
+References: <1494316248-24052-1-git-send-email-aisheng.dong@nxp.com>
+ <1494316248-24052-5-git-send-email-aisheng.dong@nxp.com>
+ <697fae59cb4e5ff921bb83614325b3f1@agner.ch>
+ <CAA+hA=RDjRwwT-O5Y3z-AAQxtPDU7agZdGe6KeFTT=QoW3ufFw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1494406408-31760-1-git-send-email-stefan.wahren@i2se.com>
+In-Reply-To: <CAA+hA=RDjRwwT-O5Y3z-AAQxtPDU7agZdGe6KeFTT=QoW3ufFw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>, "David S. Miller" <davem@davemloft.net>
-Cc: Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, devicetree@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
+To: Dong Aisheng <dongas86@gmail.com>
+Cc: Dong Aisheng <aisheng.dong@nxp.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh <gregkh@linuxfoundation.org>, jslaby@suse.com, Fugang Duan <fugang.duan@nxp.com>, Mingkai.Hu@nxp.com, yangbo.lu@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-In order to share common functions between QCA7000 SPI and UART protocol
-driver the qca_7k_common needs to be a separate kernel module.
+On 2017-05-09 23:14, Dong Aisheng wrote:
+> Hi Stefan,
+> 
+> On Wed, May 10, 2017 at 12:10 PM, Stefan Agner <stefan@agner.ch> wrote:
+>> On 2017-05-09 00:50, Dong Aisheng wrote:
+>>> The lpuart of imx7ulp is basically the same as ls1021a. It's also
+>>> 32 bit width register, but unlike ls1021a, it's little endian.
+>>> Besides that, imx7ulp lpuart has a minor different register layout
+>>> from ls1021a that it has four extra registers (verid, param, global,
+>>> pincfg) located at the beginning of register map, which are currently
+>>> not used by the driver and less to be used later.
+>>>
+>>> To ease the register difference handling, we add a reg_off member
+>>> in lpuart_soc_data structure to represent if the normal
+>>> lpuart32_{read|write} requires plus a offset to hide the issue.
+>>>
+>>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>> Cc: Jiri Slaby <jslaby@suse.com>
+>>> Cc: Fugang Duan <fugang.duan@nxp.com>
+>>> Cc: Stefan Agner <stefan@agner.ch>
+>>> Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
+>>> Cc: Yangbo Lu <yangbo.lu@nxp.com>
+>>> Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
+>>> ---
+>>>  drivers/tty/serial/fsl_lpuart.c | 21 ++++++++++++++++++---
+>>>  1 file changed, 18 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+>>> index bddd041..1cdb3f9 100644
+>>> --- a/drivers/tty/serial/fsl_lpuart.c
+>>> +++ b/drivers/tty/serial/fsl_lpuart.c
+>>> @@ -231,7 +231,11 @@
+>>>  #define DEV_NAME     "ttyLP"
+>>>  #define UART_NR              6
+>>>
+>>> +/* IMX lpuart has four extra unused regs located at the beginning */
+>>> +#define IMX_REG_OFF  0x10
+>>> +
+>>>  static bool lpuart_is_be;
+>>> +static u8 lpuart_reg_off;
+>>
+>> Global variables? That hardly works once you have two UARTs...
+>>
+> 
+> lpuart_reg_off is SoC specific and there's no two UART
+> with two different reg offset.
+> 
+>> Instead of adding a fixed offset to any write you could just add the
+>> offset to sport->port.membase...
+>>
+> 
+> That's intended as i don't want the changes to be too intrusive.
+> If adding offset in sport->port.xxx, then we have to change the basic
+> lpuart32_read/write API which is called through the whole driver.
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- drivers/net/ethernet/qualcomm/Kconfig         |  8 +++++++-
- drivers/net/ethernet/qualcomm/Makefile        |  5 +++--
- drivers/net/ethernet/qualcomm/qca_7k_common.c | 10 ++++++++++
- 3 files changed, 20 insertions(+), 3 deletions(-)
+Every lpuart32_write/read call passes port.membase, so if you offset
+port.membase when it is assigned in probe you should be fine not?
 
-diff --git a/drivers/net/ethernet/qualcomm/Kconfig b/drivers/net/ethernet/qualcomm/Kconfig
-index d7720bf..b4c369d 100644
---- a/drivers/net/ethernet/qualcomm/Kconfig
-+++ b/drivers/net/ethernet/qualcomm/Kconfig
-@@ -16,7 +16,13 @@ config NET_VENDOR_QUALCOMM
- if NET_VENDOR_QUALCOMM
- 
- config QCA7000
--	tristate "Qualcomm Atheros QCA7000 support"
-+	tristate
-+	help
-+	  This enables support for the Qualcomm Atheros QCA7000.
-+
-+config QCA7000_SPI
-+	tristate "Qualcomm Atheros QCA7000 SPI support"
-+	select QCA7000
- 	depends on SPI_MASTER && OF
- 	---help---
- 	  This SPI protocol driver supports the Qualcomm Atheros QCA7000.
-diff --git a/drivers/net/ethernet/qualcomm/Makefile b/drivers/net/ethernet/qualcomm/Makefile
-index 5e17bf1..65556ca 100644
---- a/drivers/net/ethernet/qualcomm/Makefile
-+++ b/drivers/net/ethernet/qualcomm/Makefile
-@@ -2,7 +2,8 @@
- # Makefile for the Qualcomm network device drivers.
- #
- 
--obj-$(CONFIG_QCA7000) += qcaspi.o
--qcaspi-objs := qca_spi.o qca_7k_common.o qca_7k.o qca_debug.o
-+obj-$(CONFIG_QCA7000) += qca_7k_common.o
-+obj-$(CONFIG_QCA7000_SPI) += qcaspi.o
-+qcaspi-objs := qca_7k.o qca_debug.o qca_spi.o
- 
- obj-y += emac/
-diff --git a/drivers/net/ethernet/qualcomm/qca_7k_common.c b/drivers/net/ethernet/qualcomm/qca_7k_common.c
-index 0d3daa9..6b511f0 100644
---- a/drivers/net/ethernet/qualcomm/qca_7k_common.c
-+++ b/drivers/net/ethernet/qualcomm/qca_7k_common.c
-@@ -21,7 +21,9 @@
-  *   by an atheros frame while transmitted over a serial channel;
-  */
- 
-+#include <linux/init.h>
- #include <linux/kernel.h>
-+#include <linux/module.h>
- 
- #include "qca_7k_common.h"
- 
-@@ -46,6 +48,7 @@ qcafrm_create_header(u8 *buf, u16 length)
- 
- 	return QCAFRM_HEADER_LEN;
- }
-+EXPORT_SYMBOL_GPL(qcafrm_create_header);
- 
- u16
- qcafrm_create_footer(u8 *buf)
-@@ -57,6 +60,7 @@ qcafrm_create_footer(u8 *buf)
- 	buf[1] = 0x55;
- 	return QCAFRM_FOOTER_LEN;
- }
-+EXPORT_SYMBOL_GPL(qcafrm_create_footer);
- 
- /*   Gather received bytes and try to extract a full ethernet frame by
-  *   following a simple state machine.
-@@ -154,3 +158,9 @@ qcafrm_fsm_decode(struct qcafrm_handle *handle, u8 *buf, u16 buf_len, u8 recv_by
- 
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(qcafrm_fsm_decode);
-+
-+MODULE_DESCRIPTION("Qualcomm Atheros QCA7000 common");
-+MODULE_AUTHOR("Qualcomm Atheros Communications");
-+MODULE_AUTHOR("Stefan Wahren <stefan.wahren@i2se.com>");
-+MODULE_LICENSE("Dual BSD/GPL");
--- 
-2.1.4
+--
+Stefan
+
+> 
+> Regards
+> Dong Aisheng
+> 
+>> --
+>> Stefan
+>>
+>>>
+>>>  struct lpuart_port {
+>>>       struct uart_port        port;
+>>> @@ -263,6 +267,7 @@ struct lpuart_port {
+>>>  struct lpuart_soc_data {
+>>>       bool    is_32;
+>>>       bool    is_be;
+>>> +     u8      reg_off;
+>>>  };
+>>>
+>>>  static struct lpuart_soc_data vf_data = {
+>>> @@ -272,11 +277,19 @@ static struct lpuart_soc_data vf_data = {
+>>>  static struct lpuart_soc_data ls_data = {
+>>>       .is_32 = true,
+>>>       .is_be = true,
+>>> +     .reg_off = 0x0,
+>>> +};
+>>> +
+>>> +static struct lpuart_soc_data imx_data = {
+>>> +     .is_32 = true,
+>>> +     .is_be = false,
+>>> +     .reg_off = IMX_REG_OFF,
+>>>  };
+>>>
+>>>  static const struct of_device_id lpuart_dt_ids[] = {
+>>>       { .compatible = "fsl,vf610-lpuart", .data = &vf_data, },
+>>>       { .compatible = "fsl,ls1021a-lpuart", .data = &ls_data, },
+>>> +     { .compatible = "fsl,imx7ulp-lpuart", .data = &imx_data, },
+>>>       { /* sentinel */ }
+>>>  };
+>>>  MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
+>>> @@ -286,15 +299,16 @@ static void lpuart_dma_tx_complete(void *arg);
+>>>
+>>>  static u32 lpuart32_read(void __iomem *addr)
+>>>  {
+>>> -     return lpuart_is_be ? ioread32be(addr) : readl(addr);
+>>> +     return lpuart_is_be ? ioread32be(addr + lpuart_reg_off) :
+>>> +                           readl(addr + lpuart_reg_off);
+>>>  }
+>>>
+>>>  static void lpuart32_write(u32 val, void __iomem *addr)
+>>>  {
+>>>       if (lpuart_is_be)
+>>> -             iowrite32be(val, addr);
+>>> +             iowrite32be(val, addr + lpuart_reg_off);
+>>>       else
+>>> -             writel(val, addr);
+>>> +             writel(val, addr + lpuart_reg_off);
+>>>  }
+>>>
+>>>  static void lpuart_stop_tx(struct uart_port *port)
+>>> @@ -2008,6 +2022,7 @@ static int lpuart_probe(struct platform_device *pdev)
+>>>       sport->port.line = ret;
+>>>       sport->lpuart32 = sdata->is_32;
+>>>       lpuart_is_be = sdata->is_be;
+>>> +     lpuart_reg_off = sdata->reg_off;
+>>>
+>>>       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>       sport->port.membase = devm_ioremap_resource(&pdev->dev, res);
