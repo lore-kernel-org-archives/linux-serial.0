@@ -1,66 +1,63 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v9 3/3] printk: fix double printing with earlycon
-Date: Fri, 12 May 2017 15:46:55 +0200
-Message-ID: <20170512134655.GD31170@pathway.suse.cz>
-References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
- <20170405202006.18234-1-aleksey.makarov@linaro.org>
- <20170509082915.GA13236@bistromath.localdomain>
- <20170511082433.GA421@jagdpanzerIV.localdomain>
- <20170511084158.GB421@jagdpanzerIV.localdomain>
- <20170512125729.GO3452@pathway.suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH V2] serial: efm32: Fix parity management in 'efm32_uart_console_get_options()'
+Date: Fri, 12 May 2017 16:35:45 +0200
+Message-ID: <20170512143545.15394-1-christophe.jaillet@wanadoo.fr>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170512125729.GO3452@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, Sabrina Dubroca <sd@queasysnail.net>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: gregkh@linuxfoundation.org, jslaby@suse.com, kernel@pengutronix.de
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri 2017-05-12 14:57:29, Petr Mladek wrote:
-> On Thu 2017-05-11 17:41:58, Sergey Senozhatsky wrote:
-> > On (05/11/17 17:24), Sergey Senozhatsky wrote:
-> > > On (05/09/17 10:29), Sabrina Dubroca wrote:
-> > > [..]
-> > > > That's caused a change of behavior in my qemu setup, with this cmdline
-> > > > 
-> > > >     root=/dev/sda1 console=ttyS1 console=ttyS0
-> > > > 
-> > > > Before, the kernel logs appeared on ttyS1, and I logged in with ttyS0
-> > > > (with my setup, ttyS1 is a file and ttyS0 is unix socket). Now, the
-> > > > kernel logs go to ttyS0. I need to swap the two console= parameters to
-> > > > restore behavior.
+UARTn_FRAME_PARITY_ODD is 0x0300
+UARTn_FRAME_PARITY_EVEN is 0x0200
+So if the UART is configured for EVEN parity, it would be reported as ODD.
+Fix it by correctly testing if the 2 bits are set.
 
-Do you actually need to define console=ttyS0 on the cmdline?
+Fixes: 3afbd89c9639 ("serial/efm32: add new driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+v2: Add UARTn_FRAME_PARITY__MASK
+    Test the 2 parity bits in the EVEN case
 
-IMHO, if register_console() was called for the unix socket, it
-would make logs appear on both ttyS0 and ttyS1. It seems
-that register_console() is called only for the console that
-stores logs into the file.
+v1 and related comment are quite old and can be found at:
+   http://marc.info/?t=148676095800005&r=1&w=4
+I also added a __MASK to the proposed constant name to be consistent with
+UARTn_FRAME_DATABITS__MASK
+---
+ drivers/tty/serial/efm32-uart.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-
-> > > > adding
-> > > > console=tty0 anywhere on that cmdline makes the logs appear on both
-> > > > tty0 and one ttyS* (but only one of them, and the ordering of the
-> > > > ttyS* matters).
-
-I guess that it worked this way before. I mean that the logs appeared
-on both tty0 and one of ttyS*. The only difference should be that
-the patch changed the selected ttyS*. So this is still the same problem.
-
-
-> Hmm, I have no idea how to fix this. This is the case where
-> a registered console matches more entries from the command line.
-> The fix that caused this regression fixed exactly this situation
-> and we wanted to make the preferred console first.
-> 
-> I am not sure if we broke some backward compatibility or actually made
-> it more predictable in the long term.
-
-I think that we actually fixed a very old bug. The last mentioned
-console= should be the preferred one and the logs are finally
-printed there. Or do I miss anything?
-
-Best Regards,
-Petr
+diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32-uart.c
+index ebd8569f9ad5..9fff25be87f9 100644
+--- a/drivers/tty/serial/efm32-uart.c
++++ b/drivers/tty/serial/efm32-uart.c
+@@ -27,6 +27,7 @@
+ #define UARTn_FRAME		0x04
+ #define UARTn_FRAME_DATABITS__MASK	0x000f
+ #define UARTn_FRAME_DATABITS(n)		((n) - 3)
++#define UARTn_FRAME_PARITY__MASK	0x0300
+ #define UARTn_FRAME_PARITY_NONE		0x0000
+ #define UARTn_FRAME_PARITY_EVEN		0x0200
+ #define UARTn_FRAME_PARITY_ODD		0x0300
+@@ -572,12 +573,16 @@ static void efm32_uart_console_get_options(struct efm32_uart_port *efm_port,
+ 			16 * (4 + (clkdiv >> 6)));
+ 
+ 	frame = efm32_uart_read32(efm_port, UARTn_FRAME);
+-	if (frame & UARTn_FRAME_PARITY_ODD)
++	switch (frame & UARTn_FRAME_PARITY__MASK) {
++	case UARTn_FRAME_PARITY_ODD:
+ 		*parity = 'o';
+-	else if (frame & UARTn_FRAME_PARITY_EVEN)
++		break;
++	case UARTn_FRAME_PARITY_EVEN:
+ 		*parity = 'e';
+-	else
++		break;
++	default:
+ 		*parity = 'n';
++	}
+ 
+ 	*bits = (frame & UARTn_FRAME_DATABITS__MASK) -
+ 			UARTn_FRAME_DATABITS(4) + 4;
+-- 
+2.11.0
