@@ -1,85 +1,66 @@
-From: Dong Aisheng <dongas86@gmail.com>
-Subject: Re: [PATCH 4/6] tty: serial: lpuart: add imx7ulp support
-Date: Fri, 12 May 2017 21:28:00 +0800
-Message-ID: <20170512132800.GA31087@b29396-OptiPlex-7040>
-References: <1494316248-24052-1-git-send-email-aisheng.dong@nxp.com>
- <1494316248-24052-5-git-send-email-aisheng.dong@nxp.com>
- <697fae59cb4e5ff921bb83614325b3f1@agner.ch>
- <CAA+hA=RDjRwwT-O5Y3z-AAQxtPDU7agZdGe6KeFTT=QoW3ufFw@mail.gmail.com>
- <434c613240c36181a828ea090938b8c1@agner.ch>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH v9 3/3] printk: fix double printing with earlycon
+Date: Fri, 12 May 2017 15:46:55 +0200
+Message-ID: <20170512134655.GD31170@pathway.suse.cz>
+References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
+ <20170405202006.18234-1-aleksey.makarov@linaro.org>
+ <20170509082915.GA13236@bistromath.localdomain>
+ <20170511082433.GA421@jagdpanzerIV.localdomain>
+ <20170511084158.GB421@jagdpanzerIV.localdomain>
+ <20170512125729.GO3452@pathway.suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <434c613240c36181a828ea090938b8c1@agner.ch>
+In-Reply-To: <20170512125729.GO3452@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Agner <stefan@agner.ch>
-Cc: Dong Aisheng <aisheng.dong@nxp.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh <gregkh@linuxfoundation.org>, jslaby@suse.com, Fugang Duan <fugang.duan@nxp.com>, Mingkai.Hu@nxp.com, yangbo.lu@nxp.com
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, Sabrina Dubroca <sd@queasysnail.net>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 10, 2017 at 01:37:07PM -0700, Stefan Agner wrote:
-> On 2017-05-09 23:14, Dong Aisheng wrote:
-> > Hi Stefan,
-> > 
-> > On Wed, May 10, 2017 at 12:10 PM, Stefan Agner <stefan@agner.ch> wrote:
-> >> On 2017-05-09 00:50, Dong Aisheng wrote:
-> >>> The lpuart of imx7ulp is basically the same as ls1021a. It's also
-> >>> 32 bit width register, but unlike ls1021a, it's little endian.
-> >>> Besides that, imx7ulp lpuart has a minor different register layout
-> >>> from ls1021a that it has four extra registers (verid, param, global,
-> >>> pincfg) located at the beginning of register map, which are currently
-> >>> not used by the driver and less to be used later.
-> >>>
-> >>> To ease the register difference handling, we add a reg_off member
-> >>> in lpuart_soc_data structure to represent if the normal
-> >>> lpuart32_{read|write} requires plus a offset to hide the issue.
-> >>>
-> >>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> >>> Cc: Jiri Slaby <jslaby@suse.com>
-> >>> Cc: Fugang Duan <fugang.duan@nxp.com>
-> >>> Cc: Stefan Agner <stefan@agner.ch>
-> >>> Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
-> >>> Cc: Yangbo Lu <yangbo.lu@nxp.com>
-> >>> Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
-> >>> ---
-> >>>  drivers/tty/serial/fsl_lpuart.c | 21 ++++++++++++++++++---
-> >>>  1 file changed, 18 insertions(+), 3 deletions(-)
-> >>>
-> >>> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> >>> index bddd041..1cdb3f9 100644
-> >>> --- a/drivers/tty/serial/fsl_lpuart.c
-> >>> +++ b/drivers/tty/serial/fsl_lpuart.c
-> >>> @@ -231,7 +231,11 @@
-> >>>  #define DEV_NAME     "ttyLP"
-> >>>  #define UART_NR              6
-> >>>
-> >>> +/* IMX lpuart has four extra unused regs located at the beginning */
-> >>> +#define IMX_REG_OFF  0x10
-> >>> +
-> >>>  static bool lpuart_is_be;
-> >>> +static u8 lpuart_reg_off;
-> >>
-> >> Global variables? That hardly works once you have two UARTs...
-> >>
-> > 
-> > lpuart_reg_off is SoC specific and there's no two UART
-> > with two different reg offset.
-> > 
-> >> Instead of adding a fixed offset to any write you could just add the
-> >> offset to sport->port.membase...
-> >>
-> > 
-> > That's intended as i don't want the changes to be too intrusive.
-> > If adding offset in sport->port.xxx, then we have to change the basic
-> > lpuart32_read/write API which is called through the whole driver.
-> 
-> Every lpuart32_write/read call passes port.membase, so if you offset
-> port.membase when it is assigned in probe you should be fine not?
-> 
+On Fri 2017-05-12 14:57:29, Petr Mladek wrote:
+> On Thu 2017-05-11 17:41:58, Sergey Senozhatsky wrote:
+> > On (05/11/17 17:24), Sergey Senozhatsky wrote:
+> > > On (05/09/17 10:29), Sabrina Dubroca wrote:
+> > > [..]
+> > > > That's caused a change of behavior in my qemu setup, with this cmdline
+> > > > 
+> > > >     root=/dev/sda1 console=ttyS1 console=ttyS0
+> > > > 
+> > > > Before, the kernel logs appeared on ttyS1, and I logged in with ttyS0
+> > > > (with my setup, ttyS1 is a file and ttyS0 is unix socket). Now, the
+> > > > kernel logs go to ttyS0. I need to swap the two console= parameters to
+> > > > restore behavior.
 
-Got your point now and that do seem better.
-Thanks for the suggestion.
-Will change in V2.
+Do you actually need to define console=ttyS0 on the cmdline?
 
-Regards
-Dong Aisheng
+IMHO, if register_console() was called for the unix socket, it
+would make logs appear on both ttyS0 and ttyS1. It seems
+that register_console() is called only for the console that
+stores logs into the file.
+
+
+> > > > adding
+> > > > console=tty0 anywhere on that cmdline makes the logs appear on both
+> > > > tty0 and one ttyS* (but only one of them, and the ordering of the
+> > > > ttyS* matters).
+
+I guess that it worked this way before. I mean that the logs appeared
+on both tty0 and one of ttyS*. The only difference should be that
+the patch changed the selected ttyS*. So this is still the same problem.
+
+
+> Hmm, I have no idea how to fix this. This is the case where
+> a registered console matches more entries from the command line.
+> The fix that caused this regression fixed exactly this situation
+> and we wanted to make the preferred console first.
+> 
+> I am not sure if we broke some backward compatibility or actually made
+> it more predictable in the long term.
+
+I think that we actually fixed a very old bug. The last mentioned
+console= should be the preferred one and the logs are finally
+printed there. Or do I miss anything?
+
+Best Regards,
+Petr
