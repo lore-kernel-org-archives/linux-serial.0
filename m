@@ -1,121 +1,131 @@
-From: Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>
-Subject: Re: [PATCH v5 15/17] dt-bindings: qca7000: append UART interface to
- binding
-Date: Thu, 11 May 2017 23:43:42 -0700
-Message-ID: <20170511234342.575d9226@cakuba.netronome.com>
-References: <1494406408-31760-1-git-send-email-stefan.wahren@i2se.com>
-        <1494406408-31760-16-git-send-email-stefan.wahren@i2se.com>
-        <1702237.66ccflAQAJ@kerker>
-        <20170511194541.4e58cb7d@cakuba.netronome.com>
-        <20170512061552.Horde.ggjCMHnIsr8LeADwTQwhnx7@www.mhei.heimpold.org>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH v9 3/3] printk: fix double printing with earlycon
+Date: Fri, 12 May 2017 14:57:29 +0200
+Message-ID: <20170512125729.GO3452@pathway.suse.cz>
+References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
+ <20170405202006.18234-1-aleksey.makarov@linaro.org>
+ <20170509082915.GA13236@bistromath.localdomain>
+ <20170511082433.GA421@jagdpanzerIV.localdomain>
+ <20170511084158.GB421@jagdpanzerIV.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170512061552.Horde.ggjCMHnIsr8LeADwTQwhnx7-O4EMSK59OscLBGDc3sTiBZZV94DADvEd@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Michael Heimpold <mhei-Z/Lg1yOAjpkb1SvskN2V4Q@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170511084158.GB421@jagdpanzerIV.localdomain>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, Sabrina Dubroca <sd@queasysnail.net>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 12 May 2017 06:15:52 +0000, Michael Heimpold wrote:
-> Hi,
+On Thu 2017-05-11 17:41:58, Sergey Senozhatsky wrote:
+> On (05/11/17 17:24), Sergey Senozhatsky wrote:
+> > On (05/09/17 10:29), Sabrina Dubroca wrote:
+> > [..]
+> > > That's caused a change of behavior in my qemu setup, with this cmdline
+> > > 
+> > >     root=/dev/sda1 console=ttyS1 console=ttyS0
+> > > 
+> > > Before, the kernel logs appeared on ttyS1, and I logged in with ttyS0
+> > > (with my setup, ttyS1 is a file and ttyS0 is unix socket). Now, the
+> > > kernel logs go to ttyS0. I need to swap the two console= parameters to
+> > > restore behavior.
+> > > 
+> > > There might be some other problem (in qemu?) though, because adding
+> > > console=tty0 anywhere on that cmdline makes the logs appear on both
+> > > tty0 and one ttyS* (but only one of them, and the ordering of the
+> > > ttyS* matters).
+> > 
+> > thanks for the report.
+> > 
+> > so we have ttyS1 first and ttyS0 last.
+> > after commit in question, register_console() iterates console_cmdline
+> > in reverse order so we see ttyS0 first, then we hit `if (newcon->index < 0)'
+> > condition, set newcon to ttyS0, because we iterate in reverse order now, and
+> > break out. so we enable ttyS0, instead of ttyS1.
+> > 
+> > previously, we iterated console_cmdline from index 0 and saw ttyS1 first.
+> > so the same `if (newcon->index < 0)' condition would set newcone to ttyS1,
+> > and, thus, we would enable ttyS1, not ttyS0.
 > 
-> Zitat von Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>:
-> 
-> > On Thu, 11 May 2017 21:12:22 +0200, Michael Heimpold wrote:  
-> >> Am Mittwoch, 10. Mai 2017, 10:53:26 CEST schrieb Stefan Wahren:  
-> >> > This merges the serdev binding for the QCA7000 UART driver (Ethernet over
-> >> > UART) into the existing document.
-> >> >
-> >> > Signed-off-by: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
-> >> > ---
-> >> >  .../devicetree/bindings/net/qca-qca7000.txt        | 32
-> >> > ++++++++++++++++++++++ 1 file changed, 32 insertions(+)
-> >> >
-> >> > diff --git a/Documentation/devicetree/bindings/net/qca-qca7000.txt
-> >> > b/Documentation/devicetree/bindings/net/qca-qca7000.txt index
-> >> > a37f656..08364c3 100644
-> >> > --- a/Documentation/devicetree/bindings/net/qca-qca7000.txt
-> >> > +++ b/Documentation/devicetree/bindings/net/qca-qca7000.txt
-> >> > @@ -54,3 +54,35 @@ ssp2: spi@80014000 {
-> >> >  		local-mac-address = [ A0 B0 C0 D0 E0 F0 ];
-> >> >  	};
-> >> >  };
-> >> > +
-> >> > +(b) Ethernet over UART
-> >> > +
-> >> > +In order to use the QCA7000 as UART slave it must be defined as    
-> >> a child of  
-> >> > a +UART master in the device tree. It is possible to preconfigure the UART
-> >> > +settings of the QCA7000 firmware, but it's not possible to change them
-> >> > during +runtime.
-> >> > +
-> >> > +Required properties:
-> >> > +- compatible        : Should be "qca,qca7000-uart"  
-> >>
-> >> I already discussed this with Stefan off-list a little bit, but I would like
-> >> to bring this to a broader audience: I'm not sure whether the compatible
-> >> should contain the "-uart" suffix, because the hardware chip is the  
-> >> very same
-> >> QCA7000 chip which can also be used with SPI protocol.
-> >> The only difference is the loaded firmware within the chip which can either
-> >> speak SPI or UART protocol (but not both at the same time - due to shared
-> >> pins). So the hardware design decides which interface type is used.
-> >>
-> >> At the moment, this patch series adds a dedicated driver for the UART
-> >> protocol, in parallel to the existing SPI driver. So a different compatible
-> >> string is needed here to match against the new driver.
-> >>
-> >> An alternative approach would be to re-use the existing compatible string
-> >> "qca,qca7000" for both, the SPI and UART protocol, because a "smarter"
-> >> (combined) driver would detect which protocol to use. For example the driver
-> >> could check for spi-cpha and/or spi-cpol which are required for SPI  
-> >> protocol:
-> >> if these exists the driver could assume that SPI must be used, if both are
-> >> missing then UART protocol should be used.
-> >> (This way it would not be necessary to check whether the node is a child of
-> >> a SPI or UART master node - but maybe this is even easier - I don't know)
-> >>
-> >> Or in shorter words: my concern is that while "qca7000-uart" describes the
-> >> hardware, it's too closely coupled to the driver implementation. Having
-> >> some feedback of the experts would be nice :-)  
-> >
-> > I'm no expert, but devices which can do both I2C and SPI are quite
-> > common, and they usually have the same compatible string for both
-> > buses.  
-> 
-> do you have an example driver at hand? I only found GPIO mcp23s08 driver,
-> which can handle both I2C and SPI chips, but there are different compatible
-> strings used to distinguish several chip models.
+> Alexey,
+> can we have preferred console at offset 0 (not at console_cmdline_cnt - 1)
+> and restore the previous register_console() iteration order?
 
-I think drivers/tty/serial/sc16is7xx.c has the same strings, and some
-Kconfig magic to work when either bus is enabled in .config.
+This will not help. ttyS0 is the last console defined on the command
+line. Therefore it is the preferred one. It means that it will be
+moved to offset 0 and hit first.
 
-Quick grep shows there are couple more potential ones to look at:
+I have tried to reproduce the problem and started kernel with
+console=ttyS1 console=ttyS0 in qemu. It created:
 
-$ find . -name Kconfig | xargs grep -n 'SPI_MASTER.* I2C' 
-./drivers/tty/serial/Kconfig:1208:        depends on (SPI_MASTER && !I2C) || I2C
-./drivers/mfd/Kconfig:327:	depends on (SPI_MASTER || I2C)
-./drivers/iio/dac/Kconfig:10:	depends on (SPI_MASTER && I2C!=m) || I2C
-./drivers/iio/dac/Kconfig:34:	depends on (SPI_MASTER && I2C!=m) || I2C
-./drivers/iio/dac/Kconfig:57:	depends on (SPI_MASTER && I2C!=m) || I2C
-./drivers/gpio/Kconfig:1231:	depends on (SPI_MASTER && !I2C) || I2C
-$ find . -name Kconfig | xargs grep -n 'I2C.*||.*SPI_MASTER' 
-./drivers/mfd/Kconfig:1094:	depends on (I2C=y || SPI_MASTER=y)
-./drivers/iio/gyro/Kconfig:55:	depends on (I2C || SPI_MASTER)
-./drivers/iio/gyro/Kconfig:107:	depends on (I2C || SPI_MASTER) && SYSFS
-./drivers/iio/accel/Kconfig:153:	depends on (I2C || SPI_MASTER) && SYSFS
-./drivers/iio/pressure/Kconfig:20:	depends on (I2C || SPI_MASTER)
-./drivers/iio/pressure/Kconfig:161:	depends on (I2C || SPI_MASTER) && SYSFS
-./drivers/iio/magnetometer/Kconfig:118:	depends on (I2C || SPI_MASTER) && SYSFS
+	console_cmdline = {{
+				.name = "ttyS";
+				.index = 1;		// from ttyS1
+			   },{
+				.name = "ttyS"
+				.index = 0;		// from ttyS0
+			   }};
+	preferred_console = 1;		// ttyuS0;
 
-drivers/mfd/mc13xxx-*.c seems to have the same strings.  The iio/dac drivers
-don't support DT but do share names.  The MCP GPIO chip you mention indeed has
-different product names based on the bus it's made for (0 vs s in the middle 
-of the name), so I gather less relevant case?  drivers/iio/pressure/bmp280-*.c 
-has the same strings, if I'm looking correctly... I didn't look at the others.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+Then register_console() is called twice here. First time
+from con_init() that registers:
+
+	static struct console vt_console_driver = {
+		.name		= "tty",
+		.write		= vt_console_print,
+		.device		= vt_console_device,
+		.unblank	= unblank_screen,
+		.flags		= CON_PRINTBUFFER,
+		.index		= -1,
+	};
+
+	It does not match and it is not enabled here.
+
+
+2nd times from univ8250_console_init() that registers:
+
+	static struct console univ8250_console = {
+		.name		= "ttyS",
+		.write		= univ8250_console_write,
+		.device		= uart_console_device,
+		.setup		= univ8250_console_setup,
+		.match		= univ8250_console_match,
+		.flags		= CON_PRINTBUFFER | CON_ANYTIME,
+		.index		= -1,
+		.data		= &serial8250_reg,
+	};
+
+	It matches both console_cmdline entries because index = -1.
+	The first tested is selected.
+
+
+Hmm, I have no idea how to fix this. This is the case where
+a registered console matches more entries from the command line.
+The fix that caused this regression fixed exactly this situation
+and we wanted to make the preferred console first.
+
+
+In fact, it always was kind of random because both init calls are
+defined as
+
+	console_initcall(con_init);
+	console_initcall(univ8250_console_init);
+
+They are put into special elf section and called from console_init()
+the following way:
+
+	call = __con_initcall_start;
+	while (call < __con_initcall_end) {
+		(*call)();
+		call++;
+	}
+
+By other words, the order depends on the linking order which is
+kind of weak order enforcement.
+
+I am not sure if we broke some backward compatibility or actually made
+it more predictable in the long term.
+
+Best Regards,
+Petr
