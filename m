@@ -1,36 +1,34 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH V2] serial: efm32: Fix parity management in
- 'efm32_uart_console_get_options()'
-Date: Fri, 12 May 2017 22:17:03 +0200
-Message-ID: <20170512201703.puk6xit34d3dnddv@pengutronix.de>
-References: <20170512143545.15394-1-christophe.jaillet@wanadoo.fr>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170512143545.15394-1-christophe.jaillet@wanadoo.fr>
-Sender: kernel-janitors-owner@vger.kernel.org
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, kernel@pengutronix.de, kernel-janitors@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: [PATCH] serial: altera_jtaguart: adding iounmap()
+Date: Sat, 13 May 2017 00:36:22 +0300
+Message-ID: <1494624982-3245-1-git-send-email-khoroshilov@ispras.ru>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tobias Klauser <tklauser@distanz.ch>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 12, 2017 at 04:35:45PM +0200, Christophe JAILLET wrote:
-> UARTn_FRAME_PARITY_ODD is 0x0300
-> UARTn_FRAME_PARITY_EVEN is 0x0200
-> So if the UART is configured for EVEN parity, it would be reported as ODD.
-> Fix it by correctly testing if the 2 bits are set.
-> 
-> Fixes: 3afbd89c9639 ("serial/efm32: add new driver")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+The driver does ioremap(port->mapbase, ALTERA_JTAGUART_SIZE),
+but there is no any iounmap().
 
-Thanks for picking this topic up again.
+Found by Linux Driver Verification project (linuxtesting.org).
 
-Best regards
-Uwe
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+---
+ drivers/tty/serial/altera_jtaguart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+index 18e3f8342b85..0475f5d261ce 100644
+--- a/drivers/tty/serial/altera_jtaguart.c
++++ b/drivers/tty/serial/altera_jtaguart.c
+@@ -478,6 +478,7 @@ static int altera_jtaguart_remove(struct platform_device *pdev)
+ 
+ 	port = &altera_jtaguart_ports[i].port;
+ 	uart_remove_one_port(&altera_jtaguart_driver, port);
++	iounmap(port->membase);
+ 
+ 	return 0;
+ }
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+2.7.4
