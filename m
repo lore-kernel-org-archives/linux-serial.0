@@ -1,131 +1,85 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v9 3/3] printk: fix double printing with earlycon
-Date: Fri, 12 May 2017 14:57:29 +0200
-Message-ID: <20170512125729.GO3452@pathway.suse.cz>
-References: <20170315102854.1763-1-aleksey.makarov@linaro.org>
- <20170405202006.18234-1-aleksey.makarov@linaro.org>
- <20170509082915.GA13236@bistromath.localdomain>
- <20170511082433.GA421@jagdpanzerIV.localdomain>
- <20170511084158.GB421@jagdpanzerIV.localdomain>
+From: Dong Aisheng <dongas86@gmail.com>
+Subject: Re: [PATCH 4/6] tty: serial: lpuart: add imx7ulp support
+Date: Fri, 12 May 2017 21:28:00 +0800
+Message-ID: <20170512132800.GA31087@b29396-OptiPlex-7040>
+References: <1494316248-24052-1-git-send-email-aisheng.dong@nxp.com>
+ <1494316248-24052-5-git-send-email-aisheng.dong@nxp.com>
+ <697fae59cb4e5ff921bb83614325b3f1@agner.ch>
+ <CAA+hA=RDjRwwT-O5Y3z-AAQxtPDU7agZdGe6KeFTT=QoW3ufFw@mail.gmail.com>
+ <434c613240c36181a828ea090938b8c1@agner.ch>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170511084158.GB421@jagdpanzerIV.localdomain>
+In-Reply-To: <434c613240c36181a828ea090938b8c1@agner.ch>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, Sabrina Dubroca <sd@queasysnail.net>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Stefan Agner <stefan@agner.ch>
+Cc: Dong Aisheng <aisheng.dong@nxp.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh <gregkh@linuxfoundation.org>, jslaby@suse.com, Fugang Duan <fugang.duan@nxp.com>, Mingkai.Hu@nxp.com, yangbo.lu@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-On Thu 2017-05-11 17:41:58, Sergey Senozhatsky wrote:
-> On (05/11/17 17:24), Sergey Senozhatsky wrote:
-> > On (05/09/17 10:29), Sabrina Dubroca wrote:
-> > [..]
-> > > That's caused a change of behavior in my qemu setup, with this cmdline
-> > > 
-> > >     root=/dev/sda1 console=ttyS1 console=ttyS0
-> > > 
-> > > Before, the kernel logs appeared on ttyS1, and I logged in with ttyS0
-> > > (with my setup, ttyS1 is a file and ttyS0 is unix socket). Now, the
-> > > kernel logs go to ttyS0. I need to swap the two console= parameters to
-> > > restore behavior.
-> > > 
-> > > There might be some other problem (in qemu?) though, because adding
-> > > console=tty0 anywhere on that cmdline makes the logs appear on both
-> > > tty0 and one ttyS* (but only one of them, and the ordering of the
-> > > ttyS* matters).
+On Wed, May 10, 2017 at 01:37:07PM -0700, Stefan Agner wrote:
+> On 2017-05-09 23:14, Dong Aisheng wrote:
+> > Hi Stefan,
 > > 
-> > thanks for the report.
+> > On Wed, May 10, 2017 at 12:10 PM, Stefan Agner <stefan@agner.ch> wrote:
+> >> On 2017-05-09 00:50, Dong Aisheng wrote:
+> >>> The lpuart of imx7ulp is basically the same as ls1021a. It's also
+> >>> 32 bit width register, but unlike ls1021a, it's little endian.
+> >>> Besides that, imx7ulp lpuart has a minor different register layout
+> >>> from ls1021a that it has four extra registers (verid, param, global,
+> >>> pincfg) located at the beginning of register map, which are currently
+> >>> not used by the driver and less to be used later.
+> >>>
+> >>> To ease the register difference handling, we add a reg_off member
+> >>> in lpuart_soc_data structure to represent if the normal
+> >>> lpuart32_{read|write} requires plus a offset to hide the issue.
+> >>>
+> >>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> >>> Cc: Jiri Slaby <jslaby@suse.com>
+> >>> Cc: Fugang Duan <fugang.duan@nxp.com>
+> >>> Cc: Stefan Agner <stefan@agner.ch>
+> >>> Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
+> >>> Cc: Yangbo Lu <yangbo.lu@nxp.com>
+> >>> Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
+> >>> ---
+> >>>  drivers/tty/serial/fsl_lpuart.c | 21 ++++++++++++++++++---
+> >>>  1 file changed, 18 insertions(+), 3 deletions(-)
+> >>>
+> >>> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> >>> index bddd041..1cdb3f9 100644
+> >>> --- a/drivers/tty/serial/fsl_lpuart.c
+> >>> +++ b/drivers/tty/serial/fsl_lpuart.c
+> >>> @@ -231,7 +231,11 @@
+> >>>  #define DEV_NAME     "ttyLP"
+> >>>  #define UART_NR              6
+> >>>
+> >>> +/* IMX lpuart has four extra unused regs located at the beginning */
+> >>> +#define IMX_REG_OFF  0x10
+> >>> +
+> >>>  static bool lpuart_is_be;
+> >>> +static u8 lpuart_reg_off;
+> >>
+> >> Global variables? That hardly works once you have two UARTs...
+> >>
 > > 
-> > so we have ttyS1 first and ttyS0 last.
-> > after commit in question, register_console() iterates console_cmdline
-> > in reverse order so we see ttyS0 first, then we hit `if (newcon->index < 0)'
-> > condition, set newcon to ttyS0, because we iterate in reverse order now, and
-> > break out. so we enable ttyS0, instead of ttyS1.
+> > lpuart_reg_off is SoC specific and there's no two UART
+> > with two different reg offset.
 > > 
-> > previously, we iterated console_cmdline from index 0 and saw ttyS1 first.
-> > so the same `if (newcon->index < 0)' condition would set newcone to ttyS1,
-> > and, thus, we would enable ttyS1, not ttyS0.
+> >> Instead of adding a fixed offset to any write you could just add the
+> >> offset to sport->port.membase...
+> >>
+> > 
+> > That's intended as i don't want the changes to be too intrusive.
+> > If adding offset in sport->port.xxx, then we have to change the basic
+> > lpuart32_read/write API which is called through the whole driver.
 > 
-> Alexey,
-> can we have preferred console at offset 0 (not at console_cmdline_cnt - 1)
-> and restore the previous register_console() iteration order?
+> Every lpuart32_write/read call passes port.membase, so if you offset
+> port.membase when it is assigned in probe you should be fine not?
+> 
 
-This will not help. ttyS0 is the last console defined on the command
-line. Therefore it is the preferred one. It means that it will be
-moved to offset 0 and hit first.
+Got your point now and that do seem better.
+Thanks for the suggestion.
+Will change in V2.
 
-I have tried to reproduce the problem and started kernel with
-console=ttyS1 console=ttyS0 in qemu. It created:
-
-	console_cmdline = {{
-				.name = "ttyS";
-				.index = 1;		// from ttyS1
-			   },{
-				.name = "ttyS"
-				.index = 0;		// from ttyS0
-			   }};
-	preferred_console = 1;		// ttyuS0;
-
-
-Then register_console() is called twice here. First time
-from con_init() that registers:
-
-	static struct console vt_console_driver = {
-		.name		= "tty",
-		.write		= vt_console_print,
-		.device		= vt_console_device,
-		.unblank	= unblank_screen,
-		.flags		= CON_PRINTBUFFER,
-		.index		= -1,
-	};
-
-	It does not match and it is not enabled here.
-
-
-2nd times from univ8250_console_init() that registers:
-
-	static struct console univ8250_console = {
-		.name		= "ttyS",
-		.write		= univ8250_console_write,
-		.device		= uart_console_device,
-		.setup		= univ8250_console_setup,
-		.match		= univ8250_console_match,
-		.flags		= CON_PRINTBUFFER | CON_ANYTIME,
-		.index		= -1,
-		.data		= &serial8250_reg,
-	};
-
-	It matches both console_cmdline entries because index = -1.
-	The first tested is selected.
-
-
-Hmm, I have no idea how to fix this. This is the case where
-a registered console matches more entries from the command line.
-The fix that caused this regression fixed exactly this situation
-and we wanted to make the preferred console first.
-
-
-In fact, it always was kind of random because both init calls are
-defined as
-
-	console_initcall(con_init);
-	console_initcall(univ8250_console_init);
-
-They are put into special elf section and called from console_init()
-the following way:
-
-	call = __con_initcall_start;
-	while (call < __con_initcall_end) {
-		(*call)();
-		call++;
-	}
-
-By other words, the order depends on the linking order which is
-kind of weak order enforcement.
-
-I am not sure if we broke some backward compatibility or actually made
-it more predictable in the long term.
-
-Best Regards,
-Petr
+Regards
+Dong Aisheng
