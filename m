@@ -1,58 +1,66 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 4/8] gpio: exar: Fix iomap request
-Date: Sat, 13 May 2017 16:28:10 +0300
-Message-ID: <CAHp75VfXywxyxn7-=X4P7rbeY7429y_RLs97TvtdKYPgY1n7VQ@mail.gmail.com>
-References: <cover.1494660546.git.jan.kiszka@siemens.com> <e477e2ec669b105e6d0f61c069b1361e134de593.1494660546.git.jan.kiszka@siemens.com>
+Subject: Re: [PATCH 5/8] gpio: exar: Fix reading of directions and values
+Date: Sat, 13 May 2017 16:36:23 +0300
+Message-ID: <CAHp75Vdxoro-FoJY-t+FVk_9J6OBZMhJ9P9qjhq5a2bMOJMW9A@mail.gmail.com>
+References: <cover.1494660546.git.jan.kiszka@siemens.com> <1891081c09747965173fb03a7305e1c73033dac0.1494660546.git.jan.kiszka@siemens.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <e477e2ec669b105e6d0f61c069b1361e134de593.1494660546.git.jan.kiszka@siemens.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1891081c09747965173fb03a7305e1c73033dac0.1494660546.git.jan.kiszka@siemens.com>
+Sender: linux-gpio-owner@vger.kernel.org
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
 On Sat, May 13, 2017 at 10:29 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> The UART driver already maps the resource for us. Trying to do this here
-> only fails and leaves us with a non-working device.
+> First, the logic for translating a register bit to the return code of
+> exar_get_direction and exar_get_value were wrong. And second, there was
+> a flip regarding the register bank in exar_get_direction.
 
-I hoped this had been tested previously...
+Again, I wish it was tested in the first place.
+
+After addressing below:
 FWIW:
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
+> @@ -68,7 +68,7 @@ static int exar_get(struct gpio_chip *chip, unsigned int reg)
+>         value = readb(exar_gpio->regs + reg);
+>         mutex_unlock(&exar_gpio->lock);
 >
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  drivers/gpio/gpio-exar.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
-> index 9138ee087c5d..d6ffb3d89b9c 100644
-> --- a/drivers/gpio/gpio-exar.c
-> +++ b/drivers/gpio/gpio-exar.c
-> @@ -128,14 +128,10 @@ static int gpio_exar_probe(struct platform_device *pdev)
->                 return -ENODEV;
->
->         /*
-> -        * Map the pci device to get the register addresses.
-> -        * We will need to read and write those registers to control
-> -        * the GPIO pins.
-> -        * Using managed functions will save us from unmaping on exit.
-> -        * As the device is enabled using managed functions by the
-> -        * UART driver we can also use managed functions here.
-> +        * The UART driver must have mapped region 0 prior to registering this
-> +        * device - use it.
->          */
-> -       p = pcim_iomap(pcidev, 0, 0);
-> +       p = pcim_iomap_table(pcidev)[0];
->         if (!p)
->                 return -ENOMEM;
->
-> --
-> 2.12.0
->
+> -       return !!value;
+> +       return value;
 
+This one is correct.
 
+> @@ -80,7 +80,7 @@ static int exar_get_direction(struct gpio_chip *chip, unsigned int offset)
+>         addr = bank ? EXAR_OFFSET_MPIOSEL_HI : EXAR_OFFSET_MPIOSEL_LO;
+>         val = exar_get(chip, addr) >> (offset % 8);
+>
+> -       return !!val;
+> +       return val & 1;
+
+It should be rather
+
+        val = exar_get(chip, addr) & BIT(offset % 8);
+
+>  }
+>
+>  static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
+> @@ -89,10 +89,10 @@ static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
+>         unsigned int addr;
+>         int val;
+>
+> -       addr = bank ? EXAR_OFFSET_MPIOLVL_LO : EXAR_OFFSET_MPIOLVL_HI;
+> +       addr = bank ? EXAR_OFFSET_MPIOLVL_HI : EXAR_OFFSET_MPIOLVL_LO;
+
+Good catch!
+
+>         val = exar_get(chip, addr) >> (offset % 8);
+>
+> -       return !!val;
+> +       return val & 1;
+
+Ditto (see above).
 
 -- 
 With Best Regards,
