@@ -1,42 +1,26 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 6/8] serial: uapi: Add support for bus termination
-Date: Sat, 13 May 2017 09:29:04 +0200
-Message-ID: <b10986467211e1c5b3b03f242e6601f65f4fc4b0.1494660546.git.jan.kiszka@siemens.com>
-References: <cover.1494660546.git.jan.kiszka@siemens.com>
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: Re: [PATCH] serial: altera_jtaguart: adding iounmap()
+Date: Sat, 13 May 2017 13:00:55 +0200
+Message-ID: <20170513110054.GE3447@distanz.ch>
+References: <1494624982-3245-1-git-send-email-khoroshilov@ispras.ru>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1494660546.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1494660546.git.jan.kiszka@siemens.com>
-References: <cover.1494660546.git.jan.kiszka@siemens.com>
+Content-Disposition: inline
+In-Reply-To: <1494624982-3245-1-git-send-email-khoroshilov@ispras.ru>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+To: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
 List-Id: linux-serial@vger.kernel.org
 
-The Siemens IOT2040 comes with a RS485 interface that allows to enable
-or disable bus termination via software. Add a bit to the flags field of
-serial_rs485 that applications can set in order to request this feature
-from the hardware. This seems generic enough to add it for everyone.
-Existing driver will simply ignore it when set.
+On 2017-05-12 at 23:36:22 +0200, Alexey Khoroshilov <khoroshilov@ispras.ru> wrote:
+> The driver does ioremap(port->mapbase, ALTERA_JTAGUART_SIZE),
+> but there is no any iounmap().
+> 
+> Found by Linux Driver Verification project (linuxtesting.org).
+> 
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-Signed-off-by: Sascha Weisenberger <sascha.weisenberger@siemens.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/uapi/linux/serial.h | 3 +++
- 1 file changed, 3 insertions(+)
+Acked-by: Tobias Klauser <tklauser@distanz.ch>
 
-diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-index 5d59c3ebf459..d2667ecd54ac 100644
---- a/include/uapi/linux/serial.h
-+++ b/include/uapi/linux/serial.h
-@@ -122,6 +122,9 @@ struct serial_rs485 {
- #define SER_RS485_RTS_AFTER_SEND	(1 << 2)	/* Logical level for
- 							   RTS pin after sent*/
- #define SER_RS485_RX_DURING_TX		(1 << 4)
-+#define SER_RS485_TERMINATE_BUS		(1 << 5)	/* Enable bus
-+							   termination
-+							   (if supported) */
- 	__u32	delay_rts_before_send;	/* Delay before send (milliseconds) */
- 	__u32	delay_rts_after_send;	/* Delay after send (milliseconds) */
- 	__u32	padding[5];		/* Memory is cheap, new structs
--- 
-2.12.0
+Thanks!
