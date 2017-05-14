@@ -1,38 +1,129 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 8/8] serial: exar: Add support for IOT2040 device
-Date: Sat, 13 May 2017 16:54:10 +0300
-Message-ID: <CAHp75VcG4rZiWoym9U4qaoEzUT_AY0m62oL+a8Zb-=3yBFV5Og@mail.gmail.com>
-References: <cover.1494660546.git.jan.kiszka@siemens.com> <1d8ba1dea24da541389e8175097aa4f67eddc298.1494660546.git.jan.kiszka@siemens.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Subject: Re: [PATCH 2/8] gpio: exar: Fix passing in of parent PCI device
+Date: Sun, 14 May 2017 10:11:13 +0200
+Message-ID: <4a38292e-3340-dfb4-8a61-114fccf42958@web.de>
+References: <cover.1494660546.git.jan.kiszka@siemens.com>
+ <20f1d241d134f9f4932a26e4bd873ffc250affce.1494660546.git.jan.kiszka@siemens.com>
+ <CAHp75VfCd4feKeHOe4QMM88nMQ5wnP4yk7iDJMXN7LcygXVObw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="gSeuwje7c53Xq1wE51RGMWX7vvfCnEdFV"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1d8ba1dea24da541389e8175097aa4f67eddc298.1494660546.git.jan.kiszka@siemens.com>
+In-Reply-To: <CAHp75VfCd4feKeHOe4QMM88nMQ5wnP4yk7iDJMXN7LcygXVObw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>, Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, May 13, 2017 at 10:29 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> This implements the setup of RS232 and the switch-over to RS485 or RS422
-> for the Siemens IOT2040. That uses an EXAR XR17V352 with external logic
-> to switch between the different modes. The external logic is controlled
-> via MPIO pins of the EXAR controller.
->
-> Only pin 10 can be exported as GPIO on the IOT2040. It is connected to
-> an LED.
->
-> As the XR17V352 used on the IOT2040 is not equipped with an external
-> EEPROM, it cannot present itself as IOT2040-variant via subvendor/
-> subdevice IDs. Thus, we have to check via DMI for the target platform.
->
-> Co-developed with Sascha Weisenberger.
->
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--gSeuwje7c53Xq1wE51RGMWX7vvfCnEdFV
+Content-Type: multipart/mixed; boundary="SXB1sGjAtKpwFloFfmeGcV875JNBWKWtj";
+ protected-headers="v1"
+From: Jan Kiszka <jan.kiszka@web.de>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ Alexandre Courbot <gnurou@gmail.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+ "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+ Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
+ Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Message-ID: <4a38292e-3340-dfb4-8a61-114fccf42958@web.de>
+Subject: Re: [PATCH 2/8] gpio: exar: Fix passing in of parent PCI device
+References: <cover.1494660546.git.jan.kiszka@siemens.com>
+ <20f1d241d134f9f4932a26e4bd873ffc250affce.1494660546.git.jan.kiszka@siemens.com>
+ <CAHp75VfCd4feKeHOe4QMM88nMQ5wnP4yk7iDJMXN7LcygXVObw@mail.gmail.com>
+In-Reply-To: <CAHp75VfCd4feKeHOe4QMM88nMQ5wnP4yk7iDJMXN7LcygXVObw@mail.gmail.com>
 
-Please, refactor that using properly formed DMI structrure and use its
-callback and driver data facilities/
+--SXB1sGjAtKpwFloFfmeGcV875JNBWKWtj
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 
-stmmac's pattern that you obviously applied does not actually suit here.
+On 2017-05-13 15:25, Andy Shevchenko wrote:
+> On Sat, May 13, 2017 at 10:29 AM, Jan Kiszka <jan.kiszka@siemens.com> w=
+rote:
+>> This fixes reloading of the driver for the same device: First of all,
+>> the driver sets drvdata to its own value during probing and does not
+>> restore the original value on exit. But this won't help anyway as the
+>> core clears drvdata after the driver left.
+>>
+>> Use stable platform_data instead.
+>=20
+>>From the above I didn't clearly get what device you are talking about.
+> GPIO?
 
--- 
-With Best Regards,
-Andy Shevchenko
+"This fixes reloading of the GPIO driver for the same platform device
+instance as created by the exar UART driver: [...]"
+
+Clearer?
+
+>=20
+> Can you provide step by step what you did and what bug you got?
+
+Obviously a NULL pointer: Just rmmod gpio-exar and reload it while there
+is the same platform device present.
+
+>=20
+> Regarding below it looks to me a bit hackish.
+
+The alternative is a classic platform data structure, then also carrying
+the properties of patch 7 - which are, BTW, not DT-related, thus shall
+not form an external interface. Probably another reason to switch
+everything to some struct exar_gpio_platform_data.
+
+Jan
+
+>=20
+>>  static int gpio_exar_probe(struct platform_device *pdev)
+>>  {
+>> -       struct pci_dev *pcidev =3D platform_get_drvdata(pdev);
+>> +       struct pci_dev *pcidev =3D *(struct pci_dev **)pdev->dev.platf=
+orm_data;
+>>         struct exar_gpio_chip *exar_gpio;
+>>         void __iomem *p;
+>>         int index, ret;
+>> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/=
+8250/8250_exar.c
+>> index b4fa585156c7..2d056d1eeca3 100644
+>> --- a/drivers/tty/serial/8250/8250_exar.c
+>> +++ b/drivers/tty/serial/8250/8250_exar.c
+>> @@ -196,8 +196,12 @@ xr17v35x_register_gpio(struct pci_dev *pcidev)
+>>         if (!pdev)
+>>                 return NULL;
+>>
+>> -       platform_set_drvdata(pdev, pcidev);
+>> -       if (platform_device_add(pdev) < 0) {
+>> +       /*
+>> +        * platform_device_add_data kmemdups the data, therefore we ca=
+n safely
+>> +        * pass a stack reference.
+>> +        */
+>> +       if (platform_device_add_data(pdev, &pcidev, sizeof(pcidev)) < =
+0 ||
+>> +           platform_device_add(pdev) < 0) {
+>>                 platform_device_put(pdev);
+>>                 return NULL;
+>=20
+
+
+
+--SXB1sGjAtKpwFloFfmeGcV875JNBWKWtj--
+
+--gSeuwje7c53Xq1wE51RGMWX7vvfCnEdFV
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iEYEARECAAYFAlkYEScACgkQitSsb3rl5xTsxQCfWbk+didwvuQC+6zRp8P2bGM6
+DrgAoOXvJrYFN/UoCcK61vFtEIq9RQBV
+=pCkE
+-----END PGP SIGNATURE-----
+
+--gSeuwje7c53Xq1wE51RGMWX7vvfCnEdFV--
