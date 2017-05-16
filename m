@@ -1,163 +1,64 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: Re: [PATCH V2 6/6] tty: serial: lpuart: add a more accurate baud rate
- calculation method
-Date: Mon, 15 May 2017 10:06:41 -0700
-Message-ID: <73a70b856adf28b34c793f03c4db43a9@agner.ch>
-References: <1494834539-17523-1-git-send-email-aisheng.dong@nxp.com>
- <1494834539-17523-7-git-send-email-aisheng.dong@nxp.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From: Yixun Lan <dlan@gentoo.org>
+Subject: [PATCH] serial: meson: add Magic SysRq support
+Date: Tue, 16 May 2017 15:45:29 +0800
+Message-ID: <20170516074529.10086-1-dlan@gentoo.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1494834539-17523-7-git-send-email-aisheng.dong@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dong Aisheng <aisheng.dong@nxp.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, jslaby@suse.com, fugang.duan@nxp.com, dongas86@gmail.com, Mingkai.Hu@nxp.com, yangbo.lu@nxp.com
+To: Kevin Hilman <khilman@baylibre.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Yixun Lan <dlan@gentoo.org>, Ben Dooks <ben.dooks@codethink.co.uk>, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2017-05-15 00:48, Dong Aisheng wrote:
-> On new LPUART versions, the oversampling ratio for the receiver can be
-> changed from 4x (00011) to 32x (11111) which could help us get a more
-> accurate baud rate divider.
-> 
-> The idea is to use the best OSR (over-sampling rate) possible.
-> Note, OSR is typically hard-set to 16 in other LPUART instantiations.
-> Loop to find the best OSR value possible, one that generates minimum
-> baud diff iterate through the rest of the supported values of OSR.
-> 
-> Currently only i.MX7ULP is using it.
-> 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Cc: Stefan Agner <stefan@agner.ch>
-> Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
-> Cc: Yangbo Lu <yangbo.lu@nxp.com>
-> Acked-by: Fugang Duan <fugang.duan@nxp.com>
-> Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 85 ++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 79 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index 107d0911..bda4b0c 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -140,6 +140,8 @@
->  #define UARTBAUD_SBNS		0x00002000
->  #define UARTBAUD_SBR		0x00000000
->  #define UARTBAUD_SBR_MASK	0x1fff
-> +#define UARTBAUD_OSR_MASK       0x1f
-> +#define UARTBAUD_OSR_SHIFT      24
->  
->  #define UARTSTAT_LBKDIF		0x80000000
->  #define UARTSTAT_RXEDGIF	0x40000000
-> @@ -1506,6 +1508,72 @@ lpuart_set_termios(struct uart_port *port,
-> struct ktermios *termios,
->  }
->  
->  static void
-> +lpuart32_serial_setbrg(struct lpuart_port *sport, unsigned int baudrate)
-> +{
-> +	u32 sbr, osr, baud_diff, tmp_osr, tmp_sbr, tmp_diff, tmp;
-> +	u32 clk = sport->port.uartclk;
-> +
-> +	/*
-> +	 * The idea is to use the best OSR (over-sampling rate) possible.
-> +	 * Note, OSR is typically hard-set to 16 in other LPUART instantiations.
-> +	 * Loop to find the best OSR value possible, one that generates minimum
-> +	 * baud_diff iterate through the rest of the supported values of OSR.
-> +	 *
-> +	 * Calculation Formula:
-> +	 *  Baud Rate = baud clock / ((OSR+1) × SBR)
-> +	 */
-> +	baud_diff = baudrate;
-> +	osr = 0;
-> +	sbr = 0;
-> +
-> +	for (tmp_osr = 4; tmp_osr <= 32; tmp_osr++) {
-> +		/* calculate the temporary sbr value  */
-> +		tmp_sbr = (clk / (baudrate * tmp_osr));
-> +		if (tmp_sbr == 0)
-> +			tmp_sbr = 1;
-> +
-> +		/*
-> +		 * calculate the baud rate difference based on the temporary
-> +		 * osr and sbr values
-> +		 */
-> +		tmp_diff = clk / (tmp_osr * tmp_sbr) - baudrate;
-> +
-> +		/* select best values between sbr and sbr+1 */
-> +		tmp = clk / (tmp_osr * (tmp_sbr + 1));
-> +		if (tmp_diff > (baudrate - tmp)) {
-> +			tmp_diff = baudrate - tmp;
-> +			tmp_sbr++;
-> +		}
-> +
-> +		if (tmp_diff <= baud_diff) {
-> +			baud_diff = tmp_diff;
-> +			osr = tmp_osr;
-> +			sbr = tmp_sbr;
-> +		}
-> +	}
-> +
-> +	/* handle buadrate outside acceptable rate */
-> +	if (baud_diff > ((baudrate / 100) * 3))
-> +		dev_warn(sport->port.dev,
-> +			 "unacceptable baud rate difference of more than 3%%\n");
-> +
-> +	tmp = lpuart32_read(sport->port.membase + UARTBAUD);
-> +
-> +	if ((osr > 3) && (osr < 8))
-> +		tmp |= UARTBAUD_BOTHEDGE;
-> +
-> +	tmp &= ~(UARTBAUD_OSR_MASK << UARTBAUD_OSR_SHIFT);
-> +	tmp |= (((osr-1) & UARTBAUD_OSR_MASK) << UARTBAUD_OSR_SHIFT);
-> +
-> +	tmp &= ~UARTBAUD_SBR_MASK;
-> +	tmp |= sbr & UARTBAUD_SBR_MASK;
-> +
-> +	tmp &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
-> +
-> +	lpuart32_write(tmp, sport->port.membase + UARTBAUD);
-> +}
-> +
-> +static void
->  lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
->  		   struct ktermios *old)
->  {
-> @@ -1611,12 +1679,17 @@ lpuart32_set_termios(struct uart_port *port,
-> struct ktermios *termios,
->  	lpuart32_write(old_ctrl & ~(UARTCTRL_TE | UARTCTRL_RE),
->  			sport->port.membase + UARTCTRL);
->  
-> -	sbr = sport->port.uartclk / (16 * baud);
-> -	bd &= ~UARTBAUD_SBR_MASK;
-> -	bd |= sbr & UARTBAUD_SBR_MASK;
-> -	bd |= UARTBAUD_BOTHEDGE;
-> -	bd &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
-> -	lpuart32_write(bd, sport->port.membase + UARTBAUD);
-> +	if (of_device_is_compatible(port->dev->of_node, "fsl,imx7ulp-lpuart")) {
+Signed-off-by: Yixun Lan <dlan@gentoo.org>
+---
+ drivers/tty/serial/meson_uart.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-Shouldn't we be consequent here and also use a flag in the soc data
-instead of of_device_is_compatible...?
-
-Btw, instead of using 3 bools, I would prefer using a single flags like
-your patchset is proposing for the GPIO driver, what do you think?
-
---
-Stefan
-
-
-> +		lpuart32_serial_setbrg(sport, baud);
-> +	} else {
-> +		sbr = sport->port.uartclk / (16 * baud);
-> +		bd &= ~UARTBAUD_SBR_MASK;
-> +		bd |= sbr & UARTBAUD_SBR_MASK;
-> +		bd |= UARTBAUD_BOTHEDGE;
-> +		bd &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
-> +		lpuart32_write(bd, sport->port.membase + UARTBAUD);
-> +	}
-> +
->  	lpuart32_write(modem, sport->port.membase + UARTMODIR);
->  	lpuart32_write(ctrl, sport->port.membase + UARTCTRL);
->  	/* restore control register */
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 60f16795d16b..f0d9222db82f 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -14,6 +14,10 @@
+  *
+  */
+ 
++#if defined(CONFIG_SERIAL_MESON_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
++#define SUPPORT_SYSRQ
++#endif
++
+ #include <linux/clk.h>
+ #include <linux/console.h>
+ #include <linux/delay.h>
+@@ -183,12 +187,12 @@ static void meson_receive_chars(struct uart_port *port)
+ {
+ 	struct tty_port *tport = &port->state->port;
+ 	char flag;
+-	u32 status, ch, mode;
++	u32 ostatus, status, ch, mode;
+ 
+ 	do {
+ 		flag = TTY_NORMAL;
+ 		port->icount.rx++;
+-		status = readl(port->membase + AML_UART_STATUS);
++		ostatus = status = readl(port->membase + AML_UART_STATUS);
+ 
+ 		if (status & AML_UART_ERR) {
+ 			if (status & AML_UART_TX_FIFO_WERR)
+@@ -216,6 +220,16 @@ static void meson_receive_chars(struct uart_port *port)
+ 		ch = readl(port->membase + AML_UART_RFIFO);
+ 		ch &= 0xff;
+ 
++		if ((ostatus & AML_UART_FRAME_ERR) && (ch == 0)) {
++			port->icount.brk++;
++			flag = TTY_BREAK;
++			if (uart_handle_break(port))
++				continue;
++		}
++
++		if (uart_handle_sysrq_char(port, ch))
++			continue;
++
+ 		if ((status & port->ignore_status_mask) == 0)
+ 			tty_insert_flip_char(tport, ch, flag);
+ 
+-- 
+2.12.2
