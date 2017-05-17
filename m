@@ -1,41 +1,46 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH] imx-serial: RX DMA startup latency
-Date: Wed, 17 May 2017 12:04:18 +0200
-Message-ID: <20170517100418.rvn2rajpvkpaf453@pengutronix.de>
-References: <20170514123515.15794-1-peter.senna@collabora.com>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH 0/4] serdev: fix broken lifetime assumptions
+Date: Wed, 17 May 2017 12:39:58 +0200
+Message-ID: <20170517103958.GU3657@localhost>
+References: <20170411170731.4085-1-johan@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170514123515.15794-1-peter.senna@collabora.com>
+In-Reply-To: <20170411170731.4085-1-johan@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Senna Tschudin <peter.senna@collabora.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+To: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, May 14, 2017 at 02:35:15PM +0200, Peter Senna Tschudin wrote:
-> 18a4208 introduced a change to reduce the RX DMA latency on the first reception
-> when the serial port was opened for reading. However it was claiming a hardirq
-> unsafe lock after a hardirq safe lock which is not allowed and causes lockdep
-> to complain verbosely.
+On Tue, Apr 11, 2017 at 07:07:27PM +0200, Johan Hovold wrote:
+> This series fixes a number of issues with the new serdev code, which was
+> based on incorrect tty-port lifetime assumptions.
 > 
-> This patch changes the code to always start RX DMA earlier, instead of
-> relying on the flags used to open the serial port removing the code that
-> was looking for the serial file flags.
+> The first patch disables serdev support by reverting the patch which
+> hooked into the tty layer in a broken way that leads to crashes and
+> leaks when deregistering devices. This one should probably go into 4.11.
 > 
-> CC: Sascha Hauer <s.hauer@pengutronix.de>
-> Signed-off-by: Peter Senna Tschudin <peter.senna@collabora.com>
-> ---
-> Tested on iMX53.
+> The second patch fixes a specific bug in the tty-port client
+> registration code, while the third patch adds a new interface for
+> registering serdev devices. The final patch ultimately enables serdev
+> again for the serial drivers.
+> 
+> More details can be found in the individual commit messages.
+> 
+> Johan
+> 
+> 
+> Johan Hovold (4):
+>   Revert "tty_port: register tty ports with serdev bus"
+>   serdev: fix tty-port client deregistration
+>   tty/serdev: add serdev registration interface
+>   serial: enable serdev support
 
-Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Rob, did you have any further comments to this series?
 
-(on an i.MX6)
+Greg, I think these should go into 4.12-rc2, and the first patch should
+probably also have a stable tag now as serdev resource-management is
+clearly broken in 4.11.
 
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Johan
