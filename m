@@ -1,48 +1,40 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v2 3/6] gpio: exar: Fix iomap request
-Date: Thu, 18 May 2017 16:59:06 +0200
-Message-ID: <336687b99a6606e41890cdf6b7ed74e94f12ae62.1495119548.git.jan.kiszka@siemens.com>
-References: <cover.1495119548.git.jan.kiszka@siemens.com>
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <cover.1495119548.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1495119548.git.jan.kiszka@siemens.com>
-References: <cover.1495119548.git.jan.kiszka@siemens.com>
-Sender: linux-gpio-owner@vger.kernel.org
+Subject: [PATCH v2 0/6] serial/gpio: exar: Fixes and support for IOT2000
+Date: Thu, 18 May 2017 16:59:03 +0200
+Message-ID: <cover.1495119548.git.jan.kiszka@siemens.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-The UART driver already maps the resource for us. Trying to do this here
-only fails and leaves us with a non-working device.
+This makes the gpio-exar driver usable, which was prevented by a number
+of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
+driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
+series, so I'm also cross-posting to the serial and gpio lists.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/gpio/gpio-exar.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+Changes in v2:
+ - dropped already merged patches
+ - switched to platform_data structure for exar <-> gpio driver
+   communication
+ - use dmi_check_system() to express platform match
+ - adjusted bit logic style in exar_get_direction/value
 
-diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
-index b1dc5fff21ad..4ed1f8bdeda7 100644
---- a/drivers/gpio/gpio-exar.c
-+++ b/drivers/gpio/gpio-exar.c
-@@ -130,14 +130,10 @@ static int gpio_exar_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 
- 	/*
--	 * Map the pci device to get the register addresses.
--	 * We will need to read and write those registers to control
--	 * the GPIO pins.
--	 * Using managed functions will save us from unmaping on exit.
--	 * As the device is enabled using managed functions by the
--	 * UART driver we can also use managed functions here.
-+	 * The UART driver must have mapped region 0 prior to registering this
-+	 * device - use it.
- 	 */
--	p = pcim_iomap(pcidev, 0, 0);
-+	p = pcim_iomap_table(pcidev)[0];
- 	if (!p)
- 		return -ENOMEM;
- 
+Jan
+
+Jan Kiszka (6):
+  gpio: exar: Fix passing in of parent PCI device
+  gpio: exar: Allocate resources on behalf of the platform device
+  gpio: exar: Fix iomap request
+  gpio: exar: Fix reading of directions and values
+  gpio-exar/8250-exar: Make set of exported GPIOs configurable
+  serial: exar: Add support for IOT2040 device
+
+ drivers/gpio/gpio-exar.c                |  54 +++++++-----
+ drivers/tty/serial/8250/8250_exar.c     | 151 ++++++++++++++++++++++++++++++--
+ include/linux/platform_data/gpio-exar.h |  25 ++++++
+ 3 files changed, 198 insertions(+), 32 deletions(-)
+ create mode 100644 include/linux/platform_data/gpio-exar.h
+
 -- 
 2.12.0
-
