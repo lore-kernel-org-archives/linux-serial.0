@@ -1,52 +1,55 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2 6/6] serial: exar: Add support for IOT2040 device
-Date: Thu, 18 May 2017 20:41:57 +0300
-Message-ID: <CAHp75VcAiGFzfhd-609zsuscU19STQOme3Y91d1amaDToO8=oA@mail.gmail.com>
-References: <cover.1495119548.git.jan.kiszka@siemens.com> <f0d2245527bc5700be7a4ac707a81db798cb5519.1495119548.git.jan.kiszka@siemens.com>
- <CAHp75VewiaiYq6esGTiTV8kG30krhuXLQgLFGn10jmjkooXGPA@mail.gmail.com> <65189e05-e300-bbe3-660d-4fdd6d4ec8c1@siemens.com>
+Subject: Re: [PATCH v2 5/6] gpio-exar/8250-exar: Make set of exported GPIOs configurable
+Date: Thu, 18 May 2017 20:43:36 +0300
+Message-ID: <CAHp75VcOHq05ZHc=arV9URQ9C6_guLiERB=FQ7FQgBTBYNrvPQ@mail.gmail.com>
+References: <cover.1495119548.git.jan.kiszka@siemens.com> <357209721396d57cb871ae69d72308b1a7c9cbd7.1495119548.git.jan.kiszka@siemens.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <65189e05-e300-bbe3-660d-4fdd6d4ec8c1@siemens.com>
+In-Reply-To: <357209721396d57cb871ae69d72308b1a7c9cbd7.1495119548.git.jan.kiszka@siemens.com>
 Sender: linux-gpio-owner@vger.kernel.org
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 18, 2017 at 7:39 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 2017-05-18 18:33, Andy Shevchenko wrote:
->> On Thu, May 18, 2017 at 5:59 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+On Thu, May 18, 2017 at 5:59 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> On the SIMATIC, IOT2040 only a single pin is exportable as GPIO, the
+> rest is required to operate the UART. To allow modeling this case,
+> expand the platform device data structure to specify a (consecutive) pin
+> subset for exporting by the gpio-exar driver.
 
->>> +static bool is_iot2040;
->>
->> No, please, use driver data of DMI and hide this in corresponding structure.
->> Or even assign  port->port.rs485_config in the callback function.
->>
->> Moreover, can't you use port->port.rs485_config != NULL instead?
+> +       unsigned int first_gpio;
+
+Perhaps pin?
+Or shift?
+
+Because first_gpio a bit confusing with Linux side of GPIO.
+
+> -       unsigned int bank = offset / 8;
+> -       unsigned int addr;
+> +       struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
+> +       unsigned int bank, addr;
 >
-> There are two cases to be handled on IOT2040: the setting of the
-> rs485_config and the different setup of the GPIOs, but the latter at a
-> specific point in the initialization only. So I don't see yet how
-> driver_data could come into play and help.
+> +       offset += exar_gpio->first_gpio;
+> +       bank = offset / 8;
 
-struct exar_iot2040_setup {
-...rs485_config();
-...setup_gpio();
-};
+Can't we instead do something like the following:
 
-struct exar_iot2040_setup iot2040_setup = {
-...
-};
+struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
+unsigned int bank = (offset + exar_gpio->pin) / 8;
+unsigned int line = (offset + exar_gpio->pin) % 8;
 
-DMI:
 
-.driver_data = (void *)&iot2040_setup;
+> +       pdata.first_gpio = first_gpio;
+> +       pdata.ngpio = ngpio;
 
-Above is just unfinished proposal, since I have noticed your new mail.
-So, it seems we are on the same page.
+Still thinking about device properties ("ngpios" and something like
+"exar8250,gpio-start").
 
-One thing, I still would consider to use device properties instead of
-platform data (with consideration of MFD framework usage).
+> +       unsigned int first_gpio;
+> +       unsigned int ngpio;
+
+u16 ?
 
 -- 
 With Best Regards,
