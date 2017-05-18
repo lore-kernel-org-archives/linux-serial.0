@@ -1,29 +1,57 @@
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH-stable] serial: samsung: Bring back removed variable to
- fix compilation
-Date: Thu, 18 May 2017 15:16:00 +0200
-Message-ID: <CAJKOXPcsq-AiK3hOXeuZkEQgA0u_o02x9qizbs+ebccaC2t66Q@mail.gmail.com>
-References: <1495110677-31174-1-git-send-email-krzk@kernel.org>
- <CAJKOXPdEQ-JSSZK1PA4xc1f7NWdKNyaeQ3qyjEdW7ttTvTF4og@mail.gmail.com> <20170518131440.GA14129@kroah.com>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH v5 16/17] tty: serdev-ttyport: return actual baudrate
+ from ttyport_set_baudrate
+Date: Thu, 18 May 2017 16:19:04 +0200
+Message-ID: <20170518141904.GA29741@kroah.com>
+References: <1494406408-31760-1-git-send-email-stefan.wahren@i2se.com>
+ <1494406408-31760-17-git-send-email-stefan.wahren@i2se.com>
+ <d5533816-5d87-3772-19c0-5e57e519a3f1@i2se.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20170518131440.GA14129@kroah.com>
-Sender: stable-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Krzysztof Kozlowski <kozik.server@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <d5533816-5d87-3772-19c0-5e57e519a3f1-eS4NqCHxEME@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lino Sanfilippo <LinoSanfilippo-Mmb7MZpHnFY@public.gmane.org>, Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 18, 2017 at 3:14 PM, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
-> On Thu, May 18, 2017 at 02:59:32PM +0200, Krzysztof Kozlowski wrote:
->> On Thu, May 18, 2017 at 2:31 PM, Krzysztof Kozlowski
->> <kozik.server@gmail.com> wrote:
->>
->> I need to fixup the from field. It should be krzk@kernel.org.
->
-> I've merged this with the original patch so nothing breaks...
+On Wed, May 17, 2017 at 01:58:05PM +0200, Stefan Wahren wrote:
+> Hi Greg,
+> 
+> Am 10.05.2017 um 10:53 schrieb Stefan Wahren:
+> > Instead of returning the requested baudrate, we better return the
+> > actual one because it isn't always the same.
+> >
+> > Signed-off-by: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+> > Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> > ---
+> >  drivers/tty/serdev/serdev-ttyport.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+> > index 487c88f..2cfdf34 100644
+> > --- a/drivers/tty/serdev/serdev-ttyport.c
+> > +++ b/drivers/tty/serdev/serdev-ttyport.c
+> > @@ -151,7 +151,7 @@ static unsigned int ttyport_set_baudrate(struct serdev_controller *ctrl, unsigne
+> >  
+> >  	/* tty_set_termios() return not checked as it is always 0 */
+> >  	tty_set_termios(tty, &ktermios);
+> > -	return speed;
+> > +	return ktermios.c_ospeed;
+> >  }
+> >  
+> >  static void ttyport_set_flow_control(struct serdev_controller *ctrl, bool enable)
+> 
+> there is no dependency to this series. I would be happy if this could be
+> applied, so i don't have to carry it for the next version.
 
-Great, thanks!
+Ok, I'll take it now.
 
-Krzysztof
+thanks,
+
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
