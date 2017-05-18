@@ -1,60 +1,38 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 8/8] serial: exar: Add support for IOT2040 device
-Date: Thu, 18 May 2017 13:17:19 +0300
-Message-ID: <CAHp75VcKZumhYqc9SW_JM+8ecAEfi7mWbr6=d7kFVeEPA1_LkA@mail.gmail.com>
-References: <cover.1494660546.git.jan.kiszka@siemens.com> <1d8ba1dea24da541389e8175097aa4f67eddc298.1494660546.git.jan.kiszka@siemens.com>
- <CAHp75VcG4rZiWoym9U4qaoEzUT_AY0m62oL+a8Zb-=3yBFV5Og@mail.gmail.com> <9c3fa989-b137-2935-23cd-d9c3a91c6ce6@siemens.com>
+Subject: Re: [PATCH 5/8] gpio: exar: Fix reading of directions and values
+Date: Thu, 18 May 2017 13:23:33 +0300
+Message-ID: <CAHp75VdsL_bT-HN3yHxNwQTMfJnfDc1EPEmn+ARZSvZDts7W6g@mail.gmail.com>
+References: <cover.1494660546.git.jan.kiszka@siemens.com> <1891081c09747965173fb03a7305e1c73033dac0.1494660546.git.jan.kiszka@siemens.com>
+ <CAHp75Vdxoro-FoJY-t+FVk_9J6OBZMhJ9P9qjhq5a2bMOJMW9A@mail.gmail.com>
+ <88c38a4c-f275-28d3-694e-e3089e56062e@siemens.com> <CAHp75Ve3wA6AUTRA7RwFVBS=w5ntdwak+mTJN5tE_n7oW+JQvw@mail.gmail.com>
+ <160112c1-c80b-5b1b-6e54-4b3c22f554b6@siemens.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <9c3fa989-b137-2935-23cd-d9c3a91c6ce6@siemens.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <160112c1-c80b-5b1b-6e54-4b3c22f554b6@siemens.com>
+Sender: linux-gpio-owner@vger.kernel.org
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 18, 2017 at 8:06 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 2017-05-13 15:54, Andy Shevchenko wrote:
->> On Sat, May 13, 2017 at 10:29 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>> This implements the setup of RS232 and the switch-over to RS485 or RS422
->>> for the Siemens IOT2040. That uses an EXAR XR17V352 with external logic
->>> to switch between the different modes. The external logic is controlled
->>> via MPIO pins of the EXAR controller.
->>>
->>> Only pin 10 can be exported as GPIO on the IOT2040. It is connected to
->>> an LED.
->>>
->>> As the XR17V352 used on the IOT2040 is not equipped with an external
->>> EEPROM, it cannot present itself as IOT2040-variant via subvendor/
->>> subdevice IDs. Thus, we have to check via DMI for the target platform.
->>>
->>> Co-developed with Sascha Weisenberger.
->>>
+On Thu, May 18, 2017 at 1:16 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> On 2017-05-18 12:11, Andy Shevchenko wrote:
+>> On Thu, May 18, 2017 at 8:20 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+
+>> Full picture:
 >>
->> Please, refactor that using properly formed DMI structrure and use its
->> callback and driver data facilities/
+>>  val = exar_get(chip, addr) & BIT(offset % 8);
+>>
+>>  return !!val;
+>>
+>> How it could be non-(1 or 0)?
+>>
 >
-> Could you point to a specific example? The callback of the dmi_system_id
-> structure is not designed to handle device initializations like this one
-> - not to speak of having those two different initialization points here.
+> Right - but what is the point of that other style?
 
-Sure.
+gpio-exar.c is just 4th module which is using it, OTOH the rest of
+GPIO drivers are using return !!val style.
 
-drivers/platform/x86/dell-laptop.c:
-
-static const struct dmi_system_id dell_quirks[] __initconst = {
-        {
-                .callback = dmi_matched,
-                .ident = "Dell Vostro V130",
-                .matches = {
-                        DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
-                        DMI_MATCH(DMI_PRODUCT_NAME, "Vostro V130"),
-                },
-                .driver_data = &quirk_dell_vostro_v130,
-        },
-
-
-(just in case, dmi_matched() is part of that module)
 
 -- 
 With Best Regards,
