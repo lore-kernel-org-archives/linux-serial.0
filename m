@@ -1,47 +1,44 @@
 From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH v2 0/2] serdev: fix broken lifetime assumptions
-Date: Thu, 18 May 2017 17:32:59 +0200
-Message-ID: <20170518153301.28885-1-johan@kernel.org>
+Subject: [PATCH v2 2/2] serial: enable serdev support
+Date: Thu, 18 May 2017 17:33:01 +0200
+Message-ID: <20170518153301.28885-3-johan@kernel.org>
+References: <20170518153301.28885-1-johan@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170518153301.28885-1-johan@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-This series fixes a number of issues with the new serdev code, which was
-based on incorrect tty-port lifetime assumptions.
+Enable serdev support by using the new device-registration helpers.
 
-The first patch in v1 of this series disables serdev support by reverting the
-patch which hooked into the tty layer in a broken way that leads to crashes and
-leaks when deregistering devices. That one has now been applied to tty-linus
-with a stable tag (for v4.11).
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/tty/serial/serial_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-The remaining two patches again re-enables serdev (first enabled in 4.11, but
-soon reverted in stable) for a subset of tty drivers by adding adding a new
-interface for registering serdev devices and using that in serial core only.
-
-More details can be found in the individual commit messages.
-
-Johan
-
-
-Changes in v2
- - rebase on tty-linus
- - drop first two patches that have already been applied
- - remove a stray newline in patch 1/2
- - add Rob's reviewed-by tag
-
-
-Johan Hovold (2):
-  tty/serdev: add serdev registration interface
-  serial: enable serdev support
-
- drivers/tty/serdev/serdev-ttyport.c |  6 ++-
- drivers/tty/serial/serial_core.c    |  4 +-
- drivers/tty/tty_port.c              | 75 +++++++++++++++++++++++++++++++++++++
- include/linux/serdev.h              |  7 +++-
- include/linux/tty.h                 |  9 +++++
- 5 files changed, 95 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index bc6caea6099f..13bfd5dcffce 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2782,7 +2782,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	 * Register the port whether it's detected or not.  This allows
+ 	 * setserial to be used to alter this port's parameters.
+ 	 */
+-	tty_dev = tty_port_register_device_attr(port, drv->tty_driver,
++	tty_dev = tty_port_register_device_attr_serdev(port, drv->tty_driver,
+ 			uport->line, uport->dev, port, uport->tty_groups);
+ 	if (likely(!IS_ERR(tty_dev))) {
+ 		device_set_wakeup_capable(tty_dev, 1);
+@@ -2845,7 +2845,7 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	/*
+ 	 * Remove the devices from the tty layer
+ 	 */
+-	tty_unregister_device(drv->tty_driver, uport->line);
++	tty_port_unregister_device(port, drv->tty_driver, uport->line);
+ 
+ 	tty = tty_port_tty_get(port);
+ 	if (tty) {
 -- 
 2.13.0
