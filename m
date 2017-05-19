@@ -1,170 +1,130 @@
-From: Dong Aisheng <dongas86@gmail.com>
-Subject: Re: [PATCH V2 6/6] tty: serial: lpuart: add a more accurate baud
- rate calculation method
-Date: Fri, 19 May 2017 19:50:48 +0800
-Message-ID: <20170519115047.GA23227@b29396-OptiPlex-7040>
-References: <1494834539-17523-1-git-send-email-aisheng.dong@nxp.com>
- <1494834539-17523-7-git-send-email-aisheng.dong@nxp.com>
- <73a70b856adf28b34c793f03c4db43a9@agner.ch>
- <20170517034729.GD9913@b29396-OptiPlex-7040>
- <90fa8850f9424712074217dff03b229e@agner.ch>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v5 15/17] dt-bindings: qca7000: append UART interface to binding
+Date: Fri, 19 May 2017 07:37:44 -0500
+Message-ID: <CAL_JsqKmuRJbuBy8zdjXgL6Y8A0zGT5nMpr2g=H7VgfTzAmOoA@mail.gmail.com>
+References: <1494406408-31760-1-git-send-email-stefan.wahren@i2se.com>
+ <1494406408-31760-16-git-send-email-stefan.wahren@i2se.com>
+ <1702237.66ccflAQAJ@kerker> <20170511194541.4e58cb7d@cakuba.netronome.com>
+ <20170512061552.Horde.ggjCMHnIsr8LeADwTQwhnx7@www.mhei.heimpold.org>
+ <20170511234342.575d9226@cakuba.netronome.com> <53509108-fac2-8e8d-9279-ed54e8c1af3b@i2se.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <90fa8850f9424712074217dff03b229e@agner.ch>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Agner <stefan@agner.ch>
-Cc: Dong Aisheng <aisheng.dong@nxp.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, jslaby@suse.com, fugang.duan@nxp.com, Mingkai.Hu@nxp.com, yangbo.lu@nxp.com
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <53509108-fac2-8e8d-9279-ed54e8c1af3b-eS4NqCHxEME@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Cc: Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>, Michael Heimpold <mhei-Z/Lg1yOAjpkb1SvskN2V4Q@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 17, 2017 at 10:35:43AM -0700, Stefan Agner wrote:
-> On 2017-05-16 20:47, Dong Aisheng wrote:
-> > On Mon, May 15, 2017 at 10:06:41AM -0700, Stefan Agner wrote:
-> >> On 2017-05-15 00:48, Dong Aisheng wrote:
-> >> > On new LPUART versions, the oversampling ratio for the receiver can be
-> >> > changed from 4x (00011) to 32x (11111) which could help us get a more
-> >> > accurate baud rate divider.
-> >> >
-> >> > The idea is to use the best OSR (over-sampling rate) possible.
-> >> > Note, OSR is typically hard-set to 16 in other LPUART instantiations.
-> >> > Loop to find the best OSR value possible, one that generates minimum
-> >> > baud diff iterate through the rest of the supported values of OSR.
-> >> >
-> >> > Currently only i.MX7ULP is using it.
-> >> >
-> >> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> >> > Cc: Jiri Slaby <jslaby@suse.com>
-> >> > Cc: Stefan Agner <stefan@agner.ch>
-> >> > Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
-> >> > Cc: Yangbo Lu <yangbo.lu@nxp.com>
-> >> > Acked-by: Fugang Duan <fugang.duan@nxp.com>
-> >> > Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
-> >> > ---
-> >> >  drivers/tty/serial/fsl_lpuart.c | 85 ++++++++++++++++++++++++++++++++++++++---
-> >> >  1 file changed, 79 insertions(+), 6 deletions(-)
-> >> >
-> >> > diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> >> > index 107d0911..bda4b0c 100644
-> >> > --- a/drivers/tty/serial/fsl_lpuart.c
-> >> > +++ b/drivers/tty/serial/fsl_lpuart.c
-> >> > @@ -140,6 +140,8 @@
-> >> >  #define UARTBAUD_SBNS		0x00002000
-> >> >  #define UARTBAUD_SBR		0x00000000
-> >> >  #define UARTBAUD_SBR_MASK	0x1fff
-> >> > +#define UARTBAUD_OSR_MASK       0x1f
-> >> > +#define UARTBAUD_OSR_SHIFT      24
-> >> >
-> >> >  #define UARTSTAT_LBKDIF		0x80000000
-> >> >  #define UARTSTAT_RXEDGIF	0x40000000
-> >> > @@ -1506,6 +1508,72 @@ lpuart_set_termios(struct uart_port *port,
-> >> > struct ktermios *termios,
-> >> >  }
-> >> >
-> >> >  static void
-> >> > +lpuart32_serial_setbrg(struct lpuart_port *sport, unsigned int baudrate)
-> >> > +{
-> >> > +	u32 sbr, osr, baud_diff, tmp_osr, tmp_sbr, tmp_diff, tmp;
-> >> > +	u32 clk = sport->port.uartclk;
-> >> > +
-> >> > +	/*
-> >> > +	 * The idea is to use the best OSR (over-sampling rate) possible.
-> >> > +	 * Note, OSR is typically hard-set to 16 in other LPUART instantiations.
-> >> > +	 * Loop to find the best OSR value possible, one that generates minimum
-> >> > +	 * baud_diff iterate through the rest of the supported values of OSR.
-> >> > +	 *
-> >> > +	 * Calculation Formula:
-> >> > +	 *  Baud Rate = baud clock / ((OSR+1) × SBR)
-> >> > +	 */
-> >> > +	baud_diff = baudrate;
-> >> > +	osr = 0;
-> >> > +	sbr = 0;
-> >> > +
-> >> > +	for (tmp_osr = 4; tmp_osr <= 32; tmp_osr++) {
-> >> > +		/* calculate the temporary sbr value  */
-> >> > +		tmp_sbr = (clk / (baudrate * tmp_osr));
-> >> > +		if (tmp_sbr == 0)
-> >> > +			tmp_sbr = 1;
-> >> > +
-> >> > +		/*
-> >> > +		 * calculate the baud rate difference based on the temporary
-> >> > +		 * osr and sbr values
-> >> > +		 */
-> >> > +		tmp_diff = clk / (tmp_osr * tmp_sbr) - baudrate;
-> >> > +
-> >> > +		/* select best values between sbr and sbr+1 */
-> >> > +		tmp = clk / (tmp_osr * (tmp_sbr + 1));
-> >> > +		if (tmp_diff > (baudrate - tmp)) {
-> >> > +			tmp_diff = baudrate - tmp;
-> >> > +			tmp_sbr++;
-> >> > +		}
-> >> > +
-> >> > +		if (tmp_diff <= baud_diff) {
-> >> > +			baud_diff = tmp_diff;
-> >> > +			osr = tmp_osr;
-> >> > +			sbr = tmp_sbr;
-> >> > +		}
-> >> > +	}
-> >> > +
-> >> > +	/* handle buadrate outside acceptable rate */
-> >> > +	if (baud_diff > ((baudrate / 100) * 3))
-> >> > +		dev_warn(sport->port.dev,
-> >> > +			 "unacceptable baud rate difference of more than 3%%\n");
-> >> > +
-> >> > +	tmp = lpuart32_read(sport->port.membase + UARTBAUD);
-> >> > +
-> >> > +	if ((osr > 3) && (osr < 8))
-> >> > +		tmp |= UARTBAUD_BOTHEDGE;
-> >> > +
-> >> > +	tmp &= ~(UARTBAUD_OSR_MASK << UARTBAUD_OSR_SHIFT);
-> >> > +	tmp |= (((osr-1) & UARTBAUD_OSR_MASK) << UARTBAUD_OSR_SHIFT);
-> >> > +
-> >> > +	tmp &= ~UARTBAUD_SBR_MASK;
-> >> > +	tmp |= sbr & UARTBAUD_SBR_MASK;
-> >> > +
-> >> > +	tmp &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
-> >> > +
-> >> > +	lpuart32_write(tmp, sport->port.membase + UARTBAUD);
-> >> > +}
-> >> > +
-> >> > +static void
-> >> >  lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
-> >> >  		   struct ktermios *old)
-> >> >  {
-> >> > @@ -1611,12 +1679,17 @@ lpuart32_set_termios(struct uart_port *port,
-> >> > struct ktermios *termios,
-> >> >  	lpuart32_write(old_ctrl & ~(UARTCTRL_TE | UARTCTRL_RE),
-> >> >  			sport->port.membase + UARTCTRL);
-> >> >
-> >> > -	sbr = sport->port.uartclk / (16 * baud);
-> >> > -	bd &= ~UARTBAUD_SBR_MASK;
-> >> > -	bd |= sbr & UARTBAUD_SBR_MASK;
-> >> > -	bd |= UARTBAUD_BOTHEDGE;
-> >> > -	bd &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
-> >> > -	lpuart32_write(bd, sport->port.membase + UARTBAUD);
-> >> > +	if (of_device_is_compatible(port->dev->of_node, "fsl,imx7ulp-lpuart")) {
-> >>
-> >> Shouldn't we be consequent here and also use a flag in the soc data
-> >> instead of of_device_is_compatible...?
-> >>
-> > 
-> > The original purpose is that this is a temporary code and supposed will
-> > be deleted later once LS platforms confirmed the new baud setting API
-> > works for them as well.
-> > 
-> > That's why i did not make it a property, as i stated in the cover letter.
-> 
-> Ok, I see that is a good reason to not define a new feature property
-> now... 
-> 
-> But, if you are reasonable sure it should work, I am inclined to say
-> just enable it for LS1021a so it also really gets tested...
-> 
+On Fri, May 19, 2017 at 2:13 AM, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org> wrote:
+> Hi Rob,
+>
+> Am 12.05.2017 um 08:43 schrieb Jakub Kicinski:
+>> On Fri, 12 May 2017 06:15:52 +0000, Michael Heimpold wrote:
+>>> Hi,
+>>>
+>>> Zitat von Jakub Kicinski <kubakici-5tc4TXWwyLM@public.gmane.org>:
+>>>
+>>>> On Thu, 11 May 2017 21:12:22 +0200, Michael Heimpold wrote:
+>>>>> Am Mittwoch, 10. Mai 2017, 10:53:26 CEST schrieb Stefan Wahren:
+>>>>>> This merges the serdev binding for the QCA7000 UART driver (Ethernet over
+>>>>>> UART) into the existing document.
+>>>>>>
+>>>>>> Signed-off-by: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+>>>>>> ---
+>>>>>>  .../devicetree/bindings/net/qca-qca7000.txt        | 32
+>>>>>> ++++++++++++++++++++++ 1 file changed, 32 insertions(+)
+>>>>>>
+>>>>>> diff --git a/Documentation/devicetree/bindings/net/qca-qca7000.txt
+>>>>>> b/Documentation/devicetree/bindings/net/qca-qca7000.txt index
+>>>>>> a37f656..08364c3 100644
+>>>>>> --- a/Documentation/devicetree/bindings/net/qca-qca7000.txt
+>>>>>> +++ b/Documentation/devicetree/bindings/net/qca-qca7000.txt
+>>>>>> @@ -54,3 +54,35 @@ ssp2: spi@80014000 {
+>>>>>>           local-mac-address = [ A0 B0 C0 D0 E0 F0 ];
+>>>>>>   };
+>>>>>>  };
+>>>>>> +
+>>>>>> +(b) Ethernet over UART
+>>>>>> +
+>>>>>> +In order to use the QCA7000 as UART slave it must be defined as
+>>>>> a child of
+>>>>>> a +UART master in the device tree. It is possible to preconfigure the UART
+>>>>>> +settings of the QCA7000 firmware, but it's not possible to change them
+>>>>>> during +runtime.
+>>>>>> +
+>>>>>> +Required properties:
+>>>>>> +- compatible        : Should be "qca,qca7000-uart"
+>>>>> I already discussed this with Stefan off-list a little bit, but I would like
+>>>>> to bring this to a broader audience: I'm not sure whether the compatible
+>>>>> should contain the "-uart" suffix, because the hardware chip is the
+>>>>> very same
+>>>>> QCA7000 chip which can also be used with SPI protocol.
+>>>>> The only difference is the loaded firmware within the chip which can either
+>>>>> speak SPI or UART protocol (but not both at the same time - due to shared
+>>>>> pins). So the hardware design decides which interface type is used.
+>>>>>
+>>>>> At the moment, this patch series adds a dedicated driver for the UART
+>>>>> protocol, in parallel to the existing SPI driver. So a different compatible
+>>>>> string is needed here to match against the new driver.
+>>>>>
+>>>>> An alternative approach would be to re-use the existing compatible string
+>>>>> "qca,qca7000" for both, the SPI and UART protocol, because a "smarter"
+>>>>> (combined) driver would detect which protocol to use. For example the driver
+>>>>> could check for spi-cpha and/or spi-cpol which are required for SPI
+>>>>> protocol:
+>>>>> if these exists the driver could assume that SPI must be used, if both are
+>>>>> missing then UART protocol should be used.
+>>>>> (This way it would not be necessary to check whether the node is a child of
+>>>>> a SPI or UART master node - but maybe this is even easier - I don't know)
+>>>>>
+>>>>> Or in shorter words: my concern is that while "qca7000-uart" describes the
+>>>>> hardware, it's too closely coupled to the driver implementation. Having
+>>>>> some feedback of the experts would be nice :-)
+>>>> I'm no expert, but devices which can do both I2C and SPI are quite
+>>>> common, and they usually have the same compatible string for both
+>>>> buses.
+>>> do you have an example driver at hand? I only found GPIO mcp23s08 driver,
+>>> which can handle both I2C and SPI chips, but there are different compatible
+>>> strings used to distinguish several chip models.
+>> I think drivers/tty/serial/sc16is7xx.c has the same strings, and some
+>> Kconfig magic to work when either bus is enabled in .config.
+>>
+>> Quick grep shows there are couple more potential ones to look at:
+>>
+>> $ find . -name Kconfig | xargs grep -n 'SPI_MASTER.* I2C'
+>> ./drivers/tty/serial/Kconfig:1208:        depends on (SPI_MASTER && !I2C) || I2C
+>> ./drivers/mfd/Kconfig:327:    depends on (SPI_MASTER || I2C)
+>> ./drivers/iio/dac/Kconfig:10: depends on (SPI_MASTER && I2C!=m) || I2C
+>> ./drivers/iio/dac/Kconfig:34: depends on (SPI_MASTER && I2C!=m) || I2C
+>> ./drivers/iio/dac/Kconfig:57: depends on (SPI_MASTER && I2C!=m) || I2C
+>> ./drivers/gpio/Kconfig:1231:  depends on (SPI_MASTER && !I2C) || I2C
+>> $ find . -name Kconfig | xargs grep -n 'I2C.*||.*SPI_MASTER'
+>> ./drivers/mfd/Kconfig:1094:   depends on (I2C=y || SPI_MASTER=y)
+>> ./drivers/iio/gyro/Kconfig:55:        depends on (I2C || SPI_MASTER)
+>> ./drivers/iio/gyro/Kconfig:107:       depends on (I2C || SPI_MASTER) && SYSFS
+>> ./drivers/iio/accel/Kconfig:153:      depends on (I2C || SPI_MASTER) && SYSFS
+>> ./drivers/iio/pressure/Kconfig:20:    depends on (I2C || SPI_MASTER)
+>> ./drivers/iio/pressure/Kconfig:161:   depends on (I2C || SPI_MASTER) && SYSFS
+>> ./drivers/iio/magnetometer/Kconfig:118:       depends on (I2C || SPI_MASTER) && SYSFS
+>>
+>> drivers/mfd/mc13xxx-*.c seems to have the same strings.  The iio/dac drivers
+>> don't support DT but do share names.  The MCP GPIO chip you mention indeed has
+>> different product names based on the bus it's made for (0 vs s in the middle
+>> of the name), so I gather less relevant case?  drivers/iio/pressure/bmp280-*.c
+>> has the same strings, if I'm looking correctly... I didn't look at the others.
+>
+> are you okay with the suggestion to use the compatible "qca,qca7000" for
+> both drivers?
 
-Okay, i'll take this suggestion to get things started.
+I believe I said I was fine either way.
 
-Thanks
+> Should we mark "qca,qca7000-spi" as deprecated?
 
-Regards
-Dong Aisheng
+Yes.
+
+Rob
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
