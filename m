@@ -1,264 +1,170 @@
-From: YT Shen <yt.shen@mediatek.com>
-Subject: [PATCH 2/2] arm64: dts: Add Mediatek SoC MT2712 and evaluation board dts and Makefile
-Date: Fri, 19 May 2017 19:09:46 +0800
-Message-ID: <1495192186-22480-3-git-send-email-yt.shen@mediatek.com>
-References: <1495192186-22480-1-git-send-email-yt.shen@mediatek.com>
+From: Dong Aisheng <dongas86@gmail.com>
+Subject: Re: [PATCH V2 6/6] tty: serial: lpuart: add a more accurate baud
+ rate calculation method
+Date: Fri, 19 May 2017 19:50:48 +0800
+Message-ID: <20170519115047.GA23227@b29396-OptiPlex-7040>
+References: <1494834539-17523-1-git-send-email-aisheng.dong@nxp.com>
+ <1494834539-17523-7-git-send-email-aisheng.dong@nxp.com>
+ <73a70b856adf28b34c793f03c4db43a9@agner.ch>
+ <20170517034729.GD9913@b29396-OptiPlex-7040>
+ <90fa8850f9424712074217dff03b229e@agner.ch>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1495192186-22480-1-git-send-email-yt.shen@mediatek.com>
+Content-Disposition: inline
+In-Reply-To: <90fa8850f9424712074217dff03b229e@agner.ch>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Mars Cheng <mars.cheng@mediatek.com>, YT Shen <yt.shen@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com
+To: Stefan Agner <stefan@agner.ch>
+Cc: Dong Aisheng <aisheng.dong@nxp.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, jslaby@suse.com, fugang.duan@nxp.com, Mingkai.Hu@nxp.com, yangbo.lu@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-This adds basic chip support for Mediatek 2712
+On Wed, May 17, 2017 at 10:35:43AM -0700, Stefan Agner wrote:
+> On 2017-05-16 20:47, Dong Aisheng wrote:
+> > On Mon, May 15, 2017 at 10:06:41AM -0700, Stefan Agner wrote:
+> >> On 2017-05-15 00:48, Dong Aisheng wrote:
+> >> > On new LPUART versions, the oversampling ratio for the receiver can be
+> >> > changed from 4x (00011) to 32x (11111) which could help us get a more
+> >> > accurate baud rate divider.
+> >> >
+> >> > The idea is to use the best OSR (over-sampling rate) possible.
+> >> > Note, OSR is typically hard-set to 16 in other LPUART instantiations.
+> >> > Loop to find the best OSR value possible, one that generates minimum
+> >> > baud diff iterate through the rest of the supported values of OSR.
+> >> >
+> >> > Currently only i.MX7ULP is using it.
+> >> >
+> >> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> >> > Cc: Jiri Slaby <jslaby@suse.com>
+> >> > Cc: Stefan Agner <stefan@agner.ch>
+> >> > Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
+> >> > Cc: Yangbo Lu <yangbo.lu@nxp.com>
+> >> > Acked-by: Fugang Duan <fugang.duan@nxp.com>
+> >> > Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
+> >> > ---
+> >> >  drivers/tty/serial/fsl_lpuart.c | 85 ++++++++++++++++++++++++++++++++++++++---
+> >> >  1 file changed, 79 insertions(+), 6 deletions(-)
+> >> >
+> >> > diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> >> > index 107d0911..bda4b0c 100644
+> >> > --- a/drivers/tty/serial/fsl_lpuart.c
+> >> > +++ b/drivers/tty/serial/fsl_lpuart.c
+> >> > @@ -140,6 +140,8 @@
+> >> >  #define UARTBAUD_SBNS		0x00002000
+> >> >  #define UARTBAUD_SBR		0x00000000
+> >> >  #define UARTBAUD_SBR_MASK	0x1fff
+> >> > +#define UARTBAUD_OSR_MASK       0x1f
+> >> > +#define UARTBAUD_OSR_SHIFT      24
+> >> >
+> >> >  #define UARTSTAT_LBKDIF		0x80000000
+> >> >  #define UARTSTAT_RXEDGIF	0x40000000
+> >> > @@ -1506,6 +1508,72 @@ lpuart_set_termios(struct uart_port *port,
+> >> > struct ktermios *termios,
+> >> >  }
+> >> >
+> >> >  static void
+> >> > +lpuart32_serial_setbrg(struct lpuart_port *sport, unsigned int baudrate)
+> >> > +{
+> >> > +	u32 sbr, osr, baud_diff, tmp_osr, tmp_sbr, tmp_diff, tmp;
+> >> > +	u32 clk = sport->port.uartclk;
+> >> > +
+> >> > +	/*
+> >> > +	 * The idea is to use the best OSR (over-sampling rate) possible.
+> >> > +	 * Note, OSR is typically hard-set to 16 in other LPUART instantiations.
+> >> > +	 * Loop to find the best OSR value possible, one that generates minimum
+> >> > +	 * baud_diff iterate through the rest of the supported values of OSR.
+> >> > +	 *
+> >> > +	 * Calculation Formula:
+> >> > +	 *  Baud Rate = baud clock / ((OSR+1) × SBR)
+> >> > +	 */
+> >> > +	baud_diff = baudrate;
+> >> > +	osr = 0;
+> >> > +	sbr = 0;
+> >> > +
+> >> > +	for (tmp_osr = 4; tmp_osr <= 32; tmp_osr++) {
+> >> > +		/* calculate the temporary sbr value  */
+> >> > +		tmp_sbr = (clk / (baudrate * tmp_osr));
+> >> > +		if (tmp_sbr == 0)
+> >> > +			tmp_sbr = 1;
+> >> > +
+> >> > +		/*
+> >> > +		 * calculate the baud rate difference based on the temporary
+> >> > +		 * osr and sbr values
+> >> > +		 */
+> >> > +		tmp_diff = clk / (tmp_osr * tmp_sbr) - baudrate;
+> >> > +
+> >> > +		/* select best values between sbr and sbr+1 */
+> >> > +		tmp = clk / (tmp_osr * (tmp_sbr + 1));
+> >> > +		if (tmp_diff > (baudrate - tmp)) {
+> >> > +			tmp_diff = baudrate - tmp;
+> >> > +			tmp_sbr++;
+> >> > +		}
+> >> > +
+> >> > +		if (tmp_diff <= baud_diff) {
+> >> > +			baud_diff = tmp_diff;
+> >> > +			osr = tmp_osr;
+> >> > +			sbr = tmp_sbr;
+> >> > +		}
+> >> > +	}
+> >> > +
+> >> > +	/* handle buadrate outside acceptable rate */
+> >> > +	if (baud_diff > ((baudrate / 100) * 3))
+> >> > +		dev_warn(sport->port.dev,
+> >> > +			 "unacceptable baud rate difference of more than 3%%\n");
+> >> > +
+> >> > +	tmp = lpuart32_read(sport->port.membase + UARTBAUD);
+> >> > +
+> >> > +	if ((osr > 3) && (osr < 8))
+> >> > +		tmp |= UARTBAUD_BOTHEDGE;
+> >> > +
+> >> > +	tmp &= ~(UARTBAUD_OSR_MASK << UARTBAUD_OSR_SHIFT);
+> >> > +	tmp |= (((osr-1) & UARTBAUD_OSR_MASK) << UARTBAUD_OSR_SHIFT);
+> >> > +
+> >> > +	tmp &= ~UARTBAUD_SBR_MASK;
+> >> > +	tmp |= sbr & UARTBAUD_SBR_MASK;
+> >> > +
+> >> > +	tmp &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
+> >> > +
+> >> > +	lpuart32_write(tmp, sport->port.membase + UARTBAUD);
+> >> > +}
+> >> > +
+> >> > +static void
+> >> >  lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+> >> >  		   struct ktermios *old)
+> >> >  {
+> >> > @@ -1611,12 +1679,17 @@ lpuart32_set_termios(struct uart_port *port,
+> >> > struct ktermios *termios,
+> >> >  	lpuart32_write(old_ctrl & ~(UARTCTRL_TE | UARTCTRL_RE),
+> >> >  			sport->port.membase + UARTCTRL);
+> >> >
+> >> > -	sbr = sport->port.uartclk / (16 * baud);
+> >> > -	bd &= ~UARTBAUD_SBR_MASK;
+> >> > -	bd |= sbr & UARTBAUD_SBR_MASK;
+> >> > -	bd |= UARTBAUD_BOTHEDGE;
+> >> > -	bd &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
+> >> > -	lpuart32_write(bd, sport->port.membase + UARTBAUD);
+> >> > +	if (of_device_is_compatible(port->dev->of_node, "fsl,imx7ulp-lpuart")) {
+> >>
+> >> Shouldn't we be consequent here and also use a flag in the soc data
+> >> instead of of_device_is_compatible...?
+> >>
+> > 
+> > The original purpose is that this is a temporary code and supposed will
+> > be deleted later once LS platforms confirmed the new baud setting API
+> > works for them as well.
+> > 
+> > That's why i did not make it a property, as i stated in the cover letter.
+> 
+> Ok, I see that is a good reason to not define a new feature property
+> now... 
+> 
+> But, if you are reasonable sure it should work, I am inclined to say
+> just enable it for LS1021a so it also really gets tested...
+> 
 
-Signed-off-by: YT Shen <yt.shen@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/Makefile       |   1 +
- arch/arm64/boot/dts/mediatek/mt2712-evb.dts |  44 +++++++
- arch/arm64/boot/dts/mediatek/mt2712e.dtsi   | 172 ++++++++++++++++++++++++++++
- 3 files changed, 217 insertions(+)
- create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
- create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+Okay, i'll take this suggestion to get things started.
 
-diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index 9fbfd32..fcc0604 100644
---- a/arch/arm64/boot/dts/mediatek/Makefile
-+++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -1,3 +1,4 @@
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
-diff --git a/arch/arm64/boot/dts/mediatek/mt2712-evb.dts b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-new file mode 100644
-index 0000000..40b0c91
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-@@ -0,0 +1,44 @@
-+/*
-+ * Copyright (c) 2017 MediaTek Inc.
-+ * Author: YT Shen <yt.shen@mediatek.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+/dts-v1/;
-+#include "mt2712e.dtsi"
-+
-+/ {
-+	model = "MediaTek MT2712 evaluation board";
-+	compatible = "mediatek,mt2712-evb", "mediatek,mt2712";
-+
-+	aliases {
-+		serial0 = &uart0;
-+		serial1 = &uart1;
-+		serial2 = &uart2;
-+		serial3 = &uart3;
-+		serial4 = &uart4;
-+		serial5 = &uart5;
-+	};
-+
-+	memory@40000000 {
-+		device_type = "memory";
-+		reg = <0 0x40000000 0 0x80000000>;
-+	};
-+
-+	chosen {
-+		bootargs = "console=ttyS0,921600n1 initrd=0x45000000,90M";
-+	};
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-+
-diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-new file mode 100644
-index 0000000..40747a9
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-@@ -0,0 +1,172 @@
-+/*
-+ * Copyright (c) 2017 MediaTek Inc.
-+ * Author: YT Shen <yt.shen@mediatek.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+/ {
-+	compatible = "mediatek,mt2712";
-+	interrupt-parent = <&sysirq>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+			};
-+
-+			cluster1 {
-+				core0 {
-+					cpu = <&cpu2>;
-+				};
-+			};
-+		};
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a35";
-+			reg = <0x000>;
-+		};
-+
-+		cpu1: cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a35";
-+			reg = <0x001>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu2: cpu@200 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a72";
-+			reg = <0x200>;
-+			enable-method = "psci";
-+		};
-+	};
-+
-+	psci {
-+		compatible = "arm,psci-0.2";
-+		method = "smc";
-+	};
-+
-+	uart_clk: dummy26m {
-+		compatible = "fixed-clock";
-+		clock-frequency = <26000000>;
-+		#clock-cells = <0>;
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 13
-+			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 14
-+			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 11
-+			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 10
-+			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>;
-+	};
-+
-+	soc {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		compatible = "simple-bus";
-+		ranges;
-+
-+		uart5: serial@1000f000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x1000f000 0 0x400>;
-+			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&uart_clk>;
-+			status = "disabled";
-+		};
-+
-+		sysirq: intpol-controller@10220a80 {
-+			compatible = "mediatek,mt2712-sysirq",
-+				     "mediatek,mt6577-sysirq";
-+			interrupt-controller;
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			reg = <0 0x10220a80 0 0x40>;
-+		};
-+
-+		gic: interrupt-controller@10510000 {
-+			compatible = "arm,gic-400";
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			interrupt-controller;
-+			reg = <0 0x10510000 0 0x1000>,
-+			      <0 0x10520000 0 0x1000>,
-+			      <0 0x10540000 0 0x2000>,
-+			      <0 0x10560000 0 0x2000>;
-+			interrupts = <GIC_PPI 9
-+				(GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_HIGH)>;
-+		};
-+
-+		uart0: serial@11002000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11002000 0 0x400>;
-+			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&uart_clk>;
-+			status = "disabled";
-+		};
-+
-+		uart1: serial@11003000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11003000 0 0x400>;
-+			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&uart_clk>;
-+			status = "disabled";
-+		};
-+
-+		uart2: serial@11004000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11004000 0 0x400>;
-+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&uart_clk>;
-+			status = "disabled";
-+		};
-+
-+		uart3: serial@11005000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11005000 0 0x400>;
-+			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&uart_clk>;
-+			status = "disabled";
-+		};
-+
-+		uart4: serial@11019000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11019000 0 0x400>;
-+			interrupts = <GIC_SPI 126 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&uart_clk>;
-+			status = "disabled";
-+		};
-+	};
-+};
-+
--- 
-1.9.1
+Thanks
+
+Regards
+Dong Aisheng
