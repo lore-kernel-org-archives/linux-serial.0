@@ -1,43 +1,60 @@
-From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/1] xilinx ps uart: Adding a kernel parameter for the
- number of xilinx ps uarts
-Date: Sat, 20 May 2017 17:20:08 +0100
-Message-ID: <20170520172008.5a979e8a@alans-desktop>
-References: <20170520022154.6766-1-kernel.development@povil.us>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170520022154.6766-1-kernel.development@povil.us>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sam Povilus <kernel.development@povil.us>
-Cc: gregkh@linuxfoundation.org, michal.simek@xilinx.com, linux-kernel@vger.kernel.org, soren.brinkmann@xilinx.com, linux-serial@vger.kernel.org, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: [PATCH] serial: of_serial: remove NULL pointer check for clk_disable_unprepare
+Date: Sun, 21 May 2017 02:44:46 +0900
+Message-ID: <1495302286-1503-1-git-send-email-yamada.masahiro@socionext.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Arnd Bergmann <arnd@arndb.de>, Robert Jarzmik <robert.jarzmik@free.fr>, Sekhar Nori <nsekhar@ti.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, David Lechner <david@lechnology.com>, Thor Thayer <tthayer@opensource.altera.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 19 May 2017 20:21:54 -0600
-Sam Povilus <kernel.development@povil.us> wrote:
+After long term efforts of fixing non-common clock implementations,
+clk_disable() is a no-op for a NULL pointer input, and this is now
+tree-wide consistent.
 
-> The number of xilinx ps uart should be set by a kernel parameter instead of
-> using a #define. This allows the user to set the number of xilinx ps uart
-> using only kconfig and not modifying kernel source.
-> 
-> The ps uart is used in Xilnx Zynq chips usually in quantities maxing at
-> two, but there may be other chips that use more in the future or that I
-> don't know about. 
+All clock consumers can safely call clk_disable(_unprepare) without
+NULL pointer check.
 
-If it maxes at two then just set it to two. If in in future it maxes at
-lots then when it's going to happen change the code to do dynamic
-allocation and test it versus actual hardware. 
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+---
 
-Otherwise you break some of the basic ideas of having one kernel for many
-systems.
+ drivers/tty/serial/8250/8250_of.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Alan
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 1cbadaf..89ba2b5 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -159,8 +159,8 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 
+ 	return 0;
+ out:
+-	if (info->clk)
+-		clk_disable_unprepare(info->clk);
++	clk_disable_unprepare(info->clk);
++
+ 	return ret;
+ }
+ 
+@@ -229,8 +229,8 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
+ 
+ 	serial8250_unregister_port(info->line);
+ 
+-	if (info->clk)
+-		clk_disable_unprepare(info->clk);
++	clk_disable_unprepare(info->clk);
++
+ 	kfree(info);
+ 	return 0;
+ }
+@@ -244,7 +244,7 @@ static int of_serial_suspend(struct device *dev)
+ 
+ 	serial8250_suspend_port(info->line);
+ 
+-	if (info->clk && (!uart_console(port) || console_suspend_enabled))
++	if (!uart_console(port) || console_suspend_enabled)
+ 		clk_disable_unprepare(info->clk);
+ 
+ 	return 0;
+-- 
+2.7.4
