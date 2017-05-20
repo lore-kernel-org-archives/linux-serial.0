@@ -1,60 +1,41 @@
 From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH] serial: of_serial: remove NULL pointer check for clk_disable_unprepare
-Date: Sun, 21 May 2017 02:44:46 +0900
-Message-ID: <1495302286-1503-1-git-send-email-yamada.masahiro@socionext.com>
+Subject: Re: [PATCH] serial: of_serial: remove NULL pointer check for clk_disable_unprepare
+Date: Sun, 21 May 2017 04:04:50 +0900
+Message-ID: <CAK7LNASoHTNeNWOX63S74bE6PrTsOce_rxtSiLkNypTPcSDJFA@mail.gmail.com>
+References: <1495302286-1503-1-git-send-email-yamada.masahiro@socionext.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1495302286-1503-1-git-send-email-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Arnd Bergmann <arnd@arndb.de>, Robert Jarzmik <robert.jarzmik@free.fr>, Sekhar Nori <nsekhar@ti.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, David Lechner <david@lechnology.com>, Thor Thayer <tthayer@opensource.altera.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Arnd Bergmann <arnd@arndb.de>, Robert Jarzmik <robert.jarzmik@free.fr>, Sekhar Nori <nsekhar@ti.com>, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, David Lechner <david@lechnology.com>, Thor Thayer <tthayer@opensource.altera.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-After long term efforts of fixing non-common clock implementations,
-clk_disable() is a no-op for a NULL pointer input, and this is now
-tree-wide consistent.
+2017-05-21 2:44 GMT+09:00 Masahiro Yamada <yamada.masahiro@socionext.com>:
+> After long term efforts of fixing non-common clock implementations,
+> clk_disable() is a no-op for a NULL pointer input, and this is now
+> tree-wide consistent.
+>
+> All clock consumers can safely call clk_disable(_unprepare) without
+> NULL pointer check.
+>
+> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 
-All clock consumers can safely call clk_disable(_unprepare) without
-NULL pointer check.
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
+Sorry, I retract this patch.
 
- drivers/tty/serial/8250/8250_of.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Krzysztof pointed out
+cleanups only for clk_disable_unprepare() will lose the code symmetry.
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 1cbadaf..89ba2b5 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -159,8 +159,8 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 
- 	return 0;
- out:
--	if (info->clk)
--		clk_disable_unprepare(info->clk);
-+	clk_disable_unprepare(info->clk);
-+
- 	return ret;
- }
- 
-@@ -229,8 +229,8 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
- 
- 	serial8250_unregister_port(info->line);
- 
--	if (info->clk)
--		clk_disable_unprepare(info->clk);
-+	clk_disable_unprepare(info->clk);
-+
- 	kfree(info);
- 	return 0;
- }
-@@ -244,7 +244,7 @@ static int of_serial_suspend(struct device *dev)
- 
- 	serial8250_suspend_port(info->line);
- 
--	if (info->clk && (!uart_console(port) || console_suspend_enabled))
-+	if (!uart_console(port) || console_suspend_enabled)
- 		clk_disable_unprepare(info->clk);
- 
- 	return 0;
+NULL pointer checks for clk_prepare_enable() should be
+removed to keep the code symmetrical.
+
+This is possible for common-clock framework because
+clk_prepare_enable() is also a no-op for a NULL clk input.
+But it is not necessarily true for non-common clock implementations.
+
+
 -- 
-2.7.4
+Best Regards
+Masahiro Yamada
