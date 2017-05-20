@@ -1,83 +1,59 @@
-From: Eric Anholt <eric@anholt.net>
-Subject: Re: [PATCH] serial: 8250: Add CAP_MINI, set for bcm2835aux
-Date: Fri, 19 May 2017 11:09:54 -0700
-Message-ID: <87vaowg1l9.fsf@eliezer.anholt.net>
-References: <8d9c605a-bff7-607c-2c5b-4ec75e68ac2d@raspberrypi.org>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8455445288799048727=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <8d9c605a-bff7-607c-2c5b-4ec75e68ac2d@raspberrypi.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Phil Elwell <phil@raspberrypi.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stefan Wahren <stefan.wahren@i2se.com>, linux-serial@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+From: Sam Povilus <kernel.development@povil.us>
+Subject: [PATCH 1/1] xilinx ps uart: Adding a kernel parameter for the number of xilinx ps uarts
+Date: Fri, 19 May 2017 20:21:54 -0600
+Message-ID: <20170520022154.6766-1-kernel.development@povil.us>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, michal.simek@xilinx.com, soren.brinkmann@xilinx.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: Sam Povilus <kernel.development@povil.us>
 List-Id: linux-serial@vger.kernel.org
 
---===============8455445288799048727==
-Content-Type: multipart/signed; boundary="=-=-=";
-	micalg=pgp-sha512; protocol="application/pgp-signature"
+The number of xilinx ps uart should be set by a kernel parameter instead of
+using a #define. This allows the user to set the number of xilinx ps uart
+using only kconfig and not modifying kernel source.
 
---=-=-=
-Content-Type: text/plain
+The ps uart is used in Xilnx Zynq chips usually in quantities maxing at
+two, but there may be other chips that use more in the future or that I
+don't know about. 
 
-Phil Elwell <phil@raspberrypi.org> writes:
+Signed-off-by: Sam Povilus <kernel.development@povil.us>
+---
+ drivers/tty/serial/Kconfig         | 9 +++++++++
+ drivers/tty/serial/xilinx_uartps.c | 2 +-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-> The AUX/mini-UART in the BCM2835 family of procesors is a cut-down
-> 8250 clone. In particular it is lacking support for the following
-> features: CSTOPB PARENB PARODD CMSPAR CS5 CS6
->
-> Add a new capability (UART_CAP_MINI) that exposes the restrictions to
-> the user of the termios API by turning off the unsupported features in
-> the request.
->
-> N.B. It is almost possible to automatically discover the missing
-> features by reading back the LCR register, but the CSIZE bits don't
-> cooperate (contrary to the documentation, both bits are significant,
-> but CS5 and CS6 are mapped to CS7) and the code is much longer.
->
-> See: https://github.com/raspberrypi/linux/issues/1561
->
-> Signed-off-by: Phil Elwell <phil@raspberrypi.org>
-
-Acked-by: Eric Anholt <eric@anholt.net>
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEE/JuuFDWp9/ZkuCBXtdYpNtH8nugFAlkfNPIACgkQtdYpNtH8
-nugLGA//VzPG05ItgjWqHgtWO/x3EadfRpUSeRKRQX1ppWSYB7a3/yVvwIUNMVkL
-+gkHj4xjUAKMbT6RLp9EVNmyPBQx6KcgxocPFjORlBwUjGyDHfMtw/X+JSCiR1o/
-7RjQMjWE1QGyJL3XZ5Rx0OldK67Vi3DcfE4CrkCFJn0zenJlNu5dkpQlnqC40QCj
-TNyZMTipRCxJBYgWigSCLnjIFsJhXE4IS104/1rVStRMGG6AjMM51DqbwFab+pZJ
-nEuXlqxhcQdvJ4ZVJFV7Muw/BmqW5gl0ADWI34fwRaZ4f3txjHSxVi4nn2pSyhZt
-NTyAp+IBQ5p/cevcnLsSkhFFxLk9fYo3pDarH7AJriNu1xjHXvo/HEwET+YCkAUH
-4f5mLckmqCzfgvOk57sGcvTBviYDvA6vnzlRnNDyFHHptM4+0ZgWrbc3sZiWmO9c
-63lH1iobgeMfvvoZaDyZoVl0PeZEf+Y+y4vxvrCg8n1J03B9cu7Ln/Ubz6nRVc+s
-NBGsHDG4m/r+YqnCnhoWiapaENk/ziiwQeJsrDt6LtkqzORAF7Tq7GawKIOcxmEo
-MPzpEZZYpqydDZZIAuYuNmZs5ZFbMf89DHiRQz5SuQoPBUm/K0G5QZrrPJvS1Ymn
-2kao0pl/PPypDciNxj4o+EGk0LFalcJusqi9fpmLnrDas7/pqWg=
-=PbLV
------END PGP SIGNATURE-----
---=-=-=--
-
-
---===============8455445288799048727==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============8455445288799048727==--
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 5c8850f7a2a0..fef25f17a4cc 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1461,6 +1461,15 @@ config SERIAL_XILINX_PS_UART_CONSOLE
+ 	help
+ 	  Enable a Cadence UART port to be the system console.
+ 
++config SERIAL_XILINX_PS_UART_NR_UARTS
++       int "Maximum number of Cadence UART ports"
++       depends on CONFIG_SERIAL_XILINX_NR_UARTS
++       range 1 64
++       default 2
++       help
++         Set this to the number of Cadence UARTS in your system, or the number
++	 you think you might implement.
++
+ config SERIAL_AR933X
+ 	tristate "AR933X serial port support"
+ 	depends on HAVE_CLK && SOC_AR933X
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index c0539950f8d7..a2c51c35da65 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -36,7 +36,7 @@
+ #define CDNS_UART_NAME		"xuartps"
+ #define CDNS_UART_MAJOR		0	/* use dynamic node allocation */
+ #define CDNS_UART_MINOR		0	/* works best with devtmpfs */
+-#define CDNS_UART_NR_PORTS	2
++#define CDNS_UART_NR_PORTS	CONFIG_SERIAL_XILINX_NR_UARTS
+ #define CDNS_UART_FIFO_SIZE	64	/* FIFO size */
+ #define CDNS_UART_REGISTER_SPACE	0x1000
+ 
+-- 
+2.11.0
