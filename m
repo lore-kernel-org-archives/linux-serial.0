@@ -1,24 +1,54 @@
 From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 1/8] serial: exar: Preconfigure xr17v35x MPIOs as output
-Date: Mon, 22 May 2017 17:38:43 +0200
-Message-ID: <CACRpkdZ5pjbg9_kAJ3pFgMdsvcJBTg2RyFWONt_nbk8ePsCGFw@mail.gmail.com>
-References: <cover.1494660546.git.jan.kiszka@siemens.com> <6155891d19531be018d30fd55ffd6d42493af8c1.1494660546.git.jan.kiszka@siemens.com>
+Subject: Re: [PATCH v2 1/6] gpio: exar: Fix passing in of parent PCI device
+Date: Mon, 22 May 2017 17:43:35 +0200
+Message-ID: <CACRpkdYKST8MEe7NjxpYN0ZGHZKVsJOiv+a12B0FbOdccNFz2w@mail.gmail.com>
+References: <cover.1495119548.git.jan.kiszka@siemens.com> <62280d24a7cf7c0be849c1186c909c850f4d2cc6.1495119548.git.jan.kiszka@siemens.com>
+ <CAHp75VcRRxgzoPio2zWrR5rE_ac9uQjcphcXTQF6TrM13qxe+A@mail.gmail.com> <7d5b0099-b4d9-881d-fc63-0c7f8229e096@siemens.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <6155891d19531be018d30fd55ffd6d42493af8c1.1494660546.git.jan.kiszka@siemens.com>
+In-Reply-To: <7d5b0099-b4d9-881d-fc63-0c7f8229e096@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, May 13, 2017 at 9:28 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-
-> This is the safe default for GPIOs with unknown external wiring.
+On Sun, May 21, 2017 at 1:44 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> On 2017-05-18 19:14, Andy Shevchenko wrote:
+>> On Thu, May 18, 2017 at 5:59 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>> This fixes reloading of the GPIO driver for the same platform device
+>>> instance as created by the exar UART driver: First of all, the driver
+>>> sets drvdata to its own value during probing and does not restore the
+>>> original value on exit. But this won't help anyway as the core clears
+>>> drvdata after the driver left.
+>>>
+>>> Use stable platform_data instead.
+>>
+>> Okay, basically what we are trying to do here is to reinvent part of
+>> MFD framework.
+>>
+>> I'd like to hear Linus' and others opinions if it worth to use it instead.
 >
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> I've looked into MFD modeling, but it would only make sense if we break
+> up the exar driver, change its xr17v35x part into a platform device and
+> create a dual-cell MFD for the PCI device. I don't think that would be
+> beneficial here. There are also dependencies between the UART part and
+> the MPIOs, specifically during init. All that would create a lot of
+> churn to the existing exar code.
+>
+> I'm now passing the parent reference via device.parent instead of using
+> platform data.
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Actually I am pretty much OK with either, there are gray areas in
+the device model and so it has to be sometimes.
+
+I'd just like Greg's ACK on this so I can merge the whole series
+through the GPIO tree.
+
+Incidentally, he is the device model maintainer so he might have
+some comments. Or be as tolerant as me. I don't know.
+
+Greg?
 
 Yours,
 Linus Walleij
