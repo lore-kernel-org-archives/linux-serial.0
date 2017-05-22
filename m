@@ -1,59 +1,36 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH 1/1] xilinx ps uart: Adding a kernel parameter for the
- number of xilinx ps uarts
-Date: Mon, 22 May 2017 09:02:34 +0200
-Message-ID: <517d864d-d230-3abc-eb3c-4b628dc4625f@xilinx.com>
-References: <20170520022154.6766-1-kernel.development@povil.us>
- <20170520172008.5a979e8a@alans-desktop>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: sh-sci: Update warning message in sci_request_dma_chan()
+Date: Mon, 22 May 2017 15:15:02 +0200
+Message-ID: <1495458902-11961-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170520172008.5a979e8a@alans-desktop>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Sam Povilus <kernel.development@povil.us>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, michal.simek@xilinx.com, soren.brinkmann@xilinx.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Alan,
+The commit below changed a function call from
+dma_request_slave_channel_compat() to dma_request_slave_channel(), but
+forgot to update the printed failure message.
 
-On 20.5.2017 18:20, Alan Cox wrote:
-> On Fri, 19 May 2017 20:21:54 -0600
-> Sam Povilus <kernel.development@povil.us> wrote:
-> 
->> The number of xilinx ps uart should be set by a kernel parameter instead of
->> using a #define. This allows the user to set the number of xilinx ps uart
->> using only kconfig and not modifying kernel source.
->>
->> The ps uart is used in Xilnx Zynq chips usually in quantities maxing at
->> two, but there may be other chips that use more in the future or that I
->> don't know about. 
-> 
-> If it maxes at two then just set it to two. If in in future it maxes at
-> lots then when it's going to happen change the code to do dynamic
-> allocation and test it versus actual hardware. 
-> 
-> Otherwise you break some of the basic ideas of having one kernel for many
-> systems.
+Fixes: 219fb0c1436e4893 ("serial: sh-sci: Remove the platform data dma slave rx/tx channel IDs")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/tty/serial/sh-sci.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-
-We have in soc vendor tree similar patch but the reason is different.
-
-    tty: serial: Added a CONFIG_SERIAL_XILINX_NR_UARTS option.
-
-    This patch Adds CONFIG_SERIAL_XILINX_NR_UARTS option to allow
-    the user to provide the Max number of uart ports information.
-    If multiple cards (or) PL UARTS are present, the default limit
-    of 2 ports should be increased.
-
-I haven't checked all drivers but in our case we have added this as
-quick fix for scenarios where you use serial aliases where alias is
-pointed to serial2 or more.
-In cdns_uart_init() cdns_uart_uart_driver is passed which contains .nr
-which is required to be passed.
-
-What's the best driver to look at dynamic allocation?
-
-Thanks,
-Michal
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 21b06cf1f15bc642..d36d735cd0099e83 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1450,8 +1450,7 @@ static struct dma_chan *sci_request_dma_chan(struct uart_port *port,
+ 	chan = dma_request_slave_channel(port->dev,
+ 					 dir == DMA_MEM_TO_DEV ? "tx" : "rx");
+ 	if (!chan) {
+-		dev_warn(port->dev,
+-			 "dma_request_slave_channel_compat failed\n");
++		dev_warn(port->dev, "dma_request_slave_channel failed\n");
+ 		return NULL;
+ 	}
+ 
+-- 
+2.7.4
