@@ -1,80 +1,66 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH v3 0/4] tty/serial: meson_uart: add support for core clock
- handling
-Date: Tue, 23 May 2017 10:37:01 +0200
-Message-ID: <81ec5e8e-2cf0-a59c-7355-c64e9f6106d9@baylibre.com>
-References: <20170331165437.26227-1-hgkr.klein@gmail.com>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH 1/1] xilinx ps uart: Adding a kernel parameter for the
+ number of xilinx ps uarts
+Date: Tue, 23 May 2017 13:44:24 +0200
+Message-ID: <1668f36e-f9be-7008-004a-e467a6813e0f@xilinx.com>
+References: <20170520022154.6766-1-kernel.development@povil.us>
+ <20170520172008.5a979e8a@alans-desktop>
+ <517d864d-d230-3abc-eb3c-4b628dc4625f@xilinx.com>
+ <20170522192636.5b578d89@alans-desktop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170331165437.26227-1-hgkr.klein@gmail.com>
+In-Reply-To: <20170522192636.5b578d89@alans-desktop>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Helmut Klein <hgkr.klein@gmail.com>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Michal Simek <michal.simek@xilinx.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Sam Povilus <kernel.development@povil.us>, gregkh@linuxfoundation.org, jslaby@suse.com, soren.brinkmann@xilinx.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Helmut,
+On 22.5.2017 20:26, Alan Cox wrote:
+>> We have in soc vendor tree similar patch but the reason is different.
+>>
+>>     tty: serial: Added a CONFIG_SERIAL_XILINX_NR_UARTS option.
+>>
+>>     This patch Adds CONFIG_SERIAL_XILINX_NR_UARTS option to allow
+>>     the user to provide the Max number of uart ports information.
+>>     If multiple cards (or) PL UARTS are present, the default limit
+>>     of 2 ports should be increased.
+>>
+>> I haven't checked all drivers but in our case we have added this as
+>> quick fix for scenarios where you use serial aliases where alias is
+>> pointed to serial2 or more.
+>> In cdns_uart_init() cdns_uart_uart_driver is passed which contains .nr
+>> which is required to be passed.
+>>
+>> What's the best driver to look at dynamic allocation?
+> 
+> So there are quite a few that dynamically allocate the objects as they
+> are enumerated (eg max3100), but have a maximum set that is just pointers
+> (so for the max number of ports cheaper than the dynamic code)
+
+yep hardcoded max 4 where in probe first free space is found and used
+(range 0-3) but still max3100s statically allocated.
+Shouldn't be this also dynamically allocated?
 
 
-On 03/31/2017 06:54 PM, Helmut Klein wrote:
-> To be able to use the three none AO uarts of the meson gx SoCs (uart_A,
-> uart_B & uart_C), the core clock has to be enabled (see chapter 22.3 of
-> the public s905 data sheet).
-> At least the u-boot of my s905 based media player (netxeon minimx-g)
-> doesn't do this. so the driver must enable the clock.
-> 
-> This patch set does:
-> - exposes the UART clock ids to the dtb
-> - adds documentation for the dt-bindings of meson_uart
-> - adds the core clock handling to the driver
-> - adds the core clock handling to meson-gxbb.dtsi and meson-gxl.dtsi
-> 
-> The patchset is based on the branch "master" of the repository in [1]
-> 
-> Changes since v2
-> - mail subjects reworked
-> - add clocks/clock-names to the documentation
-> - add core clock handling to meson-gxbb.dtsi & meson-gxl.dtsi
-> 
-> Changes since v1
-> - use git to produce the patch set
-> - added the clock ids for uart_B and uart_C
-> 
-> [1] git://git.kernel.org/pub/scm/linux/kernel/git/khilman/linux-amlogic.git
+> The other question is why is it a CONFIG_ option. I'm assuming these
+> platforms are all ARM and in that case you could just pass the value in
+> the device tree, or hard code a safe maximum number of pointers to a
+> value which is the worst case and then install them as they are
+> enumerated.
 
-I'll take the first patch then I will need to rework your patchset (keeping your
-autorship, don't worry) since we need to handle the old bindings.
+I am not quite sure how exactly you want to do this via DT.
 
-I'll post it for review when ready.
+Also what do you think is a safe maximum number? This is fpga - hundreds
+of pins which can do just uart.
 
-Anyway, thanks for the patchset.
+> There are lots of options better than breaking the "one kernel many
+> platforms" model.
 
-Neil
+Another options is also module parameter and dynamically allocated array
+in cdns_uart_init.
 
-> 
-> Helmut Klein (4):
->   clk: meson: gxbb: expose CLKID_UARTx
->   dt-bindings: meson_uart: add documentation for meson UARTs
->   tty/serial: meson_uart: add the core clock handling to the driver
->   ARM64: dts: meson-gx: add core clock support for uart_A, uart_B and
->     uart_C
-> 
->  .../bindings/serial/amlogic,meson_uart.txt         | 30 ++++++++++++++++++++++
->  arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi        | 15 +++++++++++
->  arch/arm64/boot/dts/amlogic/meson-gxl.dtsi         | 15 +++++++++++
->  drivers/clk/meson/gxbb.h                           |  6 ++---
->  drivers/tty/serial/meson_uart.c                    | 10 ++++++++
->  include/dt-bindings/clock/gxbb-clkc.h              |  3 +++
->  6 files changed, 76 insertions(+), 3 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson_uart.txt
-> 
-> --
-> 2.11.0
-> 
-> 
-> _______________________________________________
-> linux-amlogic mailing list
-> linux-amlogic@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-amlogic
-> 
+Thanks,
+Michal
