@@ -1,284 +1,142 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/2] arm64: dts: Add Mediatek SoC MT2712 and evaluation
- board dts and Makefile
-Date: Tue, 23 May 2017 10:01:37 -0500
-Message-ID: <20170523150137.ouyloy46ahuhsenu@rob-hp-laptop>
-References: <1495192186-22480-1-git-send-email-yt.shen@mediatek.com>
- <1495192186-22480-3-git-send-email-yt.shen@mediatek.com>
+From: Steve Twiss <stwiss.opensource@diasemi.com>
+Subject: RE: [PATCH V1] serial: imx: revert setup DCEDTE early and ensure
+ DCD and RI irqs to be off
+Date: Tue, 23 May 2017 15:01:26 +0000
+Message-ID: <6ED8E3B22081A4459DAC7699F3695FB7018CD8D328@SW-EX-MBX02.diasemi.com>
+References: <20170523123145.E268B3FAD4@swsrvapps-01.diasemi.com>
+ <20170523140941.l6cjvfdsvsg76cbx@pengutronix.de>
+ <6ED8E3B22081A4459DAC7699F3695FB7018CD8D303@SW-EX-MBX02.diasemi.com>
+ <20170523143715.yeg3gpkmvlu4l5kt@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1495192186-22480-3-git-send-email-yt.shen@mediatek.com>
+In-Reply-To: <20170523143715.yeg3gpkmvlu4l5kt@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: YT Shen <yt.shen@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Mars Cheng <mars.cheng@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LINUX-KERNEL <linux-kernel@vger.kernel.org>, LINUX-SERIAL <linux-serial@vger.kernel.org>, Lucas Stach <l.stach@pengutronix.de>, Support Opensource <Support.Opensource@diasemi.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 19, 2017 at 07:09:46PM +0800, YT Shen wrote:
-> This adds basic chip support for Mediatek 2712
-> 
-> Signed-off-by: YT Shen <yt.shen@mediatek.com>
-> ---
->  arch/arm64/boot/dts/mediatek/Makefile       |   1 +
->  arch/arm64/boot/dts/mediatek/mt2712-evb.dts |  44 +++++++
->  arch/arm64/boot/dts/mediatek/mt2712e.dtsi   | 172 ++++++++++++++++++++++++++++
->  3 files changed, 217 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-> index 9fbfd32..fcc0604 100644
-> --- a/arch/arm64/boot/dts/mediatek/Makefile
-> +++ b/arch/arm64/boot/dts/mediatek/Makefile
-> @@ -1,3 +1,4 @@
-> +dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
->  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
->  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
->  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
-> diff --git a/arch/arm64/boot/dts/mediatek/mt2712-evb.dts b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-> new file mode 100644
-> index 0000000..40b0c91
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-> @@ -0,0 +1,44 @@
-> +/*
-> + * Copyright (c) 2017 MediaTek Inc.
-> + * Author: YT Shen <yt.shen@mediatek.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-
-You may want to dual license this. Not sure what the rest of Mediatek 
-dts files do though. Also, you can use SPDX tag here if you want.
-
-> +
-> +/dts-v1/;
-> +#include "mt2712e.dtsi"
-> +
-> +/ {
-> +	model = "MediaTek MT2712 evaluation board";
-> +	compatible = "mediatek,mt2712-evb", "mediatek,mt2712";
-> +
-> +	aliases {
-> +		serial0 = &uart0;
-> +		serial1 = &uart1;
-> +		serial2 = &uart2;
-> +		serial3 = &uart3;
-> +		serial4 = &uart4;
-> +		serial5 = &uart5;
-> +	};
-> +
-> +	memory@40000000 {
-> +		device_type = "memory";
-> +		reg = <0 0x40000000 0 0x80000000>;
-> +	};
-> +
-> +	chosen {
-> +		bootargs = "console=ttyS0,921600n1 initrd=0x45000000,90M";
-
-Both of these have a way to be expressed in DT. For the initrd, the 
-bootloader should be setting the address and size anyway.
-
-> +	};
-> +};
-> +
-> +&uart0 {
-> +	status = "okay";
-> +};
-> +
-> diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> new file mode 100644
-> index 0000000..40747a9
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> @@ -0,0 +1,172 @@
-> +/*
-> + * Copyright (c) 2017 MediaTek Inc.
-> + * Author: YT Shen <yt.shen@mediatek.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +/ {
-> +	compatible = "mediatek,mt2712";
-> +	interrupt-parent = <&sysirq>;
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +
-> +	cpus {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		cpu-map {
-> +			cluster0 {
-> +				core0 {
-> +					cpu = <&cpu0>;
-> +				};
-> +				core1 {
-> +					cpu = <&cpu1>;
-> +				};
-> +			};
-> +
-> +			cluster1 {
-> +				core0 {
-> +					cpu = <&cpu2>;
-> +				};
-> +			};
-> +		};
-> +
-> +		cpu0: cpu@0 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a35";
-> +			reg = <0x000>;
-> +		};
-> +
-> +		cpu1: cpu@1 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a35";
-> +			reg = <0x001>;
-> +			enable-method = "psci";
-> +		};
-> +
-> +		cpu2: cpu@200 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a72";
-> +			reg = <0x200>;
-> +			enable-method = "psci";
-> +		};
-> +	};
-> +
-> +	psci {
-> +		compatible = "arm,psci-0.2";
-> +		method = "smc";
-> +	};
-> +
-> +	uart_clk: dummy26m {
-> +		compatible = "fixed-clock";
-> +		clock-frequency = <26000000>;
-> +		#clock-cells = <0>;
-> +	};
-> +
-> +	timer {
-> +		compatible = "arm,armv8-timer";
-> +		interrupt-parent = <&gic>;
-> +		interrupts = <GIC_PPI 13
-> +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 14
-> +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 11
-> +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 10
-> +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>;
-> +	};
-> +
-> +	soc {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		compatible = "simple-bus";
-> +		ranges;
-> +
-> +		uart5: serial@1000f000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x1000f000 0 0x400>;
-> +			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +
-> +		sysirq: intpol-controller@10220a80 {
-
-interrupt-controller@...
-
-> +			compatible = "mediatek,mt2712-sysirq",
-> +				     "mediatek,mt6577-sysirq";
-> +			interrupt-controller;
-> +			#interrupt-cells = <3>;
-> +			interrupt-parent = <&gic>;
-> +			reg = <0 0x10220a80 0 0x40>;
-> +		};
-> +
-> +		gic: interrupt-controller@10510000 {
-> +			compatible = "arm,gic-400";
-> +			#interrupt-cells = <3>;
-> +			interrupt-parent = <&gic>;
-> +			interrupt-controller;
-> +			reg = <0 0x10510000 0 0x1000>,
-> +			      <0 0x10520000 0 0x1000>,
-> +			      <0 0x10540000 0 0x2000>,
-> +			      <0 0x10560000 0 0x2000>;
-> +			interrupts = <GIC_PPI 9
-> +				(GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_HIGH)>;
-> +		};
-> +
-> +		uart0: serial@11002000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11002000 0 0x400>;
-> +			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart1: serial@11003000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11003000 0 0x400>;
-> +			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart2: serial@11004000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11004000 0 0x400>;
-> +			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart3: serial@11005000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11005000 0 0x400>;
-> +			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart4: serial@11019000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11019000 0 0x400>;
-> +			interrupts = <GIC_SPI 126 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +	};
-> +};
-> +
-> -- 
-> 1.9.1
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe devicetree" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+SGkgVXdlLA0KDQpPbiAyMyBNYXkgMjAxNyAxNTozNywgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6
+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjFdIHNlcmlhbDogaW14OiByZXZlcnQgc2V0dXAgRENF
+RFRFIGVhcmx5IGFuZCBlbnN1cmUgRENEIGFuZCBSSSBpcnFzIHRvIGJlIG9mZg0KPiBPbiBUdWUs
+IE1heSAyMywgMjAxNyBhdCAwMjoyODoxMVBNICswMDAwLCBTdGV2ZSBUd2lzcyB3cm90ZToNCj4g
+PiBPbiAyMyBNYXkgMjAxNyAxNToxMCwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQo+ID4gPiBP
+biBUdWUsIE1heSAyMywgMjAxNyBhdCAwMToxNzoyNlBNICswMTAwLCBTdGV2ZSBUd2lzcyB3cm90
+ZToNCj4gPiA+ID4NCj4gPiA+ID4gUmV2ZXJ0IHRoZSBjb21taXQgZTYxYzM4ZDg1YjczOTJlICgi
+c2VyaWFsOiBpbXg6IHNldHVwIERDRURURSBlYXJseSBhbmQNCj4gPiA+ID4gZW5zdXJlIERDRCBh
+bmQgUkkgaXJxcyB0byBiZSBvZmYiKQ0KPiA+ID4gPiBUaGUgcGF0Y2ggc3VibWl0dGVkIHRvIHNl
+dHVwIERDRURURSBlYXJseSBhbmQgZW5zdXJlIERDRCBhbmQgUkkgaXJxcyB0bw0KPiA+ID4gPiBi
+ZSBvZmYsIGNhdXNlcyBhIHNlcmlhbCBjb25zb2xlIGRpc3BsYXkgcHJvYmxlbSB0aGUgaS5NWDZR
+IFNBQlJFU0QgYm9hcmQuDQo+ID4gPiA+IFRoZSBjb25zb2xlIGJlY29tZXMgdW5yZWFkYWJsZSBh
+bmQgdW53cml0YWJsZS4NCj4gPiA+ID4NCj4gPiA+ID4gVGVzdGVkLWJ5OiBTdGV2ZSBUd2lzcyA8
+c3R3aXNzLm9wZW5zb3VyY2VAZGlhc2VtaS5jb20+DQo+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IFN0
+ZXZlIFR3aXNzIDxzdHdpc3Mub3BlbnNvdXJjZUBkaWFzZW1pLmNvbT4NCj4gPiA+DQo+ID4gPiBZ
+b3UncmUgbm90IHRoZSBmaXJzdCB0byByZXBvcnQgdGhpcyBpc3N1ZSBidXQgeW91IHN0aWxsIGhh
+dmUgdGhlIGNoYW5jZQ0KPiA+ID4gdG8gYmUgdGhlIGZpcnN0IHRvIHRlc3QgYSBzdWdnZXN0ZWQg
+cGF0Y2ggZm9yIGl0Lg0KPiA+DQo+ID4gSSd2ZSBqdXN0IGFwcGxpZWQgeW91ciBwYXRjaCBhZ2Fp
+bnN0IGEgY2xlYW4gbGludXgtbmV4dC92NC4xMi1yYzINCj4gPiBJIGFkZGVkIHlvdXIgcGF0Y2gg
+Li4uDQo+ID4NCj4gPiA+IAlodHRwOi8vbWFyYy5pbmZvLz9sPWxpbnV4LXNlcmlhbCZtPTE0OTQz
+NDAyOTkxMjk0NyZ3PTINCj4gPg0KWy4uLl0NCj4gPiBJJ3ZlIGFkZGVkIHRoYXQgdG8gbXkgd29y
+a2luZyBkaXJlY3RvcnksIGJ1dCBJIGFtIHN0aWxsIHNlZWluZyB0aGUgY29ycnVwdGVkDQo+ID4g
+Y29uc29sZSBvdXRwdXQgb24gdGhlIGkuTVg2IFEgKHF1YWQpIGJvYXJkLg0KPiANCj4gSSBkb24n
+dCBoYXZlIGEgZmFpbGluZyBib2FyZCAoSSB0aGluaykuIFNvIGhlcmUgYXJlIGEgZmV3IHF1ZXN0
+aW9ucw0KPiBhYm91dCB5b3VyczoNCj4gDQo+ICAtIGhvdyBkb2VzIHRoZSBkdHMgc25pcHBldCBm
+b3IgeW91ciBmYWlsaW5nIGRldmljZSBsb29rIGxpa2U/DQoNCkkgYW0gdXNpbmcgdGhlIHN0YW5k
+YXJkIERUUyBmcm9tIHRoZSB2NC4xMi1yYzIga2VybmVsLCBubyBjaGFuZ2VzLg0KSSBkaWQgYW4g
+ZWFybGllciB0ZXN0IHllc3RlcmRheSB1c2luZyB0aGUgRFRTIGZyb20gdjQuMTEgdG8gc2VlIGlm
+IGl0IHdhcyB0aGUgbmV3DQppbXg3IGNoYW5nZXMgdGhhdCBoYXZlIHJlY2VudGx5IGdvbmUgaW50
+byB0aGUga2VybmVsIGJ1dCBJIHN0aWxsIHNlZSB0aGUgc2FtZQ0KZWZmZWN0Lg0KDQo+ICAtIFRo
+aXMgaXMgbm90IHRoZSBkZXZpY2UgdGhlIGNvbnNvbGUgcnVucyBvbiwgcmlnaHQ/DQoNCkkgYW0g
+Y29ubmVjdGVkIHRocm91Z2ggdGhlIFVTQiB0byBVQVJULCBVMjIgb24gdGhlIGkuTVg2USBib2Fy
+ZC4NClRlcm1pbmFsIHNldCB0byAxMTUyMDAgYmF1ZCwgbm8gcGFyaXR5LCA4Yml0IGRhdGEuDQoN
+Cj4gIC0gQ2FuIHlvdSBpbml0aWFsaXplIHRoZSBkZXZpY2UgaW4gdGhlIGJvb3Rsb2FkZXIgYW5k
+IGNoZWNrIGlmIGl0IGlzIHdvcmtpbmcgdGhlcmU/DQoNCkkgY2FuIGdldCBVLWJvb3Qgb2sgZm9y
+IGFsbCBjYXNlcy4NCk9uY2UgSSBURlRQIHRoZSBrZXJuZWwgYWNyb3NzLCBJIGFtIG9rYXkgdW50
+aWwgSSBnZXQgdG8gIlN0YXJ0aW5nIGtlcm5lbCAuLi4iLA0KdGhlbiwgdGhlIFVBUlQgaXMgIndv
+cmtpbmciIGluIHRoZSBzZW5zZSB0aGF0IEkgZ2V0IHRoZSBzb21lIGNoYXJhY3RlcnMgaW4gdGhl
+IHN0eWxlDQpvZiB0aGUga2VybmVsIHN0YXJ0aW5nIHVwLCBidXQgdGhleSBhcmUgYWxsIGdhcmJs
+ZWQuDQoNCkkgZXhwZWN0IHRoZSBrZXJuZWwgaGFzIHN0YXJ0ZWQgb2ssIGJ1dCBJIGFtIHVuYWJs
+ZSB0byByZWFkL3dyaXRlIHRocm91Z2ggdGhlIFVBUlQNCmNvbnNvbGUgYmVjYXVzZSBvZiBjb3Jy
+dXB0aW9ucy4NCg0KQ29uc29sZSBsb2c6DQotLS0gODwgLS0tDQpVLUJvb3QgMjAwOS4wOC0wMDAw
+MS1nZjY1NTM2YSAoSmFuIDEyIDIwMTUgLSAxNTo0NzoxOSkNCg0KQ1BVOiBGcmVlc2NhbGUgaS5N
+WDYgZmFtaWx5IFRPMS4yIGF0IDc5MiBNSHoNClRoZXJtYWwgc2Vuc29yIHdpdGggcmF0aW8gPSAy
+MDANClRlbXBlcmF0dXJlOiAgIDQ2IEMsIGNhbGlicmF0aW9uIGRhdGEgMHg1ZjE1NTI3ZA0KbXg2
+cSBwbGwxOiA3OTJNSHoNCm14NnEgcGxsMjogNTI4TUh6DQpteDZxIHBsbDM6IDQ4ME1Ieg0KbXg2
+cSBwbGw4OiA1ME1Ieg0KaXBnIGNsb2NrICAgICA6IDY2MDAwMDAwSHoNCmlwZyBwZXIgY2xvY2sg
+OiA2NjAwMDAwMEh6DQp1YXJ0IGNsb2NrICAgIDogODAwMDAwMDBIeg0KY3NwaSBjbG9jayAgICA6
+IDYwMDAwMDAwSHoNCmFoYiBjbG9jayAgICAgOiAxMzIwMDAwMDBIeg0KYXhpIGNsb2NrICAgOiAy
+NjQwMDAwMDBIeg0KZW1pX3Nsb3cgY2xvY2s6IDEzMjAwMDAwMEh6DQpkZHIgY2xvY2sgICAgIDog
+NTI4MDAwMDAwSHoNCnVzZGhjMSBjbG9jayAgOiAxOTgwMDAwMDBIeg0KdXNkaGMyIGNsb2NrICA6
+IDE5ODAwMDAwMEh6DQp1c2RoYzMgY2xvY2sgIDogMTk4MDAwMDAwSHoNCnVzZGhjNCBjbG9jayAg
+OiAxOTgwMDAwMDBIeg0KbmZjIGNsb2NrICAgICA6IDI0MDAwMDAwSHoNCkJvYXJkOiBpLk1YNlEt
+U0FCUkVTRDogdW5rbm93bi1ib2FyZCBCb2FyZDogMHg2MzAxMiBbV0RPRyBdDQpCb290IERldmlj
+ZTogU0QNCkkyQzogICByZWFkeQ0KRFJBTTogICAxIEdCDQpNTUM6ICAgRlNMX1VTREhDOiAwLEZT
+TF9VU0RIQzogMSxGU0xfVVNESEM6IDIsRlNMX1VTREhDOiAzDQpJbjogICAgc2VyaWFsDQpPdXQ6
+ICAgc2VyaWFsDQpFcnI6ICAgc2VyaWFsDQpGb3VuZCBQRlVaRTEwMCEgZGV2aWNlaWQ9MTAscmV2
+aWQ9MTENCk5ldDogICBnb3QgTUFDIGFkZHJlc3MgZnJvbSBJSU06IDAwOjA0OjlmOjAyOmUzOjBh
+DQpGRUMwIFtQUklNRV0NCkhpdCBhbnkga2V5IHRvIHN0b3AgYXV0b2Jvb3Q6ICAwDQpQSFkgaW5k
+ZW50aWZ5IEAgMHgxID0gMHgwMDRkZDA3NA0KRkVDOiBMaW5rIGlzIFVwIDc5NmQNClVzaW5nIEZF
+QzAgZGV2aWNlDQpURlRQIGZyb20gc2VydmVyIDE5Mi4xNjguMi4xOyBvdXIgSVAgYWRkcmVzcyBp
+cyAxOTIuMTY4LjIuMg0KRmlsZW5hbWUgJ3VJbWFnZV9kdGIuaW14NnEudjQuMTItcmMyJy4NCkxv
+YWQgYWRkcmVzczogMHgxMjAwMDAwMA0KTG9hZGluZzogIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjDQpkb25lDQpCeXRlcyB0cmFuc2ZlcnJlZCA9IDU5NTExMDggKDVhY2U4
+NCBoZXgpDQojIyBCb290aW5nIGtlcm5lbCBmcm9tIExlZ2FjeSBJbWFnZSBhdCAxMjAwMDAwMCAu
+Li4NCiAgIEltYWdlIE5hbWU6DQogICBJbWFnZSBUeXBlOiAgIEFSTSBMaW51eCBLZXJuZWwgSW1h
+Z2UgKHVuY29tcHJlc3NlZCkNCiAgIERhdGEgU2l6ZTogICAgNTk1MTA0NCBCeXRlcyA9ICA1Ljcg
+TUINCiAgIExvYWQgQWRkcmVzczogMTA4MDAwMDANCiAgIEVudHJ5IFBvaW50OiAgMTA4MDAwMDAN
+CiAgIFZlcmlmeWluZyBDaGVja3N1bSAuLi4gT0sNCiAgIExvYWRpbmcgS2VybmVsIEltYWdlIC4u
+LiBPSw0KT0sNCg0KU3RhcnRpbmcga2VybmVsIC4uLg0KDQrDoBzDvBzDvBxww74cw6DDvMO+w7wc
+w6Acw6DDoBzDoMO8w77DvBwcHBzDoMO8w7wcw77DvBzDoBzDvBzDoBzDoBzDoMO8xb0cHMOgw7wc
+w6DDvBwcHBwcw6DDoBzDoBzDoBzigqzDoBzDoMO8w77DvBwcHBzDoMOgw7wcHMO8w78NCsOgHMOg
+w7zFvcO8HMO+w7wcw6DDvMOgw7AcHMOgw6DDsMOgw6AcHMOgHBwcw74cHBx+cMOgHMWTw6AcYMO+
+HMO8HMOgw7zFvcOgHMOgHBzDoBzDvBzDoBwcw74cw7zDvhwcHBzDoBzDvBwcw6Acxb3DoMOgHBzD
+oBwcHA0Kw6DDoMO8HBzDvMO/HMOgHMOgw7zFvcO8HMO+w7wcw6DDvMOgw7AcHOKCrMOgw6AcHMOg
+w6DDoMOgw7DDoMOgHMOww6DDvMOgw6DDvMOww6DDoMOww6DDoMOgHBwcHMO+HBzDvMO/HBzDvMOw
+w7wcHMO8xb0cw6AcHMO8xb3DoBzDoBwcw6Acw7zDvA0KHBwcHMO+HBwcw7zDvxzDoBzDoMO8HMO8
+HHDDsBwcw7zDgBwcw7zDvsO8HBzDvBzDoMOgHMOgw7xww78cHMO8w6DDoMOww6DDoBzDsMOgw7zD
+oMOwHBzDoBzDvMOgxb0cHH44w6Acxb3DoMOgHMW9w6DDoMO84oKsw6DDoMOww6DDoMO8cA0Kxb0c
+w6AcHMOgHBwcHBzDvMOgHMOgHBzDoBzDoMOgw7DDoMO8w7DDoMOgHMOww6Acw7zDoHDDvsOgw7zD
+sMOgw7zDsMOgw6DDvsOgHMOww6Acw7zDoMOgw6Acw6AcHBzDoMOgw7DDoMOgHMOww6DDvMO8w6DF
+vcOgHOKCrMO8HBwcHBwcw6DDoBwNChwcxb0cw7zDoH7DvxzDvMOgw6Acw6DDoBzDvBwcHMO8xb3D
+oBzDoBzDvBzDvhzDoMO8fsW9w7zDoMOww6DDoMOww6DDoMOgHBzDoBzDvsOgHOKCrBzDvBzDoMOg
+w7AcHMO8fsO/HMOgw7zFvcOgHMOgw7zFvcO8HMO+w7wcw6Acw7DDoMOgw6AcDQocHMW9HMO8w6B+
+w78cw7zDoMW9w6AcHMOgw7zigqwcHMO+HMO8w6Acw7DDoMOgw7zigqwcHMOgw7zDsMOgw6DDvMO8
+w6DigqzDoBzDvMOgHOKCrMO8HBwcHBwcw6DDoBwcHMW9HBwcw6DDvBwcw6DDoBwcw6DDoMOjHHDF
+vRzDoMOgw7wcw7wNChzDvsO8HBzDoMO8HMOgw7zFvRzDoBzDoMO8w77DvBzDoBzDoMOgHBzDoMO+
+HBzDoMO84oKsHBwcw7wcHMO8w7AcHMOgw6AcHMOgw6DDoxxwxb0cw6Ac4oKsHMOgw7wcw6DDvMW9
+HMOgHMOgw7zDvsO8HMOgHMOgHMW9HMO8DQotLS0gODwgLS0tDQoNCj4gIC0gRG9lcyBpdCBtYWtl
+IGEgZGlmZmVyZW5jZSBpbiBMaW51eCBpZiB0aGUgYm9vdGxvYWRlciB1c2VkIHRoZSBkZXZpY2Ug
+IGJlZm9yZT8NCg0KSWYgeW91IG1lYW4sIGlmIFUtYm9vdCB1c2VzIHRoZSBVQVJUIGNvbnNvbGUg
+YmVmb3JlIGxvYWRpbmcgdGhlIGtlcm5lbCwgdGhlbiBuby4NCklzIHRoYXQgd2hhdCB5b3UgbWVh
+bj8NCkl0IG1ha2VzIG5vIGRpZmZlcmVuY2UgdW50aWwgdGhlIGtlcm5lbCBpcyBsb2FkZWQsIHRo
+ZW4gdGhlIHNlcmlhbCBvdXRwdXQgZ2V0cyBjb3JydXB0ZWQuDQoNCj4gIC0gQ2FuIHlvdSBkdW1w
+IHRoZSByZWdpc3RlciBzcGFjZSBvZiB0aGUgdWFydCB3aXRoIHY0LjEyLXJjMiBhbmQNCj4gICAg
+djQuMTItcmMyICsgcmV2ZXJ0IG9mIGU2MWMzOGQ4NWI3MzkyZT8NCg0KRGlmZmljdWx0IHRvIGRv
+IHRoYXQgSSB0aGluay4gVGhlIGNvbnNvbGUgaXMgdW51c2FibGUgaW4gYm90aCBkaXJlY3Rpb25z
+LiBJIGNhbid0IGdldCBhbnkNCnJlc3BvbnNlIGZyb20gdGhlIGNvbnNvbGUgKHRocm91Z2ggdHlw
+aW5nKSBvbmNlIHRoZSBrZXJuZWwgaGFzIHN0YXJ0ZWQuDQoNClJlZ2FyZHMsDQpTdGV2ZQ0K
