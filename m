@@ -1,142 +1,89 @@
-From: Steve Twiss <stwiss.opensource@diasemi.com>
-Subject: RE: [PATCH V1] serial: imx: revert setup DCEDTE early and ensure
- DCD and RI irqs to be off
-Date: Tue, 23 May 2017 15:01:26 +0000
-Message-ID: <6ED8E3B22081A4459DAC7699F3695FB7018CD8D328@SW-EX-MBX02.diasemi.com>
-References: <20170523123145.E268B3FAD4@swsrvapps-01.diasemi.com>
- <20170523140941.l6cjvfdsvsg76cbx@pengutronix.de>
- <6ED8E3B22081A4459DAC7699F3695FB7018CD8D303@SW-EX-MBX02.diasemi.com>
- <20170523143715.yeg3gpkmvlu4l5kt@pengutronix.de>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: gpio-exar: Why filtering out Commtech devices?
+Date: Tue, 23 May 2017 17:05:34 +0200
+Message-ID: <2445db07-a150-e954-099c-f39faefeb4b5@siemens.com>
+References: <18f4b5cb-cba0-aab4-7958-84a5b8d28935@siemens.com>
+ <7a25751e-931f-b713-dcdd-7a7483aae115@codethink.co.uk>
+ <c7b03839-c2ab-fa3e-3af6-5d4678fa3bbd@siemens.com>
+ <fc74be3d-7f74-cec3-769e-5eb53b2556b3@siemens.com>
+ <CAPpjZG9MGDzS0Bu2c6M-Pob5JkzeAptDu8QNnDJETinCenee0w@mail.gmail.com>
+ <b725379e-fc67-d706-e172-ca585c3f5e3d@siemens.com>
+ <6ac3fff4-5d23-d30c-1e04-e5a1f12f466d@siemens.com>
+ <CAPpjZG_HPFqKzf+7rBxM27TJcZJ4+vfUYSPChifM-JTN7ekTOA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170523143715.yeg3gpkmvlu4l5kt@pengutronix.de>
+In-Reply-To: <CAPpjZG_HPFqKzf+7rBxM27TJcZJ4+vfUYSPChifM-JTN7ekTOA@mail.gmail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LINUX-KERNEL <linux-kernel@vger.kernel.org>, LINUX-SERIAL <linux-serial@vger.kernel.org>, Lucas Stach <l.stach@pengutronix.de>, Support Opensource <Support.Opensource@diasemi.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>
+To: Technical Support <techsupport@commtech-fastcom.com>
+Cc: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgVXdlLA0KDQpPbiAyMyBNYXkgMjAxNyAxNTozNywgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6
-DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjFdIHNlcmlhbDogaW14OiByZXZlcnQgc2V0dXAgRENF
-RFRFIGVhcmx5IGFuZCBlbnN1cmUgRENEIGFuZCBSSSBpcnFzIHRvIGJlIG9mZg0KPiBPbiBUdWUs
-IE1heSAyMywgMjAxNyBhdCAwMjoyODoxMVBNICswMDAwLCBTdGV2ZSBUd2lzcyB3cm90ZToNCj4g
-PiBPbiAyMyBNYXkgMjAxNyAxNToxMCwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6DQo+ID4gPiBP
-biBUdWUsIE1heSAyMywgMjAxNyBhdCAwMToxNzoyNlBNICswMTAwLCBTdGV2ZSBUd2lzcyB3cm90
-ZToNCj4gPiA+ID4NCj4gPiA+ID4gUmV2ZXJ0IHRoZSBjb21taXQgZTYxYzM4ZDg1YjczOTJlICgi
-c2VyaWFsOiBpbXg6IHNldHVwIERDRURURSBlYXJseSBhbmQNCj4gPiA+ID4gZW5zdXJlIERDRCBh
-bmQgUkkgaXJxcyB0byBiZSBvZmYiKQ0KPiA+ID4gPiBUaGUgcGF0Y2ggc3VibWl0dGVkIHRvIHNl
-dHVwIERDRURURSBlYXJseSBhbmQgZW5zdXJlIERDRCBhbmQgUkkgaXJxcyB0bw0KPiA+ID4gPiBi
-ZSBvZmYsIGNhdXNlcyBhIHNlcmlhbCBjb25zb2xlIGRpc3BsYXkgcHJvYmxlbSB0aGUgaS5NWDZR
-IFNBQlJFU0QgYm9hcmQuDQo+ID4gPiA+IFRoZSBjb25zb2xlIGJlY29tZXMgdW5yZWFkYWJsZSBh
-bmQgdW53cml0YWJsZS4NCj4gPiA+ID4NCj4gPiA+ID4gVGVzdGVkLWJ5OiBTdGV2ZSBUd2lzcyA8
-c3R3aXNzLm9wZW5zb3VyY2VAZGlhc2VtaS5jb20+DQo+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IFN0
-ZXZlIFR3aXNzIDxzdHdpc3Mub3BlbnNvdXJjZUBkaWFzZW1pLmNvbT4NCj4gPiA+DQo+ID4gPiBZ
-b3UncmUgbm90IHRoZSBmaXJzdCB0byByZXBvcnQgdGhpcyBpc3N1ZSBidXQgeW91IHN0aWxsIGhh
-dmUgdGhlIGNoYW5jZQ0KPiA+ID4gdG8gYmUgdGhlIGZpcnN0IHRvIHRlc3QgYSBzdWdnZXN0ZWQg
-cGF0Y2ggZm9yIGl0Lg0KPiA+DQo+ID4gSSd2ZSBqdXN0IGFwcGxpZWQgeW91ciBwYXRjaCBhZ2Fp
-bnN0IGEgY2xlYW4gbGludXgtbmV4dC92NC4xMi1yYzINCj4gPiBJIGFkZGVkIHlvdXIgcGF0Y2gg
-Li4uDQo+ID4NCj4gPiA+IAlodHRwOi8vbWFyYy5pbmZvLz9sPWxpbnV4LXNlcmlhbCZtPTE0OTQz
-NDAyOTkxMjk0NyZ3PTINCj4gPg0KWy4uLl0NCj4gPiBJJ3ZlIGFkZGVkIHRoYXQgdG8gbXkgd29y
-a2luZyBkaXJlY3RvcnksIGJ1dCBJIGFtIHN0aWxsIHNlZWluZyB0aGUgY29ycnVwdGVkDQo+ID4g
-Y29uc29sZSBvdXRwdXQgb24gdGhlIGkuTVg2IFEgKHF1YWQpIGJvYXJkLg0KPiANCj4gSSBkb24n
-dCBoYXZlIGEgZmFpbGluZyBib2FyZCAoSSB0aGluaykuIFNvIGhlcmUgYXJlIGEgZmV3IHF1ZXN0
-aW9ucw0KPiBhYm91dCB5b3VyczoNCj4gDQo+ICAtIGhvdyBkb2VzIHRoZSBkdHMgc25pcHBldCBm
-b3IgeW91ciBmYWlsaW5nIGRldmljZSBsb29rIGxpa2U/DQoNCkkgYW0gdXNpbmcgdGhlIHN0YW5k
-YXJkIERUUyBmcm9tIHRoZSB2NC4xMi1yYzIga2VybmVsLCBubyBjaGFuZ2VzLg0KSSBkaWQgYW4g
-ZWFybGllciB0ZXN0IHllc3RlcmRheSB1c2luZyB0aGUgRFRTIGZyb20gdjQuMTEgdG8gc2VlIGlm
-IGl0IHdhcyB0aGUgbmV3DQppbXg3IGNoYW5nZXMgdGhhdCBoYXZlIHJlY2VudGx5IGdvbmUgaW50
-byB0aGUga2VybmVsIGJ1dCBJIHN0aWxsIHNlZSB0aGUgc2FtZQ0KZWZmZWN0Lg0KDQo+ICAtIFRo
-aXMgaXMgbm90IHRoZSBkZXZpY2UgdGhlIGNvbnNvbGUgcnVucyBvbiwgcmlnaHQ/DQoNCkkgYW0g
-Y29ubmVjdGVkIHRocm91Z2ggdGhlIFVTQiB0byBVQVJULCBVMjIgb24gdGhlIGkuTVg2USBib2Fy
-ZC4NClRlcm1pbmFsIHNldCB0byAxMTUyMDAgYmF1ZCwgbm8gcGFyaXR5LCA4Yml0IGRhdGEuDQoN
-Cj4gIC0gQ2FuIHlvdSBpbml0aWFsaXplIHRoZSBkZXZpY2UgaW4gdGhlIGJvb3Rsb2FkZXIgYW5k
-IGNoZWNrIGlmIGl0IGlzIHdvcmtpbmcgdGhlcmU/DQoNCkkgY2FuIGdldCBVLWJvb3Qgb2sgZm9y
-IGFsbCBjYXNlcy4NCk9uY2UgSSBURlRQIHRoZSBrZXJuZWwgYWNyb3NzLCBJIGFtIG9rYXkgdW50
-aWwgSSBnZXQgdG8gIlN0YXJ0aW5nIGtlcm5lbCAuLi4iLA0KdGhlbiwgdGhlIFVBUlQgaXMgIndv
-cmtpbmciIGluIHRoZSBzZW5zZSB0aGF0IEkgZ2V0IHRoZSBzb21lIGNoYXJhY3RlcnMgaW4gdGhl
-IHN0eWxlDQpvZiB0aGUga2VybmVsIHN0YXJ0aW5nIHVwLCBidXQgdGhleSBhcmUgYWxsIGdhcmJs
-ZWQuDQoNCkkgZXhwZWN0IHRoZSBrZXJuZWwgaGFzIHN0YXJ0ZWQgb2ssIGJ1dCBJIGFtIHVuYWJs
-ZSB0byByZWFkL3dyaXRlIHRocm91Z2ggdGhlIFVBUlQNCmNvbnNvbGUgYmVjYXVzZSBvZiBjb3Jy
-dXB0aW9ucy4NCg0KQ29uc29sZSBsb2c6DQotLS0gODwgLS0tDQpVLUJvb3QgMjAwOS4wOC0wMDAw
-MS1nZjY1NTM2YSAoSmFuIDEyIDIwMTUgLSAxNTo0NzoxOSkNCg0KQ1BVOiBGcmVlc2NhbGUgaS5N
-WDYgZmFtaWx5IFRPMS4yIGF0IDc5MiBNSHoNClRoZXJtYWwgc2Vuc29yIHdpdGggcmF0aW8gPSAy
-MDANClRlbXBlcmF0dXJlOiAgIDQ2IEMsIGNhbGlicmF0aW9uIGRhdGEgMHg1ZjE1NTI3ZA0KbXg2
-cSBwbGwxOiA3OTJNSHoNCm14NnEgcGxsMjogNTI4TUh6DQpteDZxIHBsbDM6IDQ4ME1Ieg0KbXg2
-cSBwbGw4OiA1ME1Ieg0KaXBnIGNsb2NrICAgICA6IDY2MDAwMDAwSHoNCmlwZyBwZXIgY2xvY2sg
-OiA2NjAwMDAwMEh6DQp1YXJ0IGNsb2NrICAgIDogODAwMDAwMDBIeg0KY3NwaSBjbG9jayAgICA6
-IDYwMDAwMDAwSHoNCmFoYiBjbG9jayAgICAgOiAxMzIwMDAwMDBIeg0KYXhpIGNsb2NrICAgOiAy
-NjQwMDAwMDBIeg0KZW1pX3Nsb3cgY2xvY2s6IDEzMjAwMDAwMEh6DQpkZHIgY2xvY2sgICAgIDog
-NTI4MDAwMDAwSHoNCnVzZGhjMSBjbG9jayAgOiAxOTgwMDAwMDBIeg0KdXNkaGMyIGNsb2NrICA6
-IDE5ODAwMDAwMEh6DQp1c2RoYzMgY2xvY2sgIDogMTk4MDAwMDAwSHoNCnVzZGhjNCBjbG9jayAg
-OiAxOTgwMDAwMDBIeg0KbmZjIGNsb2NrICAgICA6IDI0MDAwMDAwSHoNCkJvYXJkOiBpLk1YNlEt
-U0FCUkVTRDogdW5rbm93bi1ib2FyZCBCb2FyZDogMHg2MzAxMiBbV0RPRyBdDQpCb290IERldmlj
-ZTogU0QNCkkyQzogICByZWFkeQ0KRFJBTTogICAxIEdCDQpNTUM6ICAgRlNMX1VTREhDOiAwLEZT
-TF9VU0RIQzogMSxGU0xfVVNESEM6IDIsRlNMX1VTREhDOiAzDQpJbjogICAgc2VyaWFsDQpPdXQ6
-ICAgc2VyaWFsDQpFcnI6ICAgc2VyaWFsDQpGb3VuZCBQRlVaRTEwMCEgZGV2aWNlaWQ9MTAscmV2
-aWQ9MTENCk5ldDogICBnb3QgTUFDIGFkZHJlc3MgZnJvbSBJSU06IDAwOjA0OjlmOjAyOmUzOjBh
-DQpGRUMwIFtQUklNRV0NCkhpdCBhbnkga2V5IHRvIHN0b3AgYXV0b2Jvb3Q6ICAwDQpQSFkgaW5k
-ZW50aWZ5IEAgMHgxID0gMHgwMDRkZDA3NA0KRkVDOiBMaW5rIGlzIFVwIDc5NmQNClVzaW5nIEZF
-QzAgZGV2aWNlDQpURlRQIGZyb20gc2VydmVyIDE5Mi4xNjguMi4xOyBvdXIgSVAgYWRkcmVzcyBp
-cyAxOTIuMTY4LjIuMg0KRmlsZW5hbWUgJ3VJbWFnZV9kdGIuaW14NnEudjQuMTItcmMyJy4NCkxv
-YWQgYWRkcmVzczogMHgxMjAwMDAwMA0KTG9hZGluZzogIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjDQogICAgICAgICAjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjDQpkb25lDQpCeXRlcyB0cmFuc2ZlcnJlZCA9IDU5NTExMDggKDVhY2U4
-NCBoZXgpDQojIyBCb290aW5nIGtlcm5lbCBmcm9tIExlZ2FjeSBJbWFnZSBhdCAxMjAwMDAwMCAu
-Li4NCiAgIEltYWdlIE5hbWU6DQogICBJbWFnZSBUeXBlOiAgIEFSTSBMaW51eCBLZXJuZWwgSW1h
-Z2UgKHVuY29tcHJlc3NlZCkNCiAgIERhdGEgU2l6ZTogICAgNTk1MTA0NCBCeXRlcyA9ICA1Ljcg
-TUINCiAgIExvYWQgQWRkcmVzczogMTA4MDAwMDANCiAgIEVudHJ5IFBvaW50OiAgMTA4MDAwMDAN
-CiAgIFZlcmlmeWluZyBDaGVja3N1bSAuLi4gT0sNCiAgIExvYWRpbmcgS2VybmVsIEltYWdlIC4u
-LiBPSw0KT0sNCg0KU3RhcnRpbmcga2VybmVsIC4uLg0KDQrDoBzDvBzDvBxww74cw6DDvMO+w7wc
-w6Acw6DDoBzDoMO8w77DvBwcHBzDoMO8w7wcw77DvBzDoBzDvBzDoBzDoBzDoMO8xb0cHMOgw7wc
-w6DDvBwcHBwcw6DDoBzDoBzDoBzigqzDoBzDoMO8w77DvBwcHBzDoMOgw7wcHMO8w78NCsOgHMOg
-w7zFvcO8HMO+w7wcw6DDvMOgw7AcHMOgw6DDsMOgw6AcHMOgHBwcw74cHBx+cMOgHMWTw6AcYMO+
-HMO8HMOgw7zFvcOgHMOgHBzDoBzDvBzDoBwcw74cw7zDvhwcHBzDoBzDvBwcw6Acxb3DoMOgHBzD
-oBwcHA0Kw6DDoMO8HBzDvMO/HMOgHMOgw7zFvcO8HMO+w7wcw6DDvMOgw7AcHOKCrMOgw6AcHMOg
-w6DDoMOgw7DDoMOgHMOww6DDvMOgw6DDvMOww6DDoMOww6DDoMOgHBwcHMO+HBzDvMO/HBzDvMOw
-w7wcHMO8xb0cw6AcHMO8xb3DoBzDoBwcw6Acw7zDvA0KHBwcHMO+HBwcw7zDvxzDoBzDoMO8HMO8
-HHDDsBwcw7zDgBwcw7zDvsO8HBzDvBzDoMOgHMOgw7xww78cHMO8w6DDoMOww6DDoBzDsMOgw7zD
-oMOwHBzDoBzDvMOgxb0cHH44w6Acxb3DoMOgHMW9w6DDoMO84oKsw6DDoMOww6DDoMO8cA0Kxb0c
-w6AcHMOgHBwcHBzDvMOgHMOgHBzDoBzDoMOgw7DDoMO8w7DDoMOgHMOww6Acw7zDoHDDvsOgw7zD
-sMOgw7zDsMOgw6DDvsOgHMOww6Acw7zDoMOgw6Acw6AcHBzDoMOgw7DDoMOgHMOww6DDvMO8w6DF
-vcOgHOKCrMO8HBwcHBwcw6DDoBwNChwcxb0cw7zDoH7DvxzDvMOgw6Acw6DDoBzDvBwcHMO8xb3D
-oBzDoBzDvBzDvhzDoMO8fsW9w7zDoMOww6DDoMOww6DDoMOgHBzDoBzDvsOgHOKCrBzDvBzDoMOg
-w7AcHMO8fsO/HMOgw7zFvcOgHMOgw7zFvcO8HMO+w7wcw6Acw7DDoMOgw6AcDQocHMW9HMO8w6B+
-w78cw7zDoMW9w6AcHMOgw7zigqwcHMO+HMO8w6Acw7DDoMOgw7zigqwcHMOgw7zDsMOgw6DDvMO8
-w6DigqzDoBzDvMOgHOKCrMO8HBwcHBwcw6DDoBwcHMW9HBwcw6DDvBwcw6DDoBwcw6DDoMOjHHDF
-vRzDoMOgw7wcw7wNChzDvsO8HBzDoMO8HMOgw7zFvRzDoBzDoMO8w77DvBzDoBzDoMOgHBzDoMO+
-HBzDoMO84oKsHBwcw7wcHMO8w7AcHMOgw6AcHMOgw6DDoxxwxb0cw6Ac4oKsHMOgw7wcw6DDvMW9
-HMOgHMOgw7zDvsO8HMOgHMOgHMW9HMO8DQotLS0gODwgLS0tDQoNCj4gIC0gRG9lcyBpdCBtYWtl
-IGEgZGlmZmVyZW5jZSBpbiBMaW51eCBpZiB0aGUgYm9vdGxvYWRlciB1c2VkIHRoZSBkZXZpY2Ug
-IGJlZm9yZT8NCg0KSWYgeW91IG1lYW4sIGlmIFUtYm9vdCB1c2VzIHRoZSBVQVJUIGNvbnNvbGUg
-YmVmb3JlIGxvYWRpbmcgdGhlIGtlcm5lbCwgdGhlbiBuby4NCklzIHRoYXQgd2hhdCB5b3UgbWVh
-bj8NCkl0IG1ha2VzIG5vIGRpZmZlcmVuY2UgdW50aWwgdGhlIGtlcm5lbCBpcyBsb2FkZWQsIHRo
-ZW4gdGhlIHNlcmlhbCBvdXRwdXQgZ2V0cyBjb3JydXB0ZWQuDQoNCj4gIC0gQ2FuIHlvdSBkdW1w
-IHRoZSByZWdpc3RlciBzcGFjZSBvZiB0aGUgdWFydCB3aXRoIHY0LjEyLXJjMiBhbmQNCj4gICAg
-djQuMTItcmMyICsgcmV2ZXJ0IG9mIGU2MWMzOGQ4NWI3MzkyZT8NCg0KRGlmZmljdWx0IHRvIGRv
-IHRoYXQgSSB0aGluay4gVGhlIGNvbnNvbGUgaXMgdW51c2FibGUgaW4gYm90aCBkaXJlY3Rpb25z
-LiBJIGNhbid0IGdldCBhbnkNCnJlc3BvbnNlIGZyb20gdGhlIGNvbnNvbGUgKHRocm91Z2ggdHlw
-aW5nKSBvbmNlIHRoZSBrZXJuZWwgaGFzIHN0YXJ0ZWQuDQoNClJlZ2FyZHMsDQpTdGV2ZQ0K
+On 2017-05-23 16:33, Technical Support wrote:
+> Both the PCI and the PCIe cards use the MPIO pins and the device driver
+> actually sets the pins as outputs after registering the device with the
+> PCI core.  So the changes made to the default settings shouldn't break
+> anything. 
+> 
+> Do the new default settings keep the UART_EXAR_MPIOINT_X_X values at
+> 0x00 to disable their interrupts? 
+
+Look at
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?h=tty-next&id=7dea8165f1d6434dc7572004363f86339f0f4322
+
+Interrupts remain off, but all pins are now inputs. Again, if the logic
+on the PCIe cards need any of them to be driven low, my patch causes a
+regression. In that case, we also need to make the MPIO setup card-specific.
+
+Thanks,
+Jan
+
+> 
+> -Landon 
+>         
+> Commtech, Inc.
+> Voice: 316-636-1131 <tel:%28316%29%20636-1131>
+> http://www.fastcomproducts.com
+> 
+> 
+> 
+> 
+> On Mon, May 22, 2017 at 1:18 PM, Jan Kiszka <jan.kiszka@siemens.com
+> <mailto:jan.kiszka@siemens.com>> wrote:
+> 
+>     On 2017-05-22 18:24, Jan Kiszka wrote:
+>     > On 2017-05-22 17:17, Technical Support wrote:
+>     >> Hello,
+>     >>
+>     >> The Exar MPIO pins are used by our device driver to control features of
+>     >> the line driver and can't be used as GPIO pins.  I agree, the condition
+>     >> can be moved to 8250_exar prior to a platform device being created for
+>     >> the gpio_exar driver.
+>     >>
+>     >
+>     > Thanks a lot for the feedback! I will send a refactoring patch.
+> 
+>     Hmm, are you possibly talking about PCI device with the IDs 0x2, 0x4,
+>     0xa, 0xb (4222PCI335, 4224PCI335, 2324PCI335, 2328PCI335), because those
+>     actually set the GPIOs for apparent internal reasons. However,
+>     0x20..0x22 (4222PCIE, 4224PCIE, 4228PCIE) already share setup_gpio() via
+>     pci_xr17v35x_setup(), and that looks different.
+> 
+>     I'm also asking again because we just changed the default MPIO settings
+>     for the latter to all inputs. If you depended on them to be all outputs
+>     and 0, we may have broken something.
+> 
+>     Thanks,
+>     Jan
+> 
+>     --
+>     Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+>     Corporate Competence Center Embedded Linux
+> 
+> 
+
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
