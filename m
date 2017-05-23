@@ -1,78 +1,59 @@
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: Re: [PATCH v6 net-next 17/17] net: qualcomm: add QCA7000 UART driver
-Date: Tue, 23 May 2017 23:01:01 +0200
-Message-ID: <41c7302e-b25c-9f57-470a-dd95200a060f@gmx.de>
-References: <1495545173-22150-1-git-send-email-stefan.wahren@i2se.com>
- <1495545173-22150-18-git-send-email-stefan.wahren@i2se.com>
- <053235ad-a963-6a09-ccb0-b643115dee00@gmx.de>
- <1059621060.236992.1495568289051@email.1und1.de>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: gpio-exar: Why filtering out Commtech devices?
+Date: Tue, 23 May 2017 23:16:42 +0200
+Message-ID: <e541be56-c61c-358b-91ed-ce1e513c1ccc@siemens.com>
+References: <18f4b5cb-cba0-aab4-7958-84a5b8d28935@siemens.com>
+ <7a25751e-931f-b713-dcdd-7a7483aae115@codethink.co.uk>
+ <c7b03839-c2ab-fa3e-3af6-5d4678fa3bbd@siemens.com>
+ <fc74be3d-7f74-cec3-769e-5eb53b2556b3@siemens.com>
+ <CAPpjZG9MGDzS0Bu2c6M-Pob5JkzeAptDu8QNnDJETinCenee0w@mail.gmail.com>
+ <b725379e-fc67-d706-e172-ca585c3f5e3d@siemens.com>
+ <6ac3fff4-5d23-d30c-1e04-e5a1f12f466d@siemens.com>
+ <CAPpjZG_HPFqKzf+7rBxM27TJcZJ4+vfUYSPChifM-JTN7ekTOA@mail.gmail.com>
+ <2445db07-a150-e954-099c-f39faefeb4b5@siemens.com>
+ <CAPpjZG953JHZWt8UzgEmYurSMh9o1v5HvxmO+4FD41M92GA-Ww@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1059621060.236992.1495568289051@email.1und1.de>
+In-Reply-To: <CAPpjZG953JHZWt8UzgEmYurSMh9o1v5HvxmO+4FD41M92GA-Ww@mail.gmail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Wahren <stefan.wahren@i2se.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "David S. Miller" <davem@davemloft.net>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Jakub Kicinski <kubakici@wp.pl>, devicetree@vger.kernel.org
+To: Technical Support <techsupport@commtech-fastcom.com>
+Cc: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 23.05.2017 21:38, Stefan Wahren wrote:
+On 2017-05-23 22:05, Technical Support wrote:
+> ​Our kernel module handles card specific MPIO setup, ensuring the pins
+> are set correctly for our hardware regardless of what exar_8250
+> initializes them as.   
 > 
->> Lino Sanfilippo <LinoSanfilippo@gmx.de> hat am 23. Mai 2017 um 20:16 geschrieben:
->>
->>
->> Hi,
->>
->> On 23.05.2017 15:12, Stefan Wahren wrote:
->>
->>
->>> +}
->>> +
->>> +static void qca_uart_remove(struct serdev_device *serdev)
->>> +{
->>> +	struct qcauart *qca = serdev_device_get_drvdata(serdev);
->>> +
->>> +	netif_carrier_off(qca->net_dev);
->>> +	cancel_work_sync(&qca->tx_work);
->>> +	unregister_netdev(qca->net_dev);
->>
->> Note that it is still possible that the tx work is queued right after cancel_work_sync()
->> returned and before the net device is unregistered (and thus the check for the net device
->> being up at the beginning of the tx work function is passed and the function is executed).
-> 
-> Even if the carrier is off? Since i see this pattern in some drivers, can you please point me to a reference like a thread or something else?
-> 
+> https://github.com/commtech/serialfc-linux/blob/784e1321e00d4f72c93dae8da11cdc7f99c15dee/src/utils.c#L1463-L1491
 
-The check in the tx work function is against the "running" state not against the carrier. So why should 
-the carrier matter in this case? 
+OK, that code shows what we need to do in the official driver: handle
+the commtech devices like before, i.e. keep the GPIOs as output for
+them. I'll update my patch.
 
 
->> I suggest to avoid this possible race by first unregistering the netdevice and then 
->> calling cancel_work_sync().
-> 
-> What makes you sure that's safe to unregister the netdev while the tx work queue is possibly active?
+But now some good advice: you should rather work on the upstream code
+and schedule your special driver for retirement. This will ensure that
+your users have the best experience when they plug in any of your cards
+and boot a standard Linux disto: it will just work.
 
-unregister_netdevice() calls netdev_close() if the interface is still up. netdev_close() calls flush_work()
-so the unregistration is delayed until the tx work function is finished. Furthermore both close() and
-tx work are synchronized by means of the qca->lock which also guarantees that unregister_netdevice() wont
-be finished until the tx work is done.
+Right now, your out-of-tree driver competes with the official one for
+the same resources, apparently comes with own userspace interfaces to
+configure special features instead of building on existing APIs (you
+don't support TIOCSRS485 e.g., do you?), and seems to contain support
+for a number of cards that are still missing in upstream. This is very
+unhandy for your users.
 
-But I may have missed something and if unregistering the device while the tx work could be running worries you,
-we could first close and later unregister the device like in the following sequence:
+For the same reason, we are currently upstreaming the code for our
+Exar-based design (and that's why I came across all this): We want to
+get rid of special board support to improve user experience and
+long-term availability.
 
+Jan
 
-dev_close();
-/* the tx work wont be scheduled any more now, however we have to wait for a potentially
-   earlier scheduled work */ 
-cancel_work_sync(&qca->tx_work);
-/* we can be sure that the tx work will neither be running nor be started again, so 
-   it is safe to unregister the netdev */
-unregister_netdev(qca->net_dev);
-serdev_device_close(serdev);
-free_netdev(qca->net_dev);
- 
-What do you think?
-
-Regards,
-Lino
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
