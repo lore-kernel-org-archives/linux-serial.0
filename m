@@ -1,58 +1,78 @@
-From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/1] xilinx ps uart: Adding a kernel parameter for the
- number of xilinx ps uarts
-Date: Tue, 23 May 2017 21:07:10 +0100
-Message-ID: <20170523210710.4e84dd2d@alans-desktop>
-References: <20170520022154.6766-1-kernel.development@povil.us>
- <20170520172008.5a979e8a@alans-desktop>
- <517d864d-d230-3abc-eb3c-4b628dc4625f@xilinx.com>
- <20170522192636.5b578d89@alans-desktop>
- <1668f36e-f9be-7008-004a-e467a6813e0f@xilinx.com>
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH v6 net-next 17/17] net: qualcomm: add QCA7000 UART driver
+Date: Tue, 23 May 2017 23:01:01 +0200
+Message-ID: <41c7302e-b25c-9f57-470a-dd95200a060f@gmx.de>
+References: <1495545173-22150-1-git-send-email-stefan.wahren@i2se.com>
+ <1495545173-22150-18-git-send-email-stefan.wahren@i2se.com>
+ <053235ad-a963-6a09-ccb0-b643115dee00@gmx.de>
+ <1059621060.236992.1495568289051@email.1und1.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1668f36e-f9be-7008-004a-e467a6813e0f@xilinx.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Sam Povilus <kernel.development@povil.us>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, jslaby@suse.com, soren.brinkmann@xilinx.com
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1059621060.236992.1495568289051@email.1und1.de>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Stefan Wahren <stefan.wahren@i2se.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "David S. Miller" <davem@davemloft.net>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Jakub Kicinski <kubakici@wp.pl>, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-> yep hardcoded max 4 where in probe first free space is found and used
-> (range 0-3) but still max3100s statically allocated.
-> Shouldn't be this also dynamically allocated?
-
-The code to do the dynamic allocation would be larger than the array of
-pointers for the sane worst case.
-
-> I am not quite sure how exactly you want to do this via DT.
-
-Count the number of DT entries for this kind of port and allocate that
-many ?
-
+On 23.05.2017 21:38, Stefan Wahren wrote:
 > 
-> Also what do you think is a safe maximum number? This is fpga - hundreds
-> of pins which can do just uart.
+>> Lino Sanfilippo <LinoSanfilippo@gmx.de> hat am 23. Mai 2017 um 20:16 geschrieben:
+>>
+>>
+>> Hi,
+>>
+>> On 23.05.2017 15:12, Stefan Wahren wrote:
+>>
+>>
+>>> +}
+>>> +
+>>> +static void qca_uart_remove(struct serdev_device *serdev)
+>>> +{
+>>> +	struct qcauart *qca = serdev_device_get_drvdata(serdev);
+>>> +
+>>> +	netif_carrier_off(qca->net_dev);
+>>> +	cancel_work_sync(&qca->tx_work);
+>>> +	unregister_netdev(qca->net_dev);
+>>
+>> Note that it is still possible that the tx work is queued right after cancel_work_sync()
+>> returned and before the net device is unregistered (and thus the check for the net device
+>> being up at the beginning of the tx work function is passed and the function is executed).
 > 
-> > There are lots of options better than breaking the "one kernel many
-> > platforms" model.  
+> Even if the carrier is off? Since i see this pattern in some drivers, can you please point me to a reference like a thread or something else?
 > 
-> Another options is also module parameter and dynamically allocated array
-> in cdns_uart_init.
 
-For a given platform the number is constant and they need to be
-described, so it seems to make no sense to put it anywhere other than the
-DT for that platform.
+The check in the tx work function is against the "running" state not against the carrier. So why should 
+the carrier matter in this case? 
 
-Why should users have to pass magic config options not use DT as
-intended ?
 
-Alan
+>> I suggest to avoid this possible race by first unregistering the netdevice and then 
+>> calling cancel_work_sync().
+> 
+> What makes you sure that's safe to unregister the netdev while the tx work queue is possibly active?
+
+unregister_netdevice() calls netdev_close() if the interface is still up. netdev_close() calls flush_work()
+so the unregistration is delayed until the tx work function is finished. Furthermore both close() and
+tx work are synchronized by means of the qca->lock which also guarantees that unregister_netdevice() wont
+be finished until the tx work is done.
+
+But I may have missed something and if unregistering the device while the tx work could be running worries you,
+we could first close and later unregister the device like in the following sequence:
+
+
+dev_close();
+/* the tx work wont be scheduled any more now, however we have to wait for a potentially
+   earlier scheduled work */ 
+cancel_work_sync(&qca->tx_work);
+/* we can be sure that the tx work will neither be running nor be started again, so 
+   it is safe to unregister the netdev */
+unregister_netdev(qca->net_dev);
+serdev_device_close(serdev);
+free_netdev(qca->net_dev);
+ 
+What do you think?
+
+Regards,
+Lino
