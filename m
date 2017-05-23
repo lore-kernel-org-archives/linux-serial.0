@@ -1,34 +1,44 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH v6 net-next 04/17] net: qca_spi: Use SET_NETDEV_DEV()
-Date: Tue, 23 May 2017 15:12:40 +0200
-Message-ID: <1495545173-22150-5-git-send-email-stefan.wahren@i2se.com>
-References: <1495545173-22150-1-git-send-email-stefan.wahren@i2se.com>
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <1495545173-22150-1-git-send-email-stefan.wahren@i2se.com>
-Sender: netdev-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "David S. Miller" <davem@davemloft.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Lino Sanfilippo <LinoSanfilippo@gmx.de>, Jakub Kicinski <kubakici@wp.pl>, devicetree@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH V1] serial: imx: revert setup DCEDTE early and ensure DCD
+ and RI irqs to be off
+Date: Tue, 23 May 2017 16:09:41 +0200
+Message-ID: <20170523140941.l6cjvfdsvsg76cbx@pengutronix.de>
+References: <20170523123145.E268B3FAD4@swsrvapps-01.diasemi.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170523123145.E268B3FAD4@swsrvapps-01.diasemi.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Steve Twiss <stwiss.opensource@diasemi.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LINUX-KERNEL <linux-kernel@vger.kernel.org>, LINUX-SERIAL <linux-serial@vger.kernel.org>, Lucas Stach <l.stach@pengutronix.de>, Support Opensource <support.opensource@diasemi.com>, kernel@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-Use SET_NETDEV_DEV() in qca_spi to create the "/sys/class/net/<if>/device"
-symlink.
+On Tue, May 23, 2017 at 01:17:26PM +0100, Steve Twiss wrote:
+> From: Steve Twiss <stwiss.opensource@diasemi.com>
+> 
+> Revert the commit e61c38d85b7392e ("serial: imx: setup DCEDTE early and
+> ensure DCD and RI irqs to be off")
+> 
+> The patch submitted to setup DCEDTE early and ensure DCD and RI irqs to
+> be off, causes a serial console display problem the i.MX6Q SABRESD board.
+> The console becomes unreadable and unwritable.
+> 
+> Tested-by: Steve Twiss <stwiss.opensource@diasemi.com>
+> Signed-off-by: Steve Twiss <stwiss.opensource@diasemi.com>
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- drivers/net/ethernet/qualcomm/qca_spi.c | 1 +
- 1 file changed, 1 insertion(+)
+You're not the first to report this issue but you still have the chance
+to be the first to test a suggested patch for it.
 
-diff --git a/drivers/net/ethernet/qualcomm/qca_spi.c b/drivers/net/ethernet/qualcomm/qca_spi.c
-index 24ca7df..0c3fdee 100644
---- a/drivers/net/ethernet/qualcomm/qca_spi.c
-+++ b/drivers/net/ethernet/qualcomm/qca_spi.c
-@@ -894,6 +894,7 @@ qca_spi_probe(struct spi_device *spi)
- 		return -ENOMEM;
- 
- 	qcaspi_netdev_setup(qcaspi_devs);
-+	SET_NETDEV_DEV(qcaspi_devs, &spi->dev);
- 
- 	qca = netdev_priv(qcaspi_devs);
- 	if (!qca) {
+See
+
+	http://marc.info/?l=linux-serial&m=149434029912947&w=2
+
+Best regards
+Uwe
+
 -- 
-2.1.4
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
