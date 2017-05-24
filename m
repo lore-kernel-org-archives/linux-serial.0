@@ -1,101 +1,55 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: CPU_BIG_ENDIAN in generic code (was: Re: [PATCH v3 3/7]
- arch/sparc: Define config parameter CPU_BIG_ENDIAN)
-Date: Wed, 24 May 2017 17:09:01 +0200
-Message-ID: <CAK8P3a2gk07SW2nGZdNXSzRwx5+Ap5hDf4wDksunLtYkpC5WOg@mail.gmail.com>
-References: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q@mail.gmail.com>
- <CAK8P3a1XZGQk3b3q+JFJ+mLgw_upUdAtTM1VBjHZq5f2m-YdUg@mail.gmail.com> <8ec12d9b-30da-6088-e340-93cc92245ed4@oracle.com>
+From: Steve Twiss <stwiss.opensource@diasemi.com>
+Subject: RE: [PATCH V1] serial: imx: revert setup DCEDTE early and ensure
+ DCD and RI irqs to be off
+Date: Wed, 24 May 2017 16:08:50 +0000
+Message-ID: <6ED8E3B22081A4459DAC7699F3695FB7018CD8D843@SW-EX-MBX02.diasemi.com>
+References: <20170523123145.E268B3FAD4@swsrvapps-01.diasemi.com>
+ <CAOMZO5CT5MS1WGm_rCJ61Ambh+rMapsQWD84RXtagtt3HhmZwg@mail.gmail.com>
+ <6ED8E3B22081A4459DAC7699F3695FB7018CD8D75E@SW-EX-MBX02.diasemi.com>
+ <CAOMZO5D=_L9Dd3gOgQssKBN5TouGqOx+zJnwr+-1HQrVT_yLRQ@mail.gmail.com>
+ <6ED8E3B22081A4459DAC7699F3695FB7018CD8D7CD@SW-EX-MBX02.diasemi.com>
+ <CAOMZO5CYaZZES6VSUE2JpCvHSH+fvr13ECZ=oKKoKRpmQUXDaA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <8ec12d9b-30da-6088-e340-93cc92245ed4-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Babu Moger <babu.moger-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, sparclinux <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAOMZO5CYaZZES6VSUE2JpCvHSH+fvr13ECZ=oKKoKRpmQUXDaA@mail.gmail.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Fabio Estevam <festevam@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LINUX-KERNEL <linux-kernel@vger.kernel.org>, LINUX-SERIAL <linux-serial@vger.kernel.org>, Lucas Stach <l.stach@pengutronix.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Support Opensource <Support.Opensource@diasemi.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 24, 2017 at 4:45 PM, Babu Moger <babu.moger-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org> wrote:
-> On 5/24/2017 5:18 AM, Arnd Bergmann wrote:
->> On Wed, May 24, 2017 at 11:59 AM, Geert Uytterhoeven
->> <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> wrote:
->>> On Tue, May 23, 2017 at 11:45 PM, Babu Moger <babu.moger-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
->>> wrote:
->>> include/asm-generic/qrwlock.h is also generic, but depends on the
->>> architecture to select ARCH_USE_QUEUED_RWLOCKS, which only very few do
->>> (x86, and now sparc).
->>>
->>> I guess the time is ripe for adding (both) symbols to all architectures?
->>
->> Good idea. I think we can do most of this by adding a few lines to
->> arch/Kconfig:
->>
->> config CPU_BIG_ENDIAN
->>          bool
->>
->> config CPU_LITTLE_ENDIAN
->>         def_bool !CPU_BIG_ENDIAN
->
-> I noticed that even x86 does not define CPU_LITTLE_ENDIAN.  Strange.
-
-There is no architecture-independent code that tests for
-CONFIG_CPU_LITTLE_ENDIAN, unlike CONFIG_CPU_BIG_ENDIAN,
-so that's not very suprising.
-
-> With this code all the architecture will default to
-> CONFIG_CPU_LITTLE_ENDIAN.
-
-What I meant is that we have to 'select CPU_BIG_ENDIAN' on all architectures
-that actually are big-endian:
-
-These are all configurable:
-$ git grep -l linux/byteorder/big_endian.h | xargs grep -l
-linux/byteorder/little_endian.h
-arch/arc/include/uapi/asm/byteorder.h
-arch/arm/include/uapi/asm/byteorder.h
-arch/arm64/include/uapi/asm/byteorder.h
-arch/c6x/include/uapi/asm/byteorder.h
-arch/m32r/include/uapi/asm/byteorder.h
-arch/microblaze/include/uapi/asm/byteorder.h
-arch/mips/include/uapi/asm/byteorder.h
-arch/powerpc/include/uapi/asm/byteorder.h
-arch/sh/include/uapi/asm/byteorder.h
-arch/tile/include/uapi/asm/byteorder.h
-
-These are always big-endian:
-$ git grep -l linux/byteorder/big_endian.h | xargs grep -L
-linux/byteorder/little_endian.h
-arch/avr32/include/uapi/asm/byteorder.h
-arch/frv/include/uapi/asm/byteorder.h
-arch/m68k/include/uapi/asm/byteorder.h
-arch/openrisc/include/uapi/asm/byteorder.h
-arch/parisc/include/uapi/asm/byteorder.h
-arch/s390/include/uapi/asm/byteorder.h
-arch/sparc/include/uapi/asm/byteorder.h
-
-And these are always little-endian:
-arch/alpha/include/uapi/asm/byteorder.h
-arch/blackfin/include/uapi/asm/byteorder.h
-arch/cris/include/uapi/asm/byteorder.h
-arch/hexagon/include/uapi/asm/byteorder.h
-arch/ia64/include/uapi/asm/byteorder.h
-arch/metag/include/uapi/asm/byteorder.h
-arch/mn10300/include/uapi/asm/byteorder.h
-arch/score/include/uapi/asm/byteorder.h
-arch/unicore32/include/uapi/asm/byteorder.h
-arch/x86/include/uapi/asm/byteorder.h
-
-So if we 'select CPU_BIG_ENDIAN' from avr32, frv, m68k, openrisc, parisc,
-s390 and sparc, this covers all the fixed-endian architectures, and the
-other ones are those that already have either CPU_BIG_ENDIAN
-as a 'bool' option, or both as a 'choice'.
-
-> I can make it as a separate patch. But I can only test SPARC and little bit
-> of x86. Is that ok?
-
-I think that's ok.
-
-        Arnd
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+SGkgRmFiaW8sDQoNCk9uIDI0IE1heSAyMDE3IDE0OjUzIEZhYmlvIEVzdGV2YW0gd3JvdGUsDQo+
+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjFdIHNlcmlhbDogaW14OiByZXZlcnQgc2V0dXAgRENFRFRF
+IGVhcmx5IGFuZCBlbnN1cmUgRENEIGFuZCBSSSBpcnFzIHRvIGJlIG9mZg0KPiBPbiBXZWQsIE1h
+eSAyNCwgMjAxNyBhdCA5OjQ5IEFNLCBTdGV2ZSBUd2lzcyB3cm90ZToNCj4gDQo+ID4gSSB1c2Vk
+IHRoaXMgdGFnOiBqYjQuM18xLjEuMS1nYQ0KPiA+IGh0dHA6Ly9naXQuZnJlZXNjYWxlLmNvbS9n
+aXQvY2dpdC5jZ2kvaW14L3Vib290LWlteC5naXQvY29tbWl0Lz9pZD1qYjQuM18xLjEuMS1nYQ0K
+PiA+DQo+ID4gVGhpcyByZXBvIGlzIHNsaWdodGx5IG1vZGlmaWVkIGZvciBhIHByb2plY3QgSSBh
+bSB3b3JraW5nIG9uLCBidXQgaXQgb25seSBxdWVyaWVzDQo+ID4gdGhlICBJMkMgZm9yIGRldmlj
+ZXMgYmVmb3JlIHByaW50aW5nIG91dCBzb21lIG1lc3NhZ2VzLCBzbyBtaW5vciBjaGFuZ2VzIEkN
+Cj4gPiB0aGluay4gSGVyZSdzIHRoZSBvdXRwdXQgZnJvbSB0aGUgY29uc29sZToNCj4gDQo+IEkg
+YW0gbm90IGFibGUgdG8gcmVwcm9kdWNlIGl0IHVzaW5nIHRoaXMgc2FtZSBVLUJvb3QgdmVyc2lv
+biBvbiBteQ0KPiBteDZzYWJyZXNkIGJvYXJkOg0KPiANCj4gaHR0cHM6Ly9wYXN0ZWJpbi5jb20v
+cHBucm5pZHINCg0KVGhhdCdzIHZlcnkgaW50ZXJlc3RpbmcuDQpPbmNlIEkgYXBwbHkgdGhlIHRl
+c3QgY2hhbmdlIGZyb20gVXdlLCBJIGNhbiBnZXQgYSBjb25zb2xlIHRyYWNlLg0KDQo+IFV3ZSBL
+bGVpbmUtS8O2bmlnIHdyb3RlOg0KPiA+IENhbiB5b3UgdHJ5IHRvIGp1c3QgcmVtb3ZlIHRoZSBs
+aW5lDQo+ID4gCXdyaXRlbCgwLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUZDUik7DQoNClRoZSBk
+aWZmZXJlbmNlcyBpbiB0aGUga2VybmVsIGNvbnNvbGUgbG9ncyBhcmUgLi4uDQoNCk15IGJvYXJk
+IDogWW91ciBib2FyZCBkaWZmZXJlbmNlcw0KQm9hcmQ6IGkuTVg2US1TQUJSRVNEOiB1bmtub3du
+LWJvYXJkIEJvYXJkOiAweDYzMDEyIFtQT1IgXSA6IEJvYXJkOiBpLk1YNlEtU0FCUkVTRDogdW5r
+bm93bi1ib2FyZCBCb2FyZDogMHg2MzAxMSBbUE9SIF0NCkZvdW5kIFBGVVpFMTAwISBkZXZpY2Vp
+ZD0xMCxyZXZpZD0xMSA6IEZvdW5kIFBGVVpFMTAwISBkZXZpY2VpZD0xMCxyZXZpZD0xMA0KDQou
+Li4gYW5kIG90aGVycywgYnV0Li4gSSBkbyBub3QgaGF2ZSAiY29uc29sZT10dHlteGMwLDExNTIw
+MCIgaW4gbXkga2VybmVsDQpjb21tYW5kIGxpbmUuDQoNClllcy4gSSBjYW4gdmVyaWZ5LCB1c2lu
+ZyB0aGUgcmF3IGxpbnV4LW5leHQvdjQuMTItcmMyIEkgZ2V0IHRoZSBjb25zb2xlIGVycm9yLg0K
+V2hlbiBJIGFkZCAiY29uc29sZT10dHlteGMwLDExNTIwMCIgdG8gbXkgVS1ib290IGVudmlyb25t
+ZW50IGFuZCB0aGUNCmtlcm5lbCBjb21tYW5kLWxpbmUsIHRoZSBrZXJuZWwgY29uc29sZSBzdGFy
+dHMgd29ya2luZyBhZ2Fpbi4NCg0KVGhhdCB3b3VsZCBpbmRpY2F0ZSB0aGUgdGVzdCBvbiB0aGUg
+aS5NWDZETCBtaWdodCBiZSBtaXNsZWFkaW5nLCBzaW5jZSBteQ0KY29sbGVhZ3VlIHJhbiB0aGF0
+IHVzaW5nIHRoZWlyIGJvb3Rsb2FkZXIgc2V0LXVwLiBTbywgbXkgYXNzZXJ0aW9uIHRoaXMgd2Fz
+DQpvbmx5IHZpc2libGUgb24gdGhlIGkuTVg2USBjb3VsZCBiZSB3cm9uZy4NCg0KVGhlcmUncyBu
+byB3YXkgdG8gdG8gY2hlY2sgdGhpcyB1bnRpbCB0b21vcnJvdyBub3cuDQpJJ2xsIGNoZWNrIGNo
+ZWNrIG9uIHRoZSBpLk1YNkRMIHVzaW5nIG15IGJvb3Rsb2FkZXIgZW52aXJvbm1lbnQgd2hlbiBJ
+DQpnZXQgYWNjZXNzIHRvIGFuIGkuTVg2REwgYm9hcmQuDQoNClJlZ2FyZHMsDQpTdGVwaGVuDQo=
