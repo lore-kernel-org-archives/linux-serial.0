@@ -1,36 +1,60 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH V1] serial: imx: revert setup DCEDTE early and ensure DCD
- and RI irqs to be off
-Date: Wed, 24 May 2017 10:52:34 -0300
-Message-ID: <CAOMZO5CYaZZES6VSUE2JpCvHSH+fvr13ECZ=oKKoKRpmQUXDaA@mail.gmail.com>
-References: <20170523123145.E268B3FAD4@swsrvapps-01.diasemi.com>
- <CAOMZO5CT5MS1WGm_rCJ61Ambh+rMapsQWD84RXtagtt3HhmZwg@mail.gmail.com>
- <6ED8E3B22081A4459DAC7699F3695FB7018CD8D75E@SW-EX-MBX02.diasemi.com>
- <CAOMZO5D=_L9Dd3gOgQssKBN5TouGqOx+zJnwr+-1HQrVT_yLRQ@mail.gmail.com> <6ED8E3B22081A4459DAC7699F3695FB7018CD8D7CD@SW-EX-MBX02.diasemi.com>
+From: "Lino Sanfilippo" <LinoSanfilippo@gmx.de>
+Subject: Aw: Re: [PATCH v6 net-next 17/17] net: qualcomm: add QCA7000 UART
+ driver
+Date: Wed, 24 May 2017 16:19:59 +0200
+Message-ID: <trinity-2a5e8b0e-888a-49f3-add9-bd0161fa67f5-1495635599212@3capp-gmx-bs75>
+References: <1495545173-22150-1-git-send-email-stefan.wahren@i2se.com>
+ <1495545173-22150-18-git-send-email-stefan.wahren@i2se.com>
+ <053235ad-a963-6a09-ccb0-b643115dee00@gmx.de>
+ <1059621060.236992.1495568289051@email.1und1.de>
+ <41c7302e-b25c-9f57-470a-dd95200a060f@gmx.de>
+ <50e5a442-777f-1516-4e94-16db7fa28f8b@i2se.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <6ED8E3B22081A4459DAC7699F3695FB7018CD8D7CD@SW-EX-MBX02.diasemi.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Steve Twiss <stwiss.opensource@diasemi.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LINUX-KERNEL <linux-kernel@vger.kernel.org>, LINUX-SERIAL <linux-serial@vger.kernel.org>, Lucas Stach <l.stach@pengutronix.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Support Opensource <Support.Opensource@diasemi.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <50e5a442-777f-1516-4e94-16db7fa28f8b@i2se.com>
+Sender: netdev-owner@vger.kernel.org
+To: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "David S. Miller" <davem@davemloft.net>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Jakub Kicinski <kubakici@wp.pl>, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Steve,
+Hi,
 
-On Wed, May 24, 2017 at 9:49 AM, Steve Twiss
-<stwiss.opensource@diasemi.com> wrote:
-
-> I used this tag: jb4.3_1.1.1-ga
-> http://git.freescale.com/git/cgit.cgi/imx/uboot-imx.git/commit/?id=jb4.3_1.1.1-ga
+> Gesendet: Mittwoch, 24. Mai 2017 um 11:06 Uhr
+> Von: "Stefan Wahren" <stefan.wahren@i2se.com>
+> An: "Lino Sanfilippo" <LinoSanfilippo@gmx.de>, "Rob Herring" <robh+dt@kernel.org>, "Mark Rutland" <mark.rutland@arm.com>, "David S. Miller" <davem@davemloft.net>
+> Cc: linux-serial@vger.kernel.org, "Jiri Slaby" <jslaby@suse.com>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, "Jakub Kicinski" <kubakici@wp.pl>, devicetree@vger.kernel.org
+> Betreff: Re: [PATCH v6 net-next 17/17] net: qualcomm: add QCA7000 UART driver
 >
-> This repo is slightly modified for a project I am working on, but it only queries
-> the  I2C for devices before printing out some messages, so minor changes I
-> think. Here's the output from the console:
+> Am 23.05.2017 um 23:01 schrieb Lino Sanfilippo:
+> > On 23.05.2017 21:38, Stefan Wahren wrote:
+> >>> Lino Sanfilippo <LinoSanfilippo@gmx.de> hat am 23. Mai 2017 um 20:16 geschrieben:
+> >>>
+> >>> I suggest to avoid this possible race by first unregistering the netdevice and then 
+> >>> calling cancel_work_sync().
+> >> What makes you sure that's safe to unregister the netdev while the tx work queue is possibly active?
+> > unregister_netdevice() calls netdev_close() if the interface is still up. netdev_close() calls flush_work()
+> > so the unregistration is delayed until the tx work function is finished. Furthermore both close() and
+> > tx work are synchronized by means of the qca->lock which also guarantees that unregister_netdevice() wont
+> > be finished until the tx work is done.
+> >
+> 
+> Thanks for the explanation. I suspect there could be the same race
+> between serdev_device_close() and the tx work queue.
+> 
+> So i would propose a variant of your original suggestion:
+> 
+> unregister_netdev(qca->net_dev);
+> 
+> /* Flush any pending characters in the driver. */
+> serdev_device_close(serdev);
+> cancel_work_sync(&qca->tx_work);
+> 
+> Since we have the same pattern in the error path of the probe function,
+> the same applies there.
 
-I am not able to reproduce it using this same U-Boot version on my
-mx6sabresd board:
+Agreed, it is much cleaner to have the same cleanup pattern in remove() as
+we have in (error case of) probe().
 
-https://pastebin.com/ppnrnidr
-
-Had to select dtb append in the kernel menu config.
+Regards,
+Lino
