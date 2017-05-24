@@ -1,111 +1,47 @@
-From: Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH] serial: 8250_of: Add reset support
-Date: Wed, 24 May 2017 10:18:36 +0200
-Message-ID: <1495613916.3840.16.camel@pengutronix.de>
-References: <20170524045319.29926-1-joel@jms.id.au>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [PATCH v6 net-next 17/17] net: qualcomm: add QCA7000 UART driver
+Date: Wed, 24 May 2017 11:06:37 +0200
+Message-ID: <50e5a442-777f-1516-4e94-16db7fa28f8b@i2se.com>
+References: <1495545173-22150-1-git-send-email-stefan.wahren@i2se.com>
+ <1495545173-22150-18-git-send-email-stefan.wahren@i2se.com>
+ <053235ad-a963-6a09-ccb0-b643115dee00@gmx.de>
+ <1059621060.236992.1495568289051@email.1und1.de>
+ <41c7302e-b25c-9f57-470a-dd95200a060f@gmx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170524045319.29926-1-joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <41c7302e-b25c-9f57-470a-dd95200a060f@gmx.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lino Sanfilippo <LinoSanfilippo@gmx.de>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "David S. Miller" <davem@davemloft.net>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Jakub Kicinski <kubakici@wp.pl>, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Joel,
+Am 23.05.2017 um 23:01 schrieb Lino Sanfilippo:
+> On 23.05.2017 21:38, Stefan Wahren wrote:
+>>> Lino Sanfilippo <LinoSanfilippo@gmx.de> hat am 23. Mai 2017 um 20:16 geschrieben:
+>>>
+>>> I suggest to avoid this possible race by first unregistering the netdevice and then 
+>>> calling cancel_work_sync().
+>> What makes you sure that's safe to unregister the netdev while the tx work queue is possibly active?
+> unregister_netdevice() calls netdev_close() if the interface is still up. netdev_close() calls flush_work()
+> so the unregistration is delayed until the tx work function is finished. Furthermore both close() and
+> tx work are synchronized by means of the qca->lock which also guarantees that unregister_netdevice() wont
+> be finished until the tx work is done.
+>
 
-On Wed, 2017-05-24 at 14:53 +1000, Joel Stanley wrote:
-> This adds the hooks for an optional reset controller in the 8250 device
-> tree node.
-> 
-> Signed-off-by: Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>
-> ---
->  Documentation/devicetree/bindings/serial/8250.txt |  1 +
->  drivers/tty/serial/8250/8250_of.c                 | 16 ++++++++++++++++
->  2 files changed, 17 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
-> index 10276a46ecef..63e32393f82b 100644
-> --- a/Documentation/devicetree/bindings/serial/8250.txt
-> +++ b/Documentation/devicetree/bindings/serial/8250.txt
-> @@ -45,6 +45,7 @@ Optional properties:
->    property.
->  - tx-threshold: Specify the TX FIFO low water indication for parts with
->    programmable TX FIFO thresholds.
-> +- resets : phandle + reset specifier pairs
->  
->  Note:
->  * fsl,ns16550:
-> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-> index 1cbadafc6889..f34dd23376f4 100644
-> --- a/drivers/tty/serial/8250/8250_of.c
-> +++ b/drivers/tty/serial/8250/8250_of.c
-> @@ -19,11 +19,13 @@
->  #include <linux/of_irq.h>
->  #include <linux/of_platform.h>
->  #include <linux/clk.h>
-> +#include <linux/reset.h>
->  
->  #include "8250.h"
->  
->  struct of_serial_info {
->  	struct clk *clk;
-> +	struct reset_control *rst;
->  	int type;
->  	int line;
->  };
-> @@ -132,6 +134,18 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->  		}
->  	}
->  
-> +	info->rst = devm_reset_control_get_optional(&ofdev->dev, NULL);
+Thanks for the explanation. I suspect there could be the same race
+between serdev_device_close() and the tx work queue.
 
-Please use devm_reset_control_get_optional_shared instead.
+So i would propose a variant of your original suggestion:
 
-This looks like shared (clock-like) reset use, where you just have to
-make sure that the reset is deasserted while the module is in use, but
-you don't care whether it is actually asserted all the time otherwise.
+unregister_netdev(qca->net_dev);
 
-> +	if (IS_ERR(info->rst)) {
-> +		ret = PTR_ERR(info->rst);
-> +		if (ret == -EPROBE_DEFER)
-> +			goto out;
-> +		info->rst = NULL;
+/* Flush any pending characters in the driver. */
+serdev_device_close(serdev);
+cancel_work_sync(&qca->tx_work);
 
-devm_reset_control_get_optional returns NULL if no reset is specified in
-the device tree specifically so we don't have to do this in all the
-drivers. If an error is returned, just goto out unconditionally, ...
+Since we have the same pattern in the error path of the probe function,
+the same applies there.
 
-> +	} else {
-> +		ret = reset_control_deassert(info->rst);
-> +		if (ret)
-> +			goto out;
-> +	}
-
-... then reset_control_deassert can be called unconditionally, too.
-
-> +
->  	port->type = type;
->  	port->uartclk = clk;
->  	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
-> @@ -231,6 +245,8 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
->  
->  	if (info->clk)
->  		clk_disable_unprepare(info->clk);
-> +	if (info->rst)
-
-Not necessary, reset_control_assert checks this, too.
-
-> +		reset_control_assert(info->rst);
->  	kfree(info);
->  	return 0;
->  }
-
-regards
-Philipp
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Stefan
