@@ -1,102 +1,75 @@
-From: Babu Moger <babu.moger@oracle.com>
-Subject: Re: CPU_BIG_ENDIAN in generic code (was: Re: [PATCH v3 3/7]
- arch/sparc: Define config parameter CPU_BIG_ENDIAN)
-Date: Wed, 24 May 2017 12:03:38 -0500
-Message-ID: <9d446ade-e3ef-f694-2b9b-f82e5ef463cb@oracle.com>
-References: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q@mail.gmail.com>
- <CAK8P3a1XZGQk3b3q+JFJ+mLgw_upUdAtTM1VBjHZq5f2m-YdUg@mail.gmail.com>
- <8ec12d9b-30da-6088-e340-93cc92245ed4@oracle.com>
- <CAK8P3a2gk07SW2nGZdNXSzRwx5+Ap5hDf4wDksunLtYkpC5WOg@mail.gmail.com>
+From: David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Subject: Re: [PATCH v6 net-next 01/17] net: qualcomm: remove unnecessary
+ includes
+Date: Wed, 24 May 2017 15:41:11 -0400 (EDT)
+Message-ID: <20170524.154111.404338711401048909.davem@davemloft.net>
+References: <1495545173-22150-1-git-send-email-stefan.wahren@i2se.com>
+        <1495545173-22150-2-git-send-email-stefan.wahren@i2se.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK8P3a2gk07SW2nGZdNXSzRwx5+Ap5hDf4wDksunLtYkpC5WOg@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, "David S. Miller" <davem@davemloft.net>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, sparclinux <sparclinux@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1495545173-22150-2-git-send-email-stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: stefan.wahren-eS4NqCHxEME@public.gmane.org
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, LinoSanfilippo-Mmb7MZpHnFY@public.gmane.org, kubakici-5tc4TXWwyLM@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
+From: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Date: Tue, 23 May 2017 15:12:37 +0200
 
-On 5/24/2017 10:09 AM, Arnd Bergmann wrote:
-> On Wed, May 24, 2017 at 4:45 PM, Babu Moger <babu.moger@oracle.com> wrote:
->> On 5/24/2017 5:18 AM, Arnd Bergmann wrote:
->>> On Wed, May 24, 2017 at 11:59 AM, Geert Uytterhoeven
->>> <geert@linux-m68k.org> wrote:
->>>> On Tue, May 23, 2017 at 11:45 PM, Babu Moger <babu.moger@oracle.com>
->>>> wrote:
->>>> include/asm-generic/qrwlock.h is also generic, but depends on the
->>>> architecture to select ARCH_USE_QUEUED_RWLOCKS, which only very few do
->>>> (x86, and now sparc).
->>>>
->>>> I guess the time is ripe for adding (both) symbols to all architectures?
->>> Good idea. I think we can do most of this by adding a few lines to
->>> arch/Kconfig:
->>>
->>> config CPU_BIG_ENDIAN
->>>           bool
->>>
->>> config CPU_LITTLE_ENDIAN
->>>          def_bool !CPU_BIG_ENDIAN
->> I noticed that even x86 does not define CPU_LITTLE_ENDIAN.  Strange.
-> There is no architecture-independent code that tests for
-> CONFIG_CPU_LITTLE_ENDIAN, unlike CONFIG_CPU_BIG_ENDIAN,
-> so that's not very suprising.
+> Most of the includes in qca_7k.c are unnecessary so we better remove them.
+> 
+> Signed-off-by: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+> ---
+>  drivers/net/ethernet/qualcomm/qca_7k.c | 4 ----
+>  1 file changed, 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qualcomm/qca_7k.c b/drivers/net/ethernet/qualcomm/qca_7k.c
+> index f0066fb..557d53c 100644
+> --- a/drivers/net/ethernet/qualcomm/qca_7k.c
+> +++ b/drivers/net/ethernet/qualcomm/qca_7k.c
+> @@ -23,11 +23,7 @@
+>   *   kernel-based SPI device.
+>   */
+>  
+> -#include <linux/init.h>
+> -#include <linux/module.h>
+> -#include <linux/moduleparam.h>
+>  #include <linux/spi/spi.h>
+> -#include <linux/version.h>
+>  
+>  #include "qca_7k.h"
+>  
+> -- 
+> 2.1.4
+> 
 
-Ok. Thanks
->> With this code all the architecture will default to
->> CONFIG_CPU_LITTLE_ENDIAN.
-> What I meant is that we have to 'select CPU_BIG_ENDIAN' on all architectures
-> that actually are big-endian:
-Ok. Sure.
->
-> These are all configurable:
-> $ git grep -l linux/byteorder/big_endian.h | xargs grep -l
-> linux/byteorder/little_endian.h
-> arch/arc/include/uapi/asm/byteorder.h
-> arch/arm/include/uapi/asm/byteorder.h
-> arch/arm64/include/uapi/asm/byteorder.h
-> arch/c6x/include/uapi/asm/byteorder.h
-> arch/m32r/include/uapi/asm/byteorder.h
-> arch/microblaze/include/uapi/asm/byteorder.h
-> arch/mips/include/uapi/asm/byteorder.h
-> arch/powerpc/include/uapi/asm/byteorder.h
-> arch/sh/include/uapi/asm/byteorder.h
-> arch/tile/include/uapi/asm/byteorder.h
->
-> These are always big-endian:
-> $ git grep -l linux/byteorder/big_endian.h | xargs grep -L
-> linux/byteorder/little_endian.h
-> arch/avr32/include/uapi/asm/byteorder.h
-> arch/frv/include/uapi/asm/byteorder.h
-> arch/m68k/include/uapi/asm/byteorder.h
-> arch/openrisc/include/uapi/asm/byteorder.h
-> arch/parisc/include/uapi/asm/byteorder.h
-> arch/s390/include/uapi/asm/byteorder.h
-> arch/sparc/include/uapi/asm/byteorder.h
->
-> And these are always little-endian:
-> arch/alpha/include/uapi/asm/byteorder.h
-> arch/blackfin/include/uapi/asm/byteorder.h
-> arch/cris/include/uapi/asm/byteorder.h
-> arch/hexagon/include/uapi/asm/byteorder.h
-> arch/ia64/include/uapi/asm/byteorder.h
-> arch/metag/include/uapi/asm/byteorder.h
-> arch/mn10300/include/uapi/asm/byteorder.h
-> arch/score/include/uapi/asm/byteorder.h
-> arch/unicore32/include/uapi/asm/byteorder.h
-> arch/x86/include/uapi/asm/byteorder.h
->
-> So if we 'select CPU_BIG_ENDIAN' from avr32, frv, m68k, openrisc, parisc,
-> s390 and sparc, this covers all the fixed-endian architectures, and the
-> other ones are those that already have either CPU_BIG_ENDIAN
-> as a 'bool' option, or both as a 'choice'.
-Ok.  Great details. I think I have all the details required for the 
-first version.  Will post it soon. Thanks
+Changes like this drive me crazy.
 
->> I can make it as a separate patch. But I can only test SPARC and little bit
->> of x86. Is that ok?
-> I think that's ok.
->
->          Arnd
+The only reason you can remove those headers is because you are obtaining
+things indirectly via qca_7k.h
+
+And if that is indeed the case, you are also getting qca_spi.h which
+in turn includes linux/spi/spi.h
+
+So you could have removed that as well.
+
+But seriously, it is so much harder to understand a driver and what
+interfaces it needs via header files when you hide _all_ of it behind
+these local private header files which just include _everything_
+and then _every_ foo.c file in your driver gets _all_ of those kernel
+headers whether they need it or not.
+
+So if just one foo.c file needs 20 extra kernel headers than the rest
+of the files in the driver, every foo.c file eats that cost of
+including them.
+
+I really don't like when drivers move in this direction for that
+reason.  And at best, as described at the beginning of my response,
+this change is incomplete.
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
