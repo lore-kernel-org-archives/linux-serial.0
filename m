@@ -1,110 +1,90 @@
-From: Steve Twiss <stwiss.opensource@diasemi.com>
-Subject: RE: [PATCH V1] serial: imx: revert setup DCEDTE early and ensure
- DCD and RI irqs to be off
-Date: Wed, 24 May 2017 12:49:35 +0000
-Message-ID: <6ED8E3B22081A4459DAC7699F3695FB7018CD8D7CD@SW-EX-MBX02.diasemi.com>
-References: <20170523123145.E268B3FAD4@swsrvapps-01.diasemi.com>
- <CAOMZO5CT5MS1WGm_rCJ61Ambh+rMapsQWD84RXtagtt3HhmZwg@mail.gmail.com>
- <6ED8E3B22081A4459DAC7699F3695FB7018CD8D75E@SW-EX-MBX02.diasemi.com>
- <CAOMZO5D=_L9Dd3gOgQssKBN5TouGqOx+zJnwr+-1HQrVT_yLRQ@mail.gmail.com>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH 1/1] xilinx ps uart: Adding a kernel parameter for the
+ number of xilinx ps uarts
+Date: Wed, 24 May 2017 15:06:13 +0200
+Message-ID: <924433a1-7e27-6eb6-71ca-ed7baceb427f@xilinx.com>
+References: <20170520022154.6766-1-kernel.development@povil.us>
+ <20170520172008.5a979e8a@alans-desktop>
+ <517d864d-d230-3abc-eb3c-4b628dc4625f@xilinx.com>
+ <20170522192636.5b578d89@alans-desktop>
+ <1668f36e-f9be-7008-004a-e467a6813e0f@xilinx.com>
+ <20170523210710.4e84dd2d@alans-desktop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOMZO5D=_L9Dd3gOgQssKBN5TouGqOx+zJnwr+-1HQrVT_yLRQ@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170523210710.4e84dd2d@alans-desktop>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LINUX-KERNEL <linux-kernel@vger.kernel.org>, LINUX-SERIAL <linux-serial@vger.kernel.org>, Lucas Stach <l.stach@pengutronix.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Support Opensource <Support.Opensource@diasemi.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Michal Simek <michal.simek@xilinx.com>
+Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Sam Povilus <kernel.development@povil.us>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, jslaby@suse.com, soren.brinkmann@xilinx.com
 List-Id: linux-serial@vger.kernel.org
 
-SGkgRmFiaW8sDQoNCk9uIDI0IE1heSAyMDE3IDEyOjUzIEZhYmlvIEVzdGV2YW0gd3JvdGU6DQo+
-IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjFdIHNlcmlhbDogaW14OiByZXZlcnQgc2V0dXAgRENFRFRF
-IGVhcmx5IGFuZCBlbnN1cmUgRENEIGFuZCBSSSBpcnFzIHRvIGJlIG9mZg0KPiBPbiBXZWQsIE1h
-eSAyNCwgMjAxNyBhdCA3OjMyIEFNLCBTdGV2ZSBUd2lzcyB3cm90ZToNCj4gDQo+ID4gVGhlIFVT
-QiB0byBVQVJUIGNvbm5lY3Rpb24gZ2V0cyBjb3JydXB0ZWQuDQo+ID4gSWYgdGhpcyBwYXRjaCBp
-cyBhcHBsaWVkIHRvIHRoZSBrZXJuZWwsIHRoZSBpLk1YNiBRIChxdWFkKSwgYW5kIG9ubHkgdGhp
-cyBib2FyZCBhcyBmYXIgYXMNCj4gPiB3ZSBrbm93LCBzdGFydHMgdG8gZmFpbC4gVGhpcyBkb2Vz
-ICpub3QqIGNoYW5nZSB0aGUgaS5NWDZETCBhbmQgb3RoZXIgc2FicmUgYm9hcmRzDQo+ID4gaGF2
-ZSBiZWVuIHRlc3RlZCBvbiBrZXJuZWxjaS5vcmcgYW5kIGRvIG5vdCBzZWUgYSBwcm9ibGVtLg0K
-PiA+DQo+ID4gQW4gTlhQL0ZyZWVzY2FsZSBTQUJSRVNEIGkuTVg2IFEgYm9hcmQgaXMgcmVxdXJl
-ZC4NCj4gPg0KPiA+IE15IHN5c3RlbSBmb3IgdGVzdGluZyBpcyB0byBURlRQIHRoZSBMaW51eCBr
-ZXJuZWwgb3ZlciBhbiBldGhlcm5ldCBjb25uZWN0aW9uLiBUaGUNCj4gPiBVLWJvb3QgZXhlY3V0
-ZXMgb2theSBhbmQgdGhlIFVBUlQgaXMgd29ya2luZyBhdCB0aGF0IHBvaW50LiBXaGVuIHRoZSBr
-ZXJuZWwgbG9hZHMNCj4gPiB0aGUgY29uc29sZSB0cmFjZSBiZWNvbWVzIGdhcmJsZWQsIGluIHRo
-ZSBzZW5zZSB0aGF0IEkgZ2V0IHRoZSBzb21lIGNoYXJhY3RlcnMgYmVpbmcNCj4gPiBvdXRwdXQg
-dG8gdGhlIGNvbnNvbGUsIGluIHRoZSBzdHlsZSBvZiB0aGUga2VybmVsIHN0YXJ0aW5nIHVwLCBi
-dXQgdGhleSBhcmUgbm90IGNvcnJlY3QuDQo+ID4NCj4gPiBJIGV4cGVjdCB0aGUga2VybmVsIGhh
-cyBzdGFydGVkIG9rLCBidXQgSSBhbSB1bmFibGUgdG8gcmVhZC93cml0ZSB0aHJvdWdoIHRoZSBV
-QVJUDQo+ID4gY29uc29sZSBiZWNhdXNlIG9mIGNvcnJ1cHRpb25zLg0KPiA+DQo+ID4gQ29uc29s
-ZSBsb2cgd2l0aCB0aGUgb3V0cHV0IEkgYW0gc2VlaW5nIHdpdGggbGludXgtbmV4dC92NC4xMi1y
-YzINCj4gPiAtLS0gODwgLS0tDQo+ID4gVS1Cb290IDIwMDkuMDgtMDAwMDEtZ2Y2NTUzNmEgKEph
-biAxMiAyMDE1IC0gMTU6NDc6MTkpDQo+IA0KPiBUaGFua3MgZm9yIHlvdXIgZGV0YWlsZWQgZXhw
-bGFuYXRpb24uDQo+IA0KPiBJIGFsc28gaGF2ZSBhIG14NnEgc2FicmVzZCBib2FyZCBoZXJlLCBi
-dXQgdGhlIGVycm9yIGRpZCBub3QgaGFwcGVuDQo+IHdoZW4gSSB1c2UgYSByZWNlbnQgVS1Cb290
-IHZlcnNpb24uDQo+DQo+IEkgd291bGQgbGlrZSB0byB1c2UgdGhlIHNhbWUgVS1Cb290IHZlcnNp
-b24gaGVyZSBhcyB3ZWxsIHRvIGhlbHANCj4gZGVidWdnaW5nIHRoaXMgcHJvYmxlbS4NCg0KRm9y
-IHRoZSBwcmV2aW91cyB0ZXN0cyBJIHdhcyB1c2luZyBhIHNsaWdodGx5IG1vZGlmaWVkIFUtQm9v
-dCBmcm9tIGFuIG9sZCBGcmVlc2NhbGUNCkFuZHJvaWQgcmVsZWFzZSBKQjQzXzExMCwgYnV0IEkn
-dmUganVzdCBjb21waWxlZCB1cCB0aGUgc3RhbmRhcmQgdS1ib290IGZyb20NCnRoZSBGcmVlc2Nh
-bGUgZ2l0IHJlcG9zaXRvcnksIGFuZCBJIGdldCB0aGUgc2FtZSByZXN1bHRzLg0KDQo+IENvdWxk
-IHlvdSBwbGVhc2UgbGV0IG1lIGtub3cgd2hpY2ggMjAwOS4wOCBicmFuY2ggeW91IHVzZWQ/IElz
-IGl0IGFueQ0KPiBvbmUgZnJvbSBnaXQuZnJlZXNjYWxlLmNvbQ0KPiBodHRwOi8vZ2l0LmZyZWVz
-Y2FsZS5jb20vZ2l0L2NnaXQuY2dpL2lteC91Ym9vdC1pbXguZ2l0L3JlZnMvaGVhZHMgPw0KDQpJ
-IHVzZWQgdGhpcyB0YWc6IGpiNC4zXzEuMS4xLWdhDQpodHRwOi8vZ2l0LmZyZWVzY2FsZS5jb20v
-Z2l0L2NnaXQuY2dpL2lteC91Ym9vdC1pbXguZ2l0L2NvbW1pdC8/aWQ9amI0LjNfMS4xLjEtZ2EN
-Cg0KVGhpcyByZXBvIGlzIHNsaWdodGx5IG1vZGlmaWVkIGZvciBhIHByb2plY3QgSSBhbSB3b3Jr
-aW5nIG9uLCBidXQgaXQgb25seSBxdWVyaWVzDQp0aGUgIEkyQyBmb3IgZGV2aWNlcyBiZWZvcmUg
-cHJpbnRpbmcgb3V0IHNvbWUgbWVzc2FnZXMsIHNvIG1pbm9yIGNoYW5nZXMgSQ0KdGhpbmsuIEhl
-cmUncyB0aGUgb3V0cHV0IGZyb20gdGhlIGNvbnNvbGU6DQoNCi0tLSA4PCAtLS0NClUtQm9vdCAy
-MDA5LjA4IChNYXkgMjQgMjAxNyAtIDEzOjE1OjQ3KQ0KDQpDUFU6IEZyZWVzY2FsZSBpLk1YNiBm
-YW1pbHkgVE8xLjIgYXQgNzkyIE1Ieg0KVGhlcm1hbCBzZW5zb3Igd2l0aCByYXRpbyA9IDIwMA0K
-VGVtcGVyYXR1cmU6ICAgMzggQywgY2FsaWJyYXRpb24gZGF0YSAweDVmMTU1MjdkDQpteDZxIHBs
-bDE6IDc5Mk1Ieg0KbXg2cSBwbGwyOiA1MjhNSHoNCm14NnEgcGxsMzogNDgwTUh6DQpteDZxIHBs
-bDg6IDUwTUh6DQppcGcgY2xvY2sgICAgIDogNjYwMDAwMDBIeg0KaXBnIHBlciBjbG9jayA6IDY2
-MDAwMDAwSHoNCnVhcnQgY2xvY2sgICAgOiA4MDAwMDAwMEh6DQpjc3BpIGNsb2NrICAgIDogNjAw
-MDAwMDBIeg0KYWhiIGNsb2NrICAgICA6IDEzMjAwMDAwMEh6DQpheGkgY2xvY2sgICA6IDI2NDAw
-MDAwMEh6DQplbWlfc2xvdyBjbG9jazogMTMyMDAwMDAwSHoNCmRkciBjbG9jayAgICAgOiA1Mjgw
-MDAwMDBIeg0KdXNkaGMxIGNsb2NrICA6IDE5ODAwMDAwMEh6DQp1c2RoYzIgY2xvY2sgIDogMTk4
-MDAwMDAwSHoNCnVzZGhjMyBjbG9jayAgOiAxOTgwMDAwMDBIeg0KdXNkaGM0IGNsb2NrICA6IDE5
-ODAwMDAwMEh6DQpuZmMgY2xvY2sgICAgIDogMjQwMDAwMDBIeg0KQm9hcmQ6IGkuTVg2US1TQUJS
-RVNEOiB1bmtub3duLWJvYXJkIEJvYXJkOiAweDYzMDEyIFtQT1IgXQ0KQm9vdCBEZXZpY2U6IFNE
-DQpJMkM6ICAgcmVhZHkNCkRSQU06ICAgMSBHQg0KTU1DOiAgIEZTTF9VU0RIQzogMCxGU0xfVVNE
-SEM6IDEsRlNMX1VTREhDOiAyLEZTTF9VU0RIQzogMw0KSW46ICAgIHNlcmlhbA0KT3V0OiAgIHNl
-cmlhbA0KRXJyOiAgIHNlcmlhbA0KRm91bmQgUEZVWkUxMDAhIGRldmljZWlkPTEwLHJldmlkPTEx
-DQpOZXQ6ICAgZ290IE1BQyBhZGRyZXNzIGZyb20gSUlNOiAwMDowNDo5ZjowMjplMzowYQ0KRkVD
-MCBbUFJJTUVdDQpIaXQgYW55IGtleSB0byBzdG9wIGF1dG9ib290OiAgMA0KUEhZIGluZGVudGlm
-eSBAIDB4MSA9IDB4MDA0ZGQwNzQNCkZFQzogTGluayBpcyBVcCA3OTZkDQpVc2luZyBGRUMwIGRl
-dmljZQ0KVEZUUCBmcm9tIHNlcnZlciAxOTIuMTY4LjIuMTsgb3VyIElQIGFkZHJlc3MgaXMgMTky
-LjE2OC4yLjINCkZpbGVuYW1lICd1SW1hZ2VfZHRiLmlteDZxLnY0LjEyLXJjMicuDQpMb2FkIGFk
-ZHJlc3M6IDB4MTIwMDAwMDANCkxvYWRpbmc6ICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
-ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
-ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
-ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
-ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
-ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
-ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIw0KZG9uZQ0KQnl0ZXMgdHJhbnNmZXJyZWQgPSA1OTUxMDc2ICg1YWNlNjQgaGV4
-KQ0KIyMgQm9vdGluZyBrZXJuZWwgZnJvbSBMZWdhY3kgSW1hZ2UgYXQgMTIwMDAwMDAgLi4uDQog
-ICBJbWFnZSBOYW1lOg0KICAgSW1hZ2UgVHlwZTogICBBUk0gTGludXggS2VybmVsIEltYWdlICh1
-bmNvbXByZXNzZWQpDQogICBEYXRhIFNpemU6ICAgIDU5NTEwMTIgQnl0ZXMgPSAgNS43IE1CDQog
-ICBMb2FkIEFkZHJlc3M6IDEwODAwMDAwDQogICBFbnRyeSBQb2ludDogIDEwODAwMDAwDQogICBW
-ZXJpZnlpbmcgQ2hlY2tzdW0gLi4uIE9LDQogICBMb2FkaW5nIEtlcm5lbCBJbWFnZSAuLi4gT0sN
-Ck9LDQotLS0gODwgLS0tDQoNClJlZ2FyZHMsDQpTdGVwaGVuDQo=
+On 23.5.2017 22:07, Alan Cox wrote:
+>> yep hardcoded max 4 where in probe first free space is found and used
+>> (range 0-3) but still max3100s statically allocated.
+>> Shouldn't be this also dynamically allocated?
+> 
+> The code to do the dynamic allocation would be larger than the array of
+> pointers for the sane worst case.
+> 
+>> I am not quite sure how exactly you want to do this via DT.
+> 
+> Count the number of DT entries for this kind of port and allocate that
+> many ?
+
+:-) I think there is no doubt how to calculate that number for
+static/fixed system. But where do you want to put it? And who should
+read it?
+
+A lot of drivers are calling uart_register_driver in module_init.
+Others are calling it in probe(pl011 for example).
+
+In module init you probably don't have a pointer to DT to read this and
+this should be in generic location not in node itself.
+If all drivers should call it from probe then we should change that -
+then reading property is easy and only location should be cleared.
+
+That's why I am curious how exactly you would do it because I haven't
+seen this before.
+
+> 
+>>
+>> Also what do you think is a safe maximum number? This is fpga - hundreds
+>> of pins which can do just uart.
+>>
+>>> There are lots of options better than breaking the "one kernel many
+>>> platforms" model.  
+>>
+>> Another options is also module parameter and dynamically allocated array
+>> in cdns_uart_init.
+> 
+> For a given platform the number is constant and they need to be
+> described, so it seems to make no sense to put it anywhere other than the
+> DT for that platform.
+
+Also I don't think this is really constant in all cases. Especially in
+connection to fpga where you can put others IPs to PL. You never know
+what it is present in partial region and how many of these are there.
+It means having truly dynamic behavior would be welcome.
+
+Can you call uart_register_driver() from probe for every instance? It
+means nr is 1 all the time.
+
+> 
+> Why should users have to pass magic config options not use DT as
+> intended ?
+
+I am not saying that config option is perfect solution. It is at least
+aligned with 5 others serial drivers in the tree.
+
+Thanks,
+Michal
