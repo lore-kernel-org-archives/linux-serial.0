@@ -1,67 +1,110 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH V1] serial: imx: revert setup DCEDTE early and ensure DCD
- and RI irqs to be off
-Date: Wed, 24 May 2017 14:02:11 +0200
-Message-ID: <20170524120211.5p3pa4ahca4rj5xp@pengutronix.de>
+From: Steve Twiss <stwiss.opensource@diasemi.com>
+Subject: RE: [PATCH V1] serial: imx: revert setup DCEDTE early and ensure
+ DCD and RI irqs to be off
+Date: Wed, 24 May 2017 12:49:35 +0000
+Message-ID: <6ED8E3B22081A4459DAC7699F3695FB7018CD8D7CD@SW-EX-MBX02.diasemi.com>
 References: <20170523123145.E268B3FAD4@swsrvapps-01.diasemi.com>
  <CAOMZO5CT5MS1WGm_rCJ61Ambh+rMapsQWD84RXtagtt3HhmZwg@mail.gmail.com>
  <6ED8E3B22081A4459DAC7699F3695FB7018CD8D75E@SW-EX-MBX02.diasemi.com>
  <CAOMZO5D=_L9Dd3gOgQssKBN5TouGqOx+zJnwr+-1HQrVT_yLRQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
 In-Reply-To: <CAOMZO5D=_L9Dd3gOgQssKBN5TouGqOx+zJnwr+-1HQrVT_yLRQ@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Fabio Estevam <festevam@gmail.com>
-Cc: Steve Twiss <stwiss.opensource@diasemi.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LINUX-KERNEL <linux-kernel@vger.kernel.org>, LINUX-SERIAL <linux-serial@vger.kernel.org>, Lucas Stach <l.stach@pengutronix.de>, Support Opensource <Support.Opensource@diasemi.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LINUX-KERNEL <linux-kernel@vger.kernel.org>, LINUX-SERIAL <linux-serial@vger.kernel.org>, Lucas Stach <l.stach@pengutronix.de>, Uwe Kleine-Konig <u.kleine-koenig@pengutronix.de>, Support Opensource <Support.Opensource@diasemi.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hey Fabio,
-
-On Wed, May 24, 2017 at 08:52:50AM -0300, Fabio Estevam wrote:
-> On Wed, May 24, 2017 at 7:32 AM, Steve Twiss
-> <stwiss.opensource@diasemi.com> wrote:
-> 
-> > The USB to UART connection gets corrupted.
-> > If this patch is applied to the kernel, the i.MX6 Q (quad), and only this board as far as
-> > we know, starts to fail. This does *not* change the i.MX6DL and other sabre boards
-> > have been tested on kernelci.org and do not see a problem.
-> >
-> > An NXP/Freescale SABRESD i.MX6 Q board is requred.
-> >
-> > My system for testing is to TFTP the Linux kernel over an ethernet connection. The
-> > U-boot executes okay and the UART is working at that point. When the kernel loads
-> > the console trace becomes garbled, in the sense that I get the some characters being
-> > output to the console, in the style of the kernel starting up, but they are not correct.
-> >
-> > I expect the kernel has started ok, but I am unable to read/write through the UART
-> > console because of corruptions.
-> >
-> > Console log with the output I am seeing with linux-next/v4.12-rc2
-> > --- 8< ---
-> > U-Boot 2009.08-00001-gf65536a (Jan 12 2015 - 15:47:19)
-> 
-> Thanks for your detailed explanation.
-> 
-> I also have a mx6q sabresd board here, but the error did not happen
-> when I use a recent U-Boot version.
-> 
-> I would like to use the same U-Boot version here as well to help
-> debugging this problem.
-> 
-> Could you please let me know which 2009.08 branch you used? Is it any
-> one from git.freescale.com
-> http://git.freescale.com/git/cgit.cgi/imx/uboot-imx.git/refs/heads ?
-
-The problem is that RFDIV, RXTL and TXTL are overwritten in the UFCR
-register.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGkgRmFiaW8sDQoNCk9uIDI0IE1heSAyMDE3IDEyOjUzIEZhYmlvIEVzdGV2YW0gd3JvdGU6DQo+
+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjFdIHNlcmlhbDogaW14OiByZXZlcnQgc2V0dXAgRENFRFRF
+IGVhcmx5IGFuZCBlbnN1cmUgRENEIGFuZCBSSSBpcnFzIHRvIGJlIG9mZg0KPiBPbiBXZWQsIE1h
+eSAyNCwgMjAxNyBhdCA3OjMyIEFNLCBTdGV2ZSBUd2lzcyB3cm90ZToNCj4gDQo+ID4gVGhlIFVT
+QiB0byBVQVJUIGNvbm5lY3Rpb24gZ2V0cyBjb3JydXB0ZWQuDQo+ID4gSWYgdGhpcyBwYXRjaCBp
+cyBhcHBsaWVkIHRvIHRoZSBrZXJuZWwsIHRoZSBpLk1YNiBRIChxdWFkKSwgYW5kIG9ubHkgdGhp
+cyBib2FyZCBhcyBmYXIgYXMNCj4gPiB3ZSBrbm93LCBzdGFydHMgdG8gZmFpbC4gVGhpcyBkb2Vz
+ICpub3QqIGNoYW5nZSB0aGUgaS5NWDZETCBhbmQgb3RoZXIgc2FicmUgYm9hcmRzDQo+ID4gaGF2
+ZSBiZWVuIHRlc3RlZCBvbiBrZXJuZWxjaS5vcmcgYW5kIGRvIG5vdCBzZWUgYSBwcm9ibGVtLg0K
+PiA+DQo+ID4gQW4gTlhQL0ZyZWVzY2FsZSBTQUJSRVNEIGkuTVg2IFEgYm9hcmQgaXMgcmVxdXJl
+ZC4NCj4gPg0KPiA+IE15IHN5c3RlbSBmb3IgdGVzdGluZyBpcyB0byBURlRQIHRoZSBMaW51eCBr
+ZXJuZWwgb3ZlciBhbiBldGhlcm5ldCBjb25uZWN0aW9uLiBUaGUNCj4gPiBVLWJvb3QgZXhlY3V0
+ZXMgb2theSBhbmQgdGhlIFVBUlQgaXMgd29ya2luZyBhdCB0aGF0IHBvaW50LiBXaGVuIHRoZSBr
+ZXJuZWwgbG9hZHMNCj4gPiB0aGUgY29uc29sZSB0cmFjZSBiZWNvbWVzIGdhcmJsZWQsIGluIHRo
+ZSBzZW5zZSB0aGF0IEkgZ2V0IHRoZSBzb21lIGNoYXJhY3RlcnMgYmVpbmcNCj4gPiBvdXRwdXQg
+dG8gdGhlIGNvbnNvbGUsIGluIHRoZSBzdHlsZSBvZiB0aGUga2VybmVsIHN0YXJ0aW5nIHVwLCBi
+dXQgdGhleSBhcmUgbm90IGNvcnJlY3QuDQo+ID4NCj4gPiBJIGV4cGVjdCB0aGUga2VybmVsIGhh
+cyBzdGFydGVkIG9rLCBidXQgSSBhbSB1bmFibGUgdG8gcmVhZC93cml0ZSB0aHJvdWdoIHRoZSBV
+QVJUDQo+ID4gY29uc29sZSBiZWNhdXNlIG9mIGNvcnJ1cHRpb25zLg0KPiA+DQo+ID4gQ29uc29s
+ZSBsb2cgd2l0aCB0aGUgb3V0cHV0IEkgYW0gc2VlaW5nIHdpdGggbGludXgtbmV4dC92NC4xMi1y
+YzINCj4gPiAtLS0gODwgLS0tDQo+ID4gVS1Cb290IDIwMDkuMDgtMDAwMDEtZ2Y2NTUzNmEgKEph
+biAxMiAyMDE1IC0gMTU6NDc6MTkpDQo+IA0KPiBUaGFua3MgZm9yIHlvdXIgZGV0YWlsZWQgZXhw
+bGFuYXRpb24uDQo+IA0KPiBJIGFsc28gaGF2ZSBhIG14NnEgc2FicmVzZCBib2FyZCBoZXJlLCBi
+dXQgdGhlIGVycm9yIGRpZCBub3QgaGFwcGVuDQo+IHdoZW4gSSB1c2UgYSByZWNlbnQgVS1Cb290
+IHZlcnNpb24uDQo+DQo+IEkgd291bGQgbGlrZSB0byB1c2UgdGhlIHNhbWUgVS1Cb290IHZlcnNp
+b24gaGVyZSBhcyB3ZWxsIHRvIGhlbHANCj4gZGVidWdnaW5nIHRoaXMgcHJvYmxlbS4NCg0KRm9y
+IHRoZSBwcmV2aW91cyB0ZXN0cyBJIHdhcyB1c2luZyBhIHNsaWdodGx5IG1vZGlmaWVkIFUtQm9v
+dCBmcm9tIGFuIG9sZCBGcmVlc2NhbGUNCkFuZHJvaWQgcmVsZWFzZSBKQjQzXzExMCwgYnV0IEkn
+dmUganVzdCBjb21waWxlZCB1cCB0aGUgc3RhbmRhcmQgdS1ib290IGZyb20NCnRoZSBGcmVlc2Nh
+bGUgZ2l0IHJlcG9zaXRvcnksIGFuZCBJIGdldCB0aGUgc2FtZSByZXN1bHRzLg0KDQo+IENvdWxk
+IHlvdSBwbGVhc2UgbGV0IG1lIGtub3cgd2hpY2ggMjAwOS4wOCBicmFuY2ggeW91IHVzZWQ/IElz
+IGl0IGFueQ0KPiBvbmUgZnJvbSBnaXQuZnJlZXNjYWxlLmNvbQ0KPiBodHRwOi8vZ2l0LmZyZWVz
+Y2FsZS5jb20vZ2l0L2NnaXQuY2dpL2lteC91Ym9vdC1pbXguZ2l0L3JlZnMvaGVhZHMgPw0KDQpJ
+IHVzZWQgdGhpcyB0YWc6IGpiNC4zXzEuMS4xLWdhDQpodHRwOi8vZ2l0LmZyZWVzY2FsZS5jb20v
+Z2l0L2NnaXQuY2dpL2lteC91Ym9vdC1pbXguZ2l0L2NvbW1pdC8/aWQ9amI0LjNfMS4xLjEtZ2EN
+Cg0KVGhpcyByZXBvIGlzIHNsaWdodGx5IG1vZGlmaWVkIGZvciBhIHByb2plY3QgSSBhbSB3b3Jr
+aW5nIG9uLCBidXQgaXQgb25seSBxdWVyaWVzDQp0aGUgIEkyQyBmb3IgZGV2aWNlcyBiZWZvcmUg
+cHJpbnRpbmcgb3V0IHNvbWUgbWVzc2FnZXMsIHNvIG1pbm9yIGNoYW5nZXMgSQ0KdGhpbmsuIEhl
+cmUncyB0aGUgb3V0cHV0IGZyb20gdGhlIGNvbnNvbGU6DQoNCi0tLSA4PCAtLS0NClUtQm9vdCAy
+MDA5LjA4IChNYXkgMjQgMjAxNyAtIDEzOjE1OjQ3KQ0KDQpDUFU6IEZyZWVzY2FsZSBpLk1YNiBm
+YW1pbHkgVE8xLjIgYXQgNzkyIE1Ieg0KVGhlcm1hbCBzZW5zb3Igd2l0aCByYXRpbyA9IDIwMA0K
+VGVtcGVyYXR1cmU6ICAgMzggQywgY2FsaWJyYXRpb24gZGF0YSAweDVmMTU1MjdkDQpteDZxIHBs
+bDE6IDc5Mk1Ieg0KbXg2cSBwbGwyOiA1MjhNSHoNCm14NnEgcGxsMzogNDgwTUh6DQpteDZxIHBs
+bDg6IDUwTUh6DQppcGcgY2xvY2sgICAgIDogNjYwMDAwMDBIeg0KaXBnIHBlciBjbG9jayA6IDY2
+MDAwMDAwSHoNCnVhcnQgY2xvY2sgICAgOiA4MDAwMDAwMEh6DQpjc3BpIGNsb2NrICAgIDogNjAw
+MDAwMDBIeg0KYWhiIGNsb2NrICAgICA6IDEzMjAwMDAwMEh6DQpheGkgY2xvY2sgICA6IDI2NDAw
+MDAwMEh6DQplbWlfc2xvdyBjbG9jazogMTMyMDAwMDAwSHoNCmRkciBjbG9jayAgICAgOiA1Mjgw
+MDAwMDBIeg0KdXNkaGMxIGNsb2NrICA6IDE5ODAwMDAwMEh6DQp1c2RoYzIgY2xvY2sgIDogMTk4
+MDAwMDAwSHoNCnVzZGhjMyBjbG9jayAgOiAxOTgwMDAwMDBIeg0KdXNkaGM0IGNsb2NrICA6IDE5
+ODAwMDAwMEh6DQpuZmMgY2xvY2sgICAgIDogMjQwMDAwMDBIeg0KQm9hcmQ6IGkuTVg2US1TQUJS
+RVNEOiB1bmtub3duLWJvYXJkIEJvYXJkOiAweDYzMDEyIFtQT1IgXQ0KQm9vdCBEZXZpY2U6IFNE
+DQpJMkM6ICAgcmVhZHkNCkRSQU06ICAgMSBHQg0KTU1DOiAgIEZTTF9VU0RIQzogMCxGU0xfVVNE
+SEM6IDEsRlNMX1VTREhDOiAyLEZTTF9VU0RIQzogMw0KSW46ICAgIHNlcmlhbA0KT3V0OiAgIHNl
+cmlhbA0KRXJyOiAgIHNlcmlhbA0KRm91bmQgUEZVWkUxMDAhIGRldmljZWlkPTEwLHJldmlkPTEx
+DQpOZXQ6ICAgZ290IE1BQyBhZGRyZXNzIGZyb20gSUlNOiAwMDowNDo5ZjowMjplMzowYQ0KRkVD
+MCBbUFJJTUVdDQpIaXQgYW55IGtleSB0byBzdG9wIGF1dG9ib290OiAgMA0KUEhZIGluZGVudGlm
+eSBAIDB4MSA9IDB4MDA0ZGQwNzQNCkZFQzogTGluayBpcyBVcCA3OTZkDQpVc2luZyBGRUMwIGRl
+dmljZQ0KVEZUUCBmcm9tIHNlcnZlciAxOTIuMTY4LjIuMTsgb3VyIElQIGFkZHJlc3MgaXMgMTky
+LjE2OC4yLjINCkZpbGVuYW1lICd1SW1hZ2VfZHRiLmlteDZxLnY0LjEyLXJjMicuDQpMb2FkIGFk
+ZHJlc3M6IDB4MTIwMDAwMDANCkxvYWRpbmc6ICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
+ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
+ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
+ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
+ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
+ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMNCiAgICAgICAgICMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQogICAgICAgICAjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0K
+ICAgICAgICAgIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIw0KZG9uZQ0KQnl0ZXMgdHJhbnNmZXJyZWQgPSA1OTUxMDc2ICg1YWNlNjQgaGV4
+KQ0KIyMgQm9vdGluZyBrZXJuZWwgZnJvbSBMZWdhY3kgSW1hZ2UgYXQgMTIwMDAwMDAgLi4uDQog
+ICBJbWFnZSBOYW1lOg0KICAgSW1hZ2UgVHlwZTogICBBUk0gTGludXggS2VybmVsIEltYWdlICh1
+bmNvbXByZXNzZWQpDQogICBEYXRhIFNpemU6ICAgIDU5NTEwMTIgQnl0ZXMgPSAgNS43IE1CDQog
+ICBMb2FkIEFkZHJlc3M6IDEwODAwMDAwDQogICBFbnRyeSBQb2ludDogIDEwODAwMDAwDQogICBW
+ZXJpZnlpbmcgQ2hlY2tzdW0gLi4uIE9LDQogICBMb2FkaW5nIEtlcm5lbCBJbWFnZSAuLi4gT0sN
+Ck9LDQotLS0gODwgLS0tDQoNClJlZ2FyZHMsDQpTdGVwaGVuDQo=
