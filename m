@@ -1,77 +1,102 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH 1/1] xilinx ps uart: Adding a kernel parameter for the
- number of xilinx ps uarts
-Date: Wed, 24 May 2017 18:09:11 +0200
-Message-ID: <b5a032c8-db86-c16b-750f-10aa2a132248@xilinx.com>
-References: <20170520022154.6766-1-kernel.development@povil.us>
- <20170520172008.5a979e8a@alans-desktop>
- <517d864d-d230-3abc-eb3c-4b628dc4625f@xilinx.com>
- <20170522192636.5b578d89@alans-desktop>
- <1668f36e-f9be-7008-004a-e467a6813e0f@xilinx.com>
- <20170523210710.4e84dd2d@alans-desktop>
- <924433a1-7e27-6eb6-71ca-ed7baceb427f@xilinx.com>
- <20170524143108.682a548d@alans-desktop>
+From: Babu Moger <babu.moger@oracle.com>
+Subject: Re: CPU_BIG_ENDIAN in generic code (was: Re: [PATCH v3 3/7]
+ arch/sparc: Define config parameter CPU_BIG_ENDIAN)
+Date: Wed, 24 May 2017 12:03:38 -0500
+Message-ID: <9d446ade-e3ef-f694-2b9b-f82e5ef463cb@oracle.com>
+References: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q@mail.gmail.com>
+ <CAK8P3a1XZGQk3b3q+JFJ+mLgw_upUdAtTM1VBjHZq5f2m-YdUg@mail.gmail.com>
+ <8ec12d9b-30da-6088-e340-93cc92245ed4@oracle.com>
+ <CAK8P3a2gk07SW2nGZdNXSzRwx5+Ap5hDf4wDksunLtYkpC5WOg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170524143108.682a548d@alans-desktop>
+In-Reply-To: <CAK8P3a2gk07SW2nGZdNXSzRwx5+Ap5hDf4wDksunLtYkpC5WOg@mail.gmail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Michal Simek <michal.simek@xilinx.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Sam Povilus <kernel.development@povil.us>, gregkh@linuxfoundation.org, jslaby@suse.com, soren.brinkmann@xilinx.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, "David S. Miller" <davem@davemloft.net>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, sparclinux <sparclinux@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 24.5.2017 15:31, Alan Cox wrote:
->> I am not saying that config option is perfect solution. It is at least
->> aligned with 5 others serial drivers in the tree.
-> 
-> And the fact people keep doing hacks jutifies continuing to make a mess.
-> Especialy as in this case it's entirely theoretical. Nobody has produced
-> actual hardware that hits the limit. Nobody has filed a bug, nobody is
-> impacted.
 
-This is the reason why we are talking about it how to do it right.
+On 5/24/2017 10:09 AM, Arnd Bergmann wrote:
+> On Wed, May 24, 2017 at 4:45 PM, Babu Moger <babu.moger@oracle.com> wrote:
+>> On 5/24/2017 5:18 AM, Arnd Bergmann wrote:
+>>> On Wed, May 24, 2017 at 11:59 AM, Geert Uytterhoeven
+>>> <geert@linux-m68k.org> wrote:
+>>>> On Tue, May 23, 2017 at 11:45 PM, Babu Moger <babu.moger@oracle.com>
+>>>> wrote:
+>>>> include/asm-generic/qrwlock.h is also generic, but depends on the
+>>>> architecture to select ARCH_USE_QUEUED_RWLOCKS, which only very few do
+>>>> (x86, and now sparc).
+>>>>
+>>>> I guess the time is ripe for adding (both) symbols to all architectures?
+>>> Good idea. I think we can do most of this by adding a few lines to
+>>> arch/Kconfig:
+>>>
+>>> config CPU_BIG_ENDIAN
+>>>           bool
+>>>
+>>> config CPU_LITTLE_ENDIAN
+>>>          def_bool !CPU_BIG_ENDIAN
+>> I noticed that even x86 does not define CPU_LITTLE_ENDIAN.  Strange.
+> There is no architecture-independent code that tests for
+> CONFIG_CPU_LITTLE_ENDIAN, unlike CONFIG_CPU_BIG_ENDIAN,
+> so that's not very suprising.
 
-With this ps uart it is not that easy because this is cadence RTL which
-is not in public IP database but the same think is with uartlite.
-Limit there is 16. If you really want that I can create that HW design
-which will require more than 16 uartlites in one design.
+Ok. Thanks
+>> With this code all the architecture will default to
+>> CONFIG_CPU_LITTLE_ENDIAN.
+> What I meant is that we have to 'select CPU_BIG_ENDIAN' on all architectures
+> that actually are big-endian:
+Ok. Sure.
+>
+> These are all configurable:
+> $ git grep -l linux/byteorder/big_endian.h | xargs grep -l
+> linux/byteorder/little_endian.h
+> arch/arc/include/uapi/asm/byteorder.h
+> arch/arm/include/uapi/asm/byteorder.h
+> arch/arm64/include/uapi/asm/byteorder.h
+> arch/c6x/include/uapi/asm/byteorder.h
+> arch/m32r/include/uapi/asm/byteorder.h
+> arch/microblaze/include/uapi/asm/byteorder.h
+> arch/mips/include/uapi/asm/byteorder.h
+> arch/powerpc/include/uapi/asm/byteorder.h
+> arch/sh/include/uapi/asm/byteorder.h
+> arch/tile/include/uapi/asm/byteorder.h
+>
+> These are always big-endian:
+> $ git grep -l linux/byteorder/big_endian.h | xargs grep -L
+> linux/byteorder/little_endian.h
+> arch/avr32/include/uapi/asm/byteorder.h
+> arch/frv/include/uapi/asm/byteorder.h
+> arch/m68k/include/uapi/asm/byteorder.h
+> arch/openrisc/include/uapi/asm/byteorder.h
+> arch/parisc/include/uapi/asm/byteorder.h
+> arch/s390/include/uapi/asm/byteorder.h
+> arch/sparc/include/uapi/asm/byteorder.h
+>
+> And these are always little-endian:
+> arch/alpha/include/uapi/asm/byteorder.h
+> arch/blackfin/include/uapi/asm/byteorder.h
+> arch/cris/include/uapi/asm/byteorder.h
+> arch/hexagon/include/uapi/asm/byteorder.h
+> arch/ia64/include/uapi/asm/byteorder.h
+> arch/metag/include/uapi/asm/byteorder.h
+> arch/mn10300/include/uapi/asm/byteorder.h
+> arch/score/include/uapi/asm/byteorder.h
+> arch/unicore32/include/uapi/asm/byteorder.h
+> arch/x86/include/uapi/asm/byteorder.h
+>
+> So if we 'select CPU_BIG_ENDIAN' from avr32, frv, m68k, openrisc, parisc,
+> s390 and sparc, this covers all the fixed-endian architectures, and the
+> other ones are those that already have either CPU_BIG_ENDIAN
+> as a 'bool' option, or both as a 'choice'.
+Ok.  Great details. I think I have all the details required for the 
+first version.  Will post it soon. Thanks
 
-
-> Creating extra CONFIG_ entries for junk like this is ridiculous, most of
-> the others at least have the excuse of being old code.
-
-No doubt about it. I am just trying to find out what's the way you are
-suggesting.
-
-
-> Generally it is better to call uart_register_driver from the probe method
-> because that way you don't waste time and memory registering drivers for
-> stuff that isn't even present however if you have no idea how many
-> devices there might be then you still really need to pass a suitable limit
-> and handle it internally dynamically allocating as needed.
-
-Ok. Is there any problem if uart_register_driver is called for every
-instance separately with nr=1? This driver has major 0, minor 0. Based
-on comment major 0 is for dynamic node allocation. Not sure about minor
-but it is easy to figured out if this should be 0 or 1, 2, 3, etc.
-
-> If someone was hitting this in the real world and you posted a patch that
-> just changed the constant to 8 or 16 or whatever was needed I wouldn't
-> care too much, but adding CONFIG_ entries just makes stuff harder and
-> harder to config and more and more impossible to keep generic.
-> 
-> I keep hearing that the ARM folks are trying to get one unified kernel.
-> CONFIG_ options is not how to do that.
-
-I have really not a problem with all of this. Just trying to understand
-how to do it properly and cleanup the second driver which we use on
-fpga. Last driver used by Xilinx is uart16550 where that old config
-macro already exists.
-
-Because at least now there is an issue in driver if you use serial
-aliases (serial2 and up) which needs to be fixed.
-
-Thanks,
-Michal
+>> I can make it as a separate patch. But I can only test SPARC and little bit
+>> of x86. Is that ok?
+> I think that's ok.
+>
+>          Arnd
