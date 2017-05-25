@@ -1,22 +1,53 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH v7 net-next 17/17] net: qualcomm: add QCA7000 UART
- driver
-Date: Thu, 25 May 2017 13:13:49 -0400 (EDT)
-Message-ID: <20170525.131349.1007553087594728300.davem@davemloft.net>
-References: <50e5a442-777f-1516-4e94-16db7fa28f8b@i2se.com>
-        <1495618181-1204-1-git-send-email-stefan.wahren@i2se.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: CPU_BIG_ENDIAN in generic code (was: Re: [PATCH v3 3/7]
+ arch/sparc: Define config parameter CPU_BIG_ENDIAN)
+Date: Thu, 25 May 2017 22:09:24 +0200
+Message-ID: <CAK8P3a0MEkZ0wpsrit+sS8A0Z5T_jFWF5vFq_BqF2A1tReb7tQ@mail.gmail.com>
+References: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q@mail.gmail.com>
+ <CAK8P3a1XZGQk3b3q+JFJ+mLgw_upUdAtTM1VBjHZq5f2m-YdUg@mail.gmail.com> <8ddc7276-6296-2284-51d3-01093ccbeccb@oracle.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1495618181-1204-1-git-send-email-stefan.wahren@i2se.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: stefan.wahren@i2se.com
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, jslaby@suse.com, LinoSanfilippo@gmx.de, kubakici@wp.pl, devicetree@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <8ddc7276-6296-2284-51d3-01093ccbeccb@oracle.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Babu Moger <babu.moger@oracle.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, "David S. Miller" <davem@davemloft.net>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, sparclinux <sparclinux@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+On Thu, May 25, 2017 at 4:51 PM, Babu Moger <babu.moger@oracle.com> wrote:
+> On 5/24/2017 5:18 AM, Arnd Bergmann wrote:
 
-When you submit a new version of a patch within a patch series, you must
-always resubmit the entire series not just the patches which change.
+>>> I guess the time is ripe for adding (both) symbols to all architectures?
+>>
+>> Good idea. I think we can do most of this by adding a few lines to
+>> arch/Kconfig:
+>>
+>> config CPU_BIG_ENDIAN
+>>          bool
+>>
+>> config CPU_LITTLE_ENDIAN
+>>         def_bool !CPU_BIG_ENDIAN
+>>
+>> This way, we only need to add 'select CPU_BIG_ENDIAN' to the
+>> architectures that are always big-endian, and we don't need to
+>> change anything for the ones that have a single 'CPU_BIG_ENDIAN'
+>> option.
+>>
+>> The three architectures that have a 'choice' statement (mips, ppc and
+>> sh) will have to convert, and m32r will have to replace the
+>
+>
+> what to you mean by "(mips, ppc andsh) will have to convert"?  Do you expect
+> any changes here?
+>
 
-Thank you.
+Kconfig does not allow you to have the same symbol as both a regular
+'bool' and also 'bool within choice', so those three have to replace the
+choice with a user-visible 'config CPU_BIG_ENDIAN' option like the
+other ones have.
+
+I also notice that  for arch/s390/Kconfig you now have both the
+'select CPU_BIG_ENDIAN' and the 'config CPU_BIG_ENDIAN
+def_bool y', I'd remove the second one in the same patch.
+
+       Arnd
