@@ -1,52 +1,72 @@
-From: Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: CPU_BIG_ENDIAN in generic code (was: Re: [PATCH v3 3/7]
- arch/sparc: Define config parameter CPU_BIG_ENDIAN)
-Date: Thu, 25 May 2017 15:27:48 -0700
-Message-ID: <CAMo8BfL8G0Fzn2SZ1356yaoxGgm8tpTDmFJ8cCxEEEgyObMwCQ@mail.gmail.com>
-References: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q@mail.gmail.com>
- <CAK8P3a1XZGQk3b3q+JFJ+mLgw_upUdAtTM1VBjHZq5f2m-YdUg@mail.gmail.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [BUG] tty/serial: stty hangs for 30 seconds after interrupted transfer
+Date: Thu, 25 May 2017 17:34:14 -0500
+Message-ID: <CAL_Jsq+EWfeoZL1T5RjU3WXvBu+nFzHGOULa8TK6rZoHLAX-QA@mail.gmail.com>
+References: <c87da751-0692-e381-be16-a2adf0f0104f@inbox.lv>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAK8P3a1XZGQk3b3q+JFJ+mLgw_upUdAtTM1VBjHZq5f2m-YdUg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Babu Moger <babu.moger-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, sparclinux <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <c87da751-0692-e381-be16-a2adf0f0104f@inbox.lv>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Dmitry Artamonow <mad_soft@inbox.lv>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Alan Cox <alan@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 24, 2017 at 3:18 AM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
-> On Wed, May 24, 2017 at 11:59 AM, Geert Uytterhoeven
-> <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> wrote:
->> I guess the time is ripe for adding (both) symbols to all architectures?
+On Thu, May 25, 2017 at 8:22 AM, Dmitry Artamonow <mad_soft@inbox.lv> wrote:
+> Hello.
 >
-> Good idea. I think we can do most of this by adding a few lines to
-> arch/Kconfig:
+> While working on i.MX6-based board I found weird problem with serial ports.
+> When I do some write in serial port and then interrupt it prematurely with
+> Ctrl-C, following call to stty hangs for 30 seconds. Basic reproducing steps:
 >
-> config CPU_BIG_ENDIAN
->         bool
->
-> config CPU_LITTLE_ENDIAN
->        def_bool !CPU_BIG_ENDIAN
->
-> This way, we only need to add 'select CPU_BIG_ENDIAN' to the
-> architectures that are always big-endian, and we don't need to
-> change anything for the ones that have a single 'CPU_BIG_ENDIAN'
-> option.
->
-> The three architectures that have a 'choice' statement (mips, ppc and
-> sh) will have to convert, and m32r will have to replace the
-> option with the opposite one, which could break 'make oldconfig',
-> but nobody really cares about m32r any more.
+> 1. cat some_large_text_file.txt > /dev/ttymxc1
+> 2. Press Ctrl-C
+> 3. stty -F /dev/ttymxc1
 
-Xtensa may have either endianness and for xtensa we define
-CONFIG_CPU_BIG_ENDIAN or CONFIG_CPU_LITTLE_ENDIAN
-in the arch/xtensa/Makefile based on the value of the compiler builtin
-macro.
+I've tried this on an db410c and can't reproduce. Different serial
+driver though. I do get a few second delay after ctrl-C. Do you get a
+delay there?
 
--- 
-Thanks.
--- Max
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I couldn't repo with 8250 either, but that was on qemu which is
+doesn't have realistic timing.
+
+> If I send some more data over the port afterwards and don't interrupt it,
+> following call to stty doesn't hang.
+
+[...]
+
+> I located the place of the hang inside the tty_wait_until_sent() function.
+> Looks like it waits for UART to finish sending, but as the UART doesn't
+> actually send anything, it exits only after 30 second timeout.
+
+So the only way to get a 30 sec timeout is if tty_chars_in_buffer()
+returns that the circular buffer contains some characters.
+
+> After some digging I found that the problem seems to be caused by
+> commit 761ed4a94582 ("tty: serial_core: convert uart_close to use
+> tty_port_close"). Reverting this and related commits (a5a2b13074fd,
+> be2c92b8f164, 4dda864d7307) makes the problem go away.
+>
+> Also note that statistics seems to be broken in the log above. After
+> running "sendandkill" it says that 0 bytes were sent while actually
+> about 970 bytes were transferred. And after sending one more character with
+> echo, it actually sends 2400+1 characters, i.e. resends the whole previously
+> interrupted buffer before sending 'X'. Reverts above fix this only partially.
+> UART doesn't resend previous characters anymore, but still statistics is
+> wrong about first interrupted transfer. But I suspect this could be a separate
+> problem in imx driver.
+>
+> Any ideas how to fix this hang? I tried to put uart_flush_buffer() into
+> uart_close() before call to tty_port_close() and it kind of works, but
+> I'm not really sure whether it's a proper fix. Given my lack of experience
+> with TTY subsystem and level of its complexity I suspect that I can
+> easily miss something.
+
+Kind of works? Is there still some problem beyond the statistics?
+uart_flush_buffer would ensure the circular buffer is empty. It seems
+like that is getting corrupted.
+
+Can you add some debug prints in open, close and the tx isr with the
+circular buffer head and tail values?
+
+Rob
