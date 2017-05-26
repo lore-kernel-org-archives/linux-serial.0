@@ -1,58 +1,94 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v3 03/10] gpio-exar/8250-exar: Fix passing in of parent PCI device
-Date: Fri, 26 May 2017 18:02:30 +0200
-Message-ID: <272048835491193427a32c442627be985eeba649.1495814557.git.jan.kiszka@siemens.com>
+Subject: [PATCH v3 08/10] gpio: exar: Refactor address and bit calculations
+Date: Fri, 26 May 2017 18:02:35 +0200
+Message-ID: <ee7ffa22693e844c76f30ce2e96123aefe217e3a.1495814557.git.jan.kiszka@siemens.com>
 References: <cover.1495814557.git.jan.kiszka@siemens.com>
-Return-path: <linux-gpio-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1495814557.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1495814557.git.jan.kiszka@siemens.com>
 References: <cover.1495814557.git.jan.kiszka@siemens.com>
-Sender: linux-gpio-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-This fixes reloading of the GPIO driver for the same platform device
-instance as created by the exar UART driver: First of all, the driver
-sets drvdata to its own value during probing and does not restore the
-original value on exit. But this won't help anyway as the core clears
-drvdata after the driver left.
-
-Set the platform device parent instead.
+Make the address and bit calculation more friendly for introducing a
+"first pin" offset later on. The new form is also more compact and
+regular.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- drivers/gpio/gpio-exar.c            | 2 +-
- drivers/tty/serial/8250/8250_exar.c | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpio/gpio-exar.c | 38 ++++++++++++++++----------------------
+ 1 file changed, 16 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
-index 006a9a67c2a4..da4550bb9939 100644
+index 1a629831d45b..d13bf20b8639 100644
 --- a/drivers/gpio/gpio-exar.c
 +++ b/drivers/gpio/gpio-exar.c
-@@ -119,7 +119,7 @@ static int exar_direction_input(struct gpio_chip *chip, unsigned int offset)
- 
- static int gpio_exar_probe(struct platform_device *pdev)
+@@ -51,11 +51,11 @@ static void exar_update(struct gpio_chip *chip, unsigned int reg, int val,
+ static int exar_set_direction(struct gpio_chip *chip, int direction,
+ 			      unsigned int offset)
  {
--	struct pci_dev *pcidev = platform_get_drvdata(pdev);
-+	struct pci_dev *pcidev = to_pci_dev(pdev->dev.parent);
- 	struct exar_gpio_chip *exar_gpio;
- 	void __iomem *p;
- 	int index, ret;
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index c29c7e675890..0f4b236d7e68 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -203,7 +203,8 @@ xr17v35x_register_gpio(struct pci_dev *pcidev)
- 	if (!pdev)
- 		return NULL;
+-	unsigned int bank = offset / 8;
+-	unsigned int addr;
++	unsigned int addr = offset / 8 ?
++		EXAR_OFFSET_MPIOSEL_HI : EXAR_OFFSET_MPIOSEL_LO;
++	unsigned int bit  = offset % 8;
  
--	platform_set_drvdata(pdev, pcidev);
-+	pdev->dev.parent = &pcidev->dev;
-+
- 	if (platform_device_add(pdev) < 0) {
- 		platform_device_put(pdev);
- 		return NULL;
+-	addr = bank ? EXAR_OFFSET_MPIOSEL_HI : EXAR_OFFSET_MPIOSEL_LO;
+-	exar_update(chip, addr, direction, offset % 8);
++	exar_update(chip, addr, direction, bit);
+ 	return 0;
+ }
+ 
+@@ -73,36 +73,30 @@ static int exar_get(struct gpio_chip *chip, unsigned int reg)
+ 
+ static int exar_get_direction(struct gpio_chip *chip, unsigned int offset)
+ {
+-	unsigned int bank = offset / 8;
+-	unsigned int addr;
+-	int val;
++	unsigned int addr = offset / 8 ?
++		EXAR_OFFSET_MPIOSEL_HI : EXAR_OFFSET_MPIOSEL_LO;
++	unsigned int bit  = offset % 8;
+ 
+-	addr = bank ? EXAR_OFFSET_MPIOSEL_HI : EXAR_OFFSET_MPIOSEL_LO;
+-	val = exar_get(chip, addr) & BIT(offset % 8);
+-
+-	return !!val;
++	return !!(exar_get(chip, addr) & BIT(bit));
+ }
+ 
+ static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
+ {
+-	unsigned int bank = offset / 8;
+-	unsigned int addr;
+-	int val;
+-
+-	addr = bank ? EXAR_OFFSET_MPIOLVL_HI : EXAR_OFFSET_MPIOLVL_LO;
+-	val = exar_get(chip, addr) & BIT(offset % 8);
++	unsigned int addr = offset / 8 ?
++		EXAR_OFFSET_MPIOLVL_HI : EXAR_OFFSET_MPIOLVL_LO;
++	unsigned int bit  = offset % 8;
+ 
+-	return !!val;
++	return !!(exar_get(chip, addr) & BIT(bit));
+ }
+ 
+ static void exar_set_value(struct gpio_chip *chip, unsigned int offset,
+ 			   int value)
+ {
+-	unsigned int bank = offset / 8;
+-	unsigned int addr;
++	unsigned int addr = offset / 8 ?
++		EXAR_OFFSET_MPIOLVL_HI : EXAR_OFFSET_MPIOLVL_LO;
++	unsigned int bit  = offset % 8;
+ 
+-	addr = bank ? EXAR_OFFSET_MPIOLVL_HI : EXAR_OFFSET_MPIOLVL_LO;
+-	exar_update(chip, addr, value, offset % 8);
++	exar_update(chip, addr, value, bit);
+ }
+ 
+ static int exar_direction_output(struct gpio_chip *chip, unsigned int offset,
 -- 
 2.12.0
-
