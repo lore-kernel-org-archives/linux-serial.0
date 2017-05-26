@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v3 02/10] gpio-exar/8250-exar: Do not even instantiate a GPIO device for Commtech cards
-Date: Fri, 26 May 2017 18:02:29 +0200
-Message-ID: <096688442ac54d85b6a3e0577592bc2a6891569b.1495814557.git.jan.kiszka@siemens.com>
+Subject: [PATCH v3 07/10] gpio-exar/8250-exar: Rearrange gpiochip parenthood
+Date: Fri, 26 May 2017 18:02:34 +0200
+Message-ID: <375d76dc3fe344f5168e8155211422de59f0efa0.1495814557.git.jan.kiszka@siemens.com>
 References: <cover.1495814557.git.jan.kiszka@siemens.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1495814557.git.jan.kiszka@siemens.com>
@@ -12,44 +12,48 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.wallei
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-Commtech adapters need the MPIOs for internal purposes, and the
-gpio-exar driver already refused to pick them up. But there is actually
-no point in even creating the underlying platform device.
+Set the parent of the exar gpiochip to its platform device, like other
+gpiochips are doing it. In order to keep the relationship discoverable
+for ACPI systems, set the platform device companion to the PCI device.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- drivers/gpio/gpio-exar.c            | 3 ---
- drivers/tty/serial/8250/8250_exar.c | 4 +++-
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ drivers/gpio/gpio-exar.c            | 2 +-
+ drivers/tty/serial/8250/8250_exar.c | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
-index 081076771217..006a9a67c2a4 100644
+index f3585a184f39..1a629831d45b 100644
 --- a/drivers/gpio/gpio-exar.c
 +++ b/drivers/gpio/gpio-exar.c
-@@ -124,9 +124,6 @@ static int gpio_exar_probe(struct platform_device *pdev)
- 	void __iomem *p;
- 	int index, ret;
+@@ -142,7 +142,7 @@ static int gpio_exar_probe(struct platform_device *pdev)
  
--	if (pcidev->vendor != PCI_VENDOR_ID_EXAR)
--		return -ENODEV;
--
- 	/*
- 	 * Map the pci device to get the register addresses.
- 	 * We will need to read and write those registers to control
+ 	sprintf(exar_gpio->name, "exar_gpio%d", index);
+ 	exar_gpio->gpio_chip.label = exar_gpio->name;
+-	exar_gpio->gpio_chip.parent = &pcidev->dev;
++	exar_gpio->gpio_chip.parent = &pdev->dev;
+ 	exar_gpio->gpio_chip.direction_output = exar_direction_output;
+ 	exar_gpio->gpio_chip.direction_input = exar_direction_input;
+ 	exar_gpio->gpio_chip.get_direction = exar_get_direction;
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 8984e8b2d524..c29c7e675890 100644
+index 0f4b236d7e68..ee4b142f3ed0 100644
 --- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -245,7 +245,9 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
- 		/* Setup Multipurpose Input/Output pins. */
- 		setup_gpio(pcidev, p);
+@@ -9,6 +9,7 @@
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation; either version 2 of the License.
+  */
++#include <linux/acpi.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+@@ -204,6 +205,7 @@ xr17v35x_register_gpio(struct pci_dev *pcidev)
+ 		return NULL;
  
--		port->port.private_data = xr17v35x_register_gpio(pcidev);
-+		if (pcidev->vendor == PCI_VENDOR_ID_EXAR)
-+			port->port.private_data =
-+				xr17v35x_register_gpio(pcidev);
- 	}
+ 	pdev->dev.parent = &pcidev->dev;
++	ACPI_COMPANION_SET(&pdev->dev, ACPI_COMPANION(&pcidev->dev));
  
- 	return 0;
+ 	if (platform_device_add(pdev) < 0) {
+ 		platform_device_put(pdev);
 -- 
 2.12.0
