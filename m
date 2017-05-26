@@ -1,59 +1,60 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v3 06/10] gpio: exar: Fix reading of directions and values
-Date: Fri, 26 May 2017 18:02:33 +0200
-Message-ID: <7678f5c040c6b578fa008c9b510bb936a218310c.1495814557.git.jan.kiszka@siemens.com>
-References: <cover.1495814557.git.jan.kiszka@siemens.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1495814557.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1495814557.git.jan.kiszka@siemens.com>
-References: <cover.1495814557.git.jan.kiszka@siemens.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 1/8] serial: exar: Preconfigure xr17v35x MPIOs as output
+Date: Fri, 26 May 2017 20:38:14 +0200
+Message-ID: <20170526183814.GD16490@kroah.com>
+References: <cover.1494660546.git.jan.kiszka@siemens.com>
+ <6155891d19531be018d30fd55ffd6d42493af8c1.1494660546.git.jan.kiszka@siemens.com>
+ <9bb8d972-6535-1611-8fa7-f5fe89760531@siemens.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <9bb8d972-6535-1611-8fa7-f5fe89760531@siemens.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-First, the logic for translating a register bit to the return code of
-exar_get_direction and exar_get_value were wrong. And second, there was
-a flip regarding the register bank in exar_get_direction.
+On Fri, May 26, 2017 at 03:04:26PM +0200, Jan Kiszka wrote:
+> Greg,
+> 
+> On 2017-05-13 09:28, Jan Kiszka wrote:
+> > This is the safe default for GPIOs with unknown external wiring.
+> > 
+> > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_exar.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+> > index 1270ff163f63..b4fa585156c7 100644
+> > --- a/drivers/tty/serial/8250/8250_exar.c
+> > +++ b/drivers/tty/serial/8250/8250_exar.c
+> > @@ -177,13 +177,13 @@ static void setup_gpio(u8 __iomem *p)
+> >  	writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
+> >  	writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
+> >  	writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
+> > -	writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
+> > +	writeb(0xff, p + UART_EXAR_MPIOSEL_7_0);
+> >  	writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
+> >  	writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
+> >  	writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
+> >  	writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
+> >  	writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
+> > -	writeb(0x00, p + UART_EXAR_MPIOSEL_15_8);
+> > +	writeb(0xff, p + UART_EXAR_MPIOSEL_15_8);
+> >  	writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
+> >  }
+> >  
+> > 
+> 
+> Please drop from this tty-next, it may break Commtech adapters. I have
+> an update ready.
+> 
+> I may also send a fix on top if that is preferred, just let me know.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/gpio/gpio-exar.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+I need a fixup patch, I can't drop a patch, only revert it.
 
-diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
-index b29890b143ce..f3585a184f39 100644
---- a/drivers/gpio/gpio-exar.c
-+++ b/drivers/gpio/gpio-exar.c
-@@ -68,7 +68,7 @@ static int exar_get(struct gpio_chip *chip, unsigned int reg)
- 	value = readb(exar_gpio->regs + reg);
- 	mutex_unlock(&exar_gpio->lock);
- 
--	return !!value;
-+	return value;
- }
- 
- static int exar_get_direction(struct gpio_chip *chip, unsigned int offset)
-@@ -78,7 +78,7 @@ static int exar_get_direction(struct gpio_chip *chip, unsigned int offset)
- 	int val;
- 
- 	addr = bank ? EXAR_OFFSET_MPIOSEL_HI : EXAR_OFFSET_MPIOSEL_LO;
--	val = exar_get(chip, addr) >> (offset % 8);
-+	val = exar_get(chip, addr) & BIT(offset % 8);
- 
- 	return !!val;
- }
-@@ -89,8 +89,8 @@ static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
- 	unsigned int addr;
- 	int val;
- 
--	addr = bank ? EXAR_OFFSET_MPIOLVL_LO : EXAR_OFFSET_MPIOLVL_HI;
--	val = exar_get(chip, addr) >> (offset % 8);
-+	addr = bank ? EXAR_OFFSET_MPIOLVL_HI : EXAR_OFFSET_MPIOLVL_LO;
-+	val = exar_get(chip, addr) & BIT(offset % 8);
- 
- 	return !!val;
- }
--- 
-2.12.0
+thanks,
+
+greg k-h
