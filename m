@@ -1,28 +1,306 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 1/8] serial: exar: Preconfigure xr17v35x MPIOs as output
-Date: Fri, 26 May 2017 17:22:56 +0300
-Message-ID: <CAHp75Vd5Z+rnRKYYpnjD55PXSih_ynpdHqGbDVgVpkaW36BKsw@mail.gmail.com>
-References: <cover.1494660546.git.jan.kiszka@siemens.com> <6155891d19531be018d30fd55ffd6d42493af8c1.1494660546.git.jan.kiszka@siemens.com>
- <9bb8d972-6535-1611-8fa7-f5fe89760531@siemens.com>
+From: YT Shen <yt.shen@mediatek.com>
+Subject: Re: [PATCH 2/2] arm64: dts: Add Mediatek SoC MT2712 and evaluation
+ board dts and Makefile
+Date: Fri, 26 May 2017 22:33:42 +0800
+Message-ID: <1495809222.25681.11.camel@mtksdaap41>
+References: <1495192186-22480-1-git-send-email-yt.shen@mediatek.com>
+ <1495192186-22480-3-git-send-email-yt.shen@mediatek.com>
+ <20170523150137.ouyloy46ahuhsenu@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <9bb8d972-6535-1611-8fa7-f5fe89760531@siemens.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170523150137.ouyloy46ahuhsenu@rob-hp-laptop>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, srv_heupstream@mediatek.com, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Mars Cheng <mars.cheng@mediatek.com>, linux-serial@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-mediatek@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 26, 2017 at 4:04 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> Greg,
+On Tue, 2017-05-23 at 10:01 -0500, Rob Herring wrote:
+> On Fri, May 19, 2017 at 07:09:46PM +0800, YT Shen wrote:
+> > This adds basic chip support for Mediatek 2712
+> > 
+> > Signed-off-by: YT Shen <yt.shen@mediatek.com>
+> > ---
+> >  arch/arm64/boot/dts/mediatek/Makefile       |   1 +
+> >  arch/arm64/boot/dts/mediatek/mt2712-evb.dts |  44 +++++++
+> >  arch/arm64/boot/dts/mediatek/mt2712e.dtsi   | 172 ++++++++++++++++++++++++++++
+> >  3 files changed, 217 insertions(+)
+> >  create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
+> >  create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> > 
+> > diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+> > index 9fbfd32..fcc0604 100644
+> > --- a/arch/arm64/boot/dts/mediatek/Makefile
+> > +++ b/arch/arm64/boot/dts/mediatek/Makefile
+> > @@ -1,3 +1,4 @@
+> > +dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
+> >  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
+> >  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
+> >  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
+> > diff --git a/arch/arm64/boot/dts/mediatek/mt2712-evb.dts b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
+> > new file mode 100644
+> > index 0000000..40b0c91
+> > --- /dev/null
+> > +++ b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
+> > @@ -0,0 +1,44 @@
+> > +/*
+> > + * Copyright (c) 2017 MediaTek Inc.
+> > + * Author: YT Shen <yt.shen@mediatek.com>
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify
+> > + * it under the terms of the GNU General Public License version 2 as
+> > + * published by the Free Software Foundation.
+> > + *
+> > + * This program is distributed in the hope that it will be useful,
+> > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> > + * GNU General Public License for more details.
+> > + */
+> 
+> You may want to dual license this. Not sure what the rest of Mediatek 
+> dts files do though. Also, you can use SPDX tag here if you want.
+Okay, will change to SPDX tag and dual license in the next version.
+  SPDX-License-Identifier: (GPL-2.0 OR MIT)
 
-> Please drop from this tty-next, it may break Commtech adapters. I have
-> an update ready.
->
-> I may also send a fix on top if that is preferred, just let me know.
+> 
+> > +
+> > +/dts-v1/;
+> > +#include "mt2712e.dtsi"
+> > +
+> > +/ {
+> > +	model = "MediaTek MT2712 evaluation board";
+> > +	compatible = "mediatek,mt2712-evb", "mediatek,mt2712";
+> > +
+> > +	aliases {
+> > +		serial0 = &uart0;
+> > +		serial1 = &uart1;
+> > +		serial2 = &uart2;
+> > +		serial3 = &uart3;
+> > +		serial4 = &uart4;
+> > +		serial5 = &uart5;
+> > +	};
+> > +
+> > +	memory@40000000 {
+> > +		device_type = "memory";
+> > +		reg = <0 0x40000000 0 0x80000000>;
+> > +	};
+> > +
+> > +	chosen {
+> > +		bootargs = "console=ttyS0,921600n1 initrd=0x45000000,90M";
+> 
+> Both of these have a way to be expressed in DT. For the initrd, the 
+> bootloader should be setting the address and size anyway.
+OK, will change to DT usage.
+  stdout-path = "serial0:921600n8";
+  linux,initrd-start = <...>;
+  linux,initrd-end = <...>;
 
-AFAIK what is in tty-next is left there, so, looks like latter is the option.
+> 
+> > +	};
+> > +};
+> > +
+> > +&uart0 {
+> > +	status = "okay";
+> > +};
+> > +
+> > diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> > new file mode 100644
+> > index 0000000..40747a9
+> > --- /dev/null
+> > +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> > @@ -0,0 +1,172 @@
+> > +/*
+> > + * Copyright (c) 2017 MediaTek Inc.
+> > + * Author: YT Shen <yt.shen@mediatek.com>
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify
+> > + * it under the terms of the GNU General Public License version 2 as
+> > + * published by the Free Software Foundation.
+> > + *
+> > + * This program is distributed in the hope that it will be useful,
+> > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> > + * GNU General Public License for more details.
+> > + */
+> > +
+> > +#include <dt-bindings/interrupt-controller/irq.h>
+> > +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> > +
+> > +/ {
+> > +	compatible = "mediatek,mt2712";
+> > +	interrupt-parent = <&sysirq>;
+> > +	#address-cells = <2>;
+> > +	#size-cells = <2>;
+> > +
+> > +	cpus {
+> > +		#address-cells = <1>;
+> > +		#size-cells = <0>;
+> > +
+> > +		cpu-map {
+> > +			cluster0 {
+> > +				core0 {
+> > +					cpu = <&cpu0>;
+> > +				};
+> > +				core1 {
+> > +					cpu = <&cpu1>;
+> > +				};
+> > +			};
+> > +
+> > +			cluster1 {
+> > +				core0 {
+> > +					cpu = <&cpu2>;
+> > +				};
+> > +			};
+> > +		};
+> > +
+> > +		cpu0: cpu@0 {
+> > +			device_type = "cpu";
+> > +			compatible = "arm,cortex-a35";
+> > +			reg = <0x000>;
+> > +		};
+> > +
+> > +		cpu1: cpu@1 {
+> > +			device_type = "cpu";
+> > +			compatible = "arm,cortex-a35";
+> > +			reg = <0x001>;
+> > +			enable-method = "psci";
+> > +		};
+> > +
+> > +		cpu2: cpu@200 {
+> > +			device_type = "cpu";
+> > +			compatible = "arm,cortex-a72";
+> > +			reg = <0x200>;
+> > +			enable-method = "psci";
+> > +		};
+> > +	};
+> > +
+> > +	psci {
+> > +		compatible = "arm,psci-0.2";
+> > +		method = "smc";
+> > +	};
+> > +
+> > +	uart_clk: dummy26m {
+> > +		compatible = "fixed-clock";
+> > +		clock-frequency = <26000000>;
+> > +		#clock-cells = <0>;
+> > +	};
+> > +
+> > +	timer {
+> > +		compatible = "arm,armv8-timer";
+> > +		interrupt-parent = <&gic>;
+> > +		interrupts = <GIC_PPI 13
+> > +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
+> > +			     <GIC_PPI 14
+> > +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
+> > +			     <GIC_PPI 11
+> > +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
+> > +			     <GIC_PPI 10
+> > +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>;
+> > +	};
+> > +
+> > +	soc {
+> > +		#address-cells = <2>;
+> > +		#size-cells = <2>;
+> > +		compatible = "simple-bus";
+> > +		ranges;
+> > +
+> > +		uart5: serial@1000f000 {
+> > +			compatible = "mediatek,mt2712-uart",
+> > +				     "mediatek,mt6577-uart";
+> > +			reg = <0 0x1000f000 0 0x400>;
+> > +			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
+> > +			clocks = <&uart_clk>;
+> > +			status = "disabled";
+> > +		};
+> > +
+> > +		sysirq: intpol-controller@10220a80 {
+> 
+> interrupt-controller@...
+Will check this part, thanks for the review.
 
--- 
-With Best Regards,
-Andy Shevchenko
+yt.shen
+
+> 
+> > +			compatible = "mediatek,mt2712-sysirq",
+> > +				     "mediatek,mt6577-sysirq";
+> > +			interrupt-controller;
+> > +			#interrupt-cells = <3>;
+> > +			interrupt-parent = <&gic>;
+> > +			reg = <0 0x10220a80 0 0x40>;
+> > +		};
+> > +
+> > +		gic: interrupt-controller@10510000 {
+> > +			compatible = "arm,gic-400";
+> > +			#interrupt-cells = <3>;
+> > +			interrupt-parent = <&gic>;
+> > +			interrupt-controller;
+> > +			reg = <0 0x10510000 0 0x1000>,
+> > +			      <0 0x10520000 0 0x1000>,
+> > +			      <0 0x10540000 0 0x2000>,
+> > +			      <0 0x10560000 0 0x2000>;
+> > +			interrupts = <GIC_PPI 9
+> > +				(GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_HIGH)>;
+> > +		};
+> > +
+> > +		uart0: serial@11002000 {
+> > +			compatible = "mediatek,mt2712-uart",
+> > +				     "mediatek,mt6577-uart";
+> > +			reg = <0 0x11002000 0 0x400>;
+> > +			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
+> > +			clocks = <&uart_clk>;
+> > +			status = "disabled";
+> > +		};
+> > +
+> > +		uart1: serial@11003000 {
+> > +			compatible = "mediatek,mt2712-uart",
+> > +				     "mediatek,mt6577-uart";
+> > +			reg = <0 0x11003000 0 0x400>;
+> > +			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
+> > +			clocks = <&uart_clk>;
+> > +			status = "disabled";
+> > +		};
+> > +
+> > +		uart2: serial@11004000 {
+> > +			compatible = "mediatek,mt2712-uart",
+> > +				     "mediatek,mt6577-uart";
+> > +			reg = <0 0x11004000 0 0x400>;
+> > +			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
+> > +			clocks = <&uart_clk>;
+> > +			status = "disabled";
+> > +		};
+> > +
+> > +		uart3: serial@11005000 {
+> > +			compatible = "mediatek,mt2712-uart",
+> > +				     "mediatek,mt6577-uart";
+> > +			reg = <0 0x11005000 0 0x400>;
+> > +			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_LOW>;
+> > +			clocks = <&uart_clk>;
+> > +			status = "disabled";
+> > +		};
+> > +
+> > +		uart4: serial@11019000 {
+> > +			compatible = "mediatek,mt2712-uart",
+> > +				     "mediatek,mt6577-uart";
+> > +			reg = <0 0x11019000 0 0x400>;
+> > +			interrupts = <GIC_SPI 126 IRQ_TYPE_LEVEL_LOW>;
+> > +			clocks = <&uart_clk>;
+> > +			status = "disabled";
+> > +		};
+> > +	};
+> > +};
+> > +
+> > -- 
+> > 1.9.1
+> > 
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
