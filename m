@@ -1,45 +1,37 @@
-From: Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: CPU_BIG_ENDIAN in generic code (was: Re: [PATCH v3 3/7]
- arch/sparc: Define config parameter CPU_BIG_ENDIAN)
-Date: Thu, 25 May 2017 15:52:14 -0700
-Message-ID: <CAMo8Bf+m0mqnrpC=b+3sGq0iMfqUj2uVtQxtLU6+5pNc_4fWNw@mail.gmail.com>
-References: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q@mail.gmail.com>
- <CAK8P3a1XZGQk3b3q+JFJ+mLgw_upUdAtTM1VBjHZq5f2m-YdUg@mail.gmail.com>
- <CAMo8BfL8G0Fzn2SZ1356yaoxGgm8tpTDmFJ8cCxEEEgyObMwCQ@mail.gmail.com> <116e7ba5-cb5e-8e96-ea74-bf91b4818d69@oracle.com>
+From: Joel Stanley <joel@jms.id.au>
+Subject: Re: [PATCH] serial: 8250_of: Add reset support
+Date: Fri, 26 May 2017 11:54:26 +1000
+Message-ID: <CACPK8Xc_JOGJRF6-w9XrBGuaYist9y1d=RroiJWxc9wJAtoySg@mail.gmail.com>
+References: <20170524045319.29926-1-joel@jms.id.au> <1495613916.3840.16.camel@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <116e7ba5-cb5e-8e96-ea74-bf91b4818d69-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Babu Moger <babu.moger-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, sparclinux <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1495613916.3840.16.camel@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, devicetree <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 25, 2017 at 3:41 PM, Babu Moger <babu.moger-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org> wrote:
-> On 5/25/2017 5:27 PM, Max Filippov wrote:
->> Xtensa may have either endianness and for xtensa we define
->> CONFIG_CPU_BIG_ENDIAN or CONFIG_CPU_LITTLE_ENDIAN
->> in the arch/xtensa/Makefile based on the value of the compiler builtin
->> macro.
+On Wed, May 24, 2017 at 6:18 PM, Philipp Zabel <p.zabel@pengutronix.de> wrote:
+> Hi Joel,
 >
-> Hmm.. That means defining  CPU_LITTLE_ENDIAN  based on "def_bool
-> !CPU_BIG_ENDIAN" will
->  be a problem for Xtensa because menuconfig does not have the knowledge of
-> compiler builtin macro.
-> Is that correct?
+> On Wed, 2017-05-24 at 14:53 +1000, Joel Stanley wrote:
+>> @@ -132,6 +134,18 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+>>               }
+>>       }
+>>
+>> +     info->rst = devm_reset_control_get_optional(&ofdev->dev, NULL);
+>
+> Please use devm_reset_control_get_optional_shared instead.
+>
+> This looks like shared (clock-like) reset use, where you just have to
+> make sure that the reset is deasserted while the module is in use, but
+> you don't care whether it is actually asserted all the time otherwise.
 
-I think so. OTOH outside the arch/ CPU_LITTLE_ENDIAN is only used in
-two Kconfig files:
+Thanks for the review. The new reset API is much nicer, and it worked
+for me once I realised the changes came in for 4.11 (my test setup is
+based on 4.10).
 
-drivers/crypto/nx/Kconfig
-drivers/isdn/hisax/Kconfig
+Cheers,
 
-both of which are irrelevant for xtensa.
-
--- 
-Thanks.
--- Max
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Joel
