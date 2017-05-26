@@ -1,46 +1,60 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH] serial: uartps: Fix kernel doc warnings
-Date: Fri, 26 May 2017 13:13:18 +0200
-Message-ID: <d4e9f4ba39e5cee042402f5b012a953fcca99837.1495797196.git.michal.simek@xilinx.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: [PATCH 1/8] serial: exar: Preconfigure xr17v35x MPIOs as output
+Date: Fri, 26 May 2017 15:04:26 +0200
+Message-ID: <9bb8d972-6535-1611-8fa7-f5fe89760531@siemens.com>
+References: <cover.1494660546.git.jan.kiszka@siemens.com>
+ <6155891d19531be018d30fd55ffd6d42493af8c1.1494660546.git.jan.kiszka@siemens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, =?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <6155891d19531be018d30fd55ffd6d42493af8c1.1494660546.git.jan.kiszka@siemens.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Nava kishore Manne <nava.manne@xilinx.com>
+Greg,
 
-This patch fixes the kernel doc warnings in the driver.
+On 2017-05-13 09:28, Jan Kiszka wrote:
+> This is the safe default for GPIOs with unknown external wiring.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  drivers/tty/serial/8250/8250_exar.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+> index 1270ff163f63..b4fa585156c7 100644
+> --- a/drivers/tty/serial/8250/8250_exar.c
+> +++ b/drivers/tty/serial/8250/8250_exar.c
+> @@ -177,13 +177,13 @@ static void setup_gpio(u8 __iomem *p)
+>  	writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
+>  	writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
+>  	writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
+> -	writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
+> +	writeb(0xff, p + UART_EXAR_MPIOSEL_7_0);
+>  	writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
+>  	writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
+>  	writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
+>  	writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
+>  	writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
+> -	writeb(0x00, p + UART_EXAR_MPIOSEL_15_8);
+> +	writeb(0xff, p + UART_EXAR_MPIOSEL_15_8);
+>  	writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
+>  }
+>  
+> 
 
-Signed-off-by: Nava kishore Manne <navam@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
+Please drop from this tty-next, it may break Commtech adapters. I have
+an update ready.
 
- drivers/tty/serial/xilinx_uartps.c | 1 +
- 1 file changed, 1 insertion(+)
+I may also send a fix on top if that is preferred, just let me know.
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index d82133d0f79a..81d1d553a5db 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -186,6 +186,7 @@
-  * @pclk:		APB clock
-  * @baud:		Current baud rate
-  * @clk_rate_change_nb:	Notifier block for clock changes
-+ * @quirks:		Flags for RXBS support.
-  */
- struct cdns_uart {
- 	struct uart_port	*port;
+Thanks,
+Jan
+
 -- 
-1.9.1
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
