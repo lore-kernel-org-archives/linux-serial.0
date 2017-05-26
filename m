@@ -1,47 +1,169 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v3 00/10] serial/gpio: exar: Fixes and support for IOT2000
-Date: Fri, 26 May 2017 18:02:27 +0200
-Message-ID: <cover.1495814557.git.jan.kiszka@siemens.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH v3 09/10] gpio-exar/8250-exar: Make set of exported GPIOs configurable
+Date: Fri, 26 May 2017 18:02:36 +0200
+Message-ID: <1f047bc2a36a3808170cb32e18f272109e675d0c.1495814557.git.jan.kiszka@siemens.com>
+References: <cover.1495814557.git.jan.kiszka@siemens.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <cover.1495814557.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1495814557.git.jan.kiszka@siemens.com>
+References: <cover.1495814557.git.jan.kiszka@siemens.com>
+Sender: linux-gpio-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-This makes the gpio-exar driver usable, which was prevented by a number
-of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
-driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
-series, so I'm also cross-posting to the serial and gpio lists.
+On the SIMATIC, IOT2040 only a single pin is exportable as GPIO, the
+rest is required to operate the UART. To allow modeling this case,
+expand the platform device data structure to specify a (consecutive) pin
+subset for exporting by the gpio-exar driver.
 
-Changes in v3:
- - fix MPIO state for Commtech adapters (regression of merged patch from
-   previous round)
- - do not create gpio device for Commtech adapters
- - switch back to device properties
- - pass parent reference via device.parent instead of platform data
- - use dmi_system_id table instead of open-coded matching
- - address some smaller review remarks
- - fix reading back of rs485 state
- - adjust parenthood of exar gpiochip
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ drivers/gpio/gpio-exar.c            | 29 ++++++++++++++++++++---------
+ drivers/tty/serial/8250/8250_exar.c | 14 +++++++++++---
+ 2 files changed, 31 insertions(+), 12 deletions(-)
 
-Jan
-
-Jan Kiszka (10):
-  serial: exar: Leave MPIOs as output for Commtech adapters
-  gpio-exar/8250-exar: Do not even instantiate a GPIO device for
-    Commtech cards
-  gpio-exar/8250-exar: Fix passing in of parent PCI device
-  gpio: exar: Allocate resources on behalf of the platform device
-  gpio: exar: Fix iomap request
-  gpio: exar: Fix reading of directions and values
-  gpio-exar/8250-exar: Rearrange gpiochip parenthood
-  gpio: exar: Refactor address and bit calculations
-  gpio-exar/8250-exar: Make set of exported GPIOs configurable
-  serial: exar: Add support for IOT2040 device
-
- drivers/gpio/gpio-exar.c            |  74 ++++++++-------
- drivers/tty/serial/8250/8250_exar.c | 180 ++++++++++++++++++++++++++++++++++--
- 2 files changed, 207 insertions(+), 47 deletions(-)
-
+diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
+index d13bf20b8639..8970f50e681e 100644
+--- a/drivers/gpio/gpio-exar.c
++++ b/drivers/gpio/gpio-exar.c
+@@ -31,6 +31,7 @@ struct exar_gpio_chip {
+ 	int index;
+ 	void __iomem *regs;
+ 	char name[20];
++	unsigned int first_pin;
+ };
+ 
+ static void exar_update(struct gpio_chip *chip, unsigned int reg, int val,
+@@ -51,9 +52,10 @@ static void exar_update(struct gpio_chip *chip, unsigned int reg, int val,
+ static int exar_set_direction(struct gpio_chip *chip, int direction,
+ 			      unsigned int offset)
+ {
+-	unsigned int addr = offset / 8 ?
++	struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
++	unsigned int addr = (offset + exar_gpio->first_pin) / 8 ?
+ 		EXAR_OFFSET_MPIOSEL_HI : EXAR_OFFSET_MPIOSEL_LO;
+-	unsigned int bit  = offset % 8;
++	unsigned int bit  = (offset + exar_gpio->first_pin) % 8;
+ 
+ 	exar_update(chip, addr, direction, bit);
+ 	return 0;
+@@ -73,18 +75,20 @@ static int exar_get(struct gpio_chip *chip, unsigned int reg)
+ 
+ static int exar_get_direction(struct gpio_chip *chip, unsigned int offset)
+ {
+-	unsigned int addr = offset / 8 ?
++	struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
++	unsigned int addr = (offset + exar_gpio->first_pin) / 8 ?
+ 		EXAR_OFFSET_MPIOSEL_HI : EXAR_OFFSET_MPIOSEL_LO;
+-	unsigned int bit  = offset % 8;
++	unsigned int bit  = (offset + exar_gpio->first_pin) % 8;
+ 
+ 	return !!(exar_get(chip, addr) & BIT(bit));
+ }
+ 
+ static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
+ {
+-	unsigned int addr = offset / 8 ?
++	struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
++	unsigned int addr = (offset + exar_gpio->first_pin) / 8 ?
+ 		EXAR_OFFSET_MPIOLVL_HI : EXAR_OFFSET_MPIOLVL_LO;
+-	unsigned int bit  = offset % 8;
++	unsigned int bit  = (offset + exar_gpio->first_pin) % 8;
+ 
+ 	return !!(exar_get(chip, addr) & BIT(bit));
+ }
+@@ -92,9 +96,10 @@ static int exar_get_value(struct gpio_chip *chip, unsigned int offset)
+ static void exar_set_value(struct gpio_chip *chip, unsigned int offset,
+ 			   int value)
+ {
+-	unsigned int addr = offset / 8 ?
++	struct exar_gpio_chip *exar_gpio = gpiochip_get_data(chip);
++	unsigned int addr = (offset + exar_gpio->first_pin) / 8 ?
+ 		EXAR_OFFSET_MPIOLVL_HI : EXAR_OFFSET_MPIOLVL_LO;
+-	unsigned int bit  = offset % 8;
++	unsigned int bit  = (offset + exar_gpio->first_pin) % 8;
+ 
+ 	exar_update(chip, addr, value, bit);
+ }
+@@ -115,6 +120,7 @@ static int gpio_exar_probe(struct platform_device *pdev)
+ {
+ 	struct pci_dev *pcidev = to_pci_dev(pdev->dev.parent);
+ 	struct exar_gpio_chip *exar_gpio;
++	u32 first_pin, npins;
+ 	void __iomem *p;
+ 	int index, ret;
+ 
+@@ -126,6 +132,10 @@ static int gpio_exar_probe(struct platform_device *pdev)
+ 	if (!p)
+ 		return -ENOMEM;
+ 
++	if (device_property_read_u32(&pdev->dev, "first_pin", &first_pin) < 0 ||
++	    device_property_read_u32(&pdev->dev, "npins", &npins) < 0)
++		return -EINVAL;
++
+ 	exar_gpio = devm_kzalloc(&pdev->dev, sizeof(*exar_gpio), GFP_KERNEL);
+ 	if (!exar_gpio)
+ 		return -ENOMEM;
+@@ -143,9 +153,10 @@ static int gpio_exar_probe(struct platform_device *pdev)
+ 	exar_gpio->gpio_chip.get = exar_get_value;
+ 	exar_gpio->gpio_chip.set = exar_set_value;
+ 	exar_gpio->gpio_chip.base = -1;
+-	exar_gpio->gpio_chip.ngpio = 16;
++	exar_gpio->gpio_chip.ngpio = npins;
+ 	exar_gpio->regs = p;
+ 	exar_gpio->index = index;
++	exar_gpio->first_pin = first_pin;
+ 
+ 	ret = devm_gpiochip_add_data(&pdev->dev,
+ 				     &exar_gpio->gpio_chip, exar_gpio);
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index ee4b142f3ed0..42e7c5149c07 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -14,6 +14,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
++#include <linux/property.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial_reg.h>
+ #include <linux/slab.h>
+@@ -196,8 +197,14 @@ static void setup_gpio(struct pci_dev *pcidev, u8 __iomem *p)
+ }
+ 
+ static void *
+-xr17v35x_register_gpio(struct pci_dev *pcidev)
++xr17v35x_register_gpio(struct pci_dev *pcidev, unsigned int first_pin,
++		       unsigned int npins)
+ {
++	struct property_entry properties[] = {
++		PROPERTY_ENTRY_U32("first_pin", first_pin),
++		PROPERTY_ENTRY_U32("npins", npins),
++		{ }
++	};
+ 	struct platform_device *pdev;
+ 
+ 	pdev = platform_device_alloc("gpio_exar", PLATFORM_DEVID_AUTO);
+@@ -207,7 +214,8 @@ xr17v35x_register_gpio(struct pci_dev *pcidev)
+ 	pdev->dev.parent = &pcidev->dev;
+ 	ACPI_COMPANION_SET(&pdev->dev, ACPI_COMPANION(&pcidev->dev));
+ 
+-	if (platform_device_add(pdev) < 0) {
++	if (platform_device_add_properties(pdev, properties) < 0 ||
++	    platform_device_add(pdev) < 0) {
+ 		platform_device_put(pdev);
+ 		return NULL;
+ 	}
+@@ -250,7 +258,7 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+ 
+ 		if (pcidev->vendor == PCI_VENDOR_ID_EXAR)
+ 			port->port.private_data =
+-				xr17v35x_register_gpio(pcidev);
++				xr17v35x_register_gpio(pcidev, 0, 16);
+ 	}
+ 
+ 	return 0;
 -- 
 2.12.0
+
