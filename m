@@ -1,61 +1,65 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v3 02/10] gpio-exar/8250-exar: Do not even instantiate a
- GPIO device for Commtech cards
-Date: Sat, 27 May 2017 16:40:48 +0300
-Message-ID: <CAHp75Vf56qLSBBAUBGGoT3-AGP2gLtBSjs4jTYCwZA2iR=Qjyw@mail.gmail.com>
-References: <cover.1495814557.git.jan.kiszka@siemens.com> <096688442ac54d85b6a3e0577592bc2a6891569b.1495814557.git.jan.kiszka@siemens.com>
+Subject: Re: [PATCH v3 03/10] gpio-exar/8250-exar: Fix passing in of parent
+ PCI device
+Date: Sat, 27 May 2017 16:41:41 +0300
+Message-ID: <CAHp75VcR+3XPvdJuKGdyCHGvAih1PWH4D7fKPH6+qaW4K589zw@mail.gmail.com>
+References: <cover.1495814557.git.jan.kiszka@siemens.com> <272048835491193427a32c442627be985eeba649.1495814557.git.jan.kiszka@siemens.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <096688442ac54d85b6a3e0577592bc2a6891569b.1495814557.git.jan.kiszka@siemens.com>
+In-Reply-To: <272048835491193427a32c442627be985eeba649.1495814557.git.jan.kiszka@siemens.com>
 Sender: linux-gpio-owner@vger.kernel.org
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
 On Fri, May 26, 2017 at 7:02 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> Commtech adapters need the MPIOs for internal purposes, and the
-> gpio-exar driver already refused to pick them up. But there is actually
-> no point in even creating the underlying platform device.
+> This fixes reloading of the GPIO driver for the same platform device
+> instance as created by the exar UART driver: First of all, the driver
+> sets drvdata to its own value during probing and does not restore the
+> original value on exit. But this won't help anyway as the core clears
+> drvdata after the driver left.
+>
+> Set the platform device parent instead.
 
-FWIW:
+Now this one looks much better than first efforts.
+
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
+>
 > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > ---
->  drivers/gpio/gpio-exar.c            | 3 ---
->  drivers/tty/serial/8250/8250_exar.c | 4 +++-
->  2 files changed, 3 insertions(+), 4 deletions(-)
+>  drivers/gpio/gpio-exar.c            | 2 +-
+>  drivers/tty/serial/8250/8250_exar.c | 3 ++-
+>  2 files changed, 3 insertions(+), 2 deletions(-)
 >
 > diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
-> index 081076771217..006a9a67c2a4 100644
+> index 006a9a67c2a4..da4550bb9939 100644
 > --- a/drivers/gpio/gpio-exar.c
 > +++ b/drivers/gpio/gpio-exar.c
-> @@ -124,9 +124,6 @@ static int gpio_exar_probe(struct platform_device *pdev)
+> @@ -119,7 +119,7 @@ static int exar_direction_input(struct gpio_chip *chip, unsigned int offset)
+>
+>  static int gpio_exar_probe(struct platform_device *pdev)
+>  {
+> -       struct pci_dev *pcidev = platform_get_drvdata(pdev);
+> +       struct pci_dev *pcidev = to_pci_dev(pdev->dev.parent);
+>         struct exar_gpio_chip *exar_gpio;
 >         void __iomem *p;
 >         int index, ret;
->
-> -       if (pcidev->vendor != PCI_VENDOR_ID_EXAR)
-> -               return -ENODEV;
-> -
->         /*
->          * Map the pci device to get the register addresses.
->          * We will need to read and write those registers to control
 > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> index 8984e8b2d524..c29c7e675890 100644
+> index c29c7e675890..0f4b236d7e68 100644
 > --- a/drivers/tty/serial/8250/8250_exar.c
 > +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -245,7 +245,9 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
->                 /* Setup Multipurpose Input/Output pins. */
->                 setup_gpio(pcidev, p);
+> @@ -203,7 +203,8 @@ xr17v35x_register_gpio(struct pci_dev *pcidev)
+>         if (!pdev)
+>                 return NULL;
 >
-> -               port->port.private_data = xr17v35x_register_gpio(pcidev);
-> +               if (pcidev->vendor == PCI_VENDOR_ID_EXAR)
-> +                       port->port.private_data =
-> +                               xr17v35x_register_gpio(pcidev);
->         }
->
->         return 0;
+> -       platform_set_drvdata(pdev, pcidev);
+> +       pdev->dev.parent = &pcidev->dev;
+> +
+>         if (platform_device_add(pdev) < 0) {
+>                 platform_device_put(pdev);
+>                 return NULL;
 > --
 > 2.12.0
 >
