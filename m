@@ -1,60 +1,98 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/8] serial: exar: Preconfigure xr17v35x MPIOs as output
-Date: Fri, 26 May 2017 20:38:14 +0200
-Message-ID: <20170526183814.GD16490@kroah.com>
-References: <cover.1494660546.git.jan.kiszka@siemens.com>
- <6155891d19531be018d30fd55ffd6d42493af8c1.1494660546.git.jan.kiszka@siemens.com>
- <9bb8d972-6535-1611-8fa7-f5fe89760531@siemens.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 4.12-rc3
+Date: Sat, 27 May 2017 12:01:43 +0200
+Message-ID: <20170527100143.GA15406@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <9bb8d972-6535-1611-8fa7-f5fe89760531@siemens.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 26, 2017 at 03:04:26PM +0200, Jan Kiszka wrote:
-> Greg,
-> 
-> On 2017-05-13 09:28, Jan Kiszka wrote:
-> > This is the safe default for GPIOs with unknown external wiring.
-> > 
-> > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_exar.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> > index 1270ff163f63..b4fa585156c7 100644
-> > --- a/drivers/tty/serial/8250/8250_exar.c
-> > +++ b/drivers/tty/serial/8250/8250_exar.c
-> > @@ -177,13 +177,13 @@ static void setup_gpio(u8 __iomem *p)
-> >  	writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
-> >  	writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
-> >  	writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
-> > -	writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
-> > +	writeb(0xff, p + UART_EXAR_MPIOSEL_7_0);
-> >  	writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
-> >  	writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
-> >  	writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
-> >  	writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
-> >  	writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
-> > -	writeb(0x00, p + UART_EXAR_MPIOSEL_15_8);
-> > +	writeb(0xff, p + UART_EXAR_MPIOSEL_15_8);
-> >  	writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
-> >  }
-> >  
-> > 
-> 
-> Please drop from this tty-next, it may break Commtech adapters. I have
-> an update ready.
-> 
-> I may also send a fix on top if that is preferred, just let me know.
+The following changes since commit 2ea659a9ef488125eb46da6eb571de5eae5c43f6:
 
-I need a fixup patch, I can't drop a patch, only revert it.
+  Linux 4.12-rc1 (2017-05-13 13:19:49 -0700)
 
-thanks,
+are available in the git repository at:
 
-greg k-h
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.12-rc3
+
+for you to fetch changes up to 59fe2cc8b1c32dd139da80fc8222b5b3290b7a09:
+
+  serial: altera_uart: call iounmap() at driver remove (2017-05-25 14:36:37 +0200)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 4.12-rc3
+
+Here are some serial and tty fixes for 4.12-rc3.  They are a bit
+"bigger" than normal, which is why I had them "bake" in linux-next for a
+few weeks and didn't send them to you for -rc2.
+
+They revert a few of the serdev patches from 4.12-rc1, and bring things
+back to how they were in 4.11, to try to make things a bit more stable
+there.  Rob and Johan both agree that this is the way forward, so this
+isn't people squabbling over semantics.  Other than that, just a few
+minor serial driver fixes that people have had problems with.
+
+All of these have been in linux-next for a few weeks with no reported
+issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Alexey Khoroshilov (1):
+      serial: altera_jtaguart: adding iounmap()
+
+Ard Biesheuvel (1):
+      drivers/tty: 8250: only call fintek_8250_probe when doing port I/O
+
+Christophe JAILLET (1):
+      serial: efm32: Fix parity management in 'efm32_uart_console_get_options()'
+
+Guilherme G. Piccoli (1):
+      MAINTAINERS/serial: Change maintainer of jsm driver
+
+Jan Kiszka (1):
+      serial: exar: Fix stuck MSIs
+
+Johan Hovold (6):
+      Revert "tty_port: register tty ports with serdev bus"
+      serdev: fix tty-port client deregistration
+      serial: ifx6x60: fix use-after-free on module unload
+      tty: ehv_bytechan: clean up init error handling
+      tty/serdev: add serdev registration interface
+      serial: enable serdev support
+
+Lucas Stach (1):
+      serial: core: fix crash in uart_suspend_port
+
+Stefan Wahren (1):
+      serdev: Restore serdev_device_write_buf for atomic context
+
+Tobias Klauser (1):
+      serial: altera_uart: call iounmap() at driver remove
+
+Uwe Kleine-König (1):
+      serial: imx: ensure UCR3 and UFCR are setup correctly
+
+Vegard Nossum (1):
+      tty: fix port buffer locking
+
+ MAINTAINERS                          |  2 +-
+ drivers/tty/ehv_bytechan.c           | 17 ++++----
+ drivers/tty/serdev/core.c            | 12 ++++++
+ drivers/tty/serdev/serdev-ttyport.c  | 21 ++++++----
+ drivers/tty/serial/8250/8250_port.c  | 21 +++++-----
+ drivers/tty/serial/altera_jtaguart.c |  1 +
+ drivers/tty/serial/altera_uart.c     |  1 +
+ drivers/tty/serial/efm32-uart.c      | 11 ++++--
+ drivers/tty/serial/ifx6x60.c         |  2 +-
+ drivers/tty/serial/imx.c             | 14 ++++++-
+ drivers/tty/serial/serial_core.c     |  6 +--
+ drivers/tty/tty_port.c               | 75 +++++++++++++++++++++++++++++++++---
+ include/linux/serdev.h               | 19 +++++----
+ include/linux/tty.h                  |  9 +++++
+ 14 files changed, 162 insertions(+), 49 deletions(-)
