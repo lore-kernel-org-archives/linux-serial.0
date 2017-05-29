@@ -1,71 +1,27 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: CPU_BIG_ENDIAN in generic code (was: Re: [PATCH v3 3/7]
- arch/sparc: Define config parameter CPU_BIG_ENDIAN)
-Date: Mon, 29 May 2017 14:15:35 +0200
-Message-ID: <CAMuHMdU1kne4tKRfyx0hr1LXh_c75bYMs0b=vncHqrhB69jqYg@mail.gmail.com>
-References: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q@mail.gmail.com>
- <87a85v7to2.fsf@concordia.ellerman.id.au>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v3 02/10] gpio-exar/8250-exar: Do not even instantiate a
+ GPIO device for Commtech cards
+Date: Mon, 29 May 2017 14:30:46 +0200
+Message-ID: <CACRpkdaKNdsSM9zR++TFYiCjMqAq3a3yFzkMOG=DjCOBZBYGow@mail.gmail.com>
+References: <cover.1495814557.git.jan.kiszka@siemens.com> <096688442ac54d85b6a3e0577592bc2a6891569b.1495814557.git.jan.kiszka@siemens.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <sparclinux-owner@vger.kernel.org>
-In-Reply-To: <87a85v7to2.fsf@concordia.ellerman.id.au>
-Sender: sparclinux-owner@vger.kernel.org
-To: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Babu Moger <babu.moger@oracle.com>, "David S. Miller" <davem@davemloft.net>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnd Bergmann <arnd@arndb.de>, sparclinux <sparclinux@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <096688442ac54d85b6a3e0577592bc2a6891569b.1495814557.git.jan.kiszka@siemens.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Michael,
+On Fri, May 26, 2017 at 6:02 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-On Mon, May 29, 2017 at 2:07 PM, Michael Ellerman <mpe@ellerman.id.au> wrote:
-> Geert Uytterhoeven <geert@linux-m68k.org> writes:
->> On Tue, May 23, 2017 at 11:45 PM, Babu Moger <babu.moger@oracle.com> wrote:
->>> Found this problem while enabling queued rwlock on SPARC.
->>> The parameter CONFIG_CPU_BIG_ENDIAN is used to clear the
->>> specific byte in qrwlock structure. Without this parameter,
->>> we clear the wrong byte. Here is the code.
->>>
->>> static inline u8 *__qrwlock_write_byte(struct qrwlock *lock)
->>>  {
->>>         return (u8 *)lock + 3 * IS_BUILTIN(CONFIG_CPU_BIG_ENDIAN);
->>>  }
->>>
->>> Define CPU_BIG_ENDIAN for SPARC to fix it.
->>
->>> --- a/arch/sparc/Kconfig
->>> +++ b/arch/sparc/Kconfig
->>> @@ -92,6 +92,10 @@ config ARCH_DEFCONFIG
->>>  config ARCH_PROC_KCORE_TEXT
->>>         def_bool y
->>>
->>> +config CPU_BIG_ENDIAN
->>> +       bool
->>> +       default y if SPARC
->>
->> Nice catch!
->>
->> Traditionally, CPU_BIG_ENDIAN and CPU_LITTLE_ENDIAN were defined only on
->> architectures that may support both.  And it was checked in platform code
->> and drivers only.
->> Hence the symbol is lacking from most architectures. Heck, even
->> architectures that support both may default to one endiannes, and declare
->> only the symbol for the other endianness:
+> Commtech adapters need the MPIOs for internal purposes, and the
+> gpio-exar driver already refused to pick them up. But there is actually
+> no point in even creating the underlying platform device.
 >
-> I guess there's a reason we can't use __BIG_ENDIAN__ / __LITTLE_ENDIAN__ ?
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 
-I (C/asm) code we can, in Kconfig we cannot.
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-So far we tried always doing that, but a few checks for the semi-existing
-Kconfig symbol crept in in generic code. Those could be replaced by the __*__
-variants, but consistently having the Kconfig symbols would be useful anyway
-(e.g. to avoid building the broken-on-big-endian ISDN drivers).
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Yours,
+Linus Walleij
