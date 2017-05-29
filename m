@@ -1,42 +1,55 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH v8 net-next 07/17] net: qca_spi: remove QCASPI_MTU
-Date: Mon, 29 May 2017 13:57:15 +0200
-Message-ID: <1496059045-13572-8-git-send-email-stefan.wahren@i2se.com>
-References: <1496059045-13572-1-git-send-email-stefan.wahren@i2se.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1496059045-13572-1-git-send-email-stefan.wahren@i2se.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "David S. Miller" <davem@davemloft.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Lino Sanfilippo <LinoSanfilippo@gmx.de>, Jakub Kicinski <kubakici@wp.pl>, devicetree@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
+From: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
+Subject: Re: CPU_BIG_ENDIAN in generic code (was: Re: [PATCH v3 3/7] arch/sparc: Define config parameter CPU_BIG_ENDIAN)
+Date: Mon, 29 May 2017 22:07:41 +1000
+Message-ID: <87a85v7to2.fsf@concordia.ellerman.id.au>
+References: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Babu Moger <babu.moger-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, sparclinux <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel@vger.kernel.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree@vger.kernel.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial@vger.kernel.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-There is no need for an additional MTU define.
+Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> writes:
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- drivers/net/ethernet/qualcomm/qca_spi.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> On Tue, May 23, 2017 at 11:45 PM, Babu Moger <babu.moger-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org> wrote:
+>> Found this problem while enabling queued rwlock on SPARC.
+>> The parameter CONFIG_CPU_BIG_ENDIAN is used to clear the
+>> specific byte in qrwlock structure. Without this parameter,
+>> we clear the wrong byte. Here is the code.
+>>
+>> static inline u8 *__qrwlock_write_byte(struct qrwlock *lock)
+>>  {
+>>         return (u8 *)lock + 3 * IS_BUILTIN(CONFIG_CPU_BIG_ENDIAN);
+>>  }
+>>
+>> Define CPU_BIG_ENDIAN for SPARC to fix it.
+>
+>> --- a/arch/sparc/Kconfig
+>> +++ b/arch/sparc/Kconfig
+>> @@ -92,6 +92,10 @@ config ARCH_DEFCONFIG
+>>  config ARCH_PROC_KCORE_TEXT
+>>         def_bool y
+>>
+>> +config CPU_BIG_ENDIAN
+>> +       bool
+>> +       default y if SPARC
+>
+> Nice catch!
+>
+> Traditionally, CPU_BIG_ENDIAN and CPU_LITTLE_ENDIAN were defined only on
+> architectures that may support both.  And it was checked in platform code
+> and drivers only.
+> Hence the symbol is lacking from most architectures. Heck, even
+> architectures that support both may default to one endiannes, and declare
+> only the symbol for the other endianness:
 
-diff --git a/drivers/net/ethernet/qualcomm/qca_spi.c b/drivers/net/ethernet/qualcomm/qca_spi.c
-index f155548..7464628 100644
---- a/drivers/net/ethernet/qualcomm/qca_spi.c
-+++ b/drivers/net/ethernet/qualcomm/qca_spi.c
-@@ -69,7 +69,6 @@ static int qcaspi_pluggable = QCASPI_PLUGGABLE_MIN;
- module_param(qcaspi_pluggable, int, 0);
- MODULE_PARM_DESC(qcaspi_pluggable, "Pluggable SPI connection (yes/no).");
- 
--#define QCASPI_MTU QCAFRM_MAX_MTU
- #define QCASPI_TX_TIMEOUT (1 * HZ)
- #define QCASPI_QCA7K_REBOOT_TIME_MS 1000
- 
-@@ -746,7 +745,7 @@ qcaspi_netdev_init(struct net_device *dev)
- {
- 	struct qcaspi *qca = netdev_priv(dev);
- 
--	dev->mtu = QCASPI_MTU;
-+	dev->mtu = QCAFRM_MAX_MTU;
- 	dev->type = ARPHRD_ETHER;
- 	qca->clkspeed = qcaspi_clkspeed;
- 	qca->burst_len = qcaspi_burst_len;
--- 
-2.1.4
+I guess there's a reason we can't use __BIG_ENDIAN__ / __LITTLE_ENDIAN__ ?
+
+cheers
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
