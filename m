@@ -1,46 +1,74 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v3 00/10] serial/gpio: exar: Fixes and support for IOT2000
-Date: Mon, 29 May 2017 14:39:02 +0200
-Message-ID: <CACRpkdZzDmigd8X-VsJqHTQSMK6k+w+qbPH+N9qNY05pX8eifQ@mail.gmail.com>
-References: <cover.1495814557.git.jan.kiszka@siemens.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: CPU_BIG_ENDIAN in generic code (was: Re: [PATCH v3 3/7]
+ arch/sparc: Define config parameter CPU_BIG_ENDIAN)
+Date: Mon, 29 May 2017 14:54:16 +0200
+Message-ID: <CAK8P3a0GEzj16=M5jV=u6ACE8K3_QMPk142AhFDLSp9MgpFTeQ@mail.gmail.com>
+References: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q@mail.gmail.com>
+ <CAK8P3a1XZGQk3b3q+JFJ+mLgw_upUdAtTM1VBjHZq5f2m-YdUg@mail.gmail.com>
+ <CAMo8BfL8G0Fzn2SZ1356yaoxGgm8tpTDmFJ8cCxEEEgyObMwCQ@mail.gmail.com> <CAMo8BfJDRStMDGThMQhmZBQs2LLwxFOthuqQaC1qyws14gwhRA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <cover.1495814557.git.jan.kiszka@siemens.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAMo8BfJDRStMDGThMQhmZBQs2LLwxFOthuqQaC1qyws14gwhRA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Max Filippov <jcmvbkbc@gmail.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Babu Moger <babu.moger@oracle.com>, "David S. Miller" <davem@davemloft.net>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, sparclinux <sparclinux@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 26, 2017 at 6:02 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+On Fri, May 26, 2017 at 12:43 AM, Max Filippov <jcmvbkbc@gmail.com> wrote:
+> On Thu, May 25, 2017 at 3:27 PM, Max Filippov <jcmvbkbc@gmail.com> wrote:
+>> On Wed, May 24, 2017 at 3:18 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+>>> On Wed, May 24, 2017 at 11:59 AM, Geert Uytterhoeven
+>>> <geert@linux-m68k.org> wrote:
+>>>> I guess the time is ripe for adding (both) symbols to all architectures?
+>>>
+>>> Good idea. I think we can do most of this by adding a few lines to
+>>> arch/Kconfig:
+>>>
+>>> config CPU_BIG_ENDIAN
+>>>         bool
+>>>
+>>> config CPU_LITTLE_ENDIAN
+>>>        def_bool !CPU_BIG_ENDIAN
+>>>
+>>> This way, we only need to add 'select CPU_BIG_ENDIAN' to the
+>>> architectures that are always big-endian, and we don't need to
+>>> change anything for the ones that have a single 'CPU_BIG_ENDIAN'
+>>> option.
+>>>
+>>> The three architectures that have a 'choice' statement (mips, ppc and
+>>> sh) will have to convert, and m32r will have to replace the
+>>> option with the opposite one, which could break 'make oldconfig',
+>>> but nobody really cares about m32r any more.
+>>
+>> Xtensa may have either endianness and for xtensa we define
+>> CONFIG_CPU_BIG_ENDIAN or CONFIG_CPU_LITTLE_ENDIAN
+>> in the arch/xtensa/Makefile based on the value of the compiler builtin
+>> macro.
 
-> This makes the gpio-exar driver usable, which was prevented by a number
-> of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
-> driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
-> series, so I'm also cross-posting to the serial and gpio lists.
+I can sort of see why xtensa did it the other way round from everyone
+else (letting the toolchain decide what the kernel is, rather than letting
+the kernel pass the respective flags to gcc), but I'd argue that it would
+be better overall for xtensa to change over so we do it consistently
+on all architectures.
+
+> Also, in outside the Kconfig files there's much more instances of
+> __{BIG,LITTLE}_ENDIAN than CONFIG_CPU_{BIG,LITTLE}_ENDIAN:
 >
-> Changes in v3:
->  - fix MPIO state for Commtech adapters (regression of merged patch from
->    previous round)
->  - do not create gpio device for Commtech adapters
->  - switch back to device properties
->  - pass parent reference via device.parent instead of platform data
->  - use dmi_system_id table instead of open-coded matching
->  - address some smaller review remarks
->  - fix reading back of rs485 state
->  - adjust parenthood of exar gpiochip
+> $ git grep '__\(BIG\|LITTLE\)_ENDIAN' | wc -l
+> 4537
+> $ git grep 'CONFIG_CPU_\(BIG\|LITTLE\)_ENDIAN' | wc -l
+> 247
+>
+> My understanding is that CONFIG_CPU_{BIG,LITTLE}_ENDIAN was
+> intended to be used only in Kconfig files, and perhaps all of its uses
+> outside should be replaced with __{BIG,LITTLE}_ENDIAN.
 
-I ACKed some patches if Greg need to merge them.
+Right, but I also think that using the CONFIG_CPU_* symbols in
+code makes sense because it is less ambiguous: the way we use
+__{BIG,LITTLE}_ENDIAN in the kernel is different from how user
+space uses them in glibc, and this confuses everyone when they
+try to use them in the kernel after being familiar with the traditional
+way. The Kconfig symbols don't have this problem.
 
-Can you suggest a merge strategy for this patch set?
-
-It appears Greg will have to merge at least the first one.
-
-Will it work to merge the GPIO patches orthogonally to the GPIO
-tree or are they all dependent on the serial changes?
-
-Should I merge them all? Should Greg merge them all?
-Should one of us produce an immutable branch?
-
-Yours,
-Linus Walleij
+       Arnd
