@@ -1,62 +1,49 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v4 7/9] gpio-exar/8250-exar: Rearrange gpiochip parenthood
-Date: Tue, 30 May 2017 09:01:22 +0200
-Message-ID: <25315eae7b2ed3a232feb335ad9a7509fbd59406.1496127684.git.jan.kiszka@siemens.com>
+Subject: [PATCH v4 4/9] gpio: exar: Allocate resources on behalf of the platform device
+Date: Tue, 30 May 2017 09:01:19 +0200
+Message-ID: <cd6e42cdb399d3223764b1f5828d8599726b3c3c.1496127684.git.jan.kiszka@siemens.com>
 References: <cover.1496127684.git.jan.kiszka@siemens.com>
-Return-path: <linux-gpio-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1496127684.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1496127684.git.jan.kiszka@siemens.com>
 References: <cover.1496127684.git.jan.kiszka@siemens.com>
-Sender: linux-gpio-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-Set the parent of the exar gpiochip to its platform device, like other
-gpiochips are doing it. In order to keep the relationship discoverable
-for ACPI systems, set the platform device companion to the PCI device.
+Do not allocate resources on behalf of the parent device but on our own.
+Otherwise, cleanup does not properly work if gpio-exar is removed but
+not the parent device.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Acked-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/gpio/gpio-exar.c            | 2 +-
- drivers/tty/serial/8250/8250_exar.c | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpio/gpio-exar.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
-index f3585a184f39..1a629831d45b 100644
+index da4550bb9939..65126fa1e512 100644
 --- a/drivers/gpio/gpio-exar.c
 +++ b/drivers/gpio/gpio-exar.c
-@@ -142,7 +142,7 @@ static int gpio_exar_probe(struct platform_device *pdev)
+@@ -136,7 +136,7 @@ static int gpio_exar_probe(struct platform_device *pdev)
+ 	if (!p)
+ 		return -ENOMEM;
  
- 	sprintf(exar_gpio->name, "exar_gpio%d", index);
- 	exar_gpio->gpio_chip.label = exar_gpio->name;
--	exar_gpio->gpio_chip.parent = &pcidev->dev;
-+	exar_gpio->gpio_chip.parent = &pdev->dev;
- 	exar_gpio->gpio_chip.direction_output = exar_direction_output;
- 	exar_gpio->gpio_chip.direction_input = exar_direction_input;
- 	exar_gpio->gpio_chip.get_direction = exar_get_direction;
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 0f4b236d7e68..ee4b142f3ed0 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -9,6 +9,7 @@
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation; either version 2 of the License.
-  */
-+#include <linux/acpi.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -204,6 +205,7 @@ xr17v35x_register_gpio(struct pci_dev *pcidev)
- 		return NULL;
+-	exar_gpio = devm_kzalloc(&pcidev->dev, sizeof(*exar_gpio), GFP_KERNEL);
++	exar_gpio = devm_kzalloc(&pdev->dev, sizeof(*exar_gpio), GFP_KERNEL);
+ 	if (!exar_gpio)
+ 		return -ENOMEM;
  
- 	pdev->dev.parent = &pcidev->dev;
-+	ACPI_COMPANION_SET(&pdev->dev, ACPI_COMPANION(&pcidev->dev));
+@@ -157,7 +157,7 @@ static int gpio_exar_probe(struct platform_device *pdev)
+ 	exar_gpio->regs = p;
+ 	exar_gpio->index = index;
  
- 	if (platform_device_add(pdev) < 0) {
- 		platform_device_put(pdev);
+-	ret = devm_gpiochip_add_data(&pcidev->dev,
++	ret = devm_gpiochip_add_data(&pdev->dev,
+ 				     &exar_gpio->gpio_chip, exar_gpio);
+ 	if (ret)
+ 		goto err_destroy;
 -- 
 2.12.3
-
