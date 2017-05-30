@@ -1,91 +1,203 @@
-From: Dmitry Vyukov <dvyukov@google.com>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: [GIT PULL] TTY/Serial driver fixes for 4.11-rc4
-Date: Tue, 30 May 2017 11:21:43 +0200
-Message-ID: <CACT4Y+arELXuPr7psYFETt6NrDNgeS=tP=jGhP4a0_C_8Fa=LA@mail.gmail.com>
-References: <20170326110432.GA9241@kroah.com> <CAOMGZ=F8xdUHnZaDo18DkkrYgacx6y8Cm=f8-8xnuvPupepnfg@mail.gmail.com>
- <CA+55aFwgiAmy4Gw4RosbNVBJmOG-WQoZKOd76Ziuqx5CzPFMZQ@mail.gmail.com>
- <20170413183403.GA16022@kroah.com> <CAOMGZ=G9t7ih=ydr=fkKn6cbgu5-qbdQs7XChmn=d598H95QVA@mail.gmail.com>
- <20170414123029.GA17217@kroah.com> <CACT4Y+acU1xTZEo+oeBvZL__c12bzcSPa0CBfDiw4j7+CUjfDg@mail.gmail.com>
- <CAOMGZ=GJah0GNXzscGGkYgScbZaeSM_TpxmrLZuxhrqWmBX9BQ@mail.gmail.com> <20170503120101.GA21119@kroah.com>
+Date: Tue, 30 May 2017 13:09:05 +0100
+Message-ID: <20170530130905.382487d5@alans-desktop>
+References: <20170326110432.GA9241@kroah.com>
+        <CAOMGZ=F8xdUHnZaDo18DkkrYgacx6y8Cm=f8-8xnuvPupepnfg@mail.gmail.com>
+        <CA+55aFwgiAmy4Gw4RosbNVBJmOG-WQoZKOd76Ziuqx5CzPFMZQ@mail.gmail.com>
+        <20170413183403.GA16022@kroah.com>
+        <CAOMGZ=G9t7ih=ydr=fkKn6cbgu5-qbdQs7XChmn=d598H95QVA@mail.gmail.com>
+        <20170414123029.GA17217@kroah.com>
+        <CACT4Y+acU1xTZEo+oeBvZL__c12bzcSPa0CBfDiw4j7+CUjfDg@mail.gmail.com>
+        <CAOMGZ=GJah0GNXzscGGkYgScbZaeSM_TpxmrLZuxhrqWmBX9BQ@mail.gmail.com>
+        <20170503120101.GA21119@kroah.com>
+        <CACT4Y+arELXuPr7psYFETt6NrDNgeS=tP=jGhP4a0_C_8Fa=LA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170503120101.GA21119@kroah.com>
+In-Reply-To: <CACT4Y+arELXuPr7psYFETt6NrDNgeS=tP=jGhP4a0_C_8Fa=LA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Vegard Nossum <vegard.nossum@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>
+To: Dmitry Vyukov <dvyukov@google.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Vegard Nossum <vegard.nossum@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 3, 2017 at 2:01 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
->> >>> So the original problem is that the vmalloc() in n_tty_open() can
->> >>> fail, and that will panic in tty_set_ldisc()/tty_ldisc_restore()
->> >>> because of its unwillingness to proceed if the tty doesn't have an
->> >>> ldisc.
->> >>>
->> >>> Dmitry fixed this by allowing tty->ldisc == NULL in the case of memory
->> >>> allocation failure as we can see from the comment in tty_set_ldisc().
->> >>>
->> >>> Unfortunately, it would appear that some other bits of code do not
->> >>> like tty->ldisc == NULL (other than the crash in this thread, I saw
->> >>> 2-3 similar crashes in other functions, e.g. poll()). I see two
->> >>> possibilities:
->> >>>
->> >>> 1) make other code handle tty->ldisc == NULL.
->> >>>
->> >>> 2) don't close/free the old ldisc until the new one has been
->> >>> successfully created/initialised/opened/attached to the tty, and
->> >>> return an error to userspace if changing it failed.
->> >>>
->> >>> I'm leaning towards #2 as the more obviously correct fix, it makes
->> >>> tty_set_ldisc() transactional, the fix seems limited in scope to
->> >>> tty_set_ldisc() itself, and we don't need to make every other bit of
->> >>> code that uses tty->ldisc handle the NULL case.
->> >>
->> >> That sounds reasonable to me, care to work on a patch for this?
->> >
->> > Vegard, do you know how to do this?
->> > That was first thing that I tried, but I did not manage to make it
->> > work. disc is tied to tty, so it's not that one can create a fully
->> > initialized disc on the side and then simply swap pointers. Looking at
->> > the code now, there is at least TTY_LDISC_OPEN bit in tty. But as far
->> > as I remember there were more fundamental problems. Or maybe I just
->> > did not try too hard.
->>
->> I had a look at it but like you said, the tty/ldisc relationship is
->> complicated :-/
->>
->> Maybe we can split up ldisc initialisation into two methods so that
->> the first one (e.g. ->alloc) does all the allocation and is allowed to
->> fail and the second one (e.g. ->open) is not allowed to fail. Then you
->> can allocate a new ldisc without freeing the old one and only swap
->> them over if the allocation succeeded.
->>
->> That would require fixing up ->open for all the ldisc drivers though,
->> I'm not sure how easy/feasible it is.
->
-> We don't have that many ldisc drivers, so it shouldn't be that hard to
-> change to use this.  It makes a lot more sense to fix this the correct
-> way like this.
+> >> I'll think about possible solutions, but I have no prior experience
+> >> with the tty code. In the meantime syzkaller also hit a couple of
+> >> other fun tty/pty bugs including a write/ioctl race that results in
+> >> buffer overflow :-/  
 
+There are several of those, including some of that have been documented
+for years but nobody ever volunteered to fix - in particular all the
+interfaces that push characters to the tty other than via the normal
+interrupt receive path are dodgy (console selection in particular)
 
-There are 26 drivers. This will require some careful surgery of them.
-There is no way to test all of them without special hardware, right?
-Also will require some changes to tty_ldisc.c.
-So far I've filed https://github.com/google/syzkaller/issues/203 to
-not lose track of it and collect all relevant details in one place.
+The original tty model btw was that setting the ldisc to n_tty cannot
+fail, and the structure allocated was smaller than a page size so was
+safe.
 
+The simple way to fix it is to restore that behaviour by adding a 'null'
+ldisc that we can fail to instead of N_TTY since the N_TTY failback path
+is long broken.
 
+Something like this (untested)
 
->> I'll think about possible solutions, but I have no prior experience
->> with the tty code. In the meantime syzkaller also hit a couple of
->> other fun tty/pty bugs including a write/ioctl race that results in
->> buffer overflow :-/
->
-> Ugh, let me know what they are and we'll work to fix them.
->
-> Thanks for all of the work you all are doing in finding these issues, I
-> might grumble about having to fix this and what a pain it is, but it's
-> just me being grumpy about the tty code, not your effort.  Your effort
-> is much appreciated.
+commit 797035eaf800889287b0b176a11c89c0f1fbba30
+Author: Alan Cox <alan@llwyncelyn.cymru>
+Date:   Tue May 30 12:59:45 2017 +0100
 
-Thanks, Greg. Nice to hear.
+    tty: handle the case where we cannot restore a line discipline
+    
+    Historically the N_TTY driver could never fail but this has become broken over
+    time. Rather than trying to rewrite half the ldisc layer to fix the breakage
+    introduce a second level of fallback with an N_NULL ldisc which cannot fail,
+    and thus restore the guarantees required by the ldisc layer.
+    
+    We still try and fail to N_TTY first. It's much more useful to find yourself
+    back in your old ldisc (first attempt) or in N_TTY (second attempt), and while
+    I'm not aware of any code out there that makes those assumptions it's good to
+    drive(r) defensively.
+    
+    No signed off by: this is just a proposal!
+
+diff --git a/drivers/tty/n_null.c b/drivers/tty/n_null.c
+new file mode 100644
+index 0000000..c5812cd
+--- /dev/null
++++ b/drivers/tty/n_null.c
+@@ -0,0 +1,67 @@
++/*
++ *  n_null.c - Null line discipline used in the failure path
++ *
++ *  Copyright (C) Intel 2017
++ *
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ */
++
++static int n_null_open(struct tty_struct *tty)
++{
++	return 0;
++}
++
++static void n_null_close(struct tty_struct *tty)
++{
++}
++
++static ssize_t n_null_read(struct tty_struct *tty, struct file *file,
++			   unsigned char __user * buf, size_t nr)
++{
++	return -EOPNOTSUPP;
++}
++
++static ssize_t n_null_write(struct tty_struct *tty, struct file *file,
++			    const unsigned char *buf, size_t nr)
++{
++	return -EOPNOTSUPP;
++}
++
++static ssize_t n_null_receivebuf(struct tty_struct *tty,
++				 const unsigned char *cp, char *fp,
++				 int cnt)
++{
++}
++
++static struct tty_ldisc_ops null_ldisc {
++	.owner		=	THIS_MODULE,
++	.magic		=	TTY_LDISC_MAGIC,
++	.name		=	"n_null",
++	.open		=	n_null_open,
++	.close		=	n_null_close,
++	.read		=	n_null_read,
++	.write		=	n_null_write,
++	.receive_buf	=	n_null_receivebuf
++};
++
++static int __init n_null_init(void)
++{
++	BUG_ON(tty_register_ldisc(N_NULL, &null_ldisc));
++	return 0;
++}
++
++static void __exit n_null_exit(void)
++{
++	tty_unregister_ldisc(N_NULL);
++}
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index f6ffe28..e80e05f 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -492,6 +492,29 @@ static void tty_ldisc_close(struct tty_struct *tty, struct tty_ldisc *ld)
+ }
+ 
+ /**
++ *	tty_ldisc_failto	-	helper for ldisc failback
++ *	@tty: tty to open the ldisc on
++ *	@ld: ldisc we are trying to fail back to
++ *
++ *	Helper to try and recover a tty when switching back to the old
++ *	ldisc fails and we need something attached.
++ */
++
++static int tty_ldisc_failto(struct tty_struct *tty, int ld)
++{
++	struct tty_ldisc *disc = tty_ldisc_get(tty, ld);
++	int r;
++
++	if (IS_ERR(disc))
++		return PTR_ERR(disc);
++	tty->ldisc = disc;
++	tty_set_termios_ldisc(tty, ld);
++	if ((r = tty_ldisc_open(tty, disc)) < 0)
++		tty_ldisc_put(ld);
++	return r;
++}
++
++/**
+  *	tty_ldisc_restore	-	helper for tty ldisc change
+  *	@tty: tty to recover
+  *	@old: previous ldisc
+@@ -512,15 +535,14 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
+ 	tty_set_termios_ldisc(tty, old->ops->num);
+ 	if (tty_ldisc_open(tty, old) < 0) {
+ 		tty_ldisc_put(old);
+-		/* This driver is always present */
+-		new_ldisc = tty_ldisc_get(tty, N_TTY);
+-		if (IS_ERR(new_ldisc))
+-			panic("n_tty: get");
+-		tty->ldisc = new_ldisc;
+-		tty_set_termios_ldisc(tty, N_TTY);
+-		r = tty_ldisc_open(tty, new_ldisc);
++		/* The traditional behaviour is to fall back to N_TTY, we
++		   want to avoid falling back to N_NULL unless we have no
++		   choice to avoid the risk of breaking anything */
++		if (tty_ldisc_failto(tty, N_TTY) < 0 &&
++		    tty_ldisc_failto(tty, N_NULL) < 0)
++		/* Fall back to null ldisc */
+ 		if (r < 0)
+-			panic("Couldn't open N_TTY ldisc for "
++			panic("Couldn't open N_NULL ldisc for "
+ 			      "%s --- error %d.",
+ 			      tty_name(tty), r);
+ 	}
+diff --git a/include/uapi/linux/tty.h b/include/uapi/linux/tty.h
+index e7855df..cf14553 100644
+--- a/include/uapi/linux/tty.h
++++ b/include/uapi/linux/tty.h
+@@ -36,5 +36,6 @@
+ #define N_TRACEROUTER	24	/* Trace data routing for MIPI P1149.7 */
+ #define N_NCI		25	/* NFC NCI UART */
+ #define N_SPEAKUP	26	/* Speakup communication with synths */
++#define N_NULL		27	/* Null ldisc used for error handling */
+ 
+ #endif /* _UAPI_LINUX_TTY_H */
