@@ -1,43 +1,64 @@
-From: David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
-Subject: Re: [PATCH v8 net-next 00/17] net: qualcomm: add QCA7000 UART
- driver
-Date: Tue, 30 May 2017 14:03:58 -0400 (EDT)
-Message-ID: <20170530.140358.891038297917804466.davem@davemloft.net>
-References: <1496059045-13572-1-git-send-email-stefan.wahren@i2se.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v4 2/9] gpio-exar/8250-exar: Do not even instantiate a
+ GPIO device for Commtech cards
+Date: Tue, 30 May 2017 21:33:35 +0300
+Message-ID: <CAHp75Vc0t5t8O5cPaxX_oQJQKsN3OWNFfqnA_K3GW4qpfY+N5Q@mail.gmail.com>
+References: <cover.1496127684.git.jan.kiszka@siemens.com> <f7e7da1ae81aab7f53faa32260d4ee0f930048fe.1496127684.git.jan.kiszka@siemens.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1496059045-13572-1-git-send-email-stefan.wahren-eS4NqCHxEME@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: stefan.wahren-eS4NqCHxEME@public.gmane.org
-Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, LinoSanfilippo-Mmb7MZpHnFY@public.gmane.org, kubakici-5tc4TXWwyLM@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <f7e7da1ae81aab7f53faa32260d4ee0f930048fe.1496127684.git.jan.kiszka@siemens.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
-Date: Mon, 29 May 2017 13:57:08 +0200
+On Tue, May 30, 2017 at 10:01 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> Commtech adapters need the MPIOs for internal purposes, and the
+> gpio-exar driver already refused to pick them up. But there is actually
+> no point in even creating the underlying platform device.
 
-> The Qualcomm QCA7000 HomePlug GreenPHY supports two interfaces:
-> UART and SPI. This patch series adds the missing support for UART.
-> 
-> This driver based on the Qualcomm code [1], but contains some changes:
-> * use random MAC address per default
-> * use net_device_stats from device
-> * share frame decoding between SPI and UART driver
-> * improve error handling
-> * reimplement tty_wakeup with work queue (based on slcan)
-> * use new serial device bus instead of ldisc
-> 
-> The patches 1 - 3 are just for clean up and are not related to
-> the UART support. Patch 4 adds SET_NETDEV_DEV() to qca_spi.
-> Patches 5 - 16 prepare the existing QCA7000 code for UART support.
-> The last patch contains the new driver.
-> 
-> The code itself has been tested on a Freescale i.MX28 board and
-> a Raspberry Pi Zero.
+It still feels that partially you may do stuff here, like
+renaming to
+__xr17v35x_register_gpio()
+and creating
+xr17v35x_register_gpio() wrapper.
 
-Series applied, thank you.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
+> index 081076771217..006a9a67c2a4 100644
+> --- a/drivers/gpio/gpio-exar.c
+> +++ b/drivers/gpio/gpio-exar.c
+> @@ -124,9 +124,6 @@ static int gpio_exar_probe(struct platform_device *pdev)
+>         void __iomem *p;
+>         int index, ret;
+>
+> -       if (pcidev->vendor != PCI_VENDOR_ID_EXAR)
+> -               return -ENODEV;
+> -
+>         /*
+>          * Map the pci device to get the register addresses.
+>          * We will need to read and write those registers to control
+> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+> index 8984e8b2d524..c29c7e675890 100644
+> --- a/drivers/tty/serial/8250/8250_exar.c
+> +++ b/drivers/tty/serial/8250/8250_exar.c
+> @@ -245,7 +245,9 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+>                 /* Setup Multipurpose Input/Output pins. */
+>                 setup_gpio(pcidev, p);
+>
+> -               port->port.private_data = xr17v35x_register_gpio(pcidev);
+> +               if (pcidev->vendor == PCI_VENDOR_ID_EXAR)
+> +                       port->port.private_data =
+> +                               xr17v35x_register_gpio(pcidev);
+>         }
+>
+>         return 0;
+> --
+> 2.12.3
+>
+
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
