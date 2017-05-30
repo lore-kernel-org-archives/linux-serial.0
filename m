@@ -1,65 +1,58 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: CPU_BIG_ENDIAN in generic code (was: Re: [PATCH v3 3/7] arch/sparc: Define config parameter CPU_BIG_ENDIAN)
-Date: Tue, 30 May 2017 12:56:39 +1000
-Message-ID: <877f0z6oig.fsf@concordia.ellerman.id.au>
-References: <CAMuHMdVjh+1TR19mUUQYHSazHnBHa4uxn7KyHUO+jAh7WDxy5Q@mail.gmail.com> <87a85v7to2.fsf@concordia.ellerman.id.au> <CAMuHMdU1kne4tKRfyx0hr1LXh_c75bYMs0b=vncHqrhB69jqYg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdU1kne4tKRfyx0hr1LXh_c75bYMs0b=vncHqrhB69jqYg@mail.gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Babu Moger <babu.moger@oracle.com>, "David S. Miller" <davem@davemloft.net>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnd Bergmann <arnd@arndb.de>, sparclinux <sparclinux@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH v4 2/9] gpio-exar/8250-exar: Do not even instantiate a GPIO device for Commtech cards
+Date: Tue, 30 May 2017 09:01:17 +0200
+Message-ID: <f7e7da1ae81aab7f53faa32260d4ee0f930048fe.1496127684.git.jan.kiszka@siemens.com>
+References: <cover.1496127684.git.jan.kiszka@siemens.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <cover.1496127684.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1496127684.git.jan.kiszka@siemens.com>
+References: <cover.1496127684.git.jan.kiszka@siemens.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-Geert Uytterhoeven <geert@linux-m68k.org> writes:
+Commtech adapters need the MPIOs for internal purposes, and the
+gpio-exar driver already refused to pick them up. But there is actually
+no point in even creating the underlying platform device.
 
-> Hi Michael,
->
-> On Mon, May 29, 2017 at 2:07 PM, Michael Ellerman <mpe@ellerman.id.au> wrote:
->> Geert Uytterhoeven <geert@linux-m68k.org> writes:
->>> On Tue, May 23, 2017 at 11:45 PM, Babu Moger <babu.moger@oracle.com> wrote:
->>>> Found this problem while enabling queued rwlock on SPARC.
->>>> The parameter CONFIG_CPU_BIG_ENDIAN is used to clear the
->>>> specific byte in qrwlock structure. Without this parameter,
->>>> we clear the wrong byte. Here is the code.
->>>>
->>>> static inline u8 *__qrwlock_write_byte(struct qrwlock *lock)
->>>>  {
->>>>         return (u8 *)lock + 3 * IS_BUILTIN(CONFIG_CPU_BIG_ENDIAN);
->>>>  }
->>>>
->>>> Define CPU_BIG_ENDIAN for SPARC to fix it.
->>>
->>>> --- a/arch/sparc/Kconfig
->>>> +++ b/arch/sparc/Kconfig
->>>> @@ -92,6 +92,10 @@ config ARCH_DEFCONFIG
->>>>  config ARCH_PROC_KCORE_TEXT
->>>>         def_bool y
->>>>
->>>> +config CPU_BIG_ENDIAN
->>>> +       bool
->>>> +       default y if SPARC
->>>
->>> Nice catch!
->>>
->>> Traditionally, CPU_BIG_ENDIAN and CPU_LITTLE_ENDIAN were defined only on
->>> architectures that may support both.  And it was checked in platform code
->>> and drivers only.
->>> Hence the symbol is lacking from most architectures. Heck, even
->>> architectures that support both may default to one endiannes, and declare
->>> only the symbol for the other endianness:
->>
->> I guess there's a reason we can't use __BIG_ENDIAN__ / __LITTLE_ENDIAN__ ?
->
-> I (C/asm) code we can, in Kconfig we cannot.
->
-> So far we tried always doing that, but a few checks for the semi-existing
-> Kconfig symbol crept in in generic code. Those could be replaced by the __*__
-> variants, but consistently having the Kconfig symbols would be useful anyway
-> (e.g. to avoid building the broken-on-big-endian ISDN drivers).
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/gpio/gpio-exar.c            | 3 ---
+ drivers/tty/serial/8250/8250_exar.c | 4 +++-
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-Ah OK, the original mail was citing C code, but yeah I guess it would be
-handy in Makefiles etc.
+diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
+index 081076771217..006a9a67c2a4 100644
+--- a/drivers/gpio/gpio-exar.c
++++ b/drivers/gpio/gpio-exar.c
+@@ -124,9 +124,6 @@ static int gpio_exar_probe(struct platform_device *pdev)
+ 	void __iomem *p;
+ 	int index, ret;
+ 
+-	if (pcidev->vendor != PCI_VENDOR_ID_EXAR)
+-		return -ENODEV;
+-
+ 	/*
+ 	 * Map the pci device to get the register addresses.
+ 	 * We will need to read and write those registers to control
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 8984e8b2d524..c29c7e675890 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -245,7 +245,9 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+ 		/* Setup Multipurpose Input/Output pins. */
+ 		setup_gpio(pcidev, p);
+ 
+-		port->port.private_data = xr17v35x_register_gpio(pcidev);
++		if (pcidev->vendor == PCI_VENDOR_ID_EXAR)
++			port->port.private_data =
++				xr17v35x_register_gpio(pcidev);
+ 	}
+ 
+ 	return 0;
+-- 
+2.12.3
 
-cheers
