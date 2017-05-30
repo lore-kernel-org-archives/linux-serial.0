@@ -1,50 +1,43 @@
-From: Peter Senna Tschudin <peter.senna@collabora.com>
-Subject: Re: [RFC, PATCH] imx: serial: Take tty->files_lock opportunistically
-Date: Tue, 30 May 2017 15:44:27 +0200
-Message-ID: <20170530134427.GD6786@collabora.com>
-References: <20170530123726.18598-1-andrew.smirnov@gmail.com>
- <CAL_JsqJUF8NhEhGY2FPPX5GUF3oP9XONQJy9sj42uPYATskz9A@mail.gmail.com>
- <20170530144213.48df2a1c@alans-desktop>
+From: David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Subject: Re: [PATCH v8 net-next 00/17] net: qualcomm: add QCA7000 UART
+ driver
+Date: Tue, 30 May 2017 14:03:58 -0400 (EDT)
+Message-ID: <20170530.140358.891038297917804466.davem@davemloft.net>
+References: <1496059045-13572-1-git-send-email-stefan.wahren@i2se.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170530144213.48df2a1c@alans-desktop>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Rob Herring <robherring2@gmail.com>, Andrey Smirnov <andrew.smirnov@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Chris Healy <cphealy@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1496059045-13572-1-git-send-email-stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: stefan.wahren-eS4NqCHxEME@public.gmane.org
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, LinoSanfilippo-Mmb7MZpHnFY@public.gmane.org, kubakici-5tc4TXWwyLM@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 30, 2017 at 02:42:13PM +0100, Alan Cox wrote:
+From: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Date: Mon, 29 May 2017 13:57:08 +0200
 
-I sent a second patch recently:
+> The Qualcomm QCA7000 HomePlug GreenPHY supports two interfaces:
+> UART and SPI. This patch series adds the missing support for UART.
+> 
+> This driver based on the Qualcomm code [1], but contains some changes:
+> * use random MAC address per default
+> * use net_device_stats from device
+> * share frame decoding between SPI and UART driver
+> * improve error handling
+> * reimplement tty_wakeup with work queue (based on slcan)
+> * use new serial device bus instead of ldisc
+> 
+> The patches 1 - 3 are just for clean up and are not related to
+> the UART support. Patch 4 adds SET_NETDEV_DEV() to qca_spi.
+> Patches 5 - 16 prepare the existing QCA7000 code for UART support.
+> The last patch contains the new driver.
+> 
+> The code itself has been tested on a Freescale i.MX28 board and
+> a Raspberry Pi Zero.
 
-https://patchwork.kernel.org/patch/9725625/
-
-> > > Fixes: 18a4208826dd0a13eb06de724c86bba2c225f943 ("imx-serial: Reduce
-> > > RX DMA startup latency when opening for reading")
-> > >
-> > > Cc: cphealy@gmail.com
-> > > Cc: Peter Senna Tschudin <peter.senna@collabora.com>
-> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Cc: Jiri Slaby <jslaby@suse.com>
-> > > Cc: linux-kernel@vger.kernel.org
-> > > Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
-> > > ---
-> > >
-> > > Not sure if this is the best way to solve the problem (hence the RFC
-> > > tag). If anyone has a better idea, or if there's a better fix for this
-> > > already, please let me know.  
-> > 
-> > IMO, the low level serial drivers shouldn't be accessing
-> > tty->tty_files in the first place. Is being opened for write-only that
-> > common and is skipping the DMA setup really necessary?
-> 
-> Seconded - the Reduce RX DMA startup latency patch should just be
-> reverted (and shouldn't ever IMHO have gotten in).
-> 
-> Not all readers and writers to a tty have a file handle any more anyway,
-> so it's not only icky and layer violating it's fundamentally broken
-> beyond the locking.
-> 
-> Alan
+Series applied, thank you.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
