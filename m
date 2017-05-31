@@ -1,279 +1,104 @@
-From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 2/2] arm64: dts: Add Mediatek SoC MT2712 and evaluation
- board dts and Makefile
-Date: Wed, 31 May 2017 14:42:20 +0200
-Message-ID: <92e438b3-4e9c-421b-5398-5aad2541524c@gmail.com>
-References: <1496230773-22633-1-git-send-email-yt.shen@mediatek.com>
- <1496230773-22633-3-git-send-email-yt.shen@mediatek.com>
+From: "A.S. Dong" <aisheng.dong@nxp.com>
+Subject: RE: [PATCH 6/6] tty: serial: lpuart: add a more accurate baud rate
+ calculation method
+Date: Wed, 31 May 2017 14:18:04 +0000
+Message-ID: <AM3PR04MB3062F7BCE82860C377C214E80F10@AM3PR04MB306.eurprd04.prod.outlook.com>
+References: <1494316248-24052-1-git-send-email-aisheng.dong@nxp.com>
+ <1494316248-24052-7-git-send-email-aisheng.dong@nxp.com>
+ <CAHp75Vemc5qoD7gbc_sJBSasYTFYSYOuWZv4N-4X60arWX8aJg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1496230773-22633-3-git-send-email-yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAHp75Vemc5qoD7gbc_sJBSasYTFYSYOuWZv4N-4X60arWX8aJg@mail.gmail.com>
 Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mars Cheng <mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Duan <fugang.duan@nxp.com>, Stefan Agner <stefan@agner.ch>, Mingkai Hu <mingkai.hu@nxp.com>, "Y.B. Lu" <yangbo.lu@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 31/05/17 13:39, YT Shen wrote:
-> This adds basic chip support for Mediatek 2712
-> 
-> Signed-off-by: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
->   arch/arm64/boot/dts/mediatek/Makefile       |   1 +
->   arch/arm64/boot/dts/mediatek/mt2712-evb.dts |  39 +++++++
->   arch/arm64/boot/dts/mediatek/mt2712e.dtsi   | 166 ++++++++++++++++++++++++++++
->   3 files changed, 206 insertions(+)
->   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
->   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-> index 9fbfd32..fcc0604 100644
-> --- a/arch/arm64/boot/dts/mediatek/Makefile
-> +++ b/arch/arm64/boot/dts/mediatek/Makefile
-> @@ -1,3 +1,4 @@
-> +dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
->   dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
->   dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
->   dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
-> diff --git a/arch/arm64/boot/dts/mediatek/mt2712-evb.dts b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-> new file mode 100644
-> index 0000000..e526c0f
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-> @@ -0,0 +1,39 @@
-> +/*
-> + * Copyright (c) 2017 MediaTek Inc.
-> + * Author: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> + *
-> + * SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> + */
-> +
-> +/dts-v1/;
-> +#include "mt2712e.dtsi"
-> +
-> +/ {
-> +	model = "MediaTek MT2712 evaluation board";
-> +	compatible = "mediatek,mt2712-evb", "mediatek,mt2712";
-> +
-> +	aliases {
-> +		serial0 = &uart0;
-> +		serial1 = &uart1;
-> +		serial2 = &uart2;
-> +		serial3 = &uart3;
-> +		serial4 = &uart4;
-> +		serial5 = &uart5;
-> +	};
-
-Just declare serial0 here, as you don't use the others.
-
-> +
-> +	memory@40000000 {
-> +		device_type = "memory";
-> +		reg = <0 0x40000000 0 0x80000000>;
-> +	};
-> +
-> +	chosen {
-> +		stdout-path = "serial0:921600n8";
-> +		linux,initrd-start = <0x45000000>;
-> +		linux,initrd-end   = <0x4a000000>;
-
-initrd-start and end should be dynamically set by the bootloader and not 
-via a chosen node. Is your bootloader not able to do that?
-
-> +	};
-> +};
-> +
-> +&uart0 {
-> +	status = "okay";
-> +};
-> +
-> diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> new file mode 100644
-> index 0000000..6df0da9
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> @@ -0,0 +1,166 @@
-> +/*
-> + * Copyright (c) 2017 MediaTek Inc.
-> + * Author: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> + *
-> + * SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> + */
-> +
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +/ {
-> +	compatible = "mediatek,mt2712";
-> +	interrupt-parent = <&sysirq>;
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +
-> +	cpus {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		cpu-map {
-> +			cluster0 {
-> +				core0 {
-> +					cpu = <&cpu0>;
-> +				};
-> +				core1 {
-> +					cpu = <&cpu1>;
-> +				};
-> +			};
-> +
-> +			cluster1 {
-> +				core0 {
-> +					cpu = <&cpu2>;
-> +				};
-> +			};
-> +		};
-> +
-> +		cpu0: cpu@0 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a35";
-
-do you mean cortex-a53?
-
-> +			reg = <0x000>;
-> +		};
-> +
-> +		cpu1: cpu@1 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a35";
-
-same here.
-
-Regards,
-Matthias
-
-> +			reg = <0x001>;
-> +			enable-method = "psci";
-> +		};
-> +
-> +		cpu2: cpu@200 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a72";
-> +			reg = <0x200>;
-> +			enable-method = "psci";
-> +		};
-> +	};
-> +
-> +	psci {
-> +		compatible = "arm,psci-0.2";
-> +		method = "smc";
-> +	};
-> +
-> +	uart_clk: dummy26m {
-> +		compatible = "fixed-clock";
-> +		clock-frequency = <26000000>;
-> +		#clock-cells = <0>;
-> +	};
-> +
-> +	timer {
-> +		compatible = "arm,armv8-timer";
-> +		interrupt-parent = <&gic>;
-> +		interrupts = <GIC_PPI 13
-> +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 14
-> +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 11
-> +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 10
-> +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>;
-> +	};
-> +
-> +	soc {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		compatible = "simple-bus";
-> +		ranges;
-> +
-> +		uart5: serial@1000f000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x1000f000 0 0x400>;
-> +			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +
-> +		sysirq: interrupt-controller@10220a80 {
-> +			compatible = "mediatek,mt2712-sysirq",
-> +				     "mediatek,mt6577-sysirq";
-> +			interrupt-controller;
-> +			#interrupt-cells = <3>;
-> +			interrupt-parent = <&gic>;
-> +			reg = <0 0x10220a80 0 0x40>;
-> +		};
-> +
-> +		gic: interrupt-controller@10510000 {
-> +			compatible = "arm,gic-400";
-> +			#interrupt-cells = <3>;
-> +			interrupt-parent = <&gic>;
-> +			interrupt-controller;
-> +			reg = <0 0x10510000 0 0x1000>,
-> +			      <0 0x10520000 0 0x1000>,
-> +			      <0 0x10540000 0 0x2000>,
-> +			      <0 0x10560000 0 0x2000>;
-> +			interrupts = <GIC_PPI 9
-> +				(GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_HIGH)>;
-> +		};
-> +
-> +		uart0: serial@11002000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11002000 0 0x400>;
-> +			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart1: serial@11003000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11003000 0 0x400>;
-> +			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart2: serial@11004000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11004000 0 0x400>;
-> +			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart3: serial@11005000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11005000 0 0x400>;
-> +			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart4: serial@11019000 {
-> +			compatible = "mediatek,mt2712-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11019000 0 0x400>;
-> +			interrupts = <GIC_SPI 126 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&uart_clk>;
-> +			status = "disabled";
-> +		};
-> +	};
-> +};
-> +
-> 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+SGkgQW5keSwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbmR5IFNo
+ZXZjaGVua28gW21haWx0bzphbmR5LnNoZXZjaGVua29AZ21haWwuY29tXQ0KPiBTZW50OiBTdW5k
+YXksIE1heSAyOCwgMjAxNyA4OjA0IEFNDQo+IFRvOiBBLlMuIERvbmcNCj4gQ2M6IGxpbnV4LXNl
+cmlhbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4
+LWFybQ0KPiBNYWlsaW5nIExpc3Q7IEdyZWcgS3JvYWgtSGFydG1hbjsgSmlyaSBTbGFieTsgQW5k
+eSBEdWFuOyBTdGVmYW4gQWduZXI7DQo+IE1pbmdrYWkgSHU7IFkuQi4gTHUNCj4gU3ViamVjdDog
+UmU6IFtQQVRDSCA2LzZdIHR0eTogc2VyaWFsOiBscHVhcnQ6IGFkZCBhIG1vcmUgYWNjdXJhdGUg
+YmF1ZA0KPiByYXRlIGNhbGN1bGF0aW9uIG1ldGhvZA0KPiANCj4gT24gVHVlLCBNYXkgOSwgMjAx
+NyBhdCAxMDo1MCBBTSwgRG9uZyBBaXNoZW5nIDxhaXNoZW5nLmRvbmdAbnhwLmNvbT4gd3JvdGU6
+DQo+ID4gT24gbmV3IExQVUFSVCB2ZXJzaW9ucywgdGhlIG92ZXJzYW1wbGluZyByYXRpbyBmb3Ig
+dGhlIHJlY2VpdmVyIGNhbiBiZQ0KPiA+IGNoYW5nZWQgZnJvbSA0eCAoMDAwMTEpIHRvIDMyeCAo
+MTExMTEpIHdoaWNoIGNvdWxkIGhlbHAgdXMgZ2V0IGEgbW9yZQ0KPiA+IGFjY3VyYXRlIGJhdWQg
+cmF0ZSBkaXZpZGVyLg0KPiA+DQo+ID4gVGhlIGlkZWEgaXMgdG8gdXNlIHRoZSBiZXN0IE9TUiAo
+b3Zlci1zYW1wbGluZyByYXRlKSBwb3NzaWJsZS4NCj4gPiBOb3RlLCBPU1IgaXMgdHlwaWNhbGx5
+IGhhcmQtc2V0IHRvIDE2IGluIG90aGVyIExQVUFSVCBpbnN0YW50aWF0aW9ucy4NCj4gPiBMb29w
+IHRvIGZpbmQgdGhlIGJlc3QgT1NSIHZhbHVlIHBvc3NpYmxlLCBvbmUgdGhhdCBnZW5lcmF0ZXMg
+bWluaW11bQ0KPiA+IGJhdWQgZGlmZiBpdGVyYXRlIHRocm91Z2ggdGhlIHJlc3Qgb2YgdGhlIHN1
+cHBvcnRlZCB2YWx1ZXMgb2YgT1NSLg0KPiANCj4gPiArbHB1YXJ0MzJfc2VyaWFsX3NldGJyZyhz
+dHJ1Y3QgbHB1YXJ0X3BvcnQgKnNwb3J0LCB1bnNpZ25lZCBpbnQNCj4gPiArYmF1ZHJhdGUpIHsN
+Cj4gPiArICAgICAgIHUzMiBzYnIsIG9zciwgYmF1ZF9kaWZmLCB0bXBfb3NyLCB0bXBfc2JyLCB0
+bXBfZGlmZiwgdG1wOw0KPiA+ICsgICAgICAgdTMyIGNsayA9IHNwb3J0LT5wb3J0LnVhcnRjbGs7
+DQo+ID4gKw0KPiA+ICsgICAgICAgLyoNCj4gPiArICAgICAgICAqIFRoZSBpZGVhIGlzIHRvIHVz
+ZSB0aGUgYmVzdCBPU1IgKG92ZXItc2FtcGxpbmcgcmF0ZSkgcG9zc2libGUuDQo+ID4gKyAgICAg
+ICAgKiBOb3RlLCBPU1IgaXMgdHlwaWNhbGx5IGhhcmQtc2V0IHRvIDE2IGluIG90aGVyIExQVUFS
+VA0KPiBpbnN0YW50aWF0aW9ucy4NCj4gPiArICAgICAgICAqIExvb3AgdG8gZmluZCB0aGUgYmVz
+dCBPU1IgdmFsdWUgcG9zc2libGUsIG9uZSB0aGF0IGdlbmVyYXRlcw0KPiBtaW5pbXVtDQo+ID4g
+KyAgICAgICAgKiBiYXVkX2RpZmYgaXRlcmF0ZSB0aHJvdWdoIHRoZSByZXN0IG9mIHRoZSBzdXBw
+b3J0ZWQgdmFsdWVzIG9mDQo+IE9TUi4NCj4gPiArICAgICAgICAqDQo+ID4gKyAgICAgICAgKiBD
+YWxjdWxhdGlvbiBGb3JtdWxhOg0KPiA+ICsgICAgICAgICogIEJhdWQgUmF0ZSA9IGJhdWQgY2xv
+Y2sgLyAoKE9TUisxKSDDlyBTQlIpDQo+ID4gKyAgICAgICAgKi8NCj4gPiArICAgICAgIGJhdWRf
+ZGlmZiA9IGJhdWRyYXRlOw0KPiA+ICsgICAgICAgb3NyID0gMDsNCj4gPiArICAgICAgIHNiciA9
+IDA7DQo+ID4gKw0KPiANCj4gPiArICAgICAgIGZvciAodG1wX29zciA9IDQ7IHRtcF9vc3IgPD0g
+MzI7IHRtcF9vc3IrKykgew0KPiANCj4gSSBfdGhpbmtfIHlvdSBtYXkgc2ltcGxpZnkgdGhpcyBh
+bmQgYXZvaWQgZm9yLWxvb3AgaWYgeW91IHJlY29uc2lkZXINCj4gYXBwcm9hY2guDQo+IA0KDQpU
+aGUgYWxnb3JpdGhtIGlzIHRoYXQgd2UgaGF2ZSB0byBpdGVyYXRlIGFsbCBwb3NzaWJsZSBPU0Nz
+IGFuZCBmaW5kDQp0aGUgb25lIHdpdGggbWluaW11bSBiYXVkX2RpZmYuDQoNCkknbSBub3Qgc3Vy
+ZSB3aGF0IGFsdGVybmF0aXZlIGFwcHJvYWNoIGRpZCB5b3UgbWVhbj8NCg0KQnV0IHRoZXJlIGlz
+IGluZGVlZCBhIG9wdGltaXphdGlvbiB3YXksIHNlZSBiZWxvdy4NCg0KPiA+ICsgICAgICAgICAg
+ICAgICAvKiBjYWxjdWxhdGUgdGhlIHRlbXBvcmFyeSBzYnIgdmFsdWUgICovDQo+ID4gKyAgICAg
+ICAgICAgICAgIHRtcF9zYnIgPSAoY2xrIC8gKGJhdWRyYXRlICogdG1wX29zcikpOw0KPiA+ICsg
+ICAgICAgICAgICAgICBpZiAodG1wX3NiciA9PSAwKQ0KPiA+ICsgICAgICAgICAgICAgICAgICAg
+ICAgIHRtcF9zYnIgPSAxOw0KPiA+ICsNCj4gPiArICAgICAgICAgICAgICAgLyoNCj4gPiArICAg
+ICAgICAgICAgICAgICogY2FsY3VsYXRlIHRoZSBiYXVkIHJhdGUgZGlmZmVyZW5jZSBiYXNlZCBv
+biB0aGUNCj4gdGVtcG9yYXJ5DQo+ID4gKyAgICAgICAgICAgICAgICAqIG9zciBhbmQgc2JyIHZh
+bHVlcw0KPiA+ICsgICAgICAgICAgICAgICAgKi8NCj4gDQo+ID4gKyAgICAgICAgICAgICAgIHRt
+cF9kaWZmID0gY2xrIC8gKHRtcF9vc3IgKiB0bXBfc2JyKSAtIGJhdWRyYXRlOw0KPiANCj4gKDMy
+IC0gNCArIDEpIHRpbWVzIGRpdmlzaW9uIGlzIGNhbGxlZC4uLg0KPiANCg0KWWVzLg0KDQo+ID4g
+Kw0KPiA+ICsgICAgICAgICAgICAgICAvKiBzZWxlY3QgYmVzdCB2YWx1ZXMgYmV0d2VlbiBzYnIg
+YW5kIHNicisxICovDQo+ID4gKyAgICAgICAgICAgICAgIHRtcCA9IGNsayAvICh0bXBfb3NyICog
+KHRtcF9zYnIgKyAxKSk7DQo+ID4gKyAgICAgICAgICAgICAgIGlmICh0bXBfZGlmZiA+IChiYXVk
+cmF0ZSAtIHRtcCkpIHsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICB0bXBfZGlmZiA9IGJh
+dWRyYXRlIC0gdG1wOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIHRtcF9zYnIrKzsNCj4g
+PiArICAgICAgICAgICAgICAgfQ0KPiA+ICsNCj4gPiArICAgICAgICAgICAgICAgaWYgKHRtcF9k
+aWZmIDw9IGJhdWRfZGlmZikgew0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIGJhdWRfZGlm
+ZiA9IHRtcF9kaWZmOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIG9zciA9IHRtcF9vc3I7
+DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgc2JyID0gdG1wX3NicjsNCg0KVG8gb3B0aW1p
+emUgdGhlIGxvb3BpbmcsIHdlIHByb2JhYmx5IGNvdWxkIGRvOg0KSWYgKCFkYXVkX2RpZmYpDQoJ
+QnJlYWs7DQoNCj4gPiArICAgICAgICAgICAgICAgfQ0KPiA+ICsgICAgICAgfQ0KPiANCj4gPiAr
+ICAgICAgIC8qIGhhbmRsZSBidWFkcmF0ZSBvdXRzaWRlIGFjY2VwdGFibGUgcmF0ZSAqLw0KPiA+
+ICsgICAgICAgaWYgKGJhdWRfZGlmZiA+ICgoYmF1ZHJhdGUgLyAxMDApICogMykpDQo+ID4gKyAg
+ICAgICAgICAgICAgIGRldl93YXJuKHNwb3J0LT5wb3J0LmRldiwNCj4gPiArICAgICAgICAgICAg
+ICAgICAgICAgICAgInVuYWNjZXB0YWJsZSBiYXVkIHJhdGUgZGlmZmVyZW5jZSBvZiBtb3JlDQo+
+ID4gKyB0aGFuIDMlJVxuIik7DQo+IA0KPiBTaG91bGRuJ3QgeW91IGZhbGwgYmFjayB0byBwcmV2
+aW91cyBzZXR0aW5nPw0KPiANCg0KSG1tbS4uIElzIHRoZXJlIGRlZmluZWQgc2VtYW50aWMgdG8g
+ZG8gdGhhdCBvciBpcyB0aGVyZSBhbnkgb3RoZXIgb25lcw0KZG9pbmcgdGhhdCB3YXk/DQoNCkkg
+c2VlIG1vc3QgZHJpdmVycyBub3QgZG9pbmcgdGhhdC4NCg0KPiA+ICsNCj4gPiArICAgICAgIHRt
+cCA9IGxwdWFydDMyX3JlYWQoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVBUlRCQVVEKTsNCj4gPiAr
+DQo+IA0KPiA+ICsgICAgICAgaWYgKChvc3IgPiAzKSAmJiAob3NyIDwgOCkpDQo+IA0KPiBJc24n
+dCBpdA0KPiANCj4gaWYgKG9zciBeIEJJVCgyKSA8IEJJVCgyKSkNCj4gDQo+ID8NCj4gDQoNClRo
+YXQgaXMgb2J2aW91cyBoYXJkIHRvIHVuZGVyc3RhbmQgYW5kIEknZCByYXRoZXIga2VlcCBhIG1v
+cmUgZXhwbGljaXQgd2F5Lg0KDQo+ID4gKyAgICAgICAgICAgICAgIHRtcCB8PSBVQVJUQkFVRF9C
+T1RIRURHRTsNCj4gDQo+ID4gK30NCj4gDQo+ID4gKyAgICAgICBpZiAob2ZfZGV2aWNlX2lzX2Nv
+bXBhdGlibGUocG9ydC0+ZGV2LT5vZl9ub2RlLCAiZnNsLGlteDd1bHAtDQo+IGxwdWFydCIpKSB7
+DQo+ID4gKyAgICAgICAgICAgICAgIGxwdWFydDMyX3NlcmlhbF9zZXRicmcoc3BvcnQsIGJhdWQp
+Ow0KPiANCj4gPiArICAgICAgIH0gZWxzZSB7DQo+ID4gKyAgICAgICAgICAgICAgIHNiciA9IHNw
+b3J0LT5wb3J0LnVhcnRjbGsgLyAoMTYgKiBiYXVkKTsNCj4gPiArICAgICAgICAgICAgICAgYmQg
+Jj0gflVBUlRCQVVEX1NCUl9NQVNLOw0KPiA+ICsgICAgICAgICAgICAgICBiZCB8PSBzYnIgJiBV
+QVJUQkFVRF9TQlJfTUFTSzsNCj4gPiArICAgICAgICAgICAgICAgYmQgfD0gVUFSVEJBVURfQk9U
+SEVER0U7DQo+ID4gKyAgICAgICAgICAgICAgIGJkICY9IH4oVUFSVEJBVURfVERNQUUgfCBVQVJU
+QkFVRF9SRE1BRSk7DQo+ID4gKyAgICAgICAgICAgICAgIGxwdWFydDMyX3dyaXRlKGJkLCBzcG9y
+dC0+cG9ydC5tZW1iYXNlICsgVUFSVEJBVUQpOw0KPiA+ICsgICAgICAgfQ0KPiANCj4gUGVyaGFw
+cyBpdCBtYWtlcyBzZW5zZSB0byBzcGxpdCB0aGlzIHRvIGEgaGVscGVyIGZ1bmN0aW9uIGFzIHdl
+bGwgKGluIGENCj4gc2VwYXJhdGUgcGF0Y2gpLg0KPiANCg0KVGhhdCB3aWxsIGJlIHJlbW92ZWQg
+YWNjb3JkaW5nIHRvIFN0ZWZhbidzIHN1Z2dlc3Rpb24gdG8gZ2V0IExTIHBsYXRmb3Jtcw0KU3Rh
+cnQgdG8gdGVzdC4NCg0KUmVnYXJkcw0KRG9uZyBBaXNoZW5nDQo=
