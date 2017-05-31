@@ -1,101 +1,204 @@
-From: Dong Aisheng <dongas86@gmail.com>
-Subject: Re: [V2, 2/6] tty: serial: lpuart: add little endian 32 bit register
- support
-Date: Wed, 31 May 2017 16:07:42 +0800
-Message-ID: <20170531080742.GD16812@b29396-OptiPlex-7040>
-References: <1494834539-17523-3-git-send-email-aisheng.dong@nxp.com>
- <b4a2ed13-c71f-c973-3b09-b632e083a88b@cogentembedded.com>
- <20170517033139.GB9913@b29396-OptiPlex-7040>
- <48819894-4943-7d14-ccf8-83cfd2195c9a@cogentembedded.com>
- <AM3PR04MB306D5C86AED120D15C4D46A80E70@AM3PR04MB306.eurprd04.prod.outlook.com>
- <55bae8d2-0e23-b5e1-f304-63d9130ccb08@cogentembedded.com>
- <20170517070019.GG9913@b29396-OptiPlex-7040>
- <045d1888-4a23-cf73-ab4c-009e29fde974@cogentembedded.com>
- <20170519150722.GB23227@b29396-OptiPlex-7040>
- <2f873a62-0e4e-7da6-5c5e-be570fcceff1@cogentembedded.com>
+From: Dmitry Vyukov <dvyukov@google.com>
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 4.11-rc4
+Date: Wed, 31 May 2017 10:39:23 +0200
+Message-ID: <CACT4Y+aoRRao41hGpVkO+qVk9TB5ZSPiRpQxp7H9EN+RqW-1-Q@mail.gmail.com>
+References: <20170326110432.GA9241@kroah.com> <CAOMGZ=F8xdUHnZaDo18DkkrYgacx6y8Cm=f8-8xnuvPupepnfg@mail.gmail.com>
+ <CA+55aFwgiAmy4Gw4RosbNVBJmOG-WQoZKOd76Ziuqx5CzPFMZQ@mail.gmail.com>
+ <20170413183403.GA16022@kroah.com> <CAOMGZ=G9t7ih=ydr=fkKn6cbgu5-qbdQs7XChmn=d598H95QVA@mail.gmail.com>
+ <20170414123029.GA17217@kroah.com> <CACT4Y+acU1xTZEo+oeBvZL__c12bzcSPa0CBfDiw4j7+CUjfDg@mail.gmail.com>
+ <CAOMGZ=GJah0GNXzscGGkYgScbZaeSM_TpxmrLZuxhrqWmBX9BQ@mail.gmail.com>
+ <20170503120101.GA21119@kroah.com> <CACT4Y+arELXuPr7psYFETt6NrDNgeS=tP=jGhP4a0_C_8Fa=LA@mail.gmail.com>
+ <20170530130905.382487d5@alans-desktop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <2f873a62-0e4e-7da6-5c5e-be570fcceff1@cogentembedded.com>
+In-Reply-To: <20170530130905.382487d5@alans-desktop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc: "A.S. Dong" <aisheng.dong@nxp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Andy Duan <fugang.duan@nxp.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "Y.B. Lu" <yangbo.lu@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stefan@agner.ch" <stefan@agner.ch>, Mingkai Hu <mingkai.hu@nxp.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Vegard Nossum <vegard.nossum@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Nikita,
+On Tue, May 30, 2017 at 2:09 PM, Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
+>> >> I'll think about possible solutions, but I have no prior experience
+>> >> with the tty code. In the meantime syzkaller also hit a couple of
+>> >> other fun tty/pty bugs including a write/ioctl race that results in
+>> >> buffer overflow :-/
+>
+> There are several of those, including some of that have been documented
+> for years but nobody ever volunteered to fix - in particular all the
+> interfaces that push characters to the tty other than via the normal
+> interrupt receive path are dodgy (console selection in particular)
+>
+> The original tty model btw was that setting the ldisc to n_tty cannot
+> fail, and the structure allocated was smaller than a page size so was
+> safe.
+>
+> The simple way to fix it is to restore that behaviour by adding a 'null'
+> ldisc that we can fail to instead of N_TTY since the N_TTY failback path
+> is long broken.
 
-On Tue, May 23, 2017 at 08:24:18AM +0300, Nikita Yushchenko wrote:
-> Hi,
-> 
-> >>>> Alternative solution could be - have separate write path for earlycon.
-> >>>
-> >>> It looks to me having the same issue with a separate write patch
-> >>> for earlycon as we still need distinguish Little or Big endian
-> >>> for Layerscape and IMX.
-> >>>
-> >>>> At a glance, it is dozen lines of code.
-> >>>
-> >>> Would you please show some sample code?
-> >>
-> >> Do not reuse lpuart32_console_putchar() in earlycon code.
-> >>
-> >> Have two sets of early_setup/early_write/putchar - for BE and
-> >> defaut-endian earlycon. And in these putchar's do not use
-> >> lpuart_(read|write).
-> >>
-> > 
-> > Isn't that introducing another consistency break after fix one
-> > consistency break?
-> > 
-> > If doing that, we then have two register read/write APIs.
-> > One for normal driver operation by dynamically checking lpuart_is_be
-> > property to distinguish the endian difference problem.
-> > Another is specifically implemented for only early console read/write
-> > and use hardcoded way to read/write register directly instead of using
-> > the standard API lpuart32_read/write, like follows:
-> > e.g.
-> > lpuart32_le_console_write() {
-> > 	 writel();
-> > }
-> > 
-> > lpuart32_be_console_write() {
-> > 	 iowrite32be()
-> > }
-> > This also makes the driver a bit strange and ugly.
-> > 
-> > It looks to me both way are trade offs and the later one seems sacrifice
-> > more. And i doubt if it's really necessary for probably a no real gain
-> > purpose as the FPGA you mentioned is a theoretical case and less
-> > possibility to exist.
-> > 
-> > I'm still wondering how about keep using the exist way and adding more
-> > information in code to explain why use a global var?
-> 
-> I've checked other driver under drivers/tty/serial/, for examples of
-> similar cases.
-> 
-> Please look at serial8250_early_in() / serial8250_early_out() ?
-> These do handle different endian, via port->iotype
-> 
+Greg, what do you think about this patch? Are you ready to accept
+something like this?
+Definitely shorter than changing all drivers.
 
-Well, that does inspire me.
-
-With struct uart_port's iotype member, the global lpuart_is_be can be
-gone. We can update lpuart32_read/write API to take the reference of
-of structure uart_port, then the API knows the endian information and
-can use the correct further IO accessor accordingly.
-
-And most importantly, it also works with earlycon.
-
-> Another example is drivers/tty/serial/samsung.c, where
-> port->private_data is initialized and used.
-> 
-
-If using iotype, seems no need private_data anymore.
-Will try and send the new series later with you CCed to help review.
-
-Thanks for the advice.
-
-Regards
-Dong Aisheng
+> Something like this (untested)
+>
+> commit 797035eaf800889287b0b176a11c89c0f1fbba30
+> Author: Alan Cox <alan@llwyncelyn.cymru>
+> Date:   Tue May 30 12:59:45 2017 +0100
+>
+>     tty: handle the case where we cannot restore a line discipline
+>
+>     Historically the N_TTY driver could never fail but this has become broken over
+>     time. Rather than trying to rewrite half the ldisc layer to fix the breakage
+>     introduce a second level of fallback with an N_NULL ldisc which cannot fail,
+>     and thus restore the guarantees required by the ldisc layer.
+>
+>     We still try and fail to N_TTY first. It's much more useful to find yourself
+>     back in your old ldisc (first attempt) or in N_TTY (second attempt), and while
+>     I'm not aware of any code out there that makes those assumptions it's good to
+>     drive(r) defensively.
+>
+>     No signed off by: this is just a proposal!
+>
+> diff --git a/drivers/tty/n_null.c b/drivers/tty/n_null.c
+> new file mode 100644
+> index 0000000..c5812cd
+> --- /dev/null
+> +++ b/drivers/tty/n_null.c
+> @@ -0,0 +1,67 @@
+> +/*
+> + *  n_null.c - Null line discipline used in the failure path
+> + *
+> + *  Copyright (C) Intel 2017
+> + *
+> + * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> + *
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License version 2
+> + *  as published by the Free Software Foundation.
+> + *
+> + *  This program is distributed in the hope that it will be useful,
+> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + *  GNU General Public License for more details.
+> + *
+> + * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> + */
+> +
+> +static int n_null_open(struct tty_struct *tty)
+> +{
+> +       return 0;
+> +}
+> +
+> +static void n_null_close(struct tty_struct *tty)
+> +{
+> +}
+> +
+> +static ssize_t n_null_read(struct tty_struct *tty, struct file *file,
+> +                          unsigned char __user * buf, size_t nr)
+> +{
+> +       return -EOPNOTSUPP;
+> +}
+> +
+> +static ssize_t n_null_write(struct tty_struct *tty, struct file *file,
+> +                           const unsigned char *buf, size_t nr)
+> +{
+> +       return -EOPNOTSUPP;
+> +}
+> +
+> +static ssize_t n_null_receivebuf(struct tty_struct *tty,
+> +                                const unsigned char *cp, char *fp,
+> +                                int cnt)
+> +{
+> +}
+> +
+> +static struct tty_ldisc_ops null_ldisc {
+> +       .owner          =       THIS_MODULE,
+> +       .magic          =       TTY_LDISC_MAGIC,
+> +       .name           =       "n_null",
+> +       .open           =       n_null_open,
+> +       .close          =       n_null_close,
+> +       .read           =       n_null_read,
+> +       .write          =       n_null_write,
+> +       .receive_buf    =       n_null_receivebuf
+> +};
+> +
+> +static int __init n_null_init(void)
+> +{
+> +       BUG_ON(tty_register_ldisc(N_NULL, &null_ldisc));
+> +       return 0;
+> +}
+> +
+> +static void __exit n_null_exit(void)
+> +{
+> +       tty_unregister_ldisc(N_NULL);
+> +}
+> diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+> index f6ffe28..e80e05f 100644
+> --- a/drivers/tty/tty_ldisc.c
+> +++ b/drivers/tty/tty_ldisc.c
+> @@ -492,6 +492,29 @@ static void tty_ldisc_close(struct tty_struct *tty, struct tty_ldisc *ld)
+>  }
+>
+>  /**
+> + *     tty_ldisc_failto        -       helper for ldisc failback
+> + *     @tty: tty to open the ldisc on
+> + *     @ld: ldisc we are trying to fail back to
+> + *
+> + *     Helper to try and recover a tty when switching back to the old
+> + *     ldisc fails and we need something attached.
+> + */
+> +
+> +static int tty_ldisc_failto(struct tty_struct *tty, int ld)
+> +{
+> +       struct tty_ldisc *disc = tty_ldisc_get(tty, ld);
+> +       int r;
+> +
+> +       if (IS_ERR(disc))
+> +               return PTR_ERR(disc);
+> +       tty->ldisc = disc;
+> +       tty_set_termios_ldisc(tty, ld);
+> +       if ((r = tty_ldisc_open(tty, disc)) < 0)
+> +               tty_ldisc_put(ld);
+> +       return r;
+> +}
+> +
+> +/**
+>   *     tty_ldisc_restore       -       helper for tty ldisc change
+>   *     @tty: tty to recover
+>   *     @old: previous ldisc
+> @@ -512,15 +535,14 @@ static void tty_ldisc_restore(struct tty_struct *tty, struct tty_ldisc *old)
+>         tty_set_termios_ldisc(tty, old->ops->num);
+>         if (tty_ldisc_open(tty, old) < 0) {
+>                 tty_ldisc_put(old);
+> -               /* This driver is always present */
+> -               new_ldisc = tty_ldisc_get(tty, N_TTY);
+> -               if (IS_ERR(new_ldisc))
+> -                       panic("n_tty: get");
+> -               tty->ldisc = new_ldisc;
+> -               tty_set_termios_ldisc(tty, N_TTY);
+> -               r = tty_ldisc_open(tty, new_ldisc);
+> +               /* The traditional behaviour is to fall back to N_TTY, we
+> +                  want to avoid falling back to N_NULL unless we have no
+> +                  choice to avoid the risk of breaking anything */
+> +               if (tty_ldisc_failto(tty, N_TTY) < 0 &&
+> +                   tty_ldisc_failto(tty, N_NULL) < 0)
+> +               /* Fall back to null ldisc */
+>                 if (r < 0)
+> -                       panic("Couldn't open N_TTY ldisc for "
+> +                       panic("Couldn't open N_NULL ldisc for "
+>                               "%s --- error %d.",
+>                               tty_name(tty), r);
+>         }
+> diff --git a/include/uapi/linux/tty.h b/include/uapi/linux/tty.h
+> index e7855df..cf14553 100644
+> --- a/include/uapi/linux/tty.h
+> +++ b/include/uapi/linux/tty.h
+> @@ -36,5 +36,6 @@
+>  #define N_TRACEROUTER  24      /* Trace data routing for MIPI P1149.7 */
+>  #define N_NCI          25      /* NFC NCI UART */
+>  #define N_SPEAKUP      26      /* Speakup communication with synths */
+> +#define N_NULL         27      /* Null ldisc used for error handling */
+>
+>  #endif /* _UAPI_LINUX_TTY_H */
