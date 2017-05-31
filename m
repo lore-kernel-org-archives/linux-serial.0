@@ -1,31 +1,34 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: [PATCH v2 2/2] arm64: dts: Add Mediatek SoC MT2712 and evaluation
  board dts and Makefile
-Date: Wed, 31 May 2017 13:38:26 +0100
-Message-ID: <d1be42ad-0b79-8487-1590-711b0e86d2ca@arm.com>
+Date: Wed, 31 May 2017 14:42:20 +0200
+Message-ID: <92e438b3-4e9c-421b-5398-5aad2541524c@gmail.com>
 References: <1496230773-22633-1-git-send-email-yt.shen@mediatek.com>
  <1496230773-22633-3-git-send-email-yt.shen@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <1496230773-22633-3-git-send-email-yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Content-Language: en-US
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mars Cheng <mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+To: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mars Cheng <mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 31/05/17 12:39, YT Shen wrote:
+
+
+On 31/05/17 13:39, YT Shen wrote:
 > This adds basic chip support for Mediatek 2712
 > 
 > Signed-off-by: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 > ---
->  arch/arm64/boot/dts/mediatek/Makefile       |   1 +
->  arch/arm64/boot/dts/mediatek/mt2712-evb.dts |  39 +++++++
->  arch/arm64/boot/dts/mediatek/mt2712e.dtsi   | 166 ++++++++++++++++++++++++++++
->  3 files changed, 206 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+>   arch/arm64/boot/dts/mediatek/Makefile       |   1 +
+>   arch/arm64/boot/dts/mediatek/mt2712-evb.dts |  39 +++++++
+>   arch/arm64/boot/dts/mediatek/mt2712e.dtsi   | 166 ++++++++++++++++++++++++++++
+>   3 files changed, 206 insertions(+)
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
 > 
 > diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
 > index 9fbfd32..fcc0604 100644
@@ -33,9 +36,9 @@ On 31/05/17 12:39, YT Shen wrote:
 > +++ b/arch/arm64/boot/dts/mediatek/Makefile
 > @@ -1,3 +1,4 @@
 > +dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
->  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
->  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
->  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
+>   dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
+>   dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
+>   dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
 > diff --git a/arch/arm64/boot/dts/mediatek/mt2712-evb.dts b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
 > new file mode 100644
 > index 0000000..e526c0f
@@ -64,6 +67,9 @@ On 31/05/17 12:39, YT Shen wrote:
 > +		serial4 = &uart4;
 > +		serial5 = &uart5;
 > +	};
+
+Just declare serial0 here, as you don't use the others.
+
 > +
 > +	memory@40000000 {
 > +		device_type = "memory";
@@ -74,6 +80,10 @@ On 31/05/17 12:39, YT Shen wrote:
 > +		stdout-path = "serial0:921600n8";
 > +		linux,initrd-start = <0x45000000>;
 > +		linux,initrd-end   = <0x4a000000>;
+
+initrd-start and end should be dynamically set by the bootloader and not 
+via a chosen node. Is your bootloader not able to do that?
+
 > +	};
 > +};
 > +
@@ -127,12 +137,21 @@ On 31/05/17 12:39, YT Shen wrote:
 > +		cpu0: cpu@0 {
 > +			device_type = "cpu";
 > +			compatible = "arm,cortex-a35";
+
+do you mean cortex-a53?
+
 > +			reg = <0x000>;
 > +		};
 > +
 > +		cpu1: cpu@1 {
 > +			device_type = "cpu";
 > +			compatible = "arm,cortex-a35";
+
+same here.
+
+Regards,
+Matthias
+
 > +			reg = <0x001>;
 > +			enable-method = "psci";
 > +		};
@@ -161,9 +180,6 @@ On 31/05/17 12:39, YT Shen wrote:
 > +		interrupt-parent = <&gic>;
 > +		interrupts = <GIC_PPI 13
 > +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-
-Why 6? I only count 3 cores...
-
 > +			     <GIC_PPI 14
 > +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
 > +			     <GIC_PPI 11
@@ -203,24 +219,10 @@ Why 6? I only count 3 cores...
 > +			interrupt-controller;
 > +			reg = <0 0x10510000 0 0x1000>,
 > +			      <0 0x10520000 0 0x1000>,
-
-If that's truly a GIC400, then the above is wrong (the CPU interface is
-spread over 8kB).
-
-I also suspect that the first 4kB are aliased over
-0x10520000:0x1052f000, and the second over 0x10530000:0x1053f000 (in the
-true SBSA tradition). If that's the case, then the size is actually 128kB.
-
 > +			      <0 0x10540000 0 0x2000>,
 > +			      <0 0x10560000 0 0x2000>;
-
-Please check GICV as well, which probably behaves the same way.
-
 > +			interrupts = <GIC_PPI 9
 > +				(GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_HIGH)>;
-
-Same thing here with 6 CPUs.
-
 > +		};
 > +
 > +		uart0: serial@11002000 {
@@ -271,14 +273,6 @@ Same thing here with 6 CPUs.
 > +};
 > +
 > 
-
-No PMU wired on this system?
-
-Thanks,
-
-	M.
--- 
-Jazz is not dead. It just smells funny...
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
