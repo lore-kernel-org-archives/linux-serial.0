@@ -1,29 +1,71 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v3 00/10] serial/gpio: exar: Fixes and support for IOT2000
-Date: Wed, 31 May 2017 02:01:19 +0200
-Message-ID: <CACRpkdbxW7sRqNpkPCRFascE5-hJtyKAhZVK4s1Qq9=aM-k49Q@mail.gmail.com>
-References: <cover.1495814557.git.jan.kiszka@siemens.com> <CACRpkdZzDmigd8X-VsJqHTQSMK6k+w+qbPH+N9qNY05pX8eifQ@mail.gmail.com>
- <835df887-2782-29f4-dfc9-a0fbbbb3019f@siemens.com>
+From: Dong Aisheng <dongas86@gmail.com>
+Subject: Re: [V2, 2/6] tty: serial: lpuart: add little endian 32 bit register
+ support
+Date: Wed, 31 May 2017 15:47:37 +0800
+Message-ID: <20170531074737.GC16812@b29396-OptiPlex-7040>
+References: <1494834539-17523-3-git-send-email-aisheng.dong@nxp.com>
+ <fb9fe0cd-5ca7-74e6-33dc-7638e205b2e3@cogentembedded.com>
+ <20170517033927.GC9913@b29396-OptiPlex-7040>
+ <8f4cf45e-45ab-e6e6-d95c-f3d4243697f4@cogentembedded.com>
+ <20170517054356.GE9913@b29396-OptiPlex-7040>
+ <CAHp75VdL=rGHuupGmgmAVonEQgpyPRgoMQrZK0yQiaM=1Vac-g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <835df887-2782-29f4-dfc9-a0fbbbb3019f@siemens.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAHp75VdL=rGHuupGmgmAVonEQgpyPRgoMQrZK0yQiaM=1Vac-g@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Dong Aisheng <aisheng.dong@nxp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, fugang.duan@nxp.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, yangbo.lu@nxp.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Stefan Agner <stefan@agner.ch>, Mingkai.Hu@nxp.com, Jiri Slaby <jslaby@suse.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, May 29, 2017 at 3:41 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 2017-05-29 14:39, Linus Walleij wrote:
+Hi Andy,
 
->> Should I merge them all? Should Greg merge them all?
->> Should one of us produce an immutable branch?
->
-> Half of the patch are affecting both serial and GPIO subsystem, most
-> have GPIO focus, though. Just patch 10 or more serial than GPIO. All in
-> all, maybe Greg can ack and things can flow through the GPIO tree?
+On Wed, May 17, 2017 at 12:55:59PM +0300, Andy Shevchenko wrote:
+> On Wed, May 17, 2017 at 8:43 AM, Dong Aisheng <dongas86@gmail.com> wrote:
+> > On Wed, May 17, 2017 at 08:37:41AM +0300, Nikita Yushchenko wrote:
+> >>
+> >>
+> >> 17.05.2017 06:39, Dong Aisheng wrote:
+> >> > On Tue, May 16, 2017 at 02:15:08PM +0300, Nikita Yushchenko wrote:
+> >> >>>  static u32 lpuart32_read(void __iomem *addr)
+> >> >>>  {
+> >> >>> - return ioread32be(addr);
+> >> >>> + return lpuart_is_be ? ioread32be(addr) : readl(addr);
+> >> >>>  }
+> >> >>>
+> >> >>>  static void lpuart32_write(u32 val, void __iomem *addr)
+> >> >>>  {
+> >> >>> - iowrite32be(val, addr);
+> >> >>> + if (lpuart_is_be)
+> >> >>> +         iowrite32be(val, addr);
+> >> >>> + else
+> >> >>> +         writel(val, addr);
+> >> >>>  }
+> >> >>
+> >> >> What if this is ever executed on big endian system?
+> >> >>
+> >> >
+> >> > Sorry, not catching the point...
+> >> >
+> >> > What issues will meet?
+> >>
+> >> Isn't writel() in host endian?
+> >
+> > On big endian systems, it is supposed to run iowrite32be.
+> 
+> It looks like you substituting *bus* side with CPU *side* of communication.
+> 
+> If you are talking about CPU side
+> __raw_readl() / __raw_writel() will do the trick.
+> 
 
-OK with me, let's see what Greg says.
+Yes, you're right.
+To be more accurate, for bus side, if it's BE lpuart it should use
+ioread32be/iowrite32be. If it's LE lpuart, it should use readl/writel.
 
-Yours,
-Linus Walleij
+And for CPU side, endian is transparent to driver users as they're
+hided in io accessors implementation.
+
+Regards
+Dong Aisheng
