@@ -1,28 +1,29 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v4 0/9] serial/gpio: exar: Fixes and support for IOT2000
-Date: Tue, 30 May 2017 21:39:27 +0300
-Message-ID: <CAHp75Vc=RTYjv5wuHK-KpSSwJLpqRtAr+eCxa8zHa6-Lt68aNQ@mail.gmail.com>
-References: <cover.1496127684.git.jan.kiszka@siemens.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v3 00/10] serial/gpio: exar: Fixes and support for IOT2000
+Date: Wed, 31 May 2017 02:01:19 +0200
+Message-ID: <CACRpkdbxW7sRqNpkPCRFascE5-hJtyKAhZVK4s1Qq9=aM-k49Q@mail.gmail.com>
+References: <cover.1495814557.git.jan.kiszka@siemens.com> <CACRpkdZzDmigd8X-VsJqHTQSMK6k+w+qbPH+N9qNY05pX8eifQ@mail.gmail.com>
+ <835df887-2782-29f4-dfc9-a0fbbbb3019f@siemens.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <cover.1496127684.git.jan.kiszka@siemens.com>
+In-Reply-To: <835df887-2782-29f4-dfc9-a0fbbbb3019f@siemens.com>
 Sender: linux-gpio-owner@vger.kernel.org
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 30, 2017 at 10:01 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> This makes the gpio-exar driver usable, which was prevented by a number
-> of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
-> driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
-> series, so I'm also cross-posting to the serial and gpio lists.
+On Mon, May 29, 2017 at 3:41 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> On 2017-05-29 14:39, Linus Walleij wrote:
 
-Few comments here and there, overall looks good.
-After addressing them, take my
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-to patches that are missing it.
+>> Should I merge them all? Should Greg merge them all?
+>> Should one of us produce an immutable branch?
+>
+> Half of the patch are affecting both serial and GPIO subsystem, most
+> have GPIO focus, though. Just patch 10 or more serial than GPIO. All in
+> all, maybe Greg can ack and things can flow through the GPIO tree?
 
--- 
-With Best Regards,
-Andy Shevchenko
+OK with me, let's see what Greg says.
+
+Yours,
+Linus Walleij
