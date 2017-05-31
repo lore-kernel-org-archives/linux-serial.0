@@ -1,39 +1,52 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v4 2/9] gpio-exar/8250-exar: Do not even instantiate a
- GPIO device for Commtech cards
-Date: Wed, 31 May 2017 21:02:27 +0300
-Message-ID: <CAHp75VcGeF4NTB=gGBvg2rsQe=z_TvOPbWidmpDR5gauDa=G6Q@mail.gmail.com>
-References: <cover.1496127684.git.jan.kiszka@siemens.com> <f7e7da1ae81aab7f53faa32260d4ee0f930048fe.1496127684.git.jan.kiszka@siemens.com>
- <CAHp75Vc0t5t8O5cPaxX_oQJQKsN3OWNFfqnA_K3GW4qpfY+N5Q@mail.gmail.com> <6ded8dab-caec-70e3-daf0-16622f89970a@siemens.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH] Fix serial console on SNI RM400 machines
+Date: Wed, 31 May 2017 22:21:03 +0200
+Message-ID: <20170531203518.76311508766@solo.franken.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <6ded8dab-caec-70e3-daf0-16622f89970a@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: linux@armlinux.org.uk
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 31, 2017 at 7:34 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 2017-05-30 20:33, Andy Shevchenko wrote:
->> On Tue, May 30, 2017 at 10:01 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>> Commtech adapters need the MPIOs for internal purposes, and the
->>> gpio-exar driver already refused to pick them up. But there is actually
->>> no point in even creating the underlying platform device.
->>
->> It still feels that partially you may do stuff here, like
->> renaming to
->> __xr17v35x_register_gpio()
->> and creating
->> xr17v35x_register_gpio() wrapper.
->
-> Sorry, that remains unrelated to the topic of this patch and would be
-> unclean. If you want me to pull those refactorings out of patch 9, I
-> need to write a separate patch - no problem.
+sccnxp driver doesn't get the correct uart clock rate, if CONFIG_HAVE_CLOCK
+is disabled. Correct usage of clk API to make it work with/without it.
 
-Okay, I would go with separate patch, if maintainers are okay with
-this approach.
+Fixes: 90efa75f7ab0 (serial: sccnxp: Using CLK API for getting UART clock)
 
+Suggested-by: Russell King - ARM Linux <linux@armlinux.org.uk>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+---
+ drivers/tty/serial/sccnxp.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/sccnxp.c b/drivers/tty/serial/sccnxp.c
+index fcf803f..cdd2f94 100644
+--- a/drivers/tty/serial/sccnxp.c
++++ b/drivers/tty/serial/sccnxp.c
+@@ -884,14 +884,19 @@ static int sccnxp_probe(struct platform_device *pdev)
+ 
+ 	clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(clk)) {
+-		if (PTR_ERR(clk) == -EPROBE_DEFER) {
+-			ret = -EPROBE_DEFER;
++		ret = PTR_ERR(clk);
++		if (ret == -EPROBE_DEFER)
+ 			goto err_out;
+-		}
++		uartclk = 0;
++	} else {
++		clk_prepare_enable(clk);
++		uartclk = clk_get_rate(clk);
++	}
++
++	if (!uartclk) {
+ 		dev_notice(&pdev->dev, "Using default clock frequency\n");
+ 		uartclk = s->chip->freq_std;
+-	} else
+-		uartclk = clk_get_rate(clk);
++	}
+ 
+ 	/* Check input frequency */
+ 	if ((uartclk < s->chip->freq_min) || (uartclk > s->chip->freq_max)) {
 -- 
-With Best Regards,
-Andy Shevchenko
+2.1.4
