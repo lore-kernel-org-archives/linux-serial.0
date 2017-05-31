@@ -1,71 +1,101 @@
 From: Dong Aisheng <dongas86@gmail.com>
 Subject: Re: [V2, 2/6] tty: serial: lpuart: add little endian 32 bit register
  support
-Date: Wed, 31 May 2017 15:47:37 +0800
-Message-ID: <20170531074737.GC16812@b29396-OptiPlex-7040>
+Date: Wed, 31 May 2017 16:07:42 +0800
+Message-ID: <20170531080742.GD16812@b29396-OptiPlex-7040>
 References: <1494834539-17523-3-git-send-email-aisheng.dong@nxp.com>
- <fb9fe0cd-5ca7-74e6-33dc-7638e205b2e3@cogentembedded.com>
- <20170517033927.GC9913@b29396-OptiPlex-7040>
- <8f4cf45e-45ab-e6e6-d95c-f3d4243697f4@cogentembedded.com>
- <20170517054356.GE9913@b29396-OptiPlex-7040>
- <CAHp75VdL=rGHuupGmgmAVonEQgpyPRgoMQrZK0yQiaM=1Vac-g@mail.gmail.com>
+ <b4a2ed13-c71f-c973-3b09-b632e083a88b@cogentembedded.com>
+ <20170517033139.GB9913@b29396-OptiPlex-7040>
+ <48819894-4943-7d14-ccf8-83cfd2195c9a@cogentembedded.com>
+ <AM3PR04MB306D5C86AED120D15C4D46A80E70@AM3PR04MB306.eurprd04.prod.outlook.com>
+ <55bae8d2-0e23-b5e1-f304-63d9130ccb08@cogentembedded.com>
+ <20170517070019.GG9913@b29396-OptiPlex-7040>
+ <045d1888-4a23-cf73-ab4c-009e29fde974@cogentembedded.com>
+ <20170519150722.GB23227@b29396-OptiPlex-7040>
+ <2f873a62-0e4e-7da6-5c5e-be570fcceff1@cogentembedded.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAHp75VdL=rGHuupGmgmAVonEQgpyPRgoMQrZK0yQiaM=1Vac-g@mail.gmail.com>
+In-Reply-To: <2f873a62-0e4e-7da6-5c5e-be570fcceff1@cogentembedded.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Dong Aisheng <aisheng.dong@nxp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, fugang.duan@nxp.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, yangbo.lu@nxp.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Stefan Agner <stefan@agner.ch>, Mingkai.Hu@nxp.com, Jiri Slaby <jslaby@suse.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+To: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Cc: "A.S. Dong" <aisheng.dong@nxp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Andy Duan <fugang.duan@nxp.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "Y.B. Lu" <yangbo.lu@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stefan@agner.ch" <stefan@agner.ch>, Mingkai Hu <mingkai.hu@nxp.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
+Hi Nikita,
 
-On Wed, May 17, 2017 at 12:55:59PM +0300, Andy Shevchenko wrote:
-> On Wed, May 17, 2017 at 8:43 AM, Dong Aisheng <dongas86@gmail.com> wrote:
-> > On Wed, May 17, 2017 at 08:37:41AM +0300, Nikita Yushchenko wrote:
-> >>
-> >>
-> >> 17.05.2017 06:39, Dong Aisheng wrote:
-> >> > On Tue, May 16, 2017 at 02:15:08PM +0300, Nikita Yushchenko wrote:
-> >> >>>  static u32 lpuart32_read(void __iomem *addr)
-> >> >>>  {
-> >> >>> - return ioread32be(addr);
-> >> >>> + return lpuart_is_be ? ioread32be(addr) : readl(addr);
-> >> >>>  }
-> >> >>>
-> >> >>>  static void lpuart32_write(u32 val, void __iomem *addr)
-> >> >>>  {
-> >> >>> - iowrite32be(val, addr);
-> >> >>> + if (lpuart_is_be)
-> >> >>> +         iowrite32be(val, addr);
-> >> >>> + else
-> >> >>> +         writel(val, addr);
-> >> >>>  }
-> >> >>
-> >> >> What if this is ever executed on big endian system?
-> >> >>
-> >> >
-> >> > Sorry, not catching the point...
-> >> >
-> >> > What issues will meet?
-> >>
-> >> Isn't writel() in host endian?
-> >
-> > On big endian systems, it is supposed to run iowrite32be.
+On Tue, May 23, 2017 at 08:24:18AM +0300, Nikita Yushchenko wrote:
+> Hi,
 > 
-> It looks like you substituting *bus* side with CPU *side* of communication.
+> >>>> Alternative solution could be - have separate write path for earlycon.
+> >>>
+> >>> It looks to me having the same issue with a separate write patch
+> >>> for earlycon as we still need distinguish Little or Big endian
+> >>> for Layerscape and IMX.
+> >>>
+> >>>> At a glance, it is dozen lines of code.
+> >>>
+> >>> Would you please show some sample code?
+> >>
+> >> Do not reuse lpuart32_console_putchar() in earlycon code.
+> >>
+> >> Have two sets of early_setup/early_write/putchar - for BE and
+> >> defaut-endian earlycon. And in these putchar's do not use
+> >> lpuart_(read|write).
+> >>
+> > 
+> > Isn't that introducing another consistency break after fix one
+> > consistency break?
+> > 
+> > If doing that, we then have two register read/write APIs.
+> > One for normal driver operation by dynamically checking lpuart_is_be
+> > property to distinguish the endian difference problem.
+> > Another is specifically implemented for only early console read/write
+> > and use hardcoded way to read/write register directly instead of using
+> > the standard API lpuart32_read/write, like follows:
+> > e.g.
+> > lpuart32_le_console_write() {
+> > 	 writel();
+> > }
+> > 
+> > lpuart32_be_console_write() {
+> > 	 iowrite32be()
+> > }
+> > This also makes the driver a bit strange and ugly.
+> > 
+> > It looks to me both way are trade offs and the later one seems sacrifice
+> > more. And i doubt if it's really necessary for probably a no real gain
+> > purpose as the FPGA you mentioned is a theoretical case and less
+> > possibility to exist.
+> > 
+> > I'm still wondering how about keep using the exist way and adding more
+> > information in code to explain why use a global var?
 > 
-> If you are talking about CPU side
-> __raw_readl() / __raw_writel() will do the trick.
+> I've checked other driver under drivers/tty/serial/, for examples of
+> similar cases.
+> 
+> Please look at serial8250_early_in() / serial8250_early_out() ?
+> These do handle different endian, via port->iotype
 > 
 
-Yes, you're right.
-To be more accurate, for bus side, if it's BE lpuart it should use
-ioread32be/iowrite32be. If it's LE lpuart, it should use readl/writel.
+Well, that does inspire me.
 
-And for CPU side, endian is transparent to driver users as they're
-hided in io accessors implementation.
+With struct uart_port's iotype member, the global lpuart_is_be can be
+gone. We can update lpuart32_read/write API to take the reference of
+of structure uart_port, then the API knows the endian information and
+can use the correct further IO accessor accordingly.
+
+And most importantly, it also works with earlycon.
+
+> Another example is drivers/tty/serial/samsung.c, where
+> port->private_data is initialized and used.
+> 
+
+If using iotype, seems no need private_data anymore.
+Will try and send the new series later with you CCed to help review.
+
+Thanks for the advice.
 
 Regards
 Dong Aisheng
