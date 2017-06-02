@@ -1,72 +1,69 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 4.11-rc4
-Date: Fri, 2 Jun 2017 09:06:33 +0900
-Message-ID: <20170602000633.GA3058@kroah.com>
-References: <20170414123029.GA17217@kroah.com>
- <CACT4Y+acU1xTZEo+oeBvZL__c12bzcSPa0CBfDiw4j7+CUjfDg@mail.gmail.com>
- <CAOMGZ=GJah0GNXzscGGkYgScbZaeSM_TpxmrLZuxhrqWmBX9BQ@mail.gmail.com>
- <20170503120101.GA21119@kroah.com>
- <CACT4Y+arELXuPr7psYFETt6NrDNgeS=tP=jGhP4a0_C_8Fa=LA@mail.gmail.com>
- <20170530130905.382487d5@alans-desktop>
- <CACT4Y+aoRRao41hGpVkO+qVk9TB5ZSPiRpQxp7H9EN+RqW-1-Q@mail.gmail.com>
- <20170531111612.GA6332@kroah.com>
- <20170531160420.3b173a4a@alans-desktop>
- <CACT4Y+YSOD26=AAMgw2D-A_Nvk5On71qLY40LhXXUiZpp2-h+Q@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH v5 01/11] serial: exar: Leave MPIOs as output for Commtech adapters
+Date: Fri,  2 Jun 2017 09:28:44 +0200
+Message-ID: <0c7b59cdc5a4cb7035656b081e36457eb675fc29.1496388533.git.jan.kiszka@siemens.com>
+References: <cover.1496388533.git.jan.kiszka@siemens.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+YSOD26=AAMgw2D-A_Nvk5On71qLY40LhXXUiZpp2-h+Q@mail.gmail.com>
+In-Reply-To: <cover.1496388533.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1496388533.git.jan.kiszka@siemens.com>
+References: <cover.1496388533.git.jan.kiszka@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Vyukov <dvyukov@google.com>
-Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Vegard Nossum <vegard.nossum@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jun 01, 2017 at 02:06:08PM +0200, Dmitry Vyukov wrote:
-> On Wed, May 31, 2017 at 5:04 PM, Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
-> > On Wed, 31 May 2017 20:16:12 +0900
-> > Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> >> On Wed, May 31, 2017 at 10:39:23AM +0200, Dmitry Vyukov wrote:
-> >> > On Tue, May 30, 2017 at 2:09 PM, Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
-> >> > >> >> I'll think about possible solutions, but I have no prior experience
-> >> > >> >> with the tty code. In the meantime syzkaller also hit a couple of
-> >> > >> >> other fun tty/pty bugs including a write/ioctl race that results in
-> >> > >> >> buffer overflow :-/
-> >> > >
-> >> > > There are several of those, including some of that have been documented
-> >> > > for years but nobody ever volunteered to fix - in particular all the
-> >> > > interfaces that push characters to the tty other than via the normal
-> >> > > interrupt receive path are dodgy (console selection in particular)
-> >> > >
-> >> > > The original tty model btw was that setting the ldisc to n_tty cannot
-> >> > > fail, and the structure allocated was smaller than a page size so was
-> >> > > safe.
-> >> > >
-> >> > > The simple way to fix it is to restore that behaviour by adding a 'null'
-> >> > > ldisc that we can fail to instead of N_TTY since the N_TTY failback path
-> >> > > is long broken.
-> >> >
-> >> > Greg, what do you think about this patch? Are you ready to accept
-> >> > something like this?
-> >> > Definitely shorter than changing all drivers.
-> >>
-> >> Yes, it looks reasonable to me.
-> >
-> >
-> >
-> > Ok try this
-> 
-> 
-> I've applied the patch and run syzkaller with it. I don't see kernel
-> panics in tty_ldisc_restore any more. Also don't see any new
-> tty-related crashes.
-> 
-> Greg, will you take it from here?
+Commtech adapters apparently need the original setting as outputs, see
+https://marc.info/?l=linux-gpio&m=149557425201323&w=2. Account for that.
 
-I can if Alan sends it to me in a form I can apply it in (i.e. it has a
-siged-off-by line...)
+Fixes: 7dea8165f1d6 ("serial: exar: Preconfigure xr17v35x MPIOs as output")
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+ drivers/tty/serial/8250/8250_exar.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-thanks,
-
-greg k-h
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index b4fa585156c7..8984e8b2d524 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -171,19 +171,26 @@ pci_xr17c154_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+ 	return default_setup(priv, pcidev, idx, offset, port);
+ }
+ 
+-static void setup_gpio(u8 __iomem *p)
++static void setup_gpio(struct pci_dev *pcidev, u8 __iomem *p)
+ {
++	/*
++	 * The Commtech adapters required the MPIOs to be driven low. The Exar
++	 * devices will export them as GPIOs, so we pre-configure them safely
++	 * as inputs.
++	 */
++	u8 dir = pcidev->vendor == PCI_VENDOR_ID_EXAR ? 0xff : 0x00;
++
+ 	writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
+ 	writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
+ 	writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
+ 	writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
+-	writeb(0xff, p + UART_EXAR_MPIOSEL_7_0);
++	writeb(dir,  p + UART_EXAR_MPIOSEL_7_0);
+ 	writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
+ 	writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
+ 	writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
+ 	writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
+ 	writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
+-	writeb(0xff, p + UART_EXAR_MPIOSEL_15_8);
++	writeb(dir,  p + UART_EXAR_MPIOSEL_15_8);
+ 	writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
+ }
+ 
+@@ -236,7 +243,7 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+ 
+ 	if (idx == 0) {
+ 		/* Setup Multipurpose Input/Output pins. */
+-		setup_gpio(p);
++		setup_gpio(pcidev, p);
+ 
+ 		port->port.private_data = xr17v35x_register_gpio(pcidev);
+ 	}
+-- 
+2.12.3
