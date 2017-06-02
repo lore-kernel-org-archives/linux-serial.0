@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v5 04/11] gpio: exar: Allocate resources on behalf of the platform device
-Date: Fri,  2 Jun 2017 09:28:47 +0200
-Message-ID: <039de2dc2c69e43c2cf1da7f9463adb8dc5791dc.1496388533.git.jan.kiszka@siemens.com>
+Subject: [PATCH v5 02/11] gpio-exar/8250-exar: Do not even instantiate a GPIO device for Commtech cards
+Date: Fri,  2 Jun 2017 09:28:45 +0200
+Message-ID: <d6f0b6226b6c23572b04a2b39649f2f8dd2a1551.1496388533.git.jan.kiszka@siemens.com>
 References: <cover.1496388533.git.jan.kiszka@siemens.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1496388533.git.jan.kiszka@siemens.com>
@@ -12,38 +12,46 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.wallei
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-Do not allocate resources on behalf of the parent device but on our own.
-Otherwise, cleanup does not properly work if gpio-exar is removed but
-not the parent device.
+Commtech adapters need the MPIOs for internal purposes, and the
+gpio-exar driver already refused to pick them up. But there is actually
+no point in even creating the underlying platform device.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Acked-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/gpio/gpio-exar.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpio/gpio-exar.c            | 3 ---
+ drivers/tty/serial/8250/8250_exar.c | 4 +++-
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
-index da4550bb9939..65126fa1e512 100644
+index 081076771217..006a9a67c2a4 100644
 --- a/drivers/gpio/gpio-exar.c
 +++ b/drivers/gpio/gpio-exar.c
-@@ -136,7 +136,7 @@ static int gpio_exar_probe(struct platform_device *pdev)
- 	if (!p)
- 		return -ENOMEM;
+@@ -124,9 +124,6 @@ static int gpio_exar_probe(struct platform_device *pdev)
+ 	void __iomem *p;
+ 	int index, ret;
  
--	exar_gpio = devm_kzalloc(&pcidev->dev, sizeof(*exar_gpio), GFP_KERNEL);
-+	exar_gpio = devm_kzalloc(&pdev->dev, sizeof(*exar_gpio), GFP_KERNEL);
- 	if (!exar_gpio)
- 		return -ENOMEM;
+-	if (pcidev->vendor != PCI_VENDOR_ID_EXAR)
+-		return -ENODEV;
+-
+ 	/*
+ 	 * Map the pci device to get the register addresses.
+ 	 * We will need to read and write those registers to control
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 8984e8b2d524..c29c7e675890 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -245,7 +245,9 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+ 		/* Setup Multipurpose Input/Output pins. */
+ 		setup_gpio(pcidev, p);
  
-@@ -157,7 +157,7 @@ static int gpio_exar_probe(struct platform_device *pdev)
- 	exar_gpio->regs = p;
- 	exar_gpio->index = index;
+-		port->port.private_data = xr17v35x_register_gpio(pcidev);
++		if (pcidev->vendor == PCI_VENDOR_ID_EXAR)
++			port->port.private_data =
++				xr17v35x_register_gpio(pcidev);
+ 	}
  
--	ret = devm_gpiochip_add_data(&pcidev->dev,
-+	ret = devm_gpiochip_add_data(&pdev->dev,
- 				     &exar_gpio->gpio_chip, exar_gpio);
- 	if (ret)
- 		goto err_destroy;
+ 	return 0;
 -- 
 2.12.3
