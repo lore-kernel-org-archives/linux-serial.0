@@ -1,43 +1,93 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v5 10/11] gpio-exar/8250-exar: Make set of exported GPIOs configurable
-Date: Fri, 2 Jun 2017 13:32:53 +0300
-Message-ID: <CAHp75Vfd4bmFCEpE8B0cNgKcmYVrJ=KjijY6Qq2HVtPPzOxoLA@mail.gmail.com>
-References: <cover.1496388533.git.jan.kiszka@siemens.com> <f8b03cad4ea23bf64f9e1fe29f38a1998b458293.1496388533.git.jan.kiszka@siemens.com>
+Subject: Re: [PATCH 6/6] tty: serial: lpuart: add a more accurate baud rate
+ calculation method
+Date: Fri, 2 Jun 2017 20:11:24 +0300
+Message-ID: <CAHp75VcH0j3ddaZ3iStNO4QcAwJKZ7BAMwUTthum2no1ucs2ww@mail.gmail.com>
+References: <1494316248-24052-1-git-send-email-aisheng.dong@nxp.com>
+ <1494316248-24052-7-git-send-email-aisheng.dong@nxp.com> <CAHp75Vemc5qoD7gbc_sJBSasYTFYSYOuWZv4N-4X60arWX8aJg@mail.gmail.com>
+ <AM3PR04MB3062F7BCE82860C377C214E80F10@AM3PR04MB306.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <f8b03cad4ea23bf64f9e1fe29f38a1998b458293.1496388533.git.jan.kiszka@siemens.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <AM3PR04MB3062F7BCE82860C377C214E80F10@AM3PR04MB306.eurprd04.prod.outlook.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "A.S. Dong" <aisheng.dong@nxp.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Duan <fugang.duan@nxp.com>, Stefan Agner <stefan@agner.ch>, Mingkai Hu <mingkai.hu@nxp.com>, "Y.B. Lu" <yangbo.lu@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jun 2, 2017 at 10:28 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On the SIMATIC, IOT2040 only a single pin is exportable as GPIO, the
-> rest is required to operate the UART. To allow modeling this case,
-> expand the platform device data structure to specify a (consecutive) pin
-> subset for exporting by the gpio-exar driver.
+On Wed, May 31, 2017 at 5:18 PM, A.S. Dong <aisheng.dong@nxp.com> wrote:
+>> On Tue, May 9, 2017 at 10:50 AM, Dong Aisheng <aisheng.dong@nxp.com> wro=
+te:
 
-> +       if (device_property_read_u32(&pdev->dev, "gpio-exar,first-pin",
-> +                                    &first_pin) < 0 ||
-> +           device_property_read_u32(&pdev->dev, "ngpios", &ngpios) < 0)
-> +               return -EINVAL;
+By some reason my previous message went privately.
+It didn't have anything major anyway and here I'm suggesting
+optimization of finding factors of the formula in use. See below.
 
-You shadow an error.
+>> > +       u32 sbr, osr, baud_diff, tmp_osr, tmp_sbr, tmp_diff, tmp;
+>> > +       u32 clk =3D sport->port.uartclk;
+>> > +
+>> > +       /*
+>> > +        * The idea is to use the best OSR (over-sampling rate) possib=
+le.
+>> > +        * Note, OSR is typically hard-set to 16 in other LPUART
+>> instantiations.
+>> > +        * Loop to find the best OSR value possible, one that generate=
+s
+>> minimum
+>> > +        * baud_diff iterate through the rest of the supported values =
+of
+>> OSR.
+>> > +        *
+>> > +        * Calculation Formula:
+>> > +        *  Baud Rate =3D baud clock / ((OSR+1) =C3=97 SBR)
+>> > +        */
+>> > +       baud_diff =3D baudrate;
+>> > +       osr =3D 0;
+>> > +       sbr =3D 0;
+>> > +
+>>
+>> > +       for (tmp_osr =3D 4; tmp_osr <=3D 32; tmp_osr++) {
 
-Please use
-ret = device_property_...;
-if (ret)
- return ret;
+I missed one thing, what happened by default to OSR? What is the value in u=
+se?
 
-ret = ...
-...
+>> I _think_ you may simplify this and avoid for-loop if you reconsider
+>> approach.
 
-Moreover, I missed how you named first property, I would go rather
-with "linux," prefix to show that is _internal_ / Linux only property.
+> But there is indeed a optimization way, see below.
 
-Perhaps something like "linux,first-pin" ?
+> To optimize the looping, we probably could do:
+> If (!baud_diff)
+>         Break;
 
--- 
+It's a small one, we may have more interesting approach.
+
+So, the algo is the following:
+
+Assume the ranges like this:
+OSR =3D [4 ... 32]
+SBR =3D [2 ... 8192]
+
+Then:
+
+1. Get ratio factor as
+      ratio =3D CLK / desired baud rate
+2. If ratio < 8192 * 9 / 2, just use (ratio / 4, 4) as (OSR, SBR)
+setting. (Needs clarification on OSR < 4)
+3. if ratio >=3D 8192 * 31, just use those two numbers (8192, 31). You
+can't do anything better there.
+4. Otherwise, get a minimum required factor of OSR
+      osr_min =3D ratio / 8192
+5. Start your loop from osr_min + 1 to 31.
+
+6 (optional). Of course you may not consider baud_diff > osr_min, it's
+I suppose obvious
+
+P.S. Note, all divisions by 2^n are just simple right shifts. Diffs
+are calculated as multiplication of OSR and SBR in comparison to
+ratio. One division so far.
+
+--=20
 With Best Regards,
 Andy Shevchenko
