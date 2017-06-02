@@ -1,69 +1,44 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v5 01/11] serial: exar: Leave MPIOs as output for Commtech adapters
-Date: Fri,  2 Jun 2017 09:28:44 +0200
-Message-ID: <0c7b59cdc5a4cb7035656b081e36457eb675fc29.1496388533.git.jan.kiszka@siemens.com>
-References: <cover.1496388533.git.jan.kiszka@siemens.com>
+Subject: [PATCH v5 00/11] serial/gpio: exar: Fixes and support for IOT2000
+Date: Fri,  2 Jun 2017 09:28:43 +0200
+Message-ID: <cover.1496388533.git.jan.kiszka@siemens.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1496388533.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1496388533.git.jan.kiszka@siemens.com>
-References: <cover.1496388533.git.jan.kiszka@siemens.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
 Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-Commtech adapters apparently need the original setting as outputs, see
-https://marc.info/?l=linux-gpio&m=149557425201323&w=2. Account for that.
+This makes the gpio-exar driver usable, which was prevented by a number
+of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
+driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
+series, so I'm also cross-posting to the serial and gpio lists.
 
-Fixes: 7dea8165f1d6 ("serial: exar: Preconfigure xr17v35x MPIOs as output")
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/tty/serial/8250/8250_exar.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+Changes in v5:
+ - factor out exar8250_platform hook setup as separate patch
+ - pass properties to __xr17v35x_register_gpio
+ - constant property support for platform_device_add_properties
 
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index b4fa585156c7..8984e8b2d524 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -171,19 +171,26 @@ pci_xr17c154_setup(struct exar8250 *priv, struct pci_dev *pcidev,
- 	return default_setup(priv, pcidev, idx, offset, port);
- }
- 
--static void setup_gpio(u8 __iomem *p)
-+static void setup_gpio(struct pci_dev *pcidev, u8 __iomem *p)
- {
-+	/*
-+	 * The Commtech adapters required the MPIOs to be driven low. The Exar
-+	 * devices will export them as GPIOs, so we pre-configure them safely
-+	 * as inputs.
-+	 */
-+	u8 dir = pcidev->vendor == PCI_VENDOR_ID_EXAR ? 0xff : 0x00;
-+
- 	writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
- 	writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
- 	writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
- 	writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
--	writeb(0xff, p + UART_EXAR_MPIOSEL_7_0);
-+	writeb(dir,  p + UART_EXAR_MPIOSEL_7_0);
- 	writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
- 	writeb(0x00, p + UART_EXAR_MPIOINT_15_8);
- 	writeb(0x00, p + UART_EXAR_MPIOLVL_15_8);
- 	writeb(0x00, p + UART_EXAR_MPIO3T_15_8);
- 	writeb(0x00, p + UART_EXAR_MPIOINV_15_8);
--	writeb(0xff, p + UART_EXAR_MPIOSEL_15_8);
-+	writeb(dir,  p + UART_EXAR_MPIOSEL_15_8);
- 	writeb(0x00, p + UART_EXAR_MPIOOD_15_8);
- }
- 
-@@ -236,7 +243,7 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
- 
- 	if (idx == 0) {
- 		/* Setup Multipurpose Input/Output pins. */
--		setup_gpio(p);
-+		setup_gpio(pcidev, p);
- 
- 		port->port.private_data = xr17v35x_register_gpio(pcidev);
- 	}
+Jan
+
+Jan Kiszka (11):
+  serial: exar: Leave MPIOs as output for Commtech adapters
+  gpio-exar/8250-exar: Do not even instantiate a GPIO device for
+    Commtech cards
+  gpio-exar/8250-exar: Fix passing in of parent PCI device
+  gpio: exar: Allocate resources on behalf of the platform device
+  gpio: exar: Fix iomap request
+  gpio: exar: Fix reading of directions and values
+  gpio-exar/8250-exar: Rearrange gpiochip parenthood
+  serial: exar: Factor out platform hooks
+  platform: Accept const properties
+  gpio-exar/8250-exar: Make set of exported GPIOs configurable
+  serial: exar: Add support for IOT2040 device
+
+ drivers/base/platform.c             |   2 +-
+ drivers/gpio/gpio-exar.c            |  75 +++++++-------
+ drivers/tty/serial/8250/8250_exar.c | 188 ++++++++++++++++++++++++++++++++++--
+ include/linux/platform_device.h     |   2 +-
+ 4 files changed, 218 insertions(+), 49 deletions(-)
+
 -- 
 2.12.3
