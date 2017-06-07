@@ -1,94 +1,73 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [PATCH v9 3/3] printk: fix double printing with earlycon
-Date: Wed, 7 Jun 2017 18:13:22 +0900
-Message-ID: <20170607091322.GA568@jagdpanzerIV.localdomain>
-References: <20170509082915.GA13236@bistromath.localdomain>
- <20170511082433.GA421@jagdpanzerIV.localdomain>
- <20170511084158.GB421@jagdpanzerIV.localdomain>
- <20170512125729.GO3452@pathway.suse.cz>
- <7d312633-d040-240d-ec06-ed296b5251ae@linaro.org>
- <20170518154918.GE8621@pathway.suse.cz>
- <4e679bec-4804-9791-fc2b-0e96ad67d511@linaro.org>
- <20170601120325.GA25497@pathway.suse.cz>
- <20170606143149.GB7604@pathway.suse.cz>
- <20170606160339.GC7604@pathway.suse.cz>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 0/9] tty: drop broken alt-speed handling
+Date: Wed, 7 Jun 2017 12:53:43 +0300
+Message-ID: <CAHp75Vc6hhOmCDE5y7R=frSYG7o5xPV2CwSWXjPEtamgigyzgA@mail.gmail.com>
+References: <20170606105441.689-1-johan@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170606160339.GC7604@pathway.suse.cz>
+In-Reply-To: <20170606105441.689-1-johan@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Aleksey Makarov <aleksey.makarov@linaro.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sabrina Dubroca <sd@queasysnail.net>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Johan Hovold <johan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Samuel Ortiz <samuel@sortiz.org>, "David S. Miller" <davem@davemloft.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, USB <linux-usb@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On (06/06/17 18:03), Petr Mladek wrote:
-[..]
-> From 142d75792d0df874e80493654311f69f6a1ca798 Mon Sep 17 00:00:00 2001
-> From: Petr Mladek <pmladek@suse.com>
-> Date: Tue, 6 Jun 2017 17:20:38 +0200
-> Subject: [PATCH] Revert "printk: fix double printing with earlycon"
-> 
-> The commit cf39bf58afdaabc ("printk: fix double printing with earlycon")
-> caused regression to users that define both console=ttyS1 and console=ttyS0
-> on the command line, see
-> https://lkml.kernel.org/r/20170509082915.GA13236@bistromath.localdomain
-> 
-> The kernel log messages always appeared only on one serial port. It is
-> even documented in Documentation/admin-guide/serial-console.rst:
-> 
-> "Note that you can only define one console per device type (serial,
-> video)."
-> 
-> The above mentioned commit changed the order in which the command line
-> parameters are searched. As a result, the kernel log messages go to
-> the last mentioned ttyS* instead of the first one.
-> 
-> We long thought that using two console=ttyS* on the command line
-> did not make sense. But then we realized that console= parameters
-> were handled also by systemd, see
-> http://0pointer.de/blog/projects/serial-console.html
-> 
-> "By default systemd will instantiate one serial-getty@.service on
-> the main kernel console, if it is not a virtual terminal."
-> 
-> where
-> 
-> "[4] If multiple kernel consoles are used simultaneously, the main
-> console is the one listed first in /sys/class/tty/console/active,
-> which is the last one listed on the kernel command line."
-> 
-> This puts the original report into another light. The system is running
-> in qemu. The first serial port is used to store the messages into a file.
-> The second one is used to login to the system via a socket. It depends
-> on systemd and the historic kernel behavior.
-> 
-> By other words, systemd causes that it makes sense to define both
-> console=ttyS1 console=ttyS0 on the command line. The kernel fix
-> caused regression related to userspace (systemd) and need to be
-> reverted.
-> 
-> In addition, it went out that the fix helped only partially.
-> The messages still were duplicated when the boot console was
-> removed early by late_initcall(printk_late_init). Then the entire
-> log was replayed when the same console was registered as a normal one.
-> 
-> This reverts commit cf39bf58afdaabc0b86f141630fb3fd18190294e.
+On Tue, Jun 6, 2017 at 1:54 PM, Johan Hovold <johan@kernel.org> wrote:
+> Setting an alt-speed using TIOCSSERIAL and SPD flags has been deprecated
+> since v2.1.69 and has been broken for all tty drivers but serial-core
+> since v3.10 and commit 6865ff222cca ("TTY: do not warn about setting
+> speed via SPD_*") without anyone noticing (for four years).
+>
+> Instead of reverting the offending commit, lets get rid of this legacy
+> code while adding back a warning about the SPD flags being deprecated to
+> the drivers that once implemented it. Note that drivers implementing
+> SPD_CUST will continue to support using a custom divisor.
+>
+> Also note that serial-core did not rely on the TTY layer for SPD
+> handling and continues to support it while warning about deprecation
+> (since 2003 at least).
+>
+> Greg, I suggest you take it all trough the TTY tree even if merging
+> through multiple trees and applying the final patch once everything is
+> upstream would be an option. Also the irda clean up does not depend on
+> the rest of series as the code implementing SPD handling was ifdefed
+> out.
 
-FWIW,
+What a nice clean up!
 
-Acked-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
+>
+> Johan
+>
+>
+> Johan Hovold (9):
+>   serial: rate limit custom-speed deprecation notice
+>   USB: serial: ftdi_sio: simplify TIOCSSERIAL flag logic
+>   USB: serial: ftdi_sio: remove broken alt-speed handling
+>   tty: simserial: drop unused alt_speed handling
+>   tty: amiserial: drop broken alt-speed support
+>   tty: cyclades: drop broken alt-speed support
+>   tty: rocket: drop broken alt-speed support
+>   tty: ircomm: remove dead and broken ioctl code
+>   tty: drop unused alt_speed from tty_struct
+>
+>  arch/ia64/hp/sim/simserial.c       |  13 -----
+>  drivers/tty/amiserial.c            |  23 ++------
+>  drivers/tty/cyclades.c             |  21 ++++----
+>  drivers/tty/rocket.c               |  27 +++-------
+>  drivers/tty/serial/serial_core.c   |   5 +-
+>  drivers/usb/serial/ftdi_sio.c      |  67 +++++------------------
+>  include/linux/tty.h                |   1 -
+>  net/irda/ircomm/ircomm_tty_ioctl.c | 107 +------------------------------------
+>  8 files changed, 34 insertions(+), 230 deletions(-)
+>
+> --
+> 2.13.0
+>
 
 
-the whole thing is too fragile and, may be, it deserves a rewrite.
 
-I agree with the decision to revert the patch. a user space visible
-regression is a pretty annoying thing; even a rare one. it takes ~1-2
-years until kernel release hits major vendors/users so the biggest part
-of regressions might be years away, but in the meantime we can grow a
-number of new setups that will depend on a new console= behavior. so
-I'd prefer to revert early.
-
-Petr, Aleksey, many thanks, good work.
-
-	-ss
+-- 
+With Best Regards,
+Andy Shevchenko
