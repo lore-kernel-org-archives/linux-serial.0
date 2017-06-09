@@ -1,66 +1,151 @@
-From: Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v4 4/7] ARM: dts: meson: use meson6 UART compatible like other nodes
-Date: Fri,  9 Jun 2017 11:49:13 +0200
-Message-ID: <1497001756-942-5-git-send-email-narmstrong@baylibre.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: [PATCH v4 3/7] ARM64: dts: meson-gx: use stable UART bindings with correct gate clock
+Date: Fri,  9 Jun 2017 11:49:12 +0200
+Message-ID: <1497001756-942-4-git-send-email-narmstrong@baylibre.com>
 References: <1497001756-942-1-git-send-email-narmstrong@baylibre.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1497001756-942-1-git-send-email-narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org
-Cc: Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, hgkr.klein-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1497001756-942-1-git-send-email-narmstrong@baylibre.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, khilman@baylibre.com
+Cc: Helmut Klein <hgkr.klein@gmail.com>, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: linux-serial@vger.kernel.org
 
-The UART bindings needs specifying a SoC family, use the meson6 family
-for the UART nodes like the other nodes.
+From: Helmut Klein <hgkr.klein@gmail.com>
 
-Signed-off-by: Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+This patch switches to the stable UART bindings but also add the correct
+gate clock to the non-AO UART nodes for GXBB and GXL SoCs.
+
+Signed-off-by: Helmut Klein <hgkr.klein@gmail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
 ---
- arch/arm/boot/dts/meson.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/amlogic/meson-gx.dtsi   | 12 +++++-------
+ arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi | 25 +++++++++++++++++++++++++
+ arch/arm64/boot/dts/amlogic/meson-gxl.dtsi  | 25 +++++++++++++++++++++++++
+ 3 files changed, 55 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
-index 8d9c369..ecc9330 100644
---- a/arch/arm/boot/dts/meson.dtsi
-+++ b/arch/arm/boot/dts/meson.dtsi
-@@ -79,14 +79,14 @@
- 			ranges = <0x0 0xc1100000 0x200000>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+index 436b875..d2b8d52 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+@@ -225,7 +225,7 @@
+ 			};
  
  			uart_A: serial@84c0 {
 -				compatible = "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x84c0 0x18>;
- 				interrupts = <0 26 1>;
- 				status = "disabled";
++				compatible = "amlogic,meson-gx-uart";
+ 				reg = <0x0 0x84c0 0x0 0x14>;
+ 				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
+ 				clocks = <&xtal>;
+@@ -233,7 +233,7 @@
  			};
  
  			uart_B: serial@84dc {
 -				compatible = "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x84dc 0x18>;
- 				interrupts = <0 75 1>;
- 				status = "disabled";
-@@ -102,7 +102,7 @@
++				compatible = "amlogic,meson-gx-uart";
+ 				reg = <0x0 0x84dc 0x0 0x14>;
+ 				interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>;
+ 				clocks = <&xtal>;
+@@ -279,7 +279,7 @@
  			};
  
  			uart_C: serial@8700 {
 -				compatible = "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x8700 0x18>;
- 				interrupts = <0 93 1>;
- 				status = "disabled";
-@@ -153,7 +153,7 @@
++				compatible = "amlogic,meson-gx-uart";
+ 				reg = <0x0 0x8700 0x0 0x14>;
+ 				interrupts = <GIC_SPI 93 IRQ_TYPE_EDGE_RISING>;
+ 				clocks = <&xtal>;
+@@ -366,18 +366,16 @@
  			};
  
  			uart_AO: serial@4c0 {
 -				compatible = "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart";
- 				reg = <0x4c0 0x18>;
- 				interrupts = <0 90 1>;
++				compatible = "amlogic,meson-gx-uart", "amlogic,meson-ao-uart";
+ 				reg = <0x0 0x004c0 0x0 0x14>;
+ 				interrupts = <GIC_SPI 193 IRQ_TYPE_EDGE_RISING>;
+-				clocks = <&xtal>;
  				status = "disabled";
+ 			};
+ 
+ 			uart_AO_B: serial@4e0 {
+-				compatible = "amlogic,meson-uart";
++				compatible = "amlogic,meson-gx-uart", "amlogic,meson-ao-uart";
+ 				reg = <0x0 0x004e0 0x0 0x14>;
+ 				interrupts = <GIC_SPI 197 IRQ_TYPE_EDGE_RISING>;
+-				clocks = <&xtal>;
+ 				status = "disabled";
+ 			};
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
+index dbd300f..1ae8da7 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
+@@ -675,6 +675,31 @@
+ 	clocks = <&clkc CLKID_SPI>;
+ };
+ 
++&uart_A {
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&xtal>;
++	clock-names = "xtal", "pclk", "baud";
++};
++
++&uart_AO {
++	clocks = <&xtal>, <&clkc CLKID_CLK81>, <&xtal>;
++	clock-names = "xtal", "pclk", "baud";
++};
++
++&uart_AO_B {
++	clocks = <&xtal>, <&clkc CLKID_CLK81>, <&xtal>;
++	clock-names = "xtal", "pclk", "baud";
++};
++
++&uart_B {
++	clocks = <&xtal>, <&clkc CLKID_UART1>, <&xtal>;
++	clock-names = "xtal", "core", "baud";
++};
++
++&uart_C {
++	clocks = <&xtal>, <&clkc CLKID_UART2>, <&xtal>;
++	clock-names = "xtal", "core", "baud";
++};
++
+ &vpu {
+ 	compatible = "amlogic,meson-gxbb-vpu", "amlogic,meson-gx-vpu";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
+index 4dfc22b..0c601f8 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
+@@ -616,6 +616,31 @@
+ 	clocks = <&clkc CLKID_SPI>;
+ };
+ 
++&uart_A {
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&xtal>;
++	clock-names = "xtal", "core", "baud";
++};
++
++&uart_AO {
++	clocks = <&xtal>, <&clkc CLKID_CLK81>, <&xtal>;
++	clock-names = "xtal", "pclk", "baud";
++};
++
++&uart_AO_B {
++	clocks = <&xtal>, <&clkc CLKID_CLK81>, <&xtal>;
++	clock-names = "xtal", "pclk", "baud";
++};
++
++&uart_B {
++	clocks = <&xtal>, <&clkc CLKID_UART1>, <&xtal>;
++	clock-names = "xtal", "core", "baud";
++};
++
++&uart_C {
++	clocks = <&xtal>, <&clkc CLKID_UART2>, <&xtal>;
++	clock-names = "xtal", "core", "baud";
++};
++
+ &vpu {
+ 	compatible = "amlogic,meson-gxl-vpu", "amlogic,meson-gx-vpu";
+ };
 -- 
 1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
