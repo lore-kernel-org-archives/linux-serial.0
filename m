@@ -1,97 +1,47 @@
-From: "A.S. Dong" <aisheng.dong@nxp.com>
-Subject: RE: [PATCH 6/6] tty: serial: lpuart: add a more accurate baud rate
- calculation method
-Date: Fri, 9 Jun 2017 14:20:41 +0000
-Message-ID: <AM3PR04MB30678CBD87777C6816DEFA580CE0@AM3PR04MB306.eurprd04.prod.outlook.com>
-References: <1494316248-24052-1-git-send-email-aisheng.dong@nxp.com>
- <1494316248-24052-7-git-send-email-aisheng.dong@nxp.com>
- <CAHp75Vemc5qoD7gbc_sJBSasYTFYSYOuWZv4N-4X60arWX8aJg@mail.gmail.com>
- <AM3PR04MB3062F7BCE82860C377C214E80F10@AM3PR04MB306.eurprd04.prod.outlook.com>
- <CAHp75VcH0j3ddaZ3iStNO4QcAwJKZ7BAMwUTthum2no1ucs2ww@mail.gmail.com>
- <AM3PR04MB306214514B820D66535E28B80CE0@AM3PR04MB306.eurprd04.prod.outlook.com>
- <CAHp75VcSToSfbUZ2TP0OsLRjV4TNpq7D_=4tnB_+rDvS2jp22Q@mail.gmail.com>
+From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 2/2] arm64: dts: Add Mediatek SoC MT2712 and evaluation
+ board dts and Makefile
+Date: Fri, 9 Jun 2017 15:44:20 +0100
+Message-ID: <3ac6fe47-9e56-b88a-4bab-efddc886ec76@arm.com>
+References: <1496230773-22633-1-git-send-email-yt.shen@mediatek.com>
+ <1496230773-22633-3-git-send-email-yt.shen@mediatek.com>
+ <92e438b3-4e9c-421b-5398-5aad2541524c@gmail.com>
+ <1497016569.29586.36.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75VcSToSfbUZ2TP0OsLRjV4TNpq7D_=4tnB_+rDvS2jp22Q@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Duan <fugang.duan@nxp.com>, Stefan Agner <stefan@agner.ch>, Mingkai Hu <mingkai.hu@nxp.com>, "Y.B. Lu" <yangbo.lu@nxp.com>, Dong Aisheng <dongas86@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1497016569.29586.36.camel@mtksdaap41>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mars Cheng <mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbmR5IFNoZXZjaGVua28gW21h
-aWx0bzphbmR5LnNoZXZjaGVua29AZ21haWwuY29tXQ0KPiBTZW50OiBGcmlkYXksIEp1bmUgMDks
-IDIwMTcgNToyNiBQTQ0KPiBUbzogQS5TLiBEb25nDQo+IENjOiBsaW51eC1zZXJpYWxAdmdlci5r
-ZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0NCj4gTWFp
-bGluZyBMaXN0OyBHcmVnIEtyb2FoLUhhcnRtYW47IEppcmkgU2xhYnk7IEFuZHkgRHVhbjsgU3Rl
-ZmFuIEFnbmVyOw0KPiBNaW5na2FpIEh1OyBZLkIuIEx1OyBEb25nIEFpc2hlbmcNCj4gU3ViamVj
-dDogUmU6IFtQQVRDSCA2LzZdIHR0eTogc2VyaWFsOiBscHVhcnQ6IGFkZCBhIG1vcmUgYWNjdXJh
-dGUgYmF1ZA0KPiByYXRlIGNhbGN1bGF0aW9uIG1ldGhvZA0KPiANCj4gT24gRnJpLCBKdW4gOSwg
-MjAxNyBhdCAxMTowMSBBTSwgQS5TLiBEb25nIDxhaXNoZW5nLmRvbmdAbnhwLmNvbT4gd3JvdGU6
-DQo+IA0KPiA+PiA+PiA+ICsgICAgICAgdTMyIHNiciwgb3NyLCBiYXVkX2RpZmYsIHRtcF9vc3Is
-IHRtcF9zYnIsIHRtcF9kaWZmLCB0bXA7DQo+ID4+ID4+ID4gKyAgICAgICB1MzIgY2xrID0gc3Bv
-cnQtPnBvcnQudWFydGNsazsNCj4gPj4gPj4gPiArDQo+ID4+ID4+ID4gKyAgICAgICAvKg0KPiA+
-PiA+PiA+ICsgICAgICAgICogVGhlIGlkZWEgaXMgdG8gdXNlIHRoZSBiZXN0IE9TUiAob3Zlci1z
-YW1wbGluZyByYXRlKQ0KPiA+PiBwb3NzaWJsZS4NCj4gPj4gPj4gPiArICAgICAgICAqIE5vdGUs
-IE9TUiBpcyB0eXBpY2FsbHkgaGFyZC1zZXQgdG8gMTYgaW4gb3RoZXIgTFBVQVJUDQo+ID4+ID4+
-IGluc3RhbnRpYXRpb25zLg0KPiA+PiA+PiA+ICsgICAgICAgICogTG9vcCB0byBmaW5kIHRoZSBi
-ZXN0IE9TUiB2YWx1ZSBwb3NzaWJsZSwgb25lIHRoYXQNCj4gPj4gPj4gPiArIGdlbmVyYXRlcw0K
-PiA+PiA+PiBtaW5pbXVtDQo+ID4+ID4+ID4gKyAgICAgICAgKiBiYXVkX2RpZmYgaXRlcmF0ZSB0
-aHJvdWdoIHRoZSByZXN0IG9mIHRoZSBzdXBwb3J0ZWQNCj4gPj4gPj4gPiArIHZhbHVlcyBvZg0K
-PiA+PiA+PiBPU1IuDQo+ID4+ID4+ID4gKyAgICAgICAgKg0KPiA+PiA+PiA+ICsgICAgICAgICog
-Q2FsY3VsYXRpb24gRm9ybXVsYToNCj4gPj4gPj4gPiArICAgICAgICAqICBCYXVkIFJhdGUgPSBi
-YXVkIGNsb2NrIC8gKChPU1IrMSkgw5cgU0JSKQ0KPiA+PiA+PiA+ICsgICAgICAgICovDQo+ID4+
-ID4+ID4gKyAgICAgICBiYXVkX2RpZmYgPSBiYXVkcmF0ZTsNCj4gPj4gPj4gPiArICAgICAgIG9z
-ciA9IDA7DQo+ID4+ID4+ID4gKyAgICAgICBzYnIgPSAwOw0KPiA+PiA+PiA+ICsNCj4gPj4gPj4N
-Cj4gPj4gPj4gPiArICAgICAgIGZvciAodG1wX29zciA9IDQ7IHRtcF9vc3IgPD0gMzI7IHRtcF9v
-c3IrKykgew0KPiA+Pg0KPiA+PiBJIG1pc3NlZCBvbmUgdGhpbmcsIHdoYXQgaGFwcGVuZWQgYnkg
-ZGVmYXVsdCB0byBPU1I/IFdoYXQgaXMgdGhlDQo+ID4+IHZhbHVlIGluIHVzZT8NCj4gPj4NCj4g
-Pg0KPiA+IE5vIHZhbGlkIGRlZmF1bHQgdmFsdWUuIChvc2Mvc2JyIGFyZSAwIGJ5IGRlZmF1bHQp
-IElmIG5vIHByb3BlciBvc2MNCj4gPiBhbmQgc2JyIGNhbGN1bGF0ZWQsIGEgV0FSTklORyB3aWxs
-IHNob3cuDQo+IA0KPiBPa2F5LCBzbywgaXQgbWVhbnMgdGhlIG1heGltdW0gc3VwcG9ydGVkIHNw
-ZWVkIGlzIFVBUlQgY2xvY2sgLyA0LiBDb3JyZWN0Pw0KPiANCg0KWWVzLg0KDQo+ID4+IFNvLCB0
-aGUgYWxnbyBpcyB0aGUgZm9sbG93aW5nOg0KPiA+Pg0KPiA+PiBBc3N1bWUgdGhlIHJhbmdlcyBs
-aWtlIHRoaXM6DQo+ID4+IE9TUiA9IFs0IC4uLiAzMl0NCj4gPj4gU0JSID0gWzIgLi4uIDgxOTJd
-DQo+ID4+DQo+ID4NCj4gPiBCYXVkIFJhdGUgPSBiYXVkIGNsb2NrIC8gKChPU1IrMSkgw5cgU0JS
-KQ0KPiA+DQo+ID4gSW4gSFc6DQo+ID4gT1NSIHJhbmdlIDogMyDigJMgMzENCj4gPiBTQlIgcmFu
-Z2U6IDEg4oCTIDgxOTENCj4gDQo+IEkndmUgcmVhZCB0aGF0LCBidXQgdGhpbmsgb3V0c2lkZSB0
-aGUgYm94Lg0KPiANCj4gPj4gVGhlbjoNCj4gPj4NCj4gPj4gMS4gR2V0IHJhdGlvIGZhY3RvciBh
-cw0KPiA+PiAgICAgICByYXRpbyA9IENMSyAvIGRlc2lyZWQgYmF1ZCByYXRlIDIuIElmIHJhdGlv
-IDwgODE5MiAqIDkgLyAyLA0KPiA+PiBqdXN0IHVzZSAocmF0aW8gLyA0LCA0KSBhcyAoT1NSLCBT
-QlIpIHNldHRpbmcuDQo+ID4+IChOZWVkcyBjbGFyaWZpY2F0aW9uIG9uIE9TUiA8IDQpDQo+ID4N
-Cj4gPiBTb3JyeSB0aGF0IEknbSBhIGJpdCBtZXNzIGhlcmUuDQo+ID4gV2hhdCBpcyA4MTkyICog
-OSAvMiBtZWFuaW5nPw0KPiANCj4gSSBmb3Jnb3QgdGhlIGRldGFpbHMuLi4NCj4gDQo+ID4gQW5k
-IGZvciAocmF0aW8gLyA0LCA0KSBhcyAoT1NSLFNCUiksIHRha2UgMTE1MjAwIGFzIGFuIGV4YW1w
-bGU6DQo+ID4gQXNzdW1pbmcgYmF1ZCBjbG9jayAyNE1oei4NCj4gPg0KPiA+IFJhdGlvID0gMjQw
-MDAwMDAgLyAxMTUyMDAgPSAyMDgNCj4gPiBPU1IgPSBSYXRpbyAvIDQgPSA1Mg0KPiA+IFRoZW4g
-T1NSIGlzIG91dCBvZiByYW5nZSB3aGljaCBzZWVtcyB3cm9uZy4NCj4gDQo+IC4uLnllcy4uLg0K
-PiANCj4gPj4gMy4gaWYgcmF0aW8gPj0gODE5MiAqIDMxLCBqdXN0IHVzZSB0aG9zZSB0d28gbnVt
-YmVycyAoODE5MiwgMzEpLiBZb3UNCj4gPj4gY2FuJ3QgZG8gYW55dGhpbmcgYmV0dGVyIHRoZXJl
-Lg0KPiA+DQo+ID4gVGhpcyBhY3R1YWxseSBtYXkgbm90IGhhcHBlbi4NCj4gPiBFdmVuIHRha2Ug
-YSA5NjAwIGFzIGV4YW1wbGUsIHRoZSBjbGsgYmVjb21lczoNCj4gPiA4MTkxICogMzEgKiA5NjAw
-ID0gMi40R0h6DQo+ID4gV2hpY2ggaXMgdGhlb3JldGljYWxseSBub3QgZXhpc3QuDQo+ID4NCj4g
-Pj4gNC4gT3RoZXJ3aXNlLCBnZXQgYSBtaW5pbXVtIHJlcXVpcmVkIGZhY3RvciBvZiBPU1INCj4g
-Pj4gICAgICAgb3NyX21pbiA9IHJhdGlvIC8gODE5Mg0KPiA+PiA1LiBTdGFydCB5b3VyIGxvb3Ag
-ZnJvbSBvc3JfbWluICsgMSB0byAzMS4NCj4gPj4NCj4gPj4gNiAob3B0aW9uYWwpLiBPZiBjb3Vy
-c2UgeW91IG1heSBub3QgY29uc2lkZXIgYmF1ZF9kaWZmID4gb3NyX21pbiwNCj4gPj4gaXQncyBJ
-IHN1cHBvc2Ugb2J2aW91cw0KPiA+Pg0KPiA+PiBQLlMuIE5vdGUsIGFsbCBkaXZpc2lvbnMgYnkg
-Ml5uIGFyZSBqdXN0IHNpbXBsZSByaWdodCBzaGlmdHMuIERpZmZzDQo+ID4+IGFyZSBjYWxjdWxh
-dGVkIGFzIG11bHRpcGxpY2F0aW9uIG9mIE9TUiBhbmQgU0JSIGluIGNvbXBhcmlzb24gdG8NCj4g
-Pj4gcmF0aW8uIE9uZSBkaXZpc2lvbiBzbyBmYXIuDQo+IA0KPiA+IEknbSBub3QgcXVpdGUgdW5k
-ZXJzdGFuZCB0aGUgYXBwcm9hY2guDQo+IA0KPiAuLi5sZW1tZSBwcmVwYXJlIGEgcHl0aG9uIHNj
-cmlwdCBkZW1vbnN0cmF0aW5nIGl0Lg0KPiANCg0KR3JlYXQsIHRoYW5rcw0KDQo+ID4gSG93IGFi
-b3V0IHlvdSBzZW5kIGEgc2VwYXJhdGUgYmF1ZCBhbGdvcml0aG0gaW1wcm92ZW1lbnQgcGF0Y2gg
-bGF0ZXI/DQo+IA0KPiBXaHkgbm90IHRvIGRvIGl0IHJpZ2h0IGEgd2F5Pw0KPiANCg0KQmVjYXVz
-ZSBJIHRob3VnaHQgdGhhdCBjb3VsZCBiZSBhIHNlcGFyYXRlIHBhdGNoIHdoaWNoIGlzIGRvaW5n
-IGFsZ29yaXRobQ0KaW1wcm92ZW1lbnQsIHRoZW4gd2UgY2FuIGhhdmUgdGhlIGZ1bGwgaGlzdG9y
-eSBhbmQgYSBjbGVhciBjb21wYXJpc29uLg0KDQpBbmQgYWxzbyB3ZSBhcmUgc3RpbGwgbm90IHN1
-cmUgd2hldGhlciBpdCB3b3Jrcywgd2UgZG9uJ3Qgd2FudCB0byBibG9jayBvbiBpdA0KdG9vIGxv
-bmcuDQoNCkJ1dCBpZiB5b3UncmUgcHJldHR5IHN1cmUgYWJvdXQgaXQsIEkgd291bGQgd2FpdCBm
-b3Igc29tZSBtb3JlIHRpbWUuDQoNCkhvd2V2ZXIsIHBlcnNvbmFsbHkgSSB3b3VsZCBzdGlsbCBy
-YXRoZXIga2VlcCB0aGVtIGluIHR3byBzZXBhcmF0ZSBQYXRjaGVzDQpmb3IgY2xlYXJlciBoaXN0
-b3J5IGFuZCBjb21wYXJpc29uLg0KDQo+IEp1c3QgZGVzY3JpYmUgaXQgaW4gYSBjb21tZW50IGlm
-IHlvdSBhZnJhaWQgb2YgcmVhZGVyIGNhbid0IHVuZGVyc3RhbmQNCj4gZnJvbSB0aGUgY29kZS4N
-Cj4gDQoNClRoYXQgaXMgZ29vZC4NCg0KUmVnYXJkcw0KRG9uZyBBaXNoZW5nDQoNCj4gLS0NCj4g
-V2l0aCBCZXN0IFJlZ2FyZHMsDQo+IEFuZHkgU2hldmNoZW5rbw0K
+On 09/06/17 14:56, YT Shen wrote:
+> On Wed, 2017-05-31 at 14:42 +0200, Matthias Brugger wrote:
+
+[...]
+
+>>> +		cpu0: cpu@0 {
+>>> +			device_type = "cpu";
+>>> +			compatible = "arm,cortex-a35";
+>>
+>> do you mean cortex-a53?
+> No, the cpu is cortex-a35.
+> Although I cannot find other cortex-a35 description in mainline kernel.
+
+We usually don't keep track of individual cores if we don't need to
+(errata workarounds, for example). And for the record, here's some blurb
+about Cortex-A35:
+
+https://www.arm.com/products/processors/cortex-a/cortex-a35-processor.php
+
+Thanks,
+
+	M.
+-- 
+Jazz is not dead. It just smells funny...
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
