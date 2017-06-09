@@ -1,7 +1,7 @@
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v6 08/10] platform: Accept const properties
-Date: Fri,  9 Jun 2017 20:33:16 +0200
-Message-ID: <14e65e7dc3ef7fecfa28f4ee59c5a158dd150096.1497033197.git.jan.kiszka@siemens.com>
+Subject: [PATCH v6 06/10] gpio-exar/8250-exar: Rearrange gpiochip parenthood
+Date: Fri,  9 Jun 2017 20:33:14 +0200
+Message-ID: <dc4adc102ee07ed9489e0f773c616337acd64127.1497033197.git.jan.kiszka@siemens.com>
 References: <cover.1497033197.git.jan.kiszka@siemens.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1497033197.git.jan.kiszka@siemens.com>
@@ -12,39 +12,50 @@ To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.co
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-Aligns us with device_add_properties, the function we call.
+Set the parent of the exar gpiochip to its platform device, like other
+gpiochips are doing it. In order to keep the relationship discoverable
+for ACPI systems, set the platform device companion to the PCI device.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/base/platform.c         | 2 +-
- include/linux/platform_device.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpio/gpio-exar.c            | 2 +-
+ drivers/tty/serial/8250/8250_exar.c | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index a102152301c8..71ea6f4d33c2 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -344,7 +344,7 @@ EXPORT_SYMBOL_GPL(platform_device_add_data);
-  * platform device is released.
+diff --git a/drivers/gpio/gpio-exar.c b/drivers/gpio/gpio-exar.c
+index f3585a184f39..1a629831d45b 100644
+--- a/drivers/gpio/gpio-exar.c
++++ b/drivers/gpio/gpio-exar.c
+@@ -142,7 +142,7 @@ static int gpio_exar_probe(struct platform_device *pdev)
+ 
+ 	sprintf(exar_gpio->name, "exar_gpio%d", index);
+ 	exar_gpio->gpio_chip.label = exar_gpio->name;
+-	exar_gpio->gpio_chip.parent = &pcidev->dev;
++	exar_gpio->gpio_chip.parent = &pdev->dev;
+ 	exar_gpio->gpio_chip.direction_output = exar_direction_output;
+ 	exar_gpio->gpio_chip.direction_input = exar_direction_input;
+ 	exar_gpio->gpio_chip.get_direction = exar_get_direction;
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 0f4b236d7e68..ee4b142f3ed0 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -9,6 +9,7 @@
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation; either version 2 of the License.
   */
- int platform_device_add_properties(struct platform_device *pdev,
--				   struct property_entry *properties)
-+				   const struct property_entry *properties)
- {
- 	return device_add_properties(&pdev->dev, properties);
- }
-diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
-index 98c2a7c7108e..49f634d96118 100644
---- a/include/linux/platform_device.h
-+++ b/include/linux/platform_device.h
-@@ -172,7 +172,7 @@ extern int platform_device_add_resources(struct platform_device *pdev,
- extern int platform_device_add_data(struct platform_device *pdev,
- 				    const void *data, size_t size);
- extern int platform_device_add_properties(struct platform_device *pdev,
--					  struct property_entry *properties);
-+				const struct property_entry *properties);
- extern int platform_device_add(struct platform_device *pdev);
- extern void platform_device_del(struct platform_device *pdev);
- extern void platform_device_put(struct platform_device *pdev);
++#include <linux/acpi.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+@@ -204,6 +205,7 @@ xr17v35x_register_gpio(struct pci_dev *pcidev)
+ 		return NULL;
+ 
+ 	pdev->dev.parent = &pcidev->dev;
++	ACPI_COMPANION_SET(&pdev->dev, ACPI_COMPANION(&pcidev->dev));
+ 
+ 	if (platform_device_add(pdev) < 0) {
+ 		platform_device_put(pdev);
 -- 
 2.12.3
