@@ -1,160 +1,97 @@
-From: Dominik Heidler <dheidler@suse.de>
-Subject: [PATCH 09/10] Revert "printk: fix double printing with earlycon"
-Date: Fri,  9 Jun 2017 15:53:32 +0200
-Message-ID: <20170609135333.15847-10-dheidler@suse.de>
-References: <20170609135333.15847-1-dheidler@suse.de>
+From: "A.S. Dong" <aisheng.dong@nxp.com>
+Subject: RE: [PATCH 6/6] tty: serial: lpuart: add a more accurate baud rate
+ calculation method
+Date: Fri, 9 Jun 2017 14:20:41 +0000
+Message-ID: <AM3PR04MB30678CBD87777C6816DEFA580CE0@AM3PR04MB306.eurprd04.prod.outlook.com>
+References: <1494316248-24052-1-git-send-email-aisheng.dong@nxp.com>
+ <1494316248-24052-7-git-send-email-aisheng.dong@nxp.com>
+ <CAHp75Vemc5qoD7gbc_sJBSasYTFYSYOuWZv4N-4X60arWX8aJg@mail.gmail.com>
+ <AM3PR04MB3062F7BCE82860C377C214E80F10@AM3PR04MB306.eurprd04.prod.outlook.com>
+ <CAHp75VcH0j3ddaZ3iStNO4QcAwJKZ7BAMwUTthum2no1ucs2ww@mail.gmail.com>
+ <AM3PR04MB306214514B820D66535E28B80CE0@AM3PR04MB306.eurprd04.prod.outlook.com>
+ <CAHp75VcSToSfbUZ2TP0OsLRjV4TNpq7D_=4tnB_+rDvS2jp22Q@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170609135333.15847-1-dheidler@suse.de>
+In-Reply-To: <CAHp75VcSToSfbUZ2TP0OsLRjV4TNpq7D_=4tnB_+rDvS2jp22Q@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: dominik@heidler.eu
-Cc: Petr Mladek <pmladek@suse.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, Sabrina Dubroca <sd@queasysnail.net>, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Duan <fugang.duan@nxp.com>, Stefan Agner <stefan@agner.ch>, Mingkai Hu <mingkai.hu@nxp.com>, "Y.B. Lu" <yangbo.lu@nxp.com>, Dong Aisheng <dongas86@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Petr Mladek <pmladek@suse.com>
-
-This reverts commit cf39bf58afdaabc0b86f141630fb3fd18190294e.
-
-The commit regression to users that define both console=ttyS1
-and console=ttyS0 on the command line, see
-https://lkml.kernel.org/r/20170509082915.GA13236@bistromath.localdomain
-
-The kernel log messages always appeared only on one serial port. It is
-even documented in Documentation/admin-guide/serial-console.rst:
-
-"Note that you can only define one console per device type (serial,
-video)."
-
-The above mentioned commit changed the order in which the command line
-parameters are searched. As a result, the kernel log messages go to
-the last mentioned ttyS* instead of the first one.
-
-We long thought that using two console=ttyS* on the command line
-did not make sense. But then we realized that console= parameters
-were handled also by systemd, see
-http://0pointer.de/blog/projects/serial-console.html
-
-"By default systemd will instantiate one serial-getty@.service on
-the main kernel console, if it is not a virtual terminal."
-
-where
-
-"[4] If multiple kernel consoles are used simultaneously, the main
-console is the one listed first in /sys/class/tty/console/active,
-which is the last one listed on the kernel command line."
-
-This puts the original report into another light. The system is running
-in qemu. The first serial port is used to store the messages into a file.
-The second one is used to login to the system via a socket. It depends
-on systemd and the historic kernel behavior.
-
-By other words, systemd causes that it makes sense to define both
-console=ttyS1 console=ttyS0 on the command line. The kernel fix
-caused regression related to userspace (systemd) and need to be
-reverted.
-
-In addition, it went out that the fix helped only partially.
-The messages still were duplicated when the boot console was
-removed early by late_initcall(printk_late_init). Then the entire
-log was replayed when the same console was registered as a normal one.
-
-Link: 20170606160339.GC7604@pathway.suse.cz
-Cc: Aleksey Makarov <aleksey.makarov@linaro.org>
-Cc: Sabrina Dubroca <sd@queasysnail.net>
-Cc: Sudeep Holla <sudeep.holla@arm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Reported-by: Sabrina Dubroca <sd@queasysnail.net>
-Acked-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
----
- kernel/printk/printk.c | 46 ++++++++++------------------------------------
- 1 file changed, 10 insertions(+), 36 deletions(-)
-
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 779479ac9f57..9dbceb76e6bc 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -269,7 +269,6 @@ static struct console *exclusive_console;
- #define MAX_CMDLINECONSOLES 8
- 
- static struct console_cmdline console_cmdline[MAX_CMDLINECONSOLES];
--static int console_cmdline_cnt;
- 
- static int preferred_console = -1;
- int console_set_on_cmdline;
-@@ -1906,25 +1905,12 @@ static int __add_preferred_console(char *name, int idx, char *options,
- 	 *	See if this tty is not yet registered, and
- 	 *	if we have a slot free.
- 	 */
--	for (i = 0, c = console_cmdline; i < console_cmdline_cnt; i++, c++) {
-+	for (i = 0, c = console_cmdline;
-+	     i < MAX_CMDLINECONSOLES && c->name[0];
-+	     i++, c++) {
- 		if (strcmp(c->name, name) == 0 && c->index == idx) {
--			if (brl_options)
--				return 0;
--
--			/*
--			 * Maintain an invariant that will help to find if
--			 * the matching console is preferred, see
--			 * register_console():
--			 *
--			 * The last non-braille console is always
--			 * the preferred one.
--			 */
--			if (i != console_cmdline_cnt - 1)
--				swap(console_cmdline[i],
--				     console_cmdline[console_cmdline_cnt - 1]);
--
--			preferred_console = console_cmdline_cnt - 1;
--
-+			if (!brl_options)
-+				preferred_console = i;
- 			return 0;
- 		}
- 	}
-@@ -1937,7 +1923,6 @@ static int __add_preferred_console(char *name, int idx, char *options,
- 	braille_set_options(c, brl_options);
- 
- 	c->index = idx;
--	console_cmdline_cnt++;
- 	return 0;
- }
- /*
-@@ -2477,23 +2462,12 @@ void register_console(struct console *newcon)
- 	}
- 
- 	/*
--	 * See if this console matches one we selected on the command line.
--	 *
--	 * There may be several entries in the console_cmdline array matching
--	 * with the same console, one with newcon->match(), another by
--	 * name/index:
--	 *
--	 *	pl011,mmio,0x87e024000000,115200 -- added from SPCR
--	 *	ttyAMA0 -- added from command line
--	 *
--	 * Traverse the console_cmdline array in reverse order to be
--	 * sure that if this console is preferred then it will be the first
--	 * matching entry.  We use the invariant that is maintained in
--	 * __add_preferred_console().
-+	 *	See if this console matches one we selected on
-+	 *	the command line.
- 	 */
--	for (i = console_cmdline_cnt - 1; i >= 0; i--) {
--		c = console_cmdline + i;
--
-+	for (i = 0, c = console_cmdline;
-+	     i < MAX_CMDLINECONSOLES && c->name[0];
-+	     i++, c++) {
- 		if (!newcon->match ||
- 		    newcon->match(newcon, c->name, c->index, c->options) != 0) {
- 			/* default matching */
--- 
-2.13.0
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbmR5IFNoZXZjaGVua28gW21h
+aWx0bzphbmR5LnNoZXZjaGVua29AZ21haWwuY29tXQ0KPiBTZW50OiBGcmlkYXksIEp1bmUgMDks
+IDIwMTcgNToyNiBQTQ0KPiBUbzogQS5TLiBEb25nDQo+IENjOiBsaW51eC1zZXJpYWxAdmdlci5r
+ZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0NCj4gTWFp
+bGluZyBMaXN0OyBHcmVnIEtyb2FoLUhhcnRtYW47IEppcmkgU2xhYnk7IEFuZHkgRHVhbjsgU3Rl
+ZmFuIEFnbmVyOw0KPiBNaW5na2FpIEh1OyBZLkIuIEx1OyBEb25nIEFpc2hlbmcNCj4gU3ViamVj
+dDogUmU6IFtQQVRDSCA2LzZdIHR0eTogc2VyaWFsOiBscHVhcnQ6IGFkZCBhIG1vcmUgYWNjdXJh
+dGUgYmF1ZA0KPiByYXRlIGNhbGN1bGF0aW9uIG1ldGhvZA0KPiANCj4gT24gRnJpLCBKdW4gOSwg
+MjAxNyBhdCAxMTowMSBBTSwgQS5TLiBEb25nIDxhaXNoZW5nLmRvbmdAbnhwLmNvbT4gd3JvdGU6
+DQo+IA0KPiA+PiA+PiA+ICsgICAgICAgdTMyIHNiciwgb3NyLCBiYXVkX2RpZmYsIHRtcF9vc3Is
+IHRtcF9zYnIsIHRtcF9kaWZmLCB0bXA7DQo+ID4+ID4+ID4gKyAgICAgICB1MzIgY2xrID0gc3Bv
+cnQtPnBvcnQudWFydGNsazsNCj4gPj4gPj4gPiArDQo+ID4+ID4+ID4gKyAgICAgICAvKg0KPiA+
+PiA+PiA+ICsgICAgICAgICogVGhlIGlkZWEgaXMgdG8gdXNlIHRoZSBiZXN0IE9TUiAob3Zlci1z
+YW1wbGluZyByYXRlKQ0KPiA+PiBwb3NzaWJsZS4NCj4gPj4gPj4gPiArICAgICAgICAqIE5vdGUs
+IE9TUiBpcyB0eXBpY2FsbHkgaGFyZC1zZXQgdG8gMTYgaW4gb3RoZXIgTFBVQVJUDQo+ID4+ID4+
+IGluc3RhbnRpYXRpb25zLg0KPiA+PiA+PiA+ICsgICAgICAgICogTG9vcCB0byBmaW5kIHRoZSBi
+ZXN0IE9TUiB2YWx1ZSBwb3NzaWJsZSwgb25lIHRoYXQNCj4gPj4gPj4gPiArIGdlbmVyYXRlcw0K
+PiA+PiA+PiBtaW5pbXVtDQo+ID4+ID4+ID4gKyAgICAgICAgKiBiYXVkX2RpZmYgaXRlcmF0ZSB0
+aHJvdWdoIHRoZSByZXN0IG9mIHRoZSBzdXBwb3J0ZWQNCj4gPj4gPj4gPiArIHZhbHVlcyBvZg0K
+PiA+PiA+PiBPU1IuDQo+ID4+ID4+ID4gKyAgICAgICAgKg0KPiA+PiA+PiA+ICsgICAgICAgICog
+Q2FsY3VsYXRpb24gRm9ybXVsYToNCj4gPj4gPj4gPiArICAgICAgICAqICBCYXVkIFJhdGUgPSBi
+YXVkIGNsb2NrIC8gKChPU1IrMSkgw5cgU0JSKQ0KPiA+PiA+PiA+ICsgICAgICAgICovDQo+ID4+
+ID4+ID4gKyAgICAgICBiYXVkX2RpZmYgPSBiYXVkcmF0ZTsNCj4gPj4gPj4gPiArICAgICAgIG9z
+ciA9IDA7DQo+ID4+ID4+ID4gKyAgICAgICBzYnIgPSAwOw0KPiA+PiA+PiA+ICsNCj4gPj4gPj4N
+Cj4gPj4gPj4gPiArICAgICAgIGZvciAodG1wX29zciA9IDQ7IHRtcF9vc3IgPD0gMzI7IHRtcF9v
+c3IrKykgew0KPiA+Pg0KPiA+PiBJIG1pc3NlZCBvbmUgdGhpbmcsIHdoYXQgaGFwcGVuZWQgYnkg
+ZGVmYXVsdCB0byBPU1I/IFdoYXQgaXMgdGhlDQo+ID4+IHZhbHVlIGluIHVzZT8NCj4gPj4NCj4g
+Pg0KPiA+IE5vIHZhbGlkIGRlZmF1bHQgdmFsdWUuIChvc2Mvc2JyIGFyZSAwIGJ5IGRlZmF1bHQp
+IElmIG5vIHByb3BlciBvc2MNCj4gPiBhbmQgc2JyIGNhbGN1bGF0ZWQsIGEgV0FSTklORyB3aWxs
+IHNob3cuDQo+IA0KPiBPa2F5LCBzbywgaXQgbWVhbnMgdGhlIG1heGltdW0gc3VwcG9ydGVkIHNw
+ZWVkIGlzIFVBUlQgY2xvY2sgLyA0LiBDb3JyZWN0Pw0KPiANCg0KWWVzLg0KDQo+ID4+IFNvLCB0
+aGUgYWxnbyBpcyB0aGUgZm9sbG93aW5nOg0KPiA+Pg0KPiA+PiBBc3N1bWUgdGhlIHJhbmdlcyBs
+aWtlIHRoaXM6DQo+ID4+IE9TUiA9IFs0IC4uLiAzMl0NCj4gPj4gU0JSID0gWzIgLi4uIDgxOTJd
+DQo+ID4+DQo+ID4NCj4gPiBCYXVkIFJhdGUgPSBiYXVkIGNsb2NrIC8gKChPU1IrMSkgw5cgU0JS
+KQ0KPiA+DQo+ID4gSW4gSFc6DQo+ID4gT1NSIHJhbmdlIDogMyDigJMgMzENCj4gPiBTQlIgcmFu
+Z2U6IDEg4oCTIDgxOTENCj4gDQo+IEkndmUgcmVhZCB0aGF0LCBidXQgdGhpbmsgb3V0c2lkZSB0
+aGUgYm94Lg0KPiANCj4gPj4gVGhlbjoNCj4gPj4NCj4gPj4gMS4gR2V0IHJhdGlvIGZhY3RvciBh
+cw0KPiA+PiAgICAgICByYXRpbyA9IENMSyAvIGRlc2lyZWQgYmF1ZCByYXRlIDIuIElmIHJhdGlv
+IDwgODE5MiAqIDkgLyAyLA0KPiA+PiBqdXN0IHVzZSAocmF0aW8gLyA0LCA0KSBhcyAoT1NSLCBT
+QlIpIHNldHRpbmcuDQo+ID4+IChOZWVkcyBjbGFyaWZpY2F0aW9uIG9uIE9TUiA8IDQpDQo+ID4N
+Cj4gPiBTb3JyeSB0aGF0IEknbSBhIGJpdCBtZXNzIGhlcmUuDQo+ID4gV2hhdCBpcyA4MTkyICog
+OSAvMiBtZWFuaW5nPw0KPiANCj4gSSBmb3Jnb3QgdGhlIGRldGFpbHMuLi4NCj4gDQo+ID4gQW5k
+IGZvciAocmF0aW8gLyA0LCA0KSBhcyAoT1NSLFNCUiksIHRha2UgMTE1MjAwIGFzIGFuIGV4YW1w
+bGU6DQo+ID4gQXNzdW1pbmcgYmF1ZCBjbG9jayAyNE1oei4NCj4gPg0KPiA+IFJhdGlvID0gMjQw
+MDAwMDAgLyAxMTUyMDAgPSAyMDgNCj4gPiBPU1IgPSBSYXRpbyAvIDQgPSA1Mg0KPiA+IFRoZW4g
+T1NSIGlzIG91dCBvZiByYW5nZSB3aGljaCBzZWVtcyB3cm9uZy4NCj4gDQo+IC4uLnllcy4uLg0K
+PiANCj4gPj4gMy4gaWYgcmF0aW8gPj0gODE5MiAqIDMxLCBqdXN0IHVzZSB0aG9zZSB0d28gbnVt
+YmVycyAoODE5MiwgMzEpLiBZb3UNCj4gPj4gY2FuJ3QgZG8gYW55dGhpbmcgYmV0dGVyIHRoZXJl
+Lg0KPiA+DQo+ID4gVGhpcyBhY3R1YWxseSBtYXkgbm90IGhhcHBlbi4NCj4gPiBFdmVuIHRha2Ug
+YSA5NjAwIGFzIGV4YW1wbGUsIHRoZSBjbGsgYmVjb21lczoNCj4gPiA4MTkxICogMzEgKiA5NjAw
+ID0gMi40R0h6DQo+ID4gV2hpY2ggaXMgdGhlb3JldGljYWxseSBub3QgZXhpc3QuDQo+ID4NCj4g
+Pj4gNC4gT3RoZXJ3aXNlLCBnZXQgYSBtaW5pbXVtIHJlcXVpcmVkIGZhY3RvciBvZiBPU1INCj4g
+Pj4gICAgICAgb3NyX21pbiA9IHJhdGlvIC8gODE5Mg0KPiA+PiA1LiBTdGFydCB5b3VyIGxvb3Ag
+ZnJvbSBvc3JfbWluICsgMSB0byAzMS4NCj4gPj4NCj4gPj4gNiAob3B0aW9uYWwpLiBPZiBjb3Vy
+c2UgeW91IG1heSBub3QgY29uc2lkZXIgYmF1ZF9kaWZmID4gb3NyX21pbiwNCj4gPj4gaXQncyBJ
+IHN1cHBvc2Ugb2J2aW91cw0KPiA+Pg0KPiA+PiBQLlMuIE5vdGUsIGFsbCBkaXZpc2lvbnMgYnkg
+Ml5uIGFyZSBqdXN0IHNpbXBsZSByaWdodCBzaGlmdHMuIERpZmZzDQo+ID4+IGFyZSBjYWxjdWxh
+dGVkIGFzIG11bHRpcGxpY2F0aW9uIG9mIE9TUiBhbmQgU0JSIGluIGNvbXBhcmlzb24gdG8NCj4g
+Pj4gcmF0aW8uIE9uZSBkaXZpc2lvbiBzbyBmYXIuDQo+IA0KPiA+IEknbSBub3QgcXVpdGUgdW5k
+ZXJzdGFuZCB0aGUgYXBwcm9hY2guDQo+IA0KPiAuLi5sZW1tZSBwcmVwYXJlIGEgcHl0aG9uIHNj
+cmlwdCBkZW1vbnN0cmF0aW5nIGl0Lg0KPiANCg0KR3JlYXQsIHRoYW5rcw0KDQo+ID4gSG93IGFi
+b3V0IHlvdSBzZW5kIGEgc2VwYXJhdGUgYmF1ZCBhbGdvcml0aG0gaW1wcm92ZW1lbnQgcGF0Y2gg
+bGF0ZXI/DQo+IA0KPiBXaHkgbm90IHRvIGRvIGl0IHJpZ2h0IGEgd2F5Pw0KPiANCg0KQmVjYXVz
+ZSBJIHRob3VnaHQgdGhhdCBjb3VsZCBiZSBhIHNlcGFyYXRlIHBhdGNoIHdoaWNoIGlzIGRvaW5n
+IGFsZ29yaXRobQ0KaW1wcm92ZW1lbnQsIHRoZW4gd2UgY2FuIGhhdmUgdGhlIGZ1bGwgaGlzdG9y
+eSBhbmQgYSBjbGVhciBjb21wYXJpc29uLg0KDQpBbmQgYWxzbyB3ZSBhcmUgc3RpbGwgbm90IHN1
+cmUgd2hldGhlciBpdCB3b3Jrcywgd2UgZG9uJ3Qgd2FudCB0byBibG9jayBvbiBpdA0KdG9vIGxv
+bmcuDQoNCkJ1dCBpZiB5b3UncmUgcHJldHR5IHN1cmUgYWJvdXQgaXQsIEkgd291bGQgd2FpdCBm
+b3Igc29tZSBtb3JlIHRpbWUuDQoNCkhvd2V2ZXIsIHBlcnNvbmFsbHkgSSB3b3VsZCBzdGlsbCBy
+YXRoZXIga2VlcCB0aGVtIGluIHR3byBzZXBhcmF0ZSBQYXRjaGVzDQpmb3IgY2xlYXJlciBoaXN0
+b3J5IGFuZCBjb21wYXJpc29uLg0KDQo+IEp1c3QgZGVzY3JpYmUgaXQgaW4gYSBjb21tZW50IGlm
+IHlvdSBhZnJhaWQgb2YgcmVhZGVyIGNhbid0IHVuZGVyc3RhbmQNCj4gZnJvbSB0aGUgY29kZS4N
+Cj4gDQoNClRoYXQgaXMgZ29vZC4NCg0KUmVnYXJkcw0KRG9uZyBBaXNoZW5nDQoNCj4gLS0NCj4g
+V2l0aCBCZXN0IFJlZ2FyZHMsDQo+IEFuZHkgU2hldmNoZW5rbw0K
