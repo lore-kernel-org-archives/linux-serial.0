@@ -1,42 +1,89 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH v6 00/10] serial/gpio: exar: Fixes and support for IOT2000
-Date: Fri,  9 Jun 2017 20:33:08 +0200
-Message-ID: <cover.1497033197.git.jan.kiszka@siemens.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Subject: Re: [PATCH v4 6/7] ARM: dts: meson8: switch to new bindings for UART nodes
+Date: Sat, 10 Jun 2017 00:37:09 +0200
+Message-ID: <CAFBinCD6_nGdqBSOJwyj0XQe8H05nw-r52pctY7ADJu0EqMb2A@mail.gmail.com>
+References: <1497001756-942-1-git-send-email-narmstrong@baylibre.com> <1497001756-942-7-git-send-email-narmstrong@baylibre.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1497001756-942-7-git-send-email-narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hgkr.klein-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-This makes the gpio-exar driver usable, which was prevented by a number
-of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
-driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
-series, so I'm also cross-posting to the serial and gpio lists.
+Hi Neil,
 
-Changes in v6:
- - addressed Andy's remarks on "Make set of exported GPIOs configurable"
- - dropped "Leave MPIOs as output for Commtech adapters" - merged by Greg
+On Fri, Jun 9, 2017 at 11:49 AM, Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org> wrote:
+> Switch to the stable UART bindings by adding a XTAL node and using the
+> proper compatible strings.
+unfortunately this won't apply now that Kevin has merged my "ARM: dts:
+meson8: add and use the real clock controller"
+on the other hand this will make the patch easier as you can now do
+the same changes as in meson8b.dtsi
 
-Jan
-
-Jan Kiszka (10):
-  gpio-exar/8250-exar: Do not even instantiate a GPIO device for
-    Commtech cards
-  gpio-exar/8250-exar: Fix passing in of parent PCI device
-  gpio: exar: Allocate resources on behalf of the platform device
-  gpio: exar: Fix iomap request
-  gpio: exar: Fix reading of directions and values
-  gpio-exar/8250-exar: Rearrange gpiochip parenthood
-  serial: exar: Factor out platform hooks
-  platform: Accept const properties
-  gpio-exar/8250-exar: Make set of exported GPIOs configurable
-  serial: exar: Add support for IOT2040 device
-
- drivers/base/platform.c             |   2 +-
- drivers/gpio/gpio-exar.c            |  79 ++++++++--------
- drivers/tty/serial/8250/8250_exar.c | 173 ++++++++++++++++++++++++++++++++++--
- include/linux/platform_device.h     |   2 +-
- 4 files changed, 211 insertions(+), 45 deletions(-)
-
--- 
-2.12.3
+> Signed-off-by: Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+> ---
+>  arch/arm/boot/dts/meson8.dtsi | 23 +++++++++++++++++++----
+>  1 file changed, 19 insertions(+), 4 deletions(-)
+>
+> diff --git a/arch/arm/boot/dts/meson8.dtsi b/arch/arm/boot/dts/meson8.dtsi
+> index 6993077..a2ea112 100644
+> --- a/arch/arm/boot/dts/meson8.dtsi
+> +++ b/arch/arm/boot/dts/meson8.dtsi
+> @@ -83,6 +83,13 @@
+>                 };
+>         };
+>
+> +       xtal: xtal-clk {
+> +               compatible = "fixed-clock";
+> +               clock-frequency = <24000000>;
+> +               clock-output-names = "xtal";
+> +               #clock-cells = <0>;
+> +       };
+> +
+>         clk81: clk@0 {
+>                 #clock-cells = <0>;
+>                 compatible = "fixed-clock";
+> @@ -199,17 +206,25 @@
+>  };
+>
+>  &uart_AO {
+> -       clocks = <&clk81>;
+> +       compatible = "amlogic,meson8-uart", "amlogic,meson-ao-uart";
+> +       clocks = <&xtal>, <&clk81>, <&clk81>;
+> +       clock-names = "xtal", "pclk", "baud";
+>  };
+>
+>  &uart_A {
+> -       clocks = <&clk81>;
+> +       compatible = "amlogic,meson8-uart";
+> +       clocks = <&xtal>, <&clk81>, <&clk81>;
+> +       clock-names = "xtal", "pclk", "baud";
+>  };
+>
+>  &uart_B {
+> -       clocks = <&clk81>;
+> +       compatible = "amlogic,meson8-uart";
+> +       clocks = <&xtal>, <&clk81>, <&clk81>;
+> +       clock-names = "xtal", "pclk", "baud";
+>  };
+>
+>  &uart_C {
+> -       clocks = <&clk81>;
+> +       compatible = "amlogic,meson8-uart";
+> +       clocks = <&xtal>, <&clk81>, <&clk81>;
+> +       clock-names = "xtal", "pclk", "baud";
+>  };
+> --
+> 1.9.1
+>
+>
+> _______________________________________________
+> linux-amlogic mailing list
+> linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-amlogic
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
