@@ -1,47 +1,88 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH v5 03/11] gpio-exar/8250-exar: Fix passing in of parent
- PCI device
-Date: Fri, 9 Jun 2017 09:44:28 +0200
-Message-ID: <b52e2c46-05db-63fa-f0a5-b59ca73e6e3e@siemens.com>
-References: <cover.1496388533.git.jan.kiszka@siemens.com>
- <63100617e55d78ab881baaa6baf44e8d74d0e816.1496388533.git.jan.kiszka@siemens.com>
- <CACRpkdah8Bgo2Ga5RK8+9=dqr0pizSYd50wqQk++TyycW6=xnQ@mail.gmail.com>
+From: "A.S. Dong" <aisheng.dong@nxp.com>
+Subject: RE: [PATCH 6/6] tty: serial: lpuart: add a more accurate baud rate
+ calculation method
+Date: Fri, 9 Jun 2017 08:01:40 +0000
+Message-ID: <AM3PR04MB306214514B820D66535E28B80CE0@AM3PR04MB306.eurprd04.prod.outlook.com>
+References: <1494316248-24052-1-git-send-email-aisheng.dong@nxp.com>
+ <1494316248-24052-7-git-send-email-aisheng.dong@nxp.com>
+ <CAHp75Vemc5qoD7gbc_sJBSasYTFYSYOuWZv4N-4X60arWX8aJg@mail.gmail.com>
+ <AM3PR04MB3062F7BCE82860C377C214E80F10@AM3PR04MB306.eurprd04.prod.outlook.com>
+ <CAHp75VcH0j3ddaZ3iStNO4QcAwJKZ7BAMwUTthum2no1ucs2ww@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdah8Bgo2Ga5RK8+9=dqr0pizSYd50wqQk++TyycW6=xnQ@mail.gmail.com>
+In-Reply-To: <CAHp75VcH0j3ddaZ3iStNO4QcAwJKZ7BAMwUTthum2no1ucs2ww@mail.gmail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Duan <fugang.duan@nxp.com>, Stefan Agner <stefan@agner.ch>, Mingkai Hu <mingkai.hu@nxp.com>, "Y.B. Lu" <yangbo.lu@nxp.com>, Dong Aisheng <dongas86@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 2017-06-09 09:21, Linus Walleij wrote:
-> On Fri, Jun 2, 2017 at 9:28 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> 
->> This fixes reloading of the GPIO driver for the same platform device
->> instance as created by the exar UART driver: First of all, the driver
->> sets drvdata to its own value during probing and does not restore the
->> original value on exit. But this won't help anyway as the core clears
->> drvdata after the driver left.
->>
->> Set the platform device parent instead.
->>
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
->> Acked-by: Linus Walleij <linus.walleij@linaro.org>
-> 
-> If I get Gregs ACK on this I can merge patches 2-11 through the
-> GPIO tree.
-> 
-
-Patch 10 needs an update, Andy had remarks. I need to resync and send it
-- there will be v6 soon.
-
-Thanks,
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+SGkgQW5keSwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbmR5IFNo
+ZXZjaGVua28gW21haWx0bzphbmR5LnNoZXZjaGVua29AZ21haWwuY29tXQ0KPiBTZW50OiBTYXR1
+cmRheSwgSnVuZSAwMywgMjAxNyAxOjExIEFNDQo+IFRvOiBBLlMuIERvbmcNCj4gQ2M6IGxpbnV4
+LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGxp
+bnV4LWFybQ0KPiBNYWlsaW5nIExpc3Q7IEdyZWcgS3JvYWgtSGFydG1hbjsgSmlyaSBTbGFieTsg
+QW5keSBEdWFuOyBTdGVmYW4gQWduZXI7DQo+IE1pbmdrYWkgSHU7IFkuQi4gTHUNCj4gU3ViamVj
+dDogUmU6IFtQQVRDSCA2LzZdIHR0eTogc2VyaWFsOiBscHVhcnQ6IGFkZCBhIG1vcmUgYWNjdXJh
+dGUgYmF1ZA0KPiByYXRlIGNhbGN1bGF0aW9uIG1ldGhvZA0KPiANCj4gT24gV2VkLCBNYXkgMzEs
+IDIwMTcgYXQgNToxOCBQTSwgQS5TLiBEb25nIDxhaXNoZW5nLmRvbmdAbnhwLmNvbT4gd3JvdGU6
+DQo+ID4+IE9uIFR1ZSwgTWF5IDksIDIwMTcgYXQgMTA6NTAgQU0sIERvbmcgQWlzaGVuZyA8YWlz
+aGVuZy5kb25nQG54cC5jb20+DQo+IHdyb3RlOg0KPiANCj4gQnkgc29tZSByZWFzb24gbXkgcHJl
+dmlvdXMgbWVzc2FnZSB3ZW50IHByaXZhdGVseS4NCj4gSXQgZGlkbid0IGhhdmUgYW55dGhpbmcg
+bWFqb3IgYW55d2F5IGFuZCBoZXJlIEknbSBzdWdnZXN0aW5nIG9wdGltaXphdGlvbg0KPiBvZiBm
+aW5kaW5nIGZhY3RvcnMgb2YgdGhlIGZvcm11bGEgaW4gdXNlLiBTZWUgYmVsb3cuDQo+IA0KPiA+
+PiA+ICsgICAgICAgdTMyIHNiciwgb3NyLCBiYXVkX2RpZmYsIHRtcF9vc3IsIHRtcF9zYnIsIHRt
+cF9kaWZmLCB0bXA7DQo+ID4+ID4gKyAgICAgICB1MzIgY2xrID0gc3BvcnQtPnBvcnQudWFydGNs
+azsNCj4gPj4gPiArDQo+ID4+ID4gKyAgICAgICAvKg0KPiA+PiA+ICsgICAgICAgICogVGhlIGlk
+ZWEgaXMgdG8gdXNlIHRoZSBiZXN0IE9TUiAob3Zlci1zYW1wbGluZyByYXRlKQ0KPiBwb3NzaWJs
+ZS4NCj4gPj4gPiArICAgICAgICAqIE5vdGUsIE9TUiBpcyB0eXBpY2FsbHkgaGFyZC1zZXQgdG8g
+MTYgaW4gb3RoZXIgTFBVQVJUDQo+ID4+IGluc3RhbnRpYXRpb25zLg0KPiA+PiA+ICsgICAgICAg
+ICogTG9vcCB0byBmaW5kIHRoZSBiZXN0IE9TUiB2YWx1ZSBwb3NzaWJsZSwgb25lIHRoYXQNCj4g
+Pj4gPiArIGdlbmVyYXRlcw0KPiA+PiBtaW5pbXVtDQo+ID4+ID4gKyAgICAgICAgKiBiYXVkX2Rp
+ZmYgaXRlcmF0ZSB0aHJvdWdoIHRoZSByZXN0IG9mIHRoZSBzdXBwb3J0ZWQNCj4gPj4gPiArIHZh
+bHVlcyBvZg0KPiA+PiBPU1IuDQo+ID4+ID4gKyAgICAgICAgKg0KPiA+PiA+ICsgICAgICAgICog
+Q2FsY3VsYXRpb24gRm9ybXVsYToNCj4gPj4gPiArICAgICAgICAqICBCYXVkIFJhdGUgPSBiYXVk
+IGNsb2NrIC8gKChPU1IrMSkgw5cgU0JSKQ0KPiA+PiA+ICsgICAgICAgICovDQo+ID4+ID4gKyAg
+ICAgICBiYXVkX2RpZmYgPSBiYXVkcmF0ZTsNCj4gPj4gPiArICAgICAgIG9zciA9IDA7DQo+ID4+
+ID4gKyAgICAgICBzYnIgPSAwOw0KPiA+PiA+ICsNCj4gPj4NCj4gPj4gPiArICAgICAgIGZvciAo
+dG1wX29zciA9IDQ7IHRtcF9vc3IgPD0gMzI7IHRtcF9vc3IrKykgew0KPiANCj4gSSBtaXNzZWQg
+b25lIHRoaW5nLCB3aGF0IGhhcHBlbmVkIGJ5IGRlZmF1bHQgdG8gT1NSPyBXaGF0IGlzIHRoZSB2
+YWx1ZSBpbg0KPiB1c2U/DQo+IA0KDQpObyB2YWxpZCBkZWZhdWx0IHZhbHVlLiAob3NjL3NiciBh
+cmUgMCBieSBkZWZhdWx0KQ0KSWYgbm8gcHJvcGVyIG9zYyBhbmQgc2JyIGNhbGN1bGF0ZWQsIGEg
+V0FSTklORyB3aWxsIHNob3cuDQoNCj4gPj4gSSBfdGhpbmtfIHlvdSBtYXkgc2ltcGxpZnkgdGhp
+cyBhbmQgYXZvaWQgZm9yLWxvb3AgaWYgeW91IHJlY29uc2lkZXINCj4gPj4gYXBwcm9hY2guDQo+
+IA0KPiA+IEJ1dCB0aGVyZSBpcyBpbmRlZWQgYSBvcHRpbWl6YXRpb24gd2F5LCBzZWUgYmVsb3cu
+DQo+IA0KPiA+IFRvIG9wdGltaXplIHRoZSBsb29waW5nLCB3ZSBwcm9iYWJseSBjb3VsZCBkbzoN
+Cj4gPiBJZiAoIWJhdWRfZGlmZikNCj4gPiAgICAgICAgIEJyZWFrOw0KPiANCj4gSXQncyBhIHNt
+YWxsIG9uZSwgd2UgbWF5IGhhdmUgbW9yZSBpbnRlcmVzdGluZyBhcHByb2FjaC4NCj4gDQo+IFNv
+LCB0aGUgYWxnbyBpcyB0aGUgZm9sbG93aW5nOg0KPiANCj4gQXNzdW1lIHRoZSByYW5nZXMgbGlr
+ZSB0aGlzOg0KPiBPU1IgPSBbNCAuLi4gMzJdDQo+IFNCUiA9IFsyIC4uLiA4MTkyXQ0KPiANCg0K
+QmF1ZCBSYXRlID0gYmF1ZCBjbG9jayAvICgoT1NSKzEpIMOXIFNCUikNCg0KSW4gSFc6DQpPU1Ig
+cmFuZ2UgOiAzIOKAkyAzMQ0KU0JSIHJhbmdlOiAxIOKAkyA4MTkxDQoNCj4gVGhlbjoNCj4gDQo+
+IDEuIEdldCByYXRpbyBmYWN0b3IgYXMNCj4gICAgICAgcmF0aW8gPSBDTEsgLyBkZXNpcmVkIGJh
+dWQgcmF0ZQ0KPiAyLiBJZiByYXRpbyA8IDgxOTIgKiA5IC8gMiwganVzdCB1c2UgKHJhdGlvIC8g
+NCwgNCkgYXMgKE9TUiwgU0JSKSBzZXR0aW5nLg0KPiAoTmVlZHMgY2xhcmlmaWNhdGlvbiBvbiBP
+U1IgPCA0KSANCg0KU29ycnkgdGhhdCBJJ20gYSBiaXQgbWVzcyBoZXJlLg0KV2hhdCBpcyA4MTky
+ICogOSAvMiBtZWFuaW5nPw0KDQpBbmQgZm9yIChyYXRpbyAvIDQsIDQpIGFzIChPU1IsU0JSKSwg
+dGFrZSAxMTUyMDAgYXMgYW4gZXhhbXBsZToNCkFzc3VtaW5nIGJhdWQgY2xvY2sgMjRNaHouDQoN
+ClJhdGlvID0gMjQwMDAwMDAgLyAxMTUyMDAgPSAyMDgNCk9TUiA9IFJhdGlvIC8gNCA9IDUyIA0K
+VGhlbiBPU1IgaXMgb3V0IG9mIHJhbmdlIHdoaWNoIHNlZW1zIHdyb25nLg0KDQo+IDMuIGlmIHJh
+dGlvID49IDgxOTIgKiAzMSwganVzdCB1c2UgdGhvc2UNCj4gdHdvIG51bWJlcnMgKDgxOTIsIDMx
+KS4gWW91IGNhbid0IGRvIGFueXRoaW5nIGJldHRlciB0aGVyZS4NCg0KVGhpcyBhY3R1YWxseSBt
+YXkgbm90IGhhcHBlbi4NCkV2ZW4gdGFrZSBhIDk2MDAgYXMgZXhhbXBsZSwgdGhlIGNsayBiZWNv
+bWVzOg0KODE5MSAqIDMxICogOTYwMCA9IDIuNEdIeg0KV2hpY2ggaXMgdGhlb3JldGljYWxseSBu
+b3QgZXhpc3QuDQoNCj4gNC4gT3RoZXJ3aXNlLCBnZXQgYSBtaW5pbXVtIHJlcXVpcmVkIGZhY3Rv
+ciBvZiBPU1INCj4gICAgICAgb3NyX21pbiA9IHJhdGlvIC8gODE5Mg0KPiA1LiBTdGFydCB5b3Vy
+IGxvb3AgZnJvbSBvc3JfbWluICsgMSB0byAzMS4NCj4gDQo+IDYgKG9wdGlvbmFsKS4gT2YgY291
+cnNlIHlvdSBtYXkgbm90IGNvbnNpZGVyIGJhdWRfZGlmZiA+IG9zcl9taW4sIGl0J3MgSQ0KPiBz
+dXBwb3NlIG9idmlvdXMNCj4gDQo+IFAuUy4gTm90ZSwgYWxsIGRpdmlzaW9ucyBieSAyXm4gYXJl
+IGp1c3Qgc2ltcGxlIHJpZ2h0IHNoaWZ0cy4gRGlmZnMgYXJlDQo+IGNhbGN1bGF0ZWQgYXMgbXVs
+dGlwbGljYXRpb24gb2YgT1NSIGFuZCBTQlIgaW4gY29tcGFyaXNvbiB0byByYXRpby4gT25lDQo+
+IGRpdmlzaW9uIHNvIGZhci4NCj4gDQoNCkknbSBub3QgcXVpdGUgdW5kZXJzdGFuZCB0aGUgYXBw
+cm9hY2guDQoNCkhvdyBhYm91dCB5b3Ugc2VuZCBhIHNlcGFyYXRlIGJhdWQgYWxnb3JpdGhtIGlt
+cHJvdmVtZW50IHBhdGNoIGxhdGVyPw0KVGhlbiBpdCBmaXJzdCBjYW4gcHJvdmlkZSB1cyBhIGdv
+b2QgcGF0Y2ggaGlzdG9yeSBhbmQgYWxzbyBiZXR0ZXIgdG8NCnVuZGVyc3RhbmQgZm9yIHJldmll
+dy4NCg0KTGFzdCwgdmVyeSBhcHByZWNpYXRlIGZvciB5b3VyIGtpbmQgYW5kIHByb2Zlc3Npb25h
+bCByZXZpZXcuDQoNClJlZ2FyZHMNCkRvbmcgQWlzaGVuZw0K
