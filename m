@@ -1,289 +1,160 @@
-From: YT Shen <yt.shen@mediatek.com>
-Subject: Re: [PATCH v2 2/2] arm64: dts: Add Mediatek SoC MT2712 and
- evaluation board dts and Makefile
-Date: Fri, 9 Jun 2017 21:56:09 +0800
-Message-ID: <1497016569.29586.36.camel@mtksdaap41>
-References: <1496230773-22633-1-git-send-email-yt.shen@mediatek.com>
-         <1496230773-22633-3-git-send-email-yt.shen@mediatek.com>
-         <92e438b3-4e9c-421b-5398-5aad2541524c@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: Dominik Heidler <dheidler@suse.de>
+Subject: [PATCH 09/10] Revert "printk: fix double printing with earlycon"
+Date: Fri,  9 Jun 2017 15:53:32 +0200
+Message-ID: <20170609135333.15847-10-dheidler@suse.de>
+References: <20170609135333.15847-1-dheidler@suse.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <92e438b3-4e9c-421b-5398-5aad2541524c@gmail.com>
+In-Reply-To: <20170609135333.15847-1-dheidler@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Mars Cheng <mars.cheng@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com
+To: dominik@heidler.eu
+Cc: Petr Mladek <pmladek@suse.com>, Aleksey Makarov <aleksey.makarov@linaro.org>, Sabrina Dubroca <sd@queasysnail.net>, Sudeep Holla <sudeep.holla@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, Jiri Slaby <jslaby@suse.com>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2017-05-31 at 14:42 +0200, Matthias Brugger wrote:
-> 
-> On 31/05/17 13:39, YT Shen wrote:
-> > This adds basic chip support for Mediatek 2712
-> > 
-> > Signed-off-by: YT Shen <yt.shen@mediatek.com>
-> > ---
-> >   arch/arm64/boot/dts/mediatek/Makefile       |   1 +
-> >   arch/arm64/boot/dts/mediatek/mt2712-evb.dts |  39 +++++++
-> >   arch/arm64/boot/dts/mediatek/mt2712e.dtsi   | 166 ++++++++++++++++++++++++++++
-> >   3 files changed, 206 insertions(+)
-> >   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-> >   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> > 
-> > diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-> > index 9fbfd32..fcc0604 100644
-> > --- a/arch/arm64/boot/dts/mediatek/Makefile
-> > +++ b/arch/arm64/boot/dts/mediatek/Makefile
-> > @@ -1,3 +1,4 @@
-> > +dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
-> >   dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
-> >   dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
-> >   dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt2712-evb.dts b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-> > new file mode 100644
-> > index 0000000..e526c0f
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-> > @@ -0,0 +1,39 @@
-> > +/*
-> > + * Copyright (c) 2017 MediaTek Inc.
-> > + * Author: YT Shen <yt.shen@mediatek.com>
-> > + *
-> > + * SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> > + */
-> > +
-> > +/dts-v1/;
-> > +#include "mt2712e.dtsi"
-> > +
-> > +/ {
-> > +	model = "MediaTek MT2712 evaluation board";
-> > +	compatible = "mediatek,mt2712-evb", "mediatek,mt2712";
-> > +
-> > +	aliases {
-> > +		serial0 = &uart0;
-> > +		serial1 = &uart1;
-> > +		serial2 = &uart2;
-> > +		serial3 = &uart3;
-> > +		serial4 = &uart4;
-> > +		serial5 = &uart5;
-> > +	};
-> 
-> Just declare serial0 here, as you don't use the others.
-Ok, will remove the others.
+From: Petr Mladek <pmladek@suse.com>
 
-Sorry for the late reply.
+This reverts commit cf39bf58afdaabc0b86f141630fb3fd18190294e.
 
-> > +
-> > +	memory@40000000 {
-> > +		device_type = "memory";
-> > +		reg = <0 0x40000000 0 0x80000000>;
-> > +	};
-> > +
-> > +	chosen {
-> > +		stdout-path = "serial0:921600n8";
-> > +		linux,initrd-start = <0x45000000>;
-> > +		linux,initrd-end   = <0x4a000000>;
-> 
-> initrd-start and end should be dynamically set by the bootloader and not 
-> via a chosen node. Is your bootloader not able to do that?
-OK, will remove initrd start and end later.
-Yes, current bootloader I used is new development and it does not send
-any parameters now
+The commit regression to users that define both console=ttyS1
+and console=ttyS0 on the command line, see
+https://lkml.kernel.org/r/20170509082915.GA13236@bistromath.localdomain
 
-> 
-> > +	};
-> > +};
-> > +
-> > +&uart0 {
-> > +	status = "okay";
-> > +};
-> > +
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> > new file mode 100644
-> > index 0000000..6df0da9
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> > @@ -0,0 +1,166 @@
-> > +/*
-> > + * Copyright (c) 2017 MediaTek Inc.
-> > + * Author: YT Shen <yt.shen@mediatek.com>
-> > + *
-> > + * SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> > + */
-> > +
-> > +#include <dt-bindings/interrupt-controller/irq.h>
-> > +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> > +
-> > +/ {
-> > +	compatible = "mediatek,mt2712";
-> > +	interrupt-parent = <&sysirq>;
-> > +	#address-cells = <2>;
-> > +	#size-cells = <2>;
-> > +
-> > +	cpus {
-> > +		#address-cells = <1>;
-> > +		#size-cells = <0>;
-> > +
-> > +		cpu-map {
-> > +			cluster0 {
-> > +				core0 {
-> > +					cpu = <&cpu0>;
-> > +				};
-> > +				core1 {
-> > +					cpu = <&cpu1>;
-> > +				};
-> > +			};
-> > +
-> > +			cluster1 {
-> > +				core0 {
-> > +					cpu = <&cpu2>;
-> > +				};
-> > +			};
-> > +		};
-> > +
-> > +		cpu0: cpu@0 {
-> > +			device_type = "cpu";
-> > +			compatible = "arm,cortex-a35";
-> 
-> do you mean cortex-a53?
-No, the cpu is cortex-a35.
-Although I cannot find other cortex-a35 description in mainline kernel.
+The kernel log messages always appeared only on one serial port. It is
+even documented in Documentation/admin-guide/serial-console.rst:
 
-Thanks for the review.
+"Note that you can only define one console per device type (serial,
+video)."
 
-yt.shen
+The above mentioned commit changed the order in which the command line
+parameters are searched. As a result, the kernel log messages go to
+the last mentioned ttyS* instead of the first one.
 
-> 
-> > +			reg = <0x000>;
-> > +		};
-> > +
-> > +		cpu1: cpu@1 {
-> > +			device_type = "cpu";
-> > +			compatible = "arm,cortex-a35";
-> 
-> same here.
-> 
-> Regards,
-> Matthias
-> 
-> > +			reg = <0x001>;
-> > +			enable-method = "psci";
-> > +		};
-> > +
-> > +		cpu2: cpu@200 {
-> > +			device_type = "cpu";
-> > +			compatible = "arm,cortex-a72";
-> > +			reg = <0x200>;
-> > +			enable-method = "psci";
-> > +		};
-> > +	};
-> > +
-> > +	psci {
-> > +		compatible = "arm,psci-0.2";
-> > +		method = "smc";
-> > +	};
-> > +
-> > +	uart_clk: dummy26m {
-> > +		compatible = "fixed-clock";
-> > +		clock-frequency = <26000000>;
-> > +		#clock-cells = <0>;
-> > +	};
-> > +
-> > +	timer {
-> > +		compatible = "arm,armv8-timer";
-> > +		interrupt-parent = <&gic>;
-> > +		interrupts = <GIC_PPI 13
-> > +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-> > +			     <GIC_PPI 14
-> > +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-> > +			     <GIC_PPI 11
-> > +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
-> > +			     <GIC_PPI 10
-> > +			      (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>;
-> > +	};
-> > +
-> > +	soc {
-> > +		#address-cells = <2>;
-> > +		#size-cells = <2>;
-> > +		compatible = "simple-bus";
-> > +		ranges;
-> > +
-> > +		uart5: serial@1000f000 {
-> > +			compatible = "mediatek,mt2712-uart",
-> > +				     "mediatek,mt6577-uart";
-> > +			reg = <0 0x1000f000 0 0x400>;
-> > +			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
-> > +			clocks = <&uart_clk>;
-> > +			status = "disabled";
-> > +		};
-> > +
-> > +		sysirq: interrupt-controller@10220a80 {
-> > +			compatible = "mediatek,mt2712-sysirq",
-> > +				     "mediatek,mt6577-sysirq";
-> > +			interrupt-controller;
-> > +			#interrupt-cells = <3>;
-> > +			interrupt-parent = <&gic>;
-> > +			reg = <0 0x10220a80 0 0x40>;
-> > +		};
-> > +
-> > +		gic: interrupt-controller@10510000 {
-> > +			compatible = "arm,gic-400";
-> > +			#interrupt-cells = <3>;
-> > +			interrupt-parent = <&gic>;
-> > +			interrupt-controller;
-> > +			reg = <0 0x10510000 0 0x1000>,
-> > +			      <0 0x10520000 0 0x1000>,
-> > +			      <0 0x10540000 0 0x2000>,
-> > +			      <0 0x10560000 0 0x2000>;
-> > +			interrupts = <GIC_PPI 9
-> > +				(GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_HIGH)>;
-> > +		};
-> > +
-> > +		uart0: serial@11002000 {
-> > +			compatible = "mediatek,mt2712-uart",
-> > +				     "mediatek,mt6577-uart";
-> > +			reg = <0 0x11002000 0 0x400>;
-> > +			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-> > +			clocks = <&uart_clk>;
-> > +			status = "disabled";
-> > +		};
-> > +
-> > +		uart1: serial@11003000 {
-> > +			compatible = "mediatek,mt2712-uart",
-> > +				     "mediatek,mt6577-uart";
-> > +			reg = <0 0x11003000 0 0x400>;
-> > +			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-> > +			clocks = <&uart_clk>;
-> > +			status = "disabled";
-> > +		};
-> > +
-> > +		uart2: serial@11004000 {
-> > +			compatible = "mediatek,mt2712-uart",
-> > +				     "mediatek,mt6577-uart";
-> > +			reg = <0 0x11004000 0 0x400>;
-> > +			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-> > +			clocks = <&uart_clk>;
-> > +			status = "disabled";
-> > +		};
-> > +
-> > +		uart3: serial@11005000 {
-> > +			compatible = "mediatek,mt2712-uart",
-> > +				     "mediatek,mt6577-uart";
-> > +			reg = <0 0x11005000 0 0x400>;
-> > +			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_LOW>;
-> > +			clocks = <&uart_clk>;
-> > +			status = "disabled";
-> > +		};
-> > +
-> > +		uart4: serial@11019000 {
-> > +			compatible = "mediatek,mt2712-uart",
-> > +				     "mediatek,mt6577-uart";
-> > +			reg = <0 0x11019000 0 0x400>;
-> > +			interrupts = <GIC_SPI 126 IRQ_TYPE_LEVEL_LOW>;
-> > +			clocks = <&uart_clk>;
-> > +			status = "disabled";
-> > +		};
-> > +	};
-> > +};
-> > +
-> > 
+We long thought that using two console=ttyS* on the command line
+did not make sense. But then we realized that console= parameters
+were handled also by systemd, see
+http://0pointer.de/blog/projects/serial-console.html
+
+"By default systemd will instantiate one serial-getty@.service on
+the main kernel console, if it is not a virtual terminal."
+
+where
+
+"[4] If multiple kernel consoles are used simultaneously, the main
+console is the one listed first in /sys/class/tty/console/active,
+which is the last one listed on the kernel command line."
+
+This puts the original report into another light. The system is running
+in qemu. The first serial port is used to store the messages into a file.
+The second one is used to login to the system via a socket. It depends
+on systemd and the historic kernel behavior.
+
+By other words, systemd causes that it makes sense to define both
+console=ttyS1 console=ttyS0 on the command line. The kernel fix
+caused regression related to userspace (systemd) and need to be
+reverted.
+
+In addition, it went out that the fix helped only partially.
+The messages still were duplicated when the boot console was
+removed early by late_initcall(printk_late_init). Then the entire
+log was replayed when the same console was registered as a normal one.
+
+Link: 20170606160339.GC7604@pathway.suse.cz
+Cc: Aleksey Makarov <aleksey.makarov@linaro.org>
+Cc: Sabrina Dubroca <sd@queasysnail.net>
+Cc: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: "Nair, Jayachandran" <Jayachandran.Nair@cavium.com>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Reported-by: Sabrina Dubroca <sd@queasysnail.net>
+Acked-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+---
+ kernel/printk/printk.c | 46 ++++++++++------------------------------------
+ 1 file changed, 10 insertions(+), 36 deletions(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 779479ac9f57..9dbceb76e6bc 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -269,7 +269,6 @@ static struct console *exclusive_console;
+ #define MAX_CMDLINECONSOLES 8
+ 
+ static struct console_cmdline console_cmdline[MAX_CMDLINECONSOLES];
+-static int console_cmdline_cnt;
+ 
+ static int preferred_console = -1;
+ int console_set_on_cmdline;
+@@ -1906,25 +1905,12 @@ static int __add_preferred_console(char *name, int idx, char *options,
+ 	 *	See if this tty is not yet registered, and
+ 	 *	if we have a slot free.
+ 	 */
+-	for (i = 0, c = console_cmdline; i < console_cmdline_cnt; i++, c++) {
++	for (i = 0, c = console_cmdline;
++	     i < MAX_CMDLINECONSOLES && c->name[0];
++	     i++, c++) {
+ 		if (strcmp(c->name, name) == 0 && c->index == idx) {
+-			if (brl_options)
+-				return 0;
+-
+-			/*
+-			 * Maintain an invariant that will help to find if
+-			 * the matching console is preferred, see
+-			 * register_console():
+-			 *
+-			 * The last non-braille console is always
+-			 * the preferred one.
+-			 */
+-			if (i != console_cmdline_cnt - 1)
+-				swap(console_cmdline[i],
+-				     console_cmdline[console_cmdline_cnt - 1]);
+-
+-			preferred_console = console_cmdline_cnt - 1;
+-
++			if (!brl_options)
++				preferred_console = i;
+ 			return 0;
+ 		}
+ 	}
+@@ -1937,7 +1923,6 @@ static int __add_preferred_console(char *name, int idx, char *options,
+ 	braille_set_options(c, brl_options);
+ 
+ 	c->index = idx;
+-	console_cmdline_cnt++;
+ 	return 0;
+ }
+ /*
+@@ -2477,23 +2462,12 @@ void register_console(struct console *newcon)
+ 	}
+ 
+ 	/*
+-	 * See if this console matches one we selected on the command line.
+-	 *
+-	 * There may be several entries in the console_cmdline array matching
+-	 * with the same console, one with newcon->match(), another by
+-	 * name/index:
+-	 *
+-	 *	pl011,mmio,0x87e024000000,115200 -- added from SPCR
+-	 *	ttyAMA0 -- added from command line
+-	 *
+-	 * Traverse the console_cmdline array in reverse order to be
+-	 * sure that if this console is preferred then it will be the first
+-	 * matching entry.  We use the invariant that is maintained in
+-	 * __add_preferred_console().
++	 *	See if this console matches one we selected on
++	 *	the command line.
+ 	 */
+-	for (i = console_cmdline_cnt - 1; i >= 0; i--) {
+-		c = console_cmdline + i;
+-
++	for (i = 0, c = console_cmdline;
++	     i < MAX_CMDLINECONSOLES && c->name[0];
++	     i++, c++) {
+ 		if (!newcon->match ||
+ 		    newcon->match(newcon, c->name, c->index, c->options) != 0) {
+ 			/* default matching */
+-- 
+2.13.0
