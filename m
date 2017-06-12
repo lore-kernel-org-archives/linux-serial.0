@@ -1,44 +1,110 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [RFC, PATCH] imx: serial: Take tty->files_lock opportunistically
-Date: Mon, 12 Jun 2017 08:46:56 +0200
-Message-ID: <20170612064656.GA15926@kroah.com>
-References: <20170530123726.18598-1-andrew.smirnov@gmail.com>
- <CAL_JsqJUF8NhEhGY2FPPX5GUF3oP9XONQJy9sj42uPYATskz9A@mail.gmail.com>
- <20170530144213.48df2a1c@alans-desktop>
- <20170530134427.GD6786@collabora.com>
- <20170603093048.GA9120@kroah.com>
- <CAOMZO5A_hLkuQkmfQFmCmLtCFimf0i70WbtYMr0o811vpreKbA@mail.gmail.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH v4 6/7] ARM: dts: meson8: switch to new bindings for UART
+ nodes
+Date: Mon, 12 Jun 2017 09:27:23 +0200
+Message-ID: <4a53855c-3e72-243d-6d74-2ccc5cbdc706@baylibre.com>
+References: <1497001756-942-1-git-send-email-narmstrong@baylibre.com>
+ <1497001756-942-7-git-send-email-narmstrong@baylibre.com>
+ <CAFBinCD6_nGdqBSOJwyj0XQe8H05nw-r52pctY7ADJu0EqMb2A@mail.gmail.com>
+ <CAFBinCBNhRtt8jiY+19_B-9_mNmB800rvD+rwBzYNfB5pXM53Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAOMZO5A_hLkuQkmfQFmCmLtCFimf0i70WbtYMr0o811vpreKbA@mail.gmail.com>
+In-Reply-To: <CAFBinCBNhRtt8jiY+19_B-9_mNmB800rvD+rwBzYNfB5pXM53Q@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Peter Senna Tschudin <peter.senna@collabora.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Rob Herring <robherring2@gmail.com>, Andrey Smirnov <andrew.smirnov@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Chris Healy <cphealy@gmail.com>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: gregkh@linuxfoundation.org, khilman@baylibre.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, hgkr.klein@gmail.com, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Jun 11, 2017 at 09:33:13PM -0300, Fabio Estevam wrote:
-> Hi Greg,
-> 
-> On Sat, Jun 3, 2017 at 6:30 AM, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> > On Tue, May 30, 2017 at 03:44:27PM +0200, Peter Senna Tschudin wrote:
-> >> On Tue, May 30, 2017 at 02:42:13PM +0100, Alan Cox wrote:
-> >>
-> >> I sent a second patch recently:
-> >>
-> >> https://patchwork.kernel.org/patch/9725625/
-> >
-> > And it's already in linux-next so all should be good here.
-> 
-> linux-next is good, but mainline is not.
-> 
-> Actually we need 4dec2f119e86f9c9 ("imx-serial: RX DMA startup
-> latency") to be applied to 4.12-rc as well.
+On 06/11/2017 10:18 PM, Martin Blumenstingl wrote:
+> On Sat, Jun 10, 2017 at 12:37 AM, Martin Blumenstingl
+> <martin.blumenstingl@googlemail.com> wrote:
+>> Hi Neil,
+>>
+>> On Fri, Jun 9, 2017 at 11:49 AM, Neil Armstrong <narmstrong@baylibre.com> wrote:
+>>> Switch to the stable UART bindings by adding a XTAL node and using the
+>>> proper compatible strings.
+>> unfortunately this won't apply now that Kevin has merged my "ARM: dts:
+>> meson8: add and use the real clock controller"
+>> on the other hand this will make the patch easier as you can now do
+>> the same changes as in meson8b.dtsi
+> Neil, if you want you could also drop this from your series and let me
+> handle this (just let me know). I would even go one step further and
+> export the CLKID_UART0, CLKID_UART1 and CLKID_UART2 gates and pass
+> them as "pclk" for uart_{A,B,C}
+> I'll even *try* to test if this works on real hardware (my Meson8m2
+> board has a RTL8723BS SDIO wifi + bluetooth chip - wifi driver support
+> has been pretty bad so far - but I'll try to see if I can get and
+> messages out of the bluetooth part)
+> just let me know if you want me to handle this patch for you
 
-Why?  Can't it wait until 4.13-rc1?
 
-thanks,
+No in fact it was just a "PoC" to show how to handle it on non-gx DTS.
 
-greg k-h
+I'm ok to leave it to you when the UART code is merged.
+
+Neil
+
+> 
+>>> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+>>> ---
+>>>  arch/arm/boot/dts/meson8.dtsi | 23 +++++++++++++++++++----
+>>>  1 file changed, 19 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/arch/arm/boot/dts/meson8.dtsi b/arch/arm/boot/dts/meson8.dtsi
+>>> index 6993077..a2ea112 100644
+>>> --- a/arch/arm/boot/dts/meson8.dtsi
+>>> +++ b/arch/arm/boot/dts/meson8.dtsi
+>>> @@ -83,6 +83,13 @@
+>>>                 };
+>>>         };
+>>>
+>>> +       xtal: xtal-clk {
+>>> +               compatible = "fixed-clock";
+>>> +               clock-frequency = <24000000>;
+>>> +               clock-output-names = "xtal";
+>>> +               #clock-cells = <0>;
+>>> +       };
+>>> +
+>>>         clk81: clk@0 {
+>>>                 #clock-cells = <0>;
+>>>                 compatible = "fixed-clock";
+>>> @@ -199,17 +206,25 @@
+>>>  };
+>>>
+>>>  &uart_AO {
+>>> -       clocks = <&clk81>;
+>>> +       compatible = "amlogic,meson8-uart", "amlogic,meson-ao-uart";
+>>> +       clocks = <&xtal>, <&clk81>, <&clk81>;
+>>> +       clock-names = "xtal", "pclk", "baud";
+>>>  };
+>>>
+>>>  &uart_A {
+>>> -       clocks = <&clk81>;
+>>> +       compatible = "amlogic,meson8-uart";
+>>> +       clocks = <&xtal>, <&clk81>, <&clk81>;
+>>> +       clock-names = "xtal", "pclk", "baud";
+>>>  };
+>>>
+>>>  &uart_B {
+>>> -       clocks = <&clk81>;
+>>> +       compatible = "amlogic,meson8-uart";
+>>> +       clocks = <&xtal>, <&clk81>, <&clk81>;
+>>> +       clock-names = "xtal", "pclk", "baud";
+>>>  };
+>>>
+>>>  &uart_C {
+>>> -       clocks = <&clk81>;
+>>> +       compatible = "amlogic,meson8-uart";
+>>> +       clocks = <&xtal>, <&clk81>, <&clk81>;
+>>> +       clock-names = "xtal", "pclk", "baud";
+>>>  };
+>>> --
+>>> 1.9.1
+>>>
+>>>
+>>> _______________________________________________
+>>> linux-amlogic mailing list
+>>> linux-amlogic@lists.infradead.org
+>>> http://lists.infradead.org/mailman/listinfo/linux-amlogic
