@@ -1,101 +1,35 @@
-From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Subject: Re: [PATCH v4 6/7] ARM: dts: meson8: switch to new bindings for UART nodes
-Date: Sun, 11 Jun 2017 22:18:54 +0200
-Message-ID: <CAFBinCBNhRtt8jiY+19_B-9_mNmB800rvD+rwBzYNfB5pXM53Q@mail.gmail.com>
-References: <1497001756-942-1-git-send-email-narmstrong@baylibre.com>
- <1497001756-942-7-git-send-email-narmstrong@baylibre.com> <CAFBinCD6_nGdqBSOJwyj0XQe8H05nw-r52pctY7ADJu0EqMb2A@mail.gmail.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [RFC, PATCH] imx: serial: Take tty->files_lock opportunistically
+Date: Sun, 11 Jun 2017 21:33:13 -0300
+Message-ID: <CAOMZO5A_hLkuQkmfQFmCmLtCFimf0i70WbtYMr0o811vpreKbA@mail.gmail.com>
+References: <20170530123726.18598-1-andrew.smirnov@gmail.com>
+ <CAL_JsqJUF8NhEhGY2FPPX5GUF3oP9XONQJy9sj42uPYATskz9A@mail.gmail.com>
+ <20170530144213.48df2a1c@alans-desktop> <20170530134427.GD6786@collabora.com> <20170603093048.GA9120@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAFBinCD6_nGdqBSOJwyj0XQe8H05nw-r52pctY7ADJu0EqMb2A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hgkr.klein-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170603093048.GA9120@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Peter Senna Tschudin <peter.senna@collabora.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Rob Herring <robherring2@gmail.com>, Andrey Smirnov <andrew.smirnov@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Chris Healy <cphealy@gmail.com>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Jun 10, 2017 at 12:37 AM, Martin Blumenstingl
-<martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org> wrote:
-> Hi Neil,
->
-> On Fri, Jun 9, 2017 at 11:49 AM, Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org> wrote:
->> Switch to the stable UART bindings by adding a XTAL node and using the
->> proper compatible strings.
-> unfortunately this won't apply now that Kevin has merged my "ARM: dts:
-> meson8: add and use the real clock controller"
-> on the other hand this will make the patch easier as you can now do
-> the same changes as in meson8b.dtsi
-Neil, if you want you could also drop this from your series and let me
-handle this (just let me know). I would even go one step further and
-export the CLKID_UART0, CLKID_UART1 and CLKID_UART2 gates and pass
-them as "pclk" for uart_{A,B,C}
-I'll even *try* to test if this works on real hardware (my Meson8m2
-board has a RTL8723BS SDIO wifi + bluetooth chip - wifi driver support
-has been pretty bad so far - but I'll try to see if I can get and
-messages out of the bluetooth part)
-just let me know if you want me to handle this patch for you
+Hi Greg,
 
->> Signed-off-by: Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
->> ---
->>  arch/arm/boot/dts/meson8.dtsi | 23 +++++++++++++++++++----
->>  1 file changed, 19 insertions(+), 4 deletions(-)
+On Sat, Jun 3, 2017 at 6:30 AM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Tue, May 30, 2017 at 03:44:27PM +0200, Peter Senna Tschudin wrote:
+>> On Tue, May 30, 2017 at 02:42:13PM +0100, Alan Cox wrote:
 >>
->> diff --git a/arch/arm/boot/dts/meson8.dtsi b/arch/arm/boot/dts/meson8.dtsi
->> index 6993077..a2ea112 100644
->> --- a/arch/arm/boot/dts/meson8.dtsi
->> +++ b/arch/arm/boot/dts/meson8.dtsi
->> @@ -83,6 +83,13 @@
->>                 };
->>         };
+>> I sent a second patch recently:
 >>
->> +       xtal: xtal-clk {
->> +               compatible = "fixed-clock";
->> +               clock-frequency = <24000000>;
->> +               clock-output-names = "xtal";
->> +               #clock-cells = <0>;
->> +       };
->> +
->>         clk81: clk@0 {
->>                 #clock-cells = <0>;
->>                 compatible = "fixed-clock";
->> @@ -199,17 +206,25 @@
->>  };
->>
->>  &uart_AO {
->> -       clocks = <&clk81>;
->> +       compatible = "amlogic,meson8-uart", "amlogic,meson-ao-uart";
->> +       clocks = <&xtal>, <&clk81>, <&clk81>;
->> +       clock-names = "xtal", "pclk", "baud";
->>  };
->>
->>  &uart_A {
->> -       clocks = <&clk81>;
->> +       compatible = "amlogic,meson8-uart";
->> +       clocks = <&xtal>, <&clk81>, <&clk81>;
->> +       clock-names = "xtal", "pclk", "baud";
->>  };
->>
->>  &uart_B {
->> -       clocks = <&clk81>;
->> +       compatible = "amlogic,meson8-uart";
->> +       clocks = <&xtal>, <&clk81>, <&clk81>;
->> +       clock-names = "xtal", "pclk", "baud";
->>  };
->>
->>  &uart_C {
->> -       clocks = <&clk81>;
->> +       compatible = "amlogic,meson8-uart";
->> +       clocks = <&xtal>, <&clk81>, <&clk81>;
->> +       clock-names = "xtal", "pclk", "baud";
->>  };
->> --
->> 1.9.1
->>
->>
->> _______________________________________________
->> linux-amlogic mailing list
->> linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
->> http://lists.infradead.org/mailman/listinfo/linux-amlogic
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> https://patchwork.kernel.org/patch/9725625/
+>
+> And it's already in linux-next so all should be good here.
+
+linux-next is good, but mainline is not.
+
+Actually we need 4dec2f119e86f9c9 ("imx-serial: RX DMA startup
+latency") to be applied to 4.12-rc as well.
+
+Thanks
