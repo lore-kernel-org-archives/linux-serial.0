@@ -1,107 +1,108 @@
-From: Dong Aisheng <aisheng.dong@nxp.com>
-Subject: [PATCH V3 7/7] tty: serial: lpuart: add a more accurate baud rate
- calculation method
-Date: Mon, 12 Jun 2017 23:37:28 +0800
-Message-ID: <1497281848-12995-8-git-send-email-aisheng.dong@nxp.com>
-References: <1497281848-12995-1-git-send-email-aisheng.dong@nxp.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH V3 1/7] tty: serial: lpuart: introduce lpuart_soc_data to
+ represent SoC property
+Date: Mon, 12 Jun 2017 20:49:36 +0300
+Message-ID: <CAHp75Vdi8_cxkVuwnvBo7TmceMuA1n1mUg+D5v3xN4ck67MTMA@mail.gmail.com>
+References: <1497281848-12995-1-git-send-email-aisheng.dong@nxp.com> <1497281848-12995-2-git-send-email-aisheng.dong@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1497281848-12995-1-git-send-email-aisheng.dong@nxp.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org
-Cc: nikita.yoush@cogentembedded.com, Dong Aisheng <aisheng.dong@nxp.com>, fugang.duan@nxp.com, dongas86@gmail.com, gregkh@linuxfoundation.org, yangbo.lu@nxp.com, linux-kernel@vger.kernel.org, stefan@agner.ch, andy.shevchenko@gmail.com, Mingkai.Hu@nxp.com, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1497281848-12995-2-git-send-email-aisheng.dong@nxp.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Dong Aisheng <aisheng.dong@nxp.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Duan <fugang.duan@nxp.com>, Stefan Agner <stefan@agner.ch>, Mingkai Hu <Mingkai.Hu@nxp.com>, "Y.B. Lu" <yangbo.lu@nxp.com>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Dong Aisheng <dongas86@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-T24gbmV3IExQVUFSVCB2ZXJzaW9ucywgdGhlIG92ZXJzYW1wbGluZyByYXRpbyBmb3IgdGhlIHJl
-Y2VpdmVyIGNhbiBiZQpjaGFuZ2VkIGZyb20gNHggKDAwMDExKSB0byAzMnggKDExMTExKSB3aGlj
-aCBjb3VsZCBoZWxwIHVzIGdldCBhIG1vcmUKYWNjdXJhdGUgYmF1ZCByYXRlIGRpdmlkZXIuCgpU
-aGUgaWRlYSBpcyB0byB1c2UgdGhlIGJlc3QgT1NSIChvdmVyLXNhbXBsaW5nIHJhdGUpIHBvc3Np
-YmxlLgpOb3RlLCBPU1IgaXMgdHlwaWNhbGx5IGhhcmQtc2V0IHRvIDE2IGluIG90aGVyIExQVUFS
-VCBpbnN0YW50aWF0aW9ucy4KTG9vcCB0byBmaW5kIHRoZSBiZXN0IE9TUiB2YWx1ZSBwb3NzaWJs
-ZSwgb25lIHRoYXQgZ2VuZXJhdGVzIG1pbmltdW0KYmF1ZCBkaWZmIGl0ZXJhdGUgdGhyb3VnaCB0
-aGUgcmVzdCBvZiB0aGUgc3VwcG9ydGVkIHZhbHVlcyBvZiBPU1IuCgpDYzogR3JlZyBLcm9haC1I
-YXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz4KQ2M6IEppcmkgU2xhYnkgPGpzbGFi
-eUBzdXNlLmNvbT4KQ2M6IFN0ZWZhbiBBZ25lciA8c3RlZmFuQGFnbmVyLmNoPgpDYzogTWluZ2th
-aSBIdSA8TWluZ2thaS5IdUBueHAuY29tPgpDYzogWWFuZ2JvIEx1IDx5YW5nYm8ubHVAbnhwLmNv
-bT4KQWNrZWQtYnk6IEZ1Z2FuZyBEdWFuIDxmdWdhbmcuZHVhbkBueHAuY29tPgpTaWduZWQtb2Zm
-LWJ5OiBEb25nIEFpc2hlbmcgPGFpc2hlbmcuZG9uZ0BueHAuY29tPgoKLS0tCkNoYW5nZUxvZzoK
-djItPnYzOgogKiBlbmFibGUgbmV3IGJhdWQgcmF0ZSBjYWxjdWxhdGlvbiBtZXRob2QgYnkgZGVm
-YXVsdCB0byBnZXQgTGF5ZXJzY2FwZQogICBwbGF0Zm9ybXMgcnVuIGFuZCB0ZXN0LgogKiBicmVh
-ayBvdXQgaW4gY2FzZSB3ZSBhbHJlYWR5IGZpbmQgdGhlIG1pbnVtIGJhdWRfZGlmZgp2MS0+djI6
-CiAqIE5vIGNoYW5nZXMKLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jIHwgNzkg
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0KIDEgZmlsZSBjaGFuZ2Vk
-LCA3MiBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-dHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5j
-CmluZGV4IDZhNzI1Y2IuLmExNDYyODkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9m
-c2xfbHB1YXJ0LmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2ZzbF9scHVhcnQuYwpAQCAtMTQw
-LDYgKzE0MCw4IEBACiAjZGVmaW5lIFVBUlRCQVVEX1NCTlMJCTB4MDAwMDIwMDAKICNkZWZpbmUg
-VUFSVEJBVURfU0JSCQkweDAwMDAwMDAwCiAjZGVmaW5lIFVBUlRCQVVEX1NCUl9NQVNLCTB4MWZm
-ZgorI2RlZmluZSBVQVJUQkFVRF9PU1JfTUFTSyAgICAgICAweDFmCisjZGVmaW5lIFVBUlRCQVVE
-X09TUl9TSElGVCAgICAgIDI0CiAKICNkZWZpbmUgVUFSVFNUQVRfTEJLRElGCQkweDgwMDAwMDAw
-CiAjZGVmaW5lIFVBUlRTVEFUX1JYRURHSUYJMHg0MDAwMDAwMApAQCAtMTUxMSw2ICsxNTEzLDc1
-IEBAIGxwdWFydF9zZXRfdGVybWlvcyhzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LCBzdHJ1Y3Qga3Rl
-cm1pb3MgKnRlcm1pb3MsCiB9CiAKIHN0YXRpYyB2b2lkCitscHVhcnQzMl9zZXJpYWxfc2V0YnJn
-KHN0cnVjdCBscHVhcnRfcG9ydCAqc3BvcnQsIHVuc2lnbmVkIGludCBiYXVkcmF0ZSkKK3sKKwl1
-MzIgc2JyLCBvc3IsIGJhdWRfZGlmZiwgdG1wX29zciwgdG1wX3NiciwgdG1wX2RpZmYsIHRtcDsK
-Kwl1MzIgY2xrID0gc3BvcnQtPnBvcnQudWFydGNsazsKKworCS8qCisJICogVGhlIGlkZWEgaXMg
-dG8gdXNlIHRoZSBiZXN0IE9TUiAob3Zlci1zYW1wbGluZyByYXRlKSBwb3NzaWJsZS4KKwkgKiBO
-b3RlLCBPU1IgaXMgdHlwaWNhbGx5IGhhcmQtc2V0IHRvIDE2IGluIG90aGVyIExQVUFSVCBpbnN0
-YW50aWF0aW9ucy4KKwkgKiBMb29wIHRvIGZpbmQgdGhlIGJlc3QgT1NSIHZhbHVlIHBvc3NpYmxl
-LCBvbmUgdGhhdCBnZW5lcmF0ZXMgbWluaW11bQorCSAqIGJhdWRfZGlmZiBpdGVyYXRlIHRocm91
-Z2ggdGhlIHJlc3Qgb2YgdGhlIHN1cHBvcnRlZCB2YWx1ZXMgb2YgT1NSLgorCSAqCisJICogQ2Fs
-Y3VsYXRpb24gRm9ybXVsYToKKwkgKiAgQmF1ZCBSYXRlID0gYmF1ZCBjbG9jayAvICgoT1NSKzEp
-IMOXIFNCUikKKwkgKi8KKwliYXVkX2RpZmYgPSBiYXVkcmF0ZTsKKwlvc3IgPSAwOworCXNiciA9
-IDA7CisKKwlmb3IgKHRtcF9vc3IgPSA0OyB0bXBfb3NyIDw9IDMyOyB0bXBfb3NyKyspIHsKKwkJ
-LyogY2FsY3VsYXRlIHRoZSB0ZW1wb3Jhcnkgc2JyIHZhbHVlICAqLworCQl0bXBfc2JyID0gKGNs
-ayAvIChiYXVkcmF0ZSAqIHRtcF9vc3IpKTsKKwkJaWYgKHRtcF9zYnIgPT0gMCkKKwkJCXRtcF9z
-YnIgPSAxOworCisJCS8qCisJCSAqIGNhbGN1bGF0ZSB0aGUgYmF1ZCByYXRlIGRpZmZlcmVuY2Ug
-YmFzZWQgb24gdGhlIHRlbXBvcmFyeQorCQkgKiBvc3IgYW5kIHNiciB2YWx1ZXMKKwkJICovCisJ
-CXRtcF9kaWZmID0gY2xrIC8gKHRtcF9vc3IgKiB0bXBfc2JyKSAtIGJhdWRyYXRlOworCisJCS8q
-IHNlbGVjdCBiZXN0IHZhbHVlcyBiZXR3ZWVuIHNiciBhbmQgc2JyKzEgKi8KKwkJdG1wID0gY2xr
-IC8gKHRtcF9vc3IgKiAodG1wX3NiciArIDEpKTsKKwkJaWYgKHRtcF9kaWZmID4gKGJhdWRyYXRl
-IC0gdG1wKSkgeworCQkJdG1wX2RpZmYgPSBiYXVkcmF0ZSAtIHRtcDsKKwkJCXRtcF9zYnIrKzsK
-KwkJfQorCisJCWlmICh0bXBfZGlmZiA8PSBiYXVkX2RpZmYpIHsKKwkJCWJhdWRfZGlmZiA9IHRt
-cF9kaWZmOworCQkJb3NyID0gdG1wX29zcjsKKwkJCXNiciA9IHRtcF9zYnI7CisKKwkJCWlmICgh
-YmF1ZF9kaWZmKQorCQkJCWJyZWFrOworCQl9CisJfQorCisJLyogaGFuZGxlIGJ1YWRyYXRlIG91
-dHNpZGUgYWNjZXB0YWJsZSByYXRlICovCisJaWYgKGJhdWRfZGlmZiA+ICgoYmF1ZHJhdGUgLyAx
-MDApICogMykpCisJCWRldl93YXJuKHNwb3J0LT5wb3J0LmRldiwKKwkJCSAidW5hY2NlcHRhYmxl
-IGJhdWQgcmF0ZSBkaWZmZXJlbmNlIG9mIG1vcmUgdGhhbiAzJSVcbiIpOworCisJdG1wID0gbHB1
-YXJ0MzJfcmVhZCgmc3BvcnQtPnBvcnQsIFVBUlRCQVVEKTsKKworCWlmICgob3NyID4gMykgJiYg
-KG9zciA8IDgpKQorCQl0bXAgfD0gVUFSVEJBVURfQk9USEVER0U7CisKKwl0bXAgJj0gfihVQVJU
-QkFVRF9PU1JfTUFTSyA8PCBVQVJUQkFVRF9PU1JfU0hJRlQpOworCXRtcCB8PSAoKChvc3ItMSkg
-JiBVQVJUQkFVRF9PU1JfTUFTSykgPDwgVUFSVEJBVURfT1NSX1NISUZUKTsKKworCXRtcCAmPSB+
-VUFSVEJBVURfU0JSX01BU0s7CisJdG1wIHw9IHNiciAmIFVBUlRCQVVEX1NCUl9NQVNLOworCisJ
-dG1wICY9IH4oVUFSVEJBVURfVERNQUUgfCBVQVJUQkFVRF9SRE1BRSk7CisKKwlscHVhcnQzMl93
-cml0ZSgmc3BvcnQtPnBvcnQsIHRtcCwgVUFSVEJBVUQpOworfQorCitzdGF0aWMgdm9pZAogbHB1
-YXJ0MzJfc2V0X3Rlcm1pb3Moc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IGt0ZXJtaW9z
-ICp0ZXJtaW9zLAogCQkgICBzdHJ1Y3Qga3Rlcm1pb3MgKm9sZCkKIHsKQEAgLTE1MTksNyArMTU5
-MCw2IEBAIGxwdWFydDMyX3NldF90ZXJtaW9zKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHN0cnVj
-dCBrdGVybWlvcyAqdGVybWlvcywKIAl1bnNpZ25lZCBsb25nIGN0cmwsIG9sZF9jdHJsLCBiZCwg
-bW9kZW07CiAJdW5zaWduZWQgaW50ICBiYXVkOwogCXVuc2lnbmVkIGludCBvbGRfY3NpemUgPSBv
-bGQgPyBvbGQtPmNfY2ZsYWcgJiBDU0laRSA6IENTODsKLQl1bnNpZ25lZCBpbnQgc2JyOwogCiAJ
-Y3RybCA9IG9sZF9jdHJsID0gbHB1YXJ0MzJfcmVhZCgmc3BvcnQtPnBvcnQsIFVBUlRDVFJMKTsK
-IAliZCA9IGxwdWFydDMyX3JlYWQoJnNwb3J0LT5wb3J0LCBVQVJUQkFVRCk7CkBAIC0xNjE2LDEy
-ICsxNjg2LDcgQEAgbHB1YXJ0MzJfc2V0X3Rlcm1pb3Moc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwg
-c3RydWN0IGt0ZXJtaW9zICp0ZXJtaW9zLAogCWxwdWFydDMyX3dyaXRlKCZzcG9ydC0+cG9ydCwg
-b2xkX2N0cmwgJiB+KFVBUlRDVFJMX1RFIHwgVUFSVENUUkxfUkUpLAogCQkgICAgICAgVUFSVENU
-UkwpOwogCi0Jc2JyID0gc3BvcnQtPnBvcnQudWFydGNsayAvICgxNiAqIGJhdWQpOwotCWJkICY9
-IH5VQVJUQkFVRF9TQlJfTUFTSzsKLQliZCB8PSBzYnIgJiBVQVJUQkFVRF9TQlJfTUFTSzsKLQli
-ZCB8PSBVQVJUQkFVRF9CT1RIRURHRTsKLQliZCAmPSB+KFVBUlRCQVVEX1RETUFFIHwgVUFSVEJB
-VURfUkRNQUUpOwotCWxwdWFydDMyX3dyaXRlKCZzcG9ydC0+cG9ydCwgYmQsIFVBUlRCQVVEKTsK
-KwlscHVhcnQzMl9zZXJpYWxfc2V0YnJnKHNwb3J0LCBiYXVkKTsKIAlscHVhcnQzMl93cml0ZSgm
-c3BvcnQtPnBvcnQsIG1vZGVtLCBVQVJUTU9ESVIpOwogCWxwdWFydDMyX3dyaXRlKCZzcG9ydC0+
-cG9ydCwgY3RybCwgVUFSVENUUkwpOwogCS8qIHJlc3RvcmUgY29udHJvbCByZWdpc3RlciAqLwot
-LSAKMi43LjQKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-XwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmlu
-ZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9s
-aW51eC1hcm0ta2VybmVsCg==
+On Mon, Jun 12, 2017 at 6:37 PM, Dong Aisheng <aisheng.dong@nxp.com> wrote:
+> This is used to dynamically check the SoC specific lpuart properies.
+> Currently only the iotype is added, it functions the same as before.
+> With this, new chips with different iotype will be more easily added.
+
+
+> +struct lpuart_soc_data {
+> +       char    iotype;
+> +};
+> +
+> +static const struct lpuart_soc_data vf_data = {
+> +       .iotype = UPIO_MEM,
+> +};
+> +
+> +static const struct lpuart_soc_data ls_data = {
+> +       .iotype = UPIO_MEM32BE,
+
+> +
+
+Redundant.
+
+> +};
+
+And now most interesting part...
+
+> -               if (sport->lpuart32)
+> +               if (sport->port.iotype & UPIO_MEM32BE)
+>                         lpuart32_write(sport->port.x_char, sport->port.membase + UARTDATA);
+>                 else
+>                         writeb(sport->port.x_char, sport->port.membase + UARTDR);
+
+> -               if (sport->lpuart32)
+> +               if (sport->port.iotype & UPIO_MEM32BE)
+>                         lpuart32_stop_tx(&sport->port);
+>                 else
+>                         lpuart_stop_tx(&sport->port);
+
+> -       if (sport->lpuart32)
+> +       if (sport->port.iotype & UPIO_MEM32BE)
+>                 lpuart32_transmit_buffer(sport);
+>         else
+>                 lpuart_transmit_buffer(sport);
+
+> -               if (sport->lpuart32)
+> +               if (sport->port.iotype & UPIO_MEM32BE)
+>                         lpuart32_console_get_options(sport, &baud, &parity, &bits);
+>                 else
+>                         lpuart_console_get_options(sport, &baud, &parity, &bits);
+
+> -       if (sport->lpuart32)
+> +       if (sport->port.iotype & UPIO_MEM32BE)
+>                 lpuart32_setup_watermark(sport);
+>         else
+>                 lpuart_setup_watermark(sport);
+
+> -       if (sport->lpuart32)
+> +       sport->port.iotype = sdata->iotype;
+> +       if (sport->port.iotype & UPIO_MEM32BE)
+>                 sport->port.ops = &lpuart32_pops;
+>         else
+>                 sport->port.ops = &lpuart_pops;
+
+> -       if (sport->lpuart32)
+> +       if (sport->port.iotype & UPIO_MEM32BE)
+>                 lpuart_reg.cons = LPUART32_CONSOLE;
+>         else
+>                 lpuart_reg.cons = LPUART_CONSOLE;
+
+...all above since you introduced nice struct, can get rid of conditionals.
+Instead it might be a members of the struct above.
+
+(I dunno if it's good to have in this patch, but at list a follow up
+could be nice to have)
+
+> -       if (sport->lpuart32) {
+> +       if (sport->port.iotype & UPIO_MEM32BE) {
+>                 /* disable Rx/Tx and interrupts */
+>                 temp = lpuart32_read(sport->port.membase + UARTCTRL);
+>                 temp &= ~(UARTCTRL_TE | UARTCTRL_TIE | UARTCTRL_TCIE);
+
+> -       if (sport->lpuart32) {
+> +       if (sport->port.iotype & UPIO_MEM32BE) {
+>                 lpuart32_setup_watermark(sport);
+>                 temp = lpuart32_read(sport->port.membase + UARTCTRL);
+>                 temp |= (UARTCTRL_RIE | UARTCTRL_TIE | UARTCTRL_RE |
+
+Above are questionable, might be not need to convert them.
+
+So, in any case above is a sighting which you could address (separately).
+
+-- 
+With Best Regards,
+Andy Shevchenko
