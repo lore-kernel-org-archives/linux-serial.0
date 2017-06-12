@@ -1,11 +1,12 @@
 From: Dong Aisheng <aisheng.dong@nxp.com>
-Subject: [PATCH V3 6/7] tty: serial: lpuart: add earlycon support for imx7ulp
-Date: Mon, 12 Jun 2017 23:37:27 +0800
-Message-ID: <1497281848-12995-7-git-send-email-aisheng.dong@nxp.com>
+Subject: [PATCH V3 7/7] tty: serial: lpuart: add a more accurate baud rate
+ calculation method
+Date: Mon, 12 Jun 2017 23:37:28 +0800
+Message-ID: <1497281848-12995-8-git-send-email-aisheng.dong@nxp.com>
 References: <1497281848-12995-1-git-send-email-aisheng.dong@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1497281848-12995-1-git-send-email-aisheng.dong@nxp.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
@@ -21,53 +22,86 @@ To: linux-serial@vger.kernel.org
 Cc: nikita.yoush@cogentembedded.com, Dong Aisheng <aisheng.dong@nxp.com>, fugang.duan@nxp.com, dongas86@gmail.com, gregkh@linuxfoundation.org, yangbo.lu@nxp.com, linux-kernel@vger.kernel.org, stefan@agner.ch, andy.shevchenko@gmail.com, Mingkai.Hu@nxp.com, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-earlycon is executed quite early before the device tree probe,
-so we need correctly initialize the port membase and iotype for
-imx7ulp during early console setup before using.
-
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Stefan Agner <stefan@agner.ch>
-Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
-Cc: Yangbo Lu <yangbo.lu@nxp.com>
-Acked-by: Fugang Duan <fugang.duan@nxp.com>
-Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
-
----
-Change Log:
-v2->v3:
- * use standard port->iotype to represent endians
-v1->v2:
- * updated due to lpuart_reg_off removed
----
- drivers/tty/serial/fsl_lpuart.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 9d05e53..6a725cb 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1982,8 +1982,21 @@ static int __init lpuart32_early_console_setup(struct earlycon_device *device,
- 	return 0;
- }
- 
-+static int __init lpuart32_imx_early_console_setup(struct earlycon_device *device,
-+						   const char *opt)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->port.iotype = UPIO_MEM32;
-+	device->port.membase += IMX_REG_OFF;
-+	device->con->write = lpuart32_early_write;
-+
-+	return 0;
-+}
- OF_EARLYCON_DECLARE(lpuart, "fsl,vf610-lpuart", lpuart_early_console_setup);
- OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1021a-lpuart", lpuart32_early_console_setup);
-+OF_EARLYCON_DECLARE(lpuart32, "fsl,imx7ulp-lpuart", lpuart32_imx_early_console_setup);
- EARLYCON_DECLARE(lpuart, lpuart_early_console_setup);
- EARLYCON_DECLARE(lpuart32, lpuart32_early_console_setup);
- 
--- 
-2.7.4
+T24gbmV3IExQVUFSVCB2ZXJzaW9ucywgdGhlIG92ZXJzYW1wbGluZyByYXRpbyBmb3IgdGhlIHJl
+Y2VpdmVyIGNhbiBiZQpjaGFuZ2VkIGZyb20gNHggKDAwMDExKSB0byAzMnggKDExMTExKSB3aGlj
+aCBjb3VsZCBoZWxwIHVzIGdldCBhIG1vcmUKYWNjdXJhdGUgYmF1ZCByYXRlIGRpdmlkZXIuCgpU
+aGUgaWRlYSBpcyB0byB1c2UgdGhlIGJlc3QgT1NSIChvdmVyLXNhbXBsaW5nIHJhdGUpIHBvc3Np
+YmxlLgpOb3RlLCBPU1IgaXMgdHlwaWNhbGx5IGhhcmQtc2V0IHRvIDE2IGluIG90aGVyIExQVUFS
+VCBpbnN0YW50aWF0aW9ucy4KTG9vcCB0byBmaW5kIHRoZSBiZXN0IE9TUiB2YWx1ZSBwb3NzaWJs
+ZSwgb25lIHRoYXQgZ2VuZXJhdGVzIG1pbmltdW0KYmF1ZCBkaWZmIGl0ZXJhdGUgdGhyb3VnaCB0
+aGUgcmVzdCBvZiB0aGUgc3VwcG9ydGVkIHZhbHVlcyBvZiBPU1IuCgpDYzogR3JlZyBLcm9haC1I
+YXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz4KQ2M6IEppcmkgU2xhYnkgPGpzbGFi
+eUBzdXNlLmNvbT4KQ2M6IFN0ZWZhbiBBZ25lciA8c3RlZmFuQGFnbmVyLmNoPgpDYzogTWluZ2th
+aSBIdSA8TWluZ2thaS5IdUBueHAuY29tPgpDYzogWWFuZ2JvIEx1IDx5YW5nYm8ubHVAbnhwLmNv
+bT4KQWNrZWQtYnk6IEZ1Z2FuZyBEdWFuIDxmdWdhbmcuZHVhbkBueHAuY29tPgpTaWduZWQtb2Zm
+LWJ5OiBEb25nIEFpc2hlbmcgPGFpc2hlbmcuZG9uZ0BueHAuY29tPgoKLS0tCkNoYW5nZUxvZzoK
+djItPnYzOgogKiBlbmFibGUgbmV3IGJhdWQgcmF0ZSBjYWxjdWxhdGlvbiBtZXRob2QgYnkgZGVm
+YXVsdCB0byBnZXQgTGF5ZXJzY2FwZQogICBwbGF0Zm9ybXMgcnVuIGFuZCB0ZXN0LgogKiBicmVh
+ayBvdXQgaW4gY2FzZSB3ZSBhbHJlYWR5IGZpbmQgdGhlIG1pbnVtIGJhdWRfZGlmZgp2MS0+djI6
+CiAqIE5vIGNoYW5nZXMKLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jIHwgNzkg
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0KIDEgZmlsZSBjaGFuZ2Vk
+LCA3MiBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+dHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5j
+CmluZGV4IDZhNzI1Y2IuLmExNDYyODkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9m
+c2xfbHB1YXJ0LmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2ZzbF9scHVhcnQuYwpAQCAtMTQw
+LDYgKzE0MCw4IEBACiAjZGVmaW5lIFVBUlRCQVVEX1NCTlMJCTB4MDAwMDIwMDAKICNkZWZpbmUg
+VUFSVEJBVURfU0JSCQkweDAwMDAwMDAwCiAjZGVmaW5lIFVBUlRCQVVEX1NCUl9NQVNLCTB4MWZm
+ZgorI2RlZmluZSBVQVJUQkFVRF9PU1JfTUFTSyAgICAgICAweDFmCisjZGVmaW5lIFVBUlRCQVVE
+X09TUl9TSElGVCAgICAgIDI0CiAKICNkZWZpbmUgVUFSVFNUQVRfTEJLRElGCQkweDgwMDAwMDAw
+CiAjZGVmaW5lIFVBUlRTVEFUX1JYRURHSUYJMHg0MDAwMDAwMApAQCAtMTUxMSw2ICsxNTEzLDc1
+IEBAIGxwdWFydF9zZXRfdGVybWlvcyhzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LCBzdHJ1Y3Qga3Rl
+cm1pb3MgKnRlcm1pb3MsCiB9CiAKIHN0YXRpYyB2b2lkCitscHVhcnQzMl9zZXJpYWxfc2V0YnJn
+KHN0cnVjdCBscHVhcnRfcG9ydCAqc3BvcnQsIHVuc2lnbmVkIGludCBiYXVkcmF0ZSkKK3sKKwl1
+MzIgc2JyLCBvc3IsIGJhdWRfZGlmZiwgdG1wX29zciwgdG1wX3NiciwgdG1wX2RpZmYsIHRtcDsK
+Kwl1MzIgY2xrID0gc3BvcnQtPnBvcnQudWFydGNsazsKKworCS8qCisJICogVGhlIGlkZWEgaXMg
+dG8gdXNlIHRoZSBiZXN0IE9TUiAob3Zlci1zYW1wbGluZyByYXRlKSBwb3NzaWJsZS4KKwkgKiBO
+b3RlLCBPU1IgaXMgdHlwaWNhbGx5IGhhcmQtc2V0IHRvIDE2IGluIG90aGVyIExQVUFSVCBpbnN0
+YW50aWF0aW9ucy4KKwkgKiBMb29wIHRvIGZpbmQgdGhlIGJlc3QgT1NSIHZhbHVlIHBvc3NpYmxl
+LCBvbmUgdGhhdCBnZW5lcmF0ZXMgbWluaW11bQorCSAqIGJhdWRfZGlmZiBpdGVyYXRlIHRocm91
+Z2ggdGhlIHJlc3Qgb2YgdGhlIHN1cHBvcnRlZCB2YWx1ZXMgb2YgT1NSLgorCSAqCisJICogQ2Fs
+Y3VsYXRpb24gRm9ybXVsYToKKwkgKiAgQmF1ZCBSYXRlID0gYmF1ZCBjbG9jayAvICgoT1NSKzEp
+IMOXIFNCUikKKwkgKi8KKwliYXVkX2RpZmYgPSBiYXVkcmF0ZTsKKwlvc3IgPSAwOworCXNiciA9
+IDA7CisKKwlmb3IgKHRtcF9vc3IgPSA0OyB0bXBfb3NyIDw9IDMyOyB0bXBfb3NyKyspIHsKKwkJ
+LyogY2FsY3VsYXRlIHRoZSB0ZW1wb3Jhcnkgc2JyIHZhbHVlICAqLworCQl0bXBfc2JyID0gKGNs
+ayAvIChiYXVkcmF0ZSAqIHRtcF9vc3IpKTsKKwkJaWYgKHRtcF9zYnIgPT0gMCkKKwkJCXRtcF9z
+YnIgPSAxOworCisJCS8qCisJCSAqIGNhbGN1bGF0ZSB0aGUgYmF1ZCByYXRlIGRpZmZlcmVuY2Ug
+YmFzZWQgb24gdGhlIHRlbXBvcmFyeQorCQkgKiBvc3IgYW5kIHNiciB2YWx1ZXMKKwkJICovCisJ
+CXRtcF9kaWZmID0gY2xrIC8gKHRtcF9vc3IgKiB0bXBfc2JyKSAtIGJhdWRyYXRlOworCisJCS8q
+IHNlbGVjdCBiZXN0IHZhbHVlcyBiZXR3ZWVuIHNiciBhbmQgc2JyKzEgKi8KKwkJdG1wID0gY2xr
+IC8gKHRtcF9vc3IgKiAodG1wX3NiciArIDEpKTsKKwkJaWYgKHRtcF9kaWZmID4gKGJhdWRyYXRl
+IC0gdG1wKSkgeworCQkJdG1wX2RpZmYgPSBiYXVkcmF0ZSAtIHRtcDsKKwkJCXRtcF9zYnIrKzsK
+KwkJfQorCisJCWlmICh0bXBfZGlmZiA8PSBiYXVkX2RpZmYpIHsKKwkJCWJhdWRfZGlmZiA9IHRt
+cF9kaWZmOworCQkJb3NyID0gdG1wX29zcjsKKwkJCXNiciA9IHRtcF9zYnI7CisKKwkJCWlmICgh
+YmF1ZF9kaWZmKQorCQkJCWJyZWFrOworCQl9CisJfQorCisJLyogaGFuZGxlIGJ1YWRyYXRlIG91
+dHNpZGUgYWNjZXB0YWJsZSByYXRlICovCisJaWYgKGJhdWRfZGlmZiA+ICgoYmF1ZHJhdGUgLyAx
+MDApICogMykpCisJCWRldl93YXJuKHNwb3J0LT5wb3J0LmRldiwKKwkJCSAidW5hY2NlcHRhYmxl
+IGJhdWQgcmF0ZSBkaWZmZXJlbmNlIG9mIG1vcmUgdGhhbiAzJSVcbiIpOworCisJdG1wID0gbHB1
+YXJ0MzJfcmVhZCgmc3BvcnQtPnBvcnQsIFVBUlRCQVVEKTsKKworCWlmICgob3NyID4gMykgJiYg
+KG9zciA8IDgpKQorCQl0bXAgfD0gVUFSVEJBVURfQk9USEVER0U7CisKKwl0bXAgJj0gfihVQVJU
+QkFVRF9PU1JfTUFTSyA8PCBVQVJUQkFVRF9PU1JfU0hJRlQpOworCXRtcCB8PSAoKChvc3ItMSkg
+JiBVQVJUQkFVRF9PU1JfTUFTSykgPDwgVUFSVEJBVURfT1NSX1NISUZUKTsKKworCXRtcCAmPSB+
+VUFSVEJBVURfU0JSX01BU0s7CisJdG1wIHw9IHNiciAmIFVBUlRCQVVEX1NCUl9NQVNLOworCisJ
+dG1wICY9IH4oVUFSVEJBVURfVERNQUUgfCBVQVJUQkFVRF9SRE1BRSk7CisKKwlscHVhcnQzMl93
+cml0ZSgmc3BvcnQtPnBvcnQsIHRtcCwgVUFSVEJBVUQpOworfQorCitzdGF0aWMgdm9pZAogbHB1
+YXJ0MzJfc2V0X3Rlcm1pb3Moc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IGt0ZXJtaW9z
+ICp0ZXJtaW9zLAogCQkgICBzdHJ1Y3Qga3Rlcm1pb3MgKm9sZCkKIHsKQEAgLTE1MTksNyArMTU5
+MCw2IEBAIGxwdWFydDMyX3NldF90ZXJtaW9zKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHN0cnVj
+dCBrdGVybWlvcyAqdGVybWlvcywKIAl1bnNpZ25lZCBsb25nIGN0cmwsIG9sZF9jdHJsLCBiZCwg
+bW9kZW07CiAJdW5zaWduZWQgaW50ICBiYXVkOwogCXVuc2lnbmVkIGludCBvbGRfY3NpemUgPSBv
+bGQgPyBvbGQtPmNfY2ZsYWcgJiBDU0laRSA6IENTODsKLQl1bnNpZ25lZCBpbnQgc2JyOwogCiAJ
+Y3RybCA9IG9sZF9jdHJsID0gbHB1YXJ0MzJfcmVhZCgmc3BvcnQtPnBvcnQsIFVBUlRDVFJMKTsK
+IAliZCA9IGxwdWFydDMyX3JlYWQoJnNwb3J0LT5wb3J0LCBVQVJUQkFVRCk7CkBAIC0xNjE2LDEy
+ICsxNjg2LDcgQEAgbHB1YXJ0MzJfc2V0X3Rlcm1pb3Moc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwg
+c3RydWN0IGt0ZXJtaW9zICp0ZXJtaW9zLAogCWxwdWFydDMyX3dyaXRlKCZzcG9ydC0+cG9ydCwg
+b2xkX2N0cmwgJiB+KFVBUlRDVFJMX1RFIHwgVUFSVENUUkxfUkUpLAogCQkgICAgICAgVUFSVENU
+UkwpOwogCi0Jc2JyID0gc3BvcnQtPnBvcnQudWFydGNsayAvICgxNiAqIGJhdWQpOwotCWJkICY9
+IH5VQVJUQkFVRF9TQlJfTUFTSzsKLQliZCB8PSBzYnIgJiBVQVJUQkFVRF9TQlJfTUFTSzsKLQli
+ZCB8PSBVQVJUQkFVRF9CT1RIRURHRTsKLQliZCAmPSB+KFVBUlRCQVVEX1RETUFFIHwgVUFSVEJB
+VURfUkRNQUUpOwotCWxwdWFydDMyX3dyaXRlKCZzcG9ydC0+cG9ydCwgYmQsIFVBUlRCQVVEKTsK
+KwlscHVhcnQzMl9zZXJpYWxfc2V0YnJnKHNwb3J0LCBiYXVkKTsKIAlscHVhcnQzMl93cml0ZSgm
+c3BvcnQtPnBvcnQsIG1vZGVtLCBVQVJUTU9ESVIpOwogCWxwdWFydDMyX3dyaXRlKCZzcG9ydC0+
+cG9ydCwgY3RybCwgVUFSVENUUkwpOwogCS8qIHJlc3RvcmUgY29udHJvbCByZWdpc3RlciAqLwot
+LSAKMi43LjQKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+XwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmlu
+ZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9s
+aW51eC1hcm0ta2VybmVsCg==
