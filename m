@@ -1,8 +1,7 @@
 From: Dong Aisheng <aisheng.dong@nxp.com>
-Subject: [PATCH V3 2/7] tty: serial: lpuart: refactor lpuart32_{read|write}
- prototype
-Date: Mon, 12 Jun 2017 23:37:23 +0800
-Message-ID: <1497281848-12995-3-git-send-email-aisheng.dong@nxp.com>
+Subject: [PATCH V3 5/7] tty: serial: lpuart: add imx7ulp support
+Date: Mon, 12 Jun 2017 23:37:26 +0800
+Message-ID: <1497281848-12995-6-git-send-email-aisheng.dong@nxp.com>
 References: <1497281848-12995-1-git-send-email-aisheng.dong@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,15 +21,16 @@ To: linux-serial@vger.kernel.org
 Cc: nikita.yoush@cogentembedded.com, Dong Aisheng <aisheng.dong@nxp.com>, fugang.duan@nxp.com, dongas86@gmail.com, gregkh@linuxfoundation.org, yangbo.lu@nxp.com, linux-kernel@vger.kernel.org, stefan@agner.ch, andy.shevchenko@gmail.com, Mingkai.Hu@nxp.com, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Due to the original lpuart32_read/write takes no port specific
-information arguments, it's hard to distinguish port difference
-within the API. Although it works before, but not suitable anymore
-when adding more new chips support.
+The lpuart of imx7ulp is basically the same as ls1021a. It's also
+32 bit width register, but unlike ls1021a, it's little endian.
+Besides that, imx7ulp lpuart has a minor different register layout
+from ls1021a that it has four extra registers (verid, param, global,
+pincfg) located at the beginning of register map, which are currently
+not used by the driver and less to be used later.
 
-So let's convert it to accept a new struct uart_port argument
-to make it be able to retrieve more port specific information.
-This is a preparation for the later adding new chips support
-more easily. No functions changes.
+To ease the register difference handling, we add a reg_off member
+in lpuart_soc_data structure to represent if the normal
+lpuart32_{read|write} requires plus a offset to hide the issue.
 
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
@@ -43,385 +43,60 @@ Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
 ---
 ChangeLog:
 v2->v3:
- * newly introduced
+ * use standard port->iotype to represent the endians.
+v1->v2:
+ * remove lpuart_reg_off according to Stefan's suggestion
 ---
- drivers/tty/serial/fsl_lpuart.c | 123 ++++++++++++++++++++--------------------
- 1 file changed, 62 insertions(+), 61 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 4daabc6..ed9db2f 100644
+index bbf47a0..9d05e53 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -280,14 +280,15 @@ MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
- /* Forward declare this for the dma callbacks*/
- static void lpuart_dma_tx_complete(void *arg);
- 
--static u32 lpuart32_read(void __iomem *addr)
-+static inline u32 lpuart32_read(struct uart_port *port, u32 reg_off)
- {
--	return ioread32be(addr);
-+	return ioread32be(port->membase + reg_off);
- }
- 
--static void lpuart32_write(u32 val, void __iomem *addr)
-+static inline void lpuart32_write(struct uart_port *port, u32 val,
-+				  u32 reg_off)
- {
--	iowrite32be(val, addr);
-+	iowrite32be(val, port->membase + reg_off);
- }
- 
- static void lpuart_stop_tx(struct uart_port *port)
-@@ -303,9 +304,9 @@ static void lpuart32_stop_tx(struct uart_port *port)
- {
- 	unsigned long temp;
- 
--	temp = lpuart32_read(port->membase + UARTCTRL);
-+	temp = lpuart32_read(port, UARTCTRL);
- 	temp &= ~(UARTCTRL_TIE | UARTCTRL_TCIE);
--	lpuart32_write(temp, port->membase + UARTCTRL);
-+	lpuart32_write(port, temp, UARTCTRL);
- }
- 
- static void lpuart_stop_rx(struct uart_port *port)
-@@ -320,8 +321,8 @@ static void lpuart32_stop_rx(struct uart_port *port)
- {
- 	unsigned long temp;
- 
--	temp = lpuart32_read(port->membase + UARTCTRL);
--	lpuart32_write(temp & ~UARTCTRL_RE, port->membase + UARTCTRL);
-+	temp = lpuart32_read(port, UARTCTRL);
-+	lpuart32_write(port, temp & ~UARTCTRL_RE, UARTCTRL);
- }
- 
- static void lpuart_dma_tx(struct lpuart_port *sport)
-@@ -520,14 +521,14 @@ static inline void lpuart32_transmit_buffer(struct lpuart_port *sport)
- 	struct circ_buf *xmit = &sport->port.state->xmit;
- 	unsigned long txcnt;
- 
--	txcnt = lpuart32_read(sport->port.membase + UARTWATER);
-+	txcnt = lpuart32_read(&sport->port, UARTWATER);
- 	txcnt = txcnt >> UARTWATER_TXCNT_OFF;
- 	txcnt &= UARTWATER_COUNT_MASK;
- 	while (!uart_circ_empty(xmit) && (txcnt < sport->txfifo_size)) {
--		lpuart32_write(xmit->buf[xmit->tail], sport->port.membase + UARTDATA);
-+		lpuart32_write(&sport->port, xmit->buf[xmit->tail], UARTDATA);
- 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
- 		sport->port.icount.tx++;
--		txcnt = lpuart32_read(sport->port.membase + UARTWATER);
-+		txcnt = lpuart32_read(&sport->port, UARTWATER);
- 		txcnt = txcnt >> UARTWATER_TXCNT_OFF;
- 		txcnt &= UARTWATER_COUNT_MASK;
- 	}
-@@ -563,10 +564,10 @@ static void lpuart32_start_tx(struct uart_port *port)
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
- 	unsigned long temp;
- 
--	temp = lpuart32_read(port->membase + UARTCTRL);
--	lpuart32_write(temp | UARTCTRL_TIE, port->membase + UARTCTRL);
-+	temp = lpuart32_read(port, UARTCTRL);
-+	lpuart32_write(port, temp | UARTCTRL_TIE, UARTCTRL);
- 
--	if (lpuart32_read(port->membase + UARTSTAT) & UARTSTAT_TDRE)
-+	if (lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE)
- 		lpuart32_transmit_buffer(sport);
- }
- 
-@@ -589,7 +590,7 @@ static unsigned int lpuart_tx_empty(struct uart_port *port)
- 
- static unsigned int lpuart32_tx_empty(struct uart_port *port)
- {
--	return (lpuart32_read(port->membase + UARTSTAT) & UARTSTAT_TC) ?
-+	return (lpuart32_read(port, UARTSTAT) & UARTSTAT_TC) ?
- 		TIOCSER_TEMT : 0;
- }
- 
-@@ -602,7 +603,7 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 	if (sport->port.x_char) {
- 		if (sport->port.iotype & UPIO_MEM32BE)
--			lpuart32_write(sport->port.x_char, sport->port.membase + UARTDATA);
-+			lpuart32_write(&sport->port, sport->port.x_char, UARTDATA);
- 		else
- 			writeb(sport->port.x_char, sport->port.membase + UARTDR);
- 		goto out;
-@@ -702,15 +703,15 @@ static irqreturn_t lpuart32_rxint(int irq, void *dev_id)
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
--	while (!(lpuart32_read(sport->port.membase + UARTFIFO) & UARTFIFO_RXEMPT)) {
-+	while (!(lpuart32_read(&sport->port, UARTFIFO) & UARTFIFO_RXEMPT)) {
- 		flg = TTY_NORMAL;
- 		sport->port.icount.rx++;
- 		/*
- 		 * to clear the FE, OR, NF, FE, PE flags,
- 		 * read STAT then read DATA reg
- 		 */
--		sr = lpuart32_read(sport->port.membase + UARTSTAT);
--		rx = lpuart32_read(sport->port.membase + UARTDATA);
-+		sr = lpuart32_read(&sport->port, UARTSTAT);
-+		rx = lpuart32_read(&sport->port, UARTDATA);
- 		rx &= 0x3ff;
- 
- 		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
-@@ -777,18 +778,18 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
- 	struct lpuart_port *sport = dev_id;
- 	unsigned long sts, rxcount;
- 
--	sts = lpuart32_read(sport->port.membase + UARTSTAT);
--	rxcount = lpuart32_read(sport->port.membase + UARTWATER);
-+	sts = lpuart32_read(&sport->port, UARTSTAT);
-+	rxcount = lpuart32_read(&sport->port, UARTWATER);
- 	rxcount = rxcount >> UARTWATER_RXCNT_OFF;
- 
- 	if (sts & UARTSTAT_RDRF || rxcount > 0)
- 		lpuart32_rxint(irq, dev_id);
- 
- 	if ((sts & UARTSTAT_TDRE) &&
--		!(lpuart32_read(sport->port.membase + UARTBAUD) & UARTBAUD_TDMAE))
-+		!(lpuart32_read(&sport->port, UARTBAUD) & UARTBAUD_TDMAE))
- 		lpuart_txint(irq, dev_id);
- 
--	lpuart32_write(sts, sport->port.membase + UARTSTAT);
-+	lpuart32_write(&sport->port, sts, UARTSTAT);
- 	return IRQ_HANDLED;
- }
- 
-@@ -1049,7 +1050,7 @@ static unsigned int lpuart32_get_mctrl(struct uart_port *port)
- 	unsigned int temp = 0;
- 	unsigned long reg;
- 
--	reg = lpuart32_read(port->membase + UARTMODIR);
-+	reg = lpuart32_read(port, UARTMODIR);
- 	if (reg & UARTMODIR_TXCTSE)
- 		temp |= TIOCM_CTS;
- 
-@@ -1084,7 +1085,7 @@ static void lpuart32_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
- 	unsigned long temp;
- 
--	temp = lpuart32_read(port->membase + UARTMODIR) &
-+	temp = lpuart32_read(port, UARTMODIR) &
- 			~(UARTMODIR_RXRTSE | UARTMODIR_TXCTSE);
- 
- 	if (mctrl & TIOCM_RTS)
-@@ -1093,7 +1094,7 @@ static void lpuart32_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	if (mctrl & TIOCM_CTS)
- 		temp |= UARTMODIR_TXCTSE;
- 
--	lpuart32_write(temp, port->membase + UARTMODIR);
-+	lpuart32_write(port, temp, UARTMODIR);
- }
- 
- static void lpuart_break_ctl(struct uart_port *port, int break_state)
-@@ -1112,12 +1113,12 @@ static void lpuart32_break_ctl(struct uart_port *port, int break_state)
- {
- 	unsigned long temp;
- 
--	temp = lpuart32_read(port->membase + UARTCTRL) & ~UARTCTRL_SBK;
-+	temp = lpuart32_read(port, UARTCTRL) & ~UARTCTRL_SBK;
- 
- 	if (break_state != 0)
- 		temp |= UARTCTRL_SBK;
- 
--	lpuart32_write(temp, port->membase + UARTCTRL);
-+	lpuart32_write(port, temp, UARTCTRL);
- }
- 
- static void lpuart_setup_watermark(struct lpuart_port *sport)
-@@ -1157,24 +1158,24 @@ static void lpuart32_setup_watermark(struct lpuart_port *sport)
- 	unsigned long val, ctrl;
- 	unsigned long ctrl_saved;
- 
--	ctrl = lpuart32_read(sport->port.membase + UARTCTRL);
-+	ctrl = lpuart32_read(&sport->port, UARTCTRL);
- 	ctrl_saved = ctrl;
- 	ctrl &= ~(UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_TE |
- 			UARTCTRL_RIE | UARTCTRL_RE);
--	lpuart32_write(ctrl, sport->port.membase + UARTCTRL);
-+	lpuart32_write(&sport->port, ctrl, UARTCTRL);
- 
- 	/* enable FIFO mode */
--	val = lpuart32_read(sport->port.membase + UARTFIFO);
-+	val = lpuart32_read(&sport->port, UARTFIFO);
- 	val |= UARTFIFO_TXFE | UARTFIFO_RXFE;
- 	val |= UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH;
--	lpuart32_write(val, sport->port.membase + UARTFIFO);
-+	lpuart32_write(&sport->port, val, UARTFIFO);
- 
- 	/* set the watermark */
- 	val = (0x1 << UARTWATER_RXWATER_OFF) | (0x0 << UARTWATER_TXWATER_OFF);
--	lpuart32_write(val, sport->port.membase + UARTWATER);
-+	lpuart32_write(&sport->port, val, UARTWATER);
- 
- 	/* Restore cr2 */
--	lpuart32_write(ctrl_saved, sport->port.membase + UARTCTRL);
-+	lpuart32_write(&sport->port, ctrl_saved, UARTCTRL);
- }
- 
- static void rx_dma_timer_init(struct lpuart_port *sport)
-@@ -1250,7 +1251,7 @@ static int lpuart32_startup(struct uart_port *port)
- 	unsigned long temp;
- 
- 	/* determine FIFO size */
--	temp = lpuart32_read(sport->port.membase + UARTFIFO);
-+	temp = lpuart32_read(&sport->port, UARTFIFO);
- 
- 	sport->txfifo_size = 0x1 << (((temp >> UARTFIFO_TXSIZE_OFF) &
- 		UARTFIFO_FIFOSIZE_MASK) - 1);
-@@ -1267,10 +1268,10 @@ static int lpuart32_startup(struct uart_port *port)
- 
- 	lpuart32_setup_watermark(sport);
- 
--	temp = lpuart32_read(sport->port.membase + UARTCTRL);
-+	temp = lpuart32_read(&sport->port, UARTCTRL);
- 	temp |= (UARTCTRL_RIE | UARTCTRL_TIE | UARTCTRL_RE | UARTCTRL_TE);
- 	temp |= UARTCTRL_ILIE;
--	lpuart32_write(temp, sport->port.membase + UARTCTRL);
-+	lpuart32_write(&sport->port, temp, UARTCTRL);
- 
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- 	return 0;
-@@ -1319,10 +1320,10 @@ static void lpuart32_shutdown(struct uart_port *port)
- 	spin_lock_irqsave(&port->lock, flags);
- 
- 	/* disable Rx/Tx and interrupts */
--	temp = lpuart32_read(port->membase + UARTCTRL);
-+	temp = lpuart32_read(port, UARTCTRL);
- 	temp &= ~(UARTCTRL_TE | UARTCTRL_RE |
- 			UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_RIE);
--	lpuart32_write(temp, port->membase + UARTCTRL);
-+	lpuart32_write(port, temp, UARTCTRL);
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
-@@ -1497,9 +1498,9 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
- 	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
- 	unsigned int sbr;
- 
--	ctrl = old_ctrl = lpuart32_read(sport->port.membase + UARTCTRL);
--	bd = lpuart32_read(sport->port.membase + UARTBAUD);
--	modem = lpuart32_read(sport->port.membase + UARTMODIR);
-+	ctrl = old_ctrl = lpuart32_read(&sport->port, UARTCTRL);
-+	bd = lpuart32_read(&sport->port, UARTBAUD);
-+	modem = lpuart32_read(&sport->port, UARTMODIR);
- 	/*
- 	 * only support CS8 and CS7, and for CS7 must enable PE.
- 	 * supported mode:
-@@ -1585,21 +1586,21 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
- 	uart_update_timeout(port, termios->c_cflag, baud);
- 
- 	/* wait transmit engin complete */
--	while (!(lpuart32_read(sport->port.membase + UARTSTAT) & UARTSTAT_TC))
-+	while (!(lpuart32_read(&sport->port, UARTSTAT) & UARTSTAT_TC))
- 		barrier();
- 
- 	/* disable transmit and receive */
--	lpuart32_write(old_ctrl & ~(UARTCTRL_TE | UARTCTRL_RE),
--			sport->port.membase + UARTCTRL);
-+	lpuart32_write(&sport->port, old_ctrl & ~(UARTCTRL_TE | UARTCTRL_RE),
-+		       UARTCTRL);
- 
- 	sbr = sport->port.uartclk / (16 * baud);
- 	bd &= ~UARTBAUD_SBR_MASK;
- 	bd |= sbr & UARTBAUD_SBR_MASK;
- 	bd |= UARTBAUD_BOTHEDGE;
- 	bd &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
--	lpuart32_write(bd, sport->port.membase + UARTBAUD);
--	lpuart32_write(modem, sport->port.membase + UARTMODIR);
--	lpuart32_write(ctrl, sport->port.membase + UARTCTRL);
-+	lpuart32_write(&sport->port, bd, UARTBAUD);
-+	lpuart32_write(&sport->port, modem, UARTMODIR);
-+	lpuart32_write(&sport->port, ctrl, UARTCTRL);
- 	/* restore control register */
- 
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
-@@ -1702,10 +1703,10 @@ static void lpuart_console_putchar(struct uart_port *port, int ch)
- 
- static void lpuart32_console_putchar(struct uart_port *port, int ch)
- {
--	while (!(lpuart32_read(port->membase + UARTSTAT) & UARTSTAT_TDRE))
-+	while (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE))
- 		barrier();
- 
--	lpuart32_write(ch, port->membase + UARTDATA);
-+	lpuart32_write(port, ch, UARTDATA);
- }
- 
- static void
-@@ -1753,18 +1754,18 @@ lpuart32_console_write(struct console *co, const char *s, unsigned int count)
- 		spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	/* first save CR2 and then disable interrupts */
--	cr = old_cr = lpuart32_read(sport->port.membase + UARTCTRL);
-+	cr = old_cr = lpuart32_read(&sport->port, UARTCTRL);
- 	cr |= (UARTCTRL_TE |  UARTCTRL_RE);
- 	cr &= ~(UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_RIE);
--	lpuart32_write(cr, sport->port.membase + UARTCTRL);
-+	lpuart32_write(&sport->port, cr, UARTCTRL);
- 
- 	uart_console_write(&sport->port, s, count, lpuart32_console_putchar);
- 
- 	/* wait for transmitter finish complete and restore CR2 */
--	while (!(lpuart32_read(sport->port.membase + UARTSTAT) & UARTSTAT_TC))
-+	while (!(lpuart32_read(&sport->port, UARTSTAT) & UARTSTAT_TC))
- 		barrier();
- 
--	lpuart32_write(old_cr, sport->port.membase + UARTCTRL);
-+	lpuart32_write(&sport->port, old_cr, UARTCTRL);
- 
- 	if (locked)
- 		spin_unlock_irqrestore(&sport->port.lock, flags);
-@@ -1830,14 +1831,14 @@ lpuart32_console_get_options(struct lpuart_port *sport, int *baud,
- 	unsigned long cr, bd;
- 	unsigned int sbr, uartclk, baud_raw;
- 
--	cr = lpuart32_read(sport->port.membase + UARTCTRL);
-+	cr = lpuart32_read(&sport->port, UARTCTRL);
- 	cr &= UARTCTRL_TE | UARTCTRL_RE;
- 	if (!cr)
- 		return;
- 
- 	/* ok, the port was enabled */
- 
--	cr = lpuart32_read(sport->port.membase + UARTCTRL);
-+	cr = lpuart32_read(&sport->port, UARTCTRL);
- 
- 	*parity = 'n';
- 	if (cr & UARTCTRL_PE) {
-@@ -1852,7 +1853,7 @@ lpuart32_console_get_options(struct lpuart_port *sport, int *baud,
- 	else
- 		*bits = 8;
- 
--	bd = lpuart32_read(sport->port.membase + UARTBAUD);
-+	bd = lpuart32_read(&sport->port, UARTBAUD);
- 	bd &= UARTBAUD_SBR_MASK;
- 	sbr = bd;
- 	uartclk = clk_get_rate(sport->clk);
-@@ -2096,9 +2097,9 @@ static int lpuart_suspend(struct device *dev)
- 
- 	if (sport->port.iotype & UPIO_MEM32BE) {
- 		/* disable Rx/Tx and interrupts */
--		temp = lpuart32_read(sport->port.membase + UARTCTRL);
-+		temp = lpuart32_read(&sport->port, UARTCTRL);
- 		temp &= ~(UARTCTRL_TE | UARTCTRL_TIE | UARTCTRL_TCIE);
--		lpuart32_write(temp, sport->port.membase + UARTCTRL);
-+		lpuart32_write(&sport->port, temp, UARTCTRL);
- 	} else {
- 		/* disable Rx/Tx and interrupts */
- 		temp = readb(sport->port.membase + UARTCR2);
-@@ -2147,10 +2148,10 @@ static int lpuart_resume(struct device *dev)
- 
- 	if (sport->port.iotype & UPIO_MEM32BE) {
- 		lpuart32_setup_watermark(sport);
--		temp = lpuart32_read(sport->port.membase + UARTCTRL);
-+		temp = lpuart32_read(&sport->port, UARTCTRL);
- 		temp |= (UARTCTRL_RIE | UARTCTRL_TIE | UARTCTRL_RE |
- 			 UARTCTRL_TE | UARTCTRL_ILIE);
--		lpuart32_write(temp, sport->port.membase + UARTCTRL);
-+		lpuart32_write(&sport->port, temp, UARTCTRL);
- 	} else {
- 		lpuart_setup_watermark(sport);
- 		temp = readb(sport->port.membase + UARTCR2);
+@@ -231,6 +231,9 @@
+ #define DEV_NAME	"ttyLP"
+ #define UART_NR		6
+ 
++/* IMX lpuart has four extra unused regs located at the beginning */
++#define IMX_REG_OFF	0x10
++
+ struct lpuart_port {
+ 	struct uart_port	port;
+ 	struct clk		*clk;
+@@ -259,6 +262,7 @@ struct lpuart_port {
+ 
+ struct lpuart_soc_data {
+ 	char	iotype;
++	u8	reg_off;
+ };
+ 
+ static const struct lpuart_soc_data vf_data = {
+@@ -267,12 +271,17 @@ static const struct lpuart_soc_data vf_data = {
+ 
+ static const struct lpuart_soc_data ls_data = {
+ 	.iotype = UPIO_MEM32BE,
++};
+ 
++static struct lpuart_soc_data imx_data = {
++	.iotype = UPIO_MEM32,
++	.reg_off = IMX_REG_OFF,
+ };
+ 
+ static const struct of_device_id lpuart_dt_ids[] = {
+ 	{ .compatible = "fsl,vf610-lpuart",	.data = &vf_data, },
+ 	{ .compatible = "fsl,ls1021a-lpuart",	.data = &ls_data, },
++	{ .compatible = "fsl,imx7ulp-lpuart",	.data = &imx_data, },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
+@@ -2020,6 +2029,7 @@ static int lpuart_probe(struct platform_device *pdev)
+ 	if (IS_ERR(sport->port.membase))
+ 		return PTR_ERR(sport->port.membase);
+ 
++	sport->port.membase += sdata->reg_off;
+ 	sport->port.mapbase = res->start;
+ 	sport->port.dev = &pdev->dev;
+ 	sport->port.type = PORT_LPUART;
 -- 
 2.7.4
