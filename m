@@ -1,51 +1,82 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 8/9] tty: ircomm: remove dead and broken ioctl code
-Date: Tue, 13 Jun 2017 12:01:00 +0200
-Message-ID: <20170613100100.GA1718@kroah.com>
-References: <20170606105441.689-1-johan@kernel.org>
- <20170606105441.689-9-johan@kernel.org>
- <20170606122704.3e328125@lxorguk.ukuu.org.uk>
- <20170613094841.GA31846@kroah.com>
- <20170613095714.GJ10775@localhost>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH 1/2] tty/serial: atmel: remove atmel_default_console_device handling
+Date: Tue, 13 Jun 2017 15:40:37 +0200
+Message-ID: <20170613134038.5545-1-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170613095714.GJ10775@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Samuel Ortiz <samuel@sortiz.org>, "David S. Miller" <davem@davemloft.net>, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
+To: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 13, 2017 at 11:57:14AM +0200, Johan Hovold wrote:
-> On Tue, Jun 13, 2017 at 11:48:41AM +0200, Greg Kroah-Hartman wrote:
-> > On Tue, Jun 06, 2017 at 12:27:04PM +0100, Alan Cox wrote:
-> > > On Tue,  6 Jun 2017 12:54:40 +0200
-> > > Johan Hovold <johan@kernel.org> wrote:
-> > > 
-> > > > Remove three ifdefed and broken implementations of TIOCSSERIAL and
-> > > > TIOCGICOUNT, and parity handling in set_termios which had suffered
-> > > > severe bit rot.
-> > > 
-> > > I would be amazed if the IRDA code still works. It's not been tested
-> > > properly for years and it never followed the tty rules properly in the
-> > > first place - so this looks good, although moving IRDA into staging
-> > > and /dev/null would IMHO be far better.
-> > > 
-> > > IRDA is dead, and IR remotes are handled via completely different code.
-> > 
-> > I agree, and we should move it into staging and out of the tree, I'll
-> > send netdev some patches for that...
-> 
-> Sounds good, but please consider applying this patch before moving to
-> staging as people have been modifying this dead code as part of
-> kernel-wide updates even though hasn't even compiled for quite some
-> time.
+atmel_default_console_device was only used by AVR32, in particular
+arch/avr32/mach-at32ap/at32ap700x.c which is now gone. Remove it from the
+driver.
 
-I already applied it :)
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ drivers/tty/serial/atmel_serial.c | 43 ---------------------------------------
+ 1 file changed, 43 deletions(-)
 
-I'll wait for 4.13-rc1 before doing it (if I remember...)
-
-thanks,
-
-greg k-h
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index c355ac9abafc..906e2b91bf57 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2460,8 +2460,6 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
+ 	return 0;
+ }
+ 
+-struct platform_device *atmel_default_console_device;	/* the serial console device */
+-
+ #ifdef CONFIG_SERIAL_ATMEL_CONSOLE
+ static void atmel_console_putchar(struct uart_port *port, int ch)
+ {
+@@ -2594,47 +2592,6 @@ static struct console atmel_console = {
+ 
+ #define ATMEL_CONSOLE_DEVICE	(&atmel_console)
+ 
+-/*
+- * Early console initialization (before VM subsystem initialized).
+- */
+-static int __init atmel_console_init(void)
+-{
+-	int ret;
+-	if (atmel_default_console_device) {
+-		struct atmel_uart_data *pdata =
+-			dev_get_platdata(&atmel_default_console_device->dev);
+-		int id = pdata->num;
+-		struct atmel_uart_port *atmel_port = &atmel_ports[id];
+-
+-		atmel_port->backup_imr = 0;
+-		atmel_port->uart.line = id;
+-
+-		add_preferred_console(ATMEL_DEVICENAME, id, NULL);
+-		ret = atmel_init_port(atmel_port, atmel_default_console_device);
+-		if (ret)
+-			return ret;
+-		register_console(&atmel_console);
+-	}
+-
+-	return 0;
+-}
+-
+-console_initcall(atmel_console_init);
+-
+-/*
+- * Late console initialization.
+- */
+-static int __init atmel_late_console_init(void)
+-{
+-	if (atmel_default_console_device
+-	    && !(atmel_console.flags & CON_ENABLED))
+-		register_console(&atmel_console);
+-
+-	return 0;
+-}
+-
+-core_initcall(atmel_late_console_init);
+-
+ static inline bool atmel_is_console_port(struct uart_port *port)
+ {
+ 	return port->cons && port->cons->index == port->line;
+-- 
+2.11.0
