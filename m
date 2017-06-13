@@ -1,49 +1,87 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH 2/2] tty/serial: atmel: make the driver DT only
-Date: Tue, 13 Jun 2017 21:56:08 +0200
-Message-ID: <20170613195608.3tfckys7w42sgmiy@piout.net>
-References: <20170613134038.5545-1-alexandre.belloni@free-electrons.com>
- <20170613134038.5545-2-alexandre.belloni@free-electrons.com>
- <CAHp75VdQu=mm3hPb32+3osbx+wugH4iTFqAnz8-2GDmsYV8ViA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: [PATCH v2 1/2] tty/serial: atmel: remove atmel_default_console_device handling
+Date: Tue, 13 Jun 2017 22:24:38 +0200
+Message-ID: <20170613202439.26369-1-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHp75VdQu=mm3hPb32+3osbx+wugH4iTFqAnz8-2GDmsYV8ViA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 13/06/2017 at 17:50:25 +0300, Andy Shevchenko wrote:
-> On Tue, Jun 13, 2017 at 4:40 PM, Alexandre Belloni
-> <alexandre.belloni@free-electrons.com> wrote:
-> > Now that AVR32 is gone, platform_data are not used to initialize the driver
-> > anymore, remove that path from the driver. Also remove the now unused
-> > struct atmel_uart_data.
-> 
-> Nitpicks, not insisting on them at all, just a side comment.
-> 
-> > +       struct serial_rs485 *rs485conf = &port->rs485;
-> > +       u32 rs485_delay[2];
-> 
-> + empty line?
-> 
+atmel_default_console_device was only used by AVR32, in particular
+arch/avr32/mach-at32ap/at32ap700x.c which is now gone. Remove it from the
+driver.
 
-Okay
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
 
-> > +       /* rs485 properties */
-> 
-> > +       if (of_property_read_u32_array(np, "rs485-rts-delay",
-> > +                                      rs485_delay, 2) == 0) {
-> 
-> Now it can be one line I suppose (taking into account ...() == 0 ->
-> !...() change)
-> 
+Changes in v2:
+ - added an empty line as suggested by Andy
+ - properly based the patch on v4.12-rc1
 
-No, it still doesn't fit, I'll leave it as-is
+ drivers/tty/serial/atmel_serial.c | 43 ---------------------------------------
+ 1 file changed, 43 deletions(-)
 
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index c355ac9abafc..906e2b91bf57 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2460,8 +2460,6 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
+ 	return 0;
+ }
+ 
+-struct platform_device *atmel_default_console_device;	/* the serial console device */
+-
+ #ifdef CONFIG_SERIAL_ATMEL_CONSOLE
+ static void atmel_console_putchar(struct uart_port *port, int ch)
+ {
+@@ -2594,47 +2592,6 @@ static struct console atmel_console = {
+ 
+ #define ATMEL_CONSOLE_DEVICE	(&atmel_console)
+ 
+-/*
+- * Early console initialization (before VM subsystem initialized).
+- */
+-static int __init atmel_console_init(void)
+-{
+-	int ret;
+-	if (atmel_default_console_device) {
+-		struct atmel_uart_data *pdata =
+-			dev_get_platdata(&atmel_default_console_device->dev);
+-		int id = pdata->num;
+-		struct atmel_uart_port *atmel_port = &atmel_ports[id];
+-
+-		atmel_port->backup_imr = 0;
+-		atmel_port->uart.line = id;
+-
+-		add_preferred_console(ATMEL_DEVICENAME, id, NULL);
+-		ret = atmel_init_port(atmel_port, atmel_default_console_device);
+-		if (ret)
+-			return ret;
+-		register_console(&atmel_console);
+-	}
+-
+-	return 0;
+-}
+-
+-console_initcall(atmel_console_init);
+-
+-/*
+- * Late console initialization.
+- */
+-static int __init atmel_late_console_init(void)
+-{
+-	if (atmel_default_console_device
+-	    && !(atmel_console.flags & CON_ENABLED))
+-		register_console(&atmel_console);
+-
+-	return 0;
+-}
+-
+-core_initcall(atmel_late_console_init);
+-
+ static inline bool atmel_is_console_port(struct uart_port *port)
+ {
+ 	return port->cons && port->cons->index == port->line;
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+2.11.0
