@@ -1,122 +1,38 @@
-From: "A.s. Dong" <aisheng.dong@nxp.com>
-Subject: RE: [PATCH V3 5/7] tty: serial: lpuart: add imx7ulp support
-Date: Tue, 13 Jun 2017 03:32:37 +0000
-Message-ID: <AM3PR04MB306E486BD19CD88813A3B4480C20@AM3PR04MB306.eurprd04.prod.outlook.com>
-References: <1497281848-12995-1-git-send-email-aisheng.dong@nxp.com>
- <1497281848-12995-6-git-send-email-aisheng.dong@nxp.com>
- <AM4PR0401MB22607CE9EE3909A7A0B9451AFFC20@AM4PR0401MB2260.eurprd04.prod.outlook.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 8/9] tty: ircomm: remove dead and broken ioctl code
+Date: Tue, 13 Jun 2017 11:48:41 +0200
+Message-ID: <20170613094841.GA31846@kroah.com>
+References: <20170606105441.689-1-johan@kernel.org>
+ <20170606105441.689-9-johan@kernel.org>
+ <20170606122704.3e328125@lxorguk.ukuu.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <AM4PR0401MB22607CE9EE3909A7A0B9451AFFC20@AM4PR0401MB2260.eurprd04.prod.outlook.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20170606122704.3e328125@lxorguk.ukuu.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Duan <fugang.duan@nxp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "stefan@agner.ch" <stefan@agner.ch>, Mingkai Hu <mingkai.hu@nxp.com>, "Y.b. Lu" <yangbo.lu@nxp.com>, "nikita.yoush@cogentembedded.com" <nikita.yoush@cogentembedded.com>, "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>, "dongas86@gmail.com" <dongas86@gmail.com>
+To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Cc: Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Samuel Ortiz <samuel@sortiz.org>, "David S. Miller" <davem@davemloft.net>, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-> -----Original Message-----
-> From: Andy Duan
-> Sent: Tuesday, June 13, 2017 11:02 AM
-> To: A.s. Dong; linux-serial@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
-> gregkh@linuxfoundation.org; jslaby@suse.com; stefan@agner.ch; Mingkai Hu;
-> Y.b. Lu; nikita.yoush@cogentembedded.com; andy.shevchenko@gmail.com;
-> dongas86@gmail.com; A.s. Dong
-> Subject: RE: [PATCH V3 5/7] tty: serial: lpuart: add imx7ulp support
->=20
-> From: Dong Aisheng <aisheng.dong@nxp.com> Sent: Monday, June 12, 2017
-> 11:37 PM
-> >The lpuart of imx7ulp is basically the same as ls1021a. It's also
-> >32 bit width register, but unlike ls1021a, it's little endian.
-> >Besides that, imx7ulp lpuart has a minor different register layout from
-> >ls1021a that it has four extra registers (verid, param, global,
-> >pincfg) located at the beginning of register map, which are currently
-> >not used by the driver and less to be used later.
-> >
-> >To ease the register difference handling, we add a reg_off member in
-> >lpuart_soc_data structure to represent if the normal
-> >lpuart32_{read|write} requires plus a offset to hide the issue.
-> >
-> >Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> >Cc: Jiri Slaby <jslaby@suse.com>
-> >Cc: Stefan Agner <stefan@agner.ch>
-> >Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
-> >Cc: Yangbo Lu <yangbo.lu@nxp.com>
-> >Cc: Fugang Duan <fugang.duan@nxp.com>
-> >Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
-> >
-> >---
-> >ChangeLog:
-> >v2->v3:
-> > * use standard port->iotype to represent the endians.
-> >v1->v2:
-> > * remove lpuart_reg_off according to Stefan's suggestion
-> >---
-> > drivers/tty/serial/fsl_lpuart.c | 10 ++++++++++
-> > 1 file changed, 10 insertions(+)
-> >
-> >diff --git a/drivers/tty/serial/fsl_lpuart.c
-> >b/drivers/tty/serial/fsl_lpuart.c index
-> >bbf47a0..9d05e53 100644
-> >--- a/drivers/tty/serial/fsl_lpuart.c
-> >+++ b/drivers/tty/serial/fsl_lpuart.c
-> >@@ -231,6 +231,9 @@
-> > #define DEV_NAME	"ttyLP"
-> > #define UART_NR		6
-> >
-> >+/* IMX lpuart has four extra unused regs located at the beginning */
-> >+#define IMX_REG_OFF	0x10
-> >+
-> > struct lpuart_port {
-> > 	struct uart_port	port;
-> > 	struct clk		*clk;
-> >@@ -259,6 +262,7 @@ struct lpuart_port {
-> >
-> > struct lpuart_soc_data {
-> > 	char	iotype;
-> >+	u8	reg_off;
-> > };
-> >
-> > static const struct lpuart_soc_data vf_data =3D { @@ -267,12 +271,17 @@
-> >static const struct lpuart_soc_data vf_data =3D {
-> >
-> > static const struct lpuart_soc_data ls_data =3D {
-> > 	.iotype =3D UPIO_MEM32BE,
-> >+};
-> >
-> >+static struct lpuart_soc_data imx_data =3D {
-> >+	.iotype =3D UPIO_MEM32,
-> >+	.reg_off =3D IMX_REG_OFF,
-> > };
-> >
-> > static const struct of_device_id lpuart_dt_ids[] =3D {
-> > 	{ .compatible =3D "fsl,vf610-lpuart",	.data =3D &vf_data, },
-> > 	{ .compatible =3D "fsl,ls1021a-lpuart",	.data =3D &ls_data, },
-> >+	{ .compatible =3D "fsl,imx7ulp-lpuart",	.data =3D &imx_data, },
-> > 	{ /* sentinel */ }
-> > };
-> > MODULE_DEVICE_TABLE(of, lpuart_dt_ids); @@ -2020,6 +2029,7 @@ static
-> >int lpuart_probe(struct platform_device *pdev)
-> > 	if (IS_ERR(sport->port.membase))
-> > 		return PTR_ERR(sport->port.membase);
-> >
-> >+	sport->port.membase +=3D sdata->reg_off;
-> > 	sport->port.mapbase =3D res->start;
->=20
-> Also update the mapbase.
->=20
+On Tue, Jun 06, 2017 at 12:27:04PM +0100, Alan Cox wrote:
+> On Tue,  6 Jun 2017 12:54:40 +0200
+> Johan Hovold <johan@kernel.org> wrote:
+> 
+> > Remove three ifdefed and broken implementations of TIOCSSERIAL and
+> > TIOCGICOUNT, and parity handling in set_termios which had suffered
+> > severe bit rot.
+> 
+> I would be amazed if the IRDA code still works. It's not been tested
+> properly for years and it never followed the tty rules properly in the
+> first place - so this looks good, although moving IRDA into staging
+> and /dev/null would IMHO be far better.
+> 
+> IRDA is dead, and IR remotes are handled via completely different code.
 
-The idea behind is only do the quirk for io remapped address.
-Mapbase(physical address) is not needed for lpuart32 currently.
+I agree, and we should move it into staging and out of the tree, I'll
+send netdev some patches for that...
 
-Probably it could be changed when lpuart32 DMA function is added.
+thanks,
 
-Regards
-Dong Aisheng
-
-> > 	sport->port.dev =3D &pdev->dev;
-> > 	sport->port.type =3D PORT_LPUART;
-> >--
-> >2.7.4
+greg k-h
