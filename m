@@ -1,10 +1,11 @@
 From: Dong Aisheng <aisheng.dong@nxp.com>
-Subject: [PATCH V4 3/7] tty: serial: lpuart: add little endian 32 bit register support
-Date: Tue, 13 Jun 2017 10:55:50 +0800
-Message-ID: <1497322554-24463-4-git-send-email-aisheng.dong@nxp.com>
+Subject: [PATCH V4 7/7] tty: serial: lpuart: add a more accurate baud rate calculation method
+Date: Tue, 13 Jun 2017 10:55:54 +0800
+Message-ID: <1497322554-24463-8-git-send-email-aisheng.dong@nxp.com>
 References: <1497322554-24463-1-git-send-email-aisheng.dong@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1497322554-24463-1-git-send-email-aisheng.dong@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -12,156 +13,147 @@ To: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, jslaby@suse.com, fugang.duan@nxp.com, stefan@agner.ch, Mingkai.Hu@nxp.com, yangbo.lu@nxp.com, nikita.yoush@cogentembedded.com, andy.shevchenko@gmail.com, dongas86@gmail.com, Dong Aisheng <aisheng.dong@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-Use standard port->iotype to distinguish endian difference. Note as we
-read/write register by checking iotype dynamically, we need to initialize
-the iotype correctly for earlycon as well to avoid a break.
+On new LPUART versions, the oversampling ratio for the receiver can be
+changed from 4x (00011) to 32x (11111) which could help us get a more
+accurate baud rate divider.
+
+The idea is to use the best OSR (over-sampling rate) possible.
+Note, OSR is typically hard-set to 16 in other LPUART instantiations.
+Loop to find the best OSR value possible, one that generates minimum
+baud diff iterate through the rest of the supported values of OSR.
 
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com> (supporter:TTY LAYER)
+Cc: Jiri Slaby <jslaby@suse.com>
 Cc: Stefan Agner <stefan@agner.ch>
 Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
 Cc: Yangbo Lu <yangbo.lu@nxp.com>
-Cc: Fugang Duan <fugang.duan@nxp.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Acked-by: Fugang Duan <fugang.duan@nxp.com>
 Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
 
+---
 ChangeLog:
 v3->v4:
- * Removed unneeded semicolon catched by 0day Robot.
+ * No changes
 v2->v3:
- * Instead of using global var, use standard port->iotype to distinguish
-   endian difference.
+ * enable new baud rate calculation method by default to get Layerscape
+   platforms run and test.
+ * break out in case we already find the minum baud_diff
 v1->v2:
  * No changes
 ---
- drivers/tty/serial/fsl_lpuart.c | 45 +++++++++++++++++++++++++++--------------
- 1 file changed, 30 insertions(+), 15 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 79 +++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 72 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 32d479b..ed0bf18 100644
+index a0f2666..343de8c 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -279,15 +279,29 @@ MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
- /* Forward declare this for the dma callbacks*/
- static void lpuart_dma_tx_complete(void *arg);
+@@ -140,6 +140,8 @@
+ #define UARTBAUD_SBNS		0x00002000
+ #define UARTBAUD_SBR		0x00000000
+ #define UARTBAUD_SBR_MASK	0x1fff
++#define UARTBAUD_OSR_MASK       0x1f
++#define UARTBAUD_OSR_SHIFT      24
  
--static inline u32 lpuart32_read(struct uart_port *port, u32 reg_off)
--{
--	return ioread32be(port->membase + reg_off);
-+static inline u32 lpuart32_read(struct uart_port *port, u32 off)
+ #define UARTSTAT_LBKDIF		0x80000000
+ #define UARTSTAT_RXEDGIF	0x40000000
+@@ -1511,6 +1513,75 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ }
+ 
+ static void
++lpuart32_serial_setbrg(struct lpuart_port *sport, unsigned int baudrate)
 +{
-+	switch (port->iotype) {
-+	case UPIO_MEM32:
-+		return readl(port->membase + off);
-+	case UPIO_MEM32BE:
-+		return ioread32be(port->membase + off);
-+	default:
-+		return 0;
++	u32 sbr, osr, baud_diff, tmp_osr, tmp_sbr, tmp_diff, tmp;
++	u32 clk = sport->port.uartclk;
++
++	/*
++	 * The idea is to use the best OSR (over-sampling rate) possible.
++	 * Note, OSR is typically hard-set to 16 in other LPUART instantiations.
++	 * Loop to find the best OSR value possible, one that generates minimum
++	 * baud_diff iterate through the rest of the supported values of OSR.
++	 *
++	 * Calculation Formula:
++	 *  Baud Rate = baud clock / ((OSR+1) × SBR)
++	 */
++	baud_diff = baudrate;
++	osr = 0;
++	sbr = 0;
++
++	for (tmp_osr = 4; tmp_osr <= 32; tmp_osr++) {
++		/* calculate the temporary sbr value  */
++		tmp_sbr = (clk / (baudrate * tmp_osr));
++		if (tmp_sbr == 0)
++			tmp_sbr = 1;
++
++		/*
++		 * calculate the baud rate difference based on the temporary
++		 * osr and sbr values
++		 */
++		tmp_diff = clk / (tmp_osr * tmp_sbr) - baudrate;
++
++		/* select best values between sbr and sbr+1 */
++		tmp = clk / (tmp_osr * (tmp_sbr + 1));
++		if (tmp_diff > (baudrate - tmp)) {
++			tmp_diff = baudrate - tmp;
++			tmp_sbr++;
++		}
++
++		if (tmp_diff <= baud_diff) {
++			baud_diff = tmp_diff;
++			osr = tmp_osr;
++			sbr = tmp_sbr;
++
++			if (!baud_diff)
++				break;
++		}
 +	}
- }
++
++	/* handle buadrate outside acceptable rate */
++	if (baud_diff > ((baudrate / 100) * 3))
++		dev_warn(sport->port.dev,
++			 "unacceptable baud rate difference of more than 3%%\n");
++
++	tmp = lpuart32_read(&sport->port, UARTBAUD);
++
++	if ((osr > 3) && (osr < 8))
++		tmp |= UARTBAUD_BOTHEDGE;
++
++	tmp &= ~(UARTBAUD_OSR_MASK << UARTBAUD_OSR_SHIFT);
++	tmp |= (((osr-1) & UARTBAUD_OSR_MASK) << UARTBAUD_OSR_SHIFT);
++
++	tmp &= ~UARTBAUD_SBR_MASK;
++	tmp |= sbr & UARTBAUD_SBR_MASK;
++
++	tmp &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
++
++	lpuart32_write(&sport->port, tmp, UARTBAUD);
++}
++
++static void
+ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		   struct ktermios *old)
+ {
+@@ -1519,7 +1590,6 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	unsigned long ctrl, old_ctrl, bd, modem;
+ 	unsigned int  baud;
+ 	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
+-	unsigned int sbr;
  
- static inline void lpuart32_write(struct uart_port *port, u32 val,
--				  u32 reg_off)
--{
--	iowrite32be(val, port->membase + reg_off);
-+				  u32 off)
-+{
-+	switch (port->iotype) {
-+	case UPIO_MEM32:
-+		writel(val, port->membase + off);
-+		break;
-+	case UPIO_MEM32BE:
-+		iowrite32be(val, port->membase + off);
-+		break;
-+	}
- }
+ 	ctrl = old_ctrl = lpuart32_read(&sport->port, UARTCTRL);
+ 	bd = lpuart32_read(&sport->port, UARTBAUD);
+@@ -1616,12 +1686,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	lpuart32_write(&sport->port, old_ctrl & ~(UARTCTRL_TE | UARTCTRL_RE),
+ 		       UARTCTRL);
  
- static void lpuart_stop_tx(struct uart_port *port)
-@@ -601,7 +615,7 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 	if (sport->port.x_char) {
--		if (sport->port.iotype & UPIO_MEM32BE)
-+		if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
- 			lpuart32_write(&sport->port, sport->port.x_char, UARTDATA);
- 		else
- 			writeb(sport->port.x_char, sport->port.membase + UARTDR);
-@@ -609,14 +623,14 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
- 	}
- 
- 	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
--		if (sport->port.iotype & UPIO_MEM32BE)
-+		if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
- 			lpuart32_stop_tx(&sport->port);
- 		else
- 			lpuart_stop_tx(&sport->port);
- 		goto out;
- 	}
- 
--	if (sport->port.iotype & UPIO_MEM32BE)
-+	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
- 		lpuart32_transmit_buffer(sport);
- 	else
- 		lpuart_transmit_buffer(sport);
-@@ -1889,12 +1903,12 @@ static int __init lpuart_console_setup(struct console *co, char *options)
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
- 	else
--		if (sport->port.iotype & UPIO_MEM32BE)
-+		if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
- 			lpuart32_console_get_options(sport, &baud, &parity, &bits);
- 		else
- 			lpuart_console_get_options(sport, &baud, &parity, &bits);
- 
--	if (sport->port.iotype & UPIO_MEM32BE)
-+	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
- 		lpuart32_setup_watermark(sport);
- 	else
- 		lpuart_setup_watermark(sport);
-@@ -1953,6 +1967,7 @@ static int __init lpuart32_early_console_setup(struct earlycon_device *device,
- 	if (!device->port.membase)
- 		return -ENODEV;
- 
-+	device->port.iotype = UPIO_MEM32BE;
- 	device->con->write = lpuart32_early_write;
- 	return 0;
- }
-@@ -2014,7 +2029,7 @@ static int lpuart_probe(struct platform_device *pdev)
- 	}
- 	sport->port.irq = ret;
- 	sport->port.iotype = sdata->iotype;
--	if (sport->port.iotype & UPIO_MEM32BE)
-+	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
- 		sport->port.ops = &lpuart32_pops;
- 	else
- 		sport->port.ops = &lpuart_pops;
-@@ -2041,7 +2056,7 @@ static int lpuart_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, &sport->port);
- 
--	if (sport->port.iotype & UPIO_MEM32BE)
-+	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
- 		lpuart_reg.cons = LPUART32_CONSOLE;
- 	else
- 		lpuart_reg.cons = LPUART_CONSOLE;
-@@ -2094,7 +2109,7 @@ static int lpuart_suspend(struct device *dev)
- 	struct lpuart_port *sport = dev_get_drvdata(dev);
- 	unsigned long temp;
- 
--	if (sport->port.iotype & UPIO_MEM32BE) {
-+	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE)) {
- 		/* disable Rx/Tx and interrupts */
- 		temp = lpuart32_read(&sport->port, UARTCTRL);
- 		temp &= ~(UARTCTRL_TE | UARTCTRL_TIE | UARTCTRL_TCIE);
-@@ -2145,7 +2160,7 @@ static int lpuart_resume(struct device *dev)
- 	if (sport->port.suspended && !sport->port.irq_wake)
- 		clk_prepare_enable(sport->clk);
- 
--	if (sport->port.iotype & UPIO_MEM32BE) {
-+	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE)) {
- 		lpuart32_setup_watermark(sport);
- 		temp = lpuart32_read(&sport->port, UARTCTRL);
- 		temp |= (UARTCTRL_RIE | UARTCTRL_TIE | UARTCTRL_RE |
+-	sbr = sport->port.uartclk / (16 * baud);
+-	bd &= ~UARTBAUD_SBR_MASK;
+-	bd |= sbr & UARTBAUD_SBR_MASK;
+-	bd |= UARTBAUD_BOTHEDGE;
+-	bd &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
+-	lpuart32_write(&sport->port, bd, UARTBAUD);
++	lpuart32_serial_setbrg(sport, baud);
+ 	lpuart32_write(&sport->port, modem, UARTMODIR);
+ 	lpuart32_write(&sport->port, ctrl, UARTCTRL);
+ 	/* restore control register */
 -- 
 2.7.4
