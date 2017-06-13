@@ -1,7 +1,7 @@
 From: Dong Aisheng <aisheng.dong@nxp.com>
-Subject: [PATCH V4 1/7] tty: serial: lpuart: introduce lpuart_soc_data to represent SoC property
-Date: Tue, 13 Jun 2017 10:55:48 +0800
-Message-ID: <1497322554-24463-2-git-send-email-aisheng.dong@nxp.com>
+Subject: [PATCH V4 3/7] tty: serial: lpuart: add little endian 32 bit register support
+Date: Tue, 13 Jun 2017 10:55:50 +0800
+Message-ID: <1497322554-24463-4-git-send-email-aisheng.dong@nxp.com>
 References: <1497322554-24463-1-git-send-email-aisheng.dong@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,12 +12,12 @@ To: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org, jslaby@suse.com, fugang.duan@nxp.com, stefan@agner.ch, Mingkai.Hu@nxp.com, yangbo.lu@nxp.com, nikita.yoush@cogentembedded.com, andy.shevchenko@gmail.com, dongas86@gmail.com, Dong Aisheng <aisheng.dong@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-This is used to dynamically check the SoC specific lpuart properies.
-Currently only the iotype is added, it functions the same as before.
-With this, new chips with different iotype will be more easily added.
+Use standard port->iotype to distinguish endian difference. Note as we
+read/write register by checking iotype dynamically, we need to initialize
+the iotype correctly for earlycon as well to avoid a break.
 
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Jiri Slaby <jslaby@suse.com> (supporter:TTY LAYER)
 Cc: Stefan Agner <stefan@agner.ch>
 Cc: Mingkai Hu <Mingkai.Hu@nxp.com>
 Cc: Yangbo Lu <yangbo.lu@nxp.com>
@@ -26,162 +26,142 @@ Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
 Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
 
----
 ChangeLog:
 v3->v4:
- * remove one duplicated blank line
+ * Removed unneeded semicolon catched by 0day Robot.
 v2->v3:
- * use standard iotype flags instead of private is_32 member
+ * Instead of using global var, use standard port->iotype to distinguish
+   endian difference.
 v1->v2:
- * make all soc_data const
+ * No changes
 ---
- drivers/tty/serial/fsl_lpuart.c | 47 +++++++++++++++++++++++------------------
- 1 file changed, 27 insertions(+), 20 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 45 +++++++++++++++++++++++++++--------------
+ 1 file changed, 30 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 15df1ba7..c17a0ea 100644
+index 32d479b..ed0bf18 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -236,7 +236,6 @@ struct lpuart_port {
- 	struct clk		*clk;
- 	unsigned int		txfifo_size;
- 	unsigned int		rxfifo_size;
--	bool			lpuart32;
+@@ -279,15 +279,29 @@ MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
+ /* Forward declare this for the dma callbacks*/
+ static void lpuart_dma_tx_complete(void *arg);
  
- 	bool			lpuart_dma_tx_use;
- 	bool			lpuart_dma_rx_use;
-@@ -258,13 +257,21 @@ struct lpuart_port {
- 	wait_queue_head_t	dma_wait;
- };
+-static inline u32 lpuart32_read(struct uart_port *port, u32 reg_off)
+-{
+-	return ioread32be(port->membase + reg_off);
++static inline u32 lpuart32_read(struct uart_port *port, u32 off)
++{
++	switch (port->iotype) {
++	case UPIO_MEM32:
++		return readl(port->membase + off);
++	case UPIO_MEM32BE:
++		return ioread32be(port->membase + off);
++	default:
++		return 0;
++	}
+ }
  
-+struct lpuart_soc_data {
-+	char	iotype;
-+};
-+
-+static const struct lpuart_soc_data vf_data = {
-+	.iotype = UPIO_MEM,
-+};
-+
-+static const struct lpuart_soc_data ls_data = {
-+	.iotype = UPIO_MEM32BE,
-+};
-+
- static const struct of_device_id lpuart_dt_ids[] = {
--	{
--		.compatible = "fsl,vf610-lpuart",
--	},
--	{
--		.compatible = "fsl,ls1021a-lpuart",
--	},
-+	{ .compatible = "fsl,vf610-lpuart",	.data = &vf_data, },
-+	{ .compatible = "fsl,ls1021a-lpuart",	.data = &ls_data, },
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
-@@ -593,7 +600,7 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
+ static inline void lpuart32_write(struct uart_port *port, u32 val,
+-				  u32 reg_off)
+-{
+-	iowrite32be(val, port->membase + reg_off);
++				  u32 off)
++{
++	switch (port->iotype) {
++	case UPIO_MEM32:
++		writel(val, port->membase + off);
++		break;
++	case UPIO_MEM32BE:
++		iowrite32be(val, port->membase + off);
++		break;
++	}
+ }
+ 
+ static void lpuart_stop_tx(struct uart_port *port)
+@@ -601,7 +615,7 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
  
  	spin_lock_irqsave(&sport->port.lock, flags);
  	if (sport->port.x_char) {
--		if (sport->lpuart32)
-+		if (sport->port.iotype & UPIO_MEM32BE)
- 			lpuart32_write(sport->port.x_char, sport->port.membase + UARTDATA);
+-		if (sport->port.iotype & UPIO_MEM32BE)
++		if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
+ 			lpuart32_write(&sport->port, sport->port.x_char, UARTDATA);
  		else
  			writeb(sport->port.x_char, sport->port.membase + UARTDR);
-@@ -601,14 +608,14 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
+@@ -609,14 +623,14 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
  	}
  
  	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
--		if (sport->lpuart32)
-+		if (sport->port.iotype & UPIO_MEM32BE)
+-		if (sport->port.iotype & UPIO_MEM32BE)
++		if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
  			lpuart32_stop_tx(&sport->port);
  		else
  			lpuart_stop_tx(&sport->port);
  		goto out;
  	}
  
--	if (sport->lpuart32)
-+	if (sport->port.iotype & UPIO_MEM32BE)
+-	if (sport->port.iotype & UPIO_MEM32BE)
++	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
  		lpuart32_transmit_buffer(sport);
  	else
  		lpuart_transmit_buffer(sport);
-@@ -1881,12 +1888,12 @@ static int __init lpuart_console_setup(struct console *co, char *options)
+@@ -1889,12 +1903,12 @@ static int __init lpuart_console_setup(struct console *co, char *options)
  	if (options)
  		uart_parse_options(options, &baud, &parity, &bits, &flow);
  	else
--		if (sport->lpuart32)
-+		if (sport->port.iotype & UPIO_MEM32BE)
+-		if (sport->port.iotype & UPIO_MEM32BE)
++		if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
  			lpuart32_console_get_options(sport, &baud, &parity, &bits);
  		else
  			lpuart_console_get_options(sport, &baud, &parity, &bits);
  
--	if (sport->lpuart32)
-+	if (sport->port.iotype & UPIO_MEM32BE)
+-	if (sport->port.iotype & UPIO_MEM32BE)
++	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
  		lpuart32_setup_watermark(sport);
  	else
  		lpuart_setup_watermark(sport);
-@@ -1971,6 +1978,9 @@ static struct uart_driver lpuart_reg = {
+@@ -1953,6 +1967,7 @@ static int __init lpuart32_early_console_setup(struct earlycon_device *device,
+ 	if (!device->port.membase)
+ 		return -ENODEV;
  
- static int lpuart_probe(struct platform_device *pdev)
- {
-+	const struct of_device_id *of_id = of_match_device(lpuart_dt_ids,
-+							   &pdev->dev);
-+	const struct lpuart_soc_data *sdata = of_id->data;
- 	struct device_node *np = pdev->dev.of_node;
- 	struct lpuart_port *sport;
- 	struct resource *res;
-@@ -1988,8 +1998,6 @@ static int lpuart_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 	sport->port.line = ret;
--	sport->lpuart32 = of_device_is_compatible(np, "fsl,ls1021a-lpuart");
--
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	sport->port.membase = devm_ioremap_resource(&pdev->dev, res);
- 	if (IS_ERR(sport->port.membase))
-@@ -1998,15 +2006,14 @@ static int lpuart_probe(struct platform_device *pdev)
- 	sport->port.mapbase = res->start;
- 	sport->port.dev = &pdev->dev;
- 	sport->port.type = PORT_LPUART;
--	sport->port.iotype = UPIO_MEM;
- 	ret = platform_get_irq(pdev, 0);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "cannot obtain irq\n");
- 		return ret;
++	device->port.iotype = UPIO_MEM32BE;
+ 	device->con->write = lpuart32_early_write;
+ 	return 0;
+ }
+@@ -2014,7 +2029,7 @@ static int lpuart_probe(struct platform_device *pdev)
  	}
  	sport->port.irq = ret;
--
--	if (sport->lpuart32)
-+	sport->port.iotype = sdata->iotype;
-+	if (sport->port.iotype & UPIO_MEM32BE)
+ 	sport->port.iotype = sdata->iotype;
+-	if (sport->port.iotype & UPIO_MEM32BE)
++	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
  		sport->port.ops = &lpuart32_pops;
  	else
  		sport->port.ops = &lpuart_pops;
-@@ -2033,7 +2040,7 @@ static int lpuart_probe(struct platform_device *pdev)
+@@ -2041,7 +2056,7 @@ static int lpuart_probe(struct platform_device *pdev)
  
  	platform_set_drvdata(pdev, &sport->port);
  
--	if (sport->lpuart32)
-+	if (sport->port.iotype & UPIO_MEM32BE)
+-	if (sport->port.iotype & UPIO_MEM32BE)
++	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE))
  		lpuart_reg.cons = LPUART32_CONSOLE;
  	else
  		lpuart_reg.cons = LPUART_CONSOLE;
-@@ -2086,7 +2093,7 @@ static int lpuart_suspend(struct device *dev)
+@@ -2094,7 +2109,7 @@ static int lpuart_suspend(struct device *dev)
  	struct lpuart_port *sport = dev_get_drvdata(dev);
  	unsigned long temp;
  
--	if (sport->lpuart32) {
-+	if (sport->port.iotype & UPIO_MEM32BE) {
+-	if (sport->port.iotype & UPIO_MEM32BE) {
++	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE)) {
  		/* disable Rx/Tx and interrupts */
- 		temp = lpuart32_read(sport->port.membase + UARTCTRL);
+ 		temp = lpuart32_read(&sport->port, UARTCTRL);
  		temp &= ~(UARTCTRL_TE | UARTCTRL_TIE | UARTCTRL_TCIE);
-@@ -2137,7 +2144,7 @@ static int lpuart_resume(struct device *dev)
+@@ -2145,7 +2160,7 @@ static int lpuart_resume(struct device *dev)
  	if (sport->port.suspended && !sport->port.irq_wake)
  		clk_prepare_enable(sport->clk);
  
--	if (sport->lpuart32) {
-+	if (sport->port.iotype & UPIO_MEM32BE) {
+-	if (sport->port.iotype & UPIO_MEM32BE) {
++	if (sport->port.iotype & (UPIO_MEM32 | UPIO_MEM32BE)) {
  		lpuart32_setup_watermark(sport);
- 		temp = lpuart32_read(sport->port.membase + UARTCTRL);
+ 		temp = lpuart32_read(&sport->port, UARTCTRL);
  		temp |= (UARTCTRL_RIE | UARTCTRL_TIE | UARTCTRL_RE |
 -- 
 2.7.4
