@@ -1,7 +1,7 @@
-From: Johan Hovold <johan@kernel.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH 8/9] tty: ircomm: remove dead and broken ioctl code
-Date: Tue, 13 Jun 2017 12:00:54 +0200
-Message-ID: <20170613100054.GK10775@localhost>
+Date: Tue, 13 Jun 2017 12:01:00 +0200
+Message-ID: <20170613100100.GA1718@kroah.com>
 References: <20170606105441.689-1-johan@kernel.org>
  <20170606105441.689-9-johan@kernel.org>
  <20170606122704.3e328125@lxorguk.ukuu.org.uk>
@@ -13,8 +13,8 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <20170613095714.GJ10775@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Samuel Ortiz <samuel@sortiz.org>, "David S. Miller" <davem@davemloft.net>, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
+To: Johan Hovold <johan@kernel.org>
+Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Samuel Ortiz <samuel@sortiz.org>, "David S. Miller" <davem@davemloft.net>, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 On Tue, Jun 13, 2017 at 11:57:14AM +0200, Johan Hovold wrote:
@@ -42,7 +42,10 @@ On Tue, Jun 13, 2017 at 11:57:14AM +0200, Johan Hovold wrote:
 > kernel-wide updates even though hasn't even compiled for quite some
 > time.
 
-That is, just that which you ended up doing. :)
+I already applied it :)
 
-Thanks,
-Johan
+I'll wait for 4.13-rc1 before doing it (if I remember...)
+
+thanks,
+
+greg k-h
