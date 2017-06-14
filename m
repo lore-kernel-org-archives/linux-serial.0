@@ -1,51 +1,73 @@
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: Re: [PATCH] tty/serial: Kconfig: remove AVR32
-Date: Wed, 14 Jun 2017 11:29:42 +0200
-Message-ID: <7700c2bd-9a54-af44-28a1-693b704bec91@microchip.com>
-References: <20170613203509.32026-1-alexandre.belloni@free-electrons.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH] tty/serial: remove AVR32 specific access wrappers
+Date: Wed, 14 Jun 2017 12:43:40 +0300
+Message-ID: <CAHp75VcMrhG0K-=dtkF1T5siAAmmLYdmCxcLdo_vvH8dLjLh=A@mail.gmail.com>
+References: <20170613202517.26558-1-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170613203509.32026-1-alexandre.belloni@free-electrons.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170613202517.26558-1-alexandre.belloni@free-electrons.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-TGUgMTMvMDYvMjAxNyDDoCAyMjozNSwgQWxleGFuZHJlIEJlbGxvbmkgYSDDqWNyaXQgOgo+IEFW
-UjMyIGlzIG5vdyByZW1vdmVkIGZyb20gdGhlIGtlcm5lbCwgcmVtb3ZlZCB0aGUgY29uZmlnIHN5
-bWJvbCB0aGF0Cj4gZG9lc24ndCBleGlzdCBhbnltb3JlLiBBbHNvIHRha2UgdGhlIG9wcG9ydHVu
-aXR5IHRvIHJld29yZCB0aGUgaGVscCB0bwo+IGluY2x1ZGUgc2FtYTUuCj4gCj4gU2lnbmVkLW9m
-Zi1ieTogQWxleGFuZHJlIEJlbGxvbmkgPGFsZXhhbmRyZS5iZWxsb25pQGZyZWUtZWxlY3Ryb25z
-LmNvbT4KPiAtLS0KPiAgZHJpdmVycy90dHkvc2VyaWFsL0tjb25maWcgfCA2ICsrKy0tLQo+ICAx
-IGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQo+IAo+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvS2NvbmZpZyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9L
-Y29uZmlnCj4gaW5kZXggNWM4ODUwZjdhMmEwLi4wNjNjNzFlOGRlNDEgMTAwNjQ0Cj4gLS0tIGEv
-ZHJpdmVycy90dHkvc2VyaWFsL0tjb25maWcKPiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvS2Nv
-bmZpZwo+IEBAIC0xMTQsMTQgKzExNCwxNCBAQCBjb25maWcgU0VSSUFMX1NCMTI1MF9EVUFSVF9D
-T05TT0xFCj4gIAkgIElmIHVuc3VyZSwgc2F5IFkuCj4gIAo+ICBjb25maWcgU0VSSUFMX0FUTUVM
-Cj4gLQlib29sICJBVDkxIC8gQVQzMiBvbi1jaGlwIHNlcmlhbCBwb3J0IHN1cHBvcnQiCj4gKwli
-b29sICJBdG1lbCBvbi1jaGlwIHNlcmlhbCBwb3J0IHN1cHBvcnQiCgpOb3csIEkgd291bGQgYWRk
-IHNvbWV0aGluZyBsaWtlICJNaWNyb2NoaXAvQXRtZWwiLCBpdCdzIG1vcmUgZnV0dXJlLXByb29m
-LgoKPiAgCWRlcGVuZHMgb24gSEFTX0RNQQo+IC0JZGVwZW5kcyBvbiBBUkNIX0FUOTEgfHwgQVZS
-MzIgfHwgQ09NUElMRV9URVNUCj4gKwlkZXBlbmRzIG9uIEFSQ0hfQVQ5MSB8fCBDT01QSUxFX1RF
-U1QKPiAgCXNlbGVjdCBTRVJJQUxfQ09SRQo+ICAJc2VsZWN0IFNFUklBTF9NQ1RSTF9HUElPIGlm
-IEdQSU9MSUIKPiAgCWhlbHAKPiAgCSAgVGhpcyBlbmFibGVzIHRoZSBkcml2ZXIgZm9yIHRoZSBv
-bi1jaGlwIFVBUlRzIG9mIHRoZSBBdG1lbAoKSGVyZSBhcyB3ZWxsLi4uCgo+IC0JICBBVDkxIGFu
-ZCBBVDMyIHByb2Nlc3NvcnMuCj4gKwkgIEFSTSBwcm9jZXNzb3JzLgo+ICAKPiAgY29uZmlnIFNF
-UklBTF9BVE1FTF9DT05TT0xFCj4gIAlib29sICJTdXBwb3J0IGZvciBjb25zb2xlIG9uIEFUOTEg
-LyBBVDMyIHNlcmlhbCBwb3J0IgoKV2hhdCBhYm91dCByZW1vdmluZyBBVDMyIGhlcmUgYXMgd2Vs
-bCBeID8KCj4gCgoKLS0gCk5pY29sYXMgRmVycmUKCl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4
-LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+On Tue, Jun 13, 2017 at 11:25 PM, Alexandre Belloni
+<alexandre.belloni@free-electrons.com> wrote:
+> Now that AVR32 is gone, the specific wrappers for that architecture are
+> unnecessary and will not be compiled anymore.
+>
+
+Can you rebase this on top of tty-next?
+
+I'm pretty sure this patch will gone.
+
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> ---
+>  drivers/tty/serial/atmel_serial.c | 17 -----------------
+>  1 file changed, 17 deletions(-)
+>
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 937d67f22fba..8bfc566df2da 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -228,21 +228,6 @@ static inline void atmel_uart_writel(struct uart_port *port, u32 reg, u32 value)
+>         __raw_writel(value, port->membase + reg);
+>  }
+>
+> -#ifdef CONFIG_AVR32
+> -
+> -/* AVR32 cannot handle 8 or 16bit I/O accesses but only 32bit I/O accesses */
+> -static inline u8 atmel_uart_read_char(struct uart_port *port)
+> -{
+> -       return __raw_readl(port->membase + ATMEL_US_RHR);
+> -}
+> -
+> -static inline void atmel_uart_write_char(struct uart_port *port, u8 value)
+> -{
+> -       __raw_writel(value, port->membase + ATMEL_US_THR);
+> -}
+> -
+> -#else
+> -
+>  static inline u8 atmel_uart_read_char(struct uart_port *port)
+>  {
+>         return __raw_readb(port->membase + ATMEL_US_RHR);
+> @@ -253,8 +238,6 @@ static inline void atmel_uart_write_char(struct uart_port *port, u8 value)
+>         __raw_writeb(value, port->membase + ATMEL_US_THR);
+>  }
+>
+> -#endif
+> -
+>  #ifdef CONFIG_SERIAL_ATMEL_PDC
+>  static bool atmel_use_pdc_rx(struct uart_port *port)
+>  {
+> --
+> 2.11.0
+>
+
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
