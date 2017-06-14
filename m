@@ -1,7 +1,7 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [RFC 3/4] max9260: add driver for i2c over GMSL passthrough
-Date: Wed, 14 Jun 2017 16:38:49 +0200
-Message-ID: <1497451130-7741-4-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: [RFC 4/4] ARM: dts: blanche: add SCIF1 and MAX9260 deserializer
+Date: Wed, 14 Jun 2017 16:38:50 +0200
+Message-ID: <1497451130-7741-5-git-send-email-ulrich.hecht+renesas@gmail.com>
 References: <1497451130-7741-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1497451130-7741-1-git-send-email-ulrich.hecht+renesas@gmail.com>
@@ -10,343 +10,82 @@ To: robh@kernel.org, linux-serial@vger.kernel.org
 Cc: linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, wsa@the-dreams.de, linux-i2c@vger.kernel.org, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This driver implements tunnelling of i2c requests over GMSL via a
-MAX9260 deserializer. It provides an i2c adapter that can be used
-to reach devices on the far side of the link.
+Adds serial port SCIF1 and the MAX9260 deserializers connected to it.
 
 Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 ---
- drivers/media/i2c/Kconfig   |   6 +
- drivers/media/i2c/Makefile  |   1 +
- drivers/media/i2c/max9260.c | 294 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 301 insertions(+)
- create mode 100644 drivers/media/i2c/max9260.c
+ arch/arm/boot/dts/r8a7792-blanche.dts | 45 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
-diff --git a/drivers/media/i2c/Kconfig b/drivers/media/i2c/Kconfig
-index 7c23b7a..743f8ee 100644
---- a/drivers/media/i2c/Kconfig
-+++ b/drivers/media/i2c/Kconfig
-@@ -400,6 +400,12 @@ config VIDEO_VPX3220
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called vpx3220.
+diff --git a/arch/arm/boot/dts/r8a7792-blanche.dts b/arch/arm/boot/dts/r8a7792-blanche.dts
+index 9b67dca..281484d 100644
+--- a/arch/arm/boot/dts/r8a7792-blanche.dts
++++ b/arch/arm/boot/dts/r8a7792-blanche.dts
+@@ -21,6 +21,7 @@
+ 	aliases {
+ 		serial0 = &scif0;
+ 		serial1 = &scif3;
++		serial2 = &scif1;
+ 	};
  
-+config VIDEO_MAX9260
-+	tristate "Maxim MAX9260 GMSL deserializer support"
-+	depends on I2C
-+	---help---
-+	  This driver supports the Maxim MAX9260 GMSL deserializer.
-+
- comment "Video and audio decoders"
+ 	chosen {
+@@ -202,6 +203,11 @@
+ 		function = "scif0";
+ 	};
  
- config VIDEO_SAA717X
-diff --git a/drivers/media/i2c/Makefile b/drivers/media/i2c/Makefile
-index 62323ec..9b2fd13 100644
---- a/drivers/media/i2c/Makefile
-+++ b/drivers/media/i2c/Makefile
-@@ -86,3 +86,4 @@ obj-$(CONFIG_VIDEO_IR_I2C)  += ir-kbd-i2c.o
- obj-$(CONFIG_VIDEO_ML86V7667)	+= ml86v7667.o
- obj-$(CONFIG_VIDEO_OV2659)	+= ov2659.o
- obj-$(CONFIG_VIDEO_TC358743)	+= tc358743.o
-+obj-$(CONFIG_VIDEO_MAX9260)	+= max9260.o
-diff --git a/drivers/media/i2c/max9260.c b/drivers/media/i2c/max9260.c
-new file mode 100644
-index 0000000..2030eb0
---- /dev/null
-+++ b/drivers/media/i2c/max9260.c
-@@ -0,0 +1,294 @@
-+/*
-+ * Maxim MAX9260 GMSL Deserializer Driver
-+ *
-+ * Copyright (C) 2017 Ulrich Hecht
-+ *
-+ * This program is free software; you can redistribute  it and/or modify it
-+ * under  the terms of  the GNU General  Public License as published by the
-+ * Free Software Foundation;  either version 2 of the  License, or (at your
-+ * option) any later version.
-+ */
++	scif1_pins: scif1 {
++		groups = "scif1_data";
++		function = "scif1";
++	};
 +
-+#include <linux/device.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_gpio.h>
-+#include <linux/serdev.h>
-+#include <linux/slab.h>
-+#include <linux/tty.h>
+ 	scif3_pins: scif3 {
+ 		groups = "scif3_data";
+ 		function = "scif3";
+@@ -246,6 +252,45 @@
+ 	status = "okay";
+ };
+ 
++&scif1 {
++	pinctrl-0 = <&scif1_pins>;
++	pinctrl-names = "default";
 +
-+#define SYNC	0x79
-+#define ACK	0xc3
++	status = "okay";
 +
-+#define RX_FINISHED		0
-+#define RX_FRAME_ERROR		1
-+#define RX_EXPECT_ACK		2
-+#define RX_EXPECT_ACK_DATA	3
-+#define RX_EXPECT_DATA		4
++	mux-select-gpios = <&gpio5 12 GPIO_ACTIVE_LOW>,
++			   <&gpio5 13 GPIO_ACTIVE_LOW>,
++			   <&gpio5 14 GPIO_ACTIVE_LOW>,
++			   <&gpio5 15 GPIO_ACTIVE_LOW>;
 +
-+struct max9260_device {
-+	struct serdev_device *serdev;
-+	u8 *rx_buf;
-+	int rx_len;
-+	int rx_state;
-+	wait_queue_head_t rx_wq;
-+	struct i2c_adapter adap;
++	#address-cells = <1>;
++	#size-cells = <0>;
++	gmsl-deserializer@0 {
++		compatible = "maxim,max9260";
++		reg = <0x8>;
++	};
++	gmsl-deserializer@1 {
++		compatible = "maxim,max9260";
++		reg = <0x9>;
++	};
++	gmsl-deserializer@2 {
++		compatible = "maxim,max9260";
++		reg = <0xa>;
++	};
++	gmsl-deserializer@3 {
++		compatible = "maxim,max9260";
++		reg = <0xb>;
++	};
++	gmsl-deserializer@4 {
++		compatible = "maxim,max9260";
++		reg = <0x4>;
++	};
++	gmsl-deserializer@5 {
++		compatible = "maxim,max9260";
++		reg = <0x5>;
++	};
 +};
 +
-+static void wait_for_transaction(struct max9260_device *dev)
-+{
-+	wait_event_interruptible_timeout(dev->rx_wq,
-+		dev->rx_state <= RX_FRAME_ERROR,
-+		HZ/2);
-+}
-+
-+static void transact(struct max9260_device *dev,
-+			     int expect,
-+			     u8 *request, int len)
-+{
-+	serdev_device_mux_select(dev->serdev);
-+
-+	serdev_device_set_baudrate(dev->serdev, 115200);
-+	serdev_device_set_parity(dev->serdev, 1, 0);
-+
-+	dev->rx_state = expect;
-+	serdev_device_write_buf(dev->serdev, request, len);
-+
-+	wait_for_transaction(dev);
-+
-+	serdev_device_mux_deselect(dev->serdev);
-+}
-+
-+static int max9260_read_reg(struct max9260_device *dev, int reg)
-+{
-+	u8 request[] = { 0x79, 0x91, reg, 1 };
-+	u8 rx;
-+
-+	dev->rx_len = 1;
-+	dev->rx_buf = &rx;
-+
-+	transact(dev, RX_EXPECT_ACK_DATA, request, 4);
-+
-+	if (dev->rx_state == RX_FINISHED)
-+		return rx;
-+
-+	return -1;
-+}
-+
-+static int max9260_setup(struct max9260_device *dev)
-+{
-+	int ret;
-+
-+	ret = max9260_read_reg(dev, 0x1e);
-+
-+	if (ret != 0x02) {
-+		dev_err(&dev->serdev->dev,
-+			"device does not identify as MAX9260\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static void max9260_uart_write_wakeup(struct serdev_device *serdev)
-+{
-+}
-+
-+static int max9260_uart_receive_buf(struct serdev_device *serdev,
-+				    const u8 *data, size_t count)
-+{
-+	struct max9260_device *dev = serdev_device_get_drvdata(serdev);
-+	int accepted;
-+
-+	switch (dev->rx_state) {
-+	case RX_FINISHED:
-+		dev_dbg(&dev->serdev->dev, "excess data ignored\n");
-+		return count;
-+
-+	case RX_EXPECT_ACK:
-+	case RX_EXPECT_ACK_DATA:
-+		if (data[0] != ACK) {
-+			dev_dbg(&dev->serdev->dev, "frame error");
-+			dev->rx_state = RX_FRAME_ERROR;
-+			wake_up_interruptible(&dev->rx_wq);
-+			return 1;
-+		}
-+		switch (dev->rx_state) {
-+		case RX_EXPECT_ACK_DATA:
-+			dev->rx_state = RX_EXPECT_DATA;
-+			break;
-+		case RX_EXPECT_ACK:
-+			dev->rx_state = RX_FINISHED;
-+			wake_up_interruptible(&dev->rx_wq);
-+			break;
-+		}
-+		return 1;
-+
-+	case RX_EXPECT_DATA:
-+		accepted = dev->rx_len < count ? dev->rx_len : count;
-+
-+		memcpy(dev->rx_buf, data, accepted);
-+
-+		dev->rx_len -= accepted;
-+		dev->rx_buf += accepted;
-+
-+		if (!dev->rx_len) {
-+			dev->rx_state = RX_FINISHED;
-+			wake_up_interruptible(&dev->rx_wq);
-+		}
-+
-+		return accepted;
-+
-+	case RX_FRAME_ERROR:
-+		dev_dbg(&dev->serdev->dev, "%d bytes ignored\n", count);
-+		return count;
-+
-+	}
-+	return 0;
-+}
-+
-+struct serdev_device_ops max9260_serdev_client_ops = {
-+	.receive_buf = max9260_uart_receive_buf,
-+	.write_wakeup = max9260_uart_write_wakeup,
-+};
-+
-+static u32 max9260_i2c_func(struct i2c_adapter *adapter)
-+{
-+	return I2C_FUNC_SMBUS_EMUL;
-+}
-+
-+static s32 max9260_smbus_xfer(struct i2c_adapter *adap, u16 addr,
-+	unsigned short flags, char read_write, u8 command, int size,
-+	union i2c_smbus_data *data)
-+{
-+	u8 request[] = { SYNC,
-+			 (addr << 1) + (read_write == I2C_SMBUS_READ),
-+			 command, 0, 0 };
-+	struct max9260_device *dev = i2c_get_adapdata(adap);
-+
-+	switch (size) {
-+	case I2C_SMBUS_BYTE:
-+		if (read_write == I2C_SMBUS_WRITE) {
-+			transact(dev, RX_EXPECT_ACK, request, 4);
-+			dev_dbg(&adap->dev,
-+				"smbus byte - addr 0x%02x, wrote 0x%02x.\n",
-+				addr, command);
-+		} else {
-+			/* TBD */
-+			return -EOPNOTSUPP;
-+		}
-+		break;
-+
-+	case I2C_SMBUS_BYTE_DATA:
-+		request[3] = 1;
-+		if (read_write == I2C_SMBUS_WRITE) {
-+			request[4] = data->byte;
-+			transact(dev, RX_EXPECT_ACK, request, 5);
-+			dev_dbg(&adap->dev,
-+				"smbus byte data - addr 0x%02x, wrote 0x%02x at 0x%02x.\n",
-+				addr, data->byte, command);
-+		} else {
-+			dev->rx_len = 1;
-+			dev->rx_buf = &data->byte;
-+			transact(dev, RX_EXPECT_ACK_DATA, request, 4);
-+			dev_dbg(&adap->dev,
-+				"smbus byte data - addr 0x%02x, read  0x%02x at 0x%02x.\n",
-+				addr, data->byte, command);
-+		}
-+		break;
-+	default:
-+		dev_dbg(&adap->dev,
-+			"Unsupported I2C/SMBus command %d\n", size);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (dev->rx_state != RX_FINISHED) {
-+		dev_dbg(&adap->dev, "xfer timed out\n");
-+		return -EIO;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct i2c_algorithm max9260_i2c_algorithm = {
-+	.functionality	= max9260_i2c_func,
-+	.smbus_xfer	= max9260_smbus_xfer,
-+};
-+
-+static int max9260_probe(struct serdev_device *serdev)
-+{
-+	struct max9260_device *dev;
-+	struct i2c_adapter *adap;
-+	int ret;
-+
-+	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-+	if (!dev)
-+		return -ENOMEM;
-+
-+	init_waitqueue_head(&dev->rx_wq);
-+
-+	dev->serdev = serdev;
-+	serdev_device_open(serdev);
-+	serdev_device_set_drvdata(serdev, dev);
-+
-+	serdev_device_set_client_ops(serdev, &max9260_serdev_client_ops);
-+
-+	ret = max9260_setup(dev);
-+
-+	if (ret < 0)
-+		goto err_free;
-+
-+	adap = &dev->adap;
-+	i2c_set_adapdata(adap, dev);
-+
-+	adap->owner = THIS_MODULE;
-+	adap->algo = &max9260_i2c_algorithm;
-+	adap->dev.parent = &serdev->dev;
-+	adap->retries = 5;
-+	adap->nr = -1;
-+	strlcpy(adap->name, dev_name(&serdev->dev), sizeof(adap->name));
-+
-+	ret = i2c_add_numbered_adapter(adap);
-+	if (ret < 0) {
-+		dev_err(&serdev->dev, "failed to register i2c adapter\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+
-+err_free:
-+	kfree(dev);
-+	return ret;
-+}
-+
-+static void max9260_remove(struct serdev_device *serdev)
-+{
-+	struct max9260_device *dev = serdev_device_get_drvdata(serdev);
-+
-+	serdev_device_close(dev->serdev);
-+
-+	kfree(dev);
-+}
-+
-+static const struct of_device_id max9260_dt_ids[] = {
-+	{ .compatible = "maxim,max9260" },
-+	{},
-+};
-+
-+MODULE_DEVICE_TABLE(of, max9260_dt_ids);
-+
-+static struct serdev_device_driver max9260_driver = {
-+	.probe = max9260_probe,
-+	.remove = max9260_remove,
-+	.driver = {
-+		.name = "max9260",
-+		.of_match_table = of_match_ptr(max9260_dt_ids),
-+	},
-+};
-+
-+module_serdev_device_driver(max9260_driver);
-+
-+MODULE_DESCRIPTION("Maxim MAX9260 GMSL Deserializer Driver");
-+MODULE_AUTHOR("Ulrich Hecht");
-+MODULE_LICENSE("GPL");
+ &scif3 {
+ 	pinctrl-0 = <&scif3_pins>;
+ 	pinctrl-names = "default";
 -- 
 2.7.4
