@@ -1,26 +1,36 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty/serial: Kconfig: remove AVR32
-Date: Wed, 14 Jun 2017 12:49:45 +0200
-Message-ID: <20170614104945.GA11354@kroah.com>
-References: <20170613203509.32026-1-alexandre.belloni@free-electrons.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH] tty/serial: remove AVR32 specific access wrappers
+Date: Wed, 14 Jun 2017 15:27:23 +0200
+Message-ID: <20170614132723.2duxhpjq4odchcw2@piout.net>
+References: <20170613202517.26558-1-alexandre.belloni@free-electrons.com>
+ <CAHp75VcMrhG0K-=dtkF1T5siAAmmLYdmCxcLdo_vvH8dLjLh=A@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170613203509.32026-1-alexandre.belloni@free-electrons.com>
+In-Reply-To: <CAHp75VcMrhG0K-=dtkF1T5siAAmmLYdmCxcLdo_vvH8dLjLh=A@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 13, 2017 at 10:35:09PM +0200, Alexandre Belloni wrote:
-> AVR32 is now removed from the kernel, removed the config symbol that
-> doesn't exist anymore. Also take the opportunity to reword the help to
-> include sama5.
+On 14/06/2017 at 12:43:40 +0300, Andy Shevchenko wrote:
+> On Tue, Jun 13, 2017 at 11:25 PM, Alexandre Belloni
+> <alexandre.belloni@free-electrons.com> wrote:
+> > Now that AVR32 is gone, the specific wrappers for that architecture are
+> > unnecessary and will not be compiled anymore.
+> >
 > 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> ---
->  drivers/tty/serial/Kconfig | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> Can you rebase this on top of tty-next?
+> 
+> I'm pretty sure this patch will gone.
+> 
 
-Does not apply to tty-next at all :(
+So you avoided most of the bikeshedding by not copying any of the
+maintainers, nice...
+
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
