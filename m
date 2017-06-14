@@ -1,43 +1,36 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH] tty/serial: Kconfig: remove AVR32
-Date: Tue, 13 Jun 2017 22:35:09 +0200
-Message-ID: <20170613203509.32026-1-alexandre.belloni@free-electrons.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH v2 1/2] tty/serial: atmel: remove
+ atmel_default_console_device handling
+Date: Wed, 14 Jun 2017 09:40:33 +0200
+Message-ID: <0bb0be06-ef27-7bb5-af8d-1e25ec9f1534@gmail.com>
+References: <20170613202439.26369-1-alexandre.belloni@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170613202439.26369-1-alexandre.belloni@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-AVR32 is now removed from the kernel, removed the config symbol that
-doesn't exist anymore. Also take the opportunity to reword the help to
-include sama5.
+On 13/06/2017 22:24, Alexandre Belloni wrote:
+> atmel_default_console_device was only used by AVR32, in particular
+> arch/avr32/mach-at32ap/at32ap700x.c which is now gone. Remove it from the
+> driver.
+> 
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> ---
+> 
+> Changes in v2:
+>  - added an empty line as suggested by Andy
+>  - properly based the patch on v4.12-rc1
+> 
+>  drivers/tty/serial/atmel_serial.c | 43 ---------------------------------------
+>  1 file changed, 43 deletions(-)
+> 
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- drivers/tty/serial/Kconfig | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 5c8850f7a2a0..063c71e8de41 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -114,14 +114,14 @@ config SERIAL_SB1250_DUART_CONSOLE
- 	  If unsure, say Y.
- 
- config SERIAL_ATMEL
--	bool "AT91 / AT32 on-chip serial port support"
-+	bool "Atmel on-chip serial port support"
- 	depends on HAS_DMA
--	depends on ARCH_AT91 || AVR32 || COMPILE_TEST
-+	depends on ARCH_AT91 || COMPILE_TEST
- 	select SERIAL_CORE
- 	select SERIAL_MCTRL_GPIO if GPIOLIB
- 	help
- 	  This enables the driver for the on-chip UARTs of the Atmel
--	  AT91 and AT32 processors.
-+	  ARM processors.
- 
- config SERIAL_ATMEL_CONSOLE
- 	bool "Support for console on AT91 / AT32 serial port"
--- 
-2.11.0
+
+Thanks !
