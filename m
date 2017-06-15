@@ -1,53 +1,34 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [RFC 2/4] serdev: add GPIO-based multiplexer support
-Date: Thu, 15 Jun 2017 11:34:56 +0200
-Message-ID: <CAMuHMdUe1dvjc54=NwBxP=-3L6zVGzRY3JDPV6ERMT0GxvvQcA@mail.gmail.com>
-References: <1497451130-7741-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1497451130-7741-3-git-send-email-ulrich.hecht+renesas@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1497451130-7741-3-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Wolfram Sang <wsa@the-dreams.de>, Linux I2C <linux-i2c@vger.kernel.org>
+From: Arvind Yadav <arvind.yadav.cs@gmail.com>
+Subject: [PATCH] serial: sirf: make of_device_ids const
+Date: Thu, 15 Jun 2017 17:08:40 +0530
+Message-ID: <0c382b5ef53ee2672cea152cbcdf17d67507c68f.1497526621.git.arvind.yadav.cs@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, baohua@kernel.org
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ulrich,
+of_device_ids are not supposed to change at runtime. All functions
+working with of_device_ids provided by <linux/of.h> work with const
+of_device_ids. So mark the non-const structs as const.
 
-On Wed, Jun 14, 2017 at 4:38 PM, Ulrich Hecht
-<ulrich.hecht+renesas@gmail.com> wrote:
-> Adds an interface for slave device multiplexing, and an implementation
-> for GPIO-based multiplexers.
->
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
+---
+ drivers/tty/serial/sirfsoc_uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks for your patch!
-
-> --- /dev/null
-> +++ b/drivers/tty/serdev/mux-gpio.c
-
-> +int of_serdev_register_gpio_mux(struct serdev_controller *ctrl)
-> +{
-> +       int i, ngpios;
-> +       struct serdev_mux *mux;
-> +       struct device_node *np = ctrl->dev.of_node;
-> +
-> +       ngpios = of_gpio_named_count(np, "mux-select-gpios");
-
-To make if OF-agnostic, you probably want to use gpiod_count() instead...
-
-> +       for (i = 0; i < ngpios; ++i)
-> +               mux->gpios[i] = of_get_named_gpio(np, "mux-select-gpios", i);
-
-... and (devm_)gpiod_get_index().
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
+index e03282d..684cb8d 100644
+--- a/drivers/tty/serial/sirfsoc_uart.c
++++ b/drivers/tty/serial/sirfsoc_uart.c
+@@ -1253,7 +1253,7 @@ static int __init sirfsoc_uart_console_init(void)
+ 	return HRTIMER_RESTART;
+ }
+ 
+-static struct of_device_id sirfsoc_uart_ids[] = {
++static const struct of_device_id sirfsoc_uart_ids[] = {
+ 	{ .compatible = "sirf,prima2-uart", .data = &sirfsoc_uart,},
+ 	{ .compatible = "sirf,atlas7-uart", .data = &sirfsoc_uart},
+ 	{ .compatible = "sirf,prima2-usp-uart", .data = &sirfsoc_usp},
+-- 
+1.9.1
