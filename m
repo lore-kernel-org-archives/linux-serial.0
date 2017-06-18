@@ -1,72 +1,30 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250: 8250_omap: Fix race b/w dma completion
- and RX timeout
-Date: Sat, 17 Jun 2017 17:37:23 +0300
-Message-ID: <1497710243.22624.150.camel@linux.intel.com>
-References: <20170617135224.31675-1-vigneshr@ti.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v5 1/4] dt-bindings: serial: Add bindings for the Amlogic
+ Meson UARTs
+Date: Sun, 18 Jun 2017 09:05:44 -0500
+Message-ID: <20170618140544.elrzdxg6utvhaeht@rob-hp-laptop>
+References: <1497428957-19942-1-git-send-email-narmstrong@baylibre.com>
+ <1497428957-19942-2-git-send-email-narmstrong@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170617135224.31675-1-vigneshr@ti.com>
+Content-Disposition: inline
+In-Reply-To: <1497428957-19942-2-git-send-email-narmstrong@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vignesh R <vigneshr@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+To: Neil Armstrong <narmstrong@baylibre.com>
+Cc: gregkh@linuxfoundation.org, khilman@baylibre.com, Helmut Klein <hgkr.klein@gmail.com>, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, 2017-06-17 at 19:22 +0530, Vignesh R wrote:
-> DMA RX completion handler for UART is called from a tasklet and hence
-> may be delayed depending on the system load. In meanwhile, there may
-> be
-> RX timeout interrupt which can get serviced first before DMA RX
-> completion handler is executed for the completed transfer.
-> omap_8250_rx_dma_flush() which is called on RX timeout interrupt makes
-> sure that the DMA RX buffer is pushed and then the FIFO is drained and
-> also queues a new DMA request. But, when DMA RX completion handler
-> executes, it will erroneously flush the currently queued DMA transfer
-> which sometimes results in data corruption and double queueing of DMA
-> RX
-> requests.
+On Wed, Jun 14, 2017 at 10:29:14AM +0200, Neil Armstrong wrote:
+> From: Helmut Klein <hgkr.klein@gmail.com>
 > 
-> Fix this by checking whether RX completion is for the currently queued
-> transfer or not. And also hold port lock when in DMA completion to
-> avoid
-> race wrt RX timeout handler preempting it.
+> Add the documentation for the device tree binding of Amlogic Meson Serial UART.
+> 
+> Signed-off-by: Helmut Klein <hgkr.klein@gmail.com>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+> ---
+>  .../bindings/serial/amlogic,meson-uart.txt         | 38 ++++++++++++++++++++++
+>  1 file changed, 38 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
 
-
->  static void __dma_rx_complete(void *param)
->  {
-> -	__dma_rx_do_complete(param);
-> -	omap_8250_rx_dma(param);
-> +	struct uart_8250_port *p = param;
-> +	struct uart_8250_dma *dma = p->dma;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&p->port.lock, flags);
-> +
-> +	/*
-> +	 * If the completion is for the current cookie then handle
-> it,
-> +	 * else a previous RX timeout flush would have already pushed
-> +	 * data from DMA buffers, so exit.
-> +	 */
-
-> +	if (dma->rx_cookie != dma->rxchan->completed_cookie) {
-
-Wouldn't be better to call DMAEngine API for that?
-dmaengine_tx_status() I suppose
-
-> +		spin_unlock_irqrestore(&p->port.lock, flags);
-> +		return;
-> +	}
-> +	__dma_rx_do_complete(p);
-> +	omap_8250_rx_dma(p);
-> +
-> +	spin_unlock_irqrestore(&p->port.lock, flags);
->  }
->  
->  static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
-
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Acked-by: Rob Herring <robh@kernel.org>
