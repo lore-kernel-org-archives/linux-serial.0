@@ -1,70 +1,63 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH] serial: 8250: 8250_omap: Fix race b/w dma completion and
- RX timeout
-Date: Mon, 19 Jun 2017 10:42:41 +0530
-Message-ID: <f3905c42-74e2-5897-43f3-a0ffe2991c73@ti.com>
-References: <20170617135224.31675-1-vigneshr@ti.com>
- <1497710243.22624.150.camel@linux.intel.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH v5 3/4] ARM64: dts: meson-gx: use stable UART bindings
+ with correct gate clock
+Date: Mon, 19 Jun 2017 10:40:12 +0200
+Message-ID: <e409b45e-41bc-0c1c-5657-d6f2ef0152f2@baylibre.com>
+References: <1497428957-19942-1-git-send-email-narmstrong@baylibre.com>
+ <1497428957-19942-4-git-send-email-narmstrong@baylibre.com>
+ <m2vanvejlc.fsf@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1497710243.22624.150.camel@linux.intel.com>
-Content-Language: en-US
+In-Reply-To: <m2vanvejlc.fsf@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+To: Kevin Hilman <khilman@baylibre.com>
+Cc: gregkh@linuxfoundation.org, Helmut Klein <hgkr.klein@gmail.com>, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On Saturday 17 June 2017 08:07 PM, Andy Shevchenko wrote:
-> On Sat, 2017-06-17 at 19:22 +0530, Vignesh R wrote:
->> DMA RX completion handler for UART is called from a tasklet and hence
->> may be delayed depending on the system load. In meanwhile, there may
->> be
->> RX timeout interrupt which can get serviced first before DMA RX
->> completion handler is executed for the completed transfer.
->> omap_8250_rx_dma_flush() which is called on RX timeout interrupt makes
->> sure that the DMA RX buffer is pushed and then the FIFO is drained and
->> also queues a new DMA request. But, when DMA RX completion handler
->> executes, it will erroneously flush the currently queued DMA transfer
->> which sometimes results in data corruption and double queueing of DMA
->> RX
->> requests.
+On 06/16/2017 10:57 PM, Kevin Hilman wrote:
+> Neil Armstrong <narmstrong@baylibre.com> writes:
+> 
+>> From: Helmut Klein <hgkr.klein@gmail.com>
 >>
->> Fix this by checking whether RX completion is for the currently queued
->> transfer or not. And also hold port lock when in DMA completion to
->> avoid
->> race wrt RX timeout handler preempting it.
+>> This patch switches to the stable UART bindings but also add the correct
+>> gate clock to the non-AO UART nodes for GXBB and GXL SoCs.
+>>
+>> Acked-by: Jerome Brunet <jbrunet@baylibre.com>
+>> Signed-off-by: Helmut Klein <hgkr.klein@gmail.com>
+>> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+>> ---
+>>  arch/arm64/boot/dts/amlogic/meson-gx.dtsi   | 12 +++++-------
+>>  arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi | 25 +++++++++++++++++++++++++
+>>  arch/arm64/boot/dts/amlogic/meson-gxl.dtsi  | 25 +++++++++++++++++++++++++
+>>  3 files changed, 55 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+>> index 603491d..86a4018 100644
+>> --- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+>> +++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+>> @@ -225,7 +225,7 @@
+>>  			};
+>>  
+>>  			uart_A: serial@84c0 {
+>> -				compatible = "amlogic,meson-uart";
+>> +				compatible = "amlogic,meson-gx-uart";
 > 
+> IMO, we should keep both compatibles (the more specific one first.)
+> That would allow new DTs to continue to run on older kernels.
 > 
->>  static void __dma_rx_complete(void *param)
->>  {
->> -	__dma_rx_do_complete(param);
->> -	omap_8250_rx_dma(param);
->> +	struct uart_8250_port *p = param;
->> +	struct uart_8250_dma *dma = p->dma;
->> +	unsigned long flags;
->> +
->> +	spin_lock_irqsave(&p->port.lock, flags);
->> +
->> +	/*
->> +	 * If the completion is for the current cookie then handle
->> it,
->> +	 * else a previous RX timeout flush would have already pushed
->> +	 * data from DMA buffers, so exit.
->> +	 */
+> It would also allow this DT change to be completely independent of the
+> driver changes.  Otherwise, if I merge this before the driver change are
+> merged, we'll have a bunch of boards with no more serial console output.
 > 
->> +	if (dma->rx_cookie != dma->rxchan->completed_cookie) {
+> Kevin
 > 
-> Wouldn't be better to call DMAEngine API for that?
-> dmaengine_tx_status() I suppose
 
-Yeah, will update the patch. Thanks!
+Hi Kevin,
 
+Sure, no problem with that.
 
+I'll push an update when the bindings + tty fixes are merged somewhere.
 
--- 
-Regards
-Vignesh
+Neil
