@@ -1,67 +1,70 @@
-From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Subject: Re: [PATCH v4 09/28] tty: serial: Add Actions Semi Owl UART earlycon
-Date: Mon, 19 Jun 2017 04:26:37 +0200
-Message-ID: <240f8a46-62f3-1b1e-8219-7e660397d0a2@suse.de>
-References: <20170606005426.26446-1-afaerber@suse.de>
- <20170606005426.26446-10-afaerber@suse.de>
- <55059fdd-5c54-ee6c-3e63-b5a9035c1745@suse.de>
- <20170619011627.GB11287@kroah.com>
- <7fff8813-cea4-0530-bf7b-3d0ad50d6e93@suse.de>
- <20170619021212.GA3195@kroah.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH] serial: 8250: 8250_omap: Fix race b/w dma completion and
+ RX timeout
+Date: Mon, 19 Jun 2017 10:42:41 +0530
+Message-ID: <f3905c42-74e2-5897-43f3-a0ffe2991c73@ti.com>
+References: <20170617135224.31675-1-vigneshr@ti.com>
+ <1497710243.22624.150.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170619021212.GA3195@kroah.com>
+In-Reply-To: <1497710243.22624.150.camel@linux.intel.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, support@lemaker.org, =?UTF-8?B?5byg5aSp55uK?= <tyzhang@actions-semi.com>, 96boards@ucrobotics.com, linux-kernel@vger.kernel.org, Thomas Liau <thomas.liau@actions-semi.com>, mp-cs@actions-semi.com, linux-serial@vger.kernel.org, =?UTF-8?B?5YiY54Kc?= <liuwei@actions-semi.com>, Jiri Slaby <jslaby@suse.com>, =?UTF-8?B?5byg5Lic6aOO?= <zhangdf@actions-semi.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
 
-Am 19.06.2017 um 04:12 schrieb Greg Kroah-Hartman:
-> On Mon, Jun 19, 2017 at 03:24:44AM +0200, Andreas Färber wrote:
->> Am 19.06.2017 um 03:16 schrieb Greg Kroah-Hartman:
->>> On Sun, Jun 18, 2017 at 11:45:28PM +0200, Andreas Färber wrote:
->>>> Am 06.06.2017 um 02:54 schrieb Andreas Färber:
->>>>> This implements an earlycon for Actions Semi S500/S900 SoCs.
->>>>>
->>>>> Based on LeMaker linux-actions tree.
->>>>>
->>>>> Signed-off-by: Andreas Färber <afaerber@suse.de>
->>>>
->>>> The DT vendor prefix is applied to my linux-actions.git tree now, and
->>>> the serial binding has been ack'ed by Rob.
->>>>
->>>> Is there anything keeping you from adding this patch, the preceding DT
->>>> binding (08/28) and the following documentation patch (10/28) to your
->>>> tree for 4.13?
->>>
->>> Yeah, I don't have it in my queue anymore :)
->>>
->>> Can you resend it just as a single patch?
+
+
+On Saturday 17 June 2017 08:07 PM, Andy Shevchenko wrote:
+> On Sat, 2017-06-17 at 19:22 +0530, Vignesh R wrote:
+>> DMA RX completion handler for UART is called from a tasklet and hence
+>> may be delayed depending on the system load. In meanwhile, there may
+>> be
+>> RX timeout interrupt which can get serviced first before DMA RX
+>> completion handler is executed for the completed transfer.
+>> omap_8250_rx_dma_flush() which is called on RX timeout interrupt makes
+>> sure that the DMA RX buffer is pushed and then the FIFO is drained and
+>> also queues a new DMA request. But, when DMA RX completion handler
+>> executes, it will erroneously flush the currently queued DMA transfer
+>> which sometimes results in data corruption and double queueing of DMA
+>> RX
+>> requests.
 >>
->> Do you mean squash the documentation into this tty patch? As you wish.
->> But the DT binding is supposed to be a separate patch - I can queue it
->> in my tree if you prefer.
+>> Fix this by checking whether RX completion is for the currently queued
+>> transfer or not. And also hold port lock when in DMA completion to
+>> avoid
+>> race wrt RX timeout handler preempting it.
 > 
-> No, just send me what ever you want me to apply to my tree.  If you want
-> me to pick some random patch out of the middle of a series, um, that's a
-> bit hard for me to know what to do, right?
-
-Well, I thought that would be obvious from subject, diff stat and CC...
-Only dependencies were ARCH_ACTIONS and actions vendor prefix, which
-should be in linux-next by tomorrow.
-
 > 
-> Make it very very obvious please :)
+>>  static void __dma_rx_complete(void *param)
+>>  {
+>> -	__dma_rx_do_complete(param);
+>> -	omap_8250_rx_dma(param);
+>> +	struct uart_8250_port *p = param;
+>> +	struct uart_8250_dma *dma = p->dma;
+>> +	unsigned long flags;
+>> +
+>> +	spin_lock_irqsave(&p->port.lock, flags);
+>> +
+>> +	/*
+>> +	 * If the completion is for the current cookie then handle
+>> it,
+>> +	 * else a previous RX timeout flush would have already pushed
+>> +	 * data from DMA buffers, so exit.
+>> +	 */
+> 
+>> +	if (dma->rx_cookie != dma->rxchan->completed_cookie) {
+> 
+> Wouldn't be better to call DMAEngine API for that?
+> dmaengine_tx_status() I suppose
 
-I already resent the now two patches as v5 with you as only To.
+Yeah, will update the patch. Thanks!
 
-Thanks,
-Andreas
+
 
 -- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Jane Smithard, Graham Norton
-HRB 21284 (AG Nürnberg)
+Regards
+Vignesh
