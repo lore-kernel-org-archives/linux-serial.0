@@ -1,52 +1,58 @@
-From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Subject: Re: [PATCH v4 09/28] tty: serial: Add Actions Semi Owl UART earlycon
-Date: Mon, 19 Jun 2017 03:24:44 +0200
-Message-ID: <7fff8813-cea4-0530-bf7b-3d0ad50d6e93@suse.de>
-References: <20170606005426.26446-1-afaerber@suse.de>
- <20170606005426.26446-10-afaerber@suse.de>
- <55059fdd-5c54-ee6c-3e63-b5a9035c1745@suse.de>
- <20170619011627.GB11287@kroah.com>
+From: =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>
+Subject: [PATCH v5 07/26] dt-bindings: serial: Document Actions Semi Owl UARTs
+Date: Mon, 19 Jun 2017 03:46:39 +0200
+Message-ID: <20170619014640.6829-1-afaerber@suse.de>
+References: <7fff8813-cea4-0530-bf7b-3d0ad50d6e93@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170619011627.GB11287@kroah.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, support@lemaker.org, =?UTF-8?B?5byg5aSp55uK?= <tyzhang@actions-semi.com>, 96boards@ucrobotics.com, linux-kernel@vger.kernel.org, Thomas Liau <thomas.liau@actions-semi.com>, mp-cs@actions-semi.com, linux-serial@vger.kernel.org, =?UTF-8?B?5YiY54Kc?= <liuwei@actions-semi.com>, Jiri Slaby <jslaby@suse.com>, =?UTF-8?B?5byg5Lic6aOO?= <zhangdf@actions-semi.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <7fff8813-cea4-0530-bf7b-3d0ad50d6e93-l3A5Bk7waGM@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, mp-cs-/sSyCTpAT0ql5r2w9Jh5Rg@public.gmane.org, Thomas Liau <thomas.liau-/sSyCTpAT0ql5r2w9Jh5Rg@public.gmane.org>, =?UTF-8?q?=E5=BC=A0=E4=B8=9C=E9=A3=8E?= <zhangdf-/sSyCTpAT0ql5r2w9Jh5Rg@public.gmane.org>, =?UTF-8?q?=E5=88=98=E7=82=9C?= <liuwei-/sSyCTpAT0ql5r2w9Jh5Rg@public.gmane.org>, =?UTF-8?q?=E5=BC=A0=E5=A4=A9=E7=9B=8A?= <tyzhang-/sSyCTpAT0ql5r2w9Jh5Rg@public.gmane.org>, 96boards-Ty1hIZOCd2XuufBYgWm87A@public.gmane.org, support-8Vy/tIz7429AfugRpC6u6w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Am 19.06.2017 um 03:16 schrieb Greg Kroah-Hartman:
-> On Sun, Jun 18, 2017 at 11:45:28PM +0200, Andreas Färber wrote:
->> Greg,
->>
->> Am 06.06.2017 um 02:54 schrieb Andreas Färber:
->>> This implements an earlycon for Actions Semi S500/S900 SoCs.
->>>
->>> Based on LeMaker linux-actions tree.
->>>
->>> Signed-off-by: Andreas Färber <afaerber@suse.de>
->>
->> The DT vendor prefix is applied to my linux-actions.git tree now, and
->> the serial binding has been ack'ed by Rob.
->>
->> Is there anything keeping you from adding this patch, the preceding DT
->> binding (08/28) and the following documentation patch (10/28) to your
->> tree for 4.13?
-> 
-> Yeah, I don't have it in my queue anymore :)
-> 
-> Can you resend it just as a single patch?
+This UART is found on S500 and S900 SoCs.
 
-Do you mean squash the documentation into this tty patch? As you wish.
-But the DT binding is supposed to be a separate patch - I can queue it
-in my tree if you prefer.
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Andreas Färber <afaerber-l3A5Bk7waGM@public.gmane.org>
+---
+ v2 -> v3 -> v4 -> v5: Unchanged
+ 
+ v1 -> v2:
+ * Adopted "actions" vendor prefix
+ 
+ .../devicetree/bindings/serial/actions,owl-uart.txt      | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/actions,owl-uart.txt
 
-Cheers,
-Andreas
-
+diff --git a/Documentation/devicetree/bindings/serial/actions,owl-uart.txt b/Documentation/devicetree/bindings/serial/actions,owl-uart.txt
+new file mode 100644
+index 000000000000..aa873eada02d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/actions,owl-uart.txt
+@@ -0,0 +1,16 @@
++Actions Semi Owl UART
++
++Required properties:
++- compatible :  "actions,s500-uart", "actions,owl-uart" for S500
++                "actions,s900-uart", "actions,owl-uart" for S900
++- reg        :  Offset and length of the register set for the device.
++- interrupts :  Should contain UART interrupt.
++
++
++Example:
++
++		uart3: serial@b0126000 {
++			compatible = "actions,s500-uart", "actions,owl-uart";
++			reg = <0xb0126000 0x1000>;
++			interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
++		};
 -- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Jane Smithard, Graham Norton
-HRB 21284 (AG Nürnberg)
+2.12.3
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
