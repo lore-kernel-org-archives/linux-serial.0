@@ -1,32 +1,94 @@
-From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Subject: Re: [PATCH 03/11] au1100fb: remove a bogus dma_free_nonconsistent
- call
-Date: Mon, 19 Jun 2017 13:15:04 +0200
-Message-ID: <8727942.IUH8e0tH8t@amdc3058>
-References: <20170616071716.17321-1-hch@lst.de>
-        <20170616071716.17321-4-hch@lst.de>
-        <CGME20170619111507epcas5p47fd18b90a02d827da256ff4ebbda8089@epcas5p4.samsung.com>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH v5 0/4] tty/serial: meson_uart: add support for core
+ clock handling
+Date: Tue, 20 Jun 2017 10:51:37 +0800
+Message-ID: <20170620025137.GA7258@kroah.com>
+References: <1497428957-19942-1-git-send-email-narmstrong@baylibre.com>
+ <f4179b26-54fc-30ee-2d8d-7659349ccb74@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-scsi-owner@vger.kernel.org>
-In-reply-to: <20170616071716.17321-4-hch@lst.de>
-Sender: linux-scsi-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, linux-metag@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <f4179b26-54fc-30ee-2d8d-7659349ccb74-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Cc: khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, hgkr.klein-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Friday, June 16, 2017 09:17:08 AM Christoph Hellwig wrote:
-> au1100fb is using managed dma allocations, so it doesn't need to
-> explicitly free the dma memory in the error path (and if it did
-> it would have to use the managed version).
+On Mon, Jun 19, 2017 at 10:43:05AM +0200, Neil Armstrong wrote:
+> On 06/14/2017 10:29 AM, Neil Armstrong wrote:
+> > This patchset is a re-spin of Helmut Klein's v3 patchset at [0] and the v4 patchset at [1].
+> > 
+> > Initially, the original patchset was made to enable usage on the non-AO UARTS
+> > not enabled by the Bootloader (uart_B and uart_C), but the patchset needed
+> > an overall change to have clean and stable DT bindings.
+> > 
+> > The Amlogic Meson UART Driver did not have stable DT bindings and mismatched
+> > clock handling on non-AO UARTs since these "EE" UARTs needs a clock gate to
+> > be ungated to works correctly.
+> > In the same way, the AO UARTs does not need gating and can be used as
+> > Early Consoles.
+> > 
+> > In the same time, the UART Interfaces can take clock input for the baudrate
+> > generate from either the external Xtal or the internal Bus Clock (clk81).
+> > 
+> > So new bindings was necessary to meet these requirements and the DT
+> > maintainers requirements.
+> > 
+> > The "legacy" binding actually used in the driver is left until all the DT
+> > files are switched to the new bindings.
+> > 
+> > The GX DT has been tested, but the last 4 Meson6/Meson8/b are only
+> > compile-tested, and testing is welcome.
+> > Thus only the first 3 patches can be merged until the Meson6/Meson8/b are
+> > formally tested.
+> > 
+> > It must be noted that the meson6 cannot work today except using an early
+> > console since the UART driver could not probe without a clocks property.
+> > 
+> > Changes since v4 at [1]:
+> >  - Droped meson8/meson8b DT patches
+> >  - Fixes copy/paste error in patch 2
+> >  - Refactored clock probing in patch 2
+> >  - merged meson6 patches together to avoid breaking bisect
+> > 
+> > [0] http://lkml.kernel.org/r/20170331165437.26227-1-hgkr.klein-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+> > [1] http://lkml.kernel.org/r/1497001756-942-1-git-send-email-narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org
+> > 
+> > Helmut Klein (3):
+> >   dt-bindings: serial: Add bindings for the Amlogic Meson UARTs
+> >   tty/serial: meson_uart: update to stable bindings
+> >   ARM64: dts: meson-gx: use stable UART bindings with correct gate clock
+> > 
+> > Neil Armstrong (1):
+> >   ARM: dts: meson6: use stable UART bindings
+> > 
+> >  .../bindings/serial/amlogic,meson-uart.txt         | 38 +++++++++
+> >  arch/arm/boot/dts/meson.dtsi                       |  8 +-
+> >  arch/arm/boot/dts/meson6.dtsi                      | 28 +++++++
+> >  arch/arm64/boot/dts/amlogic/meson-gx.dtsi          | 12 ++-
+> >  arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi        | 25 ++++++
+> >  arch/arm64/boot/dts/amlogic/meson-gxl.dtsi         | 25 ++++++
+> >  drivers/tty/serial/meson_uart.c                    | 90 ++++++++++++++++++++--
+> >  7 files changed, 209 insertions(+), 17 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+> > 
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> 
+> Hi Greg,
+> 
+> Patches 3 & 4 will need a respin to avoid breaking compatibility with old kernel
+> like the tty patch does by keeping the legacy compatible string.
+> I will re-send then in a separate thread and Kevin will handle them.
+> 
+> Patches 1 & 2 can be taken if they are OK for you.
 
-Acked-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Looks good, now applied, thanks.
 
-Best regards,
+Feel free to resend the other two whenever you have them ready.
+
+greg k-h
 --
-Bartlomiej Zolnierkiewicz
-Samsung R&D Institute Poland
-Samsung Electronics
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
