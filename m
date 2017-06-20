@@ -1,94 +1,71 @@
-From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH v5 0/4] tty/serial: meson_uart: add support for core
- clock handling
-Date: Tue, 20 Jun 2017 10:51:37 +0800
-Message-ID: <20170620025137.GA7258@kroah.com>
-References: <1497428957-19942-1-git-send-email-narmstrong@baylibre.com>
- <f4179b26-54fc-30ee-2d8d-7659349ccb74@baylibre.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: [PATCH v2] serial: 8250: 8250_omap: Fix race b/w dma completion and RX timeout
+Date: Tue, 20 Jun 2017 11:12:12 +0530
+Message-ID: <20170620054212.4582-1-vigneshr@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <f4179b26-54fc-30ee-2d8d-7659349ccb74-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Cc: khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, hgkr.klein-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Vignesh R <vigneshr@ti.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 19, 2017 at 10:43:05AM +0200, Neil Armstrong wrote:
-> On 06/14/2017 10:29 AM, Neil Armstrong wrote:
-> > This patchset is a re-spin of Helmut Klein's v3 patchset at [0] and the v4 patchset at [1].
-> > 
-> > Initially, the original patchset was made to enable usage on the non-AO UARTS
-> > not enabled by the Bootloader (uart_B and uart_C), but the patchset needed
-> > an overall change to have clean and stable DT bindings.
-> > 
-> > The Amlogic Meson UART Driver did not have stable DT bindings and mismatched
-> > clock handling on non-AO UARTs since these "EE" UARTs needs a clock gate to
-> > be ungated to works correctly.
-> > In the same way, the AO UARTs does not need gating and can be used as
-> > Early Consoles.
-> > 
-> > In the same time, the UART Interfaces can take clock input for the baudrate
-> > generate from either the external Xtal or the internal Bus Clock (clk81).
-> > 
-> > So new bindings was necessary to meet these requirements and the DT
-> > maintainers requirements.
-> > 
-> > The "legacy" binding actually used in the driver is left until all the DT
-> > files are switched to the new bindings.
-> > 
-> > The GX DT has been tested, but the last 4 Meson6/Meson8/b are only
-> > compile-tested, and testing is welcome.
-> > Thus only the first 3 patches can be merged until the Meson6/Meson8/b are
-> > formally tested.
-> > 
-> > It must be noted that the meson6 cannot work today except using an early
-> > console since the UART driver could not probe without a clocks property.
-> > 
-> > Changes since v4 at [1]:
-> >  - Droped meson8/meson8b DT patches
-> >  - Fixes copy/paste error in patch 2
-> >  - Refactored clock probing in patch 2
-> >  - merged meson6 patches together to avoid breaking bisect
-> > 
-> > [0] http://lkml.kernel.org/r/20170331165437.26227-1-hgkr.klein-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-> > [1] http://lkml.kernel.org/r/1497001756-942-1-git-send-email-narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org
-> > 
-> > Helmut Klein (3):
-> >   dt-bindings: serial: Add bindings for the Amlogic Meson UARTs
-> >   tty/serial: meson_uart: update to stable bindings
-> >   ARM64: dts: meson-gx: use stable UART bindings with correct gate clock
-> > 
-> > Neil Armstrong (1):
-> >   ARM: dts: meson6: use stable UART bindings
-> > 
-> >  .../bindings/serial/amlogic,meson-uart.txt         | 38 +++++++++
-> >  arch/arm/boot/dts/meson.dtsi                       |  8 +-
-> >  arch/arm/boot/dts/meson6.dtsi                      | 28 +++++++
-> >  arch/arm64/boot/dts/amlogic/meson-gx.dtsi          | 12 ++-
-> >  arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi        | 25 ++++++
-> >  arch/arm64/boot/dts/amlogic/meson-gxl.dtsi         | 25 ++++++
-> >  drivers/tty/serial/meson_uart.c                    | 90 ++++++++++++++++++++--
-> >  7 files changed, 209 insertions(+), 17 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
-> > 
-> 
-> 
-> Hi Greg,
-> 
-> Patches 3 & 4 will need a respin to avoid breaking compatibility with old kernel
-> like the tty patch does by keeping the legacy compatible string.
-> I will re-send then in a separate thread and Kevin will handle them.
-> 
-> Patches 1 & 2 can be taken if they are OK for you.
+DMA RX completion handler for UART is called from a tasklet and hence
+may be delayed depending on the system load. In meanwhile, there may be
+RX timeout interrupt which can get serviced first before DMA RX
+completion handler is executed for the completed transfer.
+omap_8250_rx_dma_flush() which is called on RX timeout interrupt makes
+sure that the DMA RX buffer is pushed and then the FIFO is drained and
+also queues a new DMA request. But, when DMA RX completion handler
+executes, it will erroneously flush the currently queued DMA transfer
+which sometimes results in data corruption and double queueing of DMA RX
+requests.
 
-Looks good, now applied, thanks.
+Fix this by checking whether RX completion is for the currently queued
+transfer or not. And also hold port lock when in DMA completion to avoid
+race wrt RX timeout handler preempting it.
 
-Feel free to resend the other two whenever you have them ready.
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+---
 
-greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+v2: use dmaengine_tx_status() API to know completion status.
+
+ drivers/tty/serial/8250/8250_omap.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index d81bac98d190..833771bca0a5 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -786,8 +786,27 @@ static void __dma_rx_do_complete(struct uart_8250_port *p)
+ 
+ static void __dma_rx_complete(void *param)
+ {
+-	__dma_rx_do_complete(param);
+-	omap_8250_rx_dma(param);
++	struct uart_8250_port *p = param;
++	struct uart_8250_dma *dma = p->dma;
++	struct dma_tx_state     state;
++	unsigned long flags;
++
++	spin_lock_irqsave(&p->port.lock, flags);
++
++	/*
++	 * If the tx status is not DMA_COMPLETE, then this is a delayed
++	 * completion callback. A previous RX timeout flush would have
++	 * already pushed the data, so exit.
++	 */
++	if (dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state) !=
++			DMA_COMPLETE) {
++		spin_unlock_irqrestore(&p->port.lock, flags);
++		return;
++	}
++	__dma_rx_do_complete(p);
++	omap_8250_rx_dma(p);
++
++	spin_unlock_irqrestore(&p->port.lock, flags);
+ }
+ 
+ static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
+-- 
+2.13.0
