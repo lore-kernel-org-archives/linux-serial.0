@@ -1,39 +1,35 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v6 00/10] serial/gpio: exar: Fixes and support for IOT2000
-Date: Tue, 20 Jun 2017 13:38:28 +0200
-Message-ID: <CACRpkdbNPnNbk_r0NWEs4e7PuKmMf9KTjeRPRnxTOHuK-+ki2Q@mail.gmail.com>
-References: <cover.1497033197.git.jan.kiszka@siemens.com> <CACRpkdZYSFTa63BF5u-J=pu2XwUbVZiQGAtZybhjQno6vVbe=g@mail.gmail.com>
- <9520074b-3731-7bbe-d59d-cbed90ac16bb@siemens.com>
+From: David Laight <David.Laight@ACULAB.COM>
+Subject: Re: remove dma_alloc_noncoherent
+Date: Tue, 20 Jun 2017 12:44:03 +0000
+Message-ID: <063D6719AE5E284EB5DD2968C1650D6DD0026C08@AcuExch.aculab.com>
+References: <20170616071716.17321-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <9520074b-3731-7bbe-d59d-cbed90ac16bb@siemens.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+In-Reply-To: <20170616071716.17321-1-hch@lst.de>
+Content-Language: en-US
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: 'Christoph Hellwig' <hch@lst.de>, "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-metag@vger.kernel.org" <linux-metag@vger.kernel.org>, "nios2-dev@lists.rocketboards.org" <nios2-dev@lists.rocketboards.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 20, 2017 at 10:54 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 2017-06-20 10:19, Linus Walleij wrote:
->> On Fri, Jun 9, 2017 at 8:33 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>
->>> This makes the gpio-exar driver usable, which was prevented by a number
->>> of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
->>> driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
->>> series, so I'm also cross-posting to the serial and gpio lists.
->>>
->>> Changes in v6:
->>
->> I merged some of the patches, that applied. Let's see if they survive
->> in linux-next, else I guess we need to fix this in the -rcs or for the next
->> kernel cycle.
+From: Christoph Hellwig
+> Sent: 16 June 2017 08:17
 >
-> Weird that things did not apply. I just did a cherry-pick for all those
-> 10 patches on top of 5c996b7eb52c, and that went smoothly. Please let me
-> know which baseline is needed, and I will rebase.
+> For many years we've had the dma_alloc_attrs API that is more flexible
+> than dma_alloc_noncoherent.  This series moves the remaining users over
+> to the attrs API.
 
-This was on the "devel" branch of my GPIO tree:
-https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git/log/?h=devel
+And most of the callers probably only want to specify 'noncoherent'.
+Grepping the source for other uses is easier if the wrapper is left.
 
-Yours,
-Linus Walleij
+	David
