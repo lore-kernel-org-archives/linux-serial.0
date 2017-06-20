@@ -1,35 +1,52 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: Re: remove dma_alloc_noncoherent
-Date: Tue, 20 Jun 2017 12:44:03 +0000
-Message-ID: <063D6719AE5E284EB5DD2968C1650D6DD0026C08@AcuExch.aculab.com>
-References: <20170616071716.17321-1-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
-In-Reply-To: <20170616071716.17321-1-hch@lst.de>
-Content-Language: en-US
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Errors-To: alsa-devel-bounces@alsa-project.org
-Sender: alsa-devel-bounces@alsa-project.org
-To: 'Christoph Hellwig' <hch@lst.de>, "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-metag@vger.kernel.org" <linux-metag@vger.kernel.org>, "nios2-dev@lists.rocketboards.org" <nios2-dev@lists.rocketboards.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: [PATCH] serial: imx: disable DMA for RS-485 on i.MX6 SMP
+Date: Tue, 20 Jun 2017 17:37:01 +0200
+Message-ID: <20170620153701.12626-1-clemens.gruber@pqgruber.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabio Estevam <fabio.estevam@nxp.com>, u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org, Clemens Gruber <clemens.gruber@pqgruber.com>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Christoph Hellwig
-> Sent: 16 June 2017 08:17
->
-> For many years we've had the dma_alloc_attrs API that is more flexible
-> than dma_alloc_noncoherent.  This series moves the remaining users over
-> to the attrs API.
+DMA support for half-duplex RS-485 never worked correctly on i.MX6Q/D
+due to an undiscovered SMP-related bug, instead of the real data being
+sent out, the rest of the transmit buffer is sent (xmit->tail jumps over
+xmit->head in imx_transmit_buffer and UART_XMIT_SIZE bytes are sent out)
+More details: https://lkml.org/lkml/2017/1/4/579
 
-And most of the callers probably only want to specify 'noncoherent'.
-Grepping the source for other uses is easier if the wrapper is left.
+Disable it for that configuration until the bug is found and fixed.
 
-	David
+We need to know at probe time if we can enable DMA. (RS-485 could be
+enabled after that). Let's therefore only enable DMA if it is not an
+i.MX6Q/D UART with uart-has-rtscts in the DT and CONFIG_SMP enabled.
+
+Fixes: 17b8f2a3fdca ("serial: imx: add support for half duplex rs485")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
+---
+ drivers/tty/serial/imx.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index bbefddd92bfe..000949f686a4 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1277,8 +1277,14 @@ static int imx_startup(struct uart_port *port)
+ 
+ 	writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
+ 
+-	/* Can we enable the DMA support? */
+-	if (!uart_console(port) && !sport->dma_is_inited)
++	/*
++	 * Can we enable the DMA support?
++	 * RS-485 DMA is broken on i.MX6D/Q SMP systems. Do not use DMA on
++	 * UARTs with RTS/CTS to prevent misbehavior until the bug is fixed.
++	 */
++	if (!uart_console(port) && !sport->dma_is_inited &&
++	    !(sport->have_rtscts && is_imx6q_uart(sport) &&
++	      IS_ENABLED(CONFIG_SMP)))
+ 		imx_uart_dma_init(sport);
+ 
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+-- 
+2.13.1
