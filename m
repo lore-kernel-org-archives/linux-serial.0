@@ -1,71 +1,99 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH] serial: imx: disable DMA for RS-485 on i.MX6 SMP
-Date: Tue, 20 Jun 2017 13:13:18 -0300
-Message-ID: <CAOMZO5Djf8OsqF=jUBo1Dkm2mw7pObxmkC=qq0U0RLZsYonXgQ@mail.gmail.com>
-References: <20170620153701.12626-1-clemens.gruber@pqgruber.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170620153701.12626-1-clemens.gruber@pqgruber.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabio Estevam <fabio.estevam@nxp.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-kernel <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>, Fugang Duan <fugang.duan@nxp.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 1/2] tty: improve tty_insert_flip_char() fast path
+Date: Tue, 20 Jun 2017 23:10:41 +0200
+Message-ID: <20170620211112.1490310-1-arnd@arndb.de>
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, kasan-dev@googlegroups.com, Dmitry Vyukov <dvyukov@google.com>, Alexander Potapenko <glider@google.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, linux-kernel@vger.kernel.org, Samuel Thibault <samuel.thibault@ens-lyon.org>, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, Arnd Bergmann <arnd@arndb.de>, stable@vger.kernel.org, Rob Herring <robh@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Clemens,
+kernelci.org reports a crazy stack usage for the VT code when CONFIG_KASAN
+is enabled:
 
-On Tue, Jun 20, 2017 at 12:37 PM, Clemens Gruber
-<clemens.gruber@pqgruber.com> wrote:
-> DMA support for half-duplex RS-485 never worked correctly on i.MX6Q/D
-> due to an undiscovered SMP-related bug, instead of the real data being
-> sent out, the rest of the transmit buffer is sent (xmit->tail jumps over
-> xmit->head in imx_transmit_buffer and UART_XMIT_SIZE bytes are sent out)
-> More details: https://lkml.org/lkml/2017/1/4/579
->
-> Disable it for that configuration until the bug is found and fixed.
->
-> We need to know at probe time if we can enable DMA. (RS-485 could be
-> enabled after that). Let's therefore only enable DMA if it is not an
-> i.MX6Q/D UART with uart-has-rtscts in the DT and CONFIG_SMP enabled.
->
-> Fixes: 17b8f2a3fdca ("serial: imx: add support for half duplex rs485")
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
-> ---
->  drivers/tty/serial/imx.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index bbefddd92bfe..000949f686a4 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -1277,8 +1277,14 @@ static int imx_startup(struct uart_port *port)
->
->         writel(temp & ~UCR4_DREN, sport->port.membase + UCR4);
->
-> -       /* Can we enable the DMA support? */
-> -       if (!uart_console(port) && !sport->dma_is_inited)
-> +       /*
-> +        * Can we enable the DMA support?
-> +        * RS-485 DMA is broken on i.MX6D/Q SMP systems. Do not use DMA on
-> +        * UARTs with RTS/CTS to prevent misbehavior until the bug is fixed.
-> +        */
-> +       if (!uart_console(port) && !sport->dma_is_inited &&
-> +           !(sport->have_rtscts && is_imx6q_uart(sport) &&
-> +             IS_ENABLED(CONFIG_SMP)))
->                 imx_uart_dma_init(sport);
+drivers/tty/vt/keyboard.c: In function 'kbd_keycode':
+drivers/tty/vt/keyboard.c:1452:1: error: the frame size of 2240 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]
 
-The subject gives the impression that the DMA will only be disabled
-for RS485, but the impact of this change is wider.
+The problem is that tty_insert_flip_char() gets inlined many times into
+kbd_keycode(), and also into other functions, and each copy requires 128
+bytes for stack redzone to check for a possible out-of-bounds access on
+the 'ch' and 'flags' arguments that are passed into
+tty_insert_flip_string_flags as a variable-length string.
 
-For example: if I have a mx6q system with a Bluetooth serial
-connection I can no longer use DMA with your change applied.
+This introduces a new __tty_insert_flip_char() function for the slow
+path, which receives the two arguments by value. This completely avoids
+the problem and the stack usage goes back down to around 100 bytes.
 
-Ideally we should fix the RS485 DMA bug. If that is not possible, then
-at least we need to restrict this change to the RS485 case.
+Without KASAN, this is also slightly better, as we don't have to
+spill the arguments to the stack but can simply pass 'ch' and 'flag'
+in registers, saving a few bytes in .text for each call site.
 
-Maybe we need to pass "linux,rs485-enabled-at-boot-time" in device
-tree and then use this property to deceide if DMA will be enabled or
-not:
+This should be backported to linux-4.0 or later, which first introduced
+the stack sanitizer in the kernel.
 
-if (!uart_console(port) && !sport->dma_is_inited && !sport->rs485_enabled)
+Cc: stable@vger.kernel.org
+Fixes: c420f167db8c ("kasan: enable stack instrumentation")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/tty/tty_buffer.c | 24 ++++++++++++++++++++++++
+ include/linux/tty_flip.h |  3 ++-
+ 2 files changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 4e7a4e9dcf4d..2da05fa37aec 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -362,6 +362,30 @@ int tty_insert_flip_string_flags(struct tty_port *port,
+ EXPORT_SYMBOL(tty_insert_flip_string_flags);
+ 
+ /**
++ *	__tty_insert_flip_char   -	Add one character to the tty buffer
++ *	@port: tty port
++ *	@ch: character
++ *	@flag: flag byte
++ *
++ *	Queue a single byte to the tty buffering, with an optional flag.
++ *	This is the slow path of tty_insert_flip_char.
++ */
++int __tty_insert_flip_char(struct tty_port *port, unsigned char ch, char flag)
++{
++	struct tty_buffer *tb = port->buf.tail;
++	int flags = (flag == TTY_NORMAL) ? TTYB_NORMAL : 0;
++
++	if (!tty_buffer_request_room(port, 1))
++		return 0;
++
++	*flag_buf_ptr(tb, tb->used) = flag;
++	*char_buf_ptr(tb, tb->used++) = ch;
++
++	return 1;
++}
++EXPORT_SYMBOL(__tty_insert_flip_char);
++
++/**
+  *	tty_schedule_flip	-	push characters to ldisc
+  *	@port: tty port to push from
+  *
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index c28dd523f96e..d43837f2ce3a 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -12,6 +12,7 @@ extern int tty_prepare_flip_string(struct tty_port *port,
+ 		unsigned char **chars, size_t size);
+ extern void tty_flip_buffer_push(struct tty_port *port);
+ void tty_schedule_flip(struct tty_port *port);
++int __tty_insert_flip_char(struct tty_port *port, unsigned char ch, char flag);
+ 
+ static inline int tty_insert_flip_char(struct tty_port *port,
+ 					unsigned char ch, char flag)
+@@ -26,7 +27,7 @@ static inline int tty_insert_flip_char(struct tty_port *port,
+ 		*char_buf_ptr(tb, tb->used++) = ch;
+ 		return 1;
+ 	}
+-	return tty_insert_flip_string_flags(port, &ch, &flag, 1);
++	return __tty_insert_flip_char(port, ch, flag);
+ }
+ 
+ static inline int tty_insert_flip_string(struct tty_port *port,
+-- 
+2.9.0
