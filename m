@@ -1,48 +1,39 @@
-From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Subject: Re: [PATCH 03/11] au1100fb: remove a bogus
- dma_free_nonconsistent call
-Date: Tue, 20 Jun 2017 12:58:02 +0200
-Message-ID: <2219033.M9DERpzktn@amdc3058>
-References: <20170616071716.17321-1-hch@lst.de>
- <8727942.IUH8e0tH8t@amdc3058> <20170620091045.GA10272@lst.de>
- <CGME20170620105805epcas1p4ea41a72356c35f2a16197b970939fb65@epcas1p4.samsung.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v6 00/10] serial/gpio: exar: Fixes and support for IOT2000
+Date: Tue, 20 Jun 2017 13:38:28 +0200
+Message-ID: <CACRpkdbNPnNbk_r0NWEs4e7PuKmMf9KTjeRPRnxTOHuK-+ki2Q@mail.gmail.com>
+References: <cover.1497033197.git.jan.kiszka@siemens.com> <CACRpkdZYSFTa63BF5u-J=pu2XwUbVZiQGAtZybhjQno6vVbe=g@mail.gmail.com>
+ <9520074b-3731-7bbe-d59d-cbed90ac16bb@siemens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
-In-reply-to: <20170620091045.GA10272@lst.de>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Errors-To: alsa-devel-bounces@alsa-project.org
-Sender: alsa-devel-bounces@alsa-project.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-fbdev@vger.kernel.org, linux-scsi@vger.kernel.org, netdev@vger.kernel.org, alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-metag@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <9520074b-3731-7bbe-d59d-cbed90ac16bb@siemens.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tuesday, June 20, 2017 11:10:45 AM Christoph Hellwig wrote:
-> On Mon, Jun 19, 2017 at 01:15:04PM +0200, Bartlomiej Zolnierkiewicz wrote:
-> > On Friday, June 16, 2017 09:17:08 AM Christoph Hellwig wrote:
-> > > au1100fb is using managed dma allocations, so it doesn't need to
-> > > explicitly free the dma memory in the error path (and if it did
-> > > it would have to use the managed version).
-> > > 
-> > > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > 
-> > Acked-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-> 
-> Are you fine with picking this up through the new dma-mapping tree?
+On Tue, Jun 20, 2017 at 10:54 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> On 2017-06-20 10:19, Linus Walleij wrote:
+>> On Fri, Jun 9, 2017 at 8:33 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>
+>>> This makes the gpio-exar driver usable, which was prevented by a number
+>>> of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
+>>> driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
+>>> series, so I'm also cross-posting to the serial and gpio lists.
+>>>
+>>> Changes in v6:
+>>
+>> I merged some of the patches, that applied. Let's see if they survive
+>> in linux-next, else I guess we need to fix this in the -rcs or for the next
+>> kernel cycle.
+>
+> Weird that things did not apply. I just did a cherry-pick for all those
+> 10 patches on top of 5c996b7eb52c, and that went smoothly. Please let me
+> know which baseline is needed, and I will rebase.
 
-Yes, this is why Ack-ed it.
+This was on the "devel" branch of my GPIO tree:
+https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git/log/?h=devel
 
-If you prefer me to merge it through fbdev for 4.13 please let me know.
-
-Best regards,
---
-Bartlomiej Zolnierkiewicz
-Samsung R&D Institute Poland
-Samsung Electronics
+Yours,
+Linus Walleij
