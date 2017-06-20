@@ -1,71 +1,38 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: [PATCH v2] serial: 8250: 8250_omap: Fix race b/w dma completion and RX timeout
-Date: Tue, 20 Jun 2017 11:12:12 +0530
-Message-ID: <20170620054212.4582-1-vigneshr@ti.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v6 02/10] gpio-exar/8250-exar: Fix passing in of parent
+ PCI device
+Date: Tue, 20 Jun 2017 10:13:36 +0200
+Message-ID: <CACRpkdZdkYvji9NyjLY0NpmTBcboQawv23RxO+KZojj586t+mQ@mail.gmail.com>
+References: <cover.1497033197.git.jan.kiszka@siemens.com> <6f2e19cfb8bcb9acf4b042e4db716e93286862d6.1497033197.git.jan.kiszka@siemens.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Peter Hurley <peter@hurleysoftware.com>, Vignesh R <vigneshr@ti.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <6f2e19cfb8bcb9acf4b042e4db716e93286862d6.1497033197.git.jan.kiszka@siemens.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-DMA RX completion handler for UART is called from a tasklet and hence
-may be delayed depending on the system load. In meanwhile, there may be
-RX timeout interrupt which can get serviced first before DMA RX
-completion handler is executed for the completed transfer.
-omap_8250_rx_dma_flush() which is called on RX timeout interrupt makes
-sure that the DMA RX buffer is pushed and then the FIFO is drained and
-also queues a new DMA request. But, when DMA RX completion handler
-executes, it will erroneously flush the currently queued DMA transfer
-which sometimes results in data corruption and double queueing of DMA RX
-requests.
+On Fri, Jun 9, 2017 at 8:33 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-Fix this by checking whether RX completion is for the currently queued
-transfer or not. And also hold port lock when in DMA completion to avoid
-race wrt RX timeout handler preempting it.
+> This fixes reloading of the GPIO driver for the same platform device
+> instance as created by the exar UART driver: First of all, the driver
+> sets drvdata to its own value during probing and does not restore the
+> original value on exit. But this won't help anyway as the core clears
+> drvdata after the driver left.
+>
+> Set the platform device parent instead.
+>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
+Patch applied to the GPIO tree so we advance this series.
 
-v2: use dmaengine_tx_status() API to know completion status.
+Patch 1 does not apply.
 
- drivers/tty/serial/8250/8250_omap.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+Let's see how it goes.
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index d81bac98d190..833771bca0a5 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -786,8 +786,27 @@ static void __dma_rx_do_complete(struct uart_8250_port *p)
- 
- static void __dma_rx_complete(void *param)
- {
--	__dma_rx_do_complete(param);
--	omap_8250_rx_dma(param);
-+	struct uart_8250_port *p = param;
-+	struct uart_8250_dma *dma = p->dma;
-+	struct dma_tx_state     state;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&p->port.lock, flags);
-+
-+	/*
-+	 * If the tx status is not DMA_COMPLETE, then this is a delayed
-+	 * completion callback. A previous RX timeout flush would have
-+	 * already pushed the data, so exit.
-+	 */
-+	if (dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state) !=
-+			DMA_COMPLETE) {
-+		spin_unlock_irqrestore(&p->port.lock, flags);
-+		return;
-+	}
-+	__dma_rx_do_complete(p);
-+	omap_8250_rx_dma(p);
-+
-+	spin_unlock_irqrestore(&p->port.lock, flags);
- }
- 
- static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
--- 
-2.13.0
+Yours,
+Linus Walleij
