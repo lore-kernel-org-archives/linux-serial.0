@@ -1,136 +1,87 @@
-From: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v3 2/2] arm64: dts: Add Mediatek SoC MT2712 and
- evaluation board dts and Makefile
-Date: Wed, 21 Jun 2017 19:01:06 +0800
-Message-ID: <1498042866.2865.3.camel@mtksdaap41>
-References: <1497620721-61444-1-git-send-email-yt.shen@mediatek.com>
-         <1497620721-61444-3-git-send-email-yt.shen@mediatek.com>
-         <d5509532-7ab6-c9ce-d951-4bcdcc1399ff@gmail.com>
+From: "A.s. Dong" <aisheng.dong@nxp.com>
+Subject: RE: [PATCH V4 0/7]  tty: serial: lpuart: add imx7ulp support
+Date: Wed, 21 Jun 2017 13:01:23 +0000
+Message-ID: <AM3PR04MB306B649ADC54EF1C6A7191D80DA0@AM3PR04MB306.eurprd04.prod.outlook.com>
+References: <1497322554-24463-1-git-send-email-aisheng.dong@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <d5509532-7ab6-c9ce-d951-4bcdcc1399ff-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mars Cheng <mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1497322554-24463-1-git-send-email-aisheng.dong@nxp.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "A.s. Dong" <aisheng.dong@nxp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, Andy Duan <fugang.duan@nxp.com>, "stefan@agner.ch" <stefan@agner.ch>, Mingkai Hu <mingkai.hu@nxp.com>, "Y.b. Lu" <yangbo.lu@nxp.com>, "nikita.yoush@cogentembedded.com" <nikita.yoush@cogentembedded.com>, "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>, "dongas86@gmail.com" <dongas86@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2017-06-16 at 16:33 +0200, Matthias Brugger wrote:
-> 
-> On 16/06/17 15:45, YT Shen wrote:
-> > This adds basic chip support for Mediatek 2712
-> > 
-> > Signed-off-by: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > ---
-> >   arch/arm64/boot/dts/mediatek/Makefile       |   1 +
-> >   arch/arm64/boot/dts/mediatek/mt2712-evb.dts |  32 ++++++
-> >   arch/arm64/boot/dts/mediatek/mt2712e.dtsi   | 166 ++++++++++++++++++++++++++++
-> >   3 files changed, 199 insertions(+)
-> >   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-> >   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> > 
-> > diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-> > index 9fbfd32..fcc0604 100644
-> > --- a/arch/arm64/boot/dts/mediatek/Makefile
-> > +++ b/arch/arm64/boot/dts/mediatek/Makefile
-> > @@ -1,3 +1,4 @@
-> > +dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
-> >   dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
-> >   dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
-> >   dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt2712-evb.dts b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-> > new file mode 100644
-> > index 0000000..8c804df
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-> > @@ -0,0 +1,32 @@
-> > +/*
-> > + * Copyright (c) 2017 MediaTek Inc.
-> > + * Author: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > + *
-> > + * SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> > + */
-> > +
-> > +/dts-v1/;
-> > +#include "mt2712e.dtsi"
-> > +
-> > +/ {
-> > +	model = "MediaTek MT2712 evaluation board";
-> > +	compatible = "mediatek,mt2712-evb", "mediatek,mt2712";
-> > +
-> > +	aliases {
-> > +		serial0 = &uart0;
-> > +	};
-> > +
-> > +	memory@40000000 {
-> > +		device_type = "memory";
-> > +		reg = <0 0x40000000 0 0x80000000>;
-> > +	};
-> > +
-> > +	chosen {
-> > +		stdout-path = "serial0:921600n8";
-> > +	};
-> > +};
-> > +
-> > +&uart0 {
-> > +	status = "okay";
-> > +};
-> > +
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> > new file mode 100644
-> > index 0000000..65cdd4a
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> > @@ -0,0 +1,166 @@
-> [...]
-> > +
-> > +	uart_clk: dummy26m {
-> > +		compatible = "fixed-clock";
-> > +		clock-frequency = <26000000>;
-> > +		#clock-cells = <0>;
-> > +	};
-> > +
-> > +	timer {
-> > +		compatible = "arm,armv8-timer";
-> > +		interrupt-parent = <&gic>;
-> > +		interrupts = <GIC_PPI 13
-> > +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-> > +			     <GIC_PPI 14
-> > +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-> > +			     <GIC_PPI 11
-> > +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-> > +			     <GIC_PPI 10
-> > +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>;
-> > +	};
-> > +
-> > +	soc {
-> > +		#address-cells = <2>;
-> > +		#size-cells = <2>;
-> > +		compatible = "simple-bus";
-> > +		ranges;
-> > +
-> > +		uart5: serial@1000f000 {
-> > +			compatible = "mediatek,mt2712-uart",
-> > +				     "mediatek,mt6577-uart";
-> > +			reg = <0 0x1000f000 0 0x400>;
-> > +			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
-> > +			clocks = <&uart_clk>;
-> 
-> uart has two clocks, baud and bus clock. Please refer to the bindings 
-> descrption for more information, that's what they are for.
-> 
-> Please define the two dummy clocks with the correct frequency and use them.
-> 
-> Regards,
-> Matthias
-Okay, after checking
-Documentation/devicetree/bindings/serial/mtk-uart.txt, I will use baud
-and bus clock in the next version.
+Ping...
 
-yt.shen
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> -----Original Message-----
+> From: Dong Aisheng [mailto:aisheng.dong@nxp.com]
+> Sent: Tuesday, June 13, 2017 10:56 AM
+> To: linux-serial@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
+> gregkh@linuxfoundation.org; jslaby@suse.com; Andy Duan; stefan@agner.ch;
+> Mingkai Hu; Y.b. Lu; nikita.yoush@cogentembedded.com;
+> andy.shevchenko@gmail.com; dongas86@gmail.com; A.s. Dong
+> Subject: [PATCH V4 0/7] tty: serial: lpuart: add imx7ulp support
+>=20
+> The lpuart in imx7ulp is basically the same as ls1021a. It's also
+> 32 bit width register, but unlike ls1021a, it's little endian.
+> Besides that, imx7ulp lpuart has a minor different register layout from
+> ls1021a that it has four extra registers (verid, param, global,
+> pincfg) located at the beginning of register map, which are currently not
+> used by the driver and less to be used later.
+>=20
+> Furthermore, this patch serial also add a new more accurate baud rate
+> calculation method as MX7ULP can't divide a suitable baud rate with the
+> default setting.
+>=20
+> Currently the new baud rate calculation is only enabled on MX7ULP.
+> However, i guess the Layerscape may also be able to use it as there seems
+> to be no difference in baud rate setting register after checking the
+> Layerscape Reference Manual.
+>=20
+> As i don't have Layerscape boards, i can't test it, so i only enable it
+> for MX7ULP by default to avoid a potential break.
+>=20
+> I copied LayerScape guys in this series and hope they can help test later=
+.
+> If it works on Layerscape as well, then they can switch to the new settin=
+g
+> too and totally remove the old stuff.
+>=20
+> ChangeLog:
+> v3->v4:
+>  * Minor changes.
+>    1) Remove one duplicated blank line
+>    2) Removed on unneeded semicolon in switch catched by 0day Robot
+> v2->v3:
+>  * Remove global lpuart_is_be.
+>    Instead use struct uart_port's iotype member.
+>    lpuart32_read/write API prototype is also updated to use the iotype to
+>    distingush the endians. And most importantly, this way also works with
+>    earlycon.
+>=20
+> v1->v2:
+>  * Patch 2/4/5 chagned, other no changes.
+>    See individuals for details.
+>=20
+> Dong Aisheng (7):
+>   tty: serial: lpuart: introduce lpuart_soc_data to represent SoC
+>     property
+>   tty: serial: lpuart: refactor lpuart32_{read|write} prototype
+>   tty: serial: lpuart: add little endian 32 bit register support
+>   dt-bindings: serial: fsl-lpuart: add i.MX7ULP support
+>   tty: serial: lpuart: add imx7ulp support
+>   tty: serial: lpuart: add earlycon support for imx7ulp
+>   tty: serial: lpuart: add a more accurate baud rate calculation method
+>=20
+>  .../devicetree/bindings/serial/fsl-lpuart.txt      |   2 +
+>  drivers/tty/serial/fsl_lpuart.c                    | 286 ++++++++++++++-=
+-
+> -----
+>  2 files changed, 201 insertions(+), 87 deletions(-)
+>=20
+> --
+> 2.7.4
