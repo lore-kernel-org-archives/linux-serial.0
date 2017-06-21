@@ -1,121 +1,51 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH] serial: imx: disable DMA for RS-485 on i.MX6 SMP
-Date: Tue, 20 Jun 2017 20:49:28 -0300
-Message-ID: <CAOMZO5DA++c95DPrmzOHfFtD+zFcW6G9-0_cRBtg0E8TA8dwXg@mail.gmail.com>
-References: <20170620153701.12626-1-clemens.gruber@pqgruber.com> <CAOMZO5Djf8OsqF=jUBo1Dkm2mw7pObxmkC=qq0U0RLZsYonXgQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: [PATCH v6 00/10] serial/gpio: exar: Fixes and support for IOT2000
+Date: Wed, 21 Jun 2017 08:29:58 +0200
+Message-ID: <c0a29540-7946-4e95-1b59-3a2f478757da@siemens.com>
+References: <cover.1497033197.git.jan.kiszka@siemens.com>
+ <CACRpkdZYSFTa63BF5u-J=pu2XwUbVZiQGAtZybhjQno6vVbe=g@mail.gmail.com>
+ <9520074b-3731-7bbe-d59d-cbed90ac16bb@siemens.com>
+ <CACRpkdbNPnNbk_r0NWEs4e7PuKmMf9KTjeRPRnxTOHuK-+ki2Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="001a113d496a0554d905526ce7eb"
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <CAOMZO5Djf8OsqF=jUBo1Dkm2mw7pObxmkC=qq0U0RLZsYonXgQ@mail.gmail.com>
-Sender: stable-owner@vger.kernel.org
-To: Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabio Estevam <fabio.estevam@nxp.com>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-kernel <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>, Fugang Duan <fugang.duan@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CACRpkdbNPnNbk_r0NWEs4e7PuKmMf9KTjeRPRnxTOHuK-+ki2Q@mail.gmail.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
---001a113d496a0554d905526ce7eb
-Content-Type: text/plain; charset="UTF-8"
+On 2017-06-20 13:38, Linus Walleij wrote:
+> On Tue, Jun 20, 2017 at 10:54 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>> On 2017-06-20 10:19, Linus Walleij wrote:
+>>> On Fri, Jun 9, 2017 at 8:33 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>>
+>>>> This makes the gpio-exar driver usable, which was prevented by a number
+>>>> of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
+>>>> driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
+>>>> series, so I'm also cross-posting to the serial and gpio lists.
+>>>>
+>>>> Changes in v6:
+>>>
+>>> I merged some of the patches, that applied. Let's see if they survive
+>>> in linux-next, else I guess we need to fix this in the -rcs or for the next
+>>> kernel cycle.
+>>
+>> Weird that things did not apply. I just did a cherry-pick for all those
+>> 10 patches on top of 5c996b7eb52c, and that went smoothly. Please let me
+>> know which baseline is needed, and I will rebase.
+> 
+> This was on the "devel" branch of my GPIO tree:
+> https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git/log/?h=devel
 
-Hi Clemens,
+Again, all (missing) patches applied absolutely cleanly for me, see
 
-On Tue, Jun 20, 2017 at 1:13 PM, Fabio Estevam <festevam@gmail.com> wrote:
+http://git.kiszka.org/?p=linux.git;a=shortlog;h=refs/heads/queues/gpio-iot2000
 
-> The subject gives the impression that the DMA will only be disabled
-> for RS485, but the impact of this change is wider.
->
-> For example: if I have a mx6q system with a Bluetooth serial
-> connection I can no longer use DMA with your change applied.
->
-> Ideally we should fix the RS485 DMA bug. If that is not possible, then
-> at least we need to restrict this change to the RS485 case.
->
-> Maybe we need to pass "linux,rs485-enabled-at-boot-time" in device
-> tree and then use this property to deceide if DMA will be enabled or
-> not:
->
-> if (!uart_console(port) && !sport->dma_is_inited && !sport->rs485_enabled)
+Jan
 
-Could you please test the two attached patches and see if it solves the issue?
-
-Unfortunately I no longer have access to the RS485 half-duplex board.
-
-Just make sure to pass 'linux,rs485-enabled-at-boot-time' in your
-device tree, thanks.
-
---001a113d496a0554d905526ce7eb
-Content-Type: text/x-patch; charset="US-ASCII";
-	name="0001-serial-imx-Allow-passing-linux-rs485-enabled-at-boot.patch"
-Content-Disposition: attachment;
-	filename="0001-serial-imx-Allow-passing-linux-rs485-enabled-at-boot.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_j467z3vx0
-
-RnJvbSAwYTM2ZDIxMjIyOGE4ZDA5M2EwM2JiYWI5NGU5ZTZmZmU5OWM4N2MzIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBGYWJpbyBFc3RldmFtIDxmYWJpby5lc3RldmFtQG54cC5jb20+
-CkRhdGU6IFR1ZSwgMjAgSnVuIDIwMTcgMjA6Mjk6MTMgLTAzMDAKU3ViamVjdDogW1BBVENIIDEv
-Ml0gc2VyaWFsOiBpbXg6IFN1cHBvcnQgJ2xpbnV4LHJzNDg1LWVuYWJsZWQtYXQtYm9vdC10aW1l
-JwoKQWNjb3JkaW5nIHRvIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwv
-cnM0ODUudHh0LCB0aGUKImxpbnV4LHJzNDg1LWVuYWJsZWQtYXQtYm9vdC10aW1lIiBwcm9wZXJ0
-eSBjYW4gYmUgdXNlZCB0byBpbmRpY2F0ZQp0aGF0IFJTNDg1IGlzIGVuYWJsZWQgZHVyaW5nIGJv
-b3QgdGltZS4KCkFkZCBzdXBwb3J0IGZvciBpdCBpbiB0aGUgZHJpdmVyLgoKU2lnbmVkLW9mZi1i
-eTogRmFiaW8gRXN0ZXZhbSA8ZmFiaW8uZXN0ZXZhbUBueHAuY29tPgotLS0KIGRyaXZlcnMvdHR5
-L3NlcmlhbC9pbXguYyB8IDMgKysrCiAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspCgpk
-aWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIGIvZHJpdmVycy90dHkvc2VyaWFs
-L2lteC5jCmluZGV4IDkyNjA2YjEuLjkwZjhhNWQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3Nl
-cmlhbC9pbXguYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKQEAgLTIxMjMsNiArMjEy
-Myw5IEBAIHN0YXRpYyBpbnQgc2VyaWFsX2lteF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNl
-ICpwZGV2KQogCXNwb3J0LT5wb3J0LnJzNDg1X2NvbmZpZyA9IGlteF9yczQ4NV9jb25maWc7CiAJ
-c3BvcnQtPnBvcnQucnM0ODUuZmxhZ3MgPQogCQlTRVJfUlM0ODVfUlRTX09OX1NFTkQgfCBTRVJf
-UlM0ODVfUlhfRFVSSU5HX1RYOworCWlmIChvZl9nZXRfcHJvcGVydHkobnAsICJsaW51eCxyczQ4
-NS1lbmFibGVkLWF0LWJvb3QtdGltZSIsIE5VTEwpKQorCQlzcG9ydC0+cG9ydC5yczQ4NS5mbGFn
-cyB8PSBTRVJfUlM0ODVfRU5BQkxFRDsKKwogCXNwb3J0LT5wb3J0LmZsYWdzID0gVVBGX0JPT1Rf
-QVVUT0NPTkY7CiAJaW5pdF90aW1lcigmc3BvcnQtPnRpbWVyKTsKIAlzcG9ydC0+dGltZXIuZnVu
-Y3Rpb24gPSBpbXhfdGltZW91dDsKLS0gCjIuNy40Cgo=
---001a113d496a0554d905526ce7eb
-Content-Type: text/x-patch; charset="US-ASCII";
-	name="0002-serial-imx-Disable-DMA-for-RS485.patch"
-Content-Disposition: attachment;
-	filename="0002-serial-imx-Disable-DMA-for-RS485.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_j4680pdn1
-
-RnJvbSBiZjYzYTA3YzU0NmNlZWQzZDJjM2QyMDNkNzVlODcwMDExNDQ0MjNmIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBGYWJpbyBFc3RldmFtIDxmYWJpby5lc3RldmFtQG54cC5jb20+
-CkRhdGU6IFR1ZSwgMjAgSnVuIDIwMTcgMjA6MzY6MzIgLTAzMDAKU3ViamVjdDogW1BBVENIIDIv
-Ml0gc2VyaWFsOiBpbXg6IERpc2FibGUgRE1BIGZvciBSUzQ4NQoKQ3VycmVudGx5IERNQSBzdXBw
-b3J0IGZvciBoYWxmLWR1cGxleCBSUy00ODUgZG9lcyBub3Qgd29yayBvbiBpLk1YNgphcyBpbnN0
-ZWFkIHRoZSByZWFsIGRhdGEgYmVpbmcgc2VudCBvdXQsIHRoZSByZXN0IG9mIHRoZSB0cmFuc21p
-dCBidWZmZXIKaXMgc2VudCAoeG1pdC0+dGFpbCBqdW1wcyBvdmVyIHhtaXQtPmhlYWQgaW4gaW14
-X3RyYW5zbWl0X2J1ZmZlciBhbmQKVUFSVF9YTUlUX1NJWkUgYnl0ZXMgYXJlIHNlbnQgb3V0KS4K
-CkRpc2FibGUgRE1BIGZvciB0aGUgUlM0ODUgY2FzZSB1bnRpbCBhIHByb3BlciBmaXggaXMgZm91
-bmQuCgpSZXBvcnRlZC1ieTogQ2xlbWVucyBHcnViZXIgPGNsZW1lbnMuZ3J1YmVyQHBxZ3J1YmVy
-LmNvbT4KU2lnbmVkLW9mZi1ieTogRmFiaW8gRXN0ZXZhbSA8ZmFiaW8uZXN0ZXZhbUBueHAuY29t
-PgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8IDkgKysrKysrKy0tCiAxIGZpbGUgY2hh
-bmdlZCwgNyBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvdHR5L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwppbmRleCA5MGY4
-YTVkLi40ODEyZTExIDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKKysrIGIv
-ZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCkBAIC0yMTMsNiArMjEzLDcgQEAgc3RydWN0IGlteF9w
-b3J0IHsKIAlzdHJ1Y3QgY2xrCQkqY2xrX2lwZzsKIAlzdHJ1Y3QgY2xrCQkqY2xrX3BlcjsKIAlj
-b25zdCBzdHJ1Y3QgaW14X3VhcnRfZGF0YSAqZGV2ZGF0YTsKKwlib29sCQkJcnM0ODVfZW5hYmxl
-ZF9hdF9ib290OwogCiAJc3RydWN0IG1jdHJsX2dwaW9zICpncGlvczsKIApAQCAtMTI3OCw3ICsx
-Mjc5LDggQEAgc3RhdGljIGludCBpbXhfc3RhcnR1cChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQog
-CXdyaXRlbCh0ZW1wICYgflVDUjRfRFJFTiwgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjQpOwog
-CiAJLyogQ2FuIHdlIGVuYWJsZSB0aGUgRE1BIHN1cHBvcnQ/ICovCi0JaWYgKCF1YXJ0X2NvbnNv
-bGUocG9ydCkgJiYgIXNwb3J0LT5kbWFfaXNfaW5pdGVkKQorCWlmICghdWFydF9jb25zb2xlKHBv
-cnQpICYmICFzcG9ydC0+ZG1hX2lzX2luaXRlZCAmJgorCSAgICAhc3BvcnQtPnJzNDg1X2VuYWJs
-ZWRfYXRfYm9vdCkKIAkJaW14X3VhcnRfZG1hX2luaXQoc3BvcnQpOwogCiAJc3Bpbl9sb2NrX2ly
-cXNhdmUoJnNwb3J0LT5wb3J0LmxvY2ssIGZsYWdzKTsKQEAgLTIwODcsNiArMjA4OSw3IEBAIHN0
-YXRpYyB2b2lkIHNlcmlhbF9pbXhfcHJvYmVfcGRhdGEoc3RydWN0IGlteF9wb3J0ICpzcG9ydCwK
-IAogc3RhdGljIGludCBzZXJpYWxfaW14X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBk
-ZXYpCiB7CisJc3RydWN0IGRldmljZV9ub2RlICpucCA9IHBkZXYtPmRldi5vZl9ub2RlOwogCXN0
-cnVjdCBpbXhfcG9ydCAqc3BvcnQ7CiAJdm9pZCBfX2lvbWVtICpiYXNlOwogCWludCByZXQgPSAw
-LCByZWc7CkBAIC0yMTIzLDggKzIxMjYsMTAgQEAgc3RhdGljIGludCBzZXJpYWxfaW14X3Byb2Jl
-KHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiAJc3BvcnQtPnBvcnQucnM0ODVfY29uZmln
-ID0gaW14X3JzNDg1X2NvbmZpZzsKIAlzcG9ydC0+cG9ydC5yczQ4NS5mbGFncyA9CiAJCVNFUl9S
-UzQ4NV9SVFNfT05fU0VORCB8IFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFg7Ci0JaWYgKG9mX2dldF9w
-cm9wZXJ0eShucCwgImxpbnV4LHJzNDg1LWVuYWJsZWQtYXQtYm9vdC10aW1lIiwgTlVMTCkpCisJ
-aWYgKG9mX2dldF9wcm9wZXJ0eShucCwgImxpbnV4LHJzNDg1LWVuYWJsZWQtYXQtYm9vdC10aW1l
-IiwgTlVMTCkpIHsKIAkJc3BvcnQtPnBvcnQucnM0ODUuZmxhZ3MgfD0gU0VSX1JTNDg1X0VOQUJM
-RUQ7CisJCXNwb3J0LT5yczQ4NV9lbmFibGVkX2F0X2Jvb3QgPSB0cnVlOworCX0KIAogCXNwb3J0
-LT5wb3J0LmZsYWdzID0gVVBGX0JPT1RfQVVUT0NPTkY7CiAJaW5pdF90aW1lcigmc3BvcnQtPnRp
-bWVyKTsKLS0gCjIuNy40Cgo=
---001a113d496a0554d905526ce7eb--
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
