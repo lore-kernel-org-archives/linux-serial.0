@@ -1,34 +1,42 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 1/2] tty/serial: atmel: remove
- atmel_default_console_device handling
-Date: Fri, 23 Jun 2017 11:01:36 +0200
-Message-ID: <20170623090136.mblnokm3f2twurwq@pengutronix.de>
-References: <20170613202439.26369-1-alexandre.belloni@free-electrons.com>
+From: "Schenk, Gavin" <G.Schenk@eckelmann.de>
+Subject: AW: [Customers.Eckelmann] [PATCH] serial: imx: disable DMA for
+ RS-485 on i.MX6 SMP
+Date: Fri, 23 Jun 2017 09:26:14 +0000
+Message-ID: <D415CD2EC4182C4EAB90A76B7D9F16DC022038EACC@EX-DAG02.eckelmann.group>
+References: <20170620153701.12626-1-clemens.gruber@pqgruber.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170613202439.26369-1-alexandre.belloni@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20170620153701.12626-1-clemens.gruber@pqgruber.com>
+Content-Language: de-DE
+Sender: stable-owner@vger.kernel.org
+To: Clemens Gruber <clemens.gruber@pqgruber.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 13, 2017 at 10:24:38PM +0200, Alexandre Belloni wrote:
-> atmel_default_console_device was only used by AVR32, in particular
-> arch/avr32/mach-at32ap/at32ap700x.c which is now gone. Remove it from the
-> driver.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-I found the same change independently, but as you were there first:
-
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGksDQoNCj4gDQo+IERNQSBzdXBwb3J0IGZvciBoYWxmLWR1cGxleCBSUy00ODUgbmV2ZXIgd29y
+a2VkIGNvcnJlY3RseSBvbiBpLk1YNlEvRA0KPiBkdWUgdG8gYW4gdW5kaXNjb3ZlcmVkIFNNUC1y
+ZWxhdGVkIGJ1ZywgaW5zdGVhZCBvZiB0aGUgcmVhbCBkYXRhIGJlaW5nDQo+IHNlbnQgb3V0LCB0
+aGUgcmVzdCBvZiB0aGUgdHJhbnNtaXQgYnVmZmVyIGlzIHNlbnQgKHhtaXQtPnRhaWwganVtcHMg
+b3Zlcg0KPiB4bWl0LT5oZWFkIGluIGlteF90cmFuc21pdF9idWZmZXIgYW5kIFVBUlRfWE1JVF9T
+SVpFIGJ5dGVzIGFyZSBzZW50IG91dCkNCj4gTW9yZSBkZXRhaWxzOiBodHRwczovL2xrbWwub3Jn
+L2xrbWwvMjAxNy8xLzQvNTc5DQo+IA0KDQpXZSBzZWUgZXhhY3RseSB0aGlzIGlzc3VlIG9uIG91
+ciBwbGF0Zm9ybSwgYmFzZWQgb24gaS5NWDZkbC4gV2UgdXNlIHRoZSBSUzQ4NSBtb2RlIHRvIGlt
+cGxlbWVudCBhIE1vZGJ1cyBpbnRlcmZhY2UuIFdlIGhhdmUgYW5vdGhlciBwbGF0Zm9ybSBiYXNl
+ZCBvbiBpLk1YMjUgcnVubmluZyB0aGUgc2FtZSBMaW51eCA0LjkuMzAgY29kZSB0aGF0IGlzIG5v
+dCBhZmZlY3RlZCENCg0KPiBEaXNhYmxlIGl0IGZvciB0aGF0IGNvbmZpZ3VyYXRpb24gdW50aWwg
+dGhlIGJ1ZyBpcyBmb3VuZCBhbmQgZml4ZWQuDQo+IA0KPiBXZSBuZWVkIHRvIGtub3cgYXQgcHJv
+YmUgdGltZSBpZiB3ZSBjYW4gZW5hYmxlIERNQS4gKFJTLTQ4NSBjb3VsZCBiZQ0KPiBlbmFibGVk
+IGFmdGVyIHRoYXQpLiBMZXQncyB0aGVyZWZvcmUgb25seSBlbmFibGUgRE1BIGlmIGl0IGlzIG5v
+dCBhbg0KPiBpLk1YNlEvRCBVQVJUIHdpdGggdWFydC1oYXMtcnRzY3RzIGluIHRoZSBEVCBhbmQg
+Q09ORklHX1NNUCBlbmFibGVkLg0KPiANCg0KVXdlIEtsZWluZS1Lw7ZuaWcgaGFkIHRoZSBpZGVh
+IHRvIGRpc2FibGUgRE1BIG9uIHRoZSBpLk1YNmRsIGJhc2VkIHBsYXRmb3JtIHZpYSBkdHMgYW5k
+IHRoaXMgaXMgb3VyIGN1cnJlbnQgd29ya2Fyb3VuZC4NCg0KUmVnYXJkcw0KR2F2aW4gU2NoZW5r
+DQoKRWNrZWxtYW5uIEFHClZvcnN0YW5kOiBEaXBsLi1JbmcuIFBldGVyIEZyYW5rZW5iYWNoIChT
+cHJlY2hlcikgRGlwbC4tV2kuLUluZy4gUGhpbGlwcCBFY2tlbG1hbm4KRHIuLUluZy4gTWFyY28g
+TcO8bmNoaG9mIERyLi1JbmcuIEZyYW5rIFVobGVtYW5uClZvcnNpdHplbmRlciBkZXMgQXVmc2lj
+aHRzcmF0czogSHViZXJ0dXMgRy4gS3Jvc3NhClN0di4gVm9yc2l0emVuZGVyIGRlcyBBdWZzaWNo
+dHNyYXRzOiBEci4tSW5nLiBHZXJkIEVja2VsbWFubgpTaXR6IGRlciBHZXNlbGxzY2hhZnQ6IEJl
+cmxpbmVyIFN0ci4gMTYxLCA2NTIwNSBXaWVzYmFkZW4sIEFtdHNnZXJpY2h0IFdpZXNiYWRlbiBI
+UkIgMTI2MzYKaHR0cDovL3d3dy5lY2tlbG1hbm4uZGUgCgo=
