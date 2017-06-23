@@ -1,72 +1,34 @@
-From: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-Subject: Re: [PATCH 1/9] serial: Add common rs485 device tree parsing function
-Date: Thu, 22 Jun 2017 11:56:43 +0200
-Message-ID: <81a521c6-71a1-a229-d9ec-c34cc070e4ba@microchip.com>
-References: <20170621102130.21024-1-u.kleine-koenig@pengutronix.de>
- <20170621102130.21024-2-u.kleine-koenig@pengutronix.de>
- <20170622063157.qih2mriprczpj7zn@pengutronix.de>
- <20170622082221.v4jf2u5bdw6oyjxw@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 1/2] tty/serial: atmel: remove
+ atmel_default_console_device handling
+Date: Fri, 23 Jun 2017 11:01:36 +0200
+Message-ID: <20170623090136.mblnokm3f2twurwq@pengutronix.de>
+References: <20170613202439.26369-1-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170622082221.v4jf2u5bdw6oyjxw-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170613202439.26369-1-alexandre.belloni@free-electrons.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 22/06/2017 at 10:22, Uwe Kleine-KÃ¶nig wrote:
-> Hello Sascha,
+On Tue, Jun 13, 2017 at 10:24:38PM +0200, Alexandre Belloni wrote:
+> atmel_default_console_device was only used by AVR32, in particular
+> arch/avr32/mach-at32ap/at32ap700x.c which is now gone. Remove it from the
+> driver.
 > 
-> On Thu, Jun 22, 2017 at 08:31:57AM +0200, Sascha Hauer wrote:
->> On Wed, Jun 21, 2017 at 12:21:22PM +0200, Uwe Kleine-KÃ¶nig wrote:
->>> +/**
->>> + * of_get_rs485_mode() - Implement parsing rs485 properties
->>> + * @np: uart node
->>> + * @rs485conf: output parameter
->>> + *
->>> + * This function implements the device tree binding described in
->>> + * Documentation/devicetree/bindings/serial/rs485.txt.
->>> + *
->>> + * Return: 0 on success, 1 if the node doesn't contain rs485 stuff, or a
->>> + * negative error code.
->>> + */
->>> +int of_get_rs485_mode(struct device_node *np, struct serial_rs485 *rs485conf)
->>> +{
->>> +	u32 rs485_delay[2];
->>> +	int ret;
->>> +
->>> +	ret = of_property_read_u32_array(np, "rs485-rts-delay" rs485_delay, 2);
->>> +	if (ret == -EINVAL) /* property does not exist */
->>> +		return 1;
->>
->> As the de-facto standard for the drivers implementing the rs485 bindings
->> is to make the properties optional, despite the documentation. Wouldn't
-> 
-> I must admit that I failed to mention in the commit log that being
-> strict here was added by me even though I'm not the author.
-> 
->> it be better to make this property optional in the binding instead? This
->> wouldn't unnecessarily break old device trees and 0/0 seems a sane
->> default we can use when the property doesn't exist.
-> 
-> Would be fine for me, too. It was Nicolas Ferre who specified this as
-> being required in 0331bbf3c6fd9. Added people who discussed the patch
-> back then (but without questioning rs485-rts-delay being mandatory).
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+I found the same change independently, but as you were there first:
 
-Uwe,
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-This would be find with me too.
-Indeed, the conversion to an optional option won't break the atmel driver.
+Best regards
+Uwe
 
-Thanks for your work on this topic.
-
-Best regards,
 -- 
-Nicolas Ferre
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
