@@ -1,8 +1,8 @@
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
         <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: [PATCH v2 8/9] serial: imx: Use common rs485 device tree parsing function
-Date: Fri, 23 Jun 2017 11:49:44 +0200
-Message-ID: <20170623094945.31908-9-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 7/9] serial: imx: default to half duplex rs485
+Date: Fri, 23 Jun 2017 11:49:43 +0200
+Message-ID: <20170623094945.31908-8-u.kleine-koenig@pengutronix.de>
 References: <20170623094945.31908-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -16,28 +16,31 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 
-This adds support for the rs485 specific properties defined in
-Documentation/devicetree/bindings/serial/rs485.txt.
+The i.MX driver defaulted to full duplex rs485 which is rather
+unusual and doesn't match the default implemented in other drivers.
+
+So change the default to half duplex.
 
 Signed-off-by: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 ---
- drivers/tty/serial/imx.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/imx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index d5deeef0cd5b..951bb754ad9b 100644
+index bbefddd92bfe..d5deeef0cd5b 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -2076,6 +2076,8 @@ static int serial_imx_probe_dt(struct imx_port *sport,
- 	if (of_get_property(np, "rts-gpios", NULL))
- 		sport->have_rtsgpio = 1;
- 
-+	of_get_rs485_mode(np, &sport->port.rs485);
-+
- 	return 0;
- }
- #else
+@@ -2137,8 +2137,7 @@ static int serial_imx_probe(struct platform_device *pdev)
+ 	sport->port.fifosize = 32;
+ 	sport->port.ops = &imx_pops;
+ 	sport->port.rs485_config = imx_rs485_config;
+-	sport->port.rs485.flags =
+-		SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX;
++	sport->port.rs485.flags = SER_RS485_RTS_ON_SEND;
+ 	sport->port.flags = UPF_BOOT_AUTOCONF;
+ 	init_timer(&sport->timer);
+ 	sport->timer.function = imx_timeout;
 -- 
 2.11.0
 
