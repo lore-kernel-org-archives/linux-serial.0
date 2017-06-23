@@ -1,74 +1,59 @@
-From: Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 3/9] serial: atmel: Use common rs485 device tree parsing
- function
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: [PATCH v2 2/9] dt-bindings: serial/rs485: make rs485-rts-delay optional
 Date: Fri, 23 Jun 2017 11:49:38 +0200
-Message-ID: <8ab92dee-d9ba-0f7d-389c-e35a0f7f304c@gmail.com>
-References: <20170621102130.21024-1-u.kleine-koenig@pengutronix.de>
- <20170621102130.21024-4-u.kleine-koenig@pengutronix.de>
+Message-ID: <20170623094945.31908-3-u.kleine-koenig@pengutronix.de>
+References: <20170623094945.31908-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170621102130.21024-4-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+In-Reply-To: <20170623094945.31908-1-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 21/06/2017 12:21, Uwe Kleine-König wrote:
-> From: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> 
-> We just got a common helper for parsing the rs485 specific
-> device tree properties. Use it and drop the open coded parser.
-> 
-> Note that the common function is more strict, so some device trees
-> needed fixing in the previous commit.
-> 
-> Signed-off-by: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> ---
-> Cc: Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> 
->  drivers/tty/serial/atmel_serial.c | 17 +----------------
->  1 file changed, 1 insertion(+), 16 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index b753d2020068..a6b0c0087e2d 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -1706,22 +1706,7 @@ static void atmel_init_rs485(struct uart_port *port,
->  	struct atmel_uart_data *pdata = dev_get_platdata(&pdev->dev);
->  
->  	if (np) {
-> -		struct serial_rs485 *rs485conf = &port->rs485;
-> -		u32 rs485_delay[2];
-> -		/* rs485 properties */
-> -		if (of_property_read_u32_array(np, "rs485-rts-delay",
-> -					rs485_delay, 2) == 0) {
-> -			rs485conf->delay_rts_before_send = rs485_delay[0];
-> -			rs485conf->delay_rts_after_send = rs485_delay[1];
-> -			rs485conf->flags = 0;
-> -		}
-> -
-> -		if (of_get_property(np, "rs485-rx-during-tx", NULL))
-> -			rs485conf->flags |= SER_RS485_RX_DURING_TX;
-> -
-> -		if (of_get_property(np, "linux,rs485-enabled-at-boot-time",
-> -								NULL))
-> -			rs485conf->flags |= SER_RS485_ENABLED;
-> +		of_get_rs485_mode(np, &port->rs485);
->  	} else if (pdata) {
->  		port->rs485 = pdata->rs485;
->  	} else {
-> 
-I don't kown if the serie will make it to 4.12, but as you may have
-noticed, this patch will break with tty-next.
-In fact, you could get rid of atmel_init_rs485() and just replace it
-with of_get_rs485_mode() :)
+There are a few device trees that specify one of the already optional
+properties without also having the up to now required property
+rs485-rts-delay. Additionally there is no technical reason to require
+rs485-rts-delay and that's also what most drivers implement.
 
-Thanks !
+So give existing users and implementers a blessing and document
+rs485-rts-delay as optional.
 
-Richard
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+---
+This is new in v2 and implements the binding update making rs485-rts-delay
+optional as suggested by Sascha.
+
+ Documentation/devicetree/bindings/serial/rs485.txt | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/rs485.txt b/Documentation/devicetree/bindings/serial/rs485.txt
+index 32b1fa1f2a5b..b8415936dfdb 100644
+--- a/Documentation/devicetree/bindings/serial/rs485.txt
++++ b/Documentation/devicetree/bindings/serial/rs485.txt
+@@ -5,14 +5,13 @@ the built-in half-duplex mode.
+ The properties described hereafter shall be given to a half-duplex capable
+ UART node.
+ 
+-Required properties:
++Optional properties:
+ - rs485-rts-delay: prop-encoded-array <a b> where:
+   * a is the delay between rts signal and beginning of data sent in milliseconds.
+       it corresponds to the delay before sending data.
+   * b is the delay between end of data sent and rts signal in milliseconds
+       it corresponds to the delay after sending data and actual release of the line.
+-
+-Optional properties:
++  If this property is not specified, <0 0> is assumed.
+ - linux,rs485-enabled-at-boot-time: empty property telling to enable the rs485
+   feature at boot time. It can be disabled later with proper ioctl.
+ - rs485-rx-during-tx: empty property that enables the receiving of data even
+-- 
+2.11.0
+
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
