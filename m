@@ -1,42 +1,75 @@
-From: "Schenk, Gavin" <G.Schenk@eckelmann.de>
-Subject: AW: [Customers.Eckelmann] [PATCH] serial: imx: disable DMA for
- RS-485 on i.MX6 SMP
-Date: Fri, 23 Jun 2017 09:26:14 +0000
-Message-ID: <D415CD2EC4182C4EAB90A76B7D9F16DC022038EACC@EX-DAG02.eckelmann.group>
-References: <20170620153701.12626-1-clemens.gruber@pqgruber.com>
+From: Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 3/9] serial: atmel: Use common rs485 device tree parsing
+ function
+Date: Fri, 23 Jun 2017 11:49:38 +0200
+Message-ID: <8ab92dee-d9ba-0f7d-389c-e35a0f7f304c@gmail.com>
+References: <20170621102130.21024-1-u.kleine-koenig@pengutronix.de>
+ <20170621102130.21024-4-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20170620153701.12626-1-clemens.gruber@pqgruber.com>
-Content-Language: de-DE
-Sender: stable-owner@vger.kernel.org
-To: Clemens Gruber <clemens.gruber@pqgruber.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170621102130.21024-4-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGksDQoNCj4gDQo+IERNQSBzdXBwb3J0IGZvciBoYWxmLWR1cGxleCBSUy00ODUgbmV2ZXIgd29y
-a2VkIGNvcnJlY3RseSBvbiBpLk1YNlEvRA0KPiBkdWUgdG8gYW4gdW5kaXNjb3ZlcmVkIFNNUC1y
-ZWxhdGVkIGJ1ZywgaW5zdGVhZCBvZiB0aGUgcmVhbCBkYXRhIGJlaW5nDQo+IHNlbnQgb3V0LCB0
-aGUgcmVzdCBvZiB0aGUgdHJhbnNtaXQgYnVmZmVyIGlzIHNlbnQgKHhtaXQtPnRhaWwganVtcHMg
-b3Zlcg0KPiB4bWl0LT5oZWFkIGluIGlteF90cmFuc21pdF9idWZmZXIgYW5kIFVBUlRfWE1JVF9T
-SVpFIGJ5dGVzIGFyZSBzZW50IG91dCkNCj4gTW9yZSBkZXRhaWxzOiBodHRwczovL2xrbWwub3Jn
-L2xrbWwvMjAxNy8xLzQvNTc5DQo+IA0KDQpXZSBzZWUgZXhhY3RseSB0aGlzIGlzc3VlIG9uIG91
-ciBwbGF0Zm9ybSwgYmFzZWQgb24gaS5NWDZkbC4gV2UgdXNlIHRoZSBSUzQ4NSBtb2RlIHRvIGlt
-cGxlbWVudCBhIE1vZGJ1cyBpbnRlcmZhY2UuIFdlIGhhdmUgYW5vdGhlciBwbGF0Zm9ybSBiYXNl
-ZCBvbiBpLk1YMjUgcnVubmluZyB0aGUgc2FtZSBMaW51eCA0LjkuMzAgY29kZSB0aGF0IGlzIG5v
-dCBhZmZlY3RlZCENCg0KPiBEaXNhYmxlIGl0IGZvciB0aGF0IGNvbmZpZ3VyYXRpb24gdW50aWwg
-dGhlIGJ1ZyBpcyBmb3VuZCBhbmQgZml4ZWQuDQo+IA0KPiBXZSBuZWVkIHRvIGtub3cgYXQgcHJv
-YmUgdGltZSBpZiB3ZSBjYW4gZW5hYmxlIERNQS4gKFJTLTQ4NSBjb3VsZCBiZQ0KPiBlbmFibGVk
-IGFmdGVyIHRoYXQpLiBMZXQncyB0aGVyZWZvcmUgb25seSBlbmFibGUgRE1BIGlmIGl0IGlzIG5v
-dCBhbg0KPiBpLk1YNlEvRCBVQVJUIHdpdGggdWFydC1oYXMtcnRzY3RzIGluIHRoZSBEVCBhbmQg
-Q09ORklHX1NNUCBlbmFibGVkLg0KPiANCg0KVXdlIEtsZWluZS1Lw7ZuaWcgaGFkIHRoZSBpZGVh
-IHRvIGRpc2FibGUgRE1BIG9uIHRoZSBpLk1YNmRsIGJhc2VkIHBsYXRmb3JtIHZpYSBkdHMgYW5k
-IHRoaXMgaXMgb3VyIGN1cnJlbnQgd29ya2Fyb3VuZC4NCg0KUmVnYXJkcw0KR2F2aW4gU2NoZW5r
-DQoKRWNrZWxtYW5uIEFHClZvcnN0YW5kOiBEaXBsLi1JbmcuIFBldGVyIEZyYW5rZW5iYWNoIChT
-cHJlY2hlcikgRGlwbC4tV2kuLUluZy4gUGhpbGlwcCBFY2tlbG1hbm4KRHIuLUluZy4gTWFyY28g
-TcO8bmNoaG9mIERyLi1JbmcuIEZyYW5rIFVobGVtYW5uClZvcnNpdHplbmRlciBkZXMgQXVmc2lj
-aHRzcmF0czogSHViZXJ0dXMgRy4gS3Jvc3NhClN0di4gVm9yc2l0emVuZGVyIGRlcyBBdWZzaWNo
-dHNyYXRzOiBEci4tSW5nLiBHZXJkIEVja2VsbWFubgpTaXR6IGRlciBHZXNlbGxzY2hhZnQ6IEJl
-cmxpbmVyIFN0ci4gMTYxLCA2NTIwNSBXaWVzYmFkZW4sIEFtdHNnZXJpY2h0IFdpZXNiYWRlbiBI
-UkIgMTI2MzYKaHR0cDovL3d3dy5lY2tlbG1hbm4uZGUgCgo=
+On 21/06/2017 12:21, Uwe Kleine-König wrote:
+> From: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+> 
+> We just got a common helper for parsing the rs485 specific
+> device tree properties. Use it and drop the open coded parser.
+> 
+> Note that the common function is more strict, so some device trees
+> needed fixing in the previous commit.
+> 
+> Signed-off-by: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+> ---
+> Cc: Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> 
+>  drivers/tty/serial/atmel_serial.c | 17 +----------------
+>  1 file changed, 1 insertion(+), 16 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index b753d2020068..a6b0c0087e2d 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -1706,22 +1706,7 @@ static void atmel_init_rs485(struct uart_port *port,
+>  	struct atmel_uart_data *pdata = dev_get_platdata(&pdev->dev);
+>  
+>  	if (np) {
+> -		struct serial_rs485 *rs485conf = &port->rs485;
+> -		u32 rs485_delay[2];
+> -		/* rs485 properties */
+> -		if (of_property_read_u32_array(np, "rs485-rts-delay",
+> -					rs485_delay, 2) == 0) {
+> -			rs485conf->delay_rts_before_send = rs485_delay[0];
+> -			rs485conf->delay_rts_after_send = rs485_delay[1];
+> -			rs485conf->flags = 0;
+> -		}
+> -
+> -		if (of_get_property(np, "rs485-rx-during-tx", NULL))
+> -			rs485conf->flags |= SER_RS485_RX_DURING_TX;
+> -
+> -		if (of_get_property(np, "linux,rs485-enabled-at-boot-time",
+> -								NULL))
+> -			rs485conf->flags |= SER_RS485_ENABLED;
+> +		of_get_rs485_mode(np, &port->rs485);
+>  	} else if (pdata) {
+>  		port->rs485 = pdata->rs485;
+>  	} else {
+> 
+I don't kown if the serie will make it to 4.12, but as you may have
+noticed, this patch will break with tty-next.
+In fact, you could get rid of atmel_init_rs485() and just replace it
+with of_get_rs485_mode() :)
+
+Thanks !
+
+Richard
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
