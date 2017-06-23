@@ -1,61 +1,63 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: 4.3 serial driver crashes with console shortly after boot
-Date: Fri, 23 Jun 2017 13:23:48 +0200
-Message-ID: <6f76451d-00e1-a3c5-28f8-ecd3808b8ed2@suse.cz>
-References: <20151110002939.GG3533@two.firstfloor.org>
- <56414DE9.20707@hurleysoftware.com>
- <20151110223957.GI3533@two.firstfloor.org>
- <20151110224340.GA30452@two.firstfloor.org>
- <56427AAC.3000409@hurleysoftware.com> <56432316.3040602@hurleysoftware.com>
- <20151111165035.GL3533@two.firstfloor.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: [PATCH v6 00/10] serial/gpio: exar: Fixes and support for IOT2000
+Date: Fri, 23 Jun 2017 22:09:12 +0200
+Message-ID: <d52a1a65-842c-9c73-17f7-5574fcefab2a@siemens.com>
+References: <cover.1497033197.git.jan.kiszka@siemens.com>
+ <CACRpkdZYSFTa63BF5u-J=pu2XwUbVZiQGAtZybhjQno6vVbe=g@mail.gmail.com>
+ <9520074b-3731-7bbe-d59d-cbed90ac16bb@siemens.com>
+ <CACRpkdbNPnNbk_r0NWEs4e7PuKmMf9KTjeRPRnxTOHuK-+ki2Q@mail.gmail.com>
+ <c0a29540-7946-4e95-1b59-3a2f478757da@siemens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20151111165035.GL3533@two.firstfloor.org>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andi Kleen <andi@firstfloor.org>, Peter Hurley <peter@hurleysoftware.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <c0a29540-7946-4e95-1b59-3a2f478757da@siemens.com>
+Content-Language: en-US
+Sender: linux-gpio-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 11/11/2015, 05:50 PM, Andi Kleen wrote:
-> On Wed, Nov 11, 2015 at 06:14:30AM -0500, Peter Hurley wrote:
->> On 11/10/2015 06:15 PM, Peter Hurley wrote:
->>> On 11/10/2015 05:43 PM, Andi Kleen wrote:
->>>> On Tue, Nov 10, 2015 at 11:39:57PM +0100, Andi Kleen wrote:
->>>>>> I've just tried to reproduce this without success on my current
->>>>>> tree which has some additional patches I just posted this am. They weren't
->>>>>> intended to fix crashes but they directly impact the area of concern. Could
->>>>>> you try these three?
->>>>>>
->>>>>> [PATCH v2 2/4] n_tty: Ignore all read data when closing
->>>>>> [PATCH v2 3/4] tty: Abstract and encapsulate tty->closing behavior
->>>>>> [PATCH v2 4/4] tty: Remove drivers' extra tty_ldisc_flush()
->>>>>>
->>>>> Applying the three patches fixes the crash. 
->>>>> I haven't tried to figure out which one did the trick.
+On 2017-06-21 08:29, Jan Kiszka wrote:
+> On 2017-06-20 13:38, Linus Walleij wrote:
+>> On Tue, Jun 20, 2017 at 10:54 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>> On 2017-06-20 10:19, Linus Walleij wrote:
+>>>> On Fri, Jun 9, 2017 at 8:33 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
 >>>>
->>>> Actually I was wrong sorry. It still crashes, but now it doesn't
->>>> hang the system anymore.
+>>>>> This makes the gpio-exar driver usable, which was prevented by a number
+>>>>> of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
+>>>>> driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
+>>>>> series, so I'm also cross-posting to the serial and gpio lists.
+>>>>>
+>>>>> Changes in v6:
+>>>>
+>>>> I merged some of the patches, that applied. Let's see if they survive
+>>>> in linux-next, else I guess we need to fix this in the -rcs or for the next
+>>>> kernel cycle.
 >>>
->>> Argghh.
->>> Can you run the patch below and send me full dmesg (privately if you prefer)?
+>>> Weird that things did not apply. I just did a cherry-pick for all those
+>>> 10 patches on top of 5c996b7eb52c, and that went smoothly. Please let me
+>>> know which baseline is needed, and I will rebase.
 >>
->> Nevermind. I see how it's happening now; it's being initiated by hangup,
->> not close. FWIW, it's been like that nearly forever; your user-space/tool is
->> triggering this because ECHO is on.
+>> This was on the "devel" branch of my GPIO tree:
+>> https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git/log/?h=devel
 > 
-> It's just agetty i believe, but there may be some funkiness going on
-> with the terminal server or the cable.
+> Again, all (missing) patches applied absolutely cleanly for me, see
 > 
-> Thanks. I'll just add a NULL pointer check for now, until you have
-> a real patch.
+> http://git.kiszka.org/?p=linux.git;a=shortlog;h=refs/heads/queues/gpio-iot2000
 
-It looks like 4.4 (-stable) still suffers from this. Has this ever been
-fixed somehow?
+I've rebased over devel and noticed along this that you will have to
+include "serial: uapi: Add support for bus termination" from Greg's
+tty-next for the last patch to avoid breaking the build. Result pushed to
 
-thanks,
+http://git.kiszka.org/?p=linux.git;a=shortlog;h=refs/heads/queues/gpio-iot2000
+
+If you want me to resend anything, just let me know. Would be great to
+have the remaining pieces lined up in time for the next merge window.
+
+Thanks,
+Jan
+
 -- 
-js
-suse labs
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
