@@ -1,26 +1,28 @@
-From: "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: Re: [PATCH 07/11] 53c700: switch to dma_alloc_attrs
-Date: Mon, 26 Jun 2017 14:21:05 -0400
-Message-ID: <yq1efu6390u.fsf@oracle.com>
+From: Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 01/11] dma-mapping: remove dmam_free_noncoherent
+Date: Mon, 26 Jun 2017 16:53:19 -0400
+Message-ID: <20170626205319.GB27428@htj.duckdns.org>
 References: <20170616071716.17321-1-hch@lst.de>
-        <20170616071716.17321-8-hch@lst.de>
+ <20170616071716.17321-2-hch@lst.de>
+ <20170626070715.GA12711@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170616071716.17321-8-hch@lst.de> (Christoph Hellwig's message
-        of "Fri, 16 Jun 2017 09:17:12 +0200")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, linux-metag@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170626070715.GA12711-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Sender: linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
+On Mon, Jun 26, 2017 at 12:07:15AM -0700, Christoph Hellwig wrote:
+> Tejun, does this look ok to you?
 
-Christoph,
+Sure,
 
-> Use dma_alloc_attrs directly instead of the dma_alloc_noncoherent
-> wrapper.
+Acked-by: Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
-Applied to 4.13/scsi-queue.
+Thanks.
 
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+tejun
