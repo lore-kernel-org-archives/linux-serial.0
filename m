@@ -1,57 +1,61 @@
 From: Bich HEMON <bich.hemon@st.com>
-Subject: [PATCH 00/20] Update STM32 usart driver
-Date: Mon, 26 Jun 2017 12:49:08 +0000
-Message-ID: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
+Subject: [PATCH 18/20] serial: stm32: update dma buffers length
+Date: Mon, 26 Jun 2017 12:49:16 +0000
+Message-ID: <1498481318-1894-19-git-send-email-bich.hemon@st.com>
+References: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Content-Language: en-US
-Content-ID: <77A0BF5F63A26C4E852BC5277C486357@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Cc: Bich HEMON <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
 From: Bich Hemon <bich.hemon@st.com>
 
-This patchset updates the stm32 usart driver. It mainly adds
-support for fifo, dma, debugfs anf fixes various bugs.
+When stm32 dma is used alone for rx, meaning that the
+third dmamux property in the device tree is 0x0, then
+the received data are accumulated in dma internal fifo
+until it is full before being transferred to the memory.
+This dma fifo is 16 bytes wide on stm32ap1 so the dma
+buffer is set to 160 bytes (= 16bytes * 10).
 
-Bich Hemon (20):
-  serial: stm32: adding fifo support
-  dt-bindings: serial: each stm32 usart needs an alias
-  serial: stm32: fix multi ports management
-  serial: stm32: make fifoen as property for each port
-  serial: stm32: add debugfs
-  serial: stm32: fix pio transmit timeout
-  serial: stm32: less messages on dma alloc error
-  serial: stm32: timeout interrupt using with dma
-  serial: stm32: fix end of transfer
-  serial: stm32: fix dma receive
-  serial: stm32: add RTS support
-  serial: stm32: fix last_res value
-  serial: stm32: fix error handling in probe
-  dt-bindings: serial: document option wake-up interrupt for STM32 USART
-  serial: stm32: Add wakeup mechanism
-  serial: stm32: fix fifo usage
-  dt-bindings: serial: stm32: add dma using note
-  serial: stm32: update dma buffers length
-  serial: stm32: add dma rx callback
-  serial: stm32: fix rx interrupt handling in startup
+When stm32 dma is used combined with mdma, meaning that
+the third dmamux property in the device tree is 0x1, then
+the received data are accumulated per 16 bytes packets
+(cf. explanation above) until the rx dma transfer period
+is reached, so 160 bytes with this patch.
 
- .../devicetree/bindings/serial/st,stm32-usart.txt  |  55 +++-
- drivers/tty/serial/stm32-usart.c                   | 310 ++++++++++++++++++---
- drivers/tty/serial/stm32-usart.h                   |  51 +++-
- 3 files changed, 375 insertions(+), 41 deletions(-)
+Due to the constraints above, the usart driver should not
+be used in dma mode for rx when received data length is
+unknown, as this is the case with the console.
 
+There is no constraint for dma mode using for tx: this patch
+simply align both rx and tx buffer lengths to the same value.
+
+Signed-off-by: Gerald Baeza <gerald.baeza@st.com>
+---
+ drivers/tty/serial/stm32-usart.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index 25ed28b..5137e68 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -238,9 +238,9 @@ struct stm32_usart_info stm32h7_info = {
+ #define STM32_SERIAL_NAME "ttyS"
+ #define STM32_MAX_PORTS 8
+ 
+-#define RX_BUF_L 200		 /* dma rx buffer length     */
++#define RX_BUF_L 160		 /* dma rx buffer length     */
+ #define RX_BUF_P RX_BUF_L	 /* dma rx buffer period     */
+-#define TX_BUF_L 200		 /* dma tx buffer length     */
++#define TX_BUF_L RX_BUF_L	 /* dma tx buffer length     */
+ 
+ struct stm32_port {
+ 	struct uart_port port;
 -- 
 1.9.1
