@@ -1,14 +1,15 @@
 From: Bich HEMON <bich.hemon@st.com>
-Subject: [PATCH 05/20] serial: stm32: add debugfs
-Date: Mon, 26 Jun 2017 12:49:10 +0000
-Message-ID: <1498481318-1894-6-git-send-email-bich.hemon@st.com>
+Subject: [PATCH 06/20] serial: stm32: fix pio transmit timeout
+Date: Mon, 26 Jun 2017 12:49:11 +0000
+Message-ID: <1498481318-1894-7-git-send-email-bich.hemon@st.com>
 References: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Content-Language: en-US
+Content-ID: <CD0DCE9DCE188346A1392D4B8CFA4885@st.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,106 +23,20 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel
 Cc: Bich HEMON <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Bich Hemon <bich.hemon@st.com>
-
-Adding debugfs infrastructure and one virtual
-file allowing to change fifoen value.
-This value change is taken into account on next
-port setup or enabling.
-
-Signed-off-by: Gerald Baeza <gerald.baeza@st.com>
----
- drivers/tty/serial/stm32-usart.c | 49 ++++++++++++++++++++++++++++++++++++++++
- drivers/tty/serial/stm32-usart.h |  3 +++
- 2 files changed, 52 insertions(+)
-
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 34e31d1..3ce0f7a 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -34,6 +34,51 @@
- 
- #include "stm32-usart.h"
- 
-+#ifdef CONFIG_DEBUG_FS
-+#include <linux/debugfs.h>
-+#include <linux/seq_file.h>
-+#include <linux/string.h>
-+#include <linux/uaccess.h>
-+
-+static struct dentry *stm32_debugfs_root;
-+static atomic_t stm32_debugfs_cnt = ATOMIC_INIT(0);
-+
-+static void stm32_serial_debugfs(struct stm32_port *stm32port,
-+				 phys_addr_t phys_addr)
-+{
-+	struct device *dev = stm32port->port.dev;
-+
-+	if (!stm32_debugfs_root)
-+		stm32_debugfs_root = debugfs_create_dir("usart-stm32", NULL);
-+
-+	stm32port->debugfs_dir = debugfs_create_dir(dev_name(dev),
-+						    stm32_debugfs_root);
-+
-+	debugfs_create_bool("fifoen", 0644,
-+			    stm32port->debugfs_dir, &stm32port->fifoen);
-+
-+	atomic_inc(&stm32_debugfs_cnt);
-+}
-+
-+static void stm32_serial_debugfs_rm(struct stm32_port *stm32port)
-+{
-+	debugfs_remove_recursive(stm32port->debugfs_dir);
-+	if (atomic_dec_and_test(&stm32_debugfs_cnt)) {
-+		debugfs_remove_recursive(stm32_debugfs_root);
-+		stm32_debugfs_root = NULL;
-+	}
-+}
-+#else
-+static void stm32_serial_debugfs(struct stm32_port *stm32port,
-+				 phys_addr_t phys_addr)
-+{
-+}
-+
-+static void stm32_serial_debugfs_rm(struct stm32_port *stm32port)
-+{
-+}
-+#endif
-+
- static void stm32_stop_tx(struct uart_port *port);
- static void stm32_transmit_chars(struct uart_port *port);
- 
-@@ -672,6 +717,8 @@ static int stm32_init_port(struct stm32_port *stm32port,
- 		return PTR_ERR(port->membase);
- 	port->mapbase = res->start;
- 
-+	stm32_serial_debugfs(stm32port, res->start);
-+
- 	spin_lock_init(&port->lock);
- 
- 	stm32port->clk = devm_clk_get(&pdev->dev, NULL);
-@@ -914,6 +961,8 @@ static int stm32_serial_remove(struct platform_device *pdev)
- 
- 	clk_disable_unprepare(stm32_port->clk);
- 
-+	stm32_serial_debugfs_rm(stm32_port);
-+
- 	return uart_remove_one_port(&stm32_usart_driver, port);
- }
- 
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index 9429baf..a8999a1 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -216,6 +216,9 @@ struct stm32_port {
- 	struct uart_port port;
- 	struct clk *clk;
- 	struct stm32_usart_info *info;
-+#ifdef CONFIG_DEBUG_FS
-+	struct dentry *debugfs_dir;
-+#endif
- 	struct dma_chan *rx_ch;  /* dma rx channel            */
- 	dma_addr_t rx_dma_buf;   /* dma rx buffer bus address */
- 	unsigned char *rx_buf;   /* dma rx buffer cpu address */
--- 
-1.9.1
+RnJvbTogQmljaCBIZW1vbiA8YmljaC5oZW1vbkBzdC5jb20+DQoNCjEwMMK1cyB3YXMgdG9vIHNo
+b3J0IGZvciBsb3cgc3BlZWQgdHJhbnNtaXNzaW9uDQooOTYwMGJwcykNCg0KU2lnbmVkLW9mZi1i
+eTogR2VyYWxkIEJhZXphIDxnZXJhbGQuYmFlemFAc3QuY29tPg0KLS0tDQogZHJpdmVycy90dHkv
+c2VyaWFsL3N0bTMyLXVzYXJ0LmMgfCAyICstDQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9u
+KCspLCAxIGRlbGV0aW9uKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvc3Rt
+MzItdXNhcnQuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zdG0zMi11c2FydC5jDQppbmRleCAzY2Uw
+ZjdhLi43OWFjMTY3IDEwMDY0NA0KLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL3N0bTMyLXVzYXJ0
+LmMNCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zdG0zMi11c2FydC5jDQpAQCAtMjQ3LDcgKzI0
+Nyw3IEBAIHN0YXRpYyB2b2lkIHN0bTMyX3RyYW5zbWl0X2NoYXJzX3BpbyhzdHJ1Y3QgdWFydF9w
+b3J0ICpwb3J0KQ0KIAlyZXQgPSByZWFkbF9yZWxheGVkX3BvbGxfdGltZW91dF9hdG9taWMocG9y
+dC0+bWVtYmFzZSArIG9mcy0+aXNyLA0KIAkJCQkJCWlzciwNCiAJCQkJCQkoaXNyICYgVVNBUlRf
+U1JfVFhFKSwNCi0JCQkJCQkxMCwgMTAwKTsNCisJCQkJCQkxMCwgMTAwMDAwKTsNCiANCiAJaWYg
+KHJldCkNCiAJCWRldl9lcnIocG9ydC0+ZGV2LCAidHggZW1wdHkgbm90IHNldFxuIik7DQotLSAN
+CjEuOS4xDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwps
+aW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJh
+ZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51
+eC1hcm0ta2VybmVsCg==
