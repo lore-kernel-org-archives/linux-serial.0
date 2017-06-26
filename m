@@ -1,80 +1,66 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: [PATCH v3 5/9] serial: fsl_lpuart: Use common rs485 device tree parsing function
-Date: Mon, 26 Jun 2017 11:07:59 +0200
-Message-ID: <20170626090803.10981-6-u.kleine-koenig@pengutronix.de>
-References: <20170626090803.10981-1-u.kleine-koenig@pengutronix.de>
+From: Bich HEMON <bich.hemon@st.com>
+Subject: [PATCH 02/20] dt-bindings: serial: each stm32 usart needs an alias
+Date: Mon, 26 Jun 2017 12:49:09 +0000
+Message-ID: <1498481318-1894-3-git-send-email-bich.hemon@st.com>
+References: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170626090803.10981-1-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Bich HEMON <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+From: Bich Hemon <bich.hemon@st.com>
 
-We just got a common helper for parsing the rs485 specific
-device tree properties. Use it and drop the open coded parser.
+Each usart controller should have an alias correctly
+numbered in "aliases" node.
 
-As a side effect this adds support for parsing rs485-rts-delay and
-rs485-rx-during-tx. As the driver doesn't support this though, probing
-fails if these are defined.
-
-Signed-off-by: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Signed-off-by: Gerald Baeza <gerald.baeza@st.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
+ Documentation/devicetree/bindings/serial/st,stm32-usart.txt | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 6e39ef96c6ca..68ac72a5c5fe 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2049,6 +2049,24 @@ static int lpuart_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+index 85ec5f2..a229b14 100644
+--- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
++++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+@@ -15,14 +15,23 @@ Optional properties:
+ - dmas: phandle(s) to DMA controller node(s). Refer to stm32-dma.txt
+ - dma-names: "rx" and/or "tx"
  
-+	of_get_rs485_mode(np, &sport->port.rs485);
++Note: Each usart controller should have an alias correctly numbered
++in "aliases" node.
 +
-+	if (sport->port.rs485.flags & SER_RS485_RX_DURING_TX) {
-+		dev_err(&pdev->dev, "driver doesn't support RX during TX\n");
-+		return -ENOSYS;
-+	}
+ Examples:
+-usart4: serial@40004c00 {
++aliases {
++	serial0 = &usart1;
++	serial1 = &usart2;
++	serial3 = &uart4;
++};
 +
-+	if (sport->port.rs485.delay_rts_before_send ||
-+	    sport->port.rs485.delay_rts_after_send) {
-+		dev_err(&pdev->dev, "driver doesn't support RTS delays\n");
-+		return -ENOSYS;
-+	}
-+
-+	if (sport->port.rs485.flags & SER_RS485_ENABLED) {
-+		sport->port.rs485.flags |= SER_RS485_RTS_ON_SEND;
-+		writeb(UARTMODEM_TXRTSE, sport->port.membase + UARTMODEM);
-+	}
-+
- 	sport->dma_tx_chan = dma_request_slave_channel(sport->port.dev, "tx");
- 	if (!sport->dma_tx_chan)
- 		dev_info(sport->port.dev, "DMA tx channel request failed, "
-@@ -2059,12 +2077,6 @@ static int lpuart_probe(struct platform_device *pdev)
- 		dev_info(sport->port.dev, "DMA rx channel request failed, "
- 				"operating without rx DMA\n");
++uart4: serial@40004c00 {
+ 	compatible = "st,stm32-uart";
+ 	reg = <0x40004c00 0x400>;
+ 	interrupts = <52>;
+ 	clocks = <&clk_pclk1>;
+ 	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_usart4>;
++	pinctrl-0 = <&pinctrl_uart4>;
+ };
  
--	if (of_property_read_bool(np, "linux,rs485-enabled-at-boot-time")) {
--		sport->port.rs485.flags |= SER_RS485_ENABLED;
--		sport->port.rs485.flags |= SER_RS485_RTS_ON_SEND;
--		writeb(UARTMODEM_TXRTSE, sport->port.membase + UARTMODEM);
--	}
--
- 	return 0;
- }
- 
+ usart2: serial@40004400 {
 -- 
-2.11.0
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+1.9.1
