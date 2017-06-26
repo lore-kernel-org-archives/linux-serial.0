@@ -1,77 +1,57 @@
-From: Bich HEMON <bich.hemon@st.com>
-Subject: [PATCH 12/20] serial: stm32: fix last_res value
-Date: Mon, 26 Jun 2017 12:49:13 +0000
-Message-ID: <1498481318-1894-13-git-send-email-bich.hemon@st.com>
+From: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
+Subject: [PATCH 20/20] serial: stm32: fix rx interrupt handling in startup
+Date: Mon, 26 Jun 2017 12:49:17 +0000
+Message-ID: <1498481318-1894-21-git-send-email-bich.hemon@st.com>
 References: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1498481318-1894-1-git-send-email-bich.hemon-qxv4g6HH51o@public.gmane.org>
 Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: Bich HEMON <bich.hemon@st.com>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Bich Hemon <bich.hemon@st.com>
+From: Bich Hemon <bich.hemon-qxv4g6HH51o@public.gmane.org>
 
-Set last_res value in each port
+When stm32 dma is used, Data register has to be read in order
+to clear the RXNE interrupt in case we received data before
+usart probe.
 
-Signed-off-by: Bich Hemon <bich.hemon@st.com>
+Signed-off-by: Bich Hemon <bich.hemon-qxv4g6HH51o@public.gmane.org>
 ---
- drivers/tty/serial/stm32-usart.c | 6 +++---
- drivers/tty/serial/stm32-usart.h | 1 +
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/tty/serial/stm32-usart.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index a7401b0..c54b89d 100644
+index 06a92c8..b1f3aab 100644
 --- a/drivers/tty/serial/stm32-usart.c
 +++ b/drivers/tty/serial/stm32-usart.c
-@@ -155,14 +155,13 @@ static void stm32_receive_chars(struct uart_port *port, bool threaded)
- 	unsigned long c;
- 	u32 sr;
- 	char flag;
--	static int last_res = RX_BUF_L;
+@@ -568,9 +568,18 @@ static int stm32_startup(struct uart_port *port)
+ 	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
+ 	const char *name = to_platform_device(port->dev)->name;
+-	u32 val;
++	u32 val, sr, dr;
+ 	int ret;
  
- 	if (port->irq_wake)
- 		pm_wakeup_event(tport->tty->dev, 0);
- 
--	while (stm32_pending_rx(port, &sr, &last_res, threaded)) {
-+	while (stm32_pending_rx(port, &sr, &stm32_port->last_res, threaded)) {
- 		sr |= USART_SR_DUMMY_RX;
--		c = stm32_get_char(port, &sr, &last_res);
-+		c = stm32_get_char(port, &sr, &stm32_port->last_res);
- 		flag = TTY_NORMAL;
- 		port->icount.rx++;
- 
-@@ -808,6 +807,7 @@ static struct stm32_port *stm32_of_get_stm32_port(struct platform_device *pdev)
- 	stm32_ports[id].port.line = id;
- 	stm32_ports[id].fifoen = true;
- 	stm32_ports[id].rx_irq = USART_CR1_RXNEIE;
-+	stm32_ports[id].last_res = RX_BUF_L;
- 	return &stm32_ports[id];
- }
- 
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index f9fe15b..056a837 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -226,6 +226,7 @@ struct stm32_port {
- 	dma_addr_t tx_dma_buf;   /* dma tx buffer bus address */
- 	unsigned char *tx_buf;   /* dma tx buffer cpu address */
- 	u32 rx_irq;		 /* USART_CR1_RXNEIE or RTOIE */
-+	int last_res;
- 	bool tx_dma_busy;	 /* dma tx busy               */
- 	bool hw_flow_control;
- 	bool fifoen;
++	sr = readl_relaxed(port->membase + ofs->isr);
++
++	if ((sr & USART_SR_RXNE) && (stm32_port->rx_ch))
++		ret = readl_relaxed_poll_timeout_atomic(port->membase +
++							ofs->rdr,
++							dr,
++							!(sr & USART_SR_RXNE),
++							10, 100000);
++
+ 	ret = request_threaded_irq(port->irq, stm32_interrupt,
+ 				   stm32_threaded_interrupt,
+ 				   IRQF_NO_SUSPEND, name, port);
 -- 
 1.9.1
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
