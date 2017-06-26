@@ -1,56 +1,61 @@
-From: Bich HEMON <bich.hemon@st.com>
-Subject: [PATCH 07/20] serial: stm32: less messages on dma alloc error
-Date: Mon, 26 Jun 2017 12:49:11 +0000
-Message-ID: <1498481318-1894-8-git-send-email-bich.hemon@st.com>
+From: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
+Subject: [PATCH 10/20] serial: stm32: fix dma receive
+Date: Mon, 26 Jun 2017 12:49:12 +0000
+Message-ID: <1498481318-1894-11-git-send-email-bich.hemon@st.com>
 References: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1498481318-1894-1-git-send-email-bich.hemon-qxv4g6HH51o@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: Bich HEMON <bich.hemon@st.com>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Bich Hemon <bich.hemon@st.com>
+From: Bich Hemon <bich.hemon-qxv4g6HH51o@public.gmane.org>
 
-Just display one info (instead of two) in the
-log buffer when there is no dma.
+Two improvements for dma receive in this patch:
+- usart dma receiver (DMAR) is disabled during receive
+- dma receive buffer is sync-ed for cpu before reading
+and given back to the dma just after
 
-Signed-off-by: Gerald Baeza <gerald.baeza@st.com>
+Signed-off-by: Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>
 ---
- drivers/tty/serial/stm32-usart.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/tty/serial/stm32-usart.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 79ac167..dcc6d1e 100644
+index 266dc4f..13fc520 100644
 --- a/drivers/tty/serial/stm32-usart.c
 +++ b/drivers/tty/serial/stm32-usart.c
-@@ -786,10 +786,8 @@ static int stm32_of_dma_rx_probe(struct stm32_port *stm32port,
+@@ -393,11 +393,21 @@ static irqreturn_t stm32_threaded_interrupt(int irq, void *ptr)
+ {
+ 	struct uart_port *port = ptr;
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
++	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
  
- 	/* Request DMA RX channel */
- 	stm32port->rx_ch = dma_request_slave_channel(dev, "rx");
--	if (!stm32port->rx_ch) {
--		dev_info(dev, "rx dma alloc failed\n");
-+	if (!stm32port->rx_ch)
- 		return -ENODEV;
--	}
- 	stm32port->rx_buf = dma_alloc_coherent(&pdev->dev, RX_BUF_L,
- 						 &stm32port->rx_dma_buf,
- 						 GFP_KERNEL);
-@@ -858,10 +856,8 @@ static int stm32_of_dma_tx_probe(struct stm32_port *stm32port,
+ 	spin_lock(&port->lock);
  
- 	/* Request DMA TX channel */
- 	stm32port->tx_ch = dma_request_slave_channel(dev, "tx");
--	if (!stm32port->tx_ch) {
--		dev_info(dev, "tx dma alloc failed\n");
-+	if (!stm32port->tx_ch)
- 		return -ENODEV;
--	}
- 	stm32port->tx_buf = dma_alloc_coherent(&pdev->dev, TX_BUF_L,
- 						 &stm32port->tx_dma_buf,
- 						 GFP_KERNEL);
+-	if (stm32_port->rx_ch)
++	if (stm32_port->rx_ch) {
++		stm32_clr_bits(port, ofs->cr3, USART_CR3_DMAR);
++		dma_sync_single_for_cpu(port->dev,
++					stm32_port->rx_dma_buf,
++					RX_BUF_L, DMA_FROM_DEVICE);
+ 		stm32_receive_chars(port, true);
++		dma_sync_single_for_device(port->dev,
++					   stm32_port->rx_dma_buf,
++					   RX_BUF_L, DMA_FROM_DEVICE);
++		stm32_set_bits(port, ofs->cr3, USART_CR3_DMAR);
++	}
+ 
+ 	spin_unlock(&port->lock);
+ 
 -- 
 1.9.1
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
