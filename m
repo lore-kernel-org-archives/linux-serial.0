@@ -1,91 +1,55 @@
-From: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
-Subject: Re: [PATCH] serial: 8250: Fix THRE flag usage for CAP_MINI
-Date: Mon, 26 Jun 2017 16:15:37 +0100
-Message-ID: <bf050731-6b05-9e35-8b50-ea9115b4197f@raspberrypi.org>
-References: <1498485581-72097-1-git-send-email-phil@raspberrypi.org>
- <627a530c-d78c-5338-5ddf-0b3f6a09c37e@i2se.com>
+From: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
+Subject: RE: [PATCH 00/20] Update STM32 usart driver -> ABANDONED
+Date: Mon, 26 Jun 2017 15:46:31 +0000
+Message-ID: <6efe0fc8648a46a79076960c4dc890bf@SFHDAG3NODE1.st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <627a530c-d78c-5338-5ddf-0b3f6a09c37e-eS4NqCHxEME@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rpi-kernel>,
- <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rpi-kernel/>
-List-Post: <mailto:linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel>,
- <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "linux-rpi-kernel" <linux-rpi-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Stefan,
-
-On 26/06/2017 16:05, Stefan Wahren wrote:
-> Hi Phil,
-> 
-> Am 26.06.2017 um 15:59 schrieb Phil Elwell:
->> The BCM2835 MINI UART has non-standard THRE semantics. Conventionally
->> the bit means that the FIFO is empty (although there may still be a
->> byte in the transmit register), but on 2835 it indicates that the FIFO
->> is not full. This causes interrupts after every byte is transmitted,
->> with the FIFO providing some interrupt latency tolerance.
->>
->> A consequence of this difference is that the usual strategy of writing
->> multiple bytes into the TX FIFO after checking THRE once is unsafe.
->> In the worst case of 7 bytes in the FIFO, writing 8 bytes loses all
->> but the first since by then the FIFO is full.
->>
->> There is an HFIFO ("Hidden FIFO") capability that causes the transmit
->> loop to terminate when both THRE and TEMT are set, i.e. when the TX
->> block is completely idle. This is unnecessarily cautious, potentially
->> causing gaps in transmission.
->>
->> Add a new conditional to the transmit loop, predicated on CAP_MINI,
->> that exits when THRE is no longer set (the FIFO is full). This allows
->> the FIFO to fill quickly but subsequent writes are paced by the
->> transmission rate.
-> 
-> thanks for this good explanation.
-> 
-> But this looks like a bug / quirk than a capability?
-> 
-> It would be better to name this define more self-explaining.
-> 
-> Btw can't see the definition of UART_CAP_MINI?
-
-The capability was added in d087e7a991f1f61ee2c07db1be7c5cc2aa373f5d, which
-is in linux-next. Given that the "capability" already exists and the quirk
-is likely to be unique to BCM2835 MINI UART, I don't think we should create
-a new quirk.
-
-Besides, the "HFIFO" capability looks a lot like quirk to me.
-
-Thanks,
-
-Phil
-
->>
->> Signed-off-by: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
->> ---
->>  drivers/tty/serial/8250/8250_port.c | 4 ++++
->>  1 file changed, 4 insertions(+)
->>
->> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
->> index 4c620be..a5fe0e6 100644
->> --- a/drivers/tty/serial/8250/8250_port.c
->> +++ b/drivers/tty/serial/8250/8250_port.c
->> @@ -1764,6 +1764,10 @@ void serial8250_tx_chars(struct uart_8250_port *up)
->>  		if ((up->capabilities & UART_CAP_HFIFO) &&
->>  		    (serial_in(up, UART_LSR) & BOTH_EMPTY) != BOTH_EMPTY)
->>  			break;
->> +		/* The BCM2835 MINI UART THRE bit is really a not-full bit. */
->> +		if ((up->capabilities & UART_CAP_MINI) &&
->> +		    !(serial_in(up, UART_LSR) & UART_LSR_THRE))
->> +			break;
->>  	} while (--count > 0);
->>  
->>  	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+RGVhciBhbGwsDQoNClBsZWFzZSwgZG8gbm90IHRha2UgaW50byBhY2NvdW50IHRoaXMgcGF0Y2hz
+ZXQuIEEgbmV3ZXIgdmVyc2lvbiBpcyBjdXJyZW50bHkgYmVpbmcgcHJlcGFyZWQgd2l0aCB0eXBv
+L2Zvcm1hdCBjb3JyZWN0aW9ucyBhbmQgd2lsbCBiZSBzZW50IGxhdGVyLiBUaGUgcHJldmlvdXMg
+dmVyc2lvbiBoYXMgdG8gYmUgYWJhbmRvbmVkLg0KDQpTb3JyeSBmb3IgdGhlIGluY29udmVuaWVu
+Y2UsDQoNCkJpY2ggSEVNT04NCg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9t
+OiBCaWNoIEhFTU9OIA0KU2VudDogbHVuZGkgMjYganVpbiAyMDE3IDE0OjQ5DQpUbzogR3JlZyBL
+cm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz47IFJvYiBIZXJyaW5nIDxy
+b2JoK2R0QGtlcm5lbC5vcmc+OyBNYXJrIFJ1dGxhbmQgPG1hcmsucnV0bGFuZEBhcm0uY29tPjsg
+TWF4aW1lIENvcXVlbGluIDxtY29xdWVsaW4uc3RtMzJAZ21haWwuY29tPjsgQWxleGFuZHJlIFRP
+UkdVRSA8YWxleGFuZHJlLnRvcmd1ZUBzdC5jb20+OyBKaXJpIFNsYWJ5IDxqc2xhYnlAc3VzZS5j
+b20+OyBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOyBkZXZpY2V0cmVlQHZnZXIua2VybmVs
+Lm9yZzsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1rZXJuZWxA
+dmdlci5rZXJuZWwub3JnDQpDYzogQmljaCBIRU1PTiA8YmljaC5oZW1vbkBzdC5jb20+DQpTdWJq
+ZWN0OiBbUEFUQ0ggMDAvMjBdIFVwZGF0ZSBTVE0zMiB1c2FydCBkcml2ZXINCg0KRnJvbTogQmlj
+aCBIZW1vbiA8YmljaC5oZW1vbkBzdC5jb20+DQoNClRoaXMgcGF0Y2hzZXQgdXBkYXRlcyB0aGUg
+c3RtMzIgdXNhcnQgZHJpdmVyLiBJdCBtYWlubHkgYWRkcyBzdXBwb3J0IGZvciBmaWZvLCBkbWEs
+IGRlYnVnZnMgYW5mIGZpeGVzIHZhcmlvdXMgYnVncy4NCg0KQmljaCBIZW1vbiAoMjApOg0KICBz
+ZXJpYWw6IHN0bTMyOiBhZGRpbmcgZmlmbyBzdXBwb3J0DQogIGR0LWJpbmRpbmdzOiBzZXJpYWw6
+IGVhY2ggc3RtMzIgdXNhcnQgbmVlZHMgYW4gYWxpYXMNCiAgc2VyaWFsOiBzdG0zMjogZml4IG11
+bHRpIHBvcnRzIG1hbmFnZW1lbnQNCiAgc2VyaWFsOiBzdG0zMjogbWFrZSBmaWZvZW4gYXMgcHJv
+cGVydHkgZm9yIGVhY2ggcG9ydA0KICBzZXJpYWw6IHN0bTMyOiBhZGQgZGVidWdmcw0KICBzZXJp
+YWw6IHN0bTMyOiBmaXggcGlvIHRyYW5zbWl0IHRpbWVvdXQNCiAgc2VyaWFsOiBzdG0zMjogbGVz
+cyBtZXNzYWdlcyBvbiBkbWEgYWxsb2MgZXJyb3INCiAgc2VyaWFsOiBzdG0zMjogdGltZW91dCBp
+bnRlcnJ1cHQgdXNpbmcgd2l0aCBkbWENCiAgc2VyaWFsOiBzdG0zMjogZml4IGVuZCBvZiB0cmFu
+c2Zlcg0KICBzZXJpYWw6IHN0bTMyOiBmaXggZG1hIHJlY2VpdmUNCiAgc2VyaWFsOiBzdG0zMjog
+YWRkIFJUUyBzdXBwb3J0DQogIHNlcmlhbDogc3RtMzI6IGZpeCBsYXN0X3JlcyB2YWx1ZQ0KICBz
+ZXJpYWw6IHN0bTMyOiBmaXggZXJyb3IgaGFuZGxpbmcgaW4gcHJvYmUNCiAgZHQtYmluZGluZ3M6
+IHNlcmlhbDogZG9jdW1lbnQgb3B0aW9uIHdha2UtdXAgaW50ZXJydXB0IGZvciBTVE0zMiBVU0FS
+VA0KICBzZXJpYWw6IHN0bTMyOiBBZGQgd2FrZXVwIG1lY2hhbmlzbQ0KICBzZXJpYWw6IHN0bTMy
+OiBmaXggZmlmbyB1c2FnZQ0KICBkdC1iaW5kaW5nczogc2VyaWFsOiBzdG0zMjogYWRkIGRtYSB1
+c2luZyBub3RlDQogIHNlcmlhbDogc3RtMzI6IHVwZGF0ZSBkbWEgYnVmZmVycyBsZW5ndGgNCiAg
+c2VyaWFsOiBzdG0zMjogYWRkIGRtYSByeCBjYWxsYmFjaw0KICBzZXJpYWw6IHN0bTMyOiBmaXgg
+cnggaW50ZXJydXB0IGhhbmRsaW5nIGluIHN0YXJ0dXANCg0KIC4uLi9kZXZpY2V0cmVlL2JpbmRp
+bmdzL3NlcmlhbC9zdCxzdG0zMi11c2FydC50eHQgIHwgIDU1ICsrKy0NCiBkcml2ZXJzL3R0eS9z
+ZXJpYWwvc3RtMzItdXNhcnQuYyAgICAgICAgICAgICAgICAgICB8IDMxMCArKysrKysrKysrKysr
+KysrKystLS0NCiBkcml2ZXJzL3R0eS9zZXJpYWwvc3RtMzItdXNhcnQuaCAgICAgICAgICAgICAg
+ICAgICB8ICA1MSArKystDQogMyBmaWxlcyBjaGFuZ2VkLCAzNzUgaW5zZXJ0aW9ucygrKSwgNDEg
+ZGVsZXRpb25zKC0pDQoNCi0tDQoxLjkuMQ0K
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
