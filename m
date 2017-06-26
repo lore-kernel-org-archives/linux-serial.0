@@ -1,7 +1,7 @@
 From: Bich HEMON <bich.hemon@st.com>
-Subject: [PATCH 18/20] serial: stm32: update dma buffers length
-Date: Mon, 26 Jun 2017 12:49:16 +0000
-Message-ID: <1498481318-1894-19-git-send-email-bich.hemon@st.com>
+Subject: [PATCH 07/20] serial: stm32: less messages on dma alloc error
+Date: Mon, 26 Jun 2017 12:49:11 +0000
+Message-ID: <1498481318-1894-8-git-send-email-bich.hemon@st.com>
 References: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -16,46 +16,41 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Bich Hemon <bich.hemon@st.com>
 
-When stm32 dma is used alone for rx, meaning that the
-third dmamux property in the device tree is 0x0, then
-the received data are accumulated in dma internal fifo
-until it is full before being transferred to the memory.
-This dma fifo is 16 bytes wide on stm32ap1 so the dma
-buffer is set to 160 bytes (= 16bytes * 10).
-
-When stm32 dma is used combined with mdma, meaning that
-the third dmamux property in the device tree is 0x1, then
-the received data are accumulated per 16 bytes packets
-(cf. explanation above) until the rx dma transfer period
-is reached, so 160 bytes with this patch.
-
-Due to the constraints above, the usart driver should not
-be used in dma mode for rx when received data length is
-unknown, as this is the case with the console.
-
-There is no constraint for dma mode using for tx: this patch
-simply align both rx and tx buffer lengths to the same value.
+Just display one info (instead of two) in the
+log buffer when there is no dma.
 
 Signed-off-by: Gerald Baeza <gerald.baeza@st.com>
 ---
- drivers/tty/serial/stm32-usart.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/stm32-usart.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index 25ed28b..5137e68 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -238,9 +238,9 @@ struct stm32_usart_info stm32h7_info = {
- #define STM32_SERIAL_NAME "ttyS"
- #define STM32_MAX_PORTS 8
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 79ac167..dcc6d1e 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -786,10 +786,8 @@ static int stm32_of_dma_rx_probe(struct stm32_port *stm32port,
  
--#define RX_BUF_L 200		 /* dma rx buffer length     */
-+#define RX_BUF_L 160		 /* dma rx buffer length     */
- #define RX_BUF_P RX_BUF_L	 /* dma rx buffer period     */
--#define TX_BUF_L 200		 /* dma tx buffer length     */
-+#define TX_BUF_L RX_BUF_L	 /* dma tx buffer length     */
+ 	/* Request DMA RX channel */
+ 	stm32port->rx_ch = dma_request_slave_channel(dev, "rx");
+-	if (!stm32port->rx_ch) {
+-		dev_info(dev, "rx dma alloc failed\n");
++	if (!stm32port->rx_ch)
+ 		return -ENODEV;
+-	}
+ 	stm32port->rx_buf = dma_alloc_coherent(&pdev->dev, RX_BUF_L,
+ 						 &stm32port->rx_dma_buf,
+ 						 GFP_KERNEL);
+@@ -858,10 +856,8 @@ static int stm32_of_dma_tx_probe(struct stm32_port *stm32port,
  
- struct stm32_port {
- 	struct uart_port port;
+ 	/* Request DMA TX channel */
+ 	stm32port->tx_ch = dma_request_slave_channel(dev, "tx");
+-	if (!stm32port->tx_ch) {
+-		dev_info(dev, "tx dma alloc failed\n");
++	if (!stm32port->tx_ch)
+ 		return -ENODEV;
+-	}
+ 	stm32port->tx_buf = dma_alloc_coherent(&pdev->dev, TX_BUF_L,
+ 						 &stm32port->tx_dma_buf,
+ 						 GFP_KERNEL);
 -- 
 1.9.1
