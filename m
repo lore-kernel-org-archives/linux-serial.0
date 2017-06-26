@@ -1,8 +1,7 @@
 From: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
-Subject: [PATCH 14/20] dt-bindings: serial: document option wake-up interrupt
- for STM32 USART
-Date: Mon, 26 Jun 2017 12:49:15 +0000
-Message-ID: <1498481318-1894-15-git-send-email-bich.hemon@st.com>
+Subject: [PATCH 13/20] serial: stm32: fix error handling in probe
+Date: Mon, 26 Jun 2017 12:49:14 +0000
+Message-ID: <1498481318-1894-14-git-send-email-bich.hemon@st.com>
 References: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -17,50 +16,48 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Bich Hemon <bich.hemon-qxv4g6HH51o@public.gmane.org>
 
-Introduce new compatibles for "st,stm32h7-usart" and "st,stm32h7-uart".
-This new compatible allow to use optional wake-up interrupt.
-
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
 ---
- .../devicetree/bindings/serial/st,stm32-usart.txt    | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+ drivers/tty/serial/stm32-usart.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-index a229b14..3b42138 100644
---- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-+++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-@@ -2,11 +2,14 @@
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index c54b89d..a62fc95 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -779,8 +779,10 @@ static int stm32_init_port(struct stm32_port *stm32port,
+ 		return ret;
  
- Required properties:
- - compatible: Can be either "st,stm32-usart", "st,stm32-uart",
--"st,stm32f7-usart" or "st,stm32f7-uart" depending on whether
--the device supports synchronous mode and is compatible with
--stm32(f4) or stm32f7.
-+"st,stm32f7-usart", "st,stm32f7-uart", "st,stm32h7-usart" or
-+st,stm32h7-uart depending on whether the device supports synchronous
-+mode and is compatible with stm32(f4), stm32f7 or stm32h7.
- - reg: The address and length of the peripheral registers space
--- interrupts: The interrupt line of the USART instance
-+- interrupts or interrupts-extended: Must contain first, the interrupt
-+  line specifier for the USART instance. An optional wake-up interrupt
-+  specifier can be added. Then, -extended variant may be needed to specify
-+  interrupts parent controllers.
- - clocks: The input clock of the USART instance
+ 	stm32port->port.uartclk = clk_get_rate(stm32port->clk);
+-	if (!stm32port->port.uartclk)
++	if (!stm32port->port.uartclk) {
++		clk_disable_unprepare(stm32port->clk);
+ 		ret = -EINVAL;
++	}
  
- Optional properties:
-@@ -53,3 +56,12 @@ usart1: serial@40011000 {
- 	       <&dma2 7 4 0x414 0x0>;
- 	dma-names = "rx", "tx";
- };
+ 	return ret;
+ }
+@@ -964,7 +966,7 @@ static int stm32_serial_probe(struct platform_device *pdev)
+ 
+ 	ret = uart_add_one_port(&stm32_usart_driver, &stm32port->port);
+ 	if (ret)
+-		return ret;
++		goto err_uninit;
+ 
+ 	ret = stm32_of_dma_rx_probe(stm32port, pdev);
+ 	if (ret)
+@@ -977,6 +979,11 @@ static int stm32_serial_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, &stm32port->port);
+ 
+ 	return 0;
 +
-+uart4: serial@40010000 {
-+	compatible = "st,stm32h7-uart";
-+	reg = <0x40010000 0x400>;
-+	interrupts-extended = <&intc GIC_SPI 52 IRQ_TYPE_NONE>,
-+			      <&aiec 30 1>;
-+	clocks = <&rcc UART4_K>;
-+	status = "disabled";
-+};
++err_uninit:
++	clk_disable_unprepare(stm32port->clk);
++
++	return ret;
+ }
+ 
+ static int stm32_serial_remove(struct platform_device *pdev)
 -- 
 1.9.1
 --
