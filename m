@@ -1,42 +1,69 @@
-From: Bich HEMON <bich.hemon@st.com>
-Subject: [PATCH 06/20] serial: stm32: fix pio transmit timeout
-Date: Mon, 26 Jun 2017 12:49:11 +0000
-Message-ID: <1498481318-1894-7-git-send-email-bich.hemon@st.com>
+From: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
+Subject: [PATCH 14/20] dt-bindings: serial: document option wake-up interrupt
+ for STM32 USART
+Date: Mon, 26 Jun 2017 12:49:15 +0000
+Message-ID: <1498481318-1894-15-git-send-email-bich.hemon@st.com>
 References: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1498481318-1894-1-git-send-email-bich.hemon-qxv4g6HH51o@public.gmane.org>
 Content-Language: en-US
-Content-ID: <CD0DCE9DCE188346A1392D4B8CFA4885@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: Bich HEMON <bich.hemon@st.com>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogQmljaCBIZW1vbiA8YmljaC5oZW1vbkBzdC5jb20+DQoNCjEwMMK1cyB3YXMgdG9vIHNo
-b3J0IGZvciBsb3cgc3BlZWQgdHJhbnNtaXNzaW9uDQooOTYwMGJwcykNCg0KU2lnbmVkLW9mZi1i
-eTogR2VyYWxkIEJhZXphIDxnZXJhbGQuYmFlemFAc3QuY29tPg0KLS0tDQogZHJpdmVycy90dHkv
-c2VyaWFsL3N0bTMyLXVzYXJ0LmMgfCAyICstDQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9u
-KCspLCAxIGRlbGV0aW9uKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvc3Rt
-MzItdXNhcnQuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zdG0zMi11c2FydC5jDQppbmRleCAzY2Uw
-ZjdhLi43OWFjMTY3IDEwMDY0NA0KLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL3N0bTMyLXVzYXJ0
-LmMNCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zdG0zMi11c2FydC5jDQpAQCAtMjQ3LDcgKzI0
-Nyw3IEBAIHN0YXRpYyB2b2lkIHN0bTMyX3RyYW5zbWl0X2NoYXJzX3BpbyhzdHJ1Y3QgdWFydF9w
-b3J0ICpwb3J0KQ0KIAlyZXQgPSByZWFkbF9yZWxheGVkX3BvbGxfdGltZW91dF9hdG9taWMocG9y
-dC0+bWVtYmFzZSArIG9mcy0+aXNyLA0KIAkJCQkJCWlzciwNCiAJCQkJCQkoaXNyICYgVVNBUlRf
-U1JfVFhFKSwNCi0JCQkJCQkxMCwgMTAwKTsNCisJCQkJCQkxMCwgMTAwMDAwKTsNCiANCiAJaWYg
-KHJldCkNCiAJCWRldl9lcnIocG9ydC0+ZGV2LCAidHggZW1wdHkgbm90IHNldFxuIik7DQotLSAN
-CjEuOS4xDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwps
-aW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJh
-ZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51
-eC1hcm0ta2VybmVsCg==
+From: Bich Hemon <bich.hemon-qxv4g6HH51o@public.gmane.org>
+
+Introduce new compatibles for "st,stm32h7-usart" and "st,stm32h7-uart".
+This new compatible allow to use optional wake-up interrupt.
+
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+---
+ .../devicetree/bindings/serial/st,stm32-usart.txt    | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+index a229b14..3b42138 100644
+--- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
++++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+@@ -2,11 +2,14 @@
+ 
+ Required properties:
+ - compatible: Can be either "st,stm32-usart", "st,stm32-uart",
+-"st,stm32f7-usart" or "st,stm32f7-uart" depending on whether
+-the device supports synchronous mode and is compatible with
+-stm32(f4) or stm32f7.
++"st,stm32f7-usart", "st,stm32f7-uart", "st,stm32h7-usart" or
++st,stm32h7-uart depending on whether the device supports synchronous
++mode and is compatible with stm32(f4), stm32f7 or stm32h7.
+ - reg: The address and length of the peripheral registers space
+-- interrupts: The interrupt line of the USART instance
++- interrupts or interrupts-extended: Must contain first, the interrupt
++  line specifier for the USART instance. An optional wake-up interrupt
++  specifier can be added. Then, -extended variant may be needed to specify
++  interrupts parent controllers.
+ - clocks: The input clock of the USART instance
+ 
+ Optional properties:
+@@ -53,3 +56,12 @@ usart1: serial@40011000 {
+ 	       <&dma2 7 4 0x414 0x0>;
+ 	dma-names = "rx", "tx";
+ };
++
++uart4: serial@40010000 {
++	compatible = "st,stm32h7-uart";
++	reg = <0x40010000 0x400>;
++	interrupts-extended = <&intc GIC_SPI 52 IRQ_TYPE_NONE>,
++			      <&aiec 30 1>;
++	clocks = <&rcc UART4_K>;
++	status = "disabled";
++};
+-- 
+1.9.1
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
