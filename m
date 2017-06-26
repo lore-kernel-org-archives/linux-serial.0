@@ -1,7 +1,7 @@
 From: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
-Subject: RE: [PATCH 00/20] Update STM32 usart driver -> ABANDONED
-Date: Mon, 26 Jun 2017 15:46:31 +0000
-Message-ID: <6efe0fc8648a46a79076960c4dc890bf@SFHDAG3NODE1.st.com>
+Subject: RE: [PATCH 00/20] Update STM32 usart driver
+Date: Mon, 26 Jun 2017 15:50:56 +0000
+Message-ID: <24d52731f9974710a29dbd5151377bd7@SFHDAG3NODE1.st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
