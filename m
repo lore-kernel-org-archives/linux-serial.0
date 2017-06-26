@@ -1,63 +1,88 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH v6 00/10] serial/gpio: exar: Fixes and support for IOT2000
-Date: Fri, 23 Jun 2017 22:09:12 +0200
-Message-ID: <d52a1a65-842c-9c73-17f7-5574fcefab2a@siemens.com>
-References: <cover.1497033197.git.jan.kiszka@siemens.com>
- <CACRpkdZYSFTa63BF5u-J=pu2XwUbVZiQGAtZybhjQno6vVbe=g@mail.gmail.com>
- <9520074b-3731-7bbe-d59d-cbed90ac16bb@siemens.com>
- <CACRpkdbNPnNbk_r0NWEs4e7PuKmMf9KTjeRPRnxTOHuK-+ki2Q@mail.gmail.com>
- <c0a29540-7946-4e95-1b59-3a2f478757da@siemens.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH 01/11] dma-mapping: remove dmam_free_noncoherent
+Date: Mon, 26 Jun 2017 00:07:15 -0700
+Message-ID: <20170626070715.GA12711@infradead.org>
+References: <20170616071716.17321-1-hch@lst.de>
+ <20170616071716.17321-2-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <c0a29540-7946-4e95-1b59-3a2f478757da@siemens.com>
-Content-Language: en-US
-Sender: linux-gpio-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-scsi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170616071716.17321-2-hch@lst.de>
+Sender: linux-scsi-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, netdev@vger.kernel.org, linux-metag@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org, Tejun Heo <tj@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 2017-06-21 08:29, Jan Kiszka wrote:
-> On 2017-06-20 13:38, Linus Walleij wrote:
->> On Tue, Jun 20, 2017 at 10:54 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>> On 2017-06-20 10:19, Linus Walleij wrote:
->>>> On Fri, Jun 9, 2017 at 8:33 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>>
->>>>> This makes the gpio-exar driver usable, which was prevented by a number
->>>>> of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
->>>>> driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
->>>>> series, so I'm also cross-posting to the serial and gpio lists.
->>>>>
->>>>> Changes in v6:
->>>>
->>>> I merged some of the patches, that applied. Let's see if they survive
->>>> in linux-next, else I guess we need to fix this in the -rcs or for the next
->>>> kernel cycle.
->>>
->>> Weird that things did not apply. I just did a cherry-pick for all those
->>> 10 patches on top of 5c996b7eb52c, and that went smoothly. Please let me
->>> know which baseline is needed, and I will rebase.
->>
->> This was on the "devel" branch of my GPIO tree:
->> https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git/log/?h=devel
+Tejun, does this look ok to you?
+
+On Fri, Jun 16, 2017 at 09:17:06AM +0200, Christoph Hellwig wrote:
+> This function was never used since it was added.
 > 
-> Again, all (missing) patches applied absolutely cleanly for me, see
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  Documentation/driver-model/devres.txt |  1 -
+>  drivers/base/dma-mapping.c            | 20 --------------------
+>  include/linux/dma-mapping.h           |  2 --
+>  3 files changed, 23 deletions(-)
 > 
-> http://git.kiszka.org/?p=linux.git;a=shortlog;h=refs/heads/queues/gpio-iot2000
-
-I've rebased over devel and noticed along this that you will have to
-include "serial: uapi: Add support for bus termination" from Greg's
-tty-next for the last patch to avoid breaking the build. Result pushed to
-
-http://git.kiszka.org/?p=linux.git;a=shortlog;h=refs/heads/queues/gpio-iot2000
-
-If you want me to resend anything, just let me know. Would be great to
-have the remaining pieces lined up in time for the next merge window.
-
-Thanks,
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+> diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+> index e72587fe477d..9070ff06b558 100644
+> --- a/Documentation/driver-model/devres.txt
+> +++ b/Documentation/driver-model/devres.txt
+> @@ -243,7 +243,6 @@ DMA
+>    dmam_alloc_noncoherent()
+>    dmam_declare_coherent_memory()
+>    dmam_free_coherent()
+> -  dmam_free_noncoherent()
+>    dmam_pool_create()
+>    dmam_pool_destroy()
+>  
+> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+> index f3deb6af42ad..5940c9dace36 100644
+> --- a/drivers/base/dma-mapping.c
+> +++ b/drivers/base/dma-mapping.c
+> @@ -148,26 +148,6 @@ void *dmam_alloc_noncoherent(struct device *dev, size_t size,
+>  }
+>  EXPORT_SYMBOL(dmam_alloc_noncoherent);
+>  
+> -/**
+> - * dmam_free_coherent - Managed dma_free_noncoherent()
+> - * @dev: Device to free noncoherent memory for
+> - * @size: Size of allocation
+> - * @vaddr: Virtual address of the memory to free
+> - * @dma_handle: DMA handle of the memory to free
+> - *
+> - * Managed dma_free_noncoherent().
+> - */
+> -void dmam_free_noncoherent(struct device *dev, size_t size, void *vaddr,
+> -			   dma_addr_t dma_handle)
+> -{
+> -	struct dma_devres match_data = { size, vaddr, dma_handle };
+> -
+> -	dma_free_noncoherent(dev, size, vaddr, dma_handle);
+> -	WARN_ON(!devres_destroy(dev, dmam_noncoherent_release, dmam_match,
+> -				&match_data));
+> -}
+> -EXPORT_SYMBOL(dmam_free_noncoherent);
+> -
+>  #ifdef CONFIG_HAVE_GENERIC_DMA_COHERENT
+>  
+>  static void dmam_coherent_decl_release(struct device *dev, void *res)
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 4f3eecedca2d..830ec5f06a4f 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -749,8 +749,6 @@ extern void dmam_free_coherent(struct device *dev, size_t size, void *vaddr,
+>  			       dma_addr_t dma_handle);
+>  extern void *dmam_alloc_noncoherent(struct device *dev, size_t size,
+>  				    dma_addr_t *dma_handle, gfp_t gfp);
+> -extern void dmam_free_noncoherent(struct device *dev, size_t size, void *vaddr,
+> -				  dma_addr_t dma_handle);
+>  #ifdef CONFIG_HAVE_GENERIC_DMA_COHERENT
+>  extern int dmam_declare_coherent_memory(struct device *dev,
+>  					phys_addr_t phys_addr,
+> -- 
+> 2.11.0
+> 
+---end quoted text---
