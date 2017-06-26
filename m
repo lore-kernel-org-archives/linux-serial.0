@@ -1,136 +1,143 @@
 From: Bich HEMON <bich.hemon@st.com>
-Subject: [PATCH 08/20] serial: stm32: timeout interrupt using with dma
-Date: Mon, 26 Jun 2017 12:49:12 +0000
-Message-ID: <1498481318-1894-9-git-send-email-bich.hemon@st.com>
+Subject: [PATCH 19/20] serial: stm32: add dma rx callback
+Date: Mon, 26 Jun 2017 12:49:17 +0000
+Message-ID: <1498481318-1894-20-git-send-email-bich.hemon@st.com>
 References: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
 Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Cc: Bich HEMON <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
 From: Bich Hemon <bich.hemon@st.com>
 
+Initial usart driver behavior consists in looking for
+chars received in dma rx buffer as soon as it gets the
+interrupt telling that we received some data (RXNE or
+RTO).
+
+When stm32 dma is used combined with mdma, meaning that
+the third dmamux property in the device tree is 0x1,
+the received data are accumulated until the rx dma
+transfer period (RX_BUF_L) is reached.
+
+In that case, the usard driver will always get a maximum
+residue for the rx dma transfer and its callback will
+be called after each period completion to tell that
+it can get a complete buffer: this is the purpose of
+this patch.
+
 Signed-off-by: Gerald Baeza <gerald.baeza@st.com>
 ---
- drivers/tty/serial/stm32-usart.c | 25 +++++++++++++++++++------
- drivers/tty/serial/stm32-usart.h |  1 +
- 2 files changed, 20 insertions(+), 6 deletions(-)
+ drivers/tty/serial/stm32-usart.c | 39 +++++++++++++++++++++++++++++++++------
+ drivers/tty/serial/stm32-usart.h |  7 +++++++
+ 2 files changed, 40 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index dcc6d1e..ed2025b 100644
+index d241056..06a92c8 100644
 --- a/drivers/tty/serial/stm32-usart.c
 +++ b/drivers/tty/serial/stm32-usart.c
-@@ -371,6 +371,10 @@ static irqreturn_t stm32_interrupt(int irq, void *ptr)
+@@ -124,14 +124,18 @@ static int stm32_pending_rx(struct uart_port *port, u32 *sr, int *last_res,
+ 	*sr = readl_relaxed(port->membase + ofs->isr);
  
- 	sr = readl_relaxed(port->membase + ofs->isr);
+ 	if (threaded && stm32_port->rx_ch) {
++		if (stm32_port->rx_dma_cb == CALLBACK_CALLED)
++			return 1;
+ 		status = dmaengine_tx_status(stm32_port->rx_ch,
+ 					     stm32_port->rx_ch->cookie,
+ 					     &state);
+ 		if ((status == DMA_IN_PROGRESS) &&
+-		    (*last_res != state.residue))
++		    (*last_res != state.residue)) {
++			stm32_port->rx_dma_cb = CALLBACK_IGNORED;
+ 			return 1;
+-		else
++		} else {
+ 			return 0;
++		}
+ 	} else if (*sr & USART_SR_RXNE) {
+ 		return 1;
+ 	}
+@@ -147,8 +151,11 @@ static int stm32_pending_rx(struct uart_port *port, u32 *sr, int *last_res,
  
-+	if ((sr & USART_SR_RTOF) && (ofs->icr != UNDEF_REG))
-+		writel_relaxed(USART_ICR_RTOCF,
-+			       port->membase + ofs->icr);
+ 	if (stm32_port->rx_ch) {
+ 		c = stm32_port->rx_buf[RX_BUF_L - (*last_res)--];
+-		if ((*last_res) == 0)
++		if ((*last_res) == 0) {
+ 			*last_res = RX_BUF_L;
++			if (stm32_port->rx_dma_cb == CALLBACK_CALLED)
++				stm32_port->rx_dma_cb = CALLBACK_NOT_CALLED;
++		}
+ 		return c;
+ 	} else {
+ 		return readl_relaxed(port->membase + ofs->rdr);
+@@ -238,6 +245,27 @@ static void stm32_tx_dma_complete(void *arg)
+ 	stm32_transmit_chars(port);
+ }
+ 
++static void stm32_rx_dma_complete(void *arg)
++{
++	struct uart_port *port = arg;
++	struct stm32_port *stm32port = to_stm32_port(port);
++	unsigned long flags;
 +
- 	if ((sr & USART_SR_RXNE) && !(stm32_port->rx_ch))
- 		stm32_receive_chars(port, false);
- 
-@@ -453,7 +457,7 @@ static void stm32_throttle(struct uart_port *port)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&port->lock, flags);
--	stm32_clr_bits(port, ofs->cr1, USART_CR1_RXNEIE);
-+	stm32_clr_bits(port, ofs->cr1, stm32_port->rx_irq);
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
-@@ -465,7 +469,7 @@ static void stm32_unthrottle(struct uart_port *port)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&port->lock, flags);
--	stm32_set_bits(port, ofs->cr1, USART_CR1_RXNEIE);
-+	stm32_set_bits(port, ofs->cr1, stm32_port->rx_irq);
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
-@@ -475,7 +479,7 @@ static void stm32_stop_rx(struct uart_port *port)
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
- 
--	stm32_clr_bits(port, ofs->cr1, USART_CR1_RXNEIE);
-+	stm32_clr_bits(port, ofs->cr1, stm32_port->rx_irq);
- }
- 
- /* Handle breaks - ignored by us */
-@@ -497,7 +501,7 @@ static int stm32_startup(struct uart_port *port)
- 	if (ret)
- 		return ret;
- 
--	val = USART_CR1_RXNEIE | USART_CR1_TE | USART_CR1_RE;
-+	val = stm32_port->rx_irq | USART_CR1_TE | USART_CR1_RE;
- 	if (stm32_port->fifoen)
- 		val |= USART_CR1_FIFOEN;
- 	stm32_set_bits(port, ofs->cr1, val);
-@@ -512,7 +516,8 @@ static void stm32_shutdown(struct uart_port *port)
- 	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
- 	u32 val;
- 
--	val = USART_CR1_TXEIE | USART_CR1_RXNEIE | USART_CR1_TE | USART_CR1_RE;
-+	val = USART_CR1_TXEIE | USART_CR1_TE;
-+	val |= stm32_port->rx_irq | USART_CR1_RE;
- 	val |= BIT(cfg->uart_enable_bit);
- 	if (stm32_port->fifoen)
- 		val |= USART_CR1_FIFOEN;
-@@ -543,7 +548,7 @@ static void stm32_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/* Stop serial port and reset value */
- 	writel_relaxed(0, port->membase + ofs->cr1);
- 
--	cr1 = USART_CR1_TE | USART_CR1_RE | USART_CR1_RXNEIE;
-+	cr1 = USART_CR1_TE | USART_CR1_RE;
- 	cr1 |= BIT(cfg->uart_enable_bit);
- 	if (stm32_port->fifoen)
- 		cr1 |= USART_CR1_FIFOEN;
-@@ -553,6 +558,13 @@ static void stm32_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if (cflag & CSTOPB)
- 		cr2 |= USART_CR2_STOP_2B;
- 
-+	if ((ofs->rtor != UNDEF_REG) && (stm32_port->rx_ch)) {
-+		stm32_port->rx_irq = USART_CR1_RTOIE;
-+		writel_relaxed(baud, port->membase + ofs->rtor);
-+		cr2 |= USART_CR2_RTOEN;
++	spin_lock_irqsave(&port->lock, flags);
++
++	/*
++	 * If the dma controller is sending the data on
++	 * the fly then we have CALLBACK_IGNORED
++	 */
++
++	if (stm32port->rx_dma_cb == CALLBACK_NOT_CALLED) {
++		stm32port->rx_dma_cb = CALLBACK_CALLED;
++		stm32_receive_chars(port, true);
 +	}
-+	cr1 |= stm32_port->rx_irq;
 +
- 	if (cflag & PARENB) {
- 		cr1 |= USART_CR1_PCE;
- 		if ((cflag & CSIZE) == CS8) {
-@@ -758,6 +770,7 @@ static struct stm32_port *stm32_of_get_stm32_port(struct platform_device *pdev)
- 							"st,hw-flow-ctrl");
- 	stm32_ports[id].port.line = id;
- 	stm32_ports[id].fifoen = true;
-+	stm32_ports[id].rx_irq = USART_CR1_RXNEIE;
- 	return &stm32_ports[id];
- }
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
+ static void stm32_transmit_chars_pio(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+@@ -897,9 +925,8 @@ static int stm32_of_dma_rx_probe(struct stm32_port *stm32port,
+ 		goto config_err;
+ 	}
  
+-	/* No callback as dma buffer is drained on usart interrupt */
+-	desc->callback = NULL;
+-	desc->callback_param = NULL;
++	desc->callback = stm32_rx_dma_complete;
++	desc->callback_param = port;
+ 
+ 	/* Push current DMA transaction in the pending queue */
+ 	cookie = dmaengine_submit(desc);
 diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index a8999a1..f9fe15b 100644
+index 5137e68..f8cad09 100644
 --- a/drivers/tty/serial/stm32-usart.h
 +++ b/drivers/tty/serial/stm32-usart.h
-@@ -225,6 +225,7 @@ struct stm32_port {
- 	struct dma_chan *tx_ch;  /* dma tx channel            */
- 	dma_addr_t tx_dma_buf;   /* dma tx buffer bus address */
+@@ -242,6 +242,12 @@ struct stm32_usart_info stm32h7_info = {
+ #define RX_BUF_P RX_BUF_L	 /* dma rx buffer period     */
+ #define TX_BUF_L RX_BUF_L	 /* dma tx buffer length     */
+ 
++enum dma_cb {
++	CALLBACK_NOT_CALLED,
++	CALLBACK_CALLED,
++	CALLBACK_IGNORED,
++};
++
+ struct stm32_port {
+ 	struct uart_port port;
+ 	struct clk *clk;
+@@ -257,6 +263,7 @@ struct stm32_port {
  	unsigned char *tx_buf;   /* dma tx buffer cpu address */
-+	u32 rx_irq;		 /* USART_CR1_RXNEIE or RTOIE */
+ 	u32 rx_irq;		 /* USART_CR1_RXNEIE or RTOIE */
+ 	int last_res;
++	enum dma_cb rx_dma_cb;	 /* dma rx callback status    */
  	bool tx_dma_busy;	 /* dma tx busy               */
  	bool hw_flow_control;
  	bool fifoen;
