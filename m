@@ -1,55 +1,26 @@
-From: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
-Subject: RE: [PATCH 00/20] Update STM32 usart driver
-Date: Mon, 26 Jun 2017 15:50:56 +0000
-Message-ID: <24d52731f9974710a29dbd5151377bd7@SFHDAG3NODE1.st.com>
+From: "Martin K. Petersen" <martin.petersen-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 06/11] sigwd93: switch to dma_alloc_attrs
+Date: Mon, 26 Jun 2017 14:20:51 -0400
+Message-ID: <yq1inji3918.fsf@oracle.com>
+References: <20170616071716.17321-1-hch@lst.de>
+        <20170616071716.17321-7-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170616071716.17321-7-hch-jcswGhMUV9g@public.gmane.org> (Christoph Hellwig's message
+        of "Fri, 16 Jun 2017 09:17:11 +0200")
+Sender: linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-RGVhciBhbGwsDQoNClBsZWFzZSwgZG8gbm90IHRha2UgaW50byBhY2NvdW50IHRoaXMgcGF0Y2hz
-ZXQuIEEgbmV3ZXIgdmVyc2lvbiBpcyBjdXJyZW50bHkgYmVpbmcgcHJlcGFyZWQgd2l0aCB0eXBv
-L2Zvcm1hdCBjb3JyZWN0aW9ucyBhbmQgd2lsbCBiZSBzZW50IGxhdGVyLiBUaGUgcHJldmlvdXMg
-dmVyc2lvbiBoYXMgdG8gYmUgYWJhbmRvbmVkLg0KDQpTb3JyeSBmb3IgdGhlIGluY29udmVuaWVu
-Y2UsDQoNCkJpY2ggSEVNT04NCg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9t
-OiBCaWNoIEhFTU9OIA0KU2VudDogbHVuZGkgMjYganVpbiAyMDE3IDE0OjQ5DQpUbzogR3JlZyBL
-cm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz47IFJvYiBIZXJyaW5nIDxy
-b2JoK2R0QGtlcm5lbC5vcmc+OyBNYXJrIFJ1dGxhbmQgPG1hcmsucnV0bGFuZEBhcm0uY29tPjsg
-TWF4aW1lIENvcXVlbGluIDxtY29xdWVsaW4uc3RtMzJAZ21haWwuY29tPjsgQWxleGFuZHJlIFRP
-UkdVRSA8YWxleGFuZHJlLnRvcmd1ZUBzdC5jb20+OyBKaXJpIFNsYWJ5IDxqc2xhYnlAc3VzZS5j
-b20+OyBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOyBkZXZpY2V0cmVlQHZnZXIua2VybmVs
-Lm9yZzsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1rZXJuZWxA
-dmdlci5rZXJuZWwub3JnDQpDYzogQmljaCBIRU1PTiA8YmljaC5oZW1vbkBzdC5jb20+DQpTdWJq
-ZWN0OiBbUEFUQ0ggMDAvMjBdIFVwZGF0ZSBTVE0zMiB1c2FydCBkcml2ZXINCg0KRnJvbTogQmlj
-aCBIZW1vbiA8YmljaC5oZW1vbkBzdC5jb20+DQoNClRoaXMgcGF0Y2hzZXQgdXBkYXRlcyB0aGUg
-c3RtMzIgdXNhcnQgZHJpdmVyLiBJdCBtYWlubHkgYWRkcyBzdXBwb3J0IGZvciBmaWZvLCBkbWEs
-IGRlYnVnZnMgYW5mIGZpeGVzIHZhcmlvdXMgYnVncy4NCg0KQmljaCBIZW1vbiAoMjApOg0KICBz
-ZXJpYWw6IHN0bTMyOiBhZGRpbmcgZmlmbyBzdXBwb3J0DQogIGR0LWJpbmRpbmdzOiBzZXJpYWw6
-IGVhY2ggc3RtMzIgdXNhcnQgbmVlZHMgYW4gYWxpYXMNCiAgc2VyaWFsOiBzdG0zMjogZml4IG11
-bHRpIHBvcnRzIG1hbmFnZW1lbnQNCiAgc2VyaWFsOiBzdG0zMjogbWFrZSBmaWZvZW4gYXMgcHJv
-cGVydHkgZm9yIGVhY2ggcG9ydA0KICBzZXJpYWw6IHN0bTMyOiBhZGQgZGVidWdmcw0KICBzZXJp
-YWw6IHN0bTMyOiBmaXggcGlvIHRyYW5zbWl0IHRpbWVvdXQNCiAgc2VyaWFsOiBzdG0zMjogbGVz
-cyBtZXNzYWdlcyBvbiBkbWEgYWxsb2MgZXJyb3INCiAgc2VyaWFsOiBzdG0zMjogdGltZW91dCBp
-bnRlcnJ1cHQgdXNpbmcgd2l0aCBkbWENCiAgc2VyaWFsOiBzdG0zMjogZml4IGVuZCBvZiB0cmFu
-c2Zlcg0KICBzZXJpYWw6IHN0bTMyOiBmaXggZG1hIHJlY2VpdmUNCiAgc2VyaWFsOiBzdG0zMjog
-YWRkIFJUUyBzdXBwb3J0DQogIHNlcmlhbDogc3RtMzI6IGZpeCBsYXN0X3JlcyB2YWx1ZQ0KICBz
-ZXJpYWw6IHN0bTMyOiBmaXggZXJyb3IgaGFuZGxpbmcgaW4gcHJvYmUNCiAgZHQtYmluZGluZ3M6
-IHNlcmlhbDogZG9jdW1lbnQgb3B0aW9uIHdha2UtdXAgaW50ZXJydXB0IGZvciBTVE0zMiBVU0FS
-VA0KICBzZXJpYWw6IHN0bTMyOiBBZGQgd2FrZXVwIG1lY2hhbmlzbQ0KICBzZXJpYWw6IHN0bTMy
-OiBmaXggZmlmbyB1c2FnZQ0KICBkdC1iaW5kaW5nczogc2VyaWFsOiBzdG0zMjogYWRkIGRtYSB1
-c2luZyBub3RlDQogIHNlcmlhbDogc3RtMzI6IHVwZGF0ZSBkbWEgYnVmZmVycyBsZW5ndGgNCiAg
-c2VyaWFsOiBzdG0zMjogYWRkIGRtYSByeCBjYWxsYmFjaw0KICBzZXJpYWw6IHN0bTMyOiBmaXgg
-cnggaW50ZXJydXB0IGhhbmRsaW5nIGluIHN0YXJ0dXANCg0KIC4uLi9kZXZpY2V0cmVlL2JpbmRp
-bmdzL3NlcmlhbC9zdCxzdG0zMi11c2FydC50eHQgIHwgIDU1ICsrKy0NCiBkcml2ZXJzL3R0eS9z
-ZXJpYWwvc3RtMzItdXNhcnQuYyAgICAgICAgICAgICAgICAgICB8IDMxMCArKysrKysrKysrKysr
-KysrKystLS0NCiBkcml2ZXJzL3R0eS9zZXJpYWwvc3RtMzItdXNhcnQuaCAgICAgICAgICAgICAg
-ICAgICB8ICA1MSArKystDQogMyBmaWxlcyBjaGFuZ2VkLCAzNzUgaW5zZXJ0aW9ucygrKSwgNDEg
-ZGVsZXRpb25zKC0pDQoNCi0tDQoxLjkuMQ0K
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+Christoph,
+
+> Use dma_alloc_attrs directly instead of the dma_alloc_noncoherent
+> wrapper.
+
+Fixed driver name typo and applied to 4.13/scsi-queue.
+
+-- 
+Martin K. Petersen	Oracle Linux Engineering
