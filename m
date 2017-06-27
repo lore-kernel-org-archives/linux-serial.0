@@ -1,87 +1,84 @@
 From: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-Subject: Re: [PATCH v3 4/9] serial: atmel: Use common rs485 device tree
- parsing function
-Date: Tue, 27 Jun 2017 09:41:23 +0200
-Message-ID: <bac50abd-9c55-c9cb-7d10-24ef8efbdb53@microchip.com>
+Subject: Re: [PATCH v3 9/9] of: document rs485 bindings for Atmel USART,
+ Freescale UARTs and OMAP UART
+Date: Tue, 27 Jun 2017 09:42:06 +0200
+Message-ID: <cf02163a-72d4-5e98-a764-ba5af19a6bf7@microchip.com>
 References: <20170626090803.10981-1-u.kleine-koenig@pengutronix.de>
- <20170626090803.10981-5-u.kleine-koenig@pengutronix.de>
+ <20170626090803.10981-10-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170626090803.10981-5-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+In-Reply-To: <20170626090803.10981-10-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 Content-Language: en-US
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 26/06/2017 at 11:07, Uwe Kleine-König wrote:
-> From: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+On 26/06/2017 at 11:08, Uwe Kleine-König wrote:
+> The drivers support the rs485 binding described in rs485.txt, this commit
+> just makes that explicit.
 > 
-> We just got a common helper for parsing the rs485 specific
-> device tree properties. Use it and drop the open coded parser.
-> 
-> Note that there is a small difference between the removed and the now
-> used implementation: The former cleared flags to 0 if rs485-rts-delay
-> was given, the common helper clears SER_RS485_RX_DURING_TX and
-> SER_RS485_ENABLED only but always which makes more sense.
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 
-Sure:
 Acked-by: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
 
-Thanks Sasha and Uwe!
-
-> Signed-off-by: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> [ukleinek: point out semantic change in commit log]
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 > ---
->  drivers/tty/serial/atmel_serial.c | 25 +------------------------
->  1 file changed, 1 insertion(+), 24 deletions(-)
+>  Documentation/devicetree/bindings/serial/atmel-usart.txt  | 1 +
+>  Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 1 +
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.txt   | 1 +
+>  Documentation/devicetree/bindings/serial/omap_serial.txt  | 1 +
+>  4 files changed, 4 insertions(+)
 > 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 937d67f22fba..245d9c227ad5 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -1684,29 +1684,6 @@ static void atmel_init_property(struct atmel_uart_port *atmel_port,
->  	}
->  }
+> diff --git a/Documentation/devicetree/bindings/serial/atmel-usart.txt b/Documentation/devicetree/bindings/serial/atmel-usart.txt
+> index e6e6142e33ac..7c0d6b2f53e4 100644
+> --- a/Documentation/devicetree/bindings/serial/atmel-usart.txt
+> +++ b/Documentation/devicetree/bindings/serial/atmel-usart.txt
+> @@ -24,6 +24,7 @@ Optional properties:
+>  	- dma-names: "rx" for RX channel, "tx" for TX channel.
+>  - atmel,fifo-size: maximum number of data the RX and TX FIFOs can store for FIFO
+>    capable USARTs.
+> +- rs485-rts-delay, rs485-rx-during-tx, linux,rs485-enabled-at-boot-time: see rs485.txt
 >  
-> -static void atmel_init_rs485(struct uart_port *port,
-> -				struct platform_device *pdev)
-> -{
-> -	struct device_node *np = pdev->dev.of_node;
-> -
-> -	struct serial_rs485 *rs485conf = &port->rs485;
-> -	u32 rs485_delay[2];
-> -
-> -	/* rs485 properties */
-> -	if (of_property_read_u32_array(np, "rs485-rts-delay",
-> -				       rs485_delay, 2) == 0) {
-> -		rs485conf->delay_rts_before_send = rs485_delay[0];
-> -		rs485conf->delay_rts_after_send = rs485_delay[1];
-> -		rs485conf->flags = 0;
-> -	}
-> -
-> -	if (of_get_property(np, "rs485-rx-during-tx", NULL))
-> -		rs485conf->flags |= SER_RS485_RX_DURING_TX;
-> -
-> -	if (of_get_property(np, "linux,rs485-enabled-at-boot-time", NULL))
-> -		rs485conf->flags |= SER_RS485_ENABLED;
-> -}
-> -
->  static void atmel_set_ops(struct uart_port *port)
->  {
->  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> @@ -2390,7 +2367,7 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
->  	atmel_init_property(atmel_port, pdev);
->  	atmel_set_ops(port);
+>  <chip> compatible description:
+>  - at91rm9200:  legacy USART support
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+> index 574c3a2c77d5..860a9559839a 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+> +++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+> @@ -9,6 +9,7 @@ Optional properties:
+>  - fsl,irda-mode : Indicate the uart supports irda mode
+>  - fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
+>                    in DCE mode by default.
+> +- rs485-rts-delay, rs485-rx-during-tx, linux,rs485-enabled-at-boot-time: see rs485.txt
 >  
-> -	atmel_init_rs485(port, pdev);
-> +	of_get_rs485_mode(pdev->dev.of_node, &port->rs485);
+>  Please check Documentation/devicetree/bindings/serial/serial.txt
+>  for the complete list of generic properties.
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> index c95005efbcb8..4eca15378584 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+> @@ -14,6 +14,7 @@ Required properties:
+>  Optional properties:
+>  - dmas: A list of two dma specifiers, one for each entry in dma-names.
+>  - dma-names: should contain "tx" and "rx".
+> +- rs485-rts-delay, rs485-rx-during-tx, linux,rs485-enabled-at-boot-time: see rs485.txt
 >  
->  	port->iotype		= UPIO_MEM;
->  	port->flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP;
+>  Note: Optional properties for DMA support. Write them both or both not.
+>  
+> diff --git a/Documentation/devicetree/bindings/serial/omap_serial.txt b/Documentation/devicetree/bindings/serial/omap_serial.txt
+> index 7a71b5de77d6..43eac675f21f 100644
+> --- a/Documentation/devicetree/bindings/serial/omap_serial.txt
+> +++ b/Documentation/devicetree/bindings/serial/omap_serial.txt
+> @@ -19,6 +19,7 @@ Optional properties:
+>  - dmas : DMA specifier, consisting of a phandle to the DMA controller
+>           node and a DMA channel number.
+>  - dma-names : "rx" for receive channel, "tx" for transmit channel.
+> +- rs485-rts-delay, rs485-rx-during-tx, linux,rs485-enabled-at-boot-time: see rs485.txt
+>  
+>  Example:
+>  
 > 
 
 
