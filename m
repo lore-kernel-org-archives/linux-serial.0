@@ -1,75 +1,76 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH v3 4/9] serial: atmel: Use common rs485 device tree
- parsing function
-Date: Tue, 27 Jun 2017 10:27:25 +0200
-Message-ID: <e0d071e6-c5ca-1bda-1a2e-b695463b66ab@gmail.com>
-References: <20170626090803.10981-1-u.kleine-koenig@pengutronix.de>
- <20170626090803.10981-5-u.kleine-koenig@pengutronix.de>
- <bac50abd-9c55-c9cb-7d10-24ef8efbdb53@microchip.com>
+From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: Moxa UPort 1150 and =?utf-8?Q?RS-422?= =?utf-8?B?LzQ4NeKApg==?=
+ what's the "proper" way to switch modes
+Date: Tue, 27 Jun 2017 11:04:49 +0200
+Message-ID: <20170627090449.GG3025@localhost>
+References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <bac50abd-9c55-c9cb-7d10-24ef8efbdb53@microchip.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Nicolas Ferre <nicolas.ferre@microchip.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: devicetree@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, kernel@pengutronix.de
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <4a469222-d48d-f498-f2db-ca582295adc3-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stuart Longland <stuartl-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-T24gMjcvMDYvMjAxNyAwOTo0MSwgTmljb2xhcyBGZXJyZSB3cm90ZToKPiBPbiAyNi8wNi8yMDE3
-IGF0IDExOjA3LCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPj4gRnJvbTogU2FzY2hhIEhhdWVy
-IDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPgo+Pgo+PiBXZSBqdXN0IGdvdCBhIGNvbW1vbiBoZWxw
-ZXIgZm9yIHBhcnNpbmcgdGhlIHJzNDg1IHNwZWNpZmljCj4+IGRldmljZSB0cmVlIHByb3BlcnRp
-ZXMuIFVzZSBpdCBhbmQgZHJvcCB0aGUgb3BlbiBjb2RlZCBwYXJzZXIuCj4+Cj4+IE5vdGUgdGhh
-dCB0aGVyZSBpcyBhIHNtYWxsIGRpZmZlcmVuY2UgYmV0d2VlbiB0aGUgcmVtb3ZlZCBhbmQgdGhl
-IG5vdwo+PiB1c2VkIGltcGxlbWVudGF0aW9uOiBUaGUgZm9ybWVyIGNsZWFyZWQgZmxhZ3MgdG8g
-MCBpZiByczQ4NS1ydHMtZGVsYXkKPj4gd2FzIGdpdmVuLCB0aGUgY29tbW9uIGhlbHBlciBjbGVh
-cnMgU0VSX1JTNDg1X1JYX0RVUklOR19UWCBhbmQKPj4gU0VSX1JTNDg1X0VOQUJMRUQgb25seSBi
-dXQgYWx3YXlzIHdoaWNoIG1ha2VzIG1vcmUgc2Vuc2UuCj4gCj4gU3VyZToKPiBBY2tlZC1ieTog
-Tmljb2xhcyBGZXJyZSA8bmljb2xhcy5mZXJyZUBtaWNyb2NoaXAuY29tPgo+IAo+IFRoYW5rcyBT
-YXNoYSBhbmQgVXdlIQo+IApBY2tlZC1ieTogUmljaGFyZCBHZW5vdWQgPHJpY2hhcmQuZ2Vub3Vk
-QGdtYWlsLmNvbT4KClRoYW5rcyAhCj4+IFNpZ25lZC1vZmYtYnk6IFNhc2NoYSBIYXVlciA8cy5o
-YXVlckBwZW5ndXRyb25peC5kZT4KPj4gW3VrbGVpbmVrOiBwb2ludCBvdXQgc2VtYW50aWMgY2hh
-bmdlIGluIGNvbW1pdCBsb2ddCj4+IFNpZ25lZC1vZmYtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1
-LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+Cj4+IC0tLQo+PiAgZHJpdmVycy90dHkvc2Vy
-aWFsL2F0bWVsX3NlcmlhbC5jIHwgMjUgKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+PiAgMSBm
-aWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAyNCBkZWxldGlvbnMoLSkKPj4KPj4gZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYyBiL2RyaXZlcnMvdHR5L3Nl
-cmlhbC9hdG1lbF9zZXJpYWwuYwo+PiBpbmRleCA5MzdkNjdmMjJmYmEuLjI0NWQ5YzIyN2FkNSAx
-MDA2NDQKPj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4+ICsrKyBi
-L2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+PiBAQCAtMTY4NCwyOSArMTY4NCw2
-IEBAIHN0YXRpYyB2b2lkIGF0bWVsX2luaXRfcHJvcGVydHkoc3RydWN0IGF0bWVsX3VhcnRfcG9y
-dCAqYXRtZWxfcG9ydCwKPj4gIAl9Cj4+ICB9Cj4+ICAKPj4gLXN0YXRpYyB2b2lkIGF0bWVsX2lu
-aXRfcnM0ODUoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwKPj4gLQkJCQlzdHJ1Y3QgcGxhdGZvcm1f
-ZGV2aWNlICpwZGV2KQo+PiAtewo+PiAtCXN0cnVjdCBkZXZpY2Vfbm9kZSAqbnAgPSBwZGV2LT5k
-ZXYub2Zfbm9kZTsKPj4gLQo+PiAtCXN0cnVjdCBzZXJpYWxfcnM0ODUgKnJzNDg1Y29uZiA9ICZw
-b3J0LT5yczQ4NTsKPj4gLQl1MzIgcnM0ODVfZGVsYXlbMl07Cj4+IC0KPj4gLQkvKiByczQ4NSBw
-cm9wZXJ0aWVzICovCj4+IC0JaWYgKG9mX3Byb3BlcnR5X3JlYWRfdTMyX2FycmF5KG5wLCAicnM0
-ODUtcnRzLWRlbGF5IiwKPj4gLQkJCQkgICAgICAgcnM0ODVfZGVsYXksIDIpID09IDApIHsKPj4g
-LQkJcnM0ODVjb25mLT5kZWxheV9ydHNfYmVmb3JlX3NlbmQgPSByczQ4NV9kZWxheVswXTsKPj4g
-LQkJcnM0ODVjb25mLT5kZWxheV9ydHNfYWZ0ZXJfc2VuZCA9IHJzNDg1X2RlbGF5WzFdOwo+PiAt
-CQlyczQ4NWNvbmYtPmZsYWdzID0gMDsKPj4gLQl9Cj4+IC0KPj4gLQlpZiAob2ZfZ2V0X3Byb3Bl
-cnR5KG5wLCAicnM0ODUtcngtZHVyaW5nLXR4IiwgTlVMTCkpCj4+IC0JCXJzNDg1Y29uZi0+Zmxh
-Z3MgfD0gU0VSX1JTNDg1X1JYX0RVUklOR19UWDsKPj4gLQo+PiAtCWlmIChvZl9nZXRfcHJvcGVy
-dHkobnAsICJsaW51eCxyczQ4NS1lbmFibGVkLWF0LWJvb3QtdGltZSIsIE5VTEwpKQo+PiAtCQly
-czQ4NWNvbmYtPmZsYWdzIHw9IFNFUl9SUzQ4NV9FTkFCTEVEOwo+PiAtfQo+PiAtCj4+ICBzdGF0
-aWMgdm9pZCBhdG1lbF9zZXRfb3BzKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCj4+ICB7Cj4+ICAJ
-c3RydWN0IGF0bWVsX3VhcnRfcG9ydCAqYXRtZWxfcG9ydCA9IHRvX2F0bWVsX3VhcnRfcG9ydChw
-b3J0KTsKPj4gQEAgLTIzOTAsNyArMjM2Nyw3IEBAIHN0YXRpYyBpbnQgYXRtZWxfaW5pdF9wb3J0
-KHN0cnVjdCBhdG1lbF91YXJ0X3BvcnQgKmF0bWVsX3BvcnQsCj4+ICAJYXRtZWxfaW5pdF9wcm9w
-ZXJ0eShhdG1lbF9wb3J0LCBwZGV2KTsKPj4gIAlhdG1lbF9zZXRfb3BzKHBvcnQpOwo+PiAgCj4+
-IC0JYXRtZWxfaW5pdF9yczQ4NShwb3J0LCBwZGV2KTsKPj4gKwlvZl9nZXRfcnM0ODVfbW9kZShw
-ZGV2LT5kZXYub2Zfbm9kZSwgJnBvcnQtPnJzNDg1KTsKPj4gIAo+PiAgCXBvcnQtPmlvdHlwZQkJ
-PSBVUElPX01FTTsKPj4gIAlwb3J0LT5mbGFncwkJPSBVUEZfQk9PVF9BVVRPQ09ORiB8IFVQRl9J
-T1JFTUFQOwo+Pgo+IAo+IAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxA
-bGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+[ +CC: Alan and linux-usb ]
+
+On Fri, Jun 23, 2017 at 09:44:31AM +1000, Stuart Longland wrote:
+> Hi all,
+> 
+> A silly question: I have a Moxa UPort 1150 USB serial interface that I
+> am trying to coax into either RS-422 or 4-wire RS-485 mode.  Internally,
+> this is a TI USB 3410 device, and works with the ti_usb_3410_5052 module.
+> 
+> Moxa have a (poorly maintained as usual) driver for these devices, and I
+> see reference to things like RS-485 in the TI driver.  Moxa's driver did
+> a kludge where they used `setserial` to control the mode, and used the
+> device "port" number to set that mode.  I do not think it wise to try
+> and replicate that same kludge, as I understand that parameter is for
+> configuring the I/O port (e.g. 0x3f8 for /dev/ttyS0 on older
+> IBM-compatibles).
+
+Agreed, and that's why we have rejected this interface when support for
+Moxa devices have been added.
+
+> Now, *some* versions of `stty` allegedly have an "rs485" option: mine
+> (in coreutils 8.25) does not.  I suspect this is 2-wire RS-485, which
+> won't do here, as my RX and TX are on different RS-485 pairs.
+
+Neither does mine, I think that's some out-of-tree support for the
+TIOCSRS485 ioctl mentioned below.
+
+> What's the "proper" way to configure such ports for RS-422 and/or 4-wire
+> RS-485?  Is there an example driver in the tree that I can use as a
+> guide to porting Moxa's mode-switch code over to the ti_usb_3410_5052
+> driver?
+
+I'm afraid not. We have the TIOCSRS485 ioctl, but that doesn't really
+fit here (currently) as we're not just enabling 2-wire-rs485 style
+signalling (using RTS to control the tranceiver), but are also
+configuring the electrical interface (e.g. which pins on the DB9
+connector are being used for which functions).
+
+This question is raised every now and then; typically when a new
+driver is being merged (e.g. mxuport or when support for your device was
+added), but we have yet to decide on the proper interface.
+
+Extending the TIOCSRS485 ioctl has been discussed, and one alternative
+could be a sysfs-based interface as this would typically be something
+you'd want to configure at boot and before opening the device (and
+toggling DTR).
+
+Either way, we need do determine the right level of abstraction as some
+of the related properties are fairly device dependent (master/slave
+mode, terminating resistors, auto direction, echo, etc).
+
+For the record, note that we do have the mxser driver, and a few more
+old drivers, implementing custom ioctls for this, but we really should
+not be adding more of those.
+
+Johan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
