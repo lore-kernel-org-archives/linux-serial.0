@@ -1,76 +1,47 @@
-From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: Moxa UPort 1150 and =?utf-8?Q?RS-422?= =?utf-8?B?LzQ4NeKApg==?=
- what's the "proper" way to switch modes
-Date: Tue, 27 Jun 2017 11:04:49 +0200
-Message-ID: <20170627090449.GG3025@localhost>
-References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH] serial: 8250: Fix THRE flag usage for CAP_MINI
+Date: Tue, 27 Jun 2017 12:15:36 +0300
+Message-ID: <1498554936.22624.180.camel@linux.intel.com>
+References: <1498485581-72097-1-git-send-email-phil@raspberrypi.org>
+ <627a530c-d78c-5338-5ddf-0b3f6a09c37e@i2se.com>
+ <bf050731-6b05-9e35-8b50-ea9115b4197f@raspberrypi.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <4a469222-d48d-f498-f2db-ca582295adc3-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Stuart Longland <stuartl-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <bf050731-6b05-9e35-8b50-ea9115b4197f-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rpi-kernel>,
+ <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rpi-kernel/>
+List-Post: <mailto:linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel>,
+ <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "linux-rpi-kernel" <linux-rpi-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-[ +CC: Alan and linux-usb ]
+On Mon, 2017-06-26 at 16:15 +0100, Phil Elwell wrote:
 
-On Fri, Jun 23, 2017 at 09:44:31AM +1000, Stuart Longland wrote:
-> Hi all,
+> > But this looks like a bug / quirk than a capability?
+> > 
+> > It would be better to name this define more self-explaining.
+> > 
+> > Btw can't see the definition of UART_CAP_MINI?
 > 
-> A silly question: I have a Moxa UPort 1150 USB serial interface that I
-> am trying to coax into either RS-422 or 4-wire RS-485 mode.  Internally,
-> this is a TI USB 3410 device, and works with the ti_usb_3410_5052 module.
+> The capability was added in d087e7a991f1f61ee2c07db1be7c5cc2aa373f5d,
+> which
+> is in linux-next. Given that the "capability" already exists and the
+> quirk
+> is likely to be unique to BCM2835 MINI UART, I don't think we should
+> create
+> a new quirk.
 > 
-> Moxa have a (poorly maintained as usual) driver for these devices, and I
-> see reference to things like RS-485 in the TI driver.  Moxa's driver did
-> a kludge where they used `setserial` to control the mode, and used the
-> device "port" number to set that mode.  I do not think it wise to try
-> and replicate that same kludge, as I understand that parameter is for
-> configuring the I/O port (e.g. 0x3f8 for /dev/ttyS0 on older
-> IBM-compatibles).
+> Besides, the "HFIFO" capability looks a lot like quirk to me.
 
-Agreed, and that's why we have rejected this interface when support for
-Moxa devices have been added.
+To me either, which raises a question "Should it be fixed accordingly?"
 
-> Now, *some* versions of `stty` allegedly have an "rs485" option: mine
-> (in coreutils 8.25) does not.  I suspect this is 2-wire RS-485, which
-> won't do here, as my RX and TX are on different RS-485 pairs.
-
-Neither does mine, I think that's some out-of-tree support for the
-TIOCSRS485 ioctl mentioned below.
-
-> What's the "proper" way to configure such ports for RS-422 and/or 4-wire
-> RS-485?  Is there an example driver in the tree that I can use as a
-> guide to porting Moxa's mode-switch code over to the ti_usb_3410_5052
-> driver?
-
-I'm afraid not. We have the TIOCSRS485 ioctl, but that doesn't really
-fit here (currently) as we're not just enabling 2-wire-rs485 style
-signalling (using RTS to control the tranceiver), but are also
-configuring the electrical interface (e.g. which pins on the DB9
-connector are being used for which functions).
-
-This question is raised every now and then; typically when a new
-driver is being merged (e.g. mxuport or when support for your device was
-added), but we have yet to decide on the proper interface.
-
-Extending the TIOCSRS485 ioctl has been discussed, and one alternative
-could be a sysfs-based interface as this would typically be something
-you'd want to configure at boot and before opening the device (and
-toggling DTR).
-
-Either way, we need do determine the right level of abstraction as some
-of the related properties are fairly device dependent (master/slave
-mode, terminating resistors, auto direction, echo, etc).
-
-For the record, note that we do have the mxser driver, and a few more
-old drivers, implementing custom ioctls for this, but we really should
-not be adding more of those.
-
-Johan
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Intel Finland Oy
