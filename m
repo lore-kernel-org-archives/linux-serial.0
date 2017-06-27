@@ -1,42 +1,44 @@
-From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-Subject: [PATCH] serial: sirf: make of_device_ids const.
-Date: Tue, 27 Jun 2017 17:06:17 +0530
-Message-ID: <c6d28ba7176bc1257d3ca030b8204b930039f255.1498563206.git.arvind.yadav.cs@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, baohua@kernel.org
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+From: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
+Subject: Re: Moxa UPort 1150 and =?UTF-8?Q?RS-422=2F485=E2=80=A6?= what's
+ the "proper" way to switch modes
+Date: Tue, 27 Jun 2017 14:08:51 +0200
+Message-ID: <1498565331.30390.5.camel@suse.com>
+References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
+         <20170627090449.GG3025@localhost>
+         <42601356-656d-57d0-d366-a0933780b8f9@longlandclan.id.au>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <42601356-656d-57d0-d366-a0933780b8f9-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stuart Longland <stuartl-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-of_device_ids are not supposed to change at runtime. All functions
-working with of_device_ids provided by <linux/of.h> work with const
-of_device_ids. So mark the non-const structs as const.
+Am Dienstag, den 27.06.2017, 19:43 +1000 schrieb Stuart Longland:
+> Maybe a good start would be a "standard" option (referring to the
+> physical signalling standard, TTL/RS-232/RS-422/RS-485), that lists the
+> available standards when read and shows the "selected" standard in
+> brackets (like the 'trigger' option of the LEDs sysfs interface)… so for
+> this case:
+> 
+> # cat /sys/class/tty/ttyUSB0/standard
+> [rs232] rs422 rs485 rs485fd
+> 
+> and to select 4-wire ("full duplex") RS-485, one does:
+> # echo rs485fd > /sys/class/tty/ttyUSB0/standard
 
-File size before:
-   text	   data	    bss	    dec	    hex	filename
-    877	   1864	     88	   2829	    b0d	drivers/tty/serial/sirfsoc_uart.o
+This looks like something that people will put into udev.
+So the switch will be done via udev, but the user not necessarily
+started via udev. Looks like a race to me.
+And what do you if the interface is already opened and the sysfs
+interface is used?
 
-File size after constify:
-   text	   data	    bss	    dec	    hex	filename
-   1885	    840	     88	   2813	    afd	drivers/tty/serial/sirfsoc_uart.o
+	Regards
+		Oliver
 
-Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
----
- drivers/tty/serial/sirfsoc_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index e03282d..684cb8d 100644
---- a/drivers/tty/serial/sirfsoc_uart.c
-+++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -1253,7 +1253,7 @@ static int __init sirfsoc_uart_console_init(void)
- 	return HRTIMER_RESTART;
- }
- 
--static struct of_device_id sirfsoc_uart_ids[] = {
-+static const struct of_device_id sirfsoc_uart_ids[] = {
- 	{ .compatible = "sirf,prima2-uart", .data = &sirfsoc_uart,},
- 	{ .compatible = "sirf,atlas7-uart", .data = &sirfsoc_uart},
- 	{ .compatible = "sirf,prima2-usp-uart", .data = &sirfsoc_usp},
--- 
-1.9.1
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
