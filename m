@@ -1,13 +1,15 @@
-From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+From: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
 Subject: Re: [PATCH] serial: 8250: Fix THRE flag usage for CAP_MINI
-Date: Tue, 27 Jun 2017 12:18:33 +0300
-Message-ID: <1498555113.22624.182.camel@linux.intel.com>
+Date: Tue, 27 Jun 2017 10:24:21 +0100
+Message-ID: <041c0471-0435-be8e-ade5-ee5438ef3a2d@raspberrypi.org>
 References: <1498485581-72097-1-git-send-email-phil@raspberrypi.org>
+ <1498555113.22624.182.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <1498485581-72097-1-git-send-email-phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
+In-Reply-To: <1498555113.22624.182.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rpi-kernel>,
  <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-rpi-kernel/>
@@ -17,38 +19,44 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel>,
  <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
 Sender: "linux-rpi-kernel" <linux-rpi-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Errors-To: linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-T24gTW9uLCAyMDE3LTA2LTI2IGF0IDE0OjU5ICswMTAwLCBQaGlsIEVsd2VsbCB3cm90ZToKPiBU
-aGUgQkNNMjgzNSBNSU5JIFVBUlQgaGFzIG5vbi1zdGFuZGFyZCBUSFJFIHNlbWFudGljcy4gQ29u
-dmVudGlvbmFsbHkKPiB0aGUgYml0IG1lYW5zIHRoYXQgdGhlIEZJRk8gaXMgZW1wdHkgKGFsdGhv
-dWdoIHRoZXJlIG1heSBzdGlsbCBiZSBhCj4gYnl0ZSBpbiB0aGUgdHJhbnNtaXQgcmVnaXN0ZXIp
-LCBidXQgb24gMjgzNSBpdCBpbmRpY2F0ZXMgdGhhdCB0aGUgRklGTwo+IGlzIG5vdCBmdWxsLiBU
-aGlzIGNhdXNlcyBpbnRlcnJ1cHRzIGFmdGVyIGV2ZXJ5IGJ5dGUgaXMgdHJhbnNtaXR0ZWQsCj4g
-d2l0aCB0aGUgRklGTyBwcm92aWRpbmcgc29tZSBpbnRlcnJ1cHQgbGF0ZW5jeSB0b2xlcmFuY2Uu
-Cj4gCj4gQSBjb25zZXF1ZW5jZSBvZiB0aGlzIGRpZmZlcmVuY2UgaXMgdGhhdCB0aGUgdXN1YWwg
-c3RyYXRlZ3kgb2Ygd3JpdGluZwo+IG11bHRpcGxlIGJ5dGVzIGludG8gdGhlIFRYIEZJRk8gYWZ0
-ZXIgY2hlY2tpbmcgVEhSRSBvbmNlIGlzIHVuc2FmZS4KPiBJbiB0aGUgd29yc3QgY2FzZSBvZiA3
-IGJ5dGVzIGluIHRoZSBGSUZPLCB3cml0aW5nIDggYnl0ZXMgbG9zZXMgYWxsCj4gYnV0IHRoZSBm
-aXJzdCBzaW5jZSBieSB0aGVuIHRoZSBGSUZPIGlzIGZ1bGwuCj4gCj4gVGhlcmUgaXMgYW4gSEZJ
-Rk8gKCJIaWRkZW4gRklGTyIpIGNhcGFiaWxpdHkgdGhhdCBjYXVzZXMgdGhlIHRyYW5zbWl0Cj4g
-bG9vcCB0byB0ZXJtaW5hdGUgd2hlbiBib3RoIFRIUkUgYW5kIFRFTVQgYXJlIHNldCwgaS5lLiB3
-aGVuIHRoZSBUWAo+IGJsb2NrIGlzIGNvbXBsZXRlbHkgaWRsZS4gVGhpcyBpcyB1bm5lY2Vzc2Fy
-aWx5IGNhdXRpb3VzLCBwb3RlbnRpYWxseQo+IGNhdXNpbmcgZ2FwcyBpbiB0cmFuc21pc3Npb24u
-Cj4gCj4gQWRkIGEgbmV3IGNvbmRpdGlvbmFsIHRvIHRoZSB0cmFuc21pdCBsb29wLCBwcmVkaWNh
-dGVkIG9uIENBUF9NSU5JLAo+IHRoYXQgZXhpdHMgd2hlbiBUSFJFIGlzIG5vIGxvbmdlciBzZXQg
-KHRoZSBGSUZPIGlzIGZ1bGwpLiBUaGlzIGFsbG93cwo+IHRoZSBGSUZPIHRvIGZpbGwgcXVpY2ts
-eSBidXQgc3Vic2VxdWVudCB3cml0ZXMgYXJlIHBhY2VkIGJ5IHRoZQo+IHRyYW5zbWlzc2lvbiBy
-YXRlLgo+IAoKPiDCoAkJaWYgKCh1cC0+Y2FwYWJpbGl0aWVzICYgVUFSVF9DQVBfSEZJRk8pICYm
-Cj4gwqAJCcKgwqDCoMKgKHNlcmlhbF9pbih1cCwgVUFSVF9MU1IpICYgQk9USF9FTVBUWSkgIT0K
-PiBCT1RIX0VNUFRZKQo+IMKgCQkJYnJlYWs7Cj4gKwkJLyogVGhlIEJDTTI4MzUgTUlOSSBVQVJU
-IFRIUkUgYml0IGlzIHJlYWxseSBhIG5vdC0KPiBmdWxsIGJpdC4gKi8KPiArCQlpZiAoKHVwLT5j
-YXBhYmlsaXRpZXMgJiBVQVJUX0NBUF9NSU5JKSAmJgo+ICsJCcKgwqDCoMKgIShzZXJpYWxfaW4o
-dXAsIFVBUlRfTFNSKSAmIFVBUlRfTFNSX1RIUkUpKQo+ICsJCQlicmVhazsKCk1pZ2h0IHRoaXMg
-ZW5kIHVwIHdpdGggdHdvIHNlcXVlbnRpYWwgcmVhZCBvZiBMU1I/CgotLSAKQW5keSBTaGV2Y2hl
-bmtvIDxhbmRyaXkuc2hldmNoZW5rb0BsaW51eC5pbnRlbC5jb20+CkludGVsIEZpbmxhbmQgT3kK
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LXJw
-aS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LXJwaS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9y
-ZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXJwaS1r
-ZXJuZWwK
+On 27/06/2017 10:18, Andy Shevchenko wrote:
+> On Mon, 2017-06-26 at 14:59 +0100, Phil Elwell wrote:
+>> The BCM2835 MINI UART has non-standard THRE semantics. Conventionally
+>> the bit means that the FIFO is empty (although there may still be a
+>> byte in the transmit register), but on 2835 it indicates that the FIFO
+>> is not full. This causes interrupts after every byte is transmitted,
+>> with the FIFO providing some interrupt latency tolerance.
+>>
+>> A consequence of this difference is that the usual strategy of writing
+>> multiple bytes into the TX FIFO after checking THRE once is unsafe.
+>> In the worst case of 7 bytes in the FIFO, writing 8 bytes loses all
+>> but the first since by then the FIFO is full.
+>>
+>> There is an HFIFO ("Hidden FIFO") capability that causes the transmit
+>> loop to terminate when both THRE and TEMT are set, i.e. when the TX
+>> block is completely idle. This is unnecessarily cautious, potentially
+>> causing gaps in transmission.
+>>
+>> Add a new conditional to the transmit loop, predicated on CAP_MINI,
+>> that exits when THRE is no longer set (the FIFO is full). This allows
+>> the FIFO to fill quickly but subsequent writes are paced by the
+>> transmission rate.
+>>
+> 
+>>  		if ((up->capabilities & UART_CAP_HFIFO) &&
+>>  		    (serial_in(up, UART_LSR) & BOTH_EMPTY) !=
+>> BOTH_EMPTY)
+>>  			break;
+>> +		/* The BCM2835 MINI UART THRE bit is really a not-
+>> full bit. */
+>> +		if ((up->capabilities & UART_CAP_MINI) &&
+>> +		    !(serial_in(up, UART_LSR) & UART_LSR_THRE))
+>> +			break;
+> 
+> Might this end up with two sequential read of LSR?
+
+The same thought crossed my mind, but CAP_MINI is essentially CAP_BCM2835,
+and we won't be setting CAP_HFIFO on BCM2835.
