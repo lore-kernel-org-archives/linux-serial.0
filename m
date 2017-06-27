@@ -1,44 +1,79 @@
-From: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
-Subject: Re: Moxa UPort 1150 and =?UTF-8?Q?RS-422=2F485=E2=80=A6?= what's
- the "proper" way to switch modes
-Date: Tue, 27 Jun 2017 14:08:51 +0200
-Message-ID: <1498565331.30390.5.camel@suse.com>
-References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
-         <20170627090449.GG3025@localhost>
-         <42601356-656d-57d0-d366-a0933780b8f9@longlandclan.id.au>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH] serial: 8250: Fix THRE flag usage for CAP_MINI
+Date: Tue, 27 Jun 2017 20:52:30 +0300
+Message-ID: <1498585950.22624.210.camel@linux.intel.com>
+References: <1498485581-72097-1-git-send-email-phil@raspberrypi.org>
+ <627a530c-d78c-5338-5ddf-0b3f6a09c37e@i2se.com>
+ <bf050731-6b05-9e35-8b50-ea9115b4197f@raspberrypi.org>
+ <1498554936.22624.180.camel@linux.intel.com>
+ <2669bcda-e1f5-ecb1-a986-99947658bac7@raspberrypi.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <42601356-656d-57d0-d366-a0933780b8f9-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Stuart Longland <stuartl-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <2669bcda-e1f5-ecb1-a986-99947658bac7-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rpi-kernel>,
+ <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rpi-kernel/>
+List-Post: <mailto:linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel>,
+ <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "linux-rpi-kernel" <linux-rpi-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Am Dienstag, den 27.06.2017, 19:43 +1000 schrieb Stuart Longland:
-> Maybe a good start would be a "standard" option (referring to the
-> physical signalling standard, TTL/RS-232/RS-422/RS-485), that lists the
-> available standards when read and shows the "selected" standard in
-> brackets (like the 'trigger' option of the LEDs sysfs interface)… so for
-> this case:
+On Tue, 2017-06-27 at 11:30 +0100, Phil Elwell wrote:
+> On 27/06/2017 10:15, Andy Shevchenko wrote:
+> > On Mon, 2017-06-26 at 16:15 +0100, Phil Elwell wrote:
+> > 
+> > > > But this looks like a bug / quirk than a capability?
+> > > > 
+> > > > It would be better to name this define more self-explaining.
+> > > > 
+> > > > Btw can't see the definition of UART_CAP_MINI?
+> > > 
+> > > The capability was added in
+> > > d087e7a991f1f61ee2c07db1be7c5cc2aa373f5d,
+> > > which
+> > > is in linux-next. Given that the "capability" already exists and
+> > > the
+> > > quirk
+> > > is likely to be unique to BCM2835 MINI UART, I don't think we
+> > > should
+> > > create
+> > > a new quirk.
+> > > 
+> > > Besides, the "HFIFO" capability looks a lot like quirk to me.
+> > 
+> > To me either, which raises a question "Should it be fixed
+> > accordingly?"
 > 
-> # cat /sys/class/tty/ttyUSB0/standard
-> [rs232] rs422 rs485 rs485fd
+> If I was going to make these quirks, are we simply talking about
+> renaming the
+> capability or is there another mechanism? I've found the 8250_pci
+> quirks, and
+> they look quite different.
+
+Okay, we have several types of flags in the code
+1. Capabilities: UART_CAP: looks like it defines features of hardware
+solely for 8250 compatible devices.
+2. Flags as quirks UPF_<something, not all of them> (I have a patch to
+convert them to quirks, need by the way to update and resend): they are
+for any serial devices.
+3. Flags as capabilities: UPF_<the rest>, similar function as UART_CAP,
+but for any serial device.
+
 > 
-> and to select 4-wire ("full duplex") RS-485, one does:
-> # echo rs485fd > /sys/class/tty/ttyUSB0/standard
+> I'm also happy to make this code conditional on
+> CONFIG_SERIAL_8250_BCM2835AUX
+> if that is more acceptable.
 
-This looks like something that people will put into udev.
-So the switch will be done via udev, but the user not necessarily
-started via udev. Looks like a race to me.
-And what do you if the interface is already opened and the sysfs
-interface is used?
+No, it is undesired.
 
-	Regards
-		Oliver
+Can you describe which one from the above suits the best for your case?
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Intel Finland Oy
