@@ -1,51 +1,67 @@
-From: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Subject: Re: Moxa UPort 1150 and =?utf-8?Q?RS-422?= =?utf-8?B?LzQ4NeKApg==?=
- what's the "proper" way to switch modes
-Date: Wed, 28 Jun 2017 14:01:20 +0200
-Message-ID: <20170628120120.GA10502@kroah.com>
-References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
- <20170627090449.GG3025@localhost>
- <42601356-656d-57d0-d366-a0933780b8f9@longlandclan.id.au>
- <1498565331.30390.5.camel@suse.com>
- <ae2907c2-cb0f-61e4-c6f2-af3dcec93ace@longlandclan.id.au>
- <1498641549.10278.5.camel@suse.com>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2] serial: 8250: Fix THRE flag usage for CAP_MINI
+Date: Wed, 28 Jun 2017 15:00:31 +0300
+Message-ID: <1498651231.22624.217.camel@linux.intel.com>
+References: <1498642885-8063-1-git-send-email-phil@raspberrypi.org>
+ <20170628105744.42bchlftl6khvsxd@pengutronix.de>
+ <95a13280-e9f6-50f5-bb0c-8bcdefd0bf12@raspberrypi.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1498641549.10278.5.camel-IBi9RG/b67k@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
-Cc: Stuart Longland <stuartl-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <95a13280-e9f6-50f5-bb0c-8bcdefd0bf12-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rpi-kernel>,
+ <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rpi-kernel/>
+List-Post: <mailto:linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel>,
+ <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "linux-rpi-kernel" <linux-rpi-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jun 28, 2017 at 11:19:09AM +0200, Oliver Neukum wrote:
-> Am Mittwoch, den 28.06.2017, 08:07 +1000 schrieb Stuart Longland:
-> 
-> Hi,
-> 
-> > >> and to select 4-wire ("full duplex") RS-485, one does:
-> > >> # echo rs485fd > /sys/class/tty/ttyUSB0/standard 
-> > > This looks like something that people will put into udev.
-> > > So the switch will be done via udev, but the user not necessarily
-> > > started via udev. Looks like a race to me.
-> > 
-> > It is a race, but unless a daemon is watching for the very moment that a
-> > particular serial interface appears, it's one that init scripts are very
-> > likely to win.
-> 
-> That is precisely what a demon might do.
-> 
-> > Short of having a flag that blocks reads/writes until a given sysfs file
-> > is written to say "I'm ready, go ahead"… there aren't that many options
-> > I can think of.
-> 
-> 1) module option
-
-No, just no, sorry.
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+T24gV2VkLCAyMDE3LTA2LTI4IGF0IDEyOjUyICswMTAwLCBQaGlsIEVsd2VsbCB3cm90ZToKPiBP
+biAyOC8wNi8yMDE3IDExOjU3LCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiA+IEhlbGxvLAo+
+ID4gCj4gPiBPbiBXZWQsIEp1biAyOCwgMjAxNyBhdCAxMDo0MToyNUFNICswMTAwLCBQaGlsIEVs
+d2VsbCB3cm90ZToKPiA+ID4gU2lnbmVkLW9mZi1ieTogUGhpbCBFbHdlbGwgPHBoaWxAcmFzcGJl
+cnJ5cGkub3JnPgo+ID4gPiBBY2tlZC1ieTogRXJpYyBBbmhvbHQgPGVyaWNAYW5ob2x0Lm5ldD4K
+PiA+ID4gQWNrZWQtYnk6IEFuZHkgU2hldmNoZW5rbyA8YW5kcml5LnNoZXZjaGVua29AbGludXgu
+aW50ZWwuY29tPgo+ID4gPiAtLS0KPiA+ID4gQ2hhbmdlcyBpbiB2MjoKPiA+ID4gwqBBZGQgcmV2
+aWV3IHRhZ3MuCj4gPiAKPiA+IG5pdHBpY2s6IFRoZSBvcmRlciBvZiBsaW5lcyBpbiB0aGUgU29i
+IGFyZWEgbWF0dGVyIGFuZCB5b3Ugc2hvdWxkCj4gPiBhZGQKPiA+IHlvdXIgU29iIGF0IHRoZSBl
+bmQuIFNvIGFzIGl0IHdhcyB5b3UgYWRkaW5nIHRoZSBhY2sgYnkgRXJpYyBhbmQKPiA+IEFuZHks
+Cj4gPiBpdCBzaG91bGQgbG9vayBhcyBmb2xsb3dzOgo+ID4gCj4gPiAJQWNrZWQtYnk6IEVyaWMg
+QW5ob2x0IDxlcmljQGFuaG9sdC5uZXQ+Cj4gPiAJQWNrZWQtYnk6IEFuZHkgU2hldmNoZW5rbyA8
+YW5kcml5LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tPgo+ID4gCVNpZ25lZC1vZmYtYnk6IFBo
+aWwgRWx3ZWxsIDxwaGlsQHJhc3BiZXJyeXBpLm9yZz4KPiAKPiBSZWFsbHk/IEkgdGhvdWdodCB0
+aGUgc3VibWl0dGVyIHdlbnQgZmlyc3QgYW5kIHRoZSBmaW5hbCBtZXJnZXIgd2VudAo+IGxhc3Qs
+IHdpdGggb3RoZXIgcmV2aWV3ZXJzIGluLWJldHdlZW4sIGxpa2UgdGhpczoKClRoZXJlIGlzIGEg
+ZGlmZmVyZW5jZSBiZXR3ZWVuIHR3bywgaS5lLiB3aG8gaGFzIGFkZGVkIHRhZ3MgaW4geW91ciBj
+YXNlCmFuZCBiZWxvdyBvbmU/IEkgZ3Vlc3Mgd2hvZXZlciBhZGRzIHRoZW0sIGFkZHMgYmVmb3Jl
+IHRoZWlyIG93biBTb0IgdGFnLgoKPiAKPiDCoMKgwqDCoGNvbW1pdCA2ZGY3NjVkY2EzNzhiZGRm
+OTk0Y2ZkMjA0NGFjYWZhNTAxYmQ4MDBmCj4gwqDCoMKgwqBBdXRob3I6IFV3ZSBLbGVpbmUtS8O2
+bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+Cj4gwqDCoMKgwqBEYXRlOsKgwqDC
+oFdlZCBNYXkgMjQgMjE6Mzg6NDYgMjAxNyArMDIwMAo+IAo+IMKgwqDCoMKgwqDCoMKgwqBzZXJp
+YWw6IGlteDogZW5zdXJlIFVDUjMgYW5kIFVGQ1IgYXJlIHNldHVwIGNvcnJlY3RseQo+IAo+IMKg
+wqDCoMKgwqDCoMKgwqBbLi4uXQo+IAo+IMKgwqDCoMKgwqDCoMKgwqBGaXhlczogZTYxYzM4ZDg1
+YjczICgic2VyaWFsOiBpbXg6IHNldHVwIERDRURURSBlYXJseSBhbmQKPiBlbnN1cmUgRENEIGFu
+ZCBSSSBpcnFzIHRvIGJlIG9mZiIpCj4gwqDCoMKgwqDCoMKgwqDCoFNpZ25lZC1vZmYtYnk6IFV3
+ZSBLbGVpbmUtS8O2bmlnIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZAo+IGU+Cj4gwqDC
+oMKgwqDCoMKgwqDCoEFja2VkLWJ5OiBNaWthIFBlbnR0aWzDpCA8bWlrYS5wZW50dGlsYUBuZXh0
+Zm91ci5jb20+Cj4gwqDCoMKgwqDCoMKgwqDCoFRlc3RlZC1ieTogTWlrYSBQZW50dGlsw6QgPG1p
+a2EucGVudHRpbGFAbmV4dGZvdXIuY29tPgo+IMKgwqDCoMKgwqDCoMKgwqBBY2tlZC1ieTogU3Rl
+dmUgVHdpc3MgPHN0d2lzcy5vcGVuc291cmNlQGRpYXNlbWkuY29tPgo+IMKgwqDCoMKgwqDCoMKg
+wqBUZXN0ZWQtYnk6IFN0ZXZlIFR3aXNzIDxzdHdpc3Mub3BlbnNvdXJjZUBkaWFzZW1pLmNvbT4K
+PiDCoMKgwqDCoMKgwqDCoMKgU2lnbmVkLW9mZi1ieTogR3JlZyBLcm9haC1IYXJ0bWFuIDxncmVn
+a2hAbGludXhmb3VuZGF0aW9uLm9yZz4KPiAKPiA+IC4gTm90ZSB0aGF0IHRoaXMgY29tbWVudCBp
+cyB2ZXJ5IHBpY2t5LCBxdWl0ZSBzb21lIHBlb3BsZSBkb24ndCBnZXQKPiA+IGl0Cj4gPiByaWdo
+dCBhbmQgSSBuZXZlciBzYXcgYSBtYWludGFpbmVyIHJlZnVzZSBhIHBhdGNoIGJlY2F1c2Ugb2Yg
+dGhpcy4KPiA+IFNvCj4gPiB0aGlzIHByb2JhYmx5IGRvZXNuJ3Qgd2FycmFudCBhIHYzIDotKQo+
+ID4gCj4gPiBCZXN0IHJlZ2FyZHMKPiA+IFV3ZQo+ID4gCgotLSAKQW5keSBTaGV2Y2hlbmtvIDxh
+bmRyaXkuc2hldmNoZW5rb0BsaW51eC5pbnRlbC5jb20+CkludGVsIEZpbmxhbmQgT3kKCl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LXJwaS1rZXJu
+ZWwgbWFpbGluZyBsaXN0CmxpbnV4LXJwaS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRw
+Oi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXJwaS1rZXJuZWwK
