@@ -1,85 +1,50 @@
-From: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
-Subject: Re: [PATCH] serial: 8250: Fix THRE flag usage for CAP_MINI
-Date: Wed, 28 Jun 2017 10:17:48 +0100
-Message-ID: <ef154d48-a525-633f-5b8b-560510e719d5@raspberrypi.org>
-References: <1498639379-143432-1-git-send-email-phil@raspberrypi.org>
- <af5786eb-786b-5a50-6b4d-f67b8daf1c8a@i2se.com>
+From: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>
+Subject: Re: Moxa UPort 1150 and =?UTF-8?Q?RS-422=2F485=E2=80=A6?= what's
+ the "proper" way to switch modes
+Date: Wed, 28 Jun 2017 11:19:09 +0200
+Message-ID: <1498641549.10278.5.camel@suse.com>
+References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
+         <20170627090449.GG3025@localhost>
+         <42601356-656d-57d0-d366-a0933780b8f9@longlandclan.id.au>
+         <1498565331.30390.5.camel@suse.com>
+         <ae2907c2-cb0f-61e4-c6f2-af3dcec93ace@longlandclan.id.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <af5786eb-786b-5a50-6b4d-f67b8daf1c8a-eS4NqCHxEME@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rpi-kernel>,
- <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rpi-kernel/>
-List-Post: <mailto:linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel>,
- <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "linux-rpi-kernel" <linux-rpi-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Peter Hurley <peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org>
-Cc: Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <ae2907c2-cb0f-61e4-c6f2-af3dcec93ace-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stuart Longland <stuartl-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 28/06/2017 09:54, Stefan Wahren wrote:
-> Hi Phil,
+Am Mittwoch, den 28.06.2017, 08:07 +1000 schrieb Stuart Longland:
+
+Hi,
+
+> >> and to select 4-wire ("full duplex") RS-485, one does:
+> >> # echo rs485fd > /sys/class/tty/ttyUSB0/standard 
+> > This looks like something that people will put into udev.
+> > So the switch will be done via udev, but the user not necessarily
+> > started via udev. Looks like a race to me.
 > 
-> Am 28.06.2017 um 10:42 schrieb Phil Elwell:
->> The BCM2835 MINI UART has non-standard THRE semantics. Conventionally
->> the bit means that the FIFO is empty (although there may still be a
->> byte in the transmit register), but on 2835 it indicates that the FIFO
->> is not full. This causes interrupts after every byte is transmitted,
->> with the FIFO providing some interrupt latency tolerance.
->>
->> A consequence of this difference is that the usual strategy of writing
->> multiple bytes into the TX FIFO after checking THRE once is unsafe.
->> In the worst case of 7 bytes in the FIFO, writing 8 bytes loses all
->> but the first since by then the FIFO is full.
->>
->> There is an HFIFO ("Hidden FIFO") capability that causes the transmit
->> loop to terminate when both THRE and TEMT are set, i.e. when the TX
->> block is completely idle. This is unnecessarily cautious, potentially
->> causing gaps in transmission.
->>
->> Add a new conditional to the transmit loop, predicated on CAP_MINI,
->> that exits when THRE is no longer set (the FIFO is full). This allows
->> the FIFO to fill quickly but subsequent writes are paced by the
->> transmission rate.
->>
->> Signed-off-by: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
->> Acked-by: Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>
->> Acked-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->> ---
->>  drivers/tty/serial/8250/8250_port.c | 4 ++++
->>  1 file changed, 4 insertions(+)
-> 
-> please increase the version of the patch and add your changelog below
-> this line, so Greg has the chance to apply the right fix.
+> It is a race, but unless a daemon is watching for the very moment that a
+> particular serial interface appears, it's one that init scripts are very
+> likely to win.
 
-But I've seen people reprimanded for posting a new version where the only difference
-is in the review history, with claims that it doesn't make the merger's job easier.
-I'll repost anyway.
+That is precisely what a demon might do.
 
-> Also i assume that Andy wanted to suggest you to add the fixes tag.
+> Short of having a flag that blocks reads/writes until a given sysfs file
+> is written to say "I'm ready, go ahead"… there aren't that many options
+> I can think of.
 
-This patch doesnt fix a bug in previous commit, it adds support for broken hardware,
-so I don't think the "Fixes:" tag applies.
+1) module option
+2) ioctl
 
->>
->> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
->> index 4c620be..a5fe0e6 100644
->> --- a/drivers/tty/serial/8250/8250_port.c
->> +++ b/drivers/tty/serial/8250/8250_port.c
->> @@ -1764,6 +1764,10 @@ void serial8250_tx_chars(struct uart_8250_port *up)
->>  		if ((up->capabilities & UART_CAP_HFIFO) &&
->>  		    (serial_in(up, UART_LSR) & BOTH_EMPTY) != BOTH_EMPTY)
->>  			break;
->> +		/* The BCM2835 MINI UART THRE bit is really a not-full bit. */
->> +		if ((up->capabilities & UART_CAP_MINI) &&
->> +		    !(serial_in(up, UART_LSR) & UART_LSR_THRE))
->> +			break;
->>  	} while (--count > 0);
->>  
->>  	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+	Regards
+		Oliver
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
