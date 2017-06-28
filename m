@@ -1,35 +1,31 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 9/9] of: document rs485 bindings for Atmel USART,
- Freescale UARTs and OMAP UART
-Date: Wed, 28 Jun 2017 13:04:00 -0500
-Message-ID: <20170628180400.h7yxrprhr44wncgs@rob-hp-laptop>
-References: <20170626090803.10981-1-u.kleine-koenig@pengutronix.de>
- <20170626090803.10981-10-u.kleine-koenig@pengutronix.de>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 02/20] dt-bindings: serial: each stm32 usart needs an
+ alias
+Date: Wed, 28 Jun 2017 13:06:03 -0500
+Message-ID: <20170628180603.4w5acuv4j2lylnv3@rob-hp-laptop>
+References: <1498481318-1894-1-git-send-email-bich.hemon@st.com>
+ <1498481318-1894-3-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170626090803.10981-10-u.kleine-koenig@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: kernel@pengutronix.de, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+In-Reply-To: <1498481318-1894-3-git-send-email-bich.hemon-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 26, 2017 at 11:08:03AM +0200, Uwe Kleine-K=F6nig wrote:
-> The drivers support the rs485 binding described in rs485.txt, this commit
-> just makes that explicit.
+On Mon, Jun 26, 2017 at 12:49:09PM +0000, Bich HEMON wrote:
+> From: Bich Hemon <bich.hemon-qxv4g6HH51o@public.gmane.org>
+> 
+> Each usart controller should have an alias correctly
+> numbered in "aliases" node.
 
-"dt-bindings: serial: ..." for the subject if you respin the series. =
+This is board specific typically and doesn't need to be in the binding 
+doc.
 
-Otherwise,
-
-Acked-by: Rob Herring <robh@kernel.org>
+Rob
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
