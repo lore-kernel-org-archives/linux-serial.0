@@ -1,68 +1,49 @@
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
 Subject: Re: [PATCH v6 00/10] serial/gpio: exar: Fixes and support for IOT2000
-Date: Thu, 29 Jun 2017 11:51:08 +0200
-Message-ID: <CACRpkdZ1atVQLuDio6PVk4Xg+DUBDt2F2OH+2UjVkue8rKNbcA@mail.gmail.com>
+Date: Thu, 29 Jun 2017 14:43:38 +0300
+Message-ID: <CAHp75VfGLEXirr7sPX37rSxfpax7XYWoxWMR3moCNy7hzKRuww@mail.gmail.com>
 References: <cover.1497033197.git.jan.kiszka@siemens.com> <CACRpkdZYSFTa63BF5u-J=pu2XwUbVZiQGAtZybhjQno6vVbe=g@mail.gmail.com>
  <9520074b-3731-7bbe-d59d-cbed90ac16bb@siemens.com> <CACRpkdbNPnNbk_r0NWEs4e7PuKmMf9KTjeRPRnxTOHuK-+ki2Q@mail.gmail.com>
  <c0a29540-7946-4e95-1b59-3a2f478757da@siemens.com> <d52a1a65-842c-9c73-17f7-5574fcefab2a@siemens.com>
+ <CACRpkdZ1atVQLuDio6PVk4Xg+DUBDt2F2OH+2UjVkue8rKNbcA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <d52a1a65-842c-9c73-17f7-5574fcefab2a@siemens.com>
+In-Reply-To: <CACRpkdZ1atVQLuDio6PVk4Xg+DUBDt2F2OH+2UjVkue8rKNbcA@mail.gmail.com>
 Sender: linux-gpio-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+To: Linus Walleij <linus.walleij@linaro.org>, Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jun 23, 2017 at 10:09 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 2017-06-21 08:29, Jan Kiszka wrote:
->> On 2017-06-20 13:38, Linus Walleij wrote:
->>> On Tue, Jun 20, 2017 at 10:54 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>> On 2017-06-20 10:19, Linus Walleij wrote:
->>>>> On Fri, Jun 9, 2017 at 8:33 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>>>
->>>>>> This makes the gpio-exar driver usable, which was prevented by a number
->>>>>> of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
->>>>>> driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
->>>>>> series, so I'm also cross-posting to the serial and gpio lists.
->>>>>>
->>>>>> Changes in v6:
->>>>>
->>>>> I merged some of the patches, that applied. Let's see if they survive
->>>>> in linux-next, else I guess we need to fix this in the -rcs or for the next
->>>>> kernel cycle.
->>>>
->>>> Weird that things did not apply. I just did a cherry-pick for all those
->>>> 10 patches on top of 5c996b7eb52c, and that went smoothly. Please let me
->>>> know which baseline is needed, and I will rebase.
->>>
->>> This was on the "devel" branch of my GPIO tree:
->>> https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git/log/?h=devel
->>
->> Again, all (missing) patches applied absolutely cleanly for me, see
->>
+On Thu, Jun 29, 2017 at 12:51 PM, Linus Walleij
+<linus.walleij@linaro.org> wrote:
+> On Fri, Jun 23, 2017 at 10:09 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>> On 2017-06-21 08:29, Jan Kiszka wrote:
+
 >> http://git.kiszka.org/?p=linux.git;a=shortlog;h=refs/heads/queues/gpio-iot2000
+>>
+>> If you want me to resend anything, just let me know. Would be great to
+>> have the remaining pieces lined up in time for the next merge window.
 >
-> I've rebased over devel and noticed along this that you will have to
-> include "serial: uapi: Add support for bus termination" from Greg's
-> tty-next for the last patch to avoid breaking the build. Result pushed to
->
-> http://git.kiszka.org/?p=linux.git;a=shortlog;h=refs/heads/queues/gpio-iot2000
->
-> If you want me to resend anything, just let me know. Would be great to
-> have the remaining pieces lined up in time for the next merge window.
+> I could just pull it in, but then I want a clear indication that Greg and
+> say Andy are happy with this.
 
-I could just pull it in, but then I want a clear indication that Greg and
-say Andy are happy with this.
+All patches that have my tag already are good from my point of view.
+The rest, i.e.
+"platform: Accept const properties", needs a slightly more attention.
 
-The serial patches are missing Gregs explicit ACK and the platform
-patch could use Andy's ACK. The last patch adding the
-IOT2040 is so obviously out of my GPIO territory that I want
-Greg 100% aligned with this.
+This one on one hand does the right thing, though I would like to hear
+Mika on this.
 
-I am sorry that it is troublesome when things cross subsystem
-boundaries, I already stretched it a bit with the things I queued
-up because it annoys me too, but this is the process we have :/
+We still have platform_device_info and mfd_cell that doesn't define
+the properties with const.
+(I believe they should, though is it matter of this patch?)
 
-Yours,
-Linus Walleij
+P.S. I have looked at the current state of the use of the API in
+question and rather agree with the patch, thus
+
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
+-- 
+With Best Regards,
+Andy Shevchenko
