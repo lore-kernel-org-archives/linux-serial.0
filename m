@@ -1,41 +1,40 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH v3 0/9] Add and make use of a common rs485 device tree
- parsing function
-Date: Thu, 29 Jun 2017 20:47:02 +0200
-Message-ID: <20170629184702.znzbc6i3gnccfegq@pengutronix.de>
+Subject: Re: [PATCH v3 9/9] of: document rs485 bindings for Atmel USART,
+ Freescale UARTs and OMAP UART
+Date: Thu, 29 Jun 2017 20:53:34 +0200
+Message-ID: <20170629185334.7pjlsnpggfvx4clo@pengutronix.de>
 References: <20170626090803.10981-1-u.kleine-koenig@pengutronix.de>
- <20170629151200.GA16362@kroah.com>
+ <20170626090803.10981-10-u.kleine-koenig@pengutronix.de>
+ <20170628180400.h7yxrprhr44wncgs@rob-hp-laptop>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170629151200.GA16362-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20170628180400.h7yxrprhr44wncgs@rob-hp-laptop>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello Greg,
-
-On Thu, Jun 29, 2017 at 05:12:00PM +0200, Greg KH wrote:
-> On Mon, Jun 26, 2017 at 11:07:54AM +0200, Uwe Kleine-König wrote:
-> > this is v3 of the series that targets to consolidate parsing the rs485 specific
-> > dt properties in a single place.
+On Wed, Jun 28, 2017 at 01:04:00PM -0500, Rob Herring wrote:
+> On Mon, Jun 26, 2017 at 11:08:03AM +0200, Uwe Kleine-König wrote:
+> > The drivers support the rs485 binding described in rs485.txt, this commit
+> > just makes that explicit.
 > 
-> This patch breaks the build, and not all of them applied properly :(
+> "dt-bindings: serial: ..." for the subject if you respin the series. 
 
-sigh :( Sorry for the build breaker.
+Done, I shortend the first line a bit, it now looks as follows:
 
-Regarding "doesn't apply": I tested to rebase on next/master (and so
-tty-next) and it applies there just fine. I considered that good enough.
-I guess you're talking about tty-testing?! I suggest to mention the
-branch name you want to apply patches on in such mails.
+	dt-bindings: serial: document rs485 bindings for various devices
 
-There is a patch you applied on tty-testing that is not ok I think
-("serial: imx-serial - move DMA buffer configuration to DT"). I
-commented this one in the respective thread now.
+	Atmel USART, Freescale UARTs and OMAP UART all support the rs485 binding 
+	described in rs485.txt, this commit just makes that explicit.
+
+	Acked-by: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+	Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+	Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 
 Best regards
 Uwe
