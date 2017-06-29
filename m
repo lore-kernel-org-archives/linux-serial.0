@@ -1,41 +1,81 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 4/6] dt-bindings: serial: Document RDA Micro UART
-Date: Thu, 29 Jun 2017 15:10:51 -0500
-Message-ID: <20170629201051.cfr37kh2gozompqo@rob-hp-laptop>
-References: <20170627005520.23731-1-afaerber@suse.de>
- <20170627005520.23731-5-afaerber@suse.de>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v6 00/10] serial/gpio: exar: Fixes and support for IOT2000
+Date: Fri, 30 Jun 2017 00:13:11 +0200
+Message-ID: <CACRpkdYEvc2De88sy-FWOOkU8-O4KwX00rLZ7dBk6H2H0Q0+LQ@mail.gmail.com>
+References: <cover.1497033197.git.jan.kiszka@siemens.com> <CACRpkdZYSFTa63BF5u-J=pu2XwUbVZiQGAtZybhjQno6vVbe=g@mail.gmail.com>
+ <9520074b-3731-7bbe-d59d-cbed90ac16bb@siemens.com> <CACRpkdbNPnNbk_r0NWEs4e7PuKmMf9KTjeRPRnxTOHuK-+ki2Q@mail.gmail.com>
+ <c0a29540-7946-4e95-1b59-3a2f478757da@siemens.com> <d52a1a65-842c-9c73-17f7-5574fcefab2a@siemens.com>
+ <CACRpkdZ1atVQLuDio6PVk4Xg+DUBDt2F2OH+2UjVkue8rKNbcA@mail.gmail.com> <20170629144940.GD23512@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170627005520.23731-5-afaerber@suse.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, service@rdamicro.com, zhao_steven@263.net, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20170629144940.GD23512@kroah.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 27, 2017 at 02:55:18AM +0200, Andreas Färber wrote:
-> Add an initial binding for the RDA8810PL UART.
-> 
-> Signed-off-by: Andreas Färber <afaerber@suse.de>
-> ---
->  Documentation/devicetree/bindings/serial/rda-uart.txt | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/rda-uart.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/rda-uart.txt b/Documentation/devicetree/bindings/serial/rda-uart.txt
-> new file mode 100644
-> index 000000000000..6840a8aee035
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/rda-uart.txt
-> @@ -0,0 +1,13 @@
-> +RDA Micro UART
-> +
-> +Required properties:
-> +- compatible :  "rda,8810pl-uart" for RDA8810PL
-> +- reg        :  Offset and length of the register set for the device.
+On Thu, Jun 29, 2017 at 4:49 PM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Thu, Jun 29, 2017 at 11:51:08AM +0200, Linus Walleij wrote:
+>> On Fri, Jun 23, 2017 at 10:09 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>> > On 2017-06-21 08:29, Jan Kiszka wrote:
+>> >> On 2017-06-20 13:38, Linus Walleij wrote:
+>> >>> On Tue, Jun 20, 2017 at 10:54 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>> >>>> On 2017-06-20 10:19, Linus Walleij wrote:
+>> >>>>> On Fri, Jun 9, 2017 at 8:33 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>> >>>>>
+>> >>>>>> This makes the gpio-exar driver usable, which was prevented by a number
+>> >>>>>> of fatal bugs, and adds support for the SIMATIC IOT2040 to the 8250-exar
+>> >>>>>> driver and, indirectly, to gpio-exar as well. It's a cross-subsystem
+>> >>>>>> series, so I'm also cross-posting to the serial and gpio lists.
+>> >>>>>>
+>> >>>>>> Changes in v6:
+>> >>>>>
+>> >>>>> I merged some of the patches, that applied. Let's see if they survive
+>> >>>>> in linux-next, else I guess we need to fix this in the -rcs or for the next
+>> >>>>> kernel cycle.
+>> >>>>
+>> >>>> Weird that things did not apply. I just did a cherry-pick for all those
+>> >>>> 10 patches on top of 5c996b7eb52c, and that went smoothly. Please let me
+>> >>>> know which baseline is needed, and I will rebase.
+>> >>>
+>> >>> This was on the "devel" branch of my GPIO tree:
+>> >>> https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git/log/?h=devel
+>> >>
+>> >> Again, all (missing) patches applied absolutely cleanly for me, see
+>> >>
+>> >> http://git.kiszka.org/?p=linux.git;a=shortlog;h=refs/heads/queues/gpio-iot2000
+>> >
+>> > I've rebased over devel and noticed along this that you will have to
+>> > include "serial: uapi: Add support for bus termination" from Greg's
+>> > tty-next for the last patch to avoid breaking the build. Result pushed to
+>> >
+>> > http://git.kiszka.org/?p=linux.git;a=shortlog;h=refs/heads/queues/gpio-iot2000
+>> >
+>> > If you want me to resend anything, just let me know. Would be great to
+>> > have the remaining pieces lined up in time for the next merge window.
+>>
+>> I could just pull it in, but then I want a clear indication that Greg and
+>> say Andy are happy with this.
+>>
+>> The serial patches are missing Gregs explicit ACK and the platform
+>> patch could use Andy's ACK. The last patch adding the
+>> IOT2040 is so obviously out of my GPIO territory that I want
+>> Greg 100% aligned with this.
+>>
+>> I am sorry that it is troublesome when things cross subsystem
+>> boundaries, I already stretched it a bit with the things I queued
+>> up because it annoys me too, but this is the process we have :/
+>
+> I've added my acks to the serial patches, so all should be fine for you
+> to take this all through your tree now.
 
-No clocks or interrupts?
+Awesome, Jan can you:
 
-Rob
+- Collect the ACKs
+
+- Send me a pull request based on my devel branch?
+
+Yours,
+Linus Walleij
