@@ -1,40 +1,41 @@
-From: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Subject: Re: Moxa UPort 1150 and =?UTF-8?B?UlMtNDIyLzQ4NeKApg==?= what's the
- "proper" way to switch modes
-Date: Thu, 29 Jun 2017 20:50:32 +0100
-Message-ID: <20170629205032.743ab235@alans-desktop>
-References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
-        <20170627090449.GG3025@localhost>
-        <42601356-656d-57d0-d366-a0933780b8f9@longlandclan.id.au>
-        <1498565331.30390.5.camel@suse.com>
-        <20170628153439.GC17630@localhost>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 4/6] dt-bindings: serial: Document RDA Micro UART
+Date: Thu, 29 Jun 2017 15:10:51 -0500
+Message-ID: <20170629201051.cfr37kh2gozompqo@rob-hp-laptop>
+References: <20170627005520.23731-1-afaerber@suse.de>
+ <20170627005520.23731-5-afaerber@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170628153439.GC17630@localhost>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>, Stuart Longland <stuartl-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170627005520.23731-5-afaerber@suse.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, service@rdamicro.com, zhao_steven@263.net, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-So IMHO there are two cases
+On Tue, Jun 27, 2017 at 02:55:18AM +0200, Andreas Färber wrote:
+> Add an initial binding for the RDA8810PL UART.
+> 
+> Signed-off-by: Andreas Färber <afaerber@suse.de>
+> ---
+>  Documentation/devicetree/bindings/serial/rda-uart.txt | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/rda-uart.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/rda-uart.txt b/Documentation/devicetree/bindings/serial/rda-uart.txt
+> new file mode 100644
+> index 000000000000..6840a8aee035
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/rda-uart.txt
+> @@ -0,0 +1,13 @@
+> +RDA Micro UART
+> +
+> +Required properties:
+> +- compatible :  "rda,8810pl-uart" for RDA8810PL
+> +- reg        :  Offset and length of the register set for the device.
 
-1. The configuration is fixed in the hardware - in which case we should
-automatically set it in kernel, or from device tree.
+No clocks or interrupts?
 
-2. The configuration is soft - in which case you need an ioctl you can
-use on the port to change it - irrespective of whether sysfs also handles
-it. For simple permissions reasons and also to avoid races you need that
-ioctl.
-
-We intentionally have lots of spare space left to extend the RS485 ioctl,
-and we have termiox which contains even more room and historically in
-other Unixen dealt with all sorts of weird and wonderful parameters used
-on stuff like synchronous ports.
-
-Alan
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Rob
