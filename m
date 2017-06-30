@@ -1,100 +1,45 @@
-From: Romain Perier <romain.perier@collabora.com>
-Subject: [PATCH 7/7] serial: imx: Fix imx_shutdown procedure
-Date: Fri, 30 Jun 2017 14:04:46 +0200
-Message-ID: <20170630120446.13994-8-romain.perier@collabora.com>
+From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
+Subject: Re: [PATCH 3/7] serial: imx: init dma_is_{rx|tx}ing variables
+Date: Fri, 30 Jun 2017 14:13:29 +0200
+Message-ID: <20170630141329.6144cddd@karo-electronics.de>
 References: <20170630120446.13994-1-romain.perier@collabora.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170630120446.13994-1-romain.perier@collabora.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Nandor Han <nandor.han@ge.com>, Romain Perier <romain.perier@collabora.com>
+ <20170630120446.13994-4-romain.perier@collabora.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170630120446.13994-4-romain.perier@collabora.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Romain Perier <romain.perier@collabora.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Nandor Han <nandor.han@ge.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Nandor Han <nandor.han@ge.com>
-
-In some cases, It looks that interrupts can happen after the dma was
-disabled and port was not yet shutdown. This will result in interrupts
-handled by imx_rxint.
-
-This commits updates the shutdown function to ensure that underlying
-components are disabled in the right order. This disables RX and TX
-blocks, then it disabled interrupts. In case DMA is enabled, it disables
-DMA and free corresponding resources. It disables UART port and stop
-clocks.
-
-Signed-off-by: Nandor Han <nandor.han@ge.com>
-Signed-off-by: Romain Perier <romain.perier@collabora.com>
----
- drivers/tty/serial/imx.c | 38 +++++++++++++++++++-------------------
- 1 file changed, 19 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index d5b6e09..7dc6f0c 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1404,44 +1404,44 @@ static void imx_shutdown(struct uart_port *port)
- 	unsigned long temp;
- 	unsigned long flags;
- 
--	if (sport->dma_is_enabled) {
--		sport->dma_is_rxing = 0;
--		sport->dma_is_txing = 0;
--		dmaengine_terminate_sync(sport->dma_chan_tx);
--		dmaengine_terminate_sync(sport->dma_chan_rx);
--
-+	if (!sport->port.suspended) {
- 		spin_lock_irqsave(&sport->port.lock, flags);
- 		imx_stop_tx(port);
- 		imx_stop_rx(port);
--		imx_disable_dma(sport);
- 		spin_unlock_irqrestore(&sport->port.lock, flags);
--		imx_uart_dma_exit(sport);
- 	}
- 
--	mctrl_gpio_disable_ms(sport->gpios);
-+	if (sport->dma_is_inited) {
-+		if (sport->dma_is_enabled) {
-+			spin_lock_irqsave(&sport->port.lock, flags);
-+			imx_disable_dma(sport);
-+			spin_unlock_irqrestore(&sport->port.lock, flags);
-+		}
-+		imx_uart_dma_exit(sport);
-+	}
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 	temp = readl(sport->port.membase + UCR2);
--	temp &= ~(UCR2_TXEN);
-+	temp &= ~(UCR2_TXEN | UCR2_RXEN);
- 	writel(temp, sport->port.membase + UCR2);
-+	temp = readl(sport->port.membase + UCR4);
-+	temp &= ~UCR4_OREN;
-+	writel(temp, sport->port.membase + UCR4);
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- 
--	/*
--	 * Stop our timer.
--	 */
--	del_timer_sync(&sport->timer);
-+	mctrl_gpio_disable_ms(sport->gpios);
- 
--	/*
--	 * Disable all interrupts, port and break condition.
--	 */
-+	/* Stop our timer. */
-+	del_timer_sync(&sport->timer);
- 
-+	/* Disable port. */
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 	temp = readl(sport->port.membase + UCR1);
--	temp &= ~(UCR1_TXMPTYEN | UCR1_RRDYEN | UCR1_RTSDEN | UCR1_UARTEN);
--
-+	temp &= ~UCR1_UARTEN;
- 	writel(temp, sport->port.membase + UCR1);
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- 
-+	/* Disable clocks. */
- 	clk_disable_unprepare(sport->clk_per);
- 	clk_disable_unprepare(sport->clk_ipg);
- }
--- 
-1.8.3.1
+SGksCgpPbiBGcmksIDMwIEp1biAyMDE3IDE0OjA0OjQyICswMjAwIFJvbWFpbiBQZXJpZXIgd3Jv
+dGU6Cj4gRnJvbTogTmFuZG9yIEhhbiA8bmFuZG9yLmhhbkBnZS5jb20+Cj4gCj4gSW5pdGlhbGl6
+ZSBib3RoIGRtYV9pc197cnh8dHh9aW5nIHZhcmlhYmxlcyB3aGVuIERNQSBpcyBlbmFibGVkIHRv
+IGF2b2lkCj4gY2hlY2tpbmcgdW5pbml0aWFsaXplZCB2YXJpYWJsZXMgaWYgcG9ydCBzaHV0ZG93
+biBpcyByZXF1ZXN0ZWQgYmVmb3JlCj4gRE1BIGNoYW5uZWxzIGdldCBhIGNoYW5jZSB0byBzdGFy
+dC4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBOYW5kb3IgSGFuIDxuYW5kb3IuaGFuQGdlLmNvbT4KPiBT
+aWduZWQtb2ZmLWJ5OiBSb21haW4gUGVyaWVyIDxyb21haW4ucGVyaWVyQGNvbGxhYm9yYS5jb20+
+Cj4gLS0tCj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8IDMgKysrCj4gIDEgZmlsZSBjaGFu
+Z2VkLCAzIGluc2VydGlvbnMoKykKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFs
+L2lteC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCj4gaW5kZXggMTg4MDYzZC4uODFmYjQx
+MyAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKPiArKysgYi9kcml2ZXJz
+L3R0eS9zZXJpYWwvaW14LmMKPiBAQCAtMTIyNSw2ICsxMjI1LDkgQEAgc3RhdGljIHZvaWQgaW14
+X2VuYWJsZV9kbWEoc3RydWN0IGlteF9wb3J0ICpzcG9ydCkKPiAgCj4gIAlpbXhfc2V0dXBfdWZj
+cihzcG9ydCwgVFhUTF9ETUEsIFJYVExfRE1BKTsKPiAgCj4gKwlzcG9ydC0+ZG1hX2lzX3J4aW5n
+ID0gMDsKPiArCXNwb3J0LT5kbWFfaXNfdHhpbmcgPSAwOwo+ICsKPiAgCXNwb3J0LT5kbWFfaXNf
+ZW5hYmxlZCA9IDE7Cj4gIH0KPiAgCnNwb3J0IGlzIGRldm1fa3phbGxvYygpZWQsIHNvIHRoZSB2
+YXJpYWJsZXMgYXJlIGluaXRpYWxpemVkIHRvIDAgYW55d2F5LgoKCkxvdGhhciBXYcOfbWFubgoK
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJt
+LWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3Jn
+Cmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtl
+cm5lbAo=
