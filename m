@@ -1,7 +1,7 @@
 From: Romain Perier <romain.perier@collabora.com>
-Subject: [PATCH 6/7] serial: imx: update the stop rx,tx procedures
-Date: Fri, 30 Jun 2017 14:04:45 +0200
-Message-ID: <20170630120446.13994-7-romain.perier@collabora.com>
+Subject: [PATCH 7/7] serial: imx: Fix imx_shutdown procedure
+Date: Fri, 30 Jun 2017 14:04:46 +0200
+Message-ID: <20170630120446.13994-8-romain.perier@collabora.com>
 References: <20170630120446.13994-1-romain.perier@collabora.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170630120446.13994-1-romain.perier@collabora.com>
@@ -12,88 +12,89 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Nandor Han <nandor.han@ge.com>
 
-According to "Documentation/serial/driver" both procedures should stop
-receiving or sending data. Based on this the procedures should stop the
-activity regardless if DMA is enabled or not.
+In some cases, It looks that interrupts can happen after the dma was
+disabled and port was not yet shutdown. This will result in interrupts
+handled by imx_rxint.
 
-This commit updates both imx_stop_{rx|tx} procedures to stop the
-activity and disable the interrupts related to that. In case DMA is used
-the sg buffers are also un-maped.
+This commits updates the shutdown function to ensure that underlying
+components are disabled in the right order. This disables RX and TX
+blocks, then it disabled interrupts. In case DMA is enabled, it disables
+DMA and free corresponding resources. It disables UART port and stop
+clocks.
 
 Signed-off-by: Nandor Han <nandor.han@ge.com>
 Signed-off-by: Romain Perier <romain.perier@collabora.com>
 ---
- drivers/tty/serial/imx.c | 39 ++++++++++++++++++++-------------------
- 1 file changed, 20 insertions(+), 19 deletions(-)
+ drivers/tty/serial/imx.c | 38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 58d6b1c..d5b6e09 100644
+index d5b6e09..7dc6f0c 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -360,6 +360,9 @@ static void imx_port_rts_auto(struct imx_port *sport, unsigned long *ucr2)
- 	*ucr2 |= UCR2_CTSC;
- }
- 
-+static void imx_stop_rx_dma(struct imx_port *sport);
-+static void imx_stop_tx_dma(struct imx_port *sport);
-+
- /*
-  * interrupts disabled on entry
-  */
-@@ -368,15 +371,14 @@ static void imx_stop_tx(struct uart_port *port)
- 	struct imx_port *sport = (struct imx_port *)port;
+@@ -1404,44 +1404,44 @@ static void imx_shutdown(struct uart_port *port)
  	unsigned long temp;
+ 	unsigned long flags;
+ 
+-	if (sport->dma_is_enabled) {
+-		sport->dma_is_rxing = 0;
+-		sport->dma_is_txing = 0;
+-		dmaengine_terminate_sync(sport->dma_chan_tx);
+-		dmaengine_terminate_sync(sport->dma_chan_rx);
+-
++	if (!sport->port.suspended) {
+ 		spin_lock_irqsave(&sport->port.lock, flags);
+ 		imx_stop_tx(port);
+ 		imx_stop_rx(port);
+-		imx_disable_dma(sport);
+ 		spin_unlock_irqrestore(&sport->port.lock, flags);
+-		imx_uart_dma_exit(sport);
+ 	}
+ 
+-	mctrl_gpio_disable_ms(sport->gpios);
++	if (sport->dma_is_inited) {
++		if (sport->dma_is_enabled) {
++			spin_lock_irqsave(&sport->port.lock, flags);
++			imx_disable_dma(sport);
++			spin_unlock_irqrestore(&sport->port.lock, flags);
++		}
++		imx_uart_dma_exit(sport);
++	}
+ 
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 	temp = readl(sport->port.membase + UCR2);
+-	temp &= ~(UCR2_TXEN);
++	temp &= ~(UCR2_TXEN | UCR2_RXEN);
+ 	writel(temp, sport->port.membase + UCR2);
++	temp = readl(sport->port.membase + UCR4);
++	temp &= ~UCR4_OREN;
++	writel(temp, sport->port.membase + UCR4);
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
  
 -	/*
--	 * We are maybe in the SMP context, so if the DMA TX thread is running
--	 * on other cpu, we have to wait for it to finish.
+-	 * Stop our timer.
 -	 */
--	if (sport->dma_is_enabled && sport->dma_is_txing)
--		return;
-+	sport->tx_bytes = 0;
-+
-+	if (sport->dma_is_enabled)
-+		imx_stop_tx_dma(sport);
+-	del_timer_sync(&sport->timer);
++	mctrl_gpio_disable_ms(sport->gpios);
  
- 	temp = readl(port->membase + UCR1);
--	writel(temp & ~UCR1_TXMPTYEN, port->membase + UCR1);
-+	temp &= ~(UCR1_TXMPTYEN | UCR1_TRDYEN | UCR1_RTSDEN);
-+	writel(temp, port->membase + UCR1);
+-	/*
+-	 * Disable all interrupts, port and break condition.
+-	 */
++	/* Stop our timer. */
++	del_timer_sync(&sport->timer);
  
- 	/* in rs485 mode disable transmitter if shifter is empty */
- 	if (port->rs485.flags & SER_RS485_ENABLED &&
-@@ -403,21 +405,20 @@ static void imx_stop_rx(struct uart_port *port)
- 	struct imx_port *sport = (struct imx_port *)port;
- 	unsigned long temp;
++	/* Disable port. */
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 	temp = readl(sport->port.membase + UCR1);
+-	temp &= ~(UCR1_TXMPTYEN | UCR1_RRDYEN | UCR1_RTSDEN | UCR1_UARTEN);
+-
++	temp &= ~UCR1_UARTEN;
+ 	writel(temp, sport->port.membase + UCR1);
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
  
--	if (sport->dma_is_enabled && sport->dma_is_rxing) {
--		if (sport->port.suspended) {
--			dmaengine_terminate_all(sport->dma_chan_rx);
--			sport->dma_is_rxing = 0;
--		} else {
--			return;
--		}
--	}
-+	if (sport->dma_is_enabled)
-+		imx_stop_rx_dma(sport);
-+
-+	temp = readl(sport->port.membase + UCR1);
-+	temp &= ~UCR1_RRDYEN;
-+	writel(temp, sport->port.membase + UCR1);
- 
- 	temp = readl(sport->port.membase + UCR2);
--	writel(temp & ~UCR2_RXEN, sport->port.membase + UCR2);
-+	temp &= ~UCR2_ATEN;
-+	writel(temp, sport->port.membase + UCR2);
- 
--	/* disable the `Receiver Ready Interrrupt` */
--	temp = readl(sport->port.membase + UCR1);
--	writel(temp & ~UCR1_RRDYEN, sport->port.membase + UCR1);
-+	temp = readl(sport->port.membase + UCR3);
-+	temp &= ~UCR3_AWAKEN;
-+	writel(temp, sport->port.membase + UCR3);
++	/* Disable clocks. */
+ 	clk_disable_unprepare(sport->clk_per);
+ 	clk_disable_unprepare(sport->clk_ipg);
  }
- 
- /*
 -- 
 1.8.3.1
