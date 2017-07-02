@@ -1,87 +1,91 @@
-From: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Subject: [PATCH] serial: 8250: fix error handling in of_platform_serial_probe()
-Date: Sat,  1 Jul 2017 01:49:29 +0300
-Message-ID: <1498862969-4919-1-git-send-email-khoroshilov@ispras.ru>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>
-Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
+From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH 4/6] dt-bindings: serial: Document RDA Micro UART
+Date: Sun, 2 Jul 2017 03:52:39 +0200
+Message-ID: <d9b00fd8-2e9e-fb01-9056-db0d32b3e80b@suse.de>
+References: <20170627005520.23731-1-afaerber@suse.de>
+ <20170627005520.23731-5-afaerber@suse.de>
+ <20170629201051.cfr37kh2gozompqo@rob-hp-laptop>
+ <e8b8eb0c-0362-0cfb-4d18-3e1ab2b77412@suse.de>
+ <CAL_JsqLatRUwdA6GeWCHXFTHMUYY27pdmUpPEoHwCCFMg2F21Q@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAL_JsqLatRUwdA6GeWCHXFTHMUYY27pdmUpPEoHwCCFMg2F21Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, service-KgY735zpLH1Wk0Htik3J/w@public.gmane.org, zhao_steven-Y9sIeH5OGRo@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-clk_disable_unprepare(info->clk) is missed in of_platform_serial_probe(),
-while irq_dispose_mapping(port->irq) is missed in of_platform_serial_setup().
+Am 30.06.2017 um 16:27 schrieb Rob Herring:
+> On Fri, Jun 30, 2017 at 6:12 AM, Andreas Färber <afaerber-l3A5Bk7waGM@public.gmane.org> wrote:
+>> Am 29.06.2017 um 22:10 schrieb Rob Herring:
+>>> On Tue, Jun 27, 2017 at 02:55:18AM +0200, Andreas Färber wrote:
+>>>> Add an initial binding for the RDA8810PL UART.
+>>>>
+>>>> Signed-off-by: Andreas Färber <afaerber-l3A5Bk7waGM@public.gmane.org>
+>>>> ---
+>>>>  Documentation/devicetree/bindings/serial/rda-uart.txt | 13 +++++++++++++
+>>>>  1 file changed, 13 insertions(+)
+>>>>  create mode 100644 Documentation/devicetree/bindings/serial/rda-uart.txt
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/serial/rda-uart.txt b/Documentation/devicetree/bindings/serial/rda-uart.txt
+>>>> new file mode 100644
+>>>> index 000000000000..6840a8aee035
+>>>> --- /dev/null
+>>>> +++ b/Documentation/devicetree/bindings/serial/rda-uart.txt
+>>>> @@ -0,0 +1,13 @@
+>>>> +RDA Micro UART
+>>>> +
+>>>> +Required properties:
+>>>> +- compatible :  "rda,8810pl-uart" for RDA8810PL
+>>>> +- reg        :  Offset and length of the register set for the device.
+>>>
+>>> No clocks or interrupts?
+>>
+>> Not yet. I've only pieced together an earlycon driver so far, no full
+>> serial driver. The .dtsi doesn't even have an interrupt-controller node
+>> yet - wasn't clear to me whether this SoC even has a GIC and, if so,
+>> where, from the downstream pre-DT code.
+> 
+> How far can you boot with no interrupts?
 
-Found by Linux Driver Verification project (linuxtesting.org).
+That was described in the cover letter, as usual.
 
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
----
- drivers/tty/serial/8250/8250_of.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+> DT bindings shouldn't unnecessarily evolve. Really, anything added
+> should be optional to maintain compatibility. Sometimes that's
+> unavoidable, but this isn't one of those cases.
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 1cbadafc6889..f7a0e7831635 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -86,7 +86,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 	ret = of_address_to_resource(np, 0, &resource);
- 	if (ret) {
- 		dev_warn(&ofdev->dev, "invalid address\n");
--		goto out;
-+		goto err_address;
- 	}
- 
- 	spin_lock_init(&port->lock);
-@@ -128,7 +128,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 			dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
- 				 prop);
- 			ret = -EINVAL;
--			goto out;
-+			goto err_regio;
- 		}
- 	}
- 
-@@ -158,7 +158,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		port->handle_irq = fsl8250_handle_irq;
- 
- 	return 0;
--out:
-+
-+err_regio:
-+	irq_dispose_mapping(port->irq);
-+err_address:
- 	if (info->clk)
- 		clk_disable_unprepare(info->clk);
- 	return ret;
-@@ -192,7 +195,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 	memset(&port8250, 0, sizeof(port8250));
- 	ret = of_platform_serial_setup(ofdev, port_type, &port8250.port, info);
- 	if (ret)
--		goto out;
-+		goto err_setup;
- 
- 	if (port8250.port.fifosize)
- 		port8250.capabilities = UART_CAP_FIFO;
-@@ -208,15 +211,18 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 
- 	ret = serial8250_register_8250_port(&port8250);
- 	if (ret < 0)
--		goto out;
-+		goto err_register;
- 
- 	info->type = port_type;
- 	info->line = ret;
- 	platform_set_drvdata(ofdev, info);
- 	return 0;
--out:
--	kfree(info);
-+err_register:
- 	irq_dispose_mapping(port8250.port.irq);
-+	if (info->clk)
-+		clk_disable_unprepare(info->clk);
-+err_setup:
-+	kfree(info);
- 	return ret;
- }
- 
+Makes sense. Maybe this series should've been marked RFC. It's too late
+for 4.13 anyway, so there's lots of time left to extend the bindings.
+
+BTW I saw that Kevin was adding a disclaimer to the Amlogic bindings
+that they are not stable. Is that required here, too?
+
+> So submit this when
+> you have something more complete.
+
+Negative. I worked weeks and months towards perfect STM32 drivers, and
+despite showing it to ST and at a LinuxCon Japan, someone else sent less
+sophisticated patches (e.g., fixed-clocks) and took all the credit. Same
+with Turris Omnia. Therefore I am now submitting my new patches early,
+not just when everything is complete.
+
+It took weeks just to get any earlycon output on the 2G-IoT at all - not
+my serial driver or my DT was broken, but the vendor's U-Boot just
+wasn't passing the .dtb to the kernel properly, as it turned out. Now
+that we know how to boot a DT-based kernel and get serial output, it
+becomes much easier for me and potential contributors to add drivers.
+
+Regards,
+Andreas
+
 -- 
-2.7.4
+SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
+GF: Felix Imendörffer, Jane Smithard, Graham Norton
+HRB 21284 (AG Nürnberg)
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
