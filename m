@@ -1,88 +1,52 @@
-From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Subject: Re: [PATCH v4 16/28] tty: serial: owl: Implement console driver
-Date: Sun, 2 Jul 2017 22:27:22 +0200
-Message-ID: <d3c107f3-5df6-a771-2510-ef5578216d0f@suse.de>
-References: <20170606005426.26446-1-afaerber@suse.de>
- <20170606005426.26446-17-afaerber@suse.de>
- <20170606143407.56d15c3c@lxorguk.ukuu.org.uk>
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: Re: serial: imx: disable DMA for RS-485 on i.MX6 SMP
+Date: Sun, 2 Jul 2017 22:47:31 +0200
+Message-ID: <20170702204731.GA7174@archie.localdomain>
+References: <CAOMZO5DA++c95DPrmzOHfFtD+zFcW6G9-0_cRBtg0E8TA8dwXg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170606143407.56d15c3c@lxorguk.ukuu.org.uk>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <CAOMZO5DA++c95DPrmzOHfFtD+zFcW6G9-0_cRBtg0E8TA8dwXg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: support@lemaker.org, =?UTF-8?B?5byg5aSp55uK?= <tyzhang@actions-semi.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 96boards@ucrobotics.com, linux-kernel@vger.kernel.org, Thomas Liau <thomas.liau@actions-semi.com>, mp-cs@actions-semi.com, linux-serial@vger.kernel.org, =?UTF-8?B?5YiY54Kc?= <liuwei@actions-semi.com>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, =?UTF-8?B?5byg5Lic6aOO?= <zhangdf@actions-semi.com>, =?UTF-8?B?5qKF5Yip?= <harrymei@actions-semi.com>, support@cubietech.com, lee@cubietech.com
+To: Fabio Estevam <festevam@gmail.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabio Estevam <fabio.estevam@nxp.com>, u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-Am 06.06.2017 um 15:34 schrieb Alan Cox:
->> +static void owl_uart_set_termios(struct uart_port *port,
->> +				 struct ktermios *termios,
->> +				 struct ktermios *old)
->> +{
->> +	struct owl_uart_port *owl_port = to_owl_uart_port(port);
->> +	unsigned int baud;
->> +	u32 ctl;
->> +	unsigned long flags;
->> +
->> +	spin_lock_irqsave(&port->lock, flags);
->> +
->> +	/* We don't support modem control lines. */
->> +	termios->c_cflag &= ~(HUPCL | CMSPAR);
->> +	termios->c_cflag |= CLOCAL;
-> 
-> CLOCAL and HUPCL are software not hardware properties so are probably
-> best not forced (it'll confuse some apps if you do)
->> +
->> +	/* We don't support BREAK character recognition. */
->> +	termios->c_iflag &= ~(IGNBRK | BRKINT);
-> 
-> Ditto these
+Hi Fabio,
 
-Fixed. These were obviously forward-ported from the vendor tree.
-
-https://github.com/LeMaker/linux-actions/blob/linux-3.10.y/arch/arm/mach-owl/serial-owl.c
-
-> You do clear CMSPAR which is right if not supported but then later on we
-> have:
+On Tue, Jun 20, 2017 at 08:49:28PM -0300, Fabio Estevam wrote:
+> Hi Clemens,
 > 
->> +	if (termios->c_cflag & PARENB) {
->> +		if (termios->c_cflag & CMSPAR) {
->> +			if (termios->c_cflag & PARODD)
->> +				ctl |= OWL_UART_CTL_PRS_MARK;
->> +			else
->> +				ctl |= OWL_UART_CTL_PRS_SPACE;
->> +		} else if (termios->c_cflag & PARODD)
->> +			ctl |= OWL_UART_CTL_PRS_ODD;
->> +		else
->> +			ctl |= OWL_UART_CTL_PRS_EVEN;
->> +	} else
->> +		ctl |= OWL_UART_CTL_PRS_NONE;
+> On Tue, Jun 20, 2017 at 1:13 PM, Fabio Estevam <festevam@gmail.com> wrote:
 > 
+> > The subject gives the impression that the DMA will only be disabled
+> > for RS485, but the impact of this change is wider.
+> >
+> > For example: if I have a mx6q system with a Bluetooth serial
+> > connection I can no longer use DMA with your change applied.
+> >
+> > Ideally we should fix the RS485 DMA bug. If that is not possible, then
+> > at least we need to restrict this change to the RS485 case.
+> >
+> > Maybe we need to pass "linux,rs485-enabled-at-boot-time" in device
+> > tree and then use this property to deceide if DMA will be enabled or
+> > not:
+> >
+> > if (!uart_console(port) && !sport->dma_is_inited && !sport->rs485_enabled)
 > 
-> Which seems to indicate you do support CMSPAR so shouldn't be clearing it.
-
-Again that's what the original code was like.
-
-Since these register values do exist, I would rather not rip the code
-out, unless it's wrong. In my testing, not clearing CMSPAR works so far.
-
->> +	baud = uart_get_baud_rate(port, termios, old, 9600, 3200000);
->> +	owl_uart_change_baudrate(owl_port, baud);
+> Could you please test the two attached patches and see if it solves the issue?
 > 
-> You should re-encode the resulting baud rate into the termios
+> Unfortunately I no longer have access to the RS485 half-duplex board.
 > 
->         /* Don't rewrite B0 */
->         if (tty_termios_baud_rate(termios))
->                 tty_termios_encode_baud_rate(termios, baud, baud);
+> Just make sure to pass 'linux,rs485-enabled-at-boot-time' in your
+> device tree, thanks.
 
-Added, thanks.
+The two patches work for me!
+
+You can add my Tested-by tag if/when you submit them.
+
+Tested-by: Clemens Gruber <clemens.gruber@pqgruber.com>
 
 Regards,
-Andreas
-
--- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Jane Smithard, Graham Norton
-HRB 21284 (AG Nürnberg)
+Clemens
