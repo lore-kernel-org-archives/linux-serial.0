@@ -1,43 +1,54 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PULL] serial/gpio: exar: Fixes and support for IOT2000
-Date: Mon, 3 Jul 2017 10:10:32 +0200
-Message-ID: <CACRpkda4v+2oQjYzGXsNZsUeJ8qwF30SLM3mL-JFyDnGiZdx8A@mail.gmail.com>
-References: <cover.1497033197.git.jan.kiszka@siemens.com> <CACRpkdZYSFTa63BF5u-J=pu2XwUbVZiQGAtZybhjQno6vVbe=g@mail.gmail.com>
- <9520074b-3731-7bbe-d59d-cbed90ac16bb@siemens.com> <CACRpkdbNPnNbk_r0NWEs4e7PuKmMf9KTjeRPRnxTOHuK-+ki2Q@mail.gmail.com>
- <c0a29540-7946-4e95-1b59-3a2f478757da@siemens.com> <d52a1a65-842c-9c73-17f7-5574fcefab2a@siemens.com>
- <CACRpkdZ1atVQLuDio6PVk4Xg+DUBDt2F2OH+2UjVkue8rKNbcA@mail.gmail.com>
- <20170629144940.GD23512@kroah.com> <CACRpkdYEvc2De88sy-FWOOkU8-O4KwX00rLZ7dBk6H2H0Q0+LQ@mail.gmail.com>
- <5de2f417-02e2-b983-67bd-7d82232956b0@siemens.com>
+From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: Moxa UPort 1150 and =?utf-8?Q?RS-422?= =?utf-8?B?LzQ4NeKApg==?=
+ what's the "proper" way to switch modes
+Date: Mon, 3 Jul 2017 10:51:31 +0200
+Message-ID: <20170703085131.GE7084@localhost>
+References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
+ <20170627090449.GG3025@localhost>
+ <42601356-656d-57d0-d366-a0933780b8f9@longlandclan.id.au>
+ <1498565331.30390.5.camel@suse.com>
+ <20170628153439.GC17630@localhost>
+ <20170629205032.743ab235@alans-desktop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <5de2f417-02e2-b983-67bd-7d82232956b0@siemens.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexandre Courbot <gnurou@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170629205032.743ab235@alans-desktop>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Oliver Neukum <oneukum-IBi9RG/b67k@public.gmane.org>, Stuart Longland <stuartl-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jul 3, 2017 at 9:21 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+On Thu, Jun 29, 2017 at 08:50:32PM +0100, Alan Cox wrote:
+> So IMHO there are two cases
+> 
+> 1. The configuration is fixed in the hardware - in which case we should
+> automatically set it in kernel, or from device tree.
 
-> The following changes since commit 85bb4646f8908eb786dfa19a6bb2ff1423dc8aa4:
->
->   gpio: rcar: Add R8A7743 (RZ/G1M) support (2017-06-29 14:22:38 +0200)
->
-> are available in the git repository at:
->
->   git://git.kiszka.org/linux.git queues/gpio-iot2000
->
-> for you to fetch changes up to 413058df4331ce29f9934a5870d582c7e71fe15f:
->
->   serial: exar: Add support for IOT2040 device (2017-07-03 08:33:20 +0200)
->
-> This corresponds to v6 of the series with additional review and ack
-> tags.
+Right.
 
-Thanks Jan, pulled in for v4.13.
+> 2. The configuration is soft - in which case you need an ioctl you can
+> use on the port to change it - irrespective of whether sysfs also handles
+> it. For simple permissions reasons and also to avoid races you need that
+> ioctl.
 
-Also thanks for your tireless and gritty work in hashing this out
-and get the right fix out there!
+Ok, but if we are going to extend and use the RS485 ioctl for this, I
+think we should just stick to that and not add a sysfs-interface as
+well.
 
-Yours,
-Linus Walleij
+I'll take a closer look at this.
+
+> We intentionally have lots of spare space left to extend the RS485 ioctl,
+> and we have termiox which contains even more room and historically in
+> other Unixen dealt with all sorts of weird and wonderful parameters used
+> on stuff like synchronous ports.
+
+Yes, your foresight when adding (generalising) that ioctl might come in
+handy now. :)
+
+Thanks,
+Johan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
