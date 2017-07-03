@@ -1,96 +1,57 @@
 From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
         <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 4/7] serial: imx: Simplify DMA disablement
-Date: Mon, 3 Jul 2017 08:58:49 +0200
-Message-ID: <20170703065849.u55umof2lkjmgohf@pengutronix.de>
+Subject: Re: [PATCH 5/7] serial: imx: umap sg buffers when DMA channel is
+ released
+Date: Mon, 3 Jul 2017 09:01:20 +0200
+Message-ID: <20170703070120.j6fg2vfiikug4jmd@pengutronix.de>
 References: <20170630120446.13994-1-romain.perier@collabora.com>
- <20170630120446.13994-5-romain.perier@collabora.com>
+ <20170630120446.13994-6-romain.perier@collabora.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170630120446.13994-5-romain.perier@collabora.com>
+In-Reply-To: <20170630120446.13994-6-romain.perier@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Romain Perier <romain.perier@collabora.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Nandor Han <nandor.han@ge.com>, kernel@pengutronix.de
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Nandor Han <nandor.han@ge.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jun 30, 2017 at 02:04:43PM +0200, Romain Perier wrote:
+$Subject ~= s/umap/unmap/
+
+On Fri, Jun 30, 2017 at 02:04:44PM +0200, Romain Perier wrote:
 > From: Nandor Han <nandor.han@ge.com>
 > 
-> This commits simplify the function imx_disable_dma() by moving
-> the code for disabling RX and TX DMAs to dedicated functions.
-
-I'd point out there that this prepares the next commit because in the
-current state I'd prefer just improved comments.
-
-> Also move away CTSC and CTS as this is not related to DMA.
-
-Hmm, maybe this is related to the rs485 breakage we're seeing and
-deserves a separate commit?
-
-This also has the advantage that the refactoring change is semantically
-a no-op.
-
+> This commits unmaps sg buffers when the DMA channel is released
+> 
 > Signed-off-by: Nandor Han <nandor.han@ge.com>
 > Signed-off-by: Romain Perier <romain.perier@collabora.com>
 > ---
->  drivers/tty/serial/imx.c | 31 ++++++++++++++++++++-----------
->  1 file changed, 20 insertions(+), 11 deletions(-)
+>  drivers/tty/serial/imx.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
 > 
 > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 81fb413..e8cf7cf 100644
+> index e8cf7cf..58d6b1c 100644
 > --- a/drivers/tty/serial/imx.c
 > +++ b/drivers/tty/serial/imx.c
-> @@ -1208,6 +1208,24 @@ static int imx_uart_dma_init(struct imx_port *sport)
->  	return ret;
+> @@ -1215,6 +1215,12 @@ static void imx_stop_tx_dma(struct imx_port *sport)
+>  	temp = readl(sport->port.membase + UCR1);
+>  	temp &= ~UCR1_TDMAEN;
+>  	writel(temp, sport->port.membase + UCR1);
+> +
+> +	if (sport->dma_is_txing) {
+> +		dma_unmap_sg(sport->port.dev, &sport->tx_sgl[0],
+> +		sport->dma_tx_nents, DMA_TO_DEVICE);
+> +		sport->dma_is_txing = 0;
+
+You don't motivate setting dma_is_txing to zero in the commit log. 
+
+Does this mean the driver leaks memory in the current state?
+
+> +	}
 >  }
 >  
-> +static void imx_stop_tx_dma(struct imx_port *sport)
-> +{
-> +	unsigned long temp;
-> +
-> +	temp = readl(sport->port.membase + UCR1);
-> +	temp &= ~UCR1_TDMAEN;
-> +	writel(temp, sport->port.membase + UCR1);
-> +}
-> +
-> +static void imx_stop_rx_dma(struct imx_port *sport)
-> +{
-> +	unsigned long temp;
-> +
-> +	temp = readl(sport->port.membase + UCR1);
-> +	temp &= ~(UCR1_RDMAEN | UCR1_ATDMAEN);
-> +	writel(temp, sport->port.membase + UCR1);
-> +}
-> +
->  static void imx_enable_dma(struct imx_port *sport)
->  {
->  	unsigned long temp;
-> @@ -1233,17 +1251,8 @@ static void imx_enable_dma(struct imx_port *sport)
->  
->  static void imx_disable_dma(struct imx_port *sport)
->  {
-> -	unsigned long temp;
-> -
-> -	/* clear UCR1 */
-> -	temp = readl(sport->port.membase + UCR1);
-> -	temp &= ~(UCR1_RDMAEN | UCR1_TDMAEN | UCR1_ATDMAEN);
-> -	writel(temp, sport->port.membase + UCR1);
-> -
-> -	/* clear UCR2 */
-> -	temp = readl(sport->port.membase + UCR2);
-> -	temp &= ~(UCR2_CTSC | UCR2_CTS | UCR2_ATEN);
-
-You also dropped clearing ATEN without mentioning that in the commit
-log. Is this done on purpose?
-
-> -	writel(temp, sport->port.membase + UCR2);
-> +	imx_stop_rx_dma(sport);
-> +	imx_stop_tx_dma(sport);
->  
->  	imx_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
+>  static void imx_stop_rx_dma(struct imx_port *sport)
 
 Best regards
 Uwe
