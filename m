@@ -1,7 +1,7 @@
 From: Romain Perier <romain.perier@collabora.com>
-Subject: [PATCH v2 5/6] serial: imx: update the stop rx,tx procedures
-Date: Wed,  5 Jul 2017 15:07:05 +0200
-Message-ID: <20170705130706.10388-6-romain.perier@collabora.com>
+Subject: [PATCH v2 1/6] serial: imx: only set DMA rx-ing when DMA starts
+Date: Wed,  5 Jul 2017 15:07:01 +0200
+Message-ID: <20170705130706.10388-2-romain.perier@collabora.com>
 References: <20170705130706.10388-1-romain.perier@collabora.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170705130706.10388-1-romain.perier@collabora.com>
@@ -12,77 +12,40 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Nandor Han <nandor.han@ge.com>
 
-According to "Documentation/serial/driver" both procedures should stop
-receiving or sending data. Based on this the procedures should stop the
-activity regardless if DMA is enabled or not.
+Avoid the situation when `dma_is_rxing` could incorrectly signal that
+DMA RX channel is receiving data in case DMA preparation or sg mapping
+fails.
 
-This commit updates both imx_stop_{rx|tx} procedures to stop the
-activity and disable the interrupts related to that.
+This commit fixes the issues by moving the assignment of dma_is_rxing
+out of imx_disable_rx_int(), then the variable is set to 1 from
+start_rx_dma() only when the preparation is correctly done.
 
 Signed-off-by: Nandor Han <nandor.han@ge.com>
 Signed-off-by: Romain Perier <romain.perier@collabora.com>
 ---
- drivers/tty/serial/imx.c | 36 +++++++++++++++++-------------------
- 1 file changed, 17 insertions(+), 19 deletions(-)
+ drivers/tty/serial/imx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 3112d88..d35112f 100644
+index 3bae4ea..01df430 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -398,15 +398,14 @@ static void imx_stop_tx(struct uart_port *port)
- 	struct imx_port *sport = (struct imx_port *)port;
+@@ -729,8 +729,6 @@ static void imx_disable_rx_int(struct imx_port *sport)
+ {
  	unsigned long temp;
  
--	/*
--	 * We are maybe in the SMP context, so if the DMA TX thread is running
--	 * on other cpu, we have to wait for it to finish.
--	 */
--	if (sport->dma_is_enabled && sport->dma_is_txing)
--		return;
-+	sport->tx_bytes = 0;
-+
-+	if (sport->dma_is_enabled)
-+		imx_stop_tx_dma(sport);
+-	sport->dma_is_rxing = 1;
+-
+ 	/* disable the receiver ready and aging timer interrupts */
+ 	temp = readl(sport->port.membase + UCR1);
+ 	temp &= ~(UCR1_RRDYEN);
+@@ -1083,6 +1081,7 @@ static int start_rx_dma(struct imx_port *sport)
+ 	desc->callback_param = sport;
  
- 	temp = readl(port->membase + UCR1);
--	writel(temp & ~UCR1_TXMPTYEN, port->membase + UCR1);
-+	temp &= ~(UCR1_TXMPTYEN | UCR1_TRDYEN | UCR1_RTSDEN);
-+	writel(temp, port->membase + UCR1);
- 
- 	/* in rs485 mode disable transmitter if shifter is empty */
- 	if (port->rs485.flags & SER_RS485_ENABLED &&
-@@ -433,21 +432,20 @@ static void imx_stop_rx(struct uart_port *port)
- 	struct imx_port *sport = (struct imx_port *)port;
- 	unsigned long temp;
- 
--	if (sport->dma_is_enabled && sport->dma_is_rxing) {
--		if (sport->port.suspended) {
--			dmaengine_terminate_all(sport->dma_chan_rx);
--			sport->dma_is_rxing = 0;
--		} else {
--			return;
--		}
--	}
-+	if (sport->dma_is_enabled)
-+		imx_stop_rx_dma(sport);
-+
-+	temp = readl(sport->port.membase + UCR1);
-+	temp &= ~UCR1_RRDYEN;
-+	writel(temp, sport->port.membase + UCR1);
- 
- 	temp = readl(sport->port.membase + UCR2);
--	writel(temp & ~UCR2_RXEN, sport->port.membase + UCR2);
-+	temp &= ~UCR2_ATEN;
-+	writel(temp, sport->port.membase + UCR2);
- 
--	/* disable the `Receiver Ready Interrrupt` */
--	temp = readl(sport->port.membase + UCR1);
--	writel(temp & ~UCR1_RRDYEN, sport->port.membase + UCR1);
-+	temp = readl(sport->port.membase + UCR3);
-+	temp &= ~UCR3_AWAKEN;
-+	writel(temp, sport->port.membase + UCR3);
- }
- 
- /*
+ 	dev_dbg(dev, "RX: prepare for the DMA.\n");
++	sport->dma_is_rxing = 1;
+ 	sport->rx_cookie = dmaengine_submit(desc);
+ 	dma_async_issue_pending(chan);
+ 	return 0;
 -- 
 1.8.3.1
