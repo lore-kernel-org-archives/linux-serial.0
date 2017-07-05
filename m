@@ -1,94 +1,70 @@
-From: Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: Re: [PATCH v2 3/6] serial: imx: remove CTSC and CTS handling
-Date: Wed, 5 Jul 2017 16:42:37 +0200
-Message-ID: <20170705144237.GA8892@archie.localdomain>
-References: <20170705130706.10388-1-romain.perier@collabora.com>
- <20170705130706.10388-4-romain.perier@collabora.com>
- <20170705133845.32ov37meqcea3wtz@pengutronix.de>
+From: Joe Perches <joe@perches.com>
+Subject: [PATCH 00/18] treewide: Move storage class before
+	return type
+Date: Wed,  5 Jul 2017 13:02:09 -0700
+Message-ID: <cover.1499284835.git.joe@perches.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170705133845.32ov37meqcea3wtz@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Romain Perier <romain.perier@collabora.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Nandor Han <nandor.han@ge.com>, Fabio Estevam <fabio.estevam@nxp.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: Andrew Morton <akpm@linux-foundation.org>, kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, linux-m68k@lists.linux-m68k.org, linux-efi@vger.kernel.org, linux-s390@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-omap@vger.kernel.org, alsa-devel@alsa-project.org
+Cc: linux-mips@linux-mips.org, linux-kernel@vger.kernel.org, linux-cris-kernel@axis.com, linux-sh@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Move the inline/asmlinkage keywords before the return types
+Add a checkpatch test for this too.
 
-On Wed, Jul 05, 2017 at 03:38:45PM +0200, Uwe Kleine-König wrote:
-> Cc += Clemens Gruber + Fabio Estevam
-> 
-> On Wed, Jul 05, 2017 at 03:07:03PM +0200, Romain Perier wrote:
-> > From: Nandor Han <nandor.han@ge.com>
-> > 
-> > CTSC and CTS are not related to DMA and might add
-> > disruption in some cases.
-> > 
-> > Signed-off-by: Romain Perier <romain.perier@collabora.com>
-> 
-> If it was Nandor Han who created this patch, it would be great to get
-> his sob. If it was you, drop the From: line above.
-> 
-> > ---
-> >  drivers/tty/serial/imx.c | 5 -----
-> >  1 file changed, 5 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > index 5291b86..dd3ebb4 100644
-> > --- a/drivers/tty/serial/imx.c
-> > +++ b/drivers/tty/serial/imx.c
-> > @@ -1249,11 +1249,6 @@ static void imx_disable_dma(struct imx_port *sport)
-> >  	imx_stop_rx_dma(sport);
-> >  	imx_stop_tx_dma(sport);
-> >  
-> > -	/* clear UCR2 */
-> > -	temp = readl(sport->port.membase + UCR2);
-> > -	temp &= ~(UCR2_CTSC | UCR2_CTS | UCR2_ATEN);
-> > -	writel(temp, sport->port.membase + UCR2);
-> > -
-> 
-> Before this patch imx_disable_dma resulted in the #CTS pin being high
-> (inactive).
-> 
-> Does this qualify as a fix? If so, you should sort this patch to the
-> beginning of the series. Did you do test this patch and its effects
-> separately?
-> 
-> @Clemens: maybe this patch makes a relevant difference when the port is
-> operated in rs485 mode. Do you care to test?
+Joe Perches (18):
+  checkpatch: improve the STORAGE_CLASS test
+  ARM: KVM: Move asmlinkage before type
+  ARM: HP Jornada 7XX: Move inline before return type
+  CRIS: gpio: Move inline before return type
+  FRV: tlbflush: Move asmlinkage before return type
+  ia64: Move inline before return type
+  ia64: sn: pci: Move inline before type
+  m68k: coldfire: Move inline before return type
+  MIPS: SMP: Move asmlinkage before return type
+  sh: Move inline before return type
+  x86/efi: Move asmlinkage before return type
+  drivers: s390: Move static and inline before return type
+  drivers: tty: serial: Move inline before return type
+  USB: serial: safe_serial: Move __inline__ before return type
+  video: fbdev: intelfb: Move inline before return type
+  video: fbdev: omap: Move inline before return type
+  ARM: samsung: usb-ohci: Move inline before return type
+  ALSA: opl4: Move inline before return type
 
-I just finished testing it. The results are about the same as with v1 of
-this patch series:
+ arch/arm/include/asm/kvm_hyp.h                 |  8 ++++----
+ arch/arm/mach-sa1100/jornada720_ssp.c          |  2 +-
+ arch/cris/arch-v10/drivers/gpio.c              |  4 ++--
+ arch/frv/include/asm/tlbflush.h                |  8 ++++----
+ arch/ia64/kernel/mca.c                         |  2 +-
+ arch/ia64/sn/pci/pcibr/pcibr_ate.c             |  2 +-
+ arch/ia64/sn/pci/tioce_provider.c              |  4 ++--
+ arch/m68k/coldfire/intc-simr.c                 |  4 ++--
+ arch/mips/include/asm/smp.h                    |  2 +-
+ arch/sh/mm/cache-sh5.c                         |  2 +-
+ arch/x86/include/asm/efi.h                     |  4 ++--
+ drivers/s390/net/ctcm_main.c                   |  2 +-
+ drivers/s390/net/qeth_l3_main.c                |  2 +-
+ drivers/tty/serial/ioc3_serial.c               |  4 ++--
+ drivers/tty/serial/ioc4_serial.c               |  4 ++--
+ drivers/usb/serial/safe_serial.c               |  2 +-
+ drivers/video/fbdev/intelfb/intelfbdrv.c       |  2 +-
+ drivers/video/fbdev/omap/lcdc.c                |  6 +++---
+ include/linux/platform_data/usb-ohci-s3c2410.h |  2 +-
+ scripts/checkpatch.pl                          | 12 ++++++++++--
+ sound/drivers/opl4/opl4_lib.c                  |  2 +-
+ 21 files changed, 44 insertions(+), 36 deletions(-)
 
-Applying v2 of patch 1/6, 2/6 and 3/6 (or even 3/6 alone) does not fix
-the RS-485 DMA bug. It behaves exactly the same as without these
-patches, meaning the whole xmit circ_buf (UART_XMIT_SIZE bytes) is sent
-out, as seen in the logic analyzer screenshots from my first bug report:
-https://pqgruber.com/rs485_results.png
-
-Applying the whole series does make a (small) difference though:
-The first few transmissions after a fresh boot work correctly! However,
-after a few transmissions, characters are sent out twice and longer
-transmissions are garbled, although not in the same way as before. The
-whole circ_buf is no longer sent out.
-
-With all patches from this series applied, I see the following on the
-logic analyzer, when calling "echo Test > /dev/ttymxc4":
-https://pqgruber.com/rs485txtest.png
-(This pattern is not always the same, sometimes it is TeTesstt\n\n,
-sometimes TeTesst\nt\n or TeTsestt\n\n and so on)
-
-This behavior is reproducible on i.MX6Q and i.MX6D, not on i.MX6S/etc.,
-I therefore assume that it is a SMP-/locking-related problem.
-
-I will try to debug this further, and verify if - with this series
-applied - xmit->tail is still jumping over xmit->head. And when exactly
-this is happening.
-
-Help is much appreciated!
-
-Best regards,
-Clemens
+-- 
+2.10.0.rc2.1.g053435c
