@@ -1,70 +1,66 @@
 From: Joe Perches <joe@perches.com>
-Subject: [PATCH 00/18] treewide: Move storage class before
-	return type
-Date: Wed,  5 Jul 2017 13:02:09 -0700
-Message-ID: <cover.1499284835.git.joe@perches.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Errors-To: alsa-devel-bounces@alsa-project.org
-Sender: alsa-devel-bounces@alsa-project.org
-To: Andrew Morton <akpm@linux-foundation.org>, kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, linux-m68k@lists.linux-m68k.org, linux-efi@vger.kernel.org, linux-s390@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-omap@vger.kernel.org, alsa-devel@alsa-project.org
-Cc: linux-mips@linux-mips.org, linux-kernel@vger.kernel.org, linux-cris-kernel@axis.com, linux-sh@vger.kernel.org
+Subject: [PATCH 13/18] drivers: tty: serial: Move inline before return type
+Date: Wed,  5 Jul 2017 13:02:22 -0700
+Message-ID: <55d3e89d50bb03d603bfb28019fab07f48bdc714.1499284835.git.joe@perches.com>
+References: <cover.1499284835.git.joe@perches.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1499284835.git.joe@perches.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>, Pat Gefre <pfg@sgi.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Move the inline/asmlinkage keywords before the return types
-Add a checkpatch test for this too.
+Make the code like the rest of the kernel.
 
-Joe Perches (18):
-  checkpatch: improve the STORAGE_CLASS test
-  ARM: KVM: Move asmlinkage before type
-  ARM: HP Jornada 7XX: Move inline before return type
-  CRIS: gpio: Move inline before return type
-  FRV: tlbflush: Move asmlinkage before return type
-  ia64: Move inline before return type
-  ia64: sn: pci: Move inline before type
-  m68k: coldfire: Move inline before return type
-  MIPS: SMP: Move asmlinkage before return type
-  sh: Move inline before return type
-  x86/efi: Move asmlinkage before return type
-  drivers: s390: Move static and inline before return type
-  drivers: tty: serial: Move inline before return type
-  USB: serial: safe_serial: Move __inline__ before return type
-  video: fbdev: intelfb: Move inline before return type
-  video: fbdev: omap: Move inline before return type
-  ARM: samsung: usb-ohci: Move inline before return type
-  ALSA: opl4: Move inline before return type
+Signed-off-by: Joe Perches <joe@perches.com>
+---
+ drivers/tty/serial/ioc3_serial.c | 4 ++--
+ drivers/tty/serial/ioc4_serial.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
- arch/arm/include/asm/kvm_hyp.h                 |  8 ++++----
- arch/arm/mach-sa1100/jornada720_ssp.c          |  2 +-
- arch/cris/arch-v10/drivers/gpio.c              |  4 ++--
- arch/frv/include/asm/tlbflush.h                |  8 ++++----
- arch/ia64/kernel/mca.c                         |  2 +-
- arch/ia64/sn/pci/pcibr/pcibr_ate.c             |  2 +-
- arch/ia64/sn/pci/tioce_provider.c              |  4 ++--
- arch/m68k/coldfire/intc-simr.c                 |  4 ++--
- arch/mips/include/asm/smp.h                    |  2 +-
- arch/sh/mm/cache-sh5.c                         |  2 +-
- arch/x86/include/asm/efi.h                     |  4 ++--
- drivers/s390/net/ctcm_main.c                   |  2 +-
- drivers/s390/net/qeth_l3_main.c                |  2 +-
- drivers/tty/serial/ioc3_serial.c               |  4 ++--
- drivers/tty/serial/ioc4_serial.c               |  4 ++--
- drivers/usb/serial/safe_serial.c               |  2 +-
- drivers/video/fbdev/intelfb/intelfbdrv.c       |  2 +-
- drivers/video/fbdev/omap/lcdc.c                |  6 +++---
- include/linux/platform_data/usb-ohci-s3c2410.h |  2 +-
- scripts/checkpatch.pl                          | 12 ++++++++++--
- sound/drivers/opl4/opl4_lib.c                  |  2 +-
- 21 files changed, 44 insertions(+), 36 deletions(-)
-
+diff --git a/drivers/tty/serial/ioc3_serial.c b/drivers/tty/serial/ioc3_serial.c
+index 2a61dd6b4009..906ee770ff4a 100644
+--- a/drivers/tty/serial/ioc3_serial.c
++++ b/drivers/tty/serial/ioc3_serial.c
+@@ -377,7 +377,7 @@ static struct ioc3_port *get_ioc3_port(struct uart_port *the_port)
+  *			called per port from attach...
+  * @port: port to initialize
+  */
+-static int inline port_init(struct ioc3_port *port)
++static inline int port_init(struct ioc3_port *port)
+ {
+ 	uint32_t sio_cr;
+ 	struct port_hooks *hooks = port->ip_hooks;
+@@ -1430,7 +1430,7 @@ static int receive_chars(struct uart_port *the_port)
+  * @pending: interrupts to handle
+  */
+ 
+-static int inline
++static inline int
+ ioc3uart_intr_one(struct ioc3_submodule *is,
+ 			struct ioc3_driver_data *idd,
+ 			unsigned int pending)
+diff --git a/drivers/tty/serial/ioc4_serial.c b/drivers/tty/serial/ioc4_serial.c
+index f96bcf9bee25..43d7d32eb150 100644
+--- a/drivers/tty/serial/ioc4_serial.c
++++ b/drivers/tty/serial/ioc4_serial.c
+@@ -824,7 +824,7 @@ pending_intrs(struct ioc4_soft *soft, int type)
+  *			called per port from attach...
+  * @port: port to initialize
+  */
+-static int inline port_init(struct ioc4_port *port)
++static inline int port_init(struct ioc4_port *port)
+ {
+ 	uint32_t sio_cr;
+ 	struct hooks *hooks = port->ip_hooks;
+@@ -1048,7 +1048,7 @@ static irqreturn_t ioc4_intr(int irq, void *arg)
+  *			IOC4 with serial ports in the system.
+  * @idd: Master module data for this IOC4
+  */
+-static int inline ioc4_attach_local(struct ioc4_driver_data *idd)
++static inline int ioc4_attach_local(struct ioc4_driver_data *idd)
+ {
+ 	struct ioc4_port *port;
+ 	struct ioc4_port *ports[IOC4_NUM_SERIAL_PORTS];
 -- 
 2.10.0.rc2.1.g053435c
