@@ -1,63 +1,51 @@
 From: Matt Redfearn <matt.redfearn@imgtec.com>
-Subject: [PATCH 2/2] serial: earlycon: Make early_con as __initdata
-Date: Thu, 6 Jul 2017 11:38:01 +0100
-Message-ID: <1499337481-19397-2-git-send-email-matt.redfearn@imgtec.com>
-References: <1499337481-19397-1-git-send-email-matt.redfearn@imgtec.com>
+Subject: [PATCH 1/2] printk: Unconditionally unregister boot consoles if in init section
+Date: Thu, 6 Jul 2017 11:38:00 +0100
+Message-ID: <1499337481-19397-1-git-send-email-matt.redfearn@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1499337481-19397-1-git-send-email-matt.redfearn@imgtec.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, Matt Redfearn <matt.redfearn@imgtec.com>, linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Matt Redfearn <matt.redfearn@imgtec.com>, Steven Rostedt <rostedt@goodmis.org>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-All early console drivers that may be registered as the earlycon are
-marked __init to be placed in the init section. The drivers' code and
-data are freed during free_initmem_default() but the early console is
-not unregistered in printk_late_init() as the init_section_intersects()
-test fails. This leads to the earlycon still being active, potentially
-with dangling pointers into the freed init section, which may have been
-poisoned by the slab debugger. Attempting to use the boot console after
-this will likely lead to weird behaviour and kernel crashes.
+Commit 4c30c6f566c0 ("kernel/printk: do not turn off bootconsole in
+printk_late_init() if keep_bootcon") added a check on keep_bootcon to
+ensure that boot consoles were kept around until the real console is
+registered.
+This can lead to problems if the boot console data and code are in the
+init section, since it can be freed before the boot console is
+deregistered. This was fixed by commit 81cc26f2bd11 ("printk: only
+unregister boot consoles when necessary").
+The keep_bootcon flag prevents the unregistration of a boot console,
+even if it's data and code reside in the init section and are about to
+be freed. This can lead to crashes and weird panics when the bootconsole
+is accessed after free, especially if page poisoning is in use and the
+code / data have been overwritten with a poison value.
+To prevent this, always free the boot console if it is within the init
+section.
 
-Fix this by marking the early_con struct __initdata so that the
-init_section_intersects() test succeeds and the console is unregistered
-in printk_late_init() before the init section is freed.
-
-The 8250 earlycon, on which the generic earlycon was based, had these
-attributes on it's console struct. The switch to the generic
-implementation in commit d2fd6810a823 ("tty/serial: convert 8250 to
-generic earlycon") appears to have broken unregistraton of the boot
-console when its code and data are in __init.
-
-Fixes: d2fd6810a823 ("tty/serial: convert 8250 to generic earlycon")
+Fixes 81cc26f2bd11 ("printk: only unregister boot consoles when necessary").
 Signed-off-by: Matt Redfearn <matt.redfearn@imgtec.com>
 
 ---
 
- drivers/tty/serial/earlycon.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/printk/printk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index c3651540e1ba..388aaafcca2b 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -29,13 +29,13 @@
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index a1db38abac5b..b5411f44eed4 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2660,7 +2660,7 @@ static int __init printk_late_init(void)
+ 	int ret;
  
- #include <asm/serial.h>
- 
--static struct console early_con = {
-+static struct console early_con __initdata = {
- 	.name =		"uart",		/* fixed up at earlycon registration */
- 	.flags =	CON_PRINTBUFFER | CON_BOOT,
- 	.index =	0,
- };
- 
--static struct earlycon_device early_console_dev = {
-+static struct earlycon_device early_console_dev __initdata = {
- 	.con = &early_con,
- };
- 
+ 	for_each_console(con) {
+-		if (!keep_bootcon && con->flags & CON_BOOT) {
++		if (con->flags & CON_BOOT) {
+ 			/*
+ 			 * Make sure to unregister boot consoles whose data
+ 			 * resides in the init section before the init section
 -- 
 2.7.4
