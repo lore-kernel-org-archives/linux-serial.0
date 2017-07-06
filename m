@@ -1,66 +1,58 @@
-From: Joe Perches <joe@perches.com>
-Subject: [PATCH 13/18] drivers: tty: serial: Move inline before return type
-Date: Wed,  5 Jul 2017 13:02:22 -0700
-Message-ID: <55d3e89d50bb03d603bfb28019fab07f48bdc714.1499284835.git.joe@perches.com>
-References: <cover.1499284835.git.joe@perches.com>
+From: Romain Perier <romain.perier@collabora.com>
+Subject: Re: [PATCH v2 1/6] serial: imx: only set DMA rx-ing when DMA starts
+Date: Thu, 6 Jul 2017 10:31:38 +0200
+Message-ID: <49bfa666-b036-3ed9-8209-9ea59468371b@collabora.com>
+References: <20170705130706.10388-1-romain.perier@collabora.com>
+ <20170705130706.10388-2-romain.perier@collabora.com>
+ <20170705132910.nmixhnh4l6h2hlga@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1499284835.git.joe@perches.com>
+In-Reply-To: <20170705132910.nmixhnh4l6h2hlga@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>, Pat Gefre <pfg@sgi.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Nandor Han <nandor.han@ge.com>
 List-Id: linux-serial@vger.kernel.org
 
-Make the code like the rest of the kernel.
+Hello,
 
-Signed-off-by: Joe Perches <joe@perches.com>
----
- drivers/tty/serial/ioc3_serial.c | 4 ++--
- drivers/tty/serial/ioc4_serial.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/ioc3_serial.c b/drivers/tty/serial/ioc3_serial.c
-index 2a61dd6b4009..906ee770ff4a 100644
---- a/drivers/tty/serial/ioc3_serial.c
-+++ b/drivers/tty/serial/ioc3_serial.c
-@@ -377,7 +377,7 @@ static struct ioc3_port *get_ioc3_port(struct uart_port *the_port)
-  *			called per port from attach...
-  * @port: port to initialize
-  */
--static int inline port_init(struct ioc3_port *port)
-+static inline int port_init(struct ioc3_port *port)
- {
- 	uint32_t sio_cr;
- 	struct port_hooks *hooks = port->ip_hooks;
-@@ -1430,7 +1430,7 @@ static int receive_chars(struct uart_port *the_port)
-  * @pending: interrupts to handle
-  */
- 
--static int inline
-+static inline int
- ioc3uart_intr_one(struct ioc3_submodule *is,
- 			struct ioc3_driver_data *idd,
- 			unsigned int pending)
-diff --git a/drivers/tty/serial/ioc4_serial.c b/drivers/tty/serial/ioc4_serial.c
-index f96bcf9bee25..43d7d32eb150 100644
---- a/drivers/tty/serial/ioc4_serial.c
-+++ b/drivers/tty/serial/ioc4_serial.c
-@@ -824,7 +824,7 @@ pending_intrs(struct ioc4_soft *soft, int type)
-  *			called per port from attach...
-  * @port: port to initialize
-  */
--static int inline port_init(struct ioc4_port *port)
-+static inline int port_init(struct ioc4_port *port)
- {
- 	uint32_t sio_cr;
- 	struct hooks *hooks = port->ip_hooks;
-@@ -1048,7 +1048,7 @@ static irqreturn_t ioc4_intr(int irq, void *arg)
-  *			IOC4 with serial ports in the system.
-  * @idd: Master module data for this IOC4
-  */
--static int inline ioc4_attach_local(struct ioc4_driver_data *idd)
-+static inline int ioc4_attach_local(struct ioc4_driver_data *idd)
- {
- 	struct ioc4_port *port;
- 	struct ioc4_port *ports[IOC4_NUM_SERIAL_PORTS];
--- 
-2.10.0.rc2.1.g053435c
+Le 05/07/2017 à 15:29, Uwe Kleine-König a écrit :
+> Hello,
+>
+> On Wed, Jul 05, 2017 at 03:07:01PM +0200, Romain Perier wrote:
+>> From: Nandor Han <nandor.han@ge.com>
+>>
+>> Avoid the situation when `dma_is_rxing` could incorrectly signal that
+>> DMA RX channel is receiving data in case DMA preparation or sg mapping
+>> fails.
+>>
+>> This commit fixes the issues by moving the assignment of dma_is_rxing
+>> out of imx_disable_rx_int(), then the variable is set to 1 from
+>> start_rx_dma() only when the preparation is correctly done.
+> I'd write:
+>
+> 	There are a few issues with setting dma_is_rxing to 1 in
+> 	imx_disable_rx_int:
+>
+> 	 - Currently always after imx_disable_rx_int() the function
+> 	   start_rx_dma() is called. This dependency isn't obvious though.
+> 	 - start_rx_dma() does error checking and might exit without enabling
+> 	   DMA but keeping dma_is_rxing 1.
+>
+> 	So the more natural place for setting dma_is_rxing to 1 is in
+> 	start_rx_dma after all errors are checked.
+>
+> If you use this, there is nothing left of Nandor Han's patch and you can
+> drop his authorship.
+>
+> Best regards
+> Uwe
+>
+Ok, will do. No other feedback for the rest of the series ? (just to
+know if I send a v3 or If I wait a bit...)
+
+Thanks,
+Romain
