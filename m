@@ -1,96 +1,92 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH] clk: gemini: Fix reset regression
-Date: Wed, 12 Jul 2017 16:08:32 -0700
-Message-ID: <20170712230832.GF22780@codeaurora.org>
-References: <20170711122601.17745-1-linus.walleij@linaro.org>
- <1499874682.6374.57.camel@pengutronix.de>
+From: Bich HEMON <bich.hemon@st.com>
+Subject: [PATCH 2/9] serial: stm32: fix multi-ports management
+Date: Thu, 13 Jul 2017 15:08:27 +0000
+Message-ID: <1499958494-19354-3-git-send-email-bich.hemon@st.com>
+References: <1499958494-19354-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-clk-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1499874682.6374.57.camel@pengutronix.de>
-Sender: linux-clk-owner@vger.kernel.org
-To: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Michael Turquette <mturquette@baylibre.com>, linux-clk@vger.kernel.org, Janos Laube <janos.dev@gmail.com>, Paulius Zaleckas <paulius.zaleckas@gmail.com>, linux-arm-kernel@lists.infradead.org, Hans Ulli Kroll <ulli.kroll@googlemail.com>, Florian Fainelli <f.fainelli@gmail.com>, Joel Stanley <joel@jms.id.au>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1499958494-19354-1-git-send-email-bich.hemon@st.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Bich HEMON <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 07/12, Philipp Zabel wrote:
-> Hi Linus,
-> 
-> On Tue, 2017-07-11 at 14:26 +0200, Linus Walleij wrote:
-> > commit e2860e1f62f2 ("serial: 8250_of: Add reset support")
-> > introduced reset support for the 8250_of driver.
-> > 
-> > However it unconditionally uses the assert/deassert pair to
-> > deassert reset on the device at probe and assert it at
-> > remove. This does not work with systems that have a
-> > self-deasserting reset controller, such as Gemini, that
-> > recently added a reset controller.
-> > 
-> > As a result, the console will not probe on the Gemini with
-> > this message:
-> > 
-> > Serial: 8250/16550 driver, 1 ports, IRQ sharing disabled
-> > of_serial: probe of 42000000.serial failed with error -524
-> > 
-> > This (-ENOTSUPP) is the error code returned by the
-> > deassert() operation on self-deasserting reset controllers.
-> > 
-> > To work around this, implement dummy .assert() and
-> > .deassert() operations in the Gemini combined clock and
-> > reset controller. This fixes the issue on this system.
-> >
-> > Cc: Joel Stanley <joel@jms.id.au>
-> > Cc: Philipp Zabel <p.zabel@pengutronix.de>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: linux-serial@vger.kernel.org
-> > Fixes: e2860e1f62f2 ("serial: 8250_of: Add reset support")
-> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> > ---
-> > This is the solution suggested by Philipp, I think.
-> 
-> It is what I suggested, yes, but now that I see it before me, I don't
-> think this is the proper solution either. Reason below:
-> 
-> > ---
-> >  drivers/clk/clk-gemini.c | 14 ++++++++++++++
-> >  1 file changed, 14 insertions(+)
-> > 
-> > diff --git a/drivers/clk/clk-gemini.c b/drivers/clk/clk-gemini.c
-> > index c391a49aaaff..b4cf2f699a21 100644
-> > --- a/drivers/clk/clk-gemini.c
-> > +++ b/drivers/clk/clk-gemini.c
-> > @@ -237,6 +237,18 @@ static int gemini_reset(struct reset_controller_dev *rcdev,
-> >  			    BIT(GEMINI_RESET_CPU1) | BIT(id));
-> >  }
-> >  
-> > +static int gemini_reset_assert(struct reset_controller_dev *rcdev,
-> > +			       unsigned long id)
-> > +{
-> > +	return 0;
-> 
-> This is valid behaviour for shared reset controls, as sharing users
-> don't mind whether the reset line is actually asserted after this call,
-> they just allow it.
-> 
-> For an exclusive reset control this should return an error though, as
-> the caller would expect the reset line to be asserted after this call.
-> Unfortunately the core does not provide information whether the reset
-> control is shared or exclusive to the reset drivers, and it could be
-> argued that the drivers shouldn't have to care. I suppose I'll have to
-> handle this in the core, after all. What do you think of the attached
-> patch?
-> 
-> Otherwise, as a regression fix, I think this would be ok. There isn't
-> going to be any driver on the Gemini platform that requests an exclusive
-> reset control and then calls reset_control_assert, expecting the reset
-> line to stay asserted.
-> 
-> Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
-> 
+From: Gerald Baeza <gerald.baeza@st.com>
 
-I'll queue this up for clk-fixes once -rc1 is out.
+Correct management of multi-ports. Each port has
+its own last residue value and its own alias.
 
+Signed-off-by: Gerald Baeza <gerald.baeza@st.com>
+Signed-off-by: Bich Hemon <bich.hemon@st.com>
+---
+ drivers/tty/serial/stm32-usart.c | 12 +++++++-----
+ drivers/tty/serial/stm32-usart.h |  1 +
+ 2 files changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index ebc49e4..a12d79c 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -111,14 +111,13 @@ static void stm32_receive_chars(struct uart_port *port, bool threaded)
+ 	unsigned long c;
+ 	u32 sr;
+ 	char flag;
+-	static int last_res = RX_BUF_L;
+ 
+ 	if (port->irq_wake)
+ 		pm_wakeup_event(tport->tty->dev, 0);
+ 
+-	while (stm32_pending_rx(port, &sr, &last_res, threaded)) {
++	while (stm32_pending_rx(port, &sr, &stm32_port->last_res, threaded)) {
+ 		sr |= USART_SR_DUMMY_RX;
+-		c = stm32_get_char(port, &sr, &last_res);
++		c = stm32_get_char(port, &sr, &stm32_port->last_res);
+ 		flag = TTY_NORMAL;
+ 		port->icount.rx++;
+ 
+@@ -694,8 +693,10 @@ static struct stm32_port *stm32_of_get_stm32_port(struct platform_device *pdev)
+ 		return NULL;
+ 
+ 	id = of_alias_get_id(np, "serial");
+-	if (id < 0)
+-		id = 0;
++	if (id < 0) {
++		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", id);
++		return NULL;
++	}
+ 
+ 	if (WARN_ON(id >= STM32_MAX_PORTS))
+ 		return NULL;
+@@ -703,6 +704,7 @@ static struct stm32_port *stm32_of_get_stm32_port(struct platform_device *pdev)
+ 	stm32_ports[id].hw_flow_control = of_property_read_bool(np,
+ 							"st,hw-flow-ctrl");
+ 	stm32_ports[id].port.line = id;
++	stm32_ports[id].last_res = RX_BUF_L;
+ 	return &stm32_ports[id];
+ }
+ 
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index 0532b2f..65b4ffa 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -222,6 +222,7 @@ struct stm32_port {
+ 	struct dma_chan *tx_ch;  /* dma tx channel            */
+ 	dma_addr_t tx_dma_buf;   /* dma tx buffer bus address */
+ 	unsigned char *tx_buf;   /* dma tx buffer cpu address */
++	int last_res;
+ 	bool tx_dma_busy;	 /* dma tx busy               */
+ 	bool hw_flow_control;
+ };
 -- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+1.9.1
