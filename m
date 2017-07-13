@@ -1,46 +1,58 @@
-From: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
-Subject: [PATCH 3/9] serial: stm32: Increase maximum number of ports
-Date: Thu, 13 Jul 2017 15:08:27 +0000
-Message-ID: <1499958494-19354-4-git-send-email-bich.hemon@st.com>
+From: Bich HEMON <bich.hemon@st.com>
+Subject: [PATCH 7/9] dt-bindings: serial: add compatible for stm32h7
+Date: Thu, 13 Jul 2017 15:08:29 +0000
+Message-ID: <1499958494-19354-8-git-send-email-bich.hemon@st.com>
 References: <1499958494-19354-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: 8BIT
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1499958494-19354-1-git-send-email-bich.hemon-qxv4g6HH51o@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1499958494-19354-1-git-send-email-bich.hemon@st.com>
 Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Bich HEMON <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
 
-Increase max number of ports for stm32h7
-which supports up to 8 uart and usart instances.
+Introduce new compatibles for "st,stm32h7-usart" and "st,stm32h7-uart".
+This new compatible allow to use optional wake-up interrupt.
 
-Signed-off-by: Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>
-Signed-off-by: Bich Hemon <bich.hemon-qxv4g6HH51o@public.gmane.org>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+Signed-off-by: Bich Hemon <bich.hemon@st.com>
 ---
- drivers/tty/serial/stm32-usart.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/serial/st,stm32-usart.txt       | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index 65b4ffa..6092789 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -206,7 +206,7 @@ struct stm32_usart_info stm32f7_info = {
- #define USART_ICR_CMCF		BIT(17)		/* F7 */
+diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+index 85ec5f2..3657f9f 100644
+--- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
++++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+@@ -1,12 +1,19 @@
+ * STMicroelectronics STM32 USART
  
- #define STM32_SERIAL_NAME "ttyS"
--#define STM32_MAX_PORTS 6
-+#define STM32_MAX_PORTS 8
+ Required properties:
+-- compatible: Can be either "st,stm32-usart", "st,stm32-uart",
+-"st,stm32f7-usart" or "st,stm32f7-uart" depending on whether
+-the device supports synchronous mode and is compatible with
+-stm32(f4) or stm32f7.
++- compatible: can be either:
++  - "st,stm32-usart",
++  - "st,stm32-uart",
++  - "st,stm32f7-usart",
++  - "st,stm32f7-uart",
++  - "st,stm32h7-usart"
++  - "st,stm32h7-uart".
++  depending on whether the device supports synchronous mode
++  and is compatible with stm32(f4), stm32f7 or stm32h7.
+ - reg: The address and length of the peripheral registers space
+-- interrupts: The interrupt line of the USART instance
++- interrupts:
++  - The interrupt line for the USART instance,
++  - An optional wake-up interrupt.
+ - clocks: The input clock of the USART instance
  
- #define RX_BUF_L 200		 /* dma rx buffer length     */
- #define RX_BUF_P RX_BUF_L	 /* dma rx buffer period     */
+ Optional properties:
 -- 
 1.9.1
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
