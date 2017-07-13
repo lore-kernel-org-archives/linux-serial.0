@@ -1,32 +1,46 @@
 From: Bich HEMON <bich.hemon@st.com>
-Subject: [PATCH 4/9] serial: stm32: fix pio transmit timeout
+Subject: [PATCH 5/9] serial: stm32: add RTS support
 Date: Thu, 13 Jul 2017 15:08:28 +0000
-Message-ID: <1499958494-19354-5-git-send-email-bich.hemon@st.com>
+Message-ID: <1499958494-19354-6-git-send-email-bich.hemon@st.com>
 References: <1499958494-19354-1-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1499958494-19354-1-git-send-email-bich.hemon@st.com>
 Content-Language: en-US
-Content-ID: <177AD9F35409B74E8756A10148D9829A@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Cc: Bich HEMON <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogR2VyYWxkIEJhZXphIDxnZXJhbGQuYmFlemFAc3QuY29tPg0KDQoxMDDCtXMgd2FzIHRv
-byBzaG9ydCBmb3IgbG93IHNwZWVkIHRyYW5zbWlzc2lvbg0KKDk2MDBicHMpDQoNClNpZ25lZC1v
-ZmYtYnk6IEdlcmFsZCBCYWV6YSA8Z2VyYWxkLmJhZXphQHN0LmNvbT4NClNpZ25lZC1vZmYtYnk6
-IEJpY2ggSGVtb24gPGJpY2guaGVtb25Ac3QuY29tPg0KLS0tDQogZHJpdmVycy90dHkvc2VyaWFs
-L3N0bTMyLXVzYXJ0LmMgfCAyICstDQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAx
-IGRlbGV0aW9uKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvc3RtMzItdXNh
-cnQuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zdG0zMi11c2FydC5jDQppbmRleCBhMTJkNzljLi5j
-YTYxYmZlIDEwMDY0NA0KLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL3N0bTMyLXVzYXJ0LmMNCisr
-KyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zdG0zMi11c2FydC5jDQpAQCAtMjAyLDcgKzIwMiw3IEBA
-IHN0YXRpYyB2b2lkIHN0bTMyX3RyYW5zbWl0X2NoYXJzX3BpbyhzdHJ1Y3QgdWFydF9wb3J0ICpw
-b3J0KQ0KIAlyZXQgPSByZWFkbF9yZWxheGVkX3BvbGxfdGltZW91dF9hdG9taWMocG9ydC0+bWVt
-YmFzZSArIG9mcy0+aXNyLA0KIAkJCQkJCWlzciwNCiAJCQkJCQkoaXNyICYgVVNBUlRfU1JfVFhF
-KSwNCi0JCQkJCQkxMCwgMTAwKTsNCisJCQkJCQkxMCwgMTAwMDAwKTsNCiANCiAJaWYgKHJldCkN
-CiAJCWRldl9lcnIocG9ydC0+ZGV2LCAidHggZW1wdHkgbm90IHNldFxuIik7DQotLSANCjEuOS4x
-DQo=
+Implement support of RTS in USART control register
+
+Signed-off-by: Bich Hemon <bich.hemon@st.com>
+---
+ drivers/tty/serial/stm32-usart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index ca61bfe..9158d31 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -518,7 +518,7 @@ static void stm32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	port->status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS);
+ 	if (cflag & CRTSCTS) {
+ 		port->status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
+-		cr3 |= USART_CR3_CTSE;
++		cr3 |= USART_CR3_CTSE | USART_CR3_RTSE;
+ 	}
+ 
+ 	usartdiv = DIV_ROUND_CLOSEST(port->uartclk, baud);
+-- 
+1.9.1
