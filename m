@@ -1,48 +1,54 @@
-From: Bich HEMON <bich.hemon@st.com>
-Subject: [PATCH 1/9] serial: stm32: fix copyright
-Date: Thu, 13 Jul 2017 15:08:26 +0000
-Message-ID: <1499958494-19354-2-git-send-email-bich.hemon@st.com>
-References: <1499958494-19354-1-git-send-email-bich.hemon@st.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 1/2] printk: Unconditionally unregister boot consoles if
+ in init section
+Date: Fri, 14 Jul 2017 14:40:26 +0200
+Message-ID: <20170714124026.GA32632@pathway.suse.cz>
+References: <1499337481-19397-1-git-send-email-matt.redfearn@imgtec.com>
+ <20170707044537.GB7478@jagdpanzerIV.localdomain>
+ <0212d098-e307-2ea1-cb41-1e81d545da56@imgtec.com>
+ <20170711124308.GA3393@pathway.suse.cz>
+ <86ff1193-8485-4b14-492f-627720c1d868@imgtec.com>
+ <20170712111117.GD3393@pathway.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1499958494-19354-1-git-send-email-bich.hemon@st.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20170712111117.GD3393@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: Bich HEMON <bich.hemon@st.com>
+To: Matt Redfearn <matt.redfearn@imgtec.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Fix missing copyright for STMicroelectronics
+On Wed 2017-07-12 13:11:17, Petr Mladek wrote:
+> On Tue 2017-07-11 15:41:50, Matt Redfearn wrote:
+> > On 11/07/17 13:43, Petr Mladek wrote:
+> > >IMHO, the reasonable solution is to move early console code and data
+> > >out of the init sections. We should do this for the early consoles
+> > >where the corresponding real console is registered using a deferred
+> > >probe. Others should be already replaced by the real console when
+> > >printk_late_init() is called. At least this is how I understand it.
+> > 
+> > This seems like the most reasonable way forward to me as well,
+> > though sadly will lead to some post-init kernel bloat.
+> > 
+> > I still think, however, that this patch is a reasonable change to
+> > make.
+> 
+> The thing is that this patch "silently" makes the keep_bootcon
+> option almost unusable.
 
-Signed-off-by: Bich Hemon <bich.hemon@st.com>
----
- drivers/tty/serial/stm32-usart.c | 1 +
- drivers/tty/serial/stm32-usart.h | 1 +
- 2 files changed, 2 insertions(+)
+I was wrong here. I thought that most early consoles used the init
+section. It was mentioned somewhere and I looked a wrong way.
+But this is not true. In fact, it seems that there are
+only few of them. Most early consoles have struct console
+and the write() callback in the normal section that is preserved.
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 0338562..ebc49e4 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -1,5 +1,6 @@
- /*
-  * Copyright (C) Maxime Coquelin 2015
-+ * Copyright (C) STMicroelectronics SA 2017
-  * Authors:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
-  *	     Gerald Baeza <gerald.baeza@st.com>
-  * License terms:  GNU General Public License (GPL), version 2
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index cd97ceb..0532b2f 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -1,5 +1,6 @@
- /*
-  * Copyright (C) Maxime Coquelin 2015
-+ * Copyright (C) STMicroelectronics SA 2017
-  * Authors:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
-  *	     Gerald Baeza <gerald_baeza@yahoo.fr>
-  * License terms:  GNU General Public License (GPL), version 2
--- 
-1.9.1
+Matt's patch and the keep_bootcon option makes sense to me
+after all. Let me to resend Matt's patch with some small
+improvements and one more patch that improves the check
+of early consoles that use init section. I'll keep Matt
+as the author of the first patch.
+
+Best Regards,
+Petr
+ 
