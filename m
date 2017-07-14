@@ -1,54 +1,95 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 0/2] Avoid crashes by early (boot) consoles using init
- memory
-Date: Fri, 14 Jul 2017 16:37:52 +0200
-Message-ID: <20170714143751.GB32632@pathway.suse.cz>
-References: <1500036673-7122-1-git-send-email-pmladek@suse.com>
- <956ce40c-1640-387a-0ec9-9045c7d8af4b@redhat.com>
+From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Subject: Re: [PATCH 1/2] printk: Unconditionally unregister boot consoles if
+ in init section
+Date: Sat, 15 Jul 2017 06:54:41 +0900
+Message-ID: <20170714215441.GA10437@tigerII.localdomain>
+References: <1499337481-19397-1-git-send-email-matt.redfearn@imgtec.com>
+ <20170707044537.GB7478@jagdpanzerIV.localdomain>
+ <0212d098-e307-2ea1-cb41-1e81d545da56@imgtec.com>
+ <20170711124308.GA3393@pathway.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <956ce40c-1640-387a-0ec9-9045c7d8af4b@redhat.com>
+In-Reply-To: <20170711124308.GA3393@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Fabio M. Di Nitto" <fdinitto@redhat.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: Matt Redfearn <matt.redfearn@imgtec.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri 2017-07-14 14:57:45, Fabio M. Di Nitto wrote:
-> Hi Petr,
+Hello,
+
+sorry, I'm on a sick leave and can't check emails that often.
+
+On (07/11/17 14:43), Petr Mladek wrote:
+[..]
+> > >>The keep_bootcon flag prevents the unregistration of a boot console,
+> > >>even if it's data and code reside in the init section and are about to
+> > >>be freed. This can lead to crashes and weird panics when the bootconsole
+> > >>is accessed after free, especially if page poisoning is in use and the
+> > >>code / data have been overwritten with a poison value.
+> > >>To prevent this, always free the boot console if it is within the init
+> > >>section.
 > 
-> On 7/14/2017 2:51 PM, Petr Mladek wrote:
-> > Some early consoles have code and data in the init section. It makes some
-> > sense but this might cause problems when they are not replaced by
-> > the real console in time. The two patches fix the safequard and
-> > help to avoid the problems.
+> > >if someone asked to `keep_bootcon' but we actually don't keep it, then
+> > >what's the purpose of the flag and
+> > >	pr_info("debug: skip boot console de-registration.\n")?
+> 
+> Exactly. The important information is in the commit 7bf693951a8e5f7e
+> ("console: allow to retain boot console via boot option keep_bootcon"):
+> 
+>     On some architectures, the boot process involves de-registering the boot
+>     console (early boot), initialize drivers and then re-register the console.
+> 
+>     This mechanism introduces a window in which no printk can happen on the
+>     console and messages are buffered and then printed once the new console is
+>     available.
+> 
+>     If a kernel crashes during this window, all it's left on the boot console
+>     is "console [foo] enabled, boot console disabled" making debug of the crash
+>     rather 'interesting'.
+
+sure. no objections here.
+I probably mis-worded my thoughts. I agree with Matt's conclusions and
+he made valid points I just disagree with the fix.
+
+> > >keeping `early_printk' sometimes can be helpful and people even want to
+> > >use `early_printk' as a panic() console fallback (because of those nasty
+> > >deadlocks that spoil printk->call_console_drivers()).
+> > >
 > > 
-> > I though about removing keep_bootcon option completely. But it is useful
-> > at least for now.
+> > Sure, but as a user, how are you supposed to know that?
 > 
-> Let´s just keep in mind that keep_bootcon was introduced only to debug
-> issues (read crashes or hangs) that could happen between disabling
-> bootconsole and enabling the real console. It shouldn´t be used for
-> anything else really.
+> Good point! I wonder if the authors of the keep_bootcon option
+> actually knew about it. I do not see this risk mentioned anywhere
+> and the early consoles might work long enough by chance.
+> 
+> One problem is that real consoles might be registered much later
+> when it is done using an async probe calls. It might open a big window
+> when there is no visible output and debugging is "impossible".
 
-This was my initial replay as well. But then I realized that
-it was a bad idea to use a freed code and data to debug any other
-issue. It would just create crazy issues on its own.
+yes. besides, Peter wants to have early consoles as panic fallback.
 
-I tried to google 'keep_bootcon'. It found several links to strange
-crashes related to this option. Maybe I was not patient enough but
-I did not find any page where this option was suggested and helped.
+> I am not comfortable with removing the only way to debug some type
+> of bugs. But the current state is broken as well.
 
-I still think that the option makes some sense but only when
-it does not cause more breakages on its own.
+yes and yes.
 
-> If the new code can replace keep_bootcon, by all mean, go for it :-)
+> IMHO, the reasonable solution is to move early console code and data
+> out of the init sections. We should do this for the early consoles
+> where the corresponding real console is registered using a deferred
+> probe. Others should be already replaced by the real console when
+> printk_late_init() is called. At least this is how I understand it.
 
-keep_bootcon stays usable for most early consoles. We print a warning
-when an unusable console is disabled too early. Also there is a
-comment how to fix it.
+so I was thinking about two options:
 
-Best Regards,
-Petr
+a) do not keep consoles in init section
+
+b) have a special init section for consoles code and avoid offloading
+   the corresponding pages when we see that keep flag
+
+
+"b" seems like a crazy idea at glance, but it kinda makes some sense at
+the same time. dunno.
+
+	-ss
