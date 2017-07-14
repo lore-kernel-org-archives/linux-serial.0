@@ -1,7 +1,7 @@
 From: Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 1/2] printk/console: Always disable boot consoles that use init memory before it is freed
-Date: Fri, 14 Jul 2017 14:51:12 +0200
-Message-ID: <1500036673-7122-2-git-send-email-pmladek@suse.com>
+Subject: [PATCH 2/2] printk/console: Enhance the check for consoles using init memory
+Date: Fri, 14 Jul 2017 14:51:13 +0200
+Message-ID: <1500036673-7122-3-git-send-email-pmladek@suse.com>
 References: <1500036673-7122-1-git-send-email-pmladek@suse.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1500036673-7122-1-git-send-email-pmladek@suse.com>
@@ -10,81 +10,69 @@ To: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@g
 Cc: Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Petr Mladek <pmladek@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Matt Redfearn <matt.redfearn@imgtec.com>
+printk_late_init() is responsible for disabling boot consoles that
+use init memory. It checks the address of struct console for this.
 
-Commit 4c30c6f566c0 ("kernel/printk: do not turn off bootconsole in
-printk_late_init() if keep_bootcon") added a check on keep_bootcon to
-ensure that boot consoles were kept around until the real console is
-registered.
+But this is not enough. For example, there are several early
+consoles that have write() method in the init section and
+struct console in the normal section. They are not disabled
+and could cause fancy and hard to debug system states.
 
-This can lead to problems if the boot console data and code are in the
-init section, since it can be freed before the boot console is
-unregistered.
+It is even more complicated by the macros EARLYCON_DECLARE() and
+OF_EARLYCON_DECLARE() where various struct members are set at
+runtime by the provided setup() function.
 
-Commit 81cc26f2bd11 ("printk: only unregister boot consoles when
-necessary") fixed this a better way. It allowed to keep boot consoles
-that did not use init data. Unfortunately it did not remove the check
-of keep_bootcon.
+I have tried to reproduce this problem and forced the classic uart
+early console to stay using keep_bootcon parameter. In particular
+I used earlycon=uart,io,0x3f8 keep_bootcon console=ttyS0,115200.
+The system did not boot:
 
-This can lead to crashes and weird panics when the bootconsole is
-accessed after free, especially if page poisoning is in use and the
-code / data have been overwritten with a poison value.
+[    1.570496] PM: Image not found (code -22)
+[    1.570496] PM: Image not found (code -22)
+[    1.571886] PM: Hibernation image not present or could not be loaded.
+[    1.571886] PM: Hibernation image not present or could not be loaded.
+[    1.576407] Freeing unused kernel memory: 2528K
+[    1.577244] kernel tried to execute NX-protected page - exploit attempt? (uid: 0)
 
-To prevent this, always free the boot console if it is within the init
-section. In addition, print a warning about that the console is removed
-prematurely.
+The double lines are caused by having both early uart console and
+ttyS0 console enabled at the same time. The early console stopped
+working when the init memory was freed. Fortunately, the invalid
+call was caught by the NX-protexted page check and did not cause
+any silent fancy problems.
 
-Finally there is a new comment how to avoid the warning. It replaced
-an explanation that duplicated a more comprehensive function
-description few lines above.
+This patch adds a check for many other addresses stored in
+struct console. It omits setup() and match() that are used
+only when the console is registered. Therefore they have
+already been used at this point and there is no reason
+to use them again.
 
-Fixes: 4c30c6f566c0 ("kernel/printk: do not turn off bootconsole in printk_late_init() if keep_bootcon")
-Signed-off-by: Matt Redfearn <matt.redfearn@imgtec.com>
-[pmladek@suse.com: print the warning, code and comments clean up]
 Signed-off-by: Petr Mladek <pmladek@suse.com>
 ---
- kernel/printk/printk.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+ kernel/printk/printk.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index fc47863f629c..f35d3ac3b8c7 100644
+index f35d3ac3b8c7..1ebe1525ef64 100644
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -2650,9 +2650,8 @@ void __init console_init(void)
-  * makes it difficult to diagnose problems that occur during this time.
-  *
-  * To mitigate this problem somewhat, only unregister consoles whose memory
-- * intersects with the init section. Note that code exists elsewhere to get
-- * rid of the boot console as soon as the proper console shows up, so there
-- * won't be side-effects from postponing the removal.
-+ * intersects with the init section. Note that all other boot consoles will
-+ * get unregistred when the real preferred console is registered.
-  */
- static int __init printk_late_init(void)
- {
-@@ -2660,16 +2659,15 @@ static int __init printk_late_init(void)
+@@ -2659,8 +2659,16 @@ static int __init printk_late_init(void)
  	int ret;
  
  	for_each_console(con) {
--		if (!keep_bootcon && con->flags & CON_BOOT) {
-+		if ((con->flags & CON_BOOT) &&
-+		    init_section_intersects(con, sizeof(*con))) {
+-		if ((con->flags & CON_BOOT) &&
+-		    init_section_intersects(con, sizeof(*con))) {
++		if (!(con->flags & CON_BOOT))
++			continue;
++
++		/* Check addresses that might be used for enabled consoles. */
++		if (init_section_intersects(con, sizeof(*con)) ||
++		    init_section_contains(con->write, 0) ||
++		    init_section_contains(con->read, 0) ||
++		    init_section_contains(con->device, 0) ||
++		    init_section_contains(con->unblank, 0) ||
++		    init_section_contains(con->data, 0)) {
  			/*
--			 * Make sure to unregister boot consoles whose data
--			 * resides in the init section before the init section
--			 * is discarded. Boot consoles whose data will stick
--			 * around will automatically be unregistered when the
--			 * proper console replaces them.
-+			 * Please, consider moving the reported consoles out
-+			 * of the init section.
- 			 */
--			if (init_section_intersects(con, sizeof(*con)))
--				unregister_console(con);
-+			pr_warn("bootconsole [%s%d] uses init memory and must be disabled even before the real one is ready\n",
-+				con->name, con->index);
-+			unregister_console(con);
- 		}
- 	}
- 	ret = cpuhp_setup_state_nocalls(CPUHP_PRINTK_DEAD, "printk:dead", NULL,
+ 			 * Please, consider moving the reported consoles out
+ 			 * of the init section.
 -- 
 1.8.5.6
