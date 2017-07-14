@@ -1,54 +1,41 @@
 From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 1/2] printk: Unconditionally unregister boot consoles if
- in init section
-Date: Fri, 14 Jul 2017 14:40:26 +0200
-Message-ID: <20170714124026.GA32632@pathway.suse.cz>
-References: <1499337481-19397-1-git-send-email-matt.redfearn@imgtec.com>
- <20170707044537.GB7478@jagdpanzerIV.localdomain>
- <0212d098-e307-2ea1-cb41-1e81d545da56@imgtec.com>
- <20170711124308.GA3393@pathway.suse.cz>
- <86ff1193-8485-4b14-492f-627720c1d868@imgtec.com>
- <20170712111117.GD3393@pathway.suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: [PATCH 0/2] Avoid crashes by early (boot) consoles using init memory
+Date: Fri, 14 Jul 2017 14:51:11 +0200
+Message-ID: <1500036673-7122-1-git-send-email-pmladek@suse.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170712111117.GD3393@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matt Redfearn <matt.redfearn@imgtec.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, linux-kernel@vger.kernel.org
+To: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Petr Mladek <pmladek@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed 2017-07-12 13:11:17, Petr Mladek wrote:
-> On Tue 2017-07-11 15:41:50, Matt Redfearn wrote:
-> > On 11/07/17 13:43, Petr Mladek wrote:
-> > >IMHO, the reasonable solution is to move early console code and data
-> > >out of the init sections. We should do this for the early consoles
-> > >where the corresponding real console is registered using a deferred
-> > >probe. Others should be already replaced by the real console when
-> > >printk_late_init() is called. At least this is how I understand it.
-> > 
-> > This seems like the most reasonable way forward to me as well,
-> > though sadly will lead to some post-init kernel bloat.
-> > 
-> > I still think, however, that this patch is a reasonable change to
-> > make.
-> 
-> The thing is that this patch "silently" makes the keep_bootcon
-> option almost unusable.
+Some early consoles have code and data in the init section. It makes some
+sense but this might cause problems when they are not replaced by
+the real console in time. The two patches fix the safequard and
+help to avoid the problems.
 
-I was wrong here. I thought that most early consoles used the init
-section. It was mentioned somewhere and I looked a wrong way.
-But this is not true. In fact, it seems that there are
-only few of them. Most early consoles have struct console
-and the write() callback in the normal section that is preserved.
+I though about removing keep_bootcon option completely. But it is useful
+at least for now. There is not an easy way to disable a particular bootconsole
+when the related real console is installed. Instead all bootconsoles are
+removed when the preferred (last on the commandline) console is registered.
+But this is a bit cumbersome and non-intuitive.
 
-Matt's patch and the keep_bootcon option makes sense to me
-after all. Let me to resend Matt's patch with some small
-improvements and one more patch that improves the check
-of early consoles that use init section. I'll keep Matt
-as the author of the first patch.
+In addition, the same problems might happen when the real console is
+registered using a deferred probe or when it is not registered at all
+for some reason.
 
-Best Regards,
-Petr
- 
+The patchset is based on and inspired by the original patch from
+Matt Redfearn, see the discussion starting by the mail
+https://lkml.kernel.org/r/1499337481-19397-1-git-send-email-matt.redfearn@imgtec.com
+
+Matt Redfearn (1):
+  printk/console: Always disable boot consoles that use init memory
+    before it is freed
+
+Petr Mladek (1):
+  printk/console: Enhance the check for consoles using init memory
+
+ kernel/printk/printk.c | 28 +++++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 11 deletions(-)
+
+-- 
+1.8.5.6
