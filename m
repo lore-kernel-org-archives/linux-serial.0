@@ -1,57 +1,73 @@
-From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Subject: Re: [PATCH 2/2] printk/console: Enhance the check for consoles using
- init memory
-Date: Sat, 15 Jul 2017 07:06:26 +0900
-Message-ID: <20170714220626.GB10437@tigerII.localdomain>
+From: "Fabio M. Di Nitto" <fdinitto@redhat.com>
+Subject: Re: [PATCH 0/2] Avoid crashes by early (boot) consoles using init
+ memory
+Date: Sat, 15 Jul 2017 07:05:35 +0200
+Message-ID: <d5bb87b5-1b9e-c5b0-500e-ab165f9b342a@redhat.com>
 References: <1500036673-7122-1-git-send-email-pmladek@suse.com>
- <1500036673-7122-3-git-send-email-pmladek@suse.com>
+ <956ce40c-1640-387a-0ec9-9045c7d8af4b@redhat.com>
+ <20170714143751.GB32632@pathway.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1500036673-7122-3-git-send-email-pmladek@suse.com>
+In-Reply-To: <20170714143751.GB32632@pathway.suse.cz>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On (07/14/17 14:51), Petr Mladek wrote:
-[..]
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index f35d3ac3b8c7..1ebe1525ef64 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -2659,8 +2659,16 @@ static int __init printk_late_init(void)
->  	int ret;
->  
->  	for_each_console(con) {
-> -		if ((con->flags & CON_BOOT) &&
-> -		    init_section_intersects(con, sizeof(*con))) {
-> +		if (!(con->flags & CON_BOOT))
-> +			continue;
-> +
-> +		/* Check addresses that might be used for enabled consoles. */
-> +		if (init_section_intersects(con, sizeof(*con)) ||
-> +		    init_section_contains(con->write, 0) ||
-> +		    init_section_contains(con->read, 0) ||
-> +		    init_section_contains(con->device, 0) ||
-> +		    init_section_contains(con->unblank, 0) ||
-> +		    init_section_contains(con->data, 0)) {
+On 7/14/2017 4:37 PM, Petr Mladek wrote:
+> On Fri 2017-07-14 14:57:45, Fabio M. Di Nitto wrote:
+>> Hi Petr,
+>>
+>> On 7/14/2017 2:51 PM, Petr Mladek wrote:
+>>> Some early consoles have code and data in the init section. It makes some
+>>> sense but this might cause problems when they are not replaced by
+>>> the real console in time. The two patches fix the safequard and
+>>> help to avoid the problems.
+>>>
+>>> I though about removing keep_bootcon option completely. But it is useful
+>>> at least for now.
+>>
+>> Let´s just keep in mind that keep_bootcon was introduced only to debug
+>> issues (read crashes or hangs) that could happen between disabling
+>> bootconsole and enabling the real console. It shouldn´t be used for
+>> anything else really.
+> 
+> This was my initial replay as well. But then I realized that
+> it was a bad idea to use a freed code and data to debug any other
+> issue. It would just create crazy issues on its own.
 
-sort of a problem here is that the next time anyone adds a new ->foo()
-callback to struct console, that person also needs to remember to update
-printk_late_init().
+Perhaps some changes that were made later in the code introduced this
+behavior. I honestly didn´t check. It´s been just so long ago :-)
 
+> 
+> I tried to google 'keep_bootcon'. It found several links to strange
+> crashes related to this option. Maybe I was not patient enough but
+> I did not find any page where this option was suggested and helped.
 
-a completely crazy idea,
-can we have a dedicated "console init" section which we will not offload
-if we see keep_bootcon?
+It´s in Documentation/admin-guide/kernel-parameters.txt. It´s also rare
+that consoles are not working or something is crashing in that small
+window, so I am not entirely surprised that there are few to none
+references of users using it.
 
-or... even crazier... disable bootmem offloading (do not offload init
-section) at all if we see keep_bootcon? keep_bootcon is a purely debugging
-option which people enable when things are bad and unclear, no one should
-be using it otherwise, so may be that idea can be a way to go.
+> 
+> I still think that the option makes some sense but only when
+> it does not cause more breakages on its own.
 
-thoughts?
+agreed.
 
-	-ss
+Cheers
+Fabio
+
+> 
+>> If the new code can replace keep_bootcon, by all mean, go for it :-)
+> 
+> keep_bootcon stays usable for most early consoles. We print a warning
+> when an unusable console is disabled too early. Also there is a
+> comment how to fix it.
+> 
+> Best Regards,
+> Petr
+> 
