@@ -1,103 +1,33 @@
-From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [RFC v2 2/6] serdev: add method to set parity
-Date: Mon, 17 Jul 2017 17:24:32 +0200
-Message-ID: <1500305076-15570-3-git-send-email-ulrich.hecht+renesas@gmail.com>
-References: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, wsa@the-dreams.de, robh@kernel.org, peda@axentia.se, geert@linux-m68k.org, linux-i2c@vger.kernel.org, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 7/9] dt-bindings: serial: add compatible for stm32h7
+Date: Mon, 17 Jul 2017 13:46:19 -0500
+Message-ID: <20170717184619.ffvt4ebzyurke3h2@rob-hp-laptop>
+References: <1499958494-19354-1-git-send-email-bich.hemon@st.com>
+ <1499958494-19354-8-git-send-email-bich.hemon@st.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1499958494-19354-8-git-send-email-bich.hemon-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Bich HEMON <bich.hemon-qxv4g6HH51o@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Adds serdev_device_set_parity() and an implementation for ttyport.
+On Thu, Jul 13, 2017 at 03:08:29PM +0000, Bich HEMON wrote:
+> From: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+> 
+> Introduce new compatibles for "st,stm32h7-usart" and "st,stm32h7-uart".
+> This new compatible allow to use optional wake-up interrupt.
+> 
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+> Signed-off-by: Bich Hemon <bich.hemon-qxv4g6HH51o@public.gmane.org>
+> ---
+>  .../devicetree/bindings/serial/st,stm32-usart.txt       | 17 ++++++++++++-----
+>  1 file changed, 12 insertions(+), 5 deletions(-)
 
-Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
----
- drivers/tty/serdev/core.c           | 12 ++++++++++++
- drivers/tty/serdev/serdev-ttyport.c | 17 +++++++++++++++++
- include/linux/serdev.h              |  4 ++++
- 3 files changed, 33 insertions(+)
-
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index f71b473..1fbaa4c 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -242,6 +242,18 @@ int serdev_device_set_tiocm(struct serdev_device *serdev, int set, int clear)
- }
- EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
- 
-+int serdev_device_set_parity(struct serdev_device *serdev,
-+			     bool enable, bool odd)
-+{
-+	struct serdev_controller *ctrl = serdev->ctrl;
-+
-+	if (!ctrl || !ctrl->ops->set_parity)
-+		return -ENOTSUPP;
-+
-+	return ctrl->ops->set_parity(ctrl, enable, odd);
-+}
-+EXPORT_SYMBOL_GPL(serdev_device_set_parity);
-+
- static int serdev_drv_probe(struct device *dev)
- {
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
-diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-index 302018d..9114956 100644
---- a/drivers/tty/serdev/serdev-ttyport.c
-+++ b/drivers/tty/serdev/serdev-ttyport.c
-@@ -195,6 +195,22 @@ static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, u
- 	return tty->driver->ops->tiocmset(tty, set, clear);
- }
- 
-+static int ttyport_set_parity(struct serdev_controller *ctrl,
-+			      bool enable, bool odd)
-+{
-+	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	struct tty_struct *tty = serport->tty;
-+	struct ktermios ktermios = tty->termios;
-+
-+	ktermios.c_cflag &= ~(PARENB | PARODD);
-+	if (enable)
-+		ktermios.c_cflag |= PARENB;
-+	if (odd)
-+		ktermios.c_cflag |= PARODD;
-+
-+	return tty_set_termios(tty, &ktermios);
-+}
-+
- static const struct serdev_controller_ops ctrl_ops = {
- 	.write_buf = ttyport_write_buf,
- 	.write_flush = ttyport_write_flush,
-@@ -206,6 +222,7 @@ static const struct serdev_controller_ops ctrl_ops = {
- 	.wait_until_sent = ttyport_wait_until_sent,
- 	.get_tiocm = ttyport_get_tiocm,
- 	.set_tiocm = ttyport_set_tiocm,
-+	.set_parity = ttyport_set_parity,
- };
- 
- struct device *serdev_tty_port_register(struct tty_port *port,
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index e69402d..8b67fcd 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -90,6 +90,7 @@ struct serdev_controller_ops {
- 	void (*wait_until_sent)(struct serdev_controller *, long);
- 	int (*get_tiocm)(struct serdev_controller *);
- 	int (*set_tiocm)(struct serdev_controller *, unsigned int, unsigned int);
-+	int (*set_parity)(struct serdev_controller *, bool, bool);
- };
- 
- /**
-@@ -298,6 +299,9 @@ static inline int serdev_device_set_rts(struct serdev_device *serdev, bool enabl
- 		return serdev_device_set_tiocm(serdev, 0, TIOCM_RTS);
- }
- 
-+int serdev_device_set_parity(struct serdev_device *serdev,
-+			     bool enable, bool odd);
-+
- /*
-  * serdev hooks into TTY core
-  */
--- 
-2.7.4
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
