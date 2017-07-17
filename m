@@ -1,44 +1,28 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] serial: st-asc: Potential error pointer dereference
-Date: Mon, 17 Jul 2017 11:28:56 +0100
-Message-ID: <20170717102856.fjxpo2miyn4vmaid@dell>
-References: <20170717081238.bjjp5vvzq56yv2q3@mwanda>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [Customers.Eckelmann] [PATCH] serial: imx: disable DMA for RS-485
+ on i.MX6 SMP
+Date: Mon, 17 Jul 2017 08:34:56 -0300
+Message-ID: <CAOMZO5BttM23SqDerppk_9EPP_TBnHm2T6ikn1RufaUHLbwc_A@mail.gmail.com>
+References: <20170620153701.12626-1-clemens.gruber@pqgruber.com> <D415CD2EC4182C4EAB90A76B7D9F16DC022038EACC@EX-DAG02.eckelmann.group>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170717081238.bjjp5vvzq56yv2q3@mwanda>
-Sender: kernel-janitors-owner@vger.kernel.org
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Patrice Chotard <patrice.chotard@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <D415CD2EC4182C4EAB90A76B7D9F16DC022038EACC@EX-DAG02.eckelmann.group>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Schenk, Gavin" <G.Schenk@eckelmann.de>
+Cc: Clemens Gruber <clemens.gruber@pqgruber.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Ian Jamison <ian.dev@arkver.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 17 Jul 2017, Dan Carpenter wrote:
+Hi Gavin,
 
-> It looks like we intended to return an error code here, because we
-> dereference "ascport->pinctrl" on the next lines.
-> 
-> Fixes: 6929cb00a501 ("serial: st-asc: Read in all Pinctrl states")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
-> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-> index f5335be344f6..6b0ca65027d0 100644
-> --- a/drivers/tty/serial/st-asc.c
-> +++ b/drivers/tty/serial/st-asc.c
-> @@ -758,6 +758,7 @@ static int asc_init_port(struct asc_port *ascport,
->  	if (IS_ERR(ascport->pinctrl)) {
->  		ret = PTR_ERR(ascport->pinctrl);
->  		dev_err(&pdev->dev, "Failed to get Pinctrl: %d\n", ret);
-> +		return ret;
->  	}
+On Fri, Jun 23, 2017 at 6:26 AM, Schenk, Gavin <G.Schenk@eckelmann.de> wrot=
+e:
 
-Good spot.
+> Uwe Kleine-K=C3=B6nig had the idea to disable DMA on the i.MX6dl based pl=
+atform via dts and this is our current workaround.
 
-Acked-by: Lee Jones <lee.jones@linaro.org>
+Please test Ian's patch:
+http://marc.info/?l=3Dlinux-serial&m=3D150005865213531&w=3D2
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+It should fix this DMA problem with RS485.
