@@ -1,7 +1,7 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [RFC v2 6/6] ARM: dts: blanche: add SCIF1 and MAX9260 deserializer
-Date: Mon, 17 Jul 2017 17:24:36 +0200
-Message-ID: <1500305076-15570-7-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: [RFC v2 2/6] serdev: add method to set parity
+Date: Mon, 17 Jul 2017 17:24:32 +0200
+Message-ID: <1500305076-15570-3-git-send-email-ulrich.hecht+renesas@gmail.com>
 References: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com>
@@ -10,96 +10,94 @@ To: linux-serial@vger.kernel.org
 Cc: linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, wsa@the-dreams.de, robh@kernel.org, peda@axentia.se, geert@linux-m68k.org, linux-i2c@vger.kernel.org, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Adds serial port SCIF1 and the MAX9260 deserializers connected to it.
+Adds serdev_device_set_parity() and an implementation for ttyport.
 
 Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 ---
- arch/arm/boot/dts/r8a7792-blanche.dts | 52 +++++++++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ drivers/tty/serdev/core.c           | 12 ++++++++++++
+ drivers/tty/serdev/serdev-ttyport.c | 17 +++++++++++++++++
+ include/linux/serdev.h              |  4 ++++
+ 3 files changed, 33 insertions(+)
 
-diff --git a/arch/arm/boot/dts/r8a7792-blanche.dts b/arch/arm/boot/dts/r8a7792-blanche.dts
-index 9b67dca..2ae9a87 100644
---- a/arch/arm/boot/dts/r8a7792-blanche.dts
-+++ b/arch/arm/boot/dts/r8a7792-blanche.dts
-@@ -21,6 +21,7 @@
- 	aliases {
- 		serial0 = &scif0;
- 		serial1 = &scif3;
-+		serial2 = &scif1;
- 	};
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index f71b473..1fbaa4c 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -242,6 +242,18 @@ int serdev_device_set_tiocm(struct serdev_device *serdev, int set, int clear)
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
  
- 	chosen {
-@@ -186,6 +187,16 @@
- 		gpio = <&gpio11 12 GPIO_ACTIVE_HIGH>;
- 		enable-active-high;
- 	};
++int serdev_device_set_parity(struct serdev_device *serdev,
++			     bool enable, bool odd)
++{
++	struct serdev_controller *ctrl = serdev->ctrl;
 +
-+	mux: mux-controller {
-+		compatible = "gpio-mux";
-+		#mux-control-cells = <0>;
++	if (!ctrl || !ctrl->ops->set_parity)
++		return -ENOTSUPP;
 +
-+		mux-gpios = <&gpio5 12 GPIO_ACTIVE_HIGH>,
-+			    <&gpio5 13 GPIO_ACTIVE_HIGH>,
-+			    <&gpio5 14 GPIO_ACTIVE_HIGH>,
-+			    <&gpio5 15 GPIO_ACTIVE_HIGH>;
-+	};
++	return ctrl->ops->set_parity(ctrl, enable, odd);
++}
++EXPORT_SYMBOL_GPL(serdev_device_set_parity);
++
+ static int serdev_drv_probe(struct device *dev)
+ {
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index 302018d..9114956 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -195,6 +195,22 @@ static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, u
+ 	return tty->driver->ops->tiocmset(tty, set, clear);
+ }
+ 
++static int ttyport_set_parity(struct serdev_controller *ctrl,
++			      bool enable, bool odd)
++{
++	struct serport *serport = serdev_controller_get_drvdata(ctrl);
++	struct tty_struct *tty = serport->tty;
++	struct ktermios ktermios = tty->termios;
++
++	ktermios.c_cflag &= ~(PARENB | PARODD);
++	if (enable)
++		ktermios.c_cflag |= PARENB;
++	if (odd)
++		ktermios.c_cflag |= PARODD;
++
++	return tty_set_termios(tty, &ktermios);
++}
++
+ static const struct serdev_controller_ops ctrl_ops = {
+ 	.write_buf = ttyport_write_buf,
+ 	.write_flush = ttyport_write_flush,
+@@ -206,6 +222,7 @@ static const struct serdev_controller_ops ctrl_ops = {
+ 	.wait_until_sent = ttyport_wait_until_sent,
+ 	.get_tiocm = ttyport_get_tiocm,
+ 	.set_tiocm = ttyport_set_tiocm,
++	.set_parity = ttyport_set_parity,
  };
  
- &extal_clk {
-@@ -202,6 +213,11 @@
- 		function = "scif0";
- 	};
- 
-+	scif1_pins: scif1 {
-+		groups = "scif1_data";
-+		function = "scif1";
-+	};
-+
- 	scif3_pins: scif3 {
- 		groups = "scif3_data";
- 		function = "scif3";
-@@ -246,6 +262,42 @@
- 	status = "okay";
+ struct device *serdev_tty_port_register(struct tty_port *port,
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index e69402d..8b67fcd 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -90,6 +90,7 @@ struct serdev_controller_ops {
+ 	void (*wait_until_sent)(struct serdev_controller *, long);
+ 	int (*get_tiocm)(struct serdev_controller *);
+ 	int (*set_tiocm)(struct serdev_controller *, unsigned int, unsigned int);
++	int (*set_parity)(struct serdev_controller *, bool, bool);
  };
  
-+&scif1 {
-+	pinctrl-0 = <&scif1_pins>;
-+	pinctrl-names = "default";
+ /**
+@@ -298,6 +299,9 @@ static inline int serdev_device_set_rts(struct serdev_device *serdev, bool enabl
+ 		return serdev_device_set_tiocm(serdev, 0, TIOCM_RTS);
+ }
+ 
++int serdev_device_set_parity(struct serdev_device *serdev,
++			     bool enable, bool odd);
 +
-+	status = "okay";
-+
-+	mux-controls = <&mux>;
-+
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	gmsl-deserializer@0 {
-+		compatible = "maxim,max9260";
-+		reg = <0x8>;
-+	};
-+	gmsl-deserializer@1 {
-+		compatible = "maxim,max9260";
-+		reg = <0x9>;
-+	};
-+	gmsl-deserializer@2 {
-+		compatible = "maxim,max9260";
-+		reg = <0xa>;
-+	};
-+	gmsl-deserializer@3 {
-+		compatible = "maxim,max9260";
-+		reg = <0xb>;
-+	};
-+	gmsl-deserializer@4 {
-+		compatible = "maxim,max9260";
-+		reg = <0x4>;
-+	};
-+	gmsl-deserializer@5 {
-+		compatible = "maxim,max9260";
-+		reg = <0x5>;
-+	};
-+};
-+
- &scif3 {
- 	pinctrl-0 = <&scif3_pins>;
- 	pinctrl-names = "default";
+ /*
+  * serdev hooks into TTY core
+  */
 -- 
 2.7.4
