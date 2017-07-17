@@ -1,62 +1,44 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v2] serial: sh-sci: Uninitialized variables in sysfs files
-Date: Mon, 17 Jul 2017 11:34:23 +0300
-Message-ID: <20170717083423.4rhsmwtbehjl7jpr@mwanda>
-References: <20170717081123.akqck2wmj7m7gtc4@mwanda>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH] serial: st-asc: Potential error pointer dereference
+Date: Mon, 17 Jul 2017 11:28:56 +0100
+Message-ID: <20170717102856.fjxpo2miyn4vmaid@dell>
+References: <20170717081238.bjjp5vvzq56yv2q3@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <kernel-janitors-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170717081123.akqck2wmj7m7gtc4@mwanda>
+In-Reply-To: <20170717081238.bjjp5vvzq56yv2q3@mwanda>
 Sender: kernel-janitors-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Patrice Chotard <patrice.chotard@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The kstrtol() function returns -ERANGE as well as -EINVAL so these tests
-are not enough.  It's not a super serious bug, but my static checker
-correctly complains that the "r" variable might be used uninitialized.
+On Mon, 17 Jul 2017, Dan Carpenter wrote:
 
-Fixes: 5d23188a473d ("serial: sh-sci: make RX FIFO parameters tunable via sysfs")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
-v2: fix subject line
+> It looks like we intended to return an error code here, because we
+> dereference "ascport->pinctrl" on the next lines.
+> 
+> Fixes: 6929cb00a501 ("serial: st-asc: Read in all Pinctrl states")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> index f5335be344f6..6b0ca65027d0 100644
+> --- a/drivers/tty/serial/st-asc.c
+> +++ b/drivers/tty/serial/st-asc.c
+> @@ -758,6 +758,7 @@ static int asc_init_port(struct asc_port *ascport,
+>  	if (IS_ERR(ascport->pinctrl)) {
+>  		ret = PTR_ERR(ascport->pinctrl);
+>  		dev_err(&pdev->dev, "Failed to get Pinctrl: %d\n", ret);
+> +		return ret;
+>  	}
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index da5ddfc14778..e08b16b070c0 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1085,10 +1085,12 @@ static ssize_t rx_trigger_store(struct device *dev,
- {
- 	struct uart_port *port = dev_get_drvdata(dev);
- 	struct sci_port *sci = to_sci_port(port);
-+	int ret;
- 	long r;
- 
--	if (kstrtol(buf, 0, &r) == -EINVAL)
--		return -EINVAL;
-+	ret = kstrtol(buf, 0, &r);
-+	if (ret)
-+		return ret;
- 
- 	sci->rx_trigger = scif_set_rtrg(port, r);
- 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
-@@ -1116,10 +1118,12 @@ static ssize_t rx_fifo_timeout_store(struct device *dev,
- {
- 	struct uart_port *port = dev_get_drvdata(dev);
- 	struct sci_port *sci = to_sci_port(port);
-+	int ret;
- 	long r;
- 
--	if (kstrtol(buf, 0, &r) == -EINVAL)
--		return -EINVAL;
-+	ret = kstrtol(buf, 0, &r);
-+	if (ret)
-+		return ret;
- 	sci->rx_fifo_timeout = r;
- 	scif_set_rtrg(port, 1);
- 	if (r > 0)
---
-To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Good spot.
+
+Acked-by: Lee Jones <lee.jones@linaro.org>
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
