@@ -1,73 +1,54 @@
-From: "Fabio M. Di Nitto" <fdinitto@redhat.com>
-Subject: Re: [PATCH 0/2] Avoid crashes by early (boot) consoles using init
- memory
-Date: Sat, 15 Jul 2017 07:05:35 +0200
-Message-ID: <d5bb87b5-1b9e-c5b0-500e-ab165f9b342a@redhat.com>
-References: <1500036673-7122-1-git-send-email-pmladek@suse.com>
- <956ce40c-1640-387a-0ec9-9045c7d8af4b@redhat.com>
- <20170714143751.GB32632@pathway.suse.cz>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH] serial: sh-sci: Uninitialized versions in sysfs files
+Date: Mon, 17 Jul 2017 11:11:23 +0300
+Message-ID: <20170717081123.akqck2wmj7m7gtc4@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170714143751.GB32632@pathway.suse.cz>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 7/14/2017 4:37 PM, Petr Mladek wrote:
-> On Fri 2017-07-14 14:57:45, Fabio M. Di Nitto wrote:
->> Hi Petr,
->>
->> On 7/14/2017 2:51 PM, Petr Mladek wrote:
->>> Some early consoles have code and data in the init section. It makes some
->>> sense but this might cause problems when they are not replaced by
->>> the real console in time. The two patches fix the safequard and
->>> help to avoid the problems.
->>>
->>> I though about removing keep_bootcon option completely. But it is useful
->>> at least for now.
->>
->> Let´s just keep in mind that keep_bootcon was introduced only to debug
->> issues (read crashes or hangs) that could happen between disabling
->> bootconsole and enabling the real console. It shouldn´t be used for
->> anything else really.
-> 
-> This was my initial replay as well. But then I realized that
-> it was a bad idea to use a freed code and data to debug any other
-> issue. It would just create crazy issues on its own.
+The kstrtol() function returns -ERANGE as well as -EINVAL so these tests
+are not enough.  It's not a super serious bug, but my static checker
+correctly complains that the "r" variable might be used uninitialized.
 
-Perhaps some changes that were made later in the code introduced this
-behavior. I honestly didn´t check. It´s been just so long ago :-)
+Fixes: 5d23188a473d ("serial: sh-sci: make RX FIFO parameters tunable via sysfs")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-> 
-> I tried to google 'keep_bootcon'. It found several links to strange
-> crashes related to this option. Maybe I was not patient enough but
-> I did not find any page where this option was suggested and helped.
-
-It´s in Documentation/admin-guide/kernel-parameters.txt. It´s also rare
-that consoles are not working or something is crashing in that small
-window, so I am not entirely surprised that there are few to none
-references of users using it.
-
-> 
-> I still think that the option makes some sense but only when
-> it does not cause more breakages on its own.
-
-agreed.
-
-Cheers
-Fabio
-
-> 
->> If the new code can replace keep_bootcon, by all mean, go for it :-)
-> 
-> keep_bootcon stays usable for most early consoles. We print a warning
-> when an unusable console is disabled too early. Also there is a
-> comment how to fix it.
-> 
-> Best Regards,
-> Petr
-> 
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index da5ddfc14778..e08b16b070c0 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1085,10 +1085,12 @@ static ssize_t rx_trigger_store(struct device *dev,
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+ 	struct sci_port *sci = to_sci_port(port);
++	int ret;
+ 	long r;
+ 
+-	if (kstrtol(buf, 0, &r) == -EINVAL)
+-		return -EINVAL;
++	ret = kstrtol(buf, 0, &r);
++	if (ret)
++		return ret;
+ 
+ 	sci->rx_trigger = scif_set_rtrg(port, r);
+ 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
+@@ -1116,10 +1118,12 @@ static ssize_t rx_fifo_timeout_store(struct device *dev,
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+ 	struct sci_port *sci = to_sci_port(port);
++	int ret;
+ 	long r;
+ 
+-	if (kstrtol(buf, 0, &r) == -EINVAL)
+-		return -EINVAL;
++	ret = kstrtol(buf, 0, &r);
++	if (ret)
++		return ret;
+ 	sci->rx_fifo_timeout = r;
+ 	scif_set_rtrg(port, 1);
+ 	if (r > 0)
