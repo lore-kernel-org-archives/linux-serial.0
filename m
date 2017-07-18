@@ -1,65 +1,64 @@
-From: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v4 0/2] Add basic support for Mediatek MT2712 SoC
-Date: Tue, 18 Jul 2017 15:46:02 +0800
-Message-ID: <1500363962.4499.4.camel@mtksdaap41>
-References: <1498123975-9748-1-git-send-email-yt.shen@mediatek.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] clk: gemini: Fix reset regression
+Date: Tue, 18 Jul 2017 11:49:44 +0200
+Message-ID: <CACRpkda3ZW4rQTwg8Y63uzzupCZAtTP6jv1ppsTXHuDDy0y8og@mail.gmail.com>
+References: <20170711122601.17745-1-linus.walleij@linaro.org> <1499874682.6374.57.camel@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1498123975-9748-1-git-send-email-yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mars Cheng <mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Return-path: <linux-clk-owner@vger.kernel.org>
+In-Reply-To: <1499874682.6374.57.camel@pengutronix.de>
+Sender: linux-clk-owner@vger.kernel.org
+To: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, linux-clk <linux-clk@vger.kernel.org>, Janos Laube <janos.dev@gmail.com>, Paulius Zaleckas <paulius.zaleckas@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Hans Ulli Kroll <ulli.kroll@googlemail.com>, Florian Fainelli <f.fainelli@gmail.com>, Joel Stanley <joel@jms.id.au>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Matthias,
+On Wed, Jul 12, 2017 at 5:51 PM, Philipp Zabel <p.zabel@pengutronix.de> wrote:
 
-Just a gentle ping.
-Should I rebase to 4.13-rc1 and send v5?
+> From fab3a9a697e9797ba1c24874d7c43c09dd812e77 Mon Sep 17 00:00:00 2001
+> From: Philipp Zabel <p.zabel@pengutronix.de>
+> Date: Wed, 12 Jul 2017 17:29:28 +0200
+> Subject: [PATCH] reset: make (de)assert report succeess for self-deasserting
+>  reset drivers
+>
+> By now there are drivers using shared reset controls and (de)assert
+> calls on platforms with self-deasserting reset lines and thus reset
+> drivers that do not implement .assert() and .deassert().
+> As long as the initial state of the reset line is deasserted, there
+> is no reason for a reset_control_assert call to return an error for
+> shared reset controls, or for a reset_control_deassert call to return
+> an error for either shared or exclusive reset controls: after a call
+> to reset_control_deassert the reset line is guaranteed to be deasserted,
+> and after a call to reset_control_assert it is valid for the reset
+> line to stay deasserted for shared reset controls.
+>
+> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
 
-Thanks
-yt.shen
+This patch makes all kind of sense, and I follow your
+reasoning.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-On Thu, 2017-06-22 at 17:32 +0800, YT Shen wrote:
-> MT2712 is a SoC based on 64bit ARMv8 architecture.
-> MT2712 share many HW IP with MT8173.  This patchset was tested on MT2712 evaluation board, and boot to shell ok.
-> 
-> This series contains document bindings, device tree including interrupt and uart.
-> 
-> Changes compared to v3:
-> - use two uart clocks refer to the bindings
-> 
-> Changes compared to v2:
-> - remove alias from serial1 to serial5
-> - remove initrd-start and initrd-end
-> - change GIC_CPU_MASK_SIMPLE(6) to GIC_CPU_MASK_RAW(0x13)
-> - change gic-400 reg range
-> 
-> Changes compared to v1:
-> - change subject prefix for bindings
-> - change device tree license to SPDX tag.
-> - change bootargs parameter to DT usage.
-> - change intpol-controller to interrupt-controller
-> 
-> YT Shen (2):
->   dt-bindings: arm: Add bindings for Mediatek MT2712 SoC Platform
->   arm64: dts: Add Mediatek SoC MT2712 and evaluation board dts and
->     Makefile
-> 
->  Documentation/devicetree/bindings/arm/mediatek.txt |   4 +
->  .../interrupt-controller/mediatek,sysirq.txt       |   1 +
->  .../devicetree/bindings/serial/mtk-uart.txt        |   1 +
->  arch/arm64/boot/dts/mediatek/Makefile              |   1 +
->  arch/arm64/boot/dts/mediatek/mt2712-evb.dts        |  32 ++++
->  arch/arm64/boot/dts/mediatek/mt2712e.dtsi          | 172 +++++++++++++++++++++
->  6 files changed, 211 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> 
+In the back of my head I was thinking that the deassert/assert
+pair matches a certain SoC driver design pattern I have seen
+around:
 
+When a driver use an IP block it enables the clock and takes
+the block out of reset.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+When it stops using it, it asserts reset and disables the clock.
+
+This is not entirely self-evident, for example why is reset asserted
+across say insmod/rmmod/insmod. Just disabling the clock would
+be OK, I guess, in most cases. It is just one of those "dances"
+that developers do, as if to clear the desk or something.
+
+But I guess there must be cases where doing things in another way
+creates problems or power leaks.
+
+I would surely like to understand, from a silicon perspective, why
+drivers are so often written like this. I could think of things like
+little automata and gates inside the silicon that need to be reset
+to minimize off-power consumption but I have no clue if it is
+really so.
+
+Yours,
+Linus Walleij
