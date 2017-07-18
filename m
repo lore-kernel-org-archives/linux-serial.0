@@ -1,65 +1,101 @@
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: [PATCH v4 6/9] serial: omap-serial: Use common rs485 device tree parsing function
-Date: Tue, 18 Jul 2017 12:59:45 +0200
-Message-ID: <20170718105948.21986-7-u.kleine-koenig@pengutronix.de>
-References: <20170718105948.21986-1-u.kleine-koenig@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170718105948.21986-1-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: [PATCH v2] serial: 8250: fix error handling in of_platform_serial_probe()
+Date: Tue, 18 Jul 2017 14:32:11 +0300
+Message-ID: <1500377531-28358-1-git-send-email-khoroshilov@ispras.ru>
+References: <032e9a8b-8013-fe60-4a49-11cbf5cc28ed@ispras.ru>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <032e9a8b-8013-fe60-4a49-11cbf5cc28ed@ispras.ru>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>
+Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+clk_disable_unprepare(info->clk) is missed in of_platform_serial_probe(),
+while irq_dispose_mapping(port->irq) is missed in of_platform_serial_setup().
 
-We just got a common helper for parsing the rs485 specific
-device tree properties. Use it and drop the open coded parser.
+Found by Linux Driver Verification project (linuxtesting.org).
 
-Signed-off-by: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
 ---
- drivers/tty/serial/omap-serial.c | 13 +------------
- 1 file changed, 1 insertion(+), 12 deletions(-)
+v2: Rebase on top of e2860e1f62f2 "serial: 8250_of: Add reset support"
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 1ea05ac57aa7..6d22097e6dd0 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -1607,7 +1607,6 @@ static int serial_omap_probe_rs485(struct uart_omap_port *up,
- 				   struct device_node *np)
- {
- 	struct serial_rs485 *rs485conf = &up->port.rs485;
--	u32 rs485_delay[2];
- 	enum of_gpio_flags flags;
- 	int ret;
- 
-@@ -1638,17 +1637,7 @@ static int serial_omap_probe_rs485(struct uart_omap_port *up,
- 		up->rts_gpio = -EINVAL;
+ drivers/tty/serial/8250/8250_of.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 0cf95fd..539f1a6 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -88,7 +88,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	ret = of_address_to_resource(np, 0, &resource);
+ 	if (ret) {
+ 		dev_warn(&ofdev->dev, "invalid address\n");
+-		goto out;
++		goto err_unprepare;
  	}
  
--	if (of_property_read_u32_array(np, "rs485-rts-delay",
--				    rs485_delay, 2) == 0) {
--		rs485conf->delay_rts_before_send = rs485_delay[0];
--		rs485conf->delay_rts_after_send = rs485_delay[1];
--	}
--
--	if (of_property_read_bool(np, "rs485-rx-during-tx"))
--		rs485conf->flags |= SER_RS485_RX_DURING_TX;
--
--	if (of_property_read_bool(np, "linux,rs485-enabled-at-boot-time"))
--		rs485conf->flags |= SER_RS485_ENABLED;
-+	of_get_rs485_mode(np, rs485conf);
+ 	spin_lock_init(&port->lock);
+@@ -130,16 +130,16 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 			dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
+ 				 prop);
+ 			ret = -EINVAL;
+-			goto out;
++			goto err_dispose;
+ 		}
+ 	}
+ 
+ 	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
+ 	if (IS_ERR(info->rst))
+-		goto out;
++		goto err_dispose;
+ 	ret = reset_control_deassert(info->rst);
+ 	if (ret)
+-		goto out;
++		goto err_dispose;
+ 
+ 	port->type = type;
+ 	port->uartclk = clk;
+@@ -167,7 +167,9 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		port->handle_irq = fsl8250_handle_irq;
  
  	return 0;
+-out:
++err_dispose:
++	irq_dispose_mapping(port->irq);
++err_unprepare:
+ 	if (info->clk)
+ 		clk_disable_unprepare(info->clk);
+ 	return ret;
+@@ -201,7 +203,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	memset(&port8250, 0, sizeof(port8250));
+ 	ret = of_platform_serial_setup(ofdev, port_type, &port8250.port, info);
+ 	if (ret)
+-		goto out;
++		goto err_setup;
+ 
+ 	if (port8250.port.fifosize)
+ 		port8250.capabilities = UART_CAP_FIFO;
+@@ -217,15 +219,18 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 
+ 	ret = serial8250_register_8250_port(&port8250);
+ 	if (ret < 0)
+-		goto out;
++		goto err_register;
+ 
+ 	info->type = port_type;
+ 	info->line = ret;
+ 	platform_set_drvdata(ofdev, info);
+ 	return 0;
+-out:
+-	kfree(info);
++err_register:
+ 	irq_dispose_mapping(port8250.port.irq);
++	if (info->clk)
++		clk_disable_unprepare(info->clk);
++err_setup:
++	kfree(info);
+ 	return ret;
  }
+ 
 -- 
-2.11.0
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.7.4
