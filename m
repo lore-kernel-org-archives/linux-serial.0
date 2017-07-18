@@ -1,13 +1,13 @@
 From: Jeffy Chen <jeffy.chen@rock-chips.com>
-Subject: [RFC PATCH 5/5] serial: 8250_early: Remove __init marking from early write
-Date: Tue, 18 Jul 2017 12:30:03 +0800
-Message-ID: <1500352203-21513-6-git-send-email-jeffy.chen@rock-chips.com>
+Subject: [RFC PATCH 4/5] serial: 8250_ingenic: Remove __init marking from early write
+Date: Tue, 18 Jul 2017 12:30:02 +0800
+Message-ID: <1500352203-21513-5-git-send-email-jeffy.chen@rock-chips.com>
 References: <1500352203-21513-1-git-send-email-jeffy.chen@rock-chips.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1500352203-21513-1-git-send-email-jeffy.chen@rock-chips.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, briannorris@chromium.org, dianders@chromium.org, peter@hurleysoftware.com, Jeffy Chen <jeffy.chen@rock-chips.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, briannorris@chromium.org, dianders@chromium.org, peter@hurleysoftware.com, Jeffy Chen <jeffy.chen@rock-chips.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
 The earlycon would be alive outside the init code in these cases:
@@ -19,48 +19,42 @@ So remove the __init marking to avoid invalid memory access.
 Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
 ---
 
- drivers/tty/serial/8250/8250_early.c | 8 ++++----
+ drivers/tty/serial/8250/8250_ingenic.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index 82fc48e..af72ec3 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -37,7 +37,7 @@
- #include <asm/io.h>
- #include <asm/serial.h>
+diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+index 4d9dc10..464389b 100644
+--- a/drivers/tty/serial/8250/8250_ingenic.c
++++ b/drivers/tty/serial/8250/8250_ingenic.c
+@@ -50,17 +50,17 @@ static const struct of_device_id of_match[];
  
--static unsigned int __init serial8250_early_in(struct uart_port *port, int offset)
-+static unsigned int serial8250_early_in(struct uart_port *port, int offset)
+ static struct earlycon_device *early_device;
+ 
+-static uint8_t __init early_in(struct uart_port *port, int offset)
++static uint8_t early_in(struct uart_port *port, int offset)
  {
- 	int reg_offset = offset;
- 	offset <<= port->regshift;
-@@ -60,7 +60,7 @@ static unsigned int __init serial8250_early_in(struct uart_port *port, int offse
- 	}
+ 	return readl(port->membase + (offset << 2));
  }
  
--static void __init serial8250_early_out(struct uart_port *port, int offset, int value)
-+static void serial8250_early_out(struct uart_port *port, int offset, int value)
+-static void __init early_out(struct uart_port *port, int offset, uint8_t value)
++static void early_out(struct uart_port *port, int offset, uint8_t value)
  {
- 	int reg_offset = offset;
- 	offset <<= port->regshift;
-@@ -89,7 +89,7 @@ static void __init serial8250_early_out(struct uart_port *port, int offset, int
- 
- #define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
- 
--static void __init serial_putc(struct uart_port *port, int c)
-+static void serial_putc(struct uart_port *port, int c)
- {
- 	unsigned int status;
- 
-@@ -103,7 +103,7 @@ static void __init serial_putc(struct uart_port *port, int c)
- 	}
+ 	writel(value, port->membase + (offset << 2));
  }
  
--static void __init early_serial8250_write(struct console *console,
-+static void early_serial8250_write(struct console *console,
- 					const char *s, unsigned int count)
+-static void __init ingenic_early_console_putc(struct uart_port *port, int c)
++static void ingenic_early_console_putc(struct uart_port *port, int c)
  {
- 	struct earlycon_device *device = console->data;
+ 	uint8_t lsr;
+ 
+@@ -71,7 +71,7 @@ static void __init ingenic_early_console_putc(struct uart_port *port, int c)
+ 	early_out(port, UART_TX, c);
+ }
+ 
+-static void __init ingenic_early_console_write(struct console *console,
++static void ingenic_early_console_write(struct console *console,
+ 					      const char *s, unsigned int count)
+ {
+ 	uart_console_write(&early_device->port, s, count,
 -- 
 2.1.4
