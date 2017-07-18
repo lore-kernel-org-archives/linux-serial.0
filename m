@@ -1,69 +1,195 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH 0/5] earlycon hang under some conditions
-Date: Tue, 18 Jul 2017 14:17:52 -0700
-Message-ID: <CAD=FV=UGWGbYycU8Avb9uLJ3j8mwbW0mGbifZpsMn+6isEwF=Q@mail.gmail.com>
-References: <1500357778-23169-1-git-send-email-jeffy.chen@rock-chips.com> <20170718175149.GA131686@google.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170718175149.GA131686@google.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Brian Norris <briannorris@chromium.org>
-Cc: Jeffy Chen <jeffy.chen@rock-chips.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Hurley <peter@hurleysoftware.com>, =?UTF-8?Q?S=C3=B6ren_Brinkmann?= <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Jiri Slaby <jslaby@suse.com>, Vineet Gupta <vgupta@synopsys.com>, linux-serial@vger.kernel.org, linux-snps-arc@lists.infradead.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+From: Rob Herring <robh@kernel.org>
+Subject: [PATCH] tty: Convert to using %pOF instead of full_name
+Date: Tue, 18 Jul 2017 16:43:34 -0500
+Message-ID: <20170718214339.7774-54-robh@kernel.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
+Sender: sparclinux-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, "David S. Miller" <davem@davemloft.net>, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Now that we have a custom printf format specifier, convert users of
+full_name to use %pOF instead. This is preparation to remove storing
+of the full path string for each node.
 
-On Tue, Jul 18, 2017 at 10:51 AM, Brian Norris <briannorris@chromium.org> wrote:
-> Hi Jeffy,
->
-> On Tue, Jul 18, 2017 at 02:02:53PM +0800, Jeffy Chen wrote:
->> I was testing earlycon with 8250 dw serial console. And it hangs in
->> these cases:
->> 1/ kernel hang when calling early write function after free_initmem:
->> a) the earlycon not disabled after the init code(due to keep_bootcon or
->>    not specify a real console to switch to)
->> b) the early write func is marked as __init, for example 8250_early.
->
-> FWIW, I tested 8250_early with "keep_bootcon", and this fixes that:
->
-> Tested-by: Brian Norris <briannorris@chromium.org>
->
-> But then I get double console, if I have both a "real" and "early"
-> console.
->
-> If I were to *only* have the early console, then I might hit the
-> problems you mention:
->
->> 2/ kernel hang when calling early write function after disable unused
->> clks/pm domain:
->> a) the earlycon not disabled after the init code
->> b) the disable unused clks/pm domain kill the requiered clks/pm
->>    domain, since they are not referenced by the earlycon.
->>
->> 3/ kernel hang when calling early write function after the serial
->>    console driver runtime suspended:
->> a) the earlycon not disabled after the init code
->> b) the serial console driver's runtime suspend kills the requiered
->>    clks/pm domain, since they are not referenced by the earlycon.
->>
->> This serial fix 1/ case only.
->
-> Problems 2 and 3 look like something that's not really in scope for
-> early consoles. There's a reason they are mainly supported for early
-> boot, and we try to switch off of them. There isn't really a good way to
-> handle all the clock and PM infrastructure without...switching off the
-> earlycon and using the real one :)
->
-> So, I guess this patchset has value for systems where the clock/PM
-> requirements are simple enough, and the earlycon can actually be useful
-> beyond early init.
+Signed-off-by: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-serial@vger.kernel.org
+Cc: sparclinux@vger.kernel.org
+---
+ drivers/tty/ehv_bytechan.c        |  2 +-
+ drivers/tty/hvc/hvc_opal.c        | 16 ++++++++--------
+ drivers/tty/hvc/hvc_vio.c         |  6 +++---
+ drivers/tty/serdev/core.c         |  2 +-
+ drivers/tty/serial/mpc52xx_uart.c | 12 ++++++------
+ drivers/tty/serial/pmac_zilog.c   |  4 ++--
+ drivers/tty/serial/sunsu.c        |  4 ++--
+ 7 files changed, 23 insertions(+), 23 deletions(-)
 
-Presumably someone using this would just use the "clk_ignore_unused"
-and "pd_ignore_unused" kernel parameters to help them...  In this case
-that seems fine to me.  The "early" boot console is early because it
-can't rely on all of the generic OS mechanisms to do things super
-cleanly, so requiring the user to know that they should add the extra
-command line arguments seems sane.
+diff --git a/drivers/tty/ehv_bytechan.c b/drivers/tty/ehv_bytechan.c
+index 61fe8d6fd24e..a1c7125cb968 100644
+--- a/drivers/tty/ehv_bytechan.c
++++ b/drivers/tty/ehv_bytechan.c
+@@ -122,7 +122,7 @@ static int find_console_handle(void)
 
--Doug
+ 	stdout_irq = irq_of_parse_and_map(np, 0);
+ 	if (stdout_irq == NO_IRQ) {
+-		pr_err("ehv-bc: no 'interrupts' property in %s node\n", np->full_name);
++		pr_err("ehv-bc: no 'interrupts' property in %pOF node\n", np);
+ 		return 0;
+ 	}
+
+diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
+index 510799311099..16331a90c1e8 100644
+--- a/drivers/tty/hvc/hvc_opal.c
++++ b/drivers/tty/hvc/hvc_opal.c
+@@ -179,8 +179,8 @@ static int hvc_opal_probe(struct platform_device *dev)
+ 		proto = HV_PROTOCOL_HVSI;
+ 		ops = &hvc_opal_hvsi_ops;
+ 	} else {
+-		pr_err("hvc_opal: Unknown protocol for %s\n",
+-		       dev->dev.of_node->full_name);
++		pr_err("hvc_opal: Unknown protocol for %pOF\n",
++		       dev->dev.of_node);
+ 		return -ENXIO;
+ 	}
+
+@@ -204,14 +204,14 @@ static int hvc_opal_probe(struct platform_device *dev)
+ 		/* Instanciate now to establish a mapping index==vtermno */
+ 		hvc_instantiate(termno, termno, ops);
+ 	} else {
+-		pr_err("hvc_opal: Device %s has duplicate terminal number #%d\n",
+-		       dev->dev.of_node->full_name, termno);
++		pr_err("hvc_opal: Device %pOF has duplicate terminal number #%d\n",
++		       dev->dev.of_node, termno);
+ 		return -ENXIO;
+ 	}
+
+-	pr_info("hvc%d: %s protocol on %s%s\n", termno,
++	pr_info("hvc%d: %s protocol on %pOF%s\n", termno,
+ 		proto == HV_PROTOCOL_RAW ? "raw" : "hvsi",
+-		dev->dev.of_node->full_name,
++		dev->dev.of_node,
+ 		boot ? " (boot console)" : "");
+
+ 	irq = irq_of_parse_and_map(dev->dev.of_node, 0);
+@@ -222,8 +222,8 @@ static int hvc_opal_probe(struct platform_device *dev)
+ 	}
+
+ 	if (!irq) {
+-		pr_err("hvc_opal: Unable to map interrupt for device %s\n",
+-			dev->dev.of_node->full_name);
++		pr_err("hvc_opal: Unable to map interrupt for device %pOF\n",
++			dev->dev.of_node);
+ 		return irq;
+ 	}
+
+diff --git a/drivers/tty/hvc/hvc_vio.c b/drivers/tty/hvc/hvc_vio.c
+index b05dc5086627..78b003be7f67 100644
+--- a/drivers/tty/hvc/hvc_vio.c
++++ b/drivers/tty/hvc/hvc_vio.c
+@@ -312,12 +312,12 @@ static int hvc_vio_probe(struct vio_dev *vdev,
+ 		proto = HV_PROTOCOL_HVSI;
+ 		ops = &hvterm_hvsi_ops;
+ 	} else {
+-		pr_err("hvc_vio: Unknown protocol for %s\n", vdev->dev.of_node->full_name);
++		pr_err("hvc_vio: Unknown protocol for %pOF\n", vdev->dev.of_node);
+ 		return -ENXIO;
+ 	}
+
+-	pr_devel("hvc_vio_probe() device %s, using %s protocol\n",
+-		 vdev->dev.of_node->full_name,
++	pr_devel("hvc_vio_probe() device %pOF, using %s protocol\n",
++		 vdev->dev.of_node,
+ 		 proto == HV_PROTOCOL_RAW ? "raw" : "hvsi");
+
+ 	/* Is it our boot one ? */
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index ae1aaa0075d1..c68fb3a8ea1c 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -363,7 +363,7 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
+ 		if (!of_get_property(node, "compatible", NULL))
+ 			continue;
+
+-		dev_dbg(&ctrl->dev, "adding child %s\n", node->full_name);
++		dev_dbg(&ctrl->dev, "adding child %pOF\n", node);
+
+ 		serdev = serdev_device_alloc(ctrl);
+ 		if (!serdev)
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index 3970d6a9aaca..4cacaadbd14b 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -1634,8 +1634,8 @@ mpc52xx_console_setup(struct console *co, char *options)
+ 		return -EINVAL;
+ 	}
+
+-	pr_debug("Console on ttyPSC%x is %s\n",
+-		 co->index, mpc52xx_uart_nodes[co->index]->full_name);
++	pr_debug("Console on ttyPSC%x is %pOF\n",
++		 co->index, mpc52xx_uart_nodes[co->index]);
+
+ 	/* Fetch register locations */
+ 	ret = of_address_to_resource(np, 0, &res);
+@@ -1755,8 +1755,8 @@ static int mpc52xx_uart_of_probe(struct platform_device *op)
+ 			break;
+ 	if (idx >= MPC52xx_PSC_MAXNUM)
+ 		return -EINVAL;
+-	pr_debug("Found %s assigned to ttyPSC%x\n",
+-		 mpc52xx_uart_nodes[idx]->full_name, idx);
++	pr_debug("Found %pOF assigned to ttyPSC%x\n",
++		 mpc52xx_uart_nodes[idx], idx);
+
+ 	/* set the uart clock to the input clock of the psc, the different
+ 	 * prescalers are taken into account in the set_baudrate() methods
+@@ -1881,8 +1881,8 @@ mpc52xx_uart_of_enumerate(void)
+
+ 	for (i = 0; i < MPC52xx_PSC_MAXNUM; i++) {
+ 		if (mpc52xx_uart_nodes[i])
+-			pr_debug("%s assigned to ttyPSC%x\n",
+-				 mpc52xx_uart_nodes[i]->full_name, i);
++			pr_debug("%pOF assigned to ttyPSC%x\n",
++				 mpc52xx_uart_nodes[i], i);
+ 	}
+ }
+
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index 0da52947e59e..6ccdd018fb45 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -1671,8 +1671,8 @@ static int __init pmz_probe(void)
+ 		if (!node_a && !node_b) {
+ 			of_node_put(node_a);
+ 			of_node_put(node_b);
+-			printk(KERN_ERR "pmac_zilog: missing node %c for escc %s\n",
+-				(!node_a) ? 'a' : 'b', node_p->full_name);
++			printk(KERN_ERR "pmac_zilog: missing node %c for escc %pOF\n",
++				(!node_a) ? 'a' : 'b', node_p);
+ 			continue;
+ 		}
+
+diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
+index 72df2e1b88af..5380407bb0be 100644
+--- a/drivers/tty/serial/sunsu.c
++++ b/drivers/tty/serial/sunsu.c
+@@ -1212,8 +1212,8 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
+ 	if (up->port.type == PORT_UNKNOWN)
+ 		return -ENODEV;
+
+-	printk("%s: %s port at %llx, irq %u\n",
+-	       up->port.dev->of_node->full_name,
++	printk("%pOF: %s port at %llx, irq %u\n",
++	       up->port.dev->of_node,
+ 	       (up->su_type == SU_PORT_KBD) ? "Keyboard" : "Mouse",
+ 	       (unsigned long long) up->port.mapbase,
+ 	       up->port.irq);
+--
+2.11.0
+
