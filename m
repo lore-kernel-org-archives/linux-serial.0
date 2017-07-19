@@ -1,74 +1,102 @@
-From: Peter De Schrijver <pdeschrijver@nvidia.com>
-Subject: Re: [PATCH] clk: gemini: Fix reset regression
-Date: Wed, 19 Jul 2017 11:00:33 +0300
-Message-ID: <20170719080033.GD1002@tbergstrom-lnx.Nvidia.com>
-References: <20170711122601.17745-1-linus.walleij@linaro.org>
- <1499874682.6374.57.camel@pengutronix.de>
- <CACRpkda3ZW4rQTwg8Y63uzzupCZAtTP6jv1ppsTXHuDDy0y8og@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-clk-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CACRpkda3ZW4rQTwg8Y63uzzupCZAtTP6jv1ppsTXHuDDy0y8og@mail.gmail.com>
-Sender: linux-clk-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, linux-clk <linux-clk@vger.kernel.org>, Janos Laube <janos.dev@gmail.com>, Paulius Zaleckas <paulius.zaleckas@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Hans Ulli Kroll <ulli.kroll@googlemail.com>, Florian Fainelli <f.fainelli@gmail.com>, Joel Stanley <joel@jms.id.au>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: [PATCH v3] serial: 8250: fix error handling in of_platform_serial_probe()
+Date: Wed, 19 Jul 2017 11:32:37 +0300
+Message-ID: <1500453157-13258-1-git-send-email-khoroshilov@ispras.ru>
+References: <20170718154521.GA7132@localhost>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170718154521.GA7132@localhost>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>
+Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jul 18, 2017 at 11:49:44AM +0200, Linus Walleij wrote:
-> On Wed, Jul 12, 2017 at 5:51 PM, Philipp Zabel <p.zabel@pengutronix.de> wrote:
-> 
-> > From fab3a9a697e9797ba1c24874d7c43c09dd812e77 Mon Sep 17 00:00:00 2001
-> > From: Philipp Zabel <p.zabel@pengutronix.de>
-> > Date: Wed, 12 Jul 2017 17:29:28 +0200
-> > Subject: [PATCH] reset: make (de)assert report succeess for self-deasserting
-> >  reset drivers
-> >
-> > By now there are drivers using shared reset controls and (de)assert
-> > calls on platforms with self-deasserting reset lines and thus reset
-> > drivers that do not implement .assert() and .deassert().
-> > As long as the initial state of the reset line is deasserted, there
-> > is no reason for a reset_control_assert call to return an error for
-> > shared reset controls, or for a reset_control_deassert call to return
-> > an error for either shared or exclusive reset controls: after a call
-> > to reset_control_deassert the reset line is guaranteed to be deasserted,
-> > and after a call to reset_control_assert it is valid for the reset
-> > line to stay deasserted for shared reset controls.
-> >
-> > Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-> 
-> This patch makes all kind of sense, and I follow your
-> reasoning.
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> 
-> In the back of my head I was thinking that the deassert/assert
-> pair matches a certain SoC driver design pattern I have seen
-> around:
-> 
-> When a driver use an IP block it enables the clock and takes
-> the block out of reset.
-> 
-> When it stops using it, it asserts reset and disables the clock.
-> 
-> This is not entirely self-evident, for example why is reset asserted
-> across say insmod/rmmod/insmod. Just disabling the clock would
-> be OK, I guess, in most cases. It is just one of those "dances"
-> that developers do, as if to clear the desk or something.
-> 
-> But I guess there must be cases where doing things in another way
-> creates problems or power leaks.
-> 
-> I would surely like to understand, from a silicon perspective, why
-> drivers are so often written like this. I could think of things like
-> little automata and gates inside the silicon that need to be reset
-> to minimize off-power consumption but I have no clue if it is
-> really so.
+clk_disable_unprepare(info->clk) is missed in of_platform_serial_probe(),
+while irq_dispose_mapping(port->irq) is missed in of_platform_serial_setup().
 
-At least doing it this way guarantees the hardware is in its initial state
-before the driver starts doing anything with it. Otherwise you would have
-to ensure the hw init sequence in the driver works for any hw state. That
-seems more complicated to me than just making sure it works correctly when
-the hw is in its initial stat, especially when there are DMA engines involved.
+Found by Linux Driver Verification project (linuxtesting.org).
 
-Peter.
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+---
+v2: Rebase on top of e2860e1f62f2 "serial: 8250_of: Add reset support"
+v3: Rename error labels after what they do as Johan Hovold suggested.
 
+ drivers/tty/serial/8250/8250_of.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 0cf95fd..6c5a8ca 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -88,7 +88,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	ret = of_address_to_resource(np, 0, &resource);
+ 	if (ret) {
+ 		dev_warn(&ofdev->dev, "invalid address\n");
+-		goto out;
++		goto err_unprepare;
+ 	}
+ 
+ 	spin_lock_init(&port->lock);
+@@ -130,16 +130,16 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 			dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
+ 				 prop);
+ 			ret = -EINVAL;
+-			goto out;
++			goto err_dispose;
+ 		}
+ 	}
+ 
+ 	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
+ 	if (IS_ERR(info->rst))
+-		goto out;
++		goto err_dispose;
+ 	ret = reset_control_deassert(info->rst);
+ 	if (ret)
+-		goto out;
++		goto err_dispose;
+ 
+ 	port->type = type;
+ 	port->uartclk = clk;
+@@ -167,7 +167,9 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		port->handle_irq = fsl8250_handle_irq;
+ 
+ 	return 0;
+-out:
++err_dispose:
++	irq_dispose_mapping(port->irq);
++err_unprepare:
+ 	if (info->clk)
+ 		clk_disable_unprepare(info->clk);
+ 	return ret;
+@@ -201,7 +203,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	memset(&port8250, 0, sizeof(port8250));
+ 	ret = of_platform_serial_setup(ofdev, port_type, &port8250.port, info);
+ 	if (ret)
+-		goto out;
++		goto err_free;
+ 
+ 	if (port8250.port.fifosize)
+ 		port8250.capabilities = UART_CAP_FIFO;
+@@ -217,15 +219,18 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 
+ 	ret = serial8250_register_8250_port(&port8250);
+ 	if (ret < 0)
+-		goto out;
++		goto err_dispose;
+ 
+ 	info->type = port_type;
+ 	info->line = ret;
+ 	platform_set_drvdata(ofdev, info);
+ 	return 0;
+-out:
+-	kfree(info);
++err_dispose:
+ 	irq_dispose_mapping(port8250.port.irq);
++	if (info->clk)
++		clk_disable_unprepare(info->clk);
++err_free:
++	kfree(info);
+ 	return ret;
+ }
+ 
+-- 
+2.7.4
