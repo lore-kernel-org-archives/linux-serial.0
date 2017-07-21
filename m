@@ -1,78 +1,106 @@
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH 000/102] Convert drivers to explicit reset API
-Date: Thu, 20 Jul 2017 13:46:17 -0700
-Message-ID: <CAKdAkRTx8jd8UToz5_EgMmdW3V47i2uo++YvVB_yzytqSA=P1Q@mail.gmail.com>
-References: <20170719152646.25903-1-p.zabel@pengutronix.de>
- <20170719211515.46a1196c@windsurf> <1500543415.2354.37.camel@pengutronix.de>
- <20170720123640.43c2ce01@windsurf> <1500555312.2354.75.camel@pengutronix.de>
+From: YT Shen <yt.shen@mediatek.com>
+Subject: Re: [PATCH v4 2/2] arm64: dts: Add Mediatek SoC MT2712 and
+ evaluation board dts and Makefile
+Date: Fri, 21 Jul 2017 14:32:26 +0800
+Message-ID: <1500618746.14868.13.camel@mtksdaap41>
+References: <1498123975-9748-1-git-send-email-yt.shen@mediatek.com>
+         <1498123975-9748-3-git-send-email-yt.shen@mediatek.com>
+         <ddfb5e58-520f-1ef5-2351-d7545e17a429@gmail.com>
+         <1500446884.14021.12.camel@mtksdaap41>
+         <a470dfc9-71a4-6574-f342-fbd8d60aafce@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <1500555312.2354.75.camel@pengutronix.de>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, lkml <linux-kernel@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Prashant Gaikwad <pgaikwad@nvidia.com>, Heiko Stuebner <heiko@sntech.de>, Peter Chen <Peter.Chen@nxp.com>, Linus Walleij <linus.walleij@linaro.org>, DRI <dri-devel@lists.freedesktop.org>, Marc Dietrich <marvin24@gmx.de>, Rakesh Iyer <riyer@nvidia.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-clk@vger.kernel.org, Wim Van Sebroeck <wim@iguana.be>, Wolfram Sang <wsa@the-dreams.de>, Xinliang Liu <z.liuxinliang@hisilicon.com>, Chanwoo Choi <cw00.choi@samsung.com>, Alan Stern <stern@rowland.harvard.edu>, Jiri Slaby <jslaby@suse.com>, Michael Turquette <mturquette@baylibre.com>, Guenter Roeck <linux@roeck-us.net>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <a470dfc9-71a4-6574-f342-fbd8d60aafce@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Mars Cheng <mars.cheng@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jul 20, 2017 at 5:55 AM, Philipp Zabel <p.zabel@pengutronix.de> wrote:
-> Hi Thomas,
->
-> On Thu, 2017-07-20 at 12:36 +0200, Thomas Petazzoni wrote:
->> Hello,
->>
->> On Thu, 20 Jul 2017 11:36:55 +0200, Philipp Zabel wrote:
->>
->> > > I don't know if it has been discussed in the past, so forgive me if it
->> > > has been. Have you considered adding a "int flags" argument to the
->> > > existing reset_control_get_*() functions, rather than introducing
->> > > separate exclusive variants ?
->> > >
->> > > Indeed, with a "int flags" argument you could in the future add more
->> > > variants/behaviors without actually multiplying the number of
->> > > functions. Something like the "flags" argument for request_irq() for
->> > > example.
->> >
->> > I can't find the discussion right now, but I remember we had talked
->> > about this in the past.
->> > Behind the scenes, all the inline API functions already call common
->> > entry points with flags (well, currently separate bool parameters for
->> > shared and optional).
->> > One reason against exposing those as an int flags in the user facing API
->> > is the possibility to accidentally provide a wrong value.
->>
->> This is a quite strange argument. You could also accidentally use the
->> wrong variant of the function, just like you could use the wrong flag.
->
-> You can't accidentally use no flag at all or a completely bogus value
-> with the "plethora of inline functions" variant.
->
->> Once again, the next time you have another parameter for those reset
->> functions, beyond the exclusive/shared variant, you will multiply again
->> by two the number of functions ? You already have the  exclusive/shared
->> and optional/mandatory variants, so 4 variants. When you'll add a new
->> parameter, you'll have 8 variants. Doesn't seem really good.
->
-> I'd rather avoid adding more variants, if possible. The complexity
-> increases regardless of whether the API is expressed as a bunch of
-> functions or as a single function with a bunch of flags.
->
->> What about reset_control_get(struct device *, const char *, int flags)
->> to replace all those variants ?
->
-> While I like how this looks, unfortunately (devm_)reset_control_get
-> already exists without the flags, so we can't change to that with a
-> gentle transition.
+On Wed, 2017-07-19 at 11:26 +0200, Matthias Brugger wrote:
+> 
+> On 07/19/2017 08:48 AM, YT Shen wrote:
+> > On Tue, 2017-07-18 at 18:29 +0200, Matthias Brugger wrote:
+> >>
+> >> On 06/22/2017 11:32 AM, YT Shen wrote:
+> >>> This adds basic chip support for Mediatek 2712
+> 
+> [...]
+> 
+> >>> +
+> >>> +	uart_clk: dummy26m {
+> >>> +		compatible = "fixed-clock";
+> >>> +		clock-frequency = <26000000>;
+> >>> +		#clock-cells = <0>;
+> >>> +	};
+> >>> +
+> 
+> [...]
+> 
+> >>> +
+> >>> +	soc {
+> >>> +		#address-cells = <2>;
+> >>> +		#size-cells = <2>;
+> >>> +		compatible = "simple-bus";
+> >>> +		ranges;
+> >>> +
+> >>> +		uart5: serial@1000f000 {
+> >>> +			compatible = "mediatek,mt2712-uart",
+> >>> +				     "mediatek,mt6577-uart";
+> >>> +			reg = <0 0x1000f000 0 0x400>;
+> >>> +			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
+> >>> +			clocks = <&uart_clk>, <&uart_clk>;
+> >>> +			clock-names = "baud", "bus";
+> >>> +			status = "disabled";
+> >>> +		};
+> >>
+> >> So baud and bus clock are both 26 MHz?
+> > We didn't have CCF clock support in this series.
+> > After we have clock source support, we could use the correct clocks to
+> > the UARTs and drop the 26MHz fixed rate UART clock.
+> > 
+> > The bus clock is 26MHz.  The baud clock could be from another clock
+> > source, using the same 26MHz fixed clock works also.
+> > 
+> > 
+> > [1] https://patchwork.kernel.org/patch/9670877/
+> > [2] https://patchwork.kernel.org/patch/6436021/
+> > 
+> 
+> Yes, just using one 26 MHz clock works, but it uses an deprecated 
+> binding, so we should not do this, as through copying from the source of 
+> other SoCs we will keep it alive forever. Anyway that's not your case, 
+> as you defined the two clocks.
+> 
+> The device tree should reflect the HW, that's why I asked for the clock 
+> frequency of both clocks. I searched the git history and it was never 
+> done right before. So you could be the first :)
+> 
+> Thanks,
+> Matthias
+Ok, I want to make it clear.  The following example
 
-This was done for gpiod_get() and its flags argument with horrifying
-#define-ry, which thankfully was completely hidden from users.
+        baud_clk: dummy26m {
+                compatible = "fixed-clock";
+                clock-frequency = <26000000>;
+                #clock-cells = <0>;
+        };
 
--- 
-Dmitry
+        sys_clk: dummyclk {
+                compatible = "fixed-clock";
+                clock-frequency = <26000000>;
+                #clock-cells = <0>;
+        };
+
+	uart0: serial@11002000 {
+[...]
+                clocks = <&baud_clk>, <&sys_clk>;
+[...]
+	}
+
+Do you think it is clear to reflect the HW that the baud clock and sys
+clock can be different source or we need to choose another frequency?
+Thanks.
+
+yt.shen
