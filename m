@@ -1,7 +1,7 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [RFC PATCH 2/4] serial: uartps: Use dynamic array for console port
-Date: Fri, 21 Jul 2017 11:32:25 +0200
-Message-ID: <d12d636176b330f5ccfe1325286f902ee0f10680.1500629544.git.michal.simek@xilinx.com>
+Subject: [RFC PATCH 3/4] serial: uartps: Move cnds_uart_get_port to probe
+Date: Fri, 21 Jul 2017 11:32:26 +0200
+Message-ID: <d636a88da35ed3ba333d1e6523cf140ec1e57a0a.1500629544.git.michal.simek@xilinx.com>
 References: <cover.1500629544.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1500629544.git.michal.simek@xilinx.com>
@@ -12,89 +12,99 @@ To: linux-kernel@vger.kernel.org, monstr@monstr.eu, Alan Cox <gnomes@lxorguk.uku
 Cc: =?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Driver console functions are using pointer to static array with fixed
-size. There can be only one serial console at the time which is found
-by register_console(). register_console() is filling cons->index to
-port->line value.
+c&p this function to probe as preparation for removing
+cdns_uart_port[] static array.
 
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
 
- drivers/tty/serial/xilinx_uartps.c | 29 ++++++++++++++++++++++++-----
- 1 file changed, 24 insertions(+), 5 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 61 +++++++++++++-------------------------
+ 1 file changed, 21 insertions(+), 40 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 4614349403c1..e6470a3111ce 100644
+index e6470a3111ce..4fb74baeae35 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1211,6 +1211,10 @@ static int __init cdns_early_console_setup(struct earlycon_device *device,
- OF_EARLYCON_DECLARE(cdns, "cdns,uart-r1p12", cdns_early_console_setup);
- OF_EARLYCON_DECLARE(cdns, "xlnx,zynqmp-uart", cdns_early_console_setup);
+@@ -1104,43 +1104,6 @@ static void cdns_uart_pm(struct uart_port *port, unsigned int state,
  
-+
-+/* Static pointer to console port */
-+static struct uart_port *console_port;
-+
- /**
-  * cdns_uart_console_write - perform write operation
-  * @co: Console handle
-@@ -1220,7 +1224,7 @@ static int __init cdns_early_console_setup(struct earlycon_device *device,
- static void cdns_uart_console_write(struct console *co, const char *s,
- 				unsigned int count)
- {
--	struct uart_port *port = &cdns_uart_port[co->index];
-+	struct uart_port *port = console_port;
- 	unsigned long flags;
- 	unsigned int imr, ctrl;
- 	int locked = 1;
-@@ -1266,15 +1270,13 @@ static void cdns_uart_console_write(struct console *co, const char *s,
-  */
- static int __init cdns_uart_console_setup(struct console *co, char *options)
- {
--	struct uart_port *port = &cdns_uart_port[co->index];
-+	struct uart_port *port = console_port;
-+
- 	int baud = 9600;
- 	int bits = 8;
- 	int parity = 'n';
- 	int flow = 'n';
+ static struct uart_port cdns_uart_port[CDNS_UART_NR_PORTS];
  
--	if (co->index < 0 || co->index >= CDNS_UART_NR_PORTS)
--		return -EINVAL;
+-/**
+- * cdns_uart_get_port - Configure the port from platform device resource info
+- * @id: Port id
+- *
+- * Return: a pointer to a uart_port or NULL for failure
+- */
+-static struct uart_port *cdns_uart_get_port(int id)
+-{
+-	struct uart_port *port;
 -
- 	if (!port->membase) {
- 		pr_debug("console on " CDNS_UART_TTY_NAME "%i not present\n",
- 			 co->index);
-@@ -1570,6 +1572,17 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
+-	/* Try the given port id if failed use default method */
+-	if (cdns_uart_port[id].mapbase != 0) {
+-		/* Find the next unused port */
+-		for (id = 0; id < CDNS_UART_NR_PORTS; id++)
+-			if (cdns_uart_port[id].mapbase == 0)
+-				break;
+-	}
+-
+-	if (id >= CDNS_UART_NR_PORTS)
+-		return NULL;
+-
+-	port = &cdns_uart_port[id];
+-
+-	/* At this point, we've got an empty uart_port struct, initialize it */
+-	spin_lock_init(&port->lock);
+-	port->membase	= NULL;
+-	port->irq	= 0;
+-	port->type	= PORT_UNKNOWN;
+-	port->iotype	= UPIO_MEM32;
+-	port->flags	= UPF_BOOT_AUTOCONF;
+-	port->ops	= &cdns_uart_ops;
+-	port->fifosize	= CDNS_UART_FIFO_SIZE;
+-	port->line	= id;
+-	port->dev	= NULL;
+-	return port;
+-}
+-
+ #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+ /**
+  * cdns_uart_console_wait_tx - Wait for the TX to be full
+@@ -1545,15 +1508,33 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 	if (id < 0)
+ 		id = 0;
  
-+#ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
-+	/*
-+	 * If console hasn't been found yet try to assign this port
-+	 * because it is required to be assigned for console setup function.
-+	 * If register_console() don't assign value, then console_port pointer
-+	 * is cleanup.
-+	 */
-+	if (cdns_uart_uart_driver.cons->index == -1)
-+		console_port = port;
-+#endif
-+
- 	rc = uart_add_one_port(&cdns_uart_uart_driver, port);
- 	if (rc) {
- 		dev_err(&pdev->dev,
-@@ -1577,6 +1590,12 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 		goto err_out_pm_disable;
+-	/* Initialize the port structure */
+-	port = cdns_uart_get_port(id);
++	/* Try the given port id if failed use default method */
++	if (cdns_uart_port[id].mapbase != 0) {
++		/* Find the next unused port */
++		for (id = 0; id < CDNS_UART_NR_PORTS; id++)
++			if (cdns_uart_port[id].mapbase == 0)
++				break;
++	}
+ 
+-	if (!port) {
++	port = &cdns_uart_port[id];
++	if (!port || id >= CDNS_UART_NR_PORTS) {
+ 		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
+ 		rc = -ENODEV;
+ 		goto err_out_notif_unreg;
  	}
  
-+#ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
-+	/* This is not port which is used for console that's why clean it up */
-+	if (cdns_uart_uart_driver.cons->index == -1)
-+		console_port = NULL;
-+#endif
++	/* At this point, we've got an empty uart_port struct, initialize it */
++	spin_lock_init(&port->lock);
++	port->membase	= NULL;
++	port->irq	= 0;
++	port->type	= PORT_UNKNOWN;
++	port->iotype	= UPIO_MEM32;
++	port->flags	= UPF_BOOT_AUTOCONF;
++	port->ops	= &cdns_uart_ops;
++	port->fifosize	= CDNS_UART_FIFO_SIZE;
++	port->line	= id;
++	port->dev	= NULL;
 +
- 	return 0;
- 
- err_out_pm_disable:
+ 	/*
+ 	 * Register the port.
+ 	 * This function also registers this device with the tty layer
 -- 
 1.9.1
