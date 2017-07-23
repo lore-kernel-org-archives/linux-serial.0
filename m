@@ -1,7 +1,7 @@
 From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-Subject: [PATCH 2/9] tty: isicom: constify pci_device_id.
-Date: Sun, 23 Jul 2017 15:31:02 +0530
-Message-ID: <1500804069-11043-3-git-send-email-arvind.yadav.cs@gmail.com>
+Subject: [PATCH 1/9] tty: mxser: constify pci_device_id.
+Date: Sun, 23 Jul 2017 15:31:01 +0530
+Message-ID: <1500804069-11043-2-git-send-email-arvind.yadav.cs@gmail.com>
 References: <1500804069-11043-1-git-send-email-arvind.yadav.cs@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1500804069-11043-1-git-send-email-arvind.yadav.cs@gmail.com>
@@ -16,29 +16,29 @@ const pci_device_id. So mark the non-const structs as const.
 
 File size before:
    text	   data	    bss	    dec	    hex	filename
-  12176	   1520	  25864	  39560	   9a88	drivers/tty/isicom.o
+  20253	   1184	  19904	  41341	   a17d	drivers/tty/mxser.o
 
 File size After adding 'const':
    text	   data	    bss	    dec	    hex	filename
-  12528	   1168	  25864	  39560	   9a88	drivers/tty/isicom.o
+  21117	    300	  19904	  41341	   a17d	drivers/tty/mxser.o
 
 Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
 ---
- drivers/tty/isicom.c | 2 +-
+ drivers/tty/mxser.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/isicom.c b/drivers/tty/isicom.c
-index b70187b..61ecdd6 100644
---- a/drivers/tty/isicom.c
-+++ b/drivers/tty/isicom.c
-@@ -150,7 +150,7 @@
- static int isicom_probe(struct pci_dev *, const struct pci_device_id *);
- static void isicom_remove(struct pci_dev *);
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index 8bd6fb6..1c0c955 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -145,7 +145,7 @@ static const struct mxser_cardinfo mxser_cards[] = {
  
--static struct pci_device_id isicom_pci_tbl[] = {
-+static const struct pci_device_id isicom_pci_tbl[] = {
- 	{ PCI_DEVICE(VENDOR_ID, 0x2028) },
- 	{ PCI_DEVICE(VENDOR_ID, 0x2051) },
- 	{ PCI_DEVICE(VENDOR_ID, 0x2052) },
+ /* driver_data correspond to the lines in the structure above
+    see also ISA probe function before you change something */
+-static struct pci_device_id mxser_pcibrds[] = {
++static const struct pci_device_id mxser_pcibrds[] = {
+ 	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_C168),	.driver_data = 3 },
+ 	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_C104),	.driver_data = 4 },
+ 	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP132),	.driver_data = 8 },
 -- 
 2.7.4
