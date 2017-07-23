@@ -1,7 +1,7 @@
 From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-Subject: [PATCH 4/9] tty: synclink: constify pci_device_id.
-Date: Sun, 23 Jul 2017 15:31:04 +0530
-Message-ID: <1500804069-11043-5-git-send-email-arvind.yadav.cs@gmail.com>
+Subject: [PATCH 3/9] tty: synclinkmp: constify pci_device_id.
+Date: Sun, 23 Jul 2017 15:31:03 +0530
+Message-ID: <1500804069-11043-4-git-send-email-arvind.yadav.cs@gmail.com>
 References: <1500804069-11043-1-git-send-email-arvind.yadav.cs@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1500804069-11043-1-git-send-email-arvind.yadav.cs@gmail.com>
@@ -16,29 +16,29 @@ const pci_device_id. So mark the non-const structs as const.
 
 File size before:
    text	   data	    bss	    dec	    hex	filename
-  51755	    400	    513	  52668	   cdbc	drivers/tty/synclink.o
+  44660	    432	    104	  45196	   b08c	drivers/tty/synclinkmp.o
 
 File size After adding 'const':
    text	   data	    bss	    dec	    hex	filename
-  51883	    304	    513	  52700	   cddc	drivers/tty/synclink.o
+  44756	    336	    104	  45196	   b08c	drivers/tty/synclinkmp.o
 
 Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
 ---
- drivers/tty/synclink.c | 2 +-
+ drivers/tty/synclinkmp.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/synclink.c b/drivers/tty/synclink.c
-index 3fafc5a..3be9811 100644
---- a/drivers/tty/synclink.c
-+++ b/drivers/tty/synclink.c
-@@ -884,7 +884,7 @@ static int synclink_init_one (struct pci_dev *dev,
- 				     const struct pci_device_id *ent);
- static void synclink_remove_one (struct pci_dev *dev);
+diff --git a/drivers/tty/synclinkmp.c b/drivers/tty/synclinkmp.c
+index 9b4fb02..4fed9e7 100644
+--- a/drivers/tty/synclinkmp.c
++++ b/drivers/tty/synclinkmp.c
+@@ -479,7 +479,7 @@ static char *driver_version = "$Revision: 4.38 $";
+ static int synclinkmp_init_one(struct pci_dev *dev,const struct pci_device_id *ent);
+ static void synclinkmp_remove_one(struct pci_dev *dev);
  
--static struct pci_device_id synclink_pci_tbl[] = {
-+static const struct pci_device_id synclink_pci_tbl[] = {
- 	{ PCI_VENDOR_ID_MICROGATE, PCI_DEVICE_ID_MICROGATE_USC, PCI_ANY_ID, PCI_ANY_ID, },
- 	{ PCI_VENDOR_ID_MICROGATE, 0x0210, PCI_ANY_ID, PCI_ANY_ID, },
+-static struct pci_device_id synclinkmp_pci_tbl[] = {
++static const struct pci_device_id synclinkmp_pci_tbl[] = {
+ 	{ PCI_VENDOR_ID_MICROGATE, PCI_DEVICE_ID_MICROGATE_SCA, PCI_ANY_ID, PCI_ANY_ID, },
  	{ 0, }, /* terminate list */
+ };
 -- 
 2.7.4
