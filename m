@@ -1,7 +1,7 @@
 From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-Subject: [PATCH 6/9] tty: serial: pci: constify pci_device_id.
-Date: Sun, 23 Jul 2017 15:31:06 +0530
-Message-ID: <1500804069-11043-7-git-send-email-arvind.yadav.cs@gmail.com>
+Subject: [PATCH 8/9] tty: serial: jsm: constify pci_device_id.
+Date: Sun, 23 Jul 2017 15:31:08 +0530
+Message-ID: <1500804069-11043-9-git-send-email-arvind.yadav.cs@gmail.com>
 References: <1500804069-11043-1-git-send-email-arvind.yadav.cs@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1500804069-11043-1-git-send-email-arvind.yadav.cs@gmail.com>
@@ -16,29 +16,29 @@ const pci_device_id. So mark the non-const structs as const.
 
 File size before:
    text	   data	    bss	    dec	    hex	filename
-  12626	  18128	      0	  30754	   7822 tty/serial/8250/8250_pci.o
+   2442	   1088	      8	   3538	    dd2	tty/serial/jsm/jsm_driver.o
 
 File size After adding 'const':
    text	   data	    bss	    dec	    hex	filename
-  23986	   6768	      0	  30754	   7822 tty/serial/8250/8250_pci.o
+   3082	    448	      8	   3538	    dd2 tty/serial/jsm/jsm_driver.o
 
 Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
 ---
- drivers/tty/serial/8250/8250_pci.c | 2 +-
+ drivers/tty/serial/jsm/jsm_driver.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 00e51a0..553823c 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -3723,7 +3723,7 @@ static int pciserial_resume_one(struct device *dev)
- static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
- 			 pciserial_resume_one);
+diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+index a119f11..102d499 100644
+--- a/drivers/tty/serial/jsm/jsm_driver.c
++++ b/drivers/tty/serial/jsm/jsm_driver.c
+@@ -304,7 +304,7 @@ static void jsm_remove_one(struct pci_dev *pdev)
+ 	kfree(brd);
+ }
  
--static struct pci_device_id serial_pci_tbl[] = {
-+static const struct pci_device_id serial_pci_tbl[] = {
- 	/* Advantech use PCI_DEVICE_ID_ADVANTECH_PCI3620 (0x3620) as 'PCI_SUBVENDOR_ID' */
- 	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI3620,
- 		PCI_DEVICE_ID_ADVANTECH_PCI3620, 0x0001, 0, 0,
+-static struct pci_device_id jsm_pci_tbl[] = {
++static const struct pci_device_id jsm_pci_tbl[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9), 0, 0, 0 },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9PRI), 0, 0, 1 },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2RJ45), 0, 0, 2 },
 -- 
 2.7.4
