@@ -1,60 +1,85 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 000/102] Convert drivers to explicit reset API
-Date: Sun, 23 Jul 2017 20:41:48 +0200
-Message-ID: <CACRpkdaXOv7mX+b-q1K34CB5w0SWPXCKa21wHaxL7qjf91PJXQ@mail.gmail.com>
-References: <20170719152646.25903-1-p.zabel@pengutronix.de>
- <20170719211515.46a1196c@windsurf> <1500543415.2354.37.camel@pengutronix.de>
- <20170720123640.43c2ce01@windsurf> <1500555312.2354.75.camel@pengutronix.de> <CAKdAkRTx8jd8UToz5_EgMmdW3V47i2uo++YvVB_yzytqSA=P1Q@mail.gmail.com>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [PATCH 2/2] printk/console: Enhance the check for consoles using
+ init memory
+Date: Mon, 24 Jul 2017 11:03:56 +0900
+Message-ID: <20170724020356.GA515@jagdpanzerIV.localdomain>
+References: <1500036673-7122-1-git-send-email-pmladek@suse.com>
+ <1500036673-7122-3-git-send-email-pmladek@suse.com>
+ <20170714220626.GB10437@tigerII.localdomain>
+ <20170721143253.GA26877@pathway.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <CAKdAkRTx8jd8UToz5_EgMmdW3V47i2uo++YvVB_yzytqSA=P1Q@mail.gmail.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, lkml <linux-kernel@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Prashant Gaikwad <pgaikwad@nvidia.com>, Heiko Stuebner <heiko@sntech.de>, Peter Chen <Peter.Chen@nxp.com>, DRI <dri-devel@lists.freedesktop.org>, Marc Dietrich <marvin24@gmx.de>, Rakesh Iyer <riyer@nvidia.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-clk <linux-clk@vger.kernel.org>, Wim Van Sebroeck <wim@iguana.be>, Wolfram Sang <wsa@the-dreams.de>, Xinliang Liu <z.liuxinliang@hisilicon.com>, Chanwoo Choi <cw00.choi@samsung.com>, Alan Stern <stern@rowland.harvard.edu>, Jiri Slaby <jslaby@suse.com>, Michael Turquette <mturquette@baylibre.com>, Guenter Roeck <linux@r>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170721143253.GA26877@pathway.suse.cz>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jul 20, 2017 at 10:46 PM, Dmitry Torokhov
-<dmitry.torokhov@gmail.com> wrote:
-> On Thu, Jul 20, 2017 at 5:55 AM, Philipp Zabel <p.zabel@pengutronix.de> wrote:
+Hello,
 
->>> What about reset_control_get(struct device *, const char *, int flags)
->>> to replace all those variants ?
->>
->> While I like how this looks, unfortunately (devm_)reset_control_get
->> already exists without the flags, so we can't change to that with a
->> gentle transition.
->
-> This was done for gpiod_get() and its flags argument with horrifying
-> #define-ry, which thankfully was completely hidden from users.
+On (07/21/17 16:32), Petr Mladek wrote:
+[..]
+> > sort of a problem here is that the next time anyone adds a new ->foo()
+> > callback to struct console, that person also needs to remember to update
+> > printk_late_init().
+> 
+> I am not super happy with this as well. Any hint how to do it better
+> or more secure is welcome. But I do not see a beter solution at the moment.
+> 
+> Note that there are only 3 commits in the git history that change this
+> structure. Neither of them invalidates this check!
 
-For your reference:
+well, the console output is far from perfect, so I can imagine future
+changes ;)
 
-commit bae48da237fcedd7ad09569025483b988635efb7
-"gpiolib: add gpiod_get() and gpiod_put() functions"
+> > a completely crazy idea,
+> > can we have a dedicated "console init" section which we will not offload
+> > if we see keep_bootcon?
+> 
+> I though about this as well. But this will not avoid the above
+> problem. We still would need to make sure that the consoles
+> use the special section. Or do I miss anything?
 
-commit 39b2bbe3d715cf5013b5c48695ccdd25bd3bf120
-"gpio: add flags argument to gpiod_get*() functions"
+you don't miss anything.
 
-commit 0dbc8b7afef6e4fddcfebcbacbeb269a0a3b06d5
-"gpio: move varargs hack outside #ifdef GPIOLIB"
+to fix the rootcause of the problem, and not its aftershock, we still
+need to either:
+	a) move consoles to normal section
+or
+	b) move consoles to a special section
 
-commit b17d1bf16cc72a374a48d748940f700009d40ff4
-"gpio: make flags mandatory for gpiod_get functions"
+I don't mind that warning, but I think we also need to tweak the
+affected consoles. otherwise, upon maintainer's request to keep
+bootcon, a user can just report back "uses init memory and must
+be disabled even before the real one is ready" warning, yet the
+kernel still would crash (a theoretical case, but for some reason
+someone wanted to keep bootcon after all).
 
-Retrospectively ... was that really a good idea... it was a LOT
-of trouble to add a flag, maybe it had been better to try and
-just slam all users in a single go.
+[..]
+> It means that less than 25% of early consoles are located in the init
+> code. I am not sure if it is worth introducing a new section.
 
-But it worked.
+ok, good.
 
-Yours,
-Linus Walleij
+> Instead it would make sense to move all these consoles into the normal
+> section. But it is not strictly needed if the normal console is
+> registered using an init call (always in time). In this case, it is "enough"
+> to mention the real console as the last one on the command line.
+
+let's move. to normal section, or to special section. depending on how
+much space we can saved unloading the consoles.
+
+> > or... even crazier... disable bootmem offloading (do not offload init
+> > section) at all if we see keep_bootcon? keep_bootcon is a purely debugging
+> > option which people enable when things are bad and unclear, no one should
+> > be using it otherwise, so may be that idea can be a way to go.
+> 
+> I have talked about this with my colleagues. They told me that it
+> would be pity. The keep_bootcon option might be useful to debug
+> problems related to freeing the init memory.
+
+agree.
+
+	-ss
