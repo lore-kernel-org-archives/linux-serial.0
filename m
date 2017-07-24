@@ -1,85 +1,68 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [PATCH 2/2] printk/console: Enhance the check for consoles using
- init memory
-Date: Mon, 24 Jul 2017 11:03:56 +0900
-Message-ID: <20170724020356.GA515@jagdpanzerIV.localdomain>
-References: <1500036673-7122-1-git-send-email-pmladek@suse.com>
- <1500036673-7122-3-git-send-email-pmladek@suse.com>
- <20170714220626.GB10437@tigerII.localdomain>
- <20170721143253.GA26877@pathway.suse.cz>
+From: Matt Brown <matthew.brown.dev-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] powerpc/asm/cacheflush: Cleanup cacheflush function params
+Date: Mon, 24 Jul 2017 14:31:09 +1000
+Message-ID: <CAPoR37a2_7Gq0DL1DsHNK4Vmq5KR1NdfAZVbep0S6zUnfACgDw@mail.gmail.com>
+References: <20170720062850.2195-1-matthew.brown.dev@gmail.com>
+ <87mv7zgwpl.fsf@concordia.ellerman.id.au> <CAMuHMdXU-R8kBs_xp7XDK0pnC5fakpghchuEPD8jtEcHLmgyHg@mail.gmail.com>
+ <87h8y7gt2z.fsf@concordia.ellerman.id.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170721143253.GA26877@pathway.suse.cz>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <87h8y7gt2z.fsf-W0DJWXSxmBNbyGPkN3NxC2scP1bn1w/D@public.gmane.org>
+Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
+Cc: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, DRI Development <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, Linux MMC List <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, MTD Maling List <linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-spi <linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+I've realised that changing the arguments for the cacheflush functions
+is much more work than its worth, due to other archs using these
+functions.
+The next patch will just translate the asm cacheflush functions to c,
+keeping the existing parameters.
+So this won't have any effect on the drivers.
 
-On (07/21/17 16:32), Petr Mladek wrote:
-[..]
-> > sort of a problem here is that the next time anyone adds a new ->foo()
-> > callback to struct console, that person also needs to remember to update
-> > printk_late_init().
-> 
-> I am not super happy with this as well. Any hint how to do it better
-> or more secure is welcome. But I do not see a beter solution at the moment.
-> 
-> Note that there are only 3 commits in the git history that change this
-> structure. Neither of them invalidates this check!
+Thanks,
+Matt Brown
 
-well, the console output is far from perfect, so I can imagine future
-changes ;)
-
-> > a completely crazy idea,
-> > can we have a dedicated "console init" section which we will not offload
-> > if we see keep_bootcon?
-> 
-> I though about this as well. But this will not avoid the above
-> problem. We still would need to make sure that the consoles
-> use the special section. Or do I miss anything?
-
-you don't miss anything.
-
-to fix the rootcause of the problem, and not its aftershock, we still
-need to either:
-	a) move consoles to normal section
-or
-	b) move consoles to a special section
-
-I don't mind that warning, but I think we also need to tweak the
-affected consoles. otherwise, upon maintainer's request to keep
-bootcon, a user can just report back "uses init memory and must
-be disabled even before the real one is ready" warning, yet the
-kernel still would crash (a theoretical case, but for some reason
-someone wanted to keep bootcon after all).
-
-[..]
-> It means that less than 25% of early consoles are located in the init
-> code. I am not sure if it is worth introducing a new section.
-
-ok, good.
-
-> Instead it would make sense to move all these consoles into the normal
-> section. But it is not strictly needed if the normal console is
-> registered using an init call (always in time). In this case, it is "enough"
-> to mention the real console as the last one on the command line.
-
-let's move. to normal section, or to special section. depending on how
-much space we can saved unloading the consoles.
-
-> > or... even crazier... disable bootmem offloading (do not offload init
-> > section) at all if we see keep_bootcon? keep_bootcon is a purely debugging
-> > option which people enable when things are bad and unclear, no one should
-> > be using it otherwise, so may be that idea can be a way to go.
-> 
-> I have talked about this with my colleagues. They told me that it
-> would be pity. The keep_bootcon option might be useful to debug
-> problems related to freeing the init memory.
-
-agree.
-
-	-ss
+On Thu, Jul 20, 2017 at 11:01 PM, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org> wrote:
+> Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> writes:
+>
+>> On Thu, Jul 20, 2017 at 1:43 PM, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org> wrote:
+>>> Matt Brown <matthew.brown.dev-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> writes:
+>>>> The cacheflush prototypes currently use start and stop values and each
+>>>> call requires typecasting the address to an unsigned long.
+>>>> This patch changes the cacheflush prototypes to follow the x86 style of
+>>>> using a base and size values, with base being a void pointer.
+>>>>
+>>>> All callers of the cacheflush functions, including drivers, have been
+>>>> modified to conform to the new prototypes.
+>>>>
+>>>> The 64 bit cacheflush functions which were implemented in assembly code
+>>>> (flush_dcache_range, flush_inval_dcache_range) have been translated into
+>>>> C for readability and coherence.
+>>
+>>>> --- a/arch/powerpc/include/asm/cacheflush.h
+>>>> +++ b/arch/powerpc/include/asm/cacheflush.h
+>>>> @@ -51,13 +51,13 @@ static inline void __flush_dcache_icache_phys(unsigned long physaddr)
+>>>>   * Write any modified data cache blocks out to memory and invalidate them.
+>>>>   * Does not invalidate the corresponding instruction cache blocks.
+>>>>   */
+>>>> -static inline void flush_dcache_range(unsigned long start, unsigned long stop)
+>>>> +static inline void flush_dcache_range(void *start, unsigned long size)
+>>>>  {
+>>>> -     void *addr = (void *)(start & ~(L1_CACHE_BYTES - 1));
+>>>> -     unsigned long size = stop - (unsigned long)addr + (L1_CACHE_BYTES - 1);
+>>>> +     void *addr = (void *)((u32)start & ~(L1_CACHE_BYTES - 1));
+>>>
+>>> unsigned long would be nicer than u32.
+>>
+>> Indeed. That would make this work on ppc64, too.
+>> After which ppc64 has an identical copy (u64 = unsigned long on ppc64) below?
+>
+> That was Matt's homework to notice that ;)
+>
+> cheers
+--
+To unsubscribe from this list: send the line "unsubscribe linux-spi" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
