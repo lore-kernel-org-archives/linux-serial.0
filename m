@@ -1,69 +1,54 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH 0/5] earlycon hang under some conditions
-Date: Mon, 24 Jul 2017 16:50:49 -0700
-Message-ID: <CAD=FV=W5+jEE21DC6=cr=5koYeDAShVbqtad-Dy2oaRVzwQSVA@mail.gmail.com>
-References: <1500357778-23169-1-git-send-email-jeffy.chen@rock-chips.com>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [PATCH 1/2] printk/console: Always disable boot consoles that
+ use init memory before it is freed
+Date: Wed, 26 Jul 2017 22:07:31 +0900
+Message-ID: <20170726130731.GA2173@jagdpanzerIV.localdomain>
+References: <1500036673-7122-1-git-send-email-pmladek@suse.com>
+ <1500036673-7122-2-git-send-email-pmladek@suse.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1500357778-23169-1-git-send-email-jeffy.chen@rock-chips.com>
+Content-Disposition: inline
+In-Reply-To: <1500036673-7122-2-git-send-email-pmladek@suse.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jeffy Chen <jeffy.chen@rock-chips.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Brian Norris <briannorris@chromium.org>, Peter Hurley <peter@hurleysoftware.com>, =?UTF-8?Q?S=C3=B6ren_Brinkmann?= <soren.brinkmann@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Jiri Slaby <jslaby@suse.com>, Vineet Gupta <vgupta@synopsys.com>, linux-serial@vger.kernel.org, linux-snps-arc@lists.infradead.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+On (07/14/17 14:51), Petr Mladek wrote:
+> From: Matt Redfearn <matt.redfearn@imgtec.com>
+> 
+> Commit 4c30c6f566c0 ("kernel/printk: do not turn off bootconsole in
+> printk_late_init() if keep_bootcon") added a check on keep_bootcon to
+> ensure that boot consoles were kept around until the real console is
+> registered.
+> 
+> This can lead to problems if the boot console data and code are in the
+> init section, since it can be freed before the boot console is
+> unregistered.
+> 
+> Commit 81cc26f2bd11 ("printk: only unregister boot consoles when
+> necessary") fixed this a better way. It allowed to keep boot consoles
+> that did not use init data. Unfortunately it did not remove the check
+> of keep_bootcon.
+> 
+> This can lead to crashes and weird panics when the bootconsole is
+> accessed after free, especially if page poisoning is in use and the
+> code / data have been overwritten with a poison value.
+> 
+> To prevent this, always free the boot console if it is within the init
+> section. In addition, print a warning about that the console is removed
+> prematurely.
+> 
+> Finally there is a new comment how to avoid the warning. It replaced
+> an explanation that duplicated a more comprehensive function
+> description few lines above.
+> 
+> Fixes: 4c30c6f566c0 ("kernel/printk: do not turn off bootconsole in printk_late_init() if keep_bootcon")
+> Signed-off-by: Matt Redfearn <matt.redfearn@imgtec.com>
+> [pmladek@suse.com: print the warning, code and comments clean up]
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
 
-On Mon, Jul 17, 2017 at 11:02 PM, Jeffy Chen <jeffy.chen@rock-chips.com> wrote:
-> I was testing earlycon with 8250 dw serial console. And it hangs in
-> these cases:
-> 1/ kernel hang when calling early write function after free_initmem:
-> a) the earlycon not disabled after the init code(due to keep_bootcon or
->    not specify a real console to switch to)
-> b) the early write func is marked as __init, for example 8250_early.
->
-> 2/ kernel hang when calling early write function after disable unused
-> clks/pm domain:
-> a) the earlycon not disabled after the init code
-> b) the disable unused clks/pm domain kill the requiered clks/pm
->    domain, since they are not referenced by the earlycon.
->
-> 3/ kernel hang when calling early write function after the serial
->    console driver runtime suspended:
-> a) the earlycon not disabled after the init code
-> b) the serial console driver's runtime suspend kills the requiered
->    clks/pm domain, since they are not referenced by the earlycon.
->
-> This serial fix 1/ case only.
->
->
->
-> Jeffy Chen (5):
->   serial: arc: Remove __init marking from early write
->   serial: omap: Remove __init marking from early write
->   serial: xuartps: Remove __init marking from early write
->   serial: 8250_ingenic: Remove __init marking from early write
->   serial: 8250_early: Remove __init marking from early write
->
->  drivers/tty/serial/8250/8250_early.c   |  8 ++++----
->  drivers/tty/serial/8250/8250_ingenic.c |  8 ++++----
->  drivers/tty/serial/arc_uart.c          |  4 ++--
->  drivers/tty/serial/omap-serial.c       | 13 ++++++-------
->  drivers/tty/serial/xilinx_uartps.c     |  2 +-
->  5 files changed, 17 insertions(+), 18 deletions(-)
+Reviewed-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 
-I looked through all 5 patches and they seem sane to me.  I didn't go
-through and test them since Brian already tested the patches for the
-one UART driver I'd have access to anyway.
-
-As per my previous email, I don't see any need to solve all the
-world'd problems with this patch series, plus the keep_bootcon seems
-to be an experts / debugging type option and it seems sane if you need
-to take care in using it.
-
-So officially for the series (FWIW since I'm just an interested 3rd party):
-
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-
-
--Doug
+	-ss
