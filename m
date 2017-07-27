@@ -1,44 +1,42 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 2/2] printk/console: Enhance the check for consoles using
- init memory
-Date: Thu, 27 Jul 2017 12:08:27 +0200
-Message-ID: <20170727100827.GF3799@pathway.suse.cz>
-References: <1500036673-7122-1-git-send-email-pmladek@suse.com>
- <1500036673-7122-3-git-send-email-pmladek@suse.com>
- <20170726130804.GB2173@jagdpanzerIV.localdomain>
- <20170727092957.GD3799@pathway.suse.cz>
- <20170727095100.GA653@jagdpanzerIV.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170727095100.GA653@jagdpanzerIV.localdomain>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org
+Subject: [PATCH 0/3] tty: serial: 8250 introduce mctrl_gpio helpers
+Date: Thu, 27 Jul 2017 15:17:33 +0200
+Message-ID: <1501161456-13367-1-git-send-email-yegorslists@googlemail.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu 2017-07-27 18:51:01, Sergey Senozhatsky wrote:
-> On (07/27/17 11:29), Petr Mladek wrote:
-> [..]
-> > > > Signed-off-by: Petr Mladek <pmladek@suse.com>
-> > > 
-> > > Reviewed-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-> > 
-> > Thanks for the review. I am going to push the two patches into
-> > for-4.14 branch so that we could get some testing via linux-next.
-> 
-> good. agree.
-> 
-> how do you think,
-> 
-> would pr_warn() be enough for people to notice the wrongdoing or
-> shall we put WARN_ON() there for a while at least? (assuming that
-> people pay more attention to backtraces).
+From: Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 
-I would keep pr_warn(). The warning is interesting only when people
-want to debug and the real console does not appear in time.
-Then this will be the last but one message on the early console.
+This patch series aims to reintroduce the  mctrl_gpio helpers for 8250
+UARTs.
 
-Best Regards,
-Petr
+There are some UARTs that use GPIO signals as a wakeup-sourse.
+The first patch addresses this issue and tries to destinguish GPIO usage
+via searching for "wakeup-sourse" property. Though it must be decided whether
+this property is secure to use for this purpose.
+
+Yegor Yefremov (3):
+  serial: mctrl_gpio: restrict MCTRL initialization
+  tty/serial/8250: use mctrl_gpio helpers
+  tty/serial/8250: add DT bindings description for mctrl_gpio helpers
+
+ Documentation/devicetree/bindings/serial/8250.txt | 26 +++++++++++++++++
+ drivers/tty/serial/8250/8250.h                    | 35 ++++++++++++++++++++++-
+ drivers/tty/serial/8250/8250_core.c               |  9 ++++++
+ drivers/tty/serial/8250/8250_omap.c               | 31 +++++++++++---------
+ drivers/tty/serial/8250/8250_port.c               |  7 ++++-
+ drivers/tty/serial/8250/Kconfig                   |  1 +
+ drivers/tty/serial/serial_mctrl_gpio.c            |  4 +++
+ include/linux/serial_8250.h                       |  1 +
+ 8 files changed, 99 insertions(+), 15 deletions(-)
+
+-- 
+2.1.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
