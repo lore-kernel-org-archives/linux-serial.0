@@ -1,42 +1,44 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+From: Petr Mladek <pmladek@suse.com>
 Subject: Re: [PATCH 2/2] printk/console: Enhance the check for consoles using
  init memory
-Date: Thu, 27 Jul 2017 18:52:22 +0900
-Message-ID: <20170727095222.GB653@jagdpanzerIV.localdomain>
+Date: Thu, 27 Jul 2017 12:08:27 +0200
+Message-ID: <20170727100827.GF3799@pathway.suse.cz>
 References: <1500036673-7122-1-git-send-email-pmladek@suse.com>
  <1500036673-7122-3-git-send-email-pmladek@suse.com>
- <20170714220626.GB10437@tigerII.localdomain>
- <20170721143253.GA26877@pathway.suse.cz>
- <20170724020356.GA515@jagdpanzerIV.localdomain>
- <20170727092825.GC3799@pathway.suse.cz>
+ <20170726130804.GB2173@jagdpanzerIV.localdomain>
+ <20170727092957.GD3799@pathway.suse.cz>
+ <20170727095100.GA653@jagdpanzerIV.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170727092825.GC3799@pathway.suse.cz>
+In-Reply-To: <20170727095100.GA653@jagdpanzerIV.localdomain>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On (07/27/17 11:28), Petr Mladek wrote:
-> > well, the console output is far from perfect, so I can imagine future
-> > changes ;)
+On Thu 2017-07-27 18:51:01, Sergey Senozhatsky wrote:
+> On (07/27/17 11:29), Petr Mladek wrote:
+> [..]
+> > > > Signed-off-by: Petr Mladek <pmladek@suse.com>
+> > > 
+> > > Reviewed-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+> > 
+> > Thanks for the review. I am going to push the two patches into
+> > for-4.14 branch so that we could get some testing via linux-next.
 > 
-> Sure and we will need to deal with it. Anyway, I still thing that this
-> check is better than nothing. Even if we "fix" all consoles and move
-> them out of init section then this check will be useful to catch at least
-> some future mistakes.
-
-yep, let's keep it.
-
-[..]
-> > let's move. to normal section, or to special section. depending on how
-> > much space we can saved unloading the consoles.
+> good. agree.
 > 
-> I agree. We will do or suggest this when anyone see the warning
-> and ask for help.
+> how do you think,
+> 
+> would pr_warn() be enough for people to notice the wrongdoing or
+> shall we put WARN_ON() there for a while at least? (assuming that
+> people pay more attention to backtraces).
 
-works for me.
+I would keep pr_warn(). The warning is interesting only when people
+want to debug and the real console does not appear in time.
+Then this will be the last but one message on the early console.
 
-	-ss
+Best Regards,
+Petr
