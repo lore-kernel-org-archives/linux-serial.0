@@ -1,193 +1,63 @@
-From: Timur Tabi <timur@codeaurora.org>
-Subject: [PATCH] [for 4.13] tty: pl011: fix initialization order of QDF2400 E44
-Date: Thu, 27 Jul 2017 16:15:52 -0500
-Message-ID: <1501190152-24060-1-git-send-email-timur@codeaurora.org>
+From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 0/3] tty: serial: 8250 introduce mctrl_gpio helpers
+Date: Thu, 27 Jul 2017 23:40:05 -0700
+Message-ID: <20170728064004.GI10026@atomide.com>
+References: <1501161456-13367-1-git-send-email-yegorslists@googlemail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
-Cc: timur@codeaurora.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1501161456-13367-1-git-send-email-yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-The work-around for Qualcomm Technologies QDF2400 Erratum 44 hinges on a
-global variable defined in the pl011 driver.  The ACPI SPCR parsing code
-determines whether the work-around is needed, and if so, it changes the
-console name from "pl011" to "qdf2400_e44".  The expectation is that
-the pl011 driver will implement the work-around when it sees the console
-name.  The global variable qdf2400_e44_present is set when that happens.
+* yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org> [170727 06:18]:
+> From: Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+> 
+> This patch series aims to reintroduce the  mctrl_gpio helpers for 8250
+> UARTs.
+> 
+> There are some UARTs that use GPIO signals as a wakeup-sourse.
+> The first patch addresses this issue and tries to destinguish GPIO usage
+> via searching for "wakeup-sourse" property. Though it must be decided whether
+> this property is secure to use for this purpose.
 
-The problem is that work-around needs to be enabled when the pl011
-driver probes, not when the console name is queried.  However, sbsa_probe()
-is called before pl011_console_match().  The work-around appeared to work
-previously because the default console on QDF2400 platforms was always
-ttyAMA1.  The first time sbsa_probe() is called (for ttyAMA0),
-qdf2400_e44_present is still false.  Then pl011_console_match() is called,
-and it sets qdf2400_e44_present to true.  All subsequent calls to
-sbsa_probe() enable the work-around.
+The wakeup-source part you should be able to handle pretty much
+out of box with Linux generic wakeirqs if configured. See for example
+drivers/i2c/i2c-core.c for the dev_pm_set_dedicated_wake_irq() part.
+As long as the 8250 driver has runtime PM implemented it will wake
+up the 8250 device.
 
-The solution is to move the global variable into spcr.c and let the
-pl011 driver query it during probe time.  This works because all QDF2400
-platforms require SPCR, so parse_spcr() will always be called.
-pl011_console_match still checks for the "qdf2400_e44" console name,
-but it doesn't do anything else special.
+This should work just fine also with am335x gpios, just configure the
+secondary wakeup gpio interrupt using interrupts-extended in device
+tree. Typically the interrupts are named "irq" and "wakeup". And if the
+pin is used as gpio, you can just dev_pm_clear_wake_irq() during
+runtime.
 
-Fixes: 5a0722b898f8 ("tty: pl011: use "qdf2400_e44" as the earlycon name for QDF2400 E44")
-Tested-by: Jeffrey Hugo <jhugo@codeaurora.org>
-Signed-off-by: Timur Tabi <timur@codeaurora.org>
----
- drivers/acpi/spcr.c             | 36 ++++++++++++++++++++++++++++++++++--
- drivers/tty/serial/amba-pl011.c | 37 +++++++++++++++++++------------------
- include/linux/acpi.h            |  1 +
- 3 files changed, 54 insertions(+), 20 deletions(-)
+If having issues, we're still missing the wakeirq level configuration,
+the patch below should do the trick there.
 
-diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-index 4ac3e06b41d8..98aa8c808a33 100644
---- a/drivers/acpi/spcr.c
-+++ b/drivers/acpi/spcr.c
-@@ -17,6 +17,16 @@
- #include <linux/serial_core.h>
+Regards,
+
+Tony
+
+8< -----------
+diff --git a/drivers/base/power/wakeirq.c b/drivers/base/power/wakeirq.c
+--- a/drivers/base/power/wakeirq.c
++++ b/drivers/base/power/wakeirq.c
+@@ -198,7 +198,8 @@ int dev_pm_set_dedicated_wake_irq(struct device *dev, int irq)
+ 	 * so we use a threaded irq.
+ 	 */
+ 	err = request_threaded_irq(irq, NULL, handle_threaded_wake_irq,
+-				   IRQF_ONESHOT, dev_name(dev), wirq);
++				   irq_get_trigger_type(irq) | IRQF_ONESHOT,
++				   dev_name(dev), wirq);
+ 	if (err)
+ 		goto err_free;
  
- /*
-+ * Erratum 44 for QDF2432v1 and QDF2400v1 SoCs describes the BUSY bit as
-+ * occasionally getting stuck as 1. To avoid the potential for a hang, check
-+ * TXFE == 0 instead of BUSY == 1. This may not be suitable for all UART
-+ * implementations, so only do so if an affected platform is detected in
-+ * parse_spcr().
-+ */
-+bool qdf2400_e44_present;
-+EXPORT_SYMBOL(qdf2400_e44_present);
-+
-+/*
-  * Some Qualcomm Datacenter Technologies SoCs have a defective UART BUSY bit.
-  * Detect them by examining the OEM fields in the SPCR header, similiar to PCI
-  * quirk detection in pci_mcfg.c.
-@@ -147,8 +157,30 @@ int __init parse_spcr(bool earlycon)
- 		goto done;
- 	}
- 
--	if (qdf2400_erratum_44_present(&table->header))
--		uart = "qdf2400_e44";
-+	/*
-+	 * If the E44 erratum is required, then we need to tell the pl011
-+	 * driver to implement the work-around.
-+	 *
-+	 * The global variable is used by the probe function when it
-+	 * creates the UARTs, whether or not they're used as a console.
-+	 *
-+	 * If the user specifies "traditional" earlycon, the qdf2400_e44
-+	 * console name matches the EARLYCON_DECLARE() statement, and
-+	 * SPCR is not used.  Parameter "earlycon" is false.
-+	 *
-+	 * If the user specifies "SPCR" earlycon, then we need to update
-+	 * the console name so that it also says "qdf2400_e44".  Parameter
-+	 * "earlycon" is true.
-+	 *
-+	 * For consistency, if we change the console name, then we do it
-+	 * for everyone, not just earlycon.
-+	 */
-+	if (qdf2400_erratum_44_present(&table->header)) {
-+		qdf2400_e44_present = true;
-+		if (earlycon)
-+			uart = "qdf2400_e44";
-+	}
-+
- 	if (xgene_8250_erratum_present(table))
- 		iotype = "mmio32";
- 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 8a857bb34fbb..1888d168a41c 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -142,15 +142,7 @@ static unsigned int get_fifosize_arm(struct amba_device *dev)
- 	.fixed_options		= true,
- };
- 
--/*
-- * Erratum 44 for QDF2432v1 and QDF2400v1 SoCs describes the BUSY bit as
-- * occasionally getting stuck as 1. To avoid the potential for a hang, check
-- * TXFE == 0 instead of BUSY == 1. This may not be suitable for all UART
-- * implementations, so only do so if an affected platform is detected in
-- * parse_spcr().
-- */
--static bool qdf2400_e44_present = false;
--
-+#ifdef CONFIG_ACPI_SPCR_TABLE
- static struct vendor_data vendor_qdt_qdf2400_e44 = {
- 	.reg_offset		= pl011_std_offsets,
- 	.fr_busy		= UART011_FR_TXFE,
-@@ -165,6 +157,7 @@ static unsigned int get_fifosize_arm(struct amba_device *dev)
- 	.always_enabled		= true,
- 	.fixed_options		= true,
- };
-+#endif
- 
- static u16 pl011_st_offsets[REG_ARRAY_SIZE] = {
- 	[REG_DR] = UART01x_DR,
-@@ -2375,12 +2368,14 @@ static int __init pl011_console_match(struct console *co, char *name, int idx,
- 	resource_size_t addr;
- 	int i;
- 
--	if (strcmp(name, "qdf2400_e44") == 0) {
--		pr_info_once("UART: Working around QDF2400 SoC erratum 44");
--		qdf2400_e44_present = true;
--	} else if (strcmp(name, "pl011") != 0) {
-+	/*
-+	 * Systems affected by the Qualcomm Technologies QDF2400 E44 erratum
-+	 * have a distinct console name, so make sure we check for that.
-+	 * The actual implementation of the erratum occurs in the probe
-+	 * function.
-+	 */
-+	if ((strcmp(name, "qdf2400_e44") != 0) && (strcmp(name, "pl011") != 0))
- 		return -ENODEV;
--	}
- 
- 	if (uart_parse_earlycon(options, &iotype, &addr, &options))
- 		return -ENODEV;
-@@ -2734,11 +2729,17 @@ static int sbsa_uart_probe(struct platform_device *pdev)
- 	}
- 	uap->port.irq	= ret;
- 
--	uap->reg_offset	= vendor_sbsa.reg_offset;
--	uap->vendor	= qdf2400_e44_present ?
--					&vendor_qdt_qdf2400_e44 : &vendor_sbsa;
-+#ifdef CONFIG_ACPI_SPCR_TABLE
-+	if (qdf2400_e44_present) {
-+		dev_info(&pdev->dev, "working around QDF2400 SoC erratum 44\n");
-+		uap->vendor = &vendor_qdt_qdf2400_e44;
-+	} else
-+#endif
-+		uap->vendor = &vendor_sbsa;
-+
-+	uap->reg_offset	= uap->vendor->reg_offset;
- 	uap->fifosize	= 32;
--	uap->port.iotype = vendor_sbsa.access_32b ? UPIO_MEM32 : UPIO_MEM;
-+	uap->port.iotype = uap->vendor->access_32b ? UPIO_MEM32 : UPIO_MEM;
- 	uap->port.ops	= &sbsa_uart_pops;
- 	uap->fixed_baud = baudrate;
- 
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index c749eef1daa1..27b4b6615263 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -1209,6 +1209,7 @@ static inline void acpi_table_upgrade(void) { }
- #endif
- 
- #ifdef CONFIG_ACPI_SPCR_TABLE
-+extern bool qdf2400_e44_present;
- int parse_spcr(bool earlycon);
- #else
- static inline int parse_spcr(bool earlycon) { return 0; }
--- 
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm
-Technologies, Inc.  Qualcomm Technologies, Inc. is a member of the
-Code Aurora Forum, a Linux Foundation Collaborative Project.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
