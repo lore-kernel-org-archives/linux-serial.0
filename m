@@ -1,258 +1,43 @@
-From: YT Shen <yt.shen@mediatek.com>
-Subject: [PATCH v5 2/2] arm64: dts: Add Mediatek SoC MT2712 and evaluation board dts and Makefile
-Date: Fri, 28 Jul 2017 19:37:15 +0800
-Message-ID: <1501241835-47849-3-git-send-email-yt.shen@mediatek.com>
-References: <1501241835-47849-1-git-send-email-yt.shen@mediatek.com>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [RFC PATCH 0/4] serial: uartps: Dynamic allocation
+Date: Fri, 28 Jul 2017 19:39:52 +0100
+Message-ID: <20170728193952.1f85073f@alans-desktop>
+References: <cover.1500629544.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1501241835-47849-1-git-send-email-yt.shen@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Mars Cheng <mars.cheng@mediatek.com>, YT Shen <yt.shen@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <cover.1500629544.git.michal.simek@xilinx.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: monstr@monstr.eu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, =?UTF-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>
 List-Id: linux-serial@vger.kernel.org
 
-This adds basic chip support for Mediatek 2712
+On Fri, 21 Jul 2017 11:32:23 +0200
+Michal Simek <michal.simek@xilinx.com> wrote:
 
-Signed-off-by: YT Shen <yt.shen@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/Makefile       |   1 +
- arch/arm64/boot/dts/mediatek/mt2712-evb.dts |  32 +++++
- arch/arm64/boot/dts/mediatek/mt2712e.dtsi   | 178 ++++++++++++++++++++++++++++
- 3 files changed, 211 insertions(+)
- create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
- create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> Hi Alan,
+> 
+> this is the initial version before next step which is move
+> uart_register_driver to probe function.
+> I was able to get rid of static array with uart_port structures.
+> It was wired with console which is also fixed.
+> And the next step is the most complicated one handle .nr in uart_driver
+> structure in more generic way.
+> 
+> Thanks,
+> Michal
 
-diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index 015eb07..f323936 100644
---- a/arch/arm64/boot/dts/mediatek/Makefile
-+++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -1,3 +1,4 @@
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-evb.dtb
-diff --git a/arch/arm64/boot/dts/mediatek/mt2712-evb.dts b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-new file mode 100644
-index 0000000..8c804df
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
-@@ -0,0 +1,32 @@
-+/*
-+ * Copyright (c) 2017 MediaTek Inc.
-+ * Author: YT Shen <yt.shen@mediatek.com>
-+ *
-+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+ */
-+
-+/dts-v1/;
-+#include "mt2712e.dtsi"
-+
-+/ {
-+	model = "MediaTek MT2712 evaluation board";
-+	compatible = "mediatek,mt2712-evb", "mediatek,mt2712";
-+
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
-+	memory@40000000 {
-+		device_type = "memory";
-+		reg = <0 0x40000000 0 0x80000000>;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:921600n8";
-+	};
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-+
-diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-new file mode 100644
-index 0000000..1e135af
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-@@ -0,0 +1,178 @@
-+/*
-+ * Copyright (c) 2017 MediaTek Inc.
-+ * Author: YT Shen <yt.shen@mediatek.com>
-+ *
-+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+ */
-+
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+/ {
-+	compatible = "mediatek,mt2712";
-+	interrupt-parent = <&sysirq>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+			};
-+
-+			cluster1 {
-+				core0 {
-+					cpu = <&cpu2>;
-+				};
-+			};
-+		};
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a35";
-+			reg = <0x000>;
-+		};
-+
-+		cpu1: cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a35";
-+			reg = <0x001>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu2: cpu@200 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a72";
-+			reg = <0x200>;
-+			enable-method = "psci";
-+		};
-+	};
-+
-+	psci {
-+		compatible = "arm,psci-0.2";
-+		method = "smc";
-+	};
-+
-+	baud_clk: dummy26m {
-+		compatible = "fixed-clock";
-+		clock-frequency = <26000000>;
-+		#clock-cells = <0>;
-+	};
-+
-+	sys_clk: dummyclk {
-+		compatible = "fixed-clock";
-+		clock-frequency = <26000000>;
-+		#clock-cells = <0>;
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 13
-+			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 14
-+			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 11
-+			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 10
-+			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>;
-+	};
-+
-+	soc {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		compatible = "simple-bus";
-+		ranges;
-+
-+		uart5: serial@1000f000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x1000f000 0 0x400>;
-+			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&baud_clk>, <&sys_clk>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		sysirq: interrupt-controller@10220a80 {
-+			compatible = "mediatek,mt2712-sysirq",
-+				     "mediatek,mt6577-sysirq";
-+			interrupt-controller;
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			reg = <0 0x10220a80 0 0x40>;
-+		};
-+
-+		gic: interrupt-controller@10510000 {
-+			compatible = "arm,gic-400";
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			interrupt-controller;
-+			reg = <0 0x10510000 0 0x10000>,
-+			      <0 0x10520000 0 0x20000>,
-+			      <0 0x10540000 0 0x20000>,
-+			      <0 0x10560000 0 0x20000>;
-+			interrupts = <GIC_PPI 9
-+				(GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_HIGH)>;
-+		};
-+
-+		uart0: serial@11002000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11002000 0 0x400>;
-+			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&baud_clk>, <&sys_clk>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart1: serial@11003000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11003000 0 0x400>;
-+			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&baud_clk>, <&sys_clk>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart2: serial@11004000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11004000 0 0x400>;
-+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&baud_clk>, <&sys_clk>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart3: serial@11005000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11005000 0 0x400>;
-+			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&baud_clk>, <&sys_clk>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart4: serial@11019000 {
-+			compatible = "mediatek,mt2712-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11019000 0 0x400>;
-+			interrupts = <GIC_SPI 126 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&baud_clk>, <&sys_clk>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+	};
-+};
-+
--- 
-1.9.1
+Sorry for the delay been on jury service
+
+Series
+
+Reviewed-by: Alan Cox <alan@linux.intel.com>
