@@ -1,50 +1,33 @@
-From: Peter Rosin <peda@axentia.se>
-Subject: Re: [RFC v2 1/6] mux: include compiler.h from mux/consumer.h
-Date: Mon, 31 Jul 2017 11:02:07 +0200
-Message-ID: <1a1233da-2f39-7777-1149-7a0f32a4b1d5@axentia.se>
-References: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com>
- <1500305076-15570-2-git-send-email-ulrich.hecht+renesas@gmail.com>
+From: Joel Stanley <joel@jms.id.au>
+Subject: Re: [PATCH] drivers/serial: Do not leave sysfs group in case of error
+ in aspeed_vuart_probe()
+Date: Mon, 31 Jul 2017 18:53:32 +0930
+Message-ID: <CACPK8XfyF3KG0Gx4uvdHwTKDXNLsLUtrYcWdNO991E4zkkz3pg@mail.gmail.com>
+References: <1501268043-20687-1-git-send-email-khoroshilov@ispras.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1500305076-15570-2-git-send-email-ulrich.hecht+renesas@gmail.com>
-Content-Language: en-US
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, linux-serial@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, wsa@the-dreams.de, robh@kernel.org, geert@linux-m68k.org, linux-i2c@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1501268043-20687-1-git-send-email-khoroshilov@ispras.ru>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Cc: Jeremy Kerr <jk@ozlabs.org>, Rob Herring <robh@kernel.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, ldv-project@linuxtesting.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ulrich,
+Hello Alexey,
 
-This patch looks good to me. Let me know if I should feed this
-through the mux subsystem or if it will take some other route.
+On Sat, Jul 29, 2017 at 4:24 AM, Alexey Khoroshilov
+<khoroshilov@ispras.ru> wrote:
+> There are several error handling paths in aspeed_vuart_probe(),
+> where sysfs group is left unremoved. The patch fixes them.
+>
+> Found by Linux Driver Verification project (linuxtesting.org).
+>
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-In case someone else ends up taking it:
-Acked-by: Peter Rosin <peda@axentia.se>
+Thanks for the patch.
+
+Acked-by: Joel Stanley <joel@jms.id.au>
 
 Cheers,
-Peter
 
-On 2017-07-17 17:24, Ulrich Hecht wrote:
-> Required for __must_check.
-> 
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-> ---
->  include/linux/mux/consumer.h | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/include/linux/mux/consumer.h b/include/linux/mux/consumer.h
-> index 5577e1b..ea96d4c 100644
-> --- a/include/linux/mux/consumer.h
-> +++ b/include/linux/mux/consumer.h
-> @@ -13,6 +13,8 @@
->  #ifndef _LINUX_MUX_CONSUMER_H
->  #define _LINUX_MUX_CONSUMER_H
->  
-> +#include <linux/compiler.h>
-> +
->  struct device;
->  struct mux_control;
->  
-> 
+Joel
