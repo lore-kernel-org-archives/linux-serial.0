@@ -1,56 +1,45 @@
-From: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 5/9] serial: fsl_lpuart: Use common rs485 device tree
- parsing function
-Date: Sun, 30 Jul 2017 07:50:57 -0700
-Message-ID: <20170730145057.GC18707@kroah.com>
-References: <20170718105948.21986-1-u.kleine-koenig@pengutronix.de>
- <20170718105948.21986-6-u.kleine-koenig@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+From: yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org
+Subject: [PATCH v2 0/3]  tty: serial: 8250 introduce mctrl_gpio helpers
+Date: Mon, 31 Jul 2017 09:13:20 +0200
+Message-ID: <1501485203-13185-1-git-send-email-yegorslists@googlemail.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170718105948.21986-6-u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, julia.lawall-L2FTfq7BK8M@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org, Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jul 18, 2017 at 12:59:44PM +0200, Uwe Kleine-König wrote:
-> From: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> 
-> We just got a common helper for parsing the rs485 specific
-> device tree properties. Use it and drop the open coded parser.
-> 
-> As a side effect this adds support for parsing rs485-rts-delay and
-> rs485-rx-during-tx. As the driver doesn't support this though, probing
-> fails if these are defined.
-> 
-> Signed-off-by: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 24 ++++++++++++++++++------
->  1 file changed, 18 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index 4becfbf35c4c..cac81b143abe 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -2161,6 +2161,24 @@ static int lpuart_probe(struct platform_device *pdev)
->  		return ret;
->  	}
->  
-> +	of_get_rs485_mode(np, &sport->port.rs485);
+From: Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 
-error checking?
+This patch series aims to reintroduce the  mctrl_gpio helpers for 8250
+UARTs.
 
-Elsewhere in this series as well.
+There are some UARTs that use GPIO signals as a wakeup-sourse.
+The first patch addresses this issue and tries to destinguish GPIO usage
+via searching for "wakeup-sourse" property. Though it must be decided whether
+this property is secure to use for this purpose.
 
-Also, why did you not cc: me on this series so I am sure to see it?
+Changes v1 -> v2:
+  - unlock mutex, if mctrl_gpio_init fails (suggested by Julia Lawall)
+  - describe -ENOSYS return value choice (suggested by Andy Shevchenko) 
 
-thanks,
+Yegor Yefremov (3):
+  serial: mctrl_gpio: restrict MCTRL initialization
+  tty/serial/8250: use mctrl_gpio helpers
+  tty/serial/8250: add DT bindings description for mctrl_gpio helpers
 
-greg k-h
+ Documentation/devicetree/bindings/serial/8250.txt | 26 +++++++++++++++++
+ drivers/tty/serial/8250/8250.h                    | 35 ++++++++++++++++++++++-
+ drivers/tty/serial/8250/8250_core.c               | 12 ++++++++
+ drivers/tty/serial/8250/8250_omap.c               | 31 +++++++++++---------
+ drivers/tty/serial/8250/8250_port.c               |  7 ++++-
+ drivers/tty/serial/8250/Kconfig                   |  1 +
+ drivers/tty/serial/serial_mctrl_gpio.c            |  4 +++
+ include/linux/serial_8250.h                       |  1 +
+ 8 files changed, 102 insertions(+), 15 deletions(-)
+
+-- 
+2.1.4
+
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
