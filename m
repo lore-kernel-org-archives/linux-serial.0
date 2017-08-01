@@ -1,66 +1,65 @@
-From: Sean Young <sean@mess.org>
-Subject: [PATCH v4.13 REGRESSION] Revert "serial: Delete dead code for CIR
- serial ports"
-Date: Tue, 1 Aug 2017 12:24:17 +0100
-Message-ID: <20170801112417.fljtelqzfzusgkzm@gofer.mess.org>
+From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v5 2/2] arm64: dts: Add Mediatek SoC MT2712 and evaluation
+ board dts and Makefile
+Date: Tue, 1 Aug 2017 14:46:28 +0200
+Message-ID: <85f5d713-a599-e4cc-f1b4-2e0dedf2797f@gmail.com>
+References: <1501241835-47849-1-git-send-email-yt.shen@mediatek.com>
+ <1501241835-47849-3-git-send-email-yt.shen@mediatek.com>
+ <1501577481.32089.3.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <mbrugger@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1501577481.32089.3.camel@mtksdaap41>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mars Cheng <mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-This reverts commit 1104321a7b3bb670dc614ffa7958c553e7b3b836.
 
-The code is not dead at all and breaks winbond-cir.
 
-Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
-00:02: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-00:03: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a CIR port
-lirc lirc0: lirc_dev: driver ir-lirc-codec (winbond-cir) registered at minor = 0
-winbond-cir 00:03: Region 0x2f8-0x2ff already in use!
-winbond-cir: probe of 00:03 failed with error -16
+On 08/01/2017 10:51 AM, Yingjoe Chen wrote:
+> On Fri, 2017-07-28 at 19:37 +0800, YT Shen wrote:
+>> diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+>> new file mode 100644
+>> index 0000000..1e135af
+>> --- /dev/null
+>> +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> 
+> <...>
+> 
+>> +	timer {
+>> +		compatible = "arm,armv8-timer";
+>> +		interrupt-parent = <&gic>;
+>> +		interrupts = <GIC_PPI 13
+>> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
+>> +			     <GIC_PPI 14
+>> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
+>> +			     <GIC_PPI 11
+>> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
+>> +			     <GIC_PPI 10
+>> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>;
+>> +	};
+>> +
+>> +	soc {
+>> +		#address-cells = <2>;
+>> +		#size-cells = <2>;
+>> +		compatible = "simple-bus";
+>> +		ranges;
+> 
+> Matthias,
+> 
+> I notice this have soc node.
+> Do we need to get rid of it?
+> 
 
-Signed-off-by: Sean Young <sean@mess.org>
----
- drivers/tty/serial/8250/8250_core.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
+Good catch. Yes please get rid of it. We should avoid artificial bus nodes. As 
+soc is no real bus, we should get rid of it.
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index b5def356af63..1aab3010fbfa 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1043,13 +1043,24 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
- 		if (up->dl_write)
- 			uart->dl_write = up->dl_write;
- 
--		if (serial8250_isa_config != NULL)
--			serial8250_isa_config(0, &uart->port,
--					&uart->capabilities);
-+		if (uart->port.type != PORT_8250_CIR) {
-+			if (serial8250_isa_config != NULL)
-+				serial8250_isa_config(0, &uart->port,
-+						&uart->capabilities);
-+
-+			ret = uart_add_one_port(&serial8250_reg,
-+						&uart->port);
-+			if (ret == 0)
-+				ret = uart->port.line;
-+		} else {
-+			dev_info(uart->port.dev,
-+				"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
-+				uart->port.iobase,
-+				(unsigned long long)uart->port.mapbase,
-+				uart->port.irq);
- 
--		ret = uart_add_one_port(&serial8250_reg, &uart->port);
--		if (ret == 0)
--			ret = uart->port.line;
-+			ret = 0;
-+		}
- 	}
- 	mutex_unlock(&serial_mutex);
- 
--- 
-2.13.3
+Thanks,
+Matthias
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
