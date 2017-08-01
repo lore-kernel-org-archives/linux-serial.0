@@ -1,51 +1,66 @@
-From: Yingjoe Chen <yingjoe.chen@mediatek.com>
-Subject: Re: [PATCH v5 2/2] arm64: dts: Add Mediatek SoC MT2712 and
- evaluation board dts and Makefile
-Date: Tue, 1 Aug 2017 16:51:21 +0800
-Message-ID: <1501577481.32089.3.camel@mtksdaap41>
-References: <1501241835-47849-1-git-send-email-yt.shen@mediatek.com>
-         <1501241835-47849-3-git-send-email-yt.shen@mediatek.com>
+From: Sean Young <sean@mess.org>
+Subject: [PATCH v4.13 REGRESSION] Revert "serial: Delete dead code for CIR
+ serial ports"
+Date: Tue, 1 Aug 2017 12:24:17 +0100
+Message-ID: <20170801112417.fljtelqzfzusgkzm@gofer.mess.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1501241835-47849-3-git-send-email-yt.shen@mediatek.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: YT Shen <yt.shen@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, srv_heupstream@mediatek.com, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Mars Cheng <mars.cheng@mediatek.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mediatek@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org
+To: Matthias Brugger <mbrugger@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2017-07-28 at 19:37 +0800, YT Shen wrote:
-> diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> new file mode 100644
-> index 0000000..1e135af
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+This reverts commit 1104321a7b3bb670dc614ffa7958c553e7b3b836.
 
-<...>
+The code is not dead at all and breaks winbond-cir.
 
-> +	timer {
-> +		compatible = "arm,armv8-timer";
-> +		interrupt-parent = <&gic>;
-> +		interrupts = <GIC_PPI 13
-> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 14
-> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 11
-> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 10
-> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>;
-> +	};
-> +
-> +	soc {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		compatible = "simple-bus";
-> +		ranges;
+Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+00:02: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+00:03: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a CIR port
+lirc lirc0: lirc_dev: driver ir-lirc-codec (winbond-cir) registered at minor = 0
+winbond-cir 00:03: Region 0x2f8-0x2ff already in use!
+winbond-cir: probe of 00:03 failed with error -16
 
-Matthias,
+Signed-off-by: Sean Young <sean@mess.org>
+---
+ drivers/tty/serial/8250/8250_core.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-I notice this have soc node.
-Do we need to get rid of it?
-
-Joe.C
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index b5def356af63..1aab3010fbfa 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1043,13 +1043,24 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 		if (up->dl_write)
+ 			uart->dl_write = up->dl_write;
+ 
+-		if (serial8250_isa_config != NULL)
+-			serial8250_isa_config(0, &uart->port,
+-					&uart->capabilities);
++		if (uart->port.type != PORT_8250_CIR) {
++			if (serial8250_isa_config != NULL)
++				serial8250_isa_config(0, &uart->port,
++						&uart->capabilities);
++
++			ret = uart_add_one_port(&serial8250_reg,
++						&uart->port);
++			if (ret == 0)
++				ret = uart->port.line;
++		} else {
++			dev_info(uart->port.dev,
++				"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
++				uart->port.iobase,
++				(unsigned long long)uart->port.mapbase,
++				uart->port.irq);
+ 
+-		ret = uart_add_one_port(&serial8250_reg, &uart->port);
+-		if (ret == 0)
+-			ret = uart->port.line;
++			ret = 0;
++		}
+ 	}
+ 	mutex_unlock(&serial_mutex);
+ 
+-- 
+2.13.3
