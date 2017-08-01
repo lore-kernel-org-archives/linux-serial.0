@@ -1,94 +1,77 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: [PATCH] serial: amba-pl011: Add basic rs485 support
-Date: Tue, 1 Aug 2017 14:52:44 +0200
-Message-ID: <20170801125244.cmeycp5ujp2lmmwr@lenoch>
+From: Matthias Brugger <mbrugger@suse.com>
+Subject: Re: [PATCH v4.13 REGRESSION] Revert "serial: Delete dead code for CIR
+ serial ports"
+Date: Tue, 1 Aug 2017 17:55:57 +0200
+Message-ID: <c599065a-60f5-070e-c1e3-12b3ab2cbf0a@suse.com>
+References: <20170801112417.fljtelqzfzusgkzm@gofer.mess.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
-Cc: Russell King <linux@armlinux.org.uk>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170801112417.fljtelqzfzusgkzm@gofer.mess.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sean Young <sean@mess.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Currently RS485 mode can be selected only via DT bindings.
 
-Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
----
- Notes: this change was sitting in my tree for a year and now with
- "serial: Add common rs485 device tree parsing function" et al.
- patches being submitted is time to move forward a bit.
- Although rpi with this patched driver is working for months I do not
- like mdelay in interrupt while waiting for last bit to leave tx wire.
- If anyone has better idea, I'll happily implement it. Thank you.
 
- drivers/tty/serial/amba-pl011.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+On 08/01/2017 01:24 PM, Sean Young wrote:
+> This reverts commit 1104321a7b3bb670dc614ffa7958c553e7b3b836.
+> 
+> The code is not dead at all and breaks winbond-cir.
+> 
+> Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+> 00:02: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+> 00:03: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a CIR port
+> lirc lirc0: lirc_dev: driver ir-lirc-codec (winbond-cir) registered at minor = 0
+> winbond-cir 00:03: Region 0x2f8-0x2ff already in use!
+> winbond-cir: probe of 00:03 failed with error -16
+> 
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 8a857bb34fbb..44016840f5df 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1319,9 +1319,22 @@ static inline bool pl011_dma_rx_running(struct uart_amba_port *uap)
- 
- static void pl011_stop_tx(struct uart_port *port)
- {
-+	unsigned int cr;
- 	struct uart_amba_port *uap =
- 	    container_of(port, struct uart_amba_port, port);
- 
-+	/* Handle RS-485 */
-+	if (port->rs485.flags & SER_RS485_ENABLED) {
-+		while (readl(port->membase + UART01x_FR) & UART01x_FR_BUSY)
-+			mdelay(1);
-+		cr = readw(uap->port.membase + UART011_CR);
-+		if (port->rs485.flags & SER_RS485_RTS_ON_SEND)
-+			cr &= ~UART011_CR_RTS;
-+		else
-+			cr |= UART011_CR_RTS;
-+		writew(cr, uap->port.membase + UART011_CR);
-+	}
-+
- 	uap->im &= ~UART011_TXIM;
- 	pl011_write(uap->im, uap, REG_IMSC);
- 	pl011_dma_tx_stop(uap);
-@@ -1340,9 +1353,20 @@ static void pl011_start_tx_pio(struct uart_amba_port *uap)
- 
- static void pl011_start_tx(struct uart_port *port)
- {
-+	unsigned int cr;
- 	struct uart_amba_port *uap =
- 	    container_of(port, struct uart_amba_port, port);
- 
-+	/* Handle RS-485 */
-+	if (port->rs485.flags & SER_RS485_ENABLED) {
-+		cr = readw(uap->port.membase + UART011_CR);
-+		if (port->rs485.flags & SER_RS485_RTS_ON_SEND)
-+			cr |= UART011_CR_RTS;
-+		else
-+			cr &= ~UART011_CR_RTS;
-+		writew(cr, uap->port.membase + UART011_CR);
-+	}
-+
- 	if (!pl011_dma_tx_start(uap))
- 		pl011_start_tx_pio(uap);
- }
-@@ -2588,6 +2612,7 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
- 		return PTR_ERR(base);
- 
- 	index = pl011_probe_dt_alias(index, dev);
-+	of_get_rs485_mode(dev->of_node, &uap->port.rs485);
- 
- 	uap->old_cr = 0;
- 	uap->port.dev = dev;
--- 
-2.11.0
+You are right, uart->port.type gets overwritten, so it is definitely not dead 
+code. That was an oversight from me, sorry for the inconvenience.
+
+Reviewed-by: Matthias Brugger <mbrugger@suse.com>
+
+> Signed-off-by: Sean Young <sean@mess.org>
+> ---
+>   drivers/tty/serial/8250/8250_core.c | 23 +++++++++++++++++------
+>   1 file changed, 17 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index b5def356af63..1aab3010fbfa 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -1043,13 +1043,24 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+>   		if (up->dl_write)
+>   			uart->dl_write = up->dl_write;
+>   
+> -		if (serial8250_isa_config != NULL)
+> -			serial8250_isa_config(0, &uart->port,
+> -					&uart->capabilities);
+> +		if (uart->port.type != PORT_8250_CIR) {
+> +			if (serial8250_isa_config != NULL)
+> +				serial8250_isa_config(0, &uart->port,
+> +						&uart->capabilities);
+> +
+> +			ret = uart_add_one_port(&serial8250_reg,
+> +						&uart->port);
+> +			if (ret == 0)
+> +				ret = uart->port.line;
+> +		} else {
+> +			dev_info(uart->port.dev,
+> +				"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
+> +				uart->port.iobase,
+> +				(unsigned long long)uart->port.mapbase,
+> +				uart->port.irq);
+>   
+> -		ret = uart_add_one_port(&serial8250_reg, &uart->port);
+> -		if (ret == 0)
+> -			ret = uart->port.line;
+> +			ret = 0;
+> +		}
+>   	}
+>   	mutex_unlock(&serial_mutex);
+>   
+> 
