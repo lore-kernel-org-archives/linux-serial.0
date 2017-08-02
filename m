@@ -1,42 +1,55 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+From: Randy Dunlap <rdunlap@infradead.org>
 Subject: Re: [patch v1 2/2] drivers: jtag: Add Aspeed SoC 24xx and 25xx
  families JTAG master driver
-Date: Wed, 2 Aug 2017 16:56:25 +0200
-Message-ID: <CAK8P3a20dXeeNkRCgs8BNWOo1zvNpBLqkQNwpj8dS2bOq1cq+A@mail.gmail.com>
+Date: Wed, 2 Aug 2017 08:31:29 -0700
+Message-ID: <ce3c9f04-1651-8b59-839e-e27783b222ff@infradead.org>
 References: <1501679918-20486-1-git-send-email-oleksandrs@mellanox.com>
- <1501679918-20486-3-git-send-email-oleksandrs@mellanox.com> <2578d94a-fd1b-9598-251d-59764a870933@baylibre.com>
+ <1501679918-20486-3-git-send-email-oleksandrs@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <2578d94a-fd1b-9598-251d-59764a870933-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Cc: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, gregkh <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org>, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, OpenBMC Maillist <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1501679918-20486-3-git-send-email-oleksandrs@mellanox.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Oleksandr Shamray <oleksandrs@mellanox.com>, gregkh@linuxfoundation.org, arnd@arndb.de
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au, jiri@resnulli.us, tklauser@distanz.ch, linux-serial@vger.kernel.org, mec@shout.net, vadimp@maellanox.com, system-sw-low-level@mellanox.com, Jiri Pirko <jiri@mellanox.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Aug 2, 2017 at 4:30 PM, Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org> wrote:
-> On 08/02/2017 03:18 PM, Oleksandr Shamray wrote:
->> Driver adds support of Aspeed 2500/2400 series SOC JTAG master controller.
+On 08/02/2017 06:18 AM, Oleksandr Shamray wrote:
+> 
+> diff --git a/drivers/jtag/Kconfig b/drivers/jtag/Kconfig
+> index a8d0149..7bf709c 100644
+> --- a/drivers/jtag/Kconfig
+> +++ b/drivers/jtag/Kconfig
+> @@ -16,3 +16,16 @@ menuconfig JTAG
+>  	  To compile this driver as a module, choose M here: the module will
+>  	  be called jtag.
+>  
+> +menuconfig JTAG_ASPEED
+> +	tristate "Aspeed SoC JTAG controller support"
+> +	depends on JTAG
+> +	---help---
+> +	  This provides a support for Aspeed JTAG device, equipped on
+> +	  Aspeed SoC 24xx and 25xx families. Drivers allows programming
+> +	  of hardware devices, connected to SoC through the JTAG interface.
+> +
+> +	  If you want this support, you should say Y here.
+> +
+> +	  To compile this driver as a module, choose M here: the module will
+> +	  be called aspeed_jtag.
 
->> +static u32 aspeed_jtag_read(struct aspeed_jtag *aspeed_jtag, u32 reg)
->> +{
->> +     return readl(aspeed_jtag->reg_base + reg);
->> +}
->> +
->> +static void
->> +aspeed_jtag_write(struct aspeed_jtag *aspeed_jtag, u32 val, u32 reg)
->> +{
->> +     writel(val, aspeed_jtag->reg_base + reg);
->> +}
->
-> Maybe readl_relaxed/writel_relaxed would be enough here.
+In the Makefile, it looks like it is called jtag-aspeed.
 
-I'd prefer keeping the regular accessors here, unless this is shown
-to be a performance bottleneck, and there is a comment to explain
-how the relaxed accessors are determined to be safe.
+> +
+> diff --git a/drivers/jtag/Makefile b/drivers/jtag/Makefile
+> index e811330..e9fa7fa 100644
+> --- a/drivers/jtag/Makefile
+> +++ b/drivers/jtag/Makefile
+> @@ -1,2 +1,3 @@
+>  obj-$(CONFIG_JTAG)		+= jtag.o
+> +obj-$(CONFIG_JTAG_ASPEED)	+= jtag-aspeed.o
 
-        Arnd
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+-- 
+~Randy
