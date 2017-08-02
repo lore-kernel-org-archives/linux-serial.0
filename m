@@ -1,131 +1,41 @@
-From: Franklin S Cooper Jr <fcooper@ti.com>
-Subject: [PATCH] serial: 8250_of: Add basic PM runtime support
-Date: Wed, 2 Aug 2017 11:32:18 -0500
-Message-ID: <20170802163218.14377-1-fcooper@ti.com>
+From: <sean.wang@mediatek.com>
+Subject: [PATCH 0/2] serial: 8250: add support for MediaTek BTIF controller
+Date: Thu, 3 Aug 2017 01:05:21 +0800
+Message-ID: <cover.1501692369.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Franklin S Cooper Jr <fcooper@ti.com>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, jan.kiszka@siemens.com, heikki.krogerus@linux.intel.com, hpeter@gmail.com, vigneshr@ti.com, matthias.bgg@gmail.com
+Cc: devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add basic PM Runtime support.
+From: Sean Wang <sean.wang@mediatek.com>
 
-Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
----
- drivers/tty/serial/8250/8250_of.c | 35 ++++++++++++++++++++++++-----------
- 1 file changed, 24 insertions(+), 11 deletions(-)
+This patchset introduces the support for MediaTek BTIF controller.
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 6c5a8ca..94e7c93 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -18,6 +18,7 @@
- #include <linux/of_address.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
-+#include <linux/pm_runtime.h>
- #include <linux/clk.h>
- #include <linux/reset.h>
- 
-@@ -65,6 +66,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 	int ret;
- 
- 	memset(port, 0, sizeof *port);
-+
-+	pm_runtime_enable(&ofdev->dev);
-+	pm_runtime_get_sync(&ofdev->dev);
-+
- 	if (of_property_read_u32(np, "clock-frequency", &clk)) {
- 
- 		/* Get clk rate through clk driver if present */
-@@ -72,12 +77,13 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		if (IS_ERR(info->clk)) {
- 			dev_warn(&ofdev->dev,
- 				"clk or clock-frequency not defined\n");
--			return PTR_ERR(info->clk);
-+			ret = PTR_ERR(info->clk);
-+			goto err_pmruntime;
- 		}
- 
- 		ret = clk_prepare_enable(info->clk);
- 		if (ret < 0)
--			return ret;
-+			goto err_pmruntime;
- 
- 		clk = clk_get_rate(info->clk);
- 	}
-@@ -170,8 +176,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- err_dispose:
- 	irq_dispose_mapping(port->irq);
- err_unprepare:
--	if (info->clk)
--		clk_disable_unprepare(info->clk);
-+	clk_disable_unprepare(info->clk);
-+err_pmruntime:
-+	pm_runtime_put_sync(&ofdev->dev);
-+	pm_runtime_disable(&ofdev->dev);
- 	return ret;
- }
- 
-@@ -227,8 +235,9 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 	return 0;
- err_dispose:
- 	irq_dispose_mapping(port8250.port.irq);
--	if (info->clk)
--		clk_disable_unprepare(info->clk);
-+	pm_runtime_put_sync(&ofdev->dev);
-+	pm_runtime_disable(&ofdev->dev);
-+	clk_disable_unprepare(info->clk);
- err_free:
- 	kfree(info);
- 	return ret;
-@@ -244,8 +253,9 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
- 	serial8250_unregister_port(info->line);
- 
- 	reset_control_assert(info->rst);
--	if (info->clk)
--		clk_disable_unprepare(info->clk);
-+	pm_runtime_put_sync(&ofdev->dev);
-+	pm_runtime_disable(&ofdev->dev);
-+	clk_disable_unprepare(info->clk);
- 	kfree(info);
- 	return 0;
- }
-@@ -259,9 +269,10 @@ static int of_serial_suspend(struct device *dev)
- 
- 	serial8250_suspend_port(info->line);
- 
--	if (info->clk && (!uart_console(port) || console_suspend_enabled))
-+	if ((!uart_console(port) || console_suspend_enabled)) {
-+		pm_runtime_put_sync(&ofdev->dev);
- 		clk_disable_unprepare(info->clk);
--
-+	}
- 	return 0;
- }
- 
-@@ -271,8 +282,10 @@ static int of_serial_resume(struct device *dev)
- 	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
- 	struct uart_port *port = &port8250->port;
- 
--	if (info->clk && (!uart_console(port) || console_suspend_enabled))
-+	if ((!uart_console(port) || console_suspend_enabled)) {
-+		pm_runtime_get_sync(&ofdev->dev);
- 		clk_prepare_enable(info->clk);
-+	}
- 
- 	serial8250_resume_port(info->line);
- 
+MediaTek BTIF controller is the serial interface similar to UART but it
+works only as the digital device which is mainly used to communicate with
+the connectivity module also called CONNSYS inside the SoC which could be
+mostly found on those MediaTek SoCs with Bluetooth feature.
+
+And the controller is made as being compatible with the 8250 register
+layout so it tends to be integrated with existing 8250 core driver and
+have no requirement for the modem configuration additionally such as the
+baud rate calculation and assignment.
+
+Sean Wang (2):
+  dt-bindings: serial: Add MediaTek BTIF controller bindings
+  tty: serial: 8250: Add MediaTek BTIF controller on MT7622 and MT7623
+    SoC
+
+ .../devicetree/bindings/serial/mtk-btif.txt        |  26 +++
+ drivers/tty/serial/8250/8250_btif.c                | 224 +++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig                    |   9 +
+ drivers/tty/serial/8250/Makefile                   |   1 +
+ 4 files changed, 260 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/mtk-btif.txt
+ create mode 100644 drivers/tty/serial/8250/8250_btif.c
+
 -- 
-2.9.4.dirty
+2.7.4
