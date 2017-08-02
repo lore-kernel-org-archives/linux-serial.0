@@ -1,51 +1,75 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH v2 1/3] serial: mctrl_gpio: restrict MCTRL initialization
-Date: Wed, 2 Aug 2017 08:19:54 +0200
-Message-ID: <20170802061954.mhd3hkmmm4wukhu3@pengutronix.de>
-References: <1501485203-13185-1-git-send-email-yegorslists@googlemail.com>
- <1501485203-13185-2-git-send-email-yegorslists@googlemail.com>
+From: Michael Moese <michael.moese@men.de>
+Subject: [PATCH v2 1/2] mcb: introduce mcb_get_resource()
+Date: Wed, 2 Aug 2017 09:58:52 +0200
+Message-ID: <20170802075853.18911-1-michael.moese@men.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1501485203-13185-2-git-send-email-yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, julia.lawall-L2FTfq7BK8M@public.gmane.org, peter-WaGBZJeGNqdsbIuE7sb01tBPR1lH4CV8@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: michael.moese@men.de, johannes.thumshirn@suse.de, Johannes Thumshirn <jthumshirn@suse.de>
 List-Id: linux-serial@vger.kernel.org
 
-Hello Yegor,
+From: Johannes Thumshirn <jthumshirn@suse.de>
 
-On Mon, Jul 31, 2017 at 09:13:21AM +0200, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org wrote:
-> From: Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-> 
-> GPIOs specified for serial port can be used either as GPIO driven MCTRL
-> or as a wakeup-source. Use the latter property to abort the MCTRL
-> initialization.
-> 
-> Return -ENOSYS as this would just skip mctrl initialization in the
-> case of wakeup source usage and not disable the port completely due to
-> failed serial8250_register_8250_port().
-> 
-> Signed-off-by: Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Introduce mcb_get_resource() as a common accessor to a mcb device's memory or
+IRQ resources.
 
-Did I miss the explanation in the last round why this is necessary? You
-write "can be used either as GPIO driven MCTRL or as a wakeup-source",
-I wonder why there is a conflict.
+Signed-off-by: Johannes Thumshirn <jthumshirn@suse.de>
+---
+ drivers/mcb/mcb-core.c | 20 +++++++++++++++++++-
+ include/linux/mcb.h    |  2 ++
+ 2 files changed, 21 insertions(+), 1 deletion(-)
 
-Can you show a dt that makes problems and describe it. I would guess
-either your dt being broken or you want to extend mctrl-gpio instead of
-restrict it.
-
-Best regards
-Uwe
-
+diff --git a/drivers/mcb/mcb-core.c b/drivers/mcb/mcb-core.c
+index 921a5d2a802b..bb5c5692dedc 100644
+--- a/drivers/mcb/mcb-core.c
++++ b/drivers/mcb/mcb-core.c
+@@ -418,6 +418,22 @@ void mcb_bus_add_devices(const struct mcb_bus *bus)
+ EXPORT_SYMBOL_GPL(mcb_bus_add_devices);
+ 
+ /**
++ * mcb_get_resource() - get a resource for a mcb device
++ * @dev: the mcb device
++ * @type: the type of resource
++ */
++struct resource *mcb_get_resource(struct mcb_device *dev, unsigned int type)
++{
++	if (type == IORESOURCE_MEM)
++		return &dev->mem;
++	else if (type == IORESOURCE_IRQ)
++		return &dev->irq;
++	else
++		return NULL;
++}
++EXPORT_SYMBOL_GPL(mcb_get_resource);
++
++/**
+  * mcb_request_mem() - Request memory
+  * @dev: The @mcb_device the memory is for
+  * @name: The name for the memory reference.
+@@ -460,7 +476,9 @@ EXPORT_SYMBOL_GPL(mcb_release_mem);
+ 
+ static int __mcb_get_irq(struct mcb_device *dev)
+ {
+-	struct resource *irq = &dev->irq;
++	struct resource *irq;
++
++	irq = mcb_get_resource(dev, IORESOURCE_IRQ);
+ 
+ 	return irq->start;
+ }
+diff --git a/include/linux/mcb.h b/include/linux/mcb.h
+index 4097ac9ea13a..b1a0ad9d23b3 100644
+--- a/include/linux/mcb.h
++++ b/include/linux/mcb.h
+@@ -136,5 +136,7 @@ extern struct resource *mcb_request_mem(struct mcb_device *dev,
+ 					const char *name);
+ extern void mcb_release_mem(struct resource *mem);
+ extern int mcb_get_irq(struct mcb_device *dev);
++extern struct resource *mcb_get_resource(struct mcb_device *dev,
++					 unsigned int type);
+ 
+ #endif /* _LINUX_MCB_H */
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.12.3
