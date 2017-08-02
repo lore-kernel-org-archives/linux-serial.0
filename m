@@ -1,298 +1,68 @@
 From: <sean.wang@mediatek.com>
-Subject: [PATCH 2/2] tty: serial: 8250: Add MediaTek BTIF controller on MT7622 and MT7623 SoC
-Date: Thu, 3 Aug 2017 01:05:23 +0800
-Message-ID: <eb3f78dd177a37119cefe5d69a4c129aeca60488.1501692369.git.sean.wang@mediatek.com>
+Subject: [PATCH 1/2] dt-bindings: serial: Add MediaTek BTIF controller bindings
+Date: Thu, 3 Aug 2017 01:05:22 +0800
+Message-ID: <6b2ad0dc976259563562e7ab23abdacf68c94aa5.1501692369.git.sean.wang@mediatek.com>
 References: <cover.1501692369.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <cover.1501692369.git.sean.wang@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, jan.kiszka@siemens.com, heikki.krogerus@linux.intel.com, hpeter@gmail.com, vigneshr@ti.com, matthias.bgg@gmail.com
-Cc: devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>
+Cc: devicetree@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Sean Wang <sean.wang@mediatek.com>
 
-MediaTek BTIF controller is the serial interface similar to UART but it
-works only as the digital device which is mainly used to communicate with
-the connectivity module also called CONNSYS inside the SoC which could be
-mostly found on those MediaTek SoCs with Bluetooth feature.
-
-And the controller is made as being compatible with the 8250 register
-layout so it tends to be integrated with existing 8250 core driver and
-have no requirement for the modem configuration additionally such as the
-baud rate calculation and assignment.
+Document the devicetree bindings for MediaTek BTIF controller
+which could be found on MT7622 and MT7623 SoC.
 
 Signed-off-by: Sean Wang <sean.wang@mediatek.com>
 ---
- drivers/tty/serial/8250/8250_btif.c | 224 ++++++++++++++++++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig     |   9 ++
- drivers/tty/serial/8250/Makefile    |   1 +
- 3 files changed, 234 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_btif.c
+ .../devicetree/bindings/serial/mtk-btif.txt        | 26 ++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/mtk-btif.txt
 
-diff --git a/drivers/tty/serial/8250/8250_btif.c b/drivers/tty/serial/8250/8250_btif.c
+diff --git a/Documentation/devicetree/bindings/serial/mtk-btif.txt b/Documentation/devicetree/bindings/serial/mtk-btif.txt
 new file mode 100644
-index 0000000..06433e9
+index 0000000..80c1f5a
 --- /dev/null
-+++ b/drivers/tty/serial/8250/8250_btif.c
-@@ -0,0 +1,224 @@
-+/*
-+ * Driver for MediaTek BTIF Controller
-+ *
-+ * Copyright (C) 2017 Sean Wang <sean.wang@mediatek.com>
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation; either version 2 of
-+ * the License, or (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ */
++++ b/Documentation/devicetree/bindings/serial/mtk-btif.txt
+@@ -0,0 +1,26 @@
++Device-Tree bindings for MediaTek BTIF controller found on those
++MediaTek SoCs with Bluetooth feature
 +
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of_irq.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/serial_8250.h>
-+#include <linux/serial_reg.h>
++Required properties:
++- compatible: Should be one of:
++	- "mediatek,mt7622-btif" : for MT7622 SoC
++	- "mediatek,mt7623-btif" : for MT7623 SoC
++- reg: The base address of the BTIF register bank;
++- interrupts: A single interrupt specifier;
++- clocks: list of clock specifiers, corresponding to
++	  entries in clock-names property;
++- clock-names: should contain "main" entries.
 +
-+#include "8250.h"
++Optional properties:
++- mediatek,loopback: Boolean; if defined, indicates that BTIF controller
++	running on the loopback mode.
 +
-+#define MTK_BTIF_TRI_LVL	0x60
-+#define BTIF_LOOP		BIT(7)
++Example:
 +
-+struct mtk_btif_data {
-+	int			line;
-+	struct clk		*main_clk;
-+};
-+
-+static void
-+mtk_btif_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
-+{
-+	if (!state)
-+		pm_runtime_get_sync(port->dev);
-+
-+	serial8250_do_pm(port, state, old);
-+
-+	if (state)
-+		pm_runtime_put_sync_suspend(port->dev);
-+}
-+
-+static int mtk_btif_probe_of(struct platform_device *pdev, struct uart_port *p,
-+			     struct mtk_btif_data *data)
-+{
-+	int err;
-+
-+	data->main_clk = devm_clk_get(&pdev->dev, "main");
-+	if (IS_ERR(data->main_clk)) {
-+		dev_warn(&pdev->dev, "Can't get main clock\n");
-+		return PTR_ERR(data->main_clk);
-+	}
-+
-+	err = clk_prepare_enable(data->main_clk);
-+	if (err) {
-+		dev_warn(&pdev->dev, "Can't prepare main_clk\n");
-+		clk_put(data->main_clk);
-+		return err;
-+	}
-+
-+	p->uartclk = clk_get_rate(data->main_clk);
-+
-+	return 0;
-+}
-+
-+static int mtk_btif_runtime_suspend(struct device *dev)
-+{
-+	struct mtk_btif_data *data = dev_get_drvdata(dev);
-+
-+	clk_disable_unprepare(data->main_clk);
-+
-+	return 0;
-+}
-+
-+static int mtk_btif_runtime_resume(struct device *dev)
-+{
-+	struct mtk_btif_data *data = dev_get_drvdata(dev);
-+	int err;
-+
-+	err = clk_prepare_enable(data->main_clk);
-+	if (err) {
-+		dev_warn(dev, "Can't enable main clock\n");
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mtk_btif_probe(struct platform_device *pdev)
-+{
-+	struct uart_8250_port uart = {};
-+	struct resource *regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-+	struct mtk_btif_data *data;
-+	int err;
-+	u32 tmp;
-+
-+	if (!regs || !irq) {
-+		dev_err(&pdev->dev, "no registers/irq defined\n");
-+		return -EINVAL;
-+	}
-+
-+	uart.port.membase = devm_ioremap(&pdev->dev, regs->start,
-+					 resource_size(regs));
-+	if (!uart.port.membase)
-+		return -ENOMEM;
-+
-+	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	if (pdev->dev.of_node) {
-+		err = mtk_btif_probe_of(pdev, &uart.port, data);
-+		if (err)
-+			return err;
-+	} else {
-+		return -ENODEV;
-+	}
-+
-+	spin_lock_init(&uart.port.lock);
-+	uart.port.mapbase = regs->start;
-+	uart.port.irq = irq->start;
-+	uart.port.pm = mtk_btif_do_pm;
-+	uart.port.type = PORT_8250;
-+	uart.port.flags = UPF_FIXED_TYPE;
-+	uart.port.dev = &pdev->dev;
-+	uart.port.iotype = UPIO_MEM32;
-+	uart.port.regshift = 2;
-+	uart.port.private_data = data;
-+
-+	platform_set_drvdata(pdev, data);
-+
-+	pm_runtime_enable(&pdev->dev);
-+
-+	if (!pm_runtime_enabled(&pdev->dev)) {
-+		err = mtk_btif_runtime_resume(&pdev->dev);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (of_property_read_bool(pdev->dev.of_node, "mediatek,loopback")) {
-+		dev_info(&pdev->dev, "btif is entering loopback mode\n");
-+		tmp = readl(uart.port.membase + MTK_BTIF_TRI_LVL);
-+		tmp |= BTIF_LOOP;
-+		writel(tmp, uart.port.membase + MTK_BTIF_TRI_LVL);
-+	}
-+
-+	data->line = serial8250_register_8250_port(&uart);
-+	if (data->line < 0)
-+		return data->line;
-+
-+	return 0;
-+}
-+
-+static int mtk_btif_remove(struct platform_device *pdev)
-+{
-+	struct mtk_btif_data *data = platform_get_drvdata(pdev);
-+
-+	pm_runtime_get_sync(&pdev->dev);
-+
-+	serial8250_unregister_port(data->line);
-+
-+	pm_runtime_disable(&pdev->dev);
-+	pm_runtime_put_noidle(&pdev->dev);
-+
-+	if (!pm_runtime_status_suspended(&pdev->dev))
-+		mtk_btif_runtime_suspend(&pdev->dev);
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int mtk_btif_suspend(struct device *dev)
-+{
-+	struct mtk_btif_data *data = dev_get_drvdata(dev);
-+
-+	serial8250_suspend_port(data->line);
-+
-+	return 0;
-+}
-+
-+static int mtk_btif_resume(struct device *dev)
-+{
-+	struct mtk_btif_data *data = dev_get_drvdata(dev);
-+
-+	serial8250_resume_port(data->line);
-+
-+	return 0;
-+}
-+#endif /* CONFIG_PM_SLEEP */
-+
-+static const struct dev_pm_ops mtk_btif_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(mtk_btif_suspend, mtk_btif_resume)
-+	SET_RUNTIME_PM_OPS(mtk_btif_runtime_suspend, mtk_btif_runtime_resume,
-+			   NULL)
-+};
-+
-+static const struct of_device_id mtk_btif_of_match[] = {
-+	{ .compatible = "mediatek,mt7622-btif" },
-+	{ .compatible = "mediatek,mt7623-btif" },
-+	{ /* Sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, mtk_btif_of_match);
-+
-+static struct platform_driver mtk_btif_platform_driver = {
-+	.driver = {
-+		.name		= "mediatek-btif",
-+		.pm		= &mtk_btif_pm_ops,
-+		.of_match_table	= mtk_btif_of_match,
-+	},
-+	.probe			= mtk_btif_probe,
-+	.remove			= mtk_btif_remove,
-+};
-+module_platform_driver(mtk_btif_platform_driver);
-+
-+MODULE_AUTHOR("Sean Wang <sean.wang@mediatek.com>");
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("MediaTek BTIF controller driver");
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index a1161ec..0e18cfc 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -403,6 +403,15 @@ config SERIAL_8250_MT6577
- 	  If you have a Mediatek based board and want to use the
- 	  serial port, say Y to this option. If unsure, say N.
- 
-+config SERIAL_8250_BTIF
-+	tristate "MediaTek BTIF controller support"
-+	depends on SERIAL_8250 && ARCH_MEDIATEK
-+	help
-+	  Selecting this option will enable BTIF controller used by MediaTek
-+	  Bluetooth to communicate with internal hardware module inside the
-+	  SoC also being called CONNSYS which could be found on MediaTek SoCs
-+	  with Bluetooth feature, say Y to this option. If unsure, say N.
-+
- config SERIAL_8250_UNIPHIER
- 	tristate "Support for UniPhier on-chip UART"
- 	depends on SERIAL_8250
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index a44a99a..2fc73ce 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -28,6 +28,7 @@ obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
- obj-$(CONFIG_SERIAL_8250_OMAP)		+= 8250_omap.o
- obj-$(CONFIG_SERIAL_8250_LPC18XX)	+= 8250_lpc18xx.o
- obj-$(CONFIG_SERIAL_8250_MT6577)	+= 8250_mtk.o
-+obj-$(CONFIG_SERIAL_8250_BTIF)		+= 8250_btif.o
- obj-$(CONFIG_SERIAL_8250_UNIPHIER)	+= 8250_uniphier.o
- obj-$(CONFIG_SERIAL_8250_INGENIC)	+= 8250_ingenic.o
- obj-$(CONFIG_SERIAL_8250_LPSS)		+= 8250_lpss.o
++	btif: btif@1100c000 {
++		compatible = "mediatek,mt7623-btif";
++		reg = <0 0x1100c000 0 0x1000>;
++		interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_LOW>;
++		clocks = <&pericfg CLK_PERI_BTIF>;
++		clock-names = "main";
++	};
 -- 
 2.7.4
