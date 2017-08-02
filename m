@@ -1,68 +1,60 @@
-From: <sean.wang@mediatek.com>
-Subject: [PATCH 1/2] dt-bindings: serial: Add MediaTek BTIF controller bindings
-Date: Thu, 3 Aug 2017 01:05:22 +0800
-Message-ID: <6b2ad0dc976259563562e7ab23abdacf68c94aa5.1501692369.git.sean.wang@mediatek.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 0/2] serial: 8250: add support for MediaTek BTIF
+ controller
+Date: Wed, 02 Aug 2017 20:14:23 +0300
+Message-ID: <1501694063.29303.361.camel@linux.intel.com>
 References: <cover.1501692369.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1501692369.git.sean.wang@mediatek.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, jan.kiszka@siemens.com, heikki.krogerus@linux.intel.com, hpeter@gmail.com, vigneshr@ti.com, matthias.bgg@gmail.com
-Cc: devicetree@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: sean.wang@mediatek.com, robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, jan.kiszka@siemens.com, heikki.krogerus@linux.intel.com, hpeter@gmail.com, vigneshr@ti.com, matthias.bgg@gmail.com
+Cc: devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+On Thu, 2017-08-03 at 01:05 +0800, sean.wang@mediatek.com wrote:
+> From: Sean Wang <sean.wang@mediatek.com>
+> 
+> This patchset introduces the support for MediaTek BTIF controller.
+> 
+> MediaTek BTIF controller is the serial interface similar to UART but
+> it
+> works only as the digital device which is mainly used to communicate
+> with
+> the connectivity module also called CONNSYS inside the SoC which could
+> be
+> mostly found on those MediaTek SoCs with Bluetooth feature.
+> 
+> And the controller is made as being compatible with the 8250 register
+> layout so it tends to be integrated with existing 8250 core driver and
+> have no requirement for the modem configuration additionally such as
+> the
+> baud rate calculation and assignment.
 
-Document the devicetree bindings for MediaTek BTIF controller
-which could be found on MT7622 and MT7623 SoC.
 
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
----
- .../devicetree/bindings/serial/mtk-btif.txt        | 26 ++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/mtk-btif.txt
+Why it requires a separate driver?
 
-diff --git a/Documentation/devicetree/bindings/serial/mtk-btif.txt b/Documentation/devicetree/bindings/serial/mtk-btif.txt
-new file mode 100644
-index 0000000..80c1f5a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/mtk-btif.txt
-@@ -0,0 +1,26 @@
-+Device-Tree bindings for MediaTek BTIF controller found on those
-+MediaTek SoCs with Bluetooth feature
-+
-+Required properties:
-+- compatible: Should be one of:
-+	- "mediatek,mt7622-btif" : for MT7622 SoC
-+	- "mediatek,mt7623-btif" : for MT7623 SoC
-+- reg: The base address of the BTIF register bank;
-+- interrupts: A single interrupt specifier;
-+- clocks: list of clock specifiers, corresponding to
-+	  entries in clock-names property;
-+- clock-names: should contain "main" entries.
-+
-+Optional properties:
-+- mediatek,loopback: Boolean; if defined, indicates that BTIF controller
-+	running on the loopback mode.
-+
-+Example:
-+
-+	btif: btif@1100c000 {
-+		compatible = "mediatek,mt7623-btif";
-+		reg = <0 0x1100c000 0 0x1000>;
-+		interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_LOW>;
-+		clocks = <&pericfg CLK_PERI_BTIF>;
-+		clock-names = "main";
-+	};
+8250_of is for DT enabled drivers.
+
+> 
+> Sean Wang (2):
+>   dt-bindings: serial: Add MediaTek BTIF controller bindings
+>   tty: serial: 8250: Add MediaTek BTIF controller on MT7622 and MT7623
+>     SoC
+> 
+>  .../devicetree/bindings/serial/mtk-btif.txt        |  26 +++
+>  drivers/tty/serial/8250/8250_btif.c                | 224
+> +++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig                    |   9 +
+>  drivers/tty/serial/8250/Makefile                   |   1 +
+>  4 files changed, 260 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/mtk-
+> btif.txt
+>  create mode 100644 drivers/tty/serial/8250/8250_btif.c
+> 
+
 -- 
-2.7.4
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
