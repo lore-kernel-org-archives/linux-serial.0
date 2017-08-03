@@ -1,63 +1,73 @@
-From: Oleksandr Shamray <oleksandrs@mellanox.com>
-Subject: RE: [PATCH] drivers: jtag: fix resource_size.cocci warnings
-Date: Thu, 3 Aug 2017 14:48:34 +0000
-Message-ID: <AM4PR0501MB21941B05C805BF53E94ECF03B1B10@AM4PR0501MB2194.eurprd05.prod.outlook.com>
-References: <201708032250.cmVljGeY%fengguang.wu@intel.com>
- <20170803143544.GA34229@lkp-ib03.lkp.intel.com>
+From: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Subject: RE: [patch v1 0/2] JTAG driver introduction
+Date: Thu, 3 Aug 2017 15:26:08 +0000
+Message-ID: <AM4PR0501MB2194E6B8D14EC15356C1C0BFB1B10@AM4PR0501MB2194.eurprd05.prod.outlook.com>
+References: <1501679918-20486-1-git-send-email-oleksandrs@mellanox.com>
+ <20170802141209.GB25781@lunn.ch>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170803143544.GA34229@lkp-ib03.lkp.intel.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170802141209.GB25781-g2DYL2Zd6BY@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: kbuild test robot <lkp@intel.com>
-Cc: "kbuild-all@01.org" <kbuild-all@01.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>, "joel@jms.id.au" <joel@jms.id.au>, "jiri@resnulli.us" <jiri@resnulli.us>, "tklauser@distanz.ch" <tklauser@distanz.ch>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "mec@shout.net" <mec@shout.net>, "vadimp@maellanox.com" <vadimp@maellanox.com>, system-sw-low-level <system-sw-low-level@mellanox.com>, Jiri Pirko <jiri@mellanox.com>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
+Cc: "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org" <jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org>, system-sw-low-level <system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, "openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org" <mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org>, "joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org" <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org" <vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org>, "tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org" <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
 > -----Original Message-----
-> From: kbuild test robot [mailto:lkp@intel.com]
-> Sent: Thursday, August 3, 2017 5:36 PM
-> To: Oleksandr Shamray <oleksandrs@mellanox.com>
-> Cc: kbuild-all@01.org; gregkh@linuxfoundation.org; arnd@arndb.de; linux-
-> kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
-> devicetree@vger.kernel.org; openbmc@lists.ozlabs.org; joel@jms.id.au;
-> jiri@resnulli.us; tklauser@distanz.ch; linux-serial@vger.kernel.org;
-> mec@shout.net; vadimp@maellanox.com; system-sw-low-level <system-sw-
-> low-level@mellanox.com>; Oleksandr Shamray <oleksandrs@mellanox.com>;
-> Jiri Pirko <jiri@mellanox.com>
-> Subject: [PATCH] drivers: jtag: fix resource_size.cocci warnings
+> From: Andrew Lunn [mailto:andrew-g2DYL2Zd6BY@public.gmane.org]
+> Sent: Wednesday, August 2, 2017 5:12 PM
+> To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+> Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; arnd-r2nGTMty4D4@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org=
+;
+> jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org; system-sw-low-level <system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>;
+> openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org;
+> joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org;
+> tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> Subject: Re: [patch v1 0/2] JTAG driver introduction
 >=20
-> drivers/jtag/jtag-aspeed.c:724:37-40: ERROR: Missing resource_size with r=
-es
+> On Wed, Aug 02, 2017 at 04:18:36PM +0300, Oleksandr Shamray wrote:
+> > When a need raise up to use JTAG interface for system's devices
+> > programming or CPU debugging, it could be done from the external JTAG
+> > master controller.
+> >
+> > For such purpose, usually the user layer application implements jtag
+> > protocol or using a proprietary connection to vendor hardware.
+> > This method is slow and not generic.
+> >
+> > We propose to implement general JTAG interface and infrastructure to
+> > communicate with user layer application. In such way, we can have the
+> > standard JTAG interface core part and separation from specific HW
+> > implementation.
+> > This allow new capability to debug the CPU or program system's device
+> > via BMC without additional devices nor cost.
 >=20
+> Hi Oleksandr
 >=20
->  Use resource_size function on resource object  instead of explicit compu=
-tation.
+> Do you have patches for OpenOCD? Or maybe i should ask it another way, wh=
+at
+> user space tools are you using?
 >=20
-> Generated by: scripts/coccinelle/api/resource_size.cocci
->=20
-> Fixes: acf0c42bb646 ("drivers: jtag: Add Aspeed SoC 24xx and 25xx familie=
-s
-> JTAG master driver")
-> CC: Oleksandr Shamray <oleksandrs@mellanox.com>
-> Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
+> Thanks
+> 	Andrew
 
-Acked-by: Oleksandr Shamray <oleksandrs@mellanox.com>
+Hi Andrew
 
-> ---
->=20
->  jtag-aspeed.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> --- a/drivers/jtag/jtag-aspeed.c
-> +++ b/drivers/jtag/jtag-aspeed.c
-> @@ -721,7 +721,7 @@ int aspeed_jtag_init(struct platform_dev
->  	return 0;
->=20
->  out_region:
-> -	release_mem_region(res->start, res->end - res->start + 1);
-> +	release_mem_region(res->start, resource_size(res));
->  	return err;
->  }
->=20
+Thanks a lot for review.
+
+We used user space tool for that, which is an adaptation of some Lattice to=
+ols, which allows programming of SVF files. We are using it for Lattice CPL=
+D burning, since we have for such devices on our system, but this tool coul=
+d be used for programming other devices from other vendors as well.
+
+https://github.com/mellanoxbmc/mellanox-bmc-tools
+
+Thanks
+Oleksandr
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
