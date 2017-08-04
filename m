@@ -1,65 +1,61 @@
-From: YT Shen <yt.shen@mediatek.com>
-Subject: Re: [PATCH v5 2/2] arm64: dts: Add Mediatek SoC MT2712 and
- evaluation board dts and Makefile
-Date: Fri, 4 Aug 2017 19:49:23 +0800
-Message-ID: <1501847363.27655.2.camel@mtksdaap41>
-References: <1501241835-47849-1-git-send-email-yt.shen@mediatek.com>
-         <1501241835-47849-3-git-send-email-yt.shen@mediatek.com>
-         <1501577481.32089.3.camel@mtksdaap41>
-         <85f5d713-a599-e4cc-f1b4-2e0dedf2797f@gmail.com>
+From: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v6 0/2] Add basic support for Mediatek MT2712 SoC
+Date: Fri, 4 Aug 2017 19:59:35 +0800
+Message-ID: <1501847977-4023-1-git-send-email-yt.shen@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <85f5d713-a599-e4cc-f1b4-2e0dedf2797f@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Yingjoe Chen <yingjoe.chen@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, srv_heupstream@mediatek.com, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Mars Cheng <mars.cheng@mediatek.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mediatek@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mars Cheng <mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2017-08-01 at 14:46 +0200, Matthias Brugger wrote:
-> 
-> On 08/01/2017 10:51 AM, Yingjoe Chen wrote:
-> > On Fri, 2017-07-28 at 19:37 +0800, YT Shen wrote:
-> >> diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> >> new file mode 100644
-> >> index 0000000..1e135af
-> >> --- /dev/null
-> >> +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> > 
-> > <...>
-> > 
-> >> +	timer {
-> >> +		compatible = "arm,armv8-timer";
-> >> +		interrupt-parent = <&gic>;
-> >> +		interrupts = <GIC_PPI 13
-> >> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-> >> +			     <GIC_PPI 14
-> >> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-> >> +			     <GIC_PPI 11
-> >> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
-> >> +			     <GIC_PPI 10
-> >> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>;
-> >> +	};
-> >> +
-> >> +	soc {
-> >> +		#address-cells = <2>;
-> >> +		#size-cells = <2>;
-> >> +		compatible = "simple-bus";
-> >> +		ranges;
-> > 
-> > Matthias,
-> > 
-> > I notice this have soc node.
-> > Do we need to get rid of it?
-> > 
-> 
-> Good catch. Yes please get rid of it. We should avoid artificial bus nodes. As 
-> soc is no real bus, we should get rid of it.
+MT2712 is a SoC based on 64bit ARMv8 architecture.
+MT2712 share many HW IP with MT8173.  This patchset was tested on MT2712 evaluation board, and boot to shell ok.
 
-OK, we will remove the soc node and send a new version.
-Thanks.
+This series contains document bindings, device tree including interrupt and uart.
 
-> 
-> Thanks,
-> Matthias
+Changes compared to v5:
+- remove the soc node
+
+Changes compared to v4:
+- rebase to 4.13-rc1
+- use two clocks (baud_clk & sys_clk) instead of one uart_clk to the correct bindings
+
+Changes compared to v3:
+- use two uart clocks refer to the bindings
+
+Changes compared to v2:
+- remove alias from serial1 to serial5
+- remove initrd-start and initrd-end
+- change GIC_CPU_MASK_SIMPLE(6) to GIC_CPU_MASK_RAW(0x13)
+- change gic-400 reg range
+
+Changes compared to v1:
+- change subject prefix for bindings
+- change device tree license to SPDX tag.
+- change bootargs parameter to DT usage.
+- change intpol-controller to interrupt-controller
+
+YT Shen (2):
+  dt-bindings: arm: Add bindings for Mediatek MT2712 SoC Platform
+  arm64: dts: Add Mediatek SoC MT2712 and evaluation board dts and
+    Makefile
+
+ Documentation/devicetree/bindings/arm/mediatek.txt |   4 +
+ .../interrupt-controller/mediatek,sysirq.txt       |   1 +
+ .../devicetree/bindings/serial/mtk-uart.txt        |   1 +
+ arch/arm64/boot/dts/mediatek/Makefile              |   1 +
+ arch/arm64/boot/dts/mediatek/mt2712-evb.dts        |  32 ++++
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi          | 171 +++++++++++++++++++++
+ 6 files changed, 210 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+
+-- 
+1.9.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
