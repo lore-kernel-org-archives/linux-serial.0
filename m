@@ -1,60 +1,65 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 3/3] tty/serial/8250: add DT bindings description for
- mctrl_gpio helpers
-Date: Thu, 3 Aug 2017 17:26:04 -0500
-Message-ID: <20170803222604.ec5o756d5hjx2l22@rob-hp-laptop>
-References: <1501161456-13367-1-git-send-email-yegorslists@googlemail.com>
- <1501161456-13367-4-git-send-email-yegorslists@googlemail.com>
+From: YT Shen <yt.shen@mediatek.com>
+Subject: Re: [PATCH v5 2/2] arm64: dts: Add Mediatek SoC MT2712 and
+ evaluation board dts and Makefile
+Date: Fri, 4 Aug 2017 19:49:23 +0800
+Message-ID: <1501847363.27655.2.camel@mtksdaap41>
+References: <1501241835-47849-1-git-send-email-yt.shen@mediatek.com>
+         <1501241835-47849-3-git-send-email-yt.shen@mediatek.com>
+         <1501577481.32089.3.camel@mtksdaap41>
+         <85f5d713-a599-e4cc-f1b4-2e0dedf2797f@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1501161456-13367-4-git-send-email-yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, uwe-rXY34ruvC2xidJT2blvkqNi2O/JbrIOy@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <85f5d713-a599-e4cc-f1b4-2e0dedf2797f@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Yingjoe Chen <yingjoe.chen@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, srv_heupstream@mediatek.com, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Mars Cheng <mars.cheng@mediatek.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mediatek@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jul 27, 2017 at 03:17:36PM +0200, yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org wrote:
-> From: Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+On Tue, 2017-08-01 at 14:46 +0200, Matthias Brugger wrote:
 > 
-> Describe {rts,cts,dtr,dsr,rng,dcd}-gpios usage.
+> On 08/01/2017 10:51 AM, Yingjoe Chen wrote:
+> > On Fri, 2017-07-28 at 19:37 +0800, YT Shen wrote:
+> >> diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> >> new file mode 100644
+> >> index 0000000..1e135af
+> >> --- /dev/null
+> >> +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> > 
+> > <...>
+> > 
+> >> +	timer {
+> >> +		compatible = "arm,armv8-timer";
+> >> +		interrupt-parent = <&gic>;
+> >> +		interrupts = <GIC_PPI 13
+> >> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
+> >> +			     <GIC_PPI 14
+> >> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
+> >> +			     <GIC_PPI 11
+> >> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>,
+> >> +			     <GIC_PPI 10
+> >> +			      (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_LOW)>;
+> >> +	};
+> >> +
+> >> +	soc {
+> >> +		#address-cells = <2>;
+> >> +		#size-cells = <2>;
+> >> +		compatible = "simple-bus";
+> >> +		ranges;
+> > 
+> > Matthias,
+> > 
+> > I notice this have soc node.
+> > Do we need to get rid of it?
+> > 
 > 
-> Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Signed-off-by: Yegor Yefremov <yegorslists-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-> ---
->  Documentation/devicetree/bindings/serial/8250.txt | 26 +++++++++++++++++++++++
->  1 file changed, 26 insertions(+)
+> Good catch. Yes please get rid of it. We should avoid artificial bus nodes. As 
+> soc is no real bus, we should get rid of it.
+
+OK, we will remove the soc node and send a new version.
+Thanks.
+
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
-> index 419ff6c..1c09db2 100644
-> --- a/Documentation/devicetree/bindings/serial/8250.txt
-> +++ b/Documentation/devicetree/bindings/serial/8250.txt
-> @@ -48,6 +48,16 @@ Optional properties:
->  - tx-threshold: Specify the TX FIFO low water indication for parts with
->    programmable TX FIFO thresholds.
->  - resets : phandle + reset specifier pairs
-> +- rts-gpios:
-> +- cts-gpios:
-> +- dtr-gpios:
-> +- dsr-gpios:
-> +- rng-gpios:
-> +- dcd-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD
-> +  line respectively. It will use specified GPIO instead of the peripheral
-> +  function pin for the UART feature. If unsure, don't specify this property.
-
-These are already described in serial.txt.
-
-> +  If "wakeup-source" property is specified for the device this GPIO
-> +  initialization will be aborted.
-
-Why? Many GPIOs can function as wake-up sources. You would need get the 
-IRQ for the GPIO. Also, some UARTs wake-up from the RX line. Not sure 
-about any 8250 flavors, but is probably implementation specific what is 
-the trigger for wake-up.
-
-Rob
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Thanks,
+> Matthias
