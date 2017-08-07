@@ -1,78 +1,78 @@
-From: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v6 1/2] dt-bindings: arm: Add bindings for Mediatek MT2712 SoC Platform
-Date: Fri, 4 Aug 2017 19:59:36 +0800
-Message-ID: <1501847977-4023-2-git-send-email-yt.shen@mediatek.com>
-References: <1501847977-4023-1-git-send-email-yt.shen@mediatek.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1501847977-4023-1-git-send-email-yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mars Cheng <mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+From: Neeraj Upadhyay <neeraju@codeaurora.org>
+Subject: [PATCH] tty: serial: msm: Move request_irq to the end of startup
+Date: Mon,  7 Aug 2017 11:51:25 +0530
+Message-ID: <1502086885-8390-1-git-send-email-neeraju@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: andy.gross@linaro.org, david.brown@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: sboyd@codeaurora.org, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, sramana@codeaurora.org, Neeraj Upadhyay <neeraju@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-This adds dt-binding documentation for Mediatek MT2712.
-Only include very basic items: cpu, gic and uart.
+Move the request_irq() call to the end of the msm_startup(),
+so that we don't handle interrupts while msm_startup() is
+running. This avoids potential races while initialization
+is in progress. For example, consider below scenario
+where rx handler reads the intermediate value of dma->chan,
+set in msm_request_rx_dma(), and tries to do dma mapping,
+which results in data abort.
 
-Signed-off-by: YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+uart_port_startup()
+  msm_startup()
+   request_irq()
+   ...
+   msm_request_rx_dma()
+    ...
+    dma->chan = dma_request_slave_channel_reason(dev, "rx");
+    <UART RX IRQ>
+     msm_uart_irq()
+      msm_handle_rx_dm()
+       msm_start_rx_dma()
+        dma->desc = dma_map_single()
+         <data abort>
+
+Signed-off-by: Neeraj Upadhyay <neeraju@codeaurora.org>
 ---
- Documentation/devicetree/bindings/arm/mediatek.txt                    | 4 ++++
- .../devicetree/bindings/interrupt-controller/mediatek,sysirq.txt      | 1 +
- Documentation/devicetree/bindings/serial/mtk-uart.txt                 | 1 +
- 3 files changed, 6 insertions(+)
+ drivers/tty/serial/msm_serial.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/mediatek.txt b/Documentation/devicetree/bindings/arm/mediatek.txt
-index da7bd13..7aa0e98 100644
---- a/Documentation/devicetree/bindings/arm/mediatek.txt
-+++ b/Documentation/devicetree/bindings/arm/mediatek.txt
-@@ -7,6 +7,7 @@ Required root node property:
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 6788e75..1db79ee 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1175,11 +1175,6 @@ static int msm_startup(struct uart_port *port)
+ 	snprintf(msm_port->name, sizeof(msm_port->name),
+ 		 "msm_serial%d", port->line);
  
- compatible: Must contain one of
-    "mediatek,mt2701"
-+   "mediatek,mt2712"
-    "mediatek,mt6580"
-    "mediatek,mt6589"
-    "mediatek,mt6592"
-@@ -25,6 +26,9 @@ Supported boards:
- - Evaluation board for MT2701:
-     Required root node properties:
-       - compatible = "mediatek,mt2701-evb", "mediatek,mt2701";
-+- Evaluation board for MT2712:
-+    Required root node properties:
-+      - compatible = "mediatek,mt2712-evb", "mediatek,mt2712";
- - Evaluation board for MT6580:
-     Required root node properties:
-       - compatible = "mediatek,mt6580-evbp1", "mediatek,mt6580";
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/mediatek,sysirq.txt b/Documentation/devicetree/bindings/interrupt-controller/mediatek,sysirq.txt
-index 11cc87a..07bf0b9 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/mediatek,sysirq.txt
-+++ b/Documentation/devicetree/bindings/interrupt-controller/mediatek,sysirq.txt
-@@ -17,6 +17,7 @@ Required properties:
- 	"mediatek,mt6582-sysirq", "mediatek,mt6577-sysirq": for MT6582
- 	"mediatek,mt6580-sysirq", "mediatek,mt6577-sysirq": for MT6580
- 	"mediatek,mt6577-sysirq": for MT6577
-+	"mediatek,mt2712-sysirq", "mediatek,mt6577-sysirq": for MT2712
- 	"mediatek,mt2701-sysirq", "mediatek,mt6577-sysirq": for MT2701
- - interrupt-controller : Identifies the node as an interrupt controller
- - #interrupt-cells : Use the same format as specified by GIC in arm,gic.txt.
-diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-index b6cf384..f73abff 100644
---- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-@@ -3,6 +3,7 @@
- Required properties:
- - compatible should contain:
-   * "mediatek,mt2701-uart" for MT2701 compatible UARTS
-+  * "mediatek,mt2712-uart" for MT2712 compatible UARTS
-   * "mediatek,mt6580-uart" for MT6580 compatible UARTS
-   * "mediatek,mt6582-uart" for MT6582 compatible UARTS
-   * "mediatek,mt6589-uart" for MT6589 compatible UARTS
+-	ret = request_irq(port->irq, msm_uart_irq, IRQF_TRIGGER_HIGH,
+-			  msm_port->name, port);
+-	if (unlikely(ret))
+-		return ret;
+-
+ 	msm_init_clock(port);
+ 
+ 	if (likely(port->fifosize > 12))
+@@ -1206,7 +1201,21 @@ static int msm_startup(struct uart_port *port)
+ 		msm_request_rx_dma(msm_port, msm_port->uart.mapbase);
+ 	}
+ 
++	ret = request_irq(port->irq, msm_uart_irq, IRQF_TRIGGER_HIGH,
++			  msm_port->name, port);
++	if (unlikely(ret))
++		goto err_irq;
++
+ 	return 0;
++
++err_irq:
++	if (msm_port->is_uartdm)
++		msm_release_dma(msm_port);
++
++	clk_disable_unprepare(msm_port->pclk);
++	clk_disable_unprepare(msm_port->clk);
++
++	return ret;
+ }
+ 
+ static void msm_shutdown(struct uart_port *port)
 -- 
-1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a
+member of the Code Aurora Forum, hosted by The Linux Foundation
