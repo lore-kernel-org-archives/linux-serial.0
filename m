@@ -1,50 +1,39 @@
-From: Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: [PATCH] tty: amba-pl011: constify vendor_data structures
-Date: Fri, 11 Aug 2017 13:47:28 +0200
-Message-ID: <1502452048-3444-1-git-send-email-Julia.Lawall@lip6.fr>
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-Sender: kernel-janitors-owner@vger.kernel.org
-To: Russell King <linux@armlinux.org.uk>
-Cc: kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Bhumika Goyal <bhumirks@gmail.com>
+From: Johannes Thumshirn <jthumshirn@suse.de>
+Subject: Re: [PATCH v2 2/2] Introduce 8250_men_mcb
+Date: Fri, 11 Aug 2017 15:13:21 +0200
+Message-ID: <20170811131321.GA11543@linux-x5ow.site>
+References: <20170802075853.18911-1-michael.moese@men.de>
+ <20170802075853.18911-2-michael.moese@men.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170802075853.18911-2-michael.moese@men.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michael Moese <michael.moese@men.de>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, johannes.thumshirn@suse.de
 List-Id: linux-serial@vger.kernel.org
 
-These vendor_data structures are only stored in the vendor field of
-the uart_amba_port structure, as defined in the same file, and this
-field is declared as const.  Thus the vendor_data structures can be
-const too.
+On Wed, Aug 02, 2017 at 09:58:53AM +0200, Michael Moese wrote:
+> This patch introduces the 8250_men_mcb driver for the MEN 16Z125
+> IP-Core. This is a 16550-type UART with a 60 byte FIFO.
+> Due to strange old hardware, every board using this IP core requires
+> different values for uartclk. A reasonable default is included in
+> addition to the support of three boards. Additional values for other
+> boards will be added later.
+> 
+> This v2 has some whitespace fixes, I screwed this up yesterday.
 
-Done with the help of Coccinelle.
+Nit: this should go below the '---' marker.
 
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Apart from that,
+Reviewed-by: Johannes Thumshirn <jthumshirn@suse.de>
 
----
-
-There are some other vendor_data structures in the same file, but
-they are used in a different way.
-
- drivers/tty/serial/amba-pl011.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 1888d16..ba4e795 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -128,7 +128,7 @@ static unsigned int get_fifosize_arm(struct amba_device *dev)
- 	.get_fifosize		= get_fifosize_arm,
- };
- 
--static struct vendor_data vendor_sbsa = {
-+static const struct vendor_data vendor_sbsa = {
- 	.reg_offset		= pl011_std_offsets,
- 	.fr_busy		= UART01x_FR_BUSY,
- 	.fr_dsr			= UART01x_FR_DSR,
-@@ -143,7 +143,7 @@ static unsigned int get_fifosize_arm(struct amba_device *dev)
- };
- 
- #ifdef CONFIG_ACPI_SPCR_TABLE
--static struct vendor_data vendor_qdt_qdf2400_e44 = {
-+static const struct vendor_data vendor_qdt_qdf2400_e44 = {
- 	.reg_offset		= pl011_std_offsets,
- 	.fr_busy		= UART011_FR_TXFE,
- 	.fr_dsr			= UART01x_FR_DSR,
-
+-- 
+Johannes Thumshirn                                          Storage
+jthumshirn@suse.de                                +49 911 74053 689
+SUSE LINUX GmbH, Maxfeldstr. 5, 90409 Nürnberg
+GF: Felix Imendörffer, Jane Smithard, Graham Norton
+HRB 21284 (AG Nürnberg)
+Key fingerprint = EC38 9CAB C2C4 F25D 8600 D0D0 0393 969D 2D76 0850
