@@ -1,39 +1,90 @@
-From: Johannes Thumshirn <jthumshirn@suse.de>
-Subject: Re: [PATCH v2 2/2] Introduce 8250_men_mcb
-Date: Fri, 11 Aug 2017 15:13:21 +0200
-Message-ID: <20170811131321.GA11543@linux-x5ow.site>
-References: <20170802075853.18911-1-michael.moese@men.de>
- <20170802075853.18911-2-michael.moese@men.de>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: Add MediaTek BTIF controller bindings
+Date: Fri, 11 Aug 2017 09:31:13 -0500
+Message-ID: <CAL_Jsq+EhkmSKeu7Hp93Kgjms4G30Gbjy1jw-nUG+rngLKLaeg@mail.gmail.com>
+References: <cover.1501692369.git.sean.wang@mediatek.com> <6b2ad0dc976259563562e7ab23abdacf68c94aa5.1501692369.git.sean.wang@mediatek.com>
+ <20170810162752.2xncymekrhu544g7@rob-hp-laptop> <1502419988.19230.16.camel@mtkswgap22>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170802075853.18911-2-michael.moese@men.de>
+In-Reply-To: <1502419988.19230.16.camel@mtkswgap22>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michael Moese <michael.moese@men.de>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, johannes.thumshirn@suse.de
+To: Sean Wang <sean.wang@mediatek.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Jan Kiszka <jan.kiszka@siemens.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Peter H <hpeter@gmail.com>, Vignesh R <vigneshr@ti.com>, Matthias Brugger <matthias.bgg@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-mediatek@lists.infradead.org, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Aug 02, 2017 at 09:58:53AM +0200, Michael Moese wrote:
-> This patch introduces the 8250_men_mcb driver for the MEN 16Z125
-> IP-Core. This is a 16550-type UART with a 60 byte FIFO.
-> Due to strange old hardware, every board using this IP core requires
-> different values for uartclk. A reasonable default is included in
-> addition to the support of three boards. Additional values for other
-> boards will be added later.
-> 
-> This v2 has some whitespace fixes, I screwed this up yesterday.
+On Thu, Aug 10, 2017 at 9:53 PM, Sean Wang <sean.wang@mediatek.com> wrote:
+> On Thu, 2017-08-10 at 11:27 -0500, Rob Herring wrote:
+>> On Thu, Aug 03, 2017 at 01:05:22AM +0800, sean.wang@mediatek.com wrote:
+>> > From: Sean Wang <sean.wang@mediatek.com>
+>> >
+>> > Document the devicetree bindings for MediaTek BTIF controller
+>> > which could be found on MT7622 and MT7623 SoC.
+>> >
+>> > Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+>> > ---
+>> >  .../devicetree/bindings/serial/mtk-btif.txt        | 26 ++++++++++++++++++++++
+>> >  1 file changed, 26 insertions(+)
+>> >  create mode 100644 Documentation/devicetree/bindings/serial/mtk-btif.txt
+>> >
+>> > diff --git a/Documentation/devicetree/bindings/serial/mtk-btif.txt b/Documentation/devicetree/bindings/serial/mtk-btif.txt
+>> > new file mode 100644
+>> > index 0000000..80c1f5a
+>> > --- /dev/null
+>> > +++ b/Documentation/devicetree/bindings/serial/mtk-btif.txt
+>> > @@ -0,0 +1,26 @@
+>> > +Device-Tree bindings for MediaTek BTIF controller found on those
+>> > +MediaTek SoCs with Bluetooth feature
+>> > +
+>> > +Required properties:
+>> > +- compatible: Should be one of:
+>> > +   - "mediatek,mt7622-btif" : for MT7622 SoC
+>> > +   - "mediatek,mt7623-btif" : for MT7623 SoC
+>> > +- reg: The base address of the BTIF register bank;
+>> > +- interrupts: A single interrupt specifier;
+>> > +- clocks: list of clock specifiers, corresponding to
+>> > +     entries in clock-names property;
+>> > +- clock-names: should contain "main" entries.
+>> > +
+>> > +Optional properties:
+>> > +- mediatek,loopback: Boolean; if defined, indicates that BTIF controller
+>> > +   running on the loopback mode.
+>>
+>> I don't think this belongs in DT, but should be a module param or sysfs
+>> control.
+>>
+> the loopback actually is one of hardware setups so i add it as one
+> property in the dt or could you kindly guide me how to make judgment
+> accurately for listing those changes as either dt or a module param?
 
-Nit: this should go below the '---' marker.
+It's just a debug mode, right? Generally a user shouldn't have to
+modify the DT to change settings. Only if you wanted a given board to
+always be in loopback would this make sense in DT.
 
-Apart from that,
-Reviewed-by: Johannes Thumshirn <jthumshirn@suse.de>
+>> > +
+>> > +Example:
+>> > +
+>> > +   btif: btif@1100c000 {
+>>
+>> bluetooth@...
+>>
+> btif not bluetooth, which is just the interface hardware allowing the
+> the main processor communicating with the bluetooth hardware built in
+> the SoC, and is really like to the uart used by legacy bluetooth.
+> So i will add bluetooth as the another node.
 
--- 
-Johannes Thumshirn                                          Storage
-jthumshirn@suse.de                                +49 911 74053 689
-SUSE LINUX GmbH, Maxfeldstr. 5, 90409 Nürnberg
-GF: Felix Imendörffer, Jane Smithard, Graham Norton
-HRB 21284 (AG Nürnberg)
-Key fingerprint = EC38 9CAB C2C4 F25D 8600 D0D0 0393 969D 2D76 0850
+Right, I realized that after writing this. It should be "serial@..." instead.
+
+>
+>
+>> > +           compatible = "mediatek,mt7623-btif";
+>> > +           reg = <0 0x1100c000 0 0x1000>;
+>> > +           interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_LOW>;
+>> > +           clocks = <&pericfg CLK_PERI_BTIF>;
+>> > +           clock-names = "main";
+>> > +   };
+>> > --
+>> > 2.7.4
+>> >
+>
+>
