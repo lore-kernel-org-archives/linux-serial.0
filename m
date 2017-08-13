@@ -1,24 +1,13 @@
 From: Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: [PATCH 01/11] serial: meson: constify uart_ops structures
-Date: Sun, 13 Aug 2017 08:21:40 +0200
-Message-ID: <1502605310-4314-2-git-send-email-Julia.Lawall@lip6.fr>
+Subject: [PATCH 09/11] serial: m32r_sio: constify uart_ops structures
+Date: Sun, 13 Aug 2017 08:21:48 +0200
+Message-ID: <1502605310-4314-10-git-send-email-Julia.Lawall@lip6.fr>
 References: <1502605310-4314-1-git-send-email-Julia.Lawall@lip6.fr>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1502605310-4314-1-git-send-email-Julia.Lawall@lip6.fr>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Kevin Hilman <khilman@baylibre.com>, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Carlo Caione <carlo@caione.org>, linux-amlogic@lists.infradead.org, bhumirks@gmail.com
+Cc: bhumirks@gmail.com, kernel-janitors@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 These uart_ops structures are only stored in the ops field of a
@@ -30,19 +19,19 @@ Done with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
 ---
- drivers/tty/serial/meson_uart.c |    2 +-
+ drivers/tty/serial/m32r_sio.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index 42e4a4c..07c0f98 100644
---- a/drivers/tty/serial/meson_uart.c
-+++ b/drivers/tty/serial/meson_uart.c
-@@ -424,7 +424,7 @@ static void meson_uart_config_port(struct uart_port *port, int flags)
- 	}
+diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/m32r_sio.c
+index 218b711..5b3bd95 100644
+--- a/drivers/tty/serial/m32r_sio.c
++++ b/drivers/tty/serial/m32r_sio.c
+@@ -854,7 +854,7 @@ static void m32r_sio_config_port(struct uart_port *port, int unused)
+ 	return 0;
  }
  
--static struct uart_ops meson_uart_ops = {
-+static const struct uart_ops meson_uart_ops = {
- 	.set_mctrl      = meson_uart_set_mctrl,
- 	.get_mctrl      = meson_uart_get_mctrl,
- 	.tx_empty	= meson_uart_tx_empty,
+-static struct uart_ops m32r_sio_pops = {
++static const struct uart_ops m32r_sio_pops = {
+ 	.tx_empty	= m32r_sio_tx_empty,
+ 	.set_mctrl	= m32r_sio_set_mctrl,
+ 	.get_mctrl	= m32r_sio_get_mctrl,
