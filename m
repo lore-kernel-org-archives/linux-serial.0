@@ -1,37 +1,38 @@
-From: Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: [PATCH 05/11] serial: uuc_uart: constify uart_ops structures
-Date: Sun, 13 Aug 2017 08:21:44 +0200
-Message-ID: <1502605310-4314-6-git-send-email-Julia.Lawall@lip6.fr>
-References: <1502605310-4314-1-git-send-email-Julia.Lawall@lip6.fr>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1502605310-4314-1-git-send-email-Julia.Lawall@lip6.fr>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Timur Tabi <timur@tabi.org>
-Cc: bhumirks@gmail.com, kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: [PATCH] serial: sh-sci: use of_property_read_bool()
+Date: Sun, 13 Aug 2017 22:07:39 +0300
+Message-ID: <20170813190811.352748420@cogentembedded.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline; filename=serial-sh-sci-use-of_property_read_bool.patch
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: "\"open list:SERIAL DRIVERS\"" <linux-serial@vger.kernel.org>
+Cc: linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 List-Id: linux-serial@vger.kernel.org
 
-These uart_ops structures are only stored in the ops field of a
-uart_port structure and this fields is const, so the uart_ops
-structures can also be const.
+Use more compact of_property_read_bool() call for a boolean property
+instead  of of_find_property() call in sci_parse_dt().
 
-Done with the help of Coccinelle.
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 
 ---
- drivers/tty/serial/ucc_uart.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
 
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index 481eb29..55b7027 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -1085,7 +1085,7 @@ static int qe_uart_verify_port(struct uart_port *port,
-  *
-  * Details on these functions can be found in Documentation/serial/driver
-  */
--static struct uart_ops qe_uart_pops = {
-+static const struct uart_ops qe_uart_pops = {
- 	.tx_empty       = qe_uart_tx_empty,
- 	.set_mctrl      = qe_uart_set_mctrl,
- 	.get_mctrl      = qe_uart_get_mctrl,
+ drivers/tty/serial/sh-sci.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+Index: tty/drivers/tty/serial/sh-sci.c
+===================================================================
+--- tty.orig/drivers/tty/serial/sh-sci.c
++++ tty/drivers/tty/serial/sh-sci.c
+@@ -3073,8 +3073,7 @@ static struct plat_sci_port *sci_parse_d
+ 	p->type = SCI_OF_TYPE(match->data);
+ 	p->regtype = SCI_OF_REGTYPE(match->data);
+ 
+-	if (of_find_property(np, "uart-has-rtscts", NULL))
+-		sp->has_rtscts = true;
++	sp->has_rtscts = of_property_read_bool(np, "uart-has-rtscts");
+ 
+ 	return p;
+ }
