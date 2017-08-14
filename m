@@ -1,66 +1,107 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v6 0/2] Add basic support for Mediatek MT2712 SoC
-Date: Mon, 14 Aug 2017 17:15:37 +0200
-Message-ID: <d40ece12-5148-af2a-fb83-00c56230e175@gmail.com>
-References: <1501847977-4023-1-git-send-email-yt.shen@mediatek.com>
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: Re: [PATCH] serial: imx: Improve PIO prevention if TX DMA has been
+ started
+Date: Mon, 14 Aug 2017 20:38:04 +0200
+Message-ID: <20170814183804.GA28695@archie.localdomain>
+References: <20170812151210.10420-1-clemens.gruber@pqgruber.com>
+ <20170812195451.2g65wifawouz4t7d@pengutronix.de>
+ <20170812220755.GA22225@archie.localdomain>
+ <20170814065149.cwgw5echcjhvqxjb@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1501847977-4023-1-git-send-email-yt.shen@mediatek.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20170814065149.cwgw5echcjhvqxjb@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: YT Shen <yt.shen@mediatek.com>, Rob Herring <robh+dt@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Mars Cheng <mars.cheng@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, yingjoe.chen@mediatek.com
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabio Estevam <fabio.estevam@nxp.com>, linux-kernel@vger.kernel.org, Ian Jamison <ian.dev@arkver.com>
 List-Id: linux-serial@vger.kernel.org
 
+Hello Uwe,
 
+On Mon, Aug 14, 2017 at 08:51:49AM +0200, Uwe Kleine-König wrote:
+> Hello Clemens,
+> 
+> On Sun, Aug 13, 2017 at 12:07:56AM +0200, Clemens Gruber wrote:
+> > On Sat, Aug 12, 2017 at 09:54:51PM +0200, Uwe Kleine-König wrote:
+> > > On Sat, Aug 12, 2017 at 05:12:10PM +0200, Clemens Gruber wrote:
+> > > > The imx_transmit_buffer function should return if TX DMA has already
+> > > > been started and not just skip over the buffer PIO write loop. (Which
+> > > > did fix the initial problem, but could have unintentional side-effects)
+> > > > 
+> > > > Tested on an i.MX6Q board with half-duplex RS-485 and with RS-232.
+> > > > 
+> > > > Cc: Ian Jamison <ian.dev@arkver.com>
+> > > > Cc: Uwe-Kleine König <u.kleine-koenig@pengutronix.de>
+> > > > Fixes: 514ab34dbad6 ("serial: imx: Prevent TX buffer PIO write when a
+> > > > DMA has been started")
+> > > 
+> > > AFAIK no newline in the Fixes: line.
+> > 
+> > Thanks. A checkpatch warning for this would be great.
+> 
+> I assume that is a note to yourself to look into that? :-)
 
-On 08/04/2017 01:59 PM, YT Shen wrote:
-> MT2712 is a SoC based on 64bit ARMv8 architecture.
-> MT2712 share many HW IP with MT8173.  This patchset was tested on MT2712 evaluation board, and boot to shell ok.
-> 
-> This series contains document bindings, device tree including interrupt and uart.
-> 
+It's on my TODO list ;)
 
-pushed to v4.13-next/dts64
+> 
+> > > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > > > index 80934e7bd67f..fce538eb8c77 100644
+> > > > --- a/drivers/tty/serial/imx.c
+> > > > +++ b/drivers/tty/serial/imx.c
+> > > > @@ -452,13 +452,14 @@ static inline void imx_transmit_buffer(struct imx_port *sport)
+> > > >  		if (sport->dma_is_txing) {
+> > > >  			temp |= UCR1_TDMAEN;
+> > > >  			writel(temp, sport->port.membase + UCR1);
+> > > > +			return;
+> > > >  		} else {
+> > > >  			writel(temp, sport->port.membase + UCR1);
+> > > >  			imx_dma_tx(sport);
+> > > >  		}
+> > > 
+> > > Shouldn't the return go here?
+> > 
+> > Yes, it can also go here (and probably should). The problem of
+> > xmit->tail jumping over xmit->head occurs only if we are already DMA
+> > txing and then go into the PIO loop, but not the first time after
+> > calling imx_dma_tx. That's why the v1 passed the tests too.
+> > I'll have to conduct a few more tests and if they succeed I'll send a
+> > v2 where we return in both cases (already txing and starting to).
+> > 
+> > > Did you understand the problem? Can you say why this only hurts in RS485
+> > > half-duplex but not (as it seems) in regular rs232 mode?
+> > 
+> > I am not sure anyone understands (yet) why it a) only hurts RS-485 and
+> > b) only occurs on SMP systems.
+> > If you have more insight, please share it. :)
+> 
+> I asked because I thought you might have understood it before patching
+> it ...
 
-Thanks
+Yeah, this patch went out way too early, sorry for that! :/
 
-> Changes compared to v5:
-> - remove the soc node
-> 
-> Changes compared to v4:
-> - rebase to 4.13-rc1
-> - use two clocks (baud_clk & sys_clk) instead of one uart_clk to the correct bindings
-> 
-> Changes compared to v3:
-> - use two uart clocks refer to the bindings
-> 
-> Changes compared to v2:
-> - remove alias from serial1 to serial5
-> - remove initrd-start and initrd-end
-> - change GIC_CPU_MASK_SIMPLE(6) to GIC_CPU_MASK_RAW(0x13)
-> - change gic-400 reg range
-> 
-> Changes compared to v1:
-> - change subject prefix for bindings
-> - change device tree license to SPDX tag.
-> - change bootargs parameter to DT usage.
-> - change intpol-controller to interrupt-controller
-> 
-> YT Shen (2):
->    dt-bindings: arm: Add bindings for Mediatek MT2712 SoC Platform
->    arm64: dts: Add Mediatek SoC MT2712 and evaluation board dts and
->      Makefile
-> 
->   Documentation/devicetree/bindings/arm/mediatek.txt |   4 +
->   .../interrupt-controller/mediatek,sysirq.txt       |   1 +
->   .../devicetree/bindings/serial/mtk-uart.txt        |   1 +
->   arch/arm64/boot/dts/mediatek/Makefile              |   1 +
->   arch/arm64/boot/dts/mediatek/mt2712-evb.dts        |  32 ++++
->   arch/arm64/boot/dts/mediatek/mt2712e.dtsi          | 171 +++++++++++++++++++++
->   6 files changed, 210 insertions(+)
->   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
->   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> 
+@gregkh: Please ignore this patch!
+
+About the underlying problem (b) why it only occurs on SMP systems:
+I think Ian's theory is correct:
+DMA is started, then the PIO is done until the xmit buffer is empty and
+immediately after that, DMA is stopped.
+On SMP systems, where the DMA TX thread can run on another core, it is
+already too late.
+
+Regarding problem (a) why it only hurts RS-485: One possibility could be
+the timing difference / additional delay due to for example toggling the
+transmit-enable GPIO via mctrl_gpio_set.
+Meaning that with RS-232 on SMP systems DMA is also stopped just early
+enough to not bork the circular xmit buffer.
+
+If this is true then the imx driver did not really use TX DMA in
+practice before.
+
+Thoughts?
+
+I'll try to trace this next week to verify these hypotheses.
+
+Best regards,
+Clemens
