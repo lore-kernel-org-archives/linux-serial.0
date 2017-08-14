@@ -1,147 +1,66 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: Race between release_tty() and vt_disallocate()
-Date: Mon, 14 Aug 2017 16:25:27 +0200
-Message-ID: <8400458.N1a9Uh7DF8@wuerfel>
-References: <CAK8P3a2Pok0Mpmj+DZG3gi13F9bWrK_u7M0hC4kHKuUzSuH1Ng@mail.gmail.com> <20170814133947.37ad1855@alans-desktop>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v6 0/2] Add basic support for Mediatek MT2712 SoC
+Date: Mon, 14 Aug 2017 17:15:37 +0200
+Message-ID: <d40ece12-5148-af2a-fb83-00c56230e175@gmail.com>
+References: <1501847977-4023-1-git-send-email-yt.shen@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170814133947.37ad1855@alans-desktop>
+In-Reply-To: <1501847977-4023-1-git-send-email-yt.shen@mediatek.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Adam Borowski <kilobyte@angband.pl>, linux-serial@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>, jun.he@linaro.org, graeme.gregory@linaro.org, gema.gomez-solano@linaro.org
+To: YT Shen <yt.shen@mediatek.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Mars Cheng <mars.cheng@mediatek.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, yingjoe.chen@mediatek.com
 List-Id: linux-serial@vger.kernel.org
 
-On Monday, August 14, 2017 1:39:47 PM CEST Alan Cox wrote:
 
-> > the tty closes and that leads to  tty->count dropping to zero
-> > before we call tty_buffer_cancel_work() on the tty_port that
-> > has now been freed.
-> > 
-> > Apparently the locking and/or reference counting between the
-> > two code paths is insufficient, but I don't understand enough
-> > about tty locking to come up with a fix that doesn't break other
-> > things. Please have a look.
+
+On 08/04/2017 01:59 PM, YT Shen wrote:
+> MT2712 is a SoC based on 64bit ARMv8 architecture.
+> MT2712 share many HW IP with MT8173.  This patchset was tested on MT2712 evaluation board, and boot to shell ok.
 > 
-> I'm actually not sure how we can fix this within the current API. The tty
-> port is refcounted (see tty_port_put() and tty_port_tty_get()) so
-> any ioctl would end up returning but the console port resources would not
-> disappear until that tty finally closed down.
+> This series contains document bindings, device tree including interrupt and uart.
+> 
 
-It seems that part of the problem is the lack of tty_port_put/tty_port_get
-calls in the VT code.
+pushed to v4.13-next/dts64
 
-> The only easy way I can think to keep the current semantics would instead
-> be to keep the tty port resources around and indexed somewhere but
-> blackhole input to/output from that port or switching to it and also call
-> tty_hangup if the port has a tty.
+Thanks
 
-What would still be missing if we just add that reference counting and
-delay the freeing of the vc_data/tty_port? I probably missed part of your
-analysis, so just throwing this out for discussion.
-
-(not tested, probably wrong as I said)
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 2ebaba16f785..9ab3df49d988 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -750,6 +750,16 @@ static void visual_init(struct vc_data *vc, int num, int init)
- 	vc->vc_screenbuf_size = vc->vc_rows * vc->vc_size_row;
- }
- 
-+static void vt_destruct(struct tty_port *port)
-+{
-+	struct vc_data *vc = container_of(port, struct vc_data, port);
-+	kfree(vc);
-+}
-+
-+static const struct tty_port_operations vt_port_operations = {
-+	.destruct = vt_destruct,
-+};
-+
- int vc_allocate(unsigned int currcons)	/* return 0 on success */
- {
- 	struct vt_notifier_param param;
-@@ -775,6 +785,7 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
- 
- 	vc_cons[currcons].d = vc;
- 	tty_port_init(&vc->port);
-+	vc->port.ops = &vt_port_operations;
- 	INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
- 
- 	visual_init(vc, currcons, 1);
-@@ -2880,14 +2891,16 @@ static int con_install(struct tty_driver *driver, struct tty_struct *tty)
- 	vc = vc_cons[currcons].d;
- 
- 	/* Still being freed */
--	if (vc->port.tty) {
-+	if (vc->port.tty || !tty_port_get(&vc->port)) {
- 		ret = -ERESTARTSYS;
- 		goto unlock;
- 	}
- 
- 	ret = tty_port_install(&vc->port, driver, tty);
--	if (ret)
-+	if (ret) {
-+		tty_port_put(&vc->port);
- 		goto unlock;
-+	}
- 
- 	tty->driver_data = vc;
- 	vc->port.tty = tty;
-@@ -2926,6 +2939,11 @@ static void con_shutdown(struct tty_struct *tty)
- 	console_unlock();
- }
- 
-+static void con_cleanup(struct tty_struct *tty)
-+{
-+	tty_port_put(tty->port);
-+}
-+
- static int default_color           = 7; /* white */
- static int default_italic_color    = 2; // green (ASCII)
- static int default_underline_color = 3; // cyan (ASCII)
-@@ -3050,7 +3068,8 @@ static const struct tty_operations con_ops = {
- 	.throttle = con_throttle,
- 	.unthrottle = con_unthrottle,
- 	.resize = vt_resize,
--	.shutdown = con_shutdown
-+	.shutdown = con_shutdown,
-+	.cleanup = con_cleanup,
- };
- 
- static struct cdev vc0_cdev;
-diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
-index 96d389cb506c..25aa37a93f58 100644
---- a/drivers/tty/vt/vt_ioctl.c
-+++ b/drivers/tty/vt/vt_ioctl.c
-@@ -292,10 +292,8 @@ static int vt_disallocate(unsigned int vc_num)
- 		vc = vc_deallocate(vc_num);
- 	console_unlock();
- 
--	if (vc && vc_num >= MIN_NR_CONSOLES) {
--		tty_port_destroy(&vc->port);
--		kfree(vc);
--	}
-+	if (vc && vc_num >= MIN_NR_CONSOLES)
-+		tty_port_put(&vc->port);
- 
- 	return ret;
- }
-@@ -315,10 +313,8 @@ static void vt_disallocate_all(void)
- 	console_unlock();
- 
- 	for (i = 1; i < MAX_NR_CONSOLES; i++) {
--		if (vc[i] && i >= MIN_NR_CONSOLES) {
--			tty_port_destroy(&vc[i]->port);
--			kfree(vc[i]);
--		}
-+		if (vc[i] && i >= MIN_NR_CONSOLES)
-+			tty_port_put(&vc[i]->port);
- 	}
- }
- 
+> Changes compared to v5:
+> - remove the soc node
+> 
+> Changes compared to v4:
+> - rebase to 4.13-rc1
+> - use two clocks (baud_clk & sys_clk) instead of one uart_clk to the correct bindings
+> 
+> Changes compared to v3:
+> - use two uart clocks refer to the bindings
+> 
+> Changes compared to v2:
+> - remove alias from serial1 to serial5
+> - remove initrd-start and initrd-end
+> - change GIC_CPU_MASK_SIMPLE(6) to GIC_CPU_MASK_RAW(0x13)
+> - change gic-400 reg range
+> 
+> Changes compared to v1:
+> - change subject prefix for bindings
+> - change device tree license to SPDX tag.
+> - change bootargs parameter to DT usage.
+> - change intpol-controller to interrupt-controller
+> 
+> YT Shen (2):
+>    dt-bindings: arm: Add bindings for Mediatek MT2712 SoC Platform
+>    arm64: dts: Add Mediatek SoC MT2712 and evaluation board dts and
+>      Makefile
+> 
+>   Documentation/devicetree/bindings/arm/mediatek.txt |   4 +
+>   .../interrupt-controller/mediatek,sysirq.txt       |   1 +
+>   .../devicetree/bindings/serial/mtk-uart.txt        |   1 +
+>   arch/arm64/boot/dts/mediatek/Makefile              |   1 +
+>   arch/arm64/boot/dts/mediatek/mt2712-evb.dts        |  32 ++++
+>   arch/arm64/boot/dts/mediatek/mt2712e.dtsi          | 171 +++++++++++++++++++++
+>   6 files changed, 210 insertions(+)
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712-evb.dts
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> 
