@@ -1,41 +1,28 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: [PATCH repost] serial: sh-sci: use of_property_read_bool()
-Date: Sun, 13 Aug 2017 22:11:24 +0300
-Message-ID: <20170813191134.674818373@cogentembedded.com>
+From: David Miller <davem@davemloft.net>
+Subject: Re: [PATCH 03/11] serial: sunsab: constify uart_ops structures
+Date: Sun, 13 Aug 2017 20:12:43 -0700 (PDT)
+Message-ID: <20170813.201243.113370942135429593.davem@davemloft.net>
+References: <1502605310-4314-1-git-send-email-Julia.Lawall@lip6.fr>
+        <1502605310-4314-4-git-send-email-Julia.Lawall@lip6.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline; filename=serial-sh-sci-use-of_property_read_bool.patch
-Sender: linux-sh-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1502605310-4314-4-git-send-email-Julia.Lawall@lip6.fr>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Julia.Lawall@lip6.fr
+Cc: bhumirks@gmail.com, kernel-janitors@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Use more compact of_property_read_bool() call for a boolean property
-instead  of of_find_property() call in sci_parse_dt().
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+Date: Sun, 13 Aug 2017 08:21:42 +0200
 
-Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+> These uart_ops structures are only stored in the ops field of a
+> uart_port structure and this fields is const, so the uart_ops
+> structures can also be const.
+> 
+> Done with the help of Coccinelle.
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
----
-This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
-
-Reposting as the previous posting dropped Greg's and Jiri's emails...
-
- drivers/tty/serial/sh-sci.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-Index: tty/drivers/tty/serial/sh-sci.c
-===================================================================
---- tty.orig/drivers/tty/serial/sh-sci.c
-+++ tty/drivers/tty/serial/sh-sci.c
-@@ -3073,8 +3073,7 @@ static struct plat_sci_port *sci_parse_d
- 	p->type = SCI_OF_TYPE(match->data);
- 	p->regtype = SCI_OF_REGTYPE(match->data);
- 
--	if (of_find_property(np, "uart-has-rtscts", NULL))
--		sp->has_rtscts = true;
-+	sp->has_rtscts = of_property_read_bool(np, "uart-has-rtscts");
- 
- 	return p;
- }
-
+Acked-by: David S. Miller <davem@davemloft.net>
