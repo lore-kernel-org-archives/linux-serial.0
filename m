@@ -1,70 +1,64 @@
-From: Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 0/8] MIPS: BCM63XX: add and use clkdev lookup support
-Date: Tue, 15 Aug 2017 09:20:00 -0700
-Message-ID: <b180fcb8-0282-3bad-aad0-4f1faaea73b0@gmail.com>
-References: <20170802093429.12572-1-jonas.gorski@gmail.com>
+From: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Subject: [PATCH] earlycon: initialise baud field of earlycon device structure
+Date: Tue, 15 Aug 2017 20:21:41 +0300
+Message-ID: <20170815172141.29115-1-Eugeniy.Paltsev@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170802093429.12572-1-jonas.gorski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jonas Gorski <jonas.gorski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-snps-arc@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
 List-Id: linux-serial@vger.kernel.org
 
+For now baud field of earlycon structure device is't initialised at all
+in of_setup_earlycon (in oppositе to register_earlycon).
 
+So when I use stdout-path to point earlycon device
+(like stdout-path = &serial or stdout-path = "serial:115200n8")
+baud field of earlycon device structure remains uninitialised and
+earlycon initialization is not performed correctly as
+of_setup_earlycon is used.
+When pass all arguments via bootargs
+(like bootargs = "earlycon=uart8250,mmio32,0xf0005000,115200n8")
+initialization is performed correctly as register_earlycon is used.
 
-On 08/02/2017 02:34 AM, Jonas Gorski wrote:
-> This patchset adds and uses clckdev lookup support to name input clocks
-> in various drivers more closely to their functions, or simplify their
-> usage.
-> 
-> Since most of these patches touch arch/mips, it probably makes most
-> sense to go through the MIPS tree.
-> 
-> The HSSPI driver was already updated previously to support a "pll"
-> input with ff18e1ef04e2 ("spi/bcm63xx-hsspi: allow providing clock rate
-> through a second clock"), so there is no need to touch it.
-> 
-> This patch series is part of an effort to modernize BCM63XX and clean up
-> its drivers to eventually make them usable with BMIPS and device tree.
+So initialise baud field of earlycon device structure by baud value
+from device tree or from options (if they exist) when we use
+of_setup_earlycon
 
-For this entire series:
+Signed-off-by: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+---
+ drivers/tty/serial/earlycon.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Reviewed-by: Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-
-Thanks!
-
-> 
-> Jonas Gorski (8):
->   MIPS: BCM63XX: add clkdev lookup support
->   MIPS: BCM63XX: provide periph clock as refclk for uart
->   tty/bcm63xx_uart: use refclk for the expected clock name
->   tty/bcm63xx_uart: allow naming clock in device tree
->   MIPS: BCM63XX: provide enet clocks as "enet" to the ethernet devices
->   bcm63xx_enet: just use "enet" as the clock name
->   MIPS: BCM63XX: move the HSSPI PLL HZ into its own clock
->   MIPS: BMIPS: name the refclk clock for uart
-> 
->  .../bindings/serial/brcm,bcm6345-uart.txt          |   6 +
->  arch/mips/Kconfig                                  |   1 +
->  arch/mips/bcm63xx/clk.c                            | 181 ++++++++++++++++-----
->  arch/mips/boot/dts/brcm/bcm3368.dtsi               |   2 +
->  arch/mips/boot/dts/brcm/bcm63268.dtsi              |   2 +
->  arch/mips/boot/dts/brcm/bcm6328.dtsi               |   2 +
->  arch/mips/boot/dts/brcm/bcm6358.dtsi               |   2 +
->  arch/mips/boot/dts/brcm/bcm6362.dtsi               |   2 +
->  arch/mips/boot/dts/brcm/bcm6368.dtsi               |   2 +
->  drivers/net/ethernet/broadcom/bcm63xx_enet.c       |   5 +-
->  drivers/tty/serial/bcm63xx_uart.c                  |   6 +-
->  11 files changed, 168 insertions(+), 43 deletions(-)
-> 
-
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index c365154..6c2e2b6 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -240,6 +240,7 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+ {
+ 	int err;
+ 	struct uart_port *port = &early_console_dev.port;
++	unsigned long baud;
+ 	const __be32 *val;
+ 	bool big_endian;
+ 	u64 addr;
+@@ -282,7 +283,15 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+ 		}
+ 	}
+ 
++	val = of_get_flat_dt_prop(node, "baud", NULL);
++	if (val)
++		early_console_dev.baud = be32_to_cpu(*val);
++
+ 	if (options) {
++		err = kstrtoul(options, 10, &baud);
++		if (!err)
++			early_console_dev.baud = baud;
++
+ 		strlcpy(early_console_dev.options, options,
+ 			sizeof(early_console_dev.options));
+ 	}
 -- 
-Florian
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.9.3
