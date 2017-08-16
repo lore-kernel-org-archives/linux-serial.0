@@ -1,30 +1,30 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: Re: [RFC v2 3/6] serdev: add multiplexer support
-Date: Wed, 16 Aug 2017 15:23:37 +0200
-Message-ID: <CAO3366xyGjrkC_JYCk9kpS=ENDZTW3uBnFThFo4PjcpyBKpgjw@mail.gmail.com>
+Subject: Re: [RFC v2 5/6] max9260: add driver for i2c over GMSL passthrough
+Date: Wed, 16 Aug 2017 15:23:52 +0200
+Message-ID: <CAO3366yOpH3Q0J9YbCh2S_L8yLevag-FaVHNngvD3WoquXzp6w@mail.gmail.com>
 References: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com>
- <1500305076-15570-4-git-send-email-ulrich.hecht+renesas@gmail.com> <CAL_JsqJ5M18+cSr0GaMHs5N5quJxLaU-fE2vDPYE1+X5pSFmuQ@mail.gmail.com>
+ <1500305076-15570-6-git-send-email-ulrich.hecht+renesas@gmail.com> <20170719150038.GA6172@katana>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-i2c-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqJ5M18+cSr0GaMHs5N5quJxLaU-fE2vDPYE1+X5pSFmuQ@mail.gmail.com>
+In-Reply-To: <20170719150038.GA6172@katana>
 Sender: linux-i2c-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "open list:MEDIA DRIVERS FOR RENESAS - FCP" <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, "wsa@the-dreams.de" <wsa@the-dreams.de>, Peter Rosin <peda@axentia.se>, Geert Uytterhoeven <geert@linux-m68k.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>
+To: Wolfram Sang <wsa@the-dreams.de>
+Cc: linux-serial@vger.kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Laurent <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Peter Rosin <peda@axentia.se>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-i2c@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jul 19, 2017 at 1:06 AM, Rob Herring <robh@kernel.org> wrote:
->>  static inline struct serdev_controller *to_serdev_controller(struct device *d)
->> @@ -172,7 +180,7 @@ static inline void serdev_controller_write_wakeup(struct serdev_controller *ctrl
->>  {
->>         struct serdev_device *serdev = ctrl->serdev;
->>
->> -       if (!serdev || !serdev->ops->write_wakeup)
->> +       if (!serdev || !serdev->ops || !serdev->ops->write_wakeup)
+On Wed, Jul 19, 2017 at 5:00 PM, Wolfram Sang <wsa@the-dreams.de> wrote:
+>> +{
+>> +     wait_event_interruptible_timeout(dev->rx_wq,
+>> +             dev->rx_state <= RX_FRAME_ERROR,
+>> +             HZ/2);
 >
-> When is ops ever NULL? Should be a separate change AFIACT.
+> I'd suggest to drop the interruptible. It can be done but it is usually
+> not trivial to abort the operation gracefully when a signal comes in.
+>
+> Also, timeout is superfluous since you don't get the return value?
 
-I dumped it; IIRC that happened once during development due to a bug elsewhere.
+Be that as it may, I still want a timeout; wouldn't wait_event() block forever?
 
 CU
 Uli
