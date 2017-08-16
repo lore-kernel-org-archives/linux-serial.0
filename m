@@ -1,91 +1,55 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH] earlycon: initialise baud field of earlycon device structure
-Date: Tue, 15 Aug 2017 14:26:28 -0500
-Message-ID: <CAL_Jsq+=LQ0kXtBx7xXJEb0FtfqwQRZoUYtG0oDFnUj_VfoG1A@mail.gmail.com>
+From: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Subject: Re: [PATCH] earlycon: initialise baud field of earlycon device
+ structure
+Date: Wed, 16 Aug 2017 11:52:42 +0000
+Message-ID: <1502884362.2586.32.camel@synopsys.com>
 References: <20170815172141.29115-1-Eugeniy.Paltsev@synopsys.com>
+         <CAL_Jsq+=LQ0kXtBx7xXJEb0FtfqwQRZoUYtG0oDFnUj_VfoG1A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170815172141.29115-1-Eugeniy.Paltsev@synopsys.com>
+In-Reply-To: <CAL_Jsq+=LQ0kXtBx7xXJEb0FtfqwQRZoUYtG0oDFnUj_VfoG1A@mail.gmail.com>
+Content-Language: en-US
+Content-ID: <5F5484911A093147A453EACCC80B0CB6@internal.synopsys.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, arcml <linux-snps-arc@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+To: "robherring2@gmail.com" <robherring2@gmail.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "Eugeniy.Paltsev@synopsys.com" <Eugeniy.Paltsev@synopsys.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Aug 15, 2017 at 12:21 PM, Eugeniy Paltsev
-<Eugeniy.Paltsev@synopsys.com> wrote:
-> For now baud field of earlycon structure device is't initialised at all
-> in of_setup_earlycon (in opposit=D0=B5 to register_earlycon).
->
-> So when I use stdout-path to point earlycon device
-> (like stdout-path =3D &serial or stdout-path =3D "serial:115200n8")
-> baud field of earlycon device structure remains uninitialised and
-> earlycon initialization is not performed correctly as
-> of_setup_earlycon is used.
-
-Because the console driver is supposed to parse the option string.
-That allows in theory for the options to be specific for each console.
-Maybe your earlycon driver is failing to do that.
-
-> When pass all arguments via bootargs
-> (like bootargs =3D "earlycon=3Duart8250,mmio32,0xf0005000,115200n8")
-> initialization is performed correctly as register_earlycon is used.
->
-> So initialise baud field of earlycon device structure by baud value
-> from device tree or from options (if they exist) when we use
-> of_setup_earlycon
->
-> Signed-off-by: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
-> ---
->  drivers/tty/serial/earlycon.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
->
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.=
-c
-> index c365154..6c2e2b6 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -240,6 +240,7 @@ int __init of_setup_earlycon(const struct earlycon_id=
- *match,
->  {
->         int err;
->         struct uart_port *port =3D &early_console_dev.port;
-> +       unsigned long baud;
->         const __be32 *val;
->         bool big_endian;
->         u64 addr;
-> @@ -282,7 +283,15 @@ int __init of_setup_earlycon(const struct earlycon_i=
-d *match,
->                 }
->         }
->
-> +       val =3D of_get_flat_dt_prop(node, "baud", NULL);
-
-No, we already have a defined way to set the baud, we don't need a
-property in addition. Plus you didn't document it.
-
-> +       if (val)
-> +               early_console_dev.baud =3D be32_to_cpu(*val);
-> +
->         if (options) {
-> +               err =3D kstrtoul(options, 10, &baud);
-> +               if (!err)
-> +                       early_console_dev.baud =3D baud;
-
-This seems fine to do here, but then we should also parse the other
-standard options here too. And we should make sure we're not doing it
-twice.
-
-> +
->                 strlcpy(early_console_dev.options, options,
->                         sizeof(early_console_dev.options));
->         }
-> --
-> 2.9.3
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" i=
-n
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+SGkgUm9iLA0KDQpPbiBUdWUsIDIwMTctMDgtMTUgYXQgMTQ6MjYgLTA1MDAsIFJvYiBIZXJyaW5n
+IHdyb3RlOg0KPiBPbiBUdWUsIEF1ZyAxNSwgMjAxNyBhdCAxMjoyMSBQTSwgRXVnZW5peSBQYWx0
+c2V2DQo+IDxFdWdlbml5LlBhbHRzZXZAc3lub3BzeXMuY29tPiB3cm90ZToNCj4gPiBbc25pcF0N
+Cj4gPiBAQCAtMjgyLDcgKzI4MywxNSBAQCBpbnQgX19pbml0IG9mX3NldHVwX2Vhcmx5Y29uKGNv
+bnN0IHN0cnVjdA0KPiA+IGVhcmx5Y29uX2lkICptYXRjaCwNCj4gPsKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqB9DQo+ID7CoMKgwqDCoMKgwqDCoMKgwqB9DQo+ID7CoA0KPiA+ICvC
+oMKgwqDCoMKgwqDCoHZhbCA9IG9mX2dldF9mbGF0X2R0X3Byb3Aobm9kZSwgImJhdWQiLCBOVUxM
+KTsNCj7CoA0KPiBObywgd2UgYWxyZWFkeSBoYXZlIGEgZGVmaW5lZCB3YXkgdG8gc2V0IHRoZSBi
+YXVkLCB3ZSBkb24ndCBuZWVkIGENCj4gcHJvcGVydHkgaW4gYWRkaXRpb24uIFBsdXMgeW91IGRp
+ZG4ndCBkb2N1bWVudCBpdC4NCg0KSSBndWVzcyBieSBkZWZpbmVkIHdheSB0byBzZXQgdGhlIGJh
+dWQgeW91IG1lYW4gc2V0dGluZyBiYXVkIGFmdGVyDQpkZXZpY2UgYWxpYXMNCmluIHN0ZG91dC1w
+YXRoIHByb3BlcnR5IChsaWtlIHN0ZG91dC1wYXRoID0gInNlcmlhbDoxMTUyMDBuOCIpLCByaWdo
+dD8NCg0KVGhlIGlkZWEgd2FzIHRvIHJldXNlICJiYXVkIiBwcm9wZXJ0eSBmcm9tIHNlcmlhbCBu
+b2RlIHRvIHNldCB0aGUNCmVhcmx5Y29uIGJhdWQ6DQoNCmNob3NlbiB7DQrCoMKgwqDCoC4uLg0K
+wqDCoMKgwqBzdGRvdXQtcGF0aCA9ICZzZXJpYWw7DQp9Ow0KDQpzZXJpYWw6IHVhcnRALi4uIHsN
+CsKgwqDCoMKgLi4uDQrCoMKgwqDCoGJhdWQgPSA8MTE1MjAwPjsgICAvKiBHZXQgYmF1ZCBmcm9t
+IGhlcmUgKi8NCn07DQoNCj4gPiArwqDCoMKgwqDCoMKgwqBpZiAodmFsKQ0KPiA+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBlYXJseV9jb25zb2xlX2Rldi5iYXVkID0gYmUzMl90b19j
+cHUoKnZhbCk7DQo+ID4gKw0KPiA+wqDCoMKgwqDCoMKgwqDCoMKgaWYgKG9wdGlvbnMpIHsNCj4g
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZXJyID0ga3N0cnRvdWwob3B0aW9ucywg
+MTAsICZiYXVkKTsNCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKCFlcnIp
+DQo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBlYXJs
+eV9jb25zb2xlX2Rldi5iYXVkID0gYmF1ZDsNCj7CoA0KPiBUaGlzIHNlZW1zIGZpbmUgdG8gZG8g
+aGVyZSwgYnV0IHRoZW4gd2Ugc2hvdWxkIGFsc28gcGFyc2UgdGhlIG90aGVyDQo+IHN0YW5kYXJk
+IG9wdGlvbnMgaGVyZSB0b28uIEFuZCB3ZSBzaG91bGQgbWFrZSBzdXJlIHdlJ3JlIG5vdCBkb2lu
+ZyBpdA0KPiB0d2ljZS4NCkkgYWRkZWQgb25seSBiYXVkIHBhcnNpbmcgaGVyZSBiZWNhdXNlIHdl
+IHBhcnNlIG9ubHkgYmF1ZCBmcm9tIHN0YW5kYXJkDQpvcHRpb25zDQp3aGVuIHJlZ2lzdGVyX2Vh
+cmx5Y29uIGlzIHVzZWQuIChzZWUgcGFyc2Vfb3B0aW9ucyBmdW5jdGlvbiB3aGljaCBpcw0KY2Fs
+bGVkDQpmcm9tIHJlZ2lzdGVyX2Vhcmx5Y29uKQ0KDQpCdXQgSSBjYW4gYWRkIG90aGVyIHN0YW5k
+YXJkIG9wdGlvbnMgcGFyc2luZyBoZXJlIChwcm9iYWJseSB1c2luZw0KdWFydF9wYXJzZV9vcHRp
+b25zICsgdWFydF9zZXRfb3B0aW9ucykuwqANCldoYXQgZG8geW91IHRoaW5rPw0KDQo+ID4gKw0K
+PiA+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHN0cmxjcHkoZWFybHlfY29uc29s
+ZV9kZXYub3B0aW9ucywgb3B0aW9ucywNCj4gPsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgc2l6ZW9mKGVhcmx5X2NvbnNvbGVfZGV2Lm9wdGlvbnMpKTsN
+Cj4gPsKgwqDCoMKgwqDCoMKgwqDCoH0NCj4gPiAtLQ0KPiA+IDIuOS4zDQotLcKgDQrCoEV1Z2Vu
+aXkgUGFsdHNldg==
