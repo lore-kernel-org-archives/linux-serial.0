@@ -1,78 +1,91 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH] earlycon: initialise baud field of earlycon device structure
-Date: Wed, 16 Aug 2017 08:46:21 -0500
-Message-ID: <CAL_JsqJaK=xgrzecf3PnPuNSzsnzdvuJ9NZ4uzs4u9Oc77sV2A@mail.gmail.com>
-References: <20170815172141.29115-1-Eugeniy.Paltsev@synopsys.com>
- <CAL_Jsq+=LQ0kXtBx7xXJEb0FtfqwQRZoUYtG0oDFnUj_VfoG1A@mail.gmail.com> <1502884362.2586.32.camel@synopsys.com>
+From: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Subject: RE: [patch v3 1/3] drivers: jtag: Add JTAG core driver
+Date: Wed, 16 Aug 2017 14:24:16 +0000
+Message-ID: <AM4PR0501MB2194CBCC82F7EB67FE73304AB1820@AM4PR0501MB2194.eurprd05.prod.outlook.com>
+References: <1502791207-26951-1-git-send-email-oleksandrs@mellanox.com>
+ <1502791207-26951-2-git-send-email-oleksandrs@mellanox.com>
+ <CAK8P3a3DutrfhGrd9MnDFbzhfvnZXSyrV2RbTgrFGgpbAs=H0w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1502884362.2586.32.camel@synopsys.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAK8P3a3DutrfhGrd9MnDFbzhfvnZXSyrV2RbTgrFGgpbAs=H0w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: gregkh <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, OpenBMC Maillist <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>, =?utf-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org>, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org" <mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org>, "vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org" <vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org>, system-sw-low-level <system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Aug 16, 2017 at 6:52 AM, Eugeniy Paltsev
-<Eugeniy.Paltsev@synopsys.com> wrote:
-> Hi Rob,
->
-> On Tue, 2017-08-15 at 14:26 -0500, Rob Herring wrote:
->> On Tue, Aug 15, 2017 at 12:21 PM, Eugeniy Paltsev
->> <Eugeniy.Paltsev@synopsys.com> wrote:
->> > [snip]
->> > @@ -282,7 +283,15 @@ int __init of_setup_earlycon(const struct
->> > earlycon_id *match,
->> >                 }
->> >         }
->> >
->> > +       val = of_get_flat_dt_prop(node, "baud", NULL);
->>
->> No, we already have a defined way to set the baud, we don't need a
->> property in addition. Plus you didn't document it.
->
-> I guess by defined way to set the baud you mean setting baud after
-> device alias
-> in stdout-path property (like stdout-path = "serial:115200n8"), right?
->
-> The idea was to reuse "baud" property from serial node to set the
-> earlycon baud:
->
-> chosen {
->     ...
->     stdout-path = &serial;
-> };
->
-> serial: uart@... {
->     ...
->     baud = <115200>;   /* Get baud from here */
-
-"current-speed" is already defined for this purpose. If you want to
-add that, that's fine.
-
-> };
->
->> > +       if (val)
->> > +               early_console_dev.baud = be32_to_cpu(*val);
->> > +
->> >         if (options) {
->> > +               err = kstrtoul(options, 10, &baud);
->> > +               if (!err)
->> > +                       early_console_dev.baud = baud;
->>
->> This seems fine to do here, but then we should also parse the other
->> standard options here too. And we should make sure we're not doing it
->> twice.
-> I added only baud parsing here because we parse only baud from standard
-> options
-> when register_earlycon is used. (see parse_options function which is
-> called
-> from register_earlycon)
->
-> But I can add other standard options parsing here (probably using
-> uart_parse_options + uart_set_options).
-> What do you think?
-
-That seems fine as long as consoles can still have their own options.
-
-Rob
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBhcm5kYmVyZ21hbm5AZ21haWwu
+Y29tIFttYWlsdG86YXJuZGJlcmdtYW5uQGdtYWlsLmNvbV0gT24NCj4gQmVoYWxmIE9mIEFybmQg
+QmVyZ21hbm4NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDE1LCAyMDE3IDI6MTYgUE0NCj4gVG86
+IE9sZWtzYW5kciBTaGFtcmF5IDxvbGVrc2FuZHJzQG1lbGxhbm94LmNvbT4NCj4gQ2M6IGdyZWdr
+aCA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+OyBMaW51eCBLZXJuZWwgTWFpbGluZyBMaXN0
+IDxsaW51eC0NCj4ga2VybmVsQHZnZXIua2VybmVsLm9yZz47IExpbnV4IEFSTSA8bGludXgtYXJt
+LWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnPjsNCj4gZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5v
+cmc7IE9wZW5CTUMgTWFpbGxpc3QgPG9wZW5ibWNAbGlzdHMub3psYWJzLm9yZz47DQo+IEpvZWwg
+U3RhbmxleSA8am9lbEBqbXMuaWQuYXU+OyBKacWZw60gUMOtcmtvIDxqaXJpQHJlc251bGxpLnVz
+PjsgVG9iaWFzIEtsYXVzZXINCj4gPHRrbGF1c2VyQGRpc3RhbnouY2g+OyBsaW51eC1zZXJpYWxA
+dmdlci5rZXJuZWwub3JnOyBtZWNAc2hvdXQubmV0Ow0KPiB2YWRpbXBAbWFlbGxhbm94LmNvbTsg
+c3lzdGVtLXN3LWxvdy1sZXZlbCA8c3lzdGVtLXN3LWxvdy0NCj4gbGV2ZWxAbWVsbGFub3guY29t
+PjsgUm9iIEhlcnJpbmcgPHJvYmgrZHRAa2VybmVsLm9yZz47IG9wZW5vY2QtZGV2ZWwtDQo+IG93
+bmVyQGxpc3RzLnNvdXJjZWZvcmdlLm5ldDsgSmlyaSBQaXJrbyA8amlyaUBtZWxsYW5veC5jb20+
+DQo+IFN1YmplY3Q6IFJlOiBbcGF0Y2ggdjMgMS8zXSBkcml2ZXJzOiBqdGFnOiBBZGQgSlRBRyBj
+b3JlIGRyaXZlcg0KPiANCj4gT24gVHVlLCBBdWcgMTUsIDIwMTcgYXQgMTI6MDAgUE0sIE9sZWtz
+YW5kciBTaGFtcmF5DQo+IDxvbGVrc2FuZHJzQG1lbGxhbm94LmNvbT4gd3JvdGU6DQo+IA0KPiA+
+ICsgICAgICAgY2FzZSBKVEFHX0lPQ1hGRVI6DQo+ID4gKyAgICAgICAgICAgICAgIGlmIChjb3B5
+X2Zyb21fdXNlcigmeGZlciwgdmFyZywgc2l6ZW9mKHN0cnVjdCBqdGFnX3hmZXIpKSkNCj4gPiAr
+ICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gLUVGQVVMVDsNCj4gPiArDQo+ID4gKyAgICAg
+ICAgICAgICAgIGlmICh4ZmVyLmxlbmd0aCA+PSBKVEFHX01BWF9YRkVSX0RBVEFfTEVOKQ0KPiA+
+ICsgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiAtRUZBVUxUOw0KPiA+ICsNCj4gPiArICAg
+ICAgICAgICAgICAgdXNlcl90ZGlvX2RhdGEgPSB4ZmVyLnRkaW87DQo+ID4gKyAgICAgICAgICAg
+ICAgIHhmZXIudGRpbyA9IGp0YWdfY29weV9mcm9tX3VzZXIoKHZvaWQgX191c2VyICopdXNlcl90
+ZGlvX2RhdGEsDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgeGZlci5sZW5ndGgpOw0KPiA+ICsgICAgICAgICAgICAgICBpZiAoIXhmZXIudGRpbykN
+Cj4gPiArICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gLUVOT01FTTsNCj4gDQo+IFRoaXMg
+aXMgbm90IHNhZmUgZm9yIDMyLWJpdCBwcm9jZXNzZXMgb24gNjQtYml0IGtlcm5lbHMsIHNpbmNl
+IHRoZSBzdHJ1Y3R1cmUgbGF5b3V0DQo+IGRpZmZlcnMgZm9yIHRoZSBwb2ludGVyIG1lbWJlci4g
+SXQncyBiZXR0ZXIgdG8gYWx3YXlzIHVzZSBlaXRoZXIgcmV3b3JrIHRoZQ0KPiBzdHJ1Y3R1cmUg
+dG8gYXZvaWQgdGhlIHBvaW50ZXIsIG9yIHRvIHVzZSBhDQo+IF9fdTY0IG1lbWJlciB0byBzdG9y
+ZSBpdCwgYW5kIHRoZW4gdXNlIHU2NF90b191c2VyX3B0cigpIHRvIGNvbnZlcnQgaXQgaW4gdGhl
+DQo+IGtlcm5lbC4NCg0KVGhhbmtzLCAgSSB0aGluayB1c2luZyBfX3U2NCBpbnN0ZWFkIG9mICBw
+b2ludGVyIHdpbGwgYmUgYSBnb29kIHNvbHV0aW9uLg0KDQo+IA0KPiA+ICsgICAgICAgY2FzZSBK
+VEFHX0dJT0NTVEFUVVM6DQo+ID4gKyAgICAgICAgICAgICAgIGlmIChqdGFnLT5vcHMtPnN0YXR1
+c19nZXQpDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgZXJyID0ganRhZy0+b3BzLT5zdGF0
+dXNfZ2V0KGp0YWcsDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgKGVudW0ganRhZ19lbmRzdGF0ZQ0KPiA+ICsgKikmdmFsdWUpOw0KPiANCj4gVGhp
+cyBwb2ludGVyIGNhc3QgaXMgYWxzbyBub3Qgc2FmZSwgYXMgYW4gZW51bSBtaWdodCBoYXZlIGEg
+ZGlmZmVyZW50IHNpemUgdGhhbg0KPiB0aGUgJ3ZhbHVlJyB2YXJpYWJsZSB0aGF0IGlzIG5vdCBh
+biBlbnVtLiBJIHRoaW5rIHlvdSBuZWVkIHRvIGNoYW5nZSB0aGUNCj4gYXJndW1lbnQgdHlwZSBm
+b3IgdGhlIGNhbGxiYWNrLCBvciBtYXliZSB1c2UgYW5vdGhlciBpbnRlcm1lZGlhdGUuDQo+IA0K
+PiA+ICtzdGF0aWMgaW50IGp0YWdfb3BlbihzdHJ1Y3QgaW5vZGUgKmlub2RlLCBzdHJ1Y3QgZmls
+ZSAqZmlsZSkgew0KPiA+ICsgICAgICAgc3RydWN0IGp0YWcgKmp0YWcgPSBjb250YWluZXJfb2Yo
+aW5vZGUtPmlfY2Rldiwgc3RydWN0IGp0YWcsDQo+ID4gK2NkZXYpOw0KPiA+ICsNCj4gPiArICAg
+ICAgIHNwaW5fbG9jaygmanRhZy0+bG9jayk7DQo+ID4gKw0KPiA+ICsgICAgICAgaWYgKGp0YWct
+PmlzX29wZW4pIHsNCj4gPiArICAgICAgICAgICAgICAgZGV2X2luZm8oTlVMTCwgImp0YWcgYWxy
+ZWFkeSBvcGVuZWRcbiIpOw0KPiA+ICsgICAgICAgICAgICAgICBzcGluX3VubG9jaygmanRhZy0+
+bG9jayk7DQo+ID4gKyAgICAgICAgICAgICAgIHJldHVybiAtRUJVU1k7DQo+ID4gKyAgICAgICB9
+DQo+ID4gKw0KPiA+ICsgICAgICAganRhZy0+aXNfb3BlbiA9IHRydWU7DQo+ID4gKyAgICAgICBm
+aWxlLT5wcml2YXRlX2RhdGEgPSBqdGFnOw0KPiA+ICsgICAgICAgc3Bpbl91bmxvY2soJmp0YWct
+PmxvY2spOw0KPiA+ICsgICAgICAgcmV0dXJuIDA7DQo+ID4gK30NCj4gDQo+IERvZXMgdGhlICdp
+c19vcGVuJyBmbGFnIHByb3RlY3QgeW91IGZyb20gc29tZXRoaW5nIHRoYXQgZG9lc24ndCBhbHNv
+IGhhcHBlbg0KPiBhZnRlciBhICdkdXAoKScgY2FsbCBvbiB0aGUgZmlsZSBkZXNjcmlwdG9yPw0K
+DQppc19vcGVuIGZsYWcgcHJvdGVjdHMgZnJvbSB0aGUgb3BlbmluZyBmaWxlIG1vcmUgdGhhbiBv
+bmUgdGltZS4NCg0KPiANCj4gPiArICogQG1vZGU6IGFjY2VzcyBtb2RlDQo+ID4gKyAqIEB0eXBl
+OiB0cmFuc2ZlciB0eXBlDQo+ID4gKyAqIEBkaXJlY3Rpb246IHhmZXIgZGlyZWN0aW9uDQo+ID4g
+KyAqIEBsZW5ndGg6IHhmZXIgYml0cyBsZW4NCj4gPiArICogQHRkaW8gOiB4ZmVyIGRhdGEgYXJy
+YXkNCj4gPiArICogQGVuZGlyOiB4ZmVyIGVuZCBzdGF0ZQ0KPiA+ICsgKg0KPiA+ICsgKiBTdHJ1
+Y3R1cmUgcmVwcmVzZW50cyBpbnRlcmZhY2UgdG8gQXNwZWVkIEpUQUcgZGV2aWNlIGZvciBqdGFn
+IHNkcg0KPiA+ICt4ZmVyDQo+ID4gKyAqIGV4ZWN1dGlvbi4NCj4gPiArICovDQo+ID4gK3N0cnVj
+dCBqdGFnX3hmZXIgew0KPiA+ICsgICAgICAgX191OCAgICBtb2RlOw0KPiA+ICsgICAgICAgX191
+OCAgICB0eXBlOw0KPiA+ICsgICAgICAgX191OCAgICBkaXJlY3Rpb247DQo+ID4gKyAgICAgICBf
+X3UzMiAgIGxlbmd0aDsNCj4gPiArICAgICAgIF9fdTggICAgKnRkaW87DQo+ID4gKyAgICAgICBf
+X3U4ICAgIGVuZHN0YXRlOw0KPiA+ICt9Ow0KPiANCj4gQXMgbWVudGlvbmVkIGFib3ZlLCB0aGUg
+cG9pbnRlciBpbiBoZXJlIG1ha2VzIGl0IGluY29tcGF0aWJsZS4gQWxzbywgeW91DQo+IHNob3Vs
+ZCByZW9yZGVyIHRoZSBtZW1iZXJzIHRvIGF2b2lkIHRoZSBpbXBsaWVkIHBhZGRpbmcuDQo+IE1v
+dmluZyB0aGUgJ2VuZHN0YXRlJyBiZWZvcmUgJ2xlbmd0aCcgaXMgc3VmZmljaWVudC4NCj4gDQoN
+ClRoYW5rLiBJIHdpbGwgZG8gaXQuDQoNCj4gICAgICAgICBBcm5kDQo=
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
