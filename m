@@ -1,69 +1,37 @@
 From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Subject: Re: [RFC v2 5/6] max9260: add driver for i2c over GMSL passthrough
-Date: Wed, 16 Aug 2017 16:30:21 +0300
-Message-ID: <4684645.VU2D5N6UUJ@avalon>
-References: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com> <12735239.0iiT7hxZXA@avalon> <CAO3366zyKbiEv0vUsbXtZN6HXwzJrr1GQA_d6f=BCj=9Z+HQpQ@mail.gmail.com>
+Date: Wed, 16 Aug 2017 16:32:25 +0300
+Message-ID: <4224346.LEY5A6FZfI@avalon>
+References: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com> <20170719150038.GA6172@katana> <CAO3366yOpH3Q0J9YbCh2S_L8yLevag-FaVHNngvD3WoquXzp6w@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <CAO3366zyKbiEv0vUsbXtZN6HXwzJrr1GQA_d6f=BCj=9Z+HQpQ@mail.gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
+Return-path: <linux-i2c-owner@vger.kernel.org>
+In-Reply-To: <CAO3366yOpH3Q0J9YbCh2S_L8yLevag-FaVHNngvD3WoquXzp6w@mail.gmail.com>
+Sender: linux-i2c-owner@vger.kernel.org
 To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: linux-serial@vger.kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh@kernel.org>, Peter Rosin <peda@axentia.se>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-i2c@vger.kernel.org
+Cc: Wolfram Sang <wsa@the-dreams.de>, linux-serial@vger.kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Rob Herring <robh@kernel.org>, Peter Rosin <peda@axentia.se>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-i2c@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 Hi Ulrich,
 
-On Wednesday 16 Aug 2017 15:23:27 Ulrich Hecht wrote:
-> On Mon, Jul 31, 2017 at 1:13 PM, Laurent Pinchart wrote:
-> >> +static int max9260_probe(struct serdev_device *serdev)
+On Wednesday 16 Aug 2017 15:23:52 Ulrich Hecht wrote:
+> On Wed, Jul 19, 2017 at 5:00 PM, Wolfram Sang <wsa@the-dreams.de> wrote:
 > >> +{
-> >> +     struct max9260_device *dev;
-> >> +     struct i2c_adapter *adap;
-> >> +     int ret;
-> >> +
-> >> +     dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-> >> +     if (!dev)
-> >> +             return -ENOMEM;
-> >> +
-> >> +     init_waitqueue_head(&dev->rx_wq);
-> >> +
-> >> +     dev->serdev = serdev;
-> >> +     serdev_device_open(serdev);
-> >> +     serdev_device_set_drvdata(serdev, dev);
-> >> +
-> >> +     serdev_device_set_client_ops(serdev, &max9260_serdev_client_ops);
-> >> +
-> >> +     ret = max9260_setup(dev);
-> >> +     if (ret < 0)
-> >> +             goto err_free;
-> >> +
-> >> +     adap = &dev->adap;
-> >> +     i2c_set_adapdata(adap, dev);
-> >> +
-> >> +     adap->owner = THIS_MODULE;
-> >> +     adap->algo = &max9260_i2c_algorithm;
-> >> +     adap->dev.parent = &serdev->dev;
-> >> +     adap->retries = 5;
-> >> +     strlcpy(adap->name, dev_name(&serdev->dev), sizeof(adap->name));
-> >> +
-> >> +     ret = i2c_add_adapter(adap);
-> >> +     if (ret < 0)
-> >> +             return ret;
-> >> +
-> >> +     return 0;
-> >> +
-> >> +err_free:
-> > No need for a serdev_device_close() ?
+> >> +     wait_event_interruptible_timeout(dev->rx_wq,
+> >> +             dev->rx_state <= RX_FRAME_ERROR,
+> >> +             HZ/2);
+> > 
+> > I'd suggest to drop the interruptible. It can be done but it is usually
+> > not trivial to abort the operation gracefully when a signal comes in.
+> > 
+> > Also, timeout is superfluous since you don't get the return value?
 > 
-> serdev_device_{open,close}() actually operate on the controller, so
-> that would pull the rug from under the other devices connected to that
-> controller.
+> Be that as it may, I still want a timeout; wouldn't wait_event() block
+> forever?
 
-My point is that you call open in the .probe() handler and close in the 
-.remove() handler. If open needs to be balanced by close, it seems to me that 
-you should also call close in the error path.
+I think that Wolfram's point is that you should report the timeout error up to 
+the upper layers.
 
 -- 
 Regards,
