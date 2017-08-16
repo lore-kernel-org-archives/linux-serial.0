@@ -1,51 +1,69 @@
 From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 6/6] dt-bindings: slave-device: add reg property
-Date: Wed, 16 Aug 2017 16:27:31 +0300
-Message-ID: <10586476.xpvXiRN2X6@avalon>
-References: <1502889748-31499-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1502889748-31499-7-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: Re: [RFC v2 5/6] max9260: add driver for i2c over GMSL passthrough
+Date: Wed, 16 Aug 2017 16:30:21 +0300
+Message-ID: <4684645.VU2D5N6UUJ@avalon>
+References: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com> <12735239.0iiT7hxZXA@avalon> <CAO3366zyKbiEv0vUsbXtZN6HXwzJrr1GQA_d6f=BCj=9Z+HQpQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1502889748-31499-7-git-send-email-ulrich.hecht+renesas@gmail.com>
+In-Reply-To: <CAO3366zyKbiEv0vUsbXtZN6HXwzJrr1GQA_d6f=BCj=9Z+HQpQ@mail.gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
 To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, wsa@the-dreams.de, robh@kernel.org, peda@axentia.se, geert@linux-m68k.org, linux-i2c@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh@kernel.org>, Peter Rosin <peda@axentia.se>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-i2c@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 Hi Ulrich,
 
-Thank you for the patch.
-
-On Wednesday 16 Aug 2017 15:22:28 Ulrich Hecht wrote:
-> This adds a new DT property to define the index used by a multiplexer to
-> select the device.
+On Wednesday 16 Aug 2017 15:23:27 Ulrich Hecht wrote:
+> On Mon, Jul 31, 2017 at 1:13 PM, Laurent Pinchart wrote:
+> >> +static int max9260_probe(struct serdev_device *serdev)
+> >> +{
+> >> +     struct max9260_device *dev;
+> >> +     struct i2c_adapter *adap;
+> >> +     int ret;
+> >> +
+> >> +     dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+> >> +     if (!dev)
+> >> +             return -ENOMEM;
+> >> +
+> >> +     init_waitqueue_head(&dev->rx_wq);
+> >> +
+> >> +     dev->serdev = serdev;
+> >> +     serdev_device_open(serdev);
+> >> +     serdev_device_set_drvdata(serdev, dev);
+> >> +
+> >> +     serdev_device_set_client_ops(serdev, &max9260_serdev_client_ops);
+> >> +
+> >> +     ret = max9260_setup(dev);
+> >> +     if (ret < 0)
+> >> +             goto err_free;
+> >> +
+> >> +     adap = &dev->adap;
+> >> +     i2c_set_adapdata(adap, dev);
+> >> +
+> >> +     adap->owner = THIS_MODULE;
+> >> +     adap->algo = &max9260_i2c_algorithm;
+> >> +     adap->dev.parent = &serdev->dev;
+> >> +     adap->retries = 5;
+> >> +     strlcpy(adap->name, dev_name(&serdev->dev), sizeof(adap->name));
+> >> +
+> >> +     ret = i2c_add_adapter(adap);
+> >> +     if (ret < 0)
+> >> +             return ret;
+> >> +
+> >> +     return 0;
+> >> +
+> >> +err_free:
+> > No need for a serdev_device_close() ?
 > 
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-> ---
->  Documentation/devicetree/bindings/serial/slave-device.txt | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/slave-device.txt
-> b/Documentation/devicetree/bindings/serial/slave-device.txt index
-> 40110e0..f9b0783 100644
-> --- a/Documentation/devicetree/bindings/serial/slave-device.txt
-> +++ b/Documentation/devicetree/bindings/serial/slave-device.txt
-> @@ -30,6 +30,8 @@ Optional Properties:
->  		      way to reset the device
->  		    * device baud rate is configured by its firmware but
->  		      there is no way to request the actual settings
-> +- reg		: Index used to select the device if it is controlled 
-by a
-> +		  multiplexer.
+> serdev_device_{open,close}() actually operate on the controller, so
+> that would pull the rug from under the other devices connected to that
+> controller.
 
-The reg property should describe the device address on the bus it is connected 
-to. This seems like an abuse of the property to me. The device shouldn't care 
-about the multiplexer, I think you should describe the hardware by adding the 
-serial device's DT node as a child of the multiplexer's port it is connected 
-to.
-
->  Example:
+My point is that you call open in the .probe() handler and close in the 
+.remove() handler. If open needs to be balanced by close, it seems to me that 
+you should also call close in the error path.
 
 -- 
 Regards,
