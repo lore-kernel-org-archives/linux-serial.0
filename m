@@ -1,30 +1,53 @@
-From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: Re: [RFC v2 5/6] max9260: add driver for i2c over GMSL passthrough
-Date: Wed, 16 Aug 2017 15:23:52 +0200
-Message-ID: <CAO3366yOpH3Q0J9YbCh2S_L8yLevag-FaVHNngvD3WoquXzp6w@mail.gmail.com>
-References: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com>
- <1500305076-15570-6-git-send-email-ulrich.hecht+renesas@gmail.com> <20170719150038.GA6172@katana>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 6/6] dt-bindings: slave-device: add reg property
+Date: Wed, 16 Aug 2017 16:27:31 +0300
+Message-ID: <10586476.xpvXiRN2X6@avalon>
+References: <1502889748-31499-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1502889748-31499-7-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-i2c-owner@vger.kernel.org>
-In-Reply-To: <20170719150038.GA6172@katana>
-Sender: linux-i2c-owner@vger.kernel.org
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: linux-serial@vger.kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Laurent <laurent.pinchart@ideasonboard.com>, Rob Herring <robh@kernel.org>, Peter Rosin <peda@axentia.se>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-i2c@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1502889748-31499-7-git-send-email-ulrich.hecht+renesas@gmail.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, wsa@the-dreams.de, robh@kernel.org, peda@axentia.se, geert@linux-m68k.org, linux-i2c@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jul 19, 2017 at 5:00 PM, Wolfram Sang <wsa@the-dreams.de> wrote:
->> +{
->> +     wait_event_interruptible_timeout(dev->rx_wq,
->> +             dev->rx_state <= RX_FRAME_ERROR,
->> +             HZ/2);
->
-> I'd suggest to drop the interruptible. It can be done but it is usually
-> not trivial to abort the operation gracefully when a signal comes in.
->
-> Also, timeout is superfluous since you don't get the return value?
+Hi Ulrich,
 
-Be that as it may, I still want a timeout; wouldn't wait_event() block forever?
+Thank you for the patch.
 
-CU
-Uli
+On Wednesday 16 Aug 2017 15:22:28 Ulrich Hecht wrote:
+> This adds a new DT property to define the index used by a multiplexer to
+> select the device.
+> 
+> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/serial/slave-device.txt | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/slave-device.txt
+> b/Documentation/devicetree/bindings/serial/slave-device.txt index
+> 40110e0..f9b0783 100644
+> --- a/Documentation/devicetree/bindings/serial/slave-device.txt
+> +++ b/Documentation/devicetree/bindings/serial/slave-device.txt
+> @@ -30,6 +30,8 @@ Optional Properties:
+>  		      way to reset the device
+>  		    * device baud rate is configured by its firmware but
+>  		      there is no way to request the actual settings
+> +- reg		: Index used to select the device if it is controlled 
+by a
+> +		  multiplexer.
+
+The reg property should describe the device address on the bus it is connected 
+to. This seems like an abuse of the property to me. The device shouldn't care 
+about the multiplexer, I think you should describe the hardware by adding the 
+serial device's DT node as a child of the multiplexer's port it is connected 
+to.
+
+>  Example:
+
+-- 
+Regards,
+
+Laurent Pinchart
