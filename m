@@ -1,39 +1,78 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [RFC v2 5/6] max9260: add driver for i2c over GMSL passthrough
-Date: Wed, 16 Aug 2017 16:32:25 +0300
-Message-ID: <4224346.LEY5A6FZfI@avalon>
-References: <1500305076-15570-1-git-send-email-ulrich.hecht+renesas@gmail.com> <20170719150038.GA6172@katana> <CAO3366yOpH3Q0J9YbCh2S_L8yLevag-FaVHNngvD3WoquXzp6w@mail.gmail.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH] earlycon: initialise baud field of earlycon device structure
+Date: Wed, 16 Aug 2017 08:46:21 -0500
+Message-ID: <CAL_JsqJaK=xgrzecf3PnPuNSzsnzdvuJ9NZ4uzs4u9Oc77sV2A@mail.gmail.com>
+References: <20170815172141.29115-1-Eugeniy.Paltsev@synopsys.com>
+ <CAL_Jsq+=LQ0kXtBx7xXJEb0FtfqwQRZoUYtG0oDFnUj_VfoG1A@mail.gmail.com> <1502884362.2586.32.camel@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-i2c-owner@vger.kernel.org>
-In-Reply-To: <CAO3366yOpH3Q0J9YbCh2S_L8yLevag-FaVHNngvD3WoquXzp6w@mail.gmail.com>
-Sender: linux-i2c-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Wolfram Sang <wsa@the-dreams.de>, linux-serial@vger.kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Rob Herring <robh@kernel.org>, Peter Rosin <peda@axentia.se>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-i2c@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1502884362.2586.32.camel@synopsys.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ulrich,
+On Wed, Aug 16, 2017 at 6:52 AM, Eugeniy Paltsev
+<Eugeniy.Paltsev@synopsys.com> wrote:
+> Hi Rob,
+>
+> On Tue, 2017-08-15 at 14:26 -0500, Rob Herring wrote:
+>> On Tue, Aug 15, 2017 at 12:21 PM, Eugeniy Paltsev
+>> <Eugeniy.Paltsev@synopsys.com> wrote:
+>> > [snip]
+>> > @@ -282,7 +283,15 @@ int __init of_setup_earlycon(const struct
+>> > earlycon_id *match,
+>> >                 }
+>> >         }
+>> >
+>> > +       val = of_get_flat_dt_prop(node, "baud", NULL);
+>>
+>> No, we already have a defined way to set the baud, we don't need a
+>> property in addition. Plus you didn't document it.
+>
+> I guess by defined way to set the baud you mean setting baud after
+> device alias
+> in stdout-path property (like stdout-path = "serial:115200n8"), right?
+>
+> The idea was to reuse "baud" property from serial node to set the
+> earlycon baud:
+>
+> chosen {
+>     ...
+>     stdout-path = &serial;
+> };
+>
+> serial: uart@... {
+>     ...
+>     baud = <115200>;   /* Get baud from here */
 
-On Wednesday 16 Aug 2017 15:23:52 Ulrich Hecht wrote:
-> On Wed, Jul 19, 2017 at 5:00 PM, Wolfram Sang <wsa@the-dreams.de> wrote:
-> >> +{
-> >> +     wait_event_interruptible_timeout(dev->rx_wq,
-> >> +             dev->rx_state <= RX_FRAME_ERROR,
-> >> +             HZ/2);
-> > 
-> > I'd suggest to drop the interruptible. It can be done but it is usually
-> > not trivial to abort the operation gracefully when a signal comes in.
-> > 
-> > Also, timeout is superfluous since you don't get the return value?
-> 
-> Be that as it may, I still want a timeout; wouldn't wait_event() block
-> forever?
+"current-speed" is already defined for this purpose. If you want to
+add that, that's fine.
 
-I think that Wolfram's point is that you should report the timeout error up to 
-the upper layers.
+> };
+>
+>> > +       if (val)
+>> > +               early_console_dev.baud = be32_to_cpu(*val);
+>> > +
+>> >         if (options) {
+>> > +               err = kstrtoul(options, 10, &baud);
+>> > +               if (!err)
+>> > +                       early_console_dev.baud = baud;
+>>
+>> This seems fine to do here, but then we should also parse the other
+>> standard options here too. And we should make sure we're not doing it
+>> twice.
+> I added only baud parsing here because we parse only baud from standard
+> options
+> when register_earlycon is used. (see parse_options function which is
+> called
+> from register_earlycon)
+>
+> But I can add other standard options parsing here (probably using
+> uart_parse_options + uart_set_options).
+> What do you think?
 
--- 
-Regards,
+That seems fine as long as consoles can still have their own options.
 
-Laurent Pinchart
+Rob
