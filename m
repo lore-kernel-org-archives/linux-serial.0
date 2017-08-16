@@ -1,66 +1,133 @@
-From: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
-Subject: Re: [PATCH] earlycon: initialise baud field of earlycon device
- structure
-Date: Wed, 16 Aug 2017 15:26:30 +0000
-Message-ID: <1502897189.2586.37.camel@synopsys.com>
-References: <20170815172141.29115-1-Eugeniy.Paltsev@synopsys.com>
-         <CAL_Jsq+=LQ0kXtBx7xXJEb0FtfqwQRZoUYtG0oDFnUj_VfoG1A@mail.gmail.com>
-         <1502884362.2586.32.camel@synopsys.com>
-         <CAL_JsqJaK=xgrzecf3PnPuNSzsnzdvuJ9NZ4uzs4u9Oc77sV2A@mail.gmail.com>
+From: Franklin S Cooper Jr <fcooper@ti.com>
+Subject: [PATCH v3] serial: 8250_of: Add basic PM runtime support
+Date: Wed, 16 Aug 2017 15:55:36 -0500
+Message-ID: <20170816205536.19634-1-fcooper@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqJaK=xgrzecf3PnPuNSzsnzdvuJ9NZ4uzs4u9Oc77sV2A@mail.gmail.com>
-Content-Language: en-US
-Content-ID: <042C22D12E394A4AA4EEE4F60B3C0DE8@internal.synopsys.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "robherring2@gmail.com" <robherring2@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "Eugeniy.Paltsev@synopsys.com" <Eugeniy.Paltsev@synopsys.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, vigneshr@ti.com, joel@jms.id.au, khoroshilov@ispras.ru, arnd@arndb.de, robert.jarzmik@free.fr, tthayer@opensource.altera.com, nsekhar@ti.com
+Cc: Franklin S Cooper Jr <fcooper@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-T24gV2VkLCAyMDE3LTA4LTE2IGF0IDA4OjQ2IC0wNTAwLCBSb2IgSGVycmluZyB3cm90ZToNCj4g
-T24gV2VkLCBBdWcgMTYsIDIwMTcgYXQgNjo1MiBBTSwgRXVnZW5peSBQYWx0c2V2DQo+IDxFdWdl
-bml5LlBhbHRzZXZAc3lub3BzeXMuY29tPiB3cm90ZToNCj4gPiBIaSBSb2IsDQo+ID4gDQo+ID4g
-T24gVHVlLCAyMDE3LTA4LTE1IGF0IDE0OjI2IC0wNTAwLCBSb2IgSGVycmluZyB3cm90ZToNCj4g
-PiA+IE9uIFR1ZSwgQXVnIDE1LCAyMDE3IGF0IDEyOjIxIFBNLCBFdWdlbml5IFBhbHRzZXYNCj4g
-PiA+IDxFdWdlbml5LlBhbHRzZXZAc3lub3BzeXMuY29tPiB3cm90ZToNCj4gPiA+ID4gW3NuaXBd
-DQo+ID4gPiA+IEBAIC0yODIsNyArMjgzLDE1IEBAIGludCBfX2luaXQgb2Zfc2V0dXBfZWFybHlj
-b24oY29uc3Qgc3RydWN0DQo+ID4gPiA+IGVhcmx5Y29uX2lkICptYXRjaCwNCj4gPiA+ID4gwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9DQo+ID4gPiA+IMKgwqDCoMKgwqDCoMKgwqB9
-DQo+ID4gPiA+IA0KPiA+ID4gPiArwqDCoMKgwqDCoMKgwqB2YWwgPSBvZl9nZXRfZmxhdF9kdF9w
-cm9wKG5vZGUsICJiYXVkIiwgTlVMTCk7DQo+ID4gPiANCj4gPiA+IE5vLCB3ZSBhbHJlYWR5IGhh
-dmUgYSBkZWZpbmVkIHdheSB0byBzZXQgdGhlIGJhdWQsIHdlIGRvbid0IG5lZWQNCj4gPiA+IGEN
-Cj4gPiA+IHByb3BlcnR5IGluIGFkZGl0aW9uLiBQbHVzIHlvdSBkaWRuJ3QgZG9jdW1lbnQgaXQu
-DQo+ID4gDQo+ID4gSSBndWVzcyBieSBkZWZpbmVkIHdheSB0byBzZXQgdGhlIGJhdWQgeW91IG1l
-YW4gc2V0dGluZyBiYXVkIGFmdGVyDQo+ID4gZGV2aWNlIGFsaWFzDQo+ID4gaW4gc3Rkb3V0LXBh
-dGggcHJvcGVydHkgKGxpa2Ugc3Rkb3V0LXBhdGggPSAic2VyaWFsOjExNTIwMG44IiksDQo+ID4g
-cmlnaHQ/DQo+ID4gDQo+ID4gVGhlIGlkZWEgd2FzIHRvIHJldXNlICJiYXVkIiBwcm9wZXJ0eSBm
-cm9tIHNlcmlhbCBub2RlIHRvIHNldCB0aGUNCj4gPiBlYXJseWNvbiBiYXVkOg0KPiA+IA0KPiA+
-IGNob3NlbiB7DQo+ID4gwqDCoMKgwqAuLi4NCj4gPiDCoMKgwqDCoHN0ZG91dC1wYXRoID0gJnNl
-cmlhbDsNCj4gPiB9Ow0KPiA+IA0KPiA+IHNlcmlhbDogdWFydEAuLi4gew0KPiA+IMKgwqDCoMKg
-Li4uDQo+ID4gwqDCoMKgwqBiYXVkID0gPDExNTIwMD47wqDCoMKgLyogR2V0IGJhdWQgZnJvbSBo
-ZXJlICovDQo+IA0KPiAiY3VycmVudC1zcGVlZCIgaXMgYWxyZWFkeSBkZWZpbmVkIGZvciB0aGlz
-IHB1cnBvc2UuIElmIHlvdSB3YW50IHRvDQo+IGFkZCB0aGF0LCB0aGF0J3MgZmluZS4NCk9rLCBJ
-J2xsIGFkZCAiY3VycmVudC1zcGVlZCIuDQoNCj4gPiB9Ow0KPiA+IA0KPiA+ID4gPiArwqDCoMKg
-wqDCoMKgwqBpZiAodmFsKQ0KPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-ZWFybHlfY29uc29sZV9kZXYuYmF1ZCA9IGJlMzJfdG9fY3B1KCp2YWwpOw0KPiA+ID4gPiArDQo+
-ID4gPiA+IMKgwqDCoMKgwqDCoMKgwqBpZiAob3B0aW9ucykgew0KPiA+ID4gPiArwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgZXJyID0ga3N0cnRvdWwob3B0aW9ucywgMTAsICZiYXVkKTsN
-Cj4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGlmICghZXJyKQ0KPiA+ID4g
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGVhcmx5X2Nv
-bnNvbGVfZGV2LmJhdWQgPSBiYXVkOw0KPiA+ID4gDQo+ID4gPiBUaGlzIHNlZW1zIGZpbmUgdG8g
-ZG8gaGVyZSwgYnV0IHRoZW4gd2Ugc2hvdWxkIGFsc28gcGFyc2UgdGhlDQo+ID4gPiBvdGhlcg0K
-PiA+ID4gc3RhbmRhcmQgb3B0aW9ucyBoZXJlIHRvby4gQW5kIHdlIHNob3VsZCBtYWtlIHN1cmUg
-d2UncmUgbm90DQo+ID4gPiBkb2luZyBpdA0KPiA+ID4gdHdpY2UuDQo+ID4gDQo+ID4gSSBhZGRl
-ZCBvbmx5IGJhdWQgcGFyc2luZyBoZXJlIGJlY2F1c2Ugd2UgcGFyc2Ugb25seSBiYXVkIGZyb20N
-Cj4gPiBzdGFuZGFyZA0KPiA+IG9wdGlvbnMNCj4gPiB3aGVuIHJlZ2lzdGVyX2Vhcmx5Y29uIGlz
-IHVzZWQuIChzZWUgcGFyc2Vfb3B0aW9ucyBmdW5jdGlvbiB3aGljaA0KPiA+IGlzDQo+ID4gY2Fs
-bGVkDQo+ID4gZnJvbSByZWdpc3Rlcl9lYXJseWNvbikNCj4gPiANCj4gPiBCdXQgSSBjYW4gYWRk
-IG90aGVyIHN0YW5kYXJkIG9wdGlvbnMgcGFyc2luZyBoZXJlIChwcm9iYWJseSB1c2luZw0KPiA+
-IHVhcnRfcGFyc2Vfb3B0aW9ucyArIHVhcnRfc2V0X29wdGlvbnMpLg0KPiA+IFdoYXQgZG8geW91
-IHRoaW5rPw0KPiANCj4gVGhhdCBzZWVtcyBmaW5lIGFzIGxvbmcgYXMgY29uc29sZXMgY2FuIHN0
-aWxsIGhhdmUgdGhlaXIgb3duIG9wdGlvbnMuDQpPay4NCg0KU2hvdWxkIEkgYWxzbyBhZGQgc3Rh
-bmRhcmQgb3B0aW9ucyBwYXJzaW5nIHRvIHJlZ2lzdGVyX2Vhcmx5Y29uPw0KKGFzIHdlIHBhcnNl
-IG9ubHkgYmF1ZCBmcm9tIHN0YW5kYXJkIG9wdGlvbnMgaW4gcmVnaXN0ZXJfZWFybHljb24pDQoN
-Cj4gUm9iDQotLSANCsKgRXVnZW5peSBQYWx0c2V2
+66AK2G UART instances are not apart of the ALWAYS_ON power domain.
+Therefore, pm_runtime calls must be made to properly insure the appropriate
+power domains needed by UART are on. Keep legacy clk api calls since other
+users of this driver may not support PM runtime.
+
+Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
+---
+Version 3 changes:
+Commit message updated
+Drop extra parenthesis
+
+Version 2 changes:
+Fix build error
+Build tested using allmodconfig
+
+ drivers/tty/serial/8250/8250_of.c | 35 ++++++++++++++++++++++++-----------
+ 1 file changed, 24 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 6c5a8ca..be90c16 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -18,6 +18,7 @@
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
++#include <linux/pm_runtime.h>
+ #include <linux/clk.h>
+ #include <linux/reset.h>
+ 
+@@ -65,6 +66,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	int ret;
+ 
+ 	memset(port, 0, sizeof *port);
++
++	pm_runtime_enable(&ofdev->dev);
++	pm_runtime_get_sync(&ofdev->dev);
++
+ 	if (of_property_read_u32(np, "clock-frequency", &clk)) {
+ 
+ 		/* Get clk rate through clk driver if present */
+@@ -72,12 +77,13 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		if (IS_ERR(info->clk)) {
+ 			dev_warn(&ofdev->dev,
+ 				"clk or clock-frequency not defined\n");
+-			return PTR_ERR(info->clk);
++			ret = PTR_ERR(info->clk);
++			goto err_pmruntime;
+ 		}
+ 
+ 		ret = clk_prepare_enable(info->clk);
+ 		if (ret < 0)
+-			return ret;
++			goto err_pmruntime;
+ 
+ 		clk = clk_get_rate(info->clk);
+ 	}
+@@ -170,8 +176,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ err_dispose:
+ 	irq_dispose_mapping(port->irq);
+ err_unprepare:
+-	if (info->clk)
+-		clk_disable_unprepare(info->clk);
++	clk_disable_unprepare(info->clk);
++err_pmruntime:
++	pm_runtime_put_sync(&ofdev->dev);
++	pm_runtime_disable(&ofdev->dev);
+ 	return ret;
+ }
+ 
+@@ -227,8 +235,9 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	return 0;
+ err_dispose:
+ 	irq_dispose_mapping(port8250.port.irq);
+-	if (info->clk)
+-		clk_disable_unprepare(info->clk);
++	pm_runtime_put_sync(&ofdev->dev);
++	pm_runtime_disable(&ofdev->dev);
++	clk_disable_unprepare(info->clk);
+ err_free:
+ 	kfree(info);
+ 	return ret;
+@@ -244,8 +253,9 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
+ 	serial8250_unregister_port(info->line);
+ 
+ 	reset_control_assert(info->rst);
+-	if (info->clk)
+-		clk_disable_unprepare(info->clk);
++	pm_runtime_put_sync(&ofdev->dev);
++	pm_runtime_disable(&ofdev->dev);
++	clk_disable_unprepare(info->clk);
+ 	kfree(info);
+ 	return 0;
+ }
+@@ -259,9 +269,10 @@ static int of_serial_suspend(struct device *dev)
+ 
+ 	serial8250_suspend_port(info->line);
+ 
+-	if (info->clk && (!uart_console(port) || console_suspend_enabled))
++	if (!uart_console(port) || console_suspend_enabled) {
++		pm_runtime_put_sync(dev);
+ 		clk_disable_unprepare(info->clk);
+-
++	}
+ 	return 0;
+ }
+ 
+@@ -271,8 +282,10 @@ static int of_serial_resume(struct device *dev)
+ 	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
+ 	struct uart_port *port = &port8250->port;
+ 
+-	if (info->clk && (!uart_console(port) || console_suspend_enabled))
++	if (!uart_console(port) || console_suspend_enabled) {
++		pm_runtime_get_sync(dev);
+ 		clk_prepare_enable(info->clk);
++	}
+ 
+ 	serial8250_resume_port(info->line);
+ 
+-- 
+2.9.4.dirty
