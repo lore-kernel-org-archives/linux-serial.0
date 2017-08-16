@@ -1,55 +1,70 @@
-From: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
-Subject: Re: [PATCH] earlycon: initialise baud field of earlycon device
- structure
-Date: Wed, 16 Aug 2017 11:52:42 +0000
-Message-ID: <1502884362.2586.32.camel@synopsys.com>
-References: <20170815172141.29115-1-Eugeniy.Paltsev@synopsys.com>
-         <CAL_Jsq+=LQ0kXtBx7xXJEb0FtfqwQRZoUYtG0oDFnUj_VfoG1A@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_Jsq+=LQ0kXtBx7xXJEb0FtfqwQRZoUYtG0oDFnUj_VfoG1A@mail.gmail.com>
-Content-Language: en-US
-Content-ID: <5F5484911A093147A453EACCC80B0CB6@internal.synopsys.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "robherring2@gmail.com" <robherring2@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "Eugeniy.Paltsev@synopsys.com" <Eugeniy.Paltsev@synopsys.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>
+From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH 0/6] serdev multiplexing support
+Date: Wed, 16 Aug 2017 15:22:22 +0200
+Message-ID: <1502889748-31499-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, wsa@the-dreams.de, robh@kernel.org, peda@axentia.se, geert@linux-m68k.org, linux-i2c@vger.kernel.org, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgUm9iLA0KDQpPbiBUdWUsIDIwMTctMDgtMTUgYXQgMTQ6MjYgLTA1MDAsIFJvYiBIZXJyaW5n
-IHdyb3RlOg0KPiBPbiBUdWUsIEF1ZyAxNSwgMjAxNyBhdCAxMjoyMSBQTSwgRXVnZW5peSBQYWx0
-c2V2DQo+IDxFdWdlbml5LlBhbHRzZXZAc3lub3BzeXMuY29tPiB3cm90ZToNCj4gPiBbc25pcF0N
-Cj4gPiBAQCAtMjgyLDcgKzI4MywxNSBAQCBpbnQgX19pbml0IG9mX3NldHVwX2Vhcmx5Y29uKGNv
-bnN0IHN0cnVjdA0KPiA+IGVhcmx5Y29uX2lkICptYXRjaCwNCj4gPsKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqB9DQo+ID7CoMKgwqDCoMKgwqDCoMKgwqB9DQo+ID7CoA0KPiA+ICvC
-oMKgwqDCoMKgwqDCoHZhbCA9IG9mX2dldF9mbGF0X2R0X3Byb3Aobm9kZSwgImJhdWQiLCBOVUxM
-KTsNCj7CoA0KPiBObywgd2UgYWxyZWFkeSBoYXZlIGEgZGVmaW5lZCB3YXkgdG8gc2V0IHRoZSBi
-YXVkLCB3ZSBkb24ndCBuZWVkIGENCj4gcHJvcGVydHkgaW4gYWRkaXRpb24uIFBsdXMgeW91IGRp
-ZG4ndCBkb2N1bWVudCBpdC4NCg0KSSBndWVzcyBieSBkZWZpbmVkIHdheSB0byBzZXQgdGhlIGJh
-dWQgeW91IG1lYW4gc2V0dGluZyBiYXVkIGFmdGVyDQpkZXZpY2UgYWxpYXMNCmluIHN0ZG91dC1w
-YXRoIHByb3BlcnR5IChsaWtlIHN0ZG91dC1wYXRoID0gInNlcmlhbDoxMTUyMDBuOCIpLCByaWdo
-dD8NCg0KVGhlIGlkZWEgd2FzIHRvIHJldXNlICJiYXVkIiBwcm9wZXJ0eSBmcm9tIHNlcmlhbCBu
-b2RlIHRvIHNldCB0aGUNCmVhcmx5Y29uIGJhdWQ6DQoNCmNob3NlbiB7DQrCoMKgwqDCoC4uLg0K
-wqDCoMKgwqBzdGRvdXQtcGF0aCA9ICZzZXJpYWw7DQp9Ow0KDQpzZXJpYWw6IHVhcnRALi4uIHsN
-CsKgwqDCoMKgLi4uDQrCoMKgwqDCoGJhdWQgPSA8MTE1MjAwPjsgICAvKiBHZXQgYmF1ZCBmcm9t
-IGhlcmUgKi8NCn07DQoNCj4gPiArwqDCoMKgwqDCoMKgwqBpZiAodmFsKQ0KPiA+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBlYXJseV9jb25zb2xlX2Rldi5iYXVkID0gYmUzMl90b19j
-cHUoKnZhbCk7DQo+ID4gKw0KPiA+wqDCoMKgwqDCoMKgwqDCoMKgaWYgKG9wdGlvbnMpIHsNCj4g
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZXJyID0ga3N0cnRvdWwob3B0aW9ucywg
-MTAsICZiYXVkKTsNCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKCFlcnIp
-DQo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBlYXJs
-eV9jb25zb2xlX2Rldi5iYXVkID0gYmF1ZDsNCj7CoA0KPiBUaGlzIHNlZW1zIGZpbmUgdG8gZG8g
-aGVyZSwgYnV0IHRoZW4gd2Ugc2hvdWxkIGFsc28gcGFyc2UgdGhlIG90aGVyDQo+IHN0YW5kYXJk
-IG9wdGlvbnMgaGVyZSB0b28uIEFuZCB3ZSBzaG91bGQgbWFrZSBzdXJlIHdlJ3JlIG5vdCBkb2lu
-ZyBpdA0KPiB0d2ljZS4NCkkgYWRkZWQgb25seSBiYXVkIHBhcnNpbmcgaGVyZSBiZWNhdXNlIHdl
-IHBhcnNlIG9ubHkgYmF1ZCBmcm9tIHN0YW5kYXJkDQpvcHRpb25zDQp3aGVuIHJlZ2lzdGVyX2Vh
-cmx5Y29uIGlzIHVzZWQuIChzZWUgcGFyc2Vfb3B0aW9ucyBmdW5jdGlvbiB3aGljaCBpcw0KY2Fs
-bGVkDQpmcm9tIHJlZ2lzdGVyX2Vhcmx5Y29uKQ0KDQpCdXQgSSBjYW4gYWRkIG90aGVyIHN0YW5k
-YXJkIG9wdGlvbnMgcGFyc2luZyBoZXJlIChwcm9iYWJseSB1c2luZw0KdWFydF9wYXJzZV9vcHRp
-b25zICsgdWFydF9zZXRfb3B0aW9ucykuwqANCldoYXQgZG8geW91IHRoaW5rPw0KDQo+ID4gKw0K
-PiA+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHN0cmxjcHkoZWFybHlfY29uc29s
-ZV9kZXYub3B0aW9ucywgb3B0aW9ucywNCj4gPsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgc2l6ZW9mKGVhcmx5X2NvbnNvbGVfZGV2Lm9wdGlvbnMpKTsN
-Cj4gPsKgwqDCoMKgwqDCoMKgwqDCoH0NCj4gPiAtLQ0KPiA+IDIuOS4zDQotLcKgDQrCoEV1Z2Vu
-aXkgUGFsdHNldg==
+Hi!
+
+Here's a new version of serdev multiplexing support. Thanks to everybody who
+commented; I think I have included all non-optional suggestions. :)
+Changes are manifold, please refer to the changelog below.
+
+This version drops "mux: include compiler.h from mux/consumer.h",
+which is on its way upstream by now.
+
+CU
+Uli
+
+
+Changes since RFC v2:
+- parity: use an enum instead of the traditional enable/odd flags
+- mux: include it in the serdev core, remove option
+- mux: add "select MULTIPLEXER" to Kconfig
+- serdev: use device "reg" node as serdev_device::nr
+- mux: check if device has an of_node before trying to register mux
+- serdev: remove check for !serdev->ops in,
+  serdev_controller_write_wakeup(), it is not needed
+- max9260: replace register numbers, magic protocol bytes and device ID with
+  macros
+- max9260: use enum instead of macros for the rx_state
+- max9260: use wait_event_timeout() instead of
+  wait_event_interruptible_timeout()
+- max9260: pass all parameters for max9260_transact() as arguments
+- max9260: add "max9260_" prefix to max9260_wait_for_transaction()
+- max9260: return -ENODEV instead of -EINVAL if the device does not respond
+  correctly
+- max9260: change a number of length-bearing variables to size_t
+- dt: number max9260 devices according to their "reg" node
+
+
+Ulrich Hecht (6):
+  serdev: add method to set parity
+  serdev: add multiplexer support
+  serial: core: support deferring serdev controller registration
+  max9260: add driver for i2c over GMSL passthrough
+  ARM: dts: blanche: add SCIF1 and MAX9260 deserializer
+  dt-bindings: slave-device: add reg property
+
+ .../devicetree/bindings/serial/slave-device.txt    |   2 +
+ arch/arm/boot/dts/r8a7792-blanche.dts              |  52 ++++
+ drivers/media/i2c/Kconfig                          |   6 +
+ drivers/media/i2c/Makefile                         |   1 +
+ drivers/media/i2c/max9260.c                        | 300 +++++++++++++++++++++
+ drivers/tty/serdev/Kconfig                         |   1 +
+ drivers/tty/serdev/Makefile                        |   2 +-
+ drivers/tty/serdev/core.c                          |  25 +-
+ drivers/tty/serdev/mux.c                           |  66 +++++
+ drivers/tty/serdev/serdev-ttyport.c                |  18 ++
+ drivers/tty/serial/serial_core.c                   |   4 +
+ include/linux/serdev.h                             |  24 +-
+ 12 files changed, 497 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/media/i2c/max9260.c
+ create mode 100644 drivers/tty/serdev/mux.c
+
+-- 
+2.7.4
