@@ -1,133 +1,40 @@
-From: Franklin S Cooper Jr <fcooper@ti.com>
-Subject: [PATCH v3] serial: 8250_of: Add basic PM runtime support
-Date: Wed, 16 Aug 2017 15:55:36 -0500
-Message-ID: <20170816205536.19634-1-fcooper@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, vigneshr@ti.com, joel@jms.id.au, khoroshilov@ispras.ru, arnd@arndb.de, robert.jarzmik@free.fr, tthayer@opensource.altera.com, nsekhar@ti.com
-Cc: Franklin S Cooper Jr <fcooper@ti.com>
+From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH] dt-bindings: serial: sh-sci: Add support for r8a77995 (H)SCIF
+Date: Thu, 17 Aug 2017 13:16:28 +0200
+Message-ID: <1502968588-7991-1-git-send-email-geert+renesas@glider.be>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-66AK2G UART instances are not apart of the ALWAYS_ON power domain.
-Therefore, pm_runtime calls must be made to properly insure the appropriate
-power domains needed by UART are on. Keep legacy clk api calls since other
-users of this driver may not support PM runtime.
+Document support for the (H)SCIF serial ports in the Renesas R-Car D3
+(r8a77995) SoC.
 
-Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
+No driver update is needed.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 ---
-Version 3 changes:
-Commit message updated
-Drop extra parenthesis
+ Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Version 2 changes:
-Fix build error
-Build tested using allmodconfig
-
- drivers/tty/serial/8250/8250_of.c | 35 ++++++++++++++++++++++++-----------
- 1 file changed, 24 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 6c5a8ca..be90c16 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -18,6 +18,7 @@
- #include <linux/of_address.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
-+#include <linux/pm_runtime.h>
- #include <linux/clk.h>
- #include <linux/reset.h>
- 
-@@ -65,6 +66,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 	int ret;
- 
- 	memset(port, 0, sizeof *port);
-+
-+	pm_runtime_enable(&ofdev->dev);
-+	pm_runtime_get_sync(&ofdev->dev);
-+
- 	if (of_property_read_u32(np, "clock-frequency", &clk)) {
- 
- 		/* Get clk rate through clk driver if present */
-@@ -72,12 +77,13 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		if (IS_ERR(info->clk)) {
- 			dev_warn(&ofdev->dev,
- 				"clk or clock-frequency not defined\n");
--			return PTR_ERR(info->clk);
-+			ret = PTR_ERR(info->clk);
-+			goto err_pmruntime;
- 		}
- 
- 		ret = clk_prepare_enable(info->clk);
- 		if (ret < 0)
--			return ret;
-+			goto err_pmruntime;
- 
- 		clk = clk_get_rate(info->clk);
- 	}
-@@ -170,8 +176,10 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- err_dispose:
- 	irq_dispose_mapping(port->irq);
- err_unprepare:
--	if (info->clk)
--		clk_disable_unprepare(info->clk);
-+	clk_disable_unprepare(info->clk);
-+err_pmruntime:
-+	pm_runtime_put_sync(&ofdev->dev);
-+	pm_runtime_disable(&ofdev->dev);
- 	return ret;
- }
- 
-@@ -227,8 +235,9 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 	return 0;
- err_dispose:
- 	irq_dispose_mapping(port8250.port.irq);
--	if (info->clk)
--		clk_disable_unprepare(info->clk);
-+	pm_runtime_put_sync(&ofdev->dev);
-+	pm_runtime_disable(&ofdev->dev);
-+	clk_disable_unprepare(info->clk);
- err_free:
- 	kfree(info);
- 	return ret;
-@@ -244,8 +253,9 @@ static int of_platform_serial_remove(struct platform_device *ofdev)
- 	serial8250_unregister_port(info->line);
- 
- 	reset_control_assert(info->rst);
--	if (info->clk)
--		clk_disable_unprepare(info->clk);
-+	pm_runtime_put_sync(&ofdev->dev);
-+	pm_runtime_disable(&ofdev->dev);
-+	clk_disable_unprepare(info->clk);
- 	kfree(info);
- 	return 0;
- }
-@@ -259,9 +269,10 @@ static int of_serial_suspend(struct device *dev)
- 
- 	serial8250_suspend_port(info->line);
- 
--	if (info->clk && (!uart_console(port) || console_suspend_enabled))
-+	if (!uart_console(port) || console_suspend_enabled) {
-+		pm_runtime_put_sync(dev);
- 		clk_disable_unprepare(info->clk);
--
-+	}
- 	return 0;
- }
- 
-@@ -271,8 +282,10 @@ static int of_serial_resume(struct device *dev)
- 	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
- 	struct uart_port *port = &port8250->port;
- 
--	if (info->clk && (!uart_console(port) || console_suspend_enabled))
-+	if (!uart_console(port) || console_suspend_enabled) {
-+		pm_runtime_get_sync(dev);
- 		clk_prepare_enable(info->clk);
-+	}
- 
- 	serial8250_resume_port(info->line);
- 
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+index 8d27d1a603e7bf75..4fc96946f81d6afc 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -41,6 +41,8 @@ Required properties:
+     - "renesas,hscif-r8a7795" for R8A7795 (R-Car H3) HSCIF compatible UART.
+     - "renesas,scif-r8a7796" for R8A7796 (R-Car M3-W) SCIF compatible UART.
+     - "renesas,hscif-r8a7796" for R8A7796 (R-Car M3-W) HSCIF compatible UART.
++    - "renesas,scif-r8a77995" for R8A77995 (R-Car D3) SCIF compatible UART.
++    - "renesas,hscif-r8a77995" for R8A77995 (R-Car D3) HSCIF compatible UART.
+     - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
+     - "renesas,scifb-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFB compatible UART.
+     - "renesas,rcar-gen1-scif" for R-Car Gen1 SCIF compatible UART,
 -- 
-2.9.4.dirty
+2.7.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
