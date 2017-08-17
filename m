@@ -1,76 +1,73 @@
-From: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
-Subject: [PATCH v2] earlycon: initialise baud field of earlycon device structure
-Date: Thu, 17 Aug 2017 21:08:54 +0300
-Message-ID: <20170817180854.5448-1-Eugeniy.Paltsev@synopsys.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [patch v3 3/3] doccumentation: jtag: Add bindings for Aspeed SoC
+ 24xx and 25xx families JTAG master driver
+Date: Thu, 17 Aug 2017 16:24:35 -0500
+Message-ID: <20170817212435.ypzsc3e6x2m4owyc@rob-hp-laptop>
+References: <1502791207-26951-1-git-send-email-oleksandrs@mellanox.com>
+ <1502791207-26951-4-git-send-email-oleksandrs@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-snps-arc@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1502791207-26951-4-git-send-email-oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org, jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org, tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-For now baud field of earlycon structure device is't initialised at all
-in of_setup_earlycon (in oppositе to register_earlycon).
+On Tue, Aug 15, 2017 at 01:00:07PM +0300, Oleksandr Shamray wrote:
+> It has been tested on Mellanox system with BMC equipped with
+> Aspeed 2520 SoC for programming CPLD devices.
+> 
+> Signed-off-by: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+> Signed-off-by: Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+> ---
+> v2->v3
+> Comments pointed by Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> - split Aspeed jtag driver and binding to sepatrate patches
+> - delete unnecessary "status" and "reg-shift" descriptions in
+>   bndings file
+> ---
+>  .../devicetree/bindings/jtag/aspeed-jtag.txt       |   19 +++++++++++++++++++
+>  1 files changed, 19 insertions(+), 0 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/jtag/aspeed-jtag.txt b/Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
+> new file mode 100644
+> index 0000000..4743d6d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
+> @@ -0,0 +1,19 @@
+> +Aspeed JTAG driver for ast2400 and ast2500 SoC
+> +
+> +Required properties:
+> +- compatible:		Should be one of
+> +      - "aspeed,aspeed2400-jtag"
+> +      - "aspeed,aspeed2500-jtag"
+> +- reg			contains the offset and length of the JTAG memory
+> +			region
+> +- clocks		root clock of bus, should reference the APB clock
+> +- interrupts		should contain JTAG controller interrupt
+> +
+> +Example:
+> +jtag: jtag@1e6e4000 {
+> +	compatible = "aspeed,aspeed2500-jtag";
+> +	reg = <0x1e6e4000 0x1c>;
+> +	reg-shift = <2>;
 
-So when I use stdout-path to point earlycon device
-(like stdout-path = &serial or stdout-path = "serial:115200n8")
-baud field of earlycon device structure remains uninitialised and
-earlycon initialization is not performed correctly as
-of_setup_earlycon is used.
-When pass all arguments via bootargs
-(like bootargs = "earlycon=uart8250,mmio32,0xf0005000,115200n8")
-initialization is performed correctly as register_earlycon is used.
+Still here...
 
-So initialise baud field of earlycon device structure by value of
-"current-speed" property from device tree or from options
-(if they exist) when we use of_setup_earlycon
+Otherwise,
 
-Signed-off-by: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
----
-Changes v1 -> v2:
- * Use standart property name "current-speed" instead of custom "baud"
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
-NOTE:
-I don't add parsing of the other standard options here because we don't
-have any place to store them. When we parce and set options of the 'real'
-uart device (using uart_parse_options + uart_set_options) we populate
-ktermios structure an pass it to port->ops->set_termios callback of
-uart_port structure. So it is processing by uart driver itself. But we don't
-register such callbacks for earlycon. So we are only able to parse baud
-value, which can be stored in baud field of earlycon_device structure.
- 
- drivers/tty/serial/earlycon.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index c365154..93f15e2 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -240,6 +240,7 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
- {
- 	int err;
- 	struct uart_port *port = &early_console_dev.port;
-+	unsigned long baud;
- 	const __be32 *val;
- 	bool big_endian;
- 	u64 addr;
-@@ -282,7 +283,15 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
- 		}
- 	}
- 
-+	val = of_get_flat_dt_prop(node, "current-speed", NULL);
-+	if (val)
-+		early_console_dev.baud = be32_to_cpu(*val);
-+
- 	if (options) {
-+		err = kstrtoul(options, 10, &baud);
-+		if (!err)
-+			early_console_dev.baud = baud;
-+
- 		strlcpy(early_console_dev.options, options,
- 			sizeof(early_console_dev.options));
- 	}
--- 
-2.9.3
+> +	clocks = <&clk_apb>;
+> +	interrupts = <43>;
+> +};
+> -- 
+> 1.7.1
+> 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
