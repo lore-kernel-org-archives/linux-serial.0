@@ -1,73 +1,119 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [patch v3 3/3] doccumentation: jtag: Add bindings for Aspeed SoC
- 24xx and 25xx families JTAG master driver
-Date: Thu, 17 Aug 2017 16:24:35 -0500
-Message-ID: <20170817212435.ypzsc3e6x2m4owyc@rob-hp-laptop>
-References: <1502791207-26951-1-git-send-email-oleksandrs@mellanox.com>
- <1502791207-26951-4-git-send-email-oleksandrs@mellanox.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1502791207-26951-4-git-send-email-oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org, jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org, tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+From: Stuart Longland <stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
+Subject: [PATCH] USB: serial: ti_usb_3410_5052: Port uart_mode from io_ti.
+Date: Fri, 18 Aug 2017 12:56:59 +1000
+Message-ID: <20170818025659.4402-1-stuartl@vrt.com.au>
+References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <4a469222-d48d-f498-f2db-ca582295adc3-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alborchers-2TsfIrYsZRL7O9PZeWXHPg@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Stuart Longland <stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Aug 15, 2017 at 01:00:07PM +0300, Oleksandr Shamray wrote:
-> It has been tested on Mellanox system with BMC equipped with
-> Aspeed 2520 SoC for programming CPLD devices.
-> 
-> Signed-off-by: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-> Signed-off-by: Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-> ---
-> v2->v3
-> Comments pointed by Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> - split Aspeed jtag driver and binding to sepatrate patches
-> - delete unnecessary "status" and "reg-shift" descriptions in
->   bndings file
-> ---
->  .../devicetree/bindings/jtag/aspeed-jtag.txt       |   19 +++++++++++++++++++
->  1 files changed, 19 insertions(+), 0 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/jtag/aspeed-jtag.txt b/Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
-> new file mode 100644
-> index 0000000..4743d6d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
-> @@ -0,0 +1,19 @@
-> +Aspeed JTAG driver for ast2400 and ast2500 SoC
-> +
-> +Required properties:
-> +- compatible:		Should be one of
-> +      - "aspeed,aspeed2400-jtag"
-> +      - "aspeed,aspeed2500-jtag"
-> +- reg			contains the offset and length of the JTAG memory
-> +			region
-> +- clocks		root clock of bus, should reference the APB clock
-> +- interrupts		should contain JTAG controller interrupt
-> +
-> +Example:
-> +jtag: jtag@1e6e4000 {
-> +	compatible = "aspeed,aspeed2500-jtag";
-> +	reg = <0x1e6e4000 0x1c>;
-> +	reg-shift = <2>;
+This introduces the `uart_mode` sysfs attribute as seen in the `io_ti`
+USB serial driver, allowing this USB serial interface to be switched
+between RS-232, 2-wire RS-485 and 4-wire RS-485.
 
-Still here...
+/sys/class/tty/ttyUSB${num}/device/uart takes a single integer:
 
-Otherwise,
+	0:	RS-232 mode (default for RS-232-compatible dongles)
+	1:	RS-485 2w mode (default for RS-485-only dongles)
+	2:	RS-485 4w mode / RS-422 mode
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Write this *before* opening your serial device.
 
-> +	clocks = <&clk_apb>;
-> +	interrupts = <43>;
-> +};
-> -- 
-> 1.7.1
-> 
+This has been successfully tested on a Moxa UPort 1150 in 4-wire RS-485
+mode.
+
+Signed-off-by: Stuart Longland <stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
+---
+ drivers/usb/serial/ti_usb_3410_5052.c | 48 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+diff --git a/drivers/usb/serial/ti_usb_3410_5052.c b/drivers/usb/serial/ti_usb_3410_5052.c
+index 8fc3854e5e69..fb30d7ff32d7 100644
+--- a/drivers/usb/serial/ti_usb_3410_5052.c
++++ b/drivers/usb/serial/ti_usb_3410_5052.c
+@@ -514,6 +514,46 @@ MODULE_DEVICE_TABLE(usb, ti_id_table_combined);
+ 
+ module_usb_serial_driver(serial_drivers, ti_id_table_combined);
+ 
++/* Sysfs Attributes */
++
++static ssize_t uart_mode_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct usb_serial_port *port = to_usb_serial_port(dev);
++	struct ti_port *tport = usb_get_serial_port_data(port);
++
++	return sprintf(buf, "%d\n", tport->tp_uart_mode);
++}
++
++static ssize_t uart_mode_store(struct device *dev,
++	struct device_attribute *attr, const char *valbuf, size_t count)
++{
++	struct usb_serial_port *port = to_usb_serial_port(dev);
++	struct ti_port *tport = usb_get_serial_port_data(port);
++	unsigned int v = simple_strtoul(valbuf, NULL, 0);
++
++	dev_dbg(dev, "%s: setting uart_mode = %d\n", __func__, v);
++
++	if (v < 256)
++		tport->tp_uart_mode = v;
++	else
++		dev_err(dev, "%s - uart_mode %d is invalid\n", __func__, v);
++
++	return count;
++}
++static DEVICE_ATTR_RW(uart_mode);
++
++static int ti_create_sysfs_attrs(struct usb_serial_port *port)
++{
++	return device_create_file(&port->dev, &dev_attr_uart_mode);
++}
++
++static int ti_remove_sysfs_attrs(struct usb_serial_port *port)
++{
++	device_remove_file(&port->dev, &dev_attr_uart_mode);
++	return 0;
++}
++
+ static int ti_startup(struct usb_serial *serial)
+ {
+ 	struct ti_device *tdev;
+@@ -607,6 +647,7 @@ static void ti_release(struct usb_serial *serial)
+ static int ti_port_probe(struct usb_serial_port *port)
+ {
+ 	struct ti_port *tport;
++	int status;
+ 
+ 	tport = kzalloc(sizeof(*tport), GFP_KERNEL);
+ 	if (!tport)
+@@ -628,6 +669,12 @@ static int ti_port_probe(struct usb_serial_port *port)
+ 
+ 	usb_set_serial_port_data(port, tport);
+ 
++	status = ti_create_sysfs_attrs(port);
++	if (status) {
++		kfree(tport);
++		return status;
++	}
++
+ 	port->port.drain_delay = 3;
+ 
+ 	return 0;
+@@ -638,6 +685,7 @@ static int ti_port_remove(struct usb_serial_port *port)
+ 	struct ti_port *tport;
+ 
+ 	tport = usb_get_serial_port_data(port);
++	ti_remove_sysfs_attrs(port);
+ 	kfree(tport);
+ 
+ 	return 0;
+-- 
+2.13.0
+
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
