@@ -1,118 +1,92 @@
-From: Stuart Longland <stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
-Subject: [PATCH] USB: serial: ti_usb_3410_5052: Port uart_mode from io_ti.
-Date: Fri, 18 Aug 2017 12:56:59 +1000
-Message-ID: <20170818025659.4402-1-stuartl@vrt.com.au>
+From: Stuart Longland <stuartl-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
+Subject: Re: [PATCH] USB: serial: ti_usb_3410_5052: Port uart_mode from io_ti.
+Date: Fri, 18 Aug 2017 13:16:25 +1000
+Message-ID: <498e9270-f174-1f72-f0ee-c68b0e6894bc@longlandclan.id.au>
 References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
+ <20170818025659.4402-1-stuartl@vrt.com.au>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="n0DpqDH38jWI0dUIJiUEVGCAejxKVcOVm"
 Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <4a469222-d48d-f498-f2db-ca582295adc3-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
+In-Reply-To: <20170818025659.4402-1-stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
 Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alborchers-2TsfIrYsZRL7O9PZeWXHPg@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Stuart Longland <stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
+To: Stuart Longland <stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alborchers-2TsfIrYsZRL7O9PZeWXHPg@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-This introduces the `uart_mode` sysfs attribute as seen in the `io_ti`
-USB serial driver, allowing this USB serial interface to be switched
-between RS-232, 2-wire RS-485 and 4-wire RS-485.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--n0DpqDH38jWI0dUIJiUEVGCAejxKVcOVm
+Content-Type: multipart/mixed; boundary="t4a4uTqCOx5Kr0i73JBpw81Hb19Hp6lWC";
+ protected-headers="v1"
+From: Stuart Longland <stuartl-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
+To: Stuart Longland <stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org,
+ alborchers-2TsfIrYsZRL7O9PZeWXHPg@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Message-ID: <498e9270-f174-1f72-f0ee-c68b0e6894bc-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
+Subject: Re: [PATCH] USB: serial: ti_usb_3410_5052: Port uart_mode from io_ti.
+References: <4a469222-d48d-f498-f2db-ca582295adc3-3e+Fe6x+DsgJbe36r25VNhCuuivNXqWP@public.gmane.org>
+ <20170818025659.4402-1-stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
+In-Reply-To: <20170818025659.4402-1-stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
 
-/sys/class/tty/ttyUSB${num}/device/uart takes a single integer:
+--t4a4uTqCOx5Kr0i73JBpw81Hb19Hp6lWC
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-AU
+Content-Transfer-Encoding: quoted-printable
 
-	0:	RS-232 mode (default for RS-232-compatible dongles)
-	1:	RS-485 2w mode (default for RS-485-only dongles)
-	2:	RS-485 4w mode / RS-422 mode
+Hi all,
 
-Write this *before* opening your serial device.
+On 18/08/17 12:56, Stuart Longland wrote:
+> This introduces the `uart_mode` sysfs attribute as seen in the `io_ti`
+> USB serial driver, allowing this USB serial interface to be switched
+> between RS-232, 2-wire RS-485 and 4-wire RS-485.
+>=20
+> /sys/class/tty/ttyUSB${num}/device/uart takes a single integer:
+=E2=80=A6 and of course, I meant 'uart_mode' here, not 'uart'.
 
-This has been successfully tested on a Moxa UPort 1150 in 4-wire RS-485
-mode.
+>=20
+> 	0:	RS-232 mode (default for RS-232-compatible dongles)
+> 	1:	RS-485 2w mode (default for RS-485-only dongles)
+> 	2:	RS-485 4w mode / RS-422 mode
 
-Signed-off-by: Stuart Longland <stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
----
- drivers/usb/serial/ti_usb_3410_5052.c | 48 +++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+This is of course, not a very elegant solution, but it gets me out of a
+bind for now and at least gets the RS-485 functionality of this USB
+serial dongle working.
 
-diff --git a/drivers/usb/serial/ti_usb_3410_5052.c b/drivers/usb/serial/ti_usb_3410_5052.c
-index 8fc3854e5e69..fb30d7ff32d7 100644
---- a/drivers/usb/serial/ti_usb_3410_5052.c
-+++ b/drivers/usb/serial/ti_usb_3410_5052.c
-@@ -514,6 +514,46 @@ MODULE_DEVICE_TABLE(usb, ti_id_table_combined);
- 
- module_usb_serial_driver(serial_drivers, ti_id_table_combined);
- 
-+/* Sysfs Attributes */
-+
-+static ssize_t uart_mode_show(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct usb_serial_port *port = to_usb_serial_port(dev);
-+	struct ti_port *tport = usb_get_serial_port_data(port);
-+
-+	return sprintf(buf, "%d\n", tport->tp_uart_mode);
-+}
-+
-+static ssize_t uart_mode_store(struct device *dev,
-+	struct device_attribute *attr, const char *valbuf, size_t count)
-+{
-+	struct usb_serial_port *port = to_usb_serial_port(dev);
-+	struct ti_port *tport = usb_get_serial_port_data(port);
-+	unsigned int v = simple_strtoul(valbuf, NULL, 0);
-+
-+	dev_dbg(dev, "%s: setting uart_mode = %d\n", __func__, v);
-+
-+	if (v < 256)
-+		tport->tp_uart_mode = v;
-+	else
-+		dev_err(dev, "%s - uart_mode %d is invalid\n", __func__, v);
-+
-+	return count;
-+}
-+static DEVICE_ATTR_RW(uart_mode);
-+
-+static int ti_create_sysfs_attrs(struct usb_serial_port *port)
-+{
-+	return device_create_file(&port->dev, &dev_attr_uart_mode);
-+}
-+
-+static int ti_remove_sysfs_attrs(struct usb_serial_port *port)
-+{
-+	device_remove_file(&port->dev, &dev_attr_uart_mode);
-+	return 0;
-+}
-+
- static int ti_startup(struct usb_serial *serial)
- {
- 	struct ti_device *tdev;
-@@ -607,6 +647,7 @@ static void ti_release(struct usb_serial *serial)
- static int ti_port_probe(struct usb_serial_port *port)
- {
- 	struct ti_port *tport;
-+	int status;
- 
- 	tport = kzalloc(sizeof(*tport), GFP_KERNEL);
- 	if (!tport)
-@@ -628,6 +669,12 @@ static int ti_port_probe(struct usb_serial_port *port)
- 
- 	usb_set_serial_port_data(port, tport);
- 
-+	status = ti_create_sysfs_attrs(port);
-+	if (status) {
-+		kfree(tport);
-+		return status;
-+	}
-+
- 	port->port.drain_delay = 3;
- 
- 	return 0;
-@@ -638,6 +685,7 @@ static int ti_port_remove(struct usb_serial_port *port)
- 	struct ti_port *tport;
- 
- 	tport = usb_get_serial_port_data(port);
-+	ti_remove_sysfs_attrs(port);
- 	kfree(tport);
- 
- 	return 0;
--- 
-2.13.0
+Long term, I think the earlier ideas of expanding the RS-485 related
+ioctls should be pursued.  I'm open to ideas here.
 
+Regards,
+--=20
+Stuart Longland (aka Redhatter, VK4MSL)
+
+I haven't lost my mind...
+  ...it's backed up on a tape somewhere.
+
+
+--t4a4uTqCOx5Kr0i73JBpw81Hb19Hp6lWC--
+
+--n0DpqDH38jWI0dUIJiUEVGCAejxKVcOVm
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEvKEYefT5O+PbDe5y+VS7u3lI1UYFAlmWXAoACgkQ+VS7u3lI
+1UbtRQ//fEVv36DZxcBLskny5xZBpmscmGx6wIxriRnVWUz/0etBj/piDXXY5bsN
+90z1OEbotdz4YGl4eKc6R4t5JffyGHOCDAG6q1XN8p0TRJIYLR15w3ZstEQGs5lL
+uIEx5nJ6eUm0wRcsJhUqr3ry2TjJk4U0hIJYOTAnJbFdq0oh3ob2H0neGlyHy6XE
+OwFl4fqYI1utKfAAKKkYlRPWhPDNOnBNOq4Sd4mTxq/FS0FL373XW8uFAoJfIfub
+uBuV0RB2qglxNPz8SIIYyy5fxsDYa6pp5UibELR26u9B4ZweyddDTmIl/ug/AGd+
+6fRqE9Rb8OIukdW/nwfl6mmPrsm9bpGcGKaz7ZtHQ1XAQ1huEtzeifGBpUoipuxb
+5ekA+xxaA8iKGEL7lbefCtkOPwRyfO0+XqeNAMYdVtqDDtD63TA+rlPl5sG6Zv9O
+4EVTAb3jRollo/sNptbuafEFmMWCqCGmigx8uzGpcPrptUAwjIeLhiTjhCylGxO5
+I5hnEBm01hT3JUx6WtTV9ppO7fsjPXlgvjlo/xc4hLG7lKgCbiIJCAWN1QcUJOZ6
+FmrO9Cl8gjBxSKhKXkXP7eZ1XP2RGY6Jzd08VwEIUpklTqUjsxTj/oFe1sIvEJBk
+Q0+WdfqPuFvoT5ZrHWe/KNKBCMIxidNWB/hqYAG1u3C8Qg5zNe4=
+=CSwm
+-----END PGP SIGNATURE-----
+
+--n0DpqDH38jWI0dUIJiUEVGCAejxKVcOVm--
 --
 To unsubscribe from this list: send the line "unsubscribe linux-usb" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
