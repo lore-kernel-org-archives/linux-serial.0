@@ -1,40 +1,47 @@
-From: Jeffy Chen <jeffy.chen@rock-chips.com>
-Subject: [PATCH] serial: earlycon: Only try fdt when specify 'earlycon' exactly
-Date: Sat, 19 Aug 2017 09:43:17 +0800
-Message-ID: <20170819014318.31631-1-jeffy.chen@rock-chips.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [patch v3 2/3] drivers: jtag: Add Aspeed SoC 24xx and 25xx
+ families JTAG master driver
+Date: Sat, 19 Aug 2017 14:27:37 +0200
+Message-ID: <CAK8P3a3H5QUBn9LDqqrwuES6UUH438B4asWXQ-PDhgb-oaWFHA@mail.gmail.com>
+References: <1502791207-26951-3-git-send-email-oleksandrs@mellanox.com> <201708190909.9GRNaEaj%fengguang.wu@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <201708190909.9GRNaEaj%fengguang.wu@intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: briannorris@chromium.org, dianders@chromium.org, Jeffy Chen <jeffy.chen@rock-chips.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+To: kbuild test robot <lkp@intel.com>
+Cc: Oleksandr Shamray <oleksandrs@mellanox.com>, kbuild-all@01.org, gregkh <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org, OpenBMC Maillist <openbmc@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, mec@shout.net, vadimp@maellanox.com, system-sw-low-level@mellanox.com, Rob Herring <robh+dt@kernel.org>, openocd-devel-owner@lists.sourceforge.net, Jiri Pirko <jiri@mellanox.com>, Richard Weinberger <richard@nod.at>, uml-devel <user-mode-linux-devel@lists.sourceforge.net>
 List-Id: linux-serial@vger.kernel.org
 
-When moving earlycon early_param handling to serial, the devicetree
-earlycons enable condition changed slightly.
+On Sat, Aug 19, 2017 at 3:21 AM, kbuild test robot <lkp@intel.com> wrote:
+> Hi Oleksandr,
+>
+> [auto build test ERROR on linus/master]
+> [also build test ERROR on v4.13-rc5 next-20170817]
+> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+>
+> url:    https://github.com/0day-ci/linux/commits/Oleksandr-Shamray/drivers-jtag-Add-JTAG-core-driver/20170818-114739
+> config: um-allyesconfig (attached as .config)
+> compiler: gcc-6 (Debian 6.2.0-3) 6.2.0 20160901
+> reproduce:
+>         # save the attached .config to linux build tree
+>         make ARCH=um
+>
+> All errors (new ones prefixed by >>):
+>
+>    drivers/auxdisplay/img-ascii-lcd.o: In function `img_ascii_lcd_probe':
+>    drivers/auxdisplay/img-ascii-lcd.c:386: undefined reference to `devm_ioremap_resource'
+>    drivers/jtag/jtag-aspeed.o: In function `aspeed_jtag_init':
+>>> drivers/jtag/jtag-aspeed.c:635: undefined reference to `devm_ioremap_resource'
+>    collect2: error: ld returned 1 exit status
 
-We used to only do that for 'console'/'earlycon', but now would also
-for 'console='/'earlycon='.
+So arch/um now provides an ioremap() stub despite the absence of
+CONFIG_HAS_IOMEM, but the respective devm_* interface from
+lib/devres.c is not available.
 
-Fix it by using the same condition like before.
+We can either work around this for new drivers as we used to do for
+ioremap() by adding a correct 'depends on HAS_IOMEM' Kconfig
+dependency, or we could find a way for arch/um to provide stubs
+for the additional functions as well.
 
-Fixes: d503187b6cc4 (of/serial: move earlycon early_param handling to serial)
-Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
----
-
- drivers/tty/serial/earlycon.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index c3651540e1ba..335933e1822c 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -220,7 +220,7 @@ static int __init param_setup_earlycon(char *buf)
- 		if (IS_ENABLED(CONFIG_ACPI_SPCR_TABLE)) {
- 			earlycon_init_is_deferred = true;
- 			return 0;
--		} else {
-+		} else if (!buf) {
- 			return early_init_dt_scan_chosen_stdout();
- 		}
- 	}
--- 
-2.11.0
+      Arnd
