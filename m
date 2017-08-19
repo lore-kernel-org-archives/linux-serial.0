@@ -1,40 +1,34 @@
-From: <sean.wang@mediatek.com>
-Subject: [PATCH v2 1/2] dt-bindings: serial: 8250: Add MediaTek BTIF controller bindings
-Date: Sun, 20 Aug 2017 02:03:29 +0800
-Message-ID: <29b52a3b95982f1097766d515aae09c57e11b002.1503165144.git.sean.wang@mediatek.com>
-References: <cover.1503165144.git.sean.wang@mediatek.com>
+From: Maksim Salau <maksim.salau-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] USB: serial: ti_usb_3410_5052: Port uart_mode from
+ io_ti.
+Date: Sat, 19 Aug 2017 23:40:56 +0300
+Message-ID: <20170819234056.37c7d339@gmail.com>
+References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
+        <20170818025659.4402-1-stuartl@vrt.com.au>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1503165144.git.sean.wang@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, robert.jarzmik@free.fr, arnd@arndb.de, p.zabel@pengutronix.de, joel@jms.id.au, david@lechnology.com, jan.kiszka@siemens.com, heikki.krogerus@linux.intel.com, hpeter@gmail.com, vigneshr@ti.com, matthias.bgg@gmail.com, tthayer@opensource.altera.com
-Cc: devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170818025659.4402-1-stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stuart Longland <stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alborchers-2TsfIrYsZRL7O9PZeWXHPg@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+Hi Stuart,
 
-Document the devicetree bindings in 8250.txt for MediaTek BTIF
-controller which could be found on MT7622 and MT7623 SoC.
+> This introduces the `uart_mode` sysfs attribute as seen in the `io_ti`
+> USB serial driver, allowing this USB serial interface to be switched
+> between RS-232, 2-wire RS-485 and 4-wire RS-485.
 
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
----
- Documentation/devicetree/bindings/serial/8250.txt | 3 +++
- 1 file changed, 3 insertions(+)
+Recently I've discovered a blog post by Greg Kroah-Hartman on sysfs files [1].
+I believe this information will help you to create the new file in a better way.
 
-diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
-index 419ff6c..7528d90 100644
---- a/Documentation/devicetree/bindings/serial/8250.txt
-+++ b/Documentation/devicetree/bindings/serial/8250.txt
-@@ -14,6 +14,9 @@ Required properties:
- 	  tegra132, or tegra210.
- 	- "nxp,lpc3220-uart"
- 	- "ralink,rt2880-uart"
-+	- For MediaTek MT7623, must contain "mediatek,mt7623-btif"
-+	- For other MediaTek SoCs , must contain "mediatek,<chip>-btif",
-+	  "mediatek,mt7623-btif" where <chip> is mt7622.
- 	- "altr,16550-FIFO32"
- 	- "altr,16550-FIFO64"
- 	- "altr,16550-FIFO128"
--- 
-2.7.4
+[1] http://kroah.com/log/blog/2013/06/26/how-to-create-a-sysfs-file-correctly/
+
+Best regards,
+Maksim.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
