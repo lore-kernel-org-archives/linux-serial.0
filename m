@@ -1,10 +1,12 @@
 From: <sean.wang@mediatek.com>
-Subject: [PATCH v2 0/2]
-Date: Sun, 20 Aug 2017 02:03:28 +0800
-Message-ID: <cover.1503165144.git.sean.wang@mediatek.com>
+Subject: [PATCH v2 1/2] dt-bindings: serial: 8250: Add MediaTek BTIF controller bindings
+Date: Sun, 20 Aug 2017 02:03:29 +0800
+Message-ID: <29b52a3b95982f1097766d515aae09c57e11b002.1503165144.git.sean.wang@mediatek.com>
+References: <cover.1503165144.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1503165144.git.sean.wang@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, robert.jarzmik@free.fr, arnd@arndb.de, p.zabel@pengutronix.de, joel@jms.id.au, david@lechnology.com, jan.kiszka@siemens.com, heikki.krogerus@linux.intel.com, hpeter@gmail.com, vigneshr@ti.com, matthias.bgg@gmail.com, tthayer@opensource.altera.com
 Cc: devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>
@@ -12,31 +14,27 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Sean Wang <sean.wang@mediatek.com>
 
-Since v2: 
-- reusing 8250_of since the original driver has almost the same logic
+Document the devicetree bindings in 8250.txt for MediaTek BTIF
+controller which could be found on MT7622 and MT7623 SoC.
 
-This patchset introduces the support for MediaTek BTIF controller.
-
-MediaTek BTIF controller is the serial interface similar to UART but it
-works only as the digital device which is mainly used to communicate with
-the connectivity module also called CONNSYS inside the SoC which could be
-mostly found on those MediaTek SoCs with Bluetooth feature.
-
-And the controller is made as being compatible with the 8250 register
-layout so it tends to be integrated with existing 8250 core driver and
-have no requirement for the modem configuration additionally such as the
-baud rate calculation and assignment.
-
-Sean Wang (2):
-  dt-bindings: serial: 8250: Add MediaTek BTIF controller bindings
-  serial: 8250: of: Add new port type for MediaTek BTIF controller on
-    MT7622/23 SoC
-
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+---
  Documentation/devicetree/bindings/serial/8250.txt | 3 +++
- drivers/tty/serial/8250/8250_of.c                 | 2 ++
- drivers/tty/serial/8250/8250_port.c               | 8 ++++++++
- include/uapi/linux/serial_core.h                  | 3 +++
- 4 files changed, 16 insertions(+)
+ 1 file changed, 3 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
+index 419ff6c..7528d90 100644
+--- a/Documentation/devicetree/bindings/serial/8250.txt
++++ b/Documentation/devicetree/bindings/serial/8250.txt
+@@ -14,6 +14,9 @@ Required properties:
+ 	  tegra132, or tegra210.
+ 	- "nxp,lpc3220-uart"
+ 	- "ralink,rt2880-uart"
++	- For MediaTek MT7623, must contain "mediatek,mt7623-btif"
++	- For other MediaTek SoCs , must contain "mediatek,<chip>-btif",
++	  "mediatek,mt7623-btif" where <chip> is mt7622.
+ 	- "altr,16550-FIFO32"
+ 	- "altr,16550-FIFO64"
+ 	- "altr,16550-FIFO128"
 -- 
 2.7.4
