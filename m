@@ -1,43 +1,81 @@
-From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-Subject: [PATCH 3/4] tty: 8250: constify parisc_device_id
-Date: Sat, 19 Aug 2017 23:24:55 +0530
-Message-ID: <1503165296-31801-1-git-send-email-arvind.yadav.cs@gmail.com>
+From: <sean.wang@mediatek.com>
+Subject: [PATCH v2 2/2] serial: 8250: of: Add new port type for MediaTek BTIF controller on MT7622/23 SoC
+Date: Sun, 20 Aug 2017 02:03:30 +0800
+Message-ID: <c2696f6a17ca5914098ad1da394834f8b4b30141.1503165144.git.sean.wang@mediatek.com>
+References: <cover.1503165144.git.sean.wang@mediatek.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1503165144.git.sean.wang@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: jejb@linux.vnet.ibm.com, martin.petersen@oracle.com, deller@gmx.de, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org
+To: robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, robert.jarzmik@free.fr, arnd@arndb.de, p.zabel@pengutronix.de, joel@jms.id.au, david@lechnology.com, jan.kiszka@siemens.com, heikki.krogerus@linux.intel.com, hpeter@gmail.com, vigneshr@ti.com, matthias.bgg@gmail.com, tthayer@opensource.altera.com
+Cc: devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-parisc_device_id are not supposed to change at runtime. All functions
-working with parisc_device_id provided by <asm/parisc-device.h> work
-with const parisc_device_id. So mark the non-const structs as const.
+From: Sean Wang <sean.wang@mediatek.com>
 
-Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
+MediaTek BTIF controller is the serial interface similar to UART but it
+works only as the digital device which is mainly used to communicate with
+the connectivity module called CONNSYS inside the SoC which could be mostly
+found on those MediaTek SoCs with Bluetooth feature such as MT7622 and
+MT7623 SoCs.
+
+And the controller is made as being compatible with the 8250 register
+layout with extra registers such as DMA enablement so it tends to be
+integrated with reusing 8250 OF driver. However, DMA mode is not being
+supported yet in the current driver.
+
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_gsc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_of.c   | 2 ++
+ drivers/tty/serial/8250/8250_port.c | 8 ++++++++
+ include/uapi/linux/serial_core.h    | 3 +++
+ 3 files changed, 13 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_gsc.c b/drivers/tty/serial/8250/8250_gsc.c
-index 63306de..0c078cc 100644
---- a/drivers/tty/serial/8250/8250_gsc.c
-+++ b/drivers/tty/serial/8250/8250_gsc.c
-@@ -80,7 +80,7 @@ static int __init serial_init_chip(struct parisc_device *dev)
- 	return 0;
- }
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 6c5a8ca..47d4772 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -300,6 +300,8 @@ static const struct of_device_id of_platform_serial_table[] = {
+ 		.data = (void *)PORT_ALTR_16550_F64, },
+ 	{ .compatible = "altr,16550-FIFO128",
+ 		.data = (void *)PORT_ALTR_16550_F128, },
++	{ .compatible = "mediatek,mt7623-btif",
++		.data = (void *)PORT_MTK_BTIF, },
+ 	{ .compatible = "mrvl,mmp-uart",
+ 		.data = (void *)PORT_XSCALE, },
+ 	{ .compatible = "ti,da830-uart", .data = (void *)PORT_DA830, },
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 25aae66..053bb38 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -289,6 +289,14 @@ static const struct serial8250_config uart_config[] = {
+ 		.rxtrig_bytes	= {1, 4, 8, 14},
+ 		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
+ 	},
++	[PORT_MTK_BTIF] = {
++		.name		= "MediaTek BTIF",
++		.fifo_size	= 16,
++		.tx_loadsz	= 16,
++		.fcr		= UART_FCR_ENABLE_FIFO |
++				  UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
++		.flags		= UART_CAP_FIFO,
++	},
+ };
  
--static struct parisc_device_id serial_tbl[] = {
-+static const struct parisc_device_id serial_tbl[] = {
- 	{ HPHW_FIO, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x00075 },
- 	{ HPHW_FIO, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x0008c },
- 	{ HPHW_FIO, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x0008d },
-@@ -94,7 +94,7 @@ static struct parisc_device_id serial_tbl[] = {
-  * which only knows about Lasi and then a second which will find all the
-  * other serial ports.  HPUX ignores this problem.
-  */
--static struct parisc_device_id lasi_tbl[] = {
-+static const struct parisc_device_id lasi_tbl[] = {
- 	{ HPHW_FIO, HVERSION_REV_ANY_ID, 0x03B, 0x0008C }, /* C1xx/C1xxL */
- 	{ HPHW_FIO, HVERSION_REV_ANY_ID, 0x03C, 0x0008C }, /* B132L */
- 	{ HPHW_FIO, HVERSION_REV_ANY_ID, 0x03D, 0x0008C }, /* B160L */
+ /* Uart divisor latch read */
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index 38bea32..cfc07a5 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -272,4 +272,7 @@
+ /* MPS2 UART */
+ #define PORT_MPS2UART	116
+ 
++/* MediaTek BTIF */
++#define PORT_MTK_BTIF	117
++
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
 -- 
 2.7.4
