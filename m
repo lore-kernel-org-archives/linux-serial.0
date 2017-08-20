@@ -1,44 +1,45 @@
-From: <sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v3 1/2] dt-bindings: serial: 8250: Add MediaTek BTIF controller bindings
-Date: Mon, 21 Aug 2017 01:17:55 +0800
-Message-ID: <0bce3e724939bcab681f280e5a1f7026266e4fb5.1503248851.git.sean.wang@mediatek.com>
-References: <cover.1503248851.git.sean.wang@mediatek.com>
+From: <sean.wang@mediatek.com>
+Subject: [PATCH v3 0/2] serial: 8250: add support for MediaTek BTIF controller
+Date: Mon, 21 Aug 2017 01:17:54 +0800
+Message-ID: <cover.1503248851.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <cover.1503248851.git.sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, robert.jarzmik-GANU6spQydw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org, david-nq/r/kbU++upp/zk7JDF2g@public.gmane.org, jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org, heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, hpeter-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, vigneshr-l0cyMroinI0@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tthayer-yzvPICuk2ABMcg4IHK0kFoH6Mc4MB0Vx@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sean Wang <sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, robert.jarzmik@free.fr, arnd@arndb.de, p.zabel@pengutronix.de, joel@jms.id.au, david@lechnology.com, jan.kiszka@siemens.com, heikki.krogerus@linux.intel.com, hpeter@gmail.com, vigneshr@ti.com, matthias.bgg@gmail.com, tthayer@opensource.altera.com
+Cc: devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Sean Wang <sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+From: Sean Wang <sean.wang@mediatek.com>
 
-Document the devicetree bindings in 8250.txt for MediaTek BTIF
-controller which could be found on MT7622 and MT7623 SoC.
+Since v3:
+- enhancing the definition of the compatible strings in dt-bindings
 
-Signed-off-by: Sean Wang <sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
+Since v2: 
+- reusing 8250_of since the original driver has almost the same logic
+
+This patchset introduces the support for MediaTek BTIF controller.
+
+MediaTek BTIF controller is the serial interface similar to UART but it
+works only as the digital device which is mainly used to communicate with
+the connectivity module also called CONNSYS inside the SoC which could be
+mostly found on those MediaTek SoCs with Bluetooth feature.
+
+And the controller is made as being compatible with the 8250 register
+layout so it tends to be integrated with existing 8250 core driver and
+have no requirement for the modem configuration additionally such as the
+baud rate calculation and assignment.
+
+Sean Wang (2):
+  dt-bindings: serial: 8250: Add MediaTek BTIF controller bindings
+  serial: 8250: of: Add new port type for MediaTek BTIF controller on
+    MT7622/23 SoC
+
  Documentation/devicetree/bindings/serial/8250.txt | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/8250/8250_of.c                 | 2 ++
+ drivers/tty/serial/8250/8250_port.c               | 8 ++++++++
+ include/uapi/linux/serial_core.h                  | 3 +++
+ 4 files changed, 15 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
-index 419ff6c..dad3b2e 100644
---- a/Documentation/devicetree/bindings/serial/8250.txt
-+++ b/Documentation/devicetree/bindings/serial/8250.txt
-@@ -14,6 +14,8 @@ Required properties:
- 	  tegra132, or tegra210.
- 	- "nxp,lpc3220-uart"
- 	- "ralink,rt2880-uart"
-+	- For MediaTek BTIF, must contain '"mediatek,<chip>-btif",
-+	  "mediatek,mtk-btif"' where <chip> is mt7622, mt7623.
- 	- "altr,16550-FIFO32"
- 	- "altr,16550-FIFO64"
- 	- "altr,16550-FIFO128"
 -- 
 2.7.4
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
