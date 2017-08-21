@@ -1,24 +1,69 @@
-From: Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>
-Subject: Re: [patch v5 3/3] doccumentation: jtag: Add bindings for Aspeed SoC
- 24xx and 25xx families JTAG master driver
-Date: Mon, 21 Aug 2017 15:00:12 +0200
-Message-ID: <20170821130011.GK3546@distanz.ch>
-References: <1503315069-29465-1-git-send-email-oleksandrs@mellanox.com>
- <1503315069-29465-4-git-send-email-oleksandrs@mellanox.com>
+From: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Subject: [PATCH v3] earlycon: initialise baud field of earlycon device structure
+Date: Mon, 21 Aug 2017 19:22:13 +0300
+Message-ID: <20170821162213.27102-1-Eugeniy.Paltsev@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1503315069-29465-4-git-send-email-oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org, jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: linux-snps-arc@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
 List-Id: linux-serial@vger.kernel.org
 
-> Subject: Re: [patch v5 3/3] doccumentation: jtag: Add bindings for Aspeed SoC 24xx and 25xx families JTAG master driver
+For now baud field of earlycon structure device is't initialised at all
+in of_setup_earlycon (in oppositе to register_earlycon).
 
-Small nit: s/doccumentation/Documentation/
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+So when I use stdout-path to point earlycon device
+(like stdout-path = &serial or stdout-path = "serial:115200n8")
+baud field of earlycon device structure remains uninitialised and
+earlycon initialization is not performed correctly as
+of_setup_earlycon is used.
+When pass all arguments via bootargs
+(like bootargs = "earlycon=uart8250,mmio32,0xf0005000,115200n8")
+initialization is performed correctly as register_earlycon is used.
+
+So initialise baud field of earlycon device structure by value of
+"current-speed" property from device tree or from options
+(if they exist) when we use of_setup_earlycon
+
+Signed-off-by: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+---
+Changes v2 -> v3:
+ * Use simple_strtoul instead of kstrtoul as with kstrtoul we can't parse
+   options string which includes arguments except baudrate (like "115200n8")
+
+Changes v1 -> v2:
+ * Use standart property name "current-speed" instead of custom "baud"
+
+NOTE:
+I don't add parsing of the other standard options here because we don't
+have any place to store them. When we parce and set options of the 'real'
+uart device (using uart_parse_options + uart_set_options) we populate
+ktermios structure an pass it to port->ops->set_termios callback of
+uart_port structure. So it is processing by uart driver itself. But we don't
+register such callbacks for earlycon. So we are only able to parse baud
+value, which can be stored in baud field of earlycon_device structure.
+
+ drivers/tty/serial/earlycon.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index c365154..82e813b 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -282,7 +282,12 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+ 		}
+ 	}
+ 
++	val = of_get_flat_dt_prop(node, "current-speed", NULL);
++	if (val)
++		early_console_dev.baud = be32_to_cpu(*val);
++
+ 	if (options) {
++		early_console_dev.baud = simple_strtoul(options, NULL, 0);
+ 		strlcpy(early_console_dev.options, options,
+ 			sizeof(early_console_dev.options));
+ 	}
+-- 
+2.9.3
