@@ -1,80 +1,33 @@
-From: Franklin S Cooper Jr <fcooper@ti.com>
-Subject: Re: [PATCH v3] serial: 8250_of: Add basic PM runtime support
-Date: Mon, 21 Aug 2017 11:59:24 -0500
-Message-ID: <1f92eeec-d1d4-1f84-299a-ddb5160869e2@ti.com>
-References: <20170816205536.19634-1-fcooper@ti.com>
- <1e3ad33d-882e-d4a0-6295-ac06397b11d2@ti.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] dt-bindings: serial: sh-sci: Add support for r8a77995
+ (H)SCIF
+Date: Mon, 21 Aug 2017 21:17:46 -0500
+Message-ID: <20170822021746.kfjgsifxpqcdbv3u@rob-hp-laptop>
+References: <1502968588-7991-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1e3ad33d-882e-d4a0-6295-ac06397b11d2@ti.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sekhar Nori <nsekhar@ti.com>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, vigneshr@ti.com, joel@jms.id.au, khoroshilov@ispras.ru, arnd@arndb.de, robert.jarzmik@free.fr, tthayer@opensource.altera.com
-Cc: Murali Karicheri <m-karicheri2@ti.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1502968588-7991-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 08/21/2017 07:20 AM, Sekhar Nori wrote:
-> On Thursday 17 August 2017 02:25 AM, Franklin S Cooper Jr wrote:
->> 66AK2G UART instances are not apart of the ALWAYS_ON power domain.
->> Therefore, pm_runtime calls must be made to properly insure the appropriate
->> power domains needed by UART are on. Keep legacy clk api calls since other
->> users of this driver may not support PM runtime.
-
-There are a significant amount of users across a wide variety of
-architectures and boards that I have no means to properly test to insure
-I'm avoiding regressions. My current approach which I've seen other
-drivers in the past use when in similar situations allows things to work
-without regressions.
+On Thu, Aug 17, 2017 at 01:16:28PM +0200, Geert Uytterhoeven wrote:
+> Document support for the (H)SCIF serial ports in the Renesas R-Car D3
+> (r8a77995) SoC.
 > 
-> Do we really have users like that? And even if there are, cant they use
-> PM clock handling support available in drivers/base/power/clock_ops.c ?
-
-I don't see any current defconfig that enables CONFIG_PM_CLK and only a
-handful of instances where functions from clock_ops.c are actually used.
-I don't quite understand what your suggestion is but in general I'm
-concerned since any approach to move everyone to different apis is
-rather risky especially for a critical driver.
-
-If I'm missing your point please let me know.
-
+> No driver update is needed.
 > 
-> The clock enable support itself was added pretty "recently" - about 5
-> years back with 0bbeb3c3e84b ("of serial port driver - add
-> clk_get_rate() support"). So I doubt any really legacy platforms relied
-> on clock support being there. It was added by Murali, I assume for
-> Keystone devices. Keystone devices can work with runtime PM using the PM
-> clock support pointed to above.
+> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> ---
+>  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 ++
+>  1 file changed, 2 insertions(+)
 
-You might be right but I can't be confident that it is indeed the case.
-But its possible that at some point people will start having problems if
-they try to use this driver for other UART instances. The currently
-could not be aware of an issue because of the bootloader powering things
-for them or even that different UART instances could be apart of a non
-always on power domain.
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
-> 
-> Perhaps linux-arm-kernel list should be copied on this submission too,
-> since most users of this driver are likely to be there on that list.
-> 
-
-Looking at configs that enable CONFIG_SERIAL_OF_PLATFORM I see quite a
-bit of users from different arch. ARM, OpenRISC, MicroBlaze, Nios2,
-PowerPC, MIPS, Xtensa and Arc.
-
-Looking at dts that enable some of the compatible it is still a
-combination of quite a bit of architectures.
-
-The current approach I've taken should be safe for all users of this
-driver which. I have no issue going another approach as long as its
-understood that I'm fairly limited in what I can test when you take into
-account the large number of users of this driver.
->>
->> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
-> 
-> Thanks,
-> Sekhar
-> 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
