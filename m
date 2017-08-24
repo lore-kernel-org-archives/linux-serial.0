@@ -1,41 +1,44 @@
-From: Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH] serial: sh-sci: document R8A7797 bindings
-Date: Thu, 24 Aug 2017 23:31:36 +0300
-Message-ID: <20170824203144.032561541@cogentembedded.com>
+From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [patch v6 0/3] JTAG driver introduction
+Date: Thu, 24 Aug 2017 23:07:29 +0200
+Message-ID: <CACRpkdZePXyo8Q36mBH7OnJU3E=yWPWSGkGUOH=zJFMjM=Yrhw@mail.gmail.com>
+References: <1503418256-5215-1-git-send-email-oleksandrs@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline; filename=serial-sh-sci-document-R8A7797-bindings.patch
+In-Reply-To: <1503418256-5215-1-git-send-email-oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
+To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, OpenBMC Maillist <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>, jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-R-Car V3M (R8A7797) SoC also has the R-Car gen3 compatible SCIF and HSCIF
-ports, so document the SoC specific bindings.
+On Tue, Aug 22, 2017 at 6:10 PM, Oleksandr Shamray
+<oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org> wrote:
 
-Signed-off-by: Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
+> SoC which are not equipped with JTAG master interface, can be built
+> on top of JTAG core driver infrastructure, by applying bit-banging of
+> TDI, TDO, TCK and TMS pins within the hardware specific driver.
 
----
-This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
+I guess you mean it should then use GPIO lines for bit-banging?
 
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |    2 ++
- 1 file changed, 2 insertions(+)
+I was wondering about how some JTAG clients like openOCD does
+this in some cases.
 
-Index: tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-===================================================================
---- tty.orig/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -41,6 +41,8 @@ Required properties:
-     - "renesas,hscif-r8a7795" for R8A7795 (R-Car H3) HSCIF compatible UART.
-     - "renesas,scif-r8a7796" for R8A7796 (R-Car M3-W) SCIF compatible UART.
-     - "renesas,hscif-r8a7796" for R8A7796 (R-Car M3-W) HSCIF compatible UART.
-+    - "renesas,scif-r8a7797" for R8A7797 (R-Car V3M) SCIF compatible UART.
-+    - "renesas,hscif-r8a7797" for R8A7797 (R-Car V3M) HSCIF compatible UART.
-     - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
-     - "renesas,scifb-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFB compatible UART.
-     - "renesas,rcar-gen1-scif" for R-Car Gen1 SCIF compatible UART,
+In my worst nightmare they export GPIO lines using
+the horrid ABI in /sys/gpio/*
 
+In best case they use the GPIO character device or even
+libgpiod.
+
+But having a JTAG abstraction inside the kernel that can
+grab a few lines for JTAG defined in a device tree, ACPI DSDT
+or similar makes sense too, as it abstracts the hardware so the
+JTAG client can then just open whatever /dev/jtag0 is on the machine
+and go ahead without having to bother about what GPIO lines
+are connected exactly where.
+
+Yours,
+Linus Walleij
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
