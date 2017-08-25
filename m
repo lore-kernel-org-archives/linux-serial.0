@@ -1,59 +1,57 @@
-From: Rick Altherr <raltherr-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [patch v6 0/3] JTAG driver introduction
-Date: Thu, 24 Aug 2017 14:37:06 -0700
-Message-ID: <CAPLgG==Jj=Ys=SvhOCspSfunbWnuqPySvW9RfuqE8HYnG4C=ZQ@mail.gmail.com>
-References: <1503418256-5215-1-git-send-email-oleksandrs@mellanox.com> <CACRpkdZePXyo8Q36mBH7OnJU3E=yWPWSGkGUOH=zJFMjM=Yrhw@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] serial: sh-sci: document R8A7797 bindings
+Date: Fri, 25 Aug 2017 09:09:06 +0200
+Message-ID: <CAMuHMdXkjYty_U9jA_Q-ziGcCSEa_GFLme5+XGgU3pLx5kTdDw@mail.gmail.com>
+References: <20170824203144.032561541@cogentembedded.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CACRpkdZePXyo8Q36mBH7OnJU3E=yWPWSGkGUOH=zJFMjM=Yrhw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, OpenBMC Maillist <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20170824203144.032561541@cogentembedded.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Aug 24, 2017 at 2:07 PM, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> On Tue, Aug 22, 2017 at 6:10 PM, Oleksandr Shamray
-> <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org> wrote:
->
->> SoC which are not equipped with JTAG master interface, can be built
->> on top of JTAG core driver infrastructure, by applying bit-banging of
->> TDI, TDO, TCK and TMS pins within the hardware specific driver.
->
-> I guess you mean it should then use GPIO lines for bit-banging?
->
-> I was wondering about how some JTAG clients like openOCD does
-> this in some cases.
->
+Hi Sergei,
 
-Many common uses of OpenOCD leverage USB devices, such as FTDI FT232R,
-that have a command queue for bitbanging operations.  Managing these
-via libusb is ugly but platform-agnostic.
-
-> In my worst nightmare they export GPIO lines using
-> the horrid ABI in /sys/gpio/*
+On Thu, Aug 24, 2017 at 10:31 PM, Sergei Shtylyov
+<sergei.shtylyov@cogentembedded.com> wrote:
+> R-Car V3M (R8A7797) SoC also has the R-Car gen3 compatible SCIF and HSCIF
+> ports, so document the SoC specific bindings.
 >
-
-https://sourceforge.net/p/openocd/code/ci/v0.10.0/tree/src/jtag/drivers/sysfsgpio.c
-
-While that is certainly horrible (and slow), mapping in the GPIO
-registers via /dev/mem strikes me as worse:
-
-https://sourceforge.net/p/openocd/code/ci/v0.10.0/tree/src/jtag/drivers/bcm2835gpio.c
-
-> In best case they use the GPIO character device or even
-> libgpiod.
+> Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 >
-> But having a JTAG abstraction inside the kernel that can
-> grab a few lines for JTAG defined in a device tree, ACPI DSDT
-> or similar makes sense too, as it abstracts the hardware so the
-> JTAG client can then just open whatever /dev/jtag0 is on the machine
-> and go ahead without having to bother about what GPIO lines
-> are connected exactly where.
+> ---
+> This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
 >
-> Yours,
-> Linus Walleij
+>  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |    2 ++
+>  1 file changed, 2 insertions(+)
+>
+> Index: tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> ===================================================================
+> --- tty.orig/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> +++ tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> @@ -41,6 +41,8 @@ Required properties:
+>      - "renesas,hscif-r8a7795" for R8A7795 (R-Car H3) HSCIF compatible UART.
+>      - "renesas,scif-r8a7796" for R8A7796 (R-Car M3-W) SCIF compatible UART.
+>      - "renesas,hscif-r8a7796" for R8A7796 (R-Car M3-W) HSCIF compatible UART.
+> +    - "renesas,scif-r8a7797" for R8A7797 (R-Car V3M) SCIF compatible UART.
+> +    - "renesas,hscif-r8a7797" for R8A7797 (R-Car V3M) HSCIF compatible UART.
+
+Please use "renesas,scif-r8a77970" and "renesas,hscif-r8a77970" instead,
+to follow the new 5-digit scheme started with r8a77995.
+
+>      - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
+>      - "renesas,scifb-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFB compatible UART.
+>      - "renesas,rcar-gen1-scif" for R-Car Gen1 SCIF compatible UART,
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
