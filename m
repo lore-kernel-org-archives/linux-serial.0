@@ -1,126 +1,94 @@
-From: Stuart Longland <stuartl@longlandclan.id.au>
+From: Rick Altherr <raltherr-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [patch v6 0/3] JTAG driver introduction
-Date: Fri, 25 Aug 2017 18:50:23 +1000
-Message-ID: <593cd0d3-8e06-0992-c155-1322014c0477@longlandclan.id.au>
+Date: Fri, 25 Aug 2017 09:52:25 -0700
+Message-ID: <CAPLgG=mv1p98e4Vzso1N-VU=1MSotkTmnF+DcDTXPcd3q-n8HA@mail.gmail.com>
 References: <1503418256-5215-1-git-send-email-oleksandrs@mellanox.com>
  <CACRpkdZePXyo8Q36mBH7OnJU3E=yWPWSGkGUOH=zJFMjM=Yrhw@mail.gmail.com>
- <CAPLgG==Jj=Ys=SvhOCspSfunbWnuqPySvW9RfuqE8HYnG4C=ZQ@mail.gmail.com>
- <CACRpkdbozWaL0RXyZXjzxYK3JHiqYziSkTGSgGORdptX-rwR8A@mail.gmail.com>
+ <CAPLgG==Jj=Ys=SvhOCspSfunbWnuqPySvW9RfuqE8HYnG4C=ZQ@mail.gmail.com> <CACRpkdbozWaL0RXyZXjzxYK3JHiqYziSkTGSgGORdptX-rwR8A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5873573788368996152=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CACRpkdbozWaL0RXyZXjzxYK3JHiqYziSkTGSgGORdptX-rwR8A@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Linus Walleij <linus.walleij@linaro.org>, Rick Altherr <raltherr@google.com>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>, Arnd Bergmann <arnd@arndb.de>, system-sw-low-level@mellanox.com, Greg KH <gregkh@linuxfoundation.org>, OpenBMC Maillist <openbmc@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, openocd-devel-owner@lists.sourceforge.net, mec@shout.net, Rob Herring <robh+dt@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, Tobias Klauser <tklauser@distanz.ch>, Oleksandr Shamray <oleksandrs@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CACRpkdbozWaL0RXyZXjzxYK3JHiqYziSkTGSgGORdptX-rwR8A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, OpenBMC Maillist <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---===============5873573788368996152==
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="14jdK5JVTNEEBgGWobCjMLbpSGuOqeIbc"
+On Fri, Aug 25, 2017 at 1:32 AM, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> On Thu, Aug 24, 2017 at 11:37 PM, Rick Altherr <raltherr-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> wrote:
+>> On Thu, Aug 24, 2017 at 2:07 PM, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+>>> On Tue, Aug 22, 2017 at 6:10 PM, Oleksandr Shamray
+>>> <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org> wrote:
+>>>
+>>>> SoC which are not equipped with JTAG master interface, can be built
+>>>> on top of JTAG core driver infrastructure, by applying bit-banging of
+>>>> TDI, TDO, TCK and TMS pins within the hardware specific driver.
+>>>
+>>> I guess you mean it should then use GPIO lines for bit-banging?
+>>>
+>>> I was wondering about how some JTAG clients like openOCD does
+>>> this in some cases.
+>>
+>> Many common uses of OpenOCD leverage USB devices, such as FTDI FT232R,
+>> that have a command queue for bitbanging operations.  Managing these
+>> via libusb is ugly but platform-agnostic.
+>
+> Incidentally, people are sending patches to expose the FTDI
+> expanders as common GPIO chips under Linux, so we can
+> internally in the kernel or from the usersapce character device
+> access them as "some GPIOs".
+>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---14jdK5JVTNEEBgGWobCjMLbpSGuOqeIbc
-Content-Type: multipart/mixed; boundary="G4ojsckFeEJJiAK0j3vAe59BPUDr6Q1GF"
-From: Stuart Longland <stuartl@longlandclan.id.au>
-To: Linus Walleij <linus.walleij@linaro.org>,
- Rick Altherr <raltherr@google.com>
-Cc: Oleksandr Shamray <oleksandrs@mellanox.com>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
- Arnd Bergmann <arnd@arndb.de>, system-sw-low-level@mellanox.com,
- Greg KH <gregkh@linuxfoundation.org>,
- OpenBMC Maillist <openbmc@lists.ozlabs.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- openocd-devel-owner@lists.sourceforge.net, mec@shout.net,
- Rob Herring <robh+dt@kernel.org>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- Tobias Klauser <tklauser@distanz.ch>,
- "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Message-ID: <593cd0d3-8e06-0992-c155-1322014c0477@longlandclan.id.au>
-Subject: Re: [patch v6 0/3] JTAG driver introduction
-References: <1503418256-5215-1-git-send-email-oleksandrs@mellanox.com>
- <CACRpkdZePXyo8Q36mBH7OnJU3E=yWPWSGkGUOH=zJFMjM=Yrhw@mail.gmail.com>
- <CAPLgG==Jj=Ys=SvhOCspSfunbWnuqPySvW9RfuqE8HYnG4C=ZQ@mail.gmail.com>
- <CACRpkdbozWaL0RXyZXjzxYK3JHiqYziSkTGSgGORdptX-rwR8A@mail.gmail.com>
-In-Reply-To: <CACRpkdbozWaL0RXyZXjzxYK3JHiqYziSkTGSgGORdptX-rwR8A@mail.gmail.com>
+I know my team at Google has an internal patch for exactly that.  FTDI
+expanders are complicated as they can be used as UART, GPIO, I2C, SPI
+depending on configuration.  Our project was using a mix of I2C and
+GPIO so I directly my team to approach it as an MFD.  I'd like to see
+all of these use cases handled by the kernel but I understand the
+other viewpoint of relying on libusb for cross-platform compatiblity.
 
---G4ojsckFeEJJiAK0j3vAe59BPUDr6Q1GF
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-
-[Note: dropping vadimp@maellanox.com as SMTP server complained about the
-DNS server returning NXDOMAIN.  Apologies.]
-On 25/08/17 18:32, Linus Walleij wrote:
+>>> In my worst nightmare they export GPIO lines using
+>>> the horrid ABI in /sys/gpio/*
+>>
+>> https://sourceforge.net/p/openocd/code/ci/v0.10.0/tree/src/jtag/drivers/sysfsgpio.c
+>
 > Gnah!
 > Whoever writes a slot-in replacement making the character device
 > take precendence wins lots of karma.
+>
 
-What would such a replacement look like though?
+If they show up at Linux Plumbers or visit San Jose, I'll take them to
+dinner.  I didn't see any docs for the chardev in Documentation.  I
+_think_ I understand how it works from reading the relevant sections
+of gpiolib.c but I can see how users end up using sysfs instead.
 
-Some sort of system whereby you can read/write single-line commands as
-if talking to a GPIO expander over a UART?
+>> While that is certainly horrible (and slow), mapping in the GPIO
+>> registers via /dev/mem strikes me as worse:
+>>
+>> https://sourceforge.net/p/openocd/code/ci/v0.10.0/tree/src/jtag/drivers/bcm2835gpio.c
+>
+> Yeah that is quite horrible.
+>
+> There were reasons to do things like that, but since we have
+> developed .set_multiple() to hammer several lines in a register
+> at once, the same efficiency can be achieved using the standard
+> character device.
 
-Would you access the GPIOs one by one, or would you perhaps map them
-into a bitmap (maybe arbitrarily, up to 64-bits wide) and perform masked
-operations on the bitmap?
+Agreed that that helps with user-space GPIO-based JTAG
+implementations.  The problem this patch series is trying to address
+is for SoCs like the Aspeed AST2400/2500 that include a hardware
+accelerated JTAG master.  It _can_ be run in a pure-software mode
+where it acts like GPIOs but the intended use case is to operate an
+interrupt-driven state machine.  That requires a higher-level
+abstraction for managing the standard JTAG state machine.  Similar to
+GPIO .set_multiple, user-space feeding a JTAG kernel API a buffer of
+JTAG state changes would be useful.  That's how I recall OpenOCD's
+internals working: run short (1-7?) state change sequences to move to
+the next decision point.  I know of at least one vendor pushing for
+the use of JTAG on BMCs as a way to debug host processors in large
+deployments instead of using dongles.  I'm supportive of the adding a
+JTAG driver abstraction.  I haven't reviewed this patch series in
+detail yet.
 
-I'm no fan of the sysfs GPIO interface, but it beats poking around at
-registers behind the kernel's back.
---=20
-Stuart Longland (aka Redhatter, VK4MSL)
-
-I haven't lost my mind...
-  ...it's backed up on a tape somewhere.
-
-
---G4ojsckFeEJJiAK0j3vAe59BPUDr6Q1GF--
-
---14jdK5JVTNEEBgGWobCjMLbpSGuOqeIbc
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJZn+TPAAoJEPlUu7t5SNVG67kP/j8MgSUNySU8dWR/Xm22ACvo
-kRwGWNLrKlMnWiPxGhZlRTTSrewT6jeuCQLueY2CPMmH0omtLJCNm6ZiG5B/xa9d
-8lJ/+D9MmrPAsqdArCRXyiakZlNU20IvyFl8loN+DgRnVzpx1UOjVWGkcwnhei1D
-/Qo3XF/wcR5gLHkCsC9j7NCN+hsOwwRPlM+NO9lQvYuRb/pAQ9JlWczrR5kC2NK+
-Ln3Aqqesbv4tQ28S3pfR+AoQi/qKM2IHJXl4K4kM1C4wW6aajls2jZZ/8r6xWC9u
-DIVXv6R7WpSUPxeHNlmn9TzJPTCFd1CV7tMkP9ACiS++rZurXQsS/Bu5EwKvbkrV
-xnox6io+SQD0mn/nXpi7N/6NPUugeLIv47fsi2NKXs+nm97soL+6dliFOLDsR5G9
-4JKRUQkhrq0o+0qWWnRdALrEj0FgGbaF5oJDWkDeEp89UIzbzPcVHXQElCcznDXZ
-YNBwa+5V9XhXiPkilOgI/qQ0iAJaG9bM2HpALQaCrHRbvsD6/0IWHxjw4KRx2S7j
-k43T1LkrvtIfQb1fFpZVPD19Noybgl7y1CMmi+5bZOHzUwaeUYe/pF4DETBhy6yh
-sgvc9J/I/ChtfYm8TQeX7+RdrAdhebMrvP6uWDpbNrYEIyScpg9xgn9DcCSCi+sO
-a8kIjjqlfdI797Zeclxm
-=GgQT
------END PGP SIGNATURE-----
-
---14jdK5JVTNEEBgGWobCjMLbpSGuOqeIbc--
-
-
---===============5873573788368996152==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============5873573788368996152==--
+>
+> Yours,
+> Linus Walleij
