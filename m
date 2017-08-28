@@ -1,31 +1,45 @@
-From: Tobias Klauser <tklauser@distanz.ch>
-Subject: Re: [patch v6 3/3] Doccumentation: jtag: Add bindings for Aspeed SoC
- 24xx and 25xx families JTAG master driver
-Date: Mon, 28 Aug 2017 10:36:11 +0200
-Message-ID: <20170828083610.GB1951@distanz.ch>
-References: <1503418256-5215-1-git-send-email-oleksandrs@mellanox.com>
- <1503418256-5215-4-git-send-email-oleksandrs@mellanox.com>
+From: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] USB: serial: ti_usb_3410_5052: Port uart_mode from io_ti.
+Date: Mon, 28 Aug 2017 10:56:23 +0200
+Message-ID: <20170828085623.GA14599@kroah.com>
+References: <4a469222-d48d-f498-f2db-ca582295adc3@longlandclan.id.au>
+ <20170818025659.4402-1-stuartl@vrt.com.au>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1503418256-5215-4-git-send-email-oleksandrs@mellanox.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Oleksandr Shamray <oleksandrs@mellanox.com>
-Cc: gregkh@linuxfoundation.org, arnd@arndb.de, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au, jiri@resnulli.us, linux-serial@vger.kernel.org, mec@shout.net, vadimp@maellanox.com, system-sw-low-level@mellanox.com, robh+dt@kernel.org, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>
+In-Reply-To: <20170818025659.4402-1-stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stuart Longland <stuartl-EoQOJlg3kTYQrrorzV6ljw@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alborchers-2TsfIrYsZRL7O9PZeWXHPg@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2017-08-22 at 18:10:56 +0200, Oleksandr Shamray <oleksandrs@mellanox.com> wrote:
-> It has been tested on Mellanox system with BMC equipped with
-> Aspeed 2520 SoC for programming CPLD devices.
+On Fri, Aug 18, 2017 at 12:56:59PM +1000, Stuart Longland wrote:
+> This introduces the `uart_mode` sysfs attribute as seen in the `io_ti`
+> USB serial driver, allowing this USB serial interface to be switched
+> between RS-232, 2-wire RS-485 and 4-wire RS-485.
 > 
-> Signed-off-by: Oleksandr Shamray <oleksandrs@mellanox.com>
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
-> v5->v6
-> Comments pointed by Tobias Klauser <tklauser@distanz.ch>
-> - Small nit: s/doccumentation/Documentation/
+> /sys/class/tty/ttyUSB${num}/device/uart takes a single integer:
+> 
+> 	0:	RS-232 mode (default for RS-232-compatible dongles)
+> 	1:	RS-485 2w mode (default for RS-485-only dongles)
+> 	2:	RS-485 4w mode / RS-422 mode
+> 
+> Write this *before* opening your serial device.
 
-There's still one 'c' too many in 'Doccumentation' in the subject (in
-case you're doing another respin of the series).
+Please don't create random driver-specific sysfs files for something as
+generic as this type of userspace api.
+
+Also, you didn't create a Documentation/ABI/ file describing this, so
+even if I wanted to take it, I couldn't :)
+
+Anyway, work on a "real" solution for this for all serial devices
+please.
+
+thanks,
+
+greg k-h
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
