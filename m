@@ -1,94 +1,64 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] tty: xilinx_uartps: move to arch_initcall for earlier console
-Date: Thu, 31 Aug 2017 14:59:08 +0200
-Message-ID: <CACRpkdZ2kNxM_MLFTXUy6bVxh5q2a_cFd+kwVWMHmOSDzG-cOQ@mail.gmail.com>
-References: <1503487221-17950-1-git-send-email-shubhrajyoti.datta@xilinx.com>
- <20170823232424.GA9546@kroah.com> <62daa70c-0c6f-7628-efa4-308cfe93709c@xilinx.com>
+From: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Subject: Re: [PATCH v3] earlycon: initialise baud field of earlycon device
+ structure
+Date: Thu, 31 Aug 2017 13:33:56 +0000
+Message-ID: <1504186436.15555.24.camel@synopsys.com>
+References: <20170821162213.27102-1-Eugeniy.Paltsev@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <62daa70c-0c6f-7628-efa4-308cfe93709c@xilinx.com>
+In-Reply-To: <20170821162213.27102-1-Eugeniy.Paltsev@synopsys.com>
+Content-Language: en-US
+Content-ID: <51650AB86316B14CA0CD9006D658CD6E@internal.synopsys.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, shubhrajyoti.datta@gmail.com
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Aug 24, 2017 at 11:32 AM, Michal Simek <michal.simek@xilinx.com> wrote:
-> On 24.8.2017 01:24, Greg KH wrote:
->> On Wed, Aug 23, 2017 at 04:50:21PM +0530, Shubhrajyoti Datta wrote:
->>> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
->>
->> I can't take patches without any changelog text at all :(
->
-> ok. I see you have also commented this.
->
-> Anyway this is kind of old discussion about moving serial drivers to
-> arch_initcall from module_init.
->
-> There is one patch in the tree.
->
-> commit 4dd9e742df98f8f600b4302d3adbb087a68237f7
-> Author:     Alessandro Rubini <rubini@gnudd.com>
-> AuthorDate: Tue May 5 05:54:13 2009 +0100
-> Commit:     Russell King <rmk+kernel@arm.linux.org.uk>
-> CommitDate: Sun May 31 14:58:11 2009 +0100
->
->     [ARM] 5505/1: serial amba-pl011: move to arch_initcall for earlier
-> console
->
->     Signed-off-by: Alessandro Rubini <rubini@unipv.it>"
->     Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
->
->
-> and then there was one patch (also sent to linux-serial but don't have link)
-> https://patches.linaro.org/patch/14633/
->
-> where that discussion wasn't finished.
-
-Yeah Alessandro never came back on that.
-
-I *guess* it is to get the console up really early, simply becaus it is
-quite helpful for spotting early boot problems.
-
-It is not for earlydebug, because for that we use another routine
-that hammers out the characters on the console. That is what we use
-before even going to console, with printascii(), I usually use a patch
-like this:
-
---- a/init/main.c
-+++ b/init/main.c
-@@ -515,6 +515,12 @@ asmlinkage __visible void __init start_kernel(void)
-        smp_setup_processor_id();
-        debug_objects_early_init();
-
-+#ifdef CONFIG_ARM
-+       {
-+         extern void printascii(char *);
-+         printascii("start_kernel\n");
-+       }
-+#endif
-        /*
-         * Set up the initial canary ASAP:
-         */
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index fc47863f629c..85edd1401406 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -1726,6 +1726,13 @@ asmlinkage int vprintk_emit(int facility, int level,
-                lflags |= LOG_NEWLINE;
-        }
-
-+#ifdef CONFIG_ARM
-+       {
-+               extern void printascii(char *);
-+               printascii(textbuf);
-+       }
-+#endif
-+
-        /* strip kernel syslog prefix and extract log level or control flags */
-        if (facility == 0) {
-                int kern_level;
-
-
-Yours,
-Linus Walleij
+SGksDQoNCk1heWJlIHlvdSBoYXZlIGFueSBjb21tZW50cyBvciByZW1hcmtzIGFib3V0IHRoaXMg
+cGF0Y2g/DQpBbmQgaWYgeW91IGRvbid0IGNvdWxkIHlvdSBwbGVhc2UgYXBwbHkgaXQuDQoNClRo
+YW5rcy4NCg0KT24gTW9uLCAyMDE3LTA4LTIxIGF0IDE5OjIyICswMzAwLCBFdWdlbml5IFBhbHRz
+ZXYgd3JvdGU6DQo+IEZvciBub3cgYmF1ZCBmaWVsZCBvZiBlYXJseWNvbiBzdHJ1Y3R1cmUgZGV2
+aWNlIGlzJ3QgaW5pdGlhbGlzZWQgYXQgYWxsDQo+IGluIG9mX3NldHVwX2Vhcmx5Y29uIChpbiBv
+cHBvc2l00LUgdG8gcmVnaXN0ZXJfZWFybHljb24pLg0KPiANCj4gU28gd2hlbiBJIHVzZSBzdGRv
+dXQtcGF0aCB0byBwb2ludCBlYXJseWNvbiBkZXZpY2UNCj4gKGxpa2Ugc3Rkb3V0LXBhdGggPSAm
+c2VyaWFsIG9yIHN0ZG91dC1wYXRoID0gInNlcmlhbDoxMTUyMDBuOCIpDQo+IGJhdWQgZmllbGQg
+b2YgZWFybHljb24gZGV2aWNlIHN0cnVjdHVyZSByZW1haW5zIHVuaW5pdGlhbGlzZWQgYW5kDQo+
+IGVhcmx5Y29uIGluaXRpYWxpemF0aW9uIGlzIG5vdCBwZXJmb3JtZWQgY29ycmVjdGx5IGFzDQo+
+IG9mX3NldHVwX2Vhcmx5Y29uIGlzIHVzZWQuDQo+IFdoZW4gcGFzcyBhbGwgYXJndW1lbnRzIHZp
+YSBib290YXJncw0KPiAobGlrZSBib290YXJncyA9ICJlYXJseWNvbj11YXJ0ODI1MCxtbWlvMzIs
+MHhmMDAwNTAwMCwxMTUyMDBuOCIpDQo+IGluaXRpYWxpemF0aW9uIGlzIHBlcmZvcm1lZCBjb3Jy
+ZWN0bHkgYXMgcmVnaXN0ZXJfZWFybHljb24gaXMgdXNlZC4NCj4gDQo+IFNvIGluaXRpYWxpc2Ug
+YmF1ZCBmaWVsZCBvZiBlYXJseWNvbiBkZXZpY2Ugc3RydWN0dXJlIGJ5IHZhbHVlIG9mDQo+ICJj
+dXJyZW50LXNwZWVkIiBwcm9wZXJ0eSBmcm9tIGRldmljZSB0cmVlIG9yIGZyb20gb3B0aW9ucw0K
+PiAoaWYgdGhleSBleGlzdCkgd2hlbiB3ZSB1c2Ugb2Zfc2V0dXBfZWFybHljb24NCj4gDQo+IFNp
+Z25lZC1vZmYtYnk6IEV1Z2VuaXkgUGFsdHNldiA8RXVnZW5peS5QYWx0c2V2QHN5bm9wc3lzLmNv
+bT4NCj4gLS0tDQo+IENoYW5nZXMgdjIgLT4gdjM6DQo+IMKgKiBVc2Ugc2ltcGxlX3N0cnRvdWwg
+aW5zdGVhZCBvZiBrc3RydG91bCBhcyB3aXRoIGtzdHJ0b3VsIHdlIGNhbid0IHBhcnNlDQo+IMKg
+wqDCoG9wdGlvbnMgc3RyaW5nIHdoaWNoIGluY2x1ZGVzIGFyZ3VtZW50cyBleGNlcHQgYmF1ZHJh
+dGUgKGxpa2UgIjExNTIwMG44IikNCj4gDQo+IENoYW5nZXMgdjEgLT4gdjI6DQo+IMKgKiBVc2Ug
+c3RhbmRhcnQgcHJvcGVydHkgbmFtZSAiY3VycmVudC1zcGVlZCIgaW5zdGVhZCBvZiBjdXN0b20g
+ImJhdWQiDQo+IA0KPiBOT1RFOg0KPiBJIGRvbid0IGFkZCBwYXJzaW5nIG9mIHRoZSBvdGhlciBz
+dGFuZGFyZCBvcHRpb25zIGhlcmUgYmVjYXVzZSB3ZSBkb24ndA0KPiBoYXZlIGFueSBwbGFjZSB0
+byBzdG9yZSB0aGVtLiBXaGVuIHdlIHBhcmNlIGFuZCBzZXQgb3B0aW9ucyBvZiB0aGUgJ3JlYWwn
+DQo+IHVhcnQgZGV2aWNlICh1c2luZyB1YXJ0X3BhcnNlX29wdGlvbnMgKyB1YXJ0X3NldF9vcHRp
+b25zKSB3ZSBwb3B1bGF0ZQ0KPiBrdGVybWlvcyBzdHJ1Y3R1cmUgYW4gcGFzcyBpdCB0byBwb3J0
+LT5vcHMtPnNldF90ZXJtaW9zIGNhbGxiYWNrIG9mDQo+IHVhcnRfcG9ydCBzdHJ1Y3R1cmUuIFNv
+IGl0IGlzIHByb2Nlc3NpbmcgYnkgdWFydCBkcml2ZXIgaXRzZWxmLiBCdXQgd2UgZG9uJ3QNCj4g
+cmVnaXN0ZXIgc3VjaCBjYWxsYmFja3MgZm9yIGVhcmx5Y29uLiBTbyB3ZSBhcmUgb25seSBhYmxl
+IHRvIHBhcnNlIGJhdWQNCj4gdmFsdWUsIHdoaWNoIGNhbiBiZSBzdG9yZWQgaW4gYmF1ZCBmaWVs
+ZCBvZiBlYXJseWNvbl9kZXZpY2Ugc3RydWN0dXJlLg0KPiANCj4gwqBkcml2ZXJzL3R0eS9zZXJp
+YWwvZWFybHljb24uYyB8IDUgKysrKysNCj4gwqAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25z
+KCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2Vhcmx5Y29uLmMgYi9k
+cml2ZXJzL3R0eS9zZXJpYWwvZWFybHljb24uYw0KPiBpbmRleCBjMzY1MTU0Li44MmU4MTNiIDEw
+MDY0NA0KPiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvZWFybHljb24uYw0KPiArKysgYi9kcml2
+ZXJzL3R0eS9zZXJpYWwvZWFybHljb24uYw0KPiBAQCAtMjgyLDcgKzI4MiwxMiBAQCBpbnQgX19p
+bml0IG9mX3NldHVwX2Vhcmx5Y29uKGNvbnN0IHN0cnVjdCBlYXJseWNvbl9pZCAqbWF0Y2gsDQo+
+IMKgCQl9DQo+IMKgCX0NCj4gwqANCj4gKwl2YWwgPSBvZl9nZXRfZmxhdF9kdF9wcm9wKG5vZGUs
+ICJjdXJyZW50LXNwZWVkIiwgTlVMTCk7DQo+ICsJaWYgKHZhbCkNCj4gKwkJZWFybHlfY29uc29s
+ZV9kZXYuYmF1ZCA9IGJlMzJfdG9fY3B1KCp2YWwpOw0KPiArDQo+IMKgCWlmIChvcHRpb25zKSB7
+DQo+ICsJCWVhcmx5X2NvbnNvbGVfZGV2LmJhdWQgPSBzaW1wbGVfc3RydG91bChvcHRpb25zLCBO
+VUxMLCAwKTsNCj4gwqAJCXN0cmxjcHkoZWFybHlfY29uc29sZV9kZXYub3B0aW9ucywgb3B0aW9u
+cywNCj4gwqAJCQlzaXplb2YoZWFybHlfY29uc29sZV9kZXYub3B0aW9ucykpOw0KPiDCoAl9DQot
+LSANCsKgRXVnZW5peSBQYWx0c2V2
