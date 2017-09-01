@@ -1,64 +1,113 @@
-From: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
-Subject: Re: [PATCH v3] earlycon: initialise baud field of earlycon device
- structure
-Date: Thu, 31 Aug 2017 13:33:56 +0000
-Message-ID: <1504186436.15555.24.camel@synopsys.com>
-References: <20170821162213.27102-1-Eugeniy.Paltsev@synopsys.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Oleksandr Shamray <oleksandrs@mellanox.com>
+Subject: [patch v7 0/4] JTAG driver introduction
+Date: Fri,  1 Sep 2017 19:06:02 +0300
+Message-ID: <1504281966-6199-1-git-send-email-oleksandrs@mellanox.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170821162213.27102-1-Eugeniy.Paltsev@synopsys.com>
-Content-Language: en-US
-Content-ID: <51650AB86316B14CA0CD9006D658CD6E@internal.synopsys.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>
+To: gregkh@linuxfoundation.org, arnd@arndb.de
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au, jiri@resnulli.us, tklauser@distanz.ch, linux-serial@vger.kernel.org, mec@shout.net, vadimp@maellanox.com, system-sw-low-level@mellanox.com, robh+dt@kernel.org, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, davem@davemloft.net, mchehab@kernel.org, Oleksandr Shamray <oleksandrs@mellanox.com>
 List-Id: linux-serial@vger.kernel.org
 
-SGksDQoNCk1heWJlIHlvdSBoYXZlIGFueSBjb21tZW50cyBvciByZW1hcmtzIGFib3V0IHRoaXMg
-cGF0Y2g/DQpBbmQgaWYgeW91IGRvbid0IGNvdWxkIHlvdSBwbGVhc2UgYXBwbHkgaXQuDQoNClRo
-YW5rcy4NCg0KT24gTW9uLCAyMDE3LTA4LTIxIGF0IDE5OjIyICswMzAwLCBFdWdlbml5IFBhbHRz
-ZXYgd3JvdGU6DQo+IEZvciBub3cgYmF1ZCBmaWVsZCBvZiBlYXJseWNvbiBzdHJ1Y3R1cmUgZGV2
-aWNlIGlzJ3QgaW5pdGlhbGlzZWQgYXQgYWxsDQo+IGluIG9mX3NldHVwX2Vhcmx5Y29uIChpbiBv
-cHBvc2l00LUgdG8gcmVnaXN0ZXJfZWFybHljb24pLg0KPiANCj4gU28gd2hlbiBJIHVzZSBzdGRv
-dXQtcGF0aCB0byBwb2ludCBlYXJseWNvbiBkZXZpY2UNCj4gKGxpa2Ugc3Rkb3V0LXBhdGggPSAm
-c2VyaWFsIG9yIHN0ZG91dC1wYXRoID0gInNlcmlhbDoxMTUyMDBuOCIpDQo+IGJhdWQgZmllbGQg
-b2YgZWFybHljb24gZGV2aWNlIHN0cnVjdHVyZSByZW1haW5zIHVuaW5pdGlhbGlzZWQgYW5kDQo+
-IGVhcmx5Y29uIGluaXRpYWxpemF0aW9uIGlzIG5vdCBwZXJmb3JtZWQgY29ycmVjdGx5IGFzDQo+
-IG9mX3NldHVwX2Vhcmx5Y29uIGlzIHVzZWQuDQo+IFdoZW4gcGFzcyBhbGwgYXJndW1lbnRzIHZp
-YSBib290YXJncw0KPiAobGlrZSBib290YXJncyA9ICJlYXJseWNvbj11YXJ0ODI1MCxtbWlvMzIs
-MHhmMDAwNTAwMCwxMTUyMDBuOCIpDQo+IGluaXRpYWxpemF0aW9uIGlzIHBlcmZvcm1lZCBjb3Jy
-ZWN0bHkgYXMgcmVnaXN0ZXJfZWFybHljb24gaXMgdXNlZC4NCj4gDQo+IFNvIGluaXRpYWxpc2Ug
-YmF1ZCBmaWVsZCBvZiBlYXJseWNvbiBkZXZpY2Ugc3RydWN0dXJlIGJ5IHZhbHVlIG9mDQo+ICJj
-dXJyZW50LXNwZWVkIiBwcm9wZXJ0eSBmcm9tIGRldmljZSB0cmVlIG9yIGZyb20gb3B0aW9ucw0K
-PiAoaWYgdGhleSBleGlzdCkgd2hlbiB3ZSB1c2Ugb2Zfc2V0dXBfZWFybHljb24NCj4gDQo+IFNp
-Z25lZC1vZmYtYnk6IEV1Z2VuaXkgUGFsdHNldiA8RXVnZW5peS5QYWx0c2V2QHN5bm9wc3lzLmNv
-bT4NCj4gLS0tDQo+IENoYW5nZXMgdjIgLT4gdjM6DQo+IMKgKiBVc2Ugc2ltcGxlX3N0cnRvdWwg
-aW5zdGVhZCBvZiBrc3RydG91bCBhcyB3aXRoIGtzdHJ0b3VsIHdlIGNhbid0IHBhcnNlDQo+IMKg
-wqDCoG9wdGlvbnMgc3RyaW5nIHdoaWNoIGluY2x1ZGVzIGFyZ3VtZW50cyBleGNlcHQgYmF1ZHJh
-dGUgKGxpa2UgIjExNTIwMG44IikNCj4gDQo+IENoYW5nZXMgdjEgLT4gdjI6DQo+IMKgKiBVc2Ug
-c3RhbmRhcnQgcHJvcGVydHkgbmFtZSAiY3VycmVudC1zcGVlZCIgaW5zdGVhZCBvZiBjdXN0b20g
-ImJhdWQiDQo+IA0KPiBOT1RFOg0KPiBJIGRvbid0IGFkZCBwYXJzaW5nIG9mIHRoZSBvdGhlciBz
-dGFuZGFyZCBvcHRpb25zIGhlcmUgYmVjYXVzZSB3ZSBkb24ndA0KPiBoYXZlIGFueSBwbGFjZSB0
-byBzdG9yZSB0aGVtLiBXaGVuIHdlIHBhcmNlIGFuZCBzZXQgb3B0aW9ucyBvZiB0aGUgJ3JlYWwn
-DQo+IHVhcnQgZGV2aWNlICh1c2luZyB1YXJ0X3BhcnNlX29wdGlvbnMgKyB1YXJ0X3NldF9vcHRp
-b25zKSB3ZSBwb3B1bGF0ZQ0KPiBrdGVybWlvcyBzdHJ1Y3R1cmUgYW4gcGFzcyBpdCB0byBwb3J0
-LT5vcHMtPnNldF90ZXJtaW9zIGNhbGxiYWNrIG9mDQo+IHVhcnRfcG9ydCBzdHJ1Y3R1cmUuIFNv
-IGl0IGlzIHByb2Nlc3NpbmcgYnkgdWFydCBkcml2ZXIgaXRzZWxmLiBCdXQgd2UgZG9uJ3QNCj4g
-cmVnaXN0ZXIgc3VjaCBjYWxsYmFja3MgZm9yIGVhcmx5Y29uLiBTbyB3ZSBhcmUgb25seSBhYmxl
-IHRvIHBhcnNlIGJhdWQNCj4gdmFsdWUsIHdoaWNoIGNhbiBiZSBzdG9yZWQgaW4gYmF1ZCBmaWVs
-ZCBvZiBlYXJseWNvbl9kZXZpY2Ugc3RydWN0dXJlLg0KPiANCj4gwqBkcml2ZXJzL3R0eS9zZXJp
-YWwvZWFybHljb24uYyB8IDUgKysrKysNCj4gwqAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25z
-KCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2Vhcmx5Y29uLmMgYi9k
-cml2ZXJzL3R0eS9zZXJpYWwvZWFybHljb24uYw0KPiBpbmRleCBjMzY1MTU0Li44MmU4MTNiIDEw
-MDY0NA0KPiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvZWFybHljb24uYw0KPiArKysgYi9kcml2
-ZXJzL3R0eS9zZXJpYWwvZWFybHljb24uYw0KPiBAQCAtMjgyLDcgKzI4MiwxMiBAQCBpbnQgX19p
-bml0IG9mX3NldHVwX2Vhcmx5Y29uKGNvbnN0IHN0cnVjdCBlYXJseWNvbl9pZCAqbWF0Y2gsDQo+
-IMKgCQl9DQo+IMKgCX0NCj4gwqANCj4gKwl2YWwgPSBvZl9nZXRfZmxhdF9kdF9wcm9wKG5vZGUs
-ICJjdXJyZW50LXNwZWVkIiwgTlVMTCk7DQo+ICsJaWYgKHZhbCkNCj4gKwkJZWFybHlfY29uc29s
-ZV9kZXYuYmF1ZCA9IGJlMzJfdG9fY3B1KCp2YWwpOw0KPiArDQo+IMKgCWlmIChvcHRpb25zKSB7
-DQo+ICsJCWVhcmx5X2NvbnNvbGVfZGV2LmJhdWQgPSBzaW1wbGVfc3RydG91bChvcHRpb25zLCBO
-VUxMLCAwKTsNCj4gwqAJCXN0cmxjcHkoZWFybHlfY29uc29sZV9kZXYub3B0aW9ucywgb3B0aW9u
-cywNCj4gwqAJCQlzaXplb2YoZWFybHlfY29uc29sZV9kZXYub3B0aW9ucykpOw0KPiDCoAl9DQot
-LSANCsKgRXVnZW5peSBQYWx0c2V2
+When a need raise up to use JTAG interface for system's devices
+programming or CPU debugging, usually the user layer
+application implements jtag protocol by bit-bang or using a 
+proprietary connection to vendor hardware.
+This method can be slow and not generic.
+ 
+We propose to implement general JTAG interface and infrastructure
+to communicate with user layer application. In such way, we can
+have the standard JTAG interface core part and separation from
+specific HW implementation.
+This allow new capability to debug the CPU or program system's 
+device via BMC without additional devices nor cost. 
+
+This patch purpose is to add JTAG master core infrastructure by 
+defining new JTAG class and provide generic JTAG interface
+to allow hardware specific drivers to connect this interface.
+This will enable all JTAG drivers to use the common interface
+part and will have separate for hardware implementation.
+
+The JTAG (Joint Test Action Group) core driver provides minimal generic
+JTAG interface, which can be used by hardware specific JTAG master
+controllers. By providing common interface for the JTAG controllers,
+user space device programing is hardware independent.
+ 
+Modern SoC which in use for embedded system' equipped with
+internal JTAG master interface.
+This interface is used for programming and debugging system's
+hardware components, like CPLD, FPGA, CPU, voltage and
+industrial controllers.
+Firmware for such devices can be upgraded through JTAG interface during
+Runtime. The JTAG standard support for multiple devices programming,
+is in case their lines are daisy-chained together.
+
+For example, systems which equipped with host CPU, BMC SoC or/and 
+number of programmable devices are capable to connect a pin and
+select system components dynamically for programming and debugging,
+This is using by the BMC which is equipped with internal SoC master
+controller.
+For example:
+
+BMC JTAG master --> pin selected to CPLDs chain for programming (filed
+upgrade, production) 
+BMC JTAG master --> pin selected to voltage monitors for programming 
+(field upgrade, production) 
+BMC JTAG master --> pin selected to host CPU (on-site debugging 
+and developers debugging)
+
+For example, we can have application in user space which using calls
+to JTAG driver executes CPLD programming directly from SVF file
+ 
+The JTAG standard (IEEE 1149.1) defines the next connector pins:
+- TDI (Test Data In);
+- TDO (Test Data Out);
+- TCK (Test Clock);
+- TMS (Test Mode Select);
+- TRST (Test Reset) (Optional);
+
+The SoC equipped with JTAG master controller, performs
+device programming on command or vector level. For example
+a file in a standard SVF (Serial Vector Format) that contains
+boundary scan vectors, can be used by sending each vector
+to the JTAG interface and the JTAG controller will execute
+the programming.
+
+Initial version provides the system calls set for:
+- SIR (Scan Instruction Register, IEEE 1149.1 Data Register scan);
+- SDR (Scan Data Register, IEEE 1149.1 Instruction Register scan);
+- RUNTEST (Forces the IEEE 1149.1 bus to a run state for a specified
+  number of clocks.
+
+SoC which are not equipped with JTAG master interface, can be built
+on top of JTAG core driver infrastructure, by applying bit-banging of
+TDI, TDO, TCK and TMS pins within the hardware specific driver.
+
+Oleksandr Shamray (4):
+  drivers: jtag: Add JTAG core driver
+  drivers: jtag: Add Aspeed SoC 24xx and 25xx families JTAG master
+    driver
+  Documentation: jtag: Add bindings for Aspeed SoC 24xx and 25xx
+    families     JTAG master driver
+  Documentation: jtag: Add ABI documentation
+
+ Documentation/ABI/testing/jatg-cdev                |   27 +
+ .../devicetree/bindings/jtag/aspeed-jtag.txt       |   18 +
+ Documentation/ioctl/ioctl-number.txt               |    2 +
+ MAINTAINERS                                        |   10 +
+ drivers/Kconfig                                    |    2 +
+ drivers/Makefile                                   |    1 +
+ drivers/jtag/Kconfig                               |   29 +
+ drivers/jtag/Makefile                              |    2 +
+ drivers/jtag/jtag-aspeed.c                         |  773 ++++++++++++++++++++
+ drivers/jtag/jtag.c                                |  312 ++++++++
+ include/linux/jtag.h                               |   48 ++
+ include/uapi/linux/jtag.h                          |  111 +++
+ 12 files changed, 1335 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/ABI/testing/jatg-cdev
+ create mode 100644 Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
+ create mode 100644 drivers/jtag/Kconfig
+ create mode 100644 drivers/jtag/Makefile
+ create mode 100644 drivers/jtag/jtag-aspeed.c
+ create mode 100644 drivers/jtag/jtag.c
+ create mode 100644 include/linux/jtag.h
+ create mode 100644 include/uapi/linux/jtag.h
