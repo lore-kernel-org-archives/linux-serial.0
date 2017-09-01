@@ -1,40 +1,26 @@
-From: Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v2] serial: sh-sci: document R8A77970 bindings
-Date: Sat, 02 Sep 2017 01:08:30 +0300
-Message-ID: <20170901220842.577848904@cogentembedded.com>
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: Re: [PATCH v2] serial: sh-sci: document R8A77970 bindings
+Date: Sat, 2 Sep 2017 01:11:26 +0300
+Message-ID: <763dde17-555f-a313-e192-f1c4dae2a1f7@cogentembedded.com>
+References: <20170901220842.577848904@cogentembedded.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline; filename=serial-sh-sci-document-R8A77970-bindings-v2.patch
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20170901220842.577848904@cogentembedded.com>
+Content-Language: en-MW
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Cc: linux-renesas-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-R-Car V3M (R8A77970) SoC also has the R-Car gen3 compatible SCIF and HSCIF
-ports, so document the SoC specific bindings.
+On 09/02/2017 01:08 AM, Sergei Shtylyov wrote:
 
-Signed-off-by: Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
+> R-Car V3M (R8A77970) SoC also has the R-Car gen3 compatible SCIF and HSCIF
+> ports, so document the SoC specific bindings.
+> 
+> Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 
----
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |    2 ++
- 1 file changed, 2 insertions(+)
+    Totally forgot about the version history. :-/ Will repost...
 
-Index: tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-===================================================================
---- tty.orig/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -41,6 +41,8 @@ Required properties:
-     - "renesas,hscif-r8a7795" for R8A7795 (R-Car H3) HSCIF compatible UART.
-     - "renesas,scif-r8a7796" for R8A7796 (R-Car M3-W) SCIF compatible UART.
-     - "renesas,hscif-r8a7796" for R8A7796 (R-Car M3-W) HSCIF compatible UART.
-+    - "renesas,scif-r8a77970" for R8A77970 (R-Car V3M) SCIF compatible UART.
-+    - "renesas,hscif-r8a77970" for R8A77970 (R-Car V3M) HSCIF compatible UART.
-     - "renesas,scif-r8a77995" for R8A77995 (R-Car D3) SCIF compatible UART.
-     - "renesas,hscif-r8a77995" for R8A77995 (R-Car D3) HSCIF compatible UART.
-     - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+MBR, Sergei
