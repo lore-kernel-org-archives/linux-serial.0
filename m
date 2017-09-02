@@ -1,41 +1,54 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: [PATCH repost v2] serial: sh-sci: document R8A77970 bindings
-Date: Sat, 02 Sep 2017 01:15:13 +0300
-Message-ID: <20170901221519.704978317@cogentembedded.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline; filename=serial-sh-sci-document-R8A77970-bindings-v2.patch
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: [PATCH] serial: sccnxp: Fix error handling in sccnxp_probe()
+Date: Sat,  2 Sep 2017 23:13:55 +0300
+Message-ID: <1504383235-23002-1-git-send-email-khoroshilov@ispras.ru>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexander Shiyan <shc_work@mail.ru>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
 List-Id: linux-serial@vger.kernel.org
 
-R-Car V3M (R8A77970) SoC also has the R-Car gen3 compatible SCIF and HSCIF
-ports, so document the SoC specific bindings.
+sccnxp_probe() returns result of regulator_disable() that may lead
+to returning zero, while device is not properly initialized.
+Also the driver enables clocks, but it does not disable it.
 
-Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Found by Linux Driver Verification project (linuxtesting.org).
 
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
 ---
-This patch is against the 'tty-next' branch of GregKH's 'tty.git' repo.
+ drivers/tty/serial/sccnxp.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-Changes in version 2:
-- changed R8A7797 to R8A77970 everywhere;
-- rebased against the current branch.
-
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |    2 ++
- 1 file changed, 2 insertions(+)
-
-Index: tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-===================================================================
---- tty.orig/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ tty/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -41,6 +41,8 @@ Required properties:
-     - "renesas,hscif-r8a7795" for R8A7795 (R-Car H3) HSCIF compatible UART.
-     - "renesas,scif-r8a7796" for R8A7796 (R-Car M3-W) SCIF compatible UART.
-     - "renesas,hscif-r8a7796" for R8A7796 (R-Car M3-W) HSCIF compatible UART.
-+    - "renesas,scif-r8a77970" for R8A77970 (R-Car V3M) SCIF compatible UART.
-+    - "renesas,hscif-r8a77970" for R8A77970 (R-Car V3M) HSCIF compatible UART.
-     - "renesas,scif-r8a77995" for R8A77995 (R-Car D3) SCIF compatible UART.
-     - "renesas,hscif-r8a77995" for R8A77995 (R-Car D3) HSCIF compatible UART.
-     - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
+diff --git a/drivers/tty/serial/sccnxp.c b/drivers/tty/serial/sccnxp.c
+index cdd2f942317c..b9c7a904c1ea 100644
+--- a/drivers/tty/serial/sccnxp.c
++++ b/drivers/tty/serial/sccnxp.c
+@@ -889,7 +889,16 @@ static int sccnxp_probe(struct platform_device *pdev)
+ 			goto err_out;
+ 		uartclk = 0;
+ 	} else {
+-		clk_prepare_enable(clk);
++		ret = clk_prepare_enable(clk);
++		if (ret)
++			goto err_out;
++
++		ret = devm_add_action_or_reset(&pdev->dev,
++				(void(*)(void *))clk_disable_unprepare,
++				clk);
++		if (ret)
++			goto err_out;
++
+ 		uartclk = clk_get_rate(clk);
+ 	}
+ 
+@@ -988,7 +997,7 @@ static int sccnxp_probe(struct platform_device *pdev)
+ 	uart_unregister_driver(&s->uart);
+ err_out:
+ 	if (!IS_ERR(s->regulator))
+-		return regulator_disable(s->regulator);
++		regulator_disable(s->regulator);
+ 
+ 	return ret;
+ }
+-- 
+2.7.4
