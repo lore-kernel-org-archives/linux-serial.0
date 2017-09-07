@@ -1,64 +1,52 @@
-From: Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [RFC 3/3] Bluetooth: hci_bcm: Add ACPI serdev support for BCM2E39
-Date: Thu, 7 Sep 2017 19:27:05 +0200
-Message-ID: <95562F35-CB13-4AEC-8DD3-2729FE0B235C@holtmann.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [RFC 1/3] serdev: Add ACPI support
+Date: Thu, 7 Sep 2017 12:54:14 -0500
+Message-ID: <CAL_JsqK9ucGbg=_0Uu8Pugxd7N4gCYHrb4W3PyKaBq_12TdNYA@mail.gmail.com>
 References: <1504786214-1866-1-git-send-email-frederic.danis.oss@gmail.com>
- <1504786214-1866-4-git-send-email-frederic.danis.oss@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Content-Type: text/plain; charset=utf-8
+ <1504786214-1866-2-git-send-email-frederic.danis.oss@gmail.com> <1BC8D5B0-EC18-4F20-9CBC-D73CB1765683@holtmann.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1504786214-1866-4-git-send-email-frederic.danis.oss@gmail.com>
+In-Reply-To: <1BC8D5B0-EC18-4F20-9CBC-D73CB1765683@holtmann.org>
 Sender: linux-acpi-owner@vger.kernel.org
-To: =?utf-8?Q?Fr=C3=A9d=C3=A9ric_Danis?= <frederic.danis.oss@gmail.com>
-Cc: robh@kernel.org, sre@kernel.org, loic.poulain@gmail.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
+To: Marcel Holtmann <marcel@holtmann.org>
+Cc: =?UTF-8?B?RnLDqWTDqXJpYyBEYW5pcw==?= <frederic.danis.oss@gmail.com>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Fred,
+On Thu, Sep 7, 2017 at 12:21 PM, Marcel Holtmann <marcel@holtmann.org> wrote:
+> Hi Fred,
+>
+>> Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
+>> ---
+>> drivers/tty/serdev/core.c | 99 ++++++++++++++++++++++++++++++++++++++++++++---
+>> 1 file changed, 94 insertions(+), 5 deletions(-)
 
-> Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
-> ---
-> drivers/bluetooth/hci_bcm.c | 10 +++++++++-
-> 1 file changed, 9 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-> index 2e358cc..b1cf07e 100644
-> --- a/drivers/bluetooth/hci_bcm.c
-> +++ b/drivers/bluetooth/hci_bcm.c
-> @@ -922,7 +922,6 @@ static const struct hci_uart_proto bcm_proto = {
-> #ifdef CONFIG_ACPI
-> static const struct acpi_device_id bcm_acpi_match[] = {
-> 	{ "BCM2E1A", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
-> -	{ "BCM2E39", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
-> 	{ "BCM2E3A", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
-> 	{ "BCM2E3D", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
-> 	{ "BCM2E3F", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
-> @@ -942,6 +941,14 @@ static const struct acpi_device_id bcm_acpi_match[] = {
-> MODULE_DEVICE_TABLE(acpi, bcm_acpi_match);
-> #endif
-> 
-> +#ifdef CONFIG_ACPI
-> +static const struct acpi_device_id bcm_serdev_acpi_match[] = {
-> +	{ "BCM2E39", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(acpi, bcm_serdev_acpi_match);
-> +#endif
-> +
-> /* Platform suspend and resume callbacks */
-> static const struct dev_pm_ops bcm_pm_ops = {
-> 	SET_SYSTEM_SLEEP_PM_OPS(bcm_suspend, bcm_resume)
-> @@ -999,6 +1006,7 @@ static struct serdev_device_driver bcm_serdev_driver = {
-> 	.driver = {
-> 		.name = "hci_uart_bcm",
-> 		.of_match_table = of_match_ptr(bcm_bluetooth_of_match),
-> +		.acpi_match_table = ACPI_PTR(bcm_serdev_acpi_match),
-> 	},
-> };
+[...]
 
-I think doing this one device at a time is actually fine. However please add a proper commit message for it explaining it.
+>> @@ -404,9 +488,14 @@ int serdev_controller_add(struct serdev_controller *ctrl)
+>>       if (ret)
+>>               return ret;
+>>
+>> -     ret = of_serdev_register_devices(ctrl);
+>> -     if (ret)
+>> +     ret_of = of_serdev_register_devices(ctrl);
+>> +     ret_acpi = acpi_serdev_register_devices(ctrl);
+>> +     if (ret_of && ret_acpi) {
+>> +             dev_dbg(&ctrl->dev, "serdev%d no devices registered: of:%d acpi:%d\n",
+>> +                     ctrl->nr, ret_of, ret_acpi);
+>> +             ret = -ENODEV;
+>>               goto out_dev_del;
+>> +     }
+>>
+>>       dev_dbg(&ctrl->dev, "serdev%d registered: dev:%p\n",
+>>               ctrl->nr, &ctrl->dev);
+>
+> Shouldn’t we just consider to always register the controller? Even if there are no devices attached to it.
 
-Regards
+You argued for the opposite at least in regards to a serdev ldisc. :)
+The problem is we use the success or failure here to decide if we
+create a tty char dev or not. I guess we could move that decision out
+of the core and let the tty code check for devices and decide.
 
-Marcel
-
+Rob
