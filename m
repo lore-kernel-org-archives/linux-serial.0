@@ -1,38 +1,30 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [patch v7 2/4] drivers: jtag: Add Aspeed SoC 24xx and 25xx
- families JTAG master driver
-Date: Wed, 6 Sep 2017 22:52:26 +0200
-Message-ID: <CAK8P3a1Ym1UxbFyeUBrSBeHnoQh9NtBn5r6iVEjU_1ki_p3W5A@mail.gmail.com>
-References: <1504281966-6199-1-git-send-email-oleksandrs@mellanox.com> <1504281966-6199-3-git-send-email-oleksandrs@mellanox.com>
+From: Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+Subject: Re: [PATCH] tty: xilinx_uartps: move to arch_initcall for earlier console
+Date: Thu, 7 Sep 2017 11:40:26 +0530
+Message-ID: <CAKfKVtG2+R3rYODSZ3YwgrB-N=QcnRQVOxqP6JpUvahSO+HB2Q@mail.gmail.com>
+References: <1503487221-17950-1-git-send-email-shubhrajyoti.datta@xilinx.com>
+ <20170823232424.GA9546@kroah.com> <62daa70c-0c6f-7628-efa4-308cfe93709c@xilinx.com>
+ <CACRpkdZ2kNxM_MLFTXUy6bVxh5q2a_cFd+kwVWMHmOSDzG-cOQ@mail.gmail.com> <72a8ba54-69fb-5a69-35b3-8c9e277621fb@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1504281966-6199-3-git-send-email-oleksandrs@mellanox.com>
+In-Reply-To: <72a8ba54-69fb-5a69-35b3-8c9e277621fb@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Oleksandr Shamray <oleksandrs@mellanox.com>
-Cc: gregkh <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org, OpenBMC Maillist <openbmc@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, mec@shout.net, vadimp@maellanox.com, system-sw-low-level@mellanox.com, Rob Herring <robh+dt@kernel.org>, openocd-devel-owner@lists.sourceforge.net, Linux API <linux-api@vger.kernel.org>, David Miller <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@kernel.org>, Jiri Pirko <jiri@mellanox.com>
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Greg KH <gregkh@linuxfoundation.org>, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 1, 2017 at 6:06 PM, Oleksandr Shamray
-<oleksandrs@mellanox.com> wrote:
-> Driver adds support of Aspeed 2500/2400 series SOC JTAG master controller.
+...
+>>
+>> I *guess* it is to get the console up really early, simply becaus it is
+>> quite helpful for spotting early boot problems.
 >
-> Driver implements the following jtag ops:
-> - freq_get;
-> - freq_set;
-> - status_get;
-> - idle;
-> - xfer;
 >
-> It has been tested on Mellanox system with BMC equipped with
-> Aspeed 2520 SoC for programming CPLD devices.
+> ok. It means no concern about the move to arch_initcall.
+> Shubhrajyoti: Please send v2 with changelog.
+
+Will do thanks for the review.
+
 >
-> Signed-off-by: Oleksandr Shamray <oleksandrs@mellanox.com>
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-
-No further comments about this driver, if there is agreement about the subsystem
-in general, it looks good to go in.
-
-Acked-by: Arnd Bergmann <arnd@arndb.de
-
-       Arnd
+> Thanks,
+> Michal
