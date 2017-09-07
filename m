@@ -1,31 +1,182 @@
 From: Marcel Holtmann <marcel@holtmann.org>
 Subject: Re: [RFC 1/3] serdev: Add ACPI support
-Date: Thu, 7 Sep 2017 19:15:08 +0200
-Message-ID: <1831EBF5-77A0-42CF-92EA-73779AA832A6@holtmann.org>
+Date: Thu, 7 Sep 2017 19:21:49 +0200
+Message-ID: <1BC8D5B0-EC18-4F20-9CBC-D73CB1765683@holtmann.org>
 References: <1504786214-1866-1-git-send-email-frederic.danis.oss@gmail.com>
  <1504786214-1866-2-git-send-email-frederic.danis.oss@gmail.com>
- <20170907123030.GA20922@kroah.com>
 Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170907123030.GA20922@kroah.com>
+In-Reply-To: <1504786214-1866-2-git-send-email-frederic.danis.oss@gmail.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: =?utf-8?Q?Fr=C3=A9d=C3=A9ric_Danis?= <frederic.danis.oss@gmail.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
+To: =?utf-8?Q?Fr=C3=A9d=C3=A9ric_Danis?= <frederic.danis.oss@gmail.com>
+Cc: robh@kernel.org, sre@kernel.org, loic.poulain@gmail.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+Hi Fred,
 
->> Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
->> ---
->> drivers/tty/serdev/core.c | 99 ++++++++++++++++++++++++++++++++++++++++++++---
->> 1 file changed, 94 insertions(+), 5 deletions(-)
+> Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
+> ---
+> drivers/tty/serdev/core.c | 99 ++++++++++++++++++++++++++++++++++++++++++++---
+> 1 file changed, 94 insertions(+), 5 deletions(-)
 > 
-> I can not take patches without any changelog text, and you should feel
-> bad about trying to get me to do so :)
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index ae1aaa0..923dd4ad 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -14,6 +14,7 @@
+>  * GNU General Public License for more details.
+>  */
+> 
+> +#include <linux/acpi.h>
+> #include <linux/errno.h>
+> #include <linux/idr.h>
+> #include <linux/kernel.h>
+> @@ -49,13 +50,22 @@ static const struct device_type serdev_ctrl_type = {
+> 
+> static int serdev_device_match(struct device *dev, struct device_driver *drv)
+> {
+> -	/* TODO: ACPI and platform matching */
+> +	/* TODO: platform matching */
+> +	if (acpi_driver_match_device(dev, drv))
+> +		return 1;
+> +
+> 	return of_driver_match_device(dev, drv);
+> }
+> 
+> static int serdev_uevent(struct device *dev, struct kobj_uevent_env *env)
+> {
+> -	/* TODO: ACPI and platform modalias */
+> +	int rc;
+> +
+> +	/* TODO: platform modalias */
+> +	rc = acpi_device_uevent_modalias(dev, env);
+> +	if (rc != -ENODEV)
+> +		return rc;
+> +
+> 	return of_device_uevent_modalias(dev, env);
+> }
+> 
+> @@ -260,6 +270,12 @@ static int serdev_drv_remove(struct device *dev)
+> static ssize_t modalias_show(struct device *dev,
+> 			     struct device_attribute *attr, char *buf)
+> {
+> +	int len;
+> +
+> +	len = acpi_device_modalias(dev, buf, PAGE_SIZE - 1);
+> +	if (len != -ENODEV)
+> +		return len;
+> +
+> 	return of_device_modalias(dev, buf, PAGE_SIZE);
+> }
+> DEVICE_ATTR_RO(modalias);
+> @@ -385,6 +401,74 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
+> 	return 0;
+> }
+> 
+> +#ifdef CONFIG_ACPI
+> +static acpi_status acpi_serdev_register_device(struct serdev_controller *ctrl,
+> +					    struct acpi_device *adev)
+> +{
+> +	struct serdev_device *serdev = NULL;
+> +	int err;
+> +
+> +	if (acpi_bus_get_status(adev) || !adev->status.present ||
+> +	    acpi_device_enumerated(adev))
+> +		return AE_OK;
+> +
+> +	serdev = serdev_device_alloc(ctrl);
+> +	if (!serdev) {
+> +		dev_err(&ctrl->dev, "failed to allocate Serial device for %s\n",
+> +			dev_name(&adev->dev));
+> +		return AE_NO_MEMORY;
+> +	}
+> +
+> +	ACPI_COMPANION_SET(&serdev->dev, adev);
+> +	acpi_device_set_enumerated(adev);
+> +
+> +	err = serdev_device_add(serdev);
+> +	if (err) {
+> +		dev_err(&serdev->dev,
+> +			"failure adding ACPI device. status %d\n", err);
+> +		serdev_device_put(serdev);
+> +	}
+> +
+> +	return AE_OK;
+> +}
+> +
+> +static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level,
+> +				       void *data, void **return_value)
+> +{
+> +	struct serdev_controller *ctrl = data;
+> +	struct acpi_device *adev;
+> +
+> +	if (acpi_bus_get_device(handle, &adev))
+> +		return AE_OK;
+> +
+> +	return acpi_serdev_register_device(ctrl, adev);
+> +}
+> +
+> +static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
+> +{
+> +	acpi_status status;
+> +	acpi_handle handle;
+> +
+> +	handle = ACPI_HANDLE(ctrl->dev.parent);
+> +	if (!handle)
+> +		return -ENODEV;
+> +
+> +	status = acpi_walk_namespace(ACPI_TYPE_DEVICE, handle, 1,
+> +				     acpi_serdev_add_device, NULL, ctrl, NULL);
+> +	if (ACPI_FAILURE(status)) {
+> +		dev_warn(&ctrl->dev, "failed to enumerate Serial slaves\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	return 0;
+> +}
 
-I wouldn’t expect you to take RFC patches :)
+how are we ensuring that we only take UART devices into account here?
+
+> +#else
+> +static inline int acpi_serdev_register_devices(struct serdev_controller *ctlr)
+> +{
+> +	return -ENODEV;
+> +}
+> +#endif /* CONFIG_ACPI */
+> +
+> /**
+>  * serdev_controller_add() - Add an serdev controller
+>  * @ctrl:	controller to be registered.
+> @@ -394,7 +478,7 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
+>  */
+> int serdev_controller_add(struct serdev_controller *ctrl)
+> {
+> -	int ret;
+> +	int ret_of, ret_acpi, ret;
+> 
+> 	/* Can't register until after driver model init */
+> 	if (WARN_ON(!is_registered))
+> @@ -404,9 +488,14 @@ int serdev_controller_add(struct serdev_controller *ctrl)
+> 	if (ret)
+> 		return ret;
+> 
+> -	ret = of_serdev_register_devices(ctrl);
+> -	if (ret)
+> +	ret_of = of_serdev_register_devices(ctrl);
+> +	ret_acpi = acpi_serdev_register_devices(ctrl);
+> +	if (ret_of && ret_acpi) {
+> +		dev_dbg(&ctrl->dev, "serdev%d no devices registered: of:%d acpi:%d\n",
+> +			ctrl->nr, ret_of, ret_acpi);
+> +		ret = -ENODEV;
+> 		goto out_dev_del;
+> +	}
+> 
+> 	dev_dbg(&ctrl->dev, "serdev%d registered: dev:%p\n",
+> 		ctrl->nr, &ctrl->dev);
+
+Shouldn’t we just consider to always register the controller? Even if there are no devices attached to it.
 
 Regards
 
