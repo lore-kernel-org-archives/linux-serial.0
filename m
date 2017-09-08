@@ -1,93 +1,45 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 2/2] mxser: remove unused parameters
-Date: Fri,  8 Sep 2017 15:36:51 +0200
-Message-ID: <20170908133651.30157-2-jslaby@suse.cz>
-References: <20170908133651.30157-1-jslaby@suse.cz>
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: [PATCH v1 00/10] Various patches for SAMA5D2 backup mode
+Date: Fri,  8 Sep 2017 17:35:54 +0200
+Message-ID: <20170908153604.28383-1-romain.izard.pro@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170908133651.30157-1-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+To: Nicolas Ferre <nicolas.ferre@microchip.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Jonathan Cameron <jic23@kernel.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>
+Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Romain Izard <romain.izard.pro@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Remove
-* pdev from mxser_initbrd
-* old_termios from mxser_change_speed
-as they are unused and update the callers.
+While the core of the backup mode for SAMA5D2 has been integrated in
+v4.13, it is far from complete. Individual controllers in the chip have
+drivers that do not support the reset of the registers during suspend,
+and they need to be adapted to handle it.
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/mxser.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+The first patch uses the clock wakeup code from the prototype backup
+mode instead of the version integrated in the mainline, as the mainline
+version is not stable. During a test loop with two-second backup
+suspend, the mainline version will hang in less than one day, whereas
+the prototype version has been running the same test for more than a
+week without hanging.
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 6b5f0c796a31..a6c6aa003893 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -642,8 +642,7 @@ static int mxser_set_baud(struct tty_struct *tty, long newspd)
-  * This routine is called to set the UART divisor registers to match
-  * the specified baud rate for a serial port.
-  */
--static int mxser_change_speed(struct tty_struct *tty,
--					struct ktermios *old_termios)
-+static int mxser_change_speed(struct tty_struct *tty)
- {
- 	struct mxser_port *info = tty->driver_data;
- 	unsigned cflag, cval, fcr;
-@@ -945,7 +944,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 	/*
- 	 * and set the speed of the serial port
- 	 */
--	mxser_change_speed(tty, NULL);
-+	mxser_change_speed(tty);
- 	spin_unlock_irqrestore(&info->slock, flags);
- 
- 	return 0;
-@@ -1288,7 +1287,7 @@ static int mxser_set_serial_info(struct tty_struct *tty,
- 	if (tty_port_initialized(port)) {
- 		if (flags != (port->flags & ASYNC_SPD_MASK)) {
- 			spin_lock_irqsave(&info->slock, sl_flags);
--			mxser_change_speed(tty, NULL);
-+			mxser_change_speed(tty);
- 			spin_unlock_irqrestore(&info->slock, sl_flags);
- 		}
- 	} else {
-@@ -1946,7 +1945,7 @@ static void mxser_set_termios(struct tty_struct *tty, struct ktermios *old_termi
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&info->slock, flags);
--	mxser_change_speed(tty, old_termios);
-+	mxser_change_speed(tty);
- 	spin_unlock_irqrestore(&info->slock, flags);
- 
- 	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty)) {
-@@ -2375,8 +2374,7 @@ static void mxser_release_ISA_res(struct mxser_board *brd)
- 	mxser_release_vector(brd);
- }
- 
--static int mxser_initbrd(struct mxser_board *brd,
--		struct pci_dev *pdev)
-+static int mxser_initbrd(struct mxser_board *brd)
- {
- 	struct mxser_port *info;
- 	unsigned int i;
-@@ -2640,7 +2638,7 @@ static int mxser_probe(struct pci_dev *pdev,
- 	}
- 
- 	/* mxser_initbrd will hook ISR. */
--	retval = mxser_initbrd(brd, pdev);
-+	retval = mxser_initbrd(brd);
- 	if (retval)
- 		goto err_rel3;
- 
-@@ -2746,7 +2744,7 @@ static int __init mxser_module_init(void)
- 				brd->info->name, ioaddr[b]);
- 
- 		/* mxser_initbrd will hook ISR. */
--		if (mxser_initbrd(brd, NULL) < 0) {
-+		if (mxser_initbrd(brd) < 0) {
- 			mxser_release_ISA_res(brd);
- 			brd->info = NULL;
- 			continue;
+Romain Izard (10):
+  clk: at91: pmc: Wait for clocks when resuming
+  clk: at91: pmc: Save SCSR during suspend
+  clk: at91: pmc: Support backup for programmable clocks
+  mtd: nand: atmel: Avoid ECC errors when leaving backup mode
+  mtd: nand: atmel: Report PMECC failures as errors
+  ehci-atmel: Power down during suspend is normal
+  iio:adc:at91-sama5d2: Support backup mode
+  pwm: atmel-tcb: Support backup mode
+  atmel_flexcom: Support backup mode
+  tty/serial: atmel: Prevent a warning on suspend
+
+ drivers/clk/at91/pmc.c             | 33 ++++++++++++------
+ drivers/iio/adc/at91-sama5d2_adc.c | 71 ++++++++++++++++++++++++++++++++------
+ drivers/mfd/atmel-flexcom.c        | 65 ++++++++++++++++++++++++++--------
+ drivers/mtd/nand/atmel/pmecc.c     | 15 ++++----
+ drivers/pwm/pwm-atmel-tcb.c        | 63 +++++++++++++++++++++++++++++++--
+ drivers/tty/serial/atmel_serial.c  | 13 +++++++
+ drivers/usb/host/ehci-atmel.c      |  3 +-
+ 7 files changed, 216 insertions(+), 47 deletions(-)
+
 -- 
-2.14.1
+2.11.0
