@@ -1,93 +1,54 @@
-From: =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss@gmail.com>
-Subject: Re: [RFC 1/3] serdev: Add ACPI support
-Date: Sat, 9 Sep 2017 15:46:58 +0200
-Message-ID: <55c85c4d-f674-6f00-f112-76d1a70e8e0a@gmail.com>
+From: Marcel Holtmann <marcel@holtmann.org>
+Subject: Re: [RFC 2/3] ACPI / scan: Fix enumeration for special UART devices
+Date: Sat, 9 Sep 2017 20:49:08 +0200
+Message-ID: <A4210376-D665-4D24-B273-90ED033D4DE1@holtmann.org>
 References: <1504786214-1866-1-git-send-email-frederic.danis.oss@gmail.com>
- <1504786214-1866-2-git-send-email-frederic.danis.oss@gmail.com>
- <1BC8D5B0-EC18-4F20-9CBC-D73CB1765683@holtmann.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+ <1504786214-1866-3-git-send-email-frederic.danis.oss@gmail.com>
+ <2C6832A9-2BA5-42CD-A398-CD7BA5AE7C8E@holtmann.org>
+ <ce2e3693-437b-1e51-61ad-3873a9e0f0f4@gmail.com>
+ <20170909172406.GA32618@wunner.de>
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1BC8D5B0-EC18-4F20-9CBC-D73CB1765683@holtmann.org>
-Content-Language: en-US
+In-Reply-To: <20170909172406.GA32618@wunner.de>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Marcel Holtmann <marcel@holtmann.org>
-Cc: robh@kernel.org, sre@kernel.org, loic.poulain@gmail.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
+To: Lukas Wunner <lukas@wunner.de>
+Cc: =?utf-8?Q?Fr=C3=A9d=C3=A9ric_Danis?= <frederic.danis.oss@gmail.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Marcel,
+Hi Lukas,
 
-Le 07/09/2017 à 19:21, Marcel Holtmann a écrit :
-<snip>
->> +#ifdef CONFIG_ACPI
->> +static acpi_status acpi_serdev_register_device(struct serdev_controller *ctrl,
->> +					    struct acpi_device *adev)
->> +{
->> +	struct serdev_device *serdev = NULL;
->> +	int err;
->> +
->> +	if (acpi_bus_get_status(adev) || !adev->status.present ||
->> +	    acpi_device_enumerated(adev))
->> +		return AE_OK;
->> +
->> +	serdev = serdev_device_alloc(ctrl);
->> +	if (!serdev) {
->> +		dev_err(&ctrl->dev, "failed to allocate Serial device for %s\n",
->> +			dev_name(&adev->dev));
->> +		return AE_NO_MEMORY;
->> +	}
->> +
->> +	ACPI_COMPANION_SET(&serdev->dev, adev);
->> +	acpi_device_set_enumerated(adev);
->> +
->> +	err = serdev_device_add(serdev);
->> +	if (err) {
->> +		dev_err(&serdev->dev,
->> +			"failure adding ACPI device. status %d\n", err);
->> +		serdev_device_put(serdev);
->> +	}
->> +
->> +	return AE_OK;
->> +}
->> +
->> +static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level,
->> +				       void *data, void **return_value)
->> +{
->> +	struct serdev_controller *ctrl = data;
->> +	struct acpi_device *adev;
->> +
->> +	if (acpi_bus_get_device(handle, &adev))
->> +		return AE_OK;
->> +
->> +	return acpi_serdev_register_device(ctrl, adev);
->> +}
->> +
->> +static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
->> +{
->> +	acpi_status status;
->> +	acpi_handle handle;
->> +
->> +	handle = ACPI_HANDLE(ctrl->dev.parent);
->> +	if (!handle)
->> +		return -ENODEV;
->> +
->> +	status = acpi_walk_namespace(ACPI_TYPE_DEVICE, handle, 1,
->> +				     acpi_serdev_add_device, NULL, ctrl, NULL);
->> +	if (ACPI_FAILURE(status)) {
->> +		dev_warn(&ctrl->dev, "failed to enumerate Serial slaves\n");
->> +		return -ENODEV;
->> +	}
->> +
->> +	return 0;
->> +}
-> how are we ensuring that we only take UART devices into account here?
+>>>> --- a/include/acpi/acpi_bus.h
+>>>> +++ b/include/acpi/acpi_bus.h
+>>>> @@ -211,7 +211,7 @@ struct acpi_device_flags {
+>>>> 	u32 of_compatible_ok:1;
+>>>> 	u32 coherent_dma:1;
+>>>> 	u32 cca_seen:1;
+>>>> -	u32 spi_i2c_slave:1;
+>>>> +	u32 serial_slave:1;
+>>>> 	u32 reserved:19;
+>>>> };
+>>> I am not an ACPI expert, but wouldn't we better have a serial_bus_slave
+>>> here. And the serial_bus_slave can be either UART or I2C? Or have a
+>>> pretty good commit message explaining why this is serial_slave only.
+>> 
+>> I will rename it.
+>> serial_bus_slave can be either SPI, I2C or UART
+>> (cf. http://elixir.free-electrons.com/linux/latest/source/include/acpi/acrestyp.h#L446).
+> 
+> Another idea would be to describe the *effect*, rather than the devices
+> affected, i.e. something like:
+> 
+> -	u32 spi_i2c_slave:1;
+> +	u32 parent_enumerated:1;
+> 
+> such that it could be extended to slaves on a non-serial bus in the
+> future.
 
-acpi_serdev_add_device() callback will only take into account entries 
-without enumerated flag set.
-This flags is set for all entries during ACPI scan, except for SPI and 
-I2C serial devices, and for UART with 2nd patch in the series.
+that might work as well. However right now I would be fine with serial_bus_slave here. Since that makes it clear that this is more than just UART devices. It is generic serial bus based devices.
 
-Regards,
+Regards
 
-Fred
+Marcel
+
