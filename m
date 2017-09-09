@@ -1,143 +1,145 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [patch v8 1/4] drivers: jtag: Add JTAG core driver
-Date: Fri, 8 Sep 2017 21:51:43 +0200
-Message-ID: <CAK8P3a2zkA5Tp4En+=zLBes4YRedHcn9xf1DhBsRufqPWrzvVQ@mail.gmail.com>
-References: <1504887229-2748-1-git-send-email-oleksandrs@mellanox.com> <1504887229-2748-2-git-send-email-oleksandrs@mellanox.com>
+From: =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss@gmail.com>
+Subject: Re: [RFC 2/3] ACPI / scan: Fix enumeration for special UART devices
+Date: Sat, 9 Sep 2017 15:46:07 +0200
+Message-ID: <ce2e3693-437b-1e51-61ad-3873a9e0f0f4@gmail.com>
+References: <1504786214-1866-1-git-send-email-frederic.danis.oss@gmail.com>
+ <1504786214-1866-3-git-send-email-frederic.danis.oss@gmail.com>
+ <2C6832A9-2BA5-42CD-A398-CD7BA5AE7C8E@holtmann.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1504887229-2748-2-git-send-email-oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Cc: gregkh <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, OpenBMC Maillist <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org>, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, vadimp-45czdsxZ+A5DPfheJLI6IQ@public.gmane.org, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Linux API <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Mauro Carvalho Chehab <mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <2C6832A9-2BA5-42CD-A398-CD7BA5AE7C8E@holtmann.org>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Marcel Holtmann <marcel@holtmann.org>
+Cc: robh@kernel.org, sre@kernel.org, loic.poulain@gmail.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 8, 2017 at 6:13 PM, Oleksandr Shamray
-<oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org> wrote:
-> Initial patch for JTAG driver
-> JTAG class driver provide infrastructure to support hardware/software
-> JTAG platform drivers. It provide user layer API interface for flashing
-> and debugging external devices which equipped with JTAG interface
-> using standard transactions.
+Hi Marcel,
+
+Le 07/09/2017 à 19:25, Marcel Holtmann a écrit :
+> Hi Fred,
 >
-> Driver exposes set of IOCTL to user space for:
-> - XFER:
-> - SIR (Scan Instruction Register, IEEE 1149.1 Data Register scan);
-> - SDR (Scan Data Register, IEEE 1149.1 Instruction Register scan);
-> - RUNTEST (Forces the IEEE 1149.1 bus to a run state for a specified
->   number of clocks).
-> - SIOCFREQ/GIOCFREQ for setting and reading JTAG frequency.
+>> UART devices is expected to be enumerated by SerDev subsystem.
+>> Rename spi_i2c_slave to serial_slave as this is no more specific to spi or
+>> i2c buses.
+>>
+>> Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
+>> ---
+>> drivers/acpi/scan.c     | 29 ++++++++++++-----------------
+>> include/acpi/acpi_bus.h |  2 +-
+>> 2 files changed, 13 insertions(+), 18 deletions(-)
+>>
+>> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+>> index 70fd550..04c5ecc 100644
+>> --- a/drivers/acpi/scan.c
+>> +++ b/drivers/acpi/scan.c
+>> @@ -1429,35 +1429,30 @@ static void acpi_init_coherency(struct acpi_device *adev)
+>> 	adev->flags.coherent_dma = cca;
+>> }
+>>
+>> -static int acpi_check_spi_i2c_slave(struct acpi_resource *ares, void *data)
+>> +static int acpi_check_serial_slave(struct acpi_resource *ares, void *data)
+>> {
+>> -	bool *is_spi_i2c_slave_p = data;
+>> +	bool *is_serial_slave_p = data;
+>>
+>> 	if (ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
+>> 		return 1;
+>>
+>> -	/*
+>> -	 * devices that are connected to UART still need to be enumerated to
+>> -	 * platform bus
+>> -	 */
+>> -	if (ares->data.common_serial_bus.type != ACPI_RESOURCE_SERIAL_TYPE_UART)
+>> -		*is_spi_i2c_slave_p = true;
+>> +	*is_serial_slave_p = true;
+>>
+>> 	 /* no need to do more checking */
+>> 	return -1;
+>> }
+>>
+> isn’t this disabled the I2C support? I mean serial bus doesn’t always mean UART. There are other serial buses and even USB is actually a serial bus.
+
+This will not disable I2C or SPI support but will add UART slave devices 
+to the devices which are not enumerated during ACPI scan, allowing them 
+do be enumerated by their respective parents, SerDev in case of UART.
+
 >
-> Driver core provides set of internal APIs for allocation and
-> registration:
-> - jtag_register;
-> - jtag_unregister;
-> - jtag_alloc;
-> - jtag_free;
->
-> Platform driver on registration with jtag-core creates the next
-> entry in dev folder:
-> /dev/jtagX
->
-> Signed-off-by: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-> Signed-off-by: Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-> Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+>> -static bool acpi_is_spi_i2c_slave(struct acpi_device *device)
+>> +static bool acpi_is_serial_slave(struct acpi_device *device)
+>> {
+>> 	struct list_head resource_list;
+>> -	bool is_spi_i2c_slave = false;
+>> +	bool is_serial_slave = false;
+>>
+>> 	INIT_LIST_HEAD(&resource_list);
+>> -	acpi_dev_get_resources(device, &resource_list, acpi_check_spi_i2c_slave,
+>> -			       &is_spi_i2c_slave);
+>> +	acpi_dev_get_resources(device, &resource_list, acpi_check_serial_slave,
+>> +			       &is_serial_slave);
+>> 	acpi_dev_free_resource_list(&resource_list);
+>>
+>> -	return is_spi_i2c_slave;
+>> +	return is_serial_slave;
+>> }
+>>
+>> void acpi_init_device_object(struct acpi_device *device, acpi_handle handle,
+>> @@ -1476,7 +1471,7 @@ void acpi_init_device_object(struct acpi_device *device, acpi_handle handle,
+>> 	acpi_bus_get_flags(device);
+>> 	device->flags.match_driver = false;
+>> 	device->flags.initialized = true;
+>> -	device->flags.spi_i2c_slave = acpi_is_spi_i2c_slave(device);
+>> +	device->flags.serial_slave = acpi_is_serial_slave(device);
+>> 	acpi_device_clear_enumerated(device);
+>> 	device_initialize(&device->dev);
+>> 	dev_set_uevent_suppress(&device->dev, true);
+>> @@ -1763,7 +1758,7 @@ static void acpi_default_enumeration(struct acpi_device *device)
+>> 	 * Do not enumerate SPI/I2C slaves as they will be enumerated by their
+>> 	 * respective parents.
+>> 	 */
+>> -	if (!device->flags.spi_i2c_slave) {
+>> +	if (!device->flags.serial_slave) {
+>> 		acpi_create_platform_device(device, NULL);
+>> 		acpi_device_set_enumerated(device);
+>> 	} else {
+>> @@ -1860,7 +1855,7 @@ static void acpi_bus_attach(struct acpi_device *device)
+>> 		return;
+>>
+>> 	device->flags.match_driver = true;
+>> -	if (ret > 0 && !device->flags.spi_i2c_slave) {
+>> +	if (ret > 0 && !device->flags.serial_slave) {
+>> 		acpi_device_set_enumerated(device);
+>> 		goto ok;
+>> 	}
+>> @@ -1869,7 +1864,7 @@ static void acpi_bus_attach(struct acpi_device *device)
+>> 	if (ret < 0)
+>> 		return;
+>>
+>> -	if (!device->pnp.type.platform_id && !device->flags.spi_i2c_slave)
+>> +	if (!device->pnp.type.platform_id && !device->flags.serial_slave)
+>> 		acpi_device_set_enumerated(device);
+>> 	else
+>> 		acpi_default_enumeration(device);
+>> diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+>> index 68bc6be..49a82f8 100644
+>> --- a/include/acpi/acpi_bus.h
+>> +++ b/include/acpi/acpi_bus.h
+>> @@ -211,7 +211,7 @@ struct acpi_device_flags {
+>> 	u32 of_compatible_ok:1;
+>> 	u32 coherent_dma:1;
+>> 	u32 cca_seen:1;
+>> -	u32 spi_i2c_slave:1;
+>> +	u32 serial_slave:1;
+>> 	u32 reserved:19;
+>> };
+> I am not an ACPI expert, but wouldn’t we better have a serial_bus_slave here. And the serial_bus_slave can be either UART or I2C? Or have a pretty good commit message explaining why this is serial_slave only.
 
-My Ack was actually just for the device driver part, I had not
-looked at the core again, sorry for not being clearer here.
+I will rename it.
+serial_bus_slave can be either SPI, I2C or UART (cf. 
+http://elixir.free-electrons.com/linux/latest/source/include/acpi/acrestyp.h#L446).
 
-The other two patches are fine, but looking at this one again,
-I find a couple of things to improve:
+Regards,
 
-> +
-> +static __u64 jtag_copy_from_user(__u64 udata, unsigned long bit_size)
-> +{
-> +       unsigned long size;
-> +       void *kdata;
-> +
-> +       size = DIV_ROUND_UP(bit_size, BITS_PER_BYTE);
-> +       kdata = memdup_user(u64_to_user_ptr(udata), size);
-> +
-> +       return (__u64)(uintptr_t)kdata;
-> +}
-> +
-> +static unsigned long jtag_copy_to_user(__u64 udata, __u64 kdata,
-> +                                      unsigned long bit_size)
-> +{
-> +       unsigned long size;
-> +
-> +       size = DIV_ROUND_UP(bit_size, BITS_PER_BYTE);
-> +
-> +       return copy_to_user(u64_to_user_ptr(udata), jtag_u64_to_ptr(kdata),
-> +                           size);
-> +}
-
-Only a style comment, but the casting to and from u64 multiple
-times here seems overly complicated. Why not use a regular kernel
-pointer here, and then pass that as a third argument to
-ag->ops->xfer() ?
-
-> +
-> +       case JTAG_SIOCFREQ:
-> +               err = __get_user(value, uarg);
-
-This needs to use get_user(), not __get_user(). I think you changed
-all the other instances after an earlier comment, but missed this one.
-
-> +static int jtag_open(struct inode *inode, struct file *file)
-> +{
-> +       struct jtag *jtag = container_of(inode->i_cdev, struct jtag, cdev);
-> +
-> +       spin_lock(&jtag->lock);
-> +
-> +       if (jtag->open) {
-> +               dev_info(NULL, "jtag already opened\n");
-> +               spin_unlock(&jtag->lock);
-> +               return -EBUSY;
-> +       }
-> +
-> +       jtag->open++;
-> +       file->private_data = jtag;
-> +       spin_unlock(&jtag->lock);
-> +       return 0;
-> +}
-
-The spinlock seems to not protect anything but the use count,
-so this could be an atomic_t.
-
-
-> +       mutex_lock(&jtag_mutex);
-> +       list_add_tail(&jtag->list, &jtag_list);
-> +       mutex_unlock(&jtag_mutex);
-
-Similarly, you only use the mutex to protect the list_add/list_del,
-but nothing ever walks the list, so I think you can simply remove
-both the list and the mutex.
-
-> +static int __init jtag_init(void)
-> +{
-> +       int err;
-> +
-> +       err = alloc_chrdev_region(&jtag_devt, 0, 1, "jtag");
-> +       if (err)
-> +               return err;
-> +       return class_register(&jtag_class);
-> +}
-> +
-> +static void __exit jtag_exit(void)
-> +{
-> +       class_unregister(&jtag_class);
-> +}
-
-This looks a bit asymmetric:
-
-- you allocate a chardev region but don't destroy it in jtag_exit,
-  so presumably this leaks a major number allocation each
-  time you load/unload the module
-
-- you allocate a single minor number at module load time,
-  but the individual devices each get another number, and
-  the original one does not appear to be used, unless I
-  misunderstand the API here.
-
-     Arnd
+Fred
