@@ -1,78 +1,93 @@
 From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH v2 1/2] mxser: fix timeout calculation for low rates
-Date: Tue, 12 Sep 2017 12:39:54 +0200
-Message-ID: <20170912103955.25826-1-jslaby@suse.cz>
+Subject: [PATCH v2 2/2] mxser: remove unused parameters
+Date: Tue, 12 Sep 2017 12:39:55 +0200
+Message-ID: <20170912103955.25826-2-jslaby@suse.cz>
+References: <20170912103955.25826-1-jslaby@suse.cz>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170912103955.25826-1-jslaby@suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Paul <Paul@abelian.netcom.co.uk>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
 List-Id: linux-serial@vger.kernel.org
 
-Paul reported, that low rates like B300 make the driver to hang in
-mxser_wait_until_sent. His debugging tackled the issue down to the
-info->timeout computation in mxser_set_baud. Obviously, ints are used
-there and they easily overflow with these low rates: B300 makes
-info->timeout to be -373.
-
-So switch all these types to unsigned as it ought to be. And use the u64
-domain to perform the computation as in the worst case, we need 35 bits
-to store the computed value (before division).
-
-And use do_div not to break 32 bit kernels.
-
-[v2] make it actually build
+Remove
+* pdev from mxser_initbrd
+* old_termios from mxser_change_speed
+as they are unused and update the callers.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Paul <Paul@abelian.netcom.co.uk>
-Tested-by: <Paul@abelian.netcom.co.uk>
 ---
- drivers/tty/mxser.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/tty/mxser.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 816681d6ec98..2e61a2d0d7cb 100644
+index 2e61a2d0d7cb..f63d6995c55c 100644
 --- a/drivers/tty/mxser.c
 +++ b/drivers/tty/mxser.c
-@@ -246,11 +246,11 @@ struct mxser_port {
- 	unsigned char err_shadow;
- 
- 	struct async_icount icount; /* kernel counters for 4 input interrupts */
--	int timeout;
-+	unsigned int timeout;
- 
- 	int read_status_mask;
- 	int ignore_status_mask;
--	int xmit_fifo_size;
-+	unsigned int xmit_fifo_size;
- 	int xmit_head;
- 	int xmit_tail;
- 	int xmit_cnt;
-@@ -572,8 +572,9 @@ static void mxser_dtr_rts(struct tty_port *port, int on)
- static int mxser_set_baud(struct tty_struct *tty, long newspd)
+@@ -642,8 +642,7 @@ static int mxser_set_baud(struct tty_struct *tty, long newspd)
+  * This routine is called to set the UART divisor registers to match
+  * the specified baud rate for a serial port.
+  */
+-static int mxser_change_speed(struct tty_struct *tty,
+-					struct ktermios *old_termios)
++static int mxser_change_speed(struct tty_struct *tty)
  {
  	struct mxser_port *info = tty->driver_data;
--	int quot = 0, baud;
-+	unsigned int quot = 0, baud;
- 	unsigned char cval;
-+	u64 timeout;
+ 	unsigned cflag, cval, fcr;
+@@ -945,7 +944,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 	/*
+ 	 * and set the speed of the serial port
+ 	 */
+-	mxser_change_speed(tty, NULL);
++	mxser_change_speed(tty);
+ 	spin_unlock_irqrestore(&info->slock, flags);
  
- 	if (!info->ioaddr)
- 		return -1;
-@@ -594,8 +595,13 @@ static int mxser_set_baud(struct tty_struct *tty, long newspd)
- 		quot = 0;
+ 	return 0;
+@@ -1288,7 +1287,7 @@ static int mxser_set_serial_info(struct tty_struct *tty,
+ 	if (tty_port_initialized(port)) {
+ 		if (flags != (port->flags & ASYNC_SPD_MASK)) {
+ 			spin_lock_irqsave(&info->slock, sl_flags);
+-			mxser_change_speed(tty, NULL);
++			mxser_change_speed(tty);
+ 			spin_unlock_irqrestore(&info->slock, sl_flags);
+ 		}
+ 	} else {
+@@ -1946,7 +1945,7 @@ static void mxser_set_termios(struct tty_struct *tty, struct ktermios *old_termi
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&info->slock, flags);
+-	mxser_change_speed(tty, old_termios);
++	mxser_change_speed(tty);
+ 	spin_unlock_irqrestore(&info->slock, flags);
+ 
+ 	if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty)) {
+@@ -2375,8 +2374,7 @@ static void mxser_release_ISA_res(struct mxser_board *brd)
+ 	mxser_release_vector(brd);
+ }
+ 
+-static int mxser_initbrd(struct mxser_board *brd,
+-		struct pci_dev *pdev)
++static int mxser_initbrd(struct mxser_board *brd)
+ {
+ 	struct mxser_port *info;
+ 	unsigned int i;
+@@ -2640,7 +2638,7 @@ static int mxser_probe(struct pci_dev *pdev,
  	}
  
--	info->timeout = ((info->xmit_fifo_size * HZ * 10 * quot) / info->baud_base);
--	info->timeout += HZ / 50;	/* Add .02 seconds of slop */
-+	/*
-+	 * worst case (128 * 1000 * 10 * 18432) needs 35 bits, so divide in the
-+	 * u64 domain
-+	 */
-+	timeout = (u64)info->xmit_fifo_size * HZ * 10 * quot;
-+	do_div(timeout, info->baud_base);
-+	info->timeout = timeout + HZ / 50; /* Add .02 seconds of slop */
+ 	/* mxser_initbrd will hook ISR. */
+-	retval = mxser_initbrd(brd, pdev);
++	retval = mxser_initbrd(brd);
+ 	if (retval)
+ 		goto err_rel3;
  
- 	if (quot) {
- 		info->MCR |= UART_MCR_DTR;
+@@ -2746,7 +2744,7 @@ static int __init mxser_module_init(void)
+ 				brd->info->name, ioaddr[b]);
+ 
+ 		/* mxser_initbrd will hook ISR. */
+-		if (mxser_initbrd(brd, NULL) < 0) {
++		if (mxser_initbrd(brd) < 0) {
+ 			mxser_release_ISA_res(brd);
+ 			brd->info = NULL;
+ 			continue;
 -- 
 2.14.1
