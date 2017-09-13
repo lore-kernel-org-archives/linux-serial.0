@@ -1,66 +1,81 @@
-From: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-Subject: Re: [PATCH v1 02/10] clk: at91: pmc: Save SCSR during suspend
-Date: Wed, 13 Sep 2017 14:10:41 +0200
-Message-ID: <318420d4-044f-d018-f70e-3ed4fcfb0fd0@microchip.com>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: Re: [PATCH v1 01/10] clk: at91: pmc: Wait for clocks when resuming
+Date: Wed, 13 Sep 2017 14:15:30 +0200
+Message-ID: <14fb5261-bb03-a6bd-6653-2a2c655b04ee@microchip.com>
 References: <20170908153604.28383-1-romain.izard.pro@gmail.com>
- <20170908153604.28383-3-romain.izard.pro@gmail.com>
+ <20170908153604.28383-2-romain.izard.pro@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170908153604.28383-3-romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+In-Reply-To: <20170908153604.28383-2-romain.izard.pro@gmail.com>
 Content-Language: en-US
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Romain Izard <romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Michael Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Ludovic Desroches <ludovic.desroches-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Wenyou Yang <wenyou.yang-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Josh Wu <rainyfeeling-1ViLX0X+lBJBDgjK7y7TUQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cyrille Pitchen <cyrille.pitchen-yU5RGvR974pGWvitb5QawA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Sender: linux-pwm-owner@vger.kernel.org
+To: Romain Izard <romain.izard.pro@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Jonathan Cameron <jic23@kernel.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>
+Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
 On 08/09/2017 at 17:35, Romain Izard wrote:
-> The contents of the System Clock Status Register (SCSR) needs to be
-> restored into the System Clock Enable Register (SCER).
+> Wait for the syncronization of all clocks when resuming, not only the
+> UPLL clock. Do not use regmap_read_poll_timeout, as it will call BUG()
+> when interrupts are masked, which is the case in here.
 > 
-> As the bootloader will restore some clocks by itself, the issue can be
-> missed as only the USB controller, the LCD controller, the Image Sensor
-> controller and the programmable clocks will be impacted.
+> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+> ---
+>  drivers/clk/at91/pmc.c | 24 ++++++++++++++++--------
+>  1 file changed, 16 insertions(+), 8 deletions(-)
 > 
-> Fix the obvious typo in the suspend/resume code, as the IMR register
-> does not need to be saved twice.
-> 
-> Signed-off-by: Romain Izard <romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
+> index 775af473fe11..5c2b26de303e 100644
+> --- a/drivers/clk/at91/pmc.c
+> +++ b/drivers/clk/at91/pmc.c
+> @@ -107,10 +107,20 @@ static int pmc_suspend(void)
+>  	return 0;
+>  }
+>  
+> +static bool pmc_ready(unsigned int mask)
+> +{
+> +	unsigned int status;
+> +
+> +	regmap_read(pmcreg, AT91_PMC_SR, &status);
+> +
+> +	return ((status & mask) == mask) ? 1 : 0;
+> +}
+> +
+>  static void pmc_resume(void)
+>  {
+> -	int i, ret = 0;
+> +	int i;
+>  	u32 tmp;
+> +	u32 mask = AT91_PMC_MCKRDY | AT91_PMC_LOCKA;
+>  
+>  	regmap_read(pmcreg, AT91_PMC_MCKR, &tmp);
+>  	if (pmc_cache.mckr != tmp)
+> @@ -134,13 +144,11 @@ static void pmc_resume(void)
+>  			     AT91_PMC_PCR_CMD);
+>  	}
+>  
+> -	if (pmc_cache.uckr & AT91_PMC_UPLLEN) {
+> -		ret = regmap_read_poll_timeout(pmcreg, AT91_PMC_SR, tmp,
+> -					       !(tmp & AT91_PMC_LOCKU),
+> -					       10, 5000);
+> -		if (ret)
+> -			pr_crit("USB PLL didn't lock when resuming\n");
+> -	}
+> +	if (pmc_cache.uckr & AT91_PMC_UPLLEN)
+> +		mask |= AT91_PMC_LOCKU;
+> +
+> +	while (!pmc_ready(mask))
+> +		cpu_relax();
 
-Yes, it looks like a typo:
-Acked-by: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-
-I didn't experienced the issue with LCD nor USB though.
+Okay, but I would prefer to keep the timeout property in it. So we may
+need to re-implement a timeout way-out here.
 
 Regards,
 
-> ---
->  drivers/clk/at91/pmc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
-> index 5c2b26de303e..07dc2861ad3f 100644
-> --- a/drivers/clk/at91/pmc.c
-> +++ b/drivers/clk/at91/pmc.c
-> @@ -86,7 +86,7 @@ static int pmc_suspend(void)
->  {
->  	int i;
+>  }
 >  
-> -	regmap_read(pmcreg, AT91_PMC_IMR, &pmc_cache.scsr);
-> +	regmap_read(pmcreg, AT91_PMC_SCSR, &pmc_cache.scsr);
->  	regmap_read(pmcreg, AT91_PMC_PCSR, &pmc_cache.pcsr0);
->  	regmap_read(pmcreg, AT91_CKGR_UCKR, &pmc_cache.uckr);
->  	regmap_read(pmcreg, AT91_CKGR_MOR, &pmc_cache.mor);
-> @@ -129,7 +129,7 @@ static void pmc_resume(void)
->  	if (pmc_cache.pllar != tmp)
->  		pr_warn("PLLAR was not configured properly by the firmware\n");
->  
-> -	regmap_write(pmcreg, AT91_PMC_IMR, pmc_cache.scsr);
-> +	regmap_write(pmcreg, AT91_PMC_SCER, pmc_cache.scsr);
->  	regmap_write(pmcreg, AT91_PMC_PCER, pmc_cache.pcsr0);
->  	regmap_write(pmcreg, AT91_CKGR_UCKR, pmc_cache.uckr);
->  	regmap_write(pmcreg, AT91_CKGR_MOR, pmc_cache.mor);
+>  static struct syscore_ops pmc_syscore_ops = {
 > 
 
 
