@@ -1,72 +1,68 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH v5 7/7] dt-bindings: serial: document rs485 bindings for
- various devices
-Date: Wed, 13 Sep 2017 11:54:28 +0200
-Message-ID: <20170913095428.xryd526xjyuiecab@pengutronix.de>
-References: <20170913081833.2740-1-u.kleine-koenig@pengutronix.de>
- <20170913081833.2740-8-u.kleine-koenig@pengutronix.de>
- <f0f3971d-3166-ee28-7978-a958f7b7835e@gmail.com>
+From: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+Subject: Re: [PATCH v1 02/10] clk: at91: pmc: Save SCSR during suspend
+Date: Wed, 13 Sep 2017 14:10:41 +0200
+Message-ID: <318420d4-044f-d018-f70e-3ed4fcfb0fd0@microchip.com>
+References: <20170908153604.28383-1-romain.izard.pro@gmail.com>
+ <20170908153604.28383-3-romain.izard.pro@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <f0f3971d-3166-ee28-7978-a958f7b7835e-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Ian Arkver <ian.arkver.dev-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170908153604.28383-3-romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Romain Izard <romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Michael Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Ludovic Desroches <ludovic.desroches-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Wenyou Yang <wenyou.yang-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Josh Wu <rainyfeeling-1ViLX0X+lBJBDgjK7y7TUQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cyrille Pitchen <cyrille.pitchen-yU5RGvR974pGWvitb5QawA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Sep 13, 2017 at 10:52:30AM +0100, Ian Arkver wrote:
-> On 13/09/17 09:18, Uwe Kleine-König wrote:
-> > Atmel USART, Freescale UARTs and OMAP UART all support the rs485 binding
-> > described in rs485.txt, this commit just makes that explicit.
-> > 
-> > Acked-by: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-> > Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> > Signed-off-by: Uwe Kleine-König <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> > ---
-> >   Documentation/devicetree/bindings/serial/atmel-usart.txt  | 1 +
-> >   Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 1 +
-> >   Documentation/devicetree/bindings/serial/fsl-lpuart.txt   | 1 +
-> >   Documentation/devicetree/bindings/serial/omap_serial.txt  | 1 +
-> >   4 files changed, 4 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/serial/atmel-usart.txt b/Documentation/devicetree/bindings/serial/atmel-usart.txt
-> > index e6e6142e33ac..7c0d6b2f53e4 100644
-> > --- a/Documentation/devicetree/bindings/serial/atmel-usart.txt
-> > +++ b/Documentation/devicetree/bindings/serial/atmel-usart.txt
-> > @@ -24,6 +24,7 @@ Optional properties:
-> >   	- dma-names: "rx" for RX channel, "tx" for TX channel.
-> >   - atmel,fifo-size: maximum number of data the RX and TX FIFOs can store for FIFO
-> >     capable USARTs.
-> > +- rs485-rts-delay, rs485-rx-during-tx, linux,rs485-enabled-at-boot-time: see rs485.txt
-> >   <chip> compatible description:
-> >   - at91rm9200:  legacy USART support
-> > diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-> > index 574c3a2c77d5..860a9559839a 100644
-> > --- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-> > +++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-> > @@ -9,6 +9,7 @@ Optional properties:
-> >   - fsl,irda-mode : Indicate the uart supports irda mode
-> >   - fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
-> >                     in DCE mode by default.
-> > +- rs485-rts-delay, rs485-rx-during-tx, linux,rs485-enabled-at-boot-time: see rs485.txt
+On 08/09/2017 at 17:35, Romain Izard wrote:
+> The contents of the System Clock Status Register (SCSR) needs to be
+> restored into the System Clock Enable Register (SCER).
 > 
-> imx.c ignores the values in delay_rts_before_send and delay_rts_after_send,
-> so maybe we shouldn't mention rs485-rts-delay here?
+> As the bootloader will restore some clocks by itself, the issue can be
+> missed as only the USB controller, the LCD controller, the Image Sensor
+> controller and the programmable clocks will be impacted.
+> 
+> Fix the obvious typo in the suspend/resume code, as the IMR register
+> does not need to be saved twice.
+> 
+> Signed-off-by: Romain Izard <romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-I have a patch here fixing that. Hmm, even without this implemented it
-is IMHO fine to document it here.
+Yes, it looks like a typo:
+Acked-by: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
 
-Best regards
-Uwe
+I didn't experienced the issue with LCD nor USB though.
+
+Regards,
+
+> ---
+>  drivers/clk/at91/pmc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
+> index 5c2b26de303e..07dc2861ad3f 100644
+> --- a/drivers/clk/at91/pmc.c
+> +++ b/drivers/clk/at91/pmc.c
+> @@ -86,7 +86,7 @@ static int pmc_suspend(void)
+>  {
+>  	int i;
+>  
+> -	regmap_read(pmcreg, AT91_PMC_IMR, &pmc_cache.scsr);
+> +	regmap_read(pmcreg, AT91_PMC_SCSR, &pmc_cache.scsr);
+>  	regmap_read(pmcreg, AT91_PMC_PCSR, &pmc_cache.pcsr0);
+>  	regmap_read(pmcreg, AT91_CKGR_UCKR, &pmc_cache.uckr);
+>  	regmap_read(pmcreg, AT91_CKGR_MOR, &pmc_cache.mor);
+> @@ -129,7 +129,7 @@ static void pmc_resume(void)
+>  	if (pmc_cache.pllar != tmp)
+>  		pr_warn("PLLAR was not configured properly by the firmware\n");
+>  
+> -	regmap_write(pmcreg, AT91_PMC_IMR, pmc_cache.scsr);
+> +	regmap_write(pmcreg, AT91_PMC_SCER, pmc_cache.scsr);
+>  	regmap_write(pmcreg, AT91_PMC_PCER, pmc_cache.pcsr0);
+>  	regmap_write(pmcreg, AT91_CKGR_UCKR, pmc_cache.uckr);
+>  	regmap_write(pmcreg, AT91_CKGR_MOR, pmc_cache.mor);
+> 
+
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Nicolas Ferre
