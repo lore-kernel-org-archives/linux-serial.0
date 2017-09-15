@@ -1,69 +1,74 @@
 From: Romain Izard <romain.izard.pro@gmail.com>
-Subject: [PATCH v2 1/9] clk: at91: pmc: Wait for clocks when resuming
-Date: Fri, 15 Sep 2017 16:04:03 +0200
-Message-ID: <20170915140411.31716-2-romain.izard.pro@gmail.com>
+Subject: [PATCH v2 4/9] mtd: nand: atmel: Avoid ECC errors when leaving backup mode
+Date: Fri, 15 Sep 2017 16:04:06 +0200
+Message-ID: <20170915140411.31716-5-romain.izard.pro@gmail.com>
 References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
-Return-path: <linux-clk-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170915140411.31716-1-romain.izard.pro@gmail.com>
-Sender: linux-clk-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>
 Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Romain Izard <romain.izard.pro@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Wait for the syncronization of all clocks when resuming, not only the
-UPLL clock. Do not use regmap_read_poll_timeout, as it will call BUG()
-when interrupts are masked, which is the case in here.
+During backup mode, the contents of all registers will be cleared as the
+SoC will be completely powered down. For a product that boots on NAND
+Flash memory, the bootloader will obviously use the related controller
+to read the Flash and correct any detected error in the memory, before
+handling back control to the kernel's resuming entry point.
+
+In normal devices, it is up to the driver's suspend/resume code to
+restore the registers in a valid state. But the PMECC is not a regular
+device in the driver model when used with the legacy device tree binding
+for the Atmel NAND controller, and suspend/resume code is not called.
+
+As in my case the bootloader leaves the PMECC controller in a programmed
+state, and the controller is only reset at boot or after a NAND access,
+the first NAND Flash access with the Atmel controller will report
+uncorrectable ECC errors.
+
+To avoid this, systematically reset the PMECC controller before using
+it.
 
 Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
 ---
- drivers/clk/at91/pmc.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ drivers/mtd/nand/atmel/pmecc.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
-index 775af473fe11..5c2b26de303e 100644
---- a/drivers/clk/at91/pmc.c
-+++ b/drivers/clk/at91/pmc.c
-@@ -107,10 +107,20 @@ static int pmc_suspend(void)
- 	return 0;
- }
+diff --git a/drivers/mtd/nand/atmel/pmecc.c b/drivers/mtd/nand/atmel/pmecc.c
+index 8c210a5776bc..8d1208f38025 100644
+--- a/drivers/mtd/nand/atmel/pmecc.c
++++ b/drivers/mtd/nand/atmel/pmecc.c
+@@ -777,6 +777,9 @@ int atmel_pmecc_enable(struct atmel_pmecc_user *user, int op)
  
-+static bool pmc_ready(unsigned int mask)
-+{
-+	unsigned int status;
+ 	mutex_lock(&user->pmecc->lock);
+ 
++	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
++	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
 +
-+	regmap_read(pmcreg, AT91_PMC_SR, &status);
-+
-+	return ((status & mask) == mask) ? 1 : 0;
-+}
-+
- static void pmc_resume(void)
+ 	cfg = user->cache.cfg;
+ 	if (op == NAND_ECC_WRITE)
+ 		cfg |= PMECC_CFG_WRITE_OP;
+@@ -797,10 +800,6 @@ EXPORT_SYMBOL_GPL(atmel_pmecc_enable);
+ 
+ void atmel_pmecc_disable(struct atmel_pmecc_user *user)
  {
--	int i, ret = 0;
-+	int i;
- 	u32 tmp;
-+	u32 mask = AT91_PMC_MCKRDY | AT91_PMC_LOCKA;
+-	struct atmel_pmecc *pmecc = user->pmecc;
+-
+-	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+-	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
+ 	mutex_unlock(&user->pmecc->lock);
+ }
+ EXPORT_SYMBOL_GPL(atmel_pmecc_disable);
+@@ -856,10 +855,6 @@ static struct atmel_pmecc *atmel_pmecc_create(struct platform_device *pdev,
+ 	/* Disable all interrupts before registering the PMECC handler. */
+ 	writel(0xffffffff, pmecc->regs.base + ATMEL_PMECC_IDR);
  
- 	regmap_read(pmcreg, AT91_PMC_MCKR, &tmp);
- 	if (pmc_cache.mckr != tmp)
-@@ -134,13 +144,11 @@ static void pmc_resume(void)
- 			     AT91_PMC_PCR_CMD);
- 	}
- 
--	if (pmc_cache.uckr & AT91_PMC_UPLLEN) {
--		ret = regmap_read_poll_timeout(pmcreg, AT91_PMC_SR, tmp,
--					       !(tmp & AT91_PMC_LOCKU),
--					       10, 5000);
--		if (ret)
--			pr_crit("USB PLL didn't lock when resuming\n");
--	}
-+	if (pmc_cache.uckr & AT91_PMC_UPLLEN)
-+		mask |= AT91_PMC_LOCKU;
-+
-+	while (!pmc_ready(mask))
-+		cpu_relax();
+-	/* Reset the ECC engine */
+-	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+-	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
+-
+ 	return pmecc;
  }
  
- static struct syscore_ops pmc_syscore_ops = {
 -- 
 2.11.0
-
