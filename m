@@ -1,128 +1,201 @@
-From: Romain Izard <romain.izard.pro@gmail.com>
-Subject: [PATCH v2 9/9] tty/serial: atmel: Prevent a warning on suspend
-Date: Fri, 15 Sep 2017 16:04:11 +0200
-Message-ID: <20170915140411.31716-10-romain.izard.pro@gmail.com>
-References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
+From: Martyn Welch <martyn.welch@collabora.co.uk>
+Subject: Re: [PATCH v2 3/6] serial: imx: remove CTSC and CTS handling
+Date: Fri, 15 Sep 2017 21:57:30 +0100
+Message-ID: <20170915205730.GA31343@hermes.home>
+References: <20170705133845.32ov37meqcea3wtz@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170915140411.31716-1-romain.izard.pro@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20170705133845.32ov37meqcea3wtz@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>
-Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Romain Izard <romain.izard.pro@gmail.com>
+To: u.kleine-koenig@pengutronix.de
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Nandor Han <nandor.han@ge.com>, Romain Perier <romain.perier@collabora.com>, Fabio Estevam <fabio.estevam@nxp.com>, Clemens Gruber <clemens.gruber@pqgruber.com>
 List-Id: linux-serial@vger.kernel.org
 
-The atmel serial port driver reported the following warning on suspend:
-atmel_usart f8020000.serial: ttyS1: Unable to drain transmitter
+Hi
 
-As the ATMEL_US_TXEMPTY status bit in ATMEL_US_CSR is always cleared
-when the transmitter is disabled, we need to know the transmitter's
-state to return the real fifo state. And as ATMEL_US_CR is write-only,
-it is necessary to save the state of the transmitter in a local
-variable, and update the variable when TXEN and TXDIS is written in
-ATMEL_US_CR.
+On Wed, Jul 05, 2017 at 03:38:45PM +0200, Uwe Kleine-König wrote:
+> Cc += Clemens Gruber + Fabio Estevam
+> 
+> On Wed, Jul 05, 2017 at 03:07:03PM +0200, Romain Perier wrote:
+> > From: Nandor Han <nandor.han@ge.com>
+> > 
+> > CTSC and CTS are not related to DMA and might add
+> > disruption in some cases.
+> > 
+> > Signed-off-by: Romain Perier <romain.perier@collabora.com>
+> 
+> If it was Nandor Han who created this patch, it would be great to get
+> his sob. If it was you, drop the From: line above.
+> 
 
-After those changes, atmel_tx_empty can return "empty" on suspend, the
-warning in uart_suspend_port disappears, and suspending is 20ms shorter
-for each enabled Atmel serial port.
+This patch was broken out from a larger one written by Nandor, who is
+happy for me to add his sob.
 
-Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
----
- drivers/tty/serial/atmel_serial.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+> > ---
+> >  drivers/tty/serial/imx.c | 5 -----
+> >  1 file changed, 5 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > index 5291b86..dd3ebb4 100644
+> > --- a/drivers/tty/serial/imx.c
+> > +++ b/drivers/tty/serial/imx.c
+> > @@ -1249,11 +1249,6 @@ static void imx_disable_dma(struct imx_port *sport)
+> >  	imx_stop_rx_dma(sport);
+> >  	imx_stop_tx_dma(sport);
+> >  
+> > -	/* clear UCR2 */
+> > -	temp = readl(sport->port.membase + UCR2);
+> > -	temp &= ~(UCR2_CTSC | UCR2_CTS | UCR2_ATEN);
+> > -	writel(temp, sport->port.membase + UCR2);
+> > -
+> 
+> Before this patch imx_disable_dma resulted in the #CTS pin being high
+> (inactive).
+> 
+> Does this qualify as a fix? If so, you should sort this patch to the
+> beginning of the series. Did you do test this patch and its effects
+> separately?
+> 
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 7551cab438ff..783af6648be0 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -171,6 +171,7 @@ struct atmel_uart_port {
- 	bool			has_hw_timer;
- 	struct timer_list	uart_timer;
- 
-+	bool			tx_stopped;
- 	bool			suspended;
- 	unsigned int		pending;
- 	unsigned int		pending_status;
-@@ -380,6 +381,10 @@ static int atmel_config_rs485(struct uart_port *port,
-  */
- static u_int atmel_tx_empty(struct uart_port *port)
- {
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+
-+	if (atmel_port->tx_stopped)
-+		return TIOCSER_TEMT;
- 	return (atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXEMPTY) ?
- 		TIOCSER_TEMT :
- 		0;
-@@ -485,6 +490,7 @@ static void atmel_stop_tx(struct uart_port *port)
- 	 * is fully transmitted.
- 	 */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS);
-+	atmel_port->tx_stopped = true;
- 
- 	/* Disable interrupts */
- 	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
-@@ -492,6 +498,7 @@ static void atmel_stop_tx(struct uart_port *port)
- 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
- 	    !(port->rs485.flags & SER_RS485_RX_DURING_TX))
- 		atmel_start_rx(port);
-+
- }
- 
- /*
-@@ -521,6 +528,7 @@ static void atmel_start_tx(struct uart_port *port)
- 
- 	/* re-enable the transmitter */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
-+	atmel_port->tx_stopped = false;
- }
- 
- /*
-@@ -1866,6 +1874,7 @@ static int atmel_startup(struct uart_port *port)
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
- 	/* enable xmit & rcvr */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	setup_timer(&atmel_port->uart_timer,
- 			atmel_uart_timer_callback,
-@@ -2122,6 +2131,7 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	/* disable receiver and transmitter */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS | ATMEL_US_RXDIS);
-+	atmel_port->tx_stopped = true;
- 
- 	/* mode */
- 	if (port->rs485.flags & SER_RS485_ENABLED) {
-@@ -2207,6 +2217,7 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
- 	atmel_uart_writel(port, ATMEL_US_BRGR, quot);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	/* restore interrupts */
- 	atmel_uart_writel(port, ATMEL_US_IER, imr);
-@@ -2450,6 +2461,7 @@ static void atmel_console_write(struct console *co, const char *s, u_int count)
- 
- 	/* Make sure that tx path is actually able to send characters */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	uart_console_write(port, s, count, atmel_console_putchar);
- 
-@@ -2511,6 +2523,7 @@ static int __init atmel_console_setup(struct console *co, char *options)
- {
- 	int ret;
- 	struct uart_port *port = &atmel_ports[co->index].uart;
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
- 	int baud = 115200;
- 	int bits = 8;
- 	int parity = 'n';
-@@ -2528,6 +2541,7 @@ static int __init atmel_console_setup(struct console *co, char *options)
- 	atmel_uart_writel(port, ATMEL_US_IDR, -1);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
--- 
-2.11.0
+I've been giving the RTS/CTS lines a bit of a kick with (and without) this
+patch and I'm seeing what I'd expect to see on the CTS pin (the Wandboard
+I'm using runs this in DCE mode even though it really should be in DTE
+mode, hey ho). Using a little test app I've found/modified (listed below),
+the CTS line can be (de)asserted whilst the device is open and the line
+gets deasserted when the device closes. I have tested this port both when
+acting as a console (and thus with DMA turned off) and when not used as a
+console, with DMA enabled (confirmed with existing debug in driver).
+
+This matches the behaviour of a FTDI based debug board that I've also
+tried (in this case I looked at the RTS line as the device is running as a
+DTE).
+
+On my PC the same test app sets the RTS line (the serial port running as a
+DTE, 8250_pnp driver) results in the CTS line being set appropriately as
+well. It also stays in that state even after the serial device is closed,
+this does seem right either but there you go.
+
+With regards to the operation of the CTS/RTS line when twiddling it via
+the ioctl, I think the behaviour of the IMX/FTDI is the expected one. Is
+that the case?
+
+Which I guess brings us to the lines above.
+
+When running as an RS232 port (i.e. not rs485) the driver is using the
+automatic CTSC control based on a rxFIFO watermark unless the state of the
+CTS line is explictly set via an ioctl call. As such, unless I'm missing
+something, the rxFIFO (and thus the automatic CTS control) is independent
+of whether the DMA is running or not and thus this section looks wrong or
+is at the very least in the wrong place.
+
+Have I misunderstood something?
+
+IIRC, the timing of DMA being enabled and disabled was changed reasonably
+recently did that fix the #CTS issue possibly?
+
+Martyn
+
+----
+
+Test app:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <termios.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdbool.h>
+
+static struct termios oldterminfo;
+
+
+void closeserial(int fd)
+{
+    tcsetattr(fd, TCSANOW, &oldterminfo);
+    if (close(fd) < 0)
+        perror("closeserial()");
+}
+
+
+int openserial(char *devicename)
+{
+    int fd;
+    struct termios attr;
+
+    if ((fd = open(devicename, O_RDWR)) == -1) {
+        perror("openserial(): open()");
+        return 0;
+    }
+    if (tcgetattr(fd, &oldterminfo) == -1) {
+        perror("openserial(): tcgetattr()");
+        return 0;
+    }
+    attr = oldterminfo;
+    attr.c_cflag |= CRTSCTS | CLOCAL;
+    attr.c_oflag = 0;
+    if (tcflush(fd, TCIOFLUSH) == -1) {
+        perror("openserial(): tcflush()");
+        return 0;
+    }
+    if (tcsetattr(fd, TCSANOW, &attr) == -1) {
+        perror("initserial(): tcsetattr()");
+        return 0;
+    }
+    return fd;
+}
+
+
+int setRTS(int fd, int level)
+{
+    int status;
+
+    if (ioctl(fd, TIOCMGET, &status) == -1) {
+        perror("setRTS(): TIOCMGET");
+        return 0;
+    }
+    if (level)
+        status |= TIOCM_RTS;
+    else
+        status &= ~TIOCM_RTS;
+    if (ioctl(fd, TIOCMSET, &status) == -1) {
+        perror("setRTS(): TIOCMSET");
+        return 0;
+    }
+    return 1;
+}
+
+
+int main(int argc, char *argv[])
+{
+    int fd;
+    bool loop = true;
+    int state = 1;
+    int got;
+    
+
+    fd = openserial(argv[1]);
+    if (!fd) {
+        fprintf(stderr, "Error while initializing %s.\n", argv[1]);
+        return 1;
+    }
+
+
+    while(loop) {
+        printf("Switching RTS %s\n", state ? "on" : "off");
+        setRTS(fd, state);
+
+        state = (++state) % 2;
+
+	got = getchar();
+	if (got == 'q')
+            break;
+    }
+    closeserial(fd);
+    return 0;
+}
