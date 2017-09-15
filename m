@@ -1,93 +1,51 @@
-From: nixiaoming <nixiaoming@huawei.com>
-Subject: [PATCH] tty fix oops when rmmod 8250
-Date: Fri, 15 Sep 2017 17:45:55 +0800
-Message-ID: <20170915094555.55333-1-nixiaoming@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, viro@zeniv.linux.org.uk, torvalds@linux-foundation.org, adobriyan@gmail.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, nixiaoming@huawei.com
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: [PATCH v2 0/9] Various patches for SAMA5D2 backup mode
+Date: Fri, 15 Sep 2017 16:04:02 +0200
+Message-ID: <20170915140411.31716-1-romain.izard.pro@gmail.com>
+Return-path: <linux-clk-owner@vger.kernel.org>
+Sender: linux-clk-owner@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>
+Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Romain Izard <romain.izard.pro@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-After rmmod 8250.ko
-tty_kref_put starts kwork (release_one_tty) to release proc interface
-oops when accessing driver->driver_name in proc_tty_unregister_driver
+While the core of the backup mode for SAMA5D2 has been integrated in
+v4.13, it is far from complete. Individual controllers in the chip have
+drivers that do not support the reset of the registers during suspend,
+and they need to be adapted to handle it.
 
-Use jprobe, found driver->driver_name point to 8250.ko
-static static struct uart_driver serial8250_reg
-.driver_name= serial,
+The first patch uses the clock wakeup code from the prototype backup
+mode instead of the version integrated in the mainline, as the mainline
+version is not stable. During a test loop with two-second backup
+suspend, the mainline version will hang in less than one day, whereas
+the prototype version has been running the same test for more than a
+week without hanging.
 
-Use name in proc_dir_entry instead of driver->driver_name to fix oops
+Changes in v2:
+* drop the IIO patch duplicating existing code
+* determine the number of programmable clocks to save dynamically
+* declare a required local variable in the tty/serial patch
 
-test on linux 4.1.12:
+Romain Izard (9):
+  clk: at91: pmc: Wait for clocks when resuming
+  clk: at91: pmc: Save SCSR during suspend
+  clk: at91: pmc: Support backup for programmable clocks
+  mtd: nand: atmel: Avoid ECC errors when leaving backup mode
+  mtd: nand: atmel: Report PMECC failures as errors
+  ehci-atmel: Power down during suspend is normal
+  pwm: atmel-tcb: Support backup mode
+  atmel_flexcom: Support backup mode
+  tty/serial: atmel: Prevent a warning on suspend
 
-BUG: unable to handle kernel paging request at ffffffffa01979de
-IP: [<ffffffff81310f40>] strchr+0x0/0x30
-PGD 1a0d067 PUD 1a0e063 PMD 851c1f067 PTE 0
-Oops: 0000 [#1] PREEMPT SMP
-Modules linked in: ... ...  [last unloaded: 8250]
-CPU: 7 PID: 116 Comm: kworker/7:1 Tainted: G           O    4.1.12 #1
-Hardware name: Insyde RiverForest/Type2 - Board Product Name1, BIOS NE5KV904 12/21/2015
-Workqueue: events release_one_tty
-task: ffff88085b684960 ti: ffff880852884000 task.ti: ffff880852884000
-RIP: 0010:[<ffffffff81310f40>]  [<ffffffff81310f40>] strchr+0x0/0x30
-RSP: 0018:ffff880852887c90  EFLAGS: 00010282
-RAX: ffffffff81a5eca0 RBX: ffffffffa01979de RCX: 0000000000000004
-RDX: ffff880852887d10 RSI: 000000000000002f RDI: ffffffffa01979de
-RBP: ffff880852887cd8 R08: 0000000000000000 R09: ffff88085f5d94d0
-R10: 0000000000000195 R11: 0000000000000000 R12: ffffffffa01979de
-R13: ffff880852887d00 R14: ffffffffa01979de R15: ffff88085f02e840
-FS:  0000000000000000(0000) GS:ffff88085f5c0000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffa01979de CR3: 0000000001a0c000 CR4: 00000000001406e0
-Stack:
- ffffffff812349b1 ffff880852887cb8 ffff880852887d10 ffff88085f5cd6c2
- ffff880852800a80 ffffffffa01979de ffff880852800a84 0000000000000010
- ffff88085bb28bd8 ffff880852887d38 ffffffff812354f0 ffff880852887d08
-Call Trace:
- [<ffffffff812349b1>] ? __xlate_proc_name+0x71/0xd0
- [<ffffffff812354f0>] remove_proc_entry+0x40/0x180
- [<ffffffff815f6811>] ? _raw_spin_lock_irqsave+0x41/0x60
- [<ffffffff813be520>] ? destruct_tty_driver+0x60/0xe0
- [<ffffffff81237c68>] proc_tty_unregister_driver+0x28/0x40
- [<ffffffff813be548>] destruct_tty_driver+0x88/0xe0
- [<ffffffff813be5bd>] tty_driver_kref_put+0x1d/0x20
- [<ffffffff813becca>] release_one_tty+0x5a/0xd0
- [<ffffffff81074159>] process_one_work+0x139/0x420
- [<ffffffff810745a1>] worker_thread+0x121/0x450
- [<ffffffff81074480>] ? process_scheduled_works+0x40/0x40
- [<ffffffff8107a16c>] kthread+0xec/0x110
- [<ffffffff81080000>] ? tg_rt_schedulable+0x210/0x220
- [<ffffffff8107a080>] ? kthread_freezable_should_stop+0x80/0x80
- [<ffffffff815f7292>] ret_from_fork+0x42/0x70
- [<ffffffff8107a080>] ? kthread_freezable_should_stop+0x80/0x80
+ drivers/clk/at91/clk-programmable.c |  2 ++
+ drivers/clk/at91/pmc.c              | 55 +++++++++++++++++++++++++------
+ drivers/clk/at91/pmc.h              |  2 ++
+ drivers/mfd/atmel-flexcom.c         | 65 ++++++++++++++++++++++++++++---------
+ drivers/mtd/nand/atmel/pmecc.c      | 15 ++++-----
+ drivers/pwm/pwm-atmel-tcb.c         | 63 +++++++++++++++++++++++++++++++++--
+ drivers/tty/serial/atmel_serial.c   | 14 ++++++++
+ drivers/usb/host/ehci-atmel.c       |  3 +-
+ 8 files changed, 182 insertions(+), 37 deletions(-)
 
-Signed-off-by: nixiaoming <nixiaoming@huawei.com>
----
- fs/proc/proc_tty.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/fs/proc/proc_tty.c b/fs/proc/proc_tty.c
-index 901bd06..20e2c18 100644
---- a/fs/proc/proc_tty.c
-+++ b/fs/proc/proc_tty.c
-@@ -14,6 +14,7 @@
- #include <linux/tty.h>
- #include <linux/seq_file.h>
- #include <linux/bitops.h>
-+#include "internal.h"
- 
- /*
-  * The /proc/tty directory inodes...
-@@ -164,7 +165,7 @@ void proc_tty_unregister_driver(struct tty_driver *driver)
- 	if (!ent)
- 		return;
- 		
--	remove_proc_entry(driver->driver_name, proc_tty_driver);
-+	remove_proc_entry(ent->name, proc_tty_driver);
- 	
- 	driver->proc_entry = NULL;
- }
 -- 
-2.11.0.1
+2.11.0
+
