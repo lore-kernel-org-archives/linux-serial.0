@@ -1,7 +1,7 @@
 From: nixiaoming <nixiaoming@huawei.com>
 Subject: [PATCH] tty fix oops when rmmod 8250
-Date: Fri, 15 Sep 2017 17:45:56 +0800
-Message-ID: <20170915094556.55384-1-nixiaoming@huawei.com>
+Date: Fri, 15 Sep 2017 17:45:55 +0800
+Message-ID: <20170915094555.55333-1-nixiaoming@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
