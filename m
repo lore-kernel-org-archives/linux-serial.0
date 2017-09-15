@@ -1,98 +1,93 @@
-From: Romain Izard <romain.izard.pro@gmail.com>
-Subject: Re: [PATCH v1 01/10] clk: at91: pmc: Wait for clocks when resuming
-Date: Thu, 14 Sep 2017 18:15:56 +0200
-Message-ID: <CAGkQfmPB8b38=hJrtuKJ-Hiqdfx9dt5SQ5R7EBL9cJV5_eRmXQ@mail.gmail.com>
-References: <20170908153604.28383-1-romain.izard.pro@gmail.com>
- <20170908153604.28383-2-romain.izard.pro@gmail.com> <14fb5261-bb03-a6bd-6653-2a2c655b04ee@microchip.com>
+From: nixiaoming <nixiaoming@huawei.com>
+Subject: [PATCH] tty fix oops when rmmod 8250
+Date: Fri, 15 Sep 2017 17:45:56 +0800
+Message-ID: <20170915094556.55384-1-nixiaoming@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <14fb5261-bb03-a6bd-6653-2a2c655b04ee@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Jonathan Cameron <jic23@kernel.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, linux-clk@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org, linux-mtd <linux-mtd@lists.in>
+To: gregkh@linuxfoundation.org, jslaby@suse.com, viro@zeniv.linux.org.uk, torvalds@linux-foundation.org, adobriyan@gmail.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, nixiaoming@huawei.com
 List-Id: linux-serial@vger.kernel.org
 
-2017-09-13 14:15 GMT+02:00 Nicolas Ferre <nicolas.ferre@microchip.com>:
-> On 08/09/2017 at 17:35, Romain Izard wrote:
->> Wait for the syncronization of all clocks when resuming, not only the
->> UPLL clock. Do not use regmap_read_poll_timeout, as it will call BUG()
->> when interrupts are masked, which is the case in here.
->>
->> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
->> ---
->>  drivers/clk/at91/pmc.c | 24 ++++++++++++++++--------
->>  1 file changed, 16 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
->> index 775af473fe11..5c2b26de303e 100644
->> --- a/drivers/clk/at91/pmc.c
->> +++ b/drivers/clk/at91/pmc.c
->> @@ -107,10 +107,20 @@ static int pmc_suspend(void)
->>       return 0;
->>  }
->>
->> +static bool pmc_ready(unsigned int mask)
->> +{
->> +     unsigned int status;
->> +
->> +     regmap_read(pmcreg, AT91_PMC_SR, &status);
->> +
->> +     return ((status & mask) == mask) ? 1 : 0;
->> +}
->> +
->>  static void pmc_resume(void)
->>  {
->> -     int i, ret = 0;
->> +     int i;
->>       u32 tmp;
->> +     u32 mask = AT91_PMC_MCKRDY | AT91_PMC_LOCKA;
->>
->>       regmap_read(pmcreg, AT91_PMC_MCKR, &tmp);
->>       if (pmc_cache.mckr != tmp)
->> @@ -134,13 +144,11 @@ static void pmc_resume(void)
->>                            AT91_PMC_PCR_CMD);
->>       }
->>
->> -     if (pmc_cache.uckr & AT91_PMC_UPLLEN) {
->> -             ret = regmap_read_poll_timeout(pmcreg, AT91_PMC_SR, tmp,
->> -                                            !(tmp & AT91_PMC_LOCKU),
->> -                                            10, 5000);
->> -             if (ret)
->> -                     pr_crit("USB PLL didn't lock when resuming\n");
->> -     }
->> +     if (pmc_cache.uckr & AT91_PMC_UPLLEN)
->> +             mask |= AT91_PMC_LOCKU;
->> +
->> +     while (!pmc_ready(mask))
->> +             cpu_relax();
->
-> Okay, but I would prefer to keep the timeout property in it. So we may
-> need to re-implement a timeout way-out here.
->
+After rmmod 8250.ko
+tty_kref_put starts kwork (release_one_tty) to release proc interface
+oops when accessing driver->driver_name in proc_tty_unregister_driver
 
-We need to have a reference clock to measure the timeout delay. If we use
-the kernel's timekeeping, it relies on the clocks that we are configuring in
-this code. Moreover, my experience with the mainline code is that when
-something goes wrong, nothing will work. No oops or panic will be reported,
-the device will just stop working.
+Use jprobe, found driver->driver_name point to 8250.ko
+static static struct uart_driver serial8250_reg
+.driver_name= serial,
 
-In my case, I had obvious failures (it just stopped working unless I removed
-USB wakeup or activated the console during suspend) but also very rare
-failures, that occurred in the bootloader. Those issues were detected when
-testing repeated suspend cycles for a night: the memory controller would
-never enter the self-refresh mode during the resume sequence.
+Use name in proc_dir_entry instead of driver->driver_name to fix oops
 
-This led me to question the bootloader's code first, and I set up 4 boards
-with the backup prototype code on v4.9 to verify that it was stable on
-suspend. I've reached 1.5 million sleep cycles over 3 weeks without
-failure, so this hinted towards the difference between the prototype and the
-backup code provided for v4.12 (which contained the patch that got in
-v4.13). Once I integrated this patch, I've run the v4.12 code for 2 weeks
-without issue as well.
+test on linux 4.1.12:
 
-In the end, I don't want to touch this code if I do not have to, as checking
-that it does not regress is really cumbersome.
+BUG: unable to handle kernel paging request at ffffffffa01979de
+IP: [<ffffffff81310f40>] strchr+0x0/0x30
+PGD 1a0d067 PUD 1a0e063 PMD 851c1f067 PTE 0
+Oops: 0000 [#1] PREEMPT SMP
+Modules linked in: ... ...  [last unloaded: 8250]
+CPU: 7 PID: 116 Comm: kworker/7:1 Tainted: G           O    4.1.12 #1
+Hardware name: Insyde RiverForest/Type2 - Board Product Name1, BIOS NE5KV904 12/21/2015
+Workqueue: events release_one_tty
+task: ffff88085b684960 ti: ffff880852884000 task.ti: ffff880852884000
+RIP: 0010:[<ffffffff81310f40>]  [<ffffffff81310f40>] strchr+0x0/0x30
+RSP: 0018:ffff880852887c90  EFLAGS: 00010282
+RAX: ffffffff81a5eca0 RBX: ffffffffa01979de RCX: 0000000000000004
+RDX: ffff880852887d10 RSI: 000000000000002f RDI: ffffffffa01979de
+RBP: ffff880852887cd8 R08: 0000000000000000 R09: ffff88085f5d94d0
+R10: 0000000000000195 R11: 0000000000000000 R12: ffffffffa01979de
+R13: ffff880852887d00 R14: ffffffffa01979de R15: ffff88085f02e840
+FS:  0000000000000000(0000) GS:ffff88085f5c0000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffa01979de CR3: 0000000001a0c000 CR4: 00000000001406e0
+Stack:
+ ffffffff812349b1 ffff880852887cb8 ffff880852887d10 ffff88085f5cd6c2
+ ffff880852800a80 ffffffffa01979de ffff880852800a84 0000000000000010
+ ffff88085bb28bd8 ffff880852887d38 ffffffff812354f0 ffff880852887d08
+Call Trace:
+ [<ffffffff812349b1>] ? __xlate_proc_name+0x71/0xd0
+ [<ffffffff812354f0>] remove_proc_entry+0x40/0x180
+ [<ffffffff815f6811>] ? _raw_spin_lock_irqsave+0x41/0x60
+ [<ffffffff813be520>] ? destruct_tty_driver+0x60/0xe0
+ [<ffffffff81237c68>] proc_tty_unregister_driver+0x28/0x40
+ [<ffffffff813be548>] destruct_tty_driver+0x88/0xe0
+ [<ffffffff813be5bd>] tty_driver_kref_put+0x1d/0x20
+ [<ffffffff813becca>] release_one_tty+0x5a/0xd0
+ [<ffffffff81074159>] process_one_work+0x139/0x420
+ [<ffffffff810745a1>] worker_thread+0x121/0x450
+ [<ffffffff81074480>] ? process_scheduled_works+0x40/0x40
+ [<ffffffff8107a16c>] kthread+0xec/0x110
+ [<ffffffff81080000>] ? tg_rt_schedulable+0x210/0x220
+ [<ffffffff8107a080>] ? kthread_freezable_should_stop+0x80/0x80
+ [<ffffffff815f7292>] ret_from_fork+0x42/0x70
+ [<ffffffff8107a080>] ? kthread_freezable_should_stop+0x80/0x80
 
+Signed-off-by: nixiaoming <nixiaoming@huawei.com>
+---
+ fs/proc/proc_tty.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/fs/proc/proc_tty.c b/fs/proc/proc_tty.c
+index 901bd06..20e2c18 100644
+--- a/fs/proc/proc_tty.c
++++ b/fs/proc/proc_tty.c
+@@ -14,6 +14,7 @@
+ #include <linux/tty.h>
+ #include <linux/seq_file.h>
+ #include <linux/bitops.h>
++#include "internal.h"
+ 
+ /*
+  * The /proc/tty directory inodes...
+@@ -164,7 +165,7 @@ void proc_tty_unregister_driver(struct tty_driver *driver)
+ 	if (!ent)
+ 		return;
+ 		
+-	remove_proc_entry(driver->driver_name, proc_tty_driver);
++	remove_proc_entry(ent->name, proc_tty_driver);
+ 	
+ 	driver->proc_entry = NULL;
+ }
 -- 
-Romain Izard
+2.11.0.1
