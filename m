@@ -1,201 +1,104 @@
-From: Martyn Welch <martyn.welch@collabora.co.uk>
-Subject: Re: [PATCH v2 3/6] serial: imx: remove CTSC and CTS handling
-Date: Fri, 15 Sep 2017 21:57:30 +0100
-Message-ID: <20170915205730.GA31343@hermes.home>
-References: <20170705133845.32ov37meqcea3wtz@pengutronix.de>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v2 4/9] mtd: nand: atmel: Avoid ECC errors when leaving
+ backup mode
+Date: Mon, 18 Sep 2017 11:50:52 +0200
+Message-ID: <20170918115052.4606d8e5@bbrezillon>
+References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
+        <20170915140411.31716-5-romain.izard.pro@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170705133845.32ov37meqcea3wtz@pengutronix.de>
+In-Reply-To: <20170915140411.31716-5-romain.izard.pro@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: u.kleine-koenig@pengutronix.de
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Nandor Han <nandor.han@ge.com>, Romain Perier <romain.perier@collabora.com>, Fabio Estevam <fabio.estevam@nxp.com>, Clemens Gruber <clemens.gruber@pqgruber.com>
+To: Romain Izard <romain.izard.pro@gmail.com>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi
+Hi Romain,
 
-On Wed, Jul 05, 2017 at 03:38:45PM +0200, Uwe Kleine-König wrote:
-> Cc += Clemens Gruber + Fabio Estevam
+On Fri, 15 Sep 2017 16:04:06 +0200
+Romain Izard <romain.izard.pro@gmail.com> wrote:
+
+> During backup mode, the contents of all registers will be cleared as the
+> SoC will be completely powered down. For a product that boots on NAND
+> Flash memory, the bootloader will obviously use the related controller
+> to read the Flash and correct any detected error in the memory, before
+> handling back control to the kernel's resuming entry point.
 > 
-> On Wed, Jul 05, 2017 at 03:07:03PM +0200, Romain Perier wrote:
-> > From: Nandor Han <nandor.han@ge.com>
-> > 
-> > CTSC and CTS are not related to DMA and might add
-> > disruption in some cases.
-> > 
-> > Signed-off-by: Romain Perier <romain.perier@collabora.com>
+> In normal devices, it is up to the driver's suspend/resume code to
+> restore the registers in a valid state. But the PMECC is not a regular
+> device in the driver model when used with the legacy device tree binding
+> for the Atmel NAND controller, and suspend/resume code is not called.
 > 
-> If it was Nandor Han who created this patch, it would be great to get
-> his sob. If it was you, drop the From: line above.
+> As in my case the bootloader leaves the PMECC controller in a programmed
+> state, and the controller is only reset at boot or after a NAND access,
+> the first NAND Flash access with the Atmel controller will report
+> uncorrectable ECC errors.
 > 
-
-This patch was broken out from a larger one written by Nandor, who is
-happy for me to add his sob.
-
-> > ---
-> >  drivers/tty/serial/imx.c | 5 -----
-> >  1 file changed, 5 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > index 5291b86..dd3ebb4 100644
-> > --- a/drivers/tty/serial/imx.c
-> > +++ b/drivers/tty/serial/imx.c
-> > @@ -1249,11 +1249,6 @@ static void imx_disable_dma(struct imx_port *sport)
-> >  	imx_stop_rx_dma(sport);
-> >  	imx_stop_tx_dma(sport);
-> >  
-> > -	/* clear UCR2 */
-> > -	temp = readl(sport->port.membase + UCR2);
-> > -	temp &= ~(UCR2_CTSC | UCR2_CTS | UCR2_ATEN);
-> > -	writel(temp, sport->port.membase + UCR2);
-> > -
+> To avoid this, systematically reset the PMECC controller before using
+> it.
 > 
-> Before this patch imx_disable_dma resulted in the #CTS pin being high
-> (inactive).
+> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+> ---
+>  drivers/mtd/nand/atmel/pmecc.c | 11 +++--------
+>  1 file changed, 3 insertions(+), 8 deletions(-)
 > 
-> Does this qualify as a fix? If so, you should sort this patch to the
-> beginning of the series. Did you do test this patch and its effects
-> separately?
-> 
+> diff --git a/drivers/mtd/nand/atmel/pmecc.c b/drivers/mtd/nand/atmel/pmecc.c
+> index 8c210a5776bc..8d1208f38025 100644
+> --- a/drivers/mtd/nand/atmel/pmecc.c
+> +++ b/drivers/mtd/nand/atmel/pmecc.c
+> @@ -777,6 +777,9 @@ int atmel_pmecc_enable(struct atmel_pmecc_user *user, int op)
+>  
+>  	mutex_lock(&user->pmecc->lock);
+>  
+> +	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+> +	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
+> +
+>  	cfg = user->cache.cfg;
+>  	if (op == NAND_ECC_WRITE)
+>  		cfg |= PMECC_CFG_WRITE_OP;
+> @@ -797,10 +800,6 @@ EXPORT_SYMBOL_GPL(atmel_pmecc_enable);
+>  
+>  void atmel_pmecc_disable(struct atmel_pmecc_user *user)
+>  {
+> -	struct atmel_pmecc *pmecc = user->pmecc;
+> -
+> -	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+> -	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
 
-I've been giving the RTS/CTS lines a bit of a kick with (and without) this
-patch and I'm seeing what I'd expect to see on the CTS pin (the Wandboard
-I'm using runs this in DCE mode even though it really should be in DTE
-mode, hey ho). Using a little test app I've found/modified (listed below),
-the CTS line can be (de)asserted whilst the device is open and the line
-gets deasserted when the device closes. I have tested this port both when
-acting as a console (and thus with DMA turned off) and when not used as a
-console, with DMA enabled (confirmed with existing debug in driver).
+So know you leave the ECC engine enabled even when it's not in use? Not
+sure what kind of implication this has on power-consumption, but I
+think I'd prefer to keep the write RST+DISABLE sequence in the disable
+path.
 
-This matches the behaviour of a FTDI based debug board that I've also
-tried (in this case I looked at the RTS line as the device is running as a
-DTE).
+How about creating a atmel_pmecc_reset() function that you'd call from
+the nand-controller resume hook. Something like:
 
-On my PC the same test app sets the RTS line (the serial port running as a
-DTE, 8250_pnp driver) results in the CTS line being set appropriately as
-well. It also stays in that state even after the serial device is closed,
-this does seem right either but there you go.
-
-With regards to the operation of the CTS/RTS line when twiddling it via
-the ioctl, I think the behaviour of the IMX/FTDI is the expected one. Is
-that the case?
-
-Which I guess brings us to the lines above.
-
-When running as an RS232 port (i.e. not rs485) the driver is using the
-automatic CTSC control based on a rxFIFO watermark unless the state of the
-CTS line is explictly set via an ioctl call. As such, unless I'm missing
-something, the rxFIFO (and thus the automatic CTS control) is independent
-of whether the DMA is running or not and thus this section looks wrong or
-is at the very least in the wrong place.
-
-Have I misunderstood something?
-
-IIRC, the timing of DMA being enabled and disabled was changed reasonably
-recently did that fix the #CTS issue possibly?
-
-Martyn
-
-----
-
-Test app:
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <termios.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdbool.h>
-
-static struct termios oldterminfo;
-
-
-void closeserial(int fd)
+void atmel_pmecc_reset(struct atmel_pmecc *pmecc)
 {
-    tcsetattr(fd, TCSANOW, &oldterminfo);
-    if (close(fd) < 0)
-        perror("closeserial()");
+	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
 }
 
+This way you can re-use the same function and call it from the probe
+and disable path as well.
 
-int openserial(char *devicename)
-{
-    int fd;
-    struct termios attr;
+Regards,
 
-    if ((fd = open(devicename, O_RDWR)) == -1) {
-        perror("openserial(): open()");
-        return 0;
-    }
-    if (tcgetattr(fd, &oldterminfo) == -1) {
-        perror("openserial(): tcgetattr()");
-        return 0;
-    }
-    attr = oldterminfo;
-    attr.c_cflag |= CRTSCTS | CLOCAL;
-    attr.c_oflag = 0;
-    if (tcflush(fd, TCIOFLUSH) == -1) {
-        perror("openserial(): tcflush()");
-        return 0;
-    }
-    if (tcsetattr(fd, TCSANOW, &attr) == -1) {
-        perror("initserial(): tcsetattr()");
-        return 0;
-    }
-    return fd;
-}
+Boris
 
-
-int setRTS(int fd, int level)
-{
-    int status;
-
-    if (ioctl(fd, TIOCMGET, &status) == -1) {
-        perror("setRTS(): TIOCMGET");
-        return 0;
-    }
-    if (level)
-        status |= TIOCM_RTS;
-    else
-        status &= ~TIOCM_RTS;
-    if (ioctl(fd, TIOCMSET, &status) == -1) {
-        perror("setRTS(): TIOCMSET");
-        return 0;
-    }
-    return 1;
-}
-
-
-int main(int argc, char *argv[])
-{
-    int fd;
-    bool loop = true;
-    int state = 1;
-    int got;
-    
-
-    fd = openserial(argv[1]);
-    if (!fd) {
-        fprintf(stderr, "Error while initializing %s.\n", argv[1]);
-        return 1;
-    }
-
-
-    while(loop) {
-        printf("Switching RTS %s\n", state ? "on" : "off");
-        setRTS(fd, state);
-
-        state = (++state) % 2;
-
-	got = getchar();
-	if (got == 'q')
-            break;
-    }
-    closeserial(fd);
-    return 0;
-}
+>  	mutex_unlock(&user->pmecc->lock);
+>  }
+>  EXPORT_SYMBOL_GPL(atmel_pmecc_disable);
+> @@ -856,10 +855,6 @@ static struct atmel_pmecc *atmel_pmecc_create(struct platform_device *pdev,
+>  	/* Disable all interrupts before registering the PMECC handler. */
+>  	writel(0xffffffff, pmecc->regs.base + ATMEL_PMECC_IDR);
+>  
+> -	/* Reset the ECC engine */
+> -	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+> -	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
+> -
+>  	return pmecc;
+>  }
+>  
