@@ -1,68 +1,50 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v2 5/9] mtd: nand: atmel: Report PMECC failures as
- errors
-Date: Mon, 18 Sep 2017 12:00:51 +0200
-Message-ID: <20170918120051.298bdabf@bbrezillon>
-References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
-        <20170915140411.31716-6-romain.izard.pro@gmail.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH] tty fix oops when rmmod 8250
+Date: Mon, 18 Sep 2017 10:43:12 +0200
+Message-ID: <c18e422a-00fe-00bd-75ba-384f67c4f241@suse.cz>
+References: <20170915094556.55384-1-nixiaoming@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=iso-8859-2
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170915140411.31716-6-romain.izard.pro@gmail.com>
+In-Reply-To: <20170915094556.55384-1-nixiaoming@huawei.com>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Romain Izard <romain.izard.pro@gmail.com>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
+To: nixiaoming <nixiaoming@huawei.com>, adobriyan@gmail.com, torvalds@linux-foundation.org, gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk
+Cc: linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Romain,
+On 09/15/2017, 11:45 AM, nixiaoming wrote:
+> After rmmod 8250.ko
+> tty_kref_put starts kwork (release_one_tty) to release proc interface
 
-On Fri, 15 Sep 2017 16:04:07 +0200
-Romain Izard <romain.izard.pro@gmail.com> wrote:
+I believe you wanted to add a period here.
 
-> It is not normal for the PMECC to fail when trying to fix ECC errors.
-> Report these cases as errors.
+> oops when accessing driver->driver_name in proc_tty_unregister_driver
 
-I'm not sure we want to have ECC error messages at this level. ECC
-errors are rather unusual but not impossible, and sometimes it's even
-not a real error (I'm thinking of bitflips in erased pages for
-example, which are not necessarily detected/fixed in hardware).
+"The kernel oopses when"... ?
 
-If we decide to print error messages when unfixable bitflips are
-detected, it should be done in the nand-controller driver (somewhere
-along those lines [1]).
-
-Regards,
-
-Boris
-
-[1]http://elixir.free-electrons.com/linux/latest/source/drivers/mtd/nand/atmel/nand-controller.c#L827
-
+> Use jprobe, found driver->driver_name point to 8250.ko
+> static static struct uart_driver serial8250_reg
+> .driver_name= serial,
 > 
-> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
-> ---
->  drivers/mtd/nand/atmel/pmecc.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> Use name in proc_dir_entry instead of driver->driver_name to fix oops
 > 
-> diff --git a/drivers/mtd/nand/atmel/pmecc.c b/drivers/mtd/nand/atmel/pmecc.c
-> index 8d1208f38025..2a23f1ff945f 100644
-> --- a/drivers/mtd/nand/atmel/pmecc.c
-> +++ b/drivers/mtd/nand/atmel/pmecc.c
-> @@ -687,6 +687,8 @@ static int atmel_pmecc_err_location(struct atmel_pmecc_user *user)
->  	 * Number of roots does not match the degree of smu
->  	 * unable to correct error.
->  	 */
-> +	dev_err(pmecc->dev,
-> +		"PMECC: Impossible to calculate error location.\n");
->  	return -EBADMSG;
->  }
->  
-> @@ -729,7 +731,7 @@ int atmel_pmecc_correct_sector(struct atmel_pmecc_user *user, int sector,
->  			ptr = ecc + byte - sectorsize;
->  			area = "ECC";
->  		} else {
-> -			dev_dbg(pmecc->dev,
-> +			dev_err(pmecc->dev,
->  				"Invalid errpos value (%d, max is %d)\n",
->  				errpos, (sectorsize + eccbytes) * 8);
->  			return -EINVAL;
+> test on linux 4.1.12:
+...
+> @@ -164,7 +165,7 @@ void proc_tty_unregister_driver(struct tty_driver *driver)
+>  	if (!ent)
+>  		return;
+>  		
+> -	remove_proc_entry(driver->driver_name, proc_tty_driver);
+> +	remove_proc_entry(ent->name, proc_tty_driver);
+
+Yes, that makes sense. Using possibly stale driver_name cannot really
+work out. I only wonder why nobody noticed until now...
+
+So, can you reproduce also on 4.13 or something newer like that?
+
+thanks,
+-- 
+js
+suse labs
