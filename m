@@ -1,50 +1,152 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH] tty fix oops when rmmod 8250
-Date: Mon, 18 Sep 2017 10:43:12 +0200
-Message-ID: <c18e422a-00fe-00bd-75ba-384f67c4f241@suse.cz>
-References: <20170915094556.55384-1-nixiaoming@huawei.com>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: Re: [PATCH v2 8/9] atmel_flexcom: Support backup mode
+Date: Tue, 19 Sep 2017 11:29:12 +0200
+Message-ID: <53aa7783-0ecf-1e68-1bf9-c470ba2f79eb@microchip.com>
+References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
+ <20170915140411.31716-9-romain.izard.pro@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170915094556.55384-1-nixiaoming@huawei.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: nixiaoming <nixiaoming@huawei.com>, adobriyan@gmail.com, torvalds@linux-foundation.org, gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk
-Cc: linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Return-path: <linux-clk-owner@vger.kernel.org>
+In-Reply-To: <20170915140411.31716-9-romain.izard.pro@gmail.com>
+Content-Language: en-US
+Sender: linux-clk-owner@vger.kernel.org
+To: Romain Izard <romain.izard.pro@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Lee Jones <lee.jones@linaro.org>
+Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 09/15/2017, 11:45 AM, nixiaoming wrote:
-> After rmmod 8250.ko
-> tty_kref_put starts kwork (release_one_tty) to release proc interface
-
-I believe you wanted to add a period here.
-
-> oops when accessing driver->driver_name in proc_tty_unregister_driver
-
-"The kernel oopses when"... ?
-
-> Use jprobe, found driver->driver_name point to 8250.ko
-> static static struct uart_driver serial8250_reg
-> .driver_name= serial,
+On 15/09/2017 at 16:04, Romain Izard wrote:
+> The controller used by a flexcom module is configured at boot, and left
+> alone after this. As the configuration will be lost after backup mode,
+> restore the state of the flexcom driver on resume.
 > 
-> Use name in proc_dir_entry instead of driver->driver_name to fix oops
+> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+
+Tested-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+On sama5d2 Xplained board (i2c0 from flexcom 4).
+and obviously:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+
+Thanks Romain!
+
+Regards,
+
+> ---
+>  drivers/mfd/atmel-flexcom.c | 65 ++++++++++++++++++++++++++++++++++-----------
+>  1 file changed, 50 insertions(+), 15 deletions(-)
 > 
-> test on linux 4.1.12:
-...
-> @@ -164,7 +165,7 @@ void proc_tty_unregister_driver(struct tty_driver *driver)
->  	if (!ent)
->  		return;
->  		
-> -	remove_proc_entry(driver->driver_name, proc_tty_driver);
-> +	remove_proc_entry(ent->name, proc_tty_driver);
+> diff --git a/drivers/mfd/atmel-flexcom.c b/drivers/mfd/atmel-flexcom.c
+> index 064bde9cff5a..ef1235c4a179 100644
+> --- a/drivers/mfd/atmel-flexcom.c
+> +++ b/drivers/mfd/atmel-flexcom.c
+> @@ -39,34 +39,44 @@
+>  #define FLEX_MR_OPMODE(opmode)	(((opmode) << FLEX_MR_OPMODE_OFFSET) &	\
+>  				 FLEX_MR_OPMODE_MASK)
+>  
+> +struct atmel_flexcom {
+> +	void __iomem *base;
+> +	u32 opmode;
+> +	struct clk *clk;
+> +};
+>  
+>  static int atmel_flexcom_probe(struct platform_device *pdev)
+>  {
+>  	struct device_node *np = pdev->dev.of_node;
+> -	struct clk *clk;
+>  	struct resource *res;
+> -	void __iomem *base;
+> -	u32 opmode;
+> +	struct atmel_flexcom *afc;
+>  	int err;
+> +	u32 val;
+> +
+> +	afc = devm_kzalloc(&pdev->dev, sizeof(*afc), GFP_KERNEL);
+> +	if (!afc)
+> +		return -ENOMEM;
+>  
+> -	err = of_property_read_u32(np, "atmel,flexcom-mode", &opmode);
+> +	platform_set_drvdata(pdev, afc);
+> +
+> +	err = of_property_read_u32(np, "atmel,flexcom-mode", &afc->opmode);
+>  	if (err)
+>  		return err;
+>  
+> -	if (opmode < ATMEL_FLEXCOM_MODE_USART ||
+> -	    opmode > ATMEL_FLEXCOM_MODE_TWI)
+> +	if (afc->opmode < ATMEL_FLEXCOM_MODE_USART ||
+> +	    afc->opmode > ATMEL_FLEXCOM_MODE_TWI)
+>  		return -EINVAL;
+>  
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	base = devm_ioremap_resource(&pdev->dev, res);
+> -	if (IS_ERR(base))
+> -		return PTR_ERR(base);
+> +	afc->base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(afc->base))
+> +		return PTR_ERR(afc->base);
+>  
+> -	clk = devm_clk_get(&pdev->dev, NULL);
+> -	if (IS_ERR(clk))
+> -		return PTR_ERR(clk);
+> +	afc->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(afc->clk))
+> +		return PTR_ERR(afc->clk);
+>  
+> -	err = clk_prepare_enable(clk);
+> +	err = clk_prepare_enable(afc->clk);
+>  	if (err)
+>  		return err;
+>  
+> @@ -76,9 +86,10 @@ static int atmel_flexcom_probe(struct platform_device *pdev)
+>  	 * inaccessible and are read as zero. Also the external I/O lines of the
+>  	 * Flexcom are muxed to reach the selected device.
+>  	 */
+> -	writel(FLEX_MR_OPMODE(opmode), base + FLEX_MR);
+> +	val = FLEX_MR_OPMODE(afc->opmode);
+> +	writel(val, afc->base + FLEX_MR);
+>  
+> -	clk_disable_unprepare(clk);
+> +	clk_disable_unprepare(afc->clk);
+>  
+>  	return devm_of_platform_populate(&pdev->dev);
+>  }
+> @@ -89,10 +100,34 @@ static const struct of_device_id atmel_flexcom_of_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(of, atmel_flexcom_of_match);
+>  
+> +#ifdef CONFIG_PM_SLEEP
+> +static int atmel_flexcom_resume(struct device *dev)
+> +{
+> +	struct atmel_flexcom *afc = dev_get_drvdata(dev);
+> +	int err;
+> +	u32 val;
+> +
+> +	err = clk_prepare_enable(afc->clk);
+> +	if (err)
+> +		return err;
+> +
+> +	val = FLEX_MR_OPMODE(afc->opmode),
+> +	writel(val, afc->base + FLEX_MR);
+> +
+> +	clk_disable_unprepare(afc->clk);
+> +
+> +	return 0;
+> +}
+> +#endif
+> +
+> +static SIMPLE_DEV_PM_OPS(atmel_flexcom_pm_ops, NULL,
+> +			 atmel_flexcom_resume);
+> +
+>  static struct platform_driver atmel_flexcom_driver = {
+>  	.probe	= atmel_flexcom_probe,
+>  	.driver	= {
+>  		.name		= "atmel_flexcom",
+> +		.pm		= &atmel_flexcom_pm_ops,
+>  		.of_match_table	= atmel_flexcom_of_match,
+>  	},
+>  };
+> 
 
-Yes, that makes sense. Using possibly stale driver_name cannot really
-work out. I only wonder why nobody noticed until now...
 
-So, can you reproduce also on 4.13 or something newer like that?
-
-thanks,
 -- 
-js
-suse labs
+Nicolas Ferre
