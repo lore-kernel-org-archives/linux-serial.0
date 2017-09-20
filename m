@@ -1,7 +1,7 @@
 From: Jonas Gorski <jonas.gorski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH V2 7/8] MIPS: BCM63XX: provide enet clocks as "enet" to the ethernet devices
-Date: Wed, 20 Sep 2017 13:14:07 +0200
-Message-ID: <20170920111408.29711-8-jonas.gorski@gmail.com>
+Subject: [PATCH V2 4/8] tty/bcm63xx_uart: allow naming clock in device tree
+Date: Wed, 20 Sep 2017 13:14:04 +0200
+Message-ID: <20170920111408.29711-5-jonas.gorski@gmail.com>
 References: <20170920111408.29711-1-jonas.gorski@gmail.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20170920111408.29711-1-jonas.gorski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
@@ -10,62 +10,60 @@ To: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-arm-kernel-IAPFreC
 Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add lookups to provide the appropriate enetX clocks as just "enet" to
-the ethernet devices.
+Codify using a named clock for the refclk of the uart. This makes it
+easier if we might need to add a gating clock (like present on the
+BCM6345).
 
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 Reviewed-by: Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Jonas Gorski <jonas.gorski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- arch/mips/bcm63xx/clk.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ Documentation/devicetree/bindings/serial/brcm,bcm6345-uart.txt | 6 ++++++
+ drivers/tty/serial/bcm63xx_uart.c                              | 6 ++++--
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/bcm63xx/clk.c b/arch/mips/bcm63xx/clk.c
-index ba5758551c94..2018425fe97e 100644
---- a/arch/mips/bcm63xx/clk.c
-+++ b/arch/mips/bcm63xx/clk.c
-@@ -377,6 +377,8 @@ static struct clk_lookup bcm3368_clks[] = {
- 	CLKDEV_INIT(NULL, "usbd", &clk_usbd),
- 	CLKDEV_INIT(NULL, "spi", &clk_spi),
- 	CLKDEV_INIT(NULL, "pcm", &clk_pcm),
-+	CLKDEV_INIT("bcm63xx_enet.0", "enet", &clk_enet0),
-+	CLKDEV_INIT("bcm63xx_enet.1", "enet", &clk_enet1),
- };
+diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm6345-uart.txt b/Documentation/devicetree/bindings/serial/brcm,bcm6345-uart.txt
+index 5c52e5eef16d..8b2b0460259a 100644
+--- a/Documentation/devicetree/bindings/serial/brcm,bcm6345-uart.txt
++++ b/Documentation/devicetree/bindings/serial/brcm,bcm6345-uart.txt
+@@ -11,6 +11,11 @@ Required properties:
+ - clocks: Clock driving the hardware; used to figure out the baud rate
+   divisor.
  
- static struct clk_lookup bcm6328_clks[] = {
-@@ -404,6 +406,7 @@ static struct clk_lookup bcm6338_clks[] = {
- 	CLKDEV_INIT(NULL, "usbh", &clk_usbh),
- 	CLKDEV_INIT(NULL, "usbd", &clk_usbd),
- 	CLKDEV_INIT(NULL, "spi", &clk_spi),
-+	CLKDEV_INIT("bcm63xx_enet.0", "enet", &clk_enet_misc),
- };
++
++Optional properties:
++
++- clock-names: Should be "refclk".
++
+ Example:
  
- static struct clk_lookup bcm6345_clks[] = {
-@@ -417,6 +420,7 @@ static struct clk_lookup bcm6345_clks[] = {
- 	CLKDEV_INIT(NULL, "usbh", &clk_usbh),
- 	CLKDEV_INIT(NULL, "usbd", &clk_usbd),
- 	CLKDEV_INIT(NULL, "spi", &clk_spi),
-+	CLKDEV_INIT("bcm63xx_enet.0", "enet", &clk_enet_misc),
- };
+ 	uart0: serial@14e00520 {
+@@ -19,6 +24,7 @@ Example:
+ 		interrupt-parent = <&periph_intc>;
+ 		interrupts = <2>;
+ 		clocks = <&periph_clk>;
++		clock-names = "refclk";
+ 	};
  
- static struct clk_lookup bcm6348_clks[] = {
-@@ -430,6 +434,8 @@ static struct clk_lookup bcm6348_clks[] = {
- 	CLKDEV_INIT(NULL, "usbh", &clk_usbh),
- 	CLKDEV_INIT(NULL, "usbd", &clk_usbd),
- 	CLKDEV_INIT(NULL, "spi", &clk_spi),
-+	CLKDEV_INIT("bcm63xx_enet.0", "enet", &clk_enet_misc),
-+	CLKDEV_INIT("bcm63xx_enet.1", "enet", &clk_enet_misc),
- };
+ 	clocks {
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index a2b9376ec861..f227eff28d3a 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -841,8 +841,10 @@ static int bcm_uart_probe(struct platform_device *pdev)
+ 	if (!res_irq)
+ 		return -ENODEV;
  
- static struct clk_lookup bcm6358_clks[] = {
-@@ -445,6 +451,8 @@ static struct clk_lookup bcm6358_clks[] = {
- 	CLKDEV_INIT(NULL, "usbd", &clk_usbd),
- 	CLKDEV_INIT(NULL, "spi", &clk_spi),
- 	CLKDEV_INIT(NULL, "pcm", &clk_pcm),
-+	CLKDEV_INIT("bcm63xx_enet.0", "enet", &clk_enet0),
-+	CLKDEV_INIT("bcm63xx_enet.1", "enet", &clk_enet1),
- };
+-	clk = pdev->dev.of_node ? of_clk_get(pdev->dev.of_node, 0) :
+-				  clk_get(&pdev->dev, "refclk");
++	clk = clk_get(&pdev->dev, "refclk");
++	if (IS_ERR(clk) && pdev->dev.of_node)
++		clk = of_clk_get(pdev->dev.of_node, 0);
++
+ 	if (IS_ERR(clk))
+ 		return -ENODEV;
  
- static struct clk_lookup bcm6362_clks[] = {
 -- 
 2.13.2
 
