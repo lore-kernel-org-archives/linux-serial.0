@@ -1,45 +1,49 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCHv2] tty: xilinx_uartps: move to arch_initcall for earlier
- console
-Date: Wed, 20 Sep 2017 10:22:19 +0200
-Message-ID: <61959fe3-48d0-f5b7-b508-c638b248e7f0@xilinx.com>
-References: <1505890211-4851-1-git-send-email-shubhrajyoti.datta@xilinx.com>
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: Re: [PATCH v2 8/9] atmel_flexcom: Support backup mode
+Date: Wed, 20 Sep 2017 10:30:31 +0200
+Message-ID: <CAGkQfmM08UqpLoMegRGQwmamN=Z74fem9VWT5yGcSjkYdS5c=Q@mail.gmail.com>
+References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
+ <20170915140411.31716-9-romain.izard.pro@gmail.com> <53aa7783-0ecf-1e68-1bf9-c470ba2f79eb@microchip.com>
+ <20170919152504.nhp5i734u75gb5gq@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1505890211-4851-1-git-send-email-shubhrajyoti.datta@xilinx.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: linus.walleij@linaro.com, gregkh@linuxfoundation.org, michal.simek@xilinx.com, shubhrajyoti.datta@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-clk-owner@vger.kernel.org>
+In-Reply-To: <20170919152504.nhp5i734u75gb5gq@dell>
+Sender: linux-clk-owner@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, linux-clk@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 20.9.2017 08:50, Shubhrajyoti Datta wrote:
-> move to arch_initcall to get the console up really early, it is
-> quite helpful for spotting early boot problems.
-> 
-> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> ---
->  drivers/tty/serial/xilinx_uartps.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index fde55dc..96fda91 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -1673,7 +1673,7 @@ static void __exit cdns_uart_exit(void)
->  	uart_unregister_driver(&cdns_uart_uart_driver);
->  }
->  
-> -module_init(cdns_uart_init);
-> +arch_initcall(cdns_uart_init);
->  module_exit(cdns_uart_exit);
->  
->  MODULE_DESCRIPTION("Driver for Cadence UART");
-> 
+2017-09-19 17:25 GMT+02:00 Lee Jones <lee.jones@linaro.org>:
+> On Tue, 19 Sep 2017, Nicolas Ferre wrote:
+>
+>> On 15/09/2017 at 16:04, Romain Izard wrote:
+>> > The controller used by a flexcom module is configured at boot, and left
+>> > alone after this. As the configuration will be lost after backup mode,
+>> > restore the state of the flexcom driver on resume.
+>> >
+>> > Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+>>
+>> Tested-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+>> On sama5d2 Xplained board (i2c0 from flexcom 4).
+>> and obviously:
+>> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+>>
+>> Thanks Romain!
+>>
+>> Regards,
+>>
+>> > ---
+>> >  drivers/mfd/atmel-flexcom.c | 65 ++++++++++++++++++++++++++++++++++-----------
+>> >  1 file changed, 50 insertions(+), 15 deletions(-)
+>
+> This is the first time I've seen this patch.  Why's that?
+>
 
-Tested-by: Michal Simek <michal.simek@xilinx.com>
+As the patchset covers many subsystems, get_maintainers.pl provided a
+very long list of both developpers and mailing lists (28). I thought it
+was a good idea to shorten it a little. Bad idea. Sorry.
 
-Thanks,
-Michal
+Best regards,
+-- 
+Romain Izard
