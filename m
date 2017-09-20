@@ -1,35 +1,41 @@
-From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Subject: [PATCHv2] tty: xilinx_uartps: move to arch_initcall for earlier console
-Date: Wed, 20 Sep 2017 12:20:11 +0530
-Message-ID: <1505890211-4851-1-git-send-email-shubhrajyoti.datta@xilinx.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Arvind Yadav <arvind.yadav.cs@gmail.com>
+Subject: [PATCH] serial: core: Release memory obtained by kasprintf
+Date: Wed, 20 Sep 2017 12:33:39 +0530
+Message-ID: <76c7fe65986400fc7630acbbc1211d73a9a8d0f7.1505890042.git.arvind.yadav.cs@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: linus.walleij@linaro.com, gregkh@linuxfoundation.org, michal.simek@xilinx.com, shubhrajyoti.datta@gmail.com, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-move to arch_initcall to get the console up really early, it is
-quite helpful for spotting early boot problems.
+Free memory region, if uart_add_one_port is not successful.
 
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
 ---
- drivers/tty/serial/xilinx_uartps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/serial_core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index fde55dc..96fda91 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1673,7 +1673,7 @@ static void __exit cdns_uart_exit(void)
- 	uart_unregister_driver(&cdns_uart_uart_driver);
- }
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 3a14ccc..989adbb 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2784,7 +2784,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 				    GFP_KERNEL);
+ 	if (!uport->tty_groups) {
+ 		ret = -ENOMEM;
+-		goto out;
++		goto out1;
+ 	}
+ 	uport->tty_groups[0] = &tty_dev_attr_group;
+ 	if (uport->attr_group)
+@@ -2808,6 +2808,8 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 	 */
+ 	uport->flags &= ~UPF_DEAD;
  
--module_init(cdns_uart_init);
-+arch_initcall(cdns_uart_init);
- module_exit(cdns_uart_exit);
- 
- MODULE_DESCRIPTION("Driver for Cadence UART");
++ out1:
++	kfree(uport->name);
+  out:
+ 	mutex_unlock(&port->mutex);
+ 	mutex_unlock(&port_mutex);
 -- 
-2.1.1
+1.9.1
