@@ -1,58 +1,64 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH v2 8/9] atmel_flexcom: Support backup mode
-Date: Wed, 20 Sep 2017 11:18:29 +0200
-Message-ID: <20170920091829.wftbjshog3ixvpmu@piout.net>
-References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
- <20170915140411.31716-9-romain.izard.pro@gmail.com>
- <53aa7783-0ecf-1e68-1bf9-c470ba2f79eb@microchip.com>
- <20170919152504.nhp5i734u75gb5gq@dell>
- <CAGkQfmM08UqpLoMegRGQwmamN=Z74fem9VWT5yGcSjkYdS5c=Q@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAGkQfmM08UqpLoMegRGQwmamN=Z74fem9VWT5yGcSjkYdS5c=Q@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
-To: Romain Izard <romain.izard.pro@gmail.com>
-Cc: Lee Jones <lee.jones@linaro.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, linux-clk@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>linux-mtd <lin>
+From: Jonas Gorski <jonas.gorski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH V2 0/8] MIPS: BCM63XX: add and use clkdev lookup support
+Date: Wed, 20 Sep 2017 13:14:00 +0200
+Message-ID: <20170920111408.29711-1-jonas.gorski@gmail.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 20/09/2017 at 10:30:31 +0200, Romain Izard wrote:
-> 2017-09-19 17:25 GMT+02:00 Lee Jones <lee.jones@linaro.org>:
-> > On Tue, 19 Sep 2017, Nicolas Ferre wrote:
-> >
-> >> On 15/09/2017 at 16:04, Romain Izard wrote:
-> >> > The controller used by a flexcom module is configured at boot, and left
-> >> > alone after this. As the configuration will be lost after backup mode,
-> >> > restore the state of the flexcom driver on resume.
-> >> >
-> >> > Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
-> >>
-> >> Tested-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> >> On sama5d2 Xplained board (i2c0 from flexcom 4).
-> >> and obviously:
-> >> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> >>
-> >> Thanks Romain!
-> >>
-> >> Regards,
-> >>
-> >> > ---
-> >> >  drivers/mfd/atmel-flexcom.c | 65 ++++++++++++++++++++++++++++++++++-----------
-> >> >  1 file changed, 50 insertions(+), 15 deletions(-)
-> >
-> > This is the first time I've seen this patch.  Why's that?
-> >
-> 
-> As the patchset covers many subsystems, get_maintainers.pl provided a
-> very long list of both developpers and mailing lists (28). I thought it
-> was a good idea to shorten it a little. Bad idea. Sorry.
-> 
+This patchset adds support for clckdev lookup support to name input
+clocks in various drivers more closely to their functions, or simplify
+their usage.
 
-I think the correct way of handling that would have been to send each
-patch to the proper subsystem as there are no dependency here.
+Since most of these patches touch arch/mips, it probably makes most
+sense to go through the MIPS tree.
+
+The HSSPI driver was already updated previously to support a "pll"
+input with ff18e1ef04e2 ("spi/bcm63xx-hsspi: allow providing clock rate
+through a second clock"), so there is no need to touch it.
+
+This patch series is part of an effort to modernize BCM63XX and clean up
+its drivers to eventually make them usable with BMIPS and device tree.
+
+Changes V1 -> V2:
+* Drop the bcm63xx_enet patch, it will be sent again once the clkdev
+  lookup is actually applied.
+* Added a patch to fix refcounting in the secondary switch clocks.
+* Slightly reordered patches to be ordered thematically.
+* Added collected Acks / Reviews to their respective patches.
+
+Due to none of the patches having changed between V1 and V2 I did not
+add individual changelogs. These will be added if the code or commit log
+text changes.
+
+Jonas Gorski (8):
+  MIPS: BCM63XX: add clkdev lookup support
+  MIPS: BCM63XX: provide periph clock as refclk for uart
+  tty/bcm63xx_uart: use refclk for the expected clock name
+  tty/bcm63xx_uart: allow naming clock in device tree
+  MIPS: BMIPS: name the refclk clock for uart
+  MIPS: BCM63XX: move the HSSPI PLL HZ into its own clock
+  MIPS: BCM63XX: provide enet clocks as "enet" to the ethernet devices
+  MIPS: BCM63XX: split out swpkt_sar/usb clocks
+
+ .../bindings/serial/brcm,bcm6345-uart.txt          |   6 +
+ arch/mips/Kconfig                                  |   1 +
+ arch/mips/bcm63xx/clk.c                            | 242 +++++++++++++++++----
+ arch/mips/boot/dts/brcm/bcm3368.dtsi               |   2 +
+ arch/mips/boot/dts/brcm/bcm63268.dtsi              |   2 +
+ arch/mips/boot/dts/brcm/bcm6328.dtsi               |   2 +
+ arch/mips/boot/dts/brcm/bcm6358.dtsi               |   2 +
+ arch/mips/boot/dts/brcm/bcm6362.dtsi               |   2 +
+ arch/mips/boot/dts/brcm/bcm6368.dtsi               |   2 +
+ drivers/tty/serial/bcm63xx_uart.c                  |   6 +-
+ 10 files changed, 218 insertions(+), 49 deletions(-)
 
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+2.13.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
