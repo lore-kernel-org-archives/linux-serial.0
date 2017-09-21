@@ -1,7 +1,7 @@
 From: Martyn Welch <martyn.welch@collabora.co.uk>
-Subject: [PATCH v3 4/6] serial: imx: unmap sg buffers when DMA channel is released
-Date: Thu, 21 Sep 2017 17:18:15 +0100
-Message-ID: <1506010697-22114-5-git-send-email-martyn.welch@collabora.co.uk>
+Subject: [PATCH v3 1/6] serial: imx: remove CTSC and CTS handling from imx_disable_dma
+Date: Thu, 21 Sep 2017 17:18:12 +0100
+Message-ID: <1506010697-22114-2-git-send-email-martyn.welch@collabora.co.uk>
 References: <1506010697-22114-1-git-send-email-martyn.welch@collabora.co.uk>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1506010697-22114-1-git-send-email-martyn.welch@collabora.co.uk>
@@ -12,47 +12,49 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Nandor Han <nandor.han@ge.com>
 
-This commits unmaps sg buffers when the DMA channel is released. It also
-sets to zero `dma_is_rxing` and `dma_is_txing` to state that the
-corresponding channels cannot transmit/receive data, as these are
-disabled.
+The CTSC and CTS bits affect operation of the CTS/RTS hardware flow
+control signal (depending on whether the device is in DCE or DTE mode) and
+are not related to DMA. When in RS-232 mode, the driver is using the
+automatic CTSC control based on a rxFIFO fill level unless the state of
+the CTS signal is explictly set via an ioctl call.
+
+Previous improvements to the imx serial driver have resulted on
+imx_disable_dma() only being called on shutdown, by which point the
+serial core has already correctly deasserted CTS.
+
+Testing shows that without this handling in imx_disable_dma() the CTS
+signal state is set correctly when the device is open and TIOCM_RTS is
+set/cleared via the TIOCMGET ioctl. The CTS signal is also correctly
+deasserted when the device file is closed.
+
+When in RS-485 mode, the driver uses the CTS signal very differently and
+appears to control it via calls to imx_port_rts_active() and
+imx_port_rts_inactive().
+
+This configuration of the CTSC and CTS bits are therefore not needed.
 
 Signed-off-by: Nandor Han <nandor.han@ge.com>
 Signed-off-by: Romain Perier <romain.perier@collabora.com>
 Signed-off-by: Martyn Welch <martyn.welch@collabora.co.uk>
 ---
- drivers/tty/serial/imx.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/tty/serial/imx.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 2fb3210..ed02783 100644
+index fe368a4..d90dae3 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -357,6 +357,12 @@ static void imx_stop_tx_dma(struct imx_port *sport)
- 	temp = readl(sport->port.membase + UCR1);
- 	temp &= ~UCR1_TDMAEN;
+@@ -1225,11 +1225,6 @@ static void imx_disable_dma(struct imx_port *sport)
+ 	temp &= ~(UCR1_RDMAEN | UCR1_TDMAEN | UCR1_ATDMAEN);
  	writel(temp, sport->port.membase + UCR1);
-+
-+	if (sport->dma_is_txing) {
-+		dma_unmap_sg(sport->port.dev, &sport->tx_sgl[0],
-+		sport->dma_tx_nents, DMA_TO_DEVICE);
-+		sport->dma_is_txing = 0;
-+	}
- }
  
- static void imx_stop_rx_dma(struct imx_port *sport)
-@@ -366,6 +372,12 @@ static void imx_stop_rx_dma(struct imx_port *sport)
- 	temp = readl(sport->port.membase + UCR1);
- 	temp &= ~(UCR1_RDMAEN | UCR1_ATDMAEN);
- 	writel(temp, sport->port.membase + UCR1);
-+
-+	if (sport->dma_is_rxing) {
-+		dma_unmap_sg(sport->port.dev, &sport->rx_sgl, 1,
-+			DMA_FROM_DEVICE);
-+		sport->dma_is_rxing = 0;
-+	}
- }
+-	/* clear UCR2 */
+-	temp = readl(sport->port.membase + UCR2);
+-	temp &= ~(UCR2_CTSC | UCR2_CTS | UCR2_ATEN);
+-	writel(temp, sport->port.membase + UCR2);
+-
+ 	imx_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
  
- /*
+ 	sport->dma_is_enabled = 0;
 -- 
 1.8.3.1
