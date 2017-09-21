@@ -1,92 +1,55 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] serial: sh-sci: Support for variable HSCIF hardware RX timeout
-Date: Thu, 21 Sep 2017 15:47:04 +0200
-Message-ID: <CAMuHMdUebfY7jyC9x-xctZxj6fr1cK3aW+sKT=3MX_tnjSfCKg@mail.gmail.com>
-References: <1505835844-3320-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1505835844-3320-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Wolfram Sang <wsa@the-dreams.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
+From: Martyn Welch <martyn.welch@collabora.co.uk>
+Subject: [PATCH v3 2/6] serial: imx: only set dma_is_rxing when DMA starts
+Date: Thu, 21 Sep 2017 17:18:13 +0100
+Message-ID: <1506010697-22114-3-git-send-email-martyn.welch@collabora.co.uk>
+References: <1506010697-22114-1-git-send-email-martyn.welch@collabora.co.uk>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1506010697-22114-1-git-send-email-martyn.welch@collabora.co.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nandor Han <nandor.han@ge.com>, Romain Perier <romain.perier@collabora.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Martyn Welch <martyn.welch@collabora.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ulrich,
+From: Romain Perier <romain.perier@collabora.com>
 
-On Tue, Sep 19, 2017 at 5:44 PM, Ulrich Hecht
-<ulrich.hecht+renesas@gmail.com> wrote:
-> HSCIF has facilities that allow changing the timeout after which an RX
-> interrupt is triggered even if the FIFO is not filled. This patch allows
-> changing the default (15 bits of silence) using the existing sysfs
-> attribute "rx_fifo_timeout".
->
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+The variable dma_is_rxing is currently set to 1 in imx_disable_rx_int().
+This is problematic as:
 
-Thanks for your patch!
+- whilst imx_disable_rx_int() is currently always called before
+  start_rx_dma() this dependency isn't obvious.
+- start_rx_dma() does error checking and might exit without
+  enabling DMA. Currently this will result in dma_is_rxing suggesting
+  that DMA is being used for recieving.
 
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -152,6 +152,7 @@ struct sci_port {
->         int                             rx_trigger;
->         struct timer_list               rx_fifo_timer;
->         int                             rx_fifo_timeout;
-> +       u16                             hscif_tot;
+To avoid these issues, move the setting of dma_is_rxing to
+start_rx_dma() when appropriate.
 
-Shouldn't this field be reset to zero in sci_init_single(), like
-rx_fifo_timeout?
+Signed-off-by: Romain Perier <romain.perier@collabora.com>
+Signed-off-by: Martyn Welch <martyn.welch@collabora.co.uk>
+---
+ drivers/tty/serial/imx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> @@ -1107,8 +1108,14 @@ static ssize_t rx_fifo_timeout_show(struct device *dev,
->  {
->         struct uart_port *port = dev_get_drvdata(dev);
->         struct sci_port *sci = to_sci_port(port);
-> +       u16 v;
-
-int, to preserve all bits from rx_fifo_timeout.
-
->
-> -       return sprintf(buf, "%d\n", sci->rx_fifo_timeout);
-> +       if (port->type == PORT_HSCIF)
-> +               v = sci->hscif_tot >> HSSCR_TOT_SHIFT;
-> +       else
-> +               v = sci->rx_fifo_timeout;
-> +
-> +       return sprintf(buf, "%d\n", v);
->  }
-
-> @@ -1124,11 +1131,19 @@ static ssize_t rx_fifo_timeout_store(struct device *dev,
->         ret = kstrtol(buf, 0, &r);
->         if (ret)
->                 return ret;
-> -       sci->rx_fifo_timeout = r;
-> -       scif_set_rtrg(port, 1);
-> -       if (r > 0)
-> -               setup_timer(&sci->rx_fifo_timer, rx_fifo_timer_fn,
-> -                           (unsigned long)sci);
-> +
-> +       if (port->type == PORT_HSCIF) {
-> +               if (r < 0 || r > 3)
-> +                       return -EINVAL;
-> +               sci->hscif_tot = r << HSSCR_TOT_SHIFT;
-> +       } else {
-> +               sci->rx_fifo_timeout = r;
-> +               scif_set_rtrg(port, 1);
-> +               if (r > 0)
-> +                       setup_timer(&sci->rx_fifo_timer, rx_fifo_timer_fn,
-> +                                   (unsigned long)sci);
-> +       }
-
-So this sysfs parameter uses slightly different units depending on serial port
-type (HSCIF is in 15 Elementary Time Units aka 1.5 frames, SCIF[AB] is in
-frames). Do we care?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index d90dae3..7835279 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -714,8 +714,6 @@ static void imx_disable_rx_int(struct imx_port *sport)
+ {
+ 	unsigned long temp;
+ 
+-	sport->dma_is_rxing = 1;
+-
+ 	/* disable the receiver ready and aging timer interrupts */
+ 	temp = readl(sport->port.membase + UCR1);
+ 	temp &= ~(UCR1_RRDYEN);
+@@ -1074,6 +1072,7 @@ static int start_rx_dma(struct imx_port *sport)
+ 	desc->callback_param = sport;
+ 
+ 	dev_dbg(dev, "RX: prepare for the DMA.\n");
++	sport->dma_is_rxing = 1;
+ 	sport->rx_cookie = dmaengine_submit(desc);
+ 	dma_async_issue_pending(chan);
+ 	return 0;
+-- 
+1.8.3.1
