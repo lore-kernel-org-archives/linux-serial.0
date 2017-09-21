@@ -1,88 +1,92 @@
-From: Oleksandr Shamray <oleksandrs@mellanox.com>
-Subject: [patch v9 3/4] Documentation: jtag: Add bindings for Aspeed SoC 24xx and 25xx families JTAG master driver
-Date: Thu, 21 Sep 2017 12:25:31 +0300
-Message-ID: <1505985932-27568-4-git-send-email-oleksandrs@mellanox.com>
-References: <1505985932-27568-1-git-send-email-oleksandrs@mellanox.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1505985932-27568-1-git-send-email-oleksandrs@mellanox.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, arnd@arndb.de
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au, jiri@resnulli.us, tklauser@distanz.ch, linux-serial@vger.kernel.org, mec@shout.net, vadimp@mellanox.com, system-sw-low-level@mellanox.com, robh+dt@kernel.org, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, davem@davemloft.net, mchehab@kernel.org, Oleksandr Shamray <oleksandrs@mellanox.com>, Jiri Pirko <jiri@mellanox.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] serial: sh-sci: Support for variable HSCIF hardware RX timeout
+Date: Thu, 21 Sep 2017 15:47:04 +0200
+Message-ID: <CAMuHMdUebfY7jyC9x-xctZxj6fr1cK3aW+sKT=3MX_tnjSfCKg@mail.gmail.com>
+References: <1505835844-3320-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1505835844-3320-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Wolfram Sang <wsa@the-dreams.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-It has been tested on Mellanox system with BMC equipped with
-Aspeed 2520 SoC for programming CPLD devices.
+Hi Ulrich,
 
-Signed-off-by: Oleksandr Shamray <oleksandrs@mellanox.com>
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-Acked-by: Rob Herring <robh@kernel.org>
----
-v8->v9
-v7->v8
-Comments pointed by pointed by Joel Stanley <joel.stan@gmail.com>
-- Change compatible string to ast2400 and ast2000
+On Tue, Sep 19, 2017 at 5:44 PM, Ulrich Hecht
+<ulrich.hecht+renesas@gmail.com> wrote:
+> HSCIF has facilities that allow changing the timeout after which an RX
+> interrupt is triggered even if the FIFO is not filled. This patch allows
+> changing the default (15 bits of silence) using the existing sysfs
+> attribute "rx_fifo_timeout".
+>
+> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 
-V6->v7
-Comments pointed by Tobias Klauser <tklauser@distanz.ch>
- - Fix spell "Doccumentation" -> "Documentation"
+Thanks for your patch!
 
-v5->v6
-Comments pointed by Tobias Klauser <tklauser@distanz.ch>
-- Small nit: s/documentation/Documentation/
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -152,6 +152,7 @@ struct sci_port {
+>         int                             rx_trigger;
+>         struct timer_list               rx_fifo_timer;
+>         int                             rx_fifo_timeout;
+> +       u16                             hscif_tot;
 
-v4->v5
+Shouldn't this field be reset to zero in sci_init_single(), like
+rx_fifo_timeout?
 
-V3->v4
-Comments pointed by Rob Herring <robh@kernel.org>
-- delete unnecessary "status" and "reg-shift" descriptions in
-  bndings file
+> @@ -1107,8 +1108,14 @@ static ssize_t rx_fifo_timeout_show(struct device *dev,
+>  {
+>         struct uart_port *port = dev_get_drvdata(dev);
+>         struct sci_port *sci = to_sci_port(port);
+> +       u16 v;
 
-v2->v3
-Comments pointed by Rob Herring <robh@kernel.org>
-- split Aspeed jtag driver and binding to sepatrate patches
-- delete unnecessary "status" and "reg-shift" descriptions in
-  bndings file
----
- .../devicetree/bindings/jtag/aspeed-jtag.txt       |   18 ++++++++++++++++++
- MAINTAINERS                                        |    1 +
- 2 files changed, 19 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
+int, to preserve all bits from rx_fifo_timeout.
 
-diff --git a/Documentation/devicetree/bindings/jtag/aspeed-jtag.txt b/Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
-new file mode 100644
-index 0000000..8cfc610
---- /dev/null
-+++ b/Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
-@@ -0,0 +1,18 @@
-+Aspeed JTAG driver for ast2400 and ast2500 SoC
-+
-+Required properties:
-+- compatible:		Should be one of
-+      - "aspeed,ast2400-jtag"
-+      - "aspeed,ast2500-jtag"
-+- reg			contains the offset and length of the JTAG memory
-+			region
-+- clocks		root clock of bus, should reference the APB clock
-+- interrupts		should contain JTAG controller interrupt
-+
-+Example:
-+jtag: jtag@1e6e4000 {
-+	compatible = "aspeed,ast2500-jtag";
-+	reg = <0x1e6e4000 0x1c>;
-+	clocks = <&clk_apb>;
-+	interrupts = <43>;
-+};
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 141aeaf..bfdfa94 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7299,6 +7299,7 @@ S:	Maintained
- F:	include/linux/jtag.h
- F:	include/uapi/linux/jtag.h
- F:	drivers/jtag/
-+F:	Documentation/devicetree/bindings/jtag/
- 
- K10TEMP HARDWARE MONITORING DRIVER
- M:	Clemens Ladisch <clemens@ladisch.de>
--- 
-1.7.1
+>
+> -       return sprintf(buf, "%d\n", sci->rx_fifo_timeout);
+> +       if (port->type == PORT_HSCIF)
+> +               v = sci->hscif_tot >> HSSCR_TOT_SHIFT;
+> +       else
+> +               v = sci->rx_fifo_timeout;
+> +
+> +       return sprintf(buf, "%d\n", v);
+>  }
+
+> @@ -1124,11 +1131,19 @@ static ssize_t rx_fifo_timeout_store(struct device *dev,
+>         ret = kstrtol(buf, 0, &r);
+>         if (ret)
+>                 return ret;
+> -       sci->rx_fifo_timeout = r;
+> -       scif_set_rtrg(port, 1);
+> -       if (r > 0)
+> -               setup_timer(&sci->rx_fifo_timer, rx_fifo_timer_fn,
+> -                           (unsigned long)sci);
+> +
+> +       if (port->type == PORT_HSCIF) {
+> +               if (r < 0 || r > 3)
+> +                       return -EINVAL;
+> +               sci->hscif_tot = r << HSSCR_TOT_SHIFT;
+> +       } else {
+> +               sci->rx_fifo_timeout = r;
+> +               scif_set_rtrg(port, 1);
+> +               if (r > 0)
+> +                       setup_timer(&sci->rx_fifo_timer, rx_fifo_timer_fn,
+> +                                   (unsigned long)sci);
+> +       }
+
+So this sysfs parameter uses slightly different units depending on serial port
+type (HSCIF is in 15 Elementary Time Units aka 1.5 frames, SCIF[AB] is in
+frames). Do we care?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
