@@ -1,7 +1,7 @@
 From: Allen Pais <allen.lkml@gmail.com>
-Subject: [PATCH 01/10] drivers: tty: mux: use setup_timer() helper.
-Date: Fri, 22 Sep 2017 13:56:43 +0530
-Message-ID: <1506068812-8496-2-git-send-email-allen.lkml@gmail.com>
+Subject: [PATCH 04/10] drivers: tty: max3100: use setup_timer() helper.
+Date: Fri, 22 Sep 2017 13:56:46 +0530
+Message-ID: <1506068812-8496-5-git-send-email-allen.lkml@gmail.com>
 References: <1506068812-8496-1-git-send-email-allen.lkml@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1506068812-8496-1-git-send-email-allen.lkml@gmail.com>
@@ -15,22 +15,24 @@ List-Id: linux-serial@vger.kernel.org
 
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/tty/serial/mux.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/serial/max3100.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/mux.c b/drivers/tty/serial/mux.c
-index 2bff69e..a789837 100644
---- a/drivers/tty/serial/mux.c
-+++ b/drivers/tty/serial/mux.c
-@@ -576,8 +576,7 @@ static int __init mux_init(void)
+diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+index ace8264..b6b3453 100644
+--- a/drivers/tty/serial/max3100.c
++++ b/drivers/tty/serial/max3100.c
+@@ -787,9 +787,8 @@ static int max3100_probe(struct spi_device *spi)
+ 		max3100s[i]->poll_time = 1;
+ 	max3100s[i]->max3100_hw_suspend = pdata->max3100_hw_suspend;
+ 	max3100s[i]->minor = i;
+-	init_timer(&max3100s[i]->timer);
+-	max3100s[i]->timer.function = max3100_timeout;
+-	max3100s[i]->timer.data = (unsigned long) max3100s[i];
++	setup_timer(&max3100s[i]->timer, max3100_timeout,
++		    (unsigned long)max3100s[i]);
  
- 	if(port_cnt > 0) {
- 		/* Start the Mux timer */
--		init_timer(&mux_timer);
--		mux_timer.function = mux_poll;
-+		setup_timer(&mux_timer, mux_poll, 0UL);
- 		mod_timer(&mux_timer, jiffies + MUX_POLL_DELAY);
- 
- #ifdef CONFIG_SERIAL_MUX_CONSOLE
+ 	dev_dbg(&spi->dev, "%s: adding port %d\n", __func__, i);
+ 	max3100s[i]->port.irq = max3100s[i]->irq;
 -- 
 2.7.4
