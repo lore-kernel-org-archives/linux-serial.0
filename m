@@ -1,7 +1,7 @@
 From: Allen Pais <allen.lkml@gmail.com>
-Subject: [PATCH 06/10] drivers: tty: 8250: use setup_timer() helper.
-Date: Fri, 22 Sep 2017 13:56:48 +0530
-Message-ID: <1506068812-8496-7-git-send-email-allen.lkml@gmail.com>
+Subject: [PATCH 03/10] drivers: tty: vcc: use setup_timer() helper.
+Date: Fri, 22 Sep 2017 13:56:45 +0530
+Message-ID: <1506068812-8496-4-git-send-email-allen.lkml@gmail.com>
 References: <1506068812-8496-1-git-send-email-allen.lkml@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1506068812-8496-1-git-send-email-allen.lkml@gmail.com>
@@ -15,22 +15,28 @@ List-Id: linux-serial@vger.kernel.org
 
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/tty/serial/8250/8250_core.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/vcc.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index d29b512a..00d4b11 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -525,8 +525,7 @@ static void __init serial8250_isa_init_ports(void)
- 			base_ops = port->ops;
- 		port->ops = &univ8250_port_ops;
+diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+index ef01d24..954b190 100644
+--- a/drivers/tty/vcc.c
++++ b/drivers/tty/vcc.c
+@@ -645,13 +645,8 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 	if (rv)
+ 		goto free_domain;
  
--		init_timer(&up->timer);
--		up->timer.function = serial8250_timeout;
-+		setup_timer(&up->timer, serial8250_timeout, 0UL);
+-	init_timer(&port->rx_timer);
+-	port->rx_timer.function = vcc_rx_timer;
+-	port->rx_timer.data = port->index;
+-
+-	init_timer(&port->tx_timer);
+-	port->tx_timer.function = vcc_tx_timer;
+-	port->tx_timer.data = port->index;
++	setup_timer(&port->rx_timer, vcc_rx_timer, port->index);
++	setup_timer(&port->tx_timer, vcc_tx_timer, port->index);
  
- 		up->ops = &univ8250_driver_ops;
+ 	dev_set_drvdata(&vdev->dev, port);
  
 -- 
 2.7.4
