@@ -1,39 +1,36 @@
 From: Allen Pais <allen.lkml@gmail.com>
-Subject: [PATCH 00/10] use setup_timer() helper function.
-Date: Fri, 22 Sep 2017 13:56:42 +0530
-Message-ID: <1506068812-8496-1-git-send-email-allen.lkml@gmail.com>
+Subject: [PATCH 01/10] drivers: tty: mux: use setup_timer() helper.
+Date: Fri, 22 Sep 2017 13:56:43 +0530
+Message-ID: <1506068812-8496-2-git-send-email-allen.lkml@gmail.com>
+References: <1506068812-8496-1-git-send-email-allen.lkml@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1506068812-8496-1-git-send-email-allen.lkml@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, Allen Pais <allen.lkml@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This series uses setup_timer() helper function. The series
-addresses the files under drivers/tty/*.
+    Use setup_timer function instead of initializing timer with the
+    function and data fields.
 
-Allen Pais (10):
-  drivers: tty: mux: use setup_timer() helper.
-  drivers:tty: imx: use setup_timer() helper.
-  drivers: tty: vcc: use setup_timer() helper.
-  drivers: tty: max3100: use setup_timer() helper.
-  drivers: tty: pnx8xxx: use setup_timer() helper.
-  drivers: tty: 8250: use setup_timer() helper.
-  drivers: tty: sa1100: use setup_timer() helper.
-  drivers: tty: n_gsm: use setup_timer() helper.
-  drivers: tty: sn_console: use setup_timer() helper.
-  drivers: tty: ifx6x60: use setup_timer() helper.
+Signed-off-by: Allen Pais <allen.lkml@gmail.com>
+---
+ drivers/tty/serial/mux.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
- drivers/tty/n_gsm.c                 | 4 +---
- drivers/tty/serial/8250/8250_core.c | 3 +--
- drivers/tty/serial/ifx6x60.c        | 5 ++---
- drivers/tty/serial/imx.c            | 4 +---
- drivers/tty/serial/max3100.c        | 5 ++---
- drivers/tty/serial/mux.c            | 3 +--
- drivers/tty/serial/pnx8xxx_uart.c   | 5 ++---
- drivers/tty/serial/sa1100.c         | 5 ++---
- drivers/tty/serial/sn_console.c     | 4 +---
- drivers/tty/vcc.c                   | 9 ++-------
- 10 files changed, 15 insertions(+), 32 deletions(-)
-
+diff --git a/drivers/tty/serial/mux.c b/drivers/tty/serial/mux.c
+index 2bff69e..a789837 100644
+--- a/drivers/tty/serial/mux.c
++++ b/drivers/tty/serial/mux.c
+@@ -576,8 +576,7 @@ static int __init mux_init(void)
+ 
+ 	if(port_cnt > 0) {
+ 		/* Start the Mux timer */
+-		init_timer(&mux_timer);
+-		mux_timer.function = mux_poll;
++		setup_timer(&mux_timer, mux_poll, 0UL);
+ 		mod_timer(&mux_timer, jiffies + MUX_POLL_DELAY);
+ 
+ #ifdef CONFIG_SERIAL_MUX_CONSOLE
 -- 
 2.7.4
