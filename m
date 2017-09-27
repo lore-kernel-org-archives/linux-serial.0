@@ -1,54 +1,131 @@
 From: Romain Izard <romain.izard.pro@gmail.com>
-Subject: [PATCH v3 5/8] ehci-atmel: Power down during suspend is normal
-Date: Wed, 27 Sep 2017 10:35:52 +0200
-Message-ID: <20170927083555.16580-6-romain.izard.pro@gmail.com>
+Subject: [PATCH v3 6/8] pwm: atmel-tcb: Support backup mode
+Date: Wed, 27 Sep 2017 10:35:53 +0200
+Message-ID: <20170927083555.16580-7-romain.izard.pro@gmail.com>
 References: <20170927083555.16580-1-romain.izard.pro@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170927083555.16580-1-romain.izard.pro@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mtd>,
- <mailto:linux-mtd-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mtd/>
-List-Post: <mailto:linux-mtd@lists.infradead.org>
-List-Help: <mailto:linux-mtd-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mtd>,
- <mailto:linux-mtd-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-mtd" <linux-mtd-bounces@lists.infradead.org>
-Errors-To: linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, Richard Weinberger <richard@nod.at>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Stern <stern@rowland.harvard.edu>, Ludovic Desroches <ludovic.desroches@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org, Romain Izard <romain.izard.pro@gmail.com>, linux-clk@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, Richard Weinberger <richard@nod.at>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Stern <stern@rowland.harvard.edu>, Ludovic Desroches <ludovic.desroches@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Ale
+Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, Romain Izard <romain.izard.pro@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-When an Atmel SoC is suspended with the backup mode, the USB bus will be
-powered down. As this is expected, do not return an error to the driver
-core when ehci_resume detects it.
+Save and restore registers for the PWM on suspend and resume, which
+makes hibernation and backup modes possible.
 
 Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
 Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 ---
- drivers/usb/host/ehci-atmel.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-atmel-tcb.c | 63 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 61 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/host/ehci-atmel.c b/drivers/usb/host/ehci-atmel.c
-index 7440722bfbf0..2a8b9bdc0e57 100644
---- a/drivers/usb/host/ehci-atmel.c
-+++ b/drivers/usb/host/ehci-atmel.c
-@@ -205,7 +205,8 @@ static int __maybe_unused ehci_atmel_drv_resume(struct device *dev)
- 	struct atmel_ehci_priv *atmel_ehci = hcd_to_atmel_ehci_priv(hcd);
+diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+index 75db585a2a94..acd3ce8ecf3f 100644
+--- a/drivers/pwm/pwm-atmel-tcb.c
++++ b/drivers/pwm/pwm-atmel-tcb.c
+@@ -37,11 +37,20 @@ struct atmel_tcb_pwm_device {
+ 	unsigned period;		/* PWM period expressed in clk cycles */
+ };
  
- 	atmel_start_clock(atmel_ehci);
--	return ehci_resume(hcd, false);
-+	ehci_resume(hcd, false);
-+	return 0;
++struct atmel_tcb_channel {
++	u32 enabled;
++	u32 cmr;
++	u32 ra;
++	u32 rb;
++	u32 rc;
++};
++
+ struct atmel_tcb_pwm_chip {
+ 	struct pwm_chip chip;
+ 	spinlock_t lock;
+ 	struct atmel_tc *tc;
+ 	struct atmel_tcb_pwm_device *pwms[NPWM];
++	struct atmel_tcb_channel bkup[NPWM / 2];
+ };
+ 
+ static inline struct atmel_tcb_pwm_chip *to_tcb_chip(struct pwm_chip *chip)
+@@ -175,12 +184,15 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	 * Use software trigger to apply the new setting.
+ 	 * If both PWM devices in this group are disabled we stop the clock.
+ 	 */
+-	if (!(cmr & (ATMEL_TC_ACPC | ATMEL_TC_BCPC)))
++	if (!(cmr & (ATMEL_TC_ACPC | ATMEL_TC_BCPC))) {
+ 		__raw_writel(ATMEL_TC_SWTRG | ATMEL_TC_CLKDIS,
+ 			     regs + ATMEL_TC_REG(group, CCR));
+-	else
++		tcbpwmc->bkup[group].enabled = 1;
++	} else {
+ 		__raw_writel(ATMEL_TC_SWTRG, regs +
+ 			     ATMEL_TC_REG(group, CCR));
++		tcbpwmc->bkup[group].enabled = 0;
++	}
+ 
+ 	spin_unlock(&tcbpwmc->lock);
  }
+@@ -263,6 +275,7 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	/* Use software trigger to apply the new setting */
+ 	__raw_writel(ATMEL_TC_CLKEN | ATMEL_TC_SWTRG,
+ 		     regs + ATMEL_TC_REG(group, CCR));
++	tcbpwmc->bkup[group].enabled = 1;
+ 	spin_unlock(&tcbpwmc->lock);
+ 	return 0;
+ }
+@@ -445,10 +458,56 @@ static const struct of_device_id atmel_tcb_pwm_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, atmel_tcb_pwm_dt_ids);
  
- #ifdef CONFIG_OF
++#ifdef CONFIG_PM_SLEEP
++static int atmel_tcb_pwm_suspend(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
++	void __iomem *base = tcbpwm->tc->regs;
++	int i;
++
++	for (i = 0; i < (NPWM / 2); i++) {
++		struct atmel_tcb_channel *chan = &tcbpwm->bkup[i];
++
++		chan->cmr = readl(base + ATMEL_TC_REG(i, CMR));
++		chan->ra = readl(base + ATMEL_TC_REG(i, RA));
++		chan->rb = readl(base + ATMEL_TC_REG(i, RB));
++		chan->rc = readl(base + ATMEL_TC_REG(i, RC));
++	}
++	return 0;
++}
++
++static int atmel_tcb_pwm_resume(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
++	void __iomem *base = tcbpwm->tc->regs;
++	int i;
++
++	for (i = 0; i < (NPWM / 2); i++) {
++		struct atmel_tcb_channel *chan = &tcbpwm->bkup[i];
++
++		writel(chan->cmr, base + ATMEL_TC_REG(i, CMR));
++		writel(chan->ra, base + ATMEL_TC_REG(i, RA));
++		writel(chan->rb, base + ATMEL_TC_REG(i, RB));
++		writel(chan->rc, base + ATMEL_TC_REG(i, RC));
++		if (chan->enabled) {
++			writel(ATMEL_TC_CLKEN | ATMEL_TC_SWTRG,
++				base + ATMEL_TC_REG(i, CCR));
++		}
++	}
++	return 0;
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(atmel_tcb_pwm_pm_ops, atmel_tcb_pwm_suspend,
++			 atmel_tcb_pwm_resume);
++
+ static struct platform_driver atmel_tcb_pwm_driver = {
+ 	.driver = {
+ 		.name = "atmel-tcb-pwm",
+ 		.of_match_table = atmel_tcb_pwm_dt_ids,
++		.pm = &atmel_tcb_pwm_pm_ops,
+ 	},
+ 	.probe = atmel_tcb_pwm_probe,
+ 	.remove = atmel_tcb_pwm_remove,
 -- 
 2.11.0
-
-
-______________________________________________________
-Linux MTD discussion mailing list
-http://lists.infradead.org/mailman/listinfo/linux-mtd/
