@@ -1,128 +1,68 @@
-From: Romain Izard <romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 8/8] tty/serial: atmel: Prevent a warning on suspend
-Date: Wed, 27 Sep 2017 10:35:55 +0200
-Message-ID: <20170927083555.16580-9-romain.izard.pro@gmail.com>
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: [PATCH v3 2/8] clk: at91: pmc: Save SCSR during suspend
+Date: Wed, 27 Sep 2017 10:35:49 +0200
+Message-ID: <20170927083555.16580-3-romain.izard.pro@gmail.com>
 References: <20170927083555.16580-1-romain.izard.pro@gmail.com>
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170927083555.16580-1-romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Michael Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Wenyou Yang <wenyou.yang-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Josh Wu <rainyfeeling-1ViLX0X+lBJBDgjK7y7TUQ@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cyrille Pitchen <cyrille.pitchen-yU5RGvR974pGWvitb5QawA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Ludovic Desroches <ludovic.desroches-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, Ale
-Cc: linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Romain Izard <romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org>
+In-Reply-To: <20170927083555.16580-1-romain.izard.pro@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mtd>,
+ <mailto:linux-mtd-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mtd/>
+List-Post: <mailto:linux-mtd@lists.infradead.org>
+List-Help: <mailto:linux-mtd-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mtd>,
+ <mailto:linux-mtd-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-mtd" <linux-mtd-bounces@lists.infradead.org>
+Errors-To: linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, Richard Weinberger <richard@nod.at>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Stern <stern@rowland.harvard.edu>, Ludovic Desroches <ludovic.desroches@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org, Romain Izard <romain.izard.pro@gmail.com>, linux-clk@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The atmel serial port driver reported the following warning on suspend:
-atmel_usart f8020000.serial: ttyS1: Unable to drain transmitter
+The contents of the System Clock Status Register (SCSR) needs to be
+restored into the System Clock Enable Register (SCER).
 
-As the ATMEL_US_TXEMPTY status bit in ATMEL_US_CSR is always cleared
-when the transmitter is disabled, we need to know the transmitter's
-state to return the real fifo state. And as ATMEL_US_CR is write-only,
-it is necessary to save the state of the transmitter in a local
-variable, and update the variable when TXEN and TXDIS is written in
-ATMEL_US_CR.
+As the bootloader will restore some clocks by itself, the issue can be
+missed as only the USB controller, the LCD controller, the Image Sensor
+controller and the programmable clocks will be impacted.
 
-After those changes, atmel_tx_empty can return "empty" on suspend, the
-warning in uart_suspend_port disappears, and suspending is 20ms shorter
-for each enabled Atmel serial port.
+Fix the obvious typo in the suspend/resume code, as the IMR register
+does not need to be saved twice.
 
-Signed-off-by: Romain Izard <romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Tested-by: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-Acked-by: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-Acked-by: Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 ---
- drivers/tty/serial/atmel_serial.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/clk/at91/pmc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 7551cab438ff..ce45b4ada0bf 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -171,6 +171,7 @@ struct atmel_uart_port {
- 	bool			has_hw_timer;
- 	struct timer_list	uart_timer;
- 
-+	bool			tx_stopped;
- 	bool			suspended;
- 	unsigned int		pending;
- 	unsigned int		pending_status;
-@@ -380,6 +381,10 @@ static int atmel_config_rs485(struct uart_port *port,
-  */
- static u_int atmel_tx_empty(struct uart_port *port)
+diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
+index 5c2b26de303e..07dc2861ad3f 100644
+--- a/drivers/clk/at91/pmc.c
++++ b/drivers/clk/at91/pmc.c
+@@ -86,7 +86,7 @@ static int pmc_suspend(void)
  {
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+
-+	if (atmel_port->tx_stopped)
-+		return TIOCSER_TEMT;
- 	return (atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXEMPTY) ?
- 		TIOCSER_TEMT :
- 		0;
-@@ -485,6 +490,7 @@ static void atmel_stop_tx(struct uart_port *port)
- 	 * is fully transmitted.
- 	 */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS);
-+	atmel_port->tx_stopped = true;
+ 	int i;
  
- 	/* Disable interrupts */
- 	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
-@@ -521,6 +527,7 @@ static void atmel_start_tx(struct uart_port *port)
+-	regmap_read(pmcreg, AT91_PMC_IMR, &pmc_cache.scsr);
++	regmap_read(pmcreg, AT91_PMC_SCSR, &pmc_cache.scsr);
+ 	regmap_read(pmcreg, AT91_PMC_PCSR, &pmc_cache.pcsr0);
+ 	regmap_read(pmcreg, AT91_CKGR_UCKR, &pmc_cache.uckr);
+ 	regmap_read(pmcreg, AT91_CKGR_MOR, &pmc_cache.mor);
+@@ -129,7 +129,7 @@ static void pmc_resume(void)
+ 	if (pmc_cache.pllar != tmp)
+ 		pr_warn("PLLAR was not configured properly by the firmware\n");
  
- 	/* re-enable the transmitter */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
-+	atmel_port->tx_stopped = false;
- }
- 
- /*
-@@ -1866,6 +1873,7 @@ static int atmel_startup(struct uart_port *port)
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
- 	/* enable xmit & rcvr */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	setup_timer(&atmel_port->uart_timer,
- 			atmel_uart_timer_callback,
-@@ -2122,6 +2130,7 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	/* disable receiver and transmitter */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS | ATMEL_US_RXDIS);
-+	atmel_port->tx_stopped = true;
- 
- 	/* mode */
- 	if (port->rs485.flags & SER_RS485_ENABLED) {
-@@ -2207,6 +2216,7 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
- 	atmel_uart_writel(port, ATMEL_US_BRGR, quot);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	/* restore interrupts */
- 	atmel_uart_writel(port, ATMEL_US_IER, imr);
-@@ -2450,6 +2460,7 @@ static void atmel_console_write(struct console *co, const char *s, u_int count)
- 
- 	/* Make sure that tx path is actually able to send characters */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	uart_console_write(port, s, count, atmel_console_putchar);
- 
-@@ -2511,6 +2522,7 @@ static int __init atmel_console_setup(struct console *co, char *options)
- {
- 	int ret;
- 	struct uart_port *port = &atmel_ports[co->index].uart;
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
- 	int baud = 115200;
- 	int bits = 8;
- 	int parity = 'n';
-@@ -2528,6 +2540,7 @@ static int __init atmel_console_setup(struct console *co, char *options)
- 	atmel_uart_writel(port, ATMEL_US_IDR, -1);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+-	regmap_write(pmcreg, AT91_PMC_IMR, pmc_cache.scsr);
++	regmap_write(pmcreg, AT91_PMC_SCER, pmc_cache.scsr);
+ 	regmap_write(pmcreg, AT91_PMC_PCER, pmc_cache.pcsr0);
+ 	regmap_write(pmcreg, AT91_CKGR_UCKR, pmc_cache.uckr);
+ 	regmap_write(pmcreg, AT91_CKGR_MOR, pmc_cache.mor);
 -- 
 2.11.0
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+______________________________________________________
+Linux MTD discussion mailing list
+http://lists.infradead.org/mailman/listinfo/linux-mtd/
