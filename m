@@ -1,7 +1,8 @@
 From: Romain Izard <romain.izard.pro@gmail.com>
-Subject: [PATCH v3 3/8] clk: at91: pmc: Support backup for programmable clocks
-Date: Wed, 27 Sep 2017 10:35:50 +0200
-Message-ID: <20170927083555.16580-4-romain.izard.pro@gmail.com>
+Subject: [PATCH v3 4/8] mtd: nand: atmel: Avoid ECC errors when leaving backup
+ mode
+Date: Wed, 27 Sep 2017 10:35:51 +0200
+Message-ID: <20170927083555.16580-5-romain.izard.pro@gmail.com>
 References: <20170927083555.16580-1-romain.izard.pro@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,151 +19,108 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mtd>,
 Sender: "linux-mtd" <linux-mtd-bounces@lists.infradead.org>
 Errors-To: linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org
 To: Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, Richard Weinberger <richard@nod.at>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Stern <stern@rowland.harvard.edu>, Ludovic Desroches <ludovic.desroches@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org, Romain Izard <romain.izard@mobile-devices.fr>, Romain Izard <romain.izard.pro@gmail.com>, linux-clk@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org, Romain Izard <romain.izard.pro@gmail.com>, linux-clk@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Romain Izard <romain.izard@mobile-devices.fr>
+During backup mode, the contents of all registers will be cleared as the
+SoC will be completely powered down. For a product that boots on NAND
+Flash memory, the bootloader will obviously use the related controller
+to read the Flash and correct any detected error in the memory, before
+handling back control to the kernel's resuming entry point.
 
-When an AT91 programmable clock is declared in the device tree, register
-it into the Power Management Controller driver. On entering suspend mode,
-the driver saves and restores the Programmable Clock registers to support
-the backup mode for these clocks.
+But it does not clean the NAND controller registers after use and on its
+side the kernel driver expects the error locator to be powered down and
+in a clean state. Add a resume hook for the PMECC error locator, and
+reset its registers.
 
 Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 ---
-Changes in v2:
-* register PCKs on clock startup
-Chnages in v3:
-* improve comments on hanling 0 in pmc_register_id and pmc_register_pck
-* declare local variables earlier for checkpatch
+Change in v3:
+* keep the PMECC disabled when not in use, and use atmel_pmecc_resume to
+  reset the controller after the bootloader has left it enabled.
 
- drivers/clk/at91/clk-programmable.c |  2 ++
- drivers/clk/at91/pmc.c              | 35 +++++++++++++++++++++++++++++++++++
- drivers/clk/at91/pmc.h              |  2 ++
- 3 files changed, 39 insertions(+)
+ drivers/mtd/nand/atmel/nand-controller.c |  3 +++
+ drivers/mtd/nand/atmel/pmecc.c           | 22 ++++++++++++++--------
+ drivers/mtd/nand/atmel/pmecc.h           |  1 +
+ 3 files changed, 18 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/clk/at91/clk-programmable.c b/drivers/clk/at91/clk-programmable.c
-index 85a449cf61e3..0e6aab1252fc 100644
---- a/drivers/clk/at91/clk-programmable.c
-+++ b/drivers/clk/at91/clk-programmable.c
-@@ -204,6 +204,8 @@ at91_clk_register_programmable(struct regmap *regmap,
- 	if (ret) {
- 		kfree(prog);
- 		hw = ERR_PTR(ret);
-+	} else {
-+		pmc_register_pck(id);
- 	}
+diff --git a/drivers/mtd/nand/atmel/nand-controller.c b/drivers/mtd/nand/atmel/nand-controller.c
+index f25eca79f4e5..86c2199380c2 100644
+--- a/drivers/mtd/nand/atmel/nand-controller.c
++++ b/drivers/mtd/nand/atmel/nand-controller.c
+@@ -2530,6 +2530,9 @@ static __maybe_unused int atmel_nand_controller_resume(struct device *dev)
+ 	struct atmel_nand_controller *nc = dev_get_drvdata(dev);
+ 	struct atmel_nand *nand;
  
- 	return hw;
-diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
-index 07dc2861ad3f..1fa27f4ea538 100644
---- a/drivers/clk/at91/pmc.c
-+++ b/drivers/clk/at91/pmc.c
-@@ -22,6 +22,7 @@
- #include "pmc.h"
- 
- #define PMC_MAX_IDS 128
-+#define PMC_MAX_PCKS 8
- 
- int of_at91_get_clk_range(struct device_node *np, const char *propname,
- 			  struct clk_range *range)
-@@ -50,6 +51,7 @@ EXPORT_SYMBOL_GPL(of_at91_get_clk_range);
- static struct regmap *pmcreg;
- 
- static u8 registered_ids[PMC_MAX_IDS];
-+static u8 registered_pcks[PMC_MAX_PCKS];
- 
- static struct
- {
-@@ -66,8 +68,13 @@ static struct
- 	u32 pcr[PMC_MAX_IDS];
- 	u32 audio_pll0;
- 	u32 audio_pll1;
-+	u32 pckr[PMC_MAX_PCKS];
- } pmc_cache;
- 
-+/*
-+ * As Peripheral ID 0 is invalid on AT91 chips, the identifier is stored
-+ * without alteration in the table, and 0 is for unused clocks.
-+ */
- void pmc_register_id(u8 id)
- {
- 	int i;
-@@ -82,9 +89,28 @@ void pmc_register_id(u8 id)
- 	}
- }
- 
-+/*
-+ * As Programmable Clock 0 is valid on AT91 chips, there is an offset
-+ * of 1 between the stored value and the real clock ID.
-+ */
-+void pmc_register_pck(u8 pck)
-+{
-+	int i;
++	if (nand->pmecc)
++		atmel_pmecc_resume(nand->pmecc);
 +
-+	for (i = 0; i < PMC_MAX_PCKS; i++) {
-+		if (registered_pcks[i] == 0) {
-+			registered_pcks[i] = pck + 1;
-+			break;
-+		}
-+		if (registered_pcks[i] == (pck + 1))
-+			break;
-+	}
+ 	list_for_each_entry(nand, &nc->chips, node) {
+ 		int i;
+ 
+diff --git a/drivers/mtd/nand/atmel/pmecc.c b/drivers/mtd/nand/atmel/pmecc.c
+index 146af8218314..ff09c0f25dd4 100644
+--- a/drivers/mtd/nand/atmel/pmecc.c
++++ b/drivers/mtd/nand/atmel/pmecc.c
+@@ -765,6 +765,12 @@ void atmel_pmecc_get_generated_eccbytes(struct atmel_pmecc_user *user,
+ }
+ EXPORT_SYMBOL_GPL(atmel_pmecc_get_generated_eccbytes);
+ 
++void atmel_pmecc_reset(struct atmel_pmecc *pmecc)
++{
++	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
++	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
 +}
 +
- static int pmc_suspend(void)
+ int atmel_pmecc_enable(struct atmel_pmecc_user *user, int op)
  {
- 	int i;
-+	u8 num;
+ 	struct atmel_pmecc *pmecc = user->pmecc;
+@@ -797,14 +803,17 @@ EXPORT_SYMBOL_GPL(atmel_pmecc_enable);
  
- 	regmap_read(pmcreg, AT91_PMC_SCSR, &pmc_cache.scsr);
- 	regmap_read(pmcreg, AT91_PMC_PCSR, &pmc_cache.pcsr0);
-@@ -103,6 +129,10 @@ static int pmc_suspend(void)
- 		regmap_read(pmcreg, AT91_PMC_PCR,
- 			    &pmc_cache.pcr[registered_ids[i]]);
- 	}
-+	for (i = 0; registered_pcks[i]; i++) {
-+		num = registered_pcks[i] - 1;
-+		regmap_read(pmcreg, AT91_PMC_PCKR(num), &pmc_cache.pckr[num]);
-+	}
- 
- 	return 0;
+ void atmel_pmecc_disable(struct atmel_pmecc_user *user)
+ {
+-	struct atmel_pmecc *pmecc = user->pmecc;
+-
+-	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+-	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
++	atmel_pmecc_reset(user->pmecc);
+ 	mutex_unlock(&user->pmecc->lock);
  }
-@@ -119,6 +149,7 @@ static bool pmc_ready(unsigned int mask)
- static void pmc_resume(void)
+ EXPORT_SYMBOL_GPL(atmel_pmecc_disable);
+ 
++void atmel_pmecc_resume(struct atmel_pmecc_user *user)
++{
++	atmel_pmecc_reset(user->pmecc);
++}
++EXPORT_SYMBOL_GPL(atmel_pmecc_resume);
++
+ int atmel_pmecc_wait_rdy(struct atmel_pmecc_user *user)
  {
- 	int i;
-+	u8 num;
- 	u32 tmp;
- 	u32 mask = AT91_PMC_MCKRDY | AT91_PMC_LOCKA;
+ 	struct atmel_pmecc *pmecc = user->pmecc;
+@@ -855,10 +864,7 @@ static struct atmel_pmecc *atmel_pmecc_create(struct platform_device *pdev,
  
-@@ -143,6 +174,10 @@ static void pmc_resume(void)
- 			     pmc_cache.pcr[registered_ids[i]] |
- 			     AT91_PMC_PCR_CMD);
- 	}
-+	for (i = 0; registered_pcks[i]; i++) {
-+		num = registered_pcks[i] - 1;
-+		regmap_write(pmcreg, AT91_PMC_PCKR(num), pmc_cache.pckr[num]);
-+	}
+ 	/* Disable all interrupts before registering the PMECC handler. */
+ 	writel(0xffffffff, pmecc->regs.base + ATMEL_PMECC_IDR);
+-
+-	/* Reset the ECC engine */
+-	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+-	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
++	atmel_pmecc_reset(pmecc);
  
- 	if (pmc_cache.uckr & AT91_PMC_UPLLEN)
- 		mask |= AT91_PMC_LOCKU;
-diff --git a/drivers/clk/at91/pmc.h b/drivers/clk/at91/pmc.h
-index 858e8ef7e8db..d22b1fa9ecdc 100644
---- a/drivers/clk/at91/pmc.h
-+++ b/drivers/clk/at91/pmc.h
-@@ -31,8 +31,10 @@ int of_at91_get_clk_range(struct device_node *np, const char *propname,
+ 	return pmecc;
+ }
+diff --git a/drivers/mtd/nand/atmel/pmecc.h b/drivers/mtd/nand/atmel/pmecc.h
+index a8ddbfca2ea5..488a90f1965d 100644
+--- a/drivers/mtd/nand/atmel/pmecc.h
++++ b/drivers/mtd/nand/atmel/pmecc.h
+@@ -63,6 +63,7 @@ void atmel_pmecc_destroy_user(struct atmel_pmecc_user *user);
  
- #ifdef CONFIG_PM
- void pmc_register_id(u8 id);
-+void pmc_register_pck(u8 pck);
- #else
- static inline void pmc_register_id(u8 id) {}
-+static inline void pmc_register_pck(u8 pck) {}
- #endif
- 
- #endif /* __PMC_H_ */
+ int atmel_pmecc_enable(struct atmel_pmecc_user *user, int op);
+ void atmel_pmecc_disable(struct atmel_pmecc_user *user);
++void atmel_pmecc_resume(struct atmel_pmecc_user *user);
+ int atmel_pmecc_wait_rdy(struct atmel_pmecc_user *user);
+ int atmel_pmecc_correct_sector(struct atmel_pmecc_user *user, int sector,
+ 			       void *data, void *ecc);
 -- 
 2.11.0
 
