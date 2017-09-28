@@ -1,80 +1,62 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH v4 0/8] Various patches for SAMA5D2 backup mode
-Date: Thu, 28 Sep 2017 12:02:22 +0200
-Message-ID: <20170928100222.nnocjkyd5qkly6qx@piout.net>
-References: <20170928094627.31017-1-romain.izard.pro@gmail.com>
+From: Martyn Welch <martyn.welch@collabora.co.uk>
+Subject: [PATCH] serial: imx: only set dma_is_rxing when DMA starts
+Date: Thu, 28 Sep 2017 11:03:49 +0100
+Message-ID: <1506593029-13849-1-git-send-email-martyn.welch@collabora.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170928094627.31017-1-romain.izard.pro@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Romain Izard <romain.izard.pro@gmail.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, Richard Weinberger <richard@nod.at>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Stern <stern@rowland.harvard.edu>, Ludovic Desroches <ludovic.desroches@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>lin
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Romain Perier <romain.perier@collabora.com>, Martyn Welch <martyn.welch@collabora.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+From: Romain Perier <romain.perier@collabora.com>
 
-On 28/09/2017 at 11:46:19 +0200, Romain Izard wrote:
-> While the core of the backup mode for SAMA5D2 has been integrated in
-> v4.13, it is far from complete. Individual controllers in the chip have
-> drivers that do not support the reset of the registers during suspend,
-> and they need to be adapted to handle it.
-> 
-> The first patch uses the clock wakeup code from the prototype backup
-> mode instead of the version integrated in the mainline, as the mainline
-> version is not stable. During a test loop with two-second backup
-> suspend, the mainline version will hang in less than one day, whereas
-> the prototype version has been running the same test for more than a
-> week without hanging.
-> 
-> While all these patches are provided in a series, the clock, mtd,
-> usb, pwm and mfd patch do not depend on each other.
-> 
-> Changes in v2:
-> * drop the IIO patch duplicating existing code
-> * determine the number of programmable clocks to save dynamically
-> * declare a required local variable in the tty/serial patch
-> 
-> Changes in v3:
-> * drop dev_printk changes for PMECC
-> * rework the resume code for PMECC
-> * improve comments on PMC clock handling
-> 
-> Changes in v4:
-> * fix a bug in the PMECC resume code
-> 
-> Romain Izard (8):
->   clk: at91: pmc: Wait for clocks when resuming
->   clk: at91: pmc: Save SCSR during suspend
->   clk: at91: pmc: Support backup for programmable clocks
->   mtd: nand: atmel: Avoid ECC errors when leaving backup mode
->   ehci-atmel: Power down during suspend is normal
->   pwm: atmel-tcb: Support backup mode
->   atmel_flexcom: Support backup mode
->   tty/serial: atmel: Prevent a warning on suspend
-> 
+The variable dma_is_rxing is currently set to 1 in imx_disable_rx_int().
+This is problematic as:
 
-Really, you have to stop sending those independent patches as a series
-if you want to have a chance to see them being merged.
+- whilst imx_disable_rx_int() is currently always called before
+  start_rx_dma() this dependency isn't obvious.
+- start_rx_dma() does error checking and might exit without
+  enabling DMA. Currently this will result in dma_is_rxing suggesting
+  that DMA is being used for recieving.
 
->  drivers/clk/at91/clk-programmable.c      |  2 +
->  drivers/clk/at91/pmc.c                   | 63 ++++++++++++++++++++++++++-----
->  drivers/clk/at91/pmc.h                   |  2 +
->  drivers/mfd/atmel-flexcom.c              | 65 ++++++++++++++++++++++++--------
->  drivers/mtd/nand/atmel/nand-controller.c |  3 ++
->  drivers/mtd/nand/atmel/pmecc.c           | 17 +++++----
->  drivers/mtd/nand/atmel/pmecc.h           |  1 +
->  drivers/pwm/pwm-atmel-tcb.c              | 63 ++++++++++++++++++++++++++++++-
->  drivers/tty/serial/atmel_serial.c        | 13 +++++++
->  drivers/usb/host/ehci-atmel.c            |  3 +-
->  10 files changed, 196 insertions(+), 36 deletions(-)
-> 
-> -- 
-> 2.11.0
-> 
+To avoid these issues, move the setting of dma_is_rxing to
+start_rx_dma() when appropriate.
 
+Signed-off-by: Romain Perier <romain.perier@collabora.com>
+Signed-off-by: Martyn Welch <martyn.welch@collabora.co.uk>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+
+This patch has been split out of series: "[PATCH v3 0/6] serial: imx:
+various improvements" as this is a stand alone fix and some of the
+patches in the series are problematic.
+
+ drivers/tty/serial/imx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index fe368a4..1691ed2 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -714,8 +714,6 @@ static void imx_disable_rx_int(struct imx_port *sport)
+ {
+ 	unsigned long temp;
+ 
+-	sport->dma_is_rxing = 1;
+-
+ 	/* disable the receiver ready and aging timer interrupts */
+ 	temp = readl(sport->port.membase + UCR1);
+ 	temp &= ~(UCR1_RRDYEN);
+@@ -1074,6 +1072,7 @@ static int start_rx_dma(struct imx_port *sport)
+ 	desc->callback_param = sport;
+ 
+ 	dev_dbg(dev, "RX: prepare for the DMA.\n");
++	sport->dma_is_rxing = 1;
+ 	sport->rx_cookie = dmaengine_submit(desc);
+ 	dma_async_issue_pending(chan);
+ 	return 0;
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+1.8.3.1
