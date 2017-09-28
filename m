@@ -1,107 +1,76 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [patch v9 0/4] JTAG driver introduction
-Date: Thu, 28 Sep 2017 10:33:18 +0200
-Message-ID: <CAMuHMdWfoYzWPJYaGOhF8qshKhvngwFKs=kvuH62PYif9q9+0g@mail.gmail.com>
+From: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Subject: RE: [patch v9 0/4] JTAG driver introduction
+Date: Thu, 28 Sep 2017 08:53:12 +0000
+Message-ID: <AM4PR0501MB2194D67623C640E20B3A7FABB1790@AM4PR0501MB2194.eurprd05.prod.outlook.com>
 References: <1505985932-27568-1-git-send-email-oleksandrs@mellanox.com>
+ <CAMuHMdWfoYzWPJYaGOhF8qshKhvngwFKs=kvuH62PYif9q9+0g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1505985932-27568-1-git-send-email-oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>, Jiri Pirko <jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org>, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, Vadim Pasternak <vadimp-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Mauro Carvalho Chehab <mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>l
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAMuHMdWfoYzWPJYaGOhF8qshKhvngwFKs=kvuH62PYif9q9+0g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>, Jiri Pirko <jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org>, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org" <mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org>, Vadim Pasternak <vadimp-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, system-sw-low-level <system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Oleksandr,
-
-[My attention was drawn by https://lwn.net/Articles/734440/]
-[CC linux-spi, which was never included, while linux-serial was]
-
-On Thu, Sep 21, 2017 at 11:25 AM, Oleksandr Shamray
-<oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org> wrote:
-> When a need raise up to use JTAG interface for system's devices
-> programming or CPU debugging, usually the user layer
-> application implements jtag protocol by bit-bang or using a
-> proprietary connection to vendor hardware.
-> This method can be slow and not generic.
->
-> We propose to implement general JTAG interface and infrastructure
-> to communicate with user layer application. In such way, we can
-> have the standard JTAG interface core part and separation from
-> specific HW implementation.
-> This allow new capability to debug the CPU or program system's
-> device via BMC without additional devices nor cost.
->
-> This patch purpose is to add JTAG master core infrastructure by
-> defining new JTAG class and provide generic JTAG interface
-> to allow hardware specific drivers to connect this interface.
-> This will enable all JTAG drivers to use the common interface
-> part and will have separate for hardware implementation.
->
-> The JTAG (Joint Test Action Group) core driver provides minimal generic
-> JTAG interface, which can be used by hardware specific JTAG master
-> controllers. By providing common interface for the JTAG controllers,
-> user space device programing is hardware independent.
->
-> Modern SoC which in use for embedded system' equipped with
-> internal JTAG master interface.
-> This interface is used for programming and debugging system's
-> hardware components, like CPLD, FPGA, CPU, voltage and
-> industrial controllers.
-> Firmware for such devices can be upgraded through JTAG interface during
-> Runtime. The JTAG standard support for multiple devices programming,
-> is in case their lines are daisy-chained together.
->
-> For example, systems which equipped with host CPU, BMC SoC or/and
-> number of programmable devices are capable to connect a pin and
-> select system components dynamically for programming and debugging,
-> This is using by the BMC which is equipped with internal SoC master
-> controller.
-> For example:
->
-> BMC JTAG master --> pin selected to CPLDs chain for programming (filed
-> upgrade, production)
-> BMC JTAG master --> pin selected to voltage monitors for programming
-> (field upgrade, production)
-> BMC JTAG master --> pin selected to host CPU (on-site debugging
-> and developers debugging)
->
-> For example, we can have application in user space which using calls
-> to JTAG driver executes CPLD programming directly from SVF file
->
-> The JTAG standard (IEEE 1149.1) defines the next connector pins:
-> - TDI (Test Data In);
-> - TDO (Test Data Out);
-> - TCK (Test Clock);
-> - TMS (Test Mode Select);
-> - TRST (Test Reset) (Optional);
->
-> The SoC equipped with JTAG master controller, performs
-> device programming on command or vector level. For example
-> a file in a standard SVF (Serial Vector Format) that contains
-> boundary scan vectors, can be used by sending each vector
-> to the JTAG interface and the JTAG controller will execute
-> the programming.
->
-> Initial version provides the system calls set for:
-> - SIR (Scan Instruction Register, IEEE 1149.1 Data Register scan);
-> - SDR (Scan Data Register, IEEE 1149.1 Instruction Register scan);
-> - RUNTEST (Forces the IEEE 1149.1 bus to a run state for a specified
->   number of clocks.
->
-> SoC which are not equipped with JTAG master interface, can be built
-> on top of JTAG core driver infrastructure, by applying bit-banging of
-> TDI, TDO, TCK and TMS pins within the hardware specific driver.
-
-Or by using an SPI master?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBnZWVydC51eXR0ZXJob2V2ZW5A
+Z21haWwuY29tIFttYWlsdG86Z2VlcnQudXl0dGVyaG9ldmVuQGdtYWlsLmNvbV0NCj4gT24gQmVo
+YWxmIE9mIEdlZXJ0IFV5dHRlcmhvZXZlbg0KPiBTZW50OiBUaHVyc2RheSwgU2VwdGVtYmVyIDI4
+LCAyMDE3IDExOjMzIEFNDQo+IFRvOiBPbGVrc2FuZHIgU2hhbXJheSA8b2xla3NhbmRyc0BtZWxs
+YW5veC5jb20+DQo+IENjOiBHcmVnIEtIIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz47IEFy
+bmQgQmVyZ21hbm4NCj4gPGFybmRAYXJuZGIuZGU+OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
+b3JnOyBsaW51eC1hcm0tDQo+IGtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBkZXZpY2V0cmVl
+QHZnZXIua2VybmVsLm9yZzsNCj4gb3BlbmJtY0BsaXN0cy5vemxhYnMub3JnOyBKb2VsIFN0YW5s
+ZXkgPGpvZWxAam1zLmlkLmF1PjsgSmlyaSBQaXJrbw0KPiA8amlyaUByZXNudWxsaS51cz47IFRv
+YmlhcyBLbGF1c2VyIDx0a2xhdXNlckBkaXN0YW56LmNoPjsgbGludXgtDQo+IHNlcmlhbEB2Z2Vy
+Lmtlcm5lbC5vcmc7IG1lY0BzaG91dC5uZXQ7IFZhZGltIFBhc3Rlcm5haw0KPiA8dmFkaW1wQG1l
+bGxhbm94LmNvbT47IHN5c3RlbS1zdy1sb3ctbGV2ZWwgPHN5c3RlbS1zdy1sb3ctDQo+IGxldmVs
+QG1lbGxhbm94LmNvbT47IFJvYiBIZXJyaW5nIDxyb2JoK2R0QGtlcm5lbC5vcmc+OyBvcGVub2Nk
+LWRldmVsLQ0KPiBvd25lckBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ7IGxpbnV4LWFwaUB2Z2VyLmtl
+cm5lbC5vcmc7IERhdmlkIFMuIE1pbGxlcg0KPiA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IE1hdXJv
+IENhcnZhbGhvIENoZWhhYiA8bWNoZWhhYkBrZXJuZWwub3JnPjsNCj4gbGludXgtc3BpIDxsaW51
+eC1zcGlAdmdlci5rZXJuZWwub3JnPjsgTWFyayBCcm93biA8YnJvb25pZUBrZXJuZWwub3JnPg0K
+PiBTdWJqZWN0OiBSZTogW3BhdGNoIHY5IDAvNF0gSlRBRyBkcml2ZXIgaW50cm9kdWN0aW9uDQo+
+IA0KPiBIaSBPbGVrc2FuZHIsDQo+IA0KPiBbTXkgYXR0ZW50aW9uIHdhcyBkcmF3biBieQ0KPiBo
+dHRwczovL2VtZWEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBz
+JTNBJTJGJTJGbHduLm5ldA0KPiAlMkZBcnRpY2xlcyUyRjczNDQ0MCUyRiZkYXRhPTAyJTdDMDEl
+N0NvbGVrc2FuZHJzJTQwbWVsbGFub3guY29tJTcNCj4gQzk3YjhiYTg4Njg2YTQyZGFhYWNlMDhk
+NTA2NGI5MmViJTdDYTY1Mjk3MWM3ZDJlNGQ5YmE2YTRkMTQ5MjU2Zg0KPiA0NjFiJTdDMCU3QzAl
+N0M2MzY0MjE4NDQwMjY4NTQyMTYmc2RhdGE9VGVIRDRhMyUyRkJONmE1WEczSml6ZjUNCj4gcG1z
+eUpISmp6a0V6a3BucXNYQzZTMCUzRCZyZXNlcnZlZD0wXQ0KPiBbQ0MgbGludXgtc3BpLCB3aGlj
+aCB3YXMgbmV2ZXIgaW5jbHVkZWQsIHdoaWxlIGxpbnV4LXNlcmlhbCB3YXNdDQo+IA0KPiBPbiBU
+aHUsIFNlcCAyMSwgMjAxNyBhdCAxMToyNSBBTSwgT2xla3NhbmRyIFNoYW1yYXkNCj4gPG9sZWtz
+YW5kcnNAbWVsbGFub3guY29tPiB3cm90ZToNCj4gPiBXaGVuIGEgbmVlZCByYWlzZSB1cCB0byB1
+c2UgSlRBRyBpbnRlcmZhY2UgZm9yIHN5c3RlbSdzIGRldmljZXMNCj4gPiBwcm9ncmFtbWluZyBv
+ciBDUFUgZGVidWdnaW5nLCB1c3VhbGx5IHRoZSB1c2VyIGxheWVyIGFwcGxpY2F0aW9uDQo+ID4g
+aW1wbGVtZW50cyBqdGFnIHByb3RvY29sIGJ5IGJpdC1iYW5nIG9yIHVzaW5nIGEgcHJvcHJpZXRh
+cnkgY29ubmVjdGlvbg0KPiA+IHRvIHZlbmRvciBoYXJkd2FyZS4NCj4gPiBUaGlzIG1ldGhvZCBj
+YW4gYmUgc2xvdyBhbmQgbm90IGdlbmVyaWMuDQo+ID4NCg0KDQpbLi5dDQoNCj4gPg0KPiA+IElu
+aXRpYWwgdmVyc2lvbiBwcm92aWRlcyB0aGUgc3lzdGVtIGNhbGxzIHNldCBmb3I6DQo+ID4gLSBT
+SVIgKFNjYW4gSW5zdHJ1Y3Rpb24gUmVnaXN0ZXIsIElFRUUgMTE0OS4xIERhdGEgUmVnaXN0ZXIg
+c2Nhbik7DQo+ID4gLSBTRFIgKFNjYW4gRGF0YSBSZWdpc3RlciwgSUVFRSAxMTQ5LjEgSW5zdHJ1
+Y3Rpb24gUmVnaXN0ZXIgc2Nhbik7DQo+ID4gLSBSVU5URVNUIChGb3JjZXMgdGhlIElFRUUgMTE0
+OS4xIGJ1cyB0byBhIHJ1biBzdGF0ZSBmb3IgYSBzcGVjaWZpZWQNCj4gPiAgIG51bWJlciBvZiBj
+bG9ja3MuDQo+ID4NCj4gPiBTb0Mgd2hpY2ggYXJlIG5vdCBlcXVpcHBlZCB3aXRoIEpUQUcgbWFz
+dGVyIGludGVyZmFjZSwgY2FuIGJlIGJ1aWx0IG9uDQo+ID4gdG9wIG9mIEpUQUcgY29yZSBkcml2
+ZXIgaW5mcmFzdHJ1Y3R1cmUsIGJ5IGFwcGx5aW5nIGJpdC1iYW5naW5nIG9mDQo+ID4gVERJLCBU
+RE8sIFRDSyBhbmQgVE1TIHBpbnMgd2l0aGluIHRoZSBoYXJkd2FyZSBzcGVjaWZpYyBkcml2ZXIu
+DQo+IA0KPiBPciBieSB1c2luZyBhbiBTUEkgbWFzdGVyPw0KPiANCg0KSSB0aGluayBpdCBkZXBl
+bmRzIG9uIGhvdyBmbGV4aWJsZSB0aGUgU1BJIGludGVyZmFjZSBpcy4gSWYgeW91IGNhbiBzZXQg
+aXQgdG8gdHJhbnNmZXIgDQpmcm9tIDEgdG8gbiBiaXRzIGF0IGEgdGltZSwgYW5kIHlvdSBjb250
+cm9sIHRoZSBUTVMgbGluZSBpbiBzb2Z0d2FyZSwgeW91IHNob3VsZCANCmJlIGFibGUgdG8gdXNl
+IGl0LiBJZiB0aGUgU1BJIGludGVyZmFjZSBjYW4gb25seSB0cmFuc2ZlciBhIG11bHRpcGxlIG9m
+IDggYml0cyANCmF0IGEgdGltZSwgdGhlbiBpbiBnZW5lcmFsIGl0IHdvdWxkIG5vdCBiZSBzdWl0
+YWJsZSBmb3IgSlRBRy4NCg0KPiBHcntvZXRqZSxlZXRpbmd9cywNCj4gDQo+ICAgICAgICAgICAg
+ICAgICAgICAgICAgIEdlZXJ0DQo+IA0KPiAtLQ0KPiBHZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhl
+cmUncyBsb3RzIG9mIExpbnV4IGJleW9uZCBpYTMyIC0tIGdlZXJ0QGxpbnV4LQ0KPiBtNjhrLm9y
+Zw0KPiANCj4gSW4gcGVyc29uYWwgY29udmVyc2F0aW9ucyB3aXRoIHRlY2huaWNhbCBwZW9wbGUs
+IEkgY2FsbCBteXNlbGYgYSBoYWNrZXIuIEJ1dA0KPiB3aGVuIEknbSB0YWxraW5nIHRvIGpvdXJu
+YWxpc3RzIEkganVzdCBzYXkgInByb2dyYW1tZXIiIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuDQo+
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLS0gTGludXMgVG9ydmFsZHMNCg==
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
