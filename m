@@ -1,89 +1,107 @@
-From: Romain Izard <romain.izard.pro@gmail.com>
-Subject: Re: [PATCH v3 4/8] mtd: nand: atmel: Avoid ECC errors when leaving
- backup mode
-Date: Wed, 27 Sep 2017 17:32:10 +0200
-Message-ID: <CAGkQfmOYg6Usyd++KuGqMjDnaWaP77U5jfOL++3nN7PTcAhh9A@mail.gmail.com>
-References: <20170927083555.16580-1-romain.izard.pro@gmail.com>
- <20170927083555.16580-5-romain.izard.pro@gmail.com> <20170927170811.57830c1f@bbrezillon>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [patch v9 0/4] JTAG driver introduction
+Date: Thu, 28 Sep 2017 10:33:18 +0200
+Message-ID: <CAMuHMdWfoYzWPJYaGOhF8qshKhvngwFKs=kvuH62PYif9q9+0g@mail.gmail.com>
+References: <1505985932-27568-1-git-send-email-oleksandrs@mellanox.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-In-Reply-To: <20170927170811.57830c1f@bbrezillon>
-Sender: linux-pwm-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, Richard Weinberger <richard@nod.at>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Stern <stern@rowland.harvard.edu>, Ludovic Desroches <ludovic.desroches@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1505985932-27568-1-git-send-email-oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>, Jiri Pirko <jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org>, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, Vadim Pasternak <vadimp-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Mauro Carvalho Chehab <mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>l
 List-Id: linux-serial@vger.kernel.org
 
-2017-09-27 17:08 GMT+02:00 Boris Brezillon <boris.brezillon@free-electrons.com>:
-> On Wed, 27 Sep 2017 10:35:51 +0200
-> Romain Izard <romain.izard.pro@gmail.com> wrote:
->
->> During backup mode, the contents of all registers will be cleared as the
->> SoC will be completely powered down. For a product that boots on NAND
->> Flash memory, the bootloader will obviously use the related controller
->> to read the Flash and correct any detected error in the memory, before
->> handling back control to the kernel's resuming entry point.
->>
->> But it does not clean the NAND controller registers after use and on its
->> side the kernel driver expects the error locator to be powered down and
->> in a clean state. Add a resume hook for the PMECC error locator, and
->> reset its registers.
->>
->> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
->> ---
->> Change in v3:
->> * keep the PMECC disabled when not in use, and use atmel_pmecc_resume to
->>   reset the controller after the bootloader has left it enabled.
->>
->>  drivers/mtd/nand/atmel/nand-controller.c |  3 +++
->>  drivers/mtd/nand/atmel/pmecc.c           | 22 ++++++++++++++--------
->>  drivers/mtd/nand/atmel/pmecc.h           |  1 +
->>  3 files changed, 18 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/mtd/nand/atmel/nand-controller.c b/drivers/mtd/nand/atmel/nand-controller.c
->> index f25eca79f4e5..86c2199380c2 100644
->> --- a/drivers/mtd/nand/atmel/nand-controller.c
->> +++ b/drivers/mtd/nand/atmel/nand-controller.c
->> @@ -2530,6 +2530,9 @@ static __maybe_unused int atmel_nand_controller_resume(struct device *dev)
->>       struct atmel_nand_controller *nc = dev_get_drvdata(dev);
->>       struct atmel_nand *nand;
->>
->> +     if (nand->pmecc)
->> +             atmel_pmecc_resume(nand->pmecc);
->> +
->
-> nand is used uninitialized here, and atmel_pmecc_resume() should be
-> passed a atmel_pmecc object not a atmel_pmecc_user.
->
->         if (nc->pmecc)
->                 atmel_pmecc_resume(nc->pmecc);
->
-And yet I thought I correctly tested this code...
+Hi Oleksandr,
 
-:(
+[My attention was drawn by https://lwn.net/Articles/734440/]
+[CC linux-spi, which was never included, while linux-serial was]
 
->>       list_for_each_entry(nand, &nc->chips, node) {
->>               int i;
->>
->> diff --git a/drivers/mtd/nand/atmel/pmecc.c b/drivers/mtd/nand/atmel/pmecc.c
->> index 146af8218314..ff09c0f25dd4 100644
->> --- a/drivers/mtd/nand/atmel/pmecc.c
->> +++ b/drivers/mtd/nand/atmel/pmecc.c
->> @@ -765,6 +765,12 @@ void atmel_pmecc_get_generated_eccbytes(struct atmel_pmecc_user *user,
->>  }
->>  EXPORT_SYMBOL_GPL(atmel_pmecc_get_generated_eccbytes);
->>
->> +void atmel_pmecc_reset(struct atmel_pmecc *pmecc)
->> +{
->> +     writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
->> +     writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
->> +}
+On Thu, Sep 21, 2017 at 11:25 AM, Oleksandr Shamray
+<oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org> wrote:
+> When a need raise up to use JTAG interface for system's devices
+> programming or CPU debugging, usually the user layer
+> application implements jtag protocol by bit-bang or using a
+> proprietary connection to vendor hardware.
+> This method can be slow and not generic.
 >
-> It's not used outside of this file, so it should have a static
-> specifier. Anyway, I wonder why you don't expose atmel_pmecc_reset()
-> directly instead of creating this atmel_pmecc_resume() wrapper.
+> We propose to implement general JTAG interface and infrastructure
+> to communicate with user layer application. In such way, we can
+> have the standard JTAG interface core part and separation from
+> specific HW implementation.
+> This allow new capability to debug the CPU or program system's
+> device via BMC without additional devices nor cost.
+>
+> This patch purpose is to add JTAG master core infrastructure by
+> defining new JTAG class and provide generic JTAG interface
+> to allow hardware specific drivers to connect this interface.
+> This will enable all JTAG drivers to use the common interface
+> part and will have separate for hardware implementation.
+>
+> The JTAG (Joint Test Action Group) core driver provides minimal generic
+> JTAG interface, which can be used by hardware specific JTAG master
+> controllers. By providing common interface for the JTAG controllers,
+> user space device programing is hardware independent.
+>
+> Modern SoC which in use for embedded system' equipped with
+> internal JTAG master interface.
+> This interface is used for programming and debugging system's
+> hardware components, like CPLD, FPGA, CPU, voltage and
+> industrial controllers.
+> Firmware for such devices can be upgraded through JTAG interface during
+> Runtime. The JTAG standard support for multiple devices programming,
+> is in case their lines are daisy-chained together.
+>
+> For example, systems which equipped with host CPU, BMC SoC or/and
+> number of programmable devices are capable to connect a pin and
+> select system components dynamically for programming and debugging,
+> This is using by the BMC which is equipped with internal SoC master
+> controller.
+> For example:
+>
+> BMC JTAG master --> pin selected to CPLDs chain for programming (filed
+> upgrade, production)
+> BMC JTAG master --> pin selected to voltage monitors for programming
+> (field upgrade, production)
+> BMC JTAG master --> pin selected to host CPU (on-site debugging
+> and developers debugging)
+>
+> For example, we can have application in user space which using calls
+> to JTAG driver executes CPLD programming directly from SVF file
+>
+> The JTAG standard (IEEE 1149.1) defines the next connector pins:
+> - TDI (Test Data In);
+> - TDO (Test Data Out);
+> - TCK (Test Clock);
+> - TMS (Test Mode Select);
+> - TRST (Test Reset) (Optional);
+>
+> The SoC equipped with JTAG master controller, performs
+> device programming on command or vector level. For example
+> a file in a standard SVF (Serial Vector Format) that contains
+> boundary scan vectors, can be used by sending each vector
+> to the JTAG interface and the JTAG controller will execute
+> the programming.
+>
+> Initial version provides the system calls set for:
+> - SIR (Scan Instruction Register, IEEE 1149.1 Data Register scan);
+> - SDR (Scan Data Register, IEEE 1149.1 Instruction Register scan);
+> - RUNTEST (Forces the IEEE 1149.1 bus to a run state for a specified
+>   number of clocks.
+>
+> SoC which are not equipped with JTAG master interface, can be built
+> on top of JTAG core driver infrastructure, by applying bit-banging of
+> TDI, TDO, TCK and TMS pins within the hardware specific driver.
 
-I will fix this...
+Or by using an SPI master?
 
--- 
-Romain Izard
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
