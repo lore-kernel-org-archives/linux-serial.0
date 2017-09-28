@@ -1,62 +1,54 @@
 From: Martyn Welch <martyn.welch@collabora.co.uk>
-Subject: [PATCH] serial: imx: only set dma_is_rxing when DMA starts
-Date: Thu, 28 Sep 2017 11:03:49 +0100
-Message-ID: <1506593029-13849-1-git-send-email-martyn.welch@collabora.co.uk>
+Subject: Re: [PATCH] Use RX_BUF_SIZE to set size of RX buffer
+Date: Thu, 28 Sep 2017 11:04:51 +0100
+Message-ID: <20170928100451.GL6739@hermes.home>
+References: <1506592335-12623-1-git-send-email-martyn.welch@collabora.co.uk>
+ <20170928100019.ynpbdctn65vxf7kq@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170928100019.ynpbdctn65vxf7kq@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Romain Perier <romain.perier@collabora.com>, Martyn Welch <martyn.welch@collabora.co.uk>
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Romain Perier <romain.perier@collabora.com>
+On Thu, Sep 28, 2017 at 12:00:19PM +0200, Uwe Kleine-König wrote:
+> On Thu, Sep 28, 2017 at 10:52:15AM +0100, Martyn Welch wrote:
+> > The imx serial driver uses PAGE_SIZE when allocating rx_buf, but then
+> > uses RX_BUF_SIZE (which is currently defined as PAGE_SIZE) to describe
+> > the length of the buffer when initialising the scatter gather list.
+> > 
+> > In order to ensure that this stays consistent, use RX_BUF_SIZE in both
+> > locations.
+> 
+> Missing SoB Line
 
-The variable dma_is_rxing is currently set to 1 in imx_disable_rx_int().
-This is problematic as:
+Doh! v2 on way...
 
-- whilst imx_disable_rx_int() is currently always called before
-  start_rx_dma() this dependency isn't obvious.
-- start_rx_dma() does error checking and might exit without
-  enabling DMA. Currently this will result in dma_is_rxing suggesting
-  that DMA is being used for recieving.
-
-To avoid these issues, move the setting of dma_is_rxing to
-start_rx_dma() when appropriate.
-
-Signed-off-by: Romain Perier <romain.perier@collabora.com>
-Signed-off-by: Martyn Welch <martyn.welch@collabora.co.uk>
-Reviewed-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
----
-
-This patch has been split out of series: "[PATCH v3 0/6] serial: imx:
-various improvements" as this is a stand alone fix and some of the
-patches in the series are problematic.
-
- drivers/tty/serial/imx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index fe368a4..1691ed2 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -714,8 +714,6 @@ static void imx_disable_rx_int(struct imx_port *sport)
- {
- 	unsigned long temp;
- 
--	sport->dma_is_rxing = 1;
--
- 	/* disable the receiver ready and aging timer interrupts */
- 	temp = readl(sport->port.membase + UCR1);
- 	temp &= ~(UCR1_RRDYEN);
-@@ -1074,6 +1072,7 @@ static int start_rx_dma(struct imx_port *sport)
- 	desc->callback_param = sport;
- 
- 	dev_dbg(dev, "RX: prepare for the DMA.\n");
-+	sport->dma_is_rxing = 1;
- 	sport->rx_cookie = dmaengine_submit(desc);
- 	dma_async_issue_pending(chan);
- 	return 0;
--- 
-1.8.3.1
+> 
+> > ---
+> >  drivers/tty/serial/imx.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > index fe368a4..bc2f2a2f 100644
+> > --- a/drivers/tty/serial/imx.c
+> > +++ b/drivers/tty/serial/imx.c
+> > @@ -1165,7 +1165,7 @@ static int imx_uart_dma_init(struct imx_port *sport)
+> >  		goto err;
+> >  	}
+> >  
+> > -	sport->rx_buf = kzalloc(PAGE_SIZE, GFP_KERNEL);
+> > +	sport->rx_buf = kzalloc(RX_BUF_SIZE, GFP_KERNEL);
+> >  	if (!sport->rx_buf) {
+> >  		ret = -ENOMEM;
+> >  		goto err;
+> Acked-by: Uwe Kleine-König <u.kleine-könig@pengtronix.de>
+> 
+> 
+> -- 
+> Pengutronix e.K.                           | Uwe Kleine-König            |
+> Industrial Linux Solutions                 | http://www.pengutronix.de/  |
