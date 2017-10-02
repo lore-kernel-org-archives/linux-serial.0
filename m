@@ -1,300 +1,121 @@
-From: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 9/9] Bluetooth: hci_bcm: Add (runtime)pm support to the serdev driver
-Date: Mon,  2 Oct 2017 17:23:56 +0200
-Message-ID: <20171002152356.4714-10-hdegoede@redhat.com>
-References: <20171002152356.4714-1-hdegoede@redhat.com>
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20171002152356.4714-1-hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [RFC,3/3] Bluetooth: hci_bcm: Add ACPI serdev support for BCM2E39
+Date: Mon, 2 Oct 2017 17:26:07 +0200
+Message-ID: <7eb508bb-c071-1e95-7fa1-1fdd33099a48@redhat.com>
+References: <1504786214-1866-4-git-send-email-frederic.danis.oss@gmail.com>
+ <be4075c9-110a-1415-3d9b-a631fe91b34f@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <be4075c9-110a-1415-3d9b-a631fe91b34f@redhat.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss@gmail.com>, robh@kernel.org, marcel@holtmann.org, sre@kernel.org, loic.poulain@gmail.com
+Cc: linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Make the serdev driver use struct bcm_device as its driver data and share
-all the pm / GPIO / IRQ related code paths with the platform driver.
+Hi,
 
-After this commit the 2 drivers are in essence the same and the serdev
-driver interface can be used for all ACPI enumerated HCI UARTs.
+On 02-10-17 09:07, Hans de Goede wrote:
+> Hi,
+> 
+> First of all Frédéric, thank you very much for working on this,
+> this is a very much needed patch series.
+> 
+> I've been testing this on a GPD pocket which has a BCM2E7E
+> ACPI device for the BT which is part of the BCM43562A wifi/bt
+> combo on this device.
+> 
+> 2 remarks:
+> 
+> 1) The following errors show up with this series:
+> 
+> [   87.059091] synth uevent: /devices/pci0000:00/8086228A:00/serial1: failed to send uevent
+> [   87.059097] serial serial1: uevent: failed to send synthetic uevent
+> [   87.059178] synth uevent: /devices/pci0000:00/8086228A:01/serial2: failed to send uevent
+> [   87.059180] serial serial2: uevent: failed to send synthetic uevent
+> [   87.062665] synth uevent: /devices/pnp0/00:01/serial0: failed to send uevent
+> [   87.062671] serial serial0: uevent: failed to send synthetic uevent
+> 
+> This needs to be fixed :)  I haven't looked into this yet.
+> 
+> 2) As I already suspected when reading the patches, we cannot
+> move the ACPI ids over 1 by 1. The first 2 patches in the series
+> cause all BCM2E* ACPI devices to no longer get enumerated as
+> platform devices, instead they now get enumerated as serdevs.
+> 
+> So adding only the known to work ACPI ids to the acpi_match_table
+> for the bcm_serdev_driver has the undesirable result that it makes
+> sure that the other ACPI-ids will not work, as there are not
+> platform devices instantiated for the platform driver to bind to.
+> 
+> I started with simplifying your patch to this:
+> 
+>  From f8728f5440c85f7e5584ac1eafa1b090b2042276 Mon Sep 17 00:00:00 2001
+> From: =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?= <frederic.danis.oss@gmail.com>
+> Date: Thu, 7 Sep 2017 14:10:14 +0200
+> Subject: [PATCH] Bluetooth: hci_bcm: Make ACPI enumerated HCIs use serdev
+> MIME-Version: 1.0
+> Content-Type: text/plain; charset=UTF-8
+> Content-Transfer-Encoding: 8bit
+> 
+> Now that the ACPI subsys instantiates ACPI enumerated HCIs as serdevs,
+> the ACPI ids for them should be part of the bcm_serdev_driver's
+> acpi_match_table.
+> 
+> Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
+> [hdegoede: Move all ACPI ids over]
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+>    drivers/bluetooth/hci_bcm.c | 2 +-
+>    1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
+> index 2285ca673ae3..4db777bb0049 100644
+> --- a/drivers/bluetooth/hci_bcm.c
+> +++ b/drivers/bluetooth/hci_bcm.c
+> @@ -942,7 +942,6 @@ static struct platform_driver bcm_driver = {
+>        .remove = bcm_remove,
+>        .driver = {
+>            .name = "hci_bcm",
+> -        .acpi_match_table = ACPI_PTR(bcm_acpi_match),
+>            .pm = &bcm_pm_ops,
+>        },
+>    };
+> @@ -988,6 +987,7 @@ static struct serdev_device_driver bcm_serdev_driver = {
+>        .driver = {
+>            .name = "hci_uart_bcm",
+>            .of_match_table = of_match_ptr(bcm_bluetooth_of_match),
+> +        .acpi_match_table = ACPI_PTR(bcm_acpi_match),
+>        },
+>    };
+> 
+> -- 
+> 2.14.2
+> 
+> Unfortunately that is not good enough. The platform driver code also
+> has (runtime) pm support using gpios and a host-wake interrupt, which
+> the serdev code all lacks and without driving the shutdown gpio to not
+> shutdown the BT device connected to the UART we not only are lacking
+> pm support, but BT does not work at all.
+> 
+> So yesterday evening I did a patch to merge all that into the serdev hci_bcm
+> code and throw away the platform code as I don't think any users will be left
+> after this. With this functionality for the BCM2E7E ACPI device is restored
+> again, without needing to do a btattach from userspace, which is great :)
+> 
+> I've attached the resulting patch. In the mean time I've realized that
+> this approach is going to make merging hard. So I'm going to redo the changes
+> so that we can have both a complete (with runtime-pm, gpios, etc.) serdev
+> driver and keep the platform driver for now. Then we can first merge the
+> hci_bcm changes to make the serdev driver side complete and once those are
+> merged merge the matching ACPI subsys changes without having a window in
+> between where things will not work.
 
-Signed-off-by: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/bluetooth/hci_bcm.c | 118 +++++++++++++++++++++++++-------------------
- 1 file changed, 68 insertions(+), 50 deletions(-)
+Ok, I've just finished and send out v1 of a patch-series adding (runtime)pm,
+GPIO and IRQ support to the serdev based code paths in hci_bcm.c .
 
-diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-index 7191cee5ced0..5fff99bb6444 100644
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -52,8 +52,10 @@
- 
- #define BCM_AUTOSUSPEND_DELAY	5000 /* default autosleep delay */
- 
--/* platform device driver resources */
-+/* device driver resources */
- struct bcm_device {
-+	/* Must be the first member, hci_serdev.c expects this. */
-+	struct hci_uart		serdev_hu;
- 	struct list_head	list;
- 
- 	struct device		*dev;
-@@ -76,11 +78,6 @@ struct bcm_device {
- #endif
- };
- 
--/* serdev driver resources */
--struct bcm_serdev {
--	struct hci_uart hu;
--};
--
- /* generic bcm uart resources */
- struct bcm_data {
- 	struct sk_buff		*rx_skb;
-@@ -155,6 +152,10 @@ static bool bcm_device_exists(struct bcm_device *device)
- {
- 	struct list_head *p;
- 
-+	/* Devices using serdev always exist */
-+	if (device && device->hu && device->hu->serdev)
-+		return true;
-+
- 	list_for_each(p, &bcm_device_list) {
- 		struct bcm_device *dev = list_entry(p, struct bcm_device, list);
- 
-@@ -200,7 +201,6 @@ static int bcm_request_irq(struct bcm_data *bcm)
- 	struct bcm_device *bdev = bcm->dev;
- 	int err;
- 
--	/* If this is not a platform device, do not enable PM functionalities */
- 	mutex_lock(&bcm_device_lock);
- 	if (!bcm_device_exists(bdev)) {
- 		err = -ENODEV;
-@@ -313,18 +313,17 @@ static int bcm_open(struct hci_uart *hu)
- 
- 	hu->priv = bcm;
- 
--	/* If this is a serdev defined device, then only use
--	 * serdev open primitive and skip the rest.
--	 */
-+	mutex_lock(&bcm_device_lock);
-+
- 	if (hu->serdev) {
- 		serdev_device_open(hu->serdev);
-+		bcm->dev = serdev_device_get_drvdata(hu->serdev);
- 		goto out;
- 	}
- 
- 	if (!hu->tty->dev)
- 		goto out;
- 
--	mutex_lock(&bcm_device_lock);
- 	list_for_each(p, &bcm_device_list) {
- 		struct bcm_device *dev = list_entry(p, struct bcm_device, list);
- 
-@@ -334,37 +333,45 @@ static int bcm_open(struct hci_uart *hu)
- 		 */
- 		if (hu->tty->dev->parent == dev->dev->parent) {
- 			bcm->dev = dev;
--			hu->init_speed = dev->init_speed;
--			hu->oper_speed = dev->oper_speed;
- #ifdef CONFIG_PM
- 			dev->hu = hu;
- #endif
--			bcm_gpio_set_power(bcm->dev, true);
- 			break;
- 		}
- 	}
- 
--	mutex_unlock(&bcm_device_lock);
- out:
-+	if (bcm->dev) {
-+		hu->init_speed = bcm->dev->init_speed;
-+		hu->oper_speed = bcm->dev->oper_speed;
-+		bcm_gpio_set_power(bcm->dev, true);
-+	}
-+
-+	mutex_unlock(&bcm_device_lock);
- 	return 0;
- }
- 
- static int bcm_close(struct hci_uart *hu)
- {
- 	struct bcm_data *bcm = hu->priv;
--	struct bcm_device *bdev = bcm->dev;
-+	struct bcm_device *bdev = NULL;
- 
- 	bt_dev_dbg(hu->hdev, "hu %p", hu);
- 
--	/* If this is a serdev defined device, only use serdev
--	 * close primitive and then continue as usual.
--	 */
--	if (hu->serdev)
--		serdev_device_close(hu->serdev);
--
- 	/* Protect bcm->dev against removal of the device or driver */
- 	mutex_lock(&bcm_device_lock);
--	if (bcm_device_exists(bdev)) {
-+
-+	if (hu->serdev) {
-+		serdev_device_close(hu->serdev);
-+		bdev = serdev_device_get_drvdata(hu->serdev);
-+	} else if (bcm_device_exists(bcm->dev)) {
-+		bdev = bcm->dev;
-+#ifdef CONFIG_PM
-+		bdev->hu = NULL;
-+#endif
-+	}
-+
-+	if (bdev) {
- 		bcm_gpio_set_power(bdev, false);
- #ifdef CONFIG_PM
- 		pm_runtime_disable(bdev->dev);
-@@ -374,8 +381,6 @@ static int bcm_close(struct hci_uart *hu)
- 			devm_free_irq(bdev->dev, bdev->irq, bdev);
- 			device_init_wakeup(bdev->dev, false);
- 		}
--
--		bdev->hu = NULL;
- #endif
- 	}
- 	mutex_unlock(&bcm_device_lock);
-@@ -603,7 +608,7 @@ static int bcm_resume_device(struct device *dev)
- #endif
- 
- #ifdef CONFIG_PM_SLEEP
--/* Platform suspend callback */
-+/* suspend callback */
- static int bcm_suspend(struct device *dev)
- {
- 	struct bcm_device *bdev = dev_get_drvdata(dev);
-@@ -611,8 +616,10 @@ static int bcm_suspend(struct device *dev)
- 
- 	bt_dev_dbg(bdev, "suspend: is_suspended %d", bdev->is_suspended);
- 
--	/* bcm_suspend can be called at any time as long as platform device is
--	 * bound, so it should use bcm_device_lock to protect access to hci_uart
-+	/*
-+	 * When used with a device instantiated as platform_device, bcm_suspend
-+	 * can be called at any time as long as the platform device is bound,
-+	 * so it should use bcm_device_lock to protect access to hci_uart
- 	 * and device_wake-up GPIO.
- 	 */
- 	mutex_lock(&bcm_device_lock);
-@@ -635,15 +642,17 @@ static int bcm_suspend(struct device *dev)
- 	return 0;
- }
- 
--/* Platform resume callback */
-+/* resume callback */
- static int bcm_resume(struct device *dev)
- {
- 	struct bcm_device *bdev = dev_get_drvdata(dev);
- 
- 	bt_dev_dbg(bdev, "resume: is_suspended %d", bdev->is_suspended);
- 
--	/* bcm_resume can be called at any time as long as platform device is
--	 * bound, so it should use bcm_device_lock to protect access to hci_uart
-+	/*
-+	 * When used with a device instantiated as platform_device, bcm_resume
-+	 * can be called at any time as long as platform device is bound,
-+	 * so it should use bcm_device_lock to protect access to hci_uart
- 	 * and device_wake-up GPIO.
- 	 */
- 	mutex_lock(&bcm_device_lock);
-@@ -786,15 +795,6 @@ static int bcm_get_resources(struct bcm_device *dev)
- 	}
- 
- 	dev_info(dev->dev, "BCM irq: %d\n", dev->irq);
--
--	/* Make sure at-least one of the GPIO is defined and that
--	 * a name is specified for this instance
--	 */
--	if ((!dev->device_wakeup && !dev->shutdown) || !dev->name) {
--		dev_err(dev->dev, "invalid platform data\n");
--		return -EINVAL;
--	}
--
- 	return 0;
- }
- 
-@@ -847,6 +847,12 @@ static int bcm_acpi_probe(struct bcm_device *dev)
- }
- #endif /* CONFIG_ACPI */
- 
-+static int bcm_of_probe(struct bcm_device *bdev)
-+{
-+	device_property_read_u32(bdev->dev, "max-speed", &bdev->oper_speed);
-+	return 0;
-+}
-+
- static int bcm_probe(struct platform_device *pdev)
- {
- 	struct bcm_device *dev;
-@@ -935,7 +941,7 @@ static const struct acpi_device_id bcm_acpi_match[] = {
- MODULE_DEVICE_TABLE(acpi, bcm_acpi_match);
- #endif
- 
--/* Platform suspend and resume callbacks */
-+/* suspend and resume callbacks */
- static const struct dev_pm_ops bcm_pm_ops = {
- 	SET_SYSTEM_SLEEP_PM_OPS(bcm_suspend, bcm_resume)
- 	SET_RUNTIME_PM_OPS(bcm_suspend_device, bcm_resume_device, NULL)
-@@ -953,29 +959,39 @@ static struct platform_driver bcm_driver = {
- 
- static int bcm_serdev_probe(struct serdev_device *serdev)
- {
--	struct bcm_serdev *bcmdev;
--	u32 speed;
-+	struct bcm_device *bcmdev;
- 	int err;
- 
- 	bcmdev = devm_kzalloc(&serdev->dev, sizeof(*bcmdev), GFP_KERNEL);
- 	if (!bcmdev)
- 		return -ENOMEM;
- 
--	bcmdev->hu.serdev = serdev;
-+	bcmdev->dev = &serdev->dev;
-+	bcmdev->hu = &bcmdev->serdev_hu;
-+	bcmdev->serdev_hu.serdev = serdev;
- 	serdev_device_set_drvdata(serdev, bcmdev);
- 
--	err = device_property_read_u32(&serdev->dev, "max-speed", &speed);
--	if (!err)
--		bcmdev->hu.oper_speed = speed;
-+	if (has_acpi_companion(&serdev->dev))
-+		err = bcm_acpi_probe(bcmdev);
-+	else
-+		err = bcm_of_probe(bcmdev);
-+	if (err)
-+		return err;
- 
--	return hci_uart_register_device(&bcmdev->hu, &bcm_proto);
-+	err = bcm_get_resources(bcmdev);
-+	if (err)
-+		return err;
-+
-+	bcm_gpio_set_power(bcmdev, false);
-+
-+	return hci_uart_register_device(&bcmdev->serdev_hu, &bcm_proto);
- }
- 
- static void bcm_serdev_remove(struct serdev_device *serdev)
- {
--	struct bcm_serdev *bcmdev = serdev_device_get_drvdata(serdev);
-+	struct bcm_device *bcmdev = serdev_device_get_drvdata(serdev);
- 
--	hci_uart_unregister_device(&bcmdev->hu);
-+	hci_uart_unregister_device(&bcmdev->serdev_hu);
- }
- 
- #ifdef CONFIG_OF
-@@ -992,6 +1008,8 @@ static struct serdev_device_driver bcm_serdev_driver = {
- 	.driver = {
- 		.name = "hci_uart_bcm",
- 		.of_match_table = of_match_ptr(bcm_bluetooth_of_match),
-+		.acpi_match_table = ACPI_PTR(bcm_acpi_match),
-+		.pm = &bcm_pm_ops,
- 	},
- };
- 
--- 
-2.14.2
+Regards,
+
+Hans
