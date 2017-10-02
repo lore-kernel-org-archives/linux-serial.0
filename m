@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 2/9] Bluetooth: hci_bcm: Fix setting of irq trigger type
-Date: Mon,  2 Oct 2017 17:23:49 +0200
-Message-ID: <20171002152356.4714-3-hdegoede@redhat.com>
+Subject: [PATCH 3/9] Bluetooth: hci_bcm: Move bcm_platform_probe call out of bcm_acpi_probe
+Date: Mon,  2 Oct 2017 17:23:50 +0200
+Message-ID: <20171002152356.4714-4-hdegoede@redhat.com>
 References: <20171002152356.4714-1-hdegoede@redhat.com>
 Return-path: <linux-acpi-owner@vger.kernel.org>
 In-Reply-To: <20171002152356.4714-1-hdegoede@redhat.com>
@@ -10,130 +10,49 @@ To: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>
 Cc: Hans de Goede <hdegoede@redhat.com>, =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?= <frederic.danis.oss@gmail.com>, Sebastian Reichel <sre@kernel.org>, robh@kernel.org, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This commit fixes 2 issues with host-wake irq trigger type handling
-in hci_bcm:
+Since bcm_acpi_probe calls bcm_platform_probe, bcm_probe always ends up
+calling bcm_platform_probe.
 
-1) bcm_setup_sleep sets sleep_params.host_wake_active based on
-bcm_device.irq_polarity, but bcm_request_irq was always requesting
-IRQF_TRIGGER_RISING as trigger type independent of irq_polarity.
-
-This was a problem when the irq is described as a GpioInt rather then
-an Interrupt in the DSDT as for GpioInt-s the value passed to request_irq
-is honored. This commit fixes this by requesting the correct trigger
-type depending on bcm_device.irq_polarity.
-
-2) bcm_device.irq_polarity was used to directly store an ACPI polarity
-value (ACPI_ACTIVE_*). This is undesirable because hci_bcm is also
-used with device-tree and checking for something like ACPI_ACTIVE_LOW
-in a non ACPI specific function like bcm_request_irq feels wrong.
-
-This commit fixes this by renaming irq_polarity to irq_active_low
-and changing its type to a bool.
+This commit simplifies things by making bcm_probe always call
+bcm_platform_probe itself.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/bluetooth/hci_bcm.c | 23 ++++++++++-------------
- 1 file changed, 10 insertions(+), 13 deletions(-)
+ drivers/bluetooth/hci_bcm.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-index c821234b9668..2285ca673ae3 100644
+index 2285ca673ae3..00103307a776 100644
 --- a/drivers/bluetooth/hci_bcm.c
 +++ b/drivers/bluetooth/hci_bcm.c
-@@ -68,7 +68,7 @@ struct bcm_device {
- 	u32			init_speed;
- 	u32			oper_speed;
- 	int			irq;
--	u8			irq_polarity;
-+	bool			irq_active_low;
- 
- #ifdef CONFIG_PM
- 	struct hci_uart		*hu;
-@@ -213,7 +213,9 @@ static int bcm_request_irq(struct bcm_data *bcm)
- 	}
- 
- 	err = devm_request_irq(&bdev->pdev->dev, bdev->irq, bcm_host_wake,
--			       IRQF_TRIGGER_RISING, "host_wake", bdev);
-+			       bdev->irq_active_low ? IRQF_TRIGGER_FALLING :
-+						      IRQF_TRIGGER_RISING,
-+			       "host_wake", bdev);
- 	if (err)
- 		goto unlock;
- 
-@@ -253,7 +255,7 @@ static int bcm_setup_sleep(struct hci_uart *hu)
- 	struct sk_buff *skb;
- 	struct bcm_set_sleep_mode sleep_params = default_sleep_params;
- 
--	sleep_params.host_wake_active = !bcm->dev->irq_polarity;
-+	sleep_params.host_wake_active = !bcm->dev->irq_active_low;
- 
- 	skb = __hci_cmd_sync(hu->hdev, 0xfc27, sizeof(sleep_params),
- 			     &sleep_params, HCI_INIT_TIMEOUT);
-@@ -690,10 +692,8 @@ static const struct acpi_gpio_mapping acpi_bcm_int_first_gpios[] = {
- };
- 
- #ifdef CONFIG_ACPI
--static u8 acpi_active_low = ACPI_ACTIVE_LOW;
--
- /* IRQ polarity of some chipsets are not defined correctly in ACPI table. */
--static const struct dmi_system_id bcm_wrong_irq_dmi_table[] = {
-+static const struct dmi_system_id bcm_active_low_irq_dmi_table[] = {
- 	{
- 		.ident = "Asus T100TA",
- 		.matches = {
-@@ -701,7 +701,6 @@ static const struct dmi_system_id bcm_wrong_irq_dmi_table[] = {
- 					"ASUSTeK COMPUTER INC."),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T100TA"),
- 		},
--		.driver_data = &acpi_active_low,
- 	},
- 	{
- 		.ident = "Asus T100CHI",
-@@ -710,7 +709,6 @@ static const struct dmi_system_id bcm_wrong_irq_dmi_table[] = {
- 					"ASUSTeK COMPUTER INC."),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T100CHI"),
- 		},
--		.driver_data = &acpi_active_low,
- 	},
- 	{	/* Handle ThinkPad 8 tablets with BCM2E55 chipset ACPI ID */
- 		.ident = "Lenovo ThinkPad 8",
-@@ -718,7 +716,6 @@ static const struct dmi_system_id bcm_wrong_irq_dmi_table[] = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "LENOVO"),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "ThinkPad 8"),
- 		},
--		.driver_data = &acpi_active_low,
- 	},
- 	{ }
- };
-@@ -733,13 +730,13 @@ static int bcm_resource(struct acpi_resource *ares, void *data)
- 	switch (ares->type) {
- 	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
- 		irq = &ares->data.extended_irq;
--		dev->irq_polarity = irq->polarity;
-+		dev->irq_active_low = irq->polarity == ACPI_ACTIVE_LOW;
- 		break;
- 
- 	case ACPI_RESOURCE_TYPE_GPIO:
- 		gpio = &ares->data.gpio;
- 		if (gpio->connection_type == ACPI_RESOURCE_GPIO_TYPE_INT)
--			dev->irq_polarity = gpio->polarity;
-+			dev->irq_active_low = gpio->polarity == ACPI_ACTIVE_LOW;
- 		break;
- 
- 	case ACPI_RESOURCE_TYPE_SERIAL_BUS:
-@@ -834,11 +831,11 @@ static int bcm_acpi_probe(struct bcm_device *dev)
+@@ -820,10 +820,6 @@ static int bcm_acpi_probe(struct bcm_device *dev)
+ 	if (ret)
  		return ret;
- 	acpi_dev_free_resource_list(&resources);
  
--	dmi_id = dmi_first_match(bcm_wrong_irq_dmi_table);
-+	dmi_id = dmi_first_match(bcm_active_low_irq_dmi_table);
- 	if (dmi_id) {
- 		bt_dev_warn(dev, "%s: Overwriting IRQ polarity to active low",
- 			    dmi_id->ident);
--		dev->irq_polarity = *(u8 *)dmi_id->driver_data;
-+		dev->irq_active_low = true;
- 	}
+-	ret = bcm_platform_probe(dev);
+-	if (ret)
+-		return ret;
+-
+ 	/* Retrieve UART ACPI info */
+ 	ret = acpi_dev_get_resources(ACPI_COMPANION(&dev->pdev->dev),
+ 				     &resources, bcm_resource, dev);
+@@ -858,10 +854,13 @@ static int bcm_probe(struct platform_device *pdev)
  
- 	return 0;
+ 	dev->pdev = pdev;
+ 
+-	if (has_acpi_companion(&pdev->dev))
++	if (has_acpi_companion(&pdev->dev)) {
+ 		ret = bcm_acpi_probe(dev);
+-	else
+-		ret = bcm_platform_probe(dev);
++		if (ret)
++			return ret;
++	}
++
++	ret = bcm_platform_probe(dev);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.14.2
 
