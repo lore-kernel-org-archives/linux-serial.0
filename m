@@ -1,153 +1,111 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 2/2] serial: sh-sci: Support for HSCIF RX sampling point adjustment
-Date: Mon, 2 Oct 2017 10:05:04 +0200
-Message-ID: <CAMuHMdWhrzEX8vr2uhSuzUcAAnyJgB3Fjb1dbMQ4QFWAqoMR+A@mail.gmail.com>
-References: <1506690534-27302-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1506690534-27302-3-git-send-email-ulrich.hecht+renesas@gmail.com>
+From: "Han, Nandor (GE Healthcare)" <nandor.han-JJi787mZWgc@public.gmane.org>
+Subject: [PATCH] serial: imx-serial - move DMA buffer configuration to DT
+Date: Mon, 2 Oct 2017 13:17:41 +0000
+Message-ID: <AM3P101MB0180F7019908E059648488F0E67D0@AM3P101MB0180.NAMP101.PROD.OUTLOOK.COM>
+References: <20170628101514.22610-1-romain.perier@collabora.com>
+ <20170629182618.jpahpmuq364ldcv2@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1506690534-27302-3-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Wolfram Sang <wsa@the-dreams.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170629182618.jpahpmuq364ldcv2-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Romain Perier <romain.perier-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Uli,
+> -----Original Message-----
+> From: Uwe Kleine-König [mailto:u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org]
+> Sent: 29 June 2017 21:26
+> To: Romain Perier <romain.perier-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+> Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; Jiri Slaby
+> <jslaby-IBi9RG/b67k@public.gmane.org>; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Han, Nandor (GE
+> Healthcare) <nandor.han-JJi787mZWgc@public.gmane.org>; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Subject: EXT: Re: [PATCH] serial: imx-serial - move DMA buffer configuration
+> to DT
+> 
+> Hello,
+> 
+> Cc: += devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> 
+> On Wed, Jun 28, 2017 at 12:15:14PM +0200, Romain Perier wrote:
+> > From: Nandor Han <nandor.han-JJi787mZWgc@public.gmane.org>
+> >
+> > The size of the DMA buffer can affect the delta time between data
+> > being produced and data being consumed. Basically the DMA system will
+> > move data to tty buffer when a) DMA buffer is full b) serial line is idle.
+> > The situation is visible when producer generates data continuously and
+> > there is no possibility for idle line. At this point the DMA buffer is
+> > directly affecting the delta time.
 
-On Fri, Sep 29, 2017 at 3:08 PM, Ulrich Hecht
-<ulrich.hecht+renesas@gmail.com> wrote:
-> HSCIF has facilities that allow moving the RX sampling point by between
-> -8 and 7 sampling cycles (one sampling cycles equals 1/15 of a bit
-> by default) to improve the error margin in case of slightly mismatched
-> bit rates between sender and receiver.
->
-> This patch allows changing the default (0, meaning center) using the
-> sysfs attribute "rx_sampling_point".
->
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Hi Uwe,
+   Maybe I can explain a bit better the situation. At least I've tried to explain well enough
+the problem and the fix. :)
 
-Thanks for your patch!
+> 
+> This doesn't look like a hw property but a configuration item. Also I don't
+> understand the problematic case. The i.MX is sending continuously and then
+> doesn't receive bytes until the DMA buffer is full?
 
-Have you noticed any improvements by fiddling with the sampling point?
+Yes
 
-While this patch is useful as an investigation tool due to the sysfs
-interface, I don't think it should be applied as-is.
+> What is the DMA buffer?
+> You don't mean the FIFO here, do you?
+> 
 
-I guess the goal is to select automatically the optimal sampling point,
-based on requested bit rate and available clock input rates, right?
+DMA buffer is not HW FIFO. Is the buffer provided by serial driver to DMA to store data.
 
-Or perhaps you want to keep the sysfs interface, to accommodate a sender
-that uses an off bit rate, unbeknownst to Linux (and unsupported by Linux,
-as software can request standard bit rates only) and thus needs user
-configuration?
-If that is the case, perhaps the sysfs interface should not be provided the
-raw sampling point offset, but the actual bit rate used by the other side,
-so the driver can calculate the offset?
+> That doesn't sound like a good fix but more like a work around. Which other
+> options did you test to fix your problem?
+> 
 
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -153,6 +153,7 @@ struct sci_port {
->         struct timer_list               rx_fifo_timer;
->         int                             rx_fifo_timeout;
->         u16                             hscif_tot;
-> +       u16                             hscif_srhp;
+I haven't tried any other, because except using maybe, ioctl I haven't got anything better.
 
-s16, or even s8?
+Our problem is that in our system some serial ports needs to have really low data latency, where others trade more bytes over data latency. This situation results in a need of beeing able to have different DMA buffer size for different ports. 
 
->
->         bool has_rtscts;
->         bool autorts;
-> @@ -992,6 +993,42 @@ static int sci_handle_breaks(struct uart_port *port)
->         return copied;
->  }
->
-> +static ssize_t rx_sampling_point_show(struct device *dev,
-> +                              struct device_attribute *attr,
-> +                              char *buf)
-> +{
-> +       struct uart_port *port = dev_get_drvdata(dev);
-> +       struct sci_port *sci = to_sci_port(port);
-> +
-> +       return sprintf(buf, "%d\n", sci->hscif_srhp);
+How can DMA buffer size affect latency?
+DMA works like this: (To answer to your question DMA buffer is not FIFO)
+ 1. Transfer the data from HW FIFO to DMA buffer based on some interrupts (character received, etc)
+ 2. Transfer the DMA buffer back to serial port based on some events (buffer full, aging timer, etc)
+ 3. Serial port forwards to tty buffer.
 
-... else it will not output negative numbers here.
+Data availability to consumer depends on: DMA buffer size, baud rate and communication pattern. By communication patter I'm refering that we send data continuoselly (serial line is never idle) or packet by packet (serial line is idle in between)
+Example:
+      Baud: 19200 (1Byte = 0.52 ms)
+      DMA buffer size: 100 bytes
+      Communication pattern: continuously 
+      =>  DMA will return data to serial port only when DMA buffer is full, since the communication is continuously. This result in a data latency of 0.52 ms* 100bytes = 52ms. In case the buffer will be 200bytes the letency will be double.
 
-> +}
-> +
-> +static ssize_t rx_sampling_point_store(struct device *dev,
-> +                               struct device_attribute *attr,
-> +                               const char *buf,
-> +                               size_t count)
-> +{
-> +       struct uart_port *port = dev_get_drvdata(dev);
-> +       struct sci_port *sci = to_sci_port(port);
-> +       int ret;
-> +       long r;
+I agree with you, this is not directly a hw property but a DMA configuration item. 
+But I've found this to be the best way to configure this comparing with using ioctl.
 
-s8 or just int?
+Let me know if you need more clarification and I would really be open to other options that will solve our problem.
 
-> +
-> +       ret = kstrtol(buf, 0, &r);
+<snip>
 
-kstrtos8() or kstrtoint()?
+> > +- fsl,dma-size : Indicate the size of the DMA buffer and its periods
+> 
+> This is a sparse description, just from reading that I don't understand what it
+> does.
+> 
 
-> +       if (ret)
-> +               return ret;
-> +
-> +       if (r < -8 || r > 7)
-> +               return -EINVAL;
-> +
-> +       sci->hscif_srhp = r;
-> +
-> +       return count;
-> +}
-> +
-> +static DEVICE_ATTR(rx_sampling_point, 0644,
-> +                  rx_sampling_point_show,
-> +                  rx_sampling_point_store);
-> +
->  static int scif_set_rtrg(struct uart_port *port, int rx_trig)
->  {
->         unsigned int bits;
-> @@ -2378,8 +2415,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
->                 serial_port_out(port, SCSCR, scr_val | s->hscif_tot);
->                 serial_port_out(port, SCSMR, smr_val);
->                 serial_port_out(port, SCBRR, brr);
-> -               if (sci_getreg(port, HSSRR)->size)
-> -                       serial_port_out(port, HSSRR, srr | HSCIF_SRE);
+Serial driver configures a circular ring of buffers for DMA. Here we can configure the size and the number of buffers.
 
-Why have you moved the setting of HSSRR?
-AFAIK all bit rate settings should be completed before the one bit delay below.
+> > +/* RX DMA buffer periods */
+> > +#define RX_DMA_PERIODS 4
+> > +#define RX_BUF_SIZE	(PAGE_SIZE)
+> 
+> These names should include "DEFAULT" in their name now to fit their new
+> semantic.
+> 
 
->                 /* Wait one bit interval */
->                 udelay((1000000 + (baud - 1)) / baud);
-> @@ -2393,6 +2428,18 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
->                 serial_port_out(port, SCSMR, smr_val);
->         }
->
-> +       if (sci_getreg(port, HSSRR)->size) {
-> +               u16 hssrr = srr | HSCIF_SRE;
-> +
-> +               if (s->hscif_srhp) {
-> +                       u16 srhp = (s->hscif_srhp << HSCIF_SRHP_SHIFT) &
-> +                                  HSCIF_SRHP_MASK;
-> +
-> +                       hssrr |= HSCIF_SRDE | srhp;
-> +               }
-> +               serial_port_out(port, HSSRR, hssrr);
-> +       }
-> +
->         sci_init_pins(port, termios->c_cflag);
->
->         port->status &= ~UPSTAT_AUTOCTS;
+Agree. 
 
-Gr{oetje,eeting}s,
 
-                        Geert
-
+Regards,
+    Nandor
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
