@@ -1,121 +1,90 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [RFC,3/3] Bluetooth: hci_bcm: Add ACPI serdev support for BCM2E39
-Date: Mon, 2 Oct 2017 17:26:07 +0200
-Message-ID: <7eb508bb-c071-1e95-7fa1-1fdd33099a48@redhat.com>
-References: <1504786214-1866-4-git-send-email-frederic.danis.oss@gmail.com>
- <be4075c9-110a-1415-3d9b-a631fe91b34f@redhat.com>
+From: Sebastian Reichel <sre@kernel.org>
+Subject: Re: [PATCH 1/9] Bluetooth: hci_uart_set_flow_control: Fix NULL deref
+ when using serdev
+Date: Tue, 3 Oct 2017 00:34:15 +0200
+Message-ID: <20171002223415.jmbi4zw7edyuxccl@earth>
+References: <20171002152356.4714-1-hdegoede@redhat.com>
+ <20171002152356.4714-2-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="a4vtalppzdfi5uwv"
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <be4075c9-110a-1415-3d9b-a631fe91b34f@redhat.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20171002152356.4714-2-hdegoede@redhat.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss@gmail.com>, robh@kernel.org, marcel@holtmann.org, sre@kernel.org, loic.poulain@gmail.com
-Cc: linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>, robh@kernel.org, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+
+
+--a4vtalppzdfi5uwv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On 02-10-17 09:07, Hans de Goede wrote:
-> Hi,
-> 
-> First of all Frédéric, thank you very much for working on this,
-> this is a very much needed patch series.
-> 
-> I've been testing this on a GPD pocket which has a BCM2E7E
-> ACPI device for the BT which is part of the BCM43562A wifi/bt
-> combo on this device.
-> 
-> 2 remarks:
-> 
-> 1) The following errors show up with this series:
-> 
-> [   87.059091] synth uevent: /devices/pci0000:00/8086228A:00/serial1: failed to send uevent
-> [   87.059097] serial serial1: uevent: failed to send synthetic uevent
-> [   87.059178] synth uevent: /devices/pci0000:00/8086228A:01/serial2: failed to send uevent
-> [   87.059180] serial serial2: uevent: failed to send synthetic uevent
-> [   87.062665] synth uevent: /devices/pnp0/00:01/serial0: failed to send uevent
-> [   87.062671] serial serial0: uevent: failed to send synthetic uevent
-> 
-> This needs to be fixed :)  I haven't looked into this yet.
-> 
-> 2) As I already suspected when reading the patches, we cannot
-> move the ACPI ids over 1 by 1. The first 2 patches in the series
-> cause all BCM2E* ACPI devices to no longer get enumerated as
-> platform devices, instead they now get enumerated as serdevs.
-> 
-> So adding only the known to work ACPI ids to the acpi_match_table
-> for the bcm_serdev_driver has the undesirable result that it makes
-> sure that the other ACPI-ids will not work, as there are not
-> platform devices instantiated for the platform driver to bind to.
-> 
-> I started with simplifying your patch to this:
-> 
->  From f8728f5440c85f7e5584ac1eafa1b090b2042276 Mon Sep 17 00:00:00 2001
-> From: =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?= <frederic.danis.oss@gmail.com>
-> Date: Thu, 7 Sep 2017 14:10:14 +0200
-> Subject: [PATCH] Bluetooth: hci_bcm: Make ACPI enumerated HCIs use serdev
-> MIME-Version: 1.0
-> Content-Type: text/plain; charset=UTF-8
-> Content-Transfer-Encoding: 8bit
-> 
-> Now that the ACPI subsys instantiates ACPI enumerated HCIs as serdevs,
-> the ACPI ids for them should be part of the bcm_serdev_driver's
-> acpi_match_table.
-> 
-> Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
-> [hdegoede: Move all ACPI ids over]
+On Mon, Oct 02, 2017 at 05:23:48PM +0200, Hans de Goede wrote:
+> Fix a NULL pointer deref (hu->tty) when calling hci_uart_set_flow_control
+> on hci_uart-s using serdev.
+>=20
 > Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 > ---
->    drivers/bluetooth/hci_bcm.c | 2 +-
->    1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-> index 2285ca673ae3..4db777bb0049 100644
-> --- a/drivers/bluetooth/hci_bcm.c
-> +++ b/drivers/bluetooth/hci_bcm.c
-> @@ -942,7 +942,6 @@ static struct platform_driver bcm_driver = {
->        .remove = bcm_remove,
->        .driver = {
->            .name = "hci_bcm",
-> -        .acpi_match_table = ACPI_PTR(bcm_acpi_match),
->            .pm = &bcm_pm_ops,
->        },
->    };
-> @@ -988,6 +987,7 @@ static struct serdev_device_driver bcm_serdev_driver = {
->        .driver = {
->            .name = "hci_uart_bcm",
->            .of_match_table = of_match_ptr(bcm_bluetooth_of_match),
-> +        .acpi_match_table = ACPI_PTR(bcm_acpi_match),
->        },
->    };
-> 
-> -- 
-> 2.14.2
-> 
-> Unfortunately that is not good enough. The platform driver code also
-> has (runtime) pm support using gpios and a host-wake interrupt, which
-> the serdev code all lacks and without driving the shutdown gpio to not
-> shutdown the BT device connected to the UART we not only are lacking
-> pm support, but BT does not work at all.
-> 
-> So yesterday evening I did a patch to merge all that into the serdev hci_bcm
-> code and throw away the platform code as I don't think any users will be left
-> after this. With this functionality for the BCM2E7E ACPI device is restored
-> again, without needing to do a btattach from userspace, which is great :)
-> 
-> I've attached the resulting patch. In the mean time I've realized that
-> this approach is going to make merging hard. So I'm going to redo the changes
-> so that we can have both a complete (with runtime-pm, gpios, etc.) serdev
-> driver and keep the platform driver for now. Then we can first merge the
-> hci_bcm changes to make the serdev driver side complete and once those are
-> merged merge the matching ACPI subsys changes without having a window in
-> between where things will not work.
+>  drivers/bluetooth/hci_ldisc.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+>=20
+> diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
+> index a746627e784e..d02f6d029093 100644
+> --- a/drivers/bluetooth/hci_ldisc.c
+> +++ b/drivers/bluetooth/hci_ldisc.c
+> @@ -41,6 +41,7 @@
+>  #include <linux/ioctl.h>
+>  #include <linux/skbuff.h>
+>  #include <linux/firmware.h>
+> +#include <linux/serdev.h>
+> =20
+>  #include <net/bluetooth/bluetooth.h>
+>  #include <net/bluetooth/hci_core.h>
+> @@ -298,6 +299,11 @@ void hci_uart_set_flow_control(struct hci_uart *hu, =
+bool enable)
+>  	unsigned int set =3D 0;
+>  	unsigned int clear =3D 0;
+> =20
+> +	if (hu->serdev) {
+> +		serdev_device_set_flow_control(hu->serdev, !enable);
+> +		return;
+> +	}
 
-Ok, I've just finished and send out v1 of a patch-series adding (runtime)pm,
-GPIO and IRQ support to the serdev based code paths in hci_bcm.c .
+I think this should also control rts, so that the behaviour is the
+same for serdev and ldisc implementation:
 
-Regards,
+serdev_device_set_rts(serdev, enable);
 
-Hans
+> +
+>  	if (enable) {
+>  		/* Disable hardware flow control */
+>  		ktermios =3D tty->termios;
+
+-- Sebastian
+
+--a4vtalppzdfi5uwv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlnSvuEACgkQ2O7X88g7
++ppKMw/+L8KxKyOIDnYr+OOoqaplzoDgOsr91ccJBh/DXXwz63T7LWiUcPQuYWiO
+eZ0vG7VsYA+10YIfgiLLzesx4TrIv28+HZUK1a7lthGayq/zw5W8pLsoSPoHpx0h
+wHBy+ZoL1JegC+/+OfaqojjVnoEgq0zOY+zt4EDmz4E1LmIpo2gsnOgOkH8xjhr/
+2/P79GTJHHfyjpP9eU/qI2g+Doxpf1hLn0Zst+LlYF+/dR0Lf71eINmWJ5r38Y5Z
+OA6tKA7yMiYvK4sjbYZplI8APzA6rxVUx0fB/oo6IhPoG3LWk9mN/D1htULPO4Hy
+OuuIHTiIp68wn+LjFFBP+eulR42q2fppARTCLbvVLmebKS0yo9VmaW2iNBB7DSAf
+Jgys38SNhmEeLZgFiCqCIXww1ihoMyBwhWerI0vLZE3V4iZm4HVuB6/C5LPNHBXd
+zoMzsHj1NIGLiYEHjOIXZLlPVS0Pr03EAGUYtjfoFodWOR5sCh2Zb5DM/p74A/E4
+Fmzg289zFrFYcPtjo3UZXB8P/crPS34BJbKpPxzO580y4Wpw4JPnIlpajKIdgliT
+gzA4gsMstzaGDTym24VXcW6MEAhjmwU5lVIoeX6sjYR78PH7jYQLWx0412C5sots
+F5PhziJiv6FNMDs21KMc6739PKZ74eWLoDgLVdu9ttSlZR3gRGI=
+=3ZvC
+-----END PGP SIGNATURE-----
+
+--a4vtalppzdfi5uwv--
