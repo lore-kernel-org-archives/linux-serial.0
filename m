@@ -1,111 +1,34 @@
-From: "Han, Nandor (GE Healthcare)" <nandor.han-JJi787mZWgc@public.gmane.org>
-Subject: [PATCH] serial: imx-serial - move DMA buffer configuration to DT
-Date: Mon, 2 Oct 2017 13:17:41 +0000
-Message-ID: <AM3P101MB0180F7019908E059648488F0E67D0@AM3P101MB0180.NAMP101.PROD.OUTLOOK.COM>
-References: <20170628101514.22610-1-romain.perier@collabora.com>
- <20170629182618.jpahpmuq364ldcv2@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170629182618.jpahpmuq364ldcv2-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Romain Perier <romain.perier-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: Gimcuan Hui <gimcuan@gmail.com>
+Subject: [PATCH] tty: serial: jsm: Add space before the open brace
+Date: Mon,  2 Oct 2017 22:48:17 +0800
+Message-ID: <1506955697-31025-1-git-send-email-gimcuan@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Guilherme G. Piccoli" <gpiccoli@linux.vnet.ibm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Gimcuan Hui <gimcuan@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-> -----Original Message-----
-> From: Uwe Kleine-König [mailto:u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org]
-> Sent: 29 June 2017 21:26
-> To: Romain Perier <romain.perier-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-> Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; Jiri Slaby
-> <jslaby-IBi9RG/b67k@public.gmane.org>; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Han, Nandor (GE
-> Healthcare) <nandor.han-JJi787mZWgc@public.gmane.org>; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: EXT: Re: [PATCH] serial: imx-serial - move DMA buffer configuration
-> to DT
-> 
-> Hello,
-> 
-> Cc: += devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> 
-> On Wed, Jun 28, 2017 at 12:15:14PM +0200, Romain Perier wrote:
-> > From: Nandor Han <nandor.han-JJi787mZWgc@public.gmane.org>
-> >
-> > The size of the DMA buffer can affect the delta time between data
-> > being produced and data being consumed. Basically the DMA system will
-> > move data to tty buffer when a) DMA buffer is full b) serial line is idle.
-> > The situation is visible when producer generates data continuously and
-> > there is no possibility for idle line. At this point the DMA buffer is
-> > directly affecting the delta time.
+This patch fixes the checkpatch.pl error complain:
 
-Hi Uwe,
-   Maybe I can explain a bit better the situation. At least I've tried to explain well enough
-the problem and the fix. :)
+ERROR: space required before the open brace '{'
 
-> 
-> This doesn't look like a hw property but a configuration item. Also I don't
-> understand the problematic case. The i.MX is sending continuously and then
-> doesn't receive bytes until the DMA buffer is full?
+Signed-off-by: Gimcuan Hui <gimcuan@gmail.com>
+---
+ drivers/tty/serial/jsm/jsm_tty.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yes
-
-> What is the DMA buffer?
-> You don't mean the FIFO here, do you?
-> 
-
-DMA buffer is not HW FIFO. Is the buffer provided by serial driver to DMA to store data.
-
-> That doesn't sound like a good fix but more like a work around. Which other
-> options did you test to fix your problem?
-> 
-
-I haven't tried any other, because except using maybe, ioctl I haven't got anything better.
-
-Our problem is that in our system some serial ports needs to have really low data latency, where others trade more bytes over data latency. This situation results in a need of beeing able to have different DMA buffer size for different ports. 
-
-How can DMA buffer size affect latency?
-DMA works like this: (To answer to your question DMA buffer is not FIFO)
- 1. Transfer the data from HW FIFO to DMA buffer based on some interrupts (character received, etc)
- 2. Transfer the DMA buffer back to serial port based on some events (buffer full, aging timer, etc)
- 3. Serial port forwards to tty buffer.
-
-Data availability to consumer depends on: DMA buffer size, baud rate and communication pattern. By communication patter I'm refering that we send data continuoselly (serial line is never idle) or packet by packet (serial line is idle in between)
-Example:
-      Baud: 19200 (1Byte = 0.52 ms)
-      DMA buffer size: 100 bytes
-      Communication pattern: continuously 
-      =>  DMA will return data to serial port only when DMA buffer is full, since the communication is continuously. This result in a data latency of 0.52 ms* 100bytes = 52ms. In case the buffer will be 200bytes the letency will be double.
-
-I agree with you, this is not directly a hw property but a DMA configuration item. 
-But I've found this to be the best way to configure this comparing with using ioctl.
-
-Let me know if you need more clarification and I would really be open to other options that will solve our problem.
-
-<snip>
-
-> > +- fsl,dma-size : Indicate the size of the DMA buffer and its periods
-> 
-> This is a sparse description, just from reading that I don't understand what it
-> does.
-> 
-
-Serial driver configures a circular ring of buffers for DMA. Here we can configure the size and the number of buffers.
-
-> > +/* RX DMA buffer periods */
-> > +#define RX_DMA_PERIODS 4
-> > +#define RX_BUF_SIZE	(PAGE_SIZE)
-> 
-> These names should include "DEFAULT" in their name now to fit their new
-> semantic.
-> 
-
-Agree. 
-
-
-Regards,
-    Nandor
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
+index ec7d838..e69227c 100644
+--- a/drivers/tty/serial/jsm/jsm_tty.c
++++ b/drivers/tty/serial/jsm/jsm_tty.c
+@@ -474,7 +474,7 @@ int jsm_uart_port_init(struct jsm_board *brd)
+ 			set_bit(line, linemap);
+ 		brd->channels[i]->uart_port.line = line;
+ 		rc = uart_add_one_port (&jsm_uart_driver, &brd->channels[i]->uart_port);
+-		if (rc){
++		if (rc) {
+ 			printk(KERN_INFO "jsm: Port %d failed. Aborting...\n", i);
+ 			return rc;
+ 		}
+-- 
+2.7.4
