@@ -1,55 +1,48 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 2/2] serial: sh-sci: Support for HSCIF RX sampling point
- adjustment
-Date: Tue, 3 Oct 2017 20:33:54 +0200
-Message-ID: <20171003183354.GA22877@kroah.com>
-References: <1506690534-27302-1-git-send-email-ulrich.hecht+renesas@gmail.com>
- <1506690534-27302-3-git-send-email-ulrich.hecht+renesas@gmail.com>
+From: =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?=
+        <frederic.danis.oss@gmail.com>
+Subject: [PATCH 0/2] ACPI serdev support
+Date: Wed,  4 Oct 2017 10:51:28 +0200
+Message-ID: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1506690534-27302-3-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: linux-renesas-soc@vger.kernel.org, geert@linux-m68k.org, wsa@the-dreams.de, linux-serial@vger.kernel.org, magnus.damm@gmail.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-acpi-owner@vger.kernel.org
+To: robh@kernel.org, marcel@holtmann.org, sre@kernel.org, loic.poulain@gmail.com, johan@kernel.org, lukas@wunner.de, hdegoede@redhat.com
+Cc: linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, frederic.danis.oss@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 29, 2017 at 03:08:54PM +0200, Ulrich Hecht wrote:
-> HSCIF has facilities that allow moving the RX sampling point by between
-> -8 and 7 sampling cycles (one sampling cycles equals 1/15 of a bit
-> by default) to improve the error margin in case of slightly mismatched
-> bit rates between sender and receiver.
-> 
-> This patch allows changing the default (0, meaning center) using the
-> sysfs attribute "rx_sampling_point".
-> 
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-> ---
->  drivers/tty/serial/sh-sci.c | 62 +++++++++++++++++++++++++++++++++++++++++++--
->  drivers/tty/serial/sh-sci.h |  4 +++
->  2 files changed, 64 insertions(+), 2 deletions(-)
+Add ACPI support for serial attached devices.
 
-Adding random sysfs files for random serial ports isn't good, especially
-if you do not document them in Documentation/ABI.
+Currently, serial devices are not set as enumerated during ACPI scan for SPI
+or i2c buses (but not for UART). This should also be done for UART serial
+devices.
+I renamed *spi_i2c_slave* to *serial_bus_slave* to reflect this.
 
-I don't want to see this, but if you write sysfs files in the future,
-here's some review comments:
+For hci_bcm, this needs Hans de Goede's "Bluetooth: hci_bcm: Add (runtime)pm
+support to the serdev drv" patches to work.
 
-> +static DEVICE_ATTR(rx_sampling_point, 0644,
-> +		   rx_sampling_point_show,
-> +		   rx_sampling_point_store);
+Tested on T100TA with Broadcom BCM2E39.
 
-DEVICE_ATTR_RW()
+Since RFC:
+  - Add or reword commit messages
+  - Rename *serial_slave* to *serial_bus_slave*
+  - Add specific check for Apple in acpi_is_serial_bus_slave(), thanks to
+    Lukas Wunner
+  - Update comment in acpi_default_enumeration()
+  - Remove patch 3 "Bluetooth: hci_bcm: Add ACPI serdev support for BCM2E39"
+    in favor of patches from Hans de Goede
 
-> +	if (port->port.type == PORT_HSCIF) {
-> +		sysfs_remove_file(&dev->dev.kobj,
-> +				  &dev_attr_rx_sampling_point.attr);
+Frédéric Danis (2):
+  serdev: Add ACPI support
+  ACPI / scan: Fix enumeration for special UART devices
 
-No driver code should ever call sysfs functions, this should be either:
-	device_create_file()
-or properly use an attribute group.
+ drivers/acpi/scan.c       | 37 ++++++++----------
+ drivers/tty/serdev/core.c | 99 ++++++++++++++++++++++++++++++++++++++++++++---
+ include/acpi/acpi_bus.h   |  2 +-
+ 3 files changed, 112 insertions(+), 26 deletions(-)
 
-thanks,
+-- 
+2.7.4
 
-greg k-h
