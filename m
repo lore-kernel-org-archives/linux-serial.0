@@ -1,59 +1,35 @@
-From: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 9/9] Bluetooth: hci_bcm: Add (runtime)pm support to the
- serdev driver
-Date: Thu, 5 Oct 2017 19:53:43 +0200
-Message-ID: <2487535c-18b4-c689-3c67-d1261b21feee@redhat.com>
-References: <20171004184343.7855-1-hdegoede@redhat.com>
- <20171004184343.7855-9-hdegoede@redhat.com>
- <DFCF661F-6FE0-4449-A169-D71ED9282074@holtmann.org>
- <1389d64c-17aa-c6a1-d56f-6c2fe877f247@redhat.com>
- <17592E57-3A4B-4386-B809-9EA928D38FDD@holtmann.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/3] Arm: dts: stm32: remove extra compatible string for
+ uart
+Date: Thu, 5 Oct 2017 18:32:03 -0500
+Message-ID: <20171005233203.6o4cs3xzvzlcsr2m@rob-hp-laptop>
+References: <1506639114-16913-1-git-send-email-vikas.manocha@st.com>
+ <1506639114-16913-2-git-send-email-vikas.manocha@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <17592E57-3A4B-4386-B809-9EA928D38FDD-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Content-Language: en-US
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Cc: "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bluez mailin list (linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org)" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1506639114-16913-2-git-send-email-vikas.manocha@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vikas Manocha <vikas.manocha@st.com>
+Cc: linux-kernel@vger.kernel.org, alexandre.torgue@st.com, patrice.chotard@st.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "open list:DMA GENERIC OFFLOAD ENGINE SUBSYSTEM" <dmaengine@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "moderated list:ARM/STM32 ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Vinod Koul <vinod.koul@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+On Thu, Sep 28, 2017 at 03:51:24PM -0700, Vikas Manocha wrote:
+> This patch removes the extra compatibility string "st,stm32-usart" to
+> avoid confusion, save some time & space.
 
-On 05-10-17 17:15, Marcel Holtmann wrote:
-> Hi Hans,
+I'm confused why you don't need it anymore. I thought the h/w blocks 
+were configured differently.
+
 > 
->>>> Make the serdev driver use struct bcm_device as its driver data and share
->>>> all the pm / GPIO / IRQ related code paths with the platform driver.
->>>>
->>>> After this commit the 2 drivers are in essence the same and the serdev
->>>> driver interface can be used for all ACPI enumerated HCI UARTs.
->>>>
->>>> Signed-off-by: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->>>> ---
->>>> drivers/bluetooth/hci_bcm.c | 118 +++++++++++++++++++++++++-------------------
->>>> 1 file changed, 68 insertions(+), 50 deletions(-)
->>> all 9 patches have been applied to bluetooth-next tree.
->>
->> Excellent, thank you!
->>
->> So I guess this means we can also move forward with getting
->> the 2 patches from Frédéric Danis merged ? There is a bit
->> of a bisect-ability problem there, if the acpi pull-req
->> gets merged first then uart attached bcm bt will stop
->> working until the bluetooth subsys is also merged.
->>
->> But I don't think this will impact a lot of users
->> (also given the need for a manual btattach so far),
->> so I don't think this is a big problem... ?
-> 
-> I wonder if we should just do this as all-in-one change for 4.15 kernel. We surely can get the ACPI changes into 4.15 and the Bluetooth changes as well. Then it should just work.
-> 
-> So I am leaning to just adding the revert patch into the bluetooth-next tree and then just add the ACPI PnP ID for the GPD device in the same pull request. And if the ACPI changes make it then nobody will know the difference that we switched from USB to UART.
+> Signed-off-by: Vikas Manocha <vikas.manocha@st.com>
+> Reviewed-by: Patrice Chotard <patrice.chotard@st.com>
+> ---
+>  Documentation/devicetree/bindings/dma/stm32-dma.txt         |  2 +-
+>  Documentation/devicetree/bindings/serial/st,stm32-usart.txt | 10 +++-------
+>  2 files changed, 4 insertions(+), 8 deletions(-)
 
-Yes that should work fine.
+In any case,
 
-Regards,
-
-Hans
+Acked-by: Rob Herring <robh@kernel.org>
