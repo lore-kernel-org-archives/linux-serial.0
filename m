@@ -1,49 +1,59 @@
-From: Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [PATCH 0/2] ACPI serdev support
-Date: Thu, 5 Oct 2017 17:21:50 +0200
-Message-ID: <A58D9E0F-99FC-4C13-95E8-F60EC61C18B2@holtmann.org>
-References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 11.0 \(3445.1.6\))
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: =?utf-8?Q?Fr=C3=A9d=C3=A9ric_Danis?= <frederic.danis.oss@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Johan Hovold <johan@kernel.org>, Lukas Wunner <lukas@wunner.de>, Hans de Goede <hdegoede@redhat.com>, "bluez mailin list (linux-bluetooth@vger.kernel.org)" <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>
+From: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 9/9] Bluetooth: hci_bcm: Add (runtime)pm support to the
+ serdev driver
+Date: Thu, 5 Oct 2017 19:53:43 +0200
+Message-ID: <2487535c-18b4-c689-3c67-d1261b21feee@redhat.com>
+References: <20171004184343.7855-1-hdegoede@redhat.com>
+ <20171004184343.7855-9-hdegoede@redhat.com>
+ <DFCF661F-6FE0-4449-A169-D71ED9282074@holtmann.org>
+ <1389d64c-17aa-c6a1-d56f-6c2fe877f247@redhat.com>
+ <17592E57-3A4B-4386-B809-9EA928D38FDD@holtmann.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <17592E57-3A4B-4386-B809-9EA928D38FDD-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Content-Language: en-US
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Cc: "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bluez mailin list (linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org)" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Fred,
+Hi,
 
-> Add ACPI support for serial attached devices.
+On 05-10-17 17:15, Marcel Holtmann wrote:
+> Hi Hans,
 > 
-> Currently, serial devices are not set as enumerated during ACPI scan for SPI
-> or i2c buses (but not for UART). This should also be done for UART serial
-> devices.
-> I renamed *spi_i2c_slave* to *serial_bus_slave* to reflect this.
+>>>> Make the serdev driver use struct bcm_device as its driver data and share
+>>>> all the pm / GPIO / IRQ related code paths with the platform driver.
+>>>>
+>>>> After this commit the 2 drivers are in essence the same and the serdev
+>>>> driver interface can be used for all ACPI enumerated HCI UARTs.
+>>>>
+>>>> Signed-off-by: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>>>> ---
+>>>> drivers/bluetooth/hci_bcm.c | 118 +++++++++++++++++++++++++-------------------
+>>>> 1 file changed, 68 insertions(+), 50 deletions(-)
+>>> all 9 patches have been applied to bluetooth-next tree.
+>>
+>> Excellent, thank you!
+>>
+>> So I guess this means we can also move forward with getting
+>> the 2 patches from Frédéric Danis merged ? There is a bit
+>> of a bisect-ability problem there, if the acpi pull-req
+>> gets merged first then uart attached bcm bt will stop
+>> working until the bluetooth subsys is also merged.
+>>
+>> But I don't think this will impact a lot of users
+>> (also given the need for a manual btattach so far),
+>> so I don't think this is a big problem... ?
 > 
-> For hci_bcm, this needs Hans de Goede's "Bluetooth: hci_bcm: Add (runtime)pm
-> support to the serdev drv" patches to work.
+> I wonder if we should just do this as all-in-one change for 4.15 kernel. We surely can get the ACPI changes into 4.15 and the Bluetooth changes as well. Then it should just work.
 > 
-> Tested on T100TA with Broadcom BCM2E39.
-> 
-> Since RFC:
->  - Add or reword commit messages
->  - Rename *serial_slave* to *serial_bus_slave*
->  - Add specific check for Apple in acpi_is_serial_bus_slave(), thanks to
->    Lukas Wunner
->  - Update comment in acpi_default_enumeration()
->  - Remove patch 3 "Bluetooth: hci_bcm: Add ACPI serdev support for BCM2E39"
->    in favor of patches from Hans de Goede
+> So I am leaning to just adding the revert patch into the bluetooth-next tree and then just add the ACPI PnP ID for the GPD device in the same pull request. And if the ACPI changes make it then nobody will know the difference that we switched from USB to UART.
 
-I already applied Hans’ patch series to bluetooth-next tree. And I have no objections or comments for these changes. They should be reviewed and acked by the appropriate maintainers as well, but from my side this looks good.
+Yes that should work fine.
 
-Acked-by: Marcel Holtmann <marcel@holtmann.org>
+Regards,
 
-What we should discuss on how we get them upstream since besides the Bluetooth subsystem, they cover ACPI and TTY subsystems.
-
-Regards
-
-Marcel
-
+Hans
