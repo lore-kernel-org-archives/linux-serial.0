@@ -1,7 +1,7 @@
 From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH 12/16] serial: mvebu-uart: support extended port registers layout
-Date: Fri,  6 Oct 2017 12:13:40 +0200
-Message-ID: <20171006101344.15590-13-miquel.raynal@free-electrons.com>
+Subject: [PATCH 14/16] arm64: dts: marvell: armada-37xx: add second UART port
+Date: Fri,  6 Oct 2017 12:13:42 +0200
+Message-ID: <20171006101344.15590-15-miquel.raynal@free-electrons.com>
 References: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20171006101344.15590-1-miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
@@ -10,82 +10,56 @@ To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Define the missing register offsets and bit fields for the extended
-UART port. Add a second driver data structure filled with its port data,
-selected with the right compatible (marvell,armada-3700-uart-ext).
+Add a node in Armada 37xx DTSI file for the second UART, with a
+different compatible due to its extended IP which has some
+differences with the first UART already in place.
+
+Make use of this commit to also fully describe the first port and
+use the same clear and named interrupt bindings for both ports.
+
+The standard UART (UART0) uses level-interrupts while the extended
+UART (UART1) uses edge-triggered interrupts.
 
 Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- drivers/tty/serial/mvebu-uart.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 3e46affa09a8..38b067e0ef0c 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -39,10 +39,13 @@
+diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+index a36d667f770e..72b68f23c001 100644
+--- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+@@ -55,6 +55,7 @@
  
- /* Register Map */
- #define UART_STD_RBR		0x00
-+#define UART_EXT_RBR		0x18
+ 	aliases {
+ 		serial0 = &uart0;
++		serial1 = &uart1;
+ 	};
  
- #define UART_STD_TSH		0x04
-+#define UART_EXT_TSH		0x1C
- 
- #define UART_STD_CTRL1		0x08
-+#define UART_EXT_CTRL1		0x04
- #define  CTRL_SOFT_RST		BIT(31)
- #define  CTRL_TXFIFO_RST	BIT(15)
- #define  CTRL_RXFIFO_RST	BIT(14)
-@@ -55,15 +58,20 @@
- 				CTRL_PAR_ERR_INT | CTRL_OVR_ERR_INT)
- 
- #define UART_STD_CTRL2		UART_STD_CTRL1
-+#define UART_EXT_CTRL2		0x20
- #define  CTRL_STD_TX_RDY_INT	BIT(5)
-+#define  CTRL_EXT_TX_RDY_INT	BIT(6)
- #define  CTRL_STD_RX_RDY_INT	BIT(4)
-+#define  CTRL_EXT_RX_RDY_INT	BIT(5)
- 
- #define UART_STAT		0x0C
- #define  STAT_TX_FIFO_EMP	BIT(13)
- #define  STAT_TX_FIFO_FUL	BIT(11)
- #define  STAT_TX_EMP		BIT(6)
- #define  STAT_STD_TX_RDY	BIT(5)
-+#define  STAT_EXT_TX_RDY	BIT(15)
- #define  STAT_STD_RX_RDY	BIT(4)
-+#define  STAT_EXT_RX_RDY	BIT(14)
- #define  STAT_BRK_DET		BIT(3)
- #define  STAT_FRM_ERR		BIT(2)
- #define  STAT_PAR_ERR		BIT(1)
-@@ -858,12 +866,28 @@ static struct mvebu_uart_driver_data uart_std_driver_data = {
- 	.flags.stat_rx_rdy = STAT_STD_RX_RDY,
- };
- 
-+static struct mvebu_uart_driver_data uart_ext_driver_data = {
-+	.is_ext = true,
-+	.regs.rbr = UART_EXT_RBR,
-+	.regs.tsh = UART_EXT_TSH,
-+	.regs.ctrl = UART_EXT_CTRL1,
-+	.regs.intr = UART_EXT_CTRL2,
-+	.flags.ctrl_tx_rdy_int = CTRL_EXT_TX_RDY_INT,
-+	.flags.ctrl_rx_rdy_int = CTRL_EXT_RX_RDY_INT,
-+	.flags.stat_tx_rdy = STAT_EXT_TX_RDY,
-+	.flags.stat_rx_rdy = STAT_EXT_RX_RDY,
-+};
+ 	cpus {
+@@ -136,7 +137,22 @@
+ 				compatible = "marvell,armada-3700-uart";
+ 				reg = <0x12000 0x200>;
+ 				clocks = <&xtalclk>;
+-				interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
++				interrupts =
++				<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
++				interrupt-names = "uart-sum", "uart-tx", "uart-rx";
++				status = "disabled";
++			};
 +
- /* Match table for of_platform binding */
- static const struct of_device_id mvebu_uart_of_match[] = {
- 	{
- 		.compatible = "marvell,armada-3700-uart",
- 		.data = (void *)&uart_std_driver_data,
- 	},
-+	{
-+		.compatible = "marvell,armada-3700-uart-ext",
-+		.data = (void *)&uart_ext_driver_data,
-+	},
- 	{}
- };
++			uart1: serial@12200 {
++				compatible = "marvell,armada-3700-uart-ext";
++				reg = <0x12200 0x30>;
++				clocks = <&xtalclk>;
++				interrupts =
++				<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
++				<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
++				interrupt-names = "uart-tx", "uart-rx";
+ 				status = "disabled";
+ 			};
  
 -- 
 2.11.0
