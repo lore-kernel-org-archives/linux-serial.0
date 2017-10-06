@@ -1,54 +1,41 @@
-From: Miquel Raynal <miquel.raynal@free-electrons.com>
-Subject: [PATCH 16/16] arm64: dts: marvell: armada-3720-espressobin: fill UART nodes
-Date: Fri,  6 Oct 2017 12:13:44 +0200
-Message-ID: <20171006101344.15590-17-miquel.raynal@free-electrons.com>
+From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH 13/16] arm64: dts: marvell: armada-37xx: add UART clock
+Date: Fri,  6 Oct 2017 12:13:41 +0200
+Message-ID: <20171006101344.15590-14-miquel.raynal@free-electrons.com>
 References: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jiri Slaby <jslaby@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Antoine Tenart <antoine.tenart@free-electrons.com>, Nadav Haklai <nadavh@marvell.com>, Wilson Ding <dingwei@marvell.com>, Miquel Raynal <miquel.raynal@free-electrons.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20171006101344.15590-1-miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Fill ESPRESSObin uart0 node with pinctrl information like in the
-Armada-3720-DB device tree (which uses the same node).
+Add the missing clock property to armada-3700 UART node.
 
-Also explain how to enable the second UART port available on the
-headers. This second port is not enabled by default because both
-headers are dedicated to expose general purpose pins and remapping
-some of them to use the second UART would break existing users.
+This clock will be used to derive the prescaler value to comply to the
+requested baudrate.
 
-Suggested-by: László ÁSHIN <laszlo@ashin.hu>
-Signed-off-by: Miquel Raynal <miquel.raynal@free-electrons.com>
+Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
-index 2ce52ba74f73..c05b274ab1a9 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
-@@ -98,9 +98,17 @@
- 
- /* Exported on the micro USB connector J5 through an FTDI */
- &uart0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart1_pins>;
- 	status = "okay";
- };
- 
-+/*
-+ * Enabling the second UART on J17 (pins 24,26) is just a matter of copying the
-+ * uart1 node from armada-3720-db.dts with one difference: it works with 1.8V
-+ * TTL levels.
-+ */
-+
- /* J7 */
- &usb3 {
- 	status = "okay";
+diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+index b554cdaf5e53..a36d667f770e 100644
+--- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+@@ -135,6 +135,7 @@
+ 			uart0: serial@12000 {
+ 				compatible = "marvell,armada-3700-uart";
+ 				reg = <0x12000 0x200>;
++				clocks = <&xtalclk>;
+ 				interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
+ 				status = "disabled";
+ 			};
 -- 
 2.11.0
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
