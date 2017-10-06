@@ -1,71 +1,31 @@
-From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH 06/16] serial: mvebu-uart: add soft reset at probe
-Date: Fri, 06 Oct 2017 14:33:03 +0200
-Message-ID: <87h8vcfocg.fsf@free-electrons.com>
-References: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
-        <20171006101344.15590-7-miquel.raynal@free-electrons.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/2] serdev: Add ACPI support
+Date: Fri, 6 Oct 2017 07:33:41 -0500
+Message-ID: <CAL_JsqKDzR9-ptE=SbL0LuQvTKDNT-GZ8buOvffJDyWz6fHfSA@mail.gmail.com>
+References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com> <1507107090-15992-2-git-send-email-frederic.danis.oss@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20171006101344.15590-7-miquel.raynal@free-electrons.com> (Miquel
-        Raynal's message of "Fri, 6 Oct 2017 12:13:34 +0200")
-Sender: linux-gpio-owner@vger.kernel.org
-To: Miquel Raynal <miquel.raynal@free-electrons.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jiri Slaby <jslaby@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, devicetree@vger.kernel.org, Allen Yan <yanwei@marvell.com>, Antoine Tenart <antoine.tenart@free-electrons.com>, Nadav Haklai <nadavh@marvell.com>, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, Wilson Ding <dingwei@marvell.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1507107090-15992-2-git-send-email-frederic.danis.oss@gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: =?UTF-8?B?RnLDqWTDqXJpYyBEYW5pcw==?= <frederic.danis.oss@gmail.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Johan Hovold <johan@kernel.org>, Lukas Wunner <lukas@wunner.de>, Hans de Goede <hdegoede@redhat.com>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Miquel,
- 
- On ven., oct. 06 2017, Miquel Raynal <miquel.raynal@free-electrons.com> wrote:
-
-> From: Allen Yan <yanwei@marvell.com>
+On Wed, Oct 4, 2017 at 3:51 AM, Frédéric Danis
+<frederic.danis.oss@gmail.com> wrote:
+> This patch allows SerDev module to manage serial devices declared as
+> attached to an UART in ACPI table.
 >
-> The existing UART driver relies on the bootloader to initialize the
-> port(s). However, the secondary uart port may not be initialized
-> properly in early boot stage. This patch adds the UART soft reset when
-> probing, for all ports.
+> acpi_serdev_add_device() callback will only take into account entries
+> without enumerated flag set. This flags is set for all entries during
+> ACPI scan, except for SPI and I2C serial devices, and for UART with
+> 2nd patch in the series.
 >
-> Signed-off-by: Allen Yan <yanwei@marvell.com>
-> Signed-off-by: Miquel Raynal <miquel.raynal@free-electrons.com>
-
-Reviewed-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
-
-Thanks,
-
-Gregory
-
-
+> Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
 > ---
->  drivers/tty/serial/mvebu-uart.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-> index 82438884af1e..da756cfec0bb 100644
-> --- a/drivers/tty/serial/mvebu-uart.c
-> +++ b/drivers/tty/serial/mvebu-uart.c
-> @@ -653,6 +653,11 @@ static int mvebu_uart_probe(struct platform_device *pdev)
->  	port->private_data = mvuart;
->  	platform_set_drvdata(pdev, mvuart);
->  
-> +	/* UART Soft Reset*/
-> +	writel(CTRL_SOFT_RST, port->membase + UART_CTRL(port));
-> +	udelay(1);
-> +	writel(0, port->membase + UART_CTRL(port));
-> +
->  	ret = uart_add_one_port(&mvebu_uart_driver, port);
->  	if (ret)
->  		return ret;
-> -- 
-> 2.11.0
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>  drivers/tty/serdev/core.c | 99 ++++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 94 insertions(+), 5 deletions(-)
 
--- 
-Gregory Clement, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+Reviewed-by: Rob Herring <robh@kernel.org>
