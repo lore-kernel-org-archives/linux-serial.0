@@ -1,74 +1,60 @@
 From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH 00/16] Support armada-37xx second UART port
-Date: Fri,  6 Oct 2017 12:13:28 +0200
-Message-ID: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH 03/16] serial: mvebu-uart: use driver name when requesting an interrupt
+Date: Fri,  6 Oct 2017 12:13:31 +0200
+Message-ID: <20171006101344.15590-4-miquel.raynal@free-electrons.com>
+References: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20171006101344.15590-1-miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Yehuda Yitschak <yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+From: Yehuda Yitschak <yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
 
-This series adds support for the armada-37xx extended UART port. The new
-capabilities of this IP compared to the standard port are the possibility
-to use DMA, it has bigger FIFOs (128 bytes instead of 32/64), it is
-possible to fill the FIFO byte-per-byte or 4 bytes at a time, it as RTC
-and CTS control, it supports transfer count for RX/TX with transfer
-finish status and finally it may achieve higher baudrates by the use of
-special dividers.
+Use the driver name when requesting an interrupt for consistency.
 
-Almost none of these extended features is implemented though. For now,
-the extended UART is just supported with the same features as the
-standard UART.
+Avoids possible confusion with DW8250 driver interrupt names in
+/proc/interrupts.
 
-This IP is present on the Armada 3720 SoC and is now enabled by the
-device tree related patches on the Armada-3720-DB. As adding the node to
-enable the second port on Armada-3720-ESPRESSObin could break existing
-users by changing the configuration of some pins on the main headers,
-only a side note is added on how to do it easily.
+Signed-off-by: Yehuda Yitschak <yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+---
+ drivers/tty/serial/mvebu-uart.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-- The driver patches should go through Greg KH.
-- The DT patches should go through the mvebu maintainers.
-- We would also like the DT binding documentation update to go through
-  the mvebu maintainers, as it conflicts with another DT change.
-
-Thank you,
-Miquel
-
-Allen Yan (5):
-  serial: mvebu-uart: support probe of multiple ports
-  serial: mvebu-uart: add soft reset at probe
-  serial: mvebu-uart: add function to change baudrate
-  serial: mvebu-uart: clear state register before IRQ request
-  serial: mvebu-uart: add TX interrupt trigger for pulse interrupts
-
-Miquel Raynal (10):
-  dt-bindings: mvebu-uart: update documentation with extended UART
-  pinctrl: dt-bindings: Fix A37xx uart2 group name
-  serial: mvebu-uart: use a generic way to access the registers
-  serial: mvebu-uart: dissociate RX and TX interrupts
-  serial: mvebu-uart: augment the maximum number of ports
-  serial: mvebu-uart: support extended port registers layout
-  arm64: dts: marvell: armada-37xx: add UART clock
-  arm64: dts: marvell: armada-37xx: add second UART port
-  arm64: dts: marvell: armada-3720-db: enable second UART port
-  arm64: dts: marvell: armada-3720-espressobin: fill UART nodes
-
-Yehuda Yitschak (1):
-  serial: mvebu-uart: use driver name when requesting an interrupt
-
- .../pinctrl/marvell,armada-37xx-pinctrl.txt        |   4 +-
- .../devicetree/bindings/serial/mvebu-uart.txt      |  49 ++-
- arch/arm64/boot/dts/marvell/armada-3720-db.dts     |   9 +-
- .../boot/dts/marvell/armada-3720-espressobin.dts   |   8 +
- arch/arm64/boot/dts/marvell/armada-37xx.dtsi       |  19 +-
- drivers/tty/serial/mvebu-uart.c                    | 474 +++++++++++++++++----
- 6 files changed, 461 insertions(+), 102 deletions(-)
-
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index 45b57c294d13..7e0a3e9fee15 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -90,6 +90,7 @@
+ #define MVEBU_NR_UARTS		1
+ 
+ #define MVEBU_UART_TYPE		"mvebu-uart"
++#define DRIVER_NAME		"mvebu_serial"
+ 
+ static struct uart_port mvebu_uart_ports[MVEBU_NR_UARTS];
+ 
+@@ -287,8 +288,8 @@ static int mvebu_uart_startup(struct uart_port *port)
+ 	udelay(1);
+ 	writel(CTRL_RX_INT, port->membase + UART_CTRL);
+ 
+-	ret = request_irq(port->irq, mvebu_uart_isr, port->irqflags, "serial",
+-			  port);
++	ret = request_irq(port->irq, mvebu_uart_isr, port->irqflags,
++			  DRIVER_NAME, port);
+ 	if (ret) {
+ 		dev_err(port->dev, "failed to request irq\n");
+ 		return ret;
+@@ -538,7 +539,7 @@ console_initcall(mvebu_uart_console_init);
+ 
+ static struct uart_driver mvebu_uart_driver = {
+ 	.owner			= THIS_MODULE,
+-	.driver_name		= "mvebu_serial",
++	.driver_name		= DRIVER_NAME,
+ 	.dev_name		= "ttyMV",
+ 	.nr			= MVEBU_NR_UARTS,
+ #ifdef CONFIG_SERIAL_MVEBU_CONSOLE
 -- 
 2.11.0
 
