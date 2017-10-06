@@ -1,107 +1,52 @@
-From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH 12/16] serial: mvebu-uart: support extended port registers layout
-Date: Fri, 06 Oct 2017 14:46:43 +0200
-Message-ID: <87wp48e958.fsf@free-electrons.com>
+From: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH 13/16] arm64: dts: marvell: armada-37xx: add UART clock
+Date: Fri, 06 Oct 2017 14:48:05 +0200
+Message-ID: <87shewe92y.fsf@free-electrons.com>
 References: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
-        <20171006101344.15590-13-miquel.raynal@free-electrons.com>
+        <20171006101344.15590-14-miquel.raynal@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20171006101344.15590-13-miquel.raynal@free-electrons.com>
-        (Miquel Raynal's message of "Fri, 6 Oct 2017 12:13:40 +0200")
-Sender: linux-gpio-owner@vger.kernel.org
-To: Miquel Raynal <miquel.raynal@free-electrons.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jiri Slaby <jslaby@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Antoine Tenart <antoine.tenart@free-electrons.com>, Nadav Haklai <nadavh@marvell.com>, Wilson Ding <dingwei@marvell.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20171006101344.15590-14-miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+        (Miquel Raynal's message of "Fri, 6 Oct 2017 12:13:41 +0200")
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
 Hi Miquel,
  
- On ven., oct. 06 2017, Miquel Raynal <miquel.raynal@free-electrons.com> wrote:
+ On ven., oct. 06 2017, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
 
-> Define the missing register offsets and bit fields for the extended
-> UART port. Add a second driver data structure filled with its port data,
-> selected with the right compatible (marvell,armada-3700-uart-ext).
+> Add the missing clock property to armada-3700 UART node.
 >
-> Signed-off-by: Miquel Raynal <miquel.raynal@free-electrons.com>
+> This clock will be used to derive the prescaler value to comply to the
+> requested baudrate.
+>
+> Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 
-Reviewed-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Acked-by: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 
 Thanks,
 
 Gregory
 
 > ---
->  drivers/tty/serial/mvebu-uart.c | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
+>  arch/arm64/boot/dts/marvell/armada-37xx.dtsi | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-> index 3e46affa09a8..38b067e0ef0c 100644
-> --- a/drivers/tty/serial/mvebu-uart.c
-> +++ b/drivers/tty/serial/mvebu-uart.c
-> @@ -39,10 +39,13 @@
->  
->  /* Register Map */
->  #define UART_STD_RBR		0x00
-> +#define UART_EXT_RBR		0x18
->  
->  #define UART_STD_TSH		0x04
-> +#define UART_EXT_TSH		0x1C
->  
->  #define UART_STD_CTRL1		0x08
-> +#define UART_EXT_CTRL1		0x04
->  #define  CTRL_SOFT_RST		BIT(31)
->  #define  CTRL_TXFIFO_RST	BIT(15)
->  #define  CTRL_RXFIFO_RST	BIT(14)
-> @@ -55,15 +58,20 @@
->  				CTRL_PAR_ERR_INT | CTRL_OVR_ERR_INT)
->  
->  #define UART_STD_CTRL2		UART_STD_CTRL1
-> +#define UART_EXT_CTRL2		0x20
->  #define  CTRL_STD_TX_RDY_INT	BIT(5)
-> +#define  CTRL_EXT_TX_RDY_INT	BIT(6)
->  #define  CTRL_STD_RX_RDY_INT	BIT(4)
-> +#define  CTRL_EXT_RX_RDY_INT	BIT(5)
->  
->  #define UART_STAT		0x0C
->  #define  STAT_TX_FIFO_EMP	BIT(13)
->  #define  STAT_TX_FIFO_FUL	BIT(11)
->  #define  STAT_TX_EMP		BIT(6)
->  #define  STAT_STD_TX_RDY	BIT(5)
-> +#define  STAT_EXT_TX_RDY	BIT(15)
->  #define  STAT_STD_RX_RDY	BIT(4)
-> +#define  STAT_EXT_RX_RDY	BIT(14)
->  #define  STAT_BRK_DET		BIT(3)
->  #define  STAT_FRM_ERR		BIT(2)
->  #define  STAT_PAR_ERR		BIT(1)
-> @@ -858,12 +866,28 @@ static struct mvebu_uart_driver_data uart_std_driver_data = {
->  	.flags.stat_rx_rdy = STAT_STD_RX_RDY,
->  };
->  
-> +static struct mvebu_uart_driver_data uart_ext_driver_data = {
-> +	.is_ext = true,
-> +	.regs.rbr = UART_EXT_RBR,
-> +	.regs.tsh = UART_EXT_TSH,
-> +	.regs.ctrl = UART_EXT_CTRL1,
-> +	.regs.intr = UART_EXT_CTRL2,
-> +	.flags.ctrl_tx_rdy_int = CTRL_EXT_TX_RDY_INT,
-> +	.flags.ctrl_rx_rdy_int = CTRL_EXT_RX_RDY_INT,
-> +	.flags.stat_tx_rdy = STAT_EXT_TX_RDY,
-> +	.flags.stat_rx_rdy = STAT_EXT_RX_RDY,
-> +};
-> +
->  /* Match table for of_platform binding */
->  static const struct of_device_id mvebu_uart_of_match[] = {
->  	{
->  		.compatible = "marvell,armada-3700-uart",
->  		.data = (void *)&uart_std_driver_data,
->  	},
-> +	{
-> +		.compatible = "marvell,armada-3700-uart-ext",
-> +		.data = (void *)&uart_ext_driver_data,
-> +	},
->  	{}
->  };
->  
+> diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+> index b554cdaf5e53..a36d667f770e 100644
+> --- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+> +++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+> @@ -135,6 +135,7 @@
+>  			uart0: serial@12000 {
+>  				compatible = "marvell,armada-3700-uart";
+>  				reg = <0x12000 0x200>;
+> +				clocks = <&xtalclk>;
+>  				interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
+>  				status = "disabled";
+>  			};
 > -- 
 > 2.11.0
 >
@@ -111,3 +56,7 @@ Gregory Clement, Free Electrons
 Kernel, drivers, real-time and embedded Linux
 development, consulting, training and support.
 http://free-electrons.com
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
