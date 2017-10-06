@@ -1,40 +1,39 @@
-From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH 07/16] serial: mvebu-uart: add function to change baudrate
-Date: Fri, 06 Oct 2017 14:39:35 +0200
-Message-ID: <87d160fo1k.fsf@free-electrons.com>
+From: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH 08/16] serial: mvebu-uart: clear state register before IRQ request
+Date: Fri, 06 Oct 2017 14:40:47 +0200
+Message-ID: <878tgofnzk.fsf@free-electrons.com>
 References: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
-        <20171006101344.15590-8-miquel.raynal@free-electrons.com>
+        <20171006101344.15590-9-miquel.raynal@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20171006101344.15590-8-miquel.raynal@free-electrons.com> (Miquel
-        Raynal's message of "Fri, 6 Oct 2017 12:13:35 +0200")
-Sender: linux-gpio-owner@vger.kernel.org
-To: Miquel Raynal <miquel.raynal@free-electrons.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jiri Slaby <jslaby@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, devicetree@vger.kernel.org, Allen Yan <yanwei@marvell.com>, Antoine Tenart <antoine.tenart@free-electrons.com>, Nadav Haklai <nadavh@marvell.com>, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, Wilson Ding <dingwei@marvell.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20171006101344.15590-9-miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> (Miquel
+        Raynal's message of "Fri, 6 Oct 2017 12:13:36 +0200")
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Allen Yan <yanwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 Hi Miquel,
  
- On ven., oct. 06 2017, Miquel Raynal <miquel.raynal@free-electrons.com> wrote:
+ On ven., oct. 06 2017, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
 
-> From: Allen Yan <yanwei@marvell.com>
+> From: Allen Yan <yanwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
 >
-> Until now, the first UART port baudrate was set by the bootloader.
+> When receiving data on RX pin before ->uart_startup() is called, some
+> error bits in the state register could be set up (like BRK_DET).
 >
-> Add a function allowing to change the baudrate. Changes may be done
-> from userspace but also at probe time by the kernel. Use the simplest
-> method: baudrate divisor.
+> This is harmless when using only the standard UART (error bits are
+> read-only), but may procude an endless loop once in the extended UART
+                      produce
+> RX interrupt handler (error bits must be cleared).
 >
-> Works for all UART ports until 230400 baud. To achieve higher baudrates,
-> software should implement the fractional divisor feature that allows
-> more accuracy for higher rates.
+> Clear the status register in ->uart_startup() to avoid this situation.
 >
-> Signed-off-by: Allen Yan <yanwei@marvell.com>
-> [<miquel.raynal@free-electrons.com>: changed termios handling]
-> Signed-off-by: Miquel Raynal <miquel.raynal@free-electrons.com>
+> Signed-off-by: Allen Yan <yanwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+> Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 
-Reviewed-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Reviewed-by: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 
 Thanks,
 
@@ -42,124 +41,33 @@ Gregory
 
 
 > ---
->  drivers/tty/serial/mvebu-uart.c | 69 ++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 65 insertions(+), 4 deletions(-)
+>  drivers/tty/serial/mvebu-uart.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 >
 > diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-> index da756cfec0bb..81a3d2714fd3 100644
+> index 81a3d2714fd3..67f302748b78 100644
 > --- a/drivers/tty/serial/mvebu-uart.c
 > +++ b/drivers/tty/serial/mvebu-uart.c
-> @@ -72,6 +72,7 @@
->  				 | STAT_PAR_ERR | STAT_OVR_ERR)
->  
->  #define UART_BRDV		0x10
-> +#define  BRDV_BAUD_MASK         0x3FF
->  
->  #define MVEBU_NR_UARTS		1
->  
-> @@ -344,6 +345,31 @@ static void mvebu_uart_shutdown(struct uart_port *port)
->  	free_irq(port->irq, port);
->  }
->  
-> +static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
-> +{
-> +	struct mvebu_uart *mvuart = to_mvuart(port);
-> +	unsigned int baud_rate_div;
-> +	u32 brdv;
-> +
-> +	if (IS_ERR(mvuart->clk))
-> +		return -PTR_ERR(mvuart->clk);
-> +
-> +	/*
-> +	 * The UART clock is divided by the value of the divisor to generate
-> +	 * UCLK_OUT clock, which is 16 times faster than the baudrate.
-> +	 * This prescaler can achieve all standard baudrates until 230400.
-> +	 * Higher baudrates could be achieved for the extended UART by using the
-> +	 * programmable oversampling stack (also called fractional divisor).
-> +	 */
-> +	baud_rate_div = DIV_ROUND_UP(port->uartclk, baud * 16);
-> +	brdv = readl(port->membase + UART_BRDV);
-> +	brdv &= ~BRDV_BAUD_MASK;
-> +	brdv |= baud_rate_div;
-> +	writel(brdv, port->membase + UART_BRDV);
-> +
-> +	return 0;
-> +}
-> +
->  static void mvebu_uart_set_termios(struct uart_port *port,
->  				   struct ktermios *termios,
->  				   struct ktermios *old)
-> @@ -367,11 +393,30 @@ static void mvebu_uart_set_termios(struct uart_port *port,
->  	if ((termios->c_cflag & CREAD) == 0)
->  		port->ignore_status_mask |= STAT_RX_RDY(port) | STAT_BRK_ERR;
->  
-> -	if (old)
-> -		tty_termios_copy_hw(termios, old);
-> +	/*
-> +	 * Maximum achievable frequency with simple baudrate divisor is 230400.
-> +	 * Since the error per bit frame would be of more than 15%, achieving
-> +	 * higher frequencies would require to implement the fractional divisor
-> +	 * feature.
-> +	 */
-> +	baud = uart_get_baud_rate(port, termios, old, 0, 230400);
-> +	if (mvebu_uart_baud_rate_set(port, baud)) {
-> +		/* No clock available, baudrate cannot be changed */
-> +		if (old)
-> +			baud = uart_get_baud_rate(port, old, NULL, 0, 230400);
-> +	} else {
-> +		tty_termios_encode_baud_rate(termios, baud, baud);
-> +		uart_update_timeout(port, termios->c_cflag, baud);
-> +	}
->  
-> -	baud = uart_get_baud_rate(port, termios, old, 0, 460800);
-> -	uart_update_timeout(port, termios->c_cflag, baud);
-> +	/* Only the following flag changes are supported */
-> +	if (old) {
-> +		termios->c_iflag &= INPCK | IGNPAR;
-> +		termios->c_iflag |= old->c_iflag & ~(INPCK | IGNPAR);
-> +		termios->c_cflag &= CREAD | CBAUD;
-> +		termios->c_cflag |= old->c_cflag & ~(CREAD | CBAUD);
-> +		termios->c_lflag = old->c_lflag;
-> +	}
->  
->  	spin_unlock_irqrestore(&port->lock, flags);
->  }
-> @@ -647,12 +692,28 @@ static int mvebu_uart_probe(struct platform_device *pdev)
->  	if (!mvuart)
->  		return -ENOMEM;
->  
-> +	/* Get controller data depending on the compatible string */
->  	mvuart->data = (struct mvebu_uart_driver_data *)match->data;
->  	mvuart->port = port;
->  
->  	port->private_data = mvuart;
->  	platform_set_drvdata(pdev, mvuart);
->  
-> +	/* Get fixed clock frequency */
-> +	mvuart->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(mvuart->clk)) {
-> +		if (PTR_ERR(mvuart->clk) == -EPROBE_DEFER)
-> +			return PTR_ERR(mvuart->clk);
-> +
-> +		if (IS_EXTENDED(port)) {
-> +			dev_err(&pdev->dev, "unable to get UART clock\n");
-> +			return PTR_ERR(mvuart->clk);
-> +		}
-> +	} else {
-> +		if (!clk_prepare_enable(mvuart->clk))
-> +			port->uartclk = clk_get_rate(mvuart->clk);
-> +	}
-> +
->  	/* UART Soft Reset*/
->  	writel(CTRL_SOFT_RST, port->membase + UART_CTRL(port));
+> @@ -322,6 +322,12 @@ static int mvebu_uart_startup(struct uart_port *port)
+>  	writel(CTRL_TXFIFO_RST | CTRL_RXFIFO_RST,
+>  	       port->membase + UART_CTRL(port));
 >  	udelay(1);
+> +
+> +	/* Clear the error bits of state register before IRQ request */
+> +	ret = readl(port->membase + UART_STAT);
+> +	ret |= STAT_BRK_ERR;
+> +	writel(ret, port->membase + UART_STAT);
+> +
+>  	writel(CTRL_BRK_INT, port->membase + UART_CTRL(port));
+>  
+>  	ctl = readl(port->membase + UART_INTR(port));
 > -- 
 > 2.11.0
 >
 >
 > _______________________________________________
 > linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 
 -- 
@@ -167,3 +75,7 @@ Gregory Clement, Free Electrons
 Kernel, drivers, real-time and embedded Linux
 development, consulting, training and support.
 http://free-electrons.com
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
