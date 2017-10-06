@@ -1,60 +1,80 @@
-From: Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH 16/16] arm64: dts: marvell: armada-3720-espressobin:
- fill UART nodes
-Date: Fri, 6 Oct 2017 15:15:21 +0200
-Message-ID: <20171006151521.440418a2@windsurf.lan>
-References: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
-        <20171006101344.15590-17-miquel.raynal@free-electrons.com>
-        <87fuawe8gx.fsf@free-electrons.com>
+From: =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss@gmail.com>
+Subject: Re: [PATCH 0/2] ACPI serdev support
+Date: Fri, 6 Oct 2017 19:36:27 +0200
+Message-ID: <8645dbfb-ca09-340d-e610-6899a9b7dd8a@gmail.com>
+References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
+ <A58D9E0F-99FC-4C13-95E8-F60EC61C18B2@holtmann.org>
+ <25008d7b-db06-49ad-033f-63c0b72d9c34@gmail.com>
+ <6cd58b2f-1ec8-c709-e983-98321bbfea70@gmail.com>
+ <CAFXWsS9uhvB=5r83GC=aA=uujDvxfjnOvEUUviymNEM31fka5Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <87fuawe8gx.fsf-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <CAFXWsS9uhvB=5r83GC=aA=uujDvxfjnOvEUUviymNEM31fka5Q@mail.gmail.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Ian W MORRISON <ianwmorrison@gmail.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Johan Hovold <johan@kernel.org>, Lukas Wunner <lukas@wunner.de>, Hans de Goede <hdegoede@redhat.com>, "bluez mailin list (linux-bluetooth@vger.kernel.org)" <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+Hi Ian,
 
-On Fri, 06 Oct 2017 15:01:18 +0200, Gregory CLEMENT wrote:
+Le 06/10/2017 à 16:47, Ian W MORRISON a écrit :
+> <snip>
+>> It seems normal to me that BCM2EA4 is no more enumerated at ACPI level as
+>> this is moved to serdev.
+>> When removing 'if (ares->data.common_serial_bus.type !=
+>> ACPI_RESOURCE_SERIAL_TYPE_UART)' you stop the serdev module finding the
+>> Serial UART information. In this case it will not register the device and it
+>> will fall back to previous behavior needing to use btattach to setup
+>> Bluetooth.
+>>
+>> Can you share:
+>> - btattach you are currently using,
+>> - dmesg with with dynamic debug enabled for serdev and hci_uart modules
+>> during boot (with Hans's patches, your MINIX Z83-4 patches and mine
+>> patches).
+>>
+>> Regards,
+>>
+>> Fred
+> Hi Fred,
+>
+> I've attached four (text) files:
+>
+> 1. btattach.txt - Details of the 'bluez' package that contains the
+> 'btattach' I'm using.
+> 2. dmesg.txt - 'dmesg' with with dynamic debug enabled for serdev and
+> hci_uart modules. This doesn't seem to show much so have I provided
+> what you wanted?
+> 3. gitlog.txt - First few commits from the git log showing the kernel
+> patches used to build the kernel (sent just for clarity).
+> 4. working.txt - An extract from 'dmesg' when BCM2EA4 is enumerated
+> from a kernel patched with the 'if' statement refered to above.
+>
+> Regards,
+> Ian
 
->  /*
->   * To enable the second UART on J17 (pins 24,26) refer to the uart1
->   * node from armada-3720-db.dts.
->   * Note that TX and RX signal are the ones coming directly from the SoC:
->   * 1.8V TTL.
->   */
+Which tty is used for btattach?
+Is this tty existing in /dev?
 
-One issue with this comment (and Miquèl's version as well) is that it
-does not explain why you don't enable this UART by default.
+I took a look at dmesg.txt and I did not find any trace related to serdev.
+On the T100, where ttyS4 is used for Bluetooth, I can see the following 
+traces:
+   [   11.732347] serial serial0: allocated controller 
+0xffff880036229000 id 0
+   [   11.732470] serial serial0-0: device serial0-0 registered
+   [   11.732475] serial serial0: serdev0 registered: dev:ffff880036229000
+   [   11.732478] serial serial0: tty port ttyS4 registered
 
-The real reason is in the commit log from Miquèl, and should probably
-be part of the comment. Perhaps something like:
+If serdev registration failed you should at least get something like:
+     serdev0 no devices registered: of:<> acpi:<>
 
-/*
+So, just to be sure, is SERIAL_DEV_BUS and SERIAL_DEV_CTRL_TTYPORT 
+enabled in your kernel?
 
- * Connector J17 (pins X, Y, Z) exposes a number of different
- * features:
- *  - UART1 (pins 24 = RX, pins 26 = TX), see armada-3720-db.dts for an
- *    example on how to enable UART1. Beware that the signals are 1.8V
- *    TTL.
- *  - SPIxyz
- *  - I2Cxyz
- */
+Regards,
 
-Otherwise, it's not clear at all why you don't just enable UART1. Or
-perhaps I misunderstood Miquèl's commit log ?
+Fred
 
-Best regards,
-
-Thomas
--- 
-Thomas Petazzoni, CTO, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
