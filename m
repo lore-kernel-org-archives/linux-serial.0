@@ -1,82 +1,78 @@
-From: =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 0/2] ACPI serdev support
-Date: Fri, 6 Oct 2017 10:16:37 +0200
-Message-ID: <6cd58b2f-1ec8-c709-e983-98321bbfea70@gmail.com>
-References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
- <A58D9E0F-99FC-4C13-95E8-F60EC61C18B2@holtmann.org>
- <25008d7b-db06-49ad-033f-63c0b72d9c34@gmail.com>
+From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH 00/16] Support armada-37xx second UART port
+Date: Fri,  6 Oct 2017 12:13:28 +0200
+Message-ID: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <25008d7b-db06-49ad-033f-63c0b72d9c34-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Ian W MORRISON <ianwmorrison-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Loic Poulain <loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "bluez mailin list (linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org)" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ian,
+Hi,
 
-Le 06/10/2017 à 09:33, Ian W MORRISON a écrit :
-> On 10/6/17 2:21 AM, Marcel Holtmann wrote:
->> Hi Fred,
->>
->>> Add ACPI support for serial attached devices.
->>>
->>> Currently, serial devices are not set as enumerated during ACPI scan for SPI
->>> or i2c buses (but not for UART). This should also be done for UART serial
->>> devices.
->>> I renamed *spi_i2c_slave* to *serial_bus_slave* to reflect this.
->>>
->>> For hci_bcm, this needs Hans de Goede's "Bluetooth: hci_bcm: Add (runtime)pm
->>> support to the serdev drv" patches to work.
->>>
->>> Tested on T100TA with Broadcom BCM2E39.
->>>
->>> Since RFC:
->>>   - Add or reword commit messages
->>>   - Rename *serial_slave* to *serial_bus_slave*
->>>   - Add specific check for Apple in acpi_is_serial_bus_slave(), thanks to
->>>     Lukas Wunner
->>>   - Update comment in acpi_default_enumeration()
->>>   - Remove patch 3 "Bluetooth: hci_bcm: Add ACPI serdev support for BCM2E39"
->>>     in favor of patches from Hans de Goede
->> I already applied Hans’ patch series to bluetooth-next tree. And I have no objections or comments for these changes. They should be reviewed and acked by the appropriate maintainers as well, but from my side this looks good.
->>
->> Acked-by: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
->>
->> What we should discuss on how we get them upstream since besides the Bluetooth subsystem, they cover ACPI and TTY subsystems.
->>
->> Regards
->>
->> Marcel
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-bluetooth" in
->> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> Hi Marcel,
->
-> I've tested these two patches along with the nine patches (plus revert patch) from Hans's series but cannot get bluetooth to work on some of my devices using these two patches as is, specifically on MINIX Z83-4 based PCs.
->
-> In order for bluetooth to function on these devices I submitted the patch 'Bluetooth: BCM: Add support for MINIX Z83-4 based devices' as they require the trigger type IRQF_TRIGGER_FALLING. With Hans's new patch series I've had to modify the patch which I've resubmitted as version 2. However when I apply the second patch from Fred's series 'ACPI / scan: Fix enumeration for special UART devices' I have found the bluetooth device (BCM2EA4) is no longer enumerated. Specifically I've found that the removal of the check 'if (ares->data.common_serial_bus.type != ACPI_RESOURCE_SERIAL_TYPE_UART)' causes this failure and if I re-add the 'if' statement then the device is loaded. However a 'btattach' is still required for functioning bluetooth.
+This series adds support for the armada-37xx extended UART port. The new
+capabilities of this IP compared to the standard port are the possibility
+to use DMA, it has bigger FIFOs (128 bytes instead of 32/64), it is
+possible to fill the FIFO byte-per-byte or 4 bytes at a time, it as RTC
+and CTS control, it supports transfer count for RX/TX with transfer
+finish status and finally it may achieve higher baudrates by the use of
+special dividers.
 
-It seems normal to me that BCM2EA4 is no more enumerated at ACPI level 
-as this is moved to serdev.
-When removing 'if (ares->data.common_serial_bus.type != 
-ACPI_RESOURCE_SERIAL_TYPE_UART)' you stop the serdev module finding the 
-Serial UART information. In this case it will not register the device 
-and it will fall back to previous behavior needing to use btattach to 
-setup Bluetooth.
+Almost none of these extended features is implemented though. For now,
+the extended UART is just supported with the same features as the
+standard UART.
 
-Can you share:
-- btattach you are currently using,
-- dmesg with with dynamic debug enabled for serdev and hci_uart modules 
-during boot (with Hans's patches, your MINIX Z83-4 patches and mine 
-patches).
+This IP is present on the Armada 3720 SoC and is now enabled by the
+device tree related patches on the Armada-3720-DB. As adding the node to
+enable the second port on Armada-3720-ESPRESSObin could break existing
+users by changing the configuration of some pins on the main headers,
+only a side note is added on how to do it easily.
 
-Regards,
+- The driver patches should go through Greg KH.
+- The DT patches should go through the mvebu maintainers.
+- We would also like the DT binding documentation update to go through
+  the mvebu maintainers, as it conflicts with another DT change.
 
-Fred
+Thank you,
+Miquel
+
+Allen Yan (5):
+  serial: mvebu-uart: support probe of multiple ports
+  serial: mvebu-uart: add soft reset at probe
+  serial: mvebu-uart: add function to change baudrate
+  serial: mvebu-uart: clear state register before IRQ request
+  serial: mvebu-uart: add TX interrupt trigger for pulse interrupts
+
+Miquel Raynal (10):
+  dt-bindings: mvebu-uart: update documentation with extended UART
+  pinctrl: dt-bindings: Fix A37xx uart2 group name
+  serial: mvebu-uart: use a generic way to access the registers
+  serial: mvebu-uart: dissociate RX and TX interrupts
+  serial: mvebu-uart: augment the maximum number of ports
+  serial: mvebu-uart: support extended port registers layout
+  arm64: dts: marvell: armada-37xx: add UART clock
+  arm64: dts: marvell: armada-37xx: add second UART port
+  arm64: dts: marvell: armada-3720-db: enable second UART port
+  arm64: dts: marvell: armada-3720-espressobin: fill UART nodes
+
+Yehuda Yitschak (1):
+  serial: mvebu-uart: use driver name when requesting an interrupt
+
+ .../pinctrl/marvell,armada-37xx-pinctrl.txt        |   4 +-
+ .../devicetree/bindings/serial/mvebu-uart.txt      |  49 ++-
+ arch/arm64/boot/dts/marvell/armada-3720-db.dts     |   9 +-
+ .../boot/dts/marvell/armada-3720-espressobin.dts   |   8 +
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi       |  19 +-
+ drivers/tty/serial/mvebu-uart.c                    | 474 +++++++++++++++++----
+ 6 files changed, 461 insertions(+), 102 deletions(-)
+
+-- 
+2.11.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
