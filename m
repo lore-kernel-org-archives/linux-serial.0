@@ -1,60 +1,88 @@
 From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH 03/16] serial: mvebu-uart: use driver name when requesting an interrupt
-Date: Fri,  6 Oct 2017 12:13:31 +0200
-Message-ID: <20171006101344.15590-4-miquel.raynal@free-electrons.com>
+Subject: [PATCH 01/16] dt-bindings: mvebu-uart: update documentation with extended UART
+Date: Fri,  6 Oct 2017 12:13:29 +0200
+Message-ID: <20171006101344.15590-2-miquel.raynal@free-electrons.com>
 References: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20171006101344.15590-1-miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Yehuda Yitschak <yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Yehuda Yitschak <yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+Update the Device Tree binding documentation for the Marvell EBU UART,
+in order to allow describing the extended UART IP block, in addition to
+the already supported standard UART IP. This requires adding a new
+compatible string, the introduction of a clocks property, and extensions
+to the interrupts property.
 
-Use the driver name when requesting an interrupt for consistency.
-
-Avoids possible confusion with DW8250 driver interrupt names in
-/proc/interrupts.
-
-Signed-off-by: Yehuda Yitschak <yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- drivers/tty/serial/mvebu-uart.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/serial/mvebu-uart.txt      | 49 +++++++++++++++++++---
+ 1 file changed, 44 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 45b57c294d13..7e0a3e9fee15 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -90,6 +90,7 @@
- #define MVEBU_NR_UARTS		1
+diff --git a/Documentation/devicetree/bindings/serial/mvebu-uart.txt b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
+index d37fabe17bd1..3df3a3fab4bb 100644
+--- a/Documentation/devicetree/bindings/serial/mvebu-uart.txt
++++ b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
+@@ -1,13 +1,52 @@
+-* Marvell UART : Non standard UART used in some of Marvell EBU SoCs (e.g., Armada-3700)
++* Marvell UART : Non standard UART used in some of Marvell EBU SoCs
++                 e.g., Armada-3700.
  
- #define MVEBU_UART_TYPE		"mvebu-uart"
-+#define DRIVER_NAME		"mvebu_serial"
+ Required properties:
+-- compatible: "marvell,armada-3700-uart"
++- compatible:
++    - "marvell,armada-3700-uart" for the standard variant of the UART
++      (32 bytes FIFO, no DMA, level interrupts, 8-bit access to the
++      FIFO, baudrate limited to 230400).
++    - "marvell,armada-3700-uart-ext" for the extended variant of the
++      UART (128 bytes FIFO, DMA, front interrupts, 8-bit or 32-bit
++      accesses to the FIFO, baudrate unlimited by the dividers).
+ - reg: offset and length of the register set for the device.
+-- interrupts: device interrupt
++- clocks: UART reference clock used to derive the baudrate (only
++      mandatory with "marvell,armada-3700-uart-ext" compatible).
++- interrupts:
++    - Must contain three elements for the standard variant of the IP
++      (marvell,armada-3700-uart): "uart-sum", "uart-tx" and "uart-rx",
++      respectively the UART sum interrupt, the UART TX interrupt and
++      UART RX interrupt. A corresponding interrupt-names property must
++      be defined.
++    - Must contain two elements for the extended variant of the IP
++      (marvell,armada-3700-uart-ext): "uart-tx" and "uart-rx",
++      respectively the UART TX interrupt and the UART RX interrupt. A
++      corresponding interrupts-names property must be defined.
++    - For backward compatibility reasons, a single element interrupts
++      property is also supported for the standard variant of the IP,
++      containing only the UART sum interrupt. This form is deprecated
++      and should no longer be used.
  
- static struct uart_port mvebu_uart_ports[MVEBU_NR_UARTS];
- 
-@@ -287,8 +288,8 @@ static int mvebu_uart_startup(struct uart_port *port)
- 	udelay(1);
- 	writel(CTRL_RX_INT, port->membase + UART_CTRL);
- 
--	ret = request_irq(port->irq, mvebu_uart_isr, port->irqflags, "serial",
--			  port);
-+	ret = request_irq(port->irq, mvebu_uart_isr, port->irqflags,
-+			  DRIVER_NAME, port);
- 	if (ret) {
- 		dev_err(port->dev, "failed to request irq\n");
- 		return ret;
-@@ -538,7 +539,7 @@ console_initcall(mvebu_uart_console_init);
- 
- static struct uart_driver mvebu_uart_driver = {
- 	.owner			= THIS_MODULE,
--	.driver_name		= "mvebu_serial",
-+	.driver_name		= DRIVER_NAME,
- 	.dev_name		= "ttyMV",
- 	.nr			= MVEBU_NR_UARTS,
- #ifdef CONFIG_SERIAL_MVEBU_CONSOLE
+ Example:
+-	serial@12000 {
++	uart0: serial@12000 {
+ 		compatible = "marvell,armada-3700-uart";
+ 		reg = <0x12000 0x200>;
+-		interrupts = <43>;
++		clocks = <&xtalclk>;
++		interrupts =
++		<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
++		<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
++		<GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "uart-sum", "uart-tx", "uart-rx";
++		status = "disabled";
++	};
++
++	uart1: serial@12200 {
++		compatible = "marvell,armada-3700-uart-ext";
++		reg = <0x12200 0x30>;
++		clocks = <&xtalclk>;
++		interrupts =
++		<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
++		<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
++		interrupt-names = "uart-tx", "uart-rx";
++		status = "disabled";
+ 	};
 -- 
 2.11.0
 
