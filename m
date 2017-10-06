@@ -1,80 +1,42 @@
-From: =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss@gmail.com>
-Subject: Re: [PATCH 0/2] ACPI serdev support
-Date: Fri, 6 Oct 2017 19:36:27 +0200
-Message-ID: <8645dbfb-ca09-340d-e610-6899a9b7dd8a@gmail.com>
+From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH 1/2] serdev: Add ACPI support
+Date: Fri, 6 Oct 2017 20:32:27 +0200
+Message-ID: <BF8AC3FB-72FE-41C3-BE8D-27A32B84F6CB@holtmann.org>
 References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
- <A58D9E0F-99FC-4C13-95E8-F60EC61C18B2@holtmann.org>
- <25008d7b-db06-49ad-033f-63c0b72d9c34@gmail.com>
- <6cd58b2f-1ec8-c709-e983-98321bbfea70@gmail.com>
- <CAFXWsS9uhvB=5r83GC=aA=uujDvxfjnOvEUUviymNEM31fka5Q@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <CAFXWsS9uhvB=5r83GC=aA=uujDvxfjnOvEUUviymNEM31fka5Q@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Ian W MORRISON <ianwmorrison@gmail.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Johan Hovold <johan@kernel.org>, Lukas Wunner <lukas@wunner.de>, Hans de Goede <hdegoede@redhat.com>, "bluez mailin list (linux-bluetooth@vger.kernel.org)" <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>
+ <1507107090-15992-2-git-send-email-frederic.danis.oss@gmail.com>
+ <CAL_JsqKDzR9-ptE=SbL0LuQvTKDNT-GZ8buOvffJDyWz6fHfSA@mail.gmail.com>
+Mime-Version: 1.0 (Mac OS X Mail 11.0 \(3445.1.7\))
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAL_JsqKDzR9-ptE=SbL0LuQvTKDNT-GZ8buOvffJDyWz6fHfSA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: =?utf-8?Q?Fr=C3=A9d=C3=A9ric_Danis?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Loic Poulain <loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ian,
+Hi Rob,
 
-Le 06/10/2017 à 16:47, Ian W MORRISON a écrit :
-> <snip>
->> It seems normal to me that BCM2EA4 is no more enumerated at ACPI level as
->> this is moved to serdev.
->> When removing 'if (ares->data.common_serial_bus.type !=
->> ACPI_RESOURCE_SERIAL_TYPE_UART)' you stop the serdev module finding the
->> Serial UART information. In this case it will not register the device and it
->> will fall back to previous behavior needing to use btattach to setup
->> Bluetooth.
->>
->> Can you share:
->> - btattach you are currently using,
->> - dmesg with with dynamic debug enabled for serdev and hci_uart modules
->> during boot (with Hans's patches, your MINIX Z83-4 patches and mine
->> patches).
->>
->> Regards,
->>
->> Fred
-> Hi Fred,
->
-> I've attached four (text) files:
->
-> 1. btattach.txt - Details of the 'bluez' package that contains the
-> 'btattach' I'm using.
-> 2. dmesg.txt - 'dmesg' with with dynamic debug enabled for serdev and
-> hci_uart modules. This doesn't seem to show much so have I provided
-> what you wanted?
-> 3. gitlog.txt - First few commits from the git log showing the kernel
-> patches used to build the kernel (sent just for clarity).
-> 4. working.txt - An extract from 'dmesg' when BCM2EA4 is enumerated
-> from a kernel patched with the 'if' statement refered to above.
->
-> Regards,
-> Ian
+>> This patch allows SerDev module to manage serial devices declared as
+>> attached to an UART in ACPI table.
+>> 
+>> acpi_serdev_add_device() callback will only take into account entries
+>> without enumerated flag set. This flags is set for all entries during
+>> ACPI scan, except for SPI and I2C serial devices, and for UART with
+>> 2nd patch in the series.
+>> 
+>> Signed-off-by: Frédéric Danis <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> ---
+>> drivers/tty/serdev/core.c | 99 ++++++++++++++++++++++++++++++++++++++++++++---
+>> 1 file changed, 94 insertions(+), 5 deletions(-)
+> 
+> Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
-Which tty is used for btattach?
-Is this tty existing in /dev?
+so how do we get these changes upstream? If the serdev changes alone do not cause any harm, I am almost proposing taking them through bluetooth-next tree and only leave only the ACPI change to the ACPI maintainers.
 
-I took a look at dmesg.txt and I did not find any trace related to serdev.
-On the T100, where ttyS4 is used for Bluetooth, I can see the following 
-traces:
-   [   11.732347] serial serial0: allocated controller 
-0xffff880036229000 id 0
-   [   11.732470] serial serial0-0: device serial0-0 registered
-   [   11.732475] serial serial0: serdev0 registered: dev:ffff880036229000
-   [   11.732478] serial serial0: tty port ttyS4 registered
+Greg, any thoughts?
 
-If serdev registration failed you should at least get something like:
-     serdev0 no devices registered: of:<> acpi:<>
+Regards
 
-So, just to be sure, is SERIAL_DEV_BUS and SERIAL_DEV_CTRL_TTYPORT 
-enabled in your kernel?
-
-Regards,
-
-Fred
-
+Marcel
