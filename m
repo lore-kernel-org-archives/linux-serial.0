@@ -1,78 +1,50 @@
 From: Greg Kroah-Hartman <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] serdev: Update drivers/tty/serdev/Kconfig for ACPI
- support
-Date: Sat, 7 Oct 2017 08:41:14 +0200
-Message-ID: <20171007064114.GA19450@kroah.com>
-References: <a4051ac2-1156-751d-ec16-2dbbb30b9258@gmail.com>
+Subject: Re: [PATCH 1/2] serdev: Add ACPI support
+Date: Sat, 7 Oct 2017 08:42:34 +0200
+Message-ID: <20171007064234.GB19450@kroah.com>
+References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
+ <1507107090-15992-2-git-send-email-frederic.danis.oss@gmail.com>
+ <CAL_JsqKDzR9-ptE=SbL0LuQvTKDNT-GZ8buOvffJDyWz6fHfSA@mail.gmail.com>
+ <BF8AC3FB-72FE-41C3-BE8D-27A32B84F6CB@holtmann.org>
+ <CAJZ5v0gLhnisMn9o00ndnB6fjHt5V7KCy_57UScF=ZfZVF=dxA@mail.gmail.com>
+ <E5446B94-9914-44B5-A734-050F7457746D@holtmann.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <a4051ac2-1156-751d-ec16-2dbbb30b9258-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <E5446B94-9914-44B5-A734-050F7457746D-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
 Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Ian W MORRISON <ianwmorrison-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org, johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, "bluez mailin list (linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org)" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Loic Poulain <loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Loic Poulain <loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Oct 07, 2017 at 05:16:31PM +1100, Ian W MORRISON wrote:
-> The current Kconfig for serdev is not compatible when adding ACPI support as it does not work when built as a module as it requires config SERIAL_DEV_CTRL_TTYPORT to be set. This patch makes serdev compiled into the kernel if selected so that config SERIAL_DEV_CTRL_TTYPORT can be correctly set if requiring ACPI support.
-> ---
->  drivers/tty/serdev/Kconfig | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+On Sat, Oct 07, 2017 at 02:31:05AM +0200, Marcel Holtmann wrote:
+> Hi Rafael,
 > 
-> diff --git a/drivers/tty/serdev/Kconfig b/drivers/tty/serdev/Kconfig
-> index cdc6b820cf93..a9fb09a9c105 100644
-> --- a/drivers/tty/serdev/Kconfig
-> +++ b/drivers/tty/serdev/Kconfig
-> @@ -2,7 +2,8 @@
->  # Serial bus device driver configuration
->  #
->  menuconfig SERIAL_DEV_BUS
-> -	tristate "Serial device bus"
-> +	bool "Serial device bus"
-> +	default y
->  	help
->  	  Core support for devices connected via a serial port.
->  
-> @@ -11,6 +12,6 @@ if SERIAL_DEV_BUS
->  config SERIAL_DEV_CTRL_TTYPORT
->  	bool "Serial device TTY port controller"
->  	depends on TTY
-> -	depends on SERIAL_DEV_BUS != m
-> +	default y
->  
->  endif
-> -- 
-> 2.11.0
+> >>>> This patch allows SerDev module to manage serial devices declared as
+> >>>> attached to an UART in ACPI table.
+> >>>> 
+> >>>> acpi_serdev_add_device() callback will only take into account entries
+> >>>> without enumerated flag set. This flags is set for all entries during
+> >>>> ACPI scan, except for SPI and I2C serial devices, and for UART with
+> >>>> 2nd patch in the series.
+> >>>> 
+> >>>> Signed-off-by: Frédéric Danis <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> >>>> ---
+> >>>> drivers/tty/serdev/core.c | 99 ++++++++++++++++++++++++++++++++++++++++++++---
+> >>>> 1 file changed, 94 insertions(+), 5 deletions(-)
+> >>> 
+> >>> Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> >> 
+> >> so how do we get these changes upstream? If the serdev changes alone do not cause any harm, I am almost proposing taking them through bluetooth-next tree and only leave only the ACPI change to the ACPI maintainers.
+> > 
+> > That would be fine by me.  I can take the serdev patch too, though.
+> 
+> having both patches go via ACPI tree might be simplest. Greg, any objections from you?
 
-
-Hi,
-
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- Your patch contains warnings and/or errors noticed by the
-  scripts/checkpatch.pl tool.
-
-- Your patch does not have a Signed-off-by: line.  Please read the
-  kernel file, Documentation/SubmittingPatches and resend it after
-  adding that line.  Note, the line needs to be in the body of the
-  email, before the patch, not at the bottom of the patch or in the
-  email signature.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+None from me, let me go ack the serdev patch...
 
 thanks,
 
-greg k-h's patch email bot
+greg k-h
