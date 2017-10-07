@@ -1,38 +1,46 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH 0/2] ACPI serdev support
-Date: Sat, 7 Oct 2017 17:14:09 +0200
-Message-ID: <20171007151409.GI2618@localhost>
+From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 2/2] ACPI / scan: Fix enumeration for special UART devices
+Date: Sat, 7 Oct 2017 17:19:34 +0200
+Message-ID: <20171007151934.GJ2618@localhost>
 References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
- <A58D9E0F-99FC-4C13-95E8-F60EC61C18B2@holtmann.org>
- <25008d7b-db06-49ad-033f-63c0b72d9c34@gmail.com>
- <6cd58b2f-1ec8-c709-e983-98321bbfea70@gmail.com>
- <CAFXWsS9uhvB=5r83GC=aA=uujDvxfjnOvEUUviymNEM31fka5Q@mail.gmail.com>
- <8645dbfb-ca09-340d-e610-6899a9b7dd8a@gmail.com>
+ <1507107090-15992-3-git-send-email-frederic.danis.oss@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <8645dbfb-ca09-340d-e610-6899a9b7dd8a@gmail.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>
-Cc: Ian W MORRISON <ianwmorrison@gmail.com>, Marcel Holtmann <marcel@holtmann.org>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Johan Hovold <johan@kernel.org>, Lukas Wunner <lukas@wunner.de>, Hans de Goede <hdegoede@redhat.com>, "bluez mailin list (linux-bluetooth@vger.kernel.org)" <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>
+In-Reply-To: <1507107090-15992-3-git-send-email-frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org, hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Oct 06, 2017 at 07:36:27PM +0200, Frédéric Danis wrote:
-
-> I took a look at dmesg.txt and I did not find any trace related to serdev.
-> On the T100, where ttyS4 is used for Bluetooth, I can see the following 
-> traces:
->    [   11.732347] serial serial0: allocated controller 
-> 0xffff880036229000 id 0
->    [   11.732470] serial serial0-0: device serial0-0 registered
->    [   11.732475] serial serial0: serdev0 registered: dev:ffff880036229000
->    [   11.732478] serial serial0: tty port ttyS4 registered
+On Wed, Oct 04, 2017 at 10:51:30AM +0200, Frédéric Danis wrote:
+> UART devices is expected to be enumerated by SerDev subsystem.
 > 
-> If serdev registration failed you should at least get something like:
->      serdev0 no devices registered: of:<> acpi:<>
+> During ACPI scan, serial devices behind SPI, I2C or UART buses are not
+> enumerated, allowing them to be enumerated by their respective parents.
+> 
+> Rename *spi_i2c_slave* to *serial_bus_slave* as this will be used for serial
+> devices on serial buses (SPI, I2C or UART).
+> 
+> On Macs an empty ResourceTemplate is returned for uart slaves.
+> Instead the device properties "baud", "parity", "dataBits", "stopBits" are
+> provided. Add a check for "baud" in acpi_is_serial_bus_slave().
+> 
+> Signed-off-by: Frédéric Danis <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-Only with debugging enabled (it's a dev_dbg).
+So just to reiterate what I just mentioned in a comment to one of Hans's
+hci_bcm patches:
+
+This one would silently break PM for such devices on any system which
+does not have serdev enabled (as the corresponding platform devices
+would no longer be registered). And with serdev enabled, hciattach
+(btattach) would start failing as the tty device would no longer be
+registered (but I assume everyone is aware of that, and fine with it, by
+now).
+
+Perhaps the hci_bcm driver should start depending on
+SERIAL_DEV_CTRL_TTYPORT when ACPI is enabled?
 
 Johan
