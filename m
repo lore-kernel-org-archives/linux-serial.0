@@ -1,46 +1,92 @@
-From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH 1/2] serdev: Add ACPI support
-Date: Sat, 7 Oct 2017 02:31:05 +0200
-Message-ID: <E5446B94-9914-44B5-A734-050F7457746D@holtmann.org>
-References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
- <1507107090-15992-2-git-send-email-frederic.danis.oss@gmail.com>
- <CAL_JsqKDzR9-ptE=SbL0LuQvTKDNT-GZ8buOvffJDyWz6fHfSA@mail.gmail.com>
- <BF8AC3FB-72FE-41C3-BE8D-27A32B84F6CB@holtmann.org>
- <CAJZ5v0gLhnisMn9o00ndnB6fjHt5V7KCy_57UScF=ZfZVF=dxA@mail.gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 11.0 \(3445.1.7\))
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAJZ5v0gLhnisMn9o00ndnB6fjHt5V7KCy_57UScF=ZfZVF=dxA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, =?utf-8?Q?Fr=C3=A9d=C3=A9ric_Danis?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Loic Poulain <loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: Troy Kisky <troy.kisky@boundarydevices.com>
+Subject: [PATCH 1/1] tty: serial: imx: disable ageing timer interrupt if dma
+ in use
+Date: Fri,  6 Oct 2017 18:46:48 -0700
+Message-ID: <20171007014648.6989-1-troy.kisky@boundarydevices.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: Troy Kisky <troy.kisky@boundarydevices.com>, linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, l.stach@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rafael,
+Since commit 4dec2f119e86 ("imx-serial: RX DMA startup latency")
 
->>>> This patch allows SerDev module to manage serial devices declared as
->>>> attached to an UART in ACPI table.
->>>> 
->>>> acpi_serdev_add_device() callback will only take into account entries
->>>> without enumerated flag set. This flags is set for all entries during
->>>> ACPI scan, except for SPI and I2C serial devices, and for UART with
->>>> 2nd patch in the series.
->>>> 
->>>> Signed-off-by: Frédéric Danis <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->>>> ---
->>>> drivers/tty/serdev/core.c | 99 ++++++++++++++++++++++++++++++++++++++++++++---
->>>> 1 file changed, 94 insertions(+), 5 deletions(-)
->>> 
->>> Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->> 
->> so how do we get these changes upstream? If the serdev changes alone do not cause any harm, I am almost proposing taking them through bluetooth-next tree and only leave only the ACPI change to the ACPI maintainers.
-> 
-> That would be fine by me.  I can take the serdev patch too, though.
+the interrupt routine no longer will start rx dma.
 
-having both patches go via ACPI tree might be simplest. Greg, any objections from you?
+Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
+---
+ drivers/tty/serial/imx.c | 34 ++--------------------------------
+ 1 file changed, 2 insertions(+), 32 deletions(-)
 
-Regards
-
-Marcel
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index dfeff3951f93..15b0ecb4cf60 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -732,29 +732,6 @@ static void imx_disable_rx_int(struct imx_port *sport)
+ }
+ 
+ static void clear_rx_errors(struct imx_port *sport);
+-static int start_rx_dma(struct imx_port *sport);
+-/*
+- * If the RXFIFO is filled with some data, and then we
+- * arise a DMA operation to receive them.
+- */
+-static void imx_dma_rxint(struct imx_port *sport)
+-{
+-	unsigned long temp;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&sport->port.lock, flags);
+-
+-	temp = readl(sport->port.membase + USR2);
+-	if ((temp & USR2_RDR) && !sport->dma_is_rxing) {
+-
+-		imx_disable_rx_int(sport);
+-
+-		/* tell the DMA to receive the data. */
+-		start_rx_dma(sport);
+-	}
+-
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
+-}
+ 
+ /*
+  * We have a modem side uart, so the meanings of RTS and CTS are inverted.
+@@ -816,11 +793,8 @@ static irqreturn_t imx_int(int irq, void *dev_id)
+ 	sts = readl(sport->port.membase + USR1);
+ 	sts2 = readl(sport->port.membase + USR2);
+ 
+-	if (sts & (USR1_RRDY | USR1_AGTIM)) {
+-		if (sport->dma_is_enabled)
+-			imx_dma_rxint(sport);
+-		else
+-			imx_rxint(irq, dev_id);
++	if (!sport->dma_is_enabled && (sts & (USR1_RRDY | USR1_AGTIM))) {
++		imx_rxint(irq, dev_id);
+ 		ret = IRQ_HANDLED;
+ 	}
+ 
+@@ -1207,10 +1181,6 @@ static void imx_enable_dma(struct imx_port *sport)
+ 	temp |= UCR1_RDMAEN | UCR1_TDMAEN | UCR1_ATDMAEN;
+ 	writel(temp, sport->port.membase + UCR1);
+ 
+-	temp = readl(sport->port.membase + UCR2);
+-	temp |= UCR2_ATEN;
+-	writel(temp, sport->port.membase + UCR2);
+-
+ 	imx_setup_ufcr(sport, TXTL_DMA, RXTL_DMA);
+ 
+ 	sport->dma_is_enabled = 1;
+-- 
+2.11.0
