@@ -1,79 +1,70 @@
 From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH 2/2] ACPI / scan: Fix enumeration for special UART devices
-Date: Mon, 9 Oct 2017 09:35:26 +0200
-Message-ID: <20171009073526.GL2618@localhost>
-References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
- <1507107090-15992-3-git-send-email-frederic.danis.oss@gmail.com>
- <20171007151934.GJ2618@localhost>
- <20171007225311.lvli7rkhv3bebq2j@earth>
+Subject: Re: [PATCH] serdev: Update drivers/tty/serdev/Kconfig for ACPI
+ support
+Date: Mon, 9 Oct 2017 09:47:00 +0200
+Message-ID: <20171009074700.GM2618@localhost>
+References: <a4051ac2-1156-751d-ec16-2dbbb30b9258@gmail.com>
+ <20171007152414.GK2618@localhost>
+ <8D8274B0-4EF6-41A0-8B76-95023F6DD26C@holtmann.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20171007225311.lvli7rkhv3bebq2j@earth>
+In-Reply-To: <8D8274B0-4EF6-41A0-8B76-95023F6DD26C@holtmann.org>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Cc: Johan Hovold <johan@kernel.org>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>, robh@kernel.org, marcel@holtmann.org, loic.poulain@gmail.com, lukas@wunner.de, hdegoede@redhat.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
+To: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hovold <johan@kernel.org>, Ian W MORRISON <ianwmorrison@gmail.com>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, "bluez mailin list (linux-bluetooth@vger.kernel.org)" <linux-bluetooth@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>, "Rafael J. Wysocki" <rafael@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Oct 08, 2017 at 12:53:11AM +0200, Sebastian Reichel wrote:
-> Hi,
+On Sat, Oct 07, 2017 at 09:57:40PM +0200, Marcel Holtmann wrote:
+> Hi Johan,
 > 
-> On Sat, Oct 07, 2017 at 05:19:34PM +0200, Johan Hovold wrote:
-> > On Wed, Oct 04, 2017 at 10:51:30AM +0200, Frédéric Danis wrote:
-> > > UART devices is expected to be enumerated by SerDev subsystem.
-> > > 
-> > > During ACPI scan, serial devices behind SPI, I2C or UART buses are not
-> > > enumerated, allowing them to be enumerated by their respective parents.
-> > > 
-> > > Rename *spi_i2c_slave* to *serial_bus_slave* as this will be used for serial
-> > > devices on serial buses (SPI, I2C or UART).
-> > > 
-> > > On Macs an empty ResourceTemplate is returned for uart slaves.
-> > > Instead the device properties "baud", "parity", "dataBits", "stopBits" are
-> > > provided. Add a check for "baud" in acpi_is_serial_bus_slave().
-> > > 
-> > > Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
+> >> The current Kconfig for serdev is not compatible when adding ACPI support as it does not work when built as a module as it requires config SERIAL_DEV_CTRL_TTYPORT to be set. This patch makes serdev compiled into the kernel if selected so that config SERIAL_DEV_CTRL_TTYPORT can be correctly set if requiring ACPI support.
+> >> ---
+> >> drivers/tty/serdev/Kconfig | 5 +++--
+> >> 1 file changed, 3 insertions(+), 2 deletions(-)
+> >> 
+> >> diff --git a/drivers/tty/serdev/Kconfig b/drivers/tty/serdev/Kconfig
+> >> index cdc6b820cf93..a9fb09a9c105 100644
+> >> --- a/drivers/tty/serdev/Kconfig
+> >> +++ b/drivers/tty/serdev/Kconfig
+> >> @@ -2,7 +2,8 @@
+> >> # Serial bus device driver configuration
+> >> #
+> >> menuconfig SERIAL_DEV_BUS
+> >> -	tristate "Serial device bus"
+> >> +	bool "Serial device bus"
+> >> +	default y
 > > 
-> > So just to reiterate what I just mentioned in a comment to one of Hans's
-> > hci_bcm patches:
+> > I understand why you want this (to prevent hci_bcm from breaking), but we
+> > should generally not have new entries default to y.
 > > 
-> > This one would silently break PM for such devices on any system which
-> > does not have serdev enabled (as the corresponding platform devices
-> > would no longer be registered). And with serdev enabled, hciattach
-> > (btattach) would start failing as the tty device would no longer be
-> > registered (but I assume everyone is aware of that, and fine with it, by
-> > now).
+> >> 	help
+> >> 	  Core support for devices connected via a serial port.
+> >> 
+> >> @@ -11,6 +12,6 @@ if SERIAL_DEV_BUS
+> >> config SERIAL_DEV_CTRL_TTYPORT
+> >> 	bool "Serial device TTY port controller"
+> >> 	depends on TTY
+> >> -	depends on SERIAL_DEV_BUS != m
+> >> +	default y
 > > 
-> > Perhaps the hci_bcm driver should start depending on
-> > SERIAL_DEV_CTRL_TTYPORT when ACPI is enabled?
+> > Same here.
+> > 
+> > It may be better to have BT_HCIUART_BCM depend on (or select?)
+> > SERIAL_DEV_CTRL_TTYPORT instead.
 > 
-> ACPI and DT both need SERIAL_DEV_CTRL_TTYPORT to work properly,
-> since SERIAL_DEV_CTRL_TTYPORT is the only controller implemented
-> for serdev. If any other controller is implemented that one could
-> also be used.
+> if we move SERIAL_DEV_BUS to bool, then I would just have it be
+> selected by BT_HCIUART_BCM. Frankly the SERIAL_DEV_BUS option is
+> pretty hard to find in the kernel config. And if we depend on TTY, but
+> then select SERIAL_DEV_BUS, I think that is a good compromise.
 
-Not for hci_bcm, right? This particular driver specifically depends on
-SERIAL_DEV_CTRL_TTYPORT for the ACPI devices and not just any (future)
-serdev controller (or currently working systems soon breaks silently).
+The Bluetooth UART drivers already depend on on SERIAL_DEV_BUS (through
+BT_HCIUART_SERDEV). And the problem with BT_HCIUART_BCM is that the
+current ACPI devices really need SERIAL_DEV_CTRL_TTYPORT (and not just
+serdev core).
 
-I don't think the same is true for the DT case where we do not already
-have child nodes defined in firmware (and in fact, this driver did not
-really support DT before serdev).
-
-> I wonder if we should just hide SERIAL_DEV_CTRL_TTYPORT and enable
-> it together with SERDEV. I suspect that we won't see any other
-> controller (it would be a UART device, that is not registered as
-> tty device) in the next few years and the extra option seems to
-> confuse people.
-
-I agree that it is somewhat confusing. But now that we have both,
-perhaps simply having SERIAL_DEV_CTRL_TTYPORT default to "y" when
-SERIAL_DEV_BUS is selected could be a compromise. The Kconfig entry
-might need to be amended as well (e.g. if only to mention that you need
-to select a controller as well).
-
-And the bluetooth uart drivers already depend on SERIAL_DEV_BUS.
+And we should probably try to avoid selecting options if we can (to
+avoid ending up with unmet dependencies).
 
 Johan
