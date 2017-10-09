@@ -1,70 +1,75 @@
 From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH] serdev: Update drivers/tty/serdev/Kconfig for ACPI
- support
-Date: Mon, 9 Oct 2017 09:47:00 +0200
-Message-ID: <20171009074700.GM2618@localhost>
-References: <a4051ac2-1156-751d-ec16-2dbbb30b9258@gmail.com>
- <20171007152414.GK2618@localhost>
- <8D8274B0-4EF6-41A0-8B76-95023F6DD26C@holtmann.org>
+Subject: Re: [PATCH v3 1/2] serdev: Update drivers/tty/serdev/Kconfig for
+ ACPI serdev support
+Date: Mon, 9 Oct 2017 09:54:13 +0200
+Message-ID: <20171009075413.GN2618@localhost>
+References: <82b477ef-757a-c953-45e8-fd68b28286e5@gmail.com>
+ <7bdc8a8a-1a36-0494-ed0c-6e2052fb53d7@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <8D8274B0-4EF6-41A0-8B76-95023F6DD26C@holtmann.org>
+In-Reply-To: <7bdc8a8a-1a36-0494-ed0c-6e2052fb53d7@gmail.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hovold <johan@kernel.org>, Ian W MORRISON <ianwmorrison@gmail.com>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, "bluez mailin list (linux-bluetooth@vger.kernel.org)" <linux-bluetooth@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Greg Kroah-Hartman <greg@kroah.com>, "Rafael J. Wysocki" <rafael@kernel.org>
+To: Ian W MORRISON <ianwmorrison@gmail.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Johan Hovold <johan@kernel.org>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, "bluez mailin list (linux-bluetooth@vger.kernel.org)" <linux-bluetooth@vger.kernel.org>, hdegoede@redhat.com, frederic.danis.oss@gmail.com, robh@kernel.org, sre@kernel.org, Loic Poulain <loic.poulain@gmail.com>, lukas@wunner.de, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, rafael@kernel.org, Greg Kroah-Hartman <greg@kroah.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Oct 07, 2017 at 09:57:40PM +0200, Marcel Holtmann wrote:
-> Hi Johan,
-> 
-> >> The current Kconfig for serdev is not compatible when adding ACPI support as it does not work when built as a module as it requires config SERIAL_DEV_CTRL_TTYPORT to be set. This patch makes serdev compiled into the kernel if selected so that config SERIAL_DEV_CTRL_TTYPORT can be correctly set if requiring ACPI support.
-> >> ---
-> >> drivers/tty/serdev/Kconfig | 5 +++--
-> >> 1 file changed, 3 insertions(+), 2 deletions(-)
-> >> 
-> >> diff --git a/drivers/tty/serdev/Kconfig b/drivers/tty/serdev/Kconfig
-> >> index cdc6b820cf93..a9fb09a9c105 100644
-> >> --- a/drivers/tty/serdev/Kconfig
-> >> +++ b/drivers/tty/serdev/Kconfig
-> >> @@ -2,7 +2,8 @@
-> >> # Serial bus device driver configuration
-> >> #
-> >> menuconfig SERIAL_DEV_BUS
-> >> -	tristate "Serial device bus"
-> >> +	bool "Serial device bus"
-> >> +	default y
-> > 
-> > I understand why you want this (to prevent hci_bcm from breaking), but we
-> > should generally not have new entries default to y.
-> > 
-> >> 	help
-> >> 	  Core support for devices connected via a serial port.
-> >> 
-> >> @@ -11,6 +12,6 @@ if SERIAL_DEV_BUS
-> >> config SERIAL_DEV_CTRL_TTYPORT
-> >> 	bool "Serial device TTY port controller"
-> >> 	depends on TTY
-> >> -	depends on SERIAL_DEV_BUS != m
-> >> +	default y
-> > 
-> > Same here.
-> > 
-> > It may be better to have BT_HCIUART_BCM depend on (or select?)
-> > SERIAL_DEV_CTRL_TTYPORT instead.
-> 
-> if we move SERIAL_DEV_BUS to bool, then I would just have it be
-> selected by BT_HCIUART_BCM. Frankly the SERIAL_DEV_BUS option is
-> pretty hard to find in the kernel config. And if we depend on TTY, but
-> then select SERIAL_DEV_BUS, I think that is a good compromise.
+On Mon, Oct 09, 2017 at 11:43:19AM +1100, Ian W MORRISON wrote:
+> ACPI and DT both need SERIAL_DEV_CTRL_TTYPORT to work properly
+> since SERIAL_DEV_CTRL_TTYPORT is the only controller implemented for
+> serdev. This is only possible if serdev support is compiled in as the code
+> hooks into TTY. Otherwise PM will silently break as the corresponding
+> platform devices would no longer be registered and as the tty class
+> device is also gone and hciattach (btattach) will also fail.
 
-The Bluetooth UART drivers already depend on on SERIAL_DEV_BUS (through
-BT_HCIUART_SERDEV). And the problem with BT_HCIUART_BCM is that the
-current ACPI devices really need SERIAL_DEV_CTRL_TTYPORT (and not just
-serdev core).
+You have quoted and a few us in the sentences above, but I'm afraid the
+end result is not correct (e.g. this patch has nothing to do with
+platform devices being registered or not).
 
-And we should probably try to avoid selecting options if we can (to
-avoid ending up with unmet dependencies).
+Pleas try to explain why you think this change is necessary with your
+own words.
+
+> This patch set addresses this by making BT_HCIUART_BCM dependent on
+> SERIAL_DEV_CTRL_TTYPORT which in turn is dependent on SERIAL_DEV_BUS
+> and ensures that if SERIAL_DEV_BUS is selected is the code is build it.
+
+This patch does not touch BT_HCIUART_BCM, so the above paragraph is more
+suited for a cover letter.
+
+Also when resubmitting a patch series, make it self-contained rather
+than send individual patches in response to their earlier counterparts
+(which messes up threading).
+
+> Signed-off-by: Ian W MORRISON <ianwmorrison@gmail.com>
+> ---
+>  drivers/tty/serdev/Kconfig | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serdev/Kconfig b/drivers/tty/serdev/Kconfig
+> index cdc6b820cf93..1144f4db5087 100644
+> --- a/drivers/tty/serdev/Kconfig
+> +++ b/drivers/tty/serdev/Kconfig
+> @@ -2,7 +2,7 @@
+>  # Serial bus device driver configuration
+>  #
+>  menuconfig SERIAL_DEV_BUS
+> -	tristate "Serial device bus"
+> +	bool "Serial device bus"
+
+So please explain why you think this is needed. I'm not sure it's
+necessary.
+
+>  	help
+>  	  Core support for devices connected via a serial port.
+>  
+> @@ -11,6 +11,6 @@ if SERIAL_DEV_BUS
+>  config SERIAL_DEV_CTRL_TTYPORT
+>  	bool "Serial device TTY port controller"
+>  	depends on TTY
+> -	depends on SERIAL_DEV_BUS != m
+> +	depends on SERIAL_DEV_BUS
+>  
+>  endif
 
 Johan
