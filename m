@@ -1,81 +1,79 @@
-From: Miquel RAYNAL <miquel.raynal@free-electrons.com>
-Subject: Re: [PATCH 16/16] arm64: dts: marvell: armada-3720-espressobin:
- fill UART nodes
-Date: Mon, 9 Oct 2017 09:30:25 +0200
-Message-ID: <20171009093025.78d45a9a@xps13>
-References: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
-        <20171006101344.15590-17-miquel.raynal@free-electrons.com>
-        <87fuawe8gx.fsf@free-electrons.com>
-        <20171006151521.440418a2@windsurf.lan>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH 2/2] ACPI / scan: Fix enumeration for special UART devices
+Date: Mon, 9 Oct 2017 09:35:26 +0200
+Message-ID: <20171009073526.GL2618@localhost>
+References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
+ <1507107090-15992-3-git-send-email-frederic.danis.oss@gmail.com>
+ <20171007151934.GJ2618@localhost>
+ <20171007225311.lvli7rkhv3bebq2j@earth>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20171006151521.440418a2@windsurf.lan>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Cc: Gregory CLEMENT <gregory.clement@free-electrons.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jiri Slaby <jslaby@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, Antoine Tenart <antoine.tenart@free-electrons.com>, Nadav Haklai <nadavh@marvell.com>, Wilson Ding <dingwei@marvell.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20171007225311.lvli7rkhv3bebq2j@earth>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Cc: Johan Hovold <johan@kernel.org>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>, robh@kernel.org, marcel@holtmann.org, loic.poulain@gmail.com, lukas@wunner.de, hdegoede@redhat.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Thomas, Gregory,
-
-On Fri, 6 Oct 2017 15:15:21 +0200
-Thomas Petazzoni <thomas.petazzoni@free-electrons.com> wrote:
-
-> Hello,
+On Sun, Oct 08, 2017 at 12:53:11AM +0200, Sebastian Reichel wrote:
+> Hi,
 > 
-> On Fri, 06 Oct 2017 15:01:18 +0200, Gregory CLEMENT wrote:
+> On Sat, Oct 07, 2017 at 05:19:34PM +0200, Johan Hovold wrote:
+> > On Wed, Oct 04, 2017 at 10:51:30AM +0200, Frédéric Danis wrote:
+> > > UART devices is expected to be enumerated by SerDev subsystem.
+> > > 
+> > > During ACPI scan, serial devices behind SPI, I2C or UART buses are not
+> > > enumerated, allowing them to be enumerated by their respective parents.
+> > > 
+> > > Rename *spi_i2c_slave* to *serial_bus_slave* as this will be used for serial
+> > > devices on serial buses (SPI, I2C or UART).
+> > > 
+> > > On Macs an empty ResourceTemplate is returned for uart slaves.
+> > > Instead the device properties "baud", "parity", "dataBits", "stopBits" are
+> > > provided. Add a check for "baud" in acpi_is_serial_bus_slave().
+> > > 
+> > > Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
+> > 
+> > So just to reiterate what I just mentioned in a comment to one of Hans's
+> > hci_bcm patches:
+> > 
+> > This one would silently break PM for such devices on any system which
+> > does not have serdev enabled (as the corresponding platform devices
+> > would no longer be registered). And with serdev enabled, hciattach
+> > (btattach) would start failing as the tty device would no longer be
+> > registered (but I assume everyone is aware of that, and fine with it, by
+> > now).
+> > 
+> > Perhaps the hci_bcm driver should start depending on
+> > SERIAL_DEV_CTRL_TTYPORT when ACPI is enabled?
 > 
-> >  /*
-> >   * To enable the second UART on J17 (pins 24,26) refer to the uart1
-> >   * node from armada-3720-db.dts.
-> >   * Note that TX and RX signal are the ones coming directly from
-> > the SoC:
-> >   * 1.8V TTL.
-> >   */  
-> 
-> One issue with this comment (and MiquÃ¨l's version as well) is that it
-> does not explain why you don't enable this UART by default.
-> 
-> The real reason is in the commit log from MiquÃ¨l, and should probably
-> be part of the comment. Perhaps something like:
-> 
-> /*
-> 
->  * Connector J17 (pins X, Y, Z) exposes a number of different
->  * features:
->  *  - UART1 (pins 24 = RX, pins 26 = TX), see armada-3720-db.dts for
-> an
->  *    example on how to enable UART1. Beware that the signals are 1.8V
->  *    TTL.
->  *  - SPIxyz
->  *  - I2Cxyz
->  */
+> ACPI and DT both need SERIAL_DEV_CTRL_TTYPORT to work properly,
+> since SERIAL_DEV_CTRL_TTYPORT is the only controller implemented
+> for serdev. If any other controller is implemented that one could
+> also be used.
 
-Thanks for both your comments, there is my version, inspired from both
-comments:
+Not for hci_bcm, right? This particular driver specifically depends on
+SERIAL_DEV_CTRL_TTYPORT for the ACPI devices and not just any (future)
+serdev controller (or currently working systems soon breaks silently).
 
-/*
- * Connector J17 exposes a number of different features. Some pins are
- * multiplexed. This is the case for the UART1 feature (pins 24 = RX,
- * pins 26 = TX). See armada-3720-db.dts for an example of how to enable it.
- * Beware that the signals are 1.8V TTL.
- */
+I don't think the same is true for the DT case where we do not already
+have child nodes defined in firmware (and in fact, this driver did not
+really support DT before serdev).
 
-Thanks,
-MiquÃ¨l
+> I wonder if we should just hide SERIAL_DEV_CTRL_TTYPORT and enable
+> it together with SERDEV. I suspect that we won't see any other
+> controller (it would be a UART device, that is not registered as
+> tty device) in the next few years and the extra option seems to
+> confuse people.
 
-> 
-> Otherwise, it's not clear at all why you don't just enable UART1. Or
-> perhaps I misunderstood MiquÃ¨l's commit log ?
-> 
-> Best regards,
-> 
-> Thomas
+I agree that it is somewhat confusing. But now that we have both,
+perhaps simply having SERIAL_DEV_CTRL_TTYPORT default to "y" when
+SERIAL_DEV_BUS is selected could be a compromise. The Kconfig entry
+might need to be amended as well (e.g. if only to mention that you need
+to select a controller as well).
 
+And the bluetooth uart drivers already depend on SERIAL_DEV_BUS.
 
-
--- 
-Miquel Raynal, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Johan
