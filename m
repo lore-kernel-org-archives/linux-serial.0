@@ -1,50 +1,60 @@
-From: Johan Hovold <johan@kernel.org>
+From: Marcel Holtmann <marcel@holtmann.org>
 Subject: Re: [PATCH v2 1/9] Bluetooth: hci_uart_set_flow_control: Fix NULL
  deref when using serdev
-Date: Mon, 9 Oct 2017 17:15:45 +0200
-Message-ID: <20171009151545.GE4269@localhost>
+Date: Mon, 9 Oct 2017 20:01:53 +0200
+Message-ID: <1C21B27B-2ADD-47E9-8E70-A33BFB0B19E4@holtmann.org>
 References: <20171004184343.7855-1-hdegoede@redhat.com>
  <20171007143645.GG2618@localhost>
  <ce49b622-212a-0e6c-2c05-9cfe3db4bd47@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 11.0 \(3445.1.7\))
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
 In-Reply-To: <ce49b622-212a-0e6c-2c05-9cfe3db4bd47@redhat.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: Hans de Goede <hdegoede@redhat.com>
-Cc: Johan Hovold <johan@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>, Sebastian Reichel <sre@kernel.org>, robh@kernel.org, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
+Cc: Johan Hovold <johan@kernel.org>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, =?utf-8?Q?Fr=C3=A9d=C3=A9ric_Danis?= <frederic.danis.oss@gmail.com>, Sebastian Reichel <sre@kernel.org>, Rob Herring <robh@kernel.org>, "bluez mailin list (linux-bluetooth@vger.kernel.org)" <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Oct 09, 2017 at 04:06:02PM +0200, Hans de Goede wrote:
+Hi Hans,
 
-> On 07-10-17 16:36, Johan Hovold wrote:
-> > On Wed, Oct 04, 2017 at 08:43:35PM +0200, Hans de Goede wrote:
-
-> >> @@ -298,6 +299,12 @@ void hci_uart_set_flow_control(struct hci_uart *hu, bool enable)
-> >>   	unsigned int set = 0;
-> >>   	unsigned int clear = 0;
-> >>   
-> >> +	if (hu->serdev) {
-> >> +		serdev_device_set_flow_control(hu->serdev, !enable);
-> >> +		serdev_device_set_rts(hu->serdev, !enable);
-> > 
-> > The order here may matter; in the non-serdev case, rts is raised before
-> > enabling flow control.
+>>> Fix a NULL pointer deref (hu->tty) when calling hci_uart_set_flow_control
+>>> on hci_uart-s using serdev.
+>>> 
+>>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+>>> ---
+>>> Changes in v2:
+>>> -Also set RTS (Suggested-by: Sebastian Reichel <sre@kernel.org>)
+>>> ---
+>>>  drivers/bluetooth/hci_ldisc.c | 7 +++++++
+>>>  1 file changed, 7 insertions(+)
+>>> 
+>>> diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
+>>> index a746627e784e..eec95019f15c 100644
+>>> --- a/drivers/bluetooth/hci_ldisc.c
+>>> +++ b/drivers/bluetooth/hci_ldisc.c
+>>> @@ -41,6 +41,7 @@
+>>>  #include <linux/ioctl.h>
+>>>  #include <linux/skbuff.h>
+>>>  #include <linux/firmware.h>
+>>> +#include <linux/serdev.h>
+>> I know this is already merged, but do we really want to add a dependency
+>> on serdev from hci_ldisc.c?
+>> There is already a helper function host_set_baudrate() in hci_bcm to
+>> handle another case like this. If more drivers will need to support
+>> both then these could be moved to a common header, but we should at
+>> least try to be consistent here.
 > 
-> AFAIK it should not matter, if RTS is not set before enabling, then CTS
-> may not be set by the other side yet and the hw flow-control will
-> wait for CTS to get raised.
+> That is a valiud question, Marcel do you want me to do a follow
+> up series which:
+> 
+> 1) Reverts this commit; and
+> 2) Add a host_set_flow_control helper to hci_bcm.c ?
 
-That's not necessarily how hardware flow control is implemented. When
-using auto-RTS, RTS will simply be asserted whenever there's room in the
-receive FIFO.
+don’t bother with a revert, lets just improve this with follow up patches.
 
-So in fact it seems the hci_ldisc should be doing this in the reverse
-order (e.g. deassert RTS before disabling auto-RTS).
+Regards
 
-Probably doesn't matter in practice here, but I would at least expect
-the enable and disable cases to be each others inverses (and for the
-ldisc and serdev implementations to match).
+Marcel
 
-Johan
