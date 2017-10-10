@@ -1,8 +1,8 @@
 From: =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?=
         <frederic.danis.oss@gmail.com>
-Subject: [PATCH v2 2/2] ACPI / scan: Fix enumeration for special UART devices
-Date: Tue, 10 Oct 2017 12:12:45 +0200
-Message-ID: <1507630365-26692-3-git-send-email-frederic.danis.oss@gmail.com>
+Subject: [PATCH v2 1/2] serdev: Add ACPI support
+Date: Tue, 10 Oct 2017 12:12:44 +0200
+Message-ID: <1507630365-26692-2-git-send-email-frederic.danis.oss@gmail.com>
 References: <1507630365-26692-1-git-send-email-frederic.danis.oss@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -15,136 +15,184 @@ To: robh@kernel.org, marcel@holtmann.org, sre@kernel.org, loic.poulain@gmail.com
 Cc: linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, frederic.danis.oss@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-UART devices is expected to be enumerated by SerDev subsystem.
+This patch allows SerDev module to manage serial devices declared as
+attached to an UART in ACPI table.
 
-During ACPI scan, serial devices behind SPI, I2C or UART buses are not
-enumerated, allowing them to be enumerated by their respective parents.
+acpi_serdev_add_device() callback will only take into account entries
+without enumerated flag set. This flags is set for all entries during
+ACPI scan, except for SPI and I2C serial devices, and for UART with
+2nd patch in the series.
 
-Rename *spi_i2c_slave* to *serial_bus_slave* as this will be used for serial
-devices on serial buses (SPI, I2C or UART).
-
-On Macs an empty ResourceTemplate is returned for uart slaves.
-Instead the device properties "baud", "parity", "dataBits", "stopBits" are
-provided. Add a check for "baud" in acpi_is_serial_bus_slave().
+Check if a serdev device as been allocated during acpi_walk_namespace()
+to prevent serdev controller registration instead of the tty-class device.
 
 Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/scan.c     | 37 +++++++++++++++++--------------------
- include/acpi/acpi_bus.h |  2 +-
- 2 files changed, 18 insertions(+), 21 deletions(-)
+ drivers/tty/serdev/core.c | 106 +++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 99 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 602f8ff..860b698 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -1505,41 +1505,38 @@ static void acpi_init_coherency(struct acpi_device *adev)
- 	adev->flags.coherent_dma = cca;
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index c68fb3a..7e00e2e 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -14,6 +14,7 @@
+  * GNU General Public License for more details.
+  */
+ 
++#include <linux/acpi.h>
+ #include <linux/errno.h>
+ #include <linux/idr.h>
+ #include <linux/kernel.h>
+@@ -49,13 +50,22 @@ static const struct device_type serdev_ctrl_type = {
+ 
+ static int serdev_device_match(struct device *dev, struct device_driver *drv)
+ {
+-	/* TODO: ACPI and platform matching */
++	/* TODO: platform matching */
++	if (acpi_driver_match_device(dev, drv))
++		return 1;
++
+ 	return of_driver_match_device(dev, drv);
  }
  
--static int acpi_check_spi_i2c_slave(struct acpi_resource *ares, void *data)
-+static int acpi_check_serial_bus_slave(struct acpi_resource *ares, void *data)
+ static int serdev_uevent(struct device *dev, struct kobj_uevent_env *env)
  {
--	bool *is_spi_i2c_slave_p = data;
-+	bool *is_serial_bus_slave_p = data;
- 
- 	if (ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
- 		return 1;
- 
--	/*
--	 * devices that are connected to UART still need to be enumerated to
--	 * platform bus
--	 */
--	if (ares->data.common_serial_bus.type != ACPI_RESOURCE_SERIAL_TYPE_UART)
--		*is_spi_i2c_slave_p = true;
-+	*is_serial_bus_slave_p = true;
- 
- 	 /* no need to do more checking */
- 	return -1;
+-	/* TODO: ACPI and platform modalias */
++	int rc;
++
++	/* TODO: platform modalias */
++	rc = acpi_device_uevent_modalias(dev, env);
++	if (rc != -ENODEV)
++		return rc;
++
+ 	return of_device_uevent_modalias(dev, env);
  }
  
--static bool acpi_is_spi_i2c_slave(struct acpi_device *device)
-+static bool acpi_is_serial_bus_slave(struct acpi_device *device)
+@@ -260,6 +270,12 @@ static int serdev_drv_remove(struct device *dev)
+ static ssize_t modalias_show(struct device *dev,
+ 			     struct device_attribute *attr, char *buf)
  {
- 	struct list_head resource_list;
--	bool is_spi_i2c_slave = false;
-+	bool is_serial_bus_slave = false;
- 
- 	/* Macs use device properties in lieu of _CRS resources */
- 	if (x86_apple_machine &&
- 	    (fwnode_property_present(&device->fwnode, "spiSclkPeriod") ||
--	     fwnode_property_present(&device->fwnode, "i2cAddress")))
-+	     fwnode_property_present(&device->fwnode, "i2cAddress") ||
-+	     fwnode_property_present(&device->fwnode, "baud")))
- 		return true;
- 
- 	INIT_LIST_HEAD(&resource_list);
--	acpi_dev_get_resources(device, &resource_list, acpi_check_spi_i2c_slave,
--			       &is_spi_i2c_slave);
-+	acpi_dev_get_resources(device, &resource_list,
-+			       acpi_check_serial_bus_slave,
-+			       &is_serial_bus_slave);
- 	acpi_dev_free_resource_list(&resource_list);
- 
--	return is_spi_i2c_slave;
-+	return is_serial_bus_slave;
++	int len;
++
++	len = acpi_device_modalias(dev, buf, PAGE_SIZE - 1);
++	if (len != -ENODEV)
++		return len;
++
+ 	return of_device_modalias(dev, buf, PAGE_SIZE);
+ }
+ DEVICE_ATTR_RO(modalias);
+@@ -385,6 +401,78 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
+ 	return 0;
  }
  
- void acpi_init_device_object(struct acpi_device *device, acpi_handle handle,
-@@ -1557,7 +1554,7 @@ void acpi_init_device_object(struct acpi_device *device, acpi_handle handle,
- 	acpi_bus_get_flags(device);
- 	device->flags.match_driver = false;
- 	device->flags.initialized = true;
--	device->flags.spi_i2c_slave = acpi_is_spi_i2c_slave(device);
-+	device->flags.serial_bus_slave = acpi_is_serial_bus_slave(device);
- 	acpi_device_clear_enumerated(device);
- 	device_initialize(&device->dev);
- 	dev_set_uevent_suppress(&device->dev, true);
-@@ -1841,10 +1838,10 @@ static acpi_status acpi_bus_check_add(acpi_handle handle, u32 lvl_not_used,
- static void acpi_default_enumeration(struct acpi_device *device)
++#ifdef CONFIG_ACPI
++static acpi_status acpi_serdev_register_device(struct serdev_controller *ctrl,
++					    struct acpi_device *adev)
++{
++	struct serdev_device *serdev = NULL;
++	int err;
++
++	if (acpi_bus_get_status(adev) || !adev->status.present ||
++	    acpi_device_enumerated(adev))
++		return AE_OK;
++
++	serdev = serdev_device_alloc(ctrl);
++	if (!serdev) {
++		dev_err(&ctrl->dev, "failed to allocate serdev device for %s\n",
++			dev_name(&adev->dev));
++		return AE_NO_MEMORY;
++	}
++
++	ACPI_COMPANION_SET(&serdev->dev, adev);
++	acpi_device_set_enumerated(adev);
++
++	err = serdev_device_add(serdev);
++	if (err) {
++		dev_err(&serdev->dev,
++			"failure adding ACPI serdev device. status %d\n", err);
++		serdev_device_put(serdev);
++		ctrl->serdev = NULL;
++	}
++
++	return AE_OK;
++}
++
++static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level,
++				       void *data, void **return_value)
++{
++	struct serdev_controller *ctrl = data;
++	struct acpi_device *adev;
++
++	if (acpi_bus_get_device(handle, &adev))
++		return AE_OK;
++
++	return acpi_serdev_register_device(ctrl, adev);
++}
++
++static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
++{
++	acpi_status status;
++	acpi_handle handle;
++
++	handle = ACPI_HANDLE(ctrl->dev.parent);
++	if (!handle)
++		return -ENODEV;
++
++	status = acpi_walk_namespace(ACPI_TYPE_DEVICE, handle, 1,
++				     acpi_serdev_add_device, NULL, ctrl, NULL);
++	if (ACPI_FAILURE(status)) {
++		dev_dbg(&ctrl->dev, "failed to enumerate serdev slaves\n");
++		return -ENODEV;
++	}
++
++	if (!ctrl->serdev)
++		return -ENODEV;
++
++	return 0;
++}
++#else
++static inline int acpi_serdev_register_devices(struct serdev_controller *ctrl)
++{
++	return -ENODEV;
++}
++#endif /* CONFIG_ACPI */
++
+ /**
+  * serdev_controller_add() - Add an serdev controller
+  * @ctrl:	controller to be registered.
+@@ -394,7 +482,7 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
+  */
+ int serdev_controller_add(struct serdev_controller *ctrl)
  {
- 	/*
--	 * Do not enumerate SPI/I2C slaves as they will be enumerated by their
--	 * respective parents.
-+	 * Do not enumerate SPI/I2C/UART slaves as they will be enumerated by
-+	 * their respective parents.
- 	 */
--	if (!device->flags.spi_i2c_slave) {
-+	if (!device->flags.serial_bus_slave) {
- 		acpi_create_platform_device(device, NULL);
- 		acpi_device_set_enumerated(device);
- 	} else {
-@@ -1941,7 +1938,7 @@ static void acpi_bus_attach(struct acpi_device *device)
- 		return;
+-	int ret;
++	int ret_of, ret_acpi, ret;
  
- 	device->flags.match_driver = true;
--	if (ret > 0 && !device->flags.spi_i2c_slave) {
-+	if (ret > 0 && !device->flags.serial_bus_slave) {
- 		acpi_device_set_enumerated(device);
- 		goto ok;
- 	}
-@@ -1950,7 +1947,7 @@ static void acpi_bus_attach(struct acpi_device *device)
- 	if (ret < 0)
- 		return;
+ 	/* Can't register until after driver model init */
+ 	if (WARN_ON(!is_registered))
+@@ -404,12 +492,16 @@ int serdev_controller_add(struct serdev_controller *ctrl)
+ 	if (ret)
+ 		return ret;
  
--	if (!device->pnp.type.platform_id && !device->flags.spi_i2c_slave)
-+	if (!device->pnp.type.platform_id && !device->flags.serial_bus_slave)
- 		acpi_device_set_enumerated(device);
- 	else
- 		acpi_default_enumeration(device);
-diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-index fa15052..f849be2 100644
---- a/include/acpi/acpi_bus.h
-+++ b/include/acpi/acpi_bus.h
-@@ -211,7 +211,7 @@ struct acpi_device_flags {
- 	u32 of_compatible_ok:1;
- 	u32 coherent_dma:1;
- 	u32 cca_seen:1;
--	u32 spi_i2c_slave:1;
-+	u32 serial_bus_slave:1;
- 	u32 reserved:19;
- };
+-	ret = of_serdev_register_devices(ctrl);
+-	if (ret)
++	ret_of = of_serdev_register_devices(ctrl);
++	ret_acpi = acpi_serdev_register_devices(ctrl);
++	if (ret_of && ret_acpi) {
++		dev_dbg(&ctrl->dev, "no devices registered: of:%d acpi:%d\n",
++			ret_of, ret_acpi);
++		ret = -ENODEV;
+ 		goto out_dev_del;
++	}
  
+-	dev_dbg(&ctrl->dev, "serdev%d registered: dev:%p\n",
+-		ctrl->nr, &ctrl->dev);
++	dev_dbg(&ctrl->dev, "registered: dev:%p\n", &ctrl->dev);
+ 	return 0;
+ 
+ out_dev_del:
 -- 
 2.7.4
 
