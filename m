@@ -1,64 +1,97 @@
-From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 2/2] serdev: Update drivers/bluetooth/Kconfig for ACPI
- serdev support
-Date: Tue, 10 Oct 2017 10:11:53 +0200
-Message-ID: <20171010081153.GI4269@localhost>
-References: <dc9cecc0-d9ef-109f-5f05-cf77ab16e60e@gmail.com>
- <427a95f6-feda-e93e-9a0f-a05b7b339ee6@gmail.com>
- <20171009080606.GO2618@localhost>
- <CAFXWsS8=t9SfUdWPOSpmHt4-6cgdrVtQChryyzJ74XOQQP3-Ww@mail.gmail.com>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH 1/2] serdev: Add ACPI support
+Date: Tue, 10 Oct 2017 10:15:28 +0200
+Message-ID: <20171010081528.GJ4269@localhost>
+References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
+ <1507107090-15992-2-git-send-email-frederic.danis.oss@gmail.com>
+ <20171007151255.GH2618@localhost>
+ <BC1C29B8-C76B-499D-B8BE-365B5D3A0065@holtmann.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAFXWsS8=t9SfUdWPOSpmHt4-6cgdrVtQChryyzJ74XOQQP3-Ww-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Ian W MORRISON <ianwmorrison-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "bluez mailin list (linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org)" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Loic Poulain <loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <BC1C29B8-C76B-499D-B8BE-365B5D3A0065@holtmann.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hovold <johan@kernel.org>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>, robh@kernel.org, sre@kernel.org, loic.poulain@gmail.com, lukas@wunner.de, hdegoede@redhat.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Oct 10, 2017 at 06:16:46PM +1100, Ian W MORRISON wrote:
-> On 9 October 2017 at 19:06, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> > On Mon, Oct 09, 2017 at 11:43:31AM +1100, Ian W MORRISON wrote:
-> <snip>
-> >>
-> >> This patch set addresses this by making BT_HCIUART_BCM dependent on
-> >> SERIAL_DEV_CTRL_TTYPORT which in turn is dependent on SERIAL_DEV_BUS
-> >> and ensures that if SERIAL_DEV_BUS is selected is the code is build it.
-> >
-> > Ok, so you didn't even bother to write two distinct commit messages for
-> > your two patches, and my comments to the first patch apply also here.
-> >
-> <snip>
-> >
-> > Johan
-> 
+On Tue, Oct 10, 2017 at 10:10:58AM +0200, Marcel Holtmann wrote:
 > Hi Johan,
 > 
-> My experience in submitting patches is still limited and I am very
-> much learning so thanks for the helpful comments and apologies for
-> trying your patience. My keenness on submitting patches was to show
-> that I had tested my suggestions so as to given them credibility
-> rather than any attempt to own the patch.
+> >> This patch allows SerDev module to manage serial devices declared as
+> >> attached to an UART in ACPI table.
+> >> 
+> >> acpi_serdev_add_device() callback will only take into account entries
+> >> without enumerated flag set. This flags is set for all entries during
+> >> ACPI scan, except for SPI and I2C serial devices, and for UART with
+> >> 2nd patch in the series.
+> >> 
+> >> Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
+> >> ---
+> >> drivers/tty/serdev/core.c | 99 ++++++++++++++++++++++++++++++++++++++++++++---
+> >> 1 file changed, 94 insertions(+), 5 deletions(-)
+> >> 
+> >> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> >> index c68fb3a..104777d 100644
+> >> --- a/drivers/tty/serdev/core.c
+> >> +++ b/drivers/tty/serdev/core.c
 
-No worries. I can recommend taking a closer look at
+> >> +static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
+> >> +{
+> >> +	acpi_status status;
+> >> +	acpi_handle handle;
+> >> +
+> >> +	handle = ACPI_HANDLE(ctrl->dev.parent);
+> >> +	if (!handle)
+> >> +		return -ENODEV;
+> >> +
+> >> +	status = acpi_walk_namespace(ACPI_TYPE_DEVICE, handle, 1,
+> >> +				     acpi_serdev_add_device, NULL, ctrl, NULL);
+> >> +	if (ACPI_FAILURE(status)) {
+> >> +		dev_warn(&ctrl->dev, "failed to enumerate Serial slaves\n");
+> > 
+> > s/Serial/serdev/
+> > 
+> >> +		return -ENODEV;
+> >> +	}
+> >> +
+> >> +	return 0;
+> > 
+> > What if there are no slaves defined? I'm not very familiar with the ACPI
+> > helpers, but from a quick look it seems you'd then end up returning zero
+> > here which would cause the serdev controller to be registered instead of
+> > the tty-class device.
+> > 
+> > [ And if I'm mistaken, you do want to suppress that error message for
+> > when there are no slaves defined. ]
 
-	Documentation/process/submitting-patches.rst
+> >> -	ret = of_serdev_register_devices(ctrl);
+> >> -	if (ret)
+> >> +	ret_of = of_serdev_register_devices(ctrl);
+> >> +	ret_acpi = acpi_serdev_register_devices(ctrl);
+> >> +	if (ret_of && ret_acpi) {
+> >> +		dev_dbg(&ctrl->dev, "serdev%d no devices registered: of:%d acpi:%d\n",
+> > 
+> > "serdev%d" is redundant here as you're using dev_dbg (which will print
+> > the device name).
+> > 
+> >> +			ctrl->nr, ret_of, ret_acpi);
+> >> +		ret = -ENODEV;
+> >> 		goto out_dev_del;
+> >> +	}
+> >> 
+> >> 	dev_dbg(&ctrl->dev, "serdev%d registered: dev:%p\n",
+> >> 		ctrl->nr, &ctrl->dev);
+> > 
+> > Hmm, I see it's already used here. No need to follow that example
+> > though.
+> 
+> lets have an extra patch on top of it that fixes these.
 
-where some of the process is described.
-
-> What I was trying to do here was to suggested two patches with one
-> requiring the other. Rather than keep as a single patch affecting two
-> files I separated into two patches attempting to create a patch series
-> with a single changelog. This was the wrong approach and I may have
-> misled so apologies for that.
-
-So next, time just submit your patches as a series (consider using
-git-send-email to get the threading right), where each patch is
-self-contained and has a good commit message describing why that change
-is needed. It is implicit that a series is to be applied in order and
-that therefore later patches in a series can depend on earlier ones.
-When a patch series span multiple subsystems, things can gets more
-complicated, though...
+Some of the above are minor nits that can be addressed by a follow-up
+patch indeed, but the handling of nodes with no child devices needs to
+be correct (or you could end up breaking normal serial-port support).
 
 Johan
