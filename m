@@ -1,47 +1,48 @@
-From: Ian W MORRISON <ianwmorrison@gmail.com>
-Subject: Re: [PATCH v3 2/2] serdev: Update drivers/bluetooth/Kconfig for ACPI
- serdev support
-Date: Tue, 10 Oct 2017 18:16:46 +1100
-Message-ID: <CAFXWsS8=t9SfUdWPOSpmHt4-6cgdrVtQChryyzJ74XOQQP3-Ww@mail.gmail.com>
-References: <dc9cecc0-d9ef-109f-5f05-cf77ab16e60e@gmail.com>
- <427a95f6-feda-e93e-9a0f-a05b7b339ee6@gmail.com> <20171009080606.GO2618@localhost>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20171009080606.GO2618@localhost>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, "bluez mailin list (linux-bluetooth@vger.kernel.org)" <linux-bluetooth@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, =?UTF-8?B?RnLDqWTDqXJpYyBEYW5pcw==?= <frederic.danis.oss@gmail.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <greg@kroah.com>
+From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] Bluetooth: avoid silent hci_bcm ACPI PM regression
+Date: Tue, 10 Oct 2017 10:01:52 +0200
+Message-ID: <20171010080152.18444-1-johan@kernel.org>
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Cc: Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Reichel <sebastian.reichel-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org, hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 9 October 2017 at 19:06, Johan Hovold <johan@kernel.org> wrote:
-> On Mon, Oct 09, 2017 at 11:43:31AM +1100, Ian W MORRISON wrote:
-<snip>
->>
->> This patch set addresses this by making BT_HCIUART_BCM dependent on
->> SERIAL_DEV_CTRL_TTYPORT which in turn is dependent on SERIAL_DEV_BUS
->> and ensures that if SERIAL_DEV_BUS is selected is the code is build it.
->
-> Ok, so you didn't even bother to write two distinct commit messages for
-> your two patches, and my comments to the first patch apply also here.
->
-<snip>
->
-> Johan
+The hci_bcm platform-device hack which was used to implement
+power management for ACPI devices is being replaced by a
+serial-device-bus implementation.
 
-Hi Johan,
+Unfortunately, when the corresponding change to the ACPI code lands (a
+change that will stop enumerating and registering the serial-device-node
+child as a platform device) PM will break silently unless serdev
+TTY-port controller support has been enabled. Specifically, hciattach
+(btattach) would still succeed, but power management would no longer
+work.
 
-My experience in submitting patches is still limited and I am very
-much learning so thanks for the helpful comments and apologies for
-trying your patience. My keenness on submitting patches was to show
-that I had tested my suggestions so as to given them credibility
-rather than any attempt to own the patch.
+Although this is strictly a runtime dependency, let's make the driver
+depend on SERIAL_DEV_CTRL_TTYPORT, which is the particular serdev
+controller implementation used by the ACPI devices currently managed by
+this driver, to avoid breaking PM without anyone noticing.
 
-What I was trying to do here was to suggested two patches with one
-requiring the other. Rather than keep as a single patch affecting two
-files I separated into two patches attempting to create a patch series
-with a single changelog. This was the wrong approach and I may have
-misled so apologies for that.
+Note that the driver already has a (build-time) dependency on the serdev
+bus code.
 
-Regards,
-Ian
+Signed-off-by: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+ drivers/bluetooth/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
+index fae5a74dc737..082e1c7329de 100644
+--- a/drivers/bluetooth/Kconfig
++++ b/drivers/bluetooth/Kconfig
+@@ -169,6 +169,7 @@ config BT_HCIUART_BCM
+ 	bool "Broadcom protocol support"
+ 	depends on BT_HCIUART
+ 	depends on BT_HCIUART_SERDEV
++	depends on (!ACPI || SERIAL_DEV_CTRL_TTYPORT)
+ 	select BT_HCIUART_H4
+ 	select BT_BCM
+ 	help
+-- 
+2.14.2
