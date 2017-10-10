@@ -1,93 +1,56 @@
 From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH] serdev: fix registration of second slave
-Date: Tue, 10 Oct 2017 18:09:49 +0200
-Message-ID: <20171010160949.28982-1-johan@kernel.org>
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?= <frederic.danis.oss@gmail.com>, Johan Hovold <johan@kernel.org>, stable <stable@vger.kernel.org>
+Subject: Re: [PATCH 1/2] serdev: Add ACPI support
+Date: Tue, 10 Oct 2017 18:36:30 +0200
+Message-ID: <20171010163630.GO4269@localhost>
+References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
+ <1507107090-15992-2-git-send-email-frederic.danis.oss@gmail.com>
+ <20171007151255.GH2618@localhost>
+ <BC1C29B8-C76B-499D-B8BE-365B5D3A0065@holtmann.org>
+ <20171010081528.GJ4269@localhost>
+ <3F3CFF22-4FCE-4283-8A41-73A9A7944494@holtmann.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <3F3CFF22-4FCE-4283-8A41-73A9A7944494@holtmann.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hovold <johan@kernel.org>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>, robh@kernel.org, sre@kernel.org, loic.poulain@gmail.com, lukas@wunner.de, hdegoede@redhat.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Serdev currently only supports a single slave device, but the required
-sanity checks to prevent further registration attempts were missing.
+On Tue, Oct 10, 2017 at 10:22:19AM +0200, Marcel Holtmann wrote:
 
-If a serial-port node has two child nodes with compatible properties,
-the OF code would try to register two slave devices using the same id
-and name. Driver core will not allow this (and there will be loud
-complaints), but the controller's slave pointer would already have been
-set to address of the soon to be deallocated second struct
-serdev_device. As the first slave device remains registered, this can
-lead to later use-after-free issues when the slave callbacks are
-accessed.
+> > Some of the above are minor nits that can be addressed by a follow-up
+> > patch indeed, but the handling of nodes with no child devices needs to
+> > be correct (or you could end up breaking normal serial-port support).
+> 
+> that sounds good to me as well. Lets get this feature into the ACPI
+> tree since I am going to push Hans’ patches into bluetooth-next as
+> soon as he re-submits the missing ID change. That hopefully gives us
+> then fully serdev support for ACPI and DT when it comes to Broadcom
+> Bluetooth controllers.
 
-Note that while the serdev registration helpers are exported, they are
-typically only called by serdev core. Any other (out-of-tree) callers
-must serialise registration and deregistration themselves.
+But with Hans's work these devices should continue to function using the
+platform-device hacks until the ACPI patch eventually lands in Linus's
+tree (via the acpi tree).
 
-Fixes: cd6484e1830b ("serdev: Introduce new bus for serial attached devices")
-Cc: stable <stable@vger.kernel.org>	# 4.11
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/tty/serdev/core.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+> Next step is to convert the Intel driver to also use ACPI based serdev
+> :)
+> 
+> And for the brave, I think there are Realtek based systems using ACPI
+> as well.
+> 
+> What I was wondering the other day is if we need a lsserdev tool or
+> some integration in lshw to be able to debug what serdev devices and
+> ID are present. The lsusb and /sys/kernel/debug/usb/devices is just
+> super powerful and easy when it comes to figuring out what people have
+> in their system. Maybe /sys/kernel/debug/serdev/devices could be
+> helpful as well. Just thinking out loud here.
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index c68fb3a8ea1c..97db76afced2 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -65,21 +65,32 @@ static int serdev_uevent(struct device *dev, struct kobj_uevent_env *env)
-  */
- int serdev_device_add(struct serdev_device *serdev)
- {
-+	struct serdev_controller *ctrl = serdev->ctrl;
- 	struct device *parent = serdev->dev.parent;
- 	int err;
- 
- 	dev_set_name(&serdev->dev, "%s-%d", dev_name(parent), serdev->nr);
- 
-+	/* Only a single slave device is currently supported. */
-+	if (ctrl->serdev) {
-+		dev_err(&serdev->dev, "controller busy\n");
-+		return -EBUSY;
-+	}
-+	ctrl->serdev = serdev;
-+
- 	err = device_add(&serdev->dev);
- 	if (err < 0) {
- 		dev_err(&serdev->dev, "Can't add %s, status %d\n",
- 			dev_name(&serdev->dev), err);
--		goto err_device_add;
-+		goto err_clear_serdev;
- 	}
- 
- 	dev_dbg(&serdev->dev, "device %s registered\n", dev_name(&serdev->dev));
- 
--err_device_add:
-+	return 0;
-+
-+err_clear_serdev:
-+	ctrl->serdev = NULL;
- 	return err;
- }
- EXPORT_SYMBOL_GPL(serdev_device_add);
-@@ -90,7 +101,10 @@ EXPORT_SYMBOL_GPL(serdev_device_add);
-  */
- void serdev_device_remove(struct serdev_device *serdev)
- {
-+	struct serdev_controller *ctrl = serdev->ctrl;
-+
- 	device_unregister(&serdev->dev);
-+	ctrl->serdev = NULL;
- }
- EXPORT_SYMBOL_GPL(serdev_device_remove);
- 
-@@ -295,7 +309,6 @@ struct serdev_device *serdev_device_alloc(struct serdev_controller *ctrl)
- 		return NULL;
- 
- 	serdev->ctrl = ctrl;
--	ctrl->serdev = serdev;
- 	device_initialize(&serdev->dev);
- 	serdev->dev.parent = &ctrl->dev;
- 	serdev->dev.bus = &serdev_bus_type;
--- 
-2.14.2
+Yeah, maybe. Since you'd typically only have small number of serdev
+devices (say, max 4), using /sys/bus/serial/devices directly should not
+be too bad meanwhile. Not that much common information we can expose
+either, at least not in comparison to USB. But I'll keep it mind. :)
+
+Johan
