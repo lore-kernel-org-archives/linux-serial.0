@@ -1,174 +1,64 @@
-From: Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [PATCH 1/2] serdev: Add ACPI support
-Date: Tue, 10 Oct 2017 10:10:58 +0200
-Message-ID: <BC1C29B8-C76B-499D-B8BE-365B5D3A0065@holtmann.org>
-References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
- <1507107090-15992-2-git-send-email-frederic.danis.oss@gmail.com>
- <20171007151255.GH2618@localhost>
-Mime-Version: 1.0 (Mac OS X Mail 11.0 \(3445.1.7\))
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20171007151255.GH2618@localhost>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: =?utf-8?Q?Fr=C3=A9d=C3=A9ric_Danis?= <frederic.danis.oss@gmail.com>, robh@kernel.org, sre@kernel.org, loic.poulain@gmail.com, lukas@wunner.de, hdegoede@redhat.com, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
+From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v3 2/2] serdev: Update drivers/bluetooth/Kconfig for ACPI
+ serdev support
+Date: Tue, 10 Oct 2017 10:11:53 +0200
+Message-ID: <20171010081153.GI4269@localhost>
+References: <dc9cecc0-d9ef-109f-5f05-cf77ab16e60e@gmail.com>
+ <427a95f6-feda-e93e-9a0f-a05b7b339ee6@gmail.com>
+ <20171009080606.GO2618@localhost>
+ <CAFXWsS8=t9SfUdWPOSpmHt4-6cgdrVtQChryyzJ74XOQQP3-Ww@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAFXWsS8=t9SfUdWPOSpmHt4-6cgdrVtQChryyzJ74XOQQP3-Ww-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Ian W MORRISON <ianwmorrison-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "bluez mailin list (linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org)" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Loic Poulain <loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Johan,
+On Tue, Oct 10, 2017 at 06:16:46PM +1100, Ian W MORRISON wrote:
+> On 9 October 2017 at 19:06, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> > On Mon, Oct 09, 2017 at 11:43:31AM +1100, Ian W MORRISON wrote:
+> <snip>
+> >>
+> >> This patch set addresses this by making BT_HCIUART_BCM dependent on
+> >> SERIAL_DEV_CTRL_TTYPORT which in turn is dependent on SERIAL_DEV_BUS
+> >> and ensures that if SERIAL_DEV_BUS is selected is the code is build it.
+> >
+> > Ok, so you didn't even bother to write two distinct commit messages for
+> > your two patches, and my comments to the first patch apply also here.
+> >
+> <snip>
+> >
+> > Johan
+> 
+> Hi Johan,
+> 
+> My experience in submitting patches is still limited and I am very
+> much learning so thanks for the helpful comments and apologies for
+> trying your patience. My keenness on submitting patches was to show
+> that I had tested my suggestions so as to given them credibility
+> rather than any attempt to own the patch.
 
->> This patch allows SerDev module to manage serial devices declared as
->> attached to an UART in ACPI table.
->> 
->> acpi_serdev_add_device() callback will only take into account entries
->> without enumerated flag set. This flags is set for all entries during
->> ACPI scan, except for SPI and I2C serial devices, and for UART with
->> 2nd patch in the series.
->> 
->> Signed-off-by: Frédéric Danis <frederic.danis.oss@gmail.com>
->> ---
->> drivers/tty/serdev/core.c | 99 ++++++++++++++++++++++++++++++++++++++++++++---
->> 1 file changed, 94 insertions(+), 5 deletions(-)
->> 
->> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
->> index c68fb3a..104777d 100644
->> --- a/drivers/tty/serdev/core.c
->> +++ b/drivers/tty/serdev/core.c
-> 
->> @@ -385,6 +401,74 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
->> 	return 0;
->> }
->> 
->> +#ifdef CONFIG_ACPI
->> +static acpi_status acpi_serdev_register_device(struct serdev_controller *ctrl,
->> +					    struct acpi_device *adev)
->> +{
->> +	struct serdev_device *serdev = NULL;
->> +	int err;
->> +
->> +	if (acpi_bus_get_status(adev) || !adev->status.present ||
->> +	    acpi_device_enumerated(adev))
->> +		return AE_OK;
->> +
->> +	serdev = serdev_device_alloc(ctrl);
->> +	if (!serdev) {
->> +		dev_err(&ctrl->dev, "failed to allocate Serial device for %s\n",
-> 
-> s/Serial/serdev/
-> 
->> +			dev_name(&adev->dev));
->> +		return AE_NO_MEMORY;
->> +	}
->> +
->> +	ACPI_COMPANION_SET(&serdev->dev, adev);
->> +	acpi_device_set_enumerated(adev);
->> +
->> +	err = serdev_device_add(serdev);
->> +	if (err) {
->> +		dev_err(&serdev->dev,
->> +			"failure adding ACPI device. status %d\n", err);
-> 
-> s/ACPI/ACPI serdev/?
-> 
->> +		serdev_device_put(serdev);
->> +	}
->> +
->> +	return AE_OK;
->> +}
->> +
->> +static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level,
->> +				       void *data, void **return_value)
->> +{
->> +	struct serdev_controller *ctrl = data;
->> +	struct acpi_device *adev;
->> +
->> +	if (acpi_bus_get_device(handle, &adev))
->> +		return AE_OK;
->> +
->> +	return acpi_serdev_register_device(ctrl, adev);
->> +}
->> +
->> +static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
->> +{
->> +	acpi_status status;
->> +	acpi_handle handle;
->> +
->> +	handle = ACPI_HANDLE(ctrl->dev.parent);
->> +	if (!handle)
->> +		return -ENODEV;
->> +
->> +	status = acpi_walk_namespace(ACPI_TYPE_DEVICE, handle, 1,
->> +				     acpi_serdev_add_device, NULL, ctrl, NULL);
->> +	if (ACPI_FAILURE(status)) {
->> +		dev_warn(&ctrl->dev, "failed to enumerate Serial slaves\n");
-> 
-> s/Serial/serdev/
-> 
->> +		return -ENODEV;
->> +	}
->> +
->> +	return 0;
-> 
-> What if there are no slaves defined? I'm not very familiar with the ACPI
-> helpers, but from a quick look it seems you'd then end up returning zero
-> here which would cause the serdev controller to be registered instead of
-> the tty-class device.
-> 
-> [ And if I'm mistaken, you do want to suppress that error message for
-> when there are no slaves defined. ]
-> 
->> +}
->> +#else
->> +static inline int acpi_serdev_register_devices(struct serdev_controller *ctlr)
-> 
-> s/ctlr/ctrl/
-> 
->> +{
->> +	return -ENODEV;
->> +}
->> +#endif /* CONFIG_ACPI */
->> +
->> /**
->>  * serdev_controller_add() - Add an serdev controller
->>  * @ctrl:	controller to be registered.
->> @@ -394,7 +478,7 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
->>  */
->> int serdev_controller_add(struct serdev_controller *ctrl)
->> {
->> -	int ret;
->> +	int ret_of, ret_acpi, ret;
->> 
->> 	/* Can't register until after driver model init */
->> 	if (WARN_ON(!is_registered))
->> @@ -404,9 +488,14 @@ int serdev_controller_add(struct serdev_controller *ctrl)
->> 	if (ret)
->> 		return ret;
->> 
->> -	ret = of_serdev_register_devices(ctrl);
->> -	if (ret)
->> +	ret_of = of_serdev_register_devices(ctrl);
->> +	ret_acpi = acpi_serdev_register_devices(ctrl);
->> +	if (ret_of && ret_acpi) {
->> +		dev_dbg(&ctrl->dev, "serdev%d no devices registered: of:%d acpi:%d\n",
-> 
-> "serdev%d" is redundant here as you're using dev_dbg (which will print
-> the device name).
-> 
->> +			ctrl->nr, ret_of, ret_acpi);
->> +		ret = -ENODEV;
->> 		goto out_dev_del;
->> +	}
->> 
->> 	dev_dbg(&ctrl->dev, "serdev%d registered: dev:%p\n",
->> 		ctrl->nr, &ctrl->dev);
-> 
-> Hmm, I see it's already used here. No need to follow that example
-> though.
+No worries. I can recommend taking a closer look at
 
-lets have an extra patch on top of it that fixes these.
+	Documentation/process/submitting-patches.rst
 
-Regards
+where some of the process is described.
 
-Marcel
+> What I was trying to do here was to suggested two patches with one
+> requiring the other. Rather than keep as a single patch affecting two
+> files I separated into two patches attempting to create a patch series
+> with a single changelog. This was the wrong approach and I may have
+> misled so apologies for that.
 
+So next, time just submit your patches as a series (consider using
+git-send-email to get the threading right), where each patch is
+self-contained and has a good commit message describing why that change
+is needed. It is implicit that a series is to be applied in order and
+that therefore later patches in a series can depend on earlier ones.
+When a patch series span multiple subsystems, things can gets more
+complicated, though...
+
+Johan
