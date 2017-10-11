@@ -1,134 +1,54 @@
-From: Troy Kisky <troy.kisky@boundarydevices.com>
-Subject: Re: [PATCH 1/1] tty: serial: imx: disable ageing timer interrupt if
- dma in use
-Date: Wed, 11 Oct 2017 09:09:34 -0700
-Message-ID: <7c5a3ef3-6da7-815e-04a3-a1f18344032e@boundarydevices.com>
-References: <20171007014648.6989-1-troy.kisky@boundarydevices.com>
- <AM3P101MB01800FAA2029393C5A859629E64A0@AM3P101MB0180.NAMP101.PROD.OUTLOOK.COM>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <AM3P101MB01800FAA2029393C5A859629E64A0@AM3P101MB0180.NAMP101.PROD.OUTLOOK.COM>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: "Han, Nandor (GE Healthcare)" <nandor.han@ge.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "fabio.estevam@nxp.com" <fabio.estevam@nxp.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "l.stach@pengutronix.de" <l.stach@pengutronix.de>
+From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v3 0/2] ACPI serdev support
+Date: Wed, 11 Oct 2017 20:32:06 +0200
+Message-ID: <AA38D4FD-5A35-460D-85CF-380BAB933448@holtmann.org>
+References: <1507710734-32520-1-git-send-email-frederic.danis.oss@gmail.com>
+ <20171011090354.GS4269@localhost>
+ <CAJZ5v0jPEg5Ow4p0DzPJ9Md7RUTPhZZqCzqP5zmX-pPf9N80=g@mail.gmail.com>
+Mime-Version: 1.0 (Mac OS X Mail 11.0 \(3445.1.7\))
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAJZ5v0jPEg5Ow4p0DzPJ9Md7RUTPhZZqCzqP5zmX-pPf9N80=g@mail.gmail.com>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, =?utf-8?Q?Fr=C3=A9d=C3=A9ric_Danis?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Loic Poulain <loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/10/2017 11:22 PM, Han, Nandor (GE Healthcare) wrote:
-> 
-> 
->> -----Original Message-----
->> From: linux-serial-owner@vger.kernel.org [mailto:linux-serial-
->> owner@vger.kernel.org] On Behalf Of Troy Kisky
->> Sent: 07 October 2017 04:47
->> To: gregkh@linuxfoundation.org
->> Cc: fabio.estevam@nxp.com; l.stach@pengutronix.de; u.kleine-
->> koenig@pengutronix.de; linux-serial@vger.kernel.org; linux-arm-
->> kernel@lists.infradead.org; Troy Kisky <troy.kisky@boundarydevices.com>
->> Subject: EXT: [PATCH 1/1] tty: serial: imx: disable ageing timer interrupt if
->> dma in use
->>
->> Since commit 4dec2f119e86 ("imx-serial: RX DMA startup latency")
->>
->> the interrupt routine no longer will start rx dma.
-> 
-> I think you have 2 commits here: 
-> - one that disables ageing timer when DMA is in use
-> - one that cleans the leftovers after 4dec2f119e86.
-> 
+Hi Greg,
 
-I could kill 3 lines, in the 1st patch, and the other 27 in the next.
-But the 2 patches would not be independent. You should not apply the
-second without the 1st. I think the change is simple enough not to
-warrant a series.
-
-
->>
->> Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
->> ---
->>  drivers/tty/serial/imx.c | 34 ++--------------------------------
->>  1 file changed, 2 insertions(+), 32 deletions(-)
->>
->> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c index
->> dfeff3951f93..15b0ecb4cf60 100644
->> --- a/drivers/tty/serial/imx.c
->> +++ b/drivers/tty/serial/imx.c
->> @@ -732,29 +732,6 @@ static void imx_disable_rx_int(struct imx_port
->> *sport)  }
->>
->>  static void clear_rx_errors(struct imx_port *sport); -static int
->> start_rx_dma(struct imx_port *sport);
->> -/*
->> - * If the RXFIFO is filled with some data, and then we
->> - * arise a DMA operation to receive them.
->> - */
->> -static void imx_dma_rxint(struct imx_port *sport) -{
->> -	unsigned long temp;
->> -	unsigned long flags;
->> -
->> -	spin_lock_irqsave(&sport->port.lock, flags);
->> -
->> -	temp = readl(sport->port.membase + USR2);
->> -	if ((temp & USR2_RDR) && !sport->dma_is_rxing) {
->> -
->> -		imx_disable_rx_int(sport);
->> -
->> -		/* tell the DMA to receive the data. */
->> -		start_rx_dma(sport);
->> -	}
->> -
->> -	spin_unlock_irqrestore(&sport->port.lock, flags);
->> -}
->>
->>  /*
->>   * We have a modem side uart, so the meanings of RTS and CTS are inverted.
->> @@ -816,11 +793,8 @@ static irqreturn_t imx_int(int irq, void *dev_id)
->>  	sts = readl(sport->port.membase + USR1);
->>  	sts2 = readl(sport->port.membase + USR2);
->>
->> -	if (sts & (USR1_RRDY | USR1_AGTIM)) {
->> -		if (sport->dma_is_enabled)
->> -			imx_dma_rxint(sport);
->> -		else
->> -			imx_rxint(irq, dev_id);
->> +	if (!sport->dma_is_enabled && (sts & (USR1_RRDY |
->> USR1_AGTIM))) {
->> +		imx_rxint(irq, dev_id);
+>>> Add ACPI support for serial attached devices.
+>>> 
+>>> Currently, serial devices are not set as enumerated during ACPI scan for SPI
+>>> or i2c buses (but not for UART). This should also be done for UART serial
+>>> devices.
+>>> I renamed *spi_i2c_slave* to *serial_bus_slave* to reflect this.
+>>> 
+>>> This needs Johan Hovold's "serdev: fix registration of second slave" patch.
+>> 
+>> In theory this series could go in through the acpi-tree without my
+>> fix. It would only affect an error case where an unlikely failure to
+>> register an ACPI serdev device, would prevent the tty-class device from
+>> being registered instead of the controller. That is, something we can
+>> live with until this all converges in 4.15-rc1 if needed.
+>> 
+>> That said, I think we should consider taking all serdev changes, and
+>> therefore also the ACPI patch, through the tty tree instead in order to
+>> avoid merge conflicts. Rafael?
 > 
-> I don't think we need the check `!sport->dma_is_enabled ` since RRDY and AGTIM interrupts should be disable when DMA is enabled.
-
-If I AND the status with its corresponding interrupt enable. But that is just as complicated, and
-more different from the original.
-
-
+> OK
 > 
->>  		ret = IRQ_HANDLED;
->>  	}
->>
->> @@ -1207,10 +1181,6 @@ static void imx_enable_dma(struct imx_port
->> *sport)
->>  	temp |= UCR1_RDMAEN | UCR1_TDMAEN | UCR1_ATDMAEN;
->>  	writel(temp, sport->port.membase + UCR1);
->>
->> -	temp = readl(sport->port.membase + UCR2);
->> -	temp |= UCR2_ATEN;
->> -	writel(temp, sport->port.membase + UCR2);
->> -
+> Please feel free to add
 > 
-> I think this should be moved to imx_startup. At least RRDY is configured there. 
+> Acked-by: Rafael J. Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > 
+> to the ACPI core change.
+> 
+> And I will assume that this series will go in via the tty tree.
 
+you have to take these two patches now via the TTY tree now. In case you already marked them as someone else problem ;)
 
-Currently, non-dma mode does not use the ageing timer. You get an interrupt immediately when
-1 character is in the fifo. So, enabling the ageing timer and changing fifo level, should really be
-a separate patch. But it would be a nice patch.
+Regards
+
+Marcel
