@@ -1,119 +1,58 @@
-From: "Han, Nandor (GE Healthcare)" <nandor.han@ge.com>
-Subject: RE: [PATCH 1/1] tty: serial: imx: disable ageing timer interrupt if
- dma in use
-Date: Wed, 11 Oct 2017 06:22:53 +0000
-Message-ID: <AM3P101MB01800FAA2029393C5A859629E64A0@AM3P101MB0180.NAMP101.PROD.OUTLOOK.COM>
-References: <20171007014648.6989-1-troy.kisky@boundarydevices.com>
+From: =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?=
+        <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v3 0/2] ACPI serdev support
+Date: Wed, 11 Oct 2017 10:32:12 +0200
+Message-ID: <1507710734-32520-1-git-send-email-frederic.danis.oss@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20171007014648.6989-1-troy.kisky@boundarydevices.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Troy Kisky <troy.kisky@boundarydevices.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "fabio.estevam@nxp.com" <fabio.estevam@nxp.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "l.stach@pengutronix.de" <l.stach@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org, hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org
+Cc: linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
+Add ACPI support for serial attached devices.
 
+Currently, serial devices are not set as enumerated during ACPI scan for SPI
+or i2c buses (but not for UART). This should also be done for UART serial
+devices.
+I renamed *spi_i2c_slave* to *serial_bus_slave* to reflect this.
 
-> -----Original Message-----
-> From: linux-serial-owner@vger.kernel.org [mailto:linux-serial-
-> owner@vger.kernel.org] On Behalf Of Troy Kisky
-> Sent: 07 October 2017 04:47
-> To: gregkh@linuxfoundation.org
-> Cc: fabio.estevam@nxp.com; l.stach@pengutronix.de; u.kleine-
-> koenig@pengutronix.de; linux-serial@vger.kernel.org; linux-arm-
-> kernel@lists.infradead.org; Troy Kisky <troy.kisky@boundarydevices.com>
-> Subject: EXT: [PATCH 1/1] tty: serial: imx: disable ageing timer interrupt if
-> dma in use
-> 
-> Since commit 4dec2f119e86 ("imx-serial: RX DMA startup latency")
-> 
-> the interrupt routine no longer will start rx dma.
+This needs Johan Hovold's "serdev: fix registration of second slave" patch.
 
-I think you have 2 commits here: 
-- one that disables ageing timer when DMA is in use
-- one that cleans the leftovers after 4dec2f119e86.
+Tested on T100TA with Broadcom BCM2E39.
 
-> 
-> Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
-> ---
->  drivers/tty/serial/imx.c | 34 ++--------------------------------
->  1 file changed, 2 insertions(+), 32 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c index
-> dfeff3951f93..15b0ecb4cf60 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -732,29 +732,6 @@ static void imx_disable_rx_int(struct imx_port
-> *sport)  }
-> 
->  static void clear_rx_errors(struct imx_port *sport); -static int
-> start_rx_dma(struct imx_port *sport);
-> -/*
-> - * If the RXFIFO is filled with some data, and then we
-> - * arise a DMA operation to receive them.
-> - */
-> -static void imx_dma_rxint(struct imx_port *sport) -{
-> -	unsigned long temp;
-> -	unsigned long flags;
-> -
-> -	spin_lock_irqsave(&sport->port.lock, flags);
-> -
-> -	temp = readl(sport->port.membase + USR2);
-> -	if ((temp & USR2_RDR) && !sport->dma_is_rxing) {
-> -
-> -		imx_disable_rx_int(sport);
-> -
-> -		/* tell the DMA to receive the data. */
-> -		start_rx_dma(sport);
-> -	}
-> -
-> -	spin_unlock_irqrestore(&sport->port.lock, flags);
-> -}
-> 
->  /*
->   * We have a modem side uart, so the meanings of RTS and CTS are inverted.
-> @@ -816,11 +793,8 @@ static irqreturn_t imx_int(int irq, void *dev_id)
->  	sts = readl(sport->port.membase + USR1);
->  	sts2 = readl(sport->port.membase + USR2);
-> 
-> -	if (sts & (USR1_RRDY | USR1_AGTIM)) {
-> -		if (sport->dma_is_enabled)
-> -			imx_dma_rxint(sport);
-> -		else
-> -			imx_rxint(irq, dev_id);
-> +	if (!sport->dma_is_enabled && (sts & (USR1_RRDY |
-> USR1_AGTIM))) {
-> +		imx_rxint(irq, dev_id);
+Since v2:
+  - Remove ctrl->serdev set to NULL in acpi_serdev_register_device() in favor
+    of Johan's patch
+  - Fallback to ctrl->serdev check when acpi_walk_namespace() returns an error
+    to prevent memory leak
+  - Remove a change in dev_dbg() call in serdev_controller_add(), this will
+    be done in separate patch
+Since v1:
+  - Check if a serdev device as been allocated during acpi_walk_namespace() to
+    prevent serdev controller registration instead of the tty-class device.
+  - Reword dev_dbg() strings replacing Serial by serdev
+  - Removing redundant "serdev%d" in dev_dbg() calls in serdev_controller_add()
+Since RFC:
+  - Add or reword commit messages
+  - Rename *serial_slave* to *serial_bus_slave*
+  - Add specific check for Apple in acpi_is_serial_bus_slave(), thanks to
+    Lukas Wunner
+  - Update comment in acpi_default_enumeration()
+  - Remove patch 3 "Bluetooth: hci_bcm: Add ACPI serdev support for BCM2E39"
+    in favor of patches from Hans de Goede
 
-I don't think we need the check `!sport->dma_is_enabled ` since RRDY and AGTIM interrupts should be disable when DMA is enabled.
+Frédéric Danis (2):
+  serdev: Add ACPI support
+  ACPI / scan: Fix enumeration for special UART devices
 
->  		ret = IRQ_HANDLED;
->  	}
-> 
-> @@ -1207,10 +1181,6 @@ static void imx_enable_dma(struct imx_port
-> *sport)
->  	temp |= UCR1_RDMAEN | UCR1_TDMAEN | UCR1_ATDMAEN;
->  	writel(temp, sport->port.membase + UCR1);
-> 
-> -	temp = readl(sport->port.membase + UCR2);
-> -	temp |= UCR2_ATEN;
-> -	writel(temp, sport->port.membase + UCR2);
-> -
+ drivers/acpi/scan.c       |  37 ++++++++---------
+ drivers/tty/serdev/core.c | 100 +++++++++++++++++++++++++++++++++++++++++++---
+ include/acpi/acpi_bus.h   |   2 +-
+ 3 files changed, 113 insertions(+), 26 deletions(-)
 
-I think this should be moved to imx_startup. At least RRDY is configured there. 
-
-<snip>
-
-Regards,
-Nandor
+-- 
+2.7.4
