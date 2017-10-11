@@ -1,77 +1,93 @@
-From: Ian W MORRISON <ianwmorrison-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/2] serdev: Add ACPI support
-Date: Wed, 11 Oct 2017 10:13:25 +1100
-Message-ID: <CAFXWsS9Mm6bEhrfWYHovUYOTjSmknLZ3KxLieteh3_2n14qNwA@mail.gmail.com>
-References: <1507107090-15992-1-git-send-email-frederic.danis.oss@gmail.com>
- <1507107090-15992-2-git-send-email-frederic.danis.oss@gmail.com>
- <20171007151255.GH2618@localhost> <BC1C29B8-C76B-499D-B8BE-365B5D3A0065@holtmann.org>
- <20171010081528.GJ4269@localhost> <3F3CFF22-4FCE-4283-8A41-73A9A7944494@holtmann.org>
- <20171010163630.GO4269@localhost>
+From: Nixiaoming <nixiaoming@huawei.com>
+Subject: RE: [PATCH] tty fix oops when rmmod 8250
+Date: Wed, 11 Oct 2017 02:03:04 +0000
+Message-ID: <E490CD805F7529488761C40FD9D26EF1299F8D2B@DGGEMA505-MBX.china.huawei.com>
+References: <20170915094556.55384-1-nixiaoming@huawei.com>
+ <c18e422a-00fe-00bd-75ba-384f67c4f241@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20171010163630.GO4269@localhost>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Cc: =?UTF-8?B?RnLDqWTDqXJpYyBEYW5pcw==?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Loic Poulain <loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "bluez mailin list (linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org)" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <c18e422a-00fe-00bd-75ba-384f67c4f241@suse.cz>
+Content-Language: zh-CN
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jiri Slaby <jslaby@suse.cz>, "adobriyan@gmail.com" <adobriyan@gmail.com>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>
+Cc: "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-T24gMTEgT2N0b2JlciAyMDE3IGF0IDAzOjM2LCBKb2hhbiBIb3ZvbGQgPGpvaGFuQGtlcm5lbC5v
-cmc+IHdyb3RlOg0KPiBPbiBUdWUsIE9jdCAxMCwgMjAxNyBhdCAxMDoyMjoxOUFNICswMjAwLCBN
-YXJjZWwgSG9sdG1hbm4gd3JvdGU6DQo+Pg0KPj4gV2hhdCBJIHdhcyB3b25kZXJpbmcgdGhlIG90
-aGVyIGRheSBpcyBpZiB3ZSBuZWVkIGEgbHNzZXJkZXYgdG9vbCBvcg0KPj4gc29tZSBpbnRlZ3Jh
-dGlvbiBpbiBsc2h3IHRvIGJlIGFibGUgdG8gZGVidWcgd2hhdCBzZXJkZXYgZGV2aWNlcyBhbmQN
-Cj4+IElEIGFyZSBwcmVzZW50LiBUaGUgbHN1c2IgYW5kIC9zeXMva2VybmVsL2RlYnVnL3VzYi9k
-ZXZpY2VzIGlzIGp1c3QNCj4+IHN1cGVyIHBvd2VyZnVsIGFuZCBlYXN5IHdoZW4gaXQgY29tZXMg
-dG8gZmlndXJpbmcgb3V0IHdoYXQgcGVvcGxlIGhhdmUNCj4+IGluIHRoZWlyIHN5c3RlbS4gTWF5
-YmUgL3N5cy9rZXJuZWwvZGVidWcvc2VyZGV2L2RldmljZXMgY291bGQgYmUNCj4+IGhlbHBmdWwg
-YXMgd2VsbC4gSnVzdCB0aGlua2luZyBvdXQgbG91ZCBoZXJlLg0KPg0KPiBZZWFoLCBtYXliZS4g
-U2luY2UgeW91J2QgdHlwaWNhbGx5IG9ubHkgaGF2ZSBzbWFsbCBudW1iZXIgb2Ygc2VyZGV2DQo+
-IGRldmljZXMgKHNheSwgbWF4IDQpLCB1c2luZyAvc3lzL2J1cy9zZXJpYWwvZGV2aWNlcyBkaXJl
-Y3RseSBzaG91bGQgbm90DQo+IGJlIHRvbyBiYWQgbWVhbndoaWxlLiBOb3QgdGhhdCBtdWNoIGNv
-bW1vbiBpbmZvcm1hdGlvbiB3ZSBjYW4gZXhwb3NlDQo+IGVpdGhlciwgYXQgbGVhc3Qgbm90IGlu
-IGNvbXBhcmlzb24gdG8gVVNCLiBCdXQgSSdsbCBrZWVwIGl0IG1pbmQuIDopDQo+DQoNClllcyBp
-biB0aGUgaW50ZXJpbSwgaWYgeW91IGhhdmUgJ3RyZWUnIGluc3RhbGxlZCB0aGVuIGZvciBleGFt
-cGxlDQoNCiQgYWxpYXMgbHNzZXJkZXY9J3RyZWUgL3N5cy9idXMvc2VyaWFsL2RldmljZXMvKi0w
-Jw0KJCBsc3NlcmRldg0KL3N5cy9idXMvc2VyaWFsL2RldmljZXMvc2VyaWFsMC0wDQrilJzilIDi
-lIAgYmx1ZXRvb3RoDQrilIIgICDilJTilIDilIAgaGNpMA0K4pSCICAgICAgIOKUnOKUgOKUgCBk
-ZXZpY2UgLT4gLi4vLi4vLi4vc2VyaWFsMC0wDQrilIIgICAgICAg4pSc4pSA4pSAIHBvd2VyDQri
-lIIgICAgICAg4pSCICAg4pSc4pSA4pSAIGFzeW5jDQrilIIgICAgICAg4pSCICAg4pSc4pSA4pSA
-IGF1dG9zdXNwZW5kX2RlbGF5X21zDQrilIIgICAgICAg4pSCICAg4pSc4pSA4pSAIGNvbnRyb2wN
-CuKUgiAgICAgICDilIIgICDilJzilIDilIAgcnVudGltZV9hY3RpdmVfa2lkcw0K4pSCICAgICAg
-IOKUgiAgIOKUnOKUgOKUgCBydW50aW1lX2FjdGl2ZV90aW1lDQrilIIgICAgICAg4pSCICAg4pSc
-4pSA4pSAIHJ1bnRpbWVfZW5hYmxlZA0K4pSCICAgICAgIOKUgiAgIOKUnOKUgOKUgCBydW50aW1l
-X3N0YXR1cw0K4pSCICAgICAgIOKUgiAgIOKUnOKUgOKUgCBydW50aW1lX3N1c3BlbmRlZF90aW1l
-DQrilIIgICAgICAg4pSCICAg4pSU4pSA4pSAIHJ1bnRpbWVfdXNhZ2UNCuKUgiAgICAgICDilJzi
-lIDilIAgcmZraWxsMA0K4pSCICAgICAgIOKUgiAgIOKUnOKUgOKUgCBkZXZpY2UgLT4gLi4vLi4v
-aGNpMA0K4pSCICAgICAgIOKUgiAgIOKUnOKUgOKUgCBoYXJkDQrilIIgICAgICAg4pSCICAg4pSc
-4pSA4pSAIGluZGV4DQrilIIgICAgICAg4pSCICAg4pSc4pSA4pSAIG5hbWUNCuKUgiAgICAgICDi
-lIIgICDilJzilIDilIAgcGVyc2lzdGVudA0K4pSCICAgICAgIOKUgiAgIOKUnOKUgOKUgCBwb3dl
-cg0K4pSCICAgICAgIOKUgiAgIOKUgiAgIOKUnOKUgOKUgCBhc3luYw0K4pSCICAgICAgIOKUgiAg
-IOKUgiAgIOKUnOKUgOKUgCBhdXRvc3VzcGVuZF9kZWxheV9tcw0K4pSCICAgICAgIOKUgiAgIOKU
-giAgIOKUnOKUgOKUgCBjb250cm9sDQrilIIgICAgICAg4pSCICAg4pSCICAg4pSc4pSA4pSAIHJ1
-bnRpbWVfYWN0aXZlX2tpZHMNCuKUgiAgICAgICDilIIgICDilIIgICDilJzilIDilIAgcnVudGlt
-ZV9hY3RpdmVfdGltZQ0K4pSCICAgICAgIOKUgiAgIOKUgiAgIOKUnOKUgOKUgCBydW50aW1lX2Vu
-YWJsZWQNCuKUgiAgICAgICDilIIgICDilIIgICDilJzilIDilIAgcnVudGltZV9zdGF0dXMNCuKU
-giAgICAgICDilIIgICDilIIgICDilJzilIDilIAgcnVudGltZV9zdXNwZW5kZWRfdGltZQ0K4pSC
-ICAgICAgIOKUgiAgIOKUgiAgIOKUlOKUgOKUgCBydW50aW1lX3VzYWdlDQrilIIgICAgICAg4pSC
-ICAg4pSc4pSA4pSAIHNvZnQNCuKUgiAgICAgICDilIIgICDilJzilIDilIAgc3RhdGUNCuKUgiAg
-ICAgICDilIIgICDilJzilIDilIAgc3Vic3lzdGVtIC0+IC4uLy4uLy4uLy4uLy4uLy4uLy4uLy4u
-L2NsYXNzL3Jma2lsbA0K4pSCICAgICAgIOKUgiAgIOKUnOKUgOKUgCB0eXBlDQrilIIgICAgICAg
-4pSCICAg4pSU4pSA4pSAIHVldmVudA0K4pSCICAgICAgIOKUnOKUgOKUgCBzdWJzeXN0ZW0gLT4g
-Li4vLi4vLi4vLi4vLi4vLi4vLi4vY2xhc3MvYmx1ZXRvb3RoDQrilIIgICAgICAg4pSU4pSA4pSA
-IHVldmVudA0K4pSc4pSA4pSAIGRyaXZlciAtPiAuLi8uLi8uLi8uLi8uLi9idXMvc2VyaWFsL2Ry
-aXZlcnMvaGNpX3VhcnRfYmNtDQrilJzilIDilIAgZmlybXdhcmVfbm9kZSAtPg0KLi4vLi4vLi4v
-Li4vTE5YU1lTVE06MDAvTE5YU1lCVVM6MDAvUE5QMEEwODowMC84MDg2MjI4QTowMC9CQ00yRUE0
-OjAwDQrilJzilIDilIAgbW9kYWxpYXMNCuKUnOKUgOKUgCBwb3dlcg0K4pSCICAg4pSc4pSA4pSA
-IGFzeW5jDQrilIIgICDilJzilIDilIAgYXV0b3N1c3BlbmRfZGVsYXlfbXMNCuKUgiAgIOKUnOKU
-gOKUgCBjb250cm9sDQrilIIgICDilJzilIDilIAgcnVudGltZV9hY3RpdmVfa2lkcw0K4pSCICAg
-4pSc4pSA4pSAIHJ1bnRpbWVfYWN0aXZlX3RpbWUNCuKUgiAgIOKUnOKUgOKUgCBydW50aW1lX2Vu
-YWJsZWQNCuKUgiAgIOKUnOKUgOKUgCBydW50aW1lX3N0YXR1cw0K4pSCICAg4pSc4pSA4pSAIHJ1
-bnRpbWVfc3VzcGVuZGVkX3RpbWUNCuKUgiAgIOKUlOKUgOKUgCBydW50aW1lX3VzYWdlDQrilJzi
-lIDilIAgc3Vic3lzdGVtIC0+IC4uLy4uLy4uLy4uLy4uL2J1cy9zZXJpYWwNCuKUlOKUgOKUgCB1
-ZXZlbnQNCg0KMTMgZGlyZWN0b3JpZXMsIDM4IGZpbGVzDQokDQoNCkl0IGlzIGEgYml0IHNoYWJi
-eSB3aGVuIHRoZXJlIGlzIG5vdGhpbmcgdG8gcmVwb3J0DQoNCiQgbHNzZXJkZXYNCi9zeXMvYnVz
-L3NlcmlhbC9kZXZpY2VzLyotMCBbZXJyb3Igb3BlbmluZyBkaXJdDQoNCjAgZGlyZWN0b3JpZXMs
-IDAgZmlsZXMNCiQNCg==
+Test on 4.14.0-rc4:
+
+CPU: 7 PID: 449 Comm: rmmod Tainted: G           O    4.14.0-rc4+ #1
+Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+Call Trace:
+ dump_stack+0x50/0x80
+ jtty_kref_put+0x5a/0x5c [jprobe_tty_kref_put]
+ uart_remove_one_port+0xe8/0x220 [serial_core]
+ ? __might_sleep+0x4a/0x90
+ serial8250_unregister_port+0x71/0x100 [8250]
+ serial_pnp_remove+0x26/0x30 [8250]
+ pnp_device_remove+0x31/0x70
+ device_release_driver_internal+0x185/0x240
+ driver_detach+0x47/0x90
+ bus_remove_driver+0x50/0xb0
+ driver_unregister+0x30/0x50
+ pnp_unregister_driver+0x12/0x20
+ serial8250_pnp_exit+0x15/0x20 [8250]
+ serial8250_exit+0x34/0xbf8 [8250]
+ SyS_delete_module+0x17a/0x1f0
+ ? exit_to_usermode_loop+0x9d/0xc0
+ do_syscall_64+0x5c/0x120
+ ? syscall_return_slowpath+0xb9/0xc0
+ ? schedule_tail+0xc1/0xe0
+ entry_SYSCALL64_slow_path+0x25/0x25
+RIP: 0033:0x7ff7d37ab257
+RSP: 002b:00007ffdb7879f08 EFLAGS: 00000202 ORIG_RAX: 00000000000000b0
+RAX: ffffffffffffffda RBX: 0000000000000800 RCX: 00007ff7d37ab257
+RDX: 00007ff7d38128c0 RSI: 0000000000000800 RDI: 00000000006d60f0
+RBP: 00000000006d6090 R08: 00007ff7d3a5bf40 R09: 00007ffdb7878eb1
+R10: 0000000000000000 R11: 0000000000000202 R12: 00007ffdb787be86
+R13: 00000000006d6010 R14: 0000000000000000 R15: 00000000006d6090
+BUG: unable to handle kernel paging request at ffffffffa00bdc91
+IP: strchr+0x3/0x30
+PGD 1c0b067 P4D 1c0b067 PUD 1c0c063 PMD 7f620067 PTE 0
+Oops: 0000 [#1] PREEMPT SMP
+Modules linked in: jprobe_tty_kref_put(O) iptable_filter br_netfilter bridge stp llc ipv6 ata_piix ahci libahci libata ext4 jbd2 8250_base serial_core ptp pps_core nfsd auth_rpcgss oid_registry nfsv3 nfs nfs_acl lockd sunrpc grace vfat fat quota_v2 quota_v1 quota_tree [last unloaded: 8250]
+CPU: 6 PID: 74 Comm: kworker/6:1 Tainted: G           O    4.14.0-rc4+ #1
+Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+Workqueue: events release_one_tty
+task: ffff8800dbb88000 task.stack: ffffc900008d0000
+RIP: 0010:strchr+0x3/0x30
+RSP: 0018:ffffc900008d3b38 EFLAGS: 00010286
+RAX: ffffffff81c682c0 RBX: ffffffffa00bdc91 RCX: 000000018040003c
+RDX: 000000000000002f RSI: 000000000000002f RDI: ffffffffa00bdc91
+RBP: ffffc900008d3b78 R08: 0000000000000000 R09: ffffffff8140e1ed
+R10: ffffea0001fd6b00 R11: 0000000000000000 R12: ffff8800df412900
+R13: 0000000000000010 R14: ffffc900008d3b90 R15: ffffffffa00bdc91
+FS:  0000000000000000(0000) GS:ffff8800dfb80000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffa00bdc91 CR3: 0000000072b7a000 CR4: 00000000000006e0
+Call Trace:
+ ? __xlate_proc_name+0x66/0xb0
+ remove_proc_entry+0x37/0x140
+ proc_tty_unregister_driver+0x28/0x40
+ destruct_tty_driver+0x84/0xe0
+ tty_driver_kref_put+0x1e/0x30
+ release_one_tty+0x62/0xe0
+ process_one_work+0x1d0/0x440
+ ? sched_clock_local+0x1c/0x90
+ ? schedule+0x4e/0xc0
+ ? preempt_count_add+0xaa/0xc0
+ worker_thread+0x110/0x4c0
+ ? __schedule+0x4ee/0x8b0
+ ? default_wake_function+0x12/0x20
+ ? __wake_up_common+0x85/0x130
+ ? schedule+0x4e/0xc0
+ kthread+0x13a/0x140
+ ? process_one_work+0x440/0x440
+ ? kthreadd+0x1c0/0x1c0
+ ret_from_fork+0x22/0x30
+Code: 01 41 38 c0 75 13 48 ff c1 45 84 c0 74 05 48 ff ca 75 e3 31 c0 c9 66 90 c3 41 38 c0 c9 19 c0 83 c8 01 c3 0f 1f 44 00 00 55 89 f2 <0f> b6 07 48 89 e5 40 38 f0 75 0c eb 12 48 ff c7 0f b6 07 38 d0 
+RIP: strchr+0x3/0x30 RSP: ffffc900008d3b38
+CR2: ffffffffa00bdc91
+
+-----
