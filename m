@@ -1,87 +1,135 @@
 From: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH 16/16] arm64: dts: marvell: armada-3720-espressobin: fill UART nodes
-Date: Thu, 12 Oct 2017 13:24:42 +0200
-Message-ID: <87zi8wbocl.fsf@free-electrons.com>
+Subject: Re: [PATCH 04/16] serial: mvebu-uart: support probe of multiple ports
+Date: Thu, 12 Oct 2017 14:22:18 +0200
+Message-ID: <87vajkblol.fsf@free-electrons.com>
 References: <20171006101344.15590-1-miquel.raynal@free-electrons.com>
-        <20171006101344.15590-17-miquel.raynal@free-electrons.com>
-        <87fuawe8gx.fsf@free-electrons.com>
-        <20171006151521.440418a2@windsurf.lan> <20171009093025.78d45a9a@xps13>
+        <20171006101344.15590-5-miquel.raynal@free-electrons.com>
+        <87poa0foro.fsf@free-electrons.com> <20171009091711.528adddd@xps13>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8BIT
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20171009093025.78d45a9a@xps13> (Miquel RAYNAL's message of "Mon,
-        9 Oct 2017 09:30:25 +0200")
+In-Reply-To: <20171009091711.528adddd@xps13> (Miquel RAYNAL's message of "Mon,
+        9 Oct 2017 09:17:11 +0200")
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Miquel RAYNAL <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Allen Yan <yanwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 Hi Miquel,
  
  On lun., oct. 09 2017, Miquel RAYNAL <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
 
-> Hi Thomas, Gregory,
+> On Fri, 06 Oct 2017 14:23:55 +0200
+> Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
 >
-> On Fri, 6 Oct 2017 15:15:21 +0200
-> Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
+>> Hi Miquel,
+>>  
+>>  On ven., oct. 06 2017, Miquel Raynal
+>> <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
+>> 
+>> > From: Allen Yan <yanwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+>> >
+>> > Until now, the mvebu-uart driver only supported probing a single
+>> > UART port. However, some platforms have multiple instances of this
+>> > UART controller, and therefore the driver should support multiple
+>> > ports.
+>> >
+>> > In order to achieve this, we make sure to assign port->line
+>> > properly, instead of hardcoding it to zero.
+>> >
+>> > Signed-off-by: Allen Yan <yanwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+>> > Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+>> > ---
+>> >  drivers/tty/serial/mvebu-uart.c | 13 +++++++++++--
+>> >  1 file changed, 11 insertions(+), 2 deletions(-)
+>> >
+>> > diff --git a/drivers/tty/serial/mvebu-uart.c
+>> > b/drivers/tty/serial/mvebu-uart.c index 7e0a3e9fee15..25b11ede3a97
+>> > 100644 --- a/drivers/tty/serial/mvebu-uart.c
+>> > +++ b/drivers/tty/serial/mvebu-uart.c
+>> > @@ -560,7 +560,16 @@ static int mvebu_uart_probe(struct
+>> > platform_device *pdev) return -EINVAL;
+>> >  	}
+>> >  
+>> > -	port = &mvebu_uart_ports[0];
+>> > +	if (pdev->dev.of_node)
+>> > +		pdev->id = of_alias_get_id(pdev->dev.of_node,
+>> > "serial");  
+>> 
+>> If the id is retrieved using an of_ function, then I think that the
+>> driver would depend on OF_CONFIG.
 >
->> Hello,
->> 
->> On Fri, 06 Oct 2017 15:01:18 +0200, Gregory CLEMENT wrote:
->> 
->> >  /*
->> >   * To enable the second UART on J17 (pins 24,26) refer to the uart1
->> >   * node from armada-3720-db.dts.
->> >   * Note that TX and RX signal are the ones coming directly from
->> > the SoC:
->> >   * 1.8V TTL.
->> >   */  
->> 
->> One issue with this comment (and Miquèl's version as well) is that it
->> does not explain why you don't enable this UART by default.
->> 
->> The real reason is in the commit log from Miquèl, and should probably
->> be part of the comment. Perhaps something like:
->> 
->> /*
->> 
->>  * Connector J17 (pins X, Y, Z) exposes a number of different
->>  * features:
->>  *  - UART1 (pins 24 = RX, pins 26 = TX), see armada-3720-db.dts for
->> an
->>  *    example on how to enable UART1. Beware that the signals are 1.8V
->>  *    TTL.
->>  *  - SPIxyz
->>  *  - I2Cxyz
->>  */
+> Is this okay?
 >
-> Thanks for both your comments, there is my version, inspired from both
-> comments:
->
-> /*
->  * Connector J17 exposes a number of different features. Some pins are
->  * multiplexed. This is the case for the UART1 feature (pins 24 = RX,
->  * pins 26 = TX). See armada-3720-db.dts for an example of how to enable it.
->  * Beware that the signals are 1.8V TTL.
->  */
+> if (pdev->dev.of_node && IS_ENABLED(CONFIG_OF))
+>         pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
 
-Seems good for me however I prefer Thomas version, easier to read and to
-extend latter with the description of other pins if needed.
+Actually if CONFIG_OF is not enabled, then dev->dev.of_node. So you can
+keep the test but just remove the test on IS_ENABLED(CONFIG_OF).
+
+But my remark about CONFIG_OF, was more to point that if there is no
+device tree support then this part of code won't work well if you have
+several ports using the same driver.
+
+So either you keep your driver as is but make it depends on CONFIG_OF to
+make it clear that it won't work with ACPI. Or you add the case for
+ACPI, but I think you don't have a board with ACPI support so you won't
+be able to test it.
+
+A third solution would be to have a fallback when of_alias_get_id failed
+(either because there is no alias in the device tree or there is no
+device tree at all). In this case you can just increment the id for each
+new port.
 
 Gregory
 
+
+> else
+>         pdev->id = 0;
+>
+> BTW, I could not test without CONFIG_OF as it is defined by default in
+> our case: Selected by: ARM64 [=y]
+> I don't think there will be a 32-bit SoC with this UART IP?
 >
 > Thanks,
 > Miquèl
 >
 >> 
->> Otherwise, it's not clear at all why you don't just enable UART1. Or
->> perhaps I misunderstood Miquèl's commit log ?
+>> Gregory
 >> 
->> Best regards,
 >> 
->> Thomas
+>> > +
+>> > +	if (pdev->id >= MVEBU_NR_UARTS) {
+>> > +		dev_err(&pdev->dev, "cannot have more than %d UART
+>> > ports\n",
+>> > +			MVEBU_NR_UARTS);
+>> > +		return -EINVAL;
+>> > +	}
+>> > +
+>> > +	port = &mvebu_uart_ports[pdev->id];
+>> >  
+>> >  	spin_lock_init(&port->lock);
+>> >  
+>> > @@ -572,7 +581,7 @@ static int mvebu_uart_probe(struct
+>> > platform_device *pdev) port->fifosize   = 32;
+>> >  	port->iotype     = UPIO_MEM32;
+>> >  	port->flags      = UPF_FIXED_PORT;
+>> > -	port->line       = 0; /* single port: force line number
+>> > to  0 */
+>> > +	port->line       = pdev->id;
+>> >  
+>> >  	port->irq        = irq->start;
+>> >  	port->irqflags   = 0;
+>> > -- 
+>> > 2.11.0
+>> >
+>> >
+>> > _______________________________________________
+>> > linux-arm-kernel mailing list
+>> > linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+>> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel  
+>> 
 >
 >
 >
