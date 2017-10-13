@@ -1,7 +1,7 @@
 From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v2 01/16] dt-bindings: mvebu-uart: update documentation with extended UART
-Date: Fri, 13 Oct 2017 11:01:45 +0200
-Message-ID: <20171013090200.31034-2-miquel.raynal@free-electrons.com>
+Subject: [PATCH v2 12/16] serial: mvebu-uart: support extended port registers layout
+Date: Fri, 13 Oct 2017 11:01:56 +0200
+Message-ID: <20171013090200.31034-13-miquel.raynal@free-electrons.com>
 References: <20171013090200.31034-1-miquel.raynal@free-electrons.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20171013090200.31034-1-miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
@@ -10,80 +10,84 @@ To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Update the Device Tree binding documentation for the Marvell EBU UART,
-in order to allow describing the extended UART IP block, in addition to
-the already supported standard UART IP. This requires adding a new
-compatible string, the introduction of a clocks property, and extensions
-to the interrupts property.
+Define the missing register offsets and bit fields for the extended
+UART port. Add a second driver data structure filled with its port data,
+selected with the right compatible (marvell,armada-3700-uart-ext).
 
 Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 Reviewed-by: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- .../devicetree/bindings/serial/mvebu-uart.txt      | 49 +++++++++++++++++++---
- 1 file changed, 44 insertions(+), 5 deletions(-)
+ drivers/tty/serial/mvebu-uart.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/mvebu-uart.txt b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
-index d37fabe17bd1..3df3a3fab4bb 100644
---- a/Documentation/devicetree/bindings/serial/mvebu-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
-@@ -1,13 +1,52 @@
--* Marvell UART : Non standard UART used in some of Marvell EBU SoCs (e.g., Armada-3700)
-+* Marvell UART : Non standard UART used in some of Marvell EBU SoCs
-+                 e.g., Armada-3700.
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index 1074054ee5be..16b0a5aa14e2 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -39,10 +39,13 @@
  
- Required properties:
--- compatible: "marvell,armada-3700-uart"
-+- compatible:
-+    - "marvell,armada-3700-uart" for the standard variant of the UART
-+      (32 bytes FIFO, no DMA, level interrupts, 8-bit access to the
-+      FIFO, baudrate limited to 230400).
-+    - "marvell,armada-3700-uart-ext" for the extended variant of the
-+      UART (128 bytes FIFO, DMA, front interrupts, 8-bit or 32-bit
-+      accesses to the FIFO, baudrate unlimited by the dividers).
- - reg: offset and length of the register set for the device.
--- interrupts: device interrupt
-+- clocks: UART reference clock used to derive the baudrate (only
-+      mandatory with "marvell,armada-3700-uart-ext" compatible).
-+- interrupts:
-+    - Must contain three elements for the standard variant of the IP
-+      (marvell,armada-3700-uart): "uart-sum", "uart-tx" and "uart-rx",
-+      respectively the UART sum interrupt, the UART TX interrupt and
-+      UART RX interrupt. A corresponding interrupt-names property must
-+      be defined.
-+    - Must contain two elements for the extended variant of the IP
-+      (marvell,armada-3700-uart-ext): "uart-tx" and "uart-rx",
-+      respectively the UART TX interrupt and the UART RX interrupt. A
-+      corresponding interrupts-names property must be defined.
-+    - For backward compatibility reasons, a single element interrupts
-+      property is also supported for the standard variant of the IP,
-+      containing only the UART sum interrupt. This form is deprecated
-+      and should no longer be used.
+ /* Register Map */
+ #define UART_STD_RBR		0x00
++#define UART_EXT_RBR		0x18
  
- Example:
--	serial@12000 {
-+	uart0: serial@12000 {
- 		compatible = "marvell,armada-3700-uart";
- 		reg = <0x12000 0x200>;
--		interrupts = <43>;
-+		clocks = <&xtalclk>;
-+		interrupts =
-+		<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
-+		<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
-+		<GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "uart-sum", "uart-tx", "uart-rx";
-+		status = "disabled";
-+	};
+ #define UART_STD_TSH		0x04
++#define UART_EXT_TSH		0x1C
+ 
+ #define UART_STD_CTRL1		0x08
++#define UART_EXT_CTRL1		0x04
+ #define  CTRL_SOFT_RST		BIT(31)
+ #define  CTRL_TXFIFO_RST	BIT(15)
+ #define  CTRL_RXFIFO_RST	BIT(14)
+@@ -55,15 +58,20 @@
+ 				CTRL_PAR_ERR_INT | CTRL_OVR_ERR_INT)
+ 
+ #define UART_STD_CTRL2		UART_STD_CTRL1
++#define UART_EXT_CTRL2		0x20
+ #define  CTRL_STD_TX_RDY_INT	BIT(5)
++#define  CTRL_EXT_TX_RDY_INT	BIT(6)
+ #define  CTRL_STD_RX_RDY_INT	BIT(4)
++#define  CTRL_EXT_RX_RDY_INT	BIT(5)
+ 
+ #define UART_STAT		0x0C
+ #define  STAT_TX_FIFO_EMP	BIT(13)
+ #define  STAT_TX_FIFO_FUL	BIT(11)
+ #define  STAT_TX_EMP		BIT(6)
+ #define  STAT_STD_TX_RDY	BIT(5)
++#define  STAT_EXT_TX_RDY	BIT(15)
+ #define  STAT_STD_RX_RDY	BIT(4)
++#define  STAT_EXT_RX_RDY	BIT(14)
+ #define  STAT_BRK_DET		BIT(3)
+ #define  STAT_FRM_ERR		BIT(2)
+ #define  STAT_PAR_ERR		BIT(1)
+@@ -865,12 +873,28 @@ static struct mvebu_uart_driver_data uart_std_driver_data = {
+ 	.flags.stat_rx_rdy = STAT_STD_RX_RDY,
+ };
+ 
++static struct mvebu_uart_driver_data uart_ext_driver_data = {
++	.is_ext = true,
++	.regs.rbr = UART_EXT_RBR,
++	.regs.tsh = UART_EXT_TSH,
++	.regs.ctrl = UART_EXT_CTRL1,
++	.regs.intr = UART_EXT_CTRL2,
++	.flags.ctrl_tx_rdy_int = CTRL_EXT_TX_RDY_INT,
++	.flags.ctrl_rx_rdy_int = CTRL_EXT_RX_RDY_INT,
++	.flags.stat_tx_rdy = STAT_EXT_TX_RDY,
++	.flags.stat_rx_rdy = STAT_EXT_RX_RDY,
++};
 +
-+	uart1: serial@12200 {
-+		compatible = "marvell,armada-3700-uart-ext";
-+		reg = <0x12200 0x30>;
-+		clocks = <&xtalclk>;
-+		interrupts =
-+		<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
-+		<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
-+		interrupt-names = "uart-tx", "uart-rx";
-+		status = "disabled";
- 	};
+ /* Match table for of_platform binding */
+ static const struct of_device_id mvebu_uart_of_match[] = {
+ 	{
+ 		.compatible = "marvell,armada-3700-uart",
+ 		.data = (void *)&uart_std_driver_data,
+ 	},
++	{
++		.compatible = "marvell,armada-3700-uart-ext",
++		.data = (void *)&uart_ext_driver_data,
++	},
+ 	{}
+ };
+ 
 -- 
 2.11.0
 
