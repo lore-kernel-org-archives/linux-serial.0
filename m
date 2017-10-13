@@ -1,54 +1,243 @@
-From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v2 08/16] serial: mvebu-uart: clear state register before IRQ request
-Date: Fri, 13 Oct 2017 11:01:52 +0200
-Message-ID: <20171013090200.31034-9-miquel.raynal@free-electrons.com>
+From: Miquel Raynal <miquel.raynal@free-electrons.com>
+Subject: [PATCH v2 10/16] serial: mvebu-uart: dissociate RX and TX interrupts
+Date: Fri, 13 Oct 2017 11:01:54 +0200
+Message-ID: <20171013090200.31034-11-miquel.raynal@free-electrons.com>
 References: <20171013090200.31034-1-miquel.raynal@free-electrons.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20171013090200.31034-1-miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Allen Yan <yanwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20171013090200.31034-1-miquel.raynal@free-electrons.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jiri Slaby <jslaby@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Antoine Tenart <antoine.tenart@free-electrons.com>, Nadav Haklai <nadavh@marvell.com>, Wilson Ding <dingwei@marvell.com>, Miquel Raynal <miquel.raynal@free-electrons.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Allen Yan <yanwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+While the standard UART port can use a single IRQ that 'sums' both RX
+and TX interrupts, the extended port cannot and has to use two different
+ISR, one for each direction. The standard port also has the hability
+to use two separate interrupts (one for each direction).
 
-When receiving data on RX pin before ->uart_startup() is called, some
-error bits in the state register could be set up (like BRK_DET).
+The logic is then: either there is only one unnamed interrupt on the
+standard port and this interrupt must be used for both directions
+(this is legacy bindings); or all the interrupts must be described and
+named 'uart-sum' (if available), 'uart-rx', 'uart-tx' and two separate
+handlers for each direction will be used.
 
-This is harmless when using only the standard UART (error bits are
-read-only), but may procude an endless loop once in the extended UART
-RX interrupt handler (error bits must be cleared).
-
-Clear the status register in ->uart_startup() to avoid this situation.
-
-Signed-off-by: Allen Yan <yanwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
-Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Reviewed-by: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Suggested-by: Allen Yan <yanwei@marvell.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@free-electrons.com>
 ---
- drivers/tty/serial/mvebu-uart.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+
+Changes since v1: free IRQ with devm_*().
+
+ drivers/tty/serial/mvebu-uart.c | 131 ++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 119 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 5767196ec0a9..6bd0c40008bb 100644
+index e52248ec2689..d0e749f6f052 100644
 --- a/drivers/tty/serial/mvebu-uart.c
 +++ b/drivers/tty/serial/mvebu-uart.c
-@@ -322,6 +322,12 @@ static int mvebu_uart_startup(struct uart_port *port)
- 	writel(CTRL_TXFIFO_RST | CTRL_RXFIFO_RST,
- 	       port->membase + UART_CTRL(port));
- 	udelay(1);
-+
-+	/* Clear the error bits of state register before IRQ request */
-+	ret = readl(port->membase + UART_STAT);
-+	ret |= STAT_BRK_ERR;
-+	writel(ret, port->membase + UART_STAT);
-+
- 	writel(CTRL_BRK_INT, port->membase + UART_CTRL(port));
+@@ -79,7 +79,16 @@
+ #define MVEBU_UART_TYPE		"mvebu-uart"
+ #define DRIVER_NAME		"mvebu_serial"
  
- 	ctl = readl(port->membase + UART_INTR(port));
+-/* Register offsets, different depending on the UART */
++enum {
++	/* Either there is only one summed IRQ... */
++	UART_IRQ_SUM = 0,
++	/* ...or there are two separate IRQ for RX and TX */
++	UART_RX_IRQ = 0,
++	UART_TX_IRQ,
++	UART_IRQ_COUNT
++};
++
++/* Diverging register offsets */
+ struct uart_regs_layout {
+ 	unsigned int rbr;
+ 	unsigned int tsh;
+@@ -106,6 +115,8 @@ struct mvebu_uart_driver_data {
+ struct mvebu_uart {
+ 	struct uart_port *port;
+ 	struct clk *clk;
++	int irq[UART_IRQ_COUNT];
++	unsigned char __iomem *nb;
+ 	struct mvebu_uart_driver_data *data;
+ };
+ 
+@@ -313,9 +324,32 @@ static irqreturn_t mvebu_uart_isr(int irq, void *dev_id)
+ 	unsigned int st = readl(port->membase + UART_STAT);
+ 
+ 	if (st & (STAT_RX_RDY(port) | STAT_OVR_ERR | STAT_FRM_ERR |
++		  STAT_BRK_DET))
++		mvebu_uart_rx_chars(port, st);
++
++	if (st & STAT_TX_RDY(port))
++		mvebu_uart_tx_chars(port, st);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t mvebu_uart_rx_isr(int irq, void *dev_id)
++{
++	struct uart_port *port = (struct uart_port *)dev_id;
++	unsigned int st = readl(port->membase + UART_STAT);
++
++	if (st & (STAT_RX_RDY(port) | STAT_OVR_ERR | STAT_FRM_ERR |
+ 			STAT_BRK_DET))
+ 		mvebu_uart_rx_chars(port, st);
+ 
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t mvebu_uart_tx_isr(int irq, void *dev_id)
++{
++	struct uart_port *port = (struct uart_port *)dev_id;
++	unsigned int st = readl(port->membase + UART_STAT);
++
+ 	if (st & STAT_TX_RDY(port))
+ 		mvebu_uart_tx_chars(port, st);
+ 
+@@ -324,6 +358,7 @@ static irqreturn_t mvebu_uart_isr(int irq, void *dev_id)
+ 
+ static int mvebu_uart_startup(struct uart_port *port)
+ {
++	struct mvebu_uart *mvuart = to_mvuart(port);
+ 	unsigned int ctl;
+ 	int ret;
+ 
+@@ -342,11 +377,38 @@ static int mvebu_uart_startup(struct uart_port *port)
+ 	ctl |= CTRL_RX_RDY_INT(port);
+ 	writel(ctl, port->membase + UART_INTR(port));
+ 
+-	ret = request_irq(port->irq, mvebu_uart_isr, port->irqflags,
+-			  DRIVER_NAME, port);
+-	if (ret) {
+-		dev_err(port->dev, "failed to request irq\n");
+-		return ret;
++	if (!mvuart->irq[UART_TX_IRQ]) {
++		/* Old bindings with just one interrupt (UART0 only) */
++		ret = devm_request_irq(port->dev, mvuart->irq[UART_IRQ_SUM],
++				       mvebu_uart_isr, port->irqflags,
++				       dev_name(port->dev), port);
++		if (ret) {
++			dev_err(port->dev, "unable to request IRQ %d\n",
++				mvuart->irq[UART_IRQ_SUM]);
++			return ret;
++		}
++	} else {
++		/* New bindings with an IRQ for RX and TX (both UART) */
++		ret = devm_request_irq(port->dev, mvuart->irq[UART_RX_IRQ],
++				       mvebu_uart_rx_isr, port->irqflags,
++				       dev_name(port->dev), port);
++		if (ret) {
++			dev_err(port->dev, "unable to request IRQ %d\n",
++				mvuart->irq[UART_RX_IRQ]);
++			return ret;
++		}
++
++		ret = devm_request_irq(port->dev, mvuart->irq[UART_TX_IRQ],
++				       mvebu_uart_tx_isr, port->irqflags,
++				       dev_name(port->dev),
++				       port);
++		if (ret) {
++			dev_err(port->dev, "unable to request IRQ %d\n",
++				mvuart->irq[UART_TX_IRQ]);
++			devm_free_irq(port->dev, mvuart->irq[UART_RX_IRQ],
++				      port);
++			return ret;
++		}
+ 	}
+ 
+ 	return 0;
+@@ -354,9 +416,16 @@ static int mvebu_uart_startup(struct uart_port *port)
+ 
+ static void mvebu_uart_shutdown(struct uart_port *port)
+ {
++	struct mvebu_uart *mvuart = to_mvuart(port);
++
+ 	writel(0, port->membase + UART_INTR(port));
+ 
+-	free_irq(port->irq, port);
++	if (!mvuart->irq[UART_TX_IRQ]) {
++		devm_free_irq(port->dev, mvuart->irq[UART_IRQ_SUM], port);
++	} else {
++		devm_free_irq(port->dev, mvuart->irq[UART_RX_IRQ], port);
++		devm_free_irq(port->dev, mvuart->irq[UART_TX_IRQ], port);
++	}
+ }
+ 
+ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+@@ -661,15 +730,14 @@ static int uart_num_counter;
+ static int mvebu_uart_probe(struct platform_device *pdev)
+ {
+ 	struct resource *reg = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+ 	const struct of_device_id *match = of_match_device(mvebu_uart_of_match,
+ 							   &pdev->dev);
+ 	struct uart_port *port;
+ 	struct mvebu_uart *mvuart;
+-	int ret, id;
++	int ret, id, irq;
+ 
+-	if (!reg || !irq) {
+-		dev_err(&pdev->dev, "no registers/irq defined\n");
++	if (!reg) {
++		dev_err(&pdev->dev, "no registers defined\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -700,7 +768,12 @@ static int mvebu_uart_probe(struct platform_device *pdev)
+ 	port->flags      = UPF_FIXED_PORT;
+ 	port->line       = pdev->id;
+ 
+-	port->irq        = irq->start;
++	/*
++	 * IRQ number is not stored in this structure because we may have two of
++	 * them per port (RX and TX). Instead, use the driver UART structure
++	 * array so called ->irq[].
++	 */
++	port->irq        = 0;
+ 	port->irqflags   = 0;
+ 	port->mapbase    = reg->start;
+ 
+@@ -735,6 +808,40 @@ static int mvebu_uart_probe(struct platform_device *pdev)
+ 			port->uartclk = clk_get_rate(mvuart->clk);
+ 	}
+ 
++	/* Manage interrupts */
++	memset(mvuart->irq, 0, UART_IRQ_COUNT);
++	if (platform_irq_count(pdev) == 1) {
++		/* Old bindings: no name on the single unamed UART0 IRQ */
++		irq = platform_get_irq(pdev, 0);
++		if (irq < 0) {
++			dev_err(&pdev->dev, "unable to get UART IRQ\n");
++			return irq;
++		}
++
++		mvuart->irq[UART_IRQ_SUM] = irq;
++	} else {
++		/*
++		 * New bindings: named interrupts (RX, TX) for both UARTS,
++		 * only make use of uart-rx and uart-tx interrupts, do not use
++		 * uart-sum of UART0 port.
++		 */
++		irq = platform_get_irq_byname(pdev, "uart-rx");
++		if (irq < 0) {
++			dev_err(&pdev->dev, "unable to get 'uart-rx' IRQ\n");
++			return irq;
++		}
++
++		mvuart->irq[UART_RX_IRQ] = irq;
++
++		irq = platform_get_irq_byname(pdev, "uart-tx");
++		if (irq < 0) {
++			dev_err(&pdev->dev, "unable to get 'uart-tx' IRQ\n");
++			return irq;
++		}
++
++		mvuart->irq[UART_TX_IRQ] = irq;
++	}
++
+ 	/* UART Soft Reset*/
+ 	writel(CTRL_SOFT_RST, port->membase + UART_CTRL(port));
+ 	udelay(1);
 -- 
 2.11.0
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
