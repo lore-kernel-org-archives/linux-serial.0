@@ -1,86 +1,42 @@
-From: Miquel Raynal <miquel.raynal@free-electrons.com>
-Subject: [PATCH v2 04/16] serial: mvebu-uart: support probe of multiple ports
-Date: Fri, 13 Oct 2017 11:01:48 +0200
-Message-ID: <20171013090200.31034-5-miquel.raynal@free-electrons.com>
+From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH v2 02/16] pinctrl: dt-bindings: Fix A37xx uart2 group name
+Date: Fri, 13 Oct 2017 11:01:46 +0200
+Message-ID: <20171013090200.31034-3-miquel.raynal@free-electrons.com>
 References: <20171013090200.31034-1-miquel.raynal@free-electrons.com>
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20171013090200.31034-1-miquel.raynal@free-electrons.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jiri Slaby <jslaby@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Antoine Tenart <antoine.tenart@free-electrons.com>, Nadav Haklai <nadavh@marvell.com>, Wilson Ding <dingwei@marvell.com>, Allen Yan <yanwei@marvell.com>, Miquel Raynal <miquel.raynal@free-electrons.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20171013090200.31034-1-miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Allen Yan <yanwei@marvell.com>
+Fix a typo in A37xx pin controllers documentation about uart2 pin group.
 
-Until now, the mvebu-uart driver only supported probing a single UART
-port. However, some platforms have multiple instances of this UART
-controller, and therefore the driver should support multiple ports.
-
-In order to achieve this, we make sure to assign port->line properly,
-instead of hardcoding it to zero.
-
-Signed-off-by: Allen Yan <yanwei@marvell.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@free-electrons.com>
+Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Reviewed-by: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
+ .../devicetree/bindings/pinctrl/marvell,armada-37xx-pinctrl.txt       | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Changes since v1: using multiple UART ports with this driver is not a
-problem anymore if not using a device tree.
-
- drivers/tty/serial/mvebu-uart.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 7e0a3e9fee15..f3c7271db32b 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -547,20 +547,36 @@ static struct uart_driver mvebu_uart_driver = {
- #endif
- };
+diff --git a/Documentation/devicetree/bindings/pinctrl/marvell,armada-37xx-pinctrl.txt b/Documentation/devicetree/bindings/pinctrl/marvell,armada-37xx-pinctrl.txt
+index f64060908d5a..c7c088d2dd50 100644
+--- a/Documentation/devicetree/bindings/pinctrl/marvell,armada-37xx-pinctrl.txt
++++ b/Documentation/devicetree/bindings/pinctrl/marvell,armada-37xx-pinctrl.txt
+@@ -97,8 +97,8 @@ group spi_quad
+  - pins 15-16
+  - functions spi, gpio
  
-+/* Counter to keep track of each UART port id when not using CONFIG_OF */
-+static int uart_num_counter;
-+
- static int mvebu_uart_probe(struct platform_device *pdev)
- {
- 	struct resource *reg = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	struct resource *irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	struct uart_port *port;
- 	struct mvebu_uart_data *data;
--	int ret;
-+	int ret, id;
+-group uart_2
+- - pins 9-10
++group uart2
++ - pins 9-10 and 18-19
+  - functions uart, gpio
  
- 	if (!reg || !irq) {
- 		dev_err(&pdev->dev, "no registers/irq defined\n");
- 		return -EINVAL;
- 	}
- 
--	port = &mvebu_uart_ports[0];
-+	/* Assume that all UART ports have a DT alias or none has */
-+	id = of_alias_get_id(pdev->dev.of_node, "serial");
-+	if (!pdev->dev.of_node || id < 0)
-+		pdev->id = uart_num_counter++;
-+	else
-+		pdev->id = id;
-+
-+	if (pdev->id >= MVEBU_NR_UARTS) {
-+		dev_err(&pdev->dev, "cannot have more than %d UART ports\n",
-+			MVEBU_NR_UARTS);
-+		return -EINVAL;
-+	}
-+
-+	port = &mvebu_uart_ports[pdev->id];
- 
- 	spin_lock_init(&port->lock);
- 
-@@ -572,7 +588,7 @@ static int mvebu_uart_probe(struct platform_device *pdev)
- 	port->fifosize   = 32;
- 	port->iotype     = UPIO_MEM32;
- 	port->flags      = UPF_FIXED_PORT;
--	port->line       = 0; /* single port: force line number to  0 */
-+	port->line       = pdev->id;
- 
- 	port->irq        = irq->start;
- 	port->irqflags   = 0;
+ Available groups and functions for the South bridge:
 -- 
 2.11.0
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
