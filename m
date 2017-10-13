@@ -1,42 +1,61 @@
-From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v2 02/16] pinctrl: dt-bindings: Fix A37xx uart2 group name
-Date: Fri, 13 Oct 2017 11:01:46 +0200
-Message-ID: <20171013090200.31034-3-miquel.raynal@free-electrons.com>
+From: Miquel Raynal <miquel.raynal@free-electrons.com>
+Subject: [PATCH v2 03/16] serial: mvebu-uart: use driver name when requesting an interrupt
+Date: Fri, 13 Oct 2017 11:01:47 +0200
+Message-ID: <20171013090200.31034-4-miquel.raynal@free-electrons.com>
 References: <20171013090200.31034-1-miquel.raynal@free-electrons.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20171013090200.31034-1-miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20171013090200.31034-1-miquel.raynal@free-electrons.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jiri Slaby <jslaby@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Antoine Tenart <antoine.tenart@free-electrons.com>, Nadav Haklai <nadavh@marvell.com>, Wilson Ding <dingwei@marvell.com>, Yehuda Yitschak <yehuday@marvell.com>, Miquel Raynal <miquel.raynal@free-electrons.com>
 List-Id: linux-serial@vger.kernel.org
 
-Fix a typo in A37xx pin controllers documentation about uart2 pin group.
+From: Yehuda Yitschak <yehuday@marvell.com>
 
-Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Reviewed-by: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Use the driver name when requesting an interrupt for consistency.
+
+Avoids possible confusion with DW8250 driver interrupt names in
+/proc/interrupts.
+
+Signed-off-by: Yehuda Yitschak <yehuday@marvell.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@free-electrons.com>
+Reviewed-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
 ---
- .../devicetree/bindings/pinctrl/marvell,armada-37xx-pinctrl.txt       | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/mvebu-uart.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/marvell,armada-37xx-pinctrl.txt b/Documentation/devicetree/bindings/pinctrl/marvell,armada-37xx-pinctrl.txt
-index f64060908d5a..c7c088d2dd50 100644
---- a/Documentation/devicetree/bindings/pinctrl/marvell,armada-37xx-pinctrl.txt
-+++ b/Documentation/devicetree/bindings/pinctrl/marvell,armada-37xx-pinctrl.txt
-@@ -97,8 +97,8 @@ group spi_quad
-  - pins 15-16
-  - functions spi, gpio
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index 45b57c294d13..7e0a3e9fee15 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -90,6 +90,7 @@
+ #define MVEBU_NR_UARTS		1
  
--group uart_2
-- - pins 9-10
-+group uart2
-+ - pins 9-10 and 18-19
-  - functions uart, gpio
+ #define MVEBU_UART_TYPE		"mvebu-uart"
++#define DRIVER_NAME		"mvebu_serial"
  
- Available groups and functions for the South bridge:
+ static struct uart_port mvebu_uart_ports[MVEBU_NR_UARTS];
+ 
+@@ -287,8 +288,8 @@ static int mvebu_uart_startup(struct uart_port *port)
+ 	udelay(1);
+ 	writel(CTRL_RX_INT, port->membase + UART_CTRL);
+ 
+-	ret = request_irq(port->irq, mvebu_uart_isr, port->irqflags, "serial",
+-			  port);
++	ret = request_irq(port->irq, mvebu_uart_isr, port->irqflags,
++			  DRIVER_NAME, port);
+ 	if (ret) {
+ 		dev_err(port->dev, "failed to request irq\n");
+ 		return ret;
+@@ -538,7 +539,7 @@ console_initcall(mvebu_uart_console_init);
+ 
+ static struct uart_driver mvebu_uart_driver = {
+ 	.owner			= THIS_MODULE,
+-	.driver_name		= "mvebu_serial",
++	.driver_name		= DRIVER_NAME,
+ 	.dev_name		= "ttyMV",
+ 	.nr			= MVEBU_NR_UARTS,
+ #ifdef CONFIG_SERIAL_MVEBU_CONSOLE
 -- 
 2.11.0
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
