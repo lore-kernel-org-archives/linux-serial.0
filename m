@@ -1,40 +1,26 @@
-From: Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH v3 2/2] ACPI / scan: Fix enumeration for special UART
- devices
-Date: Sun, 15 Oct 2017 11:57:23 +0200
-Message-ID: <20171015095723.GA15524@wunner.de>
-References: <1507710734-32520-1-git-send-email-frederic.danis.oss@gmail.com>
- <1507710734-32520-3-git-send-email-frederic.danis.oss@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2 02/16] pinctrl: dt-bindings: Fix A37xx uart2 group name
+Date: Mon, 16 Oct 2017 13:56:26 +0200
+Message-ID: <CACRpkdZJxbo1Eb3jwZjxWRfoeeeCbH+88vXVupENdCpPVQpVaA@mail.gmail.com>
+References: <20171013090200.31034-1-miquel.raynal@free-electrons.com> <20171013090200.31034-3-miquel.raynal@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1507710734-32520-3-git-send-email-frederic.danis.oss@gmail.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: robh@kernel.org, marcel@holtmann.org, sre@kernel.org, loic.poulain@gmail.com, johan@kernel.org, hdegoede@redhat.com, rafael@kernel.org, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Ronald =?iso-8859-1?Q?Tschal=E4r?= <ronald@innovation.ch>, "Peter Y. Chuang" <peteryuchuang@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20171013090200.31034-3-miquel.raynal@free-electrons.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Miquel Raynal <miquel.raynal@free-electrons.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jiri Slaby <jslaby@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Antoine Tenart <antoine.tenart@free-electrons.com>, Nadav Haklai <nadavh@marvell.com>, Wilson Ding <dingwei@marvell.>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 11, 2017 at 10:32:14AM +0200, Frédéric Danis wrote:
-> UART devices is expected to be enumerated by SerDev subsystem.
-> 
-> During ACPI scan, serial devices behind SPI, I2C or UART buses are not
-> enumerated, allowing them to be enumerated by their respective parents.
-> 
-> Rename *spi_i2c_slave* to *serial_bus_slave* as this will be used for serial
-> devices on serial buses (SPI, I2C or UART).
-> 
-> On Macs an empty ResourceTemplate is returned for uart slaves.
-> Instead the device properties "baud", "parity", "dataBits", "stopBits" are
-> provided. Add a check for "baud" in acpi_is_serial_bus_slave().
+On Fri, Oct 13, 2017 at 11:01 AM, Miquel Raynal
+<miquel.raynal@free-electrons.com> wrote:
 
-Tested-by: Ronald Tschalär <ronald@innovation.ch>
-Tested-by: Peter Y. Chuang <peteryuchuang@gmail.com>
+> Fix a typo in A37xx pin controllers documentation about uart2 pin group.
+>
+> Signed-off-by: Miquel Raynal <miquel.raynal@free-electrons.com>
+> Reviewed-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
 
-Ronald and Peter both report success for the above-mentioned Mac-specific
-change on GitHub: https://github.com/l1k/linux/pull/1#issuecomment-336126330
+Patch applied to the pinctrl tree.
 
-Thanks,
-
-Lukas
+Yours,
+Linus Walleij
