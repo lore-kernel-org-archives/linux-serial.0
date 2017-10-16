@@ -1,68 +1,58 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH 2/2] serdev: ttyport: add missing open() error handling
-Date: Mon, 16 Oct 2017 15:06:20 +0200
-Message-ID: <20171016130620.5404-2-johan@kernel.org>
-References: <20171016130620.5404-1-johan@kernel.org>
+From: Kees Cook <keescook@chromium.org>
+Subject: [PATCH] serial: m32r_sio: Convert timers to use timer_setup()
+Date: Mon, 16 Oct 2017 16:27:37 -0700
+Message-ID: <20171016232737.GA101162@beast>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171016130620.5404-1-johan@kernel.org>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add missing error handling for tty-driver open() which may fail (e.g. if
-resource allocation fails or if a port is being disconnected).
+In preparation for unconditionally passing the struct timer_list pointer to
+all timer callbacks, switch to using the new timer_setup() and from_timer()
+to pass the timer pointer explicitly.
 
-Note that close() must be called also in case of failed open() and that
-the operation sanity check is amended to catch buggy drivers.
-
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/tty/serdev/serdev-ttyport.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/tty/serial/m32r_sio.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-index 404f3fd070a7..5b09ce920117 100644
---- a/drivers/tty/serdev/serdev-ttyport.c
-+++ b/drivers/tty/serdev/serdev-ttyport.c
-@@ -96,16 +96,21 @@ static int ttyport_open(struct serdev_controller *ctrl)
- 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
- 	struct tty_struct *tty;
- 	struct ktermios ktermios;
-+	int ret;
+diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/m32r_sio.c
+index 5b3bd9511993..5f4003ad32b6 100644
+--- a/drivers/tty/serial/m32r_sio.c
++++ b/drivers/tty/serial/m32r_sio.c
+@@ -511,9 +511,9 @@ static void serial_unlink_irq_chain(struct uart_sio_port *up)
+ /*
+  * This function is used to handle ports that do not have an interrupt.
+  */
+-static void m32r_sio_timeout(unsigned long data)
++static void m32r_sio_timeout(struct timer_list *t)
+ {
+-	struct uart_sio_port *up = (struct uart_sio_port *)data;
++	struct uart_sio_port *up = from_timer(up, t, timer);
+ 	unsigned int timeout;
+ 	unsigned int sts;
  
- 	tty = tty_init_dev(serport->tty_drv, serport->tty_idx);
- 	if (IS_ERR(tty))
- 		return PTR_ERR(tty);
- 	serport->tty = tty;
+@@ -907,8 +907,7 @@ static void __init m32r_sio_register_ports(struct uart_driver *drv)
  
--	if (!tty->ops->open)
-+	if (!tty->ops->open || !tty->ops->close) {
-+		ret = -ENODEV;
- 		goto err_unlock;
-+	}
+ 		up->port.line = i;
+ 		up->port.ops = &m32r_sio_pops;
+-		init_timer(&up->timer);
+-		up->timer.function = m32r_sio_timeout;
++		timer_setup(&up->timer, m32r_sio_timeout, 0);
  
--	tty->ops->open(serport->tty, NULL);
-+	ret = tty->ops->open(serport->tty, NULL);
-+	if (ret)
-+		goto err_close;
- 
- 	/* Bring the UART into a known 8 bits no parity hw fc state */
- 	ktermios = tty->termios;
-@@ -123,11 +128,13 @@ static int ttyport_open(struct serdev_controller *ctrl)
- 	tty_unlock(serport->tty);
- 	return 0;
- 
-+err_close:
-+	tty->ops->close(tty, NULL);
- err_unlock:
- 	tty_unlock(tty);
- 	tty_release_struct(tty, serport->tty_idx);
- 
--	return -ENODEV;
-+	return ret;
- }
- 
- static void ttyport_close(struct serdev_controller *ctrl)
+ 		uart_add_one_port(drv, &up->port);
+ 	}
 -- 
-2.14.2
+2.7.4
+
+
+-- 
+Kees Cook
+Pixel Security
