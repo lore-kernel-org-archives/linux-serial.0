@@ -1,60 +1,41 @@
-From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH] tty: amba-pl011: Convert timers to use timer_setup()
-Date: Mon, 16 Oct 2017 16:28:45 -0700
-Message-ID: <20171016232845.GA101226@beast>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Subject: [PATCH V1 1/1] serial: 8250_fintek: Fix finding base_port with activated SuperIO
+Date: Tue, 17 Oct 2017 14:23:08 +0800
+Message-ID: <1508221388-25001-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, rel+kernel@agilox.net, stable@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, hpeter+linux_kernel@gmail.com, peter_hong@fintek.com.tw
 List-Id: linux-serial@vger.kernel.org
 
-In preparation for unconditionally passing the struct timer_list pointer to
-all timer callbacks, switch to using the new timer_setup() and from_timer()
-to pass the timer pointer explicitly.
+The SuperIO will be configured at boot time by BIOS, but some BIOS
+will not deactivate the SuperIO when the end of configuration. It'll
+lead to mismatch for pdata->base_port in probe_setup_port(). So we'll
+deactivate all SuperIO before activate special base_port in
+fintek_8250_enter_key().
 
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Tested on iBASE MI802.
+
+Cc: stable@vger.kernel.org
+Tested-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
 ---
- drivers/tty/serial/amba-pl011.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/tty/serial/8250/8250_fintek.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 111e6a950779..dab36369f71e 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1078,9 +1078,9 @@ static inline void pl011_dma_rx_stop(struct uart_amba_port *uap)
-  * Every polling, It checks the residue in the dma buffer and transfer
-  * data to the tty. Also, last_residue is updated for the next polling.
-  */
--static void pl011_dma_rx_poll(unsigned long args)
-+static void pl011_dma_rx_poll(struct timer_list *t)
- {
--	struct uart_amba_port *uap = (struct uart_amba_port *)args;
-+	struct uart_amba_port *uap = from_timer(uap, t, dmarx.timer);
- 	struct tty_port *port = &uap->port.state->port;
- 	struct pl011_dmarx_data *dmarx = &uap->dmarx;
- 	struct dma_chan *rxchan = uap->dmarx.chan;
-@@ -1192,9 +1192,7 @@ static void pl011_dma_startup(struct uart_amba_port *uap)
- 			dev_dbg(uap->port.dev, "could not trigger initial "
- 				"RX DMA job, fall back to interrupt mode\n");
- 		if (uap->dmarx.poll_rate) {
--			init_timer(&(uap->dmarx.timer));
--			uap->dmarx.timer.function = pl011_dma_rx_poll;
--			uap->dmarx.timer.data = (unsigned long)uap;
-+			timer_setup(&uap->dmarx.timer, pl011_dma_rx_poll, 0);
- 			mod_timer(&uap->dmarx.timer,
- 				jiffies +
- 				msecs_to_jiffies(uap->dmarx.poll_rate));
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 96cc45f25ee9..b34623914413 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -128,6 +128,9 @@ static int fintek_8250_enter_key(u16 base_port, u8 key)
+ 	if (!request_muxed_region(base_port, 2, "8250_fintek"))
+ 		return -EBUSY;
+ 
++	/* Force to deactive all SuperIO in this base_port */
++	outb(EXIT_KEY, base_port + ADDR_PORT);
++
+ 	outb(key, base_port + ADDR_PORT);
+ 	outb(key, base_port + ADDR_PORT);
+ 	return 0;
 -- 
 2.7.4
-
-
--- 
-Kees Cook
-Pixel Security
