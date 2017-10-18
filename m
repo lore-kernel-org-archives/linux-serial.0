@@ -1,90 +1,62 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: [RFC PATCH 3/3] tty: amba-pl011: earlycon: Don't drain the
- transmitter after each char
-Date: Wed, 18 Oct 2017 15:14:48 +0100
-Message-ID: <1508336088-3948-4-git-send-email-Dave.Martin@arm.com>
-References: <1508336088-3948-1-git-send-email-Dave.Martin@arm.com>
+From: =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss@gmail.com>
+Subject: Re: [PATCH v3 0/2] ACPI serdev support
+Date: Wed, 18 Oct 2017 16:46:05 +0200
+Message-ID: <ac53458d-c910-2d0a-a2ad-e7d21f8a5be7@gmail.com>
+References: <1507710734-32520-1-git-send-email-frederic.danis.oss@gmail.com>
+ <20171011090354.GS4269@localhost>
+ <CAJZ5v0jPEg5Ow4p0DzPJ9Md7RUTPhZZqCzqP5zmX-pPf9N80=g@mail.gmail.com>
+ <AA38D4FD-5A35-460D-85CF-380BAB933448@holtmann.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1508336088-3948-1-git-send-email-Dave.Martin@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Andre Przywara <andre.przywara@arm.com>, Stephen Boyd <sboyd@codeaurora.org>, Russell King <linux@armlinux.org.uk>, Andy Gross <andy.gross@linaro.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Bhupinder Thakur <bhupinder.thakur@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <AA38D4FD-5A35-460D-85CF-380BAB933448@holtmann.org>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Marcel Holtmann <marcel@holtmann.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <greg@kroah.com>
+Cc: Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Lukas Wunner <lukas@wunner.de>, Hans de Goede <hdegoede@redhat.com>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Currently, the pl011 earlycon implementation waits for the UART
-transmitter to drain completely and become idle after each
-character is written.
+Hi Greg, Rafael, Marcel,
 
-This can result in (mostly harmless) delays and stuttering output
-on the wire, and can also lead to poor performance in virtualised
-UART implementations: thrashing between VMs can occur as each
-character gets forcibly drained to the remove sink (dom0 in the Xen
-case) before the source guest writes another character.
+Le 11/10/2017 à 20:32, Marcel Holtmann a écrit :
+> Hi Greg,
+>
+>>>> Add ACPI support for serial attached devices.
+>>>>
+>>>> Currently, serial devices are not set as enumerated during ACPI scan for SPI
+>>>> or i2c buses (but not for UART). This should also be done for UART serial
+>>>> devices.
+>>>> I renamed *spi_i2c_slave* to *serial_bus_slave* to reflect this.
+>>>>
+>>>> This needs Johan Hovold's "serdev: fix registration of second slave" patch.
+>>> In theory this series could go in through the acpi-tree without my
+>>> fix. It would only affect an error case where an unlikely failure to
+>>> register an ACPI serdev device, would prevent the tty-class device from
+>>> being registered instead of the controller. That is, something we can
+>>> live with until this all converges in 4.15-rc1 if needed.
+>>>
+>>> That said, I think we should consider taking all serdev changes, and
+>>> therefore also the ACPI patch, through the tty tree instead in order to
+>>> avoid merge conflicts. Rafael?
+>> OK
+>>
+>> Please feel free to add
+>>
+>> Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>>
+>> to the ACPI core change.
+>>
+>> And I will assume that this series will go in via the tty tree.
+> you have to take these two patches now via the TTY tree now. In case you already marked them as someone else problem ;)
+>
+> Regards
+>
+> Marcel
 
-However, the semantics of earlycon don't allow callers to write one
-character at a time with the expectation of completion: the only
-interface to exposed to earlycon writes a whole string before
-returning.
+Is there any problem I missed with those patches?
+Do I have to re-send them?
 
-So, this patch eliminates the draining of the transmitted from
-pl011_putc() and moves if to the the and of pl011_early_write()
-instead.  From the earlycon caller's point of view, the effect
-should be faster but otherwise identical: either way, all the
-characters have gone out onto the wire before the write method
-returns.
+Regards,
 
-Signed-off-by: Dave Martin <Dave.Martin@arm.com>
-
----
-
-For background on the virtualisation issue, see [1].  Although
-virtual UART implementations should be working around this issue
-somehow for compatibility with current and older kernels, this patch
-should promote better interoperation, and earlycon throughput should
-improve a bit on real hardware too.
-
-[1] Re: [Xen-devel] [PATCH 26/27 v12] arm/xen: vpl011: Fix the slow
-early console SBSA UART output
-https://lists.xenproject.org/archives/html/xen-devel/2017-10/msg01949.html
----
- drivers/tty/serial/amba-pl011.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 084ed3f..e27059a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2444,16 +2444,18 @@ static void pl011_putc(struct uart_port *port, int c)
- 	while (__pl011_read(port, reg_offset, REG_FR) & UART01x_FR_TXFF)
- 		cpu_relax();
- 	__pl011_write(c, port, reg_offset, REG_DR);
--	while (!__pl011_tx_empty(port, reg_offset, vendor))
--		cpu_relax();
- }
- 
- static void pl011_early_write(struct console *con, const char *s, unsigned n)
- {
- 	struct earlycon_device *dev = con->data;
-+	const struct vendor_data *vendor = dev->port.private_data;
-+	const u16 *reg_offset = vendor->reg_offset;
- 
- 	wmb();
- 	uart_console_write(&dev->port, s, n, pl011_putc);
-+	while (!__pl011_tx_empty(&dev->port, reg_offset, vendor))
-+		cpu_relax();
- }
- 
- static int __init
--- 
-2.1.4
+Fred
