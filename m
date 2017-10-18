@@ -1,50 +1,32 @@
-From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v8 1/5] serdev: Make .remove in struct serdev_device_driver optional
-Date: Wed, 18 Oct 2017 10:01:32 -0700
-Message-ID: <20171018170136.12347-2-andrew.smirnov@gmail.com>
-References: <20171018170136.12347-1-andrew.smirnov@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171018170136.12347-1-andrew.smirnov@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH V1 1/1] serial: 8250_fintek: Fix finding base_port with
+ activated SuperIO
+Date: Wed, 18 Oct 2017 21:04:35 +0100
+Message-ID: <20171018210435.576fe152@alans-desktop>
+References: <1508221388-25001-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <1508221388-25001-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Sender: stable-owner@vger.kernel.org
+To: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, rel+kernel@agilox.net, stable@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, hpeter+linux_kernel@gmail.com, peter_hong@fintek.com.tw
 List-Id: linux-serial@vger.kernel.org
 
-Using devres infrastructure it is possible to wirte a serdev driver
-that doesn't have any code that needs to be called as a part of
-.remove. Add code to make .remove optional.
+On Tue, 17 Oct 2017 14:23:08 +0800
+"Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com> wrote:
 
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>
-Cc: cphealy@gmail.com
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Johan Hovold <johan@kernel.org>
-Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
----
- drivers/tty/serdev/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> The SuperIO will be configured at boot time by BIOS, but some BIOS
+> will not deactivate the SuperIO when the end of configuration. It'll
+> lead to mismatch for pdata->base_port in probe_setup_port(). So we'll
+> deactivate all SuperIO before activate special base_port in
+> fintek_8250_enter_key().
+> 
+> Tested on iBASE MI802.
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index c68fb3a8ea1c..f500f6a2ca88 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -252,8 +252,8 @@ static int serdev_drv_probe(struct device *dev)
- static int serdev_drv_remove(struct device *dev)
- {
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
--
--	sdrv->remove(to_serdev_device(dev));
-+	if (sdrv->remove)
-+		sdrv->remove(to_serdev_device(dev));
- 	return 0;
- }
- 
--- 
-2.13.5
+Good point.
+
+Reviewd-by: Alan Cox <alan@linux.intel.com>
+
+Alan
