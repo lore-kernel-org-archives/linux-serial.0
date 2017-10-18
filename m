@@ -1,66 +1,101 @@
-From: Greg Kroah-Hartman <greg@kroah.com>
-Subject: Re: [PATCH v3 0/2] ACPI serdev support
-Date: Wed, 18 Oct 2017 16:56:08 +0200
-Message-ID: <20171018145608.GB27138@kroah.com>
-References: <1507710734-32520-1-git-send-email-frederic.danis.oss@gmail.com>
- <20171011090354.GS4269@localhost>
- <CAJZ5v0jPEg5Ow4p0DzPJ9Md7RUTPhZZqCzqP5zmX-pPf9N80=g@mail.gmail.com>
- <AA38D4FD-5A35-460D-85CF-380BAB933448@holtmann.org>
- <ac53458d-c910-2d0a-a2ad-e7d21f8a5be7@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <ac53458d-c910-2d0a-a2ad-e7d21f8a5be7@gmail.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Lukas Wunner <lukas@wunner.de>, Hans de Goede <hdegoede@redhat.com>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+From: Andrey Smirnov <andrew.smirnov@gmail.com>
+Subject: [PATCH v8 2/5] serdev: Introduce devm_serdev_device_open()
+Date: Wed, 18 Oct 2017 10:01:33 -0700
+Message-ID: <20171018170136.12347-3-andrew.smirnov@gmail.com>
+References: <20171018170136.12347-1-andrew.smirnov@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171018170136.12347-1-andrew.smirnov@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 18, 2017 at 04:46:05PM +0200, Frédéric Danis wrote:
-> Hi Greg, Rafael, Marcel,
-> 
-> Le 11/10/2017 à 20:32, Marcel Holtmann a écrit :
-> > Hi Greg,
-> > 
-> > > > > Add ACPI support for serial attached devices.
-> > > > > 
-> > > > > Currently, serial devices are not set as enumerated during ACPI scan for SPI
-> > > > > or i2c buses (but not for UART). This should also be done for UART serial
-> > > > > devices.
-> > > > > I renamed *spi_i2c_slave* to *serial_bus_slave* to reflect this.
-> > > > > 
-> > > > > This needs Johan Hovold's "serdev: fix registration of second slave" patch.
-> > > > In theory this series could go in through the acpi-tree without my
-> > > > fix. It would only affect an error case where an unlikely failure to
-> > > > register an ACPI serdev device, would prevent the tty-class device from
-> > > > being registered instead of the controller. That is, something we can
-> > > > live with until this all converges in 4.15-rc1 if needed.
-> > > > 
-> > > > That said, I think we should consider taking all serdev changes, and
-> > > > therefore also the ACPI patch, through the tty tree instead in order to
-> > > > avoid merge conflicts. Rafael?
-> > > OK
-> > > 
-> > > Please feel free to add
-> > > 
-> > > Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > > 
-> > > to the ACPI core change.
-> > > 
-> > > And I will assume that this series will go in via the tty tree.
-> > you have to take these two patches now via the TTY tree now. In case you already marked them as someone else problem ;)
-> > 
-> > Regards
-> > 
-> > Marcel
-> 
-> Is there any problem I missed with those patches?
-> Do I have to re-send them?
+Add code implementing managed version of serdev_device_open() for
+serdev device drivers that "open" the device during driver's lifecycle
+only once (e.g. opened in .probe() and closed in .remove()).
 
-No, they are in my queue, still catching up...
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>
+Cc: cphealy@gmail.com
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Pavel Machek <pavel@ucw.cz>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Johan Hovold <johan@kernel.org>
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+---
+ Documentation/driver-model/devres.txt |  3 +++
+ drivers/tty/serdev/core.c             | 27 +++++++++++++++++++++++++++
+ include/linux/serdev.h                |  1 +
+ 3 files changed, 31 insertions(+)
 
-thanks,
-
-greg k-h
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index 69f08c0f23a8..e9c6b5cfeec1 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -383,6 +383,9 @@ RESET
+   devm_reset_control_get()
+   devm_reset_controller_register()
+ 
++SERDEV
++  devm_serdev_device_open()
++
+ SLAVE DMA ENGINE
+   devm_acpi_dma_controller_register()
+ 
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index f500f6a2ca88..b3a785665c6f 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -116,6 +116,33 @@ void serdev_device_close(struct serdev_device *serdev)
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_close);
+ 
++static void devm_serdev_device_release(struct device *dev, void *dr)
++{
++	serdev_device_close(*(struct serdev_device **)dr);
++}
++
++int devm_serdev_device_open(struct device *dev, struct serdev_device *serdev)
++{
++	struct serdev_device **dr;
++	int ret;
++
++	dr = devres_alloc(devm_serdev_device_release, sizeof(*dr), GFP_KERNEL);
++	if (!dr)
++		return -ENOMEM;
++
++	ret = serdev_device_open(serdev);
++	if (ret) {
++		devres_free(dr);
++		return ret;
++	}
++
++	*dr = serdev;
++	devres_add(dev, dr);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(devm_serdev_device_open);
++
+ void serdev_device_write_wakeup(struct serdev_device *serdev)
+ {
+ 	complete(&serdev->write_comp);
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index e69402d4a8ae..9929063bd45d 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -193,6 +193,7 @@ static inline int serdev_controller_receive_buf(struct serdev_controller *ctrl,
+ 
+ int serdev_device_open(struct serdev_device *);
+ void serdev_device_close(struct serdev_device *);
++int devm_serdev_device_open(struct device *, struct serdev_device *);
+ unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
+ void serdev_device_set_flow_control(struct serdev_device *, bool);
+ int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
+-- 
+2.13.5
