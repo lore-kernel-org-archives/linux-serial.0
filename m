@@ -1,167 +1,34 @@
-From: Miquel RAYNAL <miquel.raynal@free-electrons.com>
-Subject: Re: [PATCH v2 01/16] dt-bindings: mvebu-uart: update documentation
- with extended UART
-Date: Wed, 18 Oct 2017 08:25:31 +0200
-Message-ID: <20171018082531.59a2e5d0@xps13>
-References: <20171013090200.31034-1-miquel.raynal@free-electrons.com>
-        <20171013090200.31034-2-miquel.raynal@free-electrons.com>
-        <20171017220022.kr2qiodln3qfkbwe@rob-hp-laptop>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH 2/2] serdev: ttyport: add missing open() error handling
+Date: Wed, 18 Oct 2017 09:01:57 +0200
+Message-ID: <20171018070157.GC5638@localhost>
+References: <20171016130620.5404-1-johan@kernel.org>
+ <20171016130620.5404-2-johan@kernel.org>
+ <CAL_JsqKe_yLODOuUXaivFC3VMoy9EmgUhb+3LRmw5C3DvtdVKg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20171017220022.kr2qiodln3qfkbwe@rob-hp-laptop>
-Sender: linux-gpio-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqKe_yLODOuUXaivFC3VMoy9EmgUhb+3LRmw5C3DvtdVKg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Jiri Slaby <jslaby@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Antoine Tenart <antoine.tenart@free-electrons.com>, Nadav Haklai <nadavh@marvell.com>, Wilson Ding <dingwei@marvell.com>
+Cc: Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
-
-On Tue, 17 Oct 2017 17:00:22 -0500
-Rob Herring <robh@kernel.org> wrote:
-
-> On Fri, Oct 13, 2017 at 11:01:45AM +0200, Miquel Raynal wrote:
-> > Update the Device Tree binding documentation for the Marvell EBU
-> > UART, in order to allow describing the extended UART IP block, in
-> > addition to the already supported standard UART IP. This requires
-> > adding a new compatible string, the introduction of a clocks
-> > property, and extensions to the interrupts property.
-> > 
-> > Signed-off-by: Miquel Raynal <miquel.raynal@free-electrons.com>
-> > Reviewed-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
-> > ---
-> >  .../devicetree/bindings/serial/mvebu-uart.txt      | 49
-> > +++++++++++++++++++--- 1 file changed, 44 insertions(+), 5
-> > deletions(-)
-> > 
-> > diff --git
-> > a/Documentation/devicetree/bindings/serial/mvebu-uart.txt
-> > b/Documentation/devicetree/bindings/serial/mvebu-uart.txt index
-> > d37fabe17bd1..3df3a3fab4bb 100644 ---
-> > a/Documentation/devicetree/bindings/serial/mvebu-uart.txt +++
-> > b/Documentation/devicetree/bindings/serial/mvebu-uart.txt @@ -1,13
-> > +1,52 @@ -* Marvell UART : Non standard UART used in some of
-> > Marvell EBU SoCs (e.g., Armada-3700) +* Marvell UART : Non standard
-> > UART used in some of Marvell EBU SoCs
-> > +                 e.g., Armada-3700.
-> >  
-> >  Required properties:
-> > -- compatible: "marvell,armada-3700-uart"
-> > +- compatible:
-> > +    - "marvell,armada-3700-uart" for the standard variant of the
-> > UART
-> > +      (32 bytes FIFO, no DMA, level interrupts, 8-bit access to the
-> > +      FIFO, baudrate limited to 230400).
-> > +    - "marvell,armada-3700-uart-ext" for the extended variant of
-> > the
-> > +      UART (128 bytes FIFO, DMA, front interrupts, 8-bit or 32-bit
-> > +      accesses to the FIFO, baudrate unlimited by the dividers).  
+On Tue, Oct 17, 2017 at 11:08:53AM -0500, Rob Herring wrote:
+> On Mon, Oct 16, 2017 at 8:06 AM, Johan Hovold <johan@kernel.org> wrote:
+> > Add missing error handling for tty-driver open() which may fail (e.g. if
+> > resource allocation fails or if a port is being disconnected).
+> >
+> > Note that close() must be called also in case of failed open() and that
+> > the operation sanity check is amended to catch buggy drivers.
 > 
-> What do you call the next extended version?
-> marvell,armada-3700-uart-ext-ext?
+> That's a very odd pattern. Wouldn't a must_check annotation be enough?
 
-I don't know what you mean by "next extended version"?
+An odd pattern indeed, but that's how the TTY drivers are implemented
+and the interface documented (i.e. that close() will be called also
+after failed open()).
 
-> 
-> This is different versions of UART on the same chip?
+Not sure how a must_check could help here. 
 
-Today in mainline there is support for the A3700 UART IP.
-This series add support for another IP, based on the A3700, but with
-extended features (explaining the -ext suffix).
-
-Can you precise what is bothering you?
-
-> 
-> >  - reg: offset and length of the register set for the device.
-> > -- interrupts: device interrupt
-> > +- clocks: UART reference clock used to derive the baudrate (only
-> > +      mandatory with "marvell,armada-3700-uart-ext" compatible).  
-> 
-> How is this optional? The freq is fixed if not present? If so, what 
-> frequency?
-
-The "clocks" property should not be optional at all but that is how the
-bindings were handled before this series, so I can't tell now that
-this property is mandatory as it would break compatibility with older
-versions of the driver.
-
-When no clock is provided, the frequency is fixed by the bootloader
-and cannot be changed. There is no standard frequency for it but the
-one chosen by the bootloader often is 115200 as the UART is usually
-used as the serial console.
-
-Because the bootloader does only initialize the UART in use for the
-serial console, the clock is mandatory when using another port or it
-will not work at all.
-
-> 
-> > +- interrupts:
-> > +    - Must contain three elements for the standard variant of the
-> > IP
-> > +      (marvell,armada-3700-uart): "uart-sum", "uart-tx" and
-> > "uart-rx",
-> > +      respectively the UART sum interrupt, the UART TX interrupt
-> > and
-> > +      UART RX interrupt. A corresponding interrupt-names property
-> > must
-> > +      be defined.
-> > +    - Must contain two elements for the extended variant of the IP
-> > +      (marvell,armada-3700-uart-ext): "uart-tx" and "uart-rx",
-> > +      respectively the UART TX interrupt and the UART RX
-> > interrupt. A
-> > +      corresponding interrupts-names property must be defined.
-> > +    - For backward compatibility reasons, a single element
-> > interrupts
-> > +      property is also supported for the standard variant of the
-> > IP,
-> > +      containing only the UART sum interrupt. This form is
-> > deprecated
-> > +      and should no longer be used.
-> >  
-> >  Example:
-> > -	serial@12000 {
-> > +	uart0: serial@12000 {
-> >  		compatible = "marvell,armada-3700-uart";
-> >  		reg = <0x12000 0x200>;
-> > -		interrupts = <43>;
-> > +		clocks = <&xtalclk>;
-> > +		interrupts =
-> > +		<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
-> > +		<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
-> > +		<GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
-> > +		interrupt-names = "uart-sum", "uart-tx", "uart-rx";
-> > +		status = "disabled";  
-> 
-> Don't show status in examples.
-
-Ok.
-
-> 
-> > +	};
-> > +
-> > +	uart1: serial@12200 {
-> > +		compatible = "marvell,armada-3700-uart-ext";
-> > +		reg = <0x12200 0x30>;
-> > +		clocks = <&xtalclk>;
-> > +		interrupts =
-> > +		<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
-> > +		<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
-> > +		interrupt-names = "uart-tx", "uart-rx";
-> > +		status = "disabled";
-> >  	};
-> > -- 
-> > 2.11.0
-> > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe
-> > devicetree" in the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html  
-
-Thanks,
-Miquèl
-
--- 
-Miquel Raynal, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Johan
