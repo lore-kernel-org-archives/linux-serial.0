@@ -1,41 +1,40 @@
-From: Troy Kisky <troy.kisky@boundarydevices.com>
-Subject: Re: [PATCH v2 3/3] tty: serial: imx: remove imx_disable_rx_int
-Date: Fri, 20 Oct 2017 14:25:11 -0700
-Message-ID: <15ff545c-5aaf-4f03-3672-2c1702f78316@boundarydevices.com>
-References: <20171020212021.13065-1-troy.kisky@boundarydevices.com>
- <20171020212021.13065-3-troy.kisky@boundarydevices.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/2] serdev: ttyport: enforce tty-driver open() requirement
+Date: Fri, 20 Oct 2017 16:43:41 -0500
+Message-ID: <CAL_JsqLxtT7Rh1_w==_3=m+nOAyzopS7rfZ4RZZT3dThpu6Dag@mail.gmail.com>
+References: <20171016130620.5404-1-johan@kernel.org> <CAL_JsqKhCue-vMzM2ip3NoGTKb9T_EexG3G2-SekfVZOTKdHOA@mail.gmail.com>
+ <20171020122144.GA30326@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20171020212021.13065-3-troy.kisky@boundarydevices.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org, nandor.han@ge.com
-Cc: fabio.estevam@nxp.com, l.stach@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171020122144.GA30326@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/20/2017 2:20 PM, Troy Kisky wrote:
-> Since imx_disable_rx_int is only called by imx_startup,
-> let's integrate it into that function.
-> 
-> Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
-> ---
-> v2: new patch
-> ---
->  drivers/tty/serial/imx.c | 39 ++++++++++-----------------------------
->  1 file changed, 10 insertions(+), 29 deletions(-)
+On Fri, Oct 20, 2017 at 7:21 AM, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Tue, Oct 17, 2017 at 11:07:20AM -0500, Rob Herring wrote:
+>> On Mon, Oct 16, 2017 at 8:06 AM, Johan Hovold <johan@kernel.org> wrote:
+>> > The tty-driver open routine is mandatory, but the serdev
+>> > tty-port-controller implementation did not treat it as such and would
+>> > instead fall back to calling tty_port_open() directly.
+>>
+>> The idea was to eventually get rid of the tty_struct dependency and
+>> only depend on tty_port. That's very invasive though and needs various
+>> pieces of tty_struct to move into tty_port.
+>>
+>> Of course, tty_port_open itself would have to change as well, so this
+>> change doesn't really matter.
+>
+> So are you acking these patches?
 
-While testing this series, I noticed that sending a break on the serial port caused
+Yeah, I guess. I was mainly trying to give some background on why it
+was done the way it was.
 
-imx-uart 2020000.serial: DMA transaction error.
+For both:
 
-Is that normal ?
+Acked-by: Rob Herring <robh@kernel.org>
+
+Rob
