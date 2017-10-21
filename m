@@ -1,91 +1,80 @@
-From: Troy Kisky <troy.kisky@boundarydevices.com>
-Subject: Re: [PATCH 1/1] tty: serial: imx: allow breaks to be received when
- using dma
-Date: Fri, 20 Oct 2017 15:17:42 -0700
-Message-ID: <a3f0140a-92bb-ed59-ee79-971385634d4d@boundarydevices.com>
-References: <20171020221340.14974-1-troy.kisky@boundarydevices.com>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v3 0/2] ACPI serdev support
+Date: Sat, 21 Oct 2017 11:59:37 +0200
+Message-ID: <20171021095937.GA1226@localhost>
+References: <AA38D4FD-5A35-460D-85CF-380BAB933448@holtmann.org>
+ <ac53458d-c910-2d0a-a2ad-e7d21f8a5be7@gmail.com>
+ <20171018145608.GB27138@kroah.com>
+ <20171019142354.GE5638@localhost>
+ <877ea825-eec5-d982-f962-d67067749009@redhat.com>
+ <115502FA-19DE-439C-A171-3CD5E6D92338@holtmann.org>
+ <1503e15d-6199-221a-542f-3766a69577e5@redhat.com>
+ <CAMZdPi_ZpNrdjJPnS_rQ9t3oYe6+en9oHQMjmMjx_xHL-WWZKQ@mail.gmail.com>
+ <28b99df9-de22-4542-055e-d9fa585aba8f@redhat.com>
+ <FFD85CA6-6BD9-45AA-B3C2-898212711C0C@holtmann.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20171020221340.14974-1-troy.kisky@boundarydevices.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org, nandor.han@ge.com
-Cc: fabio.estevam@nxp.com, l.stach@pengutronix.de, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <FFD85CA6-6BD9-45AA-B3C2-898212711C0C@holtmann.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Marcel Holtmann <marcel@holtmann.org>
+Cc: Hans de Goede <hdegoede@redhat.com>, Loic Poulain <loic.poulain@linaro.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <greg@kroah.com>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Loic Poulain <loic.poulain@gmail.com>, Lukas Wunner <lukas@wunner.de>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/20/2017 3:13 PM, Troy Kisky wrote:
-> This allows me to login after sending a break when service
-> serial-getty@ttymxc0.service is running
+On Thu, Oct 19, 2017 at 09:00:25PM +0200, Marcel Holtmann wrote:
+> Hi Hans,
 > 
-> Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
-> ---
->  drivers/tty/serial/imx.c | 20 +++++++++++++-------
->  1 file changed, 13 insertions(+), 7 deletions(-)
+> >>            Hmm, I've never actually seen any hardware use an intel BT HCI connected
+> >>            to a serdev, but I guess people did not write that code for fun, so those
+> >>            do exist ?
+> >>        they are all ACPI based and could now start using serdev. Previously they were all driven by btattach.
+> >>    I understand, I was just wondering if anyone is aware of any hardware
+> >>    actually using Intel BT devices in this manner, because it is going
+> >>    to be tricky to do a similar series if we cannot test it.
+> >> Yeah this driver supports Lightning-Peak iBT 3.0 UART controller.
+> >> I remember this controller comes (at least) with Atom x3-c3440 / x3-c3445 SoCs.
+> >> However I don't have the hardware anymore.
+> > 
+> > Ah, those are the Rockchip manufactured Atom based SoCs which
+> > come with Mali graphics, I don't think anyone is trying to run
+> > mainline on those and not a whole lot of those have shipped to
+> > begin with (the line has been canceled).
+> > 
+> > I've an Apollo Lake based laptop with Intel Bluetooth, I just
+> > checked and that is simply using USB.
+> > 
+> > So I don't think we are actually going to break anything by
+> > just moving forward as planned. This reminds me of the axp288
+> > driver where Intel's "embedded" engineering team upstreamed
+> > parts of the axp288 PMIC code, but in a way where the driver
+> > could not work as it would not load with platform_data which
+> > was never provided by the mainline kernel.
+> > 
+> > As such it might actually be good to break this and if no-one
+> > complains we can just remove the hci_intel.c code altogether.
 > 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 506fcd742b47..39033f460a24 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -934,7 +934,6 @@ static void dma_rx_callback(void *data)
->  	status = dmaengine_tx_status(chan, (dma_cookie_t)0, &state);
->  
->  	if (status == DMA_ERROR) {
-> -		dev_err(sport->port.dev, "DMA transaction error.\n");
->  		clear_rx_errors(sport);
->  		return;
->  	}
-> @@ -1035,6 +1034,7 @@ static int start_rx_dma(struct imx_port *sport)
->  
->  static void clear_rx_errors(struct imx_port *sport)
->  {
-> +	struct tty_port *port = &sport->port.state->port;
->  	unsigned int status_usr1, status_usr2;
->  
->  	status_usr1 = readl(sport->port.membase + USR1);
-> @@ -1043,12 +1043,18 @@ static void clear_rx_errors(struct imx_port *sport)
->  	if (status_usr2 & USR2_BRCD) {
->  		sport->port.icount.brk++;
->  		writel(USR2_BRCD, sport->port.membase + USR2);
-> -	} else if (status_usr1 & USR1_FRAMERR) {
-> -		sport->port.icount.frame++;
-> -		writel(USR1_FRAMERR, sport->port.membase + USR1);
-> -	} else if (status_usr1 & USR1_PARITYERR) {
-> -		sport->port.icount.parity++;
-> -		writel(USR1_PARITYERR, sport->port.membase + USR1);
-> +		if (tty_insert_flip_char(port, 0, TTY_BREAK) == 0)
-> +			sport->port.icount.buf_overrun++;
-> +		tty_flip_buffer_push(port);
-> +	} else {
-> +		dev_err(sport->port.dev, "DMA transaction error.\n");
-> +		if (status_usr1 & USR1_FRAMERR) {
-> +			sport->port.icount.frame++;
-> +			writel(USR1_FRAMERR, sport->port.membase + USR1);
-> +		} else if (status_usr1 & USR1_PARITYERR) {
-> +			sport->port.icount.parity++;
-> +			writel(USR1_PARITYERR, sport->port.membase + USR1);
-> +		}
->  	}
->  
->  	if (status_usr2 & USR2_ORE) {
+> I think we can go forward with what we have. I am not going to remove
+> hci_intel.c since the firmware loading code etc. is pretty generic to
+> all Intel UART based chips. However we just take the PM pieces out or
+> maybe someone is going to fix them.
+
+Note that hci_intel used the platform hack for the reset line and host
+wake-up irq. And as the reset line appears to be required when using
+ACPI, we'd definitely find out eventually if anyone is using such
+devices as they would fail to even power on.
+
+> > The alternative would be to revert 2 if the 3 patches of
+> > my last series for making the BT on the GPD win / pocket
+> > (and likely other devices) work in uart mode. Then someone
+> > (me?) would need to do a completely untested series for
+> > hci_intel.c, and get that + reverts of the reverts into 4.16,
+> > which is not the best way forward IMHO.
 > 
+> I am not doing that. We have to make progress towards serdev. So if
+> things really turn out badly, then we have to deal with it, but that
+> should not hold up getting things in the direction this needs to go.
 
+As long as we know what we are breaking.
 
-
-Does this need to use
- 	spin_lock_irqsave(&sport->port.lock, flags);
-
-
-I would have, but dma_rx_callback doesn't.
-
-BR
-Troy
+Johan
