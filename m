@@ -1,59 +1,57 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH] tty/serial: atmel: Convert timers to use timer_setup()
-Date: Tue, 24 Oct 2017 03:00:03 -0700
-Message-ID: <20171024100003.GA67892@beast>
+Subject: [PATCH] tty/serial: altera_uart: Convert timers to use timer_setup()
+Date: Tue, 24 Oct 2017 02:59:56 -0700
+Message-ID: <20171024095956.GA67872@beast>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Tobias Klauser <tklauser@distanz.ch>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 In preparation for unconditionally passing the struct timer_list pointer to
 all timer callbacks, switch to using the new timer_setup() and from_timer()
 to pass the timer pointer explicitly.
 
-Cc: Richard Genoud <richard.genoud@gmail.com>
+Cc: Tobias Klauser <tklauser@distanz.ch>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
 Cc: linux-serial@vger.kernel.org
+Cc: nios2-dev@lists.rocketboards.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/tty/serial/atmel_serial.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/tty/serial/altera_uart.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 82d9c8eae04f..68d8685e5a50 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1185,10 +1185,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 	return -EINVAL;
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index 3e4b717670d7..a0360e640837 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -288,10 +288,10 @@ static irqreturn_t altera_uart_interrupt(int irq, void *data)
+ 	return IRQ_RETVAL(isr);
  }
  
--static void atmel_uart_timer_callback(unsigned long data)
-+static void atmel_uart_timer_callback(struct timer_list *t)
+-static void altera_uart_timer(unsigned long data)
++static void altera_uart_timer(struct timer_list *t)
  {
 -	struct uart_port *port = (void *)data;
--	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+	struct atmel_uart_port *atmel_port = from_timer(atmel_port, t,
-+							uart_timer);
-+	struct uart_port *port = &atmel_port->uart;
+-	struct altera_uart *pp = container_of(port, struct altera_uart, port);
++	struct altera_uart *pp = from_timer(pp, t, tmr);
++	struct uart_port *port = &pp->port;
  
- 	if (!atomic_read(&atmel_port->tasklet_shutdown)) {
- 		tasklet_schedule(&atmel_port->tasklet_rx);
-@@ -1852,9 +1853,7 @@ static int atmel_startup(struct uart_port *port)
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
- 	atmel_port->tx_stopped = false;
+ 	altera_uart_interrupt(0, port);
+ 	mod_timer(&pp->tmr, jiffies + uart_poll_timeout(port));
+@@ -314,7 +314,7 @@ static int altera_uart_startup(struct uart_port *port)
+ 	int ret;
  
--	setup_timer(&atmel_port->uart_timer,
--			atmel_uart_timer_callback,
--			(unsigned long)port);
-+	timer_setup(&atmel_port->uart_timer, atmel_uart_timer_callback, 0);
- 
- 	if (atmel_use_pdc_rx(port)) {
- 		/* set UART timeout */
+ 	if (!port->irq) {
+-		setup_timer(&pp->tmr, altera_uart_timer, (unsigned long)port);
++		timer_setup(&pp->tmr, altera_uart_timer, 0);
+ 		mod_timer(&pp->tmr, jiffies + uart_poll_timeout(port));
+ 		return 0;
+ 	}
 -- 
 2.7.4
 
