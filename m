@@ -1,14 +1,14 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH] serial: 8250: Convert timers to use timer_setup()
-Date: Tue, 24 Oct 2017 02:59:17 -0700
-Message-ID: <20171024095917.GA67790@beast>
+Subject: [PATCH] serial: bfin_uart: Convert timers to use timer_setup()
+Date: Tue, 24 Oct 2017 02:59:31 -0700
+Message-ID: <20171024095931.GA67812@beast>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vignesh R <vigneshr@ti.com>, Ed Blake <ed.blake@imgtec.com>, Matthias Brugger <mbrugger@suse.com>, Sean Young <sean@mess.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Jiri Slaby <jslaby@suse.com>, adi-buildroot-devel@lists.sourceforge.net, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 In preparation for unconditionally passing the struct timer_list pointer to
@@ -17,79 +17,46 @@ to pass the timer pointer explicitly.
 
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Vignesh R <vigneshr@ti.com>
-Cc: Ed Blake <ed.blake@imgtec.com>
-Cc: Matthias Brugger <mbrugger@suse.com>
-Cc: Sean Young <sean@mess.org>
+Cc: adi-buildroot-devel@lists.sourceforge.net
 Cc: linux-serial@vger.kernel.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/tty/serial/8250/8250_core.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/tty/serial/bfin_uart.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 00d4b114f1bf..ccfc42ca846d 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -262,17 +262,17 @@ static void serial_unlink_irq_chain(struct uart_8250_port *up)
-  * barely passable results for a 16550A.  (Although at the expense
-  * of much CPU overhead).
-  */
--static void serial8250_timeout(unsigned long data)
-+static void serial8250_timeout(struct timer_list *t)
- {
--	struct uart_8250_port *up = (struct uart_8250_port *)data;
-+	struct uart_8250_port *up = from_timer(up, t, timer);
- 
- 	up->port.handle_irq(&up->port);
- 	mod_timer(&up->timer, jiffies + uart_poll_timeout(&up->port));
+diff --git a/drivers/tty/serial/bfin_uart.c b/drivers/tty/serial/bfin_uart.c
+index 293ecbb00684..de5262a46b62 100644
+--- a/drivers/tty/serial/bfin_uart.c
++++ b/drivers/tty/serial/bfin_uart.c
+@@ -456,8 +456,9 @@ static void bfin_serial_dma_rx_chars(struct bfin_serial_port *uart)
+ 	tty_flip_buffer_push(&uart->port.state->port);
  }
  
--static void serial8250_backup_timeout(unsigned long data)
-+static void serial8250_backup_timeout(struct timer_list *t)
+-void bfin_serial_rx_dma_timeout(struct bfin_serial_port *uart)
++void bfin_serial_rx_dma_timeout(struct timer_list *t)
  {
--	struct uart_8250_port *up = (struct uart_8250_port *)data;
-+	struct uart_8250_port *up = from_timer(up, t, timer);
- 	unsigned int iir, ier = 0, lsr;
++	struct bfin_serial_port *uart = from_timer(uart, t, rx_dma_timer);
+ 	int x_pos, pos;
  	unsigned long flags;
  
-@@ -329,8 +329,7 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
- 	if (up->bugs & UART_BUG_THRE) {
- 		pr_debug("ttyS%d - using backup timer\n", serial_index(port));
+@@ -624,8 +625,6 @@ static int bfin_serial_startup(struct uart_port *port)
+ 	set_dma_start_addr(uart->rx_dma_channel, (unsigned long)uart->rx_dma_buf.buf);
+ 	enable_dma(uart->rx_dma_channel);
  
--		up->timer.function = serial8250_backup_timeout;
--		up->timer.data = (unsigned long)up;
-+		up->timer.function = (TIMER_FUNC_TYPE)serial8250_backup_timeout;
- 		mod_timer(&up->timer, jiffies +
- 			  uart_poll_timeout(port) + HZ / 5);
- 	}
-@@ -341,7 +340,6 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
- 	 * driver used to do this with IRQ0.
- 	 */
- 	if (!port->irq) {
--		up->timer.data = (unsigned long)up;
- 		mod_timer(&up->timer, jiffies + uart_poll_timeout(port));
- 	} else
- 		retval = serial_link_irq_chain(up);
-@@ -354,7 +352,7 @@ static void univ8250_release_irq(struct uart_8250_port *up)
- 	struct uart_port *port = &up->port;
+-	uart->rx_dma_timer.data = (unsigned long)(uart);
+-	uart->rx_dma_timer.function = (void *)bfin_serial_rx_dma_timeout;
+ 	uart->rx_dma_timer.expires = jiffies + DMA_RX_FLUSH_JIFFIES;
+ 	add_timer(&(uart->rx_dma_timer));
+ #else
+@@ -1316,7 +1315,7 @@ static int bfin_serial_probe(struct platform_device *pdev)
+ 		}
+ 		uart->rx_dma_channel = res->start;
  
- 	del_timer_sync(&up->timer);
--	up->timer.function = serial8250_timeout;
-+	up->timer.function = (TIMER_FUNC_TYPE)serial8250_timeout;
- 	if (port->irq)
- 		serial_unlink_irq_chain(up);
- }
-@@ -525,7 +523,7 @@ static void __init serial8250_isa_init_ports(void)
- 			base_ops = port->ops;
- 		port->ops = &univ8250_port_ops;
+-		init_timer(&(uart->rx_dma_timer));
++		timer_setup(&uart->rx_dma_timer, bfin_serial_rx_dma_timeout, 0);
+ #endif
  
--		setup_timer(&up->timer, serial8250_timeout, 0UL);
-+		timer_setup(&up->timer, serial8250_timeout, 0);
- 
- 		up->ops = &univ8250_driver_ops;
- 
+ #if defined(SERIAL_BFIN_CTSRTS) || \
 -- 
 2.7.4
 
