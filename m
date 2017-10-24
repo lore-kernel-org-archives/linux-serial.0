@@ -1,70 +1,99 @@
-From: Juergen Borleis <jbe@pengutronix.de>
-Subject: Re: [PATCH v2 3/3] tty: serial: imx: remove imx_disable_rx_int
-Date: Mon, 23 Oct 2017 10:26:31 +0200
-Message-ID: <201710231026.32595.jbe@pengutronix.de>
-References: <20171020212021.13065-1-troy.kisky@boundarydevices.com>
- <15ff545c-5aaf-4f03-3672-2c1702f78316@boundarydevices.com>
- <20171022184956.exmjlpcbzkvlp7xg@pengutronix.de>
+From: Kees Cook <keescook@chromium.org>
+Subject: [PATCH] serial: 8250: Convert timers to use timer_setup()
+Date: Tue, 24 Oct 2017 02:59:17 -0700
+Message-ID: <20171024095917.GA67790@beast>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20171022184956.exmjlpcbzkvlp7xg@pengutronix.de>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?iso-8859-1?q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: gregkh@linuxfoundation.org, Troy Kisky <troy.kisky@boundarydevices.com>, linux-serial@vger.kernel.org, nandor.han@ge.com, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, l.stach@pengutronix.de
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vignesh R <vigneshr@ti.com>, Ed Blake <ed.blake@imgtec.com>, Matthias Brugger <mbrugger@suse.com>, Sean Young <sean@mess.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+In preparation for unconditionally passing the struct timer_list pointer to
+all timer callbacks, switch to using the new timer_setup() and from_timer()
+to pass the timer pointer explicitly.
 
-On Sunday 22 October 2017 20:49:56 Uwe Kleine-K=F6nig wrote:
-> On Fri, Oct 20, 2017 at 02:25:11PM -0700, Troy Kisky wrote:
-> > On 10/20/2017 2:20 PM, Troy Kisky wrote:
-> > > Since imx_disable_rx_int is only called by imx_startup,
-> > > let's integrate it into that function.
-> > >
-> > > Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
-> > > ---
-> > > v2: new patch
-> > > ---
-> > >  drivers/tty/serial/imx.c | 39
-> > > ++++++++++----------------------------- 1 file changed, 10
-> > > insertions(+), 29 deletions(-)
-> >
-> > While testing this series, I noticed that sending a break on the serial
-> > port caused
-> >
-> > imx-uart 2020000.serial: DMA transaction error.
-> >
-> > Is that normal ?
->
-> I remember that J=FCrgen (added to To explictly) hit this or a similar
-> problem before, maybe he can commen?
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Vignesh R <vigneshr@ti.com>
+Cc: Ed Blake <ed.blake@imgtec.com>
+Cc: Matthias Brugger <mbrugger@suse.com>
+Cc: Sean Young <sean@mess.org>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ drivers/tty/serial/8250/8250_core.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-Yes, it hit me on i.MX53 after DMA was enabled by default. The driver =
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 00d4b114f1bf..ccfc42ca846d 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -262,17 +262,17 @@ static void serial_unlink_irq_chain(struct uart_8250_port *up)
+  * barely passable results for a 16550A.  (Although at the expense
+  * of much CPU overhead).
+  */
+-static void serial8250_timeout(unsigned long data)
++static void serial8250_timeout(struct timer_list *t)
+ {
+-	struct uart_8250_port *up = (struct uart_8250_port *)data;
++	struct uart_8250_port *up = from_timer(up, t, timer);
+ 
+ 	up->port.handle_irq(&up->port);
+ 	mod_timer(&up->timer, jiffies + uart_poll_timeout(&up->port));
+ }
+ 
+-static void serial8250_backup_timeout(unsigned long data)
++static void serial8250_backup_timeout(struct timer_list *t)
+ {
+-	struct uart_8250_port *up = (struct uart_8250_port *)data;
++	struct uart_8250_port *up = from_timer(up, t, timer);
+ 	unsigned int iir, ier = 0, lsr;
+ 	unsigned long flags;
+ 
+@@ -329,8 +329,7 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
+ 	if (up->bugs & UART_BUG_THRE) {
+ 		pr_debug("ttyS%d - using backup timer\n", serial_index(port));
+ 
+-		up->timer.function = serial8250_backup_timeout;
+-		up->timer.data = (unsigned long)up;
++		up->timer.function = (TIMER_FUNC_TYPE)serial8250_backup_timeout;
+ 		mod_timer(&up->timer, jiffies +
+ 			  uart_poll_timeout(port) + HZ / 5);
+ 	}
+@@ -341,7 +340,6 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
+ 	 * driver used to do this with IRQ0.
+ 	 */
+ 	if (!port->irq) {
+-		up->timer.data = (unsigned long)up;
+ 		mod_timer(&up->timer, jiffies + uart_poll_timeout(port));
+ 	} else
+ 		retval = serial_link_irq_chain(up);
+@@ -354,7 +352,7 @@ static void univ8250_release_irq(struct uart_8250_port *up)
+ 	struct uart_port *port = &up->port;
+ 
+ 	del_timer_sync(&up->timer);
+-	up->timer.function = serial8250_timeout;
++	up->timer.function = (TIMER_FUNC_TYPE)serial8250_timeout;
+ 	if (port->irq)
+ 		serial_unlink_irq_chain(up);
+ }
+@@ -525,7 +523,7 @@ static void __init serial8250_isa_init_ports(void)
+ 			base_ops = port->ops;
+ 		port->ops = &univ8250_port_ops;
+ 
+-		setup_timer(&up->timer, serial8250_timeout, 0UL);
++		timer_setup(&up->timer, serial8250_timeout, 0);
+ 
+ 		up->ops = &univ8250_driver_ops;
+ 
+-- 
+2.7.4
 
-currently doesn't handle the "break" event when DMA is active. In this case =
 
-the DMA callback returns with an error (that's the message you see, but =
-
-it's not an error in this case...), the driver clears the flags and drops =
-
-the (break) event itself.
-
-jb
-
--- =
-
-Pengutronix e.K. =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=A0 =A0=
-| Juergen Borleis =A0 =A0 =A0 =A0 =A0 =A0 |
-Industrial Linux Solutions =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=A0 =A0| http://w=
-ww.pengutronix.de/ =A0|
+-- 
+Kees Cook
+Pixel Security
