@@ -1,40 +1,59 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH] serial: m32r_sio: Drop redundant .data assignment
-Date: Tue, 24 Oct 2017 02:59:40 -0700
-Message-ID: <20171024095940.GA67831@beast>
+Subject: [PATCH] tty/serial: atmel: Convert timers to use timer_setup()
+Date: Tue, 24 Oct 2017 03:00:03 -0700
+Message-ID: <20171024100003.GA67892@beast>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Richard Genoud <richard.genoud@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-With the timer converted to using the new timer_setup()/from_timer() API,
-setting the .data field is redundant (and the field will be removed soon),
-so drop it.
+In preparation for unconditionally passing the struct timer_list pointer to
+all timer callbacks, switch to using the new timer_setup() and from_timer()
+to pass the timer pointer explicitly.
 
+Cc: Richard Genoud <richard.genoud@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
 Cc: linux-serial@vger.kernel.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/tty/serial/m32r_sio.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/atmel_serial.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/m32r_sio.c b/drivers/tty/serial/m32r_sio.c
-index 5f4003ad32b6..0bc548adae52 100644
---- a/drivers/tty/serial/m32r_sio.c
-+++ b/drivers/tty/serial/m32r_sio.c
-@@ -576,7 +576,6 @@ static int m32r_sio_startup(struct uart_port *port)
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 82d9c8eae04f..68d8685e5a50 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1185,10 +1185,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+ 	return -EINVAL;
+ }
  
- 		timeout = timeout > 6 ? (timeout / 2 - 2) : 1;
+-static void atmel_uart_timer_callback(unsigned long data)
++static void atmel_uart_timer_callback(struct timer_list *t)
+ {
+-	struct uart_port *port = (void *)data;
+-	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++	struct atmel_uart_port *atmel_port = from_timer(atmel_port, t,
++							uart_timer);
++	struct uart_port *port = &atmel_port->uart;
  
--		up->timer.data = (unsigned long)up;
- 		mod_timer(&up->timer, jiffies + timeout);
- 	} else {
- 		retval = serial_link_irq_chain(up);
+ 	if (!atomic_read(&atmel_port->tasklet_shutdown)) {
+ 		tasklet_schedule(&atmel_port->tasklet_rx);
+@@ -1852,9 +1853,7 @@ static int atmel_startup(struct uart_port *port)
+ 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
+ 	atmel_port->tx_stopped = false;
+ 
+-	setup_timer(&atmel_port->uart_timer,
+-			atmel_uart_timer_callback,
+-			(unsigned long)port);
++	timer_setup(&atmel_port->uart_timer, atmel_uart_timer_callback, 0);
+ 
+ 	if (atmel_use_pdc_rx(port)) {
+ 		/* set UART timeout */
 -- 
 2.7.4
 
