@@ -1,51 +1,117 @@
-From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v9 1/5] serdev: Make .remove in struct serdev_device_driver optional
-Date: Wed, 25 Oct 2017 12:04:17 -0700
-Message-ID: <20171025190421.18415-2-andrew.smirnov@gmail.com>
-References: <20171025190421.18415-1-andrew.smirnov@gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] serial: 8250: Convert timers to use timer_setup()
+Date: Thu, 26 Oct 2017 19:22:11 +0300
+Message-ID: <1509034931.10233.3.camel@linux.intel.com>
+References: <20171024095917.GA67790@beast>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171025190421.18415-1-andrew.smirnov@gmail.com>
+In-Reply-To: <20171024095917.GA67790@beast>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>
+To: Kees Cook <keescook@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Vignesh R <vigneshr@ti.com>, Ed Blake <ed.blake@imgtec.com>, Matthias Brugger <mbrugger@suse.com>, Sean Young <sean@mess.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Using devres infrastructure it is possible to write a serdev driver
-that doesn't have any code that needs to be called as a part of
-.remove. Add code to make .remove optional.
+On Tue, 2017-10-24 at 02:59 -0700, Kees Cook wrote:
+> In preparation for unconditionally passing the struct timer_list
+> pointer to
+> all timer callbacks, switch to using the new timer_setup() and
+> from_timer()
+> to pass the timer pointer explicitly.
 
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>
-Cc: cphealy@gmail.com
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Johan Hovold <johan@kernel.org>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
----
- drivers/tty/serdev/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index c68fb3a8ea1c..f500f6a2ca88 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -252,8 +252,8 @@ static int serdev_drv_probe(struct device *dev)
- static int serdev_drv_remove(struct device *dev)
- {
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
--
--	sdrv->remove(to_serdev_device(dev));
-+	if (sdrv->remove)
-+		sdrv->remove(to_serdev_device(dev));
- 	return 0;
- }
- 
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Vignesh R <vigneshr@ti.com>
+> Cc: Ed Blake <ed.blake@imgtec.com>
+> Cc: Matthias Brugger <mbrugger@suse.com>
+> Cc: Sean Young <sean@mess.org>
+> Cc: linux-serial@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  drivers/tty/serial/8250/8250_core.c | 16 +++++++---------
+>  1 file changed, 7 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c
+> b/drivers/tty/serial/8250/8250_core.c
+> index 00d4b114f1bf..ccfc42ca846d 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -262,17 +262,17 @@ static void serial_unlink_irq_chain(struct
+> uart_8250_port *up)
+>   * barely passable results for a 16550A.  (Although at the expense
+>   * of much CPU overhead).
+>   */
+> -static void serial8250_timeout(unsigned long data)
+> +static void serial8250_timeout(struct timer_list *t)
+>  {
+> -	struct uart_8250_port *up = (struct uart_8250_port *)data;
+> +	struct uart_8250_port *up = from_timer(up, t, timer);
+>  
+>  	up->port.handle_irq(&up->port);
+>  	mod_timer(&up->timer, jiffies + uart_poll_timeout(&up-
+> >port));
+>  }
+>  
+> -static void serial8250_backup_timeout(unsigned long data)
+> +static void serial8250_backup_timeout(struct timer_list *t)
+>  {
+> -	struct uart_8250_port *up = (struct uart_8250_port *)data;
+> +	struct uart_8250_port *up = from_timer(up, t, timer);
+>  	unsigned int iir, ier = 0, lsr;
+>  	unsigned long flags;
+>  
+> @@ -329,8 +329,7 @@ static int univ8250_setup_irq(struct
+> uart_8250_port *up)
+>  	if (up->bugs & UART_BUG_THRE) {
+>  		pr_debug("ttyS%d - using backup timer\n",
+> serial_index(port));
+>  
+> -		up->timer.function = serial8250_backup_timeout;
+> -		up->timer.data = (unsigned long)up;
+> +		up->timer.function =
+> (TIMER_FUNC_TYPE)serial8250_backup_timeout;
+>  		mod_timer(&up->timer, jiffies +
+>  			  uart_poll_timeout(port) + HZ / 5);
+>  	}
+> @@ -341,7 +340,6 @@ static int univ8250_setup_irq(struct
+> uart_8250_port *up)
+>  	 * driver used to do this with IRQ0.
+>  	 */
+>  	if (!port->irq) {
+> -		up->timer.data = (unsigned long)up;
+>  		mod_timer(&up->timer, jiffies +
+> uart_poll_timeout(port));
+>  	} else
+>  		retval = serial_link_irq_chain(up);
+> @@ -354,7 +352,7 @@ static void univ8250_release_irq(struct
+> uart_8250_port *up)
+>  	struct uart_port *port = &up->port;
+>  
+>  	del_timer_sync(&up->timer);
+> -	up->timer.function = serial8250_timeout;
+> +	up->timer.function = (TIMER_FUNC_TYPE)serial8250_timeout;
+>  	if (port->irq)
+>  		serial_unlink_irq_chain(up);
+>  }
+> @@ -525,7 +523,7 @@ static void __init serial8250_isa_init_ports(void)
+>  			base_ops = port->ops;
+>  		port->ops = &univ8250_port_ops;
+>  
+> -		setup_timer(&up->timer, serial8250_timeout, 0UL);
+> +		timer_setup(&up->timer, serial8250_timeout, 0);
+>  
+>  		up->ops = &univ8250_driver_ops;
+>  
+> -- 
+> 2.7.4
+> 
+> 
+
 -- 
-2.13.5
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
