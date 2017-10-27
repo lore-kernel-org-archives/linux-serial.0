@@ -1,117 +1,73 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250: Convert timers to use timer_setup()
-Date: Thu, 26 Oct 2017 19:22:11 +0300
-Message-ID: <1509034931.10233.3.camel@linux.intel.com>
-References: <20171024095917.GA67790@beast>
+From: Benjamin Valentin <benjamin.valentin-WxehSq5lv7P58Y2lBU5/X10bvzIJ1INa@public.gmane.org>
+Subject: ftdi_sio: no per-byte parity error detection possible?
+Date: Fri, 27 Oct 2017 17:49:34 +0200
+Message-ID: <25ffaffb-cdab-4df5-f21d-17820e0e3dcc@volatiles.lighting>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171024095917.GA67790@beast>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Kees Cook <keescook@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Vignesh R <vigneshr@ti.com>, Ed Blake <ed.blake@imgtec.com>, Matthias Brugger <mbrugger@suse.com>, Sean Young <sean@mess.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Language: en-GB
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2017-10-24 at 02:59 -0700, Kees Cook wrote:
-> In preparation for unconditionally passing the struct timer_list
-> pointer to
-> all timer callbacks, switch to using the new timer_setup() and
-> from_timer()
-> to pass the timer pointer explicitly.
+Hi,
+I'm trying to communicate with an embedded device using a serial 
+protocol which uses the parity bit to indicate the start of a frame 
+(MARK/SPACE parity).
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Sending such frames works well, but when receiving them with a FT232RL 
+USB adapter, the parity error detection is very unreliable.
 
-> 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Vignesh R <vigneshr@ti.com>
-> Cc: Ed Blake <ed.blake@imgtec.com>
-> Cc: Matthias Brugger <mbrugger@suse.com>
-> Cc: Sean Young <sean@mess.org>
-> Cc: linux-serial@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  drivers/tty/serial/8250/8250_core.c | 16 +++++++---------
->  1 file changed, 7 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c
-> b/drivers/tty/serial/8250/8250_core.c
-> index 00d4b114f1bf..ccfc42ca846d 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -262,17 +262,17 @@ static void serial_unlink_irq_chain(struct
-> uart_8250_port *up)
->   * barely passable results for a 16550A.  (Although at the expense
->   * of much CPU overhead).
->   */
-> -static void serial8250_timeout(unsigned long data)
-> +static void serial8250_timeout(struct timer_list *t)
->  {
-> -	struct uart_8250_port *up = (struct uart_8250_port *)data;
-> +	struct uart_8250_port *up = from_timer(up, t, timer);
->  
->  	up->port.handle_irq(&up->port);
->  	mod_timer(&up->timer, jiffies + uart_poll_timeout(&up-
-> >port));
->  }
->  
-> -static void serial8250_backup_timeout(unsigned long data)
-> +static void serial8250_backup_timeout(struct timer_list *t)
->  {
-> -	struct uart_8250_port *up = (struct uart_8250_port *)data;
-> +	struct uart_8250_port *up = from_timer(up, t, timer);
->  	unsigned int iir, ier = 0, lsr;
->  	unsigned long flags;
->  
-> @@ -329,8 +329,7 @@ static int univ8250_setup_irq(struct
-> uart_8250_port *up)
->  	if (up->bugs & UART_BUG_THRE) {
->  		pr_debug("ttyS%d - using backup timer\n",
-> serial_index(port));
->  
-> -		up->timer.function = serial8250_backup_timeout;
-> -		up->timer.data = (unsigned long)up;
-> +		up->timer.function =
-> (TIMER_FUNC_TYPE)serial8250_backup_timeout;
->  		mod_timer(&up->timer, jiffies +
->  			  uart_poll_timeout(port) + HZ / 5);
->  	}
-> @@ -341,7 +340,6 @@ static int univ8250_setup_irq(struct
-> uart_8250_port *up)
->  	 * driver used to do this with IRQ0.
->  	 */
->  	if (!port->irq) {
-> -		up->timer.data = (unsigned long)up;
->  		mod_timer(&up->timer, jiffies +
-> uart_poll_timeout(port));
->  	} else
->  		retval = serial_link_irq_chain(up);
-> @@ -354,7 +352,7 @@ static void univ8250_release_irq(struct
-> uart_8250_port *up)
->  	struct uart_port *port = &up->port;
->  
->  	del_timer_sync(&up->timer);
-> -	up->timer.function = serial8250_timeout;
-> +	up->timer.function = (TIMER_FUNC_TYPE)serial8250_timeout;
->  	if (port->irq)
->  		serial_unlink_irq_chain(up);
->  }
-> @@ -525,7 +523,7 @@ static void __init serial8250_isa_init_ports(void)
->  			base_ops = port->ops;
->  		port->ops = &univ8250_port_ops;
->  
-> -		setup_timer(&up->timer, serial8250_timeout, 0UL);
-> +		timer_setup(&up->timer, serial8250_timeout, 0);
->  
->  		up->ops = &univ8250_driver_ops;
->  
-> -- 
-> 2.7.4
-> 
-> 
+I created a minimal example to reproduce this [1] with just two of these 
+USB adapters. When I use the internal, 16550-compatible UART of the 
+MT7688 instead, parity errors are detected reliably.
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+So I decided to dig deeper and indeed in 
+ftdi_sio.c:ftdi_process_packet() I found that if a parity error occurs, 
+the error flag is set for all bytes of the current transfer (up to 64). 
+This of course breaks my assumption that a parity error would mark only 
+the affected byte.
+
+But maybe the ftdi will generate a new transfer when an error occurs, so 
+the flag is only valid for the first (last?) byte of the transfer.
+So I tried this
+
+diff --git a/drivers/usb/serial/ftdi_sio.c b/drivers/usb/serial/ftdi_sio.c
+index 49d1b2d..83fcb20 100644
+--- a/drivers/usb/serial/ftdi_sio.c
++++ b/drivers/usb/serial/ftdi_sio.c
+@@ -2112,7 +2112,9 @@ static int ftdi_process_packet(struct 
+usb_serial_port *port,
+                  tty_insert_flip_char(&port->port, *ch, flag);
+          }
+      } else {
+-        tty_insert_flip_string_fixed_flag(&port->port, ch, flag, len);
++        /* report flag only for first char */
++        tty_insert_flip_string_fixed_flag(&port->port, ch, flag, 1);
++        tty_insert_flip_string_fixed_flag(&port->port, ch + 1, 
+TTY_NORMAL, len - 1);
+      }
+
+      return len;
+
+Only to discover that this flag being set only means that there is *at 
+least* one parity error *anywhere* in the transfer.
+
+This of course lowers the information content of this flag immensely.
+
+Is this the indented behaviour/a limitation of the hardware? Or is there 
+some way to query which bytes caused the error in more detail?
+
+If not, is it maybe possible to restrict the transfer size to 1 byte 
+from user space?
+
+I unfortunately could not find the details of the protocol the file 
+header claimed FTDI was so kind to provide :-)
+
+
+[1] https://gist.github.com/benVolatiles/c0aa455d4ace0761537818efbaba40ff
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
