@@ -1,73 +1,100 @@
-From: Benjamin Valentin <benjamin.valentin-WxehSq5lv7P58Y2lBU5/X10bvzIJ1INa@public.gmane.org>
-Subject: ftdi_sio: no per-byte parity error detection possible?
-Date: Fri, 27 Oct 2017 17:49:34 +0200
-Message-ID: <25ffaffb-cdab-4df5-f21d-17820e0e3dcc@volatiles.lighting>
+From: Sebastian Reichel <sre@kernel.org>
+Subject: Re: [PATCH v8 1/5] serdev: Make .remove in struct
+ serdev_device_driver optional
+Date: Fri, 27 Oct 2017 20:17:11 +0200
+Message-ID: <20171027181710.ne3ku6rysm4blqov@earth>
+References: <20171018170136.12347-1-andrew.smirnov@gmail.com>
+ <20171018170136.12347-2-andrew.smirnov@gmail.com>
+ <493297bf-245b-10be-2659-e9fa9f424f5e@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Language: en-GB
-Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="6disxknc4zlcapvo"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <493297bf-245b-10be-2659-e9fa9f424f5e@roeck-us.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+
+--6disxknc4zlcapvo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
 Hi,
-I'm trying to communicate with an embedded device using a serial 
-protocol which uses the parity bit to indicate the start of a frame 
-(MARK/SPACE parity).
 
-Sending such frames works well, but when receiving them with a FT232RL 
-USB adapter, the parity error detection is very unreliable.
+On Sat, Oct 21, 2017 at 10:08:40AM -0700, Guenter Roeck wrote:
+> On 10/18/2017 10:01 AM, Andrey Smirnov wrote:
+> > Using devres infrastructure it is possible to wirte a serdev driver
+>=20
+> s/wirte/write/
+>=20
+> otherwise
+>=20
+> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-I created a minimal example to reproduce this [1] with just two of these 
-USB adapters. When I use the internal, 16550-compatible UART of the 
-MT7688 instead, parity errors are detected reliably.
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 
-So I decided to dig deeper and indeed in 
-ftdi_sio.c:ftdi_process_packet() I found that if a parity error occurs, 
-the error flag is set for all bytes of the current transfer (up to 64). 
-This of course breaks my assumption that a parity error would mark only 
-the affected byte.
+-- Sebastian
 
-But maybe the ftdi will generate a new transfer when an error occurs, so 
-the flag is only valid for the first (last?) byte of the transfer.
-So I tried this
+> > that doesn't have any code that needs to be called as a part of
+> > .remove. Add code to make .remove optional.
+> >=20
+> > Cc: linux-kernel@vger.kernel.org
+> > Cc: linux-serial@vger.kernel.org
+> > Cc: Rob Herring <robh@kernel.org>
+> > Cc: cphealy@gmail.com
+> > Cc: Guenter Roeck <linux@roeck-us.net>
+> > Cc: Lucas Stach <l.stach@pengutronix.de>
+> > Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+> > Cc: Lee Jones <lee.jones@linaro.org>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Pavel Machek <pavel@ucw.cz>
+> > Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > Cc: Johan Hovold <johan@kernel.org>
+> > Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+> > ---
+> >   drivers/tty/serdev/core.c | 4 ++--
+> >   1 file changed, 2 insertions(+), 2 deletions(-)
+> >=20
+> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> > index c68fb3a8ea1c..f500f6a2ca88 100644
+> > --- a/drivers/tty/serdev/core.c
+> > +++ b/drivers/tty/serdev/core.c
+> > @@ -252,8 +252,8 @@ static int serdev_drv_probe(struct device *dev)
+> >   static int serdev_drv_remove(struct device *dev)
+> >   {
+> >   	const struct serdev_device_driver *sdrv =3D to_serdev_device_driver(=
+dev->driver);
+> > -
+> > -	sdrv->remove(to_serdev_device(dev));
+> > +	if (sdrv->remove)
+> > +		sdrv->remove(to_serdev_device(dev));
+> >   	return 0;
+> >   }
+> >=20
+>=20
 
-diff --git a/drivers/usb/serial/ftdi_sio.c b/drivers/usb/serial/ftdi_sio.c
-index 49d1b2d..83fcb20 100644
---- a/drivers/usb/serial/ftdi_sio.c
-+++ b/drivers/usb/serial/ftdi_sio.c
-@@ -2112,7 +2112,9 @@ static int ftdi_process_packet(struct 
-usb_serial_port *port,
-                  tty_insert_flip_char(&port->port, *ch, flag);
-          }
-      } else {
--        tty_insert_flip_string_fixed_flag(&port->port, ch, flag, len);
-+        /* report flag only for first char */
-+        tty_insert_flip_string_fixed_flag(&port->port, ch, flag, 1);
-+        tty_insert_flip_string_fixed_flag(&port->port, ch + 1, 
-TTY_NORMAL, len - 1);
-      }
+--6disxknc4zlcapvo
+Content-Type: application/pgp-signature; name="signature.asc"
 
-      return len;
+-----BEGIN PGP SIGNATURE-----
 
-Only to discover that this flag being set only means that there is *at 
-least* one parity error *anywhere* in the transfer.
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlnzeCYACgkQ2O7X88g7
++prKmg//YEU6uplaFiNOrg65kIy7qa6Uyhx1LV1dVYVbfBo1iYoxJM4FWbspy81+
+dzqI6gbpGlnzCktiF6KLzssYFWqDxovd3S+UjLOCPUZaRmczf+ygDwelrZFC8hnE
+T2PssKkOURAwa+s2tfnjJYm4hJuXmeHdlawcKE8yw38+wDaGOaUYNd9WlW+6XBSo
+Kg9QQjYHcT5xaUBVKCQ4rlrYCoOdVrvSMGiV0SkARqGfkSqxujsf8tr+ue1R/nbp
+HaTaoiDc9Y/BCoMmOqJW9mozOXeYeECXcCgpH/sh69JSIC0v4VPgk9XibkqAH2Eg
+aYBIz0lL5f2R5pxPvYIKaI+Ns/G4Je5hwuE2EfMx4evcnC2WKuWPk9ObBHPgqy0k
+kSR+AE0jQ8BAB0jYZjoK2zL5wQ94uNSnww9sbd/28mJJR2fTR3FOH0FG/Z6RozT7
+wxEMdkWzxKA3TbFoyF5786hS9NZ+mRKB+g/GEgZl467kBrtb0qU8VlHovotYyAta
+2Bruxvg0cCFbidrP1f7gL+BQ3UEHA6IW2d0gMYgh0biYdbZO0gfWEj/pIINlepYz
+1sLWalkXXiK15sBXe1iwl4V7BBdnGLi/zPb/0+ddgxdyxi0CXLcKWxX5TOCn1knS
+amOS8v9ecUfbHS4AVo0xKvS22It5px2YGwXsAWmj56p81t3llDI=
+=0C8A
+-----END PGP SIGNATURE-----
 
-This of course lowers the information content of this flag immensely.
-
-Is this the indented behaviour/a limitation of the hardware? Or is there 
-some way to query which bytes caused the error in more detail?
-
-If not, is it maybe possible to restrict the transfer size to 1 byte 
-from user space?
-
-I unfortunately could not find the details of the protocol the file 
-header claimed FTDI was so kind to provide :-)
-
-
-[1] https://gist.github.com/benVolatiles/c0aa455d4ace0761537818efbaba40ff
---
-To unsubscribe from this list: send the line "unsubscribe linux-usb" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--6disxknc4zlcapvo--
