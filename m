@@ -1,100 +1,150 @@
 From: Sebastian Reichel <sre@kernel.org>
-Subject: Re: [PATCH v8 1/5] serdev: Make .remove in struct
- serdev_device_driver optional
-Date: Fri, 27 Oct 2017 20:17:11 +0200
-Message-ID: <20171027181710.ne3ku6rysm4blqov@earth>
+Subject: Re: [PATCH v8 2/5] serdev: Introduce devm_serdev_device_open()
+Date: Sat, 28 Oct 2017 11:48:33 +0200
+Message-ID: <20171028094833.2r3epv2vms5hmpnu@earth>
 References: <20171018170136.12347-1-andrew.smirnov@gmail.com>
- <20171018170136.12347-2-andrew.smirnov@gmail.com>
- <493297bf-245b-10be-2659-e9fa9f424f5e@roeck-us.net>
+ <20171018170136.12347-3-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6disxknc4zlcapvo"
+        protocol="application/pgp-signature"; boundary="mkx7urhy6wuk6nhj"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <493297bf-245b-10be-2659-e9fa9f424f5e@roeck-us.net>
+In-Reply-To: <20171018170136.12347-3-andrew.smirnov@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>
+To: Andrey Smirnov <andrew.smirnov@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
 
---6disxknc4zlcapvo
+--mkx7urhy6wuk6nhj
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On Sat, Oct 21, 2017 at 10:08:40AM -0700, Guenter Roeck wrote:
-> On 10/18/2017 10:01 AM, Andrey Smirnov wrote:
-> > Using devres infrastructure it is possible to wirte a serdev driver
+On Wed, Oct 18, 2017 at 10:01:33AM -0700, Andrey Smirnov wrote:
+> Add code implementing managed version of serdev_device_open() for
+> serdev device drivers that "open" the device during driver's lifecycle
+> only once (e.g. opened in .probe() and closed in .remove()).
 >=20
-> s/wirte/write/
->=20
-> otherwise
->=20
-> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: cphealy@gmail.com
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Lucas Stach <l.stach@pengutronix.de>
+> Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Cc: Johan Hovold <johan@kernel.org>
+> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+> ---
 
 Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 
 -- Sebastian
 
-> > that doesn't have any code that needs to be called as a part of
-> > .remove. Add code to make .remove optional.
-> >=20
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: linux-serial@vger.kernel.org
-> > Cc: Rob Herring <robh@kernel.org>
-> > Cc: cphealy@gmail.com
-> > Cc: Guenter Roeck <linux@roeck-us.net>
-> > Cc: Lucas Stach <l.stach@pengutronix.de>
-> > Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-> > Cc: Lee Jones <lee.jones@linaro.org>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Pavel Machek <pavel@ucw.cz>
-> > Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > Cc: Johan Hovold <johan@kernel.org>
-> > Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
-> > ---
-> >   drivers/tty/serdev/core.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> > index c68fb3a8ea1c..f500f6a2ca88 100644
-> > --- a/drivers/tty/serdev/core.c
-> > +++ b/drivers/tty/serdev/core.c
-> > @@ -252,8 +252,8 @@ static int serdev_drv_probe(struct device *dev)
-> >   static int serdev_drv_remove(struct device *dev)
-> >   {
-> >   	const struct serdev_device_driver *sdrv =3D to_serdev_device_driver(=
-dev->driver);
-> > -
-> > -	sdrv->remove(to_serdev_device(dev));
-> > +	if (sdrv->remove)
-> > +		sdrv->remove(to_serdev_device(dev));
-> >   	return 0;
-> >   }
-> >=20
+>  Documentation/driver-model/devres.txt |  3 +++
+>  drivers/tty/serdev/core.c             | 27 +++++++++++++++++++++++++++
+>  include/linux/serdev.h                |  1 +
+>  3 files changed, 31 insertions(+)
+>=20
+> diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver=
+-model/devres.txt
+> index 69f08c0f23a8..e9c6b5cfeec1 100644
+> --- a/Documentation/driver-model/devres.txt
+> +++ b/Documentation/driver-model/devres.txt
+> @@ -383,6 +383,9 @@ RESET
+>    devm_reset_control_get()
+>    devm_reset_controller_register()
+> =20
+> +SERDEV
+> +  devm_serdev_device_open()
+> +
+>  SLAVE DMA ENGINE
+>    devm_acpi_dma_controller_register()
+> =20
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index f500f6a2ca88..b3a785665c6f 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -116,6 +116,33 @@ void serdev_device_close(struct serdev_device *serde=
+v)
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_device_close);
+> =20
+> +static void devm_serdev_device_release(struct device *dev, void *dr)
+> +{
+> +	serdev_device_close(*(struct serdev_device **)dr);
+> +}
+> +
+> +int devm_serdev_device_open(struct device *dev, struct serdev_device *se=
+rdev)
+> +{
+> +	struct serdev_device **dr;
+> +	int ret;
+> +
+> +	dr =3D devres_alloc(devm_serdev_device_release, sizeof(*dr), GFP_KERNEL=
+);
+> +	if (!dr)
+> +		return -ENOMEM;
+> +
+> +	ret =3D serdev_device_open(serdev);
+> +	if (ret) {
+> +		devres_free(dr);
+> +		return ret;
+> +	}
+> +
+> +	*dr =3D serdev;
+> +	devres_add(dev, dr);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(devm_serdev_device_open);
+> +
+>  void serdev_device_write_wakeup(struct serdev_device *serdev)
+>  {
+>  	complete(&serdev->write_comp);
+> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+> index e69402d4a8ae..9929063bd45d 100644
+> --- a/include/linux/serdev.h
+> +++ b/include/linux/serdev.h
+> @@ -193,6 +193,7 @@ static inline int serdev_controller_receive_buf(struc=
+t serdev_controller *ctrl,
+> =20
+>  int serdev_device_open(struct serdev_device *);
+>  void serdev_device_close(struct serdev_device *);
+> +int devm_serdev_device_open(struct device *, struct serdev_device *);
+>  unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned=
+ int);
+>  void serdev_device_set_flow_control(struct serdev_device *, bool);
+>  int serdev_device_write_buf(struct serdev_device *, const unsigned char =
+*, size_t);
+> --=20
+> 2.13.5
 >=20
 
---6disxknc4zlcapvo
+--mkx7urhy6wuk6nhj
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlnzeCYACgkQ2O7X88g7
-+prKmg//YEU6uplaFiNOrg65kIy7qa6Uyhx1LV1dVYVbfBo1iYoxJM4FWbspy81+
-dzqI6gbpGlnzCktiF6KLzssYFWqDxovd3S+UjLOCPUZaRmczf+ygDwelrZFC8hnE
-T2PssKkOURAwa+s2tfnjJYm4hJuXmeHdlawcKE8yw38+wDaGOaUYNd9WlW+6XBSo
-Kg9QQjYHcT5xaUBVKCQ4rlrYCoOdVrvSMGiV0SkARqGfkSqxujsf8tr+ue1R/nbp
-HaTaoiDc9Y/BCoMmOqJW9mozOXeYeECXcCgpH/sh69JSIC0v4VPgk9XibkqAH2Eg
-aYBIz0lL5f2R5pxPvYIKaI+Ns/G4Je5hwuE2EfMx4evcnC2WKuWPk9ObBHPgqy0k
-kSR+AE0jQ8BAB0jYZjoK2zL5wQ94uNSnww9sbd/28mJJR2fTR3FOH0FG/Z6RozT7
-wxEMdkWzxKA3TbFoyF5786hS9NZ+mRKB+g/GEgZl467kBrtb0qU8VlHovotYyAta
-2Bruxvg0cCFbidrP1f7gL+BQ3UEHA6IW2d0gMYgh0biYdbZO0gfWEj/pIINlepYz
-1sLWalkXXiK15sBXe1iwl4V7BBdnGLi/zPb/0+ddgxdyxi0CXLcKWxX5TOCn1knS
-amOS8v9ecUfbHS4AVo0xKvS22It5px2YGwXsAWmj56p81t3llDI=
-=0C8A
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAln0Um4ACgkQ2O7X88g7
++po8+g//Z5GbJVE6Ex6Q4meLwFx32ST2oPaeTeXuW9CT7s3Q7kHTSI/xgohmpV7v
+NgSCWr9fbTRDY5aOxvk3LaCvGPo1a0xvu5tmZEYKZ8BBpd76YXGtMDbldPxKeAOO
+d8jbfNtZczAWYxafSS0BhvtTsmK/KCXShoItjvxh9Zn6NfSNqPSXEicY1eLOqlpX
+Zk0tu5FZtr9hkmmkuG5A9rEE2DiVJoxKh0c7Z4W+fZtDuW4g69lBTymP8yYubi28
+AdO5ecJ7+NjEgk4UNkvbNd9fIr2SaGC/IgrD4ubxLrZ43rl2v7aKyfZYaCeWijFW
+JDNX7epjvzlCerCz9ARFdPEF9Sc2mnJVqiJRwmHJXIRoZSxDAbd2gp3/d3npUT8T
+QHUMTY9TlQO5Wcdxh2pdXOrNskYGItCfpOhhPxKqH0/jNJ5s7LRCQMfNJHi84GWL
+q5oID8BvBMDUH1YFNYPp+0Q7M+qJxcdZw0rbte44oghWH3vmRqbYSzIeJqbT737+
+cBHkx50HxZ6P/64Yi+qi1uPZTGyCkJcZtg5l7Fqg/FsJiwrxf0wm9NsachTJdmM8
+muSqQFLhYayMbEPbNuICqmUN+480KHy03mWT4aRbA34XqSquiETmjMigd/9v0lKH
+RfLPdoGY2s9fdAX0VudkcEuF6HAad1cJc3W10kRXFwqoZxu5P7U=
+=/LrH
 -----END PGP SIGNATURE-----
 
---6disxknc4zlcapvo--
+--mkx7urhy6wuk6nhj--
