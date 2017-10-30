@@ -1,66 +1,108 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH] tty: amba-pl011: Report AUTOCTS capability to framework
-Date: Mon, 30 Oct 2017 14:03:06 +0100
-Message-ID: <1509368586-26662-1-git-send-email-stefan.wahren@i2se.com>
+From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH v3] dt-bindings: mvebu-uart: update documentation with extended UART
+Date: Mon, 30 Oct 2017 15:21:51 +0100
+Message-ID: <20171030142151.26213-1-miquel.raynal@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: loic.poulain@gmail.com, Stefan Wahren <stefan.wahren@i2se.com>, Phil Elwell <phil@raspberrypi.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.org>
+Update the device tree binding documentation for the Marvell EBU UART,
+in order to allow describing the extended UART IP block, in addition to
+the already supported standard UART IP. This requires adding a new
+compatible string, the introduction of a clocks property, and extensions
+to the interrupts property.
 
-The PL011 has full hardware RTS/CTS support which is enabled by
-the driver when flow control is requested. However, it doesn't
-notify the UART framework of the fact, causing the software CTS
-support to be enabled at the same time.
-
-Software CTS triggers the sending of another batch of characters
-when CTS becomes asserted. The pl011 interrupt handler processes
-the CTIS bit before TXIS, which can cause some characters to be
-sent between the time that the TXIS bit first becomes asserted
-and the time it is handled by a call to px011_tx_chars. This
-would be fine were it not for the optimisation in pl011_tx_char
-that assumes the FIFO is half-empty if called from the interrupt
-handler and skips the checking of the FIFO status register before
-sending each character, leading to data loss if the FIFO is more
-than half-full.
-
-Prevent the data loss and improve efficiency by indicating the
-AUTOCTS support.
-
-Signed-off-by: Phil Elwell <phil@raspberrypi.org>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Reviewed-by: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- drivers/tty/serial/amba-pl011.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 111e6a9..00019b8 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2029,9 +2029,11 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+Hi,
+
+This patch was part of a bigger series called "Support armada-37xx second
+UART port" and needed to be adapted.
+
+Changes since v2:
+- Removed the "status" from the examples.
+- Desbribed better the mandatory clock property.
+
+Thank you,
+Miquèl
+
+ .../devicetree/bindings/serial/mvebu-uart.txt      | 50 +++++++++++++++++++---
+ 1 file changed, 45 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/mvebu-uart.txt b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
+index d37fabe17bd1..2ae2fee7e023 100644
+--- a/Documentation/devicetree/bindings/serial/mvebu-uart.txt
++++ b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
+@@ -1,13 +1,53 @@
+-* Marvell UART : Non standard UART used in some of Marvell EBU SoCs (e.g., Armada-3700)
++* Marvell UART : Non standard UART used in some of Marvell EBU SoCs
++                 e.g., Armada-3700.
  
- 		old_cr |= UART011_CR_CTSEN;
- 		uap->autorts = true;
-+		port->status |= UPSTAT_AUTOCTS;
- 	} else {
- 		old_cr &= ~(UART011_CR_CTSEN | UART011_CR_RTSEN);
- 		uap->autorts = false;
-+		port->status &= ~UPSTAT_AUTOCTS;
- 	}
+ Required properties:
+-- compatible: "marvell,armada-3700-uart"
++- compatible:
++    - "marvell,armada-3700-uart" for the standard variant of the UART
++      (32 bytes FIFO, no DMA, level interrupts, 8-bit access to the
++      FIFO, baudrate limited to 230400).
++    - "marvell,armada-3700-uart-ext" for the extended variant of the
++      UART (128 bytes FIFO, DMA, front interrupts, 8-bit or 32-bit
++      accesses to the FIFO, baudrate unlimited by the dividers).
+ - reg: offset and length of the register set for the device.
+-- interrupts: device interrupt
++- clocks: UART reference clock used to derive the baudrate. If no clock
++      is provided (possible only with the "marvell,armada-3700-uart"
++      compatible string for backward compatibility), it will only work
++      if the baudrate was initialized by the bootloader and no baudrate
++      change will then be possible.
++- interrupts:
++    - Must contain three elements for the standard variant of the IP
++      (marvell,armada-3700-uart): "uart-sum", "uart-tx" and "uart-rx",
++      respectively the UART sum interrupt, the UART TX interrupt and
++      UART RX interrupt. A corresponding interrupt-names property must
++      be defined.
++    - Must contain two elements for the extended variant of the IP
++      (marvell,armada-3700-uart-ext): "uart-tx" and "uart-rx",
++      respectively the UART TX interrupt and the UART RX interrupt. A
++      corresponding interrupts-names property must be defined.
++    - For backward compatibility reasons, a single element interrupts
++      property is also supported for the standard variant of the IP,
++      containing only the UART sum interrupt. This form is deprecated
++      and should no longer be used.
  
- 	if (uap->vendor->oversampling) {
+ Example:
+-	serial@12000 {
++	uart0: serial@12000 {
+ 		compatible = "marvell,armada-3700-uart";
+ 		reg = <0x12000 0x200>;
+-		interrupts = <43>;
++		clocks = <&xtalclk>;
++		interrupts =
++		<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
++		<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
++		<GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "uart-sum", "uart-tx", "uart-rx";
++	};
++
++	uart1: serial@12200 {
++		compatible = "marvell,armada-3700-uart-ext";
++		reg = <0x12200 0x30>;
++		clocks = <&xtalclk>;
++		interrupts =
++		<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
++		<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
++		interrupt-names = "uart-tx", "uart-rx";
+ 	};
 -- 
-2.7.4
+2.11.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
