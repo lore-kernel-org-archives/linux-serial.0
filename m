@@ -1,53 +1,53 @@
-From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v10 1/5] serdev: Make .remove in struct serdev_device_driver optional
-Date: Tue, 31 Oct 2017 09:36:52 -0700
-Message-ID: <20171031163656.24552-2-andrew.smirnov@gmail.com>
-References: <20171031163656.24552-1-andrew.smirnov@gmail.com>
+From: Colin King <colin.king@canonical.com>
+Subject: [PATCH] serial: core: remove redundant assignment to port
+Date: Wed,  1 Nov 2017 10:49:23 +0000
+Message-ID: <20171101104923.18439-1-colin.king@canonical.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171031163656.24552-1-andrew.smirnov@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Using devres infrastructure it is possible to write a serdev driver
-that doesn't have any code that needs to be called as a part of
-.remove. Add code to make .remove optional.
+From: Colin Ian King <colin.king@canonical.com>
 
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>
-Cc: cphealy@gmail.com
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+The final assignment to port is never read, hence it is redundant
+and can be removed. Also move the declaration of port to a more
+local scope.  Cleans up clang warning:
+
+drivers/tty/serial/serial_core.c:1498:2: warning: Value stored
+to 'port' is never read
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- drivers/tty/serdev/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/serial_core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index c68fb3a8ea1c..f500f6a2ca88 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -252,8 +252,8 @@ static int serdev_drv_probe(struct device *dev)
- static int serdev_drv_remove(struct device *dev)
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index f4e6c8662987..cdac01fe11ca 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1482,10 +1482,10 @@ static void uart_set_termios(struct tty_struct *tty,
+ static void uart_close(struct tty_struct *tty, struct file *filp)
  {
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
--
--	sdrv->remove(to_serdev_device(dev));
-+	if (sdrv->remove)
-+		sdrv->remove(to_serdev_device(dev));
- 	return 0;
- }
+ 	struct uart_state *state = tty->driver_data;
+-	struct tty_port *port;
  
+ 	if (!state) {
+ 		struct uart_driver *drv = tty->driver->driver_state;
++		struct tty_port *port;
+ 
+ 		state = drv->state + tty->index;
+ 		port = &state->port;
+@@ -1495,7 +1495,6 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+ 		return;
+ 	}
+ 
+-	port = &state->port;
+ 	pr_debug("uart_close(%d) called\n", tty->index);
+ 
+ 	tty_port_close(tty->port, tty, filp);
 -- 
-2.13.6
+2.14.1
