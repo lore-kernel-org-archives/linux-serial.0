@@ -1,10 +1,10 @@
 From: Paul Menzel <pmenzel+linux-serial@molgen.mpg.de>
-Subject: How to enable output to serial console at run-time?
-Date: Thu, 2 Nov 2017 16:39:36 +0100
-Message-ID: <3c348fe1-1474-6c19-691d-8130d4bd0d32@molgen.mpg.de>
+Subject: Is 115200 still the maximum baudrate?
+Date: Thu, 2 Nov 2017 16:42:56 +0100
+Message-ID: <d712888f-3b91-76c5-b949-407b0c072bcf@molgen.mpg.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
@@ -15,12 +15,18 @@ List-Id: linux-serial@vger.kernel.org
 Dear Linux folks,
 
 
-If I want to output the Linux kernel messages to the serial console, but 
-the `console=ttyS…` line is missing on the Linux command line, is there 
-a way to activate that during run-time by, for example, using the sysfs 
-interface?
+The Linux serial console documentation [1] says that 115200 is the 
+maximum supported baudrate.
+
+ > The maximum baudrate is 115200.
+
+Is that still accurate? If yes, where should I look to support higher 
+values?
 
 
 Kind regards,
 
 Paul
+
+
+[1] https://www.kernel.org/doc/html/v4.13/admin-guide/serial-console.html
