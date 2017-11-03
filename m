@@ -1,62 +1,50 @@
 From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH 1/8] serdev: ttyport: add missing receive_buf sanity checks
-Date: Fri,  3 Nov 2017 15:30:52 +0100
-Message-ID: <20171103143059.20749-2-johan@kernel.org>
+Subject: [PATCH 4/8] serdev: ttyport: fix NULL-deref on hangup
+Date: Fri,  3 Nov 2017 15:30:55 +0100
+Message-ID: <20171103143059.20749-5-johan@kernel.org>
 References: <20171103143059.20749-1-johan@kernel.org>
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20171103143059.20749-1-johan@kernel.org>
-Sender: stable-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-The receive_buf tty-port callback should return the number of bytes
-accepted and must specifically never return a negative errno (or a value
-larger than the buffer size) to the tty layer.
+Make sure to use a properly refcounted tty_struct in write_wake up to
+avoid dereferencing a NULL-pointer when a port is being hung up.
 
-A serdev driver not providing a receive_buf callback would currently
-cause the flush_to_ldisc() worker to spin in a tight loop when the tty
-buffer pointers are incremented with -EINVAL (-22) after data has been
-received.
-
-A serdev driver occasionally returning a negative errno (or a too large
-byte count) could cause information leaks or crashes when accessing
-memory outside the tty buffers in consecutive callbacks.
-
-Fixes: cd6484e1830b ("serdev: Introduce new bus for serial attached devices")
-Cc: stable <stable@vger.kernel.org>	# 4.11
+Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
+Cc: stable <stable@vger.kernel.org>     # 4.11
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/tty/serdev/serdev-ttyport.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/tty/serdev/serdev-ttyport.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-index 5b09ce920117..b8bc60a251c6 100644
+index b8bc60a251c6..31c05665a0e6 100644
 --- a/drivers/tty/serdev/serdev-ttyport.c
 +++ b/drivers/tty/serdev/serdev-ttyport.c
-@@ -35,11 +35,22 @@ static int ttyport_receive_buf(struct tty_port *port, const unsigned char *cp,
+@@ -57,12 +57,19 @@ static void ttyport_write_wakeup(struct tty_port *port)
  {
  	struct serdev_controller *ctrl = port->client_data;
  	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-+	int ret;
- 
- 	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
- 		return 0;
- 
--	return serdev_controller_receive_buf(ctrl, cp, count);
-+	ret = serdev_controller_receive_buf(ctrl, cp, count);
++	struct tty_struct *tty;
 +
-+	dev_WARN_ONCE(&ctrl->dev, ret < 0 || ret > count,
-+				"receive_buf returns %d (count = %zu)\n",
-+				ret, count);
-+	if (ret < 0)
-+		return 0;
-+	else if (ret > count)
-+		return count;
++	tty = tty_port_tty_get(port);
++	if (!tty)
++		return;
+ 
+-	if (test_and_clear_bit(TTY_DO_WRITE_WAKEUP, &port->tty->flags) &&
++	if (test_and_clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags) &&
+ 	    test_bit(SERPORT_ACTIVE, &serport->flags))
+ 		serdev_controller_write_wakeup(ctrl);
+ 
+-	wake_up_interruptible_poll(&port->tty->write_wait, POLLOUT);
++	wake_up_interruptible_poll(&tty->write_wait, POLLOUT);
 +
-+	return ret;
++	tty_kref_put(tty);
  }
  
- static void ttyport_write_wakeup(struct tty_port *port)
+ static const struct tty_port_client_operations client_ops = {
 -- 
 2.15.0
