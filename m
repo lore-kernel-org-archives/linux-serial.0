@@ -1,7 +1,7 @@
 From: Thomas Rohloff <v10lator@myway.de>
-Subject: [PATCH] tty: serial: meson: allow baud-rates lower than 9600
-Date: Sun,  5 Nov 2017 20:35:14 +0100
-Message-ID: <20171105193514.7833-1-v10lator@myway.de>
+Subject: [PATCH v5] tty: serial: meson: allow baud-rates lower than 9600
+Date: Sun,  5 Nov 2017 20:36:30 +0100
+Message-ID: <20171105193630.8596-1-v10lator@myway.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
