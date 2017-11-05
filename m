@@ -1,42 +1,69 @@
-From: Thomas Rohloff <v10lator@myway.de>
-Subject: [PATCH v5] tty: serial: meson: allow baud-rates lower than 9600
-Date: Sun,  5 Nov 2017 20:36:30 +0100
-Message-ID: <20171105193630.8596-1-v10lator@myway.de>
+From: Andrey Smirnov <andrew.smirnov@gmail.com>
+Subject: Re: [PATCH v10 2/5] serdev: Introduce devm_serdev_device_open()
+Date: Sun, 5 Nov 2017 14:19:48 -0800
+Message-ID: <CAHQ1cqFQJUGuZ7DPkkDkcztMnapoyzBEdbKD17-GNzcTrKx9FA@mail.gmail.com>
+References: <20171031163656.24552-1-andrew.smirnov@gmail.com>
+ <20171031163656.24552-3-andrew.smirnov@gmail.com> <20171105153857.GC13118@localhost>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171105153857.GC13118@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Carlo Caione <carlo@caione.org>, Kevin Hilman <khilman@baylibre.com>, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Johan Hovold <johan@kernel.org>
+Cc: linux-kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-Devices like DCF77 receivers need the baud-rate to be as low as 50.
+On Sun, Nov 5, 2017 at 7:38 AM, Johan Hovold <johan@kernel.org> wrote:
+> On Tue, Oct 31, 2017 at 09:36:53AM -0700, Andrey Smirnov wrote:
+>> Add code implementing managed version of serdev_device_open() for
+>> serdev device drivers that "open" the device during driver's lifecycle
+>> only once (e.g. opened in .probe() and closed in .remove()).
+>>
+>> Cc: linux-kernel@vger.kernel.org
+>> Cc: linux-serial@vger.kernel.org
+>> Cc: Rob Herring <robh@kernel.org>
+>> Cc: cphealy@gmail.com
+>> Cc: Guenter Roeck <linux@roeck-us.net>
+>> Cc: Lucas Stach <l.stach@pengutronix.de>
+>> Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+>> Cc: Lee Jones <lee.jones@linaro.org>
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> Cc: Pavel Machek <pavel@ucw.cz>
+>> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+>> Cc: Johan Hovold <johan@kernel.org>
+>> Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+>> Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+>> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+>> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+>> ---
+>>  Documentation/driver-model/devres.txt |  3 +++
+>>  drivers/tty/serdev/core.c             | 27 +++++++++++++++++++++++++++
+>>  include/linux/serdev.h                |  1 +
+>>  3 files changed, 31 insertions(+)
+>
+>> +int devm_serdev_device_open(struct device *dev, struct serdev_device *serdev)
+>> +{
+>> +     struct serdev_device **dr;
+>> +     int ret;
+>> +
+>> +     dr = devres_alloc(devm_serdev_device_release, sizeof(*dr), GFP_KERNEL);
+>> +     if (!dr)
+>> +             return -ENOMEM;
+>> +
+>> +     ret = serdev_device_open(serdev);
+>> +     if (ret) {
+>> +             devres_free(dr);
+>> +             return ret;
+>> +     }
+>> +
+>> +     *dr = serdev;
+>> +     devres_add(dev, dr);
+>> +
+>> +     return ret;
+>
+> This would be more readable as return 0.
 
-I have tested this on a Meson GXL device with uart_A.
+Sure, I'll change that in v11.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Carlo Caione <carlo@caione.org>
-Cc: Kevin Hilman <khilman@baylibre.com>
-Cc: linux-amlogic@lists.infradead.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Thomas Rohloff <v10lator@myway.de>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
----
- drivers/tty/serial/meson_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index 07c0f98be3ac..e281ce5d101d 100644
---- a/drivers/tty/serial/meson_uart.c
-+++ b/drivers/tty/serial/meson_uart.c
-@@ -362,7 +362,7 @@ static void meson_uart_set_termios(struct uart_port *port,
- 
- 	writel(val, port->membase + AML_UART_CONTROL);
- 
--	baud = uart_get_baud_rate(port, termios, old, 9600, 4000000);
-+	baud = uart_get_baud_rate(port, termios, old, 50, 4000000);
- 	meson_uart_change_speed(port, baud);
- 
- 	port->read_status_mask = AML_UART_TX_FIFO_WERR;
--- 
-2.13.6
+Thanks,
+Andrey Smrinov
