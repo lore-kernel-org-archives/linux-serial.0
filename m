@@ -1,69 +1,70 @@
-From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: Re: [PATCH v10 2/5] serdev: Introduce devm_serdev_device_open()
-Date: Sun, 5 Nov 2017 14:19:48 -0800
-Message-ID: <CAHQ1cqFQJUGuZ7DPkkDkcztMnapoyzBEdbKD17-GNzcTrKx9FA@mail.gmail.com>
-References: <20171031163656.24552-1-andrew.smirnov@gmail.com>
- <20171031163656.24552-3-andrew.smirnov@gmail.com> <20171105153857.GC13118@localhost>
+From: Chip Bilbrey <chip-Gz1Ta9Qd61ZAfugRpC6u6w@public.gmane.org>
+Subject: Re: [v11,1/4] drivers: jtag: Add JTAG core driver
+Date: Sun, 05 Nov 2017 14:32:53 -0800
+Message-ID: <8760aoz78q.fsf@bilbrey.org>
+References: <1509724449-26221-2-git-send-email-oleksandrs@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171105153857.GC13118@localhost>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, Chris Healy <cphealy@gmail.com>, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Content-Type: text/plain
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-reply-to: <1509724449-26221-2-git-send-email-oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org, jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org, tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, vadimp-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Nov 5, 2017 at 7:38 AM, Johan Hovold <johan@kernel.org> wrote:
-> On Tue, Oct 31, 2017 at 09:36:53AM -0700, Andrey Smirnov wrote:
->> Add code implementing managed version of serdev_device_open() for
->> serdev device drivers that "open" the device during driver's lifecycle
->> only once (e.g. opened in .probe() and closed in .remove()).
->>
->> Cc: linux-kernel@vger.kernel.org
->> Cc: linux-serial@vger.kernel.org
->> Cc: Rob Herring <robh@kernel.org>
->> Cc: cphealy@gmail.com
->> Cc: Guenter Roeck <linux@roeck-us.net>
->> Cc: Lucas Stach <l.stach@pengutronix.de>
->> Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
->> Cc: Lee Jones <lee.jones@linaro.org>
->> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> Cc: Pavel Machek <pavel@ucw.cz>
->> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
->> Cc: Johan Hovold <johan@kernel.org>
->> Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
->> Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
->> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
->> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
->> ---
->>  Documentation/driver-model/devres.txt |  3 +++
->>  drivers/tty/serdev/core.c             | 27 +++++++++++++++++++++++++++
->>  include/linux/serdev.h                |  1 +
->>  3 files changed, 31 insertions(+)
->
->> +int devm_serdev_device_open(struct device *dev, struct serdev_device *serdev)
->> +{
->> +     struct serdev_device **dr;
->> +     int ret;
->> +
->> +     dr = devres_alloc(devm_serdev_device_release, sizeof(*dr), GFP_KERNEL);
->> +     if (!dr)
->> +             return -ENOMEM;
->> +
->> +     ret = serdev_device_open(serdev);
->> +     if (ret) {
->> +             devres_free(dr);
->> +             return ret;
->> +     }
->> +
->> +     *dr = serdev;
->> +     devres_add(dev, dr);
->> +
->> +     return ret;
->
-> This would be more readable as return 0.
 
-Sure, I'll change that in v11.
+Oleksandr Shamray writes:
+> diff --git a/include/uapi/linux/jtag.h b/include/uapi/linux/jtag.h
+> new file mode 100644
+> index 0000000..0b25a83
+> --- /dev/null
+> +++ b/include/uapi/linux/jtag.h
+> [...]
+> +/**
+> + * enum jtag_xfer_mode:
+> + *
+> + * @JTAG_XFER_HW_MODE: hardware mode transfer
+> + * @JTAG_XFER_SW_MODE: software mode transfer
+> + */
+> +enum jtag_xfer_mode {
+> +	JTAG_XFER_HW_MODE,
+> +	JTAG_XFER_SW_MODE,
+> +};
 
-Thanks,
-Andrey Smrinov
+Is this essentially selecting between bit-bang mode or not?  Is there a
+generally applicable reason to select SW mode over HW (or vice versa)?
+This sounds like it's tied to device-specific capability which shouldn't
+be exposed in a generic user API.
+
+> +/**
+> + * struct jtag_xfer - jtag xfer:
+> + *
+> + * @mode: access mode
+> + * @type: transfer type
+> + * @direction: xfer direction
+> + * @length: xfer bits len
+> + * @tdio : xfer data array
+> + * @endir: xfer end state
+> + *
+> + * Structure represents interface to Aspeed JTAG device for jtag sdr xfer
+> + * execution.
+
+Probably should remove the reference to Aspeed here.
+
+> +/* ioctl interface */
+> +#define __JTAG_IOCTL_MAGIC	0xb2
+> +
+> +#define JTAG_IOCRUNTEST	_IOW(__JTAG_IOCTL_MAGIC, 0,\
+> +			     struct jtag_run_test_idle)
+> +#define JTAG_SIOCFREQ	_IOW(__JTAG_IOCTL_MAGIC, 1, unsigned int)
+> +#define JTAG_GIOCFREQ	_IOR(__JTAG_IOCTL_MAGIC, 2, unsigned int)
+> +#define JTAG_IOCXFER	_IOWR(__JTAG_IOCTL_MAGIC, 3, struct jtag_xfer)
+> +#define JTAG_GIOCSTATUS _IOWR(__JTAG_IOCTL_MAGIC, 4, enum jtag_endstate)
+
+I notice the single-open()-per-device lock was dropped by request in an
+earlier revision of your patches, but multiple processes trying to drive
+a single JTAG master could wreak serious havoc if transactions get
+interleaved. Would something like an added JTAG_LOCKCHAIN/UNLOCKCHAIN
+ioctl() for exclusive client access be reasonable to prevent this?
+
+-Chip
