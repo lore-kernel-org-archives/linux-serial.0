@@ -1,33 +1,46 @@
-From: V10lator <v10lator@myway.de>
-Subject: Re: [PATCH v3] tty: serial: meson: allow baud-rates lower than 9600
-Date: Sun, 05 Nov 2017 05:26:59 +0100
-Message-ID: <bef0434b-fa23-464e-8c6c-d1f7dc678767@myway.de>
-References: <19343ad6-75de-4059-825a-98ed40ecf423@myway.de>
- <20171104131352.GA9271@kroah.com>
+From: Thomas Rohloff <v10lator@myway.de>
+Subject: [PATCH v4] tty: serial: meson: allow baud-rates lower than 9600
+Date: Sun, 05 Nov 2017 05:29:30 +0100
+Message-ID: <bb0a70cc-6cc1-46d2-aa04-046a37c9f516@myway.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20171104131352.GA9271@kroah.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Kevin Hilman <khilman@baylibre.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Carlo Caione <carlo@caione.org>, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Carlo Caione <carlo@caione.org>, Kevin Hilman <khilman@baylibre.com>, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Am Samstag, 4. November 2017 14:13:52 CET schrieb Greg Kroah-Hartman:
-> What changed from v2?
+Devices like DCF77 receivers need the baud-rate to be as low as 50.
 
-Nothing. I just re-based the patch on a fresh git clone as you couldn't 
-merge v2.
+I have tested this on a Meson GXL device with uart_A.
 
-> And I need a real name as the author of the patch :(
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Carlo Caione <carlo@caione.org>
+Cc: Kevin Hilman <khilman@baylibre.com>
+Cc: linux-amlogic@lists.infradead.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Thomas Rohloff <v10lator@myway.de>
+---
+ drivers/tty/serial/meson_uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Damn, sorry about that. Will do a v4.
+diff --git a/drivers/tty/serial/meson_uart.c 
+b/drivers/tty/serial/meson_uart.c
+index 07c0f98be3ac..e281ce5d101d 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -362,7 +362,7 @@ static void meson_uart_set_termios(struct uart_port 
+*port,
+ 
+ 	writel(val, port->membase + AML_UART_CONTROL);
+ 
+-	baud = uart_get_baud_rate(port, termios, old, 9600, 4000000);
++	baud = uart_get_baud_rate(port, termios, old, 50, 4000000);
+ 	meson_uart_change_speed(port, baud);
+ 
+ 	port->read_status_mask = AML_UART_TX_FIFO_WERR;
+-- 
+2.13.6
