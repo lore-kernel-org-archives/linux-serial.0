@@ -1,7 +1,7 @@
 From: Gimcuan Hui <gimcuan@gmail.com>
-Subject: [PATCH 2/5] tty: serial: jsm: add blank line after declarations
-Date: Sun,  5 Nov 2017 05:06:19 +0000
-Message-ID: <cbda8893586ac3dd6e80369a25a0fdae16feb044.1509853735.git.gimcuan@gmail.com>
+Subject: [PATCH 1/5] tty: serial: jsm: change the type of local variable
+Date: Sun,  5 Nov 2017 05:06:18 +0000
+Message-ID: <5c64f328c41e74b635d38e9e5614dcfb627afb5c.1509853735.git.gimcuan@gmail.com>
 References: <cover.1509853735.git.gimcuan@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1509853735.git.gimcuan@gmail.com>
@@ -12,26 +12,29 @@ To: "Guilherme G. Piccoli" <gpiccoli@linux.vnet.ibm.com>, Greg Kroah-Hartman <gr
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This patch fixes checkpatch.pl warning:
+The return type of jsm_get_mstat was int, and the local var result
+was for the return should be int, make the change.
 
-Missing a blank line after declarations.
+This patch fixes the checkpatch.pl warning:
+Prefer 'unsigned int' to bare use of 'unsigned'.
 
 Signed-off-by: Gimcuan Hui <gimcuan@gmail.com>
 ---
- drivers/tty/serial/jsm/jsm_tty.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/jsm/jsm_tty.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
-index 729d2a083a74..ed58dfc3d40e 100644
+index e69227cc3827..729d2a083a74 100644
 --- a/drivers/tty/serial/jsm/jsm_tty.c
 +++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -124,6 +124,7 @@ static void jsm_tty_set_mctrl(struct uart_port *port, unsigned int mctrl)
- static void jsm_tty_write(struct uart_port *port)
+@@ -36,7 +36,7 @@ static void jsm_carrier(struct jsm_channel *ch);
+ static inline int jsm_get_mstat(struct jsm_channel *ch)
  {
- 	struct jsm_channel *channel;
-+
- 	channel = container_of(port, struct jsm_channel, uart_port);
- 	channel->ch_bd->bd_ops->copy_data_from_queue_to_uart(channel);
- }
+ 	unsigned char mstat;
+-	unsigned result;
++	int result;
+ 
+ 	jsm_dbg(IOCTL, &ch->ch_bd->pci_dev, "start\n");
+ 
 -- 
 2.11.0
