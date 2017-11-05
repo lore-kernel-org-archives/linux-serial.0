@@ -1,40 +1,42 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 2/5] tty: serial: sh-sci: Hide serial console config question
-Date: Thu, 30 Nov 2017 14:11:59 +0100
-Message-ID: <1512047522-16312-3-git-send-email-geert+renesas@glider.be>
-References: <1512047522-16312-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1512047522-16312-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-sh-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp, linux-sh@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3] tty: serial: meson: allow baud-rates lower than 9600
+Date: Sun, 5 Nov 2017 08:21:41 +0100
+Message-ID: <20171105072141.GC28366@kroah.com>
+References: <19343ad6-75de-4059-825a-98ed40ecf423@myway.de>
+ <20171104131352.GA9271@kroah.com>
+ <bef0434b-fa23-464e-8c6c-d1f7dc678767@myway.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <bef0434b-fa23-464e-8c6c-d1f7dc678767@myway.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: V10lator <v10lator@myway.de>
+Cc: Kevin Hilman <khilman@baylibre.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Carlo Caione <carlo@caione.org>, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Most users will want to use a serial console.
+On Sun, Nov 05, 2017 at 05:26:59AM +0100, V10lator wrote:
+> Am Samstag, 4. November 2017 14:13:52 CET schrieb Greg Kroah-Hartman:
+> > What changed from v2?
+> 
+> Nothing. I just re-based the patch on a fresh git clone as you couldn't
+> merge v2.
 
-Hence make that the default, unless CONFIG_EXPERT is enabled.
+Then you need to say so somewhere otherwise I, and everyone else, has no
+idea what changed.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/tty/serial/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Remember, I get thousands of patches a week to review, and have the
+short-term memory of a squirrel :(
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index bd96046d7f94bac0..0c75562d620feb82 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -768,9 +768,10 @@ config SERIAL_SH_SCI_NR_UARTS
- 	default "18" if ARCH_RENESAS
- 
- config SERIAL_SH_SCI_CONSOLE
--	bool "Support for console on SuperH SCI(F)"
-+	bool "Support for console on SuperH SCI(F)" if EXPERT
- 	depends on SERIAL_SH_SCI=y
- 	select SERIAL_CORE_CONSOLE
-+	default y
- 
- config SERIAL_SH_SCI_EARLYCON
- 	bool "Support for early console on SuperH SCI(F)"
--- 
-2.7.4
+thanks,
 
+greg k-h
