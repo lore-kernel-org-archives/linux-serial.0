@@ -1,40 +1,36 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH 2/2] serial: 8250_fintek: Disable delays for ports != 0
-Date: Mon,  6 Nov 2017 11:49:13 +0100
-Message-ID: <20171106104913.2553-2-ricardo.ribalda@gmail.com>
-References: <20171106104913.2553-1-ricardo.ribalda@gmail.com>
+From: "Guilherme G. Piccoli" <gpiccoli@linux.vnet.ibm.com>
+Subject: Re: [PATCH 0/5] TTY/JSM coding style fixes
+Date: Mon, 6 Nov 2017 11:16:47 -0200
+Message-ID: <03d135ce-f5d6-405b-6ea3-4cf3dd8f79a4@linux.vnet.ibm.com>
+References: <cover.1509853735.git.gimcuan@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171106104913.2553-1-ricardo.ribalda@gmail.com>
+In-Reply-To: <cover.1509853735.git.gimcuan@gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>, Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+To: Gimcuan Hui <gimcuan@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-According to the datasheet, only the first port supports delay before
-send and delay after send.
+On 11/05/2017 03:06 AM, Gimcuan Hui wrote:
+> This patch set fixes several warnings and errors reported
+> by checkpatch.pl.
+> 
+> Gimcuan Hui (5):
+>   tty: serial: jsm: change the type of local variable
+>   tty: serial: jsm: add blank line after declarations
+>   tty: serial: jsm: delete space between function name and '('
+>   tty: serial: jsm: fix coding style
+>   tty: serial: jsm: add space before the open parenthesis '('
+> 
+>  drivers/tty/serial/jsm/jsm_tty.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
 
-Reported-by: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
----
- drivers/tty/serial/8250/8250_fintek.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Thanks for the fixes Gimcuan!
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index ca7e96f9f080..61745d4bea31 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -216,6 +216,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
- 	rs485->flags &= SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
- 			SER_RS485_RTS_AFTER_SEND;
- 
-+	/* Only the first port supports delays */
-+	if (pdata->index) {
-+		rs485->delay_rts_before_send = 0;
-+		rs485->delay_rts_after_send = 0;
-+	}
-+
- 	if (rs485->delay_rts_before_send) {
- 		rs485->delay_rts_before_send = 1;
- 		config |= TXW4C_IRA;
--- 
-2.14.2
+For the entire series:
+
+Acked-by: Guilherme G. Piccoli <gpiccoli@linux.vnet.ibm.com>
