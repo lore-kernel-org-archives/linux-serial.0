@@ -1,54 +1,103 @@
-From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v11 1/5] serdev: Make .remove in struct serdev_device_driver optional
-Date: Mon,  6 Nov 2017 07:29:31 -0800
-Message-ID: <20171106152935.16920-2-andrew.smirnov@gmail.com>
-References: <20171106152935.16920-1-andrew.smirnov@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171106152935.16920-1-andrew.smirnov@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+From: Troy Kisky <troy.kisky@boundarydevices.com>
+Subject: [PATCH v3 1/1] tty: serial: imx: remove imx_disable_rx_int
+Date: Mon,  6 Nov 2017 12:46:10 -0700
+Message-ID: <20171106194610.9983-1-troy.kisky@boundarydevices.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org, nandor.han@ge.com
+Cc: Troy Kisky <troy.kisky@boundarydevices.com>, linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, l.stach@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-Using devres infrastructure it is possible to write a serdev driver
-that doesn't have any code that needs to be called as a part of
-.remove. Add code to make .remove optional.
+Since imx_disable_rx_int is only called by imx_startup,
+let's integrate it into that function.
 
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>
-Cc: cphealy@gmail.com
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
 ---
- drivers/tty/serdev/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v2: new patch
+v3: rebased on tty-next
+---
+ drivers/tty/serial/imx.c | 36 +++++++++---------------------------
+ 1 file changed, 9 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index c68fb3a8ea1c..f500f6a2ca88 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -252,8 +252,8 @@ static int serdev_drv_probe(struct device *dev)
- static int serdev_drv_remove(struct device *dev)
- {
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
--
--	sdrv->remove(to_serdev_device(dev));
-+	if (sdrv->remove)
-+		sdrv->remove(to_serdev_device(dev));
- 	return 0;
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 1b04ef5925ef..9923b57fa60d 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -712,25 +712,6 @@ static irqreturn_t imx_rxint(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
  }
  
+-static void imx_disable_rx_int(struct imx_port *sport)
+-{
+-	unsigned long temp;
+-
+-	/* disable the receiver ready and aging timer interrupts */
+-	temp = readl(sport->port.membase + UCR1);
+-	temp &= ~(UCR1_RRDYEN);
+-	writel(temp, sport->port.membase + UCR1);
+-
+-	temp = readl(sport->port.membase + UCR2);
+-	temp &= ~(UCR2_ATEN);
+-	writel(temp, sport->port.membase + UCR2);
+-
+-	/* disable the rx errors interrupts */
+-	temp = readl(sport->port.membase + UCR4);
+-	temp &= ~UCR4_OREN;
+-	writel(temp, sport->port.membase + UCR4);
+-}
+-
+ static void clear_rx_errors(struct imx_port *sport);
+ 
+ /*
+@@ -1261,18 +1242,21 @@ static int imx_startup(struct uart_port *port)
+ 	if (sport->dma_is_inited && !sport->dma_is_enabled)
+ 		imx_enable_dma(sport);
+ 
+-	temp = readl(sport->port.membase + UCR1);
+-	temp |= UCR1_RRDYEN | UCR1_UARTEN;
++	temp = readl(sport->port.membase + UCR1) & ~UCR1_RRDYEN;
++	if (!sport->dma_is_enabled)
++		temp |= UCR1_RRDYEN;
++	temp |= UCR1_UARTEN;
+ 	if (sport->have_rtscts)
+ 			temp |= UCR1_RTSDEN;
+ 
+ 	writel(temp, sport->port.membase + UCR1);
+ 
+-	temp = readl(sport->port.membase + UCR4);
+-	temp |= UCR4_OREN;
++	temp = readl(sport->port.membase + UCR4) & ~UCR4_OREN;
++	if (!sport->dma_is_enabled)
++		temp |= UCR4_OREN;
+ 	writel(temp, sport->port.membase + UCR4);
+ 
+-	temp = readl(sport->port.membase + UCR2);
++	temp = readl(sport->port.membase + UCR2) & ~UCR2_ATEN;
+ 	temp |= (UCR2_RXEN | UCR2_TXEN);
+ 	if (!sport->have_rtscts)
+ 		temp |= UCR2_IRTS;
+@@ -1306,10 +1290,8 @@ static int imx_startup(struct uart_port *port)
+ 	 * In our iMX53 the average delay for the first reception dropped from
+ 	 * approximately 35000 microseconds to 1000 microseconds.
+ 	 */
+-	if (sport->dma_is_enabled) {
+-		imx_disable_rx_int(sport);
++	if (sport->dma_is_enabled)
+ 		start_rx_dma(sport);
+-	}
+ 
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
 -- 
-2.13.6
+2.11.0
