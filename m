@@ -1,71 +1,80 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v3 1/1] tty: serial: imx: remove imx_disable_rx_int
-Date: Tue, 7 Nov 2017 10:50:36 +0100
-Message-ID: <20171107095036.kbqur6v6ywt6d5bu@pengutronix.de>
-References: <20171106194610.9983-1-troy.kisky@boundarydevices.com>
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: Re: [patch v11 4/4] Documentation: jtag: Add ABI documentation
+Date: Tue, 7 Nov 2017 11:36:13 +0100
+Message-ID: <20171107103613.GJ1370@distanz.ch>
+References: <1509724449-26221-1-git-send-email-oleksandrs@mellanox.com>
+ <1509724449-26221-5-git-send-email-oleksandrs@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20171106194610.9983-1-troy.kisky@boundarydevices.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Troy Kisky <troy.kisky@boundarydevices.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, nandor.han@ge.com, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, l.stach@pengutronix.de
+In-Reply-To: <1509724449-26221-5-git-send-email-oleksandrs@mellanox.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Oleksandr Shamray <oleksandrs@mellanox.com>
+Cc: gregkh@linuxfoundation.org, arnd@arndb.de, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au, jiri@resnulli.us, linux-serial@vger.kernel.org, mec@shout.net, vadimp@mellanox.com, system-sw-low-level@mellanox.com, robh+dt@kernel.org, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, davem@davemloft.net, mchehab@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Nov 06, 2017 at 12:46:10PM -0700, Troy Kisky wrote:
-> Since imx_disable_rx_int is only called by imx_startup,
-> let's integrate it into that function.
-> =
-
-> Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
+On 2017-11-03 at 16:54:09 +0100, Oleksandr Shamray <oleksandrs@mellanox.com> wrote:
+> Added document that describe the ABI for JTAG class drivrer
+> 
+> Signed-off-by: Oleksandr Shamray <oleksandrs@mellanox.com>
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
 > ---
-> v2: new patch
-> v3: rebased on tty-next
+> v10->v11
+> v9->v10
+> Fixes added by Oleksandr:
+> - change jtag-cdev to jtag-dev in documentation
+> - update Kernel Version and Date in jtag-dev documentation;
+> v8->v9
+> v7->v8
+> v6->v7
+> Comments pointed by Pavel Machek <pavel@ucw.cz>
+> - Added jtag-cdev documentation to Documentation/ABI/testing folder
 > ---
->  drivers/tty/serial/imx.c | 36 +++++++++---------------------------
->  1 file changed, 9 insertions(+), 27 deletions(-)
-> =
+>  Documentation/ABI/testing/jatg-dev |   27 +++++++++++++++++++++++++++
+>  1 files changed, 27 insertions(+), 0 deletions(-)
+>  create mode 100644 Documentation/ABI/testing/jatg-dev
+> 
+> diff --git a/Documentation/ABI/testing/jatg-dev b/Documentation/ABI/testing/jatg-dev
+> new file mode 100644
+> index 0000000..803dbab
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/jatg-dev
 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 1b04ef5925ef..9923b57fa60d 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -712,25 +712,6 @@ static irqreturn_t imx_rxint(int irq, void *dev_id)
->  	return IRQ_HANDLED;
->  }
->  =
+Typo in the file name: s/jatg-dev/jtag-dev/
 
-> -static void imx_disable_rx_int(struct imx_port *sport)
-> -{
-> -	unsigned long temp;
-> -
-> -	/* disable the receiver ready and aging timer interrupts */
-> -	temp =3D readl(sport->port.membase + UCR1);
-> -	temp &=3D ~(UCR1_RRDYEN);
-> -	writel(temp, sport->port.membase + UCR1);
-> -
-> -	temp =3D readl(sport->port.membase + UCR2);
-> -	temp &=3D ~(UCR2_ATEN);
+> @@ -0,0 +1,27 @@
+> +What:		/dev/jtag[0-9]+
+> +Date:		October 2017
+> +KernelVersion:	4.15
+> +Contact:	oleksandrs@mellanox.com
+> +Description:
+> +		The misc device files /dev/jtag* are the interface
+> +		between JTAG master interfase and userspace.
 
-ATEN is never set in the driver, right? That's the only one I had to
-check with the imx driver open in my editor, so maybe point out that one
-in the commit log?
+Typo: s/interfase/interface/
 
-Other than that you change looks fine.
-
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> +
+> +		The ioctl(2)-based ABI is defined and documented in
+> +		[include/uapi]<linux/jtag.h>.
+> +
+> +		The following file operations are supported:
+> +
+> +		open(2)
+> +		The argument flag currently support only one access
+> +		mode O_RDWR.
+> +
+> +		ioctl(2)
+> +		Initiate various actions.
+> +		See the inline documentation in [include/uapi]<linux/jtag.h>
+> +		for descriptions of all ioctls.
+> +
+> +		close(2)
+> +		Stops and free up the I/O contexts that was associated
+> +		with the file descriptor.
+> +
+> +Users:		TBD
+> \ No newline at end of file
+> -- 
+> 1.7.1
+> 
