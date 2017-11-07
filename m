@@ -1,12 +1,14 @@
 From: Michal Oleszczyk <oleszczyk.m-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] Devicetree documentation: add rs485-rts-active-high property
-Date: Tue,  7 Nov 2017 08:36:13 +0100
-Message-ID: <20171107073613.10264-1-m.oleszczyk@grinn-global.com>
+Subject: [PATCH v2] Devicetree documentation: add rs485-rts-active-high property
+Date: Tue,  7 Nov 2017 08:53:36 +0100
+Message-ID: <20171107075336.11236-1-m.oleszczyk@grinn-global.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Michal Oleszczyk <m.oleszczyk-z3quKL4iOrmQ6ZAhV5LmOA@public.gmane.org>, Michal Oleszczyk <oleszczyk.m-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Michal Oleszczyk <oleszczyk.m-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
+
+From: Michal Oleszczyk <oleszczyk.m-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
 Add description of rs485-rts-active-high property into
 /serial/rs485.txt devicetree documentation file.
@@ -14,6 +16,8 @@ Add description of rs485-rts-active-high property into
 Signed-off-by: Michal Oleszczyk <oleszczyk.m-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
 ---
+Repair 'From' to match with 'Signed-off-by' section.
+
  Documentation/devicetree/bindings/serial/rs485.txt | 2 ++
  1 file changed, 2 insertions(+)
 
