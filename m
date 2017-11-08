@@ -1,37 +1,27 @@
-From: Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH 3/5] serial: core: Support common rs485 binding for RTS
- polarity
-Date: Wed, 8 Nov 2017 18:33:27 +0100
-Message-ID: <20171108173327.GA10670@wunner.de>
-References: <cover.1510134353.git.lukas@wunner.de>
- <e85e3d02a45e79e410b6606d8fdec347f03053f4.1510134353.git.lukas@wunner.de>
- <20171108111355.pzcrvdgqqeleinss@pengutronix.de>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH V1 1/1] serial: 8250_fintek: Fix crash with baud rate B0
+Date: Wed, 8 Nov 2017 17:34:14 +0000
+Message-ID: <20171108173414.7b16c796@alans-desktop>
+References: <1510110346-28893-1-git-send-email-hpeter+linux_kernel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20171108111355.pzcrvdgqqeleinss-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Mark Jackson <mpfj-2FZW7xY0fHgqdlJmJB21zg@public.gmane.org>, Michal Oleszczyk <oleszczyk.m-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1510110346-28893-1-git-send-email-hpeter+linux_kernel@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, lukas@wunner.de, rel+kernel@agilox.net, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ricardo.ribalda@gmail.com, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 08, 2017 at 12:13:55PM +0100, Uwe Kleine-König wrote:
-> On Wed, Nov 08, 2017 at 11:32:34AM +0100, Lukas Wunner wrote:
-> > When a driver invokes the uart_get_rs485_mode() helper, set the RTS
-> > polarity to active high by default unless the newly introduced
-> > "rs485-rts-active-low" property was specified.
+On Wed,  8 Nov 2017 11:05:46 +0800
+"Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com> wrote:
 
-Thanks a lot Uwe for your review comments, those are good points,
-d'accord on all of them.  I've already incorporated all suggested
-changes into my local repo but will wait a few days before respinning
-to see if there are further comments.
+> The 8250_fintek.c is support the Fintek F81866/F81216 with dynamic clock.
+> But It'll generate "division by zero" exception and crash in
+> fintek_8250_set_termios() with baud rate 0 on baudrate_table[i] % baud.
 
-Best,
+0 means "hang up", so this looks good providing it leaves the device in a
+sane state.
 
-Lukas
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+Reviewed-by: Alan Cox <alan@linux.intel.com>
