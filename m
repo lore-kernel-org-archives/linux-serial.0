@@ -1,68 +1,120 @@
-From: James Hogan <james.hogan@mips.com>
-Subject: Re: [PATCH 0/3] MIPS: AR7: assorted fixes
-Date: Wed, 8 Nov 2017 22:03:22 +0000
-Message-ID: <20171108220322.GO15260@jhogan-linux>
-References: <20171029152721.6770-1-jonas.gorski@gmail.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="8CNmCRe8Sh4keFKJ"
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <20171029152721.6770-1-jonas.gorski@gmail.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Jonas Gorski <jonas.gorski@gmail.com>
-Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Florian Fainelli <f.fainelli@gmail.com>, Nicolas Schichan <nschichan@freebox.fr>
+From: Denys Zagorui <dzagorui@cisco.com>
+Subject: [PATCH] serial: 8250: convert to threaded IRQ
+Date: Thu,  9 Nov 2017 16:15:06 +0200
+Message-ID: <20171109141506.2805-1-dzagorui@cisco.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
---8CNmCRe8Sh4keFKJ
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Due using virtualization it is common to see
+many "too much work for irq*" messages.
 
-On Sun, Oct 29, 2017 at 04:27:18PM +0100, Jonas Gorski wrote:
-> This patchset fixes a few issues found in AR7 that accumulated in the
-> past few years. One was fixed for ages in OpenWrt/LEDE and never made
-> it upstream, the others weren't noticed until now.
->=20
-> Jonas Gorski (2):
->   MIPS: AR7: defer registration of GPIO
->   MIPS: AR7: ensure the port type's FCR value is used
->=20
-> Oswald Buddenhagen (1):
->   MIPS: AR7: ensure that serial ports are properly set up
+There are fixes proposed erlier:
 
-Thanks. Patches 1 + 2 applied for 4.14.
+-  e7328ae1848966181a7ac47e8ae6cddbd2cf55f3 (serial:
+   8250, increase PASS_LIMIT)
+-  f4f653e9875e573860e783fecbebde284a8626f5 (serial:
+   8250, disable "too much work" messages
 
-Cheers
-James
+First one doesn't help now, last one was reverted
+(12de375ec493ab1767d4a07dde823e63ae5edc21) in fact
+it doesn't fix anything. So procesing interrupts in
+kthread give us an opportunity to perform rescheduling
+periodically.
 
---8CNmCRe8Sh4keFKJ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+Cc: Jiri Slaby <jslaby@suse.com>
+Signed-off-by: Denys Zagorui <dzagorui@cisco.com>
+---
+ drivers/tty/serial/8250/8250_core.c | 23 ++++++++++++++++-------
+ drivers/tty/serial/8250/8250_port.c |  5 ++---
+ 2 files changed, 18 insertions(+), 10 deletions(-)
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEd80NauSabkiESfLYbAtpk944dnoFAloDfyIACgkQbAtpk944
-dnpRvg/8DkL56Q6m1iZzJwFPkCJlh0eWskY1Mi6b3msAGViiB8YrP+wSxoscSv91
-MDD0LNPEuu3azN5UCR1FAfSALPml3Mc7mU0+l4mBtpQcIonrQLIHb7p06qMWPLul
-BU6/Lii9B+TBvTv+45W4IrwtRPX8Jik+FI1kjbO9HtugNgfTrIBNHZNiC9pM2MhM
-E6ZGRd+RsD3/O+hTMrtu9PbD8j8LT0wZJseT8ythEup53sFG/XTEts+DfxEHnvoM
-ueqPYG05R36ufDsotqOOGZI1EAREsc/33+qR8H6YOmPx4zAj1wIl+ILtM9Nm9WbJ
-CeIaA9OwTUej8hayMhmfH5i7bRFgZt2Nx5RYjvL14sn9KGLAEZJDh3v+IXi7zSpe
-hqOnlL69u7bpoFnET5LYm3sRUDGofL/5lg4hRVtcou8tOhdQgxsRhC9FHDC5aKwd
-1xS9fI5orU5dEvmKbcjeyZtn0u+TfY5oZdqRUI2qtHMqMf6SanipO+zcZvNwDmcS
-KTxrGKf2VIzvm9rLFH/VY/4vIgKhSMFF1JGljbIW/sPJ6Qr4PHdAxStfJY8KiIOa
-P2gGxHRawOrLhAmfpXoWxqZ+eFhmn19KH6Cl9154zQORsc9DxYw75Pvh+kpnOGzB
-c8NPvJp/0g4ZJvdKfMGGz8j+5LG5tv/QBotyw0lk+3Aj8mDCO6M=
-=p972
------END PGP SIGNATURE-----
-
---8CNmCRe8Sh4keFKJ--
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index d29b512a7d9f..0c2f6352523a 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -58,7 +58,7 @@ static struct uart_driver serial8250_reg;
+ 
+ static unsigned int skip_txen_test; /* force skip of txen test at init time */
+ 
+-#define PASS_LIMIT	512
++#define PASS_LIMIT	32
+ 
+ #include <asm/serial.h>
+ /*
+@@ -135,10 +135,8 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 		l = l->next;
+ 
+ 		if (l == i->head && pass_counter++ > PASS_LIMIT) {
+-			/* If we hit this, we're dead. */
+-			printk_ratelimited(KERN_ERR
+-				"serial8250: too much work for irq%d\n", irq);
+-			break;
++			cond_resched();
++			pass_counter = 0;
+ 		}
+ 	} while (l != end);
+ 
+@@ -146,9 +144,20 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 
+ 	pr_debug("%s(%d): end\n", __func__, irq);
+ 
++	enable_irq(i->irq);
++
+ 	return IRQ_RETVAL(handled);
+ }
+ 
++static irqreturn_t serial8250_hard_irq(int irq, void *dev_id)
++{
++	struct irq_info *i = dev_id;
++
++	disable_irq_nosync(i->irq);
++
++	return IRQ_WAKE_THREAD;
++}
++
+ /*
+  * To support ISA shared interrupts, we need to have one interrupt
+  * handler that ensures that the IRQ line has been deasserted
+@@ -217,8 +226,8 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
+ 		i->head = &up->list;
+ 		spin_unlock_irq(&i->lock);
+ 		irq_flags |= up->port.irqflags;
+-		ret = request_irq(up->port.irq, serial8250_interrupt,
+-				  irq_flags, up->port.name, i);
++		ret = request_threaded_irq(up->port.irq, serial8250_hard_irq,
++						serial8250_interrupt, irq_flags, up->port.name, i);
+ 		if (ret < 0)
+ 			serial_do_unlink(i, up);
+ 	}
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index f0cc04f62b67..6d2c7bd1f402 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1852,13 +1852,12 @@ static bool handle_rx_dma(struct uart_8250_port *up, unsigned int iir)
+ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ {
+ 	unsigned char status;
+-	unsigned long flags;
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+ 	if (iir & UART_IIR_NO_INT)
+ 		return 0;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	spin_lock(&port->lock);
+ 
+ 	status = serial_port_in(port, UART_LSR);
+ 
+@@ -1870,7 +1869,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 	if ((!up->dma || up->dma->tx_err) && (status & UART_LSR_THRE))
+ 		serial8250_tx_chars(up);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	spin_unlock(&port->lock);
+ 	return 1;
+ }
+ EXPORT_SYMBOL_GPL(serial8250_handle_irq);
+-- 
+2.11.0
