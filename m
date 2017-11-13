@@ -1,30 +1,55 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: 8250_pci: Add Amazon PCI serial device ID
-Date: Mon, 13 Nov 2017 09:31:11 +0100
-Message-ID: <20171113083111.GB22719@kroah.com>
-References: <1510524846-18979-1-git-send-email-msw@linux.com>
+Subject: [PATCH 3.18 25/28] MIPS: AR7: Ensure that serial ports are properly set up
+Date: Mon, 13 Nov 2017 13:55:19 +0100
+Message-ID: <20171113125403.132407793@linuxfoundation.org>
+References: <20171113125400.803506921@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1510524846-18979-1-git-send-email-msw@linux.com>
+In-Reply-To: <20171113125400.803506921@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matt Wilson <msw@linux.com>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Anthony Liguori <aliguori@amazon.com>, Matt Wilson <msw@amazon.com>, stable@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Oswald Buddenhagen <oswald.buddenhagen@gmx.de>, Jonas Gorski <jonas.gorski@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Nicolas Schichan <nschichan@freebox.fr>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, James Hogan <jhogan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Nov 12, 2017 at 02:14:06PM -0800, Matt Wilson wrote:
-> From: Matt Wilson <msw@amazon.com>
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Matt Wilson <msw@amazon.com>
-> ---
+3.18-stable review patch.  If anyone has any objections, please let me know.
 
-I can't take patches without any changelog text at all :(
+------------------
 
-Please resend with a bit more descriptions of what this hardware is, and
-why we need a table entry for it.
+From: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
 
-thanks,
+commit b084116f8587b222a2c5ef6dcd846f40f24b9420 upstream.
 
-greg k-h
+Without UPF_FIXED_TYPE, the data from the PORT_AR7 uart_config entry is
+never copied, resulting in a dead port.
+
+Fixes: 154615d55459 ("MIPS: AR7: Use correct UART port type")
+Signed-off-by: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
+[jonas.gorski: add Fixes tag]
+Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+Cc: Nicolas Schichan <nschichan@freebox.fr>
+Cc: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
+Cc: linux-mips@linux-mips.org
+Cc: linux-serial@vger.kernel.org
+Patchwork: https://patchwork.linux-mips.org/patch/17543/
+Signed-off-by: James Hogan <jhogan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/mips/ar7/platform.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/arch/mips/ar7/platform.c
++++ b/arch/mips/ar7/platform.c
+@@ -581,6 +581,7 @@ static int __init ar7_register_uarts(voi
+ 	uart_port.type		= PORT_AR7;
+ 	uart_port.uartclk	= clk_get_rate(bus_clk) / 2;
+ 	uart_port.iotype	= UPIO_MEM32;
++	uart_port.flags		= UPF_FIXED_TYPE;
+ 	uart_port.regshift	= 2;
+ 
+ 	uart_port.line		= 0;
