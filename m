@@ -1,26 +1,18 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.4 48/56] MIPS: AR7: Defer registration of GPIO
-Date: Mon, 13 Nov 2017 13:56:12 +0100
-Message-ID: <20171113125603.890170940@linuxfoundation.org>
-References: <20171113125557.613444087@linuxfoundation.org>
+Subject: [PATCH 4.9 74/87] MIPS: AR7: Defer registration of GPIO
+Date: Mon, 13 Nov 2017 13:56:31 +0100
+Message-ID: <20171113125621.897389572@linuxfoundation.org>
+References: <20171113125615.304035578@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20171113125557.613444087@linuxfoundation.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171113125615.304035578@linuxfoundation.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Nicolas Schichan <nschichan@freebox.fr>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, James Hogan <jhogan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-4.4-stable review patch.  If anyone has any objections, please let me know.
+4.9-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
