@@ -1,18 +1,18 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 3.18 25/28] MIPS: AR7: Ensure that serial ports are properly set up
-Date: Mon, 13 Nov 2017 13:55:19 +0100
-Message-ID: <20171113125403.132407793@linuxfoundation.org>
-References: <20171113125400.803506921@linuxfoundation.org>
+Subject: [PATCH 4.4 49/56] MIPS: AR7: Ensure that serial ports are properly set up
+Date: Mon, 13 Nov 2017 13:56:13 +0100
+Message-ID: <20171113125604.053557173@linuxfoundation.org>
+References: <20171113125557.613444087@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171113125400.803506921@linuxfoundation.org>
+In-Reply-To: <20171113125557.613444087@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Oswald Buddenhagen <oswald.buddenhagen@gmx.de>, Jonas Gorski <jonas.gorski@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Nicolas Schichan <nschichan@freebox.fr>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, James Hogan <jhogan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-3.18-stable review patch.  If anyone has any objections, please let me know.
+4.4-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -45,7 +45,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/arch/mips/ar7/platform.c
 +++ b/arch/mips/ar7/platform.c
-@@ -581,6 +581,7 @@ static int __init ar7_register_uarts(voi
+@@ -576,6 +576,7 @@ static int __init ar7_register_uarts(voi
  	uart_port.type		= PORT_AR7;
  	uart_port.uartclk	= clk_get_rate(bus_clk) / 2;
  	uart_port.iotype	= UPIO_MEM32;
