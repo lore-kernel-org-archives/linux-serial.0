@@ -1,55 +1,71 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.9 75/87] MIPS: AR7: Ensure that serial ports are properly set up
-Date: Mon, 13 Nov 2017 13:56:32 +0100
-Message-ID: <20171113125621.983642234@linuxfoundation.org>
-References: <20171113125615.304035578@linuxfoundation.org>
+Subject: [PATCH 4.13 20/33] MIPS: AR7: Defer registration of GPIO
+Date: Mon, 13 Nov 2017 13:56:41 +0100
+Message-ID: <20171113125613.063435368@linuxfoundation.org>
+References: <20171113125611.096767733@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171113125615.304035578@linuxfoundation.org>
+In-Reply-To: <20171113125611.096767733@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Oswald Buddenhagen <oswald.buddenhagen@gmx.de>, Jonas Gorski <jonas.gorski@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Nicolas Schichan <nschichan@freebox.fr>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, James Hogan <jhogan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Nicolas Schichan <nschichan@freebox.fr>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, James Hogan <jhogan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-4.9-stable review patch.  If anyone has any objections, please let me know.
+4.13-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
-From: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
+From: Jonas Gorski <jonas.gorski@gmail.com>
 
-commit b084116f8587b222a2c5ef6dcd846f40f24b9420 upstream.
+commit e6b03ab63b4d270e0249f96536fde632409dc1dc upstream.
 
-Without UPF_FIXED_TYPE, the data from the PORT_AR7 uart_config entry is
-never copied, resulting in a dead port.
+When called from prom init code, ar7_gpio_init() will fail as it will
+call gpiochip_add() which relies on a working kmalloc() to alloc
+the gpio_desc array and kmalloc is not useable yet at prom init time.
 
-Fixes: 154615d55459 ("MIPS: AR7: Use correct UART port type")
-Signed-off-by: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
-[jonas.gorski: add Fixes tag]
+Move ar7_gpio_init() to ar7_register_devices() (a device_initcall)
+where kmalloc works.
+
+Fixes: 14e85c0e69d5 ("gpio: remove gpio_descs global array")
 Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Cc: Ralf Baechle <ralf@linux-mips.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
 Cc: Nicolas Schichan <nschichan@freebox.fr>
-Cc: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
 Cc: linux-mips@linux-mips.org
 Cc: linux-serial@vger.kernel.org
-Patchwork: https://patchwork.linux-mips.org/patch/17543/
+Patchwork: https://patchwork.linux-mips.org/patch/17542/
 Signed-off-by: James Hogan <jhogan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 ---
- arch/mips/ar7/platform.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/ar7/platform.c |    4 ++++
+ arch/mips/ar7/prom.c     |    2 --
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
 --- a/arch/mips/ar7/platform.c
 +++ b/arch/mips/ar7/platform.c
-@@ -576,6 +576,7 @@ static int __init ar7_register_uarts(voi
- 	uart_port.type		= PORT_AR7;
- 	uart_port.uartclk	= clk_get_rate(bus_clk) / 2;
- 	uart_port.iotype	= UPIO_MEM32;
-+	uart_port.flags		= UPF_FIXED_TYPE;
- 	uart_port.regshift	= 2;
+@@ -653,6 +653,10 @@ static int __init ar7_register_devices(v
+ 	u32 val;
+ 	int res;
  
- 	uart_port.line		= 0;
++	res = ar7_gpio_init();
++	if (res)
++		pr_warn("unable to register gpios: %d\n", res);
++
+ 	res = ar7_register_uarts();
+ 	if (res)
+ 		pr_err("unable to setup uart(s): %d\n", res);
+--- a/arch/mips/ar7/prom.c
++++ b/arch/mips/ar7/prom.c
+@@ -246,8 +246,6 @@ void __init prom_init(void)
+ 	ar7_init_cmdline(fw_arg0, (char **)fw_arg1);
+ 	ar7_init_env((struct env_var *)fw_arg2);
+ 	console_config();
+-
+-	ar7_gpio_init();
+ }
+ 
+ #define PORT(offset) (KSEG1ADDR(AR7_REGS_UART0 + (offset * 4)))
