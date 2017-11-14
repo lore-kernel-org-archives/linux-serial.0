@@ -1,73 +1,115 @@
-From: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Subject: RE: [v11,1/4] drivers: jtag: Add JTAG core driver
-Date: Tue, 14 Nov 2017 10:34:49 +0000
-Message-ID: <DB6PR0501MB219753AC43515148F39CC2D0B1280@DB6PR0501MB2197.eurprd05.prod.outlook.com>
-References: <1509724449-26221-2-git-send-email-oleksandrs@mellanox.com>
- <8760aoz78q.fsf@bilbrey.org>
+From: James Hogan <james.hogan@mips.com>
+Subject: Re: [PATCH RFC 3/3] MIPS: AR7: ensure the port type's FCR value is
+ used
+Date: Tue, 14 Nov 2017 11:02:11 +0000
+Message-ID: <20171114110211.GA5823@jhogan-linux.mipstec.com>
+References: <20171029152721.6770-1-jonas.gorski@gmail.com>
+ <20171029152721.6770-4-jonas.gorski@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <8760aoz78q.fsf-Gz1Ta9Qd61ZAfugRpC6u6w@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: 'Chip Bilbrey' <chip-Gz1Ta9Qd61ZAfugRpC6u6w@public.gmane.org>
-Cc: "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org" <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>, "jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org" <jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org>, "tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org" <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, "linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org" <mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, "linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, davem@davemlo
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="FCuugMFkClbJLl1L"
+Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Disposition: inline
+In-Reply-To: <20171029152721.6770-4-jonas.gorski@gmail.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: Jonas Gorski <jonas.gorski@gmail.com>
+Cc: linux-mips@linux-mips.org, linux-serial@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Florian Fainelli <f.fainelli@gmail.com>, Nicolas Schichan <nschichan@freebox.fr>
 List-Id: linux-serial@vger.kernel.org
 
-> -----Original Message-----
-> From: Chip Bilbrey [mailto:chip-Gz1Ta9Qd61ZAfugRpC6u6w@public.gmane.org]
-> Sent: Monday, November 6, 2017 12:33 AM
-> To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-> Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; arnd-r2nGTMty4D4@public.gmane.org; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org;
-> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org;
-> jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org; tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org; Vadim Pasternak <vadimp-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>; system-sw-low-
-> level <system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>; robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; openocd-
-> devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org; linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org; mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-> Subject: Re: [v11,1/4] drivers: jtag: Add JTAG core driver
+--FCuugMFkClbJLl1L
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sun, Oct 29, 2017 at 04:27:21PM +0100, Jonas Gorski wrote:
+> Since commit aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt
+> trigger I/F of FIFO buffers"), the port's default FCR value isn't used
+> in serial8250_do_set_termios anymore, but copied over once in
+> serial8250_config_port and then modified as needed.
+>=20
+> Unfortunately, serial8250_config_port will never be called if the port
+> is shared between kernel and userspace, and the port's flag doesn't have
+> UPF_BOOT_AUTOCONF, which would trigger a serial8250_config_port as well.
+>=20
+> This causes garbled output from userspace:
+>=20
+> [    5.220000] random: procd urandom read with 49 bits of entropy availab=
+le
+> ers
+>    [kee
+>=20
+> Fix this by forcing it to be configured on boot, resulting in the
+> expected output:
+>=20
+> [    5.250000] random: procd urandom read with 50 bits of entropy availab=
+le
+> Press the [f] key and hit [enter] to enter failsafe mode
+> Press the [1], [2], [3] or [4] key and hit [enter] to select the debug le=
+vel
+>=20
+> Fixes: aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt trigger =
+I/F of FIFO buffers")
+> Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+> ---
+> I'm not sure if this is just AR7's issue, or if this points to a general
+> issue for UARTs used as kernel console and login console with the "fixed"
+> commit.
+
+Thanks. Given nobody seems to have objected, I've applied to my
+mips-fixes branch, with stable tag for 3.17+.
+
+Cheers
+James
+
+>=20
+>  arch/mips/ar7/platform.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/arch/mips/ar7/platform.c b/arch/mips/ar7/platform.c
+> index 4674f1efbe7a..e1675c25d5d4 100644
+> --- a/arch/mips/ar7/platform.c
+> +++ b/arch/mips/ar7/platform.c
+> @@ -575,7 +575,7 @@ static int __init ar7_register_uarts(void)
+>  	uart_port.type		=3D PORT_AR7;
+>  	uart_port.uartclk	=3D clk_get_rate(bus_clk) / 2;
+>  	uart_port.iotype	=3D UPIO_MEM32;
+> -	uart_port.flags		=3D UPF_FIXED_TYPE;
+> +	uart_port.flags		=3D UPF_FIXED_TYPE | UPF_BOOT_AUTOCONF;
+>  	uart_port.regshift	=3D 2;
+> =20
+>  	uart_port.line		=3D 0;
+> --=20
+> 2.13.2
 >=20
 >=20
-> Oleksandr Shamray writes:
 
-[..]
+--FCuugMFkClbJLl1L
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-> I notice the single-open()-per-device lock was dropped by request in an e=
-arlier
-> revision of your patches, but multiple processes trying to drive a single=
- JTAG
-> master could wreak serious havoc if transactions get interleaved. Would
-> something like an added JTAG_LOCKCHAIN/UNLOCKCHAIN
-> ioctl() for exclusive client access be reasonable to prevent this?
->=20
+-----BEGIN PGP SIGNATURE-----
 
-Yes, it dropped by recommendation of Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>.=
-=20
+iQIzBAEBCAAdFiEEd80NauSabkiESfLYbAtpk944dnoFAloKzTMACgkQbAtpk944
+dnqUFQ/+MP4o3tfIW8phx025jDOCj/rS4EeehRPU7mIqghWK6z3MGxPBVTTX+l3H
+nihHRg2bKM1SwLNoi1ScKAsQRenc15Q3DYT8bDsxivNIR1x4eapZLliDF4fT5gBv
+7PqfdVSxKxVkrUAoGjoL3x2VNrUz3RYtg/ugDhmQJch4ism5M/Ni1n7s3ZhXxm0K
+Yjvvd6+OFjZyZ+adpjILNoTmJs4Vze8csT2yLlPpWMAyOhlYb7gxb52/yVtOgh0H
+L/kewcTin/hb/CDwoas2ZGav/eG6MQnWY3SaKleWPdoWUFKhXheLI7jzWwCaqPl1
+TRzSrSs4/nPRIGg4HLpMCBkYGbZAHDCQQuH861/O3y1FqUhptoZ1wkw3H/AoRdws
+3AwMXNaWYB6/vrR1eQg2Jn9tWWGHMiUUOPEMF/bqTLpQswJVKvqi/cIxsFoNHm3p
+AHElatCRUkA95jFZ8Asui4ZB2X5zNuI9yCN5HO5+nCa1bHoMAX8tSGZHhd2dilQ4
+XxyCSx7ZhRJHSio5acpPEjnHRAB0PDCbhg+2hEP9yTVm/q5k0zRfrPLf4iuXCIxt
+5HTZoE1PG/+mfs5y8SxYhG6PFMdRxN9HnOfvrwFIxNNKfYAzTFXW8rm0Go6KhgAa
+6eM96GzjzpBFlPFWrrG0MjNzjLwNao2VPmJrWUiC48tPdSJmolw=
+=2C6E
+-----END PGP SIGNATURE-----
 
-Greg, what you can suggest about it. May be better to add again single-open=
-()-per-device lock with right locking way like:
-
->if (mutex_lock_interruptible(&jtag->open_lock)) {
->	return -ERESTARTSYS;
->}
->
->if (jtag->opened) {
->	mutex_unlock(&jtag->open_lock);
->	return -EINVAL;
->}
->
->nonseekable_open(inode, file);
->file->private_data =3D jtag;
->jtag->opened++;
->mutex_unlock(&jtag->open_lock);
->
-
-Thaks.
-
-> -Chip
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--FCuugMFkClbJLl1L--
