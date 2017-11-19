@@ -1,60 +1,80 @@
 From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Subject: Re: [RFC v1 7/8] Bluetooth: hci_serdev: remove the
- HCI_UART_INIT_PENDING check
-Date: Sun, 19 Nov 2017 09:21:19 +0100
-Message-ID: <56889A64-AFB2-454C-9889-FAA4C051168A@holtmann.org>
+Subject: Re: [RFC v1 5/8] Bluetooth: btrtl: add support for the RTL8723BS and
+ RTL8723DS chips
+Date: Sun, 19 Nov 2017 09:25:11 +0100
+Message-ID: <109FA59C-9875-4EAA-9DA5-EC811BAA77AE@holtmann.org>
 References: <20171117223543.32429-1-martin.blumenstingl@googlemail.com>
- <20171117223543.32429-8-martin.blumenstingl@googlemail.com>
+ <20171117223543.32429-6-martin.blumenstingl@googlemail.com>
 Mime-Version: 1.0 (Mac OS X Mail 11.1 \(3445.4.7\))
 Content-Type: text/plain;
         charset=us-ascii
 Content-Transfer-Encoding: 8BIT
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20171117223543.32429-8-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20171117223543.32429-6-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
 Hi Martin,
 
-> The three-wire (H5) protocol is the only protocol which uses
-> HCI_UART_INIT_PENDING.
-> Unfortunately the protocol implementation never receives data with this
-> check still in place. For the H5 protocol this means that the
-> initialization never completes and thus the firmware download never
-> starts. Even if the initialization would succeed later on the drivers
-> would call hci_uart_init_ready() which schedules the registration which
-> is currently not implemented by hci_serdev.c.
+> The Realtek RTL8723BS and RTL8723DS chipsets are SDIO wifi chips. They
+> also contain a Bluetooth module which is connected via UART to the host.
 > 
-> Removing the HCI_UART_INIT_PENDING check makes the code easier to read
-> and also fixes the initalization of devices (implemented with the serdev
-> library) which use the H5 protocol.
+> Realtek's userspace initialization tool (rtk_hciattach) differentiates
+> these two via the HCI version and revision returned by the
+> HCI_OP_READ_LOCAL_VERSION command.
+> Additionally we apply these checks only the for UART devices. Everything
+> else is assumed to be a "RTL8723B" which was originally supported by the
+> driver (communicating via USB).
 > 
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 > ---
-> drivers/bluetooth/hci_serdev.c | 3 ---
-> 1 file changed, 3 deletions(-)
+> drivers/bluetooth/btrtl.c | 32 ++++++++++++++++++++++++++++++--
+> 1 file changed, 30 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
-> index e0e6461b9200..fe67eb6d4278 100644
-> --- a/drivers/bluetooth/hci_serdev.c
-> +++ b/drivers/bluetooth/hci_serdev.c
-> @@ -333,9 +333,6 @@ int hci_uart_register_device(struct hci_uart *hu,
-> 	else
-> 		hdev->dev_type = HCI_PRIMARY;
-> 
-> -	if (test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
-> -		return 0;
-> -
+> diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
+> index 45b872f5ad22..d896f9421250 100644
+> --- a/drivers/bluetooth/btrtl.c
+> +++ b/drivers/bluetooth/btrtl.c
+> @@ -418,9 +418,33 @@ struct btrtl_device_info *btrtl_initialize(struct hci_dev *hdev)
+> 		has_rom_version = false;
+> 		break;
+> 	case RTL_ROM_LMP_8723B:
+> -		fw_name = "rtl_bt/rtl8723b_fw.bin";
+> -		cfg_name = "rtl_bt/rtl8723b_config.bin";
+> +		/* all variants support reading the ROM version */
+> 		has_rom_version = true;
+> +
+> +		/*
+> +		 * RTL8723 devices exist in different variants:
+> +		 * - RTL8723BS (SDIO chip with UART Bluetooth)
+> +		 * - RTL8723DS (SDIO chip with UART Bluetooth)
+> +		 * - for backwards-compatibility everything else is assumed to
+> +		 *   be an RTL8723B communicating over USB
+> +		 *
+> +		 * Only UART devices really need the config because that
+> +		 * contains the UART speed / flow control settings.
+> +		 */
+> +		if (hdev->bus == HCI_UART && resp->hci_ver == 6 &&
+> +		    le16_to_cpu(resp->hci_rev) == 0xb) {
+> +			fw_name = "rtl_bt/rtl8723bs_fw.bin";
+> +			cfg_name = "rtl_bt/rtl8723bs_config.bin";
+> +			cfg_needed = true;
+> +		} else if (hdev->bus == HCI_UART && resp->hci_ver == 8 &&
+> +			   le16_to_cpu(resp->hci_rev) == 0xd) {
+> +			fw_name = "rtl_bt/rtl8723ds_fw.bin";
+> +			cfg_name = "rtl_bt/rtl872ds_config.bin";
+> +			cfg_needed = true;
+> +		} else {
+> +			fw_name = "rtl_bt/rtl8723b_fw.bin";
+> +			cfg_name = "rtl_bt/rtl8723b_config.bin";
+> +		}
 
-then lets also remove the flag definition itself. Or if that is still needed for some legacy operation, then describe this. For example I also see it used in hci_serdev.c and main question would be if it is used there as well or some legacy cruft.
+so the main question is why is this a config file in the first place? So far all other drivers have expressed UART settings via DT (or even via ACPI). If we are just getting the baudrates, then better have this in DT. Since otherwise we end up with board specific filesystems again where different config files need to be installed. That is really not useful in the end.
+
+What is actually in these config files? Can we have some parsing and friendly display tool in bluez.git like we have for other manufactures.
 
 Regards
 
 Marcel
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
