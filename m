@@ -1,49 +1,60 @@
-From: Matt Wilson <msw@amzn.com>
-Subject: Re: [PATCH v2] serial: 8250_pci: Add Amazon PCI serial device ID
-Date: Sat, 18 Nov 2017 20:26:07 -0800
-Message-ID: <20171119042607.GA26232@ued668862963453.ant.amazon.com>
-References: <20171113083111.GB22719@kroah.com>
- <1510601491-31803-1-git-send-email-msw@linux.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1510601491-31803-1-git-send-email-msw@linux.com>
-Sender: stable-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Anthony Liguori <aliguori@amazon.com>, stable@vger.kernel.org
+From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Subject: Re: [RFC v1 7/8] Bluetooth: hci_serdev: remove the
+ HCI_UART_INIT_PENDING check
+Date: Sun, 19 Nov 2017 09:21:19 +0100
+Message-ID: <56889A64-AFB2-454C-9889-FAA4C051168A@holtmann.org>
+References: <20171117223543.32429-1-martin.blumenstingl@googlemail.com>
+ <20171117223543.32429-8-martin.blumenstingl@googlemail.com>
+Mime-Version: 1.0 (Mac OS X Mail 11.1 \(3445.4.7\))
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20171117223543.32429-8-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Nov 13, 2017 at 11:31:31AM -0800, Matt Wilson wrote:
-> From: Matt Wilson <msw@amazon.com>
+Hi Martin,
+
+> The three-wire (H5) protocol is the only protocol which uses
+> HCI_UART_INIT_PENDING.
+> Unfortunately the protocol implementation never receives data with this
+> check still in place. For the H5 protocol this means that the
+> initialization never completes and thus the firmware download never
+> starts. Even if the initialization would succeed later on the drivers
+> would call hci_uart_init_ready() which schedules the registration which
+> is currently not implemented by hci_serdev.c.
 > 
-> This device will be used in future Amazon EC2 instances as the primary
-> serial port (i.e., data sent to this port will be available via the
-> GetConsoleOuput [1] EC2 API).
-
-Ping?
-
---msw
-
-> [1] http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_GetConsoleOutput.html
+> Removing the HCI_UART_INIT_PENDING check makes the code easier to read
+> and also fixes the initalization of devices (implemented with the serdev
+> library) which use the H5 protocol.
 > 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Matt Wilson <msw@amazon.com>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 > ---
->  drivers/tty/serial/8250/8250_pci.c | 3 +++
->  1 file changed, 3 insertions(+)
+> drivers/bluetooth/hci_serdev.c | 3 ---
+> 1 file changed, 3 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 0c101a7..d4e7be8 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -5137,6 +5137,9 @@ static const struct pci_device_id serial_pci_tbl[] = {
->  	{ PCI_DEVICE(0x1601, 0x0800), .driver_data = pbn_b0_4_1250000 },
->  	{ PCI_DEVICE(0x1601, 0xa801), .driver_data = pbn_b0_4_1250000 },
->  
-> +	/* Amazon PCI serial device */
-> +	{ PCI_DEVICE(0x1d0f, 0x8250), .driver_data = pbn_b0_1_115200 },
-> +
->  	/*
->  	 * These entries match devices with class COMMUNICATION_SERIAL,
->  	 * COMMUNICATION_MODEM or COMMUNICATION_MULTISERIAL
+> diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
+> index e0e6461b9200..fe67eb6d4278 100644
+> --- a/drivers/bluetooth/hci_serdev.c
+> +++ b/drivers/bluetooth/hci_serdev.c
+> @@ -333,9 +333,6 @@ int hci_uart_register_device(struct hci_uart *hu,
+> 	else
+> 		hdev->dev_type = HCI_PRIMARY;
+> 
+> -	if (test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
+> -		return 0;
+> -
+
+then lets also remove the flag definition itself. Or if that is still needed for some legacy operation, then describe this. For example I also see it used in hci_serdev.c and main question would be if it is used there as well or some legacy cruft.
+
+Regards
+
+Marcel
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
