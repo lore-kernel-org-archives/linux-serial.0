@@ -1,17 +1,16 @@
-From: Ed Blake <ed.blake-56FIPCJpnYtBDgjK7y7TUQ@public.gmane.org>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 Subject: Re: [PATCH][RFC] 8250_dw: unregister dw8250_set_termios for rk3188
  chip
-Date: Mon, 20 Nov 2017 16:26:56 +0000
-Message-ID: <0a4ce349-d386-0f1b-e973-e77af7f75d23@sondrel.com>
+Date: Mon, 20 Nov 2017 18:51:37 +0100
+Message-ID: <1854299.UNFOX8ncyA@diego>
 References: <20171120144045.juwm64m2j736h5ps@home.dogben.com>
- <d8ba3c8a-a406-cbee-d71b-d6784d6ebacc@sondrel.com>
  <20171120161455.orvooleyzfsslon3@home.dogben.com>
+ <0a4ce349-d386-0f1b-e973-e77af7f75d23@sondrel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20171120161455.orvooleyzfsslon3-ZQaglsx1qnHXWvwwbwmGMg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <0a4ce349-d386-0f1b-e973-e77af7f75d23-56FIPCJpnYtBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
@@ -21,42 +20,76 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
 Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Shuyu Wei <wsy-flSAGy4ZnMjQT0dZR+AlfA@public.gmane.org>
-Cc: wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Ed Blake <ed.blake-56FIPCJpnYtBDgjK7y7TUQ@public.gmane.org>
+Cc: wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Shuyu Wei <wsy-flSAGy4ZnMjQT0dZR+AlfA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-T24gMjAvMTEvMTcgMTY6MTQsIFNodXl1IFdlaSB3cm90ZToKPiBPbiBNb24sIE5vdiAyMCwgMjAx
-NyBhdCAwMzo0NDoxM1BNICswMDAwLCBFZCBCbGFrZSB3cm90ZToKPj4gT24gMjAvMTEvMTcgMTQ6
-NDAsIFNodXl1IFdlaSB3cm90ZToKPj4+IGR3ODI1MF9zZXRfdGVybWlvcyBpcyBjYXVzaW5nIHBy
-b2JsZW1zIGZvciByazMxODggb24gbXkgcmFkeGEgYm9hcmQuCj4+PiBJdCdzIHVzaW5nIGEgZml4
-ZWQgY2xvY2sgYXQgMjRNLCBub3QgYmF1ZCoxNiBpbiBkdzgyNTBfc2V0X3Rlcm1pb3MuCj4+PiBJ
-J20gbm90IHN1cmUgaWYgb3RoZXIgcmszeHh4IGNoaXBzIGFyZSBmYWNpbmcgdGhlIHNhbWUgcHJv
-YmxlbS4KPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5IFdlaSBTaHV5dSA8d3N5QGRvZ2Jlbi5jb20+Cj4+
-PiAtLS0KPj4+ICBkcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2R3LmMgfCAzICsrKwo+Pj4g
-IDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKykKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9kdy5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAv
-ODI1MF9kdy5jCj4+PiBpbmRleCA1YmIwYzQyYzg4ZGQuLmU3NjBhNWMxZjNmNiAxMDA2NDQKPj4+
-IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZHcuYwo+Pj4gKysrIGIvZHJpdmVy
-cy90dHkvc2VyaWFsLzgyNTAvODI1MF9kdy5jCj4+PiBAQCAtMzQwLDYgKzM0MCw5IEBAIHN0YXRp
-YyB2b2lkIGR3ODI1MF9xdWlya3Moc3RydWN0IHVhcnRfcG9ydCAqcCwgc3RydWN0IGR3ODI1MF9k
-YXRhICpkYXRhKQo+Pj4gIAkJCWRhdGEtPnNraXBfYXV0b2NmZyA9IHRydWU7Cj4+PiAgCQl9Cj4+
-PiAgI2VuZGlmCj4+PiArCQlpZiAob2ZfZGV2aWNlX2lzX2NvbXBhdGlibGUobnAsICJyb2NrY2hp
-cCxyazMxODgtdWFydCIpKSB7Cj4+PiArCQkJcC0+c2V0X3Rlcm1pb3MgPSBOVUxMOwo+Pj4gKwkJ
-fQo+Pj4gIAkJaWYgKG9mX2RldmljZV9pc19iaWdfZW5kaWFuKHAtPmRldi0+b2Zfbm9kZSkpIHsK
-Pj4+ICAJCQlwLT5pb3R5cGUgPSBVUElPX01FTTMyQkU7Cj4+PiAgCQkJcC0+c2VyaWFsX2luID0g
-ZHc4MjUwX3NlcmlhbF9pbjMyYmU7Cj4+IENhbiB5b3UgcHJvdmlkZSBtb3JlIGRldGFpbHMgb24g
-dGhlIHByb2JsZW0geW91J3JlIHRyeWluZyB0byBzb2x2ZT8KPiBIaSBFZCwKPgo+IEN1cnJlbnQg
-ZHc4MjUwX3NldF90ZXJtaW9zKCkgdHJ5cyB0byBzZXQgcC0+dWFydGNsayBhbmQgZC0+Y2xrIHRv
-Cj4gYmF1ZCoxNiwgd2hpY2ggaXMgaW5jb3JyZWN0IGZvciByazMxODguIEl0IHNob3VsZCBiZSBh
-IGZpeGVkIDI0MDAwMDAwLgo+IFRoZSBpbmNvcnJlY3QgdmFsdWUgd2lsbCByZXN1bHQgaW4gYSB3
-cm9uZyBiYXVkIHJhdGUsIGdlbmVyYXRpbmcgYmFkCj4gYnl0ZXMgb24gbXkgc2VyaWFsIGNvbnNv
-bGUuIEhlaWtraSBLcm9nZXJ1cyBoYWQgd29ycmllZCBhYm91dCB0aGlzLAo+IHNlZSBodHRwczov
-L3BhdGNod29yay5rZXJuZWwub3JnL3BhdGNoLzkzMDYyNzUvLgoKSWYgdGhlIGNsb2NrIGlzIGZp
-eGVkIHRvIDI0MDAwMDAwLCBzaG91bGRuJ3QgY2xrX3JvdW5kX3JhdGUoKSBhbHdheXMKcmV0dXJu
-IHRoYXQgdmFsdWU/wqAgSW4gd2hpY2ggY2FzZSBkdzgyNTBfc2V0X3Rlcm1pb3MoKSB3b3VsZG4n
-dCB0cnkgdG8KY2hhbmdlIHRoZSByYXRlLgoKSWYgY2xrX3JvdW5kX3JhdGUoKSBpcyByZXR1cm5p
-bmcgYSBkaWZmZXJlbnQgdmFsdWUgZm9yIGEgZml4ZWQgY2xvY2ssIGl0CnNvdW5kcyBsaWtlIGl0
-J3MgdGhlIGNsb2NrIGRyaXZlciB3aGljaCBuZWVkcyB0byBjaGFuZ2UuCgpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eC1yb2NrY2hpcCBtYWlsaW5n
-IGxpc3QKTGludXgtcm9ja2NoaXBAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5m
-cmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXJvY2tjaGlwCg==
+Am Montag, 20. November 2017, 16:26:56 CET schrieb Ed Blake:
+> On 20/11/17 16:14, Shuyu Wei wrote:
+> > On Mon, Nov 20, 2017 at 03:44:13PM +0000, Ed Blake wrote:
+> >> On 20/11/17 14:40, Shuyu Wei wrote:
+> >>> dw8250_set_termios is causing problems for rk3188 on my radxa board.
+> >>> It's using a fixed clock at 24M, not baud*16 in dw8250_set_termios.
+> >>> I'm not sure if other rk3xxx chips are facing the same problem.
+> >>> 
+> >>> Signed-off-by Wei Shuyu <wsy-flSAGy4ZnMjQT0dZR+AlfA@public.gmane.org>
+> >>> ---
+> >>> 
+> >>>  drivers/tty/serial/8250/8250_dw.c | 3 +++
+> >>>  1 file changed, 3 insertions(+)
+> >>> 
+> >>> diff --git a/drivers/tty/serial/8250/8250_dw.c
+> >>> b/drivers/tty/serial/8250/8250_dw.c index 5bb0c42c88dd..e760a5c1f3f6
+> >>> 100644
+> >>> --- a/drivers/tty/serial/8250/8250_dw.c
+> >>> +++ b/drivers/tty/serial/8250/8250_dw.c
+> >>> @@ -340,6 +340,9 @@ static void dw8250_quirks(struct uart_port *p,
+> >>> struct dw8250_data *data)>>> 
+> >>>  			data->skip_autocfg = true;
+> >>>  		
+> >>>  		}
+> >>>  
+> >>>  #endif
+> >>> 
+> >>> +		if (of_device_is_compatible(np, "rockchip,rk3188-uart")) {
+> >>> +			p->set_termios = NULL;
+> >>> +		}
+> >>> 
+> >>>  		if (of_device_is_big_endian(p->dev->of_node)) {
+> >>>  		
+> >>>  			p->iotype = UPIO_MEM32BE;
+> >>>  			p->serial_in = dw8250_serial_in32be;
+> >> 
+> >> Can you provide more details on the problem you're trying to solve?
+> > 
+> > Hi Ed,
+> > 
+> > Current dw8250_set_termios() trys to set p->uartclk and d->clk to
+> > baud*16, which is incorrect for rk3188. It should be a fixed 24000000.
+> > The incorrect value will result in a wrong baud rate, generating bad
+> > bytes on my serial console. Heikki Krogerus had worried about this,
+> > see https://patchwork.kernel.org/patch/9306275/.
+> 
+> If the clock is fixed to 24000000, shouldn't clk_round_rate() always
+> return that value?  In which case dw8250_set_termios() wouldn't try to
+> change the rate.
+> 
+> If clk_round_rate() is returning a different value for a fixed clock, it
+> sounds like it's the clock driver which needs to change.
+
+Also, the rk3188 uarts are definitly not fixed at 24MHz and can use other 
+sources as well. So I'm puzzled because at least the serial console on my 
+rk3188 radxarock works without issues.
+
+Can you tell us which uart you are failing to control correctly?
+
+
+I do remember that I ran into problems when the set_termios change
+was introduced originally, resulting in the patch
+	"serial: 8250_dw: Honor clk_round_rate errors in dw8250_set_termios" [0]
+but that is in mainline for quite some time now.
+
+[0] https://patchwork.kernel.org/patch/9594657/
+
+
+Heiko
