@@ -1,86 +1,33 @@
-From: Matt Redfearn <matt.redfearn@mips.com>
-Subject: [PATCH 2/2] MIPS: Add custom serial.h with BASE_BAUD override for generic kernel
-Date: Wed, 22 Nov 2017 09:57:29 +0000
-Message-ID: <1511344649-27612-2-git-send-email-matt.redfearn@mips.com>
-References: <1511344649-27612-1-git-send-email-matt.redfearn@mips.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <1511344649-27612-1-git-send-email-matt.redfearn@mips.com>
-Sender: stable-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>
-Cc: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>, linux-serial@vger.kernel.org, linux-mips@linux-mips.org, Matt Redfearn <matt.redfearn@mips.com>, "stable # 4 . 14" <stable@vger.kernel.org>, linux-kernel@vger.kernel.org, Paul Burton <paul.burton@mips.com>, Ingo Molnar <mingo@kernel.org>, Frederic Weisbecker <fweisbec@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH] Bluetooth: hci_bcm: Add support for BCM2E72
+Date: Wed, 22 Nov 2017 14:37:28 +0100
+Message-ID: <20171122133728.13116-1-hdegoede@redhat.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>
+Cc: Hans de Goede <hdegoede@redhat.com>, =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?= <frederic.danis.oss@gmail.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add a custom serial.h header for MIPS, allowing platforms to override
-the asm-generic version if required.
+The Asus T100HA laptop uses an ACPI HID of BCM2E72 for the bluetooth
+part of the SDIO bcm43340 wifi/bt combo chip.
 
-The generic platform uses this header to set BASE_BAUD to 0. The
-generic platform supports multiple boards, which may have different
-UART clocks. Also one of the boards supported is the Boston FPGA board,
-where the UART clock depends on the loaded FPGA bitfile. As such there
-is no way that the generic kernel can set a compile time default
-BASE_BAUD.
-
-Commit 31cb9a8575ca ("earlycon: initialise baud field of earlycon device
-structure") changed the behavior of of_setup_earlycon such that any baud
-rate set in the device tree is now set in the earlycon structure. The
-UART driver will then calculate a divisor based on BASE_BAUD and set it.
-With MIPS generic kernels this resulted in garbage output due to the
-incorrect uart clock rate being used to calculate a divisor. This
-commit, combined with "serial: 8250_early: Only set divisor if valid clk
-& baud" prevents the earlycon code setting a bad divisor and restores
-earlycon output.
-
-Fixes: 31cb9a8575ca ("earlycon: initialise baud field of earlycon device structure")
-Cc: stable <stable@vger.kernel.org> # 4.14
-Signed-off-by: Matt Redfearn <matt.redfearn@mips.com>
-
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
+ drivers/bluetooth/hci_bcm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- arch/mips/include/asm/Kbuild   |  1 -
- arch/mips/include/asm/serial.h | 21 +++++++++++++++++++++
- 2 files changed, 21 insertions(+), 1 deletion(-)
- create mode 100644 arch/mips/include/asm/serial.h
-
-diff --git a/arch/mips/include/asm/Kbuild b/arch/mips/include/asm/Kbuild
-index 7c8aab23bce8..b1f66699677d 100644
---- a/arch/mips/include/asm/Kbuild
-+++ b/arch/mips/include/asm/Kbuild
-@@ -16,7 +16,6 @@ generic-y += qrwlock.h
- generic-y += qspinlock.h
- generic-y += sections.h
- generic-y += segment.h
--generic-y += serial.h
- generic-y += trace_clock.h
- generic-y += unaligned.h
- generic-y += user.h
-diff --git a/arch/mips/include/asm/serial.h b/arch/mips/include/asm/serial.h
-new file mode 100644
-index 000000000000..30be5cd8efdb
---- /dev/null
-+++ b/arch/mips/include/asm/serial.h
-@@ -0,0 +1,21 @@
-+/*
-+ * This file is subject to the terms and conditions of the GNU General Public
-+ * License.  See the file "COPYING" in the main directory of this archive
-+ * for more details.
-+ *
-+ * Copyright (C) 2017 MIPS Tech, LLC
-+ */
-+#ifndef __ASM__SERIAL_H
-+#define __ASM__SERIAL_H
-+
-+#ifdef CONFIG_MIPS_GENERIC
-+/*
-+ * Generic kernels cannot know a correct value for all platforms at
-+ * compile time. Set it to 0 to prevent 8250_early using it
-+ */
-+#define BASE_BAUD 0
-+#else
-+#include <asm-generic/serial.h>
-+#endif
-+
-+#endif /* __ASM__SERIAL_H */
+diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
+index 707c2d1b84c7..47fc58c9eb49 100644
+--- a/drivers/bluetooth/hci_bcm.c
++++ b/drivers/bluetooth/hci_bcm.c
+@@ -939,6 +939,7 @@ static const struct acpi_device_id bcm_acpi_match[] = {
+ 	{ "BCM2E65", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E67", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E71", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
++	{ "BCM2E72", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E7B", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E7C", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E7E", (kernel_ulong_t)&acpi_bcm_int_first_gpios },
 -- 
-2.7.4
+2.14.3
+
