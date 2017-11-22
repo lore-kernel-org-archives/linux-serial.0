@@ -1,12 +1,12 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH 1/2] serial: 8250_fintek: Return -EINVAL on invalid configuration
-Date: Wed, 22 Nov 2017 23:30:39 +0100
-Message-ID: <CAPybu_23H3HqnF2j4uXZFv3Fq8X4=A2NvSK=1KcLQZynBZzvqw@mail.gmail.com>
-References: <20171106104913.2553-1-ricardo.ribalda@gmail.com>
+Subject: Re: [PATCH 2/2] serial: 8250_fintek: Disable delays for ports != 0
+Date: Wed, 22 Nov 2017 23:31:02 +0100
+Message-ID: <CAPybu_3BdPHRxZwtGrtgHBbrQ+ABTeTB02BaLnXT+LP_1HPc6A@mail.gmail.com>
+References: <20171106104913.2553-1-ricardo.ribalda@gmail.com> <20171106104913.2553-2-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171106104913.2553-1-ricardo.ribalda@gmail.com>
+In-Reply-To: <20171106104913.2553-2-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>, Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
@@ -14,61 +14,35 @@ List-Id: linux-serial@vger.kernel.org
 
 ping?
 
+
 On Mon, Nov 6, 2017 at 11:49 AM, Ricardo Ribalda Delgado
 <ricardo.ribalda@gmail.com> wrote:
-> Hardware does not support having the same RTS level during RX and TX
-> when RS485 mode is on (URA in Fintek terminology).
+> According to the datasheet, only the first port supports delay before
+> send and delay after send.
 >
-> The manufacturer has also confirmed that the delays are not enabled if
-> the RS485 mode is not enabled.
->
-> Therefore we should return -EINVAL if the user wants to have the same
-> value for RTS_ON_SEND and RTS_AFTER_SEND.
->
-> Cc: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-> Cc: Lukas Wunner <lukas@wunner.de>
+> Reported-by: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
 > Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 > ---
->  drivers/tty/serial/8250/8250_fintek.c | 17 +++++++++--------
->  1 file changed, 9 insertions(+), 8 deletions(-)
+>  drivers/tty/serial/8250/8250_fintek.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 >
 > diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-> index c41cbb52f1fe..ca7e96f9f080 100644
+> index ca7e96f9f080..61745d4bea31 100644
 > --- a/drivers/tty/serial/8250/8250_fintek.c
 > +++ b/drivers/tty/serial/8250/8250_fintek.c
-> @@ -201,10 +201,17 @@ static int fintek_8250_rs485_config(struct uart_port *port,
->         if (!pdata)
->                 return -EINVAL;
->
-> -       if (rs485->flags & SER_RS485_ENABLED)
-> +       /* Hardware do not support same RTS level on send and receive */
-> +       if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-> +                       !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
-> +               return -EINVAL;
-> +
-> +       if (rs485->flags & SER_RS485_ENABLED) {
->                 memset(rs485->padding, 0, sizeof(rs485->padding));
-> -       else
-> +               config |= RS485_URA;
-> +       } else {
->                 memset(rs485, 0, sizeof(*rs485));
-> +       }
->
+> @@ -216,6 +216,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
 >         rs485->flags &= SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
 >                         SER_RS485_RTS_AFTER_SEND;
-> @@ -219,12 +226,6 @@ static int fintek_8250_rs485_config(struct uart_port *port,
->                 config |= RXW4C_IRA;
->         }
 >
-> -       if ((!!(rs485->flags & SER_RS485_RTS_ON_SEND)) ==
-> -                       (!!(rs485->flags & SER_RS485_RTS_AFTER_SEND)))
-> -               rs485->flags &= ~SER_RS485_ENABLED;
-> -       else
-> -               config |= RS485_URA;
-> -
->         if (rs485->flags & SER_RS485_RTS_ON_SEND)
->                 config |= RTS_INVERT;
->
+> +       /* Only the first port supports delays */
+> +       if (pdata->index) {
+> +               rs485->delay_rts_before_send = 0;
+> +               rs485->delay_rts_after_send = 0;
+> +       }
+> +
+>         if (rs485->delay_rts_before_send) {
+>                 rs485->delay_rts_before_send = 1;
+>                 config |= TXW4C_IRA;
 > --
 > 2.14.2
 >
