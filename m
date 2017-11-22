@@ -1,109 +1,62 @@
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 3.16 013/133] printk/console: Always disable boot consoles
- that use init memory before it is freed
-Date: Wed, 22 Nov 2017 01:58:12 +0000
-Message-ID: <lsq.1511315892.805234077@decadent.org.uk>
-References: <lsq.1511315892.657723235@decadent.org.uk>
+From: Matt Redfearn <matt.redfearn@mips.com>
+Subject: [PATCH 1/2] serial: 8250_early: Only set divisor if valid clk & baud
+Date: Wed, 22 Nov 2017 09:57:28 +0000
+Message-ID: <1511344649-27612-1-git-send-email-matt.redfearn@mips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <lsq.1511315892.657723235@decadent.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: akpm@linux-foundation.org, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Petr Mladek <pmladek@suse.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Steven Rostedt <rostedt@goodmis.org>, "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>
+Cc: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>, linux-serial@vger.kernel.org, linux-mips@linux-mips.org, Matt Redfearn <matt.redfearn@mips.com>, "stable # 4 . 14" <stable@vger.kernel.org>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Douglas Anderson <dianders@chromium.org>, Jeffy Chen <jeffy.chen@rock-chips.com>
 List-Id: linux-serial@vger.kernel.org
 
-3.16.51-rc1 review patch.  If anyone has any objections, please let me know.
+If either uartclk or baud are 0, avoid calculating and setting a divisor
+based on them since the output will almost certainly be garbage.
 
-------------------
+This also allows platforms such as the MIPS generic kernel, which has no
+way to know a valid BASE_BASE for the board it is actually booted on at
+compile time, to set BASE_BAUD to 0 and avoid early_8250 setting a bad
+divisor.
 
-From: Matt Redfearn <matt.redfearn@imgtec.com>
+This fixes a regression caused by commit 31cb9a8575ca ("earlycon:
+initialise baud field of earlycon device structure"), which changed the
+behavior of of_setup_earlycon such that it sets a baud rate in the
+earlycon structure where previously it was left as 0. All boards
+supported by the MIPS generic kernel started outputting garbage from the
+boot console due to an incorrect divisor being set.
 
-commit 2b1be689f3aadcfe0a768314c80e43483c784659 upstream.
-
-Commit 4c30c6f566c0 ("kernel/printk: do not turn off bootconsole in
-printk_late_init() if keep_bootcon") added a check on keep_bootcon to
-ensure that boot consoles were kept around until the real console is
-registered.
-
-This can lead to problems if the boot console data and code are in the
-init section, since it can be freed before the boot console is
-unregistered.
-
-Commit 81cc26f2bd11 ("printk: only unregister boot consoles when
-necessary") fixed this a better way. It allowed to keep boot consoles
-that did not use init data. Unfortunately it did not remove the check
-of keep_bootcon.
-
-This can lead to crashes and weird panics when the bootconsole is
-accessed after free, especially if page poisoning is in use and the
-code / data have been overwritten with a poison value.
-
-To prevent this, always free the boot console if it is within the init
-section. In addition, print a warning about that the console is removed
-prematurely.
-
-Finally there is a new comment how to avoid the warning. It replaced
-an explanation that duplicated a more comprehensive function
-description few lines above.
-
-Fixes: 4c30c6f566c0 ("kernel/printk: do not turn off bootconsole in printk_late_init() if keep_bootcon")
-Link: http://lkml.kernel.org/r/1500036673-7122-2-git-send-email-pmladek@suse.com
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: "Fabio M. Di Nitto" <fdinitto@redhat.com>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Matt Redfearn <matt.redfearn@imgtec.com>
-[pmladek@suse.com: print the warning, code and comments clean up]
-Reviewed-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Fixes: 31cb9a8575ca ("earlycon: initialise baud field of earlycon device structure")
+Cc: stable <stable@vger.kernel.org> # 4.14
+Signed-off-by: Matt Redfearn <matt.redfearn@mips.com>
 ---
- kernel/printk/printk.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
 
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2570,25 +2570,23 @@ EXPORT_SYMBOL(unregister_console);
-  * makes it difficult to diagnose problems that occur during this time.
-  *
-  * To mitigate this problem somewhat, only unregister consoles whose memory
-- * intersects with the init section. Note that code exists elsewhere to get
-- * rid of the boot console as soon as the proper console shows up, so there
-- * won't be side-effects from postponing the removal.
-+ * intersects with the init section. Note that all other boot consoles will
-+ * get unregistred when the real preferred console is registered.
-  */
- static int __init printk_late_init(void)
- {
- 	struct console *con;
+ drivers/tty/serial/8250/8250_early.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index af72ec32e404..f135c1846477 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -125,12 +125,14 @@ static void __init init_port(struct earlycon_device *device)
+ 	serial8250_early_out(port, UART_FCR, 0);	/* no fifo */
+ 	serial8250_early_out(port, UART_MCR, 0x3);	/* DTR + RTS */
  
- 	for_each_console(con) {
--		if (!keep_bootcon && con->flags & CON_BOOT) {
-+		if ((con->flags & CON_BOOT) &&
-+		    init_section_intersects(con, sizeof(*con))) {
- 			/*
--			 * Make sure to unregister boot consoles whose data
--			 * resides in the init section before the init section
--			 * is discarded. Boot consoles whose data will stick
--			 * around will automatically be unregistered when the
--			 * proper console replaces them.
-+			 * Please, consider moving the reported consoles out
-+			 * of the init section.
- 			 */
--			if (init_section_intersects(con, sizeof(*con)))
--				unregister_console(con);
-+			pr_warn("bootconsole [%s%d] uses init memory and must be disabled even before the real one is ready\n",
-+				con->name, con->index);
-+			unregister_console(con);
- 		}
- 	}
- 	hotcpu_notifier(console_cpu_notify, 0);
+-	divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * device->baud);
+-	c = serial8250_early_in(port, UART_LCR);
+-	serial8250_early_out(port, UART_LCR, c | UART_LCR_DLAB);
+-	serial8250_early_out(port, UART_DLL, divisor & 0xff);
+-	serial8250_early_out(port, UART_DLM, (divisor >> 8) & 0xff);
+-	serial8250_early_out(port, UART_LCR, c & ~UART_LCR_DLAB);
++	if (port->uartclk && device->baud) {
++		divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * device->baud);
++		c = serial8250_early_in(port, UART_LCR);
++		serial8250_early_out(port, UART_LCR, c | UART_LCR_DLAB);
++		serial8250_early_out(port, UART_DLL, divisor & 0xff);
++		serial8250_early_out(port, UART_DLM, (divisor >> 8) & 0xff);
++		serial8250_early_out(port, UART_LCR, c & ~UART_LCR_DLAB);
++	}
+ }
+ 
+ int __init early_serial8250_setup(struct earlycon_device *device,
+-- 
+2.7.4
