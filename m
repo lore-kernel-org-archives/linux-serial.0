@@ -1,42 +1,109 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [serial8250_interrupt] RIP: 0010:arch_local_irq_restore+0x2/0x8
-Date: Tue, 21 Nov 2017 23:14:24 +0200
-Message-ID: <1511298864.25007.370.camel@linux.intel.com>
-References: <20171121090529.p3bcdz5y5bs5mqk2@wfg-t540p.sh.intel.com>
-         <20171121123357.bw5raz3vqkob2vgz@wfg-t540p.sh.intel.com>
-         <20171121133120.43fe5ak2gct56nmp@wfg-t540p.sh.intel.com>
-         <1511275154.25007.349.camel@linux.intel.com>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 3.16 013/133] printk/console: Always disable boot consoles
+ that use init memory before it is freed
+Date: Wed, 22 Nov 2017 01:58:12 +0000
+Message-ID: <lsq.1511315892.805234077@decadent.org.uk>
+References: <lsq.1511315892.657723235@decadent.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1511275154.25007.349.camel@linux.intel.com>
+Content-Disposition: inline
+In-Reply-To: <lsq.1511315892.657723235@decadent.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fengguang Wu <fengguang.wu@intel.com>, linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, Sean Young <sean@mess.org>, Matthias Brugger <mbrugger@suse.com>, linux-kernel@vger.kernel.org, lkp@01.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: akpm@linux-foundation.org, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Matt Redfearn <matt.redfearn@imgtec.com>, "Fabio M. Di Nitto" <fdinitto@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Petr Mladek <pmladek@suse.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Steven Rostedt <rostedt@goodmis.org>, "David S. Miller" <davem@davemloft.net>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2017-11-21 at 16:39 +0200, Andy Shevchenko wrote:
-> On Tue, 2017-11-21 at 21:31 +0800, Fengguang Wu wrote:
-> > On Tue, Nov 21, 2017 at 08:33:57PM +0800, Fengguang Wu wrote:
+3.16.51-rc1 review patch.  If anyone has any objections, please let me know.
 
->>> FYI this happens in mainline kernel 4.14.0-02748-gabc36be.
-> > > It shows up since v4.13 .
-> > 
-> > Sorry it actually also shows up in 4.10:
+------------------
 
->> [   21.020567] irq 3: nobody cared (try booting with the "irqpoll"
-> > option)
+From: Matt Redfearn <matt.redfearn@imgtec.com>
 
-> > [   21.039171]  uart_start+0x73/0xe0
+commit 2b1be689f3aadcfe0a768314c80e43483c784659 upstream.
 
-> > [   21.044977]  vfs_write+0xc8/0x1e0
+Commit 4c30c6f566c0 ("kernel/printk: do not turn off bootconsole in
+printk_late_init() if keep_bootcon") added a check on keep_bootcon to
+ensure that boot consoles were kept around until the real console is
+registered.
 
-> > [   21.054662] Disabling IRQ #3
+This can lead to problems if the boot console data and code are in the
+init section, since it can be freed before the boot console is
+unregistered.
 
-Another question who and why initiates a write to ttyS1 (console seems
-on ttyS0).
+Commit 81cc26f2bd11 ("printk: only unregister boot consoles when
+necessary") fixed this a better way. It allowed to keep boot consoles
+that did not use init data. Unfortunately it did not remove the check
+of keep_bootcon.
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+This can lead to crashes and weird panics when the bootconsole is
+accessed after free, especially if page poisoning is in use and the
+code / data have been overwritten with a poison value.
+
+To prevent this, always free the boot console if it is within the init
+section. In addition, print a warning about that the console is removed
+prematurely.
+
+Finally there is a new comment how to avoid the warning. It replaced
+an explanation that duplicated a more comprehensive function
+description few lines above.
+
+Fixes: 4c30c6f566c0 ("kernel/printk: do not turn off bootconsole in printk_late_init() if keep_bootcon")
+Link: http://lkml.kernel.org/r/1500036673-7122-2-git-send-email-pmladek@suse.com
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Cc: "Fabio M. Di Nitto" <fdinitto@redhat.com>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Matt Redfearn <matt.redfearn@imgtec.com>
+[pmladek@suse.com: print the warning, code and comments clean up]
+Reviewed-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+---
+ kernel/printk/printk.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
+
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2570,25 +2570,23 @@ EXPORT_SYMBOL(unregister_console);
+  * makes it difficult to diagnose problems that occur during this time.
+  *
+  * To mitigate this problem somewhat, only unregister consoles whose memory
+- * intersects with the init section. Note that code exists elsewhere to get
+- * rid of the boot console as soon as the proper console shows up, so there
+- * won't be side-effects from postponing the removal.
++ * intersects with the init section. Note that all other boot consoles will
++ * get unregistred when the real preferred console is registered.
+  */
+ static int __init printk_late_init(void)
+ {
+ 	struct console *con;
+ 
+ 	for_each_console(con) {
+-		if (!keep_bootcon && con->flags & CON_BOOT) {
++		if ((con->flags & CON_BOOT) &&
++		    init_section_intersects(con, sizeof(*con))) {
+ 			/*
+-			 * Make sure to unregister boot consoles whose data
+-			 * resides in the init section before the init section
+-			 * is discarded. Boot consoles whose data will stick
+-			 * around will automatically be unregistered when the
+-			 * proper console replaces them.
++			 * Please, consider moving the reported consoles out
++			 * of the init section.
+ 			 */
+-			if (init_section_intersects(con, sizeof(*con)))
+-				unregister_console(con);
++			pr_warn("bootconsole [%s%d] uses init memory and must be disabled even before the real one is ready\n",
++				con->name, con->index);
++			unregister_console(con);
+ 		}
+ 	}
+ 	hotcpu_notifier(console_cpu_notify, 0);
