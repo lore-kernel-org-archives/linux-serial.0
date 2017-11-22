@@ -1,33 +1,79 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH] Bluetooth: hci_bcm: Add support for BCM2E72
-Date: Wed, 22 Nov 2017 14:37:28 +0100
-Message-ID: <20171122133728.13116-1-hdegoede@redhat.com>
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>
-Cc: Hans de Goede <hdegoede@redhat.com>, =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?= <frederic.danis.oss@gmail.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: Re: [PATCH 1/2] serial: 8250_fintek: Return -EINVAL on invalid configuration
+Date: Wed, 22 Nov 2017 23:30:39 +0100
+Message-ID: <CAPybu_23H3HqnF2j4uXZFv3Fq8X4=A2NvSK=1KcLQZynBZzvqw@mail.gmail.com>
+References: <20171106104913.2553-1-ricardo.ribalda@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171106104913.2553-1-ricardo.ribalda@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>, Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-The Asus T100HA laptop uses an ACPI HID of BCM2E72 for the bluetooth
-part of the SDIO bcm43340 wifi/bt combo chip.
+ping?
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/bluetooth/hci_bcm.c | 1 +
- 1 file changed, 1 insertion(+)
+On Mon, Nov 6, 2017 at 11:49 AM, Ricardo Ribalda Delgado
+<ricardo.ribalda@gmail.com> wrote:
+> Hardware does not support having the same RTS level during RX and TX
+> when RS485 mode is on (URA in Fintek terminology).
+>
+> The manufacturer has also confirmed that the delays are not enabled if
+> the RS485 mode is not enabled.
+>
+> Therefore we should return -EINVAL if the user wants to have the same
+> value for RTS_ON_SEND and RTS_AFTER_SEND.
+>
+> Cc: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+> Cc: Lukas Wunner <lukas@wunner.de>
+> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_fintek.c | 17 +++++++++--------
+>  1 file changed, 9 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+> index c41cbb52f1fe..ca7e96f9f080 100644
+> --- a/drivers/tty/serial/8250/8250_fintek.c
+> +++ b/drivers/tty/serial/8250/8250_fintek.c
+> @@ -201,10 +201,17 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+>         if (!pdata)
+>                 return -EINVAL;
+>
+> -       if (rs485->flags & SER_RS485_ENABLED)
+> +       /* Hardware do not support same RTS level on send and receive */
+> +       if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
+> +                       !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
+> +               return -EINVAL;
+> +
+> +       if (rs485->flags & SER_RS485_ENABLED) {
+>                 memset(rs485->padding, 0, sizeof(rs485->padding));
+> -       else
+> +               config |= RS485_URA;
+> +       } else {
+>                 memset(rs485, 0, sizeof(*rs485));
+> +       }
+>
+>         rs485->flags &= SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
+>                         SER_RS485_RTS_AFTER_SEND;
+> @@ -219,12 +226,6 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+>                 config |= RXW4C_IRA;
+>         }
+>
+> -       if ((!!(rs485->flags & SER_RS485_RTS_ON_SEND)) ==
+> -                       (!!(rs485->flags & SER_RS485_RTS_AFTER_SEND)))
+> -               rs485->flags &= ~SER_RS485_ENABLED;
+> -       else
+> -               config |= RS485_URA;
+> -
+>         if (rs485->flags & SER_RS485_RTS_ON_SEND)
+>                 config |= RTS_INVERT;
+>
+> --
+> 2.14.2
+>
 
-diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-index 707c2d1b84c7..47fc58c9eb49 100644
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -939,6 +939,7 @@ static const struct acpi_device_id bcm_acpi_match[] = {
- 	{ "BCM2E65", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
- 	{ "BCM2E67", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
- 	{ "BCM2E71", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
-+	{ "BCM2E72", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
- 	{ "BCM2E7B", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
- 	{ "BCM2E7C", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
- 	{ "BCM2E7E", (kernel_ulong_t)&acpi_bcm_int_first_gpios },
+
+
 -- 
-2.14.3
-
+Ricardo Ribalda
