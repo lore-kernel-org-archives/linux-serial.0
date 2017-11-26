@@ -1,102 +1,144 @@
-From: Shuyu Wei <wsy-flSAGy4ZnMjQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH][RFC] 8250_dw: unregister dw8250_set_termios for rk3188
- chip
-Date: Sat, 25 Nov 2017 01:06:06 +0800
-Message-ID: <20171124170606.GA10317@home.dogben.com>
-References: <20171120144045.juwm64m2j736h5ps@home.dogben.com>
- <2890515.ZR3BzkItWh@phil> <20171123153922.GA23503@home.dogben.com>
- <6443393.PFOXghLreO@phil>
+From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Subject: Re: [RFC v1 5/8] Bluetooth: btrtl: add support for the RTL8723BS and
+ RTL8723DS chips
+Date: Sun, 26 Nov 2017 23:23:03 +0100
+Message-ID: <CAFBinCD+P6kBOXjp9YZf8DbsetvF+q6yfp3X+OTRfN_Pv8R88w@mail.gmail.com>
+References: <20171117223543.32429-1-martin.blumenstingl@googlemail.com>
+ <20171117223543.32429-6-martin.blumenstingl@googlemail.com>
+ <109FA59C-9875-4EAA-9DA5-EC811BAA77AE@holtmann.org> <CAFBinCCtHUFMbbSOeKWYSJZKvFbNqhaMOrS-xgzr3E9hbkpnnw@mail.gmail.com>
+ <4B23C5B4-DCB8-4B1C-B1BF-A99B1E5E10B0@holtmann.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <6443393.PFOXghLreO@phil>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, Ed Blake <ed.blake-56FIPCJpnYtBDgjK7y7TUQ@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <4B23C5B4-DCB8-4B1C-B1BF-A99B1E5E10B0-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Nov 24, 2017 at 12:34:59AM +0100, Heiko Stuebner wrote:
-> Hi,
-> 
-> Am Donnerstag, 23. November 2017, 23:40:31 CET schrieb Shuyu Wei:
-> > On Thu, Nov 23, 2017 at 04:11:12PM +0100, Heiko Stuebner wrote:
-> > > 
-> > > you actually omitted the output part where sclk_uart2 is actually shown :-) .
-> > > 
-> > > On my rk3188 radxarock with a kernel build this morning from
-> > > the middle of this merge-window, the relevant part of the clock-tree
-> > > looks like the following and my serial console works like a charm:
-> > > 
-> > > xin24m                                   6            6    24000000          0 0
-> > > [...]
-> > >     pll_gpll                              1            1   594000000          0 0
-> > >        gpll                               5            5   594000000          0 0
-> > > [...]
-> > >          uart_src                        1            1   594000000          0 0
-> > >              uart3_pre                    0            0   594000000          0 0
-> > >                 uart3_frac                0            0    29700000          0 0
-> > >              uart2_pre                    1            1   594000000          0 0
-> > >                 uart2_frac                1            1     1843200          0 0
-> > >                    sclk_uart2             1            1     1843200          0 0
-> > >  [			^^ the important clock]
-> > > 
-> > > In your dump the sclk_uart2 clock is not muxed to the uart2_frac clock
-> > > but to something else but that part is missing from you dump.
-> > > 
-> > > So clk_round_rate is definitly correct in that it can reach this rate
-> > > using the fractional divider and also can sucessfully set this in the
-> > > clock framework.
-> > > 
-> > > Can you show where sclk_uart2 is for you please, as I guess your dump
-> > > is with the settermios patch disabled, right?
-> > > 
-> > > 
-> > > Thanks
-> > > Heiko
-> > 
-> > You are right, here is the complete clk_summary from the latest
-> > mainline, and my console is now filled with strange characters :-(
-> > 
-> >    clock                         enable_cnt  prepare_cnt        rate   accuracy   phase
-> > ----------------------------------------------------------------------------------------
-> >  xin24m                                  11           11    24000000          0 0
-> [...]
-> >     pll_gpll                              1            1   891000000          0 0
-> >        gpll                               3            3   891000000          0 0
-> [...]
-> >           uart_src                        1            1   891000000          0 0
-> >              uart3_pre                    0            0   891000000          0 0
-> >                 uart3_frac                0            0    44550000          0 0
-> >              uart2_pre                    1            1   891000000          0 0
-> >                 uart2_frac                1            1     1843200          0 0
-> >                    sclk_uart2             1            1     1843200          0 0
-> 
-> Just to make sure, I did boot-tests on a lot of different Rockchip socs
-> (rk3036, rk3188, rk3288, rk3328, rk3399) with the serial console using
-> 8250_dw and working normally on all of them with the most recent
-> torvalds kernel (and everything I tested in the past)
-> 
-> The only difference I see between our two clock dumps is the higher
-> gpll clock on your board, but I cannot really imagine that this could be
-> and issue.
-> 
-> So I'm really puzzled by what you see on your board, but don't have
-> any specific idea what to test right now.
-> 
-> 
-> Heiko
+Hi Marcel,
 
-Good news! I found the cause. It's the barebox bootloader that set the
-pll_gpll to the weired 891000000. By manually setting the clock back to
-594000000, it worked again! It's time to find the root cause in barebox
-:-)
+On Sun, Nov 19, 2017 at 10:17 PM, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org> wro=
+te:
+> Hi Martin,
+>
+>>>> The Realtek RTL8723BS and RTL8723DS chipsets are SDIO wifi chips. They
+>>>> also contain a Bluetooth module which is connected via UART to the hos=
+t.
+>>>>
+>>>> Realtek's userspace initialization tool (rtk_hciattach) differentiates
+>>>> these two via the HCI version and revision returned by the
+>>>> HCI_OP_READ_LOCAL_VERSION command.
+>>>> Additionally we apply these checks only the for UART devices. Everythi=
+ng
+>>>> else is assumed to be a "RTL8723B" which was originally supported by t=
+he
+>>>> driver (communicating via USB).
+>>>>
+>>>> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org=
+>
+>>>> ---
+>>>> drivers/bluetooth/btrtl.c | 32 ++++++++++++++++++++++++++++++--
+>>>> 1 file changed, 30 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
+>>>> index 45b872f5ad22..d896f9421250 100644
+>>>> --- a/drivers/bluetooth/btrtl.c
+>>>> +++ b/drivers/bluetooth/btrtl.c
+>>>> @@ -418,9 +418,33 @@ struct btrtl_device_info *btrtl_initialize(struct=
+ hci_dev *hdev)
+>>>>              has_rom_version =3D false;
+>>>>              break;
+>>>>      case RTL_ROM_LMP_8723B:
+>>>> -             fw_name =3D "rtl_bt/rtl8723b_fw.bin";
+>>>> -             cfg_name =3D "rtl_bt/rtl8723b_config.bin";
+>>>> +             /* all variants support reading the ROM version */
+>>>>              has_rom_version =3D true;
+>>>> +
+>>>> +             /*
+>>>> +              * RTL8723 devices exist in different variants:
+>>>> +              * - RTL8723BS (SDIO chip with UART Bluetooth)
+>>>> +              * - RTL8723DS (SDIO chip with UART Bluetooth)
+>>>> +              * - for backwards-compatibility everything else is assu=
+med to
+>>>> +              *   be an RTL8723B communicating over USB
+>>>> +              *
+>>>> +              * Only UART devices really need the config because that
+>>>> +              * contains the UART speed / flow control settings.
+>>>> +              */
+>>>> +             if (hdev->bus =3D=3D HCI_UART && resp->hci_ver =3D=3D 6 =
+&&
+>>>> +                 le16_to_cpu(resp->hci_rev) =3D=3D 0xb) {
+>>>> +                     fw_name =3D "rtl_bt/rtl8723bs_fw.bin";
+>>>> +                     cfg_name =3D "rtl_bt/rtl8723bs_config.bin";
+>>>> +                     cfg_needed =3D true;
+>>>> +             } else if (hdev->bus =3D=3D HCI_UART && resp->hci_ver =
+=3D=3D 8 &&
+>>>> +                        le16_to_cpu(resp->hci_rev) =3D=3D 0xd) {
+>>>> +                     fw_name =3D "rtl_bt/rtl8723ds_fw.bin";
+>>>> +                     cfg_name =3D "rtl_bt/rtl872ds_config.bin";
+>>>> +                     cfg_needed =3D true;
+>>>> +             } else {
+>>>> +                     fw_name =3D "rtl_bt/rtl8723b_fw.bin";
+>>>> +                     cfg_name =3D "rtl_bt/rtl8723b_config.bin";
+>>>> +             }
+>>>
+>>> so the main question is why is this a config file in the first place? S=
+o far all other drivers have expressed UART settings via DT (or even via AC=
+PI). If we are just getting the baudrates, then better have this in DT. Sin=
+ce otherwise we end up with board specific filesystems again where differen=
+t config files need to be installed. That is really not useful in the end.
+>> this is an excellent question (and also the reason why it's an "RFC" pat=
+ch)!
+>> I'll try to figure out whether:
+>> a) we can skip the config file completely
+skipping the config blob causes it to time out at the end of the
+firmware download (where the config seems to be applied internally)
+
+>> b) we can generate the config file in-memory
+I tried this as well with a very minimal version (where only the
+"known" bits are used)
+unfortunately this shows the same symptoms as skipping the config blob
+I'll try experimenting with this to see if I can get it to work somehow
+
+>> c) we have to stick with this config file
+I'm afraid this would be our last option if I can't get b) working
+a datasheet for these chips or some advice from someone who has access
+to the datasheet/knowledge about the internals would be of great help
+
+>>
+>>> What is actually in these config files? Can we have some parsing and fr=
+iendly display tool in bluez.git like we have for other manufactures.
+>> to my knowledge this config file contains:
+>> - the baudrate
+>> - whether flow control is enabled or disabled
+>
+> these two are better done as part of the DT.
+agreed, I'd also rather have this in DT than some blob
+
+>> - (in some cases) the local-bd-address
+>
+> There is essentially DT support for that as well, but we also have Set Pu=
+blic Address mgmt command to handle this. Then again, first of all the hdev=
+->set_bdaddr callback needs to be supported for that.
+>
+>> do you mean a tool that is similar to bluez.git tools/nokfw.c?
+>
+> Yes.
+>
+>> [0] https://github.com/NextThingCo/rtl8723ds_bt/blob/f56ef37217665070e57=
+4253d23a595ee1ca5ca23/rtk_hciattach/hciattach_rtk.c#L1781
+>
+> Please never ever make me look at code that defined struct sk_buff in use=
+rspace ;)
+sorry for not putting a huge warning/disclaimer in front of that link!
+as bad as it sounds: this is all I have as reference :(
+
+
+Regards
+Martin
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
