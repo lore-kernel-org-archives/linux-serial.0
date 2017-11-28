@@ -1,40 +1,90 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH 8/8] serdev: ttyport: do not used keyed wakeup in
- write_wakeup
-Date: Tue, 28 Nov 2017 16:16:29 +0100
-Message-ID: <20171128151629.GA8177@localhost>
-References: <20171103143059.20749-1-johan@kernel.org>
- <20171103143059.20749-9-johan@kernel.org>
- <20171128150418.GA3341@kroah.com>
+From: Matt Redfearn <matt.redfearn@mips.com>
+Subject: Re: [PATCH 2/2] MIPS: Add custom serial.h with BASE_BAUD override for
+ generic kernel
+Date: Tue, 28 Nov 2017 15:20:08 +0000
+Message-ID: <c33143de-4aa1-828c-a5bf-015545c50a93@mips.com>
+References: <1511344649-27612-1-git-send-email-matt.redfearn@mips.com>
+ <1511344649-27612-2-git-send-email-matt.redfearn@mips.com>
+ <20171128143502.GA17699@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20171128150418.GA3341@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20171128143502.GA17699@kroah.com>
+Content-Language: en-US
+Sender: stable-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>, linux-serial@vger.kernel.org, linux-mips@linux-mips.org, "stable # 4 . 14" <stable@vger.kernel.org>, linux-kernel@vger.kernel.org, Paul Burton <paul.burton@mips.com>, Ingo Molnar <mingo@kernel.org>, Frederic Weisbecker <fweisbec@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Nov 28, 2017 at 04:04:18PM +0100, Greg Kroah-Hartman wrote:
-> On Fri, Nov 03, 2017 at 03:30:59PM +0100, Johan Hovold wrote:
-> > Serdev does not use the file abstraction and specifically there will
-> > never be anyone polling a file descriptor for POLLOUT events.
-> > 
-> > Just use plain wake_up_interruptible() in the write_wakeup callback and
-> > document why it's there.
-> > 
-> > Signed-off-by: Johan Hovold <johan@kernel.org>
-> > ---
-> >  drivers/tty/serdev/serdev-ttyport.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
+
+
+On 28/11/17 14:35, Greg Kroah-Hartman wrote:
+> On Wed, Nov 22, 2017 at 09:57:29AM +0000, Matt Redfearn wrote:
+>> Add a custom serial.h header for MIPS, allowing platforms to override
+>> the asm-generic version if required.
+>>
+>> The generic platform uses this header to set BASE_BAUD to 0. The
+>> generic platform supports multiple boards, which may have different
+>> UART clocks. Also one of the boards supported is the Boston FPGA board,
+>> where the UART clock depends on the loaded FPGA bitfile. As such there
+>> is no way that the generic kernel can set a compile time default
+>> BASE_BAUD.
+>>
+>> Commit 31cb9a8575ca ("earlycon: initialise baud field of earlycon device
+>> structure") changed the behavior of of_setup_earlycon such that any baud
+>> rate set in the device tree is now set in the earlycon structure. The
+>> UART driver will then calculate a divisor based on BASE_BAUD and set it.
+>> With MIPS generic kernels this resulted in garbage output due to the
+>> incorrect uart clock rate being used to calculate a divisor. This
+>> commit, combined with "serial: 8250_early: Only set divisor if valid clk
+>> & baud" prevents the earlycon code setting a bad divisor and restores
+>> earlycon output.
+>>
+>> Fixes: 31cb9a8575ca ("earlycon: initialise baud field of earlycon device structure")
+>> Cc: stable <stable@vger.kernel.org> # 4.14
+>> Signed-off-by: Matt Redfearn <matt.redfearn@mips.com>
+>>
+>> ---
+>>
+>>   arch/mips/include/asm/Kbuild   |  1 -
+>>   arch/mips/include/asm/serial.h | 21 +++++++++++++++++++++
+>>   2 files changed, 21 insertions(+), 1 deletion(-)
+>>   create mode 100644 arch/mips/include/asm/serial.h
+>>
+>> diff --git a/arch/mips/include/asm/Kbuild b/arch/mips/include/asm/Kbuild
+>> index 7c8aab23bce8..b1f66699677d 100644
+>> --- a/arch/mips/include/asm/Kbuild
+>> +++ b/arch/mips/include/asm/Kbuild
+>> @@ -16,7 +16,6 @@ generic-y += qrwlock.h
+>>   generic-y += qspinlock.h
+>>   generic-y += sections.h
+>>   generic-y += segment.h
+>> -generic-y += serial.h
+>>   generic-y += trace_clock.h
+>>   generic-y += unaligned.h
+>>   generic-y += user.h
+>> diff --git a/arch/mips/include/asm/serial.h b/arch/mips/include/asm/serial.h
+>> new file mode 100644
+>> index 000000000000..30be5cd8efdb
+>> --- /dev/null
+>> +++ b/arch/mips/include/asm/serial.h
+>> @@ -0,0 +1,21 @@
+>> +/*
+>> + * This file is subject to the terms and conditions of the GNU General Public
+>> + * License.  See the file "COPYING" in the main directory of this archive
+>> + * for more details.
 > 
-> This patch didn't apply, perhaps because I split this series across my
-> "for-next" and "for-linus" branches?
+> Which version of the GPL?  As it is, this means "GPL v1 and all others".
+> 
+> I doubt you want that :)
 
-That's right, this one depends on patch 4/8.
+Good point - thanks!
 
-Perhaps you can take also this one through tty-linus? Or even better,
-just take the whole series through tty-linus?
+Matt
 
-Johan
+> 
+> thanks,
+> 
+> greg k-h
+> 
