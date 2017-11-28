@@ -1,28 +1,41 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH v2 31/35] earlycon: add reg-offset to physical address
- before mapping
-Date: Tue, 28 Nov 2017 15:25:07 +0100
-Message-ID: <20171128142507.GA17797@kroah.com>
-References: <cover.1511785528.git.green.hu@gmail.com>
- <5b5f07ffd75d509a661398d02d6f1336156554ae.1511785528.git.green.hu@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2] serial: 8250: convert to threaded IRQ
+Date: Tue, 28 Nov 2017 15:26:27 +0100
+Message-ID: <20171128142627.GB17797@kroah.com>
+References: <20171115124002.32039-1-dzagorui@cisco.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5b5f07ffd75d509a661398d02d6f1336156554ae.1511785528.git.green.hu@gmail.com>
+In-Reply-To: <20171115124002.32039-1-dzagorui@cisco.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greentime Hu <green.hu@gmail.com>
-Cc: greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org
+To: Denys Zagorui <dzagorui@cisco.com>
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Nov 27, 2017 at 08:28:18PM +0800, Greentime Hu wrote:
-> From: Greentime Hu <greentime@andestech.com>
+On Wed, Nov 15, 2017 at 02:40:02PM +0200, Denys Zagorui wrote:
+> During using virtualization it is common to see
+> many "too much work for irq*" messages.
 > 
-> It will get the wrong virtual address because port->mapbase is not added
-> the correct reg-offset yet. We have to update it before earlycon_map()
-> is called
+> There are fixes proposed erlier:
+> -  e7328ae1848966181a7ac47e8ae6cddbd2cf55f3 (serial:
+>    8250, increase PASS_LIMIT)
+> -  f4f653e9875e573860e783fecbebde284a8626f5 (serial:
+>    8250, disable "too much work" messages
+> 
+> First one doesn't help now, last one was reverted
+> (12de375ec493ab1767d4a07dde823e63ae5edc21) in fact
+> it doesn't fix anything. So procesing interrupts in
+> kthread give us an opportunity to perform rescheduling
+> periodically.
+> 
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Signed-off-by: Denys Zagorui <dzagorui@cisco.com>
 > ---
->  drivers/tty/serial/earlycon.c |    3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/tty/serial/8250/8250_core.c | 28 +++++++++++++++++++++-------
+>  1 file changed, 21 insertions(+), 7 deletions(-)
 
-No signed-off-by line?
+Always say what changed from v1 below the --- line, otherwise we have no
+idea.
+
+v3?
