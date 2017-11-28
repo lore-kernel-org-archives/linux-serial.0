@@ -1,41 +1,79 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2] serial: 8250: convert to threaded IRQ
-Date: Tue, 28 Nov 2017 15:26:27 +0100
-Message-ID: <20171128142627.GB17797@kroah.com>
-References: <20171115124002.32039-1-dzagorui@cisco.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/2] MIPS: Add custom serial.h with BASE_BAUD override
+ for generic kernel
+Date: Tue, 28 Nov 2017 15:35:02 +0100
+Message-ID: <20171128143502.GA17699@kroah.com>
+References: <1511344649-27612-1-git-send-email-matt.redfearn@mips.com>
+ <1511344649-27612-2-git-send-email-matt.redfearn@mips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20171115124002.32039-1-dzagorui@cisco.com>
+In-Reply-To: <1511344649-27612-2-git-send-email-matt.redfearn@mips.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Denys Zagorui <dzagorui@cisco.com>
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Matt Redfearn <matt.redfearn@mips.com>
+Cc: Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>, linux-serial@vger.kernel.org, linux-mips@linux-mips.org, "stable # 4 . 14" <stable@vger.kernel.org>, linux-kernel@vger.kernel.org, Paul Burton <paul.burton@mips.com>, Ingo Molnar <mingo@kernel.org>, Frederic Weisbecker <fweisbec@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 15, 2017 at 02:40:02PM +0200, Denys Zagorui wrote:
-> During using virtualization it is common to see
-> many "too much work for irq*" messages.
+On Wed, Nov 22, 2017 at 09:57:29AM +0000, Matt Redfearn wrote:
+> Add a custom serial.h header for MIPS, allowing platforms to override
+> the asm-generic version if required.
 > 
-> There are fixes proposed erlier:
-> -  e7328ae1848966181a7ac47e8ae6cddbd2cf55f3 (serial:
->    8250, increase PASS_LIMIT)
-> -  f4f653e9875e573860e783fecbebde284a8626f5 (serial:
->    8250, disable "too much work" messages
+> The generic platform uses this header to set BASE_BAUD to 0. The
+> generic platform supports multiple boards, which may have different
+> UART clocks. Also one of the boards supported is the Boston FPGA board,
+> where the UART clock depends on the loaded FPGA bitfile. As such there
+> is no way that the generic kernel can set a compile time default
+> BASE_BAUD.
 > 
-> First one doesn't help now, last one was reverted
-> (12de375ec493ab1767d4a07dde823e63ae5edc21) in fact
-> it doesn't fix anything. So procesing interrupts in
-> kthread give us an opportunity to perform rescheduling
-> periodically.
+> Commit 31cb9a8575ca ("earlycon: initialise baud field of earlycon device
+> structure") changed the behavior of of_setup_earlycon such that any baud
+> rate set in the device tree is now set in the earlycon structure. The
+> UART driver will then calculate a divisor based on BASE_BAUD and set it.
+> With MIPS generic kernels this resulted in garbage output due to the
+> incorrect uart clock rate being used to calculate a divisor. This
+> commit, combined with "serial: 8250_early: Only set divisor if valid clk
+> & baud" prevents the earlycon code setting a bad divisor and restores
+> earlycon output.
 > 
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Signed-off-by: Denys Zagorui <dzagorui@cisco.com>
+> Fixes: 31cb9a8575ca ("earlycon: initialise baud field of earlycon device structure")
+> Cc: stable <stable@vger.kernel.org> # 4.14
+> Signed-off-by: Matt Redfearn <matt.redfearn@mips.com>
+> 
 > ---
->  drivers/tty/serial/8250/8250_core.c | 28 +++++++++++++++++++++-------
->  1 file changed, 21 insertions(+), 7 deletions(-)
+> 
+>  arch/mips/include/asm/Kbuild   |  1 -
+>  arch/mips/include/asm/serial.h | 21 +++++++++++++++++++++
+>  2 files changed, 21 insertions(+), 1 deletion(-)
+>  create mode 100644 arch/mips/include/asm/serial.h
+> 
+> diff --git a/arch/mips/include/asm/Kbuild b/arch/mips/include/asm/Kbuild
+> index 7c8aab23bce8..b1f66699677d 100644
+> --- a/arch/mips/include/asm/Kbuild
+> +++ b/arch/mips/include/asm/Kbuild
+> @@ -16,7 +16,6 @@ generic-y += qrwlock.h
+>  generic-y += qspinlock.h
+>  generic-y += sections.h
+>  generic-y += segment.h
+> -generic-y += serial.h
+>  generic-y += trace_clock.h
+>  generic-y += unaligned.h
+>  generic-y += user.h
+> diff --git a/arch/mips/include/asm/serial.h b/arch/mips/include/asm/serial.h
+> new file mode 100644
+> index 000000000000..30be5cd8efdb
+> --- /dev/null
+> +++ b/arch/mips/include/asm/serial.h
+> @@ -0,0 +1,21 @@
+> +/*
+> + * This file is subject to the terms and conditions of the GNU General Public
+> + * License.  See the file "COPYING" in the main directory of this archive
+> + * for more details.
 
-Always say what changed from v1 below the --- line, otherwise we have no
-idea.
+Which version of the GPL?  As it is, this means "GPL v1 and all others".
 
-v3?
+I doubt you want that :)
+
+thanks,
+
+greg k-h
