@@ -1,72 +1,64 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v2 25/35] nds32: Build infrastructure
-Date: Wed, 29 Nov 2017 10:25:54 +0100
-Message-ID: <CAK8P3a3yk7ww+LdQdL+wgz2wYrzXLSsj1PTdfK-qx013jdg4SQ@mail.gmail.com>
-References: <cover.1511785528.git.green.hu@gmail.com> <5e1be9ebc591c6de79b75f726a5a38b2564eaa92.1511785528.git.green.hu@gmail.com>
- <CAK8P3a1GuH2tgtC5t834-PNeUVYQxreD7seZH8sjraZFtRUWKw@mail.gmail.com>
- <CAEbi=3c=hTCcUOPs+Fc10srzTFsB4MnVxgcFydz12-jH0ZXjog@mail.gmail.com>
- <CAK8P3a0kvt52UTtEmE+tWHZuH_rmgTxP7+CiD9Ddwe2cJLwXTQ@mail.gmail.com> <CAMuHMdViO=+-kGdXFPSW+9PsPbf3sUa5xdaJ_1C-cX2vE1G35Q@mail.gmail.com>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH 8/8] serdev: ttyport: do not used keyed wakeup in
+ write_wakeup
+Date: Wed, 29 Nov 2017 10:48:02 +0100
+Message-ID: <20171129094802.GA2708@localhost>
+References: <20171103143059.20749-1-johan@kernel.org>
+ <20171103143059.20749-9-johan@kernel.org>
+ <20171128150418.GA3341@kroah.com>
+ <20171128151629.GA8177@localhost>
+ <20171128193926.GA1696@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdViO=+-kGdXFPSW+9PsPbf3sUa5xdaJ_1C-cX2vE1G35Q@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20171128193926.GA1696@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Greentime Hu <green.hu@gmail.com>, Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, Networking <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vincent Chen <vincentc@andestech.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 29, 2017 at 10:10 AM, Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
-> Hi Arnd,
->
-> On Wed, Nov 29, 2017 at 9:58 AM, Arnd Bergmann <arnd@arndb.de> wrote:
->> On Wed, Nov 29, 2017 at 9:39 AM, Greentime Hu <green.hu@gmail.com> wrote:
->>> 2017-11-27 22:21 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
->>>> On Mon, Nov 27, 2017 at 1:28 PM, Greentime Hu <green.hu@gmail.com> wrote:
->>>>> diff --git a/arch/nds32/Kconfig.cpu b/arch/nds32/Kconfig.cpu
->>>>> +config CPU_CACHE_NONALIASING
->>>>> +       bool "Non-aliasing cache"
->>>>> +       help
->>>>> +         If this CPU is using VIPT data cache and its cache way size is larger
->>>>> +         than page size, say N. If it is using PIPT data cache, say Y.
->>>>> +
->>>>> +         If unsure, say Y.
->>>>
->>>> Can you determine this from the CPU type?
->>>
->>> There is no cpu register to determine it. It also depeneds on page
->>> size and way size however page size is configurable by software.
->>> These codes are determined at compile time will be benefit to code
->>> size and performance.
->>> IMHO, I think it would be better to be determined here.
->>
->> I meant determining it at compile time from other Kconfig symbols,
->> if that's possible. Do the CPU cores each have a fixed way-size?
->> If they do, it could be done like
->>
->> menu "CPU selection"
->>
->> config CPU_N15
->>       bool "AndesCore N15"
->>       select CPU_CACHE_NONALIASING
->>
->> config CPU_N13
->>       bool "AndesCore N15"
->>       select CPU_CACHE_NONALIASING if PAGE_SIZE_16K
->>
->> ...
->>
->> endmenu
->>
->> and then you can use the same CPU_... symbols to make other decisions
->> as well, e.g. CPU specific compiler optimizations.
->
-> Do you want to support multiple CPU types in a single kernel image
-> (I see no "choice" statement above)?
-> If yes, you may have a mix of aliasing and non-aliasing caches, so
-> you may want to invert the logic, and select CPU_CACHE_ALIASING
-> instead.
+On Tue, Nov 28, 2017 at 08:39:26PM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Nov 28, 2017 at 04:16:29PM +0100, Johan Hovold wrote:
+> > On Tue, Nov 28, 2017 at 04:04:18PM +0100, Greg Kroah-Hartman wrote:
+> > > On Fri, Nov 03, 2017 at 03:30:59PM +0100, Johan Hovold wrote:
+> > > > Serdev does not use the file abstraction and specifically there will
+> > > > never be anyone polling a file descriptor for POLLOUT events.
+> > > > 
+> > > > Just use plain wake_up_interruptible() in the write_wakeup callback and
+> > > > document why it's there.
+> > > > 
+> > > > Signed-off-by: Johan Hovold <johan@kernel.org>
+> > > > ---
+> > > >  drivers/tty/serdev/serdev-ttyport.c | 3 ++-
+> > > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > 
+> > > This patch didn't apply, perhaps because I split this series across my
+> > > "for-next" and "for-linus" branches?
+> > 
+> > That's right, this one depends on patch 4/8.
+> > 
+> > Perhaps you can take also this one through tty-linus? Or even better,
+> > just take the whole series through tty-linus?
+> 
+> They all didn't feel like patches to go in after -rc1, right?
+> Documentation updates?  Minor tweaks?  Would you want to defend them?
+> :)
 
-Right, my mistake.
+I agree that it's borderline, but the documentation update (patch 3/8)
+is related to the first two bug fixes, where a negative return value
+from a serdev driver could have triggered those bugs, so in a sense we
+are fixing the docs.
 
-         Arnd
+Patch 6 and 8 are clean ups, but the open lock clean up in patch 6 is
+related to the close lock fix in patch 5.
+
+Patch 7 avoids a potential crash, albeit something that would not affect
+any mainline drivers (as serial-core sets CLOCAL by default).
+
+But I'm perfectly fine with holding them off for 4.16. Perhaps you can
+just merge back rc2 and I can resubmit the final patch which didn't
+apply after that.
+
+Thanks,
+Johan
