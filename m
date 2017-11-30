@@ -1,52 +1,107 @@
-From: Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>
-Subject: Re: [patch v12 2/4] drivers: jtag: Add Aspeed SoC 24xx and 25xx
- families JTAG master driver
-Date: Thu, 30 Nov 2017 09:21:29 +0100
-Message-ID: <CAOFm3uHg8n4A8opaOC3=pNtM1yJU6iy5Ta8XtGOvqT-Euv=X1w@mail.gmail.com>
-References: <1510675867-24276-1-git-send-email-oleksandrs@mellanox.com>
- <1510675867-24276-3-git-send-email-oleksandrs@mellanox.com> <CAGMNF6XRwU5QEJhkg-mVwE5zpPigtcGJtRUupZHtcWRdedcsxg@mail.gmail.com>
+From: Greentime Hu <green.hu@gmail.com>
+Subject: Re: [PATCH v2 25/35] nds32: Build infrastructure
+Date: Thu, 30 Nov 2017 17:29:27 +0800
+Message-ID: <CAEbi=3dysHV5S=Ez8WJr=FPfQ_LFFiw_KZ6wwCVJmPnh5j5s9g@mail.gmail.com>
+References: <cover.1511785528.git.green.hu@gmail.com> <5e1be9ebc591c6de79b75f726a5a38b2564eaa92.1511785528.git.green.hu@gmail.com>
+ <CAK8P3a1GuH2tgtC5t834-PNeUVYQxreD7seZH8sjraZFtRUWKw@mail.gmail.com>
+ <CAEbi=3c=hTCcUOPs+Fc10srzTFsB4MnVxgcFydz12-jH0ZXjog@mail.gmail.com>
+ <CAK8P3a0kvt52UTtEmE+tWHZuH_rmgTxP7+CiD9Ddwe2cJLwXTQ@mail.gmail.com>
+ <CAMuHMdViO=+-kGdXFPSW+9PsPbf3sUa5xdaJ_1C-cX2vE1G35Q@mail.gmail.com>
+ <CAK8P3a3yk7ww+LdQdL+wgz2wYrzXLSsj1PTdfK-qx013jdg4SQ@mail.gmail.com>
+ <CAEbi=3cc8e__DnFKmTSMm9xQMx7CGu+1v3e55w8UekwnTTkw5Q@mail.gmail.com>
+ <CAK8P3a2d2_jxXehE3xP_G9Tzp6jP4hFmS4CJkh=6bePLEDcdGw@mail.gmail.com>
+ <CAEbi=3fmXP=n_tS+-TSFhdht2G=VHOzVCVU=SRy4A6Ym_GToUQ@mail.gmail.com>
+ <CAK8P3a3-CexhRkJB7_8TGShuDQP8w=myhkoB8-7ax3my96PrMw@mail.gmail.com>
+ <CAEbi=3cTkbt9i7XPXMnY1D6qtbebDW1x8sFVsgqhq-nApAx5mA@mail.gmail.com> <CAMuHMdWXe-1=-98V=AcUzu-MiEaAqPQi2HZ6OTS=8sXY3XNhjw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAGMNF6XRwU5QEJhkg-mVwE5zpPigtcGJtRUupZHtcWRdedcsxg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Kun Yi <kunyi-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org, vadimp-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, OpenBMC Maillist <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, mec-WqBc5aa1uDFeoWH0uzbU5w@public.gmane.org, Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org, Mauro Carvalho Chehab <mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdWXe-1=-98V=AcUzu-MiEaAqPQi2HZ6OTS=8sXY3XNhjw@mail.gmail.com>
+Sender: netdev-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, Networking <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vincent Chen <vincentc@andestech.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 29, 2017 at 11:51 PM, Kun Yi <kunyi-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> wrote:
-> On Tue, Nov 14, 2017 at 8:11 AM, Oleksandr Shamray
-> <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org> wrote:
-[]
->> diff --git a/drivers/jtag/jtag-aspeed.c b/drivers/jtag/jtag-aspeed.c
->> new file mode 100644
->> index 0000000..a6e2417
->> --- /dev/null
->> +++ b/drivers/jtag/jtag-aspeed.c
->> @@ -0,0 +1,782 @@
->> +/*
->> + * drivers/jtag/aspeed-jtag.c
->> + *
->> + * Copyright (c) 2017 Mellanox Technologies. All rights reserved.
->> + * Copyright (c) 2017 Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
->> + *
->> + * Released under the GPLv2 only.
->> + * SPDX-License-Identifier: GPL-2.0
->> + */
+2017-11-30 15:52 GMT+08:00 Geert Uytterhoeven <geert@linux-m68k.org>:
+> On Thu, Nov 30, 2017 at 6:48 AM, Greentime Hu <green.hu@gmail.com> wrote:
+>> 2017-11-30 4:27 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
+>>> On Wed, Nov 29, 2017 at 3:10 PM, Greentime Hu <green.hu@gmail.com> wrote:
+>>>> 2017-11-29 19:57 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
+>>>>> On Wed, Nov 29, 2017 at 12:39 PM, Greentime Hu <green.hu@gmail.com> wrote:
+>> I think I can use this name "CPU_V3" for all nds32 v3 compatible cpu.
+>> It will be implemented like this.
+>>
+>> config HWZOL
+>>         bool "hardware zero overhead loop support"
+>>         depends on CPU_D10 || CPU_D15
+>>         default n
+>>         help
+>>           A set of Zero-Overhead Loop mechanism is provided to reduce the
+>>           instruction fetch and execution overhead of loop-control instructions.
+>>           It will save 3 registers($LB, $LC, $LE) for context saving if say Y.
+>>           You don't need to save these registers if you can make sure your user
+>>           program doesn't use these registers.
+>>
+>>           If unsure, say N.
+>>
+>> config CPU_CACHE_NONALIASING
+>>         bool "Non-aliasing cache"
+>>         depends on !CPU_N10 && !CPU_D10
+>>         default n
+>>         help
+>>           If this CPU is using VIPT data cache and its cache way size is larger
+>>           than page size, say N. If it is using PIPT data cache, say Y.
+>>
+>>           If unsure, say N.
+>
+> I still think it will be easier to revert the logic, and have
+> CPU_CACHE_ALIASING.
+>
 
-I think the SPDX id should be on the first line as requested by Linus
-and documented by Thomas (tglx) and Greg (greg-kh). And it should use
-// comments, e.g:
+Thanks Geert
 
-// SPDX-License-Identifier: GPL-2.0
+I will implement it like this.
 
-See the threads discussing all these.
+config HWZOL
+        bool "hardware zero overhead loop support"
+        depends on CPU_D10 || CPU_D15
+        default n
+        help
+          A set of Zero-Overhead Loop mechanism is provided to reduce the
+          instruction fetch and execution overhead of loop-control instructions.
+          It will save 3 registers($LB, $LC, $LE) for context saving if say Y.
+          You don't need to save these registers if you can make sure your user
+          program doesn't use these registers.
 
+          If unsure, say N.
 
--- 
-Cordially
-Philippe Ombredanne
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+config CPU_CACHE_ALIASING
+        bool "Aliasing cache"
+        depends on CPU_N10 || CPU_D10 || CPU_N13 || CPU_V3
+        default y
+        help
+          If this CPU is using VIPT data cache and its cache way size is larger
+          than page size, say Y. If it is using PIPT data cache, say N.
+
+          If unsure, say Y.
+
+choice
+        prompt "CPU type"
+        default CPU_V3
+config CPU_N15
+        bool "AndesCore N15"
+config CPU_N13
+        bool "AndesCore N13"
+        select CPU_CACHE_ALIASING if ANDES_PAGE_SIZE_4KB
+config CPU_N10
+        bool "AndesCore N10"
+        select CPU_CACHE_ALIASING
+config CPU_D15
+        bool "AndesCore D15"
+config CPU_D10
+        bool "AndesCore D10"
+        select CPU_CACHE_ALIASING
+config CPU_V3
+        bool "AndesCore v3 compatible"
+        select ANDES_PAGE_SIZE_8KB
+endchoice
