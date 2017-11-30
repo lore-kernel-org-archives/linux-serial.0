@@ -1,56 +1,90 @@
-From: Oleksandr Shamray <oleksandrs@mellanox.com>
-Subject: RE: [patch v12 2/4] drivers: jtag: Add Aspeed SoC 24xx and 25xx
- families JTAG master driver
-Date: Thu, 30 Nov 2017 10:49:27 +0000
-Message-ID: <AM4PR0501MB2194FDF093DD241694BE77BFB1380@AM4PR0501MB2194.eurprd05.prod.outlook.com>
-References: <1510675867-24276-1-git-send-email-oleksandrs@mellanox.com>
- <1510675867-24276-3-git-send-email-oleksandrs@mellanox.com>
- <CAGMNF6XRwU5QEJhkg-mVwE5zpPigtcGJtRUupZHtcWRdedcsxg@mail.gmail.com>
- <CAOFm3uHg8n4A8opaOC3=pNtM1yJU6iy5Ta8XtGOvqT-Euv=X1w@mail.gmail.com>
+From: Marc Zyngier <marc.zyngier@arm.com>
+Subject: Re: [PATCH v2 27/35] irqchip: Andestech Internal Vector Interrupt Controller driver
+Date: Thu, 30 Nov 2017 10:57:24 +0000
+Message-ID: <86vahs2fvv.fsf@unassigned-hostname.unassigned-domain>
+References: <cover.1511785528.git.green.hu@gmail.com>
+        <e82831165cd9e45a7d03af9c870560a6384e1603.1511785528.git.green.hu@gmail.com>
+        <c7447c93-9905-2840-e2d8-01837b9fdecd@arm.com>
+        <CAEbi=3eXP1cfNDhu9YjZbjPghgxm9xmEtjEBO=KVOnWZyPqVbw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOFm3uHg8n4A8opaOC3=pNtM1yJU6iy5Ta8XtGOvqT-Euv=X1w@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <CAEbi=3eXP1cfNDhu9YjZbjPghgxm9xmEtjEBO=KVOnWZyPqVbw@mail.gmail.com>
+        (Greentime Hu's message of "Wed, 29 Nov 2017 23:23:34 +0800")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Philippe Ombredanne <pombredanne@nexb.com>, Kun Yi <kunyi@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "arnd@arndb.de" <arnd@arndb.de>, system-sw-low-level <system-sw-low-level@mellanox.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "jiri@resnulli.us" <jiri@resnulli.us>, Vadim Pasternak <vadimp@mellanox.com>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, OpenBMC Maillist <openbmc@lists.ozlabs.org>, LKML <linux-kernel@vger.kernel.org>, "openocd-devel-owner@lists.sourceforge.net" <openocd-devel-owner@lists.sourceforge.net>, "mec@shout.net" <mec@shout.net>, Jiri Pirko <jiri@mellanox.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "tklauser@distanz.ch" <tklauser@distanz.ch>, Mauro Carvalho Chehab <mchehab@kernel.org>, Dav
+To: Greentime Hu <green.hu@gmail.com>
+Cc: Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Rob Herring <robh+dt@kernel.org>, netdev <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Rick Chen <rick@andestech.com>
 List-Id: linux-serial@vger.kernel.org
 
-VGhuYWtzIGZvciBwb2ludCANCg0KQmVzdCBSZWdhcmRzLA0KT2xla3NhbmRyIFNoYW1yYXkNCg0K
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQaGlsaXBwZSBPbWJyZWRhbm5l
-IFttYWlsdG86cG9tYnJlZGFubmVAbmV4Yi5jb21dDQo+IFNlbnQ6IFRodXJzZGF5LCBOb3ZlbWJl
-ciAzMCwgMjAxNyAxMDoyMSBBTQ0KPiBUbzogS3VuIFlpIDxrdW55aUBnb29nbGUuY29tPg0KPiBD
-YzogT2xla3NhbmRyIFNoYW1yYXkgPG9sZWtzYW5kcnNAbWVsbGFub3guY29tPjsgR3JlZyBLcm9h
-aC1IYXJ0bWFuDQo+IDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz47IGFybmRAYXJuZGIuZGU7
-IHN5c3RlbS1zdy1sb3ctbGV2ZWwgPHN5c3RlbS0NCj4gc3ctbG93LWxldmVsQG1lbGxhbm94LmNv
-bT47IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBqaXJpQHJlc251bGxpLnVzOw0KPiBWYWRp
-bSBQYXN0ZXJuYWsgPHZhZGltcEBtZWxsYW5veC5jb20+OyBsaW51eC1hcGlAdmdlci5rZXJuZWwu
-b3JnOw0KPiBPcGVuQk1DIE1haWxsaXN0IDxvcGVuYm1jQGxpc3RzLm96bGFicy5vcmc+OyBMS01M
-IDxsaW51eC0NCj4ga2VybmVsQHZnZXIua2VybmVsLm9yZz47IG9wZW5vY2QtZGV2ZWwtb3duZXJA
-bGlzdHMuc291cmNlZm9yZ2UubmV0Ow0KPiBtZWNAc2hvdXQubmV0OyBKaXJpIFBpcmtvIDxqaXJp
-QG1lbGxhbm94LmNvbT47IHJvYmgrZHRAa2VybmVsLm9yZzsgbGludXgtDQo+IHNlcmlhbEB2Z2Vy
-Lmtlcm5lbC5vcmc7IHRrbGF1c2VyQGRpc3RhbnouY2g7IE1hdXJvIENhcnZhbGhvIENoZWhhYg0K
-PiA8bWNoZWhhYkBrZXJuZWwub3JnPjsgRGF2aWQgUy4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQu
-bmV0PjsgbGludXgtYXJtLQ0KPiBrZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZw0KPiBTdWJqZWN0
-OiBSZTogW3BhdGNoIHYxMiAyLzRdIGRyaXZlcnM6IGp0YWc6IEFkZCBBc3BlZWQgU29DIDI0eHgg
-YW5kIDI1eHgNCj4gZmFtaWxpZXMgSlRBRyBtYXN0ZXIgZHJpdmVyDQo+IA0KPiBPbiBXZWQsIE5v
-diAyOSwgMjAxNyBhdCAxMTo1MSBQTSwgS3VuIFlpIDxrdW55aUBnb29nbGUuY29tPiB3cm90ZToN
-Cj4gPiBPbiBUdWUsIE5vdiAxNCwgMjAxNyBhdCA4OjExIEFNLCBPbGVrc2FuZHIgU2hhbXJheQ0K
-PiA+IDxvbGVrc2FuZHJzQG1lbGxhbm94LmNvbT4gd3JvdGU6DQo+IFtdDQo+ID4+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL2p0YWcvanRhZy1hc3BlZWQuYyBiL2RyaXZlcnMvanRhZy9qdGFnLWFzcGVl
-ZC5jDQo+ID4+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0IGluZGV4IDAwMDAwMDAuLmE2ZTI0MTcNCj4g
-Pj4gLS0tIC9kZXYvbnVsbA0KPiA+PiArKysgYi9kcml2ZXJzL2p0YWcvanRhZy1hc3BlZWQuYw0K
-PiA+PiBAQCAtMCwwICsxLDc4MiBAQA0KPiA+PiArLyoNCj4gPj4gKyAqIGRyaXZlcnMvanRhZy9h
-c3BlZWQtanRhZy5jDQo+ID4+ICsgKg0KPiA+PiArICogQ29weXJpZ2h0IChjKSAyMDE3IE1lbGxh
-bm94IFRlY2hub2xvZ2llcy4gQWxsIHJpZ2h0cyByZXNlcnZlZC4NCj4gPj4gKyAqIENvcHlyaWdo
-dCAoYykgMjAxNyBPbGVrc2FuZHIgU2hhbXJheSA8b2xla3NhbmRyc0BtZWxsYW5veC5jb20+DQo+
-ID4+ICsgKg0KPiA+PiArICogUmVsZWFzZWQgdW5kZXIgdGhlIEdQTHYyIG9ubHkuDQo+ID4+ICsg
-KiBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMA0KPiA+PiArICovDQo+IA0KPiBJIHRo
-aW5rIHRoZSBTUERYIGlkIHNob3VsZCBiZSBvbiB0aGUgZmlyc3QgbGluZSBhcyByZXF1ZXN0ZWQg
-YnkgTGludXMgYW5kDQo+IGRvY3VtZW50ZWQgYnkgVGhvbWFzICh0Z2x4KSBhbmQgR3JlZyAoZ3Jl
-Zy1raCkuIEFuZCBpdCBzaG91bGQgdXNlIC8vDQo+IGNvbW1lbnRzLCBlLmc6DQo+IA0KPiAvLyBT
-UERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMA0KPiANCj4gU2VlIHRoZSB0aHJlYWRzIGRp
-c2N1c3NpbmcgYWxsIHRoZXNlLg0KPiANCj4gDQo+IC0tDQo+IENvcmRpYWxseQ0KPiBQaGlsaXBw
-ZSBPbWJyZWRhbm5lDQo=
+On Wed, Nov 29 2017 at 11:23:34 pm GMT, Greentime Hu <green.hu@gmail.com> wrote:
+
+Hi Greentime,
+
+>>> +}
+>>> +
+>>> +static void ativic32_mask_ack_irq(struct irq_data *data)
+>>> +{
+>>> +     unsigned long int_mask2 = __nds32__mfsr(NDS32_SR_INT_MASK2);
+>>> + __nds32__mtsr_dsb(int_mask2 & (~(1 << data->hwirq)),
+>>> NDS32_SR_INT_MASK2);
+>>> +     __nds32__mtsr_dsb((1 << data->hwirq), NDS32_SR_INT_PEND2);
+>>
+>> This is effectively MASK+ACK, so you're better off just writing it as
+>> such. And since there is no advantage in your implementation in having
+>> MASK_ACK over MASK+ACK, I suggest you remove this function completely,
+>> and rely on the core code which will call them in sequence.
+>
+> I think mask_ack is still better than mask + ack because we don't need
+> to do two function call.
+> We can save a prologue and a epilogue. It will benefit interrupt latency.
+
+Can you actually measure this? Your CPU would have to be extremely slow
+if you could see the impact of an extra function call on interrupt
+latency. From a maintenance perspective, this isn't very nice (it is
+effectively code duplication).
+
+I suggest you start with the simplest version of the code, and provide
+an optimisation once you can measurably demonstrate that mask_ack is
+better.
+
+[...]
+
+>>> + irq_set_chip_and_handler(virq, &ativic32_chip, handle_edge_irq);
+>>> +     else
+>>> + irq_set_chip_and_handler(virq, &ativic32_chip, handle_level_irq);
+>>
+>> Since you do not express the trigger in DT, you need to tell the core
+>> about it by calling irqd_set_trigger_type() with the right setting.
+>>
+>
+> Since the comments say so, I will add ativic32_set_type() for irq_set_type()
+> in the next version patch.
+>
+> /*
+>  * Must only be called inside irq_chip.irq_set_type() functions.
+>  */
+> static inline void irqd_set_trigger_type(struct irq_data *d, u32 type)
+> {
+>         __irqd_to_state(d) &= ~IRQD_TRIGGER_MASK;
+>         __irqd_to_state(d) |= type & IRQD_TRIGGER_MASK;
+> }
+>
+> It will be like this.
+> static int ativic32_set_type(struct irq_data *data, unsigned int flow_type)
+> {
+>         irqd_set_trigger_type(data, flow_type);
+>         return IRQ_SET_MASK_OK;
+> }
+
+This feels wrong. Your interrupt controller doesn't seem to support the
+trigger being changed, so irq_set_type would be a bit pointless. A
+driver trying to set a level trigger on an edge interrupt would succeed,
+and that is as bad as it gets. All you need is to expose the capability
+of the HW when you register the flow handler instead of adding a rather
+misleading callback.
+
+Thanks,
+
+	M.
+-- 
+Jazz is not dead, it just smell funny.
