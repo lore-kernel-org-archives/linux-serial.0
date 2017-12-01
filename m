@@ -1,47 +1,53 @@
 From: Ludovic Barre <ludovic.Barre@st.com>
-Subject: [PATCH  1/2] serial: stm32: add default console
-Date: Fri, 1 Dec 2017 17:36:50 +0100
-Message-ID: <1512146211-29086-2-git-send-email-ludovic.Barre@st.com>
+Subject: [PATCH  2/2] serial: stm32: fix name conflict with 8250
+Date: Fri, 1 Dec 2017 17:36:51 +0100
+Message-ID: <1512146211-29086-3-git-send-email-ludovic.Barre@st.com>
 References: <1512146211-29086-1-git-send-email-ludovic.Barre@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1512146211-29086-1-git-send-email-ludovic.Barre@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh+dt@kernel.org>
-Cc: devicetree@vger.kernel.org, Alexandre Torgue <alexandre.torgue@st.com>, linux-kernel@vger.kernel.org, Ludovic Barre <ludovic.barre@st.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, Ludovic Barre <ludovic.barre@st.com>
 List-Id: linux-serial@vger.kernel.org
 
 From: Ludovic Barre <ludovic.barre@st.com>
 
-This patch adds by default the console support
-on stm32.
+This patch replaces stm32 tty name ttyS by ttySTM
+to avoid a name conflict when Serial: 8250/16550 driver
+is activated.
+
+sysfs: cannot create duplicate filename '/class/tty/ttyS3'
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.14.0-12903-gb392521-dirty #1
+[<c03118dc>] (unwind_backtrace) from [<c030c950>] (show_stack+0x10/0x14)
+[<c030c950>] (show_stack) from [<c0d31e18>] (dump_stack+0x90/0xa4)
+[<c0d31e18>] (dump_stack) from [<c03430a0>] (__warn+0xf8/0x110)
+[<c03430a0>] (__warn) from [<c03430f0>] (warn_slowpath_fmt+0x38/0x48)
+[<c03430f0>] (warn_slowpath_fmt) from [<c04ce574>] (sysfs_warn_dup+0x68/0x78)
+[<c04ce574>] (sysfs_warn_dup) from [<c04ce824>] (sysfs_do_create_link_sd+0xb4/0xc4)
+[<c04ce824>] (sysfs_do_create_link_sd) from [<c08c60ec>] (device_add+0x204/0x574)
+[<c08c60ec>] (device_add) from [<c07a7ddc>] (tty_register_device_attr+0xc8/0x1bc)
+[<c07a7ddc>] (tty_register_device_attr) from [<c07c6530>] (uart_add_one_port+0x22c/0x4f4)
 
 Signed-off-by: Ludovic Barre <ludovic.barre@st.com>
 ---
- drivers/tty/serial/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/stm32-usart.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index b788fee..969e598 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1664,6 +1664,7 @@ config SERIAL_STM32_CONSOLE
- 	bool "Support for console on STM32"
- 	depends on SERIAL_STM32=y
- 	select SERIAL_CORE_CONSOLE
-+	default y
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index 8a5ff54..2294d0f 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -236,7 +236,7 @@ struct stm32_usart_info stm32h7_info = {
+ #define USART_ICR_CMCF		BIT(17)		/* F7 */
+ #define USART_ICR_WUCF		BIT(20)		/* H7 */
  
- config SERIAL_MVEBU_UART
- 	bool "Marvell EBU serial port support"
+-#define STM32_SERIAL_NAME "ttyS"
++#define STM32_SERIAL_NAME "ttySTM"
+ #define STM32_MAX_PORTS 8
+ 
+ #define RX_BUF_L 200		 /* dma rx buffer length     */
 -- 
 2.7.4
