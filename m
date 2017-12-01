@@ -1,65 +1,45 @@
-From: Oleksandr Shamray <oleksandrs@mellanox.com>
-Subject: RE: [patch v12 2/4] drivers: jtag: Add Aspeed SoC 24xx and 25xx
- families JTAG master driver
-Date: Fri, 1 Dec 2017 11:11:03 +0000
-Message-ID: <AM4PR0501MB21946528385296CCEEBFEB1AB1390@AM4PR0501MB2194.eurprd05.prod.outlook.com>
-References: <1510675867-24276-1-git-send-email-oleksandrs@mellanox.com>
- <1510675867-24276-3-git-send-email-oleksandrs@mellanox.com>
- <CAGMNF6XRwU5QEJhkg-mVwE5zpPigtcGJtRUupZHtcWRdedcsxg@mail.gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2 35/35] dt-bindings: timer: Add andestech atcpit100
+ timer binding doc
+Date: Fri, 1 Dec 2017 13:19:25 +0100
+Message-ID: <CACRpkdYuo88qeEznKxVojYofV4YTGu6AOgan-2GPYS9qZCVxZA@mail.gmail.com>
+References: <cover.1511785528.git.green.hu@gmail.com> <60f23e7fcff11f16b0bca4753a39d098849eeac3.1511785528.git.green.hu@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAGMNF6XRwU5QEJhkg-mVwE5zpPigtcGJtRUupZHtcWRdedcsxg@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <60f23e7fcff11f16b0bca4753a39d098849eeac3.1511785528.git.green.hu@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: 'Kun Yi' <kunyi@google.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "arnd@arndb.de" <arnd@arndb.de>, system-sw-low-level <system-sw-low-level@mellanox.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "jiri@resnulli.us" <jiri@resnulli.us>, Vadim Pasternak <vadimp@mellanox.com>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, OpenBMC Maillist <openbmc@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "openocd-devel-owner@lists.sourceforge.net" <openocd-devel-owner@lists.sourceforge.net>, "mec@shout.net" <mec@shout.net>, Jiri Pirko <jiri@mellanox.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "tklauser@distanz.ch" <tklauser@distanz.ch>, mchehab@kernel.org
+To: Greentime Hu <green.hu@gmail.com>
+Cc: greentime@andestech.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org, deanbo422@gmail.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Rick Chen <rickchen36@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBLdW4gWWkgW21haWx0bzprdW55
-aUBnb29nbGUuY29tXQ0KPiBTZW50OiBUaHVyc2RheSwgTm92ZW1iZXIgMzAsIDIwMTcgMTI6NTEg
-QU0NCj4gVG86IE9sZWtzYW5kciBTaGFtcmF5IDxvbGVrc2FuZHJzQG1lbGxhbm94LmNvbT4NCj4g
-Q2M6IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnOyBhcm5kQGFybmRiLmRlOyBzeXN0ZW0tc3ct
-bG93LWxldmVsDQo+IDxzeXN0ZW0tc3ctbG93LWxldmVsQG1lbGxhbm94LmNvbT47IGRldmljZXRy
-ZWVAdmdlci5rZXJuZWwub3JnOw0KPiBqaXJpQHJlc251bGxpLnVzOyBWYWRpbSBQYXN0ZXJuYWsg
-PHZhZGltcEBtZWxsYW5veC5jb20+OyBsaW51eC0NCj4gYXBpQHZnZXIua2VybmVsLm9yZzsgT3Bl
-bkJNQyBNYWlsbGlzdCA8b3BlbmJtY0BsaXN0cy5vemxhYnMub3JnPjsgbGludXgtDQo+IGtlcm5l
-bEB2Z2VyLmtlcm5lbC5vcmc7IG9wZW5vY2QtZGV2ZWwtb3duZXJAbGlzdHMuc291cmNlZm9yZ2Uu
-bmV0Ow0KPiBtZWNAc2hvdXQubmV0OyBKaXJpIFBpcmtvIDxqaXJpQG1lbGxhbm94LmNvbT47IHJv
-YmgrZHRAa2VybmVsLm9yZzsgbGludXgtDQo+IHNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7IHRrbGF1
-c2VyQGRpc3RhbnouY2g7IG1jaGVoYWJAa2VybmVsLm9yZzsNCj4gZGF2ZW1AZGF2ZW1sb2Z0Lm5l
-dDsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnDQo+IFN1YmplY3Q6IFJlOiBb
-cGF0Y2ggdjEyIDIvNF0gZHJpdmVyczoganRhZzogQWRkIEFzcGVlZCBTb0MgMjR4eCBhbmQgMjV4
-eA0KPiBmYW1pbGllcyBKVEFHIG1hc3RlciBkcml2ZXINCj4gDQo+IFRoYW5rcyBmb3Igd29ya2lu
-ZyBvbiB0aGUgZHJpdmVyLCBPbGVrc2FuZHIuIEkgZ2F2ZSB0aGlzIGEgdHJ5IG9uIGEgYm9hcmQg
-d2l0aA0KPiBBc3BlZWQgMjUyMC4gT25lIHF1ZXN0aW9uIGJlbG93Og0KPiANCj4gT24gVHVlLCBO
-b3YgMTQsIDIwMTcgYXQgODoxMSBBTSwgT2xla3NhbmRyIFNoYW1yYXkNCj4gPG9sZWtzYW5kcnNA
-bWVsbGFub3guY29tPiB3cm90ZToNCj4gPiBEcml2ZXIgYWRkcyBzdXBwb3J0IG9mIEFzcGVlZCAy
-NTAwLzI0MDAgc2VyaWVzIFNPQyBKVEFHIG1hc3RlciBjb250cm9sbGVyLg0KPiA+DQo+ID4gRHJp
-dmVyIGltcGxlbWVudHMgdGhlIGZvbGxvd2luZyBqdGFnIG9wczoNCj4gPiAtIGZyZXFfZ2V0Ow0K
-PiA+IC0gZnJlcV9zZXQ7DQo+ID4gLSBzdGF0dXNfZ2V0Ow0KPiA+IC0gaWRsZTsNCj4gPiAtIHhm
-ZXI7DQo+ID4NCg0KWy4uXQ0KDQo+ID4gKw0KPiA+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGp0YWdf
-b3BzIGFzcGVlZF9qdGFnX29wcyA9IHsNCj4gPiArICAgICAgIC5mcmVxX2dldCA9IGFzcGVlZF9q
-dGFnX2ZyZXFfZ2V0LA0KPiA+ICsgICAgICAgLmZyZXFfc2V0ID0gYXNwZWVkX2p0YWdfZnJlcV9z
-ZXQsDQo+ID4gKyAgICAgICAuc3RhdHVzX2dldCA9IGFzcGVlZF9qdGFnX3N0YXR1c19nZXQsDQo+
-ID4gKyAgICAgICAuaWRsZSA9IGFzcGVlZF9qdGFnX2lkbGUsDQo+ID4gKyAgICAgICAueGZlciA9
-IGFzcGVlZF9qdGFnX3hmZXIsDQo+ID4gKyAgICAgICAubW9kZV9zZXQgPSBhc3BlZWRfanRhZ19t
-b2RlX3NldCB9Ow0KPiA+ICsNCj4gPiArc3RhdGljIGludCBhc3BlZWRfanRhZ19wcm9iZShzdHJ1
-Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KSB7DQo+ID4gKyAgICAgICBzdHJ1Y3QgYXNwZWVkX2p0
-YWcgKmFzcGVlZF9qdGFnOw0KPiA+ICsgICAgICAgc3RydWN0IGp0YWcgKmp0YWc7DQo+ID4gKyAg
-ICAgICBpbnQgZXJyOw0KPiA+ICsNCj4gPiArICAgICAgIGlmICghb2ZfZGV2aWNlX2lzX2NvbXBh
-dGlibGUocGRldi0+ZGV2Lm9mX25vZGUsDQo+ID4gKyAiYXNwZWVkLGFzcGVlZC1qdGFnIikpDQo+
-IA0KPiBTaG91bGQgdGhpcyBiZSAiYXNwZWVkLGFzdDI0MDAtanRhZyIvImFzcGVlZCxhc3QyNTAw
-LWp0YWciIGFzIHNwZWNpZmllZCBpbiB0aGUNCj4gY29tcGF0aWJsZSBzdHJpbmcgYmVsb3c/DQo+
-IA0KDQpZZXMNCg0KDQo+ID4gKyAgICAgICAgICAgICAgIHJldHVybiAtRU5PTUVNOw0KPiA+ICsN
-Cj4gPiArICAgICAgIGp0YWcgPSBqdGFnX2FsbG9jKHNpemVvZigqYXNwZWVkX2p0YWcpLCAmYXNw
-ZWVkX2p0YWdfb3BzKTsNCj4gPiArICAgICAgIGlmICghanRhZykNCj4gPiArICAgICAgICAgICAg
-ICAgcmV0dXJuIC1FTk9ERVY7DQo+ID4gKw0KPiA+ICsgICAgICAgcGxhdGZvcm1fc2V0X2RydmRh
-dGEocGRldiwganRhZyk7DQo+ID4gKyAgICAgICBhc3BlZWRfanRhZyA9IGp0YWdfcHJpdihqdGFn
-KTsNCj4gPiArICAgICAgIGFzcGVlZF9qdGFnLT5kZXYgPSAmcGRldi0+ZGV2Ow0KPiA+ICsNCiAN
-ClsuLl0NCg0KPiA+ICsNCj4gPiArTU9EVUxFX0FVVEhPUigiT2xla3NhbmRyIFNoYW1yYXkgPG9s
-ZWtzYW5kcnNAbWVsbGFub3guY29tPiIpOw0KPiA+ICtNT0RVTEVfREVTQ1JJUFRJT04oIkFTUEVF
-RCBKVEFHIGRyaXZlciIpOyBNT0RVTEVfTElDRU5TRSgiR1BMDQo+IHYyIik7DQo+ID4gLS0NCj4g
-PiAxLjcuMQ0KPiA+DQo+IC0tDQo+IFJlZ2FyZHMsDQo+IEt1bg0KDQpUaGFua3MuDQoNCkJSDQpP
-bGVrc2FuZHIgU2hhbXJheQ0K
+On Mon, Nov 27, 2017 at 1:28 PM, Greentime Hu <green.hu@gmail.com> wrote:
+
+> From: Rick Chen <rickchen36@gmail.com>
+>
+> Add a document to describe Andestech atcpit100 timer and
+> binding information.
+>
+> Signed-off-by: Rick Chen <rickchen36@gmail.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Greentime Hu <green.hu@gmail.com>
+
+Thanks for submitting this interesting architecture!
+
+(...)
+
+> +Required properties:
+> +- compatible   : Should be "andestech,atcpit100"
+> +- reg          : Address and length of the register set
+> +- interrupts   : Reference to the timer interrupt
+> +- clocks : a clock to provide the tick rate for "andestech,atcpit100"
+> +- clock-names : should be "PCLK" for the external tick timer.
+
+This text seem wrong. PCLK is the internal timer, right? "PCLK" is
+"peripheral clock" (I hope) and that comes from the bus.
+
+Consider also adding an optional "EXTCLK" already now, since it is
+evident from the driver that this is also supported.
+
+Yours,
+Linus Walleij
