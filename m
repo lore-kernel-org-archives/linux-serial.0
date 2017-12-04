@@ -1,58 +1,103 @@
-From: Philippe Ombredanne <pombredanne@nexb.com>
-Subject: Re: [patch v13 2/4] drivers: jtag: Add Aspeed SoC 24xx and 25xx
- families JTAG master driver
-Date: Mon, 4 Dec 2017 13:41:08 +0100
-Message-ID: <CAOFm3uGYCssRV4D+Ht6NQLxFSijWt0dgsQEucJmVThjLqiD-oA@mail.gmail.com>
-References: <1512382405-14774-1-git-send-email-oleksandrs@mellanox.com> <1512382405-14774-3-git-send-email-oleksandrs@mellanox.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Denys Zagorui <dzagorui@cisco.com>
+Subject: [PATCH v3] serial: 8250: convert to threaded IRQ
+Date: Mon,  4 Dec 2017 17:26:27 +0200
+Message-ID: <20171204152627.23906-1-dzagorui@cisco.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1512382405-14774-3-git-send-email-oleksandrs@mellanox.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Oleksandr Shamray <oleksandrs@mellanox.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, LKML <linux-kernel@vger.kernel.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, OpenBMC Maillist <openbmc@lists.ozlabs.org>, joel@jms.id.au, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, vadimp@mellanox.com, system-sw-low-level@mellanox.com, Rob Herring <robh+dt@kernel.org>, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@kernel.org>, Jiri Pirko <jiri@mellanox.com>
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Oleksandr,
+During using virtualization it is common to see
+many "too much work for irq*" messages.
 
-On Mon, Dec 4, 2017 at 11:13 AM, Oleksandr Shamray
-<oleksandrs@mellanox.com> wrote:
-[...]
-> v12->v13
-> Comments pointed by Philippe Ombredanne <pombredanne@nexb.com>
-> - Change jtag-aspeed.c licence type to
->   SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
->   and reorder line with license in description
-[...]
-> diff --git a/drivers/jtag/jtag-aspeed.c b/drivers/jtag/jtag-aspeed.c
-> new file mode 100644
-> index 0000000..2ff46b0
-> --- /dev/null
-> +++ b/drivers/jtag/jtag-aspeed.c
-> @@ -0,0 +1,784 @@
-> +/* SPDX-License-Identifier: GPL-2.0
+There are fixes proposed erlier:
+-  e7328ae1848966181a7ac47e8ae6cddbd2cf55f3 (serial:
+   8250, increase PASS_LIMIT)
+-  f4f653e9875e573860e783fecbebde284a8626f5 (serial:
+   8250, disable "too much work" messages
 
-Sorry to nit pick on this but the comment style should be // here IMHO
-This is what Linus requested, e.g.:
+First one doesn't help now, last one was reverted
+(12de375ec493ab1767d4a07dde823e63ae5edc21) in fact
+it doesn't fix anything. So procesing interrupts in
+kthread give us an opportunity to perform rescheduling
+periodically.
 
-> +// SPDX-License-Identifier: GPL-2.0
+Cc: Jiri Slaby <jslaby@suse.com>
+Signed-off-by: Denys Zagorui <dzagorui@cisco.com>
+---
+v1 -> v2:
+        - Fix spin-lock inconsistent usage.
+        - After rescheduling check that all ports
+          have been serviced again.
+v2 -> v3:
+        - Add changelog.
 
-For reference, the doc is being written:Thomas (tglx) has already
-submitted a first series of doc patches a few weeks ago. And AFAIK he
-might be working on posting the updates soon, whenever his real time
-clock yields a few cycles away from real time coding work ;)
+ drivers/tty/serial/8250/8250_core.c | 28 +++++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 7 deletions(-)
 
-See also these discussions with Linus [1][2][3], Thomas[4] and Greg[5]
-on this and mostly related topics, where you will see Linus rationale
-for the C++ comment stylle
-
-[1] https://lkml.org/lkml/2017/11/2/715
-[2] https://lkml.org/lkml/2017/11/25/125
-[3] https://lkml.org/lkml/2017/11/25/133
-[4] https://lkml.org/lkml/2017/11/2/805
-[5] https://lkml.org/lkml/2017/10/19/165
-
-
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 9342fc2ee7df..20d8e5fe2dc4 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -54,7 +54,7 @@ static struct uart_driver serial8250_reg;
+ 
+ static unsigned int skip_txen_test; /* force skip of txen test at init time */
+ 
+-#define PASS_LIMIT	512
++#define PASS_LIMIT	32
+ 
+ #include <asm/serial.h>
+ /*
+@@ -131,10 +131,13 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 		l = l->next;
+ 
+ 		if (l == i->head && pass_counter++ > PASS_LIMIT) {
+-			/* If we hit this, we're dead. */
+-			printk_ratelimited(KERN_ERR
+-				"serial8250: too much work for irq%d\n", irq);
+-			break;
++			spin_unlock(&i->lock);
++			cond_resched();
++			spin_lock(&i->lock);
++			end = NULL;
++			l = i->head;
++			pass_counter = 0;
++			continue;
+ 		}
+ 	} while (l != end);
+ 
+@@ -142,9 +145,20 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+ 
+ 	pr_debug("%s(%d): end\n", __func__, irq);
+ 
++	enable_irq(i->irq);
++
+ 	return IRQ_RETVAL(handled);
+ }
+ 
++static irqreturn_t serial8250_hard_irq(int irq, void *dev_id)
++{
++	struct irq_info *i = dev_id;
++
++	disable_irq_nosync(i->irq);
++
++	return IRQ_WAKE_THREAD;
++}
++
+ /*
+  * To support ISA shared interrupts, we need to have one interrupt
+  * handler that ensures that the IRQ line has been deasserted
+@@ -213,8 +227,8 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
+ 		i->head = &up->list;
+ 		spin_unlock_irq(&i->lock);
+ 		irq_flags |= up->port.irqflags;
+-		ret = request_irq(up->port.irq, serial8250_interrupt,
+-				  irq_flags, up->port.name, i);
++		ret = request_threaded_irq(up->port.irq, serial8250_hard_irq,
++						serial8250_interrupt, irq_flags, up->port.name, i);
+ 		if (ret < 0)
+ 			serial_do_unlink(i, up);
+ 	}
 -- 
-Cordially
-Philippe Ombredanne
+2.11.0
