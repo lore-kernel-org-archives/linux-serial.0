@@ -1,53 +1,66 @@
-From: =?UTF-8?B?6Zmz5bu65b+X?= <rickchen36@gmail.com>
-Subject: Re: [PATCH v2 35/35] dt-bindings: timer: Add andestech atcpit100
- timer binding doc
-Date: Mon, 4 Dec 2017 09:07:20 +0800
-Message-ID: <CAN5B=e+-igkynapqoMhY6TMMNybnPudkL24aYiqJ7nESqxn9Yw@mail.gmail.com>
-References: <cover.1511785528.git.green.hu@gmail.com> <60f23e7fcff11f16b0bca4753a39d098849eeac3.1511785528.git.green.hu@gmail.com>
- <CACRpkdYuo88qeEznKxVojYofV4YTGu6AOgan-2GPYS9qZCVxZA@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH/RFC 5/5] ARM: shmobile: defconfig: Disable CONFIG_EMBEDDED
+Date: Mon, 4 Dec 2017 10:46:22 +0100
+Message-ID: <CAMuHMdXSWhXXEzPgp8Y35df7B6G+TUkddRK8=p6T3q+ugDNxCA@mail.gmail.com>
+References: <1512047522-16312-1-git-send-email-geert+renesas@glider.be>
+ <1512047522-16312-6-git-send-email-geert+renesas@glider.be> <20171201083305.5vhvr6dfrbzemqgc@verge.net.au>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdYuo88qeEznKxVojYofV4YTGu6AOgan-2GPYS9qZCVxZA@mail.gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Greentime Hu <green.hu@gmail.com>, greentime@andestech.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org, deanbo422@gmail.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20171201083305.5vhvr6dfrbzemqgc@verge.net.au>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "moderated list:H8/300 ARCHITECTURE" <uclinux-h8-devel@lists.sourceforge.jp>, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-2017-12-01 20:19 GMT+08:00 Linus Walleij <linus.walleij@linaro.org>:
-> On Mon, Nov 27, 2017 at 1:28 PM, Greentime Hu <green.hu@gmail.com> wrote:
->
->> From: Rick Chen <rickchen36@gmail.com>
+Hi Simon,
+
+On Fri, Dec 1, 2017 at 9:33 AM, Simon Horman <horms@verge.net.au> wrote:
+> On Thu, Nov 30, 2017 at 02:12:02PM +0100, Geert Uytterhoeven wrote:
+>> CONFIG_EXPERT exposes too many config options that do not matter for
+>> development. However, CONFIG_EMBEDDED selects CONFIG_EXPERT, so it
+>> cannot be disabled.
 >>
->> Add a document to describe Andestech atcpit100 timer and
->> binding information.
+>> Hence disable CONFIG_EMBEDDED, and compensate for the loss of
+>> CONFIG_DEBUG_KERNEL by enabling the latter.
 >>
->> Signed-off-by: Rick Chen <rickchen36@gmail.com>
->> Acked-by: Rob Herring <robh@kernel.org>
->> Signed-off-by: Greentime Hu <green.hu@gmail.com>
+>> Actual impact:
+>>   - CONFIG_NAMESPACES=y,
+>>   - CONFIG_SYSCTL_SYSCALL=n,
+>>   - CONFIG_SERIAL_SH_SCI_NR_UARTS changed from 20 to 18,
+>>   - CONFIG_SERIAL_SH_SCI_EARLYCON=y,
+>>   - Some HID support became enabled,
+>>   - CONFIG_DEBUG_MEMORY_INIT=y,
+>>
+>> Refresh the result.
 >
-> Thanks for submitting this interesting architecture!
->
-> (...)
->
->> +Required properties:
->> +- compatible   : Should be "andestech,atcpit100"
->> +- reg          : Address and length of the register set
->> +- interrupts   : Reference to the timer interrupt
->> +- clocks : a clock to provide the tick rate for "andestech,atcpit100"
->> +- clock-names : should be "PCLK" for the external tick timer.
->
-> This text seem wrong. PCLK is the internal timer, right? "PCLK" is
-> "peripheral clock" (I hope) and that comes from the bus.
->
-> Consider also adding an optional "EXTCLK" already now, since it is
-> evident from the driver that this is also supported.
->
+> I'm sorry but I don't understand the motivation for this change.
+> I understand that it might make the image smaller or build times faster.
+> But it seems to be a risky change for those benefits.
 
-Thank you for reviewing !
-I will modify it in the next patch.
+My main motivation is to start using the default values for the various SH_SCI
+options from the first 4 patches, but that requires disabling CONFIG_EXPERT.
+Sorry for not making that clearer.
 
-Rick
+> What are the side-effects of the changes you describe above?
 
-> Yours,
-> Linus Walleij
+Enabling CONFIG_NAMESPACES shouldn't hurt (isn't that also needed for
+systemd anyway?), just like the HID devices, or CONFIG_DEBUG_MEMORY_INIT
+(it does a few more checks, and defaults to yes).
+
+Disabling CONFIG_SYSCTL_SYSCALL also shouldn't hurt (it defaults to no),
+except for very old userland not yet using /proc/sys, which might have been
+broken along the way by changed binary paths anyway.
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
