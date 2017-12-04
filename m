@@ -1,103 +1,105 @@
-From: Denys Zagorui <dzagorui@cisco.com>
-Subject: [PATCH v3] serial: 8250: convert to threaded IRQ
-Date: Mon,  4 Dec 2017 17:26:27 +0200
-Message-ID: <20171204152627.23906-1-dzagorui@cisco.com>
+From: Andrey Smirnov <andrew.smirnov@gmail.com>
+Subject: [PATCH v13 2/5] serdev: Introduce devm_serdev_device_open()
+Date: Mon,  4 Dec 2017 08:11:15 -0800
+Message-ID: <20171204161118.19558-3-andrew.smirnov@gmail.com>
+References: <20171204161118.19558-1-andrew.smirnov@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171204161118.19558-1-andrew.smirnov@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-During using virtualization it is common to see
-many "too much work for irq*" messages.
+Add code implementing managed version of serdev_device_open() for
+serdev device drivers that "open" the device during driver's lifecycle
+only once (e.g. opened in .probe() and closed in .remove()).
 
-There are fixes proposed erlier:
--  e7328ae1848966181a7ac47e8ae6cddbd2cf55f3 (serial:
-   8250, increase PASS_LIMIT)
--  f4f653e9875e573860e783fecbebde284a8626f5 (serial:
-   8250, disable "too much work" messages
-
-First one doesn't help now, last one was reverted
-(12de375ec493ab1767d4a07dde823e63ae5edc21) in fact
-it doesn't fix anything. So procesing interrupts in
-kthread give us an opportunity to perform rescheduling
-periodically.
-
-Cc: Jiri Slaby <jslaby@suse.com>
-Signed-off-by: Denys Zagorui <dzagorui@cisco.com>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>
+Cc: cphealy@gmail.com
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Pavel Machek <pavel@ucw.cz>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 ---
-v1 -> v2:
-        - Fix spin-lock inconsistent usage.
-        - After rescheduling check that all ports
-          have been serviced again.
-v2 -> v3:
-        - Add changelog.
+ Documentation/driver-model/devres.txt |  3 +++
+ drivers/tty/serdev/core.c             | 27 +++++++++++++++++++++++++++
+ include/linux/serdev.h                |  1 +
+ 3 files changed, 31 insertions(+)
 
- drivers/tty/serial/8250/8250_core.c | 28 +++++++++++++++++++++-------
- 1 file changed, 21 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 9342fc2ee7df..20d8e5fe2dc4 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -54,7 +54,7 @@ static struct uart_driver serial8250_reg;
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index c180045eb43b..7c1bb3d0c222 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -384,6 +384,9 @@ RESET
+   devm_reset_control_get()
+   devm_reset_controller_register()
  
- static unsigned int skip_txen_test; /* force skip of txen test at init time */
- 
--#define PASS_LIMIT	512
-+#define PASS_LIMIT	32
- 
- #include <asm/serial.h>
- /*
-@@ -131,10 +131,13 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
- 		l = l->next;
- 
- 		if (l == i->head && pass_counter++ > PASS_LIMIT) {
--			/* If we hit this, we're dead. */
--			printk_ratelimited(KERN_ERR
--				"serial8250: too much work for irq%d\n", irq);
--			break;
-+			spin_unlock(&i->lock);
-+			cond_resched();
-+			spin_lock(&i->lock);
-+			end = NULL;
-+			l = i->head;
-+			pass_counter = 0;
-+			continue;
- 		}
- 	} while (l != end);
- 
-@@ -142,9 +145,20 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
- 
- 	pr_debug("%s(%d): end\n", __func__, irq);
- 
-+	enable_irq(i->irq);
++SERDEV
++  devm_serdev_device_open()
 +
- 	return IRQ_RETVAL(handled);
+ SLAVE DMA ENGINE
+   devm_acpi_dma_controller_register()
+ 
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 34050b439c1f..28133dbd2808 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -132,6 +132,33 @@ void serdev_device_close(struct serdev_device *serdev)
  }
+ EXPORT_SYMBOL_GPL(serdev_device_close);
  
-+static irqreturn_t serial8250_hard_irq(int irq, void *dev_id)
++static void devm_serdev_device_release(struct device *dev, void *dr)
 +{
-+	struct irq_info *i = dev_id;
-+
-+	disable_irq_nosync(i->irq);
-+
-+	return IRQ_WAKE_THREAD;
++	serdev_device_close(*(struct serdev_device **)dr);
 +}
 +
- /*
-  * To support ISA shared interrupts, we need to have one interrupt
-  * handler that ensures that the IRQ line has been deasserted
-@@ -213,8 +227,8 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
- 		i->head = &up->list;
- 		spin_unlock_irq(&i->lock);
- 		irq_flags |= up->port.irqflags;
--		ret = request_irq(up->port.irq, serial8250_interrupt,
--				  irq_flags, up->port.name, i);
-+		ret = request_threaded_irq(up->port.irq, serial8250_hard_irq,
-+						serial8250_interrupt, irq_flags, up->port.name, i);
- 		if (ret < 0)
- 			serial_do_unlink(i, up);
- 	}
++int devm_serdev_device_open(struct device *dev, struct serdev_device *serdev)
++{
++	struct serdev_device **dr;
++	int ret;
++
++	dr = devres_alloc(devm_serdev_device_release, sizeof(*dr), GFP_KERNEL);
++	if (!dr)
++		return -ENOMEM;
++
++	ret = serdev_device_open(serdev);
++	if (ret) {
++		devres_free(dr);
++		return ret;
++	}
++
++	*dr = serdev;
++	devres_add(dev, dr);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(devm_serdev_device_open);
++
+ void serdev_device_write_wakeup(struct serdev_device *serdev)
+ {
+ 	complete(&serdev->write_comp);
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index e69402d4a8ae..9929063bd45d 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -193,6 +193,7 @@ static inline int serdev_controller_receive_buf(struct serdev_controller *ctrl,
+ 
+ int serdev_device_open(struct serdev_device *);
+ void serdev_device_close(struct serdev_device *);
++int devm_serdev_device_open(struct device *, struct serdev_device *);
+ unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
+ void serdev_device_set_flow_control(struct serdev_device *, bool);
+ int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
 -- 
-2.11.0
+2.14.3
