@@ -1,40 +1,34 @@
-From: Stefan Potyra <Stefan.Potyra@elektrobit.com>
-Subject: [PATCH] serial: 8250_dw: Disable clock on error
-Date: Wed, 6 Dec 2017 16:46:12 +0100
-Message-ID: <20171206154612.ix5rtsvj5k6ldwz3@agrajag.zerfleddert.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Rolf Evers-Fischer <embedded24@evers-fischer.de>
+Subject: [v2][PATCH 1/1] serial: 8250: 8250_omap: Fix spelling error.
+Date: Wed,  6 Dec 2017 16:52:23 +0100
+Message-ID: <20171206155223.6838-1-embedded24@evers-fischer.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: ldv-project@linuxtesting.org
+To: vigneshr@ti.com, tony@atomide.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>
 List-Id: linux-serial@vger.kernel.org
 
-If there is no clock rate for uartclk defined, disable the previously
-enabled clock again.
+From: Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>
 
-Found by Linux Driver Verification project (linuxtesting.org).
+Fixed a spelling error in a comment.
 
-Fixes: 23f5b3fdd04e serial: 8250_dw: only get the clock rate in one place
-Signed-off-by: Stefan Potyra <Stefan.Potyra@elektrobit.com>
+Signed-off-by: Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>
 ---
- drivers/tty/serial/8250/8250_dw.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_omap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 5bb0c42c88dd..bda75d317d24 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -515,7 +515,8 @@ static int dw8250_probe(struct platform_device *pdev)
- 	/* If no clock rate is defined, fail. */
- 	if (!p->uartclk) {
- 		dev_err(dev, "clock rate not defined\n");
--		return -EINVAL;
-+		err = -EINVAL;
-+		goto err_clk;
- 	}
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index bd40ba402410..57f6eba47f44 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -414,7 +414,7 @@ static void omap_8250_set_termios(struct uart_port *port,
+ 	/* Up to here it was mostly serial8250_do_set_termios() */
  
- 	data->pclk = devm_clk_get(dev, "apb_pclk");
+ 	/*
+-	 * We enable TRIG_GRANU for RX and TX and additionaly we set
++	 * We enable TRIG_GRANU for RX and TX and additionally we set
+ 	 * SCR_TX_EMPTY bit. The result is the following:
+ 	 * - RX_TRIGGER amount of bytes in the FIFO will cause an interrupt.
+ 	 * - less than RX_TRIGGER number of bytes will also cause an interrupt
 -- 
 2.15.1
