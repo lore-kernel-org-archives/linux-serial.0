@@ -1,7 +1,7 @@
 From: Prarit Bhargava <prarit@redhat.com>
-Subject: [PATCH 2/2] acpi, x86: Use SPCR table for earlycon on x86
-Date: Thu,  7 Dec 2017 12:29:12 -0500
-Message-ID: <20171207172912.17868-3-prarit@redhat.com>
+Subject: [PATCH 1/2] acpi, spcr: Make SPCR avialable to other architectures
+Date: Thu,  7 Dec 2017 12:29:11 -0500
+Message-ID: <20171207172912.17868-2-prarit@redhat.com>
 References: <20171207172912.17868-1-prarit@redhat.com>
 Return-path: <linux-pm-owner@vger.kernel.org>
 In-Reply-To: <20171207172912.17868-1-prarit@redhat.com>
@@ -10,15 +10,17 @@ To: linux-acpi@vger.kernel.org
 Cc: Prarit Bhargava <prarit@redhat.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, Bhupesh Sharma <bhsharma@redhat.com>, Lv Zheng <lv.zheng@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
 List-Id: linux-serial@vger.kernel.org
 
-The ACPI SPCR code has been used to define an earlycon console for arm64
-and can be used for x86.
+Other architectures can use SPCR to setup an early console or console but
+the current code is ARM64 specific.
 
-Modify the ACPI SPCR parsing code to account for console behaviour
-differences between arm64 and x86.  Initialize the SPCR code from
-x86 ACPI initialization code.
+Change the name of parse_spcr() to acpi_parse_spcr().  Add a weak
+function acpi_arch_setup_console() that can be used for arch-specific
+setup.  Move SPCR initialization flag into ACPI code.  Update the
+Documention on the use of the SPCR earlycon.
+
+This patch does not change arm64 behaviour.
 
 Signed-off-by: Prarit Bhargava <prarit@redhat.com>
-
 Cc: linux-doc@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org
@@ -36,110 +38,530 @@ Cc: Catalin Marinas <catalin.marinas@arm.com>
 Cc: Will Deacon <will.deacon@arm.com>
 Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
 ---
- Documentation/admin-guide/kernel-parameters.txt | 3 +++
- arch/arm64/kernel/acpi.c                        | 2 +-
- arch/x86/kernel/acpi/boot.c                     | 3 +++
- drivers/acpi/Kconfig                            | 2 +-
- drivers/acpi/spcr.c                             | 5 +++--
- include/linux/acpi.h                            | 7 +++++--
- 6 files changed, 16 insertions(+), 6 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt |   6 +-
+ arch/arm64/Kconfig                              |   1 -
+ arch/arm64/kernel/acpi.c                        | 128 +++++++++++++++++-
+ drivers/acpi/Kconfig                            |  11 +-
+ drivers/acpi/spcr.c                             | 168 +++++-------------------
+ drivers/tty/serial/earlycon.c                   |  16 +--
+ include/linux/acpi.h                            |  11 +-
+ include/linux/serial_core.h                     |   2 -
+ 8 files changed, 184 insertions(+), 159 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 0d173289c67e..c7cc890a0e81 100644
+index 6571fbfdb2a1..0d173289c67e 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -918,6 +918,9 @@
- 			stdout-path property in device tree's chosen node,
- 			or determined by the ACPI SPCR table.
+@@ -914,9 +914,9 @@
  
-+			[X86] When used with no options the early console is
-+			determined by the ACPI SPCR table.
-+
+ 	earlycon=	[KNL] Output early console device and options.
+ 
+-			When used with no options, the early console is
+-			determined by the stdout-path property in device
+-			tree's chosen node.
++			[ARM64] The early console is determined by the
++			stdout-path property in device tree's chosen node,
++			or determined by the ACPI SPCR table.
+ 
  		cdns,<addr>[,options]
  			Start an early, polled-mode console on a Cadence
- 			(xuartps) serial port at the specified address. Only
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index a93339f5178f..c6f91c85abf6 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -6,7 +6,6 @@ config ARM64
+ 	select ACPI_IORT if ACPI
+ 	select ACPI_REDUCED_HARDWARE_ONLY if ACPI
+ 	select ACPI_MCFG if ACPI
+-	select ACPI_SPCR_TABLE if ACPI
+ 	select ARCH_CLOCKSOURCE_DATA
+ 	select ARCH_HAS_DEBUG_VIRTUAL
+ 	select ARCH_HAS_DEVMEM_IS_ALLOWED
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-index ef74e1f3e468..9d7842022d47 100644
+index b3162715ed78..ef74e1f3e468 100644
 --- a/arch/arm64/kernel/acpi.c
 +++ b/arch/arm64/kernel/acpi.c
-@@ -355,7 +355,7 @@ void __init acpi_boot_table_init(void)
+@@ -25,7 +25,6 @@
+ #include <linux/memblock.h>
+ #include <linux/of_fdt.h>
+ #include <linux/smp.h>
+-#include <linux/serial_core.h>
+ 
+ #include <asm/cputype.h>
+ #include <asm/cpu_ops.h>
+@@ -177,6 +176,128 @@ static int __init acpi_fadt_sanity_check(void)
+ 	return ret;
+ }
+ 
++/*
++ * Erratum 44 for QDF2432v1 and QDF2400v1 SoCs describes the BUSY bit as
++ * occasionally getting stuck as 1. To avoid the potential for a hang, check
++ * TXFE == 0 instead of BUSY == 1. This may not be suitable for all UART
++ * implementations, so only do so if an affected platform is detected in
++ * acpi_parse_spcr().
++ */
++bool qdf2400_e44_present;
++EXPORT_SYMBOL(qdf2400_e44_present);
++
++/*
++ * Some Qualcomm Datacenter Technologies SoCs have a defective UART BUSY bit.
++ * Detect them by examining the OEM fields in the SPCR header, similar to PCI
++ * quirk detection in pci_mcfg.c.
++ */
++static bool qdf2400_erratum_44_present(struct acpi_table_header *h)
++{
++	if (memcmp(h->oem_id, "QCOM  ", ACPI_OEM_ID_SIZE))
++		return false;
++
++	if (!memcmp(h->oem_table_id, "QDF2432 ", ACPI_OEM_TABLE_ID_SIZE))
++		return true;
++
++	if (!memcmp(h->oem_table_id, "QDF2400 ", ACPI_OEM_TABLE_ID_SIZE) &&
++			h->oem_revision == 1)
++		return true;
++
++	return false;
++}
++
++/*
++ * APM X-Gene v1 and v2 UART hardware is an 16550 like device but has its
++ * register aligned to 32-bit. In addition, the BIOS also encoded the
++ * access width to be 8 bits. This function detects this errata condition.
++ */
++static bool xgene_8250_erratum_present(struct acpi_table_spcr *tb)
++{
++	bool xgene_8250 = false;
++
++	if (tb->interface_type != ACPI_DBG2_16550_COMPATIBLE)
++		return false;
++
++	if (memcmp(tb->header.oem_id, "APMC0D", ACPI_OEM_ID_SIZE) &&
++	    memcmp(tb->header.oem_id, "HPE   ", ACPI_OEM_ID_SIZE))
++		return false;
++
++	if (!memcmp(tb->header.oem_table_id, "XGENESPC",
++	    ACPI_OEM_TABLE_ID_SIZE) && tb->header.oem_revision == 0)
++		xgene_8250 = true;
++
++	if (!memcmp(tb->header.oem_table_id, "ProLiant",
++	    ACPI_OEM_TABLE_ID_SIZE) && tb->header.oem_revision == 1)
++		xgene_8250 = true;
++
++	return xgene_8250;
++}
++
++int acpi_arch_setup_console(struct acpi_table_spcr *table,
++			    char *opts, char *uart, char *iotype,
++			    int baud_rate, bool earlycon)
++{
++	if (table->header.revision < 2) {
++		pr_err("wrong table version\n");
++		return -ENOENT;
++	}
++
++	switch (table->interface_type) {
++	case ACPI_DBG2_ARM_SBSA_32BIT:
++		snprintf(iotype, ACPI_SPCR_BUF_SIZE, "mmio32");
++		/* fall through */
++	case ACPI_DBG2_ARM_PL011:
++	case ACPI_DBG2_ARM_SBSA_GENERIC:
++	case ACPI_DBG2_BCM2835:
++		snprintf(uart, ACPI_SPCR_BUF_SIZE, "p1101");
++		break;
++	default:
++		if (strlen(uart) == 0)
++			return -ENOENT;
++	}
++
++	/*
++	 * If the E44 erratum is required, then we need to tell the pl011
++	 * driver to implement the work-around.
++	 *
++	 * The global variable is used by the probe function when it
++	 * creates the UARTs, whether or not they're used as a console.
++	 *
++	 * If the user specifies "traditional" earlycon, the qdf2400_e44
++	 * console name matches the EARLYCON_DECLARE() statement, and
++	 * SPCR is not used.  Parameter "earlycon" is false.
++	 *
++	 * If the user specifies "SPCR" earlycon, then we need to update
++	 * the console name so that it also says "qdf2400_e44".  Parameter
++	 * "earlycon" is true.
++	 *
++	 * For consistency, if we change the console name, then we do it
++	 * for everyone, not just earlycon.
++	 */
++	if (qdf2400_erratum_44_present(&table->header)) {
++		qdf2400_e44_present = true;
++		if (earlycon)
++			snprintf(uart, ACPI_SPCR_BUF_SIZE, "qdf2400_e44");
++	}
++
++	if (xgene_8250_erratum_present(table)) {
++		snprintf(iotype, ACPI_SPCR_BUF_SIZE, "mmio32");
++
++		/* for xgene v1 and v2 we don't know the clock rate of the
++		 * UART so don't attempt to change to the baud rate state
++		 * in the table because driver cannot calculate the dividers
++		 */
++		snprintf(opts, ACPI_SPCR_OPTS_SIZE, "%s,%s,0x%llx", uart,
++			 iotype, table->serial_port.address);
++	} else {
++		snprintf(opts, ACPI_SPCR_OPTS_SIZE, "%s,%s,0x%llx,%d", uart,
++			 iotype, table->serial_port.address, baud_rate);
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL(acpi_arch_setup_console);
++
+ /*
+  * acpi_boot_table_init() called from setup_arch(), always.
+  *	1. find RSDP and get its address, and then find XSDT
+@@ -230,10 +351,11 @@ void __init acpi_boot_table_init(void)
+ 
+ done:
+ 	if (acpi_disabled) {
+-		if (earlycon_init_is_deferred)
++		if (console_acpi_spcr_enable)
  			early_init_dt_scan_chosen_stdout();
  	} else {
- 		/* Always enable the ACPI SPCR console */
--		acpi_parse_spcr(console_acpi_spcr_enable);
-+		acpi_parse_spcr(console_acpi_spcr_enable, true);
+-		parse_spcr(earlycon_init_is_deferred);
++		/* Always enable the ACPI SPCR console */
++		acpi_parse_spcr(console_acpi_spcr_enable);
  		if (IS_ENABLED(CONFIG_ACPI_BGRT))
  			acpi_table_parse(ACPI_SIG_BGRT, acpi_parse_bgrt);
  	}
-diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-index f4c463df8b08..4527ecbab4cb 100644
---- a/arch/x86/kernel/acpi/boot.c
-+++ b/arch/x86/kernel/acpi/boot.c
-@@ -1626,6 +1626,9 @@ int __init acpi_boot_init(void)
- 	if (!acpi_noirq)
- 		x86_init.pci.init = pci_acpi_init;
- 
-+	/* Do not enable ACPI SPCR console by default */
-+	acpi_parse_spcr(console_acpi_spcr_enable, console_acpi_spcr_enable);
-+
- 	return 0;
- }
- 
 diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-index ae25159dd976..6bcddd149ca7 100644
+index 46505396869e..ae25159dd976 100644
 --- a/drivers/acpi/Kconfig
 +++ b/drivers/acpi/Kconfig
-@@ -562,7 +562,7 @@ config TPS68470_PMIC_OPREGION
+@@ -78,9 +78,6 @@ config ACPI_DEBUGGER_USER
  
- config ACPI_SPCR_TABLE
- 	bool "ACPI Serial Port Console Redirection Support"
--	default y if ARM64
-+	default y if (X86 || ARM64)
- 	help
- 	  Enable support for Serial Port Console Redirection (SPCR) Table.
- 	  This table provides information about the configuration of the
+ endif
+ 
+-config ACPI_SPCR_TABLE
+-	bool
+-
+ config ACPI_LPIT
+ 	bool
+ 	depends on X86_64
+@@ -563,4 +560,12 @@ config TPS68470_PMIC_OPREGION
+ 	  region, which must be available before any of the devices
+ 	  using this, are probed.
+ 
++config ACPI_SPCR_TABLE
++	bool "ACPI Serial Port Console Redirection Support"
++	default y if ARM64
++	help
++	  Enable support for Serial Port Console Redirection (SPCR) Table.
++	  This table provides information about the configuration of the
++	  earlycon console.
++
+ endif	# ACPI
 diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-index d8ad8fa67582..23abb1c207a0 100644
+index 324b35bfe781..d8ad8fa67582 100644
 --- a/drivers/acpi/spcr.c
 +++ b/drivers/acpi/spcr.c
-@@ -40,7 +40,7 @@ bool console_acpi_spcr_enable __initdata;
+@@ -16,65 +16,19 @@
+ #include <linux/kernel.h>
+ #include <linux/serial_core.h>
+ 
+-/*
+- * Erratum 44 for QDF2432v1 and QDF2400v1 SoCs describes the BUSY bit as
+- * occasionally getting stuck as 1. To avoid the potential for a hang, check
+- * TXFE == 0 instead of BUSY == 1. This may not be suitable for all UART
+- * implementations, so only do so if an affected platform is detected in
+- * parse_spcr().
+- */
+-bool qdf2400_e44_present;
+-EXPORT_SYMBOL(qdf2400_e44_present);
+-
+-/*
+- * Some Qualcomm Datacenter Technologies SoCs have a defective UART BUSY bit.
+- * Detect them by examining the OEM fields in the SPCR header, similiar to PCI
+- * quirk detection in pci_mcfg.c.
+- */
+-static bool qdf2400_erratum_44_present(struct acpi_table_header *h)
+-{
+-	if (memcmp(h->oem_id, "QCOM  ", ACPI_OEM_ID_SIZE))
+-		return false;
+-
+-	if (!memcmp(h->oem_table_id, "QDF2432 ", ACPI_OEM_TABLE_ID_SIZE))
+-		return true;
+-
+-	if (!memcmp(h->oem_table_id, "QDF2400 ", ACPI_OEM_TABLE_ID_SIZE) &&
+-			h->oem_revision == 1)
+-		return true;
+-
+-	return false;
+-}
+-
+-/*
+- * APM X-Gene v1 and v2 UART hardware is an 16550 like device but has its
+- * register aligned to 32-bit. In addition, the BIOS also encoded the
+- * access width to be 8 bits. This function detects this errata condition.
+- */
+-static bool xgene_8250_erratum_present(struct acpi_table_spcr *tb)
++int __weak acpi_arch_setup_console(struct acpi_table_spcr *table,
++				   char *opts, char *uart, char *iotype,
++				   int baud_rate, bool earlycon)
+ {
+-	bool xgene_8250 = false;
+-
+-	if (tb->interface_type != ACPI_DBG2_16550_COMPATIBLE)
+-		return false;
++	snprintf(opts, ACPI_SPCR_OPTS_SIZE, "%s,%s,0x%llx,%d", uart, iotype,
++		 table->serial_port.address, baud_rate);
++	return 0;
+ 
+-	if (memcmp(tb->header.oem_id, "APMC0D", ACPI_OEM_ID_SIZE) &&
+-	    memcmp(tb->header.oem_id, "HPE   ", ACPI_OEM_ID_SIZE))
+-		return false;
+-
+-	if (!memcmp(tb->header.oem_table_id, "XGENESPC",
+-	    ACPI_OEM_TABLE_ID_SIZE) && tb->header.oem_revision == 0)
+-		xgene_8250 = true;
+-
+-	if (!memcmp(tb->header.oem_table_id, "ProLiant",
+-	    ACPI_OEM_TABLE_ID_SIZE) && tb->header.oem_revision == 1)
+-		xgene_8250 = true;
+-
+-	return xgene_8250;
+ }
+ 
++bool console_acpi_spcr_enable __initdata;
+ /**
+- * parse_spcr() - parse ACPI SPCR table and add preferred console
++ * acpi_parse_spcr() - parse ACPI SPCR table and add preferred console
+  *
+  * @earlycon: set up earlycon for the console specified by the table
+  *
+@@ -86,13 +40,13 @@ static bool xgene_8250_erratum_present(struct acpi_table_spcr *tb)
   * from arch initialization code as soon as the DT/ACPI decision is made.
   *
   */
--int __init acpi_parse_spcr(bool earlycon)
-+int __init acpi_parse_spcr(bool earlycon, bool enable_console)
+-int __init parse_spcr(bool earlycon)
++int __init acpi_parse_spcr(bool earlycon)
  {
- 	static char opts[ACPI_SPCR_OPTS_SIZE];
- 	static char uart[ACPI_SPCR_BUF_SIZE];
-@@ -113,7 +113,8 @@ int __init acpi_parse_spcr(bool earlycon)
- 	if (earlycon)
+-	static char opts[64];
++	static char opts[ACPI_SPCR_OPTS_SIZE];
++	static char uart[ACPI_SPCR_BUF_SIZE];
++	static char iotype[ACPI_SPCR_BUF_SIZE];
+ 	struct acpi_table_spcr *table;
+ 	acpi_status status;
+-	char *uart;
+-	char *iotype;
+ 	int baud_rate;
+ 	int err;
+ 
+@@ -105,103 +59,54 @@ int __init parse_spcr(bool earlycon)
+ 	if (ACPI_FAILURE(status))
+ 		return -ENOENT;
+ 
+-	if (table->header.revision < 2) {
++	switch (table->baud_rate) {
++	case 3:
++		baud_rate = 9600;
++		break;
++	case 4:
++		baud_rate = 19200;
++		break;
++	case 6:
++		baud_rate = 57600;
++		break;
++	case 7:
++		baud_rate = 115200;
++		break;
++	default:
+ 		err = -ENOENT;
+-		pr_err("wrong table version\n");
+ 		goto done;
+ 	}
+ 
+ 	if (table->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
+-		switch (ACPI_ACCESS_BIT_WIDTH((
+-			table->serial_port.access_width))) {
++		u8 width = ACPI_ACCESS_BIT_WIDTH((
++					table->serial_port.access_width));
++		switch (width) {
+ 		default:
+ 			pr_err("Unexpected SPCR Access Width.  Defaulting to byte size\n");
++			width = 8;
+ 		case 8:
+-			iotype = "mmio";
+-			break;
+ 		case 16:
+-			iotype = "mmio16";
+-			break;
+ 		case 32:
+-			iotype = "mmio32";
++			snprintf(iotype, ACPI_SPCR_BUF_SIZE, "mmio%d", width);
+ 			break;
+ 		}
+ 	} else
+-		iotype = "io";
++		snprintf(iotype, ACPI_SPCR_BUF_SIZE, "io");
+ 
+ 	switch (table->interface_type) {
+-	case ACPI_DBG2_ARM_SBSA_32BIT:
+-		iotype = "mmio32";
+-		/* fall through */
+-	case ACPI_DBG2_ARM_PL011:
+-	case ACPI_DBG2_ARM_SBSA_GENERIC:
+-	case ACPI_DBG2_BCM2835:
+-		uart = "pl011";
+-		break;
+ 	case ACPI_DBG2_16550_COMPATIBLE:
+ 	case ACPI_DBG2_16550_SUBSET:
+-		uart = "uart";
++		snprintf(uart, ACPI_SPCR_BUF_SIZE, "uart");
+ 		break;
+ 	default:
+ 		err = -ENOENT;
+ 		goto done;
+ 	}
+ 
+-	switch (table->baud_rate) {
+-	case 3:
+-		baud_rate = 9600;
+-		break;
+-	case 4:
+-		baud_rate = 19200;
+-		break;
+-	case 6:
+-		baud_rate = 57600;
+-		break;
+-	case 7:
+-		baud_rate = 115200;
+-		break;
+-	default:
+-		err = -ENOENT;
++	err = acpi_arch_setup_console(table, opts, uart, iotype, baud_rate,
++				      earlycon);
++	if (err)
+ 		goto done;
+-	}
+-
+-	/*
+-	 * If the E44 erratum is required, then we need to tell the pl011
+-	 * driver to implement the work-around.
+-	 *
+-	 * The global variable is used by the probe function when it
+-	 * creates the UARTs, whether or not they're used as a console.
+-	 *
+-	 * If the user specifies "traditional" earlycon, the qdf2400_e44
+-	 * console name matches the EARLYCON_DECLARE() statement, and
+-	 * SPCR is not used.  Parameter "earlycon" is false.
+-	 *
+-	 * If the user specifies "SPCR" earlycon, then we need to update
+-	 * the console name so that it also says "qdf2400_e44".  Parameter
+-	 * "earlycon" is true.
+-	 *
+-	 * For consistency, if we change the console name, then we do it
+-	 * for everyone, not just earlycon.
+-	 */
+-	if (qdf2400_erratum_44_present(&table->header)) {
+-		qdf2400_e44_present = true;
+-		if (earlycon)
+-			uart = "qdf2400_e44";
+-	}
+-
+-	if (xgene_8250_erratum_present(table)) {
+-		iotype = "mmio32";
+-
+-		/* for xgene v1 and v2 we don't know the clock rate of the
+-		 * UART so don't attempt to change to the baud rate state
+-		 * in the table because driver cannot calculate the dividers
+-		 */
+-		snprintf(opts, sizeof(opts), "%s,%s,0x%llx", uart, iotype,
+-			 table->serial_port.address);
+-	} else {
+-		snprintf(opts, sizeof(opts), "%s,%s,0x%llx,%d", uart, iotype,
+-			 table->serial_port.address, baud_rate);
+-	}
+ 
+ 	pr_info("console: %s\n", opts);
+ 
+@@ -209,7 +114,6 @@ int __init parse_spcr(bool earlycon)
  		setup_earlycon(opts);
  
--	err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
-+	if (enable_console)
-+		err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
+ 	err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
+-
  done:
  	acpi_put_table((struct acpi_table_header *)table);
  	return err;
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 4c8b80f1c688..b0a5964dd20f 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -196,26 +196,16 @@ int __init setup_earlycon(char *buf)
+ 	return -ENOENT;
+ }
+ 
+-/*
+- * When CONFIG_ACPI_SPCR_TABLE is defined, "earlycon" without parameters in
+- * command line does not start DT earlycon immediately, instead it defers
+- * starting it until DT/ACPI decision is made.  At that time if ACPI is enabled
+- * call parse_spcr(), else call early_init_dt_scan_chosen_stdout()
+- */
+-bool earlycon_init_is_deferred __initdata;
+-
+ /* early_param wrapper for setup_earlycon() */
+ static int __init param_setup_earlycon(char *buf)
+ {
+ 	int err;
+ 
+-	/*
+-	 * Just 'earlycon' is a valid param for devicetree earlycons;
+-	 * don't generate a warning from parse_early_params() in that case
+-	 */
++	/* Just 'earlycon' is a valid param for devicetree and ACPI SPCR. */
+ 	if (!buf || !buf[0]) {
++		/* Do not start early console until ACPI has been enabled. */
+ 		if (IS_ENABLED(CONFIG_ACPI_SPCR_TABLE)) {
+-			earlycon_init_is_deferred = true;
++			console_acpi_spcr_enable = true;
+ 			return 0;
+ 		} else if (!buf) {
+ 			return early_init_dt_scan_chosen_stdout();
 diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 818c1053cc6f..252d692f017f 100644
+index dc1ebfeeb5ec..818c1053cc6f 100644
 --- a/include/linux/acpi.h
 +++ b/include/linux/acpi.h
-@@ -1248,10 +1248,13 @@ extern bool console_acpi_spcr_enable __initdata;
- extern int acpi_arch_setup_console(struct acpi_table_spcr *table,
- 				   char *opts, char *uart, char *iotype,
- 				   int baud_rate, bool earlycon);
--int acpi_parse_spcr(bool earlycon);
-+int acpi_parse_spcr(bool earlycon, bool enable_console);
+@@ -1242,9 +1242,16 @@ static inline bool acpi_has_watchdog(void) { return false; }
+ 
+ #ifdef CONFIG_ACPI_SPCR_TABLE
+ extern bool qdf2400_e44_present;
+-int parse_spcr(bool earlycon);
++#define ACPI_SPCR_OPTS_SIZE 64
++#define ACPI_SPCR_BUF_SIZE 32
++extern bool console_acpi_spcr_enable __initdata;
++extern int acpi_arch_setup_console(struct acpi_table_spcr *table,
++				   char *opts, char *uart, char *iotype,
++				   int baud_rate, bool earlycon);
++int acpi_parse_spcr(bool earlycon);
  #else
- static const bool console_acpi_spcr_enable;
--static inline int acpi_parse_spcr(bool earlycon) { return 0; }
-+static inline int acpi_parse_spcr(bool earlycon, bool enable_console)
-+{
-+	return 0;
-+}
+-static inline int parse_spcr(bool earlycon) { return 0; }
++static const bool console_acpi_spcr_enable;
++static inline int acpi_parse_spcr(bool earlycon) { return 0; }
  #endif
  
  #if IS_ENABLED(CONFIG_ACPI_GENERIC_GSI)
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 37b044e78333..abfffb4b1c37 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -376,10 +376,8 @@ extern int of_setup_earlycon(const struct earlycon_id *match,
+ 			     const char *options);
+ 
+ #ifdef CONFIG_SERIAL_EARLYCON
+-extern bool earlycon_init_is_deferred __initdata;
+ int setup_earlycon(char *buf);
+ #else
+-static const bool earlycon_init_is_deferred;
+ static inline int setup_earlycon(char *buf) { return 0; }
+ #endif
+ 
 -- 
 2.15.0.rc0.39.g2f0e14e64
