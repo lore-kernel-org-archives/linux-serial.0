@@ -1,105 +1,28 @@
-From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v14 2/5] serdev: Introduce devm_serdev_device_open()
-Date: Thu,  7 Dec 2017 08:27:32 -0800
-Message-ID: <20171207162735.25873-3-andrew.smirnov@gmail.com>
-References: <20171207162735.25873-1-andrew.smirnov@gmail.com>
+From: Al Viro <viro@ZenIV.linux.org.uk>
+Subject: Re: [PATCH v2 06/35] nds32: MMU fault handling and page table
+ management
+Date: Thu, 7 Dec 2017 16:40:41 +0000
+Message-ID: <20171207164040.GD21978@ZenIV.linux.org.uk>
+References: <cover.1511785528.git.green.hu@gmail.com>
+ <ba92adae5d20d99c7c18e75146642a2ccbd5d047.1511785528.git.green.hu@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171207162735.25873-1-andrew.smirnov@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <ba92adae5d20d99c7c18e75146642a2ccbd5d047.1511785528.git.green.hu@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+To: Greentime Hu <green.hu@gmail.com>
+Cc: greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, Vincent Chen <vincentc@andestech.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add code implementing managed version of serdev_device_open() for
-serdev device drivers that "open" the device during driver's lifecycle
-only once (e.g. opened in .probe() and closed in .remove()).
+On Mon, Nov 27, 2017 at 08:27:53PM +0800, Greentime Hu wrote:
+> +void do_page_fault(unsigned long entry, unsigned long addr,
+> +		   unsigned int error_code, struct pt_regs *regs)
+[snip]
+> +	/*
+> +	 * If we're in an interrupt or have no user
+> +	 * context, we must not take the fault..
+> +	 */
+> +	if (unlikely(in_atomic() || !mm))
 
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>
-Cc: cphealy@gmail.com
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
----
- Documentation/driver-model/devres.txt |  3 +++
- drivers/tty/serdev/core.c             | 27 +++++++++++++++++++++++++++
- include/linux/serdev.h                |  1 +
- 3 files changed, 31 insertions(+)
-
-diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
-index c180045eb43b..7c1bb3d0c222 100644
---- a/Documentation/driver-model/devres.txt
-+++ b/Documentation/driver-model/devres.txt
-@@ -384,6 +384,9 @@ RESET
-   devm_reset_control_get()
-   devm_reset_controller_register()
- 
-+SERDEV
-+  devm_serdev_device_open()
-+
- SLAVE DMA ENGINE
-   devm_acpi_dma_controller_register()
- 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 34050b439c1f..28133dbd2808 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -132,6 +132,33 @@ void serdev_device_close(struct serdev_device *serdev)
- }
- EXPORT_SYMBOL_GPL(serdev_device_close);
- 
-+static void devm_serdev_device_release(struct device *dev, void *dr)
-+{
-+	serdev_device_close(*(struct serdev_device **)dr);
-+}
-+
-+int devm_serdev_device_open(struct device *dev, struct serdev_device *serdev)
-+{
-+	struct serdev_device **dr;
-+	int ret;
-+
-+	dr = devres_alloc(devm_serdev_device_release, sizeof(*dr), GFP_KERNEL);
-+	if (!dr)
-+		return -ENOMEM;
-+
-+	ret = serdev_device_open(serdev);
-+	if (ret) {
-+		devres_free(dr);
-+		return ret;
-+	}
-+
-+	*dr = serdev;
-+	devres_add(dev, dr);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(devm_serdev_device_open);
-+
- void serdev_device_write_wakeup(struct serdev_device *serdev)
- {
- 	complete(&serdev->write_comp);
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index e69402d4a8ae..9929063bd45d 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -193,6 +193,7 @@ static inline int serdev_controller_receive_buf(struct serdev_controller *ctrl,
- 
- int serdev_device_open(struct serdev_device *);
- void serdev_device_close(struct serdev_device *);
-+int devm_serdev_device_open(struct device *, struct serdev_device *);
- unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
- void serdev_device_set_flow_control(struct serdev_device *, bool);
- int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
--- 
-2.14.3
+Broken.  in_atomic() is wrong here - it should be faulthandler_disabled().
