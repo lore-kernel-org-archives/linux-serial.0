@@ -1,53 +1,106 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v2 33/35] clocksource/drivers/atcpit100: Add andestech
- atcpit100 timer
-Date: Thu, 7 Dec 2017 09:44:55 +0100
-Message-ID: <f6e29691-a9eb-2b11-9889-dfba9ff71576@linaro.org>
-References: <cover.1511785528.git.green.hu@gmail.com>
- <672e0b3843953d1ab69bc19baf1a0f217ec1b1fa.1511785528.git.green.hu@gmail.com>
+From: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH resend v3] dt-bindings: mvebu-uart: update documentation with extended UART
+Date: Thu,  7 Dec 2017 11:12:59 +0100
+Message-ID: <20171207101259.2213-1-miquel.raynal@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <672e0b3843953d1ab69bc19baf1a0f217ec1b1fa.1511785528.git.green.hu@gmail.com>
-Content-Language: en-US
-Sender: linux-arch-owner@vger.kernel.org
-To: Greentime Hu <green.hu@gmail.com>, greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, linux-serial@vger.kernel.org
-Cc: Rick Chen <rickchen36@gmail.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Antoine Tenart <antoine.tenart-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nadav Haklai <nadavh-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Wilson Ding <dingwei-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 27/11/2017 13:28, Greentime Hu wrote:
-> From: Rick Chen <rickchen36@gmail.com>
-> 
-> ATCPIT100 is often used on the Andes architecture,
-> This timer provide 4 PIT channels. Each PIT channel is a
-> multi-function timer, can be configured as 32,16,8 bit timers
-> or PWM as well.
-> 
-> For system timer it will set channel 1 32-bit timer0 as clock
-> source and count downwards until underflow and restart again.
-> 
-> It also set channel 0 32-bit timer0 as clock event and count
-> downwards until condition match. It will generate an interrupt
-> for handling periodically.
-> 
-> Signed-off-by: Rick Chen <rickchen36@gmail.com>
-> Signed-off-by: Greentime Hu <green.hu@gmail.com>
-> ---
+Update the device tree binding documentation for the Marvell EBU UART,
+in order to allow describing the extended UART IP block, in addition to
+the already supported standard UART IP. This requires adding a new
+compatible string, the introduction of a clocks property, and extensions
+to the interrupts property.
 
-Looks good.
+Signed-off-by: Miquel Raynal <miquel.raynal-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Reviewed-by: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
 
-Please resend this patch folded with the Makefile change and the DT
-binding (fixed) as suggested by Arnd. I will merge them.
+Hello,
 
-Thanks
+Due to a conflict when applying this patch it did not make it to the last
+release. This time it should apply cleanly.
 
-  -- Daniel
+Thanks,
+Miquèl
 
 
+ .../devicetree/bindings/serial/mvebu-uart.txt      | 50 +++++++++++++++++++---
+ 1 file changed, 45 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/mvebu-uart.txt b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
+index d37fabe17bd1..2ae2fee7e023 100644
+--- a/Documentation/devicetree/bindings/serial/mvebu-uart.txt
++++ b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
+@@ -1,13 +1,53 @@
+-* Marvell UART : Non standard UART used in some of Marvell EBU SoCs (e.g., Armada-3700)
++* Marvell UART : Non standard UART used in some of Marvell EBU SoCs
++                 e.g., Armada-3700.
+ 
+ Required properties:
+-- compatible: "marvell,armada-3700-uart"
++- compatible:
++    - "marvell,armada-3700-uart" for the standard variant of the UART
++      (32 bytes FIFO, no DMA, level interrupts, 8-bit access to the
++      FIFO, baudrate limited to 230400).
++    - "marvell,armada-3700-uart-ext" for the extended variant of the
++      UART (128 bytes FIFO, DMA, front interrupts, 8-bit or 32-bit
++      accesses to the FIFO, baudrate unlimited by the dividers).
+ - reg: offset and length of the register set for the device.
+-- interrupts: device interrupt
++- clocks: UART reference clock used to derive the baudrate. If no clock
++      is provided (possible only with the "marvell,armada-3700-uart"
++      compatible string for backward compatibility), it will only work
++      if the baudrate was initialized by the bootloader and no baudrate
++      change will then be possible.
++- interrupts:
++    - Must contain three elements for the standard variant of the IP
++      (marvell,armada-3700-uart): "uart-sum", "uart-tx" and "uart-rx",
++      respectively the UART sum interrupt, the UART TX interrupt and
++      UART RX interrupt. A corresponding interrupt-names property must
++      be defined.
++    - Must contain two elements for the extended variant of the IP
++      (marvell,armada-3700-uart-ext): "uart-tx" and "uart-rx",
++      respectively the UART TX interrupt and the UART RX interrupt. A
++      corresponding interrupts-names property must be defined.
++    - For backward compatibility reasons, a single element interrupts
++      property is also supported for the standard variant of the IP,
++      containing only the UART sum interrupt. This form is deprecated
++      and should no longer be used.
+ 
+ Example:
+-	serial@12000 {
++	uart0: serial@12000 {
+ 		compatible = "marvell,armada-3700-uart";
+ 		reg = <0x12000 0x200>;
+-		interrupts = <43>;
++		clocks = <&xtalclk>;
++		interrupts =
++		<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
++		<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
++		<GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "uart-sum", "uart-tx", "uart-rx";
++	};
++
++	uart1: serial@12200 {
++		compatible = "marvell,armada-3700-uart-ext";
++		reg = <0x12200 0x30>;
++		clocks = <&xtalclk>;
++		interrupts =
++		<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
++		<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
++		interrupt-names = "uart-tx", "uart-rx";
+ 	};
 -- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+2.11.0
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
