@@ -1,47 +1,40 @@
-From: Branislav Radocaj <branislav@radocaj.org>
-Subject: [PATCH] tty: serial: mxs-auart: fix error handling in mxs_auart_probe
-Date: Thu,  7 Dec 2017 14:11:47 +0100
-Message-ID: <20171207131147.14258-1-branislav@radocaj.org>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH v3] serial: 8250: convert to threaded IRQ
+Date: Thu, 7 Dec 2017 14:45:09 +0000
+Message-ID: <20171207144509.482b3e45@alans-desktop>
+References: <20171204152627.23906-1-dzagorui@cisco.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171204152627.23906-1-dzagorui@cisco.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Branislav Radocaj <branislav@radocaj.org>
+To: Denys Zagorui <dzagorui@cisco.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-If uart_add_one_port() fails in mxs_auart_probe, the clks has
-to be disabled.Two clks are previously enabled in mxs_get_clks().
-Found by Linux Driver Verification project (linuxtesting.org).
+On Mon,  4 Dec 2017 17:26:27 +0200
+Denys Zagorui <dzagorui@cisco.com> wrote:
 
-Signed-off-by: Branislav Radocaj <branislav@radocaj.org>
----
- drivers/tty/serial/mxs-auart.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+> During using virtualization it is common to see
+> many "too much work for irq*" messages.
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index efb4fd3784ed..5b470406bf9d 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -1721,7 +1721,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 
- 	ret = uart_add_one_port(&auart_driver, &s->port);
- 	if (ret)
--		goto out_free_gpio_irq;
-+		goto out_disable_clks_free_qpio_irq;
- 
- 	/* ASM9260 don't have version reg */
- 	if (is_asm9260_auart(s)) {
-@@ -1735,7 +1735,11 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
--out_free_gpio_irq:
-+out_disable_clks_free_qpio_irq:
-+	if (s->clk)
-+		clk_disable_unprepare(s->clk_ahb);
-+	if (s->clk_ahb)
-+		clk_disable_unprepare(s->clk_ahb);
- 	mxs_auart_free_gpio_irq(s);
- 	auart_port[pdev->id] = NULL;
- 	return ret;
--- 
-2.11.0
+Your emulator is buggy.
+
+NAK
+
+You are adding a ton of overhead to an absolutely performance critical
+path on real hardware. We absolutely cannot have 16450 or 16550A UARTS
+being serviced via a threaded IRQ.
+
+Fix your emulator. You are getting the problem because your serial port
+emulation isn't doing timing correct queueing of characters. If you are
+modelling 115,200 baud then don't queue characters faster than that or
+batch them excessively. We went to 512 as the pass limit to allow
+virtualization layers to get this right more easily as you don't have to
+do timing on tiny batches.
+
+(And if you need performance of any kind stop using the uart emulation
+and use virtio)
+
+Alan
