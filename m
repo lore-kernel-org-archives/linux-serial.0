@@ -1,41 +1,29 @@
 From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH 2/2] serial: tegra: Fix a typo in a comment line
-Date: Thu, 7 Dec 2017 21:21:15 +0100
-Message-ID: <2b7ff65b-dcb8-996b-1f34-f1bff28bb515@users.sourceforge.net>
-References: <605adc2b-3591-86fc-410a-370f48dfb14e@users.sourceforge.net>
+Subject: [PATCH 0/2] tty/serial/sccnxp: Adjustments for sccnxp_probe()
+Date: Thu, 7 Dec 2017 22:18:02 +0100
+Message-ID: <90e7fa7a-c0e6-4819-9fa6-fae1a71685eb@users.sourceforge.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <605adc2b-3591-86fc-410a-370f48dfb14e@users.sourceforge.net>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Jonathan Hunter <jonathanh@nvidia.com>, Laxman Dewangan <ldewangan@nvidia.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org, trivial@kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Thu, 7 Dec 2017 21:06:25 +0100
+Date: Thu, 7 Dec 2017 22:14:32 +0100
 
-Delete a duplicate character in a word of this description.
+Two update suggestions were taken into account
+from static source code analysis.
 
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
----
- drivers/tty/serial/serial-tegra.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Markus Elfring (2):
+  Delete an error message for a failed memory allocation
+  Improve a size determination
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 46233c5974f1..a731b2d61d3e 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -888,7 +888,7 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
- 	 * EORD is different interrupt than RX_TIMEOUT - RX_TIMEOUT occurs when
- 	 * the DATA is sitting in the FIFO and couldn't be transferred to the
- 	 * DMA as the DMA size alignment(4 bytes) is not met. EORD will be
--	 * triggered when there is a pause of the incomming data stream for 4
-+	 * triggered when there is a pause of the incoming data stream for 4
- 	 * characters long.
- 	 *
- 	 * For pauses in the data which is not aligned to 4 bytes, we get
+ drivers/tty/serial/sccnxp.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
 -- 
 2.15.1
