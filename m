@@ -1,40 +1,54 @@
-From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH v3] serial: 8250: convert to threaded IRQ
-Date: Thu, 7 Dec 2017 14:45:09 +0000
-Message-ID: <20171207144509.482b3e45@alans-desktop>
-References: <20171204152627.23906-1-dzagorui@cisco.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Andrey Smirnov <andrew.smirnov@gmail.com>
+Subject: [PATCH v14 1/5] serdev: Make .remove in struct serdev_device_driver optional
+Date: Thu,  7 Dec 2017 08:27:31 -0800
+Message-ID: <20171207162735.25873-2-andrew.smirnov@gmail.com>
+References: <20171207162735.25873-1-andrew.smirnov@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171204152627.23906-1-dzagorui@cisco.com>
+In-Reply-To: <20171207162735.25873-1-andrew.smirnov@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Denys Zagorui <dzagorui@cisco.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon,  4 Dec 2017 17:26:27 +0200
-Denys Zagorui <dzagorui@cisco.com> wrote:
+Using devres infrastructure it is possible to write a serdev driver
+that doesn't have any code that needs to be called as a part of
+.remove. Add code to make .remove optional.
 
-> During using virtualization it is common to see
-> many "too much work for irq*" messages.
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>
+Cc: cphealy@gmail.com
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Pavel Machek <pavel@ucw.cz>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+---
+ drivers/tty/serdev/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Your emulator is buggy.
-
-NAK
-
-You are adding a ton of overhead to an absolutely performance critical
-path on real hardware. We absolutely cannot have 16450 or 16550A UARTS
-being serviced via a threaded IRQ.
-
-Fix your emulator. You are getting the problem because your serial port
-emulation isn't doing timing correct queueing of characters. If you are
-modelling 115,200 baud then don't queue characters faster than that or
-batch them excessively. We went to 512 as the pass limit to allow
-virtualization layers to get this right more easily as you don't have to
-do timing on tiny batches.
-
-(And if you need performance of any kind stop using the uart emulation
-and use virtio)
-
-Alan
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 1bef39828ca7..34050b439c1f 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -268,8 +268,8 @@ static int serdev_drv_probe(struct device *dev)
+ static int serdev_drv_remove(struct device *dev)
+ {
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+-
+-	sdrv->remove(to_serdev_device(dev));
++	if (sdrv->remove)
++		sdrv->remove(to_serdev_device(dev));
+ 	return 0;
+ }
+ 
+-- 
+2.14.3
