@@ -1,74 +1,70 @@
 From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH 2/3] serial: ioc4: Improve four size determinations
-Date: Fri, 8 Dec 2017 22:52:12 +0100
-Message-ID: <daff34f5-741d-d54c-81ce-aebd962d25c9@users.sourceforge.net>
+Subject: [PATCH 3/3] serial: ioc4: Adjust three function calls together with a
+ variable assignment
+Date: Fri, 8 Dec 2017 22:53:26 +0100
+Message-ID: <0256ab08-9330-26d6-19eb-e3c264c1ff1d@users.sourceforge.net>
 References: <514232dd-7e91-00f9-b95c-3e8f740090ca@users.sourceforge.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <kernel-janitors-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <514232dd-7e91-00f9-b95c-3e8f740090ca@users.sourceforge.net>
 Content-Language: en-GB
-Sender: kernel-janitors-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Pat Gefre <pfg@sgi.com>
 Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Fri, 8 Dec 2017 22:22:25 +0100
+Date: Fri, 8 Dec 2017 22:40:31 +0100
 
-Replace the specification of data structures by pointer dereferences
-as the parameter for the operator "sizeof" to make the corresponding size
-determination a bit safer according to the Linux coding style convention.
+The script "checkpatch.pl" pointed information out like the following.
 
-This issue was detected by using the Coccinelle software.
+ERROR: do not use assignment in if condition
+
+Thus fix the affected source code places.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- drivers/tty/serial/ioc4_serial.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/tty/serial/ioc4_serial.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/ioc4_serial.c b/drivers/tty/serial/ioc4_serial.c
-index 9524a6d3e1d8..6981ad2ca1b7 100644
+index 6981ad2ca1b7..ba95a4cb8130 100644
 --- a/drivers/tty/serial/ioc4_serial.c
 +++ b/drivers/tty/serial/ioc4_serial.c
-@@ -1075,7 +1075,7 @@ static inline int ioc4_attach_local(struct ioc4_driver_data *idd)
- 	/* Create port structures for each port */
- 	for (port_number = 0; port_number < IOC4_NUM_SERIAL_PORTS;
- 							port_number++) {
--		port = kzalloc(sizeof(struct ioc4_port), GFP_KERNEL);
-+		port = kzalloc(sizeof(*port), GFP_KERNEL);
- 		if (!port)
- 			goto free;
- 
-@@ -2797,7 +2797,7 @@ ioc4_serial_attach_one(struct ioc4_driver_data *idd)
- 		ret = -ENODEV;
- 		goto out1;
- 	}
--	serial = ioremap(tmp_addr1, sizeof(struct ioc4_serial));
-+	serial = ioremap(tmp_addr1, sizeof(*serial));
- 	if (!serial) {
- 		printk(KERN_WARNING
- 			 "ioc4 (%p) : unable to remap ioc4 serial register\n",
-@@ -2810,8 +2810,7 @@ ioc4_serial_attach_one(struct ioc4_driver_data *idd)
- 				(void *)serial));
- 
- 	/* Get memory for the new card */
--	control = kzalloc(sizeof(struct ioc4_control), GFP_KERNEL);
+@@ -1945,7 +1945,8 @@ static void handle_intr(void *arg, uint32_t sio_ir)
+ 			 * hasn't been delivered to the cpu yet anyway, even
+ 			 * though we see it as asserted when we read the sio_ir.
+ 			 */
+-			if ((sio_ir = PENDING(port)) & hooks->intr_rx_high) {
++			sio_ir = PENDING(port);
++			if (sio_ir & hooks->intr_rx_high) {
+ 				if ((port->ip_flags & READ_ABORTED) == 0) {
+ 					port->ip_ienb &= ~hooks->intr_rx_high;
+ 					port->ip_flags |= INPUT_HIGH;
+@@ -2902,16 +2903,18 @@ static struct ioc4_submodule ioc4_serial_submodule = {
+  */
+ static int __init ioc4_serial_init(void)
+ {
+-	int ret;
 -
-+	control = kzalloc(sizeof(*control), GFP_KERNEL);
- 	if (!control) {
- 		ret = -ENOMEM;
- 		goto out2;
-@@ -2819,7 +2818,7 @@ ioc4_serial_attach_one(struct ioc4_driver_data *idd)
- 	idd->idd_serial_data = control;
- 
- 	/* Allocate the soft structure */
--	soft = kzalloc(sizeof(struct ioc4_soft), GFP_KERNEL);
-+	soft = kzalloc(sizeof(*soft), GFP_KERNEL);
- 	if (!soft) {
- 		ret = -ENOMEM;
- 		goto out3;
+ 	/* register with serial core */
+-	if ((ret = uart_register_driver(&ioc4_uart_rs232)) < 0) {
++	int ret = uart_register_driver(&ioc4_uart_rs232);
++
++	if (ret < 0) {
+ 		printk(KERN_WARNING
+ 			"%s: Couldn't register rs232 IOC4 serial driver\n",
+ 			__func__);
+ 		goto out;
+ 	}
+-	if ((ret = uart_register_driver(&ioc4_uart_rs422)) < 0) {
++
++	ret = uart_register_driver(&ioc4_uart_rs422);
++	if (ret < 0) {
+ 		printk(KERN_WARNING
+ 			"%s: Couldn't register rs422 IOC4 serial driver\n",
+ 			__func__);
 -- 
 2.15.1
-
