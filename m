@@ -1,29 +1,79 @@
-From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2] serial: tegra: Delete an error message for a failed
- memory allocation in tegra_uart_probe()
-Date: Fri, 8 Dec 2017 15:07:01 +0530
-Message-ID: <cced0e90-61b1-2182-a2b3-327ee9394190@nvidia.com>
-References: <605adc2b-3591-86fc-410a-370f48dfb14e@users.sourceforge.net>
- <aee3d79d-a59e-a3fd-6c6b-45ee46132cc6@users.sourceforge.net>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH v3 17/33] nds32: VDSO support
+Date: Fri, 8 Dec 2017 10:21:49 +0000
+Message-ID: <20171208102149.iqiieszktwzorkuw@lakrids.cambridge.arm.com>
+References: <cover.1512723245.git.green.hu@gmail.com>
+ <921ccfa97c4c13f12c7b22b9554f52dcce51f87e.1512723245.git.green.hu@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <aee3d79d-a59e-a3fd-6c6b-45ee46132cc6-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: SF Markus Elfring <elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <921ccfa97c4c13f12c7b22b9554f52dcce51f87e.1512723245.git.green.hu@gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Greentime Hu <green.hu@gmail.com>
+Cc: greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, geert.uytterhoeven@gmail.com, linus.walleij@linaro.org, greg@kroah.com, Vincent Chen <vincentc@andestech.com>
 List-Id: linux-serial@vger.kernel.org
 
+On Fri, Dec 08, 2017 at 05:12:00PM +0800, Greentime Hu wrote:
+> From: Greentime Hu <greentime@andestech.com>
+> 
+> This patch adds VDSO support. The VDSO code is currently used for
+> sys_rt_sigreturn() and optimised gettimeofday() (using the SoC timer counter).
 
+[...]
 
-On Friday 08 December 2017 01:49 AM, SF Markus Elfring wrote:
-> From: Markus Elfring <elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
-> Date: Thu, 7 Dec 2017 21:00:05 +0100
->
-> Omit an extra message for a memory allocation failure in this function.
->
-> This issue was detected by using the Coccinelle software.
->
+> +static int grab_timer_node_info(void)
+> +{
+> +	struct device_node *timer_node;
+> +
+> +	timer_node = of_find_node_by_name(NULL, "timer");
 
-Acked-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Please use a compatible string, rather than matching the timer by name.
+
+It's plausible that you have multiple nodes called "timer" in the DT,
+under different parent nodes, and this might not be the device you
+think it is. I see your dt in patch 24 has two timer nodes.
+
+It would be best if your clocksource driver exposed some stuct that you
+looked at here, so that you're guaranteed to user the same device.
+
+> +	of_property_read_u32(timer_node, "cycle-count-offset",
+> +			     &vdso_data->cycle_count_offset);
+> +	vdso_data->cycle_count_down =
+> +	    of_property_read_bool(timer_node, "cycle-count-down");
+
+... and then you'd only need to parse these in one place, too.
+
+IIUC these are proeprties for the atcpit device, which has no
+documentation or driver in this series.
+
+So I'm rather confused as to what's going on here.
+
+> +	return of_address_to_resource(timer_node, 0, &timer_res);
+> +}
+
+> +int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
+> +{
+
+> +	/*Map timer to user space */
+> +	vdso_base += PAGE_SIZE;
+> +	prot = __pgprot(_PAGE_V | _PAGE_M_UR_KR | _PAGE_D |
+> +			_PAGE_G | _PAGE_C_DEV);
+> +	ret = io_remap_pfn_range(vma, vdso_base, timer_res.start >> PAGE_SHIFT,
+> +				 PAGE_SIZE, prot);
+> +	if (ret)
+> +		goto up_fail;
+
+Maybe this is fine, but it looks a bit suspicious.
+
+Is it safe to map IO memory to a userspace process like this?
+
+In general that isn't safe, since userspace could access other registers
+(if those exist), perform accesses that change the state of hardware, or
+make unsupported access types (e.g. unaligned, atomic) that result in
+errors the kernel can't handle.
+
+Does none of that apply here?
+
+Thanks,
+Mark.
