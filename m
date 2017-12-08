@@ -1,105 +1,52 @@
-From: Prarit Bhargava <prarit@redhat.com>
-Subject: Re: [PATCH 1/2] acpi, spcr: Make SPCR avialable to other
- architectures
-Date: Fri, 8 Dec 2017 14:42:14 -0500
-Message-ID: <848618dd-86ad-85aa-b7f4-fa700ccf63c3@redhat.com>
-References: <20171207172912.17868-1-prarit@redhat.com>
- <20171207172912.17868-2-prarit@redhat.com>
- <CAOZdJXV4E6gu=Ed6nOCcEp2afe_g8Ot-H5oO5=6+ye51cv9hUg@mail.gmail.com>
+From: =?iso-8859-1?Q?Jan_Kundr=E1t?= <jan.kundrat@cesnet.cz>
+Subject: Re: [PATCH] serial: max310x: Delete an error message for a failed =?iso-8859-1?Q?memory_allocation_in_max310x=5Fprobe()?=
+Date: Fri, 08 Dec 2017 20:52:36 +0100
+Message-ID: <c5d3a5ff-5024-46fd-993c-05f18bada08b@cesnet.cz>
+References: <4153838e-4796-537c-7b7f-98404d4f3481@users.sourceforge.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <CAOZdJXV4E6gu=Ed6nOCcEp2afe_g8Ot-H5oO5=6+ye51cv9hUg@mail.gmail.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Timur Tabi <timur@codeaurora.org>
-Cc: ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, the arch/x86 maintainers <x86@kernel.org>, linux-pm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Bhupesh Sharma <bhsharma@redhat.com>, linux-doc@vger.kernel.org, Will Deacon <will.deacon@arm.com>, lkml <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Lv Zheng <lv.zheng@intel.com>, linux-serial@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jeffrey Hugo <jhugo@codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <4153838e-4796-537c-7b7f-98404d4f3481@users.sourceforge.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: SF Markus Elfring <elfring@users.sourceforge.net>
+Cc: linux-serial@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On p=C3=A1tek 8. prosince 2017 20:00:34 CET, SF Markus Elfring wrote:
+> From: Markus Elfring <elfring@users.sourceforge.net>
+> Date: Fri, 8 Dec 2017 19:53:10 +0100
+>
+> Omit an extra message for a memory allocation failure in this function.
+>
+> This issue was detected by using the Coccinelle software.
+>
+> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+> ---
+>  drivers/tty/serial/max310x.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+> index ecb6513a6505..2aad36f402fd 100644
+> --- a/drivers/tty/serial/max310x.c
+> +++ b/drivers/tty/serial/max310x.c
+> @@ -1102,10 +1102,8 @@ static int max310x_probe(struct device=20
+> *dev, struct max310x_devtype *devtype,
+>  =09/* Alloc port structure */
+>  =09s =3D devm_kzalloc(dev, sizeof(*s) +
+>  =09=09=09 sizeof(struct max310x_one) * devtype->nr, GFP_KERNEL);
+> -=09if (!s) {
+> -=09=09dev_err(dev, "Error allocating port structure\n");
+> +=09if (!s)
+>  =09=09return -ENOMEM;
+> -=09}
+> =20
+>  =09clk_osc =3D devm_clk_get(dev, "osc");
+>  =09clk_xtal =3D devm_clk_get(dev, "xtal");
 
+I'm looking at this patch because I'm also making some modifications to=20
+this driver. This patch makes sense; other drivers also simply return=20
+ENOMEM. Tested on ARM, Armada 388; the "good" code path still obviously=20
+works :).
 
-On 12/07/2017 01:43 PM, Timur Tabi wrote:
-> On Thu, Dec 7, 2017 at 11:29 AM, Prarit Bhargava <prarit@redhat.com> wrote:
->> Other architectures can use SPCR to setup an early console or console but
->> the current code is ARM64 specific.
->>
->> Change the name of parse_spcr() to acpi_parse_spcr().  Add a weak
->> function acpi_arch_setup_console() that can be used for arch-specific
->> setup.  Move SPCR initialization flag into ACPI code.  Update the
->> Documention on the use of the SPCR earlycon.
->>
->> This patch does not change arm64 behaviour.
-> 
-> Let's hope so.  Our E44 erratum work-around has caused lots of
-> problems in the past, so the code is a bit fragile.
-
-So it does look like I broke something :(  I'll fix this and do more testing.
-One thing that I just learned (relative to x86) is that you have to test much
-further and wider than on x86.
-
-P.
-
-> 
->> +static bool qdf2400_erratum_44_present(struct acpi_table_header *h)
->> +{
->> +       if (memcmp(h->oem_id, "QCOM  ", ACPI_OEM_ID_SIZE))
->> +               return false;
->> +
->> +       if (!memcmp(h->oem_table_id, "QDF2432 ", ACPI_OEM_TABLE_ID_SIZE))
->> +               return true;
->> +
->> +       if (!memcmp(h->oem_table_id, "QDF2400 ", ACPI_OEM_TABLE_ID_SIZE) &&
->> +                       h->oem_revision == 1)
->> +               return true;
->> +
->> +       return false;
->> +}
-> 
-> Please give us a chance to test this patch before merging. We've had a
-> lot of problems with our E44 work-around, and we need to make sure
-> that qdf2400_erratum_44_present function is called before the pl011
-> driver is probed.
-> 
->> +
->> +/*
->> + * APM X-Gene v1 and v2 UART hardware is an 16550 like device but has its
->> + * register aligned to 32-bit. In addition, the BIOS also encoded the
->> + * access width to be 8 bits. This function detects this errata condition.
->> + */
->> +static bool xgene_8250_erratum_present(struct acpi_table_spcr *tb)
->> +{
->> +       bool xgene_8250 = false;
->> +
->> +       if (tb->interface_type != ACPI_DBG2_16550_COMPATIBLE)
->> +               return false;
->> +
->> +       if (memcmp(tb->header.oem_id, "APMC0D", ACPI_OEM_ID_SIZE) &&
->> +           memcmp(tb->header.oem_id, "HPE   ", ACPI_OEM_ID_SIZE))
->> +               return false;
->> +
->> +       if (!memcmp(tb->header.oem_table_id, "XGENESPC",
->> +           ACPI_OEM_TABLE_ID_SIZE) && tb->header.oem_revision == 0)
->> +               xgene_8250 = true;
->> +
->> +       if (!memcmp(tb->header.oem_table_id, "ProLiant",
->> +           ACPI_OEM_TABLE_ID_SIZE) && tb->header.oem_revision == 1)
->> +               xgene_8250 = true;
->> +
->> +       return xgene_8250;
->> +}
-> 
-> I suspect that this function has the same issues as
-> qdf2400_erratum_44_present().
-> 
->> +config ACPI_SPCR_TABLE
->> +       bool "ACPI Serial Port Console Redirection Support"
->> +       default y if ARM64
->> +       help
->> +         Enable support for Serial Port Console Redirection (SPCR) Table.
->> +         This table provides information about the configuration of the
->> +         earlycon console.
->> +
-> 
-> So ACPI without SPCR has never been tested by us.  Making it optional
-> makes me a little nervous.  We'll have to evaluate this change.
-> 
+Reviewed-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
