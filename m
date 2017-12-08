@@ -1,34 +1,39 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v3 24/33] nds32: Device tree support
-Date: Fri, 8 Dec 2017 10:27:00 +0000
-Message-ID: <20171208102700.g6wy4suhwmwnd4ix@lakrids.cambridge.arm.com>
-References: <cover.1512723245.git.green.hu@gmail.com>
- <c1083b6f603aeeb13c72c501214e82549404fa5c.1512723245.git.green.hu@gmail.com>
+From: Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH 1/2] serial: tegra: Delete an error message for a failed
+ memory allocation in tegra_uart_probe()
+Date: Fri, 8 Dec 2017 10:42:03 +0000
+Message-ID: <b19da0a2-6164-6c66-c191-576f4d48537e@nvidia.com>
+References: <605adc2b-3591-86fc-410a-370f48dfb14e@users.sourceforge.net>
+ <aee3d79d-a59e-a3fd-6c6b-45ee46132cc6@users.sourceforge.net>
+ <cced0e90-61b1-2182-a2b3-327ee9394190@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <c1083b6f603aeeb13c72c501214e82549404fa5c.1512723245.git.green.hu@gmail.com>
+In-Reply-To: <cced0e90-61b1-2182-a2b3-327ee9394190@nvidia.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greentime Hu <green.hu@gmail.com>
-Cc: greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, geert.uytterhoeven@gmail.com, linus.walleij@linaro.org, greg@kroah.com, Vincent Chen <vincentc@andestech.com>
+To: Laxman Dewangan <ldewangan@nvidia.com>, SF Markus Elfring <elfring@users.sourceforge.net>, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Dec 08, 2017 at 05:12:07PM +0800, Greentime Hu wrote:
-> +	timer0: timer@98400000 {
-> +		compatible = "andestech,atftmr010";
-> +		reg = <0x98400000 0x1000>;
-> +		interrupts = <19>;
-> +		clocks = <&clk_pll>;
-> +		clock-names = "apb_pclk";
-> +		cycle-count-offset = <0x20>;
-> +	};
 
-Looking through the series, I can't find a binding or driver for this
-timer, either.
+On 08/12/17 09:37, Laxman Dewangan wrote:
+> On Friday 08 December 2017 01:49 AM, SF Markus Elfring wrote:
+>> From: Markus Elfring <elfring@users.sourceforge.net>
+>> Date: Thu, 7 Dec 2017 21:00:05 +0100
+>>
+>> Omit an extra message for a memory allocation failure in this function.
+>>
+>> This issue was detected by using the Coccinelle software.
+>>
+> 
+> Acked-by: Laxman Dewangan <ldewangan@nvidia.com>
 
-Does timekeeping work with this series, or are additional patches
-necessary?
+Acked-by: Jon Hunter <jonathanh@nvidia.com>
 
-Thanks,
-Mark.
+Thanks!
+Jon
+
+-- 
+nvpublic
