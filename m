@@ -1,47 +1,36 @@
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH 2/2] serial: sccnxp: Improve a size determination in
- sccnxp_probe()
-Date: Thu, 7 Dec 2017 22:20:23 +0100
-Message-ID: <e52a355c-1b56-dd0e-89e4-d489df5d96dc@users.sourceforge.net>
-References: <90e7fa7a-c0e6-4819-9fa6-fae1a71685eb@users.sourceforge.net>
+From: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 06/35] nds32: MMU fault handling and page table management
+Date: Fri, 8 Dec 2017 13:26:42 +0800
+Message-ID: <CAEbi=3fDHzLv4udGJxFXvb4yxNgs8j81Jm9vm_3e9swjq4hM8A@mail.gmail.com>
+References: <cover.1511785528.git.green.hu@gmail.com> <ba92adae5d20d99c7c18e75146642a2ccbd5d047.1511785528.git.green.hu@gmail.com>
+ <20171207164040.GD21978@ZenIV.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-In-Reply-To: <90e7fa7a-c0e6-4819-9fa6-fae1a71685eb@users.sourceforge.net>
-Content-Language: en-GB
-Sender: kernel-janitors-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20171207164040.GD21978-3bDd1+5oDREiFSDQTTA3OLVCufUGDwFn@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>
+Cc: Greentime <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, DTML <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent Chen <vincentc-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Thu, 7 Dec 2017 22:00:40 +0100
+2017-12-08 0:40 GMT+08:00 Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>:
+> On Mon, Nov 27, 2017 at 08:27:53PM +0800, Greentime Hu wrote:
+>> +void do_page_fault(unsigned long entry, unsigned long addr,
+>> +                unsigned int error_code, struct pt_regs *regs)
+> [snip]
+>> +     /*
+>> +      * If we're in an interrupt or have no user
+>> +      * context, we must not take the fault..
+>> +      */
+>> +     if (unlikely(in_atomic() || !mm))
+>
+> Broken.  in_atomic() is wrong here - it should be faulthandler_disabled().
 
-Replace the specification of a data structure by a pointer dereference
-as the parameter for the operator "sizeof" to make the corresponding size
-determination a bit safer according to the Linux coding style convention.
-
-This issue was detected by using the Coccinelle software.
-
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
----
- drivers/tty/serial/sccnxp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/sccnxp.c b/drivers/tty/serial/sccnxp.c
-index ba1653ba5f37..21be1fb5fd6d 100644
---- a/drivers/tty/serial/sccnxp.c
-+++ b/drivers/tty/serial/sccnxp.c
-@@ -856,7 +856,7 @@ static int sccnxp_probe(struct platform_device *pdev)
- 	if (IS_ERR(membase))
- 		return PTR_ERR(membase);
- 
--	s = devm_kzalloc(&pdev->dev, sizeof(struct sccnxp_port), GFP_KERNEL);
-+	s = devm_kzalloc(&pdev->dev, sizeof(*s), GFP_KERNEL);
- 	if (!s)
- 		return -ENOMEM;
- 
--- 
-2.15.1
-
+Thanks.
+I will include <linux/uaccess.h> and replace in_atomic() with
+faulthandler_disabled()
+I will fix it in the next version patch.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
