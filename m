@@ -1,83 +1,105 @@
-From: Helge Deller <deller@gmx.de>
-Subject: Re: Have my PA8800 back online... (serial port missing on v4.14)
-Date: Fri, 8 Dec 2017 20:06:44 +0100
-Message-ID: <20171208190644.GA22228@ls3530.fritz.box>
-References: <53815372-58e8-70e2-bab4-1777e848cf5e@web.de>
+From: Prarit Bhargava <prarit@redhat.com>
+Subject: Re: [PATCH 1/2] acpi, spcr: Make SPCR avialable to other
+ architectures
+Date: Fri, 8 Dec 2017 14:42:14 -0500
+Message-ID: <848618dd-86ad-85aa-b7f4-fa700ccf63c3@redhat.com>
+References: <20171207172912.17868-1-prarit@redhat.com>
+ <20171207172912.17868-2-prarit@redhat.com>
+ <CAOZdJXV4E6gu=Ed6nOCcEp2afe_g8Ot-H5oO5=6+ye51cv9hUg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-parisc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <53815372-58e8-70e2-bab4-1777e848cf5e@web.de>
-Sender: linux-parisc-owner@vger.kernel.org
-To: Frank Scheiner <frank.scheiner@web.de>, linux-parisc@vger.kernel.org, John David Anglin <dave.anglin@bell.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial@vger.kernel.org
-Cc: debian-hppa@lists.debian.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <CAOZdJXV4E6gu=Ed6nOCcEp2afe_g8Ot-H5oO5=6+ye51cv9hUg@mail.gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Timur Tabi <timur@codeaurora.org>
+Cc: ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, the arch/x86 maintainers <x86@kernel.org>, linux-pm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Bhupesh Sharma <bhsharma@redhat.com>, linux-doc@vger.kernel.org, Will Deacon <will.deacon@arm.com>, lkml <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Lv Zheng <lv.zheng@intel.com>, linux-serial@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jeffrey Hugo <jhugo@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-Adding the linux-serial mailing list:
 
-* Frank Scheiner <frank.scheiner@web.de>:
-> On 12/04/2017 03:54 PM, Helge Deller wrote:
-> > Anyway, the *only* problem we have right now is, that the Linux kernel 4.14 doesn't detect all serial ports which were detected in earlier kernels.
-> > Thus the kernel will talk to the non-existant serial port at 0xfffffffff4050010 instead of 0xfffffffff4050000.
-> > 
-> > 4.13:
-> > [   28.882849] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-> > [   28.898720] 0000:e0:01.0: ttyS0 at MMIO 0xfffffffff4051000 (irq = 73, base_baud = 115200) is a 16450
-> > [   28.934669] 0000:e0:01.1: ttyS1 at MMIO 0xfffffffff4050000 (irq = 73, base_baud = 115200) is a 16550A
-> > [   28.963031] 0000:e0:01.1: ttyS2 at MMIO 0xfffffffff4050010 (irq = 73, base_baud = 115200) is a 16550A
-> > [   28.984946] 0000:e0:01.1: ttyS3 at MMIO 0xfffffffff4050038 (irq = 73, base_baud = 115200) is a 16550A
+
+On 12/07/2017 01:43 PM, Timur Tabi wrote:
+> On Thu, Dec 7, 2017 at 11:29 AM, Prarit Bhargava <prarit@redhat.com> wrote:
+>> Other architectures can use SPCR to setup an early console or console but
+>> the current code is ARM64 specific.
+>>
+>> Change the name of parse_spcr() to acpi_parse_spcr().  Add a weak
+>> function acpi_arch_setup_console() that can be used for arch-specific
+>> setup.  Move SPCR initialization flag into ACPI code.  Update the
+>> Documention on the use of the SPCR earlycon.
+>>
+>> This patch does not change arm64 behaviour.
 > 
-> > 
-> > ...but for v4.14.x only the following serial ports are detected:
-> > [   28.671984] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-> > [   28.708902] 0000:e0:01.1: ttyS0 at MMIO 0xfffffffff4050000 (irq = 73, base_baud = 115200) is a 16550A
-> > [   28.731145] 0000:e0:01.1: ttyS1 at MMIO 0xfffffffff4050010 (irq = 73, base_baud = 115200) is a 16550A
-> > 
-> > 
-> > Maybe reverting this commit brings back the old behavior:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7d8905d064058f4b65057e0101588f362f288bc0
+> Let's hope so.  Our E44 erratum work-around has caused lots of
+> problems in the past, so the code is a bit fragile.
+
+So it does look like I broke something :(  I'll fix this and do more testing.
+One thing that I just learned (relative to x86) is that you have to test much
+further and wider than on x86.
+
+P.
+
 > 
-> I'm unsure about this commit, it speaks more of avoiding duplicate messages
-> for device enabling.
-
-Reverting this commit:
-
-commit 7d8905d064058f4b65057e0101588f362f288bc0
-Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Date:   Mon Jul 24 20:28:32 2017 +0300
-
-    serial: 8250_pci: Enable device after we check black list
-
-indeed fixes the problem.
-
-After reverting, the serial port from the Diva card shows up as ttyS0 (as before).
-With that patch applied, the serial port from the Diva card gets
-ignored and the previous ttyS1 port becomes ttyS0 which then breaks
-booting the parisc machine because the kernel expects the serial port on
-ttyS1.
-
-
-I'm not sure what the best way forward is.
-Fact is, that the patch above changes the behaviour and serial ports
-which were existant before suddenly vanish with kernel 4.14.
-
-This following patch does work, and adds back the Diva serial port on parisc.
-Not sure if it's acceptable though.
-
-Helge
-
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 0c101a7470b0..61319e968e8c 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -3393,6 +3393,10 @@ static int serial_pci_is_class_communication(struct pci_dev *dev)
- 	 * (Should we try to make guesses for multiport serial devices
- 	 * later?)
- 	 */
-+	if (IS_ENABLED(CONFIG_PARISC) &&
-+	    (dev->class >> 8) == PCI_CLASS_COMMUNICATION_OTHER)
-+		return 0;
-+
- 	if ((((dev->class >> 8) != PCI_CLASS_COMMUNICATION_SERIAL) &&
- 	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MODEM)) ||
- 	    (dev->class & 0xff) > 6)
+>> +static bool qdf2400_erratum_44_present(struct acpi_table_header *h)
+>> +{
+>> +       if (memcmp(h->oem_id, "QCOM  ", ACPI_OEM_ID_SIZE))
+>> +               return false;
+>> +
+>> +       if (!memcmp(h->oem_table_id, "QDF2432 ", ACPI_OEM_TABLE_ID_SIZE))
+>> +               return true;
+>> +
+>> +       if (!memcmp(h->oem_table_id, "QDF2400 ", ACPI_OEM_TABLE_ID_SIZE) &&
+>> +                       h->oem_revision == 1)
+>> +               return true;
+>> +
+>> +       return false;
+>> +}
+> 
+> Please give us a chance to test this patch before merging. We've had a
+> lot of problems with our E44 work-around, and we need to make sure
+> that qdf2400_erratum_44_present function is called before the pl011
+> driver is probed.
+> 
+>> +
+>> +/*
+>> + * APM X-Gene v1 and v2 UART hardware is an 16550 like device but has its
+>> + * register aligned to 32-bit. In addition, the BIOS also encoded the
+>> + * access width to be 8 bits. This function detects this errata condition.
+>> + */
+>> +static bool xgene_8250_erratum_present(struct acpi_table_spcr *tb)
+>> +{
+>> +       bool xgene_8250 = false;
+>> +
+>> +       if (tb->interface_type != ACPI_DBG2_16550_COMPATIBLE)
+>> +               return false;
+>> +
+>> +       if (memcmp(tb->header.oem_id, "APMC0D", ACPI_OEM_ID_SIZE) &&
+>> +           memcmp(tb->header.oem_id, "HPE   ", ACPI_OEM_ID_SIZE))
+>> +               return false;
+>> +
+>> +       if (!memcmp(tb->header.oem_table_id, "XGENESPC",
+>> +           ACPI_OEM_TABLE_ID_SIZE) && tb->header.oem_revision == 0)
+>> +               xgene_8250 = true;
+>> +
+>> +       if (!memcmp(tb->header.oem_table_id, "ProLiant",
+>> +           ACPI_OEM_TABLE_ID_SIZE) && tb->header.oem_revision == 1)
+>> +               xgene_8250 = true;
+>> +
+>> +       return xgene_8250;
+>> +}
+> 
+> I suspect that this function has the same issues as
+> qdf2400_erratum_44_present().
+> 
+>> +config ACPI_SPCR_TABLE
+>> +       bool "ACPI Serial Port Console Redirection Support"
+>> +       default y if ARM64
+>> +       help
+>> +         Enable support for Serial Port Console Redirection (SPCR) Table.
+>> +         This table provides information about the configuration of the
+>> +         earlycon console.
+>> +
+> 
+> So ACPI without SPCR has never been tested by us.  Making it optional
+> makes me a little nervous.  We'll have to evaluate this change.
+> 
