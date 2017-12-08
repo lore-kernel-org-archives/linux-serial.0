@@ -1,46 +1,45 @@
 From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH 4/4] serial: pch_uart: Improve a size determination in
- pch_uart_init_port()
-Date: Fri, 8 Dec 2017 19:12:33 +0100
-Message-ID: <db26819b-ac42-9e73-c95c-aecbbd96cd98@users.sourceforge.net>
-References: <f8220e08-da4c-65d6-ecc7-9405cab6f375@users.sourceforge.net>
+Subject: [PATCH] serial: max310x: Delete an error message for a failed memory
+ allocation in max310x_probe()
+Date: Fri, 8 Dec 2017 20:00:34 +0100
+Message-ID: <4153838e-4796-537c-7b7f-98404d4f3481@users.sourceforge.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f8220e08-da4c-65d6-ecc7-9405cab6f375@users.sourceforge.net>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+To: linux-serial@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Fri, 8 Dec 2017 18:53:21 +0100
+Date: Fri, 8 Dec 2017 19:53:10 +0100
 
-Replace the specification of a data structure by a pointer dereference
-as the parameter for the operator "sizeof" to make the corresponding size
-determination a bit safer according to the Linux coding style convention.
+Omit an extra message for a memory allocation failure in this function.
 
 This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- drivers/tty/serial/pch_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/max310x.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 790a7aae331f..1c30309ef02c 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -1747,7 +1747,7 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
- 	board = &drv_dat[id->driver_data];
- 	port_type = board->port_type;
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index ecb6513a6505..2aad36f402fd 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1102,10 +1102,8 @@ static int max310x_probe(struct device *dev, struct max310x_devtype *devtype,
+ 	/* Alloc port structure */
+ 	s = devm_kzalloc(dev, sizeof(*s) +
+ 			 sizeof(struct max310x_one) * devtype->nr, GFP_KERNEL);
+-	if (!s) {
+-		dev_err(dev, "Error allocating port structure\n");
++	if (!s)
+ 		return -ENOMEM;
+-	}
  
--	priv = kzalloc(sizeof(struct eg20t_port), GFP_KERNEL);
-+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
- 	if (priv == NULL)
- 		goto init_port_alloc_err;
- 
+ 	clk_osc = devm_clk_get(dev, "osc");
+ 	clk_xtal = devm_clk_get(dev, "xtal");
 -- 
 2.15.1
