@@ -1,12 +1,14 @@
 From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH 0/3] tty/serial/ioc3: Adjustments for three function
- implementations
-Date: Sat, 9 Dec 2017 19:02:28 +0100
-Message-ID: <962f1172-3f27-c6b5-653f-c09f2e8fe431@users.sourceforge.net>
+Subject: [PATCH 1/3] serial: ioc3: Delete error messages for a failed memory
+ allocation in ioc3uart_probe()
+Date: Sat, 9 Dec 2017 19:03:54 +0100
+Message-ID: <3975ebe3-f1fa-a545-696d-06d701e707cc@users.sourceforge.net>
+References: <962f1172-3f27-c6b5-653f-c09f2e8fe431@users.sourceforge.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <962f1172-3f27-c6b5-653f-c09f2e8fe431@users.sourceforge.net>
 Content-Language: en-GB
 Sender: linux-ia64-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Pat Gefre <pfg@sgi.com>
@@ -14,19 +16,44 @@ Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sat, 9 Dec 2017 19:00:19 +0100
+Date: Sat, 9 Dec 2017 18:34:36 +0100
 
-Three update suggestions were taken into account
-from static source code analysis.
+Omit extra messages for a memory allocation failure in this function.
 
-Markus Elfring (3):
-  Delete error messages for a failed memory allocation in ioc3uart_probe()
-  Improve size determinations in ioc3uart_probe()
-  Adjust two function calls together with a variable assignment
+This issue was detected by using the Coccinelle software.
 
- drivers/tty/serial/ioc3_serial.c | 22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ drivers/tty/serial/ioc3_serial.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/tty/serial/ioc3_serial.c b/drivers/tty/serial/ioc3_serial.c
+index d8a1cdd6a53d..0007c2d65028 100644
+--- a/drivers/tty/serial/ioc3_serial.c
++++ b/drivers/tty/serial/ioc3_serial.c
+@@ -2017,11 +2017,9 @@ ioc3uart_probe(struct ioc3_submodule *is, struct ioc3_driver_data *idd)
+ 	DPRINT_CONFIG(("%s (0x%p, 0x%p)\n", __func__, is, idd));
+ 
+ 	card_ptr = kzalloc(sizeof(struct ioc3_card), GFP_KERNEL);
+-	if (!card_ptr) {
+-		printk(KERN_WARNING "ioc3_attach_one"
+-		       ": unable to get memory for the IOC3\n");
++	if (!card_ptr)
+ 		return -ENOMEM;
+-	}
++
+ 	idd->data[is->id] = card_ptr;
+ 	Submodule_slot = is->id;
+ 
+@@ -2038,8 +2036,6 @@ ioc3uart_probe(struct ioc3_submodule *is, struct ioc3_driver_data *idd)
+ 	for (phys_port = 0; phys_port < PORTS_PER_CARD; phys_port++) {
+ 		port = kzalloc(sizeof(struct ioc3_port), GFP_KERNEL);
+ 		if (!port) {
+-			printk(KERN_WARNING
+-			       "IOC3 serial memory not available for port\n");
+ 			ret = -ENOMEM;
+ 			goto out4;
+ 		}
 -- 
 2.15.1
 
