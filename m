@@ -1,70 +1,40 @@
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH 3/3] serial: ioc4: Adjust three function calls together with a
- variable assignment
-Date: Fri, 8 Dec 2017 22:53:26 +0100
-Message-ID: <0256ab08-9330-26d6-19eb-e3c264c1ff1d@users.sourceforge.net>
-References: <514232dd-7e91-00f9-b95c-3e8f740090ca@users.sourceforge.net>
+From: Rob Landley <rob@landley.net>
+Subject: Re: [PATCH/RFC 5/5] ARM: shmobile: defconfig: Disable CONFIG_EMBEDDED
+Date: Fri, 8 Dec 2017 20:18:40 -0600
+Message-ID: <1ad0fcaa-5edf-9206-4729-d1940842a31a@landley.net>
+References: <1512047522-16312-1-git-send-email-geert+renesas@glider.be>
+ <1512047522-16312-6-git-send-email-geert+renesas@glider.be>
+ <20171201083305.5vhvr6dfrbzemqgc@verge.net.au>
+ <CAMuHMdXSWhXXEzPgp8Y35df7B6G+TUkddRK8=p6T3q+ugDNxCA@mail.gmail.com>
+ <20171205082833.fqwuyvlmupwektny@verge.net.au>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <514232dd-7e91-00f9-b95c-3e8f740090ca@users.sourceforge.net>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Pat Gefre <pfg@sgi.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20171205082833.fqwuyvlmupwektny@verge.net.au>
+Content-Language: en-US
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Magnus Damm <magnus.damm@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "moderated list:H8/300 ARCHITECTURE" <uclinux-h8-devel@lists.sourceforge.jp>, Linux-sh list <linux-sh@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Fri, 8 Dec 2017 22:40:31 +0100
+On 12/05/2017 02:28 AM, Simon Horman wrote:
+> On Mon, Dec 04, 2017 at 10:46:22AM +0100, Geert Uytterhoeven wrote:
+>> Hi Simon,
+>>
+>> On Fri, Dec 1, 2017 at 9:33 AM, Simon Horman <horms@verge.net.au> wrote:
+>>> On Thu, Nov 30, 2017 at 02:12:02PM +0100, Geert Uytterhoeven wrote:
+>>>> CONFIG_EXPERT exposes too many config options that do not matter for
+>>>> development. However, CONFIG_EMBEDDED selects CONFIG_EXPERT, so it
+>>>> cannot be disabled.
+>>>>
+>>>> Hence disable CONFIG_EMBEDDED, and compensate for the loss of
+>>>> CONFIG_DEBUG_KERNEL by enabling the latter.
 
-The script "checkpatch.pl" pointed information out like the following.
+Didn't I already submit a patch to fix this in 2015?
 
-ERROR: do not use assignment in if condition
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=560b8c0ed45a
 
-Thus fix the affected source code places.
+If it came back, it's a regression.
 
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
----
- drivers/tty/serial/ioc4_serial.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/ioc4_serial.c b/drivers/tty/serial/ioc4_serial.c
-index 6981ad2ca1b7..ba95a4cb8130 100644
---- a/drivers/tty/serial/ioc4_serial.c
-+++ b/drivers/tty/serial/ioc4_serial.c
-@@ -1945,7 +1945,8 @@ static void handle_intr(void *arg, uint32_t sio_ir)
- 			 * hasn't been delivered to the cpu yet anyway, even
- 			 * though we see it as asserted when we read the sio_ir.
- 			 */
--			if ((sio_ir = PENDING(port)) & hooks->intr_rx_high) {
-+			sio_ir = PENDING(port);
-+			if (sio_ir & hooks->intr_rx_high) {
- 				if ((port->ip_flags & READ_ABORTED) == 0) {
- 					port->ip_ienb &= ~hooks->intr_rx_high;
- 					port->ip_flags |= INPUT_HIGH;
-@@ -2902,16 +2903,18 @@ static struct ioc4_submodule ioc4_serial_submodule = {
-  */
- static int __init ioc4_serial_init(void)
- {
--	int ret;
--
- 	/* register with serial core */
--	if ((ret = uart_register_driver(&ioc4_uart_rs232)) < 0) {
-+	int ret = uart_register_driver(&ioc4_uart_rs232);
-+
-+	if (ret < 0) {
- 		printk(KERN_WARNING
- 			"%s: Couldn't register rs232 IOC4 serial driver\n",
- 			__func__);
- 		goto out;
- 	}
--	if ((ret = uart_register_driver(&ioc4_uart_rs422)) < 0) {
-+
-+	ret = uart_register_driver(&ioc4_uart_rs422);
-+	if (ret < 0) {
- 		printk(KERN_WARNING
- 			"%s: Couldn't register rs422 IOC4 serial driver\n",
- 			__func__);
--- 
-2.15.1
+Rob
