@@ -1,12 +1,12 @@
 From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH 2/3] serial: ioc3: Improve size determinations in
- ioc3uart_probe()
-Date: Sat, 9 Dec 2017 19:05:13 +0100
-Message-ID: <e1d44286-d7e9-d118-ef02-fd4b1cd3a330@users.sourceforge.net>
+Subject: [PATCH 3/3] serial: ioc3: Adjust two function calls together with a
+ variable assignment
+Date: Sat, 9 Dec 2017 19:06:28 +0100
+Message-ID: <cb8e7643-bc3d-780e-58cf-497874305574@users.sourceforge.net>
 References: <962f1172-3f27-c6b5-653f-c09f2e8fe431@users.sourceforge.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-ia64-owner@vger.kernel.org>
 In-Reply-To: <962f1172-3f27-c6b5-653f-c09f2e8fe431@users.sourceforge.net>
 Content-Language: en-GB
@@ -16,41 +16,48 @@ Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sat, 9 Dec 2017 18:38:13 +0100
+Date: Sat, 9 Dec 2017 18:48:57 +0100
 
-Replace the specification of two data structures by pointer dereferences
-as the parameter for the operator "sizeof" to make the corresponding size
-determination a bit safer according to the Linux coding style convention.
+The script "checkpatch.pl" pointed information out like the following.
 
-This issue was detected by using the Coccinelle software.
+ERROR: do not use assignment in if condition
+
+Thus fix the affected source code places.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- drivers/tty/serial/ioc3_serial.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/ioc3_serial.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/ioc3_serial.c b/drivers/tty/serial/ioc3_serial.c
-index 0007c2d65028..d211bb1407d3 100644
+index d211bb1407d3..0170d6f2bcdf 100644
 --- a/drivers/tty/serial/ioc3_serial.c
 +++ b/drivers/tty/serial/ioc3_serial.c
-@@ -2016,7 +2016,7 @@ ioc3uart_probe(struct ioc3_submodule *is, struct ioc3_driver_data *idd)
- 
- 	DPRINT_CONFIG(("%s (0x%p, 0x%p)\n", __func__, is, idd));
- 
--	card_ptr = kzalloc(sizeof(struct ioc3_card), GFP_KERNEL);
-+	card_ptr = kzalloc(sizeof(*card_ptr), GFP_KERNEL);
- 	if (!card_ptr)
- 		return -ENOMEM;
- 
-@@ -2034,7 +2034,7 @@ ioc3uart_probe(struct ioc3_submodule *is, struct ioc3_driver_data *idd)
- 
- 	/* Create port structures for each port */
- 	for (phys_port = 0; phys_port < PORTS_PER_CARD; phys_port++) {
--		port = kzalloc(sizeof(struct ioc3_port), GFP_KERNEL);
-+		port = kzalloc(sizeof(*port), GFP_KERNEL);
- 		if (!port) {
- 			ret = -ENOMEM;
- 			goto out4;
+@@ -1540,8 +1540,8 @@ ioc3uart_intr_one(struct ioc3_submodule *is,
+ 			 * hasn't been delivered to the cpu yet anyway, even
+ 			 * though we see it as asserted when we read the sio_ir.
+ 			 */
+-			if ((sio_ir = PENDING(card_ptr, idd))
+-					& hooks->intr_rx_high) {
++			sio_ir = PENDING(card_ptr, idd);
++			if (sio_ir & hooks->intr_rx_high) {
+ 				if (port->ip_flags & READ_ABORTED) {
+ 					rx_high_rd_aborted++;
+ 				}
+@@ -2162,10 +2162,10 @@ static struct ioc3_submodule ioc3uart_ops = {
+  */
+ static int __init ioc3uart_init(void)
+ {
+-	int ret;
+-
+ 	/* register with serial core */
+-	if ((ret = uart_register_driver(&ioc3_uart)) < 0) {
++	int ret = uart_register_driver(&ioc3_uart);
++
++	if (ret < 0) {
+ 		printk(KERN_WARNING
+ 		       "%s: Couldn't register IOC3 uart serial driver\n",
+ 		       __func__);
 -- 
 2.15.1
 
