@@ -1,63 +1,31 @@
 From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH 3/3] serial: ioc3: Adjust two function calls together with a
- variable assignment
-Date: Sat, 9 Dec 2017 19:06:28 +0100
-Message-ID: <cb8e7643-bc3d-780e-58cf-497874305574@users.sourceforge.net>
-References: <962f1172-3f27-c6b5-653f-c09f2e8fe431@users.sourceforge.net>
+Subject: [PATCH 0/3] tty/serial/ifx6x60: Adjustments for five function
+ implementations
+Date: Sat, 9 Dec 2017 20:10:15 +0100
+Message-ID: <992f55e5-961d-79ea-a6cd-441ceb3ad058@users.sourceforge.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <962f1172-3f27-c6b5-653f-c09f2e8fe431@users.sourceforge.net>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Language: en-GB
-Sender: linux-ia64-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Pat Gefre <pfg@sgi.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sat, 9 Dec 2017 18:48:57 +0100
+Date: Sat, 9 Dec 2017 20:03:45 +0100
 
-The script "checkpatch.pl" pointed information out like the following.
+Three update suggestions were taken into account
+from static source code analysis.
 
-ERROR: do not use assignment in if condition
+Markus Elfring (3):
+  Delete an error message for a failed memory allocation in ifx_spi_spi_probe()
+  Improve a size determination in ifx_spi_spi_probe()
+  Add some spaces for better code readability
 
-Thus fix the affected source code places.
+ drivers/tty/serial/ifx6x60.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
----
- drivers/tty/serial/ioc3_serial.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/ioc3_serial.c b/drivers/tty/serial/ioc3_serial.c
-index d211bb1407d3..0170d6f2bcdf 100644
---- a/drivers/tty/serial/ioc3_serial.c
-+++ b/drivers/tty/serial/ioc3_serial.c
-@@ -1540,8 +1540,8 @@ ioc3uart_intr_one(struct ioc3_submodule *is,
- 			 * hasn't been delivered to the cpu yet anyway, even
- 			 * though we see it as asserted when we read the sio_ir.
- 			 */
--			if ((sio_ir = PENDING(card_ptr, idd))
--					& hooks->intr_rx_high) {
-+			sio_ir = PENDING(card_ptr, idd);
-+			if (sio_ir & hooks->intr_rx_high) {
- 				if (port->ip_flags & READ_ABORTED) {
- 					rx_high_rd_aborted++;
- 				}
-@@ -2162,10 +2162,10 @@ static struct ioc3_submodule ioc3uart_ops = {
-  */
- static int __init ioc3uart_init(void)
- {
--	int ret;
--
- 	/* register with serial core */
--	if ((ret = uart_register_driver(&ioc3_uart)) < 0) {
-+	int ret = uart_register_driver(&ioc3_uart);
-+
-+	if (ret < 0) {
- 		printk(KERN_WARNING
- 		       "%s: Couldn't register IOC3 uart serial driver\n",
- 		       __func__);
 -- 
 2.15.1
-
