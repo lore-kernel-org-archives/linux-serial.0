@@ -1,43 +1,41 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 32/33] irqchip: Andestech Internal Vector Interrupt
- Controller driver
-Date: Mon, 11 Dec 2017 09:16:11 +0000
-Message-ID: <fed9bc8a-4a07-59ca-1e8b-9007d5ce3acd@arm.com>
-References: <cover.1512723245.git.green.hu@gmail.com>
- <4fb7bd1cd2619287061fd68a38a774c8aef7dbe9.1512723245.git.green.hu@gmail.com>
+From: Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH 0/2] acpi, x86: Add SPCR table support
+Date: Mon, 11 Dec 2017 15:42:18 +0100
+Message-ID: <20171211144218.fcycoxibyln5f44x@gmail.com>
+References: <20171207172912.17868-1-prarit@redhat.com>
+ <20171208062925.64ov23u7oxmdfzyk@gmail.com>
+ <f078ada7-1e30-41cc-28dc-077ed2a5986d@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <4fb7bd1cd2619287061fd68a38a774c8aef7dbe9.1512723245.git.green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-GB
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org, dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org
-Cc: Rick Chen <rick-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <f078ada7-1e30-41cc-28dc-077ed2a5986d@redhat.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Prarit Bhargava <prarit@redhat.com>
+Cc: linux-acpi@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, Bhupesh Sharma <bhsharma@redhat.com>, Lv Zheng <lv.zheng@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
 List-Id: linux-serial@vger.kernel.org
 
-On 08/12/17 09:12, Greentime Hu wrote:
-> From: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
-> 
-> This patch adds the Andestech Internal Vector Interrupt Controller
-> driver. You can find the spec here. Ch4.9 of AndeStar SPA V3 Manual.
-> http://www.andestech.com/product.php?cls=9
-> 
-> Signed-off-by: Rick Chen <rick-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
-> Signed-off-by: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
 
-Reviewed-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+* Prarit Bhargava <prarit@redhat.com> wrote:
 
-Once there is an agreement on this series being fit for mainline, let me
-know how you want to get this merged (either as a whole series, or with
-this driver going through the irq tree).
+> If I disable "Serial Port Console Debug" in my BIOS I still see the SPCR configured:
+> 
+> [root@prarit-lab ~]# dmesg | grep SPCR
+> [    0.000000] ACPI: SPCR 0x0000000069031000 000050 (v01
+> 00000000      00000000)
+> 
+> AFAICT the SPCR is always enabled on some systems.
+
+Fair enough.
+
+> > If so then we should pick up that serial console configuration and activate it, 
+> > regardless of any kernel boot options!
+> 
+> I'm worried about someone who doesn't want a console on ttyS0 suddenly ending up
+> with one.  The SPCR could contain incorrect data, etc.
+
+Yeah, that's not good.
 
 Thanks,
 
-	M.
--- 
-Jazz is not dead. It just smells funny...
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+	Ingo
