@@ -1,146 +1,43 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: Have my PA8800 back online... (serial port missing on v4.14)
-Date: Mon, 11 Dec 2017 10:26:38 +0200
-Message-ID: <1512980798.25007.581.camel@linux.intel.com>
-References: <20171208190644.GA22228@ls3530.fritz.box>
+From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 32/33] irqchip: Andestech Internal Vector Interrupt
+ Controller driver
+Date: Mon, 11 Dec 2017 09:16:11 +0000
+Message-ID: <fed9bc8a-4a07-59ca-1e8b-9007d5ce3acd@arm.com>
+References: <cover.1512723245.git.green.hu@gmail.com>
+ <4fb7bd1cd2619287061fd68a38a774c8aef7dbe9.1512723245.git.green.hu@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <20171208190644.GA22228@ls3530.fritz.box>
-Sender: linux-parisc-owner@vger.kernel.org
-To: Helge Deller <deller@gmx.de>, Frank Scheiner <frank.scheiner@web.de>, linux-parisc@vger.kernel.org, John David Anglin <dave.anglin@bell.net>, linux-serial@vger.kernel.org
-Cc: debian-hppa@lists.debian.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <4fb7bd1cd2619287061fd68a38a774c8aef7dbe9.1512723245.git.green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-GB
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org, dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org
+Cc: Rick Chen <rick-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2017-12-08 at 20:06 +0100, Helge Deller wrote:
-> Adding the linux-serial mailing list:
-
-Thanks for pointing to this out.
-Details are below.
-
-> > > Anyway, the *only* problem we have right now is, that the Linux
-> > > kernel 4.14 doesn't detect all serial ports which were detected in
-> > > earlier kernels.
-
-> > > Thus the kernel will talk to the non-existant serial port at
-> > > 0xfffffffff4050010 instead of 0xfffffffff4050000.
-
-Wait, from this sentence you actually confirm that patch removes *non-
-existant* ports.
-
-Can you elaborate what you imply here?
-
-> > > 4.13:
-> > > [   28.882849] Serial: 8250/16550 driver, 4 ports, IRQ sharing
-> > > enabled
-> > > [   28.898720] 0000:e0:01.0: ttyS0 at MMIO 0xfffffffff4051000 (irq
-> > > = 73, base_baud = 115200) is a 16450
-> > > [   28.934669] 0000:e0:01.1: ttyS1 at MMIO 0xfffffffff4050000 (irq
-> > > = 73, base_baud = 115200) is a 16550A
-> > > [   28.963031] 0000:e0:01.1: ttyS2 at MMIO 0xfffffffff4050010 (irq
-> > > = 73, base_baud = 115200) is a 16550A
-> > > [   28.984946] 0000:e0:01.1: ttyS3 at MMIO 0xfffffffff4050038 (irq
-> > > = 73, base_baud = 115200) is a 16550A
-
->From here it looks like multi-function PCI device with two functions
-with 1 + 3 serial ports each.
-
-> > > ...but for v4.14.x only the following serial ports are detected:
-> > > [   28.671984] Serial: 8250/16550 driver, 4 ports, IRQ sharing
-> > > enabled
-> > > [   28.708902] 0000:e0:01.1: ttyS0 at MMIO 0xfffffffff4050000 (irq
-> > > = 73, base_baud = 115200) is a 16550A
-> > > [   28.731145] 0000:e0:01.1: ttyS1 at MMIO 0xfffffffff4050010 (irq
-> > > = 73, base_baud = 115200) is a 16550A
-
-I'm quite curious how ttyS0 and ttyS3 in previous run (old kernel)
-appear.
-
-> > > 
-> > > 
-> > > Maybe reverting this commit brings back the old behavior:
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> > > /commit/?id=7d8905d064058f4b65057e0101588f362f288bc0
-> > 
-> > I'm unsure about this commit, it speaks more of avoiding duplicate
-> > messages
-> > for device enabling.
-
-No, it's about trying IRQs twice, though it might be not fully clear
-from commit message: the example there shows that IRQs are probed twice
-and on some platforms it may be a problem.
-
+On 08/12/17 09:12, Greentime Hu wrote:
+> From: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
 > 
-> Reverting this commit:
+> This patch adds the Andestech Internal Vector Interrupt Controller
+> driver. You can find the spec here. Ch4.9 of AndeStar SPA V3 Manual.
+> http://www.andestech.com/product.php?cls=9
 > 
-> commit 7d8905d064058f4b65057e0101588f362f288bc0
-> Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Date:   Mon Jul 24 20:28:32 2017 +0300
-> 
->     serial: 8250_pci: Enable device after we check black list
-> 
-> indeed fixes the problem.
-> 
-> After reverting, the serial port from the Diva card shows up as ttyS0
-> (as before).
+> Signed-off-by: Rick Chen <rick-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
+> Signed-off-by: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
 
-> With that patch applied, the serial port from the Diva card gets
-> ignored and the previous ttyS1 port becomes ttyS0 which then breaks
-> booting the parisc machine because the kernel expects the serial port
-> on
-> ttyS1.
+Reviewed-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
 
-> I'm not sure what the best way forward is.
-> Fact is, that the patch above changes the behaviour and serial ports
-> which were existant before suddenly vanish with kernel 4.14.
+Once there is an agreement on this series being fit for mainline, let me
+know how you want to get this merged (either as a whole series, or with
+this driver going through the irq tree).
 
-As stated in the commit message there "We can do this since PCI
-specification requires class, device and vendor ID registers to be
-always present in the configuration space."
+Thanks,
 
-So, my understanding that the patch reveals the issue with these ports.
-
-(Of course, I agree this is regression and needs to be fixed ASAP)
-
-> This following patch does work, and adds back the Diva serial port on
-> parisc.
-
-> Not sure if it's acceptable though.
-
-For me it looks like the best quick solution right now.
-
-The proper one sounds like a specific initialization routine for these
-ports.
-
-Send it as a formal patch and you may add
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-P.S. Sorry, we have no parisc hardware around to test.
-
-> 
-> Helge
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c
-> b/drivers/tty/serial/8250/8250_pci.c
-> index 0c101a7470b0..61319e968e8c 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -3393,6 +3393,10 @@ static int
-> serial_pci_is_class_communication(struct pci_dev *dev)
->  	 * (Should we try to make guesses for multiport serial
-> devices
->  	 * later?)
->  	 */
-> +	if (IS_ENABLED(CONFIG_PARISC) &&
-> +	    (dev->class >> 8) == PCI_CLASS_COMMUNICATION_OTHER)
-> +		return 0;
-> +
->  	if ((((dev->class >> 8) != PCI_CLASS_COMMUNICATION_SERIAL) &&
->  	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MODEM)) ||
->  	    (dev->class & 0xff) > 6)
-
+	M.
 -- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Jazz is not dead. It just smells funny...
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
