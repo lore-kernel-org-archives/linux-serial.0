@@ -1,39 +1,146 @@
-From: Jon Masters <jcm@jonmasters.org>
-Subject: Re: [PATCH 0/2] acpi, x86: Add SPCR table support
-Date: Sun, 10 Dec 2017 15:40:08 -0500
-Message-ID: <d3c46a6f-745c-7643-c55f-781a6ffea8f4@jonmasters.org>
-References: <20171207172912.17868-1-prarit@redhat.com>
- <20171208062925.64ov23u7oxmdfzyk@gmail.com>
- <f078ada7-1e30-41cc-28dc-077ed2a5986d@redhat.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: Have my PA8800 back online... (serial port missing on v4.14)
+Date: Mon, 11 Dec 2017 10:26:38 +0200
+Message-ID: <1512980798.25007.581.camel@linux.intel.com>
+References: <20171208190644.GA22228@ls3530.fritz.box>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <f078ada7-1e30-41cc-28dc-077ed2a5986d@redhat.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Prarit Bhargava <prarit@redhat.com>, Ingo Molnar <mingo@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>, x86@kernel.org, linux-pm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Bhupesh Sharma <bhsharma@redhat.com>, linux-doc@vger.kernel.org, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Lv Zheng <lv.zheng@intel.com>, linux-serial@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <20171208190644.GA22228@ls3530.fritz.box>
+Sender: linux-parisc-owner@vger.kernel.org
+To: Helge Deller <deller@gmx.de>, Frank Scheiner <frank.scheiner@web.de>, linux-parisc@vger.kernel.org, John David Anglin <dave.anglin@bell.net>, linux-serial@vger.kernel.org
+Cc: debian-hppa@lists.debian.org
 List-Id: linux-serial@vger.kernel.org
 
-On 12/08/2017 09:29 AM, Prarit Bhargava wrote:
+On Fri, 2017-12-08 at 20:06 +0100, Helge Deller wrote:
+> Adding the linux-serial mailing list:
 
-> If I disable "Serial Port Console Debug" in my BIOS I still see the SPCR configured:
+Thanks for pointing to this out.
+Details are below.
+
+> > > Anyway, the *only* problem we have right now is, that the Linux
+> > > kernel 4.14 doesn't detect all serial ports which were detected in
+> > > earlier kernels.
+
+> > > Thus the kernel will talk to the non-existant serial port at
+> > > 0xfffffffff4050010 instead of 0xfffffffff4050000.
+
+Wait, from this sentence you actually confirm that patch removes *non-
+existant* ports.
+
+Can you elaborate what you imply here?
+
+> > > 4.13:
+> > > [   28.882849] Serial: 8250/16550 driver, 4 ports, IRQ sharing
+> > > enabled
+> > > [   28.898720] 0000:e0:01.0: ttyS0 at MMIO 0xfffffffff4051000 (irq
+> > > = 73, base_baud = 115200) is a 16450
+> > > [   28.934669] 0000:e0:01.1: ttyS1 at MMIO 0xfffffffff4050000 (irq
+> > > = 73, base_baud = 115200) is a 16550A
+> > > [   28.963031] 0000:e0:01.1: ttyS2 at MMIO 0xfffffffff4050010 (irq
+> > > = 73, base_baud = 115200) is a 16550A
+> > > [   28.984946] 0000:e0:01.1: ttyS3 at MMIO 0xfffffffff4050038 (irq
+> > > = 73, base_baud = 115200) is a 16550A
+
+>From here it looks like multi-function PCI device with two functions
+with 1 + 3 serial ports each.
+
+> > > ...but for v4.14.x only the following serial ports are detected:
+> > > [   28.671984] Serial: 8250/16550 driver, 4 ports, IRQ sharing
+> > > enabled
+> > > [   28.708902] 0000:e0:01.1: ttyS0 at MMIO 0xfffffffff4050000 (irq
+> > > = 73, base_baud = 115200) is a 16550A
+> > > [   28.731145] 0000:e0:01.1: ttyS1 at MMIO 0xfffffffff4050010 (irq
+> > > = 73, base_baud = 115200) is a 16550A
+
+I'm quite curious how ttyS0 and ttyS3 in previous run (old kernel)
+appear.
+
+> > > 
+> > > 
+> > > Maybe reverting this commit brings back the old behavior:
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+> > > /commit/?id=7d8905d064058f4b65057e0101588f362f288bc0
+> > 
+> > I'm unsure about this commit, it speaks more of avoiding duplicate
+> > messages
+> > for device enabling.
+
+No, it's about trying IRQs twice, though it might be not fully clear
+from commit message: the example there shows that IRQs are probed twice
+and on some platforms it may be a problem.
+
 > 
-> [root@prarit-lab ~]# dmesg | grep SPCR
-> [    0.000000] ACPI: SPCR 0x0000000069031000 000050 (v01
-> 00000000      00000000)
+> Reverting this commit:
 > 
-> AFAICT the SPCR is always enabled on some systems.
+> commit 7d8905d064058f4b65057e0101588f362f288bc0
+> Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Date:   Mon Jul 24 20:28:32 2017 +0300
+> 
+>     serial: 8250_pci: Enable device after we check black list
+> 
+> indeed fixes the problem.
+> 
+> After reverting, the serial port from the Diva card shows up as ttyS0
+> (as before).
 
-It's part of some of the Windows design flows that it gets incorporated,
-and it should always be present.
+> With that patch applied, the serial port from the Diva card gets
+> ignored and the previous ttyS1 port becomes ttyS0 which then breaks
+> booting the parisc machine because the kernel expects the serial port
+> on
+> ttyS1.
 
-Jon (not talking about AArch64/ARM/arm/ARMv8-A/64-bit ARM/Go ARM Go).
+> I'm not sure what the best way forward is.
+> Fact is, that the patch above changes the behaviour and serial ports
+> which were existant before suddenly vanish with kernel 4.14.
+
+As stated in the commit message there "We can do this since PCI
+specification requires class, device and vendor ID registers to be
+always present in the configuration space."
+
+So, my understanding that the patch reveals the issue with these ports.
+
+(Of course, I agree this is regression and needs to be fixed ASAP)
+
+> This following patch does work, and adds back the Diva serial port on
+> parisc.
+
+> Not sure if it's acceptable though.
+
+For me it looks like the best quick solution right now.
+
+The proper one sounds like a specific initialization routine for these
+ports.
+
+Send it as a formal patch and you may add
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+P.S. Sorry, we have no parisc hardware around to test.
+
+> 
+> Helge
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c
+> b/drivers/tty/serial/8250/8250_pci.c
+> index 0c101a7470b0..61319e968e8c 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -3393,6 +3393,10 @@ static int
+> serial_pci_is_class_communication(struct pci_dev *dev)
+>  	 * (Should we try to make guesses for multiport serial
+> devices
+>  	 * later?)
+>  	 */
+> +	if (IS_ENABLED(CONFIG_PARISC) &&
+> +	    (dev->class >> 8) == PCI_CLASS_COMMUNICATION_OTHER)
+> +		return 0;
+> +
+>  	if ((((dev->class >> 8) != PCI_CLASS_COMMUNICATION_SERIAL) &&
+>  	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MODEM)) ||
+>  	    (dev->class & 0xff) > 6)
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
