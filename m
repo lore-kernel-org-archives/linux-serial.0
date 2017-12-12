@@ -1,100 +1,115 @@
-From: Troy Kisky <troy.kisky@boundarydevices.com>
-Subject: Re: [PATCH 1/1] tty: serial: imx: allow breaks to be received when
- using dma
-Date: Mon, 11 Dec 2017 12:52:29 -0800
-Message-ID: <fd0a8f31-30db-4a53-6ba1-361e4e9ff170@boundarydevices.com>
-References: <20171020221340.14974-1-troy.kisky@boundarydevices.com>
- <a3f0140a-92bb-ed59-ee79-971385634d4d@boundarydevices.com>
+From: Vincent Chen <deanbo422@gmail.com>
+Subject: Re: [PATCH v3 17/33] nds32: VDSO support
+Date: Tue, 12 Dec 2017 09:58:31 +0800
+Message-ID: <CAJsyPhzQvZ1QTPcE=p3cTv2c9BbjRFCnB1ROoEBqZuRzMraeug@mail.gmail.com>
+References: <cover.1512723245.git.green.hu@gmail.com> <921ccfa97c4c13f12c7b22b9554f52dcce51f87e.1512723245.git.green.hu@gmail.com>
+ <20171208102149.iqiieszktwzorkuw@lakrids.cambridge.arm.com>
+ <CAEbi=3e9Ep4_DL4SSwp15as1t7ALvw-s2gqv+NsuRZiebNGFAQ@mail.gmail.com> <20171208121405.dy6raczdlbxtbnfo@lakrids.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <a3f0140a-92bb-ed59-ee79-971385634d4d@boundarydevices.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org, nandor.han@ge.com
-Cc: linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, l.stach@pengutronix.de
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171208121405.dy6raczdlbxtbnfo@lakrids.cambridge.arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: Greentime Hu <green.hu@gmail.com>, Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, netdev <netdev@vger.kernel.org>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Greg KH <greg@kroah.com>, Vincent Chen <vincentc@andestech.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/20/2017 3:17 PM, Troy Kisky wrote:
-> On 10/20/2017 3:13 PM, Troy Kisky wrote:
->> This allows me to login after sending a break when service
->> serial-getty@ttymxc0.service is running
+2017-12-08 20:14 GMT+08:00 Mark Rutland <mark.rutland@arm.com>:
+> On Fri, Dec 08, 2017 at 07:54:42PM +0800, Greentime Hu wrote:
+>> 2017-12-08 18:21 GMT+08:00 Mark Rutland <mark.rutland@arm.com>:
+>> > On Fri, Dec 08, 2017 at 05:12:00PM +0800, Greentime Hu wrote:
+>> >> +static int grab_timer_node_info(void)
+>> >> +{
+>> >> +     struct device_node *timer_node;
+>> >> +
+>> >> +     timer_node = of_find_node_by_name(NULL, "timer");
+>> >
+>> > Please use a compatible string, rather than matching the timer by name.
+>> >
+>> > It's plausible that you have multiple nodes called "timer" in the DT,
+>> > under different parent nodes, and this might not be the device you
+>> > think it is. I see your dt in patch 24 has two timer nodes.
+>> >
+>> > It would be best if your clocksource driver exposed some stuct that you
+>> > looked at here, so that you're guaranteed to user the same device.
 >>
->> Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
->> ---
->>  drivers/tty/serial/imx.c | 20 +++++++++++++-------
->>  1 file changed, 13 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
->> index 506fcd742b47..39033f460a24 100644
->> --- a/drivers/tty/serial/imx.c
->> +++ b/drivers/tty/serial/imx.c
->> @@ -934,7 +934,6 @@ static void dma_rx_callback(void *data)
->>  	status = dmaengine_tx_status(chan, (dma_cookie_t)0, &state);
->>  
->>  	if (status == DMA_ERROR) {
->> -		dev_err(sport->port.dev, "DMA transaction error.\n");
->>  		clear_rx_errors(sport);
->>  		return;
->>  	}
->> @@ -1035,6 +1034,7 @@ static int start_rx_dma(struct imx_port *sport)
->>  
->>  static void clear_rx_errors(struct imx_port *sport)
->>  {
->> +	struct tty_port *port = &sport->port.state->port;
->>  	unsigned int status_usr1, status_usr2;
->>  
->>  	status_usr1 = readl(sport->port.membase + USR1);
->> @@ -1043,12 +1043,18 @@ static void clear_rx_errors(struct imx_port *sport)
->>  	if (status_usr2 & USR2_BRCD) {
->>  		sport->port.icount.brk++;
->>  		writel(USR2_BRCD, sport->port.membase + USR2);
->> -	} else if (status_usr1 & USR1_FRAMERR) {
->> -		sport->port.icount.frame++;
->> -		writel(USR1_FRAMERR, sport->port.membase + USR1);
->> -	} else if (status_usr1 & USR1_PARITYERR) {
->> -		sport->port.icount.parity++;
->> -		writel(USR1_PARITYERR, sport->port.membase + USR1);
->> +		if (tty_insert_flip_char(port, 0, TTY_BREAK) == 0)
->> +			sport->port.icount.buf_overrun++;
->> +		tty_flip_buffer_push(port);
->> +	} else {
->> +		dev_err(sport->port.dev, "DMA transaction error.\n");
->> +		if (status_usr1 & USR1_FRAMERR) {
->> +			sport->port.icount.frame++;
->> +			writel(USR1_FRAMERR, sport->port.membase + USR1);
->> +		} else if (status_usr1 & USR1_PARITYERR) {
->> +			sport->port.icount.parity++;
->> +			writel(USR1_PARITYERR, sport->port.membase + USR1);
->> +		}
->>  	}
->>  
->>  	if (status_usr2 & USR2_ORE) {
->>
-> 
-> 
-> 
-> Does this need to use
->  	spin_lock_irqsave(&sport->port.lock, flags);
-> 
-> 
-> I would have, but dma_rx_callback doesn't.
-> 
-> BR
-> Troy
-> 
-> 
+>> We'd like to use "timer" here because there are 2 different timer IPs
+>> and we are sure that they won't be in the same SoC.
+>> We think this implementation in VDSO should be platform independent to
+>> get cycle-count register.
+>> Our customer or other SoC provider who can use "timer" and define
+>> cycle-count-offset or cycle-count-down then we can get the correct
+>> cycle-count.
+>
+> This is not the right way to do things.
+>
+> So from a DT perspective, NAK.
+>
+> You should not add properties to arbitrary DT bindings to handle a Linux
+> implementation detail.
+>
+> Please remove this DT code, and have the drivers for those timer blocks
+> export this information to your vdso code somehow.
+>
 
-I think the path is fine as is. Should I send a rebased version ?
+Hi, Mark:
+Based on your suggestion, we define a new sturct timer_info to let
+timer driver record the value
+of cycle-count-offset and cycle-count-down in timer_init function. The
+above code in timer driver
+is validate only when CONFIG_NDS32 is defined.
 
-Thanks
-Troy
+>> We sent atcpit100 patch last time along with our arch, however we'd
+>> like to send it to its sub system this time and my colleague is still
+>> working on it.
+>> He may send the timer patch next week.
+>
+> I think that it would make sense for that patch to be part of the arch
+> port, especially given that (AFAICT) there is no dirver for the other
+> timer IP that you mention.
+>
+> [...]
+>
+>> >> +int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
+>> >> +{
+>> >
+>> >> +     /*Map timer to user space */
+>> >> +     vdso_base += PAGE_SIZE;
+>> >> +     prot = __pgprot(_PAGE_V | _PAGE_M_UR_KR | _PAGE_D |
+>> >> +                     _PAGE_G | _PAGE_C_DEV);
+>> >> +     ret = io_remap_pfn_range(vma, vdso_base, timer_res.start >> PAGE_SHIFT,
+>> >> +                              PAGE_SIZE, prot);
+>> >> +     if (ret)
+>> >> +             goto up_fail;
+>> >
+>> > Maybe this is fine, but it looks a bit suspicious.
+>> >
+>> > Is it safe to map IO memory to a userspace process like this?
+>> >
+>> > In general that isn't safe, since userspace could access other registers
+>> > (if those exist), perform accesses that change the state of hardware, or
+>> > make unsupported access types (e.g. unaligned, atomic) that result in
+>> > errors the kernel can't handle.
+>> >
+>> > Does none of that apply here?
+>>
+>> We only provide read permission to this page so hareware state won't
+>> be chagned. It will trigger exception if we try to write.
+>> We will check about the alignment/atomic issue of this region.
+>
+
+For alignment issue, we intentionally make an un-alignment read to
+access this region and we
+got "Segmentation fault" as expected.
+
+
+Thanks,
+Vincent
+
+> Ok, thanks.
+>
+> This is another reason to only do this for devices/drivers that we have
+> drivers for, since we can't know that this is safe in general.
+>
+> Thanks,
+> Mark.
