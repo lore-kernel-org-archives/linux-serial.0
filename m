@@ -1,42 +1,31 @@
-From: Christian Borntraeger <borntraeger@de.ibm.com>
-Subject: Re: [PATCH] serial: forbid 8250 on s390
-Date: Tue, 12 Dec 2017 18:50:47 +0100
-Message-ID: <cc32ef2c-e940-cfd6-e2e7-f83d013951ea@de.ibm.com>
-References: <20171212080835.23610-1-borntraeger@de.ibm.com>
- <20171212155032.2d5ece72@alans-desktop>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 29/33] dt-bindings: nds32 CPU Bindings
+Date: Tue, 12 Dec 2017 14:10:41 -0600
+Message-ID: <20171212201041.zqapomt7kdte2qvt@rob-hp-laptop>
+References: <cover.1512723245.git.green.hu@gmail.com>
+ <b082ead87b647f6f0797e51d3ceeaf6c87038dd1.1512723245.git.green.hu@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171212155032.2d5ece72@alans-desktop>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <b082ead87b647f6f0797e51d3ceeaf6c87038dd1.1512723245.git.green.hu@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Greentime Hu <green.hu@gmail.com>
+Cc: greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, geert.uytterhoeven@gmail.com, linus.walleij@linaro.org, mark.rutland@arm.com, greg@kroah.com, Vincent Chen <vincentc@andestech.com>, Rick Chen <rick@andestech.com>, Zong Li <zong@andestech.com>
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 12/12/2017 04:50 PM, Alan Cox wrote:
-> On Tue, 12 Dec 2017 09:08:35 +0100
-> Christian Borntraeger <borntraeger@de.ibm.com> wrote:
+On Fri, Dec 08, 2017 at 05:12:12PM +0800, Greentime Hu wrote:
+> From: Greentime Hu <greentime@andestech.com>
 > 
->> Using "make kvmconfig" results in a potentially unusable linux image
->> on s390.  The reason is that both the (default on s390) sclp consoles
->> as well as the 8250 console register a ttyS<x> as console. Since there
->> will be no 8250 on s390 let's fence 8250. This will ensure that there
->> is always a working sclp console.
+> This patch adds nds32 CPU binding documents.
 > 
-> And there is no physical way to attach a PCI express UART to a 390 ?
+> Signed-off-by: Vincent Chen <vincentc@andestech.com>
+> Signed-off-by: Rick Chen <rick@andestech.com>
+> Signed-off-by: Zong Li <zong@andestech.com>
+> Signed-off-by: Greentime Hu <greentime@andestech.com>
+> ---
+>  Documentation/devicetree/bindings/nds32/cpus.txt |   37 ++++++++++++++++++++++
+>  1 file changed, 37 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/nds32/cpus.txt
 
-There is (some sort of) PCI but these cards are packaged in ibm specific I/O cages.
-So someone would need to apply some some serious hardware and firmware hacking (since
-only IBM-approved PCi cards are allowed) and you would need to have an MSI-capable
-8250 as well as an MSI capable driver. (we only support MSI, no classic interrupts)
-In addition to that that 8250 probably needs to support virtual functions since we always
-run with LPARs.
-And even if we can solve all these issues I would say it really does not make any sense at
-all, while the current situation obviously breaks the use case "make kvmconfig"
-
-So unless IBM sees some serious business case for 8250, I am inclined to answer you
-question with "no" :-)
+Reviewed-by: Rob Herring <robh@kernel.org>                  
