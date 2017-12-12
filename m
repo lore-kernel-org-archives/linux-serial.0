@@ -1,64 +1,37 @@
-From: Rick Chen <rickchen36@gmail.com>
-Subject: [PATCH v5 3/3] dt-bindings: timer: Add andestech atcpit100 timer binding doc
-Date: Tue, 12 Dec 2017 13:47:01 +0800
-Message-ID: <1513057621-19084-4-git-send-email-rickchen36@gmail.com>
-References: <1513057621-19084-1-git-send-email-rickchen36@gmail.com>
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <1513057621-19084-1-git-send-email-rickchen36@gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: rickchen36@gmail.com, rick@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linus.walleij@linaro.org, daniel.lezcano@linaro.org, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, linux-serial@vger.kernel.org
-Cc: Greentime Hu <green.hu@gmail.com>
+From: Christian Borntraeger <borntraeger@de.ibm.com>
+Subject: [PATCH] serial: forbid 8250 on s390
+Date: Tue, 12 Dec 2017 09:08:35 +0100
+Message-ID: <20171212080835.23610-1-borntraeger@de.ibm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org, Christian Borntraeger <borntraeger@de.ibm.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add a document to describe Andestech atcpit100 timer and
-binding information.
+Using "make kvmconfig" results in a potentially unusable linux image
+on s390.  The reason is that both the (default on s390) sclp consoles
+as well as the 8250 console register a ttyS<x> as console. Since there
+will be no 8250 on s390 let's fence 8250. This will ensure that there
+is always a working sclp console.
 
-Signed-off-by: Rick Chen <rickchen36@gmail.com>
-Signed-off-by: Greentime Hu <green.hu@gmail.com>
-Acked-by: Rob Herring <robh@kernel.org>
+Reported-by: Alice Frosi <alice@linux.vnet.ibm.com>
+Signed-off-by: Christian Borntraeger <borntraeger@de.ibm.com>
+Reviewed-by: Hendrik Brueckner <brueckner@linux.vnet.ibm.com>
 ---
- .../bindings/timer/andestech,atcpit100-timer.txt   | 33 ++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/timer/andestech,atcpit100-timer.txt
+ drivers/tty/serial/8250/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/timer/andestech,atcpit100-timer.txt b/Documentation/devicetree/bindings/timer/andestech,atcpit100-timer.txt
-new file mode 100644
-index 0000000..14812f68
---- /dev/null
-+++ b/Documentation/devicetree/bindings/timer/andestech,atcpit100-timer.txt
-@@ -0,0 +1,33 @@
-+Andestech ATCPIT100 timer
-+------------------------------------------------------------------
-+ATCPIT100 is a generic IP block from Andes Technology, embedded in
-+Andestech AE3XX platforms and other designs.
-+
-+This timer is a set of compact multi-function timers, which can be
-+used as pulse width modulators (PWM) as well as simple timers.
-+
-+It supports up to 4 PIT channels. Each PIT channel is a
-+multi-function timer and provide the following usage scenarios:
-+One 32-bit timer
-+Two 16-bit timers
-+Four 8-bit timers
-+One 16-bit PWM
-+One 16-bit timer and one 8-bit PWM
-+Two 8-bit timer and one 8-bit PWM
-+
-+Required properties:
-+- compatible	: Should be "andestech,atcpit100"
-+- reg		: Address and length of the register set
-+- interrupts	: Reference to the timer interrupt
-+- clocks : a clock to provide the tick rate for "andestech,atcpit100"
-+- clock-names : should be "PCLK" for the peripheral clock source.
-+
-+Examples:
-+
-+timer0: timer@f0400000 {
-+	compatible = "andestech,atcpit100";
-+	reg = <0xf0400000 0x1000>;
-+	interrupts = <2 4>;
-+	clocks = <&apb>;
-+	clock-names = "PCLK";
-+};
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index a5c0ef1..16b1496 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -5,6 +5,7 @@
+ 
+ config SERIAL_8250
+ 	tristate "8250/16550 and compatible serial support"
++	depends on !S390
+ 	select SERIAL_CORE
+ 	---help---
+ 	  This selects whether you want to include the driver for the standard
 -- 
-2.7.4
+2.9.4
