@@ -1,107 +1,65 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v5 1/3] clocksource/drivers/atcpit100: Add andestech
- atcpit100 timer
-Date: Tue, 12 Dec 2017 11:05:48 +0100
-Message-ID: <bb7383ba-bb8e-3cbd-4ce0-faaefa8ed114@linaro.org>
-References: <1513057621-19084-1-git-send-email-rickchen36@gmail.com>
- <1513057621-19084-2-git-send-email-rickchen36@gmail.com>
+From: Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH v2 2/2] acpi, x86: Use SPCR table for earlycon on x86
+Date: Tue, 12 Dec 2017 11:41:14 +0100
+Message-ID: <20171212104114.nddfrykzhezmngnl@gmail.com>
+References: <20171211155059.17062-1-prarit@redhat.com>
+ <20171211155059.17062-3-prarit@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <1513057621-19084-2-git-send-email-rickchen36@gmail.com>
-Content-Language: en-US
-Sender: linux-arch-owner@vger.kernel.org
-To: Rick Chen <rickchen36@gmail.com>, rick@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linus.walleij@linaro.org, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, linux-serial@vger.kernel.org
-Cc: Greentime Hu <green.hu@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20171211155059.17062-3-prarit@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Prarit Bhargava <prarit@redhat.com>
+Cc: linux-acpi@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, Bhupesh Sharma <bhsharma@redhat.com>, Lv Zheng <lv.zheng@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Timur Tabi <timur@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 12/12/2017 06:46, Rick Chen wrote:
-> ATCPIT100 is often used on the Andes architecture,
-> This timer provide 4 PIT channels. Each PIT channel is a
-> multi-function timer, can be configured as 32,16,8 bit timers
-> or PWM as well.
+
+* Prarit Bhargava <prarit@redhat.com> wrote:
+
+> The ACPI SPCR code has been used to define an earlycon console for ARM64
+> and can be used for x86.
 > 
-> For system timer it will set channel 1 32-bit timer0 as clock
-> source and count downwards until underflow and restart again.
+> Modify the ACPI SPCR parsing code to account for console behaviour
+> differences between ARM64 and x86.  Initialize the SPCR code from
+> x86 ACPI initialization code.
+> 
+> Signed-off-by: Prarit Bhargava <prarit@redhat.com>
+> Cc: linux-doc@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-acpi@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: Bhupesh Sharma <bhsharma@redhat.com>
+> Cc: Lv Zheng <lv.zheng@intel.com>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: "H. Peter Anvin" <hpa@zytor.com>
+> Cc: x86@kernel.org
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+> Cc: Timur Tabi <timur@codeaurora.org>
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt | 3 +++
+>  arch/arm64/kernel/acpi.c                        | 2 +-
+>  arch/x86/kernel/acpi/boot.c                     | 4 ++++
+>  drivers/acpi/Kconfig                            | 2 +-
+>  drivers/acpi/spcr.c                             | 7 +++++--
+>  include/linux/acpi.h                            | 7 +++++--
+>  6 files changed, 19 insertions(+), 6 deletions(-)
 
-[ ... ]
+LGTM from an x86 perspective:
 
-> +config CLKSRC_ATCPIT100
-> +	bool "Clocksource for AE3XX platform"
-> +	depends on NDS32 || COMPILE_TEST
-> +	depends on HAS_IOMEM
-> +	help
-> +	  This option enables support for the Andestech AE3XX platform timers.
+  Acked-by: Ingo Molnar <mingo@kernel.org>
 
-Hi Rick,
+(assuming it causes no regressions in linux-next.)
 
-the general rule for the Kconfig is:
+Since patch #1 affects ARM64 significantly, once that patch is acceptable to the 
+arm64 folks feel free to upstream this second patch via the ARM64 tree as well.
 
-bool "Clocksource for AE3XX platform" if COMPILE_TEST
+Thanks,
 
-and no deps on the platform.
-
-It is up to the platform Kconfig to select the option.
-
-We want here a silent option but make it selectable in case of
-compilation test coverage.
-
-Also, this driver is not a CLKSRC but a TIMER. Rename CLKSRC_ATCPIT100
-to TIMER_ATCPIT100.
-
-> +
->  endmenu
-> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
-> index 72711f1..7d072f5 100644
-> --- a/drivers/clocksource/Makefile
-> +++ b/drivers/clocksource/Makefile
-> @@ -75,3 +75,4 @@ obj-$(CONFIG_H8300_TMR16)		+= h8300_timer16.o
->  obj-$(CONFIG_H8300_TPU)			+= h8300_tpu.o
->  obj-$(CONFIG_CLKSRC_ST_LPC)		+= clksrc_st_lpc.o
->  obj-$(CONFIG_X86_NUMACHIP)		+= numachip.o
-> +obj-$(CONFIG_CLKSRC_ATCPIT100)		+= timer-atcpit100.o
-
-[ ... ]
-
-> +static struct timer_of to = {
-> +	.flags = TIMER_OF_IRQ | TIMER_OF_CLOCK | TIMER_OF_BASE,
-> +
-> +	.clkevt = {
-> +		.name = "atcpit100_tick",
-> +		.rating = 300,
-> +		.features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
-> +		.set_state_shutdown = atcpit100_clkevt_shutdown,
-> +		.set_state_periodic = atcpit100_clkevt_set_periodic,
-> +		.set_state_oneshot = atcpit100_clkevt_set_oneshot,
-> +		.tick_resume = atcpit100_clkevt_shutdown,
-> +		.set_next_event = atcpit100_clkevt_next_event,
-> +		.cpumask = cpu_all_mask,
-
-You may consider CLOCK_EVT_DYN_IRQ
-https://lwn.net/Articles/540160/
-
-> +	},
-> +
-> +	.of_irq = {
-> +		.handler = atcpit100_timer_interrupt,
-> +		.flags = IRQF_TIMER | IRQF_IRQPOLL,
-> +	},
-> +
-> +	/*
-> +	 * FIXME: we currently only support clocking using PCLK
-> +	 * and using EXTCLK is not supported in the driver.
-> +	 */
-> +	.of_clk = {
-> +		.name = "PCLK",
-> +	}
-
-What do you mean ? We can't specify several clock names with timer-of?
-
-
--- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+	Ingo
