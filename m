@@ -1,59 +1,71 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: Have my PA8800 back online... (serial port missing on v4.14)
-Date: Wed, 13 Dec 2017 17:16:50 +0200
-Message-ID: <1513178210.7000.34.camel@linux.intel.com>
-References: <20171208190644.GA22228@ls3530.fritz.box>
-         <1512980798.25007.581.camel@linux.intel.com>
-         <43eb21b5-75d9-1142-1307-c2e2d218b362@gmx.de>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: Re: [PATCH v2 1/2] acpi, spcr: Make SPCR avialable to other
+ architectures
+Date: Wed, 13 Dec 2017 15:11:33 -0600
+Message-ID: <d967861e-9f83-689c-2b14-58d7450c848b@codeaurora.org>
+References: <20171211155059.17062-1-prarit@redhat.com>
+ <20171211155059.17062-2-prarit@redhat.com> <20171213124533.GA32362@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <43eb21b5-75d9-1142-1307-c2e2d218b362@gmx.de>
-Sender: linux-parisc-owner@vger.kernel.org
-To: Helge Deller <deller@gmx.de>, Frank Scheiner <frank.scheiner@web.de>, linux-parisc@vger.kernel.org, John David Anglin <dave.anglin@bell.net>, linux-serial@vger.kernel.org
-Cc: debian-hppa@lists.debian.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20171213124533.GA32362@red-moon>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Prarit Bhargava <prarit@redhat.com>
+Cc: linux-acpi@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, Bhupesh Sharma <bhsharma@redhat.com>, Lv Zheng <lv.zheng@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, graeme.gregory@linaro.org, mark.salter@redhat.com
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2017-12-12 at 21:11 +0100, Helge Deller wrote:
-> On 11.12.2017 09:26, Andy Shevchenko wrote:
-> > On Fri, 2017-12-08 at 20:06 +0100, Helge Deller wrote:
-
-> Before your patch this check was inside the function
-> serial_pci_guess_board()
-> and if (ent->driver_data != pbn_default) the pci serial port got
-> registered 
-> and initialized *even* if it's *not* of class SERIAL or MODEM.
-
-Ah, okay, it explains indeed.
-Though PCI devices with wrong class should have their own quirks for my
-p.o.v.
-
-> > (Of course, I agree this is regression and needs to be fixed ASAP)
+On 12/13/2017 06:45 AM, Lorenzo Pieralisi wrote:
+>> +/*
+>> + * Erratum 44 for QDF2432v1 and QDF2400v1 SoCs describes the BUSY bit as
+>> + * occasionally getting stuck as 1. To avoid the potential for a hang, check
+>> + * TXFE == 0 instead of BUSY == 1. This may not be suitable for all UART
+>> + * implementations, so only do so if an affected platform is detected in
+>> + * acpi_parse_spcr().
+>> + */
+>> +bool qdf2400_e44_present;
+>> +EXPORT_SYMBOL(qdf2400_e44_present);
 > 
-> I don't know if it's easy to fix without reverting your patch.
+> My eyes, this is horrible but it is not introduced by this patch. It
+> would have been much better if:
+> 
+> drivers/tty/serial/amba-pl011.c
+> 
+> parsed the SPCR table (again) to detect it instead of relying on this
+> horrible exported flag.
 
-As I explained earlier it's about pci_enable_device() called twice for
-the same device which basically calls pcibios_enable_irq() twice which
-might be a problem on some platforms. (At least I have such use case).
-Perhaps it's possible to workaround the issue on those platforms, though
-I didn't come up with the better solution that time.
+I didn't want to put any ACPI code in amba-pl011.c, so putting it in 
+spcr.c made the most sense.  I agree the global variable is ugly.  If 
+you have a better idea, I'm all ears.
 
-> Thanks for the offer to accept this patch, but maybe we are able
-> to come up with another patch which simply hides those unsupported
-> devices (serial port and ATI graphics card device on the Diva card).
-> I posted a proposed patch here:
-> http://www.spinics.net/lists/linux-parisc/msg08187.html
+If it's any consolation, this erratum affects only 1.x silicon, which is 
+technically pre-production (although a lot of people have them).  This 
+work-around will eventually be reverted.
 
-Reading briefly that one I guess it's even better (now I realized you
-even do not have connectors of those devices outside).
+>> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
+>> index 46505396869e..9ae98eeada76 100644
+>> --- a/drivers/acpi/Kconfig
+>> +++ b/drivers/acpi/Kconfig
+>> @@ -79,7 +79,12 @@ config ACPI_DEBUGGER_USER
+>>   endif
+>>   
+>>   config ACPI_SPCR_TABLE
+>> -	bool
+>> +	bool "ACPI Serial Port Console Redirection Support"
+>> +	default y if ARM64
+> 
+> You need to remove the selection in arch/arm64 then. Also, moving away
+> from a non-visible config may have consequences on ARM64, Graeme and
+> Mark are more familiar with the SPCR dependencies so please chime in.
 
-> But I wonder if we are the only platform which notice this different
-> behavior now. I assume others will notice it soon too.
+I did raise this as a concern in the previous version of the patch.  I 
+also think it should not be a selectable option.
 
-Why so? Most of the 8250 PCI devices are enumerated by class. Others
-have no such misclassification.
+Keeping the "select" does force SPCR to be enabled on ARM64 ACPI 
+platforms, but if it's an option for x86, it should be an option for ARM.
 
 -- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm
+Technologies, Inc.  Qualcomm Technologies, Inc. is a member of the
+Code Aurora Forum, a Linux Foundation Collaborative Project.
