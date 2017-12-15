@@ -1,32 +1,69 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH  1/2] serial: stm32: add default console
-Date: Fri, 15 Dec 2017 20:25:17 +0100
-Message-ID: <20171215192517.GA27395@kroah.com>
-References: <1512146211-29086-1-git-send-email-ludovic.Barre@st.com>
- <1512146211-29086-2-git-send-email-ludovic.Barre@st.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 8/8] serdev: ttyport: do not used keyed wakeup in
+ write_wakeup
+Date: Fri, 15 Dec 2017 20:26:08 +0100
+Message-ID: <20171215192608.GB27395@kroah.com>
+References: <20171103143059.20749-1-johan@kernel.org>
+ <20171103143059.20749-9-johan@kernel.org>
+ <20171128150418.GA3341@kroah.com>
+ <20171128151629.GA8177@localhost>
+ <20171128193926.GA1696@kroah.com>
+ <20171129094802.GA2708@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1512146211-29086-2-git-send-email-ludovic.Barre-qxv4g6HH51o@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Ludovic Barre <ludovic.Barre-qxv4g6HH51o@public.gmane.org>
-Cc: Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Maxime Coquelin <mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Torgue <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20171129094802.GA2708@localhost>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Johan Hovold <johan@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Dec 01, 2017 at 05:36:50PM +0100, Ludovic Barre wrote:
-> From: Ludovic Barre <ludovic.barre-qxv4g6HH51o@public.gmane.org>
+On Wed, Nov 29, 2017 at 10:48:02AM +0100, Johan Hovold wrote:
+> On Tue, Nov 28, 2017 at 08:39:26PM +0100, Greg Kroah-Hartman wrote:
+> > On Tue, Nov 28, 2017 at 04:16:29PM +0100, Johan Hovold wrote:
+> > > On Tue, Nov 28, 2017 at 04:04:18PM +0100, Greg Kroah-Hartman wrote:
+> > > > On Fri, Nov 03, 2017 at 03:30:59PM +0100, Johan Hovold wrote:
+> > > > > Serdev does not use the file abstraction and specifically there will
+> > > > > never be anyone polling a file descriptor for POLLOUT events.
+> > > > > 
+> > > > > Just use plain wake_up_interruptible() in the write_wakeup callback and
+> > > > > document why it's there.
+> > > > > 
+> > > > > Signed-off-by: Johan Hovold <johan@kernel.org>
+> > > > > ---
+> > > > >  drivers/tty/serdev/serdev-ttyport.c | 3 ++-
+> > > > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > > 
+> > > > This patch didn't apply, perhaps because I split this series across my
+> > > > "for-next" and "for-linus" branches?
+> > > 
+> > > That's right, this one depends on patch 4/8.
+> > > 
+> > > Perhaps you can take also this one through tty-linus? Or even better,
+> > > just take the whole series through tty-linus?
+> > 
+> > They all didn't feel like patches to go in after -rc1, right?
+> > Documentation updates?  Minor tweaks?  Would you want to defend them?
+> > :)
 > 
-> This patch adds by default the console support
-> on stm32.
+> I agree that it's borderline, but the documentation update (patch 3/8)
+> is related to the first two bug fixes, where a negative return value
+> from a serdev driver could have triggered those bugs, so in a sense we
+> are fixing the docs.
+> 
+> Patch 6 and 8 are clean ups, but the open lock clean up in patch 6 is
+> related to the close lock fix in patch 5.
+> 
+> Patch 7 avoids a potential crash, albeit something that would not affect
+> any mainline drivers (as serial-core sets CLOCAL by default).
+> 
+> But I'm perfectly fine with holding them off for 4.16. Perhaps you can
+> just merge back rc2 and I can resubmit the final patch which didn't
+> apply after that.
 
-Why?  'default y' should only mean "machine will not boot without this".
-And I think your machine will boot without the console, right?  :)
+I've "merged back" now, care to resend the remaining patches?
 
 thanks,
 
 greg k-h
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
