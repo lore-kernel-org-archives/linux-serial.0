@@ -1,69 +1,37 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 8/8] serdev: ttyport: do not used keyed wakeup in
- write_wakeup
-Date: Fri, 15 Dec 2017 20:26:08 +0100
-Message-ID: <20171215192608.GB27395@kroah.com>
-References: <20171103143059.20749-1-johan@kernel.org>
- <20171103143059.20749-9-johan@kernel.org>
- <20171128150418.GA3341@kroah.com>
- <20171128151629.GA8177@localhost>
- <20171128193926.GA1696@kroah.com>
- <20171129094802.GA2708@localhost>
+From: SF Markus Elfring <elfring@users.sourceforge.net>
+Subject: Re: jsm_tty: Deletion of a null pointer check in two functions?
+Date: Sat, 16 Dec 2017 07:27:25 +0100
+Message-ID: <817fcf72-cd9d-bf5b-ce83-ce2844e3e901@users.sourceforge.net>
+References: <5c78db97-88f5-8655-9a47-eeee0a043fba@users.sourceforge.net>
+ <1511976187.19952.65.camel@perches.com> <20171129173504.GA20581@kroah.com>
+ <1511977896.19952.69.camel@perches.com> <20171129180528.GA24705@kroah.com>
+ <089a4b85-64e8-cb4a-c5f8-9abb2556e5e5@users.sourceforge.net>
+ <8ae240fa-7f77-8f4c-225c-853cdda73a67@linux.vnet.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20171129094802.GA2708@localhost>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+In-Reply-To: <8ae240fa-7f77-8f4c-225c-853cdda73a67@linux.vnet.ibm.com>
+Content-Language: en-GB
+Sender: kernel-janitors-owner@vger.kernel.org
+To: "Guilherme G. Piccoli" <gpiccoli@linux.vnet.ibm.com>, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>, LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 29, 2017 at 10:48:02AM +0100, Johan Hovold wrote:
-> On Tue, Nov 28, 2017 at 08:39:26PM +0100, Greg Kroah-Hartman wrote:
-> > On Tue, Nov 28, 2017 at 04:16:29PM +0100, Johan Hovold wrote:
-> > > On Tue, Nov 28, 2017 at 04:04:18PM +0100, Greg Kroah-Hartman wrote:
-> > > > On Fri, Nov 03, 2017 at 03:30:59PM +0100, Johan Hovold wrote:
-> > > > > Serdev does not use the file abstraction and specifically there will
-> > > > > never be anyone polling a file descriptor for POLLOUT events.
-> > > > > 
-> > > > > Just use plain wake_up_interruptible() in the write_wakeup callback and
-> > > > > document why it's there.
-> > > > > 
-> > > > > Signed-off-by: Johan Hovold <johan@kernel.org>
-> > > > > ---
-> > > > >  drivers/tty/serdev/serdev-ttyport.c | 3 ++-
-> > > > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > > > 
-> > > > This patch didn't apply, perhaps because I split this series across my
-> > > > "for-next" and "for-linus" branches?
-> > > 
-> > > That's right, this one depends on patch 4/8.
-> > > 
-> > > Perhaps you can take also this one through tty-linus? Or even better,
-> > > just take the whole series through tty-linus?
-> > 
-> > They all didn't feel like patches to go in after -rc1, right?
-> > Documentation updates?  Minor tweaks?  Would you want to defend them?
-> > :)
-> 
-> I agree that it's borderline, but the documentation update (patch 3/8)
-> is related to the first two bug fixes, where a negative return value
-> from a serdev driver could have triggered those bugs, so in a sense we
-> are fixing the docs.
-> 
-> Patch 6 and 8 are clean ups, but the open lock clean up in patch 6 is
-> related to the close lock fix in patch 5.
-> 
-> Patch 7 avoids a potential crash, albeit something that would not affect
-> any mainline drivers (as serial-core sets CLOCAL by default).
-> 
-> But I'm perfectly fine with holding them off for 4.16. Perhaps you can
-> just merge back rc2 and I can resubmit the final patch which didn't
-> apply after that.
+> Thanks for the fix.
 
-I've "merged back" now, care to resend the remaining patches?
+Thanks for your positive feedback.
 
-thanks,
 
-greg k-h
+> I was on vacation - but now seeing all the analysis made here,
+
+I assume that special communication settings could trigger
+corresponding consequences for the discussed source code adjustment.
+
+
+> if "ch" can't be NULL then please go ahead and remove the check =)
+
+Would you dare to convert this request into a concrete patch?
+
+Regards,
+Markus
