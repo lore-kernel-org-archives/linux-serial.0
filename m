@@ -1,37 +1,63 @@
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: Re: jsm_tty: Deletion of a null pointer check in two functions?
-Date: Sat, 16 Dec 2017 07:27:25 +0100
-Message-ID: <817fcf72-cd9d-bf5b-ce83-ce2844e3e901@users.sourceforge.net>
-References: <5c78db97-88f5-8655-9a47-eeee0a043fba@users.sourceforge.net>
- <1511976187.19952.65.camel@perches.com> <20171129173504.GA20581@kroah.com>
- <1511977896.19952.69.camel@perches.com> <20171129180528.GA24705@kroah.com>
- <089a4b85-64e8-cb4a-c5f8-9abb2556e5e5@users.sourceforge.net>
- <8ae240fa-7f77-8f4c-225c-853cdda73a67@linux.vnet.ibm.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [tty:tty-next 23/34] include/linux/kconfig.h:5:10: fatal error:
+ generated/autoconf.h: No such file or directory
+Date: Sun, 17 Dec 2017 11:15:37 +0100
+Message-ID: <CAMuHMdXNNB7+-J7+M+0k+s=TDvTs_MVM4=AjjSi0x63p2HBaNQ@mail.gmail.com>
+References: <201712161029.StXUUOBC%fengguang.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-In-Reply-To: <8ae240fa-7f77-8f4c-225c-853cdda73a67@linux.vnet.ibm.com>
-Content-Language: en-GB
-Sender: kernel-janitors-owner@vger.kernel.org
-To: "Guilherme G. Piccoli" <gpiccoli@linux.vnet.ibm.com>, linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>, LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <201712161029.StXUUOBC%fengguang.wu@intel.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, kbuild test robot <fengguang.wu@intel.com>, kbuild-all@01.org, linux-serial@vger.kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-> Thanks for the fix.
+On Sat, Dec 16, 2017 at 3:00 AM, kbuild test robot
+<fengguang.wu@intel.com> wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+> head:   38d5583ff8900c543322a74471b436d1b8b4018a
+> commit: f6731485a51978ca0931c787fcb8a0bc4dcc9303 [23/34] tty: serial: sh-sci: Hide number of ports config question
+> config: ia64-allyesconfig (attached as .config)
+> compiler: ia64-linux-gcc (GCC) 7.2.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         git checkout f6731485a51978ca0931c787fcb8a0bc4dcc9303
+>         # save the attached .config to linux build tree
+>         make.cross ARCH=ia64
+>
+> All errors (new ones prefixed by >>):
+>
+>    .config:3814:warning: symbol value '' invalid for SERIAL_SH_SCI_NR_UARTS
 
-Thanks for your positive feedback.
+config SERIAL_SH_SCI_NR_UARTS
+        int "Maximum number of SCI(F) serial ports" if EXPERT
+        depends on SERIAL_SH_SCI
+        default "3" if H8300
+        default "10" if SUPERH
+        default "18" if ARCH_RENESAS
 
+Doh, if test compiling for non-H8300/SUPERH/ARCH_RENESAS, "int" doesn't
+assign a sane numerical default value to the symbol, but an empty string :-(
 
-> I was on vacation - but now seeing all the analysis made here,
+So we do need e.g.
 
-I assume that special communication settings could trigger
-corresponding consequences for the discussed source code adjustment.
+        default "2"
 
+at the bottom.
 
-> if "ch" can't be NULL then please go ahead and remove the check =)
+Greg: Do you want a v2, or an incremental patch?
 
-Would you dare to convert this request into a concrete patch?
+Thanks, and sorry for missing this.
 
-Regards,
-Markus
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
