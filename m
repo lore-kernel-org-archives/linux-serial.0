@@ -1,43 +1,42 @@
-From: Guo Ren <ren_guo@c-sky.com>
-Subject: Re: [PATCH v3 07/33] nds32: MMU initialization
-Date: Mon, 18 Dec 2017 17:08:48 +0800
-Message-ID: <20171218090848.GA5823@gary-OptiPlex-3050>
-References: <cover.1512723245.git.green.hu@gmail.com>
- <0964714c3dcac46ac700085717b0f414b7978112.1512723245.git.green.hu@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] tty: serial: sh-sci: Add default for number of ports for compile-testing
+Date: Mon, 18 Dec 2017 09:50:57 +0100
+Message-ID: <1513587057-24355-1-git-send-email-geert+renesas@glider.be>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <0964714c3dcac46ac700085717b0f414b7978112.1512723245.git.green.hu@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greentime Hu <green.hu@gmail.com>
-Cc: greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, geert.uytterhoeven@gmail.com, linus.walleij@linaro.org, mark.rutland@arm.com, greg@kroah.com, Vincent Chen <vincentc@andestech.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: kbuild test robot <fengguang.wu@intel.com>, Stephen Rothwell <sfr@canb.auug.org.au>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greentime,
+When compile-testing an allmodconfig kernel for a platform without
+sh-sci serial ports, the SERIAL_SH_SCI_NR_UARTS symbol of type "int"
+doesn't get assigned a numerical default value, but an empty string,
+leading to a build failure:
 
-On Fri, Dec 08, 2017 at 05:11:50PM +0800, Greentime Hu wrote:
-[...]
-> 
-> diff --git a/arch/nds32/mm/highmem.c b/arch/nds32/mm/highmem.c
-[...]
-> +void *kmap(struct page *page)
-> +{
-> +	unsigned long vaddr;
-> +	might_sleep();
-> +	if (!PageHighMem(page))
-> +		return page_address(page);
-> +	vaddr = (unsigned long)kmap_high(page);
-Here should invalid the cpu_mmu_tlb's entry, Or invalid it in the
-set_pte().
+   .config:3814:warning: symbol value '' invalid for SERIAL_SH_SCI_NR_UARTS
+   ...
+   make[3]: *** [silentoldconfig] Error 1
 
-eg:
-vaddr0 = kmap(page0)
-*vaddr0 = val0 //It will cause tlb-miss, and hard-refill to MMU-tlb
-kunmap(page0)
-vaddr1 = kmap(page1) // Mostly vaddr1 = vaddr0
-val = vaddr1; //No tlb-miss and it will get page0's val not page1, because
-		last expired vaddr0's entry is left in CPU-MMU-tlb.
+Fix this by explicitly providing a default value of 2, like before.
 
-Best Regards
- Guo Ren
+Reported-by: kbuild test robot <fengguang.wu@intel.com>
+Fixes: f6731485a51978ca ("tty: serial: sh-sci: Hide number of ports config question")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/tty/serial/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 4e6dfb0a762b5807..3682fd3e960cbd64 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -766,6 +766,7 @@ config SERIAL_SH_SCI_NR_UARTS
+ 	default "3" if H8300
+ 	default "10" if SUPERH
+ 	default "18" if ARCH_RENESAS
++	default "2"
+ 
+ config SERIAL_SH_SCI_CONSOLE
+ 	bool "Support for console on SuperH SCI(F)" if EXPERT
+-- 
+2.7.4
