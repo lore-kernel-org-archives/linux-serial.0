@@ -1,65 +1,54 @@
-From: Guo Ren <ren_guo@c-sky.com>
-Subject: Re: [PATCH v3 07/33] nds32: MMU initialization
-Date: Mon, 18 Dec 2017 20:22:54 +0800
-Message-ID: <20171218122253.GA19382@gary-OptiPlex-3050>
-References: <cover.1512723245.git.green.hu@gmail.com>
- <0964714c3dcac46ac700085717b0f414b7978112.1512723245.git.green.hu@gmail.com>
- <20171218090848.GA5823@gary-OptiPlex-3050>
- <CAEbi=3dy+KGgftWOrbBpVPDZURiYVYwAyGWzd9z4T7RQYAk2FA@mail.gmail.com>
+From: "Guilherme G. Piccoli" <gpiccoli@linux.vnet.ibm.com>
+Subject: Re: jsm_tty: Deletion of a null pointer check in two functions?
+Date: Mon, 18 Dec 2017 12:36:15 -0200
+Message-ID: <533d608d-c502-824f-9c79-880e387f4d09@linux.vnet.ibm.com>
+References: <5c78db97-88f5-8655-9a47-eeee0a043fba@users.sourceforge.net>
+ <1511976187.19952.65.camel@perches.com> <20171129173504.GA20581@kroah.com>
+ <1511977896.19952.69.camel@perches.com> <20171129180528.GA24705@kroah.com>
+ <089a4b85-64e8-cb4a-c5f8-9abb2556e5e5@users.sourceforge.net>
+ <8ae240fa-7f77-8f4c-225c-853cdda73a67@linux.vnet.ibm.com>
+ <817fcf72-cd9d-bf5b-ce83-ce2844e3e901@users.sourceforge.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAEbi=3dy+KGgftWOrbBpVPDZURiYVYwAyGWzd9z4T7RQYAk2FA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greentime Hu <green.hu@gmail.com>
-Cc: Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, netdev <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+In-Reply-To: <817fcf72-cd9d-bf5b-ce83-ce2844e3e901@users.sourceforge.net>
+Content-Language: en-US
+Sender: kernel-janitors-owner@vger.kernel.org
+To: SF Markus Elfring <elfring@users.sourceforge.net>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>, LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Dec 18, 2017 at 07:21:30PM +0800, Greentime Hu wrote:
-> Hi, Guo Ren:
+On 12/16/2017 04:27 AM, SF Markus Elfring wrote:
+>> Thanks for the fix.
 > 
-> 2017-12-18 17:08 GMT+08:00 Guo Ren <ren_guo@c-sky.com>:
-> > Hi Greentime,
-> >
-> > On Fri, Dec 08, 2017 at 05:11:50PM +0800, Greentime Hu wrote:
-> > [...]
-> >>
-> >> diff --git a/arch/nds32/mm/highmem.c b/arch/nds32/mm/highmem.c
-> > [...]
-> >> +void *kmap(struct page *page)
-> >> +{
-> >> +     unsigned long vaddr;
-> >> +     might_sleep();
-> >> +     if (!PageHighMem(page))
-> >> +             return page_address(page);
-> >> +     vaddr = (unsigned long)kmap_high(page);
-> > Here should invalid the cpu_mmu_tlb's entry, Or invalid it in the
-> > set_pte().
-> >
-> > eg:
-> > vaddr0 = kmap(page0)
-> > *vaddr0 = val0 //It will cause tlb-miss, and hard-refill to MMU-tlb
-> > kunmap(page0)
-> > vaddr1 = kmap(page1) // Mostly vaddr1 = vaddr0
-> > val = vaddr1; //No tlb-miss and it will get page0's val not page1, because
-> >                 last expired vaddr0's entry is left in CPU-MMU-tlb.
-> >
+> Thanks for your positive feedback.
 > 
-> Thanks.
-> I will add __nds32__tlbop_inv(vaddr); to invalidate this mapping
-> before retrun vaddr.
+> 
+>> I was on vacation - but now seeing all the analysis made here,
+> 
+> I assume that special communication settings could trigger
+> corresponding consequences for the discussed source code adjustment.
+> 
+> 
+>> if "ch" can't be NULL then please go ahead and remove the check =)
+> 
+> Would you dare to convert this request into a concrete patch?
 
-Sorry, perhaps I'm wrong. See
-kmap->kmap_high->map_new_virtual->get_next_pkmap_nr(color).
+For me, it's OK if you send the patch or I can do it myself.
+It's a minor patch...but it's correct the way I see it.
 
-Seems pkmap will return the vaddr by vaddr + 1 until
-no_more_pkmaps(), and then flush_all_zero_pkmaps.
-Just kmap_atomic need it, and you've done.
+So, what do you prefer? Send it yourself, or want me to send
+it with your sign-off too? (since was your idea).
 
-But I don't know why mips need flush_tlb_one in
-arch/mips/mm/highmem.c:kmap(). VIPT? but kmap give the get_pkmap_color
-for aliasing.
+Thanks,
 
-Best Regards
- Guo Ren
+
+Guilherme
+
+
+> 
+> Regards,
+> Markus
+> 
+
