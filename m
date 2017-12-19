@@ -1,47 +1,63 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: Have my PA8800 back online... (serial port missing on v4.14)
-Date: Tue, 19 Dec 2017 12:53:04 +0200
-Message-ID: <1513680784.7000.170.camel@linux.intel.com>
-References: <20171208190644.GA22228@ls3530.fritz.box>
-         <1512980798.25007.581.camel@linux.intel.com>
-         <43eb21b5-75d9-1142-1307-c2e2d218b362@gmx.de>
-         <1513178210.7000.34.camel@linux.intel.com>
-         <ebe416dd-aa18-9433-4dd7-67490d5778ee@gmx.de>
+From: Joe Perches <joe@perches.com>
+Subject: [-next PATCH 0/4] sysfs and DEVICE_ATTR_<foo>
+Date: Tue, 19 Dec 2017 10:15:05 -0800
+Message-ID: <cover.1513706701.git.joe@perches.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <ebe416dd-aa18-9433-4dd7-67490d5778ee@gmx.de>
-Sender: linux-parisc-owner@vger.kernel.org
-To: Helge Deller <deller@gmx.de>, Frank Scheiner <frank.scheiner@web.de>, linux-parisc@vger.kernel.org, John David Anglin <dave.anglin@bell.net>, linux-serial@vger.kernel.org
-Cc: debian-hppa@lists.debian.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, openipmi-developer@lists.sourceforge.net, intel-gfx@lists.freedesktop.org, linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org, linux-nvme@lists.infradead.org, platform-driver-x86@vger.kernel.org, linux-s390@vger.kernel.org, esc.storagedev@microsemi.com, linux-scsi@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org, linux-omap@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, linux-fbdev@vger.kernel.org, linux-sh@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org, linux-media@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2017-12-18 at 21:07 +0100, Helge Deller wrote:
-> Hi Andy,
-> 
-> On 13.12.2017 16:16, Andy Shevchenko wrote:
-> > On Tue, 2017-12-12 at 21:11 +0100, Helge Deller wrote:
-> > > On 11.12.2017 09:26, Andy Shevchenko wrote:
-> > > > 
-> > > Thanks for the offer to accept this patch, but maybe we are able
-> > > to come up with another patch which simply hides those unsupported
-> > > devices (serial port and ATI graphics card device on the Diva
-> > > card).
-> > > I posted a proposed patch here:
-> > > http://www.spinics.net/lists/linux-parisc/msg08187.html
-> > 
-> > Reading briefly that one I guess it's even better (now I realized
-> > you
-> > even do not have connectors of those devices outside).
-> 
-> It's now fixed for parisc by new PCI quirks which
-> disable the parisc serial AUX port: 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/com
-> mit/?id=bcf3f1752a622f1372d3252d0fea8855d89812e7
-
-Thank you for taking care of this.
-
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Sm9lIFBlcmNoZXMgKDQpOgogIHN5c2ZzLmg6IFVzZSBvY3RhbCBwZXJtaXNzaW9ucwogIHRyZWV3
+aWRlOiBVc2UgREVWSUNFX0FUVFJfUlcKICB0cmVld2lkZTogVXNlIERFVklDRV9BVFRSX1JPCiAg
+dHJlZXdpZGU6IFVzZSBERVZJQ0VfQVRUUl9XTwoKIGFyY2gvYXJtL21hY2gtcHhhL3NoYXJwc2xf
+cG0uYyAgICAgICAgICAgICAgICAgICAgIHwgIDQgKy0KIGFyY2gvczM5MC9rZXJuZWwvc21wLmMg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDIgKy0KIGFyY2gvczM5MC9rZXJuZWwvdG9w
+b2xvZ3kuYyAgICAgICAgICAgICAgICAgICAgICAgIHwgIDMgKy0KIGFyY2gvc2gvZHJpdmVycy9w
+dXNoLXN3aXRjaC5jICAgICAgICAgICAgICAgICAgICAgIHwgIDIgKy0KIGFyY2gvdGlsZS9rZXJu
+ZWwvc3lzZnMuYyAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgMTIgKystLQogYXJjaC94ODYv
+a2VybmVsL2NwdS9taWNyb2NvZGUvY29yZS5jICAgICAgICAgICAgICAgfCAgMiArLQogZHJpdmVy
+cy9hY3BpL2RldmljZV9zeXNmcy5jICAgICAgICAgICAgICAgICAgICAgICAgfCAgNiArLQogZHJp
+dmVycy9jaGFyL2lwbWkvaXBtaV9tc2doYW5kbGVyLmMgICAgICAgICAgICAgICAgfCAxNyArKyst
+LS0KIGRyaXZlcnMvZ3B1L2RybS9pOTE1L2k5MTVfc3lzZnMuYyAgICAgICAgICAgICAgICAgIHwg
+MTIgKystLQogZHJpdmVycy9pbnB1dC90b3VjaHNjcmVlbi9lbGFudHNfaTJjLmMgICAgICAgICAg
+ICAgfCAgMiArLQogZHJpdmVycy9uZXQvZXRoZXJuZXQvaWJtL2libXZuaWMuYyAgICAgICAgICAg
+ICAgICAgfCAgMiArLQogZHJpdmVycy9uZXQvd2ltYXgvaTI0MDBtL3N5c2ZzLmMgICAgICAgICAg
+ICAgICAgICAgfCAgMyArLQogZHJpdmVycy9udm1lL2hvc3QvY29yZS5jICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgfCAxMCArKy0tCiBkcml2ZXJzL3BsYXRmb3JtL3g4Ni9jb21wYWwtbGFwdG9w
+LmMgICAgICAgICAgICAgICB8IDE4ICsrLS0tLQogZHJpdmVycy9zMzkwL2Npby9jc3MuYyAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgfCAgOCArLS0KIGRyaXZlcnMvczM5MC9jaW8vZGV2aWNl
+LmMgICAgICAgICAgICAgICAgICAgICAgICAgIHwgMTAgKystLQogZHJpdmVycy9zMzkwL2NyeXB0
+by9hcF9jYXJkLmMgICAgICAgICAgICAgICAgICAgICAgfCAgMiArLQogZHJpdmVycy9zY3NpL2hw
+c2EuYyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAxMCArKy0tCiBkcml2ZXJzL3Nj
+c2kvbHBmYy9scGZjX2F0dHIuYyAgICAgICAgICAgICAgICAgICAgICB8IDY0ICsrKysrKysrLS0t
+LS0tLS0tLS0tLS0KIC4uLi9zdGFnaW5nL21lZGlhL2F0b21pc3AvcGNpL2F0b21pc3AyL2htbS9o
+bW0uYyAgIHwgIDggKy0tCiBkcml2ZXJzL3RoZXJtYWwvdGhlcm1hbF9zeXNmcy5jICAgICAgICAg
+ICAgICAgICAgICB8IDE3ICsrKy0tLQogZHJpdmVycy90dHkvc2VyaWFsL3NoLXNjaS5jICAgICAg
+ICAgICAgICAgICAgICAgICAgfCAgMiArLQogZHJpdmVycy91c2IvaG9zdC94aGNpLWRiZ2NhcC5j
+ICAgICAgICAgICAgICAgICAgICAgfCAgMiArLQogZHJpdmVycy91c2IvcGh5L3BoeS10YWh2by5j
+ICAgICAgICAgICAgICAgICAgICAgICAgfCAgMiArLQogZHJpdmVycy92aWRlby9mYmRldi9hdW9f
+azE5MHguYyAgICAgICAgICAgICAgICAgICAgfCAgNCArLQogZHJpdmVycy92aWRlby9mYmRldi93
+MTAwZmIuYyAgICAgICAgICAgICAgICAgICAgICAgfCAgNCArLQogaW5jbHVkZS9saW51eC9zeXNm
+cy5oICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAxNCArKy0tLQogbGliL3Rlc3RfZmly
+bXdhcmUuYyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAxNCArKy0tLQogbGliL3Rl
+c3Rfa21vZC5jICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAxNCArKy0tLQog
+c291bmQvc29jL29tYXAvbWNic3AuYyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgNCAr
+LQogc291bmQvc29jL3NvYy1jb3JlLmMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAg
+MiArLQogc291bmQvc29jL3NvYy1kYXBtLmMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+fCAgMiArLQogMzIgZmlsZXMgY2hhbmdlZCwgMTIwIGluc2VydGlvbnMoKyksIDE1OCBkZWxldGlv
+bnMoLSkKCi0tIAoyLjE1LjAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNr
+dG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2Ry
+aS1kZXZlbAo=
