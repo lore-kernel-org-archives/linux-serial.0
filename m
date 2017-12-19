@@ -1,62 +1,85 @@
-From: Helge Deller <deller@gmx.de>
-Subject: Re: Have my PA8800 back online... (serial port missing on v4.14)
-Date: Mon, 18 Dec 2017 21:07:16 +0100
-Message-ID: <ebe416dd-aa18-9433-4dd7-67490d5778ee@gmx.de>
-References: <20171208190644.GA22228@ls3530.fritz.box>
- <1512980798.25007.581.camel@linux.intel.com>
- <43eb21b5-75d9-1142-1307-c2e2d218b362@gmx.de>
- <1513178210.7000.34.camel@linux.intel.com>
+From: Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4 16/36] nds32: System calls handling
+Date: Tue, 19 Dec 2017 10:10:09 +0800
+Message-ID: <CAJsyPhwtFz14agh05OHpSnGDTZmBZr22=tOgV9vsZ2nSuaZ4fQ@mail.gmail.com>
+References: <cover.1513577007.git.green.hu@gmail.com> <9663cb7c21011cdb4f278c1fad081d1df296daa8.1513577007.git.green.hu@gmail.com>
+ <CAK8P3a2Yas3rWdx_qYx48PECundOzRSKOsqkJnUTzGW86OjJVg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <1513178210.7000.34.camel@linux.intel.com>
-Content-Language: en-US
-Sender: linux-parisc-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Frank Scheiner <frank.scheiner@web.de>, linux-parisc@vger.kernel.org, John David Anglin <dave.anglin@bell.net>, linux-serial@vger.kernel.org
-Cc: debian-hppa@lists.debian.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAK8P3a2Yas3rWdx_qYx48PECundOzRSKOsqkJnUTzGW86OjJVg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greentime <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Networking <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, DTML <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org, Philipp
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
+2017-12-18 19:19 GMT+08:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
+> On Mon, Dec 18, 2017 at 7:46 AM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>
+>
+>> new file mode 100644
+>> index 0000000..90da745
+>> --- /dev/null
+>> +++ b/arch/nds32/include/uapi/asm/unistd.h
+>> @@ -0,0 +1,12 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +// Copyright (C) 2005-2017 Andes Technology Corporation
+>> +
+>> +#define __ARCH_WANT_SYNC_FILE_RANGE2
+>> +
+>> +/* Use the standard ABI for syscalls */
+>> +#include <asm-generic/unistd.h>
+>> +
+>> +/* Additional NDS32 specific syscalls. */
+>> +#define __NR_cacheflush                (__NR_arch_specific_syscall)
+>> +#define __NR__llseek             __NR_llseek
+>> +__SYSCALL(__NR_cacheflush, sys_cacheflush)
+>
+> I'm still confused by __NR__llseek here, why do you need that one?
+>
 
-On 13.12.2017 16:16, Andy Shevchenko wrote:
-> On Tue, 2017-12-12 at 21:11 +0100, Helge Deller wrote:
->> On 11.12.2017 09:26, Andy Shevchenko wrote:
->>> On Fri, 2017-12-08 at 20:06 +0100, Helge Deller wrote:
-> 
->> Before your patch this check was inside the function
->> serial_pci_guess_board()
->> and if (ent->driver_data != pbn_default) the pci serial port got
->> registered 
->> and initialized *even* if it's *not* of class SERIAL or MODEM.
-> 
-> Ah, okay, it explains indeed.
-> Though PCI devices with wrong class should have their own quirks for my
-> p.o.v.
-> 
->>> (Of course, I agree this is regression and needs to be fixed ASAP)
->>
->> I don't know if it's easy to fix without reverting your patch.
-> 
-> As I explained earlier it's about pci_enable_device() called twice for
-> the same device which basically calls pcibios_enable_irq() twice which
-> might be a problem on some platforms. (At least I have such use case).
-> Perhaps it's possible to workaround the issue on those platforms, though
-> I didn't come up with the better solution that time.
-> 
->> Thanks for the offer to accept this patch, but maybe we are able
->> to come up with another patch which simply hides those unsupported
->> devices (serial port and ATI graphics card device on the Diva card).
+Dear Arnd:
+We hoped to solve  ABI register alignment problem for llseek in glibc
+by __NR__llseek.
+After checking glibc again, I find glibc has same __NR__llseek macro
+and It's better to solve this problem.
+So, I will remove this definition in the next version patch.
 
->> I posted a proposed patch here:
->> http://www.spinics.net/lists/linux-parisc/msg08187.html
-> 
-> Reading briefly that one I guess it's even better (now I realized you
-> even do not have connectors of those devices outside).
 
-It's now fixed for parisc by new PCI quirks which
-disable the parisc serial AUX port: 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bcf3f1752a622f1372d3252d0fea8855d89812e7
+>> +SYSCALL_DEFINE6(mmap2, unsigned long, addr, unsigned long, len,
+>> +              unsigned long, prot, unsigned long, flags,
+>> +              unsigned long, fd, unsigned long, pgoff)
+>> +{
+>> +       if (pgoff & (~PAGE_MASK >> 12))
+>> +               return -EINVAL;
+>> +
+>> +       return sys_mmap_pgoff(addr, len, prot, flags, fd,
+>> +                             pgoff >> (PAGE_SHIFT - 12));
+>> +}
+>> +
+>> +SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
+>> +              unsigned long, prot, unsigned long, flags,
+>> +              unsigned long, fd, unsigned long, pgoff)
+>> +{
+>> +       if (unlikely(pgoff & ~PAGE_MASK))
+>> +               return -EINVAL;
+>> +
+>> +       return sys_mmap_pgoff(addr, len, prot, flags, fd,
+>> +                             pgoff >> PAGE_SHIFT);
+>> +}
+>
+> And I don't see why you define sys_mmap() in addition to sys_mmap2().
+>
+This is my mistake. I will remove it in the next version patch.
 
-Thanks,
-Helge
+> The rest of the syscall handling looks good now.
+>
+>          Arnd
+
+
+Thanks
+Vincent
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
