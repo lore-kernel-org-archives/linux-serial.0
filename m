@@ -1,64 +1,106 @@
-From: Greentime Hu <green.hu@gmail.com>
-Subject: Re: [PATCH v4 04/36] nds32: Kernel booting and initialization
-Date: Wed, 20 Dec 2017 10:35:30 +0800
-Message-ID: <CAEbi=3cyccwHNurEmXFC1nfVzEc9FZMp5bxNi8un4c3w4xA7Sg@mail.gmail.com>
-References: <cover.1513577007.git.green.hu@gmail.com> <935ff034982f077b2e6f5eeccd6fe2110614fc9c.1513577007.git.green.hu@gmail.com>
- <78afd442-4482-f104-746e-5984214658ee@infradead.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <78afd442-4482-f104-746e-5984214658ee@infradead.org>
-Sender: netdev-owner@vger.kernel.org
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, netdev <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>
+From: Andrey Smirnov <andrew.smirnov@gmail.com>
+Subject: [PATCH v15 2/5] serdev: Introduce devm_serdev_device_open()
+Date: Tue, 19 Dec 2017 20:00:14 -0800
+Message-ID: <20171220040017.7605-3-andrew.smirnov@gmail.com>
+References: <20171220040017.7605-1-andrew.smirnov@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171220040017.7605-1-andrew.smirnov@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
-2017-12-20 6:01 GMT+08:00 Randy Dunlap <rdunlap@infradead.org>:
-> On 12/17/2017 10:46 PM, Greentime Hu wrote:
->> From: Greentime Hu <greentime@andestech.com>
->>
->> This patch includes the kernel startup code. It can get dtb pointer
->> passed from bootloader. It will create a temp mapping by tlb
->> instructions at beginning and goto start_kernel.
->>
->> Signed-off-by: Vincent Chen <vincentc@andestech.com>
->> Signed-off-by: Greentime Hu <greentime@andestech.com>
->> ---
->>  arch/nds32/kernel/head.S  |  189 ++++++++++++++++++++++
->>  arch/nds32/kernel/setup.c |  383 +++++++++++++++++++++++++++++++++++++++++++++
->>  2 files changed, 572 insertions(+)
->>  create mode 100644 arch/nds32/kernel/head.S
->>  create mode 100644 arch/nds32/kernel/setup.c
->>
->
->> diff --git a/arch/nds32/kernel/setup.c b/arch/nds32/kernel/setup.c
->> new file mode 100644
->> index 0000000..7718c58
->> --- /dev/null
->> +++ b/arch/nds32/kernel/setup.c
->> @@ -0,0 +1,383 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +// Copyright (C) 2005-2017 Andes Technology Corporation
->> +
->
-> [snip]
->
->> +struct cache_info L1_cache_info[2];
->> +static void __init dump_cpu_info(int cpu)
->> +{
->> +     int i, p = 0;
->> +     char str[sizeof(hwcap_str) + 16];
->> +
->> +     for (i = 0; hwcap_str[i]; i++) {
->> +             if (elf_hwcap & (1 << i)) {
->> +                     sprintf(str + p, "%s ", hwcap_str[i]);
->> +                     p += strlen(hwcap_str[i]) + 1;
->> +             }
->> +     }
->> +
->> +     pr_info("CPU%d Featuretures: %s\n", cpu, str);
->
->                        Features:
->
+Add code implementing managed version of serdev_device_open() for
+serdev device drivers that "open" the device during driver's lifecycle
+only once (e.g. opened in .probe() and closed in .remove()).
 
-Thanks Randy. I will fix this typo.
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>
+Cc: cphealy@gmail.com
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Pavel Machek <pavel@ucw.cz>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Acked-by: Pavel Machek <pavel@ucw.cz>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+---
+ Documentation/driver-model/devres.txt |  3 +++
+ drivers/tty/serdev/core.c             | 27 +++++++++++++++++++++++++++
+ include/linux/serdev.h                |  1 +
+ 3 files changed, 31 insertions(+)
+
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index c180045eb43b..7c1bb3d0c222 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -384,6 +384,9 @@ RESET
+   devm_reset_control_get()
+   devm_reset_controller_register()
+ 
++SERDEV
++  devm_serdev_device_open()
++
+ SLAVE DMA ENGINE
+   devm_acpi_dma_controller_register()
+ 
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 34050b439c1f..28133dbd2808 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -132,6 +132,33 @@ void serdev_device_close(struct serdev_device *serdev)
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_close);
+ 
++static void devm_serdev_device_release(struct device *dev, void *dr)
++{
++	serdev_device_close(*(struct serdev_device **)dr);
++}
++
++int devm_serdev_device_open(struct device *dev, struct serdev_device *serdev)
++{
++	struct serdev_device **dr;
++	int ret;
++
++	dr = devres_alloc(devm_serdev_device_release, sizeof(*dr), GFP_KERNEL);
++	if (!dr)
++		return -ENOMEM;
++
++	ret = serdev_device_open(serdev);
++	if (ret) {
++		devres_free(dr);
++		return ret;
++	}
++
++	*dr = serdev;
++	devres_add(dev, dr);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(devm_serdev_device_open);
++
+ void serdev_device_write_wakeup(struct serdev_device *serdev)
+ {
+ 	complete(&serdev->write_comp);
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index e69402d4a8ae..9929063bd45d 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -193,6 +193,7 @@ static inline int serdev_controller_receive_buf(struct serdev_controller *ctrl,
+ 
+ int serdev_device_open(struct serdev_device *);
+ void serdev_device_close(struct serdev_device *);
++int devm_serdev_device_open(struct device *, struct serdev_device *);
+ unsigned int serdev_device_set_baudrate(struct serdev_device *, unsigned int);
+ void serdev_device_set_flow_control(struct serdev_device *, bool);
+ int serdev_device_write_buf(struct serdev_device *, const unsigned char *, size_t);
+-- 
+2.14.3
