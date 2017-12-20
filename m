@@ -1,55 +1,43 @@
-From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v15 1/5] serdev: Make .remove in struct serdev_device_driver optional
-Date: Tue, 19 Dec 2017 20:00:13 -0800
-Message-ID: <20171220040017.7605-2-andrew.smirnov@gmail.com>
-References: <20171220040017.7605-1-andrew.smirnov@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171220040017.7605-1-andrew.smirnov@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, cphealy@gmail.com, Guenter Roeck <linux@roeck-us.net>, Lucas Stach <l.stach@pengutronix.de>, Nikita Yushchenko <nikita.yoush@cogentembedded.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pavel Machek <pavel@ucw.cz>, Andy Shevchenko <andy.shevchenko@gmail.com>, Johan Hovold <johan@kernel.org>, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+From: Jarkko Nikula <jarkko.nikula@bitmer.com>
+Subject: Re: [-next PATCH 2/4] treewide: Use DEVICE_ATTR_RW
+Date: Wed, 20 Dec 2017 10:34:03 +0200
+Message-ID: <20171220083403.GA27231@bitmer.com>
+References: <cover.1513706701.git.joe@perches.com>
+ <cd38f14f06e1f447b3159ffe8c69c0df8241bb6e.1513706701.git.joe@perches.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <cd38f14f06e1f447b3159ffe8c69c0df8241bb6e.1513706701.git.joe@perches.com>
+Sender: linux-pm-owner@vger.kernel.org
+To: Joe Perches <joe@perches.com>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, Cezary Jackiewicz <cezary.jackiewicz@gmail.com>, Darren Hart <dvhart@infradead.org>, Andy Shevchenko <andy@infradead.org>, Sebastian Ott <sebott@linux.vnet.ibm.com>, Peter Oberparleiter <oberpar@linux.vnet.ibm.com>, James Smart <james.smart@broadcom.com>, Dick Kennedy <dick.kennedy@broadcom.com>, Zhang Rui <rui.zhang@intel.com>, Eduardo Valentin <edubezval@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mathias Nyman <mathias.nyman@intel.com>, Felipe Balbi <balbi@kernel.org>, "Luis R. Rodriguez" <mcgrof@kernel.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>
 List-Id: linux-serial@vger.kernel.org
 
-Using devres infrastructure it is possible to write a serdev driver
-that doesn't have any code that needs to be called as a part of
-.remove. Add code to make .remove optional.
+On Tue, Dec 19, 2017 at 10:15:07AM -0800, Joe Perches wrote:
+> Convert DEVICE_ATTR uses to DEVICE_ATTR_RW where possible.
+> 
+...
+  
+> diff --git a/sound/soc/omap/mcbsp.c b/sound/soc/omap/mcbsp.c
+> index 7a54e3083203..79d4dc785e5c 100644
+> --- a/sound/soc/omap/mcbsp.c
+> +++ b/sound/soc/omap/mcbsp.c
+> @@ -854,7 +854,7 @@ static ssize_t dma_op_mode_store(struct device *dev,
+>  	return size;
+>  }
+>  
+> -static DEVICE_ATTR(dma_op_mode, 0644, dma_op_mode_show, dma_op_mode_store);
+> +static DEVICE_ATTR_RW(dma_op_mode);
+>  
+While I can ack this part here if it helps generic cleanup effort I
+don't understart would it improve code readability in general? Mode 644
+is clear and don't need any grepping but for DEVICE_ATTR_RW() I had to go
+through all of these files in order to see what does it mean:
 
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>
-Cc: cphealy@gmail.com
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Acked-by: Pavel Machek <pavel@ucw.cz>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
----
- drivers/tty/serdev/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+DEVICE_ATTR_RW: include/linux/device.h
+__ATTR_RW: include/linux/sysfs.h
+S_IWUSR: include/uapi/linux/stat.h
+S_IRUGO: include/linux/stat.h
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 1bef39828ca7..34050b439c1f 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -268,8 +268,8 @@ static int serdev_drv_probe(struct device *dev)
- static int serdev_drv_remove(struct device *dev)
- {
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
--
--	sdrv->remove(to_serdev_device(dev));
-+	if (sdrv->remove)
-+		sdrv->remove(to_serdev_device(dev));
- 	return 0;
- }
- 
--- 
-2.14.3
+Jarkko Nikula <jarkko.nikula@bitmer.com>
