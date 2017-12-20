@@ -1,122 +1,88 @@
-From: kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH v4 33/36] net: faraday add nds32 support.
-Date: Wed, 20 Dec 2017 19:03:34 +0800
-Message-ID: <201712201849.V1uJdj6R%fengguang.wu@intel.com>
-References: <95be78502aa406f106ecbe87e751a45333883b1f.1513577007.git.green.hu@gmail.com>
+From: Julia Lawall <julia.lawall@lip6.fr>
+Subject: Re: [-next PATCH 2/4] treewide: Use DEVICE_ATTR_RW
+Date: Wed, 20 Dec 2017 14:26:18 +0100 (CET)
+Message-ID: <alpine.DEB.2.20.1712201425010.13140@hadrien>
+References: <cover.1513706701.git.joe@perches.com>
+ <cd38f14f06e1f447b3159ffe8c69c0df8241bb6e.1513706701.git.joe@perches.com>
+ <20171220083403.GA27231@bitmer.com> <1513761884.1234.83.camel@perches.com>
+ <20171220093211.GA16177@kroah.com>
+ <1513763681.1234.101.camel@perches.com> <20171220095926.GA24285@kroah.com>
+ <1513767307.1234.114.camel@perches.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <95be78502aa406f106ecbe87e751a45333883b1f.1513577007.git.green.hu@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-Cc: kbuild-all@01.org, greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, geert.uytterhoeven@gmail.com, linus.walleij@linaro.org, mark.rutland@arm.com, greg@kroah.com, ren_guo@c-sky.com, pombredanne@nexb.com, green.hu@gmail.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1513767307.1234.114.camel@perches.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Joe Perches <joe@perches.com>
+Cc: linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, Jaroslav Kysela <perex@perex.cz>, Peter Ujfalusi <peter.ujfalusi@ti.com>, linux-s390@vger.kernel.org, linux-omap@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.vnet.ibm.com>, linux-scsi@vger.kernel.org, Takashi Iwai <tiwai@suse.com>, Sebastian Ott <sebott@linux.vnet.ibm.com>, James Smart <james.smart@broadcom.com>, Cezary Jackiewicz <cezary.jackiewicz@gmail.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Darren Hart <dvhart@infradead.org>, Zhang Rui <rui.zhang@intel.com>, Dick Kennedy <dick.kennedy@broadcom.com>, Mathias Nyman <mathias.nyman@intel.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Peter Oberparleiter <oberp>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greentime,
-
-I love your patch! Perhaps something to improve:
-
-[auto build test WARNING on tip/timers/core]
-[cannot apply to linus/master v4.15-rc4 next-20171220]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-
-url:    https://github.com/0day-ci/linux/commits/Greentime-Hu/Andes-nds32-Linux-Kernel/20171220-155937
-reproduce:
-        # apt-get install sparse
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF=-D__CHECK_ENDIAN__
-
-
-sparse warnings: (new ones prefixed by >>)
-
-
-vim +205 drivers/net/ethernet/faraday/ftmac100.c
-
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  199  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  200  /******************************************************************************
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  201   * internal functions (receive descriptor)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  202   *****************************************************************************/
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  203  static bool ftmac100_rxdes_first_segment(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  204  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28 @205  	return rxdes->rxdes0 & cpu_to_le32(FTMAC100_RXDES0_FRS);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  206  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  207  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  208  static bool ftmac100_rxdes_last_segment(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  209  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  210  	return rxdes->rxdes0 & cpu_to_le32(FTMAC100_RXDES0_LRS);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  211  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  212  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  213  static bool ftmac100_rxdes_owned_by_dma(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  214  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28 @215  	return rxdes->rxdes0 & cpu_to_le32(FTMAC100_RXDES0_RXDMA_OWN);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  216  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  217  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  218  static void ftmac100_rxdes_set_dma_own(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  219  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  220  	/* clear status bits */
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28 @221  	rxdes->rxdes0 = cpu_to_le32(FTMAC100_RXDES0_RXDMA_OWN);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  222  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  223  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  224  static bool ftmac100_rxdes_rx_error(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  225  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  226  	return rxdes->rxdes0 & cpu_to_le32(FTMAC100_RXDES0_RX_ERR);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  227  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  228  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  229  static bool ftmac100_rxdes_crc_error(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  230  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  231  	return rxdes->rxdes0 & cpu_to_le32(FTMAC100_RXDES0_CRC_ERR);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  232  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  233  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  234  static bool ftmac100_rxdes_frame_too_long(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  235  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  236  	return rxdes->rxdes0 & cpu_to_le32(FTMAC100_RXDES0_FTL);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  237  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  238  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  239  static bool ftmac100_rxdes_runt(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  240  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  241  	return rxdes->rxdes0 & cpu_to_le32(FTMAC100_RXDES0_RUNT);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  242  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  243  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  244  static bool ftmac100_rxdes_odd_nibble(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  245  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  246  	return rxdes->rxdes0 & cpu_to_le32(FTMAC100_RXDES0_RX_ODD_NB);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  247  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  248  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  249  static unsigned int ftmac100_rxdes_frame_length(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  250  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28 @251  	return le32_to_cpu(rxdes->rxdes0) & FTMAC100_RXDES0_RFL;
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  252  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  253  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  254  static bool ftmac100_rxdes_multicast(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  255  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  256  	return rxdes->rxdes0 & cpu_to_le32(FTMAC100_RXDES0_MULTICAST);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  257  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  258  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  259  static void ftmac100_rxdes_set_buffer_size(struct ftmac100_rxdes *rxdes,
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  260  					   unsigned int size)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  261  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28 @262  	rxdes->rxdes1 &= cpu_to_le32(FTMAC100_RXDES1_EDORR);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  263  	rxdes->rxdes1 |= cpu_to_le32(FTMAC100_RXDES1_RXBUF_SIZE(size));
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  264  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  265  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  266  static void ftmac100_rxdes_set_end_of_ring(struct ftmac100_rxdes *rxdes)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  267  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  268  	rxdes->rxdes1 |= cpu_to_le32(FTMAC100_RXDES1_EDORR);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  269  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  270  
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  271  static void ftmac100_rxdes_set_dma_addr(struct ftmac100_rxdes *rxdes,
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  272  					dma_addr_t addr)
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  273  {
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28 @274  	rxdes->rxdes2 = cpu_to_le32(addr);
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  275  }
-8d77c036 drivers/net/ftmac100.c Po-Yu Chuang 2011-02-28  276  
-
-:::::: The code at line 205 was first introduced by commit
-:::::: 8d77c036b57cf813d838f859e11b6a188acdb1fb net: add Faraday FTMAC100 10/100 Ethernet driver
-
-:::::: TO: Po-Yu Chuang <ratbert@faraday-tech.com>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+CgpPbiBXZWQsIDIwIERlYyAyMDE3LCBKb2UgUGVyY2hlcyB3cm90ZToKCj4gT24gV2VkLCAyMDE3
+LTEyLTIwIGF0IDEwOjU5ICswMTAwLCBHcmVnIEtyb2FoLUhhcnRtYW4gd3JvdGU6Cj4gPiA+ID4g
+V2h5IHlvdSBkaWRuJ3Qgc2VuZCB0aGF0IHBhdGNoIHRvIHRoZSBzeXNmcyBtYWludGFpbmVyIGlz
+IGEgYml0IG9kZC4uLiAgOikKPiA+ID4KPiA+ID4gU28gaGVyZSdzIGFuIG9wcG9ydHVuaXR5IGZv
+ciB5b3U6Cj4gPiA+Cj4gPiA+IFRoZSBzeXNmcyBtYWludGFpbmVyIGhhc24ndCBhZGRlZCBpbmNs
+dWRlL2xpbnV4L3N5c2ZzLmggdG8KPiA+ID4gdGhlIGxpc3Qgb2YgbWFpbnRhaW5lZCBmaWxlcy4u
+Lgo+ID4gPgo+ID4gPiBEUklWRVIgQ09SRSwgS09CSkVDVFMsIERFQlVHRlMgQU5EIFNZU0ZTCj4g
+PiA+IE06CUdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+Cj4g
+PiA+IFQ6CWdpdCBnaXQ6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQv
+Z3JlZ2toL2RyaXZlci1jb3JlLmdpdAo+ID4gPiBTOglTdXBwb3J0ZWQKPiA+ID4gRjoJRG9jdW1l
+bnRhdGlvbi9rb2JqZWN0LnR4dAo+ID4gPiBGOglkcml2ZXJzL2Jhc2UvCj4gPiA+IEY6CWZzL2Rl
+YnVnZnMvCj4gPiA+IEY6CWZzL3N5c2ZzLwo+ID4gPiBGOglpbmNsdWRlL2xpbnV4L2RlYnVnZnMu
+aAo+ID4gPiBGOglpbmNsdWRlL2xpbnV4L2tvYmoqCj4gPiA+IEY6CWxpYi9rb2JqKgo+ID4KPiA+
+IEhlaCwgZ29vZCBwb2ludCwgYnV0IHVzaW5nIGdldF9tYWludGFpbmVyLnBsIGRvZXMgcHV0IG1l
+IGF0IHRoZSB0b3Agb2YKPiA+IHRoZSBsaXN0IHRoYXQgeW91IHNob3VsZCBiZSBjYzppbmc6Cj4g
+Pgo+ID4gJCAuL3NjcmlwdHMvZ2V0X21haW50YWluZXIucGwgLS1maWxlIGluY2x1ZGUvbGludXgv
+c3lzZnMuaAo+ID4gR3JlZyBLcm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9y
+Zz4gKGNvbW1pdF9zaWduZXI6My8zPTEwMCUsYXV0aG9yZWQ6Mi8zPTY3JSxhZGRlZF9saW5lczo3
+Lzg9ODglKQo+ID4gS2F0ZSBTdGV3YXJ0IDxrc3Rld2FydEBsaW51eGZvdW5kYXRpb24ub3JnPiAo
+Y29tbWl0X3NpZ25lcjoxLzM9MzMlKQo+ID4gVGhvbWFzIEdsZWl4bmVyIDx0Z2x4QGxpbnV0cm9u
+aXguZGU+IChjb21taXRfc2lnbmVyOjEvMz0zMyUpCj4gPiBQaGlsaXBwZSBPbWJyZWRhbm5lIDxw
+b21icmVkYW5uZUBuZXhiLmNvbT4gKGNvbW1pdF9zaWduZXI6MS8zPTMzJSkKPiA+IE5pY2sgRGVz
+YXVsbmllcnMgPG5pY2suZGVzYXVsbmllcnNAZ21haWwuY29tPiAoY29tbWl0X3NpZ25lcjoxLzM9
+MzMlLGF1dGhvcmVkOjEvMz0zMyUsYWRkZWRfbGluZXM6MS84PTEyJSxyZW1vdmVkX2xpbmVzOjEv
+MT0xMDAlKQo+ID4gbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZyAob3BlbiBsaXN0KQo+Cj4g
+VGhlIHNjcmlwdCBJIHVzZSB0byBzZW5kIHBhdGNoZXMgYWRkcyAtLW5vZ2l0IC0tbm9naXQtZmFs
+bGJhY2sKPiB0byBjb3B5IG9ubHkgbGlzdGVkIG1haW50YWluZXJzIGJlY2F1c2UgcGVvcGxlIHRo
+YXQgc2VuZCBjbGVhbnVwCj4gcGF0Y2hlcyBkb24ndCBnZW5lcmFsbHkgbGlrZSB0byBnZXQgcmFu
+ZG9tIHBhdGNoZXMuCj4KPiA+ID4gYnR3OiB0aGVyZSBhcmUgbWFueSB1c2VzIG9mIGEgcmV2ZXJz
+ZWQgZGVjbGFyYXRpb24gc3R5bGUgb2YgREVWSUNFX0FUVFIKPiA+ID4KPiA+ID4gSGVyZSdzIGFu
+b3RoZXIgdGhpbmcgdGhhdCBjb3VsZCBiZSBkb25lIGZvciBtb3JlIERFVklDRV9BVFRSXzxGT08+
+IHVzZXMuCj4gPiA+Cj4gPiA+ID09PQo+ID4gPgo+ID4gPiBTb21lIERFVklDRV9BVFRSIGRlZmlu
+aXRpb25zIHVzZSBhIHJldmVyc2VkIHN0YXRpYyBmdW5jdGlvbiBmb3JtIGZyb20KPiA+ID4gdGhl
+IHR5cGljYWwuICBDb252ZXJ0IHRoZW0gdG8gdXNlIHRoZSBtb3JlIGNvbW1vbiBtYWNybyBmb3Jt
+IHNvIGl0IGlzCj4gPiA+IGVhc2llciB0byBncmVwIGZvciB0aGUgc3R5bGUuCj4gW10KPiA+ID4g
+JCBnaXQgZ3JlcCAtLW5hbWUtb25seSAtdyBERVZJQ0VfQVRUUiB8IFwKPiA+ID4gICB4YXJncyBw
+ZXJsIC1pIGRldl9hdHRyX3J3X2JhY2t3YXJkcy5wZXJsCj4gPiBBaCwgbmljZSwgSSBsb3ZlIHBl
+cmwgOgo+Cj4gVGhhdCB3YXMgYSBiYWQgY29weS9wYXN0ZSBvZiB0aGUgc2NyaXB0Lgo+Cj4gVGhl
+IGFjdHVhbCBzY3JpcHQgZm9yIFJXIGlzOgo+Cj4gJCBjYXQgZGV2X2F0dHJfcndfYmFja3dhcmRz
+LnBlcmwKPiBsb2NhbCAkLzsKPiB3aGlsZSAoPD4pIHsKPiAgICAgbXkgJGZpbGUgPSAkXzsKPiAg
+ICAgd2hpbGUgKCRmaWxlID1+IG0vXGJERVZJQ0VfQVRUUlxzKlwoXHMqKFx3KylccyosL2cpIHsK
+PiAJbXkgJHZhciA9ICQxOwo+IAlpZiAoJGZpbGUgPX4gcy9cYkRFVklDRV9BVFRSXHMqXChccyok
+e3Zhcn1ccyosXHMqXCg/KFxzKlNfSVJVR09ccypcfFxzKlNfSVdVU1J8XHMqU19JV1VTUlxzKlx8
+XHMqU19JUlVHT1xzKnxccyowNjQ0XHMqKVwpP1xzKixccypzaG93XyR7dmFyfVxzKixccypzdG9y
+ZV8ke3Zhcn1ccypcKS9ERVZJQ0VfQVRUUl9SVygke3Zhcn0pL2cpIHsKPiAJICAgICRmaWxlID1+
+IHMvXGJzaG93XyR7dmFyfVxiLyR7dmFyfV9zaG93L2c7Cj4gCSAgICAkZmlsZSA9fiBzL1xic3Rv
+cmVfJHt2YXJ9XGIvJHt2YXJ9X3N0b3JlL2c7Cj4gCX0KPiAgICAgfQo+ICAgICBwcmludCAkZmls
+ZTsKPiB9Cj4KPiBUaGVyZSBhcmUgMyBkaWZmZXJlbnQgcGVybCBzY3JpcHRzIGZvciBydywgcm8s
+IGFuZCB3by4KPiBhbmQgdGhlc2Ugc2NyaXB0cywgYmVjYXVzZSBvZiBmdW5jdGlvbiByZW5hbWlu
+ZyBhbmQKPiBwb3NzaWJsZSByZXVzZSBvZiB0aGUgb3JpZ2luYWwgZnVuY3Rpb24gbmFtZXMgYnkg
+b3RoZXIKPiBzdHJpbmcgY29uY2F0ZW5hdGVkIG1hY3JvcywgY3JlYXRlIHNvbWUgYmFkIGNvbnZl
+cnNpb25zCj4gc28gdGhleSBuZWVkIHNvbWUgbWFudWFsIGNsZWFudXBzIHRvby4KPgo+IFBlcmhh
+cHMgY29jY2luZWxsZSBjb3VsZCBkbyBhIGJldHRlciBqb2Igb2YgaXQsIGJ1dAo+IGxpa2VseSBz
+dHJpbmcgY29uY2F0ZW5hdGlvbiBtYWNybyB1c2VzIGFyZSBnb2luZyB0bwo+IGJlIGhhcmQgdG8g
+ZGVhbCB3aXRoIGluIGFueSBjYXNlLgoKSSBtYWRlIGEgcnVsZSBmb3IgdGhpcyBhdCBvbmUgcG9p
+bnQsIGJ1dCB0aGVyZSBhcmUgY2FzZXMgd2hlcmUgdGhlCmZ1bmN0aW9ucyBoYXZlIHRoZSB3cm9u
+ZyBuYW1lcywgYW5kIHRoZW4gdGhlc2UgZnVuY3Rpb25zIG1heSBiZSB1c2VkCmVsc2V3aGVyZS4K
+Cmp1bGlhCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRy
+aS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
+czovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
