@@ -1,83 +1,83 @@
-From: Greentime Hu <green.hu@gmail.com>
-Subject: Re: [PATCH v4 33/36] net: faraday add nds32 support.
-Date: Wed, 20 Dec 2017 18:34:29 +0800
-Message-ID: <CAEbi=3erUo+QV75khdTHmUmZpkK7mHjFfF3A1_zaF9OmJkbCQQ@mail.gmail.com>
-References: <95be78502aa406f106ecbe87e751a45333883b1f.1513577007.git.green.hu@gmail.com>
- <201712201744.gsBDa4yK%fengguang.wu@intel.com> <CAMuHMdXp5b-Y79kaKgmDRshnpN2=VEd-f3v-6QW+6mUqv6YW-A@mail.gmail.com>
+From: Joe Perches <joe@perches.com>
+Subject: Re: [-next PATCH 2/4] treewide: Use DEVICE_ATTR_RW
+Date: Wed, 20 Dec 2017 02:55:07 -0800
+Message-ID: <1513767307.1234.114.camel@perches.com>
+References: <cover.1513706701.git.joe@perches.com>
+ <cd38f14f06e1f447b3159ffe8c69c0df8241bb6e.1513706701.git.joe@perches.com>
+ <20171220083403.GA27231@bitmer.com> <1513761884.1234.83.camel@perches.com>
+ <20171220093211.GA16177@kroah.com> <1513763681.1234.101.camel@perches.com>
+ <20171220095926.GA24285@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdXp5b-Y79kaKgmDRshnpN2=VEd-f3v-6QW+6mUqv6YW-A@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: kbuild test robot <lkp@intel.com>, kbuild-all@01.org, Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Linux-Arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, netdev <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.c>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20171220095926.GA24285@kroah.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Julia Lawall <julia.lawall@lip6.fr>
+Cc: linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, Jaroslav Kysela <perex@perex.cz>, Peter Ujfalusi <peter.ujfalusi@ti.com>, linux-s390@vger.kernel.org, linux-omap@vger.kernel.org, "James E.J.
+ Bottomley" <jejb@linux.vnet.ibm.com>, linux-scsi@vger.kernel.org, Takashi Iwai <tiwai@suse.com>, Sebastian Ott <sebott@linux.vnet.ibm.com>, James Smart <james.smart@broadcom.com>, Cezary Jackiewicz <cezary.jackiewicz@gmail.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Darren Hart <dvhart@infradead.org>, Zhang Rui <rui.zhang@intel.com>, Dick Kennedy <dick.kennedy@broadcom.com>, Mathias Nyman <mathias.nyman@intel.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Peter Oberparleiter <oberp>
 List-Id: linux-serial@vger.kernel.org
 
-2017-12-20 17:58 GMT+08:00 Geert Uytterhoeven <geert@linux-m68k.org>:
-> On Wed, Dec 20, 2017 at 10:54 AM, kbuild test robot <lkp@intel.com> wrote:
->> I love your patch! Perhaps something to improve:
->>
->> [auto build test WARNING on tip/timers/core]
->> [cannot apply to linus/master v4.15-rc4 next-20171220]
->> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
->>
->> url:    https://github.com/0day-ci/linux/commits/Greentime-Hu/Andes-nds32-Linux-Kernel/20171220-155937
->> config: sparc64-allyesconfig (attached as .config)
->> compiler: sparc64-linux-gnu-gcc (Debian 7.2.0-11) 7.2.0
->> reproduce:
->>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>         chmod +x ~/bin/make.cross
->>         # save the attached .config to linux build tree
->>         make.cross ARCH=sparc64
->>
->> All warnings (new ones prefixed by >>):
->>
->>    drivers/net/ethernet/faraday/ftmac100.c: In function 'ftmac100_rxdes_set_page':
->>>> drivers/net/ethernet/faraday/ftmac100.c:288:18: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
->>      rxdes->rxdes3 = (unsigned int)page;
->>                      ^
->
-> The proper way to casts pointer to integers is to cast to "uintptr_t".
->
-> However, the address is stored in a 32-bit descriptor, which means it can
-> not work on 64-bit platforms.
->
-> Please make the driver depend on "!64BIT || BROKEN"
->
-> Cfr. commit 15bfe05c8d6386f1 ("net: ethernet: xilinx: Mark XILINX_LL_TEMAC
-> broken on 64-bit")
->
-Thanks Geert.
-
-I will apply it like this.
-
-+++ b/drivers/net/ethernet/faraday/Kconfig
-@@ -5,7 +5,7 @@
- config NET_VENDOR_FARADAY
-        bool "Faraday devices"
-        default y
--       depends on ARM
-+       depends on ARM || NDS32 || COMPILE_TEST
-        ---help---
-          If you have a network (Ethernet) card belonging to this class, say Y.
-
-@@ -18,7 +18,8 @@ if NET_VENDOR_FARADAY
-
- config FTMAC100
-        tristate "Faraday FTMAC100 10/100 Ethernet support"
--       depends on ARM
-+       depends on ARM || NDS32 || COMPILE_TEST
-+       depends on !64BIT || BROKEN
-        select MII
-        ---help---
-          This driver supports the FTMAC100 10/100 Ethernet controller
-@@ -27,7 +28,8 @@ config FTMAC100
-
- config FTGMAC100
-        tristate "Faraday FTGMAC100 Gigabit Ethernet support"
--       depends on ARM
-+       depends on ARM || NDS32 || COMPILE_TEST
-+       depends on !64BIT || BROKEN
-        select PHYLIB
-        ---help---
-          This driver supports the FTGMAC100 Gigabit Ethernet controller
+T24gV2VkLCAyMDE3LTEyLTIwIGF0IDEwOjU5ICswMTAwLCBHcmVnIEtyb2FoLUhhcnRtYW4gd3Jv
+dGU6Cj4gPiA+IFdoeSB5b3UgZGlkbid0IHNlbmQgdGhhdCBwYXRjaCB0byB0aGUgc3lzZnMgbWFp
+bnRhaW5lciBpcyBhIGJpdCBvZGQuLi4gIDopCj4gPiAKPiA+IFNvIGhlcmUncyBhbiBvcHBvcnR1
+bml0eSBmb3IgeW91Ogo+ID4gCj4gPiBUaGUgc3lzZnMgbWFpbnRhaW5lciBoYXNuJ3QgYWRkZWQg
+aW5jbHVkZS9saW51eC9zeXNmcy5oIHRvCj4gPiB0aGUgbGlzdCBvZiBtYWludGFpbmVkIGZpbGVz
+Li4uCj4gPiAKPiA+IERSSVZFUiBDT1JFLCBLT0JKRUNUUywgREVCVUdGUyBBTkQgU1lTRlMKPiA+
+IE06CUdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+Cj4gPiBU
+OglnaXQgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L2dyZWdr
+aC9kcml2ZXItY29yZS5naXQKPiA+IFM6CVN1cHBvcnRlZAo+ID4gRjoJRG9jdW1lbnRhdGlvbi9r
+b2JqZWN0LnR4dAo+ID4gRjoJZHJpdmVycy9iYXNlLwo+ID4gRjoJZnMvZGVidWdmcy8KPiA+IEY6
+CWZzL3N5c2ZzLwo+ID4gRjoJaW5jbHVkZS9saW51eC9kZWJ1Z2ZzLmgKPiA+IEY6CWluY2x1ZGUv
+bGludXgva29iaioKPiA+IEY6CWxpYi9rb2JqKgo+IAo+IEhlaCwgZ29vZCBwb2ludCwgYnV0IHVz
+aW5nIGdldF9tYWludGFpbmVyLnBsIGRvZXMgcHV0IG1lIGF0IHRoZSB0b3Agb2YKPiB0aGUgbGlz
+dCB0aGF0IHlvdSBzaG91bGQgYmUgY2M6aW5nOgo+IAo+ICQgLi9zY3JpcHRzL2dldF9tYWludGFp
+bmVyLnBsIC0tZmlsZSBpbmNsdWRlL2xpbnV4L3N5c2ZzLmgKPiBHcmVnIEtyb2FoLUhhcnRtYW4g
+PGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPiAoY29tbWl0X3NpZ25lcjozLzM9MTAwJSxhdXRo
+b3JlZDoyLzM9NjclLGFkZGVkX2xpbmVzOjcvOD04OCUpCj4gS2F0ZSBTdGV3YXJ0IDxrc3Rld2Fy
+dEBsaW51eGZvdW5kYXRpb24ub3JnPiAoY29tbWl0X3NpZ25lcjoxLzM9MzMlKQo+IFRob21hcyBH
+bGVpeG5lciA8dGdseEBsaW51dHJvbml4LmRlPiAoY29tbWl0X3NpZ25lcjoxLzM9MzMlKQo+IFBo
+aWxpcHBlIE9tYnJlZGFubmUgPHBvbWJyZWRhbm5lQG5leGIuY29tPiAoY29tbWl0X3NpZ25lcjox
+LzM9MzMlKQo+IE5pY2sgRGVzYXVsbmllcnMgPG5pY2suZGVzYXVsbmllcnNAZ21haWwuY29tPiAo
+Y29tbWl0X3NpZ25lcjoxLzM9MzMlLGF1dGhvcmVkOjEvMz0zMyUsYWRkZWRfbGluZXM6MS84PTEy
+JSxyZW1vdmVkX2xpbmVzOjEvMT0xMDAlKQo+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcg
+KG9wZW4gbGlzdCkKClRoZSBzY3JpcHQgSSB1c2UgdG8gc2VuZCBwYXRjaGVzIGFkZHMgLS1ub2dp
+dCAtLW5vZ2l0LWZhbGxiYWNrCnRvIGNvcHkgb25seSBsaXN0ZWQgbWFpbnRhaW5lcnMgYmVjYXVz
+ZSBwZW9wbGUgdGhhdCBzZW5kIGNsZWFudXAKcGF0Y2hlcyBkb24ndCBnZW5lcmFsbHkgbGlrZSB0
+byBnZXQgcmFuZG9tIHBhdGNoZXMuCgo+ID4gYnR3OiB0aGVyZSBhcmUgbWFueSB1c2VzIG9mIGEg
+cmV2ZXJzZWQgZGVjbGFyYXRpb24gc3R5bGUgb2YgREVWSUNFX0FUVFIKPiA+IAo+ID4gSGVyZSdz
+IGFub3RoZXIgdGhpbmcgdGhhdCBjb3VsZCBiZSBkb25lIGZvciBtb3JlIERFVklDRV9BVFRSXzxG
+T08+IHVzZXMuCj4gPiAKPiA+ID09PQo+ID4gCj4gPiBTb21lIERFVklDRV9BVFRSIGRlZmluaXRp
+b25zIHVzZSBhIHJldmVyc2VkIHN0YXRpYyBmdW5jdGlvbiBmb3JtIGZyb20KPiA+IHRoZSB0eXBp
+Y2FsLiAgQ29udmVydCB0aGVtIHRvIHVzZSB0aGUgbW9yZSBjb21tb24gbWFjcm8gZm9ybSBzbyBp
+dCBpcwo+ID4gZWFzaWVyIHRvIGdyZXAgZm9yIHRoZSBzdHlsZS4KW10KPiA+ICQgZ2l0IGdyZXAg
+LS1uYW1lLW9ubHkgLXcgREVWSUNFX0FUVFIgfCBcCj4gPiAgIHhhcmdzIHBlcmwgLWkgZGV2X2F0
+dHJfcndfYmFja3dhcmRzLnBlcmwKPiBBaCwgbmljZSwgSSBsb3ZlIHBlcmwgOgoKVGhhdCB3YXMg
+YSBiYWQgY29weS9wYXN0ZSBvZiB0aGUgc2NyaXB0LgoKVGhlIGFjdHVhbCBzY3JpcHQgZm9yIFJX
+IGlzOgoKJCBjYXQgZGV2X2F0dHJfcndfYmFja3dhcmRzLnBlcmwKbG9jYWwgJC87CndoaWxlICg8
+PikgewogICAgbXkgJGZpbGUgPSAkXzsKICAgIHdoaWxlICgkZmlsZSA9fiBtL1xiREVWSUNFX0FU
+VFJccypcKFxzKihcdyspXHMqLC9nKSB7CglteSAkdmFyID0gJDE7CglpZiAoJGZpbGUgPX4gcy9c
+YkRFVklDRV9BVFRSXHMqXChccyoke3Zhcn1ccyosXHMqXCg/KFxzKlNfSVJVR09ccypcfFxzKlNf
+SVdVU1J8XHMqU19JV1VTUlxzKlx8XHMqU19JUlVHT1xzKnxccyowNjQ0XHMqKVwpP1xzKixccypz
+aG93XyR7dmFyfVxzKixccypzdG9yZV8ke3Zhcn1ccypcKS9ERVZJQ0VfQVRUUl9SVygke3Zhcn0p
+L2cpIHsKCSAgICAkZmlsZSA9fiBzL1xic2hvd18ke3Zhcn1cYi8ke3Zhcn1fc2hvdy9nOwoJICAg
+ICRmaWxlID1+IHMvXGJzdG9yZV8ke3Zhcn1cYi8ke3Zhcn1fc3RvcmUvZzsKCX0KICAgIH0KICAg
+IHByaW50ICRmaWxlOwp9CgpUaGVyZSBhcmUgMyBkaWZmZXJlbnQgcGVybCBzY3JpcHRzIGZvciBy
+dywgcm8sIGFuZCB3by4KYW5kIHRoZXNlIHNjcmlwdHMsIGJlY2F1c2Ugb2YgZnVuY3Rpb24gcmVu
+YW1pbmcgYW5kCnBvc3NpYmxlIHJldXNlIG9mIHRoZSBvcmlnaW5hbCBmdW5jdGlvbiBuYW1lcyBi
+eSBvdGhlcgpzdHJpbmcgY29uY2F0ZW5hdGVkIG1hY3JvcywgY3JlYXRlIHNvbWUgYmFkIGNvbnZl
+cnNpb25zCnNvIHRoZXkgbmVlZCBzb21lIG1hbnVhbCBjbGVhbnVwcyB0b28uCgpQZXJoYXBzIGNv
+Y2NpbmVsbGUgY291bGQgZG8gYSBiZXR0ZXIgam9iIG9mIGl0LCBidXQKbGlrZWx5IHN0cmluZyBj
+b25jYXRlbmF0aW9uIG1hY3JvIHVzZXMgYXJlIGdvaW5nIHRvCmJlIGhhcmQgdG8gZGVhbCB3aXRo
+IGluIGFueSBjYXNlLgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Au
+b3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRl
+dmVsCg==
