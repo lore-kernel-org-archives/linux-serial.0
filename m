@@ -1,144 +1,80 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH v2 1/2] serdev: do not generate modaliases for controllers
-Date: Tue,  9 Jan 2018 17:09:16 +0100
-Message-ID: <20180109160917.30752-2-johan@kernel.org>
-References: <20180109160917.30752-1-johan@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180109160917.30752-1-johan@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20Danis?= <frederic.danis.oss@gmail.com>, Hans de Goede <hdegoede@redhat.com>, Johan Hovold <johan@kernel.org>
+From: =?UTF-8?q?Jan=20Kundr=C3=A1t?= <jan.kundrat@cesnet.cz>
+Subject: [PATCH v2] gpio: serial: max310x: Support open-drain configuration
+ for GPIOs
+Date: Fri, 22 Dec 2017 21:29:44 +0100
+Message-ID: <a1e14faa20381cfbe1d6f7b37bfe60ad270551ab.1515514947.git.jan.kundrat@cesnet.cz>
+References: <20180109153721.GA17957@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20180109153721.GA17957@kroah.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Serdev controllers are not bound to any drivers and it therefore makes
-no sense to generate modaliases for them.
+The push-pull vs. open-drain are the only supported output modes. The
+inputs are always unconditionally equipped with weak pull-downs. That's
+the only mode, so there's probably no point in exporting that. I wonder
+if it's worthwhile to provide a custom dbg_show method to indicate the
+current status of the outputs, though.
 
-This has already been fixed separately for ACPI controllers for which
-uevent errors were also being logged during probe due to the missing
-ACPI companions (from which ACPI modaliases are generated).
+This patch and [1] for i2c-gpio together make it possible to bit-bang an
+I2C bus over GPIOs of an UART which is connected via SPI :). Yes, this
+is crazy, but it's fast enough (while on a 26Mhz SPI HW bus with a
+dual-core 1.6GHz CPU) to drive an I2C bus at 200kHz, according to my
+scope.
 
-This patch moves the modalias handling from the bus type to the client
-device type. Specifically, this means that only serdev devices (a.k.a.
-clients or slaves) will have have MODALIAS fields in their uevent
-environments and corresponding modalias sysfs attributes.
+[1] https://patchwork.ozlabs.org/patch/852591/
 
-Also add the missing static keyword for the modalias device attribute
-when moving the definition.
-
-Reported-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Jan Kundrát <jan.kundrat@cesnet.cz>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/tty/serdev/core.c | 72 ++++++++++++++++++++++-------------------------
- 1 file changed, 34 insertions(+), 38 deletions(-)
+ drivers/tty/serial/max310x.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 5dc88f61f506..c8c43834477b 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -19,6 +19,38 @@
- static bool is_registered;
- static DEFINE_IDA(ctrl_ida);
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 97576ff791db..39f635812077 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1159,6 +1159,27 @@ static int max310x_gpio_direction_output(struct gpio_chip *chip,
  
-+static ssize_t modalias_show(struct device *dev,
-+			     struct device_attribute *attr, char *buf)
-+{
-+	int len;
-+
-+	len = acpi_device_modalias(dev, buf, PAGE_SIZE - 1);
-+	if (len != -ENODEV)
-+		return len;
-+
-+	return of_device_modalias(dev, buf, PAGE_SIZE);
-+}
-+static DEVICE_ATTR_RO(modalias);
-+
-+static struct attribute *serdev_device_attrs[] = {
-+	&dev_attr_modalias.attr,
-+	NULL,
-+};
-+ATTRIBUTE_GROUPS(serdev_device);
-+
-+static int serdev_device_uevent(struct device *dev, struct kobj_uevent_env *env)
-+{
-+	int rc;
-+
-+	/* TODO: platform modalias */
-+
-+	rc = acpi_device_uevent_modalias(dev, env);
-+	if (rc != -ENODEV)
-+		return rc;
-+
-+	return of_device_uevent_modalias(dev, env);
-+}
-+
- static void serdev_device_release(struct device *dev)
- {
- 	struct serdev_device *serdev = to_serdev_device(dev);
-@@ -26,6 +58,8 @@ static void serdev_device_release(struct device *dev)
- }
- 
- static const struct device_type serdev_device_type = {
-+	.groups		= serdev_device_groups,
-+	.uevent		= serdev_device_uevent,
- 	.release	= serdev_device_release,
- };
- 
-@@ -49,23 +83,6 @@ static int serdev_device_match(struct device *dev, struct device_driver *drv)
- 	return of_driver_match_device(dev, drv);
- }
- 
--static int serdev_uevent(struct device *dev, struct kobj_uevent_env *env)
--{
--	int rc;
--
--	/* TODO: platform modalias */
--
--	/* ACPI enumerated controllers do not have a modalias */
--	if (!dev->of_node && dev->type == &serdev_ctrl_type)
--		return 0;
--
--	rc = acpi_device_uevent_modalias(dev, env);
--	if (rc != -ENODEV)
--		return rc;
--
--	return of_device_uevent_modalias(dev, env);
--}
--
- /**
-  * serdev_device_add() - add a device previously constructed via serdev_device_alloc()
-  * @serdev:	serdev_device to be added
-@@ -305,32 +322,11 @@ static int serdev_drv_remove(struct device *dev)
  	return 0;
  }
++
++static int max310x_gpio_set_config(struct gpio_chip *chip, unsigned int offset,
++				   unsigned long config)
++{
++	struct max310x_port *s = gpiochip_get_data(chip);
++	struct uart_port *port = &s->p[offset / 4].port;
++
++	switch (pinconf_to_config_param(config)) {
++	case PIN_CONFIG_DRIVE_OPEN_DRAIN:
++		max310x_port_update(port, MAX310X_GPIOCFG_REG,
++				1 << ((offset % 4) + 4),
++				1 << ((offset % 4) + 4));
++		return 0;
++	case PIN_CONFIG_DRIVE_PUSH_PULL:
++		max310x_port_update(port, MAX310X_GPIOCFG_REG,
++				1 << ((offset % 4) + 4), 0);
++		return 0;
++	default:
++		return -ENOTSUPP;
++	}
++}
+ #endif
  
--static ssize_t modalias_show(struct device *dev,
--			     struct device_attribute *attr, char *buf)
--{
--	int len;
--
--	len = acpi_device_modalias(dev, buf, PAGE_SIZE - 1);
--	if (len != -ENODEV)
--		return len;
--
--	return of_device_modalias(dev, buf, PAGE_SIZE);
--}
--DEVICE_ATTR_RO(modalias);
--
--static struct attribute *serdev_device_attrs[] = {
--	&dev_attr_modalias.attr,
--	NULL,
--};
--ATTRIBUTE_GROUPS(serdev_device);
--
- static struct bus_type serdev_bus_type = {
- 	.name		= "serial",
- 	.match		= serdev_device_match,
- 	.probe		= serdev_drv_probe,
- 	.remove		= serdev_drv_remove,
--	.uevent		= serdev_uevent,
--	.dev_groups	= serdev_device_groups,
- };
- 
- /**
+ static int max310x_probe(struct device *dev, struct max310x_devtype *devtype,
+@@ -1302,6 +1323,7 @@ static int max310x_probe(struct device *dev, struct max310x_devtype *devtype,
+ 	s->gpio.get		= max310x_gpio_get;
+ 	s->gpio.direction_output= max310x_gpio_direction_output;
+ 	s->gpio.set		= max310x_gpio_set;
++	s->gpio.set_config	= max310x_gpio_set_config;
+ 	s->gpio.base		= -1;
+ 	s->gpio.ngpio		= devtype->nr * 4;
+ 	s->gpio.can_sleep	= 1;
 -- 
-2.15.1
+2.14.3
+
+
