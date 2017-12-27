@@ -1,70 +1,760 @@
-From: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
-Subject: [PATCH RFC 4/7] i2c: Add device tree bindings for GENI I2C Controller
-Date: Wed, 27 Dec 2017 09:27:23 -0700
-Message-ID: <1514392046-30602-5-git-send-email-kramasub@codeaurora.org>
+From: Karthikeyan Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH RFC 5/7] i2c: i2c-qcom-geni: Add bus driver for the Qualcomm GENI I2C controller
+Date: Wed, 27 Dec 2017 09:27:24 -0700
+Message-ID: <1514392046-30602-6-git-send-email-kramasub@codeaurora.org>
 References: <1514392046-30602-1-git-send-email-kramasub@codeaurora.org>
-Return-path: <linux-i2c-owner@vger.kernel.org>
-In-Reply-To: <1514392046-30602-1-git-send-email-kramasub@codeaurora.org>
-Sender: linux-i2c-owner@vger.kernel.org
-To: linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, linux-doc@vger.kernel.org, devicetree@vger.kernel.org, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, corbet@lwn.net, wsa@the-dreams.de, gregkh@linuxfoundation.org, jslaby@suse.com, Sagar Dharia <sdharia@codeaurora.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1514392046-30602-1-git-send-email-kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Karthikeyan Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, Sagar Dharia <sdharia-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Girish Mahadevan <girishm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add device tree binding support for I2C Controller in GENI based
-QUP Wrapper.
+This bus driver supports the GENI based i2c hardware controller in the
+Qualcomm SOCs. The Qualcomm Generic Interface (GENI) is a programmable
+module supporting a wide range of serial interfaces including I2C. The
+driver supports FIFO mode and DMA mode of transfer and switches modes
+dynamically depending on the size of the transfer.
 
-Signed-off-by: Sagar Dharia <sdharia@codeaurora.org>
-Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
+Signed-off-by: Karthikeyan Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Signed-off-by: Sagar Dharia <sdharia-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Signed-off-by: Girish Mahadevan <girishm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- .../devicetree/bindings/i2c/i2c-qcom-geni.txt      | 39 ++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
+ drivers/i2c/busses/Kconfig         |  10 +
+ drivers/i2c/busses/Makefile        |   1 +
+ drivers/i2c/busses/i2c-qcom-geni.c | 685 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 696 insertions(+)
+ create mode 100644 drivers/i2c/busses/i2c-qcom-geni.c
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt b/Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index 009345d..caef309 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -838,6 +838,16 @@ config I2C_PXA_SLAVE
+ 	  is necessary for systems where the PXA may be a target on the
+ 	  I2C bus.
+ 
++config I2C_QCOM_GENI
++	tristate "Qualcomm Technologies Inc.'s GENI based I2C controller"
++	depends on ARCH_QCOM
++	help
++	  If you say yes to this option, support will be included for the
++	  built-in I2C interface on the Qualcomm Technologies Inc.'s SoCs.
++
++	  This driver can also be built as a module.  If so, the module
++	  will be called i2c-qcom-geni.
++
+ config I2C_QUP
+ 	tristate "Qualcomm QUP based I2C controller"
+ 	depends on ARCH_QCOM
+diff --git a/drivers/i2c/busses/Makefile b/drivers/i2c/busses/Makefile
+index 2ce8576..201fce1 100644
+--- a/drivers/i2c/busses/Makefile
++++ b/drivers/i2c/busses/Makefile
+@@ -84,6 +84,7 @@ obj-$(CONFIG_I2C_PNX)		+= i2c-pnx.o
+ obj-$(CONFIG_I2C_PUV3)		+= i2c-puv3.o
+ obj-$(CONFIG_I2C_PXA)		+= i2c-pxa.o
+ obj-$(CONFIG_I2C_PXA_PCI)	+= i2c-pxa-pci.o
++obj-$(CONFIG_I2C_QCOM_GENI)	+= i2c-qcom-geni.o
+ obj-$(CONFIG_I2C_QUP)		+= i2c-qup.o
+ obj-$(CONFIG_I2C_RIIC)		+= i2c-riic.o
+ obj-$(CONFIG_I2C_RK3X)		+= i2c-rk3x.o
+diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
 new file mode 100644
-index 0000000..d2fa9ce
+index 0000000..6ffe17e
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
-@@ -0,0 +1,39 @@
-+Qualcomm Technologies Inc. GENI based I2C Controller driver
++++ b/drivers/i2c/busses/i2c-qcom-geni.c
+@@ -0,0 +1,685 @@
++/*
++ * Copyright (c) 2017, The Linux Foundation. All rights reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 and
++ * only version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
 +
-+Required properties:
-+ - compatible: Should be:
-+   * "qcom,i2c-geni.
-+ - reg: Should contain QUP register address and length.
-+ - interrupts: Should contain I2C interrupt.
-+ - clocks: Serial engine core clock, and AHB clocks needed by the device.
-+ - pinctrl-names/pinctrl-0/1: The GPIOs assigned to this core. The names
-+   should be "active" and "sleep" for the pin confuguration when core is active
-+   or when entering sleep state.
-+ - #address-cells: Should be <1> Address cells for i2c device address
-+ - #size-cells: Should be <0> as i2c addresses have no size component
-+ - qcom,wrapper-core: Wrapper QUP core containing this I2C controller.
++#include <linux/clk.h>
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
++#include <linux/dma-mapping.h>
++#include <linux/qcom-geni-se.h>
 +
-+Optional property:
-+ - qcom,clk-freq-out : Desired I2C bus clock frequency in Hz.
-+   When missing default to 400000Hz.
++#define SE_I2C_TX_TRANS_LEN		(0x26C)
++#define SE_I2C_RX_TRANS_LEN		(0x270)
++#define SE_I2C_SCL_COUNTERS		(0x278)
++#define SE_GENI_IOS			(0x908)
 +
-+Child nodes should conform to i2c bus binding.
++#define SE_I2C_ERR  (M_CMD_OVERRUN_EN | M_ILLEGAL_CMD_EN | M_CMD_FAILURE_EN |\
++			M_GP_IRQ_1_EN | M_GP_IRQ_3_EN | M_GP_IRQ_4_EN)
++#define SE_I2C_ABORT (1U << 1)
++/* M_CMD OP codes for I2C */
++#define I2C_WRITE		(0x1)
++#define I2C_READ		(0x2)
++#define I2C_WRITE_READ		(0x3)
++#define I2C_ADDR_ONLY		(0x4)
++#define I2C_BUS_CLEAR		(0x6)
++#define I2C_STOP_ON_BUS		(0x7)
++/* M_CMD params for I2C */
++#define PRE_CMD_DELAY		(BIT(0))
++#define TIMESTAMP_BEFORE	(BIT(1))
++#define STOP_STRETCH		(BIT(2))
++#define TIMESTAMP_AFTER		(BIT(3))
++#define POST_COMMAND_DELAY	(BIT(4))
++#define IGNORE_ADD_NACK		(BIT(6))
++#define READ_FINISHED_WITH_ACK	(BIT(7))
++#define BYPASS_ADDR_PHASE	(BIT(8))
++#define SLV_ADDR_MSK		(GENMASK(15, 9))
++#define SLV_ADDR_SHFT		(9)
 +
-+Example:
++#define I2C_CORE2X_VOTE		(10000)
++#define GP_IRQ0			0
++#define GP_IRQ1			1
++#define GP_IRQ2			2
++#define GP_IRQ3			3
++#define GP_IRQ4			4
++#define GP_IRQ5			5
++#define GENI_OVERRUN		6
++#define GENI_ILLEGAL_CMD	7
++#define GENI_ABORT_DONE		8
++#define GENI_TIMEOUT		9
 +
-+i2c@a94000 {
-+	compatible = "qcom,i2c-geni";
-+	reg = <0xa94000 0x4000>;
-+	interrupts = <GIC_SPI 358 0>;
-+	clock-names = "se-clk", "m-ahb", "s-ahb";
-+	clocks = <&clock_gcc GCC_QUPV3_WRAP0_S5_CLK>,
-+		<&clock_gcc GCC_QUPV3_WRAP_0_M_AHB_CLK>,
-+		<&clock_gcc GCC_QUPV3_WRAP_0_S_AHB_CLK>;
-+	pinctrl-names = "default", "sleep";
-+	pinctrl-0 = <&qup_1_i2c_5_active>;
-+	pinctrl-1 = <&qup_1_i2c_5_sleep>;
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	qcom,wrapper-core = <&qup_0>;
-+	qcom,clk-freq-out = <400000>;
++#define I2C_NACK		GP_IRQ1
++#define I2C_BUS_PROTO		GP_IRQ3
++#define I2C_ARB_LOST		GP_IRQ4
++#define DM_I2C_CB_ERR		((BIT(GP_IRQ1) | BIT(GP_IRQ3) | BIT(GP_IRQ4)) \
++									<< 5)
++
++#define I2C_AUTO_SUSPEND_DELAY	250
++#define KHz(freq)		(1000 * freq)
++
++struct geni_i2c_dev {
++	struct device *dev;
++	void __iomem *base;
++	unsigned int tx_wm;
++	int irq;
++	int err;
++	struct i2c_adapter adap;
++	struct completion xfer;
++	struct i2c_msg *cur;
++	struct geni_se_rsc i2c_rsc;
++	int cur_wr;
++	int cur_rd;
++	struct device *wrapper_dev;
++	u32 clk_freq_out;
++	int clk_fld_idx;
 +};
++
++struct geni_i2c_err_log {
++	int err;
++	const char *msg;
++};
++
++static struct geni_i2c_err_log gi2c_log[] = {
++	[GP_IRQ0] = {-EINVAL, "Unknown I2C err GP_IRQ0"},
++	[I2C_NACK] = {-ENOTCONN,
++			"NACK: slv unresponsive, check its power/reset-ln"},
++	[GP_IRQ2] = {-EINVAL, "Unknown I2C err GP IRQ2"},
++	[I2C_BUS_PROTO] = {-EPROTO,
++				"Bus proto err, noisy/unepxected start/stop"},
++	[I2C_ARB_LOST] = {-EBUSY,
++				"Bus arbitration lost, clock line undriveable"},
++	[GP_IRQ5] = {-EINVAL, "Unknown I2C err GP IRQ5"},
++	[GENI_OVERRUN] = {-EIO, "Cmd overrun, check GENI cmd-state machine"},
++	[GENI_ILLEGAL_CMD] = {-EILSEQ,
++				"Illegal cmd, check GENI cmd-state machine"},
++	[GENI_ABORT_DONE] = {-ETIMEDOUT, "Abort after timeout successful"},
++	[GENI_TIMEOUT] = {-ETIMEDOUT, "I2C TXN timed out"},
++};
++
++struct geni_i2c_clk_fld {
++	u32	clk_freq_out;
++	u8	clk_div;
++	u8	t_high;
++	u8	t_low;
++	u8	t_cycle;
++};
++
++static struct geni_i2c_clk_fld geni_i2c_clk_map[] = {
++	{KHz(100), 7, 10, 11, 26},
++	{KHz(400), 2,  5, 12, 24},
++	{KHz(1000), 1, 3,  9, 18},
++};
++
++static int geni_i2c_clk_map_idx(struct geni_i2c_dev *gi2c)
++{
++	int i;
++	int ret = 0;
++	bool clk_map_present = false;
++	struct geni_i2c_clk_fld *itr = geni_i2c_clk_map;
++
++	for (i = 0; i < ARRAY_SIZE(geni_i2c_clk_map); i++, itr++) {
++		if (itr->clk_freq_out == gi2c->clk_freq_out) {
++			clk_map_present = true;
++			break;
++		}
++	}
++
++	if (clk_map_present)
++		gi2c->clk_fld_idx = i;
++	else
++		ret = -EINVAL;
++
++	return ret;
++}
++
++static inline void qcom_geni_i2c_conf(struct geni_i2c_dev *gi2c, int dfs)
++{
++	struct geni_i2c_clk_fld *itr = geni_i2c_clk_map + gi2c->clk_fld_idx;
++
++	geni_write_reg(dfs, gi2c->base, SE_GENI_CLK_SEL);
++
++	geni_write_reg((itr->clk_div << 4) | 1, gi2c->base, GENI_SER_M_CLK_CFG);
++	geni_write_reg(((itr->t_high << 20) | (itr->t_low << 10) |
++			itr->t_cycle), gi2c->base, SE_I2C_SCL_COUNTERS);
++
++	/* Ensure Clk config completes before return */
++	mb();
++}
++
++static void geni_i2c_err(struct geni_i2c_dev *gi2c, int err)
++{
++	u32 m_cmd = readl_relaxed(gi2c->base + SE_GENI_M_CMD0);
++	u32 m_stat = readl_relaxed(gi2c->base + SE_GENI_M_IRQ_STATUS);
++	u32 geni_s = readl_relaxed(gi2c->base + SE_GENI_STATUS);
++	u32 geni_ios = readl_relaxed(gi2c->base + SE_GENI_IOS);
++	u32 dma = readl_relaxed(gi2c->base + SE_GENI_DMA_MODE_EN);
++	u32 rx_st, tx_st;
++
++	if (gi2c->cur)
++		dev_dbg(gi2c->dev, "len:%d, slv-addr:0x%x, RD/WR:%d\n",
++			gi2c->cur->len, gi2c->cur->addr, gi2c->cur->flags);
++
++	if (err == I2C_NACK || err == GENI_ABORT_DONE) {
++		dev_dbg(gi2c->dev, "%s\n", gi2c_log[err].msg);
++		goto err_ret;
++	} else {
++		dev_err(gi2c->dev, "%s\n", gi2c_log[err].msg);
++	}
++
++	if (dma) {
++		rx_st = readl_relaxed(gi2c->base + SE_DMA_RX_IRQ_STAT);
++		tx_st = readl_relaxed(gi2c->base + SE_DMA_TX_IRQ_STAT);
++	} else {
++		rx_st = readl_relaxed(gi2c->base + SE_GENI_RX_FIFO_STATUS);
++		tx_st = readl_relaxed(gi2c->base + SE_GENI_TX_FIFO_STATUS);
++	}
++	dev_dbg(gi2c->dev, "DMA:%d tx_stat:0x%x, rx_stat:0x%x, irq-stat:0x%x\n",
++		dma, tx_st, rx_st, m_stat);
++	dev_dbg(gi2c->dev, "m_cmd:0x%x, geni_status:0x%x, geni_ios:0x%x\n",
++		m_cmd, geni_s, geni_ios);
++err_ret:
++	gi2c->err = gi2c_log[err].err;
++}
++
++static irqreturn_t geni_i2c_irq(int irq, void *dev)
++{
++	struct geni_i2c_dev *gi2c = dev;
++	int i, j;
++	u32 m_stat = readl_relaxed(gi2c->base + SE_GENI_M_IRQ_STATUS);
++	u32 rx_st = readl_relaxed(gi2c->base + SE_GENI_RX_FIFO_STATUS);
++	u32 dm_tx_st = readl_relaxed(gi2c->base + SE_DMA_TX_IRQ_STAT);
++	u32 dm_rx_st = readl_relaxed(gi2c->base + SE_DMA_RX_IRQ_STAT);
++	u32 dma = readl_relaxed(gi2c->base + SE_GENI_DMA_MODE_EN);
++	struct i2c_msg *cur = gi2c->cur;
++
++	if (!cur || (m_stat & M_CMD_FAILURE_EN) ||
++		    (dm_rx_st & (DM_I2C_CB_ERR)) ||
++		    (m_stat & M_CMD_ABORT_EN)) {
++
++		if (m_stat & M_GP_IRQ_1_EN)
++			geni_i2c_err(gi2c, I2C_NACK);
++		if (m_stat & M_GP_IRQ_3_EN)
++			geni_i2c_err(gi2c, I2C_BUS_PROTO);
++		if (m_stat & M_GP_IRQ_4_EN)
++			geni_i2c_err(gi2c, I2C_ARB_LOST);
++		if (m_stat & M_CMD_OVERRUN_EN)
++			geni_i2c_err(gi2c, GENI_OVERRUN);
++		if (m_stat & M_ILLEGAL_CMD_EN)
++			geni_i2c_err(gi2c, GENI_ILLEGAL_CMD);
++		if (m_stat & M_CMD_ABORT_EN)
++			geni_i2c_err(gi2c, GENI_ABORT_DONE);
++		if (m_stat & M_GP_IRQ_0_EN)
++			geni_i2c_err(gi2c, GP_IRQ0);
++
++		if (!dma)
++			writel_relaxed(0, (gi2c->base +
++					   SE_GENI_TX_WATERMARK_REG));
++		goto irqret;
++	}
++
++	if (dma) {
++		dev_dbg(gi2c->dev, "i2c dma tx:0x%x, dma rx:0x%x\n", dm_tx_st,
++			dm_rx_st);
++		goto irqret;
++	}
++
++	if (((m_stat & M_RX_FIFO_WATERMARK_EN) ||
++		(m_stat & M_RX_FIFO_LAST_EN)) && (cur->flags & I2C_M_RD)) {
++		u32 rxcnt = rx_st & RX_FIFO_WC_MSK;
++
++		for (j = 0; j < rxcnt; j++) {
++			u32 temp;
++			int p;
++
++			temp = readl_relaxed(gi2c->base + SE_GENI_RX_FIFOn);
++			for (i = gi2c->cur_rd, p = 0; (i < cur->len && p < 4);
++				i++, p++)
++				cur->buf[i] = (u8) ((temp >> (p * 8)) & 0xff);
++			gi2c->cur_rd = i;
++			if (gi2c->cur_rd == cur->len) {
++				dev_dbg(gi2c->dev, "FIFO i:%d,read 0x%x\n",
++					i, temp);
++				break;
++			}
++		}
++	} else if ((m_stat & M_TX_FIFO_WATERMARK_EN) &&
++					!(cur->flags & I2C_M_RD)) {
++		for (j = 0; j < gi2c->tx_wm; j++) {
++			u32 temp = 0;
++			int p;
++
++			for (i = gi2c->cur_wr, p = 0; (i < cur->len && p < 4);
++				i++, p++)
++				temp |= (((u32)(cur->buf[i]) << (p * 8)));
++			writel_relaxed(temp, gi2c->base + SE_GENI_TX_FIFOn);
++			gi2c->cur_wr = i;
++			dev_dbg(gi2c->dev, "FIFO i:%d,wrote 0x%x\n", i, temp);
++			if (gi2c->cur_wr == cur->len) {
++				dev_dbg(gi2c->dev, "FIFO i2c bytes done writing\n");
++				writel_relaxed(0,
++				(gi2c->base + SE_GENI_TX_WATERMARK_REG));
++				break;
++			}
++		}
++	}
++irqret:
++	if (m_stat)
++		writel_relaxed(m_stat, gi2c->base + SE_GENI_M_IRQ_CLEAR);
++
++	if (dma) {
++		if (dm_tx_st)
++			writel_relaxed(dm_tx_st, gi2c->base +
++				       SE_DMA_TX_IRQ_CLR);
++		if (dm_rx_st)
++			writel_relaxed(dm_rx_st, gi2c->base +
++				       SE_DMA_RX_IRQ_CLR);
++		/* Ensure all writes are done before returning from ISR. */
++		wmb();
++	}
++	/* if this is err with done-bit not set, handle that thr' timeout. */
++	if (m_stat & M_CMD_DONE_EN)
++		complete(&gi2c->xfer);
++	else if ((dm_tx_st & TX_DMA_DONE) || (dm_rx_st & RX_DMA_DONE))
++		complete(&gi2c->xfer);
++
++	return IRQ_HANDLED;
++}
++
++static int geni_i2c_xfer(struct i2c_adapter *adap,
++			 struct i2c_msg msgs[],
++			 int num)
++{
++	struct geni_i2c_dev *gi2c = i2c_get_adapdata(adap);
++	int i, ret = 0, timeout = 0;
++
++	gi2c->err = 0;
++	gi2c->cur = &msgs[0];
++	reinit_completion(&gi2c->xfer);
++	ret = pm_runtime_get_sync(gi2c->dev);
++	if (ret < 0) {
++		dev_err(gi2c->dev, "error turning SE resources:%d\n", ret);
++		pm_runtime_put_noidle(gi2c->dev);
++		/* Set device in suspended since resume failed */
++		pm_runtime_set_suspended(gi2c->dev);
++		return ret;
++	}
++
++	qcom_geni_i2c_conf(gi2c, 0);
++	dev_dbg(gi2c->dev, "i2c xfer:num:%d, msgs:len:%d,flg:%d\n",
++				num, msgs[0].len, msgs[0].flags);
++	for (i = 0; i < num; i++) {
++		int stretch = (i < (num - 1));
++		u32 m_param = 0;
++		u32 m_cmd = 0;
++		dma_addr_t tx_dma = 0;
++		dma_addr_t rx_dma = 0;
++		enum geni_se_xfer_mode mode = FIFO_MODE;
++
++		m_param |= (stretch ? STOP_STRETCH : 0);
++		m_param |= ((msgs[i].addr & 0x7F) << SLV_ADDR_SHFT);
++
++		gi2c->cur = &msgs[i];
++		mode = msgs[i].len > 32 ? SE_DMA : FIFO_MODE;
++		ret = geni_se_select_mode(gi2c->base, mode);
++		if (ret) {
++			dev_err(gi2c->dev, "%s: Error mode init %d:%d:%d\n",
++				__func__, mode, i, msgs[i].len);
++			break;
++		}
++		if (msgs[i].flags & I2C_M_RD) {
++			dev_dbg(gi2c->dev,
++				"READ,n:%d,i:%d len:%d, stretch:%d\n",
++					num, i, msgs[i].len, stretch);
++			geni_write_reg(msgs[i].len,
++				       gi2c->base, SE_I2C_RX_TRANS_LEN);
++			m_cmd = I2C_READ;
++			geni_se_setup_m_cmd(gi2c->base, m_cmd, m_param);
++			if (mode == SE_DMA) {
++				ret = geni_se_rx_dma_prep(gi2c->wrapper_dev,
++							gi2c->base, msgs[i].buf,
++							msgs[i].len, &rx_dma);
++				if (ret) {
++					mode = FIFO_MODE;
++					ret = geni_se_select_mode(gi2c->base,
++								  mode);
++				}
++			}
++		} else {
++			dev_dbg(gi2c->dev,
++				"WRITE:n:%d,i:%d len:%d, stretch:%d, m_param:0x%x\n",
++					num, i, msgs[i].len, stretch, m_param);
++			geni_write_reg(msgs[i].len, gi2c->base,
++						SE_I2C_TX_TRANS_LEN);
++			m_cmd = I2C_WRITE;
++			geni_se_setup_m_cmd(gi2c->base, m_cmd, m_param);
++			if (mode == SE_DMA) {
++				ret = geni_se_tx_dma_prep(gi2c->wrapper_dev,
++							gi2c->base, msgs[i].buf,
++							msgs[i].len, &tx_dma);
++				if (ret) {
++					mode = FIFO_MODE;
++					ret = geni_se_select_mode(gi2c->base,
++								  mode);
++				}
++			}
++			if (mode == FIFO_MODE) /* Get FIFO IRQ */
++				geni_write_reg(1, gi2c->base,
++						SE_GENI_TX_WATERMARK_REG);
++		}
++		/* Ensure FIFO write go through before waiting for Done evet */
++		mb();
++		timeout = wait_for_completion_timeout(&gi2c->xfer, HZ);
++		if (!timeout) {
++			geni_i2c_err(gi2c, GENI_TIMEOUT);
++			gi2c->cur = NULL;
++			geni_se_abort_m_cmd(gi2c->base);
++			timeout = wait_for_completion_timeout(&gi2c->xfer, HZ);
++		}
++		gi2c->cur_wr = 0;
++		gi2c->cur_rd = 0;
++		if (mode == SE_DMA) {
++			if (gi2c->err) {
++				if (msgs[i].flags != I2C_M_RD)
++					writel_relaxed(1, gi2c->base +
++							SE_DMA_TX_FSM_RST);
++				else
++					writel_relaxed(1, gi2c->base +
++							SE_DMA_RX_FSM_RST);
++				wait_for_completion_timeout(&gi2c->xfer, HZ);
++			}
++			geni_se_rx_dma_unprep(gi2c->wrapper_dev, rx_dma,
++					      msgs[i].len);
++			geni_se_tx_dma_unprep(gi2c->wrapper_dev, tx_dma,
++					      msgs[i].len);
++		}
++		ret = gi2c->err;
++		if (gi2c->err) {
++			dev_err(gi2c->dev, "i2c error :%d\n", gi2c->err);
++			break;
++		}
++	}
++	if (ret == 0)
++		ret = num;
++
++	pm_runtime_mark_last_busy(gi2c->dev);
++	pm_runtime_put_autosuspend(gi2c->dev);
++	gi2c->cur = NULL;
++	gi2c->err = 0;
++	dev_dbg(gi2c->dev, "i2c txn ret:%d\n", ret);
++	return ret;
++}
++
++static u32 geni_i2c_func(struct i2c_adapter *adap)
++{
++	return I2C_FUNC_I2C | (I2C_FUNC_SMBUS_EMUL & ~I2C_FUNC_SMBUS_QUICK);
++}
++
++static const struct i2c_algorithm geni_i2c_algo = {
++	.master_xfer	= geni_i2c_xfer,
++	.functionality	= geni_i2c_func,
++};
++
++static int geni_i2c_probe(struct platform_device *pdev)
++{
++	struct geni_i2c_dev *gi2c;
++	struct resource *res;
++	struct platform_device *wrapper_pdev;
++	struct device_node *wrapper_ph_node;
++	int ret;
++
++	gi2c = devm_kzalloc(&pdev->dev, sizeof(*gi2c), GFP_KERNEL);
++	if (!gi2c)
++		return -ENOMEM;
++
++	gi2c->dev = &pdev->dev;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
++
++	wrapper_ph_node = of_parse_phandle(pdev->dev.of_node,
++				"qcom,wrapper-core", 0);
++	if (IS_ERR_OR_NULL(wrapper_ph_node)) {
++		ret = PTR_ERR(wrapper_ph_node);
++		dev_err(&pdev->dev, "No wrapper core defined\n");
++		return ret;
++	}
++	wrapper_pdev = of_find_device_by_node(wrapper_ph_node);
++	of_node_put(wrapper_ph_node);
++	if (IS_ERR_OR_NULL(wrapper_pdev)) {
++		ret = PTR_ERR(wrapper_pdev);
++		dev_err(&pdev->dev, "Cannot retrieve wrapper device\n");
++		return ret;
++	}
++	gi2c->wrapper_dev = &wrapper_pdev->dev;
++	gi2c->i2c_rsc.wrapper_dev = &wrapper_pdev->dev;
++	gi2c->i2c_rsc.se_clk = devm_clk_get(&pdev->dev, "se-clk");
++	if (IS_ERR(gi2c->i2c_rsc.se_clk)) {
++		ret = PTR_ERR(gi2c->i2c_rsc.se_clk);
++		dev_err(&pdev->dev, "Err getting SE Core clk %d\n", ret);
++		return ret;
++	}
++
++	gi2c->i2c_rsc.m_ahb_clk = devm_clk_get(&pdev->dev, "m-ahb");
++	if (IS_ERR(gi2c->i2c_rsc.m_ahb_clk)) {
++		ret = PTR_ERR(gi2c->i2c_rsc.m_ahb_clk);
++		dev_err(&pdev->dev, "Err getting M AHB clk %d\n", ret);
++		return ret;
++	}
++
++	gi2c->i2c_rsc.s_ahb_clk = devm_clk_get(&pdev->dev, "s-ahb");
++	if (IS_ERR(gi2c->i2c_rsc.s_ahb_clk)) {
++		ret = PTR_ERR(gi2c->i2c_rsc.s_ahb_clk);
++		dev_err(&pdev->dev, "Err getting S AHB clk %d\n", ret);
++		return ret;
++	}
++
++	gi2c->base = devm_ioremap_resource(gi2c->dev, res);
++	if (IS_ERR(gi2c->base))
++		return PTR_ERR(gi2c->base);
++
++	gi2c->i2c_rsc.geni_pinctrl = devm_pinctrl_get(&pdev->dev);
++	if (IS_ERR_OR_NULL(gi2c->i2c_rsc.geni_pinctrl)) {
++		dev_err(&pdev->dev, "No pinctrl config specified\n");
++		ret = PTR_ERR(gi2c->i2c_rsc.geni_pinctrl);
++		return ret;
++	}
++	gi2c->i2c_rsc.geni_gpio_active =
++		pinctrl_lookup_state(gi2c->i2c_rsc.geni_pinctrl,
++							PINCTRL_DEFAULT);
++	if (IS_ERR_OR_NULL(gi2c->i2c_rsc.geni_gpio_active)) {
++		dev_err(&pdev->dev, "No default config specified\n");
++		ret = PTR_ERR(gi2c->i2c_rsc.geni_gpio_active);
++		return ret;
++	}
++	gi2c->i2c_rsc.geni_gpio_sleep =
++		pinctrl_lookup_state(gi2c->i2c_rsc.geni_pinctrl,
++							PINCTRL_SLEEP);
++	if (IS_ERR_OR_NULL(gi2c->i2c_rsc.geni_gpio_sleep)) {
++		dev_err(&pdev->dev, "No sleep config specified\n");
++		ret = PTR_ERR(gi2c->i2c_rsc.geni_gpio_sleep);
++		return ret;
++	}
++
++	if (of_property_read_u32(pdev->dev.of_node, "qcom,clk-freq-out",
++				&gi2c->clk_freq_out)) {
++		dev_info(&pdev->dev,
++			"Bus frequency not specified, default to 400KHz.\n");
++		gi2c->clk_freq_out = KHz(400);
++	}
++
++	gi2c->irq = platform_get_irq(pdev, 0);
++	if (gi2c->irq < 0) {
++		dev_err(gi2c->dev, "IRQ error for i2c-geni\n");
++		return gi2c->irq;
++	}
++
++	ret = geni_i2c_clk_map_idx(gi2c);
++	if (ret) {
++		dev_err(gi2c->dev, "Invalid clk frequency %d KHz: %d\n",
++				gi2c->clk_freq_out, ret);
++		return ret;
++	}
++
++	gi2c->adap.algo = &geni_i2c_algo;
++	init_completion(&gi2c->xfer);
++	platform_set_drvdata(pdev, gi2c);
++	ret = devm_request_irq(gi2c->dev, gi2c->irq, geni_i2c_irq,
++			       IRQF_TRIGGER_HIGH, "i2c_geni", gi2c);
++	if (ret) {
++		dev_err(gi2c->dev, "Request_irq failed:%d: err:%d\n",
++				   gi2c->irq, ret);
++		return ret;
++	}
++	disable_irq(gi2c->irq);
++	i2c_set_adapdata(&gi2c->adap, gi2c);
++	gi2c->adap.dev.parent = gi2c->dev;
++	gi2c->adap.dev.of_node = pdev->dev.of_node;
++
++	strlcpy(gi2c->adap.name, "Geni-I2C", sizeof(gi2c->adap.name));
++
++	pm_runtime_set_suspended(gi2c->dev);
++	pm_runtime_set_autosuspend_delay(gi2c->dev, I2C_AUTO_SUSPEND_DELAY);
++	pm_runtime_use_autosuspend(gi2c->dev);
++	pm_runtime_enable(gi2c->dev);
++	i2c_add_adapter(&gi2c->adap);
++
++	dev_dbg(gi2c->dev, "I2C probed\n");
++	return 0;
++}
++
++static int geni_i2c_remove(struct platform_device *pdev)
++{
++	struct geni_i2c_dev *gi2c = platform_get_drvdata(pdev);
++
++	pm_runtime_disable(gi2c->dev);
++	i2c_del_adapter(&gi2c->adap);
++	return 0;
++}
++
++static int geni_i2c_resume_noirq(struct device *device)
++{
++	return 0;
++}
++
++#ifdef CONFIG_PM
++static int geni_i2c_runtime_suspend(struct device *dev)
++{
++	struct geni_i2c_dev *gi2c = dev_get_drvdata(dev);
++
++	disable_irq(gi2c->irq);
++	geni_se_resources_off(&gi2c->i2c_rsc);
++	return 0;
++}
++
++static int geni_i2c_runtime_resume(struct device *dev)
++{
++	int ret;
++	struct geni_i2c_dev *gi2c = dev_get_drvdata(dev);
++
++	ret = geni_se_resources_on(&gi2c->i2c_rsc);
++	if (ret)
++		return ret;
++
++	if (!unlikely(gi2c->tx_wm)) {
++		int proto = geni_se_get_proto(gi2c->base);
++		int gi2c_tx_depth = geni_se_get_tx_fifo_depth(gi2c->base);
++
++		if (unlikely(proto != I2C)) {
++			dev_err(gi2c->dev, "Invalid proto %d\n", proto);
++			geni_se_resources_off(&gi2c->i2c_rsc);
++			return -ENXIO;
++		}
++
++		gi2c->tx_wm = gi2c_tx_depth - 1;
++		geni_se_init(gi2c->base, gi2c->tx_wm, gi2c_tx_depth);
++		geni_se_config_packing(gi2c->base, 8, 4, true);
++		dev_dbg(gi2c->dev, "i2c fifo/se-dma mode. fifo depth:%d\n",
++			gi2c_tx_depth);
++	}
++	enable_irq(gi2c->irq);
++
++	return 0;
++}
++
++static int geni_i2c_suspend_noirq(struct device *device)
++{
++	struct geni_i2c_dev *gi2c = dev_get_drvdata(device);
++	int ret;
++
++	/* Make sure no transactions are pending */
++	ret = i2c_trylock_bus(&gi2c->adap, I2C_LOCK_SEGMENT);
++	if (!ret) {
++		dev_err(gi2c->dev, "late I2C transaction request\n");
++		return -EBUSY;
++	}
++	if (!pm_runtime_status_suspended(device)) {
++		geni_i2c_runtime_suspend(device);
++		pm_runtime_disable(device);
++		pm_runtime_set_suspended(device);
++		pm_runtime_enable(device);
++	}
++	i2c_unlock_bus(&gi2c->adap, I2C_LOCK_SEGMENT);
++	return 0;
++}
++#else
++static int geni_i2c_runtime_suspend(struct device *dev)
++{
++	return 0;
++}
++
++static int geni_i2c_runtime_resume(struct device *dev)
++{
++	return 0;
++}
++
++static int geni_i2c_suspend_noirq(struct device *device)
++{
++	return 0;
++}
++#endif
++
++static const struct dev_pm_ops geni_i2c_pm_ops = {
++	.suspend_noirq		= geni_i2c_suspend_noirq,
++	.resume_noirq		= geni_i2c_resume_noirq,
++	.runtime_suspend	= geni_i2c_runtime_suspend,
++	.runtime_resume		= geni_i2c_runtime_resume,
++};
++
++static const struct of_device_id geni_i2c_dt_match[] = {
++	{ .compatible = "qcom,i2c-geni" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, geni_i2c_dt_match);
++
++static struct platform_driver geni_i2c_driver = {
++	.probe  = geni_i2c_probe,
++	.remove = geni_i2c_remove,
++	.driver = {
++		.name = "i2c_geni",
++		.pm = &geni_i2c_pm_ops,
++		.of_match_table = geni_i2c_dt_match,
++	},
++};
++
++module_platform_driver(geni_i2c_driver);
++
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:i2c_geni");
 -- 
 Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
