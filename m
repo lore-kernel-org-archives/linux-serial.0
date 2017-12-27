@@ -1,89 +1,49 @@
-From: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
-Subject: [PATCH RFC 1/7] qcom-geni-se: Add QCOM GENI SE Driver summary
-Date: Wed, 27 Dec 2017 09:27:20 -0700
-Message-ID: <1514392046-30602-2-git-send-email-kramasub@codeaurora.org>
+From: Karthikeyan Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH RFC 2/7] soc: qcom: Add device tree binding for GENI SE
+Date: Wed, 27 Dec 2017 09:27:21 -0700
+Message-ID: <1514392046-30602-3-git-send-email-kramasub@codeaurora.org>
 References: <1514392046-30602-1-git-send-email-kramasub@codeaurora.org>
-Return-path: <linux-i2c-owner@vger.kernel.org>
-In-Reply-To: <1514392046-30602-1-git-send-email-kramasub@codeaurora.org>
-Sender: linux-i2c-owner@vger.kernel.org
-To: linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, linux-doc@vger.kernel.org, devicetree@vger.kernel.org, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, corbet@lwn.net, wsa@the-dreams.de, gregkh@linuxfoundation.org, jslaby@suse.com
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1514392046-30602-1-git-send-email-kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Karthikeyan Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Generic Interface (GENI) firmware based Qualcomm Universal Peripheral (QUP)
-Wrapper is a programmable module that is composed of multiple Serial
-Engines (SE) and can support various Serial Interfaces like UART, SPI,
-I2C, I3C, etc. This document provides a high level overview of the GENI
-based QUP Wrapper.
+Add device tree binding support for the QCOM GENI SE driver.
 
-Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
+Signed-off-by: Karthikeyan Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- Documentation/qcom-geni-se.txt | 56 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
- create mode 100644 Documentation/qcom-geni-se.txt
+ .../devicetree/bindings/soc/qcom/qcom,geni-se.txt         | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
 
-diff --git a/Documentation/qcom-geni-se.txt b/Documentation/qcom-geni-se.txt
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
 new file mode 100644
-index 0000000..dc517ef
+index 0000000..5108b62
 --- /dev/null
-+++ b/Documentation/qcom-geni-se.txt
-@@ -0,0 +1,56 @@
-+Introduction
-+============
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+@@ -0,0 +1,15 @@
++Qualcomm Technologies, Inc. GENI Serial Engine Driver
 +
-+Generic Interface (GENI) Serial Engine (SE) Wrapper driver is introduced
-+to manage GENI firmware based Qualcomm Universal Peripheral (QUP) Wrapper
-+controller. QUP Wrapper is designed to support various serial bus protocols
-+like UART, SPI, I2C, I3C, etc.
++GENI Serial Engine Driver manages the GENI firmware based Qualcomm Universal
++Peripheral (QUP) Wrapper. GENI SE Driver also manages the common aspects of
++individual Serial Engines that composes the QUP Wrapper.
 +
-+Hardware description
-+====================
++Required properties:
++- compatible:		Must be "qcom,geni-se-qup".
++- reg:			Must contain QUP register address and length.
 +
-+GENI based QUP is a highly-flexible and programmable module for supporting
-+a wide range of serial interfaces like UART, SPI, I2C, I3C, etc. A single
-+QUP module can provide upto 8 Serial Interfaces, using its internal
-+Serial Engines. The actual configuration is determined by the target
-+platform configuration. The protocol supported by each interface is
-+determined by the firmware loaded to the Serial Engine. Each SE consists
-+of a DMA Engine and GENI sub modules which enable Serial Engines to
-+support FIFO and DMA modes of operation.
-+
-+::
-+
-+                      +-----------------------------------------+
-+                      |QUP Wrapper                              |
-+                      |         +----------------------------+  |
-+   --QUP & SE Clocks-->         | Serial Engine N            |  +-IO------>
-+                      |         | ...                        |  | Interface
-+   <---Clock Perf.----+    +----+-----------------------+    |  |
-+     State Interface  |    | Serial Engine 1            |    |  |
-+                      |    |                            |    |  |
-+                      |    |                            |    |  |
-+   <--------AHB------->    |                            |    |  |
-+                      |    |                            +----+  |
-+                      |    |                            |       |
-+                      |    |                            |       |
-+   <------SE IRQ------+    +----------------------------+       |
-+                      |                                         |
-+                      +-----------------------------------------+
-+
-+                         Figure 1: GENI based QUP Wrapper
-+
-+Software description
-+====================
-+
-+GENI SE Wrapper driver is structured into 2 parts:
-+
-+geni_se_device represents QUP Wrapper controller. This part of the driver
-+manages QUP Wrapper information such as hardware version, clock
-+performance table that is common to all the internal Serial Engines.
-+
-+geni_se_rsc represents Serial Engine. This part of the driver manages
-+Serial Engine information such as clocks, pinctrl states, containing QUP
-+Wrapper. This part of driver also supports operations(eg. initialize the
-+concerned Serial Engine, select between FIFO and DMA mode of operation etc.)
-+that are common to all the Serial Engines and are independent of Serial
-+Interfaces.
++Example:
++	qup_0: qcom,geni_se_qup_0@8c0000 {
++		compatible = "qcom,geni-se-qup";
++		reg = <0x8c0000 0x6000>;
++	}
 -- 
 Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
