@@ -1,13 +1,15 @@
-From: Jonas Gorski <jonas.gorski@gmail.com>
-Subject: Re: [PATCH RFC 3/3] MIPS: AR7: ensure the port type's FCR value is used
-Date: Thu, 28 Dec 2017 16:38:29 +0100
-Message-ID: <CAOiHx==rL82D4NMz8t15jMr8m5oQmhkAzc+9r6qA0WMgbS-b9w@mail.gmail.com>
-References: <20171029152721.6770-1-jonas.gorski@gmail.com> <20171029152721.6770-4-jonas.gorski@gmail.com>
- <20171114110211.GA5823@jhogan-linux.mipstec.com>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 3.2 82/94] MIPS: AR7: Ensure that serial ports are
+ properly set up
+Date: Thu, 28 Dec 2017 16:59:12 +0000
+Message-ID: <lsq.1514480352.53205939@decadent.org.uk>
+References: <lsq.1514480348.981935392@decadent.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20171114110211.GA5823@jhogan-linux.mipstec.com>
+Content-Disposition: inline
+In-Reply-To: <lsq.1514480348.981935392@decadent.org.uk>
 Sender: linux-mips-bounce@linux-mips.org
 Errors-to: linux-mips-bounce@linux-mips.org
 List-help: <mailto:ecartis@linux-mips.org?Subject=help>
@@ -17,48 +19,47 @@ List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
 List-owner: <mailto:ralf@linux-mips.org>
 List-post: <mailto:linux-mips@linux-mips.org>
 List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: James Hogan <james.hogan@mips.com>
-Cc: MIPS Mailing List <linux-mips@linux-mips.org>, linux-serial@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Florian Fainelli <f.fainelli@gmail.com>, Nicolas Schichan <nschichan@freebox.fr>
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: akpm@linux-foundation.org, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Ralf Baechle <ralf@linux-mips.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Oswald Buddenhagen <oswald.buddenhagen@gmx.de>, linux-mips@linux-mips.org, James Hogan <jhogan@kernel.org>, Jonas Gorski <jonas.gorski@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Nicolas Schichan <nschichan@freebox.fr>
 List-Id: linux-serial@vger.kernel.org
 
-On 14 November 2017 at 12:02, James Hogan <james.hogan@mips.com> wrote:
-> On Sun, Oct 29, 2017 at 04:27:21PM +0100, Jonas Gorski wrote:
->> Since commit aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt
->> trigger I/F of FIFO buffers"), the port's default FCR value isn't used
->> in serial8250_do_set_termios anymore, but copied over once in
->> serial8250_config_port and then modified as needed.
->>
->> Unfortunately, serial8250_config_port will never be called if the port
->> is shared between kernel and userspace, and the port's flag doesn't have
->> UPF_BOOT_AUTOCONF, which would trigger a serial8250_config_port as well.
->>
->> This causes garbled output from userspace:
->>
->> [    5.220000] random: procd urandom read with 49 bits of entropy available
->> ers
->>    [kee
->>
->> Fix this by forcing it to be configured on boot, resulting in the
->> expected output:
->>
->> [    5.250000] random: procd urandom read with 50 bits of entropy available
->> Press the [f] key and hit [enter] to enter failsafe mode
->> Press the [1], [2], [3] or [4] key and hit [enter] to select the debug level
->>
->> Fixes: aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt trigger I/F of FIFO buffers")
->> Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
->> ---
->> I'm not sure if this is just AR7's issue, or if this points to a general
->> issue for UARTs used as kernel console and login console with the "fixed"
->> commit.
->
-> Thanks. Given nobody seems to have objected, I've applied to my
-> mips-fixes branch, with stable tag for 3.17+.
+3.2.97-rc1 review patch.  If anyone has any objections, please let me know.
 
-Hmm, I don't see it in
-https://git.kernel.org/pub/scm/linux/kernel/git/jhogan/mips.git/log/?h=mips-fixes
-- did you maybe forget to push?
+------------------
 
+From: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
 
-Regards
-Jonas
+commit b084116f8587b222a2c5ef6dcd846f40f24b9420 upstream.
+
+Without UPF_FIXED_TYPE, the data from the PORT_AR7 uart_config entry is
+never copied, resulting in a dead port.
+
+Fixes: 154615d55459 ("MIPS: AR7: Use correct UART port type")
+Signed-off-by: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
+[jonas.gorski: add Fixes tag]
+Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+Cc: Nicolas Schichan <nschichan@freebox.fr>
+Cc: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
+Cc: linux-mips@linux-mips.org
+Cc: linux-serial@vger.kernel.org
+Patchwork: https://patchwork.linux-mips.org/patch/17543/
+Signed-off-by: James Hogan <jhogan@kernel.org>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+---
+ arch/mips/ar7/platform.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/arch/mips/ar7/platform.c
++++ b/arch/mips/ar7/platform.c
+@@ -541,6 +541,7 @@ static int __init ar7_register_uarts(voi
+ 	uart_port.type		= PORT_AR7;
+ 	uart_port.uartclk	= clk_get_rate(bus_clk) / 2;
+ 	uart_port.iotype	= UPIO_MEM32;
++	uart_port.flags		= UPF_FIXED_TYPE;
+ 	uart_port.regshift	= 2;
+ 
+ 	uart_port.line		= 0;
