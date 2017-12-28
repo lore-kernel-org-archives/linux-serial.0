@@ -1,15 +1,15 @@
 From: Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 3.2 82/94] MIPS: AR7: Ensure that serial ports are
+Subject: [PATCH 3.16 177/204] MIPS: AR7: Ensure that serial ports are
  properly set up
-Date: Thu, 28 Dec 2017 16:59:12 +0000
-Message-ID: <lsq.1514480352.53205939@decadent.org.uk>
-References: <lsq.1514480348.981935392@decadent.org.uk>
+Date: Thu, 28 Dec 2017 17:05:44 +0000
+Message-ID: <lsq.1514480744.874677113@decadent.org.uk>
+References: <lsq.1514480743.579539031@decadent.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-mips-bounce@linux-mips.org>
 Content-Disposition: inline
-In-Reply-To: <lsq.1514480348.981935392@decadent.org.uk>
+In-Reply-To: <lsq.1514480743.579539031@decadent.org.uk>
 Sender: linux-mips-bounce@linux-mips.org
 Errors-to: linux-mips-bounce@linux-mips.org
 List-help: <mailto:ecartis@linux-mips.org?Subject=help>
@@ -20,10 +20,10 @@ List-owner: <mailto:ralf@linux-mips.org>
 List-post: <mailto:linux-mips@linux-mips.org>
 List-archive: <http://www.linux-mips.org/archives/linux-mips/>
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: akpm@linux-foundation.org, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Ralf Baechle <ralf@linux-mips.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Oswald Buddenhagen <oswald.buddenhagen@gmx.de>, linux-mips@linux-mips.org, James Hogan <jhogan@kernel.org>, Jonas Gorski <jonas.gorski@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Nicolas Schichan <nschichan@freebox.fr>
+Cc: akpm@linux-foundation.org, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, linux-mips@linux-mips.org, Nicolas Schichan <nschichan@freebox.fr>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, James Hogan <jhogan@kernel.org>, Jonas Gorski <jonas.gorski@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
 List-Id: linux-serial@vger.kernel.org
 
-3.2.97-rc1 review patch.  If anyone has any objections, please let me know.
+3.16.52-rc1 review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -55,7 +55,7 @@ Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 
 --- a/arch/mips/ar7/platform.c
 +++ b/arch/mips/ar7/platform.c
-@@ -541,6 +541,7 @@ static int __init ar7_register_uarts(voi
+@@ -581,6 +581,7 @@ static int __init ar7_register_uarts(voi
  	uart_port.type		= PORT_AR7;
  	uart_port.uartclk	= clk_get_rate(bus_clk) / 2;
  	uart_port.iotype	= UPIO_MEM32;
