@@ -1,68 +1,64 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH 3/3] serial: 8250_ingenic: Parse earlycon options
-Date: Thu, 28 Dec 2017 14:07:09 +0100
-Message-ID: <20171228130709.12457-4-paul@crapouillou.net>
-References: <20171228130709.12457-1-paul@crapouillou.net>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171228130709.12457-1-paul@crapouillou.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+From: Jonas Gorski <jonas.gorski@gmail.com>
+Subject: Re: [PATCH RFC 3/3] MIPS: AR7: ensure the port type's FCR value is used
+Date: Thu, 28 Dec 2017 16:38:29 +0100
+Message-ID: <CAOiHx==rL82D4NMz8t15jMr8m5oQmhkAzc+9r6qA0WMgbS-b9w@mail.gmail.com>
+References: <20171029152721.6770-1-jonas.gorski@gmail.com> <20171029152721.6770-4-jonas.gorski@gmail.com>
+ <20171114110211.GA5823@jhogan-linux.mipstec.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <20171114110211.GA5823@jhogan-linux.mipstec.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: James Hogan <james.hogan@mips.com>
+Cc: MIPS Mailing List <linux-mips@linux-mips.org>, linux-serial@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Florian Fainelli <f.fainelli@gmail.com>, Nicolas Schichan <nschichan@freebox.fr>
 List-Id: linux-serial@vger.kernel.org
 
-In the devicetree, it is possible to specify the baudrate, parity,
-bits, flow of the early console, by passing a configuration string like
-this:
+On 14 November 2017 at 12:02, James Hogan <james.hogan@mips.com> wrote:
+> On Sun, Oct 29, 2017 at 04:27:21PM +0100, Jonas Gorski wrote:
+>> Since commit aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt
+>> trigger I/F of FIFO buffers"), the port's default FCR value isn't used
+>> in serial8250_do_set_termios anymore, but copied over once in
+>> serial8250_config_port and then modified as needed.
+>>
+>> Unfortunately, serial8250_config_port will never be called if the port
+>> is shared between kernel and userspace, and the port's flag doesn't have
+>> UPF_BOOT_AUTOCONF, which would trigger a serial8250_config_port as well.
+>>
+>> This causes garbled output from userspace:
+>>
+>> [    5.220000] random: procd urandom read with 49 bits of entropy available
+>> ers
+>>    [kee
+>>
+>> Fix this by forcing it to be configured on boot, resulting in the
+>> expected output:
+>>
+>> [    5.250000] random: procd urandom read with 50 bits of entropy available
+>> Press the [f] key and hit [enter] to enter failsafe mode
+>> Press the [1], [2], [3] or [4] key and hit [enter] to select the debug level
+>>
+>> Fixes: aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt trigger I/F of FIFO buffers")
+>> Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+>> ---
+>> I'm not sure if this is just AR7's issue, or if this points to a general
+>> issue for UARTs used as kernel console and login console with the "fixed"
+>> commit.
+>
+> Thanks. Given nobody seems to have objected, I've applied to my
+> mips-fixes branch, with stable tag for 3.17+.
 
-aliases {
-	serial0 = &uart0;
-};
+Hmm, I don't see it in
+https://git.kernel.org/pub/scm/linux/kernel/git/jhogan/mips.git/log/?h=mips-fixes
+- did you maybe forget to push?
 
-chosen {
-	stdout-path = "serial0:57600n8";
-};
 
-This, for instance, will configure the early console for a baudrate of
-57600 bps, no parity, and 8 bits per baud.
-
-This patches implements parsing of this configuration string in the
-8250_ingenic driver, which previously just ignored it.
-
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
- drivers/tty/serial/8250/8250_ingenic.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
- v1: Initial version
-
-diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-index 165b4bb3de93..15a8c8dfa92b 100644
---- a/drivers/tty/serial/8250/8250_ingenic.c
-+++ b/drivers/tty/serial/8250/8250_ingenic.c
-@@ -91,14 +91,22 @@ static int __init ingenic_early_console_setup(struct earlycon_device *dev,
- 					      const char *opt)
- {
- 	struct uart_port *port = &dev->port;
--	unsigned int baud, divisor;
-+	unsigned int divisor;
-+	int baud = 115200;
- 
- 	if (!dev->port.membase)
- 		return -ENODEV;
- 
-+	if (opt) {
-+		unsigned int parity, bits, flow; /* unused for now */
-+
-+		uart_parse_options(opt, &baud, &parity, &bits, &flow);
-+	}
-+
- 	ingenic_early_console_setup_clock(dev);
- 
--	baud = dev->baud ?: 115200;
-+	if (dev->baud)
-+		baud = dev->baud;
- 	divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
- 
- 	early_out(port, UART_IER, 0);
--- 
-2.15.1
+Regards
+Jonas
