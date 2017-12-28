@@ -1,65 +1,46 @@
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 3.16 177/204] MIPS: AR7: Ensure that serial ports are
- properly set up
-Date: Thu, 28 Dec 2017 17:05:44 +0000
-Message-ID: <lsq.1514480744.874677113@decadent.org.uk>
-References: <lsq.1514480743.579539031@decadent.org.uk>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] gpio: serial: max310x: Support open-drain configuration
+ for GPIOs
+Date: Fri, 29 Dec 2017 00:38:13 +0100
+Message-ID: <CACRpkdYi4tLGRHu9+pum+bt9xyOCKUZoLVdum1JvXgOOZRwfBw@mail.gmail.com>
+References: <18c9e927d2b75b3325ee3eae7e78319129faa779.1513983040.git.jan.kundrat@cesnet.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <lsq.1514480743.579539031@decadent.org.uk>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: akpm@linux-foundation.org, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, linux-mips@linux-mips.org, Nicolas Schichan <nschichan@freebox.fr>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, James Hogan <jhogan@kernel.org>, Jonas Gorski <jonas.gorski@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <18c9e927d2b75b3325ee3eae7e78319129faa779.1513983040.git.jan.kundrat@cesnet.cz>
+Sender: linux-gpio-owner@vger.kernel.org
+To: =?UTF-8?B?SmFuIEt1bmRyw6F0?= <jan.kundrat@cesnet.cz>
+Cc: linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>
 List-Id: linux-serial@vger.kernel.org
 
-3.16.52-rc1 review patch.  If anyone has any objections, please let me know.
+On Fri, Dec 22, 2017 at 9:29 PM, Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz> w=
+rote:
 
-------------------
+> The push-pull vs. open-drain are the only supported output modes. The
+> inputs are always unconditionally equipped with weak pull-downs. That's
+> the only mode, so there's probably no point in exporting that. I wonder
+> if it's worthwhile to provide a custom dbg_show method to indicate the
+> current status of the outputs, though.
+>
+> This patch and [1] for i2c-gpio together make it possible to bit-bang an
+> I2C bus over GPIOs of an UART which is connected via SPI :). Yes, this
+> is crazy, but it's fast enough (while on a 26Mhz SPI HW bus with a
+> dual-core 1.6GHz CPU) to drive an I2C bus at 200kHz, according to my
+> scope.
+>
+> [1] https://patchwork.ozlabs.org/patch/852591/
+>
+> Signed-off-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
+> ---
+> My suggestion is for this patch to go in via the tty/serial tree; I plan
+> to send more patches to this driver (and some of them are alreay in
+> tty-next). --jkt
 
-From: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
+OK Greg can pick this.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-commit b084116f8587b222a2c5ef6dcd846f40f24b9420 upstream.
+(Looks very useful for hardware hacking, by the way.)
 
-Without UPF_FIXED_TYPE, the data from the PORT_AR7 uart_config entry is
-never copied, resulting in a dead port.
-
-Fixes: 154615d55459 ("MIPS: AR7: Use correct UART port type")
-Signed-off-by: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
-[jonas.gorski: add Fixes tag]
-Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ralf Baechle <ralf@linux-mips.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
-Cc: Nicolas Schichan <nschichan@freebox.fr>
-Cc: Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
-Cc: linux-mips@linux-mips.org
-Cc: linux-serial@vger.kernel.org
-Patchwork: https://patchwork.linux-mips.org/patch/17543/
-Signed-off-by: James Hogan <jhogan@kernel.org>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
----
- arch/mips/ar7/platform.c | 1 +
- 1 file changed, 1 insertion(+)
-
---- a/arch/mips/ar7/platform.c
-+++ b/arch/mips/ar7/platform.c
-@@ -581,6 +581,7 @@ static int __init ar7_register_uarts(voi
- 	uart_port.type		= PORT_AR7;
- 	uart_port.uartclk	= clk_get_rate(bus_clk) / 2;
- 	uart_port.iotype	= UPIO_MEM32;
-+	uart_port.flags		= UPF_FIXED_TYPE;
- 	uart_port.regshift	= 2;
- 
- 	uart_port.line		= 0;
+Yours,
+Linus Walleij
