@@ -1,60 +1,68 @@
-From: Paul Cercueil <paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>
-Subject: [PATCH 1/3] serial: core: Make uart_parse_options take const char* argument
-Date: Thu, 28 Dec 2017 14:07:07 +0100
-Message-ID: <20171228130709.12457-2-paul@crapouillou.net>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH 2/3] serial: 8250_ingenic: Add support for the JZ4770 SoC
+Date: Thu, 28 Dec 2017 14:07:08 +0100
+Message-ID: <20171228130709.12457-3-paul@crapouillou.net>
 References: <20171228130709.12457-1-paul@crapouillou.net>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20171228130709.12457-1-paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Cercueil <paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171228130709.12457-1-paul@crapouillou.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-serial@vger.kernel.org
 
-The pointed string is never modified from within uart_parse_options, so
-it should be marked as const in the function prototype.
+The JZ4770 SoC's UART is no different from the other JZ SoCs, so this
+commit simply adds the ingenic,jz4770-uart compatible string.
 
-Signed-off-by: Paul Cercueil <paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- drivers/tty/serial/serial_core.c | 5 +++--
- include/linux/serial_core.h      | 2 +-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/serial/ingenic,uart.txt | 8 ++++++--
+ drivers/tty/serial/8250/8250_ingenic.c                    | 5 +++++
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
  v1: Initial version
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 854995e1cae7..4e0c9209bfb7 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1955,9 +1955,10 @@ EXPORT_SYMBOL_GPL(uart_parse_earlycon);
-  *	eg: 115200n8r
-  */
- void
--uart_parse_options(char *options, int *baud, int *parity, int *bits, int *flow)
-+uart_parse_options(const char *options, int *baud, int *parity,
-+		   int *bits, int *flow)
- {
--	char *s = options;
-+	const char *s = options;
+diff --git a/Documentation/devicetree/bindings/serial/ingenic,uart.txt b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
+index 02cb7fe59cb7..c3c6406d5cfe 100644
+--- a/Documentation/devicetree/bindings/serial/ingenic,uart.txt
++++ b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
+@@ -1,8 +1,12 @@
+ * Ingenic SoC UART
  
- 	*baud = simple_strtoul(s, NULL, 10);
- 	while (*s >= '0' && *s <= '9')
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 37b044e78333..e23d9aa757fb 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -387,7 +387,7 @@ struct uart_port *uart_get_console(struct uart_port *ports, int nr,
- 				   struct console *c);
- int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
- 			char **options);
--void uart_parse_options(char *options, int *baud, int *parity, int *bits,
-+void uart_parse_options(const char *options, int *baud, int *parity, int *bits,
- 			int *flow);
- int uart_set_options(struct uart_port *port, struct console *co, int baud,
- 		     int parity, int bits, int flow);
+ Required properties:
+-- compatible : "ingenic,jz4740-uart", "ingenic,jz4760-uart",
+-	"ingenic,jz4775-uart" or "ingenic,jz4780-uart"
++- compatible : One of:
++  - "ingenic,jz4740-uart",
++  - "ingenic,jz4760-uart",
++  - "ingenic,jz4770-uart",
++  - "ingenic,jz4775-uart",
++  - "ingenic,jz4780-uart".
+ - reg : offset and length of the register set for the device.
+ - interrupts : should contain uart interrupt.
+ - clocks : phandles to the module & baud clocks.
+diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+index 6af84900870e..165b4bb3de93 100644
+--- a/drivers/tty/serial/8250/8250_ingenic.c
++++ b/drivers/tty/serial/8250/8250_ingenic.c
+@@ -125,6 +125,10 @@ EARLYCON_DECLARE(jz4740_uart, ingenic_early_console_setup);
+ OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
+ 		    ingenic_early_console_setup);
+ 
++EARLYCON_DECLARE(jz4770_uart, ingenic_early_console_setup);
++OF_EARLYCON_DECLARE(jz4770_uart, "ingenic,jz4770-uart",
++		    ingenic_early_console_setup);
++
+ EARLYCON_DECLARE(jz4775_uart, ingenic_early_console_setup);
+ OF_EARLYCON_DECLARE(jz4775_uart, "ingenic,jz4775-uart",
+ 		    ingenic_early_console_setup);
+@@ -319,6 +323,7 @@ static const struct ingenic_uart_config jz4780_uart_config = {
+ static const struct of_device_id of_match[] = {
+ 	{ .compatible = "ingenic,jz4740-uart", .data = &jz4740_uart_config },
+ 	{ .compatible = "ingenic,jz4760-uart", .data = &jz4760_uart_config },
++	{ .compatible = "ingenic,jz4770-uart", .data = &jz4760_uart_config },
+ 	{ .compatible = "ingenic,jz4775-uart", .data = &jz4760_uart_config },
+ 	{ .compatible = "ingenic,jz4780-uart", .data = &jz4780_uart_config },
+ 	{ /* sentinel */ }
 -- 
 2.15.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
