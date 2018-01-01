@@ -1,70 +1,98 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH 2/2] serial: imx: fix endless loop during suspend
-Date: Sun, 31 Dec 2017 09:53:41 -0200
-Message-ID: <CAOMZO5AvFePCoKYQe7bt9bzFmdLYrgDyPLkepz99bJk7BTB0Lg@mail.gmail.com>
-References: <1514395632-15390-1-git-send-email-martin@kaiser.cx> <1514395632-15390-2-git-send-email-martin@kaiser.cx>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <1514395632-15390-2-git-send-email-martin@kaiser.cx>
-Sender: stable-owner@vger.kernel.org
-To: Martin Kaiser <martin@kaiser.cx>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sascha Hauer <kernel@pengutronix.de>, Philipp Zabel <p.zabel@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>
+From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Subject: [RFC v2 0/9] Realtek Bluetooth serdev support (H5 protocol)
+Date: Mon,  1 Jan 2018 21:42:08 +0100
+Message-ID: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org, johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org, carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Martin,
+Hello,
 
-On Wed, Dec 27, 2017 at 3:27 PM, Martin Kaiser <martin@kaiser.cx> wrote:
-> Before we go into suspend mode, we enable the imx uart's interrupt for
-> the awake bit in the UART Status Register 1. If, for some reason, the
-> awake bit is already set before we enter suspend mode, we get an
-> interrupt immediately when we enable interrupts for awake. The uart's
-> clk_ipg is already disabled at this point. We end up in the interrupt
-> handler, which usually tries to clear the awake bit. This doesn't work
-> with the clock disabled. Therefore, we keep getting interrupts forever,
-> resulting in an endless loop.
->
-> Move the calls to serial_imx_enable_wakeup() into the _noirq functions,
-> where interrupts are disabled and clk_ipg is active. This way, we can
-> safely clear the awake bit and enable the imx interrupt for awake.
->
-> Now that we do the wakeup configuration in .suspend_noirq, we need
-> separate functions for .suspend_noirq and .freeze_noirq. However,
-> .resume_noirq and .restore_noirq can still be shared. We just disable
-> the wakeup source there, this does not conflict with hibernation.
->
-> Signed-off-by: Martin Kaiser <martin@kaiser.cx>
-> Cc: stable@vger.kernel.org
+I am sending this series because I want to get feedback.
+please don't expect it to be perfect (yet). especially since it's
+touching parts of the kernel I've not worked with before.
 
-Which i.MX SoC did you use to test this patch?
+my goal was NOT to use the user-space initialization tool for the
+Bluetooth part of one of my devices (which uses a Realtek RTL8723BS).
+my hope was that I only had to hook up serdev support to hci_h5 and
+re-use the setup function provided by btrtl. unfortunately it wasn't
+that easy.
 
-On a imx6q-cuboxi I am no longer able to enter in suspend with this
-path applied:
+there are no datasheets for the RTL8723BS or RTL8723DS out there.
+however, there are some userspace tools which go through the whole
+initialization process - this is what I used as reference:
+- RTL8723BS Bluetooth sources from [0]
+- RTL8723DS Bluetooth sources from [1]
 
-# echo enabled > /sys/class/tty/ttymxc0/power/wakeup
-# echo mem > /sys/power/state
-[    9.766903] PM: suspend entry (deep)
-[    9.770658] PM: Syncing filesystems ... done.
-[    9.815312] Freezing user space processes ... (elapsed 0.001 seconds) done.
-[    9.824744] OOM killer disabled.
-[    9.827998] Freezing remaining freezable tasks ... (elapsed 0.001
-seconds) done.
-[    9.837351] Suspending console(s) (use no_console_suspend to debug)
-[    9.915495] PM: suspend devices took 0.080 seconds
-[    9.928746] PM: noirq suspend of devices failed
-[   10.196232] mmc0: queuing unknown CIS tuple 0x80 (2 bytes)
-[   10.198148] mmc0: queuing unknown CIS tuple 0x80 (3 bytes)
-[   10.200042] mmc0: queuing unknown CIS tuple 0x80 (3 bytes)
-[   10.203420] mmc0: queuing unknown CIS tuple 0x80 (7 bytes)
-[   10.206812] mmc0: queuing unknown CIS tuple 0x80 (7 bytes)
-[   10.263097] PM: resume devices took 0.330 seconds
-[   10.266639] ata1: SATA link down (SStatus 0 SControl 300)
-[   10.310305] OOM killer enabled.
-[   10.313458] Restarting tasks ... done.
-[   10.319568] PM: suspend exit
-sh: write error: Device or resource busy
+These modules require a firmware and a config file (both don't seem
+to be compatible with what we have in linux-firmware at the moment).
 
-Even if I do not press anything in the console the system gets out of
-suspend automatically.
+since it's an RFC I also have some questions:
+- who can help testing that I didn't break any USB based Realtek
+  Bluetooth chips? I only have UART (embedded into the SDIO RTL8723BS
+  and RTL8723DS) ones
+- what about the Bluetooth firmware and config blobs? how to get them
+  into the linux-firmware tree? maybe Larry Finger can help here :)
+- what are <your name here> comments about this series?
 
-Thanks
+
+Changes since RFC v1 at [2]:
+- fixed compile error in PATCH #1 if CONFIG_SERIAL_DEV_BUS is disabled
+  (spotted by Intel's kbuild test robot - many thanks!)
+- renamed "disable-gpios" to "enable-gpios" in the dt-bindings and
+  hci_h5 patches
+- added a "realtek,config-data" property to devicetree which can be used
+  to provide the "config"-blob. I did not find a way to auto-generate
+  that blob. a similar property is described by "marvell-bt-8xxx.txt".
+  This affects the dt-bindings (Documentation) patch and introduces a
+  new patch for btrtl.c.
+- guard against the vendor_setup callback being NULL (thanks Marcel
+  Holtmann for suggesting this in the review of RFC 1) in the hci_h5
+  patch
+- added comments where the msleep() times are coming from in the hci_h5
+  patch
+- dropped an unnecessary msleep() after sending the "change baudrate"
+  command (thanks Marcel Holtmann for spotting this)
+- entirely drop HCI_UART_INIT_PENDING instead of just ignoring it in
+  hci_serdev
+
+
+[0] https://github.com/lwfinger/rtl8723bs_bt
+[1] https://github.com/NextThingCo/rtl8723ds_bt
+[2] https://www.spinics.net/lists/linux-bluetooth/msg72862.html
+
+
+Martin Blumenstingl (9):
+  serdev: implement parity configuration
+  dt-bindings: net: bluetooth: add support for Realtek Bluetooth chips
+  Bluetooth: btrtl: add MODULE_FIRMWARE declarations
+  Bluetooth: btrtl: split the device initialization into smaller parts
+  Bluetooth: btrtl: add support for retrieving the UART settings
+  Bluetooth: btrtl: add support for the RTL8723BS and RTL8723DS chips
+  bluetooth: btrtl: load the config blob from devicetree when available
+  Bluetooth: drop HCI_UART_INIT_PENDING support
+  Bluetooth: hci_h5: add support for Realtek UART Bluetooth modules
+
+ .../devicetree/bindings/net/realtek-bluetooth.txt  |  41 ++
+ drivers/bluetooth/Kconfig                          |   1 +
+ drivers/bluetooth/btrtl.c                          | 461 ++++++++++++++++-----
+ drivers/bluetooth/btrtl.h                          |  46 ++
+ drivers/bluetooth/hci_h5.c                         | 206 ++++++++-
+ drivers/bluetooth/hci_ldisc.c                      |  38 --
+ drivers/bluetooth/hci_serdev.c                     |   3 -
+ drivers/bluetooth/hci_uart.h                       |   4 +-
+ drivers/tty/serdev/core.c                          |  12 +
+ drivers/tty/serdev/serdev-ttyport.c                |  21 +
+ include/linux/serdev.h                             |   5 +
+ 11 files changed, 678 insertions(+), 160 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/realtek-bluetooth.txt
+
+-- 
+2.15.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
