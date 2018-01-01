@@ -1,7 +1,7 @@
 From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Subject: [RFC v2 2/9] dt-bindings: net: bluetooth: add support for Realtek Bluetooth chips
-Date: Mon,  1 Jan 2018 21:42:10 +0100
-Message-ID: <20180101204217.26165-3-martin.blumenstingl@googlemail.com>
+Subject: [RFC v2 6/9] Bluetooth: btrtl: add support for the RTL8723BS and RTL8723DS chips
+Date: Mon,  1 Jan 2018 21:42:14 +0100
+Message-ID: <20180101204217.26165-7-martin.blumenstingl@googlemail.com>
 References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
 Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20180101204217.26165-1-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
@@ -10,63 +10,71 @@ To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2r
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org, johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org, carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-This adds the documentation for Bluetooth functionality of the Realtek
-RTL8723BS and RTL8723DS.
-Both are SDIO wifi chips with an additional Bluetooth module which is
-connected via UART to the host.
+The Realtek RTL8723BS and RTL8723DS chipsets are SDIO wifi chips. They
+also contain a Bluetooth module which is connected via UART to the host.
+
+Realtek's userspace initialization tool (rtk_hciattach) differentiates
+these two via the HCI version and revision returned by the
+HCI_OP_READ_LOCAL_VERSION command.
+Additionally we apply these checks only the for UART devices. Everything
+else is assumed to be a "RTL8723B" which was originally supported by the
+driver (communicating via USB).
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 ---
- .../devicetree/bindings/net/realtek-bluetooth.txt  | 41 ++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/realtek-bluetooth.txt
+ drivers/bluetooth/btrtl.c | 32 ++++++++++++++++++++++++++++++--
+ 1 file changed, 30 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/realtek-bluetooth.txt b/Documentation/devicetree/bindings/net/realtek-bluetooth.txt
-new file mode 100644
-index 000000000000..1491329c4cd1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/realtek-bluetooth.txt
-@@ -0,0 +1,41 @@
-+Realtek Bluetooth Chips
-+-----------------------
+diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
+index b6e8da4b73f8..25e9743643f5 100644
+--- a/drivers/bluetooth/btrtl.c
++++ b/drivers/bluetooth/btrtl.c
+@@ -418,9 +418,33 @@ struct btrtl_device_info *btrtl_initialize(struct hci_dev *hdev)
+ 		has_rom_version = false;
+ 		break;
+ 	case RTL_ROM_LMP_8723B:
+-		fw_name = "rtl_bt/rtl8723b_fw.bin";
+-		cfg_name = "rtl_bt/rtl8723b_config.bin";
++		/* all variants support reading the ROM version */
+ 		has_rom_version = true;
 +
-+This documents the binding structure and common properties for serial
-+attached Realtek devices.
-+
-+Serial attached Realtek devices shall be a child node of the host UART
-+device the slave device is attached to. See ../serial/slave-device.txt
-+for more information
-+
-+Required properties:
-+- compatible: should contain one of the following:
-+    * "realtek,rtl8723bs-bluetooth"
-+    * "realtek,rtl8723ds-bluetooth"
-+
-+Optional properties:
-+- realtek,config-data: Bluetooth chipset configuration data which is
-+			needed for communication (it typically contains
-+			board specific settings like the baudrate and
-+			whether flow-control is used).
-+			This is an array of u8 values.
-+- enable-gpios: GPIO specifier, used to enable/disable the BT module
-+- reset-gpios: GPIO specifier, used to reset the BT module
-+
-+
-+Example:
-+
-+&uart {
-+	...
-+
-+	bluetooth {
-+		compatible = "realtek,rtl8723bs-bluetooth";
-+		enable-gpios = <&gpio 20 GPIO_ACTIVE_HIGH>;
-+		reset-gpios = <&gpio 11 GPIO_ACTIVE_HIGH>;
-+		realtek,config-data = /bits/ 8 <
-+			0x55 0xab 0x23 0x87 0x29 0x00 0xf4 0x00 0x01 0x01 0xf6 0x00
-+			0x02 0x81 0x00 0xfa 0x00 0x02 0x12 0x80 0x0c 0x00 0x10 0x02
-+			0x80 0x92 0x04 0x50 0xc5 0xea 0x19 0xe1 0x1b 0xfd 0xaf 0x5f
-+			0x01 0xa4 0x0b 0xd9 0x00 0x01 0x0f 0xe4 0x00 0x01 0x08>;
-+	};
-+};
++		/*
++		 * RTL8723 devices exist in different variants:
++		 * - RTL8723BS (SDIO chip with UART Bluetooth)
++		 * - RTL8723DS (SDIO chip with UART Bluetooth)
++		 * - for backwards-compatibility everything else is assumed to
++		 *   be an RTL8723B communicating over USB
++		 *
++		 * Only UART devices really need the config because that
++		 * contains the UART speed / flow control settings.
++		 */
++		if (hdev->bus == HCI_UART && resp->hci_ver == 6 &&
++		    le16_to_cpu(resp->hci_rev) == 0xb) {
++			fw_name = "rtl_bt/rtl8723bs_fw.bin";
++			cfg_name = "rtl_bt/rtl8723bs_config.bin";
++			cfg_needed = true;
++		} else if (hdev->bus == HCI_UART && resp->hci_ver == 8 &&
++			   le16_to_cpu(resp->hci_rev) == 0xd) {
++			fw_name = "rtl_bt/rtl8723ds_fw.bin";
++			cfg_name = "rtl_bt/rtl872ds_config.bin";
++			cfg_needed = true;
++		} else {
++			fw_name = "rtl_bt/rtl8723b_fw.bin";
++			cfg_name = "rtl_bt/rtl8723b_config.bin";
++		}
+ 		break;
+ 	case RTL_ROM_LMP_8821A:
+ 		fw_name = "rtl_bt/rtl8821a_fw.bin";
+@@ -637,6 +661,10 @@ MODULE_LICENSE("GPL");
+ MODULE_FIRMWARE("rtl_bt/rtl8723a_fw.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8723b_fw.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8723b_config.bin");
++MODULE_FIRMWARE("rtl_bt/rtl8723bs_fw.bin");
++MODULE_FIRMWARE("rtl_bt/rtl8723bs_config.bin");
++MODULE_FIRMWARE("rtl_bt/rtl8723ds_fw.bin");
++MODULE_FIRMWARE("rtl_bt/rtl8723ds_config.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8761a_fw.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8761a_config.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8821a_fw.bin");
 -- 
 2.15.1
