@@ -1,7 +1,7 @@
 From: Rob Herring <robh@kernel.org>
 Subject: Re: [PATCH RFC 2/7] soc: qcom: Add device tree binding for GENI SE
-Date: Tue, 2 Jan 2018 09:46:29 -0600
-Message-ID: <20180102154629.s6rni5r3big2g5sv@rob-hp-laptop>
+Date: Tue, 2 Jan 2018 09:47:34 -0600
+Message-ID: <20180102154734.pbomm5rehyquemp3@rob-hp-laptop>
 References: <1514392046-30602-1-git-send-email-kramasub@codeaurora.org>
  <1514392046-30602-3-git-send-email-kramasub@codeaurora.org>
 Mime-Version: 1.0
@@ -16,44 +16,13 @@ List-Id: linux-serial@vger.kernel.org
 
 On Wed, Dec 27, 2017 at 09:27:21AM -0700, Karthikeyan Ramasubramanian wrote:
 > Add device tree binding support for the QCOM GENI SE driver.
+
+Also, "dt-bindings: ..." is the preferred subject prefix. Same for the 
+rest of the series.
+
 > 
 > Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
 > ---
 >  .../devicetree/bindings/soc/qcom/qcom,geni-se.txt         | 15 +++++++++++++++
 >  1 file changed, 15 insertions(+)
 >  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
-> new file mode 100644
-> index 0000000..5108b62
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
-> @@ -0,0 +1,15 @@
-> +Qualcomm Technologies, Inc. GENI Serial Engine Driver
-> +
-> +GENI Serial Engine Driver manages the GENI firmware based Qualcomm Universal
-> +Peripheral (QUP) Wrapper. GENI SE Driver also manages the common aspects of
-> +individual Serial Engines that composes the QUP Wrapper.
-
-Bindings describe h/w, not drivers.
-
-> +
-> +Required properties:
-> +- compatible:		Must be "qcom,geni-se-qup".
-
-Only one version of the h/w?
-
-> +- reg:			Must contain QUP register address and length.
-> +
-> +Example:
-> +	qup_0: qcom,geni_se_qup_0@8c0000 {
-
-Don't use '_' in node names.
-
-> +		compatible = "qcom,geni-se-qup";
-> +		reg = <0x8c0000 0x6000>;
-> +	}
-> -- 
-> Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-> a Linux Foundation Collaborative Project
-> 
