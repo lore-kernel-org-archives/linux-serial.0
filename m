@@ -1,206 +1,91 @@
 From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Subject: Re: [RFC v2 8/9] Bluetooth: drop HCI_UART_INIT_PENDING support
-Date: Tue, 2 Jan 2018 22:06:46 +0100
-Message-ID: <CAFBinCAxUmxivp_PWkoydha84LbJi-GGv6Uhs6cKR+D_8c8QCw@mail.gmail.com>
+Subject: Re: [RFC v2 2/9] dt-bindings: net: bluetooth: add support for Realtek
+ Bluetooth chips
+Date: Tue, 2 Jan 2018 22:10:48 +0100
+Message-ID: <CAFBinCBNro18Ak3h1fHFpAioDzimh5KcUeOE8PjQr_CCkAs7PA@mail.gmail.com>
 References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
- <20180101204217.26165-9-martin.blumenstingl@googlemail.com> <5F8922BB-5A97-43B1-88D5-591EB76FF787@holtmann.org>
+ <20180101204217.26165-3-martin.blumenstingl@googlemail.com> <2A1D60F1-F86F-4A2B-A43A-F3419506DE99@holtmann.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <5F8922BB-5A97-43B1-88D5-591EB76FF787-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+In-Reply-To: <2A1D60F1-F86F-4A2B-A43A-F3419506DE99-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Cc: Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry Finger <Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org>, Carlo Caione <carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry Finger <Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org>, Carlo Caione <carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
 Hi Marcel,
 
-thank you for looking into this latest version!
-
-On Tue, Jan 2, 2018 at 12:04 PM, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org> wrote:
+On Tue, Jan 2, 2018 at 12:16 PM, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org> wrote:
 > Hi Martin,
 >
->> The three-wire (H5) protocol is the only protocol which uses
->> HCI_UART_INIT_PENDING.
->> Unfortunately the benefits of using this flag are currently unknown. It
->> was added in commit 9f2aee848fe6 ("Bluetooth: Add delayed init sequence
->> support for UART controllers"). In my experiments (with the
->> "rtk_hciattach" tool - a customized version of hciattach for Realtek
->> chipsets) I started the tool before and after this patch while the
->> Bluetooth chipset was disabled (by pulling it's enable GPIO LOW). In
->> both cases hci0 was not created - thus HCI_UART_INIT_PENDING is not
->> required in that case.
->>
->> Removing this code also has another benefit: hci_serdev.c does not
->> support the delayed initialization / registration. Thus the protocol
->> implementation (hci_h5) never receives any data with this check still
->> in place. For the H5 protocol this means that the initialization never
->> completes (because the sync response never arrives). Even if the
->> initialization would succeed later on the drivers would call
->> hci_uart_init_ready() which schedules the registration which is
->> currently not implemented by hci_serdev.c.
->>
->> Removing the HCI_UART_INIT_PENDING check makes the code easier to read
->> and also fixes the initalization of devices (implemented with the serdev
->> library) which use the H5 protocol.
+>> This adds the documentation for Bluetooth functionality of the Realtek
+>> RTL8723BS and RTL8723DS.
+>> Both are SDIO wifi chips with an additional Bluetooth module which is
+>> connected via UART to the host.
 >>
 >> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
->
-> I really like Johan to ack this one, but generally I am fine with removing unneeded code.
-I would also like as many ACKs/Tested-by/Reviewed-by as possible since
-this is all new code for me (so it's easy for me to make mistakes)!
-
-> We might also want to look at hciattach to btattach code and make sure it gets removed there as well. I am not even sure anybody used hciattach with H:5 ever.
-a quick glance shows that it's defined in bluez.git but never used
-there (which is good in this case)
-
 >> ---
->> drivers/bluetooth/hci_h5.c     |  3 ---
->> drivers/bluetooth/hci_ldisc.c  | 38 --------------------------------------
->> drivers/bluetooth/hci_serdev.c |  3 ---
->> drivers/bluetooth/hci_uart.h   |  4 +---
->> 4 files changed, 1 insertion(+), 47 deletions(-)
+>> .../devicetree/bindings/net/realtek-bluetooth.txt  | 41 ++++++++++++++++++++++
+>> 1 file changed, 41 insertions(+)
+>> create mode 100644 Documentation/devicetree/bindings/net/realtek-bluetooth.txt
 >>
->> diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
->> index 6a8d0d06aba7..6cfc2f276250 100644
->> --- a/drivers/bluetooth/hci_h5.c
->> +++ b/drivers/bluetooth/hci_h5.c
->> @@ -210,8 +210,6 @@ static int h5_open(struct hci_uart *hu)
->>
->>       h5->tx_win = H5_TX_WIN_MAX;
->>
->> -     set_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags);
->> -
->>       /* Send initial sync request */
->>       h5_link_control(hu, sync, sizeof(sync));
->>       mod_timer(&h5->timer, jiffies + H5_SYNC_TIMEOUT);
->> @@ -316,7 +314,6 @@ static void h5_handle_internal_rx(struct hci_uart *hu)
->>                       h5->tx_win = (data[2] & 0x07);
->>               BT_DBG("Three-wire init complete. tx_win %u", h5->tx_win);
->>               h5->state = H5_ACTIVE;
->> -             hci_uart_init_ready(hu);
->>               return;
->>       } else if (memcmp(data, sleep_req, 2) == 0) {
->>               BT_DBG("Peer went to sleep");
->> diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
->> index c823914b3a80..5dd3e1bebfe4 100644
->> --- a/drivers/bluetooth/hci_ldisc.c
->> +++ b/drivers/bluetooth/hci_ldisc.c
->> @@ -195,39 +195,6 @@ static void hci_uart_write_work(struct work_struct *work)
->>       clear_bit(HCI_UART_SENDING, &hu->tx_state);
->> }
->>
->> -static void hci_uart_init_work(struct work_struct *work)
->> -{
->> -     struct hci_uart *hu = container_of(work, struct hci_uart, init_ready);
->> -     int err;
->> -     struct hci_dev *hdev;
->> -
->> -     if (!test_and_clear_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
->> -             return;
->> -
->> -     err = hci_register_dev(hu->hdev);
->> -     if (err < 0) {
->> -             BT_ERR("Can't register HCI device");
->> -             hdev = hu->hdev;
->> -             hu->hdev = NULL;
->> -             hci_free_dev(hdev);
->> -             clear_bit(HCI_UART_PROTO_READY, &hu->flags);
->> -             hu->proto->close(hu);
->> -             return;
->> -     }
->> -
->> -     set_bit(HCI_UART_REGISTERED, &hu->flags);
->> -}
->> -
->> -int hci_uart_init_ready(struct hci_uart *hu)
->> -{
->> -     if (!test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
->> -             return -EALREADY;
->> -
->> -     schedule_work(&hu->init_ready);
->> -
->> -     return 0;
->> -}
->> -
->> /* ------- Interface to HCI layer ------ */
->> /* Initialize device */
->> static int hci_uart_open(struct hci_dev *hdev)
->> @@ -490,7 +457,6 @@ static int hci_uart_tty_open(struct tty_struct *tty)
->>       hu->alignment = 1;
->>       hu->padding = 0;
->>
->> -     INIT_WORK(&hu->init_ready, hci_uart_init_work);
->>       INIT_WORK(&hu->write_work, hci_uart_write_work);
->>
->>       percpu_init_rwsem(&hu->proto_lock);
->> @@ -653,9 +619,6 @@ static int hci_uart_register_dev(struct hci_uart *hu)
->>       else
->>               hdev->dev_type = HCI_PRIMARY;
->>
->> -     if (test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
->> -             return 0;
->> -
->>       if (hci_register_dev(hdev) < 0) {
->>               BT_ERR("Can't register HCI device");
->>               hu->hdev = NULL;
->> @@ -699,7 +662,6 @@ static int hci_uart_set_flags(struct hci_uart *hu, unsigned long flags)
->>       unsigned long valid_flags = BIT(HCI_UART_RAW_DEVICE) |
->>                                   BIT(HCI_UART_RESET_ON_INIT) |
->>                                   BIT(HCI_UART_CREATE_AMP) |
->> -                                 BIT(HCI_UART_INIT_PENDING) |
->>                                   BIT(HCI_UART_EXT_CONFIG) |
->>                                   BIT(HCI_UART_VND_DETECT);
->>
->> diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
->> index e0e6461b9200..fe67eb6d4278 100644
->> --- a/drivers/bluetooth/hci_serdev.c
->> +++ b/drivers/bluetooth/hci_serdev.c
->> @@ -333,9 +333,6 @@ int hci_uart_register_device(struct hci_uart *hu,
->>       else
->>               hdev->dev_type = HCI_PRIMARY;
->>
->> -     if (test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
->> -             return 0;
->> -
->>       if (hci_register_dev(hdev) < 0) {
->>               BT_ERR("Can't register HCI device");
->>               err = -ENODEV;
->> diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
->> index 66e8c68e4607..47e755ff4092 100644
->> --- a/drivers/bluetooth/hci_uart.h
->> +++ b/drivers/bluetooth/hci_uart.h
->> @@ -53,7 +53,7 @@
->> #define HCI_UART_RAW_DEVICE   0
->> #define HCI_UART_RESET_ON_INIT        1
->> #define HCI_UART_CREATE_AMP   2
->> -#define HCI_UART_INIT_PENDING        3
->> +/* 3 is unused - was HCI_UART_INIT_PENDING */
+>> diff --git a/Documentation/devicetree/bindings/net/realtek-bluetooth.txt b/Documentation/devicetree/bindings/net/realtek-bluetooth.txt
+>> new file mode 100644
+>> index 000000000000..1491329c4cd1
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/net/realtek-bluetooth.txt
+>> @@ -0,0 +1,41 @@
+>> +Realtek Bluetooth Chips
+>> +-----------------------
+>> +
+>> +This documents the binding structure and common properties for serial
+>> +attached Realtek devices.
+>> +
+>> +Serial attached Realtek devices shall be a child node of the host UART
+>> +device the slave device is attached to. See ../serial/slave-device.txt
+>> +for more information
+>> +
+>> +Required properties:
+>> +- compatible: should contain one of the following:
+>> +    * "realtek,rtl8723bs-bluetooth"
+>> +    * "realtek,rtl8723ds-bluetooth"
+>> +
+>> +Optional properties:
+>> +- realtek,config-data: Bluetooth chipset configuration data which is
+>> +                     needed for communication (it typically contains
+>> +                     board specific settings like the baudrate and
+>> +                     whether flow-control is used).
+>> +                     This is an array of u8 values.
 >
-> #define HCI_UART_INIT_PENDING   3       /* unused */
->
-> I prefer it this way since it is easier on the eyes.
-OK, I'll do it that way in the next version
+> any chance we can at least include the basic format of these config blobs. And I prefer at least an ACK from Rob here.
+with including the basic format you mean a description that the config
+blob should start with 0x55 0xab 0x23 0x87 (which translates to:
+0x8723ab55)?
 
->> #define HCI_UART_EXT_CONFIG   4
->> #define HCI_UART_VND_DETECT   5
->>
->> @@ -83,7 +83,6 @@ struct hci_uart {
->>       unsigned long           flags;
->>       unsigned long           hdev_flags;
->>
->> -     struct work_struct      init_ready;
->>       struct work_struct      write_work;
->>
->>       const struct hci_uart_proto *proto;
->> @@ -115,7 +114,6 @@ int hci_uart_register_device(struct hci_uart *hu, const struct hci_uart_proto *p
->> void hci_uart_unregister_device(struct hci_uart *hu);
->>
->> int hci_uart_tx_wakeup(struct hci_uart *hu);
->> -int hci_uart_init_ready(struct hci_uart *hu);
->> void hci_uart_set_baudrate(struct hci_uart *hu, unsigned int speed);
->> void hci_uart_set_flow_control(struct hci_uart *hu, bool enable);
->> void hci_uart_set_speeds(struct hci_uart *hu, unsigned int init_speed,
+I think all non-trivial dt-binding patches should be ACKed by the DT
+maintainers, so waiting for Rob's ACK is perfectly fine for me
+
+>> +- enable-gpios: GPIO specifier, used to enable/disable the BT module
+>> +- reset-gpios: GPIO specifier, used to reset the BT module
+>> +
+>> +
+>> +Example:
+>> +
+>> +&uart {
+>> +     ...
+>> +
+>> +     bluetooth {
+>> +             compatible = "realtek,rtl8723bs-bluetooth";
+>> +             enable-gpios = <&gpio 20 GPIO_ACTIVE_HIGH>;
+>> +             reset-gpios = <&gpio 11 GPIO_ACTIVE_HIGH>;
+>> +             realtek,config-data = /bits/ 8 <
+>> +                     0x55 0xab 0x23 0x87 0x29 0x00 0xf4 0x00 0x01 0x01 0xf6 0x00
+>> +                     0x02 0x81 0x00 0xfa 0x00 0x02 0x12 0x80 0x0c 0x00 0x10 0x02
+>> +                     0x80 0x92 0x04 0x50 0xc5 0xea 0x19 0xe1 0x1b 0xfd 0xaf 0x5f
+>> +                     0x01 0xa4 0x0b 0xd9 0x00 0x01 0x0f 0xe4 0x00 0x01 0x08>;
+>> +     };
+>> +};
 
 
 Regards
