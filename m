@@ -1,111 +1,204 @@
-From: James Hogan <james.hogan@mips.com>
-Subject: Re: [PATCH RFC 3/3] MIPS: AR7: ensure the port type's FCR value is
- used
-Date: Tue, 2 Jan 2018 08:40:31 +0000
-Message-ID: <20180102084030.GK5027@jhogan-linux.mipstec.com>
-References: <20171029152721.6770-1-jonas.gorski@gmail.com>
- <20171029152721.6770-4-jonas.gorski@gmail.com>
- <20171114110211.GA5823@jhogan-linux.mipstec.com>
- <CAOiHx==rL82D4NMz8t15jMr8m5oQmhkAzc+9r6qA0WMgbS-b9w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="zBZpvCNcoXwafAjP"
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <CAOiHx==rL82D4NMz8t15jMr8m5oQmhkAzc+9r6qA0WMgbS-b9w@mail.gmail.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Jonas Gorski <jonas.gorski@gmail.com>, Ralf Baechle <ralf@linux-mips.org>
-Cc: MIPS Mailing List <linux-mips@linux-mips.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Florian Fainelli <f.fainelli@gmail.com>, Nicolas Schichan <nschichan@freebox.fr>
+From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Subject: Re: [RFC v2 8/9] Bluetooth: drop HCI_UART_INIT_PENDING support
+Date: Tue, 2 Jan 2018 12:04:40 +0100
+Message-ID: <5F8922BB-5A97-43B1-88D5-591EB76FF787@holtmann.org>
+References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
+ <20180101204217.26165-9-martin.blumenstingl@googlemail.com>
+Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20180101204217.26165-9-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry Finger <Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org>, Carlo Caione <carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
---zBZpvCNcoXwafAjP
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Martin,
 
-On Thu, Dec 28, 2017 at 04:38:29PM +0100, Jonas Gorski wrote:
-> On 14 November 2017 at 12:02, James Hogan <james.hogan@mips.com> wrote:
-> > On Sun, Oct 29, 2017 at 04:27:21PM +0100, Jonas Gorski wrote:
-> >> Since commit aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt
-> >> trigger I/F of FIFO buffers"), the port's default FCR value isn't used
-> >> in serial8250_do_set_termios anymore, but copied over once in
-> >> serial8250_config_port and then modified as needed.
-> >>
-> >> Unfortunately, serial8250_config_port will never be called if the port
-> >> is shared between kernel and userspace, and the port's flag doesn't ha=
-ve
-> >> UPF_BOOT_AUTOCONF, which would trigger a serial8250_config_port as wel=
-l.
-> >>
-> >> This causes garbled output from userspace:
-> >>
-> >> [    5.220000] random: procd urandom read with 49 bits of entropy avai=
-lable
-> >> ers
-> >>    [kee
-> >>
-> >> Fix this by forcing it to be configured on boot, resulting in the
-> >> expected output:
-> >>
-> >> [    5.250000] random: procd urandom read with 50 bits of entropy avai=
-lable
-> >> Press the [f] key and hit [enter] to enter failsafe mode
-> >> Press the [1], [2], [3] or [4] key and hit [enter] to select the debug=
- level
-> >>
-> >> Fixes: aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt trigg=
-er I/F of FIFO buffers")
-> >> Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
-> >> ---
-> >> I'm not sure if this is just AR7's issue, or if this points to a gener=
-al
-> >> issue for UARTs used as kernel console and login console with the "fix=
-ed"
-> >> commit.
-> >
-> > Thanks. Given nobody seems to have objected, I've applied to my
-> > mips-fixes branch, with stable tag for 3.17+.
->=20
-> Hmm, I don't see it in
-> https://git.kernel.org/pub/scm/linux/kernel/git/jhogan/mips.git/log/?h=3D=
-mips-fixes
-> - did you maybe forget to push?
+> The three-wire (H5) protocol is the only protocol which uses
+> HCI_UART_INIT_PENDING.
+> Unfortunately the benefits of using this flag are currently unknown. It
+> was added in commit 9f2aee848fe6 ("Bluetooth: Add delayed init sequence
+> support for UART controllers"). In my experiments (with the
+> "rtk_hciattach" tool - a customized version of hciattach for Realtek
+> chipsets) I started the tool before and after this patch while the
+> Bluetooth chipset was disabled (by pulling it's enable GPIO LOW). In
+> both cases hci0 was not created - thus HCI_UART_INIT_PENDING is not
+> required in that case.
+> 
+> Removing this code also has another benefit: hci_serdev.c does not
+> support the delayed initialization / registration. Thus the protocol
+> implementation (hci_h5) never receives any data with this check still
+> in place. For the H5 protocol this means that the initialization never
+> completes (because the sync response never arrives). Even if the
+> initialization would succeed later on the drivers would call
+> hci_uart_init_ready() which schedules the registration which is
+> currently not implemented by hci_serdev.c.
+> 
+> Removing the HCI_UART_INIT_PENDING check makes the code easier to read
+> and also fixes the initalization of devices (implemented with the serdev
+> library) which use the H5 protocol.
+> 
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 
-Ralf reappeared so I delegated the patch to him in patchwork, and he has
-apparently marked it as accepted.
+I really like Johan to ack this one, but generally I am fine with removing unneeded code.
 
-But perhaps that only just happened and he hasn't pushed yet. Ralf?
+We might also want to look at hciattach to btattach code and make sure it gets removed there as well. I am not even sure anybody used hciattach with H:5 ever.
 
-Cheers
-James
+> ---
+> drivers/bluetooth/hci_h5.c     |  3 ---
+> drivers/bluetooth/hci_ldisc.c  | 38 --------------------------------------
+> drivers/bluetooth/hci_serdev.c |  3 ---
+> drivers/bluetooth/hci_uart.h   |  4 +---
+> 4 files changed, 1 insertion(+), 47 deletions(-)
+> 
+> diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
+> index 6a8d0d06aba7..6cfc2f276250 100644
+> --- a/drivers/bluetooth/hci_h5.c
+> +++ b/drivers/bluetooth/hci_h5.c
+> @@ -210,8 +210,6 @@ static int h5_open(struct hci_uart *hu)
+> 
+> 	h5->tx_win = H5_TX_WIN_MAX;
+> 
+> -	set_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags);
+> -
+> 	/* Send initial sync request */
+> 	h5_link_control(hu, sync, sizeof(sync));
+> 	mod_timer(&h5->timer, jiffies + H5_SYNC_TIMEOUT);
+> @@ -316,7 +314,6 @@ static void h5_handle_internal_rx(struct hci_uart *hu)
+> 			h5->tx_win = (data[2] & 0x07);
+> 		BT_DBG("Three-wire init complete. tx_win %u", h5->tx_win);
+> 		h5->state = H5_ACTIVE;
+> -		hci_uart_init_ready(hu);
+> 		return;
+> 	} else if (memcmp(data, sleep_req, 2) == 0) {
+> 		BT_DBG("Peer went to sleep");
+> diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
+> index c823914b3a80..5dd3e1bebfe4 100644
+> --- a/drivers/bluetooth/hci_ldisc.c
+> +++ b/drivers/bluetooth/hci_ldisc.c
+> @@ -195,39 +195,6 @@ static void hci_uart_write_work(struct work_struct *work)
+> 	clear_bit(HCI_UART_SENDING, &hu->tx_state);
+> }
+> 
+> -static void hci_uart_init_work(struct work_struct *work)
+> -{
+> -	struct hci_uart *hu = container_of(work, struct hci_uart, init_ready);
+> -	int err;
+> -	struct hci_dev *hdev;
+> -
+> -	if (!test_and_clear_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
+> -		return;
+> -
+> -	err = hci_register_dev(hu->hdev);
+> -	if (err < 0) {
+> -		BT_ERR("Can't register HCI device");
+> -		hdev = hu->hdev;
+> -		hu->hdev = NULL;
+> -		hci_free_dev(hdev);
+> -		clear_bit(HCI_UART_PROTO_READY, &hu->flags);
+> -		hu->proto->close(hu);
+> -		return;
+> -	}
+> -
+> -	set_bit(HCI_UART_REGISTERED, &hu->flags);
+> -}
+> -
+> -int hci_uart_init_ready(struct hci_uart *hu)
+> -{
+> -	if (!test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
+> -		return -EALREADY;
+> -
+> -	schedule_work(&hu->init_ready);
+> -
+> -	return 0;
+> -}
+> -
+> /* ------- Interface to HCI layer ------ */
+> /* Initialize device */
+> static int hci_uart_open(struct hci_dev *hdev)
+> @@ -490,7 +457,6 @@ static int hci_uart_tty_open(struct tty_struct *tty)
+> 	hu->alignment = 1;
+> 	hu->padding = 0;
+> 
+> -	INIT_WORK(&hu->init_ready, hci_uart_init_work);
+> 	INIT_WORK(&hu->write_work, hci_uart_write_work);
+> 
+> 	percpu_init_rwsem(&hu->proto_lock);
+> @@ -653,9 +619,6 @@ static int hci_uart_register_dev(struct hci_uart *hu)
+> 	else
+> 		hdev->dev_type = HCI_PRIMARY;
+> 
+> -	if (test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
+> -		return 0;
+> -
+> 	if (hci_register_dev(hdev) < 0) {
+> 		BT_ERR("Can't register HCI device");
+> 		hu->hdev = NULL;
+> @@ -699,7 +662,6 @@ static int hci_uart_set_flags(struct hci_uart *hu, unsigned long flags)
+> 	unsigned long valid_flags = BIT(HCI_UART_RAW_DEVICE) |
+> 				    BIT(HCI_UART_RESET_ON_INIT) |
+> 				    BIT(HCI_UART_CREATE_AMP) |
+> -				    BIT(HCI_UART_INIT_PENDING) |
+> 				    BIT(HCI_UART_EXT_CONFIG) |
+> 				    BIT(HCI_UART_VND_DETECT);
+> 
+> diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
+> index e0e6461b9200..fe67eb6d4278 100644
+> --- a/drivers/bluetooth/hci_serdev.c
+> +++ b/drivers/bluetooth/hci_serdev.c
+> @@ -333,9 +333,6 @@ int hci_uart_register_device(struct hci_uart *hu,
+> 	else
+> 		hdev->dev_type = HCI_PRIMARY;
+> 
+> -	if (test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
+> -		return 0;
+> -
+> 	if (hci_register_dev(hdev) < 0) {
+> 		BT_ERR("Can't register HCI device");
+> 		err = -ENODEV;
+> diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
+> index 66e8c68e4607..47e755ff4092 100644
+> --- a/drivers/bluetooth/hci_uart.h
+> +++ b/drivers/bluetooth/hci_uart.h
+> @@ -53,7 +53,7 @@
+> #define HCI_UART_RAW_DEVICE	0
+> #define HCI_UART_RESET_ON_INIT	1
+> #define HCI_UART_CREATE_AMP	2
+> -#define HCI_UART_INIT_PENDING	3
+> +/* 3 is unused - was HCI_UART_INIT_PENDING */
 
---zBZpvCNcoXwafAjP
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+#define HCI_UART_INIT_PENDING	3	/* unused */
 
------BEGIN PGP SIGNATURE-----
+I prefer it this way since it is easier on the eyes.
 
-iQIzBAEBCAAdFiEEd80NauSabkiESfLYbAtpk944dnoFAlpLRX4ACgkQbAtpk944
-dnowVQ//TBNJ/KpQTDvxPtW4e0XF19xuu9crVUf8Nm4F6cX4x2jPk8sHjWadYG8x
-yDP7KQBiHhAQH4uJcpPaH6ViwBNKqhHaDphrjTDF33qbOxvTqfH6GRy8aPo4ZE1U
-NblrXfxGvO2YnOTbtYHsErh13wUqmjQanRD81OrH8CU+CI5Bcwz+TBl8LsWipR9V
-0TAO+3fb007SHUVQI0yLQ/cuwz++GBJbtJoCBgVBAyhQXdYbgHiPkBuaQxtSChrk
-lZSsaTDHKKO6Fl/Myr9yh0ld+3Et1wYfcLbRTCOJ8XNK+wokzPc3FltFLXMSW1E1
-fFLyYzXaduBt8cCmgyzBh+D9OazErqtr+sJR4L4M7wX5dOU9aC+aEYxZ7wNJl34S
-CznuIEsvAmtWZC0LBSFNjb5Lb9/n2G2tep73Zikart9KU7lP35Tcpljv60ujxF1o
-YJmWx+4GDle+kYLEzrkEtMm7P5rqFOT5DNvH466JdQWBK0AdqwNnTLoliIBpoTMw
-Z6c0Aj0Nr43/ic4TxA3mgvRbgDbj2Pwipsak+to+WxoG73HFNR+quadNvYxYEcy5
-TsMD/1dZzNCbp4wh+MlexuqKqZNG1EkIVYvbnzfzbtyq4nL3cwEPcDeeTvKlrnxt
-zIQnpaaJf21maRZRC/vUeRG5P9YS/S/R4hOhifAMzV8YFShXLdQ=
-=Xw6n
------END PGP SIGNATURE-----
+> #define HCI_UART_EXT_CONFIG	4
+> #define HCI_UART_VND_DETECT	5
+> 
+> @@ -83,7 +83,6 @@ struct hci_uart {
+> 	unsigned long		flags;
+> 	unsigned long		hdev_flags;
+> 
+> -	struct work_struct	init_ready;
+> 	struct work_struct	write_work;
+> 
+> 	const struct hci_uart_proto *proto;
+> @@ -115,7 +114,6 @@ int hci_uart_register_device(struct hci_uart *hu, const struct hci_uart_proto *p
+> void hci_uart_unregister_device(struct hci_uart *hu);
+> 
+> int hci_uart_tx_wakeup(struct hci_uart *hu);
+> -int hci_uart_init_ready(struct hci_uart *hu);
+> void hci_uart_set_baudrate(struct hci_uart *hu, unsigned int speed);
+> void hci_uart_set_flow_control(struct hci_uart *hu, bool enable);
+> void hci_uart_set_speeds(struct hci_uart *hu, unsigned int init_speed,
 
---zBZpvCNcoXwafAjP--
+Regards
+
+Marcel
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
