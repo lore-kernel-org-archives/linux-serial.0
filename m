@@ -1,185 +1,442 @@
-From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Subject: [RFC v2 8/9] Bluetooth: drop HCI_UART_INIT_PENDING support
-Date: Mon,  1 Jan 2018 21:42:16 +0100
-Message-ID: <20180101204217.26165-9-martin.blumenstingl@googlemail.com>
-References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20180101204217.26165-1-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org, johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org, carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+From: Greentime Hu <green.hu@gmail.com>
+Subject: [PATCH v5 00/39] Andes(nds32) Linux Kernel Port
+Date: Tue,  2 Jan 2018 16:24:32 +0800
+Message-ID: <cover.1514874857.git.green.hu@gmail.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
+Sender: linux-arch-owner@vger.kernel.org
+To: greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, geert.uytterhoeven@gmail.com, linus.walleij@linaro.org, mark.rutland@arm.com, greg@kroah.com, ren_guo@c-sky.com, rdunlap@infradead.org, davem@davemloft.net, jonas@southpole.se, stefan.kristiansson@saunalahti.fi, shorne@gmail.com
+Cc: Greentime Hu <green.hu@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-The three-wire (H5) protocol is the only protocol which uses
-HCI_UART_INIT_PENDING.
-Unfortunately the benefits of using this flag are currently unknown. It
-was added in commit 9f2aee848fe6 ("Bluetooth: Add delayed init sequence
-support for UART controllers"). In my experiments (with the
-"rtk_hciattach" tool - a customized version of hciattach for Realtek
-chipsets) I started the tool before and after this patch while the
-Bluetooth chipset was disabled (by pulling it's enable GPIO LOW). In
-both cases hci0 was not created - thus HCI_UART_INIT_PENDING is not
-required in that case.
+This is the 5th version patchset to add the Linux kernel port for Andes(nds32)
+processors. Almost all of the feedbacks from v4 patchseries has been addressed.
+Thanks to everyone who provided feedback on the previous version.
 
-Removing this code also has another benefit: hci_serdev.c does not
-support the delayed initialization / registration. Thus the protocol
-implementation (hci_h5) never receives any data with this check still
-in place. For the H5 protocol this means that the initialization never
-completes (because the sync response never arrives). Even if the
-initialization would succeed later on the drivers would call
-hci_uart_init_ready() which schedules the registration which is
-currently not implemented by hci_serdev.c.
 
-Removing the HCI_UART_INIT_PENDING check makes the code easier to read
-and also fixes the initalization of devices (implemented with the serdev
-library) which use the H5 protocol.
+This patchset adds core architecture support to Linux for Andestech's
+N13, N15, D15, N10, D10 processor cores.
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
----
- drivers/bluetooth/hci_h5.c     |  3 ---
- drivers/bluetooth/hci_ldisc.c  | 38 --------------------------------------
- drivers/bluetooth/hci_serdev.c |  3 ---
- drivers/bluetooth/hci_uart.h   |  4 +---
- 4 files changed, 1 insertion(+), 47 deletions(-)
+Based on the 16/32-bit AndeStar RISC-like architecture, we designed the
+configurable AndesCore series of embedded processor families. AndesCores
+range from highly performance-efficient small-footprint cores for
+microcontrollers and deeply-embedded applications to 1GHz+ cores running
+Linux, covering general-purpose N-series cores for a wide range of computing
+need, DSP-capable D-series cores for digital signal control,
+instruction-extensible E-series cores for application-specific acceleration,
+and secure S-series cores for best protection of the most valuable.
 
-diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
-index 6a8d0d06aba7..6cfc2f276250 100644
---- a/drivers/bluetooth/hci_h5.c
-+++ b/drivers/bluetooth/hci_h5.c
-@@ -210,8 +210,6 @@ static int h5_open(struct hci_uart *hu)
- 
- 	h5->tx_win = H5_TX_WIN_MAX;
- 
--	set_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags);
--
- 	/* Send initial sync request */
- 	h5_link_control(hu, sync, sizeof(sync));
- 	mod_timer(&h5->timer, jiffies + H5_SYNC_TIMEOUT);
-@@ -316,7 +314,6 @@ static void h5_handle_internal_rx(struct hci_uart *hu)
- 			h5->tx_win = (data[2] & 0x07);
- 		BT_DBG("Three-wire init complete. tx_win %u", h5->tx_win);
- 		h5->state = H5_ACTIVE;
--		hci_uart_init_ready(hu);
- 		return;
- 	} else if (memcmp(data, sleep_req, 2) == 0) {
- 		BT_DBG("Peer went to sleep");
-diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
-index c823914b3a80..5dd3e1bebfe4 100644
---- a/drivers/bluetooth/hci_ldisc.c
-+++ b/drivers/bluetooth/hci_ldisc.c
-@@ -195,39 +195,6 @@ static void hci_uart_write_work(struct work_struct *work)
- 	clear_bit(HCI_UART_SENDING, &hu->tx_state);
- }
- 
--static void hci_uart_init_work(struct work_struct *work)
--{
--	struct hci_uart *hu = container_of(work, struct hci_uart, init_ready);
--	int err;
--	struct hci_dev *hdev;
--
--	if (!test_and_clear_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
--		return;
--
--	err = hci_register_dev(hu->hdev);
--	if (err < 0) {
--		BT_ERR("Can't register HCI device");
--		hdev = hu->hdev;
--		hu->hdev = NULL;
--		hci_free_dev(hdev);
--		clear_bit(HCI_UART_PROTO_READY, &hu->flags);
--		hu->proto->close(hu);
--		return;
--	}
--
--	set_bit(HCI_UART_REGISTERED, &hu->flags);
--}
--
--int hci_uart_init_ready(struct hci_uart *hu)
--{
--	if (!test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
--		return -EALREADY;
--
--	schedule_work(&hu->init_ready);
--
--	return 0;
--}
--
- /* ------- Interface to HCI layer ------ */
- /* Initialize device */
- static int hci_uart_open(struct hci_dev *hdev)
-@@ -490,7 +457,6 @@ static int hci_uart_tty_open(struct tty_struct *tty)
- 	hu->alignment = 1;
- 	hu->padding = 0;
- 
--	INIT_WORK(&hu->init_ready, hci_uart_init_work);
- 	INIT_WORK(&hu->write_work, hci_uart_write_work);
- 
- 	percpu_init_rwsem(&hu->proto_lock);
-@@ -653,9 +619,6 @@ static int hci_uart_register_dev(struct hci_uart *hu)
- 	else
- 		hdev->dev_type = HCI_PRIMARY;
- 
--	if (test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
--		return 0;
--
- 	if (hci_register_dev(hdev) < 0) {
- 		BT_ERR("Can't register HCI device");
- 		hu->hdev = NULL;
-@@ -699,7 +662,6 @@ static int hci_uart_set_flags(struct hci_uart *hu, unsigned long flags)
- 	unsigned long valid_flags = BIT(HCI_UART_RAW_DEVICE) |
- 				    BIT(HCI_UART_RESET_ON_INIT) |
- 				    BIT(HCI_UART_CREATE_AMP) |
--				    BIT(HCI_UART_INIT_PENDING) |
- 				    BIT(HCI_UART_EXT_CONFIG) |
- 				    BIT(HCI_UART_VND_DETECT);
- 
-diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
-index e0e6461b9200..fe67eb6d4278 100644
---- a/drivers/bluetooth/hci_serdev.c
-+++ b/drivers/bluetooth/hci_serdev.c
-@@ -333,9 +333,6 @@ int hci_uart_register_device(struct hci_uart *hu,
- 	else
- 		hdev->dev_type = HCI_PRIMARY;
- 
--	if (test_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags))
--		return 0;
--
- 	if (hci_register_dev(hdev) < 0) {
- 		BT_ERR("Can't register HCI device");
- 		err = -ENODEV;
-diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
-index 66e8c68e4607..47e755ff4092 100644
---- a/drivers/bluetooth/hci_uart.h
-+++ b/drivers/bluetooth/hci_uart.h
-@@ -53,7 +53,7 @@
- #define HCI_UART_RAW_DEVICE	0
- #define HCI_UART_RESET_ON_INIT	1
- #define HCI_UART_CREATE_AMP	2
--#define HCI_UART_INIT_PENDING	3
-+/* 3 is unused - was HCI_UART_INIT_PENDING */
- #define HCI_UART_EXT_CONFIG	4
- #define HCI_UART_VND_DETECT	5
- 
-@@ -83,7 +83,6 @@ struct hci_uart {
- 	unsigned long		flags;
- 	unsigned long		hdev_flags;
- 
--	struct work_struct	init_ready;
- 	struct work_struct	write_work;
- 
- 	const struct hci_uart_proto *proto;
-@@ -115,7 +114,6 @@ int hci_uart_register_device(struct hci_uart *hu, const struct hci_uart_proto *p
- void hci_uart_unregister_device(struct hci_uart *hu);
- 
- int hci_uart_tx_wakeup(struct hci_uart *hu);
--int hci_uart_init_ready(struct hci_uart *hu);
- void hci_uart_set_baudrate(struct hci_uart *hu, unsigned int speed);
- void hci_uart_set_flow_control(struct hci_uart *hu, bool enable);
- void hci_uart_set_speeds(struct hci_uart *hu, unsigned int init_speed,
+The patches are based on v4.14-rc8, and can also be found in the
+following git tree:
+  https://github.com/andestech/linux.git nds32-4.14-rc8-v5
+
+The build script and toolchain repositories are able to be found here:
+  https://github.com/andestech/build_script.git
+
+Freely available instruction set and architecture overview documents can
+be found on the following page:
+  http://www.andestech.com/product.php?cls=9
+
+
+Vincent Ren-Wei Chen and I will maintain this port. Thanks to everyone who
+helped us and contributed to it. :) Any feedback is welcome.
+
+Changes in v5:
+ - Remove __NR__llseek  and sys_mmap()
+ - Add a comment to explain that we don't have clocksource cycle counter in the CPU
+ - Add volatile in iounmap()
+ - Fix typo Featuretures to Features
+ - Replace CPU_CACHE_NONALIASING with !CPU_CACHE_ALIASING
+ - Fix a endian bug when we try to get val = of_get_property(cpu, "clock-frequency", NULL)
+ - Add screen_info to fix the building error when CONFIG_ VGA_CONSOLE is enabled
+ - Remove unnecessary msync()
+ - Add depends on !64BIT || BROKEN for faraday Kconfig because the descriptor only supports 32bit
+ - Add atl2c binding document
+ - Remove unnecessary include headers
+ - Fix a vector table bug. It placed wrong vector handlers for 2 exceptions.
+ - Fix a vdso bug. It may encounter TLB multi-hit exception because we accidently set it as a global page.
+ - Add proper isb and barrier after some cache operations
+ - Fix a bug in system call restart flow. $r0 ~ $r5 does not be recovered before restarting system call
+ - Fix the build errors for OpenRISC and SPARC because io.h changed.
+ - Update ae3xx.dts to support atl2c.
+
+Changes in v4:
+ - Add atcpit100 timer driver due to it include vdso implementations and sent
+   them together with nds32 may help reviewer to review.
+ - Update ae3xx.dts for atcpit100 clock setting and remove vdso settings.
+ - To get cycle counter register by timer driver instead of dts.
+ - Use "depends on NDS32 || COMPILE_TEST" in atcpit100 driver because it is needed for nds32 vdso
+ - Update defconfig becasue kconfig rename from CONFIG_CLKSRC_ATCPIT100 to CONFIG_TIMER_ATCPIT100
+ - Remove ag101p.dts because we are not yet ready for ag101p platform.
+ - Update copyright style to SPDX-License-Identifier
+ - Include <linux/uaccess.h> instead of <asm/uaccess.h>
+ - Add local_irq_save()/local_irq_restore() to protect SR_TLB_VPN in update_mmu_cache().
+ - Update cpu_dcache_inval_all implementation to make sure all level cache are writeback.
+
+Changes in v3:
+ - Use arch's io.h instead of generic one
+ - Add andestech-boards binding document
+ - Update nds32/cpus.txt binding document
+ - Remove atcpit100 timer drivers
+ - Select NO_BOOTMEM and delete HAVE_MEMBLOCK_NODE_MAP
+ - make CPU_BIG_ENDIAN and CPU_LITTLE_ENDIAN are dependent
+ - Add cpu type to select HWZOL/CPU_CACHE_ALIASING
+ - Change CPU_CACHE_NONALIASING to CPU_CACHE_ALIASING
+ - Remove bootarg from device tree script
+ - Update ag101p.dts and ae3xx.dts for correct board name.
+ - Clear and simplify defconfig
+ - Implement L2C_R_REG/ L2C_W_REG with readl/writel instead of __raw_readl/__raw_writel for endian save
+ - Remove early_init_dt_add_memory_arch/early_init_dt_alloc_memory_arch to use the generic ones
+ - Refine devicetree.c
+ - Fix bug https://lkml.kernel.org/r/1499782590-31366-1-git-send-ema...
+ - Refine irqchip/irq-ativic32.c implementations
+ - Add COMPILE_TEST in drivers/net/ethernet/faraday/Kconfig
+ - Refine cache operations
+ - Add CONFIG_HW_SUPPORT_UNALIGNMENT_ACCESS
+ - Fix ZERO_PAGE define
+ - Remove SA_RESTORER
+ - Remove uapi/asm/signal.h
+ - Redefine user_pt_regs
+ - Remove spinlock.h
+ - Remove __ARCH_WANT_RENAMEAT and __ARCH_WANT_SYSCALL_OFF_T from unistd.h
+ - Remove set_fs(USER_DS) because flush_old_exec() will do this setting
+ - Replace in_atomic() with faulthandler_disabled()
+ - Add barrier.h
+ - Select COMMON_CLK
+ - Add clk_pll in dts
+ - Add of_clk_init() in arch/nds32/kernel/time.c
+
+Changes in v2:
+ - Set GENERIC_CALIBRATE_DELAY default n
+ - Add earlycon support
+ - Remove earlyprintk
+ - Add CPU_BIG_ENDIAN, CPU_LITTLE_ENDIAN support
+ - Refine unalignment access exception handler
+ - Add VMSPLIT support
+ - Use only one defconfig
+ - Change interrupt-cells from 2 to 1
+ - Refine andestech cpu names in bindings/nds32/cpus.txt
+ - Get clock frequency in dts because fpga bitmap doesn't include this feature
+ - Update MAINTAINERS for bindings
+ - Remove unused configs in Kconfig
+ - Refine device tree scripts
+ - Refine coding style
+ - Use generic ioremap_nocache
+ - Remove L2CC_PA_BASE define and its codes in head.S. It will be moved to bootloader.
+ - Set PHYS_OFFSET to 0x0 instead of CONFIG_MEMORY_START
+ - Remove unused macros
+ - Simplify cpu_cache_* API
+ - Change __asm__ __volatile__ to asm volatile
+ - Refine uaccess.h
+ - Remove unused/deprecated syscall
+ - Use generic posix_types.h
+ - Remove arch_trace_hardirqs_on/arch_trace_hardirqs_off
+ - Fix bug of restart syscall
+ - Refine syscall implementations
+ - Use IS_ENABLED to replace ifdef as possible
+ - Remove device_initcall(nds32_device_probe)
+ - Refine vdso implementations
+ - Refine copy_from_user()/copy_to_user()/clear_user()/get_user()/memmove()/memcpy()
+ - Refine ioremap.c
+ - Refine irq-ativic32.c
+ - Fix a bug of earlycon.c
+ - Export ioremap_nocache/ioremap_uc/ioremap_wc/ioremap_wt
+ - Add atcpit100 driver
+
+Greentime Hu (36):
+  asm-generic/io.h: move
+    ioremap_nocache/ioremap_uc/ioremap_wc/ioremap_wt out of     ifndef
+    CONFIG_MMU
+  openrisc: add ioremap_nocache declaration before include
+    asm-generic/io.h and sync ioremap prototype with it.
+  sparc: io: To use the define of ioremap_[nocache|wc|wb] in
+    asm-generic/io.h
+  earlycon: add reg-offset to physical address before mapping
+  nds32: Assembly macros and definitions
+  nds32: Kernel booting and initialization
+  nds32: Exception handling
+  nds32: MMU definitions
+  nds32: MMU initialization
+  nds32: MMU fault handling and page table management
+  nds32: Cache and TLB routines
+  nds32: Process management
+  nds32: IRQ handling
+  nds32: Atomic operations
+  nds32: Device specific operations
+  nds32: DMA mapping API
+  nds32: ELF definitions
+  nds32: System calls handling
+  nds32: VDSO support
+  nds32: Signal handling support
+  nds32: Library functions
+  nds32: Debugging support
+  nds32: L2 cache support
+  nds32: Loadable modules
+  nds32: Generic timers support
+  nds32: Device tree support
+  nds32: Miscellaneous header files
+  nds32: defconfig
+  nds32: Build infrastructure
+  MAINTAINERS: Add nds32
+  dt-bindings: nds32 CPU Bindings
+  dt-bindings: nds32 L2 cache controller Bindings
+  dt-bindings: nds32 SoC Bindings
+  dt-bindings: interrupt-controller: Andestech Internal Vector
+    Interrupt Controller
+  irqchip: Andestech Internal Vector Interrupt Controller driver
+  net: faraday add nds32 support.
+
+Rick Chen (3):
+  clocksource/drivers/atcpit100: Add andestech atcpit100 timer
+  clocksource/drivers/atcpit100: VDSO support
+  dt-bindings: timer: Add andestech atcpit100 timer binding doc
+
+ .../interrupt-controller/andestech,ativic32.txt    |   19 +
+ .../devicetree/bindings/nds32/andestech-boards     |   40 +
+ Documentation/devicetree/bindings/nds32/atl2c.txt  |   29 +
+ Documentation/devicetree/bindings/nds32/cpus.txt   |   37 +
+ .../bindings/timer/andestech,atcpit100-timer.txt   |   33 +
+ MAINTAINERS                                        |   11 +
+ arch/nds32/Kconfig                                 |  108 +++
+ arch/nds32/Kconfig.cpu                             |  161 ++++
+ arch/nds32/Makefile                                |   66 ++
+ arch/nds32/boot/Makefile                           |   15 +
+ arch/nds32/boot/dts/Makefile                       |    8 +
+ arch/nds32/boot/dts/ae3xx.dts                      |   73 ++
+ arch/nds32/configs/defconfig                       |  108 +++
+ arch/nds32/include/asm/Kbuild                      |   54 ++
+ arch/nds32/include/asm/assembler.h                 |   39 +
+ arch/nds32/include/asm/barrier.h                   |   15 +
+ arch/nds32/include/asm/bitfield.h                  |  963 ++++++++++++++++++++
+ arch/nds32/include/asm/cache.h                     |   12 +
+ arch/nds32/include/asm/cache_info.h                |   13 +
+ arch/nds32/include/asm/cacheflush.h                |   44 +
+ arch/nds32/include/asm/current.h                   |   12 +
+ arch/nds32/include/asm/delay.h                     |   39 +
+ arch/nds32/include/asm/dma-mapping.h               |   14 +
+ arch/nds32/include/asm/elf.h                       |  179 ++++
+ arch/nds32/include/asm/fixmap.h                    |   29 +
+ arch/nds32/include/asm/futex.h                     |  103 +++
+ arch/nds32/include/asm/highmem.h                   |   65 ++
+ arch/nds32/include/asm/io.h                        |   83 ++
+ arch/nds32/include/asm/irqflags.h                  |   36 +
+ arch/nds32/include/asm/l2_cache.h                  |  137 +++
+ arch/nds32/include/asm/linkage.h                   |   11 +
+ arch/nds32/include/asm/memory.h                    |  105 +++
+ arch/nds32/include/asm/mmu.h                       |   12 +
+ arch/nds32/include/asm/mmu_context.h               |   68 ++
+ arch/nds32/include/asm/module.h                    |   11 +
+ arch/nds32/include/asm/nds32.h                     |   83 ++
+ arch/nds32/include/asm/page.h                      |   67 ++
+ arch/nds32/include/asm/pgalloc.h                   |   96 ++
+ arch/nds32/include/asm/pgtable.h                   |  409 +++++++++
+ arch/nds32/include/asm/proc-fns.h                  |   44 +
+ arch/nds32/include/asm/processor.h                 |  102 +++
+ arch/nds32/include/asm/ptrace.h                    |   66 ++
+ arch/nds32/include/asm/shmparam.h                  |   19 +
+ arch/nds32/include/asm/string.h                    |   17 +
+ arch/nds32/include/asm/swab.h                      |   35 +
+ arch/nds32/include/asm/syscall.h                   |  188 ++++
+ arch/nds32/include/asm/syscalls.h                  |   13 +
+ arch/nds32/include/asm/thread_info.h               |   78 ++
+ arch/nds32/include/asm/tlb.h                       |   28 +
+ arch/nds32/include/asm/tlbflush.h                  |   47 +
+ arch/nds32/include/asm/uaccess.h                   |  283 ++++++
+ arch/nds32/include/asm/unistd.h                    |    6 +
+ arch/nds32/include/asm/vdso.h                      |   24 +
+ arch/nds32/include/asm/vdso_datapage.h             |   36 +
+ arch/nds32/include/asm/vdso_timer_info.h           |   14 +
+ arch/nds32/include/uapi/asm/Kbuild                 |   28 +
+ arch/nds32/include/uapi/asm/auxvec.h               |   12 +
+ arch/nds32/include/uapi/asm/byteorder.h            |   13 +
+ arch/nds32/include/uapi/asm/cachectl.h             |   14 +
+ arch/nds32/include/uapi/asm/param.h                |   11 +
+ arch/nds32/include/uapi/asm/ptrace.h               |   25 +
+ arch/nds32/include/uapi/asm/sigcontext.h           |   60 ++
+ arch/nds32/include/uapi/asm/unistd.h               |   11 +
+ arch/nds32/kernel/Makefile                         |   23 +
+ arch/nds32/kernel/asm-offsets.c                    |   28 +
+ arch/nds32/kernel/atl2c.c                          |   64 ++
+ arch/nds32/kernel/cacheinfo.c                      |   49 +
+ arch/nds32/kernel/devtree.c                        |   19 +
+ arch/nds32/kernel/dma.c                            |  459 ++++++++++
+ arch/nds32/kernel/ex-entry.S                       |  157 ++++
+ arch/nds32/kernel/ex-exit.S                        |  193 ++++
+ arch/nds32/kernel/ex-scall.S                       |  106 +++
+ arch/nds32/kernel/head.S                           |  188 ++++
+ arch/nds32/kernel/irq.c                            |    9 +
+ arch/nds32/kernel/module.c                         |  286 ++++++
+ arch/nds32/kernel/nds32_ksyms.c                    |   31 +
+ arch/nds32/kernel/process.c                        |  204 +++++
+ arch/nds32/kernel/ptrace.c                         |  311 +++++++
+ arch/nds32/kernel/setup.c                          |  387 ++++++++
+ arch/nds32/kernel/signal.c                         |  337 +++++++
+ arch/nds32/kernel/stacktrace.c                     |   47 +
+ arch/nds32/kernel/sys_nds32.c                      |   50 +
+ arch/nds32/kernel/syscall_table.c                  |   17 +
+ arch/nds32/kernel/time.c                           |   11 +
+ arch/nds32/kernel/traps.c                          |  428 +++++++++
+ arch/nds32/kernel/vdso.c                           |  230 +++++
+ arch/nds32/kernel/vdso/Makefile                    |   82 ++
+ arch/nds32/kernel/vdso/datapage.S                  |   21 +
+ arch/nds32/kernel/vdso/gen_vdso_offsets.sh         |   15 +
+ arch/nds32/kernel/vdso/gettimeofday.c              |  271 ++++++
+ arch/nds32/kernel/vdso/note.S                      |   11 +
+ arch/nds32/kernel/vdso/sigreturn.S                 |   19 +
+ arch/nds32/kernel/vdso/vdso.S                      |   18 +
+ arch/nds32/kernel/vdso/vdso.lds.S                  |   76 ++
+ arch/nds32/kernel/vmlinux.lds.S                    |   57 ++
+ arch/nds32/lib/Makefile                            |    3 +
+ arch/nds32/lib/clear_user.S                        |   42 +
+ arch/nds32/lib/copy_from_user.S                    |   45 +
+ arch/nds32/lib/copy_page.S                         |   37 +
+ arch/nds32/lib/copy_template.S                     |   70 ++
+ arch/nds32/lib/copy_to_user.S                      |   45 +
+ arch/nds32/lib/memcpy.S                            |   30 +
+ arch/nds32/lib/memmove.S                           |   70 ++
+ arch/nds32/lib/memset.S                            |   33 +
+ arch/nds32/lib/memzero.S                           |   18 +
+ arch/nds32/mm/Makefile                             |    7 +
+ arch/nds32/mm/alignment.c                          |  609 +++++++++++++
+ arch/nds32/mm/cacheflush.c                         |  322 +++++++
+ arch/nds32/mm/extable.c                            |   16 +
+ arch/nds32/mm/fault.c                              |  410 +++++++++
+ arch/nds32/mm/highmem.c                            |   79 ++
+ arch/nds32/mm/init.c                               |  277 ++++++
+ arch/nds32/mm/ioremap.c                            |   62 ++
+ arch/nds32/mm/mm-nds32.c                           |   90 ++
+ arch/nds32/mm/mmap.c                               |   73 ++
+ arch/nds32/mm/proc.c                               |  533 +++++++++++
+ arch/nds32/mm/tlb.c                                |   50 +
+ arch/openrisc/include/asm/io.h                     |    3 +-
+ arch/sparc/include/asm/io_32.h                     |    5 -
+ arch/sparc/kernel/ioport.c                         |    4 +-
+ drivers/clocksource/Kconfig                        |    7 +
+ drivers/clocksource/Makefile                       |    1 +
+ drivers/clocksource/timer-atcpit100.c              |  273 ++++++
+ drivers/irqchip/Makefile                           |    1 +
+ drivers/irqchip/irq-ativic32.c                     |  107 +++
+ drivers/net/ethernet/faraday/Kconfig               |    8 +-
+ drivers/tty/serial/earlycon.c                      |    3 +-
+ include/asm-generic/io.h                           |   18 +-
+ 128 files changed, 12115 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/andestech,ativic32.txt
+ create mode 100644 Documentation/devicetree/bindings/nds32/andestech-boards
+ create mode 100644 Documentation/devicetree/bindings/nds32/atl2c.txt
+ create mode 100644 Documentation/devicetree/bindings/nds32/cpus.txt
+ create mode 100644 Documentation/devicetree/bindings/timer/andestech,atcpit100-timer.txt
+ create mode 100644 arch/nds32/Kconfig
+ create mode 100644 arch/nds32/Kconfig.cpu
+ create mode 100644 arch/nds32/Makefile
+ create mode 100644 arch/nds32/boot/Makefile
+ create mode 100644 arch/nds32/boot/dts/Makefile
+ create mode 100644 arch/nds32/boot/dts/ae3xx.dts
+ create mode 100644 arch/nds32/configs/defconfig
+ create mode 100644 arch/nds32/include/asm/Kbuild
+ create mode 100644 arch/nds32/include/asm/assembler.h
+ create mode 100644 arch/nds32/include/asm/barrier.h
+ create mode 100644 arch/nds32/include/asm/bitfield.h
+ create mode 100644 arch/nds32/include/asm/cache.h
+ create mode 100644 arch/nds32/include/asm/cache_info.h
+ create mode 100644 arch/nds32/include/asm/cacheflush.h
+ create mode 100644 arch/nds32/include/asm/current.h
+ create mode 100644 arch/nds32/include/asm/delay.h
+ create mode 100644 arch/nds32/include/asm/dma-mapping.h
+ create mode 100644 arch/nds32/include/asm/elf.h
+ create mode 100644 arch/nds32/include/asm/fixmap.h
+ create mode 100644 arch/nds32/include/asm/futex.h
+ create mode 100644 arch/nds32/include/asm/highmem.h
+ create mode 100644 arch/nds32/include/asm/io.h
+ create mode 100644 arch/nds32/include/asm/irqflags.h
+ create mode 100644 arch/nds32/include/asm/l2_cache.h
+ create mode 100644 arch/nds32/include/asm/linkage.h
+ create mode 100644 arch/nds32/include/asm/memory.h
+ create mode 100644 arch/nds32/include/asm/mmu.h
+ create mode 100644 arch/nds32/include/asm/mmu_context.h
+ create mode 100644 arch/nds32/include/asm/module.h
+ create mode 100644 arch/nds32/include/asm/nds32.h
+ create mode 100644 arch/nds32/include/asm/page.h
+ create mode 100644 arch/nds32/include/asm/pgalloc.h
+ create mode 100644 arch/nds32/include/asm/pgtable.h
+ create mode 100644 arch/nds32/include/asm/proc-fns.h
+ create mode 100644 arch/nds32/include/asm/processor.h
+ create mode 100644 arch/nds32/include/asm/ptrace.h
+ create mode 100644 arch/nds32/include/asm/shmparam.h
+ create mode 100644 arch/nds32/include/asm/string.h
+ create mode 100644 arch/nds32/include/asm/swab.h
+ create mode 100644 arch/nds32/include/asm/syscall.h
+ create mode 100644 arch/nds32/include/asm/syscalls.h
+ create mode 100644 arch/nds32/include/asm/thread_info.h
+ create mode 100644 arch/nds32/include/asm/tlb.h
+ create mode 100644 arch/nds32/include/asm/tlbflush.h
+ create mode 100644 arch/nds32/include/asm/uaccess.h
+ create mode 100644 arch/nds32/include/asm/unistd.h
+ create mode 100644 arch/nds32/include/asm/vdso.h
+ create mode 100644 arch/nds32/include/asm/vdso_datapage.h
+ create mode 100644 arch/nds32/include/asm/vdso_timer_info.h
+ create mode 100644 arch/nds32/include/uapi/asm/Kbuild
+ create mode 100644 arch/nds32/include/uapi/asm/auxvec.h
+ create mode 100644 arch/nds32/include/uapi/asm/byteorder.h
+ create mode 100644 arch/nds32/include/uapi/asm/cachectl.h
+ create mode 100644 arch/nds32/include/uapi/asm/param.h
+ create mode 100644 arch/nds32/include/uapi/asm/ptrace.h
+ create mode 100644 arch/nds32/include/uapi/asm/sigcontext.h
+ create mode 100644 arch/nds32/include/uapi/asm/unistd.h
+ create mode 100644 arch/nds32/kernel/Makefile
+ create mode 100644 arch/nds32/kernel/asm-offsets.c
+ create mode 100644 arch/nds32/kernel/atl2c.c
+ create mode 100644 arch/nds32/kernel/cacheinfo.c
+ create mode 100644 arch/nds32/kernel/devtree.c
+ create mode 100644 arch/nds32/kernel/dma.c
+ create mode 100644 arch/nds32/kernel/ex-entry.S
+ create mode 100644 arch/nds32/kernel/ex-exit.S
+ create mode 100644 arch/nds32/kernel/ex-scall.S
+ create mode 100644 arch/nds32/kernel/head.S
+ create mode 100644 arch/nds32/kernel/irq.c
+ create mode 100644 arch/nds32/kernel/module.c
+ create mode 100644 arch/nds32/kernel/nds32_ksyms.c
+ create mode 100644 arch/nds32/kernel/process.c
+ create mode 100644 arch/nds32/kernel/ptrace.c
+ create mode 100644 arch/nds32/kernel/setup.c
+ create mode 100644 arch/nds32/kernel/signal.c
+ create mode 100644 arch/nds32/kernel/stacktrace.c
+ create mode 100644 arch/nds32/kernel/sys_nds32.c
+ create mode 100644 arch/nds32/kernel/syscall_table.c
+ create mode 100644 arch/nds32/kernel/time.c
+ create mode 100644 arch/nds32/kernel/traps.c
+ create mode 100644 arch/nds32/kernel/vdso.c
+ create mode 100644 arch/nds32/kernel/vdso/Makefile
+ create mode 100644 arch/nds32/kernel/vdso/datapage.S
+ create mode 100755 arch/nds32/kernel/vdso/gen_vdso_offsets.sh
+ create mode 100644 arch/nds32/kernel/vdso/gettimeofday.c
+ create mode 100644 arch/nds32/kernel/vdso/note.S
+ create mode 100644 arch/nds32/kernel/vdso/sigreturn.S
+ create mode 100644 arch/nds32/kernel/vdso/vdso.S
+ create mode 100644 arch/nds32/kernel/vdso/vdso.lds.S
+ create mode 100644 arch/nds32/kernel/vmlinux.lds.S
+ create mode 100644 arch/nds32/lib/Makefile
+ create mode 100644 arch/nds32/lib/clear_user.S
+ create mode 100644 arch/nds32/lib/copy_from_user.S
+ create mode 100644 arch/nds32/lib/copy_page.S
+ create mode 100644 arch/nds32/lib/copy_template.S
+ create mode 100644 arch/nds32/lib/copy_to_user.S
+ create mode 100644 arch/nds32/lib/memcpy.S
+ create mode 100644 arch/nds32/lib/memmove.S
+ create mode 100644 arch/nds32/lib/memset.S
+ create mode 100644 arch/nds32/lib/memzero.S
+ create mode 100644 arch/nds32/mm/Makefile
+ create mode 100644 arch/nds32/mm/alignment.c
+ create mode 100644 arch/nds32/mm/cacheflush.c
+ create mode 100644 arch/nds32/mm/extable.c
+ create mode 100644 arch/nds32/mm/fault.c
+ create mode 100644 arch/nds32/mm/highmem.c
+ create mode 100644 arch/nds32/mm/init.c
+ create mode 100644 arch/nds32/mm/ioremap.c
+ create mode 100644 arch/nds32/mm/mm-nds32.c
+ create mode 100644 arch/nds32/mm/mmap.c
+ create mode 100644 arch/nds32/mm/proc.c
+ create mode 100644 arch/nds32/mm/tlb.c
+ create mode 100644 drivers/clocksource/timer-atcpit100.c
+ create mode 100644 drivers/irqchip/irq-ativic32.c
+
 -- 
-2.15.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+1.7.9.5
