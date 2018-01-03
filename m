@@ -1,164 +1,73 @@
-From: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 26/39] nds32: Device tree support
-Date: Wed, 3 Jan 2018 13:14:35 -0600
-Message-ID: <CAL_Jsq+CC-3w8BVcUP77__ZR8aYMhxiXDYJ--HZwA=ezHG548g@mail.gmail.com>
-References: <cover.1514874857.git.green.hu@gmail.com> <7fe1190a9cf8e30f1b8af52dd382ba1176997786.1514874857.git.green.hu@gmail.com>
+From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Subject: Re: [RFC v2 8/9] Bluetooth: drop HCI_UART_INIT_PENDING support
+Date: Wed, 3 Jan 2018 21:30:15 +0100
+Message-ID: <CAFBinCCnRM2JhozueaenqGdcu3PJ0aXom+Rt__e6YQy85B=fEA@mail.gmail.com>
+References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
+ <20180101204217.26165-9-martin.blumenstingl@googlemail.com>
+ <5F8922BB-5A97-43B1-88D5-591EB76FF787@holtmann.org> <CAFBinCAxUmxivp_PWkoydha84LbJi-GGv6Uhs6cKR+D_8c8QCw@mail.gmail.com>
+ <CAMZdPi9KkPZvuvrNgfGmRksJnR0cFti8P5XC-HTFeUfkFbCZ_g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <7fe1190a9cf8e30f1b8af52dd382ba1176997786.1514874857.git.green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org, Randy
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAMZdPi9KkPZvuvrNgfGmRksJnR0cFti8P5XC-HTFeUfkFbCZ_g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Loic Poulain <loic.poulain-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry Finger <Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org>, Carlo Caione <carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 2, 2018 at 2:24 AM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> From: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
+Hi Loic,
+
+On Wed, Jan 3, 2018 at 6:14 PM, Loic Poulain <loic.poulain-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> Hi Martin,
 >
-> This patch adds support for device tree.
+> On 2 January 2018 at 22:06, Martin Blumenstingl
+> <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org> wrote:
+>> Hi Marcel,
+>>
+>> thank you for looking into this latest version!
+>>
+>> On Tue, Jan 2, 2018 at 12:04 PM, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org> wrote:
+>>> Hi Martin,
+>>>
+>>>> The three-wire (H5) protocol is the only protocol which uses
+>>>> HCI_UART_INIT_PENDING.
+>>>> Unfortunately the benefits of using this flag are currently unknown. It
+>>>> was added in commit 9f2aee848fe6 ("Bluetooth: Add delayed init sequence
+>>>> support for UART controllers"). In my experiments (with the
+>>>> "rtk_hciattach" tool - a customized version of hciattach for Realtek
+>>>> chipsets) I started the tool before and after this patch while the
+>>>> Bluetooth chipset was disabled (by pulling it's enable GPIO LOW). In
+>>>> both cases hci0 was not created - thus HCI_UART_INIT_PENDING is not
+>>>> required in that case.
+>>>>
+>>>> Removing this code also has another benefit: hci_serdev.c does not
+>>>> support the delayed initialization / registration. Thus the protocol
+>>>> implementation (hci_h5) never receives any data with this check still
+>>>> in place. For the H5 protocol this means that the initialization never
+>>>> completes (because the sync response never arrives). Even if the
+>>>> initialization would succeed later on the drivers would call
+>>>> hci_uart_init_ready() which schedules the registration which is
+>>>> currently not implemented by hci_serdev.c.
+>>>>
+>>>> Removing the HCI_UART_INIT_PENDING check makes the code easier to read
+>>>> and also fixes the initalization of devices (implemented with the serdev
+>>>> library) which use the H5 protocol.
+>>>>
+>>>> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
 >
-> Signed-off-by: Vincent Chen <vincentc-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
-> Signed-off-by: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
-> ---
->  arch/nds32/boot/dts/Makefile  |    8 +++++
->  arch/nds32/boot/dts/ae3xx.dts |   73 +++++++++++++++++++++++++++++++++++++++++
->  arch/nds32/kernel/devtree.c   |   19 +++++++++++
->  3 files changed, 100 insertions(+)
->  create mode 100644 arch/nds32/boot/dts/Makefile
->  create mode 100644 arch/nds32/boot/dts/ae3xx.dts
->  create mode 100644 arch/nds32/kernel/devtree.c
->
-> diff --git a/arch/nds32/boot/dts/Makefile b/arch/nds32/boot/dts/Makefile
-> new file mode 100644
-> index 0000000..d31faa8
-> --- /dev/null
-> +++ b/arch/nds32/boot/dts/Makefile
-> @@ -0,0 +1,8 @@
-> +ifneq '$(CONFIG_NDS32_BUILTIN_DTB)' '""'
-> +BUILTIN_DTB := $(patsubst "%",%,$(CONFIG_NDS32_BUILTIN_DTB)).dtb.o
-> +else
-> +BUILTIN_DTB :=
-> +endif
-> +obj-$(CONFIG_OF) += $(BUILTIN_DTB)
-> +
-> +clean-files := *.dtb *.dtb.S
-> diff --git a/arch/nds32/boot/dts/ae3xx.dts b/arch/nds32/boot/dts/ae3xx.dts
-> new file mode 100644
-> index 0000000..6b23d60
-> --- /dev/null
-> +++ b/arch/nds32/boot/dts/ae3xx.dts
-> @@ -0,0 +1,73 @@
-> +/dts-v1/;
-> +/ {
-> +       compatible = "andestech,ae3xx";
-> +       #address-cells = <1>;
-> +       #size-cells = <1>;
-> +       interrupt-parent = <&intc>;
-> +
-> +       chosen {
-> +               stdout-path = &serial0;
-> +       };
-> +
-> +       memory@0 {
-> +               device_type = "memory";
-> +               reg = <0x00000000 0x40000000>;
-> +       };
-> +
-> +       cpus {
-> +               #address-cells = <1>;
-> +               #size-cells = <0>;
-> +               cpu@0 {
-> +                       device_type = "cpu";
-> +                       compatible = "andestech,n13", "andestech,nds32v3";
-> +                       reg = <0>;
-> +                       clock-frequency = <60000000>;
-> +                       next-level-cache = <&L2>;
-> +               };
-> +       };
-> +
-> +       L2: l2-cache@e0500000 {
-> +               compatible = "andestech,atl2c";
-> +               reg = <0xe0500000 0x1000>;
-> +               cache-unified;
-> +               cache-level = <2>;
-> +       };
-> +
-> +       apb: clk@0 {
+> I think the original goal is to perform H5 init peacefully.
+> The H5 protocol needs to be open in order to send/receive H5 link
+> packets during the H5 initialization/synchronization step.
+> During this stage, driver prevents upper stack to send any HCI packet
+> by delaying the HCI device registration.
+thank you for this explanation
+do you have a test-case (manual list of steps, a scripts, etc.) which
+I can use to compare the old and new behavior?
 
-unit address without reg is not valid. Drop the "@0".
+based on your explanation this would mean that we should add
+HCI_UART_INIT_PENDING support to the serdev code rather than removing
+it
 
-> +               #clock-cells = <0>;
-> +               compatible = "fixed-clock";
-> +               clock-frequency = <30000000>;
-> +       };
-> +
-> +
-> +       intc: interrupt-controller {
-> +               compatible = "andestech,ativic32";
-> +               #interrupt-cells = <1>;
-> +               interrupt-controller;
-> +       };
-> +
-> +       serial0: serial@f0300000 {
 
-All the memory mapped peripherals should be under at least one simple-bus node.
-
-> +               compatible = "andestech,uart16550", "ns16550a";
-> +               reg = <0xf0300000 0x1000>;
-> +               interrupts = <8>;
-> +               clock-frequency = <14745600>;
-> +               reg-shift = <2>;
-> +               reg-offset = <32>;
-> +               no-loopback-test = <1>;
-> +       };
-> +
-> +       timer0: timer@f0400000 {
-> +               compatible = "andestech,atcpit100";
-> +               reg = <0xf0400000 0x1000>;
-> +               interrupts = <2>;
-> +               clocks = <&apb>;
-> +               clock-names = "PCLK";
-> +       };
-> +
-> +       mac0: mac@e0100000 {
-
-ethernet@...
-
-> +               compatible = "andestech,atmac100";
-> +               reg = <0xe0100000 0x1000>;
-> +               interrupts = <18>;
-> +       };
-> +
-> +};
-> diff --git a/arch/nds32/kernel/devtree.c b/arch/nds32/kernel/devtree.c
-> new file mode 100644
-> index 0000000..bdce0fe
-> --- /dev/null
-> +++ b/arch/nds32/kernel/devtree.c
-> @@ -0,0 +1,19 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (C) 2005-2017 Andes Technology Corporation
-> +
-> +#include <linux/bug.h>
-> +#include <linux/printk.h>
-> +#include <linux/of_fdt.h>
-> +
-> +void __init early_init_devtree(void *params)
-> +{
-> +       if (!params || !early_init_dt_scan(params)) {
-> +               pr_crit("\n"
-> +                       "Error: invalid device tree blob at (virtual address 0x%p)\n"
-> +                       "\nPlease check your bootloader.", params);
-> +
-> +               BUG_ON(1);
-> +       }
-> +
-> +       dump_stack_set_arch_desc("%s (DT)", of_flat_dt_get_machine_name());
-> +}
-> --
-> 1.7.9.5
->
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Regards
+Martin
