@@ -1,119 +1,56 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: [PATCH] tty: n_gsm: Allow ADM response in addition to UA for control dlci
-Date: Wed,  3 Jan 2018 10:18:03 -0800
-Message-ID: <20180103181803.31109-1-tony@atomide.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>
+From: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC v2 8/9] Bluetooth: drop HCI_UART_INIT_PENDING support
+Date: Wed, 3 Jan 2018 12:38:19 -0600
+Message-ID: <CAL_JsqLB9aem0TXZyUvFpsfXP4p++oukPmQzGEYxkVwZt+bdvw@mail.gmail.com>
+References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com> <20180101204217.26165-9-martin.blumenstingl@googlemail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20180101204217.26165-9-martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Gustavo Padovan <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org, Carlo Caione <carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Some devices have the control dlci stay in ADM mode instead of the UA
-mode. This can seen at least on droid 4 when trying to open the ts
-27.010 mux port. Enabling n_gsm debug mode shows the control dlci
-always respond with DM to SABM instead of UA:
+On Mon, Jan 1, 2018 at 2:42 PM, Martin Blumenstingl
+<martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org> wrote:
+> The three-wire (H5) protocol is the only protocol which uses
+> HCI_UART_INIT_PENDING.
 
-# modprobe n_gsm debug=0xff
-# ldattach -d GSM0710 /dev/ttyS0 &
-gsmld_output: 00000000: f9 03 3f 01 1c f9
---> 0) C: SABM(P)
-gsmld_receive: 00000000: f9 03 1f 01 36 f9
-<-- 0) C: DM(P)
-...
-$ minicom -D /dev/gsmtty1
-minicom: cannot open /dev/gsmtty1: No error information
-$ strace minicom -D /dev/gsmtty1
-...
-open("/dev/gsmtty1", O_RDWR|O_NOCTTY|O_NONBLOCK|O_LARGEFILE) = -1 EL2HLT
+I think I'd also found that this flag wasn't really needed.
 
-Note that this is different issue from other n_gsm -EL2HLT issues such
-as timeouts when the control dlci does not respond at all.
+> Unfortunately the benefits of using this flag are currently unknown. It
+> was added in commit 9f2aee848fe6 ("Bluetooth: Add delayed init sequence
+> support for UART controllers"). In my experiments (with the
+> "rtk_hciattach" tool - a customized version of hciattach for Realtek
+> chipsets) I started the tool before and after this patch while the
+> Bluetooth chipset was disabled (by pulling it's enable GPIO LOW). In
+> both cases hci0 was not created - thus HCI_UART_INIT_PENDING is not
+> required in that case.
+>
+> Removing this code also has another benefit: hci_serdev.c does not
+> support the delayed initialization / registration.
 
-The ADM mode seems to be a quite common according to "RF Wireless World"
-article "GSM Issue-UE sends SABM and gets a DM response instead of
-UA response":
+This statement is misleading. serdev *always* supports async init as
+it forces async probe of drivers. It doesn't need to support the
+private workq init mechanism. At least that was my intent.
 
-  This issue is most commonly observed in GSM networks where in UE sends
-  SABM and expects network to send UA response but it ends up receiving
-  DM response from the network. SABM stands for Set asynchronous balanced
-  mode, UA stands for Unnumbered Acknowledge and DA stands for
-  Disconnected Mode.
-
-  An RLP entity can be in one of two modes:
-  - Asynchronous Balanced Mode (ABM)
-  - Asynchronous Disconnected Mode (ADM)
-
-Currently Linux kernel closes the control dlci after several retries
-in gsm_dlci_t1() on DM. This causes n_gsm /dev/gsmtty ports to produce
-error code -EL2HLT when trying to open them as the closing of control
-dlci has already set gsm->dead.
-
-Let's fix the issue by allowing control dlci stay in ADM mode after the
-retries so the /dev/gsmtty ports can be opened and used. It seems that
-it might take several attempts to get any response from the control
-dlci, so it's best to allow ADM mode only after the SABM retries are
-done.
-
-Note that for droid 4 additional patches are needed to mux the ttyS0
-pins and to toggle RTS gpio_149 to wake up the mdm6600 modem are also
-needed to use n_gsm. And the mdm6600 modem needs to be powered on.
-
-Cc: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@llwyncelyn.cymru>
-Cc: Jiri Prchal <jiri.prchal@aksignal.cz>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: Marcel Partap <mpartap@gmx.net>
-Cc: Michael Scott <michael.scott@linaro.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>
-Cc: Russ Gorby <russ.gorby@intel.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Sebastian Reichel <sre@kernel.org>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/n_gsm.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1451,6 +1451,10 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
-  *	in which case an opening port goes back to closed and a closing port
-  *	is simply put into closed state (any further frames from the other
-  *	end will get a DM response)
-+ *
-+ *	Some control dlci can stay in ADM mode with other dlci working just
-+ *	fine. In that case we can just keep the control dlci open after the
-+ *	DLCI_OPENING retries time out.
-  */
- 
- static void gsm_dlci_t1(struct timer_list *t)
-@@ -1464,8 +1468,15 @@ static void gsm_dlci_t1(struct timer_list *t)
- 		if (dlci->retries) {
- 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
- 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
--		} else
-+		} else if (!dlci->addr && gsm->control == (DM | PF)) {
-+			if (debug & 8)
-+				pr_info("DLCI %d opening in ADM mode.\n",
-+					dlci->addr);
-+			gsm_dlci_open(dlci);
-+		} else {
- 			gsm_dlci_close(dlci);
-+		}
-+
- 		break;
- 	case DLCI_CLOSING:
- 		dlci->retries--;
-@@ -1483,8 +1494,8 @@ static void gsm_dlci_t1(struct timer_list *t)
-  *	@dlci: DLCI to open
-  *
-  *	Commence opening a DLCI from the Linux side. We issue SABM messages
-- *	to the modem which should then reply with a UA, at which point we
-- *	will move into open state. Opening is done asynchronously with retry
-+ *	to the modem which should then reply with a UA or ADM, at which point
-+ *	we will move into open state. Opening is done asynchronously with retry
-  *	running off timers and the responses.
-  */
- 
--- 
-2.15.0
+> Thus the protocol
+> implementation (hci_h5) never receives any data with this check still
+> in place. For the H5 protocol this means that the initialization never
+> completes (because the sync response never arrives). Even if the
+> initialization would succeed later on the drivers would call
+> hci_uart_init_ready() which schedules the registration which is
+> currently not implemented by hci_serdev.c.
+>
+> Removing the HCI_UART_INIT_PENDING check makes the code easier to read
+> and also fixes the initalization of devices (implemented with the serdev
+> library) which use the H5 protocol.
+>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
+> ---
+>  drivers/bluetooth/hci_h5.c     |  3 ---
+>  drivers/bluetooth/hci_ldisc.c  | 38 --------------------------------------
+>  drivers/bluetooth/hci_serdev.c |  3 ---
+>  drivers/bluetooth/hci_uart.h   |  4 +---
+>  4 files changed, 1 insertion(+), 47 deletions(-)
