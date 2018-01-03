@@ -1,76 +1,87 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 32/39] dt-bindings: nds32 L2 cache controller Bindings
-Date: Wed, 3 Jan 2018 15:10:13 -0600
-Message-ID: <20180103211013.daryfidm7hdbrsjc@rob-hp-laptop>
-References: <cover.1514874857.git.green.hu@gmail.com>
- <fc1f58a97003b4bedfbb8b6e3d29b1628ff61f9a.1514874858.git.green.hu@gmail.com>
+From: Martin Kaiser <martin@kaiser.cx>
+Subject: Re: [PATCH 2/2] serial: imx: fix endless loop during suspend
+Date: Wed, 3 Jan 2018 22:43:59 +0100
+Message-ID: <20180103214359.GA11695@botnar.kaiser.cx>
+References: <1514395632-15390-1-git-send-email-martin@kaiser.cx>
+ <1514395632-15390-2-git-send-email-martin@kaiser.cx>
+ <CAOMZO5AvFePCoKYQe7bt9bzFmdLYrgDyPLkepz99bJk7BTB0Lg@mail.gmail.com>
+ <20180102161555.GA4503@botnar.kaiser.cx>
+ <CAOMZO5BVQE45W6cSaPVLkDWAvTsaR54FPWD20krKCpgdGLX3CQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <fc1f58a97003b4bedfbb8b6e3d29b1628ff61f9a.1514874858.git.green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org, dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org, ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org, jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org, stefan.kristiansson-MbMCFXIvDHJFcC0YU169RA@public.gmane.org, shorne-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+In-Reply-To: <CAOMZO5BVQE45W6cSaPVLkDWAvTsaR54FPWD20krKCpgdGLX3CQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Fabio Estevam <festevam@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sascha Hauer <kernel@pengutronix.de>, Philipp Zabel <p.zabel@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 02, 2018 at 04:25:04PM +0800, Greentime Hu wrote:
-> From: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
-> 
-> This patch adds nds32 L2 cache controller binding documents.
-> 
-> Signed-off-by: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
-> ---
->  Documentation/devicetree/bindings/nds32/atl2c.txt |   29 +++++++++++++++++++++
->  1 file changed, 29 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/nds32/atl2c.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/nds32/atl2c.txt b/Documentation/devicetree/bindings/nds32/atl2c.txt
-> new file mode 100644
-> index 0000000..db9f7ec
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/nds32/atl2c.txt
-> @@ -0,0 +1,29 @@
-> +* Andestech L2 cache Controller
-> +
-> +The level-2 cache controller plays an important role in reducing memory latency
-> +for high performance systems, such as thoese designs with AndesCore processors.
-> +Level-2 cache controller in general enhances overall system performance
-> +signigicantly and the system power consumption might be reduced as well by
-> +reducing DRAM accesses.
-> +
-> +This binding specifies what properties must be available in the device tree
-> +representation of an Andestech L2 cache controller.
-> +
-> +Required properties:
-> +	- compatible:
-> +		Usage: required
-> +		Value type: <string>
-> +		Definition: "andestech,atl2c"
-> +	- reg : Physical base address and size of cache controller's memory mapped
-> +	- cache-unified : Specifies the cache is a unified cache.
-> +	- cache-level : Should be set to 2 for a level 2 cache.
-> +
-> +* Example
-> +
-> +	L2: l2-cache@e0500000 {
+Hi Fabio,
 
-cache-controller@...
+Thus wrote Fabio Estevam (festevam@gmail.com):
 
-With that,
+> I am not able to reproduce this problem on a imx25 pdk running 4.14.11
+> or linux-next.
 
-Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+this is no surprise. The problem shows up only if the AWAKE bit in UART
+Status Register 1 is set before we go into suspend. My understanding is
+that this bit will be set when the signal on the rx pin goes from high
+to low. 
 
-> +		compatible = "andestech,atl2c";
-> +		reg = <0xe0500000 0x1000>;
-> +		cache-unified;
-> +		cache-level = <2>;
-> +	};
-> +
-> -- 
-> 1.7.9.5
-> 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Is it 100% reproducible on your board?
+
+On my board, I have one uart port that's connected to an external chip.
+A power cycle of this external chip creates the falling edge on rx and
+makes the imx uart set the AWAKE bit. The problem can then be reproduced
+100%.
+
+It can be argued that this is an obscure scenario, but nevertheless, it
+should not put the kernel into an endless loop.
+
+This is my understanding of what happens:
+- AWAKE is set in the USR1 register
+- there's no uart transfer running, the clocks are disabled
+   (As I write this I'm not sure why this is the case, clk_ipg should
+    still be enabled but it seems that it's not. If I enable it
+    manually, the behaviour is different.)
+- we enter suspend
+- AWAKEN (UART control register 3) is set so that AWAKE creates an interrupt
+- we get an interrupt immediately
+   (the imx interrupt is not yet disabled at this point. it'll be
+    disabled later and then reenabled if the uart port acts as a wakeup
+    source)
+   -> we get into the interrupt handler with the clocks disabled
+- the interrupt handler tries to clear the AWAKE bit, this does not work
+  since the clocks are off, we exit and AWAKE is still set
+- we get another interrupt immediately
+   -> endless loop
+
+What I'm trying to do with my patch is to clear the AWAKE bit before we
+set AWAKEEN. We don't want to be woken up by events that happened before
+we started going into suspend.
+
+To do this, I have to find a suitable place where the clocks are
+enabled. That's why I tried to move clearing AWAKE and setting AWAKEEN
+into suspend_noirq, where the clocks are already enabled to save all
+registers before we finally suspend. While this works ok on my board, it
+cuases problems on imx6q.
+
+I'm not sure what makes my patch fail for you. I could imagine it is
+because now, the imx interrupt is enabled (as a wakeup source) before
+AWAKEN is set. The current code sets AWAKEN first and then enables the
+interrupt for the wakeup source.
+
+I'll try a different approach that keeps this order.
+
+> Care to share its dts? Do you use multiple UART ports? Do any of them
+> use RTS/CTS?
+
+There's nothing special regarding the uarts, There's a couple of them,
+none of which are using rts/cts.
+
+It all depends on the awake bit.
+
+Best regards,
+
+   Martin
