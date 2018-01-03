@@ -1,85 +1,163 @@
 From: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC v2 2/9] dt-bindings: net: bluetooth: add support for Realtek
- Bluetooth chips
-Date: Wed, 3 Jan 2018 13:07:28 -0600
-Message-ID: <CAL_JsqLRkicv0p8ur==mq3bCp6Sn7b41M+CoFYx_qrhcdsY9Qg@mail.gmail.com>
-References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
- <20180101204217.26165-3-martin.blumenstingl@googlemail.com>
- <2A1D60F1-F86F-4A2B-A43A-F3419506DE99@holtmann.org> <CAFBinCBNro18Ak3h1fHFpAioDzimh5KcUeOE8PjQr_CCkAs7PA@mail.gmail.com>
+Subject: Re: [PATCH v5 26/39] nds32: Device tree support
+Date: Wed, 3 Jan 2018 13:14:35 -0600
+Message-ID: <CAL_Jsq+CC-3w8BVcUP77__ZR8aYMhxiXDYJ--HZwA=ezHG548g@mail.gmail.com>
+References: <cover.1514874857.git.green.hu@gmail.com> <7fe1190a9cf8e30f1b8af52dd382ba1176997786.1514874857.git.green.hu@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAFBinCBNro18Ak3h1fHFpAioDzimh5KcUeOE8PjQr_CCkAs7PA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <7fe1190a9cf8e30f1b8af52dd382ba1176997786.1514874857.git.green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Cc: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry Finger <Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org>, Carlo Caione <carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+To: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org, Randy
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 2, 2018 at 3:10 PM, Martin Blumenstingl
-<martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org> wrote:
-> Hi Marcel,
+On Tue, Jan 2, 2018 at 2:24 AM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
 >
-> On Tue, Jan 2, 2018 at 12:16 PM, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org> wrote:
->> Hi Martin,
->>
->>> This adds the documentation for Bluetooth functionality of the Realtek
->>> RTL8723BS and RTL8723DS.
->>> Both are SDIO wifi chips with an additional Bluetooth module which is
->>> connected via UART to the host.
->>>
->>> Signed-off-by: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
->>> ---
->>> .../devicetree/bindings/net/realtek-bluetooth.txt  | 41 ++++++++++++++++++++++
->>> 1 file changed, 41 insertions(+)
->>> create mode 100644 Documentation/devicetree/bindings/net/realtek-bluetooth.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/net/realtek-bluetooth.txt b/Documentation/devicetree/bindings/net/realtek-bluetooth.txt
->>> new file mode 100644
->>> index 000000000000..1491329c4cd1
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/net/realtek-bluetooth.txt
->>> @@ -0,0 +1,41 @@
->>> +Realtek Bluetooth Chips
->>> +-----------------------
->>> +
->>> +This documents the binding structure and common properties for serial
->>> +attached Realtek devices.
->>> +
->>> +Serial attached Realtek devices shall be a child node of the host UART
->>> +device the slave device is attached to. See ../serial/slave-device.txt
->>> +for more information
->>> +
->>> +Required properties:
->>> +- compatible: should contain one of the following:
->>> +    * "realtek,rtl8723bs-bluetooth"
->>> +    * "realtek,rtl8723ds-bluetooth"
->>> +
->>> +Optional properties:
->>> +- realtek,config-data: Bluetooth chipset configuration data which is
->>> +                     needed for communication (it typically contains
->>> +                     board specific settings like the baudrate and
->>> +                     whether flow-control is used).
->>> +                     This is an array of u8 values.
->>
->> any chance we can at least include the basic format of these config blobs. And I prefer at least an ACK from Rob here.
-> with including the basic format you mean a description that the config
-> blob should start with 0x55 0xab 0x23 0x87 (which translates to:
-> 0x8723ab55)?
-
-That and the size if it is fixed (or fixed per compatible). Also,
-would be useful to state what are the defaults if not present.
-
-If it is all documented somewhere else, a pointer to that is fine.
-
-> I think all non-trivial dt-binding patches should be ACKed by the DT
-> maintainers, so waiting for Rob's ACK is perfectly fine for me
+> This patch adds support for device tree.
 >
->>> +- enable-gpios: GPIO specifier, used to enable/disable the BT module
->>> +- reset-gpios: GPIO specifier, used to reset the BT module
+> Signed-off-by: Vincent Chen <vincentc-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
+> Signed-off-by: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
+> ---
+>  arch/nds32/boot/dts/Makefile  |    8 +++++
+>  arch/nds32/boot/dts/ae3xx.dts |   73 +++++++++++++++++++++++++++++++++++++++++
+>  arch/nds32/kernel/devtree.c   |   19 +++++++++++
+>  3 files changed, 100 insertions(+)
+>  create mode 100644 arch/nds32/boot/dts/Makefile
+>  create mode 100644 arch/nds32/boot/dts/ae3xx.dts
+>  create mode 100644 arch/nds32/kernel/devtree.c
+>
+> diff --git a/arch/nds32/boot/dts/Makefile b/arch/nds32/boot/dts/Makefile
+> new file mode 100644
+> index 0000000..d31faa8
+> --- /dev/null
+> +++ b/arch/nds32/boot/dts/Makefile
+> @@ -0,0 +1,8 @@
+> +ifneq '$(CONFIG_NDS32_BUILTIN_DTB)' '""'
+> +BUILTIN_DTB := $(patsubst "%",%,$(CONFIG_NDS32_BUILTIN_DTB)).dtb.o
+> +else
+> +BUILTIN_DTB :=
+> +endif
+> +obj-$(CONFIG_OF) += $(BUILTIN_DTB)
+> +
+> +clean-files := *.dtb *.dtb.S
+> diff --git a/arch/nds32/boot/dts/ae3xx.dts b/arch/nds32/boot/dts/ae3xx.dts
+> new file mode 100644
+> index 0000000..6b23d60
+> --- /dev/null
+> +++ b/arch/nds32/boot/dts/ae3xx.dts
+> @@ -0,0 +1,73 @@
+> +/dts-v1/;
+> +/ {
+> +       compatible = "andestech,ae3xx";
+> +       #address-cells = <1>;
+> +       #size-cells = <1>;
+> +       interrupt-parent = <&intc>;
+> +
+> +       chosen {
+> +               stdout-path = &serial0;
+> +       };
+> +
+> +       memory@0 {
+> +               device_type = "memory";
+> +               reg = <0x00000000 0x40000000>;
+> +       };
+> +
+> +       cpus {
+> +               #address-cells = <1>;
+> +               #size-cells = <0>;
+> +               cpu@0 {
+> +                       device_type = "cpu";
+> +                       compatible = "andestech,n13", "andestech,nds32v3";
+> +                       reg = <0>;
+> +                       clock-frequency = <60000000>;
+> +                       next-level-cache = <&L2>;
+> +               };
+> +       };
+> +
+> +       L2: l2-cache@e0500000 {
+> +               compatible = "andestech,atl2c";
+> +               reg = <0xe0500000 0x1000>;
+> +               cache-unified;
+> +               cache-level = <2>;
+> +       };
+> +
+> +       apb: clk@0 {
 
-These should state active high or low.
+unit address without reg is not valid. Drop the "@0".
 
-Rob
+> +               #clock-cells = <0>;
+> +               compatible = "fixed-clock";
+> +               clock-frequency = <30000000>;
+> +       };
+> +
+> +
+> +       intc: interrupt-controller {
+> +               compatible = "andestech,ativic32";
+> +               #interrupt-cells = <1>;
+> +               interrupt-controller;
+> +       };
+> +
+> +       serial0: serial@f0300000 {
+
+All the memory mapped peripherals should be under at least one simple-bus node.
+
+> +               compatible = "andestech,uart16550", "ns16550a";
+> +               reg = <0xf0300000 0x1000>;
+> +               interrupts = <8>;
+> +               clock-frequency = <14745600>;
+> +               reg-shift = <2>;
+> +               reg-offset = <32>;
+> +               no-loopback-test = <1>;
+> +       };
+> +
+> +       timer0: timer@f0400000 {
+> +               compatible = "andestech,atcpit100";
+> +               reg = <0xf0400000 0x1000>;
+> +               interrupts = <2>;
+> +               clocks = <&apb>;
+> +               clock-names = "PCLK";
+> +       };
+> +
+> +       mac0: mac@e0100000 {
+
+ethernet@...
+
+> +               compatible = "andestech,atmac100";
+> +               reg = <0xe0100000 0x1000>;
+> +               interrupts = <18>;
+> +       };
+> +
+> +};
+> diff --git a/arch/nds32/kernel/devtree.c b/arch/nds32/kernel/devtree.c
+> new file mode 100644
+> index 0000000..bdce0fe
+> --- /dev/null
+> +++ b/arch/nds32/kernel/devtree.c
+> @@ -0,0 +1,19 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +// Copyright (C) 2005-2017 Andes Technology Corporation
+> +
+> +#include <linux/bug.h>
+> +#include <linux/printk.h>
+> +#include <linux/of_fdt.h>
+> +
+> +void __init early_init_devtree(void *params)
+> +{
+> +       if (!params || !early_init_dt_scan(params)) {
+> +               pr_crit("\n"
+> +                       "Error: invalid device tree blob at (virtual address 0x%p)\n"
+> +                       "\nPlease check your bootloader.", params);
+> +
+> +               BUG_ON(1);
+> +       }
+> +
+> +       dump_stack_set_arch_desc("%s (DT)", of_flat_dt_get_machine_name());
+> +}
+> --
+> 1.7.9.5
+>
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
