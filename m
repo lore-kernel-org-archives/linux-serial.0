@@ -1,92 +1,108 @@
-From: Carlo Caione <carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
-Subject: Re: [RFC v2 7/9] bluetooth: btrtl: load the config blob from
- devicetree when available
-Date: Thu, 4 Jan 2018 09:46:12 +0000
-Message-ID: <CAL9uMOGkZefjD_JNxjf4yJ0ATFtOG5Cm_XQq1fy0VQDjiMFBmg@mail.gmail.com>
-References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
- <20180101204217.26165-8-martin.blumenstingl@googlemail.com>
- <563D6F9F-8495-40D4-BE56-5338ED2B9B99@holtmann.org> <CAL9uMOEMDup4hRkxD-tM8R0YirGs5uQi31AjJUnFCPNMKUdRHg@mail.gmail.com>
- <E8E39477-CF1A-4A3E-84C5-830E182C2266@holtmann.org> <CAL9uMOH0N-4jgQncmPjK-KyU0vY9Q0ZnHYSAGgz3z3ywzc8Avw@mail.gmail.com>
- <CAFBinCBB=SmviOMRHGDH6vzjTjV-mrtQEc8nBUhDbJGs9SBpgw@mail.gmail.com>
- <CAL9uMOFyfr_qGf5BeTojkMeWeH8LqPoKj=LrdgEMB2wmhGBxmA@mail.gmail.com> <CAFBinCAFsDRpp=4We1hQPiutM1Q0MrqebPLyS3e2_e+JcBoSmg@mail.gmail.com>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v5 1/3] clocksource/drivers/atcpit100: Add andestech
+ atcpit100 timer
+Date: Thu, 4 Jan 2018 14:50:09 +0100
+Message-ID: <ff51fff7-e963-f9fd-10d6-9b90a64d7aac@linaro.org>
+References: <1513057621-19084-1-git-send-email-rickchen36@gmail.com>
+ <1513057621-19084-2-git-send-email-rickchen36@gmail.com>
+ <bb7383ba-bb8e-3cbd-4ce0-faaefa8ed114@linaro.org>
+ <CAEbi=3cEEtLQRiv-cyUwEmcBNOC2Sz7AhzZkpznQWYb9VUojug@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAFBinCAFsDRpp=4We1hQPiutM1Q0MrqebPLyS3e2_e+JcBoSmg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Cc: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <CAEbi=3cEEtLQRiv-cyUwEmcBNOC2Sz7AhzZkpznQWYb9VUojug@mail.gmail.com>
+Content-Language: en-US
+Sender: linux-arch-owner@vger.kernel.org
+To: Greentime Hu <green.hu@gmail.com>, Greentime <greentime@andestech.com>
+Cc: Rick Chen <rickchen36@gmail.com>, Rick Chen <rick@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, netdev <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 3, 2018 at 8:50 PM, Martin Blumenstingl
-<martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org> wrote:
-> Hi Carlo,
 
-Hi Martin,
+Hi,
 
->> As Marcel suggested we can assume that the information in the DSDT is
->> correct so that we can get rid of the config blob also for x86
->> platforms (assuming that the only useful information in the config
->> blobs is the UART configuration).
-> in my tests I tried to send only the firmware without the config to my
-> RTL8723BS. unfortunately the last firmware chunk (sent to the
-> controller) times out in that case (even if I set a proper baudrate
-> before or if I specify no baudrate at all and keep the serdev at
-> 115200)
+sorry I missed your answer. Comments below.
 
-What's in the config blobs besides UART configuration?
+On 13/12/2017 07:06, Greentime Hu wrote:
+> Hi, Daniel:
+> 
+> 2017-12-12 18:05 GMT+08:00 Daniel Lezcano <daniel.lezcano@linaro.org>:
+>> On 12/12/2017 06:46, Rick Chen wrote:
+>>> ATCPIT100 is often used on the Andes architecture,
+>>> This timer provide 4 PIT channels. Each PIT channel is a
+>>> multi-function timer, can be configured as 32,16,8 bit timers
+>>> or PWM as well.
+>>>
+>>> For system timer it will set channel 1 32-bit timer0 as clock
+>>> source and count downwards until underflow and restart again.
+>>
+>> [ ... ]
+>>
+>>> +config CLKSRC_ATCPIT100
+>>> +     bool "Clocksource for AE3XX platform"
+>>> +     depends on NDS32 || COMPILE_TEST
+>>> +     depends on HAS_IOMEM
+>>> +     help
+>>> +       This option enables support for the Andestech AE3XX platform timers.
+>>
+>> Hi Rick,
+>>
+>> the general rule for the Kconfig is:
+>>
+>> bool "Clocksource for AE3XX platform" if COMPILE_TEST
+>>
+>> and no deps on the platform.
+>>
+>> It is up to the platform Kconfig to select the option.
+>>
+>> We want here a silent option but make it selectable in case of
+>> compilation test coverage.
+> 
+> 
+> The way we like to use it is because
+> 1. This timer is a basic component to boot an nds32 CPU and it should
+> be able to select without COMPILE_TEST for nds32 architecture.
 
-It's odd because reading into hciattach_rtk.c it seems that the config
-file is actually only used by the userspace tools (hciattach) to
-retrieve the UART configuration and nothing else, whereas in the
-kernel driver the config blob is appended to the firmware.
+Yes, so you don't need it to be selectable, you must select it from the
+platform's Kconfig.
 
-> have you tested this (= uploading the firmware without the config
-> blob) on your x86 board before?
+> 2. It seems conflict with debug info. I am not sure if there is
+> another way to debug kernel(with debug info) with COMPILE_TEST and
+> DEBUG_INFO because we need this driver for nds32 architecture.
+> 
+> Symbol: DEBUG_INFO [=n]
+> Type  : boolean
+> Prompt: Compile the kernel with debug info
+>   Location:
+>     -> Kernel hacking
+>       -> Compile-time checks and compiler options
+>   Defined at lib/Kconfig.debug:140
+>   Depends on: DEBUG_KERNEL [=y] && !COMPILE_TEST [=n]
 
-No, on the cherry-trail I have I'm using hciattach to upload the
-firmware and AFAICT only the firmware is uploaded and (as written
-before) the config blob is only used to get the UART configuration.
+The COMPILE_TEST option is only there to allow cross-compilation test
+coverage, it does not select or unselect the driver in usual way.
 
-> so far the following solutions for the config blob were discussed:
-> 1) put the config blob in userspace (/lib/firmware/...) -> not good
-> because it makes the rootfs board-specific
-> 2) auto-generate the config blob -> didn't work for me, last firmware
-> chunk times out (just as if I had no config at all)
-> 3) putting the config blob in DT -> possible but not very nice to read
->
-> I had another idea:
-> what if we mix solution 1) and 2)?
-> the idea: load the config blob from userspace (/lib/firmware/...) and
-> update it's settings with the values we got from devicetree-properties
-> / DSDT
+If the COMPILE_TEST is enabled, then the option will appear in the
+menuconfig, so that gives the opportunity to select/unselect it.
 
-If you are shipping already the config blob in userspace I don't see
-why you would do the update since you have already all the info you
-need.
-I would rather check why (2) didn't work fine. Have you any
-documentation how the config blobs are generated? The code in
-hciattach_rtk.c seems a good starting point.
+Otherwise, the Kconfig's platform selects automatically the driver and
+the user *can't* unselect it from the menuconfig as it is a silent
+option and that is certainly what you want.
 
-> I have not tested this yet, but I just want to hear everyone's (at
-> least Marcel, Rob and Carlo) opinion on that
-> (this would also allow us to fully auto-generate the config blob in
-> the future once we figure out how to do that)
->
->> Adding the ACPI support on top of your patches is (hopefully) trivial,
->> just follow what was done for hci_bcm.c, basically adding a new _HID
->> and reading the configuration for GPIOs and UART, all the rest should
->> be transparent for serdev.
-> thanks for the reference to hci_bcm.c - I will have a look at this for
-> the next version
-> one question: "_HID" would be OBDA8723 in our case?
+>> Also, this driver is not a CLKSRC but a TIMER. Rename CLKSRC_ATCPIT100
+>> to TIMER_ATCPIT100.
+> 
+> Thanks. We will rename it in the next version patch.
 
-Yes
+You just resend an entire series V5 for the architecture. I'm confused,
+what is the merging path ?
 
->> I'll test your patches on the hardware I have.
-> great, thank you!
-
-Cheers!
+Thanks.
+  -- Daniel
 
 -- 
-Carlo Caione  |  +44.7384.69.16.04  |  Endless
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
