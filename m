@@ -1,141 +1,83 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v5 1/3] clocksource/drivers/atcpit100: Add andestech
- atcpit100 timer
-Date: Fri, 5 Jan 2018 10:31:32 +0100
-Message-ID: <1e75edb3-8f7b-796c-6871-1612b027050e@linaro.org>
-References: <1513057621-19084-1-git-send-email-rickchen36@gmail.com>
- <1513057621-19084-2-git-send-email-rickchen36@gmail.com>
- <bb7383ba-bb8e-3cbd-4ce0-faaefa8ed114@linaro.org>
- <CAEbi=3cEEtLQRiv-cyUwEmcBNOC2Sz7AhzZkpznQWYb9VUojug@mail.gmail.com>
- <ff51fff7-e963-f9fd-10d6-9b90a64d7aac@linaro.org>
- <CAEbi=3c4yAx7Tejz8aPw3-3vj89t8cg-zNEY-vbF7KaMo8OM0Q@mail.gmail.com>
- <efdb249a-8dc0-e076-a1db-20cecdbf4c13@linaro.org>
- <CAEbi=3frQYZHb0yiMvNk_JUiUCy6ca0tbrsM_pt49LtkMy47mw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <CAEbi=3frQYZHb0yiMvNk_JUiUCy6ca0tbrsM_pt49LtkMy47mw@mail.gmail.com>
-Content-Language: en-US
-Sender: netdev-owner@vger.kernel.org
-To: Greentime Hu <green.hu@gmail.com>
-Cc: Greentime <greentime@andestech.com>, Rick Chen <rickchen36@gmail.com>, Rick Chen <rick@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, netdev <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, linux-serial@vger.kernel.org
+From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
+Subject: Re: [RFC v2 7/9] bluetooth: btrtl: load the config blob from
+ devicetree when available
+Date: Fri, 5 Jan 2018 15:57:53 +0100
+Message-ID: <EC216531-81EC-4EE8-BAC4-C6954C222092@holtmann.org>
+References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
+ <20180101204217.26165-8-martin.blumenstingl@googlemail.com>
+ <563D6F9F-8495-40D4-BE56-5338ED2B9B99@holtmann.org>
+ <CAL9uMOEMDup4hRkxD-tM8R0YirGs5uQi31AjJUnFCPNMKUdRHg@mail.gmail.com>
+ <E8E39477-CF1A-4A3E-84C5-830E182C2266@holtmann.org>
+ <CAL9uMOH0N-4jgQncmPjK-KyU0vY9Q0ZnHYSAGgz3z3ywzc8Avw@mail.gmail.com>
+ <CAFBinCBB=SmviOMRHGDH6vzjTjV-mrtQEc8nBUhDbJGs9SBpgw@mail.gmail.com>
+ <CAL9uMOFyfr_qGf5BeTojkMeWeH8LqPoKj=LrdgEMB2wmhGBxmA@mail.gmail.com>
+ <CAFBinCAFsDRpp=4We1hQPiutM1Q0MrqebPLyS3e2_e+JcBoSmg@mail.gmail.com>
+ <CAL9uMOGkZefjD_JNxjf4yJ0ATFtOG5Cm_XQq1fy0VQDjiMFBmg@mail.gmail.com>
+Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAL9uMOGkZefjD_JNxjf4yJ0ATFtOG5Cm_XQq1fy0VQDjiMFBmg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Carlo Caione <carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Cc: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry Finger <Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/01/2018 09:45, Greentime Hu wrote:
-> Hi, Daniel:
+Hi Carlo,
 
-[ ... ]
-
->>>>>> [ ... ]
->>>>>>
->>>>>>> +config CLKSRC_ATCPIT100
->>>>>>> +     bool "Clocksource for AE3XX platform"
->>>>>>> +     depends on NDS32 || COMPILE_TEST
->>>>>>> +     depends on HAS_IOMEM
->>>>>>> +     help
->>>>>>> +       This option enables support for the Andestech AE3XX platform timers.
->>>>>>
->>>>>> Hi Rick,
->>>>>>
->>>>>> the general rule for the Kconfig is:
->>>>>>
->>>>>> bool "Clocksource for AE3XX platform" if COMPILE_TEST
->>
->> BTW, select TIMER_OF is missing.
+>>> As Marcel suggested we can assume that the information in the DSDT is
+>>> correct so that we can get rid of the config blob also for x86
+>>> platforms (assuming that the only useful information in the config
+>>> blobs is the UART configuration).
+>> in my tests I tried to send only the firmware without the config to my
+>> RTL8723BS. unfortunately the last firmware chunk (sent to the
+>> controller) times out in that case (even if I set a proper baudrate
+>> before or if I specify no baudrate at all and keep the serdev at
+>> 115200)
 > 
-> We don't select here because we select TIMER_OF in arch/nds32/Kconfig
-> I am not sure if I still need to select TIMER_OF here?
+> What's in the config blobs besides UART configuration?
 
-Actually, I want the drivers/clocksource/Kconfig to be consistent across
-all entries. As TIMER_OF is needed by the driver and nothing else, it
-must be selected in the TIMER entry.
+is anybody writing a rtlfw.c tool (like nokfw.c) so that we can print out what we actually have in these config files?
 
-As there are a lot of timers and we do the changes little by little,
-there are still entries with different format.
+> It's odd because reading into hciattach_rtk.c it seems that the config
+> file is actually only used by the userspace tools (hciattach) to
+> retrieve the UART configuration and nothing else, whereas in the
+> kernel driver the config blob is appended to the firmware.
 
-It should be something like that:
+Frankly, I am inclined to not use the config file even for DT based system and just allow specifying the UART settings via normal DT properties like we do for Broadcom and others.
 
-config ASM9260_TIMER
-        bool "ASM9260 timer driver" if COMPILE_TEST
-        select CLKSRC_MMIO
-        select TIMER_OF
-        help
-          Enables support for the ASM9260 timer.
-
-Move the select TIMER_OF to the timer option entry.
-
->>>>>> and no deps on the platform.
->>>>>>
->>>>>> It is up to the platform Kconfig to select the option.
->>>>>>
->>>>>> We want here a silent option but make it selectable in case of
->>>>>> compilation test coverage.
->>>>>
->>>>>
->>>>> The way we like to use it is because
->>>>> 1. This timer is a basic component to boot an nds32 CPU and it should
->>>>> be able to select without COMPILE_TEST for nds32 architecture.
->>>>
->>>> Yes, so you don't need it to be selectable, you must select it from the
->>>> platform's Kconfig.
->>>
->>> I am not sure that I get your point or not.
->>> We don't have a CONFIG_PLAT_AE3XX.
->>> Do you mean we should create one and select CLKSRC_ATCPIT100 under
->>> CONFIG_PLAT_AE3XX?
->>
->> No. Can't you add in arch/ndis32/Kconfig ?
->>
->> +select TIMER_ATCPIT100
->>
->> Like:
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/Kconfig#n50
+>> have you tested this (= uploading the firmware without the config
+>> blob) on your x86 board before?
 > 
-> IMHO, it might be a little bit wierd if we select TIMER_ATCPIT100 in
-> arch/nds32/Kconfig because it is part of SoC instead of CPU.
-> If we change to another SoC with another timer, we need to select
-> another TIMER in arch/nds32/Kconfig and delete TIMER_ATCPIT100.
-> It seems more flexible to be selected in driver layer.
+> No, on the cherry-trail I have I'm using hciattach to upload the
+> firmware and AFAICT only the firmware is uploaded and (as written
+> before) the config blob is only used to get the UART configuration.
 > 
-> It seems to be the timer is part of the arch to be selected in arch's Kconfig.
-> arch/arc/Kconfig:       select ARC_TIMERS
-> arch/arc/Kconfig:       select ARC_TIMERS_64BIT
-> arch/arm/Kconfig:       select ARM_ARCH_TIMER
-> arch/arm64/Kconfig:     select ARM_ARCH_TIMER
-> arch/blackfin/Kconfig:  select BFIN_GPTIMERS
+>> so far the following solutions for the config blob were discussed:
+>> 1) put the config blob in userspace (/lib/firmware/...) -> not good
+>> because it makes the rootfs board-specific
+>> 2) auto-generate the config blob -> didn't work for me, last firmware
+>> chunk times out (just as if I had no config at all)
+>> 3) putting the config blob in DT -> possible but not very nice to read
+>> 
+>> I had another idea:
+>> what if we mix solution 1) and 2)?
+>> the idea: load the config blob from userspace (/lib/firmware/...) and
+>> update it's settings with the values we got from devicetree-properties
+>> / DSDT
+> 
+> If you are shipping already the config blob in userspace I don't see
+> why you would do the update since you have already all the info you
+> need.
+> I would rather check why (2) didn't work fine. Have you any
+> documentation how the config blobs are generated? The code in
+> hciattach_rtk.c seems a good starting point.
 
-No, the timer must be selected from the arch/soc's or whatever Kconfig.
-Not in the clocksource's Kconfig.
+I would almost bet it needs a HCI commands or some HCI command is embedded in the config blob somewhere that essentially tells the firmware it is done and ready. Hence my ask above, we need to know what is in these config file.
 
-eg.
+Even settings like crystal timing or some RF pieces or even enabled/disabled features are board specific and should be in DT rather than a config blob on the general purpose filesystem.
 
-on ARM:
+Regards
 
-arch/arm/mach-vt8500/Kconfig:   select VT8500_TIMER
-arch/arm/mach-bcm/Kconfig:      select BCM_KONA_TIMER
-arch/arm/mach-actions/Kconfig:  select OWL_TIMER
-arch/arm/mach-digicolor/Kconfig:        select DIGICOLOR_TIMER
-
-etc ...
-
-on ARM64:
-
-arch/arm64/Kconfig.platforms:   select OWL_TIMER
-arch/arm64/Kconfig.platforms:       select ARM_TIMER_SP804
-arch/arm64/Kconfig.platforms:       select MTK_TIMER
-
-etc ...
-
-Thanks.
-
-  -- Daniel
-
-
--- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Marcel
