@@ -1,94 +1,148 @@
-From: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Subject: Re: [RFC v2 7/9] bluetooth: btrtl: load the config blob from
- devicetree when available
-Date: Fri, 5 Jan 2018 17:15:48 +0100
-Message-ID: <1F394D8B-CFB8-48BA-BC6B-15D1EE51DB08@holtmann.org>
-References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
- <20180101204217.26165-8-martin.blumenstingl@googlemail.com>
- <563D6F9F-8495-40D4-BE56-5338ED2B9B99@holtmann.org>
- <CAL9uMOEMDup4hRkxD-tM8R0YirGs5uQi31AjJUnFCPNMKUdRHg@mail.gmail.com>
- <E8E39477-CF1A-4A3E-84C5-830E182C2266@holtmann.org>
- <CAL9uMOH0N-4jgQncmPjK-KyU0vY9Q0ZnHYSAGgz3z3ywzc8Avw@mail.gmail.com>
- <CAFBinCBB=SmviOMRHGDH6vzjTjV-mrtQEc8nBUhDbJGs9SBpgw@mail.gmail.com>
- <CAL9uMOFyfr_qGf5BeTojkMeWeH8LqPoKj=LrdgEMB2wmhGBxmA@mail.gmail.com>
- <CAFBinCAFsDRpp=4We1hQPiutM1Q0MrqebPLyS3e2_e+JcBoSmg@mail.gmail.com>
- <CAL9uMOGkZefjD_JNxjf4yJ0ATFtOG5Cm_XQq1fy0VQDjiMFBmg@mail.gmail.com>
- <EC216531-81EC-4EE8-BAC4-C6954C222092@holtmann.org>
-Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
-Content-Type: text/plain;
-        charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <EC216531-81EC-4EE8-BAC4-C6954C222092-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Carlo Caione <carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
-Cc: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry Finger <Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+From: Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH v2] serial: imx: fix endless loop during suspend
+Date: Fri,  5 Jan 2018 17:46:43 +0100
+Message-ID: <1515170803-31662-1-git-send-email-martin@kaiser.cx>
+References: <1514395632-15390-1-git-send-email-martin@kaiser.cx>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1514395632-15390-1-git-send-email-martin@kaiser.cx>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Fabio Estevam <festevam@gmail.com>, Sascha Hauer <kernel@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Shawn Guo <shawnguo@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Martin Kaiser <martin@kaiser.cx>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Carlo,
+Before we go into suspend mode, we enable the imx uart's interrupt for
+the awake bit in the UART Status Register 1. If, for some reason, the
+awake bit is already set before we enter suspend mode, we get an
+interrupt immediately when we enable interrupts for awake. The uart's
+clk_ipg is disabled at this point (unless there's an ongoing transfer).
+We end up in the interrupt handler, which usually tries to clear the
+awake bit. This doesn't work with the clock disabled. Therefore, we
+keep getting interrupts forever, resulting in an endless loop.
 
->>>> As Marcel suggested we can assume that the information in the DSDT is
->>>> correct so that we can get rid of the config blob also for x86
->>>> platforms (assuming that the only useful information in the config
->>>> blobs is the UART configuration).
->>> in my tests I tried to send only the firmware without the config to my
->>> RTL8723BS. unfortunately the last firmware chunk (sent to the
->>> controller) times out in that case (even if I set a proper baudrate
->>> before or if I specify no baudrate at all and keep the serdev at
->>> 115200)
->> 
->> What's in the config blobs besides UART configuration?
-> 
-> is anybody writing a rtlfw.c tool (like nokfw.c) so that we can print out what we actually have in these config files?
-> 
->> It's odd because reading into hciattach_rtk.c it seems that the config
->> file is actually only used by the userspace tools (hciattach) to
->> retrieve the UART configuration and nothing else, whereas in the
->> kernel driver the config blob is appended to the firmware.
-> 
-> Frankly, I am inclined to not use the config file even for DT based system and just allow specifying the UART settings via normal DT properties like we do for Broadcom and others.
+Clear the awake bit before setting the awaken bit to signal that we want
+an imx interrupt when the awake bit will be set. This ensures that we're
+not woken up by events that happened before we started going into
+suspend mode.
 
-so I googled for a few config files and this is what this turns into:
+Change the clock handling so that suspend prepares and enables the clock
+and suspend_noirq disables it. Revert these operations in resume_noirq and
+resume.
 
-Analyzing rtl8723d_config_1000000_noflow.dms
-Signature:   0x8723ab55
-Data length: 41
-len=1   offset=f4,{ 01 }
-len=2   offset=f6,{ 81 00 }
-len=2   offset=fa,{ 12 80 }
-len=16  offset=0c,{ 04 50 00 00 50 c5 ea 19 e1 1b fd af 5b 01 a4 0b }
-len=1   offset=d9,{ 0f }
-len=1   offset=e4,{ 08 }
-Analyzing rtl8723d_config.dms
-Signature:   0x8723ab55
-Data length: 41
-len=1   offset=f4,{ 01 }
-len=2   offset=f6,{ 81 00 }
-len=2   offset=fa,{ 12 80 }
-len=16  offset=0c,{ 02 80 92 04 50 c5 ea 19 e1 1b fd af 5f 01 a4 0b }
-len=1   offset=d9,{ 0f }
-len=1   offset=e4,{ 08 }
-Analyzing rtl8822b_config.bin
-Signature:   0x8723ab55
-Data length: 8
-len=1   offset=d9,{ 0f }
-len=1   offset=e4,{ 08 }
+With these preparations in place, we can now modify awake and awaken in
+the suspend function when the actual imx interrupt is disabled and the
+required clk_ipg is active.
 
-The first two are some UART based ones and the last one is USB based.
+Update the thaw and freeze functions to use the new clock handling since
+we share the suspend_noirq function between suspend and hibernate.
 
-So the 0x3c offset seems to be the BD_ADDR and 0x0c offset is the UART configuration. It would be good to know which settings the other ones control.
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+changes in v2
+ call serial_imx_enable_wakeup() in suspend, not in suspend_noirq
+ keep the clock enalbed between suspend and suspend_noirq and
+  between resume_noirq and resume
 
-Also the 16 octet UART config blob seems to be decoded like this:
+Hi Fabio and all,
 
-	uart_config {
-		le32 baudrate;
-		u8[8] reserved1;
-		u8 flowctl;
-		u8[3] reserved2;
-	}
+here's a different approach for fixing the awake issue that I see on my
+board. I tried to stick as much as possible to the original order in
+which the operations were done. Could you do a quick check on imx6q?
 
-Actually hciattach_rtk just takes the baud rate and and hardware flow control bit out of this file. That is clearly two things that are better written in plain text in the DT file.
+Thanks,
+   Martin
 
-Regards
+ drivers/tty/serial/imx.c | 32 +++++++++++++++-----------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
 
-Marcel
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 145ed61..e5d5250 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2221,8 +2221,10 @@ static void serial_imx_enable_wakeup(struct imx_port *sport, bool on)
+ 	unsigned int val;
+ 
+ 	val = readl(sport->port.membase + UCR3);
+-	if (on)
++	if (on) {
++		writel(USR1_AWAKE, sport->port.membase + USR1);
+ 		val |= UCR3_AWAKEN;
++	}
+ 	else
+ 		val &= ~UCR3_AWAKEN;
+ 	writel(val, sport->port.membase + UCR3);
+@@ -2239,11 +2241,6 @@ static int imx_serial_port_suspend_noirq(struct device *dev)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct imx_port *sport = platform_get_drvdata(pdev);
+-	int ret;
+-
+-	ret = clk_enable(sport->clk_ipg);
+-	if (ret)
+-		return ret;
+ 
+ 	serial_imx_save_context(sport);
+ 
+@@ -2264,8 +2261,6 @@ static int imx_serial_port_resume_noirq(struct device *dev)
+ 
+ 	serial_imx_restore_context(sport);
+ 
+-	clk_disable(sport->clk_ipg);
+-
+ 	return 0;
+ }
+ 
+@@ -2273,15 +2268,19 @@ static int imx_serial_port_suspend(struct device *dev)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct imx_port *sport = platform_get_drvdata(pdev);
+-
+-	/* enable wakeup from i.MX UART */
+-	serial_imx_enable_wakeup(sport, true);
++	int ret;
+ 
+ 	uart_suspend_port(&imx_reg, &sport->port);
+ 	disable_irq(sport->port.irq);
+ 
+-	/* Needed to enable clock in suspend_noirq */
+-	return clk_prepare(sport->clk_ipg);
++	ret = clk_prepare_enable(sport->clk_ipg);
++	if (ret)
++		return ret;
++
++	/* enable wakeup from i.MX UART */
++	serial_imx_enable_wakeup(sport, true);
++
++	return 0;
+ }
+ 
+ static int imx_serial_port_resume(struct device *dev)
+@@ -2295,7 +2294,7 @@ static int imx_serial_port_resume(struct device *dev)
+ 	uart_resume_port(&imx_reg, &sport->port);
+ 	enable_irq(sport->port.irq);
+ 
+-	clk_unprepare(sport->clk_ipg);
++	clk_disable_unprepare(sport->clk_ipg);
+ 
+ 	return 0;
+ }
+@@ -2307,8 +2306,7 @@ static int imx_serial_port_freeze(struct device *dev)
+ 
+ 	uart_suspend_port(&imx_reg, &sport->port);
+ 
+-	/* Needed to enable clock in suspend_noirq */
+-	return clk_prepare(sport->clk_ipg);
++	return clk_prepare_enable(sport->clk_ipg);
+ }
+ 
+ static int imx_serial_port_thaw(struct device *dev)
+@@ -2318,7 +2316,7 @@ static int imx_serial_port_thaw(struct device *dev)
+ 
+ 	uart_resume_port(&imx_reg, &sport->port);
+ 
+-	clk_unprepare(sport->clk_ipg);
++	clk_disable_unprepare(sport->clk_ipg);
+ 
+ 	return 0;
+ }
+-- 
+2.1.4
