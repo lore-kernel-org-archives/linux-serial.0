@@ -1,205 +1,121 @@
-From: Martin Blumenstingl <martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org>
-Subject: Re: [RFC v2 7/9] bluetooth: btrtl: load the config blob from
- devicetree when available
-Date: Sun, 7 Jan 2018 21:07:33 +0100
-Message-ID: <CAFBinCBasb-WkLngxL2RAk9YMihC437ZgPKSkOd7Fm0RHG_aTw@mail.gmail.com>
-References: <20180101204217.26165-1-martin.blumenstingl@googlemail.com>
- <20180101204217.26165-8-martin.blumenstingl@googlemail.com>
- <563D6F9F-8495-40D4-BE56-5338ED2B9B99@holtmann.org> <CAL9uMOEMDup4hRkxD-tM8R0YirGs5uQi31AjJUnFCPNMKUdRHg@mail.gmail.com>
- <E8E39477-CF1A-4A3E-84C5-830E182C2266@holtmann.org> <CAL9uMOH0N-4jgQncmPjK-KyU0vY9Q0ZnHYSAGgz3z3ywzc8Avw@mail.gmail.com>
- <CAFBinCBB=SmviOMRHGDH6vzjTjV-mrtQEc8nBUhDbJGs9SBpgw@mail.gmail.com>
- <CAL9uMOFyfr_qGf5BeTojkMeWeH8LqPoKj=LrdgEMB2wmhGBxmA@mail.gmail.com>
- <CAFBinCAFsDRpp=4We1hQPiutM1Q0MrqebPLyS3e2_e+JcBoSmg@mail.gmail.com>
- <CAL9uMOGkZefjD_JNxjf4yJ0ATFtOG5Cm_XQq1fy0VQDjiMFBmg@mail.gmail.com>
- <EC216531-81EC-4EE8-BAC4-C6954C222092@holtmann.org> <1F394D8B-CFB8-48BA-BC6B-15D1EE51DB08@holtmann.org>
- <41669609-3E28-473D-8616-71B9D0EEDCDF@holtmann.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <41669609-3E28-473D-8616-71B9D0EEDCDF-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org>
-Cc: Carlo Caione <carlo-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:BLUETOOTH DRIVERS" <linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Gustavo F. Padovan" <gustavo-THi1TnShQwVAfugRpC6u6w@public.gmane.org>, Johan Hedberg <johan.hedberg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Larry Finger <Larry.Finger-tQ5ms3gMjBLk1uMJSBkQmQ@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH] Bluetooth: btusb: Restore QCA Rome suspend/resume fix with a "rewritten" version
+Date: Mon,  8 Jan 2018 10:44:16 +0100
+Message-ID: <20180108094416.4789-1-hdegoede@redhat.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, stable@vger.kernel.org, Leif Liddy <leif.linux@gmail.com>, Matthias Kaehlcke <mka@chromium.org>, Brian Norris <briannorris@chromium.org>, Daniel Drake <drake@endlessm.com>, Kai-Heng Feng <kai.heng.feng@canonical.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Marcel,
+Commit 7d06d5895c15 ("Revert "Bluetooth: btusb: fix QCA...suspend/resume"")
+removed the setting of the BTUSB_RESET_RESUME quirk for QCA Rome devices,
+instead favoring adding USB_QUIRK_RESET_RESUME quirks in usb/core/quirks.c.
 
-thank you for digging into this!
+This was done because the DIY BTUSB_RESET_RESUME reset-resume handling
+has several issues (see the original commit message). An added advantage
+of moving over to the USB-core reset-resume handling is that it also
+disables autosuspend for these devices, which is similarly broken on these.
 
-On Fri, Jan 5, 2018 at 9:44 PM, Marcel Holtmann <marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org> wrote=
-:
-> Hi Carlo,
->
->>>>>> As Marcel suggested we can assume that the information in the DSDT i=
-s
->>>>>> correct so that we can get rid of the config blob also for x86
->>>>>> platforms (assuming that the only useful information in the config
->>>>>> blobs is the UART configuration).
->>>>> in my tests I tried to send only the firmware without the config to m=
-y
->>>>> RTL8723BS. unfortunately the last firmware chunk (sent to the
->>>>> controller) times out in that case (even if I set a proper baudrate
->>>>> before or if I specify no baudrate at all and keep the serdev at
->>>>> 115200)
->>>>
->>>> What's in the config blobs besides UART configuration?
->>>
->>> is anybody writing a rtlfw.c tool (like nokfw.c) so that we can print o=
-ut what we actually have in these config files?
->>>
->>>> It's odd because reading into hciattach_rtk.c it seems that the config
->>>> file is actually only used by the userspace tools (hciattach) to
->>>> retrieve the UART configuration and nothing else, whereas in the
->>>> kernel driver the config blob is appended to the firmware.
->>>
->>> Frankly, I am inclined to not use the config file even for DT based sys=
-tem and just allow specifying the UART settings via normal DT properties li=
-ke we do for Broadcom and others.
->>
->> so I googled for a few config files and this is what this turns into:
->>
->> Analyzing rtl8723d_config_1000000_noflow.dms
->> Signature:   0x8723ab55
->> Data length: 41
->> len=3D1   offset=3Df4,{ 01 }
->> len=3D2   offset=3Df6,{ 81 00 }
->> len=3D2   offset=3Dfa,{ 12 80 }
->> len=3D16  offset=3D0c,{ 04 50 00 00 50 c5 ea 19 e1 1b fd af 5b 01 a4 0b =
-}
->> len=3D1   offset=3Dd9,{ 0f }
->> len=3D1   offset=3De4,{ 08 }
->> Analyzing rtl8723d_config.dms
->> Signature:   0x8723ab55
->> Data length: 41
->> len=3D1   offset=3Df4,{ 01 }
->> len=3D2   offset=3Df6,{ 81 00 }
->> len=3D2   offset=3Dfa,{ 12 80 }
->> len=3D16  offset=3D0c,{ 02 80 92 04 50 c5 ea 19 e1 1b fd af 5f 01 a4 0b =
-}
->> len=3D1   offset=3Dd9,{ 0f }
->> len=3D1   offset=3De4,{ 08 }
->> Analyzing rtl8822b_config.bin
->> Signature:   0x8723ab55
->> Data length: 8
->> len=3D1   offset=3Dd9,{ 0f }
->> len=3D1   offset=3De4,{ 08 }
->>
->> The first two are some UART based ones and the last one is USB based.
->>
->> So the 0x3c offset seems to be the BD_ADDR and 0x0c offset is the UART c=
-onfiguration. It would be good to know which settings the other ones contro=
-l.
-this matches my findings from the hciattach_rtk tool for rtl8723bs_bt
-and rtl8723ds_bt
+But there are 2 issues with this approach:
+1) It leaves the broken DIY BTUSB_RESET_RESUME code in place for Realtek
+   devices.
+2) Sofar only 2 of the 10 QCA devices known to the btusb code have been
+   added to usb/core/quirks.c and if we fix the Realtek case the same way
+   we need to add an additional 14 entries. So in essence we need to
+   duplicate a large part of the usb_device_id table in btusb.c in
+   usb/core/quirks.c and manually keep them in sync.
 
->> Also the 16 octet UART config blob seems to be decoded like this:
->>
->>       uart_config {
->>               le32 baudrate;
->>               u8[8] reserved1;
->>               u8 flowctl;
->>               u8[3] reserved2;
->>       }
->>
-I could not find this in any of the rtl8723bs_bt or rtl8723ds_bt sources
-so thank you for sharing this (even though this descriptin is missing
-a few bytes)!
+This commit instead restores setting a reset-resume quirk for QCA devices
+in the btusb.c code, avoiding the duplicate usb_device_id table problem.
 
->> Actually hciattach_rtk just takes the baud rate and and hardware flow co=
-ntrol bit out of this file. That is clearly two things that are better writ=
-ten in plain text in the DT file.
-this matches my findings apart from that hciattach_rtk also appends
-the config blob to the "firmware patch" that is being uploaded to the
-device
-if you are brave you can have a look at [0]
+This commit avoids the problems with the original DIY BTUSB_RESET_RESUME
+code by simply setting the USB_QUIRK_RESET_RESUME quirk directly on the
+usb_device.
 
-> so this is actually some funny stuff if you start to understand it.
->
-> Analyzing rtl8723b_config.dms
-> Signature: 0x8723ab55
-> Data len:  38
-> len=3D8   offset=3D00f4,{ 01 00 00 00 05 50 00 00 }
-> len=3D16  offset=3D000c,{ 02 80 92 04 50 c5 ea 19 e1 1b f1 af 5f 01 a4 0b=
- },UART_CONFIG
-> len=3D1   offset=3D0027,{ 63 }
-> len=3D1   offset=3D00fe,{ 01 }
-> Analyzing rtl8723d_config_1000000_noflow.dms
-> Signature: 0x8723ab55
-> Data len:  41
-> len=3D1   offset=3D00f4,{ 01 }
-> len=3D2   offset=3D00f6,{ 81 00 }
-> len=3D2   offset=3D00fa,{ 12 80 }
-> len=3D16  offset=3D000c,{ 04 50 00 00 50 c5 ea 19 e1 1b fd af 5b 01 a4 0b=
- },UART_CONFIG
-> len=3D1   offset=3D00d9,{ 0f }
-> len=3D1   offset=3D00e4,{ 08 }
->
-> Seems like Realtek really defines memory offsets in this file and they ca=
-n be defined in various different ways.
-wow, that is interesting - I was wondering why they called it "offset"
-instead of "config_id" (or something similar)
+This commit also moves the BTUSB_REALTEK case over to directly setting the
+USB_QUIRK_RESET_RESUME on the usb_device and removes the now unused
+BTUSB_RESET_RESUME code.
 
-> So 00f4,{ 01 00 00 00 05 50 00 00 } defines the whole PCM settings for in=
-terface 1 and 2. And 00f4,{ 01 } + 00f6,{ 81 00 } + 00fa,{ 12 80 } is the s=
-ame PCM settings, but with only pieces of it defined.
->
-> This also means a 000c,{ 04 50 00 00 50 } for just setting the baud rate =
-is as valid if flow control defaults to off and all other values are actual=
- defaults. So code inside hciattach_rtk.c is also kind faulty on how it han=
-dles the flow control bit. It works if the config files all have offset 000=
-c in it, but if not, then they are going funky.
->
-> Since these are efuse settings, I really wonder if there is just a HCI ve=
-ndor command to read out the defaults and we use that to compare. And what =
-I would really like to know is what these settings are suppose to change. S=
-ince even for USB, we are actually not even applying them.
-the idea with the vendor command to read out existing memory is interesting
+BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1514836
+Fixes: 7d06d5895c15 ("Revert "Bluetooth: btusb: fix QCA...suspend/resume"")
+Cc: stable@vger.kernel.org
+Cc: Leif Liddy <leif.linux@gmail.com>
+Cc: Matthias Kaehlcke <mka@chromium.org>
+Cc: Brian Norris <briannorris@chromium.org>
+Cc: Daniel Drake <drake@endlessm.com>
+Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+Note:
+1) Once this has been merged, the 2 commits adding QCA device entries to
+drivers/usb/core/quirks.c should be reverted or dropped from bluetooth-next.
+2) I don't have any of the affected devices, please test
+---
+ drivers/bluetooth/btusb.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-based on the code in "btrtl.c" it seems that we are applying the
-settings from the config blob.
-we are simply appending it at the end of the "firmware patch", see [1]
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 4764100a5888..c4689f03220f 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -23,6 +23,7 @@
+ 
+ #include <linux/module.h>
+ #include <linux/usb.h>
++#include <linux/usb/quirks.h>
+ #include <linux/firmware.h>
+ #include <linux/of_device.h>
+ #include <linux/of_irq.h>
+@@ -388,9 +389,8 @@ static const struct usb_device_id blacklist_table[] = {
+ #define BTUSB_FIRMWARE_LOADED	7
+ #define BTUSB_FIRMWARE_FAILED	8
+ #define BTUSB_BOOTING		9
+-#define BTUSB_RESET_RESUME	10
+-#define BTUSB_DIAG_RUNNING	11
+-#define BTUSB_OOB_WAKE_ENABLED	12
++#define BTUSB_DIAG_RUNNING	10
++#define BTUSB_OOB_WAKE_ENABLED	11
+ 
+ struct btusb_data {
+ 	struct hci_dev       *hdev;
+@@ -3118,6 +3118,12 @@ static int btusb_probe(struct usb_interface *intf,
+ 	if (id->driver_info & BTUSB_QCA_ROME) {
+ 		data->setup_on_usb = btusb_setup_qca;
+ 		hdev->set_bdaddr = btusb_set_bdaddr_ath3012;
++
++		/* QCA Rome devices lose their updated firmware over suspend,
++		 * but the USB hub doesn't notice any status change.
++		 * explicitly request a device reset on resume.
++		 */
++		interface_to_usbdev(intf)->quirks |= USB_QUIRK_RESET_RESUME;
+ 	}
+ 
+ #ifdef CONFIG_BT_HCIBTUSB_RTL
+@@ -3128,7 +3134,7 @@ static int btusb_probe(struct usb_interface *intf,
+ 		 * but the USB hub doesn't notice any status change.
+ 		 * Explicitly request a device reset on resume.
+ 		 */
+-		set_bit(BTUSB_RESET_RESUME, &data->flags);
++		interface_to_usbdev(intf)->quirks |= USB_QUIRK_RESET_RESUME;
+ 	}
+ #endif
+ 
+@@ -3297,14 +3303,6 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
+ 		enable_irq(data->oob_wake_irq);
+ 	}
+ 
+-	/* Optionally request a device reset on resume, but only when
+-	 * wakeups are disabled. If wakeups are enabled we assume the
+-	 * device will stay powered up throughout suspend.
+-	 */
+-	if (test_bit(BTUSB_RESET_RESUME, &data->flags) &&
+-	    !device_may_wakeup(&data->udev->dev))
+-		data->udev->reset_resume = 1;
+-
+ 	return 0;
+ }
+ 
+-- 
+2.14.3
 
-> Anyway, I am certain that for Realtek UART devices, we just want to speci=
-fy max-speed DT property like we do with the others. And then maybe a flow-=
-control DT property to control that one (following what nfcmrvl.txt does). =
-We can use the rtlfw tool that I wrote to extract the values from Realtek p=
-rovided config files. Frankly the PCM settings we have to deal with as well=
- at some point. But that is also missing for Broadcom and others.
-just to make sure I understand you correctly: would you generate the
-config blob in-memory (in a function in btrtl.c) and hardcode all
-unknown bits (the reserved bits in the UART config entry for example)
-or would you mandate that a config blob is present (so
-request_firmware can fetch it) for "high-speed" operation?
-
-for PCM: I cannot test that anyways since the Amlogic platform does
-not have audio support yet
-
-> Also if there is no config file, we should be able to just assume no flow=
- control, 115200 baud rate and H:5 as protocol. That means that almost all =
-chips will just work. They are just slow since we do not deal with the max-=
-speed setting.
-my problem so far was that uploading the firmware patch without
-appending a config blob (see [1]) broke the UART communication (it was
-not 115200 baud as before, and I also tried other speeds such as
-1500000 and 1000000 baud - neither worked)
-however, extracting the existing values from the efuse using a vendor
-command might give a hint why (maybe they are fallling back to some
-exotic baudrate in that case, etc...)
-
-> At the end of the day, this is the same as for Broadcom and ACPI vs DT. T=
-his should be no different. The only bit nasty part is that this is H:5 as =
-protocol and we have not really abstracted that one nicely to just have a t=
-iny hci_rtl.c for vendor specific pieces.
-yes, you already suggested that I should start making that re-usable
-(this is still on my TODO-list)
-
-
-Regards
-Martin
-
-
-[0] https://github.com/NextThingCo/rtl8723ds_bt/blob/master/rtk_hciattach/h=
-ciattach_rtk.c#L2742
-[1] https://elixir.free-electrons.com/linux/v4.14.11/source/drivers/bluetoo=
-th/btrtl.c#L377
