@@ -1,106 +1,142 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v5 1/3] clocksource/drivers/atcpit100: Add andestech
- atcpit100 timer
-Date: Mon, 8 Jan 2018 17:30:11 +0100
-Message-ID: <CAK8P3a3opvfT2TfBuPgg65EtjzTBM0kL1TheDc4LZe-RHKiumw@mail.gmail.com>
-References: <1513057621-19084-1-git-send-email-rickchen36@gmail.com>
- <1513057621-19084-2-git-send-email-rickchen36@gmail.com> <bb7383ba-bb8e-3cbd-4ce0-faaefa8ed114@linaro.org>
- <CAEbi=3cEEtLQRiv-cyUwEmcBNOC2Sz7AhzZkpznQWYb9VUojug@mail.gmail.com>
- <ff51fff7-e963-f9fd-10d6-9b90a64d7aac@linaro.org> <CAEbi=3c4yAx7Tejz8aPw3-3vj89t8cg-zNEY-vbF7KaMo8OM0Q@mail.gmail.com>
- <efdb249a-8dc0-e076-a1db-20cecdbf4c13@linaro.org> <CAEbi=3frQYZHb0yiMvNk_JUiUCy6ca0tbrsM_pt49LtkMy47mw@mail.gmail.com>
- <1e75edb3-8f7b-796c-6871-1612b027050e@linaro.org> <CAK8P3a2NVj_M5eHT92fJYNBG3x9juVnHW6uV32p3-ytfqjARxg@mail.gmail.com>
- <78dc7813-524d-c108-0e3d-516f8f4dabfe@linaro.org>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH] Bluetooth: btusb: Restore QCA Rome suspend/resume fix
+ with a "rewritten" version
+Date: Mon, 8 Jan 2018 18:49:06 +0100
+Message-ID: <3934266e-5504-1eb1-f9b3-a2d9e5e45d4d@redhat.com>
+References: <20180108094416.4789-1-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <78dc7813-524d-c108-0e3d-516f8f4dabfe@linaro.org>
-Sender: netdev-owner@vger.kernel.org
-To: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Greentime Hu <green.hu@gmail.com>, Greentime <greentime@andestech.com>, Rick Chen <rickchen36@gmail.com>, Rick Chen <rick@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, netdev <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, linux-serial@vger.kernel.org, John Stultz <john.stultz@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20180108094416.4789-1-hdegoede@redhat.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>
+Cc: linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, stable@vger.kernel.org, Leif Liddy <leif.linux@gmail.com>, Matthias Kaehlcke <mka@chromium.org>, Brian Norris <briannorris@chromium.org>, Daniel Drake <drake@endlessm.com>, Kai-Heng Feng <kai.heng.feng@canonical.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 8, 2018 at 5:08 PM, Daniel Lezcano
-<daniel.lezcano@linaro.org> wrote:
-> On 08/01/2018 16:26, Arnd Bergmann wrote:
->> On Fri, Jan 5, 2018 at 10:31 AM, Daniel Lezcano
->> <daniel.lezcano@linaro.org> wrote:
+Hi,
 
->>>
->>> etc ...
->>
->> I'd actually prefer to not do it for ARM either: Most other subsystems
->> don't do that, and I don't see a strong reason why clocksource should
->> be special here.
->
-> The majority doing the opposite does not mean it is right.
->
-> Do you know which clock belongs to which board ? Who will unselect a
-> clock ? I'm pretty sure nobody. Everyone relies on the platform Kconfig
-> and expect it to select the right drivers.
+On 08-01-18 10:44, Hans de Goede wrote:
+> Commit 7d06d5895c15 ("Revert "Bluetooth: btusb: fix QCA...suspend/resume"")
+> removed the setting of the BTUSB_RESET_RESUME quirk for QCA Rome devices,
+> instead favoring adding USB_QUIRK_RESET_RESUME quirks in usb/core/quirks.c.
+> 
+> This was done because the DIY BTUSB_RESET_RESUME reset-resume handling
+> has several issues (see the original commit message). An added advantage
+> of moving over to the USB-core reset-resume handling is that it also
+> disables autosuspend for these devices, which is similarly broken on these.
+> 
+> But there are 2 issues with this approach:
+> 1) It leaves the broken DIY BTUSB_RESET_RESUME code in place for Realtek
+>     devices.
+> 2) Sofar only 2 of the 10 QCA devices known to the btusb code have been
+>     added to usb/core/quirks.c and if we fix the Realtek case the same way
+>     we need to add an additional 14 entries. So in essence we need to
+>     duplicate a large part of the usb_device_id table in btusb.c in
+>     usb/core/quirks.c and manually keep them in sync.
+> 
+> This commit instead restores setting a reset-resume quirk for QCA devices
+> in the btusb.c code, avoiding the duplicate usb_device_id table problem.
+> 
+> This commit avoids the problems with the original DIY BTUSB_RESET_RESUME
+> code by simply setting the USB_QUIRK_RESET_RESUME quirk directly on the
+> usb_device.
+> 
+> This commit also moves the BTUSB_REALTEK case over to directly setting the
+> USB_QUIRK_RESET_RESUME on the usb_device and removes the now unused
+> BTUSB_RESET_RESUME code.
+> 
+> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1514836
+> Fixes: 7d06d5895c15 ("Revert "Bluetooth: btusb: fix QCA...suspend/resume"")
+> Cc: stable@vger.kernel.org
+> Cc: Leif Liddy <leif.linux@gmail.com>
+> Cc: Matthias Kaehlcke <mka@chromium.org>
+> Cc: Brian Norris <briannorris@chromium.org>
+> Cc: Daniel Drake <drake@endlessm.com>
+> Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+> Note:
+> 1) Once this has been merged, the 2 commits adding QCA device entries to
+> drivers/usb/core/quirks.c should be reverted or dropped from bluetooth-next.
+> 2) I don't have any of the affected devices, please test
 
-The point is that there is no platform specific Kconfig that could select
-it, as the concept doesn't make a lot of sense here.
+I've asked the reporter of:
+https://bugzilla.redhat.com/show_bug.cgi?id=1514836
 
-If you require the driver to always be selected by the
-architecture code, it adds a little bit of bloat on systems
-that don't need it. This is possible, but I think it's preferable
-to give users a way of tuning a kernel for a particular chip.
+To test a kernel with this patch added and he confirms that this fixes
+the autosuspend related issues he was seeing, so this is no longer untested.
 
-> We don't expect the hackers to have a deep knowledge of the hardware and
-> the driver dependencies. It is very convenient to not care about that
-> and let the platform's Kconfig to select the right drivers.
->
-> And that is the behavior I would like to keep.
+Regards,
 
-I'm not worried about the driver bloating the kernel here when it
-isn't disabled, this is no different from enabling the USB controller
-by default for a board that doesn't have a USB connector, or
-enabling ten different pinctrl drivers for all members of a chip
-family even though you know which particular chip you are
-running on.
+Hans
 
->> Selecting 'TIMER_OF' from the individual drivers that need it (as you
->> suggest) makes sense, but I think for ARM we treat SoC families
->> as a bit too special, in the end they are for the most part collections
->> of individual hardware blocks that may or may not be present on
->> some chip.
->>
->> In case of risc-v and nds32, I expect that the separation will be
->> even less visibile in the hardware, as a typical model here is
->> that one company designs SoCs for multiple customers that each
->> have different requirements. Some of them may have one
->> timer and some have another timer or multiple timers, but there
->> is no strict separation between SoC families as I understand.
->> Here we'd be better off not having a per-SoC Kconfig option at
->> all, just a generic defconfig that enables all the drivers that might
->> be used, and integrators can have a defconfig file that only
->> enables the stuff they actually use on a given chip.
->
-> Yes, the result is the same, the option is not showed in the menu.
->
-> However, I can understand it could be interesting to have the ability to
-> unselect a driver for experts.
->
-> I'm wondering if we can create a bool_expert which shows up only when
-> CONFIG_EXPERT is set.
 
-Having a dependency on CONFIG_EXPERT means that a more
-users will end up having to set that for a shipping system. It's
-something we can do (even without a special Kconfig keyword),
-but it should be used carefully for stuff that 99% of the users want
-to enable.
 
-Why not just:
-
-config CLKSRC_ATCPIT100
-       bool "Clocksource for AE3XX platform"
-       depends on NDS32 || COMPILE_TEST
-       depends on HAS_IOMEM
-       default NDS32
-       help
-         This option enables support for the Andestech AE3XX platform timers.
-
-That way, it's simply enabled on NDS32 by default, but just as easy
-to disable for systems that don't need it.
-
-      Arnd
+> ---
+>   drivers/bluetooth/btusb.c | 22 ++++++++++------------
+>   1 file changed, 10 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+> index 4764100a5888..c4689f03220f 100644
+> --- a/drivers/bluetooth/btusb.c
+> +++ b/drivers/bluetooth/btusb.c
+> @@ -23,6 +23,7 @@
+>   
+>   #include <linux/module.h>
+>   #include <linux/usb.h>
+> +#include <linux/usb/quirks.h>
+>   #include <linux/firmware.h>
+>   #include <linux/of_device.h>
+>   #include <linux/of_irq.h>
+> @@ -388,9 +389,8 @@ static const struct usb_device_id blacklist_table[] = {
+>   #define BTUSB_FIRMWARE_LOADED	7
+>   #define BTUSB_FIRMWARE_FAILED	8
+>   #define BTUSB_BOOTING		9
+> -#define BTUSB_RESET_RESUME	10
+> -#define BTUSB_DIAG_RUNNING	11
+> -#define BTUSB_OOB_WAKE_ENABLED	12
+> +#define BTUSB_DIAG_RUNNING	10
+> +#define BTUSB_OOB_WAKE_ENABLED	11
+>   
+>   struct btusb_data {
+>   	struct hci_dev       *hdev;
+> @@ -3118,6 +3118,12 @@ static int btusb_probe(struct usb_interface *intf,
+>   	if (id->driver_info & BTUSB_QCA_ROME) {
+>   		data->setup_on_usb = btusb_setup_qca;
+>   		hdev->set_bdaddr = btusb_set_bdaddr_ath3012;
+> +
+> +		/* QCA Rome devices lose their updated firmware over suspend,
+> +		 * but the USB hub doesn't notice any status change.
+> +		 * explicitly request a device reset on resume.
+> +		 */
+> +		interface_to_usbdev(intf)->quirks |= USB_QUIRK_RESET_RESUME;
+>   	}
+>   
+>   #ifdef CONFIG_BT_HCIBTUSB_RTL
+> @@ -3128,7 +3134,7 @@ static int btusb_probe(struct usb_interface *intf,
+>   		 * but the USB hub doesn't notice any status change.
+>   		 * Explicitly request a device reset on resume.
+>   		 */
+> -		set_bit(BTUSB_RESET_RESUME, &data->flags);
+> +		interface_to_usbdev(intf)->quirks |= USB_QUIRK_RESET_RESUME;
+>   	}
+>   #endif
+>   
+> @@ -3297,14 +3303,6 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
+>   		enable_irq(data->oob_wake_irq);
+>   	}
+>   
+> -	/* Optionally request a device reset on resume, but only when
+> -	 * wakeups are disabled. If wakeups are enabled we assume the
+> -	 * device will stay powered up throughout suspend.
+> -	 */
+> -	if (test_bit(BTUSB_RESET_RESUME, &data->flags) &&
+> -	    !device_may_wakeup(&data->udev->dev))
+> -		data->udev->reset_resume = 1;
+> -
+>   	return 0;
+>   }
+>   
+> 
