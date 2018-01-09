@@ -1,45 +1,59 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] gpio: serial: max310x: Support open-drain configuration
- for GPIOs
-Date: Tue, 9 Jan 2018 16:37:21 +0100
-Message-ID: <20180109153721.GA17957@kroah.com>
-References: <18c9e927d2b75b3325ee3eae7e78319129faa779.1513983040.git.jan.kundrat@cesnet.cz>
+Subject: Re: [PATCH 1/2] serdev: do not generate modaliases for controllers
+Date: Tue, 9 Jan 2018 16:48:03 +0100
+Message-ID: <20180109154803.GA10213@kroah.com>
+References: <20180108124233.26729-1-johan@kernel.org>
+ <20180108124233.26729-2-johan@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <18c9e927d2b75b3325ee3eae7e78319129faa779.1513983040.git.jan.kundrat@cesnet.cz>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Jan =?iso-8859-1?Q?Kundr=E1t?= <jan.kundrat@cesnet.cz>
-Cc: linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>, Linus Walleij <linus.walleij@linaro.org>
+In-Reply-To: <20180108124233.26729-2-johan@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Johan Hovold <johan@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, =?iso-8859-1?Q?Fr=E9d=E9ric?= Danis <frederic.danis.oss@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Dec 22, 2017 at 09:29:44PM +0100, Jan Kundrát wrote:
-> The push-pull vs. open-drain are the only supported output modes. The
-> inputs are always unconditionally equipped with weak pull-downs. That's
-> the only mode, so there's probably no point in exporting that. I wonder
-> if it's worthwhile to provide a custom dbg_show method to indicate the
-> current status of the outputs, though.
+On Mon, Jan 08, 2018 at 01:42:32PM +0100, Johan Hovold wrote:
+> Serdev controllers are not bound to any drivers and it therefore makes
+> no sense to generate modaliases for them.
 > 
-> This patch and [1] for i2c-gpio together make it possible to bit-bang an
-> I2C bus over GPIOs of an UART which is connected via SPI :). Yes, this
-> is crazy, but it's fast enough (while on a 26Mhz SPI HW bus with a
-> dual-core 1.6GHz CPU) to drive an I2C bus at 200kHz, according to my
-> scope.
+> This has already been fixed separately for ACPI controllers for which
+> uevent errors were also being logged during probe due to the missing
+> ACPI companions (from which ACPI modaliases are generated).
 > 
-> [1] https://patchwork.ozlabs.org/patch/852591/
+> This patch moves the modalias handling from the bus type to the client
+> device type. Specifically, this means that only serdev devices (a.k.a.
+> clients or slaves) will have have MODALIAS fields in their uevent
+> environments and corresponding modalias sysfs attributes.
 > 
-> Signed-off-by: Jan Kundrát <jan.kundrat@cesnet.cz>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Reported-by: Hans de Goede <hdegoede@redhat.com>
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 > ---
-> My suggestion is for this patch to go in via the tty/serial tree; I plan
-> to send more patches to this driver (and some of them are alreay in
-> tty-next). --jkt
+>  drivers/tty/serdev/core.c | 72 ++++++++++++++++++++++-------------------------
+>  1 file changed, 34 insertions(+), 38 deletions(-)
+> 
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index 5dc88f61f506..61c85e49e178 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -19,6 +19,38 @@
+>  static bool is_registered;
+>  static DEFINE_IDA(ctrl_ida);
+>  
+> +static ssize_t modalias_show(struct device *dev,
+> +			     struct device_attribute *attr, char *buf)
+> +{
+> +	int len;
+> +
+> +	len = acpi_device_modalias(dev, buf, PAGE_SIZE - 1);
+> +	if (len != -ENODEV)
+> +		return len;
+> +
+> +	return of_device_modalias(dev, buf, PAGE_SIZE);
+> +}
+> +DEVICE_ATTR_RO(modalias);
 
-Doesn't apply to my tty-next branch, so I can't apply it, please rebase
-and resend.
+static?
 
-thanks,
-
-greg k-h
+Sorry, minor nit :(
