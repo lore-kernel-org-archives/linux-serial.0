@@ -1,48 +1,66 @@
-From: Nuno Goncalves <nunojpg@gmail.com>
-Subject: [PATCH] 8250_dw: do not int overflow when rate can not be aplied
-Date: Thu, 11 Jan 2018 14:38:32 +0100
-Message-ID: <20180111133832.13125-1-nunojpg@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: ed.blake@sondrel.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Nuno Goncalves <nunojpg@gmail.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH RFC 6/7] serial: Add device tree bindings for GENI based
+ UART Controller
+Date: Thu, 11 Jan 2018 09:12:26 -0600
+Message-ID: <CAL_JsqL1=NAn1T_HaetO5hT+fdgxmkcNwtOr1+XaxGzSh-n6Sg@mail.gmail.com>
+References: <1514392046-30602-1-git-send-email-kramasub@codeaurora.org>
+ <1514392046-30602-7-git-send-email-kramasub@codeaurora.org>
+ <20180102155517.j4sqhdtamybtgta4@rob-hp-laptop> <068baf4d-963e-f177-311d-d2c76d27a6f9@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <068baf4d-963e-f177-311d-d2c76d27a6f9@codeaurora.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Karthik Ramasubramanian <kramasub@codeaurora.org>
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, Linux I2C <linux-i2c@vger.kernel.org>, linux-serial@vger.kernel.org, linux-doc@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Jonathan Corbet <corbet@lwn.net>, Wolfram Sang <wsa@the-dreams.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Girish Mahadevan <girishm@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-When target_rate is big enough and not permitted in hardware,
-then i is looped to UART_DIV_MAX (0xFFFF), and i * max_rate will overflow
-(32b signed).
+On Tue, Jan 9, 2018 at 12:36 PM, Karthik Ramasubramanian
+<kramasub@codeaurora.org> wrote:
+>
+>
+> On 1/2/2018 8:55 AM, Rob Herring wrote:
+>>
+>> On Wed, Dec 27, 2017 at 09:27:25AM -0700, Karthikeyan Ramasubramanian
+>> wrote:
+>>>
+>>> Add device tree binding support for GENI based UART Controller in the
+>>> QUP Wrapper.
+>>>
+>>> Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
+>>> Signed-off-by: Girish Mahadevan <girishm@codeaurora.org>
+>>> ---
+>>>   .../devicetree/bindings/serial/qcom,geni-uart.txt  | 31
+>>> ++++++++++++++++++++++
+>>>   1 file changed, 31 insertions(+)
+>>>   create mode 100644
+>>> Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
+>>> b/Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
+>>> new file mode 100644
+>>> index 0000000..e60ec6a
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
+>>> @@ -0,0 +1,31 @@
+>>> +Qualcomm Technologies Inc. GENI based Serial UART Controller driver
+>>> +
+>>> +This serial UART driver supports console use-cases. This driver is meant
+>>> +only for Generic Interface (GENI) based Qualcomm Universal Peripheral
+>>> (QUP)
+>>> +cores and isn't backwards compatible.
+>>> +
+>>> +Required properties:
+>>> +- compatible: should contain "qcom,geni-uart, qcom,geni-console"
+>>
+>>
+>> Is console different programming model or just how you are using the
+>> h/w? for the latter, drop it as we have stdout-path to select a console.
+>
+> The console programming model is different from a regular UART port and
+> hence the compatible field contains console in it.
 
-A fix is to quit the loop early enough, as soon as rate < i * min_rate as it
-means the rate is not permitted.
+And "console" is what the h/w reference manual calls it? If so, then
+it is fine. If not, sounds like a Linuxism.
 
-This avoids arbitraty rates to be applied. Still in my hardware the max
-allowed rate (1500000) is aplied when a higher is requested. This seems a
-artifact of clk_round_rate which is not understood by me and independent of
-this fix. Might or might not be another bug.
-
-Signed-off-by: Nuno Goncalves <nunojpg@gmail.com>
----
- drivers/tty/serial/8250/8250_dw.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 5bb0c42c88dd..a27ea916abbf 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -267,7 +267,13 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
- 
- 	for (i = 1; i <= UART_DIV_MAX; i++) {
- 		rate = clk_round_rate(d->clk, i * target_rate);
--		if (rate >= i * min_rate && rate <= i * max_rate)
-+
-+		if (rate < i * min_rate) {
-+			i = UART_DIV_MAX + 1;
-+			break;
-+		}
-+
-+		if (rate <= i * max_rate)
- 			break;
- 	}
- 	if (i <= UART_DIV_MAX) {
--- 
-2.11.0
+Rob
