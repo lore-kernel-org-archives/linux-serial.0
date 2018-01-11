@@ -1,94 +1,39 @@
-From: =?UTF-8?Q?Nuno_Gon=C3=A7alves?= <nunojpg@gmail.com>
-Subject: Re: [PATCH] 8250_dw: do not int overflow when rate can not be aplied
-Date: Thu, 11 Jan 2018 18:28:31 +0100
-Message-ID: <CAEXMXLTYFbBraCNHyfc6JpCFwUMVqPeEanCufbKkgW2At7=d0Q@mail.gmail.com>
-References: <20180111133832.13125-1-nunojpg@gmail.com> <57ef28bd-41da-73c2-3004-f9b2ecd8b102@sondrel.com>
+From: Joel Stanley <joel@jms.id.au>
+Subject: Re: [patch v15 2/4] drivers: jtag: Add Aspeed SoC 24xx and 25xx
+ families JTAG master driver
+Date: Thu, 11 Jan 2018 09:45:35 -0800
+Message-ID: <CACPK8XfFxWy+XvWJNSV3Ouy2WyGe1Hc2QP0bddPenqH_6673hQ@mail.gmail.com>
+References: <1514202808-29747-1-git-send-email-oleksandrs@mellanox.com> <1514202808-29747-3-git-send-email-oleksandrs@mellanox.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <57ef28bd-41da-73c2-3004-f9b2ecd8b102@sondrel.com>
+In-Reply-To: <1514202808-29747-3-git-send-email-oleksandrs@mellanox.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ed Blake <ed.blake@sondrel.com>
-Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Oleksandr Shamray <oleksandrs@mellanox.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, OpenBMC Maillist <openbmc@lists.ozlabs.org>, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>, Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org, Vadim Pasternak <vadimp@mellanox.com>, system-sw-low-level@mellanox.com, Rob Herring <robh+dt@kernel.org>, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, "David S . Miller" <davem@davemloft.net>, mchehab@kernel.org, Jiri Pirko <jiri@mellanox.com>
 List-Id: linux-serial@vger.kernel.org
 
-I have to disagree :)
-
-if (rate < i * min_rate) is true to i=3Da, then
-
-(rate >=3D i * min_rate && rate <=3D i * max_rate) will always be false
-for any i=3Db, where b>a.
-
-If this condition is true, it means the old condition would be always
-false for the remaining of the iteration.
-
-My patch "only" avoids integer overflow and terminates the search as
-soon as possible, since no need to search for bigger dividers if the
-current one would already mean a rate below min_rate (that it, this is
-the closer).
-
-So in fact we also break when the closer divider have been found.
-
-Thanks,
-Nuno
-
-On Thu, Jan 11, 2018 at 6:18 PM, Ed Blake <ed.blake@sondrel.com> wrote:
-> Hi Nuno,
+On Mon, Dec 25, 2017 at 3:53 AM, Oleksandr Shamray
+<oleksandrs@mellanox.com> wrote:
+> Driver adds support of Aspeed 2500/2400 series SOC JTAG master controller.
 >
-> Thanks for reporting this and the patch.
+> Driver implements the following jtag ops:
+> - freq_get;
+> - freq_set;
+> - status_get;
+> - idle;
+> - xfer;
 >
-> On 11/01/18 13:38, Nuno Goncalves wrote:
->> When target_rate is big enough and not permitted in hardware,
->> then i is looped to UART_DIV_MAX (0xFFFF), and i * max_rate will overflo=
-w
->> (32b signed).
->>
->> A fix is to quit the loop early enough, as soon as rate < i * min_rate a=
-s it
->> means the rate is not permitted.
+> It has been tested on Mellanox system with BMC equipped with
+> Aspeed 2520 SoC for programming CPLD devices.
 >
-> 'rate < i * min_rate' does not mean the rate is not permitted.  clk_round=
-_rate() gives the nearest achievable rate to the one requested, which may b=
-e lower than i * min_rate.  This is not an error and in this case we want t=
-o continue the loop searching for an acceptable rate.
->
->
->>
->> This avoids arbitraty rates to be applied. Still in my hardware the max
->> allowed rate (1500000) is aplied when a higher is requested. This seems =
-a
->> artifact of clk_round_rate which is not understood by me and independent=
- of
->> this fix. Might or might not be another bug.
->>
->> Signed-off-by: Nuno Goncalves <nunojpg@gmail.com>
->> ---
->>  drivers/tty/serial/8250/8250_dw.c | 8 +++++++-
->>  1 file changed, 7 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250=
-/8250_dw.c
->> index 5bb0c42c88dd..a27ea916abbf 100644
->> --- a/drivers/tty/serial/8250/8250_dw.c
->> +++ b/drivers/tty/serial/8250/8250_dw.c
->> @@ -267,7 +267,13 @@ static void dw8250_set_termios(struct uart_port *p,=
- struct ktermios *termios,
->>
->>       for (i =3D 1; i <=3D UART_DIV_MAX; i++) {
->>               rate =3D clk_round_rate(d->clk, i * target_rate);
->> -             if (rate >=3D i * min_rate && rate <=3D i * max_rate)
->> +
->> +             if (rate < i * min_rate) {
->> +                     i =3D UART_DIV_MAX + 1;
->> +                     break;
->> +             }
->> +
->> +             if (rate <=3D i * max_rate)
->>                       break;
->>       }
->>       if (i <=3D UART_DIV_MAX) {
->
-> --
-> Ed
->
+> Signed-off-by: Oleksandr Shamray <oleksandrs@mellanox.com>
+> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
+> Acked-by: Philippe Ombredanne <pombredanne@nexb.com>
+
+Acked-by: Joel Stanley <joel@jms.id.au>
+
+Cheers,
+
+Joel
