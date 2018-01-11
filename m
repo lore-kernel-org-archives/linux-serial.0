@@ -1,66 +1,78 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH RFC 6/7] serial: Add device tree bindings for GENI based
- UART Controller
-Date: Thu, 11 Jan 2018 09:12:26 -0600
-Message-ID: <CAL_JsqL1=NAn1T_HaetO5hT+fdgxmkcNwtOr1+XaxGzSh-n6Sg@mail.gmail.com>
+Subject: Re: [PATCH RFC 4/7] i2c: Add device tree bindings for GENI I2C Controller
+Date: Thu, 11 Jan 2018 09:19:28 -0600
+Message-ID: <CAL_Jsq+2w280okNbUxVqzm2oXWRc81RnMwBaM6utXqg_+fvMkg@mail.gmail.com>
 References: <1514392046-30602-1-git-send-email-kramasub@codeaurora.org>
- <1514392046-30602-7-git-send-email-kramasub@codeaurora.org>
- <20180102155517.j4sqhdtamybtgta4@rob-hp-laptop> <068baf4d-963e-f177-311d-d2c76d27a6f9@codeaurora.org>
+ <1514392046-30602-5-git-send-email-kramasub@codeaurora.org>
+ <20180102155149.f2wzjvdhoi6cne4x@rob-hp-laptop> <1d741169-e6e6-1896-d8d4-4f580f5d497d@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <068baf4d-963e-f177-311d-d2c76d27a6f9@codeaurora.org>
+In-Reply-To: <1d741169-e6e6-1896-d8d4-4f580f5d497d@codeaurora.org>
 Sender: linux-doc-owner@vger.kernel.org
 To: Karthik Ramasubramanian <kramasub@codeaurora.org>
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, Linux I2C <linux-i2c@vger.kernel.org>, linux-serial@vger.kernel.org, linux-doc@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Jonathan Corbet <corbet@lwn.net>, Wolfram Sang <wsa@the-dreams.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Girish Mahadevan <girishm@codeaurora.org>
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, Linux I2C <linux-i2c@vger.kernel.org>, linux-serial@vger.kernel.org, linux-doc@vger.kernel.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Jonathan Corbet <corbet@lwn.net>, Wolfram Sang <wsa@the-dreams.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sagar Dharia <sdharia@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 9, 2018 at 12:36 PM, Karthik Ramasubramanian
+On Mon, Jan 8, 2018 at 6:33 PM, Karthik Ramasubramanian
 <kramasub@codeaurora.org> wrote:
 >
 >
-> On 1/2/2018 8:55 AM, Rob Herring wrote:
+> On 1/2/2018 8:51 AM, Rob Herring wrote:
 >>
->> On Wed, Dec 27, 2017 at 09:27:25AM -0700, Karthikeyan Ramasubramanian
+>> On Wed, Dec 27, 2017 at 09:27:23AM -0700, Karthikeyan Ramasubramanian
 >> wrote:
 >>>
->>> Add device tree binding support for GENI based UART Controller in the
+>>> Add device tree binding support for I2C Controller in GENI based
 >>> QUP Wrapper.
 >>>
+>>> Signed-off-by: Sagar Dharia <sdharia@codeaurora.org>
 >>> Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
->>> Signed-off-by: Girish Mahadevan <girishm@codeaurora.org>
 >>> ---
->>>   .../devicetree/bindings/serial/qcom,geni-uart.txt  | 31
+>>>   .../devicetree/bindings/i2c/i2c-qcom-geni.txt      | 39
 >>> ++++++++++++++++++++++
->>>   1 file changed, 31 insertions(+)
+>>>   1 file changed, 39 insertions(+)
 >>>   create mode 100644
->>> Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
+>>> Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
 >>>
->>> diff --git a/Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
->>> b/Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
+>>> diff --git a/Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
+>>> b/Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
 >>> new file mode 100644
->>> index 0000000..e60ec6a
+>>> index 0000000..d2fa9ce
 >>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
->>> @@ -0,0 +1,31 @@
->>> +Qualcomm Technologies Inc. GENI based Serial UART Controller driver
->>> +
->>> +This serial UART driver supports console use-cases. This driver is meant
->>> +only for Generic Interface (GENI) based Qualcomm Universal Peripheral
->>> (QUP)
->>> +cores and isn't backwards compatible.
+>>> +++ b/Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
+>>> @@ -0,0 +1,39 @@
+>>> +Qualcomm Technologies Inc. GENI based I2C Controller driver
 >>> +
 >>> +Required properties:
->>> +- compatible: should contain "qcom,geni-uart, qcom,geni-console"
+>>> + - compatible: Should be:
+>>> +   * "qcom,i2c-geni.
 >>
 >>
->> Is console different programming model or just how you are using the
->> h/w? for the latter, drop it as we have stdout-path to select a console.
+>> Only 1 version?
 >
-> The console programming model is different from a regular UART port and
-> hence the compatible field contains console in it.
+> The Serial Engine used by I2C protocol has the same version as the QUP h/w
+> version. The QUP Wrapper driver exposes an interface function to get the h/w
+> version so that I2C controller driver can support version-specific
+> operations, if any.
+>>
+>>
+>>> + - reg: Should contain QUP register address and length.
+>>> + - interrupts: Should contain I2C interrupt.
+>>> + - clocks: Serial engine core clock, and AHB clocks needed by the
+>>> device.
+>>
+>>
+>> Are there really clocks for a firmware based device or these are just
+>> clocks in the parent serial engine?
+>
+> The clocks are required to derive the protocol clock. The clocks are also
+> required by the Serial Engine to access the System Memory during DMA mode of
+> operation.
 
-And "console" is what the h/w reference manual calls it? If so, then
-it is fine. If not, sounds like a Linuxism.
+You can get the QUP core (or Serial engine?) node and then get its
+clocks if you need to know the frequency. Put the clocks in DT in the
+h/w block they belong to. If you don't really have an I2C clock in the
+h/w, don't put one in the DT.
 
 Rob
