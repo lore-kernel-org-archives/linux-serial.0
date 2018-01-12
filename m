@@ -1,44 +1,61 @@
 From: Ed Blake <ed.blake@sondrel.com>
-Subject: Re: [PATCH] 8250_dw: do not int overflow when rate can not be aplied
-Date: Fri, 12 Jan 2018 13:33:22 +0000
-Message-ID: <48ee75ee-2d3a-c299-4ed8-23eb9ea27666@sondrel.com>
-References: <20180111133832.13125-1-nunojpg@gmail.com>
- <57ef28bd-41da-73c2-3004-f9b2ecd8b102@sondrel.com>
- <CAEXMXLTYFbBraCNHyfc6JpCFwUMVqPeEanCufbKkgW2At7=d0Q@mail.gmail.com>
- <60dd87e2-ea07-5da3-f426-f39ef3c1addf@sondrel.com>
- <CAEXMXLRV27_GqbiRfGzc+pWLuytw3CesVuN6WdVAUhWvA6zkUQ@mail.gmail.com>
- <4fc98be4-e489-20f0-d899-e5eabdbd5e9d@sondrel.com>
+Subject: [PATCH] serial: 8250_dw: Avoid overflow in dw8250_set_termios
+Date: Fri, 12 Jan 2018 13:45:07 +0000
+Message-ID: <20180112134507.9030-1-ed.blake@sondrel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4fc98be4-e489-20f0-d899-e5eabdbd5e9d@sondrel.com>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Nuno_Gon=c3=a7alves?= <nunojpg@gmail.com>
-Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, nunojpg@gmail.com
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ed Blake <ed.blake@sondrel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 11/01/18 18:03, Ed Blake wrote:
-> On 11/01/18 17:55, Nuno Gonçalves wrote:
->> So, for me clk_round_rate() always returns 24000000, and only the loop
->> variable i changes, so the search is monotonic, from the highest baud
->> to the lowest (increasing divider).
->>
->> I am using a Allwiner H2+, with the serial port configuration from
->> sunxi-h3-h5.dtsi.
->>
->> Are you sure that clk_round_rate can return differet values? Is that
->> because some boards might have several clock options beside the
->> adjustable divider?
-> Yes I'm sure.  Some platforms allow the clock rate to be varied, hence
-> the existence of clk_round_rate() and clk_set_rate().
->
->> I really need to understand what is the problem, to be able to suggest
->> a solution to the integer overflow that is being allowed to happen.
-> Some sort of overflow check on i * max_rate could work?
+When searching for an achievable input clock rate that is within
++/-1.6% of an integer multiple of the target baudx16 rate, there is the
+potential to overflow the i * rate calculations.
 
-Actually I have another suggestion.  I'll submit a separate patch.
+For example, on a 32-bit system with a baud rate of 4000000, the
+i * max_rate calculation will overflow if i reaches 67 without finding
+an acceptable rate.
 
+Fix this by setting the upper boundary of the loop appropriately to
+avoid overflow.
+
+Reported-by: Nuno Goncalves <nunojpg@gmail.com>
+Signed-off-by: Ed Blake <ed.blake@sondrel.com>
+---
+ drivers/tty/serial/8250/8250_dw.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 5bb0c42c88dd..04b44829f0e3 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -252,7 +252,7 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
+ 			       struct ktermios *old)
+ {
+ 	unsigned int baud = tty_termios_baud_rate(termios);
+-	unsigned int target_rate, min_rate, max_rate;
++	unsigned int target_rate, min_rate, max_rate, div_max;
+ 	struct dw8250_data *d = p->private_data;
+ 	long rate;
+ 	int i, ret;
+@@ -265,12 +265,14 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
+ 	min_rate = target_rate - (target_rate >> 6);
+ 	max_rate = target_rate + (target_rate >> 6);
+ 
+-	for (i = 1; i <= UART_DIV_MAX; i++) {
++	/* Avoid overflow */
++	div_max = min(UINT_MAX / max_rate, (unsigned int)UART_DIV_MAX);
++	for (i = 1; i <= div_max; i++) {
+ 		rate = clk_round_rate(d->clk, i * target_rate);
+ 		if (rate >= i * min_rate && rate <= i * max_rate)
+ 			break;
+ 	}
+-	if (i <= UART_DIV_MAX) {
++	if (i <= div_max) {
+ 		clk_disable_unprepare(d->clk);
+ 		ret = clk_set_rate(d->clk, rate);
+ 		clk_prepare_enable(d->clk);
 -- 
-Ed
+2.11.0
