@@ -1,52 +1,44 @@
-From: Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>
-Subject: Re: [patch v15 3/4] Documentation: jtag: Add bindings for Aspeed SoC
- 24xx and 25xx families JTAG master driver
-Date: Thu, 11 Jan 2018 15:54:36 -0800
-Message-ID: <CACPK8Xeb3K9PqynV2xymJwvhkZ9fLKsbodEFYiZtQ+SXXgGA5g@mail.gmail.com>
-References: <1514202808-29747-1-git-send-email-oleksandrs@mellanox.com>
- <1514202808-29747-4-git-send-email-oleksandrs@mellanox.com> <CACPK8XfH-4r0mBQYA+BwvUo2+RF8igai2jy+RqTDQcxx2-acsQ@mail.gmail.com>
+From: Ed Blake <ed.blake@sondrel.com>
+Subject: Re: [PATCH] 8250_dw: do not int overflow when rate can not be aplied
+Date: Fri, 12 Jan 2018 13:33:22 +0000
+Message-ID: <48ee75ee-2d3a-c299-4ed8-23eb9ea27666@sondrel.com>
+References: <20180111133832.13125-1-nunojpg@gmail.com>
+ <57ef28bd-41da-73c2-3004-f9b2ecd8b102@sondrel.com>
+ <CAEXMXLTYFbBraCNHyfc6JpCFwUMVqPeEanCufbKkgW2At7=d0Q@mail.gmail.com>
+ <60dd87e2-ea07-5da3-f426-f39ef3c1addf@sondrel.com>
+ <CAEXMXLRV27_GqbiRfGzc+pWLuytw3CesVuN6WdVAUhWvA6zkUQ@mail.gmail.com>
+ <4fc98be4-e489-20f0-d899-e5eabdbd5e9d@sondrel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CACPK8XfH-4r0mBQYA+BwvUo2+RF8igai2jy+RqTDQcxx2-acsQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Cc: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, OpenBMC Maillist <openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org>, Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vadim Pasternak <vadimp-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <4fc98be4-e489-20f0-d899-e5eabdbd5e9d@sondrel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Nuno_Gon=c3=a7alves?= <nunojpg@gmail.com>
+Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 11, 2018 at 9:50 AM, Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org> wrote:
-> On Mon, Dec 25, 2017 at 3:53 AM, Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org> wrote:
->> +jtag: jtag@1e6e4000 {
->> +       compatible = "aspeed,ast2500-jtag";
->> +       reg = <0x1e6e4000 0x1c>;
->> +       clocks = <&clk_apb>;
+On 11/01/18 18:03, Ed Blake wrote:
+> On 11/01/18 17:55, Nuno Gonçalves wrote:
+>> So, for me clk_round_rate() always returns 24000000, and only the loop
+>> variable i changes, so the search is monotonic, from the highest baud
+>> to the lowest (increasing divider).
+>>
+>> I am using a Allwiner H2+, with the serial port configuration from
+>> sunxi-h3-h5.dtsi.
+>>
+>> Are you sure that clk_round_rate can return differet values? Is that
+>> because some boards might have several clock options beside the
+>> adjustable divider?
+> Yes I'm sure.  Some platforms allow the clock rate to be varied, hence
+> the existence of clk_round_rate() and clk_set_rate().
 >
-> We've now got a proper clock driver upstream. Can you update the
-> example to match the newly added bindings?
->
->  clocks = <&syscon ASPEED_CLK_APB>;
->
+>> I really need to understand what is the problem, to be able to suggest
+>> a solution to the integer overflow that is being allowed to happen.
+> Some sort of overflow check on i * max_rate could work?
 
-I think we need to ensure the reset is deasserted as well. You will need:
+Actually I have another suggestion.  I'll submit a separate patch.
 
- resets = <&syscon ASPEED_RESET_JTAG_MASTER>;
-
-In addition, we need to make sure the reset line is deasserted in the
-driver. Take a look at how I did this in the i2c driver:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=edd20e95bca4a5434f264d8ab40d729761479825
-
-+       bus->rst = devm_reset_control_get_shared(&pdev->dev, NULL);
-+       if (IS_ERR(bus->rst)) {
-+               dev_err(&pdev->dev,
-+                       "missing or invalid reset controller device
-tree entry");
-+               return PTR_ERR(bus->rst);
-+       }
-+       reset_control_deassert(bus->rst);
-
-Please give this a test with an upstream kernel from a fresh power on.
-
-Cheers,
-
-Joel
+-- 
+Ed
