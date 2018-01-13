@@ -1,68 +1,63 @@
 From: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
-Subject: [PATCH v2 0/7] Introduce GENI SE Controller Driver
-Date: Fri, 12 Jan 2018 18:05:40 -0700
-Message-ID: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
+Subject: [PATCH v2 2/7] dt-bindings: soc: qcom: Add device tree binding for GENI SE
+Date: Fri, 12 Jan 2018 18:05:42 -0700
+Message-ID: <1515805547-22816-3-git-send-email-kramasub@codeaurora.org>
+References: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
 Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
 Sender: linux-doc-owner@vger.kernel.org
 To: corbet@lwn.net, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org
 Cc: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com
 List-Id: linux-serial@vger.kernel.org
 
-Generic Interface (GENI) firmware based Qualcomm Universal Peripheral (QUP)
-Wrapper is a next generation programmable module for supporting a wide
-range of serial interfaces like UART, SPI, I2C, I3C, etc. A single QUP
-module can provide upto 8 Serial Interfaces using its internal Serial
-Engines (SE). The protocol supported by each interface is determined by
-the firmware loaded to the Serial Engine.
+Add device tree binding support for the QCOM GENI SE driver.
 
-This patch series introduces GENI SE Driver to manage the GENI based QUP
-Wrapper and the common aspects of all SEs inside the QUP Wrapper. This
-patch series also introduces the UART and I2C Controller drivers to
-drive the SEs that are programmed with the respective protocols.
-
-[v2]
- * Updated device tree bindings to describe the hardware
- * Updated SE DT node as child node of QUP Wrapper DT node
- * Moved common AHB clocks to QUP Wrapper DT node
- * Use the standard "clock-frequency" I2C property
- * Update compatible field in UART Controller to reflect hardware manual
- * Addressed other device tree binding specific comments from Rob Herring
-
-Karthikeyan Ramasubramanian (7):
-  qcom-geni-se: Add QCOM GENI SE Driver summary
-  dt-bindings: soc: qcom: Add device tree binding for GENI SE
-  soc: qcom: Add GENI based QUP Wrapper driver
-  dt-bindings: i2c: Add device tree bindings for GENI I2C Controller
-  i2c: i2c-qcom-geni: Add bus driver for the Qualcomm GENI I2C
-    controller
-  dt-bindings: serial: Add bindings for GENI based UART Controller
-  tty: serial: msm_geni_serial: Add serial driver support for GENI based
-    QUP
-
- .../devicetree/bindings/i2c/i2c-qcom-geni.txt      |   35 +
- .../devicetree/bindings/serial/qcom,geni-uart.txt  |   29 +
- .../devicetree/bindings/soc/qcom/qcom,geni-se.txt  |   66 +
- Documentation/qcom-geni-se.txt                     |   56 +
- drivers/i2c/busses/Kconfig                         |   10 +
- drivers/i2c/busses/Makefile                        |    1 +
- drivers/i2c/busses/i2c-qcom-geni.c                 |  656 +++++++++
- drivers/soc/qcom/Kconfig                           |    8 +
- drivers/soc/qcom/Makefile                          |    1 +
- drivers/soc/qcom/qcom-geni-se.c                    | 1016 ++++++++++++++
- drivers/tty/serial/Kconfig                         |   10 +
- drivers/tty/serial/Makefile                        |    1 +
- drivers/tty/serial/qcom_geni_serial.c              | 1414 ++++++++++++++++++++
- include/linux/qcom-geni-se.h                       |  807 +++++++++++
- 14 files changed, 4110 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
- create mode 100644 Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
+Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
+---
+ .../devicetree/bindings/soc/qcom/qcom,geni-se.txt  | 34 ++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
- create mode 100644 Documentation/qcom-geni-se.txt
- create mode 100644 drivers/i2c/busses/i2c-qcom-geni.c
- create mode 100644 drivers/soc/qcom/qcom-geni-se.c
- create mode 100644 drivers/tty/serial/qcom_geni_serial.c
- create mode 100644 include/linux/qcom-geni-se.h
 
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+new file mode 100644
+index 0000000..66f8a16
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+@@ -0,0 +1,34 @@
++Qualcomm Technologies, Inc. GENI Serial Engine QUP Wrapper Controller
++
++Generic Interface (GENI) based Qualcomm Universal Peripheral (QUP) wrapper
++is a programmable module for supporting a wide range of serial interfaces
++like UART, SPI, I2C, I3C, etc. A single QUP module can provide upto 8 Serial
++Interfaces, using its internal Serial Engines. The GENI Serial Engine QUP
++Wrapper controller is modeled as a node with zero or more child nodes each
++representing a serial engine.
++
++Required properties:
++- compatible:		Must be "qcom,geni-se-qup".
++- reg:			Must contain QUP register address and length.
++- clock-names:		Must contain "m-ahb" and "s-ahb".
++- clocks:		AHB clocks needed by the device.
++
++Required properties if child node exists:
++- #address-cells: Must be 1
++- #size-cells: Must be 1
++- ranges: Must be present
++
++Properties for children:
++
++A GENI based QUP wrapper controller node can contain 0 or more child nodes
++representing serial devices.  These serial devices can be a QCOM UART, I2C
++controller, spi controller, or some combination of aforementioned devices.
++
++Example:
++	qup0: qcom,geniqup0@8c0000 {
++		compatible = "qcom,geni-se-qup";
++		reg = <0x8c0000 0x6000>;
++		clock-names = "m-ahb", "s-ahb";
++		clocks = <&clock_gcc GCC_QUPV3_WRAP_0_M_AHB_CLK>,
++			<&clock_gcc GCC_QUPV3_WRAP_0_S_AHB_CLK>;
++	}
 -- 
 Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
