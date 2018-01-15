@@ -1,45 +1,75 @@
-From: Ed Blake <ed.blake@sondrel.com>
-Subject: Re: [PATCH] serial: 8250_dw: Avoid overflow in dw8250_set_termios
-Date: Mon, 15 Jan 2018 11:27:54 +0000
-Message-ID: <0433bf6f-e8e3-4050-fb54-20b6c764c5c1@sondrel.com>
-References: <20180112134507.9030-1-ed.blake@sondrel.com>
- <CAEXMXLR3HYcgm9iknfq3d31TN=Fx-bYy9dHOSouHR5Y9gsN__w@mail.gmail.com>
+From: Stafford Horne <shorne@gmail.com>
+Subject: Re: [PATCH v6 02/36] openrisc: add ioremap_nocache declaration
+ before include asm-generic/io.h and sync ioremap prototype with it.
+Date: Mon, 15 Jan 2018 22:07:28 +0900
+Message-ID: <20180115130728.GG13019@lianli.shorne-pla.net>
+References: <cover.1515766253.git.green.hu@gmail.com>
+ <3e5ba33674a883b56e20b35ea9ae34990ea838c8.1515766253.git.green.hu@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAEXMXLR3HYcgm9iknfq3d31TN=Fx-bYy9dHOSouHR5Y9gsN__w@mail.gmail.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <3e5ba33674a883b56e20b35ea9ae34990ea838c8.1515766253.git.green.hu@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Nuno_Gon=c3=a7alves?= <nunojpg@gmail.com>
-Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greentime Hu <green.hu@gmail.com>
+Cc: greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, geert.uytterhoeven@gmail.com, linus.walleij@linaro.org, mark.rutland@arm.com, greg@kroah.com, ren_guo@c-sky.com, rdunlap@infradead.org, davem@davemloft.net, jonas@southpole.se, stefan.kristiansson@saunalahti.fi
 List-Id: linux-serial@vger.kernel.org
 
-On 13/01/18 11:59, Nuno Gonçalves wrote:
-> Dear Ed,
->
-> Thanks.
->
-> Tested-by: Nuno Goncalves <nunojpg@gmail.com>
->
-> I just would like to report a aditional issue I find, which I am not
-> sure if it is intend behaviour or not. If I set bauds 1152000,
-> 1500000, 2000000, 2500000, 3000000, I always get a actually set baud
-> of 1500000, because it appears to be the closest baud by my hardware,
-> but if I set 3500000, then the port gets disabled.
->
-> This is because up to 3000000 the closest integer divider is 1, but
-> then it becomes 0, which is invalid.
->
-> If we still should return the closest baud, then we must return a
-> minimum of 1, and never 0, at uart_get_divisor, or
-> serial8250_get_divisor.
->
-> Thanks,
-> Nuno
+On Mon, Jan 15, 2018 at 01:53:10PM +0800, Greentime Hu wrote:
+> From: Greentime Hu <greentime@andestech.com>
+> 
+> It will be built failed if commit id: d25ea659 is selected. This patch can fix this
+> build error.
 
-Yes, returning a divisor of zero doesn't sound very sensible.  Care to
-submit a patch?
+Hello,
 
--- 
-Ed
+As I mentioned last time, can you you change this to not mention the commit id?
+The ID will probably change when this is actually committed.  You might want to
+do something like:
+
+ 1. Move this commit before the ioremap_nocache change.  This is because we want
+ each commit to result in a buildable kernel.
+
+ 2. The text here and other changes could read:
+
+ A future commit for the nds32 architecture bootstrap ("asm-generic/io.h: move
+ ioremap_nocache/ioremap_uc/ioremap_wc/ioremap_wt out of ifndef CONFIG_MMU")
+ will move the ioremap_nocache out of the CONFIG_MMU ifdef.  This means that
+ in order to suppress re-definition errors we need to setup #define's before
+ importing asm-generic/io.h.
+
+ Also, the change adds a prototype for ioremap where size is size_t so fix that
+ as well.
+
+I hope that helps. But for the change:
+
+Acked-by: Stafford Horne <shorne@gmail.com>
+
+> Signed-off-by: Greentime Hu <greentime@andestech.com>
+> ---
+>  arch/openrisc/include/asm/io.h |    3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/openrisc/include/asm/io.h b/arch/openrisc/include/asm/io.h
+> index 7c69139..6709b28 100644
+> --- a/arch/openrisc/include/asm/io.h
+> +++ b/arch/openrisc/include/asm/io.h
+> @@ -29,13 +29,14 @@
+>  #define PIO_OFFSET		0
+>  #define PIO_MASK		0
+>  
+> +#define ioremap_nocache ioremap_nocache
+>  #include <asm-generic/io.h>
+>  #include <asm/pgtable.h>
+>  
+>  extern void __iomem *__ioremap(phys_addr_t offset, unsigned long size,
+>  				pgprot_t prot);
+>  
+> -static inline void __iomem *ioremap(phys_addr_t offset, unsigned long size)
+> +static inline void __iomem *ioremap(phys_addr_t offset, size_t size)
+>  {
+>  	return __ioremap(offset, size, PAGE_KERNEL);
+>  }
+> -- 
+> 1.7.9.5
+> 
