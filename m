@@ -1,65 +1,45 @@
-From: Greentime Hu <green.hu@gmail.com>
-Subject: [PATCH v6 01/36] asm-generic/io.h: move ioremap_nocache/ioremap_uc/ioremap_wc/ioremap_wt out of ifndef CONFIG_MMU
-Date: Mon, 15 Jan 2018 13:53:09 +0800
-Message-ID: <d25ea659bc370a6bb24c4d42416f890a34051df1.1515766253.git.green.hu@gmail.com>
-References: <cover.1515766253.git.green.hu@gmail.com>
+From: Ed Blake <ed.blake@sondrel.com>
+Subject: Re: [PATCH] serial: 8250_dw: Avoid overflow in dw8250_set_termios
+Date: Mon, 15 Jan 2018 11:27:54 +0000
+Message-ID: <0433bf6f-e8e3-4050-fb54-20b6c764c5c1@sondrel.com>
+References: <20180112134507.9030-1-ed.blake@sondrel.com>
+ <CAEXMXLR3HYcgm9iknfq3d31TN=Fx-bYy9dHOSouHR5Y9gsN__w@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1515766253.git.green.hu@gmail.com>
-In-Reply-To: <cover.1515766253.git.green.hu@gmail.com>
-References: <cover.1515766253.git.green.hu@gmail.com>
+In-Reply-To: <CAEXMXLR3HYcgm9iknfq3d31TN=Fx-bYy9dHOSouHR5Y9gsN__w@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, geert.uytterhoeven@gmail.com, linus.walleij@linaro.org, mark.rutland@arm.com, greg@kroah.com, ren_guo@c-sky.com, rdunlap@infradead.org, davem@davemloft.net, jonas@southpole.se, stefan.kristiansson@saunalahti.fi, shorne@gmail.com
-Cc: green.hu@gmail.com, Vincent Chen <vincentc@andestech.com>
+To: =?UTF-8?Q?Nuno_Gon=c3=a7alves?= <nunojpg@gmail.com>
+Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Greentime Hu <greentime@andestech.com>
+On 13/01/18 11:59, Nuno Gonçalves wrote:
+> Dear Ed,
+>
+> Thanks.
+>
+> Tested-by: Nuno Goncalves <nunojpg@gmail.com>
+>
+> I just would like to report a aditional issue I find, which I am not
+> sure if it is intend behaviour or not. If I set bauds 1152000,
+> 1500000, 2000000, 2500000, 3000000, I always get a actually set baud
+> of 1500000, because it appears to be the closest baud by my hardware,
+> but if I set 3500000, then the port gets disabled.
+>
+> This is because up to 3000000 the closest integer divider is 1, but
+> then it becomes 0, which is invalid.
+>
+> If we still should return the closest baud, then we must return a
+> minimum of 1, and never 0, at uart_get_divisor, or
+> serial8250_get_divisor.
+>
+> Thanks,
+> Nuno
 
-It allows some architectures to use this generic macro instead of
-defining theirs.
+Yes, returning a divisor of zero doesn't sound very sensible.  Care to
+submit a patch?
 
-Signed-off-by: Vincent Chen <vincentc@andestech.com>
-Signed-off-by: Greentime Hu <greentime@andestech.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
----
- include/asm-generic/io.h |   18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
-
-diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
-index b4531e3..7c6a39e 100644
---- a/include/asm-generic/io.h
-+++ b/include/asm-generic/io.h
-@@ -852,7 +852,16 @@ static inline void __iomem *__ioremap(phys_addr_t offset, size_t size,
- }
- #endif
- 
-+#ifndef iounmap
-+#define iounmap iounmap
-+
-+static inline void iounmap(void __iomem *addr)
-+{
-+}
-+#endif
-+#endif /* CONFIG_MMU */
- #ifndef ioremap_nocache
-+void __iomem *ioremap(phys_addr_t phys_addr, size_t size);
- #define ioremap_nocache ioremap_nocache
- static inline void __iomem *ioremap_nocache(phys_addr_t offset, size_t size)
- {
-@@ -884,15 +893,6 @@ static inline void __iomem *ioremap_wt(phys_addr_t offset, size_t size)
- }
- #endif
- 
--#ifndef iounmap
--#define iounmap iounmap
--
--static inline void iounmap(void __iomem *addr)
--{
--}
--#endif
--#endif /* CONFIG_MMU */
--
- #ifdef CONFIG_HAS_IOPORT_MAP
- #ifndef CONFIG_GENERIC_IOMAP
- #ifndef ioport_map
 -- 
-1.7.9.5
+Ed
