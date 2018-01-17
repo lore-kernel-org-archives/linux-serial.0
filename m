@@ -1,76 +1,92 @@
-From: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 4/7] dt-bindings: i2c: Add device tree bindings for
- GENI I2C Controller
-Date: Tue, 16 Jan 2018 22:31:06 -0800
-Message-ID: <20180117063106.GC6620@minitux>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH v2 6/7] dt-bindings: serial: Add bindings for GENI based
+ UART Controller
+Date: Tue, 16 Jan 2018 22:35:06 -0800
+Message-ID: <20180117063506.GD6620@minitux>
 References: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
- <1515805547-22816-5-git-send-email-kramasub@codeaurora.org>
+ <1515805547-22816-7-git-send-email-kramasub@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1515805547-22816-5-git-send-email-kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Karthikeyan Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: corbet-T1hC0tSOHrs@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, Sagar Dharia <sdharia-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <1515805547-22816-7-git-send-email-kramasub@codeaurora.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
+Cc: corbet@lwn.net, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, Girish Mahadevan <girishm@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
 On Fri 12 Jan 17:05 PST 2018, Karthikeyan Ramasubramanian wrote:
 
-> Add device tree binding support for I2C Controller in GENI based
+> Add device tree binding support for GENI based UART Controller in the
 > QUP Wrapper.
 > 
-> Signed-off-by: Sagar Dharia <sdharia-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Signed-off-by: Karthikeyan Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
+> Signed-off-by: Girish Mahadevan <girishm@codeaurora.org>
 > ---
->  .../devicetree/bindings/i2c/i2c-qcom-geni.txt      | 35 ++++++++++++++++++++++
->  .../devicetree/bindings/soc/qcom/qcom,geni-se.txt  | 19 ++++++++++++
->  2 files changed, 54 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
+>  .../devicetree/bindings/serial/qcom,geni-uart.txt  | 29 ++++++++++++++++++++++
+>  .../devicetree/bindings/soc/qcom/qcom,geni-se.txt  | 13 ++++++++++
+>  2 files changed, 42 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt b/Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
+> diff --git a/Documentation/devicetree/bindings/serial/qcom,geni-uart.txt b/Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
 > new file mode 100644
-> index 0000000..ea84be7
+> index 0000000..e7b9e24
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
-> @@ -0,0 +1,35 @@
-> +Qualcomm Technologies Inc. GENI Serial Engine based I2C Controller
+> +++ b/Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
+> @@ -0,0 +1,29 @@
+> +Qualcomm Technologies Inc. GENI Serial Engine based UART Controller
+> +
+> +The Generic Interface (GENI) Serial Engine based UART controller supports
+> +console use-cases and is supported only by GENI based Qualcomm Universal
+> +Peripheral (QUP) cores.
 > +
 > +Required properties:
-> + - compatible: Should be:
-> +   * "qcom,i2c-geni.
+> +- compatible: should contain "qcom,geni-debug-uart".
 
-As this is a subset of geni it would look better with qcom,geni-i2c
-imho.
+Why is this uart a _debug_ uart? Is there a separate binding for the
+geni-uart?
 
-> + - reg: Should contain QUP register address and length.
-> + - interrupts: Should contain I2C interrupt.
-> + - clock-names: Should contain "se-clk".
+I like that your naming here matches my suggestion with qcom,geni-i2c.
 
-Omit "clk" from the clock names.
+> +- reg: Should contain UART register location and length.
+> +- reg-names: Should contain "se-phys".
 
-> + - clocks: Serial engine core clock needed by the device.
-> + - pinctrl-names/pinctrl-0/1: The GPIOs assigned to this core. The names
-> +   should be "active" and "sleep" for the pin confuguration when core is active
-> +   or when entering sleep state.
+No need to specify reg-names for a single reg.
 
-No need to describe pinctrl properties - and your description here
-doesn't match the code.
+> +- interrupts: Should contain UART core interrupts.
+> +- clock-names: Should contain "se-clk".
 
-> + - #address-cells: Should be <1> Address cells for i2c device address
-> + - #size-cells: Should be <0> as i2c addresses have no size component
+Omit the "clk"
+
+> +- clocks: clocks needed for UART, includes the core clock.
+
+Be more specific.
+
+> +- pinctrl-names/pinctrl-0/1: The GPIOs assigned to this core. The names
+> +  Should be "active" and "sleep" for the pin confuguration when core is active
+> +  or when entering sleep state.
+
+Omit pinctrl information.
+
 > +
-> +Optional property:
-> + - clock-frequency : Desired I2C bus clock frequency in Hz.
-> +   When missing default to 400000Hz.
-> +
-> +Child nodes should conform to i2c bus binding.
+> +Example:
+> +uart0: qcom,serial@a88000 {
 
-..."as described in i2c.txt"
+Don't use qcom, in node name. This should be named "serial".
+
+> +	compatible = "qcom,geni-debug-uart";
+> +	reg = <0xa88000 0x7000>;
+> +	reg-names = "se-phys";
+> +	interrupts = <0 355 0>;
+
+<GIC_SPI 355 IRQ_TYPE_LEVEL_HIGH>
+
+> +	clock-names = "se-clk";
+> +	clocks = <&clock_gcc GCC_QUPV3_WRAP0_S0_CLK>;
+> +	pinctrl-names = "default", "sleep";
+> +	pinctrl-0 = <&qup_1_uart_3_active>;
+> +	pinctrl-1 = <&qup_1_uart_3_sleep>;
+> +};
 
 Regards,
 Bjorn
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
