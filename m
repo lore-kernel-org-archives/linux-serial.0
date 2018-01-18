@@ -1,157 +1,90 @@
-From: Julia Cartwright <juliac@eso.teric.us>
-Subject: Re: [patch v17 1/4] drivers: jtag: Add JTAG core driver
-Date: Wed, 17 Jan 2018 13:14:41 -0600
-Message-ID: <20180117191441.GE2818@kryptos.localdomain>
-References: <1516087139-7510-1-git-send-email-oleksandrs@mellanox.com>
- <1516087139-7510-2-git-send-email-oleksandrs@mellanox.com>
+From: Johan Hovold <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] serdev: add method to set parity
+Date: Thu, 18 Jan 2018 13:23:55 +1100
+Message-ID: <20180118022355.GA3286@localhost>
+References: <1516203739-4705-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1516087139-7510-2-git-send-email-oleksandrs@mellanox.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Oleksandr Shamray <oleksandrs@mellanox.com>
-Cc: gregkh@linuxfoundation.org, arnd@arndb.de, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au, jiri@resnulli.us, tklauser@distanz.ch, linux-serial@vger.kernel.org, vadimp@mellanox.com, system-sw-low-level@mellanox.com, robh+dt@kernel.org, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, davem@davemloft.net, mchehab@kernel.org, Jiri Pirko <jiri@mellanox.com>
+In-Reply-To: <1516203739-4705-1-git-send-email-ulrich.hecht+renesas-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Ulrich Hecht <ulrich.hecht+renesas-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, martin.blumenstingl-gM/Ye1E23mwN+BqQ9rBEUg@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello Oleksandr-
+On Wed, Jan 17, 2018 at 04:42:19PM +0100, Ulrich Hecht wrote:
+> Adds serdev_device_set_parity() and an implementation for ttyport.
 
-On Tue, Jan 16, 2018 at 09:18:56AM +0200, Oleksandr Shamray wrote:
-[..]
-> v16->v17
-> Comments pointed by Julia Cartwright <juliac@eso.teric.us>
+Perhaps you can mention that the interface uses an enum and the three
+settings that you add here.
 
-More review feedback below:
+> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+> Broken out of the "[PATCH 0/6] serdev multiplexing support" series
+> because this kind of functionality is apparently also required
+> for "[RFC v2 0/9] Realtek Bluetooth serdev support (H5 protocol)",
+> which contains an earlier revision of this patch.
 
-[..]
-> +++ b/drivers/jtag/jtag.c
-[..]
-> +static long jtag_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+Thanks for submitting this separately.
+
+>  drivers/tty/serdev/core.c           | 12 ++++++++++++
+>  drivers/tty/serdev/serdev-ttyport.c | 18 ++++++++++++++++++
+>  include/linux/serdev.h              | 10 ++++++++++
+>  3 files changed, 40 insertions(+)
+> 
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index 5dc88f6..1f25896 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -290,6 +290,18 @@ int serdev_device_set_tiocm(struct serdev_device *serdev, int set, int clear)
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
+>  
+> +int serdev_device_set_parity(struct serdev_device *serdev,
+> +			     enum serdev_parity parity)
 > +{
-> +	struct jtag *jtag = file->private_data;
-> +	struct jtag_run_test_idle idle;
-> +	struct jtag_xfer xfer;
-> +	u8 *xfer_data;
-> +	u32 data_size;
-> +	u32 value;
-> +	int err;
+> +	struct serdev_controller *ctrl = serdev->ctrl;
 > +
-> +	if (!arg)
-> +		return -EINVAL;
+> +	if (!ctrl || !ctrl->ops->set_parity)
+> +		return -ENOTSUPP;
 > +
-> +	switch (cmd) {
-> +	case JTAG_GIOCFREQ:
-> +		if (!jtag->ops->freq_get)
-> +			err = -EOPNOTSUPP;
+> +	return ctrl->ops->set_parity(ctrl, parity);
+> +}
+> +EXPORT_SYMBOL_GPL(serdev_device_set_parity);
 
-Did you mean:
+Please place the parity functions (and fields) after the set_flow
+equivalents so that we keep the line-setting functionality grouped
+together.
 
-			return -EOPNOTSUPP;
-
-?
-
+> +static int ttyport_set_parity(struct serdev_controller *ctrl,
+> +			      enum serdev_parity parity)
+> +{
+> +	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+> +	struct tty_struct *tty = serport->tty;
+> +	struct ktermios ktermios = tty->termios;
 > +
-> +		err = jtag->ops->freq_get(jtag, &value);
+> +	ktermios.c_cflag &= ~(PARENB | PARODD);
 
-Otherwise you're check was worthless, you'll call NULL here.
+You should also clear CMSPAR.
 
-Also, w.r.t. the set of ops which are required to be implemented: this
-isn't the right place to do the check.
-
-Instead, do it in jtag_alloc():
-
-	struct jtag *jtag_alloc(size_t priv_size, const struct jtag_ops *ops)
-	{
-		struct jtag *jtag;
-
-		if (!ops->freq_get || !ops->xfer || ...) /* fixup condition */
-			return NULL;
-
-		jtag = kzalloc(sizeof(*jtag) + priv_size, GFP_KERNEL);
-		if (!jtag)
-			return NULL;
-
-		jtag->ops = ops;
-		return jtag;
-	}
-	EXPORT_SYMBOL_GPL(jtag_alloc);
-
-[..]
-> +	case JTAG_IOCXFER:
-[..]
-> +		data_size = DIV_ROUND_UP(xfer.length, BITS_PER_BYTE);
-> +		xfer_data = memdup_user(u64_to_user_ptr(xfer.tdio), data_size);
+> +	if (parity != SERDEV_PARITY_NONE) {
+> +		ktermios.c_cflag |= PARENB;
+> +		if (parity == SERDEV_PARITY_ODD)
+> +			ktermios.c_cflag |= PARODD;
+> +	}
 > +
-> +		if (!xfer_data)
+> +	return tty_set_termios(tty, &ktermios);
 
-memdup_user() doesn't return NULL on error.  You need to check for
-IS_ERR(xfer_data).
+Note that tty_set_termios() always return 0. You need to verify that you
+got what you requested by looking at the termios after the function
+returns (and possibly return -EINVAL). Not all drivers support (all)
+parity modes.
 
-> +			return -EFAULT;
-> +
-> +		err = jtag->ops->xfer(jtag, &xfer, xfer_data);
-> +		if (err) {
-> +			kfree(xfer_data);
-> +			return -EFAULT;
-> +		}
-> +
-> +		err = copy_to_user(u64_to_user_ptr(xfer.tdio),
-> +				   (void *)(xfer_data), data_size);
-> +
-> +		if (err) {
-> +			kfree(xfer_data);
-> +			return -EFAULT;
-> +		}
-> +
-> +		kfree(xfer_data);
+Note that we currently do not implement proper error handling for flow
+control, but that should be fixed.
 
-Move the kfree() above the if (err).
-
-> +		if (copy_to_user((void *)arg, &xfer, sizeof(struct jtag_xfer)))
-> +			return -EFAULT;
-> +		break;
-> +
-> +	case JTAG_GIOCSTATUS:
-> +		if (!jtag->ops->status_get)
-> +			return -EOPNOTSUPP;
-> +
-> +		err = jtag->ops->status_get(jtag, &value);
-> +		if (err)
-> +			break;
-> +
-> +		err = put_user(value, (__u32 *)arg);
-> +		if (err)
-> +			err = -EFAULT;
-
-put_user() returns -EFAULT on failure, so this shouldn't be necessary.
-
-[..]
-> --- /dev/null
-> +++ b/include/uapi/linux/jtag.h
-[..]
-> +/**
-> + * struct jtag_xfer - jtag xfer:
-> + *
-> + * @type: transfer type
-> + * @direction: xfer direction
-> + * @length: xfer bits len
-> + * @tdio : xfer data array
-> + * @endir: xfer end state
-> + *
-> + * Structure represents interface to JTAG device for jtag sdr xfer
-> + * execution.
-> + */
-> +struct jtag_xfer {
-> +	__u8	type;
-> +	__u8	direction;
-> +	__u8	endstate;
-
-Just to be as unambiguous as possible, considering this is ABI, I would
-suggest explicitly putting a padding byte here.
-
-> +	__u32	length;
-> +	__u64	tdio;
-> +};
+Looks good otherwise.
 
 Thanks,
-   Julia
+Johan
