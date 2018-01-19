@@ -1,121 +1,84 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH v6 31/36] dt-bindings: nds32 CPU Bindings
-Date: Fri, 19 Jan 2018 16:37:54 +0100
-Message-ID: <CAMuHMdUqxuiTfM_m80F4XDVkZjx_XCsj_qXRehZxMcKjWhGQ_Q@mail.gmail.com>
-References: <cover.1515766253.git.green.hu@gmail.com> <e9577ec0f6b6ca17077aa2f576c8bef191c3d7c2.1515766253.git.green.hu@gmail.com>
- <CAK8P3a0HGhx3WpF-AwC+7m8+FoaiQBTYoCLqhECrATBRLX7x5g@mail.gmail.com>
- <CAEbi=3ef8JHf_Jpru1B2L3+Xz-Oz4p_t84Lh=5kuTFo0YEz=5A@mail.gmail.com>
- <CAK8P3a38hCHULZt=fGXJebcoiEGCwA0fre_kixA7sUpPP2xf5g@mail.gmail.com>
- <CAEbi=3eexCyrVhFZB8wmK1fT=QONzc63y6=dGNgj_H+Rt4zo_g@mail.gmail.com>
- <CAMuHMdX4nzU06ovDOwzJw-O8w0gyer-fi6skDae=K1yr-EN1gA@mail.gmail.com> <CAEbi=3fKp5tj32hoH=ZTo6kqpCE+Zv1LopnpVujusSfMkeaJKg@mail.gmail.com>
+From: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 06/36] nds32: Kernel booting and initialization
+Date: Sat, 20 Jan 2018 00:34:38 +0800
+Message-ID: <CAEbi=3dJm=M-1UjUftb5qb0YOOsq92zzF86xeaVOhzULjvT3eA@mail.gmail.com>
+References: <cover.1515766253.git.green.hu@gmail.com> <5930d2df872116555cc553284b6c111dce29e298.1515766253.git.green.hu@gmail.com>
+ <CAK8P3a143yQ72+QGZSxpiFc7p8Hb7PXuCybJBFoLRSBaZ2uw4g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAEbi=3fKp5tj32hoH=ZTo6kqpCE+Zv1LopnpVujusSfMkeaJKg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAK8P3a143yQ72+QGZSxpiFc7p8Hb7PXuCybJBFoLRSBaZ2uw4g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greentime <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Networking <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, DTML <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, Guo Ren <ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org>, Randy Dunlap <rd>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Greentime <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Networking <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, DTML <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, Guo Ren <ren_guo-Y+KPrCd2zL4@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greentime,
+Hi, Arnd:
 
-On Fri, Jan 19, 2018 at 4:35 PM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> 2018-01-19 23:29 GMT+08:00 Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>:
->> On Fri, Jan 19, 2018 at 4:18 PM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->>> 2018-01-19 22:52 GMT+08:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
->>>> On Fri, Jan 19, 2018 at 3:32 PM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->>>>> 2018-01-18 19:02 GMT+08:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
->>>>>> On Mon, Jan 15, 2018 at 6:53 AM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->>>>>>> From: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->>>>>>>
->>>>>>> This patch adds nds32 CPU binding documents.
->>>>>>>
->>>>>>> Signed-off-by: Vincent Chen <vincentc-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->>>>>>> Signed-off-by: Rick Chen <rick-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->>>>>>> Signed-off-by: Zong Li <zong-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->>>>>>> Signed-off-by: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->>>>>>> Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->>>>>>> ---
->>>>>>>  Documentation/devicetree/bindings/nds32/cpus.txt |   37 ++++++++++++++++++++++
->>>>>>>  1 file changed, 37 insertions(+)
->>>>>>>  create mode 100644 Documentation/devicetree/bindings/nds32/cpus.txt
->>>>>>>
->>>>>>> diff --git a/Documentation/devicetree/bindings/nds32/cpus.txt b/Documentation/devicetree/bindings/nds32/cpus.txt
->>>>>>> new file mode 100644
->>>>>>> index 0000000..9a52937
->>>>>>> --- /dev/null
->>>>>>> +++ b/Documentation/devicetree/bindings/nds32/cpus.txt
->>>>>>> @@ -0,0 +1,37 @@
->>>>>>> +* Andestech Processor Binding
->>>>>>> +
->>>>>>> +This binding specifies what properties must be available in the device tree
->>>>>>> +representation of a Andestech Processor Core, which is the root node in the
->>>>>>> +tree.
->>>>>>> +
->>>>>>> +Required properties:
->>>>>>> +
->>>>>>> +       - compatible:
->>>>>>> +               Usage: required
->>>>>>> +               Value type: <string>
->>>>>>> +               Definition: should be one of:
->>>>>>> +                       "andestech,n13"
->>>>>>> +                       "andestech,n15"
->>>>>>> +                       "andestech,d15"
->>>>>>> +                       "andestech,n10"
->>>>>>> +                       "andestech,d10"
->>>>>>> +                       "andestech,nds32v3"
->>>>>>
->>>>>> Based on https://lkml.org/lkml/2017/11/27/1290, this should say that
->>>>>> the device tree should always list 'andestech,nds32v3' as the most
->>>>>> generic 'compatible' value and list exactly one of the others in
->>>>>> addition.
->>>>
->>>>> I will remove the others and just left "andestech,nds32v3" in here.
->>>>
->>>> No, is not what we want here, the CPU node should list exactly which core
->>>> is used, what we need in the description is a clarification that
->>>> andestech,nds32v3 must be used in addition to the more specific
->>>> string.
->>>
->>> Hi, Arnd:
->>>
->>> Sorry I still don't get your point. Do you mean we should always use
->>> compatible = "andestech,n13", "andestech,nds32v3";
->>> instead of
->>> compatible = "andestech,n13";
->>
->> Exactly. The first value is a device-specific compatible value, the second is
->> a generic fallback.
->>
->>> And I need to add the description in this document.
->>
->> Indeed. See for example
->> Documentation/devicetree/bindings/power/renesas,apmu.txt
->>
->> Thanks!
+2018-01-18 18:11 GMT+08:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
+> On Mon, Jan 15, 2018 at 6:53 AM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
 >
-> Hi, Geert:
+> I had not looked at this patch in enough detail earlier, sorry about
+> that. It should be
+> easy enough to fix though.
 >
-> Thank you and your example.
-> I get it. I will update this document like this.
-> - compatible: Should be "andestech,<core_name>", "andestech,nds32v3"
-> as fallback.
+>> +#ifdef CONFIG_VGA_CONSOLE
+>> +struct screen_info screen_info;
+>> +#endif
+>
+> I would assume that you can't ever have a VGA console. Just drop all
+> the references
+> here and instead send a patch to the fbdev maintainer to add the dependency
+> at CONFIG_VGA_CONSOLE to prevent selecting it with nds32.
 
-And please keep a list of supported values of "andestech,<core_name>"
-in the DT binding document, so checkpatch can validate compatible values.
+I found it can be built pass for now because we disable it in defconfig.
+Should I send the patch in v7 series?
 
-Thanks!
+>> +
+>> +extern void __init early_init_devtree(void *params);
+>> +extern void __init early_trap_init(void);
+>
+> similarly, these are declared in include/linux/of_fdt.h
+>
 
-Gr{oetje,eeting}s,
+early_trap_init is a nds32 function. I will move it to nds32.h
 
-                        Geert
+>> +void __init setup_arch(char **cmdline_p)
+>> +{
+>> +       early_init_devtree(__atags_pointer ?
+>> +                          phys_to_virt(__atags_pointer) : __dtb_start);
+>
+> The reference to '__atags_pointer' appears to be a leftover from pre-DT
+> days. Can you just remove that?
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+Yes, I will remove it.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>> +void calibrate_delay(void)
+>> +{
+>> +       const int *val;
+>> +       struct device_node *cpu = NULL;
+>> +       cpu = of_find_compatible_node(NULL, NULL, "andestech,nds32v3");
+>> +       val = of_get_property(cpu, "clock-frequency", NULL);
+>> +       if (!val || !*val)
+>> +               panic("no cpu 'clock-frequency' parameter in device tree");
+>> +       loops_per_jiffy = be32_to_cpup(val) / HZ;
+>> +       pr_cont("%lu.%02lu BogoMIPS (lpj=%lu)\n",
+>> +               loops_per_jiffy / (500000 / HZ),
+>> +               (loops_per_jiffy / (5000 / HZ)) % 100, loops_per_jiffy);
+>> +}
+>
+> This seems very odd to me: The 'clock-frequency' property in the
+> cpu node should refer to the actual frequency it is running at, but that
+> tends to be different from the bogomips as needed by the ndelay()
+> function. Can you explain what is going on here?
+>
+
+This implementation is referenced from openrisc.
+https://lkml.org/lkml/2017/11/17/228
+
+
+
+Thank you.
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
