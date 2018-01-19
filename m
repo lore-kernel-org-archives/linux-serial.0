@@ -1,86 +1,91 @@
-From: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH v2 0/7] Introduce GENI SE Controller Driver
-Date: Fri, 19 Jan 2018 10:32:05 -0800
-Message-ID: <14fcdf68-e4ee-2182-2c3c-cc446c2c4d25@infradead.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/7] dt-bindings: soc: qcom: Add device tree binding
+ for GENI SE
+Date: Fri, 19 Jan 2018 16:53:32 -0600
+Message-ID: <20180119225332.2umo6mxqs3szfy6x@rob-hp-laptop>
 References: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
+ <1515805547-22816-3-git-send-email-kramasub@codeaurora.org>
+ <20180117062558.GB6620@minitux>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1515805547-22816-1-git-send-email-kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Karthikeyan Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, corbet-T1hC0tSOHrs@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
-Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180117062558.GB6620@minitux>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, corbet@lwn.net, andy.gross@linaro.org, david.brown@linaro.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com
 List-Id: linux-serial@vger.kernel.org
 
-On 01/12/2018 05:05 PM, Karthikeyan Ramasubramanian wrote:
-> Generic Interface (GENI) firmware based Qualcomm Universal Peripheral (QUP)
-> Wrapper is a next generation programmable module for supporting a wide
-> range of serial interfaces like UART, SPI, I2C, I3C, etc. A single QUP
-> module can provide upto 8 Serial Interfaces using its internal Serial
-> Engines (SE). The protocol supported by each interface is determined by
-> the firmware loaded to the Serial Engine.
+On Tue, Jan 16, 2018 at 10:25:58PM -0800, Bjorn Andersson wrote:
+> On Fri 12 Jan 17:05 PST 2018, Karthikeyan Ramasubramanian wrote:
 > 
-> This patch series introduces GENI SE Driver to manage the GENI based QUP
-> Wrapper and the common aspects of all SEs inside the QUP Wrapper. This
-> patch series also introduces the UART and I2C Controller drivers to
-> drive the SEs that are programmed with the respective protocols.
-
-Hi,
-
-Will there be follow-up drivers for SPI, I3C, etc.?
-
-Thanks.
-
-> [v2]
->  * Updated device tree bindings to describe the hardware
->  * Updated SE DT node as child node of QUP Wrapper DT node
->  * Moved common AHB clocks to QUP Wrapper DT node
->  * Use the standard "clock-frequency" I2C property
->  * Update compatible field in UART Controller to reflect hardware manual
->  * Addressed other device tree binding specific comments from Rob Herring
+> > Add device tree binding support for the QCOM GENI SE driver.
+> > 
+> > Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
 > 
-> Karthikeyan Ramasubramanian (7):
->   qcom-geni-se: Add QCOM GENI SE Driver summary
->   dt-bindings: soc: qcom: Add device tree binding for GENI SE
->   soc: qcom: Add GENI based QUP Wrapper driver
->   dt-bindings: i2c: Add device tree bindings for GENI I2C Controller
->   i2c: i2c-qcom-geni: Add bus driver for the Qualcomm GENI I2C
->     controller
->   dt-bindings: serial: Add bindings for GENI based UART Controller
->   tty: serial: msm_geni_serial: Add serial driver support for GENI based
->     QUP
+> Better describe the entire GENI, with it's functions in the same
+> binding.
 > 
->  .../devicetree/bindings/i2c/i2c-qcom-geni.txt      |   35 +
->  .../devicetree/bindings/serial/qcom,geni-uart.txt  |   29 +
->  .../devicetree/bindings/soc/qcom/qcom,geni-se.txt  |   66 +
->  Documentation/qcom-geni-se.txt                     |   56 +
->  drivers/i2c/busses/Kconfig                         |   10 +
->  drivers/i2c/busses/Makefile                        |    1 +
->  drivers/i2c/busses/i2c-qcom-geni.c                 |  656 +++++++++
->  drivers/soc/qcom/Kconfig                           |    8 +
->  drivers/soc/qcom/Makefile                          |    1 +
->  drivers/soc/qcom/qcom-geni-se.c                    | 1016 ++++++++++++++
->  drivers/tty/serial/Kconfig                         |   10 +
->  drivers/tty/serial/Makefile                        |    1 +
->  drivers/tty/serial/qcom_geni_serial.c              | 1414 ++++++++++++++++++++
->  include/linux/qcom-geni-se.h                       |  807 +++++++++++
->  14 files changed, 4110 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
->  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
->  create mode 100644 Documentation/qcom-geni-se.txt
->  create mode 100644 drivers/i2c/busses/i2c-qcom-geni.c
->  create mode 100644 drivers/soc/qcom/qcom-geni-se.c
->  create mode 100644 drivers/tty/serial/qcom_geni_serial.c
->  create mode 100644 include/linux/qcom-geni-se.h
+> > ---
+> >  .../devicetree/bindings/soc/qcom/qcom,geni-se.txt  | 34 ++++++++++++++++++++++
+> >  1 file changed, 34 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+> > new file mode 100644
+> > index 0000000..66f8a16
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+> > @@ -0,0 +1,34 @@
+> > +Qualcomm Technologies, Inc. GENI Serial Engine QUP Wrapper Controller
+> > +
+> > +Generic Interface (GENI) based Qualcomm Universal Peripheral (QUP) wrapper
+> > +is a programmable module for supporting a wide range of serial interfaces
+> > +like UART, SPI, I2C, I3C, etc. A single QUP module can provide upto 8 Serial
+> > +Interfaces, using its internal Serial Engines. The GENI Serial Engine QUP
+> > +Wrapper controller is modeled as a node with zero or more child nodes each
+> > +representing a serial engine.
+> > +
+> > +Required properties:
+> > +- compatible:		Must be "qcom,geni-se-qup".
+> > +- reg:			Must contain QUP register address and length.
+> > +- clock-names:		Must contain "m-ahb" and "s-ahb".
+> > +- clocks:		AHB clocks needed by the device.
+> > +
+> > +Required properties if child node exists:
+> > +- #address-cells: Must be 1
+> > +- #size-cells: Must be 1
 > 
+> But on a 64-bit system, shouldn't these be 2?
 
+No, depends on the bus and ranges. It annoys me to no end that folks 
+needlessly use 2 cells when the perpheral address space and/or module 
+sizes don't exceed 4G. 
 
--- 
-~Randy
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> > +- ranges: Must be present
+
+And ideally with a value, but that's beyond the scope of the binding.
+
+> > +
+> > +Properties for children:
+> > +
+> > +A GENI based QUP wrapper controller node can contain 0 or more child nodes
+> > +representing serial devices.  These serial devices can be a QCOM UART, I2C
+> > +controller, spi controller, or some combination of aforementioned devices.
+> > +
+> > +Example:
+> > +	qup0: qcom,geniqup0@8c0000 {
+> 
+> I don't see a reason for this to be referenced, so skip the label. And
+> don't use qcom, in the node name; "geni" would be perfectly fine?
+> 
+> > +		compatible = "qcom,geni-se-qup";
+> > +		reg = <0x8c0000 0x6000>;
+> > +		clock-names = "m-ahb", "s-ahb";
+> > +		clocks = <&clock_gcc GCC_QUPV3_WRAP_0_M_AHB_CLK>,
+> > +			<&clock_gcc GCC_QUPV3_WRAP_0_S_AHB_CLK>;
+> > +	}
+> 
+> Regards,
+> Bjorn
