@@ -1,67 +1,66 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 3/7] soc: qcom: Add GENI based QUP Wrapper driver
-Date: Fri, 19 Jan 2018 16:57:08 -0600
-Message-ID: <20180119225708.4mo6fiy5zyd6kscj@rob-hp-laptop>
-References: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
- <1515805547-22816-4-git-send-email-kramasub@codeaurora.org>
- <20180117062002.GA6620@minitux>
- <29ed5b45-dd70-fb70-3aa4-4e1a0006d57e@codeaurora.org>
- <20180118165745.GE6620@minitux>
+From: Vincent Chen <deanbo422@gmail.com>
+Subject: Re: [PATCH v6 2/3] clocksource/drivers/atcpit100: VDSO support
+Date: Sat, 20 Jan 2018 19:11:22 +0800
+Message-ID: <CAJsyPhxrKKN43usZ+mxAzci4G1qXnEXQ6ydT18MCiT7qQcMz3g@mail.gmail.com>
+References: <cover.1515766198.git.green.hu@gmail.com> <de648d211061a16c85ae0321625c51343ce5e5ce.1515766198.git.green.hu@gmail.com>
+ <CAK8P3a1RQxBNGiVD11BuL5kUx+fn0QcA02j0HVPnMQ2j3WmMQQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180118165745.GE6620@minitux>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Rajendra Nayak <rnayak@codeaurora.org>, Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, corbet@lwn.net, andy.gross@linaro.org, david.brown@linaro.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, Sagar Dharia <sdharia@codeaurora.org>, Girish Mahadevan <girishm@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <CAK8P3a1RQxBNGiVD11BuL5kUx+fn0QcA02j0HVPnMQ2j3WmMQQ@mail.gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Greentime Hu <green.hu@gmail.com>, Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, Networking <netdev@vger.kernel.org>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>, Guo Ren <ren_guo@c-sky.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 18, 2018 at 08:57:45AM -0800, Bjorn Andersson wrote:
-> On Thu 18 Jan 01:13 PST 2018, Rajendra Nayak wrote:
-> 
-> > []..
-> > 
-> > >> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-> > >> new file mode 100644
-> > >> index 0000000..3f43582
-> > >> --- /dev/null
-> > >> +++ b/drivers/soc/qcom/qcom-geni-se.c
-> > >> @@ -0,0 +1,1016 @@
-> > >> +/*
-> > >> + * Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
-> > >> + *
-> > >> + * This program is free software; you can redistribute it and/or modify
-> > >> + * it under the terms of the GNU General Public License version 2 and
-> > >> + * only version 2 as published by the Free Software Foundation.
-> > >> + *
-> > >> + * This program is distributed in the hope that it will be useful,
-> > >> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> > >> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> > >> + * GNU General Public License for more details.
-> > >> + *
-> > >> + */
-> > > 
-> > > Please use SPDX style license header, i.e. this file should start with:
-> > > 
-> > > // SPDX-License-Identifier: GPL-2.0
-> > > /*
-> > >  * Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
-> > >  */
-> > 
-> > Looks like Mark Brown commented elsewhere [1] that we should use the C++
-> > commenting style even for the Linux Foundation copyright?
-> > 
-> > [1] https://marc.info/?l=linux-clk&m=151497978626135&w=2 
-> > 
-> 
-> While I can agree with Mark on the ugliness of the mixed commenting
-> style, this is the style that I found communicated and is what you find
-> in other files.
+2018-01-18 19:08 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
+> On Mon, Jan 15, 2018 at 6:57 AM, Greentime Hu <green.hu@gmail.com> wrote:
+>> From: Rick Chen <rickchen36@gmail.com>
+>>
+>> VDSO needs real-time cycle count to ensure the time accuracy.
+>> Unlike others, nds32 architecture does not define clock source,
+>> hence VDSO needs atcpit100 offering real-time cycle count
+>> to derive the correct time.
+>>
+>> Signed-off-by: Vincent Chen <vincentc@andestech.com>
+>> Signed-off-by: Rick Chen <rickchen36@gmail.com>
+>> Signed-off-by: Greentime Hu <green.hu@gmail.com>
+>
+> I'm a bit puzzled by this patch, can you explain how the vdso actually
+> manages to access the clock hardware? It looks like you make the
+> physical address and the register offset available to user space, but
+> how does it end up accessing it?
+>
+>       Arnd
 
-Well, that's pretty new guidance. Moving target...
+Dear Arnd:
 
-Given that Linus said '//' comments are the only thing C++ got right, I 
-expect to see more of them.
+Accessing clock hardware in vdso can be divided to 2 step.
 
-Rob
+1. Setup an additional memory mapping for clock hardware in user space
+when establishing
+    vdso-needed memory mapping
+
+        In arch_setup_additional_pages(), kernel establishes memory
+mapping for vdso's text and vdata page
+    in user space. In order to make clock hardware be accessible in
+user space, we try to establish an
+    additional memory mapping for clock hardware here based on clock
+information from driver. This page is
+    located between vdata page and vdso text page. For safety, this
+region for clock accessing is read-only.
+
+2. Accessing clock hardware in vdso
+
+        After step 1, clock hardware is accessible in user space
+through memory-mapped IO. However, it is not
+   enough to access a specific register. Therefore, we store register
+offset information in vdata page to make it
+   visible in user space.  Now, vdso can derive the address of counter
+register by summation of __get_timerpage()
+   and counter register offset where __get_timerpage() is used to
+derive the virtual address of memory-mapped
+   clock.
+
+
+Vincent
