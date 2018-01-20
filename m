@@ -1,90 +1,93 @@
-From: Vincent Chen <deanbo422@gmail.com>
-Subject: Re: [PATCH v6 2/3] clocksource/drivers/atcpit100: VDSO support
-Date: Sat, 20 Jan 2018 19:23:51 +0800
-Message-ID: <CAJsyPhyrFFvXUpf67ev4Apf-vstH33iwMt1ifr8LTiBB3bf+hA@mail.gmail.com>
-References: <cover.1515766198.git.green.hu@gmail.com> <de648d211061a16c85ae0321625c51343ce5e5ce.1515766198.git.green.hu@gmail.com>
- <CAK8P3a1RQxBNGiVD11BuL5kUx+fn0QcA02j0HVPnMQ2j3WmMQQ@mail.gmail.com> <CAJsyPhxrKKN43usZ+mxAzci4G1qXnEXQ6ydT18MCiT7qQcMz3g@mail.gmail.com>
+From: Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH] acpi, spcr: Make SPCR available to x86
+Date: Sat, 20 Jan 2018 15:33:51 +0100
+Message-ID: <20180120143351.gmjpnqczaa2zov4o@gmail.com>
+References: <20180118150951.28964-1-prarit@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <CAJsyPhxrKKN43usZ+mxAzci4G1qXnEXQ6ydT18MCiT7qQcMz3g@mail.gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greentime Hu <green.hu@gmail.com>, Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, Networking <netdev@vger.kernel.org>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>, Guo Ren <ren_guo@c-sky.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180118150951.28964-1-prarit@redhat.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Prarit Bhargava <prarit@redhat.com>
+Cc: linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, Bhupesh Sharma <bhsharma@redhat.com>, Lv Zheng <lv.zheng@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Timur Tabi <timur@codeaurora.org>, graeme.gregory@linaro.org, mark.salter@redhat.com
 List-Id: linux-serial@vger.kernel.org
 
-Correct the composition
 
-Dear Arnd:
+* Prarit Bhargava <prarit@redhat.com> wrote:
 
-1. Setup an additional memory mapping for clock hardware in user space
-when establishing vdso-needed memory mapping
-     In arch_setup_additional_pages(), kernel establishes memory
-mapping for vdso's text and vdata page in user space. In order to make
-clock hardware be accessible in user space, we try to establish an
-additional memory mapping for clock hardware here based on clock
-information from driver. This page is located between vdata page and
-vdso text page. For safety, this region for clock accessing is
-read-only.
+> Note on testing:  I've tested this on several ARM64 and x86 boxes (only
+> earlycon, console=ttyS0,115200, and with both options), verified that
+> functionality on ARM64 has not changed (ie, CONFIG_ACPI_SPCR_TABLE is
+> always =y), and verified functionality when !CONFIG_ACPI_SPCR_TABLE on
+> x86.
+> 
+> P.
+> 
+> ----8<----
+> 
+> SPCR is currently only enabled or ARM64 and x86 can use SPCR to setup an
+> early console.
+> 
+> General fixes include updating Documentation & Kconfig (for x86), updating
+> comments, and changing parse_spcr() to acpi_parse_spcr(), and
+> earlycon_init_is_deferred to earlycon_acpi_spcr_enable to be more
+> descriptive.
+> 
+> On x86, many systems have a valid SPCR table but the table version is not
+> 2 so the table version check must be a warning.
+> 
+> On ARM64 when the kernel parameter earlycon is used both the early console
+> and console are enabled.  On x86, only the earlycon should be enabled by
+> by default.  Modify acpi_parse_spcr() to allow options for initializing
+> the early console and console separately.
+> 
+> Signed-off-by: Prarit Bhargava <prarit@redhat.com>
+> Cc: linux-acpi@vger.kernel.org
+> Cc: linux-doc@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: Bhupesh Sharma <bhsharma@redhat.com>
+> Cc: Lv Zheng <lv.zheng@intel.com>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: "H. Peter Anvin" <hpa@zytor.com>
+> Cc: x86@kernel.org
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: "Rafael J. Wysocki" Mrjw@rjwysocki.net>
+> Cc: Timur Tabi <timur@codeaurora.org>
+> Cc: graeme.gregory@linaro.org
+> Cc: mark.salter@redhat.com
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt |  9 +++++---
+>  arch/arm64/kernel/acpi.c                        |  4 ++--
+>  arch/x86/kernel/acpi/boot.c                     |  3 +++
+>  drivers/acpi/Kconfig                            |  7 +++++-
+>  drivers/acpi/spcr.c                             | 29 +++++++++++++------------
+>  drivers/tty/serial/earlycon.c                   | 15 +++++--------
+>  include/linux/acpi.h                            |  7 ++++--
+>  include/linux/serial_core.h                     |  4 ++--
+>  8 files changed, 44 insertions(+), 34 deletions(-)
 
-2. Accessing clock hardware in vdso
-    After step 1, clock hardware is accessible in user space through
-memory-mapped IO. However, it is not enough to access a specific
-register. Therefore, we store register offset information in vdata
-page to make it visible in user space.  Now, vdso can derive the
-address of counter register by summation of __get_timerpage() and
-counter register offset where __get_timerpage() is used to derive the
-virtual address of memory-mapped clock.
+I'm fine with the x86 aspect of this:
 
-2018-01-20 19:11 GMT+08:00 Vincent Chen <deanbo422@gmail.com>:
-> 2018-01-18 19:08 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
->> On Mon, Jan 15, 2018 at 6:57 AM, Greentime Hu <green.hu@gmail.com> wrote:
->>> From: Rick Chen <rickchen36@gmail.com>
->>>
->>> VDSO needs real-time cycle count to ensure the time accuracy.
->>> Unlike others, nds32 architecture does not define clock source,
->>> hence VDSO needs atcpit100 offering real-time cycle count
->>> to derive the correct time.
->>>
->>> Signed-off-by: Vincent Chen <vincentc@andestech.com>
->>> Signed-off-by: Rick Chen <rickchen36@gmail.com>
->>> Signed-off-by: Greentime Hu <green.hu@gmail.com>
->>
->> I'm a bit puzzled by this patch, can you explain how the vdso actually
->> manages to access the clock hardware? It looks like you make the
->> physical address and the register offset available to user space, but
->> how does it end up accessing it?
->>
->>       Arnd
->
-> Dear Arnd:
->
-> Accessing clock hardware in vdso can be divided to 2 step.
->
-> 1. Setup an additional memory mapping for clock hardware in user space
-> when establishing
->     vdso-needed memory mapping
->
->         In arch_setup_additional_pages(), kernel establishes memory
-> mapping for vdso's text and vdata page
->     in user space. In order to make clock hardware be accessible in
-> user space, we try to establish an
->     additional memory mapping for clock hardware here based on clock
-> information from driver. This page is
->     located between vdata page and vdso text page. For safety, this
-> region for clock accessing is read-only.
->
-> 2. Accessing clock hardware in vdso
->
->         After step 1, clock hardware is accessible in user space
-> through memory-mapped IO. However, it is not
->    enough to access a specific register. Therefore, we store register
-> offset information in vdata page to make it
->    visible in user space.  Now, vdso can derive the address of counter
-> register by summation of __get_timerpage()
->    and counter register offset where __get_timerpage() is used to
-> derive the virtual address of memory-mapped
->    clock.
->
->
-> Vincent
+Acked-by: Ingo Molnar <mingo@kernel.org>
+
+>  	earlycon=	[KNL] Output early console device and options.
+>  
+> -			When used with no options, the early console is
+> -			determined by the stdout-path property in device
+> -			tree's chosen node.
+> +			[ARM64] The early console is determined by the
+> +			stdout-path property in device tree's chosen node,
+> +			or determined by the ACPI SPCR table.
+
+s/in device tree's chosen node
+ /in the device tree's chosen node
+
+Thanks,
+
+	Ingo
