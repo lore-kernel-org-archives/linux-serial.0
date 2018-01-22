@@ -1,305 +1,40 @@
-From: Mark Salter <msalter@redhat.com>
-Subject: Re: [PATCH] acpi, spcr: Make SPCR available to x86
-Date: Sun, 21 Jan 2018 18:21:08 -0500
-Message-ID: <1516576868.2957.2.camel@redhat.com>
-References: <20180118150951.28964-1-prarit@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Marcel Holtmann <marcel@holtmann.org>
+Subject: Re: [PATCH 2/2] Bluetooth: hci_bcm: Close serdev on failure to set
+ power on bcm_open()
+Date: Mon, 22 Jan 2018 03:20:41 +0100
+Message-ID: <52263D7A-47F4-482C-98AA-74094CBCD768@holtmann.org>
+References: <20180121214645.15004-1-hdegoede@redhat.com>
+ <20180121214645.15004-2-hdegoede@redhat.com>
+Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
+Content-Type: text/plain;
+        charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20180118150951.28964-1-prarit@redhat.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Prarit Bhargava <prarit@redhat.com>, linux-kernel@vger.kernel.org
-Cc: linux-acpi@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, Bhupesh Sharma <bhsharma@redhat.com>, Lv Zheng <lv.zheng@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Timur Tabi <timur@codeaurora.org>, graeme.gregory@linaro.org, mark.salter@redhat.com
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20180121214645.15004-2-hdegoede@redhat.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Lukas Wunner <lukas@wunner.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2018-01-18 at 10:09 -0500, Prarit Bhargava wrote:
-> Note on testing:  I've tested this on several ARM64 and x86 boxes (only
-> earlycon, console=ttyS0,115200, and with both options), verified that
-> functionality on ARM64 has not changed (ie, CONFIG_ACPI_SPCR_TABLE is
-> always =y), and verified functionality when !CONFIG_ACPI_SPCR_TABLE on
-> x86.
+Hi Hans,
+
+> Commit 8bfa7e1e03ac ("Bluetooth: hci_bcm: Handle errors properly")
+> introduced error checking for the bcm_gpio_set_power() call in bcm_open()
+> but the error-path it introduces does not properly call
+> serdev_device_close() to undo the earlier serdev_device_open(), this
+> commit fixes this.
 > 
-> P.
-> 
-> ----8<----
-> 
-> SPCR is currently only enabled or ARM64 and x86 can use SPCR to setup an
-> early console.
-> 
-> General fixes include updating Documentation & Kconfig (for x86), updating
-> comments, and changing parse_spcr() to acpi_parse_spcr(), and
-> earlycon_init_is_deferred to earlycon_acpi_spcr_enable to be more
-> descriptive.
-> 
-> On x86, many systems have a valid SPCR table but the table version is not
-> 2 so the table version check must be a warning.
-> 
-> On ARM64 when the kernel parameter earlycon is used both the early console
-> and console are enabled.  On x86, only the earlycon should be enabled by
-> by default.  Modify acpi_parse_spcr() to allow options for initializing
-> the early console and console separately.
-> 
-> Signed-off-by: Prarit Bhargava <prarit@redhat.com>
-> Cc: linux-acpi@vger.kernel.org
-> Cc: linux-doc@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: linux-serial@vger.kernel.org
-> Cc: Bhupesh Sharma <bhsharma@redhat.com>
-> Cc: Lv Zheng <lv.zheng@intel.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: "H. Peter Anvin" <hpa@zytor.com>
-> Cc: x86@kernel.org
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will.deacon@arm.com>
-> Cc: "Rafael J. Wysocki" Mrjw@rjwysocki.net>
-> Cc: Timur Tabi <timur@codeaurora.org>
-> Cc: graeme.gregory@linaro.org
-> Cc: mark.salter@redhat.com
+> Cc: Lukas Wunner <lukas@wunner.de>
+> Fixes: 8bfa7e1e03ac ("Bluetooth: hci_bcm: Handle errors properly")
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 > ---
->  Documentation/admin-guide/kernel-parameters.txt |  9 +++++---
->  arch/arm64/kernel/acpi.c                        |  4 ++--
->  arch/x86/kernel/acpi/boot.c                     |  3 +++
->  drivers/acpi/Kconfig                            |  7 +++++-
->  drivers/acpi/spcr.c                             | 29 +++++++++++++------------
->  drivers/tty/serial/earlycon.c                   | 15 +++++--------
->  include/linux/acpi.h                            |  7 ++++--
->  include/linux/serial_core.h                     |  4 ++--
->  8 files changed, 44 insertions(+), 34 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 46b26bfee27b..6f519230ed34 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -915,9 +915,12 @@
->  
->  	earlycon=	[KNL] Output early console device and options.
->  
-> -			When used with no options, the early console is
-> -			determined by the stdout-path property in device
-> -			tree's chosen node.
-> +			[ARM64] The early console is determined by the
-> +			stdout-path property in device tree's chosen node,
-> +			or determined by the ACPI SPCR table.
-> +
-> +			[X86] When used with no options the early console is
-> +			determined by the ACPI SPCR table.
->  
->  		cdns,<addr>[,options]
->  			Start an early, polled-mode console on a Cadence
-> diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-> index b3162715ed78..2aa5609def27 100644
-> --- a/arch/arm64/kernel/acpi.c
-> +++ b/arch/arm64/kernel/acpi.c
-> @@ -230,10 +230,10 @@ void __init acpi_boot_table_init(void)
->  
->  done:
->  	if (acpi_disabled) {
-> -		if (earlycon_init_is_deferred)
-> +		if (earlycon_acpi_spcr_enable)
->  			early_init_dt_scan_chosen_stdout();
->  	} else {
-> -		parse_spcr(earlycon_init_is_deferred);
-> +		acpi_parse_spcr(earlycon_acpi_spcr_enable, true);
->  		if (IS_ENABLED(CONFIG_ACPI_BGRT))
->  			acpi_table_parse(ACPI_SIG_BGRT, acpi_parse_bgrt);
->  	}
-> diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-> index f4c463df8b08..0bf6a58f7a6d 100644
-> --- a/arch/x86/kernel/acpi/boot.c
-> +++ b/arch/x86/kernel/acpi/boot.c
-> @@ -36,6 +36,7 @@
->  #include <linux/ioport.h>
->  #include <linux/pci.h>
->  #include <linux/efi-bgrt.h>
-> +#include <linux/serial_core.h>
->  
->  #include <asm/e820/api.h>
->  #include <asm/irqdomain.h>
-> @@ -1626,6 +1627,8 @@ int __init acpi_boot_init(void)
->  	if (!acpi_noirq)
->  		x86_init.pci.init = pci_acpi_init;
->  
-> +	/* Do not enable ACPI SPCR console by default */
-> +	acpi_parse_spcr(earlycon_acpi_spcr_enable, false);
->  	return 0;
->  }
->  
-> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-> index 46505396869e..ddcb5f40e8ee 100644
-> --- a/drivers/acpi/Kconfig
-> +++ b/drivers/acpi/Kconfig
-> @@ -79,7 +79,12 @@ config ACPI_DEBUGGER_USER
->  endif
->  
->  config ACPI_SPCR_TABLE
-> -	bool
-> +	bool "ACPI Serial Port Console Redirection Support"
-> +	default y if X86
-> +	help
-> +	  Enable support for Serial Port Console Redirection (SPCR) Table.
-> +	  This table provides information about the configuration of the
-> +	  earlycon console.
->  
->  config ACPI_LPIT
->  	bool
-> diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-> index 324b35bfe781..89e97d21a89c 100644
-> --- a/drivers/acpi/spcr.c
-> +++ b/drivers/acpi/spcr.c
-> @@ -21,7 +21,7 @@
->   * occasionally getting stuck as 1. To avoid the potential for a hang, check
->   * TXFE == 0 instead of BUSY == 1. This may not be suitable for all UART
->   * implementations, so only do so if an affected platform is detected in
-> - * parse_spcr().
-> + * acpi_parse_spcr().
->   */
->  bool qdf2400_e44_present;
->  EXPORT_SYMBOL(qdf2400_e44_present);
-> @@ -74,19 +74,21 @@ static bool xgene_8250_erratum_present(struct acpi_table_spcr *tb)
->  }
->  
->  /**
-> - * parse_spcr() - parse ACPI SPCR table and add preferred console
-> + * acpi_parse_spcr() - parse ACPI SPCR table and add preferred console
->   *
-> - * @earlycon: set up earlycon for the console specified by the table
-> + * @enable_earlycon: set up earlycon for the console specified by the table
-> + * @enable_console: setup the console specified by the table.
->   *
->   * For the architectures with support for ACPI, CONFIG_ACPI_SPCR_TABLE may be
->   * defined to parse ACPI SPCR table.  As a result of the parsing preferred
-> - * console is registered and if @earlycon is true, earlycon is set up.
-> + * console is registered and if @enable_earlycon is true, earlycon is set up.
-> + * If @enable_console is true the system console is also configured.
->   *
->   * When CONFIG_ACPI_SPCR_TABLE is defined, this function should be called
->   * from arch initialization code as soon as the DT/ACPI decision is made.
->   *
->   */
-> -int __init parse_spcr(bool earlycon)
-> +int __init acpi_parse_spcr(bool enable_earlycon, bool enable_console)
->  {
->  	static char opts[64];
->  	struct acpi_table_spcr *table;
-> @@ -105,11 +107,8 @@ int __init parse_spcr(bool earlycon)
->  	if (ACPI_FAILURE(status))
->  		return -ENOENT;
->  
-> -	if (table->header.revision < 2) {
-> -		err = -ENOENT;
-> -		pr_err("wrong table version\n");
-> -		goto done;
-> -	}
-> +	if (table->header.revision < 2)
-> +		pr_info("SPCR table version %d\n", table->header.revision);
->  
->  	if (table->serial_port.space_id == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
->  		switch (ACPI_ACCESS_BIT_WIDTH((
-> @@ -185,7 +184,7 @@ int __init parse_spcr(bool earlycon)
->  	 */
->  	if (qdf2400_erratum_44_present(&table->header)) {
->  		qdf2400_e44_present = true;
-> -		if (earlycon)
-> +		if (enable_earlycon)
->  			uart = "qdf2400_e44";
->  	}
->  
-> @@ -205,11 +204,13 @@ int __init parse_spcr(bool earlycon)
->  
->  	pr_info("console: %s\n", opts);
->  
-> -	if (earlycon)
-> +	if (enable_earlycon)
->  		setup_earlycon(opts);
->  
-> -	err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
-> -
-> +	if (enable_console)
-> +		err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
-> +	else
-> +		err = 0;
->  done:
->  	acpi_put_table((struct acpi_table_header *)table);
->  	return err;
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index 4c8b80f1c688..870e84fb6e39 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -197,25 +197,20 @@ int __init setup_earlycon(char *buf)
->  }
->  
->  /*
-> - * When CONFIG_ACPI_SPCR_TABLE is defined, "earlycon" without parameters in
-> - * command line does not start DT earlycon immediately, instead it defers
-> - * starting it until DT/ACPI decision is made.  At that time if ACPI is enabled
-> - * call parse_spcr(), else call early_init_dt_scan_chosen_stdout()
-> + * This defers the initialization of the early console until after ACPI has
-> + * been initialized.
->   */
-> -bool earlycon_init_is_deferred __initdata;
-> +bool earlycon_acpi_spcr_enable __initdata;
->  
->  /* early_param wrapper for setup_earlycon() */
->  static int __init param_setup_earlycon(char *buf)
->  {
->  	int err;
->  
-> -	/*
-> -	 * Just 'earlycon' is a valid param for devicetree earlycons;
-> -	 * don't generate a warning from parse_early_params() in that case
-> -	 */
-> +	/* Just 'earlycon' is a valid param for devicetree and ACPI SPCR. */
->  	if (!buf || !buf[0]) {
->  		if (IS_ENABLED(CONFIG_ACPI_SPCR_TABLE)) {
-> -			earlycon_init_is_deferred = true;
-> +			earlycon_acpi_spcr_enable = true;
->  			return 0;
->  		} else if (!buf) {
->  			return early_init_dt_scan_chosen_stdout();
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index dc1ebfeeb5ec..9aac8f0ebe23 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -1242,9 +1242,12 @@ static inline void acpi_table_upgrade(void) { }
->  
->  #ifdef CONFIG_ACPI_SPCR_TABLE
->  extern bool qdf2400_e44_present;
-> -int parse_spcr(bool earlycon);
-> +int acpi_parse_spcr(bool enable_earlycon, bool enable_console);
->  #else
-> -static inline int parse_spcr(bool earlycon) { return 0; }
-> +static inline int acpi_parse_spcr(bool enable_earlycon, bool enable_console)
-> +{
-> +	return 0;
-> +}
->  #endif
->  
->  #if IS_ENABLED(CONFIG_ACPI_GENERIC_GSI)
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 37b044e78333..aefd0e5115da 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -376,10 +376,10 @@ extern int of_setup_earlycon(const struct earlycon_id *match,
->  			     const char *options);
->  
->  #ifdef CONFIG_SERIAL_EARLYCON
-> -extern bool earlycon_init_is_deferred __initdata;
-> +extern bool earlycon_acpi_spcr_enable __initdata;
->  int setup_earlycon(char *buf);
->  #else
-> -static const bool earlycon_init_is_deferred;
-> +static const bool earlycon_acpi_spcr_enable;
->  static inline int setup_earlycon(char *buf) { return 0; }
->  #endif
->  
+> drivers/bluetooth/hci_bcm.c | 4 +++-
+> 1 file changed, 3 insertions(+), 1 deletion(-)
 
-This looks okay to me. Tested on a variety of arm64 platforms.
+can I get this as 1/2 so I can apply it right away.
 
-Reviewed-by: Mark Salter <msalter@redhat.com>
-Tested-by: Mark Salter <msalter@redhat.com>
+Regards
+
+Marcel
 
 
