@@ -1,147 +1,143 @@
-From: Greentime Hu <green.hu@gmail.com>
-Subject: Re: [PATCH v6 29/36] nds32: Build infrastructure
-Date: Tue, 23 Jan 2018 00:00:34 +0800
-Message-ID: <CAEbi=3dWeYzGMf2ip9n=7aexojTsX5_nHpAfgL_WpD7qu0HLyg@mail.gmail.com>
-References: <cover.1515766253.git.green.hu@gmail.com> <e4b231f440511aa0a539ba45f316a096741f530e.1515766253.git.green.hu@gmail.com>
- <CAK8P3a2k18Z5pK-04h4bSVn82m+tvNL4JdtgVT9AJWP5gKXuig@mail.gmail.com>
- <CAEbi=3dZ-Bj+pdhcu1Td1JzgDngyMMeDTFs=XH3LNPnudcUGyg@mail.gmail.com> <CAK8P3a20eqjW3_bQf4eMTwtmJSZ8Vp4agV5O--UkLGXnMhbisQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK8P3a20eqjW3_bQf4eMTwtmJSZ8Vp4agV5O--UkLGXnMhbisQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, Networking <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>, Guo Ren <ren_guo@c-sky.co>
+From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH v2] serdev: add method to set parity
+Date: Mon, 22 Jan 2018 18:56:32 +0100
+Message-ID: <1516643792-22840-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: marcel@holtmann.org
+Cc: linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, johan@kernel.org, sre@kernel.org, linux-bluetooth@vger.kernel.org, robh@kernel.org, martin.blumenstingl@googlemail.com, gregkh@linuxfoundation.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, wsa@the-dreams.de, geert@linux-m68k.org, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Arnd:
+Adds serdev_device_set_parity() and an implementation for ttyport.
+The interface uses an enum with the values SERIAL_PARITY_NONE,
+SERIAL_PARITY_EVEN and SERIAL_PARITY_ODD.
 
-2018-01-22 23:38 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
-> On Mon, Jan 22, 2018 at 4:20 PM, Greentime Hu <green.hu@gmail.com> wrote:
-> BE
->>>
->>> I think it's better to drop GENERIC_IRQ_PROBE here, no modern driver
->>> should rely on that.
->>
->> I will drop it.
->>
->>>> +choice
->>>> +       prompt "CPU type"
->>>> +       default CPU_V3
->>>> +config CPU_N15
->>>> +       bool "AndesCore N15"
->>>> +config CPU_N13
->>>> +       bool "AndesCore N13"
->>>> +       select CPU_CACHE_ALIASING if ANDES_PAGE_SIZE_4KB
->>>> +config CPU_N10
->>>> +       bool "AndesCore N10"
->>>> +       select CPU_CACHE_ALIASING
->>>> +config CPU_D15
->>>> +       bool "AndesCore D15"
->>>> +config CPU_D10
->>>> +       bool "AndesCore D10"
->>>> +       select CPU_CACHE_ALIASING
->>>> +config CPU_V3
->>>> +       bool "AndesCore v3 compatible"
->>>> +       select ANDES_PAGE_SIZE_8KB
->>>> +endchoice
->>>
->>> I forget what we discussed here earlier, but at the very least, there should be
->>> some help text here to explain what the implications are. I assume that you
->>> generally want to be able to build one kernel to run on all of the above, right?
->>>
->>> Will selecting 'CPU_V3' result in a kernel binary that can run on all of them?
->>> If so, please explain it here as that is not obvious.
->>>
->>> For the other CPU types, can you list the what backwards-compatiblity
->>> you get? E.g. will a kernel built for N13 run on any of N15, D15 or N10?
->>>
->> Yes, we would like to build a kernel with CPU_V3 to run on all of the above.
->>
->> Not sure if these help texts clear enough?
->>
->> choice
->>         prompt "CPU type"
->>         default CPU_V3
->>         help
->>           The data cache of N15/D15 is implemented as PIPT and it will
->> not cause the
->>           cache aliasing issue. The rest cpus(N13, N10 and D10) are
->> implemented as
->>           VIPT data cache. It may cause the cache aliasing issue if
->> its cache way
->>           size is larger than page size. You can specify the the CPU
->> type direcly or
->>           choose CPU_V3 if unsure.
->>
->>           A kernel built for N10 is able to run on N15, D15, N13, N10 or D10.
->>           A kernel built for N15 is able to run on N15 or D15.
->>           A kernel built for D10 is able to run on D10 or D15.
->>           A kernel built for D15 is able to run on D15.
->>           A kernel built for N13 with CPU_CACHE_ALIASING is able to
->> run on N15, D15, N13, N10 or D10
->>           A kernel built for N13 without CPU_CACHE_ALIASING is able to
->> run on N15, N13 or D15
->>
->> config CPU_N15
->>         bool "AndesCore N15"
->> config CPU_N13
->>         bool "AndesCore N13"
->>         select CPU_CACHE_ALIASING if ANDES_PAGE_SIZE_4KB
->> config CPU_N10
->>         bool "AndesCore N10"
->>         select CPU_CACHE_ALIASING
->> config CPU_D15
->>         bool "AndesCore D15"
->> config CPU_D10
->>         bool "AndesCore D10"
->>         select CPU_CACHE_ALIASING
->> config CPU_V3
->>         bool "AndesCore v3 compatible"
->>         select CPU_CACHE_ALIASING
->> endchoice
->
-> I would drop the description about CPU_CACHE_ALIASING in the list
-> of compatibilities text and simply say 'A kernel built for N13 is able to run
-> on N15, N13 or D15', it's more logical that way, and it gives you the freedom
-> to later change the rules about whether it can or cannot run.
->
-> Maybe also change the initial prompt from "CPU type" to "minimum CPU type".
->
+Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+---
 
-Thank you for your suggestion.
-I will update it like this.
+Hi!
 
-choice
-        prompt "minimum CPU type"
-        default CPU_V3
-        help
-          The data cache of N15/D15 is implemented as PIPT and it will not cause
-          the cache aliasing issue. The rest cpus(N13, N10 and D10) are
-          implemented as VIPT data cache. It may cause the cache aliasing issue
-          if its cache way size is larger than page size. You can specify the
-          CPU type direcly or choose CPU_V3 if unsure.
+This revision addresses Johan's comments (see below for details) and adds
+Sebastian's Reviewed-by tag. Thank you for your reviews!
 
-          A kernel built for N10 is able to run on N15, D15, N13, N10 or D10.
-          A kernel built for N15 is able to run on N15 or D15.
-          A kernel built for D10 is able to run on D10 or D15.
-          A kernel built for D15 is able to run on D15.
-          A kernel built for N13 is able to run on N15, N13 or D15.
+CU
+Uli
 
-config CPU_N15
-        bool "AndesCore N15"
-config CPU_N13
-        bool "AndesCore N13"
-        select CPU_CACHE_ALIASING if ANDES_PAGE_SIZE_4KB
-config CPU_N10
-        bool "AndesCore N10"
-        select CPU_CACHE_ALIASING
-config CPU_D15
-        bool "AndesCore D15"
-config CPU_D10
-        bool "AndesCore D10"
-        select CPU_CACHE_ALIASING
-config CPU_V3
-        bool "AndesCore v3 compatible"
-        select CPU_CACHE_ALIASING
-endchoice
+
+Changes since v1:
+- added Reviewed-by tag
+- expanded commit message
+- shuffled stuff around to keep line-setting bits together
+- clear CMSPAR
+- (hopefully) detect errors correctly by checking tty->termios after call
+  to tty_set_termios().
+
+
+ drivers/tty/serdev/core.c           | 12 ++++++++++++
+ drivers/tty/serdev/serdev-ttyport.c | 24 ++++++++++++++++++++++++
+ include/linux/serdev.h              | 10 ++++++++++
+ 3 files changed, 46 insertions(+)
+
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 5dc88f6..ceee0ca 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -257,6 +257,18 @@ void serdev_device_set_flow_control(struct serdev_device *serdev, bool enable)
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_set_flow_control);
+ 
++int serdev_device_set_parity(struct serdev_device *serdev,
++			     enum serdev_parity parity)
++{
++	struct serdev_controller *ctrl = serdev->ctrl;
++
++	if (!ctrl || !ctrl->ops->set_parity)
++		return -ENOTSUPP;
++
++	return ctrl->ops->set_parity(ctrl, parity);
++}
++EXPORT_SYMBOL_GPL(serdev_device_set_parity);
++
+ void serdev_device_wait_until_sent(struct serdev_device *serdev, long timeout)
+ {
+ 	struct serdev_controller *ctrl = serdev->ctrl;
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index a5abb05..fa16729 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -194,6 +194,29 @@ static void ttyport_set_flow_control(struct serdev_controller *ctrl, bool enable
+ 	tty_set_termios(tty, &ktermios);
+ }
+ 
++static int ttyport_set_parity(struct serdev_controller *ctrl,
++			      enum serdev_parity parity)
++{
++	struct serport *serport = serdev_controller_get_drvdata(ctrl);
++	struct tty_struct *tty = serport->tty;
++	struct ktermios ktermios = tty->termios;
++
++	ktermios.c_cflag &= ~(PARENB | PARODD | CMSPAR);
++	if (parity != SERDEV_PARITY_NONE) {
++		ktermios.c_cflag |= PARENB;
++		if (parity == SERDEV_PARITY_ODD)
++			ktermios.c_cflag |= PARODD;
++	}
++
++	tty_set_termios(tty, &ktermios);
++
++	if ((tty->termios.c_cflag & (PARENB | PARODD | CMSPAR)) !=
++	    (ktermios.c_cflag & (PARENB | PARODD | CMSPAR)))
++		return -EINVAL;
++
++	return 0;
++}
++
+ static void ttyport_wait_until_sent(struct serdev_controller *ctrl, long timeout)
+ {
+ 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+@@ -231,6 +254,7 @@ static const struct serdev_controller_ops ctrl_ops = {
+ 	.open = ttyport_open,
+ 	.close = ttyport_close,
+ 	.set_flow_control = ttyport_set_flow_control,
++	.set_parity = ttyport_set_parity,
+ 	.set_baudrate = ttyport_set_baudrate,
+ 	.wait_until_sent = ttyport_wait_until_sent,
+ 	.get_tiocm = ttyport_get_tiocm,
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index 48d8ce2..f153b2c 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -78,6 +78,12 @@ static inline struct serdev_device_driver *to_serdev_device_driver(struct device
+ 	return container_of(d, struct serdev_device_driver, driver);
+ }
+ 
++enum serdev_parity {
++	SERDEV_PARITY_NONE,
++	SERDEV_PARITY_EVEN,
++	SERDEV_PARITY_ODD,
++};
++
+ /*
+  * serdev controller structures
+  */
+@@ -88,6 +94,7 @@ struct serdev_controller_ops {
+ 	int (*open)(struct serdev_controller *);
+ 	void (*close)(struct serdev_controller *);
+ 	void (*set_flow_control)(struct serdev_controller *, bool);
++	int (*set_parity)(struct serdev_controller *, enum serdev_parity);
+ 	unsigned int (*set_baudrate)(struct serdev_controller *, unsigned int);
+ 	void (*wait_until_sent)(struct serdev_controller *, long);
+ 	int (*get_tiocm)(struct serdev_controller *);
+@@ -301,6 +308,9 @@ static inline int serdev_device_set_rts(struct serdev_device *serdev, bool enabl
+ 		return serdev_device_set_tiocm(serdev, 0, TIOCM_RTS);
+ }
+ 
++int serdev_device_set_parity(struct serdev_device *serdev,
++			     enum serdev_parity parity);
++
+ /*
+  * serdev hooks into TTY core
+  */
+-- 
+2.7.4
