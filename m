@@ -1,60 +1,74 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH RFC 3/3] MIPS: AR7: ensure the port type's FCR value is
- used
-Date: Mon, 22 Jan 2018 14:34:20 +0100
-Message-ID: <20180122133420.GA5222@kroah.com>
-References: <20171029152721.6770-1-jonas.gorski@gmail.com>
- <20171029152721.6770-4-jonas.gorski@gmail.com>
- <20180122130718.GA22211@saruman>
+From: Greentime Hu <green.hu@gmail.com>
+Subject: Re: [PATCH v6 31/36] dt-bindings: nds32 CPU Bindings
+Date: Mon, 22 Jan 2018 21:55:25 +0800
+Message-ID: <CAEbi=3eyR4wqFDzZOfKk+EpvjQK5n8avDBxM50sde4P-_00q2w@mail.gmail.com>
+References: <cover.1515766253.git.green.hu@gmail.com> <e9577ec0f6b6ca17077aa2f576c8bef191c3d7c2.1515766253.git.green.hu@gmail.com>
+ <CAK8P3a0HGhx3WpF-AwC+7m8+FoaiQBTYoCLqhECrATBRLX7x5g@mail.gmail.com>
+ <CAEbi=3ef8JHf_Jpru1B2L3+Xz-Oz4p_t84Lh=5kuTFo0YEz=5A@mail.gmail.com>
+ <CAK8P3a38hCHULZt=fGXJebcoiEGCwA0fre_kixA7sUpPP2xf5g@mail.gmail.com>
+ <CAEbi=3eexCyrVhFZB8wmK1fT=QONzc63y6=dGNgj_H+Rt4zo_g@mail.gmail.com>
+ <CAMuHMdX4nzU06ovDOwzJw-O8w0gyer-fi6skDae=K1yr-EN1gA@mail.gmail.com>
+ <CAEbi=3fKp5tj32hoH=ZTo6kqpCE+Zv1LopnpVujusSfMkeaJKg@mail.gmail.com>
+ <CAMuHMdUqxuiTfM_m80F4XDVkZjx_XCsj_qXRehZxMcKjWhGQ_Q@mail.gmail.com>
+ <CAEbi=3es7O6f5T0Z2zsQzbuxzNte+h-_fMnjOOvbvpz8Hu8g_Q@mail.gmail.com> <CAK8P3a2noraQFvJbi2=T+rb3KDfZ88zJWQ_h3dYjD2ArhLPM1Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180122130718.GA22211@saruman>
-Sender: stable-owner@vger.kernel.org
-To: James Hogan <jhogan@kernel.org>
-Cc: stable@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Florian Fainelli <f.fainelli@gmail.com>, Nicolas Schichan <nschichan@freebox.fr>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <CAK8P3a2noraQFvJbi2=T+rb3KDfZ88zJWQ_h3dYjD2ArhLPM1Q@mail.gmail.com>
+Sender: netdev-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, Networking <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>, Guo Ren <ren_guo@c-sky.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 22, 2018 at 01:07:19PM +0000, James Hogan wrote:
-> Hi stable maintainers,
-> 
-> On Sun, Oct 29, 2017 at 04:27:21PM +0100, Jonas Gorski wrote:
-> > Since commit aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt
-> > trigger I/F of FIFO buffers"), the port's default FCR value isn't used
-> > in serial8250_do_set_termios anymore, but copied over once in
-> > serial8250_config_port and then modified as needed.
-> > 
-> > Unfortunately, serial8250_config_port will never be called if the port
-> > is shared between kernel and userspace, and the port's flag doesn't have
-> > UPF_BOOT_AUTOCONF, which would trigger a serial8250_config_port as well.
-> > 
-> > This causes garbled output from userspace:
-> > 
-> > [    5.220000] random: procd urandom read with 49 bits of entropy available
-> > ers
-> >    [kee
-> > 
-> > Fix this by forcing it to be configured on boot, resulting in the
-> > expected output:
-> > 
-> > [    5.250000] random: procd urandom read with 50 bits of entropy available
-> > Press the [f] key and hit [enter] to enter failsafe mode
-> > Press the [1], [2], [3] or [4] key and hit [enter] to select the debug level
-> > 
-> > Fixes: aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt trigger I/F of FIFO buffers")
-> > Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
-> 
-> Please can this patch be applied to stable branches 3.17+. It is now
-> merged into mainline as commit 0a5191efe06b ("MIPS: AR7: ensure the port
-> type's FCR value is used").
-> 
-> Commit b084116f8587 ("MIPS: AR7: Ensure that serial ports are properly
-> set up") is a prerequisite for it to apply cleanly, but is already
-> tagged for stable.
+Hi, Arnd:
 
-Now snuck into this round of stable -rc review :)
+2018-01-22 19:15 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
+> On Mon, Jan 22, 2018 at 10:53 AM, Greentime Hu <green.hu@gmail.com> wrote:
+>> 2018-01-19 23:37 GMT+08:00 Geert Uytterhoeven <geert@linux-m68k.org>:
+>>> On Fri, Jan 19, 2018 at 4:35 PM, Greentime Hu <green.hu@gmail.com> wrote:
+>>>> 2018-01-19 23:29 GMT+08:00 Geert Uytterhoeven <geert@linux-m68k.org>:
+>>>>> On Fri, Jan 19, 2018 at 4:18 PM, Greentime Hu <green.hu@gmail.com> wrote:
+>
+>>>> Thank you and your example.
+>>>> I get it. I will update this document like this.
+>>>> - compatible: Should be "andestech,<core_name>", "andestech,nds32v3"
+>>>> as fallback.
+>>>
+>>> And please keep a list of supported values of "andestech,<core_name>"
+>>> in the DT binding document, so checkpatch can validate compatible values.
+>>>
+>>
+>> Thank you for reminding me this.
+>> I will list it like this.
+>>
+>> - compatible:
+>>         Usage: required
+>>         Value type: <string>
+>>         Definition: Should be "andestech,<core_name>",
+>> "andestech,nds32v3" as fallback.
+>>         Examlpes with core_names are:
+>>         "andestech,n13"
+>>         "andestech,n15"
+>>         "andestech,d15"
+>>         "andestech,n10"
+>>         "andestech,d10"
+>
+> This is still not written as a proper specification, you should not
+> give "examples"
+> but give a complete list of the available options. You could write it like:
+>
+> Must contain "andestech,nds32v3" as the most generic value, in addition to
+> one of the following identifiers for a particular CPU core:
+>          "andestech,n13"
+>          "andestech,n15"
+>          "andestech,d15"
+>          "andestech,n10"
+>          "andestech,d10"
+>
+> It might be helpful to also list all other existing nds32v3 cores,
+> even those that the
+> current Linux port does not support them.
+>
 
-thanks,
-
-greg k-h
+Thank you for the clear explanation.
+I will update it just like you wrote.
