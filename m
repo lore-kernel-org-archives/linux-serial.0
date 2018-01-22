@@ -1,78 +1,105 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 1/2] Bluetooth: hci_bcm: Remove platform_device support
-Date: Mon, 22 Jan 2018 11:42:07 +0200
-Message-ID: <1516614127.7000.1152.camel@linux.intel.com>
-References: <20180121214645.15004-1-hdegoede@redhat.com>
-         <0EA71635-F2C7-4908-B4DE-F87328A148D0@holtmann.org>
-         <769dd32b-425e-3002-50b5-0d3c707706d4@redhat.com>
+From: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 06/36] nds32: Kernel booting and initialization
+Date: Mon, 22 Jan 2018 17:49:30 +0800
+Message-ID: <CAEbi=3dF-ekx8oz0vjd3WfM7qO755rW46Q=+i-MnQC=4N1=EMA@mail.gmail.com>
+References: <cover.1515766253.git.green.hu@gmail.com> <5930d2df872116555cc553284b6c111dce29e298.1515766253.git.green.hu@gmail.com>
+ <CAK8P3a143yQ72+QGZSxpiFc7p8Hb7PXuCybJBFoLRSBaZ2uw4g@mail.gmail.com>
+ <CAEbi=3dJm=M-1UjUftb5qb0YOOsq92zzF86xeaVOhzULjvT3eA@mail.gmail.com> <CAK8P3a3UCrMbTn1JMOGKCSV4WRw9T9tU+pey1t6Fzitf2V0Bvw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <769dd32b-425e-3002-50b5-0d3c707706d4@redhat.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Hans de Goede <hdegoede@redhat.com>, Marcel Holtmann <marcel@holtmann.org>
-Cc: "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, Lukas Wunner <lukas@wunner.de>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAK8P3a3UCrMbTn1JMOGKCSV4WRw9T9tU+pey1t6Fzitf2V0Bvw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Greentime <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Networking <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, DTML <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, Guo Ren <ren_guo-Y+KPrCd2zL4@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2018-01-22 at 09:23 +0100, Hans de Goede wrote:
-> Hi,
-> 
-> On 22-01-18 03:24, Marcel Holtmann wrote:
-> > Hi Hans,
-> > 
-> > > Now that ACPI and DT devices are both enumerated as serdevs, we
-> > > can
-> > > remove platform_device support and the bcm_device_list lookup
-> > > hack.
-> > > 
-> > > This also removes any races between suspend/resume and hci-uart
-> > > binding,
-> > > also making the suspend/resume code a lot simpler.
-> > > 
-> > > This commit leaves manually binding to an uart using btattach
-> > > supported
-> > > (without irq/gpio and thus suspend/resume support, as before).
-> > > 
-> > > Cc: Lukas Wunner <lukas@wunner.de>
-> > > Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> > > ---
-> > > drivers/bluetooth/hci_bcm.c | 260 +++++---------------------------
-> > > ------------
-> > > 1 file changed, 28 insertions(+), 232 deletions(-)
-> > 
-> > so I was under the assumption platforms like Intel Edison still only
-> > do platform data. See commit
-> > 212d71833315c65644efc46223db61dee7b3c68e. Has that changed?
+2018-01-20 0:41 GMT+08:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
+> On Fri, Jan 19, 2018 at 5:34 PM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>> Hi, Arnd:
+>>
+>> 2018-01-18 18:11 GMT+08:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
+>>> On Mon, Jan 15, 2018 at 6:53 AM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>>>
+>>> I had not looked at this patch in enough detail earlier, sorry about
+>>> that. It should be
+>>> easy enough to fix though.
+>>>
+>>>> +#ifdef CONFIG_VGA_CONSOLE
+>>>> +struct screen_info screen_info;
+>>>> +#endif
+>>>
+>>> I would assume that you can't ever have a VGA console. Just drop all
+>>> the references
+>>> here and instead send a patch to the fbdev maintainer to add the dependency
+>>> at CONFIG_VGA_CONSOLE to prevent selecting it with nds32.
+>>
+>> I found it can be built pass for now because we disable it in defconfig.
+>> Should I send the patch in v7 series?
+>
+> yes, I think that would be best.
+>
+>>>> +
+>>>> +extern void __init early_init_devtree(void *params);
+>>>> +extern void __init early_trap_init(void);
+>>>
+>>> similarly, these are declared in include/linux/of_fdt.h
+>>>
+>>
+>> early_trap_init is a nds32 function. I will move it to nds32.h
+>
+> Right, makes sense.
+>
+>>>> +void calibrate_delay(void)
+>>>> +{
+>>>> +       const int *val;
+>>>> +       struct device_node *cpu = NULL;
+>>>> +       cpu = of_find_compatible_node(NULL, NULL, "andestech,nds32v3");
+>>>> +       val = of_get_property(cpu, "clock-frequency", NULL);
+>>>> +       if (!val || !*val)
+>>>> +               panic("no cpu 'clock-frequency' parameter in device tree");
+>>>> +       loops_per_jiffy = be32_to_cpup(val) / HZ;
+>>>> +       pr_cont("%lu.%02lu BogoMIPS (lpj=%lu)\n",
+>>>> +               loops_per_jiffy / (500000 / HZ),
+>>>> +               (loops_per_jiffy / (5000 / HZ)) % 100, loops_per_jiffy);
+>>>> +}
+>>>
+>>> This seems very odd to me: The 'clock-frequency' property in the
+>>> cpu node should refer to the actual frequency it is running at, but that
+>>> tends to be different from the bogomips as needed by the ndelay()
+>>> function. Can you explain what is going on here?
+>>>
+>>
+>> This implementation is referenced from openrisc.
+>> https://lkml.org/lkml/2017/11/17/228
+>
+> It's correct on openrisc, because that has a reliable cycle counter,
+> and that gets used in its delay function:
+>
+> void __delay(unsigned long cycles)
+> {
+>         cycles_t start = get_cycles();
+>         while ((get_cycles() - start) < cycles)
+>                 cpu_relax();
+> }
+>
+> In my review comment that you cited, I assumed that nds32 had similar
+> hardware.
+>
+> However, as you explained earlier, the nds32 architecture does not provide
+> a cycle counter and the clocksource resolution is not high enough to
+> be a good replacement, so you have to use the traditional delay
+> calibration.
+>
 
-Yes and no.
+Hi, Arnd:
 
-So, we need that support to satisfy users with classical Edison
-firmware.
+Thank you for your explanation.
+Will it be ok if I code it like this?
 
-> Ugh, I was not aware of that and the whole code to match the tty with
-> the platform_device on btattach is such a mess and I was actually
-> quite
-> happy to be able to delete this.
-
-Good idea.
-
-> Andy, I see that you added support for bcm bluetooth over a tty using
-> platform_data instead of ACPI enumeration. Can you change the code
-> instantiating the device to instead instantiate a serdev, so that we
-> kill the platform device support in hci_bcm.c and so that users don't
-> need to do a btattach, but instead the kernel will do the attach
-> itself
-> and things will just work ?
-
-I'm sorry, I can't do this soon, other more priority tasks in a pocket.
-
-The instantiation of the driver is happened in arch/x86/platform/intel-
-mid/device_libs/platform_bt.c
-
-I would help with review of any patches till I would able to look at it
-myself.
-
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+config GENERIC_CALIBRATE_DELAY
+       def_bool y
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
