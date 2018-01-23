@@ -1,145 +1,40 @@
-From: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v6 16/36] nds32: DMA mapping API
-Date: Tue, 23 Jan 2018 19:52:55 +0800
-Message-ID: <CAEbi=3d46tXacnnU+RJGMw+KR1O=NaVjO+NW3cxUjAN==V51iw@mail.gmail.com>
-References: <cover.1515766253.git.green.hu@gmail.com> <ecd1742c718c5b45983486cf9dfb44adb6e06923.1515766253.git.green.hu@gmail.com>
- <CAK8P3a0-Vf9CRZzdXCxpuQoWgMhYWgO6Hy2KuP-gOKttoSGESA@mail.gmail.com> <CAEbi=3cYynvFS2GDzj5Oav_5LtHPdBfBWh9c=mFT0PxeOLX9sQ@mail.gmail.com>
+From: Prarit Bhargava <prarit@redhat.com>
+Subject: Re: [PATCH] acpi, spcr: Make SPCR available to x86
+Date: Tue, 23 Jan 2018 07:41:56 -0500
+Message-ID: <5fab980d-d937-8806-9745-9850947a9096@redhat.com>
+References: <20180118150951.28964-1-prarit@redhat.com>
+ <745c9e29-f0b4-775b-28f7-8712cdc90fe1@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAEbi=3cYynvFS2GDzj5Oav_5LtHPdBfBWh9c=mFT0PxeOLX9sQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Greentime <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Networking <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, DTML <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, Guo Ren <ren_guo-Y+KPrCd2zL4@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <745c9e29-f0b4-775b-28f7-8712cdc90fe1@codeaurora.org>
+Sender: linux-pm-owner@vger.kernel.org
+To: Timur Tabi <timur@codeaurora.org>, linux-kernel@vger.kernel.org
+Cc: linux-acpi@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, Bhupesh Sharma <bhsharma@redhat.com>, Lv Zheng <lv.zheng@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, graeme.gregory@linaro.org, mark.salter@redhat.com
 List-Id: linux-serial@vger.kernel.org
 
-Hi, Arnd:
 
-2018-01-23 16:23 GMT+08:00 Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>:
-> Hi, Arnd:
->
-> 2018-01-18 18:26 GMT+08:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
->> On Mon, Jan 15, 2018 at 6:53 AM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->>> From: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->>>
->>> This patch adds support for the DMA mapping API. It uses dma_map_ops for
->>> flexibility.
->>>
->>> Signed-off-by: Vincent Chen <vincentc-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->>> Signed-off-by: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->>
->> I'm still unhappy about the way the cache flushes are done here as discussed
->> before. It's not a show-stopped, but no Ack from me.
->
-> How about this implementation?
->
-> static void
-> nds32_dma_sync_single_for_cpu(struct device *dev, dma_addr_t handle,
->                               size_t size, enum dma_data_direction dir)
-> {
->         switch (direction) {
->         case DMA_TO_DEVICE:     /* writeback only */
->                 break;
->         case DMA_FROM_DEVICE:   /* invalidate only */
->         case DMA_BIDIRECTIONAL: /* writeback and invalidate */
->                 cpu_dma_inval_range(start, end);
->                 break;
->         default:
->                 BUG();
->         }
-> }
->
-> static void
-> nds32_dma_sync_single_for_device(struct device *dev, dma_addr_t handle,
->                                  size_t size, enum dma_data_direction dir)
-> {
->         switch (direction) {
->         case DMA_FROM_DEVICE:   /* invalidate only */
->                 break;
->         case DMA_TO_DEVICE:     /* writeback only */
->         case DMA_BIDIRECTIONAL: /* writeback and invalidate */
->                 cpu_dma_wb_range(start, end);
->                 break;
->         default:
->                 BUG();
->         }
-> }
 
-I am not sure if I understand it correctly.
-I list all the combinations.
+On 01/22/2018 04:49 PM, Timur Tabi wrote:
+> On 01/18/2018 09:09 AM, Prarit Bhargava wrote:
+>>       if (acpi_disabled) {
+>> -        if (earlycon_init_is_deferred)
+>> +        if (earlycon_acpi_spcr_enable)
+> 
+> This patch works for me, so I can ACK it, but first you might want to rename
+> earlycon_acpi_spcr_enable, because these two lines don't make much sense.
+> 
+> "If ACPI is disabled, and ACPI SCPR is enabled, then ...."
+> 
+> If ACPI is disabled, then how can a variable called "earlycon_acpi_spcr_enable"
+> be true?
+> 
+> Would it make more sense to rename it to earlycon_spcr_enable?
+> 
 
-RAM to DEVICE
-    before DMA => writeback cache
-    after DMA => nop
+acpi_disabled is a global runtime flag that can be set via "acpi=off" on the
+command line.  It does not disable the tables, only the reading and interpreting
+of the data in the tables.
 
-DEVICE to RAM
-    before DMA => nop
-    after DMA => invalidate cache
-
-static void consistent_sync(void *vaddr, size_t size, int direction, int master)
-{
-        unsigned long start = (unsigned long)vaddr;
-        unsigned long end = start + size;
-
-        if (master == FOR_CPU) {
-                switch (direction) {
-                case DMA_TO_DEVICE:
-                        break;
-                case DMA_FROM_DEVICE:
-                case DMA_BIDIRECTIONAL:
-                        cpu_dma_inval_range(start, end);
-                        break;
-                default:
-                        BUG();
-                }
-        } else {
-                /* FOR_DEVICE */
-                switch (direction) {
-                case DMA_FROM_DEVICE:
-                        break;
-                case DMA_TO_DEVICE:
-                case DMA_BIDIRECTIONAL:
-                        cpu_dma_wb_range(start, end);
-                        break;
-                default:
-                        BUG();
-                }
-        }
-}
-
-static void
-nds32_dma_sync_single_for_cpu(struct device *dev, dma_addr_t handle,
-                              size_t size, enum dma_data_direction dir)
-{
-        consistent_sync((void *)phys_to_virt(handle), size, dir, FOR_CPU);
-}
-
-static void
-nds32_dma_sync_single_for_device(struct device *dev, dma_addr_t handle,
-                                 size_t size, enum dma_data_direction dir)
-{
-        consistent_sync((void *)phys_to_virt(handle), size, dir, FOR_DEVICE);
-}
-
-static dma_addr_t nds32_dma_map_page(struct device *dev, struct page *page,
-                                     unsigned long offset, size_t size,
-                                     enum dma_data_direction dir,
-                                     unsigned long attrs)
-{
-        if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-                consistent_sync((void *)(page_address(page) + offset),
-size, dir, FOR_DEVICE);
-        return page_to_phys(page) + offset;
-}
-
-static void nds32_dma_unmap_page(struct device *dev, dma_addr_t handle,
-                                 size_t size, enum dma_data_direction dir,
-                                 unsigned long attrs)
-{
-        if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-                consistent_sync(phys_to_virt(handle), size, dir, FOR_CPU);
-}
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+P.
