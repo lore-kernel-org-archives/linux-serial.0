@@ -1,40 +1,41 @@
-From: Prarit Bhargava <prarit@redhat.com>
-Subject: Re: [PATCH] acpi, spcr: Make SPCR available to x86
-Date: Tue, 23 Jan 2018 07:41:56 -0500
-Message-ID: <5fab980d-d937-8806-9745-9850947a9096@redhat.com>
-References: <20180118150951.28964-1-prarit@redhat.com>
- <745c9e29-f0b4-775b-28f7-8712cdc90fe1@codeaurora.org>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: RCU stall in 8250 serial driver Linux 4.15-rc1
+Date: Tue, 23 Jan 2018 15:52:29 +0000
+Message-ID: <20180123155229.2035e674@alans-desktop>
+References: <CAASgV=tHtf88=h-wtUrnoC74M6BEnNXcCg8d3DyWJfx21dnLYg@mail.gmail.com>
+        <20180117170520.GA12606@kroah.com>
+        <CAASgV=tRY1ioh4vZi3ZyugDJzCiADwo+Mg+HNoEwCzAaV_G=jQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <745c9e29-f0b4-775b-28f7-8712cdc90fe1@codeaurora.org>
-Sender: linux-pm-owner@vger.kernel.org
-To: Timur Tabi <timur@codeaurora.org>, linux-kernel@vger.kernel.org
-Cc: linux-acpi@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, Bhupesh Sharma <bhsharma@redhat.com>, Lv Zheng <lv.zheng@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Jonathan Corbet <corbet@lwn.net>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, graeme.gregory@linaro.org, mark.salter@redhat.com
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAASgV=tRY1ioh4vZi3ZyugDJzCiADwo+Mg+HNoEwCzAaV_G=jQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Shankara Pailoor <sp3485@columbia.edu>
+Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, LKML <linux-kernel@vger.kernel.org>, syzkaller <syzkaller@googlegroups.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On Wed, 17 Jan 2018 09:24:32 -0800
+Shankara Pailoor <sp3485@columbia.edu> wrote:
+
+> Hi Greg,
+> 
+> Sorry for that. Here is the stack trace. C Program below
 
 
-On 01/22/2018 04:49 PM, Timur Tabi wrote:
-> On 01/18/2018 09:09 AM, Prarit Bhargava wrote:
->>       if (acpi_disabled) {
->> -        if (earlycon_init_is_deferred)
->> +        if (earlycon_acpi_spcr_enable)
-> 
-> This patch works for me, so I can ACK it, but first you might want to rename
-> earlycon_acpi_spcr_enable, because these two lines don't make much sense.
-> 
-> "If ACPI is disabled, and ACPI SCPR is enabled, then ...."
-> 
-> If ACPI is disabled, then how can a variable called "earlycon_acpi_spcr_enable"
-> be true?
-> 
-> Would it make more sense to rename it to earlycon_spcr_enable?
-> 
 
-acpi_disabled is a global runtime flag that can be set via "acpi=off" on the
-command line.  It does not disable the tables, only the reading and interpreting
-of the data in the tables.
+>  serial_in drivers/tty/serial/8250/8250.h:111 [inline]
+>  wait_for_xmitr+0x8a/0x1d0 drivers/tty/serial/8250/8250_port.c:2033
+>  serial8250_console_putchar+0x19/0x50 drivers/tty/serial/8250/8250_port.c:3170
+>  uart_console_write+0x98/0xc0 drivers/tty/serial/serial_core.c:1858
 
-P.
+The console is spinning in polled mode trying to write data to the
+console port, which it seems has gotten a bit stuck. Could be the
+hypervisor hits some kind of buffering limit, could be hypervisor
+interface broke.
+
+Either way the console interface is supposed to stall the machine to
+ensure the bytes always get out and if your serial port jams or gets
+massively behind then this will happen.
+
+Alan
