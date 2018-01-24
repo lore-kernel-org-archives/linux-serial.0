@@ -1,98 +1,98 @@
-From: Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH v6 07/36] nds32: Exception handling
-Date: Wed, 24 Jan 2018 18:53:59 +0800
-Message-ID: <CAJsyPhx1B75GJCD2a_=m92ipq3oYsXxMGq9Bg9eCw_ALavWKMg@mail.gmail.com>
+Date: Wed, 24 Jan 2018 12:09:02 +0100
+Message-ID: <CAK8P3a1mwKLi2Cj43EQvwodPCQVwWfW5gjNtf+DLdyb8T49OWw@mail.gmail.com>
 References: <cover.1515766253.git.green.hu@gmail.com> <28c2c9da4da4c8b07473e97cd4a6cb953f4b507c.1515766253.git.green.hu@gmail.com>
- <CAK8P3a1ZZsB7MVZ8sEPzkVcNUJh3-MB_ApmPi+DUF1rc9h8pXg@mail.gmail.com>
+ <CAK8P3a1ZZsB7MVZ8sEPzkVcNUJh3-MB_ApmPi+DUF1rc9h8pXg@mail.gmail.com> <CAJsyPhx1B75GJCD2a_=m92ipq3oYsXxMGq9Bg9eCw_ALavWKMg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAK8P3a1ZZsB7MVZ8sEPzkVcNUJh3-MB_ApmPi+DUF1rc9h8pXg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greentime <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Networking <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, DTML <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, Guo Ren <ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <CAJsyPhx1B75GJCD2a_=m92ipq3oYsXxMGq9Bg9eCw_ALavWKMg@mail.gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Vincent Chen <deanbo422@gmail.com>
+Cc: Greentime Hu <green.hu@gmail.com>, Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, Networking <netdev@vger.kernel.org>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>, Guo Ren <ren_guo@c-sky.com>
 List-Id: linux-serial@vger.kernel.org
 
-2018-01-18 18:14 GMT+08:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
-> On Mon, Jan 15, 2018 at 6:53 AM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->> From: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->>
->> This patch includes the exception/interrupt entries, pt_reg structure an=
-d
->> related accessors.
->>
->> Signed-off-by: Vincent Chen <vincentc-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->> Signed-off-by: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
->
-> Here it would be good to have a more detailed explanation about the align=
-ment
-> trap handling. I remember discussing it with you before, but don't rememb=
-er
-> the exact outcome. In particular you should explain here why you need to
-> handle alignment traps in the first place, and what the expected defaults
-> are (e.g. always disabled unless a user requests it, or always enabled) a=
+On Wed, Jan 24, 2018 at 11:53 AM, Vincent Chen <deanbo422@gmail.com> wrote:
+> 2018-01-18 18:14 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
+>> On Mon, Jan 15, 2018 at 6:53 AM, Greentime Hu <green.hu@gmail.com> wrote=
+:
+>>> From: Greentime Hu <greentime@andestech.com>
+>>>
+>>> This patch includes the exception/interrupt entries, pt_reg structure a=
 nd
-> what kind of code runs into the traps (e.g. buggy kernel code, correct
-> kernel code, buggy user space code etc).
+>>> related accessors.
+>>>
+>>> Signed-off-by: Vincent Chen <vincentc@andestech.com>
+>>> Signed-off-by: Greentime Hu <greentime@andestech.com>
+>>
+>> Here it would be good to have a more detailed explanation about the alig=
+nment
+>> trap handling. I remember discussing it with you before, but don't remem=
+ber
+>> the exact outcome. In particular you should explain here why you need to
+>> handle alignment traps in the first place, and what the expected default=
+s
+>> are (e.g. always disabled unless a user requests it, or always enabled) =
+and
+>> what kind of code runs into the traps (e.g. buggy kernel code, correct
+>> kernel code, buggy user space code etc).
+>>
+>>        Arnd
 >
->        Arnd
+>
+> Dear Arnd:
+>
+> I am plans to add the following description in the git commit's comment
+>
+> Andes processors cannot load/store information which is not naturally ali=
+gned
+> on the bus, i.e., loading a 4 byte data whose start address must be divis=
+ible
+> by 4. If unaligned data accessing is happened, data unaligned exception w=
+ill be
+> triggered and user will get SIGSEGV or kernel oops according to the unali=
+gned
+> address. In order to make user able to load/store data from an unaligned
+> address, software load /store emulation is implemented in
+> arch/nds32/mm/alignment.c to handle data unaligned exception.
+>
+> Unaligned accessing handling is disable by default because of it is not
+> a normal case. User can follow the steps below to enable this feature.
+>
+> A. Compile time:
+>     1. Enable kernel config CONFIG_ALIGNMENT_TRAP
+> B. Run time:
+>     1. Enter /proc/sys/nds32/unaligned_acess folder
+>     2.
+>         a. Write =E2=80=981=E2=80=99 to file enable_mode to enable unalig=
+ned accessing handling
+>             for user space
+>         b. Write =E2=80=982=E2=80=99 to file enable_mode to enable unalig=
+ned accessing handling
+>             for kernel space
+>         c. Write =E2=80=983=E2=80=99 to file enable_mode to enable unalig=
+ned accessing handling
+>             for user and kernel space
+>         d. Write '0' to file enable_mode to disable all unaligned
+> accessing handling
+>     3.
+>         a. Write =E2=80=981=E2=80=99 to file debug to show which unaligne=
+d address is addressed
+>         b. Write =E2=80=980=E2=80=99 to file debug to disable all informa=
+tion
+>
+> However, unaligned accessing handler can=E2=80=99t work on following cond=
+itions.
+> A. The corresponding mode for unaligned address is not enabled.
+> B. This unaligned address is not accessible such as protection violation.
+> On these conditions, the default behaviors for data unaligned
+> exception still happen.
 
+Ok. I still wonder about the kernel part of this though: is it a good idea
+for user space to configure whether the kernel does unaligned
+accesses? I would think that the kernel should just be fixed in such
+a case.
 
-Dear Arnd:
-
-I am plans to add the following description in the git commit's comment
-
-Andes processors cannot load/store information which is not naturally align=
-ed
-on the bus, i.e., loading a 4 byte data whose start address must be divisib=
-le
-by 4. If unaligned data accessing is happened, data unaligned exception wil=
-l be
-triggered and user will get SIGSEGV or kernel oops according to the unalign=
-ed
-address. In order to make user able to load/store data from an unaligned
-address, software load /store emulation is implemented in
-arch/nds32/mm/alignment.c to handle data unaligned exception.
-
-Unaligned accessing handling is disable by default because of it is not
-a normal case. User can follow the steps below to enable this feature.
-
-A. Compile time:
-    1. Enable kernel config CONFIG_ALIGNMENT_TRAP
-B. Run time:
-    1. Enter /proc/sys/nds32/unaligned_acess folder
-    2.
-        a. Write =E2=80=981=E2=80=99 to file enable_mode to enable unaligne=
-d accessing handling
-            for user space
-        b. Write =E2=80=982=E2=80=99 to file enable_mode to enable unaligne=
-d accessing handling
-            for kernel space
-        c. Write =E2=80=983=E2=80=99 to file enable_mode to enable unaligne=
-d accessing handling
-            for user and kernel space
-        d. Write '0' to file enable_mode to disable all unaligned
-accessing handling
-    3.
-        a. Write =E2=80=981=E2=80=99 to file debug to show which unaligned =
-address is addressed
-        b. Write =E2=80=980=E2=80=99 to file debug to disable all informati=
-on
-
-However, unaligned accessing handler can=E2=80=99t work on following condit=
-ions.
-A. The corresponding mode for unaligned address is not enabled.
-B. This unaligned address is not accessible such as protection violation.
-On these conditions, the default behaviors for data unaligned
-exception still happen.
-
-
-
-Thanks
-
-Vincent
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+     Arnd
