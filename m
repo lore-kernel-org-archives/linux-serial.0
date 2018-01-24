@@ -1,70 +1,44 @@
-From: Ferry Toth <fntoth@gmail.com>
-Subject: Re: [PATCH 1/2] Bluetooth: hci_bcm: Remove platform_device support
-Date: Wed, 24 Jan 2018 00:49:05 +0100
-Message-ID: <2372310.Qjp4y9WXno@chromium>
-References: <20180121214645.15004-1-hdegoede@redhat.com> <83ACB297-D092-4512-AC5B-3AF1137BE194@holtmann.org> <1516623321.7000.1175.camel@linux.intel.com>
+From: Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 20/36] nds32: Signal handling support
+Date: Wed, 24 Jan 2018 08:56:08 +0800
+Message-ID: <CAJsyPhyGpJVQegd7ns9oZOjM=XsGVixCQaH9nT_jOQsSpyRs+g@mail.gmail.com>
+References: <cover.1515766253.git.green.hu@gmail.com> <e145c39b3c50b3aee05bc60ad0117f1ec7cc5153.1515766253.git.green.hu@gmail.com>
+ <CAK8P3a2HR6be9Fm+o1Oq-V5p51xEiuhbyqkgVWprD5BxuU29xQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1516623321.7000.1175.camel@linux.intel.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Hans de Goede <hdegoede@redhat.com>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Lukas Wunner <lukas@wunner.de>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAK8P3a2HR6be9Fm+o1Oq-V5p51xEiuhbyqkgVWprD5BxuU29xQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greentime <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Networking <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, DTML <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, Guo Ren <ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Op maandag 22 januari 2018 13:15:21 CET schreef Andy Shevchenko:
-> On Mon, 2018-01-22 at 13:01 +0100, Marcel Holtmann wrote:
-> > > > > Anyways it looks like this will be really hard to do without
-> > > > > access
-> > > > > to the hardware.
-> > > > 
-> > > > I can do a BAT.
-> > > 
-> > > Right, sorry I was not clear, when I was talking about hardware
-> > > access I was not (not only) referring to testing.
-> > > 
-> > > The problem is that to figure out how to hook all this together
-> > > will require poking around on the hardware, looking in sysfs,
-> > > finding
-> > > some id we can use in a pci_serdev_register_devices() to add to
-> > > drivers/tty/serdev/core.c so that it only turns the serial port on
-> > > the Edison into a serdev and not somewhere else, etc.
-> > > 
-> > > But thinking about this more, I too have higher priority items on
-> > > my TODO list, so as much as I would like to see this cleaned up,
-> > > lets shelf this for now until you have time to look into this.
-> > > 
-> > > When you do find time, if you've any questions I'm happy to help.
-> > 
-> > so in theory the Edison board has SFI. Problem is just that I am not
-> > sure the SFI on the board is fully correct and contains enough
-> > information to identify the serial port correctly.
-> 
-> Unfortunately SFI was so badly designed that board (hard coded) data is
-> needed.
-> 
-> > If no one is willing to help port this over to serdev, then one option
-> > is just to rip it out and see who complains.
-> 
-> Me in the first place. + I guess at least couple of users as of my
-> knowledge. + Undefined amount of swindled users of Edison who is trying
-> or already did a switch to vanilla kernel.
-> 
-> >  Or include a version that is trying its best and see who reports
-> > 
-> > issues and who helps to fix it. I am now regretting that I accepted
-> > the Edison support in the first place, but sadly serdev was not yet
-> > fully baked at that point.
-> 
-> +Cc: Ferry, who might be interested in the helping with it.
+2018-01-18 18:30 GMT+08:00 Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>:
+> On Mon, Jan 15, 2018 at 6:53 AM, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>> From: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
+>>
+>> This patch adds support for signal handling.
+>>
+>> Signed-off-by: Vincent Chen <vincentc-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
+>> Signed-off-by: Greentime Hu <greentime-MUIXKm3Oiri1Z/+hSey0Gg@public.gmane.org>
+>
+> I never feel qualified enough to properly review signal handling code, so
+> no Ack from me for this code even though I don't see anything wrong with it.
+> Hopefully someone else can give an Ack after looking more closely.
+>
+>        Arnd
 
-I would be glad to help. Keep in mind I'm not a kernel developer and need 
-someone to hold my hand. All this in my free time of course, but can 
-spend a few evenings per week.
+Dear Arnd:
 
-Nevertheless I have an Edison dual booting 4.15.0-rc8 with poky pyro user 
-space. So I can easily apply patches and test.
+We'd be glad to improve signal handling code to meet your requirement.
+Could you
+tell us which part we need to refine or which implementation is good
+for us to refer?
 
--- 
-Ferry Toth
+Thanks.
+
+Vincent
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
