@@ -1,57 +1,53 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [v2,3/7] soc: qcom: Add GENI based QUP Wrapper driver
-Date: Fri, 26 Jan 2018 11:38:51 -0800
-Message-ID: <CAD=FV=XRvf+LYzrc8FX11dTG5KKbRyp5mTaP-39nC7SgjkZV_w@mail.gmail.com>
-References: <1515805547-22816-4-git-send-email-kramasub@codeaurora.org>
+From: =?UTF-8?q?Jan=20Kundr=C3=A1t?= <jan.kundrat@cesnet.cz>
+Subject: [PATCH] gpio: serial: max310x: Use HW type for gpio_chip's label
+Date: Fri, 26 Jan 2018 20:02:00 +0100
+Message-ID: <b2421132df00569baa90af8f2d19ad75242e8c48.1516996724.git.jan.kundrat@cesnet.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-i2c-owner@vger.kernel.org>
-In-Reply-To: <1515805547-22816-4-git-send-email-kramasub@codeaurora.org>
-Sender: linux-i2c-owner@vger.kernel.org
-To: Jonathan Corbet <corbet@lwn.net>, andy.gross@linaro.org, david.brown@linaro.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Wolfram Sang <wsa@the-dreams.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Sagar Dharia <sdharia@codeaurora.org>, Girish Mahadevan <girishm@codeaurora.org>, evgreen@chromium.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: linux-gpio@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexander Shiyan <shc_work@mail.ru>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Some debugging tools (/sys/kernel/debug/gpio, `lsgpio`) use the
+gpio_chip's label for displaying an additional context. Right now, the
+information duplicates stuff which is already available from the
+parent's device. This is how e.g. `lsgpio`'s output looks like:
 
-On Fri, Jan 12, 2018 at 5:05 PM, Karthikeyan Ramasubramanian
-<kramasub@codeaurora.org> wrote:
-> This driver manages the Generic Interface (GENI) firmware based Qualcomm
-> Universal Peripheral (QUP) Wrapper. GENI based QUP is the next generation
-> programmable module composed of multiple Serial Engines (SE) and supports
-> a wide range of serial interfaces like UART, SPI, I2C, I3C, etc. This
-> driver also enables managing the serial interface independent aspects of
-> Serial Engines.
->
-> Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
-> Signed-off-by: Sagar Dharia <sdharia@codeaurora.org>
-> Signed-off-by: Girish Mahadevan <girishm@codeaurora.org>
-> ---
->  drivers/soc/qcom/Kconfig        |    8 +
->  drivers/soc/qcom/Makefile       |    1 +
->  drivers/soc/qcom/qcom-geni-se.c | 1016 +++++++++++++++++++++++++++++++++++++++
->  include/linux/qcom-geni-se.h    |  807 +++++++++++++++++++++++++++++++
->  4 files changed, 1832 insertions(+)
->  create mode 100644 drivers/soc/qcom/qcom-geni-se.c
->  create mode 100644 include/linux/qcom-geni-se.h
->
-> diff --git a/drivers/soc/qcom/Kconfig b/drivers/soc/qcom/Kconfig
-> index b81374b..b306d51 100644
-> --- a/drivers/soc/qcom/Kconfig
-> +++ b/drivers/soc/qcom/Kconfig
-> @@ -3,6 +3,14 @@
->  #
->  menu "Qualcomm SoC drivers"
->
-> +config QCOM_GENI_SE
-> +       tristate "QCOM GENI Serial Engine Driver"
+  GPIO chip: gpiochip2, "spi1.2", 16 GPIO lines
 
-One tiny nit here: maybe it makes sense to add:
+Comparing the output of other GPIO expanders that I have available:
 
-depends on ARCH_QCOM
+  gpiochip4: GPIOs 464-479, parent: spi/spi1.1, mcp23s17, can sleep:
+  gpiochip5: GPIOs 448-463, parent: i2c/0-0020, pca9555, can sleep:
+  gpiochip2: GPIOs 496-511, parent: spi/spi1.2, spi1.2, can sleep:
 
-...like all the other stuff in this file?  Otherwise this ends up
-polluting .config files for non-Qualcomm architectures.
+This patch ensures that the type of the real HW device is shown instead
+of duplicating the SPI path:
+
+  gpiochip2: GPIOs 496-511, parent: spi/spi1.2, MAX14830, can sleep:
+
+Signed-off-by: Jan Kundrát <jan.kundrat@cesnet.cz>
+---
+ drivers/tty/serial/max310x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 39f635812077..efe55a1a0615 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1318,7 +1318,7 @@ static int max310x_probe(struct device *dev, struct max310x_devtype *devtype,
+ 	/* Setup GPIO cotroller */
+ 	s->gpio.owner		= THIS_MODULE;
+ 	s->gpio.parent		= dev;
+-	s->gpio.label		= dev_name(dev);
++	s->gpio.label		= devtype->name;
+ 	s->gpio.direction_input	= max310x_gpio_direction_input;
+ 	s->gpio.get		= max310x_gpio_get;
+ 	s->gpio.direction_output= max310x_gpio_direction_output;
+-- 
+2.14.3
 
 
--Doug
