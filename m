@@ -1,69 +1,80 @@
-From: Julia Cartwright <juliac-SPobxgzVcRdvFhSgSjN+lA@public.gmane.org>
-Subject: Re: [patch v18 1/4] drivers: jtag: Add JTAG core driver
-Date: Mon, 29 Jan 2018 09:56:00 -0600
-Message-ID: <20180129155600.GA1924@kryptos.localdomain>
-References: <1517236305-4880-1-git-send-email-oleksandrs@mellanox.com>
- <1517236305-4880-2-git-send-email-oleksandrs@mellanox.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 3.18 19/52] MIPS: AR7: ensure the port types FCR value is used
+Date: Mon, 29 Jan 2018 13:56:37 +0100
+Message-ID: <20180129123629.035172662@linuxfoundation.org>
+References: <20180129123628.168904217@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1517236305-4880-2-git-send-email-oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openbmc-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org, jiri-rHqAuBHg3fBzbRFIqnYvSA@public.gmane.org, tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vadimp-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, system-sw-low-level-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, openocd-devel-owner-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <20180129123628.168904217@linuxfoundation.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>, Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>, Florian Fainelli <f.fainelli@gmail.com>, Nicolas Schichan <nschichan@freebox.fr>, linux-mips@linux-mips.org, linux-serial@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 29, 2018 at 04:31:42PM +0200, Oleksandr Shamray wrote:
-> Initial patch for JTAG driver
-> JTAG class driver provide infrastructure to support hardware/software
-> JTAG platform drivers. It provide user layer API interface for flashing
-> and debugging external devices which equipped with JTAG interface
-> using standard transactions.
-> 
-> Driver exposes set of IOCTL to user space for:
-> - XFER:
-> - SIR (Scan Instruction Register, IEEE 1149.1 Data Register scan);
-> - SDR (Scan Data Register, IEEE 1149.1 Instruction Register scan);
-> - RUNTEST (Forces the IEEE 1149.1 bus to a run state for a specified
->   number of clocks).
-> - SIOCFREQ/GIOCFREQ for setting and reading JTAG frequency.
-> 
-> Driver core provides set of internal APIs for allocation and
-> registration:
-> - jtag_register;
-> - jtag_unregister;
-> - jtag_alloc;
-> - jtag_free;
-> 
-> Platform driver on registration with jtag-core creates the next
-> entry in dev folder:
-> /dev/jtagX
-> 
-> Signed-off-by: Oleksandr Shamray <oleksandrs-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-> Signed-off-by: Jiri Pirko <jiri-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-> Acked-by: Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>
-[..]
-> diff --git a/drivers/jtag/jtag.c b/drivers/jtag/jtag.c
-[..]
-> +struct jtag *jtag_alloc(size_t priv_size, const struct jtag_ops *ops)
-> +{
-> +	struct jtag *jtag;
-> +
-> +	jtag = kzalloc(sizeof(*jtag) + priv_size, GFP_KERNEL);
-> +	if (!jtag)
-> +		return NULL;
-> +
-> +	if (!ops)
-> +		return NULL;
-> +
-> +	if (!ops->idle || !ops->mode_set || !ops->status_get || !ops->xfer)
-> +		return NULL;
+3.18-stable review patch.  If anyone has any objections, please let me know.
 
-Did you think through this?
+------------------
 
-You leak 'jtag' here and above.
+From: Jonas Gorski <jonas.gorski@gmail.com>
 
-Perform all the ops checks prior to the allocation.
+commit 0a5191efe06b5103909206e4fbcff81d30283f8e upstream.
 
-   Julia
+Since commit aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt
+trigger I/F of FIFO buffers"), the port's default FCR value isn't used
+in serial8250_do_set_termios anymore, but copied over once in
+serial8250_config_port and then modified as needed.
+
+Unfortunately, serial8250_config_port will never be called if the port
+is shared between kernel and userspace, and the port's flag doesn't have
+UPF_BOOT_AUTOCONF, which would trigger a serial8250_config_port as well.
+
+This causes garbled output from userspace:
+
+[    5.220000] random: procd urandom read with 49 bits of entropy available
+ers
+   [kee
+
+Fix this by forcing it to be configured on boot, resulting in the
+expected output:
+
+[    5.250000] random: procd urandom read with 50 bits of entropy available
+Press the [f] key and hit [enter] to enter failsafe mode
+Press the [1], [2], [3] or [4] key and hit [enter] to select the debug level
+
+Fixes: aef9a7bd9b67 ("serial/uart/8250: Add tunable RX interrupt trigger I/F of FIFO buffers")
+Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Yoshihiro YUNOMAE <yoshihiro.yunomae.ez@hitachi.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Nicolas Schichan <nschichan@freebox.fr>
+Cc: linux-mips@linux-mips.org
+Cc: linux-serial@vger.kernel.org
+Patchwork: https://patchwork.linux-mips.org/patch/17544/
+Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
+Cc: James Hogan <jhogan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/mips/ar7/platform.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/mips/ar7/platform.c
++++ b/arch/mips/ar7/platform.c
+@@ -581,7 +581,7 @@ static int __init ar7_register_uarts(voi
+ 	uart_port.type		= PORT_AR7;
+ 	uart_port.uartclk	= clk_get_rate(bus_clk) / 2;
+ 	uart_port.iotype	= UPIO_MEM32;
+-	uart_port.flags		= UPF_FIXED_TYPE;
++	uart_port.flags		= UPF_FIXED_TYPE | UPF_BOOT_AUTOCONF;
+ 	uart_port.regshift	= 2;
+ 
+ 	uart_port.line		= 0;
