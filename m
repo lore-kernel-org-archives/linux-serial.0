@@ -1,47 +1,42 @@
-From: Karthik Ramasubramanian <kramasub@codeaurora.org>
-Subject: Re: [PATCH v2 1/7] qcom-geni-se: Add QCOM GENI SE Driver summary
-Date: Mon, 29 Jan 2018 14:52:48 -0700
-Message-ID: <bbbdc7bb-6534-2289-4f8d-6826afe0ffc6@codeaurora.org>
-References: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
- <1515805547-22816-2-git-send-email-kramasub@codeaurora.org>
- <20180116165515.GF478@tuxbook>
+From: Vincent Chen <deanbo422@gmail.com>
+Subject: Re: [PATCH v6 07/36] nds32: Exception handling
+Date: Tue, 30 Jan 2018 18:01:52 +0800
+Message-ID: <CAJsyPhx090fPsdhkydoKDHDw+LwByT66JHJNT4Tb5N0s_O7MPw@mail.gmail.com>
+References: <cover.1515766253.git.green.hu@gmail.com> <28c2c9da4da4c8b07473e97cd4a6cb953f4b507c.1515766253.git.green.hu@gmail.com>
+ <CAK8P3a1ZZsB7MVZ8sEPzkVcNUJh3-MB_ApmPi+DUF1rc9h8pXg@mail.gmail.com>
+ <CAJsyPhx1B75GJCD2a_=m92ipq3oYsXxMGq9Bg9eCw_ALavWKMg@mail.gmail.com>
+ <CAK8P3a1mwKLi2Cj43EQvwodPCQVwWfW5gjNtf+DLdyb8T49OWw@mail.gmail.com> <CAK8P3a3PxsmNXDqYbivfCTL8NmnR==M91yjv_VV0zXwjzLxHuA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-i2c-owner@vger.kernel.org>
-In-Reply-To: <20180116165515.GF478@tuxbook>
-Content-Language: en-US
-Sender: linux-i2c-owner@vger.kernel.org
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: corbet@lwn.net, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAK8P3a3PxsmNXDqYbivfCTL8NmnR==M91yjv_VV0zXwjzLxHuA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Greentime Hu <green.hu@gmail.com>, Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, Networking <netdev@vger.kernel.org>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>, Guo Ren <ren_guo@c-sky.com>
 List-Id: linux-serial@vger.kernel.org
 
+2018-01-24 19:10 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
+> On Wed, Jan 24, 2018 at 12:09 PM, Arnd Bergmann <arnd@arndb.de> wrote:
+>> On Wed, Jan 24, 2018 at 11:53 AM, Vincent Chen <deanbo422@gmail.com> wrote:
+>>> 2018-01-18 18:14 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
+>
+>> Ok. I still wonder about the kernel part of this though: is it a good idea
+>> for user space to configure whether the kernel does unaligned
+>> accesses? I would think that the kernel should just be fixed in such
+>> a case.
+>
+> To clarify: I'm asking only about unaligned accesses from kernel code itself,
+> which is generally considered a bug when
+> CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS is disabled.
+>
+>       Arnd
 
-On 1/16/2018 9:55 AM, Bjorn Andersson wrote:
-> On Fri 12 Jan 17:05 PST 2018, Karthikeyan Ramasubramanian wrote:
-> 
->> Generic Interface (GENI) firmware based Qualcomm Universal Peripheral (QUP)
->> Wrapper is a programmable module that is composed of multiple Serial
->> Engines (SE) and can support various Serial Interfaces like UART, SPI,
->> I2C, I3C, etc. This document provides a high level overview of the GENI
->> based QUP Wrapper.
->>
->> Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
-> 
-> Rather than adding a disconnected chunk of documentation move this into
-> the driver(s), using the format described in
-> https://www.kernel.org/doc/html/latest/doc-guide/kernel-doc.html?highlight=kernel%20doc#overview-documentation-comments
-I will move the documentation into the driver source file.
-> 
-> Regards,
-> Bjorn
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-Regards,
-Karthik.
--- 
-Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Thanks for your comments.
+
+For performance, we decide always disable
+CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS even if hardware supports
+unaligned accessing. Therefore, I will remove kernel unaligned accessing from
+nds32/mm/alignment.c. In other words, alignment.c only addresses unaligned
+accessing for user space.
+
+Vincent
