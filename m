@@ -1,100 +1,145 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v6 07/36] nds32: Exception handling
-Date: Tue, 30 Jan 2018 16:27:13 +0100
-Message-ID: <CAK8P3a3W+_bajdYjDwg8PLWhsG0eGZteeRMcTZjHCmpc-i7enA@mail.gmail.com>
-References: <cover.1515766253.git.green.hu@gmail.com> <28c2c9da4da4c8b07473e97cd4a6cb953f4b507c.1515766253.git.green.hu@gmail.com>
- <CAK8P3a1ZZsB7MVZ8sEPzkVcNUJh3-MB_ApmPi+DUF1rc9h8pXg@mail.gmail.com>
- <CAJsyPhx1B75GJCD2a_=m92ipq3oYsXxMGq9Bg9eCw_ALavWKMg@mail.gmail.com>
- <CAK8P3a1mwKLi2Cj43EQvwodPCQVwWfW5gjNtf+DLdyb8T49OWw@mail.gmail.com>
- <CAK8P3a3PxsmNXDqYbivfCTL8NmnR==M91yjv_VV0zXwjzLxHuA@mail.gmail.com>
- <CAJsyPhx090fPsdhkydoKDHDw+LwByT66JHJNT4Tb5N0s_O7MPw@mail.gmail.com>
- <CAK8P3a1iv=10_pfvtfvDwD9YH1HRAXwDy_m8SC=tV59HEDuSsg@mail.gmail.com> <CAEbi=3ekWX9aA5CXf1r4WsqfwvjxED-1XXTb2w0ydWmnA6jfSA@mail.gmail.com>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: [RFC PATCH v2] tty: pl011: Avoid spuriously stuck-off interrupts
+Date: Tue, 30 Jan 2018 17:49:35 +0000
+Message-ID: <1517334575-4698-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAEbi=3ekWX9aA5CXf1r4WsqfwvjxED-1XXTb2w0ydWmnA6jfSA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greentime Hu <green.hu@gmail.com>
-Cc: Vincent Chen <deanbo422@gmail.com>, Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, Networking <netdev@vger.kernel.org>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>, Guo Ren <ren_guo@c-sky.co>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Peter Maydell <peter.maydell@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Wei Xu <xuwei5@hisilicon.com>, linux-serial@vger.kernel.org, Russell King <linux@armlinux.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 30, 2018 at 3:49 PM, Greentime Hu <green.hu@gmail.com> wrote:
-> Hi, Arnd:
->
-> 2018-01-30 21:33 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
->> On Tue, Jan 30, 2018 at 11:01 AM, Vincent Chen <deanbo422@gmail.com> wrote:
->>> 2018-01-24 19:10 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
->>>> On Wed, Jan 24, 2018 at 12:09 PM, Arnd Bergmann <arnd@arndb.de> wrote:
->>>>> On Wed, Jan 24, 2018 at 11:53 AM, Vincent Chen <deanbo422@gmail.com> wrote:
->>>>>> 2018-01-18 18:14 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
->>>>
->>>>> Ok. I still wonder about the kernel part of this though: is it a good idea
->>>>> for user space to configure whether the kernel does unaligned
->>>>> accesses? I would think that the kernel should just be fixed in such
->>>>> a case.
->>>>
->>>> To clarify: I'm asking only about unaligned accesses from kernel code itself,
->>>> which is generally considered a bug when
->>>> CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS is disabled.
->>>>
->>>>       Arnd
->>>
->>> Thanks for your comments.
->>>
->>> For performance, we decide always disable
->>> CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS even if hardware supports
->>> unaligned accessing. Therefore, I will remove kernel unaligned accessing from
->>> nds32/mm/alignment.c. In other words, alignment.c only addresses unaligned
->>> accessing for user space.
->>
->> I'm not really following that logic, let's go through that again so I understand
->> the situation better.
->>
->> CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS should be set if and
->> only if you have a CPU that does not need to trap on unaligned accesses.
->>
->> What are the hardware capabilities on nds32? Do you have all three
->> categories:
->>
->> a) some CPUs that always trap on unaligned access
->> b) some CPUs that never trap on unaligned access
->> c) some CPUs that can be configured to either trap or not trap by
->>     the kernel?
->>
-> We have type a and c.
-> We use CONFIG_ALIGNMENT_TRAP for a and
-> CONFIG_HW_SUPPORT_UNALIGNMENT_ACCESS for c.
+Commit 9b96fbacda34 ("serial: PL011: clear pending interrupts")
+clears the RX and receive timeout interrupts on pl011 startup, to
+avoid a screaming-interrupt scenario that can occur when the
+firmware or bootloader leaves these interrupts asserted.
 
-Ok, got it.
+This has been noted as an issue when running Linux on qemu [1].
 
-> Since unaligned access in kernel code itself should be considered as a
-> bug, we will remove the emulation code to handle the kernel code
-> unaligned accessed case.
-> We think CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS and
-> CONFIG_HW_SUPPORT_UNALIGNMENT_ACCESS have different purposes because
-> it will still be more efficient to access by byte even if hardware
-> support unaligned access.
-> CONFIG_HW_SUPPORT_UNALIGNMENT_ACCESS is used to prevent generating
-> unaligned access exception.
+Unfortunately, the above fix seems to lead to potential
+misbehaviour if the RX FIFO interrupt is asserted _non_ spuriously
+on driver startup, if the RX FIFO is also already full to the
+trigger level.
 
-Hmm, this is a bit tricky. Most architectures actually assume that those
-two are the same, and nothing else has a
-HW_SUPPORT_UNALIGNMENT_ACCESS option.
+Clearing the RX FIFO interrupt does not change the FIFO fill level.
+In this scenario, because the interrupt is now clear and because
+the FIFO is already full to the trigger level, no new assertion of
+the RX FIFO interrupt can occur unless the FIFO is drained back
+below the trigger level.  This never occurs because the pl011
+driver is waiting for an RX FIFO interrupt to tell it that there is
+something to read, and does not read the FIFO at all until that
+interrupt occurs.
 
-We do actually have a related problem on 32-bit ARM, where the current
-generation of processors (ARMv6 and higher) support unaligned
-accesses for almost all instructions with the exception of those
-instructions that operate on multiple memory locations (ldm/stm
-and ldrd/strd). We can control the use of those instructions in inline
-assembler, and gcc never uses them when it knows that a pointer
-is unaligned, but when CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
-is set, the kernel sometimes intentionally contains code sequences
-that lead the compiler to believe that a variable is aligned when it
-is not, so we end up needing a trap handler here.
+Thus, simply clearing "spurious" interrupts on startup may be
+misguided, since there is no way to be sure that the interrupts are
+truly spurious, and things can go wrong if they are not.
 
-We might at some point want to clean this up by going through
-all uses of CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
-and changing them in a way that leads to better results on both
-arm32 and nds32.
+This patch attempts to handle (suspected) spurious interrupts more
+robustly, by allowing the interrupt(s) to fire but quenching the
+scream.
 
-       Arnd
+pl011_int() runs and attempts to drain the FIFO anyway just as if
+the interrupts were real.  If the FIFO is already empty, great.  To
+avoid a screaming spurious interrupt, the RX FIFO and timeout
+interrupts are now explicitly cleared in between committing to
+drain the RX FIFO and actually draining it.  We do not have to
+worry about lost interrupts here, because we are effectively in
+polled mode inside pl011_int() until the RX FIFO becomes empty:
+
+  * A new char received before the RX FIFO is fully drained will be
+    drained out synchronously by pl011_int() along with the other
+    chars already pending.  A new char received after the RX FIFO
+    is drained will result in correct RX FIFO interrupt assertion,
+    because emptying the RX FIFO guarantees that the RX FIFO /
+    timeout interrupt state machines are back in a sane state.
+
+  * A new RX timeout before the RX FIFO is fully drained is no
+    problem, because pl011_int() has already committed to emptying
+    the FIFO at this point, guaranteeing that no stray chars will
+    be left behind.  A new RX timeout after the RX FIFO is fully
+    drained will result in correct interrupt assertion.
+
+This patch does not attempt to address the case where the RX FIFO
+fills faster than it can be drained: that is a pathological
+condition that is beyond the scope of the driver to work around.
+Users cannot expect this to work unless they enable hardware flow
+control.
+
+[1] [Qemu-devel] [Qemu-arm] [PATCH] pl011: do not put into fifo
+before enabled the interruption
+https://lists.gnu.org/archive/html/qemu-devel/2018-01/msg06446.html
+
+Reported-by: Wei Xu <xuwei5@hisilicon.com>
+Cc: Wei Xu <xuwei5@hisilicon.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Peter Maydell <peter.maydell@linaro.org>
+Fixes: 9b96fbacda34 ("serial: PL011: clear pending interrupts")
+Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+
+---
+
+Wei, are you happy for me to add your Tested-by?
+
+Keeping this as RFC, since I'm still not sure about possible side-
+effects.  I'll wait a bit to see if anyone else can test the patch
+or has comments.
+
+Changes since RFC v1:
+
+Requested by Wei Xu:
+
+  * Also don't clear those interrupts in pl011_hwinit(), which can
+    probably trigger the same issue.
+---
+ drivers/tty/serial/amba-pl011.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 04af8de..dd6c285 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1492,9 +1492,7 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
+ 		do {
+ 			check_apply_cts_event_workaround(uap);
+ 
+-			pl011_write(status & ~(UART011_TXIS|UART011_RTIS|
+-					       UART011_RXIS),
+-				    uap, REG_ICR);
++			pl011_write(status & ~UART011_TXIS, uap, REG_ICR);
+ 
+ 			if (status & (UART011_RTIS|UART011_RXIS)) {
+ 				if (pl011_dma_rx_running(uap))
+@@ -1674,9 +1672,8 @@ static int pl011_hwinit(struct uart_port *port)
+ 
+ 	uap->port.uartclk = clk_get_rate(uap->clk);
+ 
+-	/* Clear pending error and receive interrupts */
+-	pl011_write(UART011_OEIS | UART011_BEIS | UART011_PEIS |
+-		    UART011_FEIS | UART011_RTIS | UART011_RXIS,
++	/* Clear pending error interrupts */
++	pl011_write(UART011_OEIS | UART011_BEIS | UART011_PEIS | UART011_FEIS,
+ 		    uap, REG_ICR);
+ 
+ 	/*
+@@ -1733,8 +1730,6 @@ static void pl011_enable_interrupts(struct uart_amba_port *uap)
+ {
+ 	spin_lock_irq(&uap->port.lock);
+ 
+-	/* Clear out any spuriously appearing RX interrupts */
+-	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
+ 	uap->im = UART011_RTIM;
+ 	if (!pl011_dma_rx_running(uap))
+ 		uap->im |= UART011_RXIM;
+-- 
+2.1.4
