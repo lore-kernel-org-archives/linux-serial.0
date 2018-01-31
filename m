@@ -1,87 +1,79 @@
 From: Karthik Ramasubramanian <kramasub@codeaurora.org>
-Subject: Re: [PATCH v2 0/7] Introduce GENI SE Controller Driver
-Date: Wed, 31 Jan 2018 11:59:27 -0700
-Message-ID: <53f9f145-71fe-7ce7-e6b2-02485ea94325@codeaurora.org>
+Subject: Re: [PATCH v2 3/7] soc: qcom: Add GENI based QUP Wrapper driver
+Date: Wed, 31 Jan 2018 12:02:51 -0700
+Message-ID: <1abb0679-1997-9b70-30bd-d3472cea7053@codeaurora.org>
 References: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
- <14fcdf68-e4ee-2182-2c3c-cc446c2c4d25@infradead.org>
+ <1515805547-22816-4-git-send-email-kramasub@codeaurora.org>
+ <20180117062002.GA6620@minitux>
+ <29ed5b45-dd70-fb70-3aa4-4e1a0006d57e@codeaurora.org>
+ <20180118165745.GE6620@minitux>
+ <20180119225708.4mo6fiy5zyd6kscj@rob-hp-laptop>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <14fcdf68-e4ee-2182-2c3c-cc446c2c4d25@infradead.org>
+In-Reply-To: <20180119225708.4mo6fiy5zyd6kscj@rob-hp-laptop>
 Content-Language: en-US
 Sender: linux-arm-msm-owner@vger.kernel.org
-To: Randy Dunlap <rdunlap@infradead.org>, corbet@lwn.net, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org
-Cc: linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com
+To: Rob Herring <robh@kernel.org>, Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Rajendra Nayak <rnayak@codeaurora.org>, corbet@lwn.net, andy.gross@linaro.org, david.brown@linaro.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, Sagar Dharia <sdharia@codeaurora.org>, Girish Mahadevan <girishm@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
 
 
-On 1/19/2018 11:32 AM, Randy Dunlap wrote:
-> On 01/12/2018 05:05 PM, Karthikeyan Ramasubramanian wrote:
->> Generic Interface (GENI) firmware based Qualcomm Universal Peripheral (QUP)
->> Wrapper is a next generation programmable module for supporting a wide
->> range of serial interfaces like UART, SPI, I2C, I3C, etc. A single QUP
->> module can provide upto 8 Serial Interfaces using its internal Serial
->> Engines (SE). The protocol supported by each interface is determined by
->> the firmware loaded to the Serial Engine.
+On 1/19/2018 3:57 PM, Rob Herring wrote:
+> On Thu, Jan 18, 2018 at 08:57:45AM -0800, Bjorn Andersson wrote:
+>> On Thu 18 Jan 01:13 PST 2018, Rajendra Nayak wrote:
 >>
->> This patch series introduces GENI SE Driver to manage the GENI based QUP
->> Wrapper and the common aspects of all SEs inside the QUP Wrapper. This
->> patch series also introduces the UART and I2C Controller drivers to
->> drive the SEs that are programmed with the respective protocols.
-> 
-> Hi,
-> 
-> Will there be follow-up drivers for SPI, I3C, etc.?
-Yes.
-> 
-> Thanks.
-> 
->> [v2]
->>   * Updated device tree bindings to describe the hardware
->>   * Updated SE DT node as child node of QUP Wrapper DT node
->>   * Moved common AHB clocks to QUP Wrapper DT node
->>   * Use the standard "clock-frequency" I2C property
->>   * Update compatible field in UART Controller to reflect hardware manual
->>   * Addressed other device tree binding specific comments from Rob Herring
+>>> []..
+>>>
+>>>>> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+>>>>> new file mode 100644
+>>>>> index 0000000..3f43582
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/soc/qcom/qcom-geni-se.c
+>>>>> @@ -0,0 +1,1016 @@
+>>>>> +/*
+>>>>> + * Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
+>>>>> + *
+>>>>> + * This program is free software; you can redistribute it and/or modify
+>>>>> + * it under the terms of the GNU General Public License version 2 and
+>>>>> + * only version 2 as published by the Free Software Foundation.
+>>>>> + *
+>>>>> + * This program is distributed in the hope that it will be useful,
+>>>>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>>>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>>>>> + * GNU General Public License for more details.
+>>>>> + *
+>>>>> + */
+>>>>
+>>>> Please use SPDX style license header, i.e. this file should start with:
+>>>>
+>>>> // SPDX-License-Identifier: GPL-2.0
+>>>> /*
+>>>>   * Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
+>>>>   */
+>>>
+>>> Looks like Mark Brown commented elsewhere [1] that we should use the C++
+>>> commenting style even for the Linux Foundation copyright?
+>>>
+>>> [1] https://marc.info/?l=linux-clk&m=151497978626135&w=2
+>>>
 >>
->> Karthikeyan Ramasubramanian (7):
->>    qcom-geni-se: Add QCOM GENI SE Driver summary
->>    dt-bindings: soc: qcom: Add device tree binding for GENI SE
->>    soc: qcom: Add GENI based QUP Wrapper driver
->>    dt-bindings: i2c: Add device tree bindings for GENI I2C Controller
->>    i2c: i2c-qcom-geni: Add bus driver for the Qualcomm GENI I2C
->>      controller
->>    dt-bindings: serial: Add bindings for GENI based UART Controller
->>    tty: serial: msm_geni_serial: Add serial driver support for GENI based
->>      QUP
->>
->>   .../devicetree/bindings/i2c/i2c-qcom-geni.txt      |   35 +
->>   .../devicetree/bindings/serial/qcom,geni-uart.txt  |   29 +
->>   .../devicetree/bindings/soc/qcom/qcom,geni-se.txt  |   66 +
->>   Documentation/qcom-geni-se.txt                     |   56 +
->>   drivers/i2c/busses/Kconfig                         |   10 +
->>   drivers/i2c/busses/Makefile                        |    1 +
->>   drivers/i2c/busses/i2c-qcom-geni.c                 |  656 +++++++++
->>   drivers/soc/qcom/Kconfig                           |    8 +
->>   drivers/soc/qcom/Makefile                          |    1 +
->>   drivers/soc/qcom/qcom-geni-se.c                    | 1016 ++++++++++++++
->>   drivers/tty/serial/Kconfig                         |   10 +
->>   drivers/tty/serial/Makefile                        |    1 +
->>   drivers/tty/serial/qcom_geni_serial.c              | 1414 ++++++++++++++++++++
->>   include/linux/qcom-geni-se.h                       |  807 +++++++++++
->>   14 files changed, 4110 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/i2c/i2c-qcom-geni.txt
->>   create mode 100644 Documentation/devicetree/bindings/serial/qcom,geni-uart.txt
->>   create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
->>   create mode 100644 Documentation/qcom-geni-se.txt
->>   create mode 100644 drivers/i2c/busses/i2c-qcom-geni.c
->>   create mode 100644 drivers/soc/qcom/qcom-geni-se.c
->>   create mode 100644 drivers/tty/serial/qcom_geni_serial.c
->>   create mode 100644 include/linux/qcom-geni-se.h
->>
+>> While I can agree with Mark on the ugliness of the mixed commenting
+>> style, this is the style that I found communicated and is what you find
+>> in other files.
 > 
+> Well, that's pretty new guidance. Moving target...
+> 
+> Given that Linus said '//' comments are the only thing C++ got right, I
+> expect to see more of them.
+I believe that in the source file I have to use C++ style comments(as 
+per this discussion) and in the header file I have to use C-style 
+comments (as per https://lwn.net/Articles/739183/ for reasons related to 
+tooling). Please correct me otherwise.
+> 
+> Rob
 > 
 Regards,
 Karthik.
