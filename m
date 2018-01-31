@@ -1,13 +1,12 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
+From: Peter Maydell <peter.maydell@linaro.org>
 Subject: Re: Handling of chars received while a UART is not open
-Date: Wed, 31 Jan 2018 12:19:31 +0000
-Message-ID: <20180131121931.GH9418@n2100.armlinux.org.uk>
+Date: Wed, 31 Jan 2018 13:12:15 +0000
+Message-ID: <CAFEAcA8D2RLSbHO-OdULHre4oVr=vU+Yb+6sp55XiP6Mrtg1xA@mail.gmail.com>
 References: <20180131120628.GL5862@e103592.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
 In-Reply-To: <20180131120628.GL5862@e103592.cambridge.arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
@@ -19,36 +18,31 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Dave Martin <Dave.Martin@arm.com>
-Cc: Peter Maydell <peter.maydell@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: arm-mail-list <linux-arm-kernel@lists.infradead.org>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 31, 2018 at 12:06:29PM +0000, Dave Martin wrote:
-> Hi all,
-> 
-> Question:
-> 
->  1) Should a UART definitely discard the RX FIFO on ->startup()?
+On 31 January 2018 at 12:06, Dave Martin <Dave.Martin@arm.com> wrote:
+> Now, Qemu has a facility for stuffing some input to an emulated UART
+> immediately on boot, and wouldn't work in case (2) above.  OTOH, that
+> may be a mistaken approach: it's unlikely to work reliably on hardware
+> due to the problem of knowing when a physical UART is actually ready to
+> receive input.  So maybe Qemu should be waiting for a prompt to be
+> transmitted before stuffing input.  In case (1) or (3), qemu probably
+> needs to do something like that.
 
-Yes; POSIX makes no guarantees about the configuration of the port
-while it is closed, and when it is re-opened, it is permitted that
-the port is reset back to a set of default parameters rather than
-the previous parameter set that was configured.
+FWIW, there isn't a QEMU "facility" for doing this particularly:
+we just don't take any trouble to stop the user from providing
+input whenever the user likes. (If the user is an automatic test
+script then it's that script's job to wait for suitable prompts
+from the guest before feeding input into the emulated serial port
+if it wants to be reliable, the same way you'd have to if you
+were feeding the data to a real serial line.)
 
-You also have the CREAD flag which indicates whether we want the
-receiver enabled or not, but it is not defined by POSIX whether the
-receiver remains enabled when the port is closed.
+What QEMU doesn't do and probably should fix is that we allow data
+into the FIFO even if UARTCR.UARTEN is 0 ("UART disabled"). This
+(I think) wouldn't affect the behaviour here, though, because the
+data will just get held in QEMU's input buffer until the guest
+driver sets UARTEN and then immediately fill the FIFO.
 
-Linux behaviour has always been to flush the port of received
-characters at close and open time (see 8250 driver), meaning that
-characters received while the TTY is closed are ignored - just like
-what happens on the physical console keyboard, which is also a TTY.
-Doing otherwise is likely to confuse applications and potentially
-introduce buggy behaviour that would only be detected on UARTs with
-differing behaviour to 8250.
-
-Linux follows POSIX General Terminal Interface for its TTY handling.
-
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
-According to speedtest.net: 8.21Mbps down 510kbps up
+thanks
+-- PMM
