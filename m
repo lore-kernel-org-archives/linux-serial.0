@@ -1,266 +1,223 @@
-From: Shankara Pailoor <sp3485@columbia.edu>
-Subject: Re: RCU stall in 8250 serial driver Linux 4.15-rc1
-Date: Wed, 17 Jan 2018 09:24:32 -0800
-Message-ID: <CAASgV=tRY1ioh4vZi3ZyugDJzCiADwo+Mg+HNoEwCzAaV_G=jQ@mail.gmail.com>
-References: <CAASgV=tHtf88=h-wtUrnoC74M6BEnNXcCg8d3DyWJfx21dnLYg@mail.gmail.com>
- <20180117170520.GA12606@kroah.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial patches for 4.16-rc1
+Date: Thu, 1 Feb 2018 12:07:35 +0100
+Message-ID: <20180201110735.GA28809@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180117170520.GA12606@kroah.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.com, LKML <linux-kernel@vger.kernel.org>, syzkaller <syzkaller@googlegroups.com>, linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+The following changes since commit 30a7acd573899fd8b8ac39236eff6468b195ac7d:
 
-Sorry for that. Here is the stack trace. C Program below
+  Linux 4.15-rc6 (2017-12-31 14:47:43 -0800)
 
-TCP: request_sock_TCP: Possible SYN flooding on port 20003. Sending
-cookies.  Check SNMP counters.
-TCP: request_sock_TCP: Possible SYN flooding on port 20003. Sending
-cookies.  Check SNMP counters.
-TCP: request_sock_TCP: Possible SYN flooding on port 20003. Sending
-cookies.  Check SNMP counters.
-INFO: rcu_sched detected stalls on CPUs/tasks:
-1-....: (5686 ticks this GP) idle=59e/140000000000000/0
-softirq=13217/13218 fqs=15550
-(detected by 3, t=65002 jiffies, g=3309, c=3308, q=1338676)
-Sending NMI from CPU 3 to CPUs 1:
-NMI backtrace for cpu 1
-CPU: 1 PID: 3206 Comm: syzkaller260107 Not tainted 4.15.0-rc1 #1
-Hardware name: Google Google Compute Engine/Google Compute Engine,
-BIOS Google 01/01/2011
-task: ffff8800b5688000 task.stack: ffff8800b5ae0000
-RIP: 0010:inb arch/x86/include/asm/io.h:348 [inline]
-RIP: 0010:io_serial_in+0x60/0x80 drivers/tty/serial/8250/8250_port.c:434
-RSP: 0018:ffff880105086320 EFLAGS: 00000002
-RAX: dffffc0000000000 RBX: 00000000000003fd RCX: 0000000000000000
-RDX: 00000000000003fd RSI: 0000000000000005 RDI: ffffffffb7699720
-RBP: ffffffffb76996e0 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000001 R11: 1ffff10016ad112c R12: 0000000000000020
-R13: fffffbfff6ed3323 R14: fffffbfff6ed32e6 R15: ffffffffb769991a
-FS:  00000000012d3880(0000) GS:ffff880105080000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000200007b6 CR3: 00000000ba7eb004 CR4: 00000000001606e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <IRQ>
- serial_in drivers/tty/serial/8250/8250.h:111 [inline]
- wait_for_xmitr+0x8a/0x1d0 drivers/tty/serial/8250/8250_port.c:2033
- serial8250_console_putchar+0x19/0x50 drivers/tty/serial/8250/8250_port.c:3170
- uart_console_write+0x98/0xc0 drivers/tty/serial/serial_core.c:1858
- serial_port_out include/linux/serial_core.h:265 [inline]
- serial8250_console_write+0x2ad/0x890 drivers/tty/serial/8250/8250_port.c:3243
- trace_console_rcuidle include/trace/events/printk.h:10 [inline]
- call_console_drivers kernel/printk/printk.c:1556 [inline]
- console_unlock+0x635/0xb40 kernel/printk/printk.c:2233
- log_output kernel/printk/printk.c:1675 [inline]
- vprintk_emit+0x391/0x480 kernel/printk/printk.c:1745
- vprintk_func+0x52/0xc0 kernel/printk/printk_safe.c:379
- printk+0xaa/0xca kernel/printk/printk.c:1829
- tcp_syn_flood_action net/ipv4/tcp_input.c:6171 [inline]
- tcp_conn_request+0x2c91/0x2fc0 net/ipv4/tcp_input.c:6215
- tcp_v4_conn_request+0x14f/0x200 net/ipv4/tcp_ipv4.c:1318
- tcp_rcv_state_process+0x900/0x4770 net/ipv4/tcp_input.c:5819
- tcp_v4_do_rcv+0x550/0x7c0 net/ipv4/tcp_ipv4.c:1490
- tcp_v4_rcv+0x2c2d/0x2d30 net/ipv4/tcp_ipv4.c:1719
- ip_local_deliver_finish+0x317/0xbf0 net/ipv4/ip_input.c:216
- NF_HOOK include/linux/netfilter.h:250 [inline]
- ip_local_deliver+0x1ba/0x640 net/ipv4/ip_input.c:257
- dst_input include/net/dst.h:466 [inline]
- ip_rcv_finish+0x867/0x1970 net/ipv4/ip_input.c:397
- NF_HOOK include/linux/netfilter.h:250 [inline]
- ip_rcv+0xb9d/0x1650 net/ipv4/ip_input.c:493
- __netif_receive_skb_core+0x1e56/0x3330 net/core/dev.c:4461
- __netif_receive_skb+0x27/0x1a0 net/core/dev.c:4526
- rcu_read_unlock include/linux/rcupdate.h:683 [inline]
- process_backlog+0x1d8/0x6b0 net/core/dev.c:5206
- napi_poll net/core/dev.c:5604 [inline]
- net_rx_action+0x66b/0x1330 net/core/dev.c:5669
- trace_softirq_exit include/trace/events/irq.h:142 [inline]
- __do_softirq+0x25e/0xabe kernel/softirq.c:286
- do_softirq_own_stack+0x2a/0x40 arch/x86/entry/entry_64.S:984
- </IRQ>
- do_softirq.part.16+0x70/0x90 kernel/softirq.c:88
- __local_bh_enable_ip+0x17c/0x1b0 kernel/softirq.c:161
- local_bh_enable include/linux/bottom_half.h:32 [inline]
- rcu_read_unlock_bh include/linux/rcupdate.h:727 [inline]
- ip_finish_output2+0x8ad/0x1370 net/ipv4/ip_output.c:231
- ip_finish_output+0x727/0xb20 net/ipv4/ip_output.c:317
- NF_HOOK_COND include/linux/netfilter.h:239 [inline]
- ip_output+0x1cf/0x720 net/ipv4/ip_output.c:405
- dst_output include/net/dst.h:460 [inline]
- ip_local_out+0x8e/0x160 net/ipv4/ip_output.c:124
- ip_queue_xmit+0x934/0x1890 net/ipv4/ip_output.c:504
- tcp_transmit_skb+0x19a9/0x35d0 net/ipv4/tcp_output.c:1176
- tcp_connect+0x2824/0x3890 net/ipv4/tcp_output.c:3498
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.16-rc1
 
-C program:
+for you to fetch changes up to c7e1b4059075c9e8eed101d7cc5da43e95eb5e18:
 
-// autogenerated by syzkaller (http://github.com/google/syzkaller)
+  tty: serial: exar: Relocate sleep wake-up handling (2018-01-25 12:44:50 +0100)
 
-#define _GNU_SOURCE
+----------------------------------------------------------------
+TTY/Staging driver updates for 4.16-rc1
 
-#include <sys/syscall.h>
-#include <unistd.h>
-#include <errno.h>
-#include <signal.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-#include <time.h>
-#include <sys/prctl.h>
+Here is the big tty/serial driver update for 4.16-rc1.
 
-__attribute__((noreturn)) static void doexit(int status)
-{
-volatile unsigned i;
-syscall(__NR_exit_group, status);
-for (i = 0;; i++) {
-}
-}
-#define NORETURN __attribute__((noreturn))
+The usual number of various serial driver fixes and updates to try to
+get them to work with crazy hardware configurations (seriously, how many
+different ways are hardware engineers going to come up with to hook up a
+simple UART?)
 
-#include <stdint.h>
-#include <string.h>
+There is also some serdev bugfixes and updates, as well as a smattering
+of other small fixes in here.
 
-const int kFailStatus = 67;
-const int kRetryStatus = 69;
+All have been in the linux-next tree for a while, with no reported
+issues.
 
-NORETURN static void fail(const char* msg, ...)
-{
-int e = errno;
-fflush(stdout);
-va_list args;
-va_start(args, msg);
-vfprintf(stderr, msg, args);
-va_end(args);
-fprintf(stderr, " (errno %d)\n", e);
-doexit((e == ENOMEM || e == EAGAIN) ? kRetryStatus : kFailStatus);
-}
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-NORETURN static void exitf(const char* msg, ...)
-{
-int e = errno;
-fflush(stdout);
-va_list args;
-va_start(args, msg);
-vfprintf(stderr, msg, args);
-va_end(args);
-fprintf(stderr, " (errno %d)\n", e);
-doexit(kRetryStatus);
-}
+----------------------------------------------------------------
+Aaron Sierra (1):
+      tty: serial: exar: Relocate sleep wake-up handling
 
-static uint64_t current_time_ms()
-{
-struct timespec ts;
+Andrey Smirnov (2):
+      serdev: Make .remove in struct serdev_device_driver optional
+      serdev: Introduce devm_serdev_device_open()
 
-if (clock_gettime(CLOCK_MONOTONIC, &ts))
-fail("clock_gettime failed");
-return (uint64_t)ts.tv_sec * 1000 + (uint64_t)ts.tv_nsec / 1000000;
-}
+Andy Shevchenko (2):
+      MAINTAINERS: Add myself as designated reviewer for 8250_dw
+      serial: 8250_dw: Revert "Improve clock rate setting"
 
-static void test();
+Branislav Radocaj (1):
+      tty: serial: mxs-auart: fix error handling in mxs_auart_probe
 
-void loop()
-{
-int iter;
-for (iter = 0;; iter++) {
-int pid = fork();
-if (pid < 0)
-fail("clone failed");
-if (pid == 0) {
-prctl(PR_SET_PDEATHSIG, SIGKILL, 0, 0, 0);
-setpgrp();
-test();
-doexit(0);
-}
-int status = 0;
-uint64_t start = current_time_ms();
-for (;;) {
-int res = waitpid(-1, &status, __WALL | WNOHANG);
-if (res == pid)
-break;
-usleep(1000);
-if (current_time_ms() - start > 5 * 1000) {
-kill(-pid, SIGKILL);
-kill(pid, SIGKILL);
-while (waitpid(-1, &status, __WALL) != pid) {
-}
-break;
-}
-}
-}
-}
+Christian Borntraeger (1):
+      serial: forbid 8250 on s390
 
-long r[28];
-void test()
-{
-memset(r, -1, sizeof(r));
-r[0] = syscall(__NR_mmap, 0x20000000ul, 0x3b8000ul, 0x3ul, 0x32ul,
-0xfffffffffffffffful, 0x0ul);
-r[1] = syscall(__NR_socket, 0x2ul, 0x1ul, 0x0ul);
-*(uint16_t*)0x200007b6 = (uint16_t)0x2;
-*(uint16_t*)0x200007b8 = (uint16_t)0x234e;
-*(uint32_t*)0x200007ba = (uint32_t)0x0;
-*(uint8_t*)0x200007be = (uint8_t)0x0;
-*(uint8_t*)0x200007bf = (uint8_t)0x0;
-*(uint8_t*)0x200007c0 = (uint8_t)0x0;
-*(uint8_t*)0x200007c1 = (uint8_t)0x0;
-*(uint8_t*)0x200007c2 = (uint8_t)0x0;
-*(uint8_t*)0x200007c3 = (uint8_t)0x0;
-*(uint8_t*)0x200007c4 = (uint8_t)0x0;
-*(uint8_t*)0x200007c5 = (uint8_t)0x0;
-r[13] = syscall(__NR_bind, r[1], 0x200007b6ul, 0x10ul);
-r[14] = syscall(__NR_listen, r[1], 0x0ul);
-r[15] = syscall(__NR_socket, 0x2ul, 0x1ul, 0x0ul);
-*(uint16_t*)0x200008e6 = (uint16_t)0x2;
-*(uint16_t*)0x200008e8 = (uint16_t)0x234e;
-*(uint32_t*)0x200008ea = (uint32_t)0x100007f;
-*(uint8_t*)0x200008ee = (uint8_t)0x0;
-*(uint8_t*)0x200008ef = (uint8_t)0x0;
-*(uint8_t*)0x200008f0 = (uint8_t)0x0;
-*(uint8_t*)0x200008f1 = (uint8_t)0x0;
-*(uint8_t*)0x200008f2 = (uint8_t)0x0;
-*(uint8_t*)0x200008f3 = (uint8_t)0x0;
-*(uint8_t*)0x200008f4 = (uint8_t)0x0;
-*(uint8_t*)0x200008f5 = (uint8_t)0x0;
-r[27] = syscall(__NR_connect, r[15], 0x200008e6ul, 0x10ul);
-}
+Colin Ian King (1):
+      tty: n_gsm: remove redundant pointer gsm
 
-int main()
-{
-int i; for (i = 0; i < 8; i++) {
-if (fork() == 0) {
-loop();
-return 0;
-}
-}
-sleep(1000000);
-return 0;
-}
+Fabio Estevam (2):
+      dt-bindings: serial: fsl-imx-uart: Remove 'fsl,irda-mode' property
+      serial: imx: Only wakeup via RTSDEN bit if the system has RTS/CTS
 
-Regards,
-Shankara
+Gaurav Kohli (1):
+      tty: fix data race between tty_init_dev and flush of buf
 
-On Wed, Jan 17, 2018 at 9:05 AM, Greg KH <gregkh@linuxfoundation.org> wrote:
-> On Wed, Jan 17, 2018 at 08:53:06AM -0800, Shankara Pailoor wrote:
->> Hi,
->>
->> Syzkaller found the following rcu stall report in Linux 4.15-rc1:
->> https://pastebin.com/NyZ9JdRv
->>
->> The following C program reproduces it: https://pastebin.com/gqwDWWpA
->>
->> Configs Here: https://pastebin.com/v6M3iKi1
->
-> I don't visit random web sites for random bugs. Please include all of
-> the information in the email itself.
->
-> thanks,
->
-> greg k-h
+Geert Uytterhoeven (5):
+      tty: serial: sh-sci: Hide number of ports config question
+      tty: serial: sh-sci: Hide serial console config question
+      tty: serial: sh-sci: Hide earlycon config question
+      tty: serial: sh-sci: Hide DMA config question
+      tty: serial: sh-sci: Add default for number of ports for compile-testing
+
+Greg Kroah-Hartman (2):
+      Merge 4.15-rc3 into tty-next
+      Merge 4.15-rc6 into tty-next
+
+Guilherme G. Piccoli (2):
+      tty: serial: jsm: Remove unnecessary NULL checks
+      tty: serial: jsm: Add one check against NULL pointer dereference
+
+Gustavo A. R. Silva (1):
+      tty: vt: replace _manual_ swap with swap macro in set_selection
+
+Hans de Goede (1):
+      serdev: Fix serdev_uevent failure on ACPI enumerated serdev-controllers
+
+Jan Kundrát (9):
+      serial: max310x: Fix invalid memory access during GPIO init
+      serial: max310x: Do not hard-code the IRQ type
+      serial: max310x: Use level-triggered interrupts
+      serial: max310x: Support IRQ sharing with other devices
+      serial: max310x: Document clock setup
+      serial: max310x: use a batch write op for UART transmit
+      serial: max310x: Use batched reads when reasonably safe
+      serial: max310x: Reduce RX work starvation
+      gpio: serial: max310x: Support open-drain configuration for GPIOs
+
+Jia-Ju Bai (1):
+      tty/isicom: Fix a possible sleep-in-atomic bug in WaitTillCardIsFree
+
+Johan Hovold (6):
+      serdev: document driver callbacks
+      serdev: ttyport: release tty lock sooner on open
+      serdev: ttyport: ignore carrier detect to avoid hangups
+      serdev: ttyport: do not used keyed wakeup in write_wakeup
+      serdev: do not generate modaliases for controllers
+      serdev: only match serdev devices
+
+Lars Kanis (1):
+      tty: moxa: Add support for CMSPAR
+
+Ludovic Barre (1):
+      serial: stm32: fix name conflict with 8250
+
+Lukas Wunner (7):
+      serial: pl011: Drop duplicate loop counter
+      serial: pl011: Use cached copy of IMSC register
+      serial: Make retrieval of rs485 properties platform-agnostic
+      dt-bindings: serial: Add common rs485 binding for RTS polarity
+      serial: core: Support common rs485 binding for RTS polarity
+      serial: fsl_lpuart: Support common rs485 binding for RTS polarity
+      serial: imx: Support common rs485 binding for RTS polarity
+
+Martin Blumenstingl (4):
+      tty: serial: meson: remove duplicate "clear error" bit definition
+      tty: serial: meson: merge the two register sections for AML_UART_CONTROL
+      tty: serial: meson: fix typo in the "stop bit" register definition
+      nvmem: meson-mx-efuse: fix reading from an offset other than 0
+
+Martin Kaiser (1):
+      serial: imx: fix endless loop during suspend
+
+Masahiro Yamada (1):
+      serial: 8250_of: fix return code when probe function fails to get reset
+
+Miquel Raynal (1):
+      dt-bindings: mvebu-uart: update documentation with extended UART
+
+Paul Cercueil (3):
+      serial: core: Make uart_parse_options take const char* argument
+      serial: 8250_ingenic: Add support for the JZ4770 SoC
+      serial: 8250_ingenic: Parse earlycon options
+
+Rafael Gago (1):
+      tty: omap-serial: Fix initial on-boot RTS GPIO level
+
+Rolf Evers-Fischer (1):
+      serial: 8250: 8250_omap: Fix spelling error.
+
+Sahara (1):
+      pty: cancel pty slave port buf's work in tty_release
+
+Sebastian Andrzej Siewior (2):
+      tty: goldfish: Enable 'earlycon' only if built-in
+      serial: core: mark port as initialized after successful IRQ change
+
+Stefan Potyra (1):
+      serial: 8250_dw: Disable clock on error
+
+Tony Lindgren (1):
+      tty: n_gsm: Allow ADM response in addition to UA for control dlci
+
+Troy Kisky (1):
+      tty: serial: imx: remove imx_disable_rx_int
+
+Wei Yongjun (1):
+      serial: 8250_uniphier: fix error return code in uniphier_uart_probe()
+
+Wolfram Sang (1):
+      serial: mxs-auart: don't use GPIOF_* with gpiod_get_direction
+
+ .../devicetree/bindings/serial/fsl-imx-uart.txt    |   4 +-
+ .../devicetree/bindings/serial/fsl-lpuart.txt      |   3 +-
+ .../devicetree/bindings/serial/ingenic,uart.txt    |   8 +-
+ .../devicetree/bindings/serial/maxim,max310x.txt   |  18 +-
+ .../devicetree/bindings/serial/mvebu-uart.txt      |  50 +++-
+ .../devicetree/bindings/serial/omap_serial.txt     |   1 +
+ Documentation/devicetree/bindings/serial/rs485.txt |   1 +
+ Documentation/driver-model/devres.txt              |   3 +
+ MAINTAINERS                                        |   5 +
+ drivers/tty/Kconfig                                |   6 +-
+ drivers/tty/goldfish.c                             |   2 +
+ drivers/tty/isicom.c                               |   6 +-
+ drivers/tty/moxa.c                                 |  17 +-
+ drivers/tty/moxa.h                                 |   2 +
+ drivers/tty/n_gsm.c                                |  19 +-
+ drivers/tty/serdev/core.c                          | 106 +++++---
+ drivers/tty/serdev/serdev-ttyport.c                |   8 +-
+ drivers/tty/serial/8250/8250_dw.c                  |  33 ++-
+ drivers/tty/serial/8250/8250_exar.c                |  34 ++-
+ drivers/tty/serial/8250/8250_ingenic.c             |  17 +-
+ drivers/tty/serial/8250/8250_of.c                  |   5 +-
+ drivers/tty/serial/8250/8250_omap.c                |   2 +-
+ drivers/tty/serial/8250/8250_port.c                |  26 --
+ drivers/tty/serial/8250/8250_uniphier.c            |   5 +-
+ drivers/tty/serial/8250/Kconfig                    |   1 +
+ drivers/tty/serial/Kconfig                         |  14 +-
+ drivers/tty/serial/amba-pl011.c                    |  12 +-
+ drivers/tty/serial/atmel_serial.c                  |   2 +-
+ drivers/tty/serial/fsl_lpuart.c                    |  15 +-
+ drivers/tty/serial/imx.c                           |  93 +++----
+ drivers/tty/serial/jsm/jsm_neo.c                   |   6 +-
+ drivers/tty/serial/jsm/jsm_tty.c                   |   6 -
+ drivers/tty/serial/max310x.c                       | 267 ++++++++++++++-------
+ drivers/tty/serial/meson_uart.c                    |  31 ++-
+ drivers/tty/serial/mxs-auart.c                     |  11 +-
+ drivers/tty/serial/omap-serial.c                   |  18 +-
+ drivers/tty/serial/serial_core.c                   |  35 ++-
+ drivers/tty/serial/stm32-usart.h                   |   2 +-
+ drivers/tty/tty_io.c                               |  10 +-
+ drivers/tty/tty_ldisc.c                            |   4 +-
+ drivers/tty/vt/selection.c                         |   6 +-
+ include/linux/serdev.h                             |   7 +-
+ include/linux/serial_core.h                        |   8 +-
+ include/linux/tty.h                                |   2 +
+ 44 files changed, 579 insertions(+), 352 deletions(-)
