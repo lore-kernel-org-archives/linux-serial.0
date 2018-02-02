@@ -1,97 +1,112 @@
-From: =?UTF-8?Q?Fr=c3=a9d=c3=a9ric_Danis?= <frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [v3,2/2] ACPI / scan: Fix enumeration for special UART devices
-Date: Fri, 2 Feb 2018 11:03:38 +0100
-Message-ID: <4eb3d357-bf54-2360-f547-d0c6fbbc8396@gmail.com>
-References: <1507710734-32520-3-git-send-email-frederic.danis.oss@gmail.com>
- <20180131142100.GE26342@xora-haswell>
+From: =?iso-8859-1?Q?Jan_Kundr=E1t?= <jan.kundrat-xoNZbkdr4U2lVyrhU4qvOw@public.gmane.org>
+Subject: Re: MAX310X transfers usage in DMA mode
+Date: Fri, 02 Feb 2018 11:19:39 +0100
+Message-ID: <59519abd-d268-4f7a-ace8-4fd61131bb0d@cesnet.cz>
+References: <CABMprFg5N_Qxj6No0P8fkBfY6goB2wh4Q=kawNyOi2XjdkyZ7w@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20180131142100.GE26342@xora-haswell>
-Content-Language: en-US
-Sender: linux-bluetooth-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Graeme Gregory <graeme.gregory-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, marcel-kz+m5ild9QBg9hUCZPvPmw@public.gmane.org, sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, loic.poulain-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org, hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CABMprFg5N_Qxj6No0P8fkBfY6goB2wh4Q=kawNyOi2XjdkyZ7w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Gerlando Falauto <gerlando.falauto-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Graeme,
+On p=C3=A1tek 2. =C3=BAnora 2018 10:25:09 CET, Gerlando Falauto wrote:
+> I saw your patches about max310x and all the improvements you brought in to=
 
-Le 31/01/2018 à 15:21, Graeme Gregory a écrit :
-> On Wed, Oct 11, 2017 at 10:32:14AM +0200, Frédéric Danis wrote:
->> UART devices is expected to be enumerated by SerDev subsystem.
->>
->> During ACPI scan, serial devices behind SPI, I2C or UART buses are not
->> enumerated, allowing them to be enumerated by their respective parents.
->>
->> Rename *spi_i2c_slave* to *serial_bus_slave* as this will be used for serial
->> devices on serial buses (SPI, I2C or UART).
->>
->> On Macs an empty ResourceTemplate is returned for uart slaves.
->> Instead the device properties "baud", "parity", "dataBits", "stopBits" are
->> provided. Add a check for "baud" in acpi_is_serial_bus_slave().
->>
-> This patch appears to break UART probing in ACPI on xgene based
-> plaforms.
->
-> The appropriate chunks of DSDT.
->
->      Device (_SB.AHBC)
->      {
->          OperationRegion (SRST, SystemMemory, 0x1F2AC000, 0x04)
->          OperationRegion (CLKE, SystemMemory, 0x1F2AC004, 0x04)
->          OperationRegion (SRRM, SystemMemory, 0x1F2AD070, 0x04)
->          OperationRegion (RD2F, SystemMemory, 0x1F2AE014, 0x04)
->
->      ...
->
->          Device (UAR0)
->          {
->              Name (_HID, "APMC0D08")  // _HID: Hardware ID
->              Name (_DDN, "UAR0")  // _DDN: DOS Device Name
->              Name (_UID, "UAR0")  // _UID: Unique ID
->              Name (_STR, Unicode ("APM88xxxx UART0 Controller"))  // _STR: Description String
->              Name (_ADR, 0x1C021000)  // _ADR: Address
->              Name (_CID, "NS16550A")  // _CID: Compatible ID
->
->      ...
->
->              Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
->              {
->                  Memory32Fixed (ReadWrite,
->                      0x1C021000,         // Address Base
->                      0x00000100,         // Address Length
->                      )
->                  UartSerialBusV2 (0x00002580, DataBitsEight, StopBitsOne,
->                      0x00, LittleEndian, ParityTypeNone, FlowControlHardware,
->                      0x0010, 0x0010, "UAR0",
->                      0x00, ResourceConsumer, , Exclusive,
->                      )
->                  Interrupt (ResourceProducer, Level, ActiveHigh, Exclusive, ,, )
->                  {
->                      0x0000006D,
->                  }
->              })
+> achieve
+> burst transfers.
+> My goal would be to push the chip to its limits (i.e. to 2.000.000bps) on a=
 
-This seems to be related to 
-https://bugzilla.redhat.com/show_bug.cgi?id=1531140
-Am I correct?
+> raspberry pi.
 
-The SerDev support should allow UART to appear as tty device if not used 
-by an underlying component (cf. tty_port_register_device_attr() in 
-drivers/tty/tty_port.c).
+Hi Gerlando,
+I'm happy that these patches help others as well :).
 
-AFAIU, there is no internal device attached to this serial port.
-Is it possible to get complete ACPI DSDT?
+> I had already noticed the inefficiencies and tried something similar to
+> your approach for burst transfers (but sticking to regmap).
 
-Is SerDev enabled on this device?
-Boot logs with SerDev debug traces enabled can be useful to understand 
-what happens.
+I wonder how you did that? I looked at regmap, but it felt as if it wasn't=20=
 
-Regards,
+really possible to persuade regmap to just keep the SCLK line running for=20
+batch-reading additional bytes from the same register (and just for=20
+registers 0x00).
 
-Fred
+> In both cases
+> (with or without regmap) it looks like the CPU is the bottleneck.
+> I was thinking of using DMA and your approach looks just one step away from=
 
--- 
-Frédéric Danis                       Embedded Linux Consultant
-frederic.danis.oss-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+> achieving this.
+
+Regarding DMA, I have no clue how it works on RPi. I know that the SoC I=20
+have has something similar, but it's severely limited and the kernel=20
+doesn't really support it.
+
+> Did you ever consider this?
+
+Here's what I think should help get you a better performance:
+
+1) Ensure that the userspace actually configures the UART in a mode which=20
+enables batched reads (also known as "SPI burst access"). This is a big=20
+catch. By default, reading each byte requires two SPI transactions, one for=20=
+
+reading one byte from the RX FIFO, and another one for the Line Status=20
+Register. The HW does not support "batch reading" the RX buffer along with=20=
+
+the LSR, unfortunately. This means that by default, each byte received by=20
+the UART requires at least four bytes to be transmitted over SPI.
+
+However, if the userspace tells the kernel that it is not interested in=20
+checking the BREAK condition, in determining RX parity errors, etc, then=20
+the kernel can skip (and does skip, at least in the tty-next tree) the LSR=20=
+
+register. And because it's only reading from the RXFIFO, it can leverage=20
+that SPI burst access.
+
+Here's a snippet of my code which does that `termios` configuration:
+
+    m_config.c_iflag =3D IGNPAR;
+    m_config.c_oflag =3D 0;
+    m_config.c_cflag =3D CLOCAL | CREAD | CS8 | B115200;
+    m_config.c_lflag =3D 0;
+    m_config.c_cc[VMIN] =3D 0;
+    m_config.c_cc[VTIME] =3D 1;
+
+2) Check the SPI frequency. The RPi's documentation suggests that there are=20=
+
+some limitations of the maximal SPI frequency. It's apparently a bit=20
+coarse, with a big gap between 16MHz and 32MHz. The chip that I use is=20
+spec'ed to allow up to 26MHz, which means 16MHz on your system.
+
+3) We can also improve the RX FIFO utilization. My device has a 128B=20
+buffer, and when I added some debugging code to produce a histogram of the=20=
+
+actual watermark level when reading the RX FIFO, I was surprised to see=20
+plenty of small transfers. That's because the current driver prefers to=20
+read from the RX buffer "ASAP", as soon as there's something in there.
+
+The HW also allows another mode of operation where it only raises an IRQ=20
+once either:
+
+- more than X bytes are in the FIFO,
+- or any byte in the FIFO has been there for more than Y "periods", where a=20=
+
+"period" is the time it takes the UART to transmit/receive one byte.
+
+Doing that would make a lot of sense in this context. If we always read=20
+after, say, 32 bytes are in the buffer (or upon a matching timeout), then=20
+it's likely that we will do 32byte SPI transactions much more often. That=20
+should reduce the SPI utilization when reading by (asymptotically) 50%.
+
+I plan to (eventually) send a patch doing just that, but ENOTIME for now.
+
+Hope this helps.
+
+With kind regards,
+Jan
+--
+To unsubscribe from this list: send the line "unsubscribe linux-spi" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
