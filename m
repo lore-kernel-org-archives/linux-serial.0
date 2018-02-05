@@ -1,62 +1,75 @@
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: Re: [PATCH] [PATCH] tty/serial: atmel: add new version check for usart
-Date: Mon, 5 Feb 2018 15:37:49 +0100
-Message-ID: <501be260-6a07-4334-4f97-fc2a4e1ed1fc@microchip.com>
-References: <20180129113954.12011-1-jonas@orbital-systems.com>
- <e20ced24-666b-32b7-92cd-d30e1a10b42e@microchip.com>
- <CALDOjziu=FBck-VSi=g=i8tcYWi_DQ_azzDnwKTkTuTrh54AkA@mail.gmail.com>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH v2 3/7] soc: qcom: Add GENI based QUP Wrapper driver
+Date: Mon, 5 Feb 2018 15:50:53 -0800
+Message-ID: <20180205235053.GH9465@builder>
+References: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
+ <1515805547-22816-4-git-send-email-kramasub@codeaurora.org>
+ <20180117062002.GA6620@minitux>
+ <1faee481-8cb6-4dc6-ac0f-eb89445227e1@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CALDOjziu=FBck-VSi=g=i8tcYWi_DQ_azzDnwKTkTuTrh54AkA@mail.gmail.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jonas Danielsson <jonas@orbital-systems.com>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1faee481-8cb6-4dc6-ac0f-eb89445227e1@codeaurora.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Karthik Ramasubramanian <kramasub@codeaurora.org>
+Cc: corbet@lwn.net, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, Sagar Dharia <sdharia@codeaurora.org>, Girish Mahadevan <girishm@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/02/2018 at 15:04, Jonas Danielsson wrote:
-> On Mon, Feb 5, 2018 at 1:36 PM, Nicolas Ferre
-> <nicolas.ferre@microchip.com> wrote:
->> On 29/01/2018 at 12:39, Jonas Danielsson wrote:
->>> On our at91sam9260 based board the usart0 and usart1 ports report
->>> their versions (ATMEL_US_VERSION) as 0x10302. This version is not
->>> included in the current checks in the driver.
->>>
->>> Signed-off-by: Jonas Danielsson <jonas@orbital-systems.com>
->>
->> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
->>
->> It must be the AT91SAM9260 rev. B SoC, isn't it?
->>
->> Thanks for your patch.
->>
->> Best regards,
->>   Nicolas
->>
-> 
-> Hi Nicolas!
-> 
-> Thank you for the review!
-> 
-> Yes that is right, we have the rev B SoC :) I Tried to find some
-> documentation online
-> regarding the US_VERSION register, but fell short.
+On Wed 31 Jan 10:58 PST 2018, Karthik Ramasubramanian wrote:
+> On 1/16/2018 11:20 PM, Bjorn Andersson wrote:
+> > On Fri 12 Jan 17:05 PST 2018, Karthikeyan Ramasubramanian wrote:
+[..]
+> > I'm not aware of any non-serial-engine "geni" at Qualcomm, so can we
+> > drop the "se" throughout this driver?
+> Currently GENI is used to program just the serial engines. But it is not
+> restricted to that. It can be used to program other hardware cores. Hence
+> keeping "se" will help to clarify that this driver is meant for GENI based
+> serial engines only.
 
-It's actually a non-documented register ;-)
-In short, bits [0-11] Hardware module version
-bits [16-18] Metal fix number.
-So your at91sam9260 revB benefit from the metal fix #1.
+Okay, fair enough.
 
-Best regards,
--- 
-Nicolas Ferre
+[..]
+> > > diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+[..]
+> > > +	geni_cgc_ctrl = geni_read_reg(base, GENI_CGC_CTRL);
+> > > +	dma_general_cfg = geni_read_reg(base, SE_DMA_GENERAL_CFG);
+> > > +	geni_cgc_ctrl |= DEFAULT_CGC_EN;
+> > > +	dma_general_cfg |= (AHB_SEC_SLV_CLK_CGC_ON | DMA_AHB_SLV_CFG_ON |
+> > > +			DMA_TX_CLK_CGC_ON | DMA_RX_CLK_CGC_ON);
+> > 
+> > Drop the parenthesis and there's no harm in making multiple assignments
+> > in favour of splitting the line.
+> Ok.
+> > 
+> > > +	io_op_ctrl = DEFAULT_IO_OUTPUT_CTRL_MSK;
+> > > +	geni_write_reg(geni_cgc_ctrl, base, GENI_CGC_CTRL);
+> > > +	geni_write_reg(dma_general_cfg, base, SE_DMA_GENERAL_CFG);
+> > 
+> > Is there a reason why this chunk of code is a mix of 3 independent
+> > register updates?
+> I am not sure I understand the context of your question. This is how the
+> hardware programming manual is describing to program the registers as part
+> of initializing a serial engine. Please let me know if this is not the
+> information you are looking for.
+
+Can you please double check with the hardware guys if it really is
+required that you do:
+
+a = read(A)
+b = read(B)
+
+modify a
+modify b
+assign c
+
+write(a)
+write(b)
+write(c)
+
+And if that is the case, then try to make things as easy to read as
+possible - e.g. by inlining the value of "c" and adding an empty line
+between reads, modifications and writes as I did here.
+
+Regards,
+Bjorn
