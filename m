@@ -1,75 +1,61 @@
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH v2 3/7] soc: qcom: Add GENI based QUP Wrapper driver
-Date: Mon, 5 Feb 2018 15:50:53 -0800
-Message-ID: <20180205235053.GH9465@builder>
+Date: Mon, 5 Feb 2018 15:53:01 -0800
+Message-ID: <20180205235301.GI9465@builder>
 References: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
  <1515805547-22816-4-git-send-email-kramasub@codeaurora.org>
  <20180117062002.GA6620@minitux>
- <1faee481-8cb6-4dc6-ac0f-eb89445227e1@codeaurora.org>
+ <29ed5b45-dd70-fb70-3aa4-4e1a0006d57e@codeaurora.org>
+ <20180118165745.GE6620@minitux>
+ <20180119225708.4mo6fiy5zyd6kscj@rob-hp-laptop>
+ <1abb0679-1997-9b70-30bd-d3472cea7053@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-doc-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1faee481-8cb6-4dc6-ac0f-eb89445227e1@codeaurora.org>
-Sender: linux-doc-owner@vger.kernel.org
-To: Karthik Ramasubramanian <kramasub@codeaurora.org>
-Cc: corbet@lwn.net, andy.gross@linaro.org, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, Sagar Dharia <sdharia@codeaurora.org>, Girish Mahadevan <girishm@codeaurora.org>
+In-Reply-To: <1abb0679-1997-9b70-30bd-d3472cea7053-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Karthik Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rajendra Nayak <rnayak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, corbet-T1hC0tSOHrs@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, Sagar Dharia <sdharia-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Girish Mahadevan <girishm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed 31 Jan 10:58 PST 2018, Karthik Ramasubramanian wrote:
-> On 1/16/2018 11:20 PM, Bjorn Andersson wrote:
-> > On Fri 12 Jan 17:05 PST 2018, Karthikeyan Ramasubramanian wrote:
+On Wed 31 Jan 11:02 PST 2018, Karthik Ramasubramanian wrote:
+> On 1/19/2018 3:57 PM, Rob Herring wrote:
+> > On Thu, Jan 18, 2018 at 08:57:45AM -0800, Bjorn Andersson wrote:
+> > > On Thu 18 Jan 01:13 PST 2018, Rajendra Nayak wrote:
 [..]
-> > I'm not aware of any non-serial-engine "geni" at Qualcomm, so can we
-> > drop the "se" throughout this driver?
-> Currently GENI is used to program just the serial engines. But it is not
-> restricted to that. It can be used to program other hardware cores. Hence
-> keeping "se" will help to clarify that this driver is meant for GENI based
-> serial engines only.
-
-Okay, fair enough.
-
-[..]
-> > > diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-[..]
-> > > +	geni_cgc_ctrl = geni_read_reg(base, GENI_CGC_CTRL);
-> > > +	dma_general_cfg = geni_read_reg(base, SE_DMA_GENERAL_CFG);
-> > > +	geni_cgc_ctrl |= DEFAULT_CGC_EN;
-> > > +	dma_general_cfg |= (AHB_SEC_SLV_CLK_CGC_ON | DMA_AHB_SLV_CFG_ON |
-> > > +			DMA_TX_CLK_CGC_ON | DMA_RX_CLK_CGC_ON);
+> > > > > 
+> > > > > Please use SPDX style license header, i.e. this file should start with:
+> > > > > 
+> > > > > // SPDX-License-Identifier: GPL-2.0
+> > > > > /*
+> > > > >   * Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
+> > > > >   */
+> > > > 
+> > > > Looks like Mark Brown commented elsewhere [1] that we should use the C++
+> > > > commenting style even for the Linux Foundation copyright?
+> > > > 
+> > > > [1] https://marc.info/?l=linux-clk&m=151497978626135&w=2
+> > > > 
+> > > 
+> > > While I can agree with Mark on the ugliness of the mixed commenting
+> > > style, this is the style that I found communicated and is what you find
+> > > in other files.
 > > 
-> > Drop the parenthesis and there's no harm in making multiple assignments
-> > in favour of splitting the line.
-> Ok.
+> > Well, that's pretty new guidance. Moving target...
 > > 
-> > > +	io_op_ctrl = DEFAULT_IO_OUTPUT_CTRL_MSK;
-> > > +	geni_write_reg(geni_cgc_ctrl, base, GENI_CGC_CTRL);
-> > > +	geni_write_reg(dma_general_cfg, base, SE_DMA_GENERAL_CFG);
-> > 
-> > Is there a reason why this chunk of code is a mix of 3 independent
-> > register updates?
-> I am not sure I understand the context of your question. This is how the
-> hardware programming manual is describing to program the registers as part
-> of initializing a serial engine. Please let me know if this is not the
-> information you are looking for.
+> > Given that Linus said '//' comments are the only thing C++ got right, I
+> > expect to see more of them.
+> I believe that in the source file I have to use C++ style comments(as per
+> this discussion) and in the header file I have to use C-style comments (as
+> per https://lwn.net/Articles/739183/ for reasons related to tooling). Please
+> correct me otherwise.
 
-Can you please double check with the hardware guys if it really is
-required that you do:
+I had missed that detail, you're right.
 
-a = read(A)
-b = read(B)
-
-modify a
-modify b
-assign c
-
-write(a)
-write(b)
-write(c)
-
-And if that is the case, then try to make things as easy to read as
-possible - e.g. by inlining the value of "c" and adding an empty line
-between reads, modifications and writes as I did here.
-
-Regards,
+Thanks,
 Bjorn
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
