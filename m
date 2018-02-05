@@ -1,33 +1,27 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH] serial: core: mark port as initialized in autoconfig
-Date: Sun, 4 Feb 2018 12:02:35 +1100
-Message-ID: <20180204010235.GE7714@localhost>
-References: <20180203112723.11129-1-bigeasy@linutronix.de>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH] DT: serial: renesas,sci-serial: document R8A77980
+ bindings
+Date: Mon, 5 Feb 2018 00:09:27 -0600
+Message-ID: <20180205041307.n3wo7kfshc6swd3x@rob-hp-laptop>
+References: <2182bb59-d16f-54f0-d992-65b49815ce1d@cogentembedded.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180203112723.11129-1-bigeasy@linutronix.de>
-Sender: stable-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Nikola Ciprich <nikola.ciprich@linuxbox.cz>, stable@vger.kernel.org
+In-Reply-To: <2182bb59-d16f-54f0-d992-65b49815ce1d@cogentembedded.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, linux-renesas-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Feb 03, 2018 at 12:27:23PM +0100, Sebastian Andrzej Siewior wrote:
-> This is a followup on 44117a1d1732 ("serial: core: mark port as
-> initialized after successful IRQ change").
-> Nikola has been using autoconfig via setserial and reported a crash
-> similar to what I fixed in the earlier mentioned commit. Here I do the
-> same fixup for the autoconfig. I wasn't sure that this is the right
-> approach. Nikola confirmed that it fixes his crash.
+On Thu, Feb 01, 2018 at 10:36:20PM +0300, Sergei Shtylyov wrote:
+> R-Car V3H (R8A77980) SoC has the R-Car gen3 compatible SCIF and HSCIF ports,
+> so document the SoC specific bindings.
 > 
-> Fixes: b3b576461864 ("tty: serial_core: convert uart_open to use tty_port_open")
-> Link: http://lkml.kernel.org/r/20180131072000.GD1853@localhost.localdomain
-> Reported-by: Nikola Ciprich <nikola.ciprich@linuxbox.cz>
-> Tested-by: Nikola Ciprich <nikola.ciprich@linuxbox.cz>
-> Cc: Johan Hovold <johan@kernel.org>
-> Cc: Nikola Ciprich <nikola.ciprich@linuxbox.cz>
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+> 
+> ---
+>  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt |    2 ++
+>  1 file changed, 2 insertions(+)
 
-Acked-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
