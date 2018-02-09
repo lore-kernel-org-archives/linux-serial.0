@@ -1,60 +1,77 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH 1/2] serial: 8250: Don't service RX FIFO if interrupts are
- disabled
-Date: Thu, 8 Feb 2018 22:45:59 +0530
-Message-ID: <e50c8af2-0d9f-b589-29c8-e903576d8b70@ti.com>
-References: <20180208125542.15649-1-vigneshr@ti.com>
- <20180208125542.15649-2-vigneshr@ti.com>
- <CAHp75Vdo+B=Z+ScUgYvoWMSP7G6iC=LOiW57dViXCXm=g2gOLw@mail.gmail.com>
+From: Troy Kisky <troy.kisky@boundarydevices.com>
+Subject: [PATCH V2] tty: serial: imx: allow breaks to be received when using
+ dma
+Date: Fri,  9 Feb 2018 13:22:40 -0800
+Message-ID: <20180209212240.14095-1-troy.kisky@boundarydevices.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Vdo+B=Z+ScUgYvoWMSP7G6iC=LOiW57dViXCXm=g2gOLw@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: mort@bork.org, Troy Kisky <troy.kisky@boundarydevices.com>, linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, l.stach@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
+This allows me to login after sending a break when service
+serial-getty@ttymxc0.service is running
 
+Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
 
-On 08-Feb-18 8:46 PM, Andy Shevchenko wrote:
-> On Thu, Feb 8, 2018 at 2:55 PM, Vignesh R <vigneshr@ti.com> wrote:
->> Currently, data in RX FIFO is read based on UART_LSR register state even
->> if RDI and RLSI interrupts are disabled in UART_IER register.
->> This is because when IRQ handler is called due to TX FIFO empty event,
->> RX FIFO is serviced based on UART_LSR register status instead of
->> UART_IIR status. This defeats the purpose of disabling UART RX
->> FIFO interrupts during throttling(see, omap_8250_throttle()) as IRQ
->> handler continues to drain UART RX FIFO resulting in overflow of buffer
->> at tty layer.
->> Fix this by making sure that driver drains UART RX FIFO only when
->> UART_IIR_RDI is set along with UART_LSR_BI or UART_LSR_DR bits.
->>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> 
->> -       if (status & (UART_LSR_DR | UART_LSR_BI)) {
->> +       if (status & (UART_LSR_DR | UART_LSR_BI) &&
->> +           iir & UART_IIR_RDI) {
-> 
->>                 if (!up->dma || handle_rx_dma(up, iir))
-> 
-> handle_rx_dma() checks for IRQ status as well.
-> 
-> But for now it seems we are on safe side since checks are done versus
-> IRQ status with bit 2 set, meaning that iir & RDI will be true.
-> 
->>                         status = serial8250_rx_chars(up, status);
->>         }
-> 
-> Anyway, thanks for the patch, though I need some time to test it on
-> non-OMAP hardware with DMA enabled.
+---
+v2: rebase only
 
-This patch is needed even when DMA is not enabled.
-It would be great if you could test this. But, I don't see any other
-8250 drivers apart from 8250_omap.c implementing
-.throttle()/.unthrottle() callbacks.
-
-Regards
-Vignesh
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 1d7ca382bc12..2eb8c4a20d68 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -927,7 +927,6 @@ static void dma_rx_callback(void *data)
+ 	status = dmaengine_tx_status(chan, (dma_cookie_t)0, &state);
+ 
+ 	if (status == DMA_ERROR) {
+-		dev_err(sport->port.dev, "DMA transaction error.\n");
+ 		clear_rx_errors(sport);
+ 		return;
+ 	}
+@@ -1028,6 +1027,7 @@ static int start_rx_dma(struct imx_port *sport)
+ 
+ static void clear_rx_errors(struct imx_port *sport)
+ {
++	struct tty_port *port = &sport->port.state->port;
+ 	unsigned int status_usr1, status_usr2;
+ 
+ 	status_usr1 = readl(sport->port.membase + USR1);
+@@ -1036,12 +1036,18 @@ static void clear_rx_errors(struct imx_port *sport)
+ 	if (status_usr2 & USR2_BRCD) {
+ 		sport->port.icount.brk++;
+ 		writel(USR2_BRCD, sport->port.membase + USR2);
+-	} else if (status_usr1 & USR1_FRAMERR) {
+-		sport->port.icount.frame++;
+-		writel(USR1_FRAMERR, sport->port.membase + USR1);
+-	} else if (status_usr1 & USR1_PARITYERR) {
+-		sport->port.icount.parity++;
+-		writel(USR1_PARITYERR, sport->port.membase + USR1);
++		if (tty_insert_flip_char(port, 0, TTY_BREAK) == 0)
++			sport->port.icount.buf_overrun++;
++		tty_flip_buffer_push(port);
++	} else {
++		dev_err(sport->port.dev, "DMA transaction error.\n");
++		if (status_usr1 & USR1_FRAMERR) {
++			sport->port.icount.frame++;
++			writel(USR1_FRAMERR, sport->port.membase + USR1);
++		} else if (status_usr1 & USR1_PARITYERR) {
++			sport->port.icount.parity++;
++			writel(USR1_PARITYERR, sport->port.membase + USR1);
++		}
+ 	}
+ 
+ 	if (status_usr2 & USR2_ORE) {
+-- 
+2.14.1
