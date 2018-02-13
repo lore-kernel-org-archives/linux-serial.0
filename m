@@ -1,56 +1,59 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH v7 31/37] MAINTAINERS: Add nds32
-Date: Tue, 13 Feb 2018 08:02:48 -0800
-Message-ID: <1518537768.22190.42.camel@perches.com>
-References: <cover.1518505384.git.greentime@andestech.com>
-         <f7758221d49fd24fdff7c900aa5951a6c1c6a3cd.1518505384.git.greentime@andestech.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH] serial: 8250: Add Nuvoton NPCM UART
+Date: Tue, 13 Feb 2018 18:52:41 +0200
+Message-ID: <CAHp75VcCj2PtPgMEb+9ZmO-1t_K16oyY97vn3FbHr=LkGvna-Q@mail.gmail.com>
+References: <20180212044810.23547-1-joel@jms.id.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f7758221d49fd24fdff7c900aa5951a6c1c6a3cd.1518505384.git.greentime@andestech.com>
+In-Reply-To: <20180212044810.23547-1-joel@jms.id.au>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greentime Hu <green.hu@gmail.com>, greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, geert.uytterhoeven@gmail.com, linus.walleij@linaro.org, mark.rutland@arm.com, greg@kroah.com, ren_guo@c-sky.com, rdunlap@infradead.org, davem@davemloft.net, jonas@southpole.se, stefan.kristiansson@saunalahti.fi, shorne@gmail.com
+To: Joel Stanley <joel@jms.id.au>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, devicetree <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tomer Maimon <tomer.maimon@nuvoton.com>, Avi Fishman <Avi.Fishman@nuvoton.com>, Jeremy Kerr <jk@ozlabs.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2018-02-13 at 17:09 +0800, Greentime Hu wrote:
-> Add a maintainer information for the nds32(Andes) architecture.
-[]
-> diff --git a/MAINTAINERS b/MAINTAINERS
-[]
-> @@ -868,6 +868,17 @@ X:	drivers/iio/*/adjd*
->  F:	drivers/staging/iio/*/ad*
->  F:	drivers/staging/iio/trigger/iio-trig-bfin-timer.c
->  
-> +ANDES ARCHITECTURE
-> +M:	Greentime Hu <green.hu@gmail.com>
-> +M:	Vincent Chen <deanbo422@gmail.com>
-> +T:	git https://github.com/andestech/linux.git
-> +S:	Supported
-> +F:	arch/nds32
+On Mon, Feb 12, 2018 at 6:48 AM, Joel Stanley <joel@jms.id.au> wrote:
+> The Nuvoton UART is almost compatible with the 8250 driver when probed
+> via the 8250_of driver, however it requires some extra configuration
+> at startup.
 
-This should have a trailing /
 
-F:	arch/nds32/
+> +       [PORT_NPCM] = {
+> +               .name           = "Nuvoton 16550",
+> +               .fifo_size      = 16,
+> +               .tx_loadsz      = 16,
+> +               .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
+> +                                 UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
+> +               .rxtrig_bytes   = {1, 4, 8, 14},
+> +               .flags          = UART_CAP_FIFO,
 
-> +F:	Documentation/devicetree/bindings/interrupt-controller/andestech,ativic32.txt
-> +F:	Documentation/devicetree/bindings/nds32
-> +K:	nds32
-
-Perhaps this should be
-
-K:	\bnds32
-
-as there are some existing uses of nds32 in the current tree.
-
-or maybe case insensitive like
-
-K:	(?i:\bnds32)
-or
-K:	(?:\bnds32|\bNDS32)
-
-> +N:	nds32
 > +
->  ANDROID CONFIG FRAGMENTS
->  M:	Rob Herring <robh@kernel.org>
->  S:	Supported
+
+Redundant.
+
+> +       },
+
+> +               /*
+> +                * Nuvoton calls the scratch register 'UART_TOR' (timeout
+> +                * register). Enable it, and set TIOC (timeout interrupt
+> +                * comparator) to be 0x20 for correct operation.
+> +                */
+> +               serial_port_out(port, UART_NPCM_TOR, UART_NPCM_TOIE | 0x20);
+
+> +/* Nuvoton NPCM UARTs have a custom divisor calculation */
+> +       return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud + 2) - 2;
+
+Is there any link to datasheet?
+
+> +/* Nuvoton UART */
+> +#define PORT_NPCM      118
+
+We have gaps there. #40 is perfect place for this one.
+
+> +/* Nuvoton NPCM timeout register */
+> +#define UART_NPCM_TOR          7
+> +#define UART_NPCM_TOIE         BIT(7)  /* Timeout Interrupt Enable */
+
+-- 
+With Best Regards,
+Andy Shevchenko
