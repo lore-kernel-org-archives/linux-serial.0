@@ -1,141 +1,51 @@
-From: Brian Norris <briannorris@chromium.org>
-Subject: Re: [PATCH] Bluetooth: btusb: Restore QCA Rome suspend/resume fix
- with a "rewritten" version
-Date: Mon, 12 Feb 2018 18:24:56 -0800
-Message-ID: <20180213022455.GA151190@rodete-desktop-imager.corp.google.com>
-References: <20180108094416.4789-1-hdegoede@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180108094416.4789-1-hdegoede@redhat.com>
-Sender: stable-owner@vger.kernel.org
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, stable@vger.kernel.org, Leif Liddy <leif.linux@gmail.com>, Matthias Kaehlcke <mka@chromium.org>, Daniel Drake <drake@endlessm.com>, Kai-Heng Feng <kai.heng.feng@canonical.com>, matadeen@qti.qualcomm.com, linux-kernel@vger.kernel.org
+From: Greentime Hu <green.hu@gmail.com>
+Subject: [PATCH v7 01/37] openrisc: add ioremap_nocache declaration before include asm-generic/io.h and sync ioremap prototype with it.
+Date: Tue, 13 Feb 2018 17:09:05 +0800
+Message-ID: <a5d727ac3c73a02c1ef3eff81be1494b1fad3644.1518505384.git.greentime@andestech.com>
+References: <cover.1518505384.git.greentime@andestech.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1518505384.git.greentime@andestech.com>
+In-Reply-To: <cover.1518505384.git.greentime@andestech.com>
+References: <cover.1518505384.git.greentime@andestech.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: greentime@andestech.com, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, robh+dt@kernel.org, netdev@vger.kernel.org, deanbo422@gmail.com, devicetree@vger.kernel.org, viro@zeniv.linux.org.uk, dhowells@redhat.com, will.deacon@arm.com, daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, geert.uytterhoeven@gmail.com, linus.walleij@linaro.org, mark.rutland@arm.com, greg@kroah.com, ren_guo@c-sky.com, rdunlap@infradead.org, davem@davemloft.net, jonas@southpole.se, stefan.kristiansson@saunalahti.fi, shorne@gmail.com
+Cc: green.hu@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+A future commit for the nds32 architecture bootstrap("asm-generic/io.h: move
+ioremap_nocache/ioremap_uc/ioremap_wc/ioremap_wt out of ifndef CONFIG_MMU")
+will move the ioremap_nocache out of the CONFIG_MMU ifdef. This means that
+in order to suppress re-definition errors we need to setup #define's before
+importing asm-generic/io.h.
 
-On Mon, Jan 08, 2018 at 10:44:16AM +0100, Hans de Goede wrote:
-> Commit 7d06d5895c15 ("Revert "Bluetooth: btusb: fix QCA...suspend/resume"")
-> removed the setting of the BTUSB_RESET_RESUME quirk for QCA Rome devices,
-> instead favoring adding USB_QUIRK_RESET_RESUME quirks in usb/core/quirks.c.
-> 
-> This was done because the DIY BTUSB_RESET_RESUME reset-resume handling
-> has several issues (see the original commit message). An added advantage
-> of moving over to the USB-core reset-resume handling is that it also
-> disables autosuspend for these devices, which is similarly broken on these.
+Also, the change adds a prototype for ioremap where size is size_t so fix that
+as well.
 
-Wait, is autosuspend actually broken for all QCA Rome chipsets? I don't
-think so -- I'm using one now. Thus, this is a poor solution, which
-negatively affects my systems. However, I see that this patch was
-applied regardless...
+Signed-off-by: Greentime Hu <greentime@andestech.com>
+Acked-by: Stafford Horne <shorne@gmail.com>
+---
+ arch/openrisc/include/asm/io.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-What justifications was found for this anyway? AIUI, this is a platform
-bug, and not entirely a chipset bug. Why should all users of this
-chipset be penalized?
-
-Brian
-
-> But there are 2 issues with this approach:
-> 1) It leaves the broken DIY BTUSB_RESET_RESUME code in place for Realtek
->    devices.
-> 2) Sofar only 2 of the 10 QCA devices known to the btusb code have been
->    added to usb/core/quirks.c and if we fix the Realtek case the same way
->    we need to add an additional 14 entries. So in essence we need to
->    duplicate a large part of the usb_device_id table in btusb.c in
->    usb/core/quirks.c and manually keep them in sync.
-> 
-> This commit instead restores setting a reset-resume quirk for QCA devices
-> in the btusb.c code, avoiding the duplicate usb_device_id table problem.
-> 
-> This commit avoids the problems with the original DIY BTUSB_RESET_RESUME
-> code by simply setting the USB_QUIRK_RESET_RESUME quirk directly on the
-> usb_device.
-> 
-> This commit also moves the BTUSB_REALTEK case over to directly setting the
-> USB_QUIRK_RESET_RESUME on the usb_device and removes the now unused
-> BTUSB_RESET_RESUME code.
-> 
-> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1514836
-> Fixes: 7d06d5895c15 ("Revert "Bluetooth: btusb: fix QCA...suspend/resume"")
-> Cc: stable@vger.kernel.org
-> Cc: Leif Liddy <leif.linux@gmail.com>
-> Cc: Matthias Kaehlcke <mka@chromium.org>
-> Cc: Brian Norris <briannorris@chromium.org>
-> Cc: Daniel Drake <drake@endlessm.com>
-> Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
-> Note:
-> 1) Once this has been merged, the 2 commits adding QCA device entries to
-> drivers/usb/core/quirks.c should be reverted or dropped from bluetooth-next.
-> 2) I don't have any of the affected devices, please test
-> ---
->  drivers/bluetooth/btusb.c | 22 ++++++++++------------
->  1 file changed, 10 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-> index 4764100a5888..c4689f03220f 100644
-> --- a/drivers/bluetooth/btusb.c
-> +++ b/drivers/bluetooth/btusb.c
-> @@ -23,6 +23,7 @@
->  
->  #include <linux/module.h>
->  #include <linux/usb.h>
-> +#include <linux/usb/quirks.h>
->  #include <linux/firmware.h>
->  #include <linux/of_device.h>
->  #include <linux/of_irq.h>
-> @@ -388,9 +389,8 @@ static const struct usb_device_id blacklist_table[] = {
->  #define BTUSB_FIRMWARE_LOADED	7
->  #define BTUSB_FIRMWARE_FAILED	8
->  #define BTUSB_BOOTING		9
-> -#define BTUSB_RESET_RESUME	10
-> -#define BTUSB_DIAG_RUNNING	11
-> -#define BTUSB_OOB_WAKE_ENABLED	12
-> +#define BTUSB_DIAG_RUNNING	10
-> +#define BTUSB_OOB_WAKE_ENABLED	11
->  
->  struct btusb_data {
->  	struct hci_dev       *hdev;
-> @@ -3118,6 +3118,12 @@ static int btusb_probe(struct usb_interface *intf,
->  	if (id->driver_info & BTUSB_QCA_ROME) {
->  		data->setup_on_usb = btusb_setup_qca;
->  		hdev->set_bdaddr = btusb_set_bdaddr_ath3012;
-> +
-> +		/* QCA Rome devices lose their updated firmware over suspend,
-> +		 * but the USB hub doesn't notice any status change.
-> +		 * explicitly request a device reset on resume.
-> +		 */
-> +		interface_to_usbdev(intf)->quirks |= USB_QUIRK_RESET_RESUME;
->  	}
->  
->  #ifdef CONFIG_BT_HCIBTUSB_RTL
-> @@ -3128,7 +3134,7 @@ static int btusb_probe(struct usb_interface *intf,
->  		 * but the USB hub doesn't notice any status change.
->  		 * Explicitly request a device reset on resume.
->  		 */
-> -		set_bit(BTUSB_RESET_RESUME, &data->flags);
-> +		interface_to_usbdev(intf)->quirks |= USB_QUIRK_RESET_RESUME;
->  	}
->  #endif
->  
-> @@ -3297,14 +3303,6 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
->  		enable_irq(data->oob_wake_irq);
->  	}
->  
-> -	/* Optionally request a device reset on resume, but only when
-> -	 * wakeups are disabled. If wakeups are enabled we assume the
-> -	 * device will stay powered up throughout suspend.
-> -	 */
-> -	if (test_bit(BTUSB_RESET_RESUME, &data->flags) &&
-> -	    !device_may_wakeup(&data->udev->dev))
-> -		data->udev->reset_resume = 1;
-> -
->  	return 0;
->  }
->  
-> -- 
-> 2.14.3
-> 
+diff --git a/arch/openrisc/include/asm/io.h b/arch/openrisc/include/asm/io.h
+index 7c691399da3f..6709b28a0221 100644
+--- a/arch/openrisc/include/asm/io.h
++++ b/arch/openrisc/include/asm/io.h
+@@ -29,13 +29,14 @@
+ #define PIO_OFFSET		0
+ #define PIO_MASK		0
+ 
++#define ioremap_nocache ioremap_nocache
+ #include <asm-generic/io.h>
+ #include <asm/pgtable.h>
+ 
+ extern void __iomem *__ioremap(phys_addr_t offset, unsigned long size,
+ 				pgprot_t prot);
+ 
+-static inline void __iomem *ioremap(phys_addr_t offset, unsigned long size)
++static inline void __iomem *ioremap(phys_addr_t offset, size_t size)
+ {
+ 	return __ioremap(offset, size, PAGE_KERNEL);
+ }
+-- 
+2.16.1
