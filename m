@@ -1,45 +1,49 @@
-From: Amit Kucheria <amit.kucheria@verdurent.com>
-Subject: Re: [PATCH v2 3/7] soc: qcom: Add GENI based QUP Wrapper driver
-Date: Wed, 14 Feb 2018 16:37:05 +0530
-Message-ID: <CAHLCerOf3WMUind8-5Z+c6iXyyYvdjS7MaMbO8WzNU2-VaREPg@mail.gmail.com>
-References: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org> <1515805547-22816-4-git-send-email-kramasub@codeaurora.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v7 08/37] nds32: Exception handling
+Date: Wed, 14 Feb 2018 15:31:44 +0100
+Message-ID: <CAK8P3a3hnHVrMJuTfDwWcy1R3C=o9UzDVN=OtsZdUzXboYPT5w@mail.gmail.com>
+References: <cover.1518505384.git.greentime@andestech.com> <5d7538f6cad0763594f968d58625c7c7a99f3225.1518505384.git.greentime@andestech.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-i2c-owner@vger.kernel.org>
-In-Reply-To: <1515805547-22816-4-git-send-email-kramasub@codeaurora.org>
-Sender: linux-i2c-owner@vger.kernel.org
-To: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
-Cc: corbet@lwn.net, Andy Gross <andy.gross@linaro.org>, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, Sagar Dharia <sdharia@codeaurora.org>, Girish Mahadevan <girishm@codeaurora.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <5d7538f6cad0763594f968d58625c7c7a99f3225.1518505384.git.greentime@andestech.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Greentime Hu <green.hu@gmail.com>
+Cc: Greentime <greentime@andestech.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Rob Herring <robh+dt@kernel.org>, Networking <netdev@vger.kernel.org>, Vincent Chen <deanbo422@gmail.com>, DTML <devicetree@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>, Guo Ren <ren_guo@c-sky.co>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Jan 13, 2018 at 6:35 AM, Karthikeyan Ramasubramanian
-<kramasub@codeaurora.org> wrote:
-> This driver manages the Generic Interface (GENI) firmware based Qualcomm
-> Universal Peripheral (QUP) Wrapper. GENI based QUP is the next generation
-> programmable module composed of multiple Serial Engines (SE) and supports
-> a wide range of serial interfaces like UART, SPI, I2C, I3C, etc. This
-> driver also enables managing the serial interface independent aspects of
-> Serial Engines.
+On Tue, Feb 13, 2018 at 10:09 AM, Greentime Hu <green.hu@gmail.com> wrote:
+> This patch includes the exception/interrupt entries, pt_reg structure and
+> related accessors.
 >
-> Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
-> Signed-off-by: Sagar Dharia <sdharia@codeaurora.org>
-> Signed-off-by: Girish Mahadevan <girishm@codeaurora.org>
+> /* Unaligned accessing handling*/
+> Andes processors cannot load/store information which is not naturally
+> aligned on the bus, i.e., loading a 4 byte data whose start address must
+> be divisible by 4. If unaligned data accessing is happened, data
+> unaligned exception will be triggered and user will get SIGSEGV or
+> kernel oops according to the unaligned address. In order to make user be
+> able to load/store data from an unaligned address, software load/store
+> emulation is implemented in arch/nds32/mm/alignment.c to address data
+> unaligned exception.
+>
+> Unaligned accessing handling is disabled by default because it is not a
+> normal case. User can enable this feature by following steps.
+>
+> A. Compile time:
+>     1. Enable kernel config CONFIG_ALIGNMENT_TRAP
+> B. Run time:
+>     1. Enter /proc/sys/nds32/unaligned_acess folder
+>     2. Write 1 to file enable_mode to enable unaligned accessing
+>        handling. User can disable it by writing 0 to this file.
+>     3. Write 1 to file debug to show which unaligned address is under
+>        processing. User can disable it by writing 0 to this file.
+>
+> However, unaligned accessing handler cannot work if this unaligned
+> address is not accessible such as protection violation. On this
+> condition, the default behaviors for addressing data unaligned exception
+> still happen
+>
+> Signed-off-by: Vincent Chen <vincentc@andestech.com>
+> Signed-off-by: Greentime Hu <greentime@andestech.com>
 
-
-> +int geni_se_resources_off(struct geni_se_rsc *rsc)
-> +{
-> +       int ret = 0;
-> +       struct geni_se_device *geni_se_dev;
-> +
-> +       if (unlikely(!rsc || !rsc->wrapper_dev))
-> +               return -EINVAL;
-> +
-> +       geni_se_dev = dev_get_drvdata(rsc->wrapper_dev);
-> +       if (unlikely(!geni_se_dev))
-> +               return -ENODEV;
-> +
-> +       ret = pinctrl_select_state(rsc->geni_pinctrl, rsc->geni_gpio_sleep);
-
-You need to include linux/pinctrl/consumer.h for devm_pinctrl_get
-
-I couldn't compile test it w/o it.
+Acked-by: Arnd Bergmann <arnd@arndb.de>
