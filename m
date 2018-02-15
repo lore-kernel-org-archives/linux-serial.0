@@ -1,147 +1,86 @@
-From: Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>
-Subject: [PATCH v2] serial: 8250: Add Nuvoton NPCM UART
-Date: Thu, 15 Feb 2018 12:47:20 +1030
-Message-ID: <20180215021720.14870-1-joel@jms.id.au>
+From: Avi Fishman <avifishman70-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] serial: 8250: Add Nuvoton NPCM UART
+Date: Thu, 15 Feb 2018 12:15:26 +0200
+Message-ID: <CAKKbWA7FkFosy4aUyYXvOW8tYxsoPPYj6Z-=2A9i5o6zkkRupw@mail.gmail.com>
+References: <20180212044810.23547-1-joel@jms.id.au> <CAHp75VcCj2PtPgMEb+9ZmO-1t_K16oyY97vn3FbHr=LkGvna-Q@mail.gmail.com>
+ <CACPK8XeUWV7rngfBmKn9kEnhv=NFsNCNrJdZq3p9GRTcjGVhqA@mail.gmail.com> <11dff5a3498949118b883b39be028611@NTILML02.nuvoton.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <11dff5a3498949118b883b39be028611-qcV2a/0u7bE377JQJD9m/laTQe2KTcn/@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomer Maimon <tomer.maimon-KrzQf0k3Iz9BDgjK7y7TUQ@public.gmane.org>, Avi Fishman <Avi.Fishman-KrzQf0k3Iz9BDgjK7y7TUQ@public.gmane.org>, Jeremy Kerr <jk-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>
+To: Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, AP MS30 Linux Kernel community <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jeremy Kerr <jk-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, Tomer Maimon <tmaimon77-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-The Nuvoton UART is almost compatible with the 8250 driver when probed
-via the 8250_of driver, however it requires some extra configuration
-at startup.
+> From: joel.stan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org [mailto:joel.stan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org] On Behalf Of Joel Stanley
+> Sent: Thursday, February 15, 2018 4:00 AM
+>
+> On Wed, Feb 14, 2018 at 3:22 AM, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>> On Mon, Feb 12, 2018 at 6:48 AM, Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org> wrote:
+>>> The Nuvoton UART is almost compatible with the 8250 driver when
+>>> probed via the 8250_of driver, however it requires some extra
+>>> configuration at startup.
+>>
+>>
+>>> +       [PORT_NPCM] = {
+>>> +               .name           = "Nuvoton 16550",
+>>> +               .fifo_size      = 16,
+>>> +               .tx_loadsz      = 16,
+>>> +               .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
+>>> +                                 UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
+>>> +               .rxtrig_bytes   = {1, 4, 8, 14},
+>>> +               .flags          = UART_CAP_FIFO,
+>>
+>>> +
+>>
+>> Redundant.
+>
+> You are referring to the extra whitespace?
+>
+>>> +       },
+>>
+>>> +               /*
+>>> +                * Nuvoton calls the scratch register 'UART_TOR' (timeout
+>>> +                * register). Enable it, and set TIOC (timeout interrupt
+>>> +                * comparator) to be 0x20 for correct operation.
+>>> +                */
+>>> +               serial_port_out(port, UART_NPCM_TOR, UART_NPCM_TOIE |
+>>> + 0x20);
+>>
+>>> +/* Nuvoton NPCM UARTs have a custom divisor calculation */
+>>> +       return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud + 2) - 2;
+>>
+>> Is there any link to datasheet?
+>
+> I have a copy of the datasheet under NDA. The Nuvoton guys might be able to help you out. Avi?
 
-Signed-off-by: Joel Stanley <joel-U3u1mxZcP9KHXe+LvDLADg@public.gmane.org>
----
-v2:
- Remove redundant whitespace
- Use port number 40 to fill in a gap
+In the spec the calculation is as follows:
+  BaudOut = Selected UART Clock Source / ( 16 * [Divisor + 2] )
+To translate it to our code is:
+  baud = port->uartclk / (16 * (Divisor + 2) )
+So it should calculate without the "+ 2" inside as follow:
++       return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud) - 2;
 
- Documentation/devicetree/bindings/serial/8250.txt |  1 +
- drivers/tty/serial/8250/8250_of.c                 |  1 +
- drivers/tty/serial/8250/8250_port.c               | 29 +++++++++++++++++++++++
- include/uapi/linux/serial_core.h                  |  3 +++
- include/uapi/linux/serial_reg.h                   |  5 ++++
- 5 files changed, 39 insertions(+)
+In order to get the spec you can add somthing like that:
+"For getting the NPCM7XX Data Sheet please contact bmc_marketing-KrzQf0k3Iz9BDgjK7y7TUQ@public.gmane.org".
 
-diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
-index dad3b2ec66d4..aeb6db4e35c3 100644
---- a/Documentation/devicetree/bindings/serial/8250.txt
-+++ b/Documentation/devicetree/bindings/serial/8250.txt
-@@ -24,6 +24,7 @@ Required properties:
- 	- "ti,da830-uart"
- 	- "aspeed,ast2400-vuart"
- 	- "aspeed,ast2500-vuart"
-+	- "nuvoton,npcm750-uart"
- 	- "serial" if the port type is unknown.
- - reg : offset and length of the register set for the device.
- - interrupts : should contain uart interrupt.
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 160b8906d9b9..9835b1c1cbe1 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -316,6 +316,7 @@ static const struct of_device_id of_platform_serial_table[] = {
- 	{ .compatible = "mrvl,mmp-uart",
- 		.data = (void *)PORT_XSCALE, },
- 	{ .compatible = "ti,da830-uart", .data = (void *)PORT_DA830, },
-+	{ .compatible = "nuvoton,npcm750-uart", .data = (void *)PORT_NPCM, },
- 	{ /* end of list */ },
- };
- MODULE_DEVICE_TABLE(of, of_platform_serial_table);
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 1328c7e70108..a72222f8b005 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -293,6 +293,15 @@ static const struct serial8250_config uart_config[] = {
- 				  UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
- 		.flags		= UART_CAP_FIFO,
- 	},
-+	[PORT_NPCM] = {
-+		.name		= "Nuvoton 16550",
-+		.fifo_size	= 16,
-+		.tx_loadsz	= 16,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
-+				  UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
-+		.rxtrig_bytes	= {1, 4, 8, 14},
-+		.flags		= UART_CAP_FIFO,
-+	},
- };
- 
- /* Uart divisor latch read */
-@@ -2140,6 +2149,15 @@ int serial8250_do_startup(struct uart_port *port)
- 				UART_DA830_PWREMU_MGMT_FREE);
- 	}
- 
-+	if (port->type == PORT_NPCM) {
-+		/*
-+		 * Nuvoton calls the scratch register 'UART_TOR' (timeout
-+		 * register). Enable it, and set TIOC (timeout interrupt
-+		 * comparator) to be 0x20 for correct operation.
-+		 */
-+		serial_port_out(port, UART_NPCM_TOR, UART_NPCM_TOIE | 0x20);
-+	}
-+
- #ifdef CONFIG_SERIAL_8250_RSA
- 	/*
- 	 * If this is an RSA port, see if we can kick it up to the
-@@ -2462,6 +2480,15 @@ static unsigned int xr17v35x_get_divisor(struct uart_8250_port *up,
- 	return quot_16 >> 4;
- }
- 
-+/* Nuvoton NPCM UARTs have a custom divisor calculation */
-+static unsigned int npcm_get_divisor(struct uart_8250_port *up,
-+		unsigned int baud)
-+{
-+	struct uart_port *port = &up->port;
-+
-+	return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud + 2) - 2;
-+}
-+
- static unsigned int serial8250_get_divisor(struct uart_8250_port *up,
- 					   unsigned int baud,
- 					   unsigned int *frac)
-@@ -2482,6 +2509,8 @@ static unsigned int serial8250_get_divisor(struct uart_8250_port *up,
- 		quot = 0x8002;
- 	else if (up->port.type == PORT_XR17V35X)
- 		quot = xr17v35x_get_divisor(up, baud, frac);
-+	else if (up->port.type == PORT_NPCM)
-+		quot = npcm_get_divisor(up, baud);
- 	else
- 		quot = uart_get_divisor(port, baud);
- 
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index 1c8413f93e3d..dce5f9dae121 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -76,6 +76,9 @@
- #define PORT_SUNZILOG	38
- #define PORT_SUNSAB	39
- 
-+/* Nuvoton UART */
-+#define PORT_NPCM	40
-+
- /* Intel EG20 */
- #define PORT_PCH_8LINE	44
- #define PORT_PCH_2LINE	45
-diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-index be07b5470f4b..f82f3c869df9 100644
---- a/include/uapi/linux/serial_reg.h
-+++ b/include/uapi/linux/serial_reg.h
-@@ -376,5 +376,10 @@
- #define UART_ALTR_EN_TXFIFO_LW	0x01	/* Enable the TX FIFO Low Watermark */
- #define UART_ALTR_TX_LOW	0x41	/* Tx FIFO Low Watermark */
- 
-+
-+/* Nuvoton NPCM timeout register */
-+#define UART_NPCM_TOR		7
-+#define UART_NPCM_TOIE		BIT(7)	/* Timeout Interrupt Enable */
-+
- #endif /* _LINUX_SERIAL_REG_H */
- 
--- 
-2.15.1
+BTW Andy, Intel has our Data Sheet under NDA, you can ask Mihm James
+<james.mihm-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>.
 
+>
+>>
+>>> +/* Nuvoton UART */
+>>> +#define PORT_NPCM      118
+>>
+>> We have gaps there. #40 is perfect place for this one.
+>
+> Ok, I will move it up. Thanks for the review.
+>
+> Cheers,
+>
+> Joel
+>
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
