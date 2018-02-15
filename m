@@ -1,49 +1,35 @@
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [PATCH] serial: sh-sci: prevent lockup on full TTY buffers
-Date: Thu, 15 Feb 2018 14:12:37 +0100
-Message-ID: <20180215131237.4yi42wq4duic7uaq@katana>
-References: <1518696147-23790-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v7 04/37] earlycon: add reg-offset to physical address
+ before mapping
+Date: Thu, 15 Feb 2018 09:40:49 -0600
+Message-ID: <CAL_JsqJteT1P2GJGdesTsz=PuXU1qxiyhtKLURkGwV9sSQ7XZQ@mail.gmail.com>
+References: <cover.1518505384.git.greentime@andestech.com> <968497070242f849dd70ab1fa81635451f8fda7f.1518505384.git.greentime@andestech.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="2yddoec54ffcayat"
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1518696147-23790-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, geert@linux-m68k.org, yoshihiro.shimoda.uh@renesas.com
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <968497070242f849dd70ab1fa81635451f8fda7f.1518505384.git.greentime@andestech.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: greentime@andestech.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, netdev <netdev@vger.kernel.org>, deanbo422@gmail.com, devicetree@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <greg@kroah.com>, ren_guo@c-sky.com, Randy Dunlap <rdunlap@infradead.org>, David Miller <davem@davemloft.net>
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, Feb 13, 2018 at 3:09 AM, Greentime Hu <green.hu@gmail.com> wrote:
+> It will get the wrong virtual address because port->mapbase is not added
+> the correct reg-offset yet. We have to update it before earlycon_map()
+> is called
+>
+> Signed-off-by: Greentime Hu <greentime@andestech.com>
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
+> Cc: Peter Hurley <peter@hurleysoftware.com>
+> Cc: stable@vger.kernel.org
+> Fixes: 088da2a17619 ("of: earlycon: Initialize port fields from DT
+> properties")
 
---2yddoec54ffcayat
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This should get applied now rather than sit in numerous revisions of
+this series for nds32.
 
+Acked-by: Rob Herring <robh@kernel.org>
 
-> This can be prevented by doing a dummy read of the RX data register.
+Greg, can you apply?
 
-Just so I understand the issue correctly: We are reading the register to
-throw the content away to prevent it being used in the TTY buffers?
-
-
---2yddoec54ffcayat
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlqFh0QACgkQFA3kzBSg
-KbbKBQ/9FxFI+YMHsIhQbAo2Iqn0Yt+GMl4husICOOQwMRzRTSVaQmkAIZZLNHo1
-2A6Gk3HwBSNAZbOQ7GWqjJnkB9/3xbpealYhTeSjlQTZb4O5r3MhAN7KECHeO7Pi
-tzy3TPBnc/qOkVfDIvyi7Y0godRuV+93KMPpH9khvCZ6BYtXOFoafSpTkxOL00zC
-W7uwFfQnOqCoekAq/L3ZwyR57wA+LbMD963dIhtWSPoDhHJ5x1646vOuDWwb+vqF
-eRSrQEUYI/vJgsdKeaqVMeyaKWWg1E3cUmkm1Tx+BF0eYAjv9h/OKP5XN+xq8Jvq
-9Xo4ODeSHvjRkItoz+/ovVNRhVSdQMccc0hX6vxrJBf11Hy70I5sS8xQxuZ5LeLU
-s1C94aALp71D/XSRrq1gIc4lxJ/aQan3dM/G6Q3ldg85k772d4GMXBQc8vqwPXwe
-qTQ1W1BC3QlGOp9LZ4REBvEOtosU8vuT2IuFBg3TzB1+/8MHbdpqoddLcQaITXmm
-Vy815MPUCLZQiYDt0r76eSDM4b0ryp73RUowHSdC0pVmtpC14PVJSZKmaSfQb8pY
-l76e0dp9WKVpE8CN7ayVPx54yveLjMNHwa0VVpVFZHu3iRglzwaCN0KH5PRcdlgp
-r8ZSv2p8kY5F2HODInz3s+57N96yUdnVms4qTV2VmLNywf9QpWw=
-=Cv23
------END PGP SIGNATURE-----
-
---2yddoec54ffcayat--
+Rob
