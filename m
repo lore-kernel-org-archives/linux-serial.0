@@ -1,173 +1,49 @@
-From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH] serial: sh-sci: use hrtimer for receive timeout
-Date: Thu, 15 Feb 2018 13:02:41 +0100
-Message-ID: <1518696161-23866-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+From: Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [PATCH] serial: sh-sci: prevent lockup on full TTY buffers
+Date: Thu, 15 Feb 2018 14:12:37 +0100
+Message-ID: <20180215131237.4yi42wq4duic7uaq@katana>
+References: <1518696147-23790-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="2yddoec54ffcayat"
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1518696147-23790-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: wsa@the-dreams.de, geert@linux-m68k.org, yoshihiro.shimoda.uh@renesas.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, geert@linux-m68k.org, yoshihiro.shimoda.uh@renesas.com
 List-Id: linux-serial@vger.kernel.org
 
-High latencies of classic timers cause performance issues for high-
-speed serial transmissions. This patch transforms rx_timer into an
-hrtimer to reduce the minimum latency.
 
-Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
----
- drivers/tty/serial/sh-sci.c | 47 +++++++++++++++++++++++++++++----------------
- 1 file changed, 30 insertions(+), 17 deletions(-)
+--2yddoec54ffcayat
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index d9f399c..553f30c 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -33,6 +33,7 @@
- #include <linux/init.h>
- #include <linux/interrupt.h>
- #include <linux/ioport.h>
-+#include <linux/ktime.h>
- #include <linux/major.h>
- #include <linux/module.h>
- #include <linux/mm.h>
-@@ -143,8 +144,8 @@ struct sci_port {
- 	void				*rx_buf[2];
- 	size_t				buf_len_rx;
- 	struct work_struct		work_tx;
--	struct timer_list		rx_timer;
--	unsigned int			rx_timeout;
-+	struct hrtimer			rx_timer;
-+	unsigned int			rx_timeout;	/* microseconds */
- #endif
- 	unsigned int			rx_frame;
- 	int				rx_trigger;
-@@ -1229,6 +1230,15 @@ static void sci_rx_dma_release(struct sci_port *s, bool enable_pio)
- 	}
- }
- 
-+static void start_hrtimer_us(struct hrtimer *hrt, unsigned long usec)
-+{
-+	long sec = usec / 1000000;
-+	long nsec = (usec % 1000000) * 1000;
-+	ktime_t t = ktime_set(sec, nsec);
-+
-+	hrtimer_start(hrt, t, HRTIMER_MODE_REL);
-+}
-+
- static void sci_dma_rx_complete(void *arg)
- {
- 	struct sci_port *s = arg;
-@@ -1247,7 +1257,7 @@ static void sci_dma_rx_complete(void *arg)
- 	if (active >= 0)
- 		count = sci_dma_rx_push(s, s->rx_buf[active], s->buf_len_rx);
- 
--	mod_timer(&s->rx_timer, jiffies + s->rx_timeout);
-+	start_hrtimer_us(&s->rx_timer, s->rx_timeout);
- 
- 	if (count)
- 		tty_flip_buffer_push(&port->state->port);
-@@ -1391,9 +1401,9 @@ static void work_fn_tx(struct work_struct *work)
- 	dma_async_issue_pending(chan);
- }
- 
--static void rx_timer_fn(struct timer_list *t)
-+static enum hrtimer_restart rx_timer_fn(struct hrtimer *t)
- {
--	struct sci_port *s = from_timer(s, t, rx_timer);
-+	struct sci_port *s = container_of(t, struct sci_port, rx_timer);
- 	struct dma_chan *chan = s->chan_rx;
- 	struct uart_port *port = &s->port;
- 	struct dma_tx_state state;
-@@ -1410,7 +1420,7 @@ static void rx_timer_fn(struct timer_list *t)
- 	active = sci_dma_rx_find_active(s);
- 	if (active < 0) {
- 		spin_unlock_irqrestore(&port->lock, flags);
--		return;
-+		return HRTIMER_NORESTART;
- 	}
- 
- 	status = dmaengine_tx_status(s->chan_rx, s->active_rx, &state);
-@@ -1420,7 +1430,7 @@ static void rx_timer_fn(struct timer_list *t)
- 			s->active_rx, active);
- 
- 		/* Let packet complete handler take care of the packet */
--		return;
-+		return HRTIMER_NORESTART;
- 	}
- 
- 	dmaengine_pause(chan);
-@@ -1435,7 +1445,7 @@ static void rx_timer_fn(struct timer_list *t)
- 	if (status == DMA_COMPLETE) {
- 		spin_unlock_irqrestore(&port->lock, flags);
- 		dev_dbg(port->dev, "Transaction complete after DMA engine was stopped");
--		return;
-+		return HRTIMER_NORESTART;
- 	}
- 
- 	/* Handle incomplete DMA receive */
-@@ -1460,6 +1470,8 @@ static void rx_timer_fn(struct timer_list *t)
- 	serial_port_out(port, SCSCR, scr | SCSCR_RIE);
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	return HRTIMER_NORESTART;
- }
- 
- static struct dma_chan *sci_request_dma_chan(struct uart_port *port,
-@@ -1571,7 +1583,8 @@ static void sci_request_dma(struct uart_port *port)
- 			dma += s->buf_len_rx;
- 		}
- 
--		timer_setup(&s->rx_timer, rx_timer_fn, 0);
-+		hrtimer_init(&s->rx_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-+		s->rx_timer.function = rx_timer_fn;
- 
- 		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
- 			sci_submit_rx(s);
-@@ -1630,9 +1643,9 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
- 		/* Clear current interrupt */
- 		serial_port_out(port, SCxSR,
- 				ssr & ~(SCIF_DR | SCxSR_RDxF(port)));
--		dev_dbg(port->dev, "Rx IRQ %lu: setup t-out in %u jiffies\n",
-+		dev_dbg(port->dev, "Rx IRQ %lu: setup t-out in %u us\n",
- 			jiffies, s->rx_timeout);
--		mod_timer(&s->rx_timer, jiffies + s->rx_timeout);
-+		start_hrtimer_us(&s->rx_timer, s->rx_timeout);
- 
- 		return IRQ_HANDLED;
- 	}
-@@ -1643,7 +1656,7 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
- 			scif_set_rtrg(port, s->rx_trigger);
- 
- 		mod_timer(&s->rx_fifo_timer, jiffies + DIV_ROUND_UP(
--			  s->rx_frame * s->rx_fifo_timeout, 1000));
-+			  s->rx_frame * HZ * s->rx_fifo_timeout, 1000000));
- 	}
- 
- 	/* I think sci_receive_chars has to be called irrespective
-@@ -2079,7 +2092,7 @@ static void sci_shutdown(struct uart_port *port)
- 	if (s->chan_rx) {
- 		dev_dbg(port->dev, "%s(%d) deleting rx_timer\n", __func__,
- 			port->line);
--		del_timer_sync(&s->rx_timer);
-+		hrtimer_cancel(&s->rx_timer);
- 	}
- #endif
- 
-@@ -2480,11 +2493,11 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if (termios->c_cflag & PARENB)
- 		bits++;
- 
--	s->rx_frame = (100 * bits * HZ) / (baud / 10);
-+	s->rx_frame = (10000 * bits) / (baud / 100);
- #ifdef CONFIG_SERIAL_SH_SCI_DMA
--	s->rx_timeout = DIV_ROUND_UP(s->buf_len_rx * 2 * s->rx_frame, 1000);
--	if (s->rx_timeout < msecs_to_jiffies(20))
--		s->rx_timeout = msecs_to_jiffies(20);
-+	s->rx_timeout = s->buf_len_rx * 2 * s->rx_frame;
-+	if (s->rx_timeout < 20)
-+		s->rx_timeout = 20;
- #endif
- 
- 	if ((termios->c_cflag & CREAD) != 0)
--- 
-2.7.4
+
+> This can be prevented by doing a dummy read of the RX data register.
+
+Just so I understand the issue correctly: We are reading the register to
+throw the content away to prevent it being used in the TTY buffers?
+
+
+--2yddoec54ffcayat
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlqFh0QACgkQFA3kzBSg
+KbbKBQ/9FxFI+YMHsIhQbAo2Iqn0Yt+GMl4husICOOQwMRzRTSVaQmkAIZZLNHo1
+2A6Gk3HwBSNAZbOQ7GWqjJnkB9/3xbpealYhTeSjlQTZb4O5r3MhAN7KECHeO7Pi
+tzy3TPBnc/qOkVfDIvyi7Y0godRuV+93KMPpH9khvCZ6BYtXOFoafSpTkxOL00zC
+W7uwFfQnOqCoekAq/L3ZwyR57wA+LbMD963dIhtWSPoDhHJ5x1646vOuDWwb+vqF
+eRSrQEUYI/vJgsdKeaqVMeyaKWWg1E3cUmkm1Tx+BF0eYAjv9h/OKP5XN+xq8Jvq
+9Xo4ODeSHvjRkItoz+/ovVNRhVSdQMccc0hX6vxrJBf11Hy70I5sS8xQxuZ5LeLU
+s1C94aALp71D/XSRrq1gIc4lxJ/aQan3dM/G6Q3ldg85k772d4GMXBQc8vqwPXwe
+qTQ1W1BC3QlGOp9LZ4REBvEOtosU8vuT2IuFBg3TzB1+/8MHbdpqoddLcQaITXmm
+Vy815MPUCLZQiYDt0r76eSDM4b0ryp73RUowHSdC0pVmtpC14PVJSZKmaSfQb8pY
+l76e0dp9WKVpE8CN7ayVPx54yveLjMNHwa0VVpVFZHu3iRglzwaCN0KH5PRcdlgp
+r8ZSv2p8kY5F2HODInz3s+57N96yUdnVms4qTV2VmLNywf9QpWw=
+=Cv23
+-----END PGP SIGNATURE-----
+
+--2yddoec54ffcayat--
