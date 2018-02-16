@@ -1,67 +1,177 @@
 From: Brian Norris <briannorris@chromium.org>
-Subject: Re: udev USB autosupend whitelist (was Re: [PATCH] Bluetooth: btusb:
- Restore QCA Rome suspend/resume fix with a "rewritten" version)
-Date: Fri, 16 Feb 2018 08:49:25 -0800
-Message-ID: <20180216164924.GA72213@rodete-desktop-imager.corp.google.com>
+Subject: Re: [PATCH] Bluetooth: btusb: Restore QCA Rome suspend/resume fix
+ with a "rewritten" version
+Date: Fri, 16 Feb 2018 09:59:57 -0800
+Message-ID: <20180216175955.GA80944@rodete-desktop-imager.corp.google.com>
 References: <20180108094416.4789-1-hdegoede@redhat.com>
  <20180213022455.GA151190@rodete-desktop-imager.corp.google.com>
  <8cd918fd-bf6f-70ac-e561-e7deffa695f0@redhat.com>
  <20180216022721.GA69988@rodete-desktop-imager.corp.google.com>
- <0a13d0f3-8e0d-74df-df9c-2bf0622a9fb6@redhat.com>
+ <345b0de8-1a23-d2f8-bc56-507eadf7faa7@redhat.com>
+ <6B37F6AC-1103-4FCF-A5DC-4BA236A7B11B@holtmann.org>
+ <1a08612e-2531-3711-ec0f-a867e86d0009@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <0a13d0f3-8e0d-74df-df9c-2bf0622a9fb6@redhat.com>
-Sender: linux-acpi-owner@vger.kernel.org
+In-Reply-To: <1a08612e-2531-3711-ec0f-a867e86d0009@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Hans de Goede <hdegoede@redhat.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, stable@vger.kernel.org, Leif Liddy <leif.linux@gmail.com>, Matthias Kaehlcke <mka@chromium.org>, Daniel Drake <drake@endlessm.com>, Kai-Heng Feng <kai.heng.feng@canonical.com>, matadeen@qti.qualcomm.com, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>, Benson Leung <bleung@chromium.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, stable <stable@vger.kernel.org>, Leif Liddy <leif.linux@gmail.com>, Matthias Kaehlcke <mka@chromium.org>, Daniel Drake <drake@endlessm.com>, Kai-Heng Feng <kai.heng.feng@canonical.com>, matadeen@qti.qualcomm.com, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>
 List-Id: linux-serial@vger.kernel.org
-
-+ Benson (and there are probably others that know better answers)
 
 Hi,
 
-On Fri, Feb 16, 2018 at 09:26:37AM +0100, Hans de Goede wrote:
-> Going a bit off-topic here, so changed the subject.
-> I will reply on topic in another mail.
-> 
-> On 16-02-18 03:27, Brian Norris wrote:
-> > I use a set of udev rules that manually whitelist devices for
-> > autosuspend. You can see it here:
+On Fri, Feb 16, 2018 at 01:10:20PM +0100, Hans de Goede wrote:
+> On 16-02-18 12:45, Marcel Holtmann wrote:
+> > Hi Hans,
 > > 
-> > https://chromium.googlesource.com/chromiumos/platform2/+/43728a93f6de137006c6b92fbb2a7cc4f353c9bf/power_manager/udev/gen_autosuspend_rules.py#83
+> > > > > > > Commit 7d06d5895c15 ("Revert "Bluetooth: btusb: fix QCA...suspend/resume"")
+> > > > > > > removed the setting of the BTUSB_RESET_RESUME quirk for QCA Rome devices,
+> > > > > > > instead favoring adding USB_QUIRK_RESET_RESUME quirks in usb/core/quirks.c.
+> > > > > > > 
+> > > > > > > This was done because the DIY BTUSB_RESET_RESUME reset-resume handling
+> > > > > > > has several issues (see the original commit message). An added advantage
+> > > > > > > of moving over to the USB-core reset-resume handling is that it also
+> > > > > > > disables autosuspend for these devices, which is similarly broken on these.
+> > > > > > 
+> > > > > > Wait, is autosuspend actually broken for all QCA Rome chipsets? I don't
+> > > > > > think so -- I'm using one now.
+> > > > > 
+> > > > > And have you manually enabled USB autosuspend for it, or are you
+> > > > > running something which might have done so, e.g. powertop --auto-tune ?
+> > > > > 
+> > > > > Because if you did not do that then you're already not using autosuspend
+> > > > > for your QCA devices and this patch will change nothing.
+> > > > I use a set of udev rules that manually whitelist devices for
+> > > > autosuspend. You can see it here:
+> > > > https://chromium.googlesource.com/chromiumos/platform2/+/43728a93f6de137006c6b92fbb2a7cc4f353c9bf/power_manager/udev/gen_autosuspend_rules.py#83
+> > > > You'll find at least one Rome chip in there.
+> > > > 
+> > > > > > Thus, this is a poor solution, which
+> > > > > > negatively affects my systems. However, I see that this patch was
+> > > > > > applied regardless...
+> > > > > 
+> > > > > Note that there already is a quirk to handle broken suspend/resume
+> > > > > behavior on ALL QCA devices in older kernels. Also note that the
+> > > > Yes, and the quirk was broken, and I made sure it got reverted when it
+> > > > broke my devices ;)
+> > > 
+> > > Note that the revert for this:
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7d06d5895c15
+> > > 
+> > > Says: "This commit causes a regression on some QCA ROME chips. The USB device reset happens
+> > > in btusb_open(), hence firmware loading gets interrupted."
+> > > 
+> > > And says:
+> > > 
+> > > "If we really want to reset the USB device, we need to do it before btusb_open(). Let's
+> > > handle it in drivers/usb/core/quirks.c."
+
+Just a note: I didn't write that part ;) I also didn't have evidence to
+say that *no* QCA chipset was broken. I just knew that on my platform
+with my QCA ROME chipset, there was no problem.
+
+> > > It does not mention that the quirk is not necessary on some devices only
+> > > that the implementation of it we had before had issues.
+> > > 
+> > > And the original commit of the quirk:
+> > > 
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/drivers/bluetooth/btusb.c?id=fd865802c66bc451dc515ed89360f84376ce1a56
+> > > 
+> > > Says: "There's been numerous reported instances where BTUSB_QCA_ROME
+> > > bluetooth controllers stop functioning upon resume from suspend."
+> > > 
+> > > So it may be platform specific but it is not just limited to 1 or
+> > > 2 platforms I think.
+
+Understood for most of the above. But I'll stick a "citation needed" on
+the "numerous reported instances" claim. As I note below, I believe that
+is the crux of the problem: understanding what platforms actually
+reported this problem. All attempts to "fix" it have broken things in
+one way or another, which have just caused noise since then.
+
+> > > Note I'm not saying that I don't believe you that the quirk is not
+> > > necessary on your devices.
+> > > 
+> > > > > patches series which this commit builds on top of was already
+> > > > > setting USB_QUIRK_RESET_RESUME for some devices in
+> > > > > usb/core/quirks.c.
+> > > > > 
+> > > > > All my commit does is instead of duplicating all the QCA USB-ids in
+> > > > > usb/core/quirks.c, move the setting of USB_QUIRK_RESET_RESUME
+> > > > > to btusb.c so that we don't need to duplicate the USB-id tables.
+> > > > I was slightly more OK with marking specific IDs as broken, because
+> > > > those IDs didn't happen to be ones that I knew were currently working.
+> > > > Now you're breaking my systems again. But this time, it's more subtle
+> > > > because bluetooth will still work, but we just suck more power leaving
+> > > > our USB port active all the time.
+> > > 
+> > > I see, sorry about that. Ok, so we are going to need to make the
+> > > reset-on-resume quirking more fine grained. I can see 3 ways to do this:
+> > > 
+> > > 1) Make it a separate per usb-id BTUSB_RESET_RESUME flag in the
+> > > usb_device_id table inside btusb.c (I still believe duplicating most
+> > > ids to usb/core/quirks.c is a bad idea).
+> > > 
+> > > 2) Use dmi based whitelisting to opt out of reset-resume behavior on
+> > > QCA btusb devices.
+> > > 
+> > > 3) Use dmi based blacklisting which enables reset-resume behavior.
+> > > 
+> > > In retrospect I guess 3 would have been best, but if we do that now
+> > > it will cause regressions.
+> > > 
+> > > I guess we should go with 1. adding the BTUSB_RESET_RESUME to all the
+> > > QCA usb-ids except for the ones where you know things work and which
+> > > only seem to be used in working devices (based on you not having
+> > > objections against the additions of the quirk for some ids to
+> > > drivers/usb/core/quirks.c).
+> > > 
+> > > And if then those usb-ids do turn out to have broken suspend on
+> > > on some devices too I guess we need to move to 2.
 > > 
-> > You'll find at least one Rome chip in there.
+> > actually if this is really platform related as Qualcomm is indicating, then we should just go with 3) and the two platforms that previously added quirks to usb/core/quirks.c and blacklist these. I am all for figuring out what is going on here. So lets blacklist these and see how this goes. Maybe there are only two bad platforms out there and we are making too much fuzz about this. Before we added quirks in the USB core these platforms were just plain broken as well. So not much different situation than before. We need to push the DMI blacklisting back into -stable as well and that means any impact of a 3rd broken platform briefly working and then be broken again is slim and also fixable via -stable.
 > 
-> Oh, that is a very interesting link for the work I've been doing to
-> improve Linux power-consumption in general:
+> Ok, I've asked the reporter of:
 > 
-> https://fedoraproject.org/wiki/Changes/ImprovedLaptopBatteryLife
+> https://bugzilla.redhat.com/show_bug.cgi?id=1514836
+
+Are you even sure that this reporter is seeing the original symptom at
+all (BT loses power, and therefore firmware)? Their report shows them
+running 4.15, which had this commit:
+
+fd865802c66b Bluetooth: btusb: fix QCA Rome suspend/resume
+
+which is admittedly completely broken. It breaks even perfectly working
+BT/USB devices, like mine. That's where I first complained, and we got
+this into 4.16-rc1:
+
+7d06d5895c15 Revert "Bluetooth: btusb: fix QCA Rome suspend/resume"
+
+Isn't it possible your reporter has no further problem, and none if this
+is actually important to them? I'd just caution you to be careful before
+assuming you need to add blacklist info for their DMI...
+
+As I read it, you need to investigate who are the "numerous reported
+instances" that generated commit fd865802c66b in the first place. That's
+where this mess started, IIUC.
+
+But otherwise, yes, option 3 sounds OK. FWIW, my systems are ARM based
+and don't have DMI data, so option 2 wouldn't work.
+
+> Which is how I got involved in this to provide DMI data and
+> I will whip up a patch for his machine and ask him to test
+> and once that is done submit upstream. This is the only machine
+> I'm aware of though and looking at the history of this I think
+> there will be others.
 > 
-> I was actually planning on at least doing such a list for WWAN modems,
-> for btusb my approach has been to just enable it everywhere
-> (except for QCA devices as I got bugreports for those).
+> > I addition we can add a module option to btusb.ko that allows us to force this flag to be set. That way testing this is easy on a vendor kernel. A bunch of the btusb quirks (and also core quirks) can be tested via module options or debugfs.
 > 
-> Note that I plan to eventually submit this whitelist to the
-> udev rules which are part of systemd upstream, so if chromeos
-> is using systemd too, this is something to be aware of for you.
+> Yes a module option for this is a good idea.
 
-Chrome OS does not currently use systemd, but thanks for the heads up.
-
-> Question, is the white-listing of the root and rate-limiting
-> hubs really necessary? I thought these have this enabled by default?
-
-This list is old and maintained by several of my team, originating from
-quite a ways back (i.e., much older kernels). It's quite possible that
-some of it is redundant today.
-
-> Also any caveats here I should be aware of?
-
-That it's only maintained for the express purpose of Chrome{device}s?
-There's no guarantee that there aren't platform issues with other
-systems, for instance :)
-
-I'm not really aware of any particular caveats otherwise.
+That too. Or, would be nice to be able to force it either way. So if
+someone erroneously sticks the flag in this driver (yet again), we can
+easily undo that.
 
 Brian
