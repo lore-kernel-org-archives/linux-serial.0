@@ -1,63 +1,54 @@
-From: Karthik Ramasubramanian <kramasub@codeaurora.org>
-Subject: Re: [PATCH v2 3/7] soc: qcom: Add GENI based QUP Wrapper driver
-Date: Fri, 16 Feb 2018 13:44:49 -0700
-Message-ID: <ee1a39c6-10db-9e59-5a8d-b11e156e022b@codeaurora.org>
-References: <1515805547-22816-1-git-send-email-kramasub@codeaurora.org>
- <1515805547-22816-4-git-send-email-kramasub@codeaurora.org>
- <CAHLCerOf3WMUind8-5Z+c6iXyyYvdjS7MaMbO8WzNU2-VaREPg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-i2c-owner@vger.kernel.org>
-In-Reply-To: <CAHLCerOf3WMUind8-5Z+c6iXyyYvdjS7MaMbO8WzNU2-VaREPg@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-i2c-owner@vger.kernel.org
-To: Amit Kucheria <amit.kucheria@verdurent.com>
-Cc: corbet@lwn.net, Andy Gross <andy.gross@linaro.org>, david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, wsa@the-dreams.de, gregkh@linuxfoundation.org, linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, Sagar Dharia <sdharia@codeaurora.org>, Girish Mahadevan <girishm@codeaurora.org>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: Re: [PATCH] Bluetooth: btusb: Restore QCA Rome suspend/resume fix
+ with a "rewritten" version
+Date: Sun, 18 Feb 2018 16:13:13 +0800
+Message-ID: <AC3BE596-68BD-4D15-B06A-B529F9559C13@canonical.com>
+References: <20180108094416.4789-1-hdegoede@redhat.com>
+ <20180213022455.GA151190@rodete-desktop-imager.corp.google.com>
+ <8cd918fd-bf6f-70ac-e561-e7deffa695f0@redhat.com>
+ <20180216022721.GA69988@rodete-desktop-imager.corp.google.com>
+ <345b0de8-1a23-d2f8-bc56-507eadf7faa7@redhat.com>
+ <6B37F6AC-1103-4FCF-A5DC-4BA236A7B11B@holtmann.org>
+ <1a08612e-2531-3711-ec0f-a867e86d0009@redhat.com>
+Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1a08612e-2531-3711-ec0f-a867e86d0009@redhat.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>, Brian Norris <briannorris@chromium.org>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, stable <stable@vger.kernel.org>, Leif Liddy <leif.linux@gmail.com>, Matthias Kaehlcke <mka@chromium.org>, Daniel Drake <drake@endlessm.com>, matadeen@qti.qualcomm.com, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>
 List-Id: linux-serial@vger.kernel.org
 
 
 
-On 2/14/2018 4:07 AM, Amit Kucheria wrote:
-> On Sat, Jan 13, 2018 at 6:35 AM, Karthikeyan Ramasubramanian
-> <kramasub@codeaurora.org> wrote:
->> This driver manages the Generic Interface (GENI) firmware based Qualcomm
->> Universal Peripheral (QUP) Wrapper. GENI based QUP is the next generation
->> programmable module composed of multiple Serial Engines (SE) and supports
->> a wide range of serial interfaces like UART, SPI, I2C, I3C, etc. This
->> driver also enables managing the serial interface independent aspects of
->> Serial Engines.
->>
->> Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
->> Signed-off-by: Sagar Dharia <sdharia@codeaurora.org>
->> Signed-off-by: Girish Mahadevan <girishm@codeaurora.org>
+> On 16 Feb 2018, at 8:10 PM, Hans de Goede <hdegoede@redhat.com> wrote:
 > 
 > 
->> +int geni_se_resources_off(struct geni_se_rsc *rsc)
->> +{
->> +       int ret = 0;
->> +       struct geni_se_device *geni_se_dev;
->> +
->> +       if (unlikely(!rsc || !rsc->wrapper_dev))
->> +               return -EINVAL;
->> +
->> +       geni_se_dev = dev_get_drvdata(rsc->wrapper_dev);
->> +       if (unlikely(!geni_se_dev))
->> +               return -ENODEV;
->> +
->> +       ret = pinctrl_select_state(rsc->geni_pinctrl, rsc->geni_gpio_sleep);
+> Ok, I've asked the reporter of:
 > 
-> You need to include linux/pinctrl/consumer.h for devm_pinctrl_get
+> https://bugzilla.redhat.com/show_bug.cgi?id=1514836
 > 
-> I couldn't compile test it w/o it.
-> 
-I think marking the dependencies might help with this compilation issue. 
-Else I will include the concerned header file. One way or the other, I 
-will ensure that this issue does not get hit in my follow-up patch series.
+> Which is how I got involved in this to provide DMI data and
+> I will whip up a patch for his machine and ask him to test
+> and once that is done submit upstream. This is the only machine
+> I'm aware of though and looking at the history of this I think
+> there will be others.
 
-Regards,
-Karthik.
+I have one machine needs the quirk. I’ll also send a patch to
+match its DMI.
 
--- 
-Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Kai-Heng
+
+> 
+>> I addition we can add a module option to btusb.ko that allows us to force this flag to be set. That way testing this is easy on a vendor kernel. A bunch of the btusb quirks (and also core quirks) can be tested via module options or debugfs.
+> 
+> Yes a module option for this is a good idea.
+> 
+> Regards,
+> 
+> Hans
+> 
+> 
+
