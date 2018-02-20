@@ -1,15 +1,15 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 6/9] serial: samsung: Fix out-of-bounds access through DT
- alias
-Date: Tue, 20 Feb 2018 11:52:43 +0100
-Message-ID: <CAMuHMdUPb8cubv5v7OD4qHokwk1tPScNkju0Tizwm2sOFpcF3Q@mail.gmail.com>
+Subject: Re: [PATCH 2/9] serial: fsl_lpuart: Fix out-of-bounds access through
+ DT alias
+Date: Tue, 20 Feb 2018 11:51:13 +0100
+Message-ID: <CAMuHMdXrFQbopFKipo0yGejyayHXWXy_t50ZDJMbn6dj04LtOw@mail.gmail.com>
 References: <1519119624-1268-1-git-send-email-geert+renesas@glider.be>
- <1519119624-1268-7-git-send-email-geert+renesas@glider.be>
+ <1519119624-1268-3-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1519119624-1268-7-git-send-email-geert+renesas@glider.be>
+In-Reply-To: <1519119624-1268-3-git-send-email-geert+renesas@glider.be>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -25,19 +25,15 @@ List-Id: linux-serial@vger.kernel.org
 
 On Tue, Feb 20, 2018 at 10:40 AM, Geert Uytterhoeven
 <geert+renesas@glider.be> wrote:
-> The s3c24xx_serial_ports[] array is indexed using a value derived from
-> the "serialN" alias in DT, which may lead to an out-of-bounds access.
+> The lpuart_ports[] array is indexed using a value derived from the
+> "serialN" alias in DT, which may lead to an out-of-bounds access.
 >
 > Fix this by adding a range check.
 >
-> Note that the array size is defined by a Kconfig symbol
-> (CONFIG_SERIAL_SAMSUNG_UARTS), so this can even be triggered using a
-> legitimate DTB.
->
-> Fixes: 3ac337e76a1c637b ("serial: samsung: Fix out-of-bounds access through DT alias")
+> Fixes: 970416c691dc68b5 ("serial: fsl_lpuart: Fix out-of-bounds access through DT alias")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Fixes: 13a9f6c64fdc55eb ("serial: samsung: Consider DT alias when probing po
-rts")
+Fixes: c9e2e946fb0ba5d2 ("tty: serial: add Freescale lpuart driver support")
 
 Gr{oetje,eeting}s,
 
