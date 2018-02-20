@@ -1,54 +1,55 @@
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Subject: Re: [PATCH] Bluetooth: btusb: Restore QCA Rome suspend/resume fix
- with a "rewritten" version
-Date: Sun, 18 Feb 2018 16:13:13 +0800
-Message-ID: <AC3BE596-68BD-4D15-B06A-B529F9559C13@canonical.com>
-References: <20180108094416.4789-1-hdegoede@redhat.com>
- <20180213022455.GA151190@rodete-desktop-imager.corp.google.com>
- <8cd918fd-bf6f-70ac-e561-e7deffa695f0@redhat.com>
- <20180216022721.GA69988@rodete-desktop-imager.corp.google.com>
- <345b0de8-1a23-d2f8-bc56-507eadf7faa7@redhat.com>
- <6B37F6AC-1103-4FCF-A5DC-4BA236A7B11B@holtmann.org>
- <1a08612e-2531-3711-ec0f-a867e86d0009@redhat.com>
-Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1a08612e-2531-3711-ec0f-a867e86d0009@redhat.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>, Brian Norris <briannorris@chromium.org>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, stable <stable@vger.kernel.org>, Leif Liddy <leif.linux@gmail.com>, Matthias Kaehlcke <mka@chromium.org>, Daniel Drake <drake@endlessm.com>, matadeen@qti.qualcomm.com, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 6/9] serial: samsung: Fix out-of-bounds access through DT alias
+Date: Tue, 20 Feb 2018 10:40:21 +0100
+Message-ID: <1519119624-1268-7-git-send-email-geert+renesas@glider.be>
+References: <1519119624-1268-1-git-send-email-geert+renesas@glider.be>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1519119624-1268-1-git-send-email-geert+renesas@glider.be>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, Barry Song <baohua@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Vineet Gupta <vgupta@synopsys.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
+The s3c24xx_serial_ports[] array is indexed using a value derived from
+the "serialN" alias in DT, which may lead to an out-of-bounds access.
 
+Fix this by adding a range check.
 
-> On 16 Feb 2018, at 8:10 PM, Hans de Goede <hdegoede@redhat.com> wrote:
-> 
-> 
-> Ok, I've asked the reporter of:
-> 
-> https://bugzilla.redhat.com/show_bug.cgi?id=1514836
-> 
-> Which is how I got involved in this to provide DMI data and
-> I will whip up a patch for his machine and ask him to test
-> and once that is done submit upstream. This is the only machine
-> I'm aware of though and looking at the history of this I think
-> there will be others.
+Note that the array size is defined by a Kconfig symbol
+(CONFIG_SERIAL_SAMSUNG_UARTS), so this can even be triggered using a
+legitimate DTB.
 
-I have one machine needs the quirk. I’ll also send a patch to
-match its DMI.
+Fixes: 3ac337e76a1c637b ("serial: samsung: Fix out-of-bounds access through DT alias")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/tty/serial/samsung.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Kai-Heng
-
-> 
->> I addition we can add a module option to btusb.ko that allows us to force this flag to be set. That way testing this is easy on a vendor kernel. A bunch of the btusb quirks (and also core quirks) can be tested via module options or debugfs.
-> 
-> Yes a module option for this is a good idea.
-> 
-> Regards,
-> 
-> Hans
-> 
-> 
-
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index f9fecc5ed0cee826..9ea42197ceefabba 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1818,6 +1818,10 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 
+ 	dbg("s3c24xx_serial_probe(%p) %d\n", pdev, index);
+ 
++	if (index >= CONFIG_SERIAL_SAMSUNG_UARTS) {
++		dev_err(&pdev->dev, "serial%d out of range\n", index);
++		return -EINVAL;
++	}
+ 	ourport = &s3c24xx_serial_ports[index];
+ 
+ 	ourport->drv_data = s3c24xx_get_driver_data(pdev);
+-- 
+2.7.4
