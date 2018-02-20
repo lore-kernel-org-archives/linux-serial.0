@@ -1,51 +1,64 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 5/9] serial: pxa: Fix out-of-bounds access through DT alias
-Date: Tue, 20 Feb 2018 10:40:20 +0100
-Message-ID: <1519119624-1268-6-git-send-email-geert+renesas@glider.be>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 3/9] serial: imx: Fix out-of-bounds access through DT alias
+Date: Tue, 20 Feb 2018 11:49:41 +0100
+Message-ID: <CAMuHMdVMoEuOOffRNHDa0JwaLH1auByOQfNW8DgkXGaq5GFnsw@mail.gmail.com>
 References: <1519119624-1268-1-git-send-email-geert+renesas@glider.be>
+ <1519119624-1268-4-git-send-email-geert+renesas@glider.be>
+ <20180220103134.xfh2zl2vgonb2ywb@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1519119624-1268-1-git-send-email-geert+renesas@glider.be>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: devicetree@vger.kernel.org, Barry Song <baohua@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Vineet Gupta <vgupta@synopsys.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180220103134.xfh2zl2vgonb2ywb@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>,
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Barry Song <baohua@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michal Simek <michal.simek@xilinx.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Vineet Gupta <vgupta@synopsys.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, arcml <linux-snps-arc@lists.infradead.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The serial_pxa_ports[] array is indexed using a value derived from the
-"serialN" alias in DT, which may lead to an out-of-bounds access.
-
-Fix this by adding a range check.
-
-Fixes: c8dcdc77298dde67 ("serial: pxa: Fix out-of-bounds access through DT alias")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/tty/serial/pxa.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index baf552944d5686e8..ac25faa95baaad0e 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -885,6 +885,10 @@ static int serial_pxa_probe(struct platform_device *dev)
- 		sport->port.line = dev->id;
- 	else if (ret < 0)
- 		goto err_clk;
-+	if (sport->port.line > ARRAY_SIZE(serial_pxa_ports)) {
-+		dev_err(&dev->dev, "serial%d out of range\n", sport->port.line);
-+		return -EINVAL;
-+	}
- 	snprintf(sport->name, PXA_NAME_LEN - 1, "UART%d", sport->port.line + 1);
- 
- 	sport->port.membase = ioremap(mmres->start, resource_size(mmres));
--- 
-2.7.4
+SGkgVXdlLAoKT24gVHVlLCBGZWIgMjAsIDIwMTggYXQgMTE6MzEgQU0sIFV3ZSBLbGVpbmUtS8O2
+bmlnCjx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+IHdyb3RlOgo+IE9uIFR1ZSwgRmVi
+IDIwLCAyMDE4IGF0IDEwOjQwOjE4QU0gKzAxMDAsIEdlZXJ0IFV5dHRlcmhvZXZlbiB3cm90ZToK
+Pj4gVGhlIGlteF9wb3J0c1tdIGFycmF5IGlzIGluZGV4ZWQgdXNpbmcgYSB2YWx1ZSBkZXJpdmVk
+IGZyb20gdGhlCj4+ICJzZXJpYWxOIiBhbGlhcyBpbiBEVCwgd2hpY2ggbWF5IGxlYWQgdG8gYW4g
+b3V0LW9mLWJvdW5kcyBhY2Nlc3MuCj4+Cj4+IEZpeCB0aGlzIGJ5IGFkZGluZyBhIHJhbmdlIGNo
+ZWNrLgo+Pgo+PiBGaXhlczogOTIwNmFiOGEwMzUwYzNkYSAoInNlcmlhbDogaW14OiBGaXggb3V0
+LW9mLWJvdW5kcyBhY2Nlc3MgdGhyb3VnaCBEVCBhbGlhcyIpCj4KPiBodWgsIHRoaXMgcGF0Y2gg
+Zml4ZXMgaXRzZWxmPwoKT29wcwoKICAgIEZpeGVzOiBmZjA1OTY3YTA3MjI1YWI2ICgic2VyaWFs
+L2lteDogYWRkIG9mX2FsaWFzX2dldF9pZCgpIHJlZmVyZW5jZSBiYWNrIikKCj4KPj4gU2lnbmVk
+LW9mZi1ieTogR2VlcnQgVXl0dGVyaG9ldmVuIDxnZWVydCtyZW5lc2FzQGdsaWRlci5iZT4KPj4g
+LS0tCj4+ICBkcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgfCA1ICsrKysrCj4+ICAxIGZpbGUgY2hh
+bmdlZCwgNSBpbnNlcnRpb25zKCspCj4+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJp
+YWwvaW14LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKPj4gaW5kZXggMWQ3Y2EzODJiYzEy
+YjIzOC4uZTg5ZTkwYWQ4N2Q4MjQ1YyAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFs
+L2lteC5jCj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwo+PiBAQCAtMjA0MSw2ICsy
+MDQxLDExIEBAIHN0YXRpYyBpbnQgc2VyaWFsX2lteF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2
+aWNlICpwZGV2KQo+PiAgICAgICAgICAgICAgIHNlcmlhbF9pbXhfcHJvYmVfcGRhdGEoc3BvcnQs
+IHBkZXYpOwo+PiAgICAgICBlbHNlIGlmIChyZXQgPCAwKQo+PiAgICAgICAgICAgICAgIHJldHVy
+biByZXQ7Cj4KPiBJJ2QgcHJlZmVyIGFuIGVtcHR5IGxpbmUgaGVyZS4KCk9LCgo+PiArICAgICBp
+ZiAoc3BvcnQtPnBvcnQubGluZSA+PSBVQVJUX05SKSB7Cj4KPiBJIHdvdWxkIGhhdmUgdXNlZDoK
+Pgo+ICAgICAgICAgaWYgKHNwb3J0LT5wb3J0LmxpbmUgPj0gQVJSQVlfU0laRShpbXhfcG9ydHMp
+KQo+Cj4gd2hpY2ggSU1ITyBpcyBiZXR0ZXIgdW5kZXJzdGFuZGFibGUKCk9LLgoKPj4gKyAgICAg
+ICAgICAgICBkZXZfZXJyKCZwZGV2LT5kZXYsICJzZXJpYWwlZCBvdXQgb2YgcmFuZ2VcbiIsCj4+
+ICsgICAgICAgICAgICAgICAgICAgICBzcG9ydC0+cG9ydC5saW5lKTsKPgo+IE5vdGUgdGhhdCB0
+aGUgc2FtZSBvdmVyZmxvdyBjYW4gaGFwcGVuIHdoZW4gYSBkZXZpY2UgaXMgcHJvYmVkIHVzaW5n
+Cj4gcGxhdGZvcm0gZGF0YSAoYW5kIHlvdXIgY29tbWl0IGZpeGVzIHRoYXQsIHRvbykuIE1heWJl
+IHdvcnRoIHRvIHBvaW50Cj4gb3V0IGluIHRoZSBjb21taXQgbG9nPwoKVGhhdCdzIGNvcnJlY3Qu
+IEJ1dCBib2FyZCBjb2RlIGlzIHRpZWQgbW9yZSBpbnRpbWF0ZSB0byB0aGUga2VybmVsLgpXaWxs
+IHVwZGF0ZS4KCkdye29ldGplLGVldGluZ31zLAoKICAgICAgICAgICAgICAgICAgICAgICAgR2Vl
+cnQKCi0tCkdlZXJ0IFV5dHRlcmhvZXZlbiAtLSBUaGVyZSdzIGxvdHMgb2YgTGludXggYmV5b25k
+IGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4ay5vcmcKCkluIHBlcnNvbmFsIGNvbnZlcnNhdGlvbnMg
+d2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwgbXlzZWxmIGEgaGFja2VyLiBCdXQKd2hlbiBJ
+J20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qgc2F5ICJwcm9ncmFtbWVyIiBvciBzb21l
+dGhpbmcgbGlrZSB0aGF0LgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0tIExpbnVz
+IFRvcnZhbGRzCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+XwpsaW51eC1zbnBzLWFyYyBtYWlsaW5nIGxpc3QKbGludXgtc25wcy1hcmNAbGlzdHMuaW5mcmFk
+ZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4
+LXNucHMtYXJj
