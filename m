@@ -1,15 +1,15 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 7/9] serial: sh-sci: Fix out-of-bounds access through DT
+Subject: Re: [PATCH 1/9] serial: arc_uart: Fix out-of-bounds access through DT
  alias
-Date: Tue, 20 Feb 2018 11:53:05 +0100
-Message-ID: <CAMuHMdVqoBC0oD+JXWJU_p5KJy7adZj681rwxYFYj_L5kwD=ew@mail.gmail.com>
+Date: Tue, 20 Feb 2018 11:50:13 +0100
+Message-ID: <CAMuHMdVVzK9Fisi6yjXq8ScM1QzBgm5aaV4QgU8Q=3b+_78Anw@mail.gmail.com>
 References: <1519119624-1268-1-git-send-email-geert+renesas@glider.be>
- <1519119624-1268-8-git-send-email-geert+renesas@glider.be>
+ <1519119624-1268-2-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1519119624-1268-8-git-send-email-geert+renesas@glider.be>
+In-Reply-To: <1519119624-1268-2-git-send-email-geert+renesas@glider.be>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
  <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
@@ -25,19 +25,18 @@ List-Id: linux-serial@vger.kernel.org
 
 On Tue, Feb 20, 2018 at 10:40 AM, Geert Uytterhoeven
 <geert+renesas@glider.be> wrote:
-> The sci_ports[] array is indexed using a value derived from the
+> The arc_uart_ports[] array is indexed using a value derived from the
 > "serialN" alias in DT, which may lead to an out-of-bounds access.
 >
 > Fix this by adding a range check.
 >
 > Note that the array size is defined by a Kconfig symbol
-> (CONFIG_SERIAL_SH_SCI_NR_UARTS), so this can even be triggered using a
+> (CONFIG_SERIAL_ARC_NR_PORTS), so this can even be triggered using a
 > legitimate DTB.
 >
-> Fixes: f650cdf1c115498e ("serial: sh-sci: Fix out-of-bounds access through DT alias")
+> Fixes: 10640deb04b7949a ("serial: arc_uart: Fix out-of-bounds access through DT alias")
 
-Fixes: 97ed9790c514066b ("serial: sh-sci: Remove unused platform data
-capabilities field")
+Fixes: ea28fd56fcde69af ("serial/arc-uart: switch to devicetree based probing")
 
 Gr{oetje,eeting}s,
 
