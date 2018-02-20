@@ -1,12 +1,14 @@
 From: Troy Kisky <troy.kisky@boundarydevices.com>
 Subject: [PATCH v3 1/1] tty: serial: imx: allow breaks to be received when
  using dma
-Date: Tue, 20 Feb 2018 10:20:37 -0800
-Message-ID: <20180220182038.4325-1-troy.kisky@boundarydevices.com>
+Date: Tue, 20 Feb 2018 10:20:38 -0800
+Message-ID: <20180220182038.4325-2-troy.kisky@boundarydevices.com>
+References: <20180220182038.4325-1-troy.kisky@boundarydevices.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180220182038.4325-1-troy.kisky@boundarydevices.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
