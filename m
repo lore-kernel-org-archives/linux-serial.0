@@ -1,16 +1,17 @@
-From: Troy Kisky <troy.kisky@boundarydevices.com>
-Subject: Re: [PATCH v3 1/1] tty: serial: imx: allow breaks to be received when
- using dma
-Date: Tue, 20 Feb 2018 12:25:16 -0800
-Message-ID: <6a93d743-05ef-0b23-9419-913b9d2c78ee@boundarydevices.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 1/1] tty: serial: imx: allow breaks to be received
+ when using dma
+Date: Wed, 21 Feb 2018 09:17:47 +0100
+Message-ID: <20180221081747.bajkq7kdgkx2ktug@pengutronix.de>
 References: <20180220182038.4325-1-troy.kisky@boundarydevices.com>
  <20180220195944.kgl4olfc7eitzpxg@pengutronix.de>
+ <6a93d743-05ef-0b23-9419-913b9d2c78ee@boundarydevices.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180220195944.kgl4olfc7eitzpxg@pengutronix.de>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <6a93d743-05ef-0b23-9419-913b9d2c78ee@boundarydevices.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,60 +21,64 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+To: Troy Kisky <troy.kisky@boundarydevices.com>
 Cc: gregkh@linuxfoundation.org, mort@bork.org, linux-serial@vger.kernel.org, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, l.stach@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-T24gMi8yMC8yMDE4IDExOjU5IEFNLCBVd2UgS2xlaW5lLUvDtm5pZyB3cm90ZToKPiBPbiBUdWUs
-IEZlYiAyMCwgMjAxOCBhdCAxMDoyMDozN0FNIC0wODAwLCBUcm95IEtpc2t5IHdyb3RlOgo+PiBU
-aGlzIGFsbG93cyBtZSB0byBsb2dpbiBhZnRlciBzZW5kaW5nIGEgYnJlYWsgd2hlbiBzZXJ2aWNl
-Cj4+IHNlcmlhbC1nZXR0eUB0dHlteGMwLnNlcnZpY2UgaXMgcnVubmluZwo+Pgo+PiBUaGUgInR0
-eV9pbnNlcnRfZmxpcF9jaGFyKHBvcnQsIDAsIFRUWV9CUkVBSykiIGluIGNsZWFyX3J4X2Vycm9y
-cwo+PiBmaXhlcyB0aGlzIGJ5IGFsbG93aW5nIHRoZSBoaWdoZXIgbGF5ZXJzIHRvIHNlZSBhIGJy
-ZWFrLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBUcm95IEtpc2t5IDx0cm95Lmtpc2t5QGJvdW5kYXJ5
-ZGV2aWNlcy5jb20+Cj4+IFRlc3RlZC1ieTogTWFydGluIEhpY2tzIDxtb3J0QGJvcmsub3JnPgo+
-Pgo+PiAtLS0KPj4gdjI6IHJlYmFzZSBvbmx5Cj4+IHYzOiBjaGFuZ2UgY29tbWl0IG1lc3NhZ2Ug
-YXMgcmVxdWVzdGVkIGJ5IEZhYmlvLAo+PiAgICAgYWRkIHRlc3RlZC1ieQo+PiAtLS0KPj4gIGRy
-aXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8IDIwICsrKysrKysrKysrKystLS0tLS0tCj4+ICAxIGZp
-bGUgY2hhbmdlZCwgMTMgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMoLSkKPj4KPj4gZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXgu
-Ywo+PiBpbmRleCAxZDdjYTM4MmJjMTIuLjJlYjhjNGEyMGQ2OCAxMDA2NDQKPj4gLS0tIGEvZHJp
-dmVycy90dHkvc2VyaWFsL2lteC5jCj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwo+
-PiBAQCAtOTI3LDcgKzkyNyw2IEBAIHN0YXRpYyB2b2lkIGRtYV9yeF9jYWxsYmFjayh2b2lkICpk
-YXRhKQo+PiAgCXN0YXR1cyA9IGRtYWVuZ2luZV90eF9zdGF0dXMoY2hhbiwgKGRtYV9jb29raWVf
-dCkwLCAmc3RhdGUpOwo+PiAgCj4+ICAJaWYgKHN0YXR1cyA9PSBETUFfRVJST1IpIHsKPj4gLQkJ
-ZGV2X2VycihzcG9ydC0+cG9ydC5kZXYsICJETUEgdHJhbnNhY3Rpb24gZXJyb3IuXG4iKTsKPj4g
-IAkJY2xlYXJfcnhfZXJyb3JzKHNwb3J0KTsKPj4gIAkJcmV0dXJuOwo+PiAgCX0KPj4gQEAgLTEw
-MjgsNiArMTAyNyw3IEBAIHN0YXRpYyBpbnQgc3RhcnRfcnhfZG1hKHN0cnVjdCBpbXhfcG9ydCAq
-c3BvcnQpCj4+ICAKPj4gIHN0YXRpYyB2b2lkIGNsZWFyX3J4X2Vycm9ycyhzdHJ1Y3QgaW14X3Bv
-cnQgKnNwb3J0KQo+PiAgewo+PiArCXN0cnVjdCB0dHlfcG9ydCAqcG9ydCA9ICZzcG9ydC0+cG9y
-dC5zdGF0ZS0+cG9ydDsKPj4gIAl1bnNpZ25lZCBpbnQgc3RhdHVzX3VzcjEsIHN0YXR1c191c3Iy
-Owo+PiAgCj4+ICAJc3RhdHVzX3VzcjEgPSByZWFkbChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVVNS
-MSk7Cj4+IEBAIC0xMDM2LDEyICsxMDM2LDE4IEBAIHN0YXRpYyB2b2lkIGNsZWFyX3J4X2Vycm9y
-cyhzdHJ1Y3QgaW14X3BvcnQgKnNwb3J0KQo+PiAgCWlmIChzdGF0dXNfdXNyMiAmIFVTUjJfQlJD
-RCkgewo+PiAgCQlzcG9ydC0+cG9ydC5pY291bnQuYnJrKys7Cj4+ICAJCXdyaXRlbChVU1IyX0JS
-Q0QsIHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVU1IyKTsKPj4gLQl9IGVsc2UgaWYgKHN0YXR1c191
-c3IxICYgVVNSMV9GUkFNRVJSKSB7Cj4+IC0JCXNwb3J0LT5wb3J0Lmljb3VudC5mcmFtZSsrOwo+
-PiAtCQl3cml0ZWwoVVNSMV9GUkFNRVJSLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVVNSMSk7Cj4+
-IC0JfSBlbHNlIGlmIChzdGF0dXNfdXNyMSAmIFVTUjFfUEFSSVRZRVJSKSB7Cj4+IC0JCXNwb3J0
-LT5wb3J0Lmljb3VudC5wYXJpdHkrKzsKPj4gLQkJd3JpdGVsKFVTUjFfUEFSSVRZRVJSLCBzcG9y
-dC0+cG9ydC5tZW1iYXNlICsgVVNSMSk7Cj4+ICsJCWlmICh0dHlfaW5zZXJ0X2ZsaXBfY2hhcihw
-b3J0LCAwLCBUVFlfQlJFQUspID09IDApCj4+ICsJCQlzcG9ydC0+cG9ydC5pY291bnQuYnVmX292
-ZXJydW4rKzsKPj4gKwkJdHR5X2ZsaXBfYnVmZmVyX3B1c2gocG9ydCk7Cj4gCj4gSSB0aGluayB0
-aGlzIG5lZWRzIHRvIGNhbGwgdWFydF9oYW5kbGVfYnJlYWsoKSBhcyBpbXhfcnhpbnQoKSBkb2Vz
-LiBOb3Qgc3VyZQo+IGhvdyB0byBwcm9wZXJseSBoYW5kbGUgU1lTUlEgaW4gdGhlIGRtYSBjYXNl
-IHRob3VnaC4KPiAKCgpTWVNSUSBpcyBvbmx5IGZvciB0aGUgY29uc29sZSBwb3J0LCBhbmQgY29u
-c29sZSBwb3J0IGlzIG5ldmVyIGRtYS4gQnV0IFVQRl9TQUsgbWF5IGJlCmFuIGlzc3VlLiBJIGRv
-bid0IGtub3cgZW5vdWdoIGFib3V0ICJTZWN1cmUgQXR0ZW50aW9uIEtleSIgdG8gc2F5LgoKClNo
-b3VsZCBJIGFkZCB1YXJ0X2hhbmRsZV9icmVhayBhbnl3YXkgPwoKPj4gKwl9IGVsc2Ugewo+PiAr
-CQlkZXZfZXJyKHNwb3J0LT5wb3J0LmRldiwgIkRNQSB0cmFuc2FjdGlvbiBlcnJvci5cbiIpOwo+
-PiArCQlpZiAoc3RhdHVzX3VzcjEgJiBVU1IxX0ZSQU1FUlIpIHsKPj4gKwkJCXNwb3J0LT5wb3J0
-Lmljb3VudC5mcmFtZSsrOwo+PiArCQkJd3JpdGVsKFVTUjFfRlJBTUVSUiwgc3BvcnQtPnBvcnQu
-bWVtYmFzZSArIFVTUjEpOwo+PiArCQl9IGVsc2UgaWYgKHN0YXR1c191c3IxICYgVVNSMV9QQVJJ
-VFlFUlIpIHsKPj4gKwkJCXNwb3J0LT5wb3J0Lmljb3VudC5wYXJpdHkrKzsKPj4gKwkJCXdyaXRl
-bChVU1IxX1BBUklUWUVSUiwgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVTUjEpOwo+PiArCQl9Cj4+
-ICAJfQo+PiAgCj4+ICAJaWYgKHN0YXR1c191c3IyICYgVVNSMl9PUkUpIHsKPj4gLS0gCj4+IDIu
-MTQuMQo+Pgo+Pgo+IAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlz
-dHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2xpbnV4LWFybS1rZXJuZWwK
+Hello Troy,
+
+On Tue, Feb 20, 2018 at 12:25:16PM -0800, Troy Kisky wrote:
+> >> @@ -1028,6 +1027,7 @@ static int start_rx_dma(struct imx_port *sport)
+> >>  =
+
+> >>  static void clear_rx_errors(struct imx_port *sport)
+> >>  {
+> >> +	struct tty_port *port =3D &sport->port.state->port;
+> >>  	unsigned int status_usr1, status_usr2;
+> >>  =
+
+> >>  	status_usr1 =3D readl(sport->port.membase + USR1);
+> >> @@ -1036,12 +1036,18 @@ static void clear_rx_errors(struct imx_port *s=
+port)
+> >>  	if (status_usr2 & USR2_BRCD) {
+> >>  		sport->port.icount.brk++;
+> >>  		writel(USR2_BRCD, sport->port.membase + USR2);
+> >> -	} else if (status_usr1 & USR1_FRAMERR) {
+> >> -		sport->port.icount.frame++;
+> >> -		writel(USR1_FRAMERR, sport->port.membase + USR1);
+> >> -	} else if (status_usr1 & USR1_PARITYERR) {
+> >> -		sport->port.icount.parity++;
+> >> -		writel(USR1_PARITYERR, sport->port.membase + USR1);
+> >> +		if (tty_insert_flip_char(port, 0, TTY_BREAK) =3D=3D 0)
+> >> +			sport->port.icount.buf_overrun++;
+> >> +		tty_flip_buffer_push(port);
+> > =
+
+> > I think this needs to call uart_handle_break() as imx_rxint() does. Not=
+ sure
+> > how to properly handle SYSRQ in the dma case though.
+> > =
+
+> =
+
+> =
+
+> SYSRQ is only for the console port, and console port is never dma. But UP=
+F_SAK may be
+> an issue. I don't know enough about "Secure Attention Key" to say.
+> =
+
+> =
+
+> Should I add uart_handle_break anyway ?
+
+You're right about both SYSRQ and SAK. I think uart_handle_break is the
+right one for the latter.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
