@@ -1,84 +1,60 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v3 1/1] tty: serial: imx: allow breaks to be received
- when using dma
-Date: Wed, 21 Feb 2018 09:17:47 +0100
-Message-ID: <20180221081747.bajkq7kdgkx2ktug@pengutronix.de>
-References: <20180220182038.4325-1-troy.kisky@boundarydevices.com>
- <20180220195944.kgl4olfc7eitzpxg@pengutronix.de>
- <6a93d743-05ef-0b23-9419-913b9d2c78ee@boundarydevices.com>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH v2 9/9] serial: xuartps: Fix out-of-bounds access through
+ DT alias
+Date: Fri, 23 Feb 2018 14:41:38 +0100
+Message-ID: <8e402b43-e773-4a44-6a0a-6bac2e46aaa3@xilinx.com>
+References: <1519393117-31998-1-git-send-email-geert+renesas@glider.be>
+ <1519393117-31998-10-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <6a93d743-05ef-0b23-9419-913b9d2c78ee@boundarydevices.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Troy Kisky <troy.kisky@boundarydevices.com>
-Cc: gregkh@linuxfoundation.org, mort@bork.org, linux-serial@vger.kernel.org, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, l.stach@pengutronix.de
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1519393117-31998-10-git-send-email-geert+renesas@glider.be>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>,
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, Barry Song <baohua@kernel.org>, Vineet Gupta <vgupta@synopsys.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello Troy,
+On 23.2.2018 14:38, Geert Uytterhoeven wrote:
+> The cdns_uart_port[] array is indexed using a value derived from the
+> "serialN" alias in DT, which may lead to an out-of-bounds access.
+> 
+> Fix this by adding a range check.
+> 
+> Fixes: 928e9263492069ee ("tty: xuartps: Initialize ports according to aliases")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v2:
+>   - Fix Fixes reference.
+> ---
+>  drivers/tty/serial/xilinx_uartps.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> index b9b2bc76bcac606c..abcb4d09a2d866d0 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -1110,7 +1110,7 @@ static struct uart_port *cdns_uart_get_port(int id)
+>  	struct uart_port *port;
+>  
+>  	/* Try the given port id if failed use default method */
+> -	if (cdns_uart_port[id].mapbase != 0) {
+> +	if (id < CDNS_UART_NR_PORTS && cdns_uart_port[id].mapbase != 0) {
+>  		/* Find the next unused port */
+>  		for (id = 0; id < CDNS_UART_NR_PORTS; id++)
+>  			if (cdns_uart_port[id].mapbase == 0)
+> 
 
-On Tue, Feb 20, 2018 at 12:25:16PM -0800, Troy Kisky wrote:
-> >> @@ -1028,6 +1027,7 @@ static int start_rx_dma(struct imx_port *sport)
-> >>  =
+Reviewed-by: Michal Simek <michal.simek@xilinx.com>
 
-> >>  static void clear_rx_errors(struct imx_port *sport)
-> >>  {
-> >> +	struct tty_port *port =3D &sport->port.state->port;
-> >>  	unsigned int status_usr1, status_usr2;
-> >>  =
-
-> >>  	status_usr1 =3D readl(sport->port.membase + USR1);
-> >> @@ -1036,12 +1036,18 @@ static void clear_rx_errors(struct imx_port *s=
-port)
-> >>  	if (status_usr2 & USR2_BRCD) {
-> >>  		sport->port.icount.brk++;
-> >>  		writel(USR2_BRCD, sport->port.membase + USR2);
-> >> -	} else if (status_usr1 & USR1_FRAMERR) {
-> >> -		sport->port.icount.frame++;
-> >> -		writel(USR1_FRAMERR, sport->port.membase + USR1);
-> >> -	} else if (status_usr1 & USR1_PARITYERR) {
-> >> -		sport->port.icount.parity++;
-> >> -		writel(USR1_PARITYERR, sport->port.membase + USR1);
-> >> +		if (tty_insert_flip_char(port, 0, TTY_BREAK) =3D=3D 0)
-> >> +			sport->port.icount.buf_overrun++;
-> >> +		tty_flip_buffer_push(port);
-> > =
-
-> > I think this needs to call uart_handle_break() as imx_rxint() does. Not=
- sure
-> > how to properly handle SYSRQ in the dma case though.
-> > =
-
-> =
-
-> =
-
-> SYSRQ is only for the console port, and console port is never dma. But UP=
-F_SAK may be
-> an issue. I don't know enough about "Secure Attention Key" to say.
-> =
-
-> =
-
-> Should I add uart_handle_break anyway ?
-
-You're right about both SYSRQ and SAK. I think uart_handle_break is the
-right one for the latter.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Thanks,
+Michal
