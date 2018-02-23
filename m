@@ -1,16 +1,11 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 3/9] serial: imx: Fix out-of-bounds access through
- serial port index
-Date: Fri, 23 Feb 2018 14:51:29 +0100
-Message-ID: <20180223135129.lvk3rgepyuik7a2y@pengutronix.de>
-References: <1519393117-31998-1-git-send-email-geert+renesas@glider.be>
- <1519393117-31998-4-git-send-email-geert+renesas@glider.be>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2 0/9] serial: Fix out-of-bounds accesses through DT aliases
+Date: Fri, 23 Feb 2018 14:38:28 +0100
+Message-ID: <1519393117-31998-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1519393117-31998-4-git-send-email-geert+renesas@glider.be>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
  <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
@@ -20,28 +15,74 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>,
  <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
 Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: devicetree@vger.kernel.org, Barry Song <baohua@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Vineet Gupta <vgupta@synopsys.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, Barry Song <baohua@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Vineet Gupta <vgupta@synopsys.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 23, 2018 at 02:38:31PM +0100, Geert Uytterhoeven wrote:
-> The imx_ports[] array is indexed using a value derived from the
-> "serialN" alias in DT, or from platform data, which may lead to an
-> out-of-bounds access.
-> =
+	Hi all,
 
-> Fix this by adding a range check.
-> =
+Serial drivers used on DT platforms use the "serialN" alias in DT to
+obtain the serial port index for a specific port.  Drivers typically use
+a fixed-size array for keeping track of all available serial ports.
+However, several drivers do not perform any validation on the index
+obtained from DT, which may lead to out-of-bounds accesses of these
+fixed-size arrays.
 
-> Fixes: ff05967a07225ab6 ("serial/imx: add of_alias_get_id() reference bac=
-k")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+While the DTB passed to the kernel might be considered trusted, some of
+these out-of-bounds accesses can be triggered by a legitimate DTB:
+  - In some drivers the size of the array is defined by a Kconfig
+    symbol, so a user who doesn't need all serial ports may lower this
+    value rightfully,
+  - Tomorrow's new SoC may have more serial ports than the fixed-size
+    array in today's driver can accommodate, which the user may forget
+    to enlarge.
 
-Thanks for your time
-Uwe
+Hence this series fixes that by adding checks for out-of-range aliases,
+logging an error message when triggered.
 
--- =
+Changes compared to v1:
+  - Fix Fixes references,
+  - Use ARRAY_SIZE(),
+  - Fix off-by-one error in patch [5/9],
+  - Document where the non-DT case is also fixed by a patch.
 
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Tested on r8a7791/koelsch (sh-sci), all other drivers were
+compile-tested only.
+
+Thanks for your comments!
+
+Geert Uytterhoeven (9):
+  serial: arc_uart: Fix out-of-bounds access through DT alias
+  serial: fsl_lpuart: Fix out-of-bounds access through DT alias
+  serial: imx: Fix out-of-bounds access through serial port index
+  serial: mxs-auart: Fix out-of-bounds access through serial port index
+  serial: pxa: Fix out-of-bounds access through serial port index
+  serial: samsung: Fix out-of-bounds access through serial port index
+  serial: sh-sci: Fix out-of-bounds access through DT alias
+  serial: sirf: Fix out-of-bounds access through DT alias
+  serial: xuartps: Fix out-of-bounds access through DT alias
+
+ drivers/tty/serial/arc_uart.c      | 5 +++++
+ drivers/tty/serial/fsl_lpuart.c    | 4 ++++
+ drivers/tty/serial/imx.c           | 6 ++++++
+ drivers/tty/serial/mxs-auart.c     | 4 ++++
+ drivers/tty/serial/pxa.c           | 4 ++++
+ drivers/tty/serial/samsung.c       | 4 ++++
+ drivers/tty/serial/sh-sci.c        | 4 ++++
+ drivers/tty/serial/sirfsoc_uart.c  | 5 +++++
+ drivers/tty/serial/xilinx_uartps.c | 2 +-
+ 9 files changed, 37 insertions(+), 1 deletion(-)
+
+-- 
+2.7.4
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
