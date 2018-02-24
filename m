@@ -1,60 +1,98 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 7/9] serial: sh-sci: Fix out-of-bounds access through DT
- alias
-Date: Fri, 23 Feb 2018 14:38:35 +0100
-Message-ID: <1519393117-31998-8-git-send-email-geert+renesas@glider.be>
-References: <1519393117-31998-1-git-send-email-geert+renesas@glider.be>
+From: Troy Kisky <troy.kisky@boundarydevices.com>
+Subject: [PATCH v4 1/1] tty: serial: imx: allow breaks to be received when
+ using dma
+Date: Fri, 23 Feb 2018 18:27:50 -0800
+Message-ID: <20180224022750.20942-1-troy.kisky@boundarydevices.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1519393117-31998-1-git-send-email-geert+renesas@glider.be>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: devicetree@vger.kernel.org, Barry Song <baohua@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Vineet Gupta <vgupta@synopsys.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: gregkh@linuxfoundation.org
+Cc: mort@bork.org, Troy Kisky <troy.kisky@boundarydevices.com>, linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, l.stach@pengutronix.de
 List-Id: linux-serial@vger.kernel.org
 
-The sci_ports[] array is indexed using a value derived from the
-"serialN" alias in DT, which may lead to an out-of-bounds access.
+This allows me to login after sending a break when service
+serial-getty@ttymxc0.service is running
 
-Fix this by adding a range check.
+The "tty_insert_flip_char(port, 0, TTY_BREAK)" in clear_rx_errors
+fixes this by allowing the higher layers to see a break.
 
-Note that the array size is defined by a Kconfig symbol
-(CONFIG_SERIAL_SH_SCI_NR_UARTS), so this can even be triggered using a
-legitimate DTB.
+Also, call uart_handle_break to handle possible
+"secure attention key."
 
-Fixes: 97ed9790c514066b ("serial: sh-sci: Remove unused platform data capabilities field")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+FYI: Martin said the ROM sdma firmware works with this patch,
+but external sdma firmware still does not send breaks on a
+i.mx6UL
+
+Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
+Tested-by: Martin Hicks <mort@bork.org>
+Reviewed-by: Fabio Estevam <fabio.estevam@nxp.com>
+
 ---
-v2:
-  - Fix Fixes reference,
-  - Use ARRAY_SIZE().
+v2: rebase only
+v3: change commit message as requested by Fabio,
+    add tested-by
+v4: add uart_handle_break as Uwe requested
+    add Reviewed-by
+    added to commit message
 ---
- drivers/tty/serial/sh-sci.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/serial/imx.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 4d14f321cbec95e0..f6a6610d434efc33 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -3096,6 +3096,10 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
- 		dev_err(&pdev->dev, "failed to get alias id (%d)\n", id);
- 		return NULL;
- 	}
-+	if (id >= ARRAY_SIZE(sci_ports)) {
-+		dev_err(&pdev->dev, "serial%d out of range\n", id);
-+		return NULL;
-+	}
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 1d7ca382bc12..ace96283bdb8 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -927,7 +927,6 @@ static void dma_rx_callback(void *data)
+ 	status = dmaengine_tx_status(chan, (dma_cookie_t)0, &state);
  
- 	sp = &sci_ports[id];
- 	*dev_id = id;
+ 	if (status == DMA_ERROR) {
+-		dev_err(sport->port.dev, "DMA transaction error.\n");
+ 		clear_rx_errors(sport);
+ 		return;
+ 	}
+@@ -1028,6 +1027,7 @@ static int start_rx_dma(struct imx_port *sport)
+ 
+ static void clear_rx_errors(struct imx_port *sport)
+ {
++	struct tty_port *port = &sport->port.state->port;
+ 	unsigned int status_usr1, status_usr2;
+ 
+ 	status_usr1 = readl(sport->port.membase + USR1);
+@@ -1036,12 +1036,19 @@ static void clear_rx_errors(struct imx_port *sport)
+ 	if (status_usr2 & USR2_BRCD) {
+ 		sport->port.icount.brk++;
+ 		writel(USR2_BRCD, sport->port.membase + USR2);
+-	} else if (status_usr1 & USR1_FRAMERR) {
+-		sport->port.icount.frame++;
+-		writel(USR1_FRAMERR, sport->port.membase + USR1);
+-	} else if (status_usr1 & USR1_PARITYERR) {
+-		sport->port.icount.parity++;
+-		writel(USR1_PARITYERR, sport->port.membase + USR1);
++		uart_handle_break(&sport->port);
++		if (tty_insert_flip_char(port, 0, TTY_BREAK) == 0)
++			sport->port.icount.buf_overrun++;
++		tty_flip_buffer_push(port);
++	} else {
++		dev_err(sport->port.dev, "DMA transaction error.\n");
++		if (status_usr1 & USR1_FRAMERR) {
++			sport->port.icount.frame++;
++			writel(USR1_FRAMERR, sport->port.membase + USR1);
++		} else if (status_usr1 & USR1_PARITYERR) {
++			sport->port.icount.parity++;
++			writel(USR1_PARITYERR, sport->port.membase + USR1);
++		}
+ 	}
+ 
+ 	if (status_usr2 & USR2_ORE) {
 -- 
-2.7.4
+2.14.1
