@@ -1,77 +1,69 @@
 From: John Garry <john.garry@huawei.com>
-Subject: Re: [RFC PATCH 0/2] serial: 8250_dw: IO space + polling mode support
-Date: Mon, 26 Feb 2018 10:45:46 +0000
-Message-ID: <7221877b-a84a-63a1-ef86-1991f358df72@huawei.com>
+Subject: Re: [RFC PATCH 2/2] serial: 8250_dw: support polling mode
+Date: Mon, 26 Feb 2018 10:54:06 +0000
+Message-ID: <a97eeee3-07a0-5ca6-edc4-f5550ca4acbf@huawei.com>
 References: <1519324923-196857-1-git-send-email-john.garry@huawei.com>
- <1519381801.10722.103.camel@linux.intel.com>
- <3c4c5f58-a661-13c8-cc1c-8d43828982cb@huawei.com>
- <1519407117.10722.124.camel@linux.intel.com>
- <88214a3e-82cc-c931-804c-7dc90fb8721f@huawei.com>
- <1519638828.10722.153.camel@linux.intel.com>
+ <1519324923-196857-3-git-send-email-john.garry@huawei.com>
+ <1519407313.10722.127.camel@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1519638828.10722.153.camel@linux.intel.com>
+In-Reply-To: <1519407313.10722.127.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, gregkh@linuxfoundation.org, jslaby@suse.com, p.zabel@pengutronix.de, heiko@sntech.de, ed.blake@sondrel.com, jhogan@kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, gregkh@linuxfoundation.org, slaby@suse.com, p.zabel@pengutronix.de, heiko@sntech.de, ed.blake@sondrel.com, jhogan@kernel.org
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com
 List-Id: linux-serial@vger.kernel.org
 
-
-Hi Andy,
-
->>>> We require it for a development board for our hip06 platform.
->>>
->>> Okay, and this particular platform uses Synopsys IP?
+On 23/02/2018 17:35, Andy Shevchenko wrote:
+> On Fri, 2018-02-23 at 02:42 +0800, John Garry wrote:
+>> It would be useful to make this driver support some
+>> 8250-compatible devices which have no interrupt line.
 >>
->> As I see this uart is really a virtual 8250, so HW details like apb
->> clocks and the like are hidden, so may not be relevant.
->
-> Good to know.
->
->> However I will check with the BMC team to know the specific details.
->
->>>>>>  for supporting an 8250-compatible UART with
->>>>>> the following profile/features:
->>>>>> - platform device
->>>>>> - polling mode (i.e. no interrupt support)
->>>>>> - ACPI FW
->>>>>
->>>>> Elaborate this one, please.
->>>>
->>>> So we need to define our own HID here, and cannot use PNP
->>>> compatible
->>>> CID
->>>> (like PNP0501) as we cannot use the 8250 PNP driver.
->>>
->>> Why not? What are the impediments?
->>>
+>> For these, we allow for no interrupt, and will fallback on
+>> polling mode.
 >>
->> To support the host controller for this device, we will create an
->> MFD,
->> i.e. platform device, per slave device.
+>> Note: the 8250 dt bindings state that "interrupts"
+>> is a required property:
+>> "interrupts : should contain uart interrupt."
+>>
+>> But the 8250_of.c driver can live without it. So
+>> this patch is going this way also.
 >
-> There is no answer here...
+> It should be documented in the binding.
+
+Agreed. I find the wording a bit ambigious in bindings/serial/8250.txt 
+and snps-dw-apb-uart.txt:
+
+Required properties:
+[...]
+- interrupts : should contain uart interrupt.
+
+It uses the word "should", and not "must". Maybe "should" means "must"...
+
 >
->>>> This is related to the Hisi LPC ACPI support, where we would
->>>> create
->>>> an
->>>> MFD (i.e. platform device) for the UART.
->>>
->>> Why you can't do properly in ACPI?
+>>  	if (irq < 0) {
+>> -		if (irq != -EPROBE_DEFER)
+>> -			dev_err(dev, "cannot get irq\n");
+>> -		return irq;
+>> +		if (irq == -EPROBE_DEFER)
+>> +			return irq;
+>> +		dev_warn(dev, "cannot get irq, using polling
+>> mode\n");
+>> +		irq = 0;
 >
-> No answer here either.
+> NO_IRQ _is_ 0. You need to do something like
 >
-> Sorry, but with this level of communication it's no go for the series.
+> if (irq < 0) }
+>  ... leave existing code ...
+> }
+>
+> if (!irq)
+>  dev_warn(, "Use polling mode\n");
+
+OK
+
 >
 
-Sorry if my answers did not tell you want you want to know.
-
-My point was that the 8250_pnp driver would be used for a pnp_device, 
-but we are creating a platform device for this UART slave so would 
-require a platform device driver, that which 8250_dw.c is. But I will 
-check on pnp device support.
-
-Much appreciated,
+Thanks,
 John
