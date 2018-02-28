@@ -1,41 +1,53 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v7 04/37] earlycon: add reg-offset to physical address
- before mapping
-Date: Wed, 28 Feb 2018 13:39:35 +0100
-Message-ID: <20180228123935.GB10114@kroah.com>
-References: <cover.1518505384.git.greentime@andestech.com>
- <968497070242f849dd70ab1fa81635451f8fda7f.1518505384.git.greentime@andestech.com>
- <CAL_JsqJteT1P2GJGdesTsz=PuXU1qxiyhtKLURkGwV9sSQ7XZQ@mail.gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 2/2] serial: stm32: update interrupt initialization
+Date: Wed, 28 Feb 2018 17:40:16 +0200
+Message-ID: <CAHp75Vd+UcUSG7t6SxzTmUkB6d2TAYVmgO92m9iV0YVJ1=XbzA@mail.gmail.com>
+References: <1519815044-22669-1-git-send-email-bich.hemon@st.com> <1519815044-22669-3-git-send-email-bich.hemon@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqJteT1P2GJGdesTsz=PuXU1qxiyhtKLURkGwV9sSQ7XZQ@mail.gmail.com>
+In-Reply-To: <1519815044-22669-3-git-send-email-bich.hemon@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Greentime Hu <green.hu@gmail.com>, greentime@andestech.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, netdev <netdev@vger.kernel.org>, deanbo422@gmail.com, devicetree@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>, David Howells <dhowells@redhat.com>, Will Deacon <will.deacon@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert.uytterhoeven@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, ren_guo@c-sky.com, Randy Dunlap <rdunlap@infradead.org>, David Miller <davem@dave>
+To: Bich HEMON <bich.hemon@st.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Feb 15, 2018 at 09:40:49AM -0600, Rob Herring wrote:
-> On Tue, Feb 13, 2018 at 3:09 AM, Greentime Hu <green.hu@gmail.com> wrote:
-> > It will get the wrong virtual address because port->mapbase is not added
-> > the correct reg-offset yet. We have to update it before earlycon_map()
-> > is called
-> >
-> > Signed-off-by: Greentime Hu <greentime@andestech.com>
-> > Acked-by: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Peter Hurley <peter@hurleysoftware.com>
-> > Cc: stable@vger.kernel.org
-> > Fixes: 088da2a17619 ("of: earlycon: Initialize port fields from DT
-> > properties")
-> 
-> This should get applied now rather than sit in numerous revisions of
-> this series for nds32.
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
-> 
-> Greg, can you apply?
+On Wed, Feb 28, 2018 at 12:51 PM, Bich HEMON <bich.hemon@st.com> wrote:
+> For each port, get each IRQ using its specific name instead of its index.
+>
+> Signed-off-by: Bich Hemon <bich.hemon@st.com>
+> ---
+>  drivers/tty/serial/stm32-usart.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+> index 0fa735b..5c85cbc 100644
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -680,8 +680,8 @@ static int stm32_init_port(struct stm32_port *stm32port,
+>         port->flags     = UPF_BOOT_AUTOCONF;
+>         port->ops       = &stm32_uart_ops;
+>         port->dev       = &pdev->dev;
+> -       port->irq       = platform_get_irq(pdev, 0);
+> -       stm32port->wakeirq = platform_get_irq(pdev, 1);
 
-Yes, will queue it up now, thanks.
+> +       port->irq       = platform_get_irq_byname(pdev, "event");
 
-greg k-h
+This is I have no idea about...
+
+> +       stm32port->wakeirq = platform_get_irq_byname(pdev, "wakeup");
+
+But this one is redundant since Tony's patch:
+https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=bleeding-edge&id=da997b22c40473b7db60bde6ea188d35565d10c8
+
+>         stm32port->fifoen = stm32port->info->cfg.has_fifo;
+>
+>         res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> --
+> 1.9.1
+
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
