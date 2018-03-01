@@ -1,53 +1,55 @@
-From: Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [PATCH] Bluetooth: btusb: Remove Yoga 920 from the
- btusb_needs_reset_resume_table
-Date: Thu, 1 Mar 2018 08:43:35 +0100
-Message-ID: <2F0ACD89-F225-479A-A65E-2F84E60781D3@holtmann.org>
-References: <20180228105750.6491-1-hdegoede@redhat.com>
- <20180228105750.6491-2-hdegoede@redhat.com>
-Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
-Content-Type: text/plain;
-        charset=us-ascii
+From: Bich HEMON <bich.hemon@st.com>
+Subject: [PATCH] can: m_can: select pinctrl state in each suspend/resume
+ function
+Date: Thu, 1 Mar 2018 12:29:50 +0000
+Message-ID: <1519907380-15135-1-git-send-email-bich.hemon@st.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20180228105750.6491-2-hdegoede@redhat.com>
-Sender: stable-owner@vger.kernel.org
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Kai-Heng Feng <kai.heng.feng@canonical.com>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, stable <stable@vger.kernel.org>, Brian Norris <briannorris@chromium.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Bich HEMON <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Hans,
+Make sure to apply the correct pin state in suspend/resume callbacks.
+Putting pins in sleep state saves power.
 
-> Commit 55a9c95d70ab ("Bluetooth: btusb: Use DMI matching for QCA
-> reset_resume quirking"), added the Lenovo Yoga 920 to the
-> btusb_needs_reset_resume_table.
-> 
-> Testing has shown that this is a false positive and the problems where
-> caused by issues with the initial fix: commit fd865802c66b ("Bluetooth:
-> btusb: fix QCA Rome suspend/resume"), which has already been reverted.
-> 
-> So the QCA Rome BT in the Yoga 920 does not need a reset-resume quirk at
-> all and this commit removes it from the btusb_needs_reset_resume_table.
-> 
-> Note that after this commit the btusb_needs_reset_resume_table is now
-> empty. It is kept around on purpose, since this whole series of commits
-> started for a reason and there are actually broken platforms around,
-> which need to be added to it.
-> 
-> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1514836
-> Fixes: 55a9c95d70ab ("Bluetooth: btusb: Use DMI matching for QCA ...")
-> Cc: stable@vger.kernel.org
-> Cc: Brian Norris <briannorris@chromium.org>
-> Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> Tested-by: Kevin Fenzi <kevin@scrye.com>
-> Suggested-by: Brian Norris <briannorris@chromium.org>
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
-> drivers/bluetooth/btusb.c | 7 -------
-> 1 file changed, 7 deletions(-)
+Signed-off-by: Bich Hemon <bich.hemon@st.com>
+---
+ drivers/net/can/m_can/m_can.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-patch has been applied to bluetooth-stable tree.
-
-Regards
-
-Marcel
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 2594f77..a86ef69 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1700,6 +1700,8 @@ static __maybe_unused int m_can_suspend(struct device *dev)
+ 		m_can_clk_stop(priv);
+ 	}
+ 
++	pinctrl_pm_select_sleep_state(dev);
++
+ 	priv->can.state = CAN_STATE_SLEEPING;
+ 
+ 	return 0;
+@@ -1710,6 +1712,8 @@ static __maybe_unused int m_can_resume(struct device *dev)
+ 	struct net_device *ndev = dev_get_drvdata(dev);
+ 	struct m_can_priv *priv = netdev_priv(ndev);
+ 
++	pinctrl_pm_select_default_state(dev);
++
+ 	m_can_init_ram(priv);
+ 
+ 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
+-- 
+1.9.1
