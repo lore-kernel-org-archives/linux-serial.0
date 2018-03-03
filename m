@@ -1,119 +1,73 @@
-From: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Subject: [PATCH] serial: mxs-auart: disable clks of Alphascale ASM9260
-Date: Sat,  3 Mar 2018 01:42:01 +0300
-Message-ID: <1520030521-19049-1-git-send-email-khoroshilov@ispras.ru>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v2] earlycon: Allow specifying a uartclk in options
+Date: Sat, 3 Mar 2018 17:38:43 +0200
+Message-ID: <CAHp75Vcnuc48xb167hu5nz3iv9uSp2jRw+M-w=yBihex6RTXYQ@mail.gmail.com>
+References: <20180301184335.248378-1-djkurtz@chromium.org> <CAHp75VfHuNHnjMqsvLZPSNeP57YX1CDZgf=EH-JNSh5bAVdUBA@mail.gmail.com>
+ <CAGS+omCfVUPb0yq3XOEqO_zQ0_uppkKaGhqtB0OqXmQDK9xH1Q@mail.gmail.com>
+ <CAHp75VfL82ujwBa1h0B8nEgBtFcBJPmS9ir7H5YWByDgxFGskA@mail.gmail.com> <CAE2855vbQyMwu8pmH-Sq1kA+=h5TJPWddTWPQoVdEqOn6sAyBw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAE2855vbQyMwu8pmH-Sq1kA+=h5TJPWddTWPQoVdEqOn6sAyBw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>, Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
+To: Aaron Durbin <adurbin@chromium.org>
+Cc: Daniel Kurtz <djkurtz@chromium.org>, Brian Norris <briannorris@chromium.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Ingo Molnar <mingo@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Christoffer Dall <cdall@linaro.org>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, Marc Zyngier <marc.zyngier@arm.com>, Frederic Weisbecker <frederic@kernel.org>, David Woodhouse <dwmw@amazon.co.uk>, Tom Saeger <tom.saeger@oracle.com>, Mimi Zohar <zohar@linux.vnet.ibm.com>, "Levin, Alexander (Sasha Levin)" <alexander.levin@verizon.com>, Linux Documentation List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.>
 List-Id: linux-serial@vger.kernel.org
 
-In case of Alphascale ASM9260 probe() enables s->clk and s->clk_ahb
-via mxs_get_clks(), but there is no disable of the clocks.
-The patch adds it to error paths and to mxs_auart_remove().
+On Thu, Mar 1, 2018 at 11:24 PM, Aaron Durbin <adurbin@chromium.org> wrote:
+> On Thu, Mar 1, 2018 at 1:02 PM, Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+>> On Thu, Mar 1, 2018 at 9:22 PM, Daniel Kurtz <djkurtz@chromium.org> wrote:
+>>> On Thu, Mar 1, 2018 at 11:47 AM Andy Shevchenko <andy.shevchenko@gmail.com>
+>>> wrote:
+>>
+>>> "earlycon simply does not utilize the information".
+>>>
+>>> earlycon parses iotype, mapbase and baud (from options).  However, it is
+>>> hard-coded to assume that the clock used to generate the UART bitclock is
+>>> always "BASE_BAUD * 16" (1843200).  While this may be true for many UARTs,
+>>> it isn't true for AMD's CZ/ST which has a 8250_dw and uses a fixed 48 MHz
+>>> clock.  The main 8250_dw driver uses devm_clk_get to get the "baudclk" and
+>>> uses its rate to initialize uartclk.  For AMD CZ/ST, this "baudclk" is
+>>> actually a set up in acpi_apd.c when there is an acpi match for "AMD0020",
+>>> with a rate read from the .fixed_clk_rate param of the corresponding
+>>> apd_device_desc.
+>>>
+>>> This patch attempts to add a way to inform earlycon about this clock.  As
+>>> noted above, the information is actually already in the kernel and used by
+>>> 8250_dw - I would happy be to hear recommendations for wiring this data
+>>> into earlycon that doesn't require adding another command line arg.
+>>
+>> And it should not require that for sure!
+>
+> But it does require that. There's an input clock to the uart ip block.
+> That is a design constraint by the hardware and is required to make
+> baud calculation work.
 
-Found by Linux Driver Verification project (linuxtesting.org).
+I mean it should not be user's headache to provide this information to
+the system.
 
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Fixes: 254da0d753fb ("serial: mxs-auart: add Alphascale ASM9260 support")
----
- drivers/tty/serial/mxs-auart.c | 36 +++++++++++++++++++++++-------------
- 1 file changed, 23 insertions(+), 13 deletions(-)
+> It's not a firmware problem.
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 079dc47aa142..531c374a5e3e 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -1674,8 +1674,10 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!r)
--		return -ENXIO;
-+	if (!r) {
-+		ret = -ENXIO;
-+		goto out_disable_clks;
-+	}
- 
- 	s->port.mapbase = r->start;
- 	s->port.membase = ioremap(r->start, resource_size(r));
-@@ -1690,21 +1692,23 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	s->mctrl_prev = 0;
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (irq < 0)
--		return irq;
-+	if (irq < 0) {
-+		ret = irq;
-+		goto out_disable_clks;
-+	}
- 
- 	s->port.irq = irq;
- 	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
- 			       dev_name(&pdev->dev), s);
- 	if (ret)
--		return ret;
-+		goto out_disable_clks;
- 
- 	platform_set_drvdata(pdev, s);
- 
- 	ret = mxs_auart_init_gpios(s, &pdev->dev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Failed to initialize GPIOs.\n");
--		return ret;
-+		goto out_disable_clks;
- 	}
- 
- 	/*
-@@ -1712,7 +1716,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	 */
- 	ret = mxs_auart_request_gpio_irq(s);
- 	if (ret)
--		return ret;
-+		goto out_disable_clks;
- 
- 	auart_port[s->port.line] = s;
- 
-@@ -1720,7 +1724,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 
- 	ret = uart_add_one_port(&auart_driver, &s->port);
- 	if (ret)
--		goto out_disable_clks_free_qpio_irq;
-+		goto out_free_qpio_irq;
- 
- 	/* ASM9260 don't have version reg */
- 	if (is_asm9260_auart(s)) {
-@@ -1734,13 +1738,15 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
--out_disable_clks_free_qpio_irq:
--	if (s->clk)
--		clk_disable_unprepare(s->clk_ahb);
--	if (s->clk_ahb)
--		clk_disable_unprepare(s->clk_ahb);
-+out_free_qpio_irq:
- 	mxs_auart_free_gpio_irq(s);
- 	auart_port[pdev->id] = NULL;
-+
-+out_disable_clks:
-+	if (is_asm9260_auart(s)) {
-+		clk_disable_unprepare(s->clk);
-+		clk_disable_unprepare(s->clk_ahb);
-+	}
- 	return ret;
- }
- 
-@@ -1751,6 +1757,10 @@ static int mxs_auart_remove(struct platform_device *pdev)
- 	uart_remove_one_port(&auart_driver, &s->port);
- 	auart_port[pdev->id] = NULL;
- 	mxs_auart_free_gpio_irq(s);
-+	if (is_asm9260_auart(s)) {
-+		clk_disable_unprepare(s->clk);
-+		clk_disable_unprepare(s->clk_ahb);
-+	}
- 
- 	return 0;
- }
+If it's ACPI, then it's definitely firmware issue, since SPCR provides
+a baudrate.
+
+> Its the driver's problem in that it
+> assumes an input clock to the uart block that does not reflect
+> reality.
+
+So, driver can't get this info from device tree or what?
+
+>> Okay, configures a necessary IPs to feed UART with expected 1.8432M clock.
+>
+> That's only possible if there is a clock divider on the front end of
+> the uart block. For this hardware that's not the case. I actually did
+> this very thing on intel chromebook devices, but it was only possible
+> because there was a hardware divider that could be tuned to reach the
+> assumed clock that the code currently assumes.
+
+OK.
+
 -- 
-2.7.4
+With Best Regards,
+Andy Shevchenko
