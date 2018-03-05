@@ -1,131 +1,264 @@
-From: Aaron Durbin <adurbin@chromium.org>
-Subject: Re: [PATCH v2] earlycon: Allow specifying a uartclk in options
-Date: Sat, 3 Mar 2018 12:27:11 -0700
-Message-ID: <CAE2855sBoLaXjFwSKMqH7y9+6sO87-mrRM6Ojm+Xam4vwE3gjQ@mail.gmail.com>
-References: <20180301184335.248378-1-djkurtz@chromium.org> <CAHp75VfHuNHnjMqsvLZPSNeP57YX1CDZgf=EH-JNSh5bAVdUBA@mail.gmail.com>
- <CAGS+omCfVUPb0yq3XOEqO_zQ0_uppkKaGhqtB0OqXmQDK9xH1Q@mail.gmail.com>
- <CAHp75VfL82ujwBa1h0B8nEgBtFcBJPmS9ir7H5YWByDgxFGskA@mail.gmail.com>
- <CAGS+omB76qbiuYjs7Rakff2JB7263_m5TRYDgvKM+wdBpaedNA@mail.gmail.com> <CAHp75Veu=0w2sWpgn0mNFa0G3Gwp2SpHv55vPgLiWjrCAzaiGw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: [RFC PATCH] cdc-acm: do not drop data from fast devices
+Date: Mon,  5 Mar 2018 10:55:39 +0100
+Message-ID: <20180305095539.13698-1-romain.izard.pro@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Veu=0w2sWpgn0mNFa0G3Gwp2SpHv55vPgLiWjrCAzaiGw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Daniel Kurtz <djkurtz@chromium.org>, Aaron Durbin <adurbin@chromium.org>, Brian Norris <briannorris@chromium.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Ingo Molnar <mingo@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Christoffer Dall <cdall@linaro.org>, Paul McKenney <paulmck@linux.vnet.ibm.com>, Marc Zyngier <marc.zyngier@arm.com>, Frederic Weisbecker <frederic@kernel.org>, David Woodhouse <dwmw@amazon.co.uk>, Tom Saeger <tom.saeger@oracle.com>, Mimi Zohar <zohar@linux.vnet.ibm.com>, "Levin, Alexander (Sasha Levin)" <alexander.levin@verizon.com>, Linux Documentation List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, open list:SE
+To: Oliver Neukum <oneukum@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Romain Izard <romain.izard.pro@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Mar 3, 2018 at 8:56 AM, Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Fri, Mar 2, 2018 at 8:35 PM, Daniel Kurtz <djkurtz@chromium.org> wrote:
->> On Thu, Mar 1, 2018 at 1:02 PM Andy Shevchenko <andy.shevchenko@gmail.com>
->> wrote:
->>> On Thu, Mar 1, 2018 at 9:22 PM, Daniel Kurtz <djkurtz@chromium.org> wrote:
->>> > On Thu, Mar 1, 2018 at 11:47 AM Andy Shevchenko <
->> andy.shevchenko@gmail.com>
->>> > wrote:
->
->> the UART bitclock
->> is
->>> > always "BASE_BAUD * 16" (1843200).  While this may be true for many
->> UARTs,
->>> > it isn't true for AMD's CZ/ST which has a 8250_dw and uses a fixed 48
->> MHz
->>> > clock.  The main 8250_dw driver uses devm_clk_get to get the "baudclk"
->> and
->>> > uses its rate to initialize uartclk.  For AMD CZ/ST, this "baudclk" is
->>> > actually a set up in acpi_apd.c when there is an acpi match for
->> "AMD0020",
->>> > with a rate read from the .fixed_clk_rate param of the corresponding
->>> > apd_device_desc.
->
->> As
->>> > noted above, the information is actually already in the kernel and used
->> by
->>> > 8250_dw - I would happy be to hear recommendations for wiring this data
->>> > into earlycon that doesn't require adding another command line arg.
->
-> Brief look at the code shows that ->setup() call back is executed
-> after setting initial (which is hardcoded) clock.
->
-> What you need is to either create another type of earlycon for your
-> device with accompanied ->setup() callback, or patch 8250_early.c.
+There are some devices using their USB CDC-ACM interfaces as a debug port
+that are able to send data at a very high speed, but with the current
+driver implementation it is not possible to receive it when using a
+relatively slow embedded system without dropping an important part of the
+data.
 
-If I'm understand you correctly, you are suggesting new driver code
-that sets the clock accordingly within the port structure such that
-the baud rate calculation actually works based on the correct input
-clock? Why wouldn't we just extened the generic earlycon driver like
-the original patch to support providing the clock? Anything in the
-earlycon path that tries to set a baud rate will fail once the
-hard-coded input clock assumption doesn't hold true. Why not provide
-the ability to correct the assumption for platforms that need it?
+The existing driver uses the throttling mechanism of the TTY line
+discipline to regulate the speed of the data transmitted from the port to
+the upper layers. This throttling prevents URBs from being resubmitted,
+slowing down the transfer on the USB line. But the existing code does not
+work correctly when the internal bufferring gets filled.
 
->
->>> > I see that support was also added recently to earlycon to let it use
->> ACPI
->>> > SPCR to choose a console and configure its parameters... but AFAICT,
->> this
->>> > path also doesn't allow specifying the uart clock.
->
-> It does specify baudrate. It means it's _firmware_ responsibility to
-> configure UART device properly.
+The TTY buffer is 4096 bytes large, throttling when there are only 128
+free bytes left, and unthrottling when there are only 128 bytes available.
+But the TTY buffer is filled from an intermediate flip buffer that
+contains up to 64 KiB of data, and each time unthrottle() is called 16
+URBs are scheduled by the driver, sending up to 16 KiB to the flip buffer.
+As the result of tty_insert_flip_string() is not checked in the URB
+reception callback, data can be lost when the flip buffer is filled faster
+than the TTY is emptied.
 
-baudrate != input clock. The issue is that once the driver code
-attempts to set a baud rate w/o having the correct input clock then
-things break.
+Moreover, as the URB callbacks are called from a tasklet context, whereas
+throttling is called from the system workqueue, it is possible for the
+throttling to be delayed by high traffic in the tasklet. As a result,
+completed URBs can be resubmitted even if the flip buffer is full, and we
+request more data from the device only to drop it immediately.
 
->
->>> Fix your firmware then. It should set console to 115200 like (almost)
->>> everyone does.
->>> Okay, configures a necessary IPs to feed UART with expected 1.8432M clock.
->>
->> The console is 115200 when it is enabled.  However, the firmware does not
->> always enable it by default.
->
-> Another firmware bug.
+To prevent this problem, the URBs whose data did not reach the flip buffer
+are placed in a waiting list, which is only processed when the serial port
+is unthrottled.
 
-It's more complex than that. You seem to take the stance that the
-firmware should bring every IP block out of reset and/or clock and
-power gating. That then subsequently requires the kernel to enable all
-those soc drivers that put those devices in power or clock gated state
-to reach the maximum power savings. While that's certainly possible,
-it just leads to bloated kernels. That is orthogonal to the problem of
-setting baud rate w/o knowing the proper input clock frequency,
-though.
+Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
 
-If we do make the assumption the firmware sets up the uart, but the
-kernel earlycon has a different baud rate specified than what firmware
-set up then the baud rate calculation would be wrong as well since the
-input clock isn't known. As such one cannot use earlycon when: 1.
-firmware doesn't set up uart 2. firmware baud rate != earlycon
-specified baud rate.  Providing the proper input clock for the device
-in question solves both 1 and 2.
+--
 
->
->> The problem is that the UART IP block has a fixed 48 MHz input clock, but
->> earlycon assumes this clock is always 1843200.
->
->> I looked a bit further, and I think this patch (or something similar) is
->> still required to teach generic earlycon how to handle an explicit
->> port->uartclk (ie, one that is not 1843200).
->> The extended string can then be explicitly set on the kernel command line
->> for this kind of hardware.
->
-> No.
->
->> In addition, we can add another patch with a new quirk detector in
->> drivers/acpi/spcr.c:acpi_parse_spcr() to handle this hardware.
->> acpi_parse_spcr() can then use the extended option string to pass in the
->> appropriate UART clock to setup_eralycon().
->
-> Definitely no. It's not defined in SPCR spec.
->
->> This would again allow a user to just use the simple command line parameter
->> "earlycon" if the device's firmware has a correctly confiured ACPI SPCR
->> table.
->
-> NAK to the patch, see above alternatives.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+This is working when using the normal line discipline on ttyACM. But
+there is a big hole in this: other line disciplines do not use throttling
+and thus unthrottle is never called. The URBs will never get resubmitted,
+and the port is dead. Unfortunately, there is no notification when the
+flip buffer is ready to receive new data, so the only alternative would
+be to schedule a timer polling the flip buffer. But with an additional
+asynchronous process in the mix, the code starts to be very brittle.
+
+I believe this issue is not limited to ttyACM. As the TTY layer is not
+performance-oriented, it can be easy to overwhelm devices with a low
+available processing power. In my case, a modem sending a sustained 2 MB/s
+on a debug port (exported as a CDC-ACM port) was enough to trigger the
+issue. The code handling the CDC-ACM class and the generic USB serial port
+is very similar when it comes to URB handling, so all drivers that rely on
+that code have the same issue.
+
+But in general, it seems to me that there is no code in the kernel that
+checks the return value of tty_insert_flip_string(). This means that we
+are working with the assumption that the kernel will consume the data
+faster than the source can send it, or that the upper layer will be
+able or willing to throttle it fast enough to avoid losing data.
+
+
+---
+ drivers/usb/class/cdc-acm.c | 80 ++++++++++++++++++++++++++++++++++++++++-----
+ drivers/usb/class/cdc-acm.h |  4 +++
+ 2 files changed, 75 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
+index 7b366a6c0b49..833fa0a43ddd 100644
+--- a/drivers/usb/class/cdc-acm.c
++++ b/drivers/usb/class/cdc-acm.c
+@@ -150,12 +150,18 @@ static inline int acm_set_control(struct acm *acm, int control)
+ static void acm_kill_urbs(struct acm *acm)
+ {
+ 	int i;
++	struct acm_rb *rb, *t;
+ 
+ 	usb_kill_urb(acm->ctrlurb);
+ 	for (i = 0; i < ACM_NW; i++)
+ 		usb_kill_urb(acm->wb[i].urb);
+ 	for (i = 0; i < acm->rx_buflimit; i++)
+ 		usb_kill_urb(acm->read_urbs[i]);
++	list_for_each_entry_safe(rb, t, &acm->wait_list, node) {
++		set_bit(rb->index, &acm->read_urbs_free);
++		rb->offset = 0;
++		list_del_init(&rb->node);
++	}
+ }
+ 
+ /*
+@@ -454,14 +460,27 @@ static int acm_submit_read_urbs(struct acm *acm, gfp_t mem_flags)
+ 	return 0;
+ }
+ 
+-static void acm_process_read_urb(struct acm *acm, struct urb *urb)
++static int acm_process_read_urb(struct acm *acm, struct urb *urb)
+ {
++	int flipped, remainder;
++	struct acm_rb *rb = urb->context;
+ 	if (!urb->actual_length)
+-		return;
++		return 0;
++	flipped = tty_insert_flip_string(&acm->port,
++			urb->transfer_buffer + rb->offset,
++			urb->actual_length - rb->offset);
++	rb->offset += flipped;
++	remainder = urb->actual_length - rb->offset;
++	if (remainder != 0)
++		dev_dbg(&acm->data->dev,
++			"remaining data: usb %d len %d offset %d flipped %d\n",
++			rb->index, urb->actual_length, rb->offset, flipped);
++	else
++		rb->offset = 0;
+ 
+-	tty_insert_flip_string(&acm->port, urb->transfer_buffer,
+-			urb->actual_length);
+ 	tty_flip_buffer_push(&acm->port);
++
++	return remainder;
+ }
+ 
+ static void acm_read_bulk_callback(struct urb *urb)
+@@ -474,17 +493,29 @@ static void acm_read_bulk_callback(struct urb *urb)
+ 	dev_vdbg(&acm->data->dev, "got urb %d, len %d, status %d\n",
+ 		rb->index, urb->actual_length, status);
+ 
+-	set_bit(rb->index, &acm->read_urbs_free);
+-
+ 	if (!acm->dev) {
+ 		dev_dbg(&acm->data->dev, "%s - disconnected\n", __func__);
++		set_bit(rb->index, &acm->read_urbs_free);
+ 		return;
+ 	}
+ 
++	if (status == 0) {
++		int rem = urb->actual_length;
++
++		usb_mark_last_busy(acm->dev);
++		if (list_empty_careful(&acm->wait_list))
++			rem = acm_process_read_urb(acm, urb);
++		if (rem) {
++			dev_vdbg(&acm->data->dev,
++				"queuing urb %d\n", rb->index);
++			list_add_tail(&rb->node, &acm->wait_list);
++			return;
++		}
++	}
++	set_bit(rb->index, &acm->read_urbs_free);
++
+ 	switch (status) {
+ 	case 0:
+-		usb_mark_last_busy(acm->dev);
+-		acm_process_read_urb(acm, urb);
+ 		break;
+ 	case -EPIPE:
+ 		set_bit(EVENT_RX_STALL, &acm->flags);
+@@ -518,6 +549,8 @@ static void acm_read_bulk_callback(struct urb *urb)
+ 		acm_submit_read_urb(acm, rb->index, GFP_ATOMIC);
+ 	} else {
+ 		spin_unlock_irqrestore(&acm->read_lock, flags);
++		dev_vdbg(&acm->data->dev,
++			"urb %d is suspended by throttling\n", rb->index);
+ 	}
+ }
+ 
+@@ -549,8 +582,14 @@ static void acm_softint(struct work_struct *work)
+ 
+ 	if (test_bit(EVENT_RX_STALL, &acm->flags)) {
+ 		if (!(usb_autopm_get_interface(acm->data))) {
++			struct acm_rb *rb, *t;
+ 			for (i = 0; i < acm->rx_buflimit; i++)
+ 				usb_kill_urb(acm->read_urbs[i]);
++			list_for_each_entry_safe(rb, t, &acm->wait_list, node) {
++				set_bit(rb->index, &acm->read_urbs_free);
++				rb->offset = 0;
++				list_del_init(&rb->node);
++			}
+ 			usb_clear_halt(acm->dev, acm->in);
+ 			acm_submit_read_urbs(acm, GFP_KERNEL);
+ 			usb_autopm_put_interface(acm->data);
+@@ -901,14 +940,32 @@ static void acm_tty_unthrottle(struct tty_struct *tty)
+ {
+ 	struct acm *acm = tty->driver_data;
+ 	unsigned int was_throttled;
++	struct acm_rb *rb, *t;
++	bool processed = false;
++	int rem = 0;
+ 
+ 	spin_lock_irq(&acm->read_lock);
++
++	list_for_each_entry_safe(rb, t, &acm->wait_list, node) {
++		dev_vdbg(&acm->data->dev, "processing urb %d: %d/%d\n",
++			rb->index, rb->offset, rb->urb->actual_length);
++		rem = acm_process_read_urb(acm, rb->urb);
++		if (rem) {
++			spin_unlock_irq(&acm->read_lock);
++			return;
++		}
++		processed = true;
++		set_bit(rb->index, &acm->read_urbs_free);
++		rb->offset = 0;
++		list_del_init(&rb->node);
++	}
++
+ 	was_throttled = acm->throttled;
+ 	acm->throttled = 0;
+ 	acm->throttle_req = 0;
+ 	spin_unlock_irq(&acm->read_lock);
+ 
+-	if (was_throttled)
++	if (was_throttled || processed)
+ 		acm_submit_read_urbs(acm, GFP_KERNEL);
+ }
+ 
+@@ -1430,6 +1487,8 @@ static int acm_probe(struct usb_interface *intf,
+ 	if (!acm->ctrlurb)
+ 		goto alloc_fail5;
+ 
++	INIT_LIST_HEAD(&acm->wait_list);
++
+ 	for (i = 0; i < num_rx_buf; i++) {
+ 		struct acm_rb *rb = &(acm->read_buffers[i]);
+ 		struct urb *urb;
+@@ -1445,6 +1504,9 @@ static int acm_probe(struct usb_interface *intf,
+ 		if (!urb)
+ 			goto alloc_fail6;
+ 
++		rb->offset = 0;
++		rb->urb = urb;
++		INIT_LIST_HEAD(&rb->node);
+ 		urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+ 		urb->transfer_dma = rb->dma;
+ 		if (usb_endpoint_xfer_int(epread))
+diff --git a/drivers/usb/class/cdc-acm.h b/drivers/usb/class/cdc-acm.h
+index eacc116e83da..cee849a79371 100644
+--- a/drivers/usb/class/cdc-acm.h
++++ b/drivers/usb/class/cdc-acm.h
+@@ -77,7 +77,10 @@ struct acm_rb {
+ 	unsigned char		*base;
+ 	dma_addr_t		dma;
+ 	int			index;
++	struct urb		*urb;
+ 	struct acm		*instance;
++	unsigned int		offset;
++	struct list_head	node;
+ };
+ 
+ struct acm {
+@@ -96,6 +99,7 @@ struct acm {
+ 	unsigned long read_urbs_free;
+ 	struct urb *read_urbs[ACM_NR];
+ 	struct acm_rb read_buffers[ACM_NR];
++	struct list_head wait_list;
+ 	struct acm_wb *putbuffer;			/* for acm_tty_put_char() */
+ 	int rx_buflimit;
+ 	spinlock_t read_lock;
+-- 
+2.14.1
