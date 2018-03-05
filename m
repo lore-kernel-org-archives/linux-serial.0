@@ -1,74 +1,79 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/2] ARM: dts: STi: Fix aliases property name for STi boards
-Date: Mon, 5 Mar 2018 09:28:08 -0600
-Message-ID: <CABGGiszEcvKHGE54vOXPBUJeReAKbgmrxRyRxNfQQoL6D54GCw@mail.gmail.com>
-References: <1520262025-21088-1-git-send-email-patrice.chotard@st.com> <1520262025-21088-2-git-send-email-patrice.chotard@st.com>
+From: Oliver Neukum <oneukum@suse.com>
+Subject: Re: [RFC PATCH] cdc-acm: do not drop data from fast devices
+Date: Mon, 05 Mar 2018 17:04:31 +0100
+Message-ID: <1520265871.6256.15.camel@suse.com>
+References: <20180305095539.13698-1-romain.izard.pro@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1520262025-21088-2-git-send-email-patrice.chotard@st.com>
+In-Reply-To: <20180305095539.13698-1-romain.izard.pro@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: patrice.chotard@st.com
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux@armlinux.org.uk, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-serial@vger.kernel.org
+To: Romain Izard <romain.izard.pro@gmail.com>, johan@kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Mar 5, 2018 at 9:00 AM,  <patrice.chotard@st.com> wrote:
-> From: Patrice Chotard <patrice.chotard@st.com>
->
-> Since dtc v1.4.6-9-gaadd0b65c987, aliases property name must
-> be lowercase only.
-> This allows to fix following warnings when compiling dtb
-> with W=1 option :
+On Mon, 2018-03-05 at 10:55 +0100, Romain Izard wrote:
 
-I'm so glad to see fixes before the dtc update landed in the kernel tree!
+> The TTY buffer is 4096 bytes large, throttling when there are only 128
+> free bytes left, and unthrottling when there are only 128 bytes available.
+> But the TTY buffer is filled from an intermediate flip buffer that
+> contains up to 64 KiB of data, and each time unthrottle() is called 16
+> URBs are scheduled by the driver, sending up to 16 KiB to the flip buffer.
+> As the result of tty_insert_flip_string() is not checked in the URB
+> reception callback, data can be lost when the flip buffer is filled faster
+> than the TTY is emptied.
 
-> arch/arm/boot/dts/stih418-b2199.dtb: Warning (alias_paths): /aliases: aliases property name must include only lowercase and '-'
-> arch/arm/boot/dts/stih407-b2120.dtb: Warning (alias_paths): /aliases: aliases property name must include only lowercase and '-'
-> arch/arm/boot/dts/stih410-b2260.dtb: Warning (alias_paths): /aliases: aliases property name must include only lowercase and '-'
-> arch/arm/boot/dts/stih410-b2120.dtb: Warning (alias_paths): /aliases: aliases property name must include only lowercase and '-'
->
-> Signed-off-by: Patrice Chotard <patrice.chotard@st.com>
-> ---
->  arch/arm/boot/dts/stih407-b2120.dts | 4 ++--
->  arch/arm/boot/dts/stih410-b2120.dts | 4 ++--
->  arch/arm/boot/dts/stih410-b2260.dts | 4 ++--
->  arch/arm/boot/dts/stih418-b2199.dts | 4 ++--
->  4 files changed, 8 insertions(+), 8 deletions(-)
->
-> diff --git a/arch/arm/boot/dts/stih407-b2120.dts b/arch/arm/boot/dts/stih407-b2120.dts
-> index c8ad905d0309..fa1186af6574 100644
-> --- a/arch/arm/boot/dts/stih407-b2120.dts
-> +++ b/arch/arm/boot/dts/stih407-b2120.dts
-> @@ -14,7 +14,7 @@
->         compatible = "st,stih407-b2120", "st,stih407";
->
->         chosen {
-> -               bootargs = "console=ttyAS0,115200 clk_ignore_unused";
-> +               bootargs = "console=ttyas0,115200 clk_ignore_unused";
+It seems to me that the problem is in the concept here. If you cannot
+take all data, you should tell the lower layer how much data you can
+take.
 
-The kernel change for this is an ABI breakage both DT <-> kernel and
-kernel <-> userspace.
+> Moreover, as the URB callbacks are called from a tasklet context, whereas
+> throttling is called from the system workqueue, it is possible for the
+> throttling to be delayed by high traffic in the tasklet. As a result,
+> completed URBs can be resubmitted even if the flip buffer is full, and we
+> request more data from the device only to drop it immediately.
 
-Really, if you are okay with doing this, you should change it to ttySx IMO.
+That points to a deficiency with how we throttle. Maybe we should poison
+URBs upon throttle() being called?
 
->                 linux,stdout-path = &sbc_serial0;
+> To prevent this problem, the URBs whose data did not reach the flip buffer
+> are placed in a waiting list, which is only processed when the serial port
+> is unthrottled.
 
-And since you have this, you don't even need the console praram.
+So we introduce yet another buffer? That does look like we are papering
+over a design problem.
 
->         };
->
-> @@ -24,7 +24,7 @@
->         };
->
->         aliases {
-> -               ttyAS0 = &sbc_serial0;
-> +               ttyas0 = &sbc_serial0;
 
-The correct fix is use "serialN" for aliases.
+> This is working when using the normal line discipline on ttyACM. But
+> there is a big hole in this: other line disciplines do not use throttling
+> and thus unthrottle is never called. The URBs will never get resubmitted,
 
-I have a check for only known alias names which would give a better
-warning, but David thought it was too restrictive.
+Now that is a real problem. This introduces a regression.
 
->                 ethernet0 = &ethernet0;
->         };
->
+> and the port is dead. Unfortunately, there is no notification when the
+> flip buffer is ready to receive new data, so the only alternative would
+> be to schedule a timer polling the flip buffer. But with an additional
+> asynchronous process in the mix, the code starts to be very brittle.
+
+Well, no. This tells us something is broken in the tty layer.
+
+> I believe this issue is not limited to ttyACM. As the TTY layer is not
+> performance-oriented, it can be easy to overwhelm devices with a low
+> available processing power. In my case, a modem sending a sustained 2 MB/s
+> on a debug port (exported as a CDC-ACM port) was enough to trigger the
+> issue. The code handling the CDC-ACM class and the generic USB serial port
+> is very similar when it comes to URB handling, so all drivers that rely on
+> that code have the same issue.
+> 
+> But in general, it seems to me that there is no code in the kernel that
+> checks the return value of tty_insert_flip_string(). This means that we
+> are working with the assumption that the kernel will consume the data
+> faster than the source can send it, or that the upper layer will be
+> able or willing to throttle it fast enough to avoid losing data.
+
+Yes. And if the assumption is false, you need to go for the tty layer.
+I am sorry, but NACK.
+
+	Regards
+		Oliver
