@@ -1,45 +1,85 @@
-From: Bich HEMON <bich.hemon@st.com>
-Subject: Re: [PATCH 0/2] Update interrupt names
-Date: Tue, 6 Mar 2018 09:58:38 +0000
-Message-ID: <d855b529-be9b-13d9-8834-c2d0b7a16884@st.com>
-References: <1519815044-22669-1-git-send-email-bich.hemon@st.com>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 2/3] ARM: dts: STi: Remove useless stdout-path for STi boards
+Date: Tue, 6 Mar 2018 07:26:22 -0600
+Message-ID: <CAL_Jsq+-C5h1-xLOB39bhSsn9JR31UaEQL+cRwydD0a4w6sYNw@mail.gmail.com>
+References: <1520323650-11030-1-git-send-email-patrice.chotard@st.com> <1520323650-11030-3-git-send-email-patrice.chotard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1519815044-22669-1-git-send-email-bich.hemon@st.com>
-Content-Language: en-US
-Content-ID: <0AA9BE539F3A4A4AAAC39B354D85FF2F@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1520323650-11030-3-git-send-email-patrice.chotard@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Patrice Chotard <patrice.chotard@st.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Russell King <linux@armlinux.org.uk>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi all,
+On Tue, Mar 6, 2018 at 2:07 AM,  <patrice.chotard@st.com> wrote:
+> From: Patrice Chotard <patrice.chotard@st.com>
+>
+> As serial interface is already specified into bootargs,
+> stdout-path can be removed.
 
-On 02/28/2018 11:51 AM, Bich HEMON wrote:
-> This patchset updates existing stm32 usart driver by updating interrupt
-> initialization by name.
-> 
-> Bich Hemon (2):
->    dt-bindings: serial: stm32: add wakeup option using note
->    serial: stm32: update interrupt initialization
-> 
->   Documentation/devicetree/bindings/serial/st,stm32-usart.txt | 4 ++++
->   drivers/tty/serial/stm32-usart.c                            | 4 ++--
->   2 files changed, 6 insertions(+), 2 deletions(-)
-> 
+Wrong way around. stdout-path is preferred over using console in bootargs.
 
-Please note that this patch set is abandoned. As Rob pointed that out, 
-the interrupt indices are fixed, so there is no need to keep these patches.
-
-Best regards,
-
-Bich
+>
+> Signed-off-by: Patrice Chotard <patrice.chotard@st.com>
+> ---
+>
+> v2: _ none
+>
+>  arch/arm/boot/dts/stih407-b2120.dts | 1 -
+>  arch/arm/boot/dts/stih410-b2120.dts | 1 -
+>  arch/arm/boot/dts/stih410-b2260.dts | 1 -
+>  arch/arm/boot/dts/stih418-b2199.dts | 1 -
+>  4 files changed, 4 deletions(-)
+>
+> diff --git a/arch/arm/boot/dts/stih407-b2120.dts b/arch/arm/boot/dts/stih407-b2120.dts
+> index 2c4d6033b448..074b4cd0ca89 100644
+> --- a/arch/arm/boot/dts/stih407-b2120.dts
+> +++ b/arch/arm/boot/dts/stih407-b2120.dts
+> @@ -15,7 +15,6 @@
+>
+>         chosen {
+>                 bootargs = "console=serial0,115200 clk_ignore_unused";
+> -               stdout-path = &sbc_serial0;
+>         };
+>
+>         memory@40000000 {
+> diff --git a/arch/arm/boot/dts/stih410-b2120.dts b/arch/arm/boot/dts/stih410-b2120.dts
+> index 5422850641e8..eae3050984d0 100644
+> --- a/arch/arm/boot/dts/stih410-b2120.dts
+> +++ b/arch/arm/boot/dts/stih410-b2120.dts
+> @@ -15,7 +15,6 @@
+>
+>         chosen {
+>                 bootargs = "console=serial0,115200 clk_ignore_unused";
+> -               stdout-path = &sbc_serial0;
+>         };
+>
+>         memory@40000000 {
+> diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
+> index ca347160e35d..c26e388bd1a4 100644
+> --- a/arch/arm/boot/dts/stih410-b2260.dts
+> +++ b/arch/arm/boot/dts/stih410-b2260.dts
+> @@ -16,7 +16,6 @@
+>
+>         chosen {
+>                 bootargs = "console=serial1,115200 clk_ignore_unused";
+> -               stdout-path = &uart1;
+>         };
+>
+>         memory@40000000 {
+> diff --git a/arch/arm/boot/dts/stih418-b2199.dts b/arch/arm/boot/dts/stih418-b2199.dts
+> index dbf7bb704a1a..d948f774fee7 100644
+> --- a/arch/arm/boot/dts/stih418-b2199.dts
+> +++ b/arch/arm/boot/dts/stih418-b2199.dts
+> @@ -15,7 +15,6 @@
+>
+>         chosen {
+>                 bootargs = "console=serial0,115200 clk_ignore_unused";
+> -               stdout-path = &sbc_serial0;
+>         };
+>
+>         memory@40000000 {
+> --
+> 1.9.1
+>
