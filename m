@@ -1,7 +1,7 @@
 From: <patrice.chotard@st.com>
-Subject: [PATCH v2 2/3] ARM: dts: STi: Remove useless stdout-path for STi boards
-Date: Tue, 6 Mar 2018 09:07:29 +0100
-Message-ID: <1520323650-11030-3-git-send-email-patrice.chotard@st.com>
+Subject: [PATCH v2 3/3] tty: st-asc: Update tty alias
+Date: Tue, 6 Mar 2018 09:07:30 +0100
+Message-ID: <1520323650-11030-4-git-send-email-patrice.chotard@st.com>
 References: <1520323650-11030-1-git-send-email-patrice.chotard@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -14,67 +14,34 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Patrice Chotard <patrice.chotard@st.com>
 
-As serial interface is already specified into bootargs,
-stdout-path can be removed.
+Since dtc v1.4.6-9-gaadd0b65c987, aliases property name
+must include only lowercase and '-'.
+
+After having updated all STi boards serial aliases from "ttyASN"
+to "serialN", st-asc driver need to be updated accordingly as tty
+aliases id is retrieved using of_alias_get_id(np, ASC_SERIAL_NAME);
 
 Signed-off-by: Patrice Chotard <patrice.chotard@st.com>
 ---
 
-v2: _ none
+v2: _ update st-asc driver with "serial" alias prefix
 
- arch/arm/boot/dts/stih407-b2120.dts | 1 -
- arch/arm/boot/dts/stih410-b2120.dts | 1 -
- arch/arm/boot/dts/stih410-b2260.dts | 1 -
- arch/arm/boot/dts/stih418-b2199.dts | 1 -
- 4 files changed, 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/stih407-b2120.dts b/arch/arm/boot/dts/stih407-b2120.dts
-index 2c4d6033b448..074b4cd0ca89 100644
---- a/arch/arm/boot/dts/stih407-b2120.dts
-+++ b/arch/arm/boot/dts/stih407-b2120.dts
-@@ -15,7 +15,6 @@
+ drivers/tty/serial/st-asc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index c763253514e9..f9372b690e54 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -29,7 +29,7 @@
+ #include <linux/gpio/consumer.h>
  
- 	chosen {
- 		bootargs = "console=serial0,115200 clk_ignore_unused";
--		stdout-path = &sbc_serial0;
- 	};
+ #define DRIVER_NAME "st-asc"
+-#define ASC_SERIAL_NAME "ttyAS"
++#define ASC_SERIAL_NAME "serial"
+ #define ASC_FIFO_SIZE 16
+ #define ASC_MAX_PORTS 8
  
- 	memory@40000000 {
-diff --git a/arch/arm/boot/dts/stih410-b2120.dts b/arch/arm/boot/dts/stih410-b2120.dts
-index 5422850641e8..eae3050984d0 100644
---- a/arch/arm/boot/dts/stih410-b2120.dts
-+++ b/arch/arm/boot/dts/stih410-b2120.dts
-@@ -15,7 +15,6 @@
- 
- 	chosen {
- 		bootargs = "console=serial0,115200 clk_ignore_unused";
--		stdout-path = &sbc_serial0;
- 	};
- 
- 	memory@40000000 {
-diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
-index ca347160e35d..c26e388bd1a4 100644
---- a/arch/arm/boot/dts/stih410-b2260.dts
-+++ b/arch/arm/boot/dts/stih410-b2260.dts
-@@ -16,7 +16,6 @@
- 
- 	chosen {
- 		bootargs = "console=serial1,115200 clk_ignore_unused";
--		stdout-path = &uart1;
- 	};
- 
- 	memory@40000000 {
-diff --git a/arch/arm/boot/dts/stih418-b2199.dts b/arch/arm/boot/dts/stih418-b2199.dts
-index dbf7bb704a1a..d948f774fee7 100644
---- a/arch/arm/boot/dts/stih418-b2199.dts
-+++ b/arch/arm/boot/dts/stih418-b2199.dts
-@@ -15,7 +15,6 @@
- 
- 	chosen {
- 		bootargs = "console=serial0,115200 clk_ignore_unused";
--		stdout-path = &sbc_serial0;
- 	};
- 
- 	memory@40000000 {
 -- 
 1.9.1
