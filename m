@@ -1,135 +1,103 @@
-From: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v3 1/3] ARM: dts: STi: Fix aliases property name for STi boards
-Date: Wed, 7 Mar 2018 10:15:52 -0600
-Message-ID: <CAL_JsqKBkfCsx4pyjUebwkV0q+S5LhwePWw59-7ibt77qdAGbw@mail.gmail.com>
-References: <1520412597-30545-1-git-send-email-patrice.chotard@st.com> <1520412597-30545-2-git-send-email-patrice.chotard@st.com>
+From: Patrice CHOTARD <patrice.chotard@st.com>
+Subject: Re: [PATCH v3 1/3] ARM: dts: STi: Fix aliases property name for STi
+ boards
+Date: Wed, 7 Mar 2018 17:11:31 +0000
+Message-ID: <8edca499-d31a-19b6-946b-503489054f6d@st.com>
+References: <1520412597-30545-1-git-send-email-patrice.chotard@st.com>
+ <1520412597-30545-2-git-send-email-patrice.chotard@st.com>
+ <CAL_JsqKBkfCsx4pyjUebwkV0q+S5LhwePWw59-7ibt77qdAGbw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1520412597-30545-2-git-send-email-patrice.chotard@st.com>
+In-Reply-To: <CAL_JsqKBkfCsx4pyjUebwkV0q+S5LhwePWw59-7ibt77qdAGbw@mail.gmail.com>
+Content-Language: en-US
+Content-ID: <40730739F791D04CA56449536E107BE1@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Patrice Chotard <patrice.chotard@st.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Russell King <linux@armlinux.org.uk>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, Russell King <linux@armlinux.org.uk>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 7, 2018 at 2:49 AM,  <patrice.chotard@st.com> wrote:
-> From: Patrice Chotard <patrice.chotard@st.com>
->
-> Update serial aliases from "ttyASN" to more common "serialN".
->
-> Since dtc v1.4.6-9-gaadd0b65c987, aliases property name must
-> be lowercase only. This allows to fix following dtc warnings:
->
-> arch/arm/boot/dts/stih418-b2199.dtb: Warning (alias_paths): /aliases: aliases property name must include only lowercase and '-'
-> arch/arm/boot/dts/stih407-b2120.dtb: Warning (alias_paths): /aliases: aliases property name must include only lowercase and '-'
-> arch/arm/boot/dts/stih410-b2260.dtb: Warning (alias_paths): /aliases: aliases property name must include only lowercase and '-'
-> arch/arm/boot/dts/stih410-b2120.dtb: Warning (alias_paths): /aliases: aliases property name must include only lowercase and '-'
->
-> Signed-off-by: Patrice Chotard <patrice.chotard@st.com>
-> ---
->
-> v3: _ none
-> v2: _ use serialN instead of ttyasN aliases to not break ABI
->
->  arch/arm/boot/dts/stih407-b2120.dts | 4 ++--
->  arch/arm/boot/dts/stih410-b2120.dts | 4 ++--
->  arch/arm/boot/dts/stih410-b2260.dts | 4 ++--
->  arch/arm/boot/dts/stih418-b2199.dts | 4 ++--
->  4 files changed, 8 insertions(+), 8 deletions(-)
->
-> diff --git a/arch/arm/boot/dts/stih407-b2120.dts b/arch/arm/boot/dts/stih407-b2120.dts
-> index de3c8bf129b5..2c4d6033b448 100644
-> --- a/arch/arm/boot/dts/stih407-b2120.dts
-> +++ b/arch/arm/boot/dts/stih407-b2120.dts
-> @@ -14,7 +14,7 @@
->         compatible = "st,stih407-b2120", "st,stih407";
->
->         chosen {
-> -               bootargs = "console=ttyAS0,115200 clk_ignore_unused";
-> +               bootargs = "console=serial0,115200 clk_ignore_unused";
-
-These hunks for bootargs are still wrong. You wouldn't boot with a
-console if you only apply patch 1. These hunks should be squashed with
-patch 2.
-
->                 stdout-path = &sbc_serial0;
->         };
->
-> @@ -24,7 +24,7 @@
->         };
->
->         aliases {
-> -               ttyAS0 = &sbc_serial0;
-> +               serial0 = &sbc_serial0;
->                 ethernet0 = &ethernet0;
->         };
->
-> diff --git a/arch/arm/boot/dts/stih410-b2120.dts b/arch/arm/boot/dts/stih410-b2120.dts
-> index 0a59b7b0f4b2..5422850641e8 100644
-> --- a/arch/arm/boot/dts/stih410-b2120.dts
-> +++ b/arch/arm/boot/dts/stih410-b2120.dts
-> @@ -14,7 +14,7 @@
->         compatible = "st,stih410-b2120", "st,stih410";
->
->         chosen {
-> -               bootargs = "console=ttyAS0,115200 clk_ignore_unused";
-> +               bootargs = "console=serial0,115200 clk_ignore_unused";
->                 stdout-path = &sbc_serial0;
->         };
->
-> @@ -24,7 +24,7 @@
->         };
->
->         aliases {
-> -               ttyAS0 = &sbc_serial0;
-> +               serial0 = &sbc_serial0;
->                 ethernet0 = &ethernet0;
->         };
->
-> diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
-> index feb8834478fa..ca347160e35d 100644
-> --- a/arch/arm/boot/dts/stih410-b2260.dts
-> +++ b/arch/arm/boot/dts/stih410-b2260.dts
-> @@ -15,7 +15,7 @@
->         compatible = "st,stih410-b2260", "st,stih410";
->
->         chosen {
-> -               bootargs = "console=ttyAS1,115200 clk_ignore_unused";
-> +               bootargs = "console=serial1,115200 clk_ignore_unused";
->                 stdout-path = &uart1;
->         };
->
-> @@ -25,7 +25,7 @@
->         };
->
->         aliases {
-> -               ttyAS1 = &uart1;
-> +               serial1 = &uart1;
->                 ethernet0 = &ethernet0;
->         };
->
-> diff --git a/arch/arm/boot/dts/stih418-b2199.dts b/arch/arm/boot/dts/stih418-b2199.dts
-> index 39b4db2e3507..dbf7bb704a1a 100644
-> --- a/arch/arm/boot/dts/stih418-b2199.dts
-> +++ b/arch/arm/boot/dts/stih418-b2199.dts
-> @@ -14,7 +14,7 @@
->         compatible = "st,stih418-b2199", "st,stih418";
->
->         chosen {
-> -               bootargs = "console=ttyAS0,115200 clk_ignore_unused";
-> +               bootargs = "console=serial0,115200 clk_ignore_unused";
->                 stdout-path = &sbc_serial0;
->         };
->
-> @@ -24,7 +24,7 @@
->         };
->
->         aliases {
-> -               ttyAS0 = &sbc_serial0;
-> +               serial0 = &sbc_serial0;
->                 ethernet0 = &ethernet0;
->         };
->
-> --
-> 1.9.1
->
+SGkgUm9iDQoNCk9uIDAzLzA3LzIwMTggMDU6MTUgUE0sIFJvYiBIZXJyaW5nIHdyb3RlOg0KPiBP
+biBXZWQsIE1hciA3LCAyMDE4IGF0IDI6NDkgQU0sICA8cGF0cmljZS5jaG90YXJkQHN0LmNvbT4g
+d3JvdGU6DQo+PiBGcm9tOiBQYXRyaWNlIENob3RhcmQgPHBhdHJpY2UuY2hvdGFyZEBzdC5jb20+
+DQo+Pg0KPj4gVXBkYXRlIHNlcmlhbCBhbGlhc2VzIGZyb20gInR0eUFTTiIgdG8gbW9yZSBjb21t
+b24gInNlcmlhbE4iLg0KPj4NCj4+IFNpbmNlIGR0YyB2MS40LjYtOS1nYWFkZDBiNjVjOTg3LCBh
+bGlhc2VzIHByb3BlcnR5IG5hbWUgbXVzdA0KPj4gYmUgbG93ZXJjYXNlIG9ubHkuIFRoaXMgYWxs
+b3dzIHRvIGZpeCBmb2xsb3dpbmcgZHRjIHdhcm5pbmdzOg0KPj4NCj4+IGFyY2gvYXJtL2Jvb3Qv
+ZHRzL3N0aWg0MTgtYjIxOTkuZHRiOiBXYXJuaW5nIChhbGlhc19wYXRocyk6IC9hbGlhc2VzOiBh
+bGlhc2VzIHByb3BlcnR5IG5hbWUgbXVzdCBpbmNsdWRlIG9ubHkgbG93ZXJjYXNlIGFuZCAnLScN
+Cj4+IGFyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MDctYjIxMjAuZHRiOiBXYXJuaW5nIChhbGlhc19w
+YXRocyk6IC9hbGlhc2VzOiBhbGlhc2VzIHByb3BlcnR5IG5hbWUgbXVzdCBpbmNsdWRlIG9ubHkg
+bG93ZXJjYXNlIGFuZCAnLScNCj4+IGFyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MTAtYjIyNjAuZHRi
+OiBXYXJuaW5nIChhbGlhc19wYXRocyk6IC9hbGlhc2VzOiBhbGlhc2VzIHByb3BlcnR5IG5hbWUg
+bXVzdCBpbmNsdWRlIG9ubHkgbG93ZXJjYXNlIGFuZCAnLScNCj4+IGFyY2gvYXJtL2Jvb3QvZHRz
+L3N0aWg0MTAtYjIxMjAuZHRiOiBXYXJuaW5nIChhbGlhc19wYXRocyk6IC9hbGlhc2VzOiBhbGlh
+c2VzIHByb3BlcnR5IG5hbWUgbXVzdCBpbmNsdWRlIG9ubHkgbG93ZXJjYXNlIGFuZCAnLScNCj4+
+DQo+PiBTaWduZWQtb2ZmLWJ5OiBQYXRyaWNlIENob3RhcmQgPHBhdHJpY2UuY2hvdGFyZEBzdC5j
+b20+DQo+PiAtLS0NCj4+DQo+PiB2MzogXyBub25lDQo+PiB2MjogXyB1c2Ugc2VyaWFsTiBpbnN0
+ZWFkIG9mIHR0eWFzTiBhbGlhc2VzIHRvIG5vdCBicmVhayBBQkkNCj4+DQo+PiAgIGFyY2gvYXJt
+L2Jvb3QvZHRzL3N0aWg0MDctYjIxMjAuZHRzIHwgNCArKy0tDQo+PiAgIGFyY2gvYXJtL2Jvb3Qv
+ZHRzL3N0aWg0MTAtYjIxMjAuZHRzIHwgNCArKy0tDQo+PiAgIGFyY2gvYXJtL2Jvb3QvZHRzL3N0
+aWg0MTAtYjIyNjAuZHRzIHwgNCArKy0tDQo+PiAgIGFyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MTgt
+YjIxOTkuZHRzIHwgNCArKy0tDQo+PiAgIDQgZmlsZXMgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCsp
+LCA4IGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9z
+dGloNDA3LWIyMTIwLmR0cyBiL2FyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MDctYjIxMjAuZHRzDQo+
+PiBpbmRleCBkZTNjOGJmMTI5YjUuLjJjNGQ2MDMzYjQ0OCAxMDA2NDQNCj4+IC0tLSBhL2FyY2gv
+YXJtL2Jvb3QvZHRzL3N0aWg0MDctYjIxMjAuZHRzDQo+PiArKysgYi9hcmNoL2FybS9ib290L2R0
+cy9zdGloNDA3LWIyMTIwLmR0cw0KPj4gQEAgLTE0LDcgKzE0LDcgQEANCj4+ICAgICAgICAgIGNv
+bXBhdGlibGUgPSAic3Qsc3RpaDQwNy1iMjEyMCIsICJzdCxzdGloNDA3IjsNCj4+DQo+PiAgICAg
+ICAgICBjaG9zZW4gew0KPj4gLSAgICAgICAgICAgICAgIGJvb3RhcmdzID0gImNvbnNvbGU9dHR5
+QVMwLDExNTIwMCBjbGtfaWdub3JlX3VudXNlZCI7DQo+PiArICAgICAgICAgICAgICAgYm9vdGFy
+Z3MgPSAiY29uc29sZT1zZXJpYWwwLDExNTIwMCBjbGtfaWdub3JlX3VudXNlZCI7DQo+IA0KPiBU
+aGVzZSBodW5rcyBmb3IgYm9vdGFyZ3MgYXJlIHN0aWxsIHdyb25nLiBZb3Ugd291bGRuJ3QgYm9v
+dCB3aXRoIGENCj4gY29uc29sZSBpZiB5b3Ugb25seSBhcHBseSBwYXRjaCAxLiBUaGVzZSBodW5r
+cyBzaG91bGQgYmUgc3F1YXNoZWQgd2l0aA0KPiBwYXRjaCAyLg0KDQpUaGFua3MgZm9yIHBvaW50
+aW5nIHRoaXMsIGkgZXZlbiBub3RpY2VkIHRoYXQgcGF0Y2hlcyBtdXN0IGJlIHJlb3JkZXJlZCwg
+DQpmaXJzdCBzdC1hc2MgZHJpdmVyIHVwZGF0ZSBhbmQgdGhlbiBEVFMgcGF0Y2hlcy4NCg0KVGhh
+bmtzDQoNClBhdHJpY2UNCg0KPiANCj4+ICAgICAgICAgICAgICAgICAgc3Rkb3V0LXBhdGggPSAm
+c2JjX3NlcmlhbDA7DQo+PiAgICAgICAgICB9Ow0KPj4NCj4+IEBAIC0yNCw3ICsyNCw3IEBADQo+
+PiAgICAgICAgICB9Ow0KPj4NCj4+ICAgICAgICAgIGFsaWFzZXMgew0KPj4gLSAgICAgICAgICAg
+ICAgIHR0eUFTMCA9ICZzYmNfc2VyaWFsMDsNCj4+ICsgICAgICAgICAgICAgICBzZXJpYWwwID0g
+JnNiY19zZXJpYWwwOw0KPj4gICAgICAgICAgICAgICAgICBldGhlcm5ldDAgPSAmZXRoZXJuZXQw
+Ow0KPj4gICAgICAgICAgfTsNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9vdC9kdHMv
+c3RpaDQxMC1iMjEyMC5kdHMgYi9hcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIyMTIwLmR0cw0K
+Pj4gaW5kZXggMGE1OWI3YjBmNGIyLi41NDIyODUwNjQxZTggMTAwNjQ0DQo+PiAtLS0gYS9hcmNo
+L2FybS9ib290L2R0cy9zdGloNDEwLWIyMTIwLmR0cw0KPj4gKysrIGIvYXJjaC9hcm0vYm9vdC9k
+dHMvc3RpaDQxMC1iMjEyMC5kdHMNCj4+IEBAIC0xNCw3ICsxNCw3IEBADQo+PiAgICAgICAgICBj
+b21wYXRpYmxlID0gInN0LHN0aWg0MTAtYjIxMjAiLCAic3Qsc3RpaDQxMCI7DQo+Pg0KPj4gICAg
+ICAgICAgY2hvc2VuIHsNCj4+IC0gICAgICAgICAgICAgICBib290YXJncyA9ICJjb25zb2xlPXR0
+eUFTMCwxMTUyMDAgY2xrX2lnbm9yZV91bnVzZWQiOw0KPj4gKyAgICAgICAgICAgICAgIGJvb3Rh
+cmdzID0gImNvbnNvbGU9c2VyaWFsMCwxMTUyMDAgY2xrX2lnbm9yZV91bnVzZWQiOw0KPj4gICAg
+ICAgICAgICAgICAgICBzdGRvdXQtcGF0aCA9ICZzYmNfc2VyaWFsMDsNCj4+ICAgICAgICAgIH07
+DQo+Pg0KPj4gQEAgLTI0LDcgKzI0LDcgQEANCj4+ICAgICAgICAgIH07DQo+Pg0KPj4gICAgICAg
+ICAgYWxpYXNlcyB7DQo+PiAtICAgICAgICAgICAgICAgdHR5QVMwID0gJnNiY19zZXJpYWwwOw0K
+Pj4gKyAgICAgICAgICAgICAgIHNlcmlhbDAgPSAmc2JjX3NlcmlhbDA7DQo+PiAgICAgICAgICAg
+ICAgICAgIGV0aGVybmV0MCA9ICZldGhlcm5ldDA7DQo+PiAgICAgICAgICB9Ow0KPj4NCj4+IGRp
+ZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIyMjYwLmR0cyBiL2FyY2gvYXJt
+L2Jvb3QvZHRzL3N0aWg0MTAtYjIyNjAuZHRzDQo+PiBpbmRleCBmZWI4ODM0NDc4ZmEuLmNhMzQ3
+MTYwZTM1ZCAxMDA2NDQNCj4+IC0tLSBhL2FyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MTAtYjIyNjAu
+ZHRzDQo+PiArKysgYi9hcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIyMjYwLmR0cw0KPj4gQEAg
+LTE1LDcgKzE1LDcgQEANCj4+ICAgICAgICAgIGNvbXBhdGlibGUgPSAic3Qsc3RpaDQxMC1iMjI2
+MCIsICJzdCxzdGloNDEwIjsNCj4+DQo+PiAgICAgICAgICBjaG9zZW4gew0KPj4gLSAgICAgICAg
+ICAgICAgIGJvb3RhcmdzID0gImNvbnNvbGU9dHR5QVMxLDExNTIwMCBjbGtfaWdub3JlX3VudXNl
+ZCI7DQo+PiArICAgICAgICAgICAgICAgYm9vdGFyZ3MgPSAiY29uc29sZT1zZXJpYWwxLDExNTIw
+MCBjbGtfaWdub3JlX3VudXNlZCI7DQo+PiAgICAgICAgICAgICAgICAgIHN0ZG91dC1wYXRoID0g
+JnVhcnQxOw0KPj4gICAgICAgICAgfTsNCj4+DQo+PiBAQCAtMjUsNyArMjUsNyBAQA0KPj4gICAg
+ICAgICAgfTsNCj4+DQo+PiAgICAgICAgICBhbGlhc2VzIHsNCj4+IC0gICAgICAgICAgICAgICB0
+dHlBUzEgPSAmdWFydDE7DQo+PiArICAgICAgICAgICAgICAgc2VyaWFsMSA9ICZ1YXJ0MTsNCj4+
+ICAgICAgICAgICAgICAgICAgZXRoZXJuZXQwID0gJmV0aGVybmV0MDsNCj4+ICAgICAgICAgIH07
+DQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MTgtYjIxOTkuZHRz
+IGIvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQxOC1iMjE5OS5kdHMNCj4+IGluZGV4IDM5YjRkYjJl
+MzUwNy4uZGJmN2JiNzA0YTFhIDEwMDY0NA0KPj4gLS0tIGEvYXJjaC9hcm0vYm9vdC9kdHMvc3Rp
+aDQxOC1iMjE5OS5kdHMNCj4+ICsrKyBiL2FyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MTgtYjIxOTku
+ZHRzDQo+PiBAQCAtMTQsNyArMTQsNyBAQA0KPj4gICAgICAgICAgY29tcGF0aWJsZSA9ICJzdCxz
+dGloNDE4LWIyMTk5IiwgInN0LHN0aWg0MTgiOw0KPj4NCj4+ICAgICAgICAgIGNob3NlbiB7DQo+
+PiAtICAgICAgICAgICAgICAgYm9vdGFyZ3MgPSAiY29uc29sZT10dHlBUzAsMTE1MjAwIGNsa19p
+Z25vcmVfdW51c2VkIjsNCj4+ICsgICAgICAgICAgICAgICBib290YXJncyA9ICJjb25zb2xlPXNl
+cmlhbDAsMTE1MjAwIGNsa19pZ25vcmVfdW51c2VkIjsNCj4+ICAgICAgICAgICAgICAgICAgc3Rk
+b3V0LXBhdGggPSAmc2JjX3NlcmlhbDA7DQo+PiAgICAgICAgICB9Ow0KPj4NCj4+IEBAIC0yNCw3
+ICsyNCw3IEBADQo+PiAgICAgICAgICB9Ow0KPj4NCj4+ICAgICAgICAgIGFsaWFzZXMgew0KPj4g
+LSAgICAgICAgICAgICAgIHR0eUFTMCA9ICZzYmNfc2VyaWFsMDsNCj4+ICsgICAgICAgICAgICAg
+ICBzZXJpYWwwID0gJnNiY19zZXJpYWwwOw0KPj4gICAgICAgICAgICAgICAgICBldGhlcm5ldDAg
+PSAmZXRoZXJuZXQwOw0KPj4gICAgICAgICAgfTsNCj4+DQo+PiAtLQ0KPj4gMS45LjENCj4+
