@@ -1,66 +1,64 @@
 From: Patrice CHOTARD <patrice.chotard@st.com>
-Subject: Re: [PATCH v2 2/3] ARM: dts: STi: Remove useless stdout-path for STi
- boards
-Date: Wed, 7 Mar 2018 07:59:40 +0000
-Message-ID: <0bac9e25-0d63-2f11-b54a-0d6282fe19d3@st.com>
+Subject: Re: [PATCH v2 3/3] tty: st-asc: Update tty alias
+Date: Wed, 7 Mar 2018 08:01:11 +0000
+Message-ID: <394e92bd-3e6c-6163-4a9f-66182e41238b@st.com>
 References: <1520323650-11030-1-git-send-email-patrice.chotard@st.com>
- <1520323650-11030-3-git-send-email-patrice.chotard@st.com>
- <CAL_Jsq+-C5h1-xLOB39bhSsn9JR31UaEQL+cRwydD0a4w6sYNw@mail.gmail.com>
+ <1520323650-11030-4-git-send-email-patrice.chotard@st.com>
+ <CAL_JsqJv-FV4T8=+py2EEr4kipnQikJPhDKkDdvkAab2QTgBzg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_Jsq+-C5h1-xLOB39bhSsn9JR31UaEQL+cRwydD0a4w6sYNw@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAL_JsqJv-FV4T8=+py2EEr4kipnQikJPhDKkDdvkAab2QTgBzg@mail.gmail.com>
 Content-Language: en-US
-Content-ID: <25ACD39E009FC641B2CC558BEC751F24@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-ID: <7BB7B316A774A240B77F1D5227A15AF9@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Rob Herring <robh+dt@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Russell King <linux@armlinux.org.uk>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@armlinux.org.uk>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGkgUm9iDQoNCk9uIDAzLzA2LzIwMTggMDI6MjYgUE0sIFJvYiBIZXJyaW5nIHdyb3RlOg0KPiBP
-biBUdWUsIE1hciA2LCAyMDE4IGF0IDI6MDcgQU0sICA8cGF0cmljZS5jaG90YXJkQHN0LmNvbT4g
-d3JvdGU6DQo+PiBGcm9tOiBQYXRyaWNlIENob3RhcmQgPHBhdHJpY2UuY2hvdGFyZEBzdC5jb20+
-DQo+Pg0KPj4gQXMgc2VyaWFsIGludGVyZmFjZSBpcyBhbHJlYWR5IHNwZWNpZmllZCBpbnRvIGJv
-b3RhcmdzLA0KPj4gc3Rkb3V0LXBhdGggY2FuIGJlIHJlbW92ZWQuDQo+IA0KPiBXcm9uZyB3YXkg
-YXJvdW5kLiBzdGRvdXQtcGF0aCBpcyBwcmVmZXJyZWQgb3ZlciB1c2luZyBjb25zb2xlIGluIGJv
-b3RhcmdzLg0KDQpBaCBzb3JyeSwgaSBtaXN1bmRlcnN0b29kIHdoYXQgeW91IHByZXZpb3VzbHkg
-c3VnZ2VzdGVkLiBJIHdpbGwgZml4IGl0Lg0KDQpUaGFua3MNCg0KUGF0cmljZQ0KDQo+IA0KPj4N
-Cj4+IFNpZ25lZC1vZmYtYnk6IFBhdHJpY2UgQ2hvdGFyZCA8cGF0cmljZS5jaG90YXJkQHN0LmNv
-bT4NCj4+IC0tLQ0KPj4NCj4+IHYyOiBfIG5vbmUNCj4+DQo+PiAgIGFyY2gvYXJtL2Jvb3QvZHRz
-L3N0aWg0MDctYjIxMjAuZHRzIHwgMSAtDQo+PiAgIGFyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MTAt
-YjIxMjAuZHRzIHwgMSAtDQo+PiAgIGFyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MTAtYjIyNjAuZHRz
-IHwgMSAtDQo+PiAgIGFyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MTgtYjIxOTkuZHRzIHwgMSAtDQo+
-PiAgIDQgZmlsZXMgY2hhbmdlZCwgNCBkZWxldGlvbnMoLSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEv
-YXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQwNy1iMjEyMC5kdHMgYi9hcmNoL2FybS9ib290L2R0cy9z
-dGloNDA3LWIyMTIwLmR0cw0KPj4gaW5kZXggMmM0ZDYwMzNiNDQ4Li4wNzRiNGNkMGNhODkgMTAw
-NjQ0DQo+PiAtLS0gYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWIyMTIwLmR0cw0KPj4gKysr
-IGIvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQwNy1iMjEyMC5kdHMNCj4+IEBAIC0xNSw3ICsxNSw2
-IEBADQo+Pg0KPj4gICAgICAgICAgY2hvc2VuIHsNCj4+ICAgICAgICAgICAgICAgICAgYm9vdGFy
-Z3MgPSAiY29uc29sZT1zZXJpYWwwLDExNTIwMCBjbGtfaWdub3JlX3VudXNlZCI7DQo+PiAtICAg
-ICAgICAgICAgICAgc3Rkb3V0LXBhdGggPSAmc2JjX3NlcmlhbDA7DQo+PiAgICAgICAgICB9Ow0K
-Pj4NCj4+ICAgICAgICAgIG1lbW9yeUA0MDAwMDAwMCB7DQo+PiBkaWZmIC0tZ2l0IGEvYXJjaC9h
-cm0vYm9vdC9kdHMvc3RpaDQxMC1iMjEyMC5kdHMgYi9hcmNoL2FybS9ib290L2R0cy9zdGloNDEw
-LWIyMTIwLmR0cw0KPj4gaW5kZXggNTQyMjg1MDY0MWU4Li5lYWUzMDUwOTg0ZDAgMTAwNjQ0DQo+
-PiAtLS0gYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIyMTIwLmR0cw0KPj4gKysrIGIvYXJj
-aC9hcm0vYm9vdC9kdHMvc3RpaDQxMC1iMjEyMC5kdHMNCj4+IEBAIC0xNSw3ICsxNSw2IEBADQo+
-Pg0KPj4gICAgICAgICAgY2hvc2VuIHsNCj4+ICAgICAgICAgICAgICAgICAgYm9vdGFyZ3MgPSAi
-Y29uc29sZT1zZXJpYWwwLDExNTIwMCBjbGtfaWdub3JlX3VudXNlZCI7DQo+PiAtICAgICAgICAg
-ICAgICAgc3Rkb3V0LXBhdGggPSAmc2JjX3NlcmlhbDA7DQo+PiAgICAgICAgICB9Ow0KPj4NCj4+
-ICAgICAgICAgIG1lbW9yeUA0MDAwMDAwMCB7DQo+PiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9v
-dC9kdHMvc3RpaDQxMC1iMjI2MC5kdHMgYi9hcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIyMjYw
-LmR0cw0KPj4gaW5kZXggY2EzNDcxNjBlMzVkLi5jMjZlMzg4YmQxYTQgMTAwNjQ0DQo+PiAtLS0g
-YS9hcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIyMjYwLmR0cw0KPj4gKysrIGIvYXJjaC9hcm0v
-Ym9vdC9kdHMvc3RpaDQxMC1iMjI2MC5kdHMNCj4+IEBAIC0xNiw3ICsxNiw2IEBADQo+Pg0KPj4g
-ICAgICAgICAgY2hvc2VuIHsNCj4+ICAgICAgICAgICAgICAgICAgYm9vdGFyZ3MgPSAiY29uc29s
-ZT1zZXJpYWwxLDExNTIwMCBjbGtfaWdub3JlX3VudXNlZCI7DQo+PiAtICAgICAgICAgICAgICAg
-c3Rkb3V0LXBhdGggPSAmdWFydDE7DQo+PiAgICAgICAgICB9Ow0KPj4NCj4+ICAgICAgICAgIG1l
-bW9yeUA0MDAwMDAwMCB7DQo+PiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQx
-OC1iMjE5OS5kdHMgYi9hcmNoL2FybS9ib290L2R0cy9zdGloNDE4LWIyMTk5LmR0cw0KPj4gaW5k
-ZXggZGJmN2JiNzA0YTFhLi5kOTQ4Zjc3NGZlZTcgMTAwNjQ0DQo+PiAtLS0gYS9hcmNoL2FybS9i
-b290L2R0cy9zdGloNDE4LWIyMTk5LmR0cw0KPj4gKysrIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3Rp
-aDQxOC1iMjE5OS5kdHMNCj4+IEBAIC0xNSw3ICsxNSw2IEBADQo+Pg0KPj4gICAgICAgICAgY2hv
-c2VuIHsNCj4+ICAgICAgICAgICAgICAgICAgYm9vdGFyZ3MgPSAiY29uc29sZT1zZXJpYWwwLDEx
-NTIwMCBjbGtfaWdub3JlX3VudXNlZCI7DQo+PiAtICAgICAgICAgICAgICAgc3Rkb3V0LXBhdGgg
-PSAmc2JjX3NlcmlhbDA7DQo+PiAgICAgICAgICB9Ow0KPj4NCj4+ICAgICAgICAgIG1lbW9yeUA0
-MDAwMDAwMCB7DQo+PiAtLQ0KPj4gMS45LjENCj4+
+Hi Rob
+
+On 03/06/2018 02:29 PM, Rob Herring wrote:
+> On Tue, Mar 6, 2018 at 2:07 AM,  <patrice.chotard@st.com> wrote:
+>> From: Patrice Chotard <patrice.chotard@st.com>
+>>
+>> Since dtc v1.4.6-9-gaadd0b65c987, aliases property name
+>> must include only lowercase and '-'.
+>>
+>> After having updated all STi boards serial aliases from "ttyASN"
+>> to "serialN", st-asc driver need to be updated accordingly as tty
+>> aliases id is retrieved using of_alias_get_id(np, ASC_SERIAL_NAME);
+> 
+> Again, changing the tty name breaks userspace. You can't do that.
+> 
+> You need to do something like this:
+> 
+> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> index c763253514e9..5f9f01fac6dd 100644
+> --- a/drivers/tty/serial/st-asc.c
+> +++ b/drivers/tty/serial/st-asc.c
+> @@ -782,7 +782,9 @@ static struct asc_port *asc_of_get_asc_port(struct
+> platform_device *pdev)
+>          if (!np)
+>                  return NULL;
+> 
+> -       id = of_alias_get_id(np, ASC_SERIAL_NAME);
+> +       id = of_alias_get_id(np, "serial");
+> +       if (id < 0)
+> +               id = of_alias_get_id(np, ASC_SERIAL_NAME);
+> 
+>          if (id < 0)
+>                  id = 0;
+> 
+I will fix this too
+
+Patrice
