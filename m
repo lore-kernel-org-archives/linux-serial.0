@@ -1,124 +1,155 @@
-From: Karthik Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v3 2/4] soc: qcom: Add GENI based QUP Wrapper driver
-Date: Thu, 8 Mar 2018 11:18:55 -0700
-Message-ID: <303d3e2b-bc91-2a23-a154-8ea34ecbf771@codeaurora.org>
-References: <1519781889-16117-1-git-send-email-kramasub@codeaurora.org>
-	<1519781889-16117-3-git-send-email-kramasub@codeaurora.org>
-	<152002326567.108663.16836885081217739460@swboyd.mtv.corp.google.com>
-	<4ac213a6-081f-72c1-c9c8-6994786285c9@codeaurora.org>
-	<152037339742.218381.11498404122038956963@swboyd.mtv.corp.google.com>
-	<945b6c00-dde6-6ec7-4577-4cc0d034796b@codeaurora.org>
-	<8567be1b-1431-4f1d-cb41-6a7eaa434438@arm.com>
+From: Leif Liddy <leif.linux@gmail.com>
+Subject: Re: [PATCH] Bluetooth: btusb: Restore QCA Rome suspend/resume fix
+ with a "rewritten" version
+Date: Fri, 9 Mar 2018 01:56:26 +0100
+Message-ID: <CAAbRKOsejuTNdRBJ7g1omS_07DSHuPHpwW2JEsADNOhG6fnWDA@mail.gmail.com>
+References: <20180108094416.4789-1-hdegoede@redhat.com> <20180213022455.GA151190@rodete-desktop-imager.corp.google.com>
+ <8cd918fd-bf6f-70ac-e561-e7deffa695f0@redhat.com> <20180216022721.GA69988@rodete-desktop-imager.corp.google.com>
+ <345b0de8-1a23-d2f8-bc56-507eadf7faa7@redhat.com> <6B37F6AC-1103-4FCF-A5DC-4BA236A7B11B@holtmann.org>
+ <1a08612e-2531-3711-ec0f-a867e86d0009@redhat.com> <20180216175955.GA80944@rodete-desktop-imager.corp.google.com>
+ <a846c1ac-7dea-a30a-4133-32eac606d101@redhat.com> <20180223031216.GA230265@rodete-desktop-imager.corp.google.com>
+ <a6090910-7941-b194-c094-7ce3ef047974@redhat.com> <CA+ASDXOGhi4t2R5qrbXHTFkjtzvUL=qHxkJqku4XKJ6u8Wr+cg@mail.gmail.com>
+ <cdf043ef-b7d5-61f9-b8ea-7e75cb22485f@redhat.com> <1711ebe8-8d1a-7d96-bcbe-17238988557a@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8567be1b-1431-4f1d-cb41-6a7eaa434438-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Stephen Boyd <swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Boyd <sboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Girish Mahadevan <girishm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, acourbot-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, Sagar Dharia <sdharia-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1711ebe8-8d1a-7d96-bcbe-17238988557a@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Brian Norris <briannorris@chromium.org>, Marcel Holtmann <marcel@holtmann.org>, "Gustavo F. Padovan" <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, linux-serial@vger.kernel.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, stable <stable@vger.kernel.org>, Matthias Kaehlcke <mka@chromium.org>, Daniel Drake <drake@endlessm.com>, Kai-Heng Feng <kai.heng.feng@canonical.com>, Matadeen Mishra <matadeen@qti.qualcomm.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>
 List-Id: linux-serial@vger.kernel.org
 
-CgpPbiAzLzgvMjAxOCA2OjI0IEFNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMDgvMDMvMTgg
-MDY6NDYsIEthcnRoaWsgUmFtYXN1YnJhbWFuaWFuIHdyb3RlOgo+Pgo+Pgo+PiBPbiAzLzYvMjAx
-OCAyOjU2IFBNLCBTdGVwaGVuIEJveWQgd3JvdGU6Cj4+PiBRdW90aW5nIEthcnRoaWsgUmFtYXN1
-YnJhbWFuaWFuICgyMDE4LTAzLTAyIDE2OjU4OjIzKQo+Pj4KPj4+Pj4+ICvCoMKgwqDCoMKgwqAg
-cmV0dXJuIGlvdmE7Cj4+Pj4+PiArfQo+Pj4+Pj4gK0VYUE9SVF9TWU1CT0woZ2VuaV9zZV90eF9k
-bWFfcHJlcCk7Cj4+Pj4+PiArCj4+Pj4+PiArLyoqCj4+Pj4+PiArICogZ2VuaV9zZV9yeF9kbWFf
-cHJlcCgpIC0gUHJlcGFyZSB0aGUgU2VyaWFsIEVuZ2luZSBmb3IgUlggRE1BIAo+Pj4+Pj4gdHJh
-bnNmZXIKPj4+Pj4+ICsgKiBAc2U6wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCBQb2ludGVyIHRvIHRoZSBjb25jZXJuZWQgU2VyaWFsIAo+Pj4+Pj4gRW5naW5l
-Lgo+Pj4+Pj4gKyAqIEBidWY6wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBQb2ludGVyIHRv
-IHRoZSBSWCBidWZmZXIuCj4+Pj4+PiArICogQGxlbjrCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIExlbmd0aCBvZiB0aGUgUlggYnVmZmVyLgo+Pj4+Pj4gKyAqCj4+Pj4+PiArICogVGhpcyBm
-dW5jdGlvbiBpcyB1c2VkIHRvIHByZXBhcmUgdGhlIGJ1ZmZlcnMgZm9yIERNQSBSWC4KPj4+Pj4+
-ICsgKgo+Pj4+Pj4gKyAqIFJldHVybjogTWFwcGVkIERNQSBBZGRyZXNzIG9mIHRoZSBidWZmZXIg
-b24gc3VjY2VzcywgTlVMTCBvbiAKPj4+Pj4+IGZhaWx1cmUuCj4+Pj4+PiArICovCj4+Pj4+PiAr
-ZG1hX2FkZHJfdCBnZW5pX3NlX3J4X2RtYV9wcmVwKHN0cnVjdCBnZW5pX3NlICpzZSwgdm9pZCAq
-YnVmLCAKPj4+Pj4+IHNpemVfdCBsZW4pCj4+Pj4+PiArewo+Pj4+Pj4gK8KgwqDCoMKgwqDCoCBk
-bWFfYWRkcl90IGlvdmE7Cj4+Pj4+PiArwqDCoMKgwqDCoMKgIHN0cnVjdCBnZW5pX3dyYXBwZXIg
-KndyYXBwZXIgPSBzZS0+d3JhcHBlcjsKPj4+Pj4+ICvCoMKgwqDCoMKgwqAgdTMyIHZhbDsKPj4+
-Pj4+ICsKPj4+Pj4+ICvCoMKgwqDCoMKgwqAgaW92YSA9IGRtYV9tYXBfc2luZ2xlKHdyYXBwZXIt
-PmRldiwgYnVmLCBsZW4sIAo+Pj4+Pj4gRE1BX0ZST01fREVWSUNFKTsKPj4+Pj4+ICvCoMKgwqDC
-oMKgwqAgaWYgKGRtYV9tYXBwaW5nX2Vycm9yKHdyYXBwZXItPmRldiwgaW92YSkpCj4+Pj4+PiAr
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gKGRtYV9hZGRyX3QpTlVMTDsKPj4+
-Pj4KPj4+Pj4gQ2FuJ3QgcmV0dXJuIGEgZG1hX21hcHBpbmdfZXJyb3IgYWRkcmVzcyB0byB0aGUg
-Y2FsbGVyIGFuZCBoYXZlIHRoZW0KPj4+Pj4gZmlndXJlIGl0IG91dD8KPj4+PiBFYXJsaWVyIHdl
-IHVzZWQgdG8gcmV0dXJuIHRoZSBETUFfRVJST1JfQ09ERSB3aGljaCBoYXMgYmVlbiByZW1vdmVk
-Cj4+Pj4gcmVjZW50bHkgaW4gYXJtNjQgYXJjaGl0ZWN0dXJlLiBJZiB3ZSByZXR1cm4gdGhlIGRt
-YV9tYXBwaW5nX2Vycm9yLCAKPj4+PiB0aGVuCj4+Pj4gdGhlIGNhbGxlciBhbHNvIG5lZWRzIHRo
-ZSBkZXZpY2Ugd2hpY2ggZW5jb3VudGVyZWQgdGhlIG1hcHBpbmcgZXJyb3IuCj4+Pj4gVGhlIHNl
-cmlhbCBpbnRlcmZhY2UgZHJpdmVycyBjYW4gdXNlIHRoZWlyIHBhcmVudCBjdXJyZW50bHkgdG8g
-cmVzb2x2ZQo+Pj4+IHRoZSBtYXBwaW5nIGVycm9yLiBPbmNlIHRoZSB3cmFwcGVyIHN0YXJ0cyBt
-YXBwaW5nIHVzaW5nIElPTU1VIGNvbnRleHQKPj4+PiBiYW5rLCB0aGVuIHRoZSBzZXJpYWwgaW50
-ZXJmYWNlIGRyaXZlcnMgZG8gbm90IGtub3cgd2hpY2ggZGV2aWNlIHRvIHVzZQo+Pj4+IHRvIGtu
-b3cgaWYgdGhlcmUgaXMgYW4gZXJyb3IuCj4+Pj4KPj4+PiBIYXZpbmcgc2FpZCB0aGF0LCB0aGUg
-ZG1hX29wcyBzdWdnZXN0aW9uIG1pZ2h0IGhlbHAgd2l0aCBoYW5kbGluZyB0aGlzCj4+Pj4gc2l0
-dWF0aW9uLiBJIHdpbGwgbG9vayBpbnRvIGl0IGZ1cnRoZXIuCj4+Pgo+Pj4gT2ssIHRoYW5rcy4K
-Pj4+Cj4+Pj4+PiArewo+Pj4+Pj4gK8KgwqDCoMKgwqDCoCBzdHJ1Y3QgZ2VuaV93cmFwcGVyICp3
-cmFwcGVyID0gc2UtPndyYXBwZXI7Cj4+Pj4+PiArCj4+Pj4+PiArwqDCoMKgwqDCoMKgIGlmIChp
-b3ZhKQo+Pj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZG1hX3VubWFwX3Npbmds
-ZSh3cmFwcGVyLT5kZXYsIGlvdmEsIGxlbiwgCj4+Pj4+PiBETUFfRlJPTV9ERVZJQ0UpOwo+Pj4+
-Pj4gK30KPj4+Pj4+ICtFWFBPUlRfU1lNQk9MKGdlbmlfc2VfcnhfZG1hX3VucHJlcCk7Cj4+Pj4+
-Cj4+Pj4+IEluc3RlYWQgb2YgaGF2aW5nIHRoZSBmdW5jdGlvbnMgZXhwb3J0ZWQsIGNvdWxkIHdl
-IHNldCB0aGUgZG1hX29wcyBvbgo+Pj4+PiBhbGwgY2hpbGQgZGV2aWNlcyBvZiB0aGUgd3JhcHBl
-ciB0aGF0IHRoaXMgZHJpdmVyIHBvcHVsYXRlcyBhbmQgdGhlbgo+Pj4+PiBpbXBsZW1lbnQgdGhl
-IERNQSBvcHMgZm9yIHRob3NlIGRldmljZXMgaGVyZT8gSSBhc3N1bWUgdGhhdCB0aGVyZSdzCj4+
-Pj4+IG5ldmVyIGFub3RoZXIgRE1BIG1hc3RlciBiZXR3ZWVuIHRoZSB3cmFwcGVyIGFuZCB0aGUg
-c2VyaWFsIGVuZ2luZSwgCj4+Pj4+IHNvIEkKPj4+Pj4gdGhpbmsgaXQgd291bGQgd29yay4KPj4+
-PiBUaGlzIHN1Z2dlc3Rpb24gbG9va3MgbGlrZSBpdCB3aWxsIHdvcmsuCj4+Pgo+Pj4gSXQgd291
-bGQgYmUgYSBnb29kIGlkZWEgdG8gY2hlY2sgd2l0aCBzb21lIG90aGVyIHBlb3BsZSBvbiB0aGUg
-ZG1hX29wcwo+Pj4gc3VnZ2VzdGlvbi4gTWF5YmUgYWRkIHRoZSBETUEgbWFwcGluZyBzdWJzeXN0
-ZW0gZm9sa3MgdG8gaGVscCBvdXQgaGVyZQo+PiBJIGhhdmUgYWRkZWQgdGhlIERNQSBtYXBwaW5n
-IHN1YnN5c3RlbSBmb2xrcyB0byBoZWxwIG91dCBoZXJlLgo+Pgo+PiBUbyBwcmVzZW50IGFuIG92
-ZXJ2aWV3LCB3ZSBoYXZlIGEgd3JhcHBlciBjb250cm9sbGVyIHdoaWNoIGlzIGNvbXBvc2VkIAo+
-PiBvZiBzZXZlcmFsIHNlcmlhbCBlbmdpbmVzLiBUaGUgc2VyaWFsIGVuZ2luZXMgYXJlIHByb2dy
-YW1tZWQgd2l0aCAKPj4gVUFSVCwgSTJDIG9yIFNQSSBwcm90b2NvbCBhbmQgc3VwcG9ydCBETUEg
-dHJhbnNmZXIuIFdoZW4gdGhlIHNlcmlhbCAKPj4gZW5naW5lcyBwZXJmb3JtIERNQSB0cmFuc2Zl
-ciwgdGhlIHdyYXBwZXIgY29udHJvbGxlciBkZXZpY2UgaXMgdXNlZCB0byAKPj4gcGVyZm9ybSB0
-aGUgbWFwcGluZy4gVGhlIHJlYXNvbiB3cmFwcGVyIGRldmljZSBpcyB1c2VkIGlzIGJlY2F1c2Ug
-b2YgCj4+IElPTU1VIGFuZCB0aGVyZSBpcyBvbmx5IG9uZSBJT01NVSBjb250ZXh0IGJhbmsgdG8g
-cGVyZm9ybSB0aGUgCj4+IHRyYW5zbGF0aW9uIGZvciB0aGUgZW50aXJlIHdyYXBwZXIgY29udHJv
-bGxlci4gU28gdGhlIHdyYXBwZXIgCj4+IGNvbnRyb2xsZXIgZXhwb3J0cyBtYXAgYW5kIHVubWFw
-IGZ1bmN0aW9ucyB0byB0aGUgaW5kaXZpZHVhbCBwcm90b2NvbCAKPj4gZHJpdmVycy4KPj4KPj4g
-VGhlcmUgaXMgYSBzdWdnZXN0aW9uIHRvIG1ha2UgdGhlIHBhcmVudCB3cmFwcGVyIGNvbnRyb2xs
-ZXIgaW1wbGVtZW50IAo+PiB0aGUgZG1hX21hcF9vcHMsIGluc3RlYWQgb2YgZXhwb3J0ZWQgbWFw
-L3VubWFwIGZ1bmN0aW9ucyBhbmQgcG9wdWxhdGUgCj4+IHRob3NlIGRtYV9tYXBfb3BzIG9uIGFs
-bCB0aGUgY2hpbGRyZW4gc2VyaWFsIGVuZ2luZXMuIENhbiB5b3UgcGxlYXNlIAo+PiBwcm92aWRl
-IHlvdXIgaW5wdXRzIHJlZ2FyZGluZyB0aGlzIHN1Z2dlc3Rpb24/Cj4gCj4gSW1wbGVtZW50aW5n
-IGRtYV9tYXBfb3BzIGluc2lkZSBhIGRyaXZlciBmb3IgcmVhbCBoYXJkd2FyZSBpcyBhbG1vc3Qg
-Cj4gYWx3YXlzIHRoZSB3cm9uZyB0aGluZyB0byBkby4KPiAKPiBCYXNlZCBvbiB3aGF0IEkgY291
-bGQgaW5mZXIgYWJvdXQgdGhlIGhhcmR3YXJlIGZyb20gbG9va2luZyB0aHJvdWdoIHRoZSAKPiB3
-aG9sZSBzZXJpZXMgaW4gdGhlIGxpbnV4LWFybS1tc20gYXJjaGl2ZSwgdGhpcyBpcyBwcm9iYWJs
-eSBtb3JlIGxpa2UgYSAKPiBtdWx0aS1jaGFubmVsIERNQSBjb250cm9sbGVyIHdoZXJlIGVhY2gg
-ImNoYW5uZWwiIGhhcyBhIGNvbmZpZ3VyYWJsZSAKPiBzZXJpYWwgaW50ZXJmYWNlIG9uIHRoZSBv
-dGhlciBlbmQsIGFzIG9wcG9zZWQgdG8gYW4gYWN0dWFsIGJ1cyB3aGVyZSB0aGUgCj4gc2VyaWFs
-IGVuZ2luZXMgYXJlIGluZGl2aWR1YWxseSBkaXN0aW5jdCBBSEIgbWFzdGVycyByb3V0ZWQgdGhy
-b3VnaCB0aGUgCj4gd3JhcHBlci4gSWYgdGhhdCdzIHRydWUsIHRoZW4gdXNpbmcgdGhlIFFVUCBw
-bGF0Zm9ybSBkZXZpY2UgZm9yIERNQSBBUEkgCj4gY2FsbHMgaXMgdGhlIGFwcHJvcHJpYXRlIHRo
-aW5nIHRvIGRvLiBQZXJzb25hbGx5IEknZCBiZSBpbmNsaW5lZCBub3QgdG8gCj4gYWJzdHJhY3Qg
-dGhlIGRtYV97bWFwLHVubWFwfSBjYWxscyBhdCBhbGwsIGFuZCBqdXN0IGhhdmUgdGhlIHByb3Rv
-Y29sIAo+IGRyaXZlcnMgbWFrZSB0aGVtIGRpcmVjdGx5IHVzaW5nIGRldi0+cGFyZW50L3dyYXBw
-ZXItPmRldi93aGF0ZXZlciwgYnV0IAo+IGlmIHlvdSBkbyB3YW50IHRvIGFic3RyYWN0IHRob3Nl
-IHRoZW4ganVzdCBnaXZlIHRoZSBhYnN0cmFjdGlvbiBhIHNhbmVyIAo+IGludGVyZmFjZSwgaS5l
-LiBwYXNzIHRoZSBETUEgaGFuZGxlIGJ5IHJlZmVyZW5jZSBhbmQgcmV0dXJuIGEgcmVndWxhciAK
-PiBpbnQgZm9yIGVycm9yL3N1Y2Nlc3Mgc3RhdHVzLgo+IAo+IFJvYmluLgpUaGFuayB5b3UgUm9i
-aW4gJiBDaHJpc3RvcGggZm9yIHlvdXIgaW5wdXRzLiBUaGUgd3JhcHBlciBkcml2ZXIgdXNlZCB0
-byAKcHJvdmlkZSB0aGUgcmVjb21tZW5kZWQgYWJzdHJhY3Rpb24gdW50aWwgdjIgb2YgdGhpcyBw
-YXRjaCBzZXJpZXMuIEluIHYzIAppdCB3YXMgdHdlYWtlZCB0byBhZGRyZXNzIGEgY29tbWVudC4g
-SWYgdGhlcmUgYXJlIG5vIG9iamVjdGlvbnMsIEkgd2lsbCAKcmV2aXZlIGl0IGJhY2suCgpSZWdh
-cmRzLApLYXJ0aGlrLgotLSAKUXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBt
-ZW1iZXIgb2YgdGhlIENvZGUgQXVyb3JhIEZvcnVtLAphIExpbnV4IEZvdW5kYXRpb24gQ29sbGFi
-b3JhdGl2ZSBQcm9qZWN0Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
-ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
-dQ==
+Sorry for being a bit slow to respond to this.
+
+I'm the original author of commit:
+https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/drivers/bluetooth/btusb.c?id=fd865802c66bc451dc515ed89360f84376ce1a56
+
+> Says: "There's been numerous reported instances where BTUSB_QCA_ROME
+> bluetooth controllers stop functioning upon resume from suspend."
+
+> So it may be platform specific but it is not just limited to 1 or
+>2 platforms I think.
+
+This issue might very well be limited to just a few platforms.
+Here's a link to the original bug report I submitted.
+
+https://bugzilla.kernel.org/show_bug.cgi?id=193571
+
+There was a number of people who reported they were having similar
+issues with various QCA Rome bluetooth devices.
+The userspace fix that seemed to work for everyone was resetting the usb device.
+
+ie
+
+#!/bin/bash
+echo 0 > /sys/bus/usb/devices/1-4/authorized
+echo 1 > /sys/bus/usb/devices/1-4/authorized
+
+or
+
+#!/usr/bin/python
+from usb.core import find as finddev
+dev = finddev(idVendor=0x0cf3, idProduct=0xe300)
+dev.reset()
+
+It's difficult to ascertain what the underlying issue was for each
+person (and associated device) who commented. I can only speak
+authoritatively for my own device.
+It's a Samsung ATIV Book 9 12.2 (2015) laptop that contains an
+integrated bluetooth controller that's attached to the internal usb
+bus.
+
+# lsusb
+Bus 001 Device 005: ID 0cf3:e300 Atheros Communications, Inc.
+
+After suspending the laptop for an extended length of time (sometimes
+it would take an hour or two before issue occurred), and resuming
+--the bluetooth controller would not come back on-line. After reading
+through various forums, I suspected the issue I was experiencing was
+due to the bluetooth device losing it's firmware during suspend.
+The original patch I created did fix the issue. (I do realize that
+targeting all QCA Rome chipset's was the wrong decision). Hans de
+Goede's rewritten version (commit: 61f5acea8737) also worked for my
+device. Since, some people think that the underlying issue may been
+fixed elsewhere in the kernel. I'm going to remove Hans' commit and
+see if the issue persists (with kernel 4.15.6). I'll report back
+tomorrow with the results.
+
+
+-Leif
+
+On Wed, Feb 28, 2018 at 11:54 AM, Hans de Goede <hdegoede@redhat.com> wrote:
+> Hi,
+>
+>
+> On 27-02-18 15:07, Hans de Goede wrote:
+>>
+>> Hi,
+>>
+>> On 27-02-18 03:29, Brian Norris wrote:
+>>>
+>>> On Thu, Feb 22, 2018 at 11:14 PM, Hans de Goede <hdegoede@redhat.com>
+>>> wrote:
+>>>>
+>>>> On 23-02-18 04:12, Brian Norris wrote:
+>>>>>
+>>>>> Hmm? I'm not sure I completely follow here when you say "he was not
+>>>>> hitting the firmware loading race". If things were functioning fine
+>>>>> with
+>>>>> system suspend (but not with autosuspend), then he's not seeing the
+>>>>> controller (quoting commit fd865802c66b) "losing power during suspend".
+>>>>
+>>>>
+>>>>
+>>>> He was running a kernel with the original "fd865802c66b Bluetooth:
+>>>> btusb:
+>>>> fix QCA Rome suspend/resume" commit, which fixes regular suspend for
+>>>> devices which are "losing power during suspend", but does nothing for
+>>>> runtime-suspend.
+>>>>
+>>>> He ran tests both with and without runtime-pm enabled with that same
+>>>> kernel
+>>>> and he needed to disable runtime-pm to get working bluetooth.
+>>>
+>>>
+>>> Did he ever test with commit fd865802c66b reverted?
+>>>
+>>> My symptoms were exactly the same as you described. BT was broken as
+>>> of v4.14 if I had runtime suspend enabled. Things were fine if I
+>>> either (a) reverted the patch or (b) disabled runtime suspend. I
+>>> obviously preferred (a), which is why I continued to complain :)
+>>>
+>>> Did your tester ever try (a)? If not, then I don't think you've really
+>>> ensured that he really needed a "fixed" version; he may not have
+>>> needed the patch at all.
+>>>
+>>> Or an alternative question: did that system work on an older Fedora
+>>> release (and presumably an older kernel)? If so, then he probably also
+>>> did not need that patch.
+>>>
+>>>>> So, that would suggest he could only be seeing the race (as I was), and
+>>>>> that his machine does not deserve a RESET_RESUME quirk?
+>>>>
+>>>>
+>>>>
+>>>> I hope my above answer helps to clarify why I believe the quirk is
+>>>> necessary on his machine.
+>>>
+>>>
+>>> I'm sorry, but no it doesn't. If anything, it suggests to me even more
+>>> that it may not have been necessary.
+>>
+>>
+>> Ok, I've started another test-kernel build for the reporter this time
+>> without any quirks at all and I've asked him to test.
+>
+>
+> You were right, the Yoga 920 works fine without any quirks, thank you
+> for being persistent on getting this tested properly.
+>
+> I will submit a patch dropping the Yoga 920 from the
+> btusb_needs_reset_resume_table.
+>
+> Regards,
+>
+> Hans
