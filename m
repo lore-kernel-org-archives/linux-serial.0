@@ -1,89 +1,62 @@
-From: <patrice.chotard@st.com>
-Subject: [RESEND PATCH v4 3/3]] ARM: dts: STi: Remove "console=ttyASN" from
- bootargs for STi boards
-Date: Wed, 14 Mar 2018 18:22:07 +0100
-Message-ID: <1521048127-20298-1-git-send-email-patrice.chotard@st.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 1/3] serial: 8250_early: Add earlycon support for AMD
+ Carrizo / Stoneyridge
+Date: Wed, 14 Mar 2018 19:31:19 +0200
+Message-ID: <CAHp75VceBGSyPGfmoeT_bsXOBunQ+28Xp4T+wP4MJFTAy-WxwA@mail.gmail.com>
+References: <20180314003655.12141-1-djkurtz@chromium.org> <20180314003655.12141-2-djkurtz@chromium.org>
+ <CAPybu_0uLNz=tRvwqnMfoogJ=A4b5SgMecE9ZihrZdFrbRvcEw@mail.gmail.com>
+ <CAGS+omCuEYSHFPmknvvvjUpCWFP_rCmwa9utQiO=aEmdm-anwg@mail.gmail.com>
+ <CAHp75VehhNv6pPrRiM9jBAK9FsqZ2Defo8HKhutwn+GPnCFp3w@mail.gmail.com> <CAE2855tGe0i9XoEPe9iLFpCds3fXyj9uGhDACvK06KaqvhvYBg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org
-Cc: patrice.chotard@st.com
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAE2855tGe0i9XoEPe9iLFpCds3fXyj9uGhDACvK06KaqvhvYBg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Aaron Durbin <adurbin@chromium.org>
+Cc: Daniel Kurtz <djkurtz@chromium.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Doug Anderson <dianders@chromium.org>, Matt Redfearn <matt.redfearn@mips.com>, Jeffy <jeffy.chen@rock-chips.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@st.com>
+On Wed, Mar 14, 2018 at 7:12 PM, Aaron Durbin <adurbin@chromium.org> wrote:
+> On Wed, Mar 14, 2018 at 10:38 AM, Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+>> On Wed, Mar 14, 2018 at 6:29 PM, Daniel Kurtz <djkurtz@chromium.org> wrote:
+>>> On Wed, Mar 14, 2018 at 4:54 AM Ricardo Ribalda Delgado <
+>>> ricardo.ribalda@gmail.com> wrote:
+>>>> On Wed, Mar 14, 2018 at 1:36 AM, Daniel Kurtz <djkurtz@chromium.org>
+>>> wrote:
+>>
+>>> In fact, the recommended way is to have firmware specify an ACPI SPCR table
+>>> with OEMID="AMDCZ " (see https://patchwork.kernel.org/patch/10281307/) to
+>>> configure proper access and address.
+>>
+>> Hmm... I was thinking it's already there. And thus, this is just a
+>> quirk for *existing* firmware that doesn't correctly configured
+>> hardware.
+>> (Yes, I'm aware about one nuance in SPCR specification I'm trying to
+>> address via official ways)
+>>
+>>>  With an SPCR table in place,  the
+>>> kernel command line just becomes "earlycon", with no parameters.
+>>
+>> SPCR *provides* an address of UART (required by specification).
+>
+> What is "it's" in your first sentence? The access method?
 
-As serial interface is already specified into stdout-path property,
-"console=ttyASN,115200" from bootargs can be removed.
+*SPCR table* itself on the platforms in question.
 
-Signed-off-by: Patrice Chotard <patrice.chotard@st.com>
----
- arch/arm/boot/dts/stih407-b2120.dts | 2 +-
- arch/arm/boot/dts/stih410-b2120.dts | 2 +-
- arch/arm/boot/dts/stih410-b2260.dts | 2 +-
- arch/arm/boot/dts/stih418-b2199.dts | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+>  There is hardware all over that does
+> not meet the current assumptions being made in the early uart drivers
+> within the kernel.
 
-diff --git a/arch/arm/boot/dts/stih407-b2120.dts b/arch/arm/boot/dts/stih407-b2120.dts
-index 37f2ddbfa099..a7a0f76e9cbc 100644
---- a/arch/arm/boot/dts/stih407-b2120.dts
-+++ b/arch/arm/boot/dts/stih407-b2120.dts
-@@ -14,7 +14,7 @@
- 	compatible = "st,stih407-b2120", "st,stih407";
- 
- 	chosen {
--		bootargs = "console=ttyAS0,115200 clk_ignore_unused";
-+		bootargs = "clk_ignore_unused";
- 		linux,stdout-path = &sbc_serial0;
- 	};
- 
-diff --git a/arch/arm/boot/dts/stih410-b2120.dts b/arch/arm/boot/dts/stih410-b2120.dts
-index a6f00a6687a9..6c6b4cc37e97 100644
---- a/arch/arm/boot/dts/stih410-b2120.dts
-+++ b/arch/arm/boot/dts/stih410-b2120.dts
-@@ -14,7 +14,7 @@
- 	compatible = "st,stih410-b2120", "st,stih410";
- 
- 	chosen {
--		bootargs = "console=ttyAS0,115200 clk_ignore_unused";
-+		bootargs = "clk_ignore_unused";
- 		linux,stdout-path = &sbc_serial0;
- 	};
- 
-diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
-index 62770496e328..50d36758391c 100644
---- a/arch/arm/boot/dts/stih410-b2260.dts
-+++ b/arch/arm/boot/dts/stih410-b2260.dts
-@@ -15,7 +15,7 @@
- 	compatible = "st,stih410-b2260", "st,stih410";
- 
- 	chosen {
--		bootargs = "console=ttyAS1,115200 clk_ignore_unused";
-+		bootargs = "clk_ignore_unused";
- 		linux,stdout-path = &uart1;
- 	};
- 
-diff --git a/arch/arm/boot/dts/stih418-b2199.dts b/arch/arm/boot/dts/stih418-b2199.dts
-index 36f40f58155d..7f5f3252bfc7 100644
---- a/arch/arm/boot/dts/stih418-b2199.dts
-+++ b/arch/arm/boot/dts/stih418-b2199.dts
-@@ -14,7 +14,7 @@
- 	compatible = "st,stih418-b2199", "st,stih418";
- 
- 	chosen {
--		bootargs = "console=ttyAS0,115200 clk_ignore_unused";
-+		bootargs = "clk_ignore_unused";
- 		linux,stdout-path = &sbc_serial0;
- 	};
- 
+I know, that's why I'm working now on a proposal to SPCR specification
+to make our life slightly easier in that sense.
+
+P.S. In case you are interested, I have crafted SPCR in U-Boot for
+Intel Edison (ACPI case) where UART clock is also non-standard and did
+some tests. It works quite nicely when firmware, **iff written
+properly**, configures UART beforehand. In this case no clock
+information is needed, no code needs to be added into the kernel.
+
 -- 
-1.9.1
+With Best Regards,
+Andy Shevchenko
