@@ -1,74 +1,38 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 4.16-rc6
-Date: Wed, 14 Mar 2018 12:30:10 +0100
-Message-ID: <20180314113010.GA23819@kroah.com>
+Subject: Re: [PATCH v4 3/3] ARM: dts: STi: Remove "console=ttyASN" from
+ bootargs for STi boards
+Date: Wed, 14 Mar 2018 14:57:01 +0100
+Message-ID: <20180314135701.GA20286@kroah.com>
+References: <1520444134-30144-1-git-send-email-patrice.chotard@st.com>
+ <1520444134-30144-4-git-send-email-patrice.chotard@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <1520444134-30144-4-git-send-email-patrice.chotard@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: patrice.chotard@st.com
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, jslaby@suse.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit 4a3928c6f8a53fa1aed28ccba227742486e8ddcb:
+On Wed, Mar 07, 2018 at 06:35:34PM +0100, patrice.chotard@st.com wrote:
+> From: Patrice Chotard <patrice.chotard@st.com>
+> 
+> As serial interface is already specified into stdout-path property,
+> "console=ttyASN,115200" from bootargs can be removed.
+> 
+> Signed-off-by: Patrice Chotard <patrice.chotard@st.com>
+> ---
+> v4: _ none
+> v3: _ remove "console=serialN,115200" from bootargs and use prefered 
+>       stdout-path property
+> v2: _ none
+> 
 
-  Linux 4.16-rc3 (2018-02-25 18:50:41 -0800)
+This patch does not apply at all, are you sure you made it correctly?
 
-are available in the Git repository at:
+Can you please fix it up and resend?
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.16-rc6
+thanks,
 
-for you to fetch changes up to 5d7f77ec72d10c421bc33958f06a5583f2d27ed6:
-
-  serial: imx: fix bogus dev_err (2018-02-28 13:48:21 +0100)
-
-----------------------------------------------------------------
-TTY/Serial driver fixes for 4.16-rc6
-
-Here are some small TTY core and Serial driver fixes for 4.16-rc6.
-
-They resolve some newly reported bugs, as well as some very old ones,
-which is always nice to see.  There is also a new device id added in
-here for good measure.
-
-All of these have been in linux-next for a while with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Andy Shevchenko (1):
-      serial: 8250_pci: Don't fail on multiport card class
-
-Greentime Hu (1):
-      earlycon: add reg-offset to physical address before mapping
-
-Jonas Danielsson (1):
-      tty/serial: atmel: add new version check for usart
-
-Nikola Ciprich (1):
-      serial: 8250_pci: Add Brainboxes UC-260 4 port serial device
-
-Sebastian Andrzej Siewior (1):
-      serial: core: mark port as initialized in autoconfig
-
-Tejun Heo (1):
-      tty: make n_tty_read() always abort if hangup is in progress
-
-Ulrich Hecht (1):
-      serial: sh-sci: prevent lockup on full TTY buffers
-
-phil eichinger (1):
-      serial: imx: fix bogus dev_err
-
- drivers/tty/n_tty.c                |  6 ++++++
- drivers/tty/serial/8250/8250_pci.c | 21 ++++++++++++++++++---
- drivers/tty/serial/atmel_serial.c  |  1 +
- drivers/tty/serial/earlycon.c      |  3 ++-
- drivers/tty/serial/imx.c           |  2 +-
- drivers/tty/serial/serial_core.c   |  2 ++
- drivers/tty/serial/sh-sci.c        |  2 ++
- drivers/tty/tty_io.c               |  9 +++++++++
- include/linux/tty.h                |  1 +
- 9 files changed, 42 insertions(+), 5 deletions(-)
+greg k-h
