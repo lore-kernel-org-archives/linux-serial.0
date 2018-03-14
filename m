@@ -1,33 +1,35 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 41/47] serial: remove blackfin drivers
-Date: Wed, 14 Mar 2018 17:33:15 +0100
-Message-ID: <20180314163315.GG4279@kroah.com>
+Subject: Re: [PATCH 40/47] serial: remove cris/etrax uart drivers
+Date: Wed, 14 Mar 2018 17:33:22 +0100
+Message-ID: <20180314163322.GH4279@kroah.com>
 References: <20180314153603.3127932-1-arnd@arndb.de>
- <20180314153603.3127932-42-arnd@arndb.de>
+ <20180314153603.3127932-41-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180314153603.3127932-42-arnd@arndb.de>
+In-Reply-To: <20180314153603.3127932-41-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>
 Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 14, 2018 at 04:35:54PM +0100, Arnd Bergmann wrote:
-> The blackfin architecture is getting removed, so both the bfin_uart
-> and bfin_sport_uart can be removed as well.
+On Wed, Mar 14, 2018 at 04:35:53PM +0100, Arnd Bergmann wrote:
+> The cris architecture is getting removed, so we don't need the
+> uart driver any more.
 > 
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
->  drivers/tty/serial/Kconfig           |  149 ----
->  drivers/tty/serial/Makefile          |    2 -
->  drivers/tty/serial/bfin_sport_uart.c |  937 --------------------
->  drivers/tty/serial/bfin_sport_uart.h |   86 --
->  drivers/tty/serial/bfin_uart.c       | 1551 ----------------------------------
->  5 files changed, 2725 deletions(-)
->  delete mode 100644 drivers/tty/serial/bfin_sport_uart.c
->  delete mode 100644 drivers/tty/serial/bfin_sport_uart.h
->  delete mode 100644 drivers/tty/serial/bfin_uart.c
+>  .../bindings/serial/axis,etraxfs-uart.txt          |   22 -
+>  drivers/tty/serial/Kconfig                         |   11 -
+>  drivers/tty/serial/Makefile                        |    2 -
+>  drivers/tty/serial/crisv10.c                       | 4248 --------------------
+>  drivers/tty/serial/crisv10.h                       |  133 -
+>  drivers/tty/serial/etraxfs-uart.c                  |  960 -----
+>  6 files changed, 5376 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/serial/axis,etraxfs-uart.txt
+>  delete mode 100644 drivers/tty/serial/crisv10.c
+>  delete mode 100644 drivers/tty/serial/crisv10.h
+>  delete mode 100644 drivers/tty/serial/etraxfs-uart.c
 
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
