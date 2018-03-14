@@ -1,66 +1,89 @@
-From: Patrice CHOTARD <patrice.chotard@st.com>
-Subject: Re: [RESEND PATCH v4 3/3] ARM: dts: STi: Remove console=ttyASN from
- bootargs for STi boards] ARM: dts: STi: Remove "console=ttyASN" from bootargs
- for STi boards
-Date: Wed, 14 Mar 2018 17:19:19 +0000
-Message-ID: <315aff9e-506c-cbdc-874a-082c147fe81c@st.com>
-References: <1521039159-16655-1-git-send-email-patrice.chotard@st.com>
+From: <patrice.chotard@st.com>
+Subject: [RESEND PATCH v4 3/3]] ARM: dts: STi: Remove "console=ttyASN" from
+ bootargs for STi boards
+Date: Wed, 14 Mar 2018 18:22:07 +0100
+Message-ID: <1521048127-20298-1-git-send-email-patrice.chotard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1521039159-16655-1-git-send-email-patrice.chotard@st.com>
-Content-Language: en-US
-Content-ID: <F55E529FEAD6FB48B630264F516092AE@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org
+Cc: patrice.chotard@st.com
 List-Id: linux-serial@vger.kernel.org
 
-U29ycnkNCg0KSSBqdXN0IG5vdGljZWQgIHRoYXQgdGhlIGNvbW1pdCBoZWFkZXIgaXMgY29ycnVw
-dGVkDQpJIHdpbGwgcmVzZW5kIHRoaXMgcGF0Y2gNCg0KUGF0cmljZQ0KDQpPbiAwMy8xNC8yMDE4
-IDAzOjUyIFBNLCBwYXRyaWNlLmNob3RhcmRAc3QuY29tIHdyb3RlOg0KPiBGcm9tOiBQYXRyaWNl
-IENob3RhcmQgPHBhdHJpY2UuY2hvdGFyZEBzdC5jb20+DQo+IA0KPiBBcyBzZXJpYWwgaW50ZXJm
-YWNlIGlzIGFscmVhZHkgc3BlY2lmaWVkIGludG8gc3Rkb3V0LXBhdGggcHJvcGVydHksDQo+ICJj
-b25zb2xlPXR0eUFTTiwxMTUyMDAiIGZyb20gYm9vdGFyZ3MgY2FuIGJlIHJlbW92ZWQuDQo+IA0K
-PiBTaWduZWQtb2ZmLWJ5OiBQYXRyaWNlIENob3RhcmQgPHBhdHJpY2UuY2hvdGFyZEBzdC5jb20+
-DQo+IC0tLQ0KPiANCj4gdjQ6IF8gbm9uZQ0KPiB2MzogXyByZW1vdmUgImNvbnNvbGU9c2VyaWFs
-TiwxMTUyMDAiIGZyb20gYm9vdGFyZ3MgYW5kIHVzZSBwcmVmZXJlZA0KPiAgICAgICAgc3Rkb3V0
-LXBhdGggcHJvcGVydHkNCj4gdjI6IF8gbm9uZQ0KPiANCj4gICBhcmNoL2FybS9ib290L2R0cy9z
-dGloNDA3LWIyMTIwLmR0cyB8IDIgKy0NCj4gICBhcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIy
-MTIwLmR0cyB8IDIgKy0NCj4gICBhcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIyMjYwLmR0cyB8
-IDIgKy0NCj4gICBhcmNoL2FybS9ib290L2R0cy9zdGloNDE4LWIyMTk5LmR0cyB8IDIgKy0NCj4g
-ICA0IGZpbGVzIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCj4gDQo+
-IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWIyMTIwLmR0cyBiL2FyY2gv
-YXJtL2Jvb3QvZHRzL3N0aWg0MDctYjIxMjAuZHRzDQo+IGluZGV4IDM3ZjJkZGJmYTA5OS4uYTdh
-MGY3NmU5Y2JjIDEwMDY0NA0KPiAtLS0gYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWIyMTIw
-LmR0cw0KPiArKysgYi9hcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWIyMTIwLmR0cw0KPiBAQCAt
-MTQsNyArMTQsNyBAQA0KPiAgIAljb21wYXRpYmxlID0gInN0LHN0aWg0MDctYjIxMjAiLCAic3Qs
-c3RpaDQwNyI7DQo+ICAgDQo+ICAgCWNob3NlbiB7DQo+IC0JCWJvb3RhcmdzID0gImNvbnNvbGU9
-dHR5QVMwLDExNTIwMCBjbGtfaWdub3JlX3VudXNlZCI7DQo+ICsJCWJvb3RhcmdzID0gImNsa19p
-Z25vcmVfdW51c2VkIjsNCj4gICAJCWxpbnV4LHN0ZG91dC1wYXRoID0gJnNiY19zZXJpYWwwOw0K
-PiAgIAl9Ow0KPiAgIA0KPiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQxMC1i
-MjEyMC5kdHMgYi9hcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIyMTIwLmR0cw0KPiBpbmRleCBh
-NmYwMGE2Njg3YTkuLjZjNmI0Y2MzN2U5NyAxMDA2NDQNCj4gLS0tIGEvYXJjaC9hcm0vYm9vdC9k
-dHMvc3RpaDQxMC1iMjEyMC5kdHMNCj4gKysrIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQxMC1i
-MjEyMC5kdHMNCj4gQEAgLTE0LDcgKzE0LDcgQEANCj4gICAJY29tcGF0aWJsZSA9ICJzdCxzdGlo
-NDEwLWIyMTIwIiwgInN0LHN0aWg0MTAiOw0KPiAgIA0KPiAgIAljaG9zZW4gew0KPiAtCQlib290
-YXJncyA9ICJjb25zb2xlPXR0eUFTMCwxMTUyMDAgY2xrX2lnbm9yZV91bnVzZWQiOw0KPiArCQli
-b290YXJncyA9ICJjbGtfaWdub3JlX3VudXNlZCI7DQo+ICAgCQlsaW51eCxzdGRvdXQtcGF0aCA9
-ICZzYmNfc2VyaWFsMDsNCj4gICAJfTsNCj4gICANCj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2Jv
-b3QvZHRzL3N0aWg0MTAtYjIyNjAuZHRzIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQxMC1iMjI2
-MC5kdHMNCj4gaW5kZXggNjI3NzA0OTZlMzI4Li41MGQzNjc1ODM5MWMgMTAwNjQ0DQo+IC0tLSBh
-L2FyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MTAtYjIyNjAuZHRzDQo+ICsrKyBiL2FyY2gvYXJtL2Jv
-b3QvZHRzL3N0aWg0MTAtYjIyNjAuZHRzDQo+IEBAIC0xNSw3ICsxNSw3IEBADQo+ICAgCWNvbXBh
-dGlibGUgPSAic3Qsc3RpaDQxMC1iMjI2MCIsICJzdCxzdGloNDEwIjsNCj4gICANCj4gICAJY2hv
-c2VuIHsNCj4gLQkJYm9vdGFyZ3MgPSAiY29uc29sZT10dHlBUzEsMTE1MjAwIGNsa19pZ25vcmVf
-dW51c2VkIjsNCj4gKwkJYm9vdGFyZ3MgPSAiY2xrX2lnbm9yZV91bnVzZWQiOw0KPiAgIAkJbGlu
-dXgsc3Rkb3V0LXBhdGggPSAmdWFydDE7DQo+ICAgCX07DQo+ICAgDQo+IGRpZmYgLS1naXQgYS9h
-cmNoL2FybS9ib290L2R0cy9zdGloNDE4LWIyMTk5LmR0cyBiL2FyY2gvYXJtL2Jvb3QvZHRzL3N0
-aWg0MTgtYjIxOTkuZHRzDQo+IGluZGV4IDM2ZjQwZjU4MTU1ZC4uN2Y1ZjMyNTJiZmM3IDEwMDY0
-NA0KPiAtLS0gYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDE4LWIyMTk5LmR0cw0KPiArKysgYi9h
-cmNoL2FybS9ib290L2R0cy9zdGloNDE4LWIyMTk5LmR0cw0KPiBAQCAtMTQsNyArMTQsNyBAQA0K
-PiAgIAljb21wYXRpYmxlID0gInN0LHN0aWg0MTgtYjIxOTkiLCAic3Qsc3RpaDQxOCI7DQo+ICAg
-DQo+ICAgCWNob3NlbiB7DQo+IC0JCWJvb3RhcmdzID0gImNvbnNvbGU9dHR5QVMwLDExNTIwMCBj
-bGtfaWdub3JlX3VudXNlZCI7DQo+ICsJCWJvb3RhcmdzID0gImNsa19pZ25vcmVfdW51c2VkIjsN
-Cj4gICAJCWxpbnV4LHN0ZG91dC1wYXRoID0gJnNiY19zZXJpYWwwOw0KPiAgIAl9Ow0KPiAgIA0K
-PiA=
+From: Patrice Chotard <patrice.chotard@st.com>
+
+As serial interface is already specified into stdout-path property,
+"console=ttyASN,115200" from bootargs can be removed.
+
+Signed-off-by: Patrice Chotard <patrice.chotard@st.com>
+---
+ arch/arm/boot/dts/stih407-b2120.dts | 2 +-
+ arch/arm/boot/dts/stih410-b2120.dts | 2 +-
+ arch/arm/boot/dts/stih410-b2260.dts | 2 +-
+ arch/arm/boot/dts/stih418-b2199.dts | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/boot/dts/stih407-b2120.dts b/arch/arm/boot/dts/stih407-b2120.dts
+index 37f2ddbfa099..a7a0f76e9cbc 100644
+--- a/arch/arm/boot/dts/stih407-b2120.dts
++++ b/arch/arm/boot/dts/stih407-b2120.dts
+@@ -14,7 +14,7 @@
+ 	compatible = "st,stih407-b2120", "st,stih407";
+ 
+ 	chosen {
+-		bootargs = "console=ttyAS0,115200 clk_ignore_unused";
++		bootargs = "clk_ignore_unused";
+ 		linux,stdout-path = &sbc_serial0;
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/stih410-b2120.dts b/arch/arm/boot/dts/stih410-b2120.dts
+index a6f00a6687a9..6c6b4cc37e97 100644
+--- a/arch/arm/boot/dts/stih410-b2120.dts
++++ b/arch/arm/boot/dts/stih410-b2120.dts
+@@ -14,7 +14,7 @@
+ 	compatible = "st,stih410-b2120", "st,stih410";
+ 
+ 	chosen {
+-		bootargs = "console=ttyAS0,115200 clk_ignore_unused";
++		bootargs = "clk_ignore_unused";
+ 		linux,stdout-path = &sbc_serial0;
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
+index 62770496e328..50d36758391c 100644
+--- a/arch/arm/boot/dts/stih410-b2260.dts
++++ b/arch/arm/boot/dts/stih410-b2260.dts
+@@ -15,7 +15,7 @@
+ 	compatible = "st,stih410-b2260", "st,stih410";
+ 
+ 	chosen {
+-		bootargs = "console=ttyAS1,115200 clk_ignore_unused";
++		bootargs = "clk_ignore_unused";
+ 		linux,stdout-path = &uart1;
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/stih418-b2199.dts b/arch/arm/boot/dts/stih418-b2199.dts
+index 36f40f58155d..7f5f3252bfc7 100644
+--- a/arch/arm/boot/dts/stih418-b2199.dts
++++ b/arch/arm/boot/dts/stih418-b2199.dts
+@@ -14,7 +14,7 @@
+ 	compatible = "st,stih418-b2199", "st,stih418";
+ 
+ 	chosen {
+-		bootargs = "console=ttyAS0,115200 clk_ignore_unused";
++		bootargs = "clk_ignore_unused";
+ 		linux,stdout-path = &sbc_serial0;
+ 	};
+ 
+-- 
+1.9.1
