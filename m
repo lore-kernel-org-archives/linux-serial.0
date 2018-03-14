@@ -1,31 +1,33 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 42/47] serial: remove m32r_sio driver
-Date: Wed, 14 Mar 2018 17:33:08 +0100
-Message-ID: <20180314163308.GF4279@kroah.com>
+Subject: Re: [PATCH 41/47] serial: remove blackfin drivers
+Date: Wed, 14 Mar 2018 17:33:15 +0100
+Message-ID: <20180314163315.GG4279@kroah.com>
 References: <20180314153603.3127932-1-arnd@arndb.de>
- <20180314153603.3127932-43-arnd@arndb.de>
+ <20180314153603.3127932-42-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180314153603.3127932-43-arnd@arndb.de>
+In-Reply-To: <20180314153603.3127932-42-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>
 Cc: linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 14, 2018 at 04:35:55PM +0100, Arnd Bergmann wrote:
-> The m32r architecture is getting removed, so we don't need this
-> any more.
+On Wed, Mar 14, 2018 at 04:35:54PM +0100, Arnd Bergmann wrote:
+> The blackfin architecture is getting removed, so both the bfin_uart
+> and bfin_sport_uart can be removed as well.
 > 
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
->  drivers/tty/serial/Kconfig        |   29 -
->  drivers/tty/serial/Makefile       |    1 -
->  drivers/tty/serial/m32r_sio.c     | 1053 -------------------------------------
->  drivers/tty/serial/m32r_sio_reg.h |  150 ------
->  4 files changed, 1233 deletions(-)
->  delete mode 100644 drivers/tty/serial/m32r_sio.c
->  delete mode 100644 drivers/tty/serial/m32r_sio_reg.h
+>  drivers/tty/serial/Kconfig           |  149 ----
+>  drivers/tty/serial/Makefile          |    2 -
+>  drivers/tty/serial/bfin_sport_uart.c |  937 --------------------
+>  drivers/tty/serial/bfin_sport_uart.h |   86 --
+>  drivers/tty/serial/bfin_uart.c       | 1551 ----------------------------------
+>  5 files changed, 2725 deletions(-)
+>  delete mode 100644 drivers/tty/serial/bfin_sport_uart.c
+>  delete mode 100644 drivers/tty/serial/bfin_sport_uart.h
+>  delete mode 100644 drivers/tty/serial/bfin_uart.c
 
 Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
