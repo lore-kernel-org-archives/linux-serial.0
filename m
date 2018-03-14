@@ -1,50 +1,66 @@
-From: Aaron Durbin <adurbin@chromium.org>
-Subject: Re: [PATCH 1/3] serial: 8250_early: Add earlycon support for AMD
- Carrizo / Stoneyridge
-Date: Wed, 14 Mar 2018 11:12:33 -0600
-Message-ID: <CAE2855tGe0i9XoEPe9iLFpCds3fXyj9uGhDACvK06KaqvhvYBg@mail.gmail.com>
-References: <20180314003655.12141-1-djkurtz@chromium.org> <20180314003655.12141-2-djkurtz@chromium.org>
- <CAPybu_0uLNz=tRvwqnMfoogJ=A4b5SgMecE9ZihrZdFrbRvcEw@mail.gmail.com>
- <CAGS+omCuEYSHFPmknvvvjUpCWFP_rCmwa9utQiO=aEmdm-anwg@mail.gmail.com> <CAHp75VehhNv6pPrRiM9jBAK9FsqZ2Defo8HKhutwn+GPnCFp3w@mail.gmail.com>
+From: Patrice CHOTARD <patrice.chotard@st.com>
+Subject: Re: [RESEND PATCH v4 3/3] ARM: dts: STi: Remove console=ttyASN from
+ bootargs for STi boards] ARM: dts: STi: Remove "console=ttyASN" from bootargs
+ for STi boards
+Date: Wed, 14 Mar 2018 17:19:19 +0000
+Message-ID: <315aff9e-506c-cbdc-874a-082c147fe81c@st.com>
+References: <1521039159-16655-1-git-send-email-patrice.chotard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75VehhNv6pPrRiM9jBAK9FsqZ2Defo8HKhutwn+GPnCFp3w@mail.gmail.com>
+In-Reply-To: <1521039159-16655-1-git-send-email-patrice.chotard@st.com>
+Content-Language: en-US
+Content-ID: <F55E529FEAD6FB48B630264F516092AE@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Daniel Kurtz <djkurtz@chromium.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Aaron Durbin <adurbin@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Doug Anderson <dianders@chromium.org>, Matt Redfearn <matt.redfearn@mips.com>, Jeffy <jeffy.chen@rock-chips.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 14, 2018 at 10:38 AM, Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Wed, Mar 14, 2018 at 6:29 PM, Daniel Kurtz <djkurtz@chromium.org> wrote:
->> On Wed, Mar 14, 2018 at 4:54 AM Ricardo Ribalda Delgado <
->> ricardo.ribalda@gmail.com> wrote:
->>> On Wed, Mar 14, 2018 at 1:36 AM, Daniel Kurtz <djkurtz@chromium.org>
->> wrote:
->
->> In fact, the recommended way is to have firmware specify an ACPI SPCR table
->> with OEMID="AMDCZ " (see https://patchwork.kernel.org/patch/10281307/) to
->> configure proper access and address.
->
-> Hmm... I was thinking it's already there. And thus, this is just a
-> quirk for *existing* firmware that doesn't correctly configured
-> hardware.
-> (Yes, I'm aware about one nuance in SPCR specification I'm trying to
-> address via official ways)
->
->>  With an SPCR table in place,  the
->> kernel command line just becomes "earlycon", with no parameters.
->
-> SPCR *provides* an address of UART (required by specification).
-
-What is "it's" in your first sentence? The access method? Baud rate
-can't be configured ever in the kernel w/o knowing the input clock to
-the uart block. That's already been brought up, and it is inherently a
-requirement to know that to recalculate the divisor. These patches are
-doing early OOB binding to set the proper input clock because: 1. SPCR
-doesn't have that information 2. you nak'd the generic way of
-specifying the input clock on the command line. Sadly, this situation
-is not unique to this hardware. There is hardware all over that does
-not meet the current assumptions being made in the early uart drivers
-within the kernel.
+U29ycnkNCg0KSSBqdXN0IG5vdGljZWQgIHRoYXQgdGhlIGNvbW1pdCBoZWFkZXIgaXMgY29ycnVw
+dGVkDQpJIHdpbGwgcmVzZW5kIHRoaXMgcGF0Y2gNCg0KUGF0cmljZQ0KDQpPbiAwMy8xNC8yMDE4
+IDAzOjUyIFBNLCBwYXRyaWNlLmNob3RhcmRAc3QuY29tIHdyb3RlOg0KPiBGcm9tOiBQYXRyaWNl
+IENob3RhcmQgPHBhdHJpY2UuY2hvdGFyZEBzdC5jb20+DQo+IA0KPiBBcyBzZXJpYWwgaW50ZXJm
+YWNlIGlzIGFscmVhZHkgc3BlY2lmaWVkIGludG8gc3Rkb3V0LXBhdGggcHJvcGVydHksDQo+ICJj
+b25zb2xlPXR0eUFTTiwxMTUyMDAiIGZyb20gYm9vdGFyZ3MgY2FuIGJlIHJlbW92ZWQuDQo+IA0K
+PiBTaWduZWQtb2ZmLWJ5OiBQYXRyaWNlIENob3RhcmQgPHBhdHJpY2UuY2hvdGFyZEBzdC5jb20+
+DQo+IC0tLQ0KPiANCj4gdjQ6IF8gbm9uZQ0KPiB2MzogXyByZW1vdmUgImNvbnNvbGU9c2VyaWFs
+TiwxMTUyMDAiIGZyb20gYm9vdGFyZ3MgYW5kIHVzZSBwcmVmZXJlZA0KPiAgICAgICAgc3Rkb3V0
+LXBhdGggcHJvcGVydHkNCj4gdjI6IF8gbm9uZQ0KPiANCj4gICBhcmNoL2FybS9ib290L2R0cy9z
+dGloNDA3LWIyMTIwLmR0cyB8IDIgKy0NCj4gICBhcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIy
+MTIwLmR0cyB8IDIgKy0NCj4gICBhcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIyMjYwLmR0cyB8
+IDIgKy0NCj4gICBhcmNoL2FybS9ib290L2R0cy9zdGloNDE4LWIyMTk5LmR0cyB8IDIgKy0NCj4g
+ICA0IGZpbGVzIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCj4gDQo+
+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWIyMTIwLmR0cyBiL2FyY2gv
+YXJtL2Jvb3QvZHRzL3N0aWg0MDctYjIxMjAuZHRzDQo+IGluZGV4IDM3ZjJkZGJmYTA5OS4uYTdh
+MGY3NmU5Y2JjIDEwMDY0NA0KPiAtLS0gYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWIyMTIw
+LmR0cw0KPiArKysgYi9hcmNoL2FybS9ib290L2R0cy9zdGloNDA3LWIyMTIwLmR0cw0KPiBAQCAt
+MTQsNyArMTQsNyBAQA0KPiAgIAljb21wYXRpYmxlID0gInN0LHN0aWg0MDctYjIxMjAiLCAic3Qs
+c3RpaDQwNyI7DQo+ICAgDQo+ICAgCWNob3NlbiB7DQo+IC0JCWJvb3RhcmdzID0gImNvbnNvbGU9
+dHR5QVMwLDExNTIwMCBjbGtfaWdub3JlX3VudXNlZCI7DQo+ICsJCWJvb3RhcmdzID0gImNsa19p
+Z25vcmVfdW51c2VkIjsNCj4gICAJCWxpbnV4LHN0ZG91dC1wYXRoID0gJnNiY19zZXJpYWwwOw0K
+PiAgIAl9Ow0KPiAgIA0KPiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQxMC1i
+MjEyMC5kdHMgYi9hcmNoL2FybS9ib290L2R0cy9zdGloNDEwLWIyMTIwLmR0cw0KPiBpbmRleCBh
+NmYwMGE2Njg3YTkuLjZjNmI0Y2MzN2U5NyAxMDA2NDQNCj4gLS0tIGEvYXJjaC9hcm0vYm9vdC9k
+dHMvc3RpaDQxMC1iMjEyMC5kdHMNCj4gKysrIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQxMC1i
+MjEyMC5kdHMNCj4gQEAgLTE0LDcgKzE0LDcgQEANCj4gICAJY29tcGF0aWJsZSA9ICJzdCxzdGlo
+NDEwLWIyMTIwIiwgInN0LHN0aWg0MTAiOw0KPiAgIA0KPiAgIAljaG9zZW4gew0KPiAtCQlib290
+YXJncyA9ICJjb25zb2xlPXR0eUFTMCwxMTUyMDAgY2xrX2lnbm9yZV91bnVzZWQiOw0KPiArCQli
+b290YXJncyA9ICJjbGtfaWdub3JlX3VudXNlZCI7DQo+ICAgCQlsaW51eCxzdGRvdXQtcGF0aCA9
+ICZzYmNfc2VyaWFsMDsNCj4gICAJfTsNCj4gICANCj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2Jv
+b3QvZHRzL3N0aWg0MTAtYjIyNjAuZHRzIGIvYXJjaC9hcm0vYm9vdC9kdHMvc3RpaDQxMC1iMjI2
+MC5kdHMNCj4gaW5kZXggNjI3NzA0OTZlMzI4Li41MGQzNjc1ODM5MWMgMTAwNjQ0DQo+IC0tLSBh
+L2FyY2gvYXJtL2Jvb3QvZHRzL3N0aWg0MTAtYjIyNjAuZHRzDQo+ICsrKyBiL2FyY2gvYXJtL2Jv
+b3QvZHRzL3N0aWg0MTAtYjIyNjAuZHRzDQo+IEBAIC0xNSw3ICsxNSw3IEBADQo+ICAgCWNvbXBh
+dGlibGUgPSAic3Qsc3RpaDQxMC1iMjI2MCIsICJzdCxzdGloNDEwIjsNCj4gICANCj4gICAJY2hv
+c2VuIHsNCj4gLQkJYm9vdGFyZ3MgPSAiY29uc29sZT10dHlBUzEsMTE1MjAwIGNsa19pZ25vcmVf
+dW51c2VkIjsNCj4gKwkJYm9vdGFyZ3MgPSAiY2xrX2lnbm9yZV91bnVzZWQiOw0KPiAgIAkJbGlu
+dXgsc3Rkb3V0LXBhdGggPSAmdWFydDE7DQo+ICAgCX07DQo+ICAgDQo+IGRpZmYgLS1naXQgYS9h
+cmNoL2FybS9ib290L2R0cy9zdGloNDE4LWIyMTk5LmR0cyBiL2FyY2gvYXJtL2Jvb3QvZHRzL3N0
+aWg0MTgtYjIxOTkuZHRzDQo+IGluZGV4IDM2ZjQwZjU4MTU1ZC4uN2Y1ZjMyNTJiZmM3IDEwMDY0
+NA0KPiAtLS0gYS9hcmNoL2FybS9ib290L2R0cy9zdGloNDE4LWIyMTk5LmR0cw0KPiArKysgYi9h
+cmNoL2FybS9ib290L2R0cy9zdGloNDE4LWIyMTk5LmR0cw0KPiBAQCAtMTQsNyArMTQsNyBAQA0K
+PiAgIAljb21wYXRpYmxlID0gInN0LHN0aWg0MTgtYjIxOTkiLCAic3Qsc3RpaDQxOCI7DQo+ICAg
+DQo+ICAgCWNob3NlbiB7DQo+IC0JCWJvb3RhcmdzID0gImNvbnNvbGU9dHR5QVMwLDExNTIwMCBj
+bGtfaWdub3JlX3VudXNlZCI7DQo+ICsJCWJvb3RhcmdzID0gImNsa19pZ25vcmVfdW51c2VkIjsN
+Cj4gICAJCWxpbnV4LHN0ZG91dC1wYXRoID0gJnNiY19zZXJpYWwwOw0KPiAgIAl9Ow0KPiAgIA0K
+PiA=
