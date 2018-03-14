@@ -1,37 +1,43 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4 3/3] ARM: dts: STi: Remove "console=ttyASN" from
- bootargs for STi boards
-Date: Wed, 14 Mar 2018 14:57:01 +0100
-Message-ID: <20180314135701.GA20286@kroah.com>
-References: <1520444134-30144-1-git-send-email-patrice.chotard@st.com>
- <1520444134-30144-4-git-send-email-patrice.chotard@st.com>
+Subject: Re: [PATCH] serial: samsung: macros with complex values should be
+ enclosed in parentheses
+Date: Wed, 14 Mar 2018 14:58:04 +0100
+Message-ID: <20180314135804.GA21350@kroah.com>
+References: <CGME20180314021710epcas1p3766602fe312f87d916cab69af2acf203@epcas1p3.samsung.com>
+ <1520993825-8605-1-git-send-email-y.k.oh@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1520444134-30144-4-git-send-email-patrice.chotard@st.com>
+In-Reply-To: <1520993825-8605-1-git-send-email-y.k.oh@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: patrice.chotard@st.com
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, jslaby@suse.com, linux-serial@vger.kernel.org
+To: YOUNGKEUN OH <y.k.oh@samsung.com>
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 07, 2018 at 06:35:34PM +0100, patrice.chotard@st.com wrote:
-> From: Patrice Chotard <patrice.chotard@st.com>
+On Wed, Mar 14, 2018 at 11:17:05AM +0900, YOUNGKEUN OH wrote:
+> Cleanup checkpatch error:
+> ERROR: Macros with complex values should be enclosed in parentheses
 > 
-> As serial interface is already specified into stdout-path property,
-> "console=ttyASN,115200" from bootargs can be removed.
-> 
-> Signed-off-by: Patrice Chotard <patrice.chotard@st.com>
+> Signed-off-by: YOUNGKEUN OH <y.k.oh@samsung.com>
 > ---
-> v4: _ none
-> v3: _ remove "console=serialN,115200" from bootargs and use prefered 
->       stdout-path property
-> v2: _ none
+>  drivers/tty/serial/samsung.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
 > 
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index 3f2f8c1..da9bddb1 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -1455,7 +1455,7 @@ static int __init s3c24xx_serial_console_init(void)
+>  }
+>  console_initcall(s3c24xx_serial_console_init);
+> 
+> -#define S3C24XX_SERIAL_CONSOLE &s3c24xx_serial_console
+> +#define S3C24XX_SERIAL_CONSOLE (&s3c24xx_serial_console)
 
-This patch does not apply at all, are you sure you made it correctly?
+That's not a complex macro!
 
-Can you please fix it up and resend?
+Please use checkpatch as a hint, not the "truth".
 
 thanks,
 
