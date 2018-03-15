@@ -1,135 +1,160 @@
-From: Daniel Kurtz <djkurtz@chromium.org>
-Subject: [PATCH v3 3/3] serial: core: Allow skipping old serial port initialization
-Date: Wed, 14 Mar 2018 20:04:45 -0600
-Message-ID: <20180315020445.150604-4-djkurtz@chromium.org>
-References: <20180315020445.150604-1-djkurtz@chromium.org>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v2] earlycon: Fix __earlycon_table stride... again
+Date: Wed, 14 Mar 2018 19:33:28 -0700
+Message-ID: <398eebd9-9ec9-50ef-88ea-c3d5ae9f5d90@infradead.org>
+References: <20180315014817.142930-1-djkurtz@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180315020445.150604-1-djkurtz@chromium.org>
+In-Reply-To: <20180315014817.142930-1-djkurtz@chromium.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: adurbin@chromium.org, linux-kernel@vger.kernel.org, Daniel Kurtz <djkurtz@chromium.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, David Howells <dhowells@redhat.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Douglas Anderson <dianders@chromium.org>, Matt Redfearn <matt.redfearn@mips.com>, Jeffy Chen <jeffy.chen@rock-chips.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, "open list:ACPI" <linux-acpi@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+To: Daniel Kurtz <djkurtz@chromium.org>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>
+Cc: adurbin@chromium.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE" <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:GENERIC INCLUDE/ASM HEADER FILES" <linux-arch@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-The old_serial_port global array in 8250_core is supposed to hold an entry
-for each serial port on the system that cannot be discovered via a
-standard enumeration mechanism (aka ACPI/PCI/DTS).  The array is populated
-at compile-time from the value specified in the SERIAL_PORT_DFNS macro.
-This macro is defined in arch/serial.h.
+On 03/14/2018 06:48 PM, Daniel Kurtz wrote:
+> Commit 470ca0de69fe ("serial: earlycon: Enable earlycon without command
+> line param") added EARLYCON_TABLE().
+> 
+> Commit 99492c39f39f ("earlycon: Fix __earlycon_table stride") referenced
+> commit 07fca0e57fca92 ("tracing: Properly align linker defined symbols")
+> and tried to fix EARLYCON_TABLE() using __aligned(32).
+> 
+> However, the fix copied just works around compiler behavior.  In fact, it
+> was subsequently re-implemented for tracing using a table of pointers in
+> commit 3d56e331b653 ("tracing: Replace syscall_meta_data struct array with
+> pointer array"), commit 654986462939 ("tracepoints: Fix section alignment
+> using pointer array") and commit e4a9ea5ee7c8 ("tracing: Replace
+> trace_event struct array with pointer array").
+> 
+> Let's do the same "array of pointers to structs" approach for
+> EARLYCON_TABLE.
 
-For x86, this macro is currently unconditionally initialized to supply
-four ioport UARTs (0x3F8, 0x2F8, 0x3E8, 0x2E8).
+Please describe what the problem is instead of just what the fix is.
+Thanks.
 
-However, not all x86 CPUs have these four ioport UARTs.  For example, the
-UARTs on AMD Carrizo and later are separate memory mapped Designware IP
-blocks.
+> Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+> ---
+> Changes since v1:
+>  * Change __earlycon_table to an array of pointers.
+> 
+> Note: I do not have a convenient system to test the of/fdt.c part of this
+> patch, so would apreciate help verifying it.  Thanks!
+> 
+>  drivers/of/fdt.c                  |  7 +++++--
+>  drivers/tty/serial/earlycon.c     |  6 ++++--
+>  include/asm-generic/vmlinux.lds.h |  2 +-
+>  include/linux/serial_core.h       | 21 ++++++++++++++-------
+>  4 files changed, 24 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> index 84aa9d676375..6da20b9688f7 100644
+> --- a/drivers/of/fdt.c
+> +++ b/drivers/of/fdt.c
+> @@ -942,7 +942,7 @@ int __init early_init_dt_scan_chosen_stdout(void)
+>  	int offset;
+>  	const char *p, *q, *options = NULL;
+>  	int l;
+> -	const struct earlycon_id *match;
+> +	const struct earlycon_id **p_match;
+>  	const void *fdt = initial_boot_params;
+>  
+>  	offset = fdt_path_offset(fdt, "/chosen");
+> @@ -969,7 +969,10 @@ int __init early_init_dt_scan_chosen_stdout(void)
+>  		return 0;
+>  	}
+>  
+> -	for (match = __earlycon_table; match < __earlycon_table_end; match++) {
+> +	for (p_match = __earlycon_table; p_match < __earlycon_table_end;
+> +	     p_match++) {
+> +		const struct earlycon_id *match = *p_match;
+> +
+>  		if (!match->compatible[0])
+>  			continue;
+>  
+> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+> index a24278380fec..22683393a0f2 100644
+> --- a/drivers/tty/serial/earlycon.c
+> +++ b/drivers/tty/serial/earlycon.c
+> @@ -169,7 +169,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+>   */
+>  int __init setup_earlycon(char *buf)
+>  {
+> -	const struct earlycon_id *match;
+> +	const struct earlycon_id **p_match;
+>  
+>  	if (!buf || !buf[0])
+>  		return -EINVAL;
+> @@ -177,7 +177,9 @@ int __init setup_earlycon(char *buf)
+>  	if (early_con.flags & CON_ENABLED)
+>  		return -EALREADY;
+>  
+> -	for (match = __earlycon_table; match < __earlycon_table_end; match++) {
+> +	for (p_match = __earlycon_table; p_match < __earlycon_table_end;
+> +	     p_match++) {
+> +		const struct earlycon_id *match = *p_match;
+>  		size_t len = strlen(match->name);
+>  
+>  		if (strncmp(buf, match->name, len))
+> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+> index 1ab0e520d6fc..e17de55c2542 100644
+> --- a/include/asm-generic/vmlinux.lds.h
+> +++ b/include/asm-generic/vmlinux.lds.h
+> @@ -179,7 +179,7 @@
+>  #endif
+>  
+>  #ifdef CONFIG_SERIAL_EARLYCON
+> -#define EARLYCON_TABLE() STRUCT_ALIGN();			\
+> +#define EARLYCON_TABLE() . = ALIGN(8);				\
+>  			 VMLINUX_SYMBOL(__earlycon_table) = .;	\
+>  			 KEEP(*(__earlycon_table))		\
+>  			 VMLINUX_SYMBOL(__earlycon_table_end) = .;
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index b32df49a3bd5..93b7add47087 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -351,10 +351,10 @@ struct earlycon_id {
+>  	char	name[16];
+>  	char	compatible[128];
+>  	int	(*setup)(struct earlycon_device *, const char *options);
+> -} __aligned(32);
+> +};
+>  
+> -extern const struct earlycon_id __earlycon_table[];
+> -extern const struct earlycon_id __earlycon_table_end[];
+> +extern const struct earlycon_id *__earlycon_table[];
+> +extern const struct earlycon_id *__earlycon_table_end[];
+>  
+>  #if defined(CONFIG_SERIAL_EARLYCON) && !defined(MODULE)
+>  #define EARLYCON_USED_OR_UNUSED	__used
+> @@ -362,12 +362,19 @@ extern const struct earlycon_id __earlycon_table_end[];
+>  #define EARLYCON_USED_OR_UNUSED	__maybe_unused
+>  #endif
+>  
+> -#define OF_EARLYCON_DECLARE(_name, compat, fn)				\
+> -	static const struct earlycon_id __UNIQUE_ID(__earlycon_##_name)	\
+> -	     EARLYCON_USED_OR_UNUSED __section(__earlycon_table)	\
+> +#define _OF_EARLYCON_DECLARE(_name, compat, fn, unique_id)		\
+> +	static const struct earlycon_id unique_id			\
+> +	     EARLYCON_USED_OR_UNUSED __initdata				\
+>  		= { .name = __stringify(_name),				\
+>  		    .compatible = compat,				\
+> -		    .setup = fn  }
+> +		    .setup = fn  };					\
+> +	static const struct earlycon_id EARLYCON_USED_OR_UNUSED		\
+> +		__section(__earlycon_table)				\
+> +		* const __PASTE(__p, unique_id) = &unique_id
+> +
+> +#define OF_EARLYCON_DECLARE(_name, compat, fn)				\
+> +	_OF_EARLYCON_DECLARE(_name, compat, fn,				\
+> +			     __UNIQUE_ID(__earlycon_##_name))
+>  
+>  #define EARLYCON_DECLARE(_name, fn)	OF_EARLYCON_DECLARE(_name, "", fn)
+>  
+> 
 
-Fairly early in boot the console_initcall univ8250_console_init iterates
-over this array and installs these old UARTs into the global array
-serial8250_ports.  Further, it attempts to register them for use as
-the console.  In other words, if, for example, the kernel commandline has
-console=ttyS0, the console will be switched over to one of these
-non-existent UARTs.  Only later, when the real UART drivers are probed
-and their devices are instantiated will the console switch back over to
-the proper UART.
 
-This is noticeable when using earlycon, since part of the serial console
-log will appear to disappear (when the bogus old takes over) and then
-re-appear (when the real UART finally gets registered for the console).
-
-The problem is even more noticable when *not* using earlycon, since in
-this case the entire console output is missing, having been incorrectly
-played back to the non-existing serial port.
-
-Create a global variable to allow skipping old serial port initialization
-and wire it up to the AMDCZ ACPI SPCR quirk and the special amdcz earlycon
-setup handler.
-
-Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
----
-Changes since v1:
- * Rename variable to serial8250_skip_old_ports
- * Also set variable in acpi/spcr to support no-earlycon case.
-
-Changes since v2:
- * Added IS_ENABLED(CONFIG_SERIAL_825) and removed the .h #ifdef as suggested
-   by Kees Cook.
-
-
- drivers/acpi/spcr.c                  | 3 +++
- drivers/tty/serial/8250/8250_core.c  | 6 ++++++
- drivers/tty/serial/8250/8250_early.c | 1 +
- include/linux/serial_8250.h          | 2 ++
- 4 files changed, 12 insertions(+)
-
-diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-index 52d840d0e05b..d1affdf2bc37 100644
---- a/drivers/acpi/spcr.c
-+++ b/drivers/acpi/spcr.c
-@@ -14,6 +14,7 @@
- #include <linux/acpi.h>
- #include <linux/console.h>
- #include <linux/kernel.h>
-+#include <linux/serial_8250.h>
- #include <linux/serial_core.h>
- 
- /*
-@@ -208,6 +209,8 @@ int __init acpi_parse_spcr(bool enable_earlycon, bool enable_console)
- 	}
- 
- 	if (amdcz_present(table)) {
-+		if (IS_ENABLED(CONFIG_SERIAL_8250))
-+			serial8250_skip_old_ports = true;
- 		if (enable_earlycon)
- 			uart = "amdcz";
- 	}
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 9342fc2ee7df..a04da392a251 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -66,6 +66,9 @@ static unsigned int skip_txen_test; /* force skip of txen test at init time */
- #define SERIAL_PORT_DFNS
- #endif
- 
-+bool serial8250_skip_old_ports;
-+EXPORT_SYMBOL(serial8250_skip_old_ports);
-+
- static const struct old_serial_port old_serial_port[] = {
- 	SERIAL_PORT_DFNS /* defined in asm/serial.h */
- };
-@@ -537,6 +540,9 @@ static void __init serial8250_isa_init_ports(void)
- 	if (share_irqs)
- 		irqflag = IRQF_SHARED;
- 
-+	if (serial8250_skip_old_ports)
-+		return;
-+
- 	for (i = 0, up = serial8250_ports;
- 	     i < ARRAY_SIZE(old_serial_port) && i < nr_uarts;
- 	     i++, up++) {
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index c6bf971a6038..288d2be82990 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -202,6 +202,7 @@ static int __init early_amdcz_setup(struct earlycon_device *dev,
- {
- 	struct uart_port *port = &dev->port;
- 
-+	serial8250_skip_old_ports = true;
- 	port->uartclk = 48000000;
- 
- 	return early_serial8250_setup(dev, opt);
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index a27ef5f56431..ae739c34546f 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -136,6 +136,8 @@ struct uart_8250_port {
- 	struct uart_8250_em485 *em485;
- };
- 
-+extern bool serial8250_skip_old_ports;
-+
- static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
- {
- 	return container_of(up, struct uart_8250_port, port);
 -- 
-2.16.2.804.g6dcf76e118-goog
+~Randy
