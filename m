@@ -1,79 +1,112 @@
-From: Daniel Kurtz <djkurtz@chromium.org>
-Subject: Re: [PATCH v3 3/3] serial: core: Allow skipping old serial port initialization
-Date: Thu, 15 Mar 2018 16:24:56 +0000
-Message-ID: <CAGS+omBiUJ=0LouOkP_C9GvHNZCTeH5Vr8=Yqoe9EO6YGgZFvQ@mail.gmail.com>
-References: <20180315020445.150604-1-djkurtz@chromium.org> <20180315020445.150604-4-djkurtz@chromium.org>
- <1521119068.10722.661.camel@linux.intel.com>
+From: Gabriel Matni <gabriel.matni@exfo.com>
+Subject: RE: [PATCH] serial: mvebu-uart: fix tx lost characters
+Date: Thu, 15 Mar 2018 18:55:25 +0000
+Message-ID: <3B588D51285A4A4D8D39C94212E078262787C0@SPQCMBX02.exfo.com>
+References: <3B588D51285A4A4D8D39C94212E078262748ED@SPQCMBX02.exfo.com>
+ <20180315165516.GA9519@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1521119068.10722.661.camel@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, adurbin@chromium.org, linux-kernel@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, jslaby@suse.com, Kees Cook <keescook@chromium.org>, mbrugger@suse.com, dhowells@redhat.com, allen.lkml@gmail.com, sean@mess.org, Doug Anderson <dianders@chromium.org>, matt.redfearn@mips.com, Jeffy <jeffy.chen@rock-chips.com>, marc_gonzalez@sigmadesigns.com, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20180315165516.GA9519@kroah.com>
+Content-Language: en-US
+Sender: stable-owner@vger.kernel.org
+To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, Miquel Raynal <miquel.raynal@bootlin.com>, =?iso-8859-1?Q?Gr=E9gory_Clement?= <gregory.clement@bootlin.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 15, 2018 at 7:04 AM Andy Shevchenko <
-andriy.shevchenko@linux.intel.com> wrote:
+From: Gabriel Matni <gabriel.matni@exfo.com>
 
-> On Wed, 2018-03-14 at 20:04 -0600, Daniel Kurtz wrote:
-> > The old_serial_port global array in 8250_core is supposed to hold an
-> > entry
-> > for each serial port on the system that cannot be discovered via a
-> > standard enumeration mechanism (aka ACPI/PCI/DTS).  The array is
-> > populated
-> > at compile-time from the value specified in the SERIAL_PORT_DFNS
-> > macro.
-> > This macro is defined in arch/serial.h.
-> >
-> > For x86, this macro is currently unconditionally initialized to supply
-> > four ioport UARTs (0x3F8, 0x2F8, 0x3E8, 0x2E8).
-> >
-> > However, not all x86 CPUs have these four ioport UARTs.  For example,
-> > the
-> > UARTs on AMD Carrizo and later are separate memory mapped Designware
-> > IP
-> > blocks.
-> >
-> > Fairly early in boot the console_initcall univ8250_console_init
-> > iterates
-> > over this array and installs these old UARTs into the global array
-> > serial8250_ports.  Further, it attempts to register them for use as
-> > the console.  In other words, if, for example, the kernel commandline
-> > has
-> > console=ttyS0, the console will be switched over to one of these
-> > non-existent UARTs.  Only later, when the real UART drivers are probed
-> > and their devices are instantiated will the console switch back over
-> > to
-> > the proper UART.
-> >
-> > This is noticeable when using earlycon, since part of the serial
-> > console
-> > log will appear to disappear (when the bogus old takes over) and then
-> > re-appear (when the real UART finally gets registered for the
-> > console).
-> >
-> > The problem is even more noticable when *not* using earlycon, since in
-> > this case the entire console output is missing, having been
-> > incorrectly
-> > played back to the non-existing serial port.
-> >
-> > Create a global variable to allow skipping old serial port
-> > initialization
-> > and wire it up to the AMDCZ ACPI SPCR quirk and the special amdcz
-> > earlycon
-> > setup handler.
+Fixes missing characters on kernel console at low baud rates (i.e.9600).
+The driver should poll TX_RDY or TX_FIFO_EMP instead of TX_EMP to ensure
+that the transmitter holding register (THR) is ready to receive a new byte.
 
-> I don't like this approach at all.
-> But unfortunately I have nothing to propose.
-> Just felt like I have to share my opinion on this.
+TX_EMP tells us when it is possible to send a break sequence via
+SND_BRK_SEQ. While this also indicates that both the THR and the TSR are
+empty, it does not guarantee that a new byte can be written just yet.
 
-I'm not very proud of this either, but I don't know how else to set this
-flag.
-I proposed a Kconfig option earlier, but that also met resistance.
-Perhaps another kernel command line option?
+Fixes: 30530791a7a0 ("serial: mvebu-uart: initial support for Armada-3700
+      serial port")
+Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com> 
+Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>  
+Signed-off-by: Gabriel Matni <gabriel.matni@exfo.com> 
+
+---
+ drivers/tty/serial/mvebu-uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index a100e98259d7..400e1bc558b2 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -618,7 +618,7 @@ static void wait_for_xmitr(struct uart_port *port)
+ 	u32 val;
+ 
+ 	readl_poll_timeout_atomic(port->membase + UART_STAT, val,
+-				  (val & STAT_TX_EMP), 1, 10000);
++             (val & STAT_TX_RDY(port)), 1, 10000);
+ }
+ 
+ static void mvebu_uart_console_putchar(struct uart_port *port, int ch)
+-- 
+2.7.4
 
 
-> --
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Intel Finland Oy
+> -----Original Message-----
+> From: gregkh@linuxfoundation.org <gregkh@linuxfoundation.org>
+> Sent: March 15, 2018 12:55 PM
+> To: Gabriel Matni <gabriel.matni@exfo.com>
+> Cc: linux-arm-kernel@lists.infradead.org; stable@vger.kernel.org; Miquel
+> Raynal <miquel.raynal@bootlin.com>; Grégory Clement
+> <gregory.clement@bootlin.com>; Thomas Petazzoni
+> <thomas.petazzoni@bootlin.com>
+> Subject: Re: [PATCH] serial: mvebu-uart: fix tx lost characters
+> 
+> On Tue, Mar 06, 2018 at 03:47:03PM +0000, Gabriel Matni wrote:
+> > From: Gabriel Matni <gabriel.matni@exfo.com>
+> >
+> > Fixes missing characters on kernel console at low baud rates (i.e.9600).
+> > The driver should poll TX_RDY or TX_FIFO_EMP instead of TX_EMP to
+> ensure
+> > that the transmitter holding register (THR) is ready to receive a new byte.
+> >
+> > TX_EMP tells us when it is possible to send a break sequence via
+> > SND_BRK_SEQ. While this also indicates that both the THR and the TSR are
+> > empty, it does not guarantee that a new byte can be written just yet.
+> >
+> > Fixes: 30530791a7a0 ("serial: mvebu-uart: initial support for Armada-3700
+> serial port")
+> > Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+> > Signed-off-by: Gabriel Matni <gabriel.matni@exfo.com>
+> > ---
+> > drivers/tty/serial/mvebu-uart.c | 2 +-
+> > 1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-
+> uart.c
+> > index a100e98259d7..f0df0640208e 100644
+> > --- a/drivers/tty/serial/mvebu-uart.c
+> > +++ b/drivers/tty/serial/mvebu-uart.c
+> > @@ -618,7 +618,7 @@ static void wait_for_xmitr(struct uart_port *port)
+> >    u32 val;
+> >
+> >    readl_poll_timeout_atomic(port->membase + UART_STAT, val,
+> > -             (val & STAT_TX_EMP), 1, 10000);
+> > +             (val & STAT_TX_RDY(port)), 1, 10000);
+> > }
+> >
+> > static void mvebu_uart_console_putchar(struct uart_port *port, int ch)
+> > --
+> > 2.7.4
+> 
+> Patch is corrupted and can not be applied :(
+> 
+> Please fix up and resend.
+> 
+> Also be sure to cc: the linux-serial mailing list,
+> scripts/get_maintainer.pl is your friend...
+> 
+> thanks,
+> 
+> greg k-h
