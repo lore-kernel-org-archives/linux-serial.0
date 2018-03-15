@@ -1,90 +1,72 @@
-From: Jesper Nilsson <jesper.nilsson@axis.com>
-Subject: Re: [PATCH 40/47] serial: remove cris/etrax uart drivers
-Date: Thu, 15 Mar 2018 13:19:11 +0100
-Message-ID: <20180315121911.GR17177@axis.com>
-References: <20180314153603.3127932-1-arnd@arndb.de>
- <20180314153603.3127932-41-arnd@arndb.de>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v3 3/3] serial: core: Allow skipping old serial port
+ initialization
+Date: Thu, 15 Mar 2018 15:04:28 +0200
+Message-ID: <1521119068.10722.661.camel@linux.intel.com>
+References: <20180315020445.150604-1-djkurtz@chromium.org>
+         <20180315020445.150604-4-djkurtz@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180314153603.3127932-41-arnd@arndb.de>
+In-Reply-To: <20180315020445.150604-4-djkurtz@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Daniel Kurtz <djkurtz@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: adurbin@chromium.org, linux-kernel@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, David Howells <dhowells@redhat.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Douglas Anderson <dianders@chromium.org>, Matt Redfearn <matt.redfearn@mips.com>, Jeffy Chen <jeffy.chen@rock-chips.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, "open list:ACPI" <linux-acpi@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 14, 2018 at 04:35:53PM +0100, Arnd Bergmann wrote:
-> The cris architecture is getting removed, so we don't need the
-> uart driver any more.
+On Wed, 2018-03-14 at 20:04 -0600, Daniel Kurtz wrote:
+> The old_serial_port global array in 8250_core is supposed to hold an
+> entry
+> for each serial port on the system that cannot be discovered via a
+> standard enumeration mechanism (aka ACPI/PCI/DTS).  The array is
+> populated
+> at compile-time from the value specified in the SERIAL_PORT_DFNS
+> macro.
+> This macro is defined in arch/serial.h.
 > 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
-Acked-by: Jesper Nilsson <jesper.nilsson@axis.com>
-
-> ---
->  .../bindings/serial/axis,etraxfs-uart.txt          |   22 -
->  drivers/tty/serial/Kconfig                         |   11 -
->  drivers/tty/serial/Makefile                        |    2 -
->  drivers/tty/serial/crisv10.c                       | 4248 --------------------
->  drivers/tty/serial/crisv10.h                       |  133 -
->  drivers/tty/serial/etraxfs-uart.c                  |  960 -----
->  6 files changed, 5376 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/axis,etraxfs-uart.txt
->  delete mode 100644 drivers/tty/serial/crisv10.c
->  delete mode 100644 drivers/tty/serial/crisv10.h
->  delete mode 100644 drivers/tty/serial/etraxfs-uart.c
+> For x86, this macro is currently unconditionally initialized to supply
+> four ioport UARTs (0x3F8, 0x2F8, 0x3E8, 0x2E8).
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/axis,etraxfs-uart.txt b/Documentation/devicetree/bindings/serial/axis,etraxfs-uart.txt
-> deleted file mode 100644
-> index 048c3818c826..000000000000
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 3682fd3e960c..f6e09326042d 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1114,17 +1114,6 @@ config SERIAL_VT8500_CONSOLE
->  	depends on SERIAL_VT8500=y
->  	select SERIAL_CORE_CONSOLE
->  
-> -config SERIAL_ETRAXFS
-> -	bool "ETRAX FS serial port support"
-> -	depends on ETRAX_ARCH_V32 && OF
-> -	select SERIAL_CORE
-> -	select SERIAL_MCTRL_GPIO if GPIOLIB
-> -
-> -config SERIAL_ETRAXFS_CONSOLE
-> -	bool "ETRAX FS serial console support"
-> -	depends on SERIAL_ETRAXFS
-> -	select SERIAL_CORE_CONSOLE
-> -
->  config SERIAL_NETX
->  	tristate "NetX serial port support"
->  	depends on ARCH_NETX
-> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-> index 842d185d697e..c21835dc16b2 100644
-> --- a/drivers/tty/serial/Makefile
-> +++ b/drivers/tty/serial/Makefile
-> @@ -51,8 +51,6 @@ obj-$(CONFIG_SERIAL_M32R_SIO) += m32r_sio.o
->  obj-$(CONFIG_SERIAL_MPSC) += mpsc.o
->  obj-$(CONFIG_SERIAL_MESON) += meson_uart.o
->  obj-$(CONFIG_SERIAL_SB1250_DUART) += sb1250-duart.o
-> -obj-$(CONFIG_ETRAX_SERIAL) += crisv10.o
-> -obj-$(CONFIG_SERIAL_ETRAXFS) += etraxfs-uart.o
->  obj-$(CONFIG_SERIAL_SCCNXP) += sccnxp.o
->  obj-$(CONFIG_SERIAL_SC16IS7XX_CORE) += sc16is7xx.o
->  obj-$(CONFIG_SERIAL_JSM) += jsm/
-> diff --git a/drivers/tty/serial/crisv10.c b/drivers/tty/serial/crisv10.c
-> deleted file mode 100644
-> index c9458a033e3c..000000000000
-> diff --git a/drivers/tty/serial/crisv10.h b/drivers/tty/serial/crisv10.h
-> deleted file mode 100644
-> index 79ba2bc95d3d..000000000000
-> diff --git a/drivers/tty/serial/etraxfs-uart.c b/drivers/tty/serial/etraxfs-uart.c
-> deleted file mode 100644
-> index 24bf6bfb29b4..000000000000
-> -- 
-> 2.9.0
+> However, not all x86 CPUs have these four ioport UARTs.  For example,
+> the
+> UARTs on AMD Carrizo and later are separate memory mapped Designware
+> IP
+> blocks.
+> 
+> Fairly early in boot the console_initcall univ8250_console_init
+> iterates
+> over this array and installs these old UARTs into the global array
+> serial8250_ports.  Further, it attempts to register them for use as
+> the console.  In other words, if, for example, the kernel commandline
+> has
+> console=ttyS0, the console will be switched over to one of these
+> non-existent UARTs.  Only later, when the real UART drivers are probed
+> and their devices are instantiated will the console switch back over
+> to
+> the proper UART.
+> 
+> This is noticeable when using earlycon, since part of the serial
+> console
+> log will appear to disappear (when the bogus old takes over) and then
+> re-appear (when the real UART finally gets registered for the
+> console).
+> 
+> The problem is even more noticable when *not* using earlycon, since in
+> this case the entire console output is missing, having been
+> incorrectly
+> played back to the non-existing serial port.
+> 
+> Create a global variable to allow skipping old serial port
+> initialization
+> and wire it up to the AMDCZ ACPI SPCR quirk and the special amdcz
+> earlycon
+> setup handler.
 
-/^JN - Jesper Nilsson
+I don't like this approach at all.
+But unfortunately I have nothing to propose.
+Just felt like I have to share my opinion on this.
+
 -- 
-               Jesper Nilsson -- jesper.nilsson@axis.com
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
