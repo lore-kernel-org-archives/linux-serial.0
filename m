@@ -1,85 +1,148 @@
 From: Daniel Kurtz <djkurtz@chromium.org>
-Subject: Re: [PATCH v2 3/3] serial: core: Allow skipping old serial port initialization
-Date: Thu, 15 Mar 2018 01:08:00 +0000
-Message-ID: <CAGS+omA8DFCy9eubH2X80nyajH-UqMyTsO5G6JkZNnpf_6g09Q@mail.gmail.com>
-References: <20180314214439.27806-1-djkurtz@chromium.org> <20180314214439.27806-4-djkurtz@chromium.org>
- <CAGXu5jK4QdG83FGAx94GAmU=tpuhN1dypTh5n_Pes8n7shEZuw@mail.gmail.com>
- <CAGXu5jJXNK3h5P-YzRJ3hxBer305ik4FHuhcixzprnRnefU7Qw@mail.gmail.com>
- <CAGS+omCkKT9WHApnG+i+2Sn0zihBFV1ufuQn5+jfE3asuoTAEQ@mail.gmail.com> <CAGXu5j+cOZXCTx3SZT2u5rVv4zDpEhX6hjdp+4DUtN=kE+Q-PQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH v2] earlycon: Fix __earlycon_table stride... again
+Date: Wed, 14 Mar 2018 19:48:16 -0600
+Message-ID: <20180315014817.142930-1-djkurtz@chromium.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAGXu5j+cOZXCTx3SZT2u5rVv4zDpEhX6hjdp+4DUtN=kE+Q-PQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kees Cook <keescook@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, adurbin@chromium.org, linux-kernel@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, jslaby@suse.com, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, mbrugger@suse.com, dhowells@redhat.com, vigneshr@ti.com, sean@mess.org, Jeffy <jeffy.chen@rock-chips.com>, Doug Anderson <dianders@chromium.org>, matt.redfearn@mips.com, marc_gonzalez@sigmadesigns.com, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>
+Cc: adurbin@chromium.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Daniel Kurtz <djkurtz@chromium.org>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE" <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:GENERIC INCLUDE/ASM HEADER FILES" <linux-arch@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 14, 2018 at 6:55 PM Kees Cook <keescook@chromium.org> wrote:
+Commit 470ca0de69fe ("serial: earlycon: Enable earlycon without command
+line param") added EARLYCON_TABLE().
 
-> On Wed, Mar 14, 2018 at 5:23 PM, Daniel Kurtz <djkurtz@chromium.org>
-wrote:
-> > On Wed, Mar 14, 2018 at 5:00 PM Kees Cook <keescook@chromium.org> wrote:
-> >
-> >> On Wed, Mar 14, 2018 at 3:58 PM, Kees Cook <keescook@chromium.org>
-wrote:
-> >> > On Wed, Mar 14, 2018 at 2:44 PM, Daniel Kurtz <djkurtz@chromium.org>
-> > wrote:
-> >> > Sorry for being dense. What tree is this against? I can't find
-mention
-> >> > of amdcz in Linus's tree nor linux-next.
-> >
-> >> As I watched this email send, I noticed the "3/3" in the Subject. ;) I
-> >> see the amdcz support now. :P
-> >> https://patchwork.kernel.org/project/LKML/list/?submitter=18441
-> >
-> >> >> diff --git a/include/linux/serial_8250.h
-b/include/linux/serial_8250.h
-> >> >> index a27ef5f56431..02570edaddd8 100644
-> >> >> --- a/include/linux/serial_8250.h
-> >> >> +++ b/include/linux/serial_8250.h
-> >> >> @@ -136,6 +136,12 @@ struct uart_8250_port {
-> >> >>         struct uart_8250_em485 *em485;
-> >> >>  };
-> >> >>
-> >> >> +#ifdef CONFIG_SERIAL_8250
-> >> >> +extern bool serial8250_skip_old_ports;
-> >> >> +#else
-> >> >> +static const bool serial8250_skip_old_ports;
-> >> >> +#endif
-> >> >
-> >> > Where does serial8250_skip_old_ports get used where
-CONFIG_SERIAL_8250
-> >> > isn't defined? (i.e. why is the #ifdef needed here?)
-> >
-> >> This question still stands, though.
-> >
-> >  From the same patch: https://patchwork.kernel.org/patch/10283641/
-> >
-> > if (CONFIG_ACPI_SPCR_TABLE && !CONFIG_SERIAL_8250)
-> >
-> > in other words, if serial ports are disabled, but we still want to parse
-> > the APCI_SPCR_TABLE, which "defaults y if X86".
-> > Perhaps that logic should be changed (no need to parse ACPI SPCR table
-if
-> > we are going to disable serial anyway)?
+Commit 99492c39f39f ("earlycon: Fix __earlycon_table stride") referenced
+commit 07fca0e57fca92 ("tracing: Properly align linker defined symbols")
+and tried to fix EARLYCON_TABLE() using __aligned(32).
 
-> But won't this break? "static const bool ..." but the code tries to
-> set a value but I'd expect the compiler to still yet about it?
+However, the fix copied just works around compiler behavior.  In fact, it
+was subsequently re-implemented for tracing using a table of pointers in
+commit 3d56e331b653 ("tracing: Replace syscall_meta_data struct array with
+pointer array"), commit 654986462939 ("tracepoints: Fix section alignment
+using pointer array") and commit e4a9ea5ee7c8 ("tracing: Replace
+trace_event struct array with pointer array").
 
-er... yeah.
+Let's do the same "array of pointers to structs" approach for
+EARLYCON_TABLE.
 
+Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+---
+Changes since v1:
+ * Change __earlycon_table to an array of pointers.
 
-> I think you could drop the .h #ifdef and use:
+Note: I do not have a convenient system to test the of/fdt.c part of this
+patch, so would apreciate help verifying it.  Thanks!
 
-> if (IS_ENABLED(CONFIG_SERIAL_825) && amdcz_present(...)) {
+ drivers/of/fdt.c                  |  7 +++++--
+ drivers/tty/serial/earlycon.c     |  6 ++++--
+ include/asm-generic/vmlinux.lds.h |  2 +-
+ include/linux/serial_core.h       | 21 ++++++++++++++-------
+ 4 files changed, 24 insertions(+), 12 deletions(-)
 
-oooohhh... nice.  I like it, will change.
-
-
-
-> -Kees
-
-> --
-> Kees Cook
-> Pixel Security
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 84aa9d676375..6da20b9688f7 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -942,7 +942,7 @@ int __init early_init_dt_scan_chosen_stdout(void)
+ 	int offset;
+ 	const char *p, *q, *options = NULL;
+ 	int l;
+-	const struct earlycon_id *match;
++	const struct earlycon_id **p_match;
+ 	const void *fdt = initial_boot_params;
+ 
+ 	offset = fdt_path_offset(fdt, "/chosen");
+@@ -969,7 +969,10 @@ int __init early_init_dt_scan_chosen_stdout(void)
+ 		return 0;
+ 	}
+ 
+-	for (match = __earlycon_table; match < __earlycon_table_end; match++) {
++	for (p_match = __earlycon_table; p_match < __earlycon_table_end;
++	     p_match++) {
++		const struct earlycon_id *match = *p_match;
++
+ 		if (!match->compatible[0])
+ 			continue;
+ 
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index a24278380fec..22683393a0f2 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -169,7 +169,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+  */
+ int __init setup_earlycon(char *buf)
+ {
+-	const struct earlycon_id *match;
++	const struct earlycon_id **p_match;
+ 
+ 	if (!buf || !buf[0])
+ 		return -EINVAL;
+@@ -177,7 +177,9 @@ int __init setup_earlycon(char *buf)
+ 	if (early_con.flags & CON_ENABLED)
+ 		return -EALREADY;
+ 
+-	for (match = __earlycon_table; match < __earlycon_table_end; match++) {
++	for (p_match = __earlycon_table; p_match < __earlycon_table_end;
++	     p_match++) {
++		const struct earlycon_id *match = *p_match;
+ 		size_t len = strlen(match->name);
+ 
+ 		if (strncmp(buf, match->name, len))
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 1ab0e520d6fc..e17de55c2542 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -179,7 +179,7 @@
+ #endif
+ 
+ #ifdef CONFIG_SERIAL_EARLYCON
+-#define EARLYCON_TABLE() STRUCT_ALIGN();			\
++#define EARLYCON_TABLE() . = ALIGN(8);				\
+ 			 VMLINUX_SYMBOL(__earlycon_table) = .;	\
+ 			 KEEP(*(__earlycon_table))		\
+ 			 VMLINUX_SYMBOL(__earlycon_table_end) = .;
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index b32df49a3bd5..93b7add47087 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -351,10 +351,10 @@ struct earlycon_id {
+ 	char	name[16];
+ 	char	compatible[128];
+ 	int	(*setup)(struct earlycon_device *, const char *options);
+-} __aligned(32);
++};
+ 
+-extern const struct earlycon_id __earlycon_table[];
+-extern const struct earlycon_id __earlycon_table_end[];
++extern const struct earlycon_id *__earlycon_table[];
++extern const struct earlycon_id *__earlycon_table_end[];
+ 
+ #if defined(CONFIG_SERIAL_EARLYCON) && !defined(MODULE)
+ #define EARLYCON_USED_OR_UNUSED	__used
+@@ -362,12 +362,19 @@ extern const struct earlycon_id __earlycon_table_end[];
+ #define EARLYCON_USED_OR_UNUSED	__maybe_unused
+ #endif
+ 
+-#define OF_EARLYCON_DECLARE(_name, compat, fn)				\
+-	static const struct earlycon_id __UNIQUE_ID(__earlycon_##_name)	\
+-	     EARLYCON_USED_OR_UNUSED __section(__earlycon_table)	\
++#define _OF_EARLYCON_DECLARE(_name, compat, fn, unique_id)		\
++	static const struct earlycon_id unique_id			\
++	     EARLYCON_USED_OR_UNUSED __initdata				\
+ 		= { .name = __stringify(_name),				\
+ 		    .compatible = compat,				\
+-		    .setup = fn  }
++		    .setup = fn  };					\
++	static const struct earlycon_id EARLYCON_USED_OR_UNUSED		\
++		__section(__earlycon_table)				\
++		* const __PASTE(__p, unique_id) = &unique_id
++
++#define OF_EARLYCON_DECLARE(_name, compat, fn)				\
++	_OF_EARLYCON_DECLARE(_name, compat, fn,				\
++			     __UNIQUE_ID(__earlycon_##_name))
+ 
+ #define EARLYCON_DECLARE(_name, fn)	OF_EARLYCON_DECLARE(_name, "", fn)
+ 
+-- 
+2.16.2.804.g6dcf76e118-goog
