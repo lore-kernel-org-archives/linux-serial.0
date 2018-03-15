@@ -1,192 +1,79 @@
 From: Daniel Kurtz <djkurtz@chromium.org>
-Subject: Re: [PATCH v2] earlycon: Fix __earlycon_table stride... again
-Date: Thu, 15 Mar 2018 16:15:38 +0000
-Message-ID: <CAGS+omDTVWoLGiOrMUFDOtjPDfK4gs+OiPAB6TJGoM+en7NtNw@mail.gmail.com>
-References: <20180315014817.142930-1-djkurtz@chromium.org> <398eebd9-9ec9-50ef-88ea-c3d5ae9f5d90@infradead.org>
+Subject: Re: [PATCH v3 3/3] serial: core: Allow skipping old serial port initialization
+Date: Thu, 15 Mar 2018 16:24:56 +0000
+Message-ID: <CAGS+omBiUJ=0LouOkP_C9GvHNZCTeH5Vr8=Yqoe9EO6YGgZFvQ@mail.gmail.com>
+References: <20180315020445.150604-1-djkurtz@chromium.org> <20180315020445.150604-4-djkurtz@chromium.org>
+ <1521119068.10722.661.camel@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <398eebd9-9ec9-50ef-88ea-c3d5ae9f5d90@infradead.org>
+In-Reply-To: <1521119068.10722.661.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: peter@hurleysoftware.com, Rob Herring <robh@kernel.org>, adurbin@chromium.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, frowand.list@gmail.com, jslaby@suse.com, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, linux-arch@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, adurbin@chromium.org, linux-kernel@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, jslaby@suse.com, Kees Cook <keescook@chromium.org>, mbrugger@suse.com, dhowells@redhat.com, allen.lkml@gmail.com, sean@mess.org, Doug Anderson <dianders@chromium.org>, matt.redfearn@mips.com, Jeffy <jeffy.chen@rock-chips.com>, marc_gonzalez@sigmadesigns.com, linux-acpi@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 14, 2018 at 8:33 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+On Thu, Mar 15, 2018 at 7:04 AM Andy Shevchenko <
+andriy.shevchenko@linux.intel.com> wrote:
 
-> On 03/14/2018 06:48 PM, Daniel Kurtz wrote:
-> > Commit 470ca0de69fe ("serial: earlycon: Enable earlycon without command
-> > line param") added EARLYCON_TABLE().
+> On Wed, 2018-03-14 at 20:04 -0600, Daniel Kurtz wrote:
+> > The old_serial_port global array in 8250_core is supposed to hold an
+> > entry
+> > for each serial port on the system that cannot be discovered via a
+> > standard enumeration mechanism (aka ACPI/PCI/DTS).  The array is
+> > populated
+> > at compile-time from the value specified in the SERIAL_PORT_DFNS
+> > macro.
+> > This macro is defined in arch/serial.h.
 > >
-> > Commit 99492c39f39f ("earlycon: Fix __earlycon_table stride") reference=
-d
-> > commit 07fca0e57fca92 ("tracing: Properly align linker defined symbols"=
-)
-> > and tried to fix EARLYCON_TABLE() using __aligned(32).
+> > For x86, this macro is currently unconditionally initialized to supply
+> > four ioport UARTs (0x3F8, 0x2F8, 0x3E8, 0x2E8).
 > >
-> > However, the fix copied just works around compiler behavior.  In fact,
-it
-> > was subsequently re-implemented for tracing using a table of pointers i=
-n
-> > commit 3d56e331b653 ("tracing: Replace syscall_meta_data struct array
-with
-> > pointer array"), commit 654986462939 ("tracepoints: Fix section
-alignment
-> > using pointer array") and commit e4a9ea5ee7c8 ("tracing: Replace
-> > trace_event struct array with pointer array").
+> > However, not all x86 CPUs have these four ioport UARTs.  For example,
+> > the
+> > UARTs on AMD Carrizo and later are separate memory mapped Designware
+> > IP
+> > blocks.
 > >
-> > Let's do the same "array of pointers to structs" approach for
-> > EARLYCON_TABLE.
+> > Fairly early in boot the console_initcall univ8250_console_init
+> > iterates
+> > over this array and installs these old UARTs into the global array
+> > serial8250_ports.  Further, it attempts to register them for use as
+> > the console.  In other words, if, for example, the kernel commandline
+> > has
+> > console=ttyS0, the console will be switched over to one of these
+> > non-existent UARTs.  Only later, when the real UART drivers are probed
+> > and their devices are instantiated will the console switch back over
+> > to
+> > the proper UART.
+> >
+> > This is noticeable when using earlycon, since part of the serial
+> > console
+> > log will appear to disappear (when the bogus old takes over) and then
+> > re-appear (when the real UART finally gets registered for the
+> > console).
+> >
+> > The problem is even more noticable when *not* using earlycon, since in
+> > this case the entire console output is missing, having been
+> > incorrectly
+> > played back to the non-existing serial port.
+> >
+> > Create a global variable to allow skipping old serial port
+> > initialization
+> > and wire it up to the AMDCZ ACPI SPCR quirk and the special amdcz
+> > earlycon
+> > setup handler.
 
-> Please describe what the problem is instead of just what the fix is.
-> Thanks.
+> I don't like this approach at all.
+> But unfortunately I have nothing to propose.
+> Just felt like I have to share my opinion on this.
 
-The problem is the same as in 99492c39f39f; the __earlycon_table stride may
-be wrong depending on how the compiler decides to align the contents of
-__earlycon_table.
-See the other referenced patches for a detailed description of the problem
-and its solution.
-
--Dan
-
-
-> > Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
-> > ---
-> > Changes since v1:
-> >  * Change __earlycon_table to an array of pointers.
-> >
-> > Note: I do not have a convenient system to test the of/fdt.c part of
-this
-> > patch, so would apreciate help verifying it.  Thanks!
-> >
-> >  drivers/of/fdt.c                  |  7 +++++--
-> >  drivers/tty/serial/earlycon.c     |  6 ++++--
-> >  include/asm-generic/vmlinux.lds.h |  2 +-
-> >  include/linux/serial_core.h       | 21 ++++++++++++++-------
-> >  4 files changed, 24 insertions(+), 12 deletions(-)
-> >
-> > diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> > index 84aa9d676375..6da20b9688f7 100644=EF=BF=BC
-> > --- a/drivers/of/fdt.c
-> > +++ b/drivers/of/fdt.c
-> > @@ -942,7 +942,7 @@ int __init early_init_dt_scan_chosen_stdout(void)
-> >       int offset;
-> >       const char *p, *q, *options =3D NULL;
-> >       int l;
-> > -     const struct earlycon_id *match;
-> > +     const struct earlycon_id **p_match;
-> >       const void *fdt =3D initial_boot_params;
-> >
-> >       offset =3D fdt_path_offset(fdt, "/chosen");
-> > @@ -969,7 +969,10 @@ int __init early_init_dt_scan_chosen_stdout(void)
-> >               return 0;
-> >       }
-> >
-> > -     for (match =3D __earlycon_table; match < __earlycon_table_end;
-match++) {
-> > +     for (p_match =3D __earlycon_table; p_match < __earlycon_table_end=
-;
-> > +          p_match++) {
-> > +             const struct earlycon_id *match =3D *p_match;
-> > +
-> >               if (!match->compatible[0])
-> >                       continue;
-> >
-> > diff --git a/drivers/tty/serial/earlycon.c
-b/drivers/tty/serial/earlycon.c
-> > index a24278380fec..22683393a0f2 100644
-> > --- a/drivers/tty/serial/earlycon.c
-> > +++ b/drivers/tty/serial/earlycon.c
-> > @@ -169,7 +169,7 @@ static int __init register_earlycon(char *buf,
-const struct earlycon_id *match)
-> >   */
-> >  int __init setup_earlycon(char *buf)
-> >  {
-> > -     const struct earlycon_id *match;
-> > +     const struct earlycon_id **p_match;
-> >
-> >       if (!buf || !buf[0])
-> >               return -EINVAL;
-> > @@ -177,7 +177,9 @@ int __init setup_earlycon(char *buf)
-> >       if (early_con.flags & CON_ENABLED)
-> >               return -EALREADY;
-> >
-> > -     for (match =3D __earlycon_table; match < __earlycon_table_end;
-match++) {
-> > +     for (p_match =3D __earlycon_table; p_match < __earlycon_table_end=
-;
-> > +          p_match++) {
-> > +             const struct earlycon_id *match =3D *p_match;
-> >               size_t len =3D strlen(match->name);
-> >
-> >               if (strncmp(buf, match->name, len))
-> > diff --git a/include/asm-generic/vmlinux.lds.h
-b/include/asm-generic/vmlinux.lds.h
-> > index 1ab0e520d6fc..e17de55c2542 100644
-> > --- a/include/asm-generic/vmlinux.lds.h
-> > +++ b/include/asm-generic/vmlinux.lds.h
-> > @@ -179,7 +179,7 @@
-> >  #endif
-> >
-> >  #ifdef CONFIG_SERIAL_EARLYCON
-> > -#define EARLYCON_TABLE() STRUCT_ALIGN();                     \
-> > +#define EARLYCON_TABLE() . =3D ALIGN(8);                              =
- \
-> >                        VMLINUX_SYMBOL(__earlycon_table) =3D .;  \
-> >                        KEEP(*(__earlycon_table))              \
-> >                        VMLINUX_SYMBOL(__earlycon_table_end) =3D .;
-> > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> > index b32df49a3bd5..93b7add47087 100644
-> > --- a/include/linux/serial_core.h
-> > +++ b/include/linux/serial_core.h
-> > @@ -351,10 +351,10 @@ struct earlycon_id {
-> >       char    name[16];
-> >       char    compatible[128];
-> >       int     (*setup)(struct earlycon_device *, const char *options);
-> > -} __aligned(32);
-> > +};
-> >
-> > -extern const struct earlycon_id __earlycon_table[];
-> > -extern const struct earlycon_id __earlycon_table_end[];
-> > +extern const struct earlycon_id *__earlycon_table[];
-> > +extern const struct earlycon_id *__earlycon_table_end[];
-> >
-> >  #if defined(CONFIG_SERIAL_EARLYCON) && !defined(MODULE)
-> >  #define EARLYCON_USED_OR_UNUSED      __used
-> > @@ -362,12 +362,19 @@ extern const struct earlycon_id
-__earlycon_table_end[];
-> >  #define EARLYCON_USED_OR_UNUSED      __maybe_unused
-> >  #endif
-> >
-> > -#define OF_EARLYCON_DECLARE(_name, compat, fn)
-       \
-> > -     static const struct earlycon_id __UNIQUE_ID(__earlycon_##_name) \
-> > -          EARLYCON_USED_OR_UNUSED __section(__earlycon_table)        \
-> > +#define _OF_EARLYCON_DECLARE(_name, compat, fn, unique_id)           \
-> > +     static const struct earlycon_id unique_id                       \
-> > +          EARLYCON_USED_OR_UNUSED __initdata                         \
-> >               =3D { .name =3D __stringify(_name),                      =
-   \
-> >                   .compatible =3D compat,                              =
- \
-> > -                 .setup =3D fn  }
-> > +                 .setup =3D fn  };                                    =
- \
-> > +     static const struct earlycon_id EARLYCON_USED_OR_UNUSED         \
-> > +             __section(__earlycon_table)                             \
-> > +             * const __PASTE(__p, unique_id) =3D &unique_id
-> > +
-> > +#define OF_EARLYCON_DECLARE(_name, compat, fn)
-       \
-> > +     _OF_EARLYCON_DECLARE(_name, compat, fn,                         \
-> > +                          __UNIQUE_ID(__earlycon_##_name))
-> >
-> >  #define EARLYCON_DECLARE(_name, fn)  OF_EARLYCON_DECLARE(_name, "", fn=
-)
-> >
-> >
+I'm not very proud of this either, but I don't know how else to set this
+flag.
+I proposed a Kconfig option earlier, but that also met resistance.
+Perhaps another kernel command line option?
 
 
 > --
-> ~Randy
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Intel Finland Oy
