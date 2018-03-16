@@ -1,75 +1,73 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 2/5] Bluetooth: hci_bcm: Treat Interrupt ACPI resources as always being active-low
-Date: Fri, 16 Mar 2018 21:28:08 +0100
-Message-ID: <20180316202811.5678-2-hdegoede@redhat.com>
-References: <20180316202811.5678-1-hdegoede@redhat.com>
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20180316202811.5678-1-hdegoede@redhat.com>
-Sender: stable-owner@vger.kernel.org
-To: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>
-Cc: Hans de Goede <hdegoede@redhat.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, stable@vger.kernel.org
+From: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
+Subject: Re: [PATCH v2 00/21] Allow compile-testing NO_DMA (drivers)
+Date: Fri, 16 Mar 2018 22:23:17 +0100
+Message-ID: <20180316212317.7d5rri3p25hpmx44@ninjato>
+References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============4452806862283032698=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1521208314-4783-1-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, "James E . J . Bottomley" <jejb-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matias Bjorling <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-Older devices with a serdev attached bcm bt hci, use an Interrupt ACPI
-resource to describe the IRQ (rather then a GpioInt resource).
 
-These device seem to all claim the IRQ is active-high and seem to all need
-a DMI quirk to treat it as active-low. Instead simply always assume that
-Interrupt resource specified IRQs are always active-low.
+--===============4452806862283032698==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="jn72qj2wgis6yzej"
+Content-Disposition: inline
 
-This fixes the bt device not being able to wake the host from runtime-
-suspend on the: Asus T100TAM, Asus T200TA, Lenovo Yoga2 and the Toshiba
-Encore, without the need to add 4 new DMI quirks for these models.
 
-This also allows us to remove 2 DMI quirks for the Asus T100TA and Asus
-T100CHI series. Likely the 2 remaining quirks can also be removed but I
-could not find a DSDT of these devices to verify this.
+--jn72qj2wgis6yzej
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Cc: stable@vger.kernel.org
-Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=198953
-Buglink: https://bugzilla.redhat.com/show_bug.cgi?id=1554835
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/bluetooth/hci_bcm.c | 20 +++-----------------
- 1 file changed, 3 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-index bb6cd1623132..7acd77a53b08 100644
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -799,22 +799,6 @@ static const struct acpi_gpio_mapping acpi_bcm_int_first_gpios[] = {
- #ifdef CONFIG_ACPI
- /* IRQ polarity of some chipsets are not defined correctly in ACPI table. */
- static const struct dmi_system_id bcm_active_low_irq_dmi_table[] = {
--	{
--		.ident = "Asus T100TA",
--		.matches = {
--			DMI_EXACT_MATCH(DMI_SYS_VENDOR,
--					"ASUSTeK COMPUTER INC."),
--			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T100TA"),
--		},
--	},
--	{
--		.ident = "Asus T100CHI",
--		.matches = {
--			DMI_EXACT_MATCH(DMI_SYS_VENDOR,
--					"ASUSTeK COMPUTER INC."),
--			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "T100CHI"),
--		},
--	},
- 	{	/* Handle ThinkPad 8 tablets with BCM2E55 chipset ACPI ID */
- 		.ident = "Lenovo ThinkPad 8",
- 		.matches = {
-@@ -842,7 +826,9 @@ static int bcm_resource(struct acpi_resource *ares, void *data)
- 	switch (ares->type) {
- 	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
- 		irq = &ares->data.extended_irq;
--		dev->irq_active_low = irq->polarity == ACPI_ACTIVE_LOW;
-+		if (irq->polarity != ACPI_ACTIVE_LOW)
-+			dev_info(dev->dev, "ACPI Interrupt resource is active-high, this is usually wrong, treating the IRQ as active-low\n");
-+		dev->irq_active_low = true;
- 		break;
- 
- 	case ACPI_RESOURCE_TYPE_GPIO:
--- 
-2.14.3
+> To avoid allmodconfig/allyesconfig regressions on NO_DMA=y platforms,
+> this (drivers) series should be applied after the previous (core)
+> series (but not many people may notice/care ;-)
+
+I still don't get if there is a dependency on the core patches. I.e.
+shall I apply the subsystem patch now by myself or do you want to push
+the series after the core patch and need my ack here?
+
+
+--jn72qj2wgis6yzej
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlqsNcAACgkQFA3kzBSg
+KbZoeA/+NmqFAw+9cAaOVzf/+nl/mZIFlENg9U18xEPNRmtBUBLBVqxRPuFqBhxm
+XA8XO+eUOvtG3pBePwHGQbaFDdSgsvkDateYYp7yUUvssQaROgG8OT+cOyZvSLUw
+x6f1R2+fPNGVC2r8ilpYr9xubYlAsT1Uc9IFJ8gKJK3xceYDxMxvlAQGYaXL8GbT
+tglbckIXElRlToMLTZnS5HEau7PuQUnJkPZ4LmKND8b0JQT5Q40x7PPVo7fnwD5r
+xzDhzfniBrs4XJuIaQsYwcGL7v2bnLLL7X8w2Y7mQeoVi2hRSau8KDMi56fyQq7Y
+SCd4kmBCyn1R7WUzb2p4feuv4W1FJkZIFS9dJq188EhrHR07Tq18N7YLRNufyVmu
+zf4q7vC/KEeUOG0agyU/DJvr4Mymef8ieC+NBq9fejxl/7Y2sIeJOC8O6MDusfH8
+it0UgQpUmALewJxPfiEtMjNk4K5c+Cn2syy7gESZN8vBt0oV+7F2UvKNCzot3pMO
++TEiMPiOb4ILXKZMXpnwr3YPAwYqTuoqz5xVxvuCYICEww7Q1nHL83PTGJYGHDgm
+tP5tEHSTvmviNdwk3DCIvG4vQCZiolzb8nsrxHKIheXZQiCgfVjUTK3nV/l4/0nx
+q6LaetLOaZIc8CRlKpGx6WnvD0N6i+oeWeyaBIdunKLFLi/oCwY=
+=65ZV
+-----END PGP SIGNATURE-----
+
+--jn72qj2wgis6yzej--
+
+--===============4452806862283032698==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4452806862283032698==--
