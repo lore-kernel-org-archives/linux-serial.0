@@ -1,62 +1,60 @@
-From: Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: Re: [PATCH] serial: mvebu-uart: fix tx lost characters
-Date: Thu, 15 Mar 2018 21:21:37 +0100
-Message-ID: <20180315212137.57ca7c65@xps13>
-References: <3B588D51285A4A4D8D39C94212E078262748ED@SPQCMBX02.exfo.com>
-        <20180315165516.GA9519@kroah.com>
-        <3B588D51285A4A4D8D39C94212E078262787C0@SPQCMBX02.exfo.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <3B588D51285A4A4D8D39C94212E078262787C0@SPQCMBX02.exfo.com>
-Sender: stable-owner@vger.kernel.org
-To: Gabriel Matni <gabriel.matni@exfo.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, =?UTF-8?B?R3LDqWdvcnk=?= Clement <gregory.clement@bootlin.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+From: Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH] tty: serial: 8250: pass IRQ shared flag to UART ports
+Date: Fri, 16 Mar 2018 12:31:58 +0100
+Message-ID: <20180316113158.10298-1-kurt@linutronix.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: kurt@linutronix.de, tglx@linutronix.de, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Gabriel,
+On some systems IRQ lines between multiple UARTs might be shared. If so, the
+irqflags have to be configured accordingly. The reason is: The 8250 port startup
+code performs IRQ tests *before* the IRQ handler for that particular port is
+registered. This is performed in serial8250_do_startup(). This function checks
+whether IRQF_SHARED is configured and only then disables the IRQ line while
+testing.
 
-On Thu, 15 Mar 2018 18:55:25 +0000, Gabriel Matni
-<gabriel.matni@exfo.com> wrote:
+This test is performed upon each open() of the UART device. Imagine two UARTs
+share the same IRQ line: On is already opened and the IRQ is active. When the
+second UART is opened, the IRQ line has to be disabled while performing IRQ
+tests. Otherwise an IRQ might handler might be invoked, but the the IRQ itself
+cannot be handled, because the corresponding handler isn't registered,
+yet. That's because the 8250 code uses a chain-handler and invokes the
+corresponding port's IRQ handling rountines himself.
 
-> From: Gabriel Matni <gabriel.matni@exfo.com>
-> 
-> Fixes missing characters on kernel console at low baud rates (i.e.9600).
-> The driver should poll TX_RDY or TX_FIFO_EMP instead of TX_EMP to ensure
-> that the transmitter holding register (THR) is ready to receive a new byte.
-> 
-> TX_EMP tells us when it is possible to send a break sequence via
-> SND_BRK_SEQ. While this also indicates that both the THR and the TSR are
-> empty, it does not guarantee that a new byte can be written just yet.
-> 
-> Fixes: 30530791a7a0 ("serial: mvebu-uart: initial support for Armada-3700
->       serial port")
-> Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com> 
-> Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>  
-> Signed-off-by: Gabriel Matni <gabriel.matni@exfo.com> 
-> 
-> ---
->  drivers/tty/serial/mvebu-uart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-> index a100e98259d7..400e1bc558b2 100644
-> --- a/drivers/tty/serial/mvebu-uart.c
-> +++ b/drivers/tty/serial/mvebu-uart.c
-> @@ -618,7 +618,7 @@ static void wait_for_xmitr(struct uart_port *port)
->  	u32 val;
->  
->  	readl_poll_timeout_atomic(port->membase + UART_STAT, val,
-> -				  (val & STAT_TX_EMP), 1, 10000);
-> +             (val & STAT_TX_RDY(port)), 1, 10000);
+Unfortunately this IRQF_SHARED flag isn't configured for UARTs probed via device
+tree even if the IRQs are shared. This way, the actual and shared IRQ line isn't
+disabled while performing tests and the kernel correctly detects a spurious
+IRQ. So, adding this flag to the DT probe solves the issue.
 
-I think this line should be indented like the one you replaced.
+Note: The UPF_SHARE_IRQ flag is configured unconditionally. Therefore, the
+IRQF_SHARED flag can be set unconditionally as well.
 
-Thanks,
-Miquèl
+Example stacktrace by performing echo 1 > /dev/ttyS2 on a non-patched system:
 
+|irq 85: nobody cared (try booting with the "irqpoll" option)
+| [...]
+|handlers:
+|[<ffff0000080fc628>] irq_default_primary_handler threaded [<ffff00000855fbb8>] serial8250_interrupt
+|Disabling IRQ #85
+
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_of.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 160b8906d9b9..575f91e04770 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -149,6 +149,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	port->uartclk = clk;
+ 	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+ 		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
++	port->irqflags |= IRQF_SHARED;
+ 
+ 	if (of_property_read_bool(np, "no-loopback-test"))
+ 		port->flags |= UPF_SKIP_TEST;
 -- 
-Miquel Raynal, Bootlin (formerly Free Electrons)
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.11.0
