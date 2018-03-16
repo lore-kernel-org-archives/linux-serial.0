@@ -1,60 +1,82 @@
-From: Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH] tty: serial: 8250: pass IRQ shared flag to UART ports
-Date: Fri, 16 Mar 2018 12:31:58 +0100
-Message-ID: <20180316113158.10298-1-kurt@linutronix.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: kurt@linutronix.de, tglx@linutronix.de, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Gabriel Matni <gabriel.matni@exfo.com>
+Subject: [PATCH] serial: mvebu-uart: fix tx lost characters
+Date: Fri, 16 Mar 2018 13:45:32 +0000
+Message-ID: <3B588D51285A4A4D8D39C94212E07826278BDF@SPQCMBX02.exfo.com>
+References: <3B588D51285A4A4D8D39C94212E078262748ED@SPQCMBX02.exfo.com>
+        <20180315165516.GA9519@kroah.com>
+        <3B588D51285A4A4D8D39C94212E078262787C0@SPQCMBX02.exfo.com>
+ <20180315212137.57ca7c65@xps13>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20180315212137.57ca7c65@xps13>
+Content-Language: en-US
+Sender: stable-owner@vger.kernel.org
+To: Miquel Raynal <miquel.raynal@bootlin.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, =?utf-8?B?R3LDqWdvcnkgQ2xlbWVudA==?= <gregory.clement@bootlin.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 List-Id: linux-serial@vger.kernel.org
 
-On some systems IRQ lines between multiple UARTs might be shared. If so, the
-irqflags have to be configured accordingly. The reason is: The 8250 port startup
-code performs IRQ tests *before* the IRQ handler for that particular port is
-registered. This is performed in serial8250_do_startup(). This function checks
-whether IRQF_SHARED is configured and only then disables the IRQ line while
-testing.
-
-This test is performed upon each open() of the UART device. Imagine two UARTs
-share the same IRQ line: On is already opened and the IRQ is active. When the
-second UART is opened, the IRQ line has to be disabled while performing IRQ
-tests. Otherwise an IRQ might handler might be invoked, but the the IRQ itself
-cannot be handled, because the corresponding handler isn't registered,
-yet. That's because the 8250 code uses a chain-handler and invokes the
-corresponding port's IRQ handling rountines himself.
-
-Unfortunately this IRQF_SHARED flag isn't configured for UARTs probed via device
-tree even if the IRQs are shared. This way, the actual and shared IRQ line isn't
-disabled while performing tests and the kernel correctly detects a spurious
-IRQ. So, adding this flag to the DT probe solves the issue.
-
-Note: The UPF_SHARE_IRQ flag is configured unconditionally. Therefore, the
-IRQF_SHARED flag can be set unconditionally as well.
-
-Example stacktrace by performing echo 1 > /dev/ttyS2 on a non-patched system:
-
-|irq 85: nobody cared (try booting with the "irqpoll" option)
-| [...]
-|handlers:
-|[<ffff0000080fc628>] irq_default_primary_handler threaded [<ffff00000855fbb8>] serial8250_interrupt
-|Disabling IRQ #85
-
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- drivers/tty/serial/8250/8250_of.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 160b8906d9b9..575f91e04770 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -149,6 +149,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 	port->uartclk = clk;
- 	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
- 		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
-+	port->irqflags |= IRQF_SHARED;
- 
- 	if (of_property_read_bool(np, "no-loopback-test"))
- 		port->flags |= UPF_SKIP_TEST;
--- 
-2.11.0
+RnJvbTogR2FicmllbCBNYXRuaSA8Z2FicmllbC5tYXRuaUBleGZvLmNvbT4NCg0KRml4ZXMgbWlz
+c2luZyBjaGFyYWN0ZXJzIG9uIGtlcm5lbCBjb25zb2xlIGF0IGxvdyBiYXVkIHJhdGVzIChpLmUu
+OTYwMCkuDQpUaGUgZHJpdmVyIHNob3VsZCBwb2xsIFRYX1JEWSBvciBUWF9GSUZPX0VNUCBpbnN0
+ZWFkIG9mIFRYX0VNUCB0byBlbnN1cmUNCnRoYXQgdGhlIHRyYW5zbWl0dGVyIGhvbGRpbmcgcmVn
+aXN0ZXIgKFRIUikgaXMgcmVhZHkgdG8gcmVjZWl2ZSBhIG5ldyBieXRlLg0KDQpUWF9FTVAgdGVs
+bHMgdXMgd2hlbiBpdCBpcyBwb3NzaWJsZSB0byBzZW5kIGEgYnJlYWsgc2VxdWVuY2UgdmlhDQpT
+TkRfQlJLX1NFUS4gV2hpbGUgdGhpcyBhbHNvIGluZGljYXRlcyB0aGF0IGJvdGggdGhlIFRIUiBh
+bmQgdGhlIFRTUiBhcmUNCmVtcHR5LCBpdCBkb2VzIG5vdCBndWFyYW50ZWUgdGhhdCBhIG5ldyBi
+eXRlIGNhbiBiZSB3cml0dGVuIGp1c3QgeWV0Lg0KDQpGaXhlczogMzA1MzA3OTFhN2EwICgic2Vy
+aWFsOiBtdmVidS11YXJ0OiBpbml0aWFsIHN1cHBvcnQgZm9yIEFybWFkYS0zNzAwDQogICAgICBz
+ZXJpYWwgcG9ydCIpDQpSZXZpZXdlZC1ieTogTWlxdWVsIFJheW5hbCA8bWlxdWVsLnJheW5hbEBi
+b290bGluLmNvbT4gDQpBY2tlZC1ieTogR3JlZ29yeSBDTEVNRU5UIDxncmVnb3J5LmNsZW1lbnRA
+Ym9vdGxpbi5jb20+ICANClNpZ25lZC1vZmYtYnk6IEdhYnJpZWwgTWF0bmkgPGdhYnJpZWwubWF0
+bmlAZXhmby5jb20+IA0KDQotLS0NCiBkcml2ZXJzL3R0eS9zZXJpYWwvbXZlYnUtdWFydC5jIHwg
+MiArLQ0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KDQpk
+aWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL212ZWJ1LXVhcnQuYyBiL2RyaXZlcnMvdHR5
+L3NlcmlhbC9tdmVidS11YXJ0LmMNCmluZGV4IGExMDBlOTgyNTlkNy4uZjBkZjA2NDAyMDhlIDEw
+MDY0NA0KLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL212ZWJ1LXVhcnQuYw0KKysrIGIvZHJpdmVy
+cy90dHkvc2VyaWFsL212ZWJ1LXVhcnQuYw0KQEAgLTYxOCw3ICs2MTgsNyBAQCBzdGF0aWMgdm9p
+ZCB3YWl0X2Zvcl94bWl0cihzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KIAl1MzIgdmFsOw0KIA0K
+IAlyZWFkbF9wb2xsX3RpbWVvdXRfYXRvbWljKHBvcnQtPm1lbWJhc2UgKyBVQVJUX1NUQVQsIHZh
+bCwNCi0JCQkJICAodmFsICYgU1RBVF9UWF9FTVApLCAxLCAxMDAwMCk7DQorCQkJCSAgKHZhbCAm
+IFNUQVRfVFhfUkRZKHBvcnQpKSwgMSwgMTAwMDApOw0KIH0NCiANCiBzdGF0aWMgdm9pZCBtdmVi
+dV91YXJ0X2NvbnNvbGVfcHV0Y2hhcihzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LCBpbnQgY2gpDQot
+LSANCjIuNy40DQoNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBNaXF1
+ZWwgUmF5bmFsIDxtaXF1ZWwucmF5bmFsQGJvb3RsaW4uY29tPg0KPiBTZW50OiBNYXJjaCAxNSwg
+MjAxOCA0OjIyIFBNDQo+IFRvOiBHYWJyaWVsIE1hdG5pIDxnYWJyaWVsLm1hdG5pQGV4Zm8uY29t
+Pg0KPiBDYzogZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc7IGxpbnV4LXNlcmlhbEB2Z2VyLmtl
+cm5lbC5vcmc7IGxpbnV4LWFybS0NCj4ga2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IHN0YWJs
+ZUB2Z2VyLmtlcm5lbC5vcmc7IEdyw6lnb3J5IENsZW1lbnQNCj4gPGdyZWdvcnkuY2xlbWVudEBi
+b290bGluLmNvbT47IFRob21hcyBQZXRhenpvbmkNCj4gPHRob21hcy5wZXRhenpvbmlAYm9vdGxp
+bi5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIHNlcmlhbDogbXZlYnUtdWFydDogZml4IHR4
+IGxvc3QgY2hhcmFjdGVycw0KPiANCj4gSGkgR2FicmllbCwNCj4gDQo+IE9uIFRodSwgMTUgTWFy
+IDIwMTggMTg6NTU6MjUgKzAwMDAsIEdhYnJpZWwgTWF0bmkNCj4gPGdhYnJpZWwubWF0bmlAZXhm
+by5jb20+IHdyb3RlOg0KPiANCj4gPiBGcm9tOiBHYWJyaWVsIE1hdG5pIDxnYWJyaWVsLm1hdG5p
+QGV4Zm8uY29tPg0KPiA+DQo+ID4gRml4ZXMgbWlzc2luZyBjaGFyYWN0ZXJzIG9uIGtlcm5lbCBj
+b25zb2xlIGF0IGxvdyBiYXVkIHJhdGVzIChpLmUuOTYwMCkuDQo+ID4gVGhlIGRyaXZlciBzaG91
+bGQgcG9sbCBUWF9SRFkgb3IgVFhfRklGT19FTVAgaW5zdGVhZCBvZiBUWF9FTVAgdG8NCj4gZW5z
+dXJlDQo+ID4gdGhhdCB0aGUgdHJhbnNtaXR0ZXIgaG9sZGluZyByZWdpc3RlciAoVEhSKSBpcyBy
+ZWFkeSB0byByZWNlaXZlIGEgbmV3IGJ5dGUuDQo+ID4NCj4gPiBUWF9FTVAgdGVsbHMgdXMgd2hl
+biBpdCBpcyBwb3NzaWJsZSB0byBzZW5kIGEgYnJlYWsgc2VxdWVuY2UgdmlhDQo+ID4gU05EX0JS
+S19TRVEuIFdoaWxlIHRoaXMgYWxzbyBpbmRpY2F0ZXMgdGhhdCBib3RoIHRoZSBUSFIgYW5kIHRo
+ZSBUU1IgYXJlDQo+ID4gZW1wdHksIGl0IGRvZXMgbm90IGd1YXJhbnRlZSB0aGF0IGEgbmV3IGJ5
+dGUgY2FuIGJlIHdyaXR0ZW4ganVzdCB5ZXQuDQo+ID4NCj4gPiBGaXhlczogMzA1MzA3OTFhN2Ew
+ICgic2VyaWFsOiBtdmVidS11YXJ0OiBpbml0aWFsIHN1cHBvcnQgZm9yIEFybWFkYS0zNzAwDQo+
+ID4gICAgICAgc2VyaWFsIHBvcnQiKQ0KPiA+IFJldmlld2VkLWJ5OiBNaXF1ZWwgUmF5bmFsIDxt
+aXF1ZWwucmF5bmFsQGJvb3RsaW4uY29tPg0KPiA+IEFja2VkLWJ5OiBHcmVnb3J5IENMRU1FTlQg
+PGdyZWdvcnkuY2xlbWVudEBib290bGluLmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBHYWJyaWVs
+IE1hdG5pIDxnYWJyaWVsLm1hdG5pQGV4Zm8uY29tPg0KPiA+DQo+ID4gLS0tDQo+ID4gIGRyaXZl
+cnMvdHR5L3NlcmlhbC9tdmVidS11YXJ0LmMgfCAyICstDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAx
+IGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvdHR5L3NlcmlhbC9tdmVidS11YXJ0LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbXZlYnUtDQo+
+IHVhcnQuYw0KPiA+IGluZGV4IGExMDBlOTgyNTlkNy4uNDAwZTFiYzU1OGIyIDEwMDY0NA0KPiA+
+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9tdmVidS11YXJ0LmMNCj4gPiArKysgYi9kcml2ZXJz
+L3R0eS9zZXJpYWwvbXZlYnUtdWFydC5jDQo+ID4gQEAgLTYxOCw3ICs2MTgsNyBAQCBzdGF0aWMg
+dm9pZCB3YWl0X2Zvcl94bWl0cihzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPiA+ICAJdTMyIHZh
+bDsNCj4gPg0KPiA+ICAJcmVhZGxfcG9sbF90aW1lb3V0X2F0b21pYyhwb3J0LT5tZW1iYXNlICsg
+VUFSVF9TVEFULCB2YWwsDQo+ID4gLQkJCQkgICh2YWwgJiBTVEFUX1RYX0VNUCksIDEsIDEwMDAw
+KTsNCj4gPiArICAgICAgICAgICAgICh2YWwgJiBTVEFUX1RYX1JEWShwb3J0KSksIDEsIDEwMDAw
+KTsNCj4gDQo+IEkgdGhpbmsgdGhpcyBsaW5lIHNob3VsZCBiZSBpbmRlbnRlZCBsaWtlIHRoZSBv
+bmUgeW91IHJlcGxhY2VkLg0KPiANCj4gVGhhbmtzLA0KPiBNaXF1w6hsDQo+IA0KPiAtLQ0KPiBN
+aXF1ZWwgUmF5bmFsLCBCb290bGluIChmb3JtZXJseSBGcmVlIEVsZWN0cm9ucykNCj4gRW1iZWRk
+ZWQgTGludXggYW5kIEtlcm5lbCBlbmdpbmVlcmluZw0KPiBodHRwczovL2Jvb3RsaW4uY29tDQo=
