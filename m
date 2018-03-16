@@ -1,59 +1,72 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 1/5] Bluetooth: hci_bcm: Add irq_polarity module option
-Date: Fri, 16 Mar 2018 21:28:07 +0100
-Message-ID: <20180316202811.5678-1-hdegoede@redhat.com>
+Subject: [PATCH 3/5] Bluetooth: hci_bcm: Add 6 new ACPI HIDs
+Date: Fri, 16 Mar 2018 21:28:09 +0100
+Message-ID: <20180316202811.5678-3-hdegoede@redhat.com>
+References: <20180316202811.5678-1-hdegoede@redhat.com>
 Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20180316202811.5678-1-hdegoede@redhat.com>
 Sender: stable-owner@vger.kernel.org
 To: Marcel Holtmann <marcel@holtmann.org>, Gustavo Padovan <gustavo@padovan.org>, Johan Hedberg <johan.hedberg@gmail.com>
 Cc: Hans de Goede <hdegoede@redhat.com>, linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add irq_polarity module option for easier troubleshooting of irq-polarity
-issues.
+Add 6 new ACPI HIDs to enable bluetooth on devices using these HIDs,
+I've tested the following HIDs / devices:
+
+BCM2E74: Jumper ezPad mini 3
+BCM2E83: Acer Iconia Tab8 w1-810
+BCM2E90: Meegopad T08
+BCM2EAA: Chuwi Vi8 plus (CWI519)
+
+The reporter of Red Hat bugzilla 1554835 has tested:
+BCM2E84: Lenovo Yoga2
+
+The reporter of kernel bugzilla 274481 has tested:
+BCM2E38: Toshiba Encore
+
+Note the Lenovo Yoga2 and Toshiba Encore also needs the earlier patch to
+treat all Interrupt ACPI resources as active low.
 
 Cc: stable@vger.kernel.org
+Buglink: https://bugzilla.kernel.org/attachment.cgi?id=274481
+Buglink: https://bugzilla.redhat.com/show_bug.cgi?id=1554835
+Reported-and-tested-by: Robert R. Howell <rhowell@uwyo.edu>
+Reported-and-tested-by: Christian Herzog <daduke@daduke.org>
+Tested-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/bluetooth/hci_bcm.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
+ drivers/bluetooth/hci_bcm.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-index 5e3aba3c3185..bb6cd1623132 100644
+index 7acd77a53b08..18416c435b20 100644
 --- a/drivers/bluetooth/hci_bcm.c
 +++ b/drivers/bluetooth/hci_bcm.c
-@@ -126,6 +126,10 @@ struct bcm_data {
- static DEFINE_MUTEX(bcm_device_lock);
- static LIST_HEAD(bcm_device_list);
- 
-+static int irq_polarity = -1;
-+module_param(irq_polarity, int, 0444);
-+MODULE_PARM_DESC(irq_polarity, "IRQ polarity 0: active-high 1: active-low");
-+
- static inline void host_set_baudrate(struct hci_uart *hu, unsigned int speed)
- {
- 	if (hu->serdev)
-@@ -988,11 +992,17 @@ static int bcm_acpi_probe(struct bcm_device *dev)
- 	}
- 	acpi_dev_free_resource_list(&resources);
- 
--	dmi_id = dmi_first_match(bcm_active_low_irq_dmi_table);
--	if (dmi_id) {
--		dev_warn(dev->dev, "%s: Overwriting IRQ polarity to active low",
--			    dmi_id->ident);
--		dev->irq_active_low = true;
-+	if (irq_polarity != -1) {
-+		dev->irq_active_low = irq_polarity;
-+		dev_warn(dev->dev, "Overwriting IRQ polarity to active %s by module-param\n",
-+			 dev->irq_active_low ? "low" : "high");
-+	} else {
-+		dmi_id = dmi_first_match(bcm_active_low_irq_dmi_table);
-+		if (dmi_id) {
-+			dev_warn(dev->dev, "%s: Overwriting IRQ polarity to active low",
-+				 dmi_id->ident);
-+			dev->irq_active_low = true;
-+		}
- 	}
- 
- 	return 0;
+@@ -1075,6 +1075,7 @@ static const struct hci_uart_proto bcm_proto = {
+ #ifdef CONFIG_ACPI
+ static const struct acpi_device_id bcm_acpi_match[] = {
+ 	{ "BCM2E1A", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
++	{ "BCM2E38", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E39", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E3A", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E3D", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+@@ -1087,12 +1088,17 @@ static const struct acpi_device_id bcm_acpi_match[] = {
+ 	{ "BCM2E67", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E71", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E72", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
++	{ "BCM2E74", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E7B", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E7C", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E7E", (kernel_ulong_t)&acpi_bcm_int_first_gpios },
++	{ "BCM2E83", (kernel_ulong_t)&acpi_bcm_int_first_gpios },
++	{ "BCM2E84", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
++	{ "BCM2E90", (kernel_ulong_t)&acpi_bcm_int_last_gpios },
+ 	{ "BCM2E95", (kernel_ulong_t)&acpi_bcm_int_first_gpios },
+ 	{ "BCM2E96", (kernel_ulong_t)&acpi_bcm_int_first_gpios },
+ 	{ "BCM2EA4", (kernel_ulong_t)&acpi_bcm_int_first_gpios },
++	{ "BCM2EAA", (kernel_ulong_t)&acpi_bcm_int_first_gpios },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, bcm_acpi_match);
 -- 
 2.14.3
