@@ -1,16 +1,16 @@
 From: Sasha Levin <Alexander.Levin@microsoft.com>
-Subject: [PATCH AUTOSEL for 3.18 098/102] tty: n_gsm: Allow ADM response in
+Subject: [PATCH AUTOSEL for 4.4 160/167] tty: n_gsm: Allow ADM response in
  addition to UA for control dlci
-Date: Mon, 19 Mar 2018 16:13:35 +0000
-Message-ID: <20180319161117.17833-98-alexander.levin@microsoft.com>
-References: <20180319161117.17833-1-alexander.levin@microsoft.com>
+Date: Mon, 19 Mar 2018 16:08:44 +0000
+Message-ID: <20180319160513.16384-160-alexander.levin@microsoft.com>
+References: <20180319160513.16384-1-alexander.levin@microsoft.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20180319161117.17833-1-alexander.levin@microsoft.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180319160513.16384-1-alexander.levin@microsoft.com>
 Content-Language: en-US
-Sender: stable-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>
 Cc: Tony Lindgren <tony@atomide.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Alan Cox <alan@llwyncelyn.cymru>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <Alexander.Levin@microsoft.com>
 List-Id: linux-serial@vger.kernel.org
@@ -87,7 +87,7 @@ Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
  1 file changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index db37ee49c3bf..450a8ca16351 100644
+index 9aff37186246..78bd121ecede 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
 @@ -1467,6 +1467,10 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
