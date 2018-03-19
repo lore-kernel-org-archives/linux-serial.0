@@ -1,14 +1,14 @@
 From: Sasha Levin <Alexander.Levin@microsoft.com>
-Subject: [PATCH AUTOSEL for 4.4 160/167] tty: n_gsm: Allow ADM response in
+Subject: [PATCH AUTOSEL for 4.15 092/124] tty: n_gsm: Allow ADM response in
  addition to UA for control dlci
-Date: Mon, 19 Mar 2018 16:08:44 +0000
-Message-ID: <20180319160513.16384-160-alexander.levin@microsoft.com>
-References: <20180319160513.16384-1-alexander.levin@microsoft.com>
+Date: Mon, 19 Mar 2018 15:48:42 +0000
+Message-ID: <20180319154645.11350-92-alexander.levin@microsoft.com>
+References: <20180319154645.11350-1-alexander.levin@microsoft.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180319160513.16384-1-alexander.levin@microsoft.com>
+In-Reply-To: <20180319154645.11350-1-alexander.levin@microsoft.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>
@@ -87,10 +87,10 @@ Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
  1 file changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 9aff37186246..78bd121ecede 100644
+index 5131bdc9e765..db33fc50bfaa 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1467,6 +1467,10 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+@@ -1451,6 +1451,10 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
   *	in which case an opening port goes back to closed and a closing port
   *	is simply put into closed state (any further frames from the other
   *	end will get a DM response)
@@ -100,8 +100,8 @@ index 9aff37186246..78bd121ecede 100644
 + *	DLCI_OPENING retries time out.
   */
 =20
- static void gsm_dlci_t1(unsigned long data)
-@@ -1480,8 +1484,15 @@ static void gsm_dlci_t1(unsigned long data)
+ static void gsm_dlci_t1(struct timer_list *t)
+@@ -1464,8 +1468,15 @@ static void gsm_dlci_t1(struct timer_list *t)
  		if (dlci->retries) {
  			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
  			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
@@ -118,7 +118,7 @@ index 9aff37186246..78bd121ecede 100644
  		break;
  	case DLCI_CLOSING:
  		dlci->retries--;
-@@ -1499,8 +1510,8 @@ static void gsm_dlci_t1(unsigned long data)
+@@ -1483,8 +1494,8 @@ static void gsm_dlci_t1(struct timer_list *t)
   *	@dlci: DLCI to open
   *
   *	Commence opening a DLCI from the Linux side. We issue SABM messages
