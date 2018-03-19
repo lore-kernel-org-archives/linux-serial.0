@@ -1,119 +1,133 @@
-From: Madalin-cristian Bucur <madalin.bucur-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [PATCH v2 10/21] lightnvm: Remove depends on HAS_DMA in case of
-	platform dependency
-Date: Mon, 19 Mar 2018 05:27:16 +0000
-Message-ID: <AM5PR04MB3267989AB6A81639F61AB165ECD40@AM5PR04MB3267.eurprd04.prod.outlook.com>
-References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
-	<1521208314-4783-11-git-send-email-geert@linux-m68k.org>
+From: Sasha Levin <Alexander.Levin@microsoft.com>
+Subject: [PATCH AUTOSEL for 4.14 72/97] tty: n_gsm: Allow ADM response in
+ addition to UA for control dlci
+Date: Mon, 19 Mar 2018 15:56:05 +0000
+Message-ID: <20180319155411.12348-72-alexander.levin@microsoft.com>
+References: <20180319155411.12348-1-alexander.levin@microsoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1521208314-4783-11-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180319155411.12348-1-alexander.levin@microsoft.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "James E . J . Bottomley" <jejb-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "Martin K . Petersen" <martin.petersen-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Stefan Richter <stefanr-MtYdepGKPcBMYopoZt5u/LNAH6kLmebB@public.gmane.org>, Alan Tull <atull-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Moritz Fischer <mdf-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matias Bjorling <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>, Jassi Brar <jas>
-Cc: "devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org" <devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org>, "alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org" <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>, "linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mtd-IAPFreCvJWMMKQXVYFwzLw@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+Cc: Tony Lindgren <tony@atomide.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Alan Cox <alan@llwyncelyn.cymru>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <Alexander.Levin@microsoft.com>
 List-Id: linux-serial@vger.kernel.org
 
-> -----Original Message-----
-> From: netdev-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:netdev-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org]
-> On Behalf Of Geert Uytterhoeven
-> Sent: Friday, March 16, 2018 3:52 PM
-> To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>; Marek Szyprowski
-> <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>; Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>;
-> Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Greg Kroah-Hartman
-> <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; James E . J . Bottomley
-> <jejb-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>; Martin K . Petersen
-> <martin.petersen-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>; Andrew Morton <akpm@linux-
-> foundation.org>; Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Liam Girdwood
-> <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>; Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Herbert Xu
-> <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>; David S . Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>;
-> Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>; Stefan Richter
-> <stefanr-MtYdepGKPcBMYopoZt5u/LNAH6kLmebB@public.gmane.org>; Alan Tull <atull-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Moritz Fischer
-> <mdf-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>; Jonathan Cameron
-> <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; Matias Bjorling
-> <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>; Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>; Mauro Carvalho
-> Chehab <mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>; David
-> Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>; Brian Norris
-> <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>; Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>;
-> Cyrille Pitchen <cyrille.pitchen-yU5RGvR974pGWvitb5QawA@public.gmane.org>; Boris Brezillon
-> <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>; Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>;
-> Kalle Valo <kvalo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>; Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>;
-> Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>; Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>;
-> Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org; linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux1394-
-> devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org; linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-> Subject: [PATCH v2 10/21] lightnvm: Remove depends on HAS_DMA in case of
-> platform dependency
-> 
-> Remove dependencies on HAS_DMA where a Kconfig symbol depends on
-> another
-> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-> In most cases this other symbol is an architecture or platform specific
-> symbol, or PCI.
-> 
-> Generic symbols and drivers without platform dependencies keep their
-> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-> cannot work anyway.
-> 
-> This simplifies the dependencies, and allows to improve compile-testing.
-> 
-> Notes:
->   - FSL_FMAN keeps its dependency on HAS_DMA, as it calls set_dma_ops(),
->     which does not exist if HAS_DMA=n (Do we need a dummy? The use of
->     set_dma_ops() in this driver is questionable),
+From: Tony Lindgren <tony@atomide.com>
 
-Hi,
+[ Upstream commit ea3d8465ab9b3e01be329ac5195970a84bef76c5 ]
 
-The set_dma_ops() is no longer required in the fsl/fman, I'll send a patch to remove it.
+Some devices have the control dlci stay in ADM mode instead of the UA
+mode. This can seen at least on droid 4 when trying to open the ts
+27.010 mux port. Enabling n_gsm debug mode shows the control dlci
+always respond with DM to SABM instead of UA:
 
-Thanks
+# modprobe n_gsm debug=3D0xff
+# ldattach -d GSM0710 /dev/ttyS0 &
+gsmld_output: 00000000: f9 03 3f 01 1c f9
+--> 0) C: SABM(P)
+gsmld_receive: 00000000: f9 03 1f 01 36 f9
+<-- 0) C: DM(P)
+...
+$ minicom -D /dev/gsmtty1
+minicom: cannot open /dev/gsmtty1: No error information
+$ strace minicom -D /dev/gsmtty1
+...
+open("/dev/gsmtty1", O_RDWR|O_NOCTTY|O_NONBLOCK|O_LARGEFILE) =3D -1 EL2HLT
 
->   - SND_SOC_LPASS_IPQ806X and SND_SOC_LPASS_PLATFORM loose their
->     dependency on HAS_DMA, as they are selected from
->     SND_SOC_APQ8016_SBC.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-> Reviewed-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
-> v2:
->   - Add Reviewed-by, Acked-by,
->   - Drop RFC state,
->   - Split per subsystem.
-> ---
->  drivers/lightnvm/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/lightnvm/Kconfig b/drivers/lightnvm/Kconfig
-> index 10c08982185a572f..9c03f35d9df113c6 100644
-> --- a/drivers/lightnvm/Kconfig
-> +++ b/drivers/lightnvm/Kconfig
-> @@ -4,7 +4,7 @@
-> 
->  menuconfig NVM
->  	bool "Open-Channel SSD target support"
-> -	depends on BLOCK && HAS_DMA && PCI
-> +	depends on BLOCK && PCI
->  	select BLK_DEV_NVME
->  	help
->  	  Say Y here to get to enable Open-channel SSDs.
-> --
-> 2.7.4
+Note that this is different issue from other n_gsm -EL2HLT issues such
+as timeouts when the control dlci does not respond at all.
+
+The ADM mode seems to be a quite common according to "RF Wireless World"
+article "GSM Issue-UE sends SABM and gets a DM response instead of
+UA response":
+
+  This issue is most commonly observed in GSM networks where in UE sends
+  SABM and expects network to send UA response but it ends up receiving
+  DM response from the network. SABM stands for Set asynchronous balanced
+  mode, UA stands for Unnumbered Acknowledge and DA stands for
+  Disconnected Mode.
+
+  An RLP entity can be in one of two modes:
+  - Asynchronous Balanced Mode (ABM)
+  - Asynchronous Disconnected Mode (ADM)
+
+Currently Linux kernel closes the control dlci after several retries
+in gsm_dlci_t1() on DM. This causes n_gsm /dev/gsmtty ports to produce
+error code -EL2HLT when trying to open them as the closing of control
+dlci has already set gsm->dead.
+
+Let's fix the issue by allowing control dlci stay in ADM mode after the
+retries so the /dev/gsmtty ports can be opened and used. It seems that
+it might take several attempts to get any response from the control
+dlci, so it's best to allow ADM mode only after the SABM retries are
+done.
+
+Note that for droid 4 additional patches are needed to mux the ttyS0
+pins and to toggle RTS gpio_149 to wake up the mdm6600 modem are also
+needed to use n_gsm. And the mdm6600 modem needs to be powered on.
+
+Cc: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@llwyncelyn.cymru>
+Cc: Jiri Prchal <jiri.prchal@aksignal.cz>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Marcel Partap <mpartap@gmx.net>
+Cc: Michael Scott <michael.scott@linaro.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Russ Gorby <russ.gorby@intel.com>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Sebastian Reichel <sre@kernel.org>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+---
+ drivers/tty/n_gsm.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 0a3c9665e015..7253e8d2c6d9 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1463,6 +1463,10 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+  *	in which case an opening port goes back to closed and a closing port
+  *	is simply put into closed state (any further frames from the other
+  *	end will get a DM response)
++ *
++ *	Some control dlci can stay in ADM mode with other dlci working just
++ *	fine. In that case we can just keep the control dlci open after the
++ *	DLCI_OPENING retries time out.
+  */
+=20
+ static void gsm_dlci_t1(unsigned long data)
+@@ -1476,8 +1480,15 @@ static void gsm_dlci_t1(unsigned long data)
+ 		if (dlci->retries) {
+ 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+-		} else
++		} else if (!dlci->addr && gsm->control =3D=3D (DM | PF)) {
++			if (debug & 8)
++				pr_info("DLCI %d opening in ADM mode.\n",
++					dlci->addr);
++			gsm_dlci_open(dlci);
++		} else {
+ 			gsm_dlci_close(dlci);
++		}
++
+ 		break;
+ 	case DLCI_CLOSING:
+ 		dlci->retries--;
+@@ -1495,8 +1506,8 @@ static void gsm_dlci_t1(unsigned long data)
+  *	@dlci: DLCI to open
+  *
+  *	Commence opening a DLCI from the Linux side. We issue SABM messages
+- *	to the modem which should then reply with a UA, at which point we
+- *	will move into open state. Opening is done asynchronously with retry
++ *	to the modem which should then reply with a UA or ADM, at which point
++ *	we will move into open state. Opening is done asynchronously with retry
+  *	running off timers and the responses.
+  */
+=20
+--=20
+2.14.1
