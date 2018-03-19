@@ -1,16 +1,16 @@
 From: Sasha Levin <Alexander.Levin@microsoft.com>
-Subject: [PATCH AUTOSEL for 4.14 72/97] tty: n_gsm: Allow ADM response in
+Subject: [PATCH AUTOSEL for 4.9 269/281] tty: n_gsm: Allow ADM response in
  addition to UA for control dlci
-Date: Mon, 19 Mar 2018 15:56:05 +0000
-Message-ID: <20180319155411.12348-72-alexander.levin@microsoft.com>
-References: <20180319155411.12348-1-alexander.levin@microsoft.com>
+Date: Mon, 19 Mar 2018 16:03:14 +0000
+Message-ID: <20180319155742.13731-269-alexander.levin@microsoft.com>
+References: <20180319155742.13731-1-alexander.levin@microsoft.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180319155411.12348-1-alexander.levin@microsoft.com>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20180319155742.13731-1-alexander.levin@microsoft.com>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: stable-owner@vger.kernel.org
 To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>
 Cc: Tony Lindgren <tony@atomide.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Alan Cox <alan@llwyncelyn.cymru>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <Alexander.Levin@microsoft.com>
 List-Id: linux-serial@vger.kernel.org
@@ -87,10 +87,10 @@ Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
  1 file changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 0a3c9665e015..7253e8d2c6d9 100644
+index 54cab59e20ed..fe2291795d2f 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1463,6 +1463,10 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+@@ -1467,6 +1467,10 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
   *	in which case an opening port goes back to closed and a closing port
   *	is simply put into closed state (any further frames from the other
   *	end will get a DM response)
@@ -101,7 +101,7 @@ index 0a3c9665e015..7253e8d2c6d9 100644
   */
 =20
  static void gsm_dlci_t1(unsigned long data)
-@@ -1476,8 +1480,15 @@ static void gsm_dlci_t1(unsigned long data)
+@@ -1480,8 +1484,15 @@ static void gsm_dlci_t1(unsigned long data)
  		if (dlci->retries) {
  			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
  			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
@@ -118,7 +118,7 @@ index 0a3c9665e015..7253e8d2c6d9 100644
  		break;
  	case DLCI_CLOSING:
  		dlci->retries--;
-@@ -1495,8 +1506,8 @@ static void gsm_dlci_t1(unsigned long data)
+@@ -1499,8 +1510,8 @@ static void gsm_dlci_t1(unsigned long data)
   *	@dlci: DLCI to open
   *
   *	Commence opening a DLCI from the Linux side. We issue SABM messages
