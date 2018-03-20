@@ -1,56 +1,54 @@
-From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: mvebu-uart: fix tx lost characters
-Date: Tue, 20 Mar 2018 10:32:08 +0100
-Message-ID: <20180320093208.GA22194@kroah.com>
-References: <3B588D51285A4A4D8D39C94212E078262748ED@SPQCMBX02.exfo.com>
- <20180315165516.GA9519@kroah.com>
- <3B588D51285A4A4D8D39C94212E078262787C0@SPQCMBX02.exfo.com>
- <20180315212137.57ca7c65@xps13>
- <3B588D51285A4A4D8D39C94212E07826278BDF@SPQCMBX02.exfo.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v2 00/21] Allow compile-testing NO_DMA (drivers)
+Date: Tue, 20 Mar 2018 10:57:28 +0100
+Message-ID: <CAMuHMdUUKMngcyajm_s==KbhL3ZjMNHVxhNNGkPWkpnePE2rMw@mail.gmail.com>
+References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
+ <20180316212317.7d5rri3p25hpmx44@ninjato>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <3B588D51285A4A4D8D39C94212E07826278BDF@SPQCMBX02.exfo.com>
-Sender: stable-owner@vger.kernel.org
-To: Gabriel Matni <gabriel.matni@exfo.com>
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, =?iso-8859-1?Q?Gr=E9gory?= Clement <gregory.clement@bootlin.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+In-Reply-To: <20180316212317.7d5rri3p25hpmx44@ninjato>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Wolfram Sang <wsa@the-dreams.de>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, linux-iio@vger.kernel.org, linux-fpga@vger.kernel.org, linux-remoteproc@vger.kernel.org, ALSA Development Mailing List <alsa-devel@alsa-project.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Eric Anholt <eric@anholt.net>, netdev <netdev@vger.kernel.org>, MTD Maling List <linux-mtd@lists.infradead.org>, Linux I2C <linux-i2c@vger.kernel.org>, linux1394-devel@lists.sourceforge.net, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Stefan Wahren <stefan.wahren@i2se.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, "James E . J . Bottomley" <jejb@linux.vnet.ibm.com>, Herbert Xu <herbert@gondor.apana.org.au>, scsi <linux-scsi@vger.kernel.org>, Richard Weinberger <richard@nod.at>, Joerg Roedel <joro@8bytes.org>, Jassi Brar <jassisinghbrar@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, linux-seria
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 16, 2018 at 01:45:32PM +0000, Gabriel Matni wrote:
-> From: Gabriel Matni <gabriel.matni@exfo.com>
-> 
-> Fixes missing characters on kernel console at low baud rates (i.e.9600).
-> The driver should poll TX_RDY or TX_FIFO_EMP instead of TX_EMP to ensure
-> that the transmitter holding register (THR) is ready to receive a new byte.
-> 
-> TX_EMP tells us when it is possible to send a break sequence via
-> SND_BRK_SEQ. While this also indicates that both the THR and the TSR are
-> empty, it does not guarantee that a new byte can be written just yet.
-> 
-> Fixes: 30530791a7a0 ("serial: mvebu-uart: initial support for Armada-3700
->       serial port")
+Hi Wolfram,
 
-Can all be on one line.
+On Fri, Mar 16, 2018 at 10:23 PM, Wolfram Sang <wsa@the-dreams.de> wrote:
+>> To avoid allmodconfig/allyesconfig regressions on NO_DMA=y platforms,
+>> this (drivers) series should be applied after the previous (core)
+>> series (but not many people may notice/care ;-)
+>
+> I still don't get if there is a dependency on the core patches. I.e.
+> shall I apply the subsystem patch now by myself or do you want to push
+> the series after the core patch and need my ack here?
 
-And should this go to the stable trees?
+Yes, there is a dependency. Without the core patches, enabling COMPILE_TEST,
+and compile-testing drivers irrelevant on obscure NO_DMA=y platforms will
+cause build failures.
 
-> Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com> 
-> Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>  
-> Signed-off-by: Gabriel Matni <gabriel.matni@exfo.com> 
+To play it safe, you want to postpone the subsystem patches until the core
+part has landed upstream. I will rebase and resubmit after v4.17-rc1.
 
-Trailing whitespace?
+Thanks, and sorry for being unclear.
 
-> 
-> ---
->  drivers/tty/serial/mvebu-uart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Gr{oetje,eeting}s,
 
-What version of this patch is this?  How do I know which to accept?
+                        Geert
 
-Please properly version your patch, and include the changes below the
---- line like the documentation says to do.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-thanks,
-
-greg k-h
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
