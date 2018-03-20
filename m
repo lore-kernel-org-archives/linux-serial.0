@@ -1,106 +1,60 @@
-From: Gabriel Matni <gabriel.matni@exfo.com>
-Subject: RE: [PATCH v3] serial: mvebu-uart: fix tx lost characters
-Date: Tue, 20 Mar 2018 16:09:38 +0000
-Message-ID: <3B588D51285A4A4D8D39C94212E07826279E39@SPQCMBX02.exfo.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
-Return-path: <stable-owner@vger.kernel.org>
-Content-Language: en-US
-Sender: stable-owner@vger.kernel.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, =?iso-8859-1?Q?Gr=E9gory_Clement?= <gregory.clement@bootlin.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+From: Daniel Kurtz <djkurtz@chromium.org>
+Subject: [PATCH v2 1/2] serial: sh-sci: Remove __initdata attribute for struct 'port_cfg'
+Date: Tue, 20 Mar 2018 11:57:11 -0600
+Message-ID: <20180320175712.201572-2-djkurtz@chromium.org>
+References: <20180320175712.201572-1-djkurtz@chromium.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180320175712.201572-1-djkurtz@chromium.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Kaehlcke <mka@chromium.org>, Guenter Roeck <groeck@chromium.org>
+Cc: adurbin@chromium.org, linux-kernel@vger.kernel.org, Daniel Kurtz <djkurtz@chromium.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Gabriel Matni <gabriel.matni@exfo.com>
+Commit dd076cffb8cd ("serial: sh-sci: Fix init data attribute for struct
+'port_cfg'") properly removed the __init attribute, and changed it to
+__initdata.
 
-Fixes missing characters on kernel console at low baud rates (i.e.9600).
-The driver should poll TX_RDY or TX_FIFO_EMP instead of TX_EMP to ensure
-that the transmitter holding register (THR) is ready to receive a new byte.
+The __init function early_console_setup() takes the address of global
+port_cfg and assigns it to a field in another global, sci_ports:
 
-TX_EMP tells us when it is possible to send a break sequence via
-SND_BRK_SEQ. While this also indicates that both the THR and the TSR are
-empty, it does not guarantee that a new byte can be written just yet.
+static int __init early_console_setup(struct earlycon_device *device,
+      int type)
+{
+...
+port_cfg.type = type;
+sci_ports[0].cfg = &port_cfg;
+...
+}
 
-Fixes: 30530791a7a0 ("serial: mvebu-uart: initial support for Armada-3700 serial port")
-Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com> 
-Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>  
-Signed-off-by: Gabriel Matni <gabriel.matni@exfo.com> 
+port_cfg, however, is now in __initdata:
+static struct plat_sci_port port_cfg __initdata;
+
+... but sci_ports is not:
+static struct sci_port sci_ports[SCI_NPORTS];
+
+Thus, there is a non-__initdata variable containing the address of a
+__initdata struct.
+
+Fix this section type conflict by just removing the __initdata attribute.
+
+Fixes: dd076cffb8cd ("serial: sh-sci: Fix init data attribute for struct 'port_cfg'")
+Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
 ---
-Changes since v2:
-- use one line for the "Fixes" entry
-- removed trailing space between Signed-off-by entry and ---
-- start using versioning, previous fixes in v1
-
-Changes since v1:
-- patch was corrupt, could not be applied
-- fixed line indent
----
- drivers/tty/serial/mvebu-uart.c | 2 +-
+ drivers/tty/serial/sh-sci.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index a100e98259d7..f0df0640208e 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -618,7 +618,7 @@ static void wait_for_xmitr(struct uart_port *port)
- 	u32 val;
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 44adf9db38f8..ff4e1012ed76 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3277,7 +3277,7 @@ early_platform_init_buffer("earlyprintk", &sci_driver,
+ 			   early_serial_buf, ARRAY_SIZE(early_serial_buf));
+ #endif
+ #ifdef CONFIG_SERIAL_SH_SCI_EARLYCON
+-static struct plat_sci_port port_cfg __initdata;
++static struct plat_sci_port port_cfg;
  
- 	readl_poll_timeout_atomic(port->membase + UART_STAT, val,
--				  (val & STAT_TX_EMP), 1, 10000);
-+				  (val & STAT_TX_RDY(port)), 1, 10000);
- }
- 
- static void mvebu_uart_console_putchar(struct uart_port *port, int ch)
+ static int __init early_console_setup(struct earlycon_device *device,
+ 				      int type)
 -- 
-2.7.4
-
-
-> -----Original Message-----
-> From: gregkh@linuxfoundation.org <gregkh@linuxfoundation.org>
-> Sent: March 20, 2018 5:32 AM
-> To: Gabriel Matni <gabriel.matni@exfo.com>
-> Cc: Miquel Raynal <miquel.raynal@bootlin.com>; linux-
-> serial@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
-> stable@vger.kernel.org; Grégory Clement <gregory.clement@bootlin.com>;
-> Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-> Subject: Re: [PATCH] serial: mvebu-uart: fix tx lost characters
-> 
-> On Fri, Mar 16, 2018 at 01:45:32PM +0000, Gabriel Matni wrote:
-> > From: Gabriel Matni <gabriel.matni@exfo.com>
-> >
-> > Fixes missing characters on kernel console at low baud rates (i.e.9600).
-> > The driver should poll TX_RDY or TX_FIFO_EMP instead of TX_EMP to
-> ensure
-> > that the transmitter holding register (THR) is ready to receive a new byte.
-> >
-> > TX_EMP tells us when it is possible to send a break sequence via
-> > SND_BRK_SEQ. While this also indicates that both the THR and the TSR are
-> > empty, it does not guarantee that a new byte can be written just yet.
-> >
-> > Fixes: 30530791a7a0 ("serial: mvebu-uart: initial support for Armada-3700
-> >       serial port")
-> 
-> Can all be on one line.
-> 
-> And should this go to the stable trees?
-> 
-> > Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-> > Signed-off-by: Gabriel Matni <gabriel.matni@exfo.com>
-> 
-> Trailing whitespace?
-> 
-> >
-> > ---
-> >  drivers/tty/serial/mvebu-uart.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> What version of this patch is this?  How do I know which to accept?
-> 
-> Please properly version your patch, and include the changes below the
-> --- line like the documentation says to do.
-> 
-> thanks,
-> 
-> greg k-h
+2.16.2.804.g6dcf76e118-goog
