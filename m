@@ -1,174 +1,63 @@
-From: Guenter Roeck <groeck@google.com>
-Subject: Re: [PATCH v3] earlycon: Use a pointer table to fix __earlycon_table stride
-Date: Tue, 20 Mar 2018 15:12:03 -0700
-Message-ID: <CABXOdTdo_iFS4B8+kfgn09KLFtr944-B2FzzM_Xih=zSqS4NXw@mail.gmail.com>
-References: <20180320220202.18464-1-djkurtz@chromium.org>
+From: "y.k.oh" <y.k.oh@samsung.com>
+Subject: Re: [PATCH] serial: samsung: macros with complex values should be
+ enclosed in parentheses
+Date: Thu, 22 Mar 2018 13:37:45 +0900
+Message-ID: <2f2dcf3c-2432-3dc7-5fd4-f9326ef48455@samsung.com>
+References: <CGME20180314021710epcas1p3766602fe312f87d916cab69af2acf203@epcas1p3.samsung.com>
+        <1520993825-8605-1-git-send-email-y.k.oh@samsung.com>
+        <20180314135804.GA21350@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180320220202.18464-1-djkurtz@chromium.org>
+In-reply-to: <20180314135804.GA21350@kroah.com>
+Content-language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Kurtz <djkurtz@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <groeck@chromium.org>, Aaron Durbin <adurbin@chromium.org>, linux-kernel <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE" <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:GENERIC INCLUDE/ASM HEADER FILES" <linux-arch@vger.kernel.org>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Mar 20, 2018 at 3:02 PM, Daniel Kurtz <djkurtz@chromium.org> wrote:
-> Commit 99492c39f39f ("earlycon: Fix __earlycon_table stride") tried to fix
-> __earlycon_table stride by forcing the earlycon_id struct alignment to 32
-> and asking the linker to 32-byte align the __earlycon_table symbol.  This
-> fix was based on commit 07fca0e57fca92 ("tracing: Properly align linker
-> defined symbols") which tried a similar fix for the tracing subsystem.
->
-> However, this fix doesn't quite work because there is no guarantee that
-> gcc will place structures packed into an array format.  In fact, gcc 4.9
-> chooses to 64-byte align these structs by inserting additional padding
-> between the entries because it has no clue that they are supposed to be in
-> an array.  If we are unlucky, the linker will assign symbol
-> "__earlycon_table" to a 32-byte aligned address which does not correpsond
-> to the 64-byte alignbed contents of section "__earlycon_table".
->
-> To address this same problem, the fix to the tracing system was
-> subsequently re-implemented using a more robust table of pointers approach
-> by commits:
->  3d56e331b653 ("tracing: Replace syscall_meta_data struct array with pointer array")
->  654986462939 ("tracepoints: Fix section alignment using pointer array")
->  e4a9ea5ee7c8 ("tracing: Replace trace_event struct array with pointer array")
->
-> Let's use this same "array of pointers to structs" approach for
-> EARLYCON_TABLE.
->
-> Fixes: 99492c39f39f ("earlycon: Fix __earlycon_table stride")
-> Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
-> Suggested-by: Aaron Durbin <adurbin@chromium.org>
 
-Build tested on sh4, alpha, and h8300 to ensure that the build problem
-reported by 0day is gone.
-For that,
 
-Tested-by: Guenter Roeck <groeck@chromium.org>
+On 03/14/2018 10:58 PM, Greg KH wrote:
+> On Wed, Mar 14, 2018 at 11:17:05AM +0900, YOUNGKEUN OH wrote:
+>> Cleanup checkpatch error:
+>> ERROR: Macros with complex values should be enclosed in parentheses
+>>
+>> Signed-off-by: YOUNGKEUN OH <y.k.oh@samsung.com>
+>> ---
+>>  drivers/tty/serial/samsung.c | 16 ++++++++--------
+>>  1 file changed, 8 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+>> index 3f2f8c1..da9bddb1 100644
+>> --- a/drivers/tty/serial/samsung.c
+>> +++ b/drivers/tty/serial/samsung.c
+>> @@ -1455,7 +1455,7 @@ static int __init s3c24xx_serial_console_init(void)
+>>  }
+>>  console_initcall(s3c24xx_serial_console_init);
+>>
+>> -#define S3C24XX_SERIAL_CONSOLE &s3c24xx_serial_console
+>> +#define S3C24XX_SERIAL_CONSOLE (&s3c24xx_serial_console)
+> 
+> That's not a complex macro!
+> 
+> Please use checkpatch as a hint, not the "truth".
+> 
+> thanks,
+> 
+> greg k-h
+> 
+Dear Greg.
 
-I am not an expert in this area, but the change makes sense to me. As such,
+Yes! Of course that's not a pretty complex macro. However, I think it is
+important to make a small effort to modify the minimum standard,
+Checkpatch ERROR, to ensure consistency in the Linux code.
+Starting with this Checkpatch error of samsung.c, I would like to start
+my efforts on contribution from a small point.  Please review it again.
+If there are any points that require modification, such as comment,
+then I'll modify it.
+Thank you.
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-
-but take it with a grain of salt.
-
-Guenter
-
-> ---
-> Changes since v2:
->  * Use __initconst instead of __initdata to avoid h8300 and alpha kbuild errors
->
->  drivers/of/fdt.c                  |  7 +++++--
->  drivers/tty/serial/earlycon.c     |  6 ++++--
->  include/asm-generic/vmlinux.lds.h |  2 +-
->  include/linux/serial_core.h       | 21 ++++++++++++++-------
->  4 files changed, 24 insertions(+), 12 deletions(-)
->
-> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> index 84aa9d676375..6da20b9688f7 100644
-> --- a/drivers/of/fdt.c
-> +++ b/drivers/of/fdt.c
-> @@ -942,7 +942,7 @@ int __init early_init_dt_scan_chosen_stdout(void)
->         int offset;
->         const char *p, *q, *options = NULL;
->         int l;
-> -       const struct earlycon_id *match;
-> +       const struct earlycon_id **p_match;
->         const void *fdt = initial_boot_params;
->
->         offset = fdt_path_offset(fdt, "/chosen");
-> @@ -969,7 +969,10 @@ int __init early_init_dt_scan_chosen_stdout(void)
->                 return 0;
->         }
->
-> -       for (match = __earlycon_table; match < __earlycon_table_end; match++) {
-> +       for (p_match = __earlycon_table; p_match < __earlycon_table_end;
-> +            p_match++) {
-> +               const struct earlycon_id *match = *p_match;
-> +
->                 if (!match->compatible[0])
->                         continue;
->
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index a24278380fec..22683393a0f2 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -169,7 +169,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
->   */
->  int __init setup_earlycon(char *buf)
->  {
-> -       const struct earlycon_id *match;
-> +       const struct earlycon_id **p_match;
->
->         if (!buf || !buf[0])
->                 return -EINVAL;
-> @@ -177,7 +177,9 @@ int __init setup_earlycon(char *buf)
->         if (early_con.flags & CON_ENABLED)
->                 return -EALREADY;
->
-> -       for (match = __earlycon_table; match < __earlycon_table_end; match++) {
-> +       for (p_match = __earlycon_table; p_match < __earlycon_table_end;
-> +            p_match++) {
-> +               const struct earlycon_id *match = *p_match;
->                 size_t len = strlen(match->name);
->
->                 if (strncmp(buf, match->name, len))
-> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-> index 1ab0e520d6fc..e17de55c2542 100644
-> --- a/include/asm-generic/vmlinux.lds.h
-> +++ b/include/asm-generic/vmlinux.lds.h
-> @@ -179,7 +179,7 @@
->  #endif
->
->  #ifdef CONFIG_SERIAL_EARLYCON
-> -#define EARLYCON_TABLE() STRUCT_ALIGN();                       \
-> +#define EARLYCON_TABLE() . = ALIGN(8);                         \
->                          VMLINUX_SYMBOL(__earlycon_table) = .;  \
->                          KEEP(*(__earlycon_table))              \
->                          VMLINUX_SYMBOL(__earlycon_table_end) = .;
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index b32df49a3bd5..c4219b9cbb70 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -351,10 +351,10 @@ struct earlycon_id {
->         char    name[16];
->         char    compatible[128];
->         int     (*setup)(struct earlycon_device *, const char *options);
-> -} __aligned(32);
-> +};
->
-> -extern const struct earlycon_id __earlycon_table[];
-> -extern const struct earlycon_id __earlycon_table_end[];
-> +extern const struct earlycon_id *__earlycon_table[];
-> +extern const struct earlycon_id *__earlycon_table_end[];
->
->  #if defined(CONFIG_SERIAL_EARLYCON) && !defined(MODULE)
->  #define EARLYCON_USED_OR_UNUSED        __used
-> @@ -362,12 +362,19 @@ extern const struct earlycon_id __earlycon_table_end[];
->  #define EARLYCON_USED_OR_UNUSED        __maybe_unused
->  #endif
->
-> -#define OF_EARLYCON_DECLARE(_name, compat, fn)                         \
-> -       static const struct earlycon_id __UNIQUE_ID(__earlycon_##_name) \
-> -            EARLYCON_USED_OR_UNUSED __section(__earlycon_table)        \
-> +#define _OF_EARLYCON_DECLARE(_name, compat, fn, unique_id)             \
-> +       static const struct earlycon_id unique_id                       \
-> +            EARLYCON_USED_OR_UNUSED __initconst                        \
->                 = { .name = __stringify(_name),                         \
->                     .compatible = compat,                               \
-> -                   .setup = fn  }
-> +                   .setup = fn  };                                     \
-> +       static const struct earlycon_id EARLYCON_USED_OR_UNUSED         \
-> +               __section(__earlycon_table)                             \
-> +               * const __PASTE(__p, unique_id) = &unique_id
-> +
-> +#define OF_EARLYCON_DECLARE(_name, compat, fn)                         \
-> +       _OF_EARLYCON_DECLARE(_name, compat, fn,                         \
-> +                            __UNIQUE_ID(__earlycon_##_name))
->
->  #define EARLYCON_DECLARE(_name, fn)    OF_EARLYCON_DECLARE(_name, "", fn)
->
-> --
-> 2.16.2.804.g6dcf76e118-goog
->
+Best regards,
+Youngkeun Oh
