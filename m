@@ -1,80 +1,81 @@
-From: YOUNGKEUN OH <y.k.oh@samsung.com>
-Subject: Re: [PATCH] serial: samsung: macros with complex values should be
- enclosed in parentheses
-Date: Thu, 22 Mar 2018 18:04:50 +0900
-Message-ID: <48d2c42a-dd04-23fd-feaa-0d90d62b0626@samsung.com>
-References: <CGME20180314021710epcas1p3766602fe312f87d916cab69af2acf203@epcas1p3.samsung.com>
-        <1520993825-8605-1-git-send-email-y.k.oh@samsung.com>
-        <20180314135804.GA21350@kroah.com>
-        <2f2dcf3c-2432-3dc7-5fd4-f9326ef48455@samsung.com>
-        <20180322084511.GA6211@kroah.com>
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3] serial: mvebu-uart: fix tx lost characters
+Date: Thu, 22 Mar 2018 18:35:29 +0100
+Message-ID: <20180322173529.GA24597@kroah.com>
+References: <3B588D51285A4A4D8D39C94212E07826279E39@SPQCMBX02.exfo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <20180322084511.GA6211@kroah.com>
-Content-language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <3B588D51285A4A4D8D39C94212E07826279E39@SPQCMBX02.exfo.com>
+Sender: stable-owner@vger.kernel.org
+To: Gabriel Matni <gabriel.matni@exfo.com>
+Cc: Miquel Raynal <miquel.raynal@bootlin.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, =?iso-8859-1?Q?Gr=E9gory?= Clement <gregory.clement@bootlin.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, Mar 20, 2018 at 04:09:38PM +0000, Gabriel Matni wrote:
+> From: Gabriel Matni <gabriel.matni@exfo.com>
+> 
+> Fixes missing characters on kernel console at low baud rates (i.e.9600).
+> The driver should poll TX_RDY or TX_FIFO_EMP instead of TX_EMP to ensure
+> that the transmitter holding register (THR) is ready to receive a new byte.
+> 
+> TX_EMP tells us when it is possible to send a break sequence via
+> SND_BRK_SEQ. While this also indicates that both the THR and the TSR are
+> empty, it does not guarantee that a new byte can be written just yet.
+> 
+> Fixes: 30530791a7a0 ("serial: mvebu-uart: initial support for Armada-3700 serial port")
+> Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com> 
+> Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>  
+> Signed-off-by: Gabriel Matni <gabriel.matni@exfo.com> 
+> ---
+> Changes since v2:
+> - use one line for the "Fixes" entry
+> - removed trailing space between Signed-off-by entry and ---
+> - start using versioning, previous fixes in v1
+> 
+> Changes since v1:
+> - patch was corrupt, could not be applied
+> - fixed line indent
+> ---
+>  drivers/tty/serial/mvebu-uart.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+> index a100e98259d7..f0df0640208e 100644
+> --- a/drivers/tty/serial/mvebu-uart.c
+> +++ b/drivers/tty/serial/mvebu-uart.c
+> @@ -618,7 +618,7 @@ static void wait_for_xmitr(struct uart_port *port)
+>  	u32 val;
+>  
+>  	readl_poll_timeout_atomic(port->membase + UART_STAT, val,
+> -				  (val & STAT_TX_EMP), 1, 10000);
+> +				  (val & STAT_TX_RDY(port)), 1, 10000);
+>  }
+>  
+>  static void mvebu_uart_console_putchar(struct uart_port *port, int ch)
+> -- 
+> 2.7.4
+> 
+> 
+> > -----Original Message-----
+> > From: gregkh@linuxfoundation.org <gregkh@linuxfoundation.org>
+> > Sent: March 20, 2018 5:32 AM
+> > To: Gabriel Matni <gabriel.matni@exfo.com>
+> > Cc: Miquel Raynal <miquel.raynal@bootlin.com>; linux-
+> > serial@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
+> > stable@vger.kernel.org; Grégory Clement <gregory.clement@bootlin.com>;
+> > Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+> > Subject: Re: [PATCH] serial: mvebu-uart: fix tx lost characters
 
+<snip>
 
-On 03/22/2018 05:45 PM, Greg KH wrote:
-> On Thu, Mar 22, 2018 at 01:37:45PM +0900, y.k.oh wrote:
->>
->>
->> On 03/14/2018 10:58 PM, Greg KH wrote:
->>> On Wed, Mar 14, 2018 at 11:17:05AM +0900, YOUNGKEUN OH wrote:
->>>> Cleanup checkpatch error:
->>>> ERROR: Macros with complex values should be enclosed in parentheses
->>>>
->>>> Signed-off-by: YOUNGKEUN OH <y.k.oh@samsung.com>
->>>> ---
->>>>  drivers/tty/serial/samsung.c | 16 ++++++++--------
->>>>  1 file changed, 8 insertions(+), 8 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
->>>> index 3f2f8c1..da9bddb1 100644
->>>> --- a/drivers/tty/serial/samsung.c
->>>> +++ b/drivers/tty/serial/samsung.c
->>>> @@ -1455,7 +1455,7 @@ static int __init s3c24xx_serial_console_init(void)
->>>>  }
->>>>  console_initcall(s3c24xx_serial_console_init);
->>>>
->>>> -#define S3C24XX_SERIAL_CONSOLE &s3c24xx_serial_console
->>>> +#define S3C24XX_SERIAL_CONSOLE (&s3c24xx_serial_console)
->>>
->>> That's not a complex macro!
->>>
->>> Please use checkpatch as a hint, not the "truth".
->>>
->>> thanks,
->>>
->>> greg k-h
->>>
->> Dear Greg.
->>
->> Yes! Of course that's not a pretty complex macro. However, I think it is
->> important to make a small effort to modify the minimum standard,
->> Checkpatch ERROR, to ensure consistency in the Linux code.
->> Starting with this Checkpatch error of samsung.c, I would like to start
->> my efforts on contribution from a small point.  Please review it again.
-> 
-> Why would I review something again that is not correct?
-> 
-> If you wish to start out in kernel development, please start in
-> drivers/staging/*/TODO, not in "core" kernel code.  That is what the
-> drivers/staging/ code is there for.
-> 
-> good luck!
-> 
-> greg k-h
-> 
-Dear Greg.
+What is all of this below the patch for?
 
-Thank you for your comment. I'll see you soon with a good patch.
+Please clean up and send this properly, in a clean email, with no "Re:"
+on the subject line, as a new patch/email.
 
-Sincerely,
-Youngkeun Oh
+thanks,
+
+greg k-h
