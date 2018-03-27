@@ -1,65 +1,35 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v5] earlycon: Use a pointer table to fix __earlycon_table
- stride
-Date: Mon, 26 Mar 2018 17:24:21 -0500
-Message-ID: <20180326222421.bwkdakaofoixp562@rob-hp-laptop>
-References: <20180320220536.20245-1-djkurtz@chromium.org>
+From: Aaron Durbin <adurbin@chromium.org>
+Subject: Re: [PATCH 1/3] serial: 8250_early: Add earlycon support for AMD
+ Carrizo / Stoneyridge
+Date: Mon, 26 Mar 2018 20:56:45 -0600
+Message-ID: <CAE2855tGOq2jjqaZUnWJKL953iM6+9JCgkCAEXhKLkkLRdgUBg@mail.gmail.com>
+References: <20180314003655.12141-1-djkurtz@chromium.org> <20180314003655.12141-2-djkurtz@chromium.org>
+ <CAPybu_0uLNz=tRvwqnMfoogJ=A4b5SgMecE9ZihrZdFrbRvcEw@mail.gmail.com>
+ <CAGS+omCuEYSHFPmknvvvjUpCWFP_rCmwa9utQiO=aEmdm-anwg@mail.gmail.com>
+ <CAHp75VehhNv6pPrRiM9jBAK9FsqZ2Defo8HKhutwn+GPnCFp3w@mail.gmail.com>
+ <CAE2855tGe0i9XoEPe9iLFpCds3fXyj9uGhDACvK06KaqvhvYBg@mail.gmail.com> <20180326192428.71c23abf@alans-desktop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180320220536.20245-1-djkurtz@chromium.org>
+In-Reply-To: <20180326192428.71c23abf@alans-desktop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Kurtz <djkurtz@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <groeck@chromium.org>, adurbin@chromium.org, linux-kernel@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE" <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:GENERIC INCLUDE/ASM HEADER FILES" <linux-arch@vger.kernel.org>
+To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Cc: Aaron Durbin <adurbin@chromium.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Daniel Kurtz <djkurtz@chromium.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Doug Anderson <dianders@chromium.org>, Matt Redfearn <matt.redfearn@mips.com>, Jeffy <jeffy.chen@rock-chips.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Mar 20, 2018 at 04:05:36PM -0600, Daniel Kurtz wrote:
-> Commit 99492c39f39f ("earlycon: Fix __earlycon_table stride") tried to fix
-> __earlycon_table stride by forcing the earlycon_id struct alignment to 32
-> and asking the linker to 32-byte align the __earlycon_table symbol.  This
-> fix was based on commit 07fca0e57fca92 ("tracing: Properly align linker
-> defined symbols") which tried a similar fix for the tracing subsystem.
-> 
-> However, this fix doesn't quite work because there is no guarantee that
-> gcc will place structures packed into an array format.  In fact, gcc 4.9
-> chooses to 64-byte align these structs by inserting additional padding
-> between the entries because it has no clue that they are supposed to be in
-> an array.  If we are unlucky, the linker will assign symbol
-> "__earlycon_table" to a 32-byte aligned address which does not correspond
-> to the 64-byte aligned contents of section "__earlycon_table".
-> 
-> To address this same problem, the fix to the tracing system was
-> subsequently re-implemented using a more robust table of pointers approach
-> by commits:
->  3d56e331b653 ("tracing: Replace syscall_meta_data struct array with pointer array")
->  654986462939 ("tracepoints: Fix section alignment using pointer array")
->  e4a9ea5ee7c8 ("tracing: Replace trace_event struct array with pointer array")
-> 
-> Let's use this same "array of pointers to structs" approach for
-> EARLYCON_TABLE.
+On Mon, Mar 26, 2018 at 12:24 PM, Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
+>> Sadly, this situation
+>> is not unique to this hardware. There is hardware all over that does
+>> not meet the current assumptions being made in the early uart drivers
+>> within the kernel.
+>
+> Is there any fundamental reason you can't just embed dt entries in the
+> ACPI table to describe the other features you need. I appreciate it
+> doesn't solve the generic PC case but it ought to help for anything where
+> the firmware cares about Linux ?
 
-Wouldn't every use of linker sections with structs have this problem? We 
-use them for clocks, irqs, timers unless those have been fixed.
+What's the method for doing that? Using _DSD methods? Or have a
+pointer to examples? Sorry, I haven't spelunked into the current state
+of bridging ACPI and devicetree in a while.
 
-> 
-> Fixes: 99492c39f39f ("earlycon: Fix __earlycon_table stride")
-> Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
-> Suggested-by: Aaron Durbin <adurbin@chromium.org>
-> ---
-> Changes since v2:
->  * Use __initconst instead of __initdata to avoid h8300 and alpha kbuild errors
-> 
-> Changes since v3:
->  * Fixed typos in commit message
-> 
-> Changes since v4:
->  * removed Change-Id: from commit message
-> 
->  drivers/of/fdt.c                  |  7 +++++--
->  drivers/tty/serial/earlycon.c     |  6 ++++--
->  include/asm-generic/vmlinux.lds.h |  2 +-
->  include/linux/serial_core.h       | 21 ++++++++++++++-------
->  4 files changed, 24 insertions(+), 12 deletions(-)
-
-Reviewed-by: Rob Herring <robh@kernel.org>
+-Aaron
