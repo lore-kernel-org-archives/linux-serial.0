@@ -1,35 +1,62 @@
-From: Aaron Durbin <adurbin@chromium.org>
-Subject: Re: [PATCH 1/3] serial: 8250_early: Add earlycon support for AMD
- Carrizo / Stoneyridge
-Date: Mon, 26 Mar 2018 20:56:45 -0600
-Message-ID: <CAE2855tGOq2jjqaZUnWJKL953iM6+9JCgkCAEXhKLkkLRdgUBg@mail.gmail.com>
-References: <20180314003655.12141-1-djkurtz@chromium.org> <20180314003655.12141-2-djkurtz@chromium.org>
- <CAPybu_0uLNz=tRvwqnMfoogJ=A4b5SgMecE9ZihrZdFrbRvcEw@mail.gmail.com>
- <CAGS+omCuEYSHFPmknvvvjUpCWFP_rCmwa9utQiO=aEmdm-anwg@mail.gmail.com>
- <CAHp75VehhNv6pPrRiM9jBAK9FsqZ2Defo8HKhutwn+GPnCFp3w@mail.gmail.com>
- <CAE2855tGe0i9XoEPe9iLFpCds3fXyj9uGhDACvK06KaqvhvYBg@mail.gmail.com> <20180326192428.71c23abf@alans-desktop>
+From: Vignesh R <vigneshr@ti.com>
+Subject: [PATCH] serial: 8250: omap: Provide ability to enable/disable UART as wakeup source
+Date: Tue, 27 Mar 2018 17:32:17 +0530
+Message-ID: <20180327120217.4749-1-vigneshr@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180326192428.71c23abf@alans-desktop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Aaron Durbin <adurbin@chromium.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Daniel Kurtz <djkurtz@chromium.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Doug Anderson <dianders@chromium.org>, Matt Redfearn <matt.redfearn@mips.com>, Jeffy <jeffy.chen@rock-chips.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Tony Lindgren <tony@atomide.com>, Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Mar 26, 2018 at 12:24 PM, Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
->> Sadly, this situation
->> is not unique to this hardware. There is hardware all over that does
->> not meet the current assumptions being made in the early uart drivers
->> within the kernel.
->
-> Is there any fundamental reason you can't just embed dt entries in the
-> ACPI table to describe the other features you need. I appreciate it
-> doesn't solve the generic PC case but it ought to help for anything where
-> the firmware cares about Linux ?
+Enable/Clear module level UART wakeup in UART_OMAP_WER register based on
+return value of device_may_wakeup() in .suspend(). This allows
+userspace to use sysfs to control the ability of UART to wakeup the
+system from deep sleep state. Register is restored back in .startup()
+call that happens as part of resume sequence.
 
-What's the method for doing that? Using _DSD methods? Or have a
-pointer to examples? Sorry, I haven't spelunked into the current state
-of bridging ACPI and devicetree in a while.
+With this patch, userspace can control UART wakeup capability via sysfs:
+To enable wakeup capability:
+echo enabled >  /sys/class/tty/ttyXX/device/power/wakeup
+For disabling wakeup capability:
+echo disabled > /sys/class/tty/ttyXX/device/power/wakeup
 
--Aaron
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+---
+ drivers/tty/serial/8250/8250_omap.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 624b501fd253..6aaa84355fd1 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1310,8 +1310,17 @@ static void omap8250_complete(struct device *dev)
+ static int omap8250_suspend(struct device *dev)
+ {
+ 	struct omap8250_priv *priv = dev_get_drvdata(dev);
++	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 
+ 	serial8250_suspend_port(priv->line);
++
++	pm_runtime_get_sync(dev);
++	if (!device_may_wakeup(dev))
++		priv->wer = 0;
++	serial_out(up, UART_OMAP_WER, priv->wer);
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
++
+ 	flush_work(&priv->qos_work);
+ 	return 0;
+ }
+@@ -1403,6 +1412,8 @@ static int omap8250_runtime_suspend(struct device *dev)
+ 
+ 		/* Restore to UART mode after reset (for wakeup) */
+ 		omap8250_update_mdr1(up, priv);
++		/* Restore wakeup enable register */
++		serial_out(up, UART_OMAP_WER, priv->wer);
+ 	}
+ 
+ 	if (up->dma && up->dma->rxchan)
+-- 
+2.16.2
