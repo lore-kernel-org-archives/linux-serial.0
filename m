@@ -1,47 +1,48 @@
-From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 1/3] serial: 8250_early: Add earlycon support for AMD
- Carrizo / Stoneyridge
-Date: Thu, 29 Mar 2018 14:34:00 +0100
-Message-ID: <20180329143400.6d9256a5@alans-desktop>
-References: <20180314003655.12141-1-djkurtz@chromium.org>
-        <20180314003655.12141-2-djkurtz@chromium.org>
-        <CAPybu_0uLNz=tRvwqnMfoogJ=A4b5SgMecE9ZihrZdFrbRvcEw@mail.gmail.com>
-        <CAGS+omCuEYSHFPmknvvvjUpCWFP_rCmwa9utQiO=aEmdm-anwg@mail.gmail.com>
-        <CAHp75VehhNv6pPrRiM9jBAK9FsqZ2Defo8HKhutwn+GPnCFp3w@mail.gmail.com>
-        <CAE2855tGe0i9XoEPe9iLFpCds3fXyj9uGhDACvK06KaqvhvYBg@mail.gmail.com>
-        <20180326192428.71c23abf@alans-desktop>
-        <CAE2855tGOq2jjqaZUnWJKL953iM6+9JCgkCAEXhKLkkLRdgUBg@mail.gmail.com>
+From: =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Subject: Re: ns16550 earlycon baud broken on BCM5301X since commit
+ 31cb9a8575ca0 ("earlycon: initialise baud field of earlycon device structure")
+Date: Thu, 29 Mar 2018 16:37:51 +0200
+Message-ID: <CACna6rwfCVFHLc_uVQRR=F+53uj8OVtMi1jUygJfTSmDK99+zQ@mail.gmail.com>
+References: <CACna6rzki=sjXQS12eF3yPXH7XeFYTCXVOdj--F=P=jkJZX7fg@mail.gmail.com>
+ <1522329420.32101.3.camel@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAE2855tGOq2jjqaZUnWJKL953iM6+9JCgkCAEXhKLkkLRdgUBg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Aaron Durbin <adurbin@chromium.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Daniel Kurtz <djkurtz@chromium.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Doug Anderson <dianders@chromium.org>, Matt Redfearn <matt.redfearn@mips.com>, Jeffy <jeffy.chen@rock-chips.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1522329420.32101.3.camel@synopsys.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jonmason@broadcom.com" <jonmason@broadcom.com>, "hauke@hauke-m.de" <hauke@hauke-m.de>, Alexey Brodkin <Alexey.Brodkin@synopsys.com>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 26 Mar 2018 20:56:45 -0600
-Aaron Durbin <adurbin@chromium.org> wrote:
+On 29 March 2018 at 15:17, Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com> wrote:
+> Hm, your 'port->uartclk' value (and therefore 'BASE_BAUD' value) looks strange to me...
+> Looks like you have 'BASE_BAUD' set to 115200.
+>
+>
+> Here is my example:
+> uart clock is 33333333Hz (fixed 33.33MHz xtal clock)
+> So 'BASE_BAUD' is 33333333/16 = 2083333
+> So 'port->uartclk' is BASE_BAUD*16 = 33333328
+> 'device->baud' is 115200 (which is read from device tree)
+> So when we calculate divisor with this code
+> ------------------->8---------------
+> divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * device->baud);
+> ------------------->8---------------
+> We got 'divisor' = 181 which is correct value for us.
 
-> On Mon, Mar 26, 2018 at 12:24 PM, Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
-> >> Sadly, this situation
-> >> is not unique to this hardware. There is hardware all over that does
-> >> not meet the current assumptions being made in the early uart drivers
-> >> within the kernel.  
-> >
-> > Is there any fundamental reason you can't just embed dt entries in the
-> > ACPI table to describe the other features you need. I appreciate it
-> > doesn't solve the generic PC case but it ought to help for anything where
-> > the firmware cares about Linux ?  
-> 
-> What's the method for doing that? Using _DSD methods? Or have a
-> pointer to examples? Sorry, I haven't spelunked into the current state
-> of bridging ACPI and devicetree in a while.
+You're right. 115200 is the default BASE_BAUD value coming from:
+./include/asm-generic/serial.h:#define BASE_BAUD (1843200 / 16)
 
-ACPI 5.1 adds an _DSD method UUID for device properties.
+You must be using arch/machine that has custom serial.h with different value.
 
-The kernel device_property_* interface will pick them up just as if they
-came from DT tables etc.
-
-Alan
+Could there be some wrong logic regarding uartclk / BASE_BAUD / baud
+in the tty subsystem?
