@@ -1,92 +1,47 @@
-From: Koen Vandeputte <koen.vandeputte@ncentric.com>
-Subject: Re: ns16550 earlycon baud broken on BCM5301X since commit
- 31cb9a8575ca0 ("earlycon: initialise baud field of earlycon device
- structure")
-Date: Thu, 29 Mar 2018 15:23:05 +0200
-Message-ID: <d76193f0-4483-2f5a-7161-5a486a362a73@ncentric.com>
-References: <CACna6rzki=sjXQS12eF3yPXH7XeFYTCXVOdj--F=P=jkJZX7fg@mail.gmail.com>
- <1522329420.32101.3.camel@synopsys.com>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 1/3] serial: 8250_early: Add earlycon support for AMD
+ Carrizo / Stoneyridge
+Date: Thu, 29 Mar 2018 14:34:00 +0100
+Message-ID: <20180329143400.6d9256a5@alans-desktop>
+References: <20180314003655.12141-1-djkurtz@chromium.org>
+        <20180314003655.12141-2-djkurtz@chromium.org>
+        <CAPybu_0uLNz=tRvwqnMfoogJ=A4b5SgMecE9ZihrZdFrbRvcEw@mail.gmail.com>
+        <CAGS+omCuEYSHFPmknvvvjUpCWFP_rCmwa9utQiO=aEmdm-anwg@mail.gmail.com>
+        <CAHp75VehhNv6pPrRiM9jBAK9FsqZ2Defo8HKhutwn+GPnCFp3w@mail.gmail.com>
+        <CAE2855tGe0i9XoEPe9iLFpCds3fXyj9uGhDACvK06KaqvhvYBg@mail.gmail.com>
+        <20180326192428.71c23abf@alans-desktop>
+        <CAE2855tGOq2jjqaZUnWJKL953iM6+9JCgkCAEXhKLkkLRdgUBg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1522329420.32101.3.camel@synopsys.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>, "zajec5@gmail.com" <zajec5@gmail.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jonmason@broadcom.com" <jonmason@broadcom.com>, "hauke@hauke-m.de" <hauke@hauke-m.de>, Alexey Brodkin <Alexey.Brodkin@synopsys.com>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAE2855tGOq2jjqaZUnWJKL953iM6+9JCgkCAEXhKLkkLRdgUBg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Aaron Durbin <adurbin@chromium.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Daniel Kurtz <djkurtz@chromium.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Marc Gonzalez <marc_gonzalez@sigmadesigns.com>, Doug Anderson <dianders@chromium.org>, Matt Redfearn <matt.redfearn@mips.com>, Jeffy <jeffy.chen@rock-chips.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-c2hvdWxkbid0IDE4NDMyMDAgYmUgMTg0MzIwMDAgIChhcyBpbiAxOC40MzIgTUh6KT8KCihJIHVz
-ZWQgdGhpcyBzb3VyY2UgY2xvY2sgYSBsb3QgZHVyaW5nIG15IDgwNTEgZGF5cyBhIGxvbmcgdGlt
-ZSBhZ28gOikgICkKCgpLb2VuCgoKT24gMjAxOC0wMy0yOSAxNToxNywgRXVnZW5peSBQYWx0c2V2
-IHdyb3RlOgo+IEhpIFJhZmHFgiwKPgo+IEhtLCB5b3VyICdwb3J0LT51YXJ0Y2xrJyB2YWx1ZSAo
-YW5kIHRoZXJlZm9yZSAnQkFTRV9CQVVEJyB2YWx1ZSkgbG9va3Mgc3RyYW5nZSB0byBtZS4uLgo+
-IExvb2tzIGxpa2UgeW91IGhhdmUgJ0JBU0VfQkFVRCcgc2V0IHRvIDExNTIwMC4KPgo+Cj4gSGVy
-ZSBpcyBteSBleGFtcGxlOgo+IHVhcnQgY2xvY2sgaXMgMzMzMzMzMzNIeiAoZml4ZWQgMzMuMzNN
-SHogeHRhbCBjbG9jaykKPiBTbyAnQkFTRV9CQVVEJyBpcyAzMzMzMzMzMy8xNiA9IDIwODMzMzMK
-PiBTbyAncG9ydC0+dWFydGNsaycgaXMgQkFTRV9CQVVEKjE2ID0gMzMzMzMzMjgKPiAnZGV2aWNl
-LT5iYXVkJyBpcyAxMTUyMDAgKHdoaWNoIGlzIHJlYWQgZnJvbSBkZXZpY2UgdHJlZSkKPiBTbyB3
-aGVuIHdlIGNhbGN1bGF0ZSBkaXZpc29yIHdpdGggdGhpcyBjb2RlCj4gLS0tLS0tLS0tLS0tLS0t
-LS0tLT44LS0tLS0tLS0tLS0tLS0tCj4gZGl2aXNvciA9IERJVl9ST1VORF9DTE9TRVNUKHBvcnQt
-PnVhcnRjbGssIDE2ICogZGV2aWNlLT5iYXVkKTsKPiAtLS0tLS0tLS0tLS0tLS0tLS0tPjgtLS0t
-LS0tLS0tLS0tLS0KPiBXZSBnb3QgJ2Rpdmlzb3InID0gMTgxIHdoaWNoIGlzIGNvcnJlY3QgdmFs
-dWUgZm9yIHVzLgo+Cj4KPiBPbiBUaHUsIDIwMTgtMDMtMjkgYXQgMTQ6MzQgKzAyMDAsIFJhZmHF
-giBNacWCZWNraSB3cm90ZToKPj4gSGksCj4+Cj4+IEkgdXBncmFkZWQgbXkgQkNNNTMwMVggZGV2
-aWNlIGJhc2VkIG9uIEJDTTQ3MDggU29DIGZyb20gNC4xMyB0byA0LjE0Cj4+IGFuZCBub3RpY2Vk
-IGVhcmx5Y29uIG91dHB1dCBpcyBjb3JydXB0ZWQgKGEgd3JvbmcgYmF1ZCByYXRlIGlzIHVzZWQp
-Lgo+Pgo+Pgo+PiBJIGJpc2VjdGVkIHRoaXMgcHJvYmxlbSBkb3duIHRvIHRoZToKPj4KPj4gY29t
-bWl0IDMxY2I5YTg1NzVjYTA0ZjQ3ZWExMTM0MzRkNDc4MmI2OTU2MzhiNjIKPj4gQXV0aG9yOiBF
-dWdlbml5IFBhbHRzZXYgPEV1Z2VuaXkuUGFsdHNldkBzeW5vcHN5cy5jb20+Cj4+IERhdGU6ICAg
-TW9uIEF1ZyAyMSAxOToyMjoxMyAyMDE3ICswMzAwCj4+Cj4+ICAgICAgZWFybHljb246IGluaXRp
-YWxpc2UgYmF1ZCBmaWVsZCBvZiBlYXJseWNvbiBkZXZpY2Ugc3RydWN0dXJlCj4+Cj4+Cj4+IE15
-IGRldmljZSB1c2VzIGFyY2gvYXJtL2Jvb3QvZHRzL2JjbTQ3MDguZHRzaToKPj4KPj4gdWFydDA6
-IHNlcmlhbEAwMzAwIHsKPj4gICAgICAgICAgY29tcGF0aWJsZSA9ICJuczE2NTUwIjsKPj4gICAg
-ICAgICAgcmVnID0gPDB4MDMwMCAweDEwMD47Cj4+ICAgICAgICAgIGludGVycnVwdHMgPSA8R0lD
-X1NQSSA4NSBJUlFfVFlQRV9MRVZFTF9ISUdIPjsKPj4gICAgICAgICAgY2xvY2tzID0gPCZpcHJv
-Y3Nsb3c+Owo+PiAgICAgICAgICBzdGF0dXMgPSAib2theSI7Cj4+IH07Cj4+Cj4+IGFsaWFzZXMg
-ewo+PiAgICAgICAgICBzZXJpYWwwID0gJnVhcnQwOwo+PiB9Owo+Pgo+PiBjaG9zZW4gewo+PiAg
-ICAgICAgICBzdGRvdXQtcGF0aCA9ICJzZXJpYWwwOjExNTIwMG44IjsKPj4gfTsKPj4KPj4KPj4g
-QSB2YWxpZCBVQVJUIGRpdmlzb3IgZm9yIG15IGRldmljZSBpcyA1NC4gVGhpcyBpcyB3aGF0IGJv
-b3Rsb2FkZXIgc2V0cwo+PiBhbmQgd2hhdCB3b3JrcyB3aXRoIG15IHNlcmlhbCBjb25zb2xlIHJ1
-bm5pbmcgMTE1MjAwIDhuMS4KPj4KPj4KPj4gQmVmb3JlIHRoZSBjb21taXQgMzFjYjlhODU3NWNh
-MCBlYXJseV9zZXJpYWw4MjUwX3NldHVwKCkgbmV2ZXIgdHJpZWQKPj4gc2V0dGluZyBiYXVkIGJl
-Y2F1c2UgZGV2aWNlLT5iYXVkIHdhcyAwLiBJdCBsZWZ0IGJhdWQgKGRpdmlzb3IpIHRvCj4+IHdo
-YXRldmVyIHdhcyBjb25maWd1cmVkIGJ5IHRoZSBib290bG9hZGVyLiBJdCBoYXMgY2hhbmdlZCB3
-aXRoIGFib3ZlCj4+IGNvbW1pdCB0aG91Z2guIFNvIG5vdyB0aGUgc2V0dXAgbG9va3MgbGlrZSB0
-aGF0Ogo+PiAxKSBwb3J0LT51YXJ0Y2xrIGVxdWFscyAxODQzMjAwIGFzIHNldCBpbiB0aGUgb2Zf
-c2V0dXBfZWFybHljb24oKToKPj4gcG9ydC0+dWFydGNsayA9IEJBU0VfQkFVRCAqIDE2Owo+PiAy
-KSBbTkVXXSBkZXZpY2UtPmJhdWQgZXF1YWxzIDExNTIwMCBhcyBzZXQgaW4gdGhlIG9mX3NldHVw
-X2Vhcmx5Y29uKCk6Cj4+IGVhcmx5X2NvbnNvbGVfZGV2LmJhdWQgPSBzaW1wbGVfc3RydG91bChv
-cHRpb25zLCBOVUxMLCAwKTsKPj4gKGEgdmFsdWUgb2Ygb3B0aW9ucyBpcyAiMTE1MjAwbjgiKQo+
-PiAzKSBbTkVXXSBkaXZpc29yIGlzIGNhbGN1bGF0ZWQgdG8gMSBpbiB0aGUgaW5pdF9wb3J0KCk6
-Cj4+IGRpdmlzb3IgPSBESVZfUk9VTkRfQ0xPU0VTVChwb3J0LT51YXJ0Y2xrLCAxNiAqIGRldmlj
-ZS0+YmF1ZCk7Cj4+IDQpIFtORVddIGRpdmlzb3IgaXMgc2V0IHVzaW5nIFVBUlRfRExMIGFuZCBV
-QVJUX0RMTSBpbiB0aGUgaW5pdF9wb3J0KCkKPj4KPj4gT2J2aW91c2x5IHNldHRpbmcgZGl2aXNv
-ciAxIGluc3RlYWQgb2YgNTQgcmVzdWx0cyBpbiBhIHdyb25nIGJhdWQuCj4+Cj4+Cj4+IFNvIHJp
-Z2h0IG5vdyBteSBzZXJpYWwgY29uc29sZSBvdXRwdXQgbG9va3MgbGlrZSB0aGF0Ogo+PiDvv702
-Oycrey7vv73vv71z77+9Lu+/ve+/ve+/vS4iLu+/ve+/vTTvv73vv70u77+977+977+977+977+9
-Lu+/ve+/vUp877+9Lu+/vS4477+977+9Lu+/vS4u77+977+977+977+977+977+9Z++/ve+/vX4u
-77+977+977+977+9TD4u77+977+9LO+/vTl6Oe+/vXvvv71a77+9Li4i77+977+977+9TkPvv708
-77+9OS7vv70v77+977+977+9Lu+/vS7vv71977+977+9fi7vv73vv73vv70i77+9Lu+/vXzvv73v
-v73vv73vv707P++/vS7vv73vv715ee+/vS5bCj4+ICAgICAwLjA0MzYyM10gY29uc29sZSBbdHR5
-UzBdIGVuYWJsZWQKPj4gWyAgICAwLjA0MzYyM10gY29uc29sZSBbdHR5UzBdIGVuYWJsZWQKPj4g
-WyAgICAwLjA1MDg0Ml0gYm9vdGNvbnNvbGUgW25zMTY1NTBdIGRpc2FibGVkCj4+IFsgICAgMC4w
-NTA4NDJdIGJvb3Rjb25zb2xlIFtuczE2NTUwXSBkaXNhYmxlZAo+PiBbICAgIDAuMDYyOTM5XSBs
-aWJwaHk6IEZpeGVkIE1ESU8gQnVzOiBwcm9iZWQKPj4gKC4uLikKPj4KPj4gRm9yIGEgY29tcGxl
-dGUgbG9nIChjb21pbmcgZnJvbSBkbWVzZyBjb21tYW5kKSBzZWUgYXR0YWNobWVudC4KPj4KPj4K
-Pj4gQ2FuIHlvdSB0YWtlIGEgbG9vayBhdCB0aGlzIHByb2JsZW0sIHBsZWFzZT8gSXMgdGhlcmUg
-c29tZXRoaW5nIHdyb25nCj4+IHdpdGggbXkgRFQ/IE9yIGlzIGEgcHJvYmxlbSBpbiA4MjUwIG9y
-IGVhcmx5Y29uPwo+PgoKLS0gCktvZW4gVmFuZGVwdXR0ZSAtIFNvZnR3YXJlIERldmVsb3Blcgpr
-b2VuLnZhbmRlcHV0dGVAbmNlbnRyaWMuY29tIHwgKzMyNDk5NzM2MTU4CgoKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWls
-aW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0
-cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On Mon, 26 Mar 2018 20:56:45 -0600
+Aaron Durbin <adurbin@chromium.org> wrote:
+
+> On Mon, Mar 26, 2018 at 12:24 PM, Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
+> >> Sadly, this situation
+> >> is not unique to this hardware. There is hardware all over that does
+> >> not meet the current assumptions being made in the early uart drivers
+> >> within the kernel.  
+> >
+> > Is there any fundamental reason you can't just embed dt entries in the
+> > ACPI table to describe the other features you need. I appreciate it
+> > doesn't solve the generic PC case but it ought to help for anything where
+> > the firmware cares about Linux ?  
+> 
+> What's the method for doing that? Using _DSD methods? Or have a
+> pointer to examples? Sorry, I haven't spelunked into the current state
+> of bridging ACPI and devicetree in a while.
+
+ACPI 5.1 adds an _DSD method UUID for device properties.
+
+The kernel device_property_* interface will pick them up just as if they
+came from DT tables etc.
+
+Alan
