@@ -1,58 +1,67 @@
-From: Biju Das <biju.das@bp.renesas.com>
-Subject: [PATCH v3 0/3] Add r8a77470/iW-RainboW-G23S single board computer
- support
-Date: Tue,  3 Apr 2018 12:19:36 +0100
-Message-ID: <1522754379-64116-1-git-send-email-biju.das@bp.renesas.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@armlinux.org.uk>
-Cc: Fabrizio Castro <fabrizio.castro@bp.renesas.com>, Kishon Vijay Abraham I <kishon@ti.com>, Chris Paterson <Chris.Paterson2@renesas.com>, Borislav Petkov <bp@suse.de>, Geert Uytterhoeven <geert+renesas@glider.be>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, devicetree@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Magnus Damm <magnus.damm@gmail.com>, Krzysztof Kozlowski <krzk@kernel.org>, Vladimir Barinov <vladimir.barinov@cogentembedded.com>, linux-renesas-soc@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, Simon Horman <horms@verge.net.au>, Jacopo Mondi <jacopo+renesas@jmondi.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Biju Das <biju.das@bp.renesas.com>, linux-clk@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Marek Szyprowski <m.szyprowski@samsung.com>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH] serial: xuartps: Fix the early_console junk character issue
+Date: Wed,  4 Apr 2018 12:20:47 +0200
+Message-ID: <6698032e594f5f921f25c4a7e235e0cee5521087.1522837245.git.michal.simek@xilinx.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu, agraf@suse.de
+Cc: Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello, 
+From: Nava kishore Manne <nava.manne@xilinx.com>
 
-This series adds support for Rensas RZ/G1C (r8a77470) SoC and
-RZ/G1C based iW-RainboW-G23S single board computer.
+In the early_console_setup is trying to access the unregister clock value,
+so we are receiving some garbage clk value because of this wrong clk value
+the early_console_setup is fail to set the required console baud rate.
 
-The series introduces a cpg-mssr clock/power gating module, a power/reset
-controller for the SoC.
+This path fix this issue.
 
-power areas for RZ/G1C are similar to RZ/G1E.
+Signed-off-by: Nava kishore Manne <navam@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
-Few functionalities have currently been enabled in DTS and tested: serial
-boot console.
+ drivers/tty/serial/xilinx_uartps.c | 27 +--------------------------
+ 1 file changed, 1 insertion(+), 26 deletions(-)
 
-This patch series tested against renesas-dev branch 
-tag "renesas-dev-20180328-v4.16-rc7
-
-V1-->V2
-	Incorporated geert's review comments.
-V2-->V3
-        Incorporated simon and geert's review comments.
-
-Biju Das (3):
-  serial: sh-sci: Document r8a77470 bindings
-  ARM: dts: r8a77470: Initial SoC device tree
-  ARM: dts: iwg23s-sbc: Add support for iWave G23S-SBC based on RZ/G1C
-
- .../bindings/serial/renesas,sci-serial.txt         |   2 +
- arch/arm/boot/dts/Makefile                         |   1 +
- arch/arm/boot/dts/r8a77470-iwg23s-sbc.dts          |  35 +++++
- arch/arm/boot/dts/r8a77470.dtsi                    | 154 +++++++++++++++++++++
- 4 files changed, 192 insertions(+)
- create mode 100644 arch/arm/boot/dts/r8a77470-iwg23s-sbc.dts
- create mode 100644 arch/arm/boot/dts/r8a77470.dtsi
-
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 19d370779767..4176c3a0b4e8 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1130,34 +1130,9 @@ static void cdns_early_write(struct console *con, const char *s,
+ static int __init cdns_early_console_setup(struct earlycon_device *device,
+ 					   const char *opt)
+ {
+-	struct uart_port *port = &device->port;
+-
+-	if (!port->membase)
++	if (!device->port.membase)
+ 		return -ENODEV;
+ 
+-	/* initialise control register */
+-	writel(CDNS_UART_CR_TX_EN|CDNS_UART_CR_TXRST|CDNS_UART_CR_RXRST,
+-	       port->membase + CDNS_UART_CR);
+-
+-	/* only set baud if specified on command line - otherwise
+-	 * assume it has been initialized by a boot loader.
+-	 */
+-	if (device->baud) {
+-		u32 cd = 0, bdiv = 0;
+-		u32 mr;
+-		int div8;
+-
+-		cdns_uart_calc_baud_divs(port->uartclk, device->baud,
+-					 &bdiv, &cd, &div8);
+-		mr = CDNS_UART_MR_PARITY_NONE;
+-		if (div8)
+-			mr |= CDNS_UART_MR_CLKSEL;
+-
+-		writel(mr,   port->membase + CDNS_UART_MR);
+-		writel(cd,   port->membase + CDNS_UART_BAUDGEN);
+-		writel(bdiv, port->membase + CDNS_UART_BAUDDIV);
+-	}
+-
+ 	device->con->write = cdns_early_write;
+ 
+ 	return 0;
 -- 
-2.7.4
+1.9.1
