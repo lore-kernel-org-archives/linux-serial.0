@@ -1,165 +1,93 @@
-From: Daniel Kurtz <djkurtz@chromium.org>
-Subject: [PATCH v6] earlycon: Use a pointer table to fix __earlycon_table stride
-Date: Fri,  6 Apr 2018 17:21:53 -0600
-Message-ID: <20180406232154.168174-1-djkurtz@chromium.org>
+From: Tony Lindgren <tony@atomide.com>
+Subject: [PATCH 1/2] tty: n_gsm: Fix long delays with control frame timeouts in ADM mode
+Date: Sat,  7 Apr 2018 10:19:50 -0700
+Message-ID: <20180407171951.122759-1-tony@atomide.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Daniel Kurtz <djkurtz@chromium.org>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE" <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:GENERIC INCLUDE/ASM HEADER FILES" <linux-arch@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Commit 99492c39f39f ("earlycon: Fix __earlycon_table stride") tried to fix
-__earlycon_table stride by forcing the earlycon_id struct alignment to 32
-and asking the linker to 32-byte align the __earlycon_table symbol.  This
-fix was based on commit 07fca0e57fca92 ("tracing: Properly align linker
-defined symbols") which tried a similar fix for the tracing subsystem.
+Commit ea3d8465ab9b ("tty: n_gsm: Allow ADM response in addition to UA for
+control dlci") added support for DLCI to stay in Asynchronous Disconnected
+Mode (ADM). But we still get long delays waiting for commands to other
+DLCI to complete:
 
-However, this fix doesn't quite work because there is no guarantee that
-gcc will place structures packed into an array format.  In fact, gcc 4.9
-chooses to 64-byte align these structs by inserting additional padding
-between the entries because it has no clue that they are supposed to be in
-an array.  If we are unlucky, the linker will assign symbol
-"__earlycon_table" to a 32-byte aligned address which does not correspond
-to the 64-byte aligned contents of section "__earlycon_table".
+--> 5) C: SABM(P)
+Q>  0) C: UIH(F)
+Q>  0) C: UIH(F)
+Q>  0) C: UIH(F)
+...
 
-To address this same problem, the fix to the tracing system was
-subsequently re-implemented using a more robust table of pointers approach
-by commits:
- 3d56e331b653 ("tracing: Replace syscall_meta_data struct array with pointer array")
- 654986462939 ("tracepoints: Fix section alignment using pointer array")
- e4a9ea5ee7c8 ("tracing: Replace trace_event struct array with pointer array")
+This happens because gsm_control_send() sets cretries timer to T2 that is
+by default set to 34. This will cause resend for T2 times for the control
+frame. In ADM mode, we will never get a response so the control frame, so
+retries are just delaying all the commands.
 
-Let's use this same "array of pointers to structs" approach for
-EARLYCON_TABLE.
+Let's fix the issue by setting DLCI_MODE_ADM flag after detecting the ADM
+mode for the control DLCI. Then we can use that in gsm_control_send() to
+set retries to 1. This means the control frame will be sent once allowing
+the other end at an opportunity to switch from ADM to ABM mode.
 
-Fixes: 99492c39f39f ("earlycon: Fix __earlycon_table stride")
-Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
-Suggested-by: Aaron Durbin <adurbin@chromium.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Tested-by: Guenter Roeck <groeck@chromium.org>
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Note that retries will be decremented in gsm_control_retransmit() so
+we don't want to set it to 0 here.
+
+Fixes: ea3d8465ab9b ("tty: n_gsm: Allow ADM response in addition to UA for
+control dlci")
+Cc: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@llwyncelyn.cymru>
+Cc: Dan Williams <dcbw@redhat.com>
+Cc: Jiri Prchal <jiri.prchal@aksignal.cz>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Marcel Partap <mpartap@gmx.net>
+Cc: Merlijn Wajer <merlijn@wizzup.org>
+Cc: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
+Cc: Michael Scott <michael.scott@linaro.org>
+Cc: Pavel Machek <pavel@ucw.cz>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Russ Gorby <russ.gorby@intel.com>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Sebastian Reichel <sre@kernel.org>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 ---
-Changes since v2:
- * Use __initconst instead of __initdata to avoid h8300 and alpha kbuild errors
+ drivers/tty/n_gsm.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Changes since v3:
- * Fixed typos in commit message
-
-Changes since v4:
- * removed Change-Id: from commit message
-
-Changes since v5:
- * None, just re-posting per request from greg k-h
-
- drivers/of/fdt.c                  |  7 +++++--
- drivers/tty/serial/earlycon.c     |  6 ++++--
- include/asm-generic/vmlinux.lds.h |  2 +-
- include/linux/serial_core.h       | 21 ++++++++++++++-------
- 4 files changed, 24 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 84aa9d676375..6da20b9688f7 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -942,7 +942,7 @@ int __init early_init_dt_scan_chosen_stdout(void)
- 	int offset;
- 	const char *p, *q, *options = NULL;
- 	int l;
--	const struct earlycon_id *match;
-+	const struct earlycon_id **p_match;
- 	const void *fdt = initial_boot_params;
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -121,6 +121,9 @@ struct gsm_dlci {
+ 	struct mutex mutex;
  
- 	offset = fdt_path_offset(fdt, "/chosen");
-@@ -969,7 +969,10 @@ int __init early_init_dt_scan_chosen_stdout(void)
- 		return 0;
- 	}
- 
--	for (match = __earlycon_table; match < __earlycon_table_end; match++) {
-+	for (p_match = __earlycon_table; p_match < __earlycon_table_end;
-+	     p_match++) {
-+		const struct earlycon_id *match = *p_match;
+ 	/* Link layer */
++	int mode;
++#define DLCI_MODE_ABM		0	/* Normal Asynchronous Balanced Mode */
++#define DLCI_MODE_ADM		1	/* Asynchronous Disconnected Mode */
+ 	spinlock_t lock;	/* Protects the internal state */
+ 	struct timer_list t1;	/* Retransmit timer for SABM and UA */
+ 	int retries;
+@@ -1364,7 +1367,13 @@ static struct gsm_control *gsm_control_send(struct gsm_mux *gsm,
+ 	ctrl->data = data;
+ 	ctrl->len = clen;
+ 	gsm->pending_cmd = ctrl;
+-	gsm->cretries = gsm->n2;
 +
- 		if (!match->compatible[0])
- 			continue;
- 
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index a24278380fec..22683393a0f2 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -169,7 +169,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
-  */
- int __init setup_earlycon(char *buf)
- {
--	const struct earlycon_id *match;
-+	const struct earlycon_id **p_match;
- 
- 	if (!buf || !buf[0])
- 		return -EINVAL;
-@@ -177,7 +177,9 @@ int __init setup_earlycon(char *buf)
- 	if (early_con.flags & CON_ENABLED)
- 		return -EALREADY;
- 
--	for (match = __earlycon_table; match < __earlycon_table_end; match++) {
-+	for (p_match = __earlycon_table; p_match < __earlycon_table_end;
-+	     p_match++) {
-+		const struct earlycon_id *match = *p_match;
- 		size_t len = strlen(match->name);
- 
- 		if (strncmp(buf, match->name, len))
-diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index 278841c75b97..af240573e482 100644
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -188,7 +188,7 @@
- #endif
- 
- #ifdef CONFIG_SERIAL_EARLYCON
--#define EARLYCON_TABLE() STRUCT_ALIGN();			\
-+#define EARLYCON_TABLE() . = ALIGN(8);				\
- 			 VMLINUX_SYMBOL(__earlycon_table) = .;	\
- 			 KEEP(*(__earlycon_table))		\
- 			 VMLINUX_SYMBOL(__earlycon_table_end) = .;
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 1d356105f25a..b4c9fda9d833 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -351,10 +351,10 @@ struct earlycon_id {
- 	char	name[16];
- 	char	compatible[128];
- 	int	(*setup)(struct earlycon_device *, const char *options);
--} __aligned(32);
-+};
- 
--extern const struct earlycon_id __earlycon_table[];
--extern const struct earlycon_id __earlycon_table_end[];
-+extern const struct earlycon_id *__earlycon_table[];
-+extern const struct earlycon_id *__earlycon_table_end[];
- 
- #if defined(CONFIG_SERIAL_EARLYCON) && !defined(MODULE)
- #define EARLYCON_USED_OR_UNUSED	__used
-@@ -362,12 +362,19 @@ extern const struct earlycon_id __earlycon_table_end[];
- #define EARLYCON_USED_OR_UNUSED	__maybe_unused
- #endif
- 
--#define OF_EARLYCON_DECLARE(_name, compat, fn)				\
--	static const struct earlycon_id __UNIQUE_ID(__earlycon_##_name)	\
--	     EARLYCON_USED_OR_UNUSED __section(__earlycon_table)	\
-+#define _OF_EARLYCON_DECLARE(_name, compat, fn, unique_id)		\
-+	static const struct earlycon_id unique_id			\
-+	     EARLYCON_USED_OR_UNUSED __initconst			\
- 		= { .name = __stringify(_name),				\
- 		    .compatible = compat,				\
--		    .setup = fn  }
-+		    .setup = fn  };					\
-+	static const struct earlycon_id EARLYCON_USED_OR_UNUSED		\
-+		__section(__earlycon_table)				\
-+		* const __PASTE(__p, unique_id) = &unique_id
++	/* If DLCI0 is in ADM mode skip retries, it won't respond */
++	if (gsm->dlci[0]->mode == DLCI_MODE_ADM)
++		gsm->cretries = 1;
++	else
++		gsm->cretries = gsm->n2;
 +
-+#define OF_EARLYCON_DECLARE(_name, compat, fn)				\
-+	_OF_EARLYCON_DECLARE(_name, compat, fn,				\
-+			     __UNIQUE_ID(__earlycon_##_name))
- 
- #define EARLYCON_DECLARE(_name, fn)	OF_EARLYCON_DECLARE(_name, "", fn)
- 
+ 	mod_timer(&gsm->t2_timer, jiffies + gsm->t2 * HZ / 100);
+ 	gsm_control_transmit(gsm, ctrl);
+ 	spin_unlock_irqrestore(&gsm->control_lock, flags);
+@@ -1472,6 +1481,7 @@ static void gsm_dlci_t1(struct timer_list *t)
+ 			if (debug & 8)
+ 				pr_info("DLCI %d opening in ADM mode.\n",
+ 					dlci->addr);
++			dlci->mode = DLCI_MODE_ADM;
+ 			gsm_dlci_open(dlci);
+ 		} else {
+ 			gsm_dlci_close(dlci);
 -- 
-2.17.0.484.g0c8726318c-goog
+2.17.0
