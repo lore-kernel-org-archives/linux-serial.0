@@ -1,78 +1,57 @@
-From: Pavel Machek <pavel@ucw.cz>
+From: Tony Lindgren <tony@atomide.com>
 Subject: Re: [PATCH 1/2] tty: n_gsm: Fix long delays with control frame
  timeouts in ADM mode
-Date: Sun, 8 Apr 2018 11:02:59 +0200
-Message-ID: <20180408090259.GA8185@amd>
+Date: Sun, 8 Apr 2018 09:50:38 -0700
+Message-ID: <20180408165038.GM5700@atomide.com>
 References: <20180407171951.122759-1-tony@atomide.com>
+ <20180408090259.GA8185@amd>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="u3/rZRmxL6MmkK24"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180407171951.122759-1-tony@atomide.com>
+In-Reply-To: <20180408090259.GA8185@amd>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
+To: Pavel Machek <pavel@ucw.cz>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+* Pavel Machek <pavel@ucw.cz> [180408 09:04]:
+> I guess I'd like to test this on Droid4; there are fso-gsm0710muxd and
+> gsm0710muxd packages in Debian, but I assume those do multiplexing in
+> userspace and thus are not suitable?
 
---u3/rZRmxL6MmkK24
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I don't think those are needed, we now have kernel n_gsm driver do
+most of the work for us :) Doing ldattach config is still needed,
+but eventually we should have a serdev driver do that too for us.
 
-Hi!
+So apps should only do the ldattach part if node yet already done,
+and just attempt to use /dev/gsmtty* ports directly.
 
-> Commit ea3d8465ab9b ("tty: n_gsm: Allow ADM response in addition to UA for
-> control dlci") added support for DLCI to stay in Asynchronous Disconnected
-> Mode (ADM). But we still get long delays waiting for commands to other
-> DLCI to complete:
->=20
-> --> 5) C: SABM(P)
-> Q>  0) C: UIH(F)
-> Q>  0) C: UIH(F)
-> Q>  0) C: UIH(F)
-> ...
->=20
-> This happens because gsm_control_send() sets cretries timer to T2 that is
-> by default set to 34. This will cause resend for T2 times for the control
-> frame. In ADM mode, we will never get a response so the control frame, so
-> retries are just delaying all the commands.
->=20
-> Let's fix the issue by setting DLCI_MODE_ADM flag after detecting the ADM
-> mode for the control DLCI. Then we can use that in gsm_control_send() to
-> set retries to 1. This means the control frame will be sent once allowing
-> the other end at an opportunity to switch from ADM to ABM mode.
->=20
-> Note that retries will be decremented in gsm_control_retransmit() so
-> we don't want to set it to 0 here.
+I did get serdev working with n_gsm several weeks ago with horrible
+hacks, it needs quite a bit more work though before it's ready..
 
-Thanks!
+Then we need to add proxying of some /dev/gsmtty* ports to W3GLTE to
+get that working (US only AFAIK for the band). It might make sense
+to add the proxy features to ModemManager eventually.
 
-I guess I'd like to test this on Droid4; there are fso-gsm0710muxd and
-gsm0710muxd packages in Debian, but I assume those do multiplexing in
-userspace and thus are not suitable?
+> Do you have a tool to use and a script?
 
-Do you have a tool to use and a script?
+Yes I used the shell script I posted earlier, but forgot it also
+needs the ldattach done.
 
-Thanks and best regards,
-									Pavel
-								=09
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
+Anyways, last night and today I wrote a quick test utility called
+droid4-ngsm that initializes things and I can use to do some
+experiments to get the ts27010 channel proxying to W3GLTE also
+going:
 
---u3/rZRmxL6MmkK24
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+http://github.com/tmlind/droid4-ngsm/
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Sorry could not resist adding a test call feature too :)
 
-iEYEARECAAYFAlrJ2sMACgkQMOfwapXb+vLBzgCgpiL9rpEz5ljgj/eJaQiuL2V9
-n1wAnA1caA+FYvLNcMedg6SMolYx1pUe
-=Mwad
------END PGP SIGNATURE-----
+Hmm it might be best to add the ts27010 support and proxying
+eventually to ModemManager? I think ofono and others could still
+use the /dev/gsmtty* ports for the modem as needed too?
 
---u3/rZRmxL6MmkK24--
+Regards,
+
+Tony
