@@ -1,57 +1,77 @@
-From: Tony Lindgren <tony@atomide.com>
+From: Pavel Machek <pavel@ucw.cz>
 Subject: Re: [PATCH 1/2] tty: n_gsm: Fix long delays with control frame
  timeouts in ADM mode
-Date: Sun, 8 Apr 2018 09:50:38 -0700
-Message-ID: <20180408165038.GM5700@atomide.com>
+Date: Sun, 8 Apr 2018 21:06:00 +0200
+Message-ID: <20180408190600.GA24342@amd>
 References: <20180407171951.122759-1-tony@atomide.com>
  <20180408090259.GA8185@amd>
+ <20180408165038.GM5700@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="X1bOJ3K7DJ5YkBrT"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180408090259.GA8185@amd>
+In-Reply-To: <20180408165038.GM5700@atomide.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Pavel Machek <pavel@ucw.cz>
+To: Tony Lindgren <tony@atomide.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-* Pavel Machek <pavel@ucw.cz> [180408 09:04]:
-> I guess I'd like to test this on Droid4; there are fso-gsm0710muxd and
-> gsm0710muxd packages in Debian, but I assume those do multiplexing in
-> userspace and thus are not suitable?
 
-I don't think those are needed, we now have kernel n_gsm driver do
-most of the work for us :) Doing ldattach config is still needed,
-but eventually we should have a serdev driver do that too for us.
+--X1bOJ3K7DJ5YkBrT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-So apps should only do the ldattach part if node yet already done,
-and just attempt to use /dev/gsmtty* ports directly.
+Hi!
 
-I did get serdev working with n_gsm several weeks ago with horrible
-hacks, it needs quite a bit more work though before it's ready..
+> > Do you have a tool to use and a script?
+>=20
+> Yes I used the shell script I posted earlier, but forgot it also
+> needs the ldattach done.
+>=20
+> Anyways, last night and today I wrote a quick test utility called
+> droid4-ngsm that initializes things and I can use to do some
+> experiments to get the ts27010 channel proxying to W3GLTE also
+> going:
+>=20
+> http://github.com/tmlind/droid4-ngsm/
 
-Then we need to add proxying of some /dev/gsmtty* ports to W3GLTE to
-get that working (US only AFAIK for the band). It might make sense
-to add the proxy features to ModemManager eventually.
+Ok, now i'm confused. It wants to bind to ttyS0, but modem is on
+ttyUSB4 AFAICT? Or is the modem connected to serial port, too? (Do I
+need to enable some more drivers for that?)
 
-> Do you have a tool to use and a script?
+I do have ttyS0, but I don't think there's anything attached there. Or
+is ttyS0 for the LTE modem?
 
-Yes I used the shell script I posted earlier, but forgot it also
-needs the ldattach done.
 
-Anyways, last night and today I wrote a quick test utility called
-droid4-ngsm that initializes things and I can use to do some
-experiments to get the ts27010 channel proxying to W3GLTE also
-going:
+> Sorry could not resist adding a test call feature too :)
 
-http://github.com/tmlind/droid4-ngsm/
+:-)
 
-Sorry could not resist adding a test call feature too :)
+> Hmm it might be best to add the ts27010 support and proxying
+> eventually to ModemManager? I think ofono and others could still
+> use the /dev/gsmtty* ports for the modem as needed too?
 
-Hmm it might be best to add the ts27010 support and proxying
-eventually to ModemManager? I think ofono and others could still
-use the /dev/gsmtty* ports for the modem as needed too?
+I'm not sure how the userland should be designed...
 
-Regards,
+Thanks,
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
 
-Tony
+--X1bOJ3K7DJ5YkBrT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlrKaBgACgkQMOfwapXb+vL4VgCghxzBtCv60qtIOpB2kWurf3wT
+nJUAnj+30MbsjKxVN63Cn8RowXsgUfRc
+=CtNY
+-----END PGP SIGNATURE-----
+
+--X1bOJ3K7DJ5YkBrT--
