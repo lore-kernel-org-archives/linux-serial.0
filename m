@@ -1,73 +1,78 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: [PATCH 2/2] tty: n_gsm: Fix DLCI handling for ADM mode if debug & 2 is not set
-Date: Sat,  7 Apr 2018 10:19:51 -0700
-Message-ID: <20180407171951.122759-2-tony@atomide.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH 1/2] tty: n_gsm: Fix long delays with control frame
+ timeouts in ADM mode
+Date: Sun, 8 Apr 2018 11:02:59 +0200
+Message-ID: <20180408090259.GA8185@amd>
 References: <20180407171951.122759-1-tony@atomide.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="u3/rZRmxL6MmkK24"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <20180407171951.122759-1-tony@atomide.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>
+To: Tony Lindgren <tony@atomide.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-At least on droid 4 with control channel in ADM mode, there is no response
-to Modem Status Command (MSC). Currently gsmtty_modem_update() expects to
-have data in dlci->modem_rx unless debug & 2 is set. This means that on
-droid 4, things only work if debug & 2 is set.
 
-Let's fix the issue by ignoring empty dlci->modem_rx for ADM mode. In
-the AMD mode, CMD_MSC will never respond and gsm_process_modem() won't
-get called to set dlci->modem_rx.
+--u3/rZRmxL6MmkK24
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-And according to ts_127010v140000p.pdf, MSC is only relevant if basic
-option is chosen, so let's test for that too.
+Hi!
 
-Fixes: ea3d8465ab9b ("tty: n_gsm: Allow ADM response in addition to UA for
-control dlci")
-Cc: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@llwyncelyn.cymru>
-Cc: Dan Williams <dcbw@redhat.com>
-Cc: Jiri Prchal <jiri.prchal@aksignal.cz>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: Marcel Partap <mpartap@gmx.net>
-Cc: Merlijn Wajer <merlijn@wizzup.org>
-Cc: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Cc: Michael Scott <michael.scott@linaro.org>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: Peter Hurley <peter@hurleysoftware.com>
-Cc: Russ Gorby <russ.gorby@intel.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Sebastian Reichel <sre@kernel.org>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/n_gsm.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+> Commit ea3d8465ab9b ("tty: n_gsm: Allow ADM response in addition to UA for
+> control dlci") added support for DLCI to stay in Asynchronous Disconnected
+> Mode (ADM). But we still get long delays waiting for commands to other
+> DLCI to complete:
+>=20
+> --> 5) C: SABM(P)
+> Q>  0) C: UIH(F)
+> Q>  0) C: UIH(F)
+> Q>  0) C: UIH(F)
+> ...
+>=20
+> This happens because gsm_control_send() sets cretries timer to T2 that is
+> by default set to 34. This will cause resend for T2 times for the control
+> frame. In ADM mode, we will never get a response so the control frame, so
+> retries are just delaying all the commands.
+>=20
+> Let's fix the issue by setting DLCI_MODE_ADM flag after detecting the ADM
+> mode for the control DLCI. Then we can use that in gsm_control_send() to
+> set retries to 1. This means the control frame will be sent once allowing
+> the other end at an opportunity to switch from ADM to ABM mode.
+>=20
+> Note that retries will be decremented in gsm_control_retransmit() so
+> we don't want to set it to 0 here.
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2871,11 +2871,22 @@ static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
- static int gsm_carrier_raised(struct tty_port *port)
- {
- 	struct gsm_dlci *dlci = container_of(port, struct gsm_dlci, port);
-+	struct gsm_mux *gsm = dlci->gsm;
-+
- 	/* Not yet open so no carrier info */
- 	if (dlci->state != DLCI_OPEN)
- 		return 0;
- 	if (debug & 2)
- 		return 1;
-+
-+	/*
-+	 * Basic mode with control channel in ADM mode may not respond
-+	 * to CMD_MSC at all and modem_rx is empty.
-+	 */
-+	if (gsm->encoding == 0 && gsm->dlci[0]->mode == DLCI_MODE_ADM &&
-+	    !dlci->modem_rx)
-+		return 1;
-+
- 	return dlci->modem_rx & TIOCM_CD;
- }
- 
--- 
-2.17.0
+Thanks!
+
+I guess I'd like to test this on Droid4; there are fso-gsm0710muxd and
+gsm0710muxd packages in Debian, but I assume those do multiplexing in
+userspace and thus are not suitable?
+
+Do you have a tool to use and a script?
+
+Thanks and best regards,
+									Pavel
+								=09
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--u3/rZRmxL6MmkK24
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlrJ2sMACgkQMOfwapXb+vLBzgCgpiL9rpEz5ljgj/eJaQiuL2V9
+n1wAnA1caA+FYvLNcMedg6SMolYx1pUe
+=Mwad
+-----END PGP SIGNATURE-----
+
+--u3/rZRmxL6MmkK24--
