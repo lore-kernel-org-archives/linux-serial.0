@@ -1,47 +1,36 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH] earlycon: Initialize port->uartclk based on clock-frequency property
-Date: Tue, 10 Apr 2018 15:32:28 +0200
-Message-ID: <f483181cd3a234c2eae7e11b91a1767a0cbb88ed.1523367143.git.michal.simek@xilinx.com>
+Subject: [PATCH] tty: serial: xuartps: Setup early console when uartclk is also passed
+Date: Tue, 10 Apr 2018 15:33:30 +0200
+Message-ID: <2ef5ac478f8d32bc807ead758eb5d60744a44515.1523367208.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu, devicetree@vger.kernel.org, Rob Herring <robherring2@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On DT based platforms when current-speed property is present baudrate
-is setup. Also port->uartclk is initialized to bogus BASE_BAUD * 16
-value. Drivers like uartps/ns16550 contain logic when baudrate and
-uartclk is used for baudrate calculation.
+Baudrate calculation depends on requested baudrate and uart clock.
+This patch is checking that uartclk is also passed.
 
-The patch is reading optional clock-frequency property to replace bogus
-BASE_BAUD * 16 calculation to have proper baudrate calculation.
+The same logic is used 8250_early.c/init_port function.
 
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
 
-We should add documentation for current-speed, reg-offset, reg-shift,
-big-endian, native-endian, reg-io-width and clock-frequency to any
-generic location because they are all optional properties for all DT
-earlycon drivers through of_setup_earlycon.
+ drivers/tty/serial/xilinx_uartps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
----
- drivers/tty/serial/earlycon.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index a24278380fec..eb1f84258c44 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -279,6 +279,10 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
- 	if (val)
- 		early_console_dev.baud = be32_to_cpu(*val);
- 
-+	val = of_get_flat_dt_prop(node, "clock-frequency", NULL);
-+	if (val)
-+		port->uartclk = be32_to_cpu(*val);
-+
- 	if (options) {
- 		early_console_dev.baud = simple_strtoul(options, NULL, 0);
- 		strlcpy(early_console_dev.options, options,
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index b9b2bc76bcac..a654cda203c7 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1181,7 +1181,7 @@ static int __init cdns_early_console_setup(struct earlycon_device *device,
+ 	/* only set baud if specified on command line - otherwise
+ 	 * assume it has been initialized by a boot loader.
+ 	 */
+-	if (device->baud) {
++	if (port->uartclk && device->baud) {
+ 		u32 cd = 0, bdiv = 0;
+ 		u32 mr;
+ 		int div8;
 -- 
 1.9.1
