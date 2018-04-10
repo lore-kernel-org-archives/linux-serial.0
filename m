@@ -1,34 +1,132 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 1/2] tty: n_gsm: Fix long delays with control frame
- timeouts in ADM mode
-Date: Tue, 10 Apr 2018 06:43:54 -0700
-Message-ID: <20180410134354.GR5700@atomide.com>
-References: <20180407171951.122759-1-tony@atomide.com>
- <20180408090259.GA8185@amd>
- <20180408165038.GM5700@atomide.com>
- <20180408190600.GA24342@amd>
- <20180408235740.GN5700@atomide.com>
- <20180409105407.GA15315@amd>
- <20180409134259.GO5700@atomide.com>
- <20180410110944.GB13697@amd>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 4.15 082/168] tty: n_gsm: Allow ADM response in addition to UA for control dlci
+Date: Wed, 11 Apr 2018 00:23:44 +0200
+Message-ID: <20180410212803.765778717@linuxfoundation.org>
+References: <20180410212800.144079021@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180410110944.GB13697@amd>
+In-Reply-To: <20180410212800.144079021@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Pavel Machek <pavel@ucw.cz>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>, Sasha Levin <alexander.levin@microsoft.com>
 List-Id: linux-serial@vger.kernel.org
 
-* Pavel Machek <pavel@ucw.cz> [180410 11:11]:
-> Should the modem respond to AT commands on ttyS0? I launched minicom
-> (115200 8N1) and I'm not getting any responses.
+4.15-stable review patch.  If anyone has any objections, please let me know.
 
-Not that I know. At least I never got anything out of it. But who knows,
-maybe it is in normal mode initially during boot or when mdm6600 is
-being flashed.
+------------------
 
-Regards,
+From: Tony Lindgren <tony@atomide.com>
 
-Tony
+
+[ Upstream commit ea3d8465ab9b3e01be329ac5195970a84bef76c5 ]
+
+Some devices have the control dlci stay in ADM mode instead of the UA
+mode. This can seen at least on droid 4 when trying to open the ts
+27.010 mux port. Enabling n_gsm debug mode shows the control dlci
+always respond with DM to SABM instead of UA:
+
+# modprobe n_gsm debug=0xff
+# ldattach -d GSM0710 /dev/ttyS0 &
+gsmld_output: 00000000: f9 03 3f 01 1c f9
+--> 0) C: SABM(P)
+gsmld_receive: 00000000: f9 03 1f 01 36 f9
+<-- 0) C: DM(P)
+...
+$ minicom -D /dev/gsmtty1
+minicom: cannot open /dev/gsmtty1: No error information
+$ strace minicom -D /dev/gsmtty1
+...
+open("/dev/gsmtty1", O_RDWR|O_NOCTTY|O_NONBLOCK|O_LARGEFILE) = -1 EL2HLT
+
+Note that this is different issue from other n_gsm -EL2HLT issues such
+as timeouts when the control dlci does not respond at all.
+
+The ADM mode seems to be a quite common according to "RF Wireless World"
+article "GSM Issue-UE sends SABM and gets a DM response instead of
+UA response":
+
+  This issue is most commonly observed in GSM networks where in UE sends
+  SABM and expects network to send UA response but it ends up receiving
+  DM response from the network. SABM stands for Set asynchronous balanced
+  mode, UA stands for Unnumbered Acknowledge and DA stands for
+  Disconnected Mode.
+
+  An RLP entity can be in one of two modes:
+  - Asynchronous Balanced Mode (ABM)
+  - Asynchronous Disconnected Mode (ADM)
+
+Currently Linux kernel closes the control dlci after several retries
+in gsm_dlci_t1() on DM. This causes n_gsm /dev/gsmtty ports to produce
+error code -EL2HLT when trying to open them as the closing of control
+dlci has already set gsm->dead.
+
+Let's fix the issue by allowing control dlci stay in ADM mode after the
+retries so the /dev/gsmtty ports can be opened and used. It seems that
+it might take several attempts to get any response from the control
+dlci, so it's best to allow ADM mode only after the SABM retries are
+done.
+
+Note that for droid 4 additional patches are needed to mux the ttyS0
+pins and to toggle RTS gpio_149 to wake up the mdm6600 modem are also
+needed to use n_gsm. And the mdm6600 modem needs to be powered on.
+
+Cc: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@llwyncelyn.cymru>
+Cc: Jiri Prchal <jiri.prchal@aksignal.cz>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Marcel Partap <mpartap@gmx.net>
+Cc: Michael Scott <michael.scott@linaro.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Russ Gorby <russ.gorby@intel.com>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Sebastian Reichel <sre@kernel.org>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/n_gsm.c |   17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1451,6 +1451,10 @@ static void gsm_dlci_open(struct gsm_dlc
+  *	in which case an opening port goes back to closed and a closing port
+  *	is simply put into closed state (any further frames from the other
+  *	end will get a DM response)
++ *
++ *	Some control dlci can stay in ADM mode with other dlci working just
++ *	fine. In that case we can just keep the control dlci open after the
++ *	DLCI_OPENING retries time out.
+  */
+ 
+ static void gsm_dlci_t1(struct timer_list *t)
+@@ -1464,8 +1468,15 @@ static void gsm_dlci_t1(struct timer_lis
+ 		if (dlci->retries) {
+ 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+-		} else
++		} else if (!dlci->addr && gsm->control == (DM | PF)) {
++			if (debug & 8)
++				pr_info("DLCI %d opening in ADM mode.\n",
++					dlci->addr);
++			gsm_dlci_open(dlci);
++		} else {
+ 			gsm_dlci_close(dlci);
++		}
++
+ 		break;
+ 	case DLCI_CLOSING:
+ 		dlci->retries--;
+@@ -1483,8 +1494,8 @@ static void gsm_dlci_t1(struct timer_lis
+  *	@dlci: DLCI to open
+  *
+  *	Commence opening a DLCI from the Linux side. We issue SABM messages
+- *	to the modem which should then reply with a UA, at which point we
+- *	will move into open state. Opening is done asynchronously with retry
++ *	to the modem which should then reply with a UA or ADM, at which point
++ *	we will move into open state. Opening is done asynchronously with retry
+  *	running off timers and the responses.
+  */
+ 
