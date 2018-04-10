@@ -1,36 +1,34 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH] tty: serial: xuartps: Setup early console when uartclk is also passed
-Date: Tue, 10 Apr 2018 15:33:30 +0200
-Message-ID: <2ef5ac478f8d32bc807ead758eb5d60744a44515.1523367208.git.michal.simek@xilinx.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 1/2] tty: n_gsm: Fix long delays with control frame
+ timeouts in ADM mode
+Date: Tue, 10 Apr 2018 06:43:54 -0700
+Message-ID: <20180410134354.GR5700@atomide.com>
+References: <20180407171951.122759-1-tony@atomide.com>
+ <20180408090259.GA8185@amd>
+ <20180408165038.GM5700@atomide.com>
+ <20180408190600.GA24342@amd>
+ <20180408235740.GN5700@atomide.com>
+ <20180409105407.GA15315@amd>
+ <20180409134259.GO5700@atomide.com>
+ <20180410110944.GB13697@amd>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180410110944.GB13697@amd>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
+To: Pavel Machek <pavel@ucw.cz>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Baudrate calculation depends on requested baudrate and uart clock.
-This patch is checking that uartclk is also passed.
+* Pavel Machek <pavel@ucw.cz> [180410 11:11]:
+> Should the modem respond to AT commands on ttyS0? I launched minicom
+> (115200 8N1) and I'm not getting any responses.
 
-The same logic is used 8250_early.c/init_port function.
+Not that I know. At least I never got anything out of it. But who knows,
+maybe it is in normal mode initially during boot or when mdm6600 is
+being flashed.
 
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
+Regards,
 
- drivers/tty/serial/xilinx_uartps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index b9b2bc76bcac..a654cda203c7 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1181,7 +1181,7 @@ static int __init cdns_early_console_setup(struct earlycon_device *device,
- 	/* only set baud if specified on command line - otherwise
- 	 * assume it has been initialized by a boot loader.
- 	 */
--	if (device->baud) {
-+	if (port->uartclk && device->baud) {
- 		u32 cd = 0, bdiv = 0;
- 		u32 mr;
- 		int div8;
--- 
-1.9.1
+Tony
