@@ -1,18 +1,18 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.14 064/138] tty: n_gsm: Allow ADM response in addition to UA for control dlci
-Date: Wed, 11 Apr 2018 00:24:14 +0200
-Message-ID: <20180410212909.543916081@linuxfoundation.org>
-References: <20180410212902.121524696@linuxfoundation.org>
+Subject: [PATCH 4.9 263/310] tty: n_gsm: Allow ADM response in addition to UA for control dlci
+Date: Wed, 11 Apr 2018 20:36:42 +0200
+Message-ID: <20180411183633.976088548@linuxfoundation.org>
+References: <20180411183622.305902791@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180410212902.121524696@linuxfoundation.org>
+In-Reply-To: <20180411183622.305902791@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>, Sasha Levin <alexander.levin@microsoft.com>
 List-Id: linux-serial@vger.kernel.org
 
-4.14-stable review patch.  If anyone has any objections, please let me know.
+4.9-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -91,7 +91,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1463,6 +1463,10 @@ static void gsm_dlci_open(struct gsm_dlc
+@@ -1467,6 +1467,10 @@ static void gsm_dlci_open(struct gsm_dlc
   *	in which case an opening port goes back to closed and a closing port
   *	is simply put into closed state (any further frames from the other
   *	end will get a DM response)
@@ -102,7 +102,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
   */
  
  static void gsm_dlci_t1(unsigned long data)
-@@ -1476,8 +1480,15 @@ static void gsm_dlci_t1(unsigned long da
+@@ -1480,8 +1484,15 @@ static void gsm_dlci_t1(unsigned long da
  		if (dlci->retries) {
  			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
  			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
@@ -119,7 +119,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		break;
  	case DLCI_CLOSING:
  		dlci->retries--;
-@@ -1495,8 +1506,8 @@ static void gsm_dlci_t1(unsigned long da
+@@ -1499,8 +1510,8 @@ static void gsm_dlci_t1(unsigned long da
   *	@dlci: DLCI to open
   *
   *	Commence opening a DLCI from the Linux side. We issue SABM messages
