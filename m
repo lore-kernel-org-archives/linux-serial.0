@@ -1,18 +1,18 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.4 155/190] tty: n_gsm: Allow ADM response in addition to UA for control dlci
-Date: Wed, 11 Apr 2018 20:36:41 +0200
-Message-ID: <20180411183601.649679915@linuxfoundation.org>
-References: <20180411183550.114495991@linuxfoundation.org>
+Subject: [PATCH 3.18 095/121] tty: n_gsm: Allow ADM response in addition to UA for control dlci
+Date: Wed, 11 Apr 2018 20:36:38 +0200
+Message-ID: <20180411183502.371184308@linuxfoundation.org>
+References: <20180411183456.195010921@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180411183550.114495991@linuxfoundation.org>
+In-Reply-To: <20180411183456.195010921@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>, Sasha Levin <alexander.levin@microsoft.com>
 List-Id: linux-serial@vger.kernel.org
 
-4.4-stable review patch.  If anyone has any objections, please let me know.
+3.18-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
