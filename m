@@ -1,132 +1,132 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 3.18 095/121] tty: n_gsm: Allow ADM response in addition to UA for control dlci
-Date: Wed, 11 Apr 2018 20:36:38 +0200
-Message-ID: <20180411183502.371184308@linuxfoundation.org>
-References: <20180411183456.195010921@linuxfoundation.org>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [RFC PATCH 0/2] serial: 8250_dw: IO space + polling mode support
+Date: Thu, 12 Apr 2018 17:31:13 +0100
+Message-ID: <aad35699-393a-80dc-d088-f749cfa284c8@huawei.com>
+References: <1519324923-196857-1-git-send-email-john.garry@huawei.com>
+ <1519381801.10722.103.camel@linux.intel.com>
+ <3c4c5f58-a661-13c8-cc1c-8d43828982cb@huawei.com>
+ <1519407117.10722.124.camel@linux.intel.com>
+ <88214a3e-82cc-c931-804c-7dc90fb8721f@huawei.com>
+ <1519638828.10722.153.camel@linux.intel.com>
+ <7221877b-a84a-63a1-ef86-1991f358df72@huawei.com>
+ <1519644517.10722.179.camel@linux.intel.com>
+ <b5904a5a-66d8-4385-cc5b-a52529e9d28f@huawei.com>
+ <1519647669.10722.184.camel@linux.intel.com>
+ <1519648063.10722.185.camel@linux.intel.com>
+ <22270a6a-44fb-d2ad-d6d3-3d301bdde26e@huawei.com>
+ <1519657365.10722.187.camel@linux.intel.com>
+ <98039a90-cbf2-6d76-bdb5-56c8e83f6470@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180411183456.195010921@linuxfoundation.org>
+In-Reply-To: <98039a90-cbf2-6d76-bdb5-56c8e83f6470@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>, Sasha Levin <alexander.levin@microsoft.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, p.zabel@pengutronix.de, heiko@sntech.de, ed.blake@sondrel.com, jhogan@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com
 List-Id: linux-serial@vger.kernel.org
 
-3.18-stable review patch.  If anyone has any objections, please let me know.
+On 26/02/2018 15:07, John Garry wrote:
+> On 26/02/2018 15:02, Andy Shevchenko wrote:
+>> On Mon, 2018-02-26 at 13:15 +0000, John Garry wrote:
+>>> On 26/02/2018 12:27, Andy Shevchenko wrote:
+>>>> On Mon, 2018-02-26 at 14:21 +0200, Andy Shevchenko wrote:
+>>>>> On Mon, 2018-02-26 at 11:56 +0000, John Garry wrote:
+>>>>
+>>>>
+>>>>>>    Device (LPC0.CON0) {
+>>>>>>      Name (_HID, "HISI1031")
+>>>>>>      // Name (_CID, "PNP0501") // cannot support PNP
+>>>>
+>>>>
+>>>> One more question. What is the problem with this CID? Do you have a
+>>>> race
+>>>> condition in enumeration?
+>>>>
+>>>
+>>> Hi Andy,
+>>>
+>>> Not sure if race condition exactly. I tried enabling this CID and a
+>>> pnp
+>>> device is created in pnpacpi_add_device_handler(), while we have
+>>> already
+>>> marked the corresponding acpi_device to skip enumeration in ACPI scan
+>>> handler (by flagging it as a serial bus slave).
+>>
+>> Is that code already in upstream?
+>
+> No, not yet.
+>
+>>
+>> If no, please, Cc next version to me and possible Mika.
+>
+> Of course. I should be sending it later today.
+>
 
-------------------
+Hi Andy,
 
-From: Tony Lindgren <tony@atomide.com>
+A while ago we discussed on this thread the possibility of adding 
+generic 8250 IO space platform driver support for ACPI FW.
 
+In this discussion I mentioned that we require specifically platform 
+device support, and not PNP device support, as this is how we enumerate 
+the devices in the host controller driver. I think you're familiar with 
+this driver - here is the thread posting for reference: 
+https://lkml.org/lkml/2018/3/6/230
 
-[ Upstream commit ea3d8465ab9b3e01be329ac5195970a84bef76c5 ]
+I would say that there were 2 main takeaway points:
+a. for 8250-compatible UART, we should use a PNP driver for ACPI FW
+b. you prefered us to change the host driver to use an ACPI handler approach
 
-Some devices have the control dlci stay in ADM mode instead of the UA
-mode. This can seen at least on droid 4 when trying to open the ts
-27.010 mux port. Enabling n_gsm debug mode shows the control dlci
-always respond with DM to SABM instead of UA:
+For b., I was not keen as we already did try the handler in the ACPI 
+core code, but this was not so welcome. Reasoning here: 
+https://lkml.org/lkml/2018/2/14/532
 
-# modprobe n_gsm debug=0xff
-# ldattach -d GSM0710 /dev/ttyS0 &
-gsmld_output: 00000000: f9 03 3f 01 1c f9
---> 0) C: SABM(P)
-gsmld_receive: 00000000: f9 03 1f 01 36 f9
-<-- 0) C: DM(P)
-...
-$ minicom -D /dev/gsmtty1
-minicom: cannot open /dev/gsmtty1: No error information
-$ strace minicom -D /dev/gsmtty1
-...
-open("/dev/gsmtty1", O_RDWR|O_NOCTTY|O_NONBLOCK|O_LARGEFILE) = -1 EL2HLT
+I did also say that I would prefer not to change approach after a very 
+long upstream effort, with no clear end in sight.
 
-Note that this is different issue from other n_gsm -EL2HLT issues such
-as timeouts when the control dlci does not respond at all.
+However do you have an idea on creating a PNP device in a.? That is, 
+enumerate (create) a 8250 PNP device.
 
-The ADM mode seems to be a quite common according to "RF Wireless World"
-article "GSM Issue-UE sends SABM and gets a DM response instead of
-UA response":
+If you look at the least driver here:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/bus/hisi_lpc.c
 
-  This issue is most commonly observed in GSM networks where in UE sends
-  SABM and expects network to send UA response but it ends up receiving
-  DM response from the network. SABM stands for Set asynchronous balanced
-  mode, UA stands for Unnumbered Acknowledge and DA stands for
-  Disconnected Mode.
+We could have this working with a change in the ACPI probe code, like in 
+this code snippet:
 
-  An RLP entity can be in one of two modes:
-  - Asynchronous Balanced Mode (ABM)
-  - Asynchronous Disconnected Mode (ADM)
+list_for_each_entry(child, &adev->children, node) {
+	struct resource_entry *rentry;
+	LIST_HEAD(resource_list);
+         int rc;
 
-Currently Linux kernel closes the control dlci after several retries
-in gsm_dlci_t1() on DM. This causes n_gsm /dev/gsmtty ports to produce
-error code -EL2HLT when trying to open them as the closing of control
-dlci has already set gsm->dead.
+         if (!acpi_is_pnp_device(child))
+             continue;
 
-Let's fix the issue by allowing control dlci stay in ADM mode after the
-retries so the /dev/gsmtty ports can be opened and used. It seems that
-it might take several attempts to get any response from the control
-dlci, so it's best to allow ADM mode only after the SABM retries are
-done.
+         acpi_dev_get_resources(child, &resource_list, NULL, NULL);
 
-Note that for droid 4 additional patches are needed to mux the ttyS0
-pins and to toggle RTS gpio_149 to wake up the mdm6600 modem are also
-needed to use n_gsm. And the mdm6600 modem needs to be powered on.
+         list_for_each_entry(rentry, &resource_list, node) {
+             struct resource *res = rentry->res;
 
-Cc: linux-serial@vger.kernel.org
-Cc: Alan Cox <alan@llwyncelyn.cymru>
-Cc: Jiri Prchal <jiri.prchal@aksignal.cz>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: Marcel Partap <mpartap@gmx.net>
-Cc: Michael Scott <michael.scott@linaro.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>
-Cc: Russ Gorby <russ.gorby@intel.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Sebastian Reichel <sre@kernel.org>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/n_gsm.c |   17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+             if (res->flags | IORESOURCE_IO)
+                 hisi_lpc_acpi_xlat_io_res(child, adev, res); /* bad */
+         }
+         rc = pnpacpi_add_device(child);
+         if (rc)
+             return rc;
+}
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1467,6 +1467,10 @@ static void gsm_dlci_open(struct gsm_dlc
-  *	in which case an opening port goes back to closed and a closing port
-  *	is simply put into closed state (any further frames from the other
-  *	end will get a DM response)
-+ *
-+ *	Some control dlci can stay in ADM mode with other dlci working just
-+ *	fine. In that case we can just keep the control dlci open after the
-+ *	DLCI_OPENING retries time out.
-  */
- 
- static void gsm_dlci_t1(unsigned long data)
-@@ -1480,8 +1484,15 @@ static void gsm_dlci_t1(unsigned long da
- 		if (dlci->retries) {
- 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
- 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
--		} else
-+		} else if (!dlci->addr && gsm->control == (DM | PF)) {
-+			if (debug & 8)
-+				pr_info("DLCI %d opening in ADM mode.\n",
-+					dlci->addr);
-+			gsm_dlci_open(dlci);
-+		} else {
- 			gsm_dlci_close(dlci);
-+		}
-+
- 		break;
- 	case DLCI_CLOSING:
- 		dlci->retries--;
-@@ -1499,8 +1510,8 @@ static void gsm_dlci_t1(unsigned long da
-  *	@dlci: DLCI to open
-  *
-  *	Commence opening a DLCI from the Linux side. We issue SABM messages
-- *	to the modem which should then reply with a UA, at which point we
-- *	will move into open state. Opening is done asynchronously with retry
-+ *	to the modem which should then reply with a UA or ADM, at which point
-+ *	we will move into open state. Opening is done asynchronously with retry
-  *	running off timers and the responses.
-  */
- 
+Obviously this is not sound as we should not modify the child 
+acpi_device resources.
+
+Alternatively, as another approach, I could copy the relevant code 
+pnpacpi_add_device() verbatim into this above code, and xlat the 
+resource of the PNP device, but it's not good to copy the code like.
+
+Any other ideas?
+
+All the best,
+John
+
+>>
+> All the best,
+> John
