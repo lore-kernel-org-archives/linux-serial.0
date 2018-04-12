@@ -1,132 +1,159 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [RFC PATCH 0/2] serial: 8250_dw: IO space + polling mode support
-Date: Thu, 12 Apr 2018 17:31:13 +0100
-Message-ID: <aad35699-393a-80dc-d088-f749cfa284c8@huawei.com>
-References: <1519324923-196857-1-git-send-email-john.garry@huawei.com>
- <1519381801.10722.103.camel@linux.intel.com>
- <3c4c5f58-a661-13c8-cc1c-8d43828982cb@huawei.com>
- <1519407117.10722.124.camel@linux.intel.com>
- <88214a3e-82cc-c931-804c-7dc90fb8721f@huawei.com>
- <1519638828.10722.153.camel@linux.intel.com>
- <7221877b-a84a-63a1-ef86-1991f358df72@huawei.com>
- <1519644517.10722.179.camel@linux.intel.com>
- <b5904a5a-66d8-4385-cc5b-a52529e9d28f@huawei.com>
- <1519647669.10722.184.camel@linux.intel.com>
- <1519648063.10722.185.camel@linux.intel.com>
- <22270a6a-44fb-d2ad-d6d3-3d301bdde26e@huawei.com>
- <1519657365.10722.187.camel@linux.intel.com>
- <98039a90-cbf2-6d76-bdb5-56c8e83f6470@huawei.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH 1/2] tty: n_gsm: Fix long delays with control frame
+ timeouts in ADM mode
+Date: Thu, 12 Apr 2018 23:24:12 +0200
+Message-ID: <20180412212412.GA29243@amd>
+References: <20180407171951.122759-1-tony@atomide.com>
+ <20180408090259.GA8185@amd>
+ <20180408165038.GM5700@atomide.com>
+ <20180408190600.GA24342@amd>
+ <20180408235740.GN5700@atomide.com>
+ <20180409105407.GA15315@amd>
+ <20180409134259.GO5700@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="qMm9M+Fa2AknHoGS"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <98039a90-cbf2-6d76-bdb5-56c8e83f6470@huawei.com>
+Content-Disposition: inline
+In-Reply-To: <20180409134259.GO5700@atomide.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, p.zabel@pengutronix.de, heiko@sntech.de, ed.blake@sondrel.com, jhogan@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com
+To: Tony Lindgren <tony@atomide.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 26/02/2018 15:07, John Garry wrote:
-> On 26/02/2018 15:02, Andy Shevchenko wrote:
->> On Mon, 2018-02-26 at 13:15 +0000, John Garry wrote:
->>> On 26/02/2018 12:27, Andy Shevchenko wrote:
->>>> On Mon, 2018-02-26 at 14:21 +0200, Andy Shevchenko wrote:
->>>>> On Mon, 2018-02-26 at 11:56 +0000, John Garry wrote:
->>>>
->>>>
->>>>>>    Device (LPC0.CON0) {
->>>>>>      Name (_HID, "HISI1031")
->>>>>>      // Name (_CID, "PNP0501") // cannot support PNP
->>>>
->>>>
->>>> One more question. What is the problem with this CID? Do you have a
->>>> race
->>>> condition in enumeration?
->>>>
->>>
->>> Hi Andy,
->>>
->>> Not sure if race condition exactly. I tried enabling this CID and a
->>> pnp
->>> device is created in pnpacpi_add_device_handler(), while we have
->>> already
->>> marked the corresponding acpi_device to skip enumeration in ACPI scan
->>> handler (by flagging it as a serial bus slave).
->>
->> Is that code already in upstream?
->
-> No, not yet.
->
->>
->> If no, please, Cc next version to me and possible Mika.
->
-> Of course. I should be sending it later today.
->
 
-Hi Andy,
+--qMm9M+Fa2AknHoGS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-A while ago we discussed on this thread the possibility of adding 
-generic 8250 IO space platform driver support for ACPI FW.
+On Mon 2018-04-09 06:42:59, Tony Lindgren wrote:
+> * Pavel Machek <pavel@ucw.cz> [180409 10:56]:
+> > Ok, I should have all that enabled. But droid4-ngsm still fails:
+> >=20
+> > user@devuan:/my/droid4-ngsm$ sudo ./droid4-ngsm
+> > Starting ngsm..
+> > Testing ngsm..
+> > Could not open /dev/gsmtty1: Level 2 halted
+> > Trying to start ngsm again: Level 2 halted
+> > Starting ngsm..
+>=20
+> I guess you must have phy-mapphone-mdm6600 enabled as you a have
+> working modem over USB. What do you see in dmesg if you enable n_gsm
+> debug with modprobe n_gsm debug=3D0xff or on kernel cmdline?
 
-In this discussion I mentioned that we require specifically platform 
-device support, and not PNP device support, as this is how we enumerate 
-the devices in the host controller driver. I think you're familiar with 
-this driver - here is the thread posting for reference: 
-https://lkml.org/lkml/2018/3/6/230
+Ok, let me try... Got some debugging output, hopefully you can see
+what is going on there?
 
-I would say that there were 2 main takeaway points:
-a. for 8250-compatible UART, we should use a PNP driver for ACPI FW
-b. you prefered us to change the host driver to use an ACPI handler approach
+Thanks,
+							Pavel
 
-For b., I was not keen as we already did try the handler in the ACPI 
-core code, but this was not so welcome. Reasoning here: 
-https://lkml.org/lkml/2018/2/14/532
+sudo insmod /tmp/n_gsm.ko debug=3D0xff
 
-I did also say that I would prefer not to change approach after a very 
-long upstream effort, with no clear end in sight.
+user@devuan:/my/droid4-ngsm$ sudo ./droid4-ngsm
+Starting ngsm..
+Testing ngsm..
+Could not open /dev/gsmtty1: Level 2 halted
+Trying to start ngsm again: Level 2 halted
+Starting ngsm..
+Testing ngsm..
+Could not open /dev/gsmtty1: Level 2 halted
+Trying to start ngsm again: Level 2 halted
+Starting ngsm..
+^CCould not set conf: Interrupted system call
+Could not start ngsm: Interrupted system call
 
-However do you have an idea on creating a PNP device in a.? That is, 
-enumerate (create) a 8250 PNP device.
+[ 3378.381134] cpcap-usb-phy cpcap-usb-phy.0: connected to USB host
+[ 3408.460937] cpcap-usb-phy cpcap-usb-phy.0: connected to USB host
+[ 3413.633239] Q>  0) R: UIH(F)
+[ 3413.639190] C3
+[ 3413.642761] gsm_data_kick: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3413.653564] gsmld_output: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3413.978942] Q>  0) R: UIH(F)
+[ 3413.984924] C3
+[ 3413.988586] gsm_data_kick: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3413.999114] gsmld_output: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3414.328247] Q>  0) R: UIH(F)
+[ 3414.333068] C3
+[ 3414.336608] gsm_data_kick: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3414.346984] gsmld_output: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3414.679870] gsmld_output: 00000000: f9 03 3f 01 1c f9
+=2E.?...
+[ 3414.690979] --> 0) C: SABM(P)
+[ 3414.798370] gsmld_output: 00000000: f9 03 3f 01 1c f9
+=2E.?...
+[ 3414.809570] --> 0) C: SABM(P)
+[ 3414.918243] gsmld_output: 00000000: f9 03 3f 01 1c f9
+=2E.?...
+[ 3414.928588] --> 0) C: SABM(P)
+[ 3416.743682] Q>  0) R: UIH(F)
+[ 3416.748352] C3
+[ 3416.751800] gsm_data_kick: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3416.762145] gsmld_output: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3417.088256] Q>  0) R: UIH(F)
+[ 3417.093078] C3
+[ 3417.096679] gsm_data_kick: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3417.107208] gsmld_output: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3417.438201] Q>  0) R: UIH(F)
+[ 3417.443206] C3
+[ 3417.446990] gsm_data_kick: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3417.457733] gsmld_output: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3417.788330] gsmld_output: 00000000: f9 03 3f 01 1c f9
+=2E.?...
+[ 3417.799163] --> 0) C: SABM(P)
+[ 3417.918243] gsmld_output: 00000000: f9 03 3f 01 1c f9
+=2E.?...
+[ 3417.929107] --> 0) C: SABM(P)
+[ 3418.038208] gsmld_output: 00000000: f9 03 3f 01 1c f9
+=2E.?...
+[ 3418.049102] --> 0) C: SABM(P)
+[ 3419.854248] Q>  0) R: UIH(F)
+[ 3419.859527] C3
+[ 3419.863555] gsm_data_kick: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3419.874481] gsmld_output: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3420.208221] Q>  0) R: UIH(F)
+[ 3420.213500] C3
+[ 3420.217498] gsm_data_kick: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3420.228393] gsmld_output: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3420.598205] Q>  0) R: UIH(F)
+[ 3420.603515] C3
+[ 3420.607513] gsm_data_kick: 00000000: 7e 01 ef c3 aa 7e
+~....~
+[ 3420.618377] gsmld_output: 00000000: 7e 01 ef c3 aa 7e
+~....~
+user@devuan:/my/droid4-ngsm$
 
-If you look at the least driver here:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/bus/hisi_lpc.c
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
 
-We could have this working with a change in the ACPI probe code, like in 
-this code snippet:
+--qMm9M+Fa2AknHoGS
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-list_for_each_entry(child, &adev->children, node) {
-	struct resource_entry *rentry;
-	LIST_HEAD(resource_list);
-         int rc;
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-         if (!acpi_is_pnp_device(child))
-             continue;
+iEYEARECAAYFAlrPznwACgkQMOfwapXb+vLsGwCfevVpkrT7LX6DhpN0ZhV2XLOb
+7T8An2ckSVX52ReGUi6HCj53b3vBLA08
+=LNJ2
+-----END PGP SIGNATURE-----
 
-         acpi_dev_get_resources(child, &resource_list, NULL, NULL);
-
-         list_for_each_entry(rentry, &resource_list, node) {
-             struct resource *res = rentry->res;
-
-             if (res->flags | IORESOURCE_IO)
-                 hisi_lpc_acpi_xlat_io_res(child, adev, res); /* bad */
-         }
-         rc = pnpacpi_add_device(child);
-         if (rc)
-             return rc;
-}
-
-Obviously this is not sound as we should not modify the child 
-acpi_device resources.
-
-Alternatively, as another approach, I could copy the relevant code 
-pnpacpi_add_device() verbatim into this above code, and xlat the 
-resource of the PNP device, but it's not good to copy the code like.
-
-Any other ideas?
-
-All the best,
-John
-
->>
-> All the best,
-> John
+--qMm9M+Fa2AknHoGS--
