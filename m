@@ -1,41 +1,46 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: [PATCH] serial: imx: fix cached UCR2 read on software reset
-Date: Mon, 16 Apr 2018 17:35:02 +0200
-Message-ID: <20180416153502.11814-1-stefan@agner.ch>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, u.kleine-koenig@pengutronix.de
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: 4.16 OMAP serial transmit corruption?
+Date: Mon, 16 Apr 2018 08:45:45 -0700
+Message-ID: <20180416154545.GA5671@atomide.com>
+References: <20180416151732.GU16141@n2100.armlinux.org.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20180416151732.GU16141@n2100.armlinux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-To reset the UART the SRST needs be cleared (low active). According
-to the documentation the bit will remain active for 4 module clocks
-until it is cleared (set to 1).
-
-Hence the real register need to be read in case the cached register
-indcates that the SRST bit is zero.
-
-This bug lead to wrong baudrate because the baud rate register got
-restored before reset completed in imx_flush_buffer.
-
-Fixes: 3a0ab62f43de ("serial: imx: implement shadow registers for UCRx and UFCR")
-Signed-off-by: Stefan Agner <stefan@agner.ch>
----
- drivers/tty/serial/imx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 91f3a1a5cb7f..4ff6bd6eb9ab 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -316,7 +316,7 @@ static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
- 		 * differ from the value that was last written. As it only
- 		 * clears after being set, reread conditionally.
- 		 */
--		if (sport->ucr2 & UCR2_SRST)
-+		if (!(sport->ucr2 & UCR2_SRST))
- 			sport->ucr2 = readl(sport->port.membase + offset);
- 		return sport->ucr2;
- 		break;
--- 
-2.17.0
+KiBSdXNzZWxsIEtpbmcgLSBBUk0gTGludXggPGxpbnV4QGFybWxpbnV4Lm9yZy51az4gWzE4MDQx
+NiAxNToxOV06Cj4gSGksCj4gCj4gSSdtIG5vdCBlbnRpcmVseSBzdXJlIHdoYXQncyBnb2luZyBv
+biwgYnV0IEkgc2VlIGNvcnJ1cHRlZCBjaGFyYWN0ZXJzCj4gd2l0aCB0aGUgc2VyaWFsIGNvbnNv
+bGUgb24gdGhlIE9NQVA0NDMwIFNEUCBib2FyZC4gIER1cmluZyBib290LAo+IGV2ZXJ5dGhpbmcg
+c2VlbXMgZmluZSwgdGhlIHByb2JsZW0gYXBwZWFycyB0byBiZSB1c2Vyc3BhY2Ugb3V0cHV0Lgo+
+IAo+IEZvciBleGFtcGxlLCBpZiBJIGVkaXQgYSBmaWxlLCB0aGVuIHF1aXQgdmk6Cj4gCj4gOnHi
+lqDilqAl4pag4pagQuKWoOKWoFrilqByb290QG9tYXAtNDQzMHNkcDp+IwoKSSBkb24ndCB0aGlu
+ayBJJ3ZlIHNlZW4gdGhhdCBvbmUuIFdoYXQgSSd2ZSBzZWVuIGZldyB0aW1lcyBpcwp0eXBpbmcg
+YSBrZXkgb24gdGhlIHNlcmlhbCBjb25zb2xlIGVjaG9pbmcgYmFjayB0aGUgcHJldmlvdXMKY2hh
+cmFjdGVyIHR5cGVkIHdoaWxlIHRoZSBuZXcgY2hhcmFjdGVyIHdvbid0IGdldCBkaXNwbGF5ZWQK
+dW50aWwgaGl0dGluZyBrZXlib2FyZCBhZ2Fpbi4gT25seSByZWJvb3RpbmcgdGhlIGRldmljZSBz
+ZWVtcwp0byBzb2x2ZSB0aGlzLiBUaGlzIGlzIHdpdGggNDQzMCBFUzIuMyByZXZpc2lvbi4KCkkg
+d29uZGVyIGlmIHdlJ3JlIG1pc3Npbmcgc29tZSBwYXJ0cyBvZiBlcnJhdGEgaTIwMiBoYW5kbGlu
+ZwppbiBvbWFwXzgyNTBfbWRyMV9lcnJhdGFzZXQoKT8KCkFsc28sIEknbSBzZWVpbmcgYW4gaXNz
+dWUgd2hlcmUgdGhlIFVBUlRzIHdvbid0IGlkbGUgb24gaW5pdAp3aXRoIDgyNTBfb21hcCBkcml2
+ZXIgaWYgY29ubmVjdGVkIHRvIHRoZSB3bDEyeHggYmx1ZXRvb3RoIHBvcnQKdW5sZXNzIEkgd3Jp
+dGUgc29tZSBkYXRhIHRvIHRoZSBwb3J0IGZpcnN0LiBJdCBkb2VzIG5vdCBzZWVtCnRvIGJlIHJl
+bGF0ZWQgdG8gdGhlIHJ0cy9jdHMgbGluZXMgYmVpbmcgd2lyZWQgYXMgSSd2ZSB0ZXN0ZWQKbXV4
+aW5nIHRoZW0gb3V0IG9mIHRoZSB3YXkuCgpSZWdhcmRzLAoKVG9ueQoKX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5n
+IGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5p
+bmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
