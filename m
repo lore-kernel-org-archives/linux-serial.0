@@ -1,15 +1,19 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: 4.16 OMAP serial transmit corruption?
-Date: Mon, 16 Apr 2018 18:48:26 +0100
-Message-ID: <20180416174826.GJ10990@n2100.armlinux.org.uk>
-References: <20180416151732.GU16141@n2100.armlinux.org.uk>
- <20180416155259.GB5671@atomide.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: serial: imx: half-duplex RS485 operation with RTS active low
+Date: Mon, 16 Apr 2018 20:02:56 +0200
+Message-ID: <20180416180256.s6r7rrcnpevndmrf@pengutronix.de>
+References: <0e88706a05a302201be396d2f03c3e9e@agner.ch>
+ <20180416092257.frbmooduhm4zrhhl@pengutronix.de>
+ <c6059022d48191909d030584f981d1a2@agner.ch>
+ <94f7fcf8873f7607087fc3a59a9422a8@agner.ch>
+ <20180416134249.vdjyye73elv2p5qr@pengutronix.de>
+ <15ca978834ac705c550d9d3339ae1602@agner.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20180416155259.GB5671@atomide.com>
+In-Reply-To: <15ca978834ac705c550d9d3339ae1602@agner.ch>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,37 +23,28 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Stefan Agner <stefan@agner.ch>
+Cc: s.hauer@pengutronix.de, baruch@tkos.co.il, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Apr 16, 2018 at 08:52:59AM -0700, Tony Lindgren wrote:
-> * Russell King - ARM Linux <linux@armlinux.org.uk> [180416 15:19]:
-> > Since this uses a USB adapter (built onto the board) it could be
-> > that there could be a bug in the driver for that rather than the
-> > OMAP4430 SDP, but I've no way to check that hypothesis.
-> 
-> Does it go away when you do a warm reboot of the sdp? Then
-> it should not be related to the USB iff the ftdi chip is bus
-> powered by VBUS.
+Hallo Stefan,
 
-Yes, the FTDI chip is bus powered.
+On Mon, Apr 16, 2018 at 06:12:41PM +0200, Stefan Agner wrote:
+> On 16.04.2018 15:42, Uwe Kleine-K=F6nig wrote:
+> > Adding a respective check in the driver would be nice though.
+> =
 
-I booted, ran vi, quit vi, saw corruption, typed reboot, waited for
-it to reboot, ran vi, quit vi, and still saw corruption.  So the
-reboot seems to have had no effect.
+> Hm, yes agreed. Where would that check go? In probe? Then I guess it
+> only would warn when using device tree properties...?
 
-I don't see it with other USB serial consoles on other machines...
-I have two of these using the same FTDI chipset:
+look at the code between the calls to uart_get_rs485_mode() and
+imx_uart_rs485_config(). Something like that would be needed and
+imx_uart_rs485_config must adapt the flags accordingly.
 
-Bus 001 Device 021: ID 0403:6011 Future Technology Devices International, Ltd FT4232H Quad HS USB-UART/FIFO IC
-Bus 001 Device 020: ID 0403:6011 Future Technology Devices International, Ltd FT4232H Quad HS USB-UART/FIFO IC
+Best regards
+Uwe
 
-Device 20 is the SDP board, and device 21 is a ZII board.  Both use
-port 2 on the quad ftdi device.  The serial console on the ZII board
-is fine, so that seems to rule out the FTDI driver / FTDI hardware.
+-- =
 
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
-According to speedtest.net: 8.21Mbps down 510kbps up
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
