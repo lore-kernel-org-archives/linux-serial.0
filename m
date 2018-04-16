@@ -1,14 +1,17 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: 4.16 OMAP serial transmit corruption?
-Date: Mon, 16 Apr 2018 08:52:59 -0700
-Message-ID: <20180416155259.GB5671@atomide.com>
-References: <20180416151732.GU16141@n2100.armlinux.org.uk>
+From: Stefan Agner <stefan@agner.ch>
+Subject: Re: serial: imx: half-duplex RS485 operation with RTS active low
+Date: Mon, 16 Apr 2018 18:12:41 +0200
+Message-ID: <15ca978834ac705c550d9d3339ae1602@agner.ch>
+References: <0e88706a05a302201be396d2f03c3e9e@agner.ch>
+ <20180416092257.frbmooduhm4zrhhl@pengutronix.de>
+ <c6059022d48191909d030584f981d1a2@agner.ch>
+ <94f7fcf8873f7607087fc3a59a9422a8@agner.ch>
+ <20180416134249.vdjyye73elv2p5qr@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20180416151732.GU16141@n2100.armlinux.org.uk>
+In-Reply-To: <20180416134249.vdjyye73elv2p5qr@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,19 +21,71 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@armlinux.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: s.hauer@pengutronix.de, baruch@tkos.co.il, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-* Russell King - ARM Linux <linux@armlinux.org.uk> [180416 15:19]:
-> Since this uses a USB adapter (built onto the board) it could be
-> that there could be a bug in the driver for that rather than the
-> OMAP4430 SDP, but I've no way to check that hypothesis.
-
-Does it go away when you do a warm reboot of the sdp? Then
-it should not be related to the USB iff the ftdi chip is bus
-powered by VBUS.
-
-Regards,
-
-Tony
+T24gMTYuMDQuMjAxOCAxNTo0MiwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6Cj4gT24gTW9uLCBB
+cHIgMTYsIDIwMTggYXQgMDM6MDE6NDRQTSArMDIwMCwgU3RlZmFuIEFnbmVyIHdyb3RlOgo+PiBP
+biAxNi4wNC4yMDE4IDEyOjI5LCBTdGVmYW4gQWduZXIgd3JvdGU6Cj4+ID4gT24gMTYuMDQuMjAx
+OCAxMToyMiwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6Cj4+ID4+IEhpIFN0ZWZhbiwKPj4gPj4K
+Pj4gPj4gT24gTW9uLCBBcHIgMTYsIDIwMTggYXQgMTE6MTQ6MzJBTSArMDIwMCwgU3RlZmFuIEFn
+bmVyIHdyb3RlOgo+PiA+Pj4gVXNpbmcgdXBzdHJlYW0gSSBub3RpY2VkIHRoYXQgUlMtNDg1IGRv
+ZXMgbm90IHdvcmsgaW4gdGhlIGRlZmF1bHQKPj4gPj4+IGNvbmZpZ3VyYXRpb24gZm9yIG91ciBw
+bGF0Zm9ybXMgKFRvcmFkZXggQXBhbGlzL0NvbGlicmkpLiBDbG9zZXIKPj4gPj4KPj4gPj4gVGhp
+cyBpcyBhbiBpLk1YNj8KPj4gPj4KPj4gPgo+PiA+IFllcywgc29ycnkgYWJvdXQgdGhhdC4KPj4g
+Pgo+PiA+IEJ1dCBJIHRoaW5rIGl0IGlzIGkuTVggVUFSVCBzcGVjaWZpYywgSSBub3RpY2VkIHRo
+ZSBzYW1lIGJlaGF2aW9yIG9uCj4+ID4gaS5NWCA3IHRvby4KPj4gPgo+PiA+Pj4gZGVidWdnaW5n
+IHNob3dzIHRoYXQgaXQgaXMgcmVsYXRlZCB0byAic2VyaWFsOiBpbXg6IGRlZmF1bHQgdG8gaGFs
+Zgo+PiA+Pj4gZHVwbGV4IHJzNDg1Ii4KPj4gPj4+Cj4+ID4+PiBXZSB1c2UgdGhlIGkuTVggVUFS
+VCBpbiBEVEUgbW9kZSBhbmQgY29udHJvbCB0aGUgUlMtNDg1IHRyYW5zY2VpdmVyCj4+ID4+PiB1
+c2luZyB0aGUgUlRTIHNpZ25hbCBpbiBsb3ctYWN0aXZlIG1vZGUuCj4+ID4+Pgo+PiA+Pj4gCXVh
+cnQtaGFzLXJ0c2N0czsKPj4gPj4+IAlmc2wsZHRlLW1vZGU7Cj4+ID4+PiAJbGludXgscnM0ODUt
+ZW5hYmxlZC1hdC1ib290LXRpbWU7Cj4+ID4+PiAJcnM0ODUtcnRzLWFjdGl2ZS1sb3c7Cj4+ID4+
+Cj4+ID4+IFRoYXQgbWVhbnMgeW91J3JlIG5vdCB1c2luZyBhIEdQSU8gZm9yIFJUUyBzaWduYWxp
+bmcsIHJpZ2h0Pwo+PiA+Pgo+PiA+Cj4+ID4gSSB1c2UgbmF0aXZlIFJUUyBjYXBhYmlsaXR5ICh3
+aGljaCBpcyBpbiBEVEUgbW9kZSB0aGUgQ1RTIHNpZ25hbC4uLikKPj4gPgo+PiA+Pj4gVXNpbmcg
+dGhpcyBzZXR0aW5nIGxlYWRzIHRvIHRoZSBSVFMgc2lnbmFsIG5vdCBnZXR0aW5nIGFzc2VydGVk
+ICh0aGUKPj4gPj4+IG9zY2lsbG9zY29wZSBvbmx5IHNob3dzIGEgdmVyeSBzaG9ydCBmbHVrZSBi
+ZWZvcmUgdGhlIHN0YXJ0IGJpdCBpcwo+PiA+Pj4gc2VudCkuCj4+ID4KPj4gPiBKdXN0IEZZSSwg
+dGhlIGZsdWtlIGxvb2tzIGxpa2UgYSBwcm9wZXIgYXNzZXJ0LCBidXQgaXQgaXMgcmVhbGx5IG9u
+bHkKPj4gPiA1MG5zIHdpZGUuCj4+ID4KPj4KPj4gQWxzbyB0cmllZCBEQ0UgbW9kZSwgdGhlIHNh
+bWUgYmVoYXZpb3IuCj4+Cj4+IFR3byBzY3JlZW5zaG90cyBzaG93aW5nIFRYL1JUUyAoQ1RTX0Ip
+IGluIGRpZmZlcmVudCBzZXR0aW5nczoKPj4gaHR0cHM6Ly9pbWd1ci5jb20vYS9QYlVleAo+Pgo+
+PiBUaGUgbGl0dGxlIGZsdWtlIGRpc2FwcGVhcnMgd2hlbiBkaXNhYmxpbmcgUlggYmVmb3JlIHNl
+dHRpbmcgQ1RTQzoKPj4KPj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCj4+ICsrKyBi
+L2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwo+PiBAQCAtNjU3LDYgKzY1Nyw5IEBAIHN0YXRpYyB2
+b2lkIGlteF91YXJ0X3N0YXJ0X3R4KHN0cnVjdCB1YXJ0X3BvcnQKPj4gKnBvcnQpCj4+ICAgICAg
+ICAgaWYgKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsKPj4gICAgICAg
+ICAgICAgICAgIHUzMiB1Y3IyOwo+Pgo+PiArICAgICAgICAgICAgICAgaWYgKCEocG9ydC0+cnM0
+ODUuZmxhZ3MgJiBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYKSkKPj4gKyAgICAgICAgICAgICAgICAg
+ICAgICAgaW14X3VhcnRfc3RvcF9yeChwb3J0KTsKPj4gKwo+PiAgICAgICAgICAgICAgICAgdWNy
+MiA9IGlteF91YXJ0X3JlYWRsKHNwb3J0LCBVQ1IyKTsKPj4gICAgICAgICAgICAgICAgIGlmIChw
+b3J0LT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9SVFNfT05fU0VORCkKPj4gICAgICAgICAgICAg
+ICAgICAgICAgICAgaW14X3VhcnRfcnRzX2FjdGl2ZShzcG9ydCwgJnVjcjIpOwo+PiBAQCAtNjY0
+LDkgKzY2Nyw2IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3N0YXJ0X3R4KHN0cnVjdCB1YXJ0X3Bv
+cnQKPj4gKnBvcnQpCj4+ICAgICAgICAgICAgICAgICAgICAgICAgIGlteF91YXJ0X3J0c19pbmFj
+dGl2ZShzcG9ydCwgJnVjcjIpOwo+PiAgICAgICAgICAgICAgICAgaW14X3VhcnRfd3JpdGVsKHNw
+b3J0LCB1Y3IyLCBVQ1IyKTsKPj4KPj4gLSAgICAgICAgICAgICAgIGlmICghKHBvcnQtPnJzNDg1
+LmZsYWdzICYgU0VSX1JTNDg1X1JYX0RVUklOR19UWCkpCj4+IC0gICAgICAgICAgICAgICAgICAg
+ICAgIGlteF91YXJ0X3N0b3BfcngocG9ydCk7Cj4+IC0KPj4gICAgICAgICAgICAgICAgIC8qCj4+
+ICAgICAgICAgICAgICAgICAgKiBFbmFibGUgdHJhbnNtaXR0ZXIgYW5kIHNoaWZ0ZXIgZW1wdHkg
+aXJxIG9ubHkgaWYgRE1BCj4+IGlzIG9mZi4KPj4gICAgICAgICAgICAgICAgICAqIEluIHRoZSBE
+TUEgY2FzZSB0aGlzIGlzIGRvbmUgaW4gdGhlIHR4LWNhbGxiYWNrLgo+Pgo+PiBJdCBzZWVtcyB0
+aGF0IGlmIHRoZSBSWCBwYXRoIGlzIGRpc2FibGVkLCBDVFNfQiBpcyBubyBsb25nZXIKPj4gY29u
+dHJvbGxhYmxlLiBJdCBqdXN0IHN0YXlzIGhpZ2guIFRoYXQgaXMgbm90IGEgcHJvYmxlbSBpbiB0
+aGUgaGlnaAo+PiBhY3RpdmUgUlRTIGNhc2UuLi4gSG93ZXZlciwgaXQgYnJlYWtzIGxvdyBhY3Rp
+dmUgaGFsZi1kdXBsZXguLi4KPj4KPj4gSXQgc2VlbXMgdGhhdCB0aGlzIHRocmVhZCBpcyBkZXNj
+cmliaW5nIHRoaXMgc2l0dWF0aW9uOgo+PiBodHRwczovL2NvbW11bml0eS5ueHAuY29tL3RocmVh
+ZC8zODUwNDcKPiAKPiBTbyBiZXR0ZXIgdXNlIGEgZ3BpbyBpbnN0ZWFkIG9mIHRoZSBoYXJkd2Fy
+ZS1mdW5jdGlvbj8KCkkgZ3Vlc3Mgc28sIGRpZCBub3QgdGVzdCB0aGF0IHRob3VnaC4KCk9yIHVz
+ZSBmdWxsIGR1cGxleCBtb2RlLiBUaGF0IGlzIHdoYXQgd2UgdXNlZCBhbnl3YXlzIGluIHRoZSBw
+YXN0LCBldmVuCndoZW4gdXNpbmcgYSBzaW5nbGUgUlM0ODUgYnVzIChoYWxmIGR1cGxleCkgb24g
+dGhlIHBoeXNpY2FsIGxheWVyCmFueXdheS4KCj4gCj4gQWRkaW5nIGEgcmVzcGVjdGl2ZSBjaGVj
+ayBpbiB0aGUgZHJpdmVyIHdvdWxkIGJlIG5pY2UgdGhvdWdoLgoKSG0sIHllcyBhZ3JlZWQuIFdo
+ZXJlIHdvdWxkIHRoYXQgY2hlY2sgZ28/IEluIHByb2JlPyBUaGVuIEkgZ3Vlc3MgaXQKb25seSB3
+b3VsZCB3YXJuIHdoZW4gdXNpbmcgZGV2aWNlIHRyZWUgcHJvcGVydGllcy4uLj8KCi0tClN0ZWZh
+bgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgt
+YXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQu
+b3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJt
+LWtlcm5lbAo=
