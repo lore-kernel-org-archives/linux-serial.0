@@ -1,15 +1,14 @@
-From: Einar Vading <einar.vading@axis.com>
+From: Stefan Agner <stefan@agner.ch>
 Subject: Re: serial: imx: half-duplex RS485 operation with RTS active low
-Date: Mon, 16 Apr 2018 11:57:14 +0200
-Message-ID: <20180416095714.hj6lxdoee3zis3mg@lnxeinarv.se.axis.com>
+Date: Mon, 16 Apr 2018 12:29:11 +0200
+Message-ID: <c6059022d48191909d030584f981d1a2@agner.ch>
 References: <0e88706a05a302201be396d2f03c3e9e@agner.ch>
- <20180416095436.7mxh4cqdvlyleryr@lnxeinarv.se.axis.com>
+ <20180416092257.frbmooduhm4zrhhl@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20180416095436.7mxh4cqdvlyleryr@lnxeinarv.se.axis.com>
+In-Reply-To: <20180416092257.frbmooduhm4zrhhl@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,87 +18,46 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Stefan Agner <stefan@agner.ch>
-Cc: linux-arm-kernel@lists.infradead.org, s.hauer@pengutronix.de, baruch@tkos.co.il, linux-serial@vger.kernel.org, u.kleine-koenig@pengutronix.de
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: s.hauer@pengutronix.de, baruch@tkos.co.il, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Apr 16, 2018 at 11:54:36AM +0200, Einar Vading wrote:
-> On Mon, Apr 16, 2018 at 11:14:32AM +0200, Stefan Agner wrote:
-
-Forgot to mention that we are not using DTE-de mode. We tried to but failed.
-
-> > Hi,
-> > 
-> > Using upstream I noticed that RS-485 does not work in the default
-> > configuration for our platforms (Toradex Apalis/Colibri). Closer
-> > debugging shows that it is related to "serial: imx: default to half
-> > duplex rs485".
-> 
-> We where struggling a bit with half duplex rs485 too a while ago.
-> > 
-> > We use the i.MX UART in DTE mode and control the RS-485 transceiver
-> > using the RTS signal in low-active mode.
-> > 
-> > 	uart-has-rtscts;
-> > 	fsl,dte-mode;
-> > 	linux,rs485-enabled-at-boot-time;
-> > 	rs485-rts-active-low;
-> > 
-> > Using this setting leads to the RTS signal not getting asserted (the
-> > oscilloscope only shows a very short fluke before the start bit is
-> > sent).
-> 
-> I think this is what we had too. But if I recall we where supposed to be
-> active-high but I think the behavior is the same either way.
-> > 
-> > However, using
-> > 
-> > 	uart-has-rtscts;
-> > 	fsl,dte-mode;
-> > 	linux,rs485-enabled-at-boot-time;
-> > 	rs485-rts-active-low;
-> > 	rs485-rx-during-tx;
-> > 
-> > Asserts the RTS signal low active just fine...
-> 
-> We have a (RTS active high) configuration working for us now with only
-> 
->     uart-has-rtscts
-> 
-> in DT, and then when using the port we do
-> 
->     struct serial_rs485 rs485conf;
->     memset(&rs485conf, 0x00, sizeof(struct serial_rs485));
-> 
->     rs485conf.flags |= SER_RS485_ENABLED;
->     rs485conf.flags |= SER_RS485_RTS_ON_SEND;
->     rs485conf.flags &= ~(SER_RS485_RTS_AFTER_SEND);
-> 
->     f_debug("Calling ioctl...");
->     if (ioctl (fd, TIOCSRS485, &rs485conf) < 0) {
->       f_critical("ioctl serial_rs485 failed");
->       return -1;
->     }
-> 
-> Hope it helps.
-> > 
-> > Is this a known problem? Any idea where that could come from? It looks
-> > as if the receiver part is actually enabling RTS...?
-> > 
-> > Also, isn't enabling RX even in half-duplex mode quite common in order
-> > to detect collisions?
-> > 
-> > --
-> > Stefan
-> 
-> // Einar
-// Einar
-> > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-serial" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+T24gMTYuMDQuMjAxOCAxMToyMiwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6Cj4gSGkgU3RlZmFu
+LAo+IAo+IE9uIE1vbiwgQXByIDE2LCAyMDE4IGF0IDExOjE0OjMyQU0gKzAyMDAsIFN0ZWZhbiBB
+Z25lciB3cm90ZToKPj4gVXNpbmcgdXBzdHJlYW0gSSBub3RpY2VkIHRoYXQgUlMtNDg1IGRvZXMg
+bm90IHdvcmsgaW4gdGhlIGRlZmF1bHQKPj4gY29uZmlndXJhdGlvbiBmb3Igb3VyIHBsYXRmb3Jt
+cyAoVG9yYWRleCBBcGFsaXMvQ29saWJyaSkuIENsb3Nlcgo+IAo+IFRoaXMgaXMgYW4gaS5NWDY/
+Cj4gCgpZZXMsIHNvcnJ5IGFib3V0IHRoYXQuCgpCdXQgSSB0aGluayBpdCBpcyBpLk1YIFVBUlQg
+c3BlY2lmaWMsIEkgbm90aWNlZCB0aGUgc2FtZSBiZWhhdmlvciBvbgppLk1YIDcgdG9vLgoKPj4g
+ZGVidWdnaW5nIHNob3dzIHRoYXQgaXQgaXMgcmVsYXRlZCB0byAic2VyaWFsOiBpbXg6IGRlZmF1
+bHQgdG8gaGFsZgo+PiBkdXBsZXggcnM0ODUiLgo+Pgo+PiBXZSB1c2UgdGhlIGkuTVggVUFSVCBp
+biBEVEUgbW9kZSBhbmQgY29udHJvbCB0aGUgUlMtNDg1IHRyYW5zY2VpdmVyCj4+IHVzaW5nIHRo
+ZSBSVFMgc2lnbmFsIGluIGxvdy1hY3RpdmUgbW9kZS4KPj4KPj4gCXVhcnQtaGFzLXJ0c2N0czsK
+Pj4gCWZzbCxkdGUtbW9kZTsKPj4gCWxpbnV4LHJzNDg1LWVuYWJsZWQtYXQtYm9vdC10aW1lOwo+
+PiAJcnM0ODUtcnRzLWFjdGl2ZS1sb3c7Cj4gCj4gVGhhdCBtZWFucyB5b3UncmUgbm90IHVzaW5n
+IGEgR1BJTyBmb3IgUlRTIHNpZ25hbGluZywgcmlnaHQ/Cj4gIAoKSSB1c2UgbmF0aXZlIFJUUyBj
+YXBhYmlsaXR5ICh3aGljaCBpcyBpbiBEVEUgbW9kZSB0aGUgQ1RTIHNpZ25hbC4uLikKCj4+IFVz
+aW5nIHRoaXMgc2V0dGluZyBsZWFkcyB0byB0aGUgUlRTIHNpZ25hbCBub3QgZ2V0dGluZyBhc3Nl
+cnRlZCAodGhlCj4+IG9zY2lsbG9zY29wZSBvbmx5IHNob3dzIGEgdmVyeSBzaG9ydCBmbHVrZSBi
+ZWZvcmUgdGhlIHN0YXJ0IGJpdCBpcwo+PiBzZW50KS4KCkp1c3QgRllJLCB0aGUgZmx1a2UgbG9v
+a3MgbGlrZSBhIHByb3BlciBhc3NlcnQsIGJ1dCBpdCBpcyByZWFsbHkgb25seQo1MG5zIHdpZGUu
+Cgo+Pgo+PiBIb3dldmVyLCB1c2luZwo+Pgo+PiAJdWFydC1oYXMtcnRzY3RzOwo+PiAJZnNsLGR0
+ZS1tb2RlOwo+PiAJbGludXgscnM0ODUtZW5hYmxlZC1hdC1ib290LXRpbWU7Cj4+IAlyczQ4NS1y
+dHMtYWN0aXZlLWxvdzsKPj4gCXJzNDg1LXJ4LWR1cmluZy10eDsKPj4KPj4gQXNzZXJ0cyB0aGUg
+UlRTIHNpZ25hbCBsb3cgYWN0aXZlIGp1c3QgZmluZS4uLgo+Pgo+PiBJcyB0aGlzIGEga25vd24g
+cHJvYmxlbT8gQW55IGlkZWEgd2hlcmUgdGhhdCBjb3VsZCBjb21lIGZyb20/IEl0IGxvb2tzCj4+
+IGFzIGlmIHRoZSByZWNlaXZlciBwYXJ0IGlzIGFjdHVhbGx5IGVuYWJsaW5nIFJUUy4uLj8KPiAK
+PiBXaGljaCBrZXJuZWwgdmVyc2lvbiBkbyB5b3UgdXNlPyBNeSBsYXRlc3QgcnM0ODUgcmVsYXRl
+ZCBwYXRjaGVzIHdlbnQKPiBpbnRvIHY0LjE3LXJjMS4gV2l0aCB0aGF0IEkgbWFuYWdlZCB0byBt
+YWtlIHJzNDg1IGhhbGYgZHVwbGV4IHdvcmsgb24KPiBzZXZlcmFsIGN1c3RvbWVyIGJvYXJkcy4K
+CkkgdXNlZCB2NC4xNy1yYzEuCgpJIG5vdGljZWQgeW91ciBjaGFuZ2VzLCBidXQgSSBpdCBzZWVt
+cyB0aGV5IG1ha2Ugbm8gZGlmZmVyZW5jZSwgbGFzdAp3ZWVrIEkgbm90aWNlZCB0aGUgc2FtZSBp
+c3N1ZSBpbiB2NC4xNi4KCkRvIHRob3NlIGN1c3RvbWVyIGJvYXJkcyB1c2UgRFRFIG1vZGU/Cgot
+LQpTdGVmYW4KCj4gCj4+IEFsc28sIGlzbid0IGVuYWJsaW5nIFJYIGV2ZW4gaW4gaGFsZi1kdXBs
+ZXggbW9kZSBxdWl0ZSBjb21tb24gaW4gb3JkZXIKPj4gdG8gZGV0ZWN0IGNvbGxpc2lvbnM/Cj4g
+Cj4gSSBkb24ndCBrbm93Lgo+IAoKUHJvYmFibHkgYWxzbyBkZXBlbmRzIG9uIHRoZSBleGFjdCB1
+c2UgY2FzZSBhbmQgdGhlIHRyYW5zY2VpdmVyCmNvbmZpZ3VyYXRpb24uCgotLQpTdGVmYW4KCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1r
+ZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpo
+dHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJu
+ZWwK
