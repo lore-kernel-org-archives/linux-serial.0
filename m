@@ -1,15 +1,17 @@
-From: Stefan Agner <stefan@agner.ch>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Subject: Re: serial: imx: half-duplex RS485 operation with RTS active low
-Date: Mon, 16 Apr 2018 15:01:44 +0200
-Message-ID: <94f7fcf8873f7607087fc3a59a9422a8@agner.ch>
+Date: Mon, 16 Apr 2018 15:42:49 +0200
+Message-ID: <20180416134249.vdjyye73elv2p5qr@pengutronix.de>
 References: <0e88706a05a302201be396d2f03c3e9e@agner.ch>
  <20180416092257.frbmooduhm4zrhhl@pengutronix.de>
  <c6059022d48191909d030584f981d1a2@agner.ch>
+ <94f7fcf8873f7607087fc3a59a9422a8@agner.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <c6059022d48191909d030584f981d1a2@agner.ch>
+Content-Disposition: inline
+In-Reply-To: <94f7fcf8873f7607087fc3a59a9422a8@agner.ch>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,74 +21,114 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Stefan Agner <stefan@agner.ch>
 Cc: s.hauer@pengutronix.de, baruch@tkos.co.il, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-T24gMTYuMDQuMjAxOCAxMjoyOSwgU3RlZmFuIEFnbmVyIHdyb3RlOgo+IE9uIDE2LjA0LjIwMTgg
-MTE6MjIsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOgo+PiBIaSBTdGVmYW4sCj4+Cj4+IE9uIE1v
-biwgQXByIDE2LCAyMDE4IGF0IDExOjE0OjMyQU0gKzAyMDAsIFN0ZWZhbiBBZ25lciB3cm90ZToK
-Pj4+IFVzaW5nIHVwc3RyZWFtIEkgbm90aWNlZCB0aGF0IFJTLTQ4NSBkb2VzIG5vdCB3b3JrIGlu
-IHRoZSBkZWZhdWx0Cj4+PiBjb25maWd1cmF0aW9uIGZvciBvdXIgcGxhdGZvcm1zIChUb3JhZGV4
-IEFwYWxpcy9Db2xpYnJpKS4gQ2xvc2VyCj4+Cj4+IFRoaXMgaXMgYW4gaS5NWDY/Cj4+Cj4gCj4g
-WWVzLCBzb3JyeSBhYm91dCB0aGF0Lgo+IAo+IEJ1dCBJIHRoaW5rIGl0IGlzIGkuTVggVUFSVCBz
-cGVjaWZpYywgSSBub3RpY2VkIHRoZSBzYW1lIGJlaGF2aW9yIG9uCj4gaS5NWCA3IHRvby4KPiAK
-Pj4+IGRlYnVnZ2luZyBzaG93cyB0aGF0IGl0IGlzIHJlbGF0ZWQgdG8gInNlcmlhbDogaW14OiBk
-ZWZhdWx0IHRvIGhhbGYKPj4+IGR1cGxleCByczQ4NSIuCj4+Pgo+Pj4gV2UgdXNlIHRoZSBpLk1Y
-IFVBUlQgaW4gRFRFIG1vZGUgYW5kIGNvbnRyb2wgdGhlIFJTLTQ4NSB0cmFuc2NlaXZlcgo+Pj4g
-dXNpbmcgdGhlIFJUUyBzaWduYWwgaW4gbG93LWFjdGl2ZSBtb2RlLgo+Pj4KPj4+IAl1YXJ0LWhh
-cy1ydHNjdHM7Cj4+PiAJZnNsLGR0ZS1tb2RlOwo+Pj4gCWxpbnV4LHJzNDg1LWVuYWJsZWQtYXQt
-Ym9vdC10aW1lOwo+Pj4gCXJzNDg1LXJ0cy1hY3RpdmUtbG93Owo+Pgo+PiBUaGF0IG1lYW5zIHlv
-dSdyZSBub3QgdXNpbmcgYSBHUElPIGZvciBSVFMgc2lnbmFsaW5nLCByaWdodD8KPj4KPiAKPiBJ
-IHVzZSBuYXRpdmUgUlRTIGNhcGFiaWxpdHkgKHdoaWNoIGlzIGluIERURSBtb2RlIHRoZSBDVFMg
-c2lnbmFsLi4uKQo+IAo+Pj4gVXNpbmcgdGhpcyBzZXR0aW5nIGxlYWRzIHRvIHRoZSBSVFMgc2ln
-bmFsIG5vdCBnZXR0aW5nIGFzc2VydGVkICh0aGUKPj4+IG9zY2lsbG9zY29wZSBvbmx5IHNob3dz
-IGEgdmVyeSBzaG9ydCBmbHVrZSBiZWZvcmUgdGhlIHN0YXJ0IGJpdCBpcwo+Pj4gc2VudCkuCj4g
-Cj4gSnVzdCBGWUksIHRoZSBmbHVrZSBsb29rcyBsaWtlIGEgcHJvcGVyIGFzc2VydCwgYnV0IGl0
-IGlzIHJlYWxseSBvbmx5Cj4gNTBucyB3aWRlLgo+IAoKQWxzbyB0cmllZCBEQ0UgbW9kZSwgdGhl
-IHNhbWUgYmVoYXZpb3IuCgpUd28gc2NyZWVuc2hvdHMgc2hvd2luZyBUWC9SVFMgKENUU19CKSBp
-biBkaWZmZXJlbnQgc2V0dGluZ3M6Cmh0dHBzOi8vaW1ndXIuY29tL2EvUGJVZXgKClRoZSBsaXR0
-bGUgZmx1a2UgZGlzYXBwZWFycyB3aGVuIGRpc2FibGluZyBSWCBiZWZvcmUgc2V0dGluZyBDVFND
-OgoKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jCisrKyBiL2RyaXZlcnMvdHR5L3Nlcmlh
-bC9pbXguYwpAQCAtNjU3LDYgKzY1Nyw5IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3N0YXJ0X3R4
-KHN0cnVjdCB1YXJ0X3BvcnQKKnBvcnQpCiAgICAgICAgaWYgKHBvcnQtPnJzNDg1LmZsYWdzICYg
-U0VSX1JTNDg1X0VOQUJMRUQpIHsKICAgICAgICAgICAgICAgIHUzMiB1Y3IyOwogCisgICAgICAg
-ICAgICAgICBpZiAoIShwb3J0LT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFgp
-KQorICAgICAgICAgICAgICAgICAgICAgICBpbXhfdWFydF9zdG9wX3J4KHBvcnQpOworCiAgICAg
-ICAgICAgICAgICB1Y3IyID0gaW14X3VhcnRfcmVhZGwoc3BvcnQsIFVDUjIpOwogICAgICAgICAg
-ICAgICAgaWYgKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X1JUU19PTl9TRU5EKQogICAg
-ICAgICAgICAgICAgICAgICAgICBpbXhfdWFydF9ydHNfYWN0aXZlKHNwb3J0LCAmdWNyMik7CkBA
-IC02NjQsOSArNjY3LDYgQEAgc3RhdGljIHZvaWQgaW14X3VhcnRfc3RhcnRfdHgoc3RydWN0IHVh
-cnRfcG9ydAoqcG9ydCkKICAgICAgICAgICAgICAgICAgICAgICAgaW14X3VhcnRfcnRzX2luYWN0
-aXZlKHNwb3J0LCAmdWNyMik7CiAgICAgICAgICAgICAgICBpbXhfdWFydF93cml0ZWwoc3BvcnQs
-IHVjcjIsIFVDUjIpOwogCi0gICAgICAgICAgICAgICBpZiAoIShwb3J0LT5yczQ4NS5mbGFncyAm
-IFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFgpKQotICAgICAgICAgICAgICAgICAgICAgICBpbXhfdWFy
-dF9zdG9wX3J4KHBvcnQpOwotCiAgICAgICAgICAgICAgICAvKgogICAgICAgICAgICAgICAgICog
-RW5hYmxlIHRyYW5zbWl0dGVyIGFuZCBzaGlmdGVyIGVtcHR5IGlycSBvbmx5IGlmIERNQQppcyBv
-ZmYuCiAgICAgICAgICAgICAgICAgKiBJbiB0aGUgRE1BIGNhc2UgdGhpcyBpcyBkb25lIGluIHRo
-ZSB0eC1jYWxsYmFjay4KCkl0IHNlZW1zIHRoYXQgaWYgdGhlIFJYIHBhdGggaXMgZGlzYWJsZWQs
-IENUU19CIGlzIG5vIGxvbmdlcgpjb250cm9sbGFibGUuIEl0IGp1c3Qgc3RheXMgaGlnaC4gVGhh
-dCBpcyBub3QgYSBwcm9ibGVtIGluIHRoZSBoaWdoCmFjdGl2ZSBSVFMgY2FzZS4uLiBIb3dldmVy
-LCBpdCBicmVha3MgbG93IGFjdGl2ZSBoYWxmLWR1cGxleC4uLgoKSXQgc2VlbXMgdGhhdCB0aGlz
-IHRocmVhZCBpcyBkZXNjcmliaW5nIHRoaXMgc2l0dWF0aW9uOgpodHRwczovL2NvbW11bml0eS5u
-eHAuY29tL3RocmVhZC8zODUwNDcKCi0tClN0ZWZhbgoKPj4+Cj4+PiBIb3dldmVyLCB1c2luZwo+
-Pj4KPj4+IAl1YXJ0LWhhcy1ydHNjdHM7Cj4+PiAJZnNsLGR0ZS1tb2RlOwo+Pj4gCWxpbnV4LHJz
-NDg1LWVuYWJsZWQtYXQtYm9vdC10aW1lOwo+Pj4gCXJzNDg1LXJ0cy1hY3RpdmUtbG93Owo+Pj4g
-CXJzNDg1LXJ4LWR1cmluZy10eDsKPj4+Cj4+PiBBc3NlcnRzIHRoZSBSVFMgc2lnbmFsIGxvdyBh
-Y3RpdmUganVzdCBmaW5lLi4uCj4+Pgo+Pj4gSXMgdGhpcyBhIGtub3duIHByb2JsZW0/IEFueSBp
-ZGVhIHdoZXJlIHRoYXQgY291bGQgY29tZSBmcm9tPyBJdCBsb29rcwo+Pj4gYXMgaWYgdGhlIHJl
-Y2VpdmVyIHBhcnQgaXMgYWN0dWFsbHkgZW5hYmxpbmcgUlRTLi4uPwo+Pgo+PiBXaGljaCBrZXJu
-ZWwgdmVyc2lvbiBkbyB5b3UgdXNlPyBNeSBsYXRlc3QgcnM0ODUgcmVsYXRlZCBwYXRjaGVzIHdl
-bnQKPj4gaW50byB2NC4xNy1yYzEuIFdpdGggdGhhdCBJIG1hbmFnZWQgdG8gbWFrZSByczQ4NSBo
-YWxmIGR1cGxleCB3b3JrIG9uCj4+IHNldmVyYWwgY3VzdG9tZXIgYm9hcmRzLgo+IAo+IEkgdXNl
-ZCB2NC4xNy1yYzEuCj4gCj4gSSBub3RpY2VkIHlvdXIgY2hhbmdlcywgYnV0IEkgaXQgc2VlbXMg
-dGhleSBtYWtlIG5vIGRpZmZlcmVuY2UsIGxhc3QKPiB3ZWVrIEkgbm90aWNlZCB0aGUgc2FtZSBp
-c3N1ZSBpbiB2NC4xNi4KPiAKPiBEbyB0aG9zZSBjdXN0b21lciBib2FyZHMgdXNlIERURSBtb2Rl
-Pwo+IAo+IC0tCj4gU3RlZmFuCj4gCj4+Cj4+PiBBbHNvLCBpc24ndCBlbmFibGluZyBSWCBldmVu
-IGluIGhhbGYtZHVwbGV4IG1vZGUgcXVpdGUgY29tbW9uIGluIG9yZGVyCj4+PiB0byBkZXRlY3Qg
-Y29sbGlzaW9ucz8KPj4KPj4gSSBkb24ndCBrbm93Lgo+Pgo+IAo+IFByb2JhYmx5IGFsc28gZGVw
-ZW5kcyBvbiB0aGUgZXhhY3QgdXNlIGNhc2UgYW5kIHRoZSB0cmFuc2NlaXZlcgo+IGNvbmZpZ3Vy
-YXRpb24uCj4gCj4gLS0KPiBTdGVmYW4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1r
-ZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+On Mon, Apr 16, 2018 at 03:01:44PM +0200, Stefan Agner wrote:
+> On 16.04.2018 12:29, Stefan Agner wrote:
+> > On 16.04.2018 11:22, Uwe Kleine-K=F6nig wrote:
+> >> Hi Stefan,
+> >>
+> >> On Mon, Apr 16, 2018 at 11:14:32AM +0200, Stefan Agner wrote:
+> >>> Using upstream I noticed that RS-485 does not work in the default
+> >>> configuration for our platforms (Toradex Apalis/Colibri). Closer
+> >>
+> >> This is an i.MX6?
+> >>
+> > =
+
+> > Yes, sorry about that.
+> > =
+
+> > But I think it is i.MX UART specific, I noticed the same behavior on
+> > i.MX 7 too.
+> > =
+
+> >>> debugging shows that it is related to "serial: imx: default to half
+> >>> duplex rs485".
+> >>>
+> >>> We use the i.MX UART in DTE mode and control the RS-485 transceiver
+> >>> using the RTS signal in low-active mode.
+> >>>
+> >>> 	uart-has-rtscts;
+> >>> 	fsl,dte-mode;
+> >>> 	linux,rs485-enabled-at-boot-time;
+> >>> 	rs485-rts-active-low;
+> >>
+> >> That means you're not using a GPIO for RTS signaling, right?
+> >>
+> > =
+
+> > I use native RTS capability (which is in DTE mode the CTS signal...)
+> > =
+
+> >>> Using this setting leads to the RTS signal not getting asserted (the
+> >>> oscilloscope only shows a very short fluke before the start bit is
+> >>> sent).
+> > =
+
+> > Just FYI, the fluke looks like a proper assert, but it is really only
+> > 50ns wide.
+> > =
+
+> =
+
+> Also tried DCE mode, the same behavior.
+> =
+
+> Two screenshots showing TX/RTS (CTS_B) in different settings:
+> https://imgur.com/a/PbUex
+> =
+
+> The little fluke disappears when disabling RX before setting CTSC:
+> =
+
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -657,6 +657,9 @@ static void imx_uart_start_tx(struct uart_port
+> *port)
+>         if (port->rs485.flags & SER_RS485_ENABLED) {
+>                 u32 ucr2;
+>  =
+
+> +               if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
+> +                       imx_uart_stop_rx(port);
+> +
+>                 ucr2 =3D imx_uart_readl(sport, UCR2);
+>                 if (port->rs485.flags & SER_RS485_RTS_ON_SEND)
+>                         imx_uart_rts_active(sport, &ucr2);
+> @@ -664,9 +667,6 @@ static void imx_uart_start_tx(struct uart_port
+> *port)
+>                         imx_uart_rts_inactive(sport, &ucr2);
+>                 imx_uart_writel(sport, ucr2, UCR2);
+>  =
+
+> -               if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
+> -                       imx_uart_stop_rx(port);
+> -
+>                 /*
+>                  * Enable transmitter and shifter empty irq only if DMA
+> is off.
+>                  * In the DMA case this is done in the tx-callback.
+> =
+
+> It seems that if the RX path is disabled, CTS_B is no longer
+> controllable. It just stays high. That is not a problem in the high
+> active RTS case... However, it breaks low active half-duplex...
+> =
+
+> It seems that this thread is describing this situation:
+> https://community.nxp.com/thread/385047
+
+So better use a gpio instead of the hardware-function?
+
+Adding a respective check in the driver would be nice though.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
