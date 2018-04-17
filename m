@@ -1,133 +1,58 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: [PATCH v3 18/20] spi: Remove depends on HAS_DMA in case of platform
-	dependency
-Date: Tue, 17 Apr 2018 19:49:18 +0200
-Message-ID: <1523987360-18760-19-git-send-email-geert@linux-m68k.org>
-References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
+From: Russell King - ARM Linux <linux@armlinux.org.uk>
+Subject: Re: 4.16 OMAP serial transmit corruption?
+Date: Tue, 17 Apr 2018 23:10:29 +0100
+Message-ID: <20180417221029.GL10990@n2100.armlinux.org.uk>
+References: <20180416151732.GU16141@n2100.armlinux.org.uk>
+ <20180416154545.GA5671@atomide.com>
+ <413b774b-d19f-3221-44d5-7992d3b8757f@ti.com>
+ <20180417173134.GD5671@atomide.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1523987360-18760-1-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Stefan Richter <stefanr-MtYdepGKPcBMYopoZt5u/LNAH6kLmebB@public.gmane.org>, Alan Tull <atull-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Moritz Fischer <mdf-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matias Bjorling <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>, Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mauro Carvalho Chehab <mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>Br
-Cc: devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20180417173134.GD5671@atomide.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-omap@vger.kernel.org, Vignesh R <vigneshr@ti.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
-symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-In most cases this other symbol is an architecture or platform specific
-symbol, or PCI.
+On Tue, Apr 17, 2018 at 10:31:35AM -0700, Tony Lindgren wrote:
+> * Vignesh R <vigneshr@ti.com> [180417 09:21]:
+> > On Monday 16 April 2018 09:15 PM, Tony Lindgren wrote:
+> > > Also, I'm seeing an issue where the UARTs won't idle on init
+> > > with 8250_omap driver if connected to the wl12xx bluetooth port
+> > > unless I write some data to the port first. It does not seem
+> > > to be related to the rts/cts lines being wired as I've tested
+> > > muxing them out of the way.
+> > 
+> > If this instance of UART is using DMA then it might be due an errata
+> > worked around in AM33/AM43/DRA7:
+> > https://patchwork.kernel.org/patch/6784331/
+> 
+> It sure sounds similar but UART_ERRATA_CLOCK_DISABLE does not
+> seem to help with the reset. Also disabling DMA does not seem
+> to help. So far the only way to clear it seems to be to write
+> a character (TX) on the device. Then things work just fine
+> even without UART_ERRATA_CLOCK_DISABLE set. I'll try to debug
+> this more at some point.
 
-Generic symbols and drivers without platform dependencies keep their
-dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-cannot work anyway.
+Classic case of thread hijack.  So, Tony's idle problem gets more
+attention on _my_ thread than _my_ issue about TX corruption, yea,
+that's fair...  Come on guys, what about my problem, which is the
+subject of this thread?
 
-This simplifies the dependencies, and allows to improve compile-testing.
+I don't have CONFIG_SERIAL_8250_DMA set, so DMA can't be the issue.
 
-Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Reviewed-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Acked-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
----
-v3:
-  - Add Acked-by,
-  - Rebase to v4.17-rc1,
-
-v2:
-  - Add Reviewed-by, Acked-by,
-  - Drop RFC state,
-  - Split per subsystem.
----
- drivers/spi/Kconfig | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index 2d4146ce2f1be49d..5a8524a3bc13f92d 100644
---- a/drivers/spi/Kconfig
-+++ b/drivers/spi/Kconfig
-@@ -71,7 +71,6 @@ config SPI_ARMADA_3700
- 
- config SPI_ATMEL
- 	tristate "Atmel SPI Controller"
--	depends on HAS_DMA
- 	depends on ARCH_AT91 || COMPILE_TEST
- 	help
- 	  This selects a driver for the Atmel SPI Controller, present on
-@@ -233,7 +232,6 @@ config SPI_EFM32
- 
- config SPI_EP93XX
- 	tristate "Cirrus Logic EP93xx SPI controller"
--	depends on HAS_DMA
- 	depends on ARCH_EP93XX || COMPILE_TEST
- 	help
- 	  This enables using the Cirrus EP93xx SPI controller in master
-@@ -355,7 +353,6 @@ config SPI_FSL_SPI
- config SPI_FSL_DSPI
- 	tristate "Freescale DSPI controller"
- 	select REGMAP_MMIO
--	depends on HAS_DMA
- 	depends on SOC_VF610 || SOC_LS1021A || ARCH_LAYERSCAPE || M5441x || COMPILE_TEST
- 	help
- 	  This enables support for the Freescale DSPI controller in master
-@@ -431,7 +428,6 @@ config SPI_OMAP_UWIRE
- 
- config SPI_OMAP24XX
- 	tristate "McSPI driver for OMAP"
--	depends on HAS_DMA
- 	depends on ARCH_OMAP2PLUS || COMPILE_TEST
- 	select SG_SPLIT
- 	help
-@@ -440,7 +436,6 @@ config SPI_OMAP24XX
- 
- config SPI_TI_QSPI
- 	tristate "DRA7xxx QSPI controller support"
--	depends on HAS_DMA
- 	depends on ARCH_OMAP2PLUS || COMPILE_TEST
- 	help
- 	  QSPI master controller for DRA7xxx used for flash devices.
-@@ -469,7 +464,6 @@ config SPI_PIC32
- config SPI_PIC32_SQI
- 	tristate "Microchip PIC32 Quad SPI driver"
- 	depends on MACH_PIC32 || COMPILE_TEST
--	depends on HAS_DMA
- 	help
- 	  SPI driver for PIC32 Quad SPI controller.
- 
-@@ -572,7 +566,7 @@ config SPI_SC18IS602
- 
- config SPI_SH_MSIOF
- 	tristate "SuperH MSIOF SPI controller"
--	depends on HAVE_CLK && HAS_DMA
-+	depends on HAVE_CLK
- 	depends on ARCH_SHMOBILE || ARCH_RENESAS || COMPILE_TEST
- 	help
- 	  SPI driver for SuperH and SH Mobile MSIOF blocks.
-@@ -650,7 +644,7 @@ config SPI_MXS
- config SPI_TEGRA114
- 	tristate "NVIDIA Tegra114 SPI Controller"
- 	depends on (ARCH_TEGRA && TEGRA20_APB_DMA) || COMPILE_TEST
--	depends on RESET_CONTROLLER && HAS_DMA
-+	depends on RESET_CONTROLLER
- 	help
- 	  SPI driver for NVIDIA Tegra114 SPI Controller interface. This controller
- 	  is different than the older SoCs SPI controller and also register interface
-@@ -668,7 +662,7 @@ config SPI_TEGRA20_SFLASH
- config SPI_TEGRA20_SLINK
- 	tristate "Nvidia Tegra20/Tegra30 SLINK Controller"
- 	depends on (ARCH_TEGRA && TEGRA20_APB_DMA) || COMPILE_TEST
--	depends on RESET_CONTROLLER && HAS_DMA
-+	depends on RESET_CONTROLLER
- 	help
- 	  SPI driver for Nvidia Tegra20/Tegra30 SLINK Controller interface.
- 
 -- 
-2.7.4
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
+According to speedtest.net: 8.21Mbps down 510kbps up
