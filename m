@@ -1,142 +1,69 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: 4.16 OMAP serial transmit corruption?
-Date: Wed, 18 Apr 2018 13:47:25 +0100
-Message-ID: <20180418124725.GQ10990@n2100.armlinux.org.uk>
-References: <20180416151732.GU16141@n2100.armlinux.org.uk>
- <20180416154545.GA5671@atomide.com>
- <413b774b-d19f-3221-44d5-7992d3b8757f@ti.com>
- <da3be56b-29d3-72f3-5eba-d6a38ae500d0@ti.com>
- <20180418095950.GN10990@n2100.armlinux.org.uk>
- <CAOf5uw=+MeWs+6A-zuy+yq2fZJmoe8hoLPcY1NVi9nvDMOLd7g@mail.gmail.com>
- <20180418110033.GO10990@n2100.armlinux.org.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20180418110033.GO10990@n2100.armlinux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Cc: Vignesh R <vigneshr@ti.com>, Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+From: Stefan Agner <stefan@agner.ch>
+Subject: [PATCH] serial: imx: warn user when using unsupported configuration
+Date: Wed, 18 Apr 2018 15:32:17 +0200
+Message-ID: <20180418133217.14568-1-stefan@agner.ch>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, u.kleine-koenig@pengutronix.de
+Cc: lukas@wunner.de, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>
 List-Id: linux-serial@vger.kernel.org
 
-T24gV2VkLCBBcHIgMTgsIDIwMTggYXQgMTI6MDA6MzNQTSArMDEwMCwgUnVzc2VsbCBLaW5nIC0g
-QVJNIExpbnV4IHdyb3RlOgo+IE9uIFdlZCwgQXByIDE4LCAyMDE4IGF0IDEyOjI3OjAyUE0gKzAy
-MDAsIE1pY2hhZWwgTmF6emFyZW5vIFRyaW1hcmNoaSB3cm90ZToKPiA+IEhpCj4gPiAKPiA+IE9u
-IFdlZCwgQXByIDE4LCAyMDE4IGF0IDExOjU5IEFNLCBSdXNzZWxsIEtpbmcgLSBBUk0gTGludXgK
-PiA+IDxsaW51eEBhcm1saW51eC5vcmcudWs+IHdyb3RlOgo+ID4gPiBPbiBXZWQsIEFwciAxOCwg
-MjAxOCBhdCAwMjo0MTo0M1BNICswNTMwLCBWaWduZXNoIFIgd3JvdGU6Cj4gPiA+Pgo+ID4gPj4K
-PiA+ID4+IE9uIFR1ZXNkYXkgMTcgQXByaWwgMjAxOCAwMjo1MCBQTSwgVmlnbmVzaCBSIHdyb3Rl
-Ogo+ID4gPj4gPgo+ID4gPj4gPgo+ID4gPj4gPiBPbiBNb25kYXkgMTYgQXByaWwgMjAxOCAwOTox
-NSBQTSwgVG9ueSBMaW5kZ3JlbiB3cm90ZToKPiA+ID4+ID4+ICogUnVzc2VsbCBLaW5nIC0gQVJN
-IExpbnV4IDxsaW51eEBhcm1saW51eC5vcmcudWs+IFsxODA0MTYgMTU6MTldOgo+ID4gPj4gPj4+
-IEhpLAo+ID4gPj4gPj4+Cj4gPiA+PiA+Pj4gSSdtIG5vdCBlbnRpcmVseSBzdXJlIHdoYXQncyBn
-b2luZyBvbiwgYnV0IEkgc2VlIGNvcnJ1cHRlZCBjaGFyYWN0ZXJzCj4gPiA+PiA+Pj4gd2l0aCB0
-aGUgc2VyaWFsIGNvbnNvbGUgb24gdGhlIE9NQVA0NDMwIFNEUCBib2FyZC4gIER1cmluZyBib290
-LAo+ID4gPj4gPj4+IGV2ZXJ5dGhpbmcgc2VlbXMgZmluZSwgdGhlIHByb2JsZW0gYXBwZWFycyB0
-byBiZSB1c2Vyc3BhY2Ugb3V0cHV0Lgo+ID4gPj4gPj4+Cj4gPiA+PiA+Pj4gRm9yIGV4YW1wbGUs
-IGlmIEkgZWRpdCBhIGZpbGUsIHRoZW4gcXVpdCB2aToKPiA+ID4+ID4+Pgo+ID4gPj4gPj4+IDpx
-4pag4pagJeKWoOKWoELilqDilqBa4pagcm9vdEBvbWFwLTQ0MzBzZHA6fiMKPiA+ID4+ID4+Cj4g
-PiA+PiA+PiBJIGRvbid0IHRoaW5rIEkndmUgc2VlbiB0aGF0IG9uZS4gV2hhdCBJJ3ZlIHNlZW4g
-ZmV3IHRpbWVzIGlzCj4gPiA+PiA+PiB0eXBpbmcgYSBrZXkgb24gdGhlIHNlcmlhbCBjb25zb2xl
-IGVjaG9pbmcgYmFjayB0aGUgcHJldmlvdXMKPiA+ID4+ID4+IGNoYXJhY3RlciB0eXBlZCB3aGls
-ZSB0aGUgbmV3IGNoYXJhY3RlciB3b24ndCBnZXQgZGlzcGxheWVkCj4gPiA+PiA+PiB1bnRpbCBo
-aXR0aW5nIGtleWJvYXJkIGFnYWluLiBPbmx5IHJlYm9vdGluZyB0aGUgZGV2aWNlIHNlZW1zCj4g
-PiA+PiA+PiB0byBzb2x2ZSB0aGlzLiBUaGlzIGlzIHdpdGggNDQzMCBFUzIuMyByZXZpc2lvbi4K
-PiA+ID4+ID4+Cj4gPiA+PiA+PiBJIHdvbmRlciBpZiB3ZSdyZSBtaXNzaW5nIHNvbWUgcGFydHMg
-b2YgZXJyYXRhIGkyMDIgaGFuZGxpbmcKPiA+ID4+ID4+IGluIG9tYXBfODI1MF9tZHIxX2VycmF0
-YXNldCgpPwo+ID4gPj4gPj4KPiA+ID4+Cj4gPiA+PiBJIHdvbmRlciBpZiB0aGUgZXh0cmEgcmVh
-ZCBvZiBNRFIxIHJlZ2lzdGVyIGF0IHRoZSBiZWdpbm5pbmcgb2YKPiA+ID4+IG9tYXBfODI1MF9t
-ZHIxX2VycmF0YXNldCgpIGNvbXBhcmVkIHRvIG9tYXAtc2VyaWFsIGlzIHRoZSBpc3N1ZS4KPiA+
-ID4+IGVycmF0YSBpMjAyIHNheXMgYWNjZXNzIHRvIE1EUjEgY2FuIGNhdXNlIGRhdGEgY29ycnVw
-dGlvbi4KPiA+ID4+IEFzc3VtaW5nIGJvdGggcmVhZHMgYW5kIHdyaXRlcyBjYW4gY2F1c2UgZ2xp
-dGNoIHRoZW4sIHRoYXQgcmVhZAo+ID4gPj4gaXMgbm90IGZvbGxvd2luZyBhZHZpc29yeToKPiA+
-ID4+Cj4gPiA+PiBJIGRvbid0IGhhdmUgU0RQIGJvYXJkIHNvLCBjb3VsZCB5b3UgdmVyaWZ5IGlm
-IGJlbG93IGRpZmYgaGVscHM6Cj4gPiA+Pgo+ID4gPj4KPiA+ID4+IGRpZmYgLS1naXQgYS9kcml2
-ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX29tYXAuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUw
-LzgyNTBfb21hcC5jCj4gPiA+PiBpbmRleCA2YWFhODQzNTVmZDEuLjhhYjlkMGExYjFlYiAxMDA2
-NDQKPiA+ID4+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfb21hcC5jCj4gPiA+
-PiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX29tYXAuYwo+ID4gPj4gQEAgLTE2
-MywxMSArMTYzLDYgQEAgc3RhdGljIHZvaWQgb21hcF84MjUwX21kcjFfZXJyYXRhc2V0KHN0cnVj
-dCB1YXJ0XzgyNTBfcG9ydCAqdXAsCj4gPiA+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgc3RydWN0IG9tYXA4MjUwX3ByaXYgKnByaXYpCj4gPiA+PiAgewo+ID4gPj4gICAg
-ICAgICB1OCB0aW1lb3V0ID0gMjU1Owo+ID4gPj4gLSAgICAgICB1OCBvbGRfbWRyMTsKPiA+ID4+
-IC0KPiA+ID4+IC0gICAgICAgb2xkX21kcjEgPSBzZXJpYWxfaW4odXAsIFVBUlRfT01BUF9NRFIx
-KTsKPiA+ID4+IC0gICAgICAgaWYgKG9sZF9tZHIxID09IHByaXYtPm1kcjEpCj4gPiA+PiAtICAg
-ICAgICAgICAgICAgcmV0dXJuOwo+ID4gPj4KPiA+ID4+ICAgICAgICAgc2VyaWFsX291dCh1cCwg
-VUFSVF9PTUFQX01EUjEsIHByaXYtPm1kcjEpOwo+ID4gPj4gICAgICAgICB1ZGVsYXkoMik7Cj4g
-PiA+Cj4gPiA+IFRoYXQgZG9lc24ndCBhcHBlYXIgdG8gaGVscC4KPiA+ID4KPiA+ID4gTG9va2lu
-ZyBhdCB0aGUgYml0c3RyZWFtIGFuZCBjb21wYXJpbmcgd2hhdCBzaG91bGQgaGF2ZSBiZWVuIHNl
-bnQgd2l0aAo+ID4gPiB3aGF0IHdhcyBzZW50LCB0aGVyZSBhcHBlYXJzIHRvIGJlIHNvbWUgY29y
-cmVsYXRpb24gYmV0d2VlbiB0aGUgdHdvLgo+ID4gPiBJdCBsb29rcyBsaWtlIHRoZSBGVERJIGlz
-IG5vdCBwcm9wZXJseSBzeW5jaHJvbmlzZWQgdG8gdGhlIGJpdHN0cmVhbQo+ID4gPiBjb21pbmcg
-ZnJvbSB0aGUgT01BUDQ0MzAuCj4gPiA+Cj4gPiA+IFNldHRpbmcgdHdvIHN0b3AgYml0cyBvbiBi
-b3RoIGVuZHMgKE9NQVA0NDMwIGFuZCBGVERJKSBhcHBlYXJzIHRvCj4gPiA+IGltcHJvdmUgdGhl
-IGlzc3VlLCBidXQgbm90IGNvbXBsZXRlbHkgc29sdmUgaXQuCj4gPiAKPiA+IEFyZSB5b3Ugc3Vy
-ZSBhYm91dCBjbG9jayBlcnJvciBhYm92ZSBzb21lIHRvbGxlcmFuY2U/Cj4gCj4gTm8gaWRlYSBh
-dCB0aGUgbW9tZW50LiAgTG9va2luZyBhdCB0aGUgYml0c3RyZWFtIHdpdGggYSBzY29wZSBpcyB0
-aGUKPiBuZXh0IHN0ZXAsIGJ1dCBpdCdzIG5vdCBlYXN5IHRvIGRvIHRoYXQgd2l0aCBqdXN0IHR3
-byBoYW5kcy4gIEkgYWxzbwo+IG5lZWQgdG8gZmluZCBzb21lIHdheSB0byB0cmlnZ2VyIGl0IHJl
-bGlhYmx5Lgo+IAo+IEFub3RoZXIgY2F1c2UgY291bGQgYmUgdGhhdCB0aGUgVUFSVCBwaW4gaXMg
-YmVpbmcgaGVsZCBoaWdoL2xvdyBmb3IKPiBzb21lIHJlYXNvbiAobWF5YmUgYSBwaW5tdXggcHJv
-YmxlbS4pCj4gCj4gQW5vdGhlciBpbnRlcmVzdGluZyBvYnNlcnZhdGlvbiBpcyB0aGF0IGlmIEkg
-bG9naW4gb3ZlciB0aGUgbmV0d29yayBhbmQKPiB0aGVuIGRvOgo+IAo+IAl3aGlsZSA6OyBkbyA6
-OyBkb25lICYKPiAJd2hpbGUgOjsgZG8gOjsgZG9uZSAmCj4gCj4gdG8gb2NjdXB5IGJvdGggQ1BV
-cywgYW5kIHRoZW4gZG86Cj4gCj4gCWRtZXNnIHwgbGVzcwo+IAo+IG9uIHRoZSBjb25zb2xlLCB0
-aGUgcHJvYmxlbSBnb2VzIGF3YXkuICBJZiBJIG9ubHkgZG8gb25lIHdoaWxlIGxvb3AsCj4gdGhl
-IHByb2JsZW0gaXMgcHJlc2VudCwgYnV0IHRoZSBjb3JydXB0aW9uIGxvb2tzIGxpa2UgaXQgaGFw
-cGVucyBhdCBhCj4gZGlmZmVyZW50IHBvaW50IGluIHRoZSBzZXJpYWwgc3RyZWFtLgo+IAo+IFRo
-aXMgd291bGQgc2VlbSB0byBwb2ludCB0aGUgYmxhbWUgYXdheSBmcm9tIGNsb2NrcyBvciBwaW5t
-dXgsIGFuZCBiYWNrCj4gdG8gcG93ZXIgbWFuYWdlbWVudCBpc3N1ZXMuCj4gCj4gSSd2ZSBhbHNv
-IHRyaWVkIG1pbWlja2luZyB0aGUgbGVzcyBvdXRwdXQgd2l0aCBhIHN0YW5kLWFsb25lIHByb2dy
-YW0sCj4gYW5kIHRoYXQgZG9lc24ndCBleGhpYml0IHRoZSBwcm9ibGVtIC0gSSd2ZSB0cmllZCB3
-aXRoIHZhcmlvdXMgaW5pdGlhbAo+IGRlbGF5cyBiZXR3ZWVuIHByb2dyYW0gc3RhcnQgYW5kIGZp
-cnN0IG91dHB1dCwgYnV0IHRoaXMgZG9lc24ndCBzZWVtCj4gdG8gaGF2ZSBtdWNoIGVmZmVjdC4g
-IFNvIGl0IHNlZW1zIHRvIG5lZWQgcmF0aGVyIHByZWNpc2UgdGltaW5nLgo+IAo+IHN0cmFjaW5n
-IGxlc3MgZG9lcyBjaGFuZ2Ugd2hlcmUgdGhlIGNvcnJ1cHRpb24gaGFwcGVucyBpbiB0aGUgb3V0
-cHV0LAo+IHdoaWNoIGFsc28gc3VnZ2VzdHMgYSB0aW1pbmcgcmVsYXRlZCBjYXVzZS4KCk9rYXks
-IEkgdGhpbmsgSSdtIGdldHRpbmcgc29tZXdoZXJlLi4uICBgbGVzcycgZG9lcyBhbiBpb2N0bCgs
-IFRDU0VUUywgKQphZnRlciBvdXRwdXR0aW5nIGEgc2NyZWVuZnVsIGluIG9yZGVyIHRvIGNoYW5n
-ZSBjX2lmbGFnIGFuZCBjX2xmbGFnLgpUaGUgZGlmZmVyZW5jZXMgYXJlOgoKCWNfaWZsYWcgMHgx
-NTAwIC0+IDB4MTAwMAoJY19sZmxhZyAweDA4M2IgLT4gMHgwODMxCgpPdGhlciBzZXR0aW5ncyBh
-cmUga2VwdCB0aGUgc2FtZS4KClRoZSBpZmxhZyBjaGFuZ2VzIGFyZSBJWE9OIHwgSUNSTkwsIGFu
-ZCB0aGUgbGZsYWcgY2hhbmdlcyBhcmUKRUNITyB8IElDQU5PTi4gIFJlcHJvZHVjaW5nIHRob3Nl
-IGNoYW5nZXMgaW4gbXkgdGVzdCBwcm9ncmFtIHNob3dzCnRoZSBzYW1lIGNvcnJ1cHRpb24uCgpS
-ZW1vdmluZyB0aGUgbGZsYWcgY2hhbmdlcyBtYWtlcyBubyBkaWZmZXJlbmNlLiAgUmVtb3Zpbmcg
-dGhlIElDUk5MCmFsc28gbWFrZXMgbm8gZGlmZmVyZW5jZSAtIHRoZSBwcm9ibGVtIGlzIHN0aWxs
-IHRoZXJlLiAgUmVtb3ZpbmcKdGhlIElYT04gY2hhbmdlIGFuZCB0aGUgcHJvYmxlbSB2YW5pc2hl
-cy4KCkdpdmVuIHRoYXQgdGhlIHNlcmlhbCBkcml2ZXIgcmV3cml0ZXMgdGhlIGVudGlyZSBVQVJU
-IGNvbmZpZ3VyYXRpb24Kb24gYSB0ZXJtaW9zIGNoYW5nZSB0aGF0IGFmZmVjdHMgYW55IGhhcmR3
-YXJlIHNldHRpbmdzLCB0aGlzIGlzCnJhdGhlciBleHBlY3RlZCB0byBoYXBwZW4uCgpTbywgdGhl
-IHF1ZXN0aW9uIGJlY29tZXMgd2hldGhlciB1c2Vyc3BhY2UgaXMgYWN0aW5nIGNvcnJlY3RseSAt
-IGFuZApJJ2Qgc2F5IG5vLiAgTG9va2luZyBhdCBfcmVhbF8gYGxlc3MnIChpb3csIG5vdCB0aGUg
-YnVzeWJveCB2ZXJzaW9uCnRoYXQgSSBzZWVtIHRvIGhhdmUgb24gdGhlIE9NQVA0NDMwKSBpdCBk
-b2Vzbid0IGRvIHRoaXMgZmlkZGxpbmcgd2l0aAp0ZXJtaW9zIHNldHRpbmdzIGp1c3QgYmVmb3Jl
-IHdhaXRpbmcgZm9yIGlucHV0LiAgTW9yZW92ZXIsIEkgY2FuJ3Qgc2VlCl9hbnlfIHJlYXNvbiBm
-b3IgYGxlc3MnIG9mIGFueSBraW5kIHRvIGJlIGZpZGRsaW5nIHdpdGggSVhPTi4KClRoZXJlIGlz
-IHRoZSByZW1haW5pbmcgcXVlc3Rpb24gYWJvdXQgdGhlIHByb3BlciBiZWhhdmlvdXIgb2Ygc2V0
-dGluZwp0ZXJtaW9zIG1vZGVzIHdoaWxlIHRoZXJlIGlzIGEgdHJhbnNtaXQgb3BlcmF0aW9uIGlu
-IHByb2dyZXNzIC0gSSBrbm93Cm9mIHNldmVyYWwgcHJvZ3JhbXMgdGhhdCBkbyB0aGlzLiAgQSBU
-Q1NFVFMgb3BlcmF0aW9uIGlzIGRlZmluZWQgdG8Kb2NjdXIgImltbWVkaWF0ZWx5IiBieSB0aGUg
-c3BlYywgYnV0IGlzIGl0IHJlYXNvbmFibGUgdG8gY2hhbmdlIHRoZQptb2RlcyBtaWQtdHJhbnNt
-aXNzaW9uIG9mIGEgY2hhcmFjdGVyICh3aGljaCBfd2lsbF8gY29ycnVwdCB0aGUKY2hhcmFjdGVy
-KSwgb3Igc2hvdWxkIHRoZXkgYmUgY2hhbmdlZCBhdCBhIGNoYXJhY3RlciBib3VuZGFyeSAob3Ig
-YXQKd2hhdGV2ZXIgY2hhcmFjdGVyIGJvdW5kYXJ5IHRoZSBoYXJkd2FyZSBpcyBjYXBhYmxlIG9m
-LikKCkkgbm90ZSB0aGF0IGlmIERNQSBpcyBlbmFibGVkLCA4MjUwX29tYXAgZGVsYXlzIGEgVENT
-RVRTIG9wZXJhdGlvbgp1bnRpbCBETUEgaGFzIGNvbXBsZXRlZCwgc28gSSBzdXNwZWN0IHRoYXQg
-dGhlIHByb2JsZW0gSSdtIHNlZWluZwp3aWxsIGdvIGF3YXkgaWYgSSBlbmFibGUgRE1BLgoKLS0g
-ClJNSydzIFBhdGNoIHN5c3RlbTogaHR0cDovL3d3dy5hcm1saW51eC5vcmcudWsvZGV2ZWxvcGVy
-L3BhdGNoZXMvCkZUVEMgYnJvYWRiYW5kIGZvciAwLjhtaWxlIGxpbmUgaW4gc3VidXJiaWE6IHN5
-bmMgYXQgOC44TWJwcyBkb3duIDYzMGticHMgdXAKQWNjb3JkaW5nIHRvIHNwZWVkdGVzdC5uZXQ6
-IDguMjFNYnBzIGRvd24gNTEwa2JwcyB1cAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJt
-LWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21h
-aWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+When using half-duplex mode (which disables receiver during txing)
+the RTS signal cannot be driven low during transmission. This seems
+to be a limitation of the i.MX UART IP: The RTS (CTS_B) signal is
+controlled by the receiver. When the receiver is disabled, the
+signal stays in UART logic idle state which is high...
+
+If SER_RS485_RTS_ON_SEND is used, RTS needs to be high active during
+transmission. Since this is the default state of the RTS (CTS_B)
+signal when the receiver is off, half-duplex mode in this
+configuration works fine.
+
+However, a low-active RTS signal (flag SER_RS485_RTS_ON_SEND not set)
+cannot be generated when the receiver is turned off.
+
+Print an error if the user selects this unsupported configuration
+(both SER_RS485_RTS_ON_SEND and SER_RS485_RX_DURING_TX unset) and
+configure the closest working configuration (set the
+SER_RS485_RX_DURING_TX flag).
+
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+---
+ drivers/tty/serial/imx.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 91f3a1a5cb7f..1ba7e98ddc76 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1833,6 +1833,10 @@ static int imx_uart_rs485_config(struct uart_port *port,
+ 		rs485conf->flags &= ~SER_RS485_ENABLED;
+ 
+ 	if (rs485conf->flags & SER_RS485_ENABLED) {
++		/* Enable receiver if low-active RTS signal is requested */
++		if (rs485conf->flags & SER_RS485_RTS_AFTER_SEND)
++			rs485conf->flags |= SER_RS485_RX_DURING_TX;
++
+ 		/* disable transmitter */
+ 		ucr2 = imx_uart_readl(sport, UCR2);
+ 		if (rs485conf->flags & SER_RS485_RTS_AFTER_SEND)
+@@ -2265,6 +2269,17 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	    (!sport->have_rtscts && !sport->have_rtsgpio))
+ 		dev_err(&pdev->dev, "no RTS control, disabling rs485\n");
+ 
++	/*
++	 * The RTS (CTS_B) signal cannot be set low during transmission
++	 * in case the receiver is off (limitation of the i.MX UART IP).
++	 */
++	if (sport->port.rs485.flags & SER_RS485_ENABLED && sport->have_rtscts &&
++	    (!(sport->port.rs485.flags & SER_RS485_RTS_ON_SEND) &&
++	     !(sport->port.rs485.flags & SER_RS485_RX_DURING_TX)))
++		dev_err(&pdev->dev,
++			"low-active RTS not possible when receiver is off, "
++			"enabling receiver\n");
++
+ 	imx_uart_rs485_config(&sport->port, &sport->port.rs485);
+ 
+ 	/* Disable interrupts before requesting them */
+-- 
+2.17.0
