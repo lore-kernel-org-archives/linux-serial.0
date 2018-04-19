@@ -1,72 +1,116 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: [PATCH v3] serial: imx: warn user when using unsupported configuration
-Date: Thu, 19 Apr 2018 17:39:16 +0200
-Message-ID: <20180419153916.21898-1-stefan@agner.ch>
+From: John Garry <john.garry@huawei.com>
+Subject: [PATCH] serial: 8250_of: Add IO space support
+Date: Thu, 19 Apr 2018 23:37:48 +0800
+Message-ID: <1524152268-228631-1-git-send-email-john.garry@huawei.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, u.kleine-koenig@pengutronix.de
-Cc: lukas@wunner.de, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>
+To: gregkh@linuxfoundation.org, jslaby@suse.com, joel@jms.id.au, p.zabel@pengutronix.de, arnd@arndb.de, fcooper@ti.com, sergei.shtylyov@cogentembedded.com, yamada.masahiro@socionext.com, khoroshilov@ispras.ru
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, andriy.shevchenko@linux.intel.com, linuxarm@huawei.com, John Garry <john.garry@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-When using half-duplex mode (which disables receiver during txing)
-the RTS signal cannot be driven low during transmission when using
-i.MX UART RTS/CTS control. This seems to be a limitation of the
-i.MX UART IP: The RTS (CTS_B) signal is controlled by the receiver.
-When the receiver is disabled, the signal stays in UART logic idle
-state which is high...
+Currently the 8250_of driver only supports MEM IO type
+accesses.
 
-If SER_RS485_RTS_ON_SEND is used, RTS needs to be high active during
-transmission. Since this is the default state of the RTS (CTS_B)
-signal when the receiver is off, half-duplex mode in this
-configuration works fine.
+Some development boards (Huawei D03, specifically) require
+IO space access for 8250-compatible OF driver support, so
+add it.
 
-However, a low-active RTS signal (flag SER_RS485_RTS_ON_SEND not set)
-cannot be generated when the receiver is turned off.
+The modification is quite simple: just set the port iotype
+and associated flags depending on the device address
+resource type.
 
-Print an error if the user selects this unsupported configuration
-(both SER_RS485_RTS_ON_SEND and SER_RS485_RX_DURING_TX unset) and
-configure the closest working configuration (set the
-SER_RS485_RX_DURING_TX flag).
+Signed-off-by: John Garry <john.garry@huawei.com>
 
-Signed-off-by: Stefan Agner <stefan@agner.ch>
----
- drivers/tty/serial/imx.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 91f3a1a5cb7f..65d7a2bfb6d2 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1833,6 +1833,11 @@ static int imx_uart_rs485_config(struct uart_port *port,
- 		rs485conf->flags &= ~SER_RS485_ENABLED;
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 9835b1c..a7ffaf6 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -92,13 +92,43 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		goto err_unprepare;
+ 	}
  
- 	if (rs485conf->flags & SER_RS485_ENABLED) {
-+		/* Enable receiver if low-active RTS signal is requested */
-+		if (sport->have_rtscts &&  !sport->have_rtsgpio &&
-+		    !(rs485conf->flags & SER_RS485_RTS_ON_SEND))
-+			rs485conf->flags |= SER_RS485_RX_DURING_TX;
++	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_FIXED_PORT |
++				  UPF_FIXED_TYPE;
+ 	spin_lock_init(&port->lock);
+-	port->mapbase = resource.start;
+-	port->mapsize = resource_size(&resource);
+ 
+-	/* Check for shifted address mapping */
+-	if (of_property_read_u32(np, "reg-offset", &prop) == 0)
+-		port->mapbase += prop;
++	if ((resource.flags & IORESOURCE_TYPE_BITS) == IORESOURCE_IO) {
++		port->iotype = UPIO_PORT;
++		port->iobase = resource.start;
++	} else {
++		port->mapbase = resource.start;
++		port->mapsize = resource_size(&resource);
 +
- 		/* disable transmitter */
- 		ucr2 = imx_uart_readl(sport, UCR2);
- 		if (rs485conf->flags & SER_RS485_RTS_AFTER_SEND)
-@@ -2265,6 +2270,18 @@ static int imx_uart_probe(struct platform_device *pdev)
- 	    (!sport->have_rtscts && !sport->have_rtsgpio))
- 		dev_err(&pdev->dev, "no RTS control, disabling rs485\n");
- 
-+	/*
-+	 * If using the i.MX UART RTS/CTS control then the RTS (CTS_B)
-+	 * signal cannot be set low during transmission in case the
-+	 * receiver is off (limitation of the i.MX UART IP).
-+	 */
-+	if (sport->port.rs485.flags & SER_RS485_ENABLED &&
-+	    sport->have_rtscts && !sport->have_rtsgpio &&
-+	    (!(sport->port.rs485.flags & SER_RS485_RTS_ON_SEND) &&
-+	     !(sport->port.rs485.flags & SER_RS485_RX_DURING_TX)))
-+		dev_err(&pdev->dev,
-+			"low-active RTS not possible when receiver is off, enabling receiver\n");
++		/* Check for shifted address mapping */
++		if (of_property_read_u32(np, "reg-offset", &prop) == 0)
++			port->mapbase += prop;
 +
- 	imx_uart_rs485_config(&sport->port, &sport->port.rs485);
++		port->iotype = UPIO_MEM;
++		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
++			switch (prop) {
++			case 1:
++				port->iotype = UPIO_MEM;
++				break;
++			case 2:
++				port->iotype = UPIO_MEM16;
++				break;
++			case 4:
++				port->iotype = of_device_is_big_endian(np) ?
++					       UPIO_MEM32BE : UPIO_MEM32;
++				break;
++			default:
++				dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
++					 prop);
++				ret = -EINVAL;
++				goto err_dispose;
++			}
++		}
++		port->flags |= UPF_IOREMAP;
++	}
  
- 	/* Disable interrupts before requesting them */
+ 	/* Check for registers offset within the devices address range */
+ 	if (of_property_read_u32(np, "reg-shift", &prop) == 0)
+@@ -114,26 +144,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		port->line = ret;
+ 
+ 	port->irq = irq_of_parse_and_map(np, 0);
+-	port->iotype = UPIO_MEM;
+-	if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
+-		switch (prop) {
+-		case 1:
+-			port->iotype = UPIO_MEM;
+-			break;
+-		case 2:
+-			port->iotype = UPIO_MEM16;
+-			break;
+-		case 4:
+-			port->iotype = of_device_is_big_endian(np) ?
+-				       UPIO_MEM32BE : UPIO_MEM32;
+-			break;
+-		default:
+-			dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
+-				 prop);
+-			ret = -EINVAL;
+-			goto err_dispose;
+-		}
+-	}
+ 
+ 	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
+ 	if (IS_ERR(info->rst)) {
+@@ -147,8 +157,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 
+ 	port->type = type;
+ 	port->uartclk = clk;
+-	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+-		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
+ 
+ 	if (of_property_read_bool(np, "no-loopback-test"))
+ 		port->flags |= UPF_SKIP_TEST;
 -- 
-2.17.0
+1.9.1
