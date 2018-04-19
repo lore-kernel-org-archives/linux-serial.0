@@ -1,116 +1,42 @@
-From: John Garry <john.garry@huawei.com>
-Subject: [PATCH] serial: 8250_of: Add IO space support
-Date: Thu, 19 Apr 2018 23:37:48 +0800
-Message-ID: <1524152268-228631-1-git-send-email-john.garry@huawei.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 53/61] tty: serial: simplify getting .drvdata
+Date: Thu, 19 Apr 2018 18:23:24 +0200
+Message-ID: <20180419162324.f46tsdomp4vi67cb@pengutronix.de>
+References: <20180419140641.27926-1-wsa+renesas@sang-engineering.com>
+ <20180419140641.27926-54-wsa+renesas@sang-engineering.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180419140641.27926-54-wsa+renesas@sang-engineering.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, joel@jms.id.au, p.zabel@pengutronix.de, arnd@arndb.de, fcooper@ti.com, sergei.shtylyov@cogentembedded.com, yamada.masahiro@socionext.com, khoroshilov@ispras.ru
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, andriy.shevchenko@linux.intel.com, linuxarm@huawei.com, John Garry <john.garry@huawei.com>
+To: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc: linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, kernel-janitors@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Patrice Chotard <patrice.chotard@st.com>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Currently the 8250_of driver only supports MEM IO type
-accesses.
+Hello Wolfram,
 
-Some development boards (Huawei D03, specifically) require
-IO space access for 8250-compatible OF driver support, so
-add it.
+On Thu, Apr 19, 2018 at 04:06:23PM +0200, Wolfram Sang wrote:
+> We should get drvdata from struct device directly. Going via
+> platform_device is an unneeded step back and forth.
+> 
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+> 
+> Build tested only. buildbot is happy. Please apply individually.
+> 
+>  drivers/tty/serial/imx.c              | 18 ++++++------------
 
-The modification is quite simple: just set the port iotype
-and associated flags depending on the device address
-resource type.
+for serial/imx.c:
 
-Signed-off-by: John Garry <john.garry@huawei.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 9835b1c..a7ffaf6 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -92,13 +92,43 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		goto err_unprepare;
- 	}
- 
-+	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_FIXED_PORT |
-+				  UPF_FIXED_TYPE;
- 	spin_lock_init(&port->lock);
--	port->mapbase = resource.start;
--	port->mapsize = resource_size(&resource);
- 
--	/* Check for shifted address mapping */
--	if (of_property_read_u32(np, "reg-offset", &prop) == 0)
--		port->mapbase += prop;
-+	if ((resource.flags & IORESOURCE_TYPE_BITS) == IORESOURCE_IO) {
-+		port->iotype = UPIO_PORT;
-+		port->iobase = resource.start;
-+	} else {
-+		port->mapbase = resource.start;
-+		port->mapsize = resource_size(&resource);
-+
-+		/* Check for shifted address mapping */
-+		if (of_property_read_u32(np, "reg-offset", &prop) == 0)
-+			port->mapbase += prop;
-+
-+		port->iotype = UPIO_MEM;
-+		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
-+			switch (prop) {
-+			case 1:
-+				port->iotype = UPIO_MEM;
-+				break;
-+			case 2:
-+				port->iotype = UPIO_MEM16;
-+				break;
-+			case 4:
-+				port->iotype = of_device_is_big_endian(np) ?
-+					       UPIO_MEM32BE : UPIO_MEM32;
-+				break;
-+			default:
-+				dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
-+					 prop);
-+				ret = -EINVAL;
-+				goto err_dispose;
-+			}
-+		}
-+		port->flags |= UPF_IOREMAP;
-+	}
- 
- 	/* Check for registers offset within the devices address range */
- 	if (of_property_read_u32(np, "reg-shift", &prop) == 0)
-@@ -114,26 +144,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		port->line = ret;
- 
- 	port->irq = irq_of_parse_and_map(np, 0);
--	port->iotype = UPIO_MEM;
--	if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
--		switch (prop) {
--		case 1:
--			port->iotype = UPIO_MEM;
--			break;
--		case 2:
--			port->iotype = UPIO_MEM16;
--			break;
--		case 4:
--			port->iotype = of_device_is_big_endian(np) ?
--				       UPIO_MEM32BE : UPIO_MEM32;
--			break;
--		default:
--			dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
--				 prop);
--			ret = -EINVAL;
--			goto err_dispose;
--		}
--	}
- 
- 	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
- 	if (IS_ERR(info->rst)) {
-@@ -147,8 +157,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 
- 	port->type = type;
- 	port->uartclk = clk;
--	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
--		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
- 
- 	if (of_property_read_bool(np, "no-loopback-test"))
- 		port->flags |= UPF_SKIP_TEST;
+Thanks Wolfram for going through this
+Uwe
+
+
 -- 
-1.9.1
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
