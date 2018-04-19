@@ -1,39 +1,133 @@
-From: Stefan Potyra <Stefan.Potyra@elektrobit.com>
-Subject: [PATCH] Check for an error when the clock is enabled.
-Date: Thu, 19 Apr 2018 15:02:28 +0200
-Message-ID: <20180419130228.rdee6hwsjcui5py7@agrajag.zerfleddert.de>
+From: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v3 13/20] mmc: Remove depends on HAS_DMA in case of
+	platform dependency
+Date: Thu, 19 Apr 2018 15:17:53 +0200
+Message-ID: <CAPDyKFrDsqJ-URAi=b0JmRkqoAqgT01HDPpQtNkH5to_Enm+LA@mail.gmail.com>
+References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
+	<1523987360-18760-14-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: ldv-project@linuxtesting.org, sil2review@lists.osadl.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1523987360-18760-14-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Fbdev development list <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matias Bjorling <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, driverdevel <devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org>, Alan Tull <atull@kern>
 List-Id: linux-serial@vger.kernel.org
 
-Found by Linux Driver Verification project (linuxtesting.org).
+On 17 April 2018 at 19:49, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> wrote:
+> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
+> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
+> In most cases this other symbol is an architecture or platform specific
+> symbol, or PCI.
+>
+> Generic symbols and drivers without platform dependencies keep their
+> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
+> cannot work anyway.
+>
+> This simplifies the dependencies, and allows to improve compile-testing.
+>
+> Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+> Reviewed-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Acked-by: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-Fixes: 0814e8d5da2b sc16is7xx: enable the clock
-Signed-off-by: Stefan Potyra <Stefan.Potyra@elektrobit.com>
----
- drivers/tty/serial/sc16is7xx.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Thanks, applied for next!
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 65792a3539d0..243c96025053 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1168,7 +1168,10 @@ static int sc16is7xx_probe(struct device *dev,
- 		else
- 			return PTR_ERR(s->clk);
- 	} else {
--		clk_prepare_enable(s->clk);
-+		ret = clk_prepare_enable(s->clk);
-+		if (ret)
-+			return ret;
-+
- 		freq = clk_get_rate(s->clk);
- 	}
- 
--- 
-2.17.0
+Kind regrds
+Uffe
+
+> ---
+> v3:
+>   - Add Acked-by,
+>   - Rebase to v4.17-rc1,
+>
+> v2:
+>   - Add Reviewed-by, Acked-by,
+>   - Drop RFC state,
+>   - Split per subsystem.
+> ---
+>  drivers/mmc/host/Kconfig | 10 ++--------
+>  1 file changed, 2 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
+> index 9589f9c9046f14b1..3978d0418958bf6b 100644
+> --- a/drivers/mmc/host/Kconfig
+> +++ b/drivers/mmc/host/Kconfig
+> @@ -358,7 +358,6 @@ config MMC_MESON_MX_SDIO
+>         tristate "Amlogic Meson6/Meson8/Meson8b SD/MMC Host Controller support"
+>         depends on ARCH_MESON || COMPILE_TEST
+>         depends on COMMON_CLK
+> -       depends on HAS_DMA
+>         depends on OF
+>         help
+>           This selects support for the SD/MMC Host Controller on
+> @@ -401,7 +400,6 @@ config MMC_OMAP
+>
+>  config MMC_OMAP_HS
+>         tristate "TI OMAP High Speed Multimedia Card Interface support"
+> -       depends on HAS_DMA
+>         depends on ARCH_OMAP2PLUS || ARCH_KEYSTONE || COMPILE_TEST
+>         help
+>           This selects the TI OMAP High Speed Multimedia card Interface.
+> @@ -511,7 +509,6 @@ config MMC_DAVINCI
+>
+>  config MMC_GOLDFISH
+>         tristate "goldfish qemu Multimedia Card Interface support"
+> -       depends on HAS_DMA
+>         depends on GOLDFISH || COMPILE_TEST
+>         help
+>           This selects the Goldfish Multimedia card Interface emulation
+> @@ -605,7 +602,7 @@ config MMC_SDHI
+>
+>  config MMC_SDHI_SYS_DMAC
+>         tristate "DMA for SDHI SD/SDIO controllers using SYS-DMAC"
+> -       depends on MMC_SDHI && HAS_DMA
+> +       depends on MMC_SDHI
+>         default MMC_SDHI if (SUPERH || ARM)
+>         help
+>           This provides DMA support for SDHI SD/SDIO controllers
+> @@ -615,7 +612,7 @@ config MMC_SDHI_SYS_DMAC
+>  config MMC_SDHI_INTERNAL_DMAC
+>         tristate "DMA for SDHI SD/SDIO controllers using on-chip bus mastering"
+>         depends on ARM64 || COMPILE_TEST
+> -       depends on MMC_SDHI && HAS_DMA
+> +       depends on MMC_SDHI
+>         default MMC_SDHI if ARM64
+>         help
+>           This provides DMA support for SDHI SD/SDIO controllers
+> @@ -669,7 +666,6 @@ config MMC_CAVIUM_THUNDERX
+>
+>  config MMC_DW
+>         tristate "Synopsys DesignWare Memory Card Interface"
+> -       depends on HAS_DMA
+>         depends on ARC || ARM || ARM64 || MIPS || COMPILE_TEST
+>         help
+>           This selects support for the Synopsys DesignWare Mobile Storage IP
+> @@ -748,7 +744,6 @@ config MMC_DW_ZX
+>
+>  config MMC_SH_MMCIF
+>         tristate "SuperH Internal MMCIF support"
+> -       depends on HAS_DMA
+>         depends on SUPERH || ARCH_RENESAS || COMPILE_TEST
+>         help
+>           This selects the MMC Host Interface controller (MMCIF) found in various
+> @@ -868,7 +863,6 @@ config MMC_TOSHIBA_PCI
+>  config MMC_BCM2835
+>         tristate "Broadcom BCM2835 SDHOST MMC Controller support"
+>         depends on ARCH_BCM2835 || COMPILE_TEST
+> -       depends on HAS_DMA
+>         help
+>           This selects the BCM2835 SDHOST MMC controller. If you have
+>           a BCM2835 platform with SD or MMC devices, say Y or M here.
+> --
+> 2.7.4
+>
