@@ -1,31 +1,35 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH] serial: imx: fix cached UCR2 read on software reset
-Date: Thu, 19 Apr 2018 19:15:26 -0300
-Message-ID: <CAOMZO5C9GxqVJWB18j7JQ+3D93eL1r_PG5woxmOc=8cZRdVX=w@mail.gmail.com>
-References: <20180416153502.11814-1-stefan@agner.ch>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Chris Ruehl <chris.ruehl@gtsys.com.hk>
+Subject: [PATCH] serial: imx: enable IMX21_UCR3_RXDMUXSEL for non-dte-mode
+Date: Fri, 20 Apr 2018 09:07:59 +0800
+Message-ID: <1524186479-25315-1-git-send-email-chris.ruehl@gtsys.com.hk>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180416153502.11814-1-stefan@agner.ch>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Agner <stefan@agner.ch>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Chris Ruehl <chris.ruehl@gtsys.com.hk>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Apr 16, 2018 at 12:35 PM, Stefan Agner <stefan@agner.ch> wrote:
-> To reset the UART the SRST needs be cleared (low active). According
-> to the documentation the bit will remain active for 4 module clocks
-> until it is cleared (set to 1).
->
-> Hence the real register need to be read in case the cached register
-> indcates that the SRST bit is zero.
+Fix a problem introduced with
+commit e61c38d85b73 ("serial: imx: setup DCEDTE early and ensure DCD and RI irqs to be off")
+result in non dte-mode imx-uart fail receive data.
+By add back IMX21_UCR3_RXDMUXSEL the serial port works as expected.
 
-s/indcates/indicates
+Signed-off-by: Chris Ruehl <chris.ruehl@gtsys.com.hk>
+---
+ drivers/tty/serial/imx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> This bug lead to wrong baudrate because the baud rate register got
-> restored before reset completed in imx_flush_buffer.
->
-> Fixes: 3a0ab62f43de ("serial: imx: implement shadow registers for UCRx and UFCR")
-> Signed-off-by: Stefan Agner <stefan@agner.ch>
-
-Reviewed-by: Fabio Estevam <fabio.estevam@nxp.com>
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 91f3a1a..3d09933 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1391,7 +1391,7 @@ static int imx_uart_startup(struct uart_port *port)
+ 
+ 		ucr3 = imx_uart_readl(sport, UCR3);
+ 
+-		ucr3 |= UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
++		ucr3 |= IMX21_UCR3_RXDMUXSEL | UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
+ 
+ 		if (sport->dte_mode)
+ 			/* disable broken interrupts */
+-- 
+2.1.4
