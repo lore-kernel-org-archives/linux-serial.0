@@ -1,35 +1,53 @@
-From: Chris Ruehl <chris.ruehl@gtsys.com.hk>
-Subject: [PATCH] serial: imx: enable IMX21_UCR3_RXDMUXSEL for non-dte-mode
-Date: Fri, 20 Apr 2018 09:07:59 +0800
-Message-ID: <1524186479-25315-1-git-send-email-chris.ruehl@gtsys.com.hk>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] serial: imx: fix cached UCR2 read on software reset
+Date: Fri, 20 Apr 2018 08:03:15 +0200
+Message-ID: <20180420060315.ob6eygfcibwq7f24@pengutronix.de>
+References: <20180416153502.11814-1-stefan@agner.ch>
+ <581f0f26d7191aa3355a6c63b531f876@agner.ch>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <581f0f26d7191aa3355a6c63b531f876@agner.ch>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Chris Ruehl <chris.ruehl@gtsys.com.hk>
+To: Stefan Agner <stefan@agner.ch>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Fix a problem introduced with
-commit e61c38d85b73 ("serial: imx: setup DCEDTE early and ensure DCD and RI irqs to be off")
-result in non dte-mode imx-uart fail receive data.
-By add back IMX21_UCR3_RXDMUXSEL the serial port works as expected.
+Hello Stefan,
 
-Signed-off-by: Chris Ruehl <chris.ruehl@gtsys.com.hk>
----
- drivers/tty/serial/imx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Thu, Apr 19, 2018 at 11:37:23PM +0200, Stefan Agner wrote:
+> On 16.04.2018 17:35, Stefan Agner wrote:
+> > To reset the UART the SRST needs be cleared (low active). According
+> > to the documentation the bit will remain active for 4 module clocks
+> > until it is cleared (set to 1).
+> > 
+> > Hence the real register need to be read in case the cached register
+> > indcates that the SRST bit is zero.
+> > 
+> > This bug lead to wrong baudrate because the baud rate register got
+> > restored before reset completed in imx_flush_buffer.
+> 
+> Given that you reviewed my other patch rather quickly, you might have
+> overlooked this one?
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 91f3a1a..3d09933 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1391,7 +1391,7 @@ static int imx_uart_startup(struct uart_port *port)
+no I didn't, still the ping was justified. I didn't look into it at once
+because I didn't feel like opening the refman.
  
- 		ucr3 = imx_uart_readl(sport, UCR3);
- 
--		ucr3 |= UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
-+		ucr3 |= IMX21_UCR3_RXDMUXSEL | UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
- 
- 		if (sport->dte_mode)
- 			/* disable broken interrupts */
+> Since it is a regression, this should go into v4.17 still...
+
+That's right,
+
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+
+I wonder what is different on your side that made it break. I didn't see
+any breakage and tested that on a handful of different machines.
+
+Best regards
+Uwe
+
 -- 
-2.1.4
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
