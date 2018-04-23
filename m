@@ -1,38 +1,40 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [RFC. PATCH] earlycon: Remove hardcoded port->uartclk initialization in of_setup_earlycon
-Date: Mon, 23 Apr 2018 11:27:50 +0200
-Message-ID: <b05e4d329c556357bf7393075c6c1602509eb9c2.1524475668.git.michal.simek@xilinx.com>
+Subject: [PATCH 0/4] serial: uartps: Dynamic allocation
+Date: Mon, 23 Apr 2018 11:50:59 +0200
+Message-ID: <cover.1524477059.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu, devicetree@vger.kernel.org, Rob Herring <robherring2@gmail.com>, matt.redfearn@mips.com
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, geert+renesas@glider.be
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-There is no reason to initialize uartclk to BASE_BAUD * 16 for DT based
-systems.
+Hi,
 
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
+this is the initial version before next step which is move
+uart_register_driver to probe function.
+I was able to get rid of static array with uart_port structures.
+It was wired with console which is also fixed.
+And the next step is the most complicated one handle .nr in uart_driver
+structure in more generic way.
 
-It looks like from history that portclk = BASE_BAUD * 16 was setup to
-get on calculation on x86 (divisor = 1) but it shouldn't be needed on DT based
-system. That's why I think that there is no DT based system which really
-requires this line.
----
- drivers/tty/serial/earlycon.c | 1 -
- 1 file changed, 1 deletion(-)
+I am sending these patches as v1. RFC was sent in past
+(https://www.spinics.net/lists/linux-serial/msg27106.html)
+and I promised to wait till Geert's
+"serial: xuartps: Fix out-of-bounds access through DT
+alias" (sha1: e7d75e18d0fc3f7193b65282b651f980c778d935) is applied.
 
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index a24278380fec..c12b1edcdd8e 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -244,7 +244,6 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
- 		return -ENXIO;
- 	}
- 	port->mapbase = addr;
--	port->uartclk = BASE_BAUD * 16;
- 
- 	val = of_get_flat_dt_prop(node, "reg-offset", NULL);
- 	if (val)
+Thanks,
+Michal
+
+
+Michal Simek (4):
+  serial: uartps: Remove console_initcall from the driver
+  serial: uartps: Use dynamic array for console port
+  serial: uartps: Move cnds_uart_get_port to probe
+  serial: uartps: Remove static port array
+
+ drivers/tty/serial/xilinx_uartps.c | 102 +++++++++++------------------
+ 1 file changed, 40 insertions(+), 62 deletions(-)
+
 -- 
 2.17.0
