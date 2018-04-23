@@ -1,36 +1,58 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH] serial: 8250_early: Setup divider when uartclk is passed
-Date: Mon, 23 Apr 2018 11:18:11 +0200
-Message-ID: <93a7871c8654a6273b1ab35a8071e9f830e2a0c8.1524475087.git.michal.simek@xilinx.com>
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: stable <stable@vger.kernel.org>, Matt Redfearn <matt.redfearn@mips.com>, Jiri Slaby <jslaby@suse.com>, Douglas Anderson <dianders@chromium.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jeffy Chen <jeffy.chen@rock-chips.com>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH] serial: 8250_of: Add IO space support
+Date: Mon, 23 Apr 2018 10:22:40 +0100
+Message-ID: <af71a628-d9c8-bfbd-5772-8fced7c51b6b@huawei.com>
+References: <1524152268-228631-1-git-send-email-john.garry@huawei.com>
+ <20180423081402.GA19169@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180423081402.GA19169@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jslaby@suse.com, joel@jms.id.au, p.zabel@pengutronix.de, arnd@arndb.de, fcooper@ti.com, sergei.shtylyov@cogentembedded.com, yamada.masahiro@socionext.com, khoroshilov@ispras.ru, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, andriy.shevchenko@linux.intel.com, linuxarm@huawei.com
 List-Id: linux-serial@vger.kernel.org
 
-device->baud is always non zero value because it is checked already in
-early_serial8250_setup() before init_port is called.
+On 23/04/2018 09:14, Greg KH wrote:
+> On Thu, Apr 19, 2018 at 11:37:48PM +0800, John Garry wrote:
+>> Currently the 8250_of driver only supports MEM IO type
+>> accesses.
+>>
+>> Some development boards (Huawei D03, specifically) require
+>> IO space access for 8250-compatible OF driver support, so
+>> add it.
+>>
+>> The modification is quite simple: just set the port iotype
+>> and associated flags depending on the device address
+>> resource type.
+>>
+>> Signed-off-by: John Garry <john.garry@huawei.com>
+>
+> This no longer applies to my tree due to a patch that was sent before
+> yours that conflicts in the same area.  Can you rebase it against my
+> tty-testing branch and resend?
+>
 
-Fixes: 0ff3ab701963 ("serial: 8250_early: Only set divisor if valid clk & baud")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
+Hi Greg,
 
- drivers/tty/serial/8250/8250_early.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+OK, I'll do that. I will also make this small improvement to this patch:
 
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index ae6a256524d8..5cd8c36c8fcc 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -122,7 +122,7 @@ static void __init init_port(struct earlycon_device *device)
- 	serial8250_early_out(port, UART_FCR, 0);	/* no fifo */
- 	serial8250_early_out(port, UART_MCR, 0x3);	/* DTR + RTS */
- 
--	if (port->uartclk && device->baud) {
-+	if (port->uartclk) {
- 		divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * device->baud);
- 		c = serial8250_early_in(port, UART_LCR);
- 		serial8250_early_out(port, UART_LCR, c | UART_LCR_DLAB);
--- 
-2.17.0
++	if ((resource.flags & IORESOURCE_TYPE_BITS) == IORESOURCE_IO) {
++		port->iotype = UPIO_PORT;
+
+	|
+	V
+
++	if (resource_type(&resource) == IORESOURCE_IO) {
++		port->iotype = UPIO_PORT;
+
+All the best,
+John
+
+> thanks,
+>
+> greg k-h
+>
+> .
+>
