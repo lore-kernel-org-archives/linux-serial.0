@@ -1,54 +1,35 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: serial: xuartps: Setup early console when uartclk
- is also passed
-Date: Mon, 23 Apr 2018 10:06:41 +0200
-Message-ID: <20180423080641.GA20149@kroah.com>
-References: <2ef5ac478f8d32bc807ead758eb5d60744a44515.1523367208.git.michal.simek@xilinx.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: 8250_of: Add IO space support
+Date: Mon, 23 Apr 2018 10:14:02 +0200
+Message-ID: <20180423081402.GA19169@kroah.com>
+References: <1524152268-228631-1-git-send-email-john.garry@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <2ef5ac478f8d32bc807ead758eb5d60744a44515.1523367208.git.michal.simek@xilinx.com>
+In-Reply-To: <1524152268-228631-1-git-send-email-john.garry@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: John Garry <john.garry@huawei.com>
+Cc: jslaby@suse.com, joel@jms.id.au, p.zabel@pengutronix.de, arnd@arndb.de, fcooper@ti.com, sergei.shtylyov@cogentembedded.com, yamada.masahiro@socionext.com, khoroshilov@ispras.ru, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, andriy.shevchenko@linux.intel.com, linuxarm@huawei.com
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Apr 10, 2018 at 03:33:30PM +0200, Michal Simek wrote:
-> Baudrate calculation depends on requested baudrate and uart clock.
-> This patch is checking that uartclk is also passed.
+On Thu, Apr 19, 2018 at 11:37:48PM +0800, John Garry wrote:
+> Currently the 8250_of driver only supports MEM IO type
+> accesses.
 > 
-> The same logic is used 8250_early.c/init_port function.
+> Some development boards (Huawei D03, specifically) require
+> IO space access for 8250-compatible OF driver support, so
+> add it.
 > 
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> ---
+> The modification is quite simple: just set the port iotype
+> and associated flags depending on the device address
+> resource type.
 > 
->  drivers/tty/serial/xilinx_uartps.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index b9b2bc76bcac..a654cda203c7 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -1181,7 +1181,7 @@ static int __init cdns_early_console_setup(struct earlycon_device *device,
->  	/* only set baud if specified on command line - otherwise
->  	 * assume it has been initialized by a boot loader.
->  	 */
-> -	if (device->baud) {
-> +	if (port->uartclk && device->baud) {
->  		u32 cd = 0, bdiv = 0;
->  		u32 mr;
->  		int div8;
-> -- 
-> 1.9.1
+> Signed-off-by: John Garry <john.garry@huawei.com>
 
-This patch conflicts with the previous patch you sent: Subject: [PATCH]
-serial: xuartps: Fix the early_console junk character issue
-
-So, which one should I apply?
-
-I've dropped both from my review queue now, please resend the one(s) you
-want applied, in a patch series if needed.
+This no longer applies to my tree due to a patch that was sent before
+yours that conflicts in the same area.  Can you rebase it against my
+tty-testing branch and resend?
 
 thanks,
 
