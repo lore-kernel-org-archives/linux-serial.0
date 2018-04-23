@@ -1,58 +1,38 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH] serial: 8250_of: Add IO space support
-Date: Mon, 23 Apr 2018 10:22:40 +0100
-Message-ID: <af71a628-d9c8-bfbd-5772-8fced7c51b6b@huawei.com>
-References: <1524152268-228631-1-git-send-email-john.garry@huawei.com>
- <20180423081402.GA19169@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [RFC. PATCH] earlycon: Remove hardcoded port->uartclk initialization in of_setup_earlycon
+Date: Mon, 23 Apr 2018 11:27:50 +0200
+Message-ID: <b05e4d329c556357bf7393075c6c1602509eb9c2.1524475668.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180423081402.GA19169@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.com, joel@jms.id.au, p.zabel@pengutronix.de, arnd@arndb.de, fcooper@ti.com, sergei.shtylyov@cogentembedded.com, yamada.masahiro@socionext.com, khoroshilov@ispras.ru, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, andriy.shevchenko@linux.intel.com, linuxarm@huawei.com
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu, devicetree@vger.kernel.org, Rob Herring <robherring2@gmail.com>, matt.redfearn@mips.com
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 23/04/2018 09:14, Greg KH wrote:
-> On Thu, Apr 19, 2018 at 11:37:48PM +0800, John Garry wrote:
->> Currently the 8250_of driver only supports MEM IO type
->> accesses.
->>
->> Some development boards (Huawei D03, specifically) require
->> IO space access for 8250-compatible OF driver support, so
->> add it.
->>
->> The modification is quite simple: just set the port iotype
->> and associated flags depending on the device address
->> resource type.
->>
->> Signed-off-by: John Garry <john.garry@huawei.com>
->
-> This no longer applies to my tree due to a patch that was sent before
-> yours that conflicts in the same area.  Can you rebase it against my
-> tty-testing branch and resend?
->
+There is no reason to initialize uartclk to BASE_BAUD * 16 for DT based
+systems.
 
-Hi Greg,
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
-OK, I'll do that. I will also make this small improvement to this patch:
+It looks like from history that portclk = BASE_BAUD * 16 was setup to
+get on calculation on x86 (divisor = 1) but it shouldn't be needed on DT based
+system. That's why I think that there is no DT based system which really
+requires this line.
+---
+ drivers/tty/serial/earlycon.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-+	if ((resource.flags & IORESOURCE_TYPE_BITS) == IORESOURCE_IO) {
-+		port->iotype = UPIO_PORT;
-
-	|
-	V
-
-+	if (resource_type(&resource) == IORESOURCE_IO) {
-+		port->iotype = UPIO_PORT;
-
-All the best,
-John
-
-> thanks,
->
-> greg k-h
->
-> .
->
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index a24278380fec..c12b1edcdd8e 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -244,7 +244,6 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+ 		return -ENXIO;
+ 	}
+ 	port->mapbase = addr;
+-	port->uartclk = BASE_BAUD * 16;
+ 
+ 	val = of_get_flat_dt_prop(node, "reg-offset", NULL);
+ 	if (val)
+-- 
+2.17.0
