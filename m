@@ -1,46 +1,45 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH] serial: 8250_early: Setup divider when uartclk is passed
-Date: Tue, 24 Apr 2018 14:27:47 +0200
-Message-ID: <4e5e4f48-ec79-2c99-a321-83c0e383991a@xilinx.com>
-References: <93a7871c8654a6273b1ab35a8071e9f830e2a0c8.1524475087.git.michal.simek@xilinx.com>
- <f8c69fee-8889-f0aa-1235-b7a65068238b@mips.com>
+From: Stefan Potyra <Stefan.Potyra@elektrobit.com>
+Subject: [PATCH v2] sc16is7xx: Check for an error when the clock is enabled.
+Date: Tue, 24 Apr 2018 18:03:47 +0200
+Message-ID: <20180424160346.GB16979@er01809n.ebgroup.elektrobit.com>
+References: <20180419130228.rdee6hwsjcui5py7@agrajag.zerfleddert.de>
+ <20180423075519.GA13262@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <f8c69fee-8889-f0aa-1235-b7a65068238b@mips.com>
-Content-Language: en-US
-Sender: stable-owner@vger.kernel.org
-To: Matt Redfearn <matt.redfearn@mips.com>, Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: stable <stable@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, Douglas Anderson <dianders@chromium.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jeffy Chen <jeffy.chen@rock-chips.com>
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180423075519.GA13262@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org, sil2review@lists.osadl.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Matt,
+When the clock is enabled, check if there is an error. Otherwise
+clk_get_rate() can be called without enabled clock.
 
-On 23.4.2018 15:21, Matt Redfearn wrote:
-> Hi Michal
-> 
-> On 23/04/18 10:18, Michal Simek wrote:
->> device->baud is always non zero value because it is checked already in
->> early_serial8250_setup() before init_port is called.
-> 
-> True, currently init_port is only called from the one location and so
-> the test is a little redundant, though I don't see the harm in testing
-> both inputs to the divisor calculation immediately before use such that
-> any future call path avoids setting a bad divisor.
+Found by Linux Driver Verification project (linuxtesting.org).
 
-I will let others to decide.
+Fixes: 0814e8d5da2b ("sc16is7xx: enable the clock")
+Signed-off-by: Stefan Potyra <Stefan.Potyra@elektrobit.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-> 
->>
->> Fixes: 0ff3ab701963 ("serial: 8250_early: Only set divisor if valid
->> clk & baud")
->> Cc: stable <stable@vger.kernel.org>
-> 
-> Even if the test is dropped going forward, I wouldn't consider it's
-> presence a "bug" such that a fix needs to be backported.
-
-Not a problem with not adding this to stable.
-
-Thanks,
-Michal
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 65792a3539d0..243c96025053 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1168,7 +1168,10 @@ static int sc16is7xx_probe(struct device *dev,
+ 		else
+ 			return PTR_ERR(s->clk);
+ 	} else {
+-		clk_prepare_enable(s->clk);
++		ret = clk_prepare_enable(s->clk);
++		if (ret)
++			return ret;
++
+ 		freq = clk_get_rate(s->clk);
+ 	}
+ 
+-- 
+2.17.0
