@@ -1,29 +1,39 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: 8250_early: Setup divider when uartclk is passed
-Date: Wed, 25 Apr 2018 14:51:37 +0200
-Message-ID: <20180425125137.GA30021@kroah.com>
-References: <93a7871c8654a6273b1ab35a8071e9f830e2a0c8.1524475087.git.michal.simek@xilinx.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH] earlycon: Remove hardcoded port->uartclk initialization in of_setup_earlycon
+Date: Wed, 25 Apr 2018 15:48:42 +0200
+Message-ID: <3244a776bc8c4c0c8e39cc8daa386b82d50dc86d.1524664120.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <93a7871c8654a6273b1ab35a8071e9f830e2a0c8.1524475087.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, stable <stable@vger.kernel.org>, Matt Redfearn <matt.redfearn@mips.com>, Jiri Slaby <jslaby@suse.com>, Douglas Anderson <dianders@chromium.org>, linux-serial@vger.kernel.org, Jeffy Chen <jeffy.chen@rock-chips.com>
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu, devicetree@vger.kernel.org, Rob Herring <robherring2@gmail.com>, matt.redfearn@mips.com
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Apr 23, 2018 at 11:18:11AM +0200, Michal Simek wrote:
-> device->baud is always non zero value because it is checked already in
-> early_serial8250_setup() before init_port is called.
-> 
-> Fixes: 0ff3ab701963 ("serial: 8250_early: Only set divisor if valid clk & baud")
-> Cc: stable <stable@vger.kernel.org>
+There is no reason to initialize uartclk to BASE_BAUD * 16 for DT based
+systems.
 
-This isn't "fixing" anything, as the logic is identical before, or
-after, this patch is committed.  So I'll apply this, but will drop these
-two tags.
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+Tested-by: Matt Redfearn <matt.redfearn@mips.com>
+---
 
-thanks,
+It looks like from history that portclk = BASE_BAUD * 16 was setup to
+get on calculation on x86 (divisor = 1) but it shouldn't be needed on DT based
+system. That's why I think that there is no DT based system which really
+requires this line.
+---
+ drivers/tty/serial/earlycon.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index a24278380fec..c12b1edcdd8e 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -244,7 +244,6 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+ 		return -ENXIO;
+ 	}
+ 	port->mapbase = addr;
+-	port->uartclk = BASE_BAUD * 16;
+ 
+ 	val = of_get_flat_dt_prop(node, "reg-offset", NULL);
+ 	if (val)
+-- 
+2.17.0
