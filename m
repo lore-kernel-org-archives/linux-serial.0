@@ -1,104 +1,58 @@
-From: Sean Wang <sean.wang@mediatek.com>
-Subject: Re: [PATCH v1 2/7] serdev: add dev_pm_domain_attach|detach()
-Date: Thu, 26 Apr 2018 13:29:58 +0800
-Message-ID: <1524720598.12322.37.camel@mtkswgap22>
-References: <cover.1522736996.git.sean.wang@mediatek.com>
-         <f976766cd499c8d7053a1f442aba1494b4d3314f.1522736996.git.sean.wang@mediatek.com>
-         <FD85DED4-589C-4113-8A8B-BC5A39494130@holtmann.org>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: [RFC PATCH v4] tty: pl011: Avoid spuriously stuck-off interrupts
+Date: Thu, 26 Apr 2018 11:54:40 +0100
+Message-ID: <1524740081-4979-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <FD85DED4-589C-4113-8A8B-BC5A39494130@holtmann.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marcel Holtmann <marcel@holtmann.org>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Johan Hedberg <johan.hedberg@gmail.com>, devicetree <devicetree@vger.kernel.org>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-mediatek@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>, Rob Herring <robh@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Peter Maydell <peter.maydell@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Wei Xu <xuwei5@hisilicon.com>, Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2018-04-03 at 12:29 +0200, Marcel Holtmann wrote:
-> Hi Sean,
-> 
-> > In order to open up the required power gate before any operation can be
-> > effectively performed over the serial bus between CPU and serdev, it's
-> > clearly essential to add common attach functions for PM domains to serdev
-> > at the probe phase.
-> > 
-> > Similarly, the relevant dettach function for the PM domains should be
-> > properly and reversely added at the remove phase.
-> > 
-> > Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-> > Cc: Rob Herring <robh@kernel.org>
-> > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Jiri Slaby <jslaby@suse.com>
-> > Cc: linux-serial@vger.kernel.org
-> > ---
-> > drivers/tty/serdev/core.c | 14 +++++++++++++-
-> > 1 file changed, 13 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> > index df93b72..c93d8ee 100644
-> > --- a/drivers/tty/serdev/core.c
-> > +++ b/drivers/tty/serdev/core.c
-> > @@ -13,6 +13,7 @@
-> > #include <linux/module.h>
-> > #include <linux/of.h>
-> > #include <linux/of_device.h>
-> > +#include <linux/pm_domain.h>
-> > #include <linux/serdev.h>
-> > #include <linux/slab.h>
-> > 
-> > @@ -330,8 +331,16 @@ EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
-> > static int serdev_drv_probe(struct device *dev)
-> > {
-> > 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
-> > +	int ret;
-> > +
-> > +	ret = dev_pm_domain_attach(dev, true);
-> > +	if (ret != -EPROBE_DEFER) {
-> > +		ret = sdrv->probe(to_serdev_device(dev));
-> > +		if (ret)
-> > +			dev_pm_domain_detach(dev, true);
-> > +	}
-> 
-> so if this is deferred, when does the serdev device gets probed?
-> 
+This is an update to a previous RFC v3 [1], to fix a problem observed by
+the qemu community that causes serial input to hang when booting a
+simulated system with data already queued in the UART FIFO [2].
 
-driver probe deferral mechanism is supported in driver core
+RFC v3 did not solve the problem by itself, due to the problem being
+triggered again in pl011_enable_interrupts() after working around it
+in pl011_hwinit().  See the updated commit message in the patch for
+details.
 
-deferred_probe_initcall makes sure that deferred probing is
-delayed until late_initcall time.
+This patch is intended to supersede the previous RFCs, so please test
+_without_ RFC v2 (or 3) applied.
 
+If you can, please:
 
-Below is a few of word I got from drivers/base/core.c I thought it helps
-to understand the mechanism in complete picture
+ a) Check that you can still reproduce the bug on mainline without this
+    patch.
 
-* If a required resource is not available yet, a driver can
-request probing to be deferred by returning -EPROBE_DEFER from
-its probe hook.
+ b) Check whether this patch fixes the problem.
 
-* A driver returning -EPROBE_DEFER causes the device to be added to the
-pending list.  A successful driver probe will trigger moving all devices
-from the pending to the active list so that the workqueue will
-eventually retry them.
+Cheers
+---Dave
 
-> > 
-> > -	return sdrv->probe(to_serdev_device(dev));
-> > +	return ret;
-> > }
-> > 
-> > static int serdev_drv_remove(struct device *dev)
-> > @@ -339,6 +348,9 @@ static int serdev_drv_remove(struct device *dev)
-> > 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
-> > 	if (sdrv->remove)
-> > 		sdrv->remove(to_serdev_device(dev));
-> > +
-> > +	dev_pm_domain_detach(dev, true);
-> > +
-> > 	return 0;
-> > }
-> 
-> Regards
-> 
-> Marcel
-> 
+[1] [RFC PATCH v3] tty: pl011: Avoid spuriously stuck-off interrupts
+http://lists.infradead.org/pipermail/linux-arm-kernel/2018-April/573120.html
+
+[2] [Qemu-devel] [Qemu-arm] [PATCH] pl011: do not put into fifo
+before enabled the interruption
+https://lists.gnu.org/archive/html/qemu-devel/2018-01/msg06446.html
+
+Dave Martin (1):
+  tty: pl011: Avoid spuriously stuck-off interrupts
+
+ drivers/tty/serial/amba-pl011.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+-- 
+2.1.4
