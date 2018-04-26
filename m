@@ -1,7 +1,7 @@
-From: Dave Martin <Dave.Martin@arm.com>
+From: Andrew Jones <drjones@redhat.com>
 Subject: Re: [RFC PATCH v4] tty: pl011: Avoid spuriously stuck-off interrupts
-Date: Thu, 26 Apr 2018 14:01:22 +0100
-Message-ID: <20180426130122.GQ16308@e103592.cambridge.arm.com>
+Date: Thu, 26 Apr 2018 15:42:01 +0200
+Message-ID: <20180426134201.mwnkib4ch4dcqnqi@kamzik.brq.redhat.com>
 References: <1524740081-4979-1-git-send-email-Dave.Martin@arm.com>
  <CAFEAcA9aVWC2M4cExTgPdwGqAOofWgm-61FUuZHNFWvFeNiHJA@mail.gmail.com>
 Mime-Version: 1.0
@@ -20,7 +20,7 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Peter Maydell <peter.maydell@linaro.org>
-Cc: Andrew Jones <drjones@redhat.com>, Ciro Santilli <ciro.santilli@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Wei Xu <xuwei5@hisilicon.com>, linux-serial@vger.kernel.org, arm-mail-list <linux-arm-kernel@lists.infradead.org>
+Cc: Ciro Santilli <ciro.santilli@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Wei Xu <xuwei5@hisilicon.com>, linux-serial@vger.kernel.org, Dave Martin <Dave.Martin@arm.com>, arm-mail-list <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
 On Thu, Apr 26, 2018 at 01:11:41PM +0100, Peter Maydell wrote:
@@ -48,9 +48,19 @@ On Thu, Apr 26, 2018 at 01:11:41PM +0100, Peter Maydell wrote:
 > this testing...
 > Link to v4 patch:
 > https://patchwork.kernel.org/patch/10365551/
+>
 
-Dang.  Thanks!
+Tested-by: Andrew Jones <drjones@redhat.com>
 
-(Sorry guys)
+And
+ 
+Reviewed-by: Andrew Jones <drjones@redhat.com>
 
----Dave
+as this patch is consistent with what I expected was needed back
+when I reported the issue[*]. I was just too dense to realize
+that we didn't need to "reset" the FIFO, but rather just drain it.
+
+Thanks,
+drew
+
+[*] https://lkml.org/lkml/2016/8/1/247
