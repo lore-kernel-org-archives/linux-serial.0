@@ -1,127 +1,182 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [RFC PATCH 0/3] serial: uartps: Add run time support for more IPs than hardcoded 2
-Date: Thu, 26 Apr 2018 16:08:16 +0200
-Message-ID: <cover.1524751696.git.michal.simek@xilinx.com>
+Subject: [RFC PATCH 3/3] serial: uartps: Change uart ports allocation
+Date: Thu, 26 Apr 2018 16:08:19 +0200
+Message-ID: <782bf2c500578db1a8ee327cc48ed905d3e50497.1524751696.git.michal.simek@xilinx.com>
+References: <cover.1524751696.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1524751696.git.michal.simek@xilinx.com>
+In-Reply-To: <cover.1524751696.git.michal.simek@xilinx.com>
+References: <cover.1524751696.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, monstr@monstr.eu, gnomes@lxorguk.ukuu.org.uk, Alexander Graf <agraf@suse.de>
-Cc: devicetree@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+For ips which have alias algorightm all the tim using that alias and
+minor number. It means serial20 alias ends up as ttyPS20.
 
-this series is trying to address discussion I had with Alan in past
-https://patchwork.kernel.org/patch/9738445/.
+If aliases are not setup for enabled core the first unused position is
+used but that's need to be checked if it is really empty because another
+instance doesn't need to be probed. of_alias_check_id() does that test.
+If alias pointing to different not compatible IP, it is free to use.
 
-It is moving uart_register_driver() to probe function like it is done in
-pl011 driver.
-And also introducing new function for alias compatibility checking to
-resolve cases where some IPs have alias and some of them not.
-This case is detected in pl011_probe_dt_alias() but not properly solved.
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
-Also keep status of free ids/minor numbers in bitmap to know what's the
-next unallocated number.
+ drivers/tty/serial/xilinx_uartps.c | 96 ++++++++++++++++++++++++++----
+ 1 file changed, 85 insertions(+), 11 deletions(-)
 
-The same solution can be used in pl011, uart16550 and uartlite to really
-get unified kernel.
-
-Tested on these use cases:
-Notes:
-ff000000 is the first PS uart listed in dtsi
-ff010000 is the second PS uart listed in dtsi
-
-Standard zcu102 setting
-		serial0 = &uart0;
-		serial1 = &uart1;
-[    0.196628] ff000000.serial: ttyPS0 at MMIO 0xff000000 (irq = 33,
-base_baud = 6250000) is a xuartps
-[    0.642542] ff010000.serial: ttyPS1 at MMIO 0xff010000 (irq = 34,
-base_baud = 6250000) is a xuartps
-
-Swapped zcu102 setting
-		serial0 = &uart1;
-		serial1 = &uart0;
-[    0.196472] ff000000.serial: ttyPS1 at MMIO 0xff000000 (irq = 33,
-base_baud = 6250000) is a xuartps
-[    0.196824] ff010000.serial: ttyPS0 at MMIO 0xff010000 (irq = 34,
-base_baud = 6250000) is a xuartps
-
-uart0 on alias higher then MAX uart ports
-		serial0 = &uart1;
-		serial200 = &uart0;
-[    0.176793] ff000000.serial: ttyPS200 at MMIO 0xff000000 (irq = 33,
-base_baud = 6250000) is a xuartps
-[    0.177288] ff010000.serial: ttyPS0 at MMIO 0xff010000 (irq = 34,
-base_baud = 6250000) is a xuartps
-
-Both uarts on higher aliases
-		serial1 = &uart1;
-		serial2 = &uart0;
-[    0.196470] ff000000.serial: ttyPS2 at MMIO 0xff000000 (irq = 33,
-base_baud = 6250000) is a xuartps
-[    0.196823] ff010000.serial: ttyPS1 at MMIO 0xff010000 (irq = 34,
-base_baud = 6250000) is a xuartps
-
-uart0 not listed but it is probed first that's why should be ttyPS0 but
-there is uart1 via alias
-		serial0 = &uart1;
-[    0.176656] xuartps ff000000.serial: No serial alias passed. Using
-the first free id
-[    0.176671] xuartps ff000000.serial: Validate id 0
-[    0.176680] xuartps ff000000.serial: The empty id is 0
-[    0.176692] xuartps ff000000.serial: ID 0 already taken - skipped
-[    0.176701] xuartps ff000000.serial: Validate id 1
-[    0.176710] xuartps ff000000.serial: The empty id is 1
-[    0.176719] xuartps ff000000.serial: Selected ID 1 allocation passed
-[    0.176760] ff000000.serial: ttyPS1 at MMIO 0xff000000 (irq = 33,
-base_baud = 6250000) is a xuartps
-[    0.177104] ff010000.serial: ttyPS0 at MMIO 0xff010000 (irq = 34,
-base_baud = 6250000) is a xuartps
-
-uart0 not listed but it is probed first that's why should be ttyPS0
-		serial1 = &uart1;
-[    0.176661] xuartps ff000000.serial: No serial alias passed. Using
-the first free id
-[    0.176676] xuartps ff000000.serial: Validate id 0
-[    0.176686] xuartps ff000000.serial: The empty id is 0
-[    0.176696] xuartps ff000000.serial: Selected ID 0 allocation passed
-[    0.176737] ff000000.serial: ttyPS0 at MMIO 0xff000000 (irq = 33,
-base_baud = 6250000) is a xuartps
-[    0.177069] ff010000.serial: ttyPS1 at MMIO 0xff010000 (irq = 34,
-base_baud = 6250000) is a xuartps
-
-uarts not listed in aliases list
-[    0.176673] xuartps ff000000.serial: No serial alias passed. Using
-the first free id
-[    0.176687] xuartps ff000000.serial: Validate id 0
-[    0.176697] xuartps ff000000.serial: The empty id is 0
-[    0.176707] xuartps ff000000.serial: Selected ID 0 allocation passed
-[    0.176746] ff000000.serial: ttyPS0 at MMIO 0xff000000 (irq = 33,
-base_baud = 6250000) is a xuartps
-[    0.177057] xuartps ff010000.serial: No serial alias passed. Using
-the first free id
-[    0.177070] xuartps ff010000.serial: Validate id 0
-[    0.177079] xuartps ff010000.serial: The empty id is 0
-[    0.177089] xuartps ff010000.serial: Selected ID 0 allocation failed
-[    0.177098] xuartps ff010000.serial: Validate id 1
-[    0.177107] xuartps ff010000.serial: The empty id is 1
-[    0.177116] xuartps ff010000.serial: Selected ID 1 allocation passed
-[    0.177149] ff010000.serial: ttyPS1 at MMIO 0xff010000 (irq = 34,
-base_baud = 6250000) is a xuartps
-
-Thanks,
-Michal
-
-
-Michal Simek (3):
-  of: base: Introduce of_alias_check_id() to check alias IDs
-  serial: uartps: Move register to probe based on run time detection
-  serial: uartps: Change uart ports allocation
-
- drivers/of/base.c                  |  49 +++++++++++
- drivers/tty/serial/xilinx_uartps.c | 128 +++++++++++++++++++++++------
- include/linux/of.h                 |   2 +
- 3 files changed, 153 insertions(+), 26 deletions(-)
-
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index ffb5b66a05b5..7c616b48c117 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -45,6 +45,9 @@ static int rx_timeout = 10;
+ module_param(rx_timeout, uint, S_IRUGO);
+ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
+ 
++/* The inuse bitfield is recording which IDs are free/used by the driver. */
++static unsigned long *inuse;
++
+ /* Register offsets for the UART. */
+ #define CDNS_UART_CR		0x00  /* Control Register */
+ #define CDNS_UART_MR		0x04  /* Mode Register */
+@@ -1418,6 +1421,75 @@ static const struct of_device_id cdns_uart_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, cdns_uart_of_match);
+ 
++static int cdns_get_id(struct platform_device *pdev)
++{
++	int id;
++
++	/* Look for a serialN alias */
++	id = of_alias_get_id(pdev->dev.of_node, "serial");
++	if (id < 0) {
++		dev_warn(&pdev->dev,
++			 "No serial alias passed. Using the first free id\n");
++
++		/*
++		 * Start with id 0 and check if there is no serial0 alias
++		 * which points to device which is compatible with this driver.
++		 * If alias exists then try next free position.
++		 */
++		id = 0;
++
++		for (;;) {
++			dev_dbg(&pdev->dev, "Validate id %d\n", id);
++			id = find_next_zero_bit(inuse, id,
++						cdns_uart_uart_driver.nr);
++
++			dev_dbg(&pdev->dev, "The empty id is %d\n", id);
++			/* Check if ID is empty */
++
++			if (of_alias_check_id(cdns_uart_of_match,
++					      "serial", id)) {
++				dev_dbg(&pdev->dev,
++					"ID %d already taken - skipped\n", id);
++				/* Try next one */
++				id++;
++				continue;
++			}
++
++			/* It shouldn't happen anytime */
++			if (id >= cdns_uart_uart_driver.nr) {
++				dev_dbg(&pdev->dev,
++					"ID %d is greater than NR of ports\n",
++					cdns_uart_uart_driver.nr);
++				return -ENXIO;
++			}
++
++			/* Break the loop if bit is taken */
++			if (!test_and_set_bit(id, inuse)) {
++				dev_dbg(&pdev->dev,
++					"Selected ID %d allocation passed\n",
++					id);
++				break;
++			}
++			dev_dbg(&pdev->dev,
++				"Selected ID %d allocation failed\n", id);
++			/* if taking bit fails then try next one */
++			id++;
++		}
++	} else {
++		/*
++		 * If alias was found there is no reason to check
++		 * anything else
++		 */
++		if (test_and_set_bit(id, inuse)) {
++			dev_dbg(&pdev->dev,
++				 "ID %d allocation failed\n", id);
++			return -EAGAIN;
++		}
++	}
++
++	return id;
++}
++
+ /**
+  * cdns_uart_probe - Platform driver probe
+  * @pdev: Pointer to the platform device structure
+@@ -1446,6 +1518,13 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 			dev_err(&pdev->dev, "Failed to register driver\n");
+ 			return rc;
+ 		}
++
++		/* Create bitfield to record which ids are free */
++		inuse = devm_kcalloc(&pdev->dev,
++				     BITS_TO_LONGS(cdns_uart_uart_driver.nr),
++				     sizeof(unsigned long), GFP_KERNEL);
++		if (!inuse)
++			return -ENOMEM;
+ 	}
+ 
+ 	cdns_uart_data = devm_kzalloc(&pdev->dev, sizeof(*cdns_uart_data),
+@@ -1463,6 +1542,10 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 		cdns_uart_data->quirks = data->quirks;
+ 	}
+ 
++	id = cdns_get_id(pdev);
++	if (id < 0)
++		return id;
++
+ 	cdns_uart_data->pclk = devm_clk_get(&pdev->dev, "pclk");
+ 	if (IS_ERR(cdns_uart_data->pclk)) {
+ 		cdns_uart_data->pclk = devm_clk_get(&pdev->dev, "aper_clk");
+@@ -1515,16 +1598,6 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 				&cdns_uart_data->clk_rate_change_nb))
+ 		dev_warn(&pdev->dev, "Unable to register clock notifier.\n");
+ #endif
+-	/* Look for a serialN alias */
+-	id = of_alias_get_id(pdev->dev.of_node, "serial");
+-	if (id < 0)
+-		id = 0;
+-
+-	if (id >= CDNS_UART_NR_PORTS) {
+-		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
+-		rc = -ENODEV;
+-		goto err_out_notif_unreg;
+-	}
+ 
+ 	/* At this point, we've got an empty uart_port struct, initialize it */
+ 	spin_lock_init(&port->lock);
+@@ -1583,10 +1656,10 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ err_out_pm_disable:
++	clear_bit(port->line, inuse);
+ 	pm_runtime_disable(&pdev->dev);
+ 	pm_runtime_set_suspended(&pdev->dev);
+ 	pm_runtime_dont_use_autosuspend(&pdev->dev);
+-err_out_notif_unreg:
+ #ifdef CONFIG_COMMON_CLK
+ 	clk_notifier_unregister(cdns_uart_data->uartclk,
+ 			&cdns_uart_data->clk_rate_change_nb);
+@@ -1618,6 +1691,7 @@ static int cdns_uart_remove(struct platform_device *pdev)
+ #endif
+ 	rc = uart_remove_one_port(&cdns_uart_uart_driver, port);
+ 	port->mapbase = 0;
++	clear_bit(port->line, inuse);
+ 	clk_disable_unprepare(cdns_uart_data->uartclk);
+ 	clk_disable_unprepare(cdns_uart_data->pclk);
+ 	pm_runtime_disable(&pdev->dev);
 -- 
 2.17.0
