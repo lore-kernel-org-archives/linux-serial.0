@@ -1,88 +1,77 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [RFC PATCH 2/3] serial: uartps: Move register to probe based on run time detection
-Date: Thu, 26 Apr 2018 16:08:18 +0200
-Message-ID: <7dc0d444ddfae465a80e509af6ceb6be5b42881a.1524751696.git.michal.simek@xilinx.com>
-References: <cover.1524751696.git.michal.simek@xilinx.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1524751696.git.michal.simek@xilinx.com>
-In-Reply-To: <cover.1524751696.git.michal.simek@xilinx.com>
-References: <cover.1524751696.git.michal.simek@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu, gnomes@lxorguk.ukuu.org.uk, Alexander Graf <agraf@suse.de>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH] tty/serial: atmel: use port->name as name in request_irq()
+Date: Thu, 26 Apr 2018 17:06:26 +0200
+Message-ID: <20180426150625.q5tqcb7fzchvkb5d@linutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Peter Hurley <peter@hurleysoftware.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Find out the highest serial alias and allocate that amount of
-structures/minor numbers to be able to handle all of them.
-Origin setting that there are two prealocated CDNS_UART_NR_PORTS is kept
-there.
+I was puzzled while looking at /proc/interrupts and random things showed
+up between reboots. This occurred more often but I realised it later. The
+"correct" output should be:
+|38:      11861  atmel-aic5   2 Level     ttyS0
 
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+but I saw sometimes
+|38:       6426  atmel-aic5   2 Level     tty1
+
+and I accounted it wrongly as correct. This is use after free and the
+former example randomly got the "old" pointer which pointed to the same
+content. With SLAB_FREELIST_RANDOM and HARDENED I even got
+|38:       7067  atmel-aic5   2 Level     E=Started User Manager for UID 0
+
+or other nonsense.
+As it turns out the tty, pointer that is accessed in atmel_startup(), is
+freed() before atmel_shutdown(). It seems to happen quite often that the
+tty for ttyS0 is allocated and freed while ->shutdown is not invoked. I
+don't do anything special - just a systemd boot :)
+
+It seems not to happen in v4.1.51 but it happens in v4.9 and v4.17-rc2
+so if it broke accidentally it was not recently.
+
+Use port->name as the IRQ name for request_irq(). This exists as long as
+the driver is loaded so no use-after-free here.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
+ drivers/tty/serial/atmel_serial.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Discussed here: https://patchwork.kernel.org/patch/9738445/
-
-The same solution is done in pl011 driver.
----
- drivers/tty/serial/xilinx_uartps.c | 32 ++++++++++++++++--------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 0fc9de20843c..ffb5b66a05b5 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1432,6 +1432,22 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	struct cdns_uart *cdns_uart_data;
- 	const struct of_device_id *match;
- 
-+	if (!cdns_uart_uart_driver.state) {
-+		rc = of_alias_get_highest_id("serial");
-+		if (rc >= CDNS_UART_NR_PORTS) {
-+			/* serial2 means 3 ports that's why rc(2) + 1 here */
-+			rc += 1;
-+			/* Rewrite default setup which is using 2 ports */
-+			cdns_uart_uart_driver.nr = rc;
-+		}
-+
-+		rc = uart_register_driver(&cdns_uart_uart_driver);
-+		if (rc < 0) {
-+			dev_err(&pdev->dev, "Failed to register driver\n");
-+			return rc;
-+		}
-+	}
-+
- 	cdns_uart_data = devm_kzalloc(&pdev->dev, sizeof(*cdns_uart_data),
- 			GFP_KERNEL);
- 	if (!cdns_uart_data)
-@@ -1622,28 +1638,14 @@ static struct platform_driver cdns_uart_platform_driver = {
- 
- static int __init cdns_uart_init(void)
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index e287fe8f10fc..d3189816740e 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1757,7 +1757,6 @@ static int atmel_startup(struct uart_port *port)
  {
--	int retval = 0;
--
--	/* Register the cdns_uart driver with the serial core */
--	retval = uart_register_driver(&cdns_uart_uart_driver);
--	if (retval)
--		return retval;
--
- 	/* Register the platform driver */
--	retval = platform_driver_register(&cdns_uart_platform_driver);
--	if (retval)
--		uart_unregister_driver(&cdns_uart_uart_driver);
--
--	return retval;
-+	return platform_driver_register(&cdns_uart_platform_driver);
- }
+ 	struct platform_device *pdev = to_platform_device(port->dev);
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+-	struct tty_struct *tty = port->state->port.tty;
+ 	int retval;
  
- static void __exit cdns_uart_exit(void)
- {
- 	/* Unregister the platform driver */
- 	platform_driver_unregister(&cdns_uart_platform_driver);
--
--	/* Unregister the cdns_uart driver */
--	uart_unregister_driver(&cdns_uart_uart_driver);
- }
- 
- arch_initcall(cdns_uart_init);
+ 	/*
+@@ -1772,8 +1771,7 @@ static int atmel_startup(struct uart_port *port)
+ 	 * Allocate the IRQ
+ 	 */
+ 	retval = request_irq(port->irq, atmel_interrupt,
+-			IRQF_SHARED | IRQF_COND_SUSPEND,
+-			tty ? tty->name : "atmel_serial", port);
++			     IRQF_SHARED | IRQF_COND_SUSPEND, port->name, port);
+ 	if (retval) {
+ 		dev_err(port->dev, "atmel_startup - Can't get irq\n");
+ 		return retval;
 -- 
 2.17.0
