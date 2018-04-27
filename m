@@ -1,50 +1,121 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: [PATCH] tty: pl011: Avoid spuriously stuck-off interrupts
-Date: Fri, 27 Apr 2018 11:05:44 +0100
-Message-ID: <1524823545-11309-1-git-send-email-Dave.Martin@arm.com>
+From: John Garry <john.garry@huawei.com>
+Subject: [PATCH v2] serial: 8250_of: Add IO space support
+Date: Fri, 27 Apr 2018 18:36:06 +0800
+Message-ID: <1524825366-155559-1-git-send-email-john.garry@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Peter Maydell <peter.maydell@linaro.org>, Andrew Jones <drjones@redhat.com>, Ciro Santilli <ciro.santilli@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Wei Xu <xuwei5@hisilicon.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, joel@jms.id.au, p.zabel@pengutronix.de, arnd@arndb.de, fcooper@ti.com, sergei.shtylyov@cogentembedded.com, yamada.masahiro@socionext.com, khoroshilov@ispras.ru
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, andriy.shevchenko@linux.intel.com, linuxarm@huawei.com, John Garry <john.garry@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-This is an update to a previous RFC [1], to fix a problem observed by
-the qemu community that causes serial input to hang when booting a
-simulated system with data already queued in the UART FIFO [2].
+Currently the 8250_of driver only supports MEM IO type
+accesses.
 
-This patch could cause problems for people that are actually relying
-on chars queued in the PL011 RX FIFO during boot or while the UART is
-closed.  There are no guarantees about such things working in general.
-In either case, there is no protection against RX FIFO overflow or
-reprogramming of the UART parameters while Linux is not actively
-receiving chars.
+Some development boards (Huawei D03, specifically) require
+IO space access for 8250-compatible OF driver support, so
+add it.
 
-Cheers
----Dave
+The modification is quite simple: just set the port iotype
+and associated flags depending on the device address
+resource type.
 
-[1] [RFC PATCH v4] tty: pl011: Avoid spuriously stuck-off interrupts
-http://lists.infradead.org/pipermail/linux-arm-kernel/2018-April/574033.html
+Signed-off-by: John Garry <john.garry@huawei.com>
+---
 
-[2] [Qemu-devel] [Qemu-arm] [PATCH] pl011: do not put into fifo
-before enabled the interruption
-https://lists.gnu.org/archive/html/qemu-devel/2018-01/msg06446.html
+Changes v1->v2:
+- rebase to Greg's tty-testing branch
+- use resource_type() helper
 
-Dave Martin (1):
-  tty: pl011: Avoid spuriously stuck-off interrupts
-
- drivers/tty/serial/amba-pl011.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 3de8d6a..bfb37f0 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -92,13 +92,43 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		goto err_unprepare;
+ 	}
+ 
++	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_FIXED_PORT |
++				  UPF_FIXED_TYPE;
+ 	spin_lock_init(&port->lock);
+-	port->mapbase = resource.start;
+-	port->mapsize = resource_size(&resource);
+ 
+-	/* Check for shifted address mapping */
+-	if (of_property_read_u32(np, "reg-offset", &prop) == 0)
+-		port->mapbase += prop;
++	if (resource_type(&resource) == IORESOURCE_IO) {
++		port->iotype = UPIO_PORT;
++		port->iobase = resource.start;
++	} else {
++		port->mapbase = resource.start;
++		port->mapsize = resource_size(&resource);
++
++		/* Check for shifted address mapping */
++		if (of_property_read_u32(np, "reg-offset", &prop) == 0)
++			port->mapbase += prop;
++
++		port->iotype = UPIO_MEM;
++		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
++			switch (prop) {
++			case 1:
++				port->iotype = UPIO_MEM;
++				break;
++			case 2:
++				port->iotype = UPIO_MEM16;
++				break;
++			case 4:
++				port->iotype = of_device_is_big_endian(np) ?
++					       UPIO_MEM32BE : UPIO_MEM32;
++				break;
++			default:
++				dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
++					 prop);
++				ret = -EINVAL;
++				goto err_dispose;
++			}
++		}
++		port->flags |= UPF_IOREMAP;
++	}
+ 
+ 	/* Check for registers offset within the devices address range */
+ 	if (of_property_read_u32(np, "reg-shift", &prop) == 0)
+@@ -114,26 +144,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		port->line = ret;
+ 
+ 	port->irq = irq_of_parse_and_map(np, 0);
+-	port->iotype = UPIO_MEM;
+-	if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
+-		switch (prop) {
+-		case 1:
+-			port->iotype = UPIO_MEM;
+-			break;
+-		case 2:
+-			port->iotype = UPIO_MEM16;
+-			break;
+-		case 4:
+-			port->iotype = of_device_is_big_endian(np) ?
+-				       UPIO_MEM32BE : UPIO_MEM32;
+-			break;
+-		default:
+-			dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
+-				 prop);
+-			ret = -EINVAL;
+-			goto err_dispose;
+-		}
+-	}
+ 
+ 	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
+ 	if (IS_ERR(info->rst)) {
+@@ -147,8 +157,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 
+ 	port->type = type;
+ 	port->uartclk = clk;
+-	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+-		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
+ 	port->irqflags |= IRQF_SHARED;
+ 
+ 	if (of_property_read_bool(np, "no-loopback-test"))
 -- 
-2.1.4
+1.9.1
