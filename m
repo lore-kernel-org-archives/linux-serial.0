@@ -1,121 +1,58 @@
-From: John Garry <john.garry@huawei.com>
-Subject: [PATCH v2] serial: 8250_of: Add IO space support
-Date: Fri, 27 Apr 2018 18:36:06 +0800
-Message-ID: <1524825366-155559-1-git-send-email-john.garry@huawei.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH] tty/serial: atmel: use port->name as name in request_irq()
+Date: Fri, 27 Apr 2018 12:31:52 +0200
+Message-ID: <0dbf4a4c-71d4-6456-67b9-d4d202acffb7@sorico.fr>
+References: <20180426150625.q5tqcb7fzchvkb5d@linutronix.de>
+ <20180426151222.6vw67lwqmu6ffgnw@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, joel@jms.id.au, p.zabel@pengutronix.de, arnd@arndb.de, fcooper@ti.com, sergei.shtylyov@cogentembedded.com, yamada.masahiro@socionext.com, khoroshilov@ispras.ru
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, andriy.shevchenko@linux.intel.com, linuxarm@huawei.com, John Garry <john.garry@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180426151222.6vw67lwqmu6ffgnw@linutronix.de>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Currently the 8250_of driver only supports MEM IO type
-accesses.
+Hi Sebastian,
 
-Some development boards (Huawei D03, specifically) require
-IO space access for 8250-compatible OF driver support, so
-add it.
+On 26/04/2018 17:12, Sebastian Andrzej Siewior wrote:
+> On 2018-04-26 17:06:25 [+0200], To linux-serial@vger.kernel.org wrote:
+>> It seems not to happen in v4.1.51 but it happens in v4.9 and v4.17-rc2
+>> so if it broke accidentally it was not recently.
+> 
+> This is what I used to check:
+> 
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -170,7 +170,7 @@ void free_tty_struct(struct tty_struct *tty)
+>  	put_device(tty->dev);
+>  	kfree(tty->write_buf);
+>  	tty->magic = 0xDEADDEAD;
+> -	kfree(tty);
+> +	strcpy(tty->name, "GONE");
+>  }
+>  
+>  static inline struct tty_struct *file_tty(struct file *file)
+> 
+> If this is unknown and a bisect is requested, please let me know.
+Indeed, this will be appreciated.
+I'm quite curious to find the commit that led to this.
 
-The modification is quite simple: just set the port iotype
-and associated flags depending on the device address
-resource type.
+Thanks !
 
-Signed-off-by: John Garry <john.garry@huawei.com>
----
+> 
+> Sebastian
+> 
 
-Changes v1->v2:
-- rebase to Greg's tty-testing branch
-- use resource_type() helper
-
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 3de8d6a..bfb37f0 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -92,13 +92,43 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		goto err_unprepare;
- 	}
- 
-+	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_FIXED_PORT |
-+				  UPF_FIXED_TYPE;
- 	spin_lock_init(&port->lock);
--	port->mapbase = resource.start;
--	port->mapsize = resource_size(&resource);
- 
--	/* Check for shifted address mapping */
--	if (of_property_read_u32(np, "reg-offset", &prop) == 0)
--		port->mapbase += prop;
-+	if (resource_type(&resource) == IORESOURCE_IO) {
-+		port->iotype = UPIO_PORT;
-+		port->iobase = resource.start;
-+	} else {
-+		port->mapbase = resource.start;
-+		port->mapsize = resource_size(&resource);
-+
-+		/* Check for shifted address mapping */
-+		if (of_property_read_u32(np, "reg-offset", &prop) == 0)
-+			port->mapbase += prop;
-+
-+		port->iotype = UPIO_MEM;
-+		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
-+			switch (prop) {
-+			case 1:
-+				port->iotype = UPIO_MEM;
-+				break;
-+			case 2:
-+				port->iotype = UPIO_MEM16;
-+				break;
-+			case 4:
-+				port->iotype = of_device_is_big_endian(np) ?
-+					       UPIO_MEM32BE : UPIO_MEM32;
-+				break;
-+			default:
-+				dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
-+					 prop);
-+				ret = -EINVAL;
-+				goto err_dispose;
-+			}
-+		}
-+		port->flags |= UPF_IOREMAP;
-+	}
- 
- 	/* Check for registers offset within the devices address range */
- 	if (of_property_read_u32(np, "reg-shift", &prop) == 0)
-@@ -114,26 +144,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 		port->line = ret;
- 
- 	port->irq = irq_of_parse_and_map(np, 0);
--	port->iotype = UPIO_MEM;
--	if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
--		switch (prop) {
--		case 1:
--			port->iotype = UPIO_MEM;
--			break;
--		case 2:
--			port->iotype = UPIO_MEM16;
--			break;
--		case 4:
--			port->iotype = of_device_is_big_endian(np) ?
--				       UPIO_MEM32BE : UPIO_MEM32;
--			break;
--		default:
--			dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
--				 prop);
--			ret = -EINVAL;
--			goto err_dispose;
--		}
--	}
- 
- 	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
- 	if (IS_ERR(info->rst)) {
-@@ -147,8 +157,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 
- 	port->type = type;
- 	port->uartclk = clk;
--	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
--		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
- 	port->irqflags |= IRQF_SHARED;
- 
- 	if (of_property_read_bool(np, "no-loopback-test"))
--- 
-1.9.1
+Richard
