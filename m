@@ -1,58 +1,91 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH] tty/serial: atmel: use port->name as name in request_irq()
-Date: Fri, 27 Apr 2018 12:31:52 +0200
-Message-ID: <0dbf4a4c-71d4-6456-67b9-d4d202acffb7@sorico.fr>
-References: <20180426150625.q5tqcb7fzchvkb5d@linutronix.de>
- <20180426151222.6vw67lwqmu6ffgnw@linutronix.de>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 4.17-rc3
+Date: Fri, 27 Apr 2018 16:41:04 +0200
+Message-ID: <20180427144104.GA9231@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180426151222.6vw67lwqmu6ffgnw@linutronix.de>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-serial@vger.kernel.org
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sebastian,
+The following changes since commit 60cc43fc888428bb2f18f08997432d426a243338:
 
-On 26/04/2018 17:12, Sebastian Andrzej Siewior wrote:
-> On 2018-04-26 17:06:25 [+0200], To linux-serial@vger.kernel.org wrote:
->> It seems not to happen in v4.1.51 but it happens in v4.9 and v4.17-rc2
->> so if it broke accidentally it was not recently.
-> 
-> This is what I used to check:
-> 
-> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-> --- a/drivers/tty/tty_io.c
-> +++ b/drivers/tty/tty_io.c
-> @@ -170,7 +170,7 @@ void free_tty_struct(struct tty_struct *tty)
->  	put_device(tty->dev);
->  	kfree(tty->write_buf);
->  	tty->magic = 0xDEADDEAD;
-> -	kfree(tty);
-> +	strcpy(tty->name, "GONE");
->  }
->  
->  static inline struct tty_struct *file_tty(struct file *file)
-> 
-> If this is unknown and a bisect is requested, please let me know.
-Indeed, this will be appreciated.
-I'm quite curious to find the commit that led to this.
+  Linux 4.17-rc1 (2018-04-15 18:24:20 -0700)
 
-Thanks !
+are available in the Git repository at:
 
-> 
-> Sebastian
-> 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/ tags/tty-4.17-rc3
 
-Richard
+for you to fetch changes up to bcdd0ca8cb8730573afebcaae4138f8f4c8eaa20:
+
+  tty: Use __GFP_NOFAIL for tty_ldisc_get() (2018-04-25 15:03:44 +0200)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 4.17-rc3
+
+Here are some tty and serial driver fixes for reported issues for
+4.17-rc3.
+
+Nothing major, but a number of small things:
+	- device tree fixes/updates for serial ports
+	- earlycon fixes
+	- n_gsm fixes
+	- tty core change reverted to help resolve syszkaller reports
+	- other serial driver small fixes
+
+All of these have been in linux-next with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Biju Das (1):
+      serial: sh-sci: Document r8a77470 bindings
+
+Daniel Kurtz (1):
+      earlycon: Use a pointer table to fix __earlycon_table stride
+
+Geert Uytterhoeven (2):
+      dt-bindings: meson-uart: DT fix s/clocks-names/clock-names/
+      dt-bindings: mvebu-uart: DT fix s/interrupts-names/interrupt-names/
+
+Karthikeyan Ramasubramanian (1):
+      tty: serial: qcom_geni_serial: Use signed variable to get IRQ
+
+Marc Zyngier (1):
+      serial: mvebu-uart: Fix local flags handling on termios update
+
+Michal Simek (1):
+      tty: serial: xuartps: Setup early console when uartclk is also passed
+
+Stefan Agner (2):
+      serial: imx: warn user when using unsupported configuration
+      serial: imx: fix cached UCR2 read on software reset
+
+Tetsuo Handa (3):
+      tty: Avoid possible error pointer dereference at tty_ldisc_restore().
+      tty: Don't call panic() at tty_ldisc_init()
+      tty: Use __GFP_NOFAIL for tty_ldisc_get()
+
+Tony Lindgren (2):
+      tty: n_gsm: Fix long delays with control frame timeouts in ADM mode
+      tty: n_gsm: Fix DLCI handling for ADM mode if debug & 2 is not set
+
+ .../bindings/serial/amlogic,meson-uart.txt         |  2 +-
+ .../devicetree/bindings/serial/mvebu-uart.txt      |  2 +-
+ .../bindings/serial/renesas,sci-serial.txt         |  2 ++
+ drivers/of/fdt.c                                   |  7 ++++--
+ drivers/tty/n_gsm.c                                | 23 ++++++++++++++++-
+ drivers/tty/serial/earlycon.c                      |  6 +++--
+ drivers/tty/serial/imx.c                           | 19 +++++++++++++-
+ drivers/tty/serial/mvebu-uart.c                    |  1 -
+ drivers/tty/serial/qcom_geni_serial.c              | 10 +++++---
+ drivers/tty/serial/xilinx_uartps.c                 |  2 +-
+ drivers/tty/tty_io.c                               |  5 +++-
+ drivers/tty/tty_ldisc.c                            | 29 ++++++++++------------
+ include/asm-generic/vmlinux.lds.h                  |  2 +-
+ include/linux/serial_core.h                        | 21 ++++++++++------
+ include/linux/tty.h                                |  2 +-
+ 15 files changed, 93 insertions(+), 40 deletions(-)
