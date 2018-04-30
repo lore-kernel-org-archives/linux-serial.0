@@ -1,59 +1,82 @@
-From: Rich Felker <dalias@libc.org>
-Subject: Re: [PATCH 0/3] sh: make early_platform code SuperH-specific
-Date: Mon, 30 Apr 2018 12:42:50 -0400
-Message-ID: <20180430164250.GN1392@brightrain.aerifal.cx>
-References: <20180430163556.2560-1-brgl@bgdev.pl>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 4.16 033/113] tty: n_gsm: Fix DLCI handling for ADM mode if debug & 2 is not set
+Date: Mon, 30 Apr 2018 12:24:04 -0700
+Message-ID: <20180430184016.459739950@linuxfoundation.org>
+References: <20180430184015.043892819@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20180430163556.2560-1-brgl@bgdev.pl>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: Mark Rutland <mark.rutland@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, David Lechner <david@lechnology.com>, Arnd Bergmann <arnd@arndb.de>, Kevin Hilman <khilman@kernel.org>, Stephen Boyd <sboyd@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michael Turquette <mturquette@baylibre.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Marc Zyngier <marc.zyngier@arm.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, linux-sh@vger.kernel.org, Peter Rosin <peda@axentia.se>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180430184015.043892819@linuxfoundation.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Apr 30, 2018 at 06:35:53PM +0200, Bartosz Golaszewski wrote:
-> I recently started a discussion about the need for a proper early device
-> probing mechanism[1]. One that would be based on real platform drivers
-> and support both platform data and device tree.
-> 
-> While we're far from reaching any consensus on the implementation, Arnd
-> suggested that I start off by moving the SuperH-specific early platform
-> drivers implementation to arch/sh[2].
-> 
-> This series is the first attempt at making way for a new, less hacky
-> implementation.
-> 
-> The first patch removes the last instance of a non-sh driver using the
-> early_platform API. It can be removed since ARM no longer probes early
-> drivers.
-> 
-> The second patch moves all the early_platform code to arch/sh.
-> 
-> The last patch prefixes all early_platform symbols with 'sh_'.
-> 
-> [1] https://lkml.org/lkml/2018/4/26/657
-> [2] https://lkml.org/lkml/2018/4/27/239
-> 
-> Bartosz Golaszewski (3):
->   clocksource: timer-ti-dm: remove the early platform driver
->     registration
->   platform: move the early platform device support to arch/sh
->   sh: add the sh_ prefix to early platform symbols
+4.16-stable review patch.  If anyone has any objections, please let me know.
 
-I can't say I like it, because I really want to be just removing all
-this code, but I don't necessarily object and it might be the most
-appropriate short-term action to clean up this mess without breaking
-things.
+------------------
 
-Rich
+From: Tony Lindgren <tony@atomide.com>
+
+commit b2d89ad9c9682e795ed6eeb9ed455789ad6cedf1 upstream.
+
+At least on droid 4 with control channel in ADM mode, there is no response
+to Modem Status Command (MSC). Currently gsmtty_modem_update() expects to
+have data in dlci->modem_rx unless debug & 2 is set. This means that on
+droid 4, things only work if debug & 2 is set.
+
+Let's fix the issue by ignoring empty dlci->modem_rx for ADM mode. In
+the AMD mode, CMD_MSC will never respond and gsm_process_modem() won't
+get called to set dlci->modem_rx.
+
+And according to ts_127010v140000p.pdf, MSC is only relevant if basic
+option is chosen, so let's test for that too.
+
+Fixes: ea3d8465ab9b ("tty: n_gsm: Allow ADM response in addition to UA for control dlci")
+Cc: linux-serial@vger.kernel.org
+Cc: Alan Cox <alan@llwyncelyn.cymru>
+Cc: Dan Williams <dcbw@redhat.com>
+Cc: Jiri Prchal <jiri.prchal@aksignal.cz>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Marcel Partap <mpartap@gmx.net>
+Cc: Merlijn Wajer <merlijn@wizzup.org>
+Cc: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
+Cc: Michael Scott <michael.scott@linaro.org>
+Cc: Pavel Machek <pavel@ucw.cz>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Russ Gorby <russ.gorby@intel.com>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Sebastian Reichel <sre@kernel.org>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/tty/n_gsm.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2871,11 +2871,22 @@ static int gsmtty_modem_update(struct gs
+ static int gsm_carrier_raised(struct tty_port *port)
+ {
+ 	struct gsm_dlci *dlci = container_of(port, struct gsm_dlci, port);
++	struct gsm_mux *gsm = dlci->gsm;
++
+ 	/* Not yet open so no carrier info */
+ 	if (dlci->state != DLCI_OPEN)
+ 		return 0;
+ 	if (debug & 2)
+ 		return 1;
++
++	/*
++	 * Basic mode with control channel in ADM mode may not respond
++	 * to CMD_MSC at all and modem_rx is empty.
++	 */
++	if (gsm->encoding == 0 && gsm->dlci[0]->mode == DLCI_MODE_ADM &&
++	    !dlci->modem_rx)
++		return 1;
++
+ 	return dlci->modem_rx & TIOCM_CD;
+ }
+ 
