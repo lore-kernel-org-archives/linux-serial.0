@@ -1,18 +1,18 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.9 22/61] tty: n_gsm: Fix DLCI handling for ADM mode if debug & 2 is not set
-Date: Mon, 30 Apr 2018 12:24:25 -0700
-Message-ID: <20180430183953.203892608@linuxfoundation.org>
-References: <20180430183951.312721450@linuxfoundation.org>
+Subject: [PATCH 4.4 18/44] tty: n_gsm: Fix DLCI handling for ADM mode if debug & 2 is not set
+Date: Mon, 30 Apr 2018 12:24:29 -0700
+Message-ID: <20180430190947.072041702@linuxfoundation.org>
+References: <20180430190946.093694747@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180430183951.312721450@linuxfoundation.org>
+In-Reply-To: <20180430190946.093694747@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
 
-4.9-stable review patch.  If anyone has any objections, please let me know.
+4.4-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -57,7 +57,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -2875,11 +2875,22 @@ static int gsmtty_modem_update(struct gs
+@@ -2891,11 +2891,22 @@ static int gsmtty_modem_update(struct gs
  static int gsm_carrier_raised(struct tty_port *port)
  {
  	struct gsm_dlci *dlci = container_of(port, struct gsm_dlci, port);
