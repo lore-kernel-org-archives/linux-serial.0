@@ -1,18 +1,18 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.14 30/91] tty: n_gsm: Fix long delays with control frame timeouts in ADM mode
-Date: Mon, 30 Apr 2018 12:24:12 -0700
-Message-ID: <20180430184005.761849347@linuxfoundation.org>
-References: <20180430184004.216234025@linuxfoundation.org>
+Subject: [PATCH 4.9 21/61] tty: n_gsm: Fix long delays with control frame timeouts in ADM mode
+Date: Mon, 30 Apr 2018 12:24:24 -0700
+Message-ID: <20180430183953.115809246@linuxfoundation.org>
+References: <20180430183951.312721450@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180430184004.216234025@linuxfoundation.org>
+In-Reply-To: <20180430183951.312721450@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, linux-serial@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Dan Williams <dcbw@redhat.com>, Jiri Prchal <jiri.prchal@aksignal.cz>, Jiri Slaby <jslaby@suse.cz>, Marcel Partap <mpartap@gmx.net>, Merlijn Wajer <merlijn@wizzup.org>, Michael Nazzareno Trimarchi <michael@amarulasolutions.com>, Michael Scott <michael.scott@linaro.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, Russ Gorby <russ.gorby@intel.com>, Sascha Hauer <s.hauer@pengutronix.de>, Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
 
-4.14-stable review patch.  If anyone has any objections, please let me know.
+4.9-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -69,7 +69,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -133,6 +133,9 @@ struct gsm_dlci {
+@@ -137,6 +137,9 @@ struct gsm_dlci {
  	struct mutex mutex;
  
  	/* Link layer */
@@ -79,7 +79,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	spinlock_t lock;	/* Protects the internal state */
  	struct timer_list t1;	/* Retransmit timer for SABM and UA */
  	int retries;
-@@ -1376,7 +1379,13 @@ retry:
+@@ -1380,7 +1383,13 @@ retry:
  	ctrl->data = data;
  	ctrl->len = clen;
  	gsm->pending_cmd = ctrl;
@@ -94,7 +94,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	mod_timer(&gsm->t2_timer, jiffies + gsm->t2 * HZ / 100);
  	gsm_control_transmit(gsm, ctrl);
  	spin_unlock_irqrestore(&gsm->control_lock, flags);
-@@ -1484,6 +1493,7 @@ static void gsm_dlci_t1(unsigned long da
+@@ -1488,6 +1497,7 @@ static void gsm_dlci_t1(unsigned long da
  			if (debug & 8)
  				pr_info("DLCI %d opening in ADM mode.\n",
  					dlci->addr);
