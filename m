@@ -1,74 +1,36 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: Re: [PATCH] tty: pl011: Avoid spuriously stuck-off interrupts
-Date: Mon, 30 Apr 2018 13:49:19 +0100
-Message-ID: <20180430124916.GC7753@e103592.cambridge.arm.com>
-References: <1524823545-11309-1-git-send-email-Dave.Martin@arm.com>
- <20180429131857.GC23018@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20180429131857.GC23018@kroah.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg KH <greg@kroah.com>
-Cc: Peter Maydell <peter.maydell@linaro.org>, Andrew Jones <drjones@redhat.com>, Ciro Santilli <ciro.santilli@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Wei Xu <xuwei5@hisilicon.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 1/3] clocksource: timer-ti-dm: remove the early platform driver registration
+Date: Mon, 30 Apr 2018 18:35:54 +0200
+Message-ID: <20180430163556.2560-2-brgl@bgdev.pl>
+References: <20180430163556.2560-1-brgl@bgdev.pl>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180430163556.2560-1-brgl@bgdev.pl>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sekhar Nori <nsekhar@ti.com>, Kevin Hilman <khilman@kernel.org>, David Lechner <david@lechnology.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Peter Rosin <peda@axentia.se>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Apr 29, 2018 at 03:18:57PM +0200, Greg KH wrote:
-> On Fri, Apr 27, 2018 at 11:05:44AM +0100, Dave Martin wrote:
-> > This is an update to a previous RFC [1], to fix a problem observed by
-> > the qemu community that causes serial input to hang when booting a
-> > simulated system with data already queued in the UART FIFO [2].
-> > 
-> > This patch could cause problems for people that are actually relying
-> > on chars queued in the PL011 RX FIFO during boot or while the UART is
-> > closed.  There are no guarantees about such things working in general.
-> > In either case, there is no protection against RX FIFO overflow or
-> > reprogramming of the UART parameters while Linux is not actively
-> > receiving chars.
-> > 
-> > Cheers
-> > ---Dave
-> > 
-> > [1] [RFC PATCH v4] tty: pl011: Avoid spuriously stuck-off interrupts
-> > http://lists.infradead.org/pipermail/linux-arm-kernel/2018-April/574033.html
-> > 
-> > [2] [Qemu-devel] [Qemu-arm] [PATCH] pl011: do not put into fifo
-> > before enabled the interruption
-> > https://lists.gnu.org/archive/html/qemu-devel/2018-01/msg06446.html
-> > 
-> > Dave Martin (1):
-> >   tty: pl011: Avoid spuriously stuck-off interrupts
-> > 
-> >  drivers/tty/serial/amba-pl011.c | 10 ++++++++++
-> >  1 file changed, 10 insertions(+)
-> > 
-> > -- 
-> > 2.1.4
-> 
-> There is no patch here, did something go wrong?
-> 
-> You do not need a "cover letter" for a single patch...
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-I wanted to provide some additional context for the benefit of people
-who'd been reviewing earler RFCs for this change, though I could have
-put it under the tearoff instead.
+This driver is no longer used as an early platform driver. Remove the
+registration macro.
 
-I was expecting --cover-letter to generate [PATCH 0/1] and [PATCH 1/1]
-Subject lines, but it seems that it doesn't do that.
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+---
+ drivers/clocksource/timer-ti-dm.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-To clarify, there is only intended to be one patch here.
-
-Do you want me to repost?
-
-Cheers
----Dave
+diff --git a/drivers/clocksource/timer-ti-dm.c b/drivers/clocksource/timer-ti-dm.c
+index 4cce6b224b87..595124074821 100644
+--- a/drivers/clocksource/timer-ti-dm.c
++++ b/drivers/clocksource/timer-ti-dm.c
+@@ -991,7 +991,6 @@ static struct platform_driver omap_dm_timer_driver = {
+ 	},
+ };
+ 
+-early_platform_init("earlytimer", &omap_dm_timer_driver);
+ module_platform_driver(omap_dm_timer_driver);
+ 
+ MODULE_DESCRIPTION("OMAP Dual-Mode Timer Driver");
+-- 
+2.17.0
