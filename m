@@ -1,7 +1,7 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 3.18 14/25] tty: n_gsm: Fix DLCI handling for ADM mode if debug & 2 is not set
-Date: Mon, 30 Apr 2018 12:23:21 -0700
-Message-ID: <20180430183911.402736694@linuxfoundation.org>
+Subject: [PATCH 3.18 13/25] tty: n_gsm: Fix long delays with control frame timeouts in ADM mode
+Date: Mon, 30 Apr 2018 12:23:20 -0700
+Message-ID: <20180430183911.366096677@linuxfoundation.org>
 References: <20180430183910.801976983@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -18,19 +18,31 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Tony Lindgren <tony@atomide.com>
 
-commit b2d89ad9c9682e795ed6eeb9ed455789ad6cedf1 upstream.
+commit e9ec22547986dd32c5c70da78107ce35dbff1344 upstream.
 
-At least on droid 4 with control channel in ADM mode, there is no response
-to Modem Status Command (MSC). Currently gsmtty_modem_update() expects to
-have data in dlci->modem_rx unless debug & 2 is set. This means that on
-droid 4, things only work if debug & 2 is set.
+Commit ea3d8465ab9b ("tty: n_gsm: Allow ADM response in addition to UA for
+control dlci") added support for DLCI to stay in Asynchronous Disconnected
+Mode (ADM). But we still get long delays waiting for commands to other
+DLCI to complete:
 
-Let's fix the issue by ignoring empty dlci->modem_rx for ADM mode. In
-the AMD mode, CMD_MSC will never respond and gsm_process_modem() won't
-get called to set dlci->modem_rx.
+--> 5) C: SABM(P)
+Q>  0) C: UIH(F)
+Q>  0) C: UIH(F)
+Q>  0) C: UIH(F)
+...
 
-And according to ts_127010v140000p.pdf, MSC is only relevant if basic
-option is chosen, so let's test for that too.
+This happens because gsm_control_send() sets cretries timer to T2 that is
+by default set to 34. This will cause resend for T2 times for the control
+frame. In ADM mode, we will never get a response so the control frame, so
+retries are just delaying all the commands.
+
+Let's fix the issue by setting DLCI_MODE_ADM flag after detecting the ADM
+mode for the control DLCI. Then we can use that in gsm_control_send() to
+set retries to 1. This means the control frame will be sent once allowing
+the other end at an opportunity to switch from ADM to ABM mode.
+
+Note that retries will be decremented in gsm_control_retransmit() so
+we don't want to set it to 0 here.
 
 Fixes: ea3d8465ab9b ("tty: n_gsm: Allow ADM response in addition to UA for control dlci")
 Cc: linux-serial@vger.kernel.org
@@ -52,31 +64,41 @@ Cc: stable <stable@vger.kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 ---
- drivers/tty/n_gsm.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/tty/n_gsm.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -2892,11 +2892,22 @@ static int gsmtty_modem_update(struct gs
- static int gsm_carrier_raised(struct tty_port *port)
- {
- 	struct gsm_dlci *dlci = container_of(port, struct gsm_dlci, port);
-+	struct gsm_mux *gsm = dlci->gsm;
-+
- 	/* Not yet open so no carrier info */
- 	if (dlci->state != DLCI_OPEN)
- 		return 0;
- 	if (debug & 2)
- 		return 1;
-+
-+	/*
-+	 * Basic mode with control channel in ADM mode may not respond
-+	 * to CMD_MSC at all and modem_rx is empty.
-+	 */
-+	if (gsm->encoding == 0 && gsm->dlci[0]->mode == DLCI_MODE_ADM &&
-+	    !dlci->modem_rx)
-+		return 1;
-+
- 	return dlci->modem_rx & TIOCM_CD;
- }
+@@ -137,6 +137,9 @@ struct gsm_dlci {
+ 	struct mutex mutex;
  
+ 	/* Link layer */
++	int mode;
++#define DLCI_MODE_ABM		0	/* Normal Asynchronous Balanced Mode */
++#define DLCI_MODE_ADM		1	/* Asynchronous Disconnected Mode */
+ 	spinlock_t lock;	/* Protects the internal state */
+ 	struct timer_list t1;	/* Retransmit timer for SABM and UA */
+ 	int retries;
+@@ -1380,7 +1383,13 @@ retry:
+ 	ctrl->data = data;
+ 	ctrl->len = clen;
+ 	gsm->pending_cmd = ctrl;
+-	gsm->cretries = gsm->n2;
++
++	/* If DLCI0 is in ADM mode skip retries, it won't respond */
++	if (gsm->dlci[0]->mode == DLCI_MODE_ADM)
++		gsm->cretries = 1;
++	else
++		gsm->cretries = gsm->n2;
++
+ 	mod_timer(&gsm->t2_timer, jiffies + gsm->t2 * HZ / 100);
+ 	gsm_control_transmit(gsm, ctrl);
+ 	spin_unlock_irqrestore(&gsm->control_lock, flags);
+@@ -1488,6 +1497,7 @@ static void gsm_dlci_t1(unsigned long da
+ 			if (debug & 8)
+ 				pr_info("DLCI %d opening in ADM mode.\n",
+ 					dlci->addr);
++			dlci->mode = DLCI_MODE_ADM;
+ 			gsm_dlci_open(dlci);
+ 		} else {
+ 			gsm_dlci_close(dlci);
