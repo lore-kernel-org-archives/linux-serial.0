@@ -1,97 +1,94 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 2/3] platform: move the early platform device support
- to arch/sh
-Date: Wed, 2 May 2018 23:01:36 +0200
-Message-ID: <CAMuHMdUAaJbZH2nFpBOCYz_xqBfdjRP=PZW8qtk6Zp1mKd61VA@mail.gmail.com>
-References: <20180502094821.2907-1-brgl@bgdev.pl> <20180502094821.2907-3-brgl@bgdev.pl>
+Subject: Re: [PATCH v2 0/3] sh: make early_platform code SuperH-specific
+Date: Wed, 2 May 2018 23:05:28 +0200
+Message-ID: <CAMuHMdVCrtLm7-sfbhG+o5Wvymgeu8cREtbesuuqFN0U1pc06g@mail.gmail.com>
+References: <20180502094821.2907-1-brgl@bgdev.pl>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180502094821.2907-3-brgl@bgdev.pl>
+In-Reply-To: <20180502094821.2907-1-brgl@bgdev.pl>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Bartosz Golaszewski <brgl@bgdev.pl>
 Cc: Sekhar Nori <nsekhar@ti.com>, Kevin Hilman <khilman@kernel.org>, David Lechner <david@lechnology.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Peter Rosin <peda@axentia.se>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, open list
 List-Id: linux-serial@vger.kernel.org
 
-Hi Bartosz,
+CC Magnus
 
 On Wed, May 2, 2018 at 11:48 AM, Bartosz Golaszewski <brgl@bgdev.pl> wrote:
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> I recently started a discussion about the need for a proper early device
+> probing mechanism[1]. One that would be based on real platform drivers
+> and support both platform data and device tree.
 >
-> SuperH is the only user of the current implementation of early platform
-> device support. We want to introduce a more robust approach to early
-> probing. As the first step - move all the current early platform code
-> to arch/sh.
+> While we're far from reaching any consensus on the implementation, Arnd
+> suggested that I start off by moving the SuperH-specific early platform
+> drivers implementation to arch/sh[2].
 >
-> In order not to export internal drivers/base functions to arch code for
-> this temporary solution - copy the two needed routines for driver
-> matching from drivers/base/platform.c to arch/sh/drivers/platform_early.c.
+> This series is the first attempt at making way for a new, less hacky
+> implementation.
 >
-> Also: call early_platform_cleanup() from subsys_initcall() so that it's
-> called after all early devices are probed.
+> The first patch removes the last instance of a non-sh driver using the
+> early_platform API. It can be removed since ARM no longer probes early
+> drivers.
 >
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-
-Thanks for your patch!
-
-> --- a/drivers/clocksource/sh_cmt.c
-> +++ b/drivers/clocksource/sh_cmt.c
-
-> @@ -1043,10 +1047,12 @@ static int sh_cmt_probe(struct platform_device *pdev)
->         struct sh_cmt_device *cmt = platform_get_drvdata(pdev);
->         int ret;
+> The second patch moves all the early_platform code to arch/sh.
 >
-> +#ifdef CONFIG_SUPERH
->         if (!is_early_platform_device(pdev)) {
->                 pm_runtime_set_active(&pdev->dev);
->                 pm_runtime_enable(&pdev->dev);
->         }
-> +#endif
-
-I think the above is not correct: on ARM/ARM64, is_early_platform_device()
-used to return false, so the pm_runtime_*() functions must be called.
-
-Perhaps you should keep a dummy is_early_platform_device(), always
-returning false on !SUPERH? That would reduce the number of #ifdefs you
-have to add, too.
-
-> --- a/drivers/clocksource/sh_mtu2.c
-> +++ b/drivers/clocksource/sh_mtu2.c
-> @@ -450,10 +454,12 @@ static int sh_mtu2_probe(struct platform_device *pdev)
->         struct sh_mtu2_device *mtu = platform_get_drvdata(pdev);
->         int ret;
+> The last patch prefixes all early_platform symbols with 'sh_'.
 >
-> +#ifdef CONFIG_SUPERH
->         if (!is_early_platform_device(pdev)) {
->                 pm_runtime_set_active(&pdev->dev);
->                 pm_runtime_enable(&pdev->dev);
->         }
-> +#endif
-
-Likewise.
-
-> --- a/drivers/clocksource/sh_tmu.c
-> +++ b/drivers/clocksource/sh_tmu.c
-> @@ -606,10 +610,12 @@ static int sh_tmu_probe(struct platform_device *pdev)
->         struct sh_tmu_device *tmu = platform_get_drvdata(pdev);
->         int ret;
+> [1] https://lkml.org/lkml/2018/4/26/657
+> [2] https://lkml.org/lkml/2018/4/27/239
 >
-> +#ifdef CONFIG_SUPERH
->         if (!is_early_platform_device(pdev)) {
->                 pm_runtime_set_active(&pdev->dev);
->                 pm_runtime_enable(&pdev->dev);
->         }
-> +#endif
-
-Likewise.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> v1 -> v2:
+> - certain drivers are compiled for arm/mach-shmobile too - we need to
+>   add ifdefs for CONFIG_SUPERH around early_platform calls
+>
+> Bartosz Golaszewski (3):
+>   clocksource: timer-ti-dm: remove the early platform driver
+>     registration
+>   platform: move the early platform device support to arch/sh
+>   sh: add the sh_ prefix to early platform symbols
+>
+>  arch/sh/drivers/Makefile               |   2 +-
+>  arch/sh/drivers/platform_early.c       | 346 +++++++++++++++++++++++++
+>  arch/sh/include/asm/platform_early.h   |  61 +++++
+>  arch/sh/kernel/cpu/sh2/setup-sh7619.c  |   4 +-
+>  arch/sh/kernel/cpu/sh2a/setup-mxg.c    |   3 +-
+>  arch/sh/kernel/cpu/sh2a/setup-sh7201.c |   3 +-
+>  arch/sh/kernel/cpu/sh2a/setup-sh7203.c |   3 +-
+>  arch/sh/kernel/cpu/sh2a/setup-sh7206.c |   3 +-
+>  arch/sh/kernel/cpu/sh2a/setup-sh7264.c |   3 +-
+>  arch/sh/kernel/cpu/sh2a/setup-sh7269.c |   3 +-
+>  arch/sh/kernel/cpu/sh3/setup-sh3.c     |   1 +
+>  arch/sh/kernel/cpu/sh3/setup-sh7705.c  |   3 +-
+>  arch/sh/kernel/cpu/sh3/setup-sh770x.c  |   3 +-
+>  arch/sh/kernel/cpu/sh3/setup-sh7710.c  |   3 +-
+>  arch/sh/kernel/cpu/sh3/setup-sh7720.c  |   3 +-
+>  arch/sh/kernel/cpu/sh4/setup-sh4-202.c |   3 +-
+>  arch/sh/kernel/cpu/sh4/setup-sh7750.c  |   9 +-
+>  arch/sh/kernel/cpu/sh4/setup-sh7760.c  |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7343.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7366.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7722.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7723.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7724.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7734.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7757.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7763.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7770.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7780.c |   4 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7785.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-sh7786.c |   3 +-
+>  arch/sh/kernel/cpu/sh4a/setup-shx3.c   |   3 +-
+>  arch/sh/kernel/cpu/sh5/setup-sh5.c     |   3 +-
+>  arch/sh/kernel/setup.c                 |   3 +-
+>  arch/sh/kernel/time.c                  |   5 +-
+>  drivers/base/platform.c                | 288 --------------------
+>  drivers/clocksource/sh_cmt.c           |  17 +-
+>  drivers/clocksource/sh_mtu2.c          |  17 +-
+>  drivers/clocksource/sh_tmu.c           |  18 +-
+>  drivers/clocksource/timer-ti-dm.c      |   1 -
+>  drivers/tty/serial/sh-sci.c            |  11 +-
+>  include/linux/platform_device.h        |  52 ----
+>  41 files changed, 526 insertions(+), 388 deletions(-)
+>  create mode 100644 arch/sh/drivers/platform_early.c
+>  create mode 100644 arch/sh/include/asm/platform_early.h
+>
