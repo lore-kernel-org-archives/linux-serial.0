@@ -1,91 +1,61 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: [PATCH] serial: 8250: omap: Fix idling of clocks for unused uarts
-Date: Wed,  2 May 2018 10:15:00 -0700
-Message-ID: <20180502171500.60462-1-tony@atomide.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Keerthy <j-keerthy@ti.com>, Matthijs van Duin <matthijsvanduin@gmail.com>, Sekhar Nori <nsekhar@ti.com>, Tero Kristo <t-kristo@ti.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH] tty/serial: atmel: use port->name as name in request_irq()
+Date: Wed, 2 May 2018 21:16:32 +0200
+Message-ID: <20180502191632.tgda4g5v3rhncx7c@linutronix.de>
+References: <20180426150625.q5tqcb7fzchvkb5d@linutronix.de>
+ <20180426151222.6vw67lwqmu6ffgnw@linutronix.de>
+ <0dbf4a4c-71d4-6456-67b9-d4d202acffb7@sorico.fr>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <0dbf4a4c-71d4-6456-67b9-d4d202acffb7@sorico.fr>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-I noticed that unused UARTs won't necessarily idle properly always
-unless at least one byte tx transfer is done first.
+On 2018-04-27 12:31:52 [+0200], Richard Genoud wrote:
+> Hi Sebastian,
+Hi,
 
-After some debugging I narrowed down the problem to the scr register
-dma configuration bits that need to be set before softreset for the
-clocks to idle. Unless we do this, the module clkctrl idlest bits
-may be set to 1 instead of 3 meaning the clock will never idle and
-is blocking deeper idle states for the whole domain.
+> > If this is unknown and a bisect is requested, please let me know.
+> Indeed, this will be appreciated.
+> I'm quite curious to find the commit that led to this.
 
-This might be related to the configuration done by the bootloader
-or kexec booting where certain configurations cause the 8250 or
-the clkctrl clock to jam in a way where setting of the scr bits
-and reset is needed to clear it. I've tried diffing the 8250
-registers for the various modes, but did not see anything specific.
-So far I've only seen this on omap4 but I'm suspecting this might
-also happen on the other clkctrl using SoCs considering they
-already have a quirk enabled for UART_ERRATA_CLOCK_DISABLE.
+commit 761ed4a94582ab291aa24dcbea4e01e8936488c8
+Author: Rob Herring <robh@kernel.org>
+Date:   Mon Aug 22 17:39:10 2016 -0500
 
-Let's fix the issue by configuring scr before reset for basic dma
-even if we don't use it. The scr register will be reset when we do
-softreset few lines after, and we restore scr on resume. We should
-do this for all the SoCs with UART_ERRATA_CLOCK_DISABLE quirk flag
-set since the ones with UART_ERRATA_CLOCK_DISABLE are all based
-using clkctrl similar to omap4.
+    tty: serial_core: convert uart_close to use tty_port_close
+    
+    tty_port_close handles much of the common parts of tty close. Convert
+    uart_close to use it and move the serial_core specific parts into
+    tty_port.shutdown function. This will be needed to use tty_port functions
+    directly from in kernel clients.
+    
+    This change causes ops->stop_rx() to be called after uart_wait_until_sent()
+    is called which I think should be fine. Otherwise, the sequence of the
+    close should be the same.
+    
+    Cc: Peter Hurley <peter@hurleysoftware.com>
+    Signed-off-by: Rob Herring <robh@kernel.org>
+    Acked-by: Alan Cox <alan@linux.intel.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Looks like both OMAP_UART_SCR_DMAMODE_1 | OMAP_UART_SCR_DMAMODE_CTL
-bits are needed for the clkctrl to idle after a softreset.
+The thread starts at
+  https://www.spinics.net/lists/linux-serial/msg30070.html
+  http://lkml.kernel.org/r/20180426150625.q5tqcb7fzchvkb5d@linutronix.de
 
-And we need to add omap4 to also use the UART_ERRATA_CLOCK_DISABLE
-for the related workaround to be enabled. This same compatible
-value will also be used for omap5.
+> Richard
 
-Fixes: cdb929e4452a ("serial: 8250_omap: workaround errata around
-idling UART after using DMA")
-Cc: Keerthy <j-keerthy@ti.com>
-Cc: Matthijs van Duin <matthijsvanduin@gmail.com>
-Cc: Sekhar Nori <nsekhar@ti.com>
-Cc: Tero Kristo <t-kristo@ti.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/8250/8250_omap.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1110,13 +1110,14 @@ static int omap8250_no_handle_irq(struct uart_port *port)
- 	return 0;
- }
- 
-+static const u8 omap4_habit = UART_ERRATA_CLOCK_DISABLE;
- static const u8 am3352_habit = OMAP_DMA_TX_KICK | UART_ERRATA_CLOCK_DISABLE;
- static const u8 dra742_habit = UART_ERRATA_CLOCK_DISABLE;
- 
- static const struct of_device_id omap8250_dt_ids[] = {
- 	{ .compatible = "ti,omap2-uart" },
- 	{ .compatible = "ti,omap3-uart" },
--	{ .compatible = "ti,omap4-uart" },
-+	{ .compatible = "ti,omap4-uart", .data = &omap4_habit, },
- 	{ .compatible = "ti,am3352-uart", .data = &am3352_habit, },
- 	{ .compatible = "ti,am4372-uart", .data = &am3352_habit, },
- 	{ .compatible = "ti,dra742-uart", .data = &dra742_habit, },
-@@ -1362,6 +1363,16 @@ static int omap8250_soft_reset(struct device *dev)
- 	int sysc;
- 	int syss;
- 
-+	/*
-+	 * At least on omap4, unused uarts may not idle after reset without
-+	 * a basic scr dma configuration even with no dma in use. The
-+	 * module clkctrl status bit will stay set blocking idle for the
-+	 * whole clockdomain. The softreset below will clear scr, and we
-+	 * restore it on resume so this is safe to do on all SoCs needing
-+	 * omap8250_soft_reset() quirk.
-+	 */
-+	serial_out(up, UART_OMAP_SCR,
-+		   OMAP_UART_SCR_DMAMODE_1 | OMAP_UART_SCR_DMAMODE_CTL);
- 	sysc = serial_in(up, UART_OMAP_SYSC);
- 
- 	/* softreset the UART */
--- 
-2.17.0
+Sebastian
