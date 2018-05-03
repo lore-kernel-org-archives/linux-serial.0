@@ -1,36 +1,37 @@
-From: "Theodore Y. Ts'o" <tytso@mit.edu>
+From: Grant Edwards <grant.b.edwards@gmail.com>
 Subject: Re: serial: custom baud rate
-Date: Thu, 3 May 2018 13:54:01 -0400
-Message-ID: <20180503175401.GD29205@thunk.org>
+Date: Thu, 3 May 2018 18:27:14 +0000 (UTC)
+Message-ID: <pcfka2$gie$1@blaine.gmane.org>
 References: <CAHhAz+hrmLiRJ77cM=CYj+iyH8aUJ64R6FtAwGqqB2pOS0n0aQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHhAz+hrmLiRJ77cM=CYj+iyH8aUJ64R6FtAwGqqB2pOS0n0aQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Muni Sekhar <munisekharrms@gmail.com>
-Cc: linux-serial <linux-serial@vger.kernel.org>, linux-kernel@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 03, 2018 at 06:09:13PM +0530, Muni Sekhar wrote:
-> Hi All,
-> 
-> From include/asm-generic/termbits.h , I see baudrate can be one of the
-> standard values: 50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800,
-> 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 500000,
-> 576000, 921600, 1000000, 1152000, 1500000, 2000000, 2500000, 3000000,
-> 3500000, 4000000.
-> 
+On 2018-05-03, Muni Sekhar <munisekharrms@gmail.com> wrote:
+
 > If I need to set a custom baud rates(e.g. 14400, 128000, 256000), does
 > Linux serial framework has any supporting method?
 
-See the setserial man page:t
+Sure, use the termios2 structure instead of the termios structure:
 
-	https://linux.die.net/man/8/setserial
+  #include <linux/termios.h>
 
-Not all serial devices support the spd_cust and divisor, however.  In
-general, only devices where the kernel directly programs the
-8250/16450/16550 UART directly will support this feature.
+  struct termios2 t;
 
-							- Ted
+  ioctl(fd, TCGETS2, &t)
+
+  t.c_cflag &= ~CBAUD;
+  t.c_cflag |= BOTHER;
+  t.c_ispeed = baud;
+  t.c_ospeed = baud;
+
+  ioctl(fd, TCSETS2, &t)
+
+[Not all devices/drivers support termios2]
+
+-- 
+Grant Edwards               grant.b.edwards        Yow! Are we live or on
+                                  at               tape?
+                              gmail.com            
