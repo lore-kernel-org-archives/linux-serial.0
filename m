@@ -1,63 +1,95 @@
-From: Chris Ruehl <chris.ruehl@gtsys.com.hk>
-Subject: Re: [PATCH] serial: imx: enable IMX21_UCR3_RXDMUXSEL for non-dte-mode
-Date: Thu, 3 May 2018 14:13:53 +0800
-Message-ID: <ca240b4a-aa42-b747-9bab-49b18290ca49@gtsys.com.hk>
-References: <1524186479-25315-1-git-send-email-chris.ruehl@gtsys.com.hk>
- <20180420061316.sakoupltqxn2qhfr@pengutronix.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] serial: sh-sci: Use spin_{try}lock_irqsave instead of
+ open coding version
+Date: Thu, 3 May 2018 09:43:33 +0200
+Message-ID: <CAMuHMdUjsy95zNtoZnp17dmgRcrkzfSCxTe5G=ho5nphqX0HEg@mail.gmail.com>
+References: <20180430080918.16763-1-wagi@monom.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180420061316.sakoupltqxn2qhfr@pengutronix.de>
-Content-Language: en-US
+In-Reply-To: <20180430080918.16763-1-wagi@monom.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Daniel Wagner <wagi@monom.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-rt-users@vger.kernel.org, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux-sh list <linux-sh@vger.kernel.org>, Daniel Wagner <daniel.wagner@siemens.com>, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
+Hi Daniel,
 
-On Friday, April 20, 2018 02:13 PM, Uwe Kleine-König wrote:
-> Hello Chris,
-> 
-> On Fri, Apr 20, 2018 at 09:07:59AM +0800, Chris Ruehl wrote:
->> Fix a problem introduced with
->> commit e61c38d85b73 ("serial: imx: setup DCEDTE early and ensure DCD and RI irqs to be off")
->> result in non dte-mode imx-uart fail receive data.
->> By add back IMX21_UCR3_RXDMUXSEL the serial port works as expected.
->>
->> Signed-off-by: Chris Ruehl <chris.ruehl@gtsys.com.hk>
->> ---
->>   drivers/tty/serial/imx.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
->> index 91f3a1a..3d09933 100644
->> --- a/drivers/tty/serial/imx.c
->> +++ b/drivers/tty/serial/imx.c
->> @@ -1391,7 +1391,7 @@ static int imx_uart_startup(struct uart_port *port)
->>   
->>   		ucr3 = imx_uart_readl(sport, UCR3);
->>   
->> -		ucr3 |= UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
->> +		ucr3 |= IMX21_UCR3_RXDMUXSEL | UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
->>   
->>   		if (sport->dte_mode)
->>   			/* disable broken interrupts */
-> 
-> Doesn't 6df765dca378bddf994cfd2044acafa501bd800f fix this for you?
-> 
-> Best regards
-> Uwe
-> 
+On Mon, Apr 30, 2018 at 10:09 AM, Daniel Wagner <wagi@monom.org> wrote:
+> From: Daniel Wagner <daniel.wagner@siemens.com>
+>
+> Commit 40f70c03e33a ("serial: sh-sci: add locking to console write
+> function to avoid SMP lockup") copied the strategy to avoid locking
+> problems in conjuncture with the console from the UART8250
+> driver. Instead using directly spin_{try}lock_irqsave(),
+> local_irq_save() followed by spin_{try}lock() was used. While this is
+> correct on mainline, for -rt it is a problem. spin_{try}lock() will
+> check if it is running in a valid context. Since the local_irq_save()
+> has already been executed, the context has changed and
+> spin_{try}lock() will complain. The reason why spin_{try}lock()
+> complains is that on -rt the spin locks are turned into mutexes and
+> therefore can sleep. Sleeping with interrupts disabled is not valid.
 
-The IMX serial driver is broken in the 4.9.x tree since 4.9.89.
-Uwe's patch
+> Cc: Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
+> Signed-off-by: Daniel Wagner <daniel.wagner@siemens.com>
 
-6df765dca378bddf994cfd2044acafa501bd800f
+Thanks for your patch!
 
-please apply to clear the situation.
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -2516,13 +2516,12 @@ static void serial_console_write(struct console *co, const char *s,
+>         unsigned long flags;
+>         int locked = 1;
+>
+> -       local_irq_save(flags);
 
-I know you very busy! -
+Hence the below now runs with local interrupts enabled.
 
-Chris
+For checking port->sysrq or oops_in_progress that probably isn't an issue.
+If oops_in_progress is set, you have other problems, and the race condition
+between checking the flag and calling spin_lock{,_irqsave}() existed before,
+and is hard to avoid.
+
+For actual console printing, I think you want to keep interrupts disabled.
+
+>         if (port->sysrq)
+>                 locked = 0;
+>         else if (oops_in_progress)
+> -               locked = spin_trylock(&port->lock);
+> +               locked = spin_trylock_irqsave(&port->lock, flags);
+>         else
+> -               spin_lock(&port->lock);
+> +               spin_lock_irqsave(&port->lock, flags);
+
+Add
+
+        if (!locked
+                local_irq_save(flags)
+
+here?
+
+>         /* first save the SCSCR then disable the interrupts */
+>         ctrl = serial_port_in(port, SCSCR);
+> @@ -2539,8 +2538,7 @@ static void serial_console_write(struct console *co, const char *s,
+>         serial_port_out(port, SCSCR, ctrl);
+>
+>         if (locked)
+> -               spin_unlock(&port->lock);
+> -       local_irq_restore(flags);
+> +               spin_unlock_irqrestore(&port->lock, flags);
+
+        else
+                local_irq_restore(flags);
+
+>  }
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
