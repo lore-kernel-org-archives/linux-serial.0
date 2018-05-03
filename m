@@ -1,37 +1,44 @@
-From: Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: serial: custom baud rate
-Date: Thu, 3 May 2018 18:27:14 +0000 (UTC)
-Message-ID: <pcfka2$gie$1@blaine.gmane.org>
-References: <CAHhAz+hrmLiRJ77cM=CYj+iyH8aUJ64R6FtAwGqqB2pOS0n0aQ@mail.gmail.com>
+From: Greg KH <greg@kroah.com>
+Subject: Re: serial: start_tx & buffer handling
+Date: Thu, 3 May 2018 11:34:08 -0700
+Message-ID: <20180503183408.GA12152@kroah.com>
+References: <CAHhAz+iPbNjeHH72Omi7VCUVL_cOUnQjrqbyJKQstUSL6J1hCw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAHhAz+iPbNjeHH72Omi7VCUVL_cOUnQjrqbyJKQstUSL6J1hCw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
+To: Muni Sekhar <munisekharrms@gmail.com>
+Cc: linux-serial <linux-serial@vger.kernel.org>, linux-kernel@vger.kernel.org, kernelnewbies <kernelnewbies@kernelnewbies.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 2018-05-03, Muni Sekhar <munisekharrms@gmail.com> wrote:
+On Thu, May 03, 2018 at 08:08:48PM +0530, Muni Sekhar wrote:
+> Hi All,
+> 
+> I’m trying to understand how user mode buffer is written to low level
+> serial hardware registers.
+> 
+> For this I read the kernel code and I came to know that from user mode
+> write() API lands into kernel’s tty_write() ("drivers/tty/tty_io.c")
+> and then it calls a uart_write() ("drivers/tty/serial/serial_core.c").
+> 
+> In uart_write(), the buffer is copied to circ_buf and then it calls
+> low level serial hardware driver’s start_tx() (struct uart_ops
+> .start_tx). But here I could not find how the buffer kept in circ_buf
+> is copied to serial port’s TX_FIFO registers?
+> 
+> Can someone take a moment to explain me on this?
 
-> If I need to set a custom baud rates(e.g. 14400, 128000, 256000), does
-> Linux serial framework has any supporting method?
+It all depends on which specific UART driver you are looking at, they
+all do it a bit different depending on the hardware.
 
-Sure, use the termios2 structure instead of the termios structure:
+Which one are you looking at?  Look at what the start_tx callback does
+for that specific driver, that should give you a hint as to how data
+starts flowing.  Usually an interrupt is enabled that is used to flush
+the buffer out to the hardware.
 
-  #include <linux/termios.h>
+thanks,
 
-  struct termios2 t;
-
-  ioctl(fd, TCGETS2, &t)
-
-  t.c_cflag &= ~CBAUD;
-  t.c_cflag |= BOTHER;
-  t.c_ispeed = baud;
-  t.c_ospeed = baud;
-
-  ioctl(fd, TCSETS2, &t)
-
-[Not all devices/drivers support termios2]
-
--- 
-Grant Edwards               grant.b.edwards        Yow! Are we live or on
-                                  at               tape?
-                              gmail.com            
+greg k-h
