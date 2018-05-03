@@ -1,42 +1,28 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] tty: implement a rx led trigger
-Date: Thu, 3 May 2018 13:33:10 +0100
-Message-ID: <0c1bb915-bd92-4433-61ec-78fdba453396@arm.com>
-References: <20180503100448.1350-1-u.kleine-koenig@pengutronix.de>
+From: Muni Sekhar <munisekharrms@gmail.com>
+Subject: serial: custom baud rate
+Date: Thu, 3 May 2018 18:09:13 +0530
+Message-ID: <CAHhAz+hrmLiRJ77cM=CYj+iyH8aUJ64R6FtAwGqqB2pOS0n0aQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180503100448.1350-1-u.kleine-koenig@pengutronix.de>
-Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, linux-serial@vger.kernel.org
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Florian Fainelli <f.fainelli@gmail.com>, Pavel Machek <pavel@ucw.cz>, Mathieu Poirier <mathieu.poirier@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+To: linux-serial <linux-serial@vger.kernel.org>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 03/05/18 11:04, Uwe Kleine-König wrote:
-[...]
-> @@ -157,6 +158,18 @@ struct device *tty_port_register_device_attr_serdev(struct tty_port *port,
->   
->   	tty_port_link_device(port, driver, index);
->   
-> +	port->led_trigger_rx_name = kasprintf(GFP_KERNEL, "%s%d-rx",
-> +					      driver->name, index);
-> +	if (!port->led_trigger_rx_name) {
-> +		pr_err("Failed to allocate trigger name for %s%d\n",
-> +		       driver->name, index);
-> +		goto skip_trigger;
+Hi All,
 
-Hmm, isn't that a rather awkward way to spell "else"? ;)
+>From include/asm-generic/termbits.h , I see baudrate can be one of the
+standard values: 50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800,
+2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 500000,
+576000, 921600, 1000000, 1152000, 1500000, 2000000, 2500000, 3000000,
+3500000, 4000000.
 
-Robin.
 
-> +	}
-> +
-> +	led_trigger_register_simple(port->led_trigger_rx_name,
-> +				    &port->led_trigger_rx);
-> +
-> +skip_trigger:
->   	dev = serdev_tty_port_register(port, device, driver, index);
->   	if (PTR_ERR(dev) != -ENODEV) {
->   		/* Skip creating cdev if we registered a serdev device */
+If I need to set a custom baud rates(e.g. 14400, 128000, 256000), does
+Linux serial framework has any supporting method?
+
+
+
+-- 
+Thanks,
+Sekhar
