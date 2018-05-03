@@ -1,67 +1,193 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: imx: enable IMX21_UCR3_RXDMUXSEL for non-dte-mode
-Date: Thu, 3 May 2018 13:13:17 -0700
-Message-ID: <20180503201317.GA19401@kroah.com>
-References: <1524186479-25315-1-git-send-email-chris.ruehl@gtsys.com.hk>
- <20180420061316.sakoupltqxn2qhfr@pengutronix.de>
- <ca240b4a-aa42-b747-9bab-49b18290ca49@gtsys.com.hk>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2] tty: implement led triggers
+Date: Thu,  3 May 2018 22:19:52 +0200
+Message-ID: <20180503201952.16592-1-u.kleine-koenig@pengutronix.de>
+References: <0c1bb915-bd92-4433-61ec-78fdba453396@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <ca240b4a-aa42-b747-9bab-49b18290ca49@gtsys.com.hk>
+In-Reply-To: <0c1bb915-bd92-4433-61ec-78fdba453396@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Chris Ruehl <chris.ruehl@gtsys.com.hk>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Florian Fainelli <f.fainelli@gmail.com>, Pavel Machek <pavel@ucw.cz>, Mathieu Poirier <mathieu.poirier@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 03, 2018 at 02:13:53PM +0800, Chris Ruehl wrote:
-> Hi Greg,
-> 
-> On Friday, April 20, 2018 02:13 PM, Uwe Kleine-König wrote:
-> > Hello Chris,
-> > 
-> > On Fri, Apr 20, 2018 at 09:07:59AM +0800, Chris Ruehl wrote:
-> > > Fix a problem introduced with
-> > > commit e61c38d85b73 ("serial: imx: setup DCEDTE early and ensure DCD and RI irqs to be off")
-> > > result in non dte-mode imx-uart fail receive data.
-> > > By add back IMX21_UCR3_RXDMUXSEL the serial port works as expected.
-> > > 
-> > > Signed-off-by: Chris Ruehl <chris.ruehl@gtsys.com.hk>
-> > > ---
-> > >   drivers/tty/serial/imx.c | 2 +-
-> > >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > > index 91f3a1a..3d09933 100644
-> > > --- a/drivers/tty/serial/imx.c
-> > > +++ b/drivers/tty/serial/imx.c
-> > > @@ -1391,7 +1391,7 @@ static int imx_uart_startup(struct uart_port *port)
-> > >   		ucr3 = imx_uart_readl(sport, UCR3);
-> > > -		ucr3 |= UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
-> > > +		ucr3 |= IMX21_UCR3_RXDMUXSEL | UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
-> > >   		if (sport->dte_mode)
-> > >   			/* disable broken interrupts */
-> > 
-> > Doesn't 6df765dca378bddf994cfd2044acafa501bd800f fix this for you?
-> > 
-> > Best regards
-> > Uwe
-> > 
-> 
-> The IMX serial driver is broken in the 4.9.x tree since 4.9.89.
-> Uwe's patch
-> 
-> 6df765dca378bddf994cfd2044acafa501bd800f
-> 
-> please apply to clear the situation.
-> 
-> I know you very busy! -
+The rx trigger fires when data is pushed to the ldisc. This is a bit later
+than the actual receiving of data but has the nice benefit that it
+doesn't need adaption for each driver and isn't in the hot path.
 
-It's best to email stable@vger.kernel.org for stuff like this, as I
-almost missed it...
+Similarily the tx trigger fires when data taken from the ldisc.
 
-Now queued up.
+Signed-off-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
+---
+Changes since v1, sent with Message-Id: 
+20180503100448.1350-1-u.kleine-koenig@pengutronix.de:
 
-greg k-h
+ - implement tx trigger;
+ - introduce Kconfig symbol for conditional compilation;
+ - set trigger to NULL if allocating the name failed to not free random
+   pointers in case the port struct wasn't zeroed;
+ - use if/else instead of goto
+
+ drivers/tty/Kconfig      |  7 +++++++
+ drivers/tty/tty_buffer.c |  4 ++++
+ drivers/tty/tty_io.c     |  6 ++++++
+ drivers/tty/tty_port.c   | 32 ++++++++++++++++++++++++++++++++
+ include/linux/tty.h      |  7 +++++++
+ 5 files changed, 56 insertions(+)
+
+diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+index 0840d27381ea..07a2fb05439f 100644
+--- a/drivers/tty/Kconfig
++++ b/drivers/tty/Kconfig
+@@ -41,6 +41,13 @@ config VT
+ 	  If unsure, say Y, or else you won't be able to do much with your new
+ 	  shiny Linux system :-)
+ 
++config TTY_LEDS_TRIGGER
++	bool "Enable support for TTY actions making LEDs blink"
++	depends on LEDS_TRIGGERS
++	---help---
++	  This enable support for tty triggers. It provides two LED triggers
++	  (rx and tx) for each TTY.
++
+ config CONSOLE_TRANSLATIONS
+ 	depends on VT
+ 	default y
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index c996b6859c5e..4d364b77b1a7 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -17,6 +17,7 @@
+ #include <linux/delay.h>
+ #include <linux/module.h>
+ #include <linux/ratelimit.h>
++#include <linux/leds.h>
+ 
+ 
+ #define MIN_TTYB_SIZE	256
+@@ -499,6 +500,7 @@ static void flush_to_ldisc(struct work_struct *work)
+ 		struct tty_buffer *head = buf->head;
+ 		struct tty_buffer *next;
+ 		int count;
++		unsigned long delay = 50 /* ms */;
+ 
+ 		/* Ldisc or user is trying to gain exclusive access */
+ 		if (atomic_read(&buf->priority))
+@@ -521,6 +523,8 @@ static void flush_to_ldisc(struct work_struct *work)
+ 			continue;
+ 		}
+ 
++		led_trigger_blink_oneshot(port->led_trigger_rx, &delay, &delay, 0);
++
+ 		count = receive_buf(port, head, count);
+ 		if (!count)
+ 			break;
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 7c838b90a31d..2c840f1e1e82 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -83,6 +83,7 @@
+ #include <linux/timer.h>
+ #include <linux/ctype.h>
+ #include <linux/kd.h>
++#include <linux/leds.h>
+ #include <linux/mm.h>
+ #include <linux/string.h>
+ #include <linux/slab.h>
+@@ -950,11 +951,16 @@ static inline ssize_t do_tty_write(
+ 	/* Do the write .. */
+ 	for (;;) {
+ 		size_t size = count;
++		unsigned long delay = 50 /* ms */;
++
+ 		if (size > chunk)
+ 			size = chunk;
+ 		ret = -EFAULT;
+ 		if (copy_from_user(tty->write_buf, buf, size))
+ 			break;
++
++		led_trigger_blink_oneshot(tty->port->led_trigger_tx, &delay, &delay, 0);
++
+ 		ret = write(tty, file, tty->write_buf, size);
+ 		if (ret <= 0)
+ 			break;
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 25d736880013..f042879a597c 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -16,6 +16,7 @@
+ #include <linux/wait.h>
+ #include <linux/bitops.h>
+ #include <linux/delay.h>
++#include <linux/leds.h>
+ #include <linux/module.h>
+ #include <linux/serdev.h>
+ 
+@@ -157,6 +158,30 @@ struct device *tty_port_register_device_attr_serdev(struct tty_port *port,
+ 
+ 	tty_port_link_device(port, driver, index);
+ 
++#ifdef CONFIG_TTY_LEDS_TRIGGER
++	port->led_trigger_rx_name = kasprintf(GFP_KERNEL, "%s%d-rx",
++					      driver->name, index);
++	if (port->led_trigger_rx_name) {
++		led_trigger_register_simple(port->led_trigger_rx_name,
++					    &port->led_trigger_rx);
++	} else {
++		port->led_trigger_rx = NULL;
++		pr_err("Failed to allocate trigger name for %s%d\n",
++		       driver->name, index);
++	}
++
++	port->led_trigger_tx_name = kasprintf(GFP_KERNEL, "%s%d-tx",
++					      driver->name, index);
++	if (port->led_trigger_tx_name) {
++		led_trigger_register_simple(port->led_trigger_tx_name,
++					    &port->led_trigger_tx);
++	} else {
++		port->led_trigger_tx = NULL;
++		pr_err("Failed to allocate trigger name for %s%d\n",
++		       driver->name, index);
++	}
++#endif
++
+ 	dev = serdev_tty_port_register(port, device, driver, index);
+ 	if (PTR_ERR(dev) != -ENODEV) {
+ 		/* Skip creating cdev if we registered a serdev device */
+@@ -206,6 +231,13 @@ void tty_port_unregister_device(struct tty_port *port,
+ 	if (ret == 0)
+ 		return;
+ 
++#ifdef CONFIG_TTY_LEDS_TRIGGER
++	led_trigger_unregister_simple(port->led_trigger_rx);
++	kfree(port->led_trigger_rx_name);
++	led_trigger_unregister_simple(port->led_trigger_tx);
++	kfree(port->led_trigger_tx_name);
++#endif
++
+ 	tty_unregister_device(driver, index);
+ }
+ EXPORT_SYMBOL_GPL(tty_port_unregister_device);
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 1dd587ba6d88..b7dc957365b6 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -249,6 +249,13 @@ struct tty_port {
+ 						   set to size of fifo */
+ 	struct kref		kref;		/* Ref counter */
+ 	void 			*client_data;
++
++#ifdef CONFIG_TTY_LEDS_TRIGGER
++	struct led_trigger	*led_trigger_rx;
++	char			*led_trigger_rx_name;
++	struct led_trigger	*led_trigger_tx;
++	char			*led_trigger_tx_name;
++#endif
+ };
+ 
+ /* tty_port::iflags bits -- use atomic bit ops */
+-- 
+2.17.0
