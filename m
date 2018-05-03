@@ -1,44 +1,67 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: serial: start_tx & buffer handling
-Date: Thu, 3 May 2018 11:34:08 -0700
-Message-ID: <20180503183408.GA12152@kroah.com>
-References: <CAHhAz+iPbNjeHH72Omi7VCUVL_cOUnQjrqbyJKQstUSL6J1hCw@mail.gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: imx: enable IMX21_UCR3_RXDMUXSEL for non-dte-mode
+Date: Thu, 3 May 2018 13:13:17 -0700
+Message-ID: <20180503201317.GA19401@kroah.com>
+References: <1524186479-25315-1-git-send-email-chris.ruehl@gtsys.com.hk>
+ <20180420061316.sakoupltqxn2qhfr@pengutronix.de>
+ <ca240b4a-aa42-b747-9bab-49b18290ca49@gtsys.com.hk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAHhAz+iPbNjeHH72Omi7VCUVL_cOUnQjrqbyJKQstUSL6J1hCw@mail.gmail.com>
+In-Reply-To: <ca240b4a-aa42-b747-9bab-49b18290ca49@gtsys.com.hk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Muni Sekhar <munisekharrms@gmail.com>
-Cc: linux-serial <linux-serial@vger.kernel.org>, linux-kernel@vger.kernel.org, kernelnewbies <kernelnewbies@kernelnewbies.org>
+To: Chris Ruehl <chris.ruehl@gtsys.com.hk>
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 03, 2018 at 08:08:48PM +0530, Muni Sekhar wrote:
-> Hi All,
+On Thu, May 03, 2018 at 02:13:53PM +0800, Chris Ruehl wrote:
+> Hi Greg,
 > 
-> I’m trying to understand how user mode buffer is written to low level
-> serial hardware registers.
+> On Friday, April 20, 2018 02:13 PM, Uwe Kleine-K�nig wrote:
+> > Hello Chris,
+> > 
+> > On Fri, Apr 20, 2018 at 09:07:59AM +0800, Chris Ruehl wrote:
+> > > Fix a problem introduced with
+> > > commit e61c38d85b73 ("serial: imx: setup DCEDTE early and ensure DCD and RI irqs to be off")
+> > > result in non dte-mode imx-uart fail receive data.
+> > > By add back IMX21_UCR3_RXDMUXSEL the serial port works as expected.
+> > > 
+> > > Signed-off-by: Chris Ruehl <chris.ruehl@gtsys.com.hk>
+> > > ---
+> > >   drivers/tty/serial/imx.c | 2 +-
+> > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > > index 91f3a1a..3d09933 100644
+> > > --- a/drivers/tty/serial/imx.c
+> > > +++ b/drivers/tty/serial/imx.c
+> > > @@ -1391,7 +1391,7 @@ static int imx_uart_startup(struct uart_port *port)
+> > >   		ucr3 = imx_uart_readl(sport, UCR3);
+> > > -		ucr3 |= UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
+> > > +		ucr3 |= IMX21_UCR3_RXDMUXSEL | UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
+> > >   		if (sport->dte_mode)
+> > >   			/* disable broken interrupts */
+> > 
+> > Doesn't 6df765dca378bddf994cfd2044acafa501bd800f fix this for you?
+> > 
+> > Best regards
+> > Uwe
+> > 
 > 
-> For this I read the kernel code and I came to know that from user mode
-> write() API lands into kernel’s tty_write() ("drivers/tty/tty_io.c")
-> and then it calls a uart_write() ("drivers/tty/serial/serial_core.c").
+> The IMX serial driver is broken in the 4.9.x tree since 4.9.89.
+> Uwe's patch
 > 
-> In uart_write(), the buffer is copied to circ_buf and then it calls
-> low level serial hardware driver’s start_tx() (struct uart_ops
-> .start_tx). But here I could not find how the buffer kept in circ_buf
-> is copied to serial port’s TX_FIFO registers?
+> 6df765dca378bddf994cfd2044acafa501bd800f
 > 
-> Can someone take a moment to explain me on this?
+> please apply to clear the situation.
+> 
+> I know you very busy! -
 
-It all depends on which specific UART driver you are looking at, they
-all do it a bit different depending on the hardware.
+It's best to email stable@vger.kernel.org for stuff like this, as I
+almost missed it...
 
-Which one are you looking at?  Look at what the start_tx callback does
-for that specific driver, that should give you a hint as to how data
-starts flowing.  Usually an interrupt is enabled that is used to flush
-the buffer out to the hardware.
-
-thanks,
+Now queued up.
 
 greg k-h
