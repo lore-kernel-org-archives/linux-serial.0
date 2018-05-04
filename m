@@ -1,43 +1,90 @@
-From: Muni Sekhar <munisekharrms@gmail.com>
-Subject: Re: serial: custom baud rate
-Date: Fri, 4 May 2018 14:34:51 +0530
-Message-ID: <CAHhAz+iiv+h+RAPXACQuJRiEQmE1jxeS7+qaz-8fu30Fm9tNaw@mail.gmail.com>
-References: <CAHhAz+hrmLiRJ77cM=CYj+iyH8aUJ64R6FtAwGqqB2pOS0n0aQ@mail.gmail.com>
- <20180503175401.GD29205@thunk.org>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH v2] tty/serial: atmel: use port->name as name in
+ request_irq()
+Date: Fri, 4 May 2018 12:28:56 +0200
+Message-ID: <d62a945c-f81e-d7e5-8431-a7948a0b833c@sorico.fr>
+References: <20180426150625.q5tqcb7fzchvkb5d@linutronix.de>
+ <20180426151222.6vw67lwqmu6ffgnw@linutronix.de>
+ <0dbf4a4c-71d4-6456-67b9-d4d202acffb7@sorico.fr>
+ <20180502191632.tgda4g5v3rhncx7c@linutronix.de>
+ <4f3f6e7c-2806-1749-1523-72d5c8eb8229@sorico.fr>
+ <20180503124410.n6ze2ngwv6ekjhdr@linutronix.de>
+ <921729c6-7c3f-11cd-8634-044a5c52f810@sorico.fr>
+ <80203f75-f38e-6214-e9b6-8512c5941647@sorico.fr>
+ <20180504081447.enontsm6jod4xa6g@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180503175401.GD29205@thunk.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Theodore Y. Ts'o" <tytso@mit.edu>, Muni Sekhar <munisekharrms@gmail.com>, linux-serial <linux-serial@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180504081447.enontsm6jod4xa6g@linutronix.de>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Rob Herring <robh@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 3, 2018 at 11:24 PM, Theodore Y. Ts'o <tytso@mit.edu> wrote:
-> On Thu, May 03, 2018 at 06:09:13PM +0530, Muni Sekhar wrote:
->> Hi All,
->>
->> From include/asm-generic/termbits.h , I see baudrate can be one of the
->> standard values: 50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800,
->> 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 500000,
->> 576000, 921600, 1000000, 1152000, 1500000, 2000000, 2500000, 3000000,
->> 3500000, 4000000.
->>
->> If I need to set a custom baud rates(e.g. 14400, 128000, 256000), does
->> Linux serial framework has any supporting method?
->
-> See the setserial man page:t
->
->         https://linux.die.net/man/8/setserial
->
-> Not all serial devices support the spd_cust and divisor, however.  In
-> general, only devices where the kernel directly programs the
-> 8250/16450/16550 UART directly will support this feature.
->
-So custom baud's can be set via TIOCSSERIAL IOCtl in kernel mode?
->                                                         - Ted
-
-
-
--- 
-Thanks,
-Sekhar
+T24gMDQvMDUvMjAxOCAxMDoxNCwgU2ViYXN0aWFuIEFuZHJ6ZWogU2lld2lvciB3cm90ZToKPiBJ
+IHdhcyBwdXp6bGVkIHdoaWxlIGxvb2tpbmcgYXQgL3Byb2MvaW50ZXJydXB0cyBhbmQgcmFuZG9t
+IHRoaW5ncyBzaG93ZWQKPiB1cCBiZXR3ZWVuIHJlYm9vdHMuIFRoaXMgb2NjdXJyZWQgbW9yZSBv
+ZnRlbiBidXQgSSByZWFsaXNlZCBpdCBsYXRlci4gVGhlCj4gImNvcnJlY3QiIG91dHB1dCBzaG91
+bGQgYmU6Cj4gfDM4OiAgICAgIDExODYxICBhdG1lbC1haWM1ICAgMiBMZXZlbCAgICAgdHR5UzAK
+PiAKPiBidXQgSSBzYXcgc29tZXRpbWVzCj4gfDM4OiAgICAgICA2NDI2ICBhdG1lbC1haWM1ICAg
+MiBMZXZlbCAgICAgdHR5MQo+IAo+IGFuZCBhY2NvdW50ZWQgaXQgd3JvbmdseSBhcyBjb3JyZWN0
+LiBUaGlzIGlzIHVzZSBhZnRlciBmcmVlIGFuZCB0aGUKPiBmb3JtZXIgZXhhbXBsZSByYW5kb21s
+eSBnb3QgdGhlICJvbGQiIHBvaW50ZXIgd2hpY2ggcG9pbnRlZCB0byB0aGUgc2FtZQo+IGNvbnRl
+bnQuIFdpdGggU0xBQl9GUkVFTElTVF9SQU5ET00gYW5kIEhBUkRFTkVEIEkgZXZlbiBnb3QKPiB8
+Mzg6ICAgICAgIDcwNjcgIGF0bWVsLWFpYzUgICAyIExldmVsICAgICBFPVN0YXJ0ZWQgVXNlciBN
+YW5hZ2VyIGZvciBVSUQgMAo+IAo+IG9yIG90aGVyIG5vbnNlbnNlLgo+IEFzIGl0IHR1cm5zIG91
+dCB0aGUgdHR5LCBwb2ludGVyIHRoYXQgaXMgYWNjZXNzZWQgaW4gYXRtZWxfc3RhcnR1cCgpLCBp
+cwo+IGZyZWVkKCkgYmVmb3JlIGF0bWVsX3NodXRkb3duKCkuIEl0IHNlZW1zIHRvIGhhcHBlbiBx
+dWl0ZSBvZnRlbiB0aGF0IHRoZQo+IHR0eSBmb3IgdHR5UzAgaXMgYWxsb2NhdGVkIGFuZCBmcmVl
+ZCB3aGlsZSAtPnNodXRkb3duIGlzIG5vdCBpbnZva2VkLiBJCj4gZG9uJ3QgZG8gYW55dGhpbmcg
+c3BlY2lhbCAtIGp1c3QgYSBzeXN0ZW1kIGJvb3QgOikKPiAKPiBVc2UgcG9ydC0+bmFtZSBhcyB0
+aGUgSVJRIG5hbWUgZm9yIHJlcXVlc3RfaXJxKCkuIFRoaXMgZXhpc3RzIGFzIGxvbmcgYXMKPiB0
+aGUgZHJpdmVyIGlzIGxvYWRlZCBzbyBubyB1c2UtYWZ0ZXItZnJlZSBoZXJlLgo+IEZvciBiYWNr
+cG9ydHMgYmVmb3JlIHY0LjEyIEkgc3VnZ2VzdCB0byB1c2UgYCJhdG1lbF9zZXJpYWwiJyBpbnN0
+ZWFkCj4gYHBvcnQtPm5hbWUnICh0aGF0IG1lbWJlciB3YXMgaW50cm9kdWNlZCBpbiBmNzA0OGIx
+NTkwMGYgKCJ0dHk6IHNlcmlhbF9jb3JlOgo+IEFkZCBuYW1lIGZpZWxkIHRvIHVhcnRfcG9ydCBz
+dHJ1Y3QiKS4KPiAKPiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZwpJIHRoaW5rIGl0J3Mgc2Fm
+ZXIgdG8gdXNlOgpDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZyAjIDQuMTQKQmVjYXVzZSB0aGUg
+c3RhYmxlIHRlYW0gbWF5IG1pc3MgeW91ciBjb21tZW50LCBhbmQgZXZlbiBpZiB0aGV5IGRvbid0
+LCBJCnRoaW5rIGl0J3Mgbm90IHRoZWlyIHJvbGUgdG8gYWRhcHQgdGhlIHBhdGNoIHRvIDQuOS54
+IChhbmQgdGVzdCBpdCAhKQpJTUhPLCB0aGUgYmVzdCB3YXkgaXMgdG8gYWRkICMgNC4xNCBhbmQg
+d2hlbiBpdCdzIGFwcGxpZWQgb24gNC4xNC54LApzZW5kIGEgdGVzdGVkIGJhY2twb3J0IGZvciA0
+LjkueAoKQmVzaWRlcyB0aGF0LCB5b3UgY2FuIGFkZCBteToKQWNrZWQtYnk6IFJpY2hhcmQgR2Vu
+b3VkIDxyaWNoYXJkLmdlbm91ZEBnbWFpbC5jb20+CgpSb2IsIGRvIHlvdSBhZ3JlZSB3aXRoIHRo
+aXMgZml4ID8KCgo+IEZpeGVzOiA3NjFlZDRhOTQ1ODIgKCJ0dHk6IHNlcmlhbF9jb3JlOiBjb252
+ZXJ0IHVhcnRfY2xvc2UgdG8gdXNlIHR0eV9wb3J0X2Nsb3NlIikKPiBTaWduZWQtb2ZmLWJ5OiBT
+ZWJhc3RpYW4gQW5kcnplaiBTaWV3aW9yIDxiaWdlYXN5QGxpbnV0cm9uaXguZGU+Cj4gLS0tCj4g
+djHigKZ2MjogLSBCaXNlY3RlZCBhbmQgYWRkZWQgYSBGaXhlcyB0YWcKPiAgICAgICAgLSBhZGRl
+ZCBhIG5vdGUgZm9yIGJhY2twb3J0ZXJzIHRvIHY0Ljkg4oCmIHY0LjEyIChwb2ludGVkIG91dCBi
+eQo+IAkgUmljaGFyZCBHZW5vdWQpCj4gCj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJp
+YWwuYyB8IDQgKy0tLQo+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDMgZGVsZXRp
+b25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwu
+YyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+IGluZGV4IGUyODdmZThmMTBm
+Yy4uZDMxODk4MTY3NDBlIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9z
+ZXJpYWwuYwo+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+IEBAIC0x
+NzU3LDcgKzE3NTcsNiBAQCBzdGF0aWMgaW50IGF0bWVsX3N0YXJ0dXAoc3RydWN0IHVhcnRfcG9y
+dCAqcG9ydCkKPiAgewo+ICAJc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldiA9IHRvX3BsYXRm
+b3JtX2RldmljZShwb3J0LT5kZXYpOwo+ICAJc3RydWN0IGF0bWVsX3VhcnRfcG9ydCAqYXRtZWxf
+cG9ydCA9IHRvX2F0bWVsX3VhcnRfcG9ydChwb3J0KTsKPiAtCXN0cnVjdCB0dHlfc3RydWN0ICp0
+dHkgPSBwb3J0LT5zdGF0ZS0+cG9ydC50dHk7Cj4gIAlpbnQgcmV0dmFsOwo+ICAKPiAgCS8qCj4g
+QEAgLTE3NzIsOCArMTc3MSw3IEBAIHN0YXRpYyBpbnQgYXRtZWxfc3RhcnR1cChzdHJ1Y3QgdWFy
+dF9wb3J0ICpwb3J0KQo+ICAJICogQWxsb2NhdGUgdGhlIElSUQo+ICAJICovCj4gIAlyZXR2YWwg
+PSByZXF1ZXN0X2lycShwb3J0LT5pcnEsIGF0bWVsX2ludGVycnVwdCwKPiAtCQkJSVJRRl9TSEFS
+RUQgfCBJUlFGX0NPTkRfU1VTUEVORCwKPiAtCQkJdHR5ID8gdHR5LT5uYW1lIDogImF0bWVsX3Nl
+cmlhbCIsIHBvcnQpOwo+ICsJCQkgICAgIElSUUZfU0hBUkVEIHwgSVJRRl9DT05EX1NVU1BFTkQs
+IHBvcnQtPm5hbWUsIHBvcnQpOwo+ICAJaWYgKHJldHZhbCkgewo+ICAJCWRldl9lcnIocG9ydC0+
+ZGV2LCAiYXRtZWxfc3RhcnR1cCAtIENhbid0IGdldCBpcnFcbiIpOwo+ICAJCXJldHVybiByZXR2
+YWw7Cj4gCgpUaGFua3MgIQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBs
+aXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlz
+dGluZm8vbGludXgtYXJtLWtlcm5lbAo=
