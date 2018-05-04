@@ -1,48 +1,32 @@
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH v3 1/3] clocksource: timer-ti-dm: remove the early platform
- driver registration
-Date: Fri,  4 May 2018 15:27:29 +0200
-Message-ID: <20180504132731.14574-2-brgl@bgdev.pl>
-References: <20180504132731.14574-1-brgl@bgdev.pl>
+From: "Theodore Y. Ts'o" <tytso@mit.edu>
+Subject: Re: serial: custom baud rate
+Date: Fri, 4 May 2018 09:59:04 -0400
+Message-ID: <20180504135904.GJ29205@thunk.org>
+References: <CAHhAz+hrmLiRJ77cM=CYj+iyH8aUJ64R6FtAwGqqB2pOS0n0aQ@mail.gmail.com>
+ <20180503175401.GD29205@thunk.org>
+ <CAHhAz+iiv+h+RAPXACQuJRiEQmE1jxeS7+qaz-8fu30Fm9tNaw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180504132731.14574-1-brgl@bgdev.pl>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sekhar Nori <nsekhar@ti.com>, Kevin Hilman <khilman@kernel.org>, David Lechner <david@lechnology.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Peter Rosin <peda@axentia.se>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Magnus Damm <magnus.damm@gmail.com>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAHhAz+iiv+h+RAPXACQuJRiEQmE1jxeS7+qaz-8fu30Fm9tNaw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Muni Sekhar <munisekharrms@gmail.com>
+Cc: linux-serial <linux-serial@vger.kernel.org>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+On Fri, May 04, 2018 at 02:34:51PM +0530, Muni Sekhar wrote:
+> > See the setserial man page:t
+> >
+> >         https://linux.die.net/man/8/setserial
+> >
+> > Not all serial devices support the spd_cust and divisor, however.  In
+> > general, only devices where the kernel directly programs the
+> > 8250/16450/16550 UART directly will support this feature.
+> >
+> So custom baud's can be set via TIOCSSERIAL IOCtl in kernel mode?
 
-This driver is no longer used as an early platform driver. Remove the
-registration macro.
+ioctl's are in general designed for use in userspace.  So are the
+termios interface.
 
-Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
----
- drivers/clocksource/timer-ti-dm.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/clocksource/timer-ti-dm.c b/drivers/clocksource/timer-ti-dm.c
-index 4cce6b224b87..595124074821 100644
---- a/drivers/clocksource/timer-ti-dm.c
-+++ b/drivers/clocksource/timer-ti-dm.c
-@@ -991,7 +991,6 @@ static struct platform_driver omap_dm_timer_driver = {
- 	},
- };
- 
--early_platform_init("earlytimer", &omap_dm_timer_driver);
- module_platform_driver(omap_dm_timer_driver);
- 
- MODULE_DESCRIPTION("OMAP Dual-Mode Timer Driver");
--- 
-2.17.0
+					- Ted
