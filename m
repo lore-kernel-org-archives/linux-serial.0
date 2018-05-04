@@ -1,105 +1,56 @@
-From: Muni Sekhar <munisekharrms@gmail.com>
-Subject: Re: serial: start_tx & buffer handling
-Date: Fri, 4 May 2018 19:40:20 +0530
-Message-ID: <CAHhAz+h9raK0qpuB2JEYY2TmNamt3oG3N0iUF-jjNUVboiaXdw@mail.gmail.com>
-References: <CAHhAz+iPbNjeHH72Omi7VCUVL_cOUnQjrqbyJKQstUSL6J1hCw@mail.gmail.com>
- <20180503183408.GA12152@kroah.com> <CAHhAz+iub6boqtK7UgFuKW=4t9DYPrnPX6nDu8R4T2J4=v=-DA@mail.gmail.com>
- <CA+XxOSG8UozW9uzmdrtmAOEYsgwxPVEUB8B=3HNnsrnZMuGF2w@mail.gmail.com> <CA+XxOSETX-3P9vNfOTgHK8cu=65oXpZpuznHE1ThD_nb2QYseA@mail.gmail.com>
+From: Radu Pirea <radu.pirea@microchip.com>
+Subject: [PATCH v2 0/6] Driver for at91 usart in spi mode
+Date: Fri, 4 May 2018 18:47:08 +0300
+Message-ID: <20180504154714.5109-1-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CA+XxOSETX-3P9vNfOTgHK8cu=65oXpZpuznHE1ThD_nb2QYseA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?lo=C3=AFc_tourlonias?= <loic.tourlonias@gmail.com>
-Cc: Greg KH <greg@kroah.com>, linux-kernel@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, kernelnewbies <kernelnewbies@kernelnewbies.org>
+To: linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: lee.jones@linaro.org, broonie@kernel.org, alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com, jslaby@suse.com, gregkh@linuxfoundation.org, richard.genoud@gmail.com, Radu Pirea <radu.pirea@microchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 4, 2018 at 5:44 PM, lo=C3=AFc tourlonias
-<loic.tourlonias@gmail.com> wrote:
->  Hi
->
->  On Fri, May 4, 2018 at 6:31 AM, Muni Sekhar <munisekharrms@gmail.com> wr=
-ote:
->>>
->>> On Fri, May 4, 2018 at 12:04 AM, Greg KH <greg@kroah.com> wrote:
->>> > On Thu, May 03, 2018 at 08:08:48PM +0530, Muni Sekhar wrote:
->>> >> Hi All,
->>> >>
->>> >> I=E2=80=99m trying to understand how user mode buffer is written to =
-low level
->>> >> serial hardware registers.
->>> >>
->>> >> For this I read the kernel code and I came to know that from user mo=
-de
->>> >> write() API lands into kernel=E2=80=99s tty_write() ("drivers/tty/tt=
-y_io.c")
->>> >> and then it calls a uart_write() ("drivers/tty/serial/serial_core.c"=
-).
->>> >>
->>> >> In uart_write(), the buffer is copied to circ_buf and then it calls
->>> >> low level serial hardware driver=E2=80=99s start_tx() (struct uart_o=
-ps
->>> >> .start_tx). But here I could not find how the buffer kept in circ_bu=
-f
->>> >> is copied to serial port=E2=80=99s TX_FIFO registers?
->>> >>
->>> >> Can someone take a moment to explain me on this?
->>> >
->>> > It all depends on which specific UART driver you are looking at, they
->>> > all do it a bit different depending on the hardware.
->>> >
->>> > Which one are you looking at?  Look at what the start_tx callback doe=
-s
->>> > for that specific driver, that should give you a hint as to how data
->>> > starts flowing.  Usually an interrupt is enabled that is used to flus=
-h
->>> > the buffer out to the hardware.
->>> >
->>>
->>> I=E2=80=99m looking for any existing sample code which does DMA transfe=
-rs of
->>> UART transmitted data. I looked at the bcm63xx_uart.c, it looks it
->>> does not handle DMA transfers. Even copying the Tx buffer (from
->>> circ_buf) to UART_FIFO_REG happening in ISR.
->
->
->  You can have a look at atmel_serial kernel module (built for ARM).
->  https://elixir.bootlin.com/linux/latest/source/drivers/tty/serial/atmel_=
-serial.c
->
->  The dma buffer is linked to uart circular buffer in prepare_tx() functio=
-n
->  called from uart_startup(). It's released in release_tx() function calle=
-d
->  from uart_shutdown(). DMA buffer is managed in schedule_tx() function ca=
-lled
->  from a tasklet triggered by the ISR.
-Thanks a lot for this information.
->
->  HTH
->
->>>
->>>
->>> > thanks,
->>> >
->>> > greg k-h
->>>
->>>
->>>
->>> --
->>> Thanks,
->>> Sekhar
->>>
->>> _______________________________________________
->>> Kernelnewbies mailing list
->>> Kernelnewbies@kernelnewbies.org
->>> https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
->>
->>
+Hello,
 
+This is the second version of driver. I added a mfd driver which by
+default probes atmel_serial driver and if in dt is specified to probe
+the spi driver, then the spi-at91-usart driver will be probed. The
+compatible for atmel_serial is now the compatible for at91-usart mfd
+driver and compatilbe for atmel_serial driver was changed in order to
+keep the bindings for serial as they are.
 
+Changes in v1:
+- added spi-at91-usart driver
 
---=20
-Thanks,
-Sekhar
+Changes in v2:
+- added at91-usart mfd driver
+- modified spi-at91-usart driver to work as mfd driver child
+- modified atmel_serial driver to work as mfd driver child
+
+Radu Pirea (6):
+  MAINTAINERS: add at91 usart mfd driver
+  mfd: at91-usart: added mfd driver for usart
+  MAINTAINERS: add at91 usart spi driver
+  dt-bindings: add binding for at91-usart in spi mode
+  spi: at91-usart: add driver for at91-usart as spi
+  tty/serial: atmel: changed the driver to work under at91-usart mfd
+
+ .../bindings/spi/microchip,at91-usart-spi.txt |  28 +
+ MAINTAINERS                                   |  14 +
+ drivers/mfd/Kconfig                           |  10 +
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/at91-usart.c                      |  81 +++
+ drivers/spi/Kconfig                           |   9 +
+ drivers/spi/Makefile                          |   1 +
+ drivers/spi/spi-at91-usart.c                  | 545 ++++++++++++++++++
+ drivers/tty/serial/Kconfig                    |   1 +
+ drivers/tty/serial/atmel_serial.c             |  29 +-
+ include/dt-bindings/mfd/at91-usart.h          |  17 +
+ 11 files changed, 722 insertions(+), 14 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/spi/microchip,at91-usart-spi.txt
+ create mode 100644 drivers/mfd/at91-usart.c
+ create mode 100644 drivers/spi/spi-at91-usart.c
+ create mode 100644 include/dt-bindings/mfd/at91-usart.h
+
+-- 
+2.17.0
