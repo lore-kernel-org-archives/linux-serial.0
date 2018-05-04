@@ -1,77 +1,43 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v2] tty/serial: atmel: use port->name as name in request_irq()
-Date: Fri, 4 May 2018 10:14:47 +0200
-Message-ID: <20180504081447.enontsm6jod4xa6g@linutronix.de>
-References: <20180426150625.q5tqcb7fzchvkb5d@linutronix.de>
- <20180426151222.6vw67lwqmu6ffgnw@linutronix.de>
- <0dbf4a4c-71d4-6456-67b9-d4d202acffb7@sorico.fr>
- <20180502191632.tgda4g5v3rhncx7c@linutronix.de>
- <4f3f6e7c-2806-1749-1523-72d5c8eb8229@sorico.fr>
- <20180503124410.n6ze2ngwv6ekjhdr@linutronix.de>
- <921729c6-7c3f-11cd-8634-044a5c52f810@sorico.fr>
- <80203f75-f38e-6214-e9b6-8512c5941647@sorico.fr>
+From: Muni Sekhar <munisekharrms@gmail.com>
+Subject: Re: serial: custom baud rate
+Date: Fri, 4 May 2018 14:34:51 +0530
+Message-ID: <CAHhAz+iiv+h+RAPXACQuJRiEQmE1jxeS7+qaz-8fu30Fm9tNaw@mail.gmail.com>
+References: <CAHhAz+hrmLiRJ77cM=CYj+iyH8aUJ64R6FtAwGqqB2pOS0n0aQ@mail.gmail.com>
+ <20180503175401.GD29205@thunk.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <80203f75-f38e-6214-e9b6-8512c5941647@sorico.fr>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180503175401.GD29205@thunk.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Theodore Y. Ts'o" <tytso@mit.edu>, Muni Sekhar <munisekharrms@gmail.com>, linux-serial <linux-serial@vger.kernel.org>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-SSB3YXMgcHV6emxlZCB3aGlsZSBsb29raW5nIGF0IC9wcm9jL2ludGVycnVwdHMgYW5kIHJhbmRv
-bSB0aGluZ3Mgc2hvd2VkCnVwIGJldHdlZW4gcmVib290cy4gVGhpcyBvY2N1cnJlZCBtb3JlIG9m
-dGVuIGJ1dCBJIHJlYWxpc2VkIGl0IGxhdGVyLiBUaGUKImNvcnJlY3QiIG91dHB1dCBzaG91bGQg
-YmU6CnwzODogICAgICAxMTg2MSAgYXRtZWwtYWljNSAgIDIgTGV2ZWwgICAgIHR0eVMwCgpidXQg
-SSBzYXcgc29tZXRpbWVzCnwzODogICAgICAgNjQyNiAgYXRtZWwtYWljNSAgIDIgTGV2ZWwgICAg
-IHR0eTEKCmFuZCBhY2NvdW50ZWQgaXQgd3JvbmdseSBhcyBjb3JyZWN0LiBUaGlzIGlzIHVzZSBh
-ZnRlciBmcmVlIGFuZCB0aGUKZm9ybWVyIGV4YW1wbGUgcmFuZG9tbHkgZ290IHRoZSAib2xkIiBw
-b2ludGVyIHdoaWNoIHBvaW50ZWQgdG8gdGhlIHNhbWUKY29udGVudC4gV2l0aCBTTEFCX0ZSRUVM
-SVNUX1JBTkRPTSBhbmQgSEFSREVORUQgSSBldmVuIGdvdAp8Mzg6ICAgICAgIDcwNjcgIGF0bWVs
-LWFpYzUgICAyIExldmVsICAgICBFPVN0YXJ0ZWQgVXNlciBNYW5hZ2VyIGZvciBVSUQgMAoKb3Ig
-b3RoZXIgbm9uc2Vuc2UuCkFzIGl0IHR1cm5zIG91dCB0aGUgdHR5LCBwb2ludGVyIHRoYXQgaXMg
-YWNjZXNzZWQgaW4gYXRtZWxfc3RhcnR1cCgpLCBpcwpmcmVlZCgpIGJlZm9yZSBhdG1lbF9zaHV0
-ZG93bigpLiBJdCBzZWVtcyB0byBoYXBwZW4gcXVpdGUgb2Z0ZW4gdGhhdCB0aGUKdHR5IGZvciB0
-dHlTMCBpcyBhbGxvY2F0ZWQgYW5kIGZyZWVkIHdoaWxlIC0+c2h1dGRvd24gaXMgbm90IGludm9r
-ZWQuIEkKZG9uJ3QgZG8gYW55dGhpbmcgc3BlY2lhbCAtIGp1c3QgYSBzeXN0ZW1kIGJvb3QgOikK
-ClVzZSBwb3J0LT5uYW1lIGFzIHRoZSBJUlEgbmFtZSBmb3IgcmVxdWVzdF9pcnEoKS4gVGhpcyBl
-eGlzdHMgYXMgbG9uZyBhcwp0aGUgZHJpdmVyIGlzIGxvYWRlZCBzbyBubyB1c2UtYWZ0ZXItZnJl
-ZSBoZXJlLgpGb3IgYmFja3BvcnRzIGJlZm9yZSB2NC4xMiBJIHN1Z2dlc3QgdG8gdXNlIGAiYXRt
-ZWxfc2VyaWFsIicgaW5zdGVhZApgcG9ydC0+bmFtZScgKHRoYXQgbWVtYmVyIHdhcyBpbnRyb2R1
-Y2VkIGluIGY3MDQ4YjE1OTAwZiAoInR0eTogc2VyaWFsX2NvcmU6CkFkZCBuYW1lIGZpZWxkIHRv
-IHVhcnRfcG9ydCBzdHJ1Y3QiKS4KCkNjOiBzdGFibGVAdmdlci5rZXJuZWwub3JnCkZpeGVzOiA3
-NjFlZDRhOTQ1ODIgKCJ0dHk6IHNlcmlhbF9jb3JlOiBjb252ZXJ0IHVhcnRfY2xvc2UgdG8gdXNl
-IHR0eV9wb3J0X2Nsb3NlIikKU2lnbmVkLW9mZi1ieTogU2ViYXN0aWFuIEFuZHJ6ZWogU2lld2lv
-ciA8YmlnZWFzeUBsaW51dHJvbml4LmRlPgotLS0KdjHigKZ2MjogLSBCaXNlY3RlZCBhbmQgYWRk
-ZWQgYSBGaXhlcyB0YWcKICAgICAgIC0gYWRkZWQgYSBub3RlIGZvciBiYWNrcG9ydGVycyB0byB2
-NC45IOKApiB2NC4xMiAocG9pbnRlZCBvdXQgYnkKCSBSaWNoYXJkIEdlbm91ZCkKCiBkcml2ZXJz
-L3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMgfCA0ICstLS0KIDEgZmlsZSBjaGFuZ2VkLCAxIGlu
-c2VydGlvbigrKSwgMyBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJp
-YWwvYXRtZWxfc2VyaWFsLmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMKaW5k
-ZXggZTI4N2ZlOGYxMGZjLi5kMzE4OTgxNjc0MGUgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3Nl
-cmlhbC9hdG1lbF9zZXJpYWwuYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFs
-LmMKQEAgLTE3NTcsNyArMTc1Nyw2IEBAIHN0YXRpYyBpbnQgYXRtZWxfc3RhcnR1cChzdHJ1Y3Qg
-dWFydF9wb3J0ICpwb3J0KQogewogCXN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYgPSB0b19w
-bGF0Zm9ybV9kZXZpY2UocG9ydC0+ZGV2KTsKIAlzdHJ1Y3QgYXRtZWxfdWFydF9wb3J0ICphdG1l
-bF9wb3J0ID0gdG9fYXRtZWxfdWFydF9wb3J0KHBvcnQpOwotCXN0cnVjdCB0dHlfc3RydWN0ICp0
-dHkgPSBwb3J0LT5zdGF0ZS0+cG9ydC50dHk7CiAJaW50IHJldHZhbDsKIAogCS8qCkBAIC0xNzcy
-LDggKzE3NzEsNyBAQCBzdGF0aWMgaW50IGF0bWVsX3N0YXJ0dXAoc3RydWN0IHVhcnRfcG9ydCAq
-cG9ydCkKIAkgKiBBbGxvY2F0ZSB0aGUgSVJRCiAJICovCiAJcmV0dmFsID0gcmVxdWVzdF9pcnEo
-cG9ydC0+aXJxLCBhdG1lbF9pbnRlcnJ1cHQsCi0JCQlJUlFGX1NIQVJFRCB8IElSUUZfQ09ORF9T
-VVNQRU5ELAotCQkJdHR5ID8gdHR5LT5uYW1lIDogImF0bWVsX3NlcmlhbCIsIHBvcnQpOworCQkJ
-ICAgICBJUlFGX1NIQVJFRCB8IElSUUZfQ09ORF9TVVNQRU5ELCBwb3J0LT5uYW1lLCBwb3J0KTsK
-IAlpZiAocmV0dmFsKSB7CiAJCWRldl9lcnIocG9ydC0+ZGV2LCAiYXRtZWxfc3RhcnR1cCAtIENh
-bid0IGdldCBpcnFcbiIpOwogCQlyZXR1cm4gcmV0dmFsOwotLSAKMi4xNy4wCgoKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBt
-YWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9s
-aXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On Thu, May 3, 2018 at 11:24 PM, Theodore Y. Ts'o <tytso@mit.edu> wrote:
+> On Thu, May 03, 2018 at 06:09:13PM +0530, Muni Sekhar wrote:
+>> Hi All,
+>>
+>> From include/asm-generic/termbits.h , I see baudrate can be one of the
+>> standard values: 50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800,
+>> 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 500000,
+>> 576000, 921600, 1000000, 1152000, 1500000, 2000000, 2500000, 3000000,
+>> 3500000, 4000000.
+>>
+>> If I need to set a custom baud rates(e.g. 14400, 128000, 256000), does
+>> Linux serial framework has any supporting method?
+>
+> See the setserial man page:t
+>
+>         https://linux.die.net/man/8/setserial
+>
+> Not all serial devices support the spd_cust and divisor, however.  In
+> general, only devices where the kernel directly programs the
+> 8250/16450/16550 UART directly will support this feature.
+>
+So custom baud's can be set via TIOCSSERIAL IOCtl in kernel mode?
+>                                                         - Ted
+
+
+
+-- 
+Thanks,
+Sekhar
