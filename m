@@ -1,26 +1,40 @@
-From: Muni Sekhar <munisekharrms@gmail.com>
-Subject: serial: uart_port->type
-Date: Fri, 4 May 2018 23:08:21 +0530
-Message-ID: <CAHhAz+iOotCJCnBhUUpw1v+3mB5BvU1sd8BnRzVv09J9y9bTjw@mail.gmail.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCHv2] serial: 8250: omap: Fix idling of clocks for unused
+ uarts
+Date: Fri, 4 May 2018 10:39:31 -0700
+Message-ID: <20180504173931.GD98604@atomide.com>
+References: <20180504173103.73881-1-tony@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180504173103.73881-1-tony@atomide.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: kernelnewbies <kernelnewbies@kernelnewbies.org>, linux-serial <linux-serial@vger.kernel.org>, linux-kernel@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, Keerthy <j-keerthy@ti.com>, Matthijs van Duin <matthijsvanduin@gmail.com>, Sekhar Nori <nsekhar@ti.com>, Tero Kristo <t-kristo@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi All,
+* Tony Lindgren <tony@atomide.com> [180504 17:33]:
+> I noticed that unused UARTs won't necessarily idle properly always
+> unless at least one byte tx transfer is done first.
+> ---
+>  arch/arm/mach-actions/platsmp.c     |  6 +++---
+>  arch/arm/mach-exynos/platsmp.c      | 12 ++++++------
+>  arch/arm/mach-hisi/platmcpm.c       | 22 +++++++++++-----------
+>  arch/arm/mach-omap2/omap-smp.c      | 10 +++++-----
+>  arch/arm/mach-prima2/platsmp.c      | 10 +++++-----
+>  arch/arm/mach-qcom/platsmp.c        | 10 +++++-----
+>  arch/arm/mach-spear/platsmp.c       | 10 +++++-----
+>  arch/arm/mach-sti/platsmp.c         | 10 +++++-----
+>  arch/arm/mach-sunxi/mc_smp.c        | 20 ++++++++++----------
+>  arch/arm/plat-versatile/platsmp.c   | 10 +++++-----
+>  drivers/tty/serial/8250/8250_omap.c | 16 +++++++++++++++-
+>  11 files changed, 75 insertions(+), 61 deletions(-)
 
-For the uart_port structure=E2=80=99s =E2=80=9Ctype=E2=80=9D, I see the per=
-mitted types are
-none, 8250, 16450, 16550, 16550A, 16650, 16650V2, 16654, 16750, 16850,
-16950, and 16954 etc.
+Uhh sorry I managed to commit also a patch I was testing while
+updating patch comments.. Will send out v3 shortly, this can be
+ignored.
 
-For FPGA based UART hardware(it has 512 bytes FIFO and supports up to
-4Mbps speed) what should be the =E2=80=98type=E2=80=99 value?
+Regards,
 
-
---=20
-Thanks,
-Sekhar
+Tony
