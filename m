@@ -1,90 +1,199 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH v2] tty/serial: atmel: use port->name as name in
- request_irq()
-Date: Fri, 4 May 2018 12:28:56 +0200
-Message-ID: <d62a945c-f81e-d7e5-8431-a7948a0b833c@sorico.fr>
-References: <20180426150625.q5tqcb7fzchvkb5d@linutronix.de>
- <20180426151222.6vw67lwqmu6ffgnw@linutronix.de>
- <0dbf4a4c-71d4-6456-67b9-d4d202acffb7@sorico.fr>
- <20180502191632.tgda4g5v3rhncx7c@linutronix.de>
- <4f3f6e7c-2806-1749-1523-72d5c8eb8229@sorico.fr>
- <20180503124410.n6ze2ngwv6ekjhdr@linutronix.de>
- <921729c6-7c3f-11cd-8634-044a5c52f810@sorico.fr>
- <80203f75-f38e-6214-e9b6-8512c5941647@sorico.fr>
- <20180504081447.enontsm6jod4xa6g@linutronix.de>
+From: =?UTF-8?Q?lo=C3=AFc_tourlonias?= <loic.tourlonias@gmail.com>
+Subject: Re: serial: start_tx & buffer handling
+Date: Fri, 4 May 2018 14:13:22 +0200
+Message-ID: <CA+XxOSG8UozW9uzmdrtmAOEYsgwxPVEUB8B=3HNnsrnZMuGF2w@mail.gmail.com>
+References: <CAHhAz+iPbNjeHH72Omi7VCUVL_cOUnQjrqbyJKQstUSL6J1hCw@mail.gmail.com>
+ <20180503183408.GA12152@kroah.com>
+ <CAHhAz+iub6boqtK7UgFuKW=4t9DYPrnPX6nDu8R4T2J4=v=-DA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180504081447.enontsm6jod4xa6g@linutronix.de>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Rob Herring <robh@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/mixed; boundary="===============7114374476200842349=="
+Return-path: <kernelnewbies-bounces@kernelnewbies.org>
+In-Reply-To: <CAHhAz+iub6boqtK7UgFuKW=4t9DYPrnPX6nDu8R4T2J4=v=-DA@mail.gmail.com>
+List-Unsubscribe: <https://lists.kernelnewbies.org/mailman/options/kernelnewbies>,
+ <mailto:kernelnewbies-request@kernelnewbies.org?subject=unsubscribe>
+List-Archive: <http://lists.kernelnewbies.org/pipermail/kernelnewbies/>
+List-Post: <mailto:kernelnewbies@kernelnewbies.org>
+List-Help: <mailto:kernelnewbies-request@kernelnewbies.org?subject=help>
+List-Subscribe: <https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies>,
+ <mailto:kernelnewbies-request@kernelnewbies.org?subject=subscribe>
+Errors-To: kernelnewbies-bounces@kernelnewbies.org
+To: Muni Sekhar <munisekharrms@gmail.com>
+Cc: Greg KH <greg@kroah.com>, linux-kernel@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, kernelnewbies <kernelnewbies@kernelnewbies.org>
 List-Id: linux-serial@vger.kernel.org
 
-T24gMDQvMDUvMjAxOCAxMDoxNCwgU2ViYXN0aWFuIEFuZHJ6ZWogU2lld2lvciB3cm90ZToKPiBJ
-IHdhcyBwdXp6bGVkIHdoaWxlIGxvb2tpbmcgYXQgL3Byb2MvaW50ZXJydXB0cyBhbmQgcmFuZG9t
-IHRoaW5ncyBzaG93ZWQKPiB1cCBiZXR3ZWVuIHJlYm9vdHMuIFRoaXMgb2NjdXJyZWQgbW9yZSBv
-ZnRlbiBidXQgSSByZWFsaXNlZCBpdCBsYXRlci4gVGhlCj4gImNvcnJlY3QiIG91dHB1dCBzaG91
-bGQgYmU6Cj4gfDM4OiAgICAgIDExODYxICBhdG1lbC1haWM1ICAgMiBMZXZlbCAgICAgdHR5UzAK
-PiAKPiBidXQgSSBzYXcgc29tZXRpbWVzCj4gfDM4OiAgICAgICA2NDI2ICBhdG1lbC1haWM1ICAg
-MiBMZXZlbCAgICAgdHR5MQo+IAo+IGFuZCBhY2NvdW50ZWQgaXQgd3JvbmdseSBhcyBjb3JyZWN0
-LiBUaGlzIGlzIHVzZSBhZnRlciBmcmVlIGFuZCB0aGUKPiBmb3JtZXIgZXhhbXBsZSByYW5kb21s
-eSBnb3QgdGhlICJvbGQiIHBvaW50ZXIgd2hpY2ggcG9pbnRlZCB0byB0aGUgc2FtZQo+IGNvbnRl
-bnQuIFdpdGggU0xBQl9GUkVFTElTVF9SQU5ET00gYW5kIEhBUkRFTkVEIEkgZXZlbiBnb3QKPiB8
-Mzg6ICAgICAgIDcwNjcgIGF0bWVsLWFpYzUgICAyIExldmVsICAgICBFPVN0YXJ0ZWQgVXNlciBN
-YW5hZ2VyIGZvciBVSUQgMAo+IAo+IG9yIG90aGVyIG5vbnNlbnNlLgo+IEFzIGl0IHR1cm5zIG91
-dCB0aGUgdHR5LCBwb2ludGVyIHRoYXQgaXMgYWNjZXNzZWQgaW4gYXRtZWxfc3RhcnR1cCgpLCBp
-cwo+IGZyZWVkKCkgYmVmb3JlIGF0bWVsX3NodXRkb3duKCkuIEl0IHNlZW1zIHRvIGhhcHBlbiBx
-dWl0ZSBvZnRlbiB0aGF0IHRoZQo+IHR0eSBmb3IgdHR5UzAgaXMgYWxsb2NhdGVkIGFuZCBmcmVl
-ZCB3aGlsZSAtPnNodXRkb3duIGlzIG5vdCBpbnZva2VkLiBJCj4gZG9uJ3QgZG8gYW55dGhpbmcg
-c3BlY2lhbCAtIGp1c3QgYSBzeXN0ZW1kIGJvb3QgOikKPiAKPiBVc2UgcG9ydC0+bmFtZSBhcyB0
-aGUgSVJRIG5hbWUgZm9yIHJlcXVlc3RfaXJxKCkuIFRoaXMgZXhpc3RzIGFzIGxvbmcgYXMKPiB0
-aGUgZHJpdmVyIGlzIGxvYWRlZCBzbyBubyB1c2UtYWZ0ZXItZnJlZSBoZXJlLgo+IEZvciBiYWNr
-cG9ydHMgYmVmb3JlIHY0LjEyIEkgc3VnZ2VzdCB0byB1c2UgYCJhdG1lbF9zZXJpYWwiJyBpbnN0
-ZWFkCj4gYHBvcnQtPm5hbWUnICh0aGF0IG1lbWJlciB3YXMgaW50cm9kdWNlZCBpbiBmNzA0OGIx
-NTkwMGYgKCJ0dHk6IHNlcmlhbF9jb3JlOgo+IEFkZCBuYW1lIGZpZWxkIHRvIHVhcnRfcG9ydCBz
-dHJ1Y3QiKS4KPiAKPiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZwpJIHRoaW5rIGl0J3Mgc2Fm
-ZXIgdG8gdXNlOgpDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZyAjIDQuMTQKQmVjYXVzZSB0aGUg
-c3RhYmxlIHRlYW0gbWF5IG1pc3MgeW91ciBjb21tZW50LCBhbmQgZXZlbiBpZiB0aGV5IGRvbid0
-LCBJCnRoaW5rIGl0J3Mgbm90IHRoZWlyIHJvbGUgdG8gYWRhcHQgdGhlIHBhdGNoIHRvIDQuOS54
-IChhbmQgdGVzdCBpdCAhKQpJTUhPLCB0aGUgYmVzdCB3YXkgaXMgdG8gYWRkICMgNC4xNCBhbmQg
-d2hlbiBpdCdzIGFwcGxpZWQgb24gNC4xNC54LApzZW5kIGEgdGVzdGVkIGJhY2twb3J0IGZvciA0
-LjkueAoKQmVzaWRlcyB0aGF0LCB5b3UgY2FuIGFkZCBteToKQWNrZWQtYnk6IFJpY2hhcmQgR2Vu
-b3VkIDxyaWNoYXJkLmdlbm91ZEBnbWFpbC5jb20+CgpSb2IsIGRvIHlvdSBhZ3JlZSB3aXRoIHRo
-aXMgZml4ID8KCgo+IEZpeGVzOiA3NjFlZDRhOTQ1ODIgKCJ0dHk6IHNlcmlhbF9jb3JlOiBjb252
-ZXJ0IHVhcnRfY2xvc2UgdG8gdXNlIHR0eV9wb3J0X2Nsb3NlIikKPiBTaWduZWQtb2ZmLWJ5OiBT
-ZWJhc3RpYW4gQW5kcnplaiBTaWV3aW9yIDxiaWdlYXN5QGxpbnV0cm9uaXguZGU+Cj4gLS0tCj4g
-djHigKZ2MjogLSBCaXNlY3RlZCBhbmQgYWRkZWQgYSBGaXhlcyB0YWcKPiAgICAgICAgLSBhZGRl
-ZCBhIG5vdGUgZm9yIGJhY2twb3J0ZXJzIHRvIHY0Ljkg4oCmIHY0LjEyIChwb2ludGVkIG91dCBi
-eQo+IAkgUmljaGFyZCBHZW5vdWQpCj4gCj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJp
-YWwuYyB8IDQgKy0tLQo+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDMgZGVsZXRp
-b25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwu
-YyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+IGluZGV4IGUyODdmZThmMTBm
-Yy4uZDMxODk4MTY3NDBlIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9z
-ZXJpYWwuYwo+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+IEBAIC0x
-NzU3LDcgKzE3NTcsNiBAQCBzdGF0aWMgaW50IGF0bWVsX3N0YXJ0dXAoc3RydWN0IHVhcnRfcG9y
-dCAqcG9ydCkKPiAgewo+ICAJc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldiA9IHRvX3BsYXRm
-b3JtX2RldmljZShwb3J0LT5kZXYpOwo+ICAJc3RydWN0IGF0bWVsX3VhcnRfcG9ydCAqYXRtZWxf
-cG9ydCA9IHRvX2F0bWVsX3VhcnRfcG9ydChwb3J0KTsKPiAtCXN0cnVjdCB0dHlfc3RydWN0ICp0
-dHkgPSBwb3J0LT5zdGF0ZS0+cG9ydC50dHk7Cj4gIAlpbnQgcmV0dmFsOwo+ICAKPiAgCS8qCj4g
-QEAgLTE3NzIsOCArMTc3MSw3IEBAIHN0YXRpYyBpbnQgYXRtZWxfc3RhcnR1cChzdHJ1Y3QgdWFy
-dF9wb3J0ICpwb3J0KQo+ICAJICogQWxsb2NhdGUgdGhlIElSUQo+ICAJICovCj4gIAlyZXR2YWwg
-PSByZXF1ZXN0X2lycShwb3J0LT5pcnEsIGF0bWVsX2ludGVycnVwdCwKPiAtCQkJSVJRRl9TSEFS
-RUQgfCBJUlFGX0NPTkRfU1VTUEVORCwKPiAtCQkJdHR5ID8gdHR5LT5uYW1lIDogImF0bWVsX3Nl
-cmlhbCIsIHBvcnQpOwo+ICsJCQkgICAgIElSUUZfU0hBUkVEIHwgSVJRRl9DT05EX1NVU1BFTkQs
-IHBvcnQtPm5hbWUsIHBvcnQpOwo+ICAJaWYgKHJldHZhbCkgewo+ICAJCWRldl9lcnIocG9ydC0+
-ZGV2LCAiYXRtZWxfc3RhcnR1cCAtIENhbid0IGdldCBpcnFcbiIpOwo+ICAJCXJldHVybiByZXR2
-YWw7Cj4gCgpUaGFua3MgIQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBs
-aXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlz
-dGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+--===============7114374476200842349==
+Content-Type: multipart/alternative; boundary="00000000000014c4d0056b603f0d"
+
+--00000000000014c4d0056b603f0d
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi
+
+On Fri, May 4, 2018 at 6:31 AM, Muni Sekhar <munisekharrms@gmail.com> wrote=
+:
+
+> On Fri, May 4, 2018 at 12:04 AM, Greg KH <greg@kroah.com> wrote:
+> > On Thu, May 03, 2018 at 08:08:48PM +0530, Muni Sekhar wrote:
+> >> Hi All,
+> >>
+> >> I=E2=80=99m trying to understand how user mode buffer is written to lo=
+w level
+> >> serial hardware registers.
+> >>
+> >> For this I read the kernel code and I came to know that from user mode
+> >> write() API lands into kernel=E2=80=99s tty_write() ("drivers/tty/tty_=
+io.c")
+> >> and then it calls a uart_write() ("drivers/tty/serial/serial_core.c").
+> >>
+> >> In uart_write(), the buffer is copied to circ_buf and then it calls
+> >> low level serial hardware driver=E2=80=99s start_tx() (struct uart_ops
+> >> .start_tx). But here I could not find how the buffer kept in circ_buf
+> >> is copied to serial port=E2=80=99s TX_FIFO registers?
+> >>
+> >> Can someone take a moment to explain me on this?
+> >
+> > It all depends on which specific UART driver you are looking at, they
+> > all do it a bit different depending on the hardware.
+> >
+> > Which one are you looking at?  Look at what the start_tx callback does
+> > for that specific driver, that should give you a hint as to how data
+> > starts flowing.  Usually an interrupt is enabled that is used to flush
+> > the buffer out to the hardware.
+> >
+>
+> I=E2=80=99m looking for any existing sample code which does DMA transfers=
+ of
+> UART transmitted data. I looked at the bcm63xx_uart.c, it looks it
+> does not handle DMA transfers. Even copying the Tx buffer (from
+> circ_buf) to UART_FIFO_REG happening in ISR.
+>
+
+You can have a look at atmel_serial kernel module (built for ARM).
+https://elixir.bootlin.com/linux/latest/source/drivers/tty/serial/atmel_ser=
+ial.c
+
+The dma buffer is linked to uart circular buffer in prepare_tx() function
+called from uart_startup(). It's released in release_tx() function called
+from uart_shutdown(). DMA buffer is managed in schedule_tx() function
+called from a tasklet triggered by the ISR.
+
+HTH
+
+>
+>
+> > thanks,
+> >
+> > greg k-h
+>
+>
+>
+> --
+> Thanks,
+> Sekhar
+>
+> _______________________________________________
+> Kernelnewbies mailing list
+> Kernelnewbies@kernelnewbies.org
+> https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
+>
+
+--00000000000014c4d0056b603f0d
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi<br><div><div class=3D"gmail_extra"><br><div class=3D"gm=
+ail_quote">On Fri, May 4, 2018 at 6:31 AM, Muni Sekhar <span dir=3D"ltr">&l=
+t;<a href=3D"mailto:munisekharrms@gmail.com" target=3D"_blank">munisekharrm=
+s@gmail.com</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" styl=
+e=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddin=
+g-left:1ex"><span class=3D"gmail-">On Fri, May 4, 2018 at 12:04 AM, Greg KH=
+ &lt;<a href=3D"mailto:greg@kroah.com">greg@kroah.com</a>&gt; wrote:<br>
+&gt; On Thu, May 03, 2018 at 08:08:48PM +0530, Muni Sekhar wrote:<br>
+&gt;&gt; Hi All,<br>
+&gt;&gt;<br>
+&gt;&gt; I=E2=80=99m trying to understand how user mode buffer is written t=
+o low level<br>
+&gt;&gt; serial hardware registers.<br>
+&gt;&gt;<br>
+&gt;&gt; For this I read the kernel code and I came to know that from user =
+mode<br>
+&gt;&gt; write() API lands into kernel=E2=80=99s tty_write() (&quot;drivers=
+/tty/tty_io.c&quot;)<br>
+&gt;&gt; and then it calls a uart_write() (&quot;drivers/tty/serial/serial_=
+<wbr>core.c&quot;).<br>
+&gt;&gt;<br>
+&gt;&gt; In uart_write(), the buffer is copied to circ_buf and then it call=
+s<br>
+&gt;&gt; low level serial hardware driver=E2=80=99s start_tx() (struct uart=
+_ops<br>
+&gt;&gt; .start_tx). But here I could not find how the buffer kept in circ_=
+buf<br>
+&gt;&gt; is copied to serial port=E2=80=99s TX_FIFO registers?<br>
+&gt;&gt;<br>
+&gt;&gt; Can someone take a moment to explain me on this?<br>
+&gt;<br>
+&gt; It all depends on which specific UART driver you are looking at, they<=
+br>
+&gt; all do it a bit different depending on the hardware.<br>
+&gt;<br>
+&gt; Which one are you looking at?=C2=A0 Look at what the start_tx callback=
+ does<br>
+&gt; for that specific driver, that should give you a hint as to how data<b=
+r>
+&gt; starts flowing.=C2=A0 Usually an interrupt is enabled that is used to =
+flush<br>
+&gt; the buffer out to the hardware.<br>
+&gt;<br>
+<br>
+</span>I=E2=80=99m looking for any existing sample code which does DMA tran=
+sfers of<br>
+UART transmitted data. I looked at the bcm63xx_uart.c, it looks it<br>
+does not handle DMA transfers. Even copying the Tx buffer (from<br>
+circ_buf) to UART_FIFO_REG happening in ISR.<br></blockquote><div><br></div=
+><div>You can have a look at atmel_serial kernel module (built for ARM).<br=
+><a href=3D"https://elixir.bootlin.com/linux/latest/source/drivers/tty/seri=
+al/atmel_serial.c">https://elixir.bootlin.com/linux/latest/source/drivers/t=
+ty/serial/atmel_serial.c</a><br>=C2=A0<br></div><div>The dma buffer is link=
+ed to uart circular buffer in prepare_tx() function called from uart_startu=
+p(). It&#39;s released in release_tx() function called from uart_shutdown()=
+. DMA buffer is managed in schedule_tx() function called from a tasklet tri=
+ggered by the ISR.<br><br></div><div>HTH<br></div><blockquote class=3D"gmai=
+l_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,20=
+4,204);padding-left:1ex">
+<br>
+<br>
+&gt; thanks,<br>
+&gt;<br>
+&gt; greg k-h<br>
+<span class=3D"gmail-HOEnZb"><font color=3D"#888888"><br>
+<br>
+<br>
+-- <br>
+Thanks,<br>
+Sekhar<br>
+</font></span><div class=3D"gmail-HOEnZb"><div class=3D"gmail-h5"><br>
+______________________________<wbr>_________________<br>
+Kernelnewbies mailing list<br>
+<a href=3D"mailto:Kernelnewbies@kernelnewbies.org">Kernelnewbies@kernelnewb=
+ies.<wbr>org</a><br>
+<a href=3D"https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies" =
+rel=3D"noreferrer" target=3D"_blank">https://lists.kernelnewbies.<wbr>org/m=
+ailman/listinfo/<wbr>kernelnewbies</a><br>
+</div></div></blockquote></div><br></div></div></div>
+
+--00000000000014c4d0056b603f0d--
+
+
+--===============7114374476200842349==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Kernelnewbies mailing list
+Kernelnewbies@kernelnewbies.org
+https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
+
+--===============7114374476200842349==--
