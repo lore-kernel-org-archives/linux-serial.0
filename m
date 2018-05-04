@@ -1,32 +1,105 @@
-From: "Theodore Y. Ts'o" <tytso@mit.edu>
-Subject: Re: serial: custom baud rate
-Date: Fri, 4 May 2018 09:59:04 -0400
-Message-ID: <20180504135904.GJ29205@thunk.org>
-References: <CAHhAz+hrmLiRJ77cM=CYj+iyH8aUJ64R6FtAwGqqB2pOS0n0aQ@mail.gmail.com>
- <20180503175401.GD29205@thunk.org>
- <CAHhAz+iiv+h+RAPXACQuJRiEQmE1jxeS7+qaz-8fu30Fm9tNaw@mail.gmail.com>
+From: Muni Sekhar <munisekharrms@gmail.com>
+Subject: Re: serial: start_tx & buffer handling
+Date: Fri, 4 May 2018 19:40:20 +0530
+Message-ID: <CAHhAz+h9raK0qpuB2JEYY2TmNamt3oG3N0iUF-jjNUVboiaXdw@mail.gmail.com>
+References: <CAHhAz+iPbNjeHH72Omi7VCUVL_cOUnQjrqbyJKQstUSL6J1hCw@mail.gmail.com>
+ <20180503183408.GA12152@kroah.com> <CAHhAz+iub6boqtK7UgFuKW=4t9DYPrnPX6nDu8R4T2J4=v=-DA@mail.gmail.com>
+ <CA+XxOSG8UozW9uzmdrtmAOEYsgwxPVEUB8B=3HNnsrnZMuGF2w@mail.gmail.com> <CA+XxOSETX-3P9vNfOTgHK8cu=65oXpZpuznHE1ThD_nb2QYseA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHhAz+iiv+h+RAPXACQuJRiEQmE1jxeS7+qaz-8fu30Fm9tNaw@mail.gmail.com>
+In-Reply-To: <CA+XxOSETX-3P9vNfOTgHK8cu=65oXpZpuznHE1ThD_nb2QYseA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Muni Sekhar <munisekharrms@gmail.com>
-Cc: linux-serial <linux-serial@vger.kernel.org>, linux-kernel@vger.kernel.org
+To: =?UTF-8?Q?lo=C3=AFc_tourlonias?= <loic.tourlonias@gmail.com>
+Cc: Greg KH <greg@kroah.com>, linux-kernel@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, kernelnewbies <kernelnewbies@kernelnewbies.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 04, 2018 at 02:34:51PM +0530, Muni Sekhar wrote:
-> > See the setserial man page:t
-> >
-> >         https://linux.die.net/man/8/setserial
-> >
-> > Not all serial devices support the spd_cust and divisor, however.  In
-> > general, only devices where the kernel directly programs the
-> > 8250/16450/16550 UART directly will support this feature.
-> >
-> So custom baud's can be set via TIOCSSERIAL IOCtl in kernel mode?
+On Fri, May 4, 2018 at 5:44 PM, lo=C3=AFc tourlonias
+<loic.tourlonias@gmail.com> wrote:
+>  Hi
+>
+>  On Fri, May 4, 2018 at 6:31 AM, Muni Sekhar <munisekharrms@gmail.com> wr=
+ote:
+>>>
+>>> On Fri, May 4, 2018 at 12:04 AM, Greg KH <greg@kroah.com> wrote:
+>>> > On Thu, May 03, 2018 at 08:08:48PM +0530, Muni Sekhar wrote:
+>>> >> Hi All,
+>>> >>
+>>> >> I=E2=80=99m trying to understand how user mode buffer is written to =
+low level
+>>> >> serial hardware registers.
+>>> >>
+>>> >> For this I read the kernel code and I came to know that from user mo=
+de
+>>> >> write() API lands into kernel=E2=80=99s tty_write() ("drivers/tty/tt=
+y_io.c")
+>>> >> and then it calls a uart_write() ("drivers/tty/serial/serial_core.c"=
+).
+>>> >>
+>>> >> In uart_write(), the buffer is copied to circ_buf and then it calls
+>>> >> low level serial hardware driver=E2=80=99s start_tx() (struct uart_o=
+ps
+>>> >> .start_tx). But here I could not find how the buffer kept in circ_bu=
+f
+>>> >> is copied to serial port=E2=80=99s TX_FIFO registers?
+>>> >>
+>>> >> Can someone take a moment to explain me on this?
+>>> >
+>>> > It all depends on which specific UART driver you are looking at, they
+>>> > all do it a bit different depending on the hardware.
+>>> >
+>>> > Which one are you looking at?  Look at what the start_tx callback doe=
+s
+>>> > for that specific driver, that should give you a hint as to how data
+>>> > starts flowing.  Usually an interrupt is enabled that is used to flus=
+h
+>>> > the buffer out to the hardware.
+>>> >
+>>>
+>>> I=E2=80=99m looking for any existing sample code which does DMA transfe=
+rs of
+>>> UART transmitted data. I looked at the bcm63xx_uart.c, it looks it
+>>> does not handle DMA transfers. Even copying the Tx buffer (from
+>>> circ_buf) to UART_FIFO_REG happening in ISR.
+>
+>
+>  You can have a look at atmel_serial kernel module (built for ARM).
+>  https://elixir.bootlin.com/linux/latest/source/drivers/tty/serial/atmel_=
+serial.c
+>
+>  The dma buffer is linked to uart circular buffer in prepare_tx() functio=
+n
+>  called from uart_startup(). It's released in release_tx() function calle=
+d
+>  from uart_shutdown(). DMA buffer is managed in schedule_tx() function ca=
+lled
+>  from a tasklet triggered by the ISR.
+Thanks a lot for this information.
+>
+>  HTH
+>
+>>>
+>>>
+>>> > thanks,
+>>> >
+>>> > greg k-h
+>>>
+>>>
+>>>
+>>> --
+>>> Thanks,
+>>> Sekhar
+>>>
+>>> _______________________________________________
+>>> Kernelnewbies mailing list
+>>> Kernelnewbies@kernelnewbies.org
+>>> https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
+>>
+>>
 
-ioctl's are in general designed for use in userspace.  So are the
-termios interface.
 
-					- Ted
+
+--=20
+Thanks,
+Sekhar
