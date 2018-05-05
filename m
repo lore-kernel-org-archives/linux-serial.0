@@ -1,101 +1,144 @@
-From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Subject: Re: [PATCH v3 12/20] media: Remove depends on HAS_DMA in case of
- platform dependency
-Date: Sat, 5 May 2018 09:47:43 -0300
-Message-ID: <20180505094743.4d201ba0@vento.lan>
-References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
- <1523987360-18760-13-git-send-email-geert@linux-m68k.org>
+From: Maarten Brock <m.brock@vanmierlo.com>
+Subject: Re: [RFC PATCH 0/3] serial: uartps: Add run time support for more IPs
+ than hardcoded 2
+Date: Sat, 05 May 2018 15:10:35 +0200
+Message-ID: <1d3bc2082972bb1d4abc2c15db396257@vanmierlo.com>
+References: <cover.1524751696.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <1523987360-18760-13-git-send-email-geert@linux-m68k.org>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org, linux-fpga@vger.kernel.org, linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org, Bjorn Andersson <bjorn.andersson@linaro.org>, Eric Anholt <eric@anholt.net>, netdev@vger.kernel.org, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, linux1394-devel@lists.sourceforge.net, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Stefan Wahren <stefan.wahren@i2se.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Herbert Xu <herbert@gondor.apana.org.au>, Richard Weinberger <richard@nod.at>, Joerg Roedel <joro@8bytes.org>, Jassi Brar <jassisinghbrar@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, linux-serial@vger.kernel.org, Matias Bjorling <mb@lightnvm.io>, David Woodhouse <dwmw2@infradead.org>, linux-media@vger.kernel.org, Ohad
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <cover.1524751696.git.michal.simek@xilinx.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: gnomes@lxorguk.ukuu.org.uk, monstr@monstr.eu, linux-serial-owner@vger.kernel.org, devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Alexander Graf <agraf@suse.de>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert,
-
-Em Tue, 17 Apr 2018 19:49:12 +0200
-Geert Uytterhoeven <geert@linux-m68k.org> escreveu:
-
-> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
-> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-
-Applying a patch like that is hard, as there are lots of churn at
-the code. That's against latest media upstream:
-
-checking file drivers/media/pci/intel/ipu3/Kconfig
-Hunk #1 FAILED at 4.
-1 out of 1 hunk FAILED
-checking file drivers/media/pci/solo6x10/Kconfig
-checking file drivers/media/pci/sta2x11/Kconfig
-Hunk #1 FAILED at 1.
-1 out of 1 hunk FAILED
-checking file drivers/media/pci/tw5864/Kconfig
-checking file drivers/media/pci/tw686x/Kconfig
-checking file drivers/media/platform/Kconfig
-Hunk #2 FAILED at 63.
-Hunk #3 succeeded at 81 (offset 1 line).
-Hunk #4 succeeded at 91 (offset 1 line).
-Hunk #5 succeeded at 101 (offset 1 line).
-Hunk #6 succeeded at 111 (offset 1 line).
-Hunk #7 succeeded at 124 (offset 1 line).
-Hunk #8 succeeded at 142 (offset 1 line).
-Hunk #9 succeeded at 169 (offset 1 line).
-Hunk #10 succeeded at 186 (offset 1 line).
-Hunk #11 succeeded at 197 (offset 1 line).
-Hunk #12 succeeded at 213 (offset 1 line).
-Hunk #13 succeeded at 227 (offset 1 line).
-Hunk #14 succeeded at 254 (offset 1 line).
-Hunk #15 succeeded at 265 (offset 1 line).
-Hunk #16 succeeded at 275 (offset 1 line).
-Hunk #17 succeeded at 284 (offset 1 line).
-Hunk #18 succeeded at 295 (offset 1 line).
-Hunk #19 succeeded at 303 (offset 1 line).
-Hunk #20 succeeded at 312 (offset 1 line).
-Hunk #21 succeeded at 338 (offset 1 line).
-Hunk #22 succeeded at 383 (offset 1 line).
-Hunk #23 succeeded at 397 (offset 1 line).
-Hunk #24 succeeded at 422 (offset 1 line).
-Hunk #25 succeeded at 435 (offset 1 line).
-Hunk #26 succeeded at 452 (offset 1 line).
-Hunk #27 succeeded at 470 (offset 1 line).
-Hunk #28 succeeded at 612 (offset 1 line).
-1 out of 28 hunks FAILED
-
-> In most cases this other symbol is an architecture or platform specific
-> symbol, or PCI.
+On 2018-04-26 16:08, Michal Simek wrote:
+> Hi,
 > 
-> Generic symbols and drivers without platform dependencies keep their
-> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-> cannot work anyway.
+> this series is trying to address discussion I had with Alan in past
+> https://patchwork.kernel.org/patch/9738445/.
+> 
+> It is moving uart_register_driver() to probe function like it is done 
+> in
+> pl011 driver.
+> And also introducing new function for alias compatibility checking to
+> resolve cases where some IPs have alias and some of them not.
+> This case is detected in pl011_probe_dt_alias() but not properly 
+> solved.
+> 
+> Also keep status of free ids/minor numbers in bitmap to know what's the
+> next unallocated number.
+> 
+> The same solution can be used in pl011, uart16550 and uartlite to 
+> really
+> get unified kernel.
+> 
+> Tested on these use cases:
+> Notes:
+> ff000000 is the first PS uart listed in dtsi
+> ff010000 is the second PS uart listed in dtsi
+> 
+> Standard zcu102 setting
+> 		serial0 = &uart0;
+> 		serial1 = &uart1;
+> [    0.196628] ff000000.serial: ttyPS0 at MMIO 0xff000000 (irq = 33,
+> base_baud = 6250000) is a xuartps
+> [    0.642542] ff010000.serial: ttyPS1 at MMIO 0xff010000 (irq = 34,
+> base_baud = 6250000) is a xuartps
+> 
+> Swapped zcu102 setting
+> 		serial0 = &uart1;
+> 		serial1 = &uart0;
+> [    0.196472] ff000000.serial: ttyPS1 at MMIO 0xff000000 (irq = 33,
+> base_baud = 6250000) is a xuartps
+> [    0.196824] ff010000.serial: ttyPS0 at MMIO 0xff010000 (irq = 34,
+> base_baud = 6250000) is a xuartps
+> 
+> uart0 on alias higher then MAX uart ports
+> 		serial0 = &uart1;
+> 		serial200 = &uart0;
+> [    0.176793] ff000000.serial: ttyPS200 at MMIO 0xff000000 (irq = 33,
+> base_baud = 6250000) is a xuartps
+> [    0.177288] ff010000.serial: ttyPS0 at MMIO 0xff010000 (irq = 34,
+> base_baud = 6250000) is a xuartps
+> 
+> Both uarts on higher aliases
+> 		serial1 = &uart1;
+> 		serial2 = &uart0;
+> [    0.196470] ff000000.serial: ttyPS2 at MMIO 0xff000000 (irq = 33,
+> base_baud = 6250000) is a xuartps
+> [    0.196823] ff010000.serial: ttyPS1 at MMIO 0xff010000 (irq = 34,
+> base_baud = 6250000) is a xuartps
+> 
+> uart0 not listed but it is probed first that's why should be ttyPS0 but
+> there is uart1 via alias
+> 		serial0 = &uart1;
+> [    0.176656] xuartps ff000000.serial: No serial alias passed. Using
+> the first free id
+> [    0.176671] xuartps ff000000.serial: Validate id 0
+> [    0.176680] xuartps ff000000.serial: The empty id is 0
+> [    0.176692] xuartps ff000000.serial: ID 0 already taken - skipped
+> [    0.176701] xuartps ff000000.serial: Validate id 1
+> [    0.176710] xuartps ff000000.serial: The empty id is 1
+> [    0.176719] xuartps ff000000.serial: Selected ID 1 allocation passed
+> [    0.176760] ff000000.serial: ttyPS1 at MMIO 0xff000000 (irq = 33,
+> base_baud = 6250000) is a xuartps
+> [    0.177104] ff010000.serial: ttyPS0 at MMIO 0xff010000 (irq = 34,
+> base_baud = 6250000) is a xuartps
+> 
+> uart0 not listed but it is probed first that's why should be ttyPS0
+> 		serial1 = &uart1;
+> [    0.176661] xuartps ff000000.serial: No serial alias passed. Using
+> the first free id
+> [    0.176676] xuartps ff000000.serial: Validate id 0
+> [    0.176686] xuartps ff000000.serial: The empty id is 0
+> [    0.176696] xuartps ff000000.serial: Selected ID 0 allocation passed
+> [    0.176737] ff000000.serial: ttyPS0 at MMIO 0xff000000 (irq = 33,
+> base_baud = 6250000) is a xuartps
+> [    0.177069] ff010000.serial: ttyPS1 at MMIO 0xff010000 (irq = 34,
+> base_baud = 6250000) is a xuartps
+> 
+> uarts not listed in aliases list
+> [    0.176673] xuartps ff000000.serial: No serial alias passed. Using
+> the first free id
+> [    0.176687] xuartps ff000000.serial: Validate id 0
+> [    0.176697] xuartps ff000000.serial: The empty id is 0
+> [    0.176707] xuartps ff000000.serial: Selected ID 0 allocation passed
+> [    0.176746] ff000000.serial: ttyPS0 at MMIO 0xff000000 (irq = 33,
+> base_baud = 6250000) is a xuartps
+> [    0.177057] xuartps ff010000.serial: No serial alias passed. Using
+> the first free id
+> [    0.177070] xuartps ff010000.serial: Validate id 0
+> [    0.177079] xuartps ff010000.serial: The empty id is 0
+> [    0.177089] xuartps ff010000.serial: Selected ID 0 allocation failed
+> [    0.177098] xuartps ff010000.serial: Validate id 1
+> [    0.177107] xuartps ff010000.serial: The empty id is 1
+> [    0.177116] xuartps ff010000.serial: Selected ID 1 allocation passed
+> [    0.177149] ff010000.serial: ttyPS1 at MMIO 0xff010000 (irq = 34,
+> base_baud = 6250000) is a xuartps
+> 
+> Thanks,
+> Michal
 
-Actually, depends on HAS_DMA was introduced on media because builds
-were failing otherwise. We started adding it before the addition 
-of COMPILE_TEST.
+Hello Michal,
 
-Can we just remove all HAS_DMA Kconfig dependencies as a hole from the
-entire media subsystem, with something like:
+How will this interact with ns16550 based UARTs?
 
-	$ for i in $(find drivers/media -name Kconfig) $(find drivers/staging/media -name Kconfig); do sed '/depends on HAS_DMA/d;s/ && HAS_DMA//g' -i $i; done
+Can we have both /dev/ttyS0 and /dev/ttyPS0?
+Currently we can't unless we create *no* serialN alias for the ns16550.
+And there is no other means to lock the /dev/ttySx name to a device 
+either.
 
-Or would it cause build issues?
+Or will the xuartps driver eventually use /dev/ttySx as well?
 
-Regards,
-Mauro
-
-
-
-
-Thanks,
-Mauro
+Maarten
