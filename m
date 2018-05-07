@@ -1,46 +1,79 @@
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v2] serial: sh-sci: Use spin_{try}lock_irqsave instead of
- open coding version
-Date: Mon, 7 May 2018 14:51:46 +0200
-Message-ID: <20180507125146.75crpaj2scav7mql@linutronix.de>
-References: <20180504163041.28726-1-wagi@monom.org>
+Subject: [PATCH v3] tty/serial: atmel: use port->name as name in request_irq()
+Date: Mon, 7 May 2018 19:11:30 +0200
+Message-ID: <20180507171130.iba7nm3tgfyxgabs@linutronix.de>
+References: <20180426151222.6vw67lwqmu6ffgnw@linutronix.de>
+ <0dbf4a4c-71d4-6456-67b9-d4d202acffb7@sorico.fr>
+ <20180502191632.tgda4g5v3rhncx7c@linutronix.de>
+ <4f3f6e7c-2806-1749-1523-72d5c8eb8229@sorico.fr>
+ <20180503124410.n6ze2ngwv6ekjhdr@linutronix.de>
+ <921729c6-7c3f-11cd-8634-044a5c52f810@sorico.fr>
+ <80203f75-f38e-6214-e9b6-8512c5941647@sorico.fr>
+ <20180504081447.enontsm6jod4xa6g@linutronix.de>
+ <d62a945c-f81e-d7e5-8431-a7948a0b833c@sorico.fr>
+ <CAL_JsqJ+84OFyN07XWsb0hSHxtxL_V6gSfO+iMSOU1bceztr3Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20180504163041.28726-1-wagi@monom.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Wagner <wagi@monom.org>
-Cc: linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-rt-users@vger.kernel.org, linux-serial@vger.kernel.org, linux-sh@vger.kernel.org, gregkh@linuxfoundation.org, Daniel Wagner <daniel.wagner@siemens.com>
+In-Reply-To: <CAL_JsqJ+84OFyN07XWsb0hSHxtxL_V6gSfO+iMSOU1bceztr3Q@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Peter Hurley <peter@hurleysoftware.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 2018-05-04 18:30:41 [+0200], Daniel Wagner wrote:
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -2890,16 +2890,16 @@ static void serial_console_write(struct console *co, const char *s,
->  	unsigned long flags;
->  	int locked = 1;
->  
-> -	local_irq_save(flags);
->  #if defined(SUPPORT_SYSRQ)
-> -	if (port->sysrq)
-> +	if (port->sysrq) {
->  		locked = 0;
-> -	else
-> +		local_irq_save(flags);
-
-how is this helping? You should see a splat after a sysrq request.
-
-> +	} else
->  #endif
->  	if (oops_in_progress)
-> -		locked = spin_trylock(&port->lock);
-> +		locked = spin_trylock_irqsave(&port->lock, flags);
->  	else
-> -		spin_lock(&port->lock);
-> +		spin_lock_irqsave(&port->lock, flags);
->  
->  	/* first save SCSCR then disable interrupts, keep clock source */
->  	ctrl = serial_port_in(port, SCSCR);
-
-Sebastian
+SSB3YXMgcHV6emxlZCB3aGlsZSBsb29raW5nIGF0IC9wcm9jL2ludGVycnVwdHMgYW5kIHJhbmRv
+bSB0aGluZ3Mgc2hvd2VkCnVwIGJldHdlZW4gcmVib290cy4gVGhpcyBvY2N1cnJlZCBtb3JlIG9m
+dGVuIGJ1dCBJIHJlYWxpc2VkIGl0IGxhdGVyLiBUaGUKImNvcnJlY3QiIG91dHB1dCBzaG91bGQg
+YmU6CnwzODogICAgICAxMTg2MSAgYXRtZWwtYWljNSAgIDIgTGV2ZWwgICAgIHR0eVMwCgpidXQg
+SSBzYXcgc29tZXRpbWVzCnwzODogICAgICAgNjQyNiAgYXRtZWwtYWljNSAgIDIgTGV2ZWwgICAg
+IHR0eTEKCmFuZCBhY2NvdW50ZWQgaXQgd3JvbmdseSBhcyBjb3JyZWN0LiBUaGlzIGlzIHVzZSBh
+ZnRlciBmcmVlIGFuZCB0aGUKZm9ybWVyIGV4YW1wbGUgcmFuZG9tbHkgZ290IHRoZSAib2xkIiBw
+b2ludGVyIHdoaWNoIHBvaW50ZWQgdG8gdGhlIHNhbWUKY29udGVudC4gV2l0aCBTTEFCX0ZSRUVM
+SVNUX1JBTkRPTSBhbmQgSEFSREVORUQgSSBldmVuIGdvdAp8Mzg6ICAgICAgIDcwNjcgIGF0bWVs
+LWFpYzUgICAyIExldmVsICAgICBFPVN0YXJ0ZWQgVXNlciBNYW5hZ2VyIGZvciBVSUQgMAoKb3Ig
+b3RoZXIgbm9uc2Vuc2UuCkFzIGl0IHR1cm5zIG91dCB0aGUgdHR5LCBwb2ludGVyIHRoYXQgaXMg
+YWNjZXNzZWQgaW4gYXRtZWxfc3RhcnR1cCgpLCBpcwpmcmVlZCgpIGJlZm9yZSBhdG1lbF9zaHV0
+ZG93bigpLiBJdCBzZWVtcyB0byBoYXBwZW4gcXVpdGUgb2Z0ZW4gdGhhdCB0aGUKdHR5IGZvciB0
+dHlTMCBpcyBhbGxvY2F0ZWQgYW5kIGZyZWVkIHdoaWxlIC0+c2h1dGRvd24gaXMgbm90IGludm9r
+ZWQuIEkKZG9uJ3QgZG8gYW55dGhpbmcgc3BlY2lhbCAtIGp1c3QgYSBzeXN0ZW1kIGJvb3QgOikK
+ClVzZSBkZXZfbmFtZSgmcGRldi0+ZGV2KSBhcyB0aGUgSVJRIG5hbWUgZm9yIHJlcXVlc3RfaXJx
+KCkuIFRoaXMgZXhpc3RzCmFzIGxvbmcgYXMgdGhlIGRyaXZlciBpcyBsb2FkZWQgc28gbm8gdXNl
+LWFmdGVyLWZyZWUgaGVyZS4KCkNjOiBzdGFibGVAdmdlci5rZXJuZWwub3JnCkZpeGVzOiA3NjFl
+ZDRhOTQ1ODIgKCJ0dHk6IHNlcmlhbF9jb3JlOiBjb252ZXJ0IHVhcnRfY2xvc2UgdG8gdXNlIHR0
+eV9wb3J0X2Nsb3NlIikKQWNrZWQtYnk6IFJpY2hhcmQgR2Vub3VkIDxyaWNoYXJkLmdlbm91ZEBn
+bWFpbC5jb20+CkFja2VkLWJ5OiBSb2IgSGVycmluZyA8cm9iaEBrZXJuZWwub3JnPgpTaWduZWQt
+b2ZmLWJ5OiBTZWJhc3RpYW4gQW5kcnplaiBTaWV3aW9yIDxiaWdlYXN5QGxpbnV0cm9uaXguZGU+
+Ci0tLQp2MuKApnYzOiAtIEFkZCBBY2tlZC1ieQogICAgICAgLSByZXBsYWNlIHBvcnQtPm5hbWUg
+LT4gZGV2X25hbWUoJnBkZXYtPmRldikgdG8gZWFzZSB3b3JrIGZvcgoJIGJhY2twb3J0ZXJzIChz
+dWdnZXN0ZWQgYnkgUm9iKQp2MeKApnYyOiBhZGQgRml4ZXMgYWZ0ZXIgYmlzZWN0LgoKIGRyaXZl
+cnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYyB8IDUgKystLS0KIDEgZmlsZSBjaGFuZ2VkLCAy
+IGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkv
+c2VyaWFsL2F0bWVsX3NlcmlhbC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5j
+CmluZGV4IGUyODdmZThmMTBmYy4uNTViM2VmZjE0OGIxIDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0
+eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3Nl
+cmlhbC5jCkBAIC0xNzU3LDcgKzE3NTcsNiBAQCBzdGF0aWMgaW50IGF0bWVsX3N0YXJ0dXAoc3Ry
+dWN0IHVhcnRfcG9ydCAqcG9ydCkKIHsKIAlzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2ID0g
+dG9fcGxhdGZvcm1fZGV2aWNlKHBvcnQtPmRldik7CiAJc3RydWN0IGF0bWVsX3VhcnRfcG9ydCAq
+YXRtZWxfcG9ydCA9IHRvX2F0bWVsX3VhcnRfcG9ydChwb3J0KTsKLQlzdHJ1Y3QgdHR5X3N0cnVj
+dCAqdHR5ID0gcG9ydC0+c3RhdGUtPnBvcnQudHR5OwogCWludCByZXR2YWw7CiAKIAkvKgpAQCAt
+MTc3Miw4ICsxNzcxLDggQEAgc3RhdGljIGludCBhdG1lbF9zdGFydHVwKHN0cnVjdCB1YXJ0X3Bv
+cnQgKnBvcnQpCiAJICogQWxsb2NhdGUgdGhlIElSUQogCSAqLwogCXJldHZhbCA9IHJlcXVlc3Rf
+aXJxKHBvcnQtPmlycSwgYXRtZWxfaW50ZXJydXB0LAotCQkJSVJRRl9TSEFSRUQgfCBJUlFGX0NP
+TkRfU1VTUEVORCwKLQkJCXR0eSA/IHR0eS0+bmFtZSA6ICJhdG1lbF9zZXJpYWwiLCBwb3J0KTsK
+KwkJCSAgICAgSVJRRl9TSEFSRUQgfCBJUlFGX0NPTkRfU1VTUEVORCwKKwkJCSAgICAgZGV2X25h
+bWUoJnBkZXYtPmRldiksIHBvcnQpOwogCWlmIChyZXR2YWwpIHsKIAkJZGV2X2Vycihwb3J0LT5k
+ZXYsICJhdG1lbF9zdGFydHVwIC0gQ2FuJ3QgZ2V0IGlycVxuIik7CiAJCXJldHVybiByZXR2YWw7
+Ci0tIAoyLjE3LjAKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3Rz
+LmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5m
+by9saW51eC1hcm0ta2VybmVsCg==
