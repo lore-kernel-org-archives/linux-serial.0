@@ -1,89 +1,68 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v2] tty: implement led triggers
-Date: Mon, 7 May 2018 11:27:10 +0200
-Message-ID: <20180507092710.GQ2285@localhost>
-References: <0c1bb915-bd92-4433-61ec-78fdba453396@arm.com>
- <20180503201952.16592-1-u.kleine-koenig@pengutronix.de>
- <20180507080252.GO2285@localhost>
- <20180507084127.ekpd3ze2itkzo7fd@pengutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH] serial: sh-sci: Use spin_{try}lock_irqsave instead of
+ open coding version
+Date: Mon, 7 May 2018 14:47:04 +0200
+Message-ID: <20180507124704.s4qlrcc3leoky4r7@linutronix.de>
+References: <20180430080918.16763-1-wagi@monom.org>
+ <CAMuHMdUjsy95zNtoZnp17dmgRcrkzfSCxTe5G=ho5nphqX0HEg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180507084127.ekpd3ze2itkzo7fd@pengutronix.de>
+In-Reply-To: <CAMuHMdUjsy95zNtoZnp17dmgRcrkzfSCxTe5G=ho5nphqX0HEg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Florian Fainelli <f.fainelli@gmail.com>, Pavel Machek <pavel@ucw.cz>, Mathieu Poirier <mathieu.poirier@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Daniel Wagner <wagi@monom.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-rt-users@vger.kernel.org, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux-sh list <linux-sh@vger.kernel.org>, Daniel Wagner <daniel.wagner@siemens.com>, Shinya Kuribayashi <shinya.kuribayashi.px@renesas.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, May 07, 2018 at 10:41:27AM +0200, Uwe Kleine-König wrote:
-> Hello Johan,
+On 2018-05-03 09:43:33 [+0200], Geert Uytterhoeven wrote:
+> > --- a/drivers/tty/serial/sh-sci.c
+> > +++ b/drivers/tty/serial/sh-sci.c
+> > @@ -2516,13 +2516,12 @@ static void serial_console_write(struct console *co, const char *s,
+> >         unsigned long flags;
+> >         int locked = 1;
+> >
+> > -       local_irq_save(flags);
 > 
-> thanks for your feedback.
+> Hence the below now runs with local interrupts enabled.
 > 
-> On Mon, May 07, 2018 at 10:02:52AM +0200, Johan Hovold wrote:
-> > On Thu, May 03, 2018 at 10:19:52PM +0200, Uwe Kleine-König wrote:
-> > > The rx trigger fires when data is pushed to the ldisc. This is a bit later
-> > > than the actual receiving of data but has the nice benefit that it
-> > > doesn't need adaption for each driver and isn't in the hot path.
-> > > 
-> > > Similarily the tx trigger fires when data taken from the ldisc.
-> > 
-> > You meant copied from user space, or written to the ldisc, here.
+> For checking port->sysrq or oops_in_progress that probably isn't an issue.
+> If oops_in_progress is set, you have other problems, and the race condition
+> between checking the flag and calling spin_lock{,_irqsave}() existed before,
+> and is hard to avoid.
+
+while oops_in_progress is an issue of its own, the port->sysrq isn't
+avoided by by local_irq_save(). On SMP systems you can still receive a
+`break' signal on the UART and have a `printk()' issued on another CPU.
+
+> For actual console printing, I think you want to keep interrupts disabled.
+
+why? They should be disabled as part of getting the lock and not for any
+other reason.
+
+> >         if (port->sysrq)
+> >                 locked = 0;
+> >         else if (oops_in_progress)
+> > -               locked = spin_trylock(&port->lock);
+> > +               locked = spin_trylock_irqsave(&port->lock, flags);
+> >         else
+> > -               spin_lock(&port->lock);
+> > +               spin_lock_irqsave(&port->lock, flags);
 > 
-> ack.
+> Add
 > 
-> > Note that the rx-path is shared with serdev, but the write path is not.
-> > So with this series, serdev devices would only trigger the rx-led.
+>         if (!locked
+>                 local_irq_save(flags)
 > 
-> Where would be the right place to put the tx trigger to catch serdev,
-> too?
+> here?
 
-I haven't given this much thought, but do we really want this for serdev
-at all? I'm thinking whatever driver or subsystem is using serdev should
-have their own triggers (e.g. bluetooth or net).
+So for oops_in_progress you get here with interrupts disabled. And if
+not, I don't see the point in disabling the interrupts without any kind
+of locking.
 
-So it might be better to move the rx-blinking to the default tty-port
-client receive_buf callback instead (i.e.
-tty_port_default_receive_buf()).
-
-And then the resource allocations would need to go after the serdev
-registration in tty_port_register_device_attr_serdev().
-
-> > > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> > > ---
-> > > Changes since v1, sent with Message-Id: 
-> > > 20180503100448.1350-1-u.kleine-koenig@pengutronix.de:
-> > > 
-> > >  - implement tx trigger;
-> > >  - introduce Kconfig symbol for conditional compilation;
-> > >  - set trigger to NULL if allocating the name failed to not free random
-> > >    pointers in case the port struct wasn't zeroed;
-> > >  - use if/else instead of goto
-> > 
-> > > @@ -499,6 +500,7 @@ static void flush_to_ldisc(struct work_struct *work)
-> > >  		struct tty_buffer *head = buf->head;
-> > >  		struct tty_buffer *next;
-> > >  		int count;
-> > > +		unsigned long delay = 50 /* ms */;
-> > 
-> > Comment after the semicolon?
+> Gr{oetje,eeting}s,
 > 
-> Given that this comment is about the 50 and not the delay member, I
-> prefer it before the ;.
+>                         Geert
+> 
 
-Hmm. I personally find it hard to read and can only find about 30
-instances of this comment style (for assignments) in the kernel. And
-arguably the comment applies equally well to the delay variable in this
-case too.
-
-> > Besides the ugly ifdefs here, you're leaking the above LED resources in
-> > the error paths below (e.g. on probe deferrals).
-
-> ack, the ifdevs are ugly. I'm working on an idea to get rid of them.
-
-Sounds good.
-
-Thanks,
-Johan
+Sebastian
