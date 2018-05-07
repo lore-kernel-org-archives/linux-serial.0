@@ -1,89 +1,118 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH v3 12/20] media: Remove depends on HAS_DMA in case of
-	platform dependency
-Date: Mon, 7 May 2018 09:21:47 +0200
-Message-ID: <CAMuHMdXp8u9O7Yt3W+WxuOOadYOM+_28DLOMfktwgy_WqML_0A@mail.gmail.com>
-References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
-	<1523987360-18760-13-git-send-email-geert@linux-m68k.org>
-	<20180505094743.4d201ba0@vento.lan>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v2] tty: implement led triggers
+Date: Mon, 7 May 2018 10:02:52 +0200
+Message-ID: <20180507080252.GO2285@localhost>
+References: <0c1bb915-bd92-4433-61ec-78fdba453396@arm.com>
+ <20180503201952.16592-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180505094743.4d201ba0-ch4gOOMV7nf/PtFMR13I2A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mauro Carvalho Chehab <mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" <linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, ALSA Development Mailing List <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, MTD Maling List <linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux I2C <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "open list:SERIAL DRIVERS" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Matias Bjorling <mb@light>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180503201952.16592-1-u.kleine-koenig@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Florian Fainelli <f.fainelli@gmail.com>, Pavel Machek <pavel@ucw.cz>, Mathieu Poirier <mathieu.poirier@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Mauro,
+On Thu, May 03, 2018 at 10:19:52PM +0200, Uwe Kleine-König wrote:
+> The rx trigger fires when data is pushed to the ldisc. This is a bit later
+> than the actual receiving of data but has the nice benefit that it
+> doesn't need adaption for each driver and isn't in the hot path.
+> 
+> Similarily the tx trigger fires when data taken from the ldisc.
 
-On Sat, May 5, 2018 at 2:47 PM, Mauro Carvalho Chehab
-<mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> Em Tue, 17 Apr 2018 19:49:12 +0200
-> Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> escreveu:
->
->> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
->> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
->
-> Applying a patch like that is hard, as there are lots of churn at
-> the code. That's against latest media upstream:
+You meant copied from user space, or written to the ldisc, here.
 
-[...]
+Note that the rx-path is shared with serdev, but the write path is not.
+So with this series, serdev devices would only trigger the rx-led.
 
-I can rebase. What's your preferred target? media-next?
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> ---
+> Changes since v1, sent with Message-Id: 
+> 20180503100448.1350-1-u.kleine-koenig@pengutronix.de:
+> 
+>  - implement tx trigger;
+>  - introduce Kconfig symbol for conditional compilation;
+>  - set trigger to NULL if allocating the name failed to not free random
+>    pointers in case the port struct wasn't zeroed;
+>  - use if/else instead of goto
 
->> In most cases this other symbol is an architecture or platform specific
->> symbol, or PCI.
->>
->> Generic symbols and drivers without platform dependencies keep their
->> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
->> cannot work anyway.
->
-> Actually, depends on HAS_DMA was introduced on media because builds
-> were failing otherwise. We started adding it before the addition
-> of COMPILE_TEST.
+> @@ -499,6 +500,7 @@ static void flush_to_ldisc(struct work_struct *work)
+>  		struct tty_buffer *head = buf->head;
+>  		struct tty_buffer *next;
+>  		int count;
+> +		unsigned long delay = 50 /* ms */;
 
-Indeed. Before the 5 commits below, a missing dependency on HAS_DMA
-would cause the build to fail for NO_DMA platforms.
+Comment after the semicolon?
 
-    f29ab49b5388b2f8 dma-mapping: Convert NO_DMA get_dma_ops() into a real dummy
-    ab642e952f80c66c dma-coherent: Add NO_DMA dummies for managed DMA API
-    c1ce6c2beea38171 mm: Add NO_DMA dummies for DMA pool API
-    bff739b6559e2fce scsi: Add NO_DMA dummies for SCSI DMA mapping API
-    1f674e16f9ce6eb2 usb: gadget: Add NO_DMA dummies for DMA mapping API
+>  
+>  		/* Ldisc or user is trying to gain exclusive access */
+>  		if (atomic_read(&buf->priority))
 
-> Can we just remove all HAS_DMA Kconfig dependencies as a hole from the
-> entire media subsystem, with something like:
->
->         $ for i in $(find drivers/media -name Kconfig) $(find drivers/staging/media -name Kconfig); do sed '/depends on HAS_DMA/d;s/ && HAS_DMA//g' -i $i; done
->
-> Or would it cause build issues?
+> diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+> index 25d736880013..f042879a597c 100644
+> --- a/drivers/tty/tty_port.c
+> +++ b/drivers/tty/tty_port.c
+> @@ -16,6 +16,7 @@
+>  #include <linux/wait.h>
+>  #include <linux/bitops.h>
+>  #include <linux/delay.h>
+> +#include <linux/leds.h>
+>  #include <linux/module.h>
+>  #include <linux/serdev.h>
+>  
+> @@ -157,6 +158,30 @@ struct device *tty_port_register_device_attr_serdev(struct tty_port *port,
+>  
+>  	tty_port_link_device(port, driver, index);
+>  
+> +#ifdef CONFIG_TTY_LEDS_TRIGGER
+> +	port->led_trigger_rx_name = kasprintf(GFP_KERNEL, "%s%d-rx",
+> +					      driver->name, index);
+> +	if (port->led_trigger_rx_name) {
+> +		led_trigger_register_simple(port->led_trigger_rx_name,
+> +					    &port->led_trigger_rx);
+> +	} else {
+> +		port->led_trigger_rx = NULL;
+> +		pr_err("Failed to allocate trigger name for %s%d\n",
+> +		       driver->name, index);
+> +	}
+> +
+> +	port->led_trigger_tx_name = kasprintf(GFP_KERNEL, "%s%d-tx",
+> +					      driver->name, index);
+> +	if (port->led_trigger_tx_name) {
+> +		led_trigger_register_simple(port->led_trigger_tx_name,
+> +					    &port->led_trigger_tx);
+> +	} else {
+> +		port->led_trigger_tx = NULL;
+> +		pr_err("Failed to allocate trigger name for %s%d\n",
+> +		       driver->name, index);
+> +	}
+> +#endif
 
-It should not cause build issues, but it would enable lots of drivers that
-need DMA platform support on platforms where they wouldn't work, making the
-life of distro configurators harder.
+Besides the ugly ifdefs here, you're leaking the above LED resources in
+the error paths below (e.g. on probe deferrals).
 
-That's why my series removes HAS_DMA only for symbols that have a platform
-dependency.
+>  	dev = serdev_tty_port_register(port, device, driver, index);
+>  	if (PTR_ERR(dev) != -ENODEV) {
+>  		/* Skip creating cdev if we registered a serdev device */
 
-Thanks!
+> @@ -249,6 +249,13 @@ struct tty_port {
+>  						   set to size of fifo */
+>  	struct kref		kref;		/* Ref counter */
+>  	void 			*client_data;
+> +
+> +#ifdef CONFIG_TTY_LEDS_TRIGGER
+> +	struct led_trigger	*led_trigger_rx;
+> +	char			*led_trigger_rx_name;
 
-Gr{oetje,eeting}s,
+const?
 
-                        Geert
+> +	struct led_trigger	*led_trigger_tx;
+> +	char			*led_trigger_tx_name;
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+ditto.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> +#endif
+
+Johan
