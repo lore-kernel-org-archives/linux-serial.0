@@ -1,105 +1,88 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2] serial: sh-sci: Use spin_{try}lock_irqsave instead of
- open coding version
-Date: Mon, 7 May 2018 09:14:38 +0200
-Message-ID: <CAMuHMdUsWRbYxoV_it-EWtLWcT04h0AsHpZJCgJ2hDm5z+KCOA@mail.gmail.com>
-References: <20180504163041.28726-1-wagi@monom.org>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH v3 12/20] media: Remove depends on HAS_DMA in case of
+	platform dependency
+Date: Mon, 7 May 2018 09:21:47 +0200
+Message-ID: <CAMuHMdXp8u9O7Yt3W+WxuOOadYOM+_28DLOMfktwgy_WqML_0A@mail.gmail.com>
+References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
+	<1523987360-18760-13-git-send-email-geert@linux-m68k.org>
+	<20180505094743.4d201ba0@vento.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180504163041.28726-1-wagi@monom.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Wagner <wagi@monom.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-rt-users@vger.kernel.org, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Daniel Wagner <daniel.wagner@siemens.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180505094743.4d201ba0-ch4gOOMV7nf/PtFMR13I2A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mauro Carvalho Chehab <mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" <linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, ALSA Development Mailing List <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, MTD Maling List <linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux I2C <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "open list:SERIAL DRIVERS" <linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Matias Bjorling <mb@light>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Daniel,
+Hi Mauro,
 
-On Fri, May 4, 2018 at 6:30 PM, Daniel Wagner <wagi@monom.org> wrote:
-> From: Daniel Wagner <daniel.wagner@siemens.com>
+On Sat, May 5, 2018 at 2:47 PM, Mauro Carvalho Chehab
+<mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> Em Tue, 17 Apr 2018 19:49:12 +0200
+> Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> escreveu:
 >
-> Commit 40f70c03e33a ("serial: sh-sci: add locking to console write
-> function to avoid SMP lockup") copied the strategy to avoid locking
-> problems in conjuncture with the console from the UART8250
-> driver. Instead using directly spin_{try}lock_irqsave(),
-> local_irq_save() followed by spin_{try}lock() was used. While this is
-> correct on mainline, for -rt it is a problem. spin_{try}lock() will
-> check if it is running in a valid context. Since the local_irq_save()
-> has already been executed, the context has changed and
-> spin_{try}lock() will complain. The reason why spin_{try}lock()
-> complains is that on -rt the spin locks are turned into mutexes and
-> therefore can sleep. Sleeping with interrupts disabled is not valid.
+>> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
+>> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
+>
+> Applying a patch like that is hard, as there are lots of churn at
+> the code. That's against latest media upstream:
 
 [...]
 
-> ---
+I can rebase. What's your preferred target? media-next?
+
+>> In most cases this other symbol is an architecture or platform specific
+>> symbol, or PCI.
+>>
+>> Generic symbols and drivers without platform dependencies keep their
+>> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
+>> cannot work anyway.
 >
-> changes since v1:
->  - Ported to current mainline (initial version was against v4.4.y)
->  - Left local_irq_save() in place when spinlocks are not used as suggested
->    by Geert.
+> Actually, depends on HAS_DMA was introduced on media because builds
+> were failing otherwise. We started adding it before the addition
+> of COMPILE_TEST.
 
-Thanks for the update!
+Indeed. Before the 5 commits below, a missing dependency on HAS_DMA
+would cause the build to fail for NO_DMA platforms.
 
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -2890,16 +2890,16 @@ static void serial_console_write(struct console *co, const char *s,
->         unsigned long flags;
->         int locked = 1;
+    f29ab49b5388b2f8 dma-mapping: Convert NO_DMA get_dma_ops() into a real dummy
+    ab642e952f80c66c dma-coherent: Add NO_DMA dummies for managed DMA API
+    c1ce6c2beea38171 mm: Add NO_DMA dummies for DMA pool API
+    bff739b6559e2fce scsi: Add NO_DMA dummies for SCSI DMA mapping API
+    1f674e16f9ce6eb2 usb: gadget: Add NO_DMA dummies for DMA mapping API
+
+> Can we just remove all HAS_DMA Kconfig dependencies as a hole from the
+> entire media subsystem, with something like:
 >
-> -       local_irq_save(flags);
->  #if defined(SUPPORT_SYSRQ)
-> -       if (port->sysrq)
-> +       if (port->sysrq) {
->                 locked = 0;
-> -       else
-> +               local_irq_save(flags);
-> +       } else
->  #endif
->         if (oops_in_progress)
-> -               locked = spin_trylock(&port->lock);
-> +               locked = spin_trylock_irqsave(&port->lock, flags);
-
-If the spinlock could not be taken, interrupts are re-enabled:
-
-    include/linux/spinlock.h:
-    #define raw_spin_trylock_irqsave(lock, flags) \
-    ({ \
-            local_irq_save(flags); \
-            raw_spin_trylock(lock) ? \
-            1 : ({ local_irq_restore(flags); 0; }); \
-    })
-
-hence I think you need to check for this and disable interrupts again:
-
-    if (!locked)
-            local_irq_save(flags);
-
->         else
-> -               spin_lock(&port->lock);
-> +               spin_lock_irqsave(&port->lock, flags);
+>         $ for i in $(find drivers/media -name Kconfig) $(find drivers/staging/media -name Kconfig); do sed '/depends on HAS_DMA/d;s/ && HAS_DMA//g' -i $i; done
 >
->         /* first save SCSCR then disable interrupts, keep clock source */
->         ctrl = serial_port_in(port, SCSCR);
-> @@ -2919,8 +2919,9 @@ static void serial_console_write(struct console *co, const char *s,
->         serial_port_out(port, SCSCR, ctrl);
->
->         if (locked)
-> -               spin_unlock(&port->lock);
-> -       local_irq_restore(flags);
-> +               spin_unlock_irqrestore(&port->lock, flags);
-> +       else
-> +               local_irq_restore(flags);
->  }
->
->  static int serial_console_setup(struct console *co, char *options)
+> Or would it cause build issues?
+
+It should not cause build issues, but it would enable lots of drivers that
+need DMA platform support on platforms where they wouldn't work, making the
+life of distro configurators harder.
+
+That's why my series removes HAS_DMA only for symbols that have a platform
+dependency.
+
+Thanks!
 
 Gr{oetje,eeting}s,
 
                         Geert
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
 
 In personal conversations with technical people, I call myself a hacker. But
 when I'm talking to journalists I just say "programmer" or something like that.
