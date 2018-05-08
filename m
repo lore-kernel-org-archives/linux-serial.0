@@ -1,58 +1,98 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v3] serial: sh-sci: Use spin_{try}lock_irqsave instead of
- open coding version
-Date: Tue, 8 May 2018 11:52:53 +0200
-Message-ID: <CAMuHMdV4D4uMWNxFH-RzuUV_ssEMYWZ-dbhfa=cgB57oNHiyuA@mail.gmail.com>
-References: <20180508085509.31384-1-wagi@monom.org>
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 2/3] can: simplify LED trigger handling
+Date: Tue,  8 May 2018 12:05:42 +0200
+Message-ID: <20180508100543.12559-3-u.kleine-koenig@pengutronix.de>
+References: <20180508100543.12559-1-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180508085509.31384-1-wagi@monom.org>
+In-Reply-To: <20180508100543.12559-1-u.kleine-koenig@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Wagner <wagi@monom.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-rt-users@vger.kernel.org, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Daniel Wagner <daniel.wagner@siemens.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>
+Cc: linux-serial@vger.kernel.org, linux-leds@vger.kernel.org, linux-can@vger.kernel.org, kernel@pengutronix.de, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Florian Fainelli <f.fainelli@gmail.com>, Mathieu Poirier <mathieu.poirier@linaro.org>, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 8, 2018 at 10:55 AM, Daniel Wagner <wagi@monom.org> wrote:
-> From: Daniel Wagner <daniel.wagner@siemens.com>
->
-> Commit 40f70c03e33a ("serial: sh-sci: add locking to console write
-> function to avoid SMP lockup") copied the strategy to avoid locking
-> problems in conjuncture with the console from the UART8250
-> driver. Instead using directly spin_{try}lock_irqsave(),
-> local_irq_save() followed by spin_{try}lock() was used. While this is
-> correct on mainline, for -rt it is a problem. spin_{try}lock() will
-> check if it is running in a valid context. Since the local_irq_save()
-> has already been executed, the context has changed and
-> spin_{try}lock() will complain. The reason why spin_{try}lock()
-> complains is that on -rt the spin locks are turned into mutexes and
-> therefore can sleep. Sleeping with interrupts disabled is not valid.
+The new function led_trigger_register_format allows one to simplify LED
+trigger handling considerably.
 
-[...]
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/net/can/led.c   | 30 +++++++-----------------------
+ include/linux/can/dev.h |  3 ---
+ 2 files changed, 7 insertions(+), 26 deletions(-)
 
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Signed-off-by: Daniel Wagner <daniel.wagner@siemens.com>
-> ---
-> changes since v2:
->  - dropped the local_irq_save() it's wrong as Sebastian pointed out
->
-> changes since v1:
->  - Ported to current mainline (initial version was against v4.4.y)
->  - Left local_irq_save() in place when spinlocks are not used as suggested
->    by Geert.
-
-Thanks for the update!
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/net/can/led.c b/drivers/net/can/led.c
+index 2d7d1b0d20f9..111f9769e9da 100644
+--- a/drivers/net/can/led.c
++++ b/drivers/net/can/led.c
+@@ -81,19 +81,9 @@ void devm_can_led_init(struct net_device *netdev)
+ 		return;
+ 	}
+ 
+-	snprintf(priv->tx_led_trig_name, sizeof(priv->tx_led_trig_name),
+-		 "%s-tx", netdev->name);
+-	snprintf(priv->rx_led_trig_name, sizeof(priv->rx_led_trig_name),
+-		 "%s-rx", netdev->name);
+-	snprintf(priv->rxtx_led_trig_name, sizeof(priv->rxtx_led_trig_name),
+-		 "%s-rxtx", netdev->name);
+-
+-	led_trigger_register_simple(priv->tx_led_trig_name,
+-				    &priv->tx_led_trig);
+-	led_trigger_register_simple(priv->rx_led_trig_name,
+-				    &priv->rx_led_trig);
+-	led_trigger_register_simple(priv->rxtx_led_trig_name,
+-				    &priv->rxtx_led_trig);
++	led_trigger_register_format(&priv->tx_led_trig, "%s-tx", netdev->name);
++	led_trigger_register_format(&priv->rx_led_trig, "%s-rx", netdev->name);
++	led_trigger_register_format(&priv->rxtx_led_trig, "%s-rxtx", netdev->name);
+ 
+ 	devres_add(&netdev->dev, res);
+ }
+@@ -105,23 +95,17 @@ static int can_led_notifier(struct notifier_block *nb, unsigned long msg,
+ {
+ 	struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
+ 	struct can_priv *priv = safe_candev_priv(netdev);
+-	char name[CAN_LED_NAME_SZ];
+ 
+ 	if (!priv)
+ 		return NOTIFY_DONE;
+ 
+-	if (!priv->tx_led_trig || !priv->rx_led_trig || !priv->rxtx_led_trig)
+-		return NOTIFY_DONE;
+-
+ 	if (msg == NETDEV_CHANGENAME) {
+-		snprintf(name, sizeof(name), "%s-tx", netdev->name);
+-		led_trigger_rename(priv->tx_led_trig, name);
++		led_trigger_rename(priv->tx_led_trig, "%s-tx", netdev->name);
+ 
+-		snprintf(name, sizeof(name), "%s-rx", netdev->name);
+-		led_trigger_rename(priv->rx_led_trig, name);
++		led_trigger_rename(priv->rx_led_trig, "%s-rx", netdev->name);
+ 
+-		snprintf(name, sizeof(name), "%s-rxtx", netdev->name);
+-		led_trigger_rename(priv->rxtx_led_trig, name);
++		led_trigger_rename(priv->rxtx_led_trig,
++				   "%s-rxtx", netdev->name);
+ 	}
+ 
+ 	return NOTIFY_DONE;
+diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
+index 055aaf5ed9af..ff358269aa9c 100644
+--- a/include/linux/can/dev.h
++++ b/include/linux/can/dev.h
+@@ -73,11 +73,8 @@ struct can_priv {
+ 
+ #ifdef CONFIG_CAN_LEDS
+ 	struct led_trigger *tx_led_trig;
+-	char tx_led_trig_name[CAN_LED_NAME_SZ];
+ 	struct led_trigger *rx_led_trig;
+-	char rx_led_trig_name[CAN_LED_NAME_SZ];
+ 	struct led_trigger *rxtx_led_trig;
+-	char rxtx_led_trig_name[CAN_LED_NAME_SZ];
+ #endif
+ };
+ 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+2.17.0
