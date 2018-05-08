@@ -1,370 +1,121 @@
-From: Mikko Perttunen <mperttunen@nvidia.com>
-Subject: [PATCH 5/8] mailbox: tegra-hsp: Add support for shared mailboxes
-Date: Tue, 8 May 2018 14:44:00 +0300
-Message-ID: <20180508114403.14499-6-mperttunen@nvidia.com>
-References: <20180508114403.14499-1-mperttunen@nvidia.com>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: Re: [PATCH] tty: pl011: Avoid spuriously stuck-off interrupts
+Date: Tue, 8 May 2018 13:44:24 +0100
+Message-ID: <20180508124423.GK7753@e103592.cambridge.arm.com>
+References: <1524823545-11309-1-git-send-email-Dave.Martin@arm.com>
+ <1524823545-11309-2-git-send-email-Dave.Martin@arm.com>
+ <20180508110119.GA16141@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180508114403.14499-1-mperttunen@nvidia.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: robh+dt@kernel.org, mark.rutland@arm.com, jassisinghbrar@gmail.com, gregkh@linuxfoundation.org, thierry.reding@gmail.com, jonathanh@nvidia.com
-Cc: araza@nvidia.com, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20180508110119.GA16141@n2100.armlinux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc: Peter Maydell <peter.maydell@linaro.org>, Andrew Jones <drjones@redhat.com>, Ciro Santilli <ciro.santilli@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Wei Xu <xuwei5@hisilicon.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The Tegra HSP block supports 'shared mailboxes' that are simple 32-bit
-registers consisting of a FULL bit in MSB position and 31 bits of data.
-The hardware can be configured to trigger interrupts when a mailbox
-is empty or full. Add support for these shared mailboxes to the HSP
-driver.
+On Tue, May 08, 2018 at 12:01:19PM +0100, Russell King - ARM Linux wrote:
+> On Fri, Apr 27, 2018 at 11:05:45AM +0100, Dave Martin wrote:
+> > Commit 9b96fbacda34 ("serial: PL011: clear pending interrupts")
+> > clears the RX and receive timeout interrupts on pl011 startup, to
+> > avoid a screaming-interrupt scenario that can occur when the
+> > firmware or bootloader leaves these interrupts asserted.
+> > 
+> > This has been noted as an issue when running Linux on qemu [1].
+> > 
+> > Unfortunately, the above fix seems to lead to potential
+> > misbehaviour if the RX FIFO interrupt is asserted _non_ spuriously
+> > on driver startup, if the RX FIFO is also already full to the
+> > trigger level.
+> > 
+> > Clearing the RX FIFO interrupt does not change the FIFO fill level.
+> > In this scenario, because the interrupt is now clear and because
+> > the FIFO is already full to the trigger level, no new assertion of
+> > the RX FIFO interrupt can occur unless the FIFO is drained back
+> > below the trigger level.  This never occurs because the pl011
+> > driver is waiting for an RX FIFO interrupt to tell it that there is
+> > something to read, and does not read the FIFO at all until that
+> > interrupt occurs.
+> > 
+> > Thus, simply clearing "spurious" interrupts on startup may be
+> > misguided, since there is no way to be sure that the interrupts are
+> > truly spurious, and things can go wrong if they are not.
+> > 
+> > This patch instead clears the interrupt condition by draining the
+> > RX FIFO during UART startup, after clearing any potentially
+> > spurious interrupt.  This should ensure that an interrupt will
+> > definitely be asserted if the RX FIFO subsequently becomes
+> > sufficiently full.
+> > 
+> > The drain is done at the point of enabling interrupts only.  This
+> > means that it will occur any time the UART is newly opened through
+> > the tty layer.  It will not apply to polled-mode use of the UART by
+> > kgdboc: since that scenario cannot use interrupts by design, this
+> > should not matter.  kgdboc will interact badly with "normal" use of
+> > the UART in any case: this patch makes no attempt to paper over
+> > such issues.
+> > 
+> > This patch does not attempt to address the case where the RX FIFO
+> > fills faster than it can be drained: that is a pathological
+> > hardware design problem that is beyond the scope of the driver to
+> > work around.
+> > 
+> > [1] [Qemu-devel] [Qemu-arm] [PATCH] pl011: do not put into fifo
+> > before enabled the interruption
+> > https://lists.gnu.org/archive/html/qemu-devel/2018-01/msg06446.html
+> > 
+> > Reported-by: Wei Xu <xuwei5@hisilicon.com>
+> > Cc: Russell King <linux@armlinux.org.uk>
+> > Cc: Linus Walleij <linus.walleij@linaro.org>
+> > Cc: Peter Maydell <peter.maydell@linaro.org>
+> > Fixes: 9b96fbacda34 ("serial: PL011: clear pending interrupts")
+> > Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+> > Tested-by: Andrew Jones <drjones@redhat.com>
+> > Reviewed-by: Andrew Jones <drjones@redhat.com>
+> > ---
+> >  drivers/tty/serial/amba-pl011.c | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> > 
+> > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> > index 4b40a5b..a6ccb85 100644
+> > --- a/drivers/tty/serial/amba-pl011.c
+> > +++ b/drivers/tty/serial/amba-pl011.c
+> > @@ -1731,6 +1731,16 @@ static void pl011_enable_interrupts(struct uart_amba_port *uap)
+> >  
+> >  	/* Clear out any spuriously appearing RX interrupts */
+> >  	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
+> > +
+> > +	/*
+> > +	 * RXIS is asserted only when the RX FIFO transitions from below
+> > +	 * to above the trigger threshold.  If the RX FIFO is already
+> > +	 * full to the threshold this can't happen and RXIS will now be
+> > +	 * stuck off.  Drain the RX FIFO explicitly to fix this:
+> > +	 */
+> > +	while (!(pl011_read(uap, REG_FR) & UART01x_FR_RXFE))
+> > +		pl011_read(uap, REG_DR);
+> 
+> You probably ought to limit this in case of a stuck receive not empty
+> case, maybe to (eg) twice the depth of the FIFO?
 
-The initial use for the mailboxes is the Tegra Combined UART. For this
-purpose, we use interrupts to receive data, and spinning to wait for
-the transmit mailbox to be emptied to minimize unnecessary overhead.
+My argument would have been that if the FIFO fills too fast to be
+drained, then you have more serious problems... but it would be better
+for this to show as character loss than a lockup.
 
-Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
----
- drivers/mailbox/tegra-hsp.c | 216 +++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 193 insertions(+), 23 deletions(-)
+So, I guess draining twice the FIFO depth before giving up is a
+reasonable compromise.
 
-diff --git a/drivers/mailbox/tegra-hsp.c b/drivers/mailbox/tegra-hsp.c
-index 16eb970f2c9f..77bc8ed7ef15 100644
---- a/drivers/mailbox/tegra-hsp.c
-+++ b/drivers/mailbox/tegra-hsp.c
-@@ -21,6 +21,11 @@
- 
- #include <dt-bindings/mailbox/tegra186-hsp.h>
- 
-+#include "mailbox.h"
-+
-+#define HSP_INT0_IE		0x100
-+#define HSP_INT_IR		0x304
-+
- #define HSP_INT_DIMENSIONING	0x380
- #define HSP_nSM_SHIFT		0
- #define HSP_nSS_SHIFT		4
-@@ -34,6 +39,8 @@
- #define HSP_DB_RAW	0x8
- #define HSP_DB_PENDING	0xc
- 
-+#define HSP_SM_SHRD_MBOX	0x0
-+
- #define HSP_DB_CCPLEX		1
- #define HSP_DB_BPMP		3
- #define HSP_DB_MAX		7
-@@ -68,6 +75,18 @@ struct tegra_hsp_db_map {
- 	unsigned int index;
- };
- 
-+struct tegra_hsp_mailbox {
-+	struct tegra_hsp_channel channel;
-+	unsigned int index;
-+	bool sending;
-+};
-+
-+static inline struct tegra_hsp_mailbox *
-+channel_to_mailbox(struct tegra_hsp_channel *channel)
-+{
-+	return container_of(channel, struct tegra_hsp_mailbox, channel);
-+}
-+
- struct tegra_hsp_soc {
- 	const struct tegra_hsp_db_map *map;
- };
-@@ -77,6 +96,7 @@ struct tegra_hsp {
- 	struct mbox_controller mbox;
- 	void __iomem *regs;
- 	unsigned int doorbell_irq;
-+	unsigned int shared_irq;
- 	unsigned int num_sm;
- 	unsigned int num_as;
- 	unsigned int num_ss;
-@@ -85,6 +105,7 @@ struct tegra_hsp {
- 	spinlock_t lock;
- 
- 	struct list_head doorbells;
-+	struct tegra_hsp_mailbox *mailboxes;
- };
- 
- static inline struct tegra_hsp *
-@@ -189,6 +210,35 @@ static irqreturn_t tegra_hsp_doorbell_irq(int irq, void *data)
- 	return IRQ_HANDLED;
- }
- 
-+static irqreturn_t tegra_hsp_shared_irq(int irq, void *data)
-+{
-+	struct tegra_hsp_mailbox *mb;
-+	struct tegra_hsp *hsp = data;
-+	unsigned long bit, mask;
-+	u32 value;
-+
-+	mask = tegra_hsp_readl(hsp, HSP_INT_IR);
-+	/* Only interested in FULL interrupts */
-+	mask &= 0xff << 8;
-+
-+	for_each_set_bit(bit, &mask, 16) {
-+		unsigned int mb_i = bit % 8;
-+
-+		mb = &hsp->mailboxes[mb_i];
-+
-+		if (!mb->sending) {
-+			value = tegra_hsp_channel_readl(&mb->channel,
-+							HSP_SM_SHRD_MBOX);
-+			value &= ~BIT(31);
-+			mbox_chan_received_data(mb->channel.chan, &value);
-+			tegra_hsp_channel_writel(&mb->channel, value,
-+						 HSP_SM_SHRD_MBOX);
-+		}
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
- static struct tegra_hsp_channel *
- tegra_hsp_doorbell_create(struct tegra_hsp *hsp, const char *name,
- 			  unsigned int master, unsigned int index)
-@@ -277,15 +327,58 @@ static void tegra_hsp_doorbell_shutdown(struct tegra_hsp_doorbell *db)
- 	spin_unlock_irqrestore(&hsp->lock, flags);
- }
- 
-+static int tegra_hsp_mailbox_startup(struct tegra_hsp_mailbox *mb)
-+{
-+	struct tegra_hsp *hsp = mb->channel.hsp;
-+	u32 value;
-+
-+	mb->channel.chan->txdone_method = TXDONE_BY_BLOCK;
-+
-+	/* Route FULL interrupt to external IRQ 0 */
-+	value = tegra_hsp_readl(hsp, HSP_INT0_IE);
-+	value |= BIT(mb->index + 8);
-+	tegra_hsp_writel(hsp, value, HSP_INT0_IE);
-+
-+	return 0;
-+}
-+
-+static int tegra_hsp_mailbox_shutdown(struct tegra_hsp_mailbox *mb)
-+{
-+	struct tegra_hsp *hsp = mb->channel.hsp;
-+	u32 value;
-+
-+	value = tegra_hsp_readl(hsp, HSP_INT0_IE);
-+	value &= ~BIT(mb->index + 8);
-+	tegra_hsp_writel(hsp, value, HSP_INT0_IE);
-+
-+	return 0;
-+}
-+
- static int tegra_hsp_send_data(struct mbox_chan *chan, void *data)
- {
- 	struct tegra_hsp_channel *channel = chan->con_priv;
--	struct tegra_hsp_doorbell *db;
-+	struct tegra_hsp_mailbox *mailbox;
-+	uint32_t value;
- 
- 	switch (channel->type) {
- 	case TEGRA_HSP_MBOX_TYPE_DB:
--		db = channel_to_doorbell(channel);
--		tegra_hsp_channel_writel(&db->channel, 1, HSP_DB_TRIGGER);
-+		tegra_hsp_channel_writel(channel, 1, HSP_DB_TRIGGER);
-+		return 0;
-+	case TEGRA_HSP_MBOX_TYPE_SM:
-+		mailbox = channel_to_mailbox(channel);
-+		mailbox->sending = true;
-+
-+		value = *(uint32_t *)data;
-+		/* Mark mailbox full */
-+		value |= BIT(31);
-+
-+		tegra_hsp_channel_writel(channel, value, HSP_SM_SHRD_MBOX);
-+
-+		while (tegra_hsp_channel_readl(channel, HSP_SM_SHRD_MBOX)
-+		               & BIT(31))
-+			cpu_relax();
-+
-+		return 0;
- 	}
- 
- 	return -EINVAL;
-@@ -298,6 +391,8 @@ static int tegra_hsp_startup(struct mbox_chan *chan)
- 	switch (channel->type) {
- 	case TEGRA_HSP_MBOX_TYPE_DB:
- 		return tegra_hsp_doorbell_startup(channel_to_doorbell(channel));
-+	case TEGRA_HSP_MBOX_TYPE_SM:
-+		return tegra_hsp_mailbox_startup(channel_to_mailbox(channel));
- 	}
- 
- 	return -EINVAL;
-@@ -311,6 +406,9 @@ static void tegra_hsp_shutdown(struct mbox_chan *chan)
- 	case TEGRA_HSP_MBOX_TYPE_DB:
- 		tegra_hsp_doorbell_shutdown(channel_to_doorbell(channel));
- 		break;
-+	case TEGRA_HSP_MBOX_TYPE_SM:
-+		tegra_hsp_mailbox_shutdown(channel_to_mailbox(channel));
-+		break;
- 	}
- }
- 
-@@ -364,7 +462,16 @@ static struct mbox_chan *of_tegra_hsp_xlate(struct mbox_controller *mbox,
- 
- 	switch (type) {
- 	case TEGRA_HSP_MBOX_TYPE_DB:
--		return tegra_hsp_doorbell_xlate(hsp, param);
-+		if (hsp->doorbell_irq)
-+			return tegra_hsp_doorbell_xlate(hsp, param);
-+		else
-+			return ERR_PTR(-EINVAL);
-+
-+	case TEGRA_HSP_MBOX_TYPE_SM:
-+		if (hsp->shared_irq && param < hsp->num_sm)
-+			return hsp->mailboxes[param].channel.chan;
-+		else
-+			return ERR_PTR(-EINVAL);
- 
- 	default:
- 		return ERR_PTR(-EINVAL);
-@@ -403,6 +510,31 @@ static int tegra_hsp_add_doorbells(struct tegra_hsp *hsp)
- 	return 0;
- }
- 
-+static int tegra_hsp_add_mailboxes(struct tegra_hsp *hsp, struct device *dev)
-+{
-+	int i;
-+
-+	hsp->mailboxes = devm_kcalloc(dev, hsp->num_sm, sizeof(*hsp->mailboxes),
-+				      GFP_KERNEL);
-+	if (!hsp->mailboxes)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < hsp->num_sm; i++) {
-+		struct tegra_hsp_mailbox *mb = &hsp->mailboxes[i];
-+
-+		mb->index = i;
-+		mb->sending = false;
-+
-+		mb->channel.hsp = hsp;
-+		mb->channel.type = TEGRA_HSP_MBOX_TYPE_SM;
-+		mb->channel.regs = hsp->regs + SZ_64K + i * SZ_32K;
-+		mb->channel.chan = &hsp->mbox.chans[i];
-+		mb->channel.chan->con_priv = &mb->channel;
-+	}
-+
-+	return 0;
-+}
-+
- static int tegra_hsp_probe(struct platform_device *pdev)
- {
- 	struct tegra_hsp *hsp;
-@@ -431,14 +563,19 @@ static int tegra_hsp_probe(struct platform_device *pdev)
- 	hsp->num_si = (value >> HSP_nSI_SHIFT) & HSP_nINT_MASK;
- 
- 	err = platform_get_irq_byname(pdev, "doorbell");
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to get doorbell IRQ: %d\n", err);
--		return err;
--	}
-+	if (err < 0)
-+		hsp->doorbell_irq = 0;
-+	else
-+		hsp->doorbell_irq = err;
- 
--	hsp->doorbell_irq = err;
-+	err = platform_get_irq_byname(pdev, "shared0");
-+	if (err < 0)
-+		hsp->shared_irq = 0;
-+	else
-+		hsp->shared_irq = err;
- 
- 	hsp->mbox.of_xlate = of_tegra_hsp_xlate;
-+	/* First nSM are reserved for mailboxes */
- 	hsp->mbox.num_chans = 32;
- 	hsp->mbox.dev = &pdev->dev;
- 	hsp->mbox.txdone_irq = false;
-@@ -451,10 +588,22 @@ static int tegra_hsp_probe(struct platform_device *pdev)
- 	if (!hsp->mbox.chans)
- 		return -ENOMEM;
- 
--	err = tegra_hsp_add_doorbells(hsp);
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to add doorbells: %d\n", err);
--		return err;
-+	if (hsp->doorbell_irq) {
-+		err = tegra_hsp_add_doorbells(hsp);
-+		if (err < 0) {
-+			dev_err(&pdev->dev, "failed to add doorbells: %d\n",
-+			        err);
-+			return err;
-+		}
-+	}
-+
-+	if (hsp->shared_irq) {
-+		err = tegra_hsp_add_mailboxes(hsp, &pdev->dev);
-+		if (err < 0) {
-+			dev_err(&pdev->dev, "failed to add mailboxes: %d\n",
-+			        err);
-+			goto remove_doorbells;
-+		}
- 	}
- 
- 	platform_set_drvdata(pdev, hsp);
-@@ -462,20 +611,40 @@ static int tegra_hsp_probe(struct platform_device *pdev)
- 	err = mbox_controller_register(&hsp->mbox);
- 	if (err) {
- 		dev_err(&pdev->dev, "failed to register mailbox: %d\n", err);
--		tegra_hsp_remove_doorbells(hsp);
--		return err;
-+		goto remove_doorbells;
- 	}
- 
--	err = devm_request_irq(&pdev->dev, hsp->doorbell_irq,
--			       tegra_hsp_doorbell_irq, IRQF_NO_SUSPEND,
--			       dev_name(&pdev->dev), hsp);
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to request doorbell IRQ#%u: %d\n",
--			hsp->doorbell_irq, err);
--		return err;
-+	if (hsp->doorbell_irq) {
-+		err = devm_request_irq(&pdev->dev, hsp->doorbell_irq,
-+				       tegra_hsp_doorbell_irq, IRQF_NO_SUSPEND,
-+				       dev_name(&pdev->dev), hsp);
-+		if (err < 0) {
-+			dev_err(&pdev->dev,
-+			        "failed to request doorbell IRQ#%u: %d\n",
-+				hsp->doorbell_irq, err);
-+			return err;
-+		}
-+	}
-+
-+	if (hsp->shared_irq) {
-+		err = devm_request_irq(&pdev->dev, hsp->shared_irq,
-+				       tegra_hsp_shared_irq, 0,
-+				       dev_name(&pdev->dev), hsp);
-+		if (err < 0) {
-+			dev_err(&pdev->dev,
-+				"failed to request shared0 IRQ%u: %d\n",
-+				hsp->shared_irq, err);
-+			return err;
-+		}
- 	}
- 
- 	return 0;
-+
-+remove_doorbells:
-+	if (hsp->doorbell_irq)
-+		tegra_hsp_remove_doorbells(hsp);
-+
-+	return err;
- }
- 
- static int tegra_hsp_remove(struct platform_device *pdev)
-@@ -483,7 +652,8 @@ static int tegra_hsp_remove(struct platform_device *pdev)
- 	struct tegra_hsp *hsp = platform_get_drvdata(pdev);
- 
- 	mbox_controller_unregister(&hsp->mbox);
--	tegra_hsp_remove_doorbells(hsp);
-+	if (hsp->doorbell_irq)
-+		tegra_hsp_remove_doorbells(hsp);
- 
- 	return 0;
- }
--- 
-2.16.1
+
+I'll hack that in and repost.
+
+Cheers
+---Dave
