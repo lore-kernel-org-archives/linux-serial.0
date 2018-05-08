@@ -1,135 +1,58 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH v2] serial: 8250_of: Add IO space support
-Date: Tue, 8 May 2018 10:15:46 +0100
-Message-ID: <664f5d8a-bb9e-cb36-2360-1a905c239728@huawei.com>
-References: <1524825366-155559-1-git-send-email-john.garry@huawei.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v3] serial: sh-sci: Use spin_{try}lock_irqsave instead of
+ open coding version
+Date: Tue, 8 May 2018 11:52:53 +0200
+Message-ID: <CAMuHMdV4D4uMWNxFH-RzuUV_ssEMYWZ-dbhfa=cgB57oNHiyuA@mail.gmail.com>
+References: <20180508085509.31384-1-wagi@monom.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1524825366-155559-1-git-send-email-john.garry@huawei.com>
+In-Reply-To: <20180508085509.31384-1-wagi@monom.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, joel@jms.id.au, p.zabel@pengutronix.de, arnd@arndb.de, fcooper@ti.com, sergei.shtylyov@cogentembedded.com, yamada.masahiro@socionext.com, khoroshilov@ispras.ru
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, andriy.shevchenko@linux.intel.com, linuxarm@huawei.com
+To: Daniel Wagner <wagi@monom.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-rt-users@vger.kernel.org, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Daniel Wagner <daniel.wagner@siemens.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-On 27/04/2018 11:36, John Garry wrote:
-> Currently the 8250_of driver only supports MEM IO type
-> accesses.
+On Tue, May 8, 2018 at 10:55 AM, Daniel Wagner <wagi@monom.org> wrote:
+> From: Daniel Wagner <daniel.wagner@siemens.com>
 >
-> Some development boards (Huawei D03, specifically) require
-> IO space access for 8250-compatible OF driver support, so
-> add it.
->
-> The modification is quite simple: just set the port iotype
-> and associated flags depending on the device address
-> resource type.
->
-> Signed-off-by: John Garry <john.garry@huawei.com>
+> Commit 40f70c03e33a ("serial: sh-sci: add locking to console write
+> function to avoid SMP lockup") copied the strategy to avoid locking
+> problems in conjuncture with the console from the UART8250
+> driver. Instead using directly spin_{try}lock_irqsave(),
+> local_irq_save() followed by spin_{try}lock() was used. While this is
+> correct on mainline, for -rt it is a problem. spin_{try}lock() will
+> check if it is running in a valid context. Since the local_irq_save()
+> has already been executed, the context has changed and
+> spin_{try}lock() will complain. The reason why spin_{try}lock()
+> complains is that on -rt the spin locks are turned into mutexes and
+> therefore can sleep. Sleeping with interrupts disabled is not valid.
+
+[...]
+
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: Daniel Wagner <daniel.wagner@siemens.com>
 > ---
+> changes since v2:
+>  - dropped the local_irq_save() it's wrong as Sebastian pointed out
+>
+> changes since v1:
+>  - Ported to current mainline (initial version was against v4.4.y)
+>  - Left local_irq_save() in place when spinlocks are not used as suggested
+>    by Geert.
 
-Hi Greg,
+Thanks for the update!
 
-Just a gentle reminder of this patch. I didn't see any response.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-BTW, I think that this patch should still cleanly apply to your 
-tty-testing branch.
+Gr{oetje,eeting}s,
 
-Thanks,
-John
+                        Geert
 
->
-> Changes v1->v2:
-> - rebase to Greg's tty-testing branch
-> - use resource_type() helper
->
-> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-> index 3de8d6a..bfb37f0 100644
-> --- a/drivers/tty/serial/8250/8250_of.c
-> +++ b/drivers/tty/serial/8250/8250_of.c
-> @@ -92,13 +92,43 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->  		goto err_unprepare;
->  	}
->
-> +	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_FIXED_PORT |
-> +				  UPF_FIXED_TYPE;
->  	spin_lock_init(&port->lock);
-> -	port->mapbase = resource.start;
-> -	port->mapsize = resource_size(&resource);
->
-> -	/* Check for shifted address mapping */
-> -	if (of_property_read_u32(np, "reg-offset", &prop) == 0)
-> -		port->mapbase += prop;
-> +	if (resource_type(&resource) == IORESOURCE_IO) {
-> +		port->iotype = UPIO_PORT;
-> +		port->iobase = resource.start;
-> +	} else {
-> +		port->mapbase = resource.start;
-> +		port->mapsize = resource_size(&resource);
-> +
-> +		/* Check for shifted address mapping */
-> +		if (of_property_read_u32(np, "reg-offset", &prop) == 0)
-> +			port->mapbase += prop;
-> +
-> +		port->iotype = UPIO_MEM;
-> +		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
-> +			switch (prop) {
-> +			case 1:
-> +				port->iotype = UPIO_MEM;
-> +				break;
-> +			case 2:
-> +				port->iotype = UPIO_MEM16;
-> +				break;
-> +			case 4:
-> +				port->iotype = of_device_is_big_endian(np) ?
-> +					       UPIO_MEM32BE : UPIO_MEM32;
-> +				break;
-> +			default:
-> +				dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
-> +					 prop);
-> +				ret = -EINVAL;
-> +				goto err_dispose;
-> +			}
-> +		}
-> +		port->flags |= UPF_IOREMAP;
-> +	}
->
->  	/* Check for registers offset within the devices address range */
->  	if (of_property_read_u32(np, "reg-shift", &prop) == 0)
-> @@ -114,26 +144,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->  		port->line = ret;
->
->  	port->irq = irq_of_parse_and_map(np, 0);
-> -	port->iotype = UPIO_MEM;
-> -	if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
-> -		switch (prop) {
-> -		case 1:
-> -			port->iotype = UPIO_MEM;
-> -			break;
-> -		case 2:
-> -			port->iotype = UPIO_MEM16;
-> -			break;
-> -		case 4:
-> -			port->iotype = of_device_is_big_endian(np) ?
-> -				       UPIO_MEM32BE : UPIO_MEM32;
-> -			break;
-> -		default:
-> -			dev_warn(&ofdev->dev, "unsupported reg-io-width (%d)\n",
-> -				 prop);
-> -			ret = -EINVAL;
-> -			goto err_dispose;
-> -		}
-> -	}
->
->  	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
->  	if (IS_ERR(info->rst)) {
-> @@ -147,8 +157,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->
->  	port->type = type;
->  	port->uartclk = clk;
-> -	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
-> -		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
->  	port->irqflags |= IRQF_SHARED;
->
->  	if (of_property_read_bool(np, "no-loopback-test"))
->
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
