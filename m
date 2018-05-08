@@ -1,56 +1,53 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/2] serial: imx: dma_unmap_sg buffers on shutdown
-Date: Tue, 8 May 2018 08:43:51 +0200
-Message-ID: <20180508064351.ioczgw2v4jtryr3x@pengutronix.de>
-References: <20180507213610.17330-1-sebastian.reichel@collabora.co.uk>
- <20180507213610.17330-3-sebastian.reichel@collabora.co.uk>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v3 2/3] platform: move the early platform device support
+ to arch/sh
+Date: Tue, 8 May 2018 08:45:01 +0200
+Message-ID: <CAMuHMdXbTkOHAGFBAz16zV1NKmejzy1SpO7LuqZUmsasVf0-jg@mail.gmail.com>
+References: <20180504132731.14574-1-brgl@bgdev.pl> <20180504132731.14574-3-brgl@bgdev.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180507213610.17330-3-sebastian.reichel@collabora.co.uk>
+In-Reply-To: <20180504132731.14574-3-brgl@bgdev.pl>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-kernel@vger.kernel.org
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Sekhar Nori <nsekhar@ti.com>, Kevin Hilman <khilman@kernel.org>, David Lechner <david@lechnology.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Peter Rosin <peda@axentia.se>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Magnus Damm <magnus.damm@gmail.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>Linux Kernel Mailing List <linu>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, May 07, 2018 at 11:36:10PM +0200, Sebastian Reichel wrote:
-> This properly unmaps DMA SG on device shutdown.
-> 
-> Reported-by: Nandor Han <nandor.han@ge.com>
-> Suggested-by: Nandor Han <nandor.han@ge.com>
-> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-> ---
->  drivers/tty/serial/imx.c | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 3ca767b1162a..6c53e74244ec 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -1425,10 +1425,18 @@ static void imx_uart_shutdown(struct uart_port *port)
->  	u32 ucr1, ucr2;
->  
->  	if (sport->dma_is_enabled) {
-> -		sport->dma_is_rxing = 0;
-> -		sport->dma_is_txing = 0;
->  		dmaengine_terminate_sync(sport->dma_chan_tx);
-> +		if (sport->dma_is_txing) {
-> +			dma_unmap_sg(sport->port.dev, &sport->tx_sgl[0],
-> +				     sport->dma_tx_nents, DMA_TO_DEVICE);
-> +			sport->dma_is_txing = 0;
-> +		}
+Hi Bartosz,
 
-did you find this because the kernel crashed or consumed more and more
-memory, or is this "only" a finding of reading the source code? If the
-former it would be great to point out in the commit log, if the latter,
-I wonder if this is a real problem that warrants a stable backport.
+On Fri, May 4, 2018 at 3:27 PM, Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+>
+> SuperH is the only user of the current implementation of early platform
+> device support. We want to introduce a more robust approach to early
+> probing. As the first step - move all the current early platform code
+> to arch/sh.
+>
+> In order not to export internal drivers/base functions to arch code for
+> this temporary solution - copy the two needed routines for driver
+> matching from drivers/base/platform.c to arch/sh/drivers/platform_early.c.
+>
+> Also: call early_platform_cleanup() from subsys_initcall() so that it's
+> called after all early devices are probed.
+>
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Best regards
-Uwe
+>  drivers/clocksource/sh_cmt.c           |   7 +
+>  drivers/clocksource/sh_mtu2.c          |   7 +
+>  drivers/clocksource/sh_tmu.c           |   8 +
+>  drivers/tty/serial/sh-sci.c            |   7 +-
+>  include/linux/platform_device.h        |  64 +----
+
+The parts used on contemporary ARM/ARM64 Renesas SoCs look fine to me, so
+Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
