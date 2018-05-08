@@ -1,73 +1,250 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/2] serial: imx: dma_unmap_sg buffers on shutdown
-Date: Tue, 8 May 2018 20:46:12 +0200
-Message-ID: <20180508184612.iixr3psap4ik5fdr@pengutronix.de>
-References: <20180507213610.17330-1-sebastian.reichel@collabora.co.uk>
- <20180507213610.17330-3-sebastian.reichel@collabora.co.uk>
- <20180508064351.ioczgw2v4jtryr3x@pengutronix.de>
- <20180508134047.zocurxwelw3a24ti@earth.universe>
+From: Jacek Anaszewski <jacek.anaszewski@gmail.com>
+Subject: Re: [PATCH v3 1/3] leds: triggers: provide
+ led_trigger_register_format()
+Date: Tue, 8 May 2018 21:33:14 +0200
+Message-ID: <ea34ce99-d446-03d2-b38d-d40a22480337@gmail.com>
+References: <20180508100543.12559-1-u.kleine-koenig@pengutronix.de>
+ <20180508100543.12559-2-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180508134047.zocurxwelw3a24ti@earth.universe>
+In-Reply-To: <20180508100543.12559-2-u.kleine-koenig@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-kernel@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Pavel Machek <pavel@ucw.cz>
+Cc: linux-serial@vger.kernel.org, linux-leds@vger.kernel.org, linux-can@vger.kernel.org, kernel@pengutronix.de, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Florian Fainelli <f.fainelli@gmail.com>, Mathieu Poirier <mathieu.poirier@linaro.org>, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello Sebastian,
+Hi Uwe,
 
-On Tue, May 08, 2018 at 03:40:47PM +0200, Sebastian Reichel wrote:
-> On Tue, May 08, 2018 at 08:43:51AM +0200, Uwe Kleine-König wrote:
-> > On Mon, May 07, 2018 at 11:36:10PM +0200, Sebastian Reichel wrote:
-> > > This properly unmaps DMA SG on device shutdown.
-> > > 
-> > > Reported-by: Nandor Han <nandor.han@ge.com>
-> > > Suggested-by: Nandor Han <nandor.han@ge.com>
-> > > Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-> > > ---
-> > >  drivers/tty/serial/imx.c | 12 ++++++++++--
-> > >  1 file changed, 10 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > > index 3ca767b1162a..6c53e74244ec 100644
-> > > --- a/drivers/tty/serial/imx.c
-> > > +++ b/drivers/tty/serial/imx.c
-> > > @@ -1425,10 +1425,18 @@ static void imx_uart_shutdown(struct uart_port *port)
-> > >  	u32 ucr1, ucr2;
-> > >  
-> > >  	if (sport->dma_is_enabled) {
-> > > -		sport->dma_is_rxing = 0;
-> > > -		sport->dma_is_txing = 0;
-> > >  		dmaengine_terminate_sync(sport->dma_chan_tx);
-> > > +		if (sport->dma_is_txing) {
-> > > +			dma_unmap_sg(sport->port.dev, &sport->tx_sgl[0],
-> > > +				     sport->dma_tx_nents, DMA_TO_DEVICE);
-> > > +			sport->dma_is_txing = 0;
-> > > +		}
-> > 
-> > did you find this because the kernel crashed or consumed more and more
-> > memory, or is this "only" a finding of reading the source code? If the
-> > former it would be great to point out in the commit log, if the latter,
-> > I wonder if this is a real problem that warrants a stable backport.
+Thank you for the patch. It looks fine, but please split
+the drivers/net/can/led.c related changes into a separate one.
+
+Best regards,
+Jacek Anaszewski
+
+On 05/08/2018 12:05 PM, Uwe Kleine-KÃ¶nig wrote:
+> This allows one to simplify drivers that provide a trigger with a
+> non-constant name (e.g. one trigger per device with the trigger name
+> depending on the device's name).
 > 
-> A bit of both. One of Collabora's customers had a (scarce) kernel crash
-> in imx-serial and modified multiple things in the driver. The crash is
-> gone, but it's not clear which change fixed it. I could not
-> reproduce the crash so far and I'm currently rebasing and splitting
-> their changes into upstreamable portions with proper patch
-> descriptions. From reading the source this looked like a real issue.
-
-In which context (kernel version, operating mode (e.g. rs485)) did these
-happen? What does "crash" mean? The kernel did just hang or produced an
-oops? If the latter, can you show it/them?
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+> Internally the memory the name member of struct led_trigger points to
+> now always allocated dynamically instead of just taken from the caller.
+> 
+> The function led_trigger_rename_static() must be changed accordingly and
+> was renamed to led_trigger_rename() for consistency, with the only user
+> adapted.
+> 
+> Signed-off-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
+> ---
+>   drivers/leds/led-triggers.c | 84 +++++++++++++++++++++++++++----------
+>   drivers/net/can/led.c       |  6 +--
+>   include/linux/leds.h        | 30 +++++++------
+>   3 files changed, 81 insertions(+), 39 deletions(-)
+> 
+> diff --git a/drivers/leds/led-triggers.c b/drivers/leds/led-triggers.c
+> index 431123b048a2..5d8bb504b07b 100644
+> --- a/drivers/leds/led-triggers.c
+> +++ b/drivers/leds/led-triggers.c
+> @@ -175,18 +175,34 @@ void led_trigger_set_default(struct led_classdev *led_cdev)
+>   }
+>   EXPORT_SYMBOL_GPL(led_trigger_set_default);
+>   
+> -void led_trigger_rename_static(const char *name, struct led_trigger *trig)
+> +int led_trigger_rename(struct led_trigger *trig, const char *fmt, ...)
+>   {
+> -	/* new name must be on a temporary string to prevent races */
+> -	BUG_ON(name == trig->name);
+> +	const char *prevname;
+> +	const char *newname;
+> +	va_list args;
+> +
+> +	if (!trig)
+> +		return 0;
+> +
+> +	va_start(args, fmt);
+> +	newname = kvasprintf_const(GFP_KERNEL, fmt, args);
+> +	va_end(args);
+> +
+> +	if (!newname) {
+> +		pr_err("Failed to allocate new name for trigger %s\n", trig->name);
+> +		return -ENOMEM;
+> +	}
+>   
+>   	down_write(&triggers_list_lock);
+> -	/* this assumes that trig->name was originaly allocated to
+> -	 * non constant storage */
+> -	strcpy((char *)trig->name, name);
+> +	prevname = trig->name;
+> +	trig->name = newname;
+>   	up_write(&triggers_list_lock);
+> +
+> +	kfree_const(prevname);
+> +
+> +	return 0;
+>   }
+> -EXPORT_SYMBOL_GPL(led_trigger_rename_static);
+> +EXPORT_SYMBOL_GPL(led_trigger_rename);
+>   
+>   /* LED Trigger Interface */
+>   
+> @@ -333,34 +349,56 @@ void led_trigger_blink_oneshot(struct led_trigger *trig,
+>   }
+>   EXPORT_SYMBOL_GPL(led_trigger_blink_oneshot);
+>   
+> -void led_trigger_register_simple(const char *name, struct led_trigger **tp)
+> +int led_trigger_register_format(struct led_trigger **tp, const char *fmt, ...)
+>   {
+> +	va_list args;
+>   	struct led_trigger *trig;
+> -	int err;
+> +	int err = -ENOMEM;
+> +	const char *name;
+> +
+> +	va_start(args, fmt);
+> +	name = kvasprintf_const(GFP_KERNEL, fmt, args);
+> +	va_end(args);
+>   
+>   	trig = kzalloc(sizeof(struct led_trigger), GFP_KERNEL);
+>   
+> -	if (trig) {
+> -		trig->name = name;
+> -		err = led_trigger_register(trig);
+> -		if (err < 0) {
+> -			kfree(trig);
+> -			trig = NULL;
+> -			pr_warn("LED trigger %s failed to register (%d)\n",
+> -				name, err);
+> -		}
+> -	} else {
+> -		pr_warn("LED trigger %s failed to register (no memory)\n",
+> -			name);
+> -	}
+> +	if (!name || !trig)
+> +		goto err;
+> +
+> +	trig->name = name;
+> +
+> +	err = led_trigger_register(trig);
+> +	if (err < 0)
+> +		goto err;
+> +
+>   	*tp = trig;
+> +
+> +	return 0;
+> +
+> +err:
+> +	kfree(trig);
+> +	kfree_const(name);
+> +
+> +	*tp = NULL;
+> +
+> +	return err;
+> +}
+> +EXPORT_SYMBOL_GPL(led_trigger_register_format);
+> +
+> +void led_trigger_register_simple(const char *name, struct led_trigger **tp)
+> +{
+> +	int ret = led_trigger_register_format(tp, "%s", name);
+> +	if (ret < 0)
+> +		pr_warn("LED trigger %s failed to register (%d)\n", name, ret);
+>   }
+>   EXPORT_SYMBOL_GPL(led_trigger_register_simple);
+>   
+>   void led_trigger_unregister_simple(struct led_trigger *trig)
+>   {
+> -	if (trig)
+> +	if (trig) {
+>   		led_trigger_unregister(trig);
+> +		kfree_const(trig->name);
+> +	}
+>   	kfree(trig);
+>   }
+>   EXPORT_SYMBOL_GPL(led_trigger_unregister_simple);
+> diff --git a/drivers/net/can/led.c b/drivers/net/can/led.c
+> index c1b667675fa1..2d7d1b0d20f9 100644
+> --- a/drivers/net/can/led.c
+> +++ b/drivers/net/can/led.c
+> @@ -115,13 +115,13 @@ static int can_led_notifier(struct notifier_block *nb, unsigned long msg,
+>   
+>   	if (msg == NETDEV_CHANGENAME) {
+>   		snprintf(name, sizeof(name), "%s-tx", netdev->name);
+> -		led_trigger_rename_static(name, priv->tx_led_trig);
+> +		led_trigger_rename(priv->tx_led_trig, name);
+>   
+>   		snprintf(name, sizeof(name), "%s-rx", netdev->name);
+> -		led_trigger_rename_static(name, priv->rx_led_trig);
+> +		led_trigger_rename(priv->rx_led_trig, name);
+>   
+>   		snprintf(name, sizeof(name), "%s-rxtx", netdev->name);
+> -		led_trigger_rename_static(name, priv->rxtx_led_trig);
+> +		led_trigger_rename(priv->rxtx_led_trig, name);
+>   	}
+>   
+>   	return NOTIFY_DONE;
+> diff --git a/include/linux/leds.h b/include/linux/leds.h
+> index b7e82550e655..e706c28bb35b 100644
+> --- a/include/linux/leds.h
+> +++ b/include/linux/leds.h
+> @@ -275,6 +275,8 @@ extern void led_trigger_unregister(struct led_trigger *trigger);
+>   extern int devm_led_trigger_register(struct device *dev,
+>   				     struct led_trigger *trigger);
+>   
+> +extern int led_trigger_register_format(struct led_trigger **trigger,
+> +				       const char *fmt, ...);
+>   extern void led_trigger_register_simple(const char *name,
+>   				struct led_trigger **trigger);
+>   extern void led_trigger_unregister_simple(struct led_trigger *trigger);
+> @@ -298,28 +300,25 @@ static inline void *led_get_trigger_data(struct led_classdev *led_cdev)
+>   }
+>   
+>   /**
+> - * led_trigger_rename_static - rename a trigger
+> - * @name: the new trigger name
+> + * led_trigger_rename - rename a trigger
+>    * @trig: the LED trigger to rename
+> + * @fmt: format string for new name
+>    *
+> - * Change a LED trigger name by copying the string passed in
+> - * name into current trigger name, which MUST be large
+> - * enough for the new string.
+> - *
+> - * Note that name must NOT point to the same string used
+> - * during LED registration, as that could lead to races.
+> - *
+> - * This is meant to be used on triggers with statically
+> - * allocated name.
+> + * rebaptize the given trigger.
+>    */
+> -extern void led_trigger_rename_static(const char *name,
+> -				      struct led_trigger *trig);
+> +extern int led_trigger_rename(struct led_trigger *trig, const char *fmt, ...);
+>   
+>   #else
+>   
+>   /* Trigger has no members */
+>   struct led_trigger {};
+>   
+> +static inline int led_trigger_register_format(struct led_trigger **trigger,
+> +					      const char *fmt, ...)
+> +{
+> +	return 0;
+> +}
+> +
+>   /* Trigger inline empty functions */
+>   static inline void led_trigger_register_simple(const char *name,
+>   					struct led_trigger **trigger) {}
+> @@ -342,6 +341,11 @@ static inline void *led_get_trigger_data(struct led_classdev *led_cdev)
+>   	return NULL;
+>   }
+>   
+> +static inline int led_trigger_rename(struct led_trigger *trig, const char *fmt, ...)
+> +{
+> +	return 0;
+> +}
+> +
+>   #endif /* CONFIG_LEDS_TRIGGERS */
+>   
+>   /* Trigger specific functions */
+> 
