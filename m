@@ -1,121 +1,90 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: Re: [PATCH] tty: pl011: Avoid spuriously stuck-off interrupts
-Date: Tue, 8 May 2018 13:44:24 +0100
-Message-ID: <20180508124423.GK7753@e103592.cambridge.arm.com>
-References: <1524823545-11309-1-git-send-email-Dave.Martin@arm.com>
- <1524823545-11309-2-git-send-email-Dave.Martin@arm.com>
- <20180508110119.GA16141@n2100.armlinux.org.uk>
+From: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Subject: Re: [PATCH 2/2] serial: imx: dma_unmap_sg buffers on shutdown
+Date: Tue, 8 May 2018 15:40:47 +0200
+Message-ID: <20180508134047.zocurxwelw3a24ti@earth.universe>
+References: <20180507213610.17330-1-sebastian.reichel@collabora.co.uk>
+ <20180507213610.17330-3-sebastian.reichel@collabora.co.uk>
+ <20180508064351.ioczgw2v4jtryr3x@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="6wb2m4rdd5yi7wpt"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180508110119.GA16141@n2100.armlinux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@armlinux.org.uk>
-Cc: Peter Maydell <peter.maydell@linaro.org>, Andrew Jones <drjones@redhat.com>, Ciro Santilli <ciro.santilli@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Wei Xu <xuwei5@hisilicon.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20180508064351.ioczgw2v4jtryr3x@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 08, 2018 at 12:01:19PM +0100, Russell King - ARM Linux wrote:
-> On Fri, Apr 27, 2018 at 11:05:45AM +0100, Dave Martin wrote:
-> > Commit 9b96fbacda34 ("serial: PL011: clear pending interrupts")
-> > clears the RX and receive timeout interrupts on pl011 startup, to
-> > avoid a screaming-interrupt scenario that can occur when the
-> > firmware or bootloader leaves these interrupts asserted.
-> > 
-> > This has been noted as an issue when running Linux on qemu [1].
-> > 
-> > Unfortunately, the above fix seems to lead to potential
-> > misbehaviour if the RX FIFO interrupt is asserted _non_ spuriously
-> > on driver startup, if the RX FIFO is also already full to the
-> > trigger level.
-> > 
-> > Clearing the RX FIFO interrupt does not change the FIFO fill level.
-> > In this scenario, because the interrupt is now clear and because
-> > the FIFO is already full to the trigger level, no new assertion of
-> > the RX FIFO interrupt can occur unless the FIFO is drained back
-> > below the trigger level.  This never occurs because the pl011
-> > driver is waiting for an RX FIFO interrupt to tell it that there is
-> > something to read, and does not read the FIFO at all until that
-> > interrupt occurs.
-> > 
-> > Thus, simply clearing "spurious" interrupts on startup may be
-> > misguided, since there is no way to be sure that the interrupts are
-> > truly spurious, and things can go wrong if they are not.
-> > 
-> > This patch instead clears the interrupt condition by draining the
-> > RX FIFO during UART startup, after clearing any potentially
-> > spurious interrupt.  This should ensure that an interrupt will
-> > definitely be asserted if the RX FIFO subsequently becomes
-> > sufficiently full.
-> > 
-> > The drain is done at the point of enabling interrupts only.  This
-> > means that it will occur any time the UART is newly opened through
-> > the tty layer.  It will not apply to polled-mode use of the UART by
-> > kgdboc: since that scenario cannot use interrupts by design, this
-> > should not matter.  kgdboc will interact badly with "normal" use of
-> > the UART in any case: this patch makes no attempt to paper over
-> > such issues.
-> > 
-> > This patch does not attempt to address the case where the RX FIFO
-> > fills faster than it can be drained: that is a pathological
-> > hardware design problem that is beyond the scope of the driver to
-> > work around.
-> > 
-> > [1] [Qemu-devel] [Qemu-arm] [PATCH] pl011: do not put into fifo
-> > before enabled the interruption
-> > https://lists.gnu.org/archive/html/qemu-devel/2018-01/msg06446.html
-> > 
-> > Reported-by: Wei Xu <xuwei5@hisilicon.com>
-> > Cc: Russell King <linux@armlinux.org.uk>
-> > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > Cc: Peter Maydell <peter.maydell@linaro.org>
-> > Fixes: 9b96fbacda34 ("serial: PL011: clear pending interrupts")
-> > Signed-off-by: Dave Martin <Dave.Martin@arm.com>
-> > Tested-by: Andrew Jones <drjones@redhat.com>
-> > Reviewed-by: Andrew Jones <drjones@redhat.com>
+
+--6wb2m4rdd5yi7wpt
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Tue, May 08, 2018 at 08:43:51AM +0200, Uwe Kleine-K=F6nig wrote:
+> On Mon, May 07, 2018 at 11:36:10PM +0200, Sebastian Reichel wrote:
+> > This properly unmaps DMA SG on device shutdown.
+> >=20
+> > Reported-by: Nandor Han <nandor.han@ge.com>
+> > Suggested-by: Nandor Han <nandor.han@ge.com>
+> > Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 > > ---
-> >  drivers/tty/serial/amba-pl011.c | 10 ++++++++++
-> >  1 file changed, 10 insertions(+)
-> > 
-> > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> > index 4b40a5b..a6ccb85 100644
-> > --- a/drivers/tty/serial/amba-pl011.c
-> > +++ b/drivers/tty/serial/amba-pl011.c
-> > @@ -1731,6 +1731,16 @@ static void pl011_enable_interrupts(struct uart_amba_port *uap)
-> >  
-> >  	/* Clear out any spuriously appearing RX interrupts */
-> >  	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
-> > +
-> > +	/*
-> > +	 * RXIS is asserted only when the RX FIFO transitions from below
-> > +	 * to above the trigger threshold.  If the RX FIFO is already
-> > +	 * full to the threshold this can't happen and RXIS will now be
-> > +	 * stuck off.  Drain the RX FIFO explicitly to fix this:
-> > +	 */
-> > +	while (!(pl011_read(uap, REG_FR) & UART01x_FR_RXFE))
-> > +		pl011_read(uap, REG_DR);
-> 
-> You probably ought to limit this in case of a stuck receive not empty
-> case, maybe to (eg) twice the depth of the FIFO?
+> >  drivers/tty/serial/imx.c | 12 ++++++++++--
+> >  1 file changed, 10 insertions(+), 2 deletions(-)
+> >=20
+> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > index 3ca767b1162a..6c53e74244ec 100644
+> > --- a/drivers/tty/serial/imx.c
+> > +++ b/drivers/tty/serial/imx.c
+> > @@ -1425,10 +1425,18 @@ static void imx_uart_shutdown(struct uart_port =
+*port)
+> >  	u32 ucr1, ucr2;
+> > =20
+> >  	if (sport->dma_is_enabled) {
+> > -		sport->dma_is_rxing =3D 0;
+> > -		sport->dma_is_txing =3D 0;
+> >  		dmaengine_terminate_sync(sport->dma_chan_tx);
+> > +		if (sport->dma_is_txing) {
+> > +			dma_unmap_sg(sport->port.dev, &sport->tx_sgl[0],
+> > +				     sport->dma_tx_nents, DMA_TO_DEVICE);
+> > +			sport->dma_is_txing =3D 0;
+> > +		}
+>=20
+> did you find this because the kernel crashed or consumed more and more
+> memory, or is this "only" a finding of reading the source code? If the
+> former it would be great to point out in the commit log, if the latter,
+> I wonder if this is a real problem that warrants a stable backport.
 
-My argument would have been that if the FIFO fills too fast to be
-drained, then you have more serious problems... but it would be better
-for this to show as character loss than a lockup.
+A bit of both. One of Collabora's customers had a (scarce) kernel crash
+in imx-serial and modified multiple things in the driver. The crash is
+gone, but it's not clear which change fixed it. I could not
+reproduce the crash so far and I'm currently rebasing and splitting
+their changes into upstreamable portions with proper patch
+descriptions. From reading the source this looked like a real issue.
 
-So, I guess draining twice the FIFO depth before giving up is a
-reasonable compromise.
+-- Sebastian
 
+--6wb2m4rdd5yi7wpt
+Content-Type: application/pgp-signature; name="signature.asc"
 
-I'll hack that in and repost.
+-----BEGIN PGP SIGNATURE-----
 
-Cheers
----Dave
+iQIzBAEBCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlrxqN0ACgkQ2O7X88g7
++poWCxAApwb98MM1VPGr5cibDrJ6pXjGtIPTfVz+WOsUW48kopVs1HHs4p+o6LZm
+GB6j/4WvDQ6oG37WX+9b2URX+w76GzfDSpivNQw2b1nX/8m9tSn09vrGTfz2nFN+
+j76CldlfNH9UYcz0ejUd2lcO0ESVji55H6YeFCRdBa3vrboN4Oh1eoMPZI+hOoI5
+AX97Cjt/TEzYVpl+/F3SPvneRMrKfc81SDHL0f5NLMt4NXTx7qWh7ekRnjzDyjTs
+axm/Trh5hrMuYQmo32IKMafBYJuw2bPLQFc748VtU19AoZt3Y7yX0U6cGpWyM9RF
+WDMvEnotr3IEhw8Et041ReLMlPClOfO6e+6xUTjZnIuPMhzBsw+tI5z5x25tAGx+
+GHEXihMsjysVptFLHWq/eyOxi5LC9DywMtzHa2ayYAZudiKIUbVjRlM+Fdziv00W
+TfLnx8b6ry1bpENooOzTY5k3Cb9u0UL81aHqM4ZdVhiMiaLY9cOpFPMv5D8SV7S5
+HjtpDpeonXnbNPk1zkBfTNGp6RNtMZ3E1zbIUjX5N5vyO6d+k1UOAEUxFYbFhzGt
+HFjJx+iLTCGF/NLOp9QY0u13NDNYgmYBCkMTqGKZcsRYP/2qlR+QY9rHwilsLBnR
+NKCoIMV+qNLYtWoUE6l98HpuVmBadpGNLoPgGeohtg5t2ztnyos=
+=wYO1
+-----END PGP SIGNATURE-----
+
+--6wb2m4rdd5yi7wpt--
