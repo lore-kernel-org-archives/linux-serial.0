@@ -1,111 +1,81 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: [PATCH] tty: pl011: Avoid spuriously stuck-off interrupts
-Date: Tue, 8 May 2018 12:01:19 +0100
-Message-ID: <20180508110119.GA16141@n2100.armlinux.org.uk>
-References: <1524823545-11309-1-git-send-email-Dave.Martin@arm.com>
- <1524823545-11309-2-git-send-email-Dave.Martin@arm.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: Re: [PATCH v3 2/3] can: simplify LED trigger handling
+Date: Tue, 8 May 2018 13:04:01 +0200
+Message-ID: <7135a44f-85db-758b-cf51-1a924e114e9b@pengutronix.de>
+References: <20180508100543.12559-1-u.kleine-koenig@pengutronix.de>
+ <20180508100543.12559-3-u.kleine-koenig@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1524823545-11309-2-git-send-email-Dave.Martin@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Dave Martin <Dave.Martin@arm.com>
-Cc: Peter Maydell <peter.maydell@linaro.org>, Andrew Jones <drjones@redhat.com>, Ciro Santilli <ciro.santilli@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Wei Xu <xuwei5@hisilicon.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="gYZvSXtRcjeVT1CDJqBXsIpJ6D8Hcz2nk"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180508100543.12559-3-u.kleine-koenig@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Florian Fainelli <f.fainelli@gmail.com>, linux-serial@vger.kernel.org, Mathieu Poirier <mathieu.poirier@linaro.org>, linux-kernel@vger.kernel.org, linux-can@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Robin Murphy <robin.murphy@arm.com>, linux-leds@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Apr 27, 2018 at 11:05:45AM +0100, Dave Martin wrote:
-> Commit 9b96fbacda34 ("serial: PL011: clear pending interrupts")
-> clears the RX and receive timeout interrupts on pl011 startup, to
-> avoid a screaming-interrupt scenario that can occur when the
-> firmware or bootloader leaves these interrupts asserted.
-> 
-> This has been noted as an issue when running Linux on qemu [1].
-> 
-> Unfortunately, the above fix seems to lead to potential
-> misbehaviour if the RX FIFO interrupt is asserted _non_ spuriously
-> on driver startup, if the RX FIFO is also already full to the
-> trigger level.
-> 
-> Clearing the RX FIFO interrupt does not change the FIFO fill level.
-> In this scenario, because the interrupt is now clear and because
-> the FIFO is already full to the trigger level, no new assertion of
-> the RX FIFO interrupt can occur unless the FIFO is drained back
-> below the trigger level.  This never occurs because the pl011
-> driver is waiting for an RX FIFO interrupt to tell it that there is
-> something to read, and does not read the FIFO at all until that
-> interrupt occurs.
-> 
-> Thus, simply clearing "spurious" interrupts on startup may be
-> misguided, since there is no way to be sure that the interrupts are
-> truly spurious, and things can go wrong if they are not.
-> 
-> This patch instead clears the interrupt condition by draining the
-> RX FIFO during UART startup, after clearing any potentially
-> spurious interrupt.  This should ensure that an interrupt will
-> definitely be asserted if the RX FIFO subsequently becomes
-> sufficiently full.
-> 
-> The drain is done at the point of enabling interrupts only.  This
-> means that it will occur any time the UART is newly opened through
-> the tty layer.  It will not apply to polled-mode use of the UART by
-> kgdboc: since that scenario cannot use interrupts by design, this
-> should not matter.  kgdboc will interact badly with "normal" use of
-> the UART in any case: this patch makes no attempt to paper over
-> such issues.
-> 
-> This patch does not attempt to address the case where the RX FIFO
-> fills faster than it can be drained: that is a pathological
-> hardware design problem that is beyond the scope of the driver to
-> work around.
-> 
-> [1] [Qemu-devel] [Qemu-arm] [PATCH] pl011: do not put into fifo
-> before enabled the interruption
-> https://lists.gnu.org/archive/html/qemu-devel/2018-01/msg06446.html
-> 
-> Reported-by: Wei Xu <xuwei5@hisilicon.com>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Peter Maydell <peter.maydell@linaro.org>
-> Fixes: 9b96fbacda34 ("serial: PL011: clear pending interrupts")
-> Signed-off-by: Dave Martin <Dave.Martin@arm.com>
-> Tested-by: Andrew Jones <drjones@redhat.com>
-> Reviewed-by: Andrew Jones <drjones@redhat.com>
-> ---
->  drivers/tty/serial/amba-pl011.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 4b40a5b..a6ccb85 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -1731,6 +1731,16 @@ static void pl011_enable_interrupts(struct uart_amba_port *uap)
->  
->  	/* Clear out any spuriously appearing RX interrupts */
->  	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
-> +
-> +	/*
-> +	 * RXIS is asserted only when the RX FIFO transitions from below
-> +	 * to above the trigger threshold.  If the RX FIFO is already
-> +	 * full to the threshold this can't happen and RXIS will now be
-> +	 * stuck off.  Drain the RX FIFO explicitly to fix this:
-> +	 */
-> +	while (!(pl011_read(uap, REG_FR) & UART01x_FR_RXFE))
-> +		pl011_read(uap, REG_DR);
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--gYZvSXtRcjeVT1CDJqBXsIpJ6D8Hcz2nk
+Content-Type: multipart/mixed; boundary="0ICkFqecWJdx7A8SxnvOHdXHqUwrKryoo";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jslaby@suse.com>, Johan Hovold <johan@kernel.org>,
+ Jacek Anaszewski <jacek.anaszewski@gmail.com>, Pavel Machek <pavel@ucw.cz>
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>,
+ Florian Fainelli <f.fainelli@gmail.com>, linux-serial@vger.kernel.org,
+ Mathieu Poirier <mathieu.poirier@linaro.org>, linux-kernel@vger.kernel.org,
+ linux-can@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ kernel@pengutronix.de, Robin Murphy <robin.murphy@arm.com>,
+ linux-leds@vger.kernel.org
+Message-ID: <7135a44f-85db-758b-cf51-1a924e114e9b@pengutronix.de>
+Subject: Re: [PATCH v3 2/3] can: simplify LED trigger handling
+References: <20180508100543.12559-1-u.kleine-koenig@pengutronix.de>
+ <20180508100543.12559-3-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20180508100543.12559-3-u.kleine-koenig@pengutronix.de>
 
-You probably ought to limit this in case of a stuck receive not empty
-case, maybe to (eg) twice the depth of the FIFO?
+--0ICkFqecWJdx7A8SxnvOHdXHqUwrKryoo
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
-According to speedtest.net: 8.21Mbps down 510kbps up
+On 05/08/2018 12:05 PM, Uwe Kleine-K=C3=B6nig wrote:
+> The new function led_trigger_register_format allows one to simplify LED=
+
+> trigger handling considerably.
+>=20
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+
+Marc
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+--0ICkFqecWJdx7A8SxnvOHdXHqUwrKryoo--
+
+--gYZvSXtRcjeVT1CDJqBXsIpJ6D8Hcz2nk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEENrCndlB/VnAEWuH5k9IU1zQoZfEFAlrxhCQACgkQk9IU1zQo
+ZfFpIggAio5/LgOFMhPfvaQGn/D3Xx2ZmwOT3sK4d70czLJhGXVBr1gRgxsJ7Afg
+Y9dHffyMcs4Eb9Rc+ziO7XzUPd7bWf1AgXOmE61Q9NbuQrwNMlNBRaNo6Eo1Watp
+Q/QcHRmIEwjUsFz18nesRMhiPGCEvvwaflA+iKApp1zSVmxPoGqBo23YS2gNdwmt
+ZeaIHuNJWfFlnLxAsqhHM3H1NLvUyQNvwqzhLyqtL5/l/sup9Yxe4SmBdXP8iKhx
+2ikoINhAS4E3PI/GGeW5plwlk8O8VmThnPaSCJkQCmPg9ipg1HYVKvWToLsdUopf
+Ount8LLdEnaWb+4pv51phN34736+dQ==
+=osvr
+-----END PGP SIGNATURE-----
+
+--gYZvSXtRcjeVT1CDJqBXsIpJ6D8Hcz2nk--
