@@ -1,48 +1,35 @@
-From: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Subject: [PATCH 2/2] serial: imx: dma_unmap_sg buffers on shutdown
-Date: Mon,  7 May 2018 23:36:10 +0200
-Message-ID: <20180507213610.17330-3-sebastian.reichel@collabora.co.uk>
-References: <20180507213610.17330-1-sebastian.reichel@collabora.co.uk>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v3 1/3] clocksource: timer-ti-dm: remove the early
+ platform driver registration
+Date: Tue, 8 May 2018 03:40:24 +0200
+Message-ID: <20180508014024.GE19313@mai>
+References: <20180504132731.14574-1-brgl@bgdev.pl>
+ <20180504132731.14574-2-brgl@bgdev.pl>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180507213610.17330-1-sebastian.reichel@collabora.co.uk>
+Content-Disposition: inline
+In-Reply-To: <20180504132731.14574-2-brgl@bgdev.pl>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-kernel@vger.kernel.org, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Sekhar Nori <nsekhar@ti.com>, Kevin Hilman <khilman@kernel.org>, David Lechner <david@lechnology.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Peter Rosin <peda@axentia.se>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@v
 List-Id: linux-serial@vger.kernel.org
 
-This properly unmaps DMA SG on device shutdown.
+On Fri, May 04, 2018 at 03:27:29PM +0200, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> 
+> This driver is no longer used as an early platform driver. Remove the
+> registration macro.
+> 
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Reported-by: Nandor Han <nandor.han@ge.com>
-Suggested-by: Nandor Han <nandor.han@ge.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
----
- drivers/tty/serial/imx.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 3ca767b1162a..6c53e74244ec 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1425,10 +1425,18 @@ static void imx_uart_shutdown(struct uart_port *port)
- 	u32 ucr1, ucr2;
- 
- 	if (sport->dma_is_enabled) {
--		sport->dma_is_rxing = 0;
--		sport->dma_is_txing = 0;
- 		dmaengine_terminate_sync(sport->dma_chan_tx);
-+		if (sport->dma_is_txing) {
-+			dma_unmap_sg(sport->port.dev, &sport->tx_sgl[0],
-+				     sport->dma_tx_nents, DMA_TO_DEVICE);
-+			sport->dma_is_txing = 0;
-+		}
- 		dmaengine_terminate_sync(sport->dma_chan_rx);
-+		if (sport->dma_is_rxing) {
-+			dma_unmap_sg(sport->port.dev, &sport->rx_sgl,
-+				     1, DMA_FROM_DEVICE);
-+			sport->dma_is_rxing = 0;
-+		}
- 
- 		spin_lock_irqsave(&sport->port.lock, flags);
- 		imx_uart_stop_tx(port);
 -- 
-2.17.0
+
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
