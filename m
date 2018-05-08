@@ -1,107 +1,63 @@
-From: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Subject: Re: [PATCH 1/2] serial: imx: cleanup imx_uart_disable_dma()
-Date: Tue, 8 May 2018 13:27:26 +0200
-Message-ID: <20180508112726.nyxrebcuwwdq5npy@earth.universe>
-References: <20180507213610.17330-1-sebastian.reichel@collabora.co.uk>
- <20180507213610.17330-2-sebastian.reichel@collabora.co.uk>
- <20180508064047.v7wz7b4t5ta55hv7@pengutronix.de>
+From: Mikko Perttunen <mperttunen@nvidia.com>
+Subject: [PATCH 0/8] Tegra Combined UART driver
+Date: Tue, 8 May 2018 14:43:55 +0300
+Message-ID: <20180508114403.14499-1-mperttunen@nvidia.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hldlbuxw4kvqlosc"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180508064047.v7wz7b4t5ta55hv7@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-kernel@vger.kernel.org
+To: robh+dt@kernel.org, mark.rutland@arm.com, jassisinghbrar@gmail.com, gregkh@linuxfoundation.org, thierry.reding@gmail.com, jonathanh@nvidia.com
+Cc: araza@nvidia.com, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
+Hi all,
 
---hldlbuxw4kvqlosc
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+on Tegra194, the primary console UART is the "Tegra Combined UART",
+or TCU. This is a "virtual UART", where each consumer communicates
+with a central implementation over mailboxes. The central
+implementation then multiplexes the streams and arbitrates use of
+a hardware serial port. This driver implements the consumer portion
+to allow using the primary console.
 
-Hi,
+The series is split into the following parts:
+* patches 1 and 2 add the device tree bindings for mailbox and tcu
+  itself.
+* patch 3 adds a blocking transmission option to the mailbox
+  framework.
+* patches 4 and 5 add support for the "shared mailbox" primitive
+  to the Tegra HSP driver.
+* patch 6 adds the TCU driver itself
+* patches 7 and 8 do the necessary device tree changes.
 
-On Tue, May 08, 2018 at 08:40:47AM +0200, Uwe Kleine-K=F6nig wrote:
-> On Mon, May 07, 2018 at 11:36:09PM +0200, Sebastian Reichel wrote:
-> > Remove unrelated CTSC/CTS disabling from imx_uart_disable_dma() and
-> > move it to imx_uart_shutdown(), which is the only user of the DMA
-> > disabling function. This should not change the driver's behaviour,
-> > but improves readability. After this change imx_uart_disable_dma()
-> > does the reverse thing of imx_uart_enable_dma().
-> >=20
-> > Suggested-by: Nandor Han <nandor.han@ge.com>
-> > Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-> > ---
-> >  drivers/tty/serial/imx.c | 9 ++-------
-> >  1 file changed, 2 insertions(+), 7 deletions(-)
-> >=20
-> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > index c2fc6bef7a6f..3ca767b1162a 100644
-> > --- a/drivers/tty/serial/imx.c
-> > +++ b/drivers/tty/serial/imx.c
-> > @@ -1291,18 +1291,13 @@ static void imx_uart_enable_dma(struct imx_port=
- *sport)
-> > =20
-> >  static void imx_uart_disable_dma(struct imx_port *sport)
-> >  {
-> > -	u32 ucr1, ucr2;
-> > +	u32 ucr1;
-> > =20
-> >  	/* clear UCR1 */
-> >  	ucr1 =3D imx_uart_readl(sport, UCR1);
-> >  	ucr1 &=3D ~(UCR1_RXDMAEN | UCR1_TXDMAEN | UCR1_ATDMAEN);
-> >  	imx_uart_writel(sport, ucr1, UCR1);
-> > =20
-> > -	/* clear UCR2 */
-> > -	ucr2 =3D imx_uart_readl(sport, UCR2);
-> > -	ucr2 &=3D ~(UCR2_CTSC | UCR2_CTS | UCR2_ATEN);
-> > -	imx_uart_writel(sport, ucr2, UCR2);
-> > -
-> >  	imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
-> > =20
-> >  	sport->dma_is_enabled =3D 0;
-> > @@ -1447,7 +1442,7 @@ static void imx_uart_shutdown(struct uart_port *p=
-ort)
-> > =20
-> >  	spin_lock_irqsave(&sport->port.lock, flags);
-> >  	ucr2 =3D imx_uart_readl(sport, UCR2);
-> > -	ucr2 &=3D ~(UCR2_TXEN | UCR2_ATEN);
-> > +	ucr2 &=3D ~(UCR2_TXEN | UCR2_CTSC | UCR2_CTS | UCR2_ATEN);
-> >  	imx_uart_writel(sport, ucr2, UCR2);
-> >  	spin_unlock_irqrestore(&sport->port.lock, flags);
->=20
-> While this doesn't change behaviour (which is of course good and
-> intended here) I wonder if changing RTS is right here.
->=20
-> According to Documentation/serial/driver it is not.
+The series has been tested on the Tegra194 P2972 board.
 
-Yes, looks like it should be removed completly. I suggest to keep
-this in two different patches (move UCR2 handling first, then remove
-RTS handling), so that we end up with simple and comprehensible patches.
+Thanks,
+Mikko
 
--- Sebastian
+Mikko Perttunen (8):
+  dt-bindings: tegra186-hsp: Add shared interrupts
+  dt-bindings: serial: Add bindings for nvidia,tegra194-tcu
+  mailbox: Add transmit done by blocking option
+  mailbox: tegra-hsp: Refactor in preparation of mailboxes
+  mailbox: tegra-hsp: Add support for shared mailboxes
+  serial: Add Tegra Combined UART driver
+  arm64: tegra: Add nodes for tcu on Tegra194
+  arm64: tegra: Mark tcu as primary serial port on Tegra194 P2888
 
---hldlbuxw4kvqlosc
-Content-Type: application/pgp-signature; name="signature.asc"
+ .../bindings/mailbox/nvidia,tegra186-hsp.txt       |   2 +
+ .../bindings/serial/nvidia,tegra194-tcu.txt        |  35 +++
+ arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi     |   2 +-
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi           |  34 ++-
+ drivers/mailbox/mailbox.c                          |  30 +-
+ drivers/mailbox/mailbox.h                          |   1 +
+ drivers/mailbox/tegra-hsp.c                        | 320 +++++++++++++++++----
+ drivers/tty/serial/Kconfig                         |   9 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/tegra-tcu.c                     | 302 +++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |   3 +
+ 11 files changed, 671 insertions(+), 68 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
+ create mode 100644 drivers/tty/serial/tegra-tcu.c
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlrxiZsACgkQ2O7X88g7
-+poXtg//egmX9sHgOFQsEbqhN3iiif0GU620EGZbtomR7qc21ZeQIa8EqUtmiXDS
-ewuMWpAI/Ew0zWGv+BytTXOAtlaWE4P2oSK24jjVudhnoCm/ouBLrJWTKCrnIbYw
-gYpxmpz9gKKfKseRjESy7b9DPAgS9KywabtS8/bNCcwvkEhiakgbSeUn5Uax+GaE
-H/d21E6FqU10uLnQqCGfFoezksXG5mrMxlrC9/Wy+mvzfctmBPwmZJ4MLnaeFEdo
-I6jktQ7kbxDwI9Lw5Tcs2RBNlZuNMh6DhvQrtYcUxjdyis4Z6+rIY761Znat4mwK
-7Yz9e/k2kMawuk2ODEXXhEzHDdF0rKk4Tt5wxIDEmv8f7N1g2tQgx0zTzgj3JWT1
-tWJy8sBT7Lh4DVxynm8BsFNPCi81yO0rH3hKMjnR19LsDtTIRhfoufXAmEKorbM7
-W8acLGCSaNT0ZDEqCzKZGdPMvsq+o/CJ6iZiiUC9K2ZjXAav7m3p5TEbjXbL3GHU
-sTDxdvK2MGqJG2Vj2dAG2VfuLyyTO/uegp9jT2jxSSvfgndJovp0IgMxAsvoLuyQ
-4f4nuMOx491Z1TOPAhszcKfExw73Ak36Zoc5dm73XrfvWRwq1XtK+38igIHvuG6V
-Z8xThKK+OeIU24ktiD2Fv6wIwsM9J6Y7ciGrjAxhYpEOxAIAIlw=
-=9R1O
------END PGP SIGNATURE-----
-
---hldlbuxw4kvqlosc--
+-- 
+2.16.1
