@@ -1,55 +1,35 @@
 From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH EXAMPLE 2/2] dbg: gnss: sirf: allow aggressive controller runtime PM
-Date: Wed,  9 May 2018 11:44:19 +0200
-Message-ID: <20180509094419.13470-2-johan@kernel.org>
-References: <20180509094419.13470-1-johan@kernel.org>
+Subject: Re: Serdev runtime PM (was: Re: [PATCH 4/7] dt-bindings: gnss: add
+ u-blox binding)
+Date: Wed, 9 May 2018 11:49:57 +0200
+Message-ID: <20180509094957.GB2285@localhost>
+References: <20180502081637.GE2285@localhost>
+ <5242FCAD-3139-4A9C-B9FA-7BBAA0E6AE57@goldelico.com>
+ <20180503205037.7be552c1@aktux>
+ <44A0BC7C-67C7-4116-849F-90FF7CF2B1F0@goldelico.com>
+ <20180504114213.3xlzqxe74n55tk5s@earth.universe>
+ <20180507100135.GS2285@localhost>
+ <20180507154515.GP98604@atomide.com>
+ <20180507163439.GV2285@localhost>
+ <20180508155608.3bzcbepsmoskhlox@earth.universe>
+ <20180509091831.GA2285@localhost>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180509094419.13470-1-johan@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180509091831.GA2285@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org, Johan Hovold <johan@kernel.org>
+To: Sebastian Reichel <sre@kernel.org>
+Cc: Johan Hovold <johan@kernel.org>, Tony Lindgren <tony@atomide.com>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This is just an example of how a serdev driver could go about to allow
-aggressive controller runtime PM by dropping the RPM reference taken by
-serdev core in serdev_device_open().
+On Wed, May 09, 2018 at 11:18:31AM +0200, Johan Hovold wrote:
 
-Note that for most GNSS devices this does not make any sense, as
-allowing the controller to suspend this way would cause the
-first message of every report burst to be corrupted (and discarded).
+> I've cooked up a patch which I'll be sending as a reply to this mail.
 
-This one applies on top of the GNSS series available here:
+Forgot to add the in-reply-to header of course. For the interested, the
+patch can be found here:
 
-https://lkml.kernel.org/r/20180424163458.11947-1-johan@kernel.org
+https://lkml.kernel.org/r/20180509094419.13470-1-johan@kernel.org
 
-Not-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/gnss/sirf.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/gnss/sirf.c b/drivers/gnss/sirf.c
-index 497f8eb8467f..31b2cbccd194 100644
---- a/drivers/gnss/sirf.c
-+++ b/drivers/gnss/sirf.c
-@@ -57,6 +57,9 @@ static int sirf_open(struct gnss_device *gdev)
- 		goto err_close;
- 	}
- 
-+	/* Allow aggresive controller runtime PM. */
-+	pm_runtime_put(&serdev->ctrl->dev);
-+
- 	return 0;
- 
- err_close:
-@@ -70,6 +73,9 @@ static void sirf_close(struct gnss_device *gdev)
- 	struct sirf_data *data = gnss_get_drvdata(gdev);
- 	struct serdev_device *serdev = data->serdev;
- 
-+	/* Balance the put in open() */
-+	pm_runtime_get(&serdev->ctrl->dev);
-+
- 	serdev_device_close(serdev);
- 
- 	pm_runtime_put(&serdev->dev);
--- 
-2.17.0
+Johan
