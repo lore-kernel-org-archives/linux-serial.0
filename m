@@ -1,60 +1,64 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: Serdev runtime PM (was: Re: [PATCH 4/7] dt-bindings: gnss: add
- u-blox binding)
-Date: Wed, 9 May 2018 07:05:50 -0700
-Message-ID: <20180509140550.GC98604@atomide.com>
-References: <20180502081637.GE2285@localhost>
- <5242FCAD-3139-4A9C-B9FA-7BBAA0E6AE57@goldelico.com>
- <20180503205037.7be552c1@aktux>
- <44A0BC7C-67C7-4116-849F-90FF7CF2B1F0@goldelico.com>
- <20180504114213.3xlzqxe74n55tk5s@earth.universe>
- <20180507100135.GS2285@localhost>
- <20180507154515.GP98604@atomide.com>
- <20180507163439.GV2285@localhost>
- <20180508155608.3bzcbepsmoskhlox@earth.universe>
- <20180509091831.GA2285@localhost>
+From: Jacek Anaszewski <jacek.anaszewski@gmail.com>
+Subject: Re: [PATCH v3 1/3] leds: triggers: provide
+ led_trigger_register_format()
+Date: Wed, 9 May 2018 21:57:15 +0200
+Message-ID: <906d2b27-2e8b-92a9-13ff-2676f48142f4@gmail.com>
+References: <20180508100543.12559-1-u.kleine-koenig@pengutronix.de>
+ <20180508100543.12559-2-u.kleine-koenig@pengutronix.de>
+ <ea34ce99-d446-03d2-b38d-d40a22480337@gmail.com>
+ <20180508201725.3alpkcpaxebupzqv@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180509091831.GA2285@localhost>
+In-Reply-To: <20180508201725.3alpkcpaxebupzqv@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: Sebastian Reichel <sre@kernel.org>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Marc Kleine-Budde <m.kleine-budde@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Pavel Machek <pavel@ucw.cz>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Florian Fainelli <f.fainelli@gmail.com>, linux-serial@vger.kernel.org, Mathieu Poirier <mathieu.poirier@linaro.org>, linux-kernel@vger.kernel.org, linux-can@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Robin Murphy <robin.murphy@arm.com>, linux-leds@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-* Johan Hovold <johan@kernel.org> [180509 09:20]:
-> On Tue, May 08, 2018 at 05:56:08PM +0200, Sebastian Reichel wrote:
-> > I think using open/close for runtime pm is good enough for GPS,
-> > since it regularly sends data and draws lots of power anyways.
-> > But devices, that have an out-of-band wakeup signal can do proper
-> > runtime PM of the serial port without loosing characters.
+Hi Uwe,
+
+On 05/08/2018 10:17 PM, Uwe Kleine-König wrote:
+> Hello Jacek,
 > 
-> Yeah, there may be some applications where this is possible. And this is
-> not the case for GPS, but not just because of a generally higher power
-> consumption, but due to the fact that we cannot afford having the first
-> message in every report burst be dropped.
-
-Well most of the phone implementations use one or two out of band
-GPIOs to first wake the UART before any data is sent. For serdev
-this can be called from the serdev consumer write function for TX.
-For RX, the serdev consumer needs to implement an interrupt handler
-and wake up the parent UART before serdev RX.
-
-> > Note, that OMAP does not reach deep idle states with active
-> > serial port. This is not acceptable for low power devices.
+> On Tue, May 08, 2018 at 09:33:14PM +0200, Jacek Anaszewski wrote:
+>> Thank you for the patch. It looks fine, but please split
+>> the drivers/net/can/led.c related changes into a separate one.
 > 
-> Sure, but note that OMAP is the only serial driver which currently
-> implements this kind of aggressive runtime PM (besides a couple of
-> usb-serial drivers). This means that a serdev driver can never rely on
-> this being the case, and therefore needs to be restrictive about how
-> long the port is kept open if it cares about power at all.
+> I renamed led_trigger_rename_static() to led_trigger_rename() (and
+> changed the parameters). The can change just adapts the only user of
+> led_trigger_rename_static() to use the new one.
+> 
+> It's not impossible to separate this patches, but I wonder if it's worth
+> the effort.
+> 
+> The first patch would be like the patch under discussion, just without
+> the can bits and introducing something like:
+> 
+> 	/*
+> 	 * compat stuff to be removed once the only caller is converted
+> 	 */
+> 	static inline led_trigger_rename_static(const char *name, struct led_trigger *trig)
+> 	{
+> 		(void)led_trigger_rename(trig, "%s", name);
+> 	}
+> 
+> Then the second patch would just be the 6-line can hunk. And a third
+> patch would remove the compat function. (Maybe I'd choose to squash the
+> two can patches together then, but this doesn't reduce the overhead
+> considerably.) The only upside I can see here is that it increases my
+> patch count, but it's otherwise not worth the effort for such an easy
+> change. Further more as there is a strict dependency on these three
+> patches this either delays the cleanup or (IMHO more likely) the can
+> change would go in via the led tree anyhow.  (Mark already acked patch 2
+> of this series and in private confirmed that the agrees to let this
+> change go in via the led tree, too.)
 
-Well by default we don't allow lossy UART. It needs to be manually
-configured via /sys for the timeout. With serdev, this can all be
-done with no /sys configuration needed for the cases with GPIO
-wake irqs :)
+OK, makes sense. I'll wait also for ack on 3/3 since it should
+go through the LED tree as well - uses a new led_trigger_register_format().
 
-Regards,
-
-Tony
+-- 
+Best regards,
+Jacek Anaszewski
