@@ -1,61 +1,184 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 2/2] arm64: dts: Add Mediatek SoC MT8183 and evaluation
- board dts and Makefile
-Date: Fri, 11 May 2018 13:19:54 +0200
-Message-ID: <b2dfc052-bbf4-2154-985d-b1e2e7717cf4@gmail.com>
-References: <1526019083-20237-1-git-send-email-erin.lo@mediatek.com>
- <1526019083-20237-3-git-send-email-erin.lo@mediatek.com>
- <860cba8a-3af8-31d6-ec3f-81706d2d998b@gmail.com>
- <1526035267.13828.13.camel@mtksdaap41>
+From: Sebastian Reichel <sre@kernel.org>
+Subject: Re: [PATCH 1/2] serdev: add controller runtime PM support
+Date: Fri, 11 May 2018 14:35:53 +0200
+Message-ID: <20180511123553.gmtpc5gelps5j3vj@earth.universe>
+References: <20180509094419.13470-1-johan@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1526035267.13828.13.camel@mtksdaap41>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Erin Lo <erin.lo@mediatek.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, Ben Ho <Ben.Ho@mediatek.com>, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="rj6nkibnjsz4q422"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180509094419.13470-1-johan@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Johan Hovold <johan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh@kernel.org>, Tony Lindgren <tony@atomide.com>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 
+--rj6nkibnjsz4q422
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 05/11/2018 12:41 PM, Erin Lo wrote:
-> On Fri, 2018-05-11 at 10:36 +0200, Matthias Brugger wrote:
->>
->> On 05/11/2018 08:11 AM, Erin Lo wrote:
-[...]
->>
->> I wonder if there aren't any other devices which can be supported out of the box.
->> I understand that for now we are missing the clock driver and the pinctrl
->> driver. Are you planning to submit them in the near future?
->>
->> I'm asking because I don't want to bloat the dts with boards that only can boot
->> to an initramfs with a serial console. Especially if there is no HW + datasheet
->> available for anyone in the community who wants to work on this.
->>
->> Regards,
->> Matthias
->>
->> Regards,
->> Matthias
-> 
-> 
-> We have implement clock and pinctrl driver these days, and plan to
-> submit them maybe next month.
-> After that we will submit other drivers of MT8183 continuously.
-> 
+Hi Johan,
 
-I'm happy to hear this. So in this case I'm fine with merging these once you
-figured out the dt-bindings.
+On Wed, May 09, 2018 at 11:44:18AM +0200, Johan Hovold wrote:
+> Add support for controller runtime power management to serdev core. This
+> is needed to allow slave drivers to manage the runtime PM state of the
+> underlying serial controller when its driver, in turn, implements more
+> aggressive runtime power management (e.g. using autosuspend).
+>=20
+> For some applications, for example, where loss off initial data after a
+> remote-wakeup event is acceptable or where rx is not used at all,
+> aggressive serial controller runtime PM may be used without further
+> involvement of the slave driver. But when this is not the case, the
+> slave driver must be able to indicate when incoming data is expected in
+> order to avoid data loss.
+>=20
+> To facilitate the common case, where the serial controller power state
+> is active whenever the port is open (which is the case with just about
+> every serial driver), and where data loss is not acceptable and cannot
+> even be prevented by explicit controller runtime power management, an
+> RPM reference is taken in serdev open and put again at close. This
+> reference can later be balanced by any serdev driver which wants and/or
+> can handle aggressive controller runtime PM.
+>=20
+> Note that the .ignore_children flag is set for the serdev controller to
+> allow the underlying hardware to idle when no I/O is expected, regardless
+> of the slave device RPM state.
+>=20
+> Signed-off-by: Johan Hovold <johan@kernel.org>
+> ---
 
-Thanks a lot,
-Matthias
+Looks good to me.
+
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+
+-- Sebastian
+
+>  drivers/tty/serdev/core.c | 33 ++++++++++++++++++++++++++++++---
+>  1 file changed, 30 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index df93b727e984..e5e84303faca 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> +#include <linux/pm_runtime.h>
+>  #include <linux/serdev.h>
+>  #include <linux/slab.h>
+> =20
+> @@ -143,11 +144,28 @@ EXPORT_SYMBOL_GPL(serdev_device_remove);
+>  int serdev_device_open(struct serdev_device *serdev)
+>  {
+>  	struct serdev_controller *ctrl =3D serdev->ctrl;
+> +	int ret;
+> =20
+>  	if (!ctrl || !ctrl->ops->open)
+>  		return -EINVAL;
+> =20
+> -	return ctrl->ops->open(ctrl);
+> +	ret =3D ctrl->ops->open(ctrl);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D pm_runtime_get_sync(&ctrl->dev);
+> +	if (ret < 0) {
+> +		pm_runtime_put_noidle(&ctrl->dev);
+> +		goto err_close;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_close:
+> +	if (ctrl->ops->close)
+> +		ctrl->ops->close(ctrl);
+> +
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_device_open);
+> =20
+> @@ -158,6 +176,8 @@ void serdev_device_close(struct serdev_device *serdev)
+>  	if (!ctrl || !ctrl->ops->close)
+>  		return;
+> =20
+> +	pm_runtime_put(&ctrl->dev);
+> +
+>  	ctrl->ops->close(ctrl);
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_device_close);
+> @@ -416,6 +436,9 @@ struct serdev_controller *serdev_controller_alloc(str=
+uct device *parent,
+> =20
+>  	dev_set_name(&ctrl->dev, "serial%d", id);
+> =20
+> +	pm_runtime_no_callbacks(&ctrl->dev);
+> +	pm_suspend_ignore_children(&ctrl->dev, true);
+> +
+>  	dev_dbg(&ctrl->dev, "allocated controller 0x%p id %d\n", ctrl, id);
+>  	return ctrl;
+> =20
+> @@ -547,20 +570,23 @@ int serdev_controller_add(struct serdev_controller =
+*ctrl)
+>  	if (ret)
+>  		return ret;
+> =20
+> +	pm_runtime_enable(&ctrl->dev);
+> +
+>  	ret_of =3D of_serdev_register_devices(ctrl);
+>  	ret_acpi =3D acpi_serdev_register_devices(ctrl);
+>  	if (ret_of && ret_acpi) {
+>  		dev_dbg(&ctrl->dev, "no devices registered: of:%d acpi:%d\n",
+>  			ret_of, ret_acpi);
+>  		ret =3D -ENODEV;
+> -		goto out_dev_del;
+> +		goto err_rpm_disable;
+>  	}
+> =20
+>  	dev_dbg(&ctrl->dev, "serdev%d registered: dev:%p\n",
+>  		ctrl->nr, &ctrl->dev);
+>  	return 0;
+> =20
+> -out_dev_del:
+> +err_rpm_disable:
+> +	pm_runtime_disable(&ctrl->dev);
+>  	device_del(&ctrl->dev);
+>  	return ret;
+>  };
+> @@ -591,6 +617,7 @@ void serdev_controller_remove(struct serdev_controlle=
+r *ctrl)
+> =20
+>  	dummy =3D device_for_each_child(&ctrl->dev, NULL,
+>  				      serdev_remove_device);
+> +	pm_runtime_disable(&ctrl->dev);
+>  	device_del(&ctrl->dev);
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_controller_remove);
+> --=20
+> 2.17.0
+>=20
+
+--rj6nkibnjsz4q422
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlr1jiYACgkQ2O7X88g7
++po57w/9Fr2uQ1qCrElanPCpNKB1uB0HjCkU+jDpMXzEpoX/TI+6L57SJbZ0qfzL
+vMKzMhpOVogiF2Kd8kVxz4ZliJFngCNDd7tPccH1AHdt4kr00VIC70UGBvG57GOt
+iQMF1Sd25x9sXv3t/qLNpOwqv3VcmFp8zm7ewp43XCHSOXhBgykcBCtldiSYw72b
+oA8DUfOTdzm1M7Rpiy1fo6/XUQX62Mexlj40cp6m2afnEKxJiBATpYG9ftK11kT2
+jsVq2GqYnp+M4BAgsS7+Ev269T+1q8YLkk+0evyKlAXThjZTArhfPxQENpIONN8R
+r51MIhzGZ45g2ghTnREybaf2jboDVP6v1dFLTtCVC2tOAnVNodX//c8L89IWENss
+Bpx+PNJIS4G58ZUPPNSjYq2wRVtS3BdRHVsbmYO42SEBFvklKwAMQ4AqUnOsAYec
+Dg8v/Sl7hfyS+jCrSUg8DA9CEeFY+6nwNwrmzdZT204VOP1MrGLMQQgMYK72FI84
+KytM0Etf9PhohYcXz9G4FWJ/QM5XA63AsW3msSk2OHqL3JcOUfqSyV4JIJWi8VwZ
+mQTm4KqvsPOrNDvmJh4XfM+AUWt/Xk9ZA43pBSXnF8Wo5/1BAJc3pBdNrykK3R/u
+UBN665HIWlch7dviHqwm2oGr8T08i1QKgitnKWVDx+BhootW548=
+=NEH3
+-----END PGP SIGNATURE-----
+
+--rj6nkibnjsz4q422--
