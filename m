@@ -1,55 +1,64 @@
-From: Johan Hovold <johan@kernel.org>
+From: Tony Lindgren <tony@atomide.com>
 Subject: Re: [PATCH 1/2] serdev: add controller runtime PM support
-Date: Fri, 11 May 2018 15:12:13 +0200
-Message-ID: <20180511131213.GF2285@localhost>
+Date: Fri, 11 May 2018 09:00:35 -0700
+Message-ID: <20180511160035.GJ98604@atomide.com>
 References: <20180509094419.13470-1-johan@kernel.org>
  <20180510164831.GH98604@atomide.com>
  <20180511080725.GE2285@localhost>
  <20180511125627.GI98604@atomide.com>
+ <20180511131213.GF2285@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180511125627.GI98604@atomide.com>
+In-Reply-To: <20180511131213.GF2285@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org
+To: Johan Hovold <johan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 11, 2018 at 05:56:27AM -0700, Tony Lindgren wrote:
-> * Johan Hovold <johan@kernel.org> [180511 08:09]:
-> > On Thu, May 10, 2018 at 09:48:31AM -0700, Tony Lindgren wrote:
-> > > If this solution works for GPS then this should also work for modems
-> > > that might produce data. And as long as the serdev consumer driver
-> > > can wake up the UART with pm_runtime_get(&serdev->ctrl->dev) then
-> > > the out of band GPIO wake interrupts will work to. And for TX,
-> > > the serdev consumer driver can toggle the wake GPIO, and then call
-> > > pm_runtime_get(&serdev->ctrl->dev).
+* Johan Hovold <johan@kernel.org> [180511 13:14]:
+> On Fri, May 11, 2018 at 05:56:27AM -0700, Tony Lindgren wrote:
+> > * Johan Hovold <johan@kernel.org> [180511 08:09]:
+> > > On Thu, May 10, 2018 at 09:48:31AM -0700, Tony Lindgren wrote:
+> > > > If this solution works for GPS then this should also work for modems
+> > > > that might produce data. And as long as the serdev consumer driver
+> > > > can wake up the UART with pm_runtime_get(&serdev->ctrl->dev) then
+> > > > the out of band GPIO wake interrupts will work to. And for TX,
+> > > > the serdev consumer driver can toggle the wake GPIO, and then call
+> > > > pm_runtime_get(&serdev->ctrl->dev).
+> > > 
+> > > I don't think any serdev driver action is needed for TX however. The
+> > > serial driver itself would know that there's data in the write buffer
+> > > and should manage PM itself until the buffer has been drained (which may
+> > > never happen due to flow control).
 > > 
-> > I don't think any serdev driver action is needed for TX however. The
-> > serial driver itself would know that there's data in the write buffer
-> > and should manage PM itself until the buffer has been drained (which may
-> > never happen due to flow control).
+> > Sure if the serial driver can manage TX wake directly. However, the
+> > case I'm thinking needs few hundred milliseconds after toggling the
+> > GPIO before we can even attempt to do TX. I guess what I'm saying
+> > let's not try to stuff any "application specific" GPIO handling to
+> > generic UART code :)
 > 
-> Sure if the serial driver can manage TX wake directly. However, the
-> case I'm thinking needs few hundred milliseconds after toggling the
-> GPIO before we can even attempt to do TX. I guess what I'm saying
-> let's not try to stuff any "application specific" GPIO handling to
-> generic UART code :)
+> Ok, I think understand what you have in mind now, but that sounds like
+> something which should be handled by the serdev driver which is
+> responsible for the power state of the serial-attached device (e.g.
+> through a pm_runtime_get_sync(&serdev->dev)).
 
-Ok, I think understand what you have in mind now, but that sounds like
-something which should be handled by the serdev driver which is
-responsible for the power state of the serial-attached device (e.g.
-through a pm_runtime_get_sync(&serdev->dev)).
+Yes that makes sense.
 
-And you're absolutely right that that RPM reference cannot be dropped
-before any written data has reached the device. But note that the serial
-controller responsible for that transfer could potentially runtime
-suspend before the write buffer has been drained (e.g. during long
-periods without I/O due to flow control).
+> And you're absolutely right that that RPM reference cannot be dropped
+> before any written data has reached the device. But note that the serial
+> controller responsible for that transfer could potentially runtime
+> suspend before the write buffer has been drained (e.g. during long
+> periods without I/O due to flow control).
+> 
+> So I still think that TX is not directly related to this patch and RPM
+> support for serdev controllers.
 
-So I still think that TX is not directly related to this patch and RPM
-support for serdev controllers.
+Yes you are right after the device on the serial line has been properly
+woken up then TX should just work and at that point the UART driver
+runtime PM can take care of things.
 
-Thanks,
-Johan
+Regards,
+
+Tony
