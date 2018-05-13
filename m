@@ -1,80 +1,46 @@
-From: Mikko Perttunen <cyndis@kapsi.fi>
-Subject: Re: [PATCH 6/8] serial: Add Tegra Combined UART driver
-Date: Sun, 13 May 2018 21:06:37 +0300
-Message-ID: <4d6aab52-9c99-8dd8-556d-86f32d9f6234@kapsi.fi>
-References: <20180508114403.14499-1-mperttunen@nvidia.com>
- <20180508114403.14499-7-mperttunen@nvidia.com>
- <CABb+yY3snB9o4e14by4xui+o_Vhqpe2zh6Pp_e0t-DCTKvMHWA@mail.gmail.com>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: serial: custom baud rate
+Date: Sun, 13 May 2018 20:57:26 +0100
+Message-ID: <20180513205726.5029c88a@alans-desktop>
+References: <CAHhAz+hrmLiRJ77cM=CYj+iyH8aUJ64R6FtAwGqqB2pOS0n0aQ@mail.gmail.com>
+        <pcfka2$gie$1@blaine.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CABb+yY3snB9o4e14by4xui+o_Vhqpe2zh6Pp_e0t-DCTKvMHWA@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <pcfka2$gie$1@blaine.gmane.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jassi Brar <jassisinghbrar@gmail.com>, Mikko Perttunen <mperttunen@nvidia.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <gregkh@linuxfoundation.org>, Thierry Reding <thierry.reding@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, araza@nvidia.com, Devicetree List <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, ", linux-arm-kernel"@lists.infradead.org, linux-mediatek@lists.infradead.org, srv_heupstream <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Grant Edwards <grant.b.edwards@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 05/13/2018 06:36 PM, Jassi Brar wrote:
-> On Tue, May 8, 2018 at 5:14 PM, Mikko Perttunen <mperttunen@nvidia.com> wrote:
+On Thu, 3 May 2018 18:27:14 +0000 (UTC)
+Grant Edwards <grant.b.edwards@gmail.com> wrote:
+
+> On 2018-05-03, Muni Sekhar <munisekharrms@gmail.com> wrote:
 > 
-> ....
->>
->> +config SERIAL_TEGRA_TCU
->> +       tristate "NVIDIA Tegra Combined UART"
->> +       depends on ARCH_TEGRA && MAILBOX
->> +       select SERIAL_CORE
->> +       help
->> +         Support for the mailbox-based TCU (Tegra Combined UART) serial port.
->> +         TCU is a virtual serial port that allows multiplexing multiple data
->> +         streams into a single hardware serial port.
->> +
-> Maybe make it depend upon TEGRA_HSP_MBOX ?
-
-Yeah, that probably makes more sense. MAILBOX is enough to build it but 
-it won't be of any use without TEGRA_HSP_MBOX.
-
+> > If I need to set a custom baud rates(e.g. 14400, 128000, 256000), does
+> > Linux serial framework has any supporting method?  
 > 
-> ......
+> Sure, use the termios2 structure instead of the termios structure:
 > 
->> +
->> +static void tegra_tcu_write(const char *s, unsigned int count)
->> +{
->> +       struct tegra_tcu *tcu = tegra_tcu_uart_port.private_data;
->> +       unsigned int written = 0, i = 0;
->> +       bool insert_nl = false;
->> +       uint32_t value = 0;
->> +
->> +       while (i < count) {
->> +               if (insert_nl) {
->> +                       value |= '\n' << (written++ * 8);
->> +                       insert_nl = false;
->> +                       i++;
->> +               } else if (s[i] == '\n') {
->> +                       value |= '\r' << (written++ * 8);
->> +                       insert_nl = true;
->> +               } else {
->> +                       value |= s[i++] << (written++ * 8);
->> +               }
->> +
->> +               if (written == 3) {
->> +                       value |= 3 << 24;
->> +                       value |= BIT(26);
->> +                       mbox_send_message(tcu->tx, &value);
->>
-> How is this supposed to work? tegra_hsp_doorbell_send_data() ignores
-> the second argument.
-
-The previous patch in the series adds support for what are called 
-"shared mailboxes" to the tegra-hsp driver. For these the second 
-argument is used.
-
-Thanks,
-Mikko
-
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-tegra" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>   #include <linux/termios.h>
 > 
+>   struct termios2 t;
+> 
+>   ioctl(fd, TCGETS2, &t)
+> 
+>   t.c_cflag &= ~CBAUD;
+>   t.c_cflag |= BOTHER;
+>   t.c_ispeed = baud;
+>   t.c_ospeed = baud;
+> 
+>   ioctl(fd, TCSETS2, &t)
+> 
+> [Not all devices/drivers support termios2]
+
+That shouldn't be true - all devices get passed ispeed/ospeed and
+everything in tree was using the correct fields as far as I could tell
+last time I checked this
+
+Alan
