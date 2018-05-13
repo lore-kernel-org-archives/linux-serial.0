@@ -1,59 +1,52 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2] tty: implement led triggers
-Date: Sat, 12 May 2018 21:00:22 +0200
-Message-ID: <20180512190022.rx7ix5gpx5kncvcj@pengutronix.de>
-References: <0c1bb915-bd92-4433-61ec-78fdba453396@arm.com>
- <20180503201952.16592-1-u.kleine-koenig@pengutronix.de>
- <20180507080252.GO2285@localhost>
- <20180507084127.ekpd3ze2itkzo7fd@pengutronix.de>
- <20180507092710.GQ2285@localhost>
- <20180510111434.GC6977@amd>
- <01dcbf5c-70a0-b067-20c3-f99e22ed4512@arm.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v3 3/6] MAINTAINERS: add at91 usart spi driver
+Date: Sun, 13 May 2018 16:14:38 +0300
+Message-ID: <CAHp75VdXrQ_NKBmP0L9o8_2MSqehNuriQ0gBJ3dDWQdegALSaA@mail.gmail.com>
+References: <20180511103822.31698-1-radu.pirea@microchip.com> <20180511103822.31698-4-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <01dcbf5c-70a0-b067-20c3-f99e22ed4512@arm.com>
+In-Reply-To: <20180511103822.31698-4-radu.pirea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Pavel Machek <pavel@ucw.cz>, Johan Hovold <johan@kernel.org>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de, Mathieu Poirier <mathieu.poirier@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Radu Pirea <radu.pirea@microchip.com>
+Cc: devicetree <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, linux-spi <linux-spi@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, alexandre.belloni@bootlin.com, Nicolas Ferre <nicolas.ferre@microchip.com>, Mark Brown <broonie@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 10, 2018 at 12:25:21PM +0100, Robin Murphy wrote:
-> On 10/05/18 12:14, Pavel Machek wrote:
-> > Hi!
-> > 
-> > > > > > @@ -499,6 +500,7 @@ static void flush_to_ldisc(struct work_struct *work)
-> > > > > >   		struct tty_buffer *head = buf->head;
-> > > > > >   		struct tty_buffer *next;
-> > > > > >   		int count;
-> > > > > > +		unsigned long delay = 50 /* ms */;
-> > > > > 
-> > > > > Comment after the semicolon?
-> > > > 
-> > > > Given that this comment is about the 50 and not the delay member, I
-> > > > prefer it before the ;.
-> > > 
-> > > Hmm. I personally find it hard to read and can only find about 30
-> > > instances of this comment style (for assignments) in the kernel. And
-> > > arguably the comment applies equally well to the delay variable in this
-> > > case too.
-> > 
-> > It is not too traditional, but I believe it makes sense....
-> > 
-> > (and yes, I wish we had kernel in Rust, so we could have real units
-> > attached to our variables...)
-> 
-> Well, the variable itself could always be named "delay_ms" if it's really
-> that important.
+On Fri, May 11, 2018 at 1:38 PM, Radu Pirea <radu.pirea@microchip.com> wrote:
+> Added entry for at91 usart mfd driver.
+>
 
-FTR: That's what I did for v3.
+You are adding a record for not existing file?
 
-Best regards
-Uwe
+> Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+> ---
+>  MAINTAINERS | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index ca06c6f58299..9243b9007966 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -9199,6 +9199,13 @@ S:       Supported
+>  F:     drivers/mfd/at91-usart.c
+>  F:     include/dt-bindings/mfd/at91-usart.h
+>
+> +MICROCHIP AT91 USART SPI DRIVER
+> +M:     Radu Pirea <radu.pirea@microchip.com>
+> +L:     linux-spi@vger.kernel.org
+> +S:     Supported
+> +F:     drivers/spi/spi-at91-usart.c
+> +F:     Documentation/devicetree/bindings/spi/microchip,at91-usart-spi.txt
+> +
+>  MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER
+>  M:     Woojung Huh <Woojung.Huh@microchip.com>
+>  M:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+> --
+> 2.17.0
+>
+
+
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+With Best Regards,
+Andy Shevchenko
