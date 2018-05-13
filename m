@@ -1,59 +1,179 @@
-From: Jassi Brar <jassisinghbrar@gmail.com>
+From: Mikko Perttunen <cyndis@kapsi.fi>
 Subject: Re: [PATCH 6/8] serial: Add Tegra Combined UART driver
-Date: Sun, 13 May 2018 21:06:46 +0530
-Message-ID: <CABb+yY3snB9o4e14by4xui+o_Vhqpe2zh6Pp_e0t-DCTKvMHWA@mail.gmail.com>
-References: <20180508114403.14499-1-mperttunen@nvidia.com> <20180508114403.14499-7-mperttunen@nvidia.com>
+Date: Sun, 13 May 2018 21:04:51 +0300
+Message-ID: <662ce972-56a9-9daa-d332-faa08b89c05a@kapsi.fi>
+References: <20180508114403.14499-1-mperttunen@nvidia.com>
+ <20180508114403.14499-7-mperttunen@nvidia.com>
+ <CAHp75VfYF_u2bZ+temGbReEB9K-t3A75aUNYwffyv9-=zEi0Lw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180508114403.14499-7-mperttunen@nvidia.com>
+In-Reply-To: <CAHp75VfYF_u2bZ+temGbReEB9K-t3A75aUNYwffyv9-=zEi0Lw@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mikko Perttunen <mperttunen@nvidia.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg KH <gregkh@linuxfoundation.org>, Thierry Reding <thierry.reding@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, araza@nvidia.com, Devicetree List <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, ", linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, srv_heupstream" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>, Mikko Perttunen <mperttunen@nvidia.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jassi Brar <jassisinghbrar@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thierry Reding <thierry.reding@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, araza@nvidia.com, devicetree <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linux-tegra@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 8, 2018 at 5:14 PM, Mikko Perttunen <mperttunen@nvidia.com> wrote:
+On 05/13/2018 05:16 PM, Andy Shevchenko wrote:
+> On Tue, May 8, 2018 at 2:44 PM, Mikko Perttunen <mperttunen@nvidia.com> wrote:
+>> The Tegra Combined UART (TCU) is a mailbox-based mechanism that allows
+>> multiplexing multiple "virtual UARTs" into a single hardware serial
+>> port. The TCU is the primary serial port on Tegra194 devices.
+>>
+>> Add a TCU driver utilizing the mailbox framework, as the used mailboxes
+>> are part of Tegra HSP blocks that are already controlled by the Tegra
+>> HSP mailbox driver.
+> 
+> First question, can it be done utilizing SERDEV framework?
 
-....
->
-> +config SERIAL_TEGRA_TCU
-> +       tristate "NVIDIA Tegra Combined UART"
-> +       depends on ARCH_TEGRA && MAILBOX
-> +       select SERIAL_CORE
-> +       help
-> +         Support for the mailbox-based TCU (Tegra Combined UART) serial port.
-> +         TCU is a virtual serial port that allows multiplexing multiple data
-> +         streams into a single hardware serial port.
-> +
-Maybe make it depend upon TEGRA_HSP_MBOX ?
+Based on some brief research, the SERDEV framework is for devices that 
+are behind some UART interface. In this case, this driver implements the 
+UART interface itself, so by my understanding SERDEV is not appropriate. 
+Please correct me if I'm wrong.
 
-......
+> 
+>> +static void tegra_tcu_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>> +{
+> 
+>> +       (void)port;
+>> +       (void)mctrl;
+> 
+> Huh?
 
-> +
-> +static void tegra_tcu_write(const char *s, unsigned int count)
-> +{
-> +       struct tegra_tcu *tcu = tegra_tcu_uart_port.private_data;
-> +       unsigned int written = 0, i = 0;
-> +       bool insert_nl = false;
-> +       uint32_t value = 0;
-> +
-> +       while (i < count) {
-> +               if (insert_nl) {
-> +                       value |= '\n' << (written++ * 8);
-> +                       insert_nl = false;
-> +                       i++;
-> +               } else if (s[i] == '\n') {
-> +                       value |= '\r' << (written++ * 8);
-> +                       insert_nl = true;
-> +               } else {
-> +                       value |= s[i++] << (written++ * 8);
-> +               }
-> +
-> +               if (written == 3) {
-> +                       value |= 3 << 24;
-> +                       value |= BIT(26);
-> +                       mbox_send_message(tcu->tx, &value);
->
-How is this supposed to work? tegra_hsp_doorbell_send_data() ignores
-the second argument.
+The serial core calls these callbacks without checking if they are set. 
+They don't make sense for this driver so they are stubbed out.
+
+> 
+>> +}
+> 
+>> +static void tegra_tcu_uart_stop_tx(struct uart_port *port)
+>> +{
+>> +       (void)port;
+>> +}
+> 
+> Ditto.
+> 
+>> +               if (written == 3) {
+>> +                       value |= 3 << 24;
+>> +                       value |= BIT(26);
+>> +                       mbox_send_message(tcu->tx, &value);
+> 
+>> +               }
+> 
+> (1)
+> 
+>> +       }
+>> +
+>> +       if (written) {
+>> +               value |= written << 24;
+>> +               value |= BIT(26);
+>> +               mbox_send_message(tcu->tx, &value);
+>> +       }
+> 
+> (2)
+> 
+> These are code duplications.
+
+Indeed - the length of the duplicated code is so short, and the 
+instances are so close to each other, that I don't find it necessary (or 
+clearer) to have an extra function.
+
+> 
+>> +static void tegra_tcu_uart_stop_rx(struct uart_port *port)
+>> +{
+>> +       (void)port;
+>> +}
+>> +
+>> +static void tegra_tcu_uart_break_ctl(struct uart_port *port, int ctl)
+>> +{
+>> +       (void)port;
+>> +       (void)ctl;
+>> +}
+>> +
+>> +static int tegra_tcu_uart_startup(struct uart_port *port)
+>> +{
+>> +       (void)port;
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static void tegra_tcu_uart_shutdown(struct uart_port *port)
+>> +{
+>> +       (void)port;
+>> +}
+>> +
+>> +static void tegra_tcu_uart_set_termios(struct uart_port *port,
+>> +                                      struct ktermios *new,
+>> +                                      struct ktermios *old)
+>> +{
+>> +       (void)port;
+>> +       (void)new;
+>> +       (void)old;
+>> +}
+> 
+> Remove those unused stub contents.
+
+Sure. I had these here so that we don't get unused parameter warnings, 
+but I can just as well remove the parameter names.
+
+> 
+>> +       return uart_set_options(&tegra_tcu_uart_port, cons,
+>> +                               115200, 'n', 8, 'n');
+> 
+> Can't it be one line?
+
+It would be a total of 81 characters in length on one line, so no.
+
+> 
+>> +static void tegra_tcu_receive(struct mbox_client *client, void *msg_p)
+>> +{
+>> +       struct tty_port *port = &tegra_tcu_uart_port.state->port;
+> 
+>> +       uint32_t msg = *(uint32_t *)msg_p;
+> 
+> Redundant casting.
+
+Will remove.
+
+> 
+>> +       unsigned int num_bytes;
+>> +       int i;
+>> +
+> 
+>> +       num_bytes = (msg >> 24) & 0x3;
+> 
+> Two magic numbers.
+
+Sure, will add defines.
+
+> 
+>> +       for (i = 0; i < num_bytes; i++)
+>> +               tty_insert_flip_char(port, (msg >> (i*8)) & 0xff, TTY_NORMAL);
+>> +
+>> +       tty_flip_buffer_push(port);
+>> +}
+> 
+>> +MODULE_AUTHOR("Mikko Perttunen <mperttunen@nvidia.com>");
+>> +MODULE_LICENSE("GPL v2");
+>> +MODULE_DESCRIPTION("NVIDIA Tegra Combined UART driver");
+>> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+>> index dce5f9dae121..eaf3c303cba6 100644
+>> --- a/include/uapi/linux/serial_core.h
+>> +++ b/include/uapi/linux/serial_core.h
+>> @@ -281,4 +281,7 @@
+>>   /* MediaTek BTIF */
+>>   #define PORT_MTK_BTIF  117
+>>
+>> +/* NVIDIA Tegra Combined UART */
+>> +#define PORT_TEGRA_TCU 118
+> 
+> Check if there is an unused gap. IIRC we still have one near to 40ish.
+> 
+
+Correct, looks like 41-43 are unused. I'll change this 41.
+
+Thanks for reviewing!
+
+Mikko
