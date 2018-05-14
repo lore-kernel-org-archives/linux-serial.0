@@ -1,135 +1,150 @@
-From: Mikko Perttunen <cyndis@kapsi.fi>
-Subject: Re: [PATCH 6/8] serial: Add Tegra Combined UART driver
-Date: Mon, 14 May 2018 10:36:35 +0300
-Message-ID: <513a6287-9bb3-1441-b3ea-6866f2e74c99@kapsi.fi>
-References: <20180508114403.14499-1-mperttunen@nvidia.com>
- <20180508114403.14499-7-mperttunen@nvidia.com>
- <CAHp75VfYF_u2bZ+temGbReEB9K-t3A75aUNYwffyv9-=zEi0Lw@mail.gmail.com>
- <662ce972-56a9-9daa-d332-faa08b89c05a@kapsi.fi>
- <CAHp75VeJcqaiWUVr=oXEH5YurY3yCDdE1eeoWumo6jCa_4PWEQ@mail.gmail.com>
+From: Wei Xu <xuwei5@hisilicon.com>
+Subject: Re: [PATCH v2] tty: pl011: Avoid spuriously stuck-off interrupts
+Date: Mon, 14 May 2018 10:18:50 +0100
+Message-ID: <5AF9547A.1010809@hisilicon.com>
+References: <1525972103-26691-1-git-send-email-Dave.Martin@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75VeJcqaiWUVr=oXEH5YurY3yCDdE1eeoWumo6jCa_4PWEQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Mikko Perttunen <mperttunen@nvidia.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jassi Brar <jassisinghbrar@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thierry Reding <thierry.reding@gmail.com>, Jon Hunter <jonathanh@nvidia.com>, araza@nvidia.com, devicetree <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linux-tegra@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1525972103-26691-1-git-send-email-Dave.Martin@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Dave Martin <Dave.Martin@arm.com>, linux-arm-kernel@lists.infradead.org
+Cc: Peter Maydell <peter.maydell@linaro.org>, Andrew Jones <drjones@redhat.com>, Ciro Santilli <ciro.santilli@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Linuxarm <linuxarm@huawei.com>, linux-serial@vger.kernel.org, Greg KH <greg@kroah.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 14.05.2018 01:20, Andy Shevchenko wrote:
-> On Sun, May 13, 2018 at 9:04 PM, Mikko Perttunen <cyndis@kapsi.fi> wrote:
->> On 05/13/2018 05:16 PM, Andy Shevchenko wrote:
->>>
->>> On Tue, May 8, 2018 at 2:44 PM, Mikko Perttunen <mperttunen@nvidia.com>
->>> wrote:
->>>>
->>>> The Tegra Combined UART (TCU) is a mailbox-based mechanism that allows
->>>> multiplexing multiple "virtual UARTs" into a single hardware serial
->>>> port. The TCU is the primary serial port on Tegra194 devices.
->>>>
->>>> Add a TCU driver utilizing the mailbox framework, as the used mailboxes
->>>> are part of Tegra HSP blocks that are already controlled by the Tegra
->>>> HSP mailbox driver.
->
->>>> +static void tegra_tcu_uart_set_mctrl(struct uart_port *port, unsigned
->>>> int mctrl)
->>>> +{
->>>
->>>
->>>> +       (void)port;
->>>> +       (void)mctrl;
->>>
->>>
->>> Huh?
->>
->>
->> The serial core calls these callbacks without checking if they are set. They
->> don't make sense for this driver so they are stubbed out.
->
-> My question why do you need these ugly lines? I'm pretty sure no other
-> driver with stubs using such style.
+Hi Dave,
 
-It's my personal style, being explicit about unused variables in this 
-way - I don't consider them ugly. But I can certainly remove them for 
-the next version.
+On 2018/5/10 18:08, Dave Martin wrote:
+> Commit 9b96fbacda34 ("serial: PL011: clear pending interrupts")
+> clears the RX and receive timeout interrupts on pl011 startup, to
+> avoid a screaming-interrupt scenario that can occur when the
+> firmware or bootloader leaves these interrupts asserted.
+> 
+> This has been noted as an issue when running Linux on qemu [1].
+> 
+> Unfortunately, the above fix seems to lead to potential
+> misbehaviour if the RX FIFO interrupt is asserted _non_ spuriously
+> on driver startup, if the RX FIFO is also already full to the
+> trigger level.
+> 
+> Clearing the RX FIFO interrupt does not change the FIFO fill level.
+> In this scenario, because the interrupt is now clear and because
+> the FIFO is already full to the trigger level, no new assertion of
+> the RX FIFO interrupt can occur unless the FIFO is drained back
+> below the trigger level.  This never occurs because the pl011
+> driver is waiting for an RX FIFO interrupt to tell it that there is
+> something to read, and does not read the FIFO at all until that
+> interrupt occurs.
+> 
+> Thus, simply clearing "spurious" interrupts on startup may be
+> misguided, since there is no way to be sure that the interrupts are
+> truly spurious, and things can go wrong if they are not.
+> 
+> This patch instead clears the interrupt condition by draining the
+> RX FIFO during UART startup, after clearing any potentially
+> spurious interrupt.  This should ensure that an interrupt will
+> definitely be asserted if the RX FIFO subsequently becomes
+> sufficiently full.
+> 
+> The drain is done at the point of enabling interrupts only.  This
+> means that it will occur any time the UART is newly opened through
+> the tty layer.  It will not apply to polled-mode use of the UART by
+> kgdboc: since that scenario cannot use interrupts by design, this
+> should not matter.  kgdboc will interact badly with "normal" use of
+> the UART in any case: this patch makes no attempt to paper over
+> such issues.
+> 
+> This patch does not attempt to address the case where the RX FIFO
+> fills faster than it can be drained: that is a pathological
+> hardware design problem that is beyond the scope of the driver to
+> work around.  As a failsafe, the number of poll iterations for
+> draining the FIFO is limited to twice the FIFO size.  This will
+> ensure that the kernel at least boots even if it is impossible to
+> drain the FIFO for some reason.
+> 
+> [1] [Qemu-devel] [Qemu-arm] [PATCH] pl011: do not put into fifo
+> before enabled the interruption
+> https://lists.gnu.org/archive/html/qemu-devel/2018-01/msg06446.html
+> 
+> Reported-by: Wei Xu <xuwei5@hisilicon.com>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Peter Maydell <peter.maydell@linaro.org>
+> Fixes: 9b96fbacda34 ("serial: PL011: clear pending interrupts")
+> Signed-off-by: Dave Martin <Dave.Martin@arm.com>
 
->
->>>> +}
->
->>>> +               if (written == 3) {
->>>> +                       value |= 3 << 24;
->>>> +                       value |= BIT(26);
->>>> +                       mbox_send_message(tcu->tx, &value);
->>>
->>>
->>>> +               }
->>>
->>>
->>> (1)
->>>
->>>> +       }
->>>> +
->>>> +       if (written) {
->>>> +               value |= written << 24;
->>>> +               value |= BIT(26);
->>>> +               mbox_send_message(tcu->tx, &value);
->>>> +       }
->>>
->>>
->>> (2)
->>>
->>> These are code duplications.
->>
->>
->> Indeed - the length of the duplicated code is so short, and the instances
->> are so close to each other, that I don't find it necessary (or clearer) to
->> have an extra function.
->
-> It makes sense. Consider to refactor other way w/o duplication then.
+Thanks!
+Tested on hisilicon D05 board.
 
-I'll see if I can refactor it out.
+Tested-by: Wei Xu <xuwei5@hisilicon.com>
 
->
->>>> +static void tegra_tcu_uart_set_termios(struct uart_port *port,
->>>> +                                      struct ktermios *new,
->>>> +                                      struct ktermios *old)
->>>> +{
->>>> +       (void)port;
->>>> +       (void)new;
->>>> +       (void)old;
->>>> +}
->>>
->>>
->>> Remove those unused stub contents.
->>
->>
->> Sure. I had these here so that we don't get unused parameter warnings, but I
->> can just as well remove the parameter names.
->
-> What warnings? How did you get them? We have them disabled as far as I
-> know even with W=1.
+Best Regards,
+Wei
 
-May be - it's just a habit, maybe from other projects where the warning 
-is enabled.
-
->
->>
->>>
->>>> +       return uart_set_options(&tegra_tcu_uart_port, cons,
->>>> +                               115200, 'n', 8, 'n');
->>>
->>>
->>> Can't it be one line?
->>
->>
->> It would be a total of 81 characters in length on one line, so no.
->
-> So, yes. 1 character doesn't prevent us make the readability better.
-> Please, put to one line.
->
-
-Ok, I'll change this.
-
-Thanks,
-Mikko
+> 
+> ---
+> 
+> Changes since v1 [1]
+> 
+>  * Deleted Andrew Jones' Reviewed/Tested-bys due to the following
+>    change.
+> 
+>    If you can please retest that the updated patch fixes your
+>    issue that would be appreciated.
+> 
+> Suggested by Russell King:
+> 
+>  * Only drain 2 * FIFO size, to avoid going into an infinite spin
+>    if something does wrong.  If the FIFO still couldn't be drained
+>    sufficiently then pl011 RX won't work properly, but the kernel
+>    will at least boot.
+> 
+> 
+> [1] [PATCH] tty: pl011: Avoid spuriously stuck-off interrupts
+> http://lists.infradead.org/pipermail/linux-arm-kernel/2018-April/574362.html
+> 
+> ---
+>  drivers/tty/serial/amba-pl011.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 4b40a5b..ebd33c0 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -1727,10 +1727,26 @@ static int pl011_allocate_irq(struct uart_amba_port *uap)
+>   */
+>  static void pl011_enable_interrupts(struct uart_amba_port *uap)
+>  {
+> +	unsigned int i;
+> +
+>  	spin_lock_irq(&uap->port.lock);
+>  
+>  	/* Clear out any spuriously appearing RX interrupts */
+>  	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
+> +
+> +	/*
+> +	 * RXIS is asserted only when the RX FIFO transitions from below
+> +	 * to above the trigger threshold.  If the RX FIFO is already
+> +	 * full to the threshold this can't happen and RXIS will now be
+> +	 * stuck off.  Drain the RX FIFO explicitly to fix this:
+> +	 */
+> +	for (i = 0; i < uap->fifosize * 2; ++i) {
+> +		if (pl011_read(uap, REG_FR) & UART01x_FR_RXFE)
+> +			break;
+> +
+> +		pl011_read(uap, REG_DR);
+> +	}
+> +
+>  	uap->im = UART011_RTIM;
+>  	if (!pl011_dma_rx_running(uap))
+>  		uap->im |= UART011_RXIM;
+> 
