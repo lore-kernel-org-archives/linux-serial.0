@@ -1,52 +1,87 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v3 5/6] spi: at91-usart: add driver for at91-usart as spi
-Date: Mon, 14 May 2018 20:38:15 +0300
-Message-ID: <CAHp75VdRrL25Jgnbk64Qqc5RY3uJdcntJ3xwRdp3F+rRFeTHBA@mail.gmail.com>
-References: <20180511103822.31698-1-radu.pirea@microchip.com>
- <20180511103822.31698-6-radu.pirea@microchip.com> <CAHp75Ve3Ugnjjm8EZkPQTZSvH1qad1e5SqjOn8zz5syHSQea_g@mail.gmail.com>
- <5a3930b867cf8c279953d08c5d5dd1d93113a43b.camel@microchip.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [patch v20 1/4] drivers: jtag: Add JTAG core driver
+Date: Mon, 14 May 2018 11:01:36 -0700
+Message-ID: <338d958b-f3c3-15b8-32b9-9d30bfb348b5@infradead.org>
+References: <1526314803-3532-1-git-send-email-oleksandrs@mellanox.com>
+ <1526314803-3532-2-git-send-email-oleksandrs@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5a3930b867cf8c279953d08c5d5dd1d93113a43b.camel@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu.pirea@microchip.com>, devicetree <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, linux-spi <linux-spi@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, alexandre.belloni@bootlin.com, Nicolas Ferre <nicolas.ferre@microchip.com>, Mark Brown <broonie@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1526314803-3532-2-git-send-email-oleksandrs@mellanox.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Oleksandr Shamray <oleksandrs@mellanox.com>, gregkh@linuxfoundation.org, arnd@arndb.de
+Cc: system-sw-low-level@mellanox.com, devicetree@vger.kernel.org, jiri@resnulli.us, vadimp@mellanox.com, linux-api@vger.kernel.org, openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org, openocd-devel-owner@lists.sourceforge.net, Jiri Pirko <jiri@mellanox.com>, robh+dt@kernel.org, joel@jms.id.au, linux-serial@vger.kernel.org, tklauser@distanz.ch, mchehab@kernel.org, davem@davemloft.net, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-First of all, do not remove mailing lists from Cc and people if you
-are not sure they do not need your stuff.
+On 05/14/2018 09:20 AM, Oleksandr Shamray wrote:
 
-On Mon, May 14, 2018 at 11:11 AM, Radu Pirea <radu.pirea@microchip.com> wrote:
-> On Sun, 2018-05-13 at 16:33 +0300, Andy Shevchenko wrote:
->> On Fri, May 11, 2018 at 1:38 PM, Radu Pirea <radu.pirea@microchip.com
->> > wrote:
+Hi,
+Just a bit more Kconfig fixing below.
 
->> > +static void at91_usart_spi_cleanup(struct spi_device *spi)
->> > +{
->> > +       struct at91_usart_spi_device *ausd = spi->controller_state;
->> > +
->> > +       if (!ausd)
->> > +               return;
->>
->> Is it even possible?
-> Theoretically yes.
+> ---
+>  Documentation/ioctl/ioctl-number.txt |    2 +
+>  MAINTAINERS                          |   10 ++
+>  drivers/Kconfig                      |    2 +
+>  drivers/Makefile                     |    1 +
+>  drivers/jtag/Kconfig                 |   18 +++
+>  drivers/jtag/Makefile                |    1 +
+>  drivers/jtag/jtag.c                  |  274 ++++++++++++++++++++++++++++++++++
+>  include/linux/jtag.h                 |   41 +++++
+>  include/uapi/linux/jtag.h            |  105 +++++++++++++
+>  9 files changed, 454 insertions(+), 0 deletions(-)
+>  create mode 100644 drivers/jtag/Kconfig
+>  create mode 100644 drivers/jtag/Makefile
+>  create mode 100644 drivers/jtag/jtag.c
+>  create mode 100644 include/linux/jtag.h
+>  create mode 100644 include/uapi/linux/jtag.h
 
-I would like to know real circumstances when it might happen.
+> diff --git a/drivers/jtag/Kconfig b/drivers/jtag/Kconfig
+> new file mode 100644
+> index 0000000..ba72a2b
+> --- /dev/null
+> +++ b/drivers/jtag/Kconfig
+> @@ -0,0 +1,18 @@
+> +menuconfig JTAG
+> +	tristate "JTAG support"
+> +	help
+> +	  This provides basic core functionality support for JTAG class devices
 
->>
->> Anyway the code below will work fine even if it's the case.
->>
->> > +
->> > +       spi->controller_state = NULL;
->> > +       kfree(ausd);
->> > +}
+(end sentence above with '.')                                           devices.
 
->> The question is, why you didn't utilize what SPI core provides you?
-> I tried, but it did not work the way I expected.
+> +	  Hardware that is equipped with a JTAG microcontroller can be
+> +	  supported by using this driver's interfaces.
+> +	  This driver exposes a set of IOCTL to the user space for
 
-So, what is not going as expected in "SPI core takes care of CSs" case?
-Did you use oscilloscope for that?
+	                               IOCTLs
 
+> +	  another commands:
+
+	  various commands:
+or
+	  the following commands:
+or
+	  associated commands:
+
+> +	  SDR: (Scan Data Register) Performs an IEEE 1149.1 Data Register scan
+> +	  SIR: (Scan Instruction Register) Performs an IEEE 1149.1 Instruction
+> +	  Register scan.
+> +	  RUNTEST: Forces the IEEE 1149.1 bus to a run state for a specified
+> +	  number of clocks or a specified time period.
+> +
+> +	  If you want this support, you should say Y here.
+> +
+> +	  To compile this driver as a module, choose M here: the module will
+> +	  be called jtag.
+thanks,
 -- 
-With Best Regards,
-Andy Shevchenko
+~Randy
