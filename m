@@ -1,35 +1,50 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v3 2/3] platform: move the early platform device support
- to arch/sh
-Date: Mon, 14 May 2018 13:38:59 +0200
-Message-ID: <20180514113859.GA6358@kroah.com>
-References: <20180504132731.14574-1-brgl@bgdev.pl>
- <20180504132731.14574-3-brgl@bgdev.pl>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: serial: custom baud rate
+Date: Mon, 14 May 2018 15:36:56 +0000 (UTC)
+Message-ID: <pdcaeo$d04$1@blaine.gmane.org>
+References: <CAHhAz+hrmLiRJ77cM=CYj+iyH8aUJ64R6FtAwGqqB2pOS0n0aQ@mail.gmail.com>
+ <pcfka2$gie$1@blaine.gmane.org> <20180513205726.5029c88a@alans-desktop>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180504132731.14574-3-brgl@bgdev.pl>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: Sekhar Nori <nsekhar@ti.com>, Kevin Hilman <khilman@kernel.org>, David Lechner <david@lechnology.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Mark Rutland <mark.rutland@arm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Peter Rosin <peda@axentia.se>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.k
+To: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 04, 2018 at 03:27:30PM +0200, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> 
-> SuperH is the only user of the current implementation of early platform
-> device support. We want to introduce a more robust approach to early
-> probing. As the first step - move all the current early platform code
-> to arch/sh.
-> 
-> In order not to export internal drivers/base functions to arch code for
-> this temporary solution - copy the two needed routines for driver
-> matching from drivers/base/platform.c to arch/sh/drivers/platform_early.c.
-> 
-> Also: call early_platform_cleanup() from subsys_initcall() so that it's
-> called after all early devices are probed.
-> 
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+On 2018-05-13, Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
+> On Thu, 3 May 2018 18:27:14 +0000 (UTC)
+> Grant Edwards <grant.b.edwards@gmail.com> wrote:
+>
+>> On 2018-05-03, Muni Sekhar <munisekharrms@gmail.com> wrote:
+>> 
+>> > If I need to set a custom baud rates(e.g. 14400, 128000, 256000), does
+>> > Linux serial framework has any supporting method?  
+>> 
+>> Sure, use the termios2 structure instead of the termios structure:
+>> 
+>>   #include <linux/termios.h>
+>> 
+>>   struct termios2 t;
+>> 
+>>   ioctl(fd, TCGETS2, &t)
+>> 
+>>   t.c_cflag &= ~CBAUD;
+>>   t.c_cflag |= BOTHER;
+>>   t.c_ispeed = baud;
+>>   t.c_ospeed = baud;
+>> 
+>>   ioctl(fd, TCSETS2, &t)
+>> 
+>> [Not all devices/drivers support termios2]
+>
+> That shouldn't be true - all devices get passed ispeed/ospeed and
+> everything in tree was using the correct fields as far as I could
+> tell last time I checked this
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Yep, my mistake.  It looks like the driver where I last ran into this
+was an old out-of-tree driver.
+
+-- 
+Grant Edwards               grant.b.edwards        Yow! Mary Tyler Moore's
+                                  at               SEVENTH HUSBAND is wearing
+                              gmail.com            my DACRON TANK TOP in a
+                                                   cheap hotel in HONOLULU!
