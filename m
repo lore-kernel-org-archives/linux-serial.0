@@ -1,68 +1,85 @@
-From: Erin Lo <erin.lo@mediatek.com>
-Subject: Re: [PATCH v2 4/4] arm64: dts: Add Mediatek SoC MT8183 and
- evaluation board dts and Makefile
-Date: Tue, 15 May 2018 16:39:31 +0800
-Message-ID: <1526373571.3345.3.camel@mtksdaap41>
-References: <1526293351-32794-1-git-send-email-erin.lo@mediatek.com>
-         <1526293351-32794-5-git-send-email-erin.lo@mediatek.com>
-         <efa91778-e81f-9ba4-22a6-43ff0f94af4f@arm.com>
+From: <sean.wang@mediatek.com>
+Subject: [PATCH v2 2/7] serdev: add dev_pm_domain_attach|detach()
+Date: Tue, 15 May 2018 16:52:17 +0800
+Message-ID: <6b4831836d1d642f9d4c520ffd6796e8a6295303.1526374087.git.sean.wang@mediatek.com>
+References: <cover.1526374087.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <efa91778-e81f-9ba4-22a6-43ff0f94af4f@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marc Zyngier <marc.zyngier@arm.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, yingjoe.chen@mediatek.com, mars.cheng@mediatek.com, Ben Ho <Ben.Ho@mediatek.com>, Hailong Fan <Hailong.Fan@mediatek.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <cover.1526374087.git.sean.wang@mediatek.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org, johan.hedberg@gmail.com
+Cc: devicetree@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sean Wang <sean.wang@mediatek.com>, linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2018-05-14 at 11:35 +0100, Marc Zyngier wrote:
-> On 14/05/18 11:22, Erin Lo wrote:
-> > From: Ben Ho <Ben.Ho@mediatek.com>
-> > 
-> > Add basic chip support for Mediatek 8183
-> > 
-> > Signed-off-by: Ben Ho <Ben.Ho@mediatek.com>
-> > Signed-off-by: Erin Lo <erin.lo@mediatek.com>
-> > ---
-> >  arch/arm64/boot/dts/mediatek/Makefile       |   1 +
-> >  arch/arm64/boot/dts/mediatek/mt8183-evb.dts |  31 +++++
-> >  arch/arm64/boot/dts/mediatek/mt8183.dtsi    | 178 ++++++++++++++++++++++++++++
-> >  3 files changed, 210 insertions(+)
-> >  create mode 100644 arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-> >  create mode 100644 arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> > 
-> 
-> [...]
-> 
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> > new file mode 100644
-> > index 0000000..8564a26
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> 
-> [...]
-> 
-> > +	gic: interrupt-controller@0c000000 {
-> > +		compatible = "arm,gic-v3";
-> > +		#interrupt-cells = <3>;
-> > +		interrupt-parent = <&gic>;
-> > +		interrupt-controller;
-> > +		reg = <0 0x0c000000 0 0x40000>,  // CID
-> > +		      <0 0x0c100000 0 0x200000>; // CIR
-> 
-> You're missing the GICV and GICH regions that are present on both A53
-> and A73 at an offset from PERIPHBASE.
-> 
-> > +		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-> > +	};
-> 
-> Thanks,
-> 
-> 	M.
+From: Sean Wang <sean.wang@mediatek.com>
 
-I will fill out the GICV and GICH in next round.
-Thanks.
+In order to open up the required power gate before any operation can be
+effectively performed over the serial bus between CPU and serdev, it's
+clearly essential to add common attach functions for PM domains to serdev
+at the probe phase.
 
-Regards,
-Erin
+Similarly, the relevant dettach function for the PM domains should be
+properly and reversely added at the remove phase.
+
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serdev/core.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index df93b72..c93d8ee 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/pm_domain.h>
+ #include <linux/serdev.h>
+ #include <linux/slab.h>
+ 
+@@ -330,8 +331,16 @@ EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
+ static int serdev_drv_probe(struct device *dev)
+ {
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
++	int ret;
++
++	ret = dev_pm_domain_attach(dev, true);
++	if (ret != -EPROBE_DEFER) {
++		ret = sdrv->probe(to_serdev_device(dev));
++		if (ret)
++			dev_pm_domain_detach(dev, true);
++	}
+ 
+-	return sdrv->probe(to_serdev_device(dev));
++	return ret;
+ }
+ 
+ static int serdev_drv_remove(struct device *dev)
+@@ -339,6 +348,9 @@ static int serdev_drv_remove(struct device *dev)
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+ 	if (sdrv->remove)
+ 		sdrv->remove(to_serdev_device(dev));
++
++	dev_pm_domain_detach(dev, true);
++
+ 	return 0;
+ }
+ 
+-- 
+2.7.4
