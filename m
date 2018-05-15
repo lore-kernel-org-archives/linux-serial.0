@@ -1,186 +1,254 @@
 From: Radu Pirea <radu.pirea@microchip.com>
-Subject: Re: [PATCH v3 5/6] spi: at91-usart: add driver for at91-usart as spi
-Date: Tue, 15 May 2018 12:25:10 +0300
-Message-ID: <49c13a964f517c9c90e61beda327d4174fd1358c.camel@microchip.com>
+Subject: Re: [PATCH v3 6/6] tty/serial: atmel: changed the driver to work
+ under at91-usart mfd
+Date: Tue, 15 May 2018 15:47:22 +0300
+Message-ID: <95a51c6c69bf1a2422f545ac1f06846ebcdb186a.camel@microchip.com>
 References: <20180511103822.31698-1-radu.pirea@microchip.com>
-         <20180511103822.31698-6-radu.pirea@microchip.com>
-         <CAHp75Ve3Ugnjjm8EZkPQTZSvH1qad1e5SqjOn8zz5syHSQea_g@mail.gmail.com>
+         <20180511103822.31698-7-radu.pirea@microchip.com>
+         <4a75568e-a52e-3872-f465-d707372a5c12@sorico.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="=-b3g2qpcC+4sIoVnDF1W/"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Ve3Ugnjjm8EZkPQTZSvH1qad1e5SqjOn8zz5syHSQea_g@mail.gmail.com>
+In-Reply-To: <4a75568e-a52e-3872-f465-d707372a5c12@sorico.fr>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: devicetree <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, linux-spi <linux-spi@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, alexandre.belloni@bootlin.com, Nicolas Ferre <nicolas.ferre@microchip.com>, Mark Brown <broonie@kernel.org>
+To: Richard Genoud <richard.genoud@gmail.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org
+Cc: mark.rutland@arm.com, robh+dt@kernel.org, lee.jones@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, 2018-05-13 at 16:33 +0300, Andy Shevchenko wrote:
-> On Fri, May 11, 2018 at 1:38 PM, Radu Pirea <radu.pirea@microchip.com
-> > wrote:
-> > This is the driver for at91-usart in spi mode. The USART IP can be
-> > configured
-> > to work in many modes and one of them is SPI.
-> > +#include <linux/gpio.h>
-> > +#include <linux/gpio/consumer.h>
-> 
-> Here is something wrong. You need to use latter one in new code.
-> 
-> > +#include <linux/interrupt.h>
-> > +#include <linux/io.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/module.h>
-> > +#include <linux/of.h>
-> > +#include <linux/of_device.h>
-> > +#include <linux/of_gpio.h>
-> 
-> Hmm... Do you need all of them?
-> 
-> > +static inline void at91_usart_spi_cs_activate(struct spi_device
-> > *spi)
-> > +{
-> 
-> ...
-> > +       gpiod_set_value(ausd->npcs_pin, active);
-> > +       aus->cs_active = true;
-> > +}
-> > +
-> > +static inline void at91_usart_spi_cs_deactivate(struct spi_device
-> > *spi)
-> > +{
-> 
-> ...
-> > +       gpiod_set_value(ausd->npcs_pin, !active);
-> > +       aus->cs_active = false;
-> > +}
-> 
-> ...
-> > +       if (!ausd) {
-> > +               if (gpio_is_valid(spi->cs_gpio)) {
-> > +                       npcs_pin = gpio_to_desc(spi->cs_gpio);
-> 
-> ...
-> > +               }
-> 
-> ...
-> > +               gpiod_direction_output(npcs_pin, !(spi->mode &
-> > SPI_CS_HIGH));
-> > +
-> > +               ausd->npcs_pin = npcs_pin;
-> 
-> ...
-> > +       }
-> 
-> I will refer to above as (1) later on.
-> 
-> > +       dev_dbg(&spi->dev, "new message %p submitted for %s\n",
-> > +               msg, dev_name(&spi->dev));
-> 
-> %p does make a very little sense.
-> 
-> > +       list_for_each_entry(xfer, &msg->transfers, transfer_list) {
-> > +               ret = at91_usart_spi_one_transfer(controller, msg,
-> > xfer);
-> > +               if (ret)
-> > +                       goto msg_done;
-> > +       }
-> 
-> Cant SPI core do this for your?
-> 
-> > +static void at91_usart_spi_cleanup(struct spi_device *spi)
-> > +{
-> > +       struct at91_usart_spi_device *ausd = spi->controller_state;
-> > +
-> > +       if (!ausd)
-> > +               return;
-> 
-> Is it even possible?
-> 
-> Anyway the code below will work fine even if it's the case.
-> 
-> > +
-> > +       spi->controller_state = NULL;
-> > +       kfree(ausd);
-> > +}
-> > +static int at91_usart_spi_gpio_cs(struct platform_device *pdev)
-> > +{
-> > +       struct spi_controller *controller =
-> > platform_get_drvdata(pdev);
-> > +       struct device_node *np = controller->dev.parent->of_node;
-> > +       struct gpio_desc *cs_gpio;
-> > +       int nb;
-> > +       int i;
-> > +
-> > +       if (!np)
-> > +               return 0;
-> > +
-> > +       nb = of_gpio_named_count(np, "cs-gpios");
-> > +       for (i = 0; i < nb; i++) {
-> > +               cs_gpio = devm_gpiod_get_from_of_node(&pdev->dev,
-> > +                                                     pdev-
-> > >dev.parent->of_node,
-> > +                                                     "cs-gpios",
-> > +                                                     i,
-> > GPIOD_OUT_HIGH,
-> > +                                                     dev_name(&pde
-> > v->dev));
-> > +               if (IS_ERR(cs_gpio))
-> > +                       return PTR_ERR(cs_gpio);
-> > +       }
-> > +
-> > +       controller->num_chipselect = nb;
-> > +
-> > +       return 0;
-> > +}
-> 
-> The question is, why you didn't utilize what SPI core provides you?
-> 
-> > +       spi_writel(aus, MR, US_MR_SPI_MASTER | US_MR_CHRL |
-> > US_MR_CLKO |
-> > +                       US_MR_WRDBT);
-> > +       spi_writel(aus, CR, US_CR_RXDIS | US_CR_TXDIS | US_CR_RSTRX
-> > |
-> > +                       US_CR_RSTTX);
-> 
-> I didn't check over, but it seems like you might have duplication in
-> these bitwise ORs. Consider to unify them into another (shorter)
-> definitions and reuse all over the code.
-> 
-> > +       regs = platform_get_resource(to_platform_device(pdev-
-> > >dev.parent),
-> > +                                    IORESOURCE_MEM, 0);
-> > +       if (!regs)
-> > +               return -ENXIO;
-> 
-> Strange error code for getting MMIO resource. ENOMEM sounds better.
-> 
-> > +       dev_info(&pdev->dev,
-> > +                "Atmel USART SPI Controller version 0x%x at
-> > 0x%08lx (irq %d)\n",
-> > +                spi_readl(aus, VERSION),
-> > +                (unsigned long)regs->start, irq);
-> 
-> If you do explicit casting when printing something you are doing
-> wrong.
-> Please use %pR or %pr in this case.
-> 
-> > +static struct platform_driver at91_usart_spi_driver = {
-> > +       .driver = {
-> > +               .name = "at91_usart_spi",
-> > +               .of_match_table =
-> > of_match_ptr(at91_usart_spi_dt_ids),
-> 
-> Can it work as pure platform driver? If no, of_match_ptr() is
-> redundant.
+--=-b3g2qpcC+4sIoVnDF1W/
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This driver can not work as pure platform driver, but I the way I used
-to probe it from MFD(by compatbile string).
-Do you know another way?
+On Mon, 2018-05-14 at 12:57 +0200, Richard Genoud wrote:
+> Hi,
+>=20
+> On 11/05/2018 12:38, Radu Pirea wrote:
+> > This patch modifies the place where resources and device tree
+> > properties
+> > are searched.
+> >=20
+> > Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+> > ---
+> >  drivers/tty/serial/Kconfig        |  1 +
+> >  drivers/tty/serial/atmel_serial.c | 29 +++++++++++++++----------
+> > ----
+> >  2 files changed, 16 insertions(+), 14 deletions(-)
+> >=20
+> > diff --git a/drivers/tty/serial/Kconfig
+> > b/drivers/tty/serial/Kconfig
+> > index 3682fd3e960c..25e55332f8b1 100644
+> > --- a/drivers/tty/serial/Kconfig
+> > +++ b/drivers/tty/serial/Kconfig
+> > @@ -119,6 +119,7 @@ config SERIAL_ATMEL
+> >  	depends on ARCH_AT91 || COMPILE_TEST
+> >  	select SERIAL_CORE
+> >  	select SERIAL_MCTRL_GPIO if GPIOLIB
+> > +	select MFD_AT91_USART
+> >  	help
+> >  	  This enables the driver for the on-chip UARTs of the
+> > Atmel
+> >  	  AT91 processors.
+> > diff --git a/drivers/tty/serial/atmel_serial.c
+> > b/drivers/tty/serial/atmel_serial.c
+> > index df46a9e88c34..6b4494352853 100644
+> > --- a/drivers/tty/serial/atmel_serial.c
+> > +++ b/drivers/tty/serial/atmel_serial.c
+> > @@ -193,8 +193,8 @@ static struct console atmel_console;
+> > =20
+> >  #if defined(CONFIG_OF)
+> >  static const struct of_device_id atmel_serial_dt_ids[] =3D {
+> > -	{ .compatible =3D "atmel,at91rm9200-usart" },
+> > -	{ .compatible =3D "atmel,at91sam9260-usart" },
+> > +	{ .compatible =3D "atmel,at91rm9200-usart-serial" },
+> > +	{ .compatible =3D "atmel,at91sam9260-usart-serial" },
+> >  	{ /* sentinel */ }
+> >  };
+> >  #endif
+> > @@ -1631,7 +1631,7 @@ static void atmel_tasklet_tx_func(unsigned
+> > long data)
+> >  static void atmel_init_property(struct atmel_uart_port
+> > *atmel_port,
+> >  				struct platform_device *pdev)
+> >  {
+> > -	struct device_node *np =3D pdev->dev.of_node;
+> > +	struct device_node *np =3D pdev->dev.parent->of_node;
+> > =20
+> >  	/* DMA/PDC usage specification */
+> >  	if (of_property_read_bool(np, "atmel,use-dma-rx")) {
+> > @@ -2223,7 +2223,8 @@ static const char *atmel_type(struct
+> > uart_port *port)
+> >  static void atmel_release_port(struct uart_port *port)
+> >  {
+> >  	struct platform_device *pdev =3D to_platform_device(port-
+> > >dev);
+> > -	int size =3D pdev->resource[0].end - pdev->resource[0].start=20
+> > + 1;
+> > +	int size =3D to_platform_device(pdev->dev.parent)-
+> > >resource[0].end -
+> > +		to_platform_device(pdev->dev.parent)-
+> > >resource[0].start + 1;
+>=20
+> I think it may be simpler with something like:
+> +	struct platform_device *mfd_pdev =3D to_platform_device(port-
+> >dev->parent);
+> +	int size =3D mfd_pdev->resource[0].end - mfd_pdev-
+> >resource[0].start + 1;
+>=20
+> > =20
+> >  	release_mem_region(port->mapbase, size);
+> > =20
+> > @@ -2239,7 +2240,8 @@ static void atmel_release_port(struct
+> > uart_port *port)
+> >  static int atmel_request_port(struct uart_port *port)
+> >  {
+> >  	struct platform_device *pdev =3D to_platform_device(port-
+> > >dev);
+> > -	int size =3D pdev->resource[0].end - pdev->resource[0].start=20
+> > + 1;
+> > +	int size =3D to_platform_device(pdev->dev.parent)-
+> > >resource[0].end -
+> > +		to_platform_device(pdev->dev.parent)-
+> > >resource[0].start + 1;
+> > =20
+>=20
+> ditto
+>=20
+> >  	if (!request_mem_region(port->mapbase, size,
+> > "atmel_serial"))
+> >  		return -EBUSY;
+> > @@ -2345,23 +2347,23 @@ static int atmel_init_port(struct
+> > atmel_uart_port *atmel_port,
+>=20
+> Here, we could also add:
+> +	struct device *mfd_dev =3D pdev->dev.parent;
+> +	struct platform_device *mfd_pdev =3D
+> to_platform_device(mfd_dev);
+>=20
+> >  	atmel_init_property(atmel_port, pdev);
+> >  	atmel_set_ops(port);
+> > =20
+> > -	uart_get_rs485_mode(&pdev->dev, &port->rs485);
+> > +	uart_get_rs485_mode(pdev->dev.parent, &port->rs485);
+>=20
+> ...and use them here
+>=20
+> > =20
+> >  	port->iotype		=3D UPIO_MEM;
+> >  	port->flags		=3D UPF_BOOT_AUTOCONF |
+> > UPF_IOREMAP;
+> >  	port->ops		=3D &atmel_pops;
+> >  	port->fifosize		=3D 1;
+> >  	port->dev		=3D &pdev->dev;
+> > -	port->mapbase	=3D pdev->resource[0].start;
+> > -	port->irq	=3D pdev->resource[1].start;
+> > +	port->mapbase		=3D to_platform_device(pdev-
+> > >dev.parent)->resource[0].start;
+> > +	port->irq		=3D to_platform_device(pdev-
+> > >dev.parent)->resource[1].start;
+>=20
+> and here
+> I think it would be easier to read.
+>=20
+> >  	port->rs485_config	=3D atmel_config_rs485;
+> > -	port->membase	=3D NULL;
+> > +	port->membase		=3D NULL;
+> > =20
+> >  	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port-
+> > >rx_ring));
+> > =20
+> >  	/* for console, the clock could already be configured */
+> >  	if (!atmel_port->clk) {
+> > -		atmel_port->clk =3D clk_get(&pdev->dev, "usart");
+> > +		atmel_port->clk =3D clk_get(pdev->dev.parent,
+> > "usart");
+>=20
+> and here
+>=20
+> >  		if (IS_ERR(atmel_port->clk)) {
+> >  			ret =3D PTR_ERR(atmel_port->clk);
+> >  			atmel_port->clk =3D NULL;
+> > @@ -2656,7 +2658,7 @@ static void atmel_serial_probe_fifos(struct
+> > atmel_uart_port *atmel_port,
+> >  	atmel_port->rts_low =3D 0;
+> >  	atmel_port->rts_high =3D 0;
+> > =20
+> > -	if (of_property_read_u32(pdev->dev.of_node,
+> > +	if (of_property_read_u32(pdev->dev.parent->of_node,
+> >  				 "atmel,fifo-size",
+> >  				 &atmel_port->fifo_size))
+> >  		return;
+> > @@ -2694,11 +2696,10 @@ static void atmel_serial_probe_fifos(struct
+> > atmel_uart_port *atmel_port,
+> >  static int atmel_serial_probe(struct platform_device *pdev)
+> >  {
+> >  	struct atmel_uart_port *atmel_port;
+> > -	struct device_node *np =3D pdev->dev.of_node;
+> > +	struct device_node *np =3D pdev->dev.parent->of_node;
+> >  	void *data;
+> >  	int ret =3D -ENODEV;
+> >  	bool rs485_enabled;
+> > -
+>=20
+> I think this line feed wasn't so bad.
+>=20
+> >  	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE &
+> > (ATMEL_SERIAL_RINGSIZE - 1));
+> > =20
+> >  	ret =3D of_alias_get_id(np, "serial");
+> > @@ -2845,7 +2846,7 @@ static struct platform_driver
+> > atmel_serial_driver =3D {
+> >  	.suspend	=3D atmel_serial_suspend,
+> >  	.resume		=3D atmel_serial_resume,
+> >  	.driver		=3D {
+> > -		.name			=3D "atmel_usart",
+> > +		.name			=3D
+> > "atmel_usart_serial",
+> >  		.of_match_table		=3D
+> > of_match_ptr(atmel_serial_dt_ids),
+> >  	},
+> >  };
+> >=20
+>=20
+> After your patch, the DMA is not selected anymore:
+> atmel_usart_serial atmel_usart_serial.0.auto: TX channel not
+> available, switch to pio
+> instead of:
+> atmel_usart fffff200.serial: using dma1chan2 for tx DMA transfers
+>=20
+Fixed.
+> And the kernel doesn't log anymore on the serial console, despite the
+> loglevel=3D8
+> (after reverting this series, the kernel logs reappears on the serial
+> console)
+>=20
+Which serial are you using as console?=20
+> (tests done on sam9g35)
+>=20
+I will consider the rest of suggestions.=20
+> regards,
+> Richard
+>=20
+--=-b3g2qpcC+4sIoVnDF1W/
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
-> 
-> > +       },
-> > +       .probe = at91_usart_spi_probe,
-> > +       .remove = at91_usart_spi_remove, };
-> 
-> Two lines at one. Split.
-> 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEdoCq2H4M7urKoB6rrwWfQ+JrPx0FAlr61toACgkQrwWfQ+Jr
+Px3Vhg//e1Hlkc0xBxxdhcCfU3mgYlUj41YRJJphrgSx+p28h5HSRxcuv6X703VH
+A8NxaPPSR2Yv7wu8/fXxiVYL2xhxf7uWx9U6PoUGajq+iuRoMnuDuNJp7cbKUh+L
+DAoTTnVBKiQ1GTnFDZHRGqLoKbQUO+Ph/fzhYBScXNykW+Q8ze8IVv5Mg4Bbmw1o
+lKcUrrKA0BgdBpYLNnbDd/sgH5+xUXixKquqJOQHzK4HUtEQJToKMVg+/6T9QrWl
+l6VD0w0j6i3/zFSIQtskH0BGLw4uTDNx5aXn/R2gAWn4sQLlVvCYHg9dEVOXfFvO
+k+BWgpQrE+N2E0ReUzlo+ic74LoEgLyorbkJnXI4+k05XGYBYoW2XYyu35UJjN97
+aRWD4hlxsydGBUGcIWSYGz5EY3k1yK/9lIz0U4/+PaLvG4md/9D3Khlkz0Ruy+re
+hQv3XYtOIlMb2tXCods8IMbrUBOgChZGo1qjmQ3DadNFR6r1tXTInSRVnZyPrd4p
+U1aN3R27tQ7JFS8ad0AN9LOadIomYvRzunqTk8ytG6E80fM/JgIyqSs68AJb0Bme
+hLFfwd+ZQKKjihgYh03lEQOWCE7qRr2BsHRJQS6g/0kRnm/pMJFPNy5+ah5foxJm
+eh6ljO/K65m5N/DgHC+VKOHWTx9VzjfsnoTuhyQ646uaSkoTFtQ=
+=x7zo
+-----END PGP SIGNATURE-----
+
+--=-b3g2qpcC+4sIoVnDF1W/--
