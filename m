@@ -1,87 +1,48 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [patch v20 1/4] drivers: jtag: Add JTAG core driver
-Date: Mon, 14 May 2018 11:01:36 -0700
-Message-ID: <338d958b-f3c3-15b8-32b9-9d30bfb348b5@infradead.org>
-References: <1526314803-3532-1-git-send-email-oleksandrs@mellanox.com>
- <1526314803-3532-2-git-send-email-oleksandrs@mellanox.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH v3 6/6] tty/serial: atmel: changed the driver to work
+ under at91-usart mfd
+Date: Tue, 15 May 2018 08:28:56 +0200
+Message-ID: <f3caeaf5-a61b-bf28-2d4e-0dd4a76224c2@sorico.fr>
+References: <20180511103822.31698-1-radu.pirea@microchip.com>
+ <20180511103822.31698-7-radu.pirea@microchip.com>
+ <4a75568e-a52e-3872-f465-d707372a5c12@sorico.fr>
+ <CAHp75Vdcd0MmqCMGkFXcvKLrzcHtxBDcB8U1qTzysaH9By4Y8A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1526314803-3532-2-git-send-email-oleksandrs@mellanox.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Oleksandr Shamray <oleksandrs@mellanox.com>, gregkh@linuxfoundation.org, arnd@arndb.de
-Cc: system-sw-low-level@mellanox.com, devicetree@vger.kernel.org, jiri@resnulli.us, vadimp@mellanox.com, linux-api@vger.kernel.org, openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org, openocd-devel-owner@lists.sourceforge.net, Jiri Pirko <jiri@mellanox.com>, robh+dt@kernel.org, joel@jms.id.au, linux-serial@vger.kernel.org, tklauser@distanz.ch, mchehab@kernel.org, davem@davemloft.net, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAHp75Vdcd0MmqCMGkFXcvKLrzcHtxBDcB8U1qTzysaH9By4Y8A@mail.gmail.com>
+Content-Language: fr
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Radu Pirea <radu.pirea@microchip.com>, devicetree <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, linux-spi <linux-spi@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, alexandre.belloni@bootlin.com, Nicolas Ferre <nicolas.ferre@microchip.com>, Mark Brown <broonie@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 05/14/2018 09:20 AM, Oleksandr Shamray wrote:
+On 14/05/2018 18:56, Andy Shevchenko wrote:
+> On Mon, May 14, 2018 at 1:57 PM, Richard Genoud
+> <richard.genoud@gmail.com> wrote:
+>> On 11/05/2018 12:38, Radu Pirea wrote:
+>>> This patch modifies the place where resources and device tree properties
+>>> are searched.
+> 
+>> I think it may be simpler with something like:
+> 
+>> +       int size = mfd_pdev->resource[0].end - mfd_pdev->resource[0].start + 1;
+> 
+> Isn't resource_size() macro for this very purpose?
+Indeed.
++       int size = resource_size(mfd_pdev->resource);
+would be even simpler !
 
-Hi,
-Just a bit more Kconfig fixing below.
+> 
+>>> +     int size = to_platform_device(pdev->dev.parent)->resource[0].end -
+>>> +             to_platform_device(pdev->dev.parent)->resource[0].start + 1;
+>>>
+>> ditto
+> 
+> Ditto.
+> 
 
-> ---
->  Documentation/ioctl/ioctl-number.txt |    2 +
->  MAINTAINERS                          |   10 ++
->  drivers/Kconfig                      |    2 +
->  drivers/Makefile                     |    1 +
->  drivers/jtag/Kconfig                 |   18 +++
->  drivers/jtag/Makefile                |    1 +
->  drivers/jtag/jtag.c                  |  274 ++++++++++++++++++++++++++++++++++
->  include/linux/jtag.h                 |   41 +++++
->  include/uapi/linux/jtag.h            |  105 +++++++++++++
->  9 files changed, 454 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/jtag/Kconfig
->  create mode 100644 drivers/jtag/Makefile
->  create mode 100644 drivers/jtag/jtag.c
->  create mode 100644 include/linux/jtag.h
->  create mode 100644 include/uapi/linux/jtag.h
+Thanks !
 
-> diff --git a/drivers/jtag/Kconfig b/drivers/jtag/Kconfig
-> new file mode 100644
-> index 0000000..ba72a2b
-> --- /dev/null
-> +++ b/drivers/jtag/Kconfig
-> @@ -0,0 +1,18 @@
-> +menuconfig JTAG
-> +	tristate "JTAG support"
-> +	help
-> +	  This provides basic core functionality support for JTAG class devices
-
-(end sentence above with '.')                                           devices.
-
-> +	  Hardware that is equipped with a JTAG microcontroller can be
-> +	  supported by using this driver's interfaces.
-> +	  This driver exposes a set of IOCTL to the user space for
-
-	                               IOCTLs
-
-> +	  another commands:
-
-	  various commands:
-or
-	  the following commands:
-or
-	  associated commands:
-
-> +	  SDR: (Scan Data Register) Performs an IEEE 1149.1 Data Register scan
-> +	  SIR: (Scan Instruction Register) Performs an IEEE 1149.1 Instruction
-> +	  Register scan.
-> +	  RUNTEST: Forces the IEEE 1149.1 bus to a run state for a specified
-> +	  number of clocks or a specified time period.
-> +
-> +	  If you want this support, you should say Y here.
-> +
-> +	  To compile this driver as a module, choose M here: the module will
-> +	  be called jtag.
-thanks,
--- 
-~Randy
+Richard.
