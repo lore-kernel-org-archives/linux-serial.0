@@ -1,84 +1,94 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 3/3] serial: 8250_port: Disable DMA operations for
- kernel console
-Date: Wed, 16 May 2018 15:58:10 +0300
-Message-ID: <171c11a999e2d9580d3783588d20b58e753c89ef.camel@linux.intel.com>
+Subject: Re: [PATCH v1 0/3] console, serial8250: Disable PM and DMA ops
+Date: Wed, 16 May 2018 16:10:15 +0300
+Message-ID: <ed9879ef42a70d2609f60f73834cabb7e3df9e2f.camel@linux.intel.com>
 References: <20180515183409.78046-1-andriy.shevchenko@linux.intel.com>
-         <20180515183409.78046-4-andriy.shevchenko@linux.intel.com>
-         <20180516105553.h7e2buanqfxxya4e@linutronix.de>
+         <ca78895ac7ac84ec1c7f2f33024237af329ffd7a.camel@linux.intel.com>
+         <20180516100842.xuma7b3e727w7bpz@linutronix.de>
+         <CAHp75Vc2bJQHiWYcdKK+7wwMw2fSWxMauxP-dMRUAUdKnet7WQ@mail.gmail.com>
+         <20180516104734.357oevogppu5bsg4@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180516105553.h7e2buanqfxxya4e@linutronix.de>
+In-Reply-To: <20180516104734.357oevogppu5bsg4@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2018-05-16 at 12:55 +0200, Sebastian Andrzej Siewior wrote:
-> On 2018-05-15 21:34:09 [+0300], Andy Shevchenko wrote:
-
-Thanks for review, my answers below.
-
-> > It will be too tricky and error prone to allow DMA operations on
-> > kernel
-> > console.
-> 
-> Why is it tricky and error prone? I had it working…
-
-On OMAP only? Had you tested this on let's say Intel Cherrytrail where
-DMA controller is a separate PCI device which needs to be handled
-separately from UART IP.
-
-> But I don't mind dropping the DMA on the kernel console because I
-> doubt
-> that we lose something here by disabling it. I would even imagine that
-> it gets "simpler" (maybe what you tried to say by "error prone") to
-> print something in the NMI case by writing directly to the FIFO
-> register
-> instead setting up a DMA transfer and so on.
-
-"error prone" mostly refers to patch 2 commit message. Here it seems I
-need to put something like above to explain why DMA case tricky _as
-well_.
-
-> > Disable any kind of DMA operations in such case.
+On Wed, 2018-05-16 at 12:47 +0200, Sebastian Andrzej Siewior wrote:
+> On 2018-05-16 13:17:36 [+0300], Andy Shevchenko wrote:
+> > > The output is usually short so there
+> > > shouldn't be much benefit from using it.
+> > > I remember Tony wanted runtime-pm on the kernel console, too. And
+> > > he
+> > > told me explicit how to test it so that it works. Once the UART
+> > > goes
+> > > into PM (down), the whole IP block can go into power save mode.
+> > > The
+> > > board can be woken up by sending a character via the UART. The
+> > > first few
+> > > (incoming / read) characters are lost until the IP block is up
+> > > again the
+> > > frequency stable. This is known / expected.
 > > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_port.c | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > Don't consider world the OMAP only. The things more complicated if
+> > we
+> > go out of it. Which I tried to explain in the commit message of
+> > patch
+> > 2.
+> 
+> I am not saying the world is OMAP only. I just tried to explain how
+> any
+> why it got there and its purpose. I haven't NACKed it. I would believe
+> that with that information and Tony not defending his use case or
+> possible change it somehow so it is not standing in your way, Greg
+> would
+> have enough information to go your way.
+
+Yes, I got it.
+
+> But since I am on it. You have to enable runtime-PM for the UART. So
+> what is the problem if you simply don't enable it for the UART which
+> used as the kernel console?
+
+How do I know at the ->probe() time that device in question is going to
+be kernel console? Maybe I missed simple way of it.
+
+> From reading the description of #2, my understanding is that you are
+> afraid that enabling the UART (bringing it from power-down mode) might
+> take too long because it requires (or might require) an ACPI function
+> call. This brings me again to: why bother and enable it in the first
+> place? Because this might not work from NMI context.
+
+> From looking at #2. You remove put/get in console_write()
+
+...which must be removed in any case...
+
+>  and avoid
+> runtime PM by pm_runtime_get_noresume() and need the extra hook on
+> console exit. I wasn't aware that you can remove the console at
+> runtime
+> (and assumed you have to stick to what said in console= at bootime).
+
+> Because if that is the case, you could simply strip UART_CAP_RPM and
+> then there is no more runtime-PM for you. Or is it too simple and I
+> miss something here?
+
+See above question. IIRC it's either too early or too late to decide on
+per port basis.
+
+> 
+> > > In order to achieve the same thing you would have to disable the
+> > > kernel
+> > > console on that UART. I leave this to Tony.
 > > 
-> > diff --git a/drivers/tty/serial/8250/8250_port.c
-> > b/drivers/tty/serial/8250/8250_port.c
-> > index db97222a1bf4..9a4696ea728b 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -2371,7 +2371,10 @@ int serial8250_do_startup(struct uart_port
-> > *port)
-> >  	 * Request DMA channels for both RX and TX.
-> >  	 */
-> >  	if (up->dma) {
-> > -		retval = serial8250_request_dma(up);
-> > +		if (uart_console(port))
-> > +			retval = -ENXIO;
-> > +		else
-> > +			retval = serial8250_request_dma(up);
-> >  		if (retval)
-> >  			pr_warn_ratelimited("ttyS%d - failed to
-> > request DMA\n",
-> >  					    serial_index(port));
-> 
-> I would appreciate if you note that it is disabled on purpose and not
-> because something failed.
-> Other than those minor things I an board :)
+> > Precisely the point of the series.
 
-Got it for v2.
+Besides above this would be needed _at least_ for several 8250 glue
+drivers, so, I decide to go once for all.
 
-> 
-> > -- 
-> > 2.17.0
 > 
 > Sebastian
 
