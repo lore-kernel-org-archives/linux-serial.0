@@ -1,64 +1,72 @@
 From: Johan Hovold <johan@kernel.org>
-Subject: Re: OMAP serial runtime PM and autosuspend (was: Re: [PATCH 4/7]
- dt-bindings: gnss: add u-blox binding))
-Date: Thu, 17 May 2018 12:09:48 +0200
-Message-ID: <20180517100948.GI30172@localhost>
-References: <20180507154515.GP98604@atomide.com>
+Subject: Re: Serdev runtime PM (was: Re: [PATCH 4/7] dt-bindings: gnss: add
+ u-blox binding)
+Date: Thu, 17 May 2018 12:25:02 +0200
+Message-ID: <20180517102502.GJ30172@localhost>
+References: <5242FCAD-3139-4A9C-B9FA-7BBAA0E6AE57@goldelico.com>
+ <20180503205037.7be552c1@aktux>
+ <44A0BC7C-67C7-4116-849F-90FF7CF2B1F0@goldelico.com>
+ <20180504114213.3xlzqxe74n55tk5s@earth.universe>
+ <20180507100135.GS2285@localhost>
+ <20180507154515.GP98604@atomide.com>
  <20180507163439.GV2285@localhost>
- <20180507175032.GR98604@atomide.com>
- <20180508065852.GW2285@localhost>
- <20180508152228.GV98604@atomide.com>
- <20180508154756.GW98604@atomide.com>
- <20180508155405.GX98604@atomide.com>
- <20180508164904.GZ98604@atomide.com>
- <20180509131003.GC2285@localhost>
- <20180509135706.GB98604@atomide.com>
+ <20180508155608.3bzcbepsmoskhlox@earth.universe>
+ <20180509091831.GA2285@localhost>
+ <20180509140550.GC98604@atomide.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180509135706.GB98604@atomide.com>
+In-Reply-To: <20180509140550.GC98604@atomide.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Tony Lindgren <tony@atomide.com>
-Cc: Johan Hovold <johan@kernel.org>, Sebastian Reichel <sre@kernel.org>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-pm@vger.kernel.org
+Cc: Johan Hovold <johan@kernel.org>, Sebastian Reichel <sre@kernel.org>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-[ Sorry about the late reply. ]
-
-On Wed, May 09, 2018 at 06:57:06AM -0700, Tony Lindgren wrote:
-> * Johan Hovold <johan@kernel.org> [180509 13:12]:
-
-> > It seems we really should not be using the negative autosuspend to
-> > configure the RPM behaviour the way these drivers do. Perhaps a new
-> > mechanism is needed.
+On Wed, May 09, 2018 at 07:05:50AM -0700, Tony Lindgren wrote:
+> * Johan Hovold <johan@kernel.org> [180509 09:20]:
+> > On Tue, May 08, 2018 at 05:56:08PM +0200, Sebastian Reichel wrote:
+> > > I think using open/close for runtime pm is good enough for GPS,
+> > > since it regularly sends data and draws lots of power anyways.
+> > > But devices, that have an out-of-band wakeup signal can do proper
+> > > runtime PM of the serial port without loosing characters.
+> > 
+> > Yeah, there may be some applications where this is possible. And this is
+> > not the case for GPS, but not just because of a generally higher power
+> > consumption, but due to the fact that we cannot afford having the first
+> > message in every report burst be dropped.
 > 
-> Hmm well simply defaulting to "on" instead of "auto" and setting the
-> autosuspend_ms to 3000 by default might be doable. I think that way
-> we can keep use_autosuspend() in probe. Let's hope there are no
-> existing use cases that would break with that.
+> Well most of the phone implementations use one or two out of band
+> GPIOs to first wake the UART before any data is sent. For serdev
+> this can be called from the serdev consumer write function for TX.
+> For RX, the serdev consumer needs to implement an interrupt handler
+> and wake up the parent UART before serdev RX.
 
-No, defaulting to "on" (i.e. calling pm_runtime_forbid()) wouldn't work
-either as that would also prevent the device from runtime suspending
-just as the current negative autosuspend delay does.
+Right, but the client driver would then wake the parent controller when
+expecting RX, while waking its own (serial-attached) device when wanting
+to do TX.
 
-I fail to see how we can implement this using the current toolbox. What
-you're after here is really a mechanism for selecting between two
-different runtime PM schemes at runtime:
+Just for the record, we also cleared this up here:
 
-	1. normal serial RPM, where the controller is active while the
-	   port is open (this should be the safe default)
+	https://marc.info/?l=linux-kernel&m=152604434504868&w=2
 
-	2. aggressive serial RPM, where the controller is allowed to
-	   suspend while the port is open even though this may result in
-	   lost characters when waking up on incoming data
+> > > Note, that OMAP does not reach deep idle states with active
+> > > serial port. This is not acceptable for low power devices.
+> > 
+> > Sure, but note that OMAP is the only serial driver which currently
+> > implements this kind of aggressive runtime PM (besides a couple of
+> > usb-serial drivers). This means that a serdev driver can never rely on
+> > this being the case, and therefore needs to be restrictive about how
+> > long the port is kept open if it cares about power at all.
+> 
+> Well by default we don't allow lossy UART. It needs to be manually
+> configured via /sys for the timeout. With serdev, this can all be
+> done with no /sys configuration needed for the cases with GPIO
+> wake irqs :)
 
-For normal ttys, we need a user-space interface for selecting between
-the two, and for serdev we may want a way to select the RPM scheme from
-within the kernel.
-
-Note that with my serdev controller runtime PM patch, serdev core could
-always opt for aggressive PM (as by default serdev core holds an RPM
-reference for the controller while the port is open).
+Indeed, but serdev client drivers must also work with serial drivers
+which do not implement this kind of aggressive runtime PM, and then the
+only way to save power is to close the port when not in use.
 
 Thanks,
 Johan
