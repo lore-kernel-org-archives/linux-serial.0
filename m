@@ -1,80 +1,60 @@
 From: Tony Lindgren <tony@atomide.com>
-Subject: Re: OMAP serial runtime PM and autosuspend (was: Re: [PATCH 4/7]
- dt-bindings: gnss: add u-blox binding))
-Date: Thu, 17 May 2018 10:10:38 -0700
-Message-ID: <20180517171038.GL98604@atomide.com>
-References: <20180507163439.GV2285@localhost>
- <20180507175032.GR98604@atomide.com>
- <20180508065852.GW2285@localhost>
- <20180508152228.GV98604@atomide.com>
- <20180508154756.GW98604@atomide.com>
- <20180508155405.GX98604@atomide.com>
- <20180508164904.GZ98604@atomide.com>
- <20180509131003.GC2285@localhost>
- <20180509135706.GB98604@atomide.com>
- <20180517100948.GI30172@localhost>
+Subject: Re: [PATCH v1 0/3] console, serial8250: Disable PM and DMA ops
+Date: Thu, 17 May 2018 12:30:08 -0700
+Message-ID: <20180517193008.GV25808@atomide.com>
+References: <20180515183409.78046-1-andriy.shevchenko@linux.intel.com>
+ <ca78895ac7ac84ec1c7f2f33024237af329ffd7a.camel@linux.intel.com>
+ <20180516100842.xuma7b3e727w7bpz@linutronix.de>
+ <CAHp75Vc2bJQHiWYcdKK+7wwMw2fSWxMauxP-dMRUAUdKnet7WQ@mail.gmail.com>
+ <20180516104734.357oevogppu5bsg4@linutronix.de>
+ <ed9879ef42a70d2609f60f73834cabb7e3df9e2f.camel@linux.intel.com>
+ <20180517135621.GJ98604@atomide.com>
+ <CAHp75VfqAK6+dPWWkQXjy0V-AFSGLSDJ9CmnUv=ba0F66TDTVg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180517100948.GI30172@localhost>
+In-Reply-To: <CAHp75VfqAK6+dPWWkQXjy0V-AFSGLSDJ9CmnUv=ba0F66TDTVg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: Sebastian Reichel <sre@kernel.org>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-pm@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
-* Johan Hovold <johan@kernel.org> [180517 10:12]:
-> [ Sorry about the late reply. ]
+* Andy Shevchenko <andy.shevchenko@gmail.com> [180517 16:41]:
+> On Thu, May 17, 2018 at 4:56 PM, Tony Lindgren <tony@atomide.com> wrote:
+> > * Andy Shevchenko <andriy.shevchenko@linux.intel.com> [180516 13:12]:
+> >> On Wed, 2018-05-16 at 12:47 +0200, Sebastian Andrzej Siewior wrote:
+> >> > But since I am on it. You have to enable runtime-PM for the UART. So
+> >> > what is the problem if you simply don't enable it for the UART which
+> >> > used as the kernel console?
+> >>
+> >> How do I know at the ->probe() time that device in question is going to
+> >> be kernel console? Maybe I missed simple way of it.
+> >
+> > Hmm parse the kernel cmdline maybe? :)
+> >
+> > BTW, kernel already has earlycon doing exactly what you're trying to do.
 > 
-> On Wed, May 09, 2018 at 06:57:06AM -0700, Tony Lindgren wrote:
-> > * Johan Hovold <johan@kernel.org> [180509 13:12]:
-> 
-> > > It seems we really should not be using the negative autosuspend to
-> > > configure the RPM behaviour the way these drivers do. Perhaps a new
-> > > mechanism is needed.
-> > 
-> > Hmm well simply defaulting to "on" instead of "auto" and setting the
-> > autosuspend_ms to 3000 by default might be doable. I think that way
-> > we can keep use_autosuspend() in probe. Let's hope there are no
-> > existing use cases that would break with that.
-> 
-> No, defaulting to "on" (i.e. calling pm_runtime_forbid()) wouldn't work
-> either as that would also prevent the device from runtime suspending
-> just as the current negative autosuspend delay does.
+> I'm sorry, I didn't follow. What exactly earlycon does?
 
-Well in that case we should just stick with -1 value for the
-autosuspend. And just do pm_runtime_put_sync_suspend() after
-probe and on close.
+It provides a console very early on, see earlycon in
+Documentation/admin-guide/kernel-parameters.txt
 
-> I fail to see how we can implement this using the current toolbox. What
-> you're after here is really a mechanism for selecting between two
-> different runtime PM schemes at runtime:
-> 
-> 	1. normal serial RPM, where the controller is active while the
-> 	   port is open (this should be the safe default)
+> The problem is in 8250 driver. The issue with runtime PM used in atomic context.
 
-Agreed. And that is the case already.
+So how about add some "noidle" kernel command line parameter for console
+that calls pm_runtime_forbid() and then you have the UART permanently
+on. Hmm I guess you could make also serial8250_rpm_get() do nothing
+based on that.
 
-> 	2. aggressive serial RPM, where the controller is allowed to
-> 	   suspend while the port is open even though this may result in
-> 	   lost characters when waking up on incoming data
+I do agree the serial runtime PM has an issue if it depends on
+pm_runtime_irq_safe() being set.
 
-In this case it seems that the only thing needed is to just
-configure the autosuspend delay for the parent port. The use of
--1 has been around since the start of runtime PM AFAIK, so maybe
-we should just document it. I guess we could also introduce
-pm_runtime_block_autoidle_unless_configured() :)
+> So, I can, of course just remove callbacks from the console ->write().
+> Though it will prevent to use kernel console anyway.
 
-> For normal ttys, we need a user-space interface for selecting between
-> the two, and for serdev we may want a way to select the RPM scheme from
-> within the kernel.
-> 
-> Note that with my serdev controller runtime PM patch, serdev core could
-> always opt for aggressive PM (as by default serdev core holds an RPM
-> reference for the controller while the port is open).
-
-So if your serdev controller was to set the parent autosuspend
-delay on open() and set it back on close() this should work?
+Please et's not start breaking things, we already see a constant
+flow of regressions on weekly basis.
 
 Regards,
 
