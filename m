@@ -1,60 +1,70 @@
 From: Tony Lindgren <tony@atomide.com>
 Subject: Re: [PATCH v1 0/3] console, serial8250: Disable PM and DMA ops
-Date: Thu, 17 May 2018 12:30:08 -0700
-Message-ID: <20180517193008.GV25808@atomide.com>
+Date: Thu, 17 May 2018 12:48:34 -0700
+Message-ID: <20180517194834.GW25808@atomide.com>
 References: <20180515183409.78046-1-andriy.shevchenko@linux.intel.com>
  <ca78895ac7ac84ec1c7f2f33024237af329ffd7a.camel@linux.intel.com>
  <20180516100842.xuma7b3e727w7bpz@linutronix.de>
  <CAHp75Vc2bJQHiWYcdKK+7wwMw2fSWxMauxP-dMRUAUdKnet7WQ@mail.gmail.com>
  <20180516104734.357oevogppu5bsg4@linutronix.de>
- <ed9879ef42a70d2609f60f73834cabb7e3df9e2f.camel@linux.intel.com>
- <20180517135621.GJ98604@atomide.com>
- <CAHp75VfqAK6+dPWWkQXjy0V-AFSGLSDJ9CmnUv=ba0F66TDTVg@mail.gmail.com>
+ <20180517134820.GI98604@atomide.com>
+ <CAHp75Veb+zBfh=44qmMevvrfCSRYhfUMJUMArsDBtgM-F_FknQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAHp75VfqAK6+dPWWkQXjy0V-AFSGLSDJ9CmnUv=ba0F66TDTVg@mail.gmail.com>
+In-Reply-To: <CAHp75Veb+zBfh=44qmMevvrfCSRYhfUMJUMArsDBtgM-F_FknQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
-* Andy Shevchenko <andy.shevchenko@gmail.com> [180517 16:41]:
-> On Thu, May 17, 2018 at 4:56 PM, Tony Lindgren <tony@atomide.com> wrote:
-> > * Andy Shevchenko <andriy.shevchenko@linux.intel.com> [180516 13:12]:
-> >> On Wed, 2018-05-16 at 12:47 +0200, Sebastian Andrzej Siewior wrote:
-> >> > But since I am on it. You have to enable runtime-PM for the UART. So
-> >> > what is the problem if you simply don't enable it for the UART which
-> >> > used as the kernel console?
+* Andy Shevchenko <andy.shevchenko@gmail.com> [180517 16:38]:
+> On Thu, May 17, 2018 at 4:48 PM, Tony Lindgren <tony@atomide.com> wrote:
+> > * Sebastian Andrzej Siewior <bigeasy@linutronix.de> [180516 10:49]:
+> >> On 2018-05-16 13:17:36 [+0300], Andy Shevchenko wrote:
+> >> > > The output is usually short so there
+> >> > > shouldn't be much benefit from using it.
+> >> >
+> >> > > I remember Tony wanted runtime-pm on the kernel console, too. And he
+> >> > > told me explicit how to test it so that it works. Once the UART goes
+> >> > > into PM (down), the whole IP block can go into power save mode. The
+> >> > > board can be woken up by sending a character via the UART. The first few
+> >> > > (incoming / read) characters are lost until the IP block is up again the
+> >> > > frequency stable. This is known / expected.
+> >> >
+> >> > Don't consider world the OMAP only. The things more complicated if we
+> >> > go out of it. Which I tried to explain in the commit message of patch
+> >> > 2.
 > >>
-> >> How do I know at the ->probe() time that device in question is going to
-> >> be kernel console? Maybe I missed simple way of it.
+> >> I am not saying the world is OMAP only. I just tried to explain how any
+> >> why it got there and its purpose. I haven't NACKed it. I would believe
+> >> that with that information and Tony not defending his use case or
+> >> possible change it somehow so it is not standing in your way, Greg would
+> >> have enough information to go your way.
 > >
-> > Hmm parse the kernel cmdline maybe? :)
-> >
-> > BTW, kernel already has earlycon doing exactly what you're trying to do.
+> > The idea breaking PM seems silly to me considering that we've had
+> > it working for years already.
 > 
-> I'm sorry, I didn't follow. What exactly earlycon does?
+> Same question  / note. World is much more complex than just being OMAP.
 
-It provides a console very early on, see earlycon in
-Documentation/admin-guide/kernel-parameters.txt
+Sorry but you are making assumptions about hardware being powered on
+all the time.
 
-> The problem is in 8250 driver. The issue with runtime PM used in atomic context.
+It may have been a safe assumption up to mid-90's and might still be
+valid assumption for hardware providing on MS-DOS boot floppy
+compability.
 
-So how about add some "noidle" kernel command line parameter for console
-that calls pm_runtime_forbid() and then you have the UART permanently
-on. Hmm I guess you could make also serial8250_rpm_get() do nothing
-based on that.
+But that is not a safe assumption for Linux kernel at all. Especially
+for console TX where there's no need to keep it powered unless there
+is actually something to write.
 
-I do agree the serial runtime PM has an issue if it depends on
-pm_runtime_irq_safe() being set.
+If there are runtime PM issues for consoles, let's just fix them.
 
-> So, I can, of course just remove callbacks from the console ->write().
-> Though it will prevent to use kernel console anyway.
-
-Please et's not start breaking things, we already see a constant
-flow of regressions on weekly basis.
+Then for really seeing console messages on next reboot from a hung
+system, CONFIG_PSTORE_CONSOLE option seems to do a very good job.
+With a warm reset after triggered by watchdog the console messages
+are readable most of the time even when using DDR as the back end.
 
 Regards,
 
