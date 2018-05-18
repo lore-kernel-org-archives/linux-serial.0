@@ -1,71 +1,79 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v1 0/3] console, serial8250: Disable PM and DMA ops
-Date: Thu, 17 May 2018 12:48:34 -0700
-Message-ID: <20180517194834.GW25808@atomide.com>
-References: <20180515183409.78046-1-andriy.shevchenko@linux.intel.com>
- <ca78895ac7ac84ec1c7f2f33024237af329ffd7a.camel@linux.intel.com>
- <20180516100842.xuma7b3e727w7bpz@linutronix.de>
- <CAHp75Vc2bJQHiWYcdKK+7wwMw2fSWxMauxP-dMRUAUdKnet7WQ@mail.gmail.com>
- <20180516104734.357oevogppu5bsg4@linutronix.de>
- <20180517134820.GI98604@atomide.com>
- <CAHp75Veb+zBfh=44qmMevvrfCSRYhfUMJUMArsDBtgM-F_FknQ@mail.gmail.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 4/6] dt-bindings: add binding for at91-usart in spi
+ mode
+Date: Fri, 18 May 2018 16:40:51 -0500
+Message-ID: <20180518214051.GA29868@rob-hp-laptop>
+References: <20180511103822.31698-1-radu.pirea@microchip.com>
+ <20180511103822.31698-5-radu.pirea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAHp75Veb+zBfh=44qmMevvrfCSRYhfUMJUMArsDBtgM-F_FknQ@mail.gmail.com>
+In-Reply-To: <20180511103822.31698-5-radu.pirea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
+To: Radu Pirea <radu.pirea@microchip.com>
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org, mark.rutland@arm.com, lee.jones@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, richard.genoud@gmail.com, alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-* Andy Shevchenko <andy.shevchenko@gmail.com> [180517 16:38]:
-> On Thu, May 17, 2018 at 4:48 PM, Tony Lindgren <tony@atomide.com> wrote:
-> > * Sebastian Andrzej Siewior <bigeasy@linutronix.de> [180516 10:49]:
-> >> On 2018-05-16 13:17:36 [+0300], Andy Shevchenko wrote:
-> >> > > The output is usually short so there
-> >> > > shouldn't be much benefit from using it.
-> >> >
-> >> > > I remember Tony wanted runtime-pm on the kernel console, too. And he
-> >> > > told me explicit how to test it so that it works. Once the UART goes
-> >> > > into PM (down), the whole IP block can go into power save mode. The
-> >> > > board can be woken up by sending a character via the UART. The first few
-> >> > > (incoming / read) characters are lost until the IP block is up again the
-> >> > > frequency stable. This is known / expected.
-> >> >
-> >> > Don't consider world the OMAP only. The things more complicated if we
-> >> > go out of it. Which I tried to explain in the commit message of patch
-> >> > 2.
-> >>
-> >> I am not saying the world is OMAP only. I just tried to explain how any
-> >> why it got there and its purpose. I haven't NACKed it. I would believe
-> >> that with that information and Tony not defending his use case or
-> >> possible change it somehow so it is not standing in your way, Greg would
-> >> have enough information to go your way.
-> >
-> > The idea breaking PM seems silly to me considering that we've had
-> > it working for years already.
+On Fri, May 11, 2018 at 01:38:20PM +0300, Radu Pirea wrote:
+> These are bindings for at91-usart IP in spi spi mode. There is no support for
+
+s/spi spi/SPI/
+
+> internal chip select. Only kind of chip selects available are gpio chip
+
+GPIO
+
+> selects.
 > 
-> Same question  / note. World is much more complex than just being OMAP.
+> Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+> ---
+>  .../bindings/spi/microchip,at91-usart-spi.txt | 28 +++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/spi/microchip,at91-usart-spi.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/spi/microchip,at91-usart-spi.txt b/Documentation/devicetree/bindings/spi/microchip,at91-usart-spi.txt
+> new file mode 100644
+> index 000000000000..b68a3bec4121
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/spi/microchip,at91-usart-spi.txt
 
-Sorry but you are making assumptions about hardware being powered on
-all the time.
+So now we have 2 copies of the same thing that varies by 2 properties?
+Please make this one doc.
 
-It may have been a safe assumption up to mid-90's and might still be
-valid assumption for hardware providing on MS-DOS boot floppy
-compability.
+> @@ -0,0 +1,28 @@
+> +* Universal Synchronous Asynchronous Receiver/Transmitter (USART) in SPI mode
+> +
+> +Required properties:
+> +- #size-cells      : Must be <0>
+> +- #address-cells   : Must be <1>
+> +- compatible: Should be "atmel,at91rm9200-usart" or "atmel,at91sam9260-usart"
+> +- reg: Should contain registers location and length
+> +- interrupts: Should contain interrupt
+> +- clocks: phandles to input clocks.
+> +- clock-names: tuple listing input clock names.
+> +	Required elements: "usart"
+> +- cs-gpios: chipselects (internal cs not supported)
+> +- at91,usart-mode: AT91_USART_MODE_SPI (found in dt-bindings/mfd/at91-usart.h)
 
-But that is not a safe assumption for Linux kernel at all. Especially
-for console TX where there's no need to keep it powered unless there
-is actually something to write.
+at91 is not a vendor.
 
-If there are runtime PM issues for consoles, let's just fix them.
 
-Then for really seeing console messages on next reboot from a hung
-system, CONFIG_PSTORE_CONSOLE option seems to do a very good job.
-With a warm reset after triggered by watchdog the console messages
-are readable most of the time even when using DDR as the back end.
-
-Regards,
-
-Tony
+> +
+> +Example:
+> +	#include <dt-bindings/mfd/at91-usart.h>
+> +
+> +	spi0: spi@f001c000 {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		compatible = "atmel,at91rm9200-usart", "atmel,at91sam9260-usart";
+> +		at91,usart-mode = <AT91_USART_MODE_SPI>;
+> +		reg = <0xf001c000 0x100>;
+> +		interrupts = <12 IRQ_TYPE_LEVEL_HIGH>;
+> +		clocks = <&usart0_clk>;
+> +		clock-names = "usart";
+> +		cs-gpios = <&pioB 3 0>;
+> +	};
+> -- 
+> 2.17.0
+> 
