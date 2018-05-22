@@ -1,78 +1,108 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/8] dt-bindings: serial: Add bindings for
- nvidia,tegra194-tcu
-Date: Tue, 22 May 2018 15:20:36 -0500
-Message-ID: <20180522202036.GB24611@rob-hp-laptop>
-References: <20180508114403.14499-1-mperttunen@nvidia.com>
- <20180508114403.14499-3-mperttunen@nvidia.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [patch v21 2/4] drivers: jtag: Add Aspeed SoC 24xx and 25xx
+ families JTAG master driver
+Date: Tue, 22 May 2018 23:21:06 +0300
+Message-ID: <CAHp75Vedcsbet3L0p0t5-=J0PmSe26VFXDbcRmk9943D9_FSqQ@mail.gmail.com>
+References: <1526394095-5069-1-git-send-email-oleksandrs@mellanox.com>
+ <1526394095-5069-3-git-send-email-oleksandrs@mellanox.com>
+ <CAHp75Ve7EYiWBiE73i0CmyJhPMOdSKsGzCr0SUvta3Uya=Ov1Q@mail.gmail.com> <AM5PR0501MB244981D83DD33BD29FD64924B1940@AM5PR0501MB2449.eurprd05.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180508114403.14499-3-mperttunen@nvidia.com>
+In-Reply-To: <AM5PR0501MB244981D83DD33BD29FD64924B1940@AM5PR0501MB2449.eurprd05.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mikko Perttunen <mperttunen@nvidia.com>
-Cc: mark.rutland@arm.com, jassisinghbrar@gmail.com, gregkh@linuxfoundation.org, thierry.reding@gmail.com, jonathanh@nvidia.com, araza@nvidia.com, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Oleksandr Shamray <oleksandrs@mellanox.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>, Tobias Klauser <tklauser@distanz.ch>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Vadim Pasternak <vadimp@mellanox.com>, system-sw-low-level <system-sw-low-level@mellanox.com>, Rob Herring <robh+dt@kernel.org>, "openocd-devel-owner@lists.sourceforge.net" <openocd-devel-owner@lists.sourceforge.net>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, David S. Mill
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 08, 2018 at 02:43:57PM +0300, Mikko Perttunen wrote:
-> Add bindings for the Tegra Combined UART device used to talk to the
-> UART console on Tegra194 systems.
-> 
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> ---
->  .../bindings/serial/nvidia,tegra194-tcu.txt        | 35 ++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
-> new file mode 100644
-> index 000000000000..86763bc5d74f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
-> @@ -0,0 +1,35 @@
-> +NVIDIA Tegra Combined UART (TCU)
-> +
-> +The TCU is a system for sharing a hardware UART instance among multiple
-> +systems withing the Tegra SoC. It is implemented through a mailbox-
+On Tue, May 22, 2018 at 6:00 PM, Oleksandr Shamray
+<oleksandrs@mellanox.com> wrote:
 
-s/withing/within/
 
-Otherwise,
+> Ok. Changed to:
+> #define ASPEED_JTAG_IOUT_LEN(len) \
+>                                (ASPEED_JTAG_CTL_ENG_EN | \
+>                                ASPEED_JTAG_CTL_ENG_OUT_EN | \
+>                                ASPEED_JTAG_CTL_INST_LEN(len))
+>
+> #define ASPEED_JTAG_DOUT_LEN(len) \
+>                                (ASPEED_JTAG_CTL_ENG_EN | \
+>                                ASPEED_JTAG_CTL_ENG_OUT_EN | \
+>                                ASPEED_JTAG_CTL_DATA_LEN(len))
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+What about
 
-> +based protocol where each "virtual UART" has a pair of mailboxes, one
-> +for transmitting and one for receiving, that is used to communicate
-> +with the hardware implementing the TCU.
-> +
-> +Required properties:
-> +- name : Should be tcu
-> +- compatible
-> +    Array of strings
-> +    One of:
-> +    - "nvidia,tegra194-tcu"
-> +- mbox-names:
-> +    "rx" - Mailbox for receiving data from hardware UART
-> +    "tx" - Mailbox for transmitting data to hardware UART
-> +- mboxes: Mailboxes corresponding to the mbox-names. 
-> +
-> +This node is a mailbox consumer. See the following files for details of
-> +the mailbox subsystem, and the specifiers implemented by the relevant
-> +provider(s):
-> +
-> +- .../mailbox/mailbox.txt
-> +- .../mailbox/nvidia,tegra186-hsp.txt
-> +
-> +Example bindings:
-> +-----------------
-> +
-> +tcu: tcu {
-> +	compatible = "nvidia,tegra194-tcu";
-> +	mboxes = <&hsp_top0 TEGRA_HSP_MBOX_TYPE_SM 0>,
-> +	         <&hsp_aon TEGRA_HSP_MBOX_TYPE_SM 1>;
-> +	mbox-names = "rx", "tx";
-> +};
-> -- 
-> 2.16.1
-> 
+#define _JTAG_OUT_ENABLE \
+( _ENG_EN | _ENG_OUT_EN)
+
+#define _IOUT_LEN(len) \
+ (_ENABLE | _INST_LEN(len))
+
+#define _DOUT_LEN(len) \
+...
+
+?
+
+>> > +       apb_frq = clk_get_rate(aspeed_jtag->pclk);
+>>
+>> > +       div = (apb_frq % freq == 0) ? (apb_frq / freq) - 1 :
+>> > + (apb_frq / freq);
+>>
+>> Isn't it the same as
+>>
+>> div = (apb_frq - 1) / freq;
+>>
+>> ?
+
+> Seems it is same. Thanks.
+
+Though be careful if apb_frq == 0.
+In either case the hw will be screwed, but differently.
+
+>> > +       if (xfer->direction == JTAG_READ_XFER)
+>> > +               tdi = UINT_MAX;
+>> > +       else
+>> > +               tdi = data[index];
+>>
+>> > +                       if (xfer->direction == JTAG_READ_XFER)
+>> > +                               tdi = UINT_MAX;
+>> > +                       else
+>> > +                               tdi = data[index];
+>>
+>> Take your time to think how the above duplication can be avoided.
+>>
+>
+> In both cases data[] is different, so I should check it twice, but I will
+> change it to, macro like:
+>
+> #define ASPEED_JTAG_GET_TDI(direction, data) \
+>                               (direction == JTAG_READ_XFER) ? UNIT_MAX : data
+
+Perhaps choose better name for data, b/c in the above you are using data[index].
+
+>> > +               dev_err(aspeed_jtag->dev, "irq status:%x\n",
+>> > +                       status);
+
+>> Huh, really?! SPAM.
+
+> I will review and delete redundant debug messages.
+
+Just to be sure you got a point. This is interrupt context. Imagine
+what might go wrong.
+
+
+>> > +       err = jtag_register(jtag);
+>>
+>> Perhaps we might have devm_ variant of this. Check how SPI framework
+>> deal with a such.
+>>
+>
+> Jtag driver uses miscdevice and related  misc_register and misc_deregister
+> calls for creation and destruction. There is no device object prior
+> to call to misc_register, which could be used in devm_jtag_register.
+
+Same question as per previous patch.
+
+-- 
+With Best Regards,
+Andy Shevchenko
