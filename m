@@ -1,50 +1,35 @@
-From: Jon Hunter <jonathanh@nvidia.com>
-Subject: Re: [PATCH 8/8] arm64: tegra: Mark tcu as primary serial port on
- Tegra194 P2888
-Date: Tue, 22 May 2018 17:29:13 +0100
-Message-ID: <d7b65d6d-c415-ac49-d729-9c6b44feb8c6@nvidia.com>
-References: <20180508114403.14499-1-mperttunen@nvidia.com>
- <20180508114403.14499-9-mperttunen@nvidia.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v3 1/4] dt-bindings: arm: Add bindings for Mediatek
+ MT8183 SoC Platform
+Date: Tue, 22 May 2018 12:14:32 -0500
+Message-ID: <20180522171432.GA20397@rob-hp-laptop>
+References: <1526538126-51497-1-git-send-email-erin.lo@mediatek.com>
+ <1526538126-51497-2-git-send-email-erin.lo@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180508114403.14499-9-mperttunen@nvidia.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mikko Perttunen <mperttunen@nvidia.com>, robh+dt@kernel.org, mark.rutland@arm.com, jassisinghbrar@gmail.com, gregkh@linuxfoundation.org, thierry.reding@gmail.com
-Cc: araza@nvidia.com, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1526538126-51497-2-git-send-email-erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Erin Lo <erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-
-On 08/05/18 12:44, Mikko Perttunen wrote:
-> The Tegra Combined UART is the proper primary serial port on P2888,
-> so use it.
+On Thu, May 17, 2018 at 02:22:03PM +0800, Erin Lo wrote:
+> This adds dt-binding documentation of cpu for Mediatek MT8183.
 > 
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+> Signed-off-by: Erin Lo <erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 > ---
->   arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi b/arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi
-> index 859ab5af17c1..95e2433984f7 100644
-> --- a/arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi
-> +++ b/arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi
-> @@ -10,7 +10,7 @@
->   	aliases {
->   		sdhci0 = "/cbb/sdhci@3460000";
->   		sdhci1 = "/cbb/sdhci@3400000";
-> -		serial0 = &uartb;
-> +		serial0 = &tcu;
->   		i2c0 = "/bpmp/i2c";
->   		i2c1 = "/cbb/i2c@3160000";
->   		i2c2 = "/cbb/i2c@c240000";
-> 
+>  Documentation/devicetree/bindings/arm/mediatek.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
 
-Acked-by: Jon Hunter <jonathanh@nvidia.com>
-
-Cheers
-Jon
-
--- 
-nvpublic
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
