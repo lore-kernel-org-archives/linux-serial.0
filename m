@@ -1,107 +1,80 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [patch v21 2/4] drivers: jtag: Add Aspeed SoC 24xx and 25xx
- families JTAG master driver
-Date: Tue, 22 May 2018 23:21:06 +0300
-Message-ID: <CAHp75Vedcsbet3L0p0t5-=J0PmSe26VFXDbcRmk9943D9_FSqQ@mail.gmail.com>
-References: <1526394095-5069-1-git-send-email-oleksandrs@mellanox.com>
- <1526394095-5069-3-git-send-email-oleksandrs@mellanox.com>
- <CAHp75Ve7EYiWBiE73i0CmyJhPMOdSKsGzCr0SUvta3Uya=Ov1Q@mail.gmail.com> <AM5PR0501MB244981D83DD33BD29FD64924B1940@AM5PR0501MB2449.eurprd05.prod.outlook.com>
+Subject: Re: [PATCH v1 0/3] console, serial8250: Disable PM and DMA ops
+Date: Wed, 23 May 2018 00:39:46 +0300
+Message-ID: <CAHp75Ve56pyEC41XZ9i9yxBNberQe=ee2miQL0v9T4vRtkWPBQ@mail.gmail.com>
+References: <20180515183409.78046-1-andriy.shevchenko@linux.intel.com>
+ <ca78895ac7ac84ec1c7f2f33024237af329ffd7a.camel@linux.intel.com>
+ <20180516100842.xuma7b3e727w7bpz@linutronix.de> <CAHp75Vc2bJQHiWYcdKK+7wwMw2fSWxMauxP-dMRUAUdKnet7WQ@mail.gmail.com>
+ <20180516104734.357oevogppu5bsg4@linutronix.de> <ed9879ef42a70d2609f60f73834cabb7e3df9e2f.camel@linux.intel.com>
+ <20180517135621.GJ98604@atomide.com> <CAHp75VfqAK6+dPWWkQXjy0V-AFSGLSDJ9CmnUv=ba0F66TDTVg@mail.gmail.com>
+ <20180517193008.GV25808@atomide.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <AM5PR0501MB244981D83DD33BD29FD64924B1940@AM5PR0501MB2449.eurprd05.prod.outlook.com>
+In-Reply-To: <20180517193008.GV25808@atomide.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Oleksandr Shamray <oleksandrs@mellanox.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>, =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>, Tobias Klauser <tklauser@distanz.ch>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Vadim Pasternak <vadimp@mellanox.com>, system-sw-low-level <system-sw-low-level@mellanox.com>, Rob Herring <robh+dt@kernel.org>, "openocd-devel-owner@lists.sourceforge.net" <openocd-devel-owner@lists.sourceforge.net>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, David S. Mill
+To: Tony Lindgren <tony@atomide.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 22, 2018 at 6:00 PM, Oleksandr Shamray
-<oleksandrs@mellanox.com> wrote:
-
-
-> Ok. Changed to:
-> #define ASPEED_JTAG_IOUT_LEN(len) \
->                                (ASPEED_JTAG_CTL_ENG_EN | \
->                                ASPEED_JTAG_CTL_ENG_OUT_EN | \
->                                ASPEED_JTAG_CTL_INST_LEN(len))
+On Thu, May 17, 2018 at 10:30 PM, Tony Lindgren <tony@atomide.com> wrote:
+> * Andy Shevchenko <andy.shevchenko@gmail.com> [180517 16:41]:
+>> On Thu, May 17, 2018 at 4:56 PM, Tony Lindgren <tony@atomide.com> wrote:
+>> > * Andy Shevchenko <andriy.shevchenko@linux.intel.com> [180516 13:12]:
+>> >> On Wed, 2018-05-16 at 12:47 +0200, Sebastian Andrzej Siewior wrote:
+>> >> > But since I am on it. You have to enable runtime-PM for the UART. So
+>> >> > what is the problem if you simply don't enable it for the UART which
+>> >> > used as the kernel console?
+>> >>
+>> >> How do I know at the ->probe() time that device in question is going to
+>> >> be kernel console? Maybe I missed simple way of it.
+>> >
+>> > Hmm parse the kernel cmdline maybe? :)
+>> >
+>> > BTW, kernel already has earlycon doing exactly what you're trying to do.
+>>
+>> I'm sorry, I didn't follow. What exactly earlycon does?
 >
-> #define ASPEED_JTAG_DOUT_LEN(len) \
->                                (ASPEED_JTAG_CTL_ENG_EN | \
->                                ASPEED_JTAG_CTL_ENG_OUT_EN | \
->                                ASPEED_JTAG_CTL_DATA_LEN(len))
+> It provides a console very early on, see earlycon in
+> Documentation/admin-guide/kernel-parameters.txt
 
-What about
+Yes, but what we are talking is to put the kernel console out of power
+management due to _real_ issues with it.
 
-#define _JTAG_OUT_ENABLE \
-( _ENG_EN | _ENG_OUT_EN)
-
-#define _IOUT_LEN(len) \
- (_ENABLE | _INST_LEN(len))
-
-#define _DOUT_LEN(len) \
-...
-
-?
-
->> > +       apb_frq = clk_get_rate(aspeed_jtag->pclk);
->>
->> > +       div = (apb_frq % freq == 0) ? (apb_frq / freq) - 1 :
->> > + (apb_frq / freq);
->>
->> Isn't it the same as
->>
->> div = (apb_frq - 1) / freq;
->>
->> ?
-
-> Seems it is same. Thanks.
-
-Though be careful if apb_frq == 0.
-In either case the hw will be screwed, but differently.
-
->> > +       if (xfer->direction == JTAG_READ_XFER)
->> > +               tdi = UINT_MAX;
->> > +       else
->> > +               tdi = data[index];
->>
->> > +                       if (xfer->direction == JTAG_READ_XFER)
->> > +                               tdi = UINT_MAX;
->> > +                       else
->> > +                               tdi = data[index];
->>
->> Take your time to think how the above duplication can be avoided.
->>
+>> The problem is in 8250 driver. The issue with runtime PM used in atomic context.
 >
-> In both cases data[] is different, so I should check it twice, but I will
-> change it to, macro like:
+> So how about add some "noidle" kernel command line parameter for console
+> that calls
+> pm_runtime_forbid() and then you have the UART permanently
+> on.
+
+IIUC _forbid() can be overwritten via sysfs.
+And I would prefer to do other way around, something like console.idle
+and put default for OMAP to yes and no for everything else.
+
+> Hmm I guess you could make also serial8250_rpm_get() do nothing
+> based on that.
+
+Have you seen entire series which I keep here:
+https://bitbucket.org/andy-shev/linux/branch/topic/uart/rpm?
+Among other things it gets rid of those specific callbacks entirely.
+
+> I do agree the serial runtime PM has an issue if it depends on
+> pm_runtime_irq_safe() being set.
+
+It's more than an issue. The  so called "support" of RPM for UART is
+_based on the hack_.
+I would love to NAK that in the first place if I would have known of it in time.
+
+>> So, I can, of course just remove callbacks from the console ->write().
+>> Though it will prevent to use kernel console anyway.
 >
-> #define ASPEED_JTAG_GET_TDI(direction, data) \
->                               (direction == JTAG_READ_XFER) ? UNIT_MAX : data
+> Please et's not start breaking things, we already see a constant
+> flow of regressions on weekly basis.
 
-Perhaps choose better name for data, b/c in the above you are using data[index].
-
->> > +               dev_err(aspeed_jtag->dev, "irq status:%x\n",
->> > +                       status);
-
->> Huh, really?! SPAM.
-
-> I will review and delete redundant debug messages.
-
-Just to be sure you got a point. This is interrupt context. Imagine
-what might go wrong.
-
-
->> > +       err = jtag_register(jtag);
->>
->> Perhaps we might have devm_ variant of this. Check how SPI framework
->> deal with a such.
->>
->
-> Jtag driver uses miscdevice and related  misc_register and misc_deregister
-> calls for creation and destruction. There is no device object prior
-> to call to misc_register, which could be used in devm_jtag_register.
-
-Same question as per previous patch.
+Now we are stick with a hack and the case based on that is against
+fixing things.
+This is how it looks from my side.
 
 -- 
 With Best Regards,
