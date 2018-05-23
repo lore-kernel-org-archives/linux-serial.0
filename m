@@ -1,63 +1,94 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v1 0/3] console, serial8250: Disable PM and DMA ops
-Date: Wed, 23 May 2018 00:52:01 +0300
-Message-ID: <CAHp75Vf7L3zsSgaj1vfoyNKdPo0w6Nu+mW5HuM97SKAK-1y2Pg@mail.gmail.com>
-References: <20180515183409.78046-1-andriy.shevchenko@linux.intel.com>
- <ca78895ac7ac84ec1c7f2f33024237af329ffd7a.camel@linux.intel.com>
- <20180516100842.xuma7b3e727w7bpz@linutronix.de> <CAHp75Vc2bJQHiWYcdKK+7wwMw2fSWxMauxP-dMRUAUdKnet7WQ@mail.gmail.com>
- <20180516104734.357oevogppu5bsg4@linutronix.de> <20180517134820.GI98604@atomide.com>
- <CAHp75Veb+zBfh=44qmMevvrfCSRYhfUMJUMArsDBtgM-F_FknQ@mail.gmail.com> <20180517194834.GW25808@atomide.com>
+From: Radu Pirea <radu.pirea@microchip.com>
+Subject: Re: [PATCH v3 5/6] spi: at91-usart: add driver for at91-usart as spi
+Date: Wed, 23 May 2018 11:10:28 +0300
+Message-ID: <6a59e071-3159-4939-8535-6c7a9d491379@microchip.com>
+References: <20180511103822.31698-1-radu.pirea@microchip.com>
+ <20180511103822.31698-6-radu.pirea@microchip.com>
+ <20180517050406.GF20254@sirena.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180517194834.GW25808@atomide.com>
+In-Reply-To: <20180517050406.GF20254@sirena.org.uk>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
+To: Mark Brown <broonie@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org, mark.rutland@arm.com, robh+dt@kernel.org, lee.jones@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, richard.genoud@gmail.com, alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 17, 2018 at 10:48 PM, Tony Lindgren <tony@atomide.com> wrote:
-> * Andy Shevchenko <andy.shevchenko@gmail.com> [180517 16:38]:
->> On Thu, May 17, 2018 at 4:48 PM, Tony Lindgren <tony@atomide.com> wrote:
->> > * Sebastian Andrzej Siewior <bigeasy@linutronix.de> [180516 10:49]:
 
->> > The idea breaking PM seems silly to me considering that we've had
->> > it working for years already.
->>
->> Same question  / note. World is much more complex than just being OMAP.
->
-> Sorry but you are making assumptions about hardware being powered on
-> all the time.
 
-Nope, other way around. The so called "support" _prevents_ our
-hardware to go to sleep.
+On 05/17/2018 08:04 AM, Mark Brown wrote:
+> On Fri, May 11, 2018 at 01:38:21PM +0300, Radu Pirea wrote:
+> 
+>> +config SPI_AT91_USART
+>> +        tristate "Atmel USART Controller as SPI"
+>> +	depends on HAS_DMA
+>> +	depends on (ARCH_AT91 || COMPILE_TEST)
+>> +        select MFD_AT91_USART
+>> +	help
+>> +	  This selects a driver for the AT91 USART Controller as SPI Master,
+>> +	  present on AT91 and SAMA5 SoC series.
+>> +
+> 
+> This looks like there's some tab/space mixing going on here.
+> 
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Driver for AT91 USART Controllers as SPI
+>> + *
+>> + * Copyright (C) 2018 Microchip Technology Inc.
+> 
+> Make the entire block a C++ comment so it looks more intentional rather
+> tha mixing C and C++.
 
-So it's not breaking, it's fixing. It's pity that OMAP solution is just a hack.
+Hi Mark,
 
-> It may have been a safe assumption up to mid-90's and might still be
-> valid assumption for hardware providing on MS-DOS boot floppy
-> compability.
->
-> But that is not a safe assumption for Linux kernel at all. Especially
-> for console TX where there's no need to keep it powered unless there
-> is actually something to write.
->
-> If there are runtime PM issues for consoles, let's just fix them.
+I know it's ugly, but SPDX license identifier must be in a separate 
+comment block.
 
-Yes, there is an issue to begin with, i.e. irq_safe hack.
-Removal of that hack reveals the real issues with the code.
+> 
+>> +static inline void at91_usart_spi_tx(struct at91_usart_spi *aus)
+>> +{
+>> +	unsigned int len = aus->current_transfer->len;
+>> +	unsigned int remaining = aus->current_tx_remaining_bytes;
+>> +	const u8  *tx_buf = aus->current_transfer->tx_buf;
+>> +
+>> +	if (tx_buf && remaining) {
+>> +		if (at91_usart_spi_tx_ready(aus))
+>> +			spi_writel(aus, THR, tx_buf[len - remaining]);
+>> +			aus->current_tx_remaining_bytes--;
+> 
+> Missing braces here - we only write to the FIFO if there's space but we
+> unconditionally decrement the counter.
+> 
 
-> Then for really seeing console messages on next reboot from a hung
-> system, CONFIG_PSTORE_CONSOLE option seems to do a very good job.
+Thanks. I will fix it.
 
-How this helps to prevent a more serious system crashes during an
-attempt to power UART on?
+>> +	} else {
+>> +		if (at91_usart_spi_tx_ready(aus))
+>> +			spi_writel(aus, THR, US_DUMMY_TX);
+>> +	}
+>> +}
+> 
+> This looks like you're open coding SPI_CONTROLLER_MUST_TX
+> 
+>> +	int len = aus->current_transfer->len;
+>> +	int remaining = aus->current_rx_remaining_bytes;
+>> +	u8  *rx_buf = aus->current_transfer->rx_buf;
+>> +
+>> +	if (aus->current_rx_remaining_bytes) {
+>> +		rx_buf[len - remaining] = spi_readb(aus, RHR);
+>> +		aus->current_rx_remaining_bytes--;
+>> +	} else {
+>> +		spi_readb(aus, RHR);
+>> +	}
+> 
+> Similarly for _MUST_RX.
+> 
+>> +	controller->flags = SPI_MASTER_MUST_RX | SPI_MASTER_MUST_TX;
+> 
+> You're actually setting both flags...  this means that the handling for
+> cases with missing TX or RX buffers can't happen.
 
-> With a warm reset after triggered by watchdog the console messages
-> are readable most of the time even when using DDR as the back end.
-
-Ditto.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Sorry. My mistake. I will remove unnecessary code.
