@@ -1,76 +1,48 @@
 From: Tony Lindgren <tony@atomide.com>
 Subject: Re: [PATCH v1 0/3] console, serial8250: Disable PM and DMA ops
-Date: Wed, 23 May 2018 10:58:59 -0700
-Message-ID: <20180523175859.GO98604@atomide.com>
+Date: Wed, 23 May 2018 11:00:52 -0700
+Message-ID: <20180523180052.GP98604@atomide.com>
 References: <20180515183409.78046-1-andriy.shevchenko@linux.intel.com>
  <ca78895ac7ac84ec1c7f2f33024237af329ffd7a.camel@linux.intel.com>
  <20180516100842.xuma7b3e727w7bpz@linutronix.de>
  <CAHp75Vc2bJQHiWYcdKK+7wwMw2fSWxMauxP-dMRUAUdKnet7WQ@mail.gmail.com>
  <20180516104734.357oevogppu5bsg4@linutronix.de>
- <ed9879ef42a70d2609f60f73834cabb7e3df9e2f.camel@linux.intel.com>
- <20180517135621.GJ98604@atomide.com>
- <CAHp75VfqAK6+dPWWkQXjy0V-AFSGLSDJ9CmnUv=ba0F66TDTVg@mail.gmail.com>
- <20180517193008.GV25808@atomide.com>
- <CAHp75Ve56pyEC41XZ9i9yxBNberQe=ee2miQL0v9T4vRtkWPBQ@mail.gmail.com>
+ <20180517134820.GI98604@atomide.com>
+ <CAHp75Veb+zBfh=44qmMevvrfCSRYhfUMJUMArsDBtgM-F_FknQ@mail.gmail.com>
+ <20180517194834.GW25808@atomide.com>
+ <CAHp75Vf7L3zsSgaj1vfoyNKdPo0w6Nu+mW5HuM97SKAK-1y2Pg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAHp75Ve56pyEC41XZ9i9yxBNberQe=ee2miQL0v9T4vRtkWPBQ@mail.gmail.com>
+In-Reply-To: <CAHp75Vf7L3zsSgaj1vfoyNKdPo0w6Nu+mW5HuM97SKAK-1y2Pg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
-* Andy Shevchenko <andy.shevchenko@gmail.com> [180522 21:42]:
-> On Thu, May 17, 2018 at 10:30 PM, Tony Lindgren <tony@atomide.com> wrote:
-> > So how about add some "noidle" kernel command line parameter for console
-> > that calls
-> > pm_runtime_forbid() and then you have the UART permanently
-> > on.
+* Andy Shevchenko <andy.shevchenko@gmail.com> [180522 21:54]:
+> On Thu, May 17, 2018 at 10:48 PM, Tony Lindgren <tony@atomide.com> wrote:
+> > * Andy Shevchenko <andy.shevchenko@gmail.com> [180517 16:38]:
+> >> On Thu, May 17, 2018 at 4:48 PM, Tony Lindgren <tony@atomide.com> wrote:
+> >> > * Sebastian Andrzej Siewior <bigeasy@linutronix.de> [180516 10:49]:
 > 
-> IIUC _forbid() can be overwritten via sysfs.
-> And I would prefer to do other way around, something like console.idle
-> and put default for OMAP to yes and no for everything else.
-
-OK yeah console.idle sounds good to me. We should default to a
-safe option.
-
-> > Hmm I guess you could make also serial8250_rpm_get() do nothing
-> > based on that.
-> 
-> Have you seen entire series which I keep here:
-> https://bitbucket.org/andy-shev/linux/branch/topic/uart/rpm?
-> Among other things it gets rid of those specific callbacks entirely.
-
-Well I was not Cc:ed on it, I browsed it in some archive and it
-seemed unsafe to me. But if you figured out a way to do it conditionally
-based on console.idle without causing regressions.
-
-> > I do agree the serial runtime PM has an issue if it depends on
-> > pm_runtime_irq_safe() being set.
-> 
-> It's more than an issue. The  so called "support" of RPM for UART is
-> _based on the hack_.
-> I would love to NAK that in the first place if I would have known of it in time.
-
-Hmm well it seems that you too have been patching the 8250_rpm
-functions for years and then now what after multiple years you
-hit this issue? :)
-
-> >> So, I can, of course just remove callbacks from the console ->write().
-> >> Though it will prevent to use kernel console anyway.
+> >> > The idea breaking PM seems silly to me considering that we've had
+> >> > it working for years already.
+> >>
+> >> Same question  / note. World is much more complex than just being OMAP.
 > >
-> > Please et's not start breaking things, we already see a constant
-> > flow of regressions on weekly basis.
+> > Sorry but you are making assumptions about hardware being powered on
+> > all the time.
 > 
-> Now we are stick with a hack and the case based on that is against
-> fixing things.
-> This is how it looks from my side.
+> Nope, other way around. The so called "support" _prevents_ our
+> hardware to go to sleep.
 
-Sorry yeah I agree there are issues, but let's fix it properly with
-no regressions.
+Hmm sorry now I'm all confused what issues you're having.
+
+I thought you said earlier the issue was that you wanted to keep
+the console enabled all the time and never idle?
 
 Regards,
 
-TOny
+Tony
