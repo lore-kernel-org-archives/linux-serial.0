@@ -1,57 +1,76 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 5/6] spi: at91-usart: add driver for at91-usart as spi
-Date: Wed, 23 May 2018 09:30:40 +0100
-Message-ID: <20180523083040.GC4828@sirena.org.uk>
-References: <20180511103822.31698-1-radu.pirea@microchip.com>
- <20180511103822.31698-6-radu.pirea@microchip.com>
- <20180517050406.GF20254@sirena.org.uk>
- <6a59e071-3159-4939-8535-6c7a9d491379@microchip.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH v1 0/3] console, serial8250: Disable PM and DMA ops
+Date: Wed, 23 May 2018 10:58:59 -0700
+Message-ID: <20180523175859.GO98604@atomide.com>
+References: <20180515183409.78046-1-andriy.shevchenko@linux.intel.com>
+ <ca78895ac7ac84ec1c7f2f33024237af329ffd7a.camel@linux.intel.com>
+ <20180516100842.xuma7b3e727w7bpz@linutronix.de>
+ <CAHp75Vc2bJQHiWYcdKK+7wwMw2fSWxMauxP-dMRUAUdKnet7WQ@mail.gmail.com>
+ <20180516104734.357oevogppu5bsg4@linutronix.de>
+ <ed9879ef42a70d2609f60f73834cabb7e3df9e2f.camel@linux.intel.com>
+ <20180517135621.GJ98604@atomide.com>
+ <CAHp75VfqAK6+dPWWkQXjy0V-AFSGLSDJ9CmnUv=ba0F66TDTVg@mail.gmail.com>
+ <20180517193008.GV25808@atomide.com>
+ <CAHp75Ve56pyEC41XZ9i9yxBNberQe=ee2miQL0v9T4vRtkWPBQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="/Uq4LBwYP4y1W6pO"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <6a59e071-3159-4939-8535-6c7a9d491379@microchip.com>
+In-Reply-To: <CAHp75Ve56pyEC41XZ9i9yxBNberQe=ee2miQL0v9T4vRtkWPBQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu.pirea@microchip.com>
-Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org, mark.rutland@arm.com, robh+dt@kernel.org, lee.jones@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, richard.genoud@gmail.com, alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
+* Andy Shevchenko <andy.shevchenko@gmail.com> [180522 21:42]:
+> On Thu, May 17, 2018 at 10:30 PM, Tony Lindgren <tony@atomide.com> wrote:
+> > So how about add some "noidle" kernel command line parameter for console
+> > that calls
+> > pm_runtime_forbid() and then you have the UART permanently
+> > on.
+> 
+> IIUC _forbid() can be overwritten via sysfs.
+> And I would prefer to do other way around, something like console.idle
+> and put default for OMAP to yes and no for everything else.
 
---/Uq4LBwYP4y1W6pO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+OK yeah console.idle sounds good to me. We should default to a
+safe option.
 
-On Wed, May 23, 2018 at 11:10:28AM +0300, Radu Pirea wrote:
-> On 05/17/2018 08:04 AM, Mark Brown wrote:
+> > Hmm I guess you could make also serial8250_rpm_get() do nothing
+> > based on that.
+> 
+> Have you seen entire series which I keep here:
+> https://bitbucket.org/andy-shev/linux/branch/topic/uart/rpm?
+> Among other things it gets rid of those specific callbacks entirely.
 
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +/*
-> > > + * Driver for AT91 USART Controllers as SPI
-> > > + *
-> > > + * Copyright (C) 2018 Microchip Technology Inc.
+Well I was not Cc:ed on it, I browsed it in some archive and it
+seemed unsafe to me. But if you figured out a way to do it conditionally
+based on console.idle without causing regressions.
 
-> > Make the entire block a C++ comment so it looks more intentional rather
-> > tha mixing C and C++.
+> > I do agree the serial runtime PM has an issue if it depends on
+> > pm_runtime_irq_safe() being set.
+> 
+> It's more than an issue. The  so called "support" of RPM for UART is
+> _based on the hack_.
+> I would love to NAK that in the first place if I would have known of it in time.
 
-> I know it's ugly, but SPDX license identifier must be in a separate comment
-> block.
+Hmm well it seems that you too have been patching the 8250_rpm
+functions for years and then now what after multiple years you
+hit this issue? :)
 
-No, it doesn't - it just needs to be the first line of the file.
+> >> So, I can, of course just remove callbacks from the console ->write().
+> >> Though it will prevent to use kernel console anyway.
+> >
+> > Please et's not start breaking things, we already see a constant
+> > flow of regressions on weekly basis.
+> 
+> Now we are stick with a hack and the case based on that is against
+> fixing things.
+> This is how it looks from my side.
 
---/Uq4LBwYP4y1W6pO
-Content-Type: application/pgp-signature; name="signature.asc"
+Sorry yeah I agree there are issues, but let's fix it properly with
+no regressions.
 
------BEGIN PGP SIGNATURE-----
+Regards,
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlsFJq8ACgkQJNaLcl1U
-h9A5Dwf+IXTaaeH5wemGlp1J1Cqj9ET0B9mUUqYNsQ+BsMbdI314G1a/S3isLCCw
-XjOds1vEWxncEZb6kxV4v/3bUuOKKrZ7UVlVsY2nycfzgvLsIaGhBcf7/OAAJWb/
-kzfX3gceAsRfmFgbPHXcHMQbT+cWxJMBWUA0hJt2xBdJCVh1EduJ9VNZsbqjJSkU
-nyOZffnBU/sIMj0mibun82oVVFtdu71N0DJEfMAP/mf4sajkjFs4IqGqK80Ghfyx
-LYoD8hf8RKOvGF/Jr/x3K7T7bjAp1tny7kWtwqwf5zAb44FDgG+e6AEDN1bbzAva
-MdFlv1uRTZwcunY5iN+UhKQgi7e4iw==
-=+KAd
------END PGP SIGNATURE-----
-
---/Uq4LBwYP4y1W6pO--
+TOny
