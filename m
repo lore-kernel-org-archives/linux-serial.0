@@ -1,65 +1,30 @@
-From: Radu Pirea <radu.pirea@microchip.com>
-Subject: Re: [PATCH v3 5/6] spi: at91-usart: add driver for at91-usart as spi
-Date: Thu, 24 May 2018 19:04:11 +0300
-Message-ID: <0e6e71e2-f8ac-7889-0d81-8d8a4c15223d@microchip.com>
-References: <20180511103822.31698-1-radu.pirea@microchip.com>
- <20180511103822.31698-6-radu.pirea@microchip.com>
- <CAHp75Ve3Ugnjjm8EZkPQTZSvH1qad1e5SqjOn8zz5syHSQea_g@mail.gmail.com>
- <5a3930b867cf8c279953d08c5d5dd1d93113a43b.camel@microchip.com>
- <CAHp75VdRrL25Jgnbk64Qqc5RY3uJdcntJ3xwRdp3F+rRFeTHBA@mail.gmail.com>
- <c23cdde58b9f724f51787c6c38478df983be6efa.camel@microchip.com>
- <20180517045437.GE20254@sirena.org.uk>
+From: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Subject: [PATCH 0/2] serial: imx: more shutdown cleanups
+Date: Thu, 24 May 2018 19:30:22 +0200
+Message-ID: <20180524173024.20936-1-sebastian.reichel@collabora.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180517045437.GE20254@sirena.org.uk>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mark Brown <broonie@kernel.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, devicetree <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, linux-spi <linux-spi@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, alexandre.belloni@bootlin.com, Nicolas Ferre <nicolas.ferre@microchip.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-kernel@vger.kernel.org, Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 List-Id: linux-serial@vger.kernel.org
 
+Hi,
 
+Here are two more cleanup patches for imx-serial. Both
+issues were found by code reading, no real-world issues
+are known.
 
-On 05/17/2018 07:54 AM, Mark Brown wrote:
-> On Tue, May 15, 2018 at 12:22:24PM +0300, Radu Pirea wrote:
->> On Mon, 2018-05-14 at 20:38 +0300, Andy Shevchenko wrote:
-> 
->>> So, what is not going as expected in "SPI core takes care of CSs"
->>> case?
->>> Did you use oscilloscope for that?
-> 
->> Yes, I used and CSs was not asserted. Anyway, I will will try again.
-> 
-> If the core chip select handling is not working properly for some reason
-> then the core chip select handling should be fixed rather than just open
-> coding in your driver - probably it's also broken for other users.
-> 
+-- Sebastian
 
-Hi Mark,
+Sebastian Reichel (2):
+  serial: imx: drop CTS/RTS handling from shutdown
+  serial: imx: disable UCR4_OREN on shutdown
 
-I found the fix for cs-gpios. If I change spi_add_device function like 
-this(see below) everything is ok.
+ drivers/tty/serial/imx.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-int spi_add_device(struct spi_device *spi)
-
-...
-
-     if (ctlr->cs_gpios){
-         spi->cs_gpio = ctlr->cs_gpios[spi->chip_select];
-         if(gpio_is_valid(spi->cs_gpio))
-             gpio_direction_output(spi->cs_gpio, !(spi->mode & 
-SPI_CS_HIGH));
-
-     }
-
-...
-
-     return status;
-}
-
-In the subsystem gpio direction of pins is never set and 
-gpio_set_value() don't set the direction.
-In my opinion gpio_direction_output() set direction should be called in 
-spi_add_device. What do you think? Is ok?
+-- 
+2.17.0
