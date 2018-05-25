@@ -1,53 +1,90 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [RFC PATCH 2/3] USB: serial: enable serdev support
-Date: Fri, 25 May 2018 14:52:56 +0200
-Message-ID: <20180525125257.29124-3-johan@kernel.org>
-References: <20180525125257.29124-1-johan@kernel.org>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH v3 6/6] tty/serial: atmel: changed the driver to work
+ under at91-usart mfd
+Date: Fri, 25 May 2018 15:35:40 +0200
+Message-ID: <f817c82a-95b6-afb3-e662-c481a877cf01@sorico.fr>
+References: <20180511103822.31698-1-radu.pirea@microchip.com>
+ <20180511103822.31698-7-radu.pirea@microchip.com>
+ <4a75568e-a52e-3872-f465-d707372a5c12@sorico.fr>
+ <95a51c6c69bf1a2422f545ac1f06846ebcdb186a.camel@microchip.com>
+ <4d70c73e-9db7-bdff-7414-04a4843acae3@sorico.fr>
+ <391de5c1-45d7-4773-fe57-7f2bc747214b@microchip.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180525125257.29124-1-johan@kernel.org>
+In-Reply-To: <391de5c1-45d7-4773-fe57-7f2bc747214b@microchip.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org
+To: Radu Pirea <radu.pirea@microchip.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org
+Cc: mark.rutland@arm.com, robh+dt@kernel.org, lee.jones@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Enable serdev support by using the serdev opt-in tty-port registration
-helpers.
+On 25/05/2018 14:17, Radu Pirea wrote:
+> 
+> 
+> On 05/15/2018 04:14 PM, Richard Genoud wrote:
+>> On 15/05/2018 14:47, Radu Pirea wrote:
+>>> On Mon, 2018-05-14 at 12:57 +0200, Richard Genoud wrote:
+>>>> After your patch, the DMA is not selected anymore:
+>>>> atmel_usart_serial atmel_usart_serial.0.auto: TX channel not
+>>>> available, switch to pio
+>>>> instead of:
+>>>> atmel_usart fffff200.serial: using dma1chan2 for tx DMA transfers
+>>>>
+>>> Fixed.
+>>>> And the kernel doesn't log anymore on the serial console, despite the
+>>>> loglevel=8
+>>>> (after reverting this series, the kernel logs reappears on the serial
+>>>> console)
+>>>>
+>>> Which serial are you using as console?
+>> fffff200.serial (sam9g35-cm)
+>> ( stdout-path = "serial0:115200n8"; in the DTS )
+>>
+>> With this series applied, all the kernel log goes on the screen.
+>> Without, it goes on the serial debug.
+>>
+> I tested again with archlinux arm and poky-linux4sam release as distros
+> and kernel log goes on the serial debug. Can you give me more details
+> like cmdline?
+I used kernel 4.17-rc6
+at91_dt_defconfig
+at91sam9g35ek.dtb
 
-FIXME: serdev core always allocates and registers a serdev controller
-during port registration only to immediately roll back in the common
-case when there is no serdev slave defined in firmware
+Kernel command line: root=/dev/mtdblock1 rw rootfstype=ubifs ubi.mtd=1 root=ubi0:rootfs
+( the one from the DTS )
 
-FIXME: serdev does not support hotplugging (e.g. tty port hangups)
+Detailed instructions:
 
-Not-signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/usb/serial/bus.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+git checkout v4.17-rc6 
+ARCH=arm CROSS_COMPILE=path_to_my_Xchain/arm-linux- LOADADDR=0x20008000 make -j 12 at91_dt_defconfig
+ARCH=arm CROSS_COMPILE=path_to_my_Xchain/arm-linux- LOADADDR=0x20008000 make -j 12 uImage at91sam9g35ek.dtb
+cp arch/arm/boot/uImage arch/arm/boot/dts/at91sam9g35ek.dtb /tftpboot/
 
-diff --git a/drivers/usb/serial/bus.c b/drivers/usb/serial/bus.c
-index eb0195cf37dd..5f574a418c52 100644
---- a/drivers/usb/serial/bus.c
-+++ b/drivers/usb/serial/bus.c
-@@ -60,8 +60,9 @@ static int usb_serial_device_probe(struct device *dev)
- 	}
- 
- 	minor = port->minor;
--	tty_dev = tty_port_register_device(&port->port, usb_serial_tty_driver,
--					   minor, dev);
-+	tty_dev = tty_port_register_device_serdev(&port->port,
-+							usb_serial_tty_driver,
-+							minor, dev);
- 	if (IS_ERR(tty_dev)) {
- 		retval = PTR_ERR(tty_dev);
- 		goto err_port_remove;
-@@ -105,7 +106,7 @@ static int usb_serial_device_remove(struct device *dev)
- 	autopm_err = usb_autopm_get_interface(port->serial->interface);
- 
- 	minor = port->minor;
--	tty_unregister_device(usb_serial_tty_driver, minor);
-+	tty_port_unregister_device(&port->port, usb_serial_tty_driver, minor);
- 
- 	driver = port->serial->type;
- 	if (driver->port_remove)
--- 
-2.17.0
+>From uboot:
+tftpboot 0x20007FC0 uImage
+tftpboot 0x26400000 at91sam9g35ek.dtb
+bootm 0x20007FC0 - 0x26400000
+
+[ I see the logs on the serial debug ]
+
+git am \[PATCH\ v3\ [1-6]*
+
+ARCH=arm CROSS_COMPILE=path_to_my_Xchain/arm-linux- LOADADDR=0x20008000 make -j 12 uImage at91sam9g35ek.dtb
+cp arch/arm/boot/uImage arch/arm/boot/dts/at91sam9g35ek.dtb /tftpboot/
+
+>From uboot:
+tftpboot 0x20007FC0 uImage
+tftpboot 0x26400000 at91sam9g35ek.dtb
+bootm 0x20007FC0 - 0x26400000
+
+[ I don't see the logs on the serial debug anymore ]
+
+
+>>>> (tests done on sam9g35)
+>>>>
+>>> I will consider the rest of suggestions.
+>>>> regards,
+>>>> Richard
+>>
