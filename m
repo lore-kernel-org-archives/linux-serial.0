@@ -1,53 +1,98 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: OMAP serial runtime PM and autosuspend (was: Re: [PATCH 4/7]
- dt-bindings: gnss: add u-blox binding))
-Date: Fri, 25 May 2018 16:02:13 +0200
-Message-ID: <20180525140213.GI30172@localhost>
-References: <20180508155405.GX98604@atomide.com>
- <20180508164904.GZ98604@atomide.com>
- <20180509131003.GC2285@localhost>
- <20180509135706.GB98604@atomide.com>
- <20180517100948.GI30172@localhost>
- <20180517171038.GL98604@atomide.com>
- <20180521134830.GR30172@localhost>
- <20180521154832.GY98604@atomide.com>
- <20180524091742.GZ30172@localhost>
- <20180524133237.GA98604@atomide.com>
+From: Radu Pirea <radu.pirea@microchip.com>
+Subject: Re: [PATCH v3 6/6] tty/serial: atmel: changed the driver to work
+ under at91-usart mfd
+Date: Fri, 25 May 2018 17:07:56 +0300
+Message-ID: <df164579-1d6c-0f0b-4f2f-c0a29aa63d8f@microchip.com>
+References: <20180511103822.31698-1-radu.pirea@microchip.com>
+ <20180511103822.31698-7-radu.pirea@microchip.com>
+ <4a75568e-a52e-3872-f465-d707372a5c12@sorico.fr>
+ <95a51c6c69bf1a2422f545ac1f06846ebcdb186a.camel@microchip.com>
+ <4d70c73e-9db7-bdff-7414-04a4843acae3@sorico.fr>
+ <391de5c1-45d7-4773-fe57-7f2bc747214b@microchip.com>
+ <f817c82a-95b6-afb3-e662-c481a877cf01@sorico.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180524133237.GA98604@atomide.com>
+In-Reply-To: <f817c82a-95b6-afb3-e662-c481a877cf01@sorico.fr>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Johan Hovold <johan@kernel.org>, Sebastian Reichel <sre@kernel.org>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, linux-omap@vger.kernel.org, linux-pm@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
+To: Richard Genoud <richard.genoud@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org
+Cc: mark.rutland@arm.com, robh+dt@kernel.org, lee.jones@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 24, 2018 at 06:32:37AM -0700, Tony Lindgren wrote:
-> * Johan Hovold <johan@kernel.org> [180524 09:20]:
-> > On Mon, May 21, 2018 at 08:48:32AM -0700, Tony Lindgren wrote:
 
-> > > Well if you have some better mechanism in mind let's try it out. Short of
-> > > sprinkling pm_runtime_force_suspend/resume calls all over, I'm out of ideas
-> > > right now.
-> > 
-> > Yeah, that would be too much of a hack and likely wouldn't work either
-> > (and we really should do away with those _force calls altogether).
-> > 
-> > I've been thinking a bit too much about this already, but it may be
-> > possible to use the pm QoS framework for this. A resume latency can be
-> > set through sysfs where "n/a" is defined to mean "no latency accepted"
-> > (i.e. controller remains always-on while port is open) and "0" means
-> > "any latency accepted" (i.e. omap aggressive serial RPM is allowed).
+
+On 05/25/2018 04:35 PM, Richard Genoud wrote:
+> On 25/05/2018 14:17, Radu Pirea wrote:
+>>
+>>
+>> On 05/15/2018 04:14 PM, Richard Genoud wrote:
+>>> On 15/05/2018 14:47, Radu Pirea wrote:
+>>>> On Mon, 2018-05-14 at 12:57 +0200, Richard Genoud wrote:
+>>>>> After your patch, the DMA is not selected anymore:
+>>>>> atmel_usart_serial atmel_usart_serial.0.auto: TX channel not
+>>>>> available, switch to pio
+>>>>> instead of:
+>>>>> atmel_usart fffff200.serial: using dma1chan2 for tx DMA transfers
+>>>>>
+>>>> Fixed.
+>>>>> And the kernel doesn't log anymore on the serial console, despite the
+>>>>> loglevel=8
+>>>>> (after reverting this series, the kernel logs reappears on the serial
+>>>>> console)
+>>>>>
+>>>> Which serial are you using as console?
+>>> fffff200.serial (sam9g35-cm)
+>>> ( stdout-path = "serial0:115200n8"; in the DTS )
+>>>
+>>> With this series applied, all the kernel log goes on the screen.
+>>> Without, it goes on the serial debug.
+>>>
+>> I tested again with archlinux arm and poky-linux4sam release as distros
+>> and kernel log goes on the serial debug. Can you give me more details
+>> like cmdline?
+> I used kernel 4.17-rc6
+> at91_dt_defconfig
+> at91sam9g35ek.dtb
 > 
-> Oh yeah, PM QoS might work here!
-
-Actually, after reading a recent QoS related bug report, I realised that
-a resume latency request of "n/a" is actually a third way of disabling
-runtime PM, which similarly to the negative autosuspend would prevent
-also a closed port from suspending.
-
-Using a small positive resume latency for this feels like too much of a
-hack, but defining a new QoS flag might still work.
-
-Johan
+> Kernel command line: root=/dev/mtdblock1 rw rootfstype=ubifs ubi.mtd=1 root=ubi0:rootfs
+I reproduced your issue.
+If in cmdline console is not set like this "console=ttyS0,115200", the 
+console goes to the lcd.
+> ( the one from the DTS )
+> 
+> Detailed instructions:
+> 
+> git checkout v4.17-rc6
+> ARCH=arm CROSS_COMPILE=path_to_my_Xchain/arm-linux- LOADADDR=0x20008000 make -j 12 at91_dt_defconfig
+> ARCH=arm CROSS_COMPILE=path_to_my_Xchain/arm-linux- LOADADDR=0x20008000 make -j 12 uImage at91sam9g35ek.dtb
+> cp arch/arm/boot/uImage arch/arm/boot/dts/at91sam9g35ek.dtb /tftpboot/
+> 
+>  From uboot:
+> tftpboot 0x20007FC0 uImage
+> tftpboot 0x26400000 at91sam9g35ek.dtb
+> bootm 0x20007FC0 - 0x26400000
+> 
+> [ I see the logs on the serial debug ]
+> 
+> git am \[PATCH\ v3\ [1-6]*
+> 
+> ARCH=arm CROSS_COMPILE=path_to_my_Xchain/arm-linux- LOADADDR=0x20008000 make -j 12 uImage at91sam9g35ek.dtb
+> cp arch/arm/boot/uImage arch/arm/boot/dts/at91sam9g35ek.dtb /tftpboot/
+> 
+>  From uboot:
+> tftpboot 0x20007FC0 uImage
+> tftpboot 0x26400000 at91sam9g35ek.dtb
+> bootm 0x20007FC0 - 0x26400000
+> 
+> [ I don't see the logs on the serial debug anymore ]
+> 
+> 
+>>>>> (tests done on sam9g35)
+>>>>>
+>>>> I will consider the rest of suggestions.
+>>>>> regards,
+>>>>> Richard
+>>>
+> 
