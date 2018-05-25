@@ -1,60 +1,54 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 5/6] spi: at91-usart: add driver for at91-usart as spi
-Date: Thu, 24 May 2018 19:16:28 +0100
-Message-ID: <20180524181628.GE4828@sirena.org.uk>
+From: Radu Pirea <radu.pirea@microchip.com>
+Subject: Re: [PATCH v3 6/6] tty/serial: atmel: changed the driver to work
+ under at91-usart mfd
+Date: Fri, 25 May 2018 15:17:39 +0300
+Message-ID: <391de5c1-45d7-4773-fe57-7f2bc747214b@microchip.com>
 References: <20180511103822.31698-1-radu.pirea@microchip.com>
- <20180511103822.31698-6-radu.pirea@microchip.com>
- <CAHp75Ve3Ugnjjm8EZkPQTZSvH1qad1e5SqjOn8zz5syHSQea_g@mail.gmail.com>
- <5a3930b867cf8c279953d08c5d5dd1d93113a43b.camel@microchip.com>
- <CAHp75VdRrL25Jgnbk64Qqc5RY3uJdcntJ3xwRdp3F+rRFeTHBA@mail.gmail.com>
- <c23cdde58b9f724f51787c6c38478df983be6efa.camel@microchip.com>
- <20180517045437.GE20254@sirena.org.uk>
- <0e6e71e2-f8ac-7889-0d81-8d8a4c15223d@microchip.com>
- <20180524175620.GB12093@piout.net>
+ <20180511103822.31698-7-radu.pirea@microchip.com>
+ <4a75568e-a52e-3872-f465-d707372a5c12@sorico.fr>
+ <95a51c6c69bf1a2422f545ac1f06846ebcdb186a.camel@microchip.com>
+ <4d70c73e-9db7-bdff-7414-04a4843acae3@sorico.fr>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="fzZfjcV6kaBgkq89"
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180524175620.GB12093@piout.net>
+In-Reply-To: <4d70c73e-9db7-bdff-7414-04a4843acae3@sorico.fr>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Radu Pirea <radu.pirea@microchip.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, devicetree <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, linux-spi <linux-spi@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, Nicolas Ferre <nicolas.ferre@microchip.com>
+To: Richard Genoud <richard.genoud@gmail.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org
+Cc: mark.rutland@arm.com, robh+dt@kernel.org, lee.jones@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com, broonie@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 
---fzZfjcV6kaBgkq89
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Thu, May 24, 2018 at 07:56:20PM +0200, Alexandre Belloni wrote:
-
-> Back in 2014, I was suggesting using devm_gpio_request_one() in
-> of_spi_register_master(). That would take care of setting the direction
-> of the GPIO:
-
-> https://www.spinics.net/lists/arm-kernel/msg351251.html
-
-> I never took the time to create the patch and test though.
-
-Right, this'd be ideal but unfortunately it does mean we'd have to
-transition all the existing users that open code their requests which is
-a pain.  It'd be really nice if someone had the time/enthusiam to do it
-though.
-
---fzZfjcV6kaBgkq89
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlsHAXwACgkQJNaLcl1U
-h9ByOQgAhs9RFeiFQSgUep94tUUdJU85bZVBQRkfQiidVevSbmmgtz05neQXGEIW
-UxyKwshNRVCqV2cnNMKLrLCjLOMS46TdgEfUnkzWegJQ0vhwj+XJ+AWJtCPwFZaT
-CdROhNgbhE6zNCNJGNEc8kUNrAscKV/bllQh6M6SceLpddXqcnbtgdPF6+iOKAKh
-LDWT7nzUeX49b0zEmMfnoSHLBdpQjrQui4an3bllPpZ3XB0IipIHKX+gU0lqpYSw
-qzN8auPOdD1Wqk70KfWi/+PK1flmqlQ4d9eJEOf02/zLSG7p/BjjVBKmT60DkN9+
-sM0kLWPGAOrqz+msZG7H3CegweQ9Hw==
-=dq7H
------END PGP SIGNATURE-----
-
---fzZfjcV6kaBgkq89--
+On 05/15/2018 04:14 PM, Richard Genoud wrote:
+> On 15/05/2018 14:47, Radu Pirea wrote:
+>> On Mon, 2018-05-14 at 12:57 +0200, Richard Genoud wrote:
+>>> After your patch, the DMA is not selected anymore:
+>>> atmel_usart_serial atmel_usart_serial.0.auto: TX channel not
+>>> available, switch to pio
+>>> instead of:
+>>> atmel_usart fffff200.serial: using dma1chan2 for tx DMA transfers
+>>>
+>> Fixed.
+>>> And the kernel doesn't log anymore on the serial console, despite the
+>>> loglevel=8
+>>> (after reverting this series, the kernel logs reappears on the serial
+>>> console)
+>>>
+>> Which serial are you using as console?
+> fffff200.serial (sam9g35-cm)
+> ( stdout-path = "serial0:115200n8"; in the DTS )
+> 
+> With this series applied, all the kernel log goes on the screen.
+> Without, it goes on the serial debug.
+> 
+I tested again with archlinux arm and poky-linux4sam release as distros 
+and kernel log goes on the serial debug. Can you give me more details 
+like cmdline?
+>>> (tests done on sam9g35)
+>>>
+>> I will consider the rest of suggestions.
+>>> regards,
+>>> Richard
+> 
