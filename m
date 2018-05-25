@@ -1,98 +1,65 @@
 From: Radu Pirea <radu.pirea@microchip.com>
-Subject: Re: [PATCH v3 6/6] tty/serial: atmel: changed the driver to work
- under at91-usart mfd
-Date: Fri, 25 May 2018 17:07:56 +0300
-Message-ID: <df164579-1d6c-0f0b-4f2f-c0a29aa63d8f@microchip.com>
-References: <20180511103822.31698-1-radu.pirea@microchip.com>
- <20180511103822.31698-7-radu.pirea@microchip.com>
- <4a75568e-a52e-3872-f465-d707372a5c12@sorico.fr>
- <95a51c6c69bf1a2422f545ac1f06846ebcdb186a.camel@microchip.com>
- <4d70c73e-9db7-bdff-7414-04a4843acae3@sorico.fr>
- <391de5c1-45d7-4773-fe57-7f2bc747214b@microchip.com>
- <f817c82a-95b6-afb3-e662-c481a877cf01@sorico.fr>
+Subject: [PATCH v4 0/6] Driver for at91 usart in spi mode
+Date: Fri, 25 May 2018 20:19:35 +0300
+Message-ID: <20180525171941.26766-1-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f817c82a-95b6-afb3-e662-c481a877cf01@sorico.fr>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org
-Cc: mark.rutland@arm.com, robh+dt@kernel.org, lee.jones@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com, broonie@kernel.org
+To: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
+Cc: linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>
 List-Id: linux-serial@vger.kernel.org
 
+Hello,
+
+This is the second version of driver. I added a mfd driver which by
+default probes atmel_serial driver and if in dt is specified to probe
+the spi driver, then the spi-at91-usart driver will be probed. The
+compatible for atmel_serial is now the compatible for at91-usart mfd
+driver and compatilbe for atmel_serial driver was changed in order to
+keep the bindings for serial as they are.
+
+Changes in v1:
+- added spi-at91-usart driver
+
+Changes in v2:
+- added at91-usart mfd driver
+- modified spi-at91-usart driver to work as mfd driver child
+- modified atmel_serial driver to work as mfd driver child
+
+Changes in v3:
+- fixed spi slaves probing
+
+Changes in v4:
+- modified the spi driver to use cs gpio support form spi subsystem
+- fixed dma transfers for serial driver
+- squashed binding for spi and serial and moved them to mfd/atmel-usart.txt
 
 
-On 05/25/2018 04:35 PM, Richard Genoud wrote:
-> On 25/05/2018 14:17, Radu Pirea wrote:
->>
->>
->> On 05/15/2018 04:14 PM, Richard Genoud wrote:
->>> On 15/05/2018 14:47, Radu Pirea wrote:
->>>> On Mon, 2018-05-14 at 12:57 +0200, Richard Genoud wrote:
->>>>> After your patch, the DMA is not selected anymore:
->>>>> atmel_usart_serial atmel_usart_serial.0.auto: TX channel not
->>>>> available, switch to pio
->>>>> instead of:
->>>>> atmel_usart fffff200.serial: using dma1chan2 for tx DMA transfers
->>>>>
->>>> Fixed.
->>>>> And the kernel doesn't log anymore on the serial console, despite the
->>>>> loglevel=8
->>>>> (after reverting this series, the kernel logs reappears on the serial
->>>>> console)
->>>>>
->>>> Which serial are you using as console?
->>> fffff200.serial (sam9g35-cm)
->>> ( stdout-path = "serial0:115200n8"; in the DTS )
->>>
->>> With this series applied, all the kernel log goes on the screen.
->>> Without, it goes on the serial debug.
->>>
->> I tested again with archlinux arm and poky-linux4sam release as distros
->> and kernel log goes on the serial debug. Can you give me more details
->> like cmdline?
-> I used kernel 4.17-rc6
-> at91_dt_defconfig
-> at91sam9g35ek.dtb
-> 
-> Kernel command line: root=/dev/mtdblock1 rw rootfstype=ubifs ubi.mtd=1 root=ubi0:rootfs
-I reproduced your issue.
-If in cmdline console is not set like this "console=ttyS0,115200", the 
-console goes to the lcd.
-> ( the one from the DTS )
-> 
-> Detailed instructions:
-> 
-> git checkout v4.17-rc6
-> ARCH=arm CROSS_COMPILE=path_to_my_Xchain/arm-linux- LOADADDR=0x20008000 make -j 12 at91_dt_defconfig
-> ARCH=arm CROSS_COMPILE=path_to_my_Xchain/arm-linux- LOADADDR=0x20008000 make -j 12 uImage at91sam9g35ek.dtb
-> cp arch/arm/boot/uImage arch/arm/boot/dts/at91sam9g35ek.dtb /tftpboot/
-> 
->  From uboot:
-> tftpboot 0x20007FC0 uImage
-> tftpboot 0x26400000 at91sam9g35ek.dtb
-> bootm 0x20007FC0 - 0x26400000
-> 
-> [ I see the logs on the serial debug ]
-> 
-> git am \[PATCH\ v3\ [1-6]*
-> 
-> ARCH=arm CROSS_COMPILE=path_to_my_Xchain/arm-linux- LOADADDR=0x20008000 make -j 12 uImage at91sam9g35ek.dtb
-> cp arch/arm/boot/uImage arch/arm/boot/dts/at91sam9g35ek.dtb /tftpboot/
-> 
->  From uboot:
-> tftpboot 0x20007FC0 uImage
-> tftpboot 0x26400000 at91sam9g35ek.dtb
-> bootm 0x20007FC0 - 0x26400000
-> 
-> [ I don't see the logs on the serial debug anymore ]
-> 
-> 
->>>>> (tests done on sam9g35)
->>>>>
->>>> I will consider the rest of suggestions.
->>>>> regards,
->>>>> Richard
->>>
-> 
+Radu Pirea (6):
+  MAINTAINERS: add at91 usart mfd driver
+  dt-bindings: add binding for atmel-usart in SPI mode
+  mfd: at91-usart: added mfd driver for usart
+  MAINTAINERS: add at91 usart spi driver
+  spi: at91-usart: add driver for at91-usart as spi
+  tty/serial: atmel: changed the driver to work under at91-usart mfd
+
+ .../bindings/{serial => mfd}/atmel-usart.txt  |  25 +-
+ MAINTAINERS                                   |  16 +
+ drivers/mfd/Kconfig                           |  10 +
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/at91-usart.c                      |  75 +++
+ drivers/spi/Kconfig                           |   9 +
+ drivers/spi/Makefile                          |   1 +
+ drivers/spi/spi-at91-usart.c                  | 431 ++++++++++++++++++
+ drivers/tty/serial/Kconfig                    |   1 +
+ drivers/tty/serial/atmel_serial.c             |  40 +-
+ include/dt-bindings/mfd/at91-usart.h          |  17 +
+ 11 files changed, 606 insertions(+), 20 deletions(-)
+ rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
+ create mode 100644 drivers/mfd/at91-usart.c
+ create mode 100644 drivers/spi/spi-at91-usart.c
+ create mode 100644 include/dt-bindings/mfd/at91-usart.h
+
+-- 
+2.17.0
