@@ -1,174 +1,47 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v4 5/6] spi: at91-usart: add driver for at91-usart as spi
-Date: Mon, 28 May 2018 11:21:26 +0300
-Message-ID: <CAHp75Vc0e=+2YptoFAUuPSpAyxaCUJJqjQPPY5VZHV=MEMOqHQ@mail.gmail.com>
-References: <20180525171941.26766-1-radu.pirea@microchip.com> <20180525171941.26766-6-radu.pirea@microchip.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH v4 6/6] tty/serial: atmel: changed the driver to work
+ under at91-usart mfd
+Date: Mon, 28 May 2018 12:08:02 +0200
+Message-ID: <e1445467-2df0-4593-852d-939e6795f318@sorico.fr>
+References: <20180525171941.26766-1-radu.pirea@microchip.com>
+ <20180525171941.26766-7-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180525171941.26766-6-radu.pirea@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu.pirea@microchip.com>
-Cc: Mark Brown <broonie@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, alexandre.belloni@bootlin.com, Lee Jones <lee.jones@linaro.org>, Richard Genoud <richard.genoud@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-spi <linux-spi@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180525171941.26766-7-radu.pirea@microchip.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Radu Pirea <radu.pirea@microchip.com>, broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 25, 2018 at 8:19 PM, Radu Pirea <radu.pirea@microchip.com> wrote:
-> This is the driver for at91-usart in spi mode. The USART IP can be configured
-> to work in many modes and one of them is SPI.
->
-> The driver was tested on sama5d3-xplained and sama5d4-xplained boards with
-> enc28j60 ethernet controller as slave.
+On 25/05/2018 19:19, Radu Pirea wrote:
+> This patch modifies the place where resources and device tree properties
+> are searched.
+> 
+> Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+> ---
+>  drivers/tty/serial/Kconfig        |  1 +
+>  drivers/tty/serial/atmel_serial.c | 40 +++++++++++++++++--------------
+>  2 files changed, 23 insertions(+), 18 deletions(-)
+the stdout-path property of the chosen node is still broken in this verion.
+if :
+stdout-path = "serial0:115200n8";
+is set in the DTS, the console output should go on serial0 (aka dbgu)
+cf Documentation/devicetree/bindings/chosen.txt
 
-> +#include <linux/of_gpio.h>
-
-What is the use of it?
-
-> +#define US_INIT                        (US_MR_SPI_MASTER | US_MR_CHRL | US_MR_CLKO | \
-> +                               US_MR_WRDBT)
-
-Don't split lines like this, it's hard to read.
-
-#define FOO \
- (BAR1 | BAR2)
-
-I think I already told this to someone recently, maybe to you.
-
-> +/* Register access macros */
-> +#define spi_readl(port, reg) \
-> +       readl_relaxed((port)->regs + US_##reg)
-> +#define spi_writel(port, reg, value) \
-> +       writel_relaxed((value), (port)->regs + US_##reg)
-> +
-> +#define spi_readb(port, reg) \
-> +       readb_relaxed((port)->regs + US_##reg)
-> +#define spi_writeb(port, reg, value) \
-> +       writeb_relaxed((value), (port)->regs + US_##reg)
-
-Names are too generic. You better to use the same prefix as for the
-rest, i.e. at91_spi_
-
-> +       /*used in interrupt to protect data reading*/
-
-Comment style.
-
-You need to read some existing code, perhaps, to see how it's done.
-
-> +static inline void at91_usart_spi_tx(struct at91_usart_spi *aus)
-> +{
-> +       unsigned int len = aus->current_transfer->len;
-> +       unsigned int remaining = aus->current_tx_remaining_bytes;
-> +       const u8  *tx_buf = aus->current_transfer->tx_buf;
-> +
-
-> +       if (remaining)
-> +               if (at91_usart_spi_tx_ready(aus)) {
-
-if (x) {
- if (y) {
-...
- }
-}
-
-is equivalent to if (x && y) {}.
-
-Though, considering your intention here, I would rather go with better
-pattern, i.e.
-
-if (!remaining)
- return;
-
-> +                       spi_writeb(aus, THR, tx_buf[len - remaining]);
-> +                       aus->current_tx_remaining_bytes--;
-> +               }
-> +}
-> +
-> +static inline void at91_usart_spi_rx(struct at91_usart_spi *aus)
-> +{
-
-> +       if (remaining) {
-> +               rx_buf[len - remaining] = spi_readb(aus, RHR);
-> +               aus->current_rx_remaining_bytes--;
-> +       }
-
-Ditto.
-
-> +}
+With this patch applied, this is not the case anymore.
+Adding console=ttyS0,115200 in the chosen node is not the solution here.
 
 
-> +static int at91_usart_gpio_setup(struct platform_device *pdev)
-> +{
-
-> +       struct device_node      *np = pdev->dev.parent->of_node;
-
-Your driver is not OF specific as far as I can see. Drop all these
-device_node stuff and change API calls respectively.
-
-> +       int                     i;
-
-> +       int                     ret = 0;
-> +       int                     nb = 0;
-
-What happened to indentation?
-
-Redundnant assignment for both.
-
-> +       if (!np)
-> +               return -EINVAL;
-> +
-> +       nb = of_gpio_named_count(np, "cs-gpios");
-> +       for (i = 0; i < nb; i++) {
-> +               int cs_gpio = of_get_named_gpio(np, "cs-gpios", i);
-> +
-> +               if (cs_gpio < 0)
-> +                       return cs_gpio;
-> +
-> +               if (gpio_is_valid(cs_gpio)) {
-> +                       ret = devm_gpio_request_one(&pdev->dev, cs_gpio,
-> +                                                   GPIOF_DIR_OUT,
-> +                                                   dev_name(&pdev->dev));
-> +                       if (ret)
-> +                               return ret;
-> +               }
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static int at91_usart_spi_probe(struct platform_device *pdev)
-> +{
-
-> +       regs = platform_get_resource(to_platform_device(pdev->dev.parent),
-> +                                    IORESOURCE_MEM, 0);
-> +       if (!regs)
-> +               return -EINVAL;
-
-This looks weird. Supply resource to _this_ device in your MFD code.
-
-> +       dev_info(&pdev->dev,
-> +                "Atmel USART SPI Controller version 0x%x at 0x%08lx (irq %d)\n",
-> +                spi_readl(aus, VERSION),
-> +                (unsigned long)regs->start, irq);
-
-I think I already told you, don't use explicit casting when print.
-If it wasn't you, do you homework then. But above is no go.
-
-> +       return 0;
-
-> +static struct platform_driver at91_usart_spi_driver = {
-> +       .driver = {
-> +               .name = "at91_usart_spi",
-
-> +               .of_match_table = of_match_ptr(at91_usart_spi_dt_ids),
-
-Drop of_match_ptr(). It's not needed.
-
-> +       },
-> +       .probe = at91_usart_spi_probe,
-
-> +       .remove = at91_usart_spi_remove, };
-
-Already told ya, split lines correctly.
-
--- 
-With Best Regards,
-Andy Shevchenko
+regards,
+Richard.
