@@ -1,90 +1,51 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH 19/19] serdev: Instantiate a ttydev serdev if acpi and of fails
-Date: Tue, 29 May 2018 15:10:14 +0200
-Message-ID: <20180529131014.18641-20-ricardo.ribalda@gmail.com>
-References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [patch v23 2/4] drivers: jtag: Add Aspeed SoC 24xx and 25xx
+ families JTAG master driver
+Date: Tue, 29 May 2018 15:11:09 +0200
+Message-ID: <20180529131109.GD30119@kroah.com>
+References: <1527594545-19870-1-git-send-email-oleksandrs@mellanox.com>
+ <1527594545-19870-3-git-send-email-oleksandrs@mellanox.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <1527594545-19870-3-git-send-email-oleksandrs@mellanox.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+To: Oleksandr Shamray <oleksandrs@mellanox.com>
+Cc: arnd@arndb.de, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au, jiri@resnulli.us, tklauser@distanz.ch, linux-serial@vger.kernel.org, vadimp@mellanox.com, system-sw-low-level@mellanox.com, robh+dt@kernel.org, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, davem@davemloft.net, mchehab@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-If a serdev ttyport controller does not have an acpi nor an of child,
-create a ttydev as a child of that controller.
+On Tue, May 29, 2018 at 02:49:03PM +0300, Oleksandr Shamray wrote:
+> +static int aspeed_jtag_idle(struct jtag *jtag,
+> +			    struct jtag_run_test_idle *runtest)
+> +{
+> +	struct aspeed_jtag *aspeed_jtag = jtag_priv(jtag);
+> +
+> +	dev_dbg(aspeed_jtag->dev, "runtest, status:%d, mode:%s, state:%s, reset:%d, tck:%d\n",
+> +		aspeed_jtag->status,
+> +		aspeed_jtag->mode & JTAG_XFER_HW_MODE ? "HW" : "SW",
+> +		end_status_str[runtest->endstate], runtest->reset,
+> +		runtest->tck);
 
-Doing this allows the removal, addition and replacement of ttydev devices
-at runtime.
+You have dev_dbg() lines all over the place.  They can all be removed
+now, right?  ftrace works well, and if you really want to do this
+properly, use tracepoints in the jtag core code so that you can get the
+information for all devices as needed.
 
-Cc: Rob Herring <robh@kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
----
- drivers/tty/serdev/core.c | 36 ++++++++++++++++++++++++++++++++----
- 1 file changed, 32 insertions(+), 4 deletions(-)
+But don't put them all over the driver, now that it's all working,
+there's no need, right?
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 9414700e6442..34295dacfb84 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -619,6 +619,27 @@ static inline int acpi_serdev_register_devices(struct serdev_controller *ctrl)
- }
- #endif /* CONFIG_ACPI */
- 
-+
-+#if IS_ENABLED(CONFIG_SERIAL_DEV_CTRL_TTYDEV)
-+static int serdev_controller_add_ttydev(struct serdev_controller *ctrl)
-+{
-+	struct serdev_device *serdev;
-+	int err;
-+
-+	serdev = serdev_device_alloc(ctrl);
-+	if (!serdev)
-+		return -ENOMEM;
-+
-+	strcpy(serdev->modalias, "ttydev");
-+
-+	err = serdev_device_add(serdev);
-+	if (err)
-+		serdev_device_put(serdev);
-+
-+	return err;
-+}
-+#endif
-+
- /**
-  * serdev_controller_add() - Add an serdev controller
-  * @ctrl:	controller to be registered.
-@@ -628,7 +649,7 @@ static inline int acpi_serdev_register_devices(struct serdev_controller *ctrl)
-  */
- int serdev_controller_add(struct serdev_controller *ctrl)
- {
--	int ret_of, ret_acpi, ret;
-+	int ret_of, ret_acpi, ret, ret_tty = -ENODEV;
- 
- 	/* Can't register until after driver model init */
- 	if (WARN_ON(!is_registered))
-@@ -640,9 +661,16 @@ int serdev_controller_add(struct serdev_controller *ctrl)
- 
- 	ret_of = of_serdev_register_devices(ctrl);
- 	ret_acpi = acpi_serdev_register_devices(ctrl);
--	if (ret_of && ret_acpi) {
--		dev_dbg(&ctrl->dev, "no devices registered: of:%d acpi:%d\n",
--			ret_of, ret_acpi);
-+
-+#if IS_ENABLED(CONFIG_SERIAL_DEV_CTRL_TTYDEV)
-+	if (ret_of && ret_acpi && ctrl->is_ttyport)
-+		ret_tty = serdev_controller_add_ttydev(ctrl);
-+#endif
-+
-+	if (ret_of && ret_acpi && ret_tty) {
-+		dev_dbg(&ctrl->dev,
-+			"no devices registered: of:%d acpi:%d tty:%d\n",
-+			ret_of, ret_acpi, ret_tty);
- 		ret = -ENODEV;
- 		goto out_dev_del;
- 	}
--- 
-2.17.0
+> +static void aspeed_jtag_xfer_push_data_last(struct aspeed_jtag *aspeed_jtag,
+> +					    enum jtag_xfer_type type,
+> +					    u32 shift_bits,
+> +					    enum jtag_endstate endstate)
+> +{
+> +	if (endstate == JTAG_STATE_IDLE) {
+> +		if (type == JTAG_SIR_XFER) {
+> +			dev_dbg(aspeed_jtag->dev, "IR Keep Pause\n");
+
+Like this, doesn't provide much info, does it?
+
+thanks,
+
+greg k-h
