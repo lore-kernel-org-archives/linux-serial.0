@@ -1,93 +1,276 @@
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: Re: [PATCH v4 5/6] spi: at91-usart: add driver for at91-usart as spi
-Date: Tue, 29 May 2018 16:36:52 +0200
-Message-ID: <7ac6e7ba-1f92-22c4-c989-b64107b8644a@microchip.com>
-References: <20180525171941.26766-1-radu.pirea@microchip.com>
- <20180525171941.26766-6-radu.pirea@microchip.com>
- <CAHp75Vc0e=+2YptoFAUuPSpAyxaCUJJqjQPPY5VZHV=MEMOqHQ@mail.gmail.com>
- <110bb353-b131-348c-8e26-9863b074142d@microchip.com>
- <0c529082-722c-14d8-7a04-dfeb63d5de92@microchip.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Oleksandr Shamray <oleksandrs@mellanox.com>
+Subject: [patch v25 4/4] Documentation: jtag: Add ABI documentation
+Date: Tue, 29 May 2018 17:53:38 +0300
+Message-ID: <1527605618-15705-5-git-send-email-oleksandrs@mellanox.com>
+References: <1527605618-15705-1-git-send-email-oleksandrs@mellanox.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <0c529082-722c-14d8-7a04-dfeb63d5de92@microchip.com>
-Content-Language: en-US
+In-Reply-To: <1527605618-15705-1-git-send-email-oleksandrs@mellanox.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu.pirea@microchip.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Mark Brown <broonie@kernel.org>, alexandre.belloni@bootlin.com, Lee Jones <lee.jones@linaro.org>, Richard Genoud <richard.genoud@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-spi <linux-spi@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Ludovic Desroches <ludovic.desroches@microchip.com>
+To: gregkh@linuxfoundation.org, arnd@arndb.de
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au, jiri@resnulli.us, tklauser@distanz.ch, linux-serial@vger.kernel.org, vadimp@mellanox.com, system-sw-low-level@mellanox.com, robh+dt@kernel.org, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, davem@davemloft.net, mchehab@kernel.org, Oleksandr Shamray <oleksandrs@mellanox.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 29/05/2018 at 16:34, Nicolas Ferre wrote:
-> On 29/05/2018 at 16:28, Radu Pirea wrote:
->>
->>
->> On 05/28/2018 11:21 AM, Andy Shevchenko wrote:
->>> On Fri, May 25, 2018 at 8:19 PM, Radu Pirea <radu.pirea@microchip.com> wrote:
->>>> This is the driver for at91-usart in spi mode. The USART IP can be configured
->>>> to work in many modes and one of them is SPI.
-> 
-> [..]
-> 
->>>> +static int at91_usart_gpio_setup(struct platform_device *pdev)
->>>> +{
->>>
->>>> +       struct device_node      *np = pdev->dev.parent->of_node;
->>>
->>> Your driver is not OF specific as far as I can see. Drop all these
->>> device_node stuff and change API calls respectively.
->>
->> Ok. What do you suggest to use instead of OF API to get the count of
->> cs-gpios and to read their values one by one?
-> 
-> As Alexandre said, we can make this driver OF specific.
-> 
-> What could be interesting is to use the gpio descriptors API and not the
-> older one. This would allow us to have far more control over the gpio
-> that we use in our drivers (Ludovic is converting our drivers to only
-> use gpiod structures).
+Added document that describe the ABI for JTAG class drivrer
 
-Oh, but we already said that we cannot.
-Disregard my comment then, sorry for the noise.
+Signed-off-by: Oleksandr Shamray <oleksandrs@mellanox.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+v24->v25
+Comments pointed by Greg KH <gregkh@linuxfoundation.org>
+- Fixed documentation according to new open() behavior
 
-> Regards,
->     Nicolas
-> 
->>
->>>
->>>> +       int                     i;
->>>
->>>> +       int                     ret = 0;
->>>> +       int                     nb = 0;
->>>
->>> What happened to indentation?
->>>
->>> Redundnant assignment for both.
->>>
->>>> +       if (!np)
->>>> +               return -EINVAL;
->>>> +
->>>> +       nb = of_gpio_named_count(np, "cs-gpios");
->>>> +       for (i = 0; i < nb; i++) {
->>>> +               int cs_gpio = of_get_named_gpio(np, "cs-gpios", i);
->>>> +
->>>> +               if (cs_gpio < 0)
->>>> +                       return cs_gpio;
->>>> +
->>>> +               if (gpio_is_valid(cs_gpio)) {
->>>> +                       ret = devm_gpio_request_one(&pdev->dev, cs_gpio,
->>>> +                                                   GPIOF_DIR_OUT,
->>>> +                                                   dev_name(&pdev->dev));
->>>> +                       if (ret)
->>>> +                               return ret;
->>>> +               }
->>>> +       }
->>>> +
->>>> +       return 0;
->>>> +}
-> [..]
-> 
+v23->24
+v22->v23
+Comments pointed by Randy Dunlap <rdunlap@infradead.org>
+- fix spell in ABI doccumentation
 
+v21->v22
+Comments pointed by Randy Dunlap <rdunlap@infradead.org>
+- fix spell in ABI doccumentation
 
+v20->v21
+Comments pointed by Randy Dunlap <rdunlap@infradead.org>
+- Fix JTAG dirver help in Kconfig
+
+v19->v20
+Comments pointed by Randy Dunlap <rdunlap@infradead.org>
+- Fix JTAG doccumentation
+
+v18->v19
+Pavel Machek <pavel@ucw.cz>
+- Added JTAG doccumentation to Documentation/jtag
+
+v17->v18
+v16->v17
+v15->v16
+v14->v15
+v13->v14
+v12->v13
+v11->v12 Tobias Klauser <tklauser@distanz.ch>
+Comments pointed by
+- rename /Documentation/ABI/testing/jatg-dev -> jtag-dev
+- Typo: s/interfase/interface
+v10->v11
+v9->v10
+Fixes added by Oleksandr:
+- change jtag-cdev to jtag-dev in documentation
+- update KernelVersion and Date in jtag-dev documentation;
+v8->v9
+v7->v8
+v6->v7
+Comments pointed by Pavel Machek <pavel@ucw.cz>
+- Added jtag-cdev documentation to Documentation/ABI/testing folder
+---
+ Documentation/ABI/testing/gpio-cdev |    1 -
+ Documentation/ABI/testing/jtag-dev  |   23 +++++++
+ Documentation/jtag/overview         |   27 +++++++++
+ Documentation/jtag/transactions     |  109 +++++++++++++++++++++++++++++++++++
+ MAINTAINERS                         |    1 +
+ 5 files changed, 160 insertions(+), 1 deletions(-)
+ create mode 100644 Documentation/ABI/testing/jtag-dev
+ create mode 100644 Documentation/jtag/overview
+ create mode 100644 Documentation/jtag/transactions
+
+diff --git a/Documentation/ABI/testing/gpio-cdev b/Documentation/ABI/testing/gpio-cdev
+index 7b265fb..c09d589 100644
+--- a/Documentation/ABI/testing/gpio-cdev
++++ b/Documentation/ABI/testing/gpio-cdev
+@@ -12,7 +12,6 @@ Description:
+ 		The following file operations are supported:
+ 
+ 		open(2)
+-		Currently the only useful flags are O_RDWR.
+ 
+ 		ioctl(2)
+ 		Initiate various actions.
+diff --git a/Documentation/ABI/testing/jtag-dev b/Documentation/ABI/testing/jtag-dev
+new file mode 100644
+index 0000000..08249fe
+--- /dev/null
++++ b/Documentation/ABI/testing/jtag-dev
+@@ -0,0 +1,23 @@
++What:		/dev/jtag[0-9]+
++Date:		May 2018
++KernelVersion:	4.18
++Contact:	oleksandrs@mellanox.com
++Description:
++		The misc device files /dev/jtag* are the interface
++		between JTAG master interface and userspace.
++
++		The ioctl(2)-based ABI is defined and documented in
++		[include/uapi]<linux/jtag.h>.
++
++		The following file operations are supported:
++
++		open(2)
++		Opens and allocates file descriptor.
++
++		ioctl(2)
++		Initiate various actions.
++		See the inline documentation in [include/uapi]<linux/jtag.h>
++		for descriptions of all ioctls.
++
++Users:
++		userspace tools which wants to access to JTAG bus
+diff --git a/Documentation/jtag/overview b/Documentation/jtag/overview
+new file mode 100644
+index 0000000..f179095
+--- /dev/null
++++ b/Documentation/jtag/overview
+@@ -0,0 +1,27 @@
++Linux kernel JTAG support
++=========================
++
++JTAG is an industry standard for verifying hardware.JTAG provides access to
++many logic signals of a complex integrated circuit, including the device pins.
++
++A JTAG interface is a special interface added to a chip.
++Depending on the version of JTAG, two, four, or five pins are added.
++
++The connector pins are:
++	TDI (Test Data In)
++	TDO (Test Data Out)
++	TCK (Test Clock)
++	TMS (Test Mode Select)
++	TRST (Test Reset) optional
++
++JTAG interface is designed to have two parts - basic core driver and
++hardware specific driver. The basic driver introduces a general interface
++which is not dependent of specific hardware. It provides communication
++between user space and hardware specific driver.
++Each JTAG device is represented as a char device from (jtag0, jtag1, ...).
++Access to a JTAG device is performed through IOCTL calls.
++
++Call flow example:
++User: open  -> /dev/jatgX
++User: ioctl -> /dev/jtagX -> JTAG core driver -> JTAG hardware specific driver
++User: close -> /dev/jatgX
+diff --git a/Documentation/jtag/transactions b/Documentation/jtag/transactions
+new file mode 100644
+index 0000000..c5176a7
+--- /dev/null
++++ b/Documentation/jtag/transactions
+@@ -0,0 +1,109 @@
++The JTAG API
++=============
++
++JTAG master devices can be accessed through a character misc-device.
++Each JTAG master interface can be accessed by using /dev/jtagN.
++
++JTAG system calls set:
++- SIR (Scan Instruction Register, IEEE 1149.1 Instruction Register scan);
++- SDR (Scan Data Register, IEEE 1149.1 Data Register scan);
++- RUNTEST (Forces the IEEE 1149.1 bus to a run state for a specified
++number of clocks.
++
++open(), close()
++-------
++open() opens JTAG device.
++
++Open/Close  device:
++- jtag_fd = open("/dev/jtag0", O_RDWR);
++- close(jtag_fd);
++
++ioctl()
++-------
++All access operations to JTAG devices are erformed through ioctl interface.
++The IOCTL interface supports these requests:
++	JTAG_IOCRUNTEST - Force JTAG state machine to RUN_TEST/IDLE state
++	JTAG_SIOCFREQ - Set JTAG TCK frequency
++	JTAG_GIOCFREQ - Get JTAG TCK frequency
++	JTAG_IOCXFER - send JTAG data Xfer
++	JTAG_GIOCSTATUS - get current JTAG TAP status
++	JTAG_SIOCMODE - set JTAG mode flags.
++
++JTAG_SIOCFREQ, JTAG_GIOCFREQ
++------
++Set/Get JTAG clock speed:
++
++	unsigned int jtag_fd;
++	ioctl(jtag_fd, JTAG_SIOCFREQ, &frq);
++	ioctl(jtag_fd, JTAG_GIOCFREQ, &frq);
++
++JTAG_IOCRUNTEST
++------
++Force JTAG state machine to RUN_TEST/IDLE state
++
++struct jtag_run_test_idle {
++	__u8	reset;
++	__u8	endstate;
++	__u8	tck;
++};
++
++reset:
++	JTAG_NO_RESET - run IDLE/PAUSE from current state
++	JTAG_FORCE_RESET - go through TEST_LOGIC/RESET state before IDLE/PAUSE
++endstate: completion flag
++tck: clock counter
++
++Example:
++	struct jtag_run_test_idle runtest;
++
++	runtest.endstate = JTAG_STATE_IDLE;
++	runtest.reset = 0;
++	runtest.tck = data_p->tck;
++	usleep(25 * 1000);
++	ioctl(jtag_fd, JTAG_IOCRUNTEST, &runtest);
++
++JTAG_IOCXFER
++------
++Send SDR/SIR transaction
++
++struct jtag_xfer {
++	__u8	type;
++	__u8	direction;
++	__u8	endstate;
++	__u8	padding;
++	__u32	length;
++	__u64	tdio;
++};
++
++type: transfer type - JTAG_SIR_XFER/JTAG_SDR_XFER
++direction: xfer direction - JTAG_SIR_XFER/JTAG_SDR_XFER
++length: xfer data length in bits
++tdio : xfer data array
++endstate: xfer end state after transaction finish
++	   can be: JTAG_STATE_IDLE/JTAG_STATE_PAUSEIR/JTAG_STATE_PAUSEDR
++
++Example:
++	struct jtag_xfer xfer;
++	static char buf[64];
++	static unsigned int buf_len = 0;
++	[...]
++	xfer.type = JTAG_SDR_XFER;
++	xfer.tdio = (__u64)buf;
++	xfer.length = buf_len;
++	xfer.endstate = JTAG_STATE_IDLE;
++
++	if (is_read)
++		xfer.direction = JTAG_READ_XFER;
++	else
++		xfer.direction = JTAG_WRITE_XFER;
++
++	ioctl(jtag_fd, JTAG_IOCXFER, &xfer);
++
++JTAG_SIOCMODE
++------
++If hardware driver can support different running modes you can change it.
++
++Example:
++	unsigned int mode;
++	mode = JTAG_XFER_HW_MODE;
++	ioctl(jtag_fd, JTAG_SIOCMODE, &mode);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a5e5f75..e067eda 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7618,6 +7618,7 @@ F:	include/linux/jtag.h
+ F:	include/uapi/linux/jtag.h
+ F:	drivers/jtag/
+ F:	Documentation/devicetree/bindings/jtag/
++F:	Documentation/ABI/testing/jtag-dev
+ 
+ K10TEMP HARDWARE MONITORING DRIVER
+ M:	Clemens Ladisch <clemens@ladisch.de>
 -- 
-Nicolas Ferre
+1.7.1
