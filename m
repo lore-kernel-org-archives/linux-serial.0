@@ -1,69 +1,38 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH 06/19] serdev: Support bus matching with modalias field
-Date: Tue, 29 May 2018 15:10:01 +0200
-Message-ID: <20180529131014.18641-7-ricardo.ribalda@gmail.com>
+Subject: [PATCH 05/19] serdev: Introduce modalias field
+Date: Tue, 29 May 2018 15:10:00 +0200
+Message-ID: <20180529131014.18641-6-ricardo.ribalda@gmail.com>
 References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Match devices to drivers by their modalias when the ACPI and the OF
-match fails.
+Name of the driver to use with this device, or an alias for that name,
+or an alias for the part.
+Required for hardware that is neither an of_node nor part of the ACPI
+table.
 
 Cc: Rob Herring <robh@kernel.org>
 Cc: Johan Hovold <johan@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serdev/core.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ include/linux/serdev.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index df93b727e984..2c79f47fc0db 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -79,8 +79,23 @@ static const struct device_type serdev_ctrl_type = {
- 	.release	= serdev_ctrl_release,
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index 62f1b085a794..bb3b9599c652 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -54,6 +54,7 @@ struct serdev_device {
+ 	const struct serdev_device_ops *ops;
+ 	struct completion write_comp;
+ 	struct mutex write_lock;
++	char modalias[SERDEV_NAME_SIZE];
  };
  
-+static int serdev_match_id(const struct serdev_device_id *id,
-+			   const struct serdev_device *sdev)
-+{
-+	while (id->name[0]) {
-+		if (!strcmp(sdev->modalias, id->name))
-+			return 1;
-+		id++;
-+	}
-+
-+	return 0;
-+}
-+
- static int serdev_device_match(struct device *dev, struct device_driver *drv)
- {
-+	const struct serdev_device *sdev = to_serdev_device(dev);
-+	const struct serdev_device_driver *sdrv = to_serdev_device_driver(drv);
-+
- 	if (!is_serdev_device(dev))
- 		return 0;
- 
-@@ -88,7 +103,13 @@ static int serdev_device_match(struct device *dev, struct device_driver *drv)
- 	if (acpi_driver_match_device(dev, drv))
- 		return 1;
- 
--	return of_driver_match_device(dev, drv);
-+	if (of_driver_match_device(dev, drv))
-+		return 1;
-+
-+	if (sdrv->id_table)
-+		return serdev_match_id(sdrv->id_table, sdev);
-+
-+	return strcmp(sdev->modalias, drv->name) == 0;
- }
- 
- /**
+ static inline struct serdev_device *to_serdev_device(struct device *d)
 -- 
 2.17.0
