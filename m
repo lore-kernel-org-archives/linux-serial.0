@@ -1,43 +1,95 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [patch v23 1/4] drivers: jtag: Add JTAG core driver
-Date: Tue, 29 May 2018 15:09:48 +0200
-Message-ID: <20180529130948.GC30119@kroah.com>
-References: <1527594545-19870-1-git-send-email-oleksandrs@mellanox.com>
- <1527594545-19870-2-git-send-email-oleksandrs@mellanox.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: [PATCH 00/19] Dynamically load/remove serdev devices via sysfs*
+Date: Tue, 29 May 2018 15:09:55 +0200
+Message-ID: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1527594545-19870-2-git-send-email-oleksandrs@mellanox.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Oleksandr Shamray <oleksandrs@mellanox.com>
-Cc: arnd@arndb.de, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au, jiri@resnulli.us, tklauser@distanz.ch, linux-serial@vger.kernel.org, vadimp@mellanox.com, system-sw-low-level@mellanox.com, robh+dt@kernel.org, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, davem@davemloft.net, mchehab@kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 29, 2018 at 02:49:02PM +0300, Oleksandr Shamray wrote:
-> +static int jtag_release(struct inode *inode, struct file *file)
-> +{
-> +	return 0;
-> +}
+There are some situations where it is interesting to load/remove serdev
+devices dynamically, like during board bring-up or when we are
+developing a new driver or for devices that are neither described via
+ACPI or device tree.
 
-If you do not do anything, then there is no need to have this callback
-at all, right?
+This implementation allows the creation of serdev devices via sysfs,
+in a similar way as the i2c bus allows sysfs instantiation [1].
 
-> +/**
-> + * enum jtag_endstate:
-> + *
-> + * @JTAG_STATE_IDLE: JTAG state machine IDLE state
-> + * @JTAG_STATE_PAUSEIR: JTAG state machine PAUSE_IR state
-> + * @JTAG_STATE_PAUSEDR: JTAG state machine PAUSE_DR state
-> + */
-> +enum jtag_endstate {
-> +	JTAG_STATE_IDLE,
-> +	JTAG_STATE_PAUSEIR,
-> +	JTAG_STATE_PAUSEDR,
+It also opens the door to create platform drivers for specific
+platforms, such us notebooks or industrial computers, when their serial
+devices are not described via DT or ACPI.
 
-Be specific with these enums, set them to a value so you know all is
-good.  Userspace C compilers can be funny at times.
+This patchset also supports automatic module load via udev/modprobe,
+simplifying its use by the final user.
 
-Otherwise, looks really good, nice work.
+Currently, serdev does not manage ports that do not have a serdev device
+defined at boot time. This implementation adds a new serdev module,
+ttydev, that provides the same functionality of tty (it calls the
+original one), but can be unloaded.
 
-greg k-h
+TL/DR:
+
+When we want to create a new device, we just run:
+root@qt5022:~# echo ttydev > /sys/bus/serial/devices/serial0/new_device
+
+This will create a new device:
+root@qt5022:~# ls /sys/bus/serial/devices/serial0-0/
+driver	modalias  power  subsystem  tty  uevent
+
+And load the required driver to use it:
+root@qt5022:~# lsmod | grep serdev_ttydev
+serdev_ttydev          16384  0
+
+The device can be removed:
+root@qt5022:~#
+	echo serial0-0 > /sys/bus/serial/devices/serial0/delete_device
+
+And now we can connect a new device:
+root@qt5022:~# echo hci-ti > /sys/bus/serial/devices/serial0/new_device
+
+
+[1] https://www.kernel.org/doc/Documentation/i2c/instantiating-devices
+
+Ricardo Ribalda Delgado (19):
+  serdev: Add id_table to serdev_device_driver
+  Bluetooth: hci_bcm: Add serdev_id_table
+  Bluetooth: hci_ll: Add serdev_id_table
+  Bluetooth: hci_nokia: Add serdev_id_table
+  serdev: Introduce modalias field
+  serdev: Support bus matching with modalias field
+  serdev: Allows dynamic creation of devices via sysfs
+  serdev: Provide modalias attribute for modalias devices
+  serdev: Provide modalias uevent for modalias devices
+  file2alias: Support for serdev devices
+  Bluetooth: hci_bcm: MODULE_DEVICE_TABLE(serdev)
+  Bluetooth: hci_ll: MODULE_DEVICE_TABLE(serdev)
+  Bluetooth: hci_nokia: MODULE_DEVICE_TABLE(serdev)
+  mfd: rave-sp: MODULE_DEVICE_TABLE(serdev)
+  net: qualcomm: MODULE_DEVICE_TABLE(serdev)
+  serdev: ttyport: Move serport structure to its own header
+  serdev: Mark controllers compatible with ttyport
+  serdev: ttydev: Serdev driver that creates an standard TTY port
+  serdev: Instantiate a ttydev serdev if acpi and of fails
+
+ drivers/bluetooth/hci_bcm.c              |   8 ++
+ drivers/bluetooth/hci_ll.c               |  19 ++++
+ drivers/bluetooth/hci_nokia.c            |   8 ++
+ drivers/mfd/rave-sp.c                    |   7 ++
+ drivers/net/ethernet/qualcomm/qca_uart.c |   7 ++
+ drivers/tty/serdev/Kconfig               |  11 ++
+ drivers/tty/serdev/Makefile              |   2 +
+ drivers/tty/serdev/core.c                | 133 +++++++++++++++++++++--
+ drivers/tty/serdev/serdev-ttydev.c       |  70 ++++++++++++
+ drivers/tty/serdev/serdev-ttyport.c      |  10 +-
+ drivers/tty/serdev/serport.h             |  16 +++
+ include/linux/mod_devicetable.h          |  10 ++
+ include/linux/serdev.h                   |   4 +
+ scripts/mod/devicetable-offsets.c        |   3 +
+ scripts/mod/file2alias.c                 |  11 ++
+ 15 files changed, 304 insertions(+), 15 deletions(-)
+ create mode 100644 drivers/tty/serdev/serdev-ttydev.c
+ create mode 100644 drivers/tty/serdev/serport.h
+
+-- 
+2.17.0
