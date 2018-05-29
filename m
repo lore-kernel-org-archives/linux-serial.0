@@ -1,7 +1,7 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH 08/19] serdev: Provide modalias attribute for modalias devices
-Date: Tue, 29 May 2018 15:10:03 +0200
-Message-ID: <20180529131014.18641-9-ricardo.ribalda@gmail.com>
+Subject: [PATCH 07/19] serdev: Allows dynamic creation of devices via sysfs
+Date: Tue, 29 May 2018 15:10:02 +0200
+Message-ID: <20180529131014.18641-8-ricardo.ribalda@gmail.com>
 References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
@@ -10,12 +10,16 @@ To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Create modalias sysfs attribute for modalias devices.
-This is required by modprobe/udev to autoload the serdev driver.
+Allow creating and deleting devices via sysfs. Devices created will be
+matched to serdev drivers via modalias (the string provided by the user)
+and deleted via their name. Eg:
 
-Eg:
-root@qt5022:~# cat /sys/bus/serial/devices/serial1-0/modalias
-serdev:ttydev
+ # Create device
+root@qt5022:~# echo ttydev > /sys/bus/serial/devices/serial0/new_device
+
+ # Delete device
+root@qt5022:~#
+	echo serial0-0 > /sys/bus/serial/devices/serial0/delete_device
 
 Cc: Rob Herring <robh@kernel.org>
 Cc: Johan Hovold <johan@kernel.org>
@@ -23,31 +27,80 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serdev/core.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/tty/serdev/core.c | 60 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 60 insertions(+)
 
 diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index e695fa649a6d..a9c935f68076 100644
+index 2c79f47fc0db..e695fa649a6d 100644
 --- a/drivers/tty/serdev/core.c
 +++ b/drivers/tty/serdev/core.c
-@@ -23,12 +23,17 @@ static ssize_t modalias_show(struct device *dev,
- 			     struct device_attribute *attr, char *buf)
- {
- 	int len;
-+	struct serdev_device *serdev = to_serdev_device(dev);
- 
- 	len = acpi_device_modalias(dev, buf, PAGE_SIZE - 1);
- 	if (len != -ENODEV)
- 		return len;
- 
--	return of_device_modalias(dev, buf, PAGE_SIZE);
-+	len = of_device_modalias(dev, buf, PAGE_SIZE);
-+	if (len != -ENODEV)
-+		return len;
-+
-+	return sprintf(buf, "%s%s\n", SERDEV_MODULE_PREFIX, serdev->modalias);
+@@ -75,7 +75,67 @@ static void serdev_ctrl_release(struct device *dev)
+ 	kfree(ctrl);
  }
- static DEVICE_ATTR_RO(modalias);
+ 
++static ssize_t
++new_device_store(struct device *dev, struct device_attribute *attr,
++			const char *buf, size_t count)
++{
++	struct serdev_controller *ctrl = to_serdev_controller(dev);
++	struct serdev_device *serdev;
++	int err;
++	char *nline;
++
++	serdev = serdev_device_alloc(ctrl);
++	if (!serdev)
++		return -ENOMEM;
++
++	nline = strchr(buf, '\n');
++	if (nline)
++		*nline = '\0';
++
++	strncpy(serdev->modalias, buf, SERDEV_NAME_SIZE);
++
++	err = serdev_device_add(serdev);
++	if (err) {
++		serdev_device_put(serdev);
++		return err;
++	}
++
++	return count;
++}
++static DEVICE_ATTR_WO(new_device);
++
++static ssize_t
++delete_device_store(struct device *dev, struct device_attribute *attr,
++			   const char *buf, size_t count)
++{
++	struct serdev_controller *ctrl = to_serdev_controller(dev);
++	struct serdev_device *serdev = ctrl->serdev;
++	char *nline;
++
++	nline = strchr(buf, '\n');
++	if (nline)
++		*nline = '\0';
++
++	if (!ctrl->serdev ||
++	    strncmp(dev_name(&serdev->dev), buf, SERDEV_NAME_SIZE))
++		return -ENODEV;
++
++	serdev_device_remove(serdev);
++
++	return count;
++}
++static DEVICE_ATTR_IGNORE_LOCKDEP(delete_device, 0200, NULL,
++				  delete_device_store);
++
++static struct attribute *serdev_ctrl_attrs[] = {
++	&dev_attr_new_device.attr,
++	&dev_attr_delete_device.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(serdev_ctrl);
++
+ static const struct device_type serdev_ctrl_type = {
++	.groups		= serdev_ctrl_groups,
+ 	.release	= serdev_ctrl_release,
+ };
  
 -- 
 2.17.0
