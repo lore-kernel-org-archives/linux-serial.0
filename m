@@ -1,70 +1,50 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH 01/19] serdev: Add id_table to serdev_device_driver
-Date: Tue, 29 May 2018 15:09:56 +0200
-Message-ID: <20180529131014.18641-2-ricardo.ribalda@gmail.com>
+Subject: [PATCH 02/19] Bluetooth: hci_bcm: Add serdev_id_table
+Date: Tue, 29 May 2018 15:09:57 +0200
+Message-ID: <20180529131014.18641-3-ricardo.ribalda@gmail.com>
 References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, linux-bluetooth@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Currently, serdev device driver can only be used with devices that are
-nodes of a device tree, or are part of the ACPI table.
+Describe which hardware is supported by the current driver.
 
-Id_table will be used for devices that are created at runtime or that
-are not part of the device tree nor the ACPI table.
-
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hedberg <johan.hedberg@gmail.com>
 Cc: Rob Herring <robh@kernel.org>
 Cc: Johan Hovold <johan@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-bluetooth@vger.kernel.org
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- include/linux/mod_devicetable.h | 10 ++++++++++
- include/linux/serdev.h          |  2 ++
- 2 files changed, 12 insertions(+)
+ drivers/bluetooth/hci_bcm.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-index 7d361be2e24f..1877a4e43f1b 100644
---- a/include/linux/mod_devicetable.h
-+++ b/include/linux/mod_devicetable.h
-@@ -448,6 +448,16 @@ struct pci_epf_device_id {
- 	kernel_ulong_t driver_data;
- };
+diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
+index 441f5e1deb11..f4d7846c06b8 100644
+--- a/drivers/bluetooth/hci_bcm.c
++++ b/drivers/bluetooth/hci_bcm.c
+@@ -1325,6 +1325,11 @@ static const struct of_device_id bcm_bluetooth_of_match[] = {
+ MODULE_DEVICE_TABLE(of, bcm_bluetooth_of_match);
+ #endif
  
-+/* serdev */
-+
-+#define SERDEV_NAME_SIZE	32
-+#define SERDEV_MODULE_PREFIX	"serdev:"
-+
-+struct serdev_device_id {
-+	char name[SERDEV_NAME_SIZE];
-+	kernel_ulong_t driver_data;	/* Data private to the driver */
++static const struct serdev_device_id bcm_serdev_id[] = {
++	{ "bcm43438-bt", },
++	{}
 +};
 +
- /* spi */
+ static struct serdev_device_driver bcm_serdev_driver = {
+ 	.probe = bcm_serdev_probe,
+ 	.remove = bcm_serdev_remove,
+@@ -1334,6 +1339,7 @@ static struct serdev_device_driver bcm_serdev_driver = {
+ 		.acpi_match_table = ACPI_PTR(bcm_acpi_match),
+ 		.pm = &bcm_pm_ops,
+ 	},
++	.id_table = bcm_serdev_id,
+ };
  
- #define SPI_NAME_SIZE	32
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index f153b2c7f0cd..62f1b085a794 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -15,6 +15,7 @@
- 
- #include <linux/types.h>
- #include <linux/device.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/termios.h>
- #include <linux/delay.h>
- 
-@@ -68,6 +69,7 @@ static inline struct serdev_device *to_serdev_device(struct device *d)
-  * @remove:	unbinds this driver from the serdev device.
-  */
- struct serdev_device_driver {
-+	const struct serdev_device_id *id_table;
- 	struct device_driver driver;
- 	int	(*probe)(struct serdev_device *);
- 	void	(*remove)(struct serdev_device *);
+ int __init bcm_init(void)
 -- 
 2.17.0
