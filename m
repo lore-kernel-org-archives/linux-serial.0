@@ -1,107 +1,67 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [patch v22 1/4] drivers: jtag: Add JTAG core driver
-Date: Tue, 29 May 2018 09:16:33 +0200
-Message-ID: <20180529071633.GB20427@kroah.com>
-References: <1527503652-21975-1-git-send-email-oleksandrs@mellanox.com>
- <1527503652-21975-2-git-send-email-oleksandrs@mellanox.com>
- <20180528123527.GA17613@kroah.com>
- <AM5PR0501MB24490173AD50A2E478DFCF35B16E0@AM5PR0501MB2449.eurprd05.prod.outlook.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v2 0/6] Driver for at91 usart in spi mode
+Date: Tue, 29 May 2018 09:33:03 +0100
+Message-ID: <20180529083303.GF4790@dell>
+References: <20180504154714.5109-1-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <AM5PR0501MB24490173AD50A2E478DFCF35B16E0@AM5PR0501MB2449.eurprd05.prod.outlook.com>
+In-Reply-To: <20180504154714.5109-1-radu.pirea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Oleksandr Shamray <oleksandrs@mellanox.com>
-Cc: "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>, "joel@jms.id.au" <joel@jms.id.au>, "jiri@resnulli.us" <jiri@resnulli.us>, "tklauser@distanz.ch" <tklauser@distanz.ch>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Vadim Pasternak <vadimp@mellanox.com>, system-sw-low-level <system-sw-low-level@mellanox.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "openocd-devel-owner@lists.sourceforge.net" <openocd-devel-owner@lists.sourceforge.net>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, davem@dave
+To: Radu Pirea <radu.pirea@microchip.com>
+Cc: linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, broonie@kernel.org, alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com, jslaby@suse.com, gregkh@linuxfoundation.org, richard.genoud@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, May 28, 2018 at 03:59:46PM +0000, Oleksandr Shamray wrote:
-> > > +	const struct jtag_ops *ops;
-> > > +	int id;
-> > > +	bool opened;
-> > 
-> > You shouldn't care about this, but ok...
+On Fri, 04 May 2018, Radu Pirea wrote:
+
+> Hello,
 > 
-> Jtag HW not support to using with multiple requests from different users. So we prohibit this.
-
-Ok, but then that's a userspace problem, not your driver's problem.
-Serial ports can't handle multiple requests in a sane way either, and so
-it's a userspace bug if they do that.  It's not up to the kernel to try
-to prevent it, and really, you are not preventing this from happening at
-all, you are only keeping more than one open() call from happening.  You
-aren't serializing the device access at all.
-
-So you are giving yourself a false sense of "We are protecting the
-device" here.  Just drop the whole "only one open() call" logic
-entirely.  It will make your kernel code simpler and you aren't giving
-yourself false-hope that you really prevented userspace from doing
-something stupid :)
-
-> > > +	case JTAG_IOCRUNTEST:
-> > > +		if (copy_from_user(&idle, (const void __user *)arg,
-> > > +				   sizeof(struct jtag_run_test_idle)))
-> > > +			return -EFAULT;
-> > > +
-> > > +		if (idle.endstate > JTAG_STATE_PAUSEDR)
-> > > +			return -EINVAL;
-> > 
-> > No validation that idle contains sane values?  Don't make every jtag driver
-> > have to do this type of validation please.
-> > 
+> This is the second version of driver. I added a mfd driver which by
+> default probes atmel_serial driver and if in dt is specified to probe
+> the spi driver, then the spi-at91-usart driver will be probed. The
+> compatible for atmel_serial is now the compatible for at91-usart mfd
+> driver and compatilbe for atmel_serial driver was changed in order to
+> keep the bindings for serial as they are.
 > 
-> I have partially validation of idle structure  (if (idle.endstate > JTAG_STATE_PAUSEDR)).
-> But I will add more validation.
-
-Go to the nearest whiteboard and write this at the top:
-	ALL INPUT IS EVIL
-
-Don't erase it.  You have to validate all the things, otherwise
-something bad will happen, I guarantee it.  Wait until the syzbot gets
-ahold of this layer if you don't believe me :)
-
-> > > +static int jtag_open(struct inode *inode, struct file *file) {
-> > > +	struct jtag *jtag = container_of(file->private_data, struct jtag,
-> > > +miscdev);
-> > > +
-> > > +	if (mutex_lock_interruptible(&jtag->open_lock))
-> > > +		return -ERESTARTSYS;
-> > 
-> > Why restart?  Just grab the lock, you don't want to have to do restartable
-> > logic in userspace, right?
+> Changes in v1:
+> - added spi-at91-usart driver
 > 
-> Will change like:
+> Changes in v2:
+> - added at91-usart mfd driver
+> - modified spi-at91-usart driver to work as mfd driver child
+> - modified atmel_serial driver to work as mfd driver child
 > 
-> ret = mutex_lock_interruptible(&jtag->open_lock);
-> if (ret)
-> 	return ret;
-
-No, what's wrong with a simple:
-	mutex_lock();
-?
-
-You are only holding it for a very short time, people can wait, there is
-no rush here or "fast path" happening.
-
-Anyway, this whole lock should just go away entirely, due to the lack of
-needing to track open() calls.  But in the future, keep locks simple, no
-need to add complexity when it is not warranted.
-
-> > > +	if (jtag->opened) {
-> > > +		mutex_unlock(&jtag->open_lock);
-> > > +		return -EBUSY;
-> > 
-> > Why do you care about only 1 userspace open call?  What does that buy you?
-> > Userspace can always pass around that file descriptor and use it in multiple
-> > places, so you are not really "protecting" yourself from anything.
-> > 
+> Radu Pirea (6):
+>   MAINTAINERS: add at91 usart mfd driver
+>   mfd: at91-usart: added mfd driver for usart
+>   MAINTAINERS: add at91 usart spi driver
+>   dt-bindings: add binding for at91-usart in spi mode
+>   spi: at91-usart: add driver for at91-usart as spi
+>   tty/serial: atmel: changed the driver to work under at91-usart mfd
 > 
-> Accessing to JTAG HW from multiple processes will make confusion in the work of the JTAG protocol.
-> And I want to prohibit this.
+>  .../bindings/spi/microchip,at91-usart-spi.txt |  28 +
+>  MAINTAINERS                                   |  14 +
+>  drivers/mfd/Kconfig                           |  10 +
+>  drivers/mfd/Makefile                          |   1 +
+>  drivers/mfd/at91-usart.c                      |  81 +++
+>  drivers/spi/Kconfig                           |   9 +
+>  drivers/spi/Makefile                          |   1 +
+>  drivers/spi/spi-at91-usart.c                  | 545 ++++++++++++++++++
+>  drivers/tty/serial/Kconfig                    |   1 +
+>  drivers/tty/serial/atmel_serial.c             |  29 +-
+>  include/dt-bindings/mfd/at91-usart.h          |  17 +
+>  11 files changed, 722 insertions(+), 14 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/spi/microchip,at91-usart-spi.txt
+>  create mode 100644 drivers/mfd/at91-usart.c
+>  create mode 100644 drivers/spi/spi-at91-usart.c
+>  create mode 100644 include/dt-bindings/mfd/at91-usart.h
 
-See my previous comments for why your attempt at protecting open() does
-not prevent this from happening.  Hint, you forgot about dup(3) :(
+Applied, thanks.
 
-thanks,
-
-greg k-h
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
