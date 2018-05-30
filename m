@@ -1,64 +1,157 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH 07/19] serdev: Allows dynamic creation of devices via sysfs
-Date: Tue, 29 May 2018 23:23:51 +0200
-Message-ID: <CAPybu_3tZ2z7sk5tSwgXdqNyiTm_31UwdUsWNL1_eNHBDQyCiw@mail.gmail.com>
-References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
- <20180529131014.18641-8-ricardo.ribalda@gmail.com> <CAHp75Ve_=euX83qVfArU+ZbcU2Z_PnBdtQGi7XbA7AVfM1XO-w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Johan Hovold <johan@kernel.org>
+Subject: [PATCH RESEND] serdev: add controller runtime PM support
+Date: Wed, 30 May 2018 12:50:59 +0200
+Message-ID: <20180530105059.21409-1-johan@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Ve_=euX83qVfArU+ZbcU2Z_PnBdtQGi7XbA7AVfM1XO-w@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh@kernel.org>
+Cc: Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>, "H. Nikolaus Schaller" <hns@goldelico.com>, Andreas Kemnade <andreas@kemnade.info>, Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Pavel Machek <pavel@ucw.cz>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-pm@vger.kernel.org, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
+Add support for controller runtime power management to serdev core. This
+is needed to allow slave drivers to manage the runtime PM state of the
+underlying serial controller when its driver, in turn, implements more
+aggressive runtime power management (e.g. using autosuspend).
 
-On Tue, May 29, 2018 at 10:35 PM Andy Shevchenko <andy.shevchenko@gmail.com>
-wrote:
+For some applications, for example, where loss off initial data after a
+remote-wakeup event is acceptable or where rx is not used at all,
+aggressive serial controller runtime PM may be used without further
+involvement of the slave driver. But when this is not the case, the
+slave driver must be able to indicate when incoming data is expected in
+order to avoid data loss.
 
-> On Tue, May 29, 2018 at 4:10 PM, Ricardo Ribalda Delgado
-> <ricardo.ribalda@gmail.com> wrote:
-> > Allow creating and deleting devices via sysfs. Devices created will be
-> > matched to serdev drivers via modalias (the string provided by the user)
-> > and deleted via their name.
+To facilitate the common case, where the serial controller power state
+is active whenever the port is open (which is the case with just about
+every serial driver), and where data loss is not acceptable and cannot
+even be prevented by explicit controller runtime power management, an
+RPM reference is taken in serdev open and put again at close. This
+reference can later be balanced by any serdev driver which wants and/or
+can handle aggressive controller runtime PM.
 
-> > +       int err;
-> > +       char *nline;
+Note that the .ignore_children flag is set for the serdev controller to
+allow the underlying hardware to idle when no I/O is expected, regardless
+of the slave device RPM state.
 
-> Better to read in reversed order.
+Acked-by: Tony Lindgren <tony@atomide.com>
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
 
-> > +       nline = strchr(buf, '\n');
-> > +       if (nline)
-> > +               *nline = '\0';
+Hi Rob and Greg,
 
-> strim() / strstrip() ?
+This is a resend of the serdev controller runtime PM patch, which you
+haven't commented on yet (possibly due to the following extensive
+discussions on how to generalise the aggressive OMAP serial runtime PM
+implementation).
 
-> > +       nline = strchr(buf, '\n');
-> > +       if (nline)
-> > +               *nline = '\0';
+This patch works with what we have today, regardless of how we end up
+configuring the serial controller (active) runtime PM behaviour
+(currently done through sysfs for OMAP), which is a separate issue.
 
-> Ditto.
+No changes in this resend, besides me adding Tony's and Sebastian's ack
+and reviewed-by tags and dropping the second patch which only served as
+an example of how to use this in a serdev driver.
 
-> > +static DEVICE_ATTR_IGNORE_LOCKDEP(delete_device, 0200, NULL,
-> > +                                 delete_device_store);
-
-> Perhaps leave it on one line?
-
-> --
-> With Best Regards,
-> Andy Shevchenko
-
-Thanks for your review. I am working on v2 at
-https://github.com/ribalda/linux/tree/serdev2 it fixes your comments except
-the line cut for DEVICE_ATTR, I want also to make checkpatch happy ;)
-
-Will send v2  to the list after I got more feedback, you can of course ping
-me if there is something in my tree that it is not fixed properly.
-
-Cheers
+Johan
 
 
+ drivers/tty/serdev/core.c | 33 ++++++++++++++++++++++++++++++---
+ 1 file changed, 30 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index df93b727e984..e5e84303faca 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/pm_runtime.h>
+ #include <linux/serdev.h>
+ #include <linux/slab.h>
+ 
+@@ -143,11 +144,28 @@ EXPORT_SYMBOL_GPL(serdev_device_remove);
+ int serdev_device_open(struct serdev_device *serdev)
+ {
+ 	struct serdev_controller *ctrl = serdev->ctrl;
++	int ret;
+ 
+ 	if (!ctrl || !ctrl->ops->open)
+ 		return -EINVAL;
+ 
+-	return ctrl->ops->open(ctrl);
++	ret = ctrl->ops->open(ctrl);
++	if (ret)
++		return ret;
++
++	ret = pm_runtime_get_sync(&ctrl->dev);
++	if (ret < 0) {
++		pm_runtime_put_noidle(&ctrl->dev);
++		goto err_close;
++	}
++
++	return 0;
++
++err_close:
++	if (ctrl->ops->close)
++		ctrl->ops->close(ctrl);
++
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_open);
+ 
+@@ -158,6 +176,8 @@ void serdev_device_close(struct serdev_device *serdev)
+ 	if (!ctrl || !ctrl->ops->close)
+ 		return;
+ 
++	pm_runtime_put(&ctrl->dev);
++
+ 	ctrl->ops->close(ctrl);
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_close);
+@@ -416,6 +436,9 @@ struct serdev_controller *serdev_controller_alloc(struct device *parent,
+ 
+ 	dev_set_name(&ctrl->dev, "serial%d", id);
+ 
++	pm_runtime_no_callbacks(&ctrl->dev);
++	pm_suspend_ignore_children(&ctrl->dev, true);
++
+ 	dev_dbg(&ctrl->dev, "allocated controller 0x%p id %d\n", ctrl, id);
+ 	return ctrl;
+ 
+@@ -547,20 +570,23 @@ int serdev_controller_add(struct serdev_controller *ctrl)
+ 	if (ret)
+ 		return ret;
+ 
++	pm_runtime_enable(&ctrl->dev);
++
+ 	ret_of = of_serdev_register_devices(ctrl);
+ 	ret_acpi = acpi_serdev_register_devices(ctrl);
+ 	if (ret_of && ret_acpi) {
+ 		dev_dbg(&ctrl->dev, "no devices registered: of:%d acpi:%d\n",
+ 			ret_of, ret_acpi);
+ 		ret = -ENODEV;
+-		goto out_dev_del;
++		goto err_rpm_disable;
+ 	}
+ 
+ 	dev_dbg(&ctrl->dev, "serdev%d registered: dev:%p\n",
+ 		ctrl->nr, &ctrl->dev);
+ 	return 0;
+ 
+-out_dev_del:
++err_rpm_disable:
++	pm_runtime_disable(&ctrl->dev);
+ 	device_del(&ctrl->dev);
+ 	return ret;
+ };
+@@ -591,6 +617,7 @@ void serdev_controller_remove(struct serdev_controller *ctrl)
+ 
+ 	dummy = device_for_each_child(&ctrl->dev, NULL,
+ 				      serdev_remove_device);
++	pm_runtime_disable(&ctrl->dev);
+ 	device_del(&ctrl->dev);
+ }
+ EXPORT_SYMBOL_GPL(serdev_controller_remove);
 -- 
-Ricardo Ribalda
+2.17.0
