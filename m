@@ -1,69 +1,54 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [PATCH 15/19] net: qualcomm: MODULE_DEVICE_TABLE(serdev)
-Date: Fri, 1 Jun 2018 10:59:39 +0200
-Message-ID: <d41488cd-18db-f99a-67ae-b0e809005b1d@i2se.com>
-References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
- <20180529131014.18641-16-ricardo.ribalda@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20180529131014.18641-16-ricardo.ribalda@gmail.com>
-Content-Language: en-US
-Sender: netdev-owner@vger.kernel.org
-To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Lino Sanfilippo <LinoSanfilippo@gmx.de>, "David S . Miller" <davem@davemloft.net>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, netdev@vger.kernel.org
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 0/4] lib/vsprintf: Remove atomic-unsafe support for printk format %pCr
+Date: Fri,  1 Jun 2018 11:28:18 +0200
+Message-ID: <1527845302-12159-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jia-Ju Bai <baijiaju1990@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Eduardo Valentin <edubezval@gmail.com>, Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Petr Mladek <pmladek@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, Steven Rostedt <rostedt@goodmis.org>, linux-doc@vger.kernel.org, linux-clk@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ricardo,
+	Hi all,
 
+"%pCr" formats the current rate of a clock, and calls clk_get_rate().
+The latter obtains a mutex, hence it must not be called from atomic
+context.  As vsprintf() (and e.g. printk()) must be callable from any
+context, it's better to remove support for this (rarely-used) format.
 
-Am 29.05.2018 um 15:10 schrieb Ricardo Ribalda Delgado:
-> Export serdev table to the module header, allowing module autoload via
-> udev/modprobe.
->
-> Cc: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Stefan Wahren <stefan.wahren@i2se.com>
-> Cc: Rob Herring <robh@kernel.org>
-> Cc: Johan Hovold <johan@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-> ---
->   drivers/net/ethernet/qualcomm/qca_uart.c | 7 +++++++
->   1 file changed, 7 insertions(+)
->
-> diff --git a/drivers/net/ethernet/qualcomm/qca_uart.c b/drivers/net/ethernet/qualcomm/qca_uart.c
-> index db6068cd7a1f..bb7aed805083 100644
-> --- a/drivers/net/ethernet/qualcomm/qca_uart.c
-> +++ b/drivers/net/ethernet/qualcomm/qca_uart.c
-> @@ -405,6 +405,12 @@ static void qca_uart_remove(struct serdev_device *serdev)
->   	free_netdev(qca->net_dev);
->   }
->   
-> +static struct serdev_device_id qca_uart_serdev_id[] = {
-> +	{ QCAUART_DRV_NAME, },
+This patch series:
+  - Changes all existing users of "%pCr" to print the result of
+    clk_get_rate() directly, which is safe as they all do this in task
+    context only,
+  - Removes support for the "%pCr" printk format.
 
-i guess the id must be stable, so in case someone changes the driver 
-name this has unexpected side effects?
+Note that any remaining out-of-tree users will start seeing the clock's
+name printed instead of its rate.
 
-Apart from that i'm fine with this patch.
+Thanks for your comments!
 
-Thanks
-Stefan
+Geert Uytterhoeven (4):
+  clk: renesas: cpg-mssr: Stop using printk format %pCr
+  thermal: bcm2835: Stop using printk format %pCr
+  serial: sh-sci: Stop using printk format %pCr
+  lib/vsprintf: Remove atomic-unsafe support for %pCr
 
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(serdev, qca_uart_serdev_id);
-> +
->   static struct serdev_device_driver qca_uart_driver = {
->   	.probe = qca_uart_probe,
->   	.remove = qca_uart_remove,
-> @@ -412,6 +418,7 @@ static struct serdev_device_driver qca_uart_driver = {
->   		.name = QCAUART_DRV_NAME,
->   		.of_match_table = of_match_ptr(qca_uart_of_match),
->   	},
-> +	.id_table = qca_uart_serdev_id,
->   };
->   
->   module_serdev_device_driver(qca_uart_driver);
+ Documentation/core-api/printk-formats.rst  | 3 +--
+ drivers/clk/renesas/renesas-cpg-mssr.c     | 9 +++++----
+ drivers/thermal/broadcom/bcm2835_thermal.c | 4 ++--
+ drivers/tty/serial/sh-sci.c                | 4 ++--
+ lib/vsprintf.c                             | 3 ---
+ 5 files changed, 10 insertions(+), 13 deletions(-)
+
+-- 
+2.7.4
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
