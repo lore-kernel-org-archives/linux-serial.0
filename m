@@ -1,58 +1,29 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 0/4] lib/vsprintf: Remove atomic-unsafe support for printk
- format %pCr
-Date: Fri, 1 Jun 2018 17:28:06 +0200
-Message-ID: <CAMuHMdX6ACCiEs=EEbQV3=Ah7BZT1RJ1G0kZKeYKi_KzWoKZgQ@mail.gmail.com>
+From: Stephen Boyd <sboyd@kernel.org>
+Subject: Re: [PATCH 1/4] clk: renesas: cpg-mssr: Stop using printk format %pCr
+Date: Fri, 01 Jun 2018 09:37:33 -0700
+Message-ID: <152787105335.144038.419639779875099925@swboyd.mtv.corp.google.com>
 References: <1527845302-12159-1-git-send-email-geert+renesas@glider.be>
- <CA+55aFxHHSRnDbbNGq6SwNAwEt0EhX15n_pNqon3MzGYJgMJmA@mail.gmail.com>
- <20180601114738.kdoggkha2yosjgbv@pathway.suse.cz> <20180601151905.yilldc6vbachfw4k@pathway.suse.cz>
+ <1527845302-12159-2-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20180601151905.yilldc6vbachfw4k@pathway.suse.cz>
-Sender: stable-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Jia-Ju Bai <baijiaju1990@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Eduardo Valentin <edubezval@gmail.com>, Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, linux-clk <linux-clk@vger.kernel.org>, Linux PM <linux-pm@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1527845302-12159-2-git-send-email-geert+renesas@glider.be>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Eduardo Valentin <edubezval@gmail.com>, Eric Anholt <eric@anholt.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jia-Ju Bai <baijiaju1990@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stefan Wahren <stefan.wahren@i2se.com>, Zhang Rui <rui.zhang@intel.com>
+Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>, linux-doc@vger.kernel.org, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Petr,
+Quoting Geert Uytterhoeven (2018-06-01 02:28:19)
+> Printk format "%pCr" will be removed soon, as clk_get_rate() must not be
+> called in atomic context.
+> =
 
-On Fri, Jun 1, 2018 at 5:19 PM, Petr Mladek <pmladek@suse.com> wrote:
-> On Fri 2018-06-01 13:47:38, Petr Mladek wrote:
->> On Fri 2018-06-01 06:00:47, Linus Torvalds wrote:
->> > On Fri, Jun 1, 2018 at 4:29 AM Geert Uytterhoeven
->> > <geert+renesas@glider.be> wrote:
->> > >
->> > > This patch series:
->> > >   - Changes all existing users of "%pCr" to print the result of
->> > >     clk_get_rate() directly, which is safe as they all do this in task
->> > >     context only,
->> > >   - Removes support for the "%pCr" printk format.
->> >
->> > Looks good to me.
->> >
->> > What tree will this go through? The normal printk one? Just checking
->> > that this doesn't end up falling through the cracks because nobody
->> > knows who would take it...
->>
->> I will take it via printk.git. There already is bunch of vsprintf
->> changes for-4.18.
->
-> It is in printk.git, branch for-4.18-vsprintf-pcr-removal now.
+> Replace it by open-coding the operation.  This is safe here, as the code
+> runs in task context.
+> =
 
-Thank you.
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
 
-> Also I have added Cc: stable@vger.kernel.org into the commit messages.
-
-I can confirm all stable version references ("v4.x+") match.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Acked-by: Stephen Boyd <sboyd@kernel.org>
