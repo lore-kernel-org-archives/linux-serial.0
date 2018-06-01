@@ -1,37 +1,69 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v4 3/6] mfd: at91-usart: added mfd driver for usart
-Date: Wed, 30 May 2018 20:02:12 -0500
-Message-ID: <20180531010212.GA26508@rob-hp-laptop>
-References: <20180525171941.26766-1-radu.pirea@microchip.com>
- <20180525171941.26766-4-radu.pirea@microchip.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [PATCH 15/19] net: qualcomm: MODULE_DEVICE_TABLE(serdev)
+Date: Fri, 1 Jun 2018 10:59:39 +0200
+Message-ID: <d41488cd-18db-f99a-67ae-b0e809005b1d@i2se.com>
+References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
+ <20180529131014.18641-16-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180525171941.26766-4-radu.pirea@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu.pirea@microchip.com>
-Cc: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <20180529131014.18641-16-ricardo.ribalda@gmail.com>
+Content-Language: en-US
+Sender: netdev-owner@vger.kernel.org
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Lino Sanfilippo <LinoSanfilippo@gmx.de>, "David S . Miller" <davem@davemloft.net>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, netdev@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 25, 2018 at 08:19:38PM +0300, Radu Pirea wrote:
-> This mfd driver is just a wrapper over atmel_serial driver and
-> spi-at91-usart driver. Selection of one of the drivers is based on a
-> property from device tree. If the property is not specified, the default
-> driver is atmel_serial.
-> 
-> Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+Hi Ricardo,
+
+
+Am 29.05.2018 um 15:10 schrieb Ricardo Ribalda Delgado:
+> Export serdev table to the module header, allowing module autoload via
+> udev/modprobe.
+>
+> Cc: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Stefan Wahren <stefan.wahren@i2se.com>
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Johan Hovold <johan@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 > ---
->  drivers/mfd/Kconfig                  | 10 ++++
->  drivers/mfd/Makefile                 |  1 +
->  drivers/mfd/at91-usart.c             | 75 ++++++++++++++++++++++++++++
+>   drivers/net/ethernet/qualcomm/qca_uart.c | 7 +++++++
+>   1 file changed, 7 insertions(+)
+>
+> diff --git a/drivers/net/ethernet/qualcomm/qca_uart.c b/drivers/net/ethernet/qualcomm/qca_uart.c
+> index db6068cd7a1f..bb7aed805083 100644
+> --- a/drivers/net/ethernet/qualcomm/qca_uart.c
+> +++ b/drivers/net/ethernet/qualcomm/qca_uart.c
+> @@ -405,6 +405,12 @@ static void qca_uart_remove(struct serdev_device *serdev)
+>   	free_netdev(qca->net_dev);
+>   }
+>   
+> +static struct serdev_device_id qca_uart_serdev_id[] = {
+> +	{ QCAUART_DRV_NAME, },
 
->  include/dt-bindings/mfd/at91-usart.h | 17 +++++++
+i guess the id must be stable, so in case someone changes the driver 
+name this has unexpected side effects?
 
-This really should be part of the binding patch.
+Apart from that i'm fine with this patch.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Thanks
+Stefan
 
->  4 files changed, 103 insertions(+)
->  create mode 100644 drivers/mfd/at91-usart.c
->  create mode 100644 include/dt-bindings/mfd/at91-usart.h
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(serdev, qca_uart_serdev_id);
+> +
+>   static struct serdev_device_driver qca_uart_driver = {
+>   	.probe = qca_uart_probe,
+>   	.remove = qca_uart_remove,
+> @@ -412,6 +418,7 @@ static struct serdev_device_driver qca_uart_driver = {
+>   		.name = QCAUART_DRV_NAME,
+>   		.of_match_table = of_match_ptr(qca_uart_of_match),
+>   	},
+> +	.id_table = qca_uart_serdev_id,
+>   };
+>   
+>   module_serdev_device_driver(qca_uart_driver);
