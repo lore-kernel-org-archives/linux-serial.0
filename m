@@ -1,14 +1,12 @@
 From: Helmut Grohne <h.grohne@intenta.de>
-Subject: [PATCH v3 1/3] serial: xuartps: fix typo in cdns_uart_startup
-Date: Mon, 4 Jun 2018 12:22:05 +0200
-Message-ID: <5fbc35e1a4285e149cc0db3b1d989932260a8386.1528106392.git.h.grohne@intenta.de>
-References: <cover.1528106392.git.h.grohne@intenta.de>
+Subject: [PATCH v3 0/3] serial: xuartps: hardware race condition and cleanup
+Date: Mon, 4 Jun 2018 12:21:56 +0200
+Message-ID: <cover.1528106392.git.h.grohne@intenta.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <cover.1528106392.git.h.grohne@intenta.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,39 +20,35 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michal Simek <michal.simek@
 Cc: linux-arm-kernel@lists.infradead.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
 List-Id: linux-serial@vger.kernel.org
 
-The bit mask changes in commit 6e14f7c1f2c2 ("tty: xuartps: Improve
-startup function") doesn't do what the commit message advertises. The
-original behaviour was clearing the RX_DIS bit, but due to missing ~,
-that bit is now the only bit kept.
+The character transmission in xuartps is racy. If the transmitter is disabl=
+ed
+early, the device is confused and produces a desync. Garbage on the remote =
+end
+can be a visible symptom. The second patch in this series tries to reduce t=
+hat
+race condition in accordance with the hardware documentation, but it cannot
+remove it entirely. The first and third patches are code cleanup.
 
-Currently, the regression is harmless, because the previous write to the
-control register sets it to TXRST | RXRST. Thus the RX_DIS bit is
-previously cleared. The *RST bits are cleared by the hardware, so this
-commit does not currently change behaviour, but makes future changes
-less risky.
+Changes since v2:
+ * Do not attempt to disable the transmitter after a transmission (original
+   behaviour around 3.14). These patches no longer touch with the transmitt=
+er
+   state at all as requested by S=F6ren Brinkmann.
+ * Add Acked-by/Reviewed-by tags from S=F6ren Brinkmann after addressing his
+   remarks.
 
-Link: https://www.spinics.net/lists/linux-serial/msg23157.html
-Signed-off-by: Helmut Grohne <h.grohne@intenta.de>
-Fixes: 6e14f7c1f2c2 ("tty: xuartps: Improve startup function")
-Reviewed-by: S=F6ren Brinkmann <soren.brinkmann@xilinx.com>
----
- drivers/tty/serial/xilinx_uartps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Earlier patches/discussion at:
+    https://www.spinics.net/lists/linux-serial/msg23145.html
+    https://www.spinics.net/lists/linux-serial/msg23156.html
+    https://www.spinics.net/lists/linux-serial/msg23157.html
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx=
-_uartps.c
-index bd72dd843338..e4b2d8102a04 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -829,7 +829,7 @@ static int cdns_uart_startup(struct uart_port *port)
- 	 * the receiver.
- 	 */
- 	status =3D readl(port->membase + CDNS_UART_CR);
--	status &=3D CDNS_UART_CR_RX_DIS;
-+	status &=3D ~CDNS_UART_CR_RX_DIS;
- 	status |=3D CDNS_UART_CR_RX_EN;
- 	writel(status, port->membase + CDNS_UART_CR);
- =
+Helmut Grohne (3):
+  serial: xuartps: fix typo in cdns_uart_startup
+  serial: xuartps: reduce hardware TX race condition
+  serial: xuartps: remove unnecessary register write
+
+ drivers/tty/serial/xilinx_uartps.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
 
 -- =
 
