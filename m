@@ -1,109 +1,155 @@
-From: Radu Pirea <radu.pirea@microchip.com>
-Subject: [PATCH v5 2/6] dt-bindings: add binding for atmel-usart in SPI mode
-Date: Mon, 4 Jun 2018 19:59:39 +0300
-Message-ID: <20180604165943.31381-3-radu.pirea@microchip.com>
-References: <20180604165943.31381-1-radu.pirea@microchip.com>
+From: "Matwey V. Kornilov" <matwey.kornilov@gmail.com>
+Subject: Re: [PATCH 4/8] serial: 8250: Handle case port doesn't have TEMT
+ interrupt using em485.
+Date: Mon, 4 Jun 2018 20:40:29 +0300
+Message-ID: <b14d4970-f14d-d59f-2072-b7d5704dd842@gmail.com>
+References: <20180601124021.102970-1-giulio.benetti@micronovasrl.com>
+ <20180601124021.102970-5-giulio.benetti@micronovasrl.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180604165943.31381-1-radu.pirea@microchip.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180601124021.102970-5-giulio.benetti@micronovasrl.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Ed Blake <ed.blake@sondrel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This patch moves the bindings for serial from serial/atmel-usart.txt to
-mfd/atmel-usart.txt and adds bindings for USART in SPI mode.
+01.06.2018 15:40, Giulio Benetti пишет:
+> Some 8250 ports only have TEMT interrupt, so current implementation
+> can't work for ports without it. The only chance to make it work is to
+> loop-read on LSR register.
+> 
+> With NO TEMT interrupt check if both TEMT and THRE are set looping on
+> LSR register.
+> 
+> Signed-off-by: Giulio Benetti <giulio.benetti@micronovasrl.com>
+> ---
+>  drivers/tty/serial/8250/8250.h      |  2 +-
+>  drivers/tty/serial/8250/8250_dw.c   |  2 +-
+>  drivers/tty/serial/8250/8250_omap.c |  2 +-
+>  drivers/tty/serial/8250/8250_port.c | 26 ++++++++++++++++++--------
+>  include/linux/serial_8250.h         |  1 +
+>  5 files changed, 22 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+> index ebfb0bd5bef5..5c6ae5f69432 100644
+> --- a/drivers/tty/serial/8250/8250.h
+> +++ b/drivers/tty/serial/8250/8250.h
+> @@ -136,7 +136,7 @@ void serial8250_rpm_put(struct uart_8250_port *p);
+>  void serial8250_rpm_get_tx(struct uart_8250_port *p);
+>  void serial8250_rpm_put_tx(struct uart_8250_port *p);
+>  
+> -int serial8250_em485_init(struct uart_8250_port *p);
+> +int serial8250_em485_init(struct uart_8250_port *p, bool has_temt_isr);
+>  void serial8250_em485_destroy(struct uart_8250_port *p);
+>  
+>  static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index 0f8b4da03d4e..888280ff5451 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -330,7 +330,7 @@ static int dw8250_rs485_config(struct uart_port *p,
+>  	 * are idempotent
+>  	 */
+>  	if (rs485->flags & SER_RS485_ENABLED) {
+> -		int ret = serial8250_em485_init(up);
+> +		int ret = serial8250_em485_init(up, false);
+>  
+>  		if (ret) {
+>  			rs485->flags &= ~SER_RS485_ENABLED;
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index 624b501fd253..ab483c8b30c8 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -725,7 +725,7 @@ static int omap_8250_rs485_config(struct uart_port *port,
+>  	 * are idempotent
+>  	 */
+>  	if (rs485->flags & SER_RS485_ENABLED) {
+> -		int ret = serial8250_em485_init(up);
+> +		int ret = serial8250_em485_init(up, true);
+>  
+>  		if (ret) {
+>  			rs485->flags &= ~SER_RS485_ENABLED;
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 95833cbc4338..e14badbbf181 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -599,15 +599,16 @@ EXPORT_SYMBOL_GPL(serial8250_rpm_put);
+>  /**
+>   *	serial8250_em485_init() - put uart_8250_port into rs485 emulating
+>   *	@p:	uart_8250_port port instance
+> + *	@p:	bool specify if 8250 port has TEMT interrupt or not
+>   *
+>   *	The function is used to start rs485 software emulating on the
+>   *	&struct uart_8250_port* @p. Namely, RTS is switched before/after
+>   *	transmission. The function is idempotent, so it is safe to call it
+>   *	multiple times.
+>   *
+> - *	The caller MUST enable interrupt on empty shift register before
+> - *	calling serial8250_em485_init(). This interrupt is not a part of
+> - *	8250 standard, but implementation defined.
+> + *	If has_temt_isr is passed as true, the caller MUST enable interrupt
+> + *	on empty shift register before calling serial8250_em485_init().
+> + *	This interrupt is not a part of	8250 standard, but implementation defined.
+>   *
+>   *	The function is supposed to be called from .rs485_config callback
+>   *	or from any other callback protected with p->port.lock spinlock.
+> @@ -616,7 +617,7 @@ EXPORT_SYMBOL_GPL(serial8250_rpm_put);
+>   *
+>   *	Return 0 - success, -errno - otherwise
+>   */
+> -int serial8250_em485_init(struct uart_8250_port *p)
+> +int serial8250_em485_init(struct uart_8250_port *p, bool has_temt_isr)
+>  {
+>  	if (p->em485)
+>  		return 0;
+> @@ -633,6 +634,7 @@ int serial8250_em485_init(struct uart_8250_port *p)
+>  	p->em485->start_tx_timer.function = &serial8250_em485_handle_start_tx;
+>  	p->em485->port = p;
+>  	p->em485->active_timer = NULL;
+> +	p->em485->has_temt_isr = has_temt_isr;
+>  	serial8250_em485_rts_after_send(p);
+>  
+>  	return 0;
+> @@ -1517,11 +1519,19 @@ static inline void __stop_tx(struct uart_8250_port *p)
+>  		/*
+>  		 * To provide required timeing and allow FIFO transfer,
+>  		 * __stop_tx_rs485() must be called only when both FIFO and
+> -		 * shift register are empty. It is for device driver to enable
+> -		 * interrupt on TEMT.
+> +		 * shift register are empty. If 8250 port supports it,
+> +		 * it is for device driver to enable interrupt on TEMT.
+> +		 * Otherwise must loop-read until TEMT and THRE flags are set.
+>  		 */
+> -		if ((lsr & BOTH_EMPTY) != BOTH_EMPTY)
+> -			return;
+> +		if (em485->has_temt_isr) {
+> +			if ((lsr & BOTH_EMPTY) != BOTH_EMPTY)
+> +				return;
+> +		} else {
+> +			while ((lsr & BOTH_EMPTY) != BOTH_EMPTY) {
+> +				lsr = serial_in(p, UART_LSR);
+> +				cpu_relax();
+> +			}
 
-Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../bindings/{serial => mfd}/atmel-usart.txt  | 25 +++++++++++++++++--
- include/dt-bindings/mfd/at91-usart.h          | 17 +++++++++++++
- 2 files changed, 40 insertions(+), 2 deletions(-)
- rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
- create mode 100644 include/dt-bindings/mfd/at91-usart.h
+What happens if TEMP never be empty after interruption occurring?
 
-diff --git a/Documentation/devicetree/bindings/serial/atmel-usart.txt b/Documentation/devicetree/bindings/mfd/atmel-usart.txt
-similarity index 76%
-rename from Documentation/devicetree/bindings/serial/atmel-usart.txt
-rename to Documentation/devicetree/bindings/mfd/atmel-usart.txt
-index 7c0d6b2f53e4..3b9e18642c3b 100644
---- a/Documentation/devicetree/bindings/serial/atmel-usart.txt
-+++ b/Documentation/devicetree/bindings/mfd/atmel-usart.txt
-@@ -1,6 +1,6 @@
- * Atmel Universal Synchronous Asynchronous Receiver/Transmitter (USART)
- 
--Required properties:
-+Required properties for USART:
- - compatible: Should be "atmel,<chip>-usart" or "atmel,<chip>-dbgu"
-   The compatible <chip> indicated will be the first SoC to support an
-   additional mode or an USART new feature.
-@@ -11,7 +11,13 @@ Required properties:
- 	Required elements: "usart"
- - clocks: phandles to input clocks.
- 
--Optional properties:
-+Required properties for USART in SPI mode:
-+- #size-cells      : Must be <0>
-+- #address-cells   : Must be <1>
-+- cs-gpios: chipselects (internal cs not supported)
-+- atmel,usart-mode : Must be <USART_MODE_SPI> (found in dt-bindings/mfd/at91-usart.h)
-+
-+Optional properties in serial mode:
- - atmel,use-dma-rx: use of PDC or DMA for receiving data
- - atmel,use-dma-tx: use of PDC or DMA for transmitting data
- - {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD line respectively.
-@@ -62,3 +68,18 @@ Example:
- 		dma-names = "tx", "rx";
- 		atmel,fifo-size = <32>;
- 	};
-+
-+- SPI mode:
-+	#include <dt-bindings/mfd/at91-usart.h>
-+
-+	spi0: spi@f001c000 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "atmel,at91rm9200-usart", "atmel,at91sam9260-usart";
-+		atmel,usart-mode = <USART_MODE_SPI>;
-+		reg = <0xf001c000 0x100>;
-+		interrupts = <12 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&usart0_clk>;
-+		clock-names = "usart";
-+		cs-gpios = <&pioB 3 0>;
-+	};
-diff --git a/include/dt-bindings/mfd/at91-usart.h b/include/dt-bindings/mfd/at91-usart.h
-new file mode 100644
-index 000000000000..ac811628a42d
---- /dev/null
-+++ b/include/dt-bindings/mfd/at91-usart.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * This header provides macros for AT91 USART DT bindings.
-+ *
-+ * Copyright (C) 2018 Microchip Technology
-+ *
-+ * Author: Radu Pirea <radu.pirea@microchip.com>
-+ *
-+ */
-+
-+#ifndef __DT_BINDINGS_AT91_USART_H__
-+#define __DT_BINDINGS_AT91_USART_H__
-+
-+#define AT91_USART_MODE_SERIAL	1
-+#define AT91_USART_MODE_SPI	2
-+
-+#endif /* __DT_BINDINGS_AT91_USART_H__ */
--- 
-2.17.1
+> +		}
+>  
+>  		em485->active_timer = NULL;
+>  
+> diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+> index a27ef5f56431..9b13cf59726b 100644
+> --- a/include/linux/serial_8250.h
+> +++ b/include/linux/serial_8250.h
+> @@ -83,6 +83,7 @@ struct uart_8250_em485 {
+>  	struct hrtimer		start_tx_timer; /* "rs485 start tx" timer */
+>  	struct hrtimer		stop_tx_timer;  /* "rs485 stop tx" timer */
+>  	struct hrtimer		*active_timer;  /* pointer to active timer */
+> +	bool			has_temt_isr;	/* say if 8250 has TEMT interrupt or no */
+>  	struct uart_8250_port	*port;          /* for hrtimer callbacks */
+>  };
+>  
+> 
