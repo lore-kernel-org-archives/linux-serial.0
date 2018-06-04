@@ -1,37 +1,61 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 4/8] serial: 8250: Handle case port doesn't have TEMT
- interrupt using em485.
-Date: Mon, 04 Jun 2018 13:17:41 +0300
-Message-ID: <3a66327727d9bf2ce5adf8ef0f1fcc1fffeaa4ec.camel@linux.intel.com>
-References: <20180601124021.102970-1-giulio.benetti@micronovasrl.com>
-         <20180601124021.102970-5-giulio.benetti@micronovasrl.com>
+From: Helmut Grohne <h.grohne@intenta.de>
+Subject: [PATCH v3 1/3] serial: xuartps: fix typo in cdns_uart_startup
+Date: Mon, 4 Jun 2018 12:22:05 +0200
+Message-ID: <5fbc35e1a4285e149cc0db3b1d989932260a8386.1528106392.git.h.grohne@intenta.de>
+References: <cover.1528106392.git.h.grohne@intenta.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180601124021.102970-5-giulio.benetti@micronovasrl.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Ed Blake <ed.blake@sondrel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <cover.1528106392.git.h.grohne@intenta.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michal Simek <michal.simek@xilinx.com>, linux-serial@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2018-06-01 at 14:40 +0200, Giulio Benetti wrote:
-> Some 8250 ports only have TEMT interrupt, so current implementation
-> can't work for ports without it. The only chance to make it work is to
-> loop-read on LSR register.
-> 
-> With NO TEMT interrupt check if both TEMT and THRE are set looping on
-> LSR register.
+The bit mask changes in commit 6e14f7c1f2c2 ("tty: xuartps: Improve
+startup function") doesn't do what the commit message advertises. The
+original behaviour was clearing the RX_DIS bit, but due to missing ~,
+that bit is now the only bit kept.
 
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
+Currently, the regression is harmless, because the previous write to the
+control register sets it to TXRST | RXRST. Thus the RX_DIS bit is
+previously cleared. The *RST bits are cleared by the hardware, so this
+commit does not currently change behaviour, but makes future changes
+less risky.
 
-> -		int ret = serial8250_em485_init(up);
-> +		int ret = serial8250_em485_init(up, false);
+Link: https://www.spinics.net/lists/linux-serial/msg23157.html
+Signed-off-by: Helmut Grohne <h.grohne@intenta.de>
+Fixes: 6e14f7c1f2c2 ("tty: xuartps: Improve startup function")
+Reviewed-by: S=F6ren Brinkmann <soren.brinkmann@xilinx.com>
+---
+ drivers/tty/serial/xilinx_uartps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Is true for all possible DW configured types? Or it's your particular
-case?
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx=
+_uartps.c
+index bd72dd843338..e4b2d8102a04 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -829,7 +829,7 @@ static int cdns_uart_startup(struct uart_port *port)
+ 	 * the receiver.
+ 	 */
+ 	status =3D readl(port->membase + CDNS_UART_CR);
+-	status &=3D CDNS_UART_CR_RX_DIS;
++	status &=3D ~CDNS_UART_CR_RX_DIS;
+ 	status |=3D CDNS_UART_CR_RX_EN;
+ 	writel(status, port->membase + CDNS_UART_CR);
+ =
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+-- =
+
+2.11.0
