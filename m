@@ -1,55 +1,67 @@
-From: Giulio Benetti <giulio.benetti@micronovasrl.com>
-Subject: Re: [PATCH 0/8] serial: 8250: Add 485 emulation to 8250_dw.
-Date: Mon, 4 Jun 2018 16:58:34 +0200
-Message-ID: <ec7fc614-63a4-9dcd-c83c-00628f8af2b1@micronovasrl.com>
-References: <20180601124021.102970-1-giulio.benetti@micronovasrl.com>
- <65c26f5db1275e958cfe6390e9336568b0158dea.camel@linux.intel.com>
- <CAJs94EZEEBNZRU3ixkdG9w44xsQDi7MUYAya2dzkAErT=xwqVA@mail.gmail.com>
- <c14c671c-3240-0170-7c0e-2b195c5b1398@micronovasrl.com>
- <7bdb658727b364e275c121a3bdd351f183d56cb9.camel@linux.intel.com>
+From: Radu Pirea <radu.pirea@microchip.com>
+Subject: [PATCH v5 0/6] Driver for at91 usart in spi mode
+Date: Mon, 4 Jun 2018 19:59:37 +0300
+Message-ID: <20180604165943.31381-1-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7bdb658727b364e275c121a3bdd351f183d56cb9.camel@linux.intel.com>
-Content-Language: it
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Ed Blake <ed.blake@sondrel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
+Cc: linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>
 List-Id: linux-serial@vger.kernel.org
 
+Hello,
 
-Il 04/06/2018 13:44, Andy Shevchenko ha scritto:
-> On Mon, 2018-06-04 at 12:42 +0200, Giulio Benetti wrote:
-> 
->>>> I don't see in Cc list author of rs485 code, who might be
->>>> interested in
->>>> this.
->>>>
->>>> So, added him here.
->>
->> Thanks Andy for adding in Cc an reviewing.
->> Dumb question: how did you find him?
-> 
-> I'm just following mailing lists somehow.
-> Though you always can do `git annotate` to see who lately did change
-> what.
-> 
->> I thought he was between people on get_maintainer.pl output.
-> 
-> Hmm... probably. Never checked myself for this particular case.
-> 
+This is the second version of driver. I added a mfd driver which by
+default probes atmel_serial driver and if in dt is specified to probe
+the spi driver, then the spi-at91-usart driver will be probed. The
+compatible for atmel_serial is now the compatible for at91-usart mfd
+driver and compatilbe for atmel_serial driver was changed in order to
+keep the bindings for serial as they are.
 
-Ok, thank you.
+Changes in v1:
+- added spi-at91-usart driver
+
+Changes in v2:
+- added at91-usart mfd driver
+- modified spi-at91-usart driver to work as mfd driver child
+- modified atmel_serial driver to work as mfd driver child
+
+Changes in v3:
+- fixed spi slaves probing
+
+Changes in v4:
+- modified the spi driver to use cs gpio support form spi subsystem
+- fixed dma transfers for serial driver
+- squashed binding for spi and serial and moved them to mfd/atmel-usart.txt
+
+Changes in v5:
+- fixed usage of stdout-path property with atmel_serial driver
+
+Radu Pirea (6):
+  MAINTAINERS: add at91 usart mfd driver
+  dt-bindings: add binding for atmel-usart in SPI mode
+  mfd: at91-usart: added mfd driver for usart
+  MAINTAINERS: add at91 usart spi driver
+  spi: at91-usart: add driver for at91-usart as spi
+  tty/serial: atmel: changed the driver to work under at91-usart mfd
+
+ .../bindings/{serial => mfd}/atmel-usart.txt  |  25 +-
+ MAINTAINERS                                   |  16 +
+ drivers/mfd/Kconfig                           |   9 +
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/at91-usart.c                      |  67 +++
+ drivers/spi/Kconfig                           |   9 +
+ drivers/spi/Makefile                          |   1 +
+ drivers/spi/spi-at91-usart.c                  | 436 ++++++++++++++++++
+ drivers/tty/serial/Kconfig                    |   1 +
+ drivers/tty/serial/atmel_serial.c             |  41 +-
+ include/dt-bindings/mfd/at91-usart.h          |  17 +
+ 11 files changed, 604 insertions(+), 19 deletions(-)
+ rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
+ create mode 100644 drivers/mfd/at91-usart.c
+ create mode 100644 drivers/spi/spi-at91-usart.c
+ create mode 100644 include/dt-bindings/mfd/at91-usart.h
 
 -- 
-Giulio Benetti
-CTO
-
-MICRONOVA SRL
-Sede: Via A. Niedda 3 - 35010 Vigonza (PD)
-Tel. 049/8931563 - Fax 049/8931346
-Cod.Fiscale - P.IVA 02663420285
-Capitale Sociale € 26.000 i.v.
-Iscritta al Reg. Imprese di Padova N. 02663420285
-Numero R.E.A. 258642
+2.17.1
