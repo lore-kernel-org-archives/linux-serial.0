@@ -1,79 +1,39 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 4/8] serial: 8250: Handle case port doesn't have TEMT
- interrupt using em485.
-Date: Mon, 04 Jun 2018 14:38:58 +0300
-Message-ID: <2a2f547d787db9d593bb7fe3ad9c833836e23749.camel@linux.intel.com>
+Subject: Re: [PATCH 0/8] serial: 8250: Add 485 emulation to 8250_dw.
+Date: Mon, 04 Jun 2018 14:44:28 +0300
+Message-ID: <7bdb658727b364e275c121a3bdd351f183d56cb9.camel@linux.intel.com>
 References: <20180601124021.102970-1-giulio.benetti@micronovasrl.com>
-         <20180601124021.102970-5-giulio.benetti@micronovasrl.com>
-         <3a66327727d9bf2ce5adf8ef0f1fcc1fffeaa4ec.camel@linux.intel.com>
-         <4a7148d5-ab2c-425d-afdc-08ddd3c522c2@micronovasrl.com>
+         <65c26f5db1275e958cfe6390e9336568b0158dea.camel@linux.intel.com>
+         <CAJs94EZEEBNZRU3ixkdG9w44xsQDi7MUYAya2dzkAErT=xwqVA@mail.gmail.com>
+         <c14c671c-3240-0170-7c0e-2b195c5b1398@micronovasrl.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4a7148d5-ab2c-425d-afdc-08ddd3c522c2@micronovasrl.com>
+In-Reply-To: <c14c671c-3240-0170-7c0e-2b195c5b1398@micronovasrl.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Ed Blake <ed.blake@sondrel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Giulio Benetti <giulio.benetti@micronovasrl.com>, "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Ed Blake <ed.blake@sondrel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2018-06-04 at 12:50 +0200, Giulio Benetti wrote:
-> Hi,
-> 
-> Il 04/06/2018 12:17, Andy Shevchenko ha scritto:
-> > On Fri, 2018-06-01 at 14:40 +0200, Giulio Benetti wrote:
-> > > Some 8250 ports only have TEMT interrupt, so current
-> > > implementation
-> > > can't work for ports without it. The only chance to make it work
-> > > is to
-> > > loop-read on LSR register.
+On Mon, 2018-06-04 at 12:42 +0200, Giulio Benetti wrote:
+
+> > > I don't see in Cc list author of rs485 code, who might be
+> > > interested in
+> > > this.
 > > > 
-> > > With NO TEMT interrupt check if both TEMT and THRE are set looping
-> > > on
-> > > LSR register.
-> > > --- a/drivers/tty/serial/8250/8250_dw.c
-> > > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > > -		int ret = serial8250_em485_init(up);
-> > > +		int ret = serial8250_em485_init(up, false);
-> > 
-> > Is true for all possible DW configured types? Or it's your
-> > particular
-> > case?
-> > 
+> > > So, added him here.
 > 
-> I've checked on Synopsis Designware 8250 datasheet and it's not
-> supported.
-> Here is datasheet I went through:
-> https://linux-sunxi.org/images/d/d2/Dw_apb_uart_db.pdf
-> 
-> There seems not to be TEMT interrupt, I use it under sunxi SoC and on 
-> their datasheet(A20 for example), they don't report that interrupt
-> too.
-> So it seems to be valid for all DW configured types, anyway I don't
-> know 
-> how many IP reviews there could be of that peripheral.
+> Thanks Andy for adding in Cc an reviewing.
+> Dumb question: how did you find him?
 
-This is an excerpt from the document you referred to:
+I'm just following mailing lists somehow.
+Though you always can do `git annotate` to see who lately did change
+what.
 
---- 8< --- 8< ---
+> I thought he was between people on get_maintainer.pl output.
 
-6 TEMT R Transmitter Empty bit. If in FIFO mode (FIFO_MODE != NONE) and
-FIFOs enabled (FCR[0] set to one), this bit is set whenever the
-Transmitter Shift Register and the FIFO are both empty. If in non-FIFO
-mode or FIFOs are disabled, this bit is set whenever the Transmitter
-Holding Register and the Transmitter Shift Register are both empty.
-
-Reset Value: 0x1
-
---- 8< --- 8< ---
-
-
-If I'm reading this correctly the support is there. Or otherwise, care
-to point exact paragraph needs to be read and checked?
-
-> I've tried to subscribe at Synopsis to obtain latest Datasheet but it 
-> ask me an active ID I don't have.
-> 
+Hmm... probably. Never checked myself for this particular case.
 
 -- 
 Andy Shevchenko <andriy.shevchenko@linux.intel.com>
