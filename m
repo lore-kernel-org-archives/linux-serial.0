@@ -1,104 +1,126 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 4/8] serial: 8250: Handle case port doesn't have TEMT
- interrupt using em485.
-Date: Mon, 04 Jun 2018 15:26:11 +0300
-Message-ID: <3f16e887bfdb543b02020f37d6b2cbb7921270f3.camel@linux.intel.com>
-References: <20180601124021.102970-1-giulio.benetti@micronovasrl.com>
-         <20180601124021.102970-5-giulio.benetti@micronovasrl.com>
-         <3a66327727d9bf2ce5adf8ef0f1fcc1fffeaa4ec.camel@linux.intel.com>
-         <4a7148d5-ab2c-425d-afdc-08ddd3c522c2@micronovasrl.com>
-         <2a2f547d787db9d593bb7fe3ad9c833836e23749.camel@linux.intel.com>
-         <2c61887c-53e0-1ece-9f4a-89250134f083@micronovasrl.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2c61887c-53e0-1ece-9f4a-89250134f083@micronovasrl.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Matwey V.Kornilov" <matwey@sai.msu.ru>
-Cc: Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Ed Blake <ed.blake@sondrel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Subject: [PATCH v4.9-stable] serial: pl011: add console matching function
+Date: Mon,  4 Jun 2018 15:16:12 +0200
+Message-ID: <20180604131612.14407-1-ard.biesheuvel@linaro.org>
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: stable@vger.kernel.org
+Cc: leif.lindholm@linaro.org, graeme.gregory@linaro.org, gregkh@linuxfoundation.org, linux@armlinux.org.uk, jslaby@suse.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, ard.biesheuvel@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2018-06-04 at 13:50 +0200, Giulio Benetti wrote:
-> Hi,
-> 
-> Il 04/06/2018 13:38, Andy Shevchenko ha scritto:
-> > On Mon, 2018-06-04 at 12:50 +0200, Giulio Benetti wrote:
-> > > Hi,
-> > > 
-> > > Il 04/06/2018 12:17, Andy Shevchenko ha scritto:
-> > > > On Fri, 2018-06-01 at 14:40 +0200, Giulio Benetti wrote:
-> > > > > Some 8250 ports only have TEMT interrupt, so current
-> > > > > implementation
-> > > > > can't work for ports without it. The only chance to make it
-> > > > > work
-> > > > > is to
-> > > > > loop-read on LSR register.
-> > > > > 
-> > > > > With NO TEMT interrupt check if both TEMT and THRE are set
-> > > > > looping
-> > > > > on
-> > > > > LSR register.
-> > > > > --- a/drivers/tty/serial/8250/8250_dw.c
-> > > > > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > > > > -		int ret = serial8250_em485_init(up);
-> > > > > +		int ret = serial8250_em485_init(up, false);
-> > > > 
-> > > > Is true for all possible DW configured types? Or it's your
-> > > > particular
-> > > > case?
-> > > > 
-> > > 
-> > > I've checked on Synopsis Designware 8250 datasheet and it's not
-> > > supported.
-> > > Here is datasheet I went through:
-> > > https://linux-sunxi.org/images/d/d2/Dw_apb_uart_db.pdf
-> > > 
-> > > There seems not to be TEMT interrupt, I use it under sunxi SoC and
-> > > on
-> > > their datasheet(A20 for example), they don't report that interrupt
-> > > too.
-> > > So it seems to be valid for all DW configured types, anyway I
-> > > don't
-> > > know
-> > > how many IP reviews there could be of that peripheral.
-> > 
-> > This is an excerpt from the document you referred to:
-> > 
-> > --- 8< --- 8< ---
-> > 
-> > 6 TEMT R Transmitter Empty bit. If in FIFO mode (FIFO_MODE != NONE)
-> > and
-> > FIFOs enabled (FCR[0] set to one), this bit is set whenever the
-> > Transmitter Shift Register and the FIFO are both empty. If in non-
-> > FIFO
-> > mode or FIFOs are disabled, this bit is set whenever the Transmitter
-> > Holding Register and the Transmitter Shift Register are both empty.
-> > 
-> > Reset Value: 0x1
-> > 
-> > --- 8< --- 8< ---
-> > 
-> > 
-> > If I'm reading this correctly the support is there. Or otherwise,
-> > care
-> > to point exact paragraph needs to be read and checked?
-> 
-> In the beginning I thought the same as you but
-> unfortunately LSR is only a status register and IER doesn't have 
-> corresponding TEMT bit to enable an interrupt on TEMT triggering.
-> On OMAP instead there is a specific interrupt bound to TEMT LSR flag.
-> And THRE interrupt is not enough because shift register won't be
-> empty 
-> when it triggers, so you would loose some bit of last byte to be 
-> transmitted.
+From: Aleksey Makarov <aleksey.makarov@linaro.org>
 
-Hmm... Okay, it's something you and Matwey better to discuss.
+Commit 10879ae5f12e9cab3c4e8e9504c1aaa8a033bde7 upstream.
 
-P.S. Latest version of document I have does describe RS485 HW supported
-mode. I don't know if it was added recently to the IP itself, or just
-missed documentation. That's what you need to clarify with Synopsys.
+This patch adds function pl011_console_match() that implements
+method match of struct console.  It allows to match consoles against
+data specified in a string, for example taken from command line or
+compiled by ACPI SPCR table handler.
 
+This patch was merged to tty-next but then reverted because of
+conflict with
+
+commit 46e36683f433 ("serial: earlycon: Extend earlycon command line option to support 64-bit addresses")
+
+Now it is fixed.
+
+Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
+Tested-by: Christopher Covington <cov@codeaurora.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+---
+
+Please consider for v4.9-stable. It is the missing puzzle piece for SPCR
+support on arm64 ACPI systems, which got merged for v4.9 [0]. Now that more
+systems are becoming available to people working in the kernel community, it
+turns out that v4.9 distro installers (e.g., Debian Stretch) won't work
+unless you pass a 'console=' parameter explicitly, which is annoying.
+Given that it was clearly the intent to include this code at the time,
+I hope it will be considered for backporting.
+
+[0] To quote the tty maintainer:
+
+      Also in here is the long-suffering ACPI SPCR patchset, which was
+      passed around from maintainer to maintainer like a hot-potato. Seems I
+      was the sucker^Wlucky one. All of those patches have been acked by the
+      various subsystem maintainers as well.
+
+ drivers/tty/serial/amba-pl011.c | 55 ++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index b42d7f1c9089..6b1863293fe1 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2320,12 +2320,67 @@ static int __init pl011_console_setup(struct console *co, char *options)
+ 	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
+ }
+ 
++/**
++ *	pl011_console_match - non-standard console matching
++ *	@co:	  registering console
++ *	@name:	  name from console command line
++ *	@idx:	  index from console command line
++ *	@options: ptr to option string from console command line
++ *
++ *	Only attempts to match console command lines of the form:
++ *	    console=pl011,mmio|mmio32,<addr>[,<options>]
++ *	    console=pl011,0x<addr>[,<options>]
++ *	This form is used to register an initial earlycon boot console and
++ *	replace it with the amba_console at pl011 driver init.
++ *
++ *	Performs console setup for a match (as required by interface)
++ *	If no <options> are specified, then assume the h/w is already setup.
++ *
++ *	Returns 0 if console matches; otherwise non-zero to use default matching
++ */
++static int __init pl011_console_match(struct console *co, char *name, int idx,
++				      char *options)
++{
++	unsigned char iotype;
++	resource_size_t addr;
++	int i;
++
++	if (strcmp(name, "pl011") != 0)
++		return -ENODEV;
++
++	if (uart_parse_earlycon(options, &iotype, &addr, &options))
++		return -ENODEV;
++
++	if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
++		return -ENODEV;
++
++	/* try to match the port specified on the command line */
++	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
++		struct uart_port *port;
++
++		if (!amba_ports[i])
++			continue;
++
++		port = &amba_ports[i]->port;
++
++		if (port->mapbase != addr)
++			continue;
++
++		co->index = i;
++		port->cons = co;
++		return pl011_console_setup(co, options);
++	}
++
++	return -ENODEV;
++}
++
+ static struct uart_driver amba_reg;
+ static struct console amba_console = {
+ 	.name		= "ttyAMA",
+ 	.write		= pl011_console_write,
+ 	.device		= uart_console_device,
+ 	.setup		= pl011_console_setup,
++	.match		= pl011_console_match,
+ 	.flags		= CON_PRINTBUFFER,
+ 	.index		= -1,
+ 	.data		= &amba_reg,
 -- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+2.17.0
