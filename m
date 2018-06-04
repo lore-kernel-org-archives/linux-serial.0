@@ -1,126 +1,55 @@
-From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Subject: [PATCH v4.9-stable] serial: pl011: add console matching function
-Date: Mon,  4 Jun 2018 15:16:12 +0200
-Message-ID: <20180604131612.14407-1-ard.biesheuvel@linaro.org>
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: stable@vger.kernel.org
-Cc: leif.lindholm@linaro.org, graeme.gregory@linaro.org, gregkh@linuxfoundation.org, linux@armlinux.org.uk, jslaby@suse.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, ard.biesheuvel@linaro.org
+From: Giulio Benetti <giulio.benetti@micronovasrl.com>
+Subject: Re: [PATCH 0/8] serial: 8250: Add 485 emulation to 8250_dw.
+Date: Mon, 4 Jun 2018 16:58:34 +0200
+Message-ID: <ec7fc614-63a4-9dcd-c83c-00628f8af2b1@micronovasrl.com>
+References: <20180601124021.102970-1-giulio.benetti@micronovasrl.com>
+ <65c26f5db1275e958cfe6390e9336568b0158dea.camel@linux.intel.com>
+ <CAJs94EZEEBNZRU3ixkdG9w44xsQDi7MUYAya2dzkAErT=xwqVA@mail.gmail.com>
+ <c14c671c-3240-0170-7c0e-2b195c5b1398@micronovasrl.com>
+ <7bdb658727b364e275c121a3bdd351f183d56cb9.camel@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <7bdb658727b364e275c121a3bdd351f183d56cb9.camel@linux.intel.com>
+Content-Language: it
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Matwey V. Kornilov" <matwey@sai.msu.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Ed Blake <ed.blake@sondrel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Aleksey Makarov <aleksey.makarov@linaro.org>
 
-Commit 10879ae5f12e9cab3c4e8e9504c1aaa8a033bde7 upstream.
+Il 04/06/2018 13:44, Andy Shevchenko ha scritto:
+> On Mon, 2018-06-04 at 12:42 +0200, Giulio Benetti wrote:
+> 
+>>>> I don't see in Cc list author of rs485 code, who might be
+>>>> interested in
+>>>> this.
+>>>>
+>>>> So, added him here.
+>>
+>> Thanks Andy for adding in Cc an reviewing.
+>> Dumb question: how did you find him?
+> 
+> I'm just following mailing lists somehow.
+> Though you always can do `git annotate` to see who lately did change
+> what.
+> 
+>> I thought he was between people on get_maintainer.pl output.
+> 
+> Hmm... probably. Never checked myself for this particular case.
+> 
 
-This patch adds function pl011_console_match() that implements
-method match of struct console.  It allows to match consoles against
-data specified in a string, for example taken from command line or
-compiled by ACPI SPCR table handler.
+Ok, thank you.
 
-This patch was merged to tty-next but then reverted because of
-conflict with
-
-commit 46e36683f433 ("serial: earlycon: Extend earlycon command line option to support 64-bit addresses")
-
-Now it is fixed.
-
-Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
-Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
-Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
-Tested-by: Christopher Covington <cov@codeaurora.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
----
-
-Please consider for v4.9-stable. It is the missing puzzle piece for SPCR
-support on arm64 ACPI systems, which got merged for v4.9 [0]. Now that more
-systems are becoming available to people working in the kernel community, it
-turns out that v4.9 distro installers (e.g., Debian Stretch) won't work
-unless you pass a 'console=' parameter explicitly, which is annoying.
-Given that it was clearly the intent to include this code at the time,
-I hope it will be considered for backporting.
-
-[0] To quote the tty maintainer:
-
-      Also in here is the long-suffering ACPI SPCR patchset, which was
-      passed around from maintainer to maintainer like a hot-potato. Seems I
-      was the sucker^Wlucky one. All of those patches have been acked by the
-      various subsystem maintainers as well.
-
- drivers/tty/serial/amba-pl011.c | 55 ++++++++++++++++++++
- 1 file changed, 55 insertions(+)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index b42d7f1c9089..6b1863293fe1 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2320,12 +2320,67 @@ static int __init pl011_console_setup(struct console *co, char *options)
- 	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
- }
- 
-+/**
-+ *	pl011_console_match - non-standard console matching
-+ *	@co:	  registering console
-+ *	@name:	  name from console command line
-+ *	@idx:	  index from console command line
-+ *	@options: ptr to option string from console command line
-+ *
-+ *	Only attempts to match console command lines of the form:
-+ *	    console=pl011,mmio|mmio32,<addr>[,<options>]
-+ *	    console=pl011,0x<addr>[,<options>]
-+ *	This form is used to register an initial earlycon boot console and
-+ *	replace it with the amba_console at pl011 driver init.
-+ *
-+ *	Performs console setup for a match (as required by interface)
-+ *	If no <options> are specified, then assume the h/w is already setup.
-+ *
-+ *	Returns 0 if console matches; otherwise non-zero to use default matching
-+ */
-+static int __init pl011_console_match(struct console *co, char *name, int idx,
-+				      char *options)
-+{
-+	unsigned char iotype;
-+	resource_size_t addr;
-+	int i;
-+
-+	if (strcmp(name, "pl011") != 0)
-+		return -ENODEV;
-+
-+	if (uart_parse_earlycon(options, &iotype, &addr, &options))
-+		return -ENODEV;
-+
-+	if (iotype != UPIO_MEM && iotype != UPIO_MEM32)
-+		return -ENODEV;
-+
-+	/* try to match the port specified on the command line */
-+	for (i = 0; i < ARRAY_SIZE(amba_ports); i++) {
-+		struct uart_port *port;
-+
-+		if (!amba_ports[i])
-+			continue;
-+
-+		port = &amba_ports[i]->port;
-+
-+		if (port->mapbase != addr)
-+			continue;
-+
-+		co->index = i;
-+		port->cons = co;
-+		return pl011_console_setup(co, options);
-+	}
-+
-+	return -ENODEV;
-+}
-+
- static struct uart_driver amba_reg;
- static struct console amba_console = {
- 	.name		= "ttyAMA",
- 	.write		= pl011_console_write,
- 	.device		= uart_console_device,
- 	.setup		= pl011_console_setup,
-+	.match		= pl011_console_match,
- 	.flags		= CON_PRINTBUFFER,
- 	.index		= -1,
- 	.data		= &amba_reg,
 -- 
-2.17.0
+Giulio Benetti
+CTO
+
+MICRONOVA SRL
+Sede: Via A. Niedda 3 - 35010 Vigonza (PD)
+Tel. 049/8931563 - Fax 049/8931346
+Cod.Fiscale - P.IVA 02663420285
+Capitale Sociale € 26.000 i.v.
+Iscritta al Reg. Imprese di Padova N. 02663420285
+Numero R.E.A. 258642
