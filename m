@@ -1,49 +1,36 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 3/8] serial: 8250: Copy em485 from port to real port.
-Date: Mon, 04 Jun 2018 13:13:59 +0300
-Message-ID: <d282884a4df00d3f010c6af77c61ce07da75adc3.camel@linux.intel.com>
+Subject: Re: [PATCH 4/8] serial: 8250: Handle case port doesn't have TEMT
+ interrupt using em485.
+Date: Mon, 04 Jun 2018 13:17:41 +0300
+Message-ID: <3a66327727d9bf2ce5adf8ef0f1fcc1fffeaa4ec.camel@linux.intel.com>
 References: <20180601124021.102970-1-giulio.benetti@micronovasrl.com>
-         <20180601124021.102970-4-giulio.benetti@micronovasrl.com>
+         <20180601124021.102970-5-giulio.benetti@micronovasrl.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180601124021.102970-4-giulio.benetti@micronovasrl.com>
+In-Reply-To: <20180601124021.102970-5-giulio.benetti@micronovasrl.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Ed Blake <ed.blake@sondrel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 On Fri, 2018-06-01 at 14:40 +0200, Giulio Benetti wrote:
-> em485 gets lost during serial8250_register_8250_port().
+> Some 8250 ports only have TEMT interrupt, so current implementation
+> can't work for ports without it. The only chance to make it work is to
+> loop-read on LSR register.
 > 
-> Copy em485 to final uart port.
+> With NO TEMT interrupt check if both TEMT and THRE are set looping on
+> LSR register.
 
-Fixes better to go first.
-I think you need to reorder the series.
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
 
-> 
-> Signed-off-by: Giulio Benetti <giulio.benetti@micronovasrl.com>
-> ---
->  drivers/tty/serial/8250/8250_core.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c
-> b/drivers/tty/serial/8250/8250_core.c
-> index 9342fc2ee7df..c8c2b260c681 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -994,6 +994,7 @@ int serial8250_register_8250_port(struct
-> uart_8250_port *up)
->  		uart->port.rs485_config	= up-
-> >port.rs485_config;
->  		uart->port.rs485	= up->port.rs485;
->  		uart->dma		= up->dma;
-> +		uart->em485		= up->em485;
->  
->  		/* Take tx_loadsz from fifosize if it wasn't set
-> separately */
->  		if (uart->port.fifosize && !uart->tx_loadsz)
+> -		int ret = serial8250_em485_init(up);
+> +		int ret = serial8250_em485_init(up, false);
+
+Is true for all possible DW configured types? Or it's your particular
+case?
 
 -- 
 Andy Shevchenko <andriy.shevchenko@linux.intel.com>
