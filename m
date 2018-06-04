@@ -1,16 +1,15 @@
 From: Giulio Benetti <giulio.benetti@micronovasrl.com>
-Subject: Re: [PATCH 4/8] serial: 8250: Handle case port doesn't have TEMT
- interrupt using em485.
-Date: Mon, 4 Jun 2018 12:50:44 +0200
-Message-ID: <4a7148d5-ab2c-425d-afdc-08ddd3c522c2@micronovasrl.com>
+Subject: Re: [PATCH 3/8] serial: 8250: Copy em485 from port to real port.
+Date: Mon, 4 Jun 2018 12:52:57 +0200
+Message-ID: <893fdadf-3d46-d621-1e32-d18dd2725fc8@micronovasrl.com>
 References: <20180601124021.102970-1-giulio.benetti@micronovasrl.com>
- <20180601124021.102970-5-giulio.benetti@micronovasrl.com>
- <3a66327727d9bf2ce5adf8ef0f1fcc1fffeaa4ec.camel@linux.intel.com>
+ <20180601124021.102970-4-giulio.benetti@micronovasrl.com>
+ <d282884a4df00d3f010c6af77c61ce07da75adc3.camel@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3a66327727d9bf2ce5adf8ef0f1fcc1fffeaa4ec.camel@linux.intel.com>
+In-Reply-To: <d282884a4df00d3f010c6af77c61ce07da75adc3.camel@linux.intel.com>
 Content-Language: it
 Sender: linux-kernel-owner@vger.kernel.org
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -19,35 +18,19 @@ List-Id: linux-serial@vger.kernel.org
 
 Hi,
 
-Il 04/06/2018 12:17, Andy Shevchenko ha scritto:
+Il 04/06/2018 12:13, Andy Shevchenko ha scritto:
 > On Fri, 2018-06-01 at 14:40 +0200, Giulio Benetti wrote:
->> Some 8250 ports only have TEMT interrupt, so current implementation
->> can't work for ports without it. The only chance to make it work is to
->> loop-read on LSR register.
+>> em485 gets lost during serial8250_register_8250_port().
 >>
->> With NO TEMT interrupt check if both TEMT and THRE are set looping on
->> LSR register.
+>> Copy em485 to final uart port.
 > 
->> --- a/drivers/tty/serial/8250/8250_dw.c
->> +++ b/drivers/tty/serial/8250/8250_dw.c
-> 
->> -		int ret = serial8250_em485_init(up);
->> +		int ret = serial8250_em485_init(up, false);
-> 
-> Is true for all possible DW configured types? Or it's your particular
-> case?
-> 
+> Fixes better to go first.
+> I think you need to reorder the series.
 
-I've checked on Synopsis Designware 8250 datasheet and it's not supported.
-Here is datasheet I went through:
-https://linux-sunxi.org/images/d/d2/Dw_apb_uart_db.pdf
+Ok, thanks.
+So after re-ording and clarifying TEMT interrupt, can I send v2 patchset?
 
-There seems not to be TEMT interrupt, I use it under sunxi SoC and on 
-their datasheet(A20 for example), they don't report that interrupt too.
-So it seems to be valid for all DW configured types, anyway I don't know 
-how many IP reviews there could be of that peripheral.
-I've tried to subscribe at Synopsis to obtain latest Datasheet but it 
-ask me an active ID I don't have.
+Thanks
 
 -- 
 Giulio Benetti
