@@ -1,55 +1,59 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 19/19] serdev: Instantiate a ttydev serdev if acpi and of fails
-Date: Tue, 5 Jun 2018 16:44:28 +0300
-Message-ID: <CAHp75VeNhtJSa-2NJ5hCJP5yxtcaiNi-P8QA3BYCbGSNRfyvrg@mail.gmail.com>
-References: <20180529131014.18641-1-ricardo.ribalda@gmail.com> <20180529131014.18641-20-ricardo.ribalda@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Marcel Holtmann <marcel@holtmann.org>
+Subject: Re: [PATCH 04/19] Bluetooth: hci_nokia: Add serdev_id_table
+Date: Tue, 5 Jun 2018 15:53:55 +0200
+Message-ID: <E848BED5-1D83-47FA-A673-29B366A60227@holtmann.org>
+References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
+ <20180529131014.18641-5-ricardo.ribalda@gmail.com>
+Mime-Version: 1.0 (Mac OS X Mail 11.4 \(3445.8.2\))
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180529131014.18641-20-ricardo.ribalda@gmail.com>
+In-Reply-To: <20180529131014.18641-5-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, linux-bluetooth@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 29, 2018 at 4:10 PM, Ricardo Ribalda Delgado
-<ricardo.ribalda@gmail.com> wrote:
-> If a serdev ttyport controller does not have an acpi nor an of child,
-> create a ttydev as a child of that controller.
->
-> Doing this allows the removal, addition and replacement of ttydev devices
-> at runtime.
+Hi Ricardo,
 
-> @@ -619,6 +619,27 @@ static inline int acpi_serdev_register_devices(struct serdev_controller *ctrl)
->  }
->  #endif /* CONFIG_ACPI */
->
+> Describe which hardware is supported by the current driver.
+> 
+> Cc: Marcel Holtmann <marcel@holtmann.org>
+> Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Johan Hovold <johan@kernel.org>
+> Cc: linux-bluetooth@vger.kernel.org
+> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+> ---
+> drivers/bluetooth/hci_nokia.c | 6 ++++++
+> 1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/bluetooth/hci_nokia.c b/drivers/bluetooth/hci_nokia.c
+> index 3539fd03f47e..e32dfcd56b8d 100644
+> --- a/drivers/bluetooth/hci_nokia.c
+> +++ b/drivers/bluetooth/hci_nokia.c
+> @@ -801,6 +801,11 @@ static const struct of_device_id nokia_bluetooth_of_match[] = {
+> MODULE_DEVICE_TABLE(of, nokia_bluetooth_of_match);
+> #endif
+> 
+> +static struct serdev_device_id nokia_bluetooth_serdev_id[] = {
+> +	{ "hp4-bluetooth", },
+> +	{},
+> +};
 > +
+> static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
+> 	.probe = nokia_bluetooth_serdev_probe,
+> 	.remove = nokia_bluetooth_serdev_remove,
+> @@ -809,6 +814,7 @@ static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
+> 		.pm = &nokia_bluetooth_pm_ops,
+> 		.of_match_table = of_match_ptr(nokia_bluetooth_of_match),
+> 	},
+> +	.id_table = nokia_bluetooth_serdev_id,
+> };
 
-Redundant blank line.
+I would actually skip this hardware. First of all it is such a dedicated custom Nokia transport and hardware, and secondly it is no longer produced anyway.
 
-> +#if IS_ENABLED(CONFIG_SERIAL_DEV_CTRL_TTYDEV)
+Regards
 
-> -       if (ret_of && ret_acpi) {
-> -               dev_dbg(&ctrl->dev, "no devices registered: of:%d acpi:%d\n",
-> -                       ret_of, ret_acpi);
-> +
-> +#if IS_ENABLED(CONFIG_SERIAL_DEV_CTRL_TTYDEV)
-> +       if (ret_of && ret_acpi && ctrl->is_ttyport)
-> +               ret_tty = serdev_controller_add_ttydev(ctrl);
-> +#endif
-> +
-> +       if (ret_of && ret_acpi && ret_tty) {
-> +               dev_dbg(&ctrl->dev,
-> +                       "no devices registered: of:%d acpi:%d tty:%d\n",
-> +                       ret_of, ret_acpi, ret_tty);
->                 ret = -ENODEV;
->                 goto out_dev_del;
->         }
-
-Wouldn't be better to leave above if-condition and introduce your
-stuff inside it?
-
--- 
-With Best Regards,
-Andy Shevchenko
+Marcel
