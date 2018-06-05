@@ -1,62 +1,58 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 1/2] serial: 8250: enable SERIAL_MCTRL_GPIO by default.
-Date: Tue, 05 Jun 2018 13:00:42 +0300
-Message-ID: <2b2a81ce166f16ab88a4733caed2544c8128ae6b.camel@linux.intel.com>
-References: <20180601141158.93817-1-giulio.benetti@micronovasrl.com>
-         <b850a3cf565a24414d3290f6699f5a040bf61223.camel@linux.intel.com>
-         <7f4d688c-095a-d056-1edd-430bfc4e00da@micronovasrl.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4.9-stable] serial: pl011: add console matching function
+Date: Tue, 5 Jun 2018 12:19:53 +0200
+Message-ID: <20180605101953.GC26129@kroah.com>
+References: <20180604131612.14407-1-ard.biesheuvel@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7f4d688c-095a-d056-1edd-430bfc4e00da@micronovasrl.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Ed Blake <ed.blake@sondrel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180604131612.14407-1-ard.biesheuvel@linaro.org>
+Sender: stable-owner@vger.kernel.org
+To: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc: stable@vger.kernel.org, leif.lindholm@linaro.org, graeme.gregory@linaro.org, linux@armlinux.org.uk, jslaby@suse.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 2018-06-04 at 20:57 +0200, Giulio Benetti wrote:
-> Il 04/06/2018 13:49, Andy Shevchenko ha scritto:
-> > On Fri, 2018-06-01 at 16:11 +0200, Giulio Benetti wrote:
-> > > It can be useful to override 8250 mctrl lines with gpios, for rts
-> > > on
-> > > rs485 for example, when rts is not mapped correctly to HW RTS pin.
-> > > 
-> > > Enable SERIAL_MCTRL_GPIO by default.
-> > > 
-> > 
-> > Unfortunately NAK, see
-> > 
-> > commit 5db4f7f80d165fc9725f356e99feec409e446baa
-> > Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Date:   Tue Aug 16 15:06:54 2016 +0300
-> > 
-> >      Revert "tty/serial/8250: use mctrl_gpio helpers"
-> > 
-> > for the details.
-> > 
-> > I would love to see a solution that will satisfy everyone, though I
-> > have
-> > only means to test proposals for now.
+On Mon, Jun 04, 2018 at 03:16:12PM +0200, Ard Biesheuvel wrote:
+> From: Aleksey Makarov <aleksey.makarov@linaro.org>
 > 
-> Thanks for pointing me that.
-> I would try to solve serial breakage on intel with already extisting 
-> patches dropping this one.
-> I'm going to try.
+> Commit 10879ae5f12e9cab3c4e8e9504c1aaa8a033bde7 upstream.
 > 
-> I can't understand if it's enough using qemu x86 to reproduce the bug.
-> If so I'm going to debug and check what makes driver to fail.
+> This patch adds function pl011_console_match() that implements
+> method match of struct console.  It allows to match consoles against
+> data specified in a string, for example taken from command line or
+> compiled by ACPI SPCR table handler.
+> 
+> This patch was merged to tty-next but then reverted because of
+> conflict with
+> 
+> commit 46e36683f433 ("serial: earlycon: Extend earlycon command line option to support 64-bit addresses")
+> 
+> Now it is fixed.
+> 
+> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+> Reviewed-by: Peter Hurley <peter@hurleysoftware.com>
+> Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
+> Tested-by: Christopher Covington <cov@codeaurora.org>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+> ---
+> 
+> Please consider for v4.9-stable. It is the missing puzzle piece for SPCR
+> support on arm64 ACPI systems, which got merged for v4.9 [0]. Now that more
+> systems are becoming available to people working in the kernel community, it
+> turns out that v4.9 distro installers (e.g., Debian Stretch) won't work
+> unless you pass a 'console=' parameter explicitly, which is annoying.
+> Given that it was clearly the intent to include this code at the time,
+> I hope it will be considered for backporting.
+> 
+> [0] To quote the tty maintainer:
+> 
+>       Also in here is the long-suffering ACPI SPCR patchset, which was
+>       passed around from maintainer to maintainer like a hot-potato. Seems I
+>       was the sucker^Wlucky one. All of those patches have been acked by the
+>       various subsystem maintainers as well.
 
-You need to provide an ACPI table with UART contains GpioInt() or
-GpioIo() resource in it.
+Now queued up, thanks.
 
-Where GPIO number is a number of pin related to UART's RxD.
-
-
-> Do you think it makes sense? Would it be accepted after bug fixing?
-
-I can test on our hardware. Can't say about the rest, though.
-
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+greg k-h
