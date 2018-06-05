@@ -1,7 +1,7 @@
 From: Nishanth Menon <nm@ti.com>
-Subject: [RFC PATCH 2/6] arm64: Add support for TI's K3 Multicore SoC architecture
-Date: Tue, 5 Jun 2018 01:01:21 -0500
-Message-ID: <20180605060125.9518-3-nm@ti.com>
+Subject: [RFC PATCH 3/6] serial: 8250_omap: Add support for AM654 UART controller
+Date: Tue, 5 Jun 2018 01:01:22 -0500
+Message-ID: <20180605060125.9518-4-nm@ti.com>
 References: <20180605060125.9518-1-nm@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,34 +9,45 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180605060125.9518-1-nm@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>, Nishanth Menon <nm@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>, Nishanth Menon <nm@ti.com>, Sekhar Nori <nsekhar@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add support for Texas Instrument's K3 Multicore SoC architecture
-processors.
+AM654 uses a UART controller that is compatible (partially) with
+existing 8250 UART, however, has a few differences with respect to DMA
+support and control paths. Introduce a base definition that allows us
+to build up the differences in follow on patches.
 
+Cc: Sekhar Nori <nsekhar@ti.com>
+Cc: Vignesh R <vigneshr@ti.com>
 Signed-off-by: Nishanth Menon <nm@ti.com>
 ---
- arch/arm64/Kconfig.platforms | 7 +++++++
- 1 file changed, 7 insertions(+)
+ Documentation/devicetree/bindings/serial/omap_serial.txt | 1 +
+ drivers/tty/serial/8250/8250_omap.c                      | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index d5aeac351fc3..52df25bf4f8c 100644
---- a/arch/arm64/Kconfig.platforms
-+++ b/arch/arm64/Kconfig.platforms
-@@ -71,6 +71,13 @@ config ARCH_EXYNOS
- 	help
- 	  This enables support for ARMv8 based Samsung Exynos SoC family.
+diff --git a/Documentation/devicetree/bindings/serial/omap_serial.txt b/Documentation/devicetree/bindings/serial/omap_serial.txt
+index 4b0f05adb228..c35d5ece1156 100644
+--- a/Documentation/devicetree/bindings/serial/omap_serial.txt
++++ b/Documentation/devicetree/bindings/serial/omap_serial.txt
+@@ -1,6 +1,7 @@
+ OMAP UART controller
  
-+config ARCH_K3
-+	bool "Texas Instruments Inc. K3 multicore SoC architecture"
-+	select PM_GENERIC_DOMAINS if PM
-+	help
-+	  This enables support for Texas Instruments' K3 multicore SoC
-+	  architecture.
-+
- config ARCH_LAYERSCAPE
- 	bool "ARMv8 based Freescale Layerscape SoC family"
- 	select EDAC_SUPPORT
+ Required properties:
++- compatible : should be "ti,am654-uart" for AM654 controllers
+ - compatible : should be "ti,omap2-uart" for OMAP2 controllers
+ - compatible : should be "ti,omap3-uart" for OMAP3 controllers
+ - compatible : should be "ti,omap4-uart" for OMAP4 controllers
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 1b337fee07ed..a019286f8bb6 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1115,6 +1115,7 @@ static const u8 am3352_habit = OMAP_DMA_TX_KICK | UART_ERRATA_CLOCK_DISABLE;
+ static const u8 dra742_habit = UART_ERRATA_CLOCK_DISABLE;
+ 
+ static const struct of_device_id omap8250_dt_ids[] = {
++	{ .compatible = "ti,am654-uart" },
+ 	{ .compatible = "ti,omap2-uart" },
+ 	{ .compatible = "ti,omap3-uart" },
+ 	{ .compatible = "ti,omap4-uart", .data = &omap4_habit, },
 -- 
 2.15.1
