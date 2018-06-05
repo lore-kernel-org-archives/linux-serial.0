@@ -1,104 +1,129 @@
 From: Nishanth Menon <nm@ti.com>
-Subject: [RFC PATCH 1/6] Documentation: arm: ti: Add bindings for AM654 SoC
-Date: Tue, 5 Jun 2018 01:01:20 -0500
-Message-ID: <20180605060125.9518-2-nm@ti.com>
-References: <20180605060125.9518-1-nm@ti.com>
+Subject: [RFC PATCH 6/6] arm64: dts: ti: Add support for AM654 EVM base board
+Date: Tue, 5 Jun 2018 01:05:10 -0500
+Message-ID: <20180605060510.32473-2-nm@ti.com>
+References: <=<20180605060125.9518-1-nm@ti.com>
+ <20180605060510.32473-1-nm@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180605060125.9518-1-nm@ti.com>
+In-Reply-To: <20180605060510.32473-1-nm@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>, Nishanth Menon <nm@ti.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>, nm@ti.com
 List-Id: linux-serial@vger.kernel.org
 
-The AM654 SoC is a lead device of the K3 Multicore SoC architecture
-platform, targeted for broad market and industrial control with aim to
-meet the complex processing needs of modern embedded products.
+The EValuation Module(EVM) platform for AM654 consists of a
+common Base board + one or more of daughter cards, which include:
+a) "Personality Modules", which can be specific to a profile, such as
+ ICSSG enabled or Multi-media (including audio).
+b) SERDES modules, which may be 2 lane PCIe or two port PCIe + USB2
+c) Camera daughter card
+d) various display panels
 
-Some highlights of this SoC are:
-* Quad ARMv8 A53 cores split over two clusters
-* GICv3 compliant GIC500
-* Configurable L3 Cache and IO-coherent architecture
-* Dual lock-step capable R5F uC for safety-critical applications
-* High data throughput capable distributed DMA architecture under NAVSS
-* Three Gigabit Industrial Communication Subsystems (ICSSG), each with dual
-  PRUs and dual RTUs
-* Hardware accelerator block containing AES/DES/SHA/MD5 called SA2UL
-* Centralized System Controller for Security, Power, and Resource
-  management.
-* Dual ADCSS, eQEP/eCAP, eHRPWM, dual CAN-FD
-* Flash subystem with OSPI and Hyperbus interfaces
-* Multimedia capability with CAL, DSS7-UL, SGX544, McASP
-* Peripheral connectivity including USB3, PCIE, MMC/SD, GPMC, I2C, SPI,
-  GPIO
+Among other options. There are two basic configurations defined which
+include an "EVM" configuration and "IDK" (Industrial development kit)
+which differ in the specific combination of daughter cards that are
+used.
 
-See AM65x Technical Reference Manual (SPRUID7, April 2018)
-for further details: http://www.ti.com/lit/pdf/spruid7
+To simplify support, we choose to support just the base board as the
+core device tree file and all daughter cards would be expected to be
+device tree overlays.
 
+Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
 Signed-off-by: Nishanth Menon <nm@ti.com>
 ---
- Documentation/devicetree/bindings/arm/ti/k3.txt | 33 +++++++++++++++++++++++++
- MAINTAINERS                                     |  7 ++++++
- 2 files changed, 40 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/ti/k3.txt
+ MAINTAINERS                                    |  1 +
+ arch/arm64/boot/dts/Makefile                   |  1 +
+ arch/arm64/boot/dts/ti/Makefile                |  9 ++++++
+ arch/arm64/boot/dts/ti/k3-am654-base-board.dts | 40 ++++++++++++++++++++++++++
+ 4 files changed, 51 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/ti/Makefile
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am654-base-board.dts
 
-diff --git a/Documentation/devicetree/bindings/arm/ti/k3.txt b/Documentation/devicetree/bindings/arm/ti/k3.txt
-new file mode 100644
-index 000000000000..cbabb1b89f6f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/ti/k3.txt
-@@ -0,0 +1,33 @@
-+Texas Instruments K3 Multicore SoC architecture device tree bindings
-+--------------------------------------------------------------------
-+
-+Boards based on K3 Multicore SoC architecture shall have the following property:
-+- compatible: Every hardware block introduced in K3 Multicore SoC
-+  architecture shall be of the form:
-+  "ti,XXX-YYY", where:
-+     'XXX' represents the specific SoC part for which the support is added.
-+     'YYY' represents the corresponding peripheral in SoC being supported.
-+
-+  NOTE: Generic devices such as GIC or legacy devices shall use the specified
-+  compatible for those devices.
-+
-+  Example:
-+    compatible = "ti,am654-i2c";
-+
-+SoCs
-+-------------------------------------------
-+
-+Each device tree root node must specify which exact SoC in K3 Multicore SoC
-+architecture it uses, using one of the following compatible values:
-+
-+- AM654
-+  compatible = "ti,am654";
-+
-+Boards
-+-------------------------------------------
-+
-+In addition, each device tree root node must specify which one or more
-+of the following board-specific compatible values:
-+
-+- AM654 EVM
-+  compatible = "ti,am654-evm", "ti,am654";
 diff --git a/MAINTAINERS b/MAINTAINERS
-index f39a8de1bbd7..cfb35b252ac7 100644
+index 5f5c4eddec7a..4491a0f0625f 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -2086,6 +2086,13 @@ L:	linux-kernel@vger.kernel.org
- S:	Maintained
- F:	drivers/memory/*emif*
- 
-+ARM/TEXAS INSTRUMENTS K3 ARCHITECTURE
-+M:	Tero Kristo <t-kristo@ti.com>
-+M:	Nishanth Menon <nm@ti.com>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-+S:	Supported
-+F:	Documentation/devicetree/bindings/arm/ti/k3.txt
-+
- ARM/TEXAS INSTRUMENT KEYSTONE ARCHITECTURE
- M:	Santosh Shilimkar <ssantosh@kernel.org>
+@@ -2092,6 +2092,7 @@ M:	Nishanth Menon <nm@ti.com>
  L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ S:	Supported
+ F:	Documentation/devicetree/bindings/arm/ti/k3.txt
++F:	arch/arm64/boot/dts/ti/Makefile
+ F:	arch/arm64/boot/dts/ti/k3-*
+ 
+ ARM/TEXAS INSTRUMENT KEYSTONE ARCHITECTURE
+diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
+index 3543bc324553..4690364d584b 100644
+--- a/arch/arm64/boot/dts/Makefile
++++ b/arch/arm64/boot/dts/Makefile
+@@ -23,5 +23,6 @@ subdir-y += rockchip
+ subdir-y += socionext
+ subdir-y += sprd
+ subdir-y += synaptics
++subdir-y += ti
+ subdir-y += xilinx
+ subdir-y += zte
+diff --git a/arch/arm64/boot/dts/ti/Makefile b/arch/arm64/boot/dts/ti/Makefile
+new file mode 100644
+index 000000000000..63e619d0b5b8
+--- /dev/null
++++ b/arch/arm64/boot/dts/ti/Makefile
+@@ -0,0 +1,9 @@
++# SPDX-License-Identifier: GPL-2.0
++#
++# Make file to build device tree binaries for boards based on
++# Texas Instruments Inc processors
++#
++# Copyright (C) 2016-2018 Texas Instruments Incorporated - http://www.ti.com/
++#
++
++dtb-$(CONFIG_ARCH_K3_AM6_SOC) += k3-am654-base-board.dtb
+diff --git a/arch/arm64/boot/dts/ti/k3-am654-base-board.dts b/arch/arm64/boot/dts/ti/k3-am654-base-board.dts
+new file mode 100644
+index 000000000000..d227d792de60
+--- /dev/null
++++ b/arch/arm64/boot/dts/ti/k3-am654-base-board.dts
+@@ -0,0 +1,40 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2016-2018 Texas Instruments Incorporated - http://www.ti.com/
++ */
++
++/dts-v1/;
++
++#include "k3-am654.dtsi"
++
++/ {
++	compatible =  "ti,am654-evm", "ti,am654";
++	model = "Texas Instruments AM654 Base Board";
++
++	chosen {
++		stdout-path = "serial2:115200n8";
++		bootargs = "earlycon=ns16550a,mmio32,0x02800000";
++	};
++
++	memory@80000000 {
++		device_type = "memory";
++		/* 4G RAM */
++		reg = <0x00000000 0x80000000 0x00000000 0x80000000>,
++		      <0x00000008 0x80000000 0x00000000 0x80000000>;
++	};
++
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++		secure_ddr: secure_ddr@9e800000 {
++			reg = <0 0x9e800000 0 0x01800000>; /* for OP-TEE */
++			alignment = <0x1000>;
++			no-map;
++		};
++	};
++};
++
++&main_uart0 {
++	status = "okay";
++};
 -- 
 2.15.1
