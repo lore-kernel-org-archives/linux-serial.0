@@ -1,88 +1,43 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH 18/19] serdev: ttydev: Serdev driver that creates an
- standard TTY port
-Date: Wed, 6 Jun 2018 09:47:27 +0200
-Message-ID: <CAPybu_2dqG1HX39e+oG8rYvzMG_vGDBQjiLewNjwUvkh+AiF=w@mail.gmail.com>
-References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
- <20180529131014.18641-19-ricardo.ribalda@gmail.com> <CAHp75VfFTtysSBvYfmCMoKZz8BpHb73qh=Zy-gpn6RKO2DE-5Q@mail.gmail.com>
- <CAPybu_0zByhDeVf6_Tv_PwU0WL_y6bkVPn0ha+VBvPcxWV4rLA@mail.gmail.com>
+From: Giulio Benetti <giulio.benetti@micronovasrl.com>
+Subject: Re: [PATCH 4/8] serial: 8250: Handle case port doesn't have TEMT
+ interrupt using em485.
+Date: Wed, 6 Jun 2018 11:36:40 +0200
+Message-ID: <2654fba0-e16e-4f53-4913-bd718e42497c@micronovasrl.com>
+References: <20180601124021.102970-1-giulio.benetti@micronovasrl.com>
+ <20180601124021.102970-5-giulio.benetti@micronovasrl.com>
+ <b14d4970-f14d-d59f-2072-b7d5704dd842@gmail.com>
+ <d130718a-444d-3a39-4da8-0f0b907f850d@micronovasrl.com>
+ <CAJs94EZqdQAQG+inWvj89FCQtv06LxhY_J4YgNmK8mtvgDTchQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAPybu_0zByhDeVf6_Tv_PwU0WL_y6bkVPn0ha+VBvPcxWV4rLA@mail.gmail.com>
+In-Reply-To: <CAJs94EZqdQAQG+inWvj89FCQtv06LxhY_J4YgNmK8mtvgDTchQ@mail.gmail.com>
+Content-Language: it
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+To: "Matwey V. Kornilov" <matwey.kornilov@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Kees Cook <keescook@chromium.org>, Matthias Brugger <mbrugger@suse.com>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, Ed Blake <ed.blake@sondrel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
-On Wed, Jun 6, 2018 at 8:58 AM Ricardo Ribalda Delgado
-<ricardo.ribalda@gmail.com> wrote:
->
-> Hi Andy
-> On Tue, Jun 5, 2018 at 3:42 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> >
-> > On Tue, May 29, 2018 at 4:10 PM, Ricardo Ribalda Delgado
-> > <ricardo.ribalda@gmail.com> wrote:
-> > > Standard TTY port that can be loaded/unloaded via serdev sysfs. This
-> > > serdev driver can only be used by serdev controllers that are compatible
-> > > with ttyport.
-> >
-> > > +config SERIAL_DEV_CTRL_TTYDEV
-> > > +       tristate "TTY port dynamically loaded by the Serial Device Bus"
-> > > +       help
-> > > +         Say Y here if you want to create a bridge driver between the Serial
-> > > +         device bus and the TTY chardevice. This driver can be dynamically
-> > > +         loaded/unloaded by the Serial Device Bus.
-> > > +
-> > > +         If unsure, say Y.
-> > > +       depends on SERIAL_DEV_CTRL_TTYPORT
-> >
-> > > +       default m
-> >
-> > Hmm... Can't we survive w/o this by default?
->
-> If this module is not available and serdev is enabled the user would
-> miss his /dev/ttyS* nodes, so I rather leave this on.
+Hi,
 
-Sorry, brain fart. This is exactly what #if
-IS_ENABLED(CONFIG_SERIAL_DEV_CTRL_TTYDEV) prevents.
+Il 05/06/2018 12:51, Matwey V. Kornilov ha scritto:
+> Could I ask to split the series into fixes and new features? I see
+> that the fixes can be applied, probably it would be better to apply
+> them separately from discussing new features.
 
-I have defaulted the module to n as you suggested. You can take a look
-to the patches that I plan to submit tomorrow at:
+Sure, I'm going to send 2 different patchsets.
 
-https://github.com/ribalda/linux/tree/serdev2
-
->
-> >
-> > > +static int __init ttydev_serdev_init(void)
-> > > +{
-> > > +       return serdev_device_driver_register(&ttydev_serdev_driver);
-> > > +}
-> > > +module_init(ttydev_serdev_init);
-> > > +
-> > > +static void __exit ttydev_serdev_exit(void)
-> > > +{
-> > > +       return serdev_device_driver_unregister(&ttydev_serdev_driver);
-> > > +}
-> > > +module_exit(ttydev_serdev_exit);
-> >
-> > Isn't above is just a macro in serdev.h?
-> > I.e. module_serdev_device_driver().
->
-> ACK, thanks!
-> >
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
->
-> Best regards
->
-> --
-> Ricardo Ribalda
-
-
+Thanks
 
 -- 
-Ricardo Ribalda
+Giulio Benetti
+CTO
+
+MICRONOVA SRL
+Sede: Via A. Niedda 3 - 35010 Vigonza (PD)
+Tel. 049/8931563 - Fax 049/8931346
+Cod.Fiscale - P.IVA 02663420285
+Capitale Sociale € 26.000 i.v.
+Iscritta al Reg. Imprese di Padova N. 02663420285
+Numero R.E.A. 258642
