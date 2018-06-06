@@ -1,218 +1,54 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH v5 6/6] tty/serial: atmel: changed the driver to work
- under at91-usart mfd
-Date: Wed, 6 Jun 2018 13:02:21 +0200
-Message-ID: <91db9d80-d530-9a00-3b40-80e335869ff4@sorico.fr>
-References: <20180604165943.31381-1-radu.pirea@microchip.com>
- <20180604165943.31381-7-radu.pirea@microchip.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 1/4] serial: 8250: Copy em485 from port to real port.
+Date: Wed, 06 Jun 2018 14:56:34 +0300
+Message-ID: <069f5cd3309e83d13c74929f240720b232ea7251.camel@linux.intel.com>
+References: <CAJs94EZqdQAQG+inWvj89FCQtv06LxhY_J4YgNmK8mtvgDTchQ@mail.gmail.com>
+         <20180606094942.71190-1-giulio.benetti@micronovasrl.com>
+         <20180606094942.71190-4-giulio.benetti@micronovasrl.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180604165943.31381-7-radu.pirea@microchip.com>
-Content-Language: fr
+In-Reply-To: <20180606094942.71190-4-giulio.benetti@micronovasrl.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu.pirea@microchip.com>, broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
-Cc: linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+To: Giulio Benetti <giulio.benetti@micronovasrl.com>
+Cc: matwey.kornilov@gmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <mbrugger@suse.com>, Kees Cook <keescook@chromium.org>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Typo in the subject:
-changed->change
-
-
-On 04/06/2018 18:59, Radu Pirea wrote:
-> This patch modifies the place where resources and device tree properties
-> are searched.
+On Wed, 2018-06-06 at 11:49 +0200, Giulio Benetti wrote:
+> em485 gets lost during serial8250_register_8250_port().
 > 
-> Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+> Copy em485 to final uart port.
+> 
+
+Is it needed at all?
+
+The individual driver decides either to use software emulation (and
+calls explicitly serial8250_em485_init() for that) or do HW assisted
+stuff.
+
+> Signed-off-by: Giulio Benetti <giulio.benetti@micronovasrl.com>
 > ---
->  drivers/tty/serial/Kconfig        |  1 +
->  drivers/tty/serial/atmel_serial.c | 41 ++++++++++++++++++-------------
->  2 files changed, 25 insertions(+), 17 deletions(-)
+>  drivers/tty/serial/8250/8250_core.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 3682fd3e960c..25e55332f8b1 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -119,6 +119,7 @@ config SERIAL_ATMEL
->  	depends on ARCH_AT91 || COMPILE_TEST
->  	select SERIAL_CORE
->  	select SERIAL_MCTRL_GPIO if GPIOLIB
-> +	select MFD_AT91_USART
->  	help
->  	  This enables the driver for the on-chip UARTs of the Atmel
->  	  AT91 processors.
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index df46a9e88c34..5c74e03396ef 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -193,8 +193,8 @@ static struct console atmel_console;
+> diff --git a/drivers/tty/serial/8250/8250_core.c
+> b/drivers/tty/serial/8250/8250_core.c
+> index 9342fc2ee7df..c8c2b260c681 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -994,6 +994,7 @@ int serial8250_register_8250_port(struct
+> uart_8250_port *up)
+>  		uart->port.rs485_config	= up-
+> >port.rs485_config;
+>  		uart->port.rs485	= up->port.rs485;
+>  		uart->dma		= up->dma;
+> +		uart->em485		= up->em485;
 >  
->  #if defined(CONFIG_OF)
->  static const struct of_device_id atmel_serial_dt_ids[] = {
-> -	{ .compatible = "atmel,at91rm9200-usart" },
-> -	{ .compatible = "atmel,at91sam9260-usart" },
-> +	{ .compatible = "atmel,at91rm9200-usart-serial" },
-> +	{ .compatible = "atmel,at91sam9260-usart-serial" },
-Sorry, I didn't catch that before, but we can drop "atmel,at91sam9260-usart-serial" don't we ?
-Only "atmel,at91rm9200-usart-serial" is used in the MFD driver.
+>  		/* Take tx_loadsz from fifosize if it wasn't set
+> separately */
+>  		if (uart->port.fifosize && !uart->tx_loadsz)
 
->  	{ /* sentinel */ }
->  };
->  #endif
-> @@ -915,6 +915,7 @@ static void atmel_tx_dma(struct uart_port *port)
->  static int atmel_prepare_tx_dma(struct uart_port *port)
->  {
->  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> +	struct device *mfd_dev = port->dev->parent;
->  	dma_cap_mask_t		mask;
->  	struct dma_slave_config config;
->  	int ret, nent;
-> @@ -922,7 +923,7 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
->  	dma_cap_zero(mask);
->  	dma_cap_set(DMA_SLAVE, mask);
->  
-> -	atmel_port->chan_tx = dma_request_slave_channel(port->dev, "tx");
-> +	atmel_port->chan_tx = dma_request_slave_channel(mfd_dev, "tx");
->  	if (atmel_port->chan_tx == NULL)
->  		goto chan_err;
->  	dev_info(port->dev, "using %s for tx DMA transfers\n",
-> @@ -1093,6 +1094,7 @@ static void atmel_rx_from_dma(struct uart_port *port)
->  static int atmel_prepare_rx_dma(struct uart_port *port)
->  {
->  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> +	struct device *mfd_dev = port->dev->parent;
->  	struct dma_async_tx_descriptor *desc;
->  	dma_cap_mask_t		mask;
->  	struct dma_slave_config config;
-> @@ -1104,7 +1106,7 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
->  	dma_cap_zero(mask);
->  	dma_cap_set(DMA_CYCLIC, mask);
->  
-> -	atmel_port->chan_rx = dma_request_slave_channel(port->dev, "rx");
-> +	atmel_port->chan_rx = dma_request_slave_channel(mfd_dev, "rx");
->  	if (atmel_port->chan_rx == NULL)
->  		goto chan_err;
->  	dev_info(port->dev, "using %s for rx DMA transfers\n",
-> @@ -1631,7 +1633,7 @@ static void atmel_tasklet_tx_func(unsigned long data)
->  static void atmel_init_property(struct atmel_uart_port *atmel_port,
->  				struct platform_device *pdev)
->  {
-> -	struct device_node *np = pdev->dev.of_node;
-> +	struct device_node *np = pdev->dev.parent->of_node;
-I think this is not needed anymore (cf atmel_probe())
-
->  
->  	/* DMA/PDC usage specification */
->  	if (of_property_read_bool(np, "atmel,use-dma-rx")) {
-> @@ -2222,8 +2224,8 @@ static const char *atmel_type(struct uart_port *port)
->   */
->  static void atmel_release_port(struct uart_port *port)
->  {
-> -	struct platform_device *pdev = to_platform_device(port->dev);
-> -	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
-> +	struct platform_device *mpdev = to_platform_device(port->dev->parent);
-> +	int size = resource_size(mpdev->resource);
->  
->  	release_mem_region(port->mapbase, size);
->  
-> @@ -2238,8 +2240,8 @@ static void atmel_release_port(struct uart_port *port)
->   */
->  static int atmel_request_port(struct uart_port *port)
->  {
-> -	struct platform_device *pdev = to_platform_device(port->dev);
-> -	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
-> +	struct platform_device *mpdev = to_platform_device(port->dev->parent);
-> +	int size = resource_size(mpdev->resource);
->  
->  	if (!request_mem_region(port->mapbase, size, "atmel_serial"))
->  		return -EBUSY;
-> @@ -2341,27 +2343,28 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
->  {
->  	int ret;
->  	struct uart_port *port = &atmel_port->uart;
-> +	struct platform_device *mpdev = to_platform_device(pdev->dev.parent);
->  
->  	atmel_init_property(atmel_port, pdev);
->  	atmel_set_ops(port);
->  
-> -	uart_get_rs485_mode(&pdev->dev, &port->rs485);
-> +	uart_get_rs485_mode(&mpdev->dev, &port->rs485);
->  
->  	port->iotype		= UPIO_MEM;
->  	port->flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP;
->  	port->ops		= &atmel_pops;
->  	port->fifosize		= 1;
->  	port->dev		= &pdev->dev;
-> -	port->mapbase	= pdev->resource[0].start;
-> -	port->irq	= pdev->resource[1].start;
-> +	port->mapbase		= mpdev->resource[0].start;
-> +	port->irq		= mpdev->resource[1].start;
->  	port->rs485_config	= atmel_config_rs485;
-> -	port->membase	= NULL;
-> +	port->membase		= NULL;
->  
->  	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
->  
->  	/* for console, the clock could already be configured */
->  	if (!atmel_port->clk) {
-> -		atmel_port->clk = clk_get(&pdev->dev, "usart");
-> +		atmel_port->clk = clk_get(&mpdev->dev, "usart");
->  		if (IS_ERR(atmel_port->clk)) {
->  			ret = PTR_ERR(atmel_port->clk);
->  			atmel_port->clk = NULL;
-> @@ -2652,11 +2655,13 @@ static int atmel_serial_resume(struct platform_device *pdev)
->  static void atmel_serial_probe_fifos(struct atmel_uart_port *atmel_port,
->  				     struct platform_device *pdev)
->  {
-> +	struct device *dev = pdev->dev.parent;
-> +
-Ditto
-
->  	atmel_port->fifo_size = 0;
->  	atmel_port->rts_low = 0;
->  	atmel_port->rts_high = 0;
->  
-> -	if (of_property_read_u32(pdev->dev.of_node,
-> +	if (of_property_read_u32(dev->of_node,
-Ditto
->  				 "atmel,fifo-size",
->  				 &atmel_port->fifo_size))
->  		return;
-> @@ -2694,13 +2699,15 @@ static void atmel_serial_probe_fifos(struct atmel_uart_port *atmel_port,
->  static int atmel_serial_probe(struct platform_device *pdev)
->  {
->  	struct atmel_uart_port *atmel_port;
-> -	struct device_node *np = pdev->dev.of_node;
-> +	struct device_node *np = pdev->dev.parent->of_node;
->  	void *data;
->  	int ret = -ENODEV;
->  	bool rs485_enabled;
->  
->  	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
->  
-> +	pdev->dev.of_node = np;
-> +
-As atmel_serial device's of_node is now the parent node, the changes
-in atmel_init_property() and atmel_serial_probe_fifos() are not needed anymore.
-And maybe add a comment to explain that this is part of a MFD and all
-the attributes are in the parent node, so we're using the MFD device node
-instead of this device node.
-
->  	ret = of_alias_get_id(np, "serial");
->  	if (ret < 0)
->  		/* port id not found in platform data nor device-tree aliases:
-> @@ -2845,7 +2852,7 @@ static struct platform_driver atmel_serial_driver = {
->  	.suspend	= atmel_serial_suspend,
->  	.resume		= atmel_serial_resume,
->  	.driver		= {
-> -		.name			= "atmel_usart",
-> +		.name			= "atmel_usart_serial",
->  		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
->  	},
->  };
-> 
-
-Thanks !
-
-Richard.
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
