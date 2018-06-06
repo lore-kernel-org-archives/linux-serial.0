@@ -1,7 +1,7 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [RFC PATCH v2 3/6] serial: uartps: Do not use static struct uart_driver out of probe()
-Date: Wed,  6 Jun 2018 14:41:36 +0200
-Message-ID: <e1116a36eec7307d21e88869acd3c4e0e6fe874b.1528288895.git.michal.simek@xilinx.com>
+Subject: [RFC PATCH v2 1/6] serial: uartps: Do not initialize field to zero again
+Date: Wed,  6 Jun 2018 14:41:34 +0200
+Message-ID: <e8b0169887855a5ef2c1a0456842f650601b451c.1528288895.git.michal.simek@xilinx.com>
 References: <cover.1528288895.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1528288895.git.michal.simek@xilinx.com>
@@ -12,9 +12,8 @@ To: linux-kernel@vger.kernel.org, monstr@monstr.eu, gnomes@lxorguk.ukuu.org.uk, 
 Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-cdns_uart_suspend()/resume() and remove() are using static reference
-to struct uart_driver. Assign this referece to private data structure
-as preparation step for dynamic struct uart_driver allocation.
+Writing zero and NULLs to already initialized fields is not needed.
+Remove this additional writes.
 
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
@@ -22,89 +21,28 @@ Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 Changes in v2:
 - new patch - it can be sent separately too
 
- drivers/tty/serial/xilinx_uartps.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index e24382f58dea..fe96fd950d3a 100644
+index 8a3e34234e98..5f116f3ecd4a 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -179,6 +179,7 @@
-  * @port:		Pointer to the UART port
-  * @uartclk:		Reference clock
-  * @pclk:		APB clock
-+ * @cdns_uart_driver:	Pointer to UART driver
-  * @baud:		Current baud rate
-  * @clk_rate_change_nb:	Notifier block for clock changes
-  * @quirks:		Flags for RXBS support.
-@@ -187,6 +188,7 @@ struct cdns_uart {
- 	struct uart_port	*port;
- 	struct clk		*uartclk;
- 	struct clk		*pclk;
-+	struct uart_driver	*cdns_uart_driver;
- 	unsigned int		baud;
- 	struct notifier_block	clk_rate_change_nb;
- 	u32			quirks;
-@@ -1280,6 +1282,7 @@ static int __init cdns_uart_console_setup(struct console *co, char *options)
- static int cdns_uart_suspend(struct device *device)
- {
- 	struct uart_port *port = dev_get_drvdata(device);
-+	struct cdns_uart *cdns_uart = port->private_data;
- 	struct tty_struct *tty;
- 	struct device *tty_dev;
- 	int may_wake = 0;
-@@ -1296,7 +1299,7 @@ static int cdns_uart_suspend(struct device *device)
- 	 * Call the API provided in serial_core.c file which handles
- 	 * the suspend.
- 	 */
--	uart_suspend_port(&cdns_uart_uart_driver, port);
-+	uart_suspend_port(cdns_uart->cdns_uart_driver, port);
- 	if (!(console_suspend_enabled && !may_wake)) {
- 		unsigned long flags = 0;
+@@ -1510,15 +1510,12 @@ static int cdns_uart_probe(struct platform_device *pdev)
  
-@@ -1324,6 +1327,7 @@ static int cdns_uart_suspend(struct device *device)
- static int cdns_uart_resume(struct device *device)
- {
- 	struct uart_port *port = dev_get_drvdata(device);
-+	struct cdns_uart *cdns_uart = port->private_data;
- 	unsigned long flags = 0;
- 	u32 ctrl_reg;
- 	struct tty_struct *tty;
-@@ -1339,8 +1343,6 @@ static int cdns_uart_resume(struct device *device)
- 	}
+ 	/* At this point, we've got an empty uart_port struct, initialize it */
+ 	spin_lock_init(&port->lock);
+-	port->membase	= NULL;
+-	port->irq	= 0;
+ 	port->type	= PORT_UNKNOWN;
+ 	port->iotype	= UPIO_MEM32;
+ 	port->flags	= UPF_BOOT_AUTOCONF;
+ 	port->ops	= &cdns_uart_ops;
+ 	port->fifosize	= CDNS_UART_FIFO_SIZE;
+ 	port->line	= id;
+-	port->dev	= NULL;
  
- 	if (console_suspend_enabled && !may_wake) {
--		struct cdns_uart *cdns_uart = port->private_data;
--
- 		clk_enable(cdns_uart->pclk);
- 		clk_enable(cdns_uart->uartclk);
- 
-@@ -1374,7 +1376,7 @@ static int cdns_uart_resume(struct device *device)
- 		spin_unlock_irqrestore(&port->lock, flags);
- 	}
- 
--	return uart_resume_port(&cdns_uart_uart_driver, port);
-+	return uart_resume_port(cdns_uart->cdns_uart_driver, port);
- }
- #endif /* ! CONFIG_PM_SLEEP */
- static int __maybe_unused cdns_runtime_suspend(struct device *dev)
-@@ -1446,6 +1448,8 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	cdns_uart_data->cdns_uart_driver = &cdns_uart_uart_driver;
-+
- 	match = of_match_node(cdns_uart_of_match, pdev->dev.of_node);
- 	if (match && match->data) {
- 		const struct cdns_platform_data *data = match->data;
-@@ -1603,7 +1607,7 @@ static int cdns_uart_remove(struct platform_device *pdev)
- 	clk_notifier_unregister(cdns_uart_data->uartclk,
- 			&cdns_uart_data->clk_rate_change_nb);
- #endif
--	rc = uart_remove_one_port(&cdns_uart_uart_driver, port);
-+	rc = uart_remove_one_port(cdns_uart_data->cdns_uart_driver, port);
- 	port->mapbase = 0;
- 	clk_disable_unprepare(cdns_uart_data->uartclk);
- 	clk_disable_unprepare(cdns_uart_data->pclk);
+ 	/*
+ 	 * Register the port.
 -- 
 1.9.1
