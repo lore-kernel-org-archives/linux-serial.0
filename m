@@ -1,7 +1,7 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [RFC PATCH v2 2/6] serial: uartps: Move register to probe based on run time detection
-Date: Wed,  6 Jun 2018 14:41:35 +0200
-Message-ID: <23d27f8b80e1cdad278f272f98e50e5bd8e5cfbb.1528288895.git.michal.simek@xilinx.com>
+Subject: [RFC PATCH v2 4/6] serial: uartps: Move alias reading higher in probe()
+Date: Wed,  6 Jun 2018 14:41:37 +0200
+Message-ID: <c287db5a4da13c0e3b85e3f99540a836dacd017a.1528288895.git.michal.simek@xilinx.com>
 References: <cover.1528288895.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1528288895.git.michal.simek@xilinx.com>
@@ -12,73 +12,64 @@ To: linux-kernel@vger.kernel.org, monstr@monstr.eu, gnomes@lxorguk.ukuu.org.uk, 
 Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Find out the highest serial alias and allocate that amount of
-structures/minor numbers to be able to handle all of them.
-Origin setting that there are two prealocated CDNS_UART_NR_PORTS is kept
-there.
+This cosmetic change is done only for having next patch much easier to
+read. Moving id setup higher in probe is not affecting any usage of this
+driver and it also simplify error path.
 
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
 
 Changes in v2:
-- Remove nr field logic
+- new patch - it can be sent separately too
 
-Discussed here: https://patchwork.kernel.org/patch/9738445/
-
-The same solution is done in pl011 driver.
-
----
- drivers/tty/serial/xilinx_uartps.c | 24 +++++++++---------------
- 1 file changed, 9 insertions(+), 15 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 5f116f3ecd4a..e24382f58dea 100644
+index fe96fd950d3a..b47d7ccbc38d 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1438,6 +1438,14 @@ static int cdns_uart_probe(struct platform_device *pdev)
+@@ -1440,6 +1440,16 @@ static int cdns_uart_probe(struct platform_device *pdev)
  	if (!port)
  		return -ENOMEM;
  
-+	if (!cdns_uart_uart_driver.state) {
-+		rc = uart_register_driver(&cdns_uart_uart_driver);
-+		if (rc < 0) {
-+			dev_err(&pdev->dev, "Failed to register driver\n");
-+			return rc;
-+		}
++	/* Look for a serialN alias */
++	id = of_alias_get_id(pdev->dev.of_node, "serial");
++	if (id < 0)
++		id = 0;
++
++	if (id >= CDNS_UART_NR_PORTS) {
++		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
++		return -ENODEV;
 +	}
 +
- 	match = of_match_node(cdns_uart_of_match, pdev->dev.of_node);
- 	if (match && match->data) {
- 		const struct cdns_platform_data *data = match->data;
-@@ -1617,28 +1625,14 @@ static int cdns_uart_remove(struct platform_device *pdev)
+ 	if (!cdns_uart_uart_driver.state) {
+ 		rc = uart_register_driver(&cdns_uart_uart_driver);
+ 		if (rc < 0) {
+@@ -1509,16 +1519,6 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 				&cdns_uart_data->clk_rate_change_nb))
+ 		dev_warn(&pdev->dev, "Unable to register clock notifier.\n");
+ #endif
+-	/* Look for a serialN alias */
+-	id = of_alias_get_id(pdev->dev.of_node, "serial");
+-	if (id < 0)
+-		id = 0;
+-
+-	if (id >= CDNS_UART_NR_PORTS) {
+-		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
+-		rc = -ENODEV;
+-		goto err_out_notif_unreg;
+-	}
  
- static int __init cdns_uart_init(void)
- {
--	int retval = 0;
--
--	/* Register the cdns_uart driver with the serial core */
--	retval = uart_register_driver(&cdns_uart_uart_driver);
--	if (retval)
--		return retval;
--
- 	/* Register the platform driver */
--	retval = platform_driver_register(&cdns_uart_platform_driver);
--	if (retval)
--		uart_unregister_driver(&cdns_uart_uart_driver);
--
--	return retval;
-+	return platform_driver_register(&cdns_uart_platform_driver);
- }
- 
- static void __exit cdns_uart_exit(void)
- {
- 	/* Unregister the platform driver */
- 	platform_driver_unregister(&cdns_uart_platform_driver);
--
--	/* Unregister the cdns_uart driver */
--	uart_unregister_driver(&cdns_uart_uart_driver);
- }
- 
- arch_initcall(cdns_uart_init);
+ 	/* At this point, we've got an empty uart_port struct, initialize it */
+ 	spin_lock_init(&port->lock);
+@@ -1577,7 +1577,6 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 	pm_runtime_disable(&pdev->dev);
+ 	pm_runtime_set_suspended(&pdev->dev);
+ 	pm_runtime_dont_use_autosuspend(&pdev->dev);
+-err_out_notif_unreg:
+ #ifdef CONFIG_COMMON_CLK
+ 	clk_notifier_unregister(cdns_uart_data->uartclk,
+ 			&cdns_uart_data->clk_rate_change_nb);
 -- 
 1.9.1
