@@ -1,43 +1,33 @@
-From: Giulio Benetti <giulio.benetti@micronovasrl.com>
-Subject: [PATCH 4/4] serial: 8250_dw: treat rpm suspend with -EBUSY if RS485 ON and RTS_AFTER_SEND
-Date: Wed,  6 Jun 2018 11:51:53 +0200
-Message-ID: <20180606095156.72628-3-giulio.benetti@micronovasrl.com>
-References: <CAJs94EZqdQAQG+inWvj89FCQtv06LxhY_J4YgNmK8mtvgDTchQ@mail.gmail.com>
- <20180606095156.72628-1-giulio.benetti@micronovasrl.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 18/19] serdev: ttydev: Serdev driver that creates an
+ standard TTY port
+Date: Wed, 6 Jun 2018 12:55:42 +0300
+Message-ID: <CAHp75VfZBKTu5XHt5_0eQp6m0Tdyi0H3vNz00c3ok+jgx2By7A@mail.gmail.com>
+References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
+ <20180529131014.18641-19-ricardo.ribalda@gmail.com> <CAHp75VfFTtysSBvYfmCMoKZz8BpHb73qh=Zy-gpn6RKO2DE-5Q@mail.gmail.com>
+ <CAPybu_0zByhDeVf6_Tv_PwU0WL_y6bkVPn0ha+VBvPcxWV4rLA@mail.gmail.com> <CAPybu_2dqG1HX39e+oG8rYvzMG_vGDBQjiLewNjwUvkh+AiF=w@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180606095156.72628-1-giulio.benetti@micronovasrl.com>
+In-Reply-To: <CAPybu_2dqG1HX39e+oG8rYvzMG_vGDBQjiLewNjwUvkh+AiF=w@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: matwey.kornilov@gmail.com, Giulio Benetti <giulio.benetti@micronovasrl.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Ed Blake <ed.blake@sondrel.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-If rs485 is on and RTS_AFTER_SEND it means that in idle state rts pin
-must be asserted, othwerwise rs485 transceiver will enter tx state.
-dw8250 when clocks are stopped keeps rts line de-asserted(high),
-resulting in keeping rs485 transceiver in tx state when port is idle.
+On Wed, Jun 6, 2018 at 10:47 AM, Ricardo Ribalda Delgado
+<ricardo.ribalda@gmail.com> wrote:
+> Hi Andy,
+> On Wed, Jun 6, 2018 at 8:58 AM Ricardo Ribalda Delgado
+> <ricardo.ribalda@gmail.com> wrote:
 
-Check if rs485 is on with RTS_AFTER_SEND set, if so return -EBUSY in
-rpm_suspend,
+> I have defaulted the module to n as you suggested. You can take a look
+> to the patches that I plan to submit tomorrow at:
+>
+> https://github.com/ribalda/linux/tree/serdev2
 
-Signed-off-by: Giulio Benetti <giulio.benetti@micronovasrl.com>
----
- drivers/tty/serial/8250/8250_dw.c | 5 +++++
- 1 file changed, 5 insertions(+)
+n _is_ default. So, just remove a line.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 888280ff5451..6b0ee6dc8ad0 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -668,6 +668,11 @@ static int dw8250_resume(struct device *dev)
- static int dw8250_runtime_suspend(struct device *dev)
- {
- 	struct dw8250_data *data = dev_get_drvdata(dev);
-+	struct uart_8250_port *up = serial8250_get_port(data->line);
-+	struct uart_port *p = &up->port;
-+
-+	if (p->rs485.flags & (SER_RS485_ENABLED | SER_RS485_RTS_AFTER_SEND))
-+		return -EBUSY;
- 
- 	if (!IS_ERR(data->clk))
- 		clk_disable_unprepare(data->clk);
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
