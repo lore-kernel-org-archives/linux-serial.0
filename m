@@ -1,42 +1,68 @@
 From: Giulio Benetti <giulio.benetti@micronovasrl.com>
-Subject: Re: [PATCH 4/4] serial: core: Mask mctrl with TIOCM_RTS too if rs485
- on and RTS_AFTER_SEND set.
-Date: Wed, 6 Jun 2018 14:07:45 +0200
-Message-ID: <5bda9e82-369a-ff5f-fef8-f3933c6f1c64@micronovasrl.com>
+Subject: Re: [PATCH 1/4] serial: 8250: Copy em485 from port to real port.
+Date: Wed, 6 Jun 2018 14:15:14 +0200
+Message-ID: <0bc400b1-6178-2021-c9a3-3190d1a1de32@micronovasrl.com>
 References: <CAJs94EZqdQAQG+inWvj89FCQtv06LxhY_J4YgNmK8mtvgDTchQ@mail.gmail.com>
  <20180606094942.71190-1-giulio.benetti@micronovasrl.com>
- <20180606094942.71190-3-giulio.benetti@micronovasrl.com>
- <a156ce90ab7e45ecf6936c29cc5d976c56f49a51.camel@linux.intel.com>
+ <20180606094942.71190-4-giulio.benetti@micronovasrl.com>
+ <069f5cd3309e83d13c74929f240720b232ea7251.camel@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <a156ce90ab7e45ecf6936c29cc5d976c56f49a51.camel@linux.intel.com>
+In-Reply-To: <069f5cd3309e83d13c74929f240720b232ea7251.camel@linux.intel.com>
 Content-Language: it
 Sender: linux-kernel-owner@vger.kernel.org
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: matwey.kornilov@gmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <mbrugger@suse.com>, Kees Cook <keescook@chromium.org>, Sean Young <sean@mess.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Cc: matwey.kornilov@gmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <mbrugger@suse.com>, Kees Cook <keescook@chromium.org>, Allen Pais <allen.lkml@gmail.com>, Sean Young <sean@mess.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Il 06/06/2018 14:03, Andy Shevchenko ha scritto:
+Il 06/06/2018 13:56, Andy Shevchenko ha scritto:
 > On Wed, 2018-06-06 at 11:49 +0200, Giulio Benetti wrote:
->> If rs485 is enabled and RTS_AFTER_SEND is set on startup need to keep
->> TIOCM_RTS asserted to keep rs485 transceiver in RX when idle.
+>> em485 gets lost during serial8250_register_8250_port().
 >>
->> Check if rs485 is on and RTS_AFTER_SEND is set and mask port->mctrl
->> with
->> TIOCM_RTS too and not only TIOCM_DTR.
+>> Copy em485 to final uart port.
 >>
 > 
-> This one feels wrong to be in serial_core.c. Perhaps in 8250/8250*.c.
+> Is it needed at all?
+> 
+> The individual driver decides either to use software emulation (and
+> calls explicitly serial8250_em485_init() for that) or do HW assisted
+> stuff.
 
-I've tried to avoid modifying serial_core.c but if it masks mctrl only 
-with TIOCM_DTR, it forces RTS unasserted.
-Another way could be:
-If rs485 ON and RTS_AFTER_SEND set, then ignore RTS driving in 
-8250_set_mctrl, would it make sense?
+In 8250_dw.c, during probe(), I need to call dw8250_rs485_config() 
+against local struct uart_8250_port uart = {};
+Inside serial8250_register_8250_port() not all uart fields are 
+copied(em485 too).
+So after probe, em485 is NULL.
 
-Thanks
+Another way could be to call dw8250_rs485_config() against real uart 
+port, after calling serial8250_register_8250_port(),
+would it make sense?
+
+> 
+>> Signed-off-by: Giulio Benetti <giulio.benetti@micronovasrl.com>
+>> ---
+>>   drivers/tty/serial/8250/8250_core.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_core.c
+>> b/drivers/tty/serial/8250/8250_core.c
+>> index 9342fc2ee7df..c8c2b260c681 100644
+>> --- a/drivers/tty/serial/8250/8250_core.c
+>> +++ b/drivers/tty/serial/8250/8250_core.c
+>> @@ -994,6 +994,7 @@ int serial8250_register_8250_port(struct
+>> uart_8250_port *up)
+>>   		uart->port.rs485_config	= up-
+>>> port.rs485_config;
+>>   		uart->port.rs485	= up->port.rs485;
+>>   		uart->dma		= up->dma;
+>> +		uart->em485		= up->em485;
+>>   
+>>   		/* Take tx_loadsz from fifosize if it wasn't set
+>> separately */
+>>   		if (uart->port.fifosize && !uart->tx_loadsz)
+> 
 
 -- 
 Giulio Benetti
