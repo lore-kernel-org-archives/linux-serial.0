@@ -1,182 +1,79 @@
 From: Radu Pirea <radu.pirea@microchip.com>
-Subject: [PATCH v6 6/6] tty/serial: atmel: change the driver to work under at91-usart mfd
-Date: Thu, 7 Jun 2018 14:00:20 +0300
-Message-ID: <20180607110020.20565-7-radu.pirea@microchip.com>
-References: <20180607110020.20565-1-radu.pirea@microchip.com>
+Subject: [PATCH v6 0/6] Driver for at91 usart in spi mode
+Date: Thu, 7 Jun 2018 14:00:14 +0300
+Message-ID: <20180607110020.20565-1-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180607110020.20565-1-radu.pirea@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
-Cc: linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-This patch modifies the place where resources and device tree properties
-are searched.
+Hello,
 
-Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
----
- drivers/tty/serial/Kconfig        |  1 +
- drivers/tty/serial/atmel_serial.c | 42 ++++++++++++++++++++-----------
- 2 files changed, 28 insertions(+), 15 deletions(-)
+This is the second version of driver. I added a mfd driver which by
+default probes atmel_serial driver and if in dt is specified to probe
+the spi driver, then the spi-at91-usart driver will be probed. The
+compatible for atmel_serial is now the compatible for at91-usart mfd
+driver and compatilbe for atmel_serial driver was changed in order to
+keep the bindings for serial as they are.
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 3682fd3e960c..25e55332f8b1 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -119,6 +119,7 @@ config SERIAL_ATMEL
- 	depends on ARCH_AT91 || COMPILE_TEST
- 	select SERIAL_CORE
- 	select SERIAL_MCTRL_GPIO if GPIOLIB
-+	select MFD_AT91_USART
- 	help
- 	  This enables the driver for the on-chip UARTs of the Atmel
- 	  AT91 processors.
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index df46a9e88c34..5ef8a6a6fe17 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -193,8 +193,7 @@ static struct console atmel_console;
- 
- #if defined(CONFIG_OF)
- static const struct of_device_id atmel_serial_dt_ids[] = {
--	{ .compatible = "atmel,at91rm9200-usart" },
--	{ .compatible = "atmel,at91sam9260-usart" },
-+	{ .compatible = "atmel,at91rm9200-usart-serial" },
- 	{ /* sentinel */ }
- };
- #endif
-@@ -915,6 +914,7 @@ static void atmel_tx_dma(struct uart_port *port)
- static int atmel_prepare_tx_dma(struct uart_port *port)
- {
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+	struct device *mfd_dev = port->dev->parent;
- 	dma_cap_mask_t		mask;
- 	struct dma_slave_config config;
- 	int ret, nent;
-@@ -922,7 +922,7 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
- 	dma_cap_zero(mask);
- 	dma_cap_set(DMA_SLAVE, mask);
- 
--	atmel_port->chan_tx = dma_request_slave_channel(port->dev, "tx");
-+	atmel_port->chan_tx = dma_request_slave_channel(mfd_dev, "tx");
- 	if (atmel_port->chan_tx == NULL)
- 		goto chan_err;
- 	dev_info(port->dev, "using %s for tx DMA transfers\n",
-@@ -1093,6 +1093,7 @@ static void atmel_rx_from_dma(struct uart_port *port)
- static int atmel_prepare_rx_dma(struct uart_port *port)
- {
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+	struct device *mfd_dev = port->dev->parent;
- 	struct dma_async_tx_descriptor *desc;
- 	dma_cap_mask_t		mask;
- 	struct dma_slave_config config;
-@@ -1104,7 +1105,7 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 	dma_cap_zero(mask);
- 	dma_cap_set(DMA_CYCLIC, mask);
- 
--	atmel_port->chan_rx = dma_request_slave_channel(port->dev, "rx");
-+	atmel_port->chan_rx = dma_request_slave_channel(mfd_dev, "rx");
- 	if (atmel_port->chan_rx == NULL)
- 		goto chan_err;
- 	dev_info(port->dev, "using %s for rx DMA transfers\n",
-@@ -2222,8 +2223,8 @@ static const char *atmel_type(struct uart_port *port)
-  */
- static void atmel_release_port(struct uart_port *port)
- {
--	struct platform_device *pdev = to_platform_device(port->dev);
--	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
-+	struct platform_device *mpdev = to_platform_device(port->dev->parent);
-+	int size = resource_size(mpdev->resource);
- 
- 	release_mem_region(port->mapbase, size);
- 
-@@ -2238,8 +2239,8 @@ static void atmel_release_port(struct uart_port *port)
-  */
- static int atmel_request_port(struct uart_port *port)
- {
--	struct platform_device *pdev = to_platform_device(port->dev);
--	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
-+	struct platform_device *mpdev = to_platform_device(port->dev->parent);
-+	int size = resource_size(mpdev->resource);
- 
- 	if (!request_mem_region(port->mapbase, size, "atmel_serial"))
- 		return -EBUSY;
-@@ -2341,27 +2342,28 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
- {
- 	int ret;
- 	struct uart_port *port = &atmel_port->uart;
-+	struct platform_device *mpdev = to_platform_device(pdev->dev.parent);
- 
- 	atmel_init_property(atmel_port, pdev);
- 	atmel_set_ops(port);
- 
--	uart_get_rs485_mode(&pdev->dev, &port->rs485);
-+	uart_get_rs485_mode(&mpdev->dev, &port->rs485);
- 
- 	port->iotype		= UPIO_MEM;
- 	port->flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP;
- 	port->ops		= &atmel_pops;
- 	port->fifosize		= 1;
- 	port->dev		= &pdev->dev;
--	port->mapbase	= pdev->resource[0].start;
--	port->irq	= pdev->resource[1].start;
-+	port->mapbase		= mpdev->resource[0].start;
-+	port->irq		= mpdev->resource[1].start;
- 	port->rs485_config	= atmel_config_rs485;
--	port->membase	= NULL;
-+	port->membase		= NULL;
- 
- 	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
- 
- 	/* for console, the clock could already be configured */
- 	if (!atmel_port->clk) {
--		atmel_port->clk = clk_get(&pdev->dev, "usart");
-+		atmel_port->clk = clk_get(&mpdev->dev, "usart");
- 		if (IS_ERR(atmel_port->clk)) {
- 			ret = PTR_ERR(atmel_port->clk);
- 			atmel_port->clk = NULL;
-@@ -2694,13 +2696,22 @@ static void atmel_serial_probe_fifos(struct atmel_uart_port *atmel_port,
- static int atmel_serial_probe(struct platform_device *pdev)
- {
- 	struct atmel_uart_port *atmel_port;
--	struct device_node *np = pdev->dev.of_node;
-+	struct device_node *np = pdev->dev.parent->of_node;
- 	void *data;
- 	int ret = -ENODEV;
- 	bool rs485_enabled;
- 
- 	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
- 
-+	/*
-+	 * In device tree is no node with "atmel,at91rm9200-usart-serial"
-+	 * as compatible string. This driver is probed by at91-usart mfd driver
-+	 * which is just a wrapper over the atmel_serial driver and
-+	 * spi-at91-usart driver. All attributes needed by this driver are
-+	 * found in of_node of parent.
-+	 */
-+	pdev->dev.of_node = np;
-+
- 	ret = of_alias_get_id(np, "serial");
- 	if (ret < 0)
- 		/* port id not found in platform data nor device-tree aliases:
-@@ -2835,6 +2846,7 @@ static int atmel_serial_remove(struct platform_device *pdev)
- 
- 	clk_put(atmel_port->clk);
- 	atmel_port->clk = NULL;
-+	pdev->dev.of_node = NULL;
- 
- 	return ret;
- }
-@@ -2845,7 +2857,7 @@ static struct platform_driver atmel_serial_driver = {
- 	.suspend	= atmel_serial_suspend,
- 	.resume		= atmel_serial_resume,
- 	.driver		= {
--		.name			= "atmel_usart",
-+		.name			= "atmel_usart_serial",
- 		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
- 	},
- };
+Changes in v1:
+- added spi-at91-usart driver
+
+Changes in v2:
+- added at91-usart mfd driver
+- modified spi-at91-usart driver to work as mfd driver child
+- modified atmel_serial driver to work as mfd driver child
+
+Changes in v3:
+- fixed spi slaves probing
+
+Changes in v4:
+- modified the spi driver to use cs gpio support form spi subsystem
+- fixed dma transfers for serial driver
+- squashed binding for spi and serial and moved them to mfd/atmel-usart.txt
+
+Changes in v5:
+- fixed usage of stdout-path property with atmel_serial driver
+
+Changes in v6:
+- removed unused compatible strings from serial and spi drivers
+
+Radu Pirea (6):
+  MAINTAINERS: add at91 usart mfd driver
+  dt-bindings: add binding for atmel-usart in SPI mode
+  mfd: at91-usart: added mfd driver for usart
+  MAINTAINERS: add at91 usart spi driver
+  spi: at91-usart: add driver for at91-usart as spi
+  tty/serial: atmel: change the driver to work under at91-usart mfd
+
+ .../bindings/{serial => mfd}/atmel-usart.txt  |  25 +-
+ MAINTAINERS                                   |  16 +
+ drivers/mfd/Kconfig                           |   9 +
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/at91-usart.c                      |  68 +++
+ drivers/spi/Kconfig                           |   9 +
+ drivers/spi/Makefile                          |   1 +
+ drivers/spi/spi-at91-usart.c                  | 434 ++++++++++++++++++
+ drivers/tty/serial/Kconfig                    |   1 +
+ drivers/tty/serial/atmel_serial.c             |  42 +-
+ include/dt-bindings/mfd/at91-usart.h          |  17 +
+ 11 files changed, 606 insertions(+), 17 deletions(-)
+ rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
+ create mode 100644 drivers/mfd/at91-usart.c
+ create mode 100644 drivers/spi/spi-at91-usart.c
+ create mode 100644 include/dt-bindings/mfd/at91-usart.h
+
 -- 
 2.17.1
