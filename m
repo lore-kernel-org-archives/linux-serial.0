@@ -1,66 +1,50 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH 04/19] Bluetooth: hci_nokia: Add serdev_id_table
-Date: Thu, 7 Jun 2018 12:27:40 +0200
-Message-ID: <20180607102740.GD4372@localhost>
-References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
- <20180529131014.18641-5-ricardo.ribalda@gmail.com>
- <E848BED5-1D83-47FA-A673-29B366A60227@holtmann.org>
+From: Radu Pirea <radu.pirea@microchip.com>
+Subject: [PATCH v6 1/6] MAINTAINERS: add at91 usart mfd driver
+Date: Thu, 7 Jun 2018 14:00:15 +0300
+Message-ID: <20180607110020.20565-2-radu.pirea@microchip.com>
+References: <20180607110020.20565-1-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <E848BED5-1D83-47FA-A673-29B366A60227@holtmann.org>
+In-Reply-To: <20180607110020.20565-1-radu.pirea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Marcel Holtmann <marcel@holtmann.org>
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, linux-bluetooth@vger.kernel.org
+To: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
+Cc: linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi!
+Added entry for at91 usart mfd driver.
 
-> > Describe which hardware is supported by the current driver.
-> > 
-> > Cc: Marcel Holtmann <marcel@holtmann.org>
-> > Cc: Johan Hedberg <johan.hedberg@gmail.com>
-> > Cc: Rob Herring <robh@kernel.org>
-> > Cc: Johan Hovold <johan@kernel.org>
-> > Cc: linux-bluetooth@vger.kernel.org
-> > Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-> > ---
-> > drivers/bluetooth/hci_nokia.c | 6 ++++++
-> > 1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/drivers/bluetooth/hci_nokia.c b/drivers/bluetooth/hci_nokia.c
-> > index 3539fd03f47e..e32dfcd56b8d 100644
-> > --- a/drivers/bluetooth/hci_nokia.c
-> > +++ b/drivers/bluetooth/hci_nokia.c
-> > @@ -801,6 +801,11 @@ static const struct of_device_id nokia_bluetooth_of_match[] = {
-> > MODULE_DEVICE_TABLE(of, nokia_bluetooth_of_match);
-> > #endif
-> > 
-> > +static struct serdev_device_id nokia_bluetooth_serdev_id[] = {
-> > +	{ "hp4-bluetooth", },
-> > +	{},
-> > +};
-> > +
-> > static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
-> > 	.probe = nokia_bluetooth_serdev_probe,
-> > 	.remove = nokia_bluetooth_serdev_remove,
-> > @@ -809,6 +814,7 @@ static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
-> > 		.pm = &nokia_bluetooth_pm_ops,
-> > 		.of_match_table = of_match_ptr(nokia_bluetooth_of_match),
-> > 	},
-> > +	.id_table = nokia_bluetooth_serdev_id,
-> > };
-> 
-> I would actually skip this hardware. First of all it is such a dedicated custom Nokia transport and hardware, and secondly it is no longer produced anyway.
-> 
+Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+---
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Would it make sense to cc: sre here? We want good support even for old
-hardware, and this is n9/n950, it is still on "top ten supported
-phones" list... Probably even top 5.
-
-Thanks,
-								 Pavel
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8e2a2fddbd19..12203d07c6af 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9160,6 +9160,7 @@ M:	Richard Genoud <richard.genoud@gmail.com>
+ S:	Maintained
+ F:	drivers/tty/serial/atmel_serial.c
+ F:	drivers/tty/serial/atmel_serial.h
++F:	Documentation/devicetree/bindings/mfd/atmel-usart.txt
+ 
+ MICROCHIP / ATMEL DMA DRIVER
+ M:	Ludovic Desroches <ludovic.desroches@microchip.com>
+@@ -9192,6 +9193,14 @@ S:	Supported
+ F:	drivers/mtd/nand/raw/atmel/*
+ F:	Documentation/devicetree/bindings/mtd/atmel-nand.txt
+ 
++MICROCHIP AT91 USART MFD DRIVER
++M:	Radu Pirea <radu.pirea@microchip.com>
++L:	linux-kernel@vger.kernel.org
++S:	Supported
++F:	drivers/mfd/at91-usart.c
++F:	include/dt-bindings/mfd/at91-usart.h
++F:	Documentation/devicetree/bindings/mfd/atmel-usart.txt
++
+ MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER
+ M:	Woojung Huh <Woojung.Huh@microchip.com>
+ M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
 -- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+2.17.1
