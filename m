@@ -1,196 +1,84 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH v6 6/6] tty/serial: atmel: change the driver to work under
- at91-usart mfd
-Date: Thu, 7 Jun 2018 15:42:21 +0200
-Message-ID: <42c20ca1-6d27-71c2-83cf-2e5f113e8dc9@sorico.fr>
-References: <20180607110020.20565-1-radu.pirea@microchip.com>
- <20180607110020.20565-7-radu.pirea@microchip.com>
+From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Subject: Re: possible deadlock in console_unlock
+Date: Thu, 7 Jun 2018 23:01:00 +0900
+Message-ID: <20180607140100.GA398@tigerII.localdomain>
+References: <00000000000087008b056df8fbb3@google.com>
+ <20180607051019.GA10406@jagdpanzerIV>
+ <20180607110034.qrkencwsr4stv6xp@pathway.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180607110020.20565-7-radu.pirea@microchip.com>
-Content-Language: fr
+Content-Disposition: inline
+In-Reply-To: <20180607110034.qrkencwsr4stv6xp@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu.pirea@microchip.com>, broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
-Cc: linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, syzbot <syzbot+43e93968b964e369db0b@syzkaller.appspotmail.com>, linux-kernel@vger.kernel.org, rostedt@goodmis.org, sergey.senozhatsky@gmail.com, syzkaller-bugs@googlegroups.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 07/06/2018 13:00, Radu Pirea wrote:
-> This patch modifies the place where resources and device tree properties
-> are searched.
+On (06/07/18 13:00), Petr Mladek wrote:
+> > IOW
+> > 
+> >     tty ioctl
+> >     tty_port->lock		IRQ
+> >     printk			uart_port->lock
+> >     console_owner
+> >     uart_port->lock		tty_port->rlock
 > 
-> Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
-> ---
->  drivers/tty/serial/Kconfig        |  1 +
->  drivers/tty/serial/atmel_serial.c | 42 ++++++++++++++++++++-----------
->  2 files changed, 28 insertions(+), 15 deletions(-)
+> Great analyze!
+
+Thanks!
+
+> I am just afraid that there are many other locations like this.
+
+Yep, agree. That's why I suggested the printk_safe context for
+most critically important locks.
+
+> > Another way could be - switch to printk_safe mode around that
+> > kmalloc():
+> > 
+> > 	__printk_safe_enter();
+> > 	kmalloc(sizeof(struct tty_buffer) + 2 * size, GFP_ATOMIC);
+> > 	__printk_safe_exit();
+> > 
+> > Or, may be, we even can switch to printk_safe mode every time we grab
+> > tty_port lock.
+>  
+> > Perhaps something like this should be done for uart_port->lock
+> > as well. Because, technically, we can have the following
 > 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 3682fd3e960c..25e55332f8b1 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -119,6 +119,7 @@ config SERIAL_ATMEL
->  	depends on ARCH_AT91 || COMPILE_TEST
->  	select SERIAL_CORE
->  	select SERIAL_MCTRL_GPIO if GPIOLIB
-> +	select MFD_AT91_USART
->  	help
->  	  This enables the driver for the on-chip UARTs of the Atmel
->  	  AT91 processors.
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index df46a9e88c34..5ef8a6a6fe17 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -193,8 +193,7 @@ static struct console atmel_console;
->  
->  #if defined(CONFIG_OF)
->  static const struct of_device_id atmel_serial_dt_ids[] = {
-> -	{ .compatible = "atmel,at91rm9200-usart" },
-> -	{ .compatible = "atmel,at91sam9260-usart" },
-> +	{ .compatible = "atmel,at91rm9200-usart-serial" },
->  	{ /* sentinel */ }
->  };
->  #endif
-> @@ -915,6 +914,7 @@ static void atmel_tx_dma(struct uart_port *port)
->  static int atmel_prepare_tx_dma(struct uart_port *port)
->  {
->  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> +	struct device *mfd_dev = port->dev->parent;
->  	dma_cap_mask_t		mask;
->  	struct dma_slave_config config;
->  	int ret, nent;
-> @@ -922,7 +922,7 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
->  	dma_cap_zero(mask);
->  	dma_cap_set(DMA_SLAVE, mask);
->  
-> -	atmel_port->chan_tx = dma_request_slave_channel(port->dev, "tx");
-> +	atmel_port->chan_tx = dma_request_slave_channel(mfd_dev, "tx");
->  	if (atmel_port->chan_tx == NULL)
->  		goto chan_err;
->  	dev_info(port->dev, "using %s for tx DMA transfers\n",
-> @@ -1093,6 +1093,7 @@ static void atmel_rx_from_dma(struct uart_port *port)
->  static int atmel_prepare_rx_dma(struct uart_port *port)
->  {
->  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> +	struct device *mfd_dev = port->dev->parent;
->  	struct dma_async_tx_descriptor *desc;
->  	dma_cap_mask_t		mask;
->  	struct dma_slave_config config;
-> @@ -1104,7 +1105,7 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
->  	dma_cap_zero(mask);
->  	dma_cap_set(DMA_CYCLIC, mask);
->  
-> -	atmel_port->chan_rx = dma_request_slave_channel(port->dev, "rx");
-> +	atmel_port->chan_rx = dma_request_slave_channel(mfd_dev, "rx");
->  	if (atmel_port->chan_rx == NULL)
->  		goto chan_err;
->  	dev_info(port->dev, "using %s for rx DMA transfers\n",
-> @@ -2222,8 +2223,8 @@ static const char *atmel_type(struct uart_port *port)
->   */
->  static void atmel_release_port(struct uart_port *port)
->  {
-> -	struct platform_device *pdev = to_platform_device(port->dev);
-> -	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
-> +	struct platform_device *mpdev = to_platform_device(port->dev->parent);
-> +	int size = resource_size(mpdev->resource);
->  
->  	release_mem_region(port->mapbase, size);
->  
-> @@ -2238,8 +2239,8 @@ static void atmel_release_port(struct uart_port *port)
->   */
->  static int atmel_request_port(struct uart_port *port)
->  {
-> -	struct platform_device *pdev = to_platform_device(port->dev);
-> -	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
-> +	struct platform_device *mpdev = to_platform_device(port->dev->parent);
-> +	int size = resource_size(mpdev->resource);
->  
->  	if (!request_mem_region(port->mapbase, size, "atmel_serial"))
->  		return -EBUSY;
-> @@ -2341,27 +2342,28 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
->  {
->  	int ret;
->  	struct uart_port *port = &atmel_port->uart;
-> +	struct platform_device *mpdev = to_platform_device(pdev->dev.parent);
->  
->  	atmel_init_property(atmel_port, pdev);
->  	atmel_set_ops(port);
->  
-> -	uart_get_rs485_mode(&pdev->dev, &port->rs485);
-> +	uart_get_rs485_mode(&mpdev->dev, &port->rs485);
->  
->  	port->iotype		= UPIO_MEM;
->  	port->flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP;
->  	port->ops		= &atmel_pops;
->  	port->fifosize		= 1;
->  	port->dev		= &pdev->dev;
-> -	port->mapbase	= pdev->resource[0].start;
-> -	port->irq	= pdev->resource[1].start;
-> +	port->mapbase		= mpdev->resource[0].start;
-> +	port->irq		= mpdev->resource[1].start;
->  	port->rs485_config	= atmel_config_rs485;
-> -	port->membase	= NULL;
-> +	port->membase		= NULL;
->  
->  	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
->  
->  	/* for console, the clock could already be configured */
->  	if (!atmel_port->clk) {
-> -		atmel_port->clk = clk_get(&pdev->dev, "usart");
-> +		atmel_port->clk = clk_get(&mpdev->dev, "usart");
->  		if (IS_ERR(atmel_port->clk)) {
->  			ret = PTR_ERR(atmel_port->clk);
->  			atmel_port->clk = NULL;
-> @@ -2694,13 +2696,22 @@ static void atmel_serial_probe_fifos(struct atmel_uart_port *atmel_port,
->  static int atmel_serial_probe(struct platform_device *pdev)
->  {
->  	struct atmel_uart_port *atmel_port;
-> -	struct device_node *np = pdev->dev.of_node;
-> +	struct device_node *np = pdev->dev.parent->of_node;
->  	void *data;
->  	int ret = -ENODEV;
->  	bool rs485_enabled;
->  
->  	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
->  
-> +	/*
-> +	 * In device tree is no node with "atmel,at91rm9200-usart-serial"
-I think you meant :
-In device tree *there* is no...
+> Yeah, we would need this basically around any lock that can be taken
+> from console write() callbacks. Well, this would be needed even
+> around locks that might be in a chain with a lock used in these
+> callbacks (as shown by this report).
 
-With that,
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
+Yep. So the plan for now is to wrap the tty_port->lock. Pretty much
+an automatic conversion.
 
-> +	 * as compatible string. This driver is probed by at91-usart mfd driver
-> +	 * which is just a wrapper over the atmel_serial driver and
-> +	 * spi-at91-usart driver. All attributes needed by this driver are
-> +	 * found in of_node of parent.
-> +	 */
-> +	pdev->dev.of_node = np;
-> +
->  	ret = of_alias_get_id(np, "serial");
->  	if (ret < 0)
->  		/* port id not found in platform data nor device-tree aliases:
-> @@ -2835,6 +2846,7 @@ static int atmel_serial_remove(struct platform_device *pdev)
->  
->  	clk_put(atmel_port->clk);
->  	atmel_port->clk = NULL;
-> +	pdev->dev.of_node = NULL;
->  
->  	return ret;
->  }
-> @@ -2845,7 +2857,7 @@ static struct platform_driver atmel_serial_driver = {
->  	.suspend	= atmel_serial_suspend,
->  	.resume		= atmel_serial_resume,
->  	.driver		= {
-> -		.name			= "atmel_usart",
-> +		.name			= "atmel_usart_serial",
->  		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
->  	},
->  };
-> 
+Then to convert [may be some for now on] uart_port->lock. Once again,
+pretty much can be done a script.
 
-Thanks !
+Afterwards just sit down and be humbl^W^W wait for new reports. Then
+move those newly discovered unsafe locks under printk_safe context.
 
-Richard.
+Basically, the same macros as we use for logbuf lock in printk.c
+
+A bit of a lazy approach. Can't think of anything better.
+
+I think it's finally the time to start dealing with these
+"external" locks, it's been a while.
+
+> BTW: printk_safe context might be too strict. In fact,
+> printk_deferred() would be enough. We might think about
+> introducing also printk_deferred context.
+
+Could be.
+The good thing about printk_safe is that printk_safe sections can nest.
+I suspect there might be locks/printk_safe sections nesting at some
+point. In any case, switching to a new flavor of printk_safe will be
+pretty easy - just replace printk_safe_enter() with printk_foo_enter()
+and the same for printk_save_exit().
+
+I'll wait for some time, to see what people will say.
+I guess we also need to check if Linus is OK with the proposed solution.
+
+	-ss
