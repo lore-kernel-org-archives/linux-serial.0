@@ -1,48 +1,68 @@
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Subject: Re: possible deadlock in console_unlock
-Date: Thu, 7 Jun 2018 20:40:54 +0900
-Message-ID: <6cc6d5c1-fc01-efab-86b8-eb072607680c@I-love.SAKURA.ne.jp>
-References: <00000000000087008b056df8fbb3@google.com>
- <20180607051019.GA10406@jagdpanzerIV>
- <20180607110034.qrkencwsr4stv6xp@pathway.suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Marcel Holtmann <marcel@holtmann.org>
+Subject: Re: [PATCH 04/19] Bluetooth: hci_nokia: Add serdev_id_table
+Date: Thu, 7 Jun 2018 14:32:08 +0200
+Message-ID: <22CF0FC7-6DC7-4DD2-9EA1-9F51B40F53E5@holtmann.org>
+References: <20180529131014.18641-1-ricardo.ribalda@gmail.com>
+ <20180529131014.18641-5-ricardo.ribalda@gmail.com>
+ <E848BED5-1D83-47FA-A673-29B366A60227@holtmann.org>
+ <20180607102740.GD4372@localhost>
+Mime-Version: 1.0 (Mac OS X Mail 11.4 \(3445.8.2\))
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180607110034.qrkencwsr4stv6xp@pathway.suse.cz>
-Content-Language: en-US
+In-Reply-To: <20180607102740.GD4372@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: syzbot <syzbot+43e93968b964e369db0b@syzkaller.appspotmail.com>, linux-kernel@vger.kernel.org, rostedt@goodmis.org, sergey.senozhatsky@gmail.com, syzkaller-bugs@googlegroups.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
+To: Pavel Machek <pavel@ucw.cz>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, linux-bluetooth@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2018/06/07 20:00, Petr Mladek wrote:
->> ---
->>
->>  drivers/tty/tty_buffer.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
->> index c996b6859c5e..71958ef6a831 100644
->> --- a/drivers/tty/tty_buffer.c
->> +++ b/drivers/tty/tty_buffer.c
->> @@ -167,7 +167,8 @@ static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
->>  	   have queued and recycle that ? */
->>  	if (atomic_read(&port->buf.mem_used) > port->buf.mem_limit)
->>  		return NULL;
->> -	p = kmalloc(sizeof(struct tty_buffer) + 2 * size, GFP_ATOMIC);
->> +	p = kmalloc(sizeof(struct tty_buffer) + 2 * size,
->> +			GFP_ATOMIC | __GFP_NOWARN);
->>  	if (p == NULL)
->>  		return NULL;
->>
->> ---
-> 
-> This looks like the most simple solution for this particular problem.
-> I am just afraid that there are many other locations like this.
-> 
-I haven't tried the reproducer with that change. But isn't __GFP_NOWARN
-ignored by fail_dump() (and thus printk() from fault injection still occurs)?
+Hi Pavel,
 
-By the way, this reproducer is tricky. It needs to run like ./a.out
-followed by "while :; do fg; done" because it always stops by a signal.
+>>> Describe which hardware is supported by the current driver.
+>>> 
+>>> Cc: Marcel Holtmann <marcel@holtmann.org>
+>>> Cc: Johan Hedberg <johan.hedberg@gmail.com>
+>>> Cc: Rob Herring <robh@kernel.org>
+>>> Cc: Johan Hovold <johan@kernel.org>
+>>> Cc: linux-bluetooth@vger.kernel.org
+>>> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+>>> ---
+>>> drivers/bluetooth/hci_nokia.c | 6 ++++++
+>>> 1 file changed, 6 insertions(+)
+>>> 
+>>> diff --git a/drivers/bluetooth/hci_nokia.c b/drivers/bluetooth/hci_nokia.c
+>>> index 3539fd03f47e..e32dfcd56b8d 100644
+>>> --- a/drivers/bluetooth/hci_nokia.c
+>>> +++ b/drivers/bluetooth/hci_nokia.c
+>>> @@ -801,6 +801,11 @@ static const struct of_device_id nokia_bluetooth_of_match[] = {
+>>> MODULE_DEVICE_TABLE(of, nokia_bluetooth_of_match);
+>>> #endif
+>>> 
+>>> +static struct serdev_device_id nokia_bluetooth_serdev_id[] = {
+>>> +	{ "hp4-bluetooth", },
+>>> +	{},
+>>> +};
+>>> +
+>>> static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
+>>> 	.probe = nokia_bluetooth_serdev_probe,
+>>> 	.remove = nokia_bluetooth_serdev_remove,
+>>> @@ -809,6 +814,7 @@ static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
+>>> 		.pm = &nokia_bluetooth_pm_ops,
+>>> 		.of_match_table = of_match_ptr(nokia_bluetooth_of_match),
+>>> 	},
+>>> +	.id_table = nokia_bluetooth_serdev_id,
+>>> };
+>> 
+>> I would actually skip this hardware. First of all it is such a dedicated custom Nokia transport and hardware, and secondly it is no longer produced anyway.
+>> 
+> 
+> Would it make sense to cc: sre here? We want good support even for old
+> hardware, and this is n9/n950, it is still on "top ten supported
+> phones" list... Probably even top 5.
+
+but that is not what this patch series is about. We do not need new_id kinda support for the existing hardware. My point is there will be no newly designed hardware using this driver.
+
+Regards
+
+Marcel
