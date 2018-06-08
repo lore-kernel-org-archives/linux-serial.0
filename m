@@ -1,608 +1,77 @@
-From: Nishanth Menon <nm@ti.com>
-Subject: Re: [RFC PATCH 5/6] arm64: dts: ti: Add Support for AM654 SoC
-Date: Thu, 7 Jun 2018 18:38:53 -0500
-Message-ID: <20180607233853.p7iw7nlxxuyi66og@kahuna>
-References: <20180605060510.32473-1-nm@ti.com>
- <CAL_JsqJusWTvr4A_-Bk81meYddMHBMJ4=Fch6L0MFoF7HfBW2w@mail.gmail.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: possible deadlock in console_unlock
+Date: Fri, 8 Jun 2018 10:18:55 +0200
+Message-ID: <20180608081855.ctqakvwmg27aydby@pathway.suse.cz>
+References: <00000000000087008b056df8fbb3@google.com>
+ <20180607051019.GA10406@jagdpanzerIV>
+ <20180607110034.qrkencwsr4stv6xp@pathway.suse.cz>
+ <20180607140100.GA398@tigerII.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAL_JsqJusWTvr4A_-Bk81meYddMHBMJ4=Fch6L0MFoF7HfBW2w@mail.gmail.com>
+In-Reply-To: <20180607140100.GA398@tigerII.localdomain>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Tony Lindgren <tony@atomide.com>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>
+To: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, syzbot <syzbot+43e93968b964e369db0b@syzkaller.appspotmail.com>, linux-kernel@vger.kernel.org, rostedt@goodmis.org, syzkaller-bugs@googlegroups.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 14:05-20180605, Rob Herring wrote:
-> On Tue, Jun 5, 2018 at 1:05 AM, Nishanth Menon <nm@ti.com> wrote:
-[...]
-
-> > +       soc0: soc0 {
-> > +               compatible = "simple-bus";
-> > +               #address-cells = <2>;
-> > +               #size-cells = <2>;
-> > +               ranges;
+On Thu 2018-06-07 23:01:00, Sergey Senozhatsky wrote:
+> On (06/07/18 13:00), Petr Mladek wrote:
+> > > Another way could be - switch to printk_safe mode around that
+> > > kmalloc():
+> > > 
+> > > 	__printk_safe_enter();
+> > > 	kmalloc(sizeof(struct tty_buffer) + 2 * size, GFP_ATOMIC);
+> > > 	__printk_safe_exit();
+> > > 
+> > > Or, may be, we even can switch to printk_safe mode every time we grab
+> > > tty_port lock.
+> >  
+> > > Perhaps something like this should be done for uart_port->lock
+> > > as well. Because, technically, we can have the following
+> > 
+> > Yeah, we would need this basically around any lock that can be taken
+> > from console write() callbacks. Well, this would be needed even
+> > around locks that might be in a chain with a lock used in these
+> > callbacks (as shown by this report).
 > 
-> Really need 64-bit addresses and sizes? Use ranges to limit the
-> address space if possible.
-
-Done -> overall the addresses are really in the 64bit addresses, but
-used bus segments and ranges to reduce to 32bit maps where possible.
-
-OSPI, PCIE, FSS (Flash subsystem) , CPTS are some of the ones that
-probably will need some level of cleanups when those are introduced
-later.
-
-Unfortunately, there is a lot of interleaved addressing between bus
-segments themselves, I have tried to keep the ranges as clean as
-reasonably possible. I also tried to use 1-1 map for children nodes to
-maintain some level of sanity as we add more device nodes. There might
-be a few exceptions, but overall the ranges currently map 1-1 physical
-32bit address - OSPI, CPTS, FSS will however have to have a different
-mapping.
-
-See [1]
+> Yep. So the plan for now is to wrap the tty_port->lock. Pretty much
+> an automatic conversion.
 > 
-> > +
-> > +               a53_timer0: timer-cl0-cpu0 {
-> > +                       compatible = "arm,armv8-timer";
-> > +                       interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>, /* cntpsirq */
-> > +                                    <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW>, /* cntpnsirq */
-> > +                                    <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>, /* cntvirq */
-> > +                                    <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>; /* cnthpirq */
-> > +               };
-> > +
-> > +               pmu: pmu {
-> > +                       compatible = "arm,armv8-pmuv3";
-> > +                       /* Recommendation from GIC500 TRM Table A.3 */
-> > +                       interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
-> > +               };
+> Then to convert [may be some for now on] uart_port->lock. Once again,
+> pretty much can be done a script.
 > 
-> These 2 nodes aren't on the bus, so move them up a level.
-
-Thanks. oversight on my end. I have fixed it (see [1])
+> Afterwards just sit down and be humbl^W^W wait for new reports. Then
+> move those newly discovered unsafe locks under printk_safe context.
 > 
-> > +
-> > +               gic: interrupt-controller@1800000 {
-> > +                       compatible = "arm,gic-v3";
+> Basically, the same macros as we use for logbuf lock in printk.c
 > 
-> gic-500?
+> A bit of a lazy approach. Can't think of anything better.
 
-Yes, GIC500.
+Same here.
 
+> I think it's finally the time to start dealing with these
+> "external" locks, it's been a while.
 > 
-> > +                       #address-cells = <2>;
-> > +                       #size-cells = <2>;
-> > +                       ranges;
-> > +                       #interrupt-cells = <3>;
-> > +                       interrupt-controller;
-> > +                       /*
-> > +                        * NOTE: we are NOT gicv2 backward compat, so no GICC,
-> > +                        * GICH or GICV
+> > BTW: printk_safe context might be too strict. In fact,
+> > printk_deferred() would be enough. We might think about
+> > introducing also printk_deferred context.
 > 
-> The compatible should imply this.
+> Could be.
+> The good thing about printk_safe is that printk_safe sections can nest.
+> I suspect there might be locks/printk_safe sections nesting at some
+> point. In any case, switching to a new flavor of printk_safe will be
+> pretty easy - just replace printk_safe_enter() with printk_foo_enter()
+> and the same for printk_save_exit().
 
-GIC500 at SoC design instantiation takes a parameter
-"are_option" -> this is set to no-compatibility for V2 for AM6. This is indeed
-discovered by the driver, However,
-Documentation/devicetree/bindings/interrupt-controller/arm,gic-v3.txt
-just notes that GICC, GICH, GICV as optional.. With backward
-compatibility disabled, these are'nt even present.
+We could allow nesting. It is just a matter of how many bits we
+reserve for it in printk_context variable.
 
-I have dropped the comment, was helpful for me when I was first
-adding support for GIC500, It is pretty common knowledge now for other
-ARMV8 developers, so no point in retaining newbie info as comment.
+In each case, I would like to keep the printk_safe context usage
+at minimum. It has its own problems caused by limited per-cpu buffers
+and the need to flush them. It is basically needed only to prevent
+deadlocks related to logbuf_lock.
 
-[...]
-> > diff --git a/arch/arm64/boot/dts/ti/k3-am654.dtsi b/arch/arm64/boot/dts/ti/k3-am654.dtsi
-> > new file mode 100644
-> > index 000000000000..d9b70081daba
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/ti/k3-am654.dtsi
-> > @@ -0,0 +1,117 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Device Tree Source for AM6 SoC family in Quad core configuration
-> > + *
-> > + * Copyright (C) 2016-2018 Texas Instruments Incorporated - http://www.ti.com/
-> > + */
-> > +
-> > +#include "k3-am6.dtsi"
-> > +
-> > +/ {
-> > +       cpus: cpus {
-> 
-> Really need a label?
-
-Thanks. Dropped.
-
-> 
-> > +               #address-cells = <1>;
-> > +               #size-cells = <0>;
-> > +               cpu-map {
-> 
-> IIRC, this goes at the top level.
-
-Documentation/devicetree/bindings/arm/topology.txt
-States to keep in cpus node. Quote:
-
-| The ARM CPU topology is defined within the cpu-map node, which is a direct
-| child of the cpus node and provides a container where the actual topology
-| nodes are listed.
-
-Retained as is to stay in sync with binding.
-
-> > +               cpu0: cpu@0 {
-> > +                       compatible = "arm,cortex-a53","arm,armv8";
-> 
-> space between compatibles.
-
-Oops. Fixed. thanks.
-
-> 
-> > +                       reg = <0x000>;
-> > +                       device_type = "cpu";
-> > +                       enable-method = "psci";
-> 
-> > +                       i-cache-size = <0x8000>;
-> > +                       i-cache-line-size = <64>;
-> > +                       i-cache-sets = <256>;
-> > +                       d-cache-size = <0x8000>;
-> > +                       d-cache-line-size = <64>;
-> > +                       d-cache-sets = <128>;
-> 
-> All this should be discoverable.
-
-Unfortunately no.
-Previously CCSIDR_EL1 was a good place to lookup this data.
-But as Sudeep pointed me offline:
-commit a8d4636f96ad ("arm64: cacheinfo: Remove CCSIDR-based cache information probing")
-and commit 9a802431c527 ("arm64: cacheinfo: add support to override cache levels via device tree")
-had already provided options to override cache information from the device tree.
-
-This is what I am using.
-Quote from commit:
-The architecture explicitly states:
-
-| You cannot make any inference about the actual sizes of caches based
-| on these parameters.
-
-[...]
-> > +
-> > +&soc0 {
-> > +       L2_0: l2-cache0 {
-> > +               compatible = "cache";
-> 
-> Is this documented?
-
-Just what Documentation/devicetree/bindings/arm/cpu-capacity.txt states
-as an example. We dont seem to have anything similar to
-Documentation/devicetree/bindings/arm/l2c2x0.txt in armv8 as per the
-comments in the document at least.
-
-> 
-> > +               cache-level = <2>;
-> > +               cache-size = <0x80000>;
-> > +               cache-line-size = <64>;
-> > +               cache-sets = <512>;
-> 
-> Discoverable?
-
-Same comment as L1 cache details.
-
-> 
-> > +               next-level-cache = <&msmc_l3>;
-> > +       };
-> > +
-> > +       L2_1: l2-cache1 {
-> > +               compatible = "cache";
-> > +               cache-level = <2>;
-> > +               cache-size = <0x80000>;
-> > +               cache-line-size = <64>;
-> > +               cache-sets = <512>;
-> > +               next-level-cache = <&msmc_l3>;
-> > +       };
-> > +
-> > +       msmc_l3: l3-cache0 {
-> > +               compatible = "cache";
-> 
-> Is this something TI specific or follows the (ARM) architecture?
-
-ARM Architecture permits an L3 Cache. TI implements it differently (we
-dont use CCI), instead an L3 Cache is always active in our
-implementation - backing memory is configurable and is designed to be
-completely transparent to s/w running on ARMv8.
-
-Description here is to meet the hardware description of cache topology
-to be accurate.
-
-[...]
-> > diff --git a/drivers/soc/ti/Kconfig b/drivers/soc/ti/Kconfig
-> > index 92770d84a288..be4570baad96 100644
-> > --- a/drivers/soc/ti/Kconfig
-> > +++ b/drivers/soc/ti/Kconfig
-> > @@ -1,3 +1,17 @@
-> > +# 64-bit ARM SoCs from TI
-> > +if ARM64
-> > +
-> > +if ARCH_K3
-> > +
-> > +config ARCH_K3_AM6_SOC
-> 
-> This should be in another patch (or dropped?).
-
-Agreed and split off into another patch.
-
-[1]
-Here is how the patch looks now (after incorporating changes suggested
-by Tony as well) - Thoughts please:
-https://github.com/nmenon/linux-2.6-playground/tree/upstream/next-20180604/k3-5-defconfig/arch/arm64/boot/dts/ti
-has everything consolidated.
-
-8<--
->From 88857a8241fc67d63021e5c9070092b11398d11f Mon Sep 17 00:00:00 2001
-From: Nishanth Menon <nm@ti.com>
-Date: Wed, 14 Sep 2016 19:12:42 -0500
-Subject: [RFC V2 PATCH] arm64: dts: ti: Add Support for AM654 SoC
-
-The AM654 SoC is a lead device of the K3 Multicore SoC architecture
-platform, targeted for broad market and industrial control with aim to
-meet the complex processing needs of modern embedded products.
-
-Some highlights of this SoC are:
-* Quad ARMv8 A53 cores split over two clusters
-* GICv3 compliant GIC500
-* Configurable L3 Cache and IO-coherent architecture
-* Dual lock-step capable R5F uC for safety-critical applications
-* High data throughput capable distributed DMA architecture under NAVSS
-* Three Gigabit Industrial Communication Subsystems (ICSSG), each with dual
-  PRUs and dual RTUs
-* Hardware accelerator block containing AES/DES/SHA/MD5 called SA2UL
-* Centralized System Controller for Security, Power, and Resource
-  management.
-* Dual ADCSS, eQEP/eCAP, eHRPWM, dual CAN-FD
-* Flash subystem with OSPI and Hyperbus interfaces
-* Multimedia capability with CAL, DSS7-UL, SGX544, McASP
-* Peripheral connectivity including USB3, PCIE, MMC/SD, GPMC, I2C, SPI,
-  GPIO
-
-See AM65x Technical Reference Manual (SPRUID7, April 2018)
-for further details: http://www.ti.com/lit/pdf/spruid7
-
-We introduce the Kconfig symbol for the SoC along with this patch since
-it is logically relevant point, however the usage is in subsequent
-patches.
-
-NOTE: AM654 is the first of the device variants, hence we introduce a
-generic am6.dtsi.
-
-Signed-off-by: Benjamin Fair <b-fair@ti.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
----
- MAINTAINERS                          |   1 +
- arch/arm64/boot/dts/ti/k3-am6.dtsi   | 172 +++++++++++++++++++++++++++++++++++
- arch/arm64/boot/dts/ti/k3-am654.dtsi | 117 ++++++++++++++++++++++++
- 3 files changed, 290 insertions(+)
- create mode 100644 arch/arm64/boot/dts/ti/k3-am6.dtsi
- create mode 100644 arch/arm64/boot/dts/ti/k3-am654.dtsi
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index cfb35b252ac7..5f5c4eddec7a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2092,6 +2092,7 @@ M:	Nishanth Menon <nm@ti.com>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Supported
- F:	Documentation/devicetree/bindings/arm/ti/k3.txt
-+F:	arch/arm64/boot/dts/ti/k3-*
- 
- ARM/TEXAS INSTRUMENT KEYSTONE ARCHITECTURE
- M:	Santosh Shilimkar <ssantosh@kernel.org>
-diff --git a/arch/arm64/boot/dts/ti/k3-am6.dtsi b/arch/arm64/boot/dts/ti/k3-am6.dtsi
-new file mode 100644
-index 000000000000..700c56eda12d
---- /dev/null
-+++ b/arch/arm64/boot/dts/ti/k3-am6.dtsi
-@@ -0,0 +1,172 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for AM6 SoC Family
-+ *
-+ * Copyright (C) 2016-2018 Texas Instruments Incorporated - http://www.ti.com/
-+ */
-+
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+/ {
-+	model = "Texas Instruments K3 AM654 SoC";
-+	compatible = "ti,am654";
-+	interrupt-parent = <&gic500>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	aliases {
-+		serial0 = &wkup_uart0;
-+		serial1 = &mcu_uart0;
-+		serial2 = &main_uart0;
-+		serial3 = &main_uart1;
-+		serial4 = &main_uart2;
-+	};
-+
-+	chosen { };
-+
-+	firmware {
-+		optee {
-+			compatible = "linaro,optee-tz";
-+			method = "smc";
-+		};
-+
-+		psci: psci {
-+			compatible = "arm,psci-1.0";
-+			method = "smc";
-+		};
-+	};
-+
-+	a53_timer0: timer-cl0-cpu0 {
-+		compatible = "arm,armv8-timer";
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>, /* cntpsirq */
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW>, /* cntpnsirq */
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>, /* cntvirq */
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>; /* cnthpirq */
-+	};
-+
-+	pmu: pmu {
-+		compatible = "arm,armv8-pmuv3";
-+		/* Recommendation from GIC500 TRM Table A.3 */
-+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
-+	};
-+
-+	soc0: soc0 {
-+		compatible = "simple-bus";
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		main_domain: cbass@100000 {
-+			compatible = "simple-bus";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x00100000 0x00 0x00100000 0x00020000>, /* ctrl mmr */
-+				 <0x00600000 0x00 0x00600000 0x00001100>, /* GPIO */
-+				 <0x00900000 0x00 0x00900000 0x00012000>, /* serdes */
-+				 <0x01000000 0x00 0x01000000 0x0AF02400>, /* Most peripherals */
-+				 <0x30800000 0x00 0x30800000 0x0BC00000>; /* MAIN NAVSS */
-+
-+			gic500: interrupt-controller@1800000 {
-+				compatible = "arm,gic-v3";
-+				#address-cells = <1>;
-+				#size-cells = <1>;
-+				ranges;
-+				#interrupt-cells = <3>;
-+				interrupt-controller;
-+				reg = <0x01800000 0x10000>,	/* GICD */
-+				      <0x01880000 0x90000>;	/* GICR */
-+
-+				/*
-+				 * vcpumntirq:
-+				 * virtual CPU interface maintenance interrupt
-+				 */
-+				interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-+
-+				gic_its: gic-its@18200000 {
-+					compatible = "arm,gic-v3-its";
-+					reg = <0x01820000 0x10000>;
-+					msi-controller;
-+					#msi-cells = <1>;
-+				};
-+			};
-+
-+			main_uart0: serial@2800000 {
-+				compatible = "ti,am654-uart", "ti,omap4-uart", "ns16550a";
-+				reg = <0x02800000 0x100>;
-+				reg-shift = <2>;
-+				reg-io-width = <4>;
-+				interrupts = <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>;
-+				clock-frequency = <48000000>;
-+				current-speed = <115200>;
-+				status = "disabled";
-+			};
-+
-+			main_uart1: serial@2810000 {
-+				compatible = "ti,am654-uart", "ti,omap4-uart", "ns16550a";
-+				reg = <0x02810000 0x100>;
-+				reg-shift = <2>;
-+				reg-io-width = <4>;
-+				interrupts = <GIC_SPI 193 IRQ_TYPE_LEVEL_HIGH>;
-+				clock-frequency = <48000000>;
-+				current-speed = <115200>;
-+				status = "disabled";
-+			};
-+
-+			main_uart2: serial@2820000 {
-+				compatible = "ti,am654-uart", "ti,omap4-uart", "ns16550a";
-+				reg = <0x02820000 0x100>;
-+				reg-shift = <2>;
-+				reg-io-width = <4>;
-+				interrupts = <GIC_SPI 194 IRQ_TYPE_LEVEL_HIGH>;
-+				clock-frequency = <48000000>;
-+				current-speed = <115200>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		wkup_domain: cbass@42040000 {
-+			compatible = "simple-bus";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x42040000 0x00 0x42040000 0x03AC2400>; /* Basic peripherals */
-+
-+			wkup_uart0: serial@42300000 {
-+				compatible = "ti,am654-uart", "ti,omap4-uart", "ns16550a";
-+				reg = <0x42300000 0x100>;
-+				reg-shift = <2>;
-+				reg-io-width = <4>;
-+				interrupts = <GIC_SPI 697 IRQ_TYPE_LEVEL_HIGH>;
-+				clock-frequency = <48000000>;
-+				current-speed = <115200>;
-+				status = "disabled";
-+			};
-+
-+		};
-+
-+		mcu_domain: cbass@28380000 {
-+			compatible = "simple-bus";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x28380000 0x00 0x28380000 0x03880000>, /* MCU NAVSS*/
-+				 <0x40200000 0x00 0x40200000 0x00900100>, /* First peripheral window */
-+				 <0x45100000 0x00 0x45100000 0x00c24000>, /* MMRs, remaining NAVSS */
-+				 <0x46000000 0x00 0x46000000 0x00200000>, /* CPSW */
-+				 <0x47000000 0x00 0x47000000 0x00068400>; /* OSPI space 1 */
-+
-+			mcu_uart0: serial@40a00000 {
-+				compatible = "ti,am654-uart", "ti,omap4-uart", "ns16550a";
-+				reg = <0x40a00000 0x100>;
-+				reg-shift = <2>;
-+				reg-io-width = <4>;
-+				interrupts = <GIC_SPI 565 IRQ_TYPE_LEVEL_HIGH>;
-+				clock-frequency = <96000000>;
-+				current-speed = <115200>;
-+				status = "disabled";
-+			};
-+
-+		};
-+
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/ti/k3-am654.dtsi b/arch/arm64/boot/dts/ti/k3-am654.dtsi
-new file mode 100644
-index 000000000000..bffa414180ea
---- /dev/null
-+++ b/arch/arm64/boot/dts/ti/k3-am654.dtsi
-@@ -0,0 +1,117 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for AM6 SoC family in Quad core configuration
-+ *
-+ * Copyright (C) 2016-2018 Texas Instruments Incorporated - http://www.ti.com/
-+ */
-+
-+#include "k3-am6.dtsi"
-+
-+/ {
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		cpu-map {
-+			cluster0: cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+			};
-+
-+			cluster1: cluster1 {
-+				core0 {
-+					cpu = <&cpu2>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu3>;
-+				};
-+			};
-+		};
-+
-+		cpu0: cpu@0 {
-+			compatible = "arm,cortex-a53", "arm,armv8";
-+			reg = <0x000>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&L2_0>;
-+		};
-+
-+		cpu1: cpu@1 {
-+			compatible = "arm,cortex-a53", "arm,armv8";
-+			reg = <0x001>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&L2_0>;
-+		};
-+
-+		cpu2: cpu@100 {
-+			compatible = "arm,cortex-a53", "arm,armv8";
-+			reg = <0x100>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&L2_1>;
-+		};
-+
-+		cpu3: cpu@101 {
-+			compatible = "arm,cortex-a53", "arm,armv8";
-+			reg = <0x101>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&L2_1>;
-+		};
-+	};
-+};
-+
-+&soc0 {
-+	L2_0: l2-cache0 {
-+		compatible = "cache";
-+		cache-level = <2>;
-+		cache-size = <0x80000>;
-+		cache-line-size = <64>;
-+		cache-sets = <512>;
-+		next-level-cache = <&msmc_l3>;
-+	};
-+
-+	L2_1: l2-cache1 {
-+		compatible = "cache";
-+		cache-level = <2>;
-+		cache-size = <0x80000>;
-+		cache-line-size = <64>;
-+		cache-sets = <512>;
-+		next-level-cache = <&msmc_l3>;
-+	};
-+
-+	msmc_l3: l3-cache0 {
-+		compatible = "cache";
-+		cache-level = <3>;
-+	};
-+};
--- 
-2.15.1
-
--- 
-Regards,
-Nishanth Menon
+Best Regards,
+Petr
