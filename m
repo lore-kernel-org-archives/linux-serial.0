@@ -1,62 +1,70 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v2 03/24] Bluetooth: hci_ll: Add serdev_id_table
-Date: Mon, 11 Jun 2018 13:52:19 +0200
-Message-ID: <20180611115240.32606-4-ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 01/24] serdev: Add id_table to serdev_device_driver
+Date: Mon, 11 Jun 2018 13:52:17 +0200
+Message-ID: <20180611115240.32606-2-ricardo.ribalda@gmail.com>
 References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, linux-bluetooth@vger.kernel.org
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-Describe which hardware is supported by the current driver.
+Currently, serdev device driver can only be used with devices that are
+nodes of a device tree, or are part of the ACPI table.
 
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
+Id_table will be used for devices that are created at runtime or that
+are not part of the device tree nor the ACPI table.
+
 Cc: Rob Herring <robh@kernel.org>
 Cc: Johan Hovold <johan@kernel.org>
-Cc: linux-bluetooth@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/bluetooth/hci_ll.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ include/linux/mod_devicetable.h | 10 ++++++++++
+ include/linux/serdev.h          |  2 ++
+ 2 files changed, 12 insertions(+)
 
-diff --git a/drivers/bluetooth/hci_ll.c b/drivers/bluetooth/hci_ll.c
-index 27e414b4e3a2..276fdf677df4 100644
---- a/drivers/bluetooth/hci_ll.c
-+++ b/drivers/bluetooth/hci_ll.c
-@@ -776,6 +776,23 @@ static const struct of_device_id hci_ti_of_match[] = {
+diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+index 7d361be2e24f..1877a4e43f1b 100644
+--- a/include/linux/mod_devicetable.h
++++ b/include/linux/mod_devicetable.h
+@@ -448,6 +448,16 @@ struct pci_epf_device_id {
+ 	kernel_ulong_t driver_data;
  };
- MODULE_DEVICE_TABLE(of, hci_ti_of_match);
  
-+static struct serdev_device_id hci_ti_id[] = {
-+	{ "cc2560", },
-+	{ "wl1271-st", },
-+	{ "wl1273-st", },
-+	{ "wl1281-st", },
-+	{ "wl1283-st", },
-+	{ "wl1285-st", },
-+	{ "wl1801-st", },
-+	{ "wl1805-st", },
-+	{ "wl1807-st", },
-+	{ "wl1831-st", },
-+	{ "wl1835-st", },
-+	{ "wl1837-st", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(serdev, hci_ti_id);
++/* serdev */
 +
- static struct serdev_device_driver hci_ti_drv = {
- 	.driver		= {
- 		.name	= "hci-ti",
-@@ -783,6 +800,7 @@ static struct serdev_device_driver hci_ti_drv = {
- 	},
- 	.probe	= hci_ti_probe,
- 	.remove	= hci_ti_remove,
-+	.id_table = hci_ti_id,
- };
- #else
- #define ll_setup NULL
++#define SERDEV_NAME_SIZE	32
++#define SERDEV_MODULE_PREFIX	"serdev:"
++
++struct serdev_device_id {
++	char name[SERDEV_NAME_SIZE];
++	kernel_ulong_t driver_data;	/* Data private to the driver */
++};
++
+ /* spi */
+ 
+ #define SPI_NAME_SIZE	32
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index f153b2c7f0cd..62f1b085a794 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -15,6 +15,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/device.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/termios.h>
+ #include <linux/delay.h>
+ 
+@@ -68,6 +69,7 @@ static inline struct serdev_device *to_serdev_device(struct device *d)
+  * @remove:	unbinds this driver from the serdev device.
+  */
+ struct serdev_device_driver {
++	const struct serdev_device_id *id_table;
+ 	struct device_driver driver;
+ 	int	(*probe)(struct serdev_device *);
+ 	void	(*remove)(struct serdev_device *);
 -- 
 2.17.1
