@@ -1,42 +1,72 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v2 13/24] Bluetooth: hci_nokia: MODULE_DEVICE_TABLE(serdev)
-Date: Mon, 11 Jun 2018 13:52:29 +0200
-Message-ID: <20180611115240.32606-14-ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 16/24] serdev: ttyport: Move serport structure to its own header
+Date: Mon, 11 Jun 2018 13:52:32 +0200
+Message-ID: <20180611115240.32606-17-ricardo.ribalda@gmail.com>
 References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, linux-bluetooth@vger.kernel.org
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Export serdev table to the module header, allowing module autoload via
-udev/modprobe.
+This way we can reuse this structure in other modules.
 
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
 Cc: Rob Herring <robh@kernel.org>
 Cc: Johan Hovold <johan@kernel.org>
-Cc: linux-bluetooth@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/bluetooth/hci_nokia.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serdev/serdev-ttyport.c |  9 +--------
+ drivers/tty/serdev/serport.h        | 16 ++++++++++++++++
+ 2 files changed, 17 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/tty/serdev/serport.h
 
-diff --git a/drivers/bluetooth/hci_nokia.c b/drivers/bluetooth/hci_nokia.c
-index eb3d59894aef..fef285608f10 100644
---- a/drivers/bluetooth/hci_nokia.c
-+++ b/drivers/bluetooth/hci_nokia.c
-@@ -803,8 +803,10 @@ MODULE_DEVICE_TABLE(of, nokia_bluetooth_of_match);
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index fa1672993b4c..4acc5f41dc67 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -7,17 +7,10 @@
+ #include <linux/tty.h>
+ #include <linux/tty_driver.h>
+ #include <linux/poll.h>
++#include "serport.h"
  
- static struct serdev_device_id nokia_bluetooth_serdev_id[] = {
- 	{ "hp4-bluetooth", },
-+	{ "nokia-bluetooth", },
- 	{}
- };
-+MODULE_DEVICE_TABLE(serdev, nokia_bluetooth_serdev_id);
+ #define SERPORT_ACTIVE		1
  
- static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
- 	.probe = nokia_bluetooth_serdev_probe,
+-struct serport {
+-	struct tty_port *port;
+-	struct tty_struct *tty;
+-	struct tty_driver *tty_drv;
+-	int tty_idx;
+-	unsigned long flags;
+-};
+-
+ /*
+  * Callback functions from the tty port.
+  */
+diff --git a/drivers/tty/serdev/serport.h b/drivers/tty/serdev/serport.h
+new file mode 100644
+index 000000000000..15bc1ff6326e
+--- /dev/null
++++ b/drivers/tty/serdev/serport.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2016-2017 Linaro Ltd., Rob Herring <robh@kernel.org>
++ */
++#ifndef _SERPORT_H
++#define _SERPORT_H
++
++struct serport {
++	struct tty_port *port;
++	struct tty_struct *tty;
++	struct tty_driver *tty_drv;
++	int tty_idx;
++	unsigned long flags;
++};
++
++#endif
 -- 
 2.17.1
