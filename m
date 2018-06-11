@@ -1,7 +1,7 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v2 23/24] serdev: get/put controller
-Date: Mon, 11 Jun 2018 13:52:39 +0200
-Message-ID: <20180611115240.32606-24-ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 24/24] serdev: serdev_controller_add_probed_device
+Date: Mon, 11 Jun 2018 13:52:40 +0200
+Message-ID: <20180611115240.32606-25-ricardo.ribalda@gmail.com>
 References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
@@ -10,7 +10,7 @@ To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Allow access serdev controllers by other drivers in a safe way.
+Support adding probed devices by "platform" drivers.
 
 Cc: Rob Herring <robh@kernel.org>
 Cc: Johan Hovold <johan@kernel.org>
@@ -18,54 +18,62 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serdev/core.c | 23 +++++++++++++++++++++++
+ drivers/tty/serdev/core.c | 10 +++++-----
  include/linux/serdev.h    |  2 ++
- 2 files changed, 25 insertions(+)
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 6b24b0a74fbf..06310110104a 100644
+index 06310110104a..e56a955d4ea9 100644
 --- a/drivers/tty/serdev/core.c
 +++ b/drivers/tty/serdev/core.c
-@@ -724,6 +724,29 @@ void serdev_controller_remove(struct serdev_controller *ctrl)
+@@ -630,8 +630,8 @@ static inline int acpi_serdev_register_devices(struct serdev_controller *ctrl)
  }
- EXPORT_SYMBOL_GPL(serdev_controller_remove);
+ #endif /* CONFIG_ACPI */
  
-+struct serdev_controller *serdev_get_controller(int nr)
-+{
-+	struct serdev_controller *ctrl;
-+
-+	ctrl = idr_find(&ctrl_idr, nr);
-+	if (!ctrl)
-+		return NULL;
-+
-+	get_device(&ctrl->dev);
-+
-+	return ctrl;
-+}
-+EXPORT_SYMBOL_GPL(serdev_get_controller);
-+
-+void serdev_put_controller(struct serdev_controller *ctrl)
-+{
-+	if (!ctrl)
-+		return;
-+
-+	put_device(&ctrl->dev);
-+}
-+EXPORT_SYMBOL_GPL(serdev_put_controller);
-+
+-#if IS_ENABLED(CONFIG_SERIAL_DEV_CTRL_TTYDEV)
+-static int serdev_controller_add_ttydev(struct serdev_controller *ctrl)
++int serdev_controller_add_probed_device(struct serdev_controller *ctrl,
++					const char *name)
+ {
+ 	struct serdev_device *serdev;
+ 	int err;
+@@ -640,7 +640,7 @@ static int serdev_controller_add_ttydev(struct serdev_controller *ctrl)
+ 	if (!serdev)
+ 		return -ENOMEM;
+ 
+-	strcpy(serdev->modalias, "ttydev");
++	strcpy(serdev->modalias, name);
+ 
+ 	err = serdev_device_add(serdev);
+ 	if (err)
+@@ -648,7 +648,7 @@ static int serdev_controller_add_ttydev(struct serdev_controller *ctrl)
+ 
+ 	return err;
+ }
+-#endif
++EXPORT_SYMBOL_GPL(serdev_controller_add_probed_device);
+ 
  /**
-  * serdev_driver_register() - Register client driver with serdev core
-  * @sdrv:	client driver to be associated with client-device.
+  * serdev_controller_add() - Add an serdev controller
+@@ -678,7 +678,7 @@ int serdev_controller_add(struct serdev_controller *ctrl)
+ 		goto out_dev_ok;
+ 
+ #if IS_ENABLED(CONFIG_SERIAL_DEV_CTRL_TTYDEV)
+-	ret_tty = serdev_controller_add_ttydev(ctrl);
++	ret_tty = serdev_controller_add_probed_device(ctrl, "ttydev");
+ 	if (!ret_tty)
+ 		goto out_dev_ok;
+ #endif
 diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index bf282b3781b9..1ef6e6503650 100644
+index 1ef6e6503650..93f534a21ca9 100644
 --- a/include/linux/serdev.h
 +++ b/include/linux/serdev.h
-@@ -182,6 +182,8 @@ void serdev_device_remove(struct serdev_device *);
- struct serdev_controller *serdev_controller_alloc(struct device *, size_t);
- int serdev_controller_add(struct serdev_controller *);
+@@ -184,6 +184,8 @@ int serdev_controller_add(struct serdev_controller *);
  void serdev_controller_remove(struct serdev_controller *);
-+void serdev_put_controller(struct serdev_controller *ctrl);
-+struct serdev_controller *serdev_get_controller(int nr);
+ void serdev_put_controller(struct serdev_controller *ctrl);
+ struct serdev_controller *serdev_get_controller(int nr);
++int serdev_controller_add_probed_device(struct serdev_controller *ctrl,
++					const char *name);
  
  static inline void serdev_controller_write_wakeup(struct serdev_controller *ctrl)
  {
