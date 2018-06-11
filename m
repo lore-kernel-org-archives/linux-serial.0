@@ -1,70 +1,46 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v2 01/24] serdev: Add id_table to serdev_device_driver
-Date: Mon, 11 Jun 2018 13:52:17 +0200
-Message-ID: <20180611115240.32606-2-ricardo.ribalda@gmail.com>
-References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v2 07/24] serdev: Allows dynamic creation of devices via sysfs
+Date: Mon, 11 Jun 2018 15:39:13 +0300
+Message-ID: <CAHp75Vf-V7BVU_SiyBp18D0cM_nOO=EAxfgzUaa4-hngh9PeMw@mail.gmail.com>
+References: <20180611115240.32606-1-ricardo.ribalda@gmail.com> <20180611115240.32606-8-ricardo.ribalda@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
+In-Reply-To: <20180611115240.32606-8-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Currently, serdev device driver can only be used with devices that are
-nodes of a device tree, or are part of the ACPI table.
+On Mon, Jun 11, 2018 at 2:52 PM, Ricardo Ribalda Delgado
+<ricardo.ribalda@gmail.com> wrote:
+> Allow creating and deleting devices via sysfs. Devices created will be
+> matched to serdev drivers via modalias (the string provided by the user)
+> and deleted via their name. Eg:
 
-Id_table will be used for devices that are created at runtime or that
-are not part of the device tree nor the ACPI table.
+> +       nline = strchr(buf, '\n');
 
-Cc: Rob Herring <robh@kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
----
- include/linux/mod_devicetable.h | 10 ++++++++++
- include/linux/serdev.h          |  2 ++
- 2 files changed, 12 insertions(+)
+...
 
-diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-index 7d361be2e24f..1877a4e43f1b 100644
---- a/include/linux/mod_devicetable.h
-+++ b/include/linux/mod_devicetable.h
-@@ -448,6 +448,16 @@ struct pci_epf_device_id {
- 	kernel_ulong_t driver_data;
- };
- 
-+/* serdev */
-+
-+#define SERDEV_NAME_SIZE	32
-+#define SERDEV_MODULE_PREFIX	"serdev:"
-+
-+struct serdev_device_id {
-+	char name[SERDEV_NAME_SIZE];
-+	kernel_ulong_t driver_data;	/* Data private to the driver */
-+};
-+
- /* spi */
- 
- #define SPI_NAME_SIZE	32
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index f153b2c7f0cd..62f1b085a794 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -15,6 +15,7 @@
- 
- #include <linux/types.h>
- #include <linux/device.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/termios.h>
- #include <linux/delay.h>
- 
-@@ -68,6 +69,7 @@ static inline struct serdev_device *to_serdev_device(struct device *d)
-  * @remove:	unbinds this driver from the serdev device.
-  */
- struct serdev_device_driver {
-+	const struct serdev_device_id *id_table;
- 	struct device_driver driver;
- 	int	(*probe)(struct serdev_device *);
- 	void	(*remove)(struct serdev_device *);
+> +       if (nline)
+> +               len = nline - buf;
+> +       else
+
+> +               len = strlen(buf);
+> +       len = min(SERDEV_NAME_SIZE - 1, len);
+
+If buf is guaranteed to have '\0', the strlen() is not needed.
+
+I'm not sure about this entire dances with first line and so on.
+When it's possible to get more, than two lines on input?
+
+Would it be just as simple as strstrip() call followed by strscpy()?
+
+> +       strncpy(serdev->modalias, buf, len);
+> +       serdev->modalias[len] = '\0';
+
+strspcy() ?
+
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
