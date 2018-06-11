@@ -1,59 +1,51 @@
 From: Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [PATCH v2 04/24] Bluetooth: hci_nokia: Add serdev_id_table
-Date: Mon, 11 Jun 2018 14:56:20 +0200
-Message-ID: <94360989-9AA9-422D-9CA3-AA631731BD2D@holtmann.org>
+Subject: Re: [PATCH v2 11/24] Bluetooth: hci_bcm: MODULE_DEVICE_TABLE(serdev)
+Date: Mon, 11 Jun 2018 14:59:19 +0200
+Message-ID: <D4622EB7-BB18-4931-BF14-34995F7EBBA8@holtmann.org>
 References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
- <20180611115240.32606-5-ricardo.ribalda@gmail.com>
+ <20180611115240.32606-12-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0 (Mac OS X Mail 11.4 \(3445.8.2\))
 Content-Type: text/plain;
         charset=utf-8
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180611115240.32606-5-ricardo.ribalda@gmail.com>
+In-Reply-To: <20180611115240.32606-12-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-bluetooth@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, linux-bluetooth@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 Hi Ricardo,
 
-> Describe which hardware is supported by the current driver.
+> Export serdev table to the module header, allowing module autoload via
+> udev/modprobe.
 > 
 > Cc: Marcel Holtmann <marcel@holtmann.org>
 > Cc: Johan Hedberg <johan.hedberg@gmail.com>
 > Cc: Rob Herring <robh@kernel.org>
 > Cc: Johan Hovold <johan@kernel.org>
-> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
 > Cc: linux-bluetooth@vger.kernel.org
 > Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 > ---
-> drivers/bluetooth/hci_nokia.c | 6 ++++++
-> 1 file changed, 6 insertions(+)
+> drivers/bluetooth/hci_bcm.c | 2 ++
+> 1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/bluetooth/hci_nokia.c b/drivers/bluetooth/hci_nokia.c
-> index 3539fd03f47e..eb3d59894aef 100644
-> --- a/drivers/bluetooth/hci_nokia.c
-> +++ b/drivers/bluetooth/hci_nokia.c
-> @@ -801,6 +801,11 @@ static const struct of_device_id nokia_bluetooth_of_match[] = {
-> MODULE_DEVICE_TABLE(of, nokia_bluetooth_of_match);
-> #endif
+> diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
+> index f4d7846c06b8..ff0fd3502a90 100644
+> --- a/drivers/bluetooth/hci_bcm.c
+> +++ b/drivers/bluetooth/hci_bcm.c
+> @@ -1327,8 +1327,10 @@ MODULE_DEVICE_TABLE(of, bcm_bluetooth_of_match);
 > 
-> +static struct serdev_device_id nokia_bluetooth_serdev_id[] = {
-> +	{ "hp4-bluetooth", },
-> +	{}
-> +};
-> +
-> static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
-> 	.probe = nokia_bluetooth_serdev_probe,
-> 	.remove = nokia_bluetooth_serdev_remove,
-> @@ -809,6 +814,7 @@ static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
-> 		.pm = &nokia_bluetooth_pm_ops,
-> 		.of_match_table = of_match_ptr(nokia_bluetooth_of_match),
-> 	},
-> +	.id_table = nokia_bluetooth_serdev_id,
+> static const struct serdev_device_id bcm_serdev_id[] = {
+> 	{ "bcm43438-bt", },
+> +	{ "hci_uart_bcm", },
+> 	{}
 > };
+> +MODULE_DEVICE_TABLE(serdev, bcm_serdev_id);
 
-as I said before, don’t bother with this driver. There is no need for this. Nothing is generic here, it is all specific for each of the 5 devices they shipped. Nokia is not building these kind of devices anymore and if they start changing their mind, then we add a patch for it listening this id.
+so this one I can see real use of and is a good fix to finally clean up hci_bcm.c and remove platform support for the Edison hardware. However, I would really then first rename hci_uart_bcm into some Edison specific string since this is really just one outlier here. Everything else will have ACPI or DT support.
+
+With that said, I do not understand why we need to duplicate the DT compatible strings in serdev_device_id. They will be enumerated fine via ACPI or DT in the first place. So if we want some new_id support, then wouldn’t an empty serdev_device_id table just be fine?
 
 Regards
 
