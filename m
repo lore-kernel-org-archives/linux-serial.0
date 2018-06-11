@@ -1,67 +1,42 @@
-From: Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [PATCH v2 14/24] mfd: rave-sp: MODULE_DEVICE_TABLE(serdev)
-Date: Mon, 11 Jun 2018 15:14:46 +0200
-Message-ID: <EBCCCD1F-0F23-4599-8A78-32BBF2DAF746@holtmann.org>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v2 11/24] Bluetooth: hci_bcm: MODULE_DEVICE_TABLE(serdev)
+Date: Mon, 11 Jun 2018 16:31:08 +0300
+Message-ID: <CAHp75VcbVuzo3MHwogdqBoGQkUwB4hkL1Kfjq+PtDKO9cXnUjw@mail.gmail.com>
 References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
- <20180611115240.32606-15-ricardo.ribalda@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 11.4 \(3445.8.2\))
-Content-Type: text/plain;
-        charset=us-ascii
-Content-Transfer-Encoding: 8BIT
+ <20180611115240.32606-12-ricardo.ribalda@gmail.com> <D4622EB7-BB18-4931-BF14-34995F7EBBA8@holtmann.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180611115240.32606-15-ricardo.ribalda@gmail.com>
+In-Reply-To: <D4622EB7-BB18-4931-BF14-34995F7EBBA8@holtmann.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>
+To: Marcel Holtmann <marcel@holtmann.org>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, linux-bluetooth@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Ricardo,
+On Mon, Jun 11, 2018 at 3:59 PM, Marcel Holtmann <marcel@holtmann.org> wrot=
+e:
+> Hi Ricardo,
+>
+>> Export serdev table to the module header, allowing module autoload via
+>> udev/modprobe.
 
-> Export serdev table to the module header, allowing module autoload via
-> udev/modprobe.
-> 
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Rob Herring <robh@kernel.org>
-> Cc: Johan Hovold <johan@kernel.org>
-> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-> ---
-> drivers/mfd/rave-sp.c | 7 +++++++
-> 1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/mfd/rave-sp.c b/drivers/mfd/rave-sp.c
-> index 5c858e784a89..c0ecfbc16dca 100644
-> --- a/drivers/mfd/rave-sp.c
-> +++ b/drivers/mfd/rave-sp.c
-> @@ -694,12 +694,19 @@ static int rave_sp_probe(struct serdev_device *serdev)
-> 
-> MODULE_DEVICE_TABLE(of, rave_sp_dt_ids);
-> 
-> +static struct serdev_device_id rave_sp_serdev_id[] = {
-> +	{ "rave-sp", },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(serdev, rave_sp_serdev_id);
-> +
-> static struct serdev_device_driver rave_sp_drv = {
-> 	.probe			= rave_sp_probe,
-> 	.driver = {
-> 		.name		= "rave-sp",
-> 		.of_match_table	= rave_sp_dt_ids,
-> 	},
-> +	.id_table = rave_sp_serdev_id,
-> };
-> module_serdev_device_driver(rave_sp_drv);
+>> static const struct serdev_device_id bcm_serdev_id[] =3D {
+>>       { "bcm43438-bt", },
+>> +     { "hci_uart_bcm", },
+>>       {}
+>> };
+>> +MODULE_DEVICE_TABLE(serdev, bcm_serdev_id);
+>
+> so this one I can see real use of and is a good fix to finally clean up h=
+ci_bcm.c and remove platform support for the Edison hardware. However, I wo=
+uld really then first rename hci_uart_bcm into some Edison specific string =
+since this is really just one outlier here.
 
-so I would actually prefer that we not duplicate the .driver.name in the .id_table. This one for example is non-functional since all supported hardware needs a specific .data entry. It will fail here:
+Or other way around, hack
+arch/x86/platform/intel-mid/device_libs/platform_bt.c to be compatible
+with these changes (Dunno if it's possible).
 
-        sp->variant = of_device_get_match_data(dev);                             
-        if (!sp->variant)                                                        
-                return -ENODEV;
-
-Maybe we focus first on getting the base support for new_device etc. merged and use the Edison Bluetooth platform driver support in hci_bcm.c so we can do a real cleanup there. And then later add broad new_device support. Some of these instances should be just fine with never getting it since they require to many per device quirks to make things functional. A blind search+replace is not going to work.
-
-And things like device_get_match_data() should work as well even if the hardware is listed via serdev_device_id. Drivers that are solely DT centric will need a lot more work before dynamic adding of serdev devices can happen.
-
-Regards
-
-Marcel
+--=20
+With Best Regards,
+Andy Shevchenko
