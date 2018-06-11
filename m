@@ -1,77 +1,110 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: possible deadlock in console_unlock
-Date: Fri, 8 Jun 2018 10:18:55 +0200
-Message-ID: <20180608081855.ctqakvwmg27aydby@pathway.suse.cz>
-References: <00000000000087008b056df8fbb3@google.com>
- <20180607051019.GA10406@jagdpanzerIV>
- <20180607110034.qrkencwsr4stv6xp@pathway.suse.cz>
- <20180607140100.GA398@tigerII.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 00/19] Dynamically load/remove serdev devices via sysfs*
+Date: Mon, 11 Jun 2018 13:52:16 +0200
+Message-ID: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180607140100.GA398@tigerII.localdomain>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, syzbot <syzbot+43e93968b964e369db0b@syzkaller.appspotmail.com>, linux-kernel@vger.kernel.org, rostedt@goodmis.org, syzkaller-bugs@googlegroups.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu 2018-06-07 23:01:00, Sergey Senozhatsky wrote:
-> On (06/07/18 13:00), Petr Mladek wrote:
-> > > Another way could be - switch to printk_safe mode around that
-> > > kmalloc():
-> > > 
-> > > 	__printk_safe_enter();
-> > > 	kmalloc(sizeof(struct tty_buffer) + 2 * size, GFP_ATOMIC);
-> > > 	__printk_safe_exit();
-> > > 
-> > > Or, may be, we even can switch to printk_safe mode every time we grab
-> > > tty_port lock.
-> >  
-> > > Perhaps something like this should be done for uart_port->lock
-> > > as well. Because, technically, we can have the following
-> > 
-> > Yeah, we would need this basically around any lock that can be taken
-> > from console write() callbacks. Well, this would be needed even
-> > around locks that might be in a chain with a lock used in these
-> > callbacks (as shown by this report).
-> 
-> Yep. So the plan for now is to wrap the tty_port->lock. Pretty much
-> an automatic conversion.
-> 
-> Then to convert [may be some for now on] uart_port->lock. Once again,
-> pretty much can be done a script.
-> 
-> Afterwards just sit down and be humbl^W^W wait for new reports. Then
-> move those newly discovered unsafe locks under printk_safe context.
-> 
-> Basically, the same macros as we use for logbuf lock in printk.c
-> 
-> A bit of a lazy approach. Can't think of anything better.
+There are some situations where it is interesting to load/remove serdev
+devices dynamically, like during board bring-up or when we are
+developing a new driver or for devices that are neither described via
+ACPI or device tree.
 
-Same here.
+This implementation allows the creation of serdev devices via sysfs,
+in a similar way as the i2c bus allows sysfs instantiation [1].
 
-> I think it's finally the time to start dealing with these
-> "external" locks, it's been a while.
-> 
-> > BTW: printk_safe context might be too strict. In fact,
-> > printk_deferred() would be enough. We might think about
-> > introducing also printk_deferred context.
-> 
-> Could be.
-> The good thing about printk_safe is that printk_safe sections can nest.
-> I suspect there might be locks/printk_safe sections nesting at some
-> point. In any case, switching to a new flavor of printk_safe will be
-> pretty easy - just replace printk_safe_enter() with printk_foo_enter()
-> and the same for printk_save_exit().
+It also opens the door to create platform drivers for specific
+platforms, such us notebooks or industrial computers, when their serial
+devices are not described via DT or ACPI.
 
-We could allow nesting. It is just a matter of how many bits we
-reserve for it in printk_context variable.
+This patchset also supports automatic module load via udev/modprobe,
+simplifying its use by the final user.
 
-In each case, I would like to keep the printk_safe context usage
-at minimum. It has its own problems caused by limited per-cpu buffers
-and the need to flush them. It is basically needed only to prevent
-deadlocks related to logbuf_lock.
+Currently, serdev does not manage ports that do not have a serdev device
+defined at boot time. This implementation adds a new serdev module,
+ttydev, that provides the same functionality of tty (it calls the
+original one), but can be unloaded.
 
-Best Regards,
-Petr
+TL/DR:
+
+When we want to create a new device, we just run:
+root@qt5022:~# echo ttydev > /sys/bus/serial/devices/serial0/new_device
+
+This will create a new device:
+root@qt5022:~# ls /sys/bus/serial/devices/serial0-0/
+driver	modalias  power  subsystem  tty  uevent
+
+And load the required driver to use it:
+root@qt5022:~# lsmod | grep serdev_ttydev
+serdev_ttydev          16384  0
+
+The device can be removed:
+root@qt5022:~#
+	echo serial0-0 > /sys/bus/serial/devices/serial0/delete_device
+
+And now we can connect a new device:
+root@qt5022:~# echo hci-ti > /sys/bus/serial/devices/serial0/new_device
+
+
+Changelog v2:
+
+New functionality:
+- New functions: get/put controller add_probed_device
+- Rave_sp: Match all the variants
+
+Changes proposed by Andy Shevchenko <andy.shevchenko@gmail.com>
+- Avoid strchr
+- Terminators with no comma
+
+[1] https://www.kernel.org/doc/Documentation/i2c/instantiating-devices
+
+Ricardo Ribalda Delgado (24):
+  serdev: Add id_table to serdev_device_driver
+  Bluetooth: hci_bcm: Add serdev_id_table
+  Bluetooth: hci_ll: Add serdev_id_table
+  Bluetooth: hci_nokia: Add serdev_id_table
+  serdev: Introduce modalias field
+  serdev: Support bus matching with modalias field
+  serdev: Allows dynamic creation of devices via sysfs
+  serdev: Provide modalias attribute for modalias devices
+  serdev: Provide modalias uevent for modalias devices
+  file2alias: Support for serdev devices
+  Bluetooth: hci_bcm: MODULE_DEVICE_TABLE(serdev)
+  Bluetooth: hci_ll: MODULE_DEVICE_TABLE(serdev)
+  Bluetooth: hci_nokia: MODULE_DEVICE_TABLE(serdev)
+  mfd: rave-sp: MODULE_DEVICE_TABLE(serdev)
+  net: qualcomm: MODULE_DEVICE_TABLE(serdev)
+  serdev: ttyport: Move serport structure to its own header
+  serdev: Mark controllers compatible with ttyport
+  serdev: ttydev: Serdev driver that creates an standard TTY port
+  serdev: Instantiate a ttydev serdev if acpi and of fails
+  serdev: Make match_id accessible by drivers
+  rave-sp: Support for variants on modalias drivers
+  serdev: Replace IDA functions with IDR
+  serdev: get/put controller
+  serdev: serdev_controller_add_probed_device
+
+ drivers/bluetooth/hci_bcm.c              |   8 +
+ drivers/bluetooth/hci_ll.c               |  19 +++
+ drivers/bluetooth/hci_nokia.c            |   8 +
+ drivers/mfd/rave-sp.c                    |  25 ++-
+ drivers/net/ethernet/qualcomm/qca_uart.c |   7 +
+ drivers/tty/serdev/Kconfig               |  10 ++
+ drivers/tty/serdev/Makefile              |   2 +
+ drivers/tty/serdev/core.c                | 186 ++++++++++++++++++++---
+ drivers/tty/serdev/serdev-ttydev.c       |  60 ++++++++
+ drivers/tty/serdev/serdev-ttyport.c      |  10 +-
+ drivers/tty/serdev/serport.h             |  16 ++
+ include/linux/mod_devicetable.h          |  10 ++
+ include/linux/serdev.h                   |  11 ++
+ scripts/mod/devicetable-offsets.c        |   3 +
+ scripts/mod/file2alias.c                 |  11 ++
+ 15 files changed, 360 insertions(+), 26 deletions(-)
+ create mode 100644 drivers/tty/serdev/serdev-ttydev.c
+ create mode 100644 drivers/tty/serdev/serport.h
+
+-- 
+2.17.1
