@@ -1,69 +1,51 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v2 06/24] serdev: Support bus matching with modalias field
-Date: Mon, 11 Jun 2018 13:52:22 +0200
-Message-ID: <20180611115240.32606-7-ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 04/24] Bluetooth: hci_nokia: Add serdev_id_table
+Date: Mon, 11 Jun 2018 13:52:20 +0200
+Message-ID: <20180611115240.32606-5-ricardo.ribalda@gmail.com>
 References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-bluetooth@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Match devices to drivers by their modalias when the ACPI and the OF
-match fails.
+Describe which hardware is supported by the current driver.
 
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hedberg <johan.hedberg@gmail.com>
 Cc: Rob Herring <robh@kernel.org>
 Cc: Johan Hovold <johan@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: linux-bluetooth@vger.kernel.org
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serdev/core.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ drivers/bluetooth/hci_nokia.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index df93b727e984..2c79f47fc0db 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -79,8 +79,23 @@ static const struct device_type serdev_ctrl_type = {
- 	.release	= serdev_ctrl_release,
+diff --git a/drivers/bluetooth/hci_nokia.c b/drivers/bluetooth/hci_nokia.c
+index 3539fd03f47e..eb3d59894aef 100644
+--- a/drivers/bluetooth/hci_nokia.c
++++ b/drivers/bluetooth/hci_nokia.c
+@@ -801,6 +801,11 @@ static const struct of_device_id nokia_bluetooth_of_match[] = {
+ MODULE_DEVICE_TABLE(of, nokia_bluetooth_of_match);
+ #endif
+ 
++static struct serdev_device_id nokia_bluetooth_serdev_id[] = {
++	{ "hp4-bluetooth", },
++	{}
++};
++
+ static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
+ 	.probe = nokia_bluetooth_serdev_probe,
+ 	.remove = nokia_bluetooth_serdev_remove,
+@@ -809,6 +814,7 @@ static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
+ 		.pm = &nokia_bluetooth_pm_ops,
+ 		.of_match_table = of_match_ptr(nokia_bluetooth_of_match),
+ 	},
++	.id_table = nokia_bluetooth_serdev_id,
  };
  
-+static int serdev_match_id(const struct serdev_device_id *id,
-+			   const struct serdev_device *sdev)
-+{
-+	while (id->name[0]) {
-+		if (!strcmp(sdev->modalias, id->name))
-+			return 1;
-+		id++;
-+	}
-+
-+	return 0;
-+}
-+
- static int serdev_device_match(struct device *dev, struct device_driver *drv)
- {
-+	const struct serdev_device *sdev = to_serdev_device(dev);
-+	const struct serdev_device_driver *sdrv = to_serdev_device_driver(drv);
-+
- 	if (!is_serdev_device(dev))
- 		return 0;
- 
-@@ -88,7 +103,13 @@ static int serdev_device_match(struct device *dev, struct device_driver *drv)
- 	if (acpi_driver_match_device(dev, drv))
- 		return 1;
- 
--	return of_driver_match_device(dev, drv);
-+	if (of_driver_match_device(dev, drv))
-+		return 1;
-+
-+	if (sdrv->id_table)
-+		return serdev_match_id(sdrv->id_table, sdev);
-+
-+	return strcmp(sdev->modalias, drv->name) == 0;
- }
- 
- /**
+ module_serdev_device_driver(nokia_bluetooth_serdev_driver);
 -- 
 2.17.1
