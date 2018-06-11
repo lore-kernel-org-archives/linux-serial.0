@@ -1,72 +1,37 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH v2 15/24] net: qualcomm: MODULE_DEVICE_TABLE(serdev)
-Date: Mon, 11 Jun 2018 17:33:53 +0200
-Message-ID: <CAPybu_2ViGvN6egz-Ajq4+1fv6VAVFswuvSPAVmYH0a9R-Yjvw@mail.gmail.com>
-References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
- <20180611115240.32606-16-ricardo.ribalda@gmail.com> <CCB7FF79-F89A-4421-A6C0-E0663BEE6065@holtmann.org>
- <CAPybu_0=ykAcCx=nZyrv90YRfihDxi3s2+Nz+6UP8Fwd5eH2-A@mail.gmail.com> <B4BC9DB0-2D7C-4F9D-99FE-8227D4DC3D54@holtmann.org>
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH v6 3/6] mfd: at91-usart: added mfd driver for usart
+Date: Mon, 11 Jun 2018 17:36:32 +0200
+Message-ID: <20180611153632.GG10521@piout.net>
+References: <20180607110020.20565-1-radu.pirea@microchip.com>
+ <20180607110020.20565-4-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <B4BC9DB0-2D7C-4F9D-99FE-8227D4DC3D54@holtmann.org>
+Content-Disposition: inline
+In-Reply-To: <20180607110020.20565-4-radu.pirea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Marcel Holtmann <marcel@holtmann.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Lino Sanfilippo <LinoSanfilippo@gmx.de>, David Miller <davem@davemloft.net>, Stefan Wahren <stefan.wahren@i2se.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, netdev@vger.kernel.org
+To: Radu Pirea <radu.pirea@microchip.com>
+Cc: broonie@kernel.org, nicolas.ferre@microchip.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Marcel,
-On Mon, Jun 11, 2018 at 5:28 PM Marcel Holtmann <marcel@holtmann.org> wrote=
-:
->
-> Hi Marcel,
->
-> >> the commit message is misleading me. If I build something with ACPI or=
- DT support, then modinfo will show all modalias information for ACPI and D=
-T compatible strings. What else does udev/modprobe actually need? Is someth=
-ing broken with the modalias export?
-> >
-> > The main purpose is to autoload drivers for devices that have been
-> > created via sysfs or another module.
-> >
-> > Eg1: We have a serial port on a standard computer that has connected a
-> > GPS module. Since it is something that is not in the ACPI nor the DT
-> > table the user will run
-> >
-> > echo serdev_gps > /sys/bus/serial/devices/serial0/new_device
-> >
-> > Eg2 module: https://github.com/ribalda/linux/blob/415bb3f0076c2b846ebe5=
-409589b8e1e3004f55a/drivers/tty/serdev/test_platform.c
-> >
-> > Modprobe does not know what module to load for that device unless
-> > there is a matching MODULE_DEVICE_TABLE
-> > Today, we have the same functionality for i2c devices
-> > https://www.kernel.org/doc/Documentation/i2c/instantiating-devices
->
-> but why does this have to be the driver name? I would rather say, create =
-a generic string that describes the hardware and then use that. I think you=
- also want the special handling, as from USB for example, that lets you ref=
-erence an existing .compatible or ACPI ID as reference so that the driver_d=
-ata is copied.
+On 07/06/2018 14:00:17+0300, Radu Pirea wrote:
+> +static int at91_usart_mode_probe(struct platform_device *pdev)
+> +{
+> +	struct mfd_cell cell;
+> +	u32 opmode;
 
-We can choose any name, but if there are no special variants (like the
-rave-sp driver) I would prefer using the module name. We can of course
-use more names, like the part number of the the device, but it is very
-convenient to also use the module name, and other subsystems also do
-that.
+This has to be initialized to AT91_USART_MODE_SERIAL...
 
-If you want to add specific names for this device please let me know
-and I will add them to the list. You know much more about this module
-than myself.
+> +	int err;
+> +
+> +	err = device_property_read_u32(&pdev->dev, "atmel,usart-mode", &opmode);
+> +
 
-Thanks!
-
->
-> Regards
->
-> Marcel
->
+because if the property is not present, then opmode will not be modified
+which means it could hold the value of AT91_USART_MODE_SPI.
 
 
---=20
-Ricardo Ribalda
+-- 
+Alexandre Belloni, Bootlin (formerly Free Electrons)
+Embedded Linux and Kernel engineering
+https://bootlin.com
