@@ -1,18 +1,18 @@
 From: Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [PATCH v2 11/24] Bluetooth: hci_bcm: MODULE_DEVICE_TABLE(serdev)
-Date: Mon, 11 Jun 2018 14:59:19 +0200
-Message-ID: <D4622EB7-BB18-4931-BF14-34995F7EBBA8@holtmann.org>
+Subject: Re: [PATCH v2 15/24] net: qualcomm: MODULE_DEVICE_TABLE(serdev)
+Date: Mon, 11 Jun 2018 15:01:01 +0200
+Message-ID: <CCB7FF79-F89A-4421-A6C0-E0663BEE6065@holtmann.org>
 References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
- <20180611115240.32606-12-ricardo.ribalda@gmail.com>
+ <20180611115240.32606-16-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0 (Mac OS X Mail 11.4 \(3445.8.2\))
 Content-Type: text/plain;
-        charset=utf-8
+        charset=us-ascii
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180611115240.32606-12-ricardo.ribalda@gmail.com>
+In-Reply-To: <20180611115240.32606-16-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, linux-bluetooth@vger.kernel.org
+Cc: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Lino Sanfilippo <LinoSanfilippo@gmx.de>, "David S. Miller" <davem@davemloft.net>, Stefan Wahren <stefan.wahren@i2se.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, netdev@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 Hi Ricardo,
@@ -20,32 +20,42 @@ Hi Ricardo,
 > Export serdev table to the module header, allowing module autoload via
 > udev/modprobe.
 > 
-> Cc: Marcel Holtmann <marcel@holtmann.org>
-> Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> Cc: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Stefan Wahren <stefan.wahren@i2se.com>
 > Cc: Rob Herring <robh@kernel.org>
 > Cc: Johan Hovold <johan@kernel.org>
-> Cc: linux-bluetooth@vger.kernel.org
+> Cc: netdev@vger.kernel.org
 > Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 > ---
-> drivers/bluetooth/hci_bcm.c | 2 ++
-> 1 file changed, 2 insertions(+)
+> drivers/net/ethernet/qualcomm/qca_uart.c | 7 +++++++
+> 1 file changed, 7 insertions(+)
 > 
-> diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-> index f4d7846c06b8..ff0fd3502a90 100644
-> --- a/drivers/bluetooth/hci_bcm.c
-> +++ b/drivers/bluetooth/hci_bcm.c
-> @@ -1327,8 +1327,10 @@ MODULE_DEVICE_TABLE(of, bcm_bluetooth_of_match);
+> diff --git a/drivers/net/ethernet/qualcomm/qca_uart.c b/drivers/net/ethernet/qualcomm/qca_uart.c
+> index db6068cd7a1f..6d2ac6cae63f 100644
+> --- a/drivers/net/ethernet/qualcomm/qca_uart.c
+> +++ b/drivers/net/ethernet/qualcomm/qca_uart.c
+> @@ -405,6 +405,12 @@ static void qca_uart_remove(struct serdev_device *serdev)
+> 	free_netdev(qca->net_dev);
+> }
 > 
-> static const struct serdev_device_id bcm_serdev_id[] = {
-> 	{ "bcm43438-bt", },
-> +	{ "hci_uart_bcm", },
-> 	{}
+> +static struct serdev_device_id qca_uart_serdev_id[] = {
+> +	{ QCAUART_DRV_NAME, },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(serdev, qca_uart_serdev_id);
+> +
+> static struct serdev_device_driver qca_uart_driver = {
+> 	.probe = qca_uart_probe,
+> 	.remove = qca_uart_remove,
+> @@ -412,6 +418,7 @@ static struct serdev_device_driver qca_uart_driver = {
+> 		.name = QCAUART_DRV_NAME,
+> 		.of_match_table = of_match_ptr(qca_uart_of_match),
+> 	},
+> +	.id_table = qca_uart_serdev_id,
 > };
-> +MODULE_DEVICE_TABLE(serdev, bcm_serdev_id);
 
-so this one I can see real use of and is a good fix to finally clean up hci_bcm.c and remove platform support for the Edison hardware. However, I would really then first rename hci_uart_bcm into some Edison specific string since this is really just one outlier here. Everything else will have ACPI or DT support.
-
-With that said, I do not understand why we need to duplicate the DT compatible strings in serdev_device_id. They will be enumerated fine via ACPI or DT in the first place. So if we want some new_id support, then wouldn’t an empty serdev_device_id table just be fine?
+the commit message is misleading me. If I build something with ACPI or DT support, then modinfo will show all modalias information for ACPI and DT compatible strings. What else does udev/modprobe actually need? Is something broken with the modalias export?
 
 Regards
 
