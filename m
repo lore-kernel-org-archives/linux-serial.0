@@ -1,39 +1,60 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2 21/24] rave-sp: Support for variants on modalias drivers
-Date: Mon, 11 Jun 2018 15:54:36 +0300
-Message-ID: <CAHp75VeeF4eNjyhhBxocRXboN3fRY=RjrT6QQ72=QJ-s8gvSfA@mail.gmail.com>
-References: <20180611115240.32606-1-ricardo.ribalda@gmail.com> <20180611115240.32606-22-ricardo.ribalda@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Marcel Holtmann <marcel@holtmann.org>
+Subject: Re: [PATCH v2 04/24] Bluetooth: hci_nokia: Add serdev_id_table
+Date: Mon, 11 Jun 2018 14:56:20 +0200
+Message-ID: <94360989-9AA9-422D-9CA3-AA631731BD2D@holtmann.org>
+References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
+ <20180611115240.32606-5-ricardo.ribalda@gmail.com>
+Mime-Version: 1.0 (Mac OS X Mail 11.4 \(3445.8.2\))
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180611115240.32606-22-ricardo.ribalda@gmail.com>
+In-Reply-To: <20180611115240.32606-5-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Johan Hedberg <johan.hedberg@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, linux-bluetooth@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 11, 2018 at 2:52 PM, Ricardo Ribalda Delgado
-<ricardo.ribalda@gmail.com> wrote:
-> Rave-sp behaves differently based on the device variant.
+Hi Ricardo,
 
+> Describe which hardware is supported by the current driver.
+> 
+> Cc: Marcel Holtmann <marcel@holtmann.org>
+> Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Johan Hovold <johan@kernel.org>
+> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Cc: linux-bluetooth@vger.kernel.org
+> Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+> ---
+> drivers/bluetooth/hci_nokia.c | 6 ++++++
+> 1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/bluetooth/hci_nokia.c b/drivers/bluetooth/hci_nokia.c
+> index 3539fd03f47e..eb3d59894aef 100644
+> --- a/drivers/bluetooth/hci_nokia.c
+> +++ b/drivers/bluetooth/hci_nokia.c
+> @@ -801,6 +801,11 @@ static const struct of_device_id nokia_bluetooth_of_match[] = {
+> MODULE_DEVICE_TABLE(of, nokia_bluetooth_of_match);
+> #endif
+> 
+> +static struct serdev_device_id nokia_bluetooth_serdev_id[] = {
+> +	{ "hp4-bluetooth", },
+> +	{}
+> +};
+> +
+> static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
+> 	.probe = nokia_bluetooth_serdev_probe,
+> 	.remove = nokia_bluetooth_serdev_remove,
+> @@ -809,6 +814,7 @@ static struct serdev_device_driver nokia_bluetooth_serdev_driver = {
+> 		.pm = &nokia_bluetooth_pm_ops,
+> 		.of_match_table = of_match_ptr(nokia_bluetooth_of_match),
+> 	},
+> +	.id_table = nokia_bluetooth_serdev_id,
+> };
 
->         sp->variant = of_device_get_match_data(dev);
-> +       if (!sp->variant) {
-> +               id = serdev_match_id(rave_sp_serdev_id, serdev);
+as I said before, don’t bother with this driver. There is no need for this. Nothing is generic here, it is all specific for each of the 5 devices they shipped. Nokia is not building these kind of devices anymore and if they start changing their mind, then we add a patch for it listening this id.
 
-I think you may leave the ID table where it is in the code and use link.
+Regards
 
-> +               if (id)
-> +                       sp->variant = (const struct rave_sp_variant *)
-> +                                                       id->driver_data;
-> +       }
-
-Perhaps a helper like it's done for ACPI / OF cases?
-
-[device_get_match_data() -> ]
-  of_fwnode_device_get_match_data()
-  acpi_fwnode_device_get_match_data()
-
--- 
-With Best Regards,
-Andy Shevchenko
+Marcel
