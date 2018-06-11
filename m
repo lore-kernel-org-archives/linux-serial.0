@@ -1,7 +1,7 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v2 20/24] serdev: Make match_id accessible by drivers
-Date: Mon, 11 Jun 2018 13:52:36 +0200
-Message-ID: <20180611115240.32606-21-ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 22/24] serdev: Replace IDA functions with IDR
+Date: Mon, 11 Jun 2018 13:52:38 +0200
+Message-ID: <20180611115240.32606-23-ricardo.ribalda@gmail.com>
 References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
@@ -10,8 +10,8 @@ To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Drivers that make use of the driver_data field require to transverse the
-id_table. There is no reason to have one implementation per driver.
+IDR functions support associating an ID with a pointer. This is required
+if we need to access the controllers based on their ID.
 
 Cc: Rob Herring <robh@kernel.org>
 Cc: Johan Hovold <johan@kernel.org>
@@ -19,60 +19,39 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serdev/core.c | 12 +++++++-----
- include/linux/serdev.h    |  3 +++
- 2 files changed, 10 insertions(+), 5 deletions(-)
+ drivers/tty/serdev/core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 587d2796b3d5..3084b6d10179 100644
+index 3084b6d10179..6b24b0a74fbf 100644
 --- a/drivers/tty/serdev/core.c
 +++ b/drivers/tty/serdev/core.c
-@@ -158,17 +158,19 @@ static const struct device_type serdev_ctrl_type = {
- 	.release	= serdev_ctrl_release,
- };
+@@ -17,7 +17,7 @@
+ #include <linux/slab.h>
  
--static int serdev_match_id(const struct serdev_device_id *id,
--			   const struct serdev_device *sdev)
-+const struct serdev_device_id *serdev_match_id(
-+			const struct serdev_device_id *id,
-+			const struct serdev_device *sdev)
+ static bool is_registered;
+-static DEFINE_IDA(ctrl_ida);
++static DEFINE_IDR(ctrl_idr);
+ 
+ static ssize_t modalias_show(struct device *dev,
+ 			     struct device_attribute *attr, char *buf)
+@@ -81,7 +81,7 @@ static bool is_serdev_device(const struct device *dev)
+ static void serdev_ctrl_release(struct device *dev)
  {
- 	while (id->name[0]) {
- 		if (!strcmp(sdev->modalias, id->name))
--			return 1;
-+			return id;
- 		id++;
- 	}
- 
--	return 0;
-+	return NULL;
- }
-+EXPORT_SYMBOL_GPL(serdev_match_id);
- 
- static int serdev_device_match(struct device *dev, struct device_driver *drv)
- {
-@@ -186,7 +188,7 @@ static int serdev_device_match(struct device *dev, struct device_driver *drv)
- 		return 1;
- 
- 	if (sdrv->id_table)
--		return serdev_match_id(sdrv->id_table, sdev);
-+		return serdev_match_id(sdrv->id_table, sdev) != NULL;
- 
- 	return strcmp(sdev->modalias, drv->name) == 0;
- }
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index 07d63933bdb9..bf282b3781b9 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -172,6 +172,9 @@ static inline void serdev_controller_put(struct serdev_controller *ctrl)
- 		put_device(&ctrl->dev);
+ 	struct serdev_controller *ctrl = to_serdev_controller(dev);
+-	ida_simple_remove(&ctrl_ida, ctrl->nr);
++	idr_remove(&ctrl_idr, ctrl->nr);
+ 	kfree(ctrl);
  }
  
-+const struct serdev_device_id *serdev_match_id(
-+		const struct serdev_device_id *id,
-+		const struct serdev_device *sdev);
- struct serdev_device *serdev_device_alloc(struct serdev_controller *);
- int serdev_device_add(struct serdev_device *);
- void serdev_device_remove(struct serdev_device *);
+@@ -500,7 +500,7 @@ struct serdev_controller *serdev_controller_alloc(struct device *parent,
+ 	if (!ctrl)
+ 		return NULL;
+ 
+-	id = ida_simple_get(&ctrl_ida, 0, 0, GFP_KERNEL);
++	id = idr_alloc(&ctrl_idr, ctrl, 0, 0, GFP_KERNEL);
+ 	if (id < 0) {
+ 		dev_err(parent,
+ 			"unable to allocate serdev controller identifier.\n");
 -- 
 2.17.1
