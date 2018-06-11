@@ -1,117 +1,51 @@
 From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: [PATCH v2 07/24] serdev: Allows dynamic creation of devices via sysfs
-Date: Mon, 11 Jun 2018 13:52:23 +0200
-Message-ID: <20180611115240.32606-8-ricardo.ribalda@gmail.com>
+Subject: [PATCH v2 09/24] serdev: Provide modalias uevent for modalias devices
+Date: Mon, 11 Jun 2018 13:52:25 +0200
+Message-ID: <20180611115240.32606-10-ricardo.ribalda@gmail.com>
 References: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180611115240.32606-1-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>, Rob Herring <robh@kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Allow creating and deleting devices via sysfs. Devices created will be
-matched to serdev drivers via modalias (the string provided by the user)
-and deleted via their name. Eg:
-
- # Create device
-root@qt5022:~# echo ttydev > /sys/bus/serial/devices/serial0/new_device
-
- # Delete device
-root@qt5022:~#
-	echo serial0-0 > /sys/bus/serial/devices/serial0/delete_device
+Create the sysfs uevent for modalias devices. This is required by newer
+versions of udev for autoload modules.
 
 Cc: Rob Herring <robh@kernel.org>
 Cc: Johan Hovold <johan@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-
 Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 ---
- drivers/tty/serdev/core.c | 69 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 69 insertions(+)
+ drivers/tty/serdev/core.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 2c79f47fc0db..5df01d8cf307 100644
+index b9bb0c0ee319..584cb994213a 100644
 --- a/drivers/tty/serdev/core.c
 +++ b/drivers/tty/serdev/core.c
-@@ -75,7 +75,76 @@ static void serdev_ctrl_release(struct device *dev)
- 	kfree(ctrl);
+@@ -46,6 +46,7 @@ ATTRIBUTE_GROUPS(serdev_device);
+ static int serdev_device_uevent(struct device *dev, struct kobj_uevent_env *env)
+ {
+ 	int rc;
++	struct serdev_device *serdev = to_serdev_device(dev);
+ 
+ 	/* TODO: platform modalias */
+ 
+@@ -53,7 +54,11 @@ static int serdev_device_uevent(struct device *dev, struct kobj_uevent_env *env)
+ 	if (rc != -ENODEV)
+ 		return rc;
+ 
+-	return of_device_uevent_modalias(dev, env);
++	if (rc != of_device_uevent_modalias(dev, env))
++		return rc;
++
++	return add_uevent_var(env, "MODALIAS=%s%s", SERDEV_MODULE_PREFIX,
++						    serdev->modalias);
  }
  
-+static ssize_t
-+new_device_store(struct device *dev, struct device_attribute *attr,
-+			const char *buf, size_t count)
-+{
-+	struct serdev_controller *ctrl = to_serdev_controller(dev);
-+	struct serdev_device *serdev;
-+	char *nline;
-+	int len;
-+	int err;
-+
-+	serdev = serdev_device_alloc(ctrl);
-+	if (!serdev)
-+		return -ENOMEM;
-+
-+	nline = strchr(buf, '\n');
-+	if (nline)
-+		len = nline - buf;
-+	else
-+		len = strlen(buf);
-+	len = min(SERDEV_NAME_SIZE - 1, len);
-+
-+	strncpy(serdev->modalias, buf, len);
-+	serdev->modalias[len] = '\0';
-+
-+	err = serdev_device_add(serdev);
-+	if (err) {
-+		serdev_device_put(serdev);
-+		return err;
-+	}
-+
-+	return count;
-+}
-+static DEVICE_ATTR_WO(new_device);
-+
-+static ssize_t
-+delete_device_store(struct device *dev, struct device_attribute *attr,
-+			   const char *buf, size_t count)
-+{
-+	struct serdev_controller *ctrl = to_serdev_controller(dev);
-+	struct serdev_device *serdev = ctrl->serdev;
-+	char *nline;
-+	int len;
-+
-+	nline = strchr(buf, '\n');
-+	if (nline)
-+		len = nline - buf;
-+	else
-+		len = strlen(buf);
-+	len = min(SERDEV_NAME_SIZE - 1, len);
-+
-+	if (!ctrl->serdev ||
-+	    strncmp(dev_name(&serdev->dev), buf, len))
-+		return -ENODEV;
-+
-+	serdev_device_remove(serdev);
-+
-+	return count;
-+}
-+static DEVICE_ATTR_IGNORE_LOCKDEP(delete_device, 0200, NULL,
-+				  delete_device_store);
-+
-+static struct attribute *serdev_ctrl_attrs[] = {
-+	&dev_attr_new_device.attr,
-+	&dev_attr_delete_device.attr,
-+	NULL
-+};
-+ATTRIBUTE_GROUPS(serdev_ctrl);
-+
- static const struct device_type serdev_ctrl_type = {
-+	.groups		= serdev_ctrl_groups,
- 	.release	= serdev_ctrl_release,
- };
- 
+ static void serdev_device_release(struct device *dev)
 -- 
 2.17.1
