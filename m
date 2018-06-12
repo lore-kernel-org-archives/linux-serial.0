@@ -1,38 +1,91 @@
-From: Zhouyang Jia <jiazhouyang09@gmail.com>
-Subject: [PATCH] tty: serial: add error handling for try_module_get
-Date: Tue, 12 Jun 2018 12:50:46 +0800
-Message-ID: <1528779046-42341-1-git-send-email-jiazhouyang09@gmail.com>
+From: Songjun Wu <songjun.wu@linux.intel.com>
+Subject: [PATCH 0/7] MIPS: intel: add initial support for Intel MIPS SoCs
+Date: Tue, 12 Jun 2018 13:40:27 +0800
+Message-ID: <20180612054034.4969-1-songjun.wu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Zhouyang Jia <jiazhouyang09@gmail.com>, Jason Wessel <jason.wessel@windriver.com>, Daniel Thompson <daniel.thompson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@intel.com
+Cc: linux-mips@linux-mips.org, qi-ming.wu@intel.com, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Songjun Wu <songjun.wu@linux.intel.com>, Michael Turquette <mturquette@baylibre.com>, James Hogan <jhogan@kernel.org>, Stephen Boyd <sboyd@kernel.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Philippe Ombredanne <pombredanne@nexb.com>, Rob Herring <robh+dt@kernel.org>, Kate Stewart <kstewart@linuxfoundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>
 List-Id: linux-serial@vger.kernel.org
 
-When try_module_get fails, the lack of error-handling code may
-cause unexpected results.
+This patch series is for adding the support for Intel MIPS interAptiv SoC GRX500 family.
+It includes CCF support, serial driver optimization and DTS modification.
 
-This patch adds error-handling code after calling try_module_get.
+This patch series is applied on top of v4.17.1. Basic verification is performed on GRX500 board.
+Any comments on this would be appreciated.
 
-Signed-off-by: Zhouyang Jia <jiazhouyang09@gmail.com>
----
- drivers/tty/serial/kgdboc.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+We propose merging this patch series into MIPS Linux tree.
 
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index b4ba2b1..641e22a 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -286,8 +286,10 @@ static void kgdboc_pre_exp_handler(void)
- 		con_debug_enter(vc_cons[fg_console].d);
- 	}
- 	/* Increment the module count when the debugger is active */
--	if (!kgdb_connected)
--		try_module_get(THIS_MODULE);
-+	if (!kgdb_connected) {
-+		if (!try_module_get(THIS_MODULE))
-+			printk(KERN_ERR "kgdboc: cannot get module.\n");
-+	}
- }
- 
- static void kgdboc_post_exp_handler(void)
+
+Hua Ma (1):
+  MIPS: intel: Add initial support for Intel MIPS SoCs
+
+Songjun Wu (5):
+  MIPS: dts: Add aliases node for lantiq danube serial
+  tty: serial: lantiq: Always use readl()/writel()
+  tty: serial: lantiq: Convert global lock to per device lock
+  tty: serial: lantiq: Remove unneeded header includes and macros
+  tty: serial: lantiq: Add CCF support
+
+Yixin Zhu (1):
+  clk: intel: Add clock driver for GRX500 SoC
+
+ .../devicetree/bindings/clock/intel,grx500-clk.txt |  46 ++
+ .../devicetree/bindings/serial/lantiq_asc.txt      |  15 +
+ arch/mips/Kbuild.platforms                         |   1 +
+ arch/mips/Kconfig                                  |  37 +-
+ arch/mips/boot/dts/Makefile                        |   1 +
+ arch/mips/boot/dts/intel-mips/Makefile             |   3 +
+ arch/mips/boot/dts/intel-mips/easy350_anywan.dts   |  20 +
+ arch/mips/boot/dts/intel-mips/xrx500.dtsi          | 196 ++++++
+ arch/mips/boot/dts/lantiq/danube.dtsi              |   6 +-
+ arch/mips/configs/grx500_defconfig                 | 165 +++++
+ .../asm/mach-intel-mips/cpu-feature-overrides.h    |  61 ++
+ arch/mips/include/asm/mach-intel-mips/ioremap.h    |  39 ++
+ arch/mips/include/asm/mach-intel-mips/irq.h        |  17 +
+ .../asm/mach-intel-mips/kernel-entry-init.h        |  76 +++
+ arch/mips/include/asm/mach-intel-mips/spaces.h     |  29 +
+ arch/mips/include/asm/mach-intel-mips/war.h        |  18 +
+ arch/mips/intel-mips/Kconfig                       |  22 +
+ arch/mips/intel-mips/Makefile                      |   3 +
+ arch/mips/intel-mips/Platform                      |  11 +
+ arch/mips/intel-mips/irq.c                         |  36 ++
+ arch/mips/intel-mips/prom.c                        | 184 ++++++
+ arch/mips/intel-mips/time.c                        |  56 ++
+ drivers/clk/Kconfig                                |   1 +
+ drivers/clk/Makefile                               |   1 +
+ drivers/clk/intel/Kconfig                          |  21 +
+ drivers/clk/intel/Makefile                         |   7 +
+ drivers/clk/intel/clk-cgu-api.c                    | 676 +++++++++++++++++++++
+ drivers/clk/intel/clk-cgu-api.h                    | 120 ++++
+ drivers/clk/intel/clk-grx500.c                     | 236 +++++++
+ drivers/tty/serial/Kconfig                         |   2 +-
+ drivers/tty/serial/lantiq.c                        | 415 ++++++++-----
+ include/dt-bindings/clock/intel,grx500-clk.h       |  61 ++
+ 32 files changed, 2418 insertions(+), 164 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/intel,grx500-clk.txt
+ create mode 100644 arch/mips/boot/dts/intel-mips/Makefile
+ create mode 100644 arch/mips/boot/dts/intel-mips/easy350_anywan.dts
+ create mode 100644 arch/mips/boot/dts/intel-mips/xrx500.dtsi
+ create mode 100644 arch/mips/configs/grx500_defconfig
+ create mode 100644 arch/mips/include/asm/mach-intel-mips/cpu-feature-overrides.h
+ create mode 100644 arch/mips/include/asm/mach-intel-mips/ioremap.h
+ create mode 100644 arch/mips/include/asm/mach-intel-mips/irq.h
+ create mode 100644 arch/mips/include/asm/mach-intel-mips/kernel-entry-init.h
+ create mode 100644 arch/mips/include/asm/mach-intel-mips/spaces.h
+ create mode 100644 arch/mips/include/asm/mach-intel-mips/war.h
+ create mode 100644 arch/mips/intel-mips/Kconfig
+ create mode 100644 arch/mips/intel-mips/Makefile
+ create mode 100644 arch/mips/intel-mips/Platform
+ create mode 100644 arch/mips/intel-mips/irq.c
+ create mode 100644 arch/mips/intel-mips/prom.c
+ create mode 100644 arch/mips/intel-mips/time.c
+ create mode 100644 drivers/clk/intel/Kconfig
+ create mode 100644 drivers/clk/intel/Makefile
+ create mode 100644 drivers/clk/intel/clk-cgu-api.c
+ create mode 100644 drivers/clk/intel/clk-cgu-api.h
+ create mode 100644 drivers/clk/intel/clk-grx500.c
+ create mode 100644 include/dt-bindings/clock/intel,grx500-clk.h
+
 -- 
-2.7.4
+2.11.0
