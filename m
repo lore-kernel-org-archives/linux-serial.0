@@ -1,49 +1,59 @@
-From: Nishanth Menon <nm@ti.com>
-Subject: Re: [RFC PATCH 3/6] serial: 8250_omap: Add support for AM654 UART
- controller
-Date: Tue, 12 Jun 2018 17:03:33 -0500
-Message-ID: <20180612220333.4odussbccwmup26v@kahuna>
-References: <20180605060125.9518-1-nm@ti.com> <20180605060125.9518-4-nm@ti.com>
- <20180612210640.GA20728@rob-hp-laptop>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/7] MIPS: dts: Add aliases node for lantiq danube serial
+Date: Tue, 12 Jun 2018 16:24:24 -0600
+Message-ID: <20180612222424.GA2197@rob-hp-laptop>
+References: <20180612054034.4969-1-songjun.wu@linux.intel.com>
+ <20180612054034.4969-2-songjun.wu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180612210640.GA20728@rob-hp-laptop>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Vignesh R <vigneshr@ti.com>, Tony Lindgren <tony@atomide.com>, Catalin Marinas <catalin.marinas@arm.com>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20180612054034.4969-2-songjun.wu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Songjun Wu <songjun.wu@linux.intel.com>
+Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@intel.com, linux-mips@linux-mips.org, qi-ming.wu@intel.com, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, James Hogan <jhogan@kernel.org>, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 21:06-20180612, Rob Herring wrote:
-> > diff --git a/Documentation/devicetree/bindings/serial/omap_serial.txt b/Documentation/devicetree/bindings/serial/omap_serial.txt
-> > index 4b0f05adb228..c35d5ece1156 100644
-> > --- a/Documentation/devicetree/bindings/serial/omap_serial.txt
-> > +++ b/Documentation/devicetree/bindings/serial/omap_serial.txt
-> > @@ -1,6 +1,7 @@
-> >  OMAP UART controller
-> >  
-> >  Required properties:
-> > +- compatible : should be "ti,am654-uart" for AM654 controllers
+On Tue, Jun 12, 2018 at 01:40:28PM +0800, Songjun Wu wrote:
+> Previous implementation uses a hard-coded register value to check if
+> the current serial entity is the console entity.
+> Now the lantiq serial driver uses the aliases for the index of the
+> serial port.
+> The lantiq danube serial dts are updated with aliases to support this.
 > 
-> Not compatible with any existing TI 8250 UARTs?
+> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
+> ---
+> 
+>  arch/mips/boot/dts/lantiq/danube.dtsi | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/mips/boot/dts/lantiq/danube.dtsi b/arch/mips/boot/dts/lantiq/danube.dtsi
+> index 2dd950181f8a..7a9e15da6bd0 100644
+> --- a/arch/mips/boot/dts/lantiq/danube.dtsi
+> +++ b/arch/mips/boot/dts/lantiq/danube.dtsi
+> @@ -4,6 +4,10 @@
+>  	#size-cells = <1>;
+>  	compatible = "lantiq,xway", "lantiq,danube";
+>  
+> +	aliases {
+> +		serial0 = &asc1;
+> +	};
+> +
+>  	cpus {
+>  		cpu@0 {
+>  			compatible = "mips,mips24Kc";
+> @@ -74,7 +78,7 @@
+>  			reg = <0xE100A00 0x100>;
+>  		};
+>  
+> -		serial@E100C00 {
+> +		asc1: serial@E100C00 {
 
-Base is compatible, however there are differences in DMA operation and
-few additional bits. omap4-uart is sufficient for a basic PIO mode of
-operation given initialization a bootloader might do for base console.
+Fix this to be lower case hex while you are at it.
 
-I will split the bindings off into it's own patch to keep the confusion
-to a minimum and allowing serial driver change to go in independently.
-
--- 
-Regards,
-Nishanth Menon
+>  			compatible = "lantiq,asc";
+>  			reg = <0xE100C00 0x400>;
+>  			interrupt-parent = <&icu0>;
+> -- 
+> 2.11.0
+> 
