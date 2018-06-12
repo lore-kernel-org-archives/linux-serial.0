@@ -1,34 +1,44 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH] tty: serial: add error handling for try_module_get
-Date: Tue, 12 Jun 2018 11:23:29 +0300
-Message-ID: <CAHp75VdtvNsQt16eb_OwGoBVTcDNEF0=E8OzqM-kHV4U6Tka=Q@mail.gmail.com>
-References: <1528779046-42341-1-git-send-email-jiazhouyang09@gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] serial: 8250_dw: 8250_dw need to depend on COMMON_CLK
+Date: Tue, 12 Jun 2018 10:31:51 +0200
+Message-ID: <CAMuHMdVZjPRknHY-3b7qr+FgwWmK3g3rCgjjK09Thh2EOLXbcQ@mail.gmail.com>
+References: <1528310824-12706-1-git-send-email-clabbe@baylibre.com> <CAHp75Ve3nDsoEh0dL=xF3oei_GM9tPn_72=je+FESO=hJFm4uA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1528779046-42341-1-git-send-email-jiazhouyang09@gmail.com>
+In-Reply-To: <CAHp75Ve3nDsoEh0dL=xF3oei_GM9tPn_72=je+FESO=hJFm4uA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Zhouyang Jia <jiazhouyang09@gmail.com>
-Cc: Jason Wessel <jason.wessel@windriver.com>, Daniel Thompson <daniel.thompson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, kgdb-bugreport@lists.sourceforge.net, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Corentin Labbe <clabbe@baylibre.com>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 12, 2018 at 7:50 AM, Zhouyang Jia <jiazhouyang09@gmail.com> wrote:
-> When try_module_get fails, the lack of error-handling code may
-> cause unexpected results.
+On Mon, Jun 11, 2018 at 11:03 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Wed, Jun 6, 2018 at 10:27 PM Corentin Labbe <clabbe@baylibre.com> wrote:
+> > This patch fix the following build error on M68K:
 
-What results? What is recovery approach here?
-How printing message change a behaviour?
+Not plain m68k, but coldfire only (and MIPS AR7, I guess).
 
-> This patch adds error-handling code after calling try_module_get.
+> > drivers/tty/serial/8250/8250_dw.o: In function `dw8250_set_termios':
+> > 8250_dw.c:(.text+0x50c): undefined reference to `clk_round_rate'
+> > 8250_dw.c:(.text+0x594): undefined reference to `clk_set_rate'
+> >
+> > So 8250_dw need to depend on COMMON_CLK.
+> >
+>
+> Makes sense.
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-> +       if (!kgdb_connected) {
-> +               if (!try_module_get(THIS_MODULE))
-> +                       printk(KERN_ERR "kgdboc: cannot get module.\n");
+Please see "[PATCH 0/3] Legacy clock drivers: Normalize clk API"
+(https://lkml.org/lkml/2018/6/11/122).
 
-So, what's wrong with pr_err() ?
+Gr{oetje,eeting}s,
 
-> +       }
+                        Geert
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
