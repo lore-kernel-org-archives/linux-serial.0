@@ -1,38 +1,33 @@
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 4/7] tty: serial: lantiq: Always use readl()/writel()
-Date: Tue, 12 Jun 2018 11:13:29 +0300
-Message-ID: <CAHp75Vc_EVgfj1MpuA_hKHgy6SiQdU7JQDdtVHfOT1sZ_K-nRQ@mail.gmail.com>
-References: <20180612054034.4969-1-songjun.wu@linux.intel.com> <20180612054034.4969-5-songjun.wu@linux.intel.com>
+Subject: Re: [PATCH] tty: serial: add error handling for try_module_get
+Date: Tue, 12 Jun 2018 11:23:29 +0300
+Message-ID: <CAHp75VdtvNsQt16eb_OwGoBVTcDNEF0=E8OzqM-kHV4U6Tka=Q@mail.gmail.com>
+References: <1528779046-42341-1-git-send-email-jiazhouyang09@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180612054034.4969-5-songjun.wu@linux.intel.com>
+In-Reply-To: <1528779046-42341-1-git-send-email-jiazhouyang09@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Songjun Wu <songjun.wu@linux.intel.com>
-Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@intel.com, Linux MIPS Mailing List <linux-mips@linux-mips.org>, qi-ming.wu@intel.com, linux-clk@vger.kernel.org, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, James Hogan <jhogan@kernel.org>, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ralf Baechle <ralf@linux-mips.org>
+To: Zhouyang Jia <jiazhouyang09@gmail.com>
+Cc: Jason Wessel <jason.wessel@windriver.com>, Daniel Thompson <daniel.thompson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, kgdb-bugreport@lists.sourceforge.net, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 12, 2018 at 8:40 AM, Songjun Wu <songjun.wu@linux.intel.com> wrote:
-> Previous implementation uses platform-dependent functions
-> ltq_w32()/ltq_r32() to access registers. Those functions are not
-> available for other SoC which uses the same IP.
-> Change to OS provided readl()/writel() and readb()/writeb(), so
-> that different SoCs can use the same driver.
+On Tue, Jun 12, 2018 at 7:50 AM, Zhouyang Jia <jiazhouyang09@gmail.com> wrote:
+> When try_module_get fails, the lack of error-handling code may
+> cause unexpected results.
 
-This patch consists 2 or even 3 ones:
-- whitespace shuffling (indentation fixes, blank lines), I dunno if
-it's needed at all
-- some new registers / bits
-- actual switch to readl() / writel()
+What results? What is recovery approach here?
+How printing message change a behaviour?
 
-Please, split.
+> This patch adds error-handling code after calling try_module_get.
 
-> +#define asc_w32_mask(clear, set, reg)  \
-> +       ({ typeof(reg) reg_ = (reg);    \
-> +       writel((readl(reg_) & ~(clear)) | (set), reg_); })
+> +       if (!kgdb_connected) {
+> +               if (!try_module_get(THIS_MODULE))
+> +                       printk(KERN_ERR "kgdboc: cannot get module.\n");
 
-This would be better as a static inline helper, and name is completely
-misleading, it doesn't mask the register bits, it _updates_ them.
+So, what's wrong with pr_err() ?
+
+> +       }
 
 -- 
 With Best Regards,
