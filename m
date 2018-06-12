@@ -1,133 +1,71 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/7] clk: intel: Add clock driver for GRX500 SoC
-Date: Tue, 12 Jun 2018 16:37:25 -0600
-Message-ID: <20180612223725.GC2197@rob-hp-laptop>
+Subject: Re: [PATCH 7/7] tty: serial: lantiq: Add CCF support
+Date: Tue, 12 Jun 2018 16:39:53 -0600
+Message-ID: <20180612223953.GA21621@rob-hp-laptop>
 References: <20180612054034.4969-1-songjun.wu@linux.intel.com>
- <20180612054034.4969-3-songjun.wu@linux.intel.com>
+ <20180612054034.4969-8-songjun.wu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180612054034.4969-3-songjun.wu@linux.intel.com>
+In-Reply-To: <20180612054034.4969-8-songjun.wu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Songjun Wu <songjun.wu@linux.intel.com>
-Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@intel.com, linux-mips@linux-mips.org, qi-ming.wu@intel.com, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>
+Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@intel.com, linux-mips@linux-mips.org, qi-ming.wu@intel.com, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 12, 2018 at 01:40:29PM +0800, Songjun Wu wrote:
-> From: Yixin Zhu <yixin.zhu@linux.intel.com>
-> 
-> PLL of GRX500 provide clock to DDR, CPU, and peripherals as show below
-> 
->                  +---------+
-> 	    |--->| LCPLL3 0|--PCIe clk-->
->    XO       |    +---------+
-> +-----------|
->             |    +---------+
->             |    |        3|--PAE clk-->
->             |--->| PLL0B  2|--GSWIP clk-->
->             |    |        1|--DDR clk-->DDR PHY clk-->
->             |    |        0|--CPU1 clk--+   +-----+
->             |    +---------+            |--->0    |
->             |                               | MUX |--CPU clk-->
->             |    +---------+            |--->1    |
->             |    |        0|--CPU0 clk--+   +-----+
->             |--->| PLLOA  1|--SSX4 clk-->
->                  |        2|--NGI clk-->
->                  |        3|--CBM clk-->
->                  +---------+
-> 
-> VCO of all PLLs of GRX500 is not supposed to be reprogrammed.
-> DDR PHY clock is created to show correct clock rate in software
-> point of view.
-> CPU clock of 1Ghz from PLL0B otherwise from PLL0A.
-> Signed-off-by: Yixin Zhu <yixin.zhu@linux.intel.com>
+On Tue, Jun 12, 2018 at 01:40:34PM +0800, Songjun Wu wrote:
+> Previous implementation uses platform-dependent API to get the clock.
+> Those functions are not available for other SoC which uses the same IP.
+> The CCF (Common Clock Framework) have an abstraction based APIs
+> for clock.
+> Change to use CCF APIs to get clock and rate.
+> So that different SoCs can use the same driver.
+> Clocks and clock-names are updated in device tree binding.
 > 
 > Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
-
-Need a blank line before the SoB's and not one in the middle.
-
+> 
 > ---
 > 
->  .../devicetree/bindings/clock/intel,grx500-clk.txt |  46 ++
+>  .../devicetree/bindings/serial/lantiq_asc.txt      |  15 +++
 
 Please split bindings to separate patch.
 
->  drivers/clk/Kconfig                                |   1 +
->  drivers/clk/Makefile                               |   1 +
->  drivers/clk/intel/Kconfig                          |  21 +
->  drivers/clk/intel/Makefile                         |   7 +
->  drivers/clk/intel/clk-cgu-api.c                    | 676 +++++++++++++++++++++
->  drivers/clk/intel/clk-cgu-api.h                    | 120 ++++
->  drivers/clk/intel/clk-grx500.c                     | 236 +++++++
->  include/dt-bindings/clock/intel,grx500-clk.h       |  61 ++
->  9 files changed, 1169 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/intel,grx500-clk.txt
->  create mode 100644 drivers/clk/intel/Kconfig
->  create mode 100644 drivers/clk/intel/Makefile
->  create mode 100644 drivers/clk/intel/clk-cgu-api.c
->  create mode 100644 drivers/clk/intel/clk-cgu-api.h
->  create mode 100644 drivers/clk/intel/clk-grx500.c
->  create mode 100644 include/dt-bindings/clock/intel,grx500-clk.h
+>  drivers/tty/serial/Kconfig                         |   2 +-
+>  drivers/tty/serial/lantiq.c                        | 101 +++++++++++++++++----
+>  3 files changed, 98 insertions(+), 20 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/clock/intel,grx500-clk.txt b/Documentation/devicetree/bindings/clock/intel,grx500-clk.txt
-> new file mode 100644
-> index 000000000000..dd761d900dc9
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/intel,grx500-clk.txt
-> @@ -0,0 +1,46 @@
-> +Device Tree Clock bindings for GRX500 PLL controller.
+> diff --git a/Documentation/devicetree/bindings/serial/lantiq_asc.txt b/Documentation/devicetree/bindings/serial/lantiq_asc.txt
+> index 3acbd309ab9d..608f0c87a4af 100644
+> --- a/Documentation/devicetree/bindings/serial/lantiq_asc.txt
+> +++ b/Documentation/devicetree/bindings/serial/lantiq_asc.txt
+> @@ -6,6 +6,10 @@ Required properties:
+>  - interrupts: the 3 (tx rx err) interrupt numbers. The interrupt specifier
+>    depends on the interrupt-parent interrupt controller.
+>  
+> +Optional properties:
+> +- clocks: Should contain frequency clock and gate clock
+> +- clock-names: Should be "freq" and "asc"
 > +
-> +This binding uses the common clock binding:
-> +	Documentation/devicetree/bindings/clock/clock-bindings.txt
+>  Example:
+>  
+>  asc1: serial@e100c00 {
+> @@ -14,3 +18,14 @@ asc1: serial@e100c00 {
+>  	interrupt-parent = <&icu0>;
+>  	interrupts = <112 113 114>;
+>  };
 > +
-> +This GRX500 PLL controller provides the 5 main clock domain of the SoC: CPU/DDR, XBAR,
-> +Voice, WLAN, PCIe and gate clocks for HW modules.
-> +
-> +Required properties for osc clock node
-> +- compatible: Should be intel,grx500-xxx-clk
+> +asc0: serial@600000 {
+> +	compatible = "lantiq,asc";
+> +	reg = <0x600000 0x100000>;
 
-These would need to be enumerated with all possible values. However, see 
-below.
+1MB of address space? That wastes a lot of virtual space on 32-bit 
+systems. Just make the size the actual used range.
 
-> +- reg: offset address of the controller memory area.
-> +- clocks: phandle of the external reference clock
-> +- #clock-cells: can be one or zero.
-> +- clock-output-names: Names of the output clocks.
-> +
-> +Example:
-> +	pll0aclk: pll0aclk {
-> +		#clock-cells = <1>;
-> +		compatible = "intel,grx500-pll0a-clk";
-> +		clocks = <&pll0a>;
-> +		reg = <0x8>;
-> +		clock-output-names = "cbmclk", "ngiclk", "ssx4clk", "cpu0clk";
-> +	};
-> +
-> +	cpuclk: cpuclk {
-> +		#clock-cells = <0>;
-> +		compatible = "intel,grx500-cpu-clk";
-> +		clocks = <&pll0aclk CPU0_CLK>, <&pll0bclk CPU1_CLK>;
-> +		reg = <0x8>;
-> +		clock-output-names = "cpu";
-> +	};
-> +
-> +Required properties for gate node:
-> +- compatible: Should be intel,grx500-gatex-clk
-> +- reg: offset address of the controller memory area.
-> +- #clock-cells: Should be <1>
-> +- clock-output-names: Names of the output clocks.
-> +
-> +Example:
-> +	clkgate0: clkgate0 {
-> +		#clock-cells = <1>;
-> +		compatible = "intel,grx500-gate0-clk";
-> +		reg = <0x114>;
-> +		clock-output-names = "gate_xbar0", "gate_xbar1", "gate_xbar2",
-> +		"gate_xbar3", "gate_xbar6", "gate_xbar7";
-> +	};
-
-We generally don't do a clock node per clock or few clocks but rather 1 
-clock node per clock controller block. See any recent clock bindings.
-
-Rob
+> +	interrupt-parent = <&gic>;
+> +	interrupts = <GIC_SHARED 103 IRQ_TYPE_LEVEL_HIGH>,
+> +	<GIC_SHARED 105 IRQ_TYPE_LEVEL_HIGH>,
+> +	<GIC_SHARED 106 IRQ_TYPE_LEVEL_HIGH>;
+> +	clocks = <&pll0aclk SSX4_CLK>, <&clkgate1 GATE_URT_CLK>;
+> +	clock-names = "freq", "asc";
+> +};
