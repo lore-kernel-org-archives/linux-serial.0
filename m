@@ -1,30 +1,37 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 18/24] serdev: ttydev: Serdev driver that creates an
- standard TTY port
-Date: Tue, 12 Jun 2018 19:20:03 -0600
-Message-ID: <CAL_JsqLhRSbhmpaiqgG_TRRXQEsRKG5UK0HWw0tu9Eymn8cNcA@mail.gmail.com>
-References: <20180611115240.32606-1-ricardo.ribalda@gmail.com> <20180611115240.32606-19-ricardo.ribalda@gmail.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v4 2/6] dt-bindings: add binding for atmel-usart in SPI
+ mode
+Date: Wed, 13 Jun 2018 07:11:10 +0100
+Message-ID: <20180613061110.GH5278@dell>
+References: <20180525171941.26766-1-radu.pirea@microchip.com>
+ <20180525171941.26766-3-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180611115240.32606-19-ricardo.ribalda@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20180525171941.26766-3-radu.pirea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+To: Radu Pirea <radu.pirea@microchip.com>
+Cc: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 11, 2018 at 5:52 AM, Ricardo Ribalda Delgado
-<ricardo.ribalda@gmail.com> wrote:
-> Standard TTY port that can be loaded/unloaded via serdev sysfs. This
-> serdev driver can only be used by serdev controllers that are compatible
-> with ttyport.
+On Fri, 25 May 2018, Radu Pirea wrote:
 
-I'm hesitant to expose a tty device on top of serdev to userspace that
-we then have to support forever unless that's the only way tty devices
-(for serial ports) are created.
+> This patch moves the bindings for serial from serial/atmel-usart.txt to
+> mfd/atmel-usart.txt and adds bindings for USART in SPI mode.
+> 
+> Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+> ---
+>  .../bindings/{serial => mfd}/atmel-usart.txt  | 25 +++++++++++++++++--
+>  1 file changed, 23 insertions(+), 2 deletions(-)
+>  rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
 
-I did a similar patch which just registered both serdev and a tty
-allowing them to coexist. It suffered from warnings about open counts
-though and felt hacky.
+For my own reference:
+  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 
-Rob
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
