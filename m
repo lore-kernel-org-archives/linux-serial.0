@@ -1,71 +1,30 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 7/7] tty: serial: lantiq: Add CCF support
-Date: Tue, 12 Jun 2018 16:39:53 -0600
-Message-ID: <20180612223953.GA21621@rob-hp-laptop>
-References: <20180612054034.4969-1-songjun.wu@linux.intel.com>
- <20180612054034.4969-8-songjun.wu@linux.intel.com>
+Subject: Re: [PATCH v2 18/24] serdev: ttydev: Serdev driver that creates an
+ standard TTY port
+Date: Tue, 12 Jun 2018 19:20:03 -0600
+Message-ID: <CAL_JsqLhRSbhmpaiqgG_TRRXQEsRKG5UK0HWw0tu9Eymn8cNcA@mail.gmail.com>
+References: <20180611115240.32606-1-ricardo.ribalda@gmail.com> <20180611115240.32606-19-ricardo.ribalda@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180612054034.4969-8-songjun.wu@linux.intel.com>
+In-Reply-To: <20180611115240.32606-19-ricardo.ribalda@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Songjun Wu <songjun.wu@linux.intel.com>
-Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@intel.com, linux-mips@linux-mips.org, qi-ming.wu@intel.com, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>
+To: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 12, 2018 at 01:40:34PM +0800, Songjun Wu wrote:
-> Previous implementation uses platform-dependent API to get the clock.
-> Those functions are not available for other SoC which uses the same IP.
-> The CCF (Common Clock Framework) have an abstraction based APIs
-> for clock.
-> Change to use CCF APIs to get clock and rate.
-> So that different SoCs can use the same driver.
-> Clocks and clock-names are updated in device tree binding.
-> 
-> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
-> 
-> ---
-> 
->  .../devicetree/bindings/serial/lantiq_asc.txt      |  15 +++
+On Mon, Jun 11, 2018 at 5:52 AM, Ricardo Ribalda Delgado
+<ricardo.ribalda@gmail.com> wrote:
+> Standard TTY port that can be loaded/unloaded via serdev sysfs. This
+> serdev driver can only be used by serdev controllers that are compatible
+> with ttyport.
 
-Please split bindings to separate patch.
+I'm hesitant to expose a tty device on top of serdev to userspace that
+we then have to support forever unless that's the only way tty devices
+(for serial ports) are created.
 
->  drivers/tty/serial/Kconfig                         |   2 +-
->  drivers/tty/serial/lantiq.c                        | 101 +++++++++++++++++----
->  3 files changed, 98 insertions(+), 20 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/lantiq_asc.txt b/Documentation/devicetree/bindings/serial/lantiq_asc.txt
-> index 3acbd309ab9d..608f0c87a4af 100644
-> --- a/Documentation/devicetree/bindings/serial/lantiq_asc.txt
-> +++ b/Documentation/devicetree/bindings/serial/lantiq_asc.txt
-> @@ -6,6 +6,10 @@ Required properties:
->  - interrupts: the 3 (tx rx err) interrupt numbers. The interrupt specifier
->    depends on the interrupt-parent interrupt controller.
->  
-> +Optional properties:
-> +- clocks: Should contain frequency clock and gate clock
-> +- clock-names: Should be "freq" and "asc"
-> +
->  Example:
->  
->  asc1: serial@e100c00 {
-> @@ -14,3 +18,14 @@ asc1: serial@e100c00 {
->  	interrupt-parent = <&icu0>;
->  	interrupts = <112 113 114>;
->  };
-> +
-> +asc0: serial@600000 {
-> +	compatible = "lantiq,asc";
-> +	reg = <0x600000 0x100000>;
+I did a similar patch which just registered both serdev and a tty
+allowing them to coexist. It suffered from warnings about open counts
+though and felt hacky.
 
-1MB of address space? That wastes a lot of virtual space on 32-bit 
-systems. Just make the size the actual used range.
-
-> +	interrupt-parent = <&gic>;
-> +	interrupts = <GIC_SHARED 103 IRQ_TYPE_LEVEL_HIGH>,
-> +	<GIC_SHARED 105 IRQ_TYPE_LEVEL_HIGH>,
-> +	<GIC_SHARED 106 IRQ_TYPE_LEVEL_HIGH>;
-> +	clocks = <&pll0aclk SSX4_CLK>, <&clkgate1 GATE_URT_CLK>;
-> +	clock-names = "freq", "asc";
-> +};
+Rob
