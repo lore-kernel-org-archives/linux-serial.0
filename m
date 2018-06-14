@@ -1,29 +1,67 @@
-From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH 3/4] serial: 8250: Handle case port doesn't have TEMT
- interrupt using em485.
-Date: Wed, 13 Jun 2018 17:59:38 +0100
-Message-ID: <20180613175915.279d03e2@alans-desktop>
-References: <CAJs94EZqdQAQG+inWvj89FCQtv06LxhY_J4YgNmK8mtvgDTchQ@mail.gmail.com>
-        <20180606095156.72628-1-giulio.benetti@micronovasrl.com>
-        <20180606095156.72628-2-giulio.benetti@micronovasrl.com>
+From: Robin Gong <yibin.gong@nxp.com>
+Subject: [PATCH v4 0/7] add virt-dma support for imx-sdma
+Date: Thu, 14 Jun 2018 22:02:55 +0800
+Message-ID: <1528984982-5074-1-git-send-email-yibin.gong@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180606095156.72628-2-giulio.benetti@micronovasrl.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Giulio Benetti <giulio.benetti@micronovasrl.com>
-Cc: matwey.kornilov@gmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Philipp Zabel <p.zabel@pengutronix.de>, Ed Blake <ed.blake@sondrel.com>, Joshua Scott <joshua.scott@alliedtelesis.co.nz>, Vignesh R <vigneshr@ti.com>, Rolf Evers-Fischer <rolf.evers.fischer@aptiv.com>, Aaron Sierra <asierra@xes-inc.com>, Phil Elwell <phil@raspberrypi.org>, Rafael Gago <rafael.gago@gmail.com>, Joel Stanley <joel@jms.id.au>, Sean Wang <sean.wang@mediatek.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+To: vkoul@kernel.org, s.hauer@pengutronix.de, l.stach@pengutronix.de, dan.j.williams@intel.com, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-> +		} else {
-> +			while ((lsr & BOTH_EMPTY) != BOTH_EMPTY) {
-> +				lsr = serial_in(p, UART_LSR);
-> +				cpu_relax();
-> +			}
-> +		}
+The legacy sdma driver has below limitations or drawbacks:
+  1. Hardcode the max BDs number as "PAGE_SIZE / sizeof(*)", and alloc
+     one page size for one channel regardless of only few BDs needed
+     most time. But in few cases, the max PAGE_SIZE maybe not enough.
+  2. One SDMA channel can't stop immediatley once channel disabled which
+     means SDMA interrupt may come in after this channel terminated.There
+     are some patches for this corner case such as commit "2746e2c389f9",
+     but not cover non-cyclic.
 
-This still needs a timeout in case some kind of hardware flow control line
-is asserted and therefore the byte is staying put.
+The common virt-dma overcomes the above limitations. It can alloc bd
+dynamically and free bd once this tx transfer done. No memory wasted or
+maximum limititation here, only depends on how many memory can be requested
+from kernel. For No.2, such issue can be workaround by checking if there
+is available descript("sdmac->desc") now once the unwanted interrupt
+coming. At last the common virt-dma is easier for sdma driver maintain.
 
-Alan
+Change from v3:
+  1. add two uart patches which impacted by this patchset.
+  2. unlock 'vc.lock' before cyclic dma callback and lock again after
+     it because some driver such as uart will call dmaengine_tx_status
+     which will acquire 'vc.lock' again and dead lock comes out.
+  3. remove 'Revert commit' stuff since that patch is not wrong and
+     combine two patch into one patch as Sascha's comment.
+
+Change from v2:
+  1. include Sascha's patch to make the main patch easier to review.
+     Thanks Sacha.
+  2. remove useless 'desc'/'chan' in struct sdma_channe.
+
+Change from v1:
+  1. split v1 patch into 5 patches.
+  2. remove some unnecessary condition check.
+  3. remove unnecessary 'pending' list.
+
+Robin Gong (6):
+  tty: serial: imx: correct dma cookie status
+  dmaengine: imx-sdma: add virt-dma support
+  dmaengine: imx-sdma: remove useless 'lock' and 'enabled' in 'struct
+    sdma_channel'
+  dmaengine: imx-sdma: remove the maximum limitation for bd numbers
+  dmaengine: imx-sdma: add sdma_transfer_init to decrease code overlap
+  tty: serial: imx: split all dma setup operations out of 'port.lock'
+    protector
+
+Sascha Hauer (1):
+  dmaengine: imx-sdma: factor out a struct sdma_desc from struct
+    sdma_channel
+
+ drivers/dma/Kconfig      |   1 +
+ drivers/dma/imx-sdma.c   | 394 +++++++++++++++++++++++++++--------------------
+ drivers/tty/serial/imx.c |  99 ++++++------
+ 3 files changed, 282 insertions(+), 212 deletions(-)
+
+-- 
+2.7.4
