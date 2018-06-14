@@ -1,85 +1,156 @@
-From: <sean.wang@mediatek.com>
-Subject: [PATCH v3 2/7] serdev: add dev_pm_domain_attach|detach()
-Date: Thu, 14 Jun 2018 15:14:24 +0800
-Message-ID: <e338118bb6b9f560560887eb974eb250a6c89984.1528960095.git.sean.wang@mediatek.com>
-References: <cover.1528960095.git.sean.wang@mediatek.com>
+From: Ludovic Desroches <ludovic.desroches@microchip.com>
+Subject: Re: [PATCH v7 3/6] mfd: at91-usart: added mfd driver for usart
+Date: Thu, 14 Jun 2018 09:58:49 +0200
+Message-ID: <20180614075849.dfiqwcu6rtzgpzq7@rfolt0960.corp.atmel.com>
+References: <20180613163621.23995-1-radu.pirea@microchip.com>
+ <20180613163621.23995-4-radu.pirea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <cover.1528960095.git.sean.wang@mediatek.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org, johan.hedberg@gmail.com
-Cc: devicetree@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sean Wang <sean.wang@mediatek.com>, linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180613163621.23995-4-radu.pirea@microchip.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Radu Pirea <radu.pirea@microchip.com>
+Cc: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+On Wed, Jun 13, 2018 at 07:36:18PM +0300, Radu Pirea wrote:
+> This mfd driver is just a wrapper over atmel_serial driver and
+> spi-at91-usart driver. Selection of one of the drivers is based on a
+> property from device tree. If the property is not specified, the default
+> driver is atmel_serial.
+> 
+> Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  drivers/mfd/Kconfig      |  9 ++++++
+>  drivers/mfd/Makefile     |  1 +
+>  drivers/mfd/at91-usart.c | 69 ++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 79 insertions(+)
+>  create mode 100644 drivers/mfd/at91-usart.c
+> 
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index b860eb5aa194..a886672b960d 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -99,6 +99,15 @@ config MFD_AAT2870_CORE
+>  	  additional drivers must be enabled in order to use the
+>  	  functionality of the device.
+>  
+> +config MFD_AT91_USART
+> +	tristate "AT91 USART Driver"
+> +	select MFD_CORE
+> +	help
+> +	  Select this to get support for AT91 USART IP. This is a wrapper
+> +	  over at91-usart-serial driver and usart-spi-driver. Only one function
+> +	  can be used at a time. The choice is done at boot time by the probe
+> +	  function of this MFD driver according to a device tree property.
+> +
+>  config MFD_ATMEL_FLEXCOM
+>  	tristate "Atmel Flexcom (Flexible Serial Communication Unit)"
+>  	select MFD_CORE
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index d9d2cf0d32ef..db1332aa96db 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -185,6 +185,7 @@ obj-$(CONFIG_MFD_SPMI_PMIC)	+= qcom-spmi-pmic.o
+>  obj-$(CONFIG_TPS65911_COMPARATOR)	+= tps65911-comparator.o
+>  obj-$(CONFIG_MFD_TPS65090)	+= tps65090.o
+>  obj-$(CONFIG_MFD_AAT2870_CORE)	+= aat2870-core.o
+> +obj-$(CONFIG_MFD_AT91_USART)	+= at91-usart.o
+>  obj-$(CONFIG_MFD_ATMEL_FLEXCOM)	+= atmel-flexcom.o
+>  obj-$(CONFIG_MFD_ATMEL_HLCDC)	+= atmel-hlcdc.o
+>  obj-$(CONFIG_MFD_ATMEL_SMC)	+= atmel-smc.o
+> diff --git a/drivers/mfd/at91-usart.c b/drivers/mfd/at91-usart.c
+> new file mode 100644
+> index 000000000000..3014ce532644
+> --- /dev/null
+> +++ b/drivers/mfd/at91-usart.c
+> @@ -0,0 +1,69 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Driver for AT91 USART
+> + *
+> + * Copyright (C) 2018 Microchip Technology
+> + *
+> + * Author: Radu Pirea <radu.pirea@microchip.com>
+> + *
+> + */
+> +
+> +#include <dt-bindings/mfd/at91-usart.h>
+> +
+> +#include <linux/module.h>
+> +#include <linux/mfd/core.h>
+> +#include <linux/property.h>
+> +
+> +static struct mfd_cell at91_usart_spi_subdev = {
+> +		.name = "at91_usart_spi",
+> +		.of_compatible = "microchip,at91sam9g45-usart-spi",
+> +	};
+> +
+> +static struct mfd_cell at91_usart_serial_subdev = {
+> +		.name = "atmel_usart_serial",
+> +		.of_compatible = "atmel,at91rm9200-usart-serial",
+> +	};
+> +
+> +static int at91_usart_mode_probe(struct platform_device *pdev)
+> +{
+> +	struct mfd_cell cell;
+> +	u32 opmode = AT91_USART_MODE_SERIAL;
+> +
+> +	device_property_read_u32(&pdev->dev, "atmel,usart-mode", &opmode);
+> +
+> +	switch (opmode) {
+> +	case AT91_USART_MODE_SPI:
+> +		cell = at91_usart_spi_subdev;
+> +		break;
+> +	case AT91_USART_MODE_SERIAL:
+> +		cell = at91_usart_serial_subdev;
+> +		break;
+> +	default:
+> +		break;
 
-In order to open up the required power gate before any operation can be
-effectively performed over the serial bus between CPU and serdev, it's
-clearly essential to add common attach functions for PM domains to serdev
-at the probe phase.
+If there is an invalid opmode from the DT, you will pass a non initialized cell
+to mfd_add_device().
 
-Similarly, the relevant dettach function for the PM domains should be
-properly and reversely added at the remove phase.
+Regards
 
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serdev/core.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+Ludovic
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index df93b72..c93d8ee 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -13,6 +13,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/pm_domain.h>
- #include <linux/serdev.h>
- #include <linux/slab.h>
- 
-@@ -330,8 +331,16 @@ EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
- static int serdev_drv_probe(struct device *dev)
- {
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
-+	int ret;
-+
-+	ret = dev_pm_domain_attach(dev, true);
-+	if (ret != -EPROBE_DEFER) {
-+		ret = sdrv->probe(to_serdev_device(dev));
-+		if (ret)
-+			dev_pm_domain_detach(dev, true);
-+	}
- 
--	return sdrv->probe(to_serdev_device(dev));
-+	return ret;
- }
- 
- static int serdev_drv_remove(struct device *dev)
-@@ -339,6 +348,9 @@ static int serdev_drv_remove(struct device *dev)
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
- 	if (sdrv->remove)
- 		sdrv->remove(to_serdev_device(dev));
-+
-+	dev_pm_domain_detach(dev, true);
-+
- 	return 0;
- }
- 
--- 
-2.7.4
+> +	}
+> +
+> +	return devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_AUTO, &cell, 1,
+> +			      NULL, 0, NULL);
+> +}
+> +
+> +static const struct of_device_id at91_usart_mode_of_match[] = {
+> +	{ .compatible = "atmel,at91rm9200-usart" },
+> +	{ .compatible = "atmel,at91sam9260-usart" },
+> +	{ /* sentinel */ }
+> +};
+> +
+> +MODULE_DEVICE_TABLE(of, at91_flexcom_of_match);
+> +
+> +static struct platform_driver at91_usart_mfd = {
+> +	.probe	= at91_usart_mode_probe,
+> +	.driver	= {
+> +		.name		= "at91_usart_mode",
+> +		.of_match_table	= at91_usart_mode_of_match,
+> +	},
+> +};
+> +
+> +module_platform_driver(at91_usart_mfd);
+> +
+> +MODULE_AUTHOR("Radu Pirea <radu.pirea@microchip.com>");
+> +MODULE_DESCRIPTION("AT91 USART MFD driver");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 2.17.1
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
