@@ -1,42 +1,85 @@
-From: "Wu, Songjun" <songjun.wu@linux.intel.com>
-Subject: Re: [PATCH 4/7] tty: serial: lantiq: Always use readl()/writel()
-Date: Thu, 14 Jun 2018 15:05:25 +0800
-Message-ID: <4d2482dc-a77c-6a1f-5e71-f7f14d66bf80@linux.intel.com>
-References: <20180612054034.4969-1-songjun.wu@linux.intel.com>
- <20180612054034.4969-5-songjun.wu@linux.intel.com>
- <CAHp75Vc_EVgfj1MpuA_hKHgy6SiQdU7JQDdtVHfOT1sZ_K-nRQ@mail.gmail.com>
+From: <sean.wang@mediatek.com>
+Subject: [PATCH v3 2/7] serdev: add dev_pm_domain_attach|detach()
+Date: Thu, 14 Jun 2018 15:14:24 +0800
+Message-ID: <e338118bb6b9f560560887eb974eb250a6c89984.1528960095.git.sean.wang@mediatek.com>
+References: <cover.1528960095.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Vc_EVgfj1MpuA_hKHgy6SiQdU7JQDdtVHfOT1sZ_K-nRQ@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@intel.com, Linux MIPS Mailing List <linux-mips@linux-mips.org>, qi-ming.wu@intel.com, linux-clk@vger.kernel.org, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>, James Hogan <jhogan@kernel.org>, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ralf Baechle <ralf@linux-mips.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <cover.1528960095.git.sean.wang@mediatek.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org, johan.hedberg@gmail.com
+Cc: devicetree@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sean Wang <sean.wang@mediatek.com>, linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
+From: Sean Wang <sean.wang@mediatek.com>
 
+In order to open up the required power gate before any operation can be
+effectively performed over the serial bus between CPU and serdev, it's
+clearly essential to add common attach functions for PM domains to serdev
+at the probe phase.
 
-On 6/12/2018 4:13 PM, Andy Shevchenko wrote:
-> On Tue, Jun 12, 2018 at 8:40 AM, Songjun Wu <songjun.wu@linux.intel.com> wrote:
->> Previous implementation uses platform-dependent functions
->> ltq_w32()/ltq_r32() to access registers. Those functions are not
->> available for other SoC which uses the same IP.
->> Change to OS provided readl()/writel() and readb()/writeb(), so
->> that different SoCs can use the same driver.
-> This patch consists 2 or even 3 ones:
-> - whitespace shuffling (indentation fixes, blank lines), I dunno if
-> it's needed at all
-> - some new registers / bits
-> - actual switch to readl() / writel()
->
-> Please, split.
-It will be split to four patches, coding style, new registers, 
-readl()/writel() and asc_update_bits.
->> +#define asc_w32_mask(clear, set, reg)  \
->> +       ({ typeof(reg) reg_ = (reg);    \
->> +       writel((readl(reg_) & ~(clear)) | (set), reg_); })
-> This would be better as a static inline helper, and name is completely
-> misleading, it doesn't mask the register bits, it _updates_ them.
-It will be changed to asc_update_bits.
+Similarly, the relevant dettach function for the PM domains should be
+properly and reversely added at the remove phase.
+
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serdev/core.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index df93b72..c93d8ee 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/pm_domain.h>
+ #include <linux/serdev.h>
+ #include <linux/slab.h>
+ 
+@@ -330,8 +331,16 @@ EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
+ static int serdev_drv_probe(struct device *dev)
+ {
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
++	int ret;
++
++	ret = dev_pm_domain_attach(dev, true);
++	if (ret != -EPROBE_DEFER) {
++		ret = sdrv->probe(to_serdev_device(dev));
++		if (ret)
++			dev_pm_domain_detach(dev, true);
++	}
+ 
+-	return sdrv->probe(to_serdev_device(dev));
++	return ret;
+ }
+ 
+ static int serdev_drv_remove(struct device *dev)
+@@ -339,6 +348,9 @@ static int serdev_drv_remove(struct device *dev)
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+ 	if (sdrv->remove)
+ 		sdrv->remove(to_serdev_device(dev));
++
++	dev_pm_domain_detach(dev, true);
++
+ 	return 0;
+ }
+ 
+-- 
+2.7.4
