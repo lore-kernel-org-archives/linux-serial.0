@@ -1,125 +1,69 @@
-From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Subject: Re: [PATCH v2 00/19] Dynamically load/remove serdev devices via sysfs*
-Date: Thu, 14 Jun 2018 13:06:59 +0200
-Message-ID: <CAPybu_0TSdQFOL1ptv67-aKktAftYWPwnSnevmBd_b1T0W7LYg@mail.gmail.com>
-References: <20180611115240.32606-1-ricardo.ribalda@gmail.com> <20180614104820.GC32411@localhost>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [RFC PATCH 5/6] arm64: dts: ti: Add Support for AM654 SoC
+Date: Thu, 14 Jun 2018 05:38:05 -0700
+Message-ID: <20180614123805.GF112168@atomide.com>
+References: <20180605060510.32473-1-nm@ti.com>
+ <CAL_JsqJusWTvr4A_-Bk81meYddMHBMJ4=Fch6L0MFoF7HfBW2w@mail.gmail.com>
+ <20180607233853.p7iw7nlxxuyi66og@kahuna>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180614104820.GC32411@localhost>
+Content-Disposition: inline
+In-Reply-To: <20180607233853.p7iw7nlxxuyi66og@kahuna>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Rob Herring <robh@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>
+To: Nishanth Menon <nm@ti.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Johan
-On Thu, Jun 14, 2018 at 12:48 PM Johan Hovold <johan@kernel.org> wrote:
->
-> Hi Ricardo,
->
-> On Mon, Jun 11, 2018 at 01:52:16PM +0200, Ricardo Ribalda Delgado wrote:
-> > There are some situations where it is interesting to load/remove serdev
-> > devices dynamically, like during board bring-up or when we are
-> > developing a new driver or for devices that are neither described via
-> > ACPI or device tree.
->
-> First of all, this would be more appropriately labeled an RFC as this is
-> far from being in a mergeable state. Besides some implementation issues,
-> we need to determine if this approach is at all viable.
+Hi,
 
->From previous conversations with Greg it seemed that RFC labels was
-something to avoid, but I do not mind reseding it as RFC on v3.
+Some comments on the ranges below.
 
-http://lists.kernelnewbies.org/pipermail/kernelnewbies/2018-March/018844.html
+* Nishanth Menon <nm@ti.com> [180607 16:41]:
+> +	soc0: soc0 {
+> +		compatible = "simple-bus";
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		ranges;
 
->
-> Second, I wonder how you tested this given that this series breaks RX
-> (and write-wakeup signalling) for serial ports (patch 19/24)?
+I suggest you leave out the soc0, that's not real. Just make
+the cbass@0 the top level interconnect. It can then provide
+ranges to mcu interconnect which can provide ranges to the wkup
+interconnect. So just model it after what's in the hardware :)
 
-I have a serdev device (led ctrls) that is dynamically enumerated with
-something very similar to:
+I found the following ranges based on a quick look at the TRM,
+they could be split further if needed for power domains for
+genpd for example.
 
-https://github.com/ribalda/linux/commit/415bb3f0076c2b846ebe5409589b8e1e3004f55a
+main covers
+0x0000000000 - 0x5402000000
 
-and then I have a script that does adds and removes. For standard
-serial port I was not testing the data path, just that the ttyS* was
-enumerated fine.
+main provides at least the following ranges for mcu
+0x0028380000 - 0x002bc00000
+0x0040080000 - 0x0041c80000
+0x0045100000 - 0x0045180000
+0x0045600000 - 0x0045640000
+0x0045810000 - 0x0045860000
+0x0045950000 - 0x0045950400
+0x0045a50000 - 0x0045a50400
+0x0045b04000 - 0x0045b06400
+0x0045d10000 - 0x0045d24000
+0x0046000000 - 0x0060000000
+0x0400000000 - 0x0800000000
+0x4c3c020000 - 0x4c3c030000
+0x4c3e000000 - 0x4c3e040000
+0x5400000000 - 0x5402000000
 
-But  yesterday I believe that we found the bug that you mentioned and
-we have fixed it (check end of mail). I will patch the series and
-resend after I get more feedback and also implement what Marcel
-suggested.
+then mcu provides the following ranges for wkup
+0x0042000000 - 0x0044410020
+0x0045000000 - 0x0045030000
+0x0045080000 - 0x00450a0000
+0x0045808000 - 0x0045808800
+0x0045b00000 - 0x0045b02400
 
-WIP is at
-https://github.com/ribalda/linux/tree/serdev3
+This based on looking at "figure 1-1. device top-level
+block diagram" and the memory map in TRM.
 
-Besides this bug, we have used the new driver for over a week now with
-no issues.
+Regards,
 
->
-> Third, and as Marcel already suggested, you need to limit your scope
-> here. Aim at ten patches or so, and use a representative serdev driver
-> as an example of the kind of driver updates that would be needed. It
-> also looks like some patches should be squashed (e.g. the ones
-> introducing new fields and the first one actually using them).
-
->
-> > This implementation allows the creation of serdev devices via sysfs,
-> > in a similar way as the i2c bus allows sysfs instantiation [1].
->
-> Note that this is a legacy interface and not necessarily something that
-> new interfaces should be modelled after.
-
-I would not consider it legacy, it is the only way to use an i2c
-module without writing your own driver and/or modifying ACPI/DT table.
-Just google around for i2c linux...
-Thanks!
-
->
-> Johan
-Author: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Date:   Thu Jun 14 11:30:27 2018 +0200
-
-    serdev-ttydev: Restore/change ttyport client ops
-
-diff --git a/drivers/tty/serdev/serdev-ttydev.c
-b/drivers/tty/serdev/serdev-ttydev.c
-index 180035e101dc..b151c9645a1d 100644
---- a/drivers/tty/serdev/serdev-ttydev.c
-+++ b/drivers/tty/serdev/serdev-ttydev.c
-@@ -16,14 +16,23 @@ static int ttydev_serdev_probe(struct serdev_device *serdev)
-        struct serdev_controller *ctrl = serdev->ctrl;
-        struct serport *serport;
-        struct device *dev;
-+       const struct tty_port_client_operations *serdev_ops;
-
-        if (!ctrl->is_ttyport)
-                return -ENODEV;
-
-        serport = serdev_controller_get_drvdata(ctrl);
-
-+       serdev_ops = serport->port->client_ops;
-+
-+       serport->port->client_ops = serport->tty_ops;
-        dev = tty_register_device_attr(serport->tty_drv, serport->tty_idx,
--                                       &serdev->dev, NULL, NULL);
-+                                      ctrl->dev.parent, NULL, NULL);
-+
-+       if (IS_ERR(dev))
-+               serport->port->client_ops = serdev_ops;
-+       else
-+               serdev_device_set_drvdata(serdev, (void *)serdev_ops);
-
-        return dev ? 0 : PTR_ERR(dev);
- }
-@@ -35,6 +44,7 @@ static void ttydev_serdev_remove(struct serdev_device *serdev)
-
-        serport = serdev_controller_get_drvdata(ctrl);
-        tty_unregister_device(serport->tty_drv, serport->tty_idx);
-+       serport->port->client_ops = serdev_device_get_drvdata(serdev);
- }
-
-
-
--- 
-Ricardo Ribalda
+Tony
