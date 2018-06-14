@@ -1,81 +1,56 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.16 25/43] serial: sh-sci: Stop using printk format %pCr
-Date: Thu, 14 Jun 2018 16:04:29 +0200
-Message-ID: <20180614132136.880991791@linuxfoundation.org>
-References: <20180614132135.111973468@linuxfoundation.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 2/7] clk: intel: Add clock driver for GRX500 SoC
+Date: Thu, 14 Jun 2018 08:09:14 -0600
+Message-ID: <CAL_JsqJVcKPexrVrnGnr-zga1n6n00nYdUmKZWOz2VQJ7BV-oA@mail.gmail.com>
+References: <20180612054034.4969-1-songjun.wu@linux.intel.com>
+ <20180612054034.4969-3-songjun.wu@linux.intel.com> <20180612223725.GC2197@rob-hp-laptop>
+ <41163f48-ce5c-efae-2b6d-b93d75e422e5@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180614132135.111973468@linuxfoundation.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Eduardo Valentin <edubezval@gmail.com>, Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>, linux-doc@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-pm@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org, linux-serial@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <41163f48-ce5c-efae-2b6d-b93d75e422e5@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: yixin zhu <yixin.zhu@linux.intel.com>
+Cc: Songjun Wu <songjun.wu@linux.intel.com>, hua.ma@linux.intel.com, chuanhua.lei@linux.intel.com, Linux-MIPS <linux-mips@linux-mips.org>, qi-ming.wu@intel.com, linux-clk <linux-clk@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, devicetree@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-4.16-stable review patch.  If anyone has any objections, please let me know.
+On Thu, Jun 14, 2018 at 2:40 AM, yixin zhu <yixin.zhu@linux.intel.com> wrote:
+>
+>
+> On 6/13/2018 6:37 AM, Rob Herring wrote:
+>>
+>> On Tue, Jun 12, 2018 at 01:40:29PM +0800, Songjun Wu wrote:
+>>>
+>>> From: Yixin Zhu <yixin.zhu@linux.intel.com>
+>>>
+>>> PLL of GRX500 provide clock to DDR, CPU, and peripherals as show below
 
-------------------
+[...]
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+>>> +Example:
+>>> +       clkgate0: clkgate0 {
+>>> +               #clock-cells = <1>;
+>>> +               compatible = "intel,grx500-gate0-clk";
+>>> +               reg = <0x114>;
+>>> +               clock-output-names = "gate_xbar0", "gate_xbar1",
+>>> "gate_xbar2",
+>>> +               "gate_xbar3", "gate_xbar6", "gate_xbar7";
+>>> +       };
+>>
+>>
+>> We generally don't do a clock node per clock or few clocks but rather 1
+>> clock node per clock controller block. See any recent clock bindings.
+>>
+>> Rob
+>
+> Do you mean only one example is needed per clock controller block?
+> cpuclk is not needed in the document?
 
-commit d63c16f8e1ab761775275adcf54f4bef7c330295 upstream.
+No, I mean generally we have 1 DT node for the h/w block with all the
+clock control registers rather than nodes with a single register and 1
+or a couple of clocks. Sometimes the clock registers are mixed with
+other functions which complicates things a bit. But I can't tell that
+here because you haven't documented what's in the rest of the register
+space.
 
-Printk format "%pCr" will be removed soon, as clk_get_rate() must not be
-called in atomic context.
-
-Replace it by open-coding the operation.  This is safe here, as the code
-runs in task context.
-
-Link: http://lkml.kernel.org/r/1527845302-12159-4-git-send-email-geert+renesas@glider.be
-To: Jia-Ju Bai <baijiaju1990@gmail.com>
-To: Jonathan Corbet <corbet@lwn.net>
-To: Michael Turquette <mturquette@baylibre.com>
-To: Stephen Boyd <sboyd@kernel.org>
-To: Zhang Rui <rui.zhang@intel.com>
-To: Eduardo Valentin <edubezval@gmail.com>
-To: Eric Anholt <eric@anholt.net>
-To: Stefan Wahren <stefan.wahren@i2se.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: linux-doc@vger.kernel.org
-Cc: linux-clk@vger.kernel.org
-Cc: linux-pm@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-renesas-soc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: stable@vger.kernel.org # 4.5+
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
----
- drivers/tty/serial/sh-sci.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2691,8 +2691,8 @@ found:
- 			dev_dbg(dev, "failed to get %s (%ld)\n", clk_names[i],
- 				PTR_ERR(clk));
- 		else
--			dev_dbg(dev, "clk %s is %pC rate %pCr\n", clk_names[i],
--				clk, clk);
-+			dev_dbg(dev, "clk %s is %pC rate %lu\n", clk_names[i],
-+				clk, clk_get_rate(clk));
- 		sci_port->clks[i] = IS_ERR(clk) ? NULL : clk;
- 	}
- 	return 0;
+Rob
