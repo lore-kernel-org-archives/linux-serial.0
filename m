@@ -1,160 +1,118 @@
-From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Subject: [PATCH v4 22/26] devicetree: fix name of pinctrl-bindings.txt
-Date: Fri, 15 Jun 2018 13:30:50 -0300
-Message-ID: <1832904c012f823958663464ac4fb249f77978b5.1529079120.git.mchehab+samsung@kernel.org>
-References: <cover.1529079119.git.mchehab+samsung@kernel.org>
+From: Oleksandr Shamray <oleksandrs@mellanox.com>
+Subject: [patch v26 0/4] JTAG driver introduction
+Date: Fri, 15 Jun 2018 19:45:19 +0300
+Message-ID: <1529081123-30873-1-git-send-email-oleksandrs@mellanox.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1529079119.git.mchehab+samsung@kernel.org>
-In-Reply-To: <cover.1529079119.git.mchehab+samsung@kernel.org>
-References: <cover.1529079119.git.mchehab+samsung@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linux Doc Mailing List <linux-doc@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>
-Cc: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Mauro Carvalho Chehab <mchehab@infradead.org>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Lee Jones <lee.jones@linaro.org>, Ulf Hansson <ulf.hansson@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org, linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+To: gregkh@linuxfoundation.org, arnd@arndb.de
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, openbmc@lists.ozlabs.org, joel@jms.id.au, jiri@resnulli.us, tklauser@distanz.ch, linux-serial@vger.kernel.org, vadimp@mellanox.com, system-sw-low-level@mellanox.com, robh+dt@kernel.org, openocd-devel-owner@lists.sourceforge.net, linux-api@vger.kernel.org, davem@davemloft.net, mchehab@kernel.org, Oleksandr Shamray <oleksandrs@mellanox.com>
 List-Id: linux-serial@vger.kernel.org
 
-Rename:
-	pinctrl-binding.txt -> pinctrl-bindings.txt
+When a need raise up to use JTAG interface for system's devices
+programming or CPU debugging, usually the user layer
+application implements jtag protocol by bit-bang or using a 
+proprietary connection to vendor hardware.
+This method can be slow and not generic.
+ 
+We propose to implement general JTAG interface and infrastructure
+to communicate with user layer application. In such way, we can
+have the standard JTAG interface core part and separation from
+specific HW implementation.
+This allow new capability to debug the CPU or program system's 
+device via BMC without additional devices nor cost. 
 
-In order to match the current name of this file.
+This patch purpose is to add JTAG master core infrastructure by 
+defining new JTAG class and provide generic JTAG interface
+to allow hardware specific drivers to connect this interface.
+This will enable all JTAG drivers to use the common interface
+part and will have separate for hardware implementation.
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
----
- Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt | 2 +-
- Documentation/devicetree/bindings/mfd/as3722.txt              | 2 +-
- .../devicetree/bindings/mmc/microchip,sdhci-pic32.txt         | 2 +-
- Documentation/devicetree/bindings/mmc/sdhci-st.txt            | 2 +-
- .../devicetree/bindings/pinctrl/pinctrl-max77620.txt          | 4 ++--
- .../devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt          | 4 ++--
- Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt   | 4 ++--
- .../devicetree/bindings/serial/microchip,pic32-uart.txt       | 2 +-
- Documentation/devicetree/bindings/spi/spi-st-ssc.txt          | 2 +-
- 9 files changed, 12 insertions(+), 12 deletions(-)
+The JTAG (Joint Test Action Group) core driver provides minimal generic
+JTAG interface, which can be used by hardware specific JTAG master
+controllers. By providing common interface for the JTAG controllers,
+user space device programing is hardware independent.
+ 
+Modern SoC which in use for embedded system' equipped with
+internal JTAG master interface.
+This interface is used for programming and debugging system's
+hardware components, like CPLD, FPGA, CPU, voltage and
+industrial controllers.
+Firmware for such devices can be upgraded through JTAG interface during
+Runtime. The JTAG standard support for multiple devices programming,
+is in case their lines are daisy-chained together.
 
-diff --git a/Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt b/Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt
-index c7888d6f6408..880d4d70c9fd 100644
---- a/Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt
-+++ b/Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt
-@@ -28,7 +28,7 @@ See: Documentation/devicetree/bindings/clock/clock-bindings.txt
- - pinctrl-names	: a pinctrl state named tsin%d-serial or tsin%d-parallel (where %d is tsin-num)
- 		   must be defined for each tsin child node.
- - pinctrl-0	: phandle referencing pin configuration for this tsin configuration
--See: Documentation/devicetree/bindings/pinctrl/pinctrl-binding.txt
-+See: Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
+For example, systems which equipped with host CPU, BMC SoC or/and 
+number of programmable devices are capable to connect a pin and
+select system components dynamically for programming and debugging,
+This is using by the BMC which is equipped with internal SoC master
+controller.
+For example:
+
+BMC JTAG master --> pin selected to CPLDs chain for programming (filed
+upgrade, production) 
+BMC JTAG master --> pin selected to voltage monitors for programming 
+(field upgrade, production) 
+BMC JTAG master --> pin selected to host CPU (on-site debugging 
+and developers debugging)
+
+For example, we can have application in user space which using calls
+to JTAG driver executes CPLD programming directly from SVF file
  
- 
- Required properties (tsin (child) node):
-diff --git a/Documentation/devicetree/bindings/mfd/as3722.txt b/Documentation/devicetree/bindings/mfd/as3722.txt
-index 0b2a6099aa20..5297b2210704 100644
---- a/Documentation/devicetree/bindings/mfd/as3722.txt
-+++ b/Documentation/devicetree/bindings/mfd/as3722.txt
-@@ -46,7 +46,7 @@ is required:
- 	Following properties are require if pin control setting is required
- 	at boot.
- 	- pinctrl-names: A pinctrl state named "default" be defined, using the
--		bindings in pinctrl/pinctrl-binding.txt.
-+		bindings in pinctrl/pinctrl-bindings.txt.
- 	- pinctrl[0...n]: Properties to contain the phandle that refer to
- 		different nodes of pin control settings. These nodes represents
- 		the pin control setting of state 0 to state n. Each of these
-diff --git a/Documentation/devicetree/bindings/mmc/microchip,sdhci-pic32.txt b/Documentation/devicetree/bindings/mmc/microchip,sdhci-pic32.txt
-index 3149297b3933..f064528effed 100644
---- a/Documentation/devicetree/bindings/mmc/microchip,sdhci-pic32.txt
-+++ b/Documentation/devicetree/bindings/mmc/microchip,sdhci-pic32.txt
-@@ -12,7 +12,7 @@ Required properties:
-           See: Documentation/devicetree/bindings/clock/clock-bindings.txt
- - pinctrl-names: A pinctrl state names "default" must be defined.
- - pinctrl-0: Phandle referencing pin configuration of the SDHCI controller.
--             See: Documentation/devicetree/bindings/pinctrl/pinctrl-binding.txt
-+             See: Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
- 
- Example:
- 
-diff --git a/Documentation/devicetree/bindings/mmc/sdhci-st.txt b/Documentation/devicetree/bindings/mmc/sdhci-st.txt
-index 6b3d40ca395e..ccf82b4ee838 100644
---- a/Documentation/devicetree/bindings/mmc/sdhci-st.txt
-+++ b/Documentation/devicetree/bindings/mmc/sdhci-st.txt
-@@ -20,7 +20,7 @@ Required properties:
- 
- - pinctrl-names:	A pinctrl state names "default" must be defined.
- - pinctrl-0:		Phandle referencing pin configuration of the sd/emmc controller.
--			See: Documentation/devicetree/bindings/pinctrl/pinctrl-binding.txt
-+			See: Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
- 
- - reg:			This must provide the host controller base address and it can also
- 			contain the FlashSS Top register for TX/RX delay used by the driver
-diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-max77620.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-max77620.txt
-index ad4fce3552bb..511fc234558b 100644
---- a/Documentation/devicetree/bindings/pinctrl/pinctrl-max77620.txt
-+++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-max77620.txt
-@@ -11,9 +11,9 @@ Optional Pinmux properties:
- --------------------------
- Following properties are required if default setting of pins are required
- at boot.
--- pinctrl-names: A pinctrl state named per <pinctrl-binding.txt>.
-+- pinctrl-names: A pinctrl state named per <pinctrl-bindings.txt>.
- - pinctrl[0...n]: Properties to contain the phandle for pinctrl states per
--		<pinctrl-binding.txt>.
-+		<pinctrl-bindings.txt>.
- 
- The pin configurations are defined as child of the pinctrl states node. Each
- sub-node have following properties:
-diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt
-index a677145ae6d1..625a22e2f211 100644
---- a/Documentation/devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt
-+++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt
-@@ -101,9 +101,9 @@ Optional Pinmux properties:
- --------------------------
- Following properties are required if default setting of pins are required
- at boot.
--- pinctrl-names: A pinctrl state named per <pinctrl-binding.txt>.
-+- pinctrl-names: A pinctrl state named per <pinctrl-bindings.txt>.
- - pinctrl[0...n]: Properties to contain the phandle for pinctrl states per
--		<pinctrl-binding.txt>.
-+		<pinctrl-bindings.txt>.
- 
- The pin configurations are defined as child of the pinctrl states node. Each
- sub-node have following properties:
-diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt
-index eee3dc260934..cbcbd31e3ce8 100644
---- a/Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt
-+++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt
-@@ -10,9 +10,9 @@ Optional Pinmux properties:
- --------------------------
- Following properties are required if default setting of pins are required
- at boot.
--- pinctrl-names: A pinctrl state named per <pinctrl-binding.txt>.
-+- pinctrl-names: A pinctrl state named per <pinctrl-bindings.txt>.
- - pinctrl[0...n]: Properties to contain the phandle for pinctrl states per
--		<pinctrl-binding.txt>.
-+		<pinctrl-bindings.txt>.
- 
- The pin configurations are defined as child of the pinctrl states node. Each
- sub-node have following properties:
-diff --git a/Documentation/devicetree/bindings/serial/microchip,pic32-uart.txt b/Documentation/devicetree/bindings/serial/microchip,pic32-uart.txt
-index 7a34345d0ca3..c8dd440e9747 100644
---- a/Documentation/devicetree/bindings/serial/microchip,pic32-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/microchip,pic32-uart.txt
-@@ -8,7 +8,7 @@ Required properties:
-           See: Documentation/devicetree/bindings/clock/clock-bindings.txt
- - pinctrl-names: A pinctrl state names "default" must be defined.
- - pinctrl-0: Phandle referencing pin configuration of the UART peripheral.
--             See: Documentation/devicetree/bindings/pinctrl/pinctrl-binding.txt
-+             See: Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
- 
- Optional properties:
- - cts-gpios: CTS pin for UART
-diff --git a/Documentation/devicetree/bindings/spi/spi-st-ssc.txt b/Documentation/devicetree/bindings/spi/spi-st-ssc.txt
-index fe54959ec957..1bdc4709e474 100644
---- a/Documentation/devicetree/bindings/spi/spi-st-ssc.txt
-+++ b/Documentation/devicetree/bindings/spi/spi-st-ssc.txt
-@@ -9,7 +9,7 @@ Required properties:
- - clocks	: Must contain an entry for each name in clock-names
- 		    See ../clk/*
- - pinctrl-names	: Uses "default", can use "sleep" if provided
--		    See ../pinctrl/pinctrl-binding.txt
-+		    See ../pinctrl/pinctrl-bindings.txt
- 
- Optional properties:
- - cs-gpios	: List of GPIO chip selects
--- 
-2.17.1
+The JTAG standard (IEEE 1149.1) defines the next connector pins:
+- TDI (Test Data In);
+- TDO (Test Data Out);
+- TCK (Test Clock);
+- TMS (Test Mode Select);
+- TRST (Test Reset) (Optional);
+
+The SoC equipped with JTAG master controller, performs
+device programming on command or vector level. For example
+a file in a standard SVF (Serial Vector Format) that contains
+boundary scan vectors, can be used by sending each vector
+to the JTAG interface and the JTAG controller will execute
+the programming.
+
+Initial version provides the system calls set for:
+- SIR (Scan Instruction Register, IEEE 1149.1 Instruction Register scan);
+- SDR (Scan Data Register, IEEE 1149.1 Data Register scan);
+- RUNTEST (Forces the IEEE 1149.1 bus to a run state for a specified
+  number of clocks.
+
+SoC which are not equipped with JTAG master interface, can be built
+on top of JTAG core driver infrastructure, by applying bit-banging of
+TDI, TDO, TCK and TMS pins within the hardware specific driver.
+
+Oleksandr Shamray (4):
+  drivers: jtag: Add JTAG core driver
+  drivers: jtag: Add Aspeed SoC 24xx and 25xx families JTAG master
+    driver
+  Documentation: jtag: Add bindings for Aspeed SoC 24xx and 25xx
+    families     JTAG master driver
+  Documentation: jtag: Add ABI documentation
+
+ Documentation/ABI/testing/gpio-cdev                |    1 -
+ Documentation/ABI/testing/jtag-dev                 |   23 +
+ .../devicetree/bindings/jtag/aspeed-jtag.txt       |   22 +
+ Documentation/ioctl/ioctl-number.txt               |    2 +
+ Documentation/jtag/overview                        |   27 +
+ Documentation/jtag/transactions                    |  109 +++
+ MAINTAINERS                                        |   10 +
+ drivers/Kconfig                                    |    2 +
+ drivers/Makefile                                   |    1 +
+ drivers/jtag/Kconfig                               |   31 +
+ drivers/jtag/Makefile                              |    2 +
+ drivers/jtag/jtag-aspeed.c                         |  756 ++++++++++++++++++++
+ drivers/jtag/jtag.c                                |  274 +++++++
+ include/linux/jtag.h                               |   41 ++
+ include/uapi/linux/jtag.h                          |  109 +++
+ 15 files changed, 1409 insertions(+), 1 deletions(-)
+ create mode 100644 Documentation/ABI/testing/jtag-dev
+ create mode 100644 Documentation/devicetree/bindings/jtag/aspeed-jtag.txt
+ create mode 100644 Documentation/jtag/overview
+ create mode 100644 Documentation/jtag/transactions
+ create mode 100644 drivers/jtag/Kconfig
+ create mode 100644 drivers/jtag/Makefile
+ create mode 100644 drivers/jtag/jtag-aspeed.c
+ create mode 100644 drivers/jtag/jtag.c
+ create mode 100644 include/linux/jtag.h
+ create mode 100644 include/uapi/linux/jtag.h
