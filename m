@@ -1,160 +1,105 @@
-From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Subject: [PATCH v3 23/27] devicetree: fix name of pinctrl-bindings.txt
-Date: Thu, 14 Jun 2018 13:09:08 -0300
-Message-ID: <d04d47f9fba035cf9de8589a288964c636324d58.1528990947.git.mchehab+samsung@kernel.org>
-References: <cover.1528990947.git.mchehab+samsung@kernel.org>
+From: Sean Wang <sean.wang@mediatek.com>
+Subject: Re: [PATCH v3 2/7] serdev: add dev_pm_domain_attach|detach()
+Date: Fri, 15 Jun 2018 10:30:05 +0800
+Message-ID: <1529029805.29697.27.camel@mtkswgap22>
+References: <cover.1528960095.git.sean.wang@mediatek.com>
+         <e338118bb6b9f560560887eb974eb250a6c89984.1528960095.git.sean.wang@mediatek.com>
+         <CAPDyKFqVpfhJf3R3jbXtjGgXf+0pg=9dgALBnxM_bSyBQrQQDQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1528990947.git.mchehab+samsung@kernel.org>
-In-Reply-To: <cover.1528990947.git.mchehab+samsung@kernel.org>
-References: <cover.1528990947.git.mchehab+samsung@kernel.org>
+In-Reply-To: <CAPDyKFqVpfhJf3R3jbXtjGgXf+0pg=9dgALBnxM_bSyBQrQQDQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Mauro Carvalho Chehab <mchehab@infradead.org>, linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Lee Jones <lee.jones@linaro.org>, Ulf Hansson <ulf.hansson@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org, linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+To: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>, devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-mediatek@lists.infradead.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Rename:
-	pinctrl-binding.txt -> pinctrl-bindings.txt
+On Thu, 2018-06-14 at 10:58 +0200, Ulf Hansson wrote:
+> On Thu, 14 Jun 2018 at 09:14, <sean.wang@mediatek.com> wrote:
+> >
+> > From: Sean Wang <sean.wang@mediatek.com>
+> >
+> > In order to open up the required power gate before any operation can be
+> > effectively performed over the serial bus between CPU and serdev, it's
+> > clearly essential to add common attach functions for PM domains to serdev
+> > at the probe phase.
+> >
+> > Similarly, the relevant dettach function for the PM domains should be
+> > properly and reversely added at the remove phase.
+> >
+> > Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> > Cc: Rob Herring <robh@kernel.org>
+> > Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Jiri Slaby <jslaby@suse.com>
+> > Cc: linux-serial@vger.kernel.org
+> > ---
+> >  drivers/tty/serdev/core.c | 14 +++++++++++++-
+> >  1 file changed, 13 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> > index df93b72..c93d8ee 100644
+> > --- a/drivers/tty/serdev/core.c
+> > +++ b/drivers/tty/serdev/core.c
+> > @@ -13,6 +13,7 @@
+> >  #include <linux/module.h>
+> >  #include <linux/of.h>
+> >  #include <linux/of_device.h>
+> > +#include <linux/pm_domain.h>
+> >  #include <linux/serdev.h>
+> >  #include <linux/slab.h>
+> >
+> > @@ -330,8 +331,16 @@ EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
+> >  static int serdev_drv_probe(struct device *dev)
+> >  {
+> >         const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+> > +       int ret;
+> > +
+> > +       ret = dev_pm_domain_attach(dev, true);
+> > +       if (ret != -EPROBE_DEFER) {
+> 
+> From 4.18 rc1 via commit 919b7308fcc4, dev_pm_domain_attach() will
+> return better error codes.
+> 
+> I suggest to change the above error path to:
+> if (ret)
+>      return ret;
+> 
+> Then continue with the probing below.
 
-In order to match the current name of this file.
+Thanks for sharing me the information. I'll happily respin using the
+patch because it makes the most sense.
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
----
- Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt | 2 +-
- Documentation/devicetree/bindings/mfd/as3722.txt              | 2 +-
- .../devicetree/bindings/mmc/microchip,sdhci-pic32.txt         | 2 +-
- Documentation/devicetree/bindings/mmc/sdhci-st.txt            | 2 +-
- .../devicetree/bindings/pinctrl/pinctrl-max77620.txt          | 4 ++--
- .../devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt          | 4 ++--
- Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt   | 4 ++--
- .../devicetree/bindings/serial/microchip,pic32-uart.txt       | 2 +-
- Documentation/devicetree/bindings/spi/spi-st-ssc.txt          | 2 +-
- 9 files changed, 12 insertions(+), 12 deletions(-)
+> 
+> > +               ret = sdrv->probe(to_serdev_device(dev));
+> > +               if (ret)
+> > +                       dev_pm_domain_detach(dev, true);
+> > +       }
+> >
+> > -       return sdrv->probe(to_serdev_device(dev));
+> > +       return ret;
+> >  }
+> >
+> >  static int serdev_drv_remove(struct device *dev)
+> > @@ -339,6 +348,9 @@ static int serdev_drv_remove(struct device *dev)
+> >         const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+> >         if (sdrv->remove)
+> >                 sdrv->remove(to_serdev_device(dev));
+> > +
+> > +       dev_pm_domain_detach(dev, true);
+> > +
+> >         return 0;
+> >  }
+> >
+> > --
+> > 2.7.4
+> >
+> 
+> Otherwise, this makes sense to me!
+> 
 
-diff --git a/Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt b/Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt
-index c7888d6f6408..880d4d70c9fd 100644
---- a/Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt
-+++ b/Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt
-@@ -28,7 +28,7 @@ See: Documentation/devicetree/bindings/clock/clock-bindings.txt
- - pinctrl-names	: a pinctrl state named tsin%d-serial or tsin%d-parallel (where %d is tsin-num)
- 		   must be defined for each tsin child node.
- - pinctrl-0	: phandle referencing pin configuration for this tsin configuration
--See: Documentation/devicetree/bindings/pinctrl/pinctrl-binding.txt
-+See: Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
- 
- 
- Required properties (tsin (child) node):
-diff --git a/Documentation/devicetree/bindings/mfd/as3722.txt b/Documentation/devicetree/bindings/mfd/as3722.txt
-index 0b2a6099aa20..5297b2210704 100644
---- a/Documentation/devicetree/bindings/mfd/as3722.txt
-+++ b/Documentation/devicetree/bindings/mfd/as3722.txt
-@@ -46,7 +46,7 @@ is required:
- 	Following properties are require if pin control setting is required
- 	at boot.
- 	- pinctrl-names: A pinctrl state named "default" be defined, using the
--		bindings in pinctrl/pinctrl-binding.txt.
-+		bindings in pinctrl/pinctrl-bindings.txt.
- 	- pinctrl[0...n]: Properties to contain the phandle that refer to
- 		different nodes of pin control settings. These nodes represents
- 		the pin control setting of state 0 to state n. Each of these
-diff --git a/Documentation/devicetree/bindings/mmc/microchip,sdhci-pic32.txt b/Documentation/devicetree/bindings/mmc/microchip,sdhci-pic32.txt
-index 3149297b3933..f064528effed 100644
---- a/Documentation/devicetree/bindings/mmc/microchip,sdhci-pic32.txt
-+++ b/Documentation/devicetree/bindings/mmc/microchip,sdhci-pic32.txt
-@@ -12,7 +12,7 @@ Required properties:
-           See: Documentation/devicetree/bindings/clock/clock-bindings.txt
- - pinctrl-names: A pinctrl state names "default" must be defined.
- - pinctrl-0: Phandle referencing pin configuration of the SDHCI controller.
--             See: Documentation/devicetree/bindings/pinctrl/pinctrl-binding.txt
-+             See: Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
- 
- Example:
- 
-diff --git a/Documentation/devicetree/bindings/mmc/sdhci-st.txt b/Documentation/devicetree/bindings/mmc/sdhci-st.txt
-index 6b3d40ca395e..ccf82b4ee838 100644
---- a/Documentation/devicetree/bindings/mmc/sdhci-st.txt
-+++ b/Documentation/devicetree/bindings/mmc/sdhci-st.txt
-@@ -20,7 +20,7 @@ Required properties:
- 
- - pinctrl-names:	A pinctrl state names "default" must be defined.
- - pinctrl-0:		Phandle referencing pin configuration of the sd/emmc controller.
--			See: Documentation/devicetree/bindings/pinctrl/pinctrl-binding.txt
-+			See: Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
- 
- - reg:			This must provide the host controller base address and it can also
- 			contain the FlashSS Top register for TX/RX delay used by the driver
-diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-max77620.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-max77620.txt
-index ad4fce3552bb..511fc234558b 100644
---- a/Documentation/devicetree/bindings/pinctrl/pinctrl-max77620.txt
-+++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-max77620.txt
-@@ -11,9 +11,9 @@ Optional Pinmux properties:
- --------------------------
- Following properties are required if default setting of pins are required
- at boot.
--- pinctrl-names: A pinctrl state named per <pinctrl-binding.txt>.
-+- pinctrl-names: A pinctrl state named per <pinctrl-bindings.txt>.
- - pinctrl[0...n]: Properties to contain the phandle for pinctrl states per
--		<pinctrl-binding.txt>.
-+		<pinctrl-bindings.txt>.
- 
- The pin configurations are defined as child of the pinctrl states node. Each
- sub-node have following properties:
-diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt
-index a677145ae6d1..625a22e2f211 100644
---- a/Documentation/devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt
-+++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt
-@@ -101,9 +101,9 @@ Optional Pinmux properties:
- --------------------------
- Following properties are required if default setting of pins are required
- at boot.
--- pinctrl-names: A pinctrl state named per <pinctrl-binding.txt>.
-+- pinctrl-names: A pinctrl state named per <pinctrl-bindings.txt>.
- - pinctrl[0...n]: Properties to contain the phandle for pinctrl states per
--		<pinctrl-binding.txt>.
-+		<pinctrl-bindings.txt>.
- 
- The pin configurations are defined as child of the pinctrl states node. Each
- sub-node have following properties:
-diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt
-index eee3dc260934..cbcbd31e3ce8 100644
---- a/Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt
-+++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt
-@@ -10,9 +10,9 @@ Optional Pinmux properties:
- --------------------------
- Following properties are required if default setting of pins are required
- at boot.
--- pinctrl-names: A pinctrl state named per <pinctrl-binding.txt>.
-+- pinctrl-names: A pinctrl state named per <pinctrl-bindings.txt>.
- - pinctrl[0...n]: Properties to contain the phandle for pinctrl states per
--		<pinctrl-binding.txt>.
-+		<pinctrl-bindings.txt>.
- 
- The pin configurations are defined as child of the pinctrl states node. Each
- sub-node have following properties:
-diff --git a/Documentation/devicetree/bindings/serial/microchip,pic32-uart.txt b/Documentation/devicetree/bindings/serial/microchip,pic32-uart.txt
-index 7a34345d0ca3..c8dd440e9747 100644
---- a/Documentation/devicetree/bindings/serial/microchip,pic32-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/microchip,pic32-uart.txt
-@@ -8,7 +8,7 @@ Required properties:
-           See: Documentation/devicetree/bindings/clock/clock-bindings.txt
- - pinctrl-names: A pinctrl state names "default" must be defined.
- - pinctrl-0: Phandle referencing pin configuration of the UART peripheral.
--             See: Documentation/devicetree/bindings/pinctrl/pinctrl-binding.txt
-+             See: Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
- 
- Optional properties:
- - cts-gpios: CTS pin for UART
-diff --git a/Documentation/devicetree/bindings/spi/spi-st-ssc.txt b/Documentation/devicetree/bindings/spi/spi-st-ssc.txt
-index fe54959ec957..1bdc4709e474 100644
---- a/Documentation/devicetree/bindings/spi/spi-st-ssc.txt
-+++ b/Documentation/devicetree/bindings/spi/spi-st-ssc.txt
-@@ -9,7 +9,7 @@ Required properties:
- - clocks	: Must contain an entry for each name in clock-names
- 		    See ../clk/*
- - pinctrl-names	: Uses "default", can use "sleep" if provided
--		    See ../pinctrl/pinctrl-binding.txt
-+		    See ../pinctrl/pinctrl-bindings.txt
- 
- Optional properties:
- - cs-gpios	: List of GPIO chip selects
--- 
-2.17.1
+really thanks for your review!
+
+> Kind regards
+> Uffe
