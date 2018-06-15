@@ -1,7 +1,7 @@
 From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: [RFC][PATCH 1/6] printk: move printk_safe macros to printk header
-Date: Fri, 15 Jun 2018 18:39:14 +0900
-Message-ID: <20180615093919.559-2-sergey.senozhatsky@gmail.com>
+Subject: [RFC][PATCH 2/6] tty: add tty_port locking helpers
+Date: Fri, 15 Jun 2018 18:39:15 +0900
+Message-ID: <20180615093919.559-3-sergey.senozhatsky@gmail.com>
 References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
@@ -10,116 +10,79 @@ To: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Greg K
 Cc: Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Make printk_safe_enter_irqsave()/etc macros available to the
-rest of the kernel, so we can use them in TTY and UART code.
+TTY port spin_lock is one of the locks that can cause a
+printk-recursion deadlock, thus we need to lock it from
+printk_safe context. E.g.
+
+ioctl()
+ tty_ioctl()
+  spin_lock(&tty_port->lock)
+   printk()
+    call_console_drivers()
+     foo_console_write()
+      spin_lock(&uart_port->lock)
+       tty_wakeup()
+        spin_lock(&tty_port->lock)    << deadlock
+
+This patch adds tty_port->lock helper macros which take care
+of printk_safe context and redirect potentially unsafe printk()
+calls to per-CPU buffers, which we flush later from safe a
+context. The helper macros will turn the above mentioned deadlock
+scenario into:
+
+ioctl()
+ tty_ioctl()
+  printk_safe_enter()
+   spin_lock(&tty_port->lock)
+    printk()
+     printk_safe_log_store()
+      irq_work_queue()
+   spin_unlock(&tty_port->lock)
+  printk_safe_exit()
+
+ IRQ
+  printk_safe_flush_buffer()
+   vprintk_deferred()
 
 Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 ---
- include/linux/printk.h   | 40 ++++++++++++++++++++++++++++++++++++++++
- kernel/printk/internal.h | 37 -------------------------------------
- 2 files changed, 40 insertions(+), 37 deletions(-)
+ include/linux/tty.h | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/include/linux/printk.h b/include/linux/printk.h
-index 6d7e800affd8..8b4e1e667919 100644
---- a/include/linux/printk.h
-+++ b/include/linux/printk.h
-@@ -153,6 +153,46 @@ static inline void printk_nmi_enter(void) { }
- static inline void printk_nmi_exit(void) { }
- #endif /* PRINTK_NMI */
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index c56e3978b00f..828f91ab680b 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -252,6 +252,30 @@ struct tty_port {
+ 	void 			*client_data;
+ };
  
-+#ifdef CONFIG_PRINTK
-+extern void __printk_safe_enter(void);
-+extern void __printk_safe_exit(void);
-+
-+#define printk_safe_enter_irqsave(flags)	\
-+	do {					\
-+		local_irq_save(flags);		\
-+		__printk_safe_enter();		\
++#define tty_port_lock_irq(lock)				\
++	do {						\
++		printk_safe_enter_irq();		\
++		spin_lock(lock);			\
 +	} while (0)
 +
-+#define printk_safe_exit_irqrestore(flags)	\
-+	do {					\
-+		__printk_safe_exit();		\
-+		local_irq_restore(flags);	\
++#define tty_port_unlock_irq(lock)			\
++	do {						\
++		spin_unlock(lock);			\
++		printk_safe_exit_irq();			\
 +	} while (0)
 +
-+#define printk_safe_enter_irq()		\
-+	do {					\
-+		local_irq_disable();		\
-+		__printk_safe_enter();		\
++#define tty_port_lock_irqsave(lock, flags)		\
++	do {						\
++		printk_safe_enter_irqsave(flags);	\
++		spin_lock(lock);			\
 +	} while (0)
 +
-+#define printk_safe_exit_irq()			\
-+	do {					\
-+		__printk_safe_exit();		\
-+		local_irq_enable();		\
++#define tty_port_unlock_irqrestore(lock, flags)		\
++	do {						\
++		spin_unlock(lock);			\
++		printk_safe_exit_irqrestore(flags);	\
 +	} while (0)
-+#else
-+/*
-+ * On !PRINTK builds we still export console output related locks
-+ * and some functions (console_unlock()/tty/etc.), so printk-safe
-+ * must preserve the existing local IRQ guarantees.
-+ */
-+#define printk_safe_enter_irqsave(flags) local_irq_save(flags)
-+#define printk_safe_exit_irqrestore(flags) local_irq_restore(flags)
 +
-+#define printk_safe_enter_irq() local_irq_disable()
-+#define printk_safe_exit_irq() local_irq_enable()
-+#endif
-+
- #ifdef CONFIG_PRINTK
- asmlinkage __printf(5, 0)
- int vprintk_emit(int facility, int level,
-diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
-index 2a7d04049af4..cf4f85e53cc2 100644
---- a/kernel/printk/internal.h
-+++ b/kernel/printk/internal.h
-@@ -27,46 +27,9 @@ extern raw_spinlock_t logbuf_lock;
- __printf(1, 0) int vprintk_default(const char *fmt, va_list args);
- __printf(1, 0) int vprintk_deferred(const char *fmt, va_list args);
- __printf(1, 0) int vprintk_func(const char *fmt, va_list args);
--void __printk_safe_enter(void);
--void __printk_safe_exit(void);
--
--#define printk_safe_enter_irqsave(flags)	\
--	do {					\
--		local_irq_save(flags);		\
--		__printk_safe_enter();		\
--	} while (0)
--
--#define printk_safe_exit_irqrestore(flags)	\
--	do {					\
--		__printk_safe_exit();		\
--		local_irq_restore(flags);	\
--	} while (0)
--
--#define printk_safe_enter_irq()		\
--	do {					\
--		local_irq_disable();		\
--		__printk_safe_enter();		\
--	} while (0)
--
--#define printk_safe_exit_irq()			\
--	do {					\
--		__printk_safe_exit();		\
--		local_irq_enable();		\
--	} while (0)
- 
- #else
- 
- __printf(1, 0) int vprintk_func(const char *fmt, va_list args) { return 0; }
- 
--/*
-- * In !PRINTK builds we still export logbuf_lock spin_lock, console_sem
-- * semaphore and some of console functions (console_unlock()/etc.), so
-- * printk-safe must preserve the existing local IRQ guarantees.
-- */
--#define printk_safe_enter_irqsave(flags) local_irq_save(flags)
--#define printk_safe_exit_irqrestore(flags) local_irq_restore(flags)
--
--#define printk_safe_enter_irq() local_irq_disable()
--#define printk_safe_exit_irq() local_irq_enable()
--
- #endif /* CONFIG_PRINTK */
+ /* tty_port::iflags bits -- use atomic bit ops */
+ #define TTY_PORT_INITIALIZED	0	/* device is initialized */
+ #define TTY_PORT_SUSPENDED	1	/* device is suspended */
 -- 
 2.17.1
