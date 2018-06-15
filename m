@@ -1,364 +1,73 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: [RFC][PATCH 6/6] tty: 8250: switch to uart_port locking helpers
-Date: Fri, 15 Jun 2018 18:39:19 +0900
-Message-ID: <20180615093919.559-7-sergey.senozhatsky@gmail.com>
-References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
+From: Sekhar Nori <nsekhar@ti.com>
+Subject: Re: [RFC PATCH 5/6] arm64: dts: ti: Add Support for AM654 SoC
+Date: Fri, 15 Jun 2018 19:08:14 +0530
+Message-ID: <a69fcb7a-f7a1-481b-8a02-1da7d1e20671@ti.com>
+References: <20180605060510.32473-1-nm@ti.com>
+ <CAL_JsqJusWTvr4A_-Bk81meYddMHBMJ4=Fch6L0MFoF7HfBW2w@mail.gmail.com>
+ <20180607233853.p7iw7nlxxuyi66og@kahuna>
+ <20180614123805.GF112168@atomide.com>
+ <20180614130435.j2bmzam6corrjylx@kahuna>
+ <20180615050108.GG112168@atomide.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
+In-Reply-To: <20180615050108.GG112168@atomide.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To: Tony Lindgren <tony@atomide.com>, Nishanth Menon <nm@ti.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Vignesh R <vigneshr@ti.com>, Catalin Marinas <catalin.marinas@arm.com>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>, Rob Herring <robh+dt@kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Do not directly lock/unlock uart_port->lock, but use uart_port_lock
-helper macros.
+Hi Tony,
 
-Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
----
- drivers/tty/serial/8250/8250_core.c |  8 ++--
- drivers/tty/serial/8250/8250_dma.c  |  4 +-
- drivers/tty/serial/8250/8250_port.c | 74 ++++++++++++++---------------
- 3 files changed, 43 insertions(+), 43 deletions(-)
+On Friday 15 June 2018 10:31 AM, Tony Lindgren wrote:
+> * Nishanth Menon <nm@ti.com> [180614 13:07]:
+>> On 12:38-20180614, Tony Lindgren wrote:
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 9342fc2ee7df..ce7aa601c809 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -272,7 +272,7 @@ static void serial8250_backup_timeout(struct timer_list *t)
- 	unsigned int iir, ier = 0, lsr;
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&up->port.lock, flags);
-+	uart_port_lock_irqsave(&up->port.lock, flags);
- 
- 	/*
- 	 * Must disable interrupts or else we risk racing with the interrupt
-@@ -306,7 +306,7 @@ static void serial8250_backup_timeout(struct timer_list *t)
- 	if (up->port.irq)
- 		serial_out(up, UART_IER, ier);
- 
--	spin_unlock_irqrestore(&up->port.lock, flags);
-+	uart_port_unlock_irqrestore(&up->port.lock, flags);
- 
- 	/* Standard timer interval plus 0.2s to keep the port running */
- 	mod_timer(&up->timer,
-@@ -1078,9 +1078,9 @@ void serial8250_unregister_port(int line)
- 	if (uart->em485) {
- 		unsigned long flags;
- 
--		spin_lock_irqsave(&uart->port.lock, flags);
-+		uart_port_lock_irqsave(&uart->port.lock, flags);
- 		serial8250_em485_destroy(uart);
--		spin_unlock_irqrestore(&uart->port.lock, flags);
-+		uart_port_unlock_irqrestore(&uart->port.lock, flags);
- 	}
- 
- 	uart_remove_one_port(&serial8250_reg, &uart->port);
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index bfa1a857f3ff..ec601779c32f 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -22,7 +22,7 @@ static void __dma_tx_complete(void *param)
- 	dma_sync_single_for_cpu(dma->txchan->device->dev, dma->tx_addr,
- 				UART_XMIT_SIZE, DMA_TO_DEVICE);
- 
--	spin_lock_irqsave(&p->port.lock, flags);
-+	uart_port_lock_irqsave(&p->port.lock, flags);
- 
- 	dma->tx_running = 0;
- 
-@@ -39,7 +39,7 @@ static void __dma_tx_complete(void *param)
- 		serial_port_out(&p->port, UART_IER, p->ier);
- 	}
- 
--	spin_unlock_irqrestore(&p->port.lock, flags);
-+	uart_port_unlock_irqrestore(&p->port.lock, flags);
- }
- 
- static void __dma_rx_complete(void *param)
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index cf541aab2bd0..a1ee17870ebc 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -772,9 +772,9 @@ static void enable_rsa(struct uart_8250_port *up)
- {
- 	if (up->port.type == PORT_RSA) {
- 		if (up->port.uartclk != SERIAL_RSA_BAUD_BASE * 16) {
--			spin_lock_irq(&up->port.lock);
-+			uart_port_lock_irq(&up->port.lock);
- 			__enable_rsa(up);
--			spin_unlock_irq(&up->port.lock);
-+			uart_port_unlock_irq(&up->port.lock);
- 		}
- 		if (up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16)
- 			serial_out(up, UART_RSA_FRR, 0);
-@@ -794,7 +794,7 @@ static void disable_rsa(struct uart_8250_port *up)
- 
- 	if (up->port.type == PORT_RSA &&
- 	    up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16) {
--		spin_lock_irq(&up->port.lock);
-+		uart_port_lock_irq(&up->port.lock);
- 
- 		mode = serial_in(up, UART_RSA_MSR);
- 		result = !(mode & UART_RSA_MSR_FIFO);
-@@ -807,7 +807,7 @@ static void disable_rsa(struct uart_8250_port *up)
- 
- 		if (result)
- 			up->port.uartclk = SERIAL_RSA_BAUD_BASE_LO * 16;
--		spin_unlock_irq(&up->port.lock);
-+		uart_port_unlock_irq(&up->port.lock);
- 	}
- }
- #endif /* CONFIG_SERIAL_8250_RSA */
-@@ -1218,7 +1218,7 @@ static void autoconfig(struct uart_8250_port *up)
- 	 * We really do need global IRQs disabled here - we're going to
- 	 * be frobbing the chips IRQ enable register to see if it exists.
- 	 */
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(&port->lock, flags);
- 
- 	up->capabilities = 0;
- 	up->bugs = 0;
-@@ -1257,7 +1257,7 @@ static void autoconfig(struct uart_8250_port *up)
- 			/*
- 			 * We failed; there's nothing here
- 			 */
--			spin_unlock_irqrestore(&port->lock, flags);
-+			uart_port_unlock_irqrestore(&port->lock, flags);
- 			DEBUG_AUTOCONF("IER test failed (%02x, %02x) ",
- 				       scratch2, scratch3);
- 			goto out;
-@@ -1281,7 +1281,7 @@ static void autoconfig(struct uart_8250_port *up)
- 		status1 = serial_in(up, UART_MSR) & 0xF0;
- 		serial8250_out_MCR(up, save_mcr);
- 		if (status1 != 0x90) {
--			spin_unlock_irqrestore(&port->lock, flags);
-+			uart_port_unlock_irqrestore(&port->lock, flags);
- 			DEBUG_AUTOCONF("LOOP test failed (%02x) ",
- 				       status1);
- 			goto out;
-@@ -1354,7 +1354,7 @@ static void autoconfig(struct uart_8250_port *up)
- 		serial_out(up, UART_IER, 0);
- 
- out_lock:
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(&port->lock, flags);
- 
- 	/*
- 	 * Check if the device is a Fintek F81216A
-@@ -1466,12 +1466,12 @@ static enum hrtimer_restart serial8250_em485_handle_stop_tx(struct hrtimer *t)
- 	p = em485->port;
- 
- 	serial8250_rpm_get(p);
--	spin_lock_irqsave(&p->port.lock, flags);
-+	uart_port_lock_irqsave(&p->port.lock, flags);
- 	if (em485->active_timer == &em485->stop_tx_timer) {
- 		__do_stop_tx_rs485(p);
- 		em485->active_timer = NULL;
- 	}
--	spin_unlock_irqrestore(&p->port.lock, flags);
-+	uart_port_unlock_irqrestore(&p->port.lock, flags);
- 	serial8250_rpm_put(p);
- 	return HRTIMER_NORESTART;
- }
-@@ -1620,12 +1620,12 @@ static enum hrtimer_restart serial8250_em485_handle_start_tx(struct hrtimer *t)
- 	em485 = container_of(t, struct uart_8250_em485, start_tx_timer);
- 	p = em485->port;
- 
--	spin_lock_irqsave(&p->port.lock, flags);
-+	uart_port_lock_irqsave(&p->port.lock, flags);
- 	if (em485->active_timer == &em485->start_tx_timer) {
- 		__start_tx(&p->port);
- 		em485->active_timer = NULL;
- 	}
--	spin_unlock_irqrestore(&p->port.lock, flags);
-+	uart_port_unlock_irqrestore(&p->port.lock, flags);
- 	return HRTIMER_NORESTART;
- }
- 
-@@ -1867,7 +1867,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- 	if (iir & UART_IIR_NO_INT)
- 		return 0;
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(&port->lock, flags);
- 
- 	status = serial_port_in(port, UART_LSR);
- 
-@@ -1880,7 +1880,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- 	if ((!up->dma || up->dma->tx_err) && (status & UART_LSR_THRE))
- 		serial8250_tx_chars(up);
- 
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(&port->lock, flags);
- 	return 1;
- }
- EXPORT_SYMBOL_GPL(serial8250_handle_irq);
-@@ -1915,9 +1915,9 @@ static int serial8250_tx_threshold_handle_irq(struct uart_port *port)
- 	if ((iir & UART_IIR_ID) == UART_IIR_THRI) {
- 		struct uart_8250_port *up = up_to_u8250p(port);
- 
--		spin_lock_irqsave(&port->lock, flags);
-+		uart_port_lock_irqsave(&port->lock, flags);
- 		serial8250_tx_chars(up);
--		spin_unlock_irqrestore(&port->lock, flags);
-+		uart_port_unlock_irqrestore(&port->lock, flags);
- 	}
- 
- 	iir = serial_port_in(port, UART_IIR);
-@@ -1932,10 +1932,10 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
- 
- 	serial8250_rpm_get(up);
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(&port->lock, flags);
- 	lsr = serial_port_in(port, UART_LSR);
- 	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(&port->lock, flags);
- 
- 	serial8250_rpm_put(up);
- 
-@@ -2008,13 +2008,13 @@ static void serial8250_break_ctl(struct uart_port *port, int break_state)
- 	unsigned long flags;
- 
- 	serial8250_rpm_get(up);
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(&port->lock, flags);
- 	if (break_state == -1)
- 		up->lcr |= UART_LCR_SBC;
- 	else
- 		up->lcr &= ~UART_LCR_SBC;
- 	serial_port_out(port, UART_LCR, up->lcr);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(&port->lock, flags);
- 	serial8250_rpm_put(up);
- }
- 
-@@ -2266,7 +2266,7 @@ int serial8250_do_startup(struct uart_port *port)
- 		 * the interrupt is enabled.  Delays are necessary to
- 		 * allow register changes to become visible.
- 		 */
--		spin_lock_irqsave(&port->lock, flags);
-+		uart_port_lock_irqsave(&port->lock, flags);
- 		if (up->port.irqflags & IRQF_SHARED)
- 			disable_irq_nosync(port->irq);
- 
-@@ -2282,7 +2282,7 @@ int serial8250_do_startup(struct uart_port *port)
- 
- 		if (port->irqflags & IRQF_SHARED)
- 			enable_irq(port->irq);
--		spin_unlock_irqrestore(&port->lock, flags);
-+		uart_port_unlock_irqrestore(&port->lock, flags);
- 
- 		/*
- 		 * If the interrupt is not reasserted, or we otherwise
-@@ -2304,7 +2304,7 @@ int serial8250_do_startup(struct uart_port *port)
- 	 */
- 	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(&port->lock, flags);
- 	if (up->port.flags & UPF_FOURPORT) {
- 		if (!up->port.irq)
- 			up->port.mctrl |= TIOCM_OUT1;
-@@ -2351,7 +2351,7 @@ int serial8250_do_startup(struct uart_port *port)
- 	}
- 
- dont_test_tx_en:
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(&port->lock, flags);
- 
- 	/*
- 	 * Clear the interrupt registers again for luck, and clear the
-@@ -2418,17 +2418,17 @@ void serial8250_do_shutdown(struct uart_port *port)
- 	/*
- 	 * Disable interrupts from this port
- 	 */
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(&port->lock, flags);
- 	up->ier = 0;
- 	serial_port_out(port, UART_IER, 0);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(&port->lock, flags);
- 
- 	synchronize_irq(port->irq);
- 
- 	if (up->dma)
- 		serial8250_release_dma(up);
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(&port->lock, flags);
- 	if (port->flags & UPF_FOURPORT) {
- 		/* reset interrupts on the AST Fourport board */
- 		inb((port->iobase & 0xfe0) | 0x1f);
-@@ -2437,7 +2437,7 @@ void serial8250_do_shutdown(struct uart_port *port)
- 		port->mctrl &= ~TIOCM_OUT2;
- 
- 	serial8250_set_mctrl(port, port->mctrl);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(&port->lock, flags);
- 
- 	/*
- 	 * Disable break condition and FIFOs
-@@ -2643,7 +2643,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 * interrupts disabled.
- 	 */
- 	serial8250_rpm_get(up);
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(&port->lock, flags);
- 
- 	up->lcr = cval;					/* Save computed LCR */
- 
-@@ -2747,7 +2747,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 		serial_port_out(port, UART_FCR, up->fcr);	/* set fcr */
- 	}
- 	serial8250_set_mctrl(port, port->mctrl);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(&port->lock, flags);
- 	serial8250_rpm_put(up);
- 
- 	/* Don't rewrite B0 */
-@@ -2770,15 +2770,15 @@ void serial8250_do_set_ldisc(struct uart_port *port, struct ktermios *termios)
- {
- 	if (termios->c_line == N_PPS) {
- 		port->flags |= UPF_HARDPPS_CD;
--		spin_lock_irq(&port->lock);
-+		uart_port_lock_irq(&port->lock);
- 		serial8250_enable_ms(port);
--		spin_unlock_irq(&port->lock);
-+		uart_port_unlock_irq(&port->lock);
- 	} else {
- 		port->flags &= ~UPF_HARDPPS_CD;
- 		if (!UART_ENABLE_MS(port, termios->c_cflag)) {
--			spin_lock_irq(&port->lock);
-+			uart_port_lock_irq(&port->lock);
- 			serial8250_disable_ms(port);
--			spin_unlock_irq(&port->lock);
-+			uart_port_unlock_irq(&port->lock);
- 		}
- 	}
- }
-@@ -3225,9 +3225,9 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 	if (port->sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
--		locked = spin_trylock_irqsave(&port->lock, flags);
-+		locked = uart_port_trylock_irqsave(&port->lock, flags);
- 	else
--		spin_lock_irqsave(&port->lock, flags);
-+		uart_port_lock_irqsave(&port->lock, flags);
- 
- 	/*
- 	 *	First save the IER then disable the interrupts
-@@ -3265,7 +3265,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		serial8250_modem_status(up);
- 
- 	if (locked)
--		spin_unlock_irqrestore(&port->lock, flags);
-+		uart_port_unlock_irqrestore(&port->lock, flags);
- 	serial8250_rpm_put(up);
- }
- 
--- 
-2.17.1
+>> From A53 view, a more accurate view might be  - from an interconnect
+>> view of the world (still simplified - i have ignored the sub bus
+>> segments in the representations below):
+>>
+>> msmc {
+>> 	navss_main {
+>> 		cbass_main{
+>> 			cbass_mcu {
+>> 				navss_mcu {
+>> 				};
+>> 				cbass_wkup{
+>> 				};
+>> 			};
+>> 		};
+>> 	};
+>> };
+>>
+>> From R5 view, the view will be very different ofcourse:
+>> view of the world (still simplified):
+>>
+>> cbass_mcu {
+>> 	navss_mcu {
+>> 	};
+>> 	cbass_wkup{
+>> 	};
+>> 	cbass_main{
+>> 		navss_main {
+>> 			msmc {
+>> 			};
+>> 		};
+>> 	};
+>> };
+> 
+> Well if we follow the hardware representation of the interconnects,
+> it should not matter from which processor view you're looking at things.
+> There are just different ranges provided.
+
+AFAIK, the root node needs to have the CPU which is using the DT. So,
+the hierarchy will change based on CPU view (if we describe it fully).
+
+How well we can reuse individual interconnect segments is something I
+have to think about / experiment. Will have to be wary of any "short
+paths" or "cross connections".
+
+Thanks,
+Sekhar
