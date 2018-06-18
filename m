@@ -1,46 +1,25 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v4 22/26] devicetree: fix name of pinctrl-bindings.txt
-Date: Mon, 18 Jun 2018 06:48:13 +0100
-Message-ID: <20180618054813.GA31141@dell>
-References: <cover.1529079119.git.mchehab+samsung@kernel.org>
- <1832904c012f823958663464ac4fb249f77978b5.1529079120.git.mchehab+samsung@kernel.org>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [RFC][PATCH 1/6] printk: move printk_safe macros to printk header
+Date: Mon, 18 Jun 2018 15:27:31 +0900
+Message-ID: <20180618062731.GB27996@jagdpanzerIV>
+References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
+ <20180615093919.559-2-sergey.senozhatsky@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1832904c012f823958663464ac4fb249f77978b5.1529079120.git.mchehab+samsung@kernel.org>
+In-Reply-To: <20180615093919.559-2-sergey.senozhatsky@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Cc: Linux Doc Mailing List <linux-doc@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mauro Carvalho Chehab <mchehab@infradead.org>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org, linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 15 Jun 2018, Mauro Carvalho Chehab wrote:
+On (06/15/18 18:39), Sergey Senozhatsky wrote:
+> Make printk_safe_enter_irqsave()/etc macros available to the
+> rest of the kernel, so we can use them in TTY and UART code.
 
-> Rename:
-> 	pinctrl-binding.txt -> pinctrl-bindings.txt
-> 
-> In order to match the current name of this file.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> ---
->  Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt | 2 +-
+Sorry, this patch is incomplete. Since we are going to use printk_safe()
+API in modules (serial console drivers) printk_safe() functions [enter and
+exit] must be exported via EXPORT_SYMBOL_GPL().
 
->  Documentation/devicetree/bindings/mfd/as3722.txt              | 2 +-
-
-Acked-by: Lee Jones <lee.jones@linaro.org>
-
->  .../devicetree/bindings/mmc/microchip,sdhci-pic32.txt         | 2 +-
->  Documentation/devicetree/bindings/mmc/sdhci-st.txt            | 2 +-
->  .../devicetree/bindings/pinctrl/pinctrl-max77620.txt          | 4 ++--
->  .../devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt          | 4 ++--
->  Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt   | 4 ++--
->  .../devicetree/bindings/serial/microchip,pic32-uart.txt       | 2 +-
->  Documentation/devicetree/bindings/spi/spi-st-ssc.txt          | 2 +-
->  9 files changed, 12 insertions(+), 12 deletions(-)
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+	-ss
