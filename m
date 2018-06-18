@@ -1,66 +1,50 @@
-From: yixin zhu <yixin.zhu@linux.intel.com>
-Subject: Re: [PATCH 2/7] clk: intel: Add clock driver for GRX500 SoC
-Date: Mon, 18 Jun 2018 18:05:15 +0800
-Message-ID: <4bb8f16e-2663-3a62-3c09-dc58fcb11831@linux.intel.com>
-References: <20180612054034.4969-1-songjun.wu@linux.intel.com>
- <20180612054034.4969-3-songjun.wu@linux.intel.com>
- <20180612223725.GC2197@rob-hp-laptop>
- <41163f48-ce5c-efae-2b6d-b93d75e422e5@linux.intel.com>
- <CAL_JsqJVcKPexrVrnGnr-zga1n6n00nYdUmKZWOz2VQJ7BV-oA@mail.gmail.com>
+From: Radu Pirea <radu.pirea@microchip.com>
+Subject: [PATCH v8 1/6] MAINTAINERS: add at91 usart mfd driver
+Date: Mon, 18 Jun 2018 13:08:24 +0300
+Message-ID: <20180618100829.13875-2-radu.pirea@microchip.com>
+References: <20180618100829.13875-1-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqJVcKPexrVrnGnr-zga1n6n00nYdUmKZWOz2VQJ7BV-oA@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <20180618100829.13875-1-radu.pirea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Songjun Wu <songjun.wu@linux.intel.com>, hua.ma@linux.intel.com, chuanhua.lei@linux.intel.com, Linux-MIPS <linux-mips@linux-mips.org>, qi-ming.wu@intel.com, linux-clk <linux-clk@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, devicetree@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>
+To: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
+Cc: linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>
 List-Id: linux-serial@vger.kernel.org
 
+Added entry for at91 usart mfd driver.
 
+Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+---
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-On 6/14/2018 10:09 PM, Rob Herring wrote:
-> On Thu, Jun 14, 2018 at 2:40 AM, yixin zhu <yixin.zhu@linux.intel.com> wrote:
->>
->>
->> On 6/13/2018 6:37 AM, Rob Herring wrote:
->>>
->>> On Tue, Jun 12, 2018 at 01:40:29PM +0800, Songjun Wu wrote:
->>>>
->>>> From: Yixin Zhu <yixin.zhu@linux.intel.com>
->>>>
->>>> PLL of GRX500 provide clock to DDR, CPU, and peripherals as show below
-> 
-> [...]
-> 
->>>> +Example:
->>>> +       clkgate0: clkgate0 {
->>>> +               #clock-cells = <1>;
->>>> +               compatible = "intel,grx500-gate0-clk";
->>>> +               reg = <0x114>;
->>>> +               clock-output-names = "gate_xbar0", "gate_xbar1",
->>>> "gate_xbar2",
->>>> +               "gate_xbar3", "gate_xbar6", "gate_xbar7";
->>>> +       };
->>>
->>>
->>> We generally don't do a clock node per clock or few clocks but rather 1
->>> clock node per clock controller block. See any recent clock bindings.
->>>
->>> Rob
->>
->> Do you mean only one example is needed per clock controller block?
->> cpuclk is not needed in the document?
-> 
-> No, I mean generally we have 1 DT node for the h/w block with all the
-> clock control registers rather than nodes with a single register and 1
-> or a couple of clocks. Sometimes the clock registers are mixed with
-> other functions which complicates things a bit. But I can't tell that
-> here because you haven't documented what's in the rest of the register
-> space.
-> 
-> Rob
-> 
-Thanks
-Will update to use one DT node for the whole clock controller.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8e2a2fddbd19..12203d07c6af 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9160,6 +9160,7 @@ M:	Richard Genoud <richard.genoud@gmail.com>
+ S:	Maintained
+ F:	drivers/tty/serial/atmel_serial.c
+ F:	drivers/tty/serial/atmel_serial.h
++F:	Documentation/devicetree/bindings/mfd/atmel-usart.txt
+ 
+ MICROCHIP / ATMEL DMA DRIVER
+ M:	Ludovic Desroches <ludovic.desroches@microchip.com>
+@@ -9192,6 +9193,14 @@ S:	Supported
+ F:	drivers/mtd/nand/raw/atmel/*
+ F:	Documentation/devicetree/bindings/mtd/atmel-nand.txt
+ 
++MICROCHIP AT91 USART MFD DRIVER
++M:	Radu Pirea <radu.pirea@microchip.com>
++L:	linux-kernel@vger.kernel.org
++S:	Supported
++F:	drivers/mfd/at91-usart.c
++F:	include/dt-bindings/mfd/at91-usart.h
++F:	Documentation/devicetree/bindings/mfd/atmel-usart.txt
++
+ MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER
+ M:	Woojung Huh <Woojung.Huh@microchip.com>
+ M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+-- 
+2.17.1
