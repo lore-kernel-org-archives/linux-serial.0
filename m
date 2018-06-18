@@ -1,85 +1,46 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [RFC PATCH 3/6] serial: 8250_omap: Add support for AM654 UART controller
-Date: Fri, 15 Jun 2018 15:56:08 -0600
-Message-ID: <CAL_JsqLvygcUSqJpAF_xTt3QRq9=xgu7nF3UDchgPYk+QDj1JA@mail.gmail.com>
-References: <20180605060125.9518-1-nm@ti.com> <20180605060125.9518-4-nm@ti.com>
- <20180612210640.GA20728@rob-hp-laptop> <8c553dcc-e352-6e69-e08c-4e6237555ea7@ti.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v4 22/26] devicetree: fix name of pinctrl-bindings.txt
+Date: Mon, 18 Jun 2018 06:48:13 +0100
+Message-ID: <20180618054813.GA31141@dell>
+References: <cover.1529079119.git.mchehab+samsung@kernel.org>
+ <1832904c012f823958663464ac4fb249f77978b5.1529079120.git.mchehab+samsung@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <8c553dcc-e352-6e69-e08c-4e6237555ea7@ti.com>
+Content-Disposition: inline
+In-Reply-To: <1832904c012f823958663464ac4fb249f77978b5.1529079120.git.mchehab+samsung@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sekhar Nori <nsekhar@ti.com>
-Cc: Nishanth Menon <nm@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Tony Lindgren <tony@atomide.com>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>
+To: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc: Linux Doc Mailing List <linux-doc@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Mauro Carvalho Chehab <mchehab@infradead.org>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org, linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jun 15, 2018 at 11:17 AM, Sekhar Nori <nsekhar@ti.com> wrote:
-> Hi Rob,
->
-> On Wednesday 13 June 2018 02:36 AM, Rob Herring wrote:
->> On Tue, Jun 05, 2018 at 01:01:22AM -0500, Nishanth Menon wrote:
->>> AM654 uses a UART controller that is compatible (partially) with
->>> existing 8250 UART, however, has a few differences with respect to DMA
->>> support and control paths. Introduce a base definition that allows us
->>> to build up the differences in follow on patches.
->>>
->>> Cc: Sekhar Nori <nsekhar@ti.com>
->>> Cc: Vignesh R <vigneshr@ti.com>
->>> Signed-off-by: Nishanth Menon <nm@ti.com>
->>> ---
->>>  Documentation/devicetree/bindings/serial/omap_serial.txt | 1 +
->>>  drivers/tty/serial/8250/8250_omap.c                      | 1 +
->>>  2 files changed, 2 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/serial/omap_serial.txt b/Documentation/devicetree/bindings/serial/omap_serial.txt
->>> index 4b0f05adb228..c35d5ece1156 100644
->>> --- a/Documentation/devicetree/bindings/serial/omap_serial.txt
->>> +++ b/Documentation/devicetree/bindings/serial/omap_serial.txt
->>> @@ -1,6 +1,7 @@
->>>  OMAP UART controller
->>>
->>>  Required properties:
->>> +- compatible : should be "ti,am654-uart" for AM654 controllers
->>
->> Not compatible with any existing TI 8250 UARTs?
->
-> Curious on why you asked about this. Are you suggesting why not:
->
-> "ti,<new-soc>-uart", "ti,<old-soc>-uart"
+On Fri, 15 Jun 2018, Mauro Carvalho Chehab wrote:
 
-Correct.
+> Rename:
+> 	pinctrl-binding.txt -> pinctrl-bindings.txt
+> 
+> In order to match the current name of this file.
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/media/stih407-c8sectpfe.txt | 2 +-
 
-> or you are asking why introduce "ti,<new-soc>-uart" unless there is
-> clear demonstrable need for using it in driver code.
->
-> In general, I think "ti,<new-soc>-uart", "ti,<old-soc>-uart" in
-> device-tree (and by extension in binding document) is better even in
-> there are no _known_ incompatibilities at the time of initial driver
-> submission. The reason is silicon integration and process differences
-> many times spill over into driver.
+>  Documentation/devicetree/bindings/mfd/as3722.txt              | 2 +-
 
-Yes, and chip designers can't be trusted. ;)
+Acked-by: Lee Jones <lee.jones@linaro.org>
 
-> Of course, the idea is not to go postal and create a new compatible for
-> every pin-compatible part number that gets created, but probably a new
-> compatible should be created for a new silicon die.
+>  .../devicetree/bindings/mmc/microchip,sdhci-pic32.txt         | 2 +-
+>  Documentation/devicetree/bindings/mmc/sdhci-st.txt            | 2 +-
+>  .../devicetree/bindings/pinctrl/pinctrl-max77620.txt          | 4 ++--
+>  .../devicetree/bindings/pinctrl/pinctrl-mcp23s08.txt          | 4 ++--
+>  Documentation/devicetree/bindings/pinctrl/pinctrl-rk805.txt   | 4 ++--
+>  .../devicetree/bindings/serial/microchip,pic32-uart.txt       | 2 +-
+>  Documentation/devicetree/bindings/spi/spi-st-ssc.txt          | 2 +-
+>  9 files changed, 12 insertions(+), 12 deletions(-)
 
-Yes, that's the criteria I would use too. That's sometimes hard if
-it's not the chip vendor doing the DT bindings.
-
-> We have just started introducing support for this SoC, and since it
-> reuses many IPs, this question is likely to come up again.
->
-> In this particular case though, Nishanth is perfectly right in not saying
->
-> compatible : should be "ti,am654-uart", "ti,omap4-uart"
->
-> Because we *know* UART DMA integration is different and a match against
-> omap4 would result in non-working UART once DMA is enabled by default.
-
-Okay, makes sense. I'd suggest rewording the commit message to include
-this. The "compatible to 8250 except for DMA" part I would have
-applied to all TI UARTs rather than DMA differences with other TI
-UARTs.
-
-Rob
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
