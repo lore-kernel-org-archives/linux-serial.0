@@ -1,71 +1,62 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 4/7] tty: serial: lantiq: Always use readl()/writel()
-Date: Mon, 18 Jun 2018 13:52:12 +0200
-Message-ID: <CAK8P3a3Zgtk56RAuP=J=-F9VPLxCu=vyGRFpTdBjtnWbOX+4KQ@mail.gmail.com>
-References: <20180612054034.4969-1-songjun.wu@linux.intel.com>
- <20180612054034.4969-5-songjun.wu@linux.intel.com> <CAK8P3a0K6qezHLcjkeq0zd+iQJQc_qbT2JhtZGrCNRT495sUvQ@mail.gmail.com>
- <f992c920-7e57-8099-b13c-f3651c0d1594@linux.intel.com>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [RFC][PATCH 0/6] Use printk_safe context for TTY and UART port
+ locks
+Date: Mon, 18 Jun 2018 14:38:18 +0100
+Message-ID: <20180618143818.50b2f2f9@alans-desktop>
+References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f992c920-7e57-8099-b13c-f3651c0d1594@linux.intel.com>
+In-Reply-To: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Wu, Songjun" <songjun.wu@linux.intel.com>
-Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@intel.com, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, qi-ming.wu@intel.com, linux-clk <linux-clk@vger.kernel.org>, linux-serial@vger.kernel.org, DTML <devicetree@vger.kernel.org>, James Hogan <jhogan@kernel.org>, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ralf Baechle <ralf@linux-mips.org>
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 18, 2018 at 11:39 AM, Wu, Songjun
-<songjun.wu@linux.intel.com> wrote:
->
->
-> On 6/14/2018 6:07 PM, Arnd Bergmann wrote:
->>
->> On Tue, Jun 12, 2018 at 7:40 AM, Songjun Wu <songjun.wu@linux.intel.com>
->> wrote:
->>>
->>> Previous implementation uses platform-dependent functions
->>> ltq_w32()/ltq_r32() to access registers. Those functions are not
->>> available for other SoC which uses the same IP.
->>> Change to OS provided readl()/writel() and readb()/writeb(), so
->>> that different SoCs can use the same driver.
->>>
->>> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
->>
->> Are there any big-endian machines using this driver? The original
->> definition
->> of ltq_r32() uses non-byteswapping __raw_readl() etc, which suggests
->> that the registers might be wired up in a way that matches the CPU
->> endianess (this is usally a bad idea in hardware design, but nothing
->> we can influence in the OS).
->>
->> When you change it to readl(), that will breaks all machines that rely
->> on the old behavior on big-endian kernels.
->
-> It will not break existing big-endian SoC as SWAP_IO_SPACE is disabled.
->
-> Disable SWAP_IO_SPACE will not impact ltq_r32 as it uses non-byte swapping
-> __raw_readl() and it makes readl work in big-endian kernel too.
->
-> The old Lantiq platform enable SWAP_IO_SPACE to support PCI as it's a
-> little-endian bus plus PCI TX/RX swap enable impacted both data and control
-> path.
+> It doesn't come as a surprise that recursive printk() calls are not the
+> only way for us to deadlock in printk() and we still have a whole bunch
+> of other printk() deadlock scenarios. For instance, those that involve
+> TTY port->lock spin_lock and UART port->lock spin_lock.
 
-Right, I see now what you mean. I was getting confused by how MIPS
-defines the __raw_* accessors differently from other big-endian
-architectures when CONFIG_SWAP_IO_SPACE is disabled.
+The tty layer code there is not re-entrant. Nor is it supposed to be
 
-I suppose this just means you can't use any PCI drivers using __raw_
-accessors or memcpy_fromio(), but your patch to the serial driver is fine.
+> So the idea of this patch set is to take tty_port->lock and
+> uart_port->lock from printk_safe context and to eliminate some
+> of non-recursive printk() deadlocks - the ones that don't start
+> in printk(), but involve console related locks and thus eventually
+> deadlock us in printk(). For this purpose the patch set introduces
+> several helper macros:
 
-> Alternatively PCI device driver has to do endian swap, It is better to let
-> PCI device driver to do endian swap instead because SWAP_IO_SPACE is global
-> wide macro.
-> Once we set it, other peripheral such as USB has to change its register
-> access as well
+I don't see how this helps - if you recurse into the uart code you are
+still hitting the paths that are unsafe when re-entered. All you've done
+is messed up a pile of locking code on critical performance paths.
 
-I'm not entirely sure what you mean here, I would assume that aiming for
-maximum compatibility with existing drivers would be the main goal here.
-The USB platform drivers can already deal with being compiled for either
-(or both) endianess.
+As it stands I think it's a bad idea.
 
-      Arnd
+> Of course, TTY and UART port spin_locks are not the only locks that
+> we can deadlock on. So this patch set does not address all deadlock
+> scenarios, it just makes a small step forward.
+> 
+> Any opinions?
+
+The cure is worse than the disease.
+
+The only case that's worth looking at is the direct polled console code
+paths. The moment you touch the other layers you add essentially never
+needed code to hot paths.
+
+Given printk nowdays is already somewhat unreliable with all the perf
+related changes, and we have other good debug tools I think it would be
+far cleaner to have some kind of
+
+
+	if (spin_trylock(...)) {
+		console_defer(buffer);
+		return;
+	}
+
+helper layer in the printk/console logic, at least for the non panic/oops
+cases.
+
+Alan
