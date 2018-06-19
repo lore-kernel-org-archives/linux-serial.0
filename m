@@ -1,79 +1,45 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] serial: mps2-uart: Initialize early console
-Date: Tue, 19 Jun 2018 06:01:08 -0700
-Message-ID: <da7ba538-a81e-f2d2-d51c-1b39f5b455f0@roeck-us.net>
-References: <1529384097-1631-1-git-send-email-linux@roeck-us.net>
- <173551dd-3632-08a6-ec42-2ee416ccb9ad@arm.com>
+From: Nishanth Menon <nm@ti.com>
+Subject: [PATCH 2/2] serial: 8250_omap: Add support for AM654 UART controller
+Date: Tue, 19 Jun 2018 14:44:50 -0500
+Message-ID: <20180619194450.6353-3-nm@ti.com>
+References: <20180619194450.6353-1-nm@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <173551dd-3632-08a6-ec42-2ee416ccb9ad@arm.com>
-Content-Language: en-US
+In-Reply-To: <20180619194450.6353-1-nm@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vladimir Murzin <vladimir.murzin@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Liviu Dudau <liviu.dudau@arm.com>, Sudeep Holla <sudeep.holla@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Nishanth Menon <nm@ti.com>, Tony Lindgren <tony@atomide.com>, Tero Kristo <t-kristo@ti.com>, Vignesh R <vigneshr@ti.com>, Jiri Slaby <jslaby@suse.com>, Sekhar Nori <nsekhar@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 06/19/2018 02:07 AM, Vladimir Murzin wrote:
-> Hi Guenter,
-> 
-> On 19/06/18 05:54, Guenter Roeck wrote:
->> The early console code for mps2-uart assumes that the serial hardware is
->> enabled for transmit when the system boots. However, this is not the case
->> after reset. This results in a hang in mps2_early_putchar() if the serial
->> transmitter is not enabled by a boot loader or ROM monitor.
-> 
-> I was under impression that for earlycon there is an assumption/requirement
-> that the serial port must already be setup and configured. For instance, I
-> see such requirement for pl011. So it looks like boot code's fault not to
-> enable serial (for mps2 it needs to setup BAUDDIV as well).
-> 
+AM654 uses a UART controller that is compatible (partially) with
+existing 8250 UART, however, has a few differences with respect to DMA
+support and control paths. Introduce a base definition that allows us
+to build up the differences in follow on patches.
 
-Good to know. Fine with me as well; I wasn't aware that such a requirement
-existed.
+Cc: Sekhar Nori <nsekhar@ti.com>
+Cc: Vignesh R <vigneshr@ti.com>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+---
 
-Guenter
+Changes since RFC: Driver change has been split out with corresponding description.
 
-> I'm not against the patch per se, but I'd like to hear if my understanding of
-> earlycon requirements is correct or not.
-> 
-> Cheers
-> Vladimir
-> 
->>
->> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->> ---
->>   drivers/tty/serial/mps2-uart.c | 9 +++++++++
->>   1 file changed, 9 insertions(+)
->>
->> diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
->> index 9f8f63719126..0743a0551ce1 100644
->> --- a/drivers/tty/serial/mps2-uart.c
->> +++ b/drivers/tty/serial/mps2-uart.c
->> @@ -448,6 +448,14 @@ static struct console mps2_uart_console = {
->>   
->>   #define MPS2_SERIAL_CONSOLE (&mps2_uart_console)
->>   
->> +static void mps2_early_init(struct uart_port *port)
->> +{
->> +	u8 control = readb(port->membase + UARTn_CTRL);
->> +
->> +	control |= UARTn_CTRL_TX_ENABLE;
->> +	writeb(control, port->membase + UARTn_CTRL);
->> +}
->> +
->>   static void mps2_early_putchar(struct uart_port *port, int ch)
->>   {
->>   	while (readb(port->membase + UARTn_STATE) & UARTn_STATE_TX_FULL)
->> @@ -469,6 +477,7 @@ static int __init mps2_early_console_setup(struct earlycon_device *device,
->>   	if (!device->port.membase)
->>   		return -ENODEV;
->>   
->> +	mps2_early_init(&device->port);
->>   	device->con->write = mps2_early_write;
->>   
->>   	return 0;
->>
-> 
-> 
+RFC: https://patchwork.kernel.org/patch/10447641/
+
+ drivers/tty/serial/8250/8250_omap.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 1b337fee07ed..a019286f8bb6 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1115,6 +1115,7 @@ static const u8 am3352_habit = OMAP_DMA_TX_KICK | UART_ERRATA_CLOCK_DISABLE;
+ static const u8 dra742_habit = UART_ERRATA_CLOCK_DISABLE;
+ 
+ static const struct of_device_id omap8250_dt_ids[] = {
++	{ .compatible = "ti,am654-uart" },
+ 	{ .compatible = "ti,omap2-uart" },
+ 	{ .compatible = "ti,omap3-uart" },
+ 	{ .compatible = "ti,omap4-uart", .data = &omap4_habit, },
+-- 
+2.15.1
