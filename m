@@ -1,48 +1,69 @@
-From: Robin Gong <yibin.gong@nxp.com>
-Subject: [PATCH v5 1/7] tty: serial: imx: correct dma cookie status
-Date: Wed, 20 Jun 2018 00:56:58 +0800
-Message-ID: <1529427424-12321-2-git-send-email-yibin.gong@nxp.com>
-References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
+From: Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: Re: [PATCH] serial: mps2-uart: Initialize early console
+Date: Tue, 19 Jun 2018 10:07:01 +0100
+Message-ID: <173551dd-3632-08a6-ec42-2ee416ccb9ad@arm.com>
+References: <1529384097-1631-1-git-send-email-linux@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: vkoul@kernel.org, s.hauer@pengutronix.de, l.stach@pengutronix.de, dan.j.williams@intel.com, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: dmaengine@vger.kernel.org, linux-imx@nxp.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1529384097-1631-1-git-send-email-linux@roeck-us.net>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Guenter Roeck <linux@roeck-us.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Liviu Dudau <liviu.dudau@arm.com>, Sudeep Holla <sudeep.holla@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-Correct to check the right rx dma cookie status in spit of it
-works because only one cookie is running in the current sdma.
-But it will not once sdma driver support multi cookies
-running based on virt-dma.
+Hi Guenter,
 
-Signed-off-by: Robin Gong <yibin.gong@nxp.com>
----
- drivers/tty/serial/imx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 19/06/18 05:54, Guenter Roeck wrote:
+> The early console code for mps2-uart assumes that the serial hardware is
+> enabled for transmit when the system boots. However, this is not the case
+> after reset. This results in a hang in mps2_early_putchar() if the serial
+> transmitter is not enabled by a boot loader or ROM monitor.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 4e85357..2879407 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1051,7 +1051,7 @@ static void imx_uart_dma_rx_callback(void *data)
- 	unsigned int r_bytes;
- 	unsigned int bd_size;
- 
--	status = dmaengine_tx_status(chan, (dma_cookie_t)0, &state);
-+	status = dmaengine_tx_status(chan, sport->rx_cookie, &state);
- 
- 	if (status == DMA_ERROR) {
- 		imx_uart_clear_rx_errors(sport);
--- 
-2.7.4
+I was under impression that for earlycon there is an assumption/requirement
+that the serial port must already be setup and configured. For instance, I 
+see such requirement for pl011. So it looks like boot code's fault not to
+enable serial (for mps2 it needs to setup BAUDDIV as well).
+
+I'm not against the patch per se, but I'd like to hear if my understanding of
+earlycon requirements is correct or not.
+
+Cheers
+Vladimir
+
+> 
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> ---
+>  drivers/tty/serial/mps2-uart.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
+> index 9f8f63719126..0743a0551ce1 100644
+> --- a/drivers/tty/serial/mps2-uart.c
+> +++ b/drivers/tty/serial/mps2-uart.c
+> @@ -448,6 +448,14 @@ static struct console mps2_uart_console = {
+>  
+>  #define MPS2_SERIAL_CONSOLE (&mps2_uart_console)
+>  
+> +static void mps2_early_init(struct uart_port *port)
+> +{
+> +	u8 control = readb(port->membase + UARTn_CTRL);
+> +
+> +	control |= UARTn_CTRL_TX_ENABLE;
+> +	writeb(control, port->membase + UARTn_CTRL);
+> +}
+> +
+>  static void mps2_early_putchar(struct uart_port *port, int ch)
+>  {
+>  	while (readb(port->membase + UARTn_STATE) & UARTn_STATE_TX_FULL)
+> @@ -469,6 +477,7 @@ static int __init mps2_early_console_setup(struct earlycon_device *device,
+>  	if (!device->port.membase)
+>  		return -ENODEV;
+>  
+> +	mps2_early_init(&device->port);
+>  	device->con->write = mps2_early_write;
+>  
+>  	return 0;
+> 
