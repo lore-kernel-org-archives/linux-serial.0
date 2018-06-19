@@ -1,29 +1,65 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [RFC][PATCH 0/6] Use printk_safe context for TTY and UART port
- locks
-Date: Tue, 19 Jun 2018 10:08:30 +0200
-Message-ID: <20180619080830.GD2476@hirez.programming.kicks-ass.net>
-References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
- <20180618143818.50b2f2f9@alans-desktop>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: [RFC PATCH v2 1/6] serial: uartps: Do not initialize field to
+ zero again
+Date: Tue, 19 Jun 2018 10:09:05 +0200
+Message-ID: <e7b01bd9-5763-75c0-1384-2536313f5854@monstr.eu>
+References: <cover.1528288895.git.michal.simek@xilinx.com>
+ <e8b0169887855a5ef2c1a0456842f650601b451c.1528288895.git.michal.simek@xilinx.com>
+Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180618143818.50b2f2f9@alans-desktop>
+In-Reply-To: <e8b0169887855a5ef2c1a0456842f650601b451c.1528288895.git.michal.simek@xilinx.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, Alexander Graf <agraf@suse.de>, shubhraj@xilinx.com, robh@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 18, 2018 at 02:38:18PM +0100, Alan Cox wrote:
-> Given printk nowdays is already somewhat unreliable with all the perf
-> related changes,
+On 6.6.2018 14:41, Michal Simek wrote:
+> Writing zero and NULLs to already initialized fields is not needed.
+> Remove this additional writes.
+> 
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> ---
+> 
+> Changes in v2:
+> - new patch - it can be sent separately too
+> 
+>  drivers/tty/serial/xilinx_uartps.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> index 8a3e34234e98..5f116f3ecd4a 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -1510,15 +1510,12 @@ static int cdns_uart_probe(struct platform_device *pdev)
+>  
+>  	/* At this point, we've got an empty uart_port struct, initialize it */
+>  	spin_lock_init(&port->lock);
+> -	port->membase	= NULL;
+> -	port->irq	= 0;
+>  	port->type	= PORT_UNKNOWN;
+>  	port->iotype	= UPIO_MEM32;
+>  	port->flags	= UPF_BOOT_AUTOCONF;
+>  	port->ops	= &cdns_uart_ops;
+>  	port->fifosize	= CDNS_UART_FIFO_SIZE;
+>  	port->line	= id;
+> -	port->dev	= NULL;
+>  
+>  	/*
+>  	 * Register the port.
+> 
 
-printk is a steaming pile of @#$#@, unreliable doesn't even begin to
-cover it.
+Alan, Rob, Greg: Any comment about this RFC?
 
-> and we have other good debug tools
+Thanks,
+Michal
 
-What other good debug tools do you have? The only thing I have that
-actually works is earlyser/8250_early -- and I route everything printk
-into that.
+-- 
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Xilinx Microblaze
+Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
+U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP SoCs
