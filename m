@@ -1,7 +1,7 @@
 From: Robin Gong <yibin.gong@nxp.com>
-Subject: [PATCH v5 6/7] dmaengine: imx-sdma: add sdma_transfer_init to decrease code overlap
-Date: Wed, 20 Jun 2018 00:57:03 +0800
-Message-ID: <1529427424-12321-7-git-send-email-yibin.gong@nxp.com>
+Subject: [PATCH v5 7/7] dmaengine: imx-sdma: alloclate bd memory from dma pool
+Date: Wed, 20 Jun 2018 00:57:04 +0800
+Message-ID: <1529427424-12321-8-git-send-email-yibin.gong@nxp.com>
 References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,137 +12,111 @@ To: vkoul@kernel.org, s.hauer@pengutronix.de, l.stach@pengutronix.de, dan.j.will
 Cc: linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-There are lot of codes overlap between prep_sg and prep_cyclic function.
-Add sdma_transfer_init() function to elimated the code overlap.
+dma_terminate_all maybe called in interrupt context which means
+WARN_ON() will be triggered as below when bd memory freed. Allocat
+bd memory from dma pool instead.
+
+[   29.161079] WARNING: CPU: 1 PID: 533 at ./include/linux/dma-mapping.h:541 sdma_free_bd+0xa4/0xb4
+[   29.169883] Modules linked in:
+[   29.172990] CPU: 1 PID: 533 Comm: mpegaudioparse0 Not tainted 4.18.0-rc1-next-20180618-00009-gf79f22c #20
+[   29.182597] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[   29.189163] Backtrace:
+[   29.191685] [<c010d1e0>] (dump_backtrace) from [<c010d4a0>] (show_stack+0x18/0x1c)
+[   29.199306]  r7:00000000 r6:600f0093 r5:00000000 r4:c107db7c
+[   29.205029] [<c010d488>] (show_stack) from [<c0a5bba0>] (dump_stack+0xb4/0xe8)
+[   29.212312] [<c0a5baec>] (dump_stack) from [<c012703c>] (__warn+0x104/0x130)
+[   29.219411]  r9:ec3e817c r8:0000021d r7:00000009 r6:c0d1d440 r5:00000000 r4:00000000
+[   29.227204] [<c0126f38>] (__warn) from [<c0127180>] (warn_slowpath_null+0x44/0x50)
+[   29.234821]  r8:ed129dc4 r7:c0b01978 r6:c04d4e90 r5:0000021d r4:c0d1d440
+[   29.241574] [<c012713c>] (warn_slowpath_null) from [<c04d4e90>] (sdma_free_bd+0xa4/0xb4)
+[   29.249706]  r6:4c001000 r5:f082e000 r4:00000024
+[   29.254376] [<c04d4dec>] (sdma_free_bd) from [<c04d4eb4>] (sdma_desc_free+0x14/0x20)
+[   29.262163]  r7:ec3e8110 r6:00000100 r5:00000200 r4:ecf89a00
+[   29.267873] [<c04d4ea0>] (sdma_desc_free) from [<c04d229c>] (vchan_dma_desc_free_list+0xa4/0xac)
+[   29.276697]  r5:00000200 r4:ed129d9c
+[   29.280326] [<c04d21f8>] (vchan_dma_desc_free_list) from [<c04d482c>] (sdma_disable_channel_with_delay+0x14c/0x188)
+[   29.290808]  r9:ecae560c r8:ec3e815c r7:00000000 r6:c1008908 r5:ed129dc4 r4:ec3e8110
+[   29.298605] [<c04d46e0>] (sdma_disable_channel_with_delay) from [<c07c5c84>] (snd_dmaengine_pcm_trigger+0x90/0x1b0)
+[   29.309087]  r8:ecae5000 r7:ec940800 r6:ed31bd80 r5:ecadb200 r4:ec26a700
+[   29.315855] [<c07c5bf4>] (snd_dmaengine_pcm_trigger) from [<c07dd800>] (soc_pcm_trigger+0xb4/0x130)
+[   29.324953]  r8:ecae5000 r7:ec940800 r6:00000000 r5:ecadb200 r4:ec26a700
+[   29.331716] [<c07dd74c>] (soc_pcm_trigger) from [<c07bc008>] (snd_pcm_do_stop+0x58/0x5c)
+[   29.339859]  r9:ecaed5a8 r8:ed31bdc0 r7:00000000 r6:00000001 r5:ecadb200 r4:c0b9c4d0
+[   29.347652] [<c07bbfb0>] (snd_pcm_do_stop) from [<c07bbde8>] (snd_pcm_action_single+0x40/0x80)
+[   29.356315] [<c07bbda8>] (snd_pcm_action_single) from [<c07bbf1c>] (snd_pcm_action+0xf4/0xfc)
+[   29.364883]  r7:00000001 r6:c0b9c4d0 r5:ecadb2d4 r4:ecadb200
+[   29.370593] [<c07bbe28>] (snd_pcm_action) from [<c07bc8dc>] (snd_pcm_drop+0x58/0x9c)
 
 Signed-off-by: Robin Gong <yibin.gong@nxp.com>
 ---
- drivers/dma/imx-sdma.c | 83 ++++++++++++++++++++++----------------------------
- 1 file changed, 37 insertions(+), 46 deletions(-)
+ drivers/dma/imx-sdma.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index 9f1a462..f8becaf 100644
+index f8becaf..7dab7e9 100644
 --- a/drivers/dma/imx-sdma.c
 +++ b/drivers/dma/imx-sdma.c
-@@ -1248,6 +1248,40 @@ static void sdma_free_chan_resources(struct dma_chan *chan)
- 	clk_disable(sdma->clk_ahb);
+@@ -24,6 +24,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/device.h>
+ #include <linux/dma-mapping.h>
++#include <linux/dmapool.h>
+ #include <linux/firmware.h>
+ #include <linux/slab.h>
+ #include <linux/platform_device.h>
+@@ -343,6 +344,7 @@ struct sdma_channel {
+ 	u32				shp_addr, per_addr;
+ 	enum dma_status			status;
+ 	struct imx_dma_data		data;
++	struct dma_pool			*bd_pool;
+ };
+ 
+ #define IMX_DMA_SG_LOOP		BIT(0)
+@@ -1153,11 +1155,10 @@ static int sdma_request_channel0(struct sdma_engine *sdma)
+ 
+ static int sdma_alloc_bd(struct sdma_desc *desc)
+ {
+-	u32 bd_size = desc->num_bd * sizeof(struct sdma_buffer_descriptor);
+ 	int ret = 0;
+ 
+-	desc->bd = dma_zalloc_coherent(NULL, bd_size, &desc->bd_phys,
+-					GFP_ATOMIC);
++	desc->bd = dma_pool_alloc(desc->sdmac->bd_pool, GFP_ATOMIC,
++					&desc->bd_phys);
+ 	if (!desc->bd) {
+ 		ret = -ENOMEM;
+ 		goto out;
+@@ -1168,9 +1169,7 @@ static int sdma_alloc_bd(struct sdma_desc *desc)
+ 
+ static void sdma_free_bd(struct sdma_desc *desc)
+ {
+-	u32 bd_size = desc->num_bd * sizeof(struct sdma_buffer_descriptor);
+-
+-	dma_free_coherent(NULL, bd_size, desc->bd, desc->bd_phys);
++	dma_pool_free(desc->sdmac->bd_pool, desc->bd, desc->bd_phys);
  }
  
-+static struct sdma_desc *sdma_transfer_init(struct sdma_channel *sdmac,
-+				enum dma_transfer_direction direction, u32 bds)
-+{
-+	struct sdma_desc *desc;
-+
-+	desc = kzalloc((sizeof(*desc)), GFP_NOWAIT);
-+	if (!desc)
-+		goto err_out;
-+
-+	sdmac->status = DMA_IN_PROGRESS;
-+	sdmac->direction = direction;
-+	sdmac->flags = 0;
-+
-+	desc->chn_count = 0;
-+	desc->chn_real_count = 0;
-+	desc->buf_tail = 0;
-+	desc->buf_ptail = 0;
-+	desc->sdmac = sdmac;
-+	desc->num_bd = bds;
-+
-+	if (sdma_alloc_bd(desc))
-+		goto err_desc_out;
-+
-+	if (sdma_load_context(sdmac))
-+		goto err_desc_out;
-+
-+	return desc;
-+
-+err_desc_out:
-+	kfree(desc);
-+err_out:
-+	return NULL;
-+}
-+
- static struct dma_async_tx_descriptor *sdma_prep_slave_sg(
- 		struct dma_chan *chan, struct scatterlist *sgl,
- 		unsigned int sg_len, enum dma_transfer_direction direction,
-@@ -1260,36 +1294,13 @@ static struct dma_async_tx_descriptor *sdma_prep_slave_sg(
- 	struct scatterlist *sg;
- 	struct sdma_desc *desc;
+ static void sdma_desc_free(struct virt_dma_desc *vd)
+@@ -1218,6 +1217,10 @@ static int sdma_alloc_chan_resources(struct dma_chan *chan)
+ 	if (ret)
+ 		goto disable_clk_ahb;
  
--	if (sdmac->status == DMA_IN_PROGRESS)
--		return NULL;
--	sdmac->status = DMA_IN_PROGRESS;
--
--	sdmac->flags = 0;
--
--	desc = kzalloc((sizeof(*desc)), GFP_NOWAIT);
-+	desc = sdma_transfer_init(sdmac, direction, sg_len);
- 	if (!desc)
- 		goto err_out;
++	sdmac->bd_pool = dma_pool_create("bd_pool", chan->device->dev,
++				sizeof(struct sdma_buffer_descriptor),
++				32, 0);
++
+ 	return 0;
  
--	desc->buf_tail = 0;
--	desc->buf_ptail = 0;
--	desc->sdmac = sdmac;
--	desc->num_bd = sg_len;
--	desc->chn_real_count = 0;
--
--	if (sdma_alloc_bd(desc)) {
--		kfree(desc);
--		goto err_out;
--	}
--
- 	dev_dbg(sdma->dev, "setting up %d entries for channel %d.\n",
- 			sg_len, channel);
+ disable_clk_ahb:
+@@ -1246,6 +1249,9 @@ static void sdma_free_chan_resources(struct dma_chan *chan)
  
--	sdmac->direction = direction;
--	ret = sdma_load_context(sdmac);
--	if (ret)
--		goto err_bd_out;
--
--	desc->chn_count = 0;
- 	for_each_sg(sgl, sg, sg_len, i) {
- 		struct sdma_buffer_descriptor *bd = &desc->bd[i];
- 		int param;
-@@ -1365,38 +1376,18 @@ static struct dma_async_tx_descriptor *sdma_prep_dma_cyclic(
- 	struct sdma_engine *sdma = sdmac->sdma;
- 	int num_periods = buf_len / period_len;
- 	int channel = sdmac->channel;
--	int ret, i = 0, buf = 0;
-+	int i = 0, buf = 0;
- 	struct sdma_desc *desc;
+ 	clk_disable(sdma->clk_ipg);
+ 	clk_disable(sdma->clk_ahb);
++
++	dma_pool_destroy(sdmac->bd_pool);
++	sdmac->bd_pool = NULL;
+ }
  
- 	dev_dbg(sdma->dev, "%s channel: %d\n", __func__, channel);
- 
--	if (sdmac->status == DMA_IN_PROGRESS)
--		return NULL;
--
--	sdmac->status = DMA_IN_PROGRESS;
--
--	desc = kzalloc((sizeof(*desc)), GFP_NOWAIT);
-+	desc = sdma_transfer_init(sdmac, direction, num_periods);
- 	if (!desc)
- 		goto err_out;
- 
--	desc->buf_tail = 0;
--	desc->buf_ptail = 0;
--	desc->sdmac = sdmac;
--	desc->num_bd = num_periods;
--	desc->chn_real_count = 0;
- 	desc->period_len = period_len;
- 
- 	sdmac->flags |= IMX_DMA_SG_LOOP;
--	sdmac->direction = direction;
--
--	if (sdma_alloc_bd(desc)) {
--		kfree(desc);
--		goto err_bd_out;
--	}
--
--	ret = sdma_load_context(sdmac);
--	if (ret)
--		goto err_bd_out;
- 
- 	if (period_len > 0xffff) {
- 		dev_err(sdma->dev, "SDMA channel %d: maximum period size exceeded: %zu > %d\n",
+ static struct sdma_desc *sdma_transfer_init(struct sdma_channel *sdmac,
 -- 
 2.7.4
