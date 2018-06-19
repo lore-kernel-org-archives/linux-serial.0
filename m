@@ -1,65 +1,107 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [RFC PATCH v2 1/6] serial: uartps: Do not initialize field to
- zero again
-Date: Tue, 19 Jun 2018 10:09:05 +0200
-Message-ID: <e7b01bd9-5763-75c0-1384-2536313f5854@monstr.eu>
-References: <cover.1528288895.git.michal.simek@xilinx.com>
- <e8b0169887855a5ef2c1a0456842f650601b451c.1528288895.git.michal.simek@xilinx.com>
-Reply-To: monstr@monstr.eu
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [RFC][PATCH 0/6] Use printk_safe context for TTY and UART port
+ locks
+Date: Tue, 19 Jun 2018 10:30:21 +0200
+Message-ID: <20180619083021.4avsgvcqjrpkat6s@pathway.suse.cz>
+References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
+ <20180618143818.50b2f2f9@alans-desktop>
+ <20180619005308.GA405@jagdpanzerIV>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <e8b0169887855a5ef2c1a0456842f650601b451c.1528288895.git.michal.simek@xilinx.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180619005308.GA405@jagdpanzerIV>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, Alexander Graf <agraf@suse.de>, shubhraj@xilinx.com, robh@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 6.6.2018 14:41, Michal Simek wrote:
-> Writing zero and NULLs to already initialized fields is not needed.
-> Remove this additional writes.
+On Tue 2018-06-19 09:53:08, Sergey Senozhatsky wrote:
+> Thanks for taking a look!
 > 
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> ---
-> 
-> Changes in v2:
-> - new patch - it can be sent separately too
-> 
->  drivers/tty/serial/xilinx_uartps.c | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index 8a3e34234e98..5f116f3ecd4a 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -1510,15 +1510,12 @@ static int cdns_uart_probe(struct platform_device *pdev)
->  
->  	/* At this point, we've got an empty uart_port struct, initialize it */
->  	spin_lock_init(&port->lock);
-> -	port->membase	= NULL;
-> -	port->irq	= 0;
->  	port->type	= PORT_UNKNOWN;
->  	port->iotype	= UPIO_MEM32;
->  	port->flags	= UPF_BOOT_AUTOCONF;
->  	port->ops	= &cdns_uart_ops;
->  	port->fifosize	= CDNS_UART_FIFO_SIZE;
->  	port->line	= id;
-> -	port->dev	= NULL;
->  
->  	/*
->  	 * Register the port.
-> 
+> On (06/18/18 14:38), Alan Cox wrote:
+> > > It doesn't come as a surprise that recursive printk() calls are not the
+> > > only way for us to deadlock in printk() and we still have a whole bunch
+> > > of other printk() deadlock scenarios. For instance, those that involve
+> > > TTY port->lock spin_lock and UART port->lock spin_lock.
+> > 
+> > The tty layer code there is not re-entrant. Nor is it supposed to be
 
-Alan, Rob, Greg: Any comment about this RFC?
+It is re-entrant via printk(). I mean that any printk() called inside
+the locked sections might cause recursion if the same lock is needed
+also by con->write() callbacks.
 
-Thanks,
-Michal
 
--- 
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Xilinx Microblaze
-Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
-U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP SoCs
+> Could be.
+> 
+> But at least we have circular locking dependency in tty,
+> see [1] for more details:
+> 
+>   tty_port->lock  => uart_port->lock
+> 
+>    CPU0
+>    tty
+>     spin_lock(&tty_port->lock)
+>      printk()
+>       call_console_drivers()
+>        foo_console_write()
+>         spin_lock(&uart_port->lock)
+> 
+> Whereas we normally have
+> 
+>   uart_port->lock => tty_port->lock
+> 
+>    CPU1
+>    IRQ
+>     foo_console_handle_IRQ()
+>      spin_lock(&uart_port->lock)
+>       tty
+>        spin_lock(&tty_port->lock)
+
+This is even more complicated situation because printk() allowed
+an ABBA lock scenario.
+
+> If we switch to printk_safe when we take tty_port->lock then we
+> remove the printk->uart_port chain from the picture.
+> 
+> > > So the idea of this patch set is to take tty_port->lock and
+> > > uart_port->lock from printk_safe context and to eliminate some
+> > > of non-recursive printk() deadlocks - the ones that don't start
+> > > in printk(), but involve console related locks and thus eventually
+> > > deadlock us in printk(). For this purpose the patch set introduces
+> > > several helper macros:
+> > 
+> > I don't see how this helps - if you recurse into the uart code you are
+> > still hitting the paths that are unsafe when re-entered. All you've done
+> > is messed up a pile of locking code on critical performance paths.
+> > 
+> > As it stands I think it's a bad idea.
+> 
+> The only new thing is that we inc/dec per-CPU printk context
+> variable when we lock/unlock tty/uart port lock:
+> 
+> 	printk_safe_enter() -> this_cpu_inc(printk_context);
+> 	printk_safe_exit() -> this_cpu_dec(printk_context);
+
+To make it clear. This patch set adds yet another spin_lock API.
+It behaves exactly as spin_lock_irqsafe()/spin_unlock_irqrestore()
+but in addition it sets printk_context.
+
+Where printk_context defines what printk implementation is safe. We
+basically have four possibilities:
+
+  1. normal   (store in logbuf, try to handle consoles)
+  2. deferred (store in logbuf, deffer consoles)
+  3. safe     (store in per-CPU buffer, deffer everything)
+  4. safe_nmi (store in another per-CPU buffer, deffer everything)
+
+
+This patchset forces safe context around TTY and UART locks.
+In fact, the deferred context would be enough to prevent
+all the mentioned deadlocks.
+
+IMHO, the only question is if people might get familiar with
+yet another spin_lock API.
+
+Best Regards,
+Petr
