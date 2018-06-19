@@ -1,63 +1,53 @@
-From: Robin Gong <yibin.gong@nxp.com>
-Subject: [PATCH v5 5/7] dmaengine: imx-sdma: remove the maximum limitation for bd numbers
-Date: Wed, 20 Jun 2018 00:57:02 +0800
-Message-ID: <1529427424-12321-6-git-send-email-yibin.gong@nxp.com>
-References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [RFC][PATCH 0/6] Use printk_safe context for TTY and UART port
+ locks
+Date: Tue, 19 Jun 2018 17:59:33 +0900
+Message-ID: <20180619085933.GA2631@jagdpanzerIV>
+References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
+ <20180618143818.50b2f2f9@alans-desktop>
+ <20180619005308.GA405@jagdpanzerIV>
+ <20180619083021.4avsgvcqjrpkat6s@pathway.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
+Content-Disposition: inline
+In-Reply-To: <20180619083021.4avsgvcqjrpkat6s@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: vkoul@kernel.org, s.hauer@pengutronix.de, l.stach@pengutronix.de, dan.j.williams@intel.com, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-No this limitation now after virtual dma used since bd is allocated
-dynamically instead of static.
+On (06/19/18 10:30), Petr Mladek wrote:
+> It is re-entrant via printk(). I mean that any printk() called inside
+> the locked sections might cause recursion if the same lock is needed
+> also by con->write() callbacks.
 
-Signed-off-by: Robin Gong <yibin.gong@nxp.com>
----
- drivers/dma/imx-sdma.c | 14 --------------
- 1 file changed, 14 deletions(-)
+Perhaps Alan meant that we cannot return back to tty once we passed
+the control from tty to printk -> uart serial console. So tty is
+probably (but I didn't check) not re-entrant, but uart definitely is
+re-entrant: IRQ -> uart console -> tty -> printk -> uart console.
 
-diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index d1d3494..9f1a462 100644
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -285,7 +285,6 @@ struct sdma_context_data {
- 	u32  scratch7;
- } __attribute__ ((packed));
- 
--#define NUM_BD (int)(PAGE_SIZE / sizeof(struct sdma_buffer_descriptor))
- 
- struct sdma_engine;
- 
-@@ -1290,13 +1289,6 @@ static struct dma_async_tx_descriptor *sdma_prep_slave_sg(
- 	if (ret)
- 		goto err_bd_out;
- 
--	if (sg_len > NUM_BD) {
--		dev_err(sdma->dev, "SDMA channel %d: maximum number of sg exceeded: %d > %d\n",
--				channel, sg_len, NUM_BD);
--		ret = -EINVAL;
--		goto err_bd_out;
--	}
--
- 	desc->chn_count = 0;
- 	for_each_sg(sgl, sg, sg_len, i) {
- 		struct sdma_buffer_descriptor *bd = &desc->bd[i];
-@@ -1406,12 +1398,6 @@ static struct dma_async_tx_descriptor *sdma_prep_dma_cyclic(
- 	if (ret)
- 		goto err_bd_out;
- 
--	if (num_periods > NUM_BD) {
--		dev_err(sdma->dev, "SDMA channel %d: maximum number of sg exceeded: %d > %d\n",
--				channel, num_periods, NUM_BD);
--		goto err_bd_out;
--	}
--
- 	if (period_len > 0xffff) {
- 		dev_err(sdma->dev, "SDMA channel %d: maximum period size exceeded: %zu > %d\n",
- 				channel, period_len, 0xffff);
--- 
-2.7.4
+The patch set attempts to address several issues, and re-entrant uart
+is just one of them.
+
+[..]
+> This patchset forces safe context around TTY and UART locks.
+
+Right.
+
+> In fact, the deferred context would be enough to prevent
+> all the mentioned deadlocks.
+
+Agree.
+But we can leave it as a printk_safe implementation detail and
+change it later, outside of this patch, to avoid further confusion.
+
+> IMHO, the only question is if people might get familiar with
+> yet another spin_lock API.
+
+Right. That's why I thought about renaming uart_port and tty_port
+->lock to ->____lock. So the naming will suggest [hopefully] that
+those locks are not meant to be used directly [anymore] and instead
+people should use uart_port_lock/tty_port_lock API.
+
+	-ss
