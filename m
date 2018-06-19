@@ -1,65 +1,69 @@
-From: "Wu, Songjun" <songjun.wu@linux.intel.com>
-Subject: Re: [PATCH 1/7] MIPS: dts: Add aliases node for lantiq danube serial
-Date: Tue, 19 Jun 2018 14:46:27 +0800
-Message-ID: <32ff76eb-6711-f0f2-2d83-6887a961855f@linux.intel.com>
-References: <20180612054034.4969-1-songjun.wu@linux.intel.com>
- <20180612054034.4969-2-songjun.wu@linux.intel.com>
- <CAK8P3a1=CBahrEE2uDRfdrSi=ALc5LBED1=KbLbLa40c9H8dmQ@mail.gmail.com>
- <539411c1-82b7-cf76-71cf-d50f3303f50f@linux.intel.com>
- <CAK8P3a0WVxHU98zjY6d8jN0bDtwabFkrbcxr3a7xRkxSjD2ZLg@mail.gmail.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: possible deadlock in console_unlock
+Date: Tue, 19 Jun 2018 10:04:12 +0200
+Message-ID: <20180619080412.zkdanx6bmq5qm3dz@pathway.suse.cz>
+References: <00000000000087008b056df8fbb3@google.com>
+ <20180607051019.GA10406@jagdpanzerIV>
+ <20180607110034.qrkencwsr4stv6xp@pathway.suse.cz>
+ <20180607140100.GA398@tigerII.localdomain>
+ <20180608081855.ctqakvwmg27aydby@pathway.suse.cz>
+ <20180615083804.GB8964@jagdpanzerIV>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK8P3a0WVxHU98zjY6d8jN0bDtwabFkrbcxr3a7xRkxSjD2ZLg@mail.gmail.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180615083804.GB8964@jagdpanzerIV>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@intel.com, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, qi-ming.wu@intel.com, linux-clk <linux-clk@vger.kernel.org>, linux-serial@vger.kernel.org, DTML <devicetree@vger.kernel.org>, James Hogan <jhogan@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Philippe Ombredanne <pombredanne@nexb.com>, Rob Herring <robh+dt@kernel.org>, Kate Stewart <kstewart@linuxfoundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, syzbot <syzbot+43e93968b964e369db0b@syzkaller.appspotmail.com>, linux-kernel@vger.kernel.org, rostedt@goodmis.org, syzkaller-bugs@googlegroups.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 List-Id: linux-serial@vger.kernel.org
 
+On Fri 2018-06-15 17:38:04, Sergey Senozhatsky wrote:
+> On (06/08/18 10:18), Petr Mladek wrote:
+> [..]
+> > > Could be.
+> > > The good thing about printk_safe is that printk_safe sections can nest.
+> > > I suspect there might be locks/printk_safe sections nesting at some
+> > > point. In any case, switching to a new flavor of printk_safe will be
+> > > pretty easy - just replace printk_safe_enter() with printk_foo_enter()
+> > > and the same for printk_save_exit().
+> > 
+> > We could allow nesting. It is just a matter of how many bits we
+> > reserve for it in printk_context variable.
+> [..]
+> > In each case, I would like to keep the printk_safe context usage
+> > at minimum. It has its own problems caused by limited per-cpu buffers
+> > and the need to flush them.
+> 
+> May be. Every new printk_safe flavour comes with increasing memory
+> usage.
+
+This must be a misunderstanding. My intention was to introduce
+printk_deferred() context. Where any printk() called in this
+context would behave like printk_deferred(). It does not need
+any extra buffers.
+
+IMHO, this problem is similar to the problems that we solve
+in scheduler and timer code. The cure might be the same.
+I just suggest to introduce a context to make our life easier.
 
 
-On 6/18/2018 6:59 PM, Arnd Bergmann wrote:
-> On Mon, Jun 18, 2018 at 11:42 AM, Wu, Songjun
-> <songjun.wu@linux.intel.com> wrote:
->> On 6/14/2018 6:03 PM, Arnd Bergmann wrote:
->>> On Tue, Jun 12, 2018 at 7:40 AM, Songjun Wu <songjun.wu@linux.intel.com>
->>> wrote:
->>>> Previous implementation uses a hard-coded register value to check if
->>>> the current serial entity is the console entity.
->>>> Now the lantiq serial driver uses the aliases for the index of the
->>>> serial port.
->>>> The lantiq danube serial dts are updated with aliases to support this.
->>>>
->>>> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
->>>> ---
->>>>
->>>>    arch/mips/boot/dts/lantiq/danube.dtsi | 6 +++++-
->>>>    1 file changed, 5 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/arch/mips/boot/dts/lantiq/danube.dtsi
->>>> b/arch/mips/boot/dts/lantiq/danube.dtsi
->>>> index 2dd950181f8a..7a9e15da6bd0 100644
->>>> --- a/arch/mips/boot/dts/lantiq/danube.dtsi
->>>> +++ b/arch/mips/boot/dts/lantiq/danube.dtsi
->>>> @@ -4,6 +4,10 @@
->>>>           #size-cells = <1>;
->>>>           compatible = "lantiq,xway", "lantiq,danube";
->>>>
->>>> +       aliases {
->>>> +               serial0 = &asc1;
->>>> +       };
->>>> +
->>> You generally want the aliases to be part of the board specific file,
->>> not every board numbers their serial ports in the same way.
->>>
->> In this chip only asc1 can be used as console,  so serial0 is defined in
->> chip specific file.
-> This was a more general comment about 'aliases' being board specific
-> in principle (though we've had exceptions in the past). Even if there
-> is only one uart on the chip, I'd recommend following the same
-> conventions as the other chips that have more than one uart.
->
->         Arnd
-Accept, 'aliases' will be move to the board specific file.
+> > It is basically needed only to prevent deadlocks related to logbuf_lock.
+> 
+> I wouldn't say that we need printk_safe for logbuf_lock only.
+> printk_safe helps us to avoid deadlocks on:
+> 
+> - logbuf_lock spin_lock
+
+logbuf_lock is already guarded by printk_safe context everywhere.
+
+
+> - console_sem ->lock spin_lock
+> - console_owner spin_lock
+> - scheduler ->pi_lock spin_lock
+> - and probably something else.
+
+printk_deferred should be enough for others. Or do I miss anything?
+
+Best Regards,
+Petr
