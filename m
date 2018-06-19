@@ -1,107 +1,75 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC][PATCH 0/6] Use printk_safe context for TTY and UART port
- locks
-Date: Tue, 19 Jun 2018 10:30:21 +0200
-Message-ID: <20180619083021.4avsgvcqjrpkat6s@pathway.suse.cz>
-References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
- <20180618143818.50b2f2f9@alans-desktop>
- <20180619005308.GA405@jagdpanzerIV>
+From: Robin Gong <yibin.gong@nxp.com>
+Subject: [PATCH v5 0/7] add virt-dma support for imx-sdma
+Date: Wed, 20 Jun 2018 00:56:57 +0800
+Message-ID: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180619005308.GA405@jagdpanzerIV>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: vkoul@kernel.org, s.hauer@pengutronix.de, l.stach@pengutronix.de, dan.j.williams@intel.com, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 2018-06-19 09:53:08, Sergey Senozhatsky wrote:
-> Thanks for taking a look!
-> 
-> On (06/18/18 14:38), Alan Cox wrote:
-> > > It doesn't come as a surprise that recursive printk() calls are not the
-> > > only way for us to deadlock in printk() and we still have a whole bunch
-> > > of other printk() deadlock scenarios. For instance, those that involve
-> > > TTY port->lock spin_lock and UART port->lock spin_lock.
-> > 
-> > The tty layer code there is not re-entrant. Nor is it supposed to be
+The legacy sdma driver has below limitations or drawbacks:
+  1. Hardcode the max BDs number as "PAGE_SIZE / sizeof(*)", and alloc
+     one page size for one channel regardless of only few BDs needed
+     most time. But in few cases, the max PAGE_SIZE maybe not enough.
+  2. One SDMA channel can't stop immediatley once channel disabled which
+     means SDMA interrupt may come in after this channel terminated.There
+     are some patches for this corner case such as commit "2746e2c389f9",
+     but not cover non-cyclic.
 
-It is re-entrant via printk(). I mean that any printk() called inside
-the locked sections might cause recursion if the same lock is needed
-also by con->write() callbacks.
+The common virt-dma overcomes the above limitations. It can alloc bd
+dynamically and free bd once this tx transfer done. No memory wasted or
+maximum limititation here, only depends on how many memory can be requested
+from kernel. For No.2, such issue can be workaround by checking if there
+is available descript("sdmac->desc") now once the unwanted interrupt
+coming. At last the common virt-dma is easier for sdma driver maintain.
 
+Change from v4:
+  1. identify lockdep issue which caused by allocate memory with
+     'GFP_KERNEL', change to 'GFP_NOWAIT' instead so that lockdep
+     ignore check. That also make sense since Audio/uart driver may
+     call dma function after spin_lock_irqsave()...
+  2. use dma pool instead for bd description allocated,since audio
+     driver may call dma_terminate_all in irq. Please refer to 7/7.
+  3. remove 7/7 serial patch in v4, since lockdep issued fixed by No.1 
 
-> Could be.
-> 
-> But at least we have circular locking dependency in tty,
-> see [1] for more details:
-> 
->   tty_port->lock  => uart_port->lock
-> 
->    CPU0
->    tty
->     spin_lock(&tty_port->lock)
->      printk()
->       call_console_drivers()
->        foo_console_write()
->         spin_lock(&uart_port->lock)
-> 
-> Whereas we normally have
-> 
->   uart_port->lock => tty_port->lock
-> 
->    CPU1
->    IRQ
->     foo_console_handle_IRQ()
->      spin_lock(&uart_port->lock)
->       tty
->        spin_lock(&tty_port->lock)
+Change from v3:
+  1. add two uart patches which impacted by this patchset.
+  2. unlock 'vc.lock' before cyclic dma callback and lock again after
+     it because some driver such as uart will call dmaengine_tx_status
+     which will acquire 'vc.lock' again and dead lock comes out.
+  3. remove 'Revert commit' stuff since that patch is not wrong and
+     combine two patch into one patch as Sascha's comment.
 
-This is even more complicated situation because printk() allowed
-an ABBA lock scenario.
+Change from v2:
+  1. include Sascha's patch to make the main patch easier to review.
+     Thanks Sacha.
+  2. remove useless 'desc'/'chan' in struct sdma_channe.
 
-> If we switch to printk_safe when we take tty_port->lock then we
-> remove the printk->uart_port chain from the picture.
-> 
-> > > So the idea of this patch set is to take tty_port->lock and
-> > > uart_port->lock from printk_safe context and to eliminate some
-> > > of non-recursive printk() deadlocks - the ones that don't start
-> > > in printk(), but involve console related locks and thus eventually
-> > > deadlock us in printk(). For this purpose the patch set introduces
-> > > several helper macros:
-> > 
-> > I don't see how this helps - if you recurse into the uart code you are
-> > still hitting the paths that are unsafe when re-entered. All you've done
-> > is messed up a pile of locking code on critical performance paths.
-> > 
-> > As it stands I think it's a bad idea.
-> 
-> The only new thing is that we inc/dec per-CPU printk context
-> variable when we lock/unlock tty/uart port lock:
-> 
-> 	printk_safe_enter() -> this_cpu_inc(printk_context);
-> 	printk_safe_exit() -> this_cpu_dec(printk_context);
+Change from v1:
+  1. split v1 patch into 5 patches.
+  2. remove some unnecessary condition check.
+  3. remove unnecessary 'pending' list.
 
-To make it clear. This patch set adds yet another spin_lock API.
-It behaves exactly as spin_lock_irqsafe()/spin_unlock_irqrestore()
-but in addition it sets printk_context.
+Robin Gong (6):
+  tty: serial: imx: correct dma cookie status
+  dmaengine: imx-sdma: add virt-dma support
+  dmaengine: imx-sdma: remove useless 'lock' and 'enabled' in 'struct
+    sdma_channel'
+  dmaengine: imx-sdma: remove the maximum limitation for bd numbers
+  dmaengine: imx-sdma: add sdma_transfer_init to decrease code overlap
+  dmaengine: imx-sdma: alloclate bd memory from dma pool
 
-Where printk_context defines what printk implementation is safe. We
-basically have four possibilities:
+Sascha Hauer (1):
+  dmaengine: imx-sdma: factor out a struct sdma_desc from struct
+    sdma_channel
 
-  1. normal   (store in logbuf, try to handle consoles)
-  2. deferred (store in logbuf, deffer consoles)
-  3. safe     (store in per-CPU buffer, deffer everything)
-  4. safe_nmi (store in another per-CPU buffer, deffer everything)
+ drivers/dma/Kconfig      |   1 +
+ drivers/dma/imx-sdma.c   | 400 +++++++++++++++++++++++++++--------------------
+ drivers/tty/serial/imx.c |   2 +-
+ 3 files changed, 235 insertions(+), 168 deletions(-)
 
-
-This patchset forces safe context around TTY and UART locks.
-In fact, the deferred context would be enough to prevent
-all the mentioned deadlocks.
-
-IMHO, the only question is if people might get familiar with
-yet another spin_lock API.
-
-Best Regards,
-Petr
+-- 
+2.7.4
