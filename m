@@ -1,7 +1,7 @@
 From: Robin Gong <yibin.gong@nxp.com>
-Subject: [PATCH v5 7/7] dmaengine: imx-sdma: alloclate bd memory from dma pool
-Date: Wed, 20 Jun 2018 00:57:04 +0800
-Message-ID: <1529427424-12321-8-git-send-email-yibin.gong@nxp.com>
+Subject: [PATCH v5 5/7] dmaengine: imx-sdma: remove the maximum limitation for bd numbers
+Date: Wed, 20 Jun 2018 00:57:02 +0800
+Message-ID: <1529427424-12321-6-git-send-email-yibin.gong@nxp.com>
 References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,111 +12,52 @@ To: vkoul@kernel.org, s.hauer@pengutronix.de, l.stach@pengutronix.de, dan.j.will
 Cc: linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-dma_terminate_all maybe called in interrupt context which means
-WARN_ON() will be triggered as below when bd memory freed. Allocat
-bd memory from dma pool instead.
-
-[   29.161079] WARNING: CPU: 1 PID: 533 at ./include/linux/dma-mapping.h:541 sdma_free_bd+0xa4/0xb4
-[   29.169883] Modules linked in:
-[   29.172990] CPU: 1 PID: 533 Comm: mpegaudioparse0 Not tainted 4.18.0-rc1-next-20180618-00009-gf79f22c #20
-[   29.182597] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-[   29.189163] Backtrace:
-[   29.191685] [<c010d1e0>] (dump_backtrace) from [<c010d4a0>] (show_stack+0x18/0x1c)
-[   29.199306]  r7:00000000 r6:600f0093 r5:00000000 r4:c107db7c
-[   29.205029] [<c010d488>] (show_stack) from [<c0a5bba0>] (dump_stack+0xb4/0xe8)
-[   29.212312] [<c0a5baec>] (dump_stack) from [<c012703c>] (__warn+0x104/0x130)
-[   29.219411]  r9:ec3e817c r8:0000021d r7:00000009 r6:c0d1d440 r5:00000000 r4:00000000
-[   29.227204] [<c0126f38>] (__warn) from [<c0127180>] (warn_slowpath_null+0x44/0x50)
-[   29.234821]  r8:ed129dc4 r7:c0b01978 r6:c04d4e90 r5:0000021d r4:c0d1d440
-[   29.241574] [<c012713c>] (warn_slowpath_null) from [<c04d4e90>] (sdma_free_bd+0xa4/0xb4)
-[   29.249706]  r6:4c001000 r5:f082e000 r4:00000024
-[   29.254376] [<c04d4dec>] (sdma_free_bd) from [<c04d4eb4>] (sdma_desc_free+0x14/0x20)
-[   29.262163]  r7:ec3e8110 r6:00000100 r5:00000200 r4:ecf89a00
-[   29.267873] [<c04d4ea0>] (sdma_desc_free) from [<c04d229c>] (vchan_dma_desc_free_list+0xa4/0xac)
-[   29.276697]  r5:00000200 r4:ed129d9c
-[   29.280326] [<c04d21f8>] (vchan_dma_desc_free_list) from [<c04d482c>] (sdma_disable_channel_with_delay+0x14c/0x188)
-[   29.290808]  r9:ecae560c r8:ec3e815c r7:00000000 r6:c1008908 r5:ed129dc4 r4:ec3e8110
-[   29.298605] [<c04d46e0>] (sdma_disable_channel_with_delay) from [<c07c5c84>] (snd_dmaengine_pcm_trigger+0x90/0x1b0)
-[   29.309087]  r8:ecae5000 r7:ec940800 r6:ed31bd80 r5:ecadb200 r4:ec26a700
-[   29.315855] [<c07c5bf4>] (snd_dmaengine_pcm_trigger) from [<c07dd800>] (soc_pcm_trigger+0xb4/0x130)
-[   29.324953]  r8:ecae5000 r7:ec940800 r6:00000000 r5:ecadb200 r4:ec26a700
-[   29.331716] [<c07dd74c>] (soc_pcm_trigger) from [<c07bc008>] (snd_pcm_do_stop+0x58/0x5c)
-[   29.339859]  r9:ecaed5a8 r8:ed31bdc0 r7:00000000 r6:00000001 r5:ecadb200 r4:c0b9c4d0
-[   29.347652] [<c07bbfb0>] (snd_pcm_do_stop) from [<c07bbde8>] (snd_pcm_action_single+0x40/0x80)
-[   29.356315] [<c07bbda8>] (snd_pcm_action_single) from [<c07bbf1c>] (snd_pcm_action+0xf4/0xfc)
-[   29.364883]  r7:00000001 r6:c0b9c4d0 r5:ecadb2d4 r4:ecadb200
-[   29.370593] [<c07bbe28>] (snd_pcm_action) from [<c07bc8dc>] (snd_pcm_drop+0x58/0x9c)
+No this limitation now after virtual dma used since bd is allocated
+dynamically instead of static.
 
 Signed-off-by: Robin Gong <yibin.gong@nxp.com>
 ---
- drivers/dma/imx-sdma.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/dma/imx-sdma.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
 diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index f8becaf..7dab7e9 100644
+index d1d3494..9f1a462 100644
 --- a/drivers/dma/imx-sdma.c
 +++ b/drivers/dma/imx-sdma.c
-@@ -24,6 +24,7 @@
- #include <linux/spinlock.h>
- #include <linux/device.h>
- #include <linux/dma-mapping.h>
-+#include <linux/dmapool.h>
- #include <linux/firmware.h>
- #include <linux/slab.h>
- #include <linux/platform_device.h>
-@@ -343,6 +344,7 @@ struct sdma_channel {
- 	u32				shp_addr, per_addr;
- 	enum dma_status			status;
- 	struct imx_dma_data		data;
-+	struct dma_pool			*bd_pool;
- };
+@@ -285,7 +285,6 @@ struct sdma_context_data {
+ 	u32  scratch7;
+ } __attribute__ ((packed));
  
- #define IMX_DMA_SG_LOOP		BIT(0)
-@@ -1153,11 +1155,10 @@ static int sdma_request_channel0(struct sdma_engine *sdma)
+-#define NUM_BD (int)(PAGE_SIZE / sizeof(struct sdma_buffer_descriptor))
  
- static int sdma_alloc_bd(struct sdma_desc *desc)
- {
--	u32 bd_size = desc->num_bd * sizeof(struct sdma_buffer_descriptor);
- 	int ret = 0;
+ struct sdma_engine;
  
--	desc->bd = dma_zalloc_coherent(NULL, bd_size, &desc->bd_phys,
--					GFP_ATOMIC);
-+	desc->bd = dma_pool_alloc(desc->sdmac->bd_pool, GFP_ATOMIC,
-+					&desc->bd_phys);
- 	if (!desc->bd) {
- 		ret = -ENOMEM;
- 		goto out;
-@@ -1168,9 +1169,7 @@ static int sdma_alloc_bd(struct sdma_desc *desc)
- 
- static void sdma_free_bd(struct sdma_desc *desc)
- {
--	u32 bd_size = desc->num_bd * sizeof(struct sdma_buffer_descriptor);
--
--	dma_free_coherent(NULL, bd_size, desc->bd, desc->bd_phys);
-+	dma_pool_free(desc->sdmac->bd_pool, desc->bd, desc->bd_phys);
- }
- 
- static void sdma_desc_free(struct virt_dma_desc *vd)
-@@ -1218,6 +1217,10 @@ static int sdma_alloc_chan_resources(struct dma_chan *chan)
+@@ -1290,13 +1289,6 @@ static struct dma_async_tx_descriptor *sdma_prep_slave_sg(
  	if (ret)
- 		goto disable_clk_ahb;
+ 		goto err_bd_out;
  
-+	sdmac->bd_pool = dma_pool_create("bd_pool", chan->device->dev,
-+				sizeof(struct sdma_buffer_descriptor),
-+				32, 0);
-+
- 	return 0;
+-	if (sg_len > NUM_BD) {
+-		dev_err(sdma->dev, "SDMA channel %d: maximum number of sg exceeded: %d > %d\n",
+-				channel, sg_len, NUM_BD);
+-		ret = -EINVAL;
+-		goto err_bd_out;
+-	}
+-
+ 	desc->chn_count = 0;
+ 	for_each_sg(sgl, sg, sg_len, i) {
+ 		struct sdma_buffer_descriptor *bd = &desc->bd[i];
+@@ -1406,12 +1398,6 @@ static struct dma_async_tx_descriptor *sdma_prep_dma_cyclic(
+ 	if (ret)
+ 		goto err_bd_out;
  
- disable_clk_ahb:
-@@ -1246,6 +1249,9 @@ static void sdma_free_chan_resources(struct dma_chan *chan)
- 
- 	clk_disable(sdma->clk_ipg);
- 	clk_disable(sdma->clk_ahb);
-+
-+	dma_pool_destroy(sdmac->bd_pool);
-+	sdmac->bd_pool = NULL;
- }
- 
- static struct sdma_desc *sdma_transfer_init(struct sdma_channel *sdmac,
+-	if (num_periods > NUM_BD) {
+-		dev_err(sdma->dev, "SDMA channel %d: maximum number of sg exceeded: %d > %d\n",
+-				channel, num_periods, NUM_BD);
+-		goto err_bd_out;
+-	}
+-
+ 	if (period_len > 0xffff) {
+ 		dev_err(sdma->dev, "SDMA channel %d: maximum period size exceeded: %zu > %d\n",
+ 				channel, period_len, 0xffff);
 -- 
 2.7.4
