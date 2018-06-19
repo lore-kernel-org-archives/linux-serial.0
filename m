@@ -1,7 +1,7 @@
 From: Robin Gong <yibin.gong@nxp.com>
-Subject: [PATCH v5 4/7] dmaengine: imx-sdma: remove useless 'lock' and 'enabled' in 'struct sdma_channel'
-Date: Wed, 20 Jun 2018 00:57:01 +0800
-Message-ID: <1529427424-12321-5-git-send-email-yibin.gong@nxp.com>
+Subject: [PATCH v5 6/7] dmaengine: imx-sdma: add sdma_transfer_init to decrease code overlap
+Date: Wed, 20 Jun 2018 00:57:03 +0800
+Message-ID: <1529427424-12321-7-git-send-email-yibin.gong@nxp.com>
 References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,82 +12,137 @@ To: vkoul@kernel.org, s.hauer@pengutronix.de, l.stach@pengutronix.de, dan.j.will
 Cc: linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-Since 'sdmac->vc.lock' and 'sdmac->desc' can be used as 'lock' and
-'enabled' in 'struct sdma_channel sdmac', remove them.
+There are lot of codes overlap between prep_sg and prep_cyclic function.
+Add sdma_transfer_init() function to elimated the code overlap.
 
 Signed-off-by: Robin Gong <yibin.gong@nxp.com>
 ---
- drivers/dma/imx-sdma.c | 23 -----------------------
- 1 file changed, 23 deletions(-)
+ drivers/dma/imx-sdma.c | 83 ++++++++++++++++++++++----------------------------
+ 1 file changed, 37 insertions(+), 46 deletions(-)
 
 diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index 86fa799..d1d3494 100644
+index 9f1a462..f8becaf 100644
 --- a/drivers/dma/imx-sdma.c
 +++ b/drivers/dma/imx-sdma.c
-@@ -342,10 +342,8 @@ struct sdma_channel {
- 	unsigned long			event_mask[2];
- 	unsigned long			watermark_level;
- 	u32				shp_addr, per_addr;
--	spinlock_t			lock;
- 	enum dma_status			status;
- 	struct imx_dma_data		data;
--	bool				enabled;
- };
- 
- #define IMX_DMA_SG_LOOP		BIT(0)
-@@ -606,14 +604,7 @@ static int sdma_config_ownership(struct sdma_channel *sdmac,
- 
- static void sdma_enable_channel(struct sdma_engine *sdma, int channel)
- {
--	unsigned long flags;
--	struct sdma_channel *sdmac = &sdma->channel[channel];
--
- 	writel(BIT(channel), sdma->regs + SDMA_H_START);
--
--	spin_lock_irqsave(&sdmac->lock, flags);
--	sdmac->enabled = true;
--	spin_unlock_irqrestore(&sdmac->lock, flags);
+@@ -1248,6 +1248,40 @@ static void sdma_free_chan_resources(struct dma_chan *chan)
+ 	clk_disable(sdma->clk_ahb);
  }
  
- /*
-@@ -731,14 +722,6 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
- 	struct sdma_buffer_descriptor *bd;
- 	int error = 0;
- 	enum dma_status	old_status = sdmac->status;
--	unsigned long flags;
++static struct sdma_desc *sdma_transfer_init(struct sdma_channel *sdmac,
++				enum dma_transfer_direction direction, u32 bds)
++{
++	struct sdma_desc *desc;
++
++	desc = kzalloc((sizeof(*desc)), GFP_NOWAIT);
++	if (!desc)
++		goto err_out;
++
++	sdmac->status = DMA_IN_PROGRESS;
++	sdmac->direction = direction;
++	sdmac->flags = 0;
++
++	desc->chn_count = 0;
++	desc->chn_real_count = 0;
++	desc->buf_tail = 0;
++	desc->buf_ptail = 0;
++	desc->sdmac = sdmac;
++	desc->num_bd = bds;
++
++	if (sdma_alloc_bd(desc))
++		goto err_desc_out;
++
++	if (sdma_load_context(sdmac))
++		goto err_desc_out;
++
++	return desc;
++
++err_desc_out:
++	kfree(desc);
++err_out:
++	return NULL;
++}
++
+ static struct dma_async_tx_descriptor *sdma_prep_slave_sg(
+ 		struct dma_chan *chan, struct scatterlist *sgl,
+ 		unsigned int sg_len, enum dma_transfer_direction direction,
+@@ -1260,36 +1294,13 @@ static struct dma_async_tx_descriptor *sdma_prep_slave_sg(
+ 	struct scatterlist *sg;
+ 	struct sdma_desc *desc;
+ 
+-	if (sdmac->status == DMA_IN_PROGRESS)
+-		return NULL;
+-	sdmac->status = DMA_IN_PROGRESS;
 -
--	spin_lock_irqsave(&sdmac->lock, flags);
--	if (!sdmac->enabled) {
--		spin_unlock_irqrestore(&sdmac->lock, flags);
--		return;
+-	sdmac->flags = 0;
+-
+-	desc = kzalloc((sizeof(*desc)), GFP_NOWAIT);
++	desc = sdma_transfer_init(sdmac, direction, sg_len);
+ 	if (!desc)
+ 		goto err_out;
+ 
+-	desc->buf_tail = 0;
+-	desc->buf_ptail = 0;
+-	desc->sdmac = sdmac;
+-	desc->num_bd = sg_len;
+-	desc->chn_real_count = 0;
+-
+-	if (sdma_alloc_bd(desc)) {
+-		kfree(desc);
+-		goto err_out;
 -	}
--	spin_unlock_irqrestore(&sdmac->lock, flags);
- 
- 	/*
- 	 * loop mode. Iterate over descriptors, re-setup them and
-@@ -1000,15 +983,10 @@ static int sdma_disable_channel(struct dma_chan *chan)
- 	struct sdma_channel *sdmac = to_sdma_chan(chan);
- 	struct sdma_engine *sdma = sdmac->sdma;
- 	int channel = sdmac->channel;
--	unsigned long flags;
- 
- 	writel_relaxed(BIT(channel), sdma->regs + SDMA_H_STATSTOP);
- 	sdmac->status = DMA_ERROR;
- 
--	spin_lock_irqsave(&sdmac->lock, flags);
--	sdmac->enabled = false;
--	spin_unlock_irqrestore(&sdmac->lock, flags);
 -
- 	return 0;
- }
+ 	dev_dbg(sdma->dev, "setting up %d entries for channel %d.\n",
+ 			sg_len, channel);
  
-@@ -1922,7 +1900,6 @@ static int sdma_probe(struct platform_device *pdev)
- 		struct sdma_channel *sdmac = &sdma->channel[i];
+-	sdmac->direction = direction;
+-	ret = sdma_load_context(sdmac);
+-	if (ret)
+-		goto err_bd_out;
+-
+-	desc->chn_count = 0;
+ 	for_each_sg(sgl, sg, sg_len, i) {
+ 		struct sdma_buffer_descriptor *bd = &desc->bd[i];
+ 		int param;
+@@ -1365,38 +1376,18 @@ static struct dma_async_tx_descriptor *sdma_prep_dma_cyclic(
+ 	struct sdma_engine *sdma = sdmac->sdma;
+ 	int num_periods = buf_len / period_len;
+ 	int channel = sdmac->channel;
+-	int ret, i = 0, buf = 0;
++	int i = 0, buf = 0;
+ 	struct sdma_desc *desc;
  
- 		sdmac->sdma = sdma;
--		spin_lock_init(&sdmac->lock);
+ 	dev_dbg(sdma->dev, "%s channel: %d\n", __func__, channel);
  
- 		sdmac->channel = i;
- 		sdmac->vc.desc_free = sdma_desc_free;
+-	if (sdmac->status == DMA_IN_PROGRESS)
+-		return NULL;
+-
+-	sdmac->status = DMA_IN_PROGRESS;
+-
+-	desc = kzalloc((sizeof(*desc)), GFP_NOWAIT);
++	desc = sdma_transfer_init(sdmac, direction, num_periods);
+ 	if (!desc)
+ 		goto err_out;
+ 
+-	desc->buf_tail = 0;
+-	desc->buf_ptail = 0;
+-	desc->sdmac = sdmac;
+-	desc->num_bd = num_periods;
+-	desc->chn_real_count = 0;
+ 	desc->period_len = period_len;
+ 
+ 	sdmac->flags |= IMX_DMA_SG_LOOP;
+-	sdmac->direction = direction;
+-
+-	if (sdma_alloc_bd(desc)) {
+-		kfree(desc);
+-		goto err_bd_out;
+-	}
+-
+-	ret = sdma_load_context(sdmac);
+-	if (ret)
+-		goto err_bd_out;
+ 
+ 	if (period_len > 0xffff) {
+ 		dev_err(sdma->dev, "SDMA channel %d: maximum period size exceeded: %zu > %d\n",
 -- 
 2.7.4
