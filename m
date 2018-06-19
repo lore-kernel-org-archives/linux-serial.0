@@ -1,49 +1,41 @@
 From: Nishanth Menon <nm@ti.com>
-Subject: [PATCH 1/2] dt-bindings: serial: 8250_omap: Add compatible for AM654 UART controller
-Date: Tue, 19 Jun 2018 14:44:49 -0500
-Message-ID: <20180619194450.6353-2-nm@ti.com>
-References: <20180619194450.6353-1-nm@ti.com>
+Subject: [PATCH 0/2] serial: 8250_omap: Add compatible for AM654 UART
+Date: Tue, 19 Jun 2018 14:44:48 -0500
+Message-ID: <20180619194450.6353-1-nm@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180619194450.6353-1-nm@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Nishanth Menon <nm@ti.com>, Tony Lindgren <tony@atomide.com>, Tero Kristo <t-kristo@ti.com>, Vignesh R <vigneshr@ti.com>, Jiri Slaby <jslaby@suse.com>, Sekhar Nori <nsekhar@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-AM654 uses a UART controller that is only partially compatible with
-existing 8250 UART. UART DMA integration is substantially different
-and even a match against standard 8250 or omap4 would result in
-non-working UART once DMA is enabled by default.
+Hi,
 
-Introduce a specific compatible to help build up the differences in
-follow on patches.
+This series was previously send out as part of a larger AM654 UART
+support series, but was determined to create a bit of merge conflicts
+due to interdependence.
 
-Cc: Sekhar Nori <nsekhar@ti.com>
-Cc: Vignesh R <vigneshr@ti.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
----
+Changes since RFC are indicated in corresponding patches in the series
 
-Changes since RFC:
-* DT binding has been split out as it's own patch and commit message elaborated
+Instead this series is split out. The series itself is based off
+v4.18-rc1 and available here:
+https://github.com/nmenon/linux-2.6-playground/commits/upstream/v4.18-rc1/k3-1-am6-uart
 
-RFC: https://patchwork.kernel.org/patch/10447641/
+Consolidated all patches (including all series) are available here:
+https://github.com/nmenon/linux-2.6-playground/commits/upstream/v4.18-rc1/k3-am6-integ
+
+Full Boot log (integrated of all series) is available here:
+   https://pastebin.ubuntu.com/p/bBFmnzYtCd/
+
+Nishanth Menon (2):
+  dt-bindings: serial: 8250_omap: Add compatible for AM654 UART
+    controller
+  serial: 8250_omap: Add support for AM654 UART controller
 
  Documentation/devicetree/bindings/serial/omap_serial.txt | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/8250/8250_omap.c                      | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/omap_serial.txt b/Documentation/devicetree/bindings/serial/omap_serial.txt
-index 4b0f05adb228..c35d5ece1156 100644
---- a/Documentation/devicetree/bindings/serial/omap_serial.txt
-+++ b/Documentation/devicetree/bindings/serial/omap_serial.txt
-@@ -1,6 +1,7 @@
- OMAP UART controller
- 
- Required properties:
-+- compatible : should be "ti,am654-uart" for AM654 controllers
- - compatible : should be "ti,omap2-uart" for OMAP2 controllers
- - compatible : should be "ti,omap3-uart" for OMAP3 controllers
- - compatible : should be "ti,omap4-uart" for OMAP4 controllers
 -- 
 2.15.1
