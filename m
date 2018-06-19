@@ -1,49 +1,65 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH] serial: mps2-uart: Initialize early console
-Date: Mon, 18 Jun 2018 21:54:57 -0700
-Message-ID: <1529384097-1631-1-git-send-email-linux@roeck-us.net>
+From: "Wu, Songjun" <songjun.wu@linux.intel.com>
+Subject: Re: [PATCH 1/7] MIPS: dts: Add aliases node for lantiq danube serial
+Date: Tue, 19 Jun 2018 14:46:27 +0800
+Message-ID: <32ff76eb-6711-f0f2-2d83-6887a961855f@linux.intel.com>
+References: <20180612054034.4969-1-songjun.wu@linux.intel.com>
+ <20180612054034.4969-2-songjun.wu@linux.intel.com>
+ <CAK8P3a1=CBahrEE2uDRfdrSi=ALc5LBED1=KbLbLa40c9H8dmQ@mail.gmail.com>
+ <539411c1-82b7-cf76-71cf-d50f3303f50f@linux.intel.com>
+ <CAK8P3a0WVxHU98zjY6d8jN0bDtwabFkrbcxr3a7xRkxSjD2ZLg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAK8P3a0WVxHU98zjY6d8jN0bDtwabFkrbcxr3a7xRkxSjD2ZLg@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Vladimir Murzin <vladimir.murzin@arm.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Liviu Dudau <liviu.dudau@arm.com>, Sudeep Holla <sudeep.holla@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Guenter Roeck <linux@roeck-us.net>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@intel.com, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, qi-ming.wu@intel.com, linux-clk <linux-clk@vger.kernel.org>, linux-serial@vger.kernel.org, DTML <devicetree@vger.kernel.org>, James Hogan <jhogan@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Philippe Ombredanne <pombredanne@nexb.com>, Rob Herring <robh+dt@kernel.org>, Kate Stewart <kstewart@linuxfoundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>
 List-Id: linux-serial@vger.kernel.org
 
-The early console code for mps2-uart assumes that the serial hardware is
-enabled for transmit when the system boots. However, this is not the case
-after reset. This results in a hang in mps2_early_putchar() if the serial
-transmitter is not enabled by a boot loader or ROM monitor.
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
- drivers/tty/serial/mps2-uart.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
-index 9f8f63719126..0743a0551ce1 100644
---- a/drivers/tty/serial/mps2-uart.c
-+++ b/drivers/tty/serial/mps2-uart.c
-@@ -448,6 +448,14 @@ static struct console mps2_uart_console = {
- 
- #define MPS2_SERIAL_CONSOLE (&mps2_uart_console)
- 
-+static void mps2_early_init(struct uart_port *port)
-+{
-+	u8 control = readb(port->membase + UARTn_CTRL);
-+
-+	control |= UARTn_CTRL_TX_ENABLE;
-+	writeb(control, port->membase + UARTn_CTRL);
-+}
-+
- static void mps2_early_putchar(struct uart_port *port, int ch)
- {
- 	while (readb(port->membase + UARTn_STATE) & UARTn_STATE_TX_FULL)
-@@ -469,6 +477,7 @@ static int __init mps2_early_console_setup(struct earlycon_device *device,
- 	if (!device->port.membase)
- 		return -ENODEV;
- 
-+	mps2_early_init(&device->port);
- 	device->con->write = mps2_early_write;
- 
- 	return 0;
--- 
-2.7.4
+On 6/18/2018 6:59 PM, Arnd Bergmann wrote:
+> On Mon, Jun 18, 2018 at 11:42 AM, Wu, Songjun
+> <songjun.wu@linux.intel.com> wrote:
+>> On 6/14/2018 6:03 PM, Arnd Bergmann wrote:
+>>> On Tue, Jun 12, 2018 at 7:40 AM, Songjun Wu <songjun.wu@linux.intel.com>
+>>> wrote:
+>>>> Previous implementation uses a hard-coded register value to check if
+>>>> the current serial entity is the console entity.
+>>>> Now the lantiq serial driver uses the aliases for the index of the
+>>>> serial port.
+>>>> The lantiq danube serial dts are updated with aliases to support this.
+>>>>
+>>>> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
+>>>> ---
+>>>>
+>>>>    arch/mips/boot/dts/lantiq/danube.dtsi | 6 +++++-
+>>>>    1 file changed, 5 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/arch/mips/boot/dts/lantiq/danube.dtsi
+>>>> b/arch/mips/boot/dts/lantiq/danube.dtsi
+>>>> index 2dd950181f8a..7a9e15da6bd0 100644
+>>>> --- a/arch/mips/boot/dts/lantiq/danube.dtsi
+>>>> +++ b/arch/mips/boot/dts/lantiq/danube.dtsi
+>>>> @@ -4,6 +4,10 @@
+>>>>           #size-cells = <1>;
+>>>>           compatible = "lantiq,xway", "lantiq,danube";
+>>>>
+>>>> +       aliases {
+>>>> +               serial0 = &asc1;
+>>>> +       };
+>>>> +
+>>> You generally want the aliases to be part of the board specific file,
+>>> not every board numbers their serial ports in the same way.
+>>>
+>> In this chip only asc1 can be used as console,  so serial0 is defined in
+>> chip specific file.
+> This was a more general comment about 'aliases' being board specific
+> in principle (though we've had exceptions in the past). Even if there
+> is only one uart on the chip, I'd recommend following the same
+> conventions as the other chips that have more than one uart.
+>
+>         Arnd
+Accept, 'aliases' will be move to the board specific file.
