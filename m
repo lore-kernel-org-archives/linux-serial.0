@@ -1,7 +1,7 @@
 From: Mikko Perttunen <mperttunen@nvidia.com>
-Subject: [PATCH v2 7/8] arm64: tegra: Add nodes for tcu on Tegra194
-Date: Wed, 20 Jun 2018 15:20:41 +0300
-Message-ID: <20180620122042.10950-8-mperttunen@nvidia.com>
+Subject: [PATCH v2 3/8] mailbox: Add transmit done by blocking option
+Date: Wed, 20 Jun 2018 15:20:37 +0300
+Message-ID: <20180620122042.10950-4-mperttunen@nvidia.com>
 References: <20180620122042.10950-1-mperttunen@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,69 +12,127 @@ To: robh+dt@kernel.org, mark.rutland@arm.com, jassisinghbrar@gmail.com, gregkh@l
 Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add nodes required for communication through the Tegra Combined UART.
-This includes the AON HSP instance, addition of shared interrupts
-for the TOP0 HSP instance, and finally the TCU node itself. Also
-mark the HSP instances as compatible to tegra194-hsp, as the hardware
-is not identical but is compatible to tegra186-hsp.
+Add a new TXDONE option, TXDONE_BY_BLOCK. With this option, the
+send_data function of the mailbox driver is expected to block until
+the message has been sent. The new option is used with the Tegra
+Combined UART driver to minimize unnecessary overhead when transmitting
+data.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
- arch/arm64/boot/dts/nvidia/tegra194.dtsi | 34 +++++++++++++++++++++++++++++---
- 1 file changed, 31 insertions(+), 3 deletions(-)
+ drivers/mailbox/mailbox.c | 30 +++++++++++++++++++++---------
+ drivers/mailbox/mailbox.h |  1 +
+ 2 files changed, 22 insertions(+), 9 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-index 6d699815a84f..d7f780b06fe2 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-@@ -217,10 +217,31 @@
- 		};
+diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
+index 674b35f402f5..5c76b70e673c 100644
+--- a/drivers/mailbox/mailbox.c
++++ b/drivers/mailbox/mailbox.c
+@@ -53,6 +53,8 @@ static int add_to_rbuf(struct mbox_chan *chan, void *mssg)
+ 	return idx;
+ }
  
- 		hsp_top0: hsp@3c00000 {
--			compatible = "nvidia,tegra186-hsp";
-+			compatible = "nvidia,tegra194-hsp", "nvidia,tegra186-hsp";
- 			reg = <0x03c00000 0xa0000>;
--			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
--			interrupt-names = "doorbell";
-+			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "doorbell", "shared0", "shared1", "shared2",
-+			                  "shared3", "shared4", "shared5", "shared6",
-+			                  "shared7";
-+			#mbox-cells = <2>;
-+		};
++static void tx_tick(struct mbox_chan *chan, int r, bool submit_next);
 +
-+		hsp_aon: hsp@c150000 {
-+			compatible = "nvidia,tegra194-hsp", "nvidia,tegra186-hsp";
-+			reg = <0x0c150000 0xa0000>;
-+			interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "shared0", "shared1", "shared2", "shared3";
- 			#mbox-cells = <2>;
- 		};
+ static void msg_submit(struct mbox_chan *chan)
+ {
+ 	unsigned count, idx;
+@@ -60,10 +62,13 @@ static void msg_submit(struct mbox_chan *chan)
+ 	void *data;
+ 	int err = -EBUSY;
  
-@@ -382,6 +403,13 @@
- 		};
- 	};
++next:
+ 	spin_lock_irqsave(&chan->lock, flags);
  
-+	tcu: tcu {
-+		compatible = "nvidia,tegra194-tcu";
-+		mboxes = <&hsp_top0 TEGRA_HSP_MBOX_TYPE_SM 0>,
-+		         <&hsp_aon TEGRA_HSP_MBOX_TYPE_SM 1>;
-+		mbox-names = "rx", "tx";
-+	};
+-	if (!chan->msg_count || chan->active_req)
+-		goto exit;
++	if (!chan->msg_count || chan->active_req) {
++		spin_unlock_irqrestore(&chan->lock, flags);
++		return;
++	}
+ 
+ 	count = chan->msg_count;
+ 	idx = chan->msg_free;
+@@ -82,15 +87,21 @@ static void msg_submit(struct mbox_chan *chan)
+ 		chan->active_req = data;
+ 		chan->msg_count--;
+ 	}
+-exit:
 +
- 	timer {
- 		compatible = "arm,armv8-timer";
- 		interrupts = <GIC_PPI 13
+ 	spin_unlock_irqrestore(&chan->lock, flags);
+ 
+ 	if (!err && (chan->txdone_method & TXDONE_BY_POLL))
+ 		/* kick start the timer immediately to avoid delays */
+ 		hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
++
++	if (chan->txdone_method & TXDONE_BY_BLOCK) {
++		tx_tick(chan, err, false);
++		if (!err)
++			goto next;
++	}
+ }
+ 
+-static void tx_tick(struct mbox_chan *chan, int r)
++static void tx_tick(struct mbox_chan *chan, int r, bool submit_next)
+ {
+ 	unsigned long flags;
+ 	void *mssg;
+@@ -101,7 +112,8 @@ static void tx_tick(struct mbox_chan *chan, int r)
+ 	spin_unlock_irqrestore(&chan->lock, flags);
+ 
+ 	/* Submit next message */
+-	msg_submit(chan);
++	if (submit_next)
++		msg_submit(chan);
+ 
+ 	if (!mssg)
+ 		return;
+@@ -127,7 +139,7 @@ static enum hrtimer_restart txdone_hrtimer(struct hrtimer *hrtimer)
+ 		if (chan->active_req && chan->cl) {
+ 			txdone = chan->mbox->ops->last_tx_done(chan);
+ 			if (txdone)
+-				tx_tick(chan, 0);
++				tx_tick(chan, 0, true);
+ 			else
+ 				resched = true;
+ 		}
+@@ -176,7 +188,7 @@ void mbox_chan_txdone(struct mbox_chan *chan, int r)
+ 		return;
+ 	}
+ 
+-	tx_tick(chan, r);
++	tx_tick(chan, r, true);
+ }
+ EXPORT_SYMBOL_GPL(mbox_chan_txdone);
+ 
+@@ -196,7 +208,7 @@ void mbox_client_txdone(struct mbox_chan *chan, int r)
+ 		return;
+ 	}
+ 
+-	tx_tick(chan, r);
++	tx_tick(chan, r, true);
+ }
+ EXPORT_SYMBOL_GPL(mbox_client_txdone);
+ 
+@@ -275,7 +287,7 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
+ 		ret = wait_for_completion_timeout(&chan->tx_complete, wait);
+ 		if (ret == 0) {
+ 			t = -ETIME;
+-			tx_tick(chan, t);
++			tx_tick(chan, t, true);
+ 		}
+ 	}
+ 
+diff --git a/drivers/mailbox/mailbox.h b/drivers/mailbox/mailbox.h
+index 456ba68513bb..ec68e2e28cd6 100644
+--- a/drivers/mailbox/mailbox.h
++++ b/drivers/mailbox/mailbox.h
+@@ -10,5 +10,6 @@
+ #define TXDONE_BY_IRQ	BIT(0) /* controller has remote RTR irq */
+ #define TXDONE_BY_POLL	BIT(1) /* controller can read status of last TX */
+ #define TXDONE_BY_ACK	BIT(2) /* S/W ACK recevied by Client ticks the TX */
++#define TXDONE_BY_BLOCK	BIT(3) /* mailbox driver send_data blocks until done */
+ 
+ #endif /* __MAILBOX_H */
 -- 
 2.16.1
