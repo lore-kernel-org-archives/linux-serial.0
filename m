@@ -1,72 +1,54 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [RFC][PATCH 0/6] Use printk_safe context for TTY and UART port
- locks
-Date: Wed, 20 Jun 2018 13:28:47 +0900
-Message-ID: <20180620042847.GH650@jagdpanzerIV>
-References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
- <20180618143818.50b2f2f9@alans-desktop>
- <20180619005308.GA405@jagdpanzerIV>
- <20180619083021.4avsgvcqjrpkat6s@pathway.suse.cz>
- <CA+55aFz9aGc-vGvKv_ZR2W2ZkZNSZfOHa0m_MbGH_a=x8oAW5Q@mail.gmail.com>
- <20180620025050.GE650@jagdpanzerIV>
- <CA+55aFzC5=awDhzOy9u_2FNaQmRprUTxj_KV2xO+GnpNAFg8MQ@mail.gmail.com>
+From: Mikko Perttunen <mperttunen@nvidia.com>
+Subject: [PATCH v2 1/8] dt-bindings: tegra186-hsp: Add shared interrupts
+Date: Wed, 20 Jun 2018 15:20:35 +0300
+Message-ID: <20180620122042.10950-2-mperttunen@nvidia.com>
+References: <20180620122042.10950-1-mperttunen@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CA+55aFzC5=awDhzOy9u_2FNaQmRprUTxj_KV2xO+GnpNAFg8MQ@mail.gmail.com>
+In-Reply-To: <20180620122042.10950-1-mperttunen@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Petr Mladek <pmladek@suse.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, SergeySenozhatsky <sergey.senozhatsky@gmail.com>
+To: robh+dt@kernel.org, mark.rutland@arm.com, jassisinghbrar@gmail.com, gregkh@linuxfoundation.org, thierry.reding@gmail.com, jonathanh@nvidia.com
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-On (06/20/18 12:38), Linus Torvalds wrote:
-> On Wed, Jun 20, 2018 at 11:50 AM Sergey Senozhatsky
-> <sergey.senozhatsky.work@gmail.com> wrote:
-> >
-> > It's not UART on its own that immediately calls into printk(), that would
-> > be trivial to fix, it's all those subsystems that serial console driver
-> > can call into.
-> 
-> We already have the whole PRINTK_SAFE_CONTEXT_MASK model that only
-> adds it to a secondary buffer if you get recursion.  Why isn't that
-> triggering? That's the whole point of it.
+HSP interrupts can be routed through exposed "shared interrupts". These
+interrupts can be mapped to various internal interrupt lines. Add
+interrupt properties for shared interrupts to the tegra186-hsp device
+tree bindings. At the same time, add the compatibility string for
+tegra194-hsp, which is backwards compatible with tegra186.
 
-This is exactly what I'm doing in my patch set.
-PRINTK_SAFE_CONTEXT_MASK so far worked *one* way only: when we start
-from printk.c
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+---
 
-IOW:
+Notes:
+    v2:
+    - Edited commit message to not say that doorbell interrupts cannot be
+      routed to shared interrupts.
+    - Added tegra194 compatibility string.
 
-      printk -> printk_safe_mask -> vsprinf -> printk
+ Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt | 3 +++
+ 1 file changed, 3 insertions(+)
 
-But we also can have printk-related deadlocks the *other* way
-around. For instance:
-
-      uart -> printk -> uart
-
-printk_safe_mask is not triggering there because we don't use
-printk_safe in uart / tty yet. And this is what I do in my
-patch set - extend printk_safe usage.
-
-The patch set does not add any _new_ locks or locking rules.
-It just replaces the existing
-
-		spin_lock(a)
-with
-		prinkt_safe_enter();
-		spin_lock(a)
-
-and
-		spin_unlock(a)
-with
-		spin_unlock(a)
-		printk_safe_exit();
-
-and that's it.
-
-So now we use printk_safe mechanism to avoid another bunch of
-deadlock scenarious: which don't start from printk, but from
-parts of the kernel which printk eventually calls.
-
-	-ss
+diff --git a/Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt b/Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt
+index b99d25fc2f26..620c249363ca 100644
+--- a/Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt
++++ b/Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt
+@@ -15,12 +15,15 @@ Required properties:
+     Array of strings.
+     one of:
+     - "nvidia,tegra186-hsp"
++    - "nvidia,tegra194-hsp", "nvidia,tegra186-hsp"
+ - reg : Offset and length of the register set for the device.
+ - interrupt-names
+     Array of strings.
+     Contains a list of names for the interrupts described by the interrupt
+     property. May contain the following entries, in any order:
+     - "doorbell"
++    - "sharedN", where 'N' is a number from zero up to the number of
++      external interrupts supported by the HSP instance minus one.
+     Users of this binding MUST look up entries in the interrupt property
+     by name, using this interrupt-names property to do so.
+ - interrupts
+-- 
+2.16.1
