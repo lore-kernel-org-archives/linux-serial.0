@@ -1,76 +1,80 @@
 From: Mikko Perttunen <mperttunen@nvidia.com>
-Subject: [PATCH v2 0/8] Tegra Combined UART driver
-Date: Wed, 20 Jun 2018 15:20:34 +0300
-Message-ID: <20180620122042.10950-1-mperttunen@nvidia.com>
+Subject: [PATCH v2 7/8] arm64: tegra: Add nodes for tcu on Tegra194
+Date: Wed, 20 Jun 2018 15:20:41 +0300
+Message-ID: <20180620122042.10950-8-mperttunen@nvidia.com>
+References: <20180620122042.10950-1-mperttunen@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180620122042.10950-1-mperttunen@nvidia.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: robh+dt@kernel.org, mark.rutland@arm.com, jassisinghbrar@gmail.com, gregkh@linuxfoundation.org, thierry.reding@gmail.com, jonathanh@nvidia.com
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi again - see individual patches for v2 changes.
+Add nodes required for communication through the Tegra Combined UART.
+This includes the AON HSP instance, addition of shared interrupts
+for the TOP0 HSP instance, and finally the TCU node itself. Also
+mark the HSP instances as compatible to tegra194-hsp, as the hardware
+is not identical but is compatible to tegra186-hsp.
 
-Thanks,
-Mikko
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+---
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi | 34 +++++++++++++++++++++++++++++---
+ 1 file changed, 31 insertions(+), 3 deletions(-)
 
-Original message:
-
-Hi all,
-
-on Tegra194, the primary console UART is the "Tegra Combined UART",
-or TCU. This is a "virtual UART", where each consumer communicates
-with a central implementation over mailboxes. The central
-implementation then multiplexes the streams and arbitrates use of
-a hardware serial port. This driver implements the consumer portion
-to allow using the primary console.
-
-The series is split into the following parts:
-* patches 1 and 2 add the device tree bindings for mailbox and tcu
-  itself.
-* patch 3 adds a blocking transmission option to the mailbox
-  framework.
-* patches 4 and 5 add support for the "shared mailbox" primitive
-  to the Tegra HSP driver.
-* patch 6 adds the TCU driver itself
-* patches 7 and 8 do the necessary device tree changes.
-
-The series has been tested on the Tegra194 P2972 board.
-
-Mikko Perttunen (8):
-  dt-bindings: tegra186-hsp: Add shared interrupts
-  dt-bindings: serial: Add bindings for nvidia,tegra194-tcu
-  mailbox: Add transmit done by blocking option
-  mailbox: tegra-hsp: Refactor in preparation of mailboxes
-  mailbox: tegra-hsp: Add support for shared mailboxes
-  serial: Add Tegra Combined UART driver
-  arm64: tegra: Add nodes for tcu on Tegra194
-  arm64: tegra: Mark tcu as primary serial port on Tegra194 P2888
-
- .../bindings/mailbox/nvidia,tegra186-hsp.txt       |   3 +
- .../bindings/serial/nvidia,tegra194-tcu.txt        |  35 +++
- arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi     |   2 +-
- arch/arm64/boot/dts/nvidia/tegra194.dtsi           |  34 ++-
- drivers/mailbox/mailbox.c                          |  30 +-
- drivers/mailbox/mailbox.h                          |   1 +
- drivers/mailbox/tegra-hsp.c                        | 319 +++++++++++++++++----
- drivers/tty/serial/Kconfig                         |   9 +
- drivers/tty/serial/Makefile                        |   1 +
- drivers/tty/serial/tegra-tcu.c                     | 289 +++++++++++++++++++
- include/uapi/linux/serial_core.h                   |   3 +
- 11 files changed, 658 insertions(+), 68 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
- create mode 100644 drivers/tty/serial/tegra-tcu.c
-
+diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+index 6d699815a84f..d7f780b06fe2 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+@@ -217,10 +217,31 @@
+ 		};
+ 
+ 		hsp_top0: hsp@3c00000 {
+-			compatible = "nvidia,tegra186-hsp";
++			compatible = "nvidia,tegra194-hsp", "nvidia,tegra186-hsp";
+ 			reg = <0x03c00000 0xa0000>;
+-			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
+-			interrupt-names = "doorbell";
++			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "doorbell", "shared0", "shared1", "shared2",
++			                  "shared3", "shared4", "shared5", "shared6",
++			                  "shared7";
++			#mbox-cells = <2>;
++		};
++
++		hsp_aon: hsp@c150000 {
++			compatible = "nvidia,tegra194-hsp", "nvidia,tegra186-hsp";
++			reg = <0x0c150000 0xa0000>;
++			interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "shared0", "shared1", "shared2", "shared3";
+ 			#mbox-cells = <2>;
+ 		};
+ 
+@@ -382,6 +403,13 @@
+ 		};
+ 	};
+ 
++	tcu: tcu {
++		compatible = "nvidia,tegra194-tcu";
++		mboxes = <&hsp_top0 TEGRA_HSP_MBOX_TYPE_SM 0>,
++		         <&hsp_aon TEGRA_HSP_MBOX_TYPE_SM 1>;
++		mbox-names = "rx", "tx";
++	};
++
+ 	timer {
+ 		compatible = "arm,armv8-timer";
+ 		interrupts = <GIC_PPI 13
 -- 
 2.16.1
