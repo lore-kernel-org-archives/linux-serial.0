@@ -1,41 +1,44 @@
-From: Nishanth Menon <nm@ti.com>
-Subject: [PATCH 0/2] serial: 8250_omap: Add compatible for AM654 UART
-Date: Tue, 19 Jun 2018 14:44:48 -0500
-Message-ID: <20180619194450.6353-1-nm@ti.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [RFC][PATCH 0/6] Use printk_safe context for TTY and UART port locks
+Date: Wed, 20 Jun 2018 11:01:49 +0900
+Message-ID: <CA+55aFz9aGc-vGvKv_ZR2W2ZkZNSZfOHa0m_MbGH_a=x8oAW5Q@mail.gmail.com>
+References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
+ <20180618143818.50b2f2f9@alans-desktop> <20180619005308.GA405@jagdpanzerIV> <20180619083021.4avsgvcqjrpkat6s@pathway.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180619083021.4avsgvcqjrpkat6s@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Nishanth Menon <nm@ti.com>, Tony Lindgren <tony@atomide.com>, Tero Kristo <t-kristo@ti.com>, Vignesh R <vigneshr@ti.com>, Jiri Slaby <jslaby@suse.com>, Sekhar Nori <nsekhar@ti.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, SergeySenozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+On Tue, Jun 19, 2018 at 5:30 PM Petr Mladek <pmladek@suse.com> wrote:
+>
+> To make it clear. This patch set adds yet another spin_lock API.
+> It behaves exactly as spin_lock_irqsafe()/spin_unlock_irqrestore()
+> but in addition it sets printk_context.
+>
+> This patchset forces safe context around TTY and UART locks.
+> In fact, the deferred context would be enough to prevent
+> all the mentioned deadlocks.
 
-This series was previously send out as part of a larger AM654 UART
-support series, but was determined to create a bit of merge conflicts
-due to interdependence.
+Please stop this garbage.
 
-Changes since RFC are indicated in corresponding patches in the series
+The rule is simple: DO NOT DO THAT THEN.
 
-Instead this series is split out. The series itself is based off
-v4.18-rc1 and available here:
-https://github.com/nmenon/linux-2.6-playground/commits/upstream/v4.18-rc1/k3-1-am6-uart
+Don't make recursive locks. Don't make random complexity.  Just stop
+doing the thing that hurts.
 
-Consolidated all patches (including all series) are available here:
-https://github.com/nmenon/linux-2.6-playground/commits/upstream/v4.18-rc1/k3-am6-integ
+There is no valid reason why an UART driver should do a printk() of
+any sort inside the critical region where the console is locked.
 
-Full Boot log (integrated of all series) is available here:
-   https://pastebin.ubuntu.com/p/bBFmnzYtCd/
+Just remove those printk's, don't add new crazy locking.
 
-Nishanth Menon (2):
-  dt-bindings: serial: 8250_omap: Add compatible for AM654 UART
-    controller
-  serial: 8250_omap: Add support for AM654 UART controller
+If you had a spinlock that deadlocked because it was inside an already
+spinlocked region, you'd say "that's buggy".
 
- Documentation/devicetree/bindings/serial/omap_serial.txt | 1 +
- drivers/tty/serial/8250/8250_omap.c                      | 1 +
- 2 files changed, 2 insertions(+)
+This is the exact same issue. We don't work around buggy garbage. We
+fix the bug - by removing the problematic printk.
 
--- 
-2.15.1
+           Linus
