@@ -1,31 +1,25 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [RFC][PATCH 0/6] Use printk_safe context for TTY and UART port locks
-Date: Wed, 20 Jun 2018 12:38:01 +0900
-Message-ID: <CA+55aFzC5=awDhzOy9u_2FNaQmRprUTxj_KV2xO+GnpNAFg8MQ@mail.gmail.com>
-References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
- <20180618143818.50b2f2f9@alans-desktop> <20180619005308.GA405@jagdpanzerIV>
- <20180619083021.4avsgvcqjrpkat6s@pathway.suse.cz> <CA+55aFz9aGc-vGvKv_ZR2W2ZkZNSZfOHa0m_MbGH_a=x8oAW5Q@mail.gmail.com>
- <20180620025050.GE650@jagdpanzerIV>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 0/2] serial: 8250_omap: Add compatible for AM654 UART
+Date: Tue, 19 Jun 2018 21:19:34 -0700
+Message-ID: <20180620041934.GA112168@atomide.com>
+References: <20180619194450.6353-1-nm@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180620025050.GE650@jagdpanzerIV>
+Content-Disposition: inline
+In-Reply-To: <20180619194450.6353-1-nm@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Petr Mladek <pmladek@suse.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, SergeySenozhatsky <sergey.senozhatsky@gmail.com>
+To: Nishanth Menon <nm@ti.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Tero Kristo <t-kristo@ti.com>, Vignesh R <vigneshr@ti.com>, Jiri Slaby <jslaby@suse.com>, Sekhar Nori <nsekhar@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jun 20, 2018 at 11:50 AM Sergey Senozhatsky
-<sergey.senozhatsky.work@gmail.com> wrote:
->
-> It's not UART on its own that immediately calls into printk(), that would
-> be trivial to fix, it's all those subsystems that serial console driver
-> can call into.
+* Nishanth Menon <nm@ti.com> [180619 20:13]:
+> Hi,
+> 
+> This series was previously send out as part of a larger AM654 UART
+> support series, but was determined to create a bit of merge conflicts
+> due to interdependence.
 
-We already have the whole PRINTK_SAFE_CONTEXT_MASK model that only
-adds it to a secondary buffer if you get recursion.  Why isn't that
-triggering? That's the whole point of it.
+Both patches look good to me:
 
-I absolutely do *not*  want to see any crazy changes to tty drivers.  No no no.
-
-                   Linus
+Acked-by: Tony Lindgren <tony@atomide.com>
