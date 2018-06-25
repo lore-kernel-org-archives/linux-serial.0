@@ -1,11 +1,13 @@
-From: Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH] dt-bindings: serial: imx: clarify rs485 support usage
-Date: Mon, 25 Jun 2018 10:33:19 +0300
-Message-ID: <01fc1e3d89037adce38177c3922d277584214fdd.1529911999.git.baruch@tkos.co.il>
+From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
+Subject: Re: [PATCH] dt-bindings: serial: imx: clarify rs485 support usage
+Date: Mon, 25 Jun 2018 10:16:38 +0200
+Message-ID: <20180625101638.47f3b3dd@karo-electronics.de>
+References: <01fc1e3d89037adce38177c3922d277584214fdd.1529911999.git.baruch@tkos.co.il>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <01fc1e3d89037adce38177c3922d277584214fdd.1529911999.git.baruch@tkos.co.il>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -15,43 +17,44 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, NXP Linux Team <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Baruch Siach <baruch@tkos.co.il>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The i.MX UART peripheral uses the RST_B signal as input, and CTS_B as
-output. This is just like the CDE role in RS-232. This is true
-regardless of the "DTE mode" setting of this peripheral.
-
-As a result, rs485 support hardware must use the CTS_B signal to control
-the RS-485 transceiver. This is in contrast to generic rs485 kernel
-code, documentation, and DT property names that consistently refer to
-the RST as transceiver control signal.
-
-Add a note in the DT binding document about that, to reduce the
-confusion somewhat.
-
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
- Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-index afcfbc34e243..35957cbf1571 100644
---- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
-@@ -9,7 +9,11 @@ Optional properties:
- - fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
-                   in DCE mode by default.
- - rs485-rts-delay, rs485-rts-active-low, rs485-rx-during-tx,
--  linux,rs485-enabled-at-boot-time: see rs485.txt
-+  linux,rs485-enabled-at-boot-time: see rs485.txt. Note that for RS485
-+  you must enable either the "uart-has-rtscts" or the "rts-gpios"
-+  properties. In case you use "uart-has-rtscts" the signal that controls
-+  the transceiver is actually CTS_B, not RTS_B. CTS_B is always output,
-+  and RTS_B is input, regardless of dte-mode.
- 
- Please check Documentation/devicetree/bindings/serial/serial.txt
- for the complete list of generic properties.
--- 
-2.18.0
+SGksCgpPbiBNb24sIDI1IEp1biAyMDE4IDEwOjMzOjE5ICswMzAwIEJhcnVjaCBTaWFjaCB3cm90
+ZToKPiBUaGUgaS5NWCBVQVJUIHBlcmlwaGVyYWwgdXNlcyB0aGUgUlNUX0Igc2lnbmFsIGFzIGlu
+cHV0LCBhbmQgQ1RTX0IgYXMKPiBvdXRwdXQuIFRoaXMgaXMganVzdCBsaWtlIHRoZSBDREUgcm9s
+ZSBpbiBSUy0yMzIuIFRoaXMgaXMgdHJ1ZQo+CnMvQ0RFL0RDRS8KCj4gcmVnYXJkbGVzcyBvZiB0
+aGUgIkRURSBtb2RlIiBzZXR0aW5nIG9mIHRoaXMgcGVyaXBoZXJhbC4KPiAKPiBBcyBhIHJlc3Vs
+dCwgcnM0ODUgc3VwcG9ydCBoYXJkd2FyZSBtdXN0IHVzZSB0aGUgQ1RTX0Igc2lnbmFsIHRvIGNv
+bnRyb2wKPiB0aGUgUlMtNDg1IHRyYW5zY2VpdmVyLiBUaGlzIGlzIGluIGNvbnRyYXN0IHRvIGdl
+bmVyaWMgcnM0ODUga2VybmVsCj4gY29kZSwgZG9jdW1lbnRhdGlvbiwgYW5kIERUIHByb3BlcnR5
+IG5hbWVzIHRoYXQgY29uc2lzdGVudGx5IHJlZmVyIHRvCj4gdGhlIFJTVCBhcyB0cmFuc2NlaXZl
+ciBjb250cm9sIHNpZ25hbC4KPgpzL1JTVC9SVFMvCgo+IEFkZCBhIG5vdGUgaW4gdGhlIERUIGJp
+bmRpbmcgZG9jdW1lbnQgYWJvdXQgdGhhdCwgdG8gcmVkdWNlIHRoZQo+IGNvbmZ1c2lvbiBzb21l
+d2hhdC4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBCYXJ1Y2ggU2lhY2ggPGJhcnVjaEB0a29zLmNvLmls
+Pgo+IC0tLQo+ICBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL2ZzbC1p
+bXgtdWFydC50eHQgfCA2ICsrKysrLQo+ICAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCsp
+LCAxIGRlbGV0aW9uKC0pCj4gCj4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9zZXJpYWwvZnNsLWlteC11YXJ0LnR4dCBiL0RvY3VtZW50YXRpb24vZGV2aWNl
+dHJlZS9iaW5kaW5ncy9zZXJpYWwvZnNsLWlteC11YXJ0LnR4dAo+IGluZGV4IGFmY2ZiYzM0ZTI0
+My4uMzU5NTdjYmYxNTcxIDEwMDY0NAo+IC0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
+aW5kaW5ncy9zZXJpYWwvZnNsLWlteC11YXJ0LnR4dAo+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2
+aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvZnNsLWlteC11YXJ0LnR4dAo+IEBAIC05LDcgKzksMTEg
+QEAgT3B0aW9uYWwgcHJvcGVydGllczoKPiAgLSBmc2wsZHRlLW1vZGUgOiBJbmRpY2F0ZSB0aGUg
+dWFydCB3b3JrcyBpbiBEVEUgbW9kZS4gVGhlIHVhcnQgd29ya3MKPiAgICAgICAgICAgICAgICAg
+ICAgaW4gRENFIG1vZGUgYnkgZGVmYXVsdC4KPiAgLSByczQ4NS1ydHMtZGVsYXksIHJzNDg1LXJ0
+cy1hY3RpdmUtbG93LCByczQ4NS1yeC1kdXJpbmctdHgsCj4gLSAgbGludXgscnM0ODUtZW5hYmxl
+ZC1hdC1ib290LXRpbWU6IHNlZSByczQ4NS50eHQKPiArICBsaW51eCxyczQ4NS1lbmFibGVkLWF0
+LWJvb3QtdGltZTogc2VlIHJzNDg1LnR4dC4gTm90ZSB0aGF0IGZvciBSUzQ4NQo+ICsgIHlvdSBt
+dXN0IGVuYWJsZSBlaXRoZXIgdGhlICJ1YXJ0LWhhcy1ydHNjdHMiIG9yIHRoZSAicnRzLWdwaW9z
+Igo+ICsgIHByb3BlcnRpZXMuIEluIGNhc2UgeW91IHVzZSAidWFydC1oYXMtcnRzY3RzIiB0aGUg
+c2lnbmFsIHRoYXQgY29udHJvbHMKPiArICB0aGUgdHJhbnNjZWl2ZXIgaXMgYWN0dWFsbHkgQ1RT
+X0IsIG5vdCBSVFNfQi4gQ1RTX0IgaXMgYWx3YXlzIG91dHB1dCwKPiArICBhbmQgUlRTX0IgaXMg
+aW5wdXQsIHJlZ2FyZGxlc3Mgb2YgZHRlLW1vZGUuCj4gIAo+ICBQbGVhc2UgY2hlY2sgRG9jdW1l
+bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NlcmlhbC9zZXJpYWwudHh0Cj4gIGZvciB0aGUg
+Y29tcGxldGUgbGlzdCBvZiBnZW5lcmljIHByb3BlcnRpZXMuCgoKTG90aGFyIFdhw59tYW5uCgpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0t
+a2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcK
+aHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2Vy
+bmVsCg==
