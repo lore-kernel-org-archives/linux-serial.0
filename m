@@ -1,48 +1,57 @@
-From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Subject: Re: [RFC][PATCH 0/6] Use printk_safe context for TTY and UART port
- locks
-Date: Sat, 23 Jun 2018 14:21:49 +0900
-Message-ID: <20180623052149.GA402@tigerII.localdomain>
-References: <20180615093919.559-1-sergey.senozhatsky@gmail.com>
- <20180618143818.50b2f2f9@alans-desktop>
- <20180619005308.GA405@jagdpanzerIV>
- <20180619083021.4avsgvcqjrpkat6s@pathway.suse.cz>
- <CA+55aFz9aGc-vGvKv_ZR2W2ZkZNSZfOHa0m_MbGH_a=x8oAW5Q@mail.gmail.com>
- <20180619223447.4369748b@vmware.local.home>
- <CA+55aFwpcbNO6FS4=O-BrsC4vMBaT3JeFG-_D9WtgmW+Dof3iA@mail.gmail.com>
- <20180622172100.2293b5e5@alans-desktop>
+From: Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH] dt-bindings: serial: imx: clarify rs485 support usage
+Date: Mon, 25 Jun 2018 10:33:19 +0300
+Message-ID: <01fc1e3d89037adce38177c3922d277584214fdd.1529911999.git.baruch@tkos.co.il>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180622172100.2293b5e5@alans-desktop>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Steven Rostedt <rostedt@goodmis.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Dmitry Vyukov <dvyukov@google.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, SergeySenozhatsky <sergey.senozhatsky@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, NXP Linux Team <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-On (06/22/18 17:21), Alan Cox wrote:
-> On Wed, 20 Jun 2018 11:44:13 +0900
-> Linus Torvalds <torvalds@linux-foundation.org> wrote:
-> 
-> > On Wed, Jun 20, 2018 at 11:34 AM Steven Rostedt <rostedt@goodmis.org> wrote:
-> > >
-> > > Perhaps we should do an audit of the console drivers and remove all
-> > > printk, pr_* , WARN*, BUG* from them.  
-> > 
-> > Only the actual _printing_ parts.
-> 
-> No because they are normally rather useful because that port isn't the
-> console. If you trylock
+The i.MX UART peripheral uses the RST_B signal as input, and CTS_B as
+output. This is just like the CDE role in RS-232. This is true
+regardless of the "DTE mode" setting of this peripheral.
 
-trylock is boring, me wants printk_safe_mask everywhere :)
+As a result, rs485 support hardware must use the CTS_B signal to control
+the RS-485 transceiver. This is in contrast to generic rs485 kernel
+code, documentation, and DT property names that consistently refer to
+the RST as transceiver control signal.
 
-> Really that's all that you need - log the message to whichever console
-> targets you can currently safely do so. If it's none well there was
-> always the proposed morse code keyboard light driver 8)
+Add a note in the DT binding document about that, to reduce the
+confusion somewhat.
 
-Hm, just discard messages? With printk_safe_mask we keep everything
-in a lockless per-CPU buffer, which we flush [per-CPU buffer -> printk logbuf]
-from irq_work, so we can print it later.
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+ Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-	-ss
+diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+index afcfbc34e243..35957cbf1571 100644
+--- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
++++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+@@ -9,7 +9,11 @@ Optional properties:
+ - fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
+                   in DCE mode by default.
+ - rs485-rts-delay, rs485-rts-active-low, rs485-rx-during-tx,
+-  linux,rs485-enabled-at-boot-time: see rs485.txt
++  linux,rs485-enabled-at-boot-time: see rs485.txt. Note that for RS485
++  you must enable either the "uart-has-rtscts" or the "rts-gpios"
++  properties. In case you use "uart-has-rtscts" the signal that controls
++  the transceiver is actually CTS_B, not RTS_B. CTS_B is always output,
++  and RTS_B is input, regardless of dte-mode.
+ 
+ Please check Documentation/devicetree/bindings/serial/serial.txt
+ for the complete list of generic properties.
+-- 
+2.18.0
