@@ -1,60 +1,82 @@
-From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
-Subject: Re: [PATCH] dt-bindings: serial: imx: clarify rs485 support usage
-Date: Mon, 25 Jun 2018 10:16:38 +0200
-Message-ID: <20180625101638.47f3b3dd@karo-electronics.de>
-References: <01fc1e3d89037adce38177c3922d277584214fdd.1529911999.git.baruch@tkos.co.il>
+From: Radu Pirea <radu.pirea@microchip.com>
+Subject: [PATCH v9 0/6] Driver for at91 usart in spi mode
+Date: Mon, 25 Jun 2018 13:20:59 +0300
+Message-ID: <20180625102105.28383-1-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <01fc1e3d89037adce38177c3922d277584214fdd.1529911999.git.baruch@tkos.co.il>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Baruch Siach <baruch@tkos.co.il>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
+Cc: linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-SGksCgpPbiBNb24sIDI1IEp1biAyMDE4IDEwOjMzOjE5ICswMzAwIEJhcnVjaCBTaWFjaCB3cm90
-ZToKPiBUaGUgaS5NWCBVQVJUIHBlcmlwaGVyYWwgdXNlcyB0aGUgUlNUX0Igc2lnbmFsIGFzIGlu
-cHV0LCBhbmQgQ1RTX0IgYXMKPiBvdXRwdXQuIFRoaXMgaXMganVzdCBsaWtlIHRoZSBDREUgcm9s
-ZSBpbiBSUy0yMzIuIFRoaXMgaXMgdHJ1ZQo+CnMvQ0RFL0RDRS8KCj4gcmVnYXJkbGVzcyBvZiB0
-aGUgIkRURSBtb2RlIiBzZXR0aW5nIG9mIHRoaXMgcGVyaXBoZXJhbC4KPiAKPiBBcyBhIHJlc3Vs
-dCwgcnM0ODUgc3VwcG9ydCBoYXJkd2FyZSBtdXN0IHVzZSB0aGUgQ1RTX0Igc2lnbmFsIHRvIGNv
-bnRyb2wKPiB0aGUgUlMtNDg1IHRyYW5zY2VpdmVyLiBUaGlzIGlzIGluIGNvbnRyYXN0IHRvIGdl
-bmVyaWMgcnM0ODUga2VybmVsCj4gY29kZSwgZG9jdW1lbnRhdGlvbiwgYW5kIERUIHByb3BlcnR5
-IG5hbWVzIHRoYXQgY29uc2lzdGVudGx5IHJlZmVyIHRvCj4gdGhlIFJTVCBhcyB0cmFuc2NlaXZl
-ciBjb250cm9sIHNpZ25hbC4KPgpzL1JTVC9SVFMvCgo+IEFkZCBhIG5vdGUgaW4gdGhlIERUIGJp
-bmRpbmcgZG9jdW1lbnQgYWJvdXQgdGhhdCwgdG8gcmVkdWNlIHRoZQo+IGNvbmZ1c2lvbiBzb21l
-d2hhdC4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBCYXJ1Y2ggU2lhY2ggPGJhcnVjaEB0a29zLmNvLmls
-Pgo+IC0tLQo+ICBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL2ZzbC1p
-bXgtdWFydC50eHQgfCA2ICsrKysrLQo+ICAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCsp
-LCAxIGRlbGV0aW9uKC0pCj4gCj4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
-ZS9iaW5kaW5ncy9zZXJpYWwvZnNsLWlteC11YXJ0LnR4dCBiL0RvY3VtZW50YXRpb24vZGV2aWNl
-dHJlZS9iaW5kaW5ncy9zZXJpYWwvZnNsLWlteC11YXJ0LnR4dAo+IGluZGV4IGFmY2ZiYzM0ZTI0
-My4uMzU5NTdjYmYxNTcxIDEwMDY0NAo+IC0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
-aW5kaW5ncy9zZXJpYWwvZnNsLWlteC11YXJ0LnR4dAo+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2
-aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvZnNsLWlteC11YXJ0LnR4dAo+IEBAIC05LDcgKzksMTEg
-QEAgT3B0aW9uYWwgcHJvcGVydGllczoKPiAgLSBmc2wsZHRlLW1vZGUgOiBJbmRpY2F0ZSB0aGUg
-dWFydCB3b3JrcyBpbiBEVEUgbW9kZS4gVGhlIHVhcnQgd29ya3MKPiAgICAgICAgICAgICAgICAg
-ICAgaW4gRENFIG1vZGUgYnkgZGVmYXVsdC4KPiAgLSByczQ4NS1ydHMtZGVsYXksIHJzNDg1LXJ0
-cy1hY3RpdmUtbG93LCByczQ4NS1yeC1kdXJpbmctdHgsCj4gLSAgbGludXgscnM0ODUtZW5hYmxl
-ZC1hdC1ib290LXRpbWU6IHNlZSByczQ4NS50eHQKPiArICBsaW51eCxyczQ4NS1lbmFibGVkLWF0
-LWJvb3QtdGltZTogc2VlIHJzNDg1LnR4dC4gTm90ZSB0aGF0IGZvciBSUzQ4NQo+ICsgIHlvdSBt
-dXN0IGVuYWJsZSBlaXRoZXIgdGhlICJ1YXJ0LWhhcy1ydHNjdHMiIG9yIHRoZSAicnRzLWdwaW9z
-Igo+ICsgIHByb3BlcnRpZXMuIEluIGNhc2UgeW91IHVzZSAidWFydC1oYXMtcnRzY3RzIiB0aGUg
-c2lnbmFsIHRoYXQgY29udHJvbHMKPiArICB0aGUgdHJhbnNjZWl2ZXIgaXMgYWN0dWFsbHkgQ1RT
-X0IsIG5vdCBSVFNfQi4gQ1RTX0IgaXMgYWx3YXlzIG91dHB1dCwKPiArICBhbmQgUlRTX0IgaXMg
-aW5wdXQsIHJlZ2FyZGxlc3Mgb2YgZHRlLW1vZGUuCj4gIAo+ICBQbGVhc2UgY2hlY2sgRG9jdW1l
-bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NlcmlhbC9zZXJpYWwudHh0Cj4gIGZvciB0aGUg
-Y29tcGxldGUgbGlzdCBvZiBnZW5lcmljIHByb3BlcnRpZXMuCgoKTG90aGFyIFdhw59tYW5uCgpf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0t
-a2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcK
-aHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2Vy
-bmVsCg==
+Hello,
+
+This is the second version of driver. I added a mfd driver which by
+default probes atmel_serial driver and if in dt is specified to probe
+the spi driver, then the spi-at91-usart driver will be probed. The
+compatible for atmel_serial is now the compatible for at91-usart mfd
+driver and compatilbe for atmel_serial driver was changed in order to
+keep the bindings for serial as they are.
+
+Changes in v9:
+- minor changes
+- rebased on top of broonie/for-4.19
+
+Changes in v8:
+- fixed passing an empty mfd cell if "atmel,usart-mode" value is invalid
+
+Changes in v7:
+- synced up  SPDIX license with module license
+- numbering of usart modes starts from 0 insteand of 1
+
+Changes in v6:
+- removed unused compatible strings from serial and spi drivers
+
+Changes in v5:
+- fixed usage of stdout-path property with atmel_serial driver
+
+Changes in v4:
+- modified the spi driver to use cs gpio support form spi subsystem
+- fixed dma transfers for serial driver
+- squashed binding for spi and serial and moved them to mfd/atmel-usart.txt
+
+Changes in v3:
+- fixed spi slaves probing
+
+Changes in v2:
+- added at91-usart mfd driver
+- modified spi-at91-usart driver to work as mfd driver child
+- modified atmel_serial driver to work as mfd driver child
+
+Changes in v1:
+- added spi-at91-usart driver
+
+
+Radu Pirea (6):
+  MAINTAINERS: add at91 usart mfd driver
+  dt-bindings: add binding for atmel-usart in SPI mode
+  mfd: at91-usart: added mfd driver for usart
+  MAINTAINERS: add at91 usart spi driver
+  spi: at91-usart: add driver for at91-usart as spi
+  tty/serial: atmel: change the driver to work under at91-usart mfd
+
+ .../bindings/{serial => mfd}/atmel-usart.txt  |  25 +-
+ MAINTAINERS                                   |  16 +
+ drivers/mfd/Kconfig                           |   9 +
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/at91-usart.c                      |  71 +++
+ drivers/spi/Kconfig                           |   9 +
+ drivers/spi/Makefile                          |   1 +
+ drivers/spi/spi-at91-usart.c                  | 432 ++++++++++++++++++
+ drivers/tty/serial/Kconfig                    |   1 +
+ drivers/tty/serial/atmel_serial.c             |  42 +-
+ include/dt-bindings/mfd/at91-usart.h          |  17 +
+ 11 files changed, 607 insertions(+), 17 deletions(-)
+ rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
+ create mode 100644 drivers/mfd/at91-usart.c
+ create mode 100644 drivers/spi/spi-at91-usart.c
+ create mode 100644 include/dt-bindings/mfd/at91-usart.h
+
+-- 
+2.17.1
