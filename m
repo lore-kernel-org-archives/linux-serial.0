@@ -1,36 +1,35 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 1/8] dt-bindings: tegra186-hsp: Add shared interrupts
-Date: Mon, 25 Jun 2018 13:07:39 -0600
-Message-ID: <20180625190739.GA10143@rob-hp-laptop>
-References: <20180620122042.10950-1-mperttunen@nvidia.com>
- <20180620122042.10950-2-mperttunen@nvidia.com>
+From: Mars Cheng <mars.cheng@mediatek.com>
+Subject: [PATCH 0/2] Add basic SoC support for MT6765
+Date: Tue, 26 Jun 2018 10:04:04 +0800
+Message-ID: <1529978646-28976-1-git-send-email-mars.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180620122042.10950-2-mperttunen@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mikko Perttunen <mperttunen@nvidia.com>
-Cc: mark.rutland@arm.com, jassisinghbrar@gmail.com, gregkh@linuxfoundation.org, thierry.reding@gmail.com, jonathanh@nvidia.com, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Marc Zyngier <marc.zyngier@arm.com>
+Cc: CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, Miles Chen <miles.chen@mediatek.com>, Jades Shih <jades.shih@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, My Chuang <my.chuang@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jun 20, 2018 at 03:20:35PM +0300, Mikko Perttunen wrote:
-> HSP interrupts can be routed through exposed "shared interrupts". These
-> interrupts can be mapped to various internal interrupt lines. Add
-> interrupt properties for shared interrupts to the tegra186-hsp device
-> tree bindings. At the same time, add the compatibility string for
-> tegra194-hsp, which is backwards compatible with tegra186.
-> 
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> ---
-> 
-> Notes:
->     v2:
->     - Edited commit message to not say that doorbell interrupts cannot be
->       routed to shared interrupts.
->     - Added tegra194 compatibility string.
-> 
->  Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt | 3 +++
->  1 file changed, 3 insertions(+)
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+This patch adds basic SoC support for Mediatek's new 8-core SoC,
+MT6765, which is mainly for smartphone application.
+
+Change in V2:
+1. fix clk properties in uart dts node
+2. fix typo in submit title
+3. add simple-bus in mt6765.dtsi
+4. use correct SPDX license format
+
+Mars Cheng (2):
+  dt-bindings: mediatek: Add bindings for mediatek MT6765 Platform
+  arm64: dts: mediatek: add mt6765 support
+
+ Documentation/devicetree/bindings/arm/mediatek.txt |    4 +
+ .../interrupt-controller/mediatek,sysirq.txt       |    1 +
+ .../devicetree/bindings/serial/mtk-uart.txt        |    1 +
+ arch/arm64/boot/dts/mediatek/Makefile              |    1 +
+ arch/arm64/boot/dts/mediatek/mt6765-evb.dts        |   33 ++++
+ arch/arm64/boot/dts/mediatek/mt6765.dtsi           |  158 ++++++++++++++++++++
+ 6 files changed, 198 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
