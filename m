@@ -1,109 +1,88 @@
-From: Mars Cheng <mars.cheng@mediatek.com>
-Subject: Re: [PATCH v2 2/2] arm64: dts: mediatek: add mt6765 support
-Date: Tue, 26 Jun 2018 19:23:43 +0800
-Message-ID: <1530012223.17380.2.camel@mtkswgap22>
-References: <1529978646-28976-1-git-send-email-mars.cheng@mediatek.com>
-         <1529978646-28976-3-git-send-email-mars.cheng@mediatek.com>
-         <86h8lq6l1r.wl-marc.zyngier@arm.com>
+From: Lucas Stach <l.stach@pengutronix.de>
+Subject: Re: [PATCH v5 0/7] add virt-dma support for imx-sdma
+Date: Tue, 26 Jun 2018 17:04:02 +0200
+Message-ID: <1530025442.9910.44.camel@pengutronix.de>
+References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <86h8lq6l1r.wl-marc.zyngier@arm.com>
+In-Reply-To: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Marc Zyngier <marc.zyngier@arm.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, Miles Chen <miles.chen@mediatek.com>, Jades Shih <jades.shih@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, My Chuang <my.chuang@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Robin Gong <yibin.gong@nxp.com>, vkoul@kernel.org, s.hauer@pengutronix.de, dan.j.williams@intel.com, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-Hi Marc
+Hi Robin,
 
-On Tue, 2018-06-26 at 08:53 +0100, Marc Zyngier wrote:
-> On Tue, 26 Jun 2018 03:04:06 +0100,
-> Mars Cheng <mars.cheng@mediatek.com> wrote:
-> > 
-> > This adds basic chip support for MT6765 SoC.
-> > 
-> > Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
-> > ---
-> >  arch/arm64/boot/dts/mediatek/Makefile       |    1 +
-> >  arch/arm64/boot/dts/mediatek/mt6765-evb.dts |   33 ++++++
-> >  arch/arm64/boot/dts/mediatek/mt6765.dtsi    |  158 +++++++++++++++++++++++++++
-> >  3 files changed, 192 insertions(+)
-> >  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
-> >  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
-> > 
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt6765.dtsi b/arch/arm64/boot/dts/mediatek/mt6765.dtsi
-> > new file mode 100644
-> > index 0000000..ab34c0f
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/mediatek/mt6765.dtsi
-> 
-> [...]
-> 
-> > +	timer {
-> > +		compatible = "arm,armv8-timer";
-> > +		interrupt-parent = <&gic>;
-> > +		interrupts = <GIC_PPI 13
-> > +			     (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> > +			     <GIC_PPI 14
-> > +			     (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> > +			     <GIC_PPI 11
-> > +			     (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> > +			     <GIC_PPI 10
-> > +			     (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
-> 
-> GICv3 doesn't encode the PPI affinity in its interrupt specifiers (or
-> at least not this way). Please drop it.
+I've tested this whole series with the SDMA being used for SPI, UART
+and SSI with no regressions spotted. As this should cover most common
+use-cases, I think this series is good to go in.
 
-Got it, will fix it.
+Tested-by: Lucas Stach <l.stach@pengutronix.de>
 
-> 
-> > +	};
-> > +
-> > +	soc {
-> > +		#address-cells = <2>;
-> > +		#size-cells = <2>;
-> > +		compatible = "simple-bus";
-> > +		ranges;
-> > +
-> > +		sysirq: intpol-controller@10200a80 {
-> > +			compatible = "mediatek,mt6765-sysirq",
-> > +				     "mediatek,mt6577-sysirq";
-> > +			interrupt-controller;
-> > +			#interrupt-cells = <3>;
-> > +			interrupt-parent = <&gic>;
-> > +			reg = <0 0x10200a80 0 0x50>;
-> > +		};
-> > +
-> > +		gic: interrupt-controller@0c000000 {
-> > +			compatible = "arm,gic-v3";
-> > +			#interrupt-cells = <3>;
-> > +			#address-cells = <2>;
-> > +			#size-cells = <2>;
-> > +			#redistributor-regions = <1>;
-> 
-> A single redistributor is the default, and you don't need to specify
-> it in the DT.
-> 
+Regards,
+Lucas
 
-sure, it's really unnecessary. will remove it.
-
-> > +			interrupt-parent = <&gic>;
-> > +			interrupt-controller;
-> > +			reg = <0 0x0c000000 0 0x40000>, // distributor
-> > +			      <0 0x0c100000 0 0x200000>; // redistributor
+Am Mittwoch, den 20.06.2018, 00:56 +0800 schrieb Robin Gong:
+> The legacy sdma driver has below limitations or drawbacks:
+>   1. Hardcode the max BDs number as "PAGE_SIZE / sizeof(*)", and alloc
+>      one page size for one channel regardless of only few BDs needed
+>      most time. But in few cases, the max PAGE_SIZE maybe not enough.
+>   2. One SDMA channel can't stop immediatley once channel disabled which
+>      means SDMA interrupt may come in after this channel terminated.There
+>      are some patches for this corner case such as commit "2746e2c389f9",
+>      but not cover non-cyclic.
 > 
-> How about the GICv2 compatibility regions, which are provided by the
-> CPUs at a fixed offset from PERIPHBASE? See the Cortex-A53 TRM for
-> detail, and please add the missing regions.
+> The common virt-dma overcomes the above limitations. It can alloc bd
+> dynamically and free bd once this tx transfer done. No memory wasted or
+> maximum limititation here, only depends on how many memory can be requested
+> from kernel. For No.2, such issue can be workaround by checking if there
+> is available descript("sdmac->desc") now once the unwanted interrupt
+> coming. At last the common virt-dma is easier for sdma driver maintain.
 > 
-
-Thanks. will add it soon.
-
-> > +			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-> > +		};
+> Change from v4:
+>   1. identify lockdep issue which caused by allocate memory with
+>      'GFP_KERNEL', change to 'GFP_NOWAIT' instead so that lockdep
+>      ignore check. That also make sense since Audio/uart driver may
+>      call dma function after spin_lock_irqsave()...
+>   2. use dma pool instead for bd description allocated,since audio
+>      driver may call dma_terminate_all in irq. Please refer to 7/7.
+>   3. remove 7/7 serial patch in v4, since lockdep issued fixed by No.1 
 > 
-> Thanks,
+> Change from v3:
+>   1. add two uart patches which impacted by this patchset.
+>   2. unlock 'vc.lock' before cyclic dma callback and lock again after
+>      it because some driver such as uart will call dmaengine_tx_status
+>      which will acquire 'vc.lock' again and dead lock comes out.
+>   3. remove 'Revert commit' stuff since that patch is not wrong and
+>      combine two patch into one patch as Sascha's comment.
 > 
-> 	M.
+> Change from v2:
+>   1. include Sascha's patch to make the main patch easier to review.
+>      Thanks Sacha.
+>   2. remove useless 'desc'/'chan' in struct sdma_channe.
+> 
+> Change from v1:
+>   1. split v1 patch into 5 patches.
+>   2. remove some unnecessary condition check.
+>   3. remove unnecessary 'pending' list.
+> 
+> Robin Gong (6):
+>   tty: serial: imx: correct dma cookie status
+>   dmaengine: imx-sdma: add virt-dma support
+>   dmaengine: imx-sdma: remove useless 'lock' and 'enabled' in 'struct
+>     sdma_channel'
+>   dmaengine: imx-sdma: remove the maximum limitation for bd numbers
+>   dmaengine: imx-sdma: add sdma_transfer_init to decrease code overlap
+>   dmaengine: imx-sdma: alloclate bd memory from dma pool
+> 
+> Sascha Hauer (1):
+>   dmaengine: imx-sdma: factor out a struct sdma_desc from struct
+>     sdma_channel
+> 
+>  drivers/dma/Kconfig      |   1 +
+>  drivers/dma/imx-sdma.c   | 400 +++++++++++++++++++++++++++--------------------
+>  drivers/tty/serial/imx.c |   2 +-
+>  3 files changed, 235 insertions(+), 168 deletions(-)
 > 
