@@ -1,63 +1,32 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v5 1/7] tty: serial: imx: correct dma cookie status
-Date: Tue, 26 Jun 2018 21:22:52 +0200
-Message-ID: <20180626192252.6qdpwzpbpn6s5sd3@pengutronix.de>
-References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
- <1529427424-12321-2-git-send-email-yibin.gong@nxp.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: 8250_omap: Add compatible for
+ AM654 UART controller
+Date: Tue, 26 Jun 2018 15:12:53 -0600
+Message-ID: <20180626211253.GA21853@rob-hp-laptop>
+References: <20180619194450.6353-1-nm@ti.com>
+ <20180619194450.6353-2-nm@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1529427424-12321-2-git-send-email-yibin.gong@nxp.com>
+In-Reply-To: <20180619194450.6353-2-nm@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Gong <yibin.gong@nxp.com>
-Cc: vkoul@kernel.org, s.hauer@pengutronix.de, l.stach@pengutronix.de, dan.j.williams@intel.com, gregkh@linuxfoundation.org, jslaby@suse.com, dmaengine@vger.kernel.org, linux-imx@nxp.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Nishanth Menon <nm@ti.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Tero Kristo <t-kristo@ti.com>, Vignesh R <vigneshr@ti.com>, Jiri Slaby <jslaby@suse.com>, Sekhar Nori <nsekhar@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jun 20, 2018 at 12:56:58AM +0800, Robin Gong wrote:
-> Correct to check the right rx dma cookie status in spit of it
-> works because only one cookie is running in the current sdma.
-> But it will not once sdma driver support multi cookies
-> running based on virt-dma.
+On Tue, Jun 19, 2018 at 02:44:49PM -0500, Nishanth Menon wrote:
+> AM654 uses a UART controller that is only partially compatible with
+> existing 8250 UART. UART DMA integration is substantially different
+> and even a match against standard 8250 or omap4 would result in
+> non-working UART once DMA is enabled by default.
 > 
-> Signed-off-by: Robin Gong <yibin.gong@nxp.com>
-Looks wrong (because of tx_status vs rx_cookie), but is right
-nevertheless I think:
-
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-
-Thanks
-Uwe
-
+> Introduce a specific compatible to help build up the differences in
+> follow on patches.
+> 
+> Cc: Sekhar Nori <nsekhar@ti.com>
+> Cc: Vignesh R <vigneshr@ti.com>
+> Signed-off-by: Nishanth Menon <nm@ti.com>
 > ---
->  drivers/tty/serial/imx.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 4e85357..2879407 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -1051,7 +1051,7 @@ static void imx_uart_dma_rx_callback(void *data)
->  	unsigned int r_bytes;
->  	unsigned int bd_size;
->  
-> -	status = dmaengine_tx_status(chan, (dma_cookie_t)0, &state);
-> +	status = dmaengine_tx_status(chan, sport->rx_cookie, &state);
->  
->  	if (status == DMA_ERROR) {
->  		imx_uart_clear_rx_errors(sport);
-> -- 
-> 2.7.4
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Acked-by: Rob Herring <robh@kernel.org>
