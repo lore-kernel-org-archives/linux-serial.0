@@ -1,85 +1,65 @@
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v4 2/7] serdev: add dev_pm_domain_attach|detach()
-Date: Wed, 27 Jun 2018 10:00:08 +0200
-Message-ID: <CAPDyKFp4kESPH4hcqgATYWBt3Kz3FhAOCpnrCc5PRSkMkBikEg@mail.gmail.com>
-References: <cover.1530004712.git.sean.wang@mediatek.com> <ed497b2a9751df3b2f84cc9db6d6834816a6027f.1530004712.git.sean.wang@mediatek.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [RFC PATCH v2 1/6] serial: uartps: Do not initialize field to
+ zero again
+Date: Wed, 27 Jun 2018 18:09:17 +0800
+Message-ID: <20180627100917.GA20940@kroah.com>
+References: <cover.1528288895.git.michal.simek@xilinx.com>
+ <e8b0169887855a5ef2c1a0456842f650601b451c.1528288895.git.michal.simek@xilinx.com>
+ <e7b01bd9-5763-75c0-1384-2536313f5854@monstr.eu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ed497b2a9751df3b2f84cc9db6d6834816a6027f.1530004712.git.sean.wang@mediatek.com>
+Content-Disposition: inline
+In-Reply-To: <e7b01bd9-5763-75c0-1384-2536313f5854@monstr.eu>
 Sender: linux-kernel-owner@vger.kernel.org
-To: sean.wang@mediatek.com
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>, devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-mediatek@lists.infradead.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Michal Simek <monstr@monstr.eu>
+Cc: Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, Alexander Graf <agraf@suse.de>, shubhraj@xilinx.com, robh@kernel.org, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 27 June 2018 at 07:43,  <sean.wang@mediatek.com> wrote:
-> From: Sean Wang <sean.wang@mediatek.com>
->
-> In order to open up the required power gate before any operation can be
-> effectively performed over the serial bus between CPU and serdev, it's
-> clearly essential to add common attach functions for PM domains to serdev
-> at the probe phase.
->
-> Similarly, the relevant dettach function for the PM domains should be
-> properly and reversely added at the remove phase.
->
-> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-> Cc: Rob Herring <robh@kernel.org>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Cc: linux-serial@vger.kernel.org
+On Tue, Jun 19, 2018 at 10:09:05AM +0200, Michal Simek wrote:
+> On 6.6.2018 14:41, Michal Simek wrote:
+> > Writing zero and NULLs to already initialized fields is not needed.
+> > Remove this additional writes.
+> > 
+> > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> > ---
+> > 
+> > Changes in v2:
+> > - new patch - it can be sent separately too
+> > 
+> >  drivers/tty/serial/xilinx_uartps.c | 3 ---
+> >  1 file changed, 3 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> > index 8a3e34234e98..5f116f3ecd4a 100644
+> > --- a/drivers/tty/serial/xilinx_uartps.c
+> > +++ b/drivers/tty/serial/xilinx_uartps.c
+> > @@ -1510,15 +1510,12 @@ static int cdns_uart_probe(struct platform_device *pdev)
+> >  
+> >  	/* At this point, we've got an empty uart_port struct, initialize it */
+> >  	spin_lock_init(&port->lock);
+> > -	port->membase	= NULL;
+> > -	port->irq	= 0;
+> >  	port->type	= PORT_UNKNOWN;
+> >  	port->iotype	= UPIO_MEM32;
+> >  	port->flags	= UPF_BOOT_AUTOCONF;
+> >  	port->ops	= &cdns_uart_ops;
+> >  	port->fifosize	= CDNS_UART_FIFO_SIZE;
+> >  	port->line	= id;
+> > -	port->dev	= NULL;
+> >  
+> >  	/*
+> >  	 * Register the port.
+> > 
+> 
+> Alan, Rob, Greg: Any comment about this RFC?
 
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+I rarely review RFC patchesets as obviously you don't think it is good
+enough to be submitted "for real" :)
 
-Kind regards
-Uffe
+If you think this is all good, great, please resend it without the RFC
+and it will end up in my queue.
 
-> ---
->  drivers/tty/serdev/core.c | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index df93b72..8096138 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -13,6 +13,7 @@
->  #include <linux/module.h>
->  #include <linux/of.h>
->  #include <linux/of_device.h>
-> +#include <linux/pm_domain.h>
->  #include <linux/serdev.h>
->  #include <linux/slab.h>
->
-> @@ -330,8 +331,17 @@ EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
->  static int serdev_drv_probe(struct device *dev)
->  {
->         const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
-> +       int ret;
->
-> -       return sdrv->probe(to_serdev_device(dev));
-> +       ret = dev_pm_domain_attach(dev, true);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = sdrv->probe(to_serdev_device(dev));
-> +       if (ret)
-> +               dev_pm_domain_detach(dev, true);
-> +
-> +       return ret;
->  }
->
->  static int serdev_drv_remove(struct device *dev)
-> @@ -339,6 +349,9 @@ static int serdev_drv_remove(struct device *dev)
->         const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
->         if (sdrv->remove)
->                 sdrv->remove(to_serdev_device(dev));
-> +
-> +       dev_pm_domain_detach(dev, true);
-> +
->         return 0;
->  }
->
-> --
-> 2.7.4
->
+thanks,
+
+greg k-h
