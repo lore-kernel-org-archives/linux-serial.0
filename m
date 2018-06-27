@@ -1,88 +1,77 @@
-From: Robin Gong <yibin.gong@nxp.com>
-Subject: RE: [PATCH v5 0/7] add virt-dma support for imx-sdma
-Date: Wed, 27 Jun 2018 01:18:05 +0000
-Message-ID: <DB6PR04MB3223F2B6364A63A00A251DF689480@DB6PR04MB3223.eurprd04.prod.outlook.com>
-References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
- <1530025442.9910.44.camel@pengutronix.de>
+From: <sean.wang@mediatek.com>
+Subject: [PATCH v4 2/7] serdev: add dev_pm_domain_attach|detach()
+Date: Wed, 27 Jun 2018 13:43:20 +0800
+Message-ID: <ed497b2a9751df3b2f84cc9db6d6834816a6027f.1530004712.git.sean.wang@mediatek.com>
+References: <cover.1530004712.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1530025442.9910.44.camel@pengutronix.de>
-Content-Language: en-US
+In-Reply-To: <cover.1530004712.git.sean.wang@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lucas Stach <l.stach@pengutronix.de>, "vkoul@kernel.org" <vkoul@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "dan.j.williams@intel.com" <dan.j.williams@intel.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, dl-linux-imx <linux-imx@nxp.com>
+To: robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org, johan.hedberg@gmail.com
+Cc: devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>, Rob Herring <robh@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-VGhhbmtzIEx1Y2FzLiBMZXQncyB3YWl0IGZvciBjb21tZW50cyBmcm9tIFZpbm9kLg0KDQotLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogTHVjYXMgU3RhY2ggW21haWx0bzpsLnN0YWNo
-QHBlbmd1dHJvbml4LmRlXSANClNlbnQ6IDIwMTjlubQ25pyIMjbml6UgMjM6MDQNClRvOiBSb2Jp
-biBHb25nIDx5aWJpbi5nb25nQG54cC5jb20+OyB2a291bEBrZXJuZWwub3JnOyBzLmhhdWVyQHBl
-bmd1dHJvbml4LmRlOyBkYW4uai53aWxsaWFtc0BpbnRlbC5jb207IGdyZWdraEBsaW51eGZvdW5k
-YXRpb24ub3JnOyBqc2xhYnlAc3VzZS5jb20NCkNjOiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwu
-b3JnOyBkbWFlbmdpbmVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
-b3JnOyBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IGRsLWxpbnV4LWlteCA8
-bGludXgtaW14QG54cC5jb20+DQpTdWJqZWN0OiBSZTogW1BBVENIIHY1IDAvN10gYWRkIHZpcnQt
-ZG1hIHN1cHBvcnQgZm9yIGlteC1zZG1hDQoNCkhpIFJvYmluLA0KDQpJJ3ZlIHRlc3RlZCB0aGlz
-IHdob2xlIHNlcmllcyB3aXRoIHRoZSBTRE1BIGJlaW5nIHVzZWQgZm9yIFNQSSwgVUFSVCBhbmQg
-U1NJIHdpdGggbm8gcmVncmVzc2lvbnMgc3BvdHRlZC4gQXMgdGhpcyBzaG91bGQgY292ZXIgbW9z
-dCBjb21tb24gdXNlLWNhc2VzLCBJIHRoaW5rIHRoaXMgc2VyaWVzIGlzIGdvb2QgdG8gZ28gaW4u
-DQoNClRlc3RlZC1ieTogTHVjYXMgU3RhY2ggPGwuc3RhY2hAcGVuZ3V0cm9uaXguZGU+DQoNClJl
-Z2FyZHMsDQpMdWNhcw0KDQpBbSBNaXR0d29jaCwgZGVuIDIwLjA2LjIwMTgsIDAwOjU2ICswODAw
-IHNjaHJpZWIgUm9iaW4gR29uZzoNCj4gVGhlIGxlZ2FjeSBzZG1hIGRyaXZlciBoYXMgYmVsb3cg
-bGltaXRhdGlvbnMgb3IgZHJhd2JhY2tzOg0KPiDCoCAxLiBIYXJkY29kZSB0aGUgbWF4IEJEcyBu
-dW1iZXIgYXMgIlBBR0VfU0laRSAvIHNpemVvZigqKSIsIGFuZCBhbGxvYw0KPiDCoMKgwqDCoMKg
-b25lIHBhZ2Ugc2l6ZSBmb3Igb25lIGNoYW5uZWwgcmVnYXJkbGVzcyBvZiBvbmx5IGZldyBCRHMg
-bmVlZGVkDQo+IMKgwqDCoMKgwqBtb3N0IHRpbWUuIEJ1dCBpbiBmZXcgY2FzZXMsIHRoZSBtYXgg
-UEFHRV9TSVpFIG1heWJlIG5vdCBlbm91Z2guDQo+IMKgIDIuIE9uZSBTRE1BIGNoYW5uZWwgY2Fu
-J3Qgc3RvcCBpbW1lZGlhdGxleSBvbmNlIGNoYW5uZWwgZGlzYWJsZWQgDQo+IHdoaWNoDQo+IMKg
-wqDCoMKgwqBtZWFucyBTRE1BIGludGVycnVwdCBtYXkgY29tZSBpbiBhZnRlciB0aGlzIGNoYW5u
-ZWwgDQo+IHRlcm1pbmF0ZWQuVGhlcmUNCj4gwqDCoMKgwqDCoGFyZSBzb21lIHBhdGNoZXMgZm9y
-IHRoaXMgY29ybmVyIGNhc2Ugc3VjaCBhcyBjb21taXQgDQo+ICIyNzQ2ZTJjMzg5ZjkiLA0KPiDC
-oMKgwqDCoMKgYnV0IG5vdCBjb3ZlciBub24tY3ljbGljLg0KPiANCj4gVGhlIGNvbW1vbiB2aXJ0
-LWRtYSBvdmVyY29tZXMgdGhlIGFib3ZlIGxpbWl0YXRpb25zLiBJdCBjYW4gYWxsb2MgYmQgDQo+
-IGR5bmFtaWNhbGx5IGFuZCBmcmVlIGJkIG9uY2UgdGhpcyB0eCB0cmFuc2ZlciBkb25lLiBObyBt
-ZW1vcnkgd2FzdGVkIA0KPiBvciBtYXhpbXVtIGxpbWl0aXRhdGlvbiBoZXJlLCBvbmx5IGRlcGVu
-ZHMgb24gaG93IG1hbnkgbWVtb3J5IGNhbiBiZSANCj4gcmVxdWVzdGVkIGZyb20ga2VybmVsLiBG
-b3IgTm8uMiwgc3VjaCBpc3N1ZSBjYW4gYmUgd29ya2Fyb3VuZCBieSANCj4gY2hlY2tpbmcgaWYg
-dGhlcmUgaXMgYXZhaWxhYmxlIGRlc2NyaXB0KCJzZG1hYy0+ZGVzYyIpIG5vdyBvbmNlIHRoZSAN
-Cj4gdW53YW50ZWQgaW50ZXJydXB0IGNvbWluZy4gQXQgbGFzdCB0aGUgY29tbW9uIHZpcnQtZG1h
-IGlzIGVhc2llciBmb3Igc2RtYSBkcml2ZXIgbWFpbnRhaW4uDQo+IA0KPiBDaGFuZ2UgZnJvbSB2
-NDoNCj4gwqAgMS4gaWRlbnRpZnkgbG9ja2RlcCBpc3N1ZSB3aGljaCBjYXVzZWQgYnkgYWxsb2Nh
-dGUgbWVtb3J5IHdpdGgNCj4gwqDCoMKgwqDCoCdHRlBfS0VSTkVMJywgY2hhbmdlIHRvICdHRlBf
-Tk9XQUlUJyBpbnN0ZWFkIHNvIHRoYXQgbG9ja2RlcA0KPiDCoMKgwqDCoMKgaWdub3JlIGNoZWNr
-LiBUaGF0IGFsc28gbWFrZSBzZW5zZSBzaW5jZSBBdWRpby91YXJ0IGRyaXZlciBtYXkNCj4gwqDC
-oMKgwqDCoGNhbGwgZG1hIGZ1bmN0aW9uIGFmdGVyIHNwaW5fbG9ja19pcnFzYXZlKCkuLi4NCj4g
-wqAgMi4gdXNlIGRtYSBwb29sIGluc3RlYWQgZm9yIGJkIGRlc2NyaXB0aW9uIGFsbG9jYXRlZCxz
-aW5jZSBhdWRpbw0KPiDCoMKgwqDCoMKgZHJpdmVyIG1heSBjYWxsIGRtYV90ZXJtaW5hdGVfYWxs
-IGluIGlycS4gUGxlYXNlIHJlZmVyIHRvIDcvNy4NCj4gwqAgMy4gcmVtb3ZlIDcvNyBzZXJpYWwg
-cGF0Y2ggaW4gdjQsIHNpbmNlIGxvY2tkZXAgaXNzdWVkIGZpeGVkIGJ5IE5vLjENCj4gDQo+IENo
-YW5nZSBmcm9tIHYzOg0KPiDCoCAxLiBhZGQgdHdvIHVhcnQgcGF0Y2hlcyB3aGljaCBpbXBhY3Rl
-ZCBieSB0aGlzIHBhdGNoc2V0Lg0KPiDCoCAyLiB1bmxvY2sgJ3ZjLmxvY2snIGJlZm9yZSBjeWNs
-aWMgZG1hIGNhbGxiYWNrIGFuZCBsb2NrIGFnYWluIGFmdGVyDQo+IMKgwqDCoMKgwqBpdCBiZWNh
-dXNlIHNvbWUgZHJpdmVyIHN1Y2ggYXMgdWFydCB3aWxsIGNhbGwgZG1hZW5naW5lX3R4X3N0YXR1
-cw0KPiDCoMKgwqDCoMKgd2hpY2ggd2lsbCBhY3F1aXJlICd2Yy5sb2NrJyBhZ2FpbiBhbmQgZGVh
-ZCBsb2NrIGNvbWVzIG91dC4NCj4gwqAgMy4gcmVtb3ZlICdSZXZlcnQgY29tbWl0JyBzdHVmZiBz
-aW5jZSB0aGF0IHBhdGNoIGlzIG5vdCB3cm9uZyBhbmQNCj4gwqDCoMKgwqDCoGNvbWJpbmUgdHdv
-IHBhdGNoIGludG8gb25lIHBhdGNoIGFzIFNhc2NoYSdzIGNvbW1lbnQuDQo+IA0KPiBDaGFuZ2Ug
-ZnJvbSB2MjoNCj4gwqAgMS4gaW5jbHVkZSBTYXNjaGEncyBwYXRjaCB0byBtYWtlIHRoZSBtYWlu
-IHBhdGNoIGVhc2llciB0byByZXZpZXcuDQo+IMKgwqDCoMKgwqBUaGFua3MgU2FjaGEuDQo+IMKg
-IDIuIHJlbW92ZSB1c2VsZXNzICdkZXNjJy8nY2hhbicgaW4gc3RydWN0IHNkbWFfY2hhbm5lLg0K
-PiANCj4gQ2hhbmdlIGZyb20gdjE6DQo+IMKgIDEuIHNwbGl0IHYxIHBhdGNoIGludG8gNSBwYXRj
-aGVzLg0KPiDCoCAyLiByZW1vdmUgc29tZSB1bm5lY2Vzc2FyeSBjb25kaXRpb24gY2hlY2suDQo+
-IMKgIDMuIHJlbW92ZSB1bm5lY2Vzc2FyeSAncGVuZGluZycgbGlzdC4NCj4gDQo+IFJvYmluIEdv
-bmcgKDYpOg0KPiDCoCB0dHk6IHNlcmlhbDogaW14OiBjb3JyZWN0IGRtYSBjb29raWUgc3RhdHVz
-DQo+IMKgIGRtYWVuZ2luZTogaW14LXNkbWE6IGFkZCB2aXJ0LWRtYSBzdXBwb3J0DQo+IMKgIGRt
-YWVuZ2luZTogaW14LXNkbWE6IHJlbW92ZSB1c2VsZXNzICdsb2NrJyBhbmQgJ2VuYWJsZWQnIGlu
-ICdzdHJ1Y3QNCj4gwqDCoMKgwqBzZG1hX2NoYW5uZWwnDQo+IMKgIGRtYWVuZ2luZTogaW14LXNk
-bWE6IHJlbW92ZSB0aGUgbWF4aW11bSBsaW1pdGF0aW9uIGZvciBiZCBudW1iZXJzDQo+IMKgIGRt
-YWVuZ2luZTogaW14LXNkbWE6IGFkZCBzZG1hX3RyYW5zZmVyX2luaXQgdG8gZGVjcmVhc2UgY29k
-ZSBvdmVybGFwDQo+IMKgIGRtYWVuZ2luZTogaW14LXNkbWE6IGFsbG9jbGF0ZSBiZCBtZW1vcnkg
-ZnJvbSBkbWEgcG9vbA0KPiANCj4gU2FzY2hhIEhhdWVyICgxKToNCj4gwqAgZG1hZW5naW5lOiBp
-bXgtc2RtYTogZmFjdG9yIG91dCBhIHN0cnVjdCBzZG1hX2Rlc2MgZnJvbSBzdHJ1Y3QNCj4gwqDC
-oMKgwqBzZG1hX2NoYW5uZWwNCj4gDQo+IMKgZHJpdmVycy9kbWEvS2NvbmZpZ8KgwqDCoMKgwqDC
-oHzCoMKgwqAxICsNCj4gwqBkcml2ZXJzL2RtYS9pbXgtc2RtYS5jwqDCoMKgfCA0MDAgDQo+ICsr
-KysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IMKgZHJpdmVy
-cy90dHkvc2VyaWFsL2lteC5jIHzCoMKgwqAyICstDQo+IMKgMyBmaWxlcyBjaGFuZ2VkLCAyMzUg
-aW5zZXJ0aW9ucygrKSwgMTY4IGRlbGV0aW9ucygtKQ0KPiANCg==
+From: Sean Wang <sean.wang@mediatek.com>
+
+In order to open up the required power gate before any operation can be
+effectively performed over the serial bus between CPU and serdev, it's
+clearly essential to add common attach functions for PM domains to serdev
+at the probe phase.
+
+Similarly, the relevant dettach function for the PM domains should be
+properly and reversely added at the remove phase.
+
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serdev/core.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index df93b72..8096138 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/pm_domain.h>
+ #include <linux/serdev.h>
+ #include <linux/slab.h>
+ 
+@@ -330,8 +331,17 @@ EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
+ static int serdev_drv_probe(struct device *dev)
+ {
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
++	int ret;
+ 
+-	return sdrv->probe(to_serdev_device(dev));
++	ret = dev_pm_domain_attach(dev, true);
++	if (ret)
++		return ret;
++
++	ret = sdrv->probe(to_serdev_device(dev));
++	if (ret)
++		dev_pm_domain_detach(dev, true);
++
++	return ret;
+ }
+ 
+ static int serdev_drv_remove(struct device *dev)
+@@ -339,6 +349,9 @@ static int serdev_drv_remove(struct device *dev)
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+ 	if (sdrv->remove)
+ 		sdrv->remove(to_serdev_device(dev));
++
++	dev_pm_domain_detach(dev, true);
++
+ 	return 0;
+ }
+ 
+-- 
+2.7.4
