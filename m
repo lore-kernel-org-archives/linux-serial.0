@@ -1,32 +1,88 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: 8250_omap: Add compatible for
- AM654 UART controller
-Date: Tue, 26 Jun 2018 15:12:53 -0600
-Message-ID: <20180626211253.GA21853@rob-hp-laptop>
-References: <20180619194450.6353-1-nm@ti.com>
- <20180619194450.6353-2-nm@ti.com>
+From: Robin Gong <yibin.gong@nxp.com>
+Subject: RE: [PATCH v5 0/7] add virt-dma support for imx-sdma
+Date: Wed, 27 Jun 2018 01:18:05 +0000
+Message-ID: <DB6PR04MB3223F2B6364A63A00A251DF689480@DB6PR04MB3223.eurprd04.prod.outlook.com>
+References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
+ <1530025442.9910.44.camel@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180619194450.6353-2-nm@ti.com>
+In-Reply-To: <1530025442.9910.44.camel@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nishanth Menon <nm@ti.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Tero Kristo <t-kristo@ti.com>, Vignesh R <vigneshr@ti.com>, Jiri Slaby <jslaby@suse.com>, Sekhar Nori <nsekhar@ti.com>
+To: Lucas Stach <l.stach@pengutronix.de>, "vkoul@kernel.org" <vkoul@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "dan.j.williams@intel.com" <dan.j.williams@intel.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 19, 2018 at 02:44:49PM -0500, Nishanth Menon wrote:
-> AM654 uses a UART controller that is only partially compatible with
-> existing 8250 UART. UART DMA integration is substantially different
-> and even a match against standard 8250 or omap4 would result in
-> non-working UART once DMA is enabled by default.
-> 
-> Introduce a specific compatible to help build up the differences in
-> follow on patches.
-> 
-> Cc: Sekhar Nori <nsekhar@ti.com>
-> Cc: Vignesh R <vigneshr@ti.com>
-> Signed-off-by: Nishanth Menon <nm@ti.com>
-> ---
-
-Acked-by: Rob Herring <robh@kernel.org>
+VGhhbmtzIEx1Y2FzLiBMZXQncyB3YWl0IGZvciBjb21tZW50cyBmcm9tIFZpbm9kLg0KDQotLS0t
+LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogTHVjYXMgU3RhY2ggW21haWx0bzpsLnN0YWNo
+QHBlbmd1dHJvbml4LmRlXSANClNlbnQ6IDIwMTjlubQ25pyIMjbml6UgMjM6MDQNClRvOiBSb2Jp
+biBHb25nIDx5aWJpbi5nb25nQG54cC5jb20+OyB2a291bEBrZXJuZWwub3JnOyBzLmhhdWVyQHBl
+bmd1dHJvbml4LmRlOyBkYW4uai53aWxsaWFtc0BpbnRlbC5jb207IGdyZWdraEBsaW51eGZvdW5k
+YXRpb24ub3JnOyBqc2xhYnlAc3VzZS5jb20NCkNjOiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwu
+b3JnOyBkbWFlbmdpbmVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
+b3JnOyBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IGRsLWxpbnV4LWlteCA8
+bGludXgtaW14QG54cC5jb20+DQpTdWJqZWN0OiBSZTogW1BBVENIIHY1IDAvN10gYWRkIHZpcnQt
+ZG1hIHN1cHBvcnQgZm9yIGlteC1zZG1hDQoNCkhpIFJvYmluLA0KDQpJJ3ZlIHRlc3RlZCB0aGlz
+IHdob2xlIHNlcmllcyB3aXRoIHRoZSBTRE1BIGJlaW5nIHVzZWQgZm9yIFNQSSwgVUFSVCBhbmQg
+U1NJIHdpdGggbm8gcmVncmVzc2lvbnMgc3BvdHRlZC4gQXMgdGhpcyBzaG91bGQgY292ZXIgbW9z
+dCBjb21tb24gdXNlLWNhc2VzLCBJIHRoaW5rIHRoaXMgc2VyaWVzIGlzIGdvb2QgdG8gZ28gaW4u
+DQoNClRlc3RlZC1ieTogTHVjYXMgU3RhY2ggPGwuc3RhY2hAcGVuZ3V0cm9uaXguZGU+DQoNClJl
+Z2FyZHMsDQpMdWNhcw0KDQpBbSBNaXR0d29jaCwgZGVuIDIwLjA2LjIwMTgsIDAwOjU2ICswODAw
+IHNjaHJpZWIgUm9iaW4gR29uZzoNCj4gVGhlIGxlZ2FjeSBzZG1hIGRyaXZlciBoYXMgYmVsb3cg
+bGltaXRhdGlvbnMgb3IgZHJhd2JhY2tzOg0KPiDCoCAxLiBIYXJkY29kZSB0aGUgbWF4IEJEcyBu
+dW1iZXIgYXMgIlBBR0VfU0laRSAvIHNpemVvZigqKSIsIGFuZCBhbGxvYw0KPiDCoMKgwqDCoMKg
+b25lIHBhZ2Ugc2l6ZSBmb3Igb25lIGNoYW5uZWwgcmVnYXJkbGVzcyBvZiBvbmx5IGZldyBCRHMg
+bmVlZGVkDQo+IMKgwqDCoMKgwqBtb3N0IHRpbWUuIEJ1dCBpbiBmZXcgY2FzZXMsIHRoZSBtYXgg
+UEFHRV9TSVpFIG1heWJlIG5vdCBlbm91Z2guDQo+IMKgIDIuIE9uZSBTRE1BIGNoYW5uZWwgY2Fu
+J3Qgc3RvcCBpbW1lZGlhdGxleSBvbmNlIGNoYW5uZWwgZGlzYWJsZWQgDQo+IHdoaWNoDQo+IMKg
+wqDCoMKgwqBtZWFucyBTRE1BIGludGVycnVwdCBtYXkgY29tZSBpbiBhZnRlciB0aGlzIGNoYW5u
+ZWwgDQo+IHRlcm1pbmF0ZWQuVGhlcmUNCj4gwqDCoMKgwqDCoGFyZSBzb21lIHBhdGNoZXMgZm9y
+IHRoaXMgY29ybmVyIGNhc2Ugc3VjaCBhcyBjb21taXQgDQo+ICIyNzQ2ZTJjMzg5ZjkiLA0KPiDC
+oMKgwqDCoMKgYnV0IG5vdCBjb3ZlciBub24tY3ljbGljLg0KPiANCj4gVGhlIGNvbW1vbiB2aXJ0
+LWRtYSBvdmVyY29tZXMgdGhlIGFib3ZlIGxpbWl0YXRpb25zLiBJdCBjYW4gYWxsb2MgYmQgDQo+
+IGR5bmFtaWNhbGx5IGFuZCBmcmVlIGJkIG9uY2UgdGhpcyB0eCB0cmFuc2ZlciBkb25lLiBObyBt
+ZW1vcnkgd2FzdGVkIA0KPiBvciBtYXhpbXVtIGxpbWl0aXRhdGlvbiBoZXJlLCBvbmx5IGRlcGVu
+ZHMgb24gaG93IG1hbnkgbWVtb3J5IGNhbiBiZSANCj4gcmVxdWVzdGVkIGZyb20ga2VybmVsLiBG
+b3IgTm8uMiwgc3VjaCBpc3N1ZSBjYW4gYmUgd29ya2Fyb3VuZCBieSANCj4gY2hlY2tpbmcgaWYg
+dGhlcmUgaXMgYXZhaWxhYmxlIGRlc2NyaXB0KCJzZG1hYy0+ZGVzYyIpIG5vdyBvbmNlIHRoZSAN
+Cj4gdW53YW50ZWQgaW50ZXJydXB0IGNvbWluZy4gQXQgbGFzdCB0aGUgY29tbW9uIHZpcnQtZG1h
+IGlzIGVhc2llciBmb3Igc2RtYSBkcml2ZXIgbWFpbnRhaW4uDQo+IA0KPiBDaGFuZ2UgZnJvbSB2
+NDoNCj4gwqAgMS4gaWRlbnRpZnkgbG9ja2RlcCBpc3N1ZSB3aGljaCBjYXVzZWQgYnkgYWxsb2Nh
+dGUgbWVtb3J5IHdpdGgNCj4gwqDCoMKgwqDCoCdHRlBfS0VSTkVMJywgY2hhbmdlIHRvICdHRlBf
+Tk9XQUlUJyBpbnN0ZWFkIHNvIHRoYXQgbG9ja2RlcA0KPiDCoMKgwqDCoMKgaWdub3JlIGNoZWNr
+LiBUaGF0IGFsc28gbWFrZSBzZW5zZSBzaW5jZSBBdWRpby91YXJ0IGRyaXZlciBtYXkNCj4gwqDC
+oMKgwqDCoGNhbGwgZG1hIGZ1bmN0aW9uIGFmdGVyIHNwaW5fbG9ja19pcnFzYXZlKCkuLi4NCj4g
+wqAgMi4gdXNlIGRtYSBwb29sIGluc3RlYWQgZm9yIGJkIGRlc2NyaXB0aW9uIGFsbG9jYXRlZCxz
+aW5jZSBhdWRpbw0KPiDCoMKgwqDCoMKgZHJpdmVyIG1heSBjYWxsIGRtYV90ZXJtaW5hdGVfYWxs
+IGluIGlycS4gUGxlYXNlIHJlZmVyIHRvIDcvNy4NCj4gwqAgMy4gcmVtb3ZlIDcvNyBzZXJpYWwg
+cGF0Y2ggaW4gdjQsIHNpbmNlIGxvY2tkZXAgaXNzdWVkIGZpeGVkIGJ5IE5vLjENCj4gDQo+IENo
+YW5nZSBmcm9tIHYzOg0KPiDCoCAxLiBhZGQgdHdvIHVhcnQgcGF0Y2hlcyB3aGljaCBpbXBhY3Rl
+ZCBieSB0aGlzIHBhdGNoc2V0Lg0KPiDCoCAyLiB1bmxvY2sgJ3ZjLmxvY2snIGJlZm9yZSBjeWNs
+aWMgZG1hIGNhbGxiYWNrIGFuZCBsb2NrIGFnYWluIGFmdGVyDQo+IMKgwqDCoMKgwqBpdCBiZWNh
+dXNlIHNvbWUgZHJpdmVyIHN1Y2ggYXMgdWFydCB3aWxsIGNhbGwgZG1hZW5naW5lX3R4X3N0YXR1
+cw0KPiDCoMKgwqDCoMKgd2hpY2ggd2lsbCBhY3F1aXJlICd2Yy5sb2NrJyBhZ2FpbiBhbmQgZGVh
+ZCBsb2NrIGNvbWVzIG91dC4NCj4gwqAgMy4gcmVtb3ZlICdSZXZlcnQgY29tbWl0JyBzdHVmZiBz
+aW5jZSB0aGF0IHBhdGNoIGlzIG5vdCB3cm9uZyBhbmQNCj4gwqDCoMKgwqDCoGNvbWJpbmUgdHdv
+IHBhdGNoIGludG8gb25lIHBhdGNoIGFzIFNhc2NoYSdzIGNvbW1lbnQuDQo+IA0KPiBDaGFuZ2Ug
+ZnJvbSB2MjoNCj4gwqAgMS4gaW5jbHVkZSBTYXNjaGEncyBwYXRjaCB0byBtYWtlIHRoZSBtYWlu
+IHBhdGNoIGVhc2llciB0byByZXZpZXcuDQo+IMKgwqDCoMKgwqBUaGFua3MgU2FjaGEuDQo+IMKg
+IDIuIHJlbW92ZSB1c2VsZXNzICdkZXNjJy8nY2hhbicgaW4gc3RydWN0IHNkbWFfY2hhbm5lLg0K
+PiANCj4gQ2hhbmdlIGZyb20gdjE6DQo+IMKgIDEuIHNwbGl0IHYxIHBhdGNoIGludG8gNSBwYXRj
+aGVzLg0KPiDCoCAyLiByZW1vdmUgc29tZSB1bm5lY2Vzc2FyeSBjb25kaXRpb24gY2hlY2suDQo+
+IMKgIDMuIHJlbW92ZSB1bm5lY2Vzc2FyeSAncGVuZGluZycgbGlzdC4NCj4gDQo+IFJvYmluIEdv
+bmcgKDYpOg0KPiDCoCB0dHk6IHNlcmlhbDogaW14OiBjb3JyZWN0IGRtYSBjb29raWUgc3RhdHVz
+DQo+IMKgIGRtYWVuZ2luZTogaW14LXNkbWE6IGFkZCB2aXJ0LWRtYSBzdXBwb3J0DQo+IMKgIGRt
+YWVuZ2luZTogaW14LXNkbWE6IHJlbW92ZSB1c2VsZXNzICdsb2NrJyBhbmQgJ2VuYWJsZWQnIGlu
+ICdzdHJ1Y3QNCj4gwqDCoMKgwqBzZG1hX2NoYW5uZWwnDQo+IMKgIGRtYWVuZ2luZTogaW14LXNk
+bWE6IHJlbW92ZSB0aGUgbWF4aW11bSBsaW1pdGF0aW9uIGZvciBiZCBudW1iZXJzDQo+IMKgIGRt
+YWVuZ2luZTogaW14LXNkbWE6IGFkZCBzZG1hX3RyYW5zZmVyX2luaXQgdG8gZGVjcmVhc2UgY29k
+ZSBvdmVybGFwDQo+IMKgIGRtYWVuZ2luZTogaW14LXNkbWE6IGFsbG9jbGF0ZSBiZCBtZW1vcnkg
+ZnJvbSBkbWEgcG9vbA0KPiANCj4gU2FzY2hhIEhhdWVyICgxKToNCj4gwqAgZG1hZW5naW5lOiBp
+bXgtc2RtYTogZmFjdG9yIG91dCBhIHN0cnVjdCBzZG1hX2Rlc2MgZnJvbSBzdHJ1Y3QNCj4gwqDC
+oMKgwqBzZG1hX2NoYW5uZWwNCj4gDQo+IMKgZHJpdmVycy9kbWEvS2NvbmZpZ8KgwqDCoMKgwqDC
+oHzCoMKgwqAxICsNCj4gwqBkcml2ZXJzL2RtYS9pbXgtc2RtYS5jwqDCoMKgfCA0MDAgDQo+ICsr
+KysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IMKgZHJpdmVy
+cy90dHkvc2VyaWFsL2lteC5jIHzCoMKgwqAyICstDQo+IMKgMyBmaWxlcyBjaGFuZ2VkLCAyMzUg
+aW5zZXJ0aW9ucygrKSwgMTY4IGRlbGV0aW9ucygtKQ0KPiANCg==
