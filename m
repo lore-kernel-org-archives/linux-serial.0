@@ -1,81 +1,56 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [RFC PATCH v2 1/6] serial: uartps: Do not initialize field to
- zero again
-Date: Thu, 28 Jun 2018 09:18:08 +0200
-Message-ID: <a12639be-dd7b-d706-9c2e-35a99b816383@xilinx.com>
-References: <cover.1528288895.git.michal.simek@xilinx.com>
- <e8b0169887855a5ef2c1a0456842f650601b451c.1528288895.git.michal.simek@xilinx.com>
- <e7b01bd9-5763-75c0-1384-2536313f5854@monstr.eu>
- <20180627100917.GA20940@kroah.com>
- <05e553c2-202b-0b4b-8b88-60e330c80fa3@xilinx.com>
- <20180627234836.GA1691@kroah.com>
+From: Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH v2] dt-bindings: serial: imx: clarify rs485 support usage
+Date: Thu, 28 Jun 2018 10:25:32 +0300
+Message-ID: <e9beff38e9035c2f33d691f362e37d8e62aaa660.1530170732.git.baruch@tkos.co.il>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180627234836.GA1691@kroah.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michal Simek <michal.simek@xilinx.com>
-Cc: Michal Simek <monstr@monstr.eu>, linux-kernel@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, Alexander Graf <agraf@suse.de>, shubhraj@xilinx.com, robh@kernel.org, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, NXP Linux Team <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 List-Id: linux-serial@vger.kernel.org
 
-On 28.6.2018 01:48, Greg Kroah-Hartman wrote:
-> On Wed, Jun 27, 2018 at 04:19:46PM +0200, Michal Simek wrote:
->> On 27.6.2018 12:09, Greg Kroah-Hartman wrote:
->>> On Tue, Jun 19, 2018 at 10:09:05AM +0200, Michal Simek wrote:
->>>> On 6.6.2018 14:41, Michal Simek wrote:
->>>>> Writing zero and NULLs to already initialized fields is not needed.
->>>>> Remove this additional writes.
->>>>>
->>>>> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
->>>>> ---
->>>>>
->>>>> Changes in v2:
->>>>> - new patch - it can be sent separately too
->>>>>
->>>>>  drivers/tty/serial/xilinx_uartps.c | 3 ---
->>>>>  1 file changed, 3 deletions(-)
->>>>>
->>>>> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
->>>>> index 8a3e34234e98..5f116f3ecd4a 100644
->>>>> --- a/drivers/tty/serial/xilinx_uartps.c
->>>>> +++ b/drivers/tty/serial/xilinx_uartps.c
->>>>> @@ -1510,15 +1510,12 @@ static int cdns_uart_probe(struct platform_device *pdev)
->>>>>  
->>>>>  	/* At this point, we've got an empty uart_port struct, initialize it */
->>>>>  	spin_lock_init(&port->lock);
->>>>> -	port->membase	= NULL;
->>>>> -	port->irq	= 0;
->>>>>  	port->type	= PORT_UNKNOWN;
->>>>>  	port->iotype	= UPIO_MEM32;
->>>>>  	port->flags	= UPF_BOOT_AUTOCONF;
->>>>>  	port->ops	= &cdns_uart_ops;
->>>>>  	port->fifosize	= CDNS_UART_FIFO_SIZE;
->>>>>  	port->line	= id;
->>>>> -	port->dev	= NULL;
->>>>>  
->>>>>  	/*
->>>>>  	 * Register the port.
->>>>>
->>>>
->>>> Alan, Rob, Greg: Any comment about this RFC?
->>>
->>> I rarely review RFC patchesets as obviously you don't think it is good
->>> enough to be submitted "for real" :)
->>
->> There is one missing minor part but I want to review concept first
->> because I didn't find any driver which is using this style.
->>
->>> If you think this is all good, great, please resend it without the RFC
->>> and it will end up in my queue.
->>
->> I will definitely do it but please look at the concept itself because I
->> would like to use this with at least 3 other drivers.
-> 
-> I don't have the time right now to review "concepts", sorry.
-
-Ok. I will revup that missing part to get it review to be able to use it.
-
-Thanks,
-Michal
+VGhlIGkuTVggVUFSVCBwZXJpcGhlcmFsIHVzZXMgdGhlIFJTVF9CIHNpZ25hbCBhcyBpbnB1dCwg
+YW5kIENUU19CIGFzCm91dHB1dC4gVGhpcyBpcyBqdXN0IGxpa2UgdGhlIERDRSByb2xlIGluIFJT
+LTIzMi4gVGhpcyBpcyB0cnVlCnJlZ2FyZGxlc3Mgb2YgdGhlICJEVEUgbW9kZSIgc2V0dGluZyBv
+ZiB0aGlzIHBlcmlwaGVyYWwuCgpBcyBhIHJlc3VsdCwgcnM0ODUgc3VwcG9ydCBoYXJkd2FyZSBt
+dXN0IHVzZSB0aGUgQ1RTX0Igc2lnbmFsIHRvIGNvbnRyb2wKdGhlIFJTLTQ4NSB0cmFuc2NlaXZl
+ci4gVGhpcyBpcyBpbiBjb250cmFzdCB0byBnZW5lcmljIHJzNDg1IGtlcm5lbApjb2RlLCBkb2N1
+bWVudGF0aW9uLCBhbmQgRFQgcHJvcGVydHkgbmFtZXMgdGhhdCBjb25zaXN0ZW50bHkgcmVmZXIg
+dG8KdGhlIFJUUyBhcyB0cmFuc2NlaXZlciBjb250cm9sIHNpZ25hbC4KCkFkZCBhIG5vdGUgaW4g
+dGhlIERUIGJpbmRpbmcgZG9jdW1lbnQgYWJvdXQgdGhhdCwgdG8gcmVkdWNlIHRoZQpjb25mdXNp
+b24gc29tZXdoYXQuCgpTaWduZWQtb2ZmLWJ5OiBCYXJ1Y2ggU2lhY2ggPGJhcnVjaEB0a29zLmNv
+LmlsPgotLS0KdjI6IEZpeCBjb21taXQgbG9nIHR5cG9zIChMb3RoYXIgV2HDn21hbm4pCi0tLQog
+RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NlcmlhbC9mc2wtaW14LXVhcnQudHh0
+IHwgNiArKysrKy0KIDEgZmlsZSBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24o
+LSkKCmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFs
+L2ZzbC1pbXgtdWFydC50eHQgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2Vy
+aWFsL2ZzbC1pbXgtdWFydC50eHQKaW5kZXggYWZjZmJjMzRlMjQzLi4zNTk1N2NiZjE1NzEgMTAw
+NjQ0Ci0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvZnNsLWlt
+eC11YXJ0LnR4dAorKysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFs
+L2ZzbC1pbXgtdWFydC50eHQKQEAgLTksNyArOSwxMSBAQCBPcHRpb25hbCBwcm9wZXJ0aWVzOgog
+LSBmc2wsZHRlLW1vZGUgOiBJbmRpY2F0ZSB0aGUgdWFydCB3b3JrcyBpbiBEVEUgbW9kZS4gVGhl
+IHVhcnQgd29ya3MKICAgICAgICAgICAgICAgICAgIGluIERDRSBtb2RlIGJ5IGRlZmF1bHQuCiAt
+IHJzNDg1LXJ0cy1kZWxheSwgcnM0ODUtcnRzLWFjdGl2ZS1sb3csIHJzNDg1LXJ4LWR1cmluZy10
+eCwKLSAgbGludXgscnM0ODUtZW5hYmxlZC1hdC1ib290LXRpbWU6IHNlZSByczQ4NS50eHQKKyAg
+bGludXgscnM0ODUtZW5hYmxlZC1hdC1ib290LXRpbWU6IHNlZSByczQ4NS50eHQuIE5vdGUgdGhh
+dCBmb3IgUlM0ODUKKyAgeW91IG11c3QgZW5hYmxlIGVpdGhlciB0aGUgInVhcnQtaGFzLXJ0c2N0
+cyIgb3IgdGhlICJydHMtZ3Bpb3MiCisgIHByb3BlcnRpZXMuIEluIGNhc2UgeW91IHVzZSAidWFy
+dC1oYXMtcnRzY3RzIiB0aGUgc2lnbmFsIHRoYXQgY29udHJvbHMKKyAgdGhlIHRyYW5zY2VpdmVy
+IGlzIGFjdHVhbGx5IENUU19CLCBub3QgUlRTX0IuIENUU19CIGlzIGFsd2F5cyBvdXRwdXQsCisg
+IGFuZCBSVFNfQiBpcyBpbnB1dCwgcmVnYXJkbGVzcyBvZiBkdGUtbW9kZS4KIAogUGxlYXNlIGNo
+ZWNrIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvc2VyaWFsLnR4dAog
+Zm9yIHRoZSBjb21wbGV0ZSBsaXN0IG9mIGdlbmVyaWMgcHJvcGVydGllcy4KLS0gCjIuMTguMAoK
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFy
+bS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9y
+ZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1r
+ZXJuZWwK
