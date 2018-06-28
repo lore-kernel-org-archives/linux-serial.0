@@ -1,11 +1,14 @@
-From: Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH v2] dt-bindings: serial: imx: clarify rs485 support usage
-Date: Thu, 28 Jun 2018 10:25:32 +0300
-Message-ID: <e9beff38e9035c2f33d691f362e37d8e62aaa660.1530170732.git.baruch@tkos.co.il>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2] dt-bindings: serial: imx: clarify rs485 support usage
+Date: Thu, 28 Jun 2018 10:14:24 +0200
+Message-ID: <20180628081424.hsndzkyhzxjvuzyp@pengutronix.de>
+References: <e9beff38e9035c2f33d691f362e37d8e62aaa660.1530170732.git.baruch@tkos.co.il>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <e9beff38e9035c2f33d691f362e37d8e62aaa660.1530170732.git.baruch@tkos.co.il>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -15,42 +18,61 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, NXP Linux Team <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: devicetree@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+To: Baruch Siach <baruch@tkos.co.il>
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
 List-Id: linux-serial@vger.kernel.org
 
-VGhlIGkuTVggVUFSVCBwZXJpcGhlcmFsIHVzZXMgdGhlIFJTVF9CIHNpZ25hbCBhcyBpbnB1dCwg
-YW5kIENUU19CIGFzCm91dHB1dC4gVGhpcyBpcyBqdXN0IGxpa2UgdGhlIERDRSByb2xlIGluIFJT
-LTIzMi4gVGhpcyBpcyB0cnVlCnJlZ2FyZGxlc3Mgb2YgdGhlICJEVEUgbW9kZSIgc2V0dGluZyBv
-ZiB0aGlzIHBlcmlwaGVyYWwuCgpBcyBhIHJlc3VsdCwgcnM0ODUgc3VwcG9ydCBoYXJkd2FyZSBt
-dXN0IHVzZSB0aGUgQ1RTX0Igc2lnbmFsIHRvIGNvbnRyb2wKdGhlIFJTLTQ4NSB0cmFuc2NlaXZl
-ci4gVGhpcyBpcyBpbiBjb250cmFzdCB0byBnZW5lcmljIHJzNDg1IGtlcm5lbApjb2RlLCBkb2N1
-bWVudGF0aW9uLCBhbmQgRFQgcHJvcGVydHkgbmFtZXMgdGhhdCBjb25zaXN0ZW50bHkgcmVmZXIg
-dG8KdGhlIFJUUyBhcyB0cmFuc2NlaXZlciBjb250cm9sIHNpZ25hbC4KCkFkZCBhIG5vdGUgaW4g
-dGhlIERUIGJpbmRpbmcgZG9jdW1lbnQgYWJvdXQgdGhhdCwgdG8gcmVkdWNlIHRoZQpjb25mdXNp
-b24gc29tZXdoYXQuCgpTaWduZWQtb2ZmLWJ5OiBCYXJ1Y2ggU2lhY2ggPGJhcnVjaEB0a29zLmNv
-LmlsPgotLS0KdjI6IEZpeCBjb21taXQgbG9nIHR5cG9zIChMb3RoYXIgV2HDn21hbm4pCi0tLQog
-RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NlcmlhbC9mc2wtaW14LXVhcnQudHh0
-IHwgNiArKysrKy0KIDEgZmlsZSBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24o
-LSkKCmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFs
-L2ZzbC1pbXgtdWFydC50eHQgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2Vy
-aWFsL2ZzbC1pbXgtdWFydC50eHQKaW5kZXggYWZjZmJjMzRlMjQzLi4zNTk1N2NiZjE1NzEgMTAw
-NjQ0Ci0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvZnNsLWlt
-eC11YXJ0LnR4dAorKysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFs
-L2ZzbC1pbXgtdWFydC50eHQKQEAgLTksNyArOSwxMSBAQCBPcHRpb25hbCBwcm9wZXJ0aWVzOgog
-LSBmc2wsZHRlLW1vZGUgOiBJbmRpY2F0ZSB0aGUgdWFydCB3b3JrcyBpbiBEVEUgbW9kZS4gVGhl
-IHVhcnQgd29ya3MKICAgICAgICAgICAgICAgICAgIGluIERDRSBtb2RlIGJ5IGRlZmF1bHQuCiAt
-IHJzNDg1LXJ0cy1kZWxheSwgcnM0ODUtcnRzLWFjdGl2ZS1sb3csIHJzNDg1LXJ4LWR1cmluZy10
-eCwKLSAgbGludXgscnM0ODUtZW5hYmxlZC1hdC1ib290LXRpbWU6IHNlZSByczQ4NS50eHQKKyAg
-bGludXgscnM0ODUtZW5hYmxlZC1hdC1ib290LXRpbWU6IHNlZSByczQ4NS50eHQuIE5vdGUgdGhh
-dCBmb3IgUlM0ODUKKyAgeW91IG11c3QgZW5hYmxlIGVpdGhlciB0aGUgInVhcnQtaGFzLXJ0c2N0
-cyIgb3IgdGhlICJydHMtZ3Bpb3MiCisgIHByb3BlcnRpZXMuIEluIGNhc2UgeW91IHVzZSAidWFy
-dC1oYXMtcnRzY3RzIiB0aGUgc2lnbmFsIHRoYXQgY29udHJvbHMKKyAgdGhlIHRyYW5zY2VpdmVy
-IGlzIGFjdHVhbGx5IENUU19CLCBub3QgUlRTX0IuIENUU19CIGlzIGFsd2F5cyBvdXRwdXQsCisg
-IGFuZCBSVFNfQiBpcyBpbnB1dCwgcmVnYXJkbGVzcyBvZiBkdGUtbW9kZS4KIAogUGxlYXNlIGNo
-ZWNrIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvc2VyaWFsLnR4dAog
-Zm9yIHRoZSBjb21wbGV0ZSBsaXN0IG9mIGdlbmVyaWMgcHJvcGVydGllcy4KLS0gCjIuMTguMAoK
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFy
-bS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9y
-ZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1r
-ZXJuZWwK
+On Thu, Jun 28, 2018 at 10:25:32AM +0300, Baruch Siach wrote:
+> The i.MX UART peripheral uses the RST_B signal as input, and CTS_B as
+> output. This is just like the DCE role in RS-232. This is true
+> regardless of the "DTE mode" setting of this peripheral.
+> =
+
+> As a result, rs485 support hardware must use the CTS_B signal to control
+> the RS-485 transceiver. This is in contrast to generic rs485 kernel
+> code, documentation, and DT property names that consistently refer to
+> the RTS as transceiver control signal.
+
+Well, the reason is that the pin function is called CTS because
+Freescale chose to name it from the DCE's POV which is unusual.
+So this isn't exactly specific to rs485 but also affect rs232 operation.
+
+> Add a note in the DT binding document about that, to reduce the
+> confusion somewhat.
+> =
+
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
+> v2: Fix commit log typos (Lothar Wa=DFmann)
+> ---
+>  Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> =
+
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt b/=
+Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+> index afcfbc34e243..35957cbf1571 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+> +++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.txt
+> @@ -9,7 +9,11 @@ Optional properties:
+>  - fsl,dte-mode : Indicate the uart works in DTE mode. The uart works
+>                    in DCE mode by default.
+>  - rs485-rts-delay, rs485-rts-active-low, rs485-rx-during-tx,
+> -  linux,rs485-enabled-at-boot-time: see rs485.txt
+> +  linux,rs485-enabled-at-boot-time: see rs485.txt. Note that for RS485
+> +  you must enable either the "uart-has-rtscts" or the "rts-gpios"
+> +  properties. In case you use "uart-has-rtscts" the signal that controls
+> +  the transceiver is actually CTS_B, not RTS_B. CTS_B is always output,
+> +  and RTS_B is input, regardless of dte-mode.
+
+Still this section is correct and better than what we had (not) before.
+So:
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
