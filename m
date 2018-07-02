@@ -1,388 +1,62 @@
-From: Mikko Perttunen <mperttunen@nvidia.com>
-Subject: [PATCH v3 5/8] mailbox: tegra-hsp: Add support for shared mailboxes
-Date: Mon, 2 Jul 2018 14:40:30 +0300
-Message-ID: <20180702114033.15654-6-mperttunen@nvidia.com>
-References: <20180702114033.15654-1-mperttunen@nvidia.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 0/2] serial: 8250_dw: add fractional divisor support
+Date: Mon, 02 Jul 2018 14:51:03 +0300
+Message-ID: <59b14f97234271a7d859fa07f27bd66ec252ccc9.camel@linux.intel.com>
+References: <20180702180428.331b36c5@xhacker.debian>
+         <fef0bf484ead5e0998666168ced86438bf935ce5.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180702114033.15654-1-mperttunen@nvidia.com>
+In-Reply-To: <fef0bf484ead5e0998666168ced86438bf935ce5.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: jassisinghbrar@gmail.com, gregkh@linuxfoundation.org, thierry.reding@gmail.com, jonathanh@nvidia.com
-Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>
+To: Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The Tegra HSP block supports 'shared mailboxes' that are simple 32-bit
-registers consisting of a FULL bit in MSB position and 31 bits of data.
-The hardware can be configured to trigger interrupts when a mailbox
-is empty or full. Add support for these shared mailboxes to the HSP
-driver.
+On Mon, 2018-07-02 at 13:18 +0300, Andy Shevchenko wrote:
+> On Mon, 2018-07-02 at 18:04 +0800, Jisheng Zhang wrote:
+> > For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
+> > valid divisor latch fraction register. The fractional divisor width
+> > is
+> > 4bits ~ 6bits.
+> > 
+> 
+> There are several serial IPs that have fractional divider built-in.
+> None
+> is using any specific hooks. Why do you need in your case, esp. taking
+> into consideration that we have a custom ->set_termios() callback?
 
-The initial use for the mailboxes is the Tegra Combined UART. For this
-purpose, we use interrupts to receive data, and spinning to wait for
-the transmit mailbox to be emptied to minimize unnecessary overhead.
+Okay, I see that in 8250 we have hooks embedded into 8250_port.c which
+is not the best solution.
 
-Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
----
+For example it prevents better splitting Exar code.
+So, we would need these hooks, but better to integrate them in the same
+way like it's done for the rest of 8250 ones, i.e.
+- rename existing to have a "do" word
+- create new functions which would be a replacement that choose between
+"do" variant and custom one
+- not sure if we need to export "do" variants (at least for now)
 
-Notes:
-    v3:
-    - Added define HSP_INT0_IE_FULL_SHIFT
-    - Added Jon's Reviewed-by
-    
-    v2:
-    - Added defines for some register fields
-    - Simplified bit looping logic in interrupt handler
-    - Changed write done polling to use readl_poll_timeout
-    - Removed unnecessary zero assignments
-    - Fixed two error cases in probe to do proper cleanup
+> 
+> > patch1 introduces necessary hooks to 8250 core.
+> > patch2 implement the fractional divisor support for Synopsys DW
+> > 8250.
+> > 
+> > Jisheng Zhang (2):
+> >   serial: 8250: introduce get_divisor() and set_divisor() hook
+> >   serial: 8250_dw: add fractional divisor support
+> > 
+> >  drivers/tty/serial/8250/8250_core.c |  4 +++
+> >  drivers/tty/serial/8250/8250_dw.c   | 54
+> > +++++++++++++++++++++++++++++
+> >  drivers/tty/serial/8250/8250_port.c |  8 +++++
+> >  include/linux/serial_8250.h         |  7 ++++
+> >  4 files changed, 73 insertions(+)
+> > 
+> 
+> 
 
- drivers/mailbox/tegra-hsp.c | 211 +++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 191 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/mailbox/tegra-hsp.c b/drivers/mailbox/tegra-hsp.c
-index 5dc21a6d01bb..e0e238287502 100644
---- a/drivers/mailbox/tegra-hsp.c
-+++ b/drivers/mailbox/tegra-hsp.c
-@@ -13,6 +13,7 @@
- 
- #include <linux/interrupt.h>
- #include <linux/io.h>
-+#include <linux/iopoll.h>
- #include <linux/mailbox_controller.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-@@ -21,6 +22,14 @@
- 
- #include <dt-bindings/mailbox/tegra186-hsp.h>
- 
-+#include "mailbox.h"
-+
-+#define HSP_INT0_IE		0x100
-+#define HSP_INT0_IE_FULL_SHIFT	8
-+#define HSP_INT_IR		0x304
-+#define HSP_INT_IR_FULL_SHIFT	8
-+#define HSP_INT_IR_FULL_MASK	0xff
-+
- #define HSP_INT_DIMENSIONING	0x380
- #define HSP_nSM_SHIFT		0
- #define HSP_nSS_SHIFT		4
-@@ -34,6 +43,9 @@
- #define HSP_DB_RAW	0x8
- #define HSP_DB_PENDING	0xc
- 
-+#define HSP_SM_SHRD_MBOX	0x0
-+#define HSP_SM_SHRD_MBOX_FULL	BIT(31)
-+
- #define HSP_DB_CCPLEX		1
- #define HSP_DB_BPMP		3
- #define HSP_DB_MAX		7
-@@ -68,6 +80,18 @@ struct tegra_hsp_db_map {
- 	unsigned int index;
- };
- 
-+struct tegra_hsp_mailbox {
-+	struct tegra_hsp_channel channel;
-+	unsigned int index;
-+	bool sending;
-+};
-+
-+static inline struct tegra_hsp_mailbox *
-+channel_to_mailbox(struct tegra_hsp_channel *channel)
-+{
-+	return container_of(channel, struct tegra_hsp_mailbox, channel);
-+}
-+
- struct tegra_hsp_soc {
- 	const struct tegra_hsp_db_map *map;
- };
-@@ -77,6 +101,7 @@ struct tegra_hsp {
- 	struct mbox_controller mbox;
- 	void __iomem *regs;
- 	unsigned int doorbell_irq;
-+	unsigned int shared_irq;
- 	unsigned int num_sm;
- 	unsigned int num_as;
- 	unsigned int num_ss;
-@@ -85,6 +110,7 @@ struct tegra_hsp {
- 	spinlock_t lock;
- 
- 	struct list_head doorbells;
-+	struct tegra_hsp_mailbox *mailboxes;
- };
- 
- static inline struct tegra_hsp *
-@@ -189,6 +215,33 @@ static irqreturn_t tegra_hsp_doorbell_irq(int irq, void *data)
- 	return IRQ_HANDLED;
- }
- 
-+static irqreturn_t tegra_hsp_shared_irq(int irq, void *data)
-+{
-+	struct tegra_hsp_mailbox *mb;
-+	struct tegra_hsp *hsp = data;
-+	unsigned long bit, mask;
-+	u32 value;
-+
-+	mask = tegra_hsp_readl(hsp, HSP_INT_IR);
-+	/* Only interested in FULL interrupts */
-+	mask = (mask >> HSP_INT_IR_FULL_SHIFT) & HSP_INT_IR_FULL_MASK;
-+
-+	for_each_set_bit(bit, &mask, 8) {
-+		mb = &hsp->mailboxes[bit];
-+
-+		if (!mb->sending) {
-+			value = tegra_hsp_channel_readl(&mb->channel,
-+							HSP_SM_SHRD_MBOX);
-+			value &= ~HSP_SM_SHRD_MBOX_FULL;
-+			mbox_chan_received_data(mb->channel.chan, &value);
-+			tegra_hsp_channel_writel(&mb->channel, value,
-+						 HSP_SM_SHRD_MBOX);
-+		}
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
- static struct tegra_hsp_channel *
- tegra_hsp_doorbell_create(struct tegra_hsp *hsp, const char *name,
- 			  unsigned int master, unsigned int index)
-@@ -277,14 +330,57 @@ static void tegra_hsp_doorbell_shutdown(struct tegra_hsp_doorbell *db)
- 	spin_unlock_irqrestore(&hsp->lock, flags);
- }
- 
-+static int tegra_hsp_mailbox_startup(struct tegra_hsp_mailbox *mb)
-+{
-+	struct tegra_hsp *hsp = mb->channel.hsp;
-+	u32 value;
-+
-+	mb->channel.chan->txdone_method = TXDONE_BY_BLOCK;
-+
-+	/* Route FULL interrupt to external IRQ 0 */
-+	value = tegra_hsp_readl(hsp, HSP_INT0_IE);
-+	value |= BIT(HSP_INT0_IE_FULL_SHIFT + mb->index);
-+	tegra_hsp_writel(hsp, value, HSP_INT0_IE);
-+
-+	return 0;
-+}
-+
-+static int tegra_hsp_mailbox_shutdown(struct tegra_hsp_mailbox *mb)
-+{
-+	struct tegra_hsp *hsp = mb->channel.hsp;
-+	u32 value;
-+
-+	value = tegra_hsp_readl(hsp, HSP_INT0_IE);
-+	value &= ~BIT(mb->index + 8);
-+	tegra_hsp_writel(hsp, value, HSP_INT0_IE);
-+
-+	return 0;
-+}
-+
- static int tegra_hsp_send_data(struct mbox_chan *chan, void *data)
- {
- 	struct tegra_hsp_channel *channel = chan->con_priv;
-+	struct tegra_hsp_mailbox *mailbox;
-+	uint32_t value;
- 
- 	switch (channel->type) {
- 	case TEGRA_HSP_MBOX_TYPE_DB:
- 		tegra_hsp_channel_writel(channel, 1, HSP_DB_TRIGGER);
- 		return 0;
-+
-+	case TEGRA_HSP_MBOX_TYPE_SM:
-+		mailbox = channel_to_mailbox(channel);
-+		mailbox->sending = true;
-+
-+		value = *(uint32_t *)data;
-+		/* Mark mailbox full */
-+		value |= HSP_SM_SHRD_MBOX_FULL;
-+
-+		tegra_hsp_channel_writel(channel, value, HSP_SM_SHRD_MBOX);
-+
-+		return readl_poll_timeout(
-+			channel->regs + HSP_SM_SHRD_MBOX, value,
-+			!(value & HSP_SM_SHRD_MBOX_FULL), 0, 10000);
- 	}
- 
- 	return -EINVAL;
-@@ -297,6 +393,8 @@ static int tegra_hsp_startup(struct mbox_chan *chan)
- 	switch (channel->type) {
- 	case TEGRA_HSP_MBOX_TYPE_DB:
- 		return tegra_hsp_doorbell_startup(channel_to_doorbell(channel));
-+	case TEGRA_HSP_MBOX_TYPE_SM:
-+		return tegra_hsp_mailbox_startup(channel_to_mailbox(channel));
- 	}
- 
- 	return -EINVAL;
-@@ -310,6 +408,9 @@ static void tegra_hsp_shutdown(struct mbox_chan *chan)
- 	case TEGRA_HSP_MBOX_TYPE_DB:
- 		tegra_hsp_doorbell_shutdown(channel_to_doorbell(channel));
- 		break;
-+	case TEGRA_HSP_MBOX_TYPE_SM:
-+		tegra_hsp_mailbox_shutdown(channel_to_mailbox(channel));
-+		break;
- 	}
- }
- 
-@@ -363,7 +464,16 @@ static struct mbox_chan *of_tegra_hsp_xlate(struct mbox_controller *mbox,
- 
- 	switch (type) {
- 	case TEGRA_HSP_MBOX_TYPE_DB:
--		return tegra_hsp_doorbell_xlate(hsp, param);
-+		if (hsp->doorbell_irq)
-+			return tegra_hsp_doorbell_xlate(hsp, param);
-+		else
-+			return ERR_PTR(-EINVAL);
-+
-+	case TEGRA_HSP_MBOX_TYPE_SM:
-+		if (hsp->shared_irq && param < hsp->num_sm)
-+			return hsp->mailboxes[param].channel.chan;
-+		else
-+			return ERR_PTR(-EINVAL);
- 
- 	default:
- 		return ERR_PTR(-EINVAL);
-@@ -402,6 +512,31 @@ static int tegra_hsp_add_doorbells(struct tegra_hsp *hsp)
- 	return 0;
- }
- 
-+static int tegra_hsp_add_mailboxes(struct tegra_hsp *hsp, struct device *dev)
-+{
-+	int i;
-+
-+	hsp->mailboxes = devm_kcalloc(dev, hsp->num_sm, sizeof(*hsp->mailboxes),
-+				      GFP_KERNEL);
-+	if (!hsp->mailboxes)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < hsp->num_sm; i++) {
-+		struct tegra_hsp_mailbox *mb = &hsp->mailboxes[i];
-+
-+		mb->index = i;
-+		mb->sending = false;
-+
-+		mb->channel.hsp = hsp;
-+		mb->channel.type = TEGRA_HSP_MBOX_TYPE_SM;
-+		mb->channel.regs = hsp->regs + SZ_64K + i * SZ_32K;
-+		mb->channel.chan = &hsp->mbox.chans[i];
-+		mb->channel.chan->con_priv = &mb->channel;
-+	}
-+
-+	return 0;
-+}
-+
- static int tegra_hsp_probe(struct platform_device *pdev)
- {
- 	struct tegra_hsp *hsp;
-@@ -430,14 +565,15 @@ static int tegra_hsp_probe(struct platform_device *pdev)
- 	hsp->num_si = (value >> HSP_nSI_SHIFT) & HSP_nINT_MASK;
- 
- 	err = platform_get_irq_byname(pdev, "doorbell");
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to get doorbell IRQ: %d\n", err);
--		return err;
--	}
-+	if (err >= 0)
-+		hsp->doorbell_irq = err;
- 
--	hsp->doorbell_irq = err;
-+	err = platform_get_irq_byname(pdev, "shared0");
-+	if (err >= 0)
-+		hsp->shared_irq = err;
- 
- 	hsp->mbox.of_xlate = of_tegra_hsp_xlate;
-+	/* First nSM are reserved for mailboxes */
- 	hsp->mbox.num_chans = 32;
- 	hsp->mbox.dev = &pdev->dev;
- 	hsp->mbox.txdone_irq = false;
-@@ -450,10 +586,22 @@ static int tegra_hsp_probe(struct platform_device *pdev)
- 	if (!hsp->mbox.chans)
- 		return -ENOMEM;
- 
--	err = tegra_hsp_add_doorbells(hsp);
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to add doorbells: %d\n", err);
--		return err;
-+	if (hsp->doorbell_irq) {
-+		err = tegra_hsp_add_doorbells(hsp);
-+		if (err < 0) {
-+			dev_err(&pdev->dev, "failed to add doorbells: %d\n",
-+			        err);
-+			return err;
-+		}
-+	}
-+
-+	if (hsp->shared_irq) {
-+		err = tegra_hsp_add_mailboxes(hsp, &pdev->dev);
-+		if (err < 0) {
-+			dev_err(&pdev->dev, "failed to add mailboxes: %d\n",
-+			        err);
-+			goto remove_doorbells;
-+		}
- 	}
- 
- 	platform_set_drvdata(pdev, hsp);
-@@ -461,20 +609,42 @@ static int tegra_hsp_probe(struct platform_device *pdev)
- 	err = mbox_controller_register(&hsp->mbox);
- 	if (err) {
- 		dev_err(&pdev->dev, "failed to register mailbox: %d\n", err);
--		tegra_hsp_remove_doorbells(hsp);
--		return err;
-+		goto remove_doorbells;
- 	}
- 
--	err = devm_request_irq(&pdev->dev, hsp->doorbell_irq,
--			       tegra_hsp_doorbell_irq, IRQF_NO_SUSPEND,
--			       dev_name(&pdev->dev), hsp);
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to request doorbell IRQ#%u: %d\n",
--			hsp->doorbell_irq, err);
--		return err;
-+	if (hsp->doorbell_irq) {
-+		err = devm_request_irq(&pdev->dev, hsp->doorbell_irq,
-+				       tegra_hsp_doorbell_irq, IRQF_NO_SUSPEND,
-+				       dev_name(&pdev->dev), hsp);
-+		if (err < 0) {
-+			dev_err(&pdev->dev,
-+			        "failed to request doorbell IRQ#%u: %d\n",
-+				hsp->doorbell_irq, err);
-+			goto unregister_mbox_controller;
-+		}
-+	}
-+
-+	if (hsp->shared_irq) {
-+		err = devm_request_irq(&pdev->dev, hsp->shared_irq,
-+				       tegra_hsp_shared_irq, 0,
-+				       dev_name(&pdev->dev), hsp);
-+		if (err < 0) {
-+			dev_err(&pdev->dev,
-+				"failed to request shared0 IRQ%u: %d\n",
-+				hsp->shared_irq, err);
-+			goto unregister_mbox_controller;
-+		}
- 	}
- 
- 	return 0;
-+
-+unregister_mbox_controller:
-+	mbox_controller_unregister(&hsp->mbox);
-+remove_doorbells:
-+	if (hsp->doorbell_irq)
-+		tegra_hsp_remove_doorbells(hsp);
-+
-+	return err;
- }
- 
- static int tegra_hsp_remove(struct platform_device *pdev)
-@@ -482,7 +652,8 @@ static int tegra_hsp_remove(struct platform_device *pdev)
- 	struct tegra_hsp *hsp = platform_get_drvdata(pdev);
- 
- 	mbox_controller_unregister(&hsp->mbox);
--	tegra_hsp_remove_doorbells(hsp);
-+	if (hsp->doorbell_irq)
-+		tegra_hsp_remove_doorbells(hsp);
- 
- 	return 0;
- }
 -- 
-2.16.1
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
