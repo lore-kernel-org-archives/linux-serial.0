@@ -1,111 +1,254 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 0/8] Tegra Combined UART driver
-Date: Mon, 2 Jul 2018 16:17:28 +0200
-Message-ID: <20180702141728.GP13096@ulmo>
-References: <20180702114033.15654-1-mperttunen@nvidia.com>
- <20180702140343.GO13096@ulmo> <20180702140742.GA7977@kroah.com>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 2/2] arm64: dts: mediatek: add mt6765 support
+Date: Mon, 2 Jul 2018 15:50:00 -0600
+Message-ID: <CAL_JsqKxvCxn3eb0sZVFwhUudDAkoHH5uyUgt1NY06zt-yKkQQ@mail.gmail.com>
+References: <1529978646-28976-1-git-send-email-mars.cheng@mediatek.com> <1529978646-28976-3-git-send-email-mars.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2037835502130023140=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180702140742.GA7977@kroah.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: devicetree@vger.kernel.org, jassisinghbrar@gmail.com, linux-kernel@vger.kernel.org, jonathanh@nvidia.com, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1529978646-28976-3-git-send-email-mars.cheng@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Mars Cheng <mars.cheng@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, CC Hwang <cc.hwang@mediatek.com>, Loda Choui <loda.chou@mediatek.com>, Miles Chen <miles.chen@mediatek.com>, Jades Shih <jades.shih@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, My Chuang <my.chuang@mediatek.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
+On Mon, Jun 25, 2018 at 8:04 PM Mars Cheng <mars.cheng@mediatek.com> wrote:
+>
+> This adds basic chip support for MT6765 SoC.
+>
+> Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
+> ---
+>  arch/arm64/boot/dts/mediatek/Makefile       |    1 +
+>  arch/arm64/boot/dts/mediatek/mt6765-evb.dts |   33 ++++++
+>  arch/arm64/boot/dts/mediatek/mt6765.dtsi    |  158 +++++++++++++++++++++++++++
+>  3 files changed, 192 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
+>
+> diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+> index ac17f60..7506b0d 100644
+> --- a/arch/arm64/boot/dts/mediatek/Makefile
+> +++ b/arch/arm64/boot/dts/mediatek/Makefile
+> @@ -1,6 +1,7 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
+> +dtb-$(CONFIG_ARCH_MEDIATEK) += mt6765-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-rfb1.dtb
+> diff --git a/arch/arm64/boot/dts/mediatek/mt6765-evb.dts b/arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+> new file mode 100644
+> index 0000000..36dddff2
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+> @@ -0,0 +1,33 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * dts file for Mediatek MT6765
+> + *
+> + * (C) Copyright 2018. Mediatek, Inc.
+> + *
+> + * Mars Cheng <mars.cheng@mediatek.com>
+> + */
+> +
+> +/dts-v1/;
+> +#include "mt6765.dtsi"
+> +
+> +/ {
+> +       model = "MediaTek MT6765 EVB";
+> +       compatible = "mediatek,mt6765-evb", "mediatek,mt6765";
+> +
+> +       aliases {
+> +               serial0 = &uart0;
+> +       };
+> +
+> +       memory@40000000 {
+> +               device_type = "memory";
+> +               reg = <0 0x40000000 0 0x1e800000>;
+> +       };
+> +
+> +       chosen {
+> +               stdout-path = "serial0:921600n8";
+> +       };
+> +};
+> +
+> +&uart0 {
+> +       status = "okay";
+> +};
+> diff --git a/arch/arm64/boot/dts/mediatek/mt6765.dtsi b/arch/arm64/boot/dts/mediatek/mt6765.dtsi
+> new file mode 100644
+> index 0000000..ab34c0f
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt6765.dtsi
+> @@ -0,0 +1,158 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * dts file for Mediatek MT6765
+> + *
+> + * (C) Copyright 2018. Mediatek, Inc.
+> + *
+> + * Mars Cheng <mars.cheng@mediatek.com>
+> + */
+> +
+> +#include <dt-bindings/interrupt-controller/irq.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +/ {
+> +       compatible = "mediatek,mt6765";
+> +       interrupt-parent = <&sysirq>;
+> +       #address-cells = <2>;
+> +       #size-cells = <2>;
+> +
+> +       psci {
+> +               compatible = "arm,psci-0.2";
+> +               method = "smc";
+> +       };
+> +
+> +       cpus {
+> +               #address-cells = <1>;
+> +               #size-cells = <0>;
+> +
+> +               cpu0: cpu@0 {
 
---===============2037835502130023140==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="mejza3ZMMA5Za1mX"
-Content-Disposition: inline
+Really need labels for cpu nodes?
 
+> +                       device_type = "cpu";
+> +                       compatible = "arm,cortex-a53";
+> +                       enable-method = "psci";
+> +                       reg = <0x000>;
+> +               };
+> +
+> +               cpu1: cpu@1 {
+> +                       device_type = "cpu";
+> +                       compatible = "arm,cortex-a53";
+> +                       enable-method = "psci";
+> +                       reg = <0x001>;
+> +               };
+> +
+> +               cpu2: cpu@2 {
+> +                       device_type = "cpu";
+> +                       compatible = "arm,cortex-a53";
+> +                       enable-method = "psci";
+> +                       reg = <0x002>;
+> +               };
+> +
+> +               cpu3: cpu@3 {
+> +                       device_type = "cpu";
+> +                       compatible = "arm,cortex-a53";
+> +                       enable-method = "psci";
+> +                       reg = <0x003>;
+> +               };
+> +
+> +               cpu4: cpu@100 {
+> +                       device_type = "cpu";
+> +                       compatible = "arm,cortex-a53";
+> +                       enable-method = "psci";
+> +                       reg = <0x100>;
+> +               };
+> +
+> +               cpu5: cpu@101 {
+> +                       device_type = "cpu";
+> +                       compatible = "arm,cortex-a53";
+> +                       enable-method = "psci";
+> +                       reg = <0x101>;
+> +               };
+> +
+> +               cpu6: cpu@102 {
+> +                       device_type = "cpu";
+> +                       compatible = "arm,cortex-a53";
+> +                       enable-method = "psci";
+> +                       reg = <0x102>;
+> +               };
+> +
+> +               cpu7: cpu@103 {
+> +                       device_type = "cpu";
+> +                       compatible = "arm,cortex-a53";
+> +                       enable-method = "psci";
+> +                       reg = <0x103>;
+> +               };
+> +       };
+> +
+> +       baud_clk: dummy26m {
+> +               compatible = "fixed-clock";
+> +               clock-frequency = <26000000>;
+> +               #clock-cells = <0>;
+> +       };
+> +
+> +       sys_clk: dummyclk {
+> +               compatible = "fixed-clock";
+> +               clock-frequency = <26000000>;
+> +               #clock-cells = <0>;
+> +       };
+> +
+> +       timer {
+> +               compatible = "arm,armv8-timer";
+> +               interrupt-parent = <&gic>;
+> +               interrupts = <GIC_PPI 13
+> +                            (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +                            <GIC_PPI 14
+> +                            (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +                            <GIC_PPI 11
+> +                            (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +                            <GIC_PPI 10
+> +                            (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
+> +       };
+> +
+> +       soc {
+> +               #address-cells = <2>;
+> +               #size-cells = <2>;
+> +               compatible = "simple-bus";
+> +               ranges;
+> +
+> +               sysirq: intpol-controller@10200a80 {
 
---mejza3ZMMA5Za1mX
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+interrupt-controller@...
 
-On Mon, Jul 02, 2018 at 04:07:42PM +0200, Greg KH wrote:
-> On Mon, Jul 02, 2018 at 04:03:43PM +0200, Thierry Reding wrote:
-> > On Mon, Jul 02, 2018 at 02:40:25PM +0300, Mikko Perttunen wrote:
-> > > Hi, here's v3. Changes are in individual patches. Acks are still
-> > > missing from the following patches:
-> > >=20
-> > > mailbox: Add transmit done by blocking option
-> > > mailbox: tegra-hsp: Refactor in preparation of mailboxes
-> > > mailbox: tegra-hsp: Add support for shared mailboxes
-> > > serial: Add Tegra Combined UART driver
-> >=20
-> > There don't seem to be any build-time dependencies between the above, so
-> > technically I guess these could be applied to the respective trees
-> > separately. The only thing we need to be careful about is to not merge
-> > the final patch before the others, because it will break serial console
-> > if the other patches aren't applied.
-> >=20
-> > Jassi, Greg,
-> >=20
-> > What I could do to resolve the runtime dependency is pull the mailbox
-> > patches into a separate branch, create another separate branch for the
-> > TCU driver that is based on the mailbox branch and then base the DT
-> > changes on that branch, or possibly send a separate pull request for
-> > just the DT change late in the merge window or shortly after v4.19-rc1.
-> >=20
-> > Obviously the latter would be equivalent to you guys merging the patches
-> > through your trees for v4.19-rc1 and me sending out a late pull request
-> > for the DT bits.
->=20
-> No need for me to take the serial driver if these types of dependancies
-> are required, you are free to take that in your tree if you want to.
->=20
-> does that help?
+> +                       compatible = "mediatek,mt6765-sysirq",
+> +                                    "mediatek,mt6577-sysirq";
+> +                       interrupt-controller;
+> +                       #interrupt-cells = <3>;
+> +                       interrupt-parent = <&gic>;
+> +                       reg = <0 0x10200a80 0 0x50>;
+> +               };
+> +
+> +               gic: interrupt-controller@0c000000 {
 
-It does if Jassi's okay if I take the mailbox drivers into the Tegra
-tree as well. I'll wait for Jassi to comment and then we can decide what
-to do.
+Drop the leading 0. Build your dts with W=12 and fix the warnings like this.
 
-Thanks,
-Thierry
-
---mejza3ZMMA5Za1mX
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAls6M/UACgkQ3SOs138+
-s6EhnxAAwI9fH8fSx7Du3Z5PMU2jY3cko+JNZUpPiRjiRvvKX6wdCvNW8WVq/9qR
-mbQshoHuNPY+BskYBBwECl8cJLDfF0LGOLkCZlQX6THET/L//Fm+LAWP+4u79G0k
-f9H+rOduaFfbT4FimYn1BMe/bs0+dl1OdWTwXrB1oHLxjs1Vgyclh1HELlzs2Vbo
-olLJlP8DEMCHlALWjPhYRAw7GWdmzV1LTIZ9z973LWJWsxe27dH3AVd71rJ5pFAP
-UM2E+8Kuf7vwW8XldsFZzeutJdeqDBqB8DQovutlOhQrQ1/ll76eT2B1lkUSqD/6
-xgWw2l5JzDs5pRc0S4xo5HYPMQnD+CLreQ2Sdc9O45p74hpVCjMqFftE5hH8Jx6a
-GhaE7grXnRs6Z0BoFYwQHR7EiCNjsxiOiK0p5R16hJeipSCFGUPkyXgibmUJ7zL1
-Lcg2JcSF9OF9PQr/Zv4vSf2D1mtI5D2kCRip/6Sf96FhhkEahDqr2EZHLwgFOvS/
-1ZWYF2xCqQ3cfjnSvWbdOdbM91wqZR9+6ot86giDclNSAqHdPb61csWcLM5usdnX
-zxCWIyvdItud6JgQnoox7+aUxv1GZh6Q6oSYs87dXXGMRiXsW/EBpa8c5hHFB97W
-jre7HKlzAAUdG/k4V0aShM7HCwXwpZC92mh6VrNvg9LR5d498OE=
-=oIKU
------END PGP SIGNATURE-----
-
---mejza3ZMMA5Za1mX--
-
-
---===============2037835502130023140==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============2037835502130023140==--
+> +                       compatible = "arm,gic-v3";
+> +                       #interrupt-cells = <3>;
+> +                       #address-cells = <2>;
+> +                       #size-cells = <2>;
+> +                       #redistributor-regions = <1>;
+> +                       interrupt-parent = <&gic>;
+> +                       interrupt-controller;
+> +                       reg = <0 0x0c000000 0 0x40000>, // distributor
+> +                             <0 0x0c100000 0 0x200000>; // redistributor
+> +                       interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+> +               };
+> +
+> +               uart0: serial@11002000 {
+> +                       compatible = "mediatek,mt6765-uart",
+> +                                    "mediatek,mt6577-uart";
+> +                       reg = <0 0x11002000 0 0x400>;
+> +                       interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
+> +                       clocks = <&baud_clk>, <&sys_clk>;
+> +                       clock-names = "baud", "bus";
+> +                       status = "disabled";
+> +               };
+> +
+> +               uart1: serial@11003000 {
+> +                       compatible = "mediatek,mt6765-uart",
+> +                                    "mediatek,mt6577-uart";
+> +                       reg = <0 0x11003000 0 0x400>;
+> +                       interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
+> +                       clocks = <&baud_clk>, <&sys_clk>;
+> +                       clock-names = "baud", "bus";
+> +                       status = "disabled";
+> +               };
+> +       }; /* end of soc */
+> +};
+> --
+> 1.7.9.5
+>
