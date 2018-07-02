@@ -1,80 +1,34 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 5/8] mailbox: tegra-hsp: Add support for shared
- mailboxes
-Date: Mon, 2 Jul 2018 15:13:00 +0200
-Message-ID: <20180702131300.GG13096@ulmo>
-References: <20180702114033.15654-1-mperttunen@nvidia.com>
- <20180702114033.15654-6-mperttunen@nvidia.com>
+From: Vinod <vkoul@kernel.org>
+Subject: Re: [PATCH v5 0/7] add virt-dma support for imx-sdma
+Date: Mon, 2 Jul 2018 18:47:37 +0530
+Message-ID: <20180702131737.GJ22377@vkoul-mobl>
+References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
+ <1530025442.9910.44.camel@pengutronix.de>
+ <1530527489.15665.22.camel@nxp.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Wtrm9ATX0sn6fFKv"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180702114033.15654-6-mperttunen@nvidia.com>
+In-Reply-To: <1530527489.15665.22.camel@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mikko Perttunen <mperttunen@nvidia.com>
-Cc: jassisinghbrar@gmail.com, gregkh@linuxfoundation.org, jonathanh@nvidia.com, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Robin Gong <yibin.gong@nxp.com>
+Cc: "l.stach@pengutronix.de" <l.stach@pengutronix.de>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "dan.j.williams@intel.com" <dan.j.williams@intel.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, dl-linux-imx <linux-imx@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
+On 02-07-18, 02:32, Robin Gong wrote:
+> Hi Vinod,
+> 	Do you have any comment for this patchset? Lucas and Sascha
+> acked it and tty patch already merged in.
 
---Wtrm9ATX0sn6fFKv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I was actually waiting for ACK/action on patch 1 :)
 
-On Mon, Jul 02, 2018 at 02:40:30PM +0300, Mikko Perttunen wrote:
-> The Tegra HSP block supports 'shared mailboxes' that are simple 32-bit
-> registers consisting of a FULL bit in MSB position and 31 bits of data.
-> The hardware can be configured to trigger interrupts when a mailbox
-> is empty or full. Add support for these shared mailboxes to the HSP
-> driver.
->=20
-> The initial use for the mailboxes is the Tegra Combined UART. For this
-> purpose, we use interrupts to receive data, and spinning to wait for
-> the transmit mailbox to be emptied to minimize unnecessary overhead.
->=20
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-> ---
->=20
-> Notes:
->     v3:
->     - Added define HSP_INT0_IE_FULL_SHIFT
->     - Added Jon's Reviewed-by
->    =20
->     v2:
->     - Added defines for some register fields
->     - Simplified bit looping logic in interrupt handler
->     - Changed write done polling to use readl_poll_timeout
->     - Removed unnecessary zero assignments
->     - Fixed two error cases in probe to do proper cleanup
->=20
->  drivers/mailbox/tegra-hsp.c | 211 ++++++++++++++++++++++++++++++++++++++=
-+-----
->  1 file changed, 191 insertions(+), 20 deletions(-)
+I have reviewed the series, some nitpicks nothing major, so I have
+applied this good cleanup and conversion :) along with fixes for typos
+in code, GFP_ fix and removed unused variable.
 
-Looks good to me:
+My buildchain noticed warns (with W=1) on this file, esp now that
+structs are moved around. Pls fix the struct descriptions.
 
-Acked-by: Thierry Reding <treding@nvidia.com>
-
---Wtrm9ATX0sn6fFKv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAls6JNwACgkQ3SOs138+
-s6GWoRAAjMSzFRnjIqmYTKNAlC3+zWjnHI329p0ETq4v9BEhKuDXsCKv490meKDp
-+OFZOvgs7InvdNKX9sUmFYsiHNx7z0AjfyMhbLq2QqFQLJVxLG+h5I1oYdrhIaZ6
-PIhOlQNEgrr5b7wYnj/2CvVtANCNB/3uw23gkhQVCvvV0V2SI/SFZzp+JvO4JUT6
-KLSvQEGrmialeqaLvDi47nZswcrjh6w28O6YALiJHQWnx66dk3jQFxqS8Ck+4YXk
-ihTUSlkG3Qy5PzZQQ/zFESL/S6bh9dLeUkGeFeigsV5B2sBBrcsffP0Sj2Ox3TIQ
-LpFHSu9yXAsRRlSxWpeLDVox+AaTrzNNf+earyvItB9tAHKDl1mCLLqAuWrkKyye
-AX1hvhLSuT2oXCfvtx/Xiw2XvI19gvXFtuAsMYb1S7fliIcEkuZqruLKT2yeOMLh
-3alEYF1QYnVzh7JwInY16Kq7lJ2bHLBOZ01SFVFCAoyZR/Or/yVapoHaHk6LQMwW
-vuYBZE7zCWw670+3OS7qRdIwhtt4S1qd5MAoodyu3oA8ZV0C052EhkXASEVG+d0r
-QbJCpeNcTfbDnBUnANJ/saLmTe2EAGhmYN4NxR9VKNyH9oKjS9zVr2p42uNvruLq
-z+xo5qXKOavNVYhVA93k4MQfEEASqltcqr90nE9/0KeO0u0rdDM=
-=30K8
------END PGP SIGNATURE-----
-
---Wtrm9ATX0sn6fFKv--
+Thanks
+-- 
+~Vinod
