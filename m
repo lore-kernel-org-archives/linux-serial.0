@@ -1,69 +1,69 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 1/8] dt-bindings: tegra186-hsp: Add shared interrupts
-Date: Mon, 2 Jul 2018 14:37:48 +0200
-Message-ID: <20180702123748.GA13096@ulmo>
+Subject: Re: [PATCH v3 2/8] dt-bindings: serial: Add bindings for
+ nvidia,tegra194-tcu
+Date: Mon, 2 Jul 2018 14:51:54 +0200
+Message-ID: <20180702125154.GD13096@ulmo>
 References: <20180702114033.15654-1-mperttunen@nvidia.com>
- <20180702114033.15654-2-mperttunen@nvidia.com>
+ <20180702114033.15654-3-mperttunen@nvidia.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="2fHTh5uZTiUOsy+g"
+        protocol="application/pgp-signature"; boundary="DiL7RhKs8rK9YGuF"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180702114033.15654-2-mperttunen@nvidia.com>
+In-Reply-To: <20180702114033.15654-3-mperttunen@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Mikko Perttunen <mperttunen@nvidia.com>
 Cc: jassisinghbrar@gmail.com, gregkh@linuxfoundation.org, jonathanh@nvidia.com, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 
---2fHTh5uZTiUOsy+g
+--DiL7RhKs8rK9YGuF
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 02, 2018 at 02:40:26PM +0300, Mikko Perttunen wrote:
-> HSP interrupts can be routed through exposed "shared interrupts". These
-> interrupts can be mapped to various internal interrupt lines. Add
-> interrupt properties for shared interrupts to the tegra186-hsp device
-> tree bindings.
+On Mon, Jul 02, 2018 at 02:40:27PM +0300, Mikko Perttunen wrote:
+> Add bindings for the Tegra Combined UART device used to talk to the
+> UART console on Tegra194 systems.
 >=20
 > Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> Acked-by: Jon Hunter <jonathanh@nvidia.com>
 > Reviewed-by: Rob Herring <robh@kernel.org>
+> Acked-by: Jon Hunter <jonathanh@nvidia.com>
 > ---
 >=20
 > Notes:
 >     v2:
->     - Edited commit message to not say that doorbell interrupts cannot be
->       routed to shared interrupts.
->     - Added tegra194 compatibility string.
+>     - Added Rob's Reviewed-by.
 >    =20
 >     v3:
->     - Added Jon's A-b and Rob's R-b
+>     - Added Jon's Acked-by.
 >=20
->  Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt | 3 +++
->  1 file changed, 3 insertions(+)
+>  .../bindings/serial/nvidia,tegra194-tcu.txt        | 35 ++++++++++++++++=
+++++++
+>  1 file changed, 35 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra=
+194-tcu.txt
 
 Acked-by: Thierry Reding <treding@nvidia.com>
 
---2fHTh5uZTiUOsy+g
+--DiL7RhKs8rK9YGuF
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAls6HJoACgkQ3SOs138+
-s6Hn+A/+Odk5wqDMnlfiw/LHOl8gKOTI9dFik4nUtwIonK5a3l4mflfBpDcyEKmk
-1I3Tz93choYczev+mmnh0DWDFWEFmXdKFUgU7mzGw2ZLvtlmYjpSTdigERg3MN9j
-p8qFpHDf9Mg6FQJuba1znZbOwaTe6PAA6sOOUzaqSQ0AXqLBT4iWuxJioVDhis3/
-ppyQXe2OcnukmDlTxzBK9rP/AZbnOkRgzQKyWKP8GMwNW72H5zuTI1T+BfMTsqni
-DRck2GPEBM59j10XW9XR3FAizasV03z+AyZ+D2pASpAo1iwtnVIuh2JkxzCAu3RD
-ep7aYVi+BP/AsJr/T1J2B6/50hJHu6ovwDtRaUQgSkINwqItv4aFbeaxy55HzE83
-gPIYIoolgj5q/7B9hAUApkVH6UPKlrKGfbCBQN/6BilWHhZnQrqPSg3Ry+EusCma
-6n/sIPHg5ZF8zV/nuu4DHcRlmmuUSEBNyb6VPuJuyabMMUWZ0p+hKymn4POvwpxR
-xxO9I9dUvHFG2Q2YZ7QtFL533KTwWcrx8oQBg2LIv4g+FVGWUnEysqSfUpjIbpDi
-YDfI+Xq0ckNrmft8rcOKfYmKOY8SGg8QFO2V6XA+lOIlRUv2Mke/z5qtXa9+ez28
-YJsRgwMggua/pG4Yk9WxdT6sexZGdYFmUi6GhJB08K/CpAzHIPk=
-=RaT6
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAls6H+cACgkQ3SOs138+
+s6Ftgw/6Al7FwFrx9x0Bqz8/QSQwlP8RexRWeehUJgvEHfqeQvlUuDnGjbzykNwO
+HaxhGzpGfckbwKqDAdbrkR1jLOdd/dckJBT1Qz7Co8orMhHcjxlHbmNV43t/t26w
+r7qBzH5cM9FkC8vmMjNhRP3REOqDZ1HOuW2Zp4jgO9EeBKGfDWnBzAiyYLWVkH5n
+Az1AEjSF5Rw54D7Mbt5EWGQ5oRp5waxyboz8D6qw5jVN6vHwudIM+3f2pNv7iIix
+9aNJvJLOk+RAbce8vFOuATAc1N/7CSJhLVvBW97hXGt5cTECPMdb1jmqT8IkofrR
+k+3PA+yacx0KLTf3vZXEWrqoAndJMd2XEJFJE1zm2BLZ/s4qvXAA6mZjVCKe8wIU
+yKeE8aLcptG7WPgRfF7KI6UO11q9igpQ9FF2LMIUcn8snTFxbli4RqcjX2E6nShD
+Mh1iApK4uu05AeKY4G9l4UFd7jFPBK2ajTeG/MprzF9Uyu+mjxCjlZvSZKo3jIAs
+wsUkMNeuGap0yDxRdeco+lO1XBXtYWrnSk6twI59KV5IO0bj8nxZrKn2SBgVo5G+
+QjvnocC7hno+Abx3xzB735rKnu+VNxH7HDIy3sj4smfwwtGrkwWy0wiSg8OUbtDB
+XojFX8e0T14LttZnLKWshq8iAOuTl1lpwhOmMhKTaI+DrFdrRWY=
+=1DhX
 -----END PGP SIGNATURE-----
 
---2fHTh5uZTiUOsy+g--
+--DiL7RhKs8rK9YGuF--
