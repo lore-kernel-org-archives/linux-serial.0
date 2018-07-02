@@ -1,87 +1,32 @@
-From: Robin Gong <yibin.gong@nxp.com>
-Subject: Re: [PATCH v5 0/7] add virt-dma support for imx-sdma
-Date: Mon, 2 Jul 2018 02:32:05 +0000
-Message-ID: <1530527489.15665.22.camel@nxp.com>
-References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
-         <1530025442.9910.44.camel@pengutronix.de>
+From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+Subject: [PATCH 0/2] serial: 8250_dw: add fractional divisor support
+Date: Mon, 2 Jul 2018 18:04:28 +0800
+Message-ID: <20180702180428.331b36c5@xhacker.debian>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1530025442.9910.44.camel@pengutronix.de>
-Content-Language: en-US
-Content-ID: <0BECDD57B9DFA645AD0B258DF54ACD41@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "l.stach@pengutronix.de" <l.stach@pengutronix.de>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "vkoul@kernel.org" <vkoul@kernel.org>, "dan.j.williams@intel.com" <dan.j.williams@intel.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, dl-linux-imx <linux-imx@nxp.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-SGkgVmlub2QsDQoJRG8geW91IGhhdmUgYW55IGNvbW1lbnQgZm9yIHRoaXMgcGF0Y2hzZXQ/IEx1
-Y2FzIGFuZCBTYXNjaGENCmFja2VkIGl0IGFuZCB0dHkgcGF0Y2ggYWxyZWFkeSBtZXJnZWQgaW4u
-DQoNCk9uIOS6jCwgMjAxOC0wNi0yNiBhdCAxNzowNCArMDIwMCwgTHVjYXMgU3RhY2ggd3JvdGU6
-DQo+IEhpIFJvYmluLA0KPiANCj4gSSd2ZSB0ZXN0ZWQgdGhpcyB3aG9sZSBzZXJpZXMgd2l0aCB0
-aGUgU0RNQSBiZWluZyB1c2VkIGZvciBTUEksIFVBUlQNCj4gYW5kIFNTSSB3aXRoIG5vIHJlZ3Jl
-c3Npb25zIHNwb3R0ZWQuIEFzIHRoaXMgc2hvdWxkIGNvdmVyIG1vc3QgY29tbW9uDQo+IHVzZS1j
-YXNlcywgSSB0aGluayB0aGlzIHNlcmllcyBpcyBnb29kIHRvIGdvIGluLg0KPiANCj4gVGVzdGVk
-LWJ5OiBMdWNhcyBTdGFjaCA8bC5zdGFjaEBwZW5ndXRyb25peC5kZT4NCj4gDQo+IFJlZ2FyZHMs
-DQo+IEx1Y2FzDQo+IA0KPiBBbSBNaXR0d29jaCwgZGVuIDIwLjA2LjIwMTgsIDAwOjU2ICswODAw
-IHNjaHJpZWIgUm9iaW4gR29uZzoNCj4gPiANCj4gPiBUaGUgbGVnYWN5IHNkbWEgZHJpdmVyIGhh
-cyBiZWxvdyBsaW1pdGF0aW9ucyBvciBkcmF3YmFja3M6DQo+ID4gwqAgMS4gSGFyZGNvZGUgdGhl
-IG1heCBCRHMgbnVtYmVyIGFzICJQQUdFX1NJWkUgLyBzaXplb2YoKikiLCBhbmQNCj4gPiBhbGxv
-Yw0KPiA+IMKgwqDCoMKgwqBvbmUgcGFnZSBzaXplIGZvciBvbmUgY2hhbm5lbCByZWdhcmRsZXNz
-IG9mIG9ubHkgZmV3IEJEcw0KPiA+IG5lZWRlZA0KPiA+IMKgwqDCoMKgwqBtb3N0IHRpbWUuIEJ1
-dCBpbiBmZXcgY2FzZXMsIHRoZSBtYXggUEFHRV9TSVpFIG1heWJlIG5vdA0KPiA+IGVub3VnaC4N
-Cj4gPiDCoCAyLiBPbmUgU0RNQSBjaGFubmVsIGNhbid0IHN0b3AgaW1tZWRpYXRsZXkgb25jZSBj
-aGFubmVsIGRpc2FibGVkDQo+ID4gd2hpY2gNCj4gPiDCoMKgwqDCoMKgbWVhbnMgU0RNQSBpbnRl
-cnJ1cHQgbWF5IGNvbWUgaW4gYWZ0ZXIgdGhpcyBjaGFubmVsDQo+ID4gdGVybWluYXRlZC5UaGVy
-ZQ0KPiA+IMKgwqDCoMKgwqBhcmUgc29tZSBwYXRjaGVzIGZvciB0aGlzIGNvcm5lciBjYXNlIHN1
-Y2ggYXMgY29tbWl0DQo+ID4gIjI3NDZlMmMzODlmOSIsDQo+ID4gwqDCoMKgwqDCoGJ1dCBub3Qg
-Y292ZXIgbm9uLWN5Y2xpYy4NCj4gPiANCj4gPiBUaGUgY29tbW9uIHZpcnQtZG1hIG92ZXJjb21l
-cyB0aGUgYWJvdmUgbGltaXRhdGlvbnMuIEl0IGNhbiBhbGxvYw0KPiA+IGJkDQo+ID4gZHluYW1p
-Y2FsbHkgYW5kIGZyZWUgYmQgb25jZSB0aGlzIHR4IHRyYW5zZmVyIGRvbmUuIE5vIG1lbW9yeQ0K
-PiA+IHdhc3RlZCBvcg0KPiA+IG1heGltdW0gbGltaXRpdGF0aW9uIGhlcmUsIG9ubHkgZGVwZW5k
-cyBvbiBob3cgbWFueSBtZW1vcnkgY2FuIGJlDQo+ID4gcmVxdWVzdGVkDQo+ID4gZnJvbSBrZXJu
-ZWwuIEZvciBOby4yLCBzdWNoIGlzc3VlIGNhbiBiZSB3b3JrYXJvdW5kIGJ5IGNoZWNraW5nIGlm
-DQo+ID4gdGhlcmUNCj4gPiBpcyBhdmFpbGFibGUgZGVzY3JpcHQoInNkbWFjLT5kZXNjIikgbm93
-IG9uY2UgdGhlIHVud2FudGVkDQo+ID4gaW50ZXJydXB0DQo+ID4gY29taW5nLiBBdCBsYXN0IHRo
-ZSBjb21tb24gdmlydC1kbWEgaXMgZWFzaWVyIGZvciBzZG1hIGRyaXZlcg0KPiA+IG1haW50YWlu
-Lg0KPiA+IA0KPiA+IENoYW5nZSBmcm9tIHY0Og0KPiA+IMKgIDEuIGlkZW50aWZ5IGxvY2tkZXAg
-aXNzdWUgd2hpY2ggY2F1c2VkIGJ5IGFsbG9jYXRlIG1lbW9yeSB3aXRoDQo+ID4gwqDCoMKgwqDC
-oCdHRlBfS0VSTkVMJywgY2hhbmdlIHRvICdHRlBfTk9XQUlUJyBpbnN0ZWFkIHNvIHRoYXQgbG9j
-a2RlcA0KPiA+IMKgwqDCoMKgwqBpZ25vcmUgY2hlY2suIFRoYXQgYWxzbyBtYWtlIHNlbnNlIHNp
-bmNlIEF1ZGlvL3VhcnQgZHJpdmVyIG1heQ0KPiA+IMKgwqDCoMKgwqBjYWxsIGRtYSBmdW5jdGlv
-biBhZnRlciBzcGluX2xvY2tfaXJxc2F2ZSgpLi4uDQo+ID4gwqAgMi4gdXNlIGRtYSBwb29sIGlu
-c3RlYWQgZm9yIGJkIGRlc2NyaXB0aW9uIGFsbG9jYXRlZCxzaW5jZSBhdWRpbw0KPiA+IMKgwqDC
-oMKgwqBkcml2ZXIgbWF5IGNhbGwgZG1hX3Rlcm1pbmF0ZV9hbGwgaW4gaXJxLiBQbGVhc2UgcmVm
-ZXIgdG8gNy83Lg0KPiA+IMKgIDMuIHJlbW92ZSA3Lzcgc2VyaWFsIHBhdGNoIGluIHY0LCBzaW5j
-ZSBsb2NrZGVwIGlzc3VlZCBmaXhlZCBieQ0KPiA+IE5vLjHCoA0KPiA+IA0KPiA+IENoYW5nZSBm
-cm9tIHYzOg0KPiA+IMKgIDEuIGFkZCB0d28gdWFydCBwYXRjaGVzIHdoaWNoIGltcGFjdGVkIGJ5
-IHRoaXMgcGF0Y2hzZXQuDQo+ID4gwqAgMi4gdW5sb2NrICd2Yy5sb2NrJyBiZWZvcmUgY3ljbGlj
-IGRtYSBjYWxsYmFjayBhbmQgbG9jayBhZ2Fpbg0KPiA+IGFmdGVyDQo+ID4gwqDCoMKgwqDCoGl0
-IGJlY2F1c2Ugc29tZSBkcml2ZXIgc3VjaCBhcyB1YXJ0IHdpbGwgY2FsbA0KPiA+IGRtYWVuZ2lu
-ZV90eF9zdGF0dXMNCj4gPiDCoMKgwqDCoMKgd2hpY2ggd2lsbCBhY3F1aXJlICd2Yy5sb2NrJyBh
-Z2FpbiBhbmQgZGVhZCBsb2NrIGNvbWVzIG91dC4NCj4gPiDCoCAzLiByZW1vdmUgJ1JldmVydCBj
-b21taXQnIHN0dWZmIHNpbmNlIHRoYXQgcGF0Y2ggaXMgbm90IHdyb25nIGFuZA0KPiA+IMKgwqDC
-oMKgwqBjb21iaW5lIHR3byBwYXRjaCBpbnRvIG9uZSBwYXRjaCBhcyBTYXNjaGEncyBjb21tZW50
-Lg0KPiA+IA0KPiA+IENoYW5nZSBmcm9tIHYyOg0KPiA+IMKgIDEuIGluY2x1ZGUgU2FzY2hhJ3Mg
-cGF0Y2ggdG8gbWFrZSB0aGUgbWFpbiBwYXRjaCBlYXNpZXIgdG8NCj4gPiByZXZpZXcuDQo+ID4g
-wqDCoMKgwqDCoFRoYW5rcyBTYWNoYS4NCj4gPiDCoCAyLiByZW1vdmUgdXNlbGVzcyAnZGVzYycv
-J2NoYW4nIGluIHN0cnVjdCBzZG1hX2NoYW5uZS4NCj4gPiANCj4gPiBDaGFuZ2UgZnJvbSB2MToN
-Cj4gPiDCoCAxLiBzcGxpdCB2MSBwYXRjaCBpbnRvIDUgcGF0Y2hlcy4NCj4gPiDCoCAyLiByZW1v
-dmUgc29tZSB1bm5lY2Vzc2FyeSBjb25kaXRpb24gY2hlY2suDQo+ID4gwqAgMy4gcmVtb3ZlIHVu
-bmVjZXNzYXJ5ICdwZW5kaW5nJyBsaXN0Lg0KPiA+IA0KPiA+IFJvYmluIEdvbmcgKDYpOg0KPiA+
-IMKgIHR0eTogc2VyaWFsOiBpbXg6IGNvcnJlY3QgZG1hIGNvb2tpZSBzdGF0dXMNCj4gPiDCoCBk
-bWFlbmdpbmU6IGlteC1zZG1hOiBhZGQgdmlydC1kbWEgc3VwcG9ydA0KPiA+IMKgIGRtYWVuZ2lu
-ZTogaW14LXNkbWE6IHJlbW92ZSB1c2VsZXNzICdsb2NrJyBhbmQgJ2VuYWJsZWQnIGluDQo+ID4g
-J3N0cnVjdA0KPiA+IMKgwqDCoMKgc2RtYV9jaGFubmVsJw0KPiA+IMKgIGRtYWVuZ2luZTogaW14
-LXNkbWE6IHJlbW92ZSB0aGUgbWF4aW11bSBsaW1pdGF0aW9uIGZvciBiZCBudW1iZXJzDQo+ID4g
-wqAgZG1hZW5naW5lOiBpbXgtc2RtYTogYWRkIHNkbWFfdHJhbnNmZXJfaW5pdCB0byBkZWNyZWFz
-ZSBjb2RlDQo+ID4gb3ZlcmxhcA0KPiA+IMKgIGRtYWVuZ2luZTogaW14LXNkbWE6IGFsbG9jbGF0
-ZSBiZCBtZW1vcnkgZnJvbSBkbWEgcG9vbA0KPiA+IA0KPiA+IFNhc2NoYSBIYXVlciAoMSk6DQo+
-ID4gwqAgZG1hZW5naW5lOiBpbXgtc2RtYTogZmFjdG9yIG91dCBhIHN0cnVjdCBzZG1hX2Rlc2Mg
-ZnJvbSBzdHJ1Y3QNCj4gPiDCoMKgwqDCoHNkbWFfY2hhbm5lbA0KPiA+IA0KPiA+IMKgZHJpdmVy
-cy9kbWEvS2NvbmZpZ8KgwqDCoMKgwqDCoHzCoMKgwqAxICsNCj4gPiDCoGRyaXZlcnMvZG1hL2lt
-eC1zZG1hLmPCoMKgwqB8IDQwMCArKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0NCj4g
-PiAtLS0tLS0tLS0tLS0tLQ0KPiA+IMKgZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIHzCoMKgwqAy
-ICstDQo+ID4gwqAzIGZpbGVzIGNoYW5nZWQsIDIzNSBpbnNlcnRpb25zKCspLCAxNjggZGVsZXRp
-b25zKC0pDQo+ID4g
+For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
+valid divisor latch fraction register. The fractional divisor width is
+4bits ~ 6bits.
+
+patch1 introduces necessary hooks to 8250 core.
+patch2 implement the fractional divisor support for Synopsys DW 8250.
+
+Jisheng Zhang (2):
+  serial: 8250: introduce get_divisor() and set_divisor() hook
+  serial: 8250_dw: add fractional divisor support
+
+ drivers/tty/serial/8250/8250_core.c |  4 +++
+ drivers/tty/serial/8250/8250_dw.c   | 54 +++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c |  8 +++++
+ include/linux/serial_8250.h         |  7 ++++
+ 4 files changed, 73 insertions(+)
+
+-- 
+2.18.0
