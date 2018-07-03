@@ -1,93 +1,33 @@
-From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Subject: Re: [PATCH 0/2] serial: 8250_dw: add fractional divisor support
-Date: Tue, 3 Jul 2018 10:48:16 +0800
-Message-ID: <20180703104816.031abbfc@xhacker.debian>
-References: <20180702180428.331b36c5@xhacker.debian>
-        <fef0bf484ead5e0998666168ced86438bf935ce5.camel@linux.intel.com>
-        <59b14f97234271a7d859fa07f27bd66ec252ccc9.camel@linux.intel.com>
-        <20180703102257.678db6a8@xhacker.debian>
+From: Robin Gong <yibin.gong@nxp.com>
+Subject: Re: [PATCH v5 0/7] add virt-dma support for imx-sdma
+Date: Tue, 3 Jul 2018 02:57:13 +0000
+Message-ID: <1530615395.15665.26.camel@nxp.com>
+References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
+         <1530025442.9910.44.camel@pengutronix.de>
+         <1530527489.15665.22.camel@nxp.com> <20180702131737.GJ22377@vkoul-mobl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180703102257.678db6a8@xhacker.debian>
+In-Reply-To: <20180702131737.GJ22377@vkoul-mobl>
+Content-Language: en-US
+Content-ID: <7E027C099FB2924C8DBAB8375DA4838E@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: "vkoul@kernel.org" <vkoul@kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "dan.j.williams@intel.com" <dan.j.williams@intel.com>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "l.stach@pengutronix.de" <l.stach@pengutronix.de>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 3 Jul 2018 10:22:57 +0800 Jisheng Zhang wrote:
-
-> Hi,
-> 
-> On Mon, 2 Jul 2018 14:51:03 +0300 Andy Shevchenko wrote:
-> 
-> > On Mon, 2018-07-02 at 13:18 +0300, Andy Shevchenko wrote:  
-> > > On Mon, 2018-07-02 at 18:04 +0800, Jisheng Zhang wrote:    
-> > > > For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
-> > > > valid divisor latch fraction register. The fractional divisor width
-> > > > is
-> > > > 4bits ~ 6bits.
-> > > >     
-> > > 
-> > > There are several serial IPs that have fractional divider built-in.
-> > > None
-> > > is using any specific hooks. Why do you need in your case, esp. taking
-> > > into consideration that we have a custom ->set_termios() callback?    
-> > 
-> > Okay, I see that in 8250 we have hooks embedded into 8250_port.c which
-> > is not the best solution.
-> > 
-> > For example it prevents better splitting Exar code.
-> > So, we would need these hooks, but better to integrate them in the same
-> > way like it's done for the rest of 8250 ones, i.e.
-> > - rename existing to have a "do" word
-> > - create new functions which would be a replacement that choose between
-> > "do" variant and custom one
-> > - not sure if we need to export "do" variants (at least for now)  
-> 
-> So you mean add the support as following:
-> 
-> 1.rename current serial8250_set_divisor as serial8250_do_set_divisor
-> 
-> 2.add a new serial8250_set_divisor which will be as simple as
-> 
-> static void serial8250_set_divisor(struct uart_port *port, ...)
-> {
-> 	struct uart_8250_port *up = up_to_u8250p(port);
-> 
-> 	if (up->set_divisor)
-> 		up->set_divisor(...);
-> 	else
-> 		serial8250_do_set_divisor(...);
-> }
-> 
-> could you please confirm?
-> 
-> Another issue is I'm not sure which struct to add the hook,
-> struct uart_port or struct uart_8250_port? Currently, it seems that only
-> uart_8250_port needs this hook, sure, adding the hook to struct uart_port
-> is fine either. Could you please kindly give some suggestions?
-
-patching struct uart_port seems a bit overhead. After reading the code
-again, I propose another solution, similar as what dl_write() is used in
-8250 core:
-
-1.introduce the hook to struct uart_8250_port as my previous patches do, 
-
-2.rename current serial8250_set_divisor() as default_serial_get_divisor()
-then introduce a new serial8250_set_divisor() as:
-static inline void serial8250_set_divisor(struct uart_8250_port *up,....)
-{
-	up->set_divisor();
-}
-
-and point up->set-divisor to default_serial_get_divisor
-
-what do you think about this solution?
-
-Thanks
-
-> 
-> Thanks,
-> Jisheng
+T24g5LiALCAyMDE4LTA3LTAyIGF0IDE4OjQ3ICswNTMwLCBWaW5vZCB3cm90ZToNCj4gT24gMDIt
+MDctMTgsIDAyOjMyLCBSb2JpbiBHb25nIHdyb3RlOg0KPiA+IA0KPiA+IEhpIFZpbm9kLA0KPiA+
+IAlEbyB5b3UgaGF2ZSBhbnkgY29tbWVudCBmb3IgdGhpcyBwYXRjaHNldD8gTHVjYXMgYW5kIFNh
+c2NoYQ0KPiA+IGFja2VkIGl0IGFuZCB0dHkgcGF0Y2ggYWxyZWFkeSBtZXJnZWQgaW4uDQo+IEkg
+d2FzIGFjdHVhbGx5IHdhaXRpbmcgZm9yIEFDSy9hY3Rpb24gb24gcGF0Y2ggMSA6KQ0KPiANCj4g
+SSBoYXZlIHJldmlld2VkIHRoZSBzZXJpZXMsIHNvbWUgbml0cGlja3Mgbm90aGluZyBtYWpvciwg
+c28gSSBoYXZlDQo+IGFwcGxpZWQgdGhpcyBnb29kIGNsZWFudXAgYW5kIGNvbnZlcnNpb24gOikg
+YWxvbmcgd2l0aCBmaXhlcyBmb3INCj4gdHlwb3MNCj4gaW4gY29kZSwgR0ZQXyBmaXggYW5kIHJl
+bW92ZWQgdW51c2VkIHZhcmlhYmxlLg0KPiANCj4gTXkgYnVpbGRjaGFpbiBub3RpY2VkIHdhcm5z
+ICh3aXRoIFc9MSkgb24gdGhpcyBmaWxlLCBlc3Agbm93IHRoYXQNCj4gc3RydWN0cyBhcmUgbW92
+ZWQgYXJvdW5kLiBQbHMgZml4IHRoZSBzdHJ1Y3QgZGVzY3JpcHRpb25zLg0KT2theSwgSSdsbCBz
+ZW5kIGFub3RoZXIgcGF0Y2ggdG8gZml4IHN1Y2ggYnVpbGQgd2FybmluZyBpc3N1ZSBsYXRlci4N
+CkJUVywgcGF0Y2ggMSBoYXMgYWxyZWFkeSBiZWVuIGluIGxpbnV4LW5leHQgdHJlZSA6KS4NCj4g
+DQo+IFRoYW5rcw==
