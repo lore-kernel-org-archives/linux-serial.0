@@ -1,33 +1,76 @@
-From: Robin Gong <yibin.gong@nxp.com>
-Subject: Re: [PATCH v5 0/7] add virt-dma support for imx-sdma
-Date: Tue, 3 Jul 2018 02:57:13 +0000
-Message-ID: <1530615395.15665.26.camel@nxp.com>
-References: <1529427424-12321-1-git-send-email-yibin.gong@nxp.com>
-         <1530025442.9910.44.camel@pengutronix.de>
-         <1530527489.15665.22.camel@nxp.com> <20180702131737.GJ22377@vkoul-mobl>
+From: Mikko Perttunen <cyndis@kapsi.fi>
+Subject: Re: [PATCH v3 6/8] serial: Add Tegra Combined UART driver
+Date: Tue, 3 Jul 2018 09:40:16 +0300
+Message-ID: <02120216-e305-5968-3567-d7174c2a8b13@kapsi.fi>
+References: <20180702114033.15654-1-mperttunen@nvidia.com>
+ <20180702114033.15654-7-mperttunen@nvidia.com> <20180702131851.GH13096@ulmo>
+ <50c4702b-3d59-e443-5075-c888f83a2615@kapsi.fi> <20180702134731.GI13096@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180702131737.GJ22377@vkoul-mobl>
+In-Reply-To: <20180702134731.GI13096@ulmo>
 Content-Language: en-US
-Content-ID: <7E027C099FB2924C8DBAB8375DA4838E@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "vkoul@kernel.org" <vkoul@kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "dan.j.williams@intel.com" <dan.j.williams@intel.com>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "l.stach@pengutronix.de" <l.stach@pengutronix.de>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Mikko Perttunen <mperttunen@nvidia.com>, devicetree@vger.kernel.org, gregkh@linuxfoundation.org, jassisinghbrar@gmail.com, linux-kernel@vger.kernel.org, jonathanh@nvidia.com, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-T24g5LiALCAyMDE4LTA3LTAyIGF0IDE4OjQ3ICswNTMwLCBWaW5vZCB3cm90ZToNCj4gT24gMDIt
-MDctMTgsIDAyOjMyLCBSb2JpbiBHb25nIHdyb3RlOg0KPiA+IA0KPiA+IEhpIFZpbm9kLA0KPiA+
-IAlEbyB5b3UgaGF2ZSBhbnkgY29tbWVudCBmb3IgdGhpcyBwYXRjaHNldD8gTHVjYXMgYW5kIFNh
-c2NoYQ0KPiA+IGFja2VkIGl0IGFuZCB0dHkgcGF0Y2ggYWxyZWFkeSBtZXJnZWQgaW4uDQo+IEkg
-d2FzIGFjdHVhbGx5IHdhaXRpbmcgZm9yIEFDSy9hY3Rpb24gb24gcGF0Y2ggMSA6KQ0KPiANCj4g
-SSBoYXZlIHJldmlld2VkIHRoZSBzZXJpZXMsIHNvbWUgbml0cGlja3Mgbm90aGluZyBtYWpvciwg
-c28gSSBoYXZlDQo+IGFwcGxpZWQgdGhpcyBnb29kIGNsZWFudXAgYW5kIGNvbnZlcnNpb24gOikg
-YWxvbmcgd2l0aCBmaXhlcyBmb3INCj4gdHlwb3MNCj4gaW4gY29kZSwgR0ZQXyBmaXggYW5kIHJl
-bW92ZWQgdW51c2VkIHZhcmlhYmxlLg0KPiANCj4gTXkgYnVpbGRjaGFpbiBub3RpY2VkIHdhcm5z
-ICh3aXRoIFc9MSkgb24gdGhpcyBmaWxlLCBlc3Agbm93IHRoYXQNCj4gc3RydWN0cyBhcmUgbW92
-ZWQgYXJvdW5kLiBQbHMgZml4IHRoZSBzdHJ1Y3QgZGVzY3JpcHRpb25zLg0KT2theSwgSSdsbCBz
-ZW5kIGFub3RoZXIgcGF0Y2ggdG8gZml4IHN1Y2ggYnVpbGQgd2FybmluZyBpc3N1ZSBsYXRlci4N
-CkJUVywgcGF0Y2ggMSBoYXMgYWxyZWFkeSBiZWVuIGluIGxpbnV4LW5leHQgdHJlZSA6KS4NCj4g
-DQo+IFRoYW5rcw==
+On 02.07.2018 16:47, Thierry Reding wrote:
+> On Mon, Jul 02, 2018 at 04:30:07PM +0300, Mikko Perttunen wrote:
+>> On 02.07.2018 16:18, Thierry Reding wrote:
+>>> On Mon, Jul 02, 2018 at 02:40:31PM +0300, Mikko Perttunen wrote:
+>>>> The Tegra Combined UART (TCU) is a mailbox-based mechanism that allows
+>>>> multiplexing multiple "virtual UARTs" into a single hardware serial
+>>>> port. The TCU is the primary serial port on Tegra194 devices.
+>>>>
+>>>> Add a TCU driver utilizing the mailbox framework, as the used mailboxes
+>>>> are part of Tegra HSP blocks that are already controlled by the Tegra
+>>>> HSP mailbox driver.
+>>>>
+>>>> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+>>>> ---
+>>>>
+>>>> Notes:
+>>>>       v2:
+>>>>       - Removed (void) casts for unused variables.
+>>>>       - Changed the uart_set_options() call to be on one line, even if its
+>>>>         over 80 characters.
+>>>>       - Added defines for magic numbers.
+>>>>       - Style fixes.
+>>>>       - Changed Kconfig entry to depend on the Tegra HSP driver instead of
+>>>>         just the mailbox framework.
+>>>>       v3:
+>>>>       - Removed FLUSH bit, as it's unnecessary and slows down printing
+>>>>       - Removed call to uart_set_options
+>>>>       - Added mbox_free_channel calls to remove()
+>>>>
+>>>>    drivers/tty/serial/Kconfig       |   9 ++
+>>>>    drivers/tty/serial/Makefile      |   1 +
+>>>>    drivers/tty/serial/tegra-tcu.c   | 291 +++++++++++++++++++++++++++++++++++++++
+>>>>    include/uapi/linux/serial_core.h |   3 +
+>>>>    4 files changed, 304 insertions(+)
+>>>>    create mode 100644 drivers/tty/serial/tegra-tcu.c
+>>>
+>>> The driver looks good to me. But for my own understanding, is there some
+>>> way we can make use of the multiplexing? That is, could we add a
+>>> mechanism to have the driver filter out only a specific stream? Could we
+>>> also specify which stream to send data back to? What happens by default?
+>>> Which stream is data sent to?
+>>
+>> There is no multiplexing on the producer/device side (i.e. what this driver
+>> does). The mailbox specified in device tree specifies the stream we send
+>> stuff to. The mailboxes are per-CPU (we use the CCPLEX mailbox here), so it
+>> cannot really be changed.
+> 
+> Oh, I see, so there is one stream per pair of mailboxes? That is, the
+> mailboxes we specify in the DT define which stream we receive from and
+> send to?
+
+Correct.
+
+Mikko
+
+> 
+> Thierry
+> 
