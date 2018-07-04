@@ -1,75 +1,40 @@
-From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: Re: [PATCH v3 4/4] arm64: dts: mediatek: add mt6765 support
-Date: Wed, 4 Jul 2018 08:59:56 +0100
-Message-ID: <304dc0a7-bcba-961c-40f4-b324ecc2d003@arm.com>
-References: <1530669174-17623-1-git-send-email-mars.cheng@mediatek.com>
- <1530669174-17623-5-git-send-email-mars.cheng@mediatek.com>
- <f482708c-ea5e-5d81-a176-d69be9ccdf63@arm.com>
- <1530690473.16183.3.camel@mtkswgap22>
+From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+Subject: [PATCH v2 0/3] serial: 8250_dw: add fractional divisor support
+Date: Wed, 4 Jul 2018 16:59:08 +0800
+Message-ID: <20180704165908.4bb8b090@xhacker.debian>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1530690473.16183.3.camel@mtkswgap22>
-Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mars Cheng <mars.cheng@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 04/07/18 08:47, Mars Cheng wrote:
-> Hi Marc
-> 
-> On Wed, 2018-07-04 at 08:35 +0100, Marc Zyngier wrote:
->> On 04/07/18 02:52, Mars Cheng wrote:
->>> This adds basic chip support for MT6765 SoC.
->>>
->>> Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
->>> ---
->>>  arch/arm64/boot/dts/mediatek/Makefile       |    1 +
->>>  arch/arm64/boot/dts/mediatek/mt6765-evb.dts |   33 ++++++
->>>  arch/arm64/boot/dts/mediatek/mt6765.dtsi    |  155 +++++++++++++++++++++++++++
->>>  3 files changed, 189 insertions(+)
->>>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
->>>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
->>>
->>
->> [...]
->>
->>> +
->>> +		gic: interrupt-controller@c000000 {
->>> +			compatible = "arm,gic-v3";
->>> +			#interrupt-cells = <3>;
->>> +			#address-cells = <2>;
->>> +			#size-cells = <2>;
->>> +			#redistributor-regions = <1>;
->>> +			interrupt-parent = <&gic>;
->>> +			interrupt-controller;
->>> +			reg = <0 0x0c000000 0 0x40000>, // distributor
->>> +			      <0 0x0c100000 0 0x200000>, // redistributor
->>> +			      <0 0x0c400000 0 0x40000>; // gicc
->>
->> For the second time: please add *all* the GIC CPU interface regions,
->> described in the Cortex-A53 TRM[1] (GICC, GICH, and GICV).
->>
-> 
-> MT6765 has no GICH/GICV/ITS in mediatek design. Have confirmed with our
-> designer.  
+For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
+valid divisor latch fraction register. The fractional divisor width is
+4bits ~ 6bits.
 
-The only way *not* to have GICH or GICV is to assert GICCDISABLE on the
-CPU, in which case you don't have GICC either, nor any support for the
-GICv3 at all. So either the designer is wrong or the documentation is
-wrong. Which one is it, do you think?
+patch1 lets serial8250_get_divisor() get uart_port * as param
+patch2 introduces necessary hooks to 8250 core.
+patch3 implements the fractional divisor support for Synopsys DW 8250.
 
-As for the ITS, that's a perfectly optional part of the design, and not
-part of the CPU.
+Since v1:
+ - add an extra patch to let serial8250_get_divisor() get uart_port *
+   as param
+ - take Andy's suggestions to "integrates hooks in the same way like
+   it's done for the rest of 8250 ones". Many thanks to Andy.
 
-> MT6797 had similar question from you. Sorry for not mentioned it first.
-> 
-> http://lists.infradead.org/pipermail/linux-mediatek/2017-February/008074.html
+Jisheng Zhang (3):
+  serial: 8250: let serial8250_get_divisor() get uart_port * as param
+  serial: 8250: introduce get_divisor() and set_divisor() hook
+  serial: 8250_dw: add fractional divisor support
 
-Well, that's wrong too.
+ drivers/tty/serial/8250/8250_core.c |  4 +++
+ drivers/tty/serial/8250/8250_dw.c   | 53 +++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c | 33 ++++++++++++++----
+ include/linux/serial_core.h         |  7 ++++
+ 4 files changed, 90 insertions(+), 7 deletions(-)
 
-	M.
 -- 
-Jazz is not dead. It just smells funny...
+2.18.0
