@@ -1,83 +1,174 @@
-From: Mars Cheng <mars.cheng@mediatek.com>
-Subject: Re: [PATCH v3 4/4] arm64: dts: mediatek: add mt6765 support
-Date: Wed, 4 Jul 2018 19:38:09 +0800
-Message-ID: <1530704289.16183.6.camel@mtkswgap22>
-References: <1530669174-17623-1-git-send-email-mars.cheng@mediatek.com>
-         <1530669174-17623-5-git-send-email-mars.cheng@mediatek.com>
-         <f482708c-ea5e-5d81-a176-d69be9ccdf63@arm.com>
-         <1530690473.16183.3.camel@mtkswgap22>
-         <304dc0a7-bcba-961c-40f4-b324ecc2d003@arm.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2 3/3] serial: 8250_dw: add fractional divisor support
+Date: Wed, 04 Jul 2018 19:08:22 +0300
+Message-ID: <f2733332a58e7f2d92948e2ff252581f93e5073a.camel@linux.intel.com>
+References: <20180704165908.4bb8b090@xhacker.debian>
+ <20180704170310.56772d77@xhacker.debian>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <304dc0a7-bcba-961c-40f4-b324ecc2d003@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marc Zyngier <marc.zyngier@arm.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180704170310.56772d77@xhacker.debian>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Marc
+On Wed, 2018-07-04 at 17:03 +0800, Jisheng Zhang wrote:
 
-On Wed, 2018-07-04 at 08:59 +0100, Marc Zyngier wrote:
-> On 04/07/18 08:47, Mars Cheng wrote:
-> > Hi Marc
-> > 
-> > On Wed, 2018-07-04 at 08:35 +0100, Marc Zyngier wrote:
-> >> On 04/07/18 02:52, Mars Cheng wrote:
-> >>> This adds basic chip support for MT6765 SoC.
-> >>>
-> >>> Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
-> >>> ---
-> >>>  arch/arm64/boot/dts/mediatek/Makefile       |    1 +
-> >>>  arch/arm64/boot/dts/mediatek/mt6765-evb.dts |   33 ++++++
-> >>>  arch/arm64/boot/dts/mediatek/mt6765.dtsi    |  155 +++++++++++++++++++++++++++
-> >>>  3 files changed, 189 insertions(+)
-> >>>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
-> >>>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
-> >>>
-> >>
-> >> [...]
-> >>
-> >>> +
-> >>> +		gic: interrupt-controller@c000000 {
-> >>> +			compatible = "arm,gic-v3";
-> >>> +			#interrupt-cells = <3>;
-> >>> +			#address-cells = <2>;
-> >>> +			#size-cells = <2>;
-> >>> +			#redistributor-regions = <1>;
-> >>> +			interrupt-parent = <&gic>;
-> >>> +			interrupt-controller;
-> >>> +			reg = <0 0x0c000000 0 0x40000>, // distributor
-> >>> +			      <0 0x0c100000 0 0x200000>, // redistributor
-> >>> +			      <0 0x0c400000 0 0x40000>; // gicc
-> >>
-> >> For the second time: please add *all* the GIC CPU interface regions,
-> >> described in the Cortex-A53 TRM[1] (GICC, GICH, and GICV).
-> >>
-> > 
-> > MT6765 has no GICH/GICV/ITS in mediatek design. Have confirmed with our
-> > designer.  
-> 
-> The only way *not* to have GICH or GICV is to assert GICCDISABLE on the
-> CPU, in which case you don't have GICC either, nor any support for the
-> GICv3 at all. So either the designer is wrong or the documentation is
-> wrong. Which one is it, do you think?
-> 
-> As for the ITS, that's a perfectly optional part of the design, and not
-> part of the CPU.
+Thanks for an update, my comments below.
+
+> For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
+> valid divisor latch fraction register. The fractional divisor width is
+> 4bits ~ 6bits.
+
+I have read 4.00a spec a bit and didn't find this limitation.
+The fractional divider can fit up to 32 bits.
+
+> Now the preparation is done, it's easy to add the feature support.
+> This patch firstly checks the component version during probe, if
+> version >= 4.00a, then calculates the fractional divisor width, then
+> setups dw specific get_divisor() and set_divisor() hook.
+ 
+> +#define DW_FRAC_MIN_VERS		0x3430302A
+
+Do we really need this? 
+
+My intuition (I, unfortunately, didn't find any evidence in Synopsys
+specs for UART) tells me that when it's unimplemented we would read back
+0's, which is fine.
+
+I would test this a bit later.
+
 > 
 
-Clarified with our designer. It is our misunderstanding for TRM.
-GICV/GICH do exist. Will add them in v4 soon. And fix MT6797 in another
-patch.
+> +	unsigned int		dlf_size:3;
 
-Thanks.
+These bit fields (besides the fact you need 5) more or less for software
+quirk flags. In your case I would rather keep a u32 value of DFL mask as
+done for msr slightly above in this structure.
 
-> > MT6797 had similar question from you. Sorry for not mentioned it first.
-> > 
-> > https://urldefense.proofpoint.com/v2/url?u=http-3A__lists.infradead.org_pipermail_linux-2Dmediatek_2017-2DFebruary_008074.html&d=DwICaQ&c=X9NHckmGz7LNQmqtvpDCYVnn6eFXNivfZeknqiAo-n0&r=Ph_SbcClVGRWmGxVhfr-5CZF9ffiUOE7TZ47ns4ROh4&m=iACLXUO5vXXZCPSvhbBKZFXy0bXdO8f4kbgy6RLi2QM&s=2N4qyy0aMytzNgObeyU4tvCDREX4U1x4oeNgvZwUxvM&e= 
-> 
-> Well, that's wrong too.
-> 
-> 	M.
+>  };
+>  
+> +/*
+> + * For version >= 4.00a, the dw uarts have a valid divisor latch
+> fraction
+> + * register. Calculate divisor with extra 4bits ~ 6bits fractional
+> portion.
+> + */
+
+This comment kinda noise. Better to put actual formula from datasheet
+how this fractional divider is involved into calculus.
+
+> +static unsigned int dw8250_get_divisor(struct uart_port *p,
+> +				       unsigned int baud,
+> +				       unsigned int *frac)
+> +{
+> +	unsigned int quot;
+> +	struct dw8250_data *d = p->private_data;
+> +
+
+> +	quot = DIV_ROUND_CLOSEST(p->uartclk << (d->dlf_size - 4),
+> baud);
+
+If we have clock rate like 100MHz and 10 bits of fractional divider it
+would give an integer overflow.
+
+4 here is a magic. Needs to be commented / described better.
+
+> +	*frac = quot & (~0U >> (32 - d->dlf_size));
+> +
+
+Operating on dfl_mask is simple as
+
+u64 quot = p->uartclk * (p->dfl_mask + 1);
+
+*frac = div64_u64(quot, baud * 16 * (p->dfl_mask + 1);
+return quot;
+
+(Perhaps some magic with types is needed, but you get the idea)
+
+> +	return quot >> d->dlf_size;
+> +}
+> +
+> +static void dw8250_set_divisor(struct uart_port *p, unsigned int
+> baud,
+> +			       unsigned int quot, unsigned int
+> quot_frac)
+> +{
+> +	struct uart_8250_port *up = up_to_u8250p(p);
+> +
+> +	serial_port_out(p, DW_UART_DLF >> p->regshift, quot_frac);
+
+It should use the helper, not playing tricks with serial_port_out().
+
+> +	serial_port_out(p, UART_LCR, up->lcr | UART_LCR_DLAB);
+> +	serial_dl_write(up, quot);
+
+At some point it would be a helper, I think. We can call
+serial8250_do_set_divisor() here. So, perhaps we might export it.
+
+> +}
+> +
+>  static void dw8250_quirks(struct uart_port *p, struct dw8250_data
+> *data)
+>  {
+>  	if (p->dev->of_node) {
+> @@ -414,6 +445,28 @@ static void dw8250_setup_port(struct uart_port
+> *p)
+>  	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
+>  		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) &
+> 0xff);
+>  
+> +	/*
+> +	 * For version >= 4.00a, the dw uarts have a valid divisor
+> latch
+> +	 * fraction register. Calculate the fractional divisor width.
+> +	 */
+> +	if (reg >= DW_FRAC_MIN_VERS) {
+> +		struct dw8250_data *d = p->private_data;
+> +
+
+> +		if (p->iotype == UPIO_MEM32BE) {
+> +			iowrite32be(~0U, p->membase + DW_UART_DLF);
+> +			reg = ioread32be(p->membase + DW_UART_DLF);
+> +		} else {
+> +			writel(~0U, p->membase + DW_UART_DLF);
+> +			reg = readl(p->membase + DW_UART_DLF);
+> +		}
+
+This should use some helpers. I'll prepare a patch soon and send it
+here, you may include it in your series.
+
+I think you need to clean up back them. So the flow like
+
+1. Write all 1:s
+2. Read back the value
+3. Write all 0:s
+
+> +		d->dlf_size = fls(reg);
+
+Just save value itself as dfl_mask.
+
+> +
+> +		if (d->dlf_size) {
+> +			p->get_divisor = dw8250_get_divisor;
+> +			p->set_divisor = dw8250_set_divisor;
+> +		}
+> +	}
+> +
+>  	if (p->iotype == UPIO_MEM32BE)
+>  		reg = ioread32be(p->membase + DW_UART_CPR);
+>  	else
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
