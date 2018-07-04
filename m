@@ -1,8 +1,7 @@
 From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Subject: [PATCH v2 2/3] serial: 8250: introduce get_divisor() and
- set_divisor() hook
-Date: Wed, 4 Jul 2018 17:02:17 +0800
-Message-ID: <20180704170217.190711ef@xhacker.debian>
+Subject: [PATCH v2 3/3] serial: 8250_dw: add fractional divisor support
+Date: Wed, 4 Jul 2018 17:03:10 +0800
+Message-ID: <20180704170310.56772d77@xhacker.debian>
 References: <20180704165908.4bb8b090@xhacker.debian>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -14,107 +13,107 @@ To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gre
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Add these two hooks so that they can be overridden with driver specific
-implementations.
+For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
+valid divisor latch fraction register. The fractional divisor width is
+4bits ~ 6bits.
+
+Now the preparation is done, it's easy to add the feature support.
+This patch firstly checks the component version during probe, if
+version >= 4.00a, then calculates the fractional divisor width, then
+setups dw specific get_divisor() and set_divisor() hook.
 
 Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
 ---
- drivers/tty/serial/8250/8250_core.c |  4 ++++
- drivers/tty/serial/8250/8250_port.c | 27 +++++++++++++++++++++++----
- include/linux/serial_core.h         |  7 +++++++
- 3 files changed, 34 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_dw.c | 53 +++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 9342fc2ee7df..a0bb77290747 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1023,6 +1023,10 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
- 			uart->port.get_mctrl = up->port.get_mctrl;
- 		if (up->port.set_mctrl)
- 			uart->port.set_mctrl = up->port.set_mctrl;
-+		if (up->port.get_divisor)
-+			uart->port.get_divisor = up->port.get_divisor;
-+		if (up->port.set_divisor)
-+			uart->port.set_divisor = up->port.set_divisor;
- 		if (up->port.startup)
- 			uart->port.startup = up->port.startup;
- 		if (up->port.shutdown)
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 709fe6b4265c..ce0dc17f18ee 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2498,9 +2498,9 @@ static unsigned int npcm_get_divisor(struct uart_8250_port *up,
- 	return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud + 2) - 2;
- }
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index aff04f1de3a5..b9630f633388 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -31,9 +31,12 @@
  
--static unsigned int serial8250_get_divisor(struct uart_port *port,
--					   unsigned int baud,
--					   unsigned int *frac)
-+static unsigned int serial8250_do_get_divisor(struct uart_port *port,
-+					      unsigned int baud,
-+					      unsigned int *frac)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned int quot;
-@@ -2532,6 +2532,16 @@ static unsigned int serial8250_get_divisor(struct uart_port *port,
- 	return quot;
- }
+ /* Offsets for the DesignWare specific registers */
+ #define DW_UART_USR	0x1f /* UART Status Register */
++#define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
+ #define DW_UART_CPR	0xf4 /* Component Parameter Register */
+ #define DW_UART_UCV	0xf8 /* UART Component Version */
  
-+static unsigned int serial8250_get_divisor(struct uart_port *port,
-+					   unsigned int baud,
-+					   unsigned int *frac)
-+{
-+	if (port->get_divisor)
-+		return port->get_divisor(port, baud, frac);
++#define DW_FRAC_MIN_VERS		0x3430302A
 +
-+	return serial8250_do_get_divisor(port, baud, frac);
+ /* Component Parameter Register bits */
+ #define DW_UART_CPR_ABP_DATA_WIDTH	(3 << 0)
+ #define DW_UART_CPR_AFCE_MODE		(1 << 4)
+@@ -65,6 +68,7 @@ struct dw8250_data {
+ 
+ 	unsigned int		skip_autocfg:1;
+ 	unsigned int		uart_16550_compatible:1;
++	unsigned int		dlf_size:3;
+ };
+ 
+ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
+@@ -351,6 +355,33 @@ static bool dw8250_idma_filter(struct dma_chan *chan, void *param)
+ 	return param == chan->device->dev->parent;
+ }
+ 
++/*
++ * For version >= 4.00a, the dw uarts have a valid divisor latch fraction
++ * register. Calculate divisor with extra 4bits ~ 6bits fractional portion.
++ */
++static unsigned int dw8250_get_divisor(struct uart_port *p,
++				       unsigned int baud,
++				       unsigned int *frac)
++{
++	unsigned int quot;
++	struct dw8250_data *d = p->private_data;
++
++	quot = DIV_ROUND_CLOSEST(p->uartclk << (d->dlf_size - 4), baud);
++	*frac = quot & (~0U >> (32 - d->dlf_size));
++
++	return quot >> d->dlf_size;
 +}
 +
- static unsigned char serial8250_compute_lcr(struct uart_8250_port *up,
- 					    tcflag_t c_cflag)
- {
-@@ -2570,7 +2580,7 @@ static unsigned char serial8250_compute_lcr(struct uart_8250_port *up,
- 	return cval;
- }
- 
--static void serial8250_set_divisor(struct uart_port *port, unsigned int baud,
-+static void serial8250_do_set_divisor(struct uart_port *port, unsigned int baud,
- 			    unsigned int quot, unsigned int quot_frac)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
-@@ -2603,6 +2613,15 @@ static void serial8250_set_divisor(struct uart_port *port, unsigned int baud,
- 	}
- }
- 
-+static void serial8250_set_divisor(struct uart_port *port, unsigned int baud,
-+				   unsigned int quot, unsigned int quot_frac)
++static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
++			       unsigned int quot, unsigned int quot_frac)
 +{
-+	if (port->set_divisor)
-+		port->set_divisor(port, baud, quot, quot_frac);
-+	else
-+		serial8250_do_set_divisor(port, baud, quot, quot_frac);
++	struct uart_8250_port *up = up_to_u8250p(p);
++
++	serial_port_out(p, DW_UART_DLF >> p->regshift, quot_frac);
++	serial_port_out(p, UART_LCR, up->lcr | UART_LCR_DLAB);
++	serial_dl_write(up, quot);
 +}
 +
- static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 					     struct ktermios *termios,
- 					     struct ktermios *old)
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 06ea4eeb09ab..406edae44ca3 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -127,6 +127,13 @@ struct uart_port {
- 					     struct ktermios *);
- 	unsigned int		(*get_mctrl)(struct uart_port *);
- 	void			(*set_mctrl)(struct uart_port *, unsigned int);
-+	unsigned int		(*get_divisor)(struct uart_port *,
-+					       unsigned int baud,
-+					       unsigned int *frac);
-+	void			(*set_divisor)(struct uart_port *,
-+					       unsigned int baud,
-+					       unsigned int quot,
-+					       unsigned int quot_frac);
- 	int			(*startup)(struct uart_port *port);
- 	void			(*shutdown)(struct uart_port *port);
- 	void			(*throttle)(struct uart_port *port);
+ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ {
+ 	if (p->dev->of_node) {
+@@ -414,6 +445,28 @@ static void dw8250_setup_port(struct uart_port *p)
+ 	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
+ 		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
+ 
++	/*
++	 * For version >= 4.00a, the dw uarts have a valid divisor latch
++	 * fraction register. Calculate the fractional divisor width.
++	 */
++	if (reg >= DW_FRAC_MIN_VERS) {
++		struct dw8250_data *d = p->private_data;
++
++		if (p->iotype == UPIO_MEM32BE) {
++			iowrite32be(~0U, p->membase + DW_UART_DLF);
++			reg = ioread32be(p->membase + DW_UART_DLF);
++		} else {
++			writel(~0U, p->membase + DW_UART_DLF);
++			reg = readl(p->membase + DW_UART_DLF);
++		}
++		d->dlf_size = fls(reg);
++
++		if (d->dlf_size) {
++			p->get_divisor = dw8250_get_divisor;
++			p->set_divisor = dw8250_set_divisor;
++		}
++	}
++
+ 	if (p->iotype == UPIO_MEM32BE)
+ 		reg = ioread32be(p->membase + DW_UART_CPR);
+ 	else
 -- 
 2.18.0
