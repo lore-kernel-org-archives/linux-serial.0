@@ -1,152 +1,83 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 2/3] serial: 8250: introduce get_divisor() and
- set_divisor() hook
-Date: Wed, 04 Jul 2018 13:00:33 +0300
-Message-ID: <ced59625cfa0c9132680aca18d17d5cd123d62a0.camel@linux.intel.com>
-References: <20180704165908.4bb8b090@xhacker.debian>
-         <20180704170217.190711ef@xhacker.debian>
+From: Mars Cheng <mars.cheng@mediatek.com>
+Subject: Re: [PATCH v3 4/4] arm64: dts: mediatek: add mt6765 support
+Date: Wed, 4 Jul 2018 19:38:09 +0800
+Message-ID: <1530704289.16183.6.camel@mtkswgap22>
+References: <1530669174-17623-1-git-send-email-mars.cheng@mediatek.com>
+         <1530669174-17623-5-git-send-email-mars.cheng@mediatek.com>
+         <f482708c-ea5e-5d81-a176-d69be9ccdf63@arm.com>
+         <1530690473.16183.3.camel@mtkswgap22>
+         <304dc0a7-bcba-961c-40f4-b324ecc2d003@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180704170217.190711ef@xhacker.debian>
+In-Reply-To: <304dc0a7-bcba-961c-40f4-b324ecc2d003@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2018-07-04 at 17:02 +0800, Jisheng Zhang wrote:
-> Add these two hooks so that they can be overridden with driver
-> specific
-> implementations.
+Hi Marc
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
+On Wed, 2018-07-04 at 08:59 +0100, Marc Zyngier wrote:
+> On 04/07/18 08:47, Mars Cheng wrote:
+> > Hi Marc
+> > 
+> > On Wed, 2018-07-04 at 08:35 +0100, Marc Zyngier wrote:
+> >> On 04/07/18 02:52, Mars Cheng wrote:
+> >>> This adds basic chip support for MT6765 SoC.
+> >>>
+> >>> Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
+> >>> ---
+> >>>  arch/arm64/boot/dts/mediatek/Makefile       |    1 +
+> >>>  arch/arm64/boot/dts/mediatek/mt6765-evb.dts |   33 ++++++
+> >>>  arch/arm64/boot/dts/mediatek/mt6765.dtsi    |  155 +++++++++++++++++++++++++++
+> >>>  3 files changed, 189 insertions(+)
+> >>>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+> >>>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
+> >>>
+> >>
+> >> [...]
+> >>
+> >>> +
+> >>> +		gic: interrupt-controller@c000000 {
+> >>> +			compatible = "arm,gic-v3";
+> >>> +			#interrupt-cells = <3>;
+> >>> +			#address-cells = <2>;
+> >>> +			#size-cells = <2>;
+> >>> +			#redistributor-regions = <1>;
+> >>> +			interrupt-parent = <&gic>;
+> >>> +			interrupt-controller;
+> >>> +			reg = <0 0x0c000000 0 0x40000>, // distributor
+> >>> +			      <0 0x0c100000 0 0x200000>, // redistributor
+> >>> +			      <0 0x0c400000 0 0x40000>; // gicc
+> >>
+> >> For the second time: please add *all* the GIC CPU interface regions,
+> >> described in the Cortex-A53 TRM[1] (GICC, GICH, and GICV).
+> >>
+> > 
+> > MT6765 has no GICH/GICV/ITS in mediatek design. Have confirmed with our
+> > designer.  
 > 
-> Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-> ---
->  drivers/tty/serial/8250/8250_core.c |  4 ++++
->  drivers/tty/serial/8250/8250_port.c | 27 +++++++++++++++++++++++----
->  include/linux/serial_core.h         |  7 +++++++
->  3 files changed, 34 insertions(+), 4 deletions(-)
+> The only way *not* to have GICH or GICV is to assert GICCDISABLE on the
+> CPU, in which case you don't have GICC either, nor any support for the
+> GICv3 at all. So either the designer is wrong or the documentation is
+> wrong. Which one is it, do you think?
 > 
-> diff --git a/drivers/tty/serial/8250/8250_core.c
-> b/drivers/tty/serial/8250/8250_core.c
-> index 9342fc2ee7df..a0bb77290747 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -1023,6 +1023,10 @@ int serial8250_register_8250_port(struct
-> uart_8250_port *up)
->  			uart->port.get_mctrl = up->port.get_mctrl;
->  		if (up->port.set_mctrl)
->  			uart->port.set_mctrl = up->port.set_mctrl;
-> +		if (up->port.get_divisor)
-> +			uart->port.get_divisor = up-
-> >port.get_divisor;
-> +		if (up->port.set_divisor)
-> +			uart->port.set_divisor = up-
-> >port.set_divisor;
->  		if (up->port.startup)
->  			uart->port.startup = up->port.startup;
->  		if (up->port.shutdown)
-> diff --git a/drivers/tty/serial/8250/8250_port.c
-> b/drivers/tty/serial/8250/8250_port.c
-> index 709fe6b4265c..ce0dc17f18ee 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2498,9 +2498,9 @@ static unsigned int npcm_get_divisor(struct
-> uart_8250_port *up,
->  	return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud + 2) - 2;
->  }
->  
-> -static unsigned int serial8250_get_divisor(struct uart_port *port,
-> -					   unsigned int baud,
-> -					   unsigned int *frac)
-> +static unsigned int serial8250_do_get_divisor(struct uart_port *port,
-> +					      unsigned int baud,
-> +					      unsigned int *frac)
->  {
->  	struct uart_8250_port *up = up_to_u8250p(port);
->  	unsigned int quot;
-> @@ -2532,6 +2532,16 @@ static unsigned int
-> serial8250_get_divisor(struct uart_port *port,
->  	return quot;
->  }
->  
-> +static unsigned int serial8250_get_divisor(struct uart_port *port,
-> +					   unsigned int baud,
-> +					   unsigned int *frac)
-> +{
-> +	if (port->get_divisor)
-> +		return port->get_divisor(port, baud, frac);
-> +
-> +	return serial8250_do_get_divisor(port, baud, frac);
-> +}
-> +
->  static unsigned char serial8250_compute_lcr(struct uart_8250_port
-> *up,
->  					    tcflag_t c_cflag)
->  {
-> @@ -2570,7 +2580,7 @@ static unsigned char
-> serial8250_compute_lcr(struct uart_8250_port *up,
->  	return cval;
->  }
->  
-> -static void serial8250_set_divisor(struct uart_port *port, unsigned
-> int baud,
-> +static void serial8250_do_set_divisor(struct uart_port *port,
-> unsigned int baud,
->  			    unsigned int quot, unsigned int
-> quot_frac)
->  {
->  	struct uart_8250_port *up = up_to_u8250p(port);
-> @@ -2603,6 +2613,15 @@ static void serial8250_set_divisor(struct
-> uart_port *port, unsigned int baud,
->  	}
->  }
->  
-> +static void serial8250_set_divisor(struct uart_port *port, unsigned
-> int baud,
-> +				   unsigned int quot, unsigned int
-> quot_frac)
-> +{
-> +	if (port->set_divisor)
-> +		port->set_divisor(port, baud, quot, quot_frac);
-> +	else
-> +		serial8250_do_set_divisor(port, baud, quot,
-> quot_frac);
-> +}
-> +
->  static unsigned int serial8250_get_baud_rate(struct uart_port *port,
->  					     struct ktermios
-> *termios,
->  					     struct ktermios *old)
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 06ea4eeb09ab..406edae44ca3 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -127,6 +127,13 @@ struct uart_port {
->  					     struct ktermios *);
->  	unsigned int		(*get_mctrl)(struct uart_port *);
->  	void			(*set_mctrl)(struct uart_port *,
-> unsigned int);
-> +	unsigned int		(*get_divisor)(struct uart_port
-> *,
-> +					       unsigned int baud,
-> +					       unsigned int *frac);
-> +	void			(*set_divisor)(struct uart_port
-> *,
-> +					       unsigned int baud,
-> +					       unsigned int quot,
-> +					       unsigned int
-> quot_frac);
->  	int			(*startup)(struct uart_port
-> *port);
->  	void			(*shutdown)(struct uart_port
-> *port);
->  	void			(*throttle)(struct uart_port
-> *port);
+> As for the ITS, that's a perfectly optional part of the design, and not
+> part of the CPU.
+> 
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Clarified with our designer. It is our misunderstanding for TRM.
+GICV/GICH do exist. Will add them in v4 soon. And fix MT6797 in another
+patch.
+
+Thanks.
+
+> > MT6797 had similar question from you. Sorry for not mentioned it first.
+> > 
+> > https://urldefense.proofpoint.com/v2/url?u=http-3A__lists.infradead.org_pipermail_linux-2Dmediatek_2017-2DFebruary_008074.html&d=DwICaQ&c=X9NHckmGz7LNQmqtvpDCYVnn6eFXNivfZeknqiAo-n0&r=Ph_SbcClVGRWmGxVhfr-5CZF9ffiUOE7TZ47ns4ROh4&m=iACLXUO5vXXZCPSvhbBKZFXy0bXdO8f4kbgy6RLi2QM&s=2N4qyy0aMytzNgObeyU4tvCDREX4U1x4oeNgvZwUxvM&e= 
+> 
+> Well, that's wrong too.
+> 
+> 	M.
