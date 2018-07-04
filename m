@@ -1,53 +1,37 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2] dt-bindings: serial: imx: clarify rs485 support usage
-Date: Tue, 3 Jul 2018 17:10:40 -0600
-Message-ID: <20180703231040.GA5749@rob-hp-laptop>
-References: <e9beff38e9035c2f33d691f362e37d8e62aaa660.1530170732.git.baruch@tkos.co.il>
+From: Mars Cheng <mars.cheng@mediatek.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: mediatek: Add bindings for mediatek
+ MT6765 Platform
+Date: Wed, 4 Jul 2018 08:24:01 +0800
+Message-ID: <1530663841.28949.0.camel@mtkswgap22>
+References: <1529978646-28976-1-git-send-email-mars.cheng@mediatek.com>
+         <1529978646-28976-2-git-send-email-mars.cheng@mediatek.com>
+         <20180703221101.GA6829@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <e9beff38e9035c2f33d691f362e37d8e62aaa660.1530170732.git.baruch@tkos.co.il>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Baruch Siach <baruch@tkos.co.il>
-Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180703221101.GA6829@rob-hp-laptop>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, Miles Chen <miles.chen@mediatek.com>, Jades Shih <jades.shih@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, My Chuang <my.chuang@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jun 28, 2018 at 10:25:32AM +0300, Baruch Siach wrote:
-> The i.MX UART peripheral uses the RST_B signal as input, and CTS_B as
+Hi Rob
 
-s/RST_B/RTS_B/
+On Tue, 2018-07-03 at 16:11 -0600, Rob Herring wrote:
+> On Tue, Jun 26, 2018 at 10:04:05AM +0800, Mars Cheng wrote:
+> > This adds dt-binding documentation for Mediatek MT6765. Only
+> > include very basic items, gic, uart timer and cpu.
+> > 
+> > Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
+> > ---
+> >  Documentation/devicetree/bindings/arm/mediatek.txt |    4 ++++
+> >  .../interrupt-controller/mediatek,sysirq.txt       |    1 +
+> >  .../devicetree/bindings/serial/mtk-uart.txt        |    1 +
+> 
+> These can all go thru different trees, so should be split.
+> 
 
-> output. This is just like the DCE role in RS-232. This is true
-> regardless of the "DTE mode" setting of this peripheral.
-> =
+Got it, will split them.
 
-> As a result, rs485 support hardware must use the CTS_B signal to control
-> the RS-485 transceiver. This is in contrast to generic rs485 kernel
-> code, documentation, and DT property names that consistently refer to
-> the RTS as transceiver control signal.
-> =
-
-> Add a note in the DT binding document about that, to reduce the
-> confusion somewhat.
-> =
-
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
-> v2: Fix commit log typos (Lothar Wa=DFmann)
-> ---
->  Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-
-With that,
-
-Reviewed-by: Rob Herring <robh@kernel.org>
+> >  3 files changed, 6 insertions(+)
