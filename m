@@ -1,35 +1,40 @@
-From: Mars Cheng <mars.cheng@mediatek.com>
-Subject: [PATCH v3 3/4] dt-bindings: interrupt-controller: add binding for mt6765
-Date: Wed, 4 Jul 2018 09:52:53 +0800
-Message-ID: <1530669174-17623-4-git-send-email-mars.cheng@mediatek.com>
-References: <1530669174-17623-1-git-send-email-mars.cheng@mediatek.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v10 2/6] dt-bindings: add binding for atmel-usart in SPI
+ mode
+Date: Wed, 4 Jul 2018 07:23:16 +0100
+Message-ID: <20180704062316.GY20176@dell>
+References: <20180625172230.29686-1-radu.pirea@microchip.com>
+ <20180625172230.29686-3-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1530669174-17623-1-git-send-email-mars.cheng@mediatek.com>
+Content-Disposition: inline
+In-Reply-To: <20180625172230.29686-3-radu.pirea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Mars Cheng <mars.cheng@mediatek.com>
+To: Radu Pirea <radu.pirea@microchip.com>
+Cc: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Update the dt-binding documentation of sysirq for mt6765
+On Mon, 25 Jun 2018, Radu Pirea wrote:
 
-Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
----
- .../interrupt-controller/mediatek,sysirq.txt       |    1 +
- 1 file changed, 1 insertion(+)
+> This patch moves the bindings for serial from serial/atmel-usart.txt to
+> mfd/atmel-usart.txt and adds bindings for USART in SPI mode.
+> 
+> Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/mediatek,sysirq.txt b/Documentation/devicetree/bindings/interrupt-controller/mediatek,sysirq.txt
-index 07bf0b9..c8eda80 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/mediatek,sysirq.txt
-+++ b/Documentation/devicetree/bindings/interrupt-controller/mediatek,sysirq.txt
-@@ -11,6 +11,7 @@ Required properties:
- 	"mediatek,mt7622-sysirq", "mediatek,mt6577-sysirq": for MT7622
- 	"mediatek,mt6795-sysirq", "mediatek,mt6577-sysirq": for MT6795
- 	"mediatek,mt6797-sysirq", "mediatek,mt6577-sysirq": for MT6797
-+	"mediatek,mt6765-sysirq", "mediatek,mt6577-sysirq": for MT6765
- 	"mediatek,mt6755-sysirq", "mediatek,mt6577-sysirq": for MT6755
- 	"mediatek,mt6592-sysirq", "mediatek,mt6577-sysirq": for MT6592
- 	"mediatek,mt6589-sysirq", "mediatek,mt6577-sysirq": for MT6589
+I already Acked this in V4.
+
+> ---
+>  .../bindings/{serial => mfd}/atmel-usart.txt  | 25 +++++++++++++++++--
+>  include/dt-bindings/mfd/at91-usart.h          | 17 +++++++++++++
+>  2 files changed, 40 insertions(+), 2 deletions(-)
+>  rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
+>  create mode 100644 include/dt-bindings/mfd/at91-usart.h
+
 -- 
-1.7.9.5
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
