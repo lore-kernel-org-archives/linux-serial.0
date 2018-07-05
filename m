@@ -1,42 +1,26 @@
-From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Subject: Re: [PATCH v2 3/3] serial: 8250_dw: add fractional divisor support
-Date: Thu, 5 Jul 2018 14:54:58 +0800
-Message-ID: <20180705145458.7e7d9b9f@xhacker.debian>
-References: <20180704165908.4bb8b090@xhacker.debian>
-        <20180704170310.56772d77@xhacker.debian>
-        <f2733332a58e7f2d92948e2ff252581f93e5073a.camel@linux.intel.com>
-        <20180705143921.6a8aeb50@xhacker.debian>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 1/4] dt-bindings: mediatek: add support for mt6765
+ reference board
+Date: Thu, 5 Jul 2018 17:22:30 -0600
+Message-ID: <20180705232229.GA14001@rob-hp-laptop>
+References: <1530669174-17623-1-git-send-email-mars.cheng@mediatek.com>
+ <1530669174-17623-2-git-send-email-mars.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180705143921.6a8aeb50@xhacker.debian>
+Content-Disposition: inline
+In-Reply-To: <1530669174-17623-2-git-send-email-mars.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Mars Cheng <mars.cheng@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 5 Jul 2018 14:39:21 +0800 Jisheng Zhang wrote:
-
-<snip>
-
-> >   
-> > > +	serial_port_out(p, UART_LCR, up->lcr | UART_LCR_DLAB);
-> > > +	serial_dl_write(up, quot);    
-> > 
-> > At some point it would be a helper, I think. We can call
-> > serial8250_do_set_divisor() here. So, perhaps we might export it.  
+On Wed, Jul 04, 2018 at 09:52:51AM +0800, Mars Cheng wrote:
+> Update binding document for mt6765 reference board
 > 
-> serial8250_do_set_divisor will drop the frac, that's not we want ;)
-> 
+> Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/arm/mediatek.txt |    4 ++++
+>  1 file changed, 4 insertions(+)
 
-And most importantly, serial8250_do_set_divisor() will set a wrong BRD(I)
-for fractional capable DW uarts. For example, clk = 25MHZ, baud = 115200.
-
-In fractional capable DW uarts, we should set BRD(I) as
-25000000/(16*115200) = 13
-
-but serial8250_do_set_divisor() will set BRD(I) as
-DIV_ROUND_CLOSEST(25*1000000, 16*115200)) = 14
-
-Thanks
+Reviewed-by: Rob Herring <robh@kernel.org>
