@@ -1,174 +1,246 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
 Subject: Re: [PATCH v2 3/3] serial: 8250_dw: add fractional divisor support
-Date: Wed, 04 Jul 2018 19:08:22 +0300
-Message-ID: <f2733332a58e7f2d92948e2ff252581f93e5073a.camel@linux.intel.com>
+Date: Thu, 5 Jul 2018 14:39:21 +0800
+Message-ID: <20180705143921.6a8aeb50@xhacker.debian>
 References: <20180704165908.4bb8b090@xhacker.debian>
- <20180704170310.56772d77@xhacker.debian>
+        <20180704170310.56772d77@xhacker.debian>
+        <f2733332a58e7f2d92948e2ff252581f93e5073a.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180704170310.56772d77@xhacker.debian>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <f2733332a58e7f2d92948e2ff252581f93e5073a.camel@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2018-07-04 at 17:03 +0800, Jisheng Zhang wrote:
+Hi Andy,
 
-Thanks for an update, my comments below.
+On Wed, 04 Jul 2018 19:08:22 +0300 Andy Shevchenko wrote:
 
-> For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
-> valid divisor latch fraction register. The fractional divisor width is
-> 4bits ~ 6bits.
+> On Wed, 2018-07-04 at 17:03 +0800, Jisheng Zhang wrote:
+>=20
+> Thanks for an update, my comments below.
+>=20
+> > For Synopsys DesignWare 8250 uart which version >=3D 4.00a, there's a
+> > valid divisor latch fraction register. The fractional divisor width is
+> > 4bits ~ 6bits. =20
+>=20
+> I have read 4.00a spec a bit and didn't find this limitation.
+> The fractional divider can fit up to 32 bits.
 
-I have read 4.00a spec a bit and didn't find this limitation.
-The fractional divider can fit up to 32 bits.
+the limitation isn't put in the register description, but in the description
+about fractional divisor width configure parameters. Searching DLF_SIZE will
+find it.
 
-> Now the preparation is done, it's easy to add the feature support.
-> This patch firstly checks the component version during probe, if
-> version >= 4.00a, then calculates the fractional divisor width, then
-> setups dw specific get_divisor() and set_divisor() hook.
- 
-> +#define DW_FRAC_MIN_VERS		0x3430302A
+=46rom another side, 32bits fractional div is a waste, for example, let's
+assume the fract divisor =3D 0.9,=20
+if fractional width is 4 bits, DLF reg will be set to UP(0.9*2^4) =3D 15, t=
+he
+real frac divisor =3D  15/2^4 =3D 0.93;
+if fractional width is 32 bits, DLF reg will be set to UP(0.9*2^32) =3D 386=
+5470567
+the real frac divisor =3D 3865470567/2^32 =3D 0.90;
 
-Do we really need this? 
+>=20
+> > Now the preparation is done, it's easy to add the feature support.
+> > This patch firstly checks the component version during probe, if
+> > version >=3D 4.00a, then calculates the fractional divisor width, then
+> > setups dw specific get_divisor() and set_divisor() hook. =20
+> =20
+> > +#define DW_FRAC_MIN_VERS		0x3430302A =20
+>=20
+> Do we really need this?=20
+>=20
+> My intuition (I, unfortunately, didn't find any evidence in Synopsys
+> specs for UART) tells me that when it's unimplemented we would read back
+> 0's, which is fine.
 
-My intuition (I, unfortunately, didn't find any evidence in Synopsys
-specs for UART) tells me that when it's unimplemented we would read back
-0's, which is fine.
+yeah, I agree with you. I will remove this version check in the new version
 
-I would test this a bit later.
+>=20
+> I would test this a bit later.
+>=20
+> >  =20
+>=20
+> > +	unsigned int		dlf_size:3; =20
+>=20
+> These bit fields (besides the fact you need 5) more or less for software
+> quirk flags. In your case I would rather keep a u32 value of DFL mask as
+> done for msr slightly above in this structure.
 
-> 
+OK. When setting the frac div, we use DLF size rather than mask, so could
+I only calculate the DLF size once then use an u8 value to hold the
+calculated DLF size rather than calculating every time?
 
-> +	unsigned int		dlf_size:3;
+>=20
+> >  };
+> > =20
+> > +/*
+> > + * For version >=3D 4.00a, the dw uarts have a valid divisor latch
+> > fraction
+> > + * register. Calculate divisor with extra 4bits ~ 6bits fractional
+> > portion.
+> > + */ =20
+>=20
+> This comment kinda noise. Better to put actual formula from datasheet
+> how this fractional divider is involved into calculus.
 
-These bit fields (besides the fact you need 5) more or less for software
-quirk flags. In your case I would rather keep a u32 value of DFL mask as
-done for msr slightly above in this structure.
+yeah. Will do.
 
->  };
->  
-> +/*
-> + * For version >= 4.00a, the dw uarts have a valid divisor latch
-> fraction
-> + * register. Calculate divisor with extra 4bits ~ 6bits fractional
-> portion.
-> + */
+>=20
+> > +static unsigned int dw8250_get_divisor(struct uart_port *p,
+> > +				       unsigned int baud,
+> > +				       unsigned int *frac)
+> > +{
+> > +	unsigned int quot;
+> > +	struct dw8250_data *d =3D p->private_data;
+> > + =20
+>=20
+> > +	quot =3D DIV_ROUND_CLOSEST(p->uartclk << (d->dlf_size - 4),
+> > baud); =20
+>=20
+> If we have clock rate like 100MHz and 10 bits of fractional divider it
+> would give an integer overflow.
 
-This comment kinda noise. Better to put actual formula from datasheet
-how this fractional divider is involved into calculus.
+This depends on the fraction divider width. If it's only 4~6 bits,
+then we are fine.
 
-> +static unsigned int dw8250_get_divisor(struct uart_port *p,
-> +				       unsigned int baud,
-> +				       unsigned int *frac)
-> +{
-> +	unsigned int quot;
-> +	struct dw8250_data *d = p->private_data;
-> +
+>=20
+> 4 here is a magic. Needs to be commented / described better.
 
-> +	quot = DIV_ROUND_CLOSEST(p->uartclk << (d->dlf_size - 4),
-> baud);
+Yes. divisor =3D clk/(16*baud) =3D BRD(I) + BRD(F)
+"I" means integer, "F" means fractional
 
-If we have clock rate like 100MHz and 10 bits of fractional divider it
-would give an integer overflow.
+2^dlf_size*clk/(16*baud) =3D 2^dlf_size*(BRD(I) + BRD(F))
 
-4 here is a magic. Needs to be commented / described better.
+clk*2^(dlf_size - 4)/baud =3D 2^dlf_size*((BRD(I) + BRD(F))
 
-> +	*frac = quot & (~0U >> (32 - d->dlf_size));
-> +
+the left part is "DIV_ROUND_CLOSEST(p->uartclk << (d->dlf_size - 4), baud)",
+let's assume it equals quot.
 
-Operating on dfl_mask is simple as
+then, BRD(I) =3D quot / 2^dlf_size =3D quot >> dlf_size, this is where
+"quot >> d->dlf_size" below from.
 
-u64 quot = p->uartclk * (p->dfl_mask + 1);
+BRD(F) =3D quot & dlf_mask =3D quot & (~0U >> (32 - dlf_size))
 
-*frac = div64_u64(quot, baud * 16 * (p->dfl_mask + 1);
+>=20
+> > +	*frac =3D quot & (~0U >> (32 - d->dlf_size));
+> > + =20
+>=20
+> Operating on dfl_mask is simple as
+>=20
+> u64 quot =3D p->uartclk * (p->dfl_mask + 1);
+
+Since the dlf_mask is always 2^n - 1,=20
+clk * (p->dlf_mask + 1) =3D clk << p->dlf_size, but the later
+is simpler
+
+>=20
+> *frac =3D div64_u64(quot, baud * 16 * (p->dfl_mask + 1);
+> return quot;
+
+quot =3D DIV_ROUND_CLOSEST(p->uartclk << (d->dlf_size - 4), baud)
+*frac =3D quot & (~0U >> (32 - d->dlf_size))
+return quot >> d->dlf_size;
+
+vs.
+
+quot =3D p->uartclk * (p->dfl_mask + 1);
+*frac =3D div64_u64(quot, baud * 16 * (p->dfl_mask + 1);
 return quot;
 
-(Perhaps some magic with types is needed, but you get the idea)
+shift vs mul.
 
-> +	return quot >> d->dlf_size;
-> +}
-> +
-> +static void dw8250_set_divisor(struct uart_port *p, unsigned int
-> baud,
-> +			       unsigned int quot, unsigned int
-> quot_frac)
-> +{
-> +	struct uart_8250_port *up = up_to_u8250p(p);
-> +
-> +	serial_port_out(p, DW_UART_DLF >> p->regshift, quot_frac);
+If the dlf width is only 4~6 bits, the first calculation can avoid
+64bit div. I prefer the first calculation.
 
-It should use the helper, not playing tricks with serial_port_out().
+>=20
+> (Perhaps some magic with types is needed, but you get the idea)
+>=20
+> > +	return quot >> d->dlf_size;
+> > +}
+> > +
+> > +static void dw8250_set_divisor(struct uart_port *p, unsigned int
+> > baud,
+> > +			       unsigned int quot, unsigned int
+> > quot_frac)
+> > +{
+> > +	struct uart_8250_port *up =3D up_to_u8250p(p);
+> > +
+> > +	serial_port_out(p, DW_UART_DLF >> p->regshift, quot_frac); =20
+>=20
+> It should use the helper, not playing tricks with serial_port_out().
 
-> +	serial_port_out(p, UART_LCR, up->lcr | UART_LCR_DLAB);
-> +	serial_dl_write(up, quot);
+I assume the helper here means the one you mentioned below, i.e in
 
-At some point it would be a helper, I think. We can call
-serial8250_do_set_divisor() here. So, perhaps we might export it.
+if (p->iotype =3D=3D UPIO_MEM32BE) {
+	...
+} else {
+	...
+}
 
-> +}
-> +
->  static void dw8250_quirks(struct uart_port *p, struct dw8250_data
-> *data)
->  {
->  	if (p->dev->of_node) {
-> @@ -414,6 +445,28 @@ static void dw8250_setup_port(struct uart_port
-> *p)
->  	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
->  		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) &
-> 0xff);
->  
-> +	/*
-> +	 * For version >= 4.00a, the dw uarts have a valid divisor
-> latch
-> +	 * fraction register. Calculate the fractional divisor width.
-> +	 */
-> +	if (reg >= DW_FRAC_MIN_VERS) {
-> +		struct dw8250_data *d = p->private_data;
-> +
+>=20
+> > +	serial_port_out(p, UART_LCR, up->lcr | UART_LCR_DLAB);
+> > +	serial_dl_write(up, quot); =20
+>=20
+> At some point it would be a helper, I think. We can call
+> serial8250_do_set_divisor() here. So, perhaps we might export it.
 
-> +		if (p->iotype == UPIO_MEM32BE) {
-> +			iowrite32be(~0U, p->membase + DW_UART_DLF);
-> +			reg = ioread32be(p->membase + DW_UART_DLF);
-> +		} else {
-> +			writel(~0U, p->membase + DW_UART_DLF);
-> +			reg = readl(p->membase + DW_UART_DLF);
-> +		}
+serial8250_do_set_divisor will drop the frac, that's not we want ;)
 
-This should use some helpers. I'll prepare a patch soon and send it
-here, you may include it in your series.
+>=20
+> > +}
+> > +
+> >  static void dw8250_quirks(struct uart_port *p, struct dw8250_data
+> > *data)
+> >  {
+> >  	if (p->dev->of_node) {
+> > @@ -414,6 +445,28 @@ static void dw8250_setup_port(struct uart_port
+> > *p)
+> >  	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
+> >  		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) &
+> > 0xff);
+> > =20
+> > +	/*
+> > +	 * For version >=3D 4.00a, the dw uarts have a valid divisor
+> > latch
+> > +	 * fraction register. Calculate the fractional divisor width.
+> > +	 */
+> > +	if (reg >=3D DW_FRAC_MIN_VERS) {
+> > +		struct dw8250_data *d =3D p->private_data;
+> > + =20
+>=20
+> > +		if (p->iotype =3D=3D UPIO_MEM32BE) {
+> > +			iowrite32be(~0U, p->membase + DW_UART_DLF);
+> > +			reg =3D ioread32be(p->membase + DW_UART_DLF);
+> > +		} else {
+> > +			writel(~0U, p->membase + DW_UART_DLF);
+> > +			reg =3D readl(p->membase + DW_UART_DLF);
+> > +		} =20
+>=20
+> This should use some helpers. I'll prepare a patch soon and send it
+> here, you may include it in your series.
 
-I think you need to clean up back them. So the flow like
+Nice. Thanks.
 
-1. Write all 1:s
-2. Read back the value
-3. Write all 0:s
+>=20
+> I think you need to clean up back them. So the flow like
+>=20
+> 1. Write all 1:s
+> 2. Read back the value
+> 3. Write all 0:s
 
-> +		d->dlf_size = fls(reg);
+oh, yeah! will do
 
-Just save value itself as dfl_mask.
+>=20
+> > +		d->dlf_size =3D fls(reg); =20
+>=20
+> Just save value itself as dfl_mask.
 
-> +
-> +		if (d->dlf_size) {
-> +			p->get_divisor = dw8250_get_divisor;
-> +			p->set_divisor = dw8250_set_divisor;
-> +		}
-> +	}
-> +
->  	if (p->iotype == UPIO_MEM32BE)
->  		reg = ioread32be(p->membase + DW_UART_CPR);
->  	else
+we use the dlf size during calculation, so it's better to hold the dlf_size
+instead.
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Thanks for the kind review,
+Jisheng
