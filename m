@@ -1,52 +1,104 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 3/3] serial: 8250_dw: add fractional divisor support
-Date: Fri, 06 Jul 2018 20:39:30 +0300
-Message-ID: <891eef6922d6ed2c69fa28241d047ae8fded7804.camel@linux.intel.com>
-References: <20180704165908.4bb8b090@xhacker.debian>
-         <20180704170310.56772d77@xhacker.debian>
-         <f2733332a58e7f2d92948e2ff252581f93e5073a.camel@linux.intel.com>
-         <20180705143921.6a8aeb50@xhacker.debian>
-         <20180705145458.7e7d9b9f@xhacker.debian>
+From: Tycho Andersen <tycho@tycho.ws>
+Subject: Re: [PATCH v3] uart: fix race between uart_put_char() and
+ uart_shutdown()
+Date: Fri, 6 Jul 2018 12:39:28 -0600
+Message-ID: <20180706183928.GA3583@cisco.lan>
+References: <20180706143919.GA2344@kroah.com>
+ <20180706162457.20489-1-tycho@tycho.ws>
+ <CAHp75Vfbh5SzpqP=2LfeXteEGrBG46dPfeHsU0ac5SiJSjZOXw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180705145458.7e7d9b9f@xhacker.debian>
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vfbh5SzpqP=2LfeXteEGrBG46dPfeHsU0ac5SiJSjZOXw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "Serge E . Hallyn" <serge@hallyn.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2018-07-05 at 14:54 +0800, Jisheng Zhang wrote:
-> On Thu, 5 Jul 2018 14:39:21 +0800 Jisheng Zhang wrote:
+On Fri, Jul 06, 2018 at 07:49:09PM +0300, Andy Shevchenko wrote:
+> On Fri, Jul 6, 2018 at 7:24 PM, Tycho Andersen <tycho@tycho.ws> wrote:
 > 
-> <snip>
+> > Looking in uart_port_startup(), it seems that circ->buf (state->xmit.buf)
+> > protected by the "per-port mutex", which based on uart_port_check() is
+> > state->port.mutex. Indeed, the lock acquired in uart_put_char() is
+> > uport->lock, i.e. not the same lock.
+> >
+> > Anyway, since the lock is not acquired, if uart_shutdown() is called, the
+> > last chunk of that function may release state->xmit.buf before its assigned
+> > to null, and cause the race above.
+> >
+> > To fix it, let's lock uport->lock when allocating/deallocating
+> > state->xmit.buf in addition to the per-port mutex.
 > 
-> > >   
-> > > > +	serial_port_out(p, UART_LCR, up->lcr | UART_LCR_DLAB);
-> > > > +	serial_dl_write(up, quot);    
-> > > 
-> > > At some point it would be a helper, I think. We can call
-> > > serial8250_do_set_divisor() here. So, perhaps we might export
-> > > it.  
-> > 
-> > serial8250_do_set_divisor will drop the frac, that's not we want ;)
-> > 
+> Thanks for fixing this!
 > 
-> And most importantly, serial8250_do_set_divisor() will set a wrong
-> BRD(I)
-> for fractional capable DW uarts. For example, clk = 25MHZ, baud =
-> 115200.
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 > 
-> In fractional capable DW uarts, we should set BRD(I) as
-> 25000000/(16*115200) = 13
+> Some nitpicks though.
 > 
-> but serial8250_do_set_divisor() will set BRD(I) as
-> DIV_ROUND_CLOSEST(25*1000000, 16*115200)) = 14
+> > +       unsigned long page, flags = 0;
+> 
+> I would rather put on separate lines and btw assignment is not needed.
+> It all goes through macros.
 
-How come? It doesn't do any calculus (for DW 8250), it just writes few
-registers based on input.
+Sure, I can split it up, but without the initialization I get,
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+  CC      drivers/tty/serial/serial_core.o
+In file included from ./include/linux/seqlock.h:36:0,
+                 from ./include/linux/time.h:6,
+                 from ./include/linux/stat.h:19,
+                 from ./include/linux/module.h:10,
+                 from drivers/tty/serial/serial_core.c:10:
+drivers/tty/serial/serial_core.c: In function ‘uart_startup.part.20’:
+./include/linux/spinlock.h:260:3: warning: ‘flags’ may be used uninitialized in this function  -Wmaybe-uninitialized]
+   _raw_spin_unlock_irqrestore(lock, flags); \
+   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/tty/serial/serial_core.c:184:22: note: ‘flags’ was declared here
+  unsigned long page, flags;
+                      ^~~~~
+
+> > -       if (!state->xmit.buf) {
+> > -               /* This is protected by the per port mutex */
+> > -               page = get_zeroed_page(GFP_KERNEL);
+> > -               if (!page)
+> > -                       return -ENOMEM;
+> > +       page = get_zeroed_page(GFP_KERNEL);
+> > +       if (!page)
+> > +               return -ENOMEM;
+> > +       if (!state->xmit.buf) {
+> >                 state->xmit.buf = (unsigned char *) page;
+> >                 uart_circ_clear(&state->xmit);
+> > +       } else {
+> > +               free_page(page);
+> >         }
+> 
+> I see original code, but since you are adding else, does it make sense
+> to switch to positive condition?
+
+Sure, I'll switch it.
+
+> > +       unsigned long flags = 0;
+> 
+> Ditto about assignment.
+
+And in this case too,
+
+drivers/tty/serial/serial_core.c:184:22: note: ‘flags’ was declared here
+  unsigned long page, flags;
+                      ^~~~~
+In file included from ./include/linux/seqlock.h:36:0,
+                 from ./include/linux/time.h:6,
+                 from ./include/linux/stat.h:19,
+                 from ./include/linux/module.h:10,
+                 from drivers/tty/serial/serial_core.c:10:
+drivers/tty/serial/serial_core.c: In function ‘uart_shutdown’:
+./include/linux/spinlock.h:260:3: warning: ‘flags’ may be used uninitialized in this function  -Wmaybe-uninitialized]
+   _raw_spin_unlock_irqrestore(lock, flags); \
+   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/tty/serial/serial_core.c:269:16: note: ‘flags’ was declared here
+  unsigned long flags;
+                ^~~~~
+
+Tycho
