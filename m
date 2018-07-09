@@ -1,78 +1,66 @@
-From: <sean.wang@mediatek.com>
-Subject: [PATCH v5 2/7] serdev: add dev_pm_domain_attach|detach()
-Date: Mon, 9 Jul 2018 23:56:58 +0800
-Message-ID: <d5904115ff1da38fe79b45fa3d59ef0688cea124.1531150733.git.sean.wang@mediatek.com>
-References: <cover.1531150733.git.sean.wang@mediatek.com>
+From: Marc Zyngier <marc.zyngier@arm.com>
+Subject: Re: [PATCH v4 1/1] arm64: dts: mediatek: add mt6765 support
+Date: Mon, 9 Jul 2018 17:43:14 +0100
+Message-ID: <d439eb7d-6365-7a0a-2969-1ddecc51defc@arm.com>
+References: <1531116302-29921-1-git-send-email-mars.cheng@mediatek.com>
+ <1531116302-29921-2-git-send-email-mars.cheng@mediatek.com>
+ <7fb13f45-4e33-6efc-467b-c7256a40cbc9@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1531150733.git.sean.wang@mediatek.com>
+In-Reply-To: <7fb13f45-4e33-6efc-467b-c7256a40cbc9@gmail.com>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org, johan.hedberg@gmail.com
-Cc: devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>, Rob Herring <robh@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>, Mars Cheng <mars.cheng@mediatek.com>, Rob Herring <robh+dt@kernel.org>
+Cc: CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+On 09/07/18 11:20, Matthias Brugger wrote:
+> 
+> 
+> On 09/07/18 08:05, Mars Cheng wrote:
+>> This adds basic chip support for MT6765 SoC.
+>>
+>> Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
+>> ---
+>>  arch/arm64/boot/dts/mediatek/Makefile       |    1 +
+>>  arch/arm64/boot/dts/mediatek/mt6765-evb.dts |   33 ++++++
+>>  arch/arm64/boot/dts/mediatek/mt6765.dtsi    |  156 +++++++++++++++++++++++++++
+>>  3 files changed, 190 insertions(+)
+>>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+>>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
+>>
+>> diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+>> index ac17f60..7506b0d 100644
+>> --- a/arch/arm64/boot/dts/mediatek/Makefile
+>> +++ b/arch/arm64/boot/dts/mediatek/Makefile
+>> @@ -1,6 +1,7 @@
+>>  # SPDX-License-Identifier: GPL-2.0
+>>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
+>>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
+>> +dtb-$(CONFIG_ARCH_MEDIATEK) += mt6765-evb.dtb
+>>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
+>>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-evb.dtb
+>>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-rfb1.dtb
+> 
+> As you can see, we have a long list of SoCs which are poorly supported.
+> I'm not very keen to just add another SoC which supports booting into a ramdisk
+> using the serial console. Do you have a roadmap adding mainline support for this
+> SoC?
 
-In order to open up the required power gate before any operation can be
-effectively performed over the serial bus between CPU and serdev, it's
-clearly essential to add common attach functions for PM domains to serdev
-at the probe phase.
+Yes, that's a valid concern.
 
-Similarly, the relevant dettach function for the PM domains should be
-properly and reversely added at the remove phase.
+mt6755 and mt6795 are in a similar state, the latter after three years.
+I'm all for supporting new SoCs, but this feels looks a box-ticking
+exercise ("hey, look, our SoC is supported in mainline") which doesn't
+help anyone.
 
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serdev/core.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+My Ack still stands, but I'd definitely like to see some more complete
+support before this patch goes in.
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index bd47c46..9db93f5 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -13,6 +13,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/pm_domain.h>
- #include <linux/pm_runtime.h>
- #include <linux/serdev.h>
- #include <linux/slab.h>
-@@ -350,8 +351,17 @@ EXPORT_SYMBOL_GPL(serdev_device_set_tiocm);
- static int serdev_drv_probe(struct device *dev)
- {
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
-+	int ret;
- 
--	return sdrv->probe(to_serdev_device(dev));
-+	ret = dev_pm_domain_attach(dev, true);
-+	if (ret)
-+		return ret;
-+
-+	ret = sdrv->probe(to_serdev_device(dev));
-+	if (ret)
-+		dev_pm_domain_detach(dev, true);
-+
-+	return ret;
- }
- 
- static int serdev_drv_remove(struct device *dev)
-@@ -359,6 +369,9 @@ static int serdev_drv_remove(struct device *dev)
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
- 	if (sdrv->remove)
- 		sdrv->remove(to_serdev_device(dev));
-+
-+	dev_pm_domain_detach(dev, true);
-+
- 	return 0;
- }
- 
+Thanks,
+
+	M.
 -- 
-2.7.4
+Jazz is not dead. It just smells funny...
