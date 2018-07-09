@@ -1,93 +1,44 @@
-From: Tycho Andersen <tycho@tycho.ws>
-Subject: Re: [PATCH v3] uart: fix race between uart_put_char() and
- uart_shutdown()
-Date: Fri, 6 Jul 2018 15:22:20 -0600
-Message-ID: <20180706212220.GC3583@cisco.lan>
-References: <20180706143919.GA2344@kroah.com>
- <20180706162457.20489-1-tycho@tycho.ws>
- <CAHp75Vfbh5SzpqP=2LfeXteEGrBG46dPfeHsU0ac5SiJSjZOXw@mail.gmail.com>
- <20180706183928.GA3583@cisco.lan>
- <CAHp75VeAoL9aN4pX4G9WGPS4Oxi=G6PyF7qCCyZ1fNH=gKHYiw@mail.gmail.com>
+From: Mars Cheng <mars.cheng@mediatek.com>
+Subject: [PATCH v4 0/1] Add basic SoC support for mt6765
+Date: Mon, 9 Jul 2018 14:05:01 +0800
+Message-ID: <1531116302-29921-1-git-send-email-mars.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHp75VeAoL9aN4pX4G9WGPS4Oxi=G6PyF7qCCyZ1fNH=gKHYiw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "Serge E . Hallyn" <serge@hallyn.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Marc Zyngier <marc.zyngier@arm.com>
+Cc: CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 06, 2018 at 11:48:58PM +0300, Andy Shevchenko wrote:
-> On Fri, Jul 6, 2018 at 9:39 PM, Tycho Andersen <tycho@tycho.ws> wrote:
-> > On Fri, Jul 06, 2018 at 07:49:09PM +0300, Andy Shevchenko wrote:
-> >> On Fri, Jul 6, 2018 at 7:24 PM, Tycho Andersen <tycho@tycho.ws> wrote:
-> 
-> >  but without the initialization I get,
-> >
-> >   CC      drivers/tty/serial/serial_core.o
-> > In file included from ./include/linux/seqlock.h:36:0,
-> >                  from ./include/linux/time.h:6,
-> >                  from ./include/linux/stat.h:19,
-> >                  from ./include/linux/module.h:10,
-> >                  from drivers/tty/serial/serial_core.c:10:
-> > drivers/tty/serial/serial_core.c: In function ‘uart_startup.part.20’:
-> > ./include/linux/spinlock.h:260:3: warning: ‘flags’ may be used uninitialized in this function  -Wmaybe-uninitialized]
-> >    _raw_spin_unlock_irqrestore(lock, flags); \
-> >    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > drivers/tty/serial/serial_core.c:184:22: note: ‘flags’ was declared here
-> >   unsigned long page, flags;
-> >                       ^~~~~
-> 
-> Hmm... I didn't see such warning. How you run make?
 
-Just with `make`, although using the specific object file works too.
-Perhaps it's gcc versions?
+This patch adds basic SoC support for Mediatek's new 8-core SoC,
+MT6765, which is mainly for smartphone application.
 
-~/packages/linux uart-fix-v4 make drivers/tty/serial/serial_core.o
-  CALL    scripts/checksyscalls.sh
-  DESCEND  objtool
-  CC      drivers/tty/serial/serial_core.o
-In file included from ./include/linux/seqlock.h:36:0,
-                 from ./include/linux/time.h:6,
-                 from ./include/linux/stat.h:19,
-                 from ./include/linux/module.h:10,
-                 from drivers/tty/serial/serial_core.c:10:
-drivers/tty/serial/serial_core.c: In function ‘uart_startup.part.20’:
-./include/linux/spinlock.h:260:3: warning: ‘flags’ may be used uninitialized in this function  -Wmaybe-uninitialized]
-   _raw_spin_unlock_irqrestore(lock, flags); \
-   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/tty/serial/serial_core.c:184:22: note: ‘flags’ was declared here
-  unsigned long page, flags;
-                      ^~~~~
-In file included from ./include/linux/seqlock.h:36:0,
-                 from ./include/linux/time.h:6,
-                 from ./include/linux/stat.h:19,
-                 from ./include/linux/module.h:10,
-                 from drivers/tty/serial/serial_core.c:10:
-drivers/tty/serial/serial_core.c: In function ‘uart_shutdown’:
-./include/linux/spinlock.h:260:3: warning: ‘flags’ may be used uninitialized in this function  -Wmaybe-uninitialized]
-   _raw_spin_unlock_irqrestore(lock, flags); \
-   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/tty/serial/serial_core.c:269:16: note: ‘flags’ was declared here
-  unsigned long flags;
-                ^~~~~
-~/packages/linux uart-fix-v4 gcc --version
-gcc (Ubuntu 7.3.0-16ubuntu3) 7.3.0
-Copyright (C) 2017 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Changes in V4:
+1. add gic's settings in reg properties
+2. remove some patches about dt-bindings since GKH already took them
 
-> Btw, you adding the only places with such assignments in this file.
-> So, I would not do in your case, until entire file would be fixed.
-> 
-> (But warning looks bogus, or you have some patches on top of current
-> vanilla / next)
+Changes in V3:
+1. split dt-binding document patchs
+2. fix mt6765.dtsi warnings with W=12
+3. remove uncessary PPI affinity for timer
+4. add gicc base for gic dt node
 
-I don't have any patches, but I do admit to not thinking about it very hard and
-adding initializations. I'll see if I can figure out what's going on.
+Changes in V2:
+1. fix clk properties in uart dts node
+2. fix typo in submit title
+3. add simple-bus in mt6765.dtsi
+4. use correct SPDX license format
 
-Thanks,
+Mars Cheng (1):
+  arm64: dts: mediatek: add mt6765 support
 
-Tycho
+ arch/arm64/boot/dts/mediatek/Makefile       |    1 +
+ arch/arm64/boot/dts/mediatek/mt6765-evb.dts |   33 ++++++
+ arch/arm64/boot/dts/mediatek/mt6765.dtsi    |  157 +++++++++++++++++++++++++++
+ 3 files changed, 191 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
+
+--
+1.7.9.5
