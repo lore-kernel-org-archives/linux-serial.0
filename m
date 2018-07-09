@@ -1,7 +1,8 @@
 From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Subject: serial: 8250: introduce get_divisor() and set_divisor() hook
-Date: Mon, 9 Jul 2018 16:19:22 +0800
-Message-ID: <20180709161922.3c43f599@xhacker.debian>
+Subject: [PATCH v3 1/3] serial: 8250: introduce get_divisor() and
+ set_divisor() hook
+Date: Mon, 9 Jul 2018 16:20:34 +0800
+Message-ID: <20180709162034.212022e5@xhacker.debian>
 References: <20180709160942.11a74f7a@xhacker.debian>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
