@@ -1,130 +1,254 @@
-From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Subject: Re: [PATCH v3 3/3] serial: 8250_dw: add fractional divisor support
-Date: Mon, 9 Jul 2018 16:32:41 +0800
-Message-ID: <20180709163241.4d4ee343@xhacker.debian>
-References: <20180709160942.11a74f7a@xhacker.debian>
-        <20180709162315.7f53eb9a@xhacker.debian>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v4 1/1] arm64: dts: mediatek: add mt6765 support
+Date: Mon, 9 Jul 2018 12:20:53 +0200
+Message-ID: <7fb13f45-4e33-6efc-467b-c7256a40cbc9@gmail.com>
+References: <1531116302-29921-1-git-send-email-mars.cheng@mediatek.com>
+ <1531116302-29921-2-git-send-email-mars.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180709162315.7f53eb9a@xhacker.debian>
+In-Reply-To: <1531116302-29921-2-git-send-email-mars.cheng@mediatek.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Mars Cheng <mars.cheng@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Marc Zyngier <marc.zyngier@arm.com>
+Cc: CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
 
-On Mon, 9 Jul 2018 16:23:15 +0800 Jisheng Zhang wrote:
 
-> For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
-> valid divisor latch fraction register. The fractional divisor width is
-> 4bits ~ 6bits.
+On 09/07/18 08:05, Mars Cheng wrote:
+> This adds basic chip support for MT6765 SoC.
 > 
-> Now the preparation is done, it's easy to add the feature support.
-> This patch firstly tries to get the fractional divisor width during
-> probe, then setups dw specific get_divisor() and set_divisor() hook.
-> 
-> Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+> Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
 > ---
->  drivers/tty/serial/8250/8250_dw.c | 45 +++++++++++++++++++++++++++++++
->  1 file changed, 45 insertions(+)
+>  arch/arm64/boot/dts/mediatek/Makefile       |    1 +
+>  arch/arm64/boot/dts/mediatek/mt6765-evb.dts |   33 ++++++
+>  arch/arm64/boot/dts/mediatek/mt6765.dtsi    |  156 +++++++++++++++++++++++++++
+>  3 files changed, 190 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
 > 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index fa8a00e8c9c6..e90c3d229f00 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -31,6 +31,7 @@
->  
->  /* Offsets for the DesignWare specific registers */
->  #define DW_UART_USR	0x1f /* UART Status Register */
-> +#define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
->  #define DW_UART_CPR	0xf4 /* Component Parameter Register */
->  #define DW_UART_UCV	0xf8 /* UART Component Version */
->  
-> @@ -55,6 +56,7 @@
->  
->  struct dw8250_data {
->  	u8			usr_reg;
-> +	u8			dlf_size;
->  	int			line;
->  	int			msr_mask_on;
->  	int			msr_mask_off;
-> @@ -366,6 +368,37 @@ static bool dw8250_idma_filter(struct dma_chan *chan, void *param)
->  	return param == chan->device->dev->parent;
->  }
->  
+> diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+> index ac17f60..7506b0d 100644
+> --- a/arch/arm64/boot/dts/mediatek/Makefile
+> +++ b/arch/arm64/boot/dts/mediatek/Makefile
+> @@ -1,6 +1,7 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
+> +dtb-$(CONFIG_ARCH_MEDIATEK) += mt6765-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-rfb1.dtb
+
+As you can see, we have a long list of SoCs which are poorly supported.
+I'm not very keen to just add another SoC which supports booting into a ramdisk
+using the serial console. Do you have a roadmap adding mainline support for this
+SoC?
+
+Regards,
+Matthias
+
+> diff --git a/arch/arm64/boot/dts/mediatek/mt6765-evb.dts b/arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+> new file mode 100644
+> index 0000000..36dddff2
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+> @@ -0,0 +1,33 @@
+> +// SPDX-License-Identifier: GPL-2.0
 > +/*
-> + * divisor = clk / (16 * baud) = div(I) + div(F)
-> + * "I" means integer, "F" means fractional
+> + * dts file for Mediatek MT6765
 > + *
-> + * 2^dlf_size * clk / (16 * baud) = 2^dlf_size * (div(I) + div(F))
-> + * so, (clk << (dlf_siz - 4)) / baud = (div(I) + div(F)) << dlf_size
+> + * (C) Copyright 2018. Mediatek, Inc.
 > + *
-> + * let quot = DIV_ROUND_CLOSEST(clk << (dlf_size - 4), baud), we get
-> + * div(I) = quot >> dlf_size
-> + * div(F) = quot & dlf_mask, where dlf_mask = GENMASK(dlf_size - 1, 0)
+> + * Mars Cheng <mars.cheng@mediatek.com>
 > + */
-> +static unsigned int dw8250_get_divisor(struct uart_port *p,
-> +				       unsigned int baud,
-> +				       unsigned int *frac)
-> +{
-> +	unsigned int quot;
-> +	struct dw8250_data *d = p->private_data;
 > +
-> +	quot = DIV_ROUND_CLOSEST(p->uartclk << (d->dlf_size - 4), baud);
-> +	*frac = quot & GENMASK(d->dlf_size - 1, 0);
+> +/dts-v1/;
+> +#include "mt6765.dtsi"
 > +
-> +	return quot >> d->dlf_size;
-
-After more consideration, I sent out this version for the following two
-points:
-
-1. the max frac divisor width is 6bits now, but we dunno whether future IP
-extends it or not. This patch version can still support > 6bits width except
-the overflow concern. But fixing overflow(if there is) is as simple as using\
-the DIV_ROUND_CLOSEST_ULL macro.
-
-2. this version makes use of well implemented GENMASK to get the dlf_mask,
-the micro is well understood, I think. so the code is simplified as well.
-
-3. the magic "4" is explained in the comments, I hope it could help the
-code.
-
-what do you think?
-
-Thanks in advance,
-Jisheng
-
-> +}
+> +/ {
+> +	model = "MediaTek MT6765 EVB";
+> +	compatible = "mediatek,mt6765-evb", "mediatek,mt6765";
 > +
-> +static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
-> +			       unsigned int quot, unsigned int quot_frac)
-> +{
-> +	dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
-> +	serial8250_do_set_divisor(p, baud, quot, quot_frac);
-> +}
+> +	aliases {
+> +		serial0 = &uart0;
+> +	};
 > +
->  static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
->  {
->  	if (p->dev->of_node) {
-> @@ -426,6 +459,18 @@ static void dw8250_setup_port(struct uart_port *p)
->  	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
->  		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
->  
-> +	dw8250_writel_ext(p, DW_UART_DLF, ~0U);
-> +	reg = dw8250_readl_ext(p, DW_UART_DLF);
-> +	dw8250_writel_ext(p, DW_UART_DLF, 0);
+> +	memory@40000000 {
+> +		device_type = "memory";
+> +		reg = <0 0x40000000 0 0x1e800000>;
+> +	};
 > +
-> +	if (reg) {
-> +		struct dw8250_data *d = p->private_data;
+> +	chosen {
+> +		stdout-path = "serial0:921600n8";
+> +	};
+> +};
 > +
-> +		d->dlf_size = fls(reg);
-> +		p->get_divisor = dw8250_get_divisor;
-> +		p->set_divisor = dw8250_set_divisor;
-> +	}
+> +&uart0 {
+> +	status = "okay";
+> +};
+> diff --git a/arch/arm64/boot/dts/mediatek/mt6765.dtsi b/arch/arm64/boot/dts/mediatek/mt6765.dtsi
+> new file mode 100644
+> index 0000000..cc365b1
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt6765.dtsi
+> @@ -0,0 +1,156 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * dts file for Mediatek MT6765
+> + *
+> + * (C) Copyright 2018. Mediatek, Inc.
+> + *
+> + * Mars Cheng <mars.cheng@mediatek.com>
+> + */
 > +
->  	reg = dw8250_readl_ext(p, DW_UART_CPR);
->  	if (!reg)
->  		return;
+> +#include <dt-bindings/interrupt-controller/irq.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +/ {
+> +	compatible = "mediatek,mt6765";
+> +	interrupt-parent = <&sysirq>;
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
+> +
+> +	psci {
+> +		compatible = "arm,psci-0.2";
+> +		method = "smc";
+> +	};
+> +
+> +	cpus {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		cpu@0 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a53";
+> +			enable-method = "psci";
+> +			reg = <0x000>;
+> +		};
+> +
+> +		cpu@1 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a53";
+> +			enable-method = "psci";
+> +			reg = <0x001>;
+> +		};
+> +
+> +		cpu@2 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a53";
+> +			enable-method = "psci";
+> +			reg = <0x002>;
+> +		};
+> +
+> +		cpu@3 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a53";
+> +			enable-method = "psci";
+> +			reg = <0x003>;
+> +		};
+> +
+> +		cpu@100 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a53";
+> +			enable-method = "psci";
+> +			reg = <0x100>;
+> +		};
+> +
+> +		cpu@101 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a53";
+> +			enable-method = "psci";
+> +			reg = <0x101>;
+> +		};
+> +
+> +		cpu@102 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a53";
+> +			enable-method = "psci";
+> +			reg = <0x102>;
+> +		};
+> +
+> +		cpu@103 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a53";
+> +			enable-method = "psci";
+> +			reg = <0x103>;
+> +		};
+> +	};
+> +
+> +	baud_clk: dummy26m {
+> +		compatible = "fixed-clock";
+> +		clock-frequency = <26000000>;
+> +		#clock-cells = <0>;
+> +	};
+> +
+> +	sys_clk: dummyclk {
+> +		compatible = "fixed-clock";
+> +		clock-frequency = <26000000>;
+> +		#clock-cells = <0>;
+> +	};
+> +
+> +	timer {
+> +		compatible = "arm,armv8-timer";
+> +		interrupt-parent = <&gic>;
+> +		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>;
+> +	};
+> +
+> +	soc {
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		compatible = "simple-bus";
+> +		ranges;
+> +
+> +		gic: interrupt-controller@c000000 {
+> +			compatible = "arm,gic-v3";
+> +			#interrupt-cells = <3>;
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +			interrupt-parent = <&gic>;
+> +			interrupt-controller;
+> +			reg = <0 0x0c000000 0 0x40000>,  /* GICD */
+> +			      <0 0x0c100000 0 0x200000>, /* GICR */
+> +			      <0 0x0c400000 0 0x2000>,   /* GICC */
+> +			      <0 0x0c410000 0 0x2000>,   /* GICH */
+> +			      <0 0x0c420000 0 0x20000>;  /* GICV */
+> +			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+> +		};
+> +
+> +		sysirq: interrupt-controller@10200a80 {
+> +			compatible = "mediatek,mt6765-sysirq",
+> +				     "mediatek,mt6577-sysirq";
+> +			interrupt-controller;
+> +			#interrupt-cells = <3>;
+> +			interrupt-parent = <&gic>;
+> +			reg = <0 0x10200a80 0 0x50>;
+> +		};
+> +
+> +		uart0: serial@11002000 {
+> +			compatible = "mediatek,mt6765-uart",
+> +				     "mediatek,mt6577-uart";
+> +			reg = <0 0x11002000 0 0x400>;
+> +			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
+> +			clocks = <&baud_clk>, <&sys_clk>;
+> +			clock-names = "baud", "bus";
+> +			status = "disabled";
+> +		};
+> +
+> +		uart1: serial@11003000 {
+> +			compatible = "mediatek,mt6765-uart",
+> +				     "mediatek,mt6577-uart";
+> +			reg = <0 0x11003000 0 0x400>;
+> +			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
+> +			clocks = <&baud_clk>, <&sys_clk>;
+> +			clock-names = "baud", "bus";
+> +			status = "disabled";
+> +		};
+> +	}; /* end of soc */
+> +};
+> 
