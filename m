@@ -1,97 +1,72 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 3/8] mailbox: Add transmit done by blocking option
-Date: Tue, 10 Jul 2018 17:49:26 +0200
-Message-ID: <20180710154926.GB8492@ulmo>
-References: <20180702114033.15654-1-mperttunen@nvidia.com>
- <20180702114033.15654-4-mperttunen@nvidia.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v4 3/3] serial: 8250_dw: add fractional divisor support
+Date: Tue, 10 Jul 2018 19:19:21 +0300
+Message-ID: <8c5b6bbbde12b0836e1f833c86b805a817596654.camel@linux.intel.com>
+References: <20180710110942.5b0a016e@xhacker.debian>
+         <20180710111516.13b8c570@xhacker.debian>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5631047396355467356=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180702114033.15654-4-mperttunen@nvidia.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jassi Brar <jassisinghbrar@gmail.com>
-Cc: devicetree@vger.kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, jonathanh@nvidia.com, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180710111516.13b8c570@xhacker.debian>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, 2018-07-10 at 11:15 +0800, Jisheng Zhang wrote:
+> For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
+> valid divisor latch fraction register. The fractional divisor width is
+> 4bits ~ 6bits.
+> 
+> Now the preparation is done, it's easy to add the feature support.
+> This patch firstly tries to get the fractional divisor width during
+> probe, then setups dw specific get_divisor() and set_divisor() hook.
 
---===============5631047396355467356==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="+pHx0qQiF2pBVqBT"
-Content-Disposition: inline
+Thanks for an update, my comments below.
 
+> +/*
+> + * divisor = div(I) + div(F)
+> + * "I" means integer, "F" means fractional
+> + * quot = div(I) = clk / (16 * baud)
+> + * frac = div(F) * 2^dlf_size
+> + *
+> + * let rem = clk % (16 * baud)
+> + * we have: div(F) * (16 * baud) = rem
+> + * so frac = 2^dlf_size * rem / (16 * baud) = (rem << dlf_size) / (16
+> * baud)
+> + */
+> +static unsigned int dw8250_get_divisor(struct uart_port *p,
+> +				       unsigned int baud,
+> +				       unsigned int *frac)
+> +{
 
---+pHx0qQiF2pBVqBT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+unsigned int base_baud = baud * 16;
 
-On Mon, Jul 02, 2018 at 02:40:28PM +0300, Mikko Perttunen wrote:
-> Add a new TXDONE option, TXDONE_BY_BLOCK. With this option, the
-> send_data function of the mailbox driver is expected to block until
-> the message has been sent. The new option is used with the Tegra
-> Combined UART driver to minimize unnecessary overhead when transmitting
-> data.
->=20
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> ---
->  drivers/mailbox/mailbox.c | 30 +++++++++++++++++++++---------
->  drivers/mailbox/mailbox.h |  1 +
->  2 files changed, 22 insertions(+), 9 deletions(-)
+> +	unsigned int quot, rem;
+> +	struct dw8250_data *d = p->private_data;
+> +
+> +	quot = p->uartclk / (16 * baud);
+> +	rem = p->uartclk % (16 * baud);
+> +	*frac = DIV_ROUND_CLOSEST(rem << d->dlf_size, 16 * baud);
+> +
 
-Jassi,
+While it looks indeed better, I would rather like to have a confirmation
+it's working as designed.
 
-any comments on this patch and 4/8 and 5/8? Greg's already said that
-he'd be fine if I take the serial driver (patch 6/8) through the Tegra
-tree to resolve the dependencies. If you're okay with the three mailbox
-patches I can pick them up as well with your Acked-by.
+For example, when I did some calculus, I cooked a preliminary check in
+Python (easy and fast to prototype), for example:
+https://gist.github.com/andy-shev/06b084488b3629898121 in Python, or
+commit 9df461eca18f ("spi: pxa2xx: replace ugly table by approximation")
+in the kernel.
 
-Otherwise, if you'd prefer to take these through the mailbox tree, let
-me know and I'll wait until sometime after v4.19-rc1 before I send out
-pull requests for the DT changes.
+Or another one here https://gist.github.com/andy-shev/8b2a73aeca2874f4cc
+89 and commits c1a67b48f6a5 ("serial: 8250_pci: replace switch-case by
+formula for Intel MID"), 21947ba654a6 ("serial: 8250_pci: replace
+switch-case by formula")
 
-Thanks,
-Thierry
+P.S. The code itself looks good to me, thanks!
 
---+pHx0qQiF2pBVqBT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAltE1YIACgkQ3SOs138+
-s6EsOQ/9HaN/N6V7yRKfJ3THVBcHNhpECScMRxyZdsrDA6gKQaXCkgWWE7dwV7a0
-upPIqevAo4GRX8Jx4ETP1M1Z0pLEozFqsOCcwo58JnFduXXfETXbb5RmeJRwj6Ep
-kVRkhyLtc50JfSgKo/4LTAWmktoFAZokiPGQahl82EyU/ZryltmALJgRUK5d3gP9
-RphFtyyUfMXW0JmHOVnQKNYwm5lnr+tHxSeP4WDow6EXtzq12//hELp8J6jpxVaW
-/F83+5UNROde84jNKVtiBXithQJGoUTI29SDFrzncw3VTH64A0kzAgXKsCOigSE7
-eFMNT0gkxPmdg+JjfJezldTeYxmi6vl6ikPSBSOwie2OZjCEjXc787rT0PkL8Djt
-5JYKl5p2W9f64eoNwMUe4hKdiUPCWZ4vjt0NTG84gw9FKPmclKhImqFs5RmiBhZt
-Syod6TZL5qWwwuHYMMr2TWuKH+JeHaAnb7KMqf2MB3E1mqA3W/3mLXYTNfp9Z6Sy
-rNy2shb2ZjTJKMrfYSuqajwEyvR/r0VFQcPUmGjVDJbDug9eLlH/j6cskjx+BqnS
-9NZQQpjrgAkXrpLVvZ7R7p8HIipTAwbQljkEVEpulG4ZMUiVCGvP/ObZ2HI4WzZp
-OhhvIifTVTmCH3wTyzkXqAsEVfuRdw5AGe4hU6QDWQN29tJHs1U=
-=NUWu
------END PGP SIGNATURE-----
-
---+pHx0qQiF2pBVqBT--
-
-
---===============5631047396355467356==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============5631047396355467356==--
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
