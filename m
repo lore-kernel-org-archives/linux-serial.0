@@ -1,90 +1,97 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v4 2/3] serial: 8250: export serial8250_do_set_divisor()
-Date: Tue, 10 Jul 2018 16:56:28 +0300
-Message-ID: <ee2443ab6b413e9d7f0148e8916b0bd0d4924375.camel@linux.intel.com>
-References: <20180710110942.5b0a016e@xhacker.debian>
-         <20180710111327.072584c0@xhacker.debian>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v3 3/8] mailbox: Add transmit done by blocking option
+Date: Tue, 10 Jul 2018 17:49:26 +0200
+Message-ID: <20180710154926.GB8492@ulmo>
+References: <20180702114033.15654-1-mperttunen@nvidia.com>
+ <20180702114033.15654-4-mperttunen@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180710111327.072584c0@xhacker.debian>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============5631047396355467356=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180702114033.15654-4-mperttunen@nvidia.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jassi Brar <jassisinghbrar@gmail.com>
+Cc: devicetree@vger.kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, jonathanh@nvidia.com, linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2018-07-10 at 11:13 +0800, Jisheng Zhang wrote:
-> Some drivers could call serial8250_do_set_divisor() to complete its
-> own set_divisor routine. Export this symbol for code reusing.
-> 
 
-I dunno Greg's preferences here, but it could be merged with patch 1.
+--===============5631047396355467356==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="+pHx0qQiF2pBVqBT"
+Content-Disposition: inline
 
-In any case,
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+--+pHx0qQiF2pBVqBT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-for this part.
-
-> Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+On Mon, Jul 02, 2018 at 02:40:28PM +0300, Mikko Perttunen wrote:
+> Add a new TXDONE option, TXDONE_BY_BLOCK. With this option, the
+> send_data function of the mailbox driver is expected to block until
+> the message has been sent. The new option is used with the Tegra
+> Combined UART driver to minimize unnecessary overhead when transmitting
+> data.
+>=20
+> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 > ---
->  drivers/tty/serial/8250/8250_port.c | 5 +++--
->  include/linux/serial_8250.h         | 3 +++
->  2 files changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c
-> b/drivers/tty/serial/8250/8250_port.c
-> index ce0dc17f18ee..945f8dc2d50f 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2580,8 +2580,8 @@ static unsigned char
-> serial8250_compute_lcr(struct uart_8250_port *up,
->  	return cval;
->  }
->  
-> -static void serial8250_do_set_divisor(struct uart_port *port,
-> unsigned int baud,
-> -			    unsigned int quot, unsigned int
-> quot_frac)
-> +void serial8250_do_set_divisor(struct uart_port *port, unsigned int
-> baud,
-> +			       unsigned int quot, unsigned int
-> quot_frac)
->  {
->  	struct uart_8250_port *up = up_to_u8250p(port);
->  
-> @@ -2612,6 +2612,7 @@ static void serial8250_do_set_divisor(struct
-> uart_port *port, unsigned int baud,
->  		serial_port_out(port, 0x2, quot_frac);
->  	}
->  }
-> +EXPORT_SYMBOL_GPL(serial8250_do_set_divisor);
->  
->  static void serial8250_set_divisor(struct uart_port *port, unsigned
-> int baud,
->  				   unsigned int quot, unsigned int
-> quot_frac)
-> diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-> index 76b9db71e489..18e21427bce4 100644
-> --- a/include/linux/serial_8250.h
-> +++ b/include/linux/serial_8250.h
-> @@ -160,6 +160,9 @@ extern void serial8250_do_shutdown(struct
-> uart_port *port);
->  extern void serial8250_do_pm(struct uart_port *port, unsigned int
-> state,
->  			     unsigned int oldstate);
->  extern void serial8250_do_set_mctrl(struct uart_port *port, unsigned
-> int mctrl);
-> +extern void serial8250_do_set_divisor(struct uart_port *port,
-> unsigned int baud,
-> +				      unsigned int quot,
-> +				      unsigned int quot_frac);
->  extern int fsl8250_handle_irq(struct uart_port *port);
->  int serial8250_handle_irq(struct uart_port *port, unsigned int iir);
->  unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned
-> char lsr);
+>  drivers/mailbox/mailbox.c | 30 +++++++++++++++++++++---------
+>  drivers/mailbox/mailbox.h |  1 +
+>  2 files changed, 22 insertions(+), 9 deletions(-)
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Jassi,
+
+any comments on this patch and 4/8 and 5/8? Greg's already said that
+he'd be fine if I take the serial driver (patch 6/8) through the Tegra
+tree to resolve the dependencies. If you're okay with the three mailbox
+patches I can pick them up as well with your Acked-by.
+
+Otherwise, if you'd prefer to take these through the mailbox tree, let
+me know and I'll wait until sometime after v4.19-rc1 before I send out
+pull requests for the DT changes.
+
+Thanks,
+Thierry
+
+--+pHx0qQiF2pBVqBT
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAltE1YIACgkQ3SOs138+
+s6EsOQ/9HaN/N6V7yRKfJ3THVBcHNhpECScMRxyZdsrDA6gKQaXCkgWWE7dwV7a0
+upPIqevAo4GRX8Jx4ETP1M1Z0pLEozFqsOCcwo58JnFduXXfETXbb5RmeJRwj6Ep
+kVRkhyLtc50JfSgKo/4LTAWmktoFAZokiPGQahl82EyU/ZryltmALJgRUK5d3gP9
+RphFtyyUfMXW0JmHOVnQKNYwm5lnr+tHxSeP4WDow6EXtzq12//hELp8J6jpxVaW
+/F83+5UNROde84jNKVtiBXithQJGoUTI29SDFrzncw3VTH64A0kzAgXKsCOigSE7
+eFMNT0gkxPmdg+JjfJezldTeYxmi6vl6ikPSBSOwie2OZjCEjXc787rT0PkL8Djt
+5JYKl5p2W9f64eoNwMUe4hKdiUPCWZ4vjt0NTG84gw9FKPmclKhImqFs5RmiBhZt
+Syod6TZL5qWwwuHYMMr2TWuKH+JeHaAnb7KMqf2MB3E1mqA3W/3mLXYTNfp9Z6Sy
+rNy2shb2ZjTJKMrfYSuqajwEyvR/r0VFQcPUmGjVDJbDug9eLlH/j6cskjx+BqnS
+9NZQQpjrgAkXrpLVvZ7R7p8HIipTAwbQljkEVEpulG4ZMUiVCGvP/ObZ2HI4WzZp
+OhhvIifTVTmCH3wTyzkXqAsEVfuRdw5AGe4hU6QDWQN29tJHs1U=
+=NUWu
+-----END PGP SIGNATURE-----
+
+--+pHx0qQiF2pBVqBT--
+
+
+--===============5631047396355467356==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============5631047396355467356==--
