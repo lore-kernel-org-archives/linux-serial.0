@@ -1,107 +1,117 @@
-From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Subject: [PATCH v4 3/3] serial: 8250_dw: add fractional divisor support
-Date: Tue, 10 Jul 2018 11:15:16 +0800
-Message-ID: <20180710111516.13b8c570@xhacker.debian>
-References: <20180710110942.5b0a016e@xhacker.debian>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v4 1/1] arm64: dts: mediatek: add mt6765 support
+Date: Tue, 10 Jul 2018 12:52:32 +0200
+Message-ID: <7a3becb3-510b-5763-5b66-5e14ebf7c974@gmail.com>
+References: <1531116302-29921-1-git-send-email-mars.cheng@mediatek.com>
+ <1531116302-29921-2-git-send-email-mars.cheng@mediatek.com>
+ <7fb13f45-4e33-6efc-467b-c7256a40cbc9@gmail.com>
+ <d439eb7d-6365-7a0a-2969-1ddecc51defc@arm.com>
+ <1531177443.7777.18.camel@mtkswgap22>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180710110942.5b0a016e@xhacker.debian>
+In-Reply-To: <1531177443.7777.18.camel@mtkswgap22>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Mars Cheng <mars.cheng@mediatek.com>, Marc Zyngier <marc.zyngier@arm.com>
+Cc: Rob Herring <robh+dt@kernel.org>, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
-valid divisor latch fraction register. The fractional divisor width is
-4bits ~ 6bits.
 
-Now the preparation is done, it's easy to add the feature support.
-This patch firstly tries to get the fractional divisor width during
-probe, then setups dw specific get_divisor() and set_divisor() hook.
 
-Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
----
- drivers/tty/serial/8250/8250_dw.c | 45 +++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+On 10/07/18 01:04, Mars Cheng wrote:
+> Hi Matthias/Marc
+> 
+> On Mon, 2018-07-09 at 17:43 +0100, Marc Zyngier wrote:
+>> On 09/07/18 11:20, Matthias Brugger wrote:
+>>>
+>>>
+>>> On 09/07/18 08:05, Mars Cheng wrote:
+>>>> This adds basic chip support for MT6765 SoC.
+>>>>
+>>>> Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
+>>>> ---
+>>>>  arch/arm64/boot/dts/mediatek/Makefile       |    1 +
+>>>>  arch/arm64/boot/dts/mediatek/mt6765-evb.dts |   33 ++++++
+>>>>  arch/arm64/boot/dts/mediatek/mt6765.dtsi    |  156 +++++++++++++++++++++++++++
+>>>>  3 files changed, 190 insertions(+)
+>>>>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+>>>>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
+>>>>
+>>>> diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+>>>> index ac17f60..7506b0d 100644
+>>>> --- a/arch/arm64/boot/dts/mediatek/Makefile
+>>>> +++ b/arch/arm64/boot/dts/mediatek/Makefile
+>>>> @@ -1,6 +1,7 @@
+>>>>  # SPDX-License-Identifier: GPL-2.0
+>>>>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
+>>>>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
+>>>> +dtb-$(CONFIG_ARCH_MEDIATEK) += mt6765-evb.dtb
+>>>>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
+>>>>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-evb.dtb
+>>>>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-rfb1.dtb
+>>>
+>>> As you can see, we have a long list of SoCs which are poorly supported.
+>>> I'm not very keen to just add another SoC which supports booting into a ramdisk
+>>> using the serial console. Do you have a roadmap adding mainline support for this
+>>> SoC?
+>>
+>> Yes, that's a valid concern.
+>>
+>> mt6755 and mt6795 are in a similar state, the latter after three years.
+>> I'm all for supporting new SoCs, but this feels looks a box-ticking
+>> exercise ("hey, look, our SoC is supported in mainline") which doesn't
+>> help anyone.
+>>
+>> My Ack still stands, but I'd definitely like to see some more complete
+>> support before this patch goes in.
+>>
+>> Thanks,
+>>
+>> 	M.
+> 
+> Yes, we do arrange more resources to do upstream task for mt6765,
+> clk/pinctrl drivers are almost ready to submit. systimer is under
+> reviewing (v9).
+> http://lists.infradead.org/pipermail/linux-mediatek/2018-July/013989.html
+> 
+> other drivers including
+> pmic/pwrap/i2c/rtc/kpd/spi/wdt/cqdma/auxadc/pwm/cmdq/disp. We have
+> dedicated owners to handle them and will cowork tightly with members to
+> make sure things happen in the following weeks.
+> 
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index fa8a00e8c9c6..ad08d7a3b93b 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -31,6 +31,7 @@
- 
- /* Offsets for the DesignWare specific registers */
- #define DW_UART_USR	0x1f /* UART Status Register */
-+#define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
- #define DW_UART_CPR	0xf4 /* Component Parameter Register */
- #define DW_UART_UCV	0xf8 /* UART Component Version */
- 
-@@ -55,6 +56,7 @@
- 
- struct dw8250_data {
- 	u8			usr_reg;
-+	u8			dlf_size;
- 	int			line;
- 	int			msr_mask_on;
- 	int			msr_mask_off;
-@@ -366,6 +368,37 @@ static bool dw8250_idma_filter(struct dma_chan *chan, void *param)
- 	return param == chan->device->dev->parent;
- }
- 
-+/*
-+ * divisor = div(I) + div(F)
-+ * "I" means integer, "F" means fractional
-+ * quot = div(I) = clk / (16 * baud)
-+ * frac = div(F) * 2^dlf_size
-+ *
-+ * let rem = clk % (16 * baud)
-+ * we have: div(F) * (16 * baud) = rem
-+ * so frac = 2^dlf_size * rem / (16 * baud) = (rem << dlf_size) / (16 * baud)
-+ */
-+static unsigned int dw8250_get_divisor(struct uart_port *p,
-+				       unsigned int baud,
-+				       unsigned int *frac)
-+{
-+	unsigned int quot, rem;
-+	struct dw8250_data *d = p->private_data;
-+
-+	quot = p->uartclk / (16 * baud);
-+	rem = p->uartclk % (16 * baud);
-+	*frac = DIV_ROUND_CLOSEST(rem << d->dlf_size, 16 * baud);
-+
-+	return quot;
-+}
-+
-+static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
-+			       unsigned int quot, unsigned int quot_frac)
-+{
-+	dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
-+	serial8250_do_set_divisor(p, baud, quot, quot_frac);
-+}
-+
- static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- {
- 	if (p->dev->of_node) {
-@@ -426,6 +459,18 @@ static void dw8250_setup_port(struct uart_port *p)
- 	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
- 		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
- 
-+	dw8250_writel_ext(p, DW_UART_DLF, ~0U);
-+	reg = dw8250_readl_ext(p, DW_UART_DLF);
-+	dw8250_writel_ext(p, DW_UART_DLF, 0);
-+
-+	if (reg) {
-+		struct dw8250_data *d = p->private_data;
-+
-+		d->dlf_size = fls(reg);
-+		p->get_divisor = dw8250_get_divisor;
-+		p->set_divisor = dw8250_set_divisor;
-+	}
-+
- 	reg = dw8250_readl_ext(p, DW_UART_CPR);
- 	if (!reg)
- 		return;
--- 
-2.18.0
+Ok, so let's wait until pinctrl driver is submitted. I'd prefer if you could add
+the clk driver to this series. This way we can get rid of the dummy clocks in
+the device tree.
+
+> For previous chips, we did have no enough support after shell. It is due
+> to fast pace of smartphone SoC and other resource issues. We also know
+> that is no excuse so that we already confirmed owners and their
+> schedules for mt6765.
+> 
+> If there is any suggestion, please let us know.
+> 
+
+I know that smartphone SoC is a fast paced business. Never the less I'm
+convinced that the basic building blocks won't change much from one version to
+another. And that mainline support for the previous version of your SoC will
+help you to get your new drivers faster upstream.
+
+For me the best example is the mt7622 which got to a reasonable upstream support
+quite fast, thanks to a good foundation of mt7623 in mainline. I'd love to see
+that happen on the smartphone SoCs as well.
+
+Not to mention that upstream support will help you internally when you have to
+rebase your BSP code-base to a new kernel version.
+
+That said I think it is good news that you have already defined owner for the
+different devices and hope to see submissions for them in the near future :)
+As a suggestion I would say that upstream submission takes time and effort and
+it will help your engineers if they can allocate some time to do so. But that's
+most probably a management decision and all engineers know that management bases
+it's decision on some hard-to-understandable abbreviations like EBITDA etc. ;)
+
+Best regards,
+Matthias
