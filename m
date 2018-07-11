@@ -1,8 +1,8 @@
 From: "Serge E. Hallyn" <serge@hallyn.com>
 Subject: Re: [PATCH v4] uart: fix race between uart_put_char() and
  uart_shutdown()
-Date: Wed, 11 Jul 2018 14:24:06 -0500
-Message-ID: <20180711192406.GB26667@mail.hallyn.com>
+Date: Wed, 11 Jul 2018 14:49:08 -0500
+Message-ID: <20180711194908.GA27217@mail.hallyn.com>
 References: <20180706212220.GC3583@cisco.lan>
  <20180711160744.32074-1-tycho@tycho.ws>
 Mime-Version: 1.0
@@ -140,9 +140,7 @@ Quoting Tycho Andersen (tycho@tycho.ws):
 > 
 > Signed-off-by: Tycho Andersen <tycho@tycho.ws>
 
-Reviewed-by: Serge Hallyn <serge@hallyn.com>
-
-Thanks, Tycho.
+One question: would it be worth doing:
 
 > ---
 >  drivers/tty/serial/serial_core.c | 19 ++++++++++++++-----
@@ -170,6 +168,10 @@ Thanks, Tycho.
 > -		if (!page)
 > -			return -ENOMEM;
 > +	page = get_zeroed_page(GFP_KERNEL);
+
+ignoring the alloc failure here.  (leave a comment for worried
+future reviewers)  Then,
+
 > +	if (!page)
 > +		return -ENOMEM;
 >  
@@ -178,6 +180,22 @@ Thanks, Tycho.
 > +	if (state->xmit.buf) {
 > +		free_page(page);
 > +	} else {
+
+here if page is NULL (unlock and) return ENOMEM.
+
+Since it looks like this fn is called on every device open, that
+would seem to minimize getting lots of needless ENOMEMs.
+
+Another alternative is to just wait to do the alloc until we
+get here, and drop the spinlock here if we need to alloc.  Then
+retake the lock, re-check state->xmit.buf;  If that is now not
+null then free_page(page), or if it is still NULL and page alloc
+failed, then return ENOEMEM). That is uglier code, but is
+probably the best behavior.
+
+Still the original patch fixes the real bug so I'm fine with it
+as well.
+
 >  		state->xmit.buf = (unsigned char *) page;
 >  		uart_circ_clear(&state->xmit);
 >  	}
