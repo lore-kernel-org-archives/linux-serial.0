@@ -1,35 +1,33 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v5 3/3] serial: 8250_dw: add fractional divisor support
-Date: Wed, 11 Jul 2018 14:31:03 +0300
-Message-ID: <2b363dc2f8ddd6fe52ba6f7c461b4dd55cfb8bce.camel@linux.intel.com>
-References: <20180710110942.5b0a016e@xhacker.debian>
-         <20180710111516.13b8c570@xhacker.debian>
-         <20180711151111.6f417020@xhacker.debian>
+From: Ludovic Desroches <ludovic.desroches@microchip.com>
+Subject: [PATCH 0/3] add ISO7816 support
+Date: Wed, 11 Jul 2018 15:16:35 +0200
+Message-ID: <20180711131638.12622-1-ludovic.desroches@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180711151111.6f417020@xhacker.debian>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, arnd@arndb.de, richard.genoud@gmail.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, linux-kernel@vger.kernel.org, Ludovic Desroches <ludovic.desroches@microchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2018-07-11 at 15:11 +0800, Jisheng Zhang wrote:
-> For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
-> valid divisor latch fraction register. The fractional divisor width is
-> 4bits ~ 6bits.
-> 
-> Now the preparation is done, it's easy to add the feature support.
-> This patch firstly tries to get the fractional divisor width during
-> probe, then setups dw specific get_divisor() and set_divisor() hook.
-> 
+Hi,
 
-You would need to resend entire series as v6.
-Don't forget to add given tags.
+This set of patches adds support for the ISO7816 standard. The USART devices in
+Microchip SoCs have an ISO7816 mode. It allows to let the USART managing
+the CLK and I/O signals of a smart card.
 
-But, wait a bit, I would like to check the algo (thanks for C program!).
+Nicolas Ferre (3):
+  tty/serial_core: add ISO7816 infrastructure
+  tty/serial: atmel: add ISO7816 support
+  tty/serial: atmel: manage shutdown in case of RS485 or ISO7816 mode
+
+ drivers/tty/serial/atmel_serial.c | 179 +++++++++++++++++++++++++++++++++++---
+ drivers/tty/serial/atmel_serial.h |   3 +-
+ drivers/tty/serial/serial_core.c  |  49 +++++++++++
+ include/linux/serial_core.h       |   3 +
+ include/uapi/asm-generic/ioctls.h |   2 +
+ include/uapi/linux/serial.h       |  17 ++++
+ 6 files changed, 241 insertions(+), 12 deletions(-)
 
 -- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+2.12.2
