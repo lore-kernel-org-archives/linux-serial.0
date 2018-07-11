@@ -1,108 +1,104 @@
-From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Subject: [PATCH v5 3/3] serial: 8250_dw: add fractional divisor support
-Date: Wed, 11 Jul 2018 15:11:11 +0800
-Message-ID: <20180711151111.6f417020@xhacker.debian>
-References: <20180710110942.5b0a016e@xhacker.debian>
-        <20180710111516.13b8c570@xhacker.debian>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: Re: [PATCH v10 0/6] Driver for at91 usart in spi mode
+Date: Wed, 11 Jul 2018 10:26:42 +0200
+Message-ID: <aecba39e-deba-c64b-9542-a446e074e95e@microchip.com>
+References: <20180625172230.29686-1-radu.pirea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180710111516.13b8c570@xhacker.debian>
+In-Reply-To: <20180625172230.29686-1-radu.pirea@microchip.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Radu Pirea <radu.pirea@microchip.com>, lee.jones@linaro.org
+Cc: broonie@kernel.org, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
-valid divisor latch fraction register. The fractional divisor width is
-4bits ~ 6bits.
+On 25/06/2018 at 19:22, Radu Pirea wrote:
+> Hello,
+> 
+> This is the second version of driver. I added a mfd driver which by
+> default probes atmel_serial driver and if in dt is specified to probe
+> the spi driver, then the spi-at91-usart driver will be probed. The
+> compatible for atmel_serial is now the compatible for at91-usart mfd
+> driver and compatilbe for atmel_serial driver was changed in order to
+> keep the bindings for serial as they are.
+> 
+> Changes in v10:
+> -fixed kbuild test robot warning
+> 
+> Changes in v9:
+> - minor changes
+> - rebased on top of broonie/for-4.19
+> 
+> Changes in v8:
+> - fixed passing an empty mfd cell if "atmel,usart-mode" value is invalid
+> 
+> Changes in v7:
+> - synced up  SPDIX license with module license
+> - numbering of usart modes starts from 0 insteand of 1
+> 
+> Changes in v6:
+> - removed unused compatible strings from serial and spi drivers
+> 
+> Changes in v5:
+> - fixed usage of stdout-path property with atmel_serial driver
+> 
+> Changes in v4:
+> - modified the spi driver to use cs gpio support form spi subsystem
+> - fixed dma transfers for serial driver
+> - squashed binding for spi and serial and moved them to mfd/atmel-usart.txt
+> 
+> Changes in v3:
+> - fixed spi slaves probing
+> 
+> Changes in v2:
+> - added at91-usart mfd driver
+> - modified spi-at91-usart driver to work as mfd driver child
+> - modified atmel_serial driver to work as mfd driver child
+> 
+> Changes in v1:
+> - added spi-at91-usart driver
+> 
+> 
+> Radu Pirea (6):
+>    MAINTAINERS: add at91 usart mfd driver
+>    dt-bindings: add binding for atmel-usart in SPI mode
+>    mfd: at91-usart: added mfd driver for usart
+>    MAINTAINERS: add at91 usart spi driver
+>    spi: at91-usart: add driver for at91-usart as spi
+>    tty/serial: atmel: change the driver to work under at91-usart mfd
 
-Now the preparation is done, it's easy to add the feature support.
-This patch firstly tries to get the fractional divisor width during
-probe, then setups dw specific get_divisor() and set_divisor() hook.
+For the record or if needed by the MAINTAINERS changes, you can add my:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+for the whole series.
 
-Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
----
- drivers/tty/serial/8250/8250_dw.c | 45 +++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+Once the remarks by Mark are addressed, you can certainly re-send the 
+series with all tags collected for Lee to take it, if he is okay with 
+this process, of course...
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index fa8a00e8c9c6..5a60c4814d62 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -31,6 +31,7 @@
- 
- /* Offsets for the DesignWare specific registers */
- #define DW_UART_USR	0x1f /* UART Status Register */
-+#define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
- #define DW_UART_CPR	0xf4 /* Component Parameter Register */
- #define DW_UART_UCV	0xf8 /* UART Component Version */
- 
-@@ -55,6 +56,7 @@
- 
- struct dw8250_data {
- 	u8			usr_reg;
-+	u8			dlf_size;
- 	int			line;
- 	int			msr_mask_on;
- 	int			msr_mask_off;
-@@ -366,6 +368,37 @@ static bool dw8250_idma_filter(struct dma_chan *chan, void *param)
- 	return param == chan->device->dev->parent;
- }
- 
-+/*
-+ * divisor = div(I) + div(F)
-+ * "I" means integer, "F" means fractional
-+ * quot = div(I) = clk / (16 * baud)
-+ * frac = div(F) * 2^dlf_size
-+ *
-+ * let rem = clk % (16 * baud)
-+ * we have: div(F) * (16 * baud) = rem
-+ * so frac = 2^dlf_size * rem / (16 * baud) = (rem << dlf_size) / (16 * baud)
-+ */
-+static unsigned int dw8250_get_divisor(struct uart_port *p,
-+				       unsigned int baud,
-+				       unsigned int *frac)
-+{
-+	unsigned int quot, rem, base_baud = baud * 16;
-+	struct dw8250_data *d = p->private_data;
-+
-+	quot = p->uartclk / base_baud;
-+	rem = p->uartclk % base_baud;
-+	*frac = DIV_ROUND_CLOSEST(rem << d->dlf_size, base_baud);
-+
-+	return quot;
-+}
-+
-+static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
-+			       unsigned int quot, unsigned int quot_frac)
-+{
-+	dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
-+	serial8250_do_set_divisor(p, baud, quot, quot_frac);
-+}
-+
- static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- {
- 	if (p->dev->of_node) {
-@@ -426,6 +459,18 @@ static void dw8250_setup_port(struct uart_port *p)
- 	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
- 		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
- 
-+	dw8250_writel_ext(p, DW_UART_DLF, ~0U);
-+	reg = dw8250_readl_ext(p, DW_UART_DLF);
-+	dw8250_writel_ext(p, DW_UART_DLF, 0);
-+
-+	if (reg) {
-+		struct dw8250_data *d = p->private_data;
-+
-+		d->dlf_size = fls(reg);
-+		p->get_divisor = dw8250_get_divisor;
-+		p->set_divisor = dw8250_set_divisor;
-+	}
-+
- 	reg = dw8250_readl_ext(p, DW_UART_CPR);
- 	if (!reg)
- 		return;
+Thanks, best regards,
+   Nicolas
+
+
+>   .../bindings/{serial => mfd}/atmel-usart.txt  |  25 +-
+>   MAINTAINERS                                   |  16 +
+>   drivers/mfd/Kconfig                           |   9 +
+>   drivers/mfd/Makefile                          |   1 +
+>   drivers/mfd/at91-usart.c                      |  71 +++
+>   drivers/spi/Kconfig                           |   9 +
+>   drivers/spi/Makefile                          |   1 +
+>   drivers/spi/spi-at91-usart.c                  | 432 ++++++++++++++++++
+>   drivers/tty/serial/Kconfig                    |   1 +
+>   drivers/tty/serial/atmel_serial.c             |  42 +-
+>   include/dt-bindings/mfd/at91-usart.h          |  17 +
+>   11 files changed, 607 insertions(+), 17 deletions(-)
+>   rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
+>   create mode 100644 drivers/mfd/at91-usart.c
+>   create mode 100644 drivers/spi/spi-at91-usart.c
+>   create mode 100644 include/dt-bindings/mfd/at91-usart.h
+> 
+
+
 -- 
-2.18.0
+Nicolas Ferre
