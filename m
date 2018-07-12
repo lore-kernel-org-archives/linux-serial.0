@@ -1,50 +1,39 @@
-From: Ludovic Desroches <ludovic.desroches@microchip.com>
-Subject: Re: [PATCH 3/3] tty/serial: atmel: manage shutdown in case of RS485
- or ISO7816 mode
-Date: Thu, 12 Jul 2018 17:23:41 +0200
-Message-ID: <20180712152341.p4lmjyldujv6et56@M43218.corp.atmel.com>
-References: <20180711131638.12622-1-ludovic.desroches@microchip.com>
- <20180711132623.13227-1-ludovic.desroches@microchip.com>
- <20180712145827.GB22502@kroah.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4] uart: fix race between uart_put_char() and
+ uart_shutdown()
+Date: Thu, 12 Jul 2018 17:40:15 +0200
+Message-ID: <20180712154015.GC13114@kroah.com>
+References: <20180706212220.GC3583@cisco.lan>
+ <20180711160744.32074-1-tycho@tycho.ws>
+ <20180712150438.GF22502@kroah.com>
+ <20180712150822.GC13192@cisco.cisco.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180712145827.GB22502@kroah.com>
+In-Reply-To: <20180712150822.GC13192@cisco.cisco.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-arch@vger.kernel.org, alexandre.belloni@bootlin.com, arnd@arndb.de, richard.genoud@gmail.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
+To: Tycho Andersen <tycho@tycho.ws>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Serge E . Hallyn" <serge@hallyn.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jul 12, 2018 at 04:58:27PM +0200, Greg KH wrote:
-> On Wed, Jul 11, 2018 at 03:26:23PM +0200, Ludovic Desroches wrote:
-> > From: Nicolas Ferre <nicolas.ferre@microchip.com>
+On Thu, Jul 12, 2018 at 09:08:22AM -0600, Tycho Andersen wrote:
+> On Thu, Jul 12, 2018 at 05:04:38PM +0200, Greg Kroah-Hartman wrote:
+> > On Wed, Jul 11, 2018 at 10:07:44AM -0600, Tycho Andersen wrote:
+> > > +	if (uport)
+> > > +		spin_lock_irqsave(&uport->lock, flags);
 > > 
-> > In atmel_shutdown() we call atmel_stop_rx() and atmel_stop_tx() functions.
-> > Prevent the rx restart that is implemented in RS485 or ISO7816 modes when
-> > calling atmel_stop_tx() by using the atomic information tasklet_shutdown
-> > that is already in place for this purpose.
-> > 
-> > Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> > ---
-> >  drivers/tty/serial/atmel_serial.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > That's the same thing as just calling uart_port_lock(), why aren't you
+> > doing that?
 > 
-> Did you send this patch twice?
+> Because the compiler can't seem to "see" through the macros/ref calls,
+> and I get the warning I mentioned here if I use them:
 > 
-> confused,
+> https://lkml.org/lkml/2018/7/6/840
 
-Yes sorry, as I didn't receive patch 3/3, I resend it. At the end, it
-was sent twice.
+What horrible version of gcc are you using that give you that?  Don't
+open-code things just because of a broken compiler.
 
-Regards
+thanks,
 
-Ludovic
-
-> 
-> greg k-h
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+greg k-h
