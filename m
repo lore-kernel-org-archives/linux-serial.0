@@ -1,108 +1,44 @@
-From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Subject: [PATCH v6 3/3] serial: 8250_dw: add fractional divisor support
-Date: Thu, 12 Jul 2018 09:59:40 +0800
-Message-ID: <20180712095940.20859423@xhacker.debian>
-References: <20180712095504.4d9583ce@xhacker.debian>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v4] uart: fix race between uart_put_char() and uart_shutdown()
+Date: Thu, 12 Jul 2018 12:03:08 +0300
+Message-ID: <CAHp75VfQe4p_z1uAoq87F6zqaCbqKG1ZgHeK55fjwkFGNtMK0A@mail.gmail.com>
+References: <20180706212220.GC3583@cisco.lan> <20180711160744.32074-1-tycho@tycho.ws>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180712095504.4d9583ce@xhacker.debian>
+In-Reply-To: <20180711160744.32074-1-tycho@tycho.ws>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Tycho Andersen <tycho@tycho.ws>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "Serge E . Hallyn" <serge@hallyn.com>
 List-Id: linux-serial@vger.kernel.org
 
-For Synopsys DesignWare 8250 uart which version >= 4.00a, there's a
-valid divisor latch fraction register. The fractional divisor width is
-4bits ~ 6bits.
+On Wed, Jul 11, 2018 at 7:07 PM, Tycho Andersen <tycho@tycho.ws> wrote:
 
-Now the preparation is done, it's easy to add the feature support.
-This patch firstly tries to get the fractional divisor width during
-probe, then setups dw specific get_divisor() and set_divisor() hook.
+> Anyway, since the lock is not acquired, if uart_shutdown() is called, the
+> last chunk of that function may release state->xmit.buf before its assigned
+> to null, and cause the race above.
+>
+> To fix it, let's lock uport->lock when allocating/deallocating
+> state->xmit.buf in addition to the per-port mutex.
 
-Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 45 +++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+>     * use the result of uart_port_lock() in uart_shutdown() to avoid
+>       uninitialized warning
+>     * don't use the uart_port_lock/unlock macros in uart_port_startup,
+>       instead test against uport directly; the compiler can't seem to "see"
+>       through the macros/ref/unref calls to not warn about uninitialized
+>       flags. We don't need to do a ref here since we hold the per-port
+>       mutex anyway.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index fa8a00e8c9c6..5a60c4814d62 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -31,6 +31,7 @@
- 
- /* Offsets for the DesignWare specific registers */
- #define DW_UART_USR	0x1f /* UART Status Register */
-+#define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
- #define DW_UART_CPR	0xf4 /* Component Parameter Register */
- #define DW_UART_UCV	0xf8 /* UART Component Version */
- 
-@@ -55,6 +56,7 @@
- 
- struct dw8250_data {
- 	u8			usr_reg;
-+	u8			dlf_size;
- 	int			line;
- 	int			msr_mask_on;
- 	int			msr_mask_off;
-@@ -366,6 +368,37 @@ static bool dw8250_idma_filter(struct dma_chan *chan, void *param)
- 	return param == chan->device->dev->parent;
- }
- 
-+/*
-+ * divisor = div(I) + div(F)
-+ * "I" means integer, "F" means fractional
-+ * quot = div(I) = clk / (16 * baud)
-+ * frac = div(F) * 2^dlf_size
-+ *
-+ * let rem = clk % (16 * baud)
-+ * we have: div(F) * (16 * baud) = rem
-+ * so frac = 2^dlf_size * rem / (16 * baud) = (rem << dlf_size) / (16 * baud)
-+ */
-+static unsigned int dw8250_get_divisor(struct uart_port *p,
-+				       unsigned int baud,
-+				       unsigned int *frac)
-+{
-+	unsigned int quot, rem, base_baud = baud * 16;
-+	struct dw8250_data *d = p->private_data;
-+
-+	quot = p->uartclk / base_baud;
-+	rem = p->uartclk % base_baud;
-+	*frac = DIV_ROUND_CLOSEST(rem << d->dlf_size, base_baud);
-+
-+	return quot;
-+}
-+
-+static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
-+			       unsigned int quot, unsigned int quot_frac)
-+{
-+	dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
-+	serial8250_do_set_divisor(p, baud, quot, quot_frac);
-+}
-+
- static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- {
- 	if (p->dev->of_node) {
-@@ -426,6 +459,18 @@ static void dw8250_setup_port(struct uart_port *p)
- 	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
- 		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
- 
-+	dw8250_writel_ext(p, DW_UART_DLF, ~0U);
-+	reg = dw8250_readl_ext(p, DW_UART_DLF);
-+	dw8250_writel_ext(p, DW_UART_DLF, 0);
-+
-+	if (reg) {
-+		struct dw8250_data *d = p->private_data;
-+
-+		d->dlf_size = fls(reg);
-+		p->get_divisor = dw8250_get_divisor;
-+		p->set_divisor = dw8250_set_divisor;
-+	}
-+
- 	reg = dw8250_readl_ext(p, DW_UART_CPR);
- 	if (!reg)
- 		return;
+> +       if (uport)
+> +               spin_lock_irqsave(&uport->lock, flags);
+
+> +       if (uport)
+> +               spin_unlock_irqrestore(&uport->lock, flags);
+
+At some point it It was uart_port_lock()/uart_port_unlock(), and you
+changed to simple spin lock. The macro also take reference to the
+port. Do we aware about that here?
+
 -- 
-2.18.0
+With Best Regards,
+Andy Shevchenko
