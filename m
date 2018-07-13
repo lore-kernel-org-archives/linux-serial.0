@@ -1,49 +1,63 @@
-From: Colin King <colin.king@canonical.com>
-Subject: [PATCH] tty: serial: jsm: remove redundant pointer ch
-Date: Fri, 13 Jul 2018 10:05:35 +0100
-Message-ID: <20180713090535.3205-1-colin.king@canonical.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4] uart: fix race between uart_put_char() and
+ uart_shutdown()
+Date: Fri, 13 Jul 2018 11:28:28 +0200
+Message-ID: <20180713092828.GA6589@kroah.com>
+References: <20180706212220.GC3583@cisco.lan>
+ <20180711160744.32074-1-tycho@tycho.ws>
+ <20180712150438.GF22502@kroah.com>
+ <20180712150822.GC13192@cisco.cisco.com>
+ <20180712154015.GC13114@kroah.com>
+ <20180712181846.GD13192@cisco.cisco.com>
+ <20180712182545.GA30099@kroah.com>
+ <20180712183001.GE13192@cisco.cisco.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180712183001.GE13192@cisco.cisco.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Guilherme G . Piccoli" <gpiccoli@linux.vnet.ibm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
-Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Tycho Andersen <tycho@tycho.ws>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Serge E . Hallyn" <serge@hallyn.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Thu, Jul 12, 2018 at 12:30:01PM -0600, Tycho Andersen wrote:
+> On Thu, Jul 12, 2018 at 08:25:45PM +0200, Greg Kroah-Hartman wrote:
+> > On Thu, Jul 12, 2018 at 12:18:46PM -0600, Tycho Andersen wrote:
+> > > On Thu, Jul 12, 2018 at 05:40:15PM +0200, Greg Kroah-Hartman wrote:
+> > > > On Thu, Jul 12, 2018 at 09:08:22AM -0600, Tycho Andersen wrote:
+> > > > > On Thu, Jul 12, 2018 at 05:04:38PM +0200, Greg Kroah-Hartman wrote:
+> > > > > > On Wed, Jul 11, 2018 at 10:07:44AM -0600, Tycho Andersen wrote:
+> > > > > > > +	if (uport)
+> > > > > > > +		spin_lock_irqsave(&uport->lock, flags);
+> > > > > > 
+> > > > > > That's the same thing as just calling uart_port_lock(), why aren't you
+> > > > > > doing that?
+> > > > > 
+> > > > > Because the compiler can't seem to "see" through the macros/ref calls,
+> > > > > and I get the warning I mentioned here if I use them:
+> > > > > 
+> > > > > https://lkml.org/lkml/2018/7/6/840
+> > > > 
+> > > > What horrible version of gcc are you using that give you that?  Don't
+> > > > open-code things just because of a broken compiler.
+> > > 
+> > > I've tried with both 7.3.0 and 5.4.0. I think the reason we see this
+> > > here but not elsewhere in the file is because there's an actual
+> > > function call (free_page()) in the critical section.
+> > > 
+> > > If we move that out, something like the below patch, it all works for
+> > > me.
+> > 
+> > Ick.  Which version of this series had the problem?  Let me test it out
+> > here...
+> 
+> v3, if you remove the initialization of flags from both functions you
+> should see it.
 
-Pointer ch is being assigned but is never used hence it is redundant
-and can be removed.
+Ok, I tried v3 out and yes, you are right, removing the "= 0" causes gcc
+to complain.  The compiler is being dumb here, so I'll just leave it
+as-is.  I've queued up the v3 version now, thanks for sticking with
+this.
 
-Cleans up clang warning:
-warning: variable 'ch' set but not used [-Wunused-but-set-variable]
-
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/tty/serial/jsm/jsm_tty.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
-index b6bd6e15e07b..689774c073ca 100644
---- a/drivers/tty/serial/jsm/jsm_tty.c
-+++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -430,7 +430,6 @@ int jsm_uart_port_init(struct jsm_board *brd)
- {
- 	int i, rc;
- 	unsigned int line;
--	struct jsm_channel *ch;
- 
- 	if (!brd)
- 		return -ENXIO;
-@@ -444,7 +443,7 @@ int jsm_uart_port_init(struct jsm_board *brd)
- 	brd->nasync = brd->maxports;
- 
- 	/* Set up channel variables */
--	for (i = 0; i < brd->nasync; i++, ch = brd->channels[i]) {
-+	for (i = 0; i < brd->nasync; i++) {
- 
- 		if (!brd->channels[i])
- 			continue;
--- 
-2.17.1
+greg k-h
