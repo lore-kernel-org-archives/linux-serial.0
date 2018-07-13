@@ -1,67 +1,56 @@
-From: Tycho Andersen <tycho@tycho.ws>
-Subject: Re: [PATCH v4] uart: fix race between uart_put_char() and
- uart_shutdown()
-Date: Fri, 13 Jul 2018 08:01:42 -0600
-Message-ID: <20180713140142.GH13192@cisco.cisco.com>
-References: <20180706212220.GC3583@cisco.lan>
- <20180711160744.32074-1-tycho@tycho.ws>
- <20180712150438.GF22502@kroah.com>
- <20180712150822.GC13192@cisco.cisco.com>
- <20180712154015.GC13114@kroah.com>
- <20180712181846.GD13192@cisco.cisco.com>
- <20180712182545.GA30099@kroah.com>
- <20180712183001.GE13192@cisco.cisco.com>
- <20180713092828.GA6589@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH] serial: 8250_ingenic: Add support for the JZ4725B SoC
+Date: Fri, 13 Jul 2018 16:38:40 +0200
+Message-ID: <20180713143840.9721-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180713092828.GA6589@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Serge E . Hallyn" <serge@hallyn.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 13, 2018 at 11:28:28AM +0200, Greg Kroah-Hartman wrote:
-> On Thu, Jul 12, 2018 at 12:30:01PM -0600, Tycho Andersen wrote:
-> > On Thu, Jul 12, 2018 at 08:25:45PM +0200, Greg Kroah-Hartman wrote:
-> > > On Thu, Jul 12, 2018 at 12:18:46PM -0600, Tycho Andersen wrote:
-> > > > On Thu, Jul 12, 2018 at 05:40:15PM +0200, Greg Kroah-Hartman wrote:
-> > > > > On Thu, Jul 12, 2018 at 09:08:22AM -0600, Tycho Andersen wrote:
-> > > > > > On Thu, Jul 12, 2018 at 05:04:38PM +0200, Greg Kroah-Hartman wrote:
-> > > > > > > On Wed, Jul 11, 2018 at 10:07:44AM -0600, Tycho Andersen wrote:
-> > > > > > > > +	if (uport)
-> > > > > > > > +		spin_lock_irqsave(&uport->lock, flags);
-> > > > > > > 
-> > > > > > > That's the same thing as just calling uart_port_lock(), why aren't you
-> > > > > > > doing that?
-> > > > > > 
-> > > > > > Because the compiler can't seem to "see" through the macros/ref calls,
-> > > > > > and I get the warning I mentioned here if I use them:
-> > > > > > 
-> > > > > > https://lkml.org/lkml/2018/7/6/840
-> > > > > 
-> > > > > What horrible version of gcc are you using that give you that?  Don't
-> > > > > open-code things just because of a broken compiler.
-> > > > 
-> > > > I've tried with both 7.3.0 and 5.4.0. I think the reason we see this
-> > > > here but not elsewhere in the file is because there's an actual
-> > > > function call (free_page()) in the critical section.
-> > > > 
-> > > > If we move that out, something like the below patch, it all works for
-> > > > me.
-> > > 
-> > > Ick.  Which version of this series had the problem?  Let me test it out
-> > > here...
-> > 
-> > v3, if you remove the initialization of flags from both functions you
-> > should see it.
-> 
-> Ok, I tried v3 out and yes, you are right, removing the "= 0" causes gcc
-> to complain.  The compiler is being dumb here, so I'll just leave it
-> as-is.  I've queued up the v3 version now, thanks for sticking with
-> this.
+The UART in the jz4725b works just like in the other JZ SoCs, so this
+commit simply adds a new compatible string.
 
-Great, thanks!
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ Documentation/devicetree/bindings/serial/ingenic,uart.txt | 1 +
+ drivers/tty/serial/8250/8250_ingenic.c                    | 5 +++++
+ 2 files changed, 6 insertions(+)
 
-Tycho
+diff --git a/Documentation/devicetree/bindings/serial/ingenic,uart.txt b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
+index c3c6406d5cfe..a0b34fd3b602 100644
+--- a/Documentation/devicetree/bindings/serial/ingenic,uart.txt
++++ b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
+@@ -3,6 +3,7 @@
+ Required properties:
+ - compatible : One of:
+   - "ingenic,jz4740-uart",
++  - "ingenic,jz4725b-uart",
+   - "ingenic,jz4760-uart",
+   - "ingenic,jz4770-uart",
+   - "ingenic,jz4775-uart",
+diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+index 15a8c8dfa92b..760266559a5a 100644
+--- a/drivers/tty/serial/8250/8250_ingenic.c
++++ b/drivers/tty/serial/8250/8250_ingenic.c
+@@ -133,6 +133,10 @@ EARLYCON_DECLARE(jz4740_uart, ingenic_early_console_setup);
+ OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
+ 		    ingenic_early_console_setup);
+ 
++EARLYCON_DECLARE(jz4725b_uart, ingenic_early_console_setup);
++OF_EARLYCON_DECLARE(jz4725b_uart, "ingenic,jz4725b-uart",
++		    ingenic_early_console_setup);
++
+ EARLYCON_DECLARE(jz4770_uart, ingenic_early_console_setup);
+ OF_EARLYCON_DECLARE(jz4770_uart, "ingenic,jz4770-uart",
+ 		    ingenic_early_console_setup);
+@@ -330,6 +334,7 @@ static const struct ingenic_uart_config jz4780_uart_config = {
+ 
+ static const struct of_device_id of_match[] = {
+ 	{ .compatible = "ingenic,jz4740-uart", .data = &jz4740_uart_config },
++	{ .compatible = "ingenic,jz4725b-uart", .data = &jz4740_uart_config },
+ 	{ .compatible = "ingenic,jz4760-uart", .data = &jz4760_uart_config },
+ 	{ .compatible = "ingenic,jz4770-uart", .data = &jz4760_uart_config },
+ 	{ .compatible = "ingenic,jz4775-uart", .data = &jz4760_uart_config },
+-- 
+2.11.0
