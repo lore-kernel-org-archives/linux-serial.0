@@ -1,56 +1,89 @@
-From: Tycho Andersen <tycho@tycho.ws>
-Subject: Re: [PATCH v4] uart: fix race between uart_put_char() and
- uart_shutdown()
-Date: Thu, 12 Jul 2018 12:30:01 -0600
-Message-ID: <20180712183001.GE13192@cisco.cisco.com>
-References: <20180706212220.GC3583@cisco.lan>
- <20180711160744.32074-1-tycho@tycho.ws>
- <20180712150438.GF22502@kroah.com>
- <20180712150822.GC13192@cisco.cisco.com>
- <20180712154015.GC13114@kroah.com>
- <20180712181846.GD13192@cisco.cisco.com>
- <20180712182545.GA30099@kroah.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v10 0/6] Driver for at91 usart in spi mode
+Date: Fri, 13 Jul 2018 08:37:05 +0100
+Message-ID: <20180713073705.GT4641@dell>
+References: <20180625172230.29686-1-radu.pirea@microchip.com>
+ <aecba39e-deba-c64b-9542-a446e074e95e@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180712182545.GA30099@kroah.com>
+In-Reply-To: <aecba39e-deba-c64b-9542-a446e074e95e@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Serge E . Hallyn" <serge@hallyn.com>
+To: Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: Radu Pirea <radu.pirea@microchip.com>, broonie@kernel.org, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jul 12, 2018 at 08:25:45PM +0200, Greg Kroah-Hartman wrote:
-> On Thu, Jul 12, 2018 at 12:18:46PM -0600, Tycho Andersen wrote:
-> > On Thu, Jul 12, 2018 at 05:40:15PM +0200, Greg Kroah-Hartman wrote:
-> > > On Thu, Jul 12, 2018 at 09:08:22AM -0600, Tycho Andersen wrote:
-> > > > On Thu, Jul 12, 2018 at 05:04:38PM +0200, Greg Kroah-Hartman wrote:
-> > > > > On Wed, Jul 11, 2018 at 10:07:44AM -0600, Tycho Andersen wrote:
-> > > > > > +	if (uport)
-> > > > > > +		spin_lock_irqsave(&uport->lock, flags);
-> > > > > 
-> > > > > That's the same thing as just calling uart_port_lock(), why aren't you
-> > > > > doing that?
-> > > > 
-> > > > Because the compiler can't seem to "see" through the macros/ref calls,
-> > > > and I get the warning I mentioned here if I use them:
-> > > > 
-> > > > https://lkml.org/lkml/2018/7/6/840
-> > > 
-> > > What horrible version of gcc are you using that give you that?  Don't
-> > > open-code things just because of a broken compiler.
+On Wed, 11 Jul 2018, Nicolas Ferre wrote:
+
+> On 25/06/2018 at 19:22, Radu Pirea wrote:
+> > Hello,
 > > 
-> > I've tried with both 7.3.0 and 5.4.0. I think the reason we see this
-> > here but not elsewhere in the file is because there's an actual
-> > function call (free_page()) in the critical section.
+> > This is the second version of driver. I added a mfd driver which by
+> > default probes atmel_serial driver and if in dt is specified to probe
+> > the spi driver, then the spi-at91-usart driver will be probed. The
+> > compatible for atmel_serial is now the compatible for at91-usart mfd
+> > driver and compatilbe for atmel_serial driver was changed in order to
+> > keep the bindings for serial as they are.
 > > 
-> > If we move that out, something like the below patch, it all works for
-> > me.
+> > Changes in v10:
+> > -fixed kbuild test robot warning
+> > 
+> > Changes in v9:
+> > - minor changes
+> > - rebased on top of broonie/for-4.19
+> > 
+> > Changes in v8:
+> > - fixed passing an empty mfd cell if "atmel,usart-mode" value is invalid
+> > 
+> > Changes in v7:
+> > - synced up  SPDIX license with module license
+> > - numbering of usart modes starts from 0 insteand of 1
+> > 
+> > Changes in v6:
+> > - removed unused compatible strings from serial and spi drivers
+> > 
+> > Changes in v5:
+> > - fixed usage of stdout-path property with atmel_serial driver
+> > 
+> > Changes in v4:
+> > - modified the spi driver to use cs gpio support form spi subsystem
+> > - fixed dma transfers for serial driver
+> > - squashed binding for spi and serial and moved them to mfd/atmel-usart.txt
+> > 
+> > Changes in v3:
+> > - fixed spi slaves probing
+> > 
+> > Changes in v2:
+> > - added at91-usart mfd driver
+> > - modified spi-at91-usart driver to work as mfd driver child
+> > - modified atmel_serial driver to work as mfd driver child
+> > 
+> > Changes in v1:
+> > - added spi-at91-usart driver
+> > 
+> > 
+> > Radu Pirea (6):
+> >    MAINTAINERS: add at91 usart mfd driver
+> >    dt-bindings: add binding for atmel-usart in SPI mode
+> >    mfd: at91-usart: added mfd driver for usart
+> >    MAINTAINERS: add at91 usart spi driver
+> >    spi: at91-usart: add driver for at91-usart as spi
+> >    tty/serial: atmel: change the driver to work under at91-usart mfd
 > 
-> Ick.  Which version of this series had the problem?  Let me test it out
-> here...
+> For the record or if needed by the MAINTAINERS changes, you can add my:
+> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> for the whole series.
+> 
+> Once the remarks by Mark are addressed, you can certainly re-send the series
+> with all tags collected for Lee to take it, if he is okay with this process,
+> of course...
 
-v3, if you remove the initialization of flags from both functions you
-should see it.
+That's fine.  No problem.
 
-Tycho
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
