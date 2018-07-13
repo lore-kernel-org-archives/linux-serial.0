@@ -1,89 +1,178 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v10 0/6] Driver for at91 usart in spi mode
-Date: Fri, 13 Jul 2018 08:37:05 +0100
-Message-ID: <20180713073705.GT4641@dell>
-References: <20180625172230.29686-1-radu.pirea@microchip.com>
- <aecba39e-deba-c64b-9542-a446e074e95e@microchip.com>
+From: Ludovic Desroches <ludovic.desroches@microchip.com>
+Subject: Re: [PATCH 1/3] tty/serial_core: add ISO7816 infrastructure
+Date: Fri, 13 Jul 2018 09:56:48 +0200
+Message-ID: <20180713075648.ya2er5eip6uldl75@M43218.corp.atmel.com>
+References: <20180711131638.12622-1-ludovic.desroches@microchip.com>
+ <20180711131638.12622-2-ludovic.desroches@microchip.com>
+ <20180712150229.GE22502@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <aecba39e-deba-c64b-9542-a446e074e95e@microchip.com>
+In-Reply-To: <20180712150229.GE22502@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Radu Pirea <radu.pirea@microchip.com>, broonie@kernel.org, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-arch@vger.kernel.org, alexandre.belloni@bootlin.com, arnd@arndb.de, richard.genoud@gmail.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 11 Jul 2018, Nicolas Ferre wrote:
-
-> On 25/06/2018 at 19:22, Radu Pirea wrote:
-> > Hello,
+On Thu, Jul 12, 2018 at 05:02:29PM +0200, Greg KH wrote:
+> On Wed, Jul 11, 2018 at 03:16:36PM +0200, Ludovic Desroches wrote:
+> > From: Nicolas Ferre <nicolas.ferre@microchip.com>
 > > 
-> > This is the second version of driver. I added a mfd driver which by
-> > default probes atmel_serial driver and if in dt is specified to probe
-> > the spi driver, then the spi-at91-usart driver will be probed. The
-> > compatible for atmel_serial is now the compatible for at91-usart mfd
-> > driver and compatilbe for atmel_serial driver was changed in order to
-> > keep the bindings for serial as they are.
+> > Add the ISO7816 ioctl and associated accessors and data structure.
+> > Drivers can then use this common implementation to handle ISO7816.
 > > 
-> > Changes in v10:
-> > -fixed kbuild test robot warning
+> > Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> > [ludovic.desroches@microchip.com: squash and rebase, removal of gpios, checkpatch fixes]
+> > Signed-off-by: Ludovic Desroches <ludovic.desroches@microchip.com>
+> > ---
+> >  drivers/tty/serial/serial_core.c  | 49 +++++++++++++++++++++++++++++++++++++++
+> >  include/linux/serial_core.h       |  3 +++
+> >  include/uapi/asm-generic/ioctls.h |  2 ++
+> >  include/uapi/linux/serial.h       | 17 ++++++++++++++
+> >  4 files changed, 71 insertions(+)
 > > 
-> > Changes in v9:
-> > - minor changes
-> > - rebased on top of broonie/for-4.19
-> > 
-> > Changes in v8:
-> > - fixed passing an empty mfd cell if "atmel,usart-mode" value is invalid
-> > 
-> > Changes in v7:
-> > - synced up  SPDIX license with module license
-> > - numbering of usart modes starts from 0 insteand of 1
-> > 
-> > Changes in v6:
-> > - removed unused compatible strings from serial and spi drivers
-> > 
-> > Changes in v5:
-> > - fixed usage of stdout-path property with atmel_serial driver
-> > 
-> > Changes in v4:
-> > - modified the spi driver to use cs gpio support form spi subsystem
-> > - fixed dma transfers for serial driver
-> > - squashed binding for spi and serial and moved them to mfd/atmel-usart.txt
-> > 
-> > Changes in v3:
-> > - fixed spi slaves probing
-> > 
-> > Changes in v2:
-> > - added at91-usart mfd driver
-> > - modified spi-at91-usart driver to work as mfd driver child
-> > - modified atmel_serial driver to work as mfd driver child
-> > 
-> > Changes in v1:
-> > - added spi-at91-usart driver
-> > 
-> > 
-> > Radu Pirea (6):
-> >    MAINTAINERS: add at91 usart mfd driver
-> >    dt-bindings: add binding for atmel-usart in SPI mode
-> >    mfd: at91-usart: added mfd driver for usart
-> >    MAINTAINERS: add at91 usart spi driver
-> >    spi: at91-usart: add driver for at91-usart as spi
-> >    tty/serial: atmel: change the driver to work under at91-usart mfd
+> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> > index 9c14a453f73c..c89ac59f6f8c 100644
+> > --- a/drivers/tty/serial/serial_core.c
+> > +++ b/drivers/tty/serial/serial_core.c
+> > @@ -1301,6 +1301,47 @@ static int uart_set_rs485_config(struct uart_port *port,
+> >  	return 0;
+> >  }
+> >  
+> > +static int uart_get_iso7816_config(struct uart_port *port,
+> > +				   struct serial_iso7816 __user *iso7816)
+> > +{
+> > +	unsigned long flags;
+> > +	struct serial_iso7816 aux;
+> > +
+> > +	spin_lock_irqsave(&port->lock, flags);
+> > +	aux = port->iso7816;
+> > +	spin_unlock_irqrestore(&port->lock, flags);
+> > +
+> > +	if (copy_to_user(iso7816, &aux, sizeof(aux)))
+> > +		return -EFAULT;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int uart_set_iso7816_config(struct uart_port *port,
+> > +				   struct serial_iso7816 __user *iso7816_user)
+> > +{
+> > +	struct serial_iso7816 iso7816;
+> > +	int ret;
+> > +	unsigned long flags;
+> > +
+> > +	if (!port->iso7816_config)
+> > +		return -ENOIOCTLCMD;
+> > +
+> > +	if (copy_from_user(&iso7816, iso7816_user, sizeof(*iso7816_user)))
+> > +		return -EFAULT;
+> > +
+> > +	spin_lock_irqsave(&port->lock, flags);
+> > +	ret = port->iso7816_config(port, &iso7816);
+> > +	spin_unlock_irqrestore(&port->lock, flags);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	if (copy_to_user(iso7816_user, &port->iso7816, sizeof(port->iso7816)))
+> > +		return -EFAULT;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  /*
+> >   * Called via sys_ioctl.  We can use spin_lock_irq() here.
+> >   */
+> > @@ -1385,6 +1426,14 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+> >  	case TIOCSRS485:
+> >  		ret = uart_set_rs485_config(uport, uarg);
+> >  		break;
+> > +
+> > +	case TIOCSISO7816:
+> > +		ret = uart_set_iso7816_config(state->uart_port, uarg);
+> > +		break;
+> > +
+> > +	case TIOCGISO7816:
+> > +		ret = uart_get_iso7816_config(state->uart_port, uarg);
+> > +		break;
+> >  	default:
+> >  		if (uport->ops->ioctl)
+> >  			ret = uport->ops->ioctl(uport, cmd, arg);
+> > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> > index 06ea4eeb09ab..d6e7747ffd46 100644
+> > --- a/include/linux/serial_core.h
+> > +++ b/include/linux/serial_core.h
+> > @@ -137,6 +137,8 @@ struct uart_port {
+> >  	void			(*handle_break)(struct uart_port *);
+> >  	int			(*rs485_config)(struct uart_port *,
+> >  						struct serial_rs485 *rs485);
+> > +	int			(*iso7816_config)(struct uart_port *,
+> > +						  struct serial_iso7816 *iso7816);
+> >  	unsigned int		irq;			/* irq number */
+> >  	unsigned long		irqflags;		/* irq flags  */
+> >  	unsigned int		uartclk;		/* base uart clock */
+> > @@ -253,6 +255,7 @@ struct uart_port {
+> >  	struct attribute_group	*attr_group;		/* port specific attributes */
+> >  	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
+> >  	struct serial_rs485     rs485;
+> > +	struct serial_iso7816   iso7816;
+> >  	void			*private_data;		/* generic platform data pointer */
+> >  };
+> >  
+> > diff --git a/include/uapi/asm-generic/ioctls.h b/include/uapi/asm-generic/ioctls.h
+> > index 040651735662..0e5c79726c2d 100644
+> > --- a/include/uapi/asm-generic/ioctls.h
+> > +++ b/include/uapi/asm-generic/ioctls.h
+> > @@ -66,6 +66,8 @@
+> >  #ifndef TIOCSRS485
+> >  #define TIOCSRS485	0x542F
+> >  #endif
+> > +#define TIOCGISO7816	0x5430
+> > +#define TIOCSISO7816	0x5431
+> >  #define TIOCGPTN	_IOR('T', 0x30, unsigned int) /* Get Pty Number (of pty-mux device) */
+> >  #define TIOCSPTLCK	_IOW('T', 0x31, int)  /* Lock/unlock Pty */
+> >  #define TIOCGDEV	_IOR('T', 0x32, unsigned int) /* Get primary device node of /dev/console */
+> > diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
+> > index 3fdd0dee8b41..93eb3c496ff1 100644
+> > --- a/include/uapi/linux/serial.h
+> > +++ b/include/uapi/linux/serial.h
+> > @@ -132,4 +132,21 @@ struct serial_rs485 {
+> >  					   are a royal PITA .. */
+> >  };
+> >  
+> > +/*
+> > + * Serial interface for controlling ISO7816 settings on chips with suitable
+> > + * support. Set with TIOCSISO7816 and get with TIOCGISO7816 if supported by
+> > + * your platform.
+> > + */
+> > +struct serial_iso7816 {
+> > +	__u32	flags;			/* ISO7816 feature flags */
+> > +#define SER_ISO7816_ENABLED		(1 << 0)
+> > +#define SER_ISO7816_T_PARAM		(0x0f << 4)
+> > +#define SER_ISO7816_T(t)		(((t) & 0x0f) << 4)
+> > +	__u32	tg;
+> > +	__u32	sc_fi;
+> > +	__u32	sc_di;
+> > +	__u32	clk;
+> > +	__u32	reserved[5];
 > 
-> For the record or if needed by the MAINTAINERS changes, you can add my:
-> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> for the whole series.
+> You need to verify that reserved[] is all set to 0, otherwise people
+> will put crud in there and you can never use it for anything in the
+> future.
+
+Should I just verify or force it to 0?
+
+Regards
+
+Ludovic
+
 > 
-> Once the remarks by Mark are addressed, you can certainly re-send the series
-> with all tags collected for Lee to take it, if he is okay with this process,
-> of course...
-
-That's fine.  No problem.
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> thanks,
+> 
+> greg k-h
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
