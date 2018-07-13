@@ -1,63 +1,60 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4] uart: fix race between uart_put_char() and
- uart_shutdown()
-Date: Fri, 13 Jul 2018 11:28:28 +0200
-Message-ID: <20180713092828.GA6589@kroah.com>
-References: <20180706212220.GC3583@cisco.lan>
- <20180711160744.32074-1-tycho@tycho.ws>
- <20180712150438.GF22502@kroah.com>
- <20180712150822.GC13192@cisco.cisco.com>
- <20180712154015.GC13114@kroah.com>
- <20180712181846.GD13192@cisco.cisco.com>
- <20180712182545.GA30099@kroah.com>
- <20180712183001.GE13192@cisco.cisco.com>
+From: Radu Pirea <radu.pirea@microchip.com>
+Subject: Re: [PATCH v10 5/6] spi: at91-usart: add driver for at91-usart as spi
+Date: Fri, 13 Jul 2018 12:56:22 +0300
+Message-ID: <dc410321-5dfd-7c26-2a3e-d2b2840da214@microchip.com>
+References: <20180625172230.29686-1-radu.pirea@microchip.com>
+ <20180625172230.29686-6-radu.pirea@microchip.com>
+ <20180710181559.GG8104@sirena.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180712183001.GE13192@cisco.cisco.com>
+In-Reply-To: <20180710181559.GG8104@sirena.org.uk>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tycho Andersen <tycho@tycho.ws>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Serge E . Hallyn" <serge@hallyn.com>
+To: Mark Brown <broonie@kernel.org>
+Cc: nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jul 12, 2018 at 12:30:01PM -0600, Tycho Andersen wrote:
-> On Thu, Jul 12, 2018 at 08:25:45PM +0200, Greg Kroah-Hartman wrote:
-> > On Thu, Jul 12, 2018 at 12:18:46PM -0600, Tycho Andersen wrote:
-> > > On Thu, Jul 12, 2018 at 05:40:15PM +0200, Greg Kroah-Hartman wrote:
-> > > > On Thu, Jul 12, 2018 at 09:08:22AM -0600, Tycho Andersen wrote:
-> > > > > On Thu, Jul 12, 2018 at 05:04:38PM +0200, Greg Kroah-Hartman wrote:
-> > > > > > On Wed, Jul 11, 2018 at 10:07:44AM -0600, Tycho Andersen wrote:
-> > > > > > > +	if (uport)
-> > > > > > > +		spin_lock_irqsave(&uport->lock, flags);
-> > > > > > 
-> > > > > > That's the same thing as just calling uart_port_lock(), why aren't you
-> > > > > > doing that?
-> > > > > 
-> > > > > Because the compiler can't seem to "see" through the macros/ref calls,
-> > > > > and I get the warning I mentioned here if I use them:
-> > > > > 
-> > > > > https://lkml.org/lkml/2018/7/6/840
-> > > > 
-> > > > What horrible version of gcc are you using that give you that?  Don't
-> > > > open-code things just because of a broken compiler.
-> > > 
-> > > I've tried with both 7.3.0 and 5.4.0. I think the reason we see this
-> > > here but not elsewhere in the file is because there's an actual
-> > > function call (free_page()) in the critical section.
-> > > 
-> > > If we move that out, something like the below patch, it all works for
-> > > me.
-> > 
-> > Ick.  Which version of this series had the problem?  Let me test it out
-> > here...
+
+
+On 07/10/2018 09:15 PM, Mark Brown wrote:
+> On Mon, Jun 25, 2018 at 08:22:29PM +0300, Radu Pirea wrote:
 > 
-> v3, if you remove the initialization of flags from both functions you
-> should see it.
+> This is mostly good, just a couple of small things:
+> 
+>> +config SPI_AT91_USART
+>> +	tristate "Atmel USART Controller SPI driver"
+>> +	depends on HAS_DMA
+>> +	depends on (ARCH_AT91 || COMPILE_TEST)
+>> +	select MFD_AT91_USART
+> 
+> Why is this selecting rather than depending on the MFD like we normally
+> do?
+> 
 
-Ok, I tried v3 out and yes, you are right, removing the "= 0" causes gcc
-to complain.  The compiler is being dumb here, so I'll just leave it
-as-is.  I've queued up the v3 version now, thanks for sticking with
-this.
+Hi Mark,
 
-greg k-h
+If I add depends instead of select, current defconfigs will be broken 
+and the proper driver will not be selected. Like this, there is no 
+required change in any defconfig. Selecting the serial or spi driver 
+from menuconfig makes the MFD completely transparent.
+>> @@ -0,0 +1,432 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Driver for AT91 USART Controllers as SPI
+>> + *
+>> + * Copyright (C) 2018 Microchip Technology Inc.
+>> + * Author: Radu Pirea <radu.pirea@microchip.com>
+>> + */
+> 
+> Please use C++ comments for the whole block so it looks a bit more
+> intentional.
+
+Ok. I will change it.
+
+> 
+> Otherwise
+> 
+> Reviwed-by: Mark Brown <broonie@kernel.org>
+> 
