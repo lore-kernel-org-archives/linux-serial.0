@@ -1,56 +1,52 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH] serial: 8250_ingenic: Add support for the JZ4725B SoC
-Date: Fri, 13 Jul 2018 16:38:40 +0200
-Message-ID: <20180713143840.9721-1-paul@crapouillou.net>
+From: Radu Pirea <radu.pirea@microchip.com>
+Subject: [PATCH v11 1/6] MAINTAINERS: add at91 usart mfd driver
+Date: Fri, 13 Jul 2018 19:47:31 +0300
+Message-ID: <20180713164736.26028-2-radu.pirea@microchip.com>
+References: <20180713164736.26028-1-radu.pirea@microchip.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180713164736.26028-1-radu.pirea@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+To: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, lee.jones@linaro.org, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org
+Cc: linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-The UART in the jz4725b works just like in the other JZ SoCs, so this
-commit simply adds a new compatible string.
+Added entry for at91 usart mfd driver.
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 ---
- Documentation/devicetree/bindings/serial/ingenic,uart.txt | 1 +
- drivers/tty/serial/8250/8250_ingenic.c                    | 5 +++++
- 2 files changed, 6 insertions(+)
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/ingenic,uart.txt b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-index c3c6406d5cfe..a0b34fd3b602 100644
---- a/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-+++ b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-@@ -3,6 +3,7 @@
- Required properties:
- - compatible : One of:
-   - "ingenic,jz4740-uart",
-+  - "ingenic,jz4725b-uart",
-   - "ingenic,jz4760-uart",
-   - "ingenic,jz4770-uart",
-   - "ingenic,jz4775-uart",
-diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-index 15a8c8dfa92b..760266559a5a 100644
---- a/drivers/tty/serial/8250/8250_ingenic.c
-+++ b/drivers/tty/serial/8250/8250_ingenic.c
-@@ -133,6 +133,10 @@ EARLYCON_DECLARE(jz4740_uart, ingenic_early_console_setup);
- OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
- 		    ingenic_early_console_setup);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 9d5eeff51b5f..7ac6e6af5292 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9321,6 +9321,7 @@ M:	Richard Genoud <richard.genoud@gmail.com>
+ S:	Maintained
+ F:	drivers/tty/serial/atmel_serial.c
+ F:	drivers/tty/serial/atmel_serial.h
++F:	Documentation/devicetree/bindings/mfd/atmel-usart.txt
  
-+EARLYCON_DECLARE(jz4725b_uart, ingenic_early_console_setup);
-+OF_EARLYCON_DECLARE(jz4725b_uart, "ingenic,jz4725b-uart",
-+		    ingenic_early_console_setup);
+ MICROCHIP / ATMEL DMA DRIVER
+ M:	Ludovic Desroches <ludovic.desroches@microchip.com>
+@@ -9353,6 +9354,14 @@ S:	Supported
+ F:	drivers/mtd/nand/raw/atmel/*
+ F:	Documentation/devicetree/bindings/mtd/atmel-nand.txt
+ 
++MICROCHIP AT91 USART MFD DRIVER
++M:	Radu Pirea <radu.pirea@microchip.com>
++L:	linux-kernel@vger.kernel.org
++S:	Supported
++F:	drivers/mfd/at91-usart.c
++F:	include/dt-bindings/mfd/at91-usart.h
++F:	Documentation/devicetree/bindings/mfd/atmel-usart.txt
 +
- EARLYCON_DECLARE(jz4770_uart, ingenic_early_console_setup);
- OF_EARLYCON_DECLARE(jz4770_uart, "ingenic,jz4770-uart",
- 		    ingenic_early_console_setup);
-@@ -330,6 +334,7 @@ static const struct ingenic_uart_config jz4780_uart_config = {
- 
- static const struct of_device_id of_match[] = {
- 	{ .compatible = "ingenic,jz4740-uart", .data = &jz4740_uart_config },
-+	{ .compatible = "ingenic,jz4725b-uart", .data = &jz4740_uart_config },
- 	{ .compatible = "ingenic,jz4760-uart", .data = &jz4760_uart_config },
- 	{ .compatible = "ingenic,jz4770-uart", .data = &jz4760_uart_config },
- 	{ .compatible = "ingenic,jz4775-uart", .data = &jz4760_uart_config },
+ MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER
+ M:	Woojung Huh <Woojung.Huh@microchip.com>
+ M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
 -- 
-2.11.0
+2.18.0
