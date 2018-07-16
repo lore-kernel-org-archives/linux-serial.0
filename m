@@ -1,53 +1,42 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v3 0/4] Add basic support for Mediatek MT8183 SoC
-Date: Mon, 16 Jul 2018 11:28:52 +0200
-Message-ID: <9ba45353-a6e1-9a6e-f05b-4b1679ae9e52@gmail.com>
-References: <1526538126-51497-1-git-send-email-erin.lo@mediatek.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v5 2/7] serdev: add dev_pm_domain_attach|detach()
+Date: Mon, 16 Jul 2018 11:50:18 +0200
+Message-ID: <20180716095018.GA11078@kroah.com>
+References: <cover.1531150733.git.sean.wang@mediatek.com>
+ <d5904115ff1da38fe79b45fa3d59ef0688cea124.1531150733.git.sean.wang@mediatek.com>
+ <20180715085628.GI10204@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1526538126-51497-1-git-send-email-erin.lo@mediatek.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180715085628.GI10204@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Erin Lo <erin.lo@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, yingjoe.chen@mediatek.com, mars.cheng@mediatek.com
+To: Johan Hovold <johan@kernel.org>
+Cc: sean.wang@mediatek.com, robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org, johan.hedberg@gmail.com, devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Erin,
+On Sun, Jul 15, 2018 at 10:56:28AM +0200, Johan Hovold wrote:
+> On Mon, Jul 09, 2018 at 11:56:58PM +0800, sean.wang@mediatek.com wrote:
+> > From: Sean Wang <sean.wang@mediatek.com>
+> > 
+> > In order to open up the required power gate before any operation can be
+> > effectively performed over the serial bus between CPU and serdev, it's
+> > clearly essential to add common attach functions for PM domains to serdev
+> > at the probe phase.
+> > 
+> > Similarly, the relevant dettach function for the PM domains should be
+> > properly and reversely added at the remove phase.
+> > 
+> > Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> > Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+> > Cc: Rob Herring <robh@kernel.org>
+> > Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Jiri Slaby <jslaby@suse.com>
+> > Cc: linux-serial@vger.kernel.org
+> 
+> Reviewed-by: Johan Hovold <johan@kernel.org>
 
-On 17/05/18 08:22, Erin Lo wrote:
-> MT8183 is a SoC based on 64bit ARMv8 architecture.
-> It contains 4 CA53 and 4 CA73 cores.
-> MT8183 share many HW IP with MT65xx series.
-> This patchset was tested on MT8183 evaluation board, and boot to shell ok.
-> 
-> This series contains document bindings, device tree including interrupt, uart.
-> 
-> Change in v3:
-> 1. Fill out GICC, GICH, GICV regions
-> 2. Update Copyright to 2018
-> 
-> Change in v2:
-> 1. Split dt-bindings into different patches
-> 2. Correct bindings for supported SoCs (mtk-uart.txt)
-> 
-> Ben Ho (1):
->   arm64: dts: Add Mediatek SoC MT8183 and evaluation board dts and
->     Makefile
-> 
-> Erin Lo (3):
->   dt-bindings: arm: Add bindings for Mediatek MT8183 SoC Platform
->   dt-bindings: mtk-sysirq: Add compatible for Mediatek MT8183
->   dt-bindings: serial: Add compatible for Mediatek MT8183
-> 
+Thanks, now applied.
 
-I'm a bit reluctant to take this series, as it will only enable the EVB board to
-boot into a serial console. Are you planning to add support for other devices of
-this SoC?
-
-Apart please take into account that there is an issue with the dts file, as you
-were told by the kbuild test robot.
-
-Regards,
-Matthias
+greg k-h
