@@ -1,42 +1,36 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v5 2/7] serdev: add dev_pm_domain_attach|detach()
-Date: Mon, 16 Jul 2018 11:50:18 +0200
-Message-ID: <20180716095018.GA11078@kroah.com>
-References: <cover.1531150733.git.sean.wang@mediatek.com>
- <d5904115ff1da38fe79b45fa3d59ef0688cea124.1531150733.git.sean.wang@mediatek.com>
- <20180715085628.GI10204@localhost>
+From: Mars Cheng <mars.cheng@mediatek.com>
+Subject: [PATCH v5 02/11] dt-bindings: mediatek: Add smi dts binding for Mediatek MT6765 SoC
+Date: Tue, 17 Jul 2018 16:52:23 +0800
+Message-ID: <1531817552-17221-3-git-send-email-mars.cheng@mediatek.com>
+References: <1531817552-17221-1-git-send-email-mars.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180715085628.GI10204@localhost>
+In-Reply-To: <1531817552-17221-1-git-send-email-mars.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: sean.wang@mediatek.com, robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org, johan.hedberg@gmail.com, devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Stephen Boyd <sboyd@kernel.org>, Sean Wang <sean.wang@mediatek.com>
+Cc: CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, Mars Cheng <mars.cheng@mediatek.com>, Owen Chen <owen.chen@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Jul 15, 2018 at 10:56:28AM +0200, Johan Hovold wrote:
-> On Mon, Jul 09, 2018 at 11:56:58PM +0800, sean.wang@mediatek.com wrote:
-> > From: Sean Wang <sean.wang@mediatek.com>
-> > 
-> > In order to open up the required power gate before any operation can be
-> > effectively performed over the serial bus between CPU and serdev, it's
-> > clearly essential to add common attach functions for PM domains to serdev
-> > at the probe phase.
-> > 
-> > Similarly, the relevant dettach function for the PM domains should be
-> > properly and reversely added at the remove phase.
-> > 
-> > Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-> > Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-> > Cc: Rob Herring <robh@kernel.org>
-> > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Jiri Slaby <jslaby@suse.com>
-> > Cc: linux-serial@vger.kernel.org
-> 
-> Reviewed-by: Johan Hovold <johan@kernel.org>
+This patch adds MT6765 smi binding document
 
-Thanks, now applied.
+Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
+Signed-off-by: Owen Chen <owen.chen@mediatek.com>
+---
+ .../memory-controllers/mediatek,smi-common.txt     |    1 +
+ 1 file changed, 1 insertion(+)
 
-greg k-h
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+index aa614b2..0bf64f5 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+@@ -15,6 +15,7 @@ not needed for SMI generation 2.
+ Required properties:
+ - compatible : must be one of :
+ 	"mediatek,mt2701-smi-common"
++	"mediatek,mt6765-smi-common", "syscon"
+ 	"mediatek,mt8173-smi-common"
+ - reg : the register and size of the SMI block.
+ - power-domains : a phandle to the power domain of this local arbiter.
+-- 
+1.7.9.5
