@@ -1,175 +1,106 @@
 From: Mars Cheng <mars.cheng@mediatek.com>
-Subject: [PATCH v5 04/11] soc: mediatek: add MT6765 scpsys support
-Date: Tue, 17 Jul 2018 16:52:25 +0800
-Message-ID: <1531817552-17221-5-git-send-email-mars.cheng@mediatek.com>
-References: <1531817552-17221-1-git-send-email-mars.cheng@mediatek.com>
+Subject: [PATCH v5 0/11] Add basic SoC support for mt6765
+Date: Tue, 17 Jul 2018 16:52:21 +0800
+Message-ID: <1531817552-17221-1-git-send-email-mars.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1531817552-17221-1-git-send-email-mars.cheng@mediatek.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Stephen Boyd <sboyd@kernel.org>, Sean Wang <sean.wang@mediatek.com>
-Cc: devicetree@vger.kernel.org, CC Hwang <cc.hwang@mediatek.com>, wsd_upstream@mediatek.com, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, Mars Cheng <mars.cheng@mediatek.com>, Owen Chen <owen.chen@mediatek.com>, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This adds scpsys support for MT6765
+This patch adds basic SoC support for Mediatek's new 8-core SoC,
+MT6765, which is mainly for smartphone application.
 
-Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
-Signed-off-by: Owen Chen <owen.chen@mediatek.com>
----
- drivers/soc/mediatek/mtk-scpsys.c        |   88 ++++++++++++++++++++++++++++++
- include/dt-bindings/power/mt6765-power.h |   14 +++++
- 2 files changed, 102 insertions(+)
+Changes in V5:
+1. add clk support
+
+Changes in V4:
+1. add gic's settings in reg properties
+2. remove some patches about dt-bindings since GKH already took them
+
+Changes in V3:
+1. split dt-binding document patchs
+2. fix mt6765.dtsi warnings with W=12
+3. remove uncessary PPI affinity for timer
+4. add gicc base for gic dt node
+
+Changes in V2:
+1. fix clk properties in uart dts node
+2. fix typo in submit title
+3. add simple-bus in mt6765.dtsi
+4. use correct SPDX license format
+
+Mars Cheng (7):
+  dt-bindings: clock: mediatek: document clk bindings for Mediatek
+    MT6765 SoC
+  dt-bindings: mediatek: Add smi dts binding for Mediatek MT6765 SoC
+  dt-bindings: mediatek: add MT6765 power dt-bindings
+  soc: mediatek: add MT6765 scpsys support
+  clk: mediatek: add mt6765 clock IDs
+  soc: mediatek: add MT6765 subdomain support
+  arm64: dts: mediatek: add mt6765 support
+
+Owen Chen (4):
+  soc: mediatek: add new flow for mtcmos power.
+  clk: mediatek: fix pll setting
+  clk: mediatek: add new clkmux register API
+  clk: mediatek: Add MT6765 clock support
+
+ .../bindings/arm/mediatek/mediatek,apmixedsys.txt  |   1 +
+ .../bindings/arm/mediatek/mediatek,audsys.txt      |   1 +
+ .../bindings/arm/mediatek/mediatek,camsys.txt      |  27 +
+ .../bindings/arm/mediatek/mediatek,imgsys.txt      |   1 +
+ .../bindings/arm/mediatek/mediatek,infracfg.txt    |   1 +
+ .../bindings/arm/mediatek/mediatek,mipi0a.txt      |  23 +
+ .../bindings/arm/mediatek/mediatek,mmsys.txt       |   1 +
+ .../bindings/arm/mediatek/mediatek,pericfg.txt     |   1 +
+ .../bindings/arm/mediatek/mediatek,topckgen.txt    |   1 +
+ .../bindings/arm/mediatek/mediatek,vcodecsys.txt   |  22 +
+ .../memory-controllers/mediatek,smi-common.txt     |   1 +
+ .../devicetree/bindings/soc/mediatek/scpsys.txt    |   6 +
+ arch/arm64/boot/dts/mediatek/Makefile              |   1 +
+ arch/arm64/boot/dts/mediatek/mt6765-evb.dts        |  33 +
+ arch/arm64/boot/dts/mediatek/mt6765.dtsi           | 253 ++++++
+ drivers/clk/mediatek/Kconfig                       |  87 ++
+ drivers/clk/mediatek/Makefile                      |   9 +-
+ drivers/clk/mediatek/clk-mt6765-audio.c            | 109 +++
+ drivers/clk/mediatek/clk-mt6765-cam.c              |  83 ++
+ drivers/clk/mediatek/clk-mt6765-img.c              |  79 ++
+ drivers/clk/mediatek/clk-mt6765-mipi0a.c           |  77 ++
+ drivers/clk/mediatek/clk-mt6765-mm.c               | 105 +++
+drivers/clk/mediatek/clk-mt6765-vcodec.c           |  79 ++
+ drivers/clk/mediatek/clk-mt6765.c                  | 963 +++++++++++++++++++++
+ drivers/clk/mediatek/clk-mtk.c                     |  41 +
+ drivers/clk/mediatek/clk-mtk.h                     |  87 +-
+ drivers/clk/mediatek/clk-mux.c                     | 236 +++++
+ drivers/clk/mediatek/clk-mux.h                     |  38 +
+ drivers/clk/mediatek/clk-pll.c                     |  45 +-
+ drivers/soc/mediatek/Makefile                      |   2 +-
+ drivers/soc/mediatek/mtk-infracfg.c                | 178 +++-
+ drivers/soc/mediatek/mtk-scpsys-ext.c              | 535 ++++++++++++
+ drivers/soc/mediatek/mtk-scpsys.c                  | 235 ++++-
+ include/dt-bindings/clock/mt6765-clk.h             | 313 +++++++
+ include/dt-bindings/power/mt6765-power.h           |  14 +
+ include/linux/soc/mediatek/infracfg.h              |   9 +-
+ include/linux/soc/mediatek/scpsys-ext.h            |  66 ++
+ 37 files changed, 3681 insertions(+), 82 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mipi0a.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,vcodecsys.txt
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
+ create mode 100644 drivers/clk/mediatek/clk-mt6765-audio.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6765-cam.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6765-img.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6765-mipi0a.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6765-mm.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6765-vcodec.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6765.c
+ create mode 100644 drivers/clk/mediatek/clk-mux.c
+ create mode 100644 drivers/clk/mediatek/clk-mux.h
+ create mode 100644 drivers/soc/mediatek/mtk-scpsys-ext.c
+ create mode 100644 include/dt-bindings/clock/mt6765-clk.h
  create mode 100644 include/dt-bindings/power/mt6765-power.h
-
-diff --git a/drivers/soc/mediatek/mtk-scpsys.c b/drivers/soc/mediatek/mtk-scpsys.c
-index 5b24bb4..4bb6c7a 100644
---- a/drivers/soc/mediatek/mtk-scpsys.c
-+++ b/drivers/soc/mediatek/mtk-scpsys.c
-@@ -23,6 +23,7 @@
- 
- #include <dt-bindings/power/mt2701-power.h>
- #include <dt-bindings/power/mt2712-power.h>
-+#include <dt-bindings/power/mt6765-power.h>
- #include <dt-bindings/power/mt6797-power.h>
- #include <dt-bindings/power/mt7622-power.h>
- #include <dt-bindings/power/mt7623a-power.h>
-@@ -680,6 +681,79 @@ static void mtk_register_power_domains(struct platform_device *pdev,
- };
- 
- /*
-+ * MT6765 power domain support
-+ */
-+#define SPM_PWR_STATUS_MT6765			0x0180
-+#define SPM_PWR_STATUS_2ND_MT6765		0x0184
-+
-+static const struct scp_domain_data scp_domain_data_mt6765[] = {
-+	[MT6765_POWER_DOMAIN_VCODEC] = {
-+		.name = "vcodec",
-+		.sta_mask = BIT(26),
-+		.ctl_offs = 0x300,
-+		.sram_pdn_bits = GENMASK(8, 8),
-+		.sram_pdn_ack_bits = GENMASK(12, 12),
-+	},
-+	[MT6765_POWER_DOMAIN_ISP] = {
-+		.name = "isp",
-+		.sta_mask = BIT(5),
-+		.ctl_offs = 0x308,
-+		.sram_pdn_bits = GENMASK(8, 8),
-+		.sram_pdn_ack_bits = GENMASK(12, 12),
-+	},
-+	[MT6765_POWER_DOMAIN_MM] = {
-+		.name = "mm",
-+		.sta_mask = BIT(3),
-+		.ctl_offs = 0x30C,
-+		.sram_pdn_bits = GENMASK(8, 8),
-+		.sram_pdn_ack_bits = GENMASK(12, 12),
-+	},
-+	[MT6765_POWER_DOMAIN_CONN] = {
-+		.name = "conn",
-+		.sta_mask = BIT(1),
-+		.ctl_offs = 0x32C,
-+		.sram_pdn_bits = 0,
-+		.sram_pdn_ack_bits = 0,
-+	},
-+	[MT6765_POWER_DOMAIN_MFG_ASYNC] = {
-+		.name = "mfg_async",
-+		.sta_mask = BIT(23),
-+		.ctl_offs = 0x334,
-+		.sram_pdn_bits = 0,
-+		.sram_pdn_ack_bits = 0,
-+	},
-+	[MT6765_POWER_DOMAIN_MFG] = {
-+		.name = "mfg",
-+		.sta_mask = BIT(4),
-+		.ctl_offs = 0x338,
-+		.sram_pdn_bits = GENMASK(8, 8),
-+		.sram_pdn_ack_bits = GENMASK(12, 12),
-+	},
-+	[MT6765_POWER_DOMAIN_CAM] = {
-+		.name = "cam",
-+		.sta_mask = BIT(25),
-+		.ctl_offs = 0x344,
-+		.sram_pdn_bits = GENMASK(8, 9),
-+		.sram_pdn_ack_bits = GENMASK(12, 13),
-+	},
-+	[MT6765_POWER_DOMAIN_MFG_CORE0] = {
-+		.name = "mfg_core0",
-+		.sta_mask = BIT(7),
-+		.ctl_offs = 0x34C,
-+		.sram_pdn_bits = GENMASK(8, 8),
-+		.sram_pdn_ack_bits = GENMASK(12, 12),
-+	},
-+};
-+
-+static const struct scp_subdomain scp_subdomain_mt6765[] = {
-+	{MT6765_POWER_DOMAIN_MM, MT6765_POWER_DOMAIN_CAM},
-+	{MT6765_POWER_DOMAIN_MM, MT6765_POWER_DOMAIN_ISP},
-+	{MT6765_POWER_DOMAIN_MM, MT6765_POWER_DOMAIN_VCODEC},
-+	{MT6765_POWER_DOMAIN_MFG_ASYNC, MT6765_POWER_DOMAIN_MFG},
-+	{MT6765_POWER_DOMAIN_MFG, MT6765_POWER_DOMAIN_MFG_CORE0},
-+};
-+
-+/*
-  * MT6797 power domain support
-  */
- 
-@@ -962,6 +1036,17 @@ static void mtk_register_power_domains(struct platform_device *pdev,
- 	.bus_prot_reg_update = false,
- };
- 
-+static const struct scp_soc_data mt6765_data = {
-+	.domains = scp_domain_data_mt6765,
-+	.num_domains = ARRAY_SIZE(scp_domain_data_mt6765),
-+	.subdomains = scp_subdomain_mt6765,
-+	.num_subdomains = ARRAY_SIZE(scp_subdomain_mt6765),
-+	.regs = {
-+		.pwr_sta_offs = SPM_PWR_STATUS_MT6765,
-+		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND_MT6765,
-+	},
-+};
-+
- static const struct scp_soc_data mt6797_data = {
- 	.domains = scp_domain_data_mt6797,
- 	.num_domains = ARRAY_SIZE(scp_domain_data_mt6797),
-@@ -1018,6 +1103,9 @@ static void mtk_register_power_domains(struct platform_device *pdev,
- 		.compatible = "mediatek,mt2712-scpsys",
- 		.data = &mt2712_data,
- 	}, {
-+		.compatible = "mediatek,mt6765-scpsys",
-+		.data = &mt6765_data,
-+	}, {
- 		.compatible = "mediatek,mt6797-scpsys",
- 		.data = &mt6797_data,
- 	}, {
-diff --git a/include/dt-bindings/power/mt6765-power.h b/include/dt-bindings/power/mt6765-power.h
-new file mode 100644
-index 0000000..d347b4e
---- /dev/null
-+++ b/include/dt-bindings/power/mt6765-power.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _DT_BINDINGS_POWER_MT6765_POWER_H
-+#define _DT_BINDINGS_POWER_MT6765_POWER_H
-+
-+#define MT6765_POWER_DOMAIN_CONN		0
-+#define MT6765_POWER_DOMAIN_MM			1
-+#define MT6765_POWER_DOMAIN_MFG_ASYNC		2
-+#define MT6765_POWER_DOMAIN_ISP			3
-+#define MT6765_POWER_DOMAIN_MFG			4
-+#define MT6765_POWER_DOMAIN_MFG_CORE0		5
-+#define MT6765_POWER_DOMAIN_CAM			6
-+#define MT6765_POWER_DOMAIN_VCODEC		7
-+
-+#endif /* _DT_BINDINGS_POWER_MT6765_POWER_H */
--- 
-1.7.9.5
+ create mode 100644 include/linux/soc/mediatek/scpsys-ext.h
