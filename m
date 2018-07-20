@@ -1,70 +1,101 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH] serial: 8250_ingenic: Add support for the JZ4725B SoC
-Date: Fri, 20 Jul 2018 09:30:27 -0600
-Message-ID: <20180720153027.GA11978@rob-hp-laptop>
-References: <20180713143840.9721-1-paul@crapouillou.net>
+Subject: Re: [PATCH v5 01/11] dt-bindings: clock: mediatek: document clk
+ bindings for Mediatek MT6765 SoC
+Date: Fri, 20 Jul 2018 11:43:31 -0600
+Message-ID: <20180720174331.GA26945@rob-hp-laptop>
+References: <1531817552-17221-1-git-send-email-mars.cheng@mediatek.com>
+ <1531817552-17221-2-git-send-email-mars.cheng@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180713143840.9721-1-paul@crapouillou.net>
+In-Reply-To: <1531817552-17221-2-git-send-email-mars.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Mars Cheng <mars.cheng@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Stephen Boyd <sboyd@kernel.org>, Sean Wang <sean.wang@mediatek.com>, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, Owen Chen <owen.chen@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 13, 2018 at 04:38:40PM +0200, Paul Cercueil wrote:
-> The UART in the jz4725b works just like in the other JZ SoCs, so this
-> commit simply adds a new compatible string.
+On Tue, Jul 17, 2018 at 04:52:22PM +0800, Mars Cheng wrote:
+> This patch adds the binding documentation for apmixedsys, audsys, camsys,
+> imgsys, infracfg, mipi0a, topckgen, vcodecsys
 > 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
+> Signed-off-by: Owen Chen <owen.chen@mediatek.com>
 > ---
->  Documentation/devicetree/bindings/serial/ingenic,uart.txt | 1 +
->  drivers/tty/serial/8250/8250_ingenic.c                    | 5 +++++
->  2 files changed, 6 insertions(+)
+>  .../bindings/arm/mediatek/mediatek,apmixedsys.txt  |    1 +
+>  .../bindings/arm/mediatek/mediatek,audsys.txt      |    1 +
+>  .../bindings/arm/mediatek/mediatek,camsys.txt      |   27 ++++++++++++++++++++
+>  .../bindings/arm/mediatek/mediatek,imgsys.txt      |    1 +
+>  .../bindings/arm/mediatek/mediatek,infracfg.txt    |    1 +
+>  .../bindings/arm/mediatek/mediatek,mipi0a.txt      |   23 +++++++++++++++++
+>  .../bindings/arm/mediatek/mediatek,mmsys.txt       |    1 +
+>  .../bindings/arm/mediatek/mediatek,pericfg.txt     |    1 +
+>  .../bindings/arm/mediatek/mediatek,topckgen.txt    |    1 +
+>  .../bindings/arm/mediatek/mediatek,vcodecsys.txt   |   22 ++++++++++++++++
+>  10 files changed, 79 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt
+>  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mipi0a.txt
+>  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,vcodecsys.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/ingenic,uart.txt b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-> index c3c6406d5cfe..a0b34fd3b602 100644
-> --- a/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-> +++ b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-> @@ -3,6 +3,7 @@
->  Required properties:
->  - compatible : One of:
->    - "ingenic,jz4740-uart",
-> +  - "ingenic,jz4725b-uart",
->    - "ingenic,jz4760-uart",
->    - "ingenic,jz4770-uart",
->    - "ingenic,jz4775-uart",
-> diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-> index 15a8c8dfa92b..760266559a5a 100644
-> --- a/drivers/tty/serial/8250/8250_ingenic.c
-> +++ b/drivers/tty/serial/8250/8250_ingenic.c
-> @@ -133,6 +133,10 @@ EARLYCON_DECLARE(jz4740_uart, ingenic_early_console_setup);
->  OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
->  		    ingenic_early_console_setup);
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
+> index b404d59..44eaeac 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
+> @@ -8,6 +8,7 @@ Required Properties:
+>  - compatible: Should be one of:
+>  	- "mediatek,mt2701-apmixedsys"
+>  	- "mediatek,mt2712-apmixedsys", "syscon"
+> +	- "mediatek,mt6765-apmixedsys", "syscon"
+>  	- "mediatek,mt6797-apmixedsys"
+>  	- "mediatek,mt7622-apmixedsys"
+>  	- "mediatek,mt8135-apmixedsys"
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt
+> index 34a69ba..9a8672a 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt
+> @@ -7,6 +7,7 @@ Required Properties:
 >  
-> +EARLYCON_DECLARE(jz4725b_uart, ingenic_early_console_setup);
-> +OF_EARLYCON_DECLARE(jz4725b_uart, "ingenic,jz4725b-uart",
-> +		    ingenic_early_console_setup);
+>  - compatible: Should be one of:
+>  	- "mediatek,mt2701-audsys", "syscon"
+> +	- "mediatek,mt6765-audsys", "syscon"
+>  	- "mediatek,mt7622-audsys", "syscon"
+>  - #clock-cells: Must be 1
+>  
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt
+> new file mode 100644
+> index 0000000..dc75783
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt
+> @@ -0,0 +1,27 @@
+> +MediaTek CAMSYS controller
+> +============================
 > +
+> +The MediaTek CAMSYS controller provides various clocks to the system.
 
-This shouldn't be necessary. Looks like it should be compatible with 
-ingenic,jz4740-uart.
+Only clocks? If so, then this should be moved to bindings/clocks/.
 
->  EARLYCON_DECLARE(jz4770_uart, ingenic_early_console_setup);
->  OF_EARLYCON_DECLARE(jz4770_uart, "ingenic,jz4770-uart",
->  		    ingenic_early_console_setup);
-> @@ -330,6 +334,7 @@ static const struct ingenic_uart_config jz4780_uart_config = {
->  
->  static const struct of_device_id of_match[] = {
->  	{ .compatible = "ingenic,jz4740-uart", .data = &jz4740_uart_config },
-> +	{ .compatible = "ingenic,jz4725b-uart", .data = &jz4740_uart_config },
+> +
+> +Required Properties:
+> +
+> +- compatible: Should be one of:
+> +	- "mediatek,mt6765-camsys", "syscon"
+> +- #clock-cells: Must be 1
+> +
+> +The AUDSYS controller uses the common clk binding from
+> +Documentation/devicetree/bindings/clock/clock-bindings.txt
+> +The available clocks are defined in dt-bindings/clock/mt*-clk.h.
+> +
+> +Required sub-nodes:
+> +-------
+> +For common binding part and usage, refer to
+> +../sonud/mt2701-afe-pcm.txt.
+> +
+> +Example:
+> +
+> +camsys: camsys@1a000000  {
 
-And this too.
+clock-controller@...
 
->  	{ .compatible = "ingenic,jz4760-uart", .data = &jz4760_uart_config },
->  	{ .compatible = "ingenic,jz4770-uart", .data = &jz4760_uart_config },
->  	{ .compatible = "ingenic,jz4775-uart", .data = &jz4760_uart_config },
-> -- 
-> 2.11.0
-> 
+if the above answer is yes.
+
+Same comments on the other docs.
