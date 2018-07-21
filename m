@@ -1,90 +1,102 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH] serial: 8250_ingenic: Add support for the JZ4725B SoC
-Date: Fri, 20 Jul 2018 20:58:08 +0200
-Message-ID: <1532113088.2309.0@smtp.crapouillou.net>
-References: <20180713143840.9721-1-paul@crapouillou.net>
-        <20180720153027.GA11978@rob-hp-laptop>
+From: Erin Lo <erin.lo@mediatek.com>
+Subject: Re: [PATCH v3 0/4] Add basic support for Mediatek MT8183 SoC
+Date: Sat, 21 Jul 2018 15:28:54 +0800
+Message-ID: <1532158134.16009.10.camel@mtksdaap41>
+References: <1526538126-51497-1-git-send-email-erin.lo@mediatek.com>
+ <9ba45353-a6e1-9a6e-f05b-4b1679ae9e52@gmail.com>
+ <1532074769.19148.2.camel@mtksdaap41>
+ <2ca76468-198b-b764-c974-374e567e0c93@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180720153027.GA11978@rob-hp-laptop>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <2ca76468-198b-b764-c974-374e567e0c93@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, srv_heupstream <srv_heupstream@mediatek.com>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, mars.cheng@mediatek.com, linux-serial@vger.kernel.org, yingjoe.chen@mediatek.com, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
+On Fri, 2018-07-20 at 12:44 +0200, Matthias Brugger wrote:
+> 
+> On 20/07/18 10:19, Erin Lo wrote:
+> > On Mon, 2018-07-16 at 11:28 +0200, Matthias Brugger wrote:
+> >> Hi Erin,
+> >>
+> >> On 17/05/18 08:22, Erin Lo wrote:
+> >>> MT8183 is a SoC based on 64bit ARMv8 architecture.
+> >>> It contains 4 CA53 and 4 CA73 cores.
+> >>> MT8183 share many HW IP with MT65xx series.
+> >>> This patchset was tested on MT8183 evaluation board, and boot to shell ok.
+> >>>
+> >>> This series contains document bindings, device tree including interrupt, uart.
+> >>>
+> >>> Change in v3:
+> >>> 1. Fill out GICC, GICH, GICV regions
+> >>> 2. Update Copyright to 2018
+> >>>
+> >>> Change in v2:
+> >>> 1. Split dt-bindings into different patches
+> >>> 2. Correct bindings for supported SoCs (mtk-uart.txt)
+> >>>
+> >>> Ben Ho (1):
+> >>>   arm64: dts: Add Mediatek SoC MT8183 and evaluation board dts and
+> >>>     Makefile
+> >>>
+> >>> Erin Lo (3):
+> >>>   dt-bindings: arm: Add bindings for Mediatek MT8183 SoC Platform
+> >>>   dt-bindings: mtk-sysirq: Add compatible for Mediatek MT8183
+> >>>   dt-bindings: serial: Add compatible for Mediatek MT8183
+> >>>
+> >>
+> >> I'm a bit reluctant to take this series, as it will only enable the EVB board to
+> >> boot into a serial console. Are you planning to add support for other devices of
+> >> this SoC?
+> >>
+> >> Apart please take into account that there is an issue with the dts file, as you
+> >> were told by the kbuild test robot.
+> >>
+> >> Regards,
+> >> Matthias
+> >>
+> > 
+> > Hi, Matthias
+> > Sorry for missing this letter...since mail proxy server.
+> > We plan to add support all the devices of MT8183 in serious.
+> > We have implemented the clock and pinctrl driver for upstream and they
+> > are in internal review right now.
+> > 
+> 
+> Nice to hear that :)
+> 
+> > About the dts issue... do you suggest me to send new patch right now or
+> > wait for clock and pinctrl driver ready then send them together?
+> > 
+> 
+> I would prefer that you send at least the clock controller together, so that we
+> don't have any dummy clocks in the basic device tree.
+> 
+> Regards,
+> Matthias
+> 
 
-Le ven. 20 juil. 2018 =E0 17:30, Rob Herring <robh@kernel.org> a =E9crit :
-> On Fri, Jul 13, 2018 at 04:38:40PM +0200, Paul Cercueil wrote:
->>  The UART in the jz4725b works just like in the other JZ SoCs, so=20
->> this
->>  commit simply adds a new compatible string.
->>=20
->>  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
->>  ---
->>   Documentation/devicetree/bindings/serial/ingenic,uart.txt | 1 +
->>   drivers/tty/serial/8250/8250_ingenic.c                    | 5 +++++
->>   2 files changed, 6 insertions(+)
->>=20
->>  diff --git=20
->> a/Documentation/devicetree/bindings/serial/ingenic,uart.txt=20
->> b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
->>  index c3c6406d5cfe..a0b34fd3b602 100644
->>  --- a/Documentation/devicetree/bindings/serial/ingenic,uart.txt
->>  +++ b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
->>  @@ -3,6 +3,7 @@
->>   Required properties:
->>   - compatible : One of:
->>     - "ingenic,jz4740-uart",
->>  +  - "ingenic,jz4725b-uart",
->>     - "ingenic,jz4760-uart",
->>     - "ingenic,jz4770-uart",
->>     - "ingenic,jz4775-uart",
->>  diff --git a/drivers/tty/serial/8250/8250_ingenic.c=20
->> b/drivers/tty/serial/8250/8250_ingenic.c
->>  index 15a8c8dfa92b..760266559a5a 100644
->>  --- a/drivers/tty/serial/8250/8250_ingenic.c
->>  +++ b/drivers/tty/serial/8250/8250_ingenic.c
->>  @@ -133,6 +133,10 @@ EARLYCON_DECLARE(jz4740_uart,=20
->> ingenic_early_console_setup);
->>   OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
->>   		    ingenic_early_console_setup);
->>=20
->>  +EARLYCON_DECLARE(jz4725b_uart, ingenic_early_console_setup);
->>  +OF_EARLYCON_DECLARE(jz4725b_uart, "ingenic,jz4725b-uart",
->>  +		    ingenic_early_console_setup);
->>  +
->=20
-> This shouldn't be necessary. Looks like it should be compatible with
-> ingenic,jz4740-uart.
->=20
->>   EARLYCON_DECLARE(jz4770_uart, ingenic_early_console_setup);
->>   OF_EARLYCON_DECLARE(jz4770_uart, "ingenic,jz4770-uart",
->>   		    ingenic_early_console_setup);
->>  @@ -330,6 +334,7 @@ static const struct ingenic_uart_config=20
->> jz4780_uart_config =3D {
->>=20
->>   static const struct of_device_id of_match[] =3D {
->>   	{ .compatible =3D "ingenic,jz4740-uart", .data =3D=20
->> &jz4740_uart_config },
->>  +	{ .compatible =3D "ingenic,jz4725b-uart", .data =3D=20
->> &jz4740_uart_config },
->=20
-> And this too.
+Got it! Next patch, we will send them with clock controller without
+dummy clocks in the basic device tree.
+By the way, the clock controller driver of MT8183 is a little bit
+different from former ICs, so we need more time to prepare them.
+We will send them to public as soon as possible.
 
-Well, I'm confused, the driver already uses multiple compatible strings=20
-for SoCs that
-work the exact same, so that was wrong?
+Best Regards,
+Erin
 
->>   	{ .compatible =3D "ingenic,jz4760-uart", .data =3D=20
->> &jz4760_uart_config },
->>   	{ .compatible =3D "ingenic,jz4770-uart", .data =3D=20
->> &jz4760_uart_config },
->>   	{ .compatible =3D "ingenic,jz4775-uart", .data =3D=20
->> &jz4760_uart_config },
->>  --
->>  2.11.0
->>=20
-=
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
