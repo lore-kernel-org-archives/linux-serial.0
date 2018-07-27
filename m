@@ -1,29 +1,36 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH] serial: core: stop passing NULL in uart_resume_port
-Date: Thu, 26 Jul 2018 17:04:45 +0300
-Message-ID: <CAHp75VeuCQ+R-rK+sYbZM_ED4R5aXSXy_QiAOPd4wE7FmBxX2Q@mail.gmail.com>
-References: <CAHp75Ve7i0QsrjshtMMp0cb44Mtet-SHDN+XuQHF-EHH_KuZEQ@mail.gmail.com>
- <20180726093620.3876-1-hu1.chen@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Srinath Mannam <srinath.mannam@broadcom.com>
+Subject: [PATCH] serial: 8250_dw: Add ACPI support for uart on Broadcom SoC
+Date: Fri, 27 Jul 2018 09:31:06 +0530
+Message-ID: <1532664066-30056-1-git-send-email-srinath.mannam@broadcom.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180726093620.3876-1-hu1.chen@intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Chen Hu <hu1.chen@intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, vikram.prakash@broadcom.com, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, Srinath Mannam <srinath.mannam@broadcom.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jul 26, 2018 at 12:36 PM, Chen Hu <hu1.chen@intel.com> wrote:
-> Is it better to modify the DesignWare 8250 driver directly? Or do you think is this really an issue?
+Add ACPI identifier HID for UART DW 8250 on Broadcom SoCs
+to match the HID passed through ACPI tables to enable
+UART controller.
 
-I have checked all of the users of do_termios in 8250 and only DW
-bails out on old == NULL.
+Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+Reviewed-by: Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>
+Tested-by: Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>
+Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+---
+ drivers/tty/serial/8250/8250_dw.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-So, send a patch against 8250_dw with detailed explanation why it's
-wrong (use case, examples of wrong output, etc) and how you fix it.
-Describe any potential side effects (b/c it's a new behaviour).
-
-
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index aff04f1..7ea94ec 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -708,6 +708,7 @@ static const struct acpi_device_id dw8250_acpi_match[] = {
+ 	{ "AMD0020", 0 },
+ 	{ "AMDI0020", 0 },
+ 	{ "HISI0031", 0 },
++	{ "BRCM2032", 0 },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
 -- 
-With Best Regards,
-Andy Shevchenko
+2.7.4
