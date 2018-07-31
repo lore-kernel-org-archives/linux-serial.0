@@ -1,7 +1,7 @@
 From: Erin Lo <erin.lo@mediatek.com>
-Subject: [PATCH v4 10/10] dts: arm64: mt8183: add uart node
-Date: Tue, 31 Jul 2018 13:38:07 +0800
-Message-ID: <1533015487-60189-11-git-send-email-erin.lo@mediatek.com>
+Subject: [PATCH v4 08/10] arm64: dts: mt8183: Add clock controller device nodes
+Date: Tue, 31 Jul 2018 13:38:05 +0800
+Message-ID: <1533015487-60189-9-git-send-email-erin.lo@mediatek.com>
 References: <1533015487-60189-1-git-send-email-erin.lo@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -14,78 +14,129 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Weiyi Lu <weiyi.lu@mediatek.com>
 
-Add uart node with correct uart clocks.
+Add clock controller nodes for MT8183, include topckgen, infracfg,
+apmixedsys and subsystem.
 
-Signed-off-by: Erin Lo <erin.lo@mediatek.com>
 Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
+Signed-off-by: Erin Lo <erin.lo@mediatek.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8183-evb.dts |  8 ++++++++
- arch/arm64/boot/dts/mediatek/mt8183.dtsi    | 30 +++++++++++++++++++++++++++++
- 2 files changed, 38 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi | 92 ++++++++++++++++++++++++++++++++
+ 1 file changed, 92 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-index 2a3dd5a..9b52559 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-@@ -12,6 +12,10 @@
- 	model = "MediaTek MT8183 evaluation board";
- 	compatible = "mediatek,mt8183-evb", "mediatek,mt8183";
- 
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
- 	memory@40000000 {
- 		device_type = "memory";
- 		reg = <0 0x40000000 0 0x80000000>;
-@@ -21,3 +25,7 @@
- 		stdout-path = "serial0:921600n8";
- 	};
- };
-+
-+&uart0 {
-+	status = "okay";
-+};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 6b87a24..c22a2dc 100644
+index 1553265..6b87a24 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -170,6 +170,36 @@
- 		#clock-cells = <1>;
+@@ -5,6 +5,7 @@
+  *	   Erin Lo <erin.lo@mediatek.com>
+  */
+ 
++#include <dt-bindings/clock/mt8183-clk.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ 
+@@ -112,6 +113,13 @@
+ 		method          = "smc";
  	};
  
-+	uart0: serial@11002000 {
-+		compatible = "mediatek,mt8183-uart",
-+			     "mediatek,mt6577-uart";
-+		reg = <0 0x11002000 0 0x1000>;
-+		interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-+		clocks = <&clk26m>, <&infracfg CLK_INFRA_UART0>;
-+		clock-names = "baud", "bus";
-+		status = "disabled";
++	clk26m: oscillator@0 {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <26000000>;
++		clock-output-names = "clk26m";
 +	};
 +
-+	uart1: serial@11003000 {
-+		compatible = "mediatek,mt8183-uart",
-+			     "mediatek,mt6577-uart";
-+		reg = <0 0x11003000 0 0x1000>;
-+		interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-+		clocks = <&clk26m>, <&infracfg CLK_INFRA_UART1>;
-+		clock-names = "baud", "bus";
-+		status = "disabled";
+ 	timer {
+ 		compatible = "arm,armv8-timer";
+ 		interrupt-parent = <&gic>;
+@@ -143,4 +151,88 @@
+ 		interrupt-parent = <&gic>;
+ 		reg = <0 0x0c530a80 0 0x50>;
+ 	};
++
++	topckgen: syscon@10000000 {
++		compatible = "mediatek,mt8183-topckgen", "syscon";
++		reg = <0 0x10000000 0 0x1000>;
++		#clock-cells = <1>;
 +	};
 +
-+	uart2: serial@11004000 {
-+		compatible = "mediatek,mt8183-uart",
-+			     "mediatek,mt6577-uart";
-+		reg = <0 0x11004000 0 0x1000>;
-+		interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-+		clocks = <&clk26m>, <&infracfg CLK_INFRA_UART2>;
-+		clock-names = "baud", "bus";
-+		status = "disabled";
++	infracfg: syscon@10001000 {
++		compatible = "mediatek,mt8183-infracfg", "syscon";
++		reg = <0 0x10001000 0 0x1000>;
++		#clock-cells = <1>;
 +	};
 +
- 	audiosys: syscon@11220000 {
- 		compatible = "mediatek,mt8183-audiosys", "syscon";
- 		reg = <0 0x11220000 0 0x1000>;
++	apmixedsys: syscon@1000c000 {
++		compatible = "mediatek,mt8183-apmixedsys", "syscon";
++		reg = <0 0x1000c000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	audiosys: syscon@11220000 {
++		compatible = "mediatek,mt8183-audiosys", "syscon";
++		reg = <0 0x11220000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	mfgcfg: syscon@13000000 {
++		compatible = "mediatek,mt8183-mfgcfg", "syscon";
++		reg = <0 0x13000000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	mmsys: syscon@14000000 {
++		compatible = "mediatek,mt8183-mmsys", "syscon";
++		reg = <0 0x14000000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	imgsys: syscon@15020000 {
++		compatible = "mediatek,mt8183-imgsys", "syscon";
++		reg = <0 0x15020000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	vdecsys: syscon@16000000 {
++		compatible = "mediatek,mt8183-vdecsys", "syscon";
++		reg = <0 0x16000000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	vencsys: syscon@17000000 {
++		compatible = "mediatek,mt8183-vencsys", "syscon";
++		reg = <0 0x17000000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	ipu_conn: syscon@19000000 {
++		compatible = "mediatek,mt8183-ipu_conn", "syscon";
++		reg = <0 0x19000000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	ipu_adl: syscon@19010000 {
++		compatible = "mediatek,mt8183-ipu_adl", "syscon";
++		reg = <0 0x19010000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	ipu_core0: syscon@19180000 {
++		compatible = "mediatek,mt8183-ipu_core0", "syscon";
++		reg = <0 0x19180000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	ipu_core1: syscon@19280000 {
++		compatible = "mediatek,mt8183-ipu_core1", "syscon";
++		reg = <0 0x19280000 0 0x1000>;
++		#clock-cells = <1>;
++	};
++
++	camsys: syscon@1a000000 {
++		compatible = "mediatek,mt8183-camsys", "syscon";
++		reg = <0 0x1a000000 0 0x1000>;
++		#clock-cells = <1>;
++	};
+ };
 -- 
 1.9.1
