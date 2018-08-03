@@ -1,15 +1,15 @@
 From: "Wu, Songjun" <songjun.wu@linux.intel.com>
-Subject: Re: [PATCH v2 15/18] serial: intel: Support more platform
-Date: Fri, 3 Aug 2018 15:21:45 +0800
-Message-ID: <2bd3f808-ed93-ac2c-a802-957a88129e67@linux.intel.com>
+Subject: Re: [PATCH v2 14/18] serial: intel: Add CCF support
+Date: Fri, 3 Aug 2018 15:33:38 +0800
+Message-ID: <763bba56-3701-7fe9-9b31-4710594b40d5@linux.intel.com>
 References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
- <20180803030237.3366-16-songjun.wu@linux.intel.com>
- <20180803055709.GB32226@kroah.com>
+ <20180803030237.3366-15-songjun.wu@linux.intel.com>
+ <20180803055640.GA32226@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180803055709.GB32226@kroah.com>
+In-Reply-To: <20180803055640.GA32226@kroah.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -18,12 +18,53 @@ List-Id: linux-serial@vger.kernel.org
 
 
 
-On 8/3/2018 1:57 PM, Greg Kroah-Hartman wrote:
-> On Fri, Aug 03, 2018 at 11:02:34AM +0800, Songjun Wu wrote:
->> Support more platform.
+On 8/3/2018 1:56 PM, Greg Kroah-Hartman wrote:
+> On Fri, Aug 03, 2018 at 11:02:33AM +0800, Songjun Wu wrote:
+>> Previous implementation uses platform-dependent API to get the clock.
+>> Those functions are not available for other SoC which uses the same IP.
+>> The CCF (Common Clock Framework) have an abstraction based APIs for
+>> clock. In future, the platform specific code will be removed when the
+>> legacy soc use CCF as well.
+>> Change to use CCF APIs to get clock and rate. So that different SoCs
+>> can use the same driver.
 >>
 >> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
 >> ---
-> Your changelog text makes no sense, sorry.
-Thanks for your comment.
-I will describe it more clearly.
+>>
+>> Changes in v2: None
+>>
+>>   drivers/tty/serial/lantiq.c | 11 +++++++++++
+>>   1 file changed, 11 insertions(+)
+>>
+>> diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+>> index 36479d66fb7c..35518ab3a80d 100644
+>> --- a/drivers/tty/serial/lantiq.c
+>> +++ b/drivers/tty/serial/lantiq.c
+>> @@ -26,7 +26,9 @@
+>>   #include <linux/clk.h>
+>>   #include <linux/gpio.h>
+>>   
+>> +#ifdef CONFIG_LANTIQ
+>>   #include <lantiq_soc.h>
+>> +#endif
+> That is never how you do this in Linux, you know better.
+>
+> Please go and get this patchset reviewed and signed-off-by from other
+> internal Intel kernel developers before resending it next time.  It is
+> their job to find and fix your basic errors like this, not ours.
+Thank you for your comment.
+Actually, we have discussed this issue internally.
+We put the reason why we use "#ifdef CONFIG_LANTIQ" preprocessor in commit
+message in "[PATCH v2 08/18] serial: intel: Get serial id from dts".
+Please refer the commit message below.
+
+"#ifdef CONFIG_LANTIQ" preprocessor is used because LTQ_EARLY_ASC
+macro is defined in lantiq_soc.h.
+lantiq_soc.h is in arch path for legacy product support.
+
+arch/mips/include/asm/mach-lantiq/xway/lantiq_soc.h
+
+If "#ifdef preprocessor" is changed to
+"if (IS_ENABLED(CONFIG_LANTIQ))", when CONFIG_LANTIQ is not enabled,
+code using LTQ_EARLY_ASC is compiled.
+Compilation will fail for no LTQ_EARLY_ASC defined.
