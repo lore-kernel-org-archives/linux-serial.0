@@ -1,52 +1,66 @@
 From: Songjun Wu <songjun.wu@linux.intel.com>
-Subject: [PATCH v2 18/18] dt-bindings: serial: lantiq: Add optional properties for CCF
-Date: Fri,  3 Aug 2018 11:02:37 +0800
-Message-ID: <20180803030237.3366-19-songjun.wu@linux.intel.com>
+Subject: [PATCH v2 12/18] serial: intel: Rename fpiclk to freqclk
+Date: Fri,  3 Aug 2018 11:02:31 +0800
+Message-ID: <20180803030237.3366-13-songjun.wu@linux.intel.com>
 References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180803030237.3366-1-songjun.wu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com
-Cc: linux-mips@linux-mips.org, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Songjun Wu <songjun.wu@linux.intel.com>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: linux-mips@linux-mips.org, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Songjun Wu <songjun.wu@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Clocks and clock-names are updated in device tree binding.
+Rename fpiclk to freqclk.
 
 Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
 ---
 
 Changes in v2: None
 
- Documentation/devicetree/bindings/serial/lantiq_asc.txt | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/tty/serial/lantiq.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/lantiq_asc.txt b/Documentation/devicetree/bindings/serial/lantiq_asc.txt
-index 3acbd309ab9d..40e81a5818f6 100644
---- a/Documentation/devicetree/bindings/serial/lantiq_asc.txt
-+++ b/Documentation/devicetree/bindings/serial/lantiq_asc.txt
-@@ -6,8 +6,23 @@ Required properties:
- - interrupts: the 3 (tx rx err) interrupt numbers. The interrupt specifier
-   depends on the interrupt-parent interrupt controller.
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index 2e1b35b1cf4d..28086d52e980 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -106,7 +106,7 @@ static DEFINE_SPINLOCK(ltq_asc_lock);
+ struct ltq_uart_port {
+ 	struct uart_port	port;
+ 	/* clock used to derive divider */
+-	struct clk		*fpiclk;
++	struct clk		*freqclk;
+ 	/* clock gating of the ASC core */
+ 	struct clk		*clk;
+ 	unsigned int		tx_irq;
+@@ -310,7 +310,7 @@ lqasc_startup(struct uart_port *port)
  
-+Optional properties:
-+- clocks: Should contain frequency clock and gate clock
-+- clock-names: Should be "freq" and "asc"
-+
- Example:
+ 	if (!IS_ERR(ltq_port->clk))
+ 		clk_enable(ltq_port->clk);
+-	port->uartclk = clk_get_rate(ltq_port->fpiclk);
++	port->uartclk = clk_get_rate(ltq_port->freqclk);
  
-+asc0: serial@16600000 {
-+	compatible = "lantiq,asc";
-+	reg = <0x16600000 0x100000>;
-+	interrupt-parent = <&gic>;
-+	interrupts = <GIC_SHARED 103 IRQ_TYPE_LEVEL_HIGH>,
-+		<GIC_SHARED 105 IRQ_TYPE_LEVEL_HIGH>,
-+		<GIC_SHARED 106 IRQ_TYPE_LEVEL_HIGH>;
-+	clocks = <&cgu CLK_SSX4>, <&cgu GCLK_UART>;
-+	clock-names = "freq", "asc";
-+};
-+
- asc1: serial@e100c00 {
- 	compatible = "lantiq,asc";
- 	reg = <0xE100C00 0x400>;
+ 	asc_update_bits(ASCCLC_DISS | ASCCLC_RMCMASK, (1 << ASCCLC_RMCOFFSET),
+ 		port->membase + LTQ_ASC_CLC);
+@@ -633,7 +633,7 @@ lqasc_console_setup(struct console *co, char *options)
+ 	if (!IS_ERR(ltq_port->clk))
+ 		clk_enable(ltq_port->clk);
+ 
+-	port->uartclk = clk_get_rate(ltq_port->fpiclk);
++	port->uartclk = clk_get_rate(ltq_port->freqclk);
+ 
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+@@ -744,8 +744,8 @@ lqasc_probe(struct platform_device *pdev)
+ 	port->irq	= irqres[0].start;
+ 	port->mapbase	= mmres->start;
+ 
+-	ltq_port->fpiclk = clk_get_fpi();
+-	if (IS_ERR(ltq_port->fpiclk)) {
++	ltq_port->freqclk = clk_get_fpi();
++	if (IS_ERR(ltq_port->freqclk)) {
+ 		pr_err("failed to get fpi clk\n");
+ 		return -ENOENT;
+ 	}
 -- 
 2.11.0
