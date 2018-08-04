@@ -1,171 +1,238 @@
 From: Hauke Mehrtens <hauke@hauke-m.de>
-Subject: Re: [PATCH v2 14/18] serial: intel: Add CCF support
-Date: Sat, 4 Aug 2018 12:54:22 +0200
-Message-ID: <3360edd2-f3d8-b860-13fa-ce680edbfd0a@hauke-m.de>
+Subject: Re: [PATCH v2 04/18] MIPS: dts: Add initial support for Intel MIPS
+ SoCs
+Date: Sat, 4 Aug 2018 13:11:07 +0200
+Message-ID: <4f58b5ee-1e3c-7d39-258e-e4525d78db0b@hauke-m.de>
 References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
- <20180803030237.3366-15-songjun.wu@linux.intel.com>
- <20180803055640.GA32226@kroah.com>
- <763bba56-3701-7fe9-9b31-4710594b40d5@linux.intel.com>
- <20180803103023.GA6557@kroah.com>
+ <20180803030237.3366-5-songjun.wu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="iYaDZoiil5AJfzRaU241VXsHuivma9pSr"
+ boundary="X0b2gHnRoDWWhZa0XmgbmDwsF2zwlMDFd"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180803103023.GA6557@kroah.com>
+In-Reply-To: <20180803030237.3366-5-songjun.wu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Wu, Songjun" <songjun.wu@linux.intel.com>
-Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com, linux-mips@linux-mips.org, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+To: Songjun Wu <songjun.wu@linux.intel.com>, hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com
+Cc: linux-mips@linux-mips.org, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, James Hogan <jhogan@kernel.org>, linux-kernel@vger.kernel.org, Paul Burton <paul.burton@mips.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>
 List-Id: linux-serial@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---iYaDZoiil5AJfzRaU241VXsHuivma9pSr
-Content-Type: multipart/mixed; boundary="yo3X2uHHNkbQafiGIhJb4q0TZSTXJ8cW0";
+--X0b2gHnRoDWWhZa0XmgbmDwsF2zwlMDFd
+Content-Type: multipart/mixed; boundary="kTYbZNGrF8dpzU7F9ObS8ZoN8nmGoFTOF";
  protected-headers="v1"
 From: Hauke Mehrtens <hauke@hauke-m.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Wu, Songjun" <songjun.wu@linux.intel.com>
-Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com,
- chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com,
- linux-mips@linux-mips.org, linux-clk@vger.kernel.org,
+To: Songjun Wu <songjun.wu@linux.intel.com>, hua.ma@linux.intel.com,
+ yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com
+Cc: linux-mips@linux-mips.org, linux-clk@vger.kernel.org,
  linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
-Message-ID: <3360edd2-f3d8-b860-13fa-ce680edbfd0a@hauke-m.de>
-Subject: Re: [PATCH v2 14/18] serial: intel: Add CCF support
+ James Hogan <jhogan@kernel.org>, linux-kernel@vger.kernel.org,
+ Paul Burton <paul.burton@mips.com>, Rob Herring <robh+dt@kernel.org>,
+ Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>
+Message-ID: <4f58b5ee-1e3c-7d39-258e-e4525d78db0b@hauke-m.de>
+Subject: Re: [PATCH v2 04/18] MIPS: dts: Add initial support for Intel MIPS
+ SoCs
 References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
- <20180803030237.3366-15-songjun.wu@linux.intel.com>
- <20180803055640.GA32226@kroah.com>
- <763bba56-3701-7fe9-9b31-4710594b40d5@linux.intel.com>
- <20180803103023.GA6557@kroah.com>
-In-Reply-To: <20180803103023.GA6557@kroah.com>
+ <20180803030237.3366-5-songjun.wu@linux.intel.com>
+In-Reply-To: <20180803030237.3366-5-songjun.wu@linux.intel.com>
 
---yo3X2uHHNkbQafiGIhJb4q0TZSTXJ8cW0
+--kTYbZNGrF8dpzU7F9ObS8ZoN8nmGoFTOF
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
 
-On 08/03/2018 12:30 PM, Greg Kroah-Hartman wrote:
-> On Fri, Aug 03, 2018 at 03:33:38PM +0800, Wu, Songjun wrote:
->>
->>
->> On 8/3/2018 1:56 PM, Greg Kroah-Hartman wrote:
->>> On Fri, Aug 03, 2018 at 11:02:33AM +0800, Songjun Wu wrote:
->>>> Previous implementation uses platform-dependent API to get the clock=
-=2E
->>>> Those functions are not available for other SoC which uses the same =
-IP.
->>>> The CCF (Common Clock Framework) have an abstraction based APIs for
->>>> clock. In future, the platform specific code will be removed when th=
-e
->>>> legacy soc use CCF as well.
->>>> Change to use CCF APIs to get clock and rate. So that different SoCs=
-
->>>> can use the same driver.
->>>>
->>>> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
->>>> ---
->>>>
->>>> Changes in v2: None
->>>>
->>>>   drivers/tty/serial/lantiq.c | 11 +++++++++++
->>>>   1 file changed, 11 insertions(+)
->>>>
->>>> diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq=
-=2Ec
->>>> index 36479d66fb7c..35518ab3a80d 100644
->>>> --- a/drivers/tty/serial/lantiq.c
->>>> +++ b/drivers/tty/serial/lantiq.c
->>>> @@ -26,7 +26,9 @@
->>>>   #include <linux/clk.h>
->>>>   #include <linux/gpio.h>
->>>> +#ifdef CONFIG_LANTIQ
->>>>   #include <lantiq_soc.h>
->>>> +#endif
->>> That is never how you do this in Linux, you know better.
->>>
->>> Please go and get this patchset reviewed and signed-off-by from other=
-
->>> internal Intel kernel developers before resending it next time.  It i=
-s
->>> their job to find and fix your basic errors like this, not ours.
->> Thank you for your comment.
->> Actually, we have discussed this issue internally.
->> We put the reason why we use "#ifdef CONFIG_LANTIQ" preprocessor in co=
-mmit
->> message in "[PATCH v2 08/18] serial: intel: Get serial id from dts".
->> Please refer the commit message below.
->>
->> "#ifdef CONFIG_LANTIQ" preprocessor is used because LTQ_EARLY_ASC
->> macro is defined in lantiq_soc.h.
->> lantiq_soc.h is in arch path for legacy product support.
->>
->> arch/mips/include/asm/mach-lantiq/xway/lantiq_soc.h
->>
->> If "#ifdef preprocessor" is changed to
->> "if (IS_ENABLED(CONFIG_LANTIQ))", when CONFIG_LANTIQ is not enabled,
->> code using LTQ_EARLY_ASC is compiled.
->> Compilation will fail for no LTQ_EARLY_ASC defined.
+On 08/03/2018 05:02 AM, Songjun Wu wrote:
+> From: Hua Ma <hua.ma@linux.intel.com>
 >=20
-> Sorry, but no.  Why is this one tiny driver/chip somehow more "special"=
-
-> than all of the tens of thousands of other devices we support to warren=
-t
-> it getting some sort of special exception to do things differently?
-> What happens to the next device that wants to do it this way?
+> Add dts files to support Intel MIPS SoCs:
+> - xrx500.dtsi is the chip dts
+> - easy350_anywan.dts is the board dts
 >=20
-> Our coding style and rules are there for a reason, do not violate them
-> thinking your device is the only one that matters.
+> Signed-off-by: Hua Ma <hua.ma@linux.intel.com>
+> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
+> ---
 >=20
-> Do it properly, again, you all know better than this.
+> Changes in v2:
+> - New patch split from previous patch
+> - The memory address is changed to @20000000
+> - Update to obj-$(CONFIG_BUILTIN_DTB) as per commit fca3aa166422
 >=20
-> greg k-h
+>  arch/mips/boot/dts/Makefile                      |  1 +
+>  arch/mips/boot/dts/intel-mips/Makefile           |  4 ++
+>  arch/mips/boot/dts/intel-mips/easy350_anywan.dts | 26 ++++++++++
+>  arch/mips/boot/dts/intel-mips/xrx500.dtsi        | 66 ++++++++++++++++=
+++++++++
+>  4 files changed, 97 insertions(+)
+>  create mode 100644 arch/mips/boot/dts/intel-mips/Makefile
+>  create mode 100644 arch/mips/boot/dts/intel-mips/easy350_anywan.dts
+>  create mode 100644 arch/mips/boot/dts/intel-mips/xrx500.dtsi
 >=20
-Hi Greg,
+> diff --git a/arch/mips/boot/dts/Makefile b/arch/mips/boot/dts/Makefile
+> index 1e79cab8e269..05f52f279047 100644
+> --- a/arch/mips/boot/dts/Makefile
+> +++ b/arch/mips/boot/dts/Makefile
+> @@ -3,6 +3,7 @@ subdir-y	+=3D brcm
+>  subdir-y	+=3D cavium-octeon
+>  subdir-y	+=3D img
+>  subdir-y	+=3D ingenic
+> +subdir-y	+=3D intel-mips
+>  subdir-y	+=3D lantiq
+>  subdir-y	+=3D mscc
+>  subdir-y	+=3D mti
+> diff --git a/arch/mips/boot/dts/intel-mips/Makefile b/arch/mips/boot/dt=
+s/intel-mips/Makefile
+> new file mode 100644
+> index 000000000000..adfaabbbb07c
+> --- /dev/null
+> +++ b/arch/mips/boot/dts/intel-mips/Makefile
+> @@ -0,0 +1,4 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +dtb-$(CONFIG_DTB_INTEL_MIPS_GRX500)	+=3D easy350_anywan.dtb
+> +
+> +obj-$(CONFIG_BUILTIN_DTB)		+=3D $(addsuffix .o, $(dtb-y))
+> diff --git a/arch/mips/boot/dts/intel-mips/easy350_anywan.dts b/arch/mi=
+ps/boot/dts/intel-mips/easy350_anywan.dts
+> new file mode 100644
+> index 000000000000..e5e95f90c5e7
+> --- /dev/null
+> +++ b/arch/mips/boot/dts/intel-mips/easy350_anywan.dts
+> @@ -0,0 +1,26 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/dts-v1/;
+> +
+> +#include <dt-bindings/interrupt-controller/mips-gic.h>
+> +#include <dt-bindings/clock/intel,grx500-clk.h>
+> +
+> +#include "xrx500.dtsi"
+> +
+> +/ {
+> +	model =3D "EASY350 ANYWAN (GRX350) Main model";
 
-The problem is that the Lantiq SoC code in arch/mips/lantiq does not use
-the common clock framework, but it uses the clk framework directly. It
-defines CONFIG_HAVE_CLK and CONFIG_CLKDEV_LOOKUP, but not
-CONFIG_COMMON_CLK. The xRX500 SoC which is being added here is about 2
-generations more recent than the VR9/xRX200 SoC which is the latest
-which is supported by the code in arch/mips/lantiq. With this new SoC we
-switched to the common clock framework. This driver is used by the older
-SoC and also by the new ones because this IP core is pretty similar in
-all the SoCs.
-This patch makes it possible to use it with the legacy lantiq code and
-also with the common clock framework. I see multiple options to fix this
-problem.
+Main model can be removed, it does not identify the board.
 
-1. The current approach to have it as a compile variant for a) legacy
-lantiq arch code without common clock framework and b) support for SoCs
-using the common clock framework.
-2. Convert the lantiq arch code to the common clock framework. This
-would be a good approach, but it need some efforts.
-3. Remove the arch/mips/lantiq code. There are still users of this code.
-4. Use the old APIs also for the new xRX500 SoC, I do not like this
-approach.
-5. Move lantiq_soc.h to somewhere in include/linux/ so it is globally
-available and provide some better wrapper code.
+> +	compatible =3D "intel,easy350-anywan";
 
-Hauke
+I think this should be
+	compatible =3D "intel,easy350-anywan", "intel,xrx500";
+
+Are there different revisions of the EASY350 Anywan board or only of the
+EASY550 board?There are at least some differences in the power supply on
+the EASY550 V1 and EASY550 V2 board. I would suggest to be here very
+specific to make it easier when adding more boards.
+
+> +
+> +	aliases {
+> +		serial0 =3D &asc0;
+> +	};
+> +
+> +	chosen {
+> +		bootargs =3D "earlycon=3Dlantiq,0x16600000 clk_ignore_unused";
+
+What happens when you remove clk_ignore_unused?
+If it crashes we should probably define some of the clock to be always
+active.
+
+> +		stdout-path =3D "serial0";
+> +	};
+> +
+> +	memory@20000000 {
+> +		device_type =3D "memory";
+> +		reg =3D <0x20000000 0x0e000000>;
+> +	};
+> +};
+> diff --git a/arch/mips/boot/dts/intel-mips/xrx500.dtsi b/arch/mips/boot=
+/dts/intel-mips/xrx500.dtsi
+> new file mode 100644
+> index 000000000000..54c5f8f8b604
+> --- /dev/null
+> +++ b/arch/mips/boot/dts/intel-mips/xrx500.dtsi
+> @@ -0,0 +1,66 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +/ {
+> +	#address-cells =3D <1>;
+> +	#size-cells =3D <1>;
+> +	compatible =3D "intel,xrx500";
+> +
+> +	cpus {
+> +		#address-cells =3D <1>;
+> +		#size-cells =3D <0>;
+> +
+> +		cpu0: cpu@0 {
+> +			device_type =3D "cpu";
+> +			compatible =3D "mti,interaptiv";
+> +			clocks =3D <&cgu CLK_CPU>;
+> +			reg =3D <0>;
+> +		};
+> +
+> +		cpu1: cpu@1 {
+> +			device_type =3D "cpu";
+> +			compatible =3D "mti,interaptiv";
+> +			reg =3D <1>;
+> +		};
+> +	};
+> +
+> +	cpu_intc: interrupt-controller {
+> +		compatible =3D "mti,cpu-interrupt-controller";
+> +
+> +		interrupt-controller;
+> +		#interrupt-cells =3D <1>;
+> +	};
+> +
+> +	gic: gic@12320000 {
+> +		compatible =3D "mti,gic";
+> +		reg =3D <0x12320000 0x20000>;
+> +
+> +		interrupt-controller;
+> +		#interrupt-cells =3D <3>;
+> +		/*
+> +		 * Declare the interrupt-parent even though the mti,gic
+> +		 * binding doesn't require it, such that the kernel can
+> +		 * figure out that cpu_intc is the root interrupt
+> +		 * controller & should be probed first.
+> +		 */
+> +		interrupt-parent =3D <&cpu_intc>;
+> +		mti,reserved-ipi-vectors =3D <56 8>;
+> +	};
+> +
+> +	cgu: cgu@16200000 {
+> +		compatible =3D "intel,grx500-cgu", "syscon";
+> +		reg =3D <0x16200000 0x200>;
+> +		#clock-cells =3D <1>;
+> +	};
+> +
+> +	asc0: serial@16600000 {
+> +		compatible =3D "lantiq,asc";
+> +		reg =3D <0x16600000 0x100000>;
+> +
+> +		interrupt-parent =3D <&gic>;
+> +		interrupts =3D <GIC_SHARED 103 IRQ_TYPE_LEVEL_HIGH>,
+> +			<GIC_SHARED 105 IRQ_TYPE_LEVEL_HIGH>,
+> +			<GIC_SHARED 106 IRQ_TYPE_LEVEL_HIGH>;
+> +		clocks =3D <&cgu CLK_SSX4>, <&cgu GCLK_UART>;
+> +		clock-names =3D "freq", "asc";
+> +	};
+> +};
+>=20
 
 
---yo3X2uHHNkbQafiGIhJb4q0TZSTXJ8cW0--
 
---iYaDZoiil5AJfzRaU241VXsHuivma9pSr
+--kTYbZNGrF8dpzU7F9ObS8ZoN8nmGoFTOF--
+
+--X0b2gHnRoDWWhZa0XmgbmDwsF2zwlMDFd
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEyz0/uAcd+JwXmwtD8bdnhZyy68cFAltlheYACgkQ8bdnhZyy
-68f9YwgAyE4M+WJKQQepmYvunvM3LLg05z/q/8X+xyQhnrAHO6UTp7st/3iW9/4m
-jpkObGOk/FbZ8luantnYYxtzldSrvdC6kkcc670NYLtNkeJIizifCLkIETXmmzQP
-791QZE4n6irE7xEBsK04oMrZnGi8P775RHQ2paSVvf1O2HMSiCy5vanTbU7tVta8
-BUZleZa2O7YGApgO9Vh5qnoh8QP1Oii1CkEFGEVqNysq6ik6IoVW17m5mxCzp75i
-XZw/a6ADFlAd+AdkwKC0xeYazUkDAXqrR+X2E12iH5vATwOwemXRmlrmexVNUpVe
-GIJ2FTuaGGbEzhro721wuXCUZegiOg==
-=Km41
+iQEzBAEBCAAdFiEEyz0/uAcd+JwXmwtD8bdnhZyy68cFAltlicsACgkQ8bdnhZyy
+68fF3Qf+MUOxtnxWC/uB7FeRDczLlhwmZSY6lm1xguQ9SzeFRm0Nq+rScWLYqoO7
+KEeMILOplCoo67uHvZ5LElWiobLI3g3PFF/pAVhAVAAcgYsI5VO4rmBKK43UQrSP
+PFehXjDZd8Dn4+QFKAs9cvCImQOjzhW91TBFRJfBsk6jxz7FMXeFfolZTfBpiPex
+RmXKk9jZndztrF5gbcx9W+NueVUl6EKReamn18/snleNF6JIb9TnnChIlDMo/XxX
+Dc59MD6k4d65np44Onx73iWsT/gxdR0PjpEr8hZDH2XCbuHjSrVLoKs/AnBN40Ra
+x30Z27Zn2p5QHN4OmbG8hLd/JeqVgg==
+=jV+X
 -----END PGP SIGNATURE-----
 
---iYaDZoiil5AJfzRaU241VXsHuivma9pSr--
+--X0b2gHnRoDWWhZa0XmgbmDwsF2zwlMDFd--
