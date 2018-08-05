@@ -1,18 +1,70 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v2 15/18] serial: intel: Support more platform
-Date: Sun, 5 Aug 2018 01:37:22 -0700
-Message-ID: <20180805083722.GA30000@infradead.org>
-References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
- <20180803030237.3366-16-songjun.wu@linux.intel.com>
+From: =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>
+Subject: [RFC] serial: sc16is7xx: Use DT sub-nodes for UART ports
+Date: Mon,  6 Aug 2018 01:26:51 +0200
+Message-ID: <20180805232651.10605-1-afaerber@suse.de>
+References: <CAL_JsqKNnfgESG6ON95D7nD8VNrcVy7-x6cGGnae_GbbGKAuPQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180803030237.3366-16-songjun.wu@linux.intel.com>
+In-Reply-To: <CAL_JsqKNnfgESG6ON95D7nD8VNrcVy7-x6cGGnae_GbbGKAuPQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Songjun Wu <songjun.wu@linux.intel.com>
-Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com, linux-mips@linux-mips.org, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+To: linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>
+Cc: linux-mips@linux-mips.org, jringle@gridpoint.com, allsey87@gmail.com, Jakub Kicinski <kubakici@wp.pl>, Xue Liu <liuxuenetmail@gmail.com>, =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The subject line also seems odd, your are changing deps on the lantiq
-driver, not some (nonexistent) intel serial driver.
+This is to allow using serdev.
+
+Signed-off-by: Andreas Färber <afaerber@suse.de>
+---
+ drivers/tty/serial/sc16is7xx.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 243c96025053..ad7267274f65 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1213,9 +1213,31 @@ static int sc16is7xx_probe(struct device *dev,
+ 			SC16IS7XX_IOCONTROL_SRESET_BIT);
+ 
+ 	for (i = 0; i < devtype->nr_uart; ++i) {
++#ifdef CONFIG_OF
++		struct device_node *np;
++		struct platform_device *pdev;
++		char name[6] = "uartx";
++#endif
++
+ 		s->p[i].line		= i;
+ 		/* Initialize port data */
++#ifdef CONFIG_OF
++		name[4] = '0' + i;
++		np = of_get_child_by_name(dev->of_node, name);
++		if (IS_ERR(np)) {
++			ret = PTR_ERR(np);
++			goto out_ports;
++		}
++		pdev = of_platform_device_create(np, NULL, dev);
++		if (IS_ERR(pdev)) {
++			ret = PTR_ERR(pdev);
++			goto out_ports;
++		}
++		platform_set_drvdata(pdev, dev_get_drvdata(dev));
++		s->p[i].port.dev	= &pdev->dev;
++#else
+ 		s->p[i].port.dev	= dev;
++#endif
+ 		s->p[i].port.irq	= irq;
+ 		s->p[i].port.type	= PORT_SC16IS7XX;
+ 		s->p[i].port.fifosize	= SC16IS7XX_FIFO_SIZE;
+@@ -1271,6 +1293,9 @@ static int sc16is7xx_probe(struct device *dev,
+ 	for (i--; i >= 0; i--) {
+ 		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+ 		clear_bit(s->p[i].port.line, &sc16is7xx_lines);
++#ifdef CONFIG_OF
++		of_platform_device_destroy(s->p[i].port.dev, NULL);
++#endif
+ 	}
+ 
+ #ifdef CONFIG_GPIOLIB
+-- 
+2.16.4
