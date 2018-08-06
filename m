@@ -1,105 +1,25 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 14/18] serial: intel: Add CCF support
-Date: Mon, 6 Aug 2018 09:20:16 +0200
-Message-ID: <CAMuHMdWY9NuYOXq8sD9wmH48=vhMcSBomRY9ZbC+tGE3PGiTGg@mail.gmail.com>
+From: "Wu, Songjun" <songjun.wu@linux.intel.com>
+Subject: Re: [PATCH v2 15/18] serial: intel: Support more platform
+Date: Mon, 6 Aug 2018 15:20:04 +0800
+Message-ID: <8589b777-1fa9-5c27-3a78-8c9e7af2fc01@linux.intel.com>
 References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
- <20180803030237.3366-15-songjun.wu@linux.intel.com> <20180803055640.GA32226@kroah.com>
- <763bba56-3701-7fe9-9b31-4710594b40d5@linux.intel.com> <20180803103023.GA6557@kroah.com>
- <3360edd2-f3d8-b860-13fa-ce680edbfd0a@hauke-m.de> <20180804124309.GB4920@kroah.com>
- <CAK8P3a3qs34LuhPeaef2wPHYEWbYO5N-4n7763BcaDyppiJ6DA@mail.gmail.com> <acd28f40-4342-7f67-8468-7d4578f614a1@linux.intel.com>
+ <20180803030237.3366-16-songjun.wu@linux.intel.com>
+ <20180805083722.GA30000@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <acd28f40-4342-7f67-8468-7d4578f614a1@linux.intel.com>
+In-Reply-To: <20180805083722.GA30000@infradead.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: songjun.wu@linux.intel.com
-Cc: Arnd Bergmann <arnd@arndb.de>, Greg KH <gregkh@linuxfoundation.org>, Hauke Mehrtens <hauke@hauke-m.de>, hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com, Linux MIPS Mailing List <linux-mips@linux-mips.org>, linux-clk <linux-clk@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
+To: Christoph Hellwig <hch@infradead.org>
+Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com, linux-mips@linux-mips.org, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Songjun,
 
-On Mon, Aug 6, 2018 at 9:15 AM Wu, Songjun <songjun.wu@linux.intel.com> wrote:
-> On 8/5/2018 5:03 AM, Arnd Bergmann wrote:
-> > On Sat, Aug 4, 2018 at 2:43 PM, Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> >> On Sat, Aug 04, 2018 at 12:54:22PM +0200, Hauke Mehrtens wrote:
-> >>> On 08/03/2018 12:30 PM, Greg Kroah-Hartman wrote:
-> >>>> On Fri, Aug 03, 2018 at 03:33:38PM +0800, Wu, Songjun wrote:
-> >>> This patch makes it possible to use it with the legacy lantiq code and
-> >>> also with the common clock framework. I see multiple options to fix this
-> >>> problem.
-> >>>
-> >>> 1. The current approach to have it as a compile variant for a) legacy
-> >>> lantiq arch code without common clock framework and b) support for SoCs
-> >>> using the common clock framework.
-> >>> 2. Convert the lantiq arch code to the common clock framework. This
-> >>> would be a good approach, but it need some efforts.
-> >>> 3. Remove the arch/mips/lantiq code. There are still users of this code.
-> >>> 4. Use the old APIs also for the new xRX500 SoC, I do not like this
-> >>> approach.
-> >>> 5. Move lantiq_soc.h to somewhere in include/linux/ so it is globally
-> >>> available and provide some better wrapper code.
-> >> I don't really care what you do at this point in time, but you all
-> >> should know better than the crazy #ifdef is not allowed to try to
-> >> prevent/allow the inclusion of a .h file.  Checkpatch might have even
-> >> warned you about it, right?
-> >>
-> >> So do it correctly, odds are #5 is correct, as that makes it work like
-> >> any other device in the kernel.  You are not unique here.
-> > The best approach here would clearly be 2. We don't want platform
-> > specific header files for doing things that should be completely generic.
-> >
-> > Converting lantiq to the common-clk framework obviously requires
-> > some work, but then again the whole arch/mips/lantiq/clk.c file
-> > is fairly short and maybe not that hard to convert.
-> >
-> > >From looking at arch/mips/lantiq/xway/sysctrl.c, it appears that you
-> > already use the clkdev lookup mechanism for some devices without
-> > using COMMON_CLK, so I would assume that you can also use those
-> > for the remaining clks, which would be much simpler. It registers
-> > one anonymous clk there as
-> >
-> >          clkdev_add_pmu("1e100c00.serial", NULL, 0, 0, PMU_ASC1);
-> >
-> > so why not add replace that with two named clocks and just use
-> > the same names in the DT for the newer chip?
-> >
-> >        Arnd
-> We discussed internally and have another solution for this issue.
-> Add one lantiq.h in the serial folder, and use "#ifdef preprocessor" in
-> lantiq.h,
-> also providing no-op stub functions in the #else case, then call those
-> functions
-> unconditionally from lantiq.c to avoid #ifdef in C file.
+
+On 8/5/2018 4:37 PM, Christoph Hellwig wrote:
+> The subject line also seems odd, your are changing deps on the lantiq
+> driver, not some (nonexistent) intel serial driver.
 >
-> To support CCF in legacy product is another topic, is not included in
-> this patch.
->
-> The implementation is as following：
-> #ifdef CONFIG_LANTIQ
-> #include <lantiq_soc.h>
-> #else
-> #define LTQ_EARLY_ASC 0
-> #define CPHYSADDR(_val) 0
->
-> static inline struct clk *clk_get_fpi(void)
-> {
->      return NULL;
-> }
-> #endif
-
-Why not use clkdev_add(), as Arnd suggested?
-That would be a 3-line patch without introducing a new header file and an ugly
-#ifdef, which complicates compile coverage testing?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Your suggestion is reasonable, it will be changed to "serial: lantiq".
