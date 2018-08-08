@@ -1,85 +1,84 @@
-From: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 03/18] dt-bindings: clk: Add documentation of grx500
- clock controller
-Date: Wed, 8 Aug 2018 08:54:12 -0600
-Message-ID: <CAL_JsqL5=a9nhvaZOsuDZ7YFhvZs23QT-jbDd4m7wPFviGU1CQ@mail.gmail.com>
-References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
- <20180803030237.3366-4-songjun.wu@linux.intel.com> <CAL_JsqKLa1e3X+ddAoVdEwBQFd6tsL=RjOLcTLdfoc6mpKuefQ@mail.gmail.com>
- <9c0cbdfa-8109-be0d-8e14-7d303c764f5c@linux.intel.com>
+From: <zhe.he@windriver.com>
+Subject: [PATCH] kgdboc: Passing ekgdboc to command line causes panic
+Date: Wed, 8 Aug 2018 23:59:44 +0800
+Message-ID: <1533743984-426660-1-git-send-email-zhe.he@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <9c0cbdfa-8109-be0d-8e14-7d303c764f5c@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: yixin zhu <yixin.zhu@linux.intel.com>
-Cc: Songjun Wu <songjun.wu@linux.intel.com>, hua.ma@linux.intel.com, chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com, Linux-MIPS <linux-mips@linux-mips.org>, linux-clk <linux-clk@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, devicetree@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>
+To: jason.wessel@windriver.com, daniel.thompson@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: zhe.he@windriver.com
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Aug 7, 2018 at 9:08 PM yixin zhu <yixin.zhu@linux.intel.com> wrote:
->
->
->
-> On 8/6/2018 11:18 PM, Rob Herring wrote:
-> > On Thu, Aug 2, 2018 at 9:03 PM Songjun Wu <songjun.wu@linux.intel.com> wrote:
-> >> From: Yixin Zhu <yixin.zhu@linux.intel.com>
-> >>
-> >> This patch adds binding documentation for grx500 clock controller.
-> >>
-> >> Signed-off-by: YiXin Zhu <yixin.zhu@linux.intel.com>
-> >> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
-> >> ---
-> >>
-> >> Changes in v2:
-> >> - Rewrite clock driver's dt-binding document according to Rob Herring's
-> >>    comments.
-> >> - Simplify device tree docoment, remove some clock description.
-> >>
-> >>   .../devicetree/bindings/clock/intel,grx500-clk.txt | 39 ++++++++++++++++++++++
-> > Please match the compatible string: intel,grx500-cgu.txt
-> Will update to use same name.
->
-> >
-> >>   1 file changed, 39 insertions(+)
-> >>   create mode 100644 Documentation/devicetree/bindings/clock/intel,grx500-clk.txt
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/clock/intel,grx500-clk.txt b/Documentation/devicetree/bindings/clock/intel,grx500-clk.txt
-> >> new file mode 100644
-> >> index 000000000000..e54e1dad9196
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/clock/intel,grx500-clk.txt
-> >> @@ -0,0 +1,39 @@
-> >> +Device Tree Clock bindings for grx500 PLL controller.
-> >> +
-> >> +This binding uses the common clock binding:
-> >> +       Documentation/devicetree/bindings/clock/clock-bindings.txt
-> >> +
-> >> +The grx500 clock controller supplies clock to various controllers within the
-> >> +SoC.
-> >> +
-> >> +Required properties for clock node
-> >> +- compatible: Should be "intel,grx500-cgu".
-> >> +- reg: physical base address of the controller and length of memory range.
-> >> +- #clock-cells: should be 1.
-> >> +
-> >> +Optional Propteries:
-> >> +- intel,osc-frequency: frequency of the osc clock.
-> >> +if missing, driver will use clock rate defined in the driver.
-> > This should use a fixed-clock node instead.
-> Yes, This is a fixed clock node registered in driver code.
-> The frequency of the fixed clock is designed to be overwritten by device
-> tree in case some one verify
-> clock driver in the emulation platform or in some cases frequency other
-> than driver defined one is preferred.
+From: He Zhe <zhe.he@windriver.com>
 
-Emulation platforms often need several hacks that shouldn't be upstream...
+kgdboc_option_setup does not check input argument before passing it
+to strlen. The argument would be a NULL pointer if "ekgdboc", without
+its value, is set in command line and thus cause the following panic.
 
-> These kinds of cases are very rare. But I feel it would be better to
-> have a way to use customized frequency.
-> The frequency defined in device tree will overwritten driver defined
-> frequency before registering fixed-clock node.
+PANIC: early exception 0xe3 IP 10:ffffffff8fbbb620 error 0 cr2 0x0
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 4.18-rc8+ #1
+[    0.000000] RIP: 0010:strlen+0x0/0x20
+...
+[    0.000000] Call Trace
+[    0.000000]  ? kgdboc_option_setup+0x9/0xa0
+[    0.000000]  ? kgdboc_early_init+0x6/0x1b
+[    0.000000]  ? do_early_param+0x4d/0x82
+[    0.000000]  ? parse_args+0x212/0x330
+[    0.000000]  ? rdinit_setup+0x26/0x26
+[    0.000000]  ? parse_early_options+0x20/0x23
+[    0.000000]  ? rdinit_setup+0x26/0x26
+[    0.000000]  ? parse_early_param+0x2d/0x39
+[    0.000000]  ? setup_arch+0x2f7/0xbf4
+[    0.000000]  ? start_kernel+0x5e/0x4c2
+[    0.000000]  ? load_ucode_bsp+0x113/0x12f
+[    0.000000]  ? secondary_startup_64+0xa5/0xb0
 
-I don't think you understand what I meant. Add a DT node with
-"fixed-clock" compatible and have this node refer to it with "clocks"
-property. The frequency is still in DT, but uses the clock binding.
+This patch adds a check to prevent the panic and changes some printk
+to right fashion.
 
-Rob
+Signed-off-by: He Zhe <zhe.he@windriver.com>
+---
+ drivers/tty/serial/kgdboc.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index b4ba2b1..0003d6c 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -130,8 +130,13 @@ static void kgdboc_unregister_kbd(void)
+ 
+ static int kgdboc_option_setup(char *opt)
+ {
++	if (!opt) {
++		pr_err("kgdboc: null option\n");
++		return -EINVAL;
++	}
++
+ 	if (strlen(opt) >= MAX_CONFIG_LEN) {
+-		printk(KERN_ERR "kgdboc: config string too long\n");
++		pr_err("kgdboc: config string too long\n");
+ 		return -ENOSPC;
+ 	}
+ 	strcpy(config, opt);
+@@ -248,7 +253,7 @@ static int param_set_kgdboc_var(const char *kmessage,
+ 	int len = strlen(kmessage);
+ 
+ 	if (len >= MAX_CONFIG_LEN) {
+-		printk(KERN_ERR "kgdboc: config string too long\n");
++		pr_err("kgdboc: config string too long\n");
+ 		return -ENOSPC;
+ 	}
+ 
+@@ -259,8 +264,7 @@ static int param_set_kgdboc_var(const char *kmessage,
+ 	}
+ 
+ 	if (kgdb_connected) {
+-		printk(KERN_ERR
+-		       "kgdboc: Cannot reconfigure while KGDB is connected.\n");
++		pr_err("kgdboc: Cannot reconfigure while KGDB is connected.\n");
+ 
+ 		return -EBUSY;
+ 	}
+-- 
+2.7.4
