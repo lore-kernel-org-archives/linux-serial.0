@@ -1,83 +1,87 @@
-From: Ludovic Desroches <ludovic.desroches@microchip.com>
-Subject: Re: [PATCH v3 2/2] tty/serial: atmel: add ISO7816 support
-Date: Thu, 9 Aug 2018 13:30:35 +0200
-Message-ID: <20180809113035.kftvdalca7zsf4ly@M43218.corp.atmel.com>
-References: <20180807130049.5957-1-ludovic.desroches@microchip.com>
- <20180807130049.5957-3-ludovic.desroches@microchip.com>
- <d66c4318-1d31-5c4e-3952-6b69a010b028@sorico.fr>
+From: "Wu, Songjun" <songjun.wu@linux.intel.com>
+Subject: Re: [PATCH v2 08/18] serial: intel: Get serial id from dts
+Date: Fri, 10 Aug 2018 16:13:34 +0800
+Message-ID: <ba7e68d4-d749-1afc-8a4f-57ebee88a1fb@linux.intel.com>
+References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
+ <20180803030237.3366-9-songjun.wu@linux.intel.com>
+ <CAMuHMdXkGchPN337dXbBVOFsb1o-Tkh8S_z=uCm3Z0sDjPVMKA@mail.gmail.com>
+ <734bddbc-a5aa-d50d-0e7b-d8adc4d1afb2@linux.intel.com>
+ <CAMuHMdVgC__AJHCEKT9UhdK4Jh4bm-s0ihH8mvx7KQ7+vzh6Ag@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <d66c4318-1d31-5c4e-3952-6b69a010b028@sorico.fr>
+In-Reply-To: <CAMuHMdVgC__AJHCEKT9UhdK4Jh4bm-s0ihH8mvx7KQ7+vzh6Ag@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>
-Cc: linux-serial@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alexandre.belloni@bootlin.com, arnd@arndb.de, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, jslaby@suse.com
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com, Linux MIPS Mailing List <linux-mips@linux-mips.org>, linux-clk <linux-clk@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Richard,
 
-On Thu, Aug 09, 2018 at 10:47:17AM +0200, Richard Genoud wrote:
-> Hi !
-> 
-> On 07/08/2018 15:00, Ludovic Desroches wrote:
-> > From: Nicolas Ferre <nicolas.ferre@microchip.com>
-> > 
-> > When mode is set in atmel_config_iso7816() we backup last RS232 mode
-> > for coming back to this mode if requested.
-> > Also allow setup of T=0 and T=1 parameter and basic support in set_termios
-> > function as well.
-> > 
-> > Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> > [ludovic.desroches@microchip.com: rebase, add check on fidi ratio, checkpatch fixes]
-> > Signed-off-by: Ludovic Desroches <ludovic.desroches@microchip.com>
-> > ---
-> >  drivers/tty/serial/atmel_serial.c | 211 +++++++++++++++++++++++++++++++++++---
-> >  drivers/tty/serial/atmel_serial.h |   6 +-
-> >  2 files changed, 201 insertions(+), 16 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> > index 8e4428725848..4a7ec44b0ace 100644
-> > --- a/drivers/tty/serial/atmel_serial.c
-> > +++ b/drivers/tty/serial/atmel_serial.c
 
-[...]
-
-> >  #if defined(CONFIG_OF)
-> > +static struct atmel_uart_pdata at91rm9200_pdata = {
-> > +	.fidi_min = 1,
-> > +	.fidi_max = 2047,
-> > +};
-> > +
-> > +static struct atmel_uart_pdata at91sam9260_pdata = {
-> > +	.fidi_min = 1,
-> > +	.fidi_max = 2047,
-> > +};
-> > +
-> > +static struct atmel_uart_pdata sama5d3_pdata = {
-> > +	.fidi_min = 3,
-> > +	.fidi_max = 65535,
-> Are you sure this is for sama5d3 ?
-> From the datasheets I have, 65535 is for sama5d4/sama5d2
-
-I checked it and I missed it. What a pity... In fact, it's a bit more
-tricky since the min value for d3 is 3 and no longer 1.
-
-> And also, you'll have to s/atmel,at91sam9260-usart/atmel,sama5d2-usart/g
-> in sama5d{2,4}.dtsi
+On 8/8/2018 4:33 PM, Geert Uytterhoeven wrote:
+> Hi Songjun,
 >
+> On Wed, Aug 8, 2018 at 6:05 AM Wu, Songjun <songjun.wu@linux.intel.com> wrote:
+>> On 8/7/2018 3:33 PM, Geert Uytterhoeven wrote:
+>>> On Fri, Aug 3, 2018 at 5:04 AM Songjun Wu <songjun.wu@linux.intel.com> wrote:
+>>>> Get serial id from dts.
+>>>>
+>>>> "#ifdef CONFIG_LANTIQ" preprocessor is used because LTQ_EARLY_ASC
+>>>> macro is defined in lantiq_soc.h.
+>>>> lantiq_soc.h is in arch path for legacy product support.
+>>>>
+>>>> arch/mips/include/asm/mach-lantiq/xway/lantiq_soc.h
+>>>>
+>>>> If "#ifdef preprocessor" is changed to
+>>>> "if (IS_ENABLED(CONFIG_LANTIQ))", when CONFIG_LANTIQ is not enabled,
+>>>> code using LTQ_EARLY_ASC is compiled.
+>>>> Compilation will fail for no LTQ_EARLY_ASC defined.
+>>>>
+>>>> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
+>>> Thanks for your patch!
+>>>
+>>>> @@ -699,9 +700,19 @@ lqasc_probe(struct platform_device *pdev)
+>>>>                   return -ENODEV;
+>>>>           }
+>>>>
+>>>> -       /* check if this is the console port */
+>>>> -       if (mmres->start != CPHYSADDR(LTQ_EARLY_ASC))
+>>>> -               line = 1;
+>>>> +       /* get serial id */
+>>>> +       line = of_alias_get_id(node, "serial");
+>>>> +       if (line < 0) {
+>>>> +#ifdef CONFIG_LANTIQ
+>>>> +               if (mmres->start == CPHYSADDR(LTQ_EARLY_ASC))
+>>>> +                       line = 0;
+>>>> +               else
+>>>> +                       line = 1;
+>>>> +#else
+>>>> +               dev_err(&pdev->dev, "failed to get alias id, errno %d\n", line);
+>>>> +               return line;
+>>> Please note that not providing a fallback here makes life harder when using
+>>> DT overlays.
+>>> See the description of commit 7678f4c20fa7670f ("serial: sh-sci: Add support
+>>> for dynamic instances") for background info.
+>> Thanks for your comment.
+>> The logic in commit 7678f4c20fa7670f is not suitable here.
+>> We need to know which serial instance is used for console.
+>> We cannot use dynamic serial instance here.
+> Why does the driver need to use which serial instance is used for the console?
+> Hardcoding that is not an option, as the board DTS may specify the console using
+> chosen/stdout-path.
+In legacy platform in open source, it only defined asc1 in dts.
+There's no asc0 in legacy dts.While in the new platform, asc0
+is defined in dts. There's no asc1 in new platform dts.
+To avoid hard code in driver, alias serial0 is used to unified
+driver code. Actually only one serial is supported in SoC.
 
-Yes, I planed to send it later but I can add those patches within this
-set of patches. 
+aliases {
+         serial0 = &asc0;
+};
 
-> But I wonder if it could be detected via ATMEL_US_VERSION instead ?
-> 
-
-I have not checked, I tend to prefer the compatible string for this kind
-of thing. But as we already use the version number, I can investigate
-this solution if it's the one you prefer.
-
-
-Regards
-
-Ludovic
+chosen {
+     bootargs = "earlycon  clk_ignore_unused";
+     stdout-path = "serial0";
+};
