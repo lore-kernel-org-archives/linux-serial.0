@@ -1,107 +1,29 @@
-From: Owen Chen <owen.chen@mediatek.com>
-Subject: Re: [PATCH v5 01/11] dt-bindings: clock: mediatek: document clk
- bindings for Mediatek MT6765 SoC
-Date: Mon, 13 Aug 2018 17:12:03 +0800
-Message-ID: <1534151523.17494.48.camel@mtkswgap22>
-References: <1531817552-17221-1-git-send-email-mars.cheng@mediatek.com>
-         <1531817552-17221-2-git-send-email-mars.cheng@mediatek.com>
-         <20180720174331.GA26945@rob-hp-laptop>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 18/18] dt-bindings: serial: lantiq: Add optional
+ properties for CCF
+Date: Mon, 13 Aug 2018 11:53:17 -0600
+Message-ID: <20180813175317.GA31286@rob-hp-laptop>
+References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
+ <20180803030237.3366-19-songjun.wu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180720174331.GA26945@rob-hp-laptop>
+Content-Disposition: inline
+In-Reply-To: <20180803030237.3366-19-songjun.wu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Mars Cheng <mars.cheng@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Marc Zyngier <marc.zyngier@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Stephen Boyd <sboyd@kernel.org>, Sean Wang <sean.wang@mediatek.com>, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, wsd_upstream@mediatek.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
+To: Songjun Wu <songjun.wu@linux.intel.com>
+Cc: hua.ma@linux.intel.com, yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, qi-ming.wu@intel.com, linux-mips@linux-mips.org, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2018-07-20 at 11:43 -0600, Rob Herring wrote:
-> On Tue, Jul 17, 2018 at 04:52:22PM +0800, Mars Cheng wrote:
-> > This patch adds the binding documentation for apmixedsys, audsys, camsys,
-> > imgsys, infracfg, mipi0a, topckgen, vcodecsys
-> > 
-> > Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
-> > Signed-off-by: Owen Chen <owen.chen@mediatek.com>
-> > ---
-> >  .../bindings/arm/mediatek/mediatek,apmixedsys.txt  |    1 +
-> >  .../bindings/arm/mediatek/mediatek,audsys.txt      |    1 +
-> >  .../bindings/arm/mediatek/mediatek,camsys.txt      |   27 ++++++++++++++++++++
-> >  .../bindings/arm/mediatek/mediatek,imgsys.txt      |    1 +
-> >  .../bindings/arm/mediatek/mediatek,infracfg.txt    |    1 +
-> >  .../bindings/arm/mediatek/mediatek,mipi0a.txt      |   23 +++++++++++++++++
-> >  .../bindings/arm/mediatek/mediatek,mmsys.txt       |    1 +
-> >  .../bindings/arm/mediatek/mediatek,pericfg.txt     |    1 +
-> >  .../bindings/arm/mediatek/mediatek,topckgen.txt    |    1 +
-> >  .../bindings/arm/mediatek/mediatek,vcodecsys.txt   |   22 ++++++++++++++++
-> >  10 files changed, 79 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt
-> >  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mipi0a.txt
-> >  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,vcodecsys.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
-> > index b404d59..44eaeac 100644
-> > --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
-> > +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
-> > @@ -8,6 +8,7 @@ Required Properties:
-> >  - compatible: Should be one of:
-> >  	- "mediatek,mt2701-apmixedsys"
-> >  	- "mediatek,mt2712-apmixedsys", "syscon"
-> > +	- "mediatek,mt6765-apmixedsys", "syscon"
-> >  	- "mediatek,mt6797-apmixedsys"
-> >  	- "mediatek,mt7622-apmixedsys"
-> >  	- "mediatek,mt8135-apmixedsys"
-> > diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt
-> > index 34a69ba..9a8672a 100644
-> > --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt
-> > +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt
-> > @@ -7,6 +7,7 @@ Required Properties:
-> >  
-> >  - compatible: Should be one of:
-> >  	- "mediatek,mt2701-audsys", "syscon"
-> > +	- "mediatek,mt6765-audsys", "syscon"
-> >  	- "mediatek,mt7622-audsys", "syscon"
-> >  - #clock-cells: Must be 1
-> >  
-> > diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt
-> > new file mode 100644
-> > index 0000000..dc75783
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt
-> > @@ -0,0 +1,27 @@
-> > +MediaTek CAMSYS controller
-> > +============================
-> > +
-> > +The MediaTek CAMSYS controller provides various clocks to the system.
+On Fri, Aug 03, 2018 at 11:02:37AM +0800, Songjun Wu wrote:
+> Clocks and clock-names are updated in device tree binding.
 > 
-> Only clocks? If so, then this should be moved to bindings/clocks/.
+> Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
+> ---
 > 
+> Changes in v2: None
+> 
+>  Documentation/devicetree/bindings/serial/lantiq_asc.txt | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
 
-camsys conclude not only clks but also mtcmos, so it's better to put
-this node in this path.
-
-> > +
-> > +Required Properties:
-> > +
-> > +- compatible: Should be one of:
-> > +	- "mediatek,mt6765-camsys", "syscon"
-> > +- #clock-cells: Must be 1
-> > +
-> > +The AUDSYS controller uses the common clk binding from
-> > +Documentation/devicetree/bindings/clock/clock-bindings.txt
-> > +The available clocks are defined in dt-bindings/clock/mt*-clk.h.
-> > +
-> > +Required sub-nodes:
-> > +-------
-> > +For common binding part and usage, refer to
-> > +../sonud/mt2701-afe-pcm.txt.
-> > +
-> > +Example:
-> > +
-> > +camsys: camsys@1a000000  {
-> 
-> clock-controller@...
-> 
-> if the above answer is yes.
-> 
-> Same comments on the other docs.
+Reviewed-by: Rob Herring <robh@kernel.org>
