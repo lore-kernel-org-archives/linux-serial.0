@@ -1,35 +1,100 @@
-From: Oliver Neukum <oneukum@suse.com>
-Subject: Re: serdev: How to attach serdev devices to USB based tty devices?
-Date: Tue, 14 Aug 2018 09:23:06 +0200
-Message-ID: <1534231386.31827.3.camel@suse.com>
-References: <3639955d-5990-1c82-7158-ac07b33c41f2@suse.de>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH] kgdboc: Passing ekgdboc to command line causes panic
+Date: Tue, 14 Aug 2018 10:16:00 +0100
+Message-ID: <20180814091600.md6v2dj53wco7lgn@holly.lan>
+References: <1533743984-426660-1-git-send-email-zhe.he@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <3639955d-5990-1c82-7158-ac07b33c41f2@suse.de>
-Sender: netdev-owner@vger.kernel.org
-To: Andreas =?ISO-8859-1?Q?F=E4rber?= <afaerber@suse.de>, Rob Herring <robh@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-usb@vger.kernel.org
-Cc: Jian-Hong Pan <starnight@g.ncu.edu.tw>, Xue Liu <liuxuenetmail@gmail.com>, Ben Whitten <ben.whitten@lairdtech.com>, Linux-MIPS <linux-mips@linux-mips.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Stefan Rehm <rehm@miromico.ch>, "LoRa_Community_Support@semtech.com" <LoRa_Community_Support@semtech.com>, Alexander Graf <agraf@suse.de>, devicetree@vger.kernel.org, "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1533743984-426660-1-git-send-email-zhe.he@windriver.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: zhe.he@windriver.com
+Cc: jason.wessel@windriver.com, gregkh@linuxfoundation.org, jslaby@suse.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Di, 2018-08-14 at 04:28 +0200, Andreas Färber  wrote:
-> My idea then was that if we had some unique criteria like vendor and
-> product IDs (or whatever is supported in usb_device_id), we could write
-> a usb_driver with suitable USB_DEVICE*() macro. In its probe function we
-> could call into the existing tty driver's probe function and afterwards
-> try creating and attaching the appropriate serdev device, i.e. a fixed
-> USB-to-serdev driver mapping. Problem is that most devices don't seem to
-> implement any unique identifier I could make this depend on - either by
-> using a standard FT232/FT2232/CH340G chip or by using STMicroelectronics
-> virtual com port identifiers in CDC firmware and only differing in the
-> textual description [3] the usb_device_id does not seem to match on.
+On Wed, Aug 08, 2018 at 11:59:44PM +0800, zhe.he@windriver.com wrote:
+> From: He Zhe <zhe.he@windriver.com>
+> 
+> kgdboc_option_setup does not check input argument before passing it
+> to strlen. The argument would be a NULL pointer if "ekgdboc", without
+> its value, is set in command line and thus cause the following panic.
+> 
+> PANIC: early exception 0xe3 IP 10:ffffffff8fbbb620 error 0 cr2 0x0
+> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 4.18-rc8+ #1
+> [    0.000000] RIP: 0010:strlen+0x0/0x20
+> ...
+> [    0.000000] Call Trace
+> [    0.000000]  ? kgdboc_option_setup+0x9/0xa0
+> [    0.000000]  ? kgdboc_early_init+0x6/0x1b
+> [    0.000000]  ? do_early_param+0x4d/0x82
+> [    0.000000]  ? parse_args+0x212/0x330
+> [    0.000000]  ? rdinit_setup+0x26/0x26
+> [    0.000000]  ? parse_early_options+0x20/0x23
+> [    0.000000]  ? rdinit_setup+0x26/0x26
+> [    0.000000]  ? parse_early_param+0x2d/0x39
+> [    0.000000]  ? setup_arch+0x2f7/0xbf4
+> [    0.000000]  ? start_kernel+0x5e/0x4c2
+> [    0.000000]  ? load_ucode_bsp+0x113/0x12f
+> [    0.000000]  ? secondary_startup_64+0xa5/0xb0
+> 
+> This patch adds a check to prevent the panic and changes some printk
+> to right fashion.
+> 
+> Signed-off-by: He Zhe <zhe.he@windriver.com>
 
-If you really must do this you can benignly fail probe(). Thus you
-can compare strings within your probe() method.
-This sucks because you need to make sure your drivers are always
-loaded in a certain order and you really rely on undocumented
-properties, but it can be done.
+For the bug fix portions of this patch you should add the stable kernel
+ML to the Cc: of the sign off area: See:
+https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html#option-1
 
-	Regards
-		Oliver
+> ---
+>  drivers/tty/serial/kgdboc.c | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+> index b4ba2b1..0003d6c 100644
+> --- a/drivers/tty/serial/kgdboc.c
+> +++ b/drivers/tty/serial/kgdboc.c
+> @@ -130,8 +130,13 @@ static void kgdboc_unregister_kbd(void)
+>  
+>  static int kgdboc_option_setup(char *opt)
+>  {
+> +	if (!opt) {
+> +		pr_err("kgdboc: null option\n");
+> +		return -EINVAL;
+> +	}
+> +
+>  	if (strlen(opt) >= MAX_CONFIG_LEN) {
+> -		printk(KERN_ERR "kgdboc: config string too long\n");
+> +		pr_err("kgdboc: config string too long\n");
+
+These changes are not bug fixes and are not normally candidates for
+backporting. It would therefore be better to put the s/printk KERN_ERR /pr_err(/
+changes into a separate patch.
+
+
+>  		return -ENOSPC;
+>  	}
+>  	strcpy(config, opt);
+> @@ -248,7 +253,7 @@ static int param_set_kgdboc_var(const char *kmessage,
+>  	int len = strlen(kmessage);
+>  
+>  	if (len >= MAX_CONFIG_LEN) {
+> -		printk(KERN_ERR "kgdboc: config string too long\n");
+> +		pr_err("kgdboc: config string too long\n");
+>  		return -ENOSPC;
+>  	}
+>  
+> @@ -259,8 +264,7 @@ static int param_set_kgdboc_var(const char *kmessage,
+>  	}
+>  
+>  	if (kgdb_connected) {
+> -		printk(KERN_ERR
+> -		       "kgdboc: Cannot reconfigure while KGDB is connected.\n");
+> +		pr_err("kgdboc: Cannot reconfigure while KGDB is connected.\n");
+>  
+>  		return -EBUSY;
+>  	}
+> -- 
+> 2.7.4
+> 
