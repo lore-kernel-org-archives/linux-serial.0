@@ -1,56 +1,80 @@
-From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Subject: [PATCH] serial: sh-sci: Document r8a774a1 bindings
-Date: Tue, 14 Aug 2018 13:34:02 +0100
-Message-ID: <1534250042-15815-1-git-send-email-fabrizio.castro@bp.renesas.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: Fabrizio Castro <fabrizio.castro@bp.renesas.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-renesas-soc@vger.kernel.org
+From: <zhe.he@windriver.com>
+Subject: [PATCH v2 1/2] kgdboc: Passing ekgdboc to command
+ line causes panic
+Date: Tue, 14 Aug 2018 20:46:00 +0800
+Message-ID: <1534250761-824-1-git-send-email-zhe.he@windriver.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kgdb-bugreport-bounces@lists.sourceforge.net>
+List-Unsubscribe: <https://lists.sourceforge.net/lists/options/kgdb-bugreport>,
+ <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=kgdb-bugreport>
+List-Post: <mailto:kgdb-bugreport@lists.sourceforge.net>
+List-Help: <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=help>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/kgdb-bugreport>,
+ <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=subscribe>
+Errors-To: kgdb-bugreport-bounces@lists.sourceforge.net
+To: jason.wessel@windriver.com, daniel.thompson@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: zhe.he@windriver.com
 List-Id: linux-serial@vger.kernel.org
 
-RZ/G2M (R8A774A1) SoC also has the R-Car Gen3 compatible SCIF and
-HSCIF ports, so document the SoC specific bindings. While at it,
-update the RZ/G1 and RZ/G2 family specific strings description as
-outdated.
+From: He Zhe <zhe.he@windriver.com>
 
-Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das@bp.renesas.com>
+kgdboc_option_setup does not check input argument before passing it
+to strlen. The argument would be a NULL pointer if "ekgdboc", without
+its value, is set in command line and thus cause the following panic.
+
+PANIC: early exception 0xe3 IP 10:ffffffff8fbbb620 error 0 cr2 0x0
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 4.18-rc8+ #1
+[    0.000000] RIP: 0010:strlen+0x0/0x20
+...
+[    0.000000] Call Trace
+[    0.000000]  ? kgdboc_option_setup+0x9/0xa0
+[    0.000000]  ? kgdboc_early_init+0x6/0x1b
+[    0.000000]  ? do_early_param+0x4d/0x82
+[    0.000000]  ? parse_args+0x212/0x330
+[    0.000000]  ? rdinit_setup+0x26/0x26
+[    0.000000]  ? parse_early_options+0x20/0x23
+[    0.000000]  ? rdinit_setup+0x26/0x26
+[    0.000000]  ? parse_early_param+0x2d/0x39
+[    0.000000]  ? setup_arch+0x2f7/0xbf4
+[    0.000000]  ? start_kernel+0x5e/0x4c2
+[    0.000000]  ? load_ucode_bsp+0x113/0x12f
+[    0.000000]  ? secondary_startup_64+0xa5/0xb0
+
+This patch adds a check to prevent the panic.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: He Zhe <zhe.he@windriver.com>
 ---
- .../devicetree/bindings/serial/renesas,sci-serial.txt      | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+v2:
+- Split out printk cleanups
+- Add cc to stable@vger.kernel.org
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index eaca9da..1994ab8 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -20,6 +20,8 @@ Required properties:
-     - "renesas,hscif-r8a7745" for R8A7745 (RZ/G1E) HSCIF compatible UART.
-     - "renesas,scif-r8a77470" for R8A77470 (RZ/G1C) SCIF compatible UART.
-     - "renesas,hscif-r8a77470" for R8A77470 (RZ/G1C) HSCIF compatible UART.
-+    - "renesas,scif-r8a774a1" for R8A774A1 (RZ/G2M) SCIF compatible UART.
-+    - "renesas,hscif-r8a774a1" for R8A774A1 (RZ/G2M) HSCIF compatible UART.
-     - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
-     - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
-     - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
-@@ -55,13 +57,13 @@ Required properties:
-     - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible UART.
-     - "renesas,scifb-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFB compatible UART.
-     - "renesas,rcar-gen1-scif" for R-Car Gen1 SCIF compatible UART,
--    - "renesas,rcar-gen2-scif" for R-Car Gen2 SCIF compatible UART,
--    - "renesas,rcar-gen3-scif" for R-Car Gen3 SCIF compatible UART,
--    - "renesas,rcar-gen2-scifa" for R-Car Gen2 SCIFA compatible UART,
--    - "renesas,rcar-gen2-scifb" for R-Car Gen2 SCIFB compatible UART,
-+    - "renesas,rcar-gen2-scif" for R-Car Gen2 and RZ/G1 SCIF compatible UART,
-+    - "renesas,rcar-gen3-scif" for R-Car Gen3 and RZ/G2 SCIF compatible UART,
-+    - "renesas,rcar-gen2-scifa" for R-Car Gen2 and RZ/G1 SCIFA compatible UART,
-+    - "renesas,rcar-gen2-scifb" for R-Car Gen2 and RZ/G1 SCIFB compatible UART,
-     - "renesas,rcar-gen1-hscif" for R-Car Gen1 HSCIF compatible UART,
--    - "renesas,rcar-gen2-hscif" for R-Car Gen2 HSCIF compatible UART,
--    - "renesas,rcar-gen3-hscif" for R-Car Gen3 HSCIF compatible UART,
-+    - "renesas,rcar-gen2-hscif" for R-Car Gen2 and RZ/G1 HSCIF compatible UART,
-+    - "renesas,rcar-gen3-hscif" for R-Car Gen3 and RZ/G2 HSCIF compatible UART,
-     - "renesas,scif" for generic SCIF compatible UART.
-     - "renesas,scifa" for generic SCIFA compatible UART.
-     - "renesas,scifb" for generic SCIFB compatible UART.
+ drivers/tty/serial/kgdboc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index b4ba2b1..206f8c2 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -130,6 +130,11 @@ static void kgdboc_unregister_kbd(void)
+ 
+ static int kgdboc_option_setup(char *opt)
+ {
++	if (!opt) {
++		pr_err("kgdboc: null option\n");
++		return -EINVAL;
++	}
++
+ 	if (strlen(opt) >= MAX_CONFIG_LEN) {
+ 		printk(KERN_ERR "kgdboc: config string too long\n");
+ 		return -ENOSPC;
 -- 
 2.7.4
+
+
+------------------------------------------------------------------------------
+Check out the vibrant tech community on one of the world's most
+engaging tech sites, Slashdot.org! http://sdm.link/slashdot
