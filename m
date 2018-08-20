@@ -1,54 +1,29 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: Re: [RFC PATCH 5/6] arm64: dts: ti: Add Support for AM654 SoC
-Date: Mon, 20 Aug 2018 07:31:53 -0700
-Message-ID: <20180820143153.GD7523@atomide.com>
-References: <20180605060510.32473-1-nm@ti.com>
- <CAL_JsqJusWTvr4A_-Bk81meYddMHBMJ4=Fch6L0MFoF7HfBW2w@mail.gmail.com>
- <454c277e-8a63-81cb-b341-a50f4e25cbea@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Subject: [PATCH 0/3] ARM: OMAP1: ams-delta: Clean up GPIO setup for MODEM
+Date: Mon, 20 Aug 2018 20:13:30 +0200
+Message-ID: <20180820181333.2527-1-jmkrzyszt@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <454c277e-8a63-81cb-b341-a50f4e25cbea@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kishon Vijay Abraham I <kishon@ti.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Nishanth Menon <nm@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>
+To: Tony Lindgren <tony@atomide.com>
+Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, Janusz Krzysztofik <jmkrzyszt@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-* Kishon Vijay Abraham I <kishon@ti.com> [180808 06:35]:
-> On Tuesday 05 June 2018 07:35 PM, Rob Herring wrote:
-> > Really need 64-bit addresses and sizes? Use ranges to limit the
-> > address space if possible.
-> 
-> We now have address-cells as <1>,
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/arch/arm64/boot/dts/ti/k3-am65.dtsi#n49
-> 
-> However each PCIe instance has 2 data regions and one of the regions
-> (PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT1/PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT1 specified
-> in the "MAIN Domain Memory Map" table of TRM http://www.ti.com/lit/pdf/spruid7)
-> is above the 32bit region and requires 2 cells to specify the start address.
-> This region is used to access MEM_SPACE of PCIe endpoint when operating in root
-> complex mode and access memory of PCI root complex when operating in endpoint mode.
-> 
-> In order to describe this, should we change the address-cells back to <2> or do
-> you suggest any other alternatives?
 
-It's probably best to have the top level cbass interconnect use
-#size-cells = <2> and then have it's child interconnects have
-#size-cells = <1> if they don't need ranges above 4GB.
+Convert modem related GPIO setup from integer space to GPIO descriptors.
+Also, restore original initialization order of the MODEM device and its
+related GPIO pins.
 
-BTW, what's the difference between all these three similar PCIE
-ranges?
+Cleanup of MODEM relaated regulator setup is postponed while waiting for
+upcoming conversion of fixed regulator API to GPIO descriptors.
 
-PCIE0_CORE_CORE_DAT_SLV_PCIE_CORE 0x0005500000 0x0005600000 1 MB
-PCIE1_CORE_CORE_DAT_SLV_PCIE_CORE 0x0005600000 0x0005700000 1 MB
 
-PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT0 0x0010000000 0x0018000000 128 MB
-PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT0 0x0018000000 0x0020000000 128 MB
+Janusz Krzysztofik (3):
+      ARM: OMAP1: ams-delta: assign MODEM IRQ from GPIO descriptor
+      ARM: OMAP1: ams-delta: initialize latch2 pins to safe values
+      ARM: OMAP1: ams-delta: register MODEM device earlier
 
-PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT1 0x4000000000 0x4100000000 4 GB
-PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT1 0x4100000000 0x4200000000 4 GB
 
-Regards,
-
-Tony
+diffstat:
+ board-ams-delta.c |  120 +++++++++++++++++++++++++++++++++++++++---------------
+ board-ams-delta.h |    7 ---
+ 2 files changed, 88 insertions(+), 39 deletions(-)
