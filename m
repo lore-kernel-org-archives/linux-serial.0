@@ -1,154 +1,66 @@
 From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Subject: [PATCH 2/3] ARM: OMAP1: ams-delta: initialize latch2 pins to safe values
-Date: Mon, 20 Aug 2018 20:13:32 +0200
-Message-ID: <20180820181333.2527-3-jmkrzyszt@gmail.com>
-References: <20180820181333.2527-1-jmkrzyszt@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180820181333.2527-1-jmkrzyszt@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Subject: [RFC RFT PATCH 0/4] gpiolib: speed up GPIO array processing
+Date: Tue, 21 Aug 2018 01:43:37 +0200
+Message-ID: <20180820234341.5271-1-jmkrzyszt@gmail.com>
+References: <20180813223448.21316-1-jmkrzyszt@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+In-Reply-To: <20180813223448.21316-1-jmkrzyszt@gmail.com>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>, linux-doc@vger.kernel.org, linux-iio@vger.kernel.org, Dominik Brodowski <linux@dominikbrodowski.net>, netdev@vger.kernel.org, linux-i2c@vger.kernel.org, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, devel@driverdev.osuosl.org, Florian Fainelli <f.fainelli@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Janusz Krzysztofik <jmkrzyszt@gmail.com>, Kishon Vijay Abraham I <kishon@ti.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Michael Hennerich <Michael.Hennerich@analog.com>, linux-gpio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Rosin <peda@axentia.se>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Hartmut Knaack <kna>
 List-Id: linux-serial@vger.kernel.org
 
-Latch2 pins control a number of on-board devices, namely LCD, NAND,
-MODEM and CODEC.  Those pins used to be initialized with safe values
-from init_machine before that operation was:
-1) moved to late_initcall in preparation for conversion of latch2 to
-GPIO device - see commit f7519d8c8290 ("ARM: OMAP1: ams-delta: register
-latch dependent devices later"),
-2) replaced with non-atomic initialization performed by means of
-gpio_request_array() - see commit 937eb4bb0058 ("ARM: OMAP1: ams-delta:
-convert latches to basic_mmio_gpio"),
-3) made completely asynchronous by delegation of GPIO request
-operations performed on subsets of pins to respective device drivers in
-subsequent commits.
 
-One visible negative result of that disintegration was corrupt keyboard
-data reported by serio driver, recently fixed by commit 41f8fee385a0
-("ARM: OMAP1: ams-delta: Hog "keybrd_dataout" GPIO pin").
+This series is a follow up of the former "mtd: rawnand: ams-delta: Use
+gpio-omap accessors for data I/O" which already contained some changes
+to gpiolib.  Those previous attempts were commented by Borris Brezillon
+who suggested using GPIO API modified to accept bitmaps, and by Linus
+Walleij who suggested still more great ideas for further immprovement
+of the proposed API changes - thanks!
 
-Moreover, initialization of LATCH2_PIN_MODEM_CODEC still performed with
-ams_delta_latch2_write() wrapper from late_init() is now done on not
-requested GPIO pin.
+The goal is to boost performans of get/set array functions while
+processing GPIO arrays which represent pins of a signle chip in
+hardware order.  If resulting performance is close to PIO, GPIO API
+can be used for data I/O without much loss of speed.
 
-Reintroduce atomic initialization of latch2 pins at machine_init to
-prevent from random values potentially corrupting NAND data or maybe
-even destroing other hardware.  Also take care of MODEM/CODEC related
-pins so MODEM device probe succeeds even if latch2 GPIO device or
-dependent regulator is not ready and CODEC can be reached over the
-MODEM even if audio driver doesn't take control over
-LATCH2_PIN_MODEM_CODEC.
+Created and tested on a low end Amstrad Delta board with NAND driver
+updated to use GPIO API for data I/O.  Performance degrade compared to
+PIO is much better than before the optimization but still not quite
+satisfactory.
 
-Once done, remove the no longer needed GPIO based implementation of
-ams_delta_latch_write() and its frontend macro.
 
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
----
- arch/arm/mach-omap1/board-ams-delta.c | 52 +++++++++++++++++++++++------------
- arch/arm/mach-omap1/board-ams-delta.h |  7 -----
- 2 files changed, 35 insertions(+), 24 deletions(-)
+Janusz Krzysztofik (4):
+      gpiolib: Pass bitmaps, not integer arrays, to get/set array
+      gpiolib: Identify arrays matching GPIO hardware
+      gpiolib: Pass array info to get/set array functions
+      gpiolib: Implement fast processing path in get/set array
 
-diff --git a/arch/arm/mach-omap1/board-ams-delta.c b/arch/arm/mach-omap1/board-ams-delta.c
-index b3fe515b6f49..c865c6921af8 100644
---- a/arch/arm/mach-omap1/board-ams-delta.c
-+++ b/arch/arm/mach-omap1/board-ams-delta.c
-@@ -321,20 +321,6 @@ struct modem_private_data {
- 
- static struct modem_private_data modem_priv;
- 
--void ams_delta_latch_write(int base, int ngpio, u16 mask, u16 value)
--{
--	int bit = 0;
--	u16 bitpos = 1 << bit;
--
--	for (; bit < ngpio; bit++, bitpos = bitpos << 1) {
--		if (!(mask & bitpos))
--			continue;
--		else
--			gpio_set_value(base + bit, (value & bitpos) != 0);
--	}
--}
--EXPORT_SYMBOL(ams_delta_latch_write);
--
- static struct resource ams_delta_nand_resources[] = {
- 	[0] = {
- 		.start	= OMAP1_MPUIO_BASE,
-@@ -680,6 +666,40 @@ static void __init omap_gpio_deps_init(void)
- 	modem_assign_irq(chip);
- }
- 
-+/*
-+ * Initialize latch2 pins with values which are safe for dependent on-board
-+ * devices or useful for their successull initialization even before GPIO
-+ * driver takes control over the latch pins:
-+ * - LATCH2_PIN_LCD_VBLEN	= 0
-+ * - LATCH2_PIN_LCD_NDISP	= 0	Keep LCD device powered off before its
-+ *					driver takes control over it.
-+ * - LATCH2_PIN_NAND_NCE	= 0
-+ * - LATCH2_PIN_NAND_NWP	= 0	Keep NAND device down and write-
-+ *					protected before its driver takes
-+ *					control over it.
-+ * - LATCH2_PIN_KEYBRD_PWR	= 0	Keep keyboard powered off before serio
-+ *					driver takes control over it.
-+ * - LATCH2_PIN_KEYBRD_DATAOUT	= 0	Keep low to avoid corruption of first
-+ *					byte of data received from attached
-+ *					keyboard when serio device is probed;
-+ *					the pin is also hogged low by the latch2
-+ *					GPIO driver as soon as it is ready.
-+ * - LATCH2_PIN_MODEM_NRESET	= 1	Enable voice MODEM device, allowing for
-+ *					its successful probe even before a
-+ *					regulator it depends on, which in turn
-+ *					takes control over the pin, is set up.
-+ * - LATCH2_PIN_MODEM_CODEC	= 1	Attach voice MODEM CODEC data port
-+ *					to the MODEM so the CODEC is under
-+ *					control even if audio driver doesn't
-+ *					take it over.
-+ */
-+static void __init ams_delta_latch2_init(void)
-+{
-+	u16 latch2 = 1 << LATCH2_PIN_MODEM_NRESET | 1 << LATCH2_PIN_MODEM_CODEC;
-+
-+	__raw_writew(latch2, LATCH2_VIRT);
-+}
-+
- static void __init ams_delta_init(void)
- {
- 	/* mux pins for uarts */
-@@ -701,6 +721,7 @@ static void __init ams_delta_init(void)
- 	omap_cfg_reg(J18_1610_CAM_D7);
- 
- 	omap_gpio_deps_init();
-+	ams_delta_latch2_init();
- 	gpiod_add_hogs(ams_delta_gpio_hogs);
- 
- 	omap_serial_init();
-@@ -888,9 +909,6 @@ static int __init ams_delta_modem_init(void)
- 	/* Initialize the modem_nreset regulator consumer before use */
- 	modem_priv.regulator = ERR_PTR(-ENODEV);
- 
--	ams_delta_latch2_write(AMS_DELTA_LATCH2_MODEM_CODEC,
--			AMS_DELTA_LATCH2_MODEM_CODEC);
--
- 	err = platform_device_register(&ams_delta_modem_device);
- 
- 	return err;
-diff --git a/arch/arm/mach-omap1/board-ams-delta.h b/arch/arm/mach-omap1/board-ams-delta.h
-index 1fbada29431a..a74a306d7e77 100644
---- a/arch/arm/mach-omap1/board-ams-delta.h
-+++ b/arch/arm/mach-omap1/board-ams-delta.h
-@@ -59,13 +59,6 @@
- #define AMS_DELTA_LATCH2_GPIO_BASE	AMS_DELTA_GPIO_PIN_LCD_VBLEN
- #define AMS_DELTA_LATCH2_NGPIO		16
- 
--#ifndef __ASSEMBLY__
--void ams_delta_latch_write(int base, int ngpio, u16 mask, u16 value);
--#define ams_delta_latch2_write(mask, value) \
--	ams_delta_latch_write(AMS_DELTA_LATCH2_GPIO_BASE, \
--			AMS_DELTA_LATCH2_NGPIO, (mask), (value))
--#endif
--
- #endif /* CONFIG_MACH_AMS_DELTA */
- 
- #endif /* __ASM_ARCH_OMAP_AMS_DELTA_H */
--- 
-2.16.4
+
+ Documentation/driver-api/gpio/board.rst     |   15 +
+ Documentation/driver-api/gpio/consumer.rst  |   48 +++-
+ drivers/auxdisplay/hd44780.c                |   64 +++---
+ drivers/bus/ts-nbus.c                       |   25 --
+ drivers/gpio/gpio-max3191x.c                |   23 +-
+ drivers/gpio/gpiolib.c                      |  279 ++++++++++++++++++++++------
+ drivers/gpio/gpiolib.h                      |   15 +
+ drivers/i2c/muxes/i2c-mux-gpio.c            |    5 
+ drivers/mmc/core/pwrseq_simple.c            |   15 -
+ drivers/mux/gpio.c                          |    7 
+ drivers/net/phy/mdio-mux-gpio.c             |    5 
+ drivers/pcmcia/soc_common.c                 |   14 -
+ drivers/phy/motorola/phy-mapphone-mdm6600.c |   21 +-
+ drivers/staging/iio/adc/ad7606.c            |   12 -
+ drivers/tty/serial/serial_mctrl_gpio.c      |    9 
+ include/linux/gpio/consumer.h               |   35 ++-
+ 16 files changed, 410 insertions(+), 182 deletions(-)
