@@ -1,34 +1,53 @@
 From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [RFC PATCH 5/6] arm64: dts: ti: Add Support for AM654 SoC
-Date: Mon, 20 Aug 2018 07:21:24 -0700
-Message-ID: <20180820142124.GC7523@atomide.com>
+Subject: Re: Re: [RFC PATCH 5/6] arm64: dts: ti: Add Support for AM654 SoC
+Date: Mon, 20 Aug 2018 07:31:53 -0700
+Message-ID: <20180820143153.GD7523@atomide.com>
 References: <20180605060510.32473-1-nm@ti.com>
  <CAL_JsqJusWTvr4A_-Bk81meYddMHBMJ4=Fch6L0MFoF7HfBW2w@mail.gmail.com>
- <20180607233853.p7iw7nlxxuyi66og@kahuna>
- <20180614123805.GF112168@atomide.com>
- <20180614130435.j2bmzam6corrjylx@kahuna>
- <20180615050108.GG112168@atomide.com>
- <a69fcb7a-f7a1-481b-8a02-1da7d1e20671@ti.com>
+ <454c277e-8a63-81cb-b341-a50f4e25cbea@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <a69fcb7a-f7a1-481b-8a02-1da7d1e20671@ti.com>
+In-Reply-To: <454c277e-8a63-81cb-b341-a50f4e25cbea@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sekhar Nori <nsekhar@ti.com>
-Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Vignesh R <vigneshr@ti.com>, Catalin Marinas <catalin.marinas@arm.com>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>, Rob Herring <robh+dt@kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
+To: Kishon Vijay Abraham I <kishon@ti.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Nishanth Menon <nm@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-* Sekhar Nori <nsekhar@ti.com> [180615 13:41]:
+* Kishon Vijay Abraham I <kishon@ti.com> [180808 06:35]:
+> On Tuesday 05 June 2018 07:35 PM, Rob Herring wrote:
+> > Really need 64-bit addresses and sizes? Use ranges to limit the
+> > address space if possible.
 > 
-> How well we can reuse individual interconnect segments is something I
-> have to think about / experiment. Will have to be wary of any "short
-> paths" or "cross connections".
+> We now have address-cells as <1>,
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/arch/arm64/boot/dts/ti/k3-am65.dtsi#n49
+> 
+> However each PCIe instance has 2 data regions and one of the regions
+> (PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT1/PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT1 specified
+> in the "MAIN Domain Memory Map" table of TRM http://www.ti.com/lit/pdf/spruid7)
+> is above the 32bit region and requires 2 cells to specify the start address.
+> This region is used to access MEM_SPACE of PCIe endpoint when operating in root
+> complex mode and access memory of PCI root complex when operating in endpoint mode.
+> 
+> In order to describe this, should we change the address-cells back to <2> or do
+> you suggest any other alternatives?
 
-These short paths and cross connections are almost certainly just
-additional ranges from the parent interconnect. See for example
-what we have in Linux next for wdt3 in omap4.dtsi for separate
-ranges for L4 and L3 interconnects.
+It's probably best to have the top level cbass interconnect use
+#size-cells = <2> and then have it's child interconnects have
+#size-cells = <1> if they don't need ranges above 4GB.
+
+BTW, what's the difference between all these three similar PCIE
+ranges?
+
+PCIE0_CORE_CORE_DAT_SLV_PCIE_CORE 0x0005500000 0x0005600000 1 MB
+PCIE1_CORE_CORE_DAT_SLV_PCIE_CORE 0x0005600000 0x0005700000 1 MB
+
+PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT0 0x0010000000 0x0018000000 128 MB
+PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT0 0x0018000000 0x0020000000 128 MB
+
+PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT1 0x4000000000 0x4100000000 4 GB
+PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT1 0x4100000000 0x4200000000 4 GB
 
 Regards,
 
