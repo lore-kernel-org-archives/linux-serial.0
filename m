@@ -1,118 +1,123 @@
-From: Frank Kunz <mailinglists@kunz-im-inter.net>
+From: Rob Herring <robh@kernel.org>
 Subject: Re: serdev: How to attach serdev devices to USB based tty devices?
-Date: Tue, 21 Aug 2018 18:32:42 +0200
-Message-ID: <b00d8330-dab4-e444-e02c-dee6b54abc81@kunz-im-inter.net>
-References: <3639955d-5990-1c82-7158-ac07b33c41f2@suse.de>
+Date: Tue, 21 Aug 2018 13:01:33 -0500
+Message-ID: <CAL_JsqKasgjf5BkEN-ATbLQdDaWxMLoeACkVPUe4vjs+Z0ziGw@mail.gmail.com>
+References: <3639955d-5990-1c82-7158-ac07b33c41f2@suse.de> <b00d8330-dab4-e444-e02c-dee6b54abc81@kunz-im-inter.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <3639955d-5990-1c82-7158-ac07b33c41f2@suse.de>
-Content-Language: de-DE
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>, Rob Herring <robh@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, linux-usb@vger.kernel.org
-Cc: Linux-MIPS <linux-mips@linux-mips.org>, Xue Liu <liuxuenetmail@gmail.com>, Ben Whitten <ben.whitten@lairdtech.com>, devicetree@vger.kernel.org, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, Oliver Neukum <oneukum@suse.com>, Alexander Graf <agraf@suse.de>, "LoRa_Community_Support@semtech.com" <LoRa_Community_Support@semtech.com>, Jian-Hong Pan <starnight@g.ncu.edu.tw>, Stefan Rehm <rehm@miromico.ch>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <b00d8330-dab4-e444-e02c-dee6b54abc81@kunz-im-inter.net>
+Sender: netdev-owner@vger.kernel.org
+To: mailinglists@kunz-im-inter.net
+Cc: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux USB List <linux-usb@vger.kernel.org>, Linux-MIPS <linux-mips@linux-mips.org>, Xue Liu <liuxuenetmail@gmail.com>, Ben Whitten <ben.whitten@lairdtech.com>, devicetree@vger.kernel.org, netdev <netdev@vger.kernel.org>, oneukum@suse.com, Alexander Graf <agraf@suse.de>, LoRa_Community_Support@semtech.com, =?UTF-8?B?5r2Y5bu65a6P?= <starnight@g.ncu.edu.tw>, rehm@miromico.ch, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-QW0gMTQuMDguMjAxOCB1bSAwNDoyOCBzY2hyaWViIEFuZHJlYXMgRsOkcmJlcjoKPiBIaSBSb2Ig
-ZXQgYWwuLAo+IAo+IEZvciBteSBMb1JhIG5ldHdvcmsgZHJpdmVyIHByb2plY3QgWzFdIEkgaGF2
-ZSBmb3VuZCB5b3VyIHNlcmRldgo+IGZyYW1ld29yayB0byBiZSBhIHZhbHVhYmxlIGhlbHAgZm9y
-IGRlYWxpbmcgd2l0aCBoYXJkd2FyZSBtb2R1bGVzCj4gZXhwb3Npbmcgc29tZSB0ZXh0dWFsIG9y
-IGJpbmFyeSBVQVJUIGludGVyZmFjZS4KPiAKPiBJbiBwYXJ0aWN1bGFyIG9uIGFybSg2NCkgYW5k
-IG1pcHMgdGhpcyBhbGxvd3MgdG8gZGVmaW5lIGFuIHVubGltaXRlZAo+IG51bWJlciBvZiBzZXJk
-ZXYgZHJpdmVycyBbMl0gdGhhdCBhcmUgYXNzb2NpYXRlZCB2aWEgdGhlaXIgRGV2aWNlIFRyZWUK
-PiBjb21wYXRpYmxlIHN0cmluZyBhbmQgY2FuIG9wdGlvbmFsbHkgYmUgY29uZmlndXJlZCB2aWEg
-RFQgcHJvcGVydGllcy4KPiAKPiBBbmQgaW4gdGhlb3J5IGl0IHNlZW1zIHNlcmRldiBoYXMgYWxz
-byBncm93biBzdXBwb3J0IGZvciBBQ1BJLgo+IAo+IE5vdywgYSBncm93aW5nIG51bWJlciBvZiB2
-ZW5kb3JzIGFyZSBwbGFjaW5nIHN1Y2ggbW9kdWxlcyBvbiBhIFVTQiBzdGljawo+IGZvciBlYXN5
-IGV2YWx1YXRpb24gb24geDg2XzY0IFBDIGhhcmR3YXJlLCBvciBhcmUgZGVzaWduaW5nIG1QQ0ll
-IG9yIE0uMgo+IGNhcmRzIHVzaW5nIHRoZWlyIFVTQiBwaW5zLiBXaGlsZSBJIGRvIG5vdCB5ZXQg
-aGF2ZSBhY2Nlc3MgdG8gc3VjaCBhCj4gZGV2aWNlIG15c2VsZiwgaXQgaXMgbXkgdW5kZXJzdGFu
-ZGluZyB0aGF0IGRldmljZXMgd2l0aCBVU0ItVUFSVCBicmlkZ2UKPiBjaGlwc2V0cyAoZS5nLiwg
-RlRESSkgd2lsbCBzaG93IHVwIGFzIC9kZXYvdHR5VVNCeCBhbmQgZGV2aWNlcyB3aXRoIGFuCj4g
-TUNVIGltcGxlbWVudGluZyB0aGUgQ0RDIFVTQiBwcm90b2NvbCAoZS5nLiwgUGljby1jZWxsIGdh
-dGV3YXkgPSBwaWNvR1cpCj4gd2lsbCBzaG93IHVwIGFzIC9kZXYvdHR5QUNNeC4KPiBPbiB0aGUg
-UmFzcGJlcnJ5IFBpIEkndmUgc2VlbiB0aGF0IERldmljZSBUcmVlIG5vZGVzIGNhbiBiZSB1c2Vk
-IHRvIHBhc3MKPiBpbmZvcm1hdGlvbiB0byBvbi1ib2FyZCBkZXZpY2VzIHN1Y2ggYXMgTUFDIGFk
-ZHJlc3MgdG8gRXRoZXJuZXQgY2hpcHNldCwKPiBidXQgdGhhdCBkb2VzIG5vdCBzZWVtIGFsbCB0
-aGF0IHVzZWZ1bCBmb3IgcGFzc2luZyBhIHNlcmRldiBjaGlsZCBub2RlCj4gdG8gaG90LXBsdWdn
-ZWQgZGV2aWNlcyBhdCB1bnByZWRpY3RhYmxlIGh1Yi9wb3J0IGxvY2F0aW9uICh3aGVyZSBpdAo+
-IHNob3VsZCBub3QgaW50ZXJmZXJlIHdpdGggcmVndWxhciBVU0ItVUFSVCBjYWJsZXMgZm9yIGRl
-YnVnZ2luZyksIG5vcgo+IHdvdWxkIGl0IGhlbHAgQUNQSSBiYXNlZCBwbGF0Zm9ybXMgc3VjaCBh
-cyB4ODZfNjQuCj4gCj4gTXkgaWRlYSB0aGVuIHdhcyB0aGF0IGlmIHdlIGhhZCBzb21lIHVuaXF1
-ZSBjcml0ZXJpYSBsaWtlIHZlbmRvciBhbmQKPiBwcm9kdWN0IElEcyAob3Igd2hhdGV2ZXIgaXMg
-c3VwcG9ydGVkIGluIHVzYl9kZXZpY2VfaWQpLCB3ZSBjb3VsZCB3cml0ZQo+IGEgdXNiX2RyaXZl
-ciB3aXRoIHN1aXRhYmxlIFVTQl9ERVZJQ0UqKCkgbWFjcm8uIEluIGl0cyBwcm9iZSBmdW5jdGlv
-biB3ZQo+IGNvdWxkIGNhbGwgaW50byB0aGUgZXhpc3RpbmcgdHR5IGRyaXZlcidzIHByb2JlIGZ1
-bmN0aW9uIGFuZCBhZnRlcndhcmRzCj4gdHJ5IGNyZWF0aW5nIGFuZCBhdHRhY2hpbmcgdGhlIGFw
-cHJvcHJpYXRlIHNlcmRldiBkZXZpY2UsIGkuZS4gYSBmaXhlZAo+IFVTQi10by1zZXJkZXYgZHJp
-dmVyIG1hcHBpbmcuIFByb2JsZW0gaXMgdGhhdCBtb3N0IGRldmljZXMgZG9uJ3Qgc2VlbSB0bwo+
-IGltcGxlbWVudCBhbnkgdW5pcXVlIGlkZW50aWZpZXIgSSBjb3VsZCBtYWtlIHRoaXMgZGVwZW5k
-IG9uIC0gZWl0aGVyIGJ5Cj4gdXNpbmcgYSBzdGFuZGFyZCBGVDIzMi9GVDIyMzIvQ0gzNDBHIGNo
-aXAgb3IgYnkgdXNpbmcgU1RNaWNyb2VsZWN0cm9uaWNzCj4gdmlydHVhbCBjb20gcG9ydCBpZGVu
-dGlmaWVycyBpbiBDREMgZmlybXdhcmUgYW5kIG9ubHkgZGlmZmVyaW5nIGluIHRoZQo+IHRleHR1
-YWwgZGVzY3JpcHRpb24gWzNdIHRoZSB1c2JfZGV2aWNlX2lkIGRvZXMgbm90IHNlZW0gdG8gbWF0
-Y2ggb24uCj4gCj4gVGhlIG9idmlvdXMgc29sdXRpb24gd291bGQgb2YgY291cnNlIGJlIGlmIGhh
-cmR3YXJlIHZlbmRvcnMgY291bGQgcmV2aXNlCj4gdGhlaXIgZGVzaWducyB0byBjb25maWd1cmUg
-RlRESS9ldGMuIGNoaXBzIHVuaXF1ZWx5LiBJIGhlYXIgdGhhdCB0aGF0Cj4gbWF5IGludm9sdmUg
-ZXhjaGFuZ2luZyB0aGUgY2hpcHNldCwgaW5jcmVhc2luZyBjb3N0cywgYW5kIG1heSBpbXBhY3QK
-PiBleGlzdGluZyBkcml2ZXJzLiBXb3VsZG4ndCBoZWxwIGZvciBkZXZpY2VzIG91dCB0aGVyZSB0
-b2RheSBlaXRoZXIuCgpUaGV5IG5lZWQgdG8gcHV0IGFuIGV4dHJhIGVlcHJvbSAoY2VudHMpIGlu
-dG8gdGhlaXIgZGVzaWduIGFuZCBwcm9ncmFtIGl0LgoKPiAKPiBGb3IgdGhlIHBpY29HVyBDREMg
-ZmlybXdhcmUsIFNlbXRlY2ggZG9lcyBhcHBlYXIgdG8gb3duIGEgVVNCIHZlbmRvciBJRCwKPiBz
-byBpdCB3b3VsZCBzZWVtIHBvc3NpYmxlIHRvIGFsbG9jYXRlIHRoZWlyIG93biBwcm9kdWN0IElE
-cyBmb3IgU1gxMzAxCj4gYW5kIFNYMTMwOCByZXNwZWN0aXZlbHkgdG8gcmVwbGFjZSB0aGUgZ2Vu
-ZXJpYyBTVE1pY3JvZWxlY3Ryb25pY3MgSURzLAo+IHdoaWNoIHRoZSB2YXJpb3VzIHZlbmRvcnMg
-Y291bGQgb2ZmZXIgYXMgZmlybXdhcmUgdXBkYXRlcy4KPiAKPiBBbGwgb3V0c2lkZSBteSBjb250
-cm9sIHRob3VnaC4KPiAKPiBPbGl2ZXIgdGhlcmVmb3JlIHN1Z2dlc3RlZCB0byBub3QgbWVzcyB3
-aXRoIFVTQiBkcml2ZXJzIGFuZCBpbnN0ZWFkIHVzZQo+IGEgbGluZSBkaXNjaXBsaW5lIChsZGlz
-YykuIEl0IHNlZW1zIHRoYXQgZm9yIGV4YW1wbGUgdGhlIHVzZXJzcGFjZSB0b29sCj4gc2xhdHRh
-Y2ggdGFrZXMgYSB0dHkgZGV2aWNlIGFuZCBwZXJmb3JtcyBhbiBpb2N0bCB0byBzd2l0Y2ggdGhl
-IGdlbmVyaWMKPiB0dHkgZGV2aWNlIGludG8gYSBzcGVjaWFsIE5fU0xJUCBwcm90b2NvbCBtb2Rl
-LCBpbXBsZW1lbnRlZCBpbiBbNF0uCj4gCj4gSG93ZXZlciwgdGhlIGV4aXN0aW5nIG51bWJlciBv
-ZiBzdWNoIGxkaXNjIG1vZGVzIGFwcGVhcnMgdG8gYmUgYmVsb3cgMzAsCj4gd2l0aCBoYXJkbHkg
-YW55IHZlbmRvci1zcGVjaWZpYyBpbXBsZW1lbnRhdGlvbiwgc28gcG9sbHV0aW5nIGl0cyBudW1i
-ZXIKPiBzcGFjZSBzZWVtcyB1bmRlc2lyYWJsZT8gQW5kIGluIHNvbWUgY2FzZXMgSSB3b3VsZCBs
-aWtlIHRvIHVzZSB0aGUgc2FtZQo+IHByb3RvY29sIGltcGxlbWVudGF0aW9uIG92ZXIgZGlyZWN0
-IFVBUlQgYW5kIG92ZXIgVVNCLCBzbyB3b3VsZCBsaWtlIHRvCj4gYXZvaWQgZHVwbGljYXRlIHNl
-cmRldl9kZXZpY2VfZHJpdmVyIGFuZCB0dHlfbGRpc2Nfb3BzIGltcGxlbWVudGF0aW9ucy4KPiAK
-PiBMb25nIHN0b3J5IHNob3J0LCBoYXMgdGhlcmUgYmVlbiBhbnkgdGhpbmtpbmcgYWJvdXQgYSB1
-c2Vyc3BhY2UKPiBpbnRlcmZhY2UgdG8gYXR0YWNoIGEgZ2l2ZW4gc2VyZGV2IGRyaXZlciB0byBh
-IHR0eSBkZXZpY2U/Cj4gCj4gT3IgaXMgdGhlcmUsIG9uIE9GX0RZTkFNSUMgcGxhdGZvcm1zLCBh
-IHdheSBmcm9tIHVzZXJzcGFjZSB0byBhc3NvY2lhdGUKPiBhIERUIGZyYWdtZW50ICghPSBEVCBP
-dmVybGF5KSB3aXRoIGEgZ2l2ZW4gVVNCIGRldmljZSBkeW5hbWljYWxseSwgdG8KPiBhdHRhY2gg
-YSBzZXJkZXYgbm9kZSB3aXRoIHN1Yi1ub2Rlcz8KPiAKPiBBbnkgb3RoZXIgaWRlYXMgaG93IHRv
-IGNsZWFubHkgc29sdmUgdGhpcz8KPiAKPiBJbiBzb21lIGNhc2VzIHdlJ3JlIHRhbGtpbmcgYWJv
-dXQgYSAic2ltcGxlIiBBVC1saWtlIGNvbW1hbmQgaW50ZXJmYWNlOwo+IHRoZSBwaWNvR1cgaW1w
-bGVtZW50cyBhIHNlbWktZ2VuZXJpYyBVU0ItU1BJIGJyaWRnZSB0aGF0IG1heSBob3N0IGEKPiBj
-aG9pY2Ugb2YgMisgY2hpcHNldHMsIHdoaWNoIGluIHR1cm4gaGFzIHR3byBmdXJ0aGVyIHN1Yi1k
-ZXZpY2VzIHdpdGggMysKPiBjaGlwc2V0IGNob2ljZXMgKHRoZW9yZXRpY2FsbHkgY2xrIG91dHB1
-dCBhbmQgcngvdHggb3B0aW9ucyBldGMuKSBlYWNoLgo+IChGb3IgdGhlIGxhdHRlciBJJ20gdGhp
-bmtpbmcgd2UnbGwgbmVlZCBhIHNlcmRldiBkcml2ZXIgZXhwb3NpbmcgYQo+IHJlZ21hcF9idXMg
-YW5kIHRoZW4gaW1wbGVtZW50IHJlZ21hcF9idXMgYmFzZWQgdmVyc2lvbnMgb2YgdGhlIFNQSQo+
-IGRyaXZlcnMgbGlrZSBCZW4gYW5kIEkgcmVmYWN0b3JlZCBTWDEyNTcgaW4gWzJdIGxhc3Qgd2Vl
-a2VuZC4pPgoKVGhlcmUgaXMgYSBtUENJZSBtb2R1bGUgKFJBSzgzMykgYXZhaWxhYmxlIGJ5IFJB
-SyB3aXJlbGVzcyB0aGF0IHVzZXMgYQpGVDIyMzIgYXMgVVNCLVNQSSBicmlkZ2UsIG5vdCB1YXJ0
-LiBJIGhhdmUgb25lIGhlcmUgZm9yIGV4cGVyaW1lbnRzLiBJdAppcyBkZXRlY3RlZCBhcyBnZW5l
-cmljIEZUMjIzMiBkZXZpY2Ugb24gdXNiLiBBcyBmYXIgYXMgSSB1bmRlcnN0b29kIHNvCmZhciB0
-aGUgc2VyZGV2IGRvZXMgb25seSBzdXBwb3J0IHVhcnQgYmFzZWQgY29tbXVuaWNhdGlvbiwgaXMg
-dGhlcmUgYQpjaGFuY2UgdG8gZ2V0IFVTQi1TUEkgYnJpZGdlZCBtb2R1bGVzIGFsc28gd29ya2lu
-Zz8KCkJyLApGcmFuawoKPiBUaGFua3MsCj4gQW5kcmVhcwo+IAo+IFsxXSBodHRwczovL3BhdGNo
-d29yay5vemxhYnMub3JnL2NvdmVyLzkzNzU0NS8KPiBbMl0KPiBodHRwczovL2dpdC5rZXJuZWwu
-b3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9hZmFlcmJlci9saW51eC1sb3JhLmdpdC90cmVl
-L2RyaXZlcnMvbmV0L2xvcmE/aD1sb3JhLW5leHQKPiBbM10KPiBodHRwczovL2dpdGh1Yi5jb20v
-TG9yYS1uZXQvcGljb0dXX21jdS9ibG9iL21hc3Rlci9zcmMvdXNiX2NkYy9TcmMvdXNiZF9kZXNj
-LmNwcCNMNTkKPiBbNF0KPiBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2Vy
-bmVsL2dpdC90b3J2YWxkcy9saW51eC5naXQvdHJlZS9kcml2ZXJzL25ldC9zbGlwL3NsaXAuYyNu
-MTI4MQo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-bGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZy
-YWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGlu
-dXgtYXJtLWtlcm5lbAo=
+On Tue, Aug 21, 2018 at 11:33 AM Frank Kunz
+<mailinglists@kunz-im-inter.net> wrote:
+>
+> Am 14.08.2018 um 04:28 schrieb Andreas F=C3=A4rber:
+> > Hi Rob et al.,
+> >
+> > For my LoRa network driver project [1] I have found your serdev
+> > framework to be a valuable help for dealing with hardware modules
+> > exposing some textual or binary UART interface.
+> >
+> > In particular on arm(64) and mips this allows to define an unlimited
+> > number of serdev drivers [2] that are associated via their Device Tree
+> > compatible string and can optionally be configured via DT properties.
+> >
+> > And in theory it seems serdev has also grown support for ACPI.
+> >
+> > Now, a growing number of vendors are placing such modules on a USB stic=
+k
+> > for easy evaluation on x86_64 PC hardware, or are designing mPCIe or M.=
+2
+> > cards using their USB pins. While I do not yet have access to such a
+> > device myself, it is my understanding that devices with USB-UART bridge
+> > chipsets (e.g., FTDI) will show up as /dev/ttyUSBx and devices with an
+> > MCU implementing the CDC USB protocol (e.g., Pico-cell gateway =3D pico=
+GW)
+> > will show up as /dev/ttyACMx.
+> > On the Raspberry Pi I've seen that Device Tree nodes can be used to pas=
+s
+> > information to on-board devices such as MAC address to Ethernet chipset=
+,
+> > but that does not seem all that useful for passing a serdev child node
+> > to hot-plugged devices at unpredictable hub/port location (where it
+> > should not interfere with regular USB-UART cables for debugging), nor
+> > would it help ACPI based platforms such as x86_64.
+> >
+> > My idea then was that if we had some unique criteria like vendor and
+> > product IDs (or whatever is supported in usb_device_id), we could write
+> > a usb_driver with suitable USB_DEVICE*() macro. In its probe function w=
+e
+> > could call into the existing tty driver's probe function and afterwards
+> > try creating and attaching the appropriate serdev device, i.e. a fixed
+> > USB-to-serdev driver mapping. Problem is that most devices don't seem t=
+o
+> > implement any unique identifier I could make this depend on - either by
+> > using a standard FT232/FT2232/CH340G chip or by using STMicroelectronic=
+s
+> > virtual com port identifiers in CDC firmware and only differing in the
+> > textual description [3] the usb_device_id does not seem to match on.
+> >
+> > The obvious solution would of course be if hardware vendors could revis=
+e
+> > their designs to configure FTDI/etc. chips uniquely. I hear that that
+> > may involve exchanging the chipset, increasing costs, and may impact
+> > existing drivers. Wouldn't help for devices out there today either.
+>
+> They need to put an extra eeprom (cents) into their design and program it=
+.
+>
+> >
+> > For the picoGW CDC firmware, Semtech does appear to own a USB vendor ID=
+,
+> > so it would seem possible to allocate their own product IDs for SX1301
+> > and SX1308 respectively to replace the generic STMicroelectronics IDs,
+> > which the various vendors could offer as firmware updates.
+> >
+> > All outside my control though.
+> >
+> > Oliver therefore suggested to not mess with USB drivers and instead use
+> > a line discipline (ldisc). It seems that for example the userspace tool
+> > slattach takes a tty device and performs an ioctl to switch the generic
+> > tty device into a special N_SLIP protocol mode, implemented in [4].
+> >
+> > However, the existing number of such ldisc modes appears to be below 30=
+,
+> > with hardly any vendor-specific implementation, so polluting its number
+> > space seems undesirable? And in some cases I would like to use the same
+> > protocol implementation over direct UART and over USB, so would like to
+> > avoid duplicate serdev_device_driver and tty_ldisc_ops implementations.
+> >
+> > Long story short, has there been any thinking about a userspace
+> > interface to attach a given serdev driver to a tty device?
+> >
+> > Or is there, on OF_DYNAMIC platforms, a way from userspace to associate
+> > a DT fragment (!=3D DT Overlay) with a given USB device dynamically, to
+> > attach a serdev node with sub-nodes?
+> >
+> > Any other ideas how to cleanly solve this?
+> >
+> > In some cases we're talking about a "simple" AT-like command interface;
+> > the picoGW implements a semi-generic USB-SPI bridge that may host a
+> > choice of 2+ chipsets, which in turn has two further sub-devices with 3=
++
+> > chipset choices (theoretically clk output and rx/tx options etc.) each.
+> > (For the latter I'm thinking we'll need a serdev driver exposing a
+> > regmap_bus and then implement regmap_bus based versions of the SPI
+> > drivers like Ben and I refactored SX1257 in [2] last weekend.)>
+>
+> There is a mPCIe module (RAK833) available by RAK wireless that uses a
+> FT2232 as USB-SPI bridge, not uart. I have one here for experiments. It
+> is detected as generic FT2232 device on usb. As far as I understood so
+> far the serdev does only support uart based communication, is there a
+> chance to get USB-SPI bridged modules also working?
+
+That should be somewhat easier than a UART because there's not the
+interactions with the tty layer to deal with. You still have the issue
+of what is the DT root for the FTDI device.
+
+Rob
