@@ -1,42 +1,58 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v11 0/6] Driver for at91 usart in spi mode
-Date: Thu, 23 Aug 2018 12:23:49 +0100
-Message-ID: <20180823112349.GB28860@dell>
-References: <20180713164736.26028-1-radu.pirea@microchip.com>
- <ba108fbe-d3c4-a60e-a1c0-441fe3082212@microchip.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] tty: serial: qcom_geni_serial: Drop useless check for dev.of_node
+Date: Thu, 23 Aug 2018 23:30:27 +0200
+Message-ID: <20180823213027.18856-1-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <ba108fbe-d3c4-a60e-a1c0-441fe3082212@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu.pirea@microchip.com>
-Cc: "broonie@kernel.org" <broonie@kernel.org>, Nicolas Ferre - M43238 <Nicolas.Ferre@microchip.com>, "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>, "richard.genoud@gmail.com" <richard.genoud@gmail.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Girish Mahadevan <girishm@codeaurora.org>, Mohammed Khajapasha <mkhaja@codeaurora.org>, Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 22 Aug 2018, Radu Pirea wrote:
-> I saw that the patches were not applied to your tree for this kernel
-> version. After the discussion with Nicolas, I remember that you said that
-> you will take the patches in your tree. I addressed Mark comments related to
-> the last version of patches. Is there something that must be reworked in
-> order to take the patches?
+With gcc 4.1.2:
 
-I don't remember back this far, so can't provide you with any good
-reasons as to why the set wasn't applied.  There doesn't appear to be
-anything wrong or wanting from the set, although it was submitted late
-in the release cycle.
+    drivers/tty/serial/qcom_geni_serial.c: In function ‘qcom_geni_serial_probe’:
+    drivers/tty/serial/qcom_geni_serial.c:1261: warning: ‘drv’ may be used uninitialized in this function
 
-Just to let you and other readers know; since email is almost
-exclusively used for submitting, reviewing and tracking patches, and
-my setup (mbsync/mutt) can be a little temperamental at times, there
-are instances, albeit rare ones when patches/sets fall by the
-wayside.  In these instances, my suggestion is always for the
-submitter to resubmit with a RESEND in order to regain attention to
-the set.
+Indeed, if dev.of_node is NULL, drv will be used uninitialized, and
+dereferenced in uart_add_one_port().  However, as this driver supports
+DT only, dev.of_node will always be valid.
 
+Hence remove the useless check for dev.of_node, killing the warning as a
+side effect.
+
+Fixes: 8a8a66a1a18a1dbd ("tty: serial: qcom_geni_serial: Add support for flow control")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 29ec343872466e49..1cfbb6745a8cc7d0 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1263,14 +1263,12 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	if (of_device_is_compatible(pdev->dev.of_node, "qcom,geni-debug-uart"))
+ 		console = true;
+ 
+-	if (pdev->dev.of_node) {
+-		if (console) {
+-			drv = &qcom_geni_console_driver;
+-			line = of_alias_get_id(pdev->dev.of_node, "serial");
+-		} else {
+-			drv = &qcom_geni_uart_driver;
+-			line = of_alias_get_id(pdev->dev.of_node, "hsuart");
+-		}
++	if (console) {
++		drv = &qcom_geni_console_driver;
++		line = of_alias_get_id(pdev->dev.of_node, "serial");
++	} else {
++		drv = &qcom_geni_uart_driver;
++		line = of_alias_get_id(pdev->dev.of_node, "hsuart");
+ 	}
+ 
+ 	port = get_port_from_line(line, console);
 -- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.17.1
