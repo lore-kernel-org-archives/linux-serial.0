@@ -1,112 +1,35 @@
-From: QIANJUN <hangdianqj@163.com>
-Subject: spin_lock instead of spin_lock_irqsave in imx uart interuput
-Date: Sun, 26 Aug 2018 08:00:42 -0700
-Message-ID: <20180826150042.GA7972@ubuntu>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: spin_lock instead of spin_lock_irqsave in imx uart interuput
+Date: Sun, 26 Aug 2018 19:04:30 +0200
+Message-ID: <20180826170430.GA12776@kroah.com>
+References: <20180826150042.GA7972@ubuntu>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="3V7upXqbjpZ4EhLz"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <20180826150042.GA7972@ubuntu>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: QIANJUN <hangdianqj@163.com>
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On Sun, Aug 26, 2018 at 08:00:42AM -0700, QIANJUN wrote:
+> spin_lock instead of spin_lock_irqsave in imx uart interuput
 
---3V7upXqbjpZ4EhLz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+What does that mean?
 
-spin_lock instead of spin_lock_irqsave in imx uart interuput
+> >From 6580790d7be51a78d1376b90df49b04019a1f944 Mon Sep 17 00:00:00 2001
+> From: jun qian <hangdianqj@163.com>
+> Date: Sun, 26 Aug 2018 06:58:35 -0700
+> Subject: [PATCH] before the programe into the uart interuput's handler, the
+>  system has already disabled the local cpu interuput. so the spin_lock
+>  interface is More suitable for here.
 
---3V7upXqbjpZ4EhLz
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="0001-before-the-programe-into-the-uart-interuput-s-handle.patch"
+Why is this here?  The changelog text belongs in the changelog, not in
+the subject line :(
 
->From 6580790d7be51a78d1376b90df49b04019a1f944 Mon Sep 17 00:00:00 2001
-From: jun qian <hangdianqj@163.com>
-Date: Sun, 26 Aug 2018 06:58:35 -0700
-Subject: [PATCH] before the programe into the uart interuput's handler, the
- system has already disabled the local cpu interuput. so the spin_lock
- interface is More suitable for here.
+can you fix this all up and resend?
 
-Signed-off-by: jun qian <hangdianqj@163.com>
----
- drivers/tty/serial/imx.c | 21 ++++++++-------------
- 1 file changed, 8 insertions(+), 13 deletions(-)
+thanks,
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 239c0fa2e981..3069ee93583e 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -706,27 +706,25 @@ static irqreturn_t imx_uart_rtsint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
- 	u32 usr1;
--	unsigned long flags;
- 
--	spin_lock_irqsave(&sport->port.lock, flags);
-+	spin_lock(&sport->port.lock);
- 
- 	imx_uart_writel(sport, USR1_RTSD, USR1);
- 	usr1 = imx_uart_readl(sport, USR1) & USR1_RTSS;
- 	uart_handle_cts_change(&sport->port, !!usr1);
- 	wake_up_interruptible(&sport->port.state->port.delta_msr_wait);
- 
--	spin_unlock_irqrestore(&sport->port.lock, flags);
-+	spin_unlock(&sport->port.lock);
- 	return IRQ_HANDLED;
- }
- 
- static irqreturn_t imx_uart_txint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
--	unsigned long flags;
- 
--	spin_lock_irqsave(&sport->port.lock, flags);
-+	spin_lock(&sport->port.lock);
- 	imx_uart_transmit_buffer(sport);
--	spin_unlock_irqrestore(&sport->port.lock, flags);
-+	spin_unlock(&sport->port.lock);
- 	return IRQ_HANDLED;
- }
- 
-@@ -735,9 +733,8 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
- 	struct imx_port *sport = dev_id;
- 	unsigned int rx, flg, ignored = 0;
- 	struct tty_port *port = &sport->port.state->port;
--	unsigned long flags;
- 
--	spin_lock_irqsave(&sport->port.lock, flags);
-+	spin_lock(&sport->port.lock);
- 
- 	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
- 		u32 usr2;
-@@ -797,7 +794,7 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
- 	}
- 
- out:
--	spin_unlock_irqrestore(&sport->port.lock, flags);
-+	spin_unlock(&sport->port.lock);
- 	tty_flip_buffer_push(port);
- 	return IRQ_HANDLED;
- }
-@@ -903,13 +900,11 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
- 	}
- 
- 	if (usr1 & USR1_DTRD) {
--		unsigned long flags;
--
- 		imx_uart_writel(sport, USR1_DTRD, USR1);
- 
--		spin_lock_irqsave(&sport->port.lock, flags);
-+		spin_lock(&sport->port.lock);
- 		imx_uart_mctrl_check(sport);
--		spin_unlock_irqrestore(&sport->port.lock, flags);
-+		spin_unlock(&sport->port.lock);
- 
- 		ret = IRQ_HANDLED;
- 	}
--- 
-2.17.1
-
-
---3V7upXqbjpZ4EhLz--
+greg k-h
