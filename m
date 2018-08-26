@@ -1,58 +1,112 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] tty: serial: qcom_geni_serial: Drop useless check for dev.of_node
-Date: Thu, 23 Aug 2018 23:30:27 +0200
-Message-ID: <20180823213027.18856-1-geert@linux-m68k.org>
+From: QIANJUN <hangdianqj@163.com>
+Subject: spin_lock instead of spin_lock_irqsave in imx uart interuput
+Date: Sun, 26 Aug 2018 08:00:42 -0700
+Message-ID: <20180826150042.GA7972@ubuntu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="3V7upXqbjpZ4EhLz"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Girish Mahadevan <girishm@codeaurora.org>, Mohammed Khajapasha <mkhaja@codeaurora.org>, Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-With gcc 4.1.2:
 
-    drivers/tty/serial/qcom_geni_serial.c: In function ‘qcom_geni_serial_probe’:
-    drivers/tty/serial/qcom_geni_serial.c:1261: warning: ‘drv’ may be used uninitialized in this function
+--3V7upXqbjpZ4EhLz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Indeed, if dev.of_node is NULL, drv will be used uninitialized, and
-dereferenced in uart_add_one_port().  However, as this driver supports
-DT only, dev.of_node will always be valid.
+spin_lock instead of spin_lock_irqsave in imx uart interuput
 
-Hence remove the useless check for dev.of_node, killing the warning as a
-side effect.
+--3V7upXqbjpZ4EhLz
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="0001-before-the-programe-into-the-uart-interuput-s-handle.patch"
 
-Fixes: 8a8a66a1a18a1dbd ("tty: serial: qcom_geni_serial: Add support for flow control")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>From 6580790d7be51a78d1376b90df49b04019a1f944 Mon Sep 17 00:00:00 2001
+From: jun qian <hangdianqj@163.com>
+Date: Sun, 26 Aug 2018 06:58:35 -0700
+Subject: [PATCH] before the programe into the uart interuput's handler, the
+ system has already disabled the local cpu interuput. so the spin_lock
+ interface is More suitable for here.
+
+Signed-off-by: jun qian <hangdianqj@163.com>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/tty/serial/imx.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 29ec343872466e49..1cfbb6745a8cc7d0 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1263,14 +1263,12 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	if (of_device_is_compatible(pdev->dev.of_node, "qcom,geni-debug-uart"))
- 		console = true;
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 239c0fa2e981..3069ee93583e 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -706,27 +706,25 @@ static irqreturn_t imx_uart_rtsint(int irq, void *dev_id)
+ {
+ 	struct imx_port *sport = dev_id;
+ 	u32 usr1;
+-	unsigned long flags;
  
--	if (pdev->dev.of_node) {
--		if (console) {
--			drv = &qcom_geni_console_driver;
--			line = of_alias_get_id(pdev->dev.of_node, "serial");
--		} else {
--			drv = &qcom_geni_uart_driver;
--			line = of_alias_get_id(pdev->dev.of_node, "hsuart");
--		}
-+	if (console) {
-+		drv = &qcom_geni_console_driver;
-+		line = of_alias_get_id(pdev->dev.of_node, "serial");
-+	} else {
-+		drv = &qcom_geni_uart_driver;
-+		line = of_alias_get_id(pdev->dev.of_node, "hsuart");
+-	spin_lock_irqsave(&sport->port.lock, flags);
++	spin_lock(&sport->port.lock);
+ 
+ 	imx_uart_writel(sport, USR1_RTSD, USR1);
+ 	usr1 = imx_uart_readl(sport, USR1) & USR1_RTSS;
+ 	uart_handle_cts_change(&sport->port, !!usr1);
+ 	wake_up_interruptible(&sport->port.state->port.delta_msr_wait);
+ 
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
++	spin_unlock(&sport->port.lock);
+ 	return IRQ_HANDLED;
+ }
+ 
+ static irqreturn_t imx_uart_txint(int irq, void *dev_id)
+ {
+ 	struct imx_port *sport = dev_id;
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&sport->port.lock, flags);
++	spin_lock(&sport->port.lock);
+ 	imx_uart_transmit_buffer(sport);
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
++	spin_unlock(&sport->port.lock);
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -735,9 +733,8 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
+ 	struct imx_port *sport = dev_id;
+ 	unsigned int rx, flg, ignored = 0;
+ 	struct tty_port *port = &sport->port.state->port;
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&sport->port.lock, flags);
++	spin_lock(&sport->port.lock);
+ 
+ 	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
+ 		u32 usr2;
+@@ -797,7 +794,7 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
  	}
  
- 	port = get_port_from_line(line, console);
+ out:
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
++	spin_unlock(&sport->port.lock);
+ 	tty_flip_buffer_push(port);
+ 	return IRQ_HANDLED;
+ }
+@@ -903,13 +900,11 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
+ 	}
+ 
+ 	if (usr1 & USR1_DTRD) {
+-		unsigned long flags;
+-
+ 		imx_uart_writel(sport, USR1_DTRD, USR1);
+ 
+-		spin_lock_irqsave(&sport->port.lock, flags);
++		spin_lock(&sport->port.lock);
+ 		imx_uart_mctrl_check(sport);
+-		spin_unlock_irqrestore(&sport->port.lock, flags);
++		spin_unlock(&sport->port.lock);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
 -- 
 2.17.1
+
+
+--3V7upXqbjpZ4EhLz--
