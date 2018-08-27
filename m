@@ -1,93 +1,74 @@
-From: jun qian <hangdianqj@163.com>
-Subject: [PATCH] tty:serial:imx: use spin_lock instead of spin_lock_irqsave in isr
-Date: Mon, 27 Aug 2018 07:49:04 -0700
-Message-ID: <20180827144904.17226-1-hangdianqj@163.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [RFC PATCH 5/6] arm64: dts: ti: Add Support for AM654 SoC
+Date: Mon, 27 Aug 2018 08:55:35 -0700
+Message-ID: <20180827155535.GJ7523@atomide.com>
+References: <20180605060510.32473-1-nm@ti.com>
+ <CAL_JsqJusWTvr4A_-Bk81meYddMHBMJ4=Fch6L0MFoF7HfBW2w@mail.gmail.com>
+ <454c277e-8a63-81cb-b341-a50f4e25cbea@ti.com>
+ <20180820143153.GD7523@atomide.com>
+ <40cecb47-bd32-04aa-b7cd-ff16c1eb28f3@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <40cecb47-bd32-04aa-b7cd-ff16c1eb28f3@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Barry song <21cnbao@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jun qian <hangdianqj@163.com>
+To: Kishon Vijay Abraham I <kishon@ti.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Nishanth Menon <nm@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-Before the program enters the uart ISR, the local interrupt has been
-disabled by the system, so it's not appropriate to use spin_lock_irqsave
-interface in the ISR.
+* Kishon Vijay Abraham I <kishon@ti.com> [180827 03:06]:
+> Hi Tony,
+> 
+> On Monday 20 August 2018 08:01 PM, Tony Lindgren wrote:
+> > * Kishon Vijay Abraham I <kishon@ti.com> [180808 06:35]:
+> >> On Tuesday 05 June 2018 07:35 PM, Rob Herring wrote:
+> >>> Really need 64-bit addresses and sizes? Use ranges to limit the
+> >>> address space if possible.
+> >>
+> >> We now have address-cells as <1>,
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/arch/arm64/boot/dts/ti/k3-am65.dtsi#n49
+> >>
+> >> However each PCIe instance has 2 data regions and one of the regions
+> >> (PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT1/PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT1 specified
+> >> in the "MAIN Domain Memory Map" table of TRM http://www.ti.com/lit/pdf/spruid7)
+> >> is above the 32bit region and requires 2 cells to specify the start address.
+> >> This region is used to access MEM_SPACE of PCIe endpoint when operating in root
+> >> complex mode and access memory of PCI root complex when operating in endpoint mode.
+> >>
+> >> In order to describe this, should we change the address-cells back to <2> or do
+> >> you suggest any other alternatives?
+> > 
+> > It's probably best to have the top level cbass interconnect use
+> > #size-cells = <2> and then have it's child interconnects have
+> > #size-cells = <1> if they don't need ranges above 4GB.
+> 
+> PCIe has a region starting at 0x40_00000000 and size 4GB. We need 2 address
+> cells and 2 size cells to describe this no?
 
-Signed-off-by: jun qian <hangdianqj@163.com>
----
- drivers/tty/serial/imx.c | 21 ++++++++-------------
- 1 file changed, 8 insertions(+), 13 deletions(-)
+Yes.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 239c0fa2e981..3069ee93583e 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -706,27 +706,25 @@ static irqreturn_t imx_uart_rtsint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
- 	u32 usr1;
--	unsigned long flags;
- 
--	spin_lock_irqsave(&sport->port.lock, flags);
-+	spin_lock(&sport->port.lock);
- 
- 	imx_uart_writel(sport, USR1_RTSD, USR1);
- 	usr1 = imx_uart_readl(sport, USR1) & USR1_RTSS;
- 	uart_handle_cts_change(&sport->port, !!usr1);
- 	wake_up_interruptible(&sport->port.state->port.delta_msr_wait);
- 
--	spin_unlock_irqrestore(&sport->port.lock, flags);
-+	spin_unlock(&sport->port.lock);
- 	return IRQ_HANDLED;
- }
- 
- static irqreturn_t imx_uart_txint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
--	unsigned long flags;
- 
--	spin_lock_irqsave(&sport->port.lock, flags);
-+	spin_lock(&sport->port.lock);
- 	imx_uart_transmit_buffer(sport);
--	spin_unlock_irqrestore(&sport->port.lock, flags);
-+	spin_unlock(&sport->port.lock);
- 	return IRQ_HANDLED;
- }
- 
-@@ -735,9 +733,8 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
- 	struct imx_port *sport = dev_id;
- 	unsigned int rx, flg, ignored = 0;
- 	struct tty_port *port = &sport->port.state->port;
--	unsigned long flags;
- 
--	spin_lock_irqsave(&sport->port.lock, flags);
-+	spin_lock(&sport->port.lock);
- 
- 	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
- 		u32 usr2;
-@@ -797,7 +794,7 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
- 	}
- 
- out:
--	spin_unlock_irqrestore(&sport->port.lock, flags);
-+	spin_unlock(&sport->port.lock);
- 	tty_flip_buffer_push(port);
- 	return IRQ_HANDLED;
- }
-@@ -903,13 +900,11 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
- 	}
- 
- 	if (usr1 & USR1_DTRD) {
--		unsigned long flags;
--
- 		imx_uart_writel(sport, USR1_DTRD, USR1);
- 
--		spin_lock_irqsave(&sport->port.lock, flags);
-+		spin_lock(&sport->port.lock);
- 		imx_uart_mctrl_check(sport);
--		spin_unlock_irqrestore(&sport->port.lock, flags);
-+		spin_unlock(&sport->port.lock);
- 
- 		ret = IRQ_HANDLED;
- 	}
--- 
-2.17.1
+> > BTW, what's the difference between all these three similar PCIE
+> > ranges?
+> > 
+> > PCIE0_CORE_CORE_DAT_SLV_PCIE_CORE 0x0005500000 0x0005600000 1 MB
+> > PCIE1_CORE_CORE_DAT_SLV_PCIE_CORE 0x0005600000 0x0005700000 1 MB
+> 
+> This is the register space for the two instances of PCIe controller.
+> > 
+> > PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT0 0x0010000000 0x0018000000 128 MB
+> > PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT0 0x0018000000 0x0020000000 128 MB
+> > 
+> > PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT1 0x4000000000 0x4100000000 4 GB
+> > PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT1 0x4100000000 0x4200000000 4 GB
+> 
+> The above are regions which can be used by CPU/DMA to access the PCIe address
+> space. The mapping from the above regions to the PCIe address space will be
+> programmed in the PCIe controller.
+
+OK so not just somethng for dma-ranges but also accessible by
+the CPU.
+
+Regards,
+
+Tony
