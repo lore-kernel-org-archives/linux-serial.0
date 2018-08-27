@@ -1,96 +1,93 @@
-From: Jan Kiszka <jan.kiszka@web.de>
-Subject: Re: [PATCH] serial: mvebu-uart: Fix reporting of effective CSIZE to
- userspace
-Date: Mon, 27 Aug 2018 08:25:07 +0200
-Message-ID: <211be85e-8ec1-541f-0d3a-9846079f068f@web.de>
-References: <69ad54af-8732-b78a-7e0b-482bfcd6d25f@web.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: jun qian <hangdianqj@163.com>
+Subject: [PATCH] tty:serial:imx: use spin_lock instead of spin_lock_irqsave in isr
+Date: Mon, 27 Aug 2018 07:49:04 -0700
+Message-ID: <20180827144904.17226-1-hangdianqj@163.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <69ad54af-8732-b78a-7e0b-482bfcd6d25f@web.de>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial <linux-serial@vger.kernel.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Allen Yan <yanwei@marvell.com>, Miquel Raynal <miquel.raynal@bootlin.com>, Marc Zyngier <marc.zyngier@arm.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Barry song <21cnbao@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jun qian <hangdianqj@163.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 2018-08-26 19:49, Jan Kiszka wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> Apparently, this driver (or the hardware) does not support character
-> length settings. It's apparently running in 8-bit mode, but it makes
-> userspace believe it's in 5-bit mode. That makes tcsetattr with CS8
-> incorrectly fail, breaking e.g. getty from busybox, thus the login shell
-> on ttyMVx.
-> 
-> Fix by hard-wiring CS8 into c_cflag.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
-> 
-> It's a bit of a shame that still maturing drivers can break userspace
-> that easily and subtly. I had to debug my way from old but working
-> buildroot to busybox, libc (tcsetattr) and then finally this driver.
-> This wasn't the first bug of this kind, and maybe it's not the last (I
-> didn't check all that termio flags). Could the kernel help in some way
-> with sanity checks or sane defaults driver have to make insane
-> willingly?
-> 
->   drivers/tty/serial/mvebu-uart.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-> index d04b5eeea3c6..170e446a2f62 100644
-> --- a/drivers/tty/serial/mvebu-uart.c
-> +++ b/drivers/tty/serial/mvebu-uart.c
-> @@ -511,6 +511,7 @@ static void mvebu_uart_set_termios(struct uart_port *port,
->   		termios->c_iflag |= old->c_iflag & ~(INPCK | IGNPAR);
->   		termios->c_cflag &= CREAD | CBAUD;
->   		termios->c_cflag |= old->c_cflag & ~(CREAD | CBAUD);
-> +		termios->c_cflag |= CS8;
->   	}
->   
->   	spin_unlock_irqrestore(&port->lock, flags);
-> 
+Before the program enters the uart ISR, the local interrupt has been
+disabled by the system, so it's not appropriate to use spin_lock_irqsave
+interface in the ISR.
 
-FWIW, below is the analogous fix for stable trees <= 4.14.
-
-Jan
-
----8<---
-
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH] serial: mvebu-uart: Fix reporting of effective CSIZE to userspace
-
-Apparently, this driver (or the hardware) does not support character
-length settings. It's apparently running in 8-bit mode, but it makes
-userspace believe it's in 5-bit mode. That makes tcsetattr with CS8
-incorrectly fail, breaking e.g. getty from busybox, thus the login shell
-on ttyMVx.
-
-Fix by hard-wiring CS8 into c_cflag.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: jun qian <hangdianqj@163.com>
 ---
- drivers/tty/serial/mvebu-uart.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/serial/imx.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 45b57c294d13..401c983ec5f3 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -327,8 +327,10 @@ static void mvebu_uart_set_termios(struct uart_port *port,
- 	if ((termios->c_cflag & CREAD) == 0)
- 		port->ignore_status_mask |= STAT_RX_RDY | STAT_BRK_ERR;
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 239c0fa2e981..3069ee93583e 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -706,27 +706,25 @@ static irqreturn_t imx_uart_rtsint(int irq, void *dev_id)
+ {
+ 	struct imx_port *sport = dev_id;
+ 	u32 usr1;
+-	unsigned long flags;
  
--	if (old)
-+	if (old) {
- 		tty_termios_copy_hw(termios, old);
-+		termios->c_cflag |= CS8;
-+	}
+-	spin_lock_irqsave(&sport->port.lock, flags);
++	spin_lock(&sport->port.lock);
  
- 	baud = uart_get_baud_rate(port, termios, old, 0, 460800);
- 	uart_update_timeout(port, termios->c_cflag, baud);
+ 	imx_uart_writel(sport, USR1_RTSD, USR1);
+ 	usr1 = imx_uart_readl(sport, USR1) & USR1_RTSS;
+ 	uart_handle_cts_change(&sport->port, !!usr1);
+ 	wake_up_interruptible(&sport->port.state->port.delta_msr_wait);
+ 
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
++	spin_unlock(&sport->port.lock);
+ 	return IRQ_HANDLED;
+ }
+ 
+ static irqreturn_t imx_uart_txint(int irq, void *dev_id)
+ {
+ 	struct imx_port *sport = dev_id;
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&sport->port.lock, flags);
++	spin_lock(&sport->port.lock);
+ 	imx_uart_transmit_buffer(sport);
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
++	spin_unlock(&sport->port.lock);
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -735,9 +733,8 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
+ 	struct imx_port *sport = dev_id;
+ 	unsigned int rx, flg, ignored = 0;
+ 	struct tty_port *port = &sport->port.state->port;
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&sport->port.lock, flags);
++	spin_lock(&sport->port.lock);
+ 
+ 	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
+ 		u32 usr2;
+@@ -797,7 +794,7 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
+ 	}
+ 
+ out:
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
++	spin_unlock(&sport->port.lock);
+ 	tty_flip_buffer_push(port);
+ 	return IRQ_HANDLED;
+ }
+@@ -903,13 +900,11 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
+ 	}
+ 
+ 	if (usr1 & USR1_DTRD) {
+-		unsigned long flags;
+-
+ 		imx_uart_writel(sport, USR1_DTRD, USR1);
+ 
+-		spin_lock_irqsave(&sport->port.lock, flags);
++		spin_lock(&sport->port.lock);
+ 		imx_uart_mctrl_check(sport);
+-		spin_unlock_irqrestore(&sport->port.lock, flags);
++		spin_unlock(&sport->port.lock);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
 -- 
-2.16.4
+2.17.1
