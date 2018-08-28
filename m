@@ -1,41 +1,83 @@
 From: Nishanth Menon <nm@ti.com>
-Subject: [PATCH] serial: 8250_omap: Make 8250_omap driver driver depend on ARCH_K3
-Date: Mon, 27 Aug 2018 20:03:02 -0500
-Message-ID: <20180828010302.2751-1-nm@ti.com>
+Subject: Re: [RFC PATCH 5/6] arm64: dts: ti: Add Support for AM654 SoC
+Date: Mon, 27 Aug 2018 20:22:24 -0500
+Message-ID: <20180828012224.fbmcmwfhfuwhcm53@kahuna>
+References: <20180605060510.32473-1-nm@ti.com>
+ <CAL_JsqJusWTvr4A_-Bk81meYddMHBMJ4=Fch6L0MFoF7HfBW2w@mail.gmail.com>
+ <454c277e-8a63-81cb-b341-a50f4e25cbea@ti.com>
+ <20180820143153.GD7523@atomide.com>
+ <40cecb47-bd32-04aa-b7cd-ff16c1eb28f3@ti.com>
+ <20180827155535.GJ7523@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180827155535.GJ7523@atomide.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Lokesh Vutla <lokeshvutla@ti.com>, linux-arm-kernel@lists.infradead.org, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>, Nishanth Menon <nm@ti.com>
+To: Tony Lindgren <tony@atomide.com>
+Cc: Kishon Vijay Abraham I <kishon@ti.com>, Rob Herring <robh+dt@kernel.org>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Vignesh R <vigneshr@ti.com>, Tero Kristo <t-kristo@ti.com>, Russell King <linux@armlinux.org.uk>, Sudeep Holla <sudeep.holla@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Lokesh Vutla <lokeshvutla@ti.com>
+On 15:55-20180827, Tony Lindgren wrote:
+> * Kishon Vijay Abraham I <kishon@ti.com> [180827 03:06]:
+> > Hi Tony,
+> > 
+> > On Monday 20 August 2018 08:01 PM, Tony Lindgren wrote:
+> > > * Kishon Vijay Abraham I <kishon@ti.com> [180808 06:35]:
+> > >> On Tuesday 05 June 2018 07:35 PM, Rob Herring wrote:
+> > >>> Really need 64-bit addresses and sizes? Use ranges to limit the
+> > >>> address space if possible.
+> > >>
+> > >> We now have address-cells as <1>,
+> > >> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/arch/arm64/boot/dts/ti/k3-am65.dtsi#n49
+> > >>
+> > >> However each PCIe instance has 2 data regions and one of the regions
+> > >> (PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT1/PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT1 specified
+> > >> in the "MAIN Domain Memory Map" table of TRM http://www.ti.com/lit/pdf/spruid7)
+> > >> is above the 32bit region and requires 2 cells to specify the start address.
+> > >> This region is used to access MEM_SPACE of PCIe endpoint when operating in root
+> > >> complex mode and access memory of PCI root complex when operating in endpoint mode.
+> > >>
+> > >> In order to describe this, should we change the address-cells back to <2> or do
+> > >> you suggest any other alternatives?
+> > > 
+> > > It's probably best to have the top level cbass interconnect use
+> > > #size-cells = <2> and then have it's child interconnects have
+> > > #size-cells = <1> if they don't need ranges above 4GB.
+> > 
+> > PCIe has a region starting at 0x40_00000000 and size 4GB. We need 2 address
+> > cells and 2 size cells to describe this no?
+> 
+> Yes.
+> 
+> > > BTW, what's the difference between all these three similar PCIE
+> > > ranges?
+> > > 
+> > > PCIE0_CORE_CORE_DAT_SLV_PCIE_CORE 0x0005500000 0x0005600000 1 MB
+> > > PCIE1_CORE_CORE_DAT_SLV_PCIE_CORE 0x0005600000 0x0005700000 1 MB
+> > 
+> > This is the register space for the two instances of PCIe controller.
+> > > 
+> > > PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT0 0x0010000000 0x0018000000 128 MB
+> > > PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT0 0x0018000000 0x0020000000 128 MB
+> > > 
+> > > PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT1 0x4000000000 0x4100000000 4 GB
+> > > PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT1 0x4100000000 0x4200000000 4 GB
+> > 
+> > The above are regions which can be used by CPU/DMA to access the PCIe address
+> > space. The mapping from the above regions to the PCIe address space will be
+> > programmed in the PCIe controller.
+> 
+> OK so not just somethng for dma-ranges but also accessible by
+> the CPU.
+> 
 
-Allow 8250 omap serial driver to be used for K3 platforms.
+Kishon, Sekhar:
 
-Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
----
+Can you guys post patches based on v4.19-rc1 for fixing this? I do have
+a bunch of dts nodes to build as well for v4.20, once Tony / Rob acks the
+changes.
 
-Now that we have the device tree support merged integrated AND we have ARCH_K3,
-Lets enable the 820 OMAP Driver to build for ARCH_K3 and make it operational.
-
- drivers/tty/serial/8250/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index f005eaf8bc57..15c2c5463835 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -375,7 +375,7 @@ config SERIAL_8250_RT288X
- 
- config SERIAL_8250_OMAP
- 	tristate "Support for OMAP internal UART (8250 based driver)"
--	depends on SERIAL_8250 && ARCH_OMAP2PLUS
-+	depends on SERIAL_8250 && (ARCH_OMAP2PLUS || ARCH_K3)
- 	help
- 	  If you have a machine based on an Texas Instruments OMAP CPU you
- 	  can enable its onboard serial ports by enabling this option.
 -- 
-2.15.1
+Regards,
+Nishanth Menon
