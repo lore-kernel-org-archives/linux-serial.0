@@ -1,110 +1,96 @@
-From: Rob Herring <robh@kernel.org>
-Subject: [PATCH] tty: Convert to using %pOFn instead of device_node.name
-Date: Mon, 27 Aug 2018 20:52:47 -0500
-Message-ID: <20180828015252.28511-46-robh@kernel.org>
-References: <20180828015252.28511-1-robh@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180828015252.28511-1-robh@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+From: Kishon Vijay Abraham I <kishon@ti.com>
+Subject: Re: [RFC PATCH 5/6] arm64: dts: ti: Add Support for AM654 SoC
+Date: Tue, 28 Aug 2018 09:09:44 +0530
+Message-ID: <f947ea13-9273-e951-c6af-673d1e6a9570@ti.com>
+References: <20180605060510.32473-1-nm@ti.com>
+ <CAL_JsqJusWTvr4A_-Bk81meYddMHBMJ4=Fch6L0MFoF7HfBW2w@mail.gmail.com>
+ <454c277e-8a63-81cb-b341-a50f4e25cbea@ti.com>
+ <20180820143153.GD7523@atomide.com>
+ <40cecb47-bd32-04aa-b7cd-ff16c1eb28f3@ti.com>
+ <20180827155535.GJ7523@atomide.com> <20180828012224.fbmcmwfhfuwhcm53@kahuna>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180828012224.fbmcmwfhfuwhcm53@kahuna>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Nishanth Menon <nm@ti.com>, Tony Lindgren <tony@atomide.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Vignesh R <vigneshr@ti.com>, Catalin Marinas <catalin.marinas@arm.com>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>, Rob Herring <robh+dt@kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "moderated
+ list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-In preparation to remove the node name pointer from struct device_node,
-convert printf users to use the %pOFn format specifier.
+Hi,
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: linux-serial@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- drivers/tty/ehv_bytechan.c                  | 12 ++++++------
- drivers/tty/serial/cpm_uart/cpm_uart_core.c |  8 ++++----
- drivers/tty/serial/pmac_zilog.c             |  4 ++--
- 3 files changed, 12 insertions(+), 12 deletions(-)
+On Tuesday 28 August 2018 06:52 AM, Nishanth Menon wrote:
+> On 15:55-20180827, Tony Lindgren wrote:
+>> * Kishon Vijay Abraham I <kishon@ti.com> [180827 03:06]:
+>>> Hi Tony,
+>>>
+>>> On Monday 20 August 2018 08:01 PM, Tony Lindgren wrote:
+>>>> * Kishon Vijay Abraham I <kishon@ti.com> [180808 06:35]:
+>>>>> On Tuesday 05 June 2018 07:35 PM, Rob Herring wrote:
+>>>>>> Really need 64-bit addresses and sizes? Use ranges to limit the
+>>>>>> address space if possible.
+>>>>>
+>>>>> We now have address-cells as <1>,
+>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/arch/arm64/boot/dts/ti/k3-am65.dtsi#n49
+>>>>>
+>>>>> However each PCIe instance has 2 data regions and one of the regions
+>>>>> (PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT1/PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT1 specified
+>>>>> in the "MAIN Domain Memory Map" table of TRM http://www.ti.com/lit/pdf/spruid7)
+>>>>> is above the 32bit region and requires 2 cells to specify the start address.
+>>>>> This region is used to access MEM_SPACE of PCIe endpoint when operating in root
+>>>>> complex mode and access memory of PCI root complex when operating in endpoint mode.
+>>>>>
+>>>>> In order to describe this, should we change the address-cells back to <2> or do
+>>>>> you suggest any other alternatives?
+>>>>
+>>>> It's probably best to have the top level cbass interconnect use
+>>>> #size-cells = <2> and then have it's child interconnects have
+>>>> #size-cells = <1> if they don't need ranges above 4GB.
+>>>
+>>> PCIe has a region starting at 0x40_00000000 and size 4GB. We need 2 address
+>>> cells and 2 size cells to describe this no?
+>>
+>> Yes.
+>>
+>>>> BTW, what's the difference between all these three similar PCIE
+>>>> ranges?
+>>>>
+>>>> PCIE0_CORE_CORE_DAT_SLV_PCIE_CORE 0x0005500000 0x0005600000 1 MB
+>>>> PCIE1_CORE_CORE_DAT_SLV_PCIE_CORE 0x0005600000 0x0005700000 1 MB
+>>>
+>>> This is the register space for the two instances of PCIe controller.
+>>>>
+>>>> PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT0 0x0010000000 0x0018000000 128 MB
+>>>> PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT0 0x0018000000 0x0020000000 128 MB
+>>>>
+>>>> PCIE0_CORE_CORE_DAT_SLV_PCIE_DAT1 0x4000000000 0x4100000000 4 GB
+>>>> PCIE1_CORE_CORE_DAT_SLV_PCIE_DAT1 0x4100000000 0x4200000000 4 GB
+>>>
+>>> The above are regions which can be used by CPU/DMA to access the PCIe address
+>>> space. The mapping from the above regions to the PCIe address space will be
+>>> programmed in the PCIe controller.
+>>
+>> OK so not just somethng for dma-ranges but also accessible by
+>> the CPU.
+>>
+> 
+> Kishon, Sekhar:
+> 
+> Can you guys post patches based on v4.19-rc1 for fixing this? I do have
+> a bunch of dts nodes to build as well for v4.20, once Tony / Rob acks the
+> changes.
 
-diff --git a/drivers/tty/ehv_bytechan.c b/drivers/tty/ehv_bytechan.c
-index eea4049b5dcc..769e0a5d1dfc 100644
---- a/drivers/tty/ehv_bytechan.c
-+++ b/drivers/tty/ehv_bytechan.c
-@@ -128,8 +128,8 @@ static int find_console_handle(void)
- 	 */
- 	iprop = of_get_property(np, "hv-handle", NULL);
- 	if (!iprop) {
--		pr_err("ehv-bc: no 'hv-handle' property in %s node\n",
--		       np->name);
-+		pr_err("ehv-bc: no 'hv-handle' property in %pOFn node\n",
-+		       np);
- 		return 0;
- 	}
- 	stdout_bc = be32_to_cpu(*iprop);
-@@ -661,8 +661,8 @@ static int ehv_bc_tty_probe(struct platform_device *pdev)
- 
- 	iprop = of_get_property(np, "hv-handle", NULL);
- 	if (!iprop) {
--		dev_err(&pdev->dev, "no 'hv-handle' property in %s node\n",
--			np->name);
-+		dev_err(&pdev->dev, "no 'hv-handle' property in %pOFn node\n",
-+			np);
- 		return -ENODEV;
- 	}
- 
-@@ -682,8 +682,8 @@ static int ehv_bc_tty_probe(struct platform_device *pdev)
- 	bc->rx_irq = irq_of_parse_and_map(np, 0);
- 	bc->tx_irq = irq_of_parse_and_map(np, 1);
- 	if ((bc->rx_irq == NO_IRQ) || (bc->tx_irq == NO_IRQ)) {
--		dev_err(&pdev->dev, "no 'interrupts' property in %s node\n",
--			np->name);
-+		dev_err(&pdev->dev, "no 'interrupts' property in %pOFn node\n",
-+			np);
- 		ret = -ENODEV;
- 		goto error;
- 	}
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index 24a5f05e769b..ea7204d75022 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -1151,8 +1151,8 @@ static int cpm_uart_init_port(struct device_node *np,
- 	if (!pinfo->clk) {
- 		data = of_get_property(np, "fsl,cpm-brg", &len);
- 		if (!data || len != 4) {
--			printk(KERN_ERR "CPM UART %s has no/invalid "
--			                "fsl,cpm-brg property.\n", np->name);
-+			printk(KERN_ERR "CPM UART %pOFn has no/invalid "
-+			                "fsl,cpm-brg property.\n", np);
- 			return -EINVAL;
- 		}
- 		pinfo->brg = *data;
-@@ -1160,8 +1160,8 @@ static int cpm_uart_init_port(struct device_node *np,
- 
- 	data = of_get_property(np, "fsl,cpm-command", &len);
- 	if (!data || len != 4) {
--		printk(KERN_ERR "CPM UART %s has no/invalid "
--		                "fsl,cpm-command property.\n", np->name);
-+		printk(KERN_ERR "CPM UART %pOFn has no/invalid "
-+		                "fsl,cpm-command property.\n", np);
- 		return -EINVAL;
- 	}
- 	pinfo->command = *data;
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index 3d21790d961e..a4ec22d1f214 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -1566,9 +1566,9 @@ static int pmz_attach(struct macio_dev *mdev, const struct of_device_id *match)
- 	 * to work around bugs in ancient Apple device-trees
- 	 */
- 	if (macio_request_resources(uap->dev, "pmac_zilog"))
--		printk(KERN_WARNING "%s: Failed to request resource"
-+		printk(KERN_WARNING "%pOFn: Failed to request resource"
- 		       ", port still active\n",
--		       uap->node->name);
-+		       uap->node);
- 	else
- 		uap->flags |= PMACZILOG_FLAG_RSRC_REQUESTED;
- 
--- 
-2.17.1
+Sure, I'll post that today.
+
+Thanks
+Kishon
