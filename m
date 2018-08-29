@@ -1,60 +1,105 @@
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Subject: Re: [RFC RFT PATCH 0/4] gpiolib: speed up GPIO array processing
-Date: Wed, 29 Aug 2018 20:16:20 +0200
-Message-ID: <1595423.PPW7Q1vFt0@z50>
-References: <20180813223448.21316-1-jmkrzyszt@gmail.com> <20180820234341.5271-1-jmkrzyszt@gmail.com> <CACRpkdbgY6VNP-K-c5ErQtmO7E83D6c=49TN5siF8VTNh_66Jg@mail.gmail.com>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH] serial: 8250_of: Fix for lack of interrupt support
+Date: Wed, 29 Aug 2018 20:50:59 +0100
+Message-ID: <3ceebf21-7de2-dbd7-fffe-f5e805b5abab@huawei.com>
+References: <1535555277-102256-1-git-send-email-john.garry@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdbgY6VNP-K-c5ErQtmO7E83D6c=49TN5siF8VTNh_66Jg@mail.gmail.com>
-Sender: netdev-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, kishon@ti.com, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-doc@vger.kernel.org, linux-i2c@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1535555277-102256-1-git-send-email-john.garry@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, alexander.sverdlin@nokia.com
+Cc: jslaby@suse.com, robh@kernel.org, joel@jms.id.au, kurt@linutronix.de, yamada.masahiro@socionext.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com
 List-Id: linux-serial@vger.kernel.org
 
-Hi Linus,
+On 29/08/2018 16:07, John Garry wrote:
+> In commit c58caaab3bf8 ("serial: 8250: of: Defer probe on missing IRQ"), a
+> check was added for the UART driver being probed prior to the parent IRQ
+> controller.
+>
+> Unfortunately this breaks certain boards which have no interrupt support,
+> like Huawei D03.
+>
+> Indeed, the 8250 DT bindings state that interrupts should be supported -
+> not must.
+>
+> To fix, switch from irq_of_parse_and_map() to of_irq_get(), which
+> does relay whether the IRQ host controller domain is not ready, i.e.
+> defer probe, instead of assuming it.
+>
+> Fixes: c58caaab3bf8 ("serial: 8250: of: Defer probe on missing IRQ")
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+> Note: I think that it would better if we could try to get the interrupt
+> 	  before clk+pm enabling, so we don't need to disable later when
+> 	  deferring, but this is not a fix.
+>
+> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+> index af8beef..c370e776 100644
+> --- a/drivers/tty/serial/8250/8250_of.c
+> +++ b/drivers/tty/serial/8250/8250_of.c
+> @@ -58,7 +58,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+>  	struct resource resource;
+>  	struct device_node *np = ofdev->dev.of_node;
+>  	u32 clk, spd, prop;
+> -	int ret;
+> +	int ret, irq;
+>
+>  	memset(port, 0, sizeof *port);
+>
+> @@ -143,21 +143,27 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+>  	if (ret >= 0)
+>  		port->line = ret;
+>
+> -	port->irq = irq_of_parse_and_map(np, 0);
+> -	if (!port->irq) {
+> -		ret = -EPROBE_DEFER;
+> -		goto err_unprepare;
+> +	irq = of_irq_get(np, 0);
+> +	if (irq < 0) {
+> +		if (port->irq == -EPROBE_DEFER) {
 
-On Wednesday, August 29, 2018 11:06:21 AM CEST Linus Walleij wrote:
-> On Tue, Aug 21, 2018 at 1:42 AM Janusz Krzysztofik <jmkrzyszt@gmail.com> 
-wrote:
-> 
-> > This series is a follow up of the former "mtd: rawnand: ams-delta: Use
-> > gpio-omap accessors for data I/O" which already contained some changes
-> > to gpiolib.  Those previous attempts were commented by Borris Brezillon
-> > who suggested using GPIO API modified to accept bitmaps, and by Linus
-> > Walleij who suggested still more great ideas for further immprovement
-> > of the proposed API changes - thanks!
-> >
-> > The goal is to boost performans of get/set array functions while
-> > processing GPIO arrays which represent pins of a signle chip in
-> > hardware order.  If resulting performance is close to PIO, GPIO API
-> > can be used for data I/O without much loss of speed.
-> 
-> Hands down, this is a very pretty patch set. I'm a big fan already.
-> 
-> This is mainly because it fulfills the requirement for libraries
-> to be narrow and deep, which is what we want.
-> This refers to John Ousterhouts software design philosophy,
-> here is a great lecture if you haven't seen it already:
-> https://www.youtube.com/watch?v=bmSAYlu0NcY
-> 
-> Let's get this into v1 and get some testing and merge it for v4.20
-> ASAP
+This check is not corrrct. It should be:
+		if (irq == -EPROBE_DEFER) {
 
-Please hold on for a while, I'm going to resubmit soon, with the comment from 
-Peter Rosin on i2c-mux-gpio addressed and the error discovered by Miguel Ojeda 
-in hd44780 fixed.
+I'll send a v2.
+
+@Alexander Sverdlin, Can you test this also please?
 
 Thanks,
-Janusz
+John
 
-> so we get some proper testing before the v4.20 merge
-> window. It would be excellent if some of the current users of
-> the array API could provide tested-by's or at least ACKs.
-> 
-> For example ts-nbus.c must be a big benefactor.
-> 
-> Yours,
-> Linus Walleij
-> 
+> +			ret = -EPROBE_DEFER;
+> +			goto err_unprepare;
+> +		}
+> +		/* IRQ support not mandatory */
+> +		irq = 0;
+>  	}
+>
+> +	port->irq = irq;
+> +
+>  	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
+>  	if (IS_ERR(info->rst)) {
+>  		ret = PTR_ERR(info->rst);
+> -		goto err_dispose;
+> +		goto err_unprepare;
+>  	}
+>
+>  	ret = reset_control_deassert(info->rst);
+>  	if (ret)
+> -		goto err_dispose;
+> +		goto err_unprepare;
+>
+>  	port->type = type;
+>  	port->uartclk = clk;
+> @@ -184,8 +190,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+>  		port->handle_irq = fsl8250_handle_irq;
+>
+>  	return 0;
+> -err_dispose:
+> -	irq_dispose_mapping(port->irq);
+>  err_unprepare:
+>  	clk_disable_unprepare(info->clk);
+>  err_pmruntime:
+>
