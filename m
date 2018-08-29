@@ -1,105 +1,89 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH] serial: 8250_of: Fix for lack of interrupt support
-Date: Wed, 29 Aug 2018 20:50:59 +0100
-Message-ID: <3ceebf21-7de2-dbd7-fffe-f5e805b5abab@huawei.com>
-References: <1535555277-102256-1-git-send-email-john.garry@huawei.com>
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Subject: [PATH v5 0/4] gpiolib: speed up GPIO array processing
+Date: Wed, 29 Aug 2018 22:48:56 +0200
+Message-ID: <20180829204900.19390-1-jmkrzyszt@gmail.com>
+References: <20180820234341.5271-1-jmkrzyszt@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1535555277-102256-1-git-send-email-john.garry@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, alexander.sverdlin@nokia.com
-Cc: jslaby@suse.com, robh@kernel.org, joel@jms.id.au, kurt@linutronix.de, yamada.masahiro@socionext.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+In-Reply-To: <20180820234341.5271-1-jmkrzyszt@gmail.com>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>, linux-doc@vger.kernel.org, linux-iio@vger.kernel.org, Dominik Brodowski <linux@dominikbrodowski.net>, Peter Rosin <peda@axentia.se>, netdev@vger.kernel.org, linux-i2c@vger.kernel.org, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, devel@driverdev.osuosl.org, Florian Fainelli <f.fainelli@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Kishon Vijay Abraham I <kishon@ti.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Michael Hennerich <Michael.Hennerich@analog.com>, linux-gpio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@bar>
 List-Id: linux-serial@vger.kernel.org
 
-On 29/08/2018 16:07, John Garry wrote:
-> In commit c58caaab3bf8 ("serial: 8250: of: Defer probe on missing IRQ"), a
-> check was added for the UART driver being probed prior to the parent IRQ
-> controller.
->
-> Unfortunately this breaks certain boards which have no interrupt support,
-> like Huawei D03.
->
-> Indeed, the 8250 DT bindings state that interrupts should be supported -
-> not must.
->
-> To fix, switch from irq_of_parse_and_map() to of_irq_get(), which
-> does relay whether the IRQ host controller domain is not ready, i.e.
-> defer probe, instead of assuming it.
->
-> Fixes: c58caaab3bf8 ("serial: 8250: of: Defer probe on missing IRQ")
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
-> Note: I think that it would better if we could try to get the interrupt
-> 	  before clk+pm enabling, so we don't need to disable later when
-> 	  deferring, but this is not a fix.
->
-> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-> index af8beef..c370e776 100644
-> --- a/drivers/tty/serial/8250/8250_of.c
-> +++ b/drivers/tty/serial/8250/8250_of.c
-> @@ -58,7 +58,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->  	struct resource resource;
->  	struct device_node *np = ofdev->dev.of_node;
->  	u32 clk, spd, prop;
-> -	int ret;
-> +	int ret, irq;
->
->  	memset(port, 0, sizeof *port);
->
-> @@ -143,21 +143,27 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->  	if (ret >= 0)
->  		port->line = ret;
->
-> -	port->irq = irq_of_parse_and_map(np, 0);
-> -	if (!port->irq) {
-> -		ret = -EPROBE_DEFER;
-> -		goto err_unprepare;
-> +	irq = of_irq_get(np, 0);
-> +	if (irq < 0) {
-> +		if (port->irq == -EPROBE_DEFER) {
 
-This check is not corrrct. It should be:
-		if (irq == -EPROBE_DEFER) {
+The goal is to boost performance of get/set array functions while
+processing GPIO arrays which represent pins of a signle chip in
+hardware order.  If resulting performance is close to PIO, GPIO API
+can be used for data I/O without much loss of speed.
 
-I'll send a v2.
+Created and tested on a low end Amstrad Delta board with NAND driver
+updated to use GPIO API for data I/O.  Performance degrade compared to
+PIO is much better than before the optimization but still not quite
+satisfactory.
 
-@Alexander Sverdlin, Can you test this also please?
+Janusz Krzysztofik (4):
+      gpiolib: Pass bitmaps, not integer arrays, to get/set array
+      gpiolib: Identify arrays matching GPIO hardware
+      gpiolib: Pass array info to get/set array functions
+      gpiolib: Implement fast processing path in get/set array
 
-Thanks,
-John
+Changelog:
+v5:
+[PATCH v5 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set
+- drivers/i2c/muxes/i2c-mux-gpio.c:
+  - drop assigment of values to struct gpiomux.values, as recommended
+    by Peter Rosin - thanks!,
+  - mark the .values member of the structure as obsolete,
+- drivers/mux/gpio.c:
+  - drop assigment of values to struct mux_gpio.val, also recommended
+    by Peter Rosin - thanks!,
+  - merk the .val member of the structure as obsolete,
+- drivers/auxdisplay/hd44780.c:
+  - fix incorrect bitmap size,
+  - use >>= operator to simplify notation,
+  both catched by Miguel Ojeda - thanks!,
+- add Cc: clauses as well as Acked-by: collected so far.
+[PATCH v5 2/4] gpiolib: Identify arrays matching GPIO hardware
+- add Cc: clause.
+[PATCH v5 3/4] gpiolib: Pass array info to get/set array functions
+- add Cc: clauses as well as Acked-by: collected so far.
+[PATCH v5 4/4] gpiolib: Implement fast processing path in get/set
+- add Cc: clause.
 
-> +			ret = -EPROBE_DEFER;
-> +			goto err_unprepare;
-> +		}
-> +		/* IRQ support not mandatory */
-> +		irq = 0;
->  	}
->
-> +	port->irq = irq;
-> +
->  	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
->  	if (IS_ERR(info->rst)) {
->  		ret = PTR_ERR(info->rst);
-> -		goto err_dispose;
-> +		goto err_unprepare;
->  	}
->
->  	ret = reset_control_deassert(info->rst);
->  	if (ret)
-> -		goto err_dispose;
-> +		goto err_unprepare;
->
->  	port->type = type;
->  	port->uartclk = clk;
-> @@ -184,8 +190,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->  		port->handle_irq = fsl8250_handle_irq;
->
->  	return 0;
-> -err_dispose:
-> -	irq_dispose_mapping(port->irq);
->  err_unprepare:
->  	clk_disable_unprepare(info->clk);
->  err_pmruntime:
->
+v4:
+That series was a follow up of the former "mtd: rawnand: ams-delta: Use
+gpio-omap accessors for data I/O" which already contained some changes
+to gpiolib.  Those previous attempts were commented by Borris Brezillon
+who suggested using GPIO API modified to accept bitmaps, and by Linus
+Walleij who suggested still more great ideas for further immprovement
+of the proposed API changes - thanks!
+
+diffstat:
+ Documentation/driver-api/gpio/board.rst     |   15 +
+ Documentation/driver-api/gpio/consumer.rst  |   48 +++-
+ drivers/auxdisplay/hd44780.c                |   64 +++---
+ drivers/bus/ts-nbus.c                       |   25 --
+ drivers/gpio/gpio-max3191x.c                |   23 +-
+ drivers/gpio/gpiolib.c                      |  279 ++++++++++++++++++++++------
+ drivers/gpio/gpiolib.h                      |   15 +
+ drivers/i2c/muxes/i2c-mux-gpio.c            |   10 -
+ drivers/mmc/core/pwrseq_simple.c            |   15 -
+ drivers/mux/gpio.c                          |   12 -
+ drivers/net/phy/mdio-mux-gpio.c             |    5 
+ drivers/pcmcia/soc_common.c                 |   14 -
+ drivers/phy/motorola/phy-mapphone-mdm6600.c |   21 +-
+ drivers/staging/iio/adc/ad7606.c            |   12 -
+ drivers/tty/serial/serial_mctrl_gpio.c      |    9 
+ include/linux/gpio/consumer.h               |   35 ++-
+ 16 files changed, 412 insertions(+), 190 deletions(-)
