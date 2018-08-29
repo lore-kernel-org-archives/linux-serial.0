@@ -1,157 +1,45 @@
-From: "Zhu, Yi Xin" <yixin.zhu@linux.intel.com>
-Subject: Re: [PATCH v2 02/18] clk: intel: Add clock driver for Intel MIPS SoCs
-Date: Wed, 29 Aug 2018 14:56:22 +0800
-Message-ID: <75f8313b-42e6-e741-196d-af27ad1e4f9b@linux.intel.com>
-References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
- <20180803030237.3366-3-songjun.wu@linux.intel.com>
- <153370742214.220756.2039365625963765922@swboyd.mtv.corp.google.com>
- <571d2d40-8728-fa7c-5d89-73d2a7b6293b@linux.intel.com>
- <153539697928.129321.2605078315090527674@swboyd.mtv.corp.google.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [RFC RFT PATCH 0/4] gpiolib: speed up GPIO array processing
+Date: Wed, 29 Aug 2018 11:06:21 +0200
+Message-ID: <CACRpkdbgY6VNP-K-c5ErQtmO7E83D6c=49TN5siF8VTNh_66Jg@mail.gmail.com>
+References: <20180813223448.21316-1-jmkrzyszt@gmail.com> <20180820234341.5271-1-jmkrzyszt@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <153539697928.129321.2605078315090527674@swboyd.mtv.corp.google.com>
-Content-Language: en-US
+In-Reply-To: <20180820234341.5271-1-jmkrzyszt@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@kernel.org>, Songjun Wu <songjun.wu@linux.intel.com>, chuanhua.lei@linux.intel.com, hua.ma@linux.intel.com, qi-ming.wu@intel.com
-Cc: linux-mips@linux-mips.org, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+To: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, kishon@ti.com, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-doc@vger.kernel.org, linux-i2c@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, Aug 21, 2018 at 1:42 AM Janusz Krzysztofik <jmkrzyszt@gmail.com> wrote:
 
-On 8/28/2018 3:09 AM, Stephen Boyd wrote:
-> Quoting yixin zhu (2018-08-08 01:52:20)
->> On 8/8/2018 1:50 PM, Stephen Boyd wrote:
->>> Quoting Songjun Wu (2018-08-02 20:02:21)
->>>> +       struct clk *clk;
->>>> +       int idx;
->>>> +
->>>> +       for (idx = 0; idx < nr_clks; idx++, osc++) {
->>>> +               if (!osc->dt_freq ||
->>>> +                   of_property_read_u32(ctx->np, osc->dt_freq, &freq))
->>>> +                       freq = osc->def_rate;
->>>> +
->>>> +               clk = clk_register_fixed_rate(NULL, osc->name, NULL, 0, freq);
->>> Should come from DT itself.
->> Yes. It can be defined as fixed-clock node in device tree.
->> Do you mean it should be defined in device tree and driver reference it
->> via device tree?
-> Yes the oscillator should be in DT and then the DT node here can call
-> clk_get() or just hardcode the parent name to be what it knows it is.
-> Eventually we'd like to be able to move away from string names for
-> hierarchy descriptions but that's far off. To get there, we would need
-> DT nodes for clock controllers to indicate their clk parents with the
-> clocks and clock-names properties. So for the oscillator, DT would
-> define it and then the driver would eventually have a way to specify
-> that some parent is index 5 or clock name "foo" and then the clk core
-> could figure out the linkage. I haven't written that code yet, but I'll
-> probably do it soon if nobody beats me to it.
-
-Thanks.  Will update.
-
-
+> This series is a follow up of the former "mtd: rawnand: ams-delta: Use
+> gpio-omap accessors for data I/O" which already contained some changes
+> to gpiolib.  Those previous attempts were commented by Borris Brezillon
+> who suggested using GPIO API modified to accept bitmaps, and by Linus
+> Walleij who suggested still more great ideas for further immprovement
+> of the proposed API changes - thanks!
 >
->>>> +/**
->>>> + * struct intel_clk_provider
->>>> + * @map: regmap type base address for register.
->>>> + * @np: device node
->>>> + * @clk_data: array of hw clocks and clk number.
->>>> + */
->>>> +struct intel_clk_provider {
->>>> +       struct regmap           *map;
->>>> +       struct device_node      *np;
->>>> +       struct clk_onecell_data clk_data;
->>> Please register clk_hw pointers instead of clk pointers with the of
->>> provider APIs.
->> Sorry.  I'm not sure I understand you correctly.
->> If only registering clk_hw pointer,  not registering of_provider API, then
->> how to reference it in the user drivers ?
->> Could you please give me more hints ?
-> Clk provider drivers shouldn't be using clk pointers directly. Usually
-> when that happens something is wrong. So new clk drivers should register
-> clk_hw pointers and pretty much only deal with clk_hw pointers instead
-> of struct clk pointers. You still register an of_provider, but that
-> provider hands out clk_hw pointers so that clk provider drivers aren't
-> tempted to use struct clk pointers.
+> The goal is to boost performans of get/set array functions while
+> processing GPIO arrays which represent pins of a signle chip in
+> hardware order.  If resulting performance is close to PIO, GPIO API
+> can be used for data I/O without much loss of speed.
 
-Understood.  Will update to use clk_hw_onecell_data and change the 
-registration accordingly.
+Hands down, this is a very pretty patch set. I'm a big fan already.
 
+This is mainly because it fulfills the requirement for libraries
+to be narrow and deep, which is what we want.
+This refers to John Ousterhouts software design philosophy,
+here is a great lecture if you haven't seen it already:
+https://www.youtube.com/watch?v=bmSAYlu0NcY
 
->>
->>>> + */
->>>> +struct intel_pll_clk {
->>>> +       unsigned int            id;
->>>> +       const char              *name;
->>>> +       const char              *const *parent_names;
->>>> +       u8                      num_parents;
->>> Can the PLL have multiple parents?
->> Yes. But not in this platform.
->> The define here make it easy to expand to support new platform.
->>
-> Ok, so it has a mux inside.
->
->>>> +       unsigned int                    id;
->>>> +       enum intel_clk_type             type;
->>>> +       const char                      *name;
->>>> +       const char                      *const *parent_names;
->>>> +       u8                              num_parents;
->>>> +       unsigned long                   flags;
->>>> +       unsigned int                    mux_off;
->>>> +       u8                              mux_shift;
->>>> +       u8                              mux_width;
->>>> +       unsigned long                   mux_flags;
->>>> +       unsigned int                    mux_val;
->>>> +       unsigned int                    div_off;
->>>> +       u8                              div_shift;
->>>> +       u8                              div_width;
->>>> +       unsigned long                   div_flags;
->>>> +       unsigned int                    div_val;
->>>> +       const struct clk_div_table      *div_table;
->>>> +       unsigned int                    gate_off;
->>>> +       u8                              gate_shift;
->>>> +       unsigned long                   gate_flags;
->>>> +       unsigned int                    gate_val;
->>>> +       unsigned int                    mult;
->>>> +       unsigned int                    div;
->>>> +};
->>>> +
->>>> +/* clock flags definition */
->>>> +#define CLOCK_FLAG_VAL_INIT    BIT(16)
->>>> +#define GATE_CLK_HW            BIT(17)
->>>> +#define GATE_CLK_SW            BIT(18)
->>>> +#define GATE_CLK_VT            BIT(19)
->>> What does VT mean? Virtual?
->> Yes. VT means virtual here.
->> Will change to GATE_CLK_VIRT.
->>
-> Is it a hardware concept? Or virtualization with hypervisor?
+Let's get this into v1 and get some testing and merge it for v4.20
+ASAP so we get some proper testing before the v4.20 merge
+window. It would be excellent if some of the current users of
+the array API could provide tested-by's or at least ACKs.
 
-Some peripheral drivers want to use same code cross platforms.
+For example ts-nbus.c must be a big benefactor.
 
-But not all platforms provide HW gate clock.  So in this case, clock 
-driver creates
-
-a virtual gate clock to make it work if no HW gate clock in the SoC.
-
-
->
->>>> +}
->>>> +
->>>> +CLK_OF_DECLARE(intel_grx500_cgu, "intel,grx500-cgu", grx500_clk_init);
->>> Any reason a platform driver can't be used instead of CLK_OF_DECLARE()?
->> It provides CPU clock which is used in early boot stage.
->>
-> Ok. What is the CPU clock doing in early boot stage? Some sort of timer
-> frequency? If the driver can be split into two pieces, one to handle the
-> really early stuff that must be in place to get timers up and running
-> and the other to register the rest of the clks that aren't critical from
-> a regular platform driver it would be good. That's preferred model if
-> something is super critical.
-
-Yes, CPU clock is providing CPU frequency in the early boot stage.
-
-Will put the non-critical clocks in the platform driver.
-
-
->
+Yours,
+Linus Walleij
