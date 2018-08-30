@@ -1,111 +1,59 @@
-From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
-Subject: Re: [PATCH v2] serial: 8250_of: Fix for lack of interrupt support
-Date: Thu, 30 Aug 2018 20:21:50 +0200
-Message-ID: <055f5ee8-4905-c229-0e33-6379cf65dfbc@nokia.com>
-References: <1535620130-199328-1-git-send-email-john.garry@huawei.com>
+From: Chris Brandt <Chris.Brandt@renesas.com>
+Subject: RE: [PATCH 0/2] serial: sh-sci: Fix earlycon on Renesas ARM platforms
+Date: Thu, 30 Aug 2018 18:52:37 +0000
+Message-ID: <TY1PR01MB1562E58C07A892AC7CF7438B8A080@TY1PR01MB1562.jpnprd01.prod.outlook.com>
+References: <20180830125404.21192-1-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1535620130-199328-1-git-send-email-john.garry@huawei.com>
+In-Reply-To: <20180830125404.21192-1-geert+renesas@glider.be>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Garry <john.garry@huawei.com>, gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, robh@kernel.org, joel@jms.id.au, kurt@linutronix.de, yamada.masahiro@socionext.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Ulrich Hecht <uli+renesas@fpond.eu>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello John!
+Hi Geert,
 
-On 30/08/2018 11:08, John Garry wrote:
-> In commit c58caaab3bf8 ("serial: 8250: of: Defer probe on missing IRQ"), a
-> check was added for the UART driver being probed prior to the parent IRQ
-> controller.
-> 
-> Unfortunately this breaks certain boards which have no interrupt support,
-> like Huawei D03.
-> 
-> Indeed, the 8250 DT bindings state that interrupts should be supported -
-> not must.
-> 
-> To fix, switch from irq_of_parse_and_map() to of_irq_get(), which
-> does relay whether the IRQ host controller domain is not ready, i.e.
-> defer probe, instead of assuming it.
-> 
-> Fixes: c58caaab3bf8 ("serial: 8250: of: Defer probe on missing IRQ")
-> Signed-off-by: John Garry <john.garry@huawei.com>
+On Thursday, August 30, 2018, Geert Uytterhoeven wrote:
+> Earlycon for RZ/A2 (which is a new platform) will be fixed later in a
+> separate patch.
 
-This indeed looks like a proper way to handle both cases:
+I assume something like this:
+(which works for me)
 
-Reviewed-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
-Tested-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
 
-> ---
-> 
-> Change in v2:
-> - fix check on irq value
-> 
-> Note: I think that it would better if we could try to get the interrupt
-> 	  before clk+pm enabling, so we don't need to disable later when
-> 	  deferring, but this is not a fix.
-> 
-> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-> index af8beef..877fd7f 100644
-> --- a/drivers/tty/serial/8250/8250_of.c
-> +++ b/drivers/tty/serial/8250/8250_of.c
-> @@ -58,7 +58,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->  	struct resource resource;
->  	struct device_node *np = ofdev->dev.of_node;
->  	u32 clk, spd, prop;
-> -	int ret;
-> +	int ret, irq;
->  
->  	memset(port, 0, sizeof *port);
->  
-> @@ -143,21 +143,27 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->  	if (ret >= 0)
->  		port->line = ret;
->  
-> -	port->irq = irq_of_parse_and_map(np, 0);
-> -	if (!port->irq) {
-> -		ret = -EPROBE_DEFER;
-> -		goto err_unprepare;
-> +	irq = of_irq_get(np, 0);
-> +	if (irq < 0) {
-> +		if (irq == -EPROBE_DEFER) {
-> +			ret = -EPROBE_DEFER;
-> +			goto err_unprepare;
-> +		}
-> +		/* IRQ support not mandatory */
-> +		irq = 0;
->  	}
->  
-> +	port->irq = irq;
-> +
->  	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
->  	if (IS_ERR(info->rst)) {
->  		ret = PTR_ERR(info->rst);
-> -		goto err_dispose;
-> +		goto err_unprepare;
->  	}
->  
->  	ret = reset_control_deassert(info->rst);
->  	if (ret)
-> -		goto err_dispose;
-> +		goto err_unprepare;
->  
->  	port->type = type;
->  	port->uartclk = clk;
-> @@ -184,8 +190,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->  		port->handle_irq = fsl8250_handle_irq;
->  
->  	return 0;
-> -err_dispose:
-> -	irq_dispose_mapping(port->irq);
->  err_unprepare:
->  	clk_disable_unprepare(info->clk);
->  err_pmruntime:
-> 
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index ab3f6e91853d..426241da2e44 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3414,6 +3414,12 @@ static int __init scif_early_console_setup(struct ea=
+rlycon_device *device,
+ {
+        return early_console_setup(device, PORT_SCIF);
+ }
++static int __init rzscifa_early_console_setup(struct earlycon_device *devi=
+ce,
++                                         const char *opt)
++{
++       port_cfg.regtype =3D SCIx_RZ_SCIFA_REGTYPE;
++       return early_console_setup(device, PORT_SCIF);
++}
+ static int __init scifa_early_console_setup(struct earlycon_device *device=
+,
+                                          const char *opt)
+ {
+@@ -3432,6 +3438,7 @@ static int __init hscif_early_console_setup(struct ea=
+rlycon_device *device,
+=20
+ OF_EARLYCON_DECLARE(sci, "renesas,sci", sci_early_console_setup);
+ OF_EARLYCON_DECLARE(scif, "renesas,scif", scif_early_console_setup);
++OF_EARLYCON_DECLARE(scif, "renesas,scif-r7s9210", rzscifa_early_console_se=
+tup);
+ OF_EARLYCON_DECLARE(scifa, "renesas,scifa", scifa_early_console_setup);
+ OF_EARLYCON_DECLARE(scifb, "renesas,scifb", scifb_early_console_setup);
+ OF_EARLYCON_DECLARE(hscif, "renesas,hscif", hscif_early_console_setup);
 
--- 
-Best regards,
-Alexander Sverdlin.
+
+Chris
