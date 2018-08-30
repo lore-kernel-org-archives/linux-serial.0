@@ -1,224 +1,95 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v5 1/4] gpiolib: Pass bitmaps, not integer arrays, to
- get/set array
-Date: Thu, 30 Aug 2018 09:40:47 +0200
-Message-ID: <CAMuHMdW4QHuab8xuqNxc-yg_RiH0+Pb4yJryarDq6bgjtGvWsQ@mail.gmail.com>
-References: <20180820234341.5271-1-jmkrzyszt@gmail.com> <20180829204900.19390-1-jmkrzyszt@gmail.com>
- <20180829204900.19390-2-jmkrzyszt@gmail.com>
+From: John Garry <john.garry@huawei.com>
+Subject: [PATCH v2] serial: 8250_of: Fix for lack of interrupt support
+Date: Thu, 30 Aug 2018 17:08:50 +0800
+Message-ID: <1535620130-199328-1-git-send-email-john.garry@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20180829204900.19390-2-jmkrzyszt@gmail.com>
-Sender: netdev-owner@vger.kernel.org
-To: jmkrzyszt@gmail.com
-Cc: Linus Walleij <linus.walleij@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, peter.korsgaard@barco.com, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, Greg KH <gregkh@linuxfoundation.org>, Kishon Vijay Abraham I <kishon@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>, Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, "open list:DOCUMENTATION" <linux-doc@vger.>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: alexander.sverdlin@nokia.com, jslaby@suse.com, robh@kernel.org, joel@jms.id.au, kurt@linutronix.de, yamada.masahiro@socionext.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, John Garry <john.garry@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Janusz,
+In commit c58caaab3bf8 ("serial: 8250: of: Defer probe on missing IRQ"), a
+check was added for the UART driver being probed prior to the parent IRQ
+controller.
 
-On Wed, Aug 29, 2018 at 10:48 PM Janusz Krzysztofik <jmkrzyszt@gmail.com> wrote:
-> Most users of get/set array functions iterate consecutive bits of data,
-> usually a single integer, while processing array of results obtained
-> from, or building an array of values to be passed to those functions.
-> Save time wasted on those iterations by changing the functions' API to
-> accept bitmaps.
->
-> All current users are updated as well.
->
-> More benefits from the change are expected as soon as planned support
-> for accepting/passing those bitmaps directly from/to respective GPIO
-> chip callbacks if applicable is implemented.
->
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>
-> Cc: Peter Korsgaard <peter.korsgaard@barco.com>
-> Cc: Peter Rosin <peda@axentia.se>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-> Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+Unfortunately this breaks certain boards which have no interrupt support,
+like Huawei D03.
 
-Thanks for your patch!
+Indeed, the 8250 DT bindings state that interrupts should be supported -
+not must.
 
-> --- a/drivers/auxdisplay/hd44780.c
-> +++ b/drivers/auxdisplay/hd44780.c
-> @@ -62,20 +62,19 @@ static void hd44780_strobe_gpio(struct hd44780 *hd)
->  /* write to an LCD panel register in 8 bit GPIO mode */
->  static void hd44780_write_gpio8(struct hd44780 *hd, u8 val, unsigned int rs)
->  {
-> -       int values[10]; /* for DATA[0-7], RS, RW */
-> -       unsigned int i, n;
-> +       unsigned long value_bitmap[1];  /* for DATA[0-7], RS, RW */
-> +       unsigned int n;
->
-> -       for (i = 0; i < 8; i++)
-> -               values[PIN_DATA0 + i] = !!(val & BIT(i));
-> -       values[PIN_CTRL_RS] = rs;
-> +       value_bitmap[0] = val;
-> +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
+To fix, switch from irq_of_parse_and_map() to of_irq_get(), which
+does relay whether the IRQ host controller domain is not ready, i.e.
+defer probe, instead of assuming it.
 
+Fixes: c58caaab3bf8 ("serial: 8250: of: Defer probe on missing IRQ")
+Signed-off-by: John Garry <john.garry@huawei.com>
+---
 
->         n = 9;
->         if (hd->pins[PIN_CTRL_RW]) {
-> -               values[PIN_CTRL_RW] = 0;
-> +               __clear_bit(PIN_CTRL_RW, value_bitmap);
+Change in v2:
+- fix check on irq value
 
-The clearing is not needed, as this has been done by 'value_bitmap[0] = val;'
+Note: I think that it would better if we could try to get the interrupt
+	  before clk+pm enabling, so we don't need to disable later when
+	  deferring, but this is not a fix.
 
->                 n++;
->         }
-
-So the above block can be simplified to:
-
-        n = hd->pins[PIN_CTRL_RW] ? 10 : 9;
-
->
->         /* Present the data to the port */
-> -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA0], values);
-> +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA0], value_bitmap);
->
->         hd44780_strobe_gpio(hd);
->  }
-> @@ -83,32 +82,31 @@ static void hd44780_write_gpio8(struct hd44780 *hd, u8 val, unsigned int rs)
->  /* write to an LCD panel register in 4 bit GPIO mode */
->  static void hd44780_write_gpio4(struct hd44780 *hd, u8 val, unsigned int rs)
->  {
-> -       int values[10]; /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
-> -       unsigned int i, n;
-> +       /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
-
-This comment is not correct, as the low bits will be used.
-
-        /* DATA[4-7], RS, RW */
-
-> +       unsigned long value_bitmap[1];
-> +       unsigned int n;
->
->         /* High nibble + RS, RW */
-> -       for (i = 4; i < 8; i++)
-> -               values[PIN_DATA0 + i] = !!(val & BIT(i));
-> -       values[PIN_CTRL_RS] = rs;
-> +       value_bitmap[0] = val;
-> +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
->         n = 5;
->         if (hd->pins[PIN_CTRL_RW]) {
-> -               values[PIN_CTRL_RW] = 0;
-> +               __clear_bit(PIN_CTRL_RW, value_bitmap);
-
-Not needed.
-
->                 n++;
->         }
-
-Hence:
-
-        n = hd->pins[PIN_CTRL_RW] ? 6: 5;
-
-> +       value_bitmap[0] >>= PIN_DATA4;
-
-Yuck?!?
-
-Isn't it more readable to just do:
-
-        /* High nibble + RS, RW */
-        value_bitmap[0] = val >> 4;
-        __assign_bit(4, value_bitmap, rs);
-        n = hd->pins[PIN_CTRL_RW] ? 6: 5;
-
->
->         /* Present the data to the port */
-> -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
-> -                                      &values[PIN_DATA4]);
-> +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], value_bitmap);
->
->         hd44780_strobe_gpio(hd);
->
->         /* Low nibble */
-> -       for (i = 0; i < 4; i++)
-> -               values[PIN_DATA4 + i] = !!(val & BIT(i));
-> +       value_bitmap[0] &= ~((1 << PIN_DATA4) - 1);
-> +       value_bitmap[0] |= val & ~((1 << PIN_DATA4) - 1);
-
-... and:
-
-         /* Low nibble */
-        value_bitmap[0] &= ~0x0f;
-        value_bitmap[0] |= val & 0x0f;
-
->
->         /* Present the data to the port */
-> -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
-> -                                      &values[PIN_DATA4]);
-> +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], value_bitmap);
->
->         hd44780_strobe_gpio(hd);
->  }
-> @@ -155,23 +153,23 @@ static void hd44780_write_cmd_gpio4(struct charlcd *lcd, int cmd)
->  /* Send 4-bits of a command to the LCD panel in raw 4 bit GPIO mode */
->  static void hd44780_write_cmd_raw_gpio4(struct charlcd *lcd, int cmd)
->  {
-> -       int values[10]; /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
-> +       /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
-
-This comment is not correct, as the low bits will be used.
-
-        /* DATA[4-7], RS, RW */
-
-> +       unsigned long value_bitmap[1];
->         struct hd44780 *hd = lcd->drvdata;
-> -       unsigned int i, n;
-> +       unsigned int n;
->
->         /* Command nibble + RS, RW */
-> -       for (i = 0; i < 4; i++)
-> -               values[PIN_DATA4 + i] = !!(cmd & BIT(i));
-> -       values[PIN_CTRL_RS] = 0;
-> +       value_bitmap[0] = cmd << PIN_DATA4;
-> +       __clear_bit(PIN_CTRL_RS, value_bitmap);
-
-Implied by the assignment above.
-
->         n = 5;
->         if (hd->pins[PIN_CTRL_RW]) {
-> -               values[PIN_CTRL_RW] = 0;
-> +               __clear_bit(PIN_CTRL_RW, value_bitmap);
->                 n++;
->         }
-> +       value_bitmap[0] = value_bitmap[0] >> PIN_DATA4;
-
-Hence:
-
-        /* Command nibble + RS, RW */
-        value_bitmap[0] = cmd;
-        n = hd->pins[PIN_CTRL_RW] ? 6: 5;
-
-
->
->         /* Present the data to the port */
-> -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
-> -                                      &values[PIN_DATA4]);
-> +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], value_bitmap);
->
->         hd44780_strobe_gpio(hd);
->  }
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index af8beef..877fd7f 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -58,7 +58,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	struct resource resource;
+ 	struct device_node *np = ofdev->dev.of_node;
+ 	u32 clk, spd, prop;
+-	int ret;
++	int ret, irq;
+ 
+ 	memset(port, 0, sizeof *port);
+ 
+@@ -143,21 +143,27 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	if (ret >= 0)
+ 		port->line = ret;
+ 
+-	port->irq = irq_of_parse_and_map(np, 0);
+-	if (!port->irq) {
+-		ret = -EPROBE_DEFER;
+-		goto err_unprepare;
++	irq = of_irq_get(np, 0);
++	if (irq < 0) {
++		if (irq == -EPROBE_DEFER) {
++			ret = -EPROBE_DEFER;
++			goto err_unprepare;
++		}
++		/* IRQ support not mandatory */
++		irq = 0;
+ 	}
+ 
++	port->irq = irq;
++
+ 	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
+ 	if (IS_ERR(info->rst)) {
+ 		ret = PTR_ERR(info->rst);
+-		goto err_dispose;
++		goto err_unprepare;
+ 	}
+ 
+ 	ret = reset_control_deassert(info->rst);
+ 	if (ret)
+-		goto err_dispose;
++		goto err_unprepare;
+ 
+ 	port->type = type;
+ 	port->uartclk = clk;
+@@ -184,8 +190,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		port->handle_irq = fsl8250_handle_irq;
+ 
+ 	return 0;
+-err_dispose:
+-	irq_dispose_mapping(port->irq);
+ err_unprepare:
+ 	clk_disable_unprepare(info->clk);
+ err_pmruntime:
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+1.9.1
