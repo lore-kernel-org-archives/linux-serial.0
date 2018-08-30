@@ -1,175 +1,224 @@
-From: Peter Rosin <peda@axentia.se>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH v5 1/4] gpiolib: Pass bitmaps, not integer arrays, to
  get/set array
-Date: Thu, 30 Aug 2018 06:30:11 +0200
-Message-ID: <9d9a4272-9a31-937d-720b-1946930dec09@axentia.se>
-References: <20180820234341.5271-1-jmkrzyszt@gmail.com>
- <20180829204900.19390-1-jmkrzyszt@gmail.com>
+Date: Thu, 30 Aug 2018 09:40:47 +0200
+Message-ID: <CAMuHMdW4QHuab8xuqNxc-yg_RiH0+Pb4yJryarDq6bgjtGvWsQ@mail.gmail.com>
+References: <20180820234341.5271-1-jmkrzyszt@gmail.com> <20180829204900.19390-1-jmkrzyszt@gmail.com>
  <20180829204900.19390-2-jmkrzyszt@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <netdev-owner@vger.kernel.org>
 In-Reply-To: <20180829204900.19390-2-jmkrzyszt@gmail.com>
-Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
-To: Janusz Krzysztofik <jmkrzyszt@gmail.com>, Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kishon Vijay Abraham I <kishon@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-doc@vger.kernel.org, linux-i2
+To: jmkrzyszt@gmail.com
+Cc: Linus Walleij <linus.walleij@linaro.org>, Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, peter.korsgaard@barco.com, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, Greg KH <gregkh@linuxfoundation.org>, Kishon Vijay Abraham I <kishon@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>, Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, "open list:DOCUMENTATION" <linux-doc@vger.>
 List-Id: linux-serial@vger.kernel.org
 
-On 2018-08-29 22:48, Janusz Krzysztofik wrote:
+Hi Janusz,
+
+On Wed, Aug 29, 2018 at 10:48 PM Janusz Krzysztofik <jmkrzyszt@gmail.com> wrote:
 > Most users of get/set array functions iterate consecutive bits of data,
 > usually a single integer, while processing array of results obtained
 > from, or building an array of values to be passed to those functions.
 > Save time wasted on those iterations by changing the functions' API to
 > accept bitmaps.
-> 
+>
 > All current users are updated as well.
-> 
+>
 > More benefits from the change are expected as soon as planned support
 > for accepting/passing those bitmaps directly from/to respective GPIO
 > chip callbacks if applicable is implemented.
-> diff --git a/drivers/i2c/muxes/i2c-mux-gpio.c b/drivers/i2c/muxes/i2c-mux-gpio.c
-> index 401308e3d036..4e36e0eac7a3 100644
-> --- a/drivers/i2c/muxes/i2c-mux-gpio.c
-> +++ b/drivers/i2c/muxes/i2c-mux-gpio.c
-> @@ -22,18 +22,16 @@ struct gpiomux {
->  	struct i2c_mux_gpio_platform_data data;
->  	unsigned gpio_base;
->  	struct gpio_desc **gpios;
-> -	int *values;
-> +	int *values; /* FIXME: no longer needed */
+>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>
+> Cc: Peter Korsgaard <peter.korsgaard@barco.com>
+> Cc: Peter Rosin <peda@axentia.se>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+> Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-That's a half-measure...
+Thanks for your patch!
 
->  };
->  
->  static void i2c_mux_gpio_set(const struct gpiomux *mux, unsigned val)
+> --- a/drivers/auxdisplay/hd44780.c
+> +++ b/drivers/auxdisplay/hd44780.c
+> @@ -62,20 +62,19 @@ static void hd44780_strobe_gpio(struct hd44780 *hd)
+>  /* write to an LCD panel register in 8 bit GPIO mode */
+>  static void hd44780_write_gpio8(struct hd44780 *hd, u8 val, unsigned int rs)
 >  {
-> +	unsigned long value_bitmap[1] = { val, };
->  	int i;
+> -       int values[10]; /* for DATA[0-7], RS, RW */
+> -       unsigned int i, n;
+> +       unsigned long value_bitmap[1];  /* for DATA[0-7], RS, RW */
+> +       unsigned int n;
+>
+> -       for (i = 0; i < 8; i++)
+> -               values[PIN_DATA0 + i] = !!(val & BIT(i));
+> -       values[PIN_CTRL_RS] = rs;
+> +       value_bitmap[0] = val;
+> +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
 
-...and i is no longer needed. Hmm, I'd expect a warning about that?
 
->  
-> -	for (i = 0; i < mux->data.n_gpios; i++)
-> -		mux->values[i] = (val >> i) & 1;
-> -
->  	gpiod_set_array_value_cansleep(mux->data.n_gpios,
-> -				       mux->gpios, mux->values);
-> +				       mux->gpios, value_bitmap);
+>         n = 9;
+>         if (hd->pins[PIN_CTRL_RW]) {
+> -               values[PIN_CTRL_RW] = 0;
+> +               __clear_bit(PIN_CTRL_RW, value_bitmap);
+
+The clearing is not needed, as this has been done by 'value_bitmap[0] = val;'
+
+>                 n++;
+>         }
+
+So the above block can be simplified to:
+
+        n = hd->pins[PIN_CTRL_RW] ? 10 : 9;
+
+>
+>         /* Present the data to the port */
+> -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA0], values);
+> +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA0], value_bitmap);
+>
+>         hd44780_strobe_gpio(hd);
 >  }
->  
->  static int i2c_mux_gpio_select(struct i2c_mux_core *muxc, u32 chan)
-> diff --git a/drivers/mux/gpio.c b/drivers/mux/gpio.c
-> index 6fdd9316db8b..734e1b43aed6 100644
-> --- a/drivers/mux/gpio.c
-> +++ b/drivers/mux/gpio.c
-> @@ -17,20 +17,17 @@
->  
->  struct mux_gpio {
->  	struct gpio_descs *gpios;
-> -	int *val;
-> +	int *val; /* FIXME: no longer needed */
->  };
->  
->  static int mux_gpio_set(struct mux_control *mux, int state)
+> @@ -83,32 +82,31 @@ static void hd44780_write_gpio8(struct hd44780 *hd, u8 val, unsigned int rs)
+>  /* write to an LCD panel register in 4 bit GPIO mode */
+>  static void hd44780_write_gpio4(struct hd44780 *hd, u8 val, unsigned int rs)
 >  {
->  	struct mux_gpio *mux_gpio = mux_chip_priv(mux->chip);
-> +	unsigned long value_bitmap[1] = { state, };
->  	int i;
->  
-> -	for (i = 0; i < mux_gpio->gpios->ndescs; i++)
-> -		mux_gpio->val[i] = (state >> i) & 1;
-> -
->  	gpiod_set_array_value_cansleep(mux_gpio->gpios->ndescs,
-> -				       mux_gpio->gpios->desc,
-> -				       mux_gpio->val);
-> +				       mux_gpio->gpios->desc, value_bitmap);
->  
->  	return 0;
+> -       int values[10]; /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
+> -       unsigned int i, n;
+> +       /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
+
+This comment is not correct, as the low bits will be used.
+
+        /* DATA[4-7], RS, RW */
+
+> +       unsigned long value_bitmap[1];
+> +       unsigned int n;
+>
+>         /* High nibble + RS, RW */
+> -       for (i = 4; i < 8; i++)
+> -               values[PIN_DATA0 + i] = !!(val & BIT(i));
+> -       values[PIN_CTRL_RS] = rs;
+> +       value_bitmap[0] = val;
+> +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
+>         n = 5;
+>         if (hd->pins[PIN_CTRL_RW]) {
+> -               values[PIN_CTRL_RW] = 0;
+> +               __clear_bit(PIN_CTRL_RW, value_bitmap);
+
+Not needed.
+
+>                 n++;
+>         }
+
+Hence:
+
+        n = hd->pins[PIN_CTRL_RW] ? 6: 5;
+
+> +       value_bitmap[0] >>= PIN_DATA4;
+
+Yuck?!?
+
+Isn't it more readable to just do:
+
+        /* High nibble + RS, RW */
+        value_bitmap[0] = val >> 4;
+        __assign_bit(4, value_bitmap, rs);
+        n = hd->pins[PIN_CTRL_RW] ? 6: 5;
+
+>
+>         /* Present the data to the port */
+> -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
+> -                                      &values[PIN_DATA4]);
+> +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], value_bitmap);
+>
+>         hd44780_strobe_gpio(hd);
+>
+>         /* Low nibble */
+> -       for (i = 0; i < 4; i++)
+> -               values[PIN_DATA4 + i] = !!(val & BIT(i));
+> +       value_bitmap[0] &= ~((1 << PIN_DATA4) - 1);
+> +       value_bitmap[0] |= val & ~((1 << PIN_DATA4) - 1);
+
+... and:
+
+         /* Low nibble */
+        value_bitmap[0] &= ~0x0f;
+        value_bitmap[0] |= val & 0x0f;
+
+>
+>         /* Present the data to the port */
+> -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
+> -                                      &values[PIN_DATA4]);
+> +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], value_bitmap);
+>
+>         hd44780_strobe_gpio(hd);
+>  }
+> @@ -155,23 +153,23 @@ static void hd44780_write_cmd_gpio4(struct charlcd *lcd, int cmd)
+>  /* Send 4-bits of a command to the LCD panel in raw 4 bit GPIO mode */
+>  static void hd44780_write_cmd_raw_gpio4(struct charlcd *lcd, int cmd)
+>  {
+> -       int values[10]; /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
+> +       /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
+
+This comment is not correct, as the low bits will be used.
+
+        /* DATA[4-7], RS, RW */
+
+> +       unsigned long value_bitmap[1];
+>         struct hd44780 *hd = lcd->drvdata;
+> -       unsigned int i, n;
+> +       unsigned int n;
+>
+>         /* Command nibble + RS, RW */
+> -       for (i = 0; i < 4; i++)
+> -               values[PIN_DATA4 + i] = !!(cmd & BIT(i));
+> -       values[PIN_CTRL_RS] = 0;
+> +       value_bitmap[0] = cmd << PIN_DATA4;
+> +       __clear_bit(PIN_CTRL_RS, value_bitmap);
+
+Implied by the assignment above.
+
+>         n = 5;
+>         if (hd->pins[PIN_CTRL_RW]) {
+> -               values[PIN_CTRL_RW] = 0;
+> +               __clear_bit(PIN_CTRL_RW, value_bitmap);
+>                 n++;
+>         }
+> +       value_bitmap[0] = value_bitmap[0] >> PIN_DATA4;
+
+Hence:
+
+        /* Command nibble + RS, RW */
+        value_bitmap[0] = cmd;
+        n = hd->pins[PIN_CTRL_RW] ? 6: 5;
+
+
+>
+>         /* Present the data to the port */
+> -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
+> -                                      &values[PIN_DATA4]);
+> +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], value_bitmap);
+>
+>         hd44780_strobe_gpio(hd);
 >  }
 
-Dito for this driver. Just squash the following and be done with
-it, no attribution needed...
+Gr{oetje,eeting}s,
 
-With that (for the changes in i2c-mux-gpio.c and mux/gpio.c)
+                        Geert
 
-Reviewed-by: Peter Rosin <peda@axentia.se>
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Linus, I expect this will will end up in some immutable branch for me
-to pick up, in case I need to? Not that I expect further work to clash
-in these two drivers, but...
-
-Cheers,
-Peter
-
-diff --git a/drivers/i2c/muxes/i2c-mux-gpio.c b/drivers/i2c/muxes/i2c-mux-gpio.c
-index 4e36e0eac7a3..06a89a29250a 100644
---- a/drivers/i2c/muxes/i2c-mux-gpio.c
-+++ b/drivers/i2c/muxes/i2c-mux-gpio.c
-@@ -22,13 +22,11 @@ struct gpiomux {
- 	struct i2c_mux_gpio_platform_data data;
- 	unsigned gpio_base;
- 	struct gpio_desc **gpios;
--	int *values; /* FIXME: no longer needed */
- };
- 
- static void i2c_mux_gpio_set(const struct gpiomux *mux, unsigned val)
- {
- 	unsigned long value_bitmap[1] = { val, };
--	int i;
- 
- 	gpiod_set_array_value_cansleep(mux->data.n_gpios,
- 				       mux->gpios, value_bitmap);
-@@ -180,15 +178,13 @@ static int i2c_mux_gpio_probe(struct platform_device *pdev)
- 		return -EPROBE_DEFER;
- 
- 	muxc = i2c_mux_alloc(parent, &pdev->dev, mux->data.n_values,
--			     mux->data.n_gpios * sizeof(*mux->gpios) +
--			     mux->data.n_gpios * sizeof(*mux->values), 0,
-+			     mux->data.n_gpios * sizeof(*mux->gpios), 0,
- 			     i2c_mux_gpio_select, NULL);
- 	if (!muxc) {
- 		ret = -ENOMEM;
- 		goto alloc_failed;
- 	}
- 	mux->gpios = muxc->priv;
--	mux->values = (int *)(mux->gpios + mux->data.n_gpios);
- 	muxc->priv = mux;
- 
- 	platform_set_drvdata(pdev, muxc);
-diff --git a/drivers/mux/gpio.c b/drivers/mux/gpio.c
-index 734e1b43aed6..eb1798677dfd 100644
---- a/drivers/mux/gpio.c
-+++ b/drivers/mux/gpio.c
-@@ -17,14 +17,12 @@
- 
- struct mux_gpio {
- 	struct gpio_descs *gpios;
--	int *val; /* FIXME: no longer needed */
- };
- 
- static int mux_gpio_set(struct mux_control *mux, int state)
- {
- 	struct mux_gpio *mux_gpio = mux_chip_priv(mux->chip);
- 	unsigned long value_bitmap[1] = { state, };
--	int i;
- 
- 	gpiod_set_array_value_cansleep(mux_gpio->gpios->ndescs,
- 				       mux_gpio->gpios->desc, value_bitmap);
-@@ -55,13 +53,11 @@ static int mux_gpio_probe(struct platform_device *pdev)
- 	if (pins < 0)
- 		return pins;
- 
--	mux_chip = devm_mux_chip_alloc(dev, 1, sizeof(*mux_gpio) +
--				       pins * sizeof(*mux_gpio->val));
-+	mux_chip = devm_mux_chip_alloc(dev, 1, sizeof(*mux_gpio));
- 	if (IS_ERR(mux_chip))
- 		return PTR_ERR(mux_chip);
- 
- 	mux_gpio = mux_chip_priv(mux_chip);
--	mux_gpio->val = (int *)(mux_gpio + 1);
- 	mux_chip->ops = &mux_gpio_ops;
- 
- 	mux_gpio->gpios = devm_gpiod_get_array(dev, "mux", GPIOD_OUT_LOW);
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
