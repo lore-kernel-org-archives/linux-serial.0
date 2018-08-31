@@ -1,39 +1,46 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 0/2] serial: sh-sci: Fix earlycon on Renesas ARM platforms
-Date: Fri, 31 Aug 2018 00:30:30 +0200
-Message-ID: <CAMuHMdVgRQsOiQ-M3CGZZK1wdx3smY6MgkkokdSuw3iBm8zPrQ@mail.gmail.com>
-References: <20180830125404.21192-1-geert+renesas@glider.be> <TY1PR01MB1562E58C07A892AC7CF7438B8A080@TY1PR01MB1562.jpnprd01.prod.outlook.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v5 1/4] gpiolib: Pass bitmaps, not integer arrays, to
+ get/set array
+Date: Fri, 31 Aug 2018 11:14:31 +0200
+Message-ID: <CACRpkdYmd=Efh4-YsTzRAhtKLWHuhJ-9D6iVagkg=+zxU=KLHA@mail.gmail.com>
+References: <20180820234341.5271-1-jmkrzyszt@gmail.com> <20180829204900.19390-1-jmkrzyszt@gmail.com>
+ <20180829204900.19390-2-jmkrzyszt@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <TY1PR01MB1562E58C07A892AC7CF7438B8A080@TY1PR01MB1562.jpnprd01.prod.outlook.com>
+In-Reply-To: <20180829204900.19390-2-jmkrzyszt@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Chris Brandt <Chris.Brandt@renesas.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, uli+renesas@fpond.eu, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, Greg KH <gregkh@linuxfoundation.org>, kishon@ti.com, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>, Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-doc@vger.kernel.org, linux-i2c@vger.kernel
 List-Id: linux-serial@vger.kernel.org
 
-Hi Chris,
+On Wed, Aug 29, 2018 at 10:48 PM Janusz Krzysztofik <jmkrzyszt@gmail.com> wrote:
 
-On Thu, Aug 30, 2018 at 8:52 PM Chris Brandt <Chris.Brandt@renesas.com> wrote:
-> On Thursday, August 30, 2018, Geert Uytterhoeven wrote:
-> > Earlycon for RZ/A2 (which is a new platform) will be fixed later in a
-> > separate patch.
->
-> I assume something like this:
+So it's no secret that I strongly fancy this patch set.
 
-Exactly!
+What would be great at this point is to have some people test
+that the drivers still work as expected, even better if they can do
+some benchmarking.
 
-> (which works for me)
+> -               values[PIN_DATA0 + i] = !!(val & BIT(i));
+> -       values[PIN_CTRL_RS] = rs;
+> +       value_bitmap[0] = val;
+> +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
+>         n = 9;
+>         if (hd->pins[PIN_CTRL_RW]) {
+> -               values[PIN_CTRL_RW] = 0;
+> +               __clear_bit(PIN_CTRL_RW, value_bitmap);
 
-Thanks for checking!
+This seems fine to me, but I understand the comment that the
+code becomes harder to read.
 
-Gr{oetje,eeting}s,
+I think part of it is those __assign_bit() and __clear_bit() with
+the double-underscore of unclear meaning. The meaning is
+"non atomic" IIRC, so maybe I should move forward
+with my plan to send a sed script to Torvalds just renaming all
+of those to something sane in the next merge window.
 
-                        Geert
+Like __assign_bit() -> assign_bit_nonatomic()
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Yours,
+Linus Walleij
