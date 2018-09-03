@@ -1,19 +1,19 @@
 From: "Zhu, Yi Xin" <yixin.zhu@linux.intel.com>
 Subject: Re: [PATCH v2 02/18] clk: intel: Add clock driver for Intel MIPS SoCs
-Date: Mon, 3 Sep 2018 18:47:39 +0800
-Message-ID: <cb3a0dcd-c9b4-136a-abff-200299186113@linux.intel.com>
+Date: Mon, 3 Sep 2018 18:52:21 +0800
+Message-ID: <3fcc4615-eea8-8cb7-987f-c58ab9683e0c@linux.intel.com>
 References: <20180803030237.3366-1-songjun.wu@linux.intel.com>
  <20180803030237.3366-3-songjun.wu@linux.intel.com>
  <153370742214.220756.2039365625963765922@swboyd.mtv.corp.google.com>
  <571d2d40-8728-fa7c-5d89-73d2a7b6293b@linux.intel.com>
  <153539697928.129321.2605078315090527674@swboyd.mtv.corp.google.com>
- <75f8313b-42e6-e741-196d-af27ad1e4f9b@linux.intel.com>
- <153573545028.93865.1832322708533849519@swboyd.mtv.corp.google.com>
+ <65a8518b-8fd8-847b-f952-0370be3d786a@linux.intel.com>
+ <153573558557.93865.3835503209987304514@swboyd.mtv.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <153573545028.93865.1832322708533849519@swboyd.mtv.corp.google.com>
+In-Reply-To: <153573558557.93865.3835503209987304514@swboyd.mtv.corp.google.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Stephen Boyd <sboyd@kernel.org>, Songjun Wu <songjun.wu@linux.intel.com>, chuanhua.lei@linux.intel.com, hua.ma@linux.intel.com, qi-ming.wu@intel.com
@@ -21,37 +21,8 @@ Cc: linux-mips@linux-mips.org, linux-clk@vger.kernel.org, linux-serial@vger.kern
 List-Id: linux-serial@vger.kernel.org
 
 
-On 9/1/2018 1:10 AM, Stephen Boyd wrote:
-> Quoting Zhu, Yi Xin (2018-08-28 23:56:22)
->> On 8/28/2018 3:09 AM, Stephen Boyd wrote:
->>> Quoting yixin zhu (2018-08-08 01:52:20)
->>>> On 8/8/2018 1:50 PM, Stephen Boyd wrote:
->>>>>> +/* clock flags definition */
->>>>>> +#define CLOCK_FLAG_VAL_INIT    BIT(16)
->>>>>> +#define GATE_CLK_HW            BIT(17)
->>>>>> +#define GATE_CLK_SW            BIT(18)
->>>>>> +#define GATE_CLK_VT            BIT(19)
->>>>> What does VT mean? Virtual?
->>>> Yes. VT means virtual here.
->>>> Will change to GATE_CLK_VIRT.
->>>>
->>> Is it a hardware concept? Or virtualization with hypervisor?
->> Some peripheral drivers want to use same code cross platforms.
->>
->> But not all platforms provide HW gate clock.  So in this case, clock
->> driver creates
->>
->> a virtual gate clock to make it work if no HW gate clock in the SoC.
-> That's not how things are supposed to work. If a clk isn't there in the
-> hardware we don't make them up in software so that the consumer software
-> drivers can keep requesting clks on different platforms. On a different
-> platform, the driver needs to know that the clks aren't there with a
-> different compatible string.
-
-OK. Will remove virtual gate clock.
-
-
->>
+On 9/1/2018 1:13 AM, Stephen Boyd wrote:
+> Quoting Zhu, Yi Xin (2018-08-29 03:34:26)
 >>>>>> +}
 >>>>>> +
 >>>>>> +CLK_OF_DECLARE(intel_grx500_cgu, "intel,grx500-cgu", grx500_clk_init);
@@ -64,19 +35,17 @@ OK. Will remove virtual gate clock.
 >>> and the other to register the rest of the clks that aren't critical from
 >>> a regular platform driver it would be good. That's preferred model if
 >>> something is super critical.
->> Yes, CPU clock is providing CPU frequency in the early boot stage.
+>>>
+>> Just to make sure my approach is same as you think.
 >>
->> Will put the non-critical clocks in the platform driver.
+>> In the driver, there's two clock registrations.
 >>
+>> - One through CLK_OF_DECLARE for early stage clocks.
 >>
-> Sure the CPU clock is handling frequency, but does that matter for early
-> boot to get going? If timers aren't involved here then it doesn't sound
-> like this needs CLK_OF_DECLARE.
-
-Yes, timer is involved here.
-
-CPU frequency get by early stage platform code used in clockevent 
-registration.
-
-
+>> - The other via platform driver for the non-critical clocks.
+> You can use the same DT node for both parts, no need to split the node
+> into two and use syscon here.
 >
+Thank you.
+
+Will use CLK_OF_DECLARE_DRIVER to use the same DT node.
