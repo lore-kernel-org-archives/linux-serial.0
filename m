@@ -1,7 +1,7 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH v3 06/10] serial: uartps: Move register to probe based on run time detection
-Date: Mon,  3 Sep 2018 15:10:54 +0200
-Message-ID: <0ffd804b18c15b60a64aecadcf32b0036e6cbcdb.1535980253.git.michal.simek@xilinx.com>
+Subject: [PATCH v3 07/10] serial: uartps: Fill struct uart_driver in probe()
+Date: Mon,  3 Sep 2018 15:10:55 +0200
+Message-ID: <9a2f438e7d7e39b1ce965d09cebd9fb799422479.1535980253.git.michal.simek@xilinx.com>
 References: <cover.1535980253.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1535980253.git.michal.simek@xilinx.com>
@@ -12,142 +12,79 @@ To: linux-kernel@vger.kernel.org, monstr@monstr.eu, gnomes@lxorguk.ukuu.org.uk, 
 Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Register uart driver in probe to be able to register one device with
-unique major/minor separately. Also calculate number of instances of
-this driver to be able to call uart_unregister_driver() when there is no
-instance.
+This is preparation step for dynamic port allocation without
+CDNS_UART_NR_PORTS macro. Fill the structure only once at probe.
 
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
 
 Changes in v3:
-- Fix uart_unregister_driver() in error path or when driver is removed.
-- Change commit message
+- s/,/;/ in filling structure
+- get cdns_uart_uart_driver out of PS_UART_CONSOLE ifdefs
 
 Changes in v2:
-- Remove nr field logic
+- new patch - it can be sent separately too
 
-Discussed here: https://patchwork.kernel.org/patch/9738445/
-
-The same solution is done in pl011 driver.
-
----
- drivers/tty/serial/xilinx_uartps.c | 42 +++++++++++++++++++++-----------------
- 1 file changed, 23 insertions(+), 19 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 26 ++++++++++++--------------
+ 1 file changed, 12 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index a3e97ccb376d..54735a7f9960 100644
+index 54735a7f9960..61087233f411 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1393,6 +1393,9 @@ static int __maybe_unused cdns_runtime_resume(struct device *dev)
- };
- MODULE_DEVICE_TABLE(of, cdns_uart_of_match);
- 
-+/* Temporary variable for storing number of instances */
-+static int instances;
-+
- /**
-  * cdns_uart_probe - Platform driver probe
-  * @pdev: Pointer to the platform device structure
-@@ -1425,6 +1428,14 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
-+	if (!cdns_uart_uart_driver.state) {
-+		rc = uart_register_driver(&cdns_uart_uart_driver);
-+		if (rc < 0) {
-+			dev_err(&pdev->dev, "Failed to register driver\n");
-+			return rc;
-+		}
-+	}
-+
- 	cdns_uart_data->cdns_uart_driver = &cdns_uart_uart_driver;
- 
- 	match = of_match_node(cdns_uart_of_match, pdev->dev.of_node);
-@@ -1442,7 +1453,8 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	}
- 	if (IS_ERR(cdns_uart_data->pclk)) {
- 		dev_err(&pdev->dev, "pclk clock not found.\n");
--		return PTR_ERR(cdns_uart_data->pclk);
-+		rc = PTR_ERR(cdns_uart_data->pclk);
-+		goto err_out_unregister_driver;
- 	}
- 
- 	cdns_uart_data->uartclk = devm_clk_get(&pdev->dev, "uart_clk");
-@@ -1453,13 +1465,14 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	}
- 	if (IS_ERR(cdns_uart_data->uartclk)) {
- 		dev_err(&pdev->dev, "uart_clk clock not found.\n");
--		return PTR_ERR(cdns_uart_data->uartclk);
-+		rc = PTR_ERR(cdns_uart_data->uartclk);
-+		goto err_out_unregister_driver;
- 	}
- 
- 	rc = clk_prepare_enable(cdns_uart_data->pclk);
- 	if (rc) {
- 		dev_err(&pdev->dev, "Unable to enable pclk clock.\n");
--		return rc;
-+		goto err_out_unregister_driver;
- 	}
- 	rc = clk_prepare_enable(cdns_uart_data->uartclk);
- 	if (rc) {
-@@ -1538,6 +1551,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 		console_port = NULL;
+@@ -1099,6 +1099,8 @@ static void cdns_uart_pm(struct uart_port *port, unsigned int state,
  #endif
+ };
  
-+	instances++;
- 	return 0;
- 
- err_out_pm_disable:
-@@ -1552,7 +1566,9 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	clk_disable_unprepare(cdns_uart_data->uartclk);
- err_out_clk_dis_pclk:
- 	clk_disable_unprepare(cdns_uart_data->pclk);
--
-+err_out_unregister_driver:
-+	if (!instances)
-+		uart_unregister_driver(cdns_uart_data->cdns_uart_driver);
- 	return rc;
++static struct uart_driver cdns_uart_uart_driver;
++
+ #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+ /**
+  * cdns_uart_console_putchar - write the character to the FIFO buffer
+@@ -1239,8 +1241,6 @@ static int cdns_uart_console_setup(struct console *co, char *options)
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
  }
  
-@@ -1580,6 +1596,8 @@ static int cdns_uart_remove(struct platform_device *pdev)
- 	pm_runtime_disable(&pdev->dev);
- 	pm_runtime_set_suspended(&pdev->dev);
- 	pm_runtime_dont_use_autosuspend(&pdev->dev);
-+	if (!--instances)
-+		uart_unregister_driver(cdns_uart_data->cdns_uart_driver);
- 	return rc;
- }
- 
-@@ -1595,28 +1613,14 @@ static int cdns_uart_remove(struct platform_device *pdev)
- 
- static int __init cdns_uart_init(void)
- {
--	int retval = 0;
+-static struct uart_driver cdns_uart_uart_driver;
 -
--	/* Register the cdns_uart driver with the serial core */
--	retval = uart_register_driver(&cdns_uart_uart_driver);
--	if (retval)
--		return retval;
--
- 	/* Register the platform driver */
--	retval = platform_driver_register(&cdns_uart_platform_driver);
--	if (retval)
--		uart_unregister_driver(&cdns_uart_uart_driver);
--
--	return retval;
-+	return platform_driver_register(&cdns_uart_platform_driver);
- }
+ static struct console cdns_uart_console = {
+ 	.name	= CDNS_UART_TTY_NAME,
+ 	.write	= cdns_uart_console_write,
+@@ -1252,18 +1252,6 @@ static int cdns_uart_console_setup(struct console *co, char *options)
+ };
+ #endif /* CONFIG_SERIAL_XILINX_PS_UART_CONSOLE */
  
- static void __exit cdns_uart_exit(void)
- {
- 	/* Unregister the platform driver */
- 	platform_driver_unregister(&cdns_uart_platform_driver);
+-static struct uart_driver cdns_uart_uart_driver = {
+-	.owner		= THIS_MODULE,
+-	.driver_name	= CDNS_UART_NAME,
+-	.dev_name	= CDNS_UART_TTY_NAME,
+-	.major		= CDNS_UART_MAJOR,
+-	.minor		= CDNS_UART_MINOR,
+-	.nr		= CDNS_UART_NR_PORTS,
+-#ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+-	.cons		= &cdns_uart_console,
+-#endif
+-};
 -
--	/* Unregister the cdns_uart driver */
--	uart_unregister_driver(&cdns_uart_uart_driver);
- }
+ #ifdef CONFIG_PM_SLEEP
+ /**
+  * cdns_uart_suspend - suspend event
+@@ -1429,6 +1417,16 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 	}
  
- arch_initcall(cdns_uart_init);
+ 	if (!cdns_uart_uart_driver.state) {
++		cdns_uart_uart_driver.owner = THIS_MODULE;
++		cdns_uart_uart_driver.driver_name = CDNS_UART_NAME;
++		cdns_uart_uart_driver.dev_name = CDNS_UART_TTY_NAME;
++		cdns_uart_uart_driver.major = CDNS_UART_MAJOR;
++		cdns_uart_uart_driver.minor = CDNS_UART_MINOR;
++		cdns_uart_uart_driver.nr = CDNS_UART_NR_PORTS;
++#ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
++		cdns_uart_uart_driver.cons = &cdns_uart_console;
++#endif
++
+ 		rc = uart_register_driver(&cdns_uart_uart_driver);
+ 		if (rc < 0) {
+ 			dev_err(&pdev->dev, "Failed to register driver\n");
 -- 
 1.9.1
