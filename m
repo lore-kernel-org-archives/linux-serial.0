@@ -1,170 +1,63 @@
-From: Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH 5/5] serial: sprd: Fix the indentation issue
-Date: Tue, 4 Sep 2018 14:57:04 +0800
-Message-ID: <CAAfSe-svdZ2RSSX8+USN-0gJGOPDQktgcvtyHku615_YDoo_3A@mail.gmail.com>
-References: <50e1f7f4673bff9d71936b4eb34cbf2571b0fda9.1533950271.git.baolin.wang@linaro.org>
- <5952d0e2189677a247a8efabf356347e1e087187.1533950271.git.baolin.wang@linaro.org>
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: Re: [PATCH 01/25] tty: Change return type to void
+Date: Tue, 4 Sep 2018 13:45:14 +0300
+Message-ID: <3b5cce6a-b4c3-edf9-51c8-0a16f156e128@cogentembedded.com>
+References: <1536029091-4426-1-git-send-email-climbbb.kim@gmail.com>
+ <1536029091-4426-2-git-send-email-climbbb.kim@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5952d0e2189677a247a8efabf356347e1e087187.1533950271.git.baolin.wang@linaro.org>
+In-Reply-To: <1536029091-4426-2-git-send-email-climbbb.kim@gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Baolin Wang <baolin.wang@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, Orson Zhai <orsonzhai@gmail.com>, Mark Brown <broonie@kernel.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Jaejoong Kim <climbbb.kim@gmail.com>, linux-um@lists.infradead.org, netdev@vger.kernel.org, linux-mmc@vger.kernel.org, linux-s390@vger.kernel.org, devel@driverdev.osuosl.org, greybus-dev@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org, sparclinux@vger.kernel.org, linux-usb@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 11 August 2018 at 09:34, Baolin Wang <baolin.wang@linaro.org> wrote:
-> Make the macros' definition and code have the same correct indentation.
->
-> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+Hello!
 
-Acked-by: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+On 9/4/2018 5:44 AM, Jaejoong Kim wrote:
 
+> Many drivers with tty use the tty_stand_install(). But, there is no
+> need to handle the error, since it always returns 0. So, change the
+> return type of tty_standard_install() and tty_port_install() to void
+> type and remove unnecessary exception handling where we use these
+> functions.
+> 
+> Signed-off-by: Jaejoong Kim <climbbb.kim@gmail.com>
 > ---
->  drivers/tty/serial/sprd_serial.c | 46 +++++++++++++++++++---------------------
->  1 file changed, 22 insertions(+), 24 deletions(-)
->
-> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-> index 8d5c9cd..4287ca3 100644
-> --- a/drivers/tty/serial/sprd_serial.c
-> +++ b/drivers/tty/serial/sprd_serial.c
-> @@ -68,24 +68,24 @@
->  #define SPRD_LCR_DATA_LEN6     0x4
->  #define SPRD_LCR_DATA_LEN7     0x8
->  #define SPRD_LCR_DATA_LEN8     0xc
-> -#define SPRD_LCR_PARITY        (BIT(0) | BIT(1))
-> +#define SPRD_LCR_PARITY                (BIT(0) | BIT(1))
->  #define SPRD_LCR_PARITY_EN     0x2
->  #define SPRD_LCR_EVEN_PAR      0x0
->  #define SPRD_LCR_ODD_PAR       0x1
->
->  /* control register 1 */
-> -#define SPRD_CTL1                      0x001C
-> +#define SPRD_CTL1              0x001C
->  #define RX_HW_FLOW_CTL_THLD    BIT(6)
->  #define RX_HW_FLOW_CTL_EN      BIT(7)
->  #define TX_HW_FLOW_CTL_EN      BIT(8)
->  #define RX_TOUT_THLD_DEF       0x3E00
-> -#define RX_HFC_THLD_DEF        0x40
-> +#define RX_HFC_THLD_DEF                0x40
->
->  /* fifo threshold register */
->  #define SPRD_CTL2              0x0020
-> -#define THLD_TX_EMPTY  0x40
-> +#define THLD_TX_EMPTY          0x40
->  #define THLD_TX_EMPTY_SHIFT    8
-> -#define THLD_RX_FULL   0x40
-> +#define THLD_RX_FULL           0x40
->
->  /* config baud rate register */
->  #define SPRD_CLKD0             0x0024
-> @@ -95,11 +95,11 @@
->  #define SPRD_CLKD1_SHIFT       16
->
->  /* interrupt mask status register */
-> -#define SPRD_IMSR                      0x002C
-> -#define SPRD_IMSR_RX_FIFO_FULL         BIT(0)
-> +#define SPRD_IMSR              0x002C
-> +#define SPRD_IMSR_RX_FIFO_FULL BIT(0)
->  #define SPRD_IMSR_TX_FIFO_EMPTY        BIT(1)
-> -#define SPRD_IMSR_BREAK_DETECT         BIT(7)
-> -#define SPRD_IMSR_TIMEOUT              BIT(13)
-> +#define SPRD_IMSR_BREAK_DETECT BIT(7)
-> +#define SPRD_IMSR_TIMEOUT      BIT(13)
->
->  struct sprd_uart_port {
->         struct uart_port port;
-> @@ -229,7 +229,7 @@ static inline void sprd_rx(struct uart_port *port)
->                 port->icount.rx++;
->
->                 if (lsr & (SPRD_LSR_BI | SPRD_LSR_PE |
-> -                       SPRD_LSR_FE | SPRD_LSR_OE))
-> +                          SPRD_LSR_FE | SPRD_LSR_OE))
->                         if (handle_lsr_errors(port, &lsr, &flag))
->                                 continue;
->                 if (uart_handle_sysrq_char(port, ch))
-> @@ -292,8 +292,8 @@ static irqreturn_t sprd_handle_irq(int irq, void *dev_id)
->         if (ims & SPRD_IMSR_TIMEOUT)
->                 serial_out(port, SPRD_ICLR, SPRD_ICLR_TIMEOUT);
->
-> -       if (ims & (SPRD_IMSR_RX_FIFO_FULL |
-> -               SPRD_IMSR_BREAK_DETECT | SPRD_IMSR_TIMEOUT))
-> +       if (ims & (SPRD_IMSR_RX_FIFO_FULL | SPRD_IMSR_BREAK_DETECT |
-> +                  SPRD_IMSR_TIMEOUT))
->                 sprd_rx(port);
->
->         if (ims & SPRD_IMSR_TX_FIFO_EMPTY)
-> @@ -333,7 +333,7 @@ static int sprd_startup(struct uart_port *port)
->         sp = container_of(port, struct sprd_uart_port, port);
->         snprintf(sp->name, sizeof(sp->name), "sprd_serial%d", port->line);
->         ret = devm_request_irq(port->dev, port->irq, sprd_handle_irq,
-> -                               IRQF_SHARED, sp->name, port);
-> +                              IRQF_SHARED, sp->name, port);
->         if (ret) {
->                 dev_err(port->dev, "fail to request serial irq %d, ret=%d\n",
->                         port->irq, ret);
-> @@ -361,8 +361,8 @@ static void sprd_shutdown(struct uart_port *port)
->  }
->
->  static void sprd_set_termios(struct uart_port *port,
-> -                                   struct ktermios *termios,
-> -                                   struct ktermios *old)
-> +                            struct ktermios *termios,
-> +                            struct ktermios *old)
->  {
->         unsigned int baud, quot;
->         unsigned int lcr = 0, fc;
-> @@ -480,8 +480,7 @@ static void sprd_config_port(struct uart_port *port, int flags)
->                 port->type = PORT_SPRD;
->  }
->
-> -static int sprd_verify_port(struct uart_port *port,
-> -                                  struct serial_struct *ser)
-> +static int sprd_verify_port(struct uart_port *port, struct serial_struct *ser)
->  {
->         if (ser->type != PORT_SPRD)
->                 return -EINVAL;
-> @@ -531,7 +530,7 @@ static void sprd_console_putchar(struct uart_port *port, int ch)
->  }
->
->  static void sprd_console_write(struct console *co, const char *s,
-> -                                     unsigned int count)
-> +                              unsigned int count)
->  {
->         struct uart_port *port = &sprd_port[co->index]->port;
->         int locked = 1;
-> @@ -594,7 +593,7 @@ static void sprd_putc(struct uart_port *port, int c)
->         unsigned int timeout = SPRD_TIMEOUT;
->
->         while (timeout-- &&
-> -                  !(readl(port->membase + SPRD_LSR) & SPRD_LSR_TX_OVER))
-> +              !(readl(port->membase + SPRD_LSR) & SPRD_LSR_TX_OVER))
->                 cpu_relax();
->
->         writeb(c, port->membase + SPRD_TXD);
-> @@ -607,9 +606,8 @@ static void sprd_early_write(struct console *con, const char *s, unsigned int n)
->         uart_console_write(&dev->port, s, n, sprd_putc);
->  }
->
-> -static int __init sprd_early_console_setup(
-> -                               struct earlycon_device *device,
-> -                               const char *opt)
-> +static int __init sprd_early_console_setup(struct earlycon_device *device,
-> +                                          const char *opt)
->  {
->         if (!device->port.membase)
->                 return -ENODEV;
-> @@ -691,8 +689,8 @@ static int sprd_probe(struct platform_device *pdev)
->
->         index = sprd_probe_dt_alias(index, &pdev->dev);
->
-> -       sprd_port[index] = devm_kzalloc(&pdev->dev,
-> -               sizeof(*sprd_port[index]), GFP_KERNEL);
-> +       sprd_port[index] = devm_kzalloc(&pdev->dev, sizeof(*sprd_port[index]),
-> +                                       GFP_KERNEL);
->         if (!sprd_port[index])
->                 return -ENOMEM;
->
-> --
-> 1.9.1
->
+>   drivers/tty/tty_io.c   | 10 ++++++----
+>   drivers/tty/tty_port.c |  4 ++--
+>   include/linux/tty.h    |  4 ++--
+>   3 files changed, 10 insertions(+), 8 deletions(-)
+> 
+[...]
+> diff --git a/include/linux/tty.h b/include/linux/tty.h
+> index c56e397..63cdac1 100644
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -556,7 +556,7 @@ extern struct tty_struct *tty_init_dev(struct tty_driver *driver, int idx);
+>   extern void tty_release_struct(struct tty_struct *tty, int idx);
+>   extern int tty_release(struct inode *inode, struct file *filp);
+>   extern void tty_init_termios(struct tty_struct *tty);
+> -extern int tty_standard_install(struct tty_driver *driver,
+> +extern void tty_standard_install(struct tty_driver *driver,
+>   		struct tty_struct *tty);
+>   
+>   extern struct mutex tty_mutex;
+> @@ -688,7 +688,7 @@ extern int tty_port_close_start(struct tty_port *port,
+>   extern void tty_port_close_end(struct tty_port *port, struct tty_struct *tty);
+>   extern void tty_port_close(struct tty_port *port,
+>   				struct tty_struct *tty, struct file *filp);
+> -extern int tty_port_install(struct tty_port *port, struct tty_driver *driver,
+> +extern void tty_port_install(struct tty_port *port, struct tty_driver *driver,
+>   				struct tty_struct *tty);
+
+    You need to update all the callers in the same patch -- the kernel must 
+remain buildable after each patch but you seem to have spread that update 
+among a lot of patches..
+
+[...]
+
+MBR, Sergei
