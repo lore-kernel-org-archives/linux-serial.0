@@ -1,11 +1,13 @@
 From: Radu Pirea <radu_nicolae.pirea@upb.ro>
-Subject: [PATCH v12 0/6] Driver for at91 usart in spi mode
-Date: Tue,  4 Sep 2018 14:13:04 +0300
-Message-ID: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
+Subject: [PATCH v12 1/6] MAINTAINERS: add at91 usart mfd driver
+Date: Tue,  4 Sep 2018 14:13:05 +0300
+Message-ID: <20180904111310.4049-2-radu_nicolae.pirea@upb.ro>
+References: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -16,93 +18,46 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, gregkh@linuxfoundation.org, broonie@kernel.org, jslaby@suse.com, richard.genoud@gmail.com, davem@davemloft.net, mchehab+samsung@kernel.org, akpm@linux-foundation.org, arnd@arndb.de
-Cc: devicetree@vger.kernel.org, Radu Pirea <radu_nicolae.pirea@upb.ro>, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+From: Radu Pirea <radu.pirea@microchip.com>
 
-Well, this is the 12th version of this patch series.
-In this version I fixed a warning from kbuild-robot and I have no idea
-how I forgot to add static in declaration of that functions. Also I
-fixed the example for the SPI driver in bindings.
+Added entry for at91 usart mfd driver.
 
-Currently I am not working for Microchip, but I will continue to
-maintain and improve this driver. So yes, this is the reason that
-I changed my email address from MAINTAINERS file.
+Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+---
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Changes in v12:
-- fixed interrupts property in example from bindings of SPI driver
-- changed email address in MAINTAINERS
-- added static to declaration of few functions in SPI
-  driver(kbuild-robot warning)
-
-Changes in v11:
-- removed "depends on HAS_DMA" from drivers/spi/Kconfig because the driver has
-no dma support
-- changed "selects MFD_AT91_USART" to "depends on MFD_AT91_USART" in
-drivers/spi/Kconfig
-- changed comment style in spi-at91-usart.c
-
-Changes in v10:
--fixed kbuild test robot warning
-
-Changes in v9:
-- minor changes
-- rebased on top of broonie/for-4.19
-
-Changes in v8:
-- fixed passing an empty mfd cell if "atmel,usart-mode" value is invalid
-
-Changes in v7:
-- synced up  SPDIX license with module license
-- numbering of usart modes starts from 0 insteand of 1
-
-Changes in v6:
-- removed unused compatible strings from serial and spi drivers
-
-Changes in v5:
-- fixed usage of stdout-path property with atmel_serial driver
-
-Changes in v4:
-- modified the spi driver to use cs gpio support form spi subsystem
-- fixed dma transfers for serial driver
-- squashed binding for spi and serial and moved them to mfd/atmel-usart.txt
-
-Changes in v3:
-- fixed spi slaves probing
-
-Changes in v2:
-- added at91-usart mfd driver
-- modified spi-at91-usart driver to work as mfd driver child
-- modified atmel_serial driver to work as mfd driver child
-
-Changes in v1:
-- added spi-at91-usart driver
-
-Radu Pirea (6):
-  MAINTAINERS: add at91 usart mfd driver
-  dt-bindings: add binding for atmel-usart in SPI mode
-  mfd: at91-usart: added mfd driver for usart
-  MAINTAINERS: add at91 usart spi driver
-  spi: at91-usart: add driver for at91-usart as spi
-  tty/serial: atmel: change the driver to work under at91-usart mfd
-
- .../bindings/{serial => mfd}/atmel-usart.txt  |  25 +-
- MAINTAINERS                                   |  16 +
- drivers/mfd/Kconfig                           |   9 +
- drivers/mfd/Makefile                          |   1 +
- drivers/mfd/at91-usart.c                      |  71 +++
- drivers/spi/Kconfig                           |   8 +
- drivers/spi/Makefile                          |   1 +
- drivers/spi/spi-at91-usart.c                  | 432 ++++++++++++++++++
- drivers/tty/serial/Kconfig                    |   1 +
- drivers/tty/serial/atmel_serial.c             |  42 +-
- include/dt-bindings/mfd/at91-usart.h          |  17 +
- 11 files changed, 606 insertions(+), 17 deletions(-)
- rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
- create mode 100644 drivers/mfd/at91-usart.c
- create mode 100644 drivers/spi/spi-at91-usart.c
- create mode 100644 include/dt-bindings/mfd/at91-usart.h
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 544cac829cf4..8aeaa2cc3e14 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9322,6 +9322,7 @@ M:	Richard Genoud <richard.genoud@gmail.com>
+ S:	Maintained
+ F:	drivers/tty/serial/atmel_serial.c
+ F:	drivers/tty/serial/atmel_serial.h
++F:	Documentation/devicetree/bindings/mfd/atmel-usart.txt
+ 
+ MICROCHIP / ATMEL DMA DRIVER
+ M:	Ludovic Desroches <ludovic.desroches@microchip.com>
+@@ -9354,6 +9355,14 @@ S:	Supported
+ F:	drivers/mtd/nand/raw/atmel/*
+ F:	Documentation/devicetree/bindings/mtd/atmel-nand.txt
+ 
++MICROCHIP AT91 USART MFD DRIVER
++M:	Radu Pirea <radu_nicolae.pirea@upb.ro>
++L:	linux-kernel@vger.kernel.org
++S:	Supported
++F:	drivers/mfd/at91-usart.c
++F:	include/dt-bindings/mfd/at91-usart.h
++F:	Documentation/devicetree/bindings/mfd/atmel-usart.txt
++
+ MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER
+ M:	Woojung Huh <Woojung.Huh@microchip.com>
+ M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
 -- 
 2.18.0
