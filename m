@@ -1,63 +1,53 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH 01/25] tty: Change return type to void
-Date: Tue, 4 Sep 2018 13:45:14 +0300
-Message-ID: <3b5cce6a-b4c3-edf9-51c8-0a16f156e128@cogentembedded.com>
-References: <1536029091-4426-1-git-send-email-climbbb.kim@gmail.com>
- <1536029091-4426-2-git-send-email-climbbb.kim@gmail.com>
+From: Radu Pirea <radu_nicolae.pirea@upb.ro>
+Subject: [PATCH v12 4/6] MAINTAINERS: add at91 usart spi driver
+Date: Tue,  4 Sep 2018 14:13:08 +0300
+Message-ID: <20180904111310.4049-5-radu_nicolae.pirea@upb.ro>
+References: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1536029091-4426-2-git-send-email-climbbb.kim@gmail.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jaejoong Kim <climbbb.kim@gmail.com>, linux-um@lists.infradead.org, netdev@vger.kernel.org, linux-mmc@vger.kernel.org, linux-s390@vger.kernel.org, devel@driverdev.osuosl.org, greybus-dev@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org, sparclinux@vger.kernel.org, linux-usb@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, gregkh@linuxfoundation.org, broonie@kernel.org, jslaby@suse.com, richard.genoud@gmail.com, davem@davemloft.net, mchehab+samsung@kernel.org, akpm@linux-foundation.org, arnd@arndb.de
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Radu Pirea <radu.pirea@microchip.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello!
+From: Radu Pirea <radu.pirea@microchip.com>
 
-On 9/4/2018 5:44 AM, Jaejoong Kim wrote:
+Added entry for at91 usart mfd driver.
 
-> Many drivers with tty use the tty_stand_install(). But, there is no
-> need to handle the error, since it always returns 0. So, change the
-> return type of tty_standard_install() and tty_port_install() to void
-> type and remove unnecessary exception handling where we use these
-> functions.
-> 
-> Signed-off-by: Jaejoong Kim <climbbb.kim@gmail.com>
-> ---
->   drivers/tty/tty_io.c   | 10 ++++++----
->   drivers/tty/tty_port.c |  4 ++--
->   include/linux/tty.h    |  4 ++--
->   3 files changed, 10 insertions(+), 8 deletions(-)
-> 
-[...]
-> diff --git a/include/linux/tty.h b/include/linux/tty.h
-> index c56e397..63cdac1 100644
-> --- a/include/linux/tty.h
-> +++ b/include/linux/tty.h
-> @@ -556,7 +556,7 @@ extern struct tty_struct *tty_init_dev(struct tty_driver *driver, int idx);
->   extern void tty_release_struct(struct tty_struct *tty, int idx);
->   extern int tty_release(struct inode *inode, struct file *filp);
->   extern void tty_init_termios(struct tty_struct *tty);
-> -extern int tty_standard_install(struct tty_driver *driver,
-> +extern void tty_standard_install(struct tty_driver *driver,
->   		struct tty_struct *tty);
->   
->   extern struct mutex tty_mutex;
-> @@ -688,7 +688,7 @@ extern int tty_port_close_start(struct tty_port *port,
->   extern void tty_port_close_end(struct tty_port *port, struct tty_struct *tty);
->   extern void tty_port_close(struct tty_port *port,
->   				struct tty_struct *tty, struct file *filp);
-> -extern int tty_port_install(struct tty_port *port, struct tty_driver *driver,
-> +extern void tty_port_install(struct tty_port *port, struct tty_driver *driver,
->   				struct tty_struct *tty);
+Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+---
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-    You need to update all the callers in the same patch -- the kernel must 
-remain buildable after each patch but you seem to have spread that update 
-among a lot of patches..
-
-[...]
-
-MBR, Sergei
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8aeaa2cc3e14..1bb477aab33b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9363,6 +9363,13 @@ F:	drivers/mfd/at91-usart.c
+ F:	include/dt-bindings/mfd/at91-usart.h
+ F:	Documentation/devicetree/bindings/mfd/atmel-usart.txt
+ 
++MICROCHIP AT91 USART SPI DRIVER
++M:	Radu Pirea <radu_nicolae.pirea@upb.ro>
++L:	linux-spi@vger.kernel.org
++S:	Supported
++F:	drivers/spi/spi-at91-usart.c
++F:	Documentation/devicetree/bindings/mfd/atmel-usart.txt
++
+ MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER
+ M:	Woojung Huh <Woojung.Huh@microchip.com>
+ M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+-- 
+2.18.0
