@@ -1,165 +1,138 @@
-From: Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH] tty: serial: qcom_geni_serial: Fix serial when not used as console
-Date: Wed,  5 Sep 2018 13:11:46 -0700
-Message-ID: <20180905201146.261438-1-dianders@chromium.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-arm-msm@vger.kernel.org, mka@chromium.org, evgreen@chromium.org, swboyd@chromium.org, Douglas Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Subject: [PATCH v8 0/4] gpiolib: speed up GPIO array processing
+Date: Wed,  5 Sep 2018 23:50:04 +0200
+Message-ID: <20180905215008.1649-1-jmkrzyszt@gmail.com>
+References: <20180902120144.6855-1-jmkrzyszt@gmail.com>
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <20180902120144.6855-1-jmkrzyszt@gmail.com>
+Sender: netdev-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kishon Vijay Abraham I <kishon@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, Geert Uytterhoeven <geert@linux-m68k.org>
 List-Id: linux-serial@vger.kernel.org
 
-If you've got the "console" serial port setup to use just as a UART
-(AKA there is no "console=ttyMSMX" on the kernel command line) then
-certain initialization is skipped.  When userspace later tries to do
-something with the port then things go boom (specifically, on my
-system, some sort of exception hit that caused the system to reboot
-itself w/ no error messages).
 
-Let's cleanup / refactor the init so that we always run the same init
-code regardless of whether we're using the console.
+The goal is to boost performance of get/set array functions while
+processing GPIO arrays which represent pins of a signle chip in
+hardware order.  If resulting performance is close to PIO, GPIO API
+can be used for data I/O without much loss of speed.
 
-To make this work, we make rely on qcom_geni_serial_pm doing its job
-to turn resources on.
+Created and tested on a low end Amstrad Delta board with NAND driver
+updated to use GPIO API for data I/O.  Performance degrade compared to
+PIO is much better than before the optimization though not quite
+satisfactory on my test hardware.
 
-For the record, here is a trace of the order of things (after this
-patch) when console= is specified on the command line and we have an
-agetty on the port:
-  qcom_geni_serial_pm: 4 (undefined) => 0 (on)
-  qcom_geni_console_setup
-  qcom_geni_serial_port_setup
-  qcom_geni_serial_console_write
-  qcom_geni_serial_startup
-  qcom_geni_serial_start_tx
 
-...and here is the order of things (after this patch) when console= is
-_NOT_ specified on the command line and we have an agetty port:
-  qcom_geni_serial_pm: 4 => 0
-  qcom_geni_serial_pm: 0 => 3
-  qcom_geni_serial_pm: 3 => 0
-  qcom_geni_serial_startup
-  qcom_geni_serial_port_setup
-  qcom_geni_serial_pm: 0 => 3
-  qcom_geni_serial_pm: 3 => 0
-  qcom_geni_serial_startup
-  qcom_geni_serial_start_tx
+Janusz Krzysztofik (4):
+      gpiolib: Pass bitmaps, not integer arrays, to get/set array
+      gpiolib: Identify arrays matching GPIO hardware
+      gpiolib: Pass array info to get/set array functions
+      gpiolib: Implement fast processing path in get/set array
 
-Fixes: c4f528795d1a ("tty: serial: msm_geni_serial: Add serial driver support for GENI based QUP")
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
 
- drivers/tty/serial/qcom_geni_serial.c | 55 +++++++++++++--------------
- 1 file changed, 26 insertions(+), 29 deletions(-)
+Changelog:
+v8:
+[PATCH v8 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set array:
+- replace *values with values[0] where applicable - suggessted by Geert
+  Uytterhoeven, thanks,
+- drop !! from 3rd argument of __assign_bit() where applicable - suggested
+  by Lukas Wunner, thanks,
+drivers/gpio/gpiolib.c:
+- s/bitnap/bitmap/ - catched by Lukas Wunner, thanks,
+drivers/phy/motorola/phy-mapphone-mdm6600.c:
+- assign ddata->status directly from bitmap, not an intermediate 'val'
+  variable, now used only for debugging purposes,
+include/linux/gpio/consumer.h:
+- also update API of inline function replacements used if CONFIG_GPIOLIB
+  is not defined - catched by kbuild test robot,
+[PATCH v8 3/4] gpiolib: Pass array info to get/set array functions:
+commit message:
+- s/bulids/builds/ - catched by Geert Uytterhoeven, thanks,
+drivers/gpio/gpiolib.c:
+- add information on array_info arguments to array function descriptions -
+  catched by kbuild test robot,
+include/linux/gpio/consumer.h:
+- also update API of inline function replacements used if CONFIG_GPIOLIB
+  is not defined - catched by kbuild test robot.
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 29ec34387246..99103c67e1dc 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -851,6 +851,23 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
- 	unsigned int rxstale = DEFAULT_BITS_PER_CHAR * STALE_TIMEOUT;
-+	u32 proto;
-+
-+	if (uart_console(uport))
-+		port->tx_bytes_pw = 1;
-+	else
-+		port->tx_bytes_pw = 4;
-+	port->rx_bytes_pw = RX_BYTES_PW;
-+
-+	proto = geni_se_read_proto(&port->se);
-+	if (proto != GENI_SE_UART) {
-+		dev_err(uport->dev, "Invalid FW loaded, proto: %d\n", proto);
-+		return -ENXIO;
-+	}
-+
-+	qcom_geni_serial_stop_rx(uport);
-+
-+	get_tx_fifo_size(port);
- 
- 	set_rfr_wm(port);
- 	writel_relaxed(rxstale, uport->membase + SE_UART_RX_STALE_CNT);
-@@ -874,30 +891,19 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
- 			return -ENOMEM;
- 	}
- 	port->setup = true;
-+
- 	return 0;
- }
- 
- static int qcom_geni_serial_startup(struct uart_port *uport)
- {
- 	int ret;
--	u32 proto;
- 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
- 
- 	scnprintf(port->name, sizeof(port->name),
- 		  "qcom_serial_%s%d",
- 		(uart_console(uport) ? "console" : "uart"), uport->line);
- 
--	if (!uart_console(uport)) {
--		port->tx_bytes_pw = 4;
--		port->rx_bytes_pw = RX_BYTES_PW;
--	}
--	proto = geni_se_read_proto(&port->se);
--	if (proto != GENI_SE_UART) {
--		dev_err(uport->dev, "Invalid FW loaded, proto: %d\n", proto);
--		return -ENXIO;
--	}
--
--	get_tx_fifo_size(port);
- 	if (!port->setup) {
- 		ret = qcom_geni_serial_port_setup(uport);
- 		if (ret)
-@@ -1056,6 +1062,7 @@ static int __init qcom_geni_console_setup(struct console *co, char *options)
- 	int bits = 8;
- 	int parity = 'n';
- 	int flow = 'n';
-+	int ret;
- 
- 	if (co->index >= GENI_UART_CONS_PORTS  || co->index < 0)
- 		return -ENXIO;
-@@ -1071,21 +1078,10 @@ static int __init qcom_geni_console_setup(struct console *co, char *options)
- 	if (unlikely(!uport->membase))
- 		return -ENXIO;
- 
--	if (geni_se_resources_on(&port->se)) {
--		dev_err(port->se.dev, "Error turning on resources\n");
--		return -ENXIO;
--	}
--
--	if (unlikely(geni_se_read_proto(&port->se) != GENI_SE_UART)) {
--		geni_se_resources_off(&port->se);
--		return -ENXIO;
--	}
--
- 	if (!port->setup) {
--		port->tx_bytes_pw = 1;
--		port->rx_bytes_pw = RX_BYTES_PW;
--		qcom_geni_serial_stop_rx(uport);
--		qcom_geni_serial_port_setup(uport);
-+		ret = qcom_geni_serial_port_setup(uport);
-+		if (ret)
-+			return ret;
- 	}
- 
- 	if (options)
-@@ -1203,11 +1199,12 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
- 
-+	/* If we've never been called, treat it as off */
-+	if (old_state == UART_PM_STATE_UNDEFINED)
-+		old_state = UART_PM_STATE_OFF;
-+
- 	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
- 		geni_se_resources_on(&port->se);
--	else if (!uart_console(uport) && (new_state == UART_PM_STATE_ON &&
--				old_state == UART_PM_STATE_UNDEFINED))
--		geni_se_resources_on(&port->se);
- 	else if (new_state == UART_PM_STATE_OFF &&
- 			old_state == UART_PM_STATE_ON)
- 		geni_se_resources_off(&port->se);
--- 
-2.19.0.rc1.350.ge57e33dbd1-goog
+v7:
+- add more people to Cc: - authors and/or those who contributed most to
+  the drivers in scope of the change,
+[PATCH v7 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set:
+- avoid VLAs, use data source type bit number as bitmap size if not
+  constant - great recommendation by Peter Rosin, thanks,
+- revert names of local variables declared with DECLARE_BITMAP() from
+  'value_bitmap' to original names of value arrays they replace (but not
+  'value_array') - inspired by Peter Rosin suggestion - thanks!
+drivers/gpio/gpio-max3191x.c:
+- use bitmap_alloc() to be more consistent with DECLARE_BITMAP() pattern
+  used by other consumers,
+drivers/phy/motorola/phy-mapphone-mdm6600.c:
+- no need to mask unused bits of val before its assignment to bitmap,
+  passing PHY_MDM6600_NR_CMD_LINES to gpiod_set_array_value() as array/
+  bitmap size provides sufficient protection.
+
+v6:
+[PATCH v6 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set
+- use DECLARE_BITMAP() macro for declaring value_bitmap - great idea by
+  David Laight, thanks!
+drivers/auxdisplay/hd44780.c:
+- simplify the code and adjust comments as recommended by Geert
+  Uytterhoeven - thanks!,
+drivers/i2c/muxes/i2c-mux-gpio.c:
+- drop .values member of struct gpiomux - details provided by Peter
+  Rosin, thanks!, 
+drivers/mux/gpio.c:
+- drop .val member of struct mux_gpio - details provided by Peter
+  Rosin, thanks!,
+drivers/net/phy/mdio-mux-gpio.c:
+- drop .values member of struct mdio_mux_gpio_state and its processsing.
+
+v5:
+[PATCH v5 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set
+- drivers/i2c/muxes/i2c-mux-gpio.c:
+  - drop assigment of values to struct gpiomux.values, as recommended
+    by Peter Rosin - thanks!,
+  - mark the .values member of the structure as obsolete,
+- drivers/mux/gpio.c:
+  - drop assigment of values to struct mux_gpio.val, also recommended
+    by Peter Rosin - thanks!,
+  - merk the .val member of the structure as obsolete,
+- drivers/auxdisplay/hd44780.c:
+  - fix incorrect bitmap size,
+  - use >>= operator to simplify notation,
+  both catched by Miguel Ojeda - thanks!,
+- add Cc: clauses as well as Acked-by: collected so far.
+[PATCH v5 2/4] gpiolib: Identify arrays matching GPIO hardware
+- add Cc: clause.
+[PATCH v5 3/4] gpiolib: Pass array info to get/set array functions
+- add Cc: clauses as well as Acked-by: collected so far.
+[PATCH v5 4/4] gpiolib: Implement fast processing path in get/set
+- add Cc: clause.
+
+v4:
+That series was a follow up of the former "mtd: rawnand: ams-delta: Use
+gpio-omap accessors for data I/O" which already contained some changes
+to gpiolib.  Those previous attempts were commented by Borris Brezillon
+who suggested using GPIO API modified to accept bitmaps, and by Linus
+Walleij who suggested still more great ideas for further immprovement
+of the proposed API changes - thanks!
+
+
+diffstat:
+ Documentation/driver-api/gpio/board.rst     |   15 +
+ Documentation/driver-api/gpio/consumer.rst  |   48 +++-
+ drivers/auxdisplay/hd44780.c                |   67 ++----
+ drivers/bus/ts-nbus.c                       |   20 -
+ drivers/gpio/gpio-max3191x.c                |   16 -
+ drivers/gpio/gpiolib.c                      |  281 ++++++++++++++++++++++------
+ drivers/gpio/gpiolib.h                      |   15 +
+ drivers/i2c/muxes/i2c-mux-gpio.c            |   16 -
+ drivers/mmc/core/pwrseq_simple.c            |   15 -
+ drivers/mux/gpio.c                          |   16 -
+ drivers/net/phy/mdio-mux-gpio.c             |   13 -
+ drivers/pcmcia/soc_common.c                 |    9 
+ drivers/phy/motorola/phy-mapphone-mdm6600.c |   19 -
+ drivers/staging/iio/adc/ad7606.c            |   12 -
+ drivers/tty/serial/serial_mctrl_gpio.c      |    9 
+ include/linux/gpio/consumer.h               |   59 ++++-
+ 16 files changed, 420 insertions(+), 210 deletions(-)
