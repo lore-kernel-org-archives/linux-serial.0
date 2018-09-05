@@ -1,34 +1,54 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH V2 2/2] tty: serial: imx: add pinctrl sleep/default mode
- switch for suspend
-Date: Wed, 5 Sep 2018 07:55:11 +0200
-Message-ID: <20180905055511.ba46b2onz7skb7ln@pengutronix.de>
-References: <1536110667-23530-1-git-send-email-Anson.Huang@nxp.com>
- <1536110667-23530-2-git-send-email-Anson.Huang@nxp.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH 01/25] tty: Change return type to void
+Date: Wed, 5 Sep 2018 07:57:25 +0200
+Message-ID: <d3d5df26-4678-2539-e579-1c48bc726163@suse.cz>
+References: <1536029091-4426-1-git-send-email-climbbb.kim@gmail.com>
+ <1536029091-4426-2-git-send-email-climbbb.kim@gmail.com>
+ <3b5cce6a-b4c3-edf9-51c8-0a16f156e128@cogentembedded.com>
+ <CAL6iAaKzDPe7CMGR8VOBZRsJqZuNB1=zek_YVvwcKnjimbox2g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1536110667-23530-2-git-send-email-Anson.Huang@nxp.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Anson Huang <Anson.Huang@nxp.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Linux-imx@nxp.com
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <CAL6iAaKzDPe7CMGR8VOBZRsJqZuNB1=zek_YVvwcKnjimbox2g@mail.gmail.com>
+Content-Language: en-GB
+Sender: netdev-owner@vger.kernel.org
+To: Jaejoong Kim <climbbb.kim@gmail.com>, sergei.shtylyov@cogentembedded.com
+Cc: devel@driverdev.osuosl.org, Greg KH <gregkh@linuxfoundation.org>, linux-um@lists.infradead.org, greybus-dev@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-bluetooth@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-mmc@vger.kernel.org, linux-s390@vger.kernel.org, linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>, netdev@vger.kernel.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Sep 05, 2018 at 09:24:27AM +0800, Anson Huang wrote:
-> On some i.MX SoCs' low power mode, such as i.MX7D's LPSR(low power
-> state retention), UART iomux settings will be lost, need to add
-> pinctrl sleep/default mode switch during suspend/resume to make
-> sure UART iomux settings are correct after resume.
+On 09/05/2018, 03:08 AM, Jaejoong Kim wrote:
+>     > @@ -688,7 +688,7 @@ extern int tty_port_close_start(struct
+>     tty_port *port,
+>     >   extern void tty_port_close_end(struct tty_port *port, struct
+>     tty_struct *tty);
+>     >   extern void tty_port_close(struct tty_port *port,
+>     >                               struct tty_struct *tty, struct file
+>     *filp);
+>     > -extern int tty_port_install(struct tty_port *port, struct
+>     tty_driver *driver,
+>     > +extern void tty_port_install(struct tty_port *port, struct
+>     tty_driver *driver,
+>     >                               struct tty_struct *tty);
 > 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+>         You need to update all the callers in the same patch -- the
+>     kernel must
+>     remain buildable after each patch but you seem to have spread that
+>     update
+>     among a lot of patches..
+> 
+> 
+> OK. I will make several patches as one patch.
 
-Acked-by: Uwe Kleine-K�nig <u.kleine-koenig@pengutronix.de>
+You don't have to. Just reorder the patches as suggested by Sam. (First,
+make everybody ignore the return value, then change these return types
+to void.)
 
-Best regards
-Uwe
+BTW you can mention in this commit log, that this change is possible
+after a3123fd0a4a5. That commit made tty_standard_install to always
+return 0.
+
+thanks,
 -- 
-Pengutronix e.K.                           | Uwe Kleine-K�nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+js
+suse labs
