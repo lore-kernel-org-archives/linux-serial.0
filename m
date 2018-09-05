@@ -1,68 +1,56 @@
 From: Anson Huang <Anson.Huang@nxp.com>
-Subject: [PATCH V2 1/2] tty: serial: imx: add lock for registers save/restore
-Date: Wed,  5 Sep 2018 09:24:26 +0800
-Message-ID: <1536110667-23530-1-git-send-email-Anson.Huang@nxp.com>
+Subject: [PATCH V2 2/2] tty: serial: imx: add pinctrl sleep/default mode switch for suspend
+Date: Wed,  5 Sep 2018 09:24:27 +0800
+Message-ID: <1536110667-23530-2-git-send-email-Anson.Huang@nxp.com>
+References: <1536110667-23530-1-git-send-email-Anson.Huang@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1536110667-23530-1-git-send-email-Anson.Huang@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, u.kleine-koenig@pengutronix.de
 Cc: Linux-imx@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-In noirq suspend/resume stage with no_console_suspend enabled,
-imx_uart_console_write() may be called to print out log_buf
-message by printk(), so there will be race condition between
-imx_uart_console_write() and imx_uart_save/restore_context(),
-need to add lock to protect the registers save/restore operations.
+On some i.MX SoCs' low power mode, such as i.MX7D's LPSR(low power
+state retention), UART iomux settings will be lost, need to add
+pinctrl sleep/default mode switch during suspend/resume to make
+sure UART iomux settings are correct after resume.
 
 Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 ---
- drivers/tty/serial/imx.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/tty/serial/imx.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 239c0fa..c15332d 100644
+index c15332d..6ccb5c4 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -2376,8 +2376,13 @@ static int imx_uart_remove(struct platform_device *pdev)
+@@ -24,6 +24,7 @@
+ #include <linux/serial.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/rational.h>
+ #include <linux/slab.h>
+ #include <linux/of.h>
+@@ -2449,6 +2450,8 @@ static int imx_uart_suspend_noirq(struct device *dev)
  
- static void imx_uart_restore_context(struct imx_port *sport)
- {
--	if (!sport->context_saved)
-+	unsigned long flags;
+ 	clk_disable(sport->clk_ipg);
+ 
++	pinctrl_pm_select_sleep_state(dev);
 +
-+	spin_lock_irqsave(&sport->port.lock, flags);
-+	if (!sport->context_saved) {
-+		spin_unlock_irqrestore(&sport->port.lock, flags);
- 		return;
-+	}
- 
- 	imx_uart_writel(sport, sport->saved_reg[4], UFCR);
- 	imx_uart_writel(sport, sport->saved_reg[5], UESC);
-@@ -2390,11 +2395,15 @@ static void imx_uart_restore_context(struct imx_port *sport)
- 	imx_uart_writel(sport, sport->saved_reg[2], UCR3);
- 	imx_uart_writel(sport, sport->saved_reg[3], UCR4);
- 	sport->context_saved = false;
-+	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 	return 0;
  }
  
- static void imx_uart_save_context(struct imx_port *sport)
- {
-+	unsigned long flags;
-+
- 	/* Save necessary regs */
-+	spin_lock_irqsave(&sport->port.lock, flags);
- 	sport->saved_reg[0] = imx_uart_readl(sport, UCR1);
- 	sport->saved_reg[1] = imx_uart_readl(sport, UCR2);
- 	sport->saved_reg[2] = imx_uart_readl(sport, UCR3);
-@@ -2406,6 +2415,7 @@ static void imx_uart_save_context(struct imx_port *sport)
- 	sport->saved_reg[8] = imx_uart_readl(sport, UBMR);
- 	sport->saved_reg[9] = imx_uart_readl(sport, IMX21_UTS);
- 	sport->context_saved = true;
-+	spin_unlock_irqrestore(&sport->port.lock, flags);
- }
+@@ -2457,6 +2460,8 @@ static int imx_uart_resume_noirq(struct device *dev)
+ 	struct imx_port *sport = dev_get_drvdata(dev);
+ 	int ret;
  
- static void imx_uart_enable_wakeup(struct imx_port *sport, bool on)
++	pinctrl_pm_select_default_state(dev);
++
+ 	ret = clk_enable(sport->clk_ipg);
+ 	if (ret)
+ 		return ret;
 -- 
 2.7.4
