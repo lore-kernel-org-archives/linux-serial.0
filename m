@@ -1,178 +1,268 @@
-From: Matthias Kaehlcke <mka@chromium.org>
-Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Fix serial when not used
- as console
-Date: Wed, 5 Sep 2018 16:32:59 -0700
-Message-ID: <20180905233259.GA22824@google.com>
-References: <20180905201146.261438-1-dianders@chromium.org>
+From: Ludovic Desroches <ludovic.desroches@microchip.com>
+Subject: [PATCH v4 1/2] tty/serial_core: add ISO7816 infrastructure
+Date: Thu, 6 Sep 2018 15:42:13 +0200
+Message-ID: <20180906134214.29031-2-ludovic.desroches@microchip.com>
+References: <20180906134214.29031-1-ludovic.desroches@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180905201146.261438-1-dianders@chromium.org>
+In-Reply-To: <20180906134214.29031-1-ludovic.desroches@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Douglas Anderson <dianders@chromium.org>
-Cc: gregkh@linuxfoundation.org, linux-arm-msm@vger.kernel.org, evgreen@chromium.org, swboyd@chromium.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
+To: linux-serial@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, arnd@arndb.de, richard.genoud@gmail.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, linux-kernel@vger.kernel.org, Ludovic Desroches <ludovic.desroches@microchip.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Sep 05, 2018 at 01:11:46PM -0700, Douglas Anderson wrote:
-> If you've got the "console" serial port setup to use just as a UART
-> (AKA there is no "console=ttyMSMX" on the kernel command line) then
-> certain initialization is skipped.  When userspace later tries to do
-> something with the port then things go boom (specifically, on my
-> system, some sort of exception hit that caused the system to reboot
-> itself w/ no error messages).
-> 
-> Let's cleanup / refactor the init so that we always run the same init
-> code regardless of whether we're using the console.
-> 
-> To make this work, we make rely on qcom_geni_serial_pm doing its job
-> to turn resources on.
-> 
-> For the record, here is a trace of the order of things (after this
-> patch) when console= is specified on the command line and we have an
-> agetty on the port:
->   qcom_geni_serial_pm: 4 (undefined) => 0 (on)
->   qcom_geni_console_setup
->   qcom_geni_serial_port_setup
->   qcom_geni_serial_console_write
->   qcom_geni_serial_startup
->   qcom_geni_serial_start_tx
-> 
-> ...and here is the order of things (after this patch) when console= is
-> _NOT_ specified on the command line and we have an agetty port:
->   qcom_geni_serial_pm: 4 => 0
->   qcom_geni_serial_pm: 0 => 3
->   qcom_geni_serial_pm: 3 => 0
->   qcom_geni_serial_startup
->   qcom_geni_serial_port_setup
->   qcom_geni_serial_pm: 0 => 3
->   qcom_geni_serial_pm: 3 => 0
->   qcom_geni_serial_startup
->   qcom_geni_serial_start_tx
-> 
-> Fixes: c4f528795d1a ("tty: serial: msm_geni_serial: Add serial driver support for GENI based QUP")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
-> 
->  drivers/tty/serial/qcom_geni_serial.c | 55 +++++++++++++--------------
->  1 file changed, 26 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 29ec34387246..99103c67e1dc 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -851,6 +851,23 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
->  {
->  	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
->  	unsigned int rxstale = DEFAULT_BITS_PER_CHAR * STALE_TIMEOUT;
-> +	u32 proto;
-> +
-> +	if (uart_console(uport))
-> +		port->tx_bytes_pw = 1;
-> +	else
-> +		port->tx_bytes_pw = 4;
-> +	port->rx_bytes_pw = RX_BYTES_PW;
-> +
-> +	proto = geni_se_read_proto(&port->se);
-> +	if (proto != GENI_SE_UART) {
-> +		dev_err(uport->dev, "Invalid FW loaded, proto: %d\n", proto);
-> +		return -ENXIO;
-> +	}
-> +
-> +	qcom_geni_serial_stop_rx(uport);
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-This wasn't done earlier in qcom_geni_serial_startup() (but it was in
-qcom_geni_console_setup()). I guess this extra stop of RX for the
-'uart' shouldn't do any harm.
+Add the ISO7816 ioctl and associated accessors and data structure.
+Drivers can then use this common implementation to handle ISO7816
+(smart cards).
 
-> +
-> +	get_tx_fifo_size(port);
->  
->  	set_rfr_wm(port);
->  	writel_relaxed(rxstale, uport->membase + SE_UART_RX_STALE_CNT);
-> @@ -874,30 +891,19 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
->  			return -ENOMEM;
->  	}
->  	port->setup = true;
-> +
->  	return 0;
->  }
->  
->  static int qcom_geni_serial_startup(struct uart_port *uport)
->  {
->  	int ret;
-> -	u32 proto;
->  	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
->  
->  	scnprintf(port->name, sizeof(port->name),
->  		  "qcom_serial_%s%d",
->  		(uart_console(uport) ? "console" : "uart"), uport->line);
->  
-> -	if (!uart_console(uport)) {
-> -		port->tx_bytes_pw = 4;
-> -		port->rx_bytes_pw = RX_BYTES_PW;
-> -	}
-> -	proto = geni_se_read_proto(&port->se);
-> -	if (proto != GENI_SE_UART) {
-> -		dev_err(uport->dev, "Invalid FW loaded, proto: %d\n", proto);
-> -		return -ENXIO;
-> -	}
-> -
-> -	get_tx_fifo_size(port);
->  	if (!port->setup) {
->  		ret = qcom_geni_serial_port_setup(uport);
->  		if (ret)
-> @@ -1056,6 +1062,7 @@ static int __init qcom_geni_console_setup(struct console *co, char *options)
->  	int bits = 8;
->  	int parity = 'n';
->  	int flow = 'n';
-> +	int ret;
->  
->  	if (co->index >= GENI_UART_CONS_PORTS  || co->index < 0)
->  		return -ENXIO;
-> @@ -1071,21 +1078,10 @@ static int __init qcom_geni_console_setup(struct console *co, char *options)
->  	if (unlikely(!uport->membase))
->  		return -ENXIO;
->  
-> -	if (geni_se_resources_on(&port->se)) {
-> -		dev_err(port->se.dev, "Error turning on resources\n");
-> -		return -ENXIO;
-> -	}
-> -
-> -	if (unlikely(geni_se_read_proto(&port->se) != GENI_SE_UART)) {
-> -		geni_se_resources_off(&port->se);
-> -		return -ENXIO;
-> -	}
-> -
->  	if (!port->setup) {
-> -		port->tx_bytes_pw = 1;
-> -		port->rx_bytes_pw = RX_BYTES_PW;
-> -		qcom_geni_serial_stop_rx(uport);
-> -		qcom_geni_serial_port_setup(uport);
-> +		ret = qcom_geni_serial_port_setup(uport);
-> +		if (ret)
-> +			return ret;
->  	}
->  
->  	if (options)
-> @@ -1203,11 +1199,12 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
->  {
->  	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
->  
-> +	/* If we've never been called, treat it as off */
-> +	if (old_state == UART_PM_STATE_UNDEFINED)
-> +		old_state = UART_PM_STATE_OFF;
-> +
->  	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
->  		geni_se_resources_on(&port->se);
-> -	else if (!uart_console(uport) && (new_state == UART_PM_STATE_ON &&
-> -				old_state == UART_PM_STATE_UNDEFINED))
-> -		geni_se_resources_on(&port->se);
->  	else if (new_state == UART_PM_STATE_OFF &&
->  			old_state == UART_PM_STATE_ON)
->  		geni_se_resources_off(&port->se);
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+[ludovic.desroches@microchip.com: squash and rebase, removal of gpios, checkpatch fixes]
+Signed-off-by: Ludovic Desroches <ludovic.desroches@microchip.com>
+---
+ arch/alpha/include/uapi/asm/ioctls.h   |  2 ++
+ arch/mips/include/uapi/asm/ioctls.h    |  2 ++
+ arch/parisc/include/uapi/asm/ioctls.h  |  2 ++
+ arch/powerpc/include/uapi/asm/ioctls.h |  2 ++
+ arch/sh/include/uapi/asm/ioctls.h      |  2 ++
+ arch/sparc/include/uapi/asm/ioctls.h   |  2 ++
+ arch/xtensa/include/uapi/asm/ioctls.h  |  2 ++
+ drivers/tty/serial/serial_core.c       | 60 ++++++++++++++++++++++++++++++++++
+ include/linux/serial_core.h            |  3 ++
+ include/uapi/asm-generic/ioctls.h      |  2 ++
+ include/uapi/linux/serial.h            | 17 ++++++++++
+ 11 files changed, 96 insertions(+)
 
-Seems like a good refactoring, besides fixing the problem when booting
-without 'console=ttyMSMx'.
-
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/uapi/asm/ioctls.h
+index 3729d92d3fa8..1e9121c9b3c7 100644
+--- a/arch/alpha/include/uapi/asm/ioctls.h
++++ b/arch/alpha/include/uapi/asm/ioctls.h
+@@ -102,6 +102,8 @@
+ #define TIOCGPTLCK	_IOR('T', 0x39, int) /* Get Pty lock state */
+ #define TIOCGEXCL	_IOR('T', 0x40, int) /* Get exclusive mode state */
+ #define TIOCGPTPEER	_IO('T', 0x41) /* Safely open the slave */
++#define TIOCGISO7816	_IOR('T', 0x42, struct serial_iso7816)
++#define TIOCSISO7816	_IOWR('T', 0x43, struct serial_iso7816)
+ 
+ #define TIOCSERCONFIG	0x5453
+ #define TIOCSERGWILD	0x5454
+diff --git a/arch/mips/include/uapi/asm/ioctls.h b/arch/mips/include/uapi/asm/ioctls.h
+index 890245a9f0c4..16aa8a766aec 100644
+--- a/arch/mips/include/uapi/asm/ioctls.h
++++ b/arch/mips/include/uapi/asm/ioctls.h
+@@ -93,6 +93,8 @@
+ #define TIOCGPTLCK	_IOR('T', 0x39, int) /* Get Pty lock state */
+ #define TIOCGEXCL	_IOR('T', 0x40, int) /* Get exclusive mode state */
+ #define TIOCGPTPEER	_IO('T', 0x41) /* Safely open the slave */
++#define TIOCGISO7816	_IOR('T', 0x42, struct serial_iso7816)
++#define TIOCSISO7816	_IOWR('T', 0x43, struct serial_iso7816)
+ 
+ /* I hope the range from 0x5480 on is free ... */
+ #define TIOCSCTTY	0x5480		/* become controlling tty */
+diff --git a/arch/parisc/include/uapi/asm/ioctls.h b/arch/parisc/include/uapi/asm/ioctls.h
+index aafb1c0ca0af..82d1148c6379 100644
+--- a/arch/parisc/include/uapi/asm/ioctls.h
++++ b/arch/parisc/include/uapi/asm/ioctls.h
+@@ -62,6 +62,8 @@
+ #define TIOCGPTLCK	_IOR('T', 0x39, int) /* Get Pty lock state */
+ #define TIOCGEXCL	_IOR('T', 0x40, int) /* Get exclusive mode state */
+ #define TIOCGPTPEER	_IO('T', 0x41) /* Safely open the slave */
++#define TIOCGISO7816	_IOR('T', 0x42, struct serial_iso7816)
++#define TIOCSISO7816	_IOWR('T', 0x43, struct serial_iso7816)
+ 
+ #define FIONCLEX	0x5450  /* these numbers need to be adjusted. */
+ #define FIOCLEX		0x5451
+diff --git a/arch/powerpc/include/uapi/asm/ioctls.h b/arch/powerpc/include/uapi/asm/ioctls.h
+index 41b1a5c15734..2c145da3b774 100644
+--- a/arch/powerpc/include/uapi/asm/ioctls.h
++++ b/arch/powerpc/include/uapi/asm/ioctls.h
+@@ -102,6 +102,8 @@
+ #define TIOCGPTLCK	_IOR('T', 0x39, int) /* Get Pty lock state */
+ #define TIOCGEXCL	_IOR('T', 0x40, int) /* Get exclusive mode state */
+ #define TIOCGPTPEER	_IO('T', 0x41) /* Safely open the slave */
++#define TIOCGISO7816	_IOR('T', 0x42, struct serial_iso7816)
++#define TIOCSISO7816	_IOWR('T', 0x43, struct serial_iso7816)
+ 
+ #define TIOCSERCONFIG	0x5453
+ #define TIOCSERGWILD	0x5454
+diff --git a/arch/sh/include/uapi/asm/ioctls.h b/arch/sh/include/uapi/asm/ioctls.h
+index cc62f6f98103..11866d4f60e1 100644
+--- a/arch/sh/include/uapi/asm/ioctls.h
++++ b/arch/sh/include/uapi/asm/ioctls.h
+@@ -95,6 +95,8 @@
+ #define TIOCGPTLCK	_IOR('T', 0x39, int) /* Get Pty lock state */
+ #define TIOCGEXCL	_IOR('T', 0x40, int) /* Get exclusive mode state */
+ #define TIOCGPTPEER	_IO('T', 0x41) /* Safely open the slave */
++#define TIOCGISO7816	_IOR('T', 0x42, struct serial_iso7816)
++#define TIOCSISO7816	_IOWR('T', 0x43, struct serial_iso7816)
+ 
+ #define TIOCSERCONFIG	_IO('T', 83) /* 0x5453 */
+ #define TIOCSERGWILD	_IOR('T', 84,  int) /* 0x5454 */
+diff --git a/arch/sparc/include/uapi/asm/ioctls.h b/arch/sparc/include/uapi/asm/ioctls.h
+index 2df52711e170..7fd2f5873c9e 100644
+--- a/arch/sparc/include/uapi/asm/ioctls.h
++++ b/arch/sparc/include/uapi/asm/ioctls.h
+@@ -27,6 +27,8 @@
+ #define TIOCGEXCL	_IOR('T', 0x40, int) /* Get exclusive mode state */
+ #define TIOCGRS485	_IOR('T', 0x41, struct serial_rs485)
+ #define TIOCSRS485	_IOWR('T', 0x42, struct serial_rs485)
++#define TIOCGISO7816	_IOR('T', 0x43, struct serial_iso7816)
++#define TIOCSISO7816	_IOWR('T', 0x44, struct serial_iso7816)
+ 
+ /* Note that all the ioctls that are not available in Linux have a
+  * double underscore on the front to: a) avoid some programs to
+diff --git a/arch/xtensa/include/uapi/asm/ioctls.h b/arch/xtensa/include/uapi/asm/ioctls.h
+index ec43609cbfc5..6d4a87296c95 100644
+--- a/arch/xtensa/include/uapi/asm/ioctls.h
++++ b/arch/xtensa/include/uapi/asm/ioctls.h
+@@ -107,6 +107,8 @@
+ #define TIOCGPTLCK	_IOR('T', 0x39, int) /* Get Pty lock state */
+ #define TIOCGEXCL	_IOR('T', 0x40, int) /* Get exclusive mode state */
+ #define TIOCGPTPEER	_IO('T', 0x41) /* Safely open the slave */
++#define TIOCGISO7816	_IOR('T', 0x42, struct serial_iso7816)
++#define TIOCSISO7816	_IOWR('T', 0x43, struct serial_iso7816)
+ 
+ #define TIOCSERCONFIG	_IO('T', 83)
+ #define TIOCSERGWILD	_IOR('T', 84,  int)
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 9c14a453f73c..af8d5b12fba9 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1301,6 +1301,58 @@ static int uart_set_rs485_config(struct uart_port *port,
+ 	return 0;
+ }
+ 
++static int uart_get_iso7816_config(struct uart_port *port,
++				   struct serial_iso7816 __user *iso7816)
++{
++	unsigned long flags;
++	struct serial_iso7816 aux;
++
++	if (!port->iso7816_config)
++		return -ENOIOCTLCMD;
++
++	spin_lock_irqsave(&port->lock, flags);
++	aux = port->iso7816;
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	if (copy_to_user(iso7816, &aux, sizeof(aux)))
++		return -EFAULT;
++
++	return 0;
++}
++
++static int uart_set_iso7816_config(struct uart_port *port,
++				   struct serial_iso7816 __user *iso7816_user)
++{
++	struct serial_iso7816 iso7816;
++	int i, ret;
++	unsigned long flags;
++
++	if (!port->iso7816_config)
++		return -ENOIOCTLCMD;
++
++	if (copy_from_user(&iso7816, iso7816_user, sizeof(*iso7816_user)))
++		return -EFAULT;
++
++	/*
++	 * There are 5 words reserved for future use. Check that userspace
++	 * doesn't put stuff in there to prevent breakages in the future.
++	 */
++	for (i = 0; i < 5; i++)
++		if (iso7816.reserved[i])
++			return -EINVAL;
++
++	spin_lock_irqsave(&port->lock, flags);
++	ret = port->iso7816_config(port, &iso7816);
++	spin_unlock_irqrestore(&port->lock, flags);
++	if (ret)
++		return ret;
++
++	if (copy_to_user(iso7816_user, &port->iso7816, sizeof(port->iso7816)))
++		return -EFAULT;
++
++	return 0;
++}
++
+ /*
+  * Called via sys_ioctl.  We can use spin_lock_irq() here.
+  */
+@@ -1385,6 +1437,14 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+ 	case TIOCSRS485:
+ 		ret = uart_set_rs485_config(uport, uarg);
+ 		break;
++
++	case TIOCSISO7816:
++		ret = uart_set_iso7816_config(state->uart_port, uarg);
++		break;
++
++	case TIOCGISO7816:
++		ret = uart_get_iso7816_config(state->uart_port, uarg);
++		break;
+ 	default:
+ 		if (uport->ops->ioctl)
+ 			ret = uport->ops->ioctl(uport, cmd, arg);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 06ea4eeb09ab..d6e7747ffd46 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -137,6 +137,8 @@ struct uart_port {
+ 	void			(*handle_break)(struct uart_port *);
+ 	int			(*rs485_config)(struct uart_port *,
+ 						struct serial_rs485 *rs485);
++	int			(*iso7816_config)(struct uart_port *,
++						  struct serial_iso7816 *iso7816);
+ 	unsigned int		irq;			/* irq number */
+ 	unsigned long		irqflags;		/* irq flags  */
+ 	unsigned int		uartclk;		/* base uart clock */
+@@ -253,6 +255,7 @@ struct uart_port {
+ 	struct attribute_group	*attr_group;		/* port specific attributes */
+ 	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
+ 	struct serial_rs485     rs485;
++	struct serial_iso7816   iso7816;
+ 	void			*private_data;		/* generic platform data pointer */
+ };
+ 
+diff --git a/include/uapi/asm-generic/ioctls.h b/include/uapi/asm-generic/ioctls.h
+index 040651735662..cdc9f4ca8c27 100644
+--- a/include/uapi/asm-generic/ioctls.h
++++ b/include/uapi/asm-generic/ioctls.h
+@@ -79,6 +79,8 @@
+ #define TIOCGPTLCK	_IOR('T', 0x39, int) /* Get Pty lock state */
+ #define TIOCGEXCL	_IOR('T', 0x40, int) /* Get exclusive mode state */
+ #define TIOCGPTPEER	_IO('T', 0x41) /* Safely open the slave */
++#define TIOCGISO7816	_IOR('T', 0x42, struct serial_iso7816)
++#define TIOCSISO7816	_IOWR('T', 0x43, struct serial_iso7816)
+ 
+ #define FIONCLEX	0x5450
+ #define FIOCLEX		0x5451
+diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
+index 3fdd0dee8b41..93eb3c496ff1 100644
+--- a/include/uapi/linux/serial.h
++++ b/include/uapi/linux/serial.h
+@@ -132,4 +132,21 @@ struct serial_rs485 {
+ 					   are a royal PITA .. */
+ };
+ 
++/*
++ * Serial interface for controlling ISO7816 settings on chips with suitable
++ * support. Set with TIOCSISO7816 and get with TIOCGISO7816 if supported by
++ * your platform.
++ */
++struct serial_iso7816 {
++	__u32	flags;			/* ISO7816 feature flags */
++#define SER_ISO7816_ENABLED		(1 << 0)
++#define SER_ISO7816_T_PARAM		(0x0f << 4)
++#define SER_ISO7816_T(t)		(((t) & 0x0f) << 4)
++	__u32	tg;
++	__u32	sc_fi;
++	__u32	sc_di;
++	__u32	clk;
++	__u32	reserved[5];
++};
++
+ #endif /* _UAPI_LINUX_SERIAL_H */
+-- 
+2.12.2
