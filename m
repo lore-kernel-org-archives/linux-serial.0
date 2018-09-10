@@ -1,55 +1,39 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH] serial: 8250_omap: Make 8250_omap driver driver depend on
- ARCH_K3
-Date: Mon, 10 Sep 2018 09:31:40 +0530
-Message-ID: <9bc2eab8-af4c-1a90-50da-533087b0314b@ti.com>
-References: <20180828010302.2751-1-nm@ti.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v12 0/6] Driver for at91 usart in spi mode
+Date: Mon, 10 Sep 2018 10:48:17 +0100
+Message-ID: <20180910094817.GJ28860@dell>
+References: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180828010302.2751-1-nm@ti.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nishanth Menon <nm@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Lokesh Vutla <lokeshvutla@ti.com>, linux-arm-kernel@lists.infradead.org, Sekhar Nori <nsekhar@ti.com>
+To: Radu Pirea <radu_nicolae.pirea@upb.ro>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, gregkh@linuxfoundation.org, broonie@kernel.org, jslaby@suse.com, richard.genoud@gmail.com, davem@davemloft.net, mchehab+samsung@kernel.org, akpm@linux-foundation.org, arnd@arndb.de, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, 04 Sep 2018, Radu Pirea wrote:
+> Well, this is the 12th version of this patch series.
+> In this version I fixed a warning from kbuild-robot and I have no idea
+> how I forgot to add static in declaration of that functions. Also I
+> fixed the example for the SPI driver in bindings.
 
+Okay great.  So which patches still require Acks?
 
-On Tuesday 28 August 2018 06:33 AM, Nishanth Menon wrote:
-> From: Lokesh Vutla <lokeshvutla@ti.com>
-> 
-> Allow 8250 omap serial driver to be used for K3 platforms.
-> 
-> Signed-off-by: Lokesh Vutla <lokeshvutla@ti.com>
-> Signed-off-by: Nishanth Menon <nm@ti.com>
-> ---
-> 
+[...]
 
-Acked-by: Vignesh R <vigneshr@ti.com>
-
-> Now that we have the device tree support merged integrated AND we have ARCH_K3,
-> Lets enable the 820 OMAP Driver to build for ARCH_K3 and make it operational.
-> 
->  drivers/tty/serial/8250/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index f005eaf8bc57..15c2c5463835 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -375,7 +375,7 @@ config SERIAL_8250_RT288X
->  
->  config SERIAL_8250_OMAP
->  	tristate "Support for OMAP internal UART (8250 based driver)"
-> -	depends on SERIAL_8250 && ARCH_OMAP2PLUS
-> +	depends on SERIAL_8250 && (ARCH_OMAP2PLUS || ARCH_K3)
->  	help
->  	  If you have a machine based on an Texas Instruments OMAP CPU you
->  	  can enable its onboard serial ports by enabling this option.
-> 
+> Radu Pirea (6):
+>   MAINTAINERS: add at91 usart mfd driver
+>   dt-bindings: add binding for atmel-usart in SPI mode
+>   mfd: at91-usart: added mfd driver for usart
+>   MAINTAINERS: add at91 usart spi driver
+>   spi: at91-usart: add driver for at91-usart as spi
+>   tty/serial: atmel: change the driver to work under at91-usart mfd
 
 -- 
-Regards
-Vignesh
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
