@@ -1,20 +1,21 @@
 From: Lee Jones <lee.jones@linaro.org>
 Subject: [GIT PULL v2] Immutable branch between MFD, SPI and TTY due for the
  v4.20 merge window
-Date: Tue, 11 Sep 2018 11:56:28 +0100
-Message-ID: <20180911105628.GI4185@dell>
-References: <20180713164736.26028-1-radu.pirea@microchip.com>
- <20180910151803.GX28860@dell>
+Date: Tue, 11 Sep 2018 12:18:50 +0100
+Message-ID: <20180911111850.GJ4185@dell>
+References: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180910151803.GX28860@dell>
+In-Reply-To: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu.pirea@microchip.com>
-Cc: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+To: Radu Pirea <radu_nicolae.pirea@upb.ro>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, gregkh@linuxfoundation.org, broonie@kernel.org, jslaby@suse.com, richard.genoud@gmail.com, davem@davemloft.net, mchehab+samsung@kernel.org, akpm@linux-foundation.org, arnd@arndb.de, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+
+[In case you missed it]
 
 This new pull-request contains the following changes since v1:
 
