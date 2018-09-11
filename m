@@ -1,69 +1,39 @@
 From: Lee Jones <lee.jones@linaro.org>
 Subject: Re: [GIT PULL] Immutable branch between MFD, SPI and TTY due for the
  v4.20 merge window
-Date: Tue, 11 Sep 2018 09:45:48 +0100
-Message-ID: <20180911084548.GC4185@dell>
+Date: Tue, 11 Sep 2018 09:51:27 +0100
+Message-ID: <20180911085127.GD4185@dell>
 References: <20180713164736.26028-1-radu.pirea@microchip.com>
  <20180910151803.GX28860@dell>
+ <bd9104b702feec556ed01311e9efcb96790131d0.camel@upb.ro>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180910151803.GX28860@dell>
+In-Reply-To: <bd9104b702feec556ed01311e9efcb96790131d0.camel@upb.ro>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu.pirea@microchip.com>
-Cc: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+To: Radu Nicolae Pirea <pirea.radu@gmail.com>
+Cc: Radu Pirea <radu.pirea@microchip.com>, broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 10 Sep 2018, Lee Jones wrote:
+On Tue, 11 Sep 2018, Radu Nicolae Pirea wrote:
 
-> Enjoy!
+> Hi Lee,
 > 
-> The following changes since commit 5b394b2ddf0347bef56e50c69a58773c94343ff3:
-> 
->   Linux 4.19-rc1 (2018-08-26 14:11:59 -0700)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git tags/ib-mfd-spi-tty-v4.20
-> 
-> for you to fetch changes up to c24d25317a7c6bb3053d4c193b3cf57d1e9a3e4b:
-> 
->   tty/serial: atmel: Change the driver to work under at91-usart MFD (2018-09-10 16:12:43 +0100)
-> 
-> ----------------------------------------------------------------
-> Immutable branch between MFD, SPI and TTY due for the v4.20 merge window
+> Thank you for taking the patch series, but you didn't take the latest
+> version(v12) :)
 
-Due to a comedy of errors, I'm voiding this pull-request.
+Both were marked for merging in my inbox, and since I am working
+though my (300+) post-vacation emails chronologically v11 was handled
+first.
 
-Please stand-by for a follow-up.
+It appears as though there is an issue in the way 'struct
+of_device_id' was declared too.  The header file in which it was
+declared used to be included by proxy, however a separation has
+recently been made causing build errors.
 
-> Radu Pirea (6):
->       MAINTAINERS: Add AT91 USART MFD entry
->       dt-bindings: Add binding for atmel-usart in SPI mode
->       mfd: at91-usart: Add MFD driver for USART
->       MAINTAINERS: Add AT91 USART SPI entry
->       spi: at91-usart: Add driver for at91-usart as SPI
->       tty/serial: atmel: Change the driver to work under at91-usart MFD
-> 
->  .../bindings/{serial => mfd}/atmel-usart.txt       |  25 +-
->  MAINTAINERS                                        |  16 +
->  drivers/mfd/Kconfig                                |   9 +
->  drivers/mfd/Makefile                               |   1 +
->  drivers/mfd/at91-usart.c                           |  71 ++++
->  drivers/spi/Kconfig                                |   8 +
->  drivers/spi/Makefile                               |   1 +
->  drivers/spi/spi-at91-usart.c                       | 432 +++++++++++++++++++++
->  drivers/tty/serial/Kconfig                         |   1 +
->  drivers/tty/serial/atmel_serial.c                  |  42 +-
->  include/dt-bindings/mfd/at91-usart.h               |  17 +
->  11 files changed, 606 insertions(+), 17 deletions(-)
->  rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
->  create mode 100644 drivers/mfd/at91-usart.c
->  create mode 100644 drivers/spi/spi-at91-usart.c
->  create mode 100644 include/dt-bindings/mfd/at91-usart.h
-> 
+I will fix both issues and re-submit the PR.
 
 -- 
 Lee Jones [李琼斯]
