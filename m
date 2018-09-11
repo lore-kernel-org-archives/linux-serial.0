@@ -1,42 +1,48 @@
-From: Lee Jones <lee.jones@linaro.org>
+From: Greg KH <gregkh@linuxfoundation.org>
 Subject: Re: [GIT PULL] Immutable branch between MFD, SPI and TTY due for the
  v4.20 merge window
-Date: Tue, 11 Sep 2018 09:51:27 +0100
-Message-ID: <20180911085127.GD4185@dell>
+Date: Tue, 11 Sep 2018 11:01:32 +0200
+Message-ID: <20180911090132.GB25161@kroah.com>
 References: <20180713164736.26028-1-radu.pirea@microchip.com>
  <20180910151803.GX28860@dell>
- <bd9104b702feec556ed01311e9efcb96790131d0.camel@upb.ro>
+ <20180911084548.GC4185@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <bd9104b702feec556ed01311e9efcb96790131d0.camel@upb.ro>
+In-Reply-To: <20180911084548.GC4185@dell>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Nicolae Pirea <pirea.radu@gmail.com>
-Cc: Radu Pirea <radu.pirea@microchip.com>, broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Radu Pirea <radu.pirea@microchip.com>, broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 11 Sep 2018, Radu Nicolae Pirea wrote:
-
-> Hi Lee,
+On Tue, Sep 11, 2018 at 09:45:48AM +0100, Lee Jones wrote:
+> On Mon, 10 Sep 2018, Lee Jones wrote:
 > 
-> Thank you for taking the patch series, but you didn't take the latest
-> version(v12) :)
+> > Enjoy!
+> > 
+> > The following changes since commit 5b394b2ddf0347bef56e50c69a58773c94343ff3:
+> > 
+> >   Linux 4.19-rc1 (2018-08-26 14:11:59 -0700)
+> > 
+> > are available in the Git repository at:
+> > 
+> >   git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git tags/ib-mfd-spi-tty-v4.20
+> > 
+> > for you to fetch changes up to c24d25317a7c6bb3053d4c193b3cf57d1e9a3e4b:
+> > 
+> >   tty/serial: atmel: Change the driver to work under at91-usart MFD (2018-09-10 16:12:43 +0100)
+> > 
+> > ----------------------------------------------------------------
+> > Immutable branch between MFD, SPI and TTY due for the v4.20 merge window
+> 
+> Due to a comedy of errors, I'm voiding this pull-request.
 
-Both were marked for merging in my inbox, and since I am working
-though my (300+) post-vacation emails chronologically v11 was handled
-first.
+Um, I can't do that as my tree can not be rebased :(
 
-It appears as though there is an issue in the way 'struct
-of_device_id' was declared too.  The header file in which it was
-declared used to be included by proxy, however a separation has
-recently been made causing build errors.
+I can take follow-on patches, so I will go apply the patch posted so
+that my tree builds again.  I recommend you just apply it as well.
 
-I will fix both issues and re-submit the PR.
+thanks,
 
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+greg k-h
