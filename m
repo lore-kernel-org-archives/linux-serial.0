@@ -1,7 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
 Subject: Re: [PATCH v12 0/6] Driver for at91 usart in spi mode
-Date: Tue, 11 Sep 2018 23:43:02 +0100
-Message-ID: <20180911224302.GJ4185@dell>
+Date: Tue, 11 Sep 2018 23:44:18 +0100
+Message-ID: <20180911224418.GK4185@dell>
 References: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
  <20180911093356.GE4185@dell>
  <20180911093917.GL2494@piout.net>
@@ -9,21 +9,23 @@ References: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
  <20180911153621.GP2494@piout.net>
  <CAMuHMdV+=EgAYogwNHbY=RExkGox_+YSeHV6pJtQb6g6PzD-CQ@mail.gmail.com>
  <20180911181838.GI4185@dell>
- <CAMuHMdUMt=HJGCDZvJF99=45mecn5AjnTr-tA_LioxWrNKM2ag@mail.gmail.com>
+ <20180911185839.GA25212@piout.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdUMt=HJGCDZvJF99=45mecn5AjnTr-tA_LioxWrNKM2ag@mail.gmail.com>
+In-Reply-To: <20180911185839.GA25212@piout.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, radu_nicolae.pirea@upb.ro, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Greg KH <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>linu
+To: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, radu_nicolae.pirea@upb.ro, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Greg KH <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>linux-spi <l>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 11 Sep 2018, Geert Uytterhoeven wrote:
-> On Tue, Sep 11, 2018 at 8:40 PM Lee Jones <lee.jones@linaro.org> wrote:
+On Tue, 11 Sep 2018, Alexandre Belloni wrote:
+
+> On 11/09/2018 19:39:30+0100, Lee Jones wrote:
 > > On Tue, 11 Sep 2018, Geert Uytterhoeven wrote:
+> > 
 > > > On Tue, Sep 11, 2018 at 5:36 PM Alexandre Belloni
 > > > <alexandre.belloni@bootlin.com> wrote:
 > > > > On 11/09/2018 16:59:09+0200, Geert Uytterhoeven wrote:
@@ -93,59 +95,37 @@ On Tue, 11 Sep 2018, Geert Uytterhoeven wrote:
 > > > > Yes, this is exactly what is done:
 > > > >
 > > > > https://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git/tree/drivers/mfd/at91-usart.c?h=ib-mfd-spi-tty-4.20-1#n33
-> > >
+> > > 
 > > > OK.
-> > >
+> > > 
 > > > I guess the main "hackish" part is that the mfd_cell uses of_compatible,
 > > > which thus requires having additional compatible values?
-> > >
+> > > 
 > > > I think those can just be removed. AFAICS, the SPI and serial drivers already
 > > > match against the "at91_usart_spi" resp. "atmel_usart_serial" platform device
 > > > names?
-> >
+> > 
 > > The hackish part of this driver is that it's using MFD for something
 > > which is clearly not an MFD.  It's a USART device.  Nothing more,
 > > nothing less.
-> >
+> > 
 > > Does anyone have the datasheet to hand?
+> > 
 > 
-> I haven't read it, but I believe it's not unlike Renesas SCIF, which is
-> served by both drivers/tty/serial/sh-sci.c and drivers/spi/spi-sh-sci.c.
-> But the latter is not used from DT, so we haven't experienced (and solved)
-> the similar issue yet.
-> 
-> Would it work if the UART driver and SPI driver would match against the
-> same compatible value, but the UART driver would do in its probe()
-> function:
-> 
->     device_property_read_u32(&pdev->dev, "atmel,usart-mode", &opmode);
->     if (opmode != AT91_USART_MODE_SERIAL)
->         return ENODEV;
-> 
-> while the SPI driver would do:
-> 
->     device_property_read_u32(&pdev->dev, "atmel,usart-mode", &opmode);
->     if (opmode != AT91_USART_MODE_SPI)
->         return ENODEV;
-> 
-> ? No MFD driver involved.
+> It is not a simple usart, it is either a usart or a full blown SPI
+> controller with registers changing layout depending on the selected
+> mode. Otherwise, I'm not sure how you would get a USART to do SPI.
 
-I haven't looked at the code in a while, but if memory serves I
-believe platform code gives up once it has found its first match, so
-by doing this, one of the drivers will never be matched/probed.
+Make up your mind.  Either the IP is different, or it's not. ;)
 
-It's midnight here, so cracking out the datasheet isn't going to
-happen just now, but it's my current belief that if the IP serves 2
-very different modes of operation, even if the registers are in a
-shared space, they could have their own compatible strings in DT.
+> Datasheet here:
 
-That is what the MFD driver provides after all.  Why would it be okay
-to allocate different compatible strings from the MFD, but not in the
-Device Tree?
+Great.  Thank you.
 
-It would be the easiest solution.
-
-Has Rob commented on this yet?
+> http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-6438-32-bit-ARM926-Embedded-Microprocessor-SAM9G45_Datasheet.pdf
+> 
+> USART doc starting p572, registers p621.
+> 
 
 -- 
 Lee Jones [李琼斯]
