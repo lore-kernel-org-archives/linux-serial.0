@@ -1,33 +1,83 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Lee Jones <lee.jones@linaro.org>
 Subject: Re: [PATCH v12 0/6] Driver for at91 usart in spi mode
-Date: Tue, 11 Sep 2018 21:04:56 +0200
-Message-ID: <CAMuHMdV_btX=HcTpfnrP6iUfrBNvQfDybE_tKtJZZERMQ8n=ZA@mail.gmail.com>
+Date: Tue, 11 Sep 2018 23:43:02 +0100
+Message-ID: <20180911224302.GJ4185@dell>
 References: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
- <20180911093356.GE4185@dell> <20180911093917.GL2494@piout.net>
+ <20180911093356.GE4185@dell>
+ <20180911093917.GL2494@piout.net>
  <CAMuHMdXH8gNjKGOHGFc+K03U2zsVCSN7G_Q4wtepQr859nRQKg@mail.gmail.com>
- <20180911153621.GP2494@piout.net> <CAMuHMdV+=EgAYogwNHbY=RExkGox_+YSeHV6pJtQb6g6PzD-CQ@mail.gmail.com>
- <20180911181838.GI4185@dell> <20180911185839.GA25212@piout.net>
+ <20180911153621.GP2494@piout.net>
+ <CAMuHMdV+=EgAYogwNHbY=RExkGox_+YSeHV6pJtQb6g6PzD-CQ@mail.gmail.com>
+ <20180911181838.GI4185@dell>
+ <CAMuHMdUMt=HJGCDZvJF99=45mecn5AjnTr-tA_LioxWrNKM2ag@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180911185839.GA25212@piout.net>
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdUMt=HJGCDZvJF99=45mecn5AjnTr-tA_LioxWrNKM2ag@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Lee Jones <lee.jones@linaro.org>, radu_nicolae.pirea@upb.ro, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Greg KH <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linux-spi <linux-spi@>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, radu_nicolae.pirea@upb.ro, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Greg KH <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>linu
 List-Id: linux-serial@vger.kernel.org
 
-Hi Alexandre,
-
-On Tue, Sep 11, 2018 at 8:58 PM Alexandre Belloni
-<alexandre.belloni@bootlin.com> wrote:
-> On 11/09/2018 19:39:30+0100, Lee Jones wrote:
+On Tue, 11 Sep 2018, Geert Uytterhoeven wrote:
+> On Tue, Sep 11, 2018 at 8:40 PM Lee Jones <lee.jones@linaro.org> wrote:
 > > On Tue, 11 Sep 2018, Geert Uytterhoeven wrote:
-> >
 > > > On Tue, Sep 11, 2018 at 5:36 PM Alexandre Belloni
 > > > <alexandre.belloni@bootlin.com> wrote:
 > > > > On 11/09/2018 16:59:09+0200, Geert Uytterhoeven wrote:
 > > > > > On Tue, Sep 11, 2018 at 11:40 AM Alexandre Belloni
 > > > > > <alexandre.belloni@bootlin.com> wrote:
+> > > > > > On 11/09/2018 10:33:56+0100, Lee Jones wrote:
+> > > > > > > On Tue, 04 Sep 2018, Radu Pirea wrote:
+> > > > > > > > Radu Pirea (6):
+> > > > > > > >   MAINTAINERS: add at91 usart mfd driver
+> > > > > > > >   dt-bindings: add binding for atmel-usart in SPI mode
+> > > > > > > >   mfd: at91-usart: added mfd driver for usart
+> > > > > > > >   MAINTAINERS: add at91 usart spi driver
+> > > > > > > >   spi: at91-usart: add driver for at91-usart as spi
+> > > > > > > >   tty/serial: atmel: change the driver to work under at91-usart mfd
+> > > > > > > >
+> > > > > > > >  .../bindings/{serial => mfd}/atmel-usart.txt  |  25 +-
+> > > > > > > >  MAINTAINERS                                   |  16 +
+> > > > > > > >  drivers/mfd/Kconfig                           |   9 +
+> > > > > > > >  drivers/mfd/Makefile                          |   1 +
+> > > > > > > >  drivers/mfd/at91-usart.c                      |  71 +++
+> > > > > > > >  drivers/spi/Kconfig                           |   8 +
+> > > > > > > >  drivers/spi/Makefile                          |   1 +
+> > > > > > > >  drivers/spi/spi-at91-usart.c                  | 432 ++++++++++++++++++
+> > > > > > > >  drivers/tty/serial/Kconfig                    |   1 +
+> > > > > > > >  drivers/tty/serial/atmel_serial.c             |  42 +-
+> > > > > > > >  include/dt-bindings/mfd/at91-usart.h          |  17 +
+> > > > > > > >  11 files changed, 606 insertions(+), 17 deletions(-)
+> > > > > > > >  rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
+> > > > > > > >  create mode 100644 drivers/mfd/at91-usart.c
+> > > > > > > >  create mode 100644 drivers/spi/spi-at91-usart.c
+> > > > > > > >  create mode 100644 include/dt-bindings/mfd/at91-usart.h
+> > > > > > >
+> > > > > > > Seeing as this patch-set has caused some issues this morning, I took
+> > > > > > > the liberty to peruse back into its history to figure out where things
+> > > > > > > started to go wrong.  I also re-reviewed the MFD driver - and I'm glad
+> > > > > > > I did!
+> > > > > > >
+> > > > > > > My Acked-by has been attached to the MFD portion since v5, which is
+> > > > > > > why the code hasn't caught my eye before today.  I reviewed the
+> > > > > > > relocation of the *binding document* (serial => mfd with no changes)
+> > > > > > > in v4 and nothing else.  It appears as though you mistakenly added it
+> > > > > > > to the *MFD driver* instead.  This explains my confusion in v10 when I
+> > > > > > > told you I'd already reviewed the binding document.
+> > > > > > >
+> > > > > > > As I said, I have re-reviewed the MFD driver and I'm afraid to say
+> > > > > > > that I do not like what I see.  Besides the missing header file and
+> > > > > > > the whitespace tabbing errors, I do not agree with the implementation.
+> > > > > > > Using MFD as a shim to hack around driver selection is not a valid
+> > > > > > > use-case.
+> > > > > > >
+> > > > > > > What's stopping you from just using the compatible string directly to
+> > > > > > > select which driver you need to probe?
+> > > > > > >
+> > > > > >
 > > > > > > Then you'd have multiple compatible strings for the same IP which is a
 > > > > > > big no-no.
 > > > > >
@@ -58,21 +108,47 @@ On Tue, Sep 11, 2018 at 8:58 PM Alexandre Belloni
 > > nothing less.
 > >
 > > Does anyone have the datasheet to hand?
->
-> It is not a simple usart, it is either a usart or a full blown SPI
-> controller with registers changing layout depending on the selected
-> mode. Otherwise, I'm not sure how you would get a USART to do SPI.
+> 
+> I haven't read it, but I believe it's not unlike Renesas SCIF, which is
+> served by both drivers/tty/serial/sh-sci.c and drivers/spi/spi-sh-sci.c.
+> But the latter is not used from DT, so we haven't experienced (and solved)
+> the similar issue yet.
+> 
+> Would it work if the UART driver and SPI driver would match against the
+> same compatible value, but the UART driver would do in its probe()
+> function:
+> 
+>     device_property_read_u32(&pdev->dev, "atmel,usart-mode", &opmode);
+>     if (opmode != AT91_USART_MODE_SERIAL)
+>         return ENODEV;
+> 
+> while the SPI driver would do:
+> 
+>     device_property_read_u32(&pdev->dev, "atmel,usart-mode", &opmode);
+>     if (opmode != AT91_USART_MODE_SPI)
+>         return ENODEV;
+> 
+> ? No MFD driver involved.
 
-Note the "S" in USART. SPI is just synchronous serial with a shared clock
-for transmit and receive. So the hardware is not that unrelated.
+I haven't looked at the code in a while, but if memory serves I
+believe platform code gives up once it has found its first match, so
+by doing this, one of the drivers will never be matched/probed.
 
-Gr{oetje,eeting}s,
+It's midnight here, so cracking out the datasheet isn't going to
+happen just now, but it's my current belief that if the IP serves 2
+very different modes of operation, even if the registers are in a
+shared space, they could have their own compatible strings in DT.
 
-                        Geert
+That is what the MFD driver provides after all.  Why would it be okay
+to allocate different compatible strings from the MFD, but not in the
+Device Tree?
+
+It would be the easiest solution.
+
+Has Rob commented on this yet?
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
