@@ -1,66 +1,75 @@
-From: Baolin Wang <baolin.wang@linaro.org>
-Subject: Re: [PATCH 1/5] serial: sprd: Remove unused structure
-Date: Tue, 11 Sep 2018 14:09:52 +0800
-Message-ID: <CAMz4kuKTp0fAqNHSTL_upQ1OQMM4NB0pnmsYG19PGuq=esavPg@mail.gmail.com>
-References: <50e1f7f4673bff9d71936b4eb34cbf2571b0fda9.1533950271.git.baolin.wang@linaro.org>
- <CAAfSe-tVJ1P30y+aj-2AsEtsbQ=O3vADxZNc_UW6ri92suGMgA@mail.gmail.com>
+From: Radu Nicolae Pirea <pirea.radu@gmail.com>
+Subject: Re: [GIT PULL] Immutable branch between MFD, SPI and TTY due for
+ the v4.20 merge window
+Date: Tue, 11 Sep 2018 11:14:33 +0300
+Message-ID: <bd9104b702feec556ed01311e9efcb96790131d0.camel@upb.ro>
+References: <20180713164736.26028-1-radu.pirea@microchip.com>
+         <20180910151803.GX28860@dell>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAAfSe-tVJ1P30y+aj-2AsEtsbQ=O3vADxZNc_UW6ri92suGMgA@mail.gmail.com>
+In-Reply-To: <20180910151803.GX28860@dell>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com, Orson Zhai <orsonzhai@gmail.com>, Mark Brown <broonie@kernel.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Lee Jones <lee.jones@linaro.org>, Radu Pirea <radu.pirea@microchip.com>
+Cc: broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Hi Lee,
 
-On 4 September 2018 at 14:52, Chunyan Zhang <zhang.lyra@gmail.com> wrote:
-> On 11 August 2018 at 09:34, Baolin Wang <baolin.wang@linaro.org> wrote:
->> Remove the unused reg_backup structure.
->>
->> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
->
-> Acked-by: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
-
-Thanks Chunyan.
-
-Greg, could you apply this patch set if there are no other issues? Thanks.
-
->> ---
->>  drivers/tty/serial/sprd_serial.c | 11 -----------
->>  1 file changed, 11 deletions(-)
->>
->> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
->> index 828f114..1b0e3fb 100644
->> --- a/drivers/tty/serial/sprd_serial.c
->> +++ b/drivers/tty/serial/sprd_serial.c
->> @@ -95,19 +95,8 @@
->>  #define SPRD_IMSR_BREAK_DETECT         BIT(7)
->>  #define SPRD_IMSR_TIMEOUT              BIT(13)
->>
->> -struct reg_backup {
->> -       u32 ien;
->> -       u32 ctrl0;
->> -       u32 ctrl1;
->> -       u32 ctrl2;
->> -       u32 clkd0;
->> -       u32 clkd1;
->> -       u32 dspwait;
->> -};
->> -
->>  struct sprd_uart_port {
->>         struct uart_port port;
->> -       struct reg_backup reg_bak;
->>         char name[16];
->>  };
->>
->> --
->> 1.9.1
->>
+Thank you for taking the patch series, but you didn't take the latest
+version(v12) :)
 
 
-
--- 
-Baolin Wang
-Best Regards
+On Mon, 2018-09-10 at 16:18 +0100, Lee Jones wrote:
+> Enjoy!
+> 
+> The following changes since commit
+> 5b394b2ddf0347bef56e50c69a58773c94343ff3:
+> 
+>   Linux 4.19-rc1 (2018-08-26 14:11:59 -0700)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git tags/ib-
+> mfd-spi-tty-v4.20
+> 
+> for you to fetch changes up to
+> c24d25317a7c6bb3053d4c193b3cf57d1e9a3e4b:
+> 
+>   tty/serial: atmel: Change the driver to work under at91-usart MFD
+> (2018-09-10 16:12:43 +0100)
+> 
+> ----------------------------------------------------------------
+> Immutable branch between MFD, SPI and TTY due for the v4.20 merge
+> window
+> 
+> ----------------------------------------------------------------
+> Radu Pirea (6):
+>       MAINTAINERS: Add AT91 USART MFD entry
+>       dt-bindings: Add binding for atmel-usart in SPI mode
+>       mfd: at91-usart: Add MFD driver for USART
+>       MAINTAINERS: Add AT91 USART SPI entry
+>       spi: at91-usart: Add driver for at91-usart as SPI
+>       tty/serial: atmel: Change the driver to work under at91-usart
+> MFD
+> 
+>  .../bindings/{serial => mfd}/atmel-usart.txt       |  25 +-
+>  MAINTAINERS                                        |  16 +
+>  drivers/mfd/Kconfig                                |   9 +
+>  drivers/mfd/Makefile                               |   1 +
+>  drivers/mfd/at91-usart.c                           |  71 ++++
+>  drivers/spi/Kconfig                                |   8 +
+>  drivers/spi/Makefile                               |   1 +
+>  drivers/spi/spi-at91-usart.c                       | 432
+> +++++++++++++++++++++
+>  drivers/tty/serial/Kconfig                         |   1 +
+>  drivers/tty/serial/atmel_serial.c                  |  42 +-
+>  include/dt-bindings/mfd/at91-usart.h               |  17 +
+>  11 files changed, 606 insertions(+), 17 deletions(-)
+>  rename Documentation/devicetree/bindings/{serial => mfd}/atmel-
+> usart.txt (76%)
+>  create mode 100644 drivers/mfd/at91-usart.c
+>  create mode 100644 drivers/spi/spi-at91-usart.c
+>  create mode 100644 include/dt-bindings/mfd/at91-usart.h
+> 
