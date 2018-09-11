@@ -1,48 +1,68 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [GIT PULL] Immutable branch between MFD, SPI and TTY due for the
- v4.20 merge window
-Date: Tue, 11 Sep 2018 11:01:32 +0200
-Message-ID: <20180911090132.GB25161@kroah.com>
-References: <20180713164736.26028-1-radu.pirea@microchip.com>
- <20180910151803.GX28860@dell>
- <20180911084548.GC4185@dell>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v12 0/6] Driver for at91 usart in spi mode
+Date: Tue, 11 Sep 2018 10:33:56 +0100
+Message-ID: <20180911093356.GE4185@dell>
+References: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180911084548.GC4185@dell>
+In-Reply-To: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Radu Pirea <radu.pirea@microchip.com>, broonie@kernel.org, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, richard.genoud@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+To: Radu Pirea <radu_nicolae.pirea@upb.ro>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, gregkh@linuxfoundation.org, broonie@kernel.org, jslaby@suse.com, richard.genoud@gmail.com, davem@davemloft.net, mchehab+samsung@kernel.org, akpm@linux-foundation.org, arnd@arndb.de, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Sep 11, 2018 at 09:45:48AM +0100, Lee Jones wrote:
-> On Mon, 10 Sep 2018, Lee Jones wrote:
+On Tue, 04 Sep 2018, Radu Pirea wrote:
+> Radu Pirea (6):
+>   MAINTAINERS: add at91 usart mfd driver
+>   dt-bindings: add binding for atmel-usart in SPI mode
+>   mfd: at91-usart: added mfd driver for usart
+>   MAINTAINERS: add at91 usart spi driver
+>   spi: at91-usart: add driver for at91-usart as spi
+>   tty/serial: atmel: change the driver to work under at91-usart mfd
 > 
-> > Enjoy!
-> > 
-> > The following changes since commit 5b394b2ddf0347bef56e50c69a58773c94343ff3:
-> > 
-> >   Linux 4.19-rc1 (2018-08-26 14:11:59 -0700)
-> > 
-> > are available in the Git repository at:
-> > 
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git tags/ib-mfd-spi-tty-v4.20
-> > 
-> > for you to fetch changes up to c24d25317a7c6bb3053d4c193b3cf57d1e9a3e4b:
-> > 
-> >   tty/serial: atmel: Change the driver to work under at91-usart MFD (2018-09-10 16:12:43 +0100)
-> > 
-> > ----------------------------------------------------------------
-> > Immutable branch between MFD, SPI and TTY due for the v4.20 merge window
-> 
-> Due to a comedy of errors, I'm voiding this pull-request.
+>  .../bindings/{serial => mfd}/atmel-usart.txt  |  25 +-
+>  MAINTAINERS                                   |  16 +
+>  drivers/mfd/Kconfig                           |   9 +
+>  drivers/mfd/Makefile                          |   1 +
+>  drivers/mfd/at91-usart.c                      |  71 +++
+>  drivers/spi/Kconfig                           |   8 +
+>  drivers/spi/Makefile                          |   1 +
+>  drivers/spi/spi-at91-usart.c                  | 432 ++++++++++++++++++
+>  drivers/tty/serial/Kconfig                    |   1 +
+>  drivers/tty/serial/atmel_serial.c             |  42 +-
+>  include/dt-bindings/mfd/at91-usart.h          |  17 +
+>  11 files changed, 606 insertions(+), 17 deletions(-)
+>  rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
+>  create mode 100644 drivers/mfd/at91-usart.c
+>  create mode 100644 drivers/spi/spi-at91-usart.c
+>  create mode 100644 include/dt-bindings/mfd/at91-usart.h
 
-Um, I can't do that as my tree can not be rebased :(
+Seeing as this patch-set has caused some issues this morning, I took
+the liberty to peruse back into its history to figure out where things
+started to go wrong.  I also re-reviewed the MFD driver - and I'm glad
+I did!
 
-I can take follow-on patches, so I will go apply the patch posted so
-that my tree builds again.  I recommend you just apply it as well.
+My Acked-by has been attached to the MFD portion since v5, which is
+why the code hasn't caught my eye before today.  I reviewed the
+relocation of the *binding document* (serial => mfd with no changes)
+in v4 and nothing else.  It appears as though you mistakenly added it
+to the *MFD driver* instead.  This explains my confusion in v10 when I
+told you I'd already reviewed the binding document.
 
-thanks,
+As I said, I have re-reviewed the MFD driver and I'm afraid to say
+that I do not like what I see.  Besides the missing header file and
+the whitespace tabbing errors, I do not agree with the implementation.
+Using MFD as a shim to hack around driver selection is not a valid
+use-case.
 
-greg k-h
+What's stopping you from just using the compatible string directly to
+select which driver you need to probe?
+
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
