@@ -1,62 +1,44 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH] kgdboc: Fix restrict error
-Date: Tue, 11 Sep 2018 13:49:54 +0100
-Message-ID: <20180911124954.zwhzxshx6zzddj4v@holly.lan>
-References: <20180910232014.2642-1-labbott@redhat.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [GIT PULL v2] Immutable branch between MFD, SPI and TTY due for
+ the v4.20 merge window
+Date: Tue, 11 Sep 2018 16:04:00 +0200
+Message-ID: <20180911140400.GB18410@kroah.com>
+References: <20180904111310.4049-1-radu_nicolae.pirea@upb.ro>
+ <20180911111850.GJ4185@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180910232014.2642-1-labbott@redhat.com>
+In-Reply-To: <20180911111850.GJ4185@dell>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Laura Abbott <labbott@redhat.com>
-Cc: Jason Wessel <jason.wessel@windriver.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Radu Pirea <radu_nicolae.pirea@upb.ro>, robh+dt@kernel.org, mark.rutland@arm.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, broonie@kernel.org, jslaby@suse.com, richard.genoud@gmail.com, davem@davemloft.net, mchehab+samsung@kernel.org, akpm@linux-foundation.org, arnd@arndb.de, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Sep 10, 2018 at 04:20:14PM -0700, Laura Abbott wrote:
-> There's an error when compiled with restrict:
+On Tue, Sep 11, 2018 at 12:18:50PM +0100, Lee Jones wrote:
+> [In case you missed it]
 > 
-> drivers/tty/serial/kgdboc.c: In function ‘configure_kgdboc’:
-> drivers/tty/serial/kgdboc.c:137:2: error: ‘strcpy’ source argument is the same
-> as destination [-Werror=restrict]
->   strcpy(config, opt);
->   ^~~~~~~~~~~~~~~~~~~
+> This new pull-request contains the following changes since v1:
 > 
-> As the error implies, this is from trying to use config as both source and
-> destination. Drop the call to the function where config is the argument
-> since nothing else happens in the function.
+>  - Uplift the submission version from v11 to v12
+>  - Include fix for build breakage due to missing Device Tree include file
 > 
-> Signed-off-by: Laura Abbott <labbott@redhat.com>
+> Since it is based on the original pull-request, it can be pulled
+> in either directly on top of it or as a pull in its own right.
+> 
+> The following changes since commit 5b394b2ddf0347bef56e50c69a58773c94343ff3:
+> 
+>   Linux 4.19-rc1 (2018-08-26 14:11:59 -0700)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git tags/ib-mfd-spi-tty-v4.20-1
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Ok, let's try this again, I've dropped that other patch and taken this
+branch into my tree.
 
-> ---
->  drivers/tty/serial/kgdboc.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> index b4ba2b1dab76..dd503743bbff 100644
-> --- a/drivers/tty/serial/kgdboc.c
-> +++ b/drivers/tty/serial/kgdboc.c
-> @@ -154,15 +154,13 @@ static int configure_kgdboc(void)
->  {
->  	struct tty_driver *p;
->  	int tty_line = 0;
-> -	int err;
-> +	int err = -ENODEV;
->  	char *cptr = config;
->  	struct console *cons;
->  
-> -	err = kgdboc_option_setup(config);
-> -	if (err || !strlen(config) || isspace(config[0]))
-> +	if (!strlen(config) || isspace(config[0]))
->  		goto noconfig;
->  
-> -	err = -ENODEV;
->  	kgdboc_io_ops.is_console = 0;
->  	kgdb_tty_driver = NULL;
->  
-> -- 
-> 2.17.1
-> 
+Hopefully this all works well :)
+
+thanks,
+
+greg k-h
