@@ -1,9 +1,8 @@
-From: Lee Jones <lee.jones@linaro.org>
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Subject: Re: [PATCH v12 0/6] Driver for at91 usart in spi mode
-Date: Wed, 12 Sep 2018 12:43:52 +0100
-Message-ID: <20180912114352.GT4185@dell>
-References: <CAMuHMdV+=EgAYogwNHbY=RExkGox_+YSeHV6pJtQb6g6PzD-CQ@mail.gmail.com>
- <20180911181838.GI4185@dell>
+Date: Wed, 12 Sep 2018 14:14:20 +0200
+Message-ID: <20180912121420.GE2760@piout.net>
+References: <20180911181838.GI4185@dell>
  <20180911185839.GA25212@piout.net>
  <20180911224418.GK4185@dell>
  <20180911225440.GL4185@dell>
@@ -12,95 +11,64 @@ References: <CAMuHMdV+=EgAYogwNHbY=RExkGox_+YSeHV6pJtQb6g6PzD-CQ@mail.gmail.com>
  <CAMuHMdWefU0pw=c9TKOa+wGHchpg8JRfE0OnC4+wKDt-qrbH1A@mail.gmail.com>
  <20180912105407.GR4185@dell>
  <20180912111757.GC2760@piout.net>
+ <20180912114352.GT4185@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180912111757.GC2760@piout.net>
+In-Reply-To: <20180912114352.GT4185@dell>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
+To: Lee Jones <lee.jones@linaro.org>
 Cc: Geert Uytterhoeven <geert@linux-m68k.org>, radu_nicolae.pirea@upb.ro, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Greg KH <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>linux-spi <l>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 12 Sep 2018, Alexandre Belloni wrote:
-
-> On 12/09/2018 11:54:07+0100, Lee Jones wrote:
-> > On Wed, 12 Sep 2018, Geert Uytterhoeven wrote:
-> > > On Wed, Sep 12, 2018 at 10:41 AM Lee Jones <lee.jones@linaro.org> wrote:
-> > > > On Wed, 12 Sep 2018, Alexandre Belloni wrote:
-> > > > > On 11/09/2018 23:54:40+0100, Lee Jones wrote:
-> > > > > > > > http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-6438-32-bit-ARM926-Embedded-Microprocessor-SAM9G45_Datasheet.pdf
-> > > > > > > >
-> > > > > > > > USART doc starting p572, registers p621.
-> > > > > >
-> > > > > > After looking at the datasheet, I don't see any reason why one of the
-> > > > > > two drivers can't be selected using different compatible strings.
-> > > > >
-> > > > > Because there is only one IP and we don't use the device tree to selecet
-> > > > > linux specific drivers.
-> > > >
-> > > > We do it all the time.  There are loads of MFDs (def: same IP, with
-> > > > different functions) which have separate compatibles for their various
-> > > > functions.  If you wish this IP to operate as an SPI controller, it
-> > > > should have an SPI compatible, if you wish it to operate as a U(S)ART,
-> > > > then it should have a UART compatible.  It's what we do for most of
-> > > > the other MFDs in the kernel.
+On 12/09/2018 12:43:52+0100, Lee Jones wrote:
+> > > But ... we can't have it both ways.  *Either* it's a true MFD, in
+> > > which case it can/should have 2 separate compatible strings which can
+> > > be specified directly from the DT.  *Or* it's not an MFD.  In the
+> > > latter case, which I think we're all agreeing on (else we'd have 2
+> > > compatible strings), MFD is not the place to handle this (my original
+> > > point).
 > > > 
-> > > There is a big difference: MFD functions are(more or less) independent
-> > > functions, which can be used at the same time. It makes perfect sense for a
-> > > single IP block that has both SPI and UART interfaces, that can be used at
-> > > the same time.
+> > 
+> > If that is what bothers you, then let's move it out of mfd.
+> 
+> As I've already mentioned.  I don't just want it moved out of MFD and
+> shoved somewhere else.  My aim is to fix this properly.
+> 
+
+If it is out of MFD, then I'm not sure why you would care too much about
+it as you won't be maintaining that code. And I still this what was done
+was correct but I'm open to test what you suggest.
+
+> > > So ... this is a USART device which can do SPI, right?
 > > > 
-> > > In this case, there is a single piece of hardware that can perform
-> > > different functions, but not at the same time. Performing a different
-> > > function means configuring the hardware for that function, hence using a
-> > > different driver (from a different subsystem).
+> > > My current thinking is that; as this is a USART device first &
+> > > foremost, the USART should be probed in the first instance regardless,
+> > > then if SPI mode is specified it (the USART driver) registers the SPI
+> > > platform driver (as MFD does currently) and exits gracefully, allowing
+> > > the SPI driver to take over.
+> > > 
+> > > Spanner in the works: is it physically possible to change the mode at
+> > > run-time?  :s
 > > 
-> > Yes, I can see that PoV.
-> > 
-> > But ... we can't have it both ways.  *Either* it's a true MFD, in
-> > which case it can/should have 2 separate compatible strings which can
-> > be specified directly from the DT.  *Or* it's not an MFD.  In the
-> > latter case, which I think we're all agreeing on (else we'd have 2
-> > compatible strings), MFD is not the place to handle this (my original
-> > point).
-> > 
+> > Yes it is possible but on Linux that will not happen without probing
+> > the drivers again.
 > 
-> If that is what bothers you, then let's move it out of mfd.
-
-As I've already mentioned.  I don't just want it moved out of MFD and
-shoved somewhere else.  My aim is to fix this properly.
-
-> > So ... this is a USART device which can do SPI, right?
-> > 
-> > My current thinking is that; as this is a USART device first &
-> > foremost, the USART should be probed in the first instance regardless,
-> > then if SPI mode is specified it (the USART driver) registers the SPI
-> > platform driver (as MFD does currently) and exits gracefully, allowing
-> > the SPI driver to take over.
-> > 
-> > Spanner in the works: is it physically possible to change the mode at
-> > run-time?  :s
+> Not sure I understand what you mean.
 > 
-> Yes it is possible but on Linux that will not happen without probing
-> the drivers again.
 
-Not sure I understand what you mean.
+I was just commenting on changing the mode at runtime.
 
-I'm suggesting that you use the same platform_* interfaces MFD uses to
-register the SPI driver if SPI mode has been selected.  Only do so
-from the appropriate driver i.e. USART.
+> I'm suggesting that you use the same platform_* interfaces MFD uses to
+> register the SPI driver if SPI mode has been selected.  Only do so
+> from the appropriate driver i.e. USART.
+> 
 
-> I think DT overlays will be the only possible use
-> case because on SPI, you'd still have to provide nodes for the connected
-> SPI devices.
-
-Since SPI is a function of the USART you should describe is as such
-via a child node.
+Yeah, I understood that but I didn't comment because I'm not sure this
+will work yet.
 
 -- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
