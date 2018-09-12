@@ -1,7 +1,7 @@
 From: Phil Elwell <phil@raspberrypi.org>
-Subject: [PATCH 2/2] sc16is7xx: Fix for "Unexpected interrupt: 8"
-Date: Wed, 12 Sep 2018 15:31:56 +0100
-Message-ID: <1536762716-30673-3-git-send-email-phil@raspberrypi.org>
+Subject: [PATCH 1/2] sc16is7xx: Fix for multi-channel stall
+Date: Wed, 12 Sep 2018 15:31:55 +0100
+Message-ID: <1536762716-30673-2-git-send-email-phil@raspberrypi.org>
 References: <1536762716-30673-1-git-send-email-phil@raspberrypi.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1536762716-30673-1-git-send-email-phil@raspberrypi.org>
@@ -10,112 +10,111 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Phil Elwell <phil@raspberrypi.org>
 List-Id: linux-serial@vger.kernel.org
 
-The SC16IS752 has an Enhanced Feature Register which is aliased at the
-same address as the Interrupt Identification Register; accessing it
-requires that a magic value is written to the Line Configuration
-Register. If an interrupt is raised while the EFR is mapped in then
-the ISR won't be able to access the IIR, leading to the "Unexpected
-interrupt" error messages.
+The SC16IS752 is a dual-channel device. The two channels are largely
+independent, but the IRQ signals are wired together as an open-drain,
+active low signal which will be driven low while either of the
+channels requires attention, which can be for significant periods of
+time until operations complete and the interrupt can be acknowledged.
+In that respect it is should be treated as a true level-sensitive IRQ.
 
-Avoid the problem by claiming a mutex around accesses to the EFR
-register, also claiming the mutex in the interrupt handler work
-item (this is equivalent to disabling interrupts to interlock against
-a non-threaded interrupt handler).
+The kernel, however, needs to be able to exit interrupt context in
+order to use I2C or SPI to access the device registers (which may
+involve sleeping).  Therefore the interrupt needs to be masked out or
+paused in some way.
 
-See: https://github.com/raspberrypi/linux/issues/2529
+The usual way to manage sleeping from within an interrupt handler
+is to use a threaded interrupt handler - a regular interrupt routine
+does the minimum amount of work needed to triage the interrupt before
+waking the interrupt service thread. If the threaded IRQ is marked as
+IRQF_ONESHOT the kernel will automatically mask out the interrupt
+until the thread runs to completion. The sc16is7xx driver used to
+use a threaded IRQ, but a patch switched to using a kthread_worker
+in order to set realtime priorities on the handler thread and for
+other optimisations. The end result is non-threaded IRQ that
+schedules some work then returns IRQ_HANDLED, making the kernel
+think that all IRQ processing has completed.
+
+The work-around to prevent a constant stream of interrupts is to
+mark the interrupt as edge-sensitive rather than level-sensitive,
+but interpreting an active-low source as a falling-edge source
+requires care to prevent a total cessation of interrupts. Whereas
+an edge-triggering source will generate a new edge for every interrupt
+condition a level-triggering source will keep the signal at the
+interrupting level until it no longer requires attention; in other
+words, the host won't see another edge until all interrupt conditions
+are cleared. It is therefore vital that the interrupt handler does not
+exit with an outstanding interrupt condition, otherwise the kernel
+will not receive another interrupt unless some other operation causes
+the interrupt state on the device to be cleared.
+
+The existing sc16is7xx driver has a very simple interrupt "thread"
+(kthread_work job) that processes interrupts on each channel in turn
+until there are no more. If both channels are active and the first
+channel starts interrupting while the handler for the second channel
+is running then it will not be detected and an IRQ stall ensues. This
+could be handled easily if there was a shared IRQ status register, or
+a convenient way to determine if the IRQ had been deasserted for any
+length of time, but both appear to be lacking.
+
+Avoid this problem (or at least make it much less likely to happen)
+by reducing the granularity of per-channel interrupt processing
+to one condition per iteration, only exiting the overall loop when
+both channels are no longer interrupting.
 
 Signed-off-by: Phil Elwell <phil@raspberrypi.org>
 ---
- drivers/tty/serial/sc16is7xx.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/tty/serial/sc16is7xx.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 47b4115..2680986 100644
+index 243c960..47b4115 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -328,6 +328,7 @@ struct sc16is7xx_port {
- 	struct kthread_worker		kworker;
- 	struct task_struct		*kworker_task;
- 	struct kthread_work		irq_work;
-+	struct mutex			efr_lock;
- 	struct sc16is7xx_one		p[0];
- };
+@@ -657,7 +657,7 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
+ 		uart_write_wakeup(port);
+ }
  
-@@ -499,6 +500,21 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 		div /= 4;
- 	}
+-static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
++static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+ {
+ 	struct uart_port *port = &s->p[portno].port;
  
-+	/* In an amazing feat of design, the Enhanced Features Register shares
-+	 * the address of the Interrupt Identification Register, and is
-+	 * switched in by writing a magic value (0xbf) to the Line Control
-+	 * Register. Any interrupt firing during this time will see the EFR
-+	 * where it expects the IIR to be, leading to "Unexpected interrupt"
-+	 * messages.
-+	 *
-+	 * Prevent this possibility by claiming a mutex while accessing the
-+	 * EFR, and claiming the same mutex from within the interrupt handler.
-+	 * This is similar to disabling the interrupt, but that doesn't work
-+	 * because the bulk of the interrupt processing is run as a workqueue
-+	 * job in thread context.
-+	 */
-+	mutex_lock(&s->efr_lock);
-+
- 	lcr = sc16is7xx_port_read(port, SC16IS7XX_LCR_REG);
+@@ -666,7 +666,7 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
  
- 	/* Open the LCR divisors for configuration */
-@@ -514,6 +530,8 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 	/* Put LCR back to the normal mode */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
+ 		iir = sc16is7xx_port_read(port, SC16IS7XX_IIR_REG);
+ 		if (iir & SC16IS7XX_IIR_NO_INT_BIT)
+-			break;
++			return false;
  
-+	mutex_unlock(&s->efr_lock);
-+
- 	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
- 			      SC16IS7XX_MCR_CLKSEL_BIT,
- 			      prescaler);
-@@ -696,6 +714,8 @@ static void sc16is7xx_ist(struct kthread_work *ws)
+ 		iir &= SC16IS7XX_IIR_ID_MASK;
+ 
+@@ -688,16 +688,23 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+ 					    port->line, iir);
+ 			break;
+ 		}
+-	} while (1);
++	} while (0);
++	return true;
+ }
+ 
+ static void sc16is7xx_ist(struct kthread_work *ws)
  {
  	struct sc16is7xx_port *s = to_sc16is7xx_port(ws, irq_work);
+-	int i;
  
-+	mutex_lock(&s->efr_lock);
+-	for (i = 0; i < s->devtype->nr_uart; ++i)
+-		sc16is7xx_port_irq(s, i);
++	while (1) {
++		bool keep_polling = false;
++		int i;
 +
- 	while (1) {
- 		bool keep_polling = false;
- 		int i;
-@@ -705,6 +725,8 @@ static void sc16is7xx_ist(struct kthread_work *ws)
- 		if (!keep_polling)
- 			break;
- 	}
-+
-+	mutex_unlock(&s->efr_lock);
++		for (i = 0; i < s->devtype->nr_uart; ++i)
++			keep_polling |= sc16is7xx_port_irq(s, i);
++		if (!keep_polling)
++			break;
++	}
  }
  
  static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
-@@ -899,6 +921,9 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 	if (!(termios->c_cflag & CREAD))
- 		port->ignore_status_mask |= SC16IS7XX_LSR_BRK_ERROR_MASK;
- 
-+	/* As above, claim the mutex while accessing the EFR. */
-+	mutex_lock(&s->efr_lock);
-+
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG,
- 			     SC16IS7XX_LCR_CONF_MODE_B);
- 
-@@ -920,6 +945,8 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 	/* Update LCR register */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
- 
-+	mutex_unlock(&s->efr_lock);
-+
- 	/* Get baud rate generator configuration */
- 	baud = uart_get_baud_rate(port, termios, old,
- 				  port->uartclk / 16 / 4 / 0xffff,
-@@ -1185,6 +1212,7 @@ static int sc16is7xx_probe(struct device *dev,
- 	s->regmap = regmap;
- 	s->devtype = devtype;
- 	dev_set_drvdata(dev, s);
-+	mutex_init(&s->efr_lock);
- 
- 	kthread_init_worker(&s->kworker);
- 	kthread_init_work(&s->irq_work, sc16is7xx_ist);
 -- 
 2.7.4
