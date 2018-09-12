@@ -1,120 +1,32 @@
 From: Phil Elwell <phil@raspberrypi.org>
-Subject: [PATCH 1/2] sc16is7xx: Fix for multi-channel stall
-Date: Wed, 12 Sep 2018 15:31:55 +0100
-Message-ID: <1536762716-30673-2-git-send-email-phil@raspberrypi.org>
-References: <1536762716-30673-1-git-send-email-phil@raspberrypi.org>
+Subject: [PATCH 0/2] sc16is7xx interrupt fixes
+Date: Wed, 12 Sep 2018 15:31:54 +0100
+Message-ID: <1536762716-30673-1-git-send-email-phil@raspberrypi.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1536762716-30673-1-git-send-email-phil@raspberrypi.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Graf <agraf@suse.de>, Stefan Wahren <stefan.wahren@i2se.com>
 Cc: Phil Elwell <phil@raspberrypi.org>
 List-Id: linux-serial@vger.kernel.org
 
-The SC16IS752 is a dual-channel device. The two channels are largely
-independent, but the IRQ signals are wired together as an open-drain,
-active low signal which will be driven low while either of the
-channels requires attention, which can be for significant periods of
-time until operations complete and the interrupt can be acknowledged.
-In that respect it is should be treated as a true level-sensitive IRQ.
+The interrupt handling of the sc16is7xx driver is broken in a number of ways,
+as observed by multiple Raspberry Pi users. The attached patches attempt to
+address its failings, with apparent success.
 
-The kernel, however, needs to be able to exit interrupt context in
-order to use I2C or SPI to access the device registers (which may
-involve sleeping).  Therefore the interrupt needs to be masked out or
-paused in some way.
+The first is a workaround for a side-effect of the switch away from using a
+thread IRQ, a change which has necessitated using what is actually a
+level-triggered interrupt as if it were edge-triggered. Doing so is fraught
+with potential race conditions, but the patch makes them much less likely.
 
-The usual way to manage sleeping from within an interrupt handler
-is to use a threaded interrupt handler - a regular interrupt routine
-does the minimum amount of work needed to triage the interrupt before
-waking the interrupt service thread. If the threaded IRQ is marked as
-IRQF_ONESHOT the kernel will automatically mask out the interrupt
-until the thread runs to completion. The sc16is7xx driver used to
-use a threaded IRQ, but a patch switched to using a kthread_worker
-in order to set realtime priorities on the handler thread and for
-other optimisations. The end result is non-threaded IRQ that
-schedules some work then returns IRQ_HANDLED, making the kernel
-think that all IRQ processing has completed.
+The second is a workaround for a bug in the design of the SC16IS752 which
+requires mutual exclusion between the interrupt handler and access to the
+Enhanced Features Register.
 
-The work-around to prevent a constant stream of interrupts is to
-mark the interrupt as edge-sensitive rather than level-sensitive,
-but interpreting an active-low source as a falling-edge source
-requires care to prevent a total cessation of interrupts. Whereas
-an edge-triggering source will generate a new edge for every interrupt
-condition a level-triggering source will keep the signal at the
-interrupting level until it no longer requires attention; in other
-words, the host won't see another edge until all interrupt conditions
-are cleared. It is therefore vital that the interrupt handler does not
-exit with an outstanding interrupt condition, otherwise the kernel
-will not receive another interrupt unless some other operation causes
-the interrupt state on the device to be cleared.
+Phil Elwell (2):
+  sc16is7xx: Fix for multi-channel stall
+  sc16is7xx: Fix for "Unexpected interrupt: 8"
 
-The existing sc16is7xx driver has a very simple interrupt "thread"
-(kthread_work job) that processes interrupts on each channel in turn
-until there are no more. If both channels are active and the first
-channel starts interrupting while the handler for the second channel
-is running then it will not be detected and an IRQ stall ensues. This
-could be handled easily if there was a shared IRQ status register, or
-a convenient way to determine if the IRQ had been deasserted for any
-length of time, but both appear to be lacking.
+ drivers/tty/serial/sc16is7xx.c | 50 +++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 44 insertions(+), 6 deletions(-)
 
-Avoid this problem (or at least make it much less likely to happen)
-by reducing the granularity of per-channel interrupt processing
-to one condition per iteration, only exiting the overall loop when
-both channels are no longer interrupting.
-
-Signed-off-by: Phil Elwell <phil@raspberrypi.org>
----
- drivers/tty/serial/sc16is7xx.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 243c960..47b4115 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -657,7 +657,7 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
- 		uart_write_wakeup(port);
- }
- 
--static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
-+static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
- {
- 	struct uart_port *port = &s->p[portno].port;
- 
-@@ -666,7 +666,7 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
- 
- 		iir = sc16is7xx_port_read(port, SC16IS7XX_IIR_REG);
- 		if (iir & SC16IS7XX_IIR_NO_INT_BIT)
--			break;
-+			return false;
- 
- 		iir &= SC16IS7XX_IIR_ID_MASK;
- 
-@@ -688,16 +688,23 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
- 					    port->line, iir);
- 			break;
- 		}
--	} while (1);
-+	} while (0);
-+	return true;
- }
- 
- static void sc16is7xx_ist(struct kthread_work *ws)
- {
- 	struct sc16is7xx_port *s = to_sc16is7xx_port(ws, irq_work);
--	int i;
- 
--	for (i = 0; i < s->devtype->nr_uart; ++i)
--		sc16is7xx_port_irq(s, i);
-+	while (1) {
-+		bool keep_polling = false;
-+		int i;
-+
-+		for (i = 0; i < s->devtype->nr_uart; ++i)
-+			keep_polling |= sc16is7xx_port_irq(s, i);
-+		if (!keep_polling)
-+			break;
-+	}
- }
- 
- static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
 -- 
 2.7.4
