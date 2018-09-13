@@ -1,121 +1,107 @@
-From: Radu Pirea <radu_nicolae.pirea@upb.ro>
-Subject: Re: [PATCH v12 0/6] Driver for at91 usart in spi mode
-Date: Wed, 12 Sep 2018 22:36:40 +0300
-Message-ID: <a143edd3c0de2ba98b64e642b4384edf4323be2b.camel@upb.ro>
-References: <20180911185839.GA25212@piout.net> <20180911224418.GK4185@dell>
-         <20180911225440.GL4185@dell> <20180912073355.GB2557@piout.net>
-         <20180912084143.GN4185@dell>
-         <CAMuHMdWefU0pw=c9TKOa+wGHchpg8JRfE0OnC4+wKDt-qrbH1A@mail.gmail.com>
-         <20180912105407.GR4185@dell> <20180912111757.GC2760@piout.net>
-         <20180912114352.GT4185@dell> <20180912121420.GE2760@piout.net>
-         <20180912131248.GA21544@dell>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH] tty: max3100: Fix oops while 'cat
+ /proc/tty/driver/ttyMAX'
+Date: Thu, 13 Sep 2018 07:33:46 +0200
+Message-ID: <c2c4a6e5-2c5b-7c7c-1390-146186e7e1b3@suse.cz>
+References: <201809131038370132780@zte.com.cn>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180912131248.GA21544@dell>
+In-Reply-To: <201809131038370132780@zte.com.cn>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Greg KH <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linux-spi <linux-spi@vger.kernel.org>
+To: chen.lin5@zte.com.cn, gregkh@linuxfoundation.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2018-09-12 at 14:12 +0100, Lee Jones wrote:
-> On Wed, 12 Sep 2018, Alexandre Belloni wrote:
+On 09/13/2018, 04:38 AM, chen.lin5@zte.com.cn wrote:
+> Before wq 's->workqueue' be initialized in function 'max3100_startup',
 > 
-> > On 12/09/2018 12:43:52+0100, Lee Jones wrote:
-> > > > > But ... we can't have it both ways.  *Either* it's a true
-> > > > > MFD, in
-> > > > > which case it can/should have 2 separate compatible strings
-> > > > > which can
-> > > > > be specified directly from the DT.  *Or* it's not an MFD.  In
-> > > > > the
-> > > > > latter case, which I think we're all agreeing on (else we'd
-> > > > > have 2
-> > > > > compatible strings), MFD is not the place to handle this (my
-> > > > > original
-> > > > > point).
-> > > > > 
-> > > > 
-> > > > If that is what bothers you, then let's move it out of mfd.
-> > > 
-> > > As I've already mentioned.  I don't just want it moved out of MFD
-> > > and
-> > > shoved somewhere else.  My aim is to fix this properly.
-> > > 
-> > 
-> > If it is out of MFD, then I'm not sure why you would care too much
-> > about
-> > it as you won't be maintaining that code. And I still this what was
-> > done
-> > was correct but I'm open to test what you suggest.
+> 'cat /proc/tty/driver/ttyMAX' will cause oops.
 > 
-> I care for the kernel in general, not just the areas I'm responsible
-> for.  I guess I'm just that kinda guy! ;)
-
-Well, Lee, like you, I think this driver should not be a MFD driver,
-but Alex has a good point of view. 
-
 > 
-> > > > > So ... this is a USART device which can do SPI, right?
-> > > > > 
-> > > > > My current thinking is that; as this is a USART device first
-> > > > > &
-> > > > > foremost, the USART should be probed in the first instance
-> > > > > regardless,
-> > > > > then if SPI mode is specified it (the USART driver) registers
-> > > > > the SPI
-> > > > > platform driver (as MFD does currently) and exits gracefully,
-> > > > > allowing
-> > > > > the SPI driver to take over.
-> > > > > 
-> > > > > Spanner in the works: is it physically possible to change the
-> > > > > mode at
-> > > > > run-time?  :s
-> > > > 
-> > > > Yes it is possible but on Linux that will not happen without
-> > > > probing
-> > > > the drivers again.
-> > > 
-> > > Not sure I understand what you mean.
-> > 
-> > I was just commenting on changing the mode at runtime.
+> Oops: Kernel access of bad area, sig: 11 [#1]
 > 
-> Oh I see.  My question was relating to whether the H/W is physically
-> capable of changing modes on-the-fly, rather than how Linux would
-> handle that.  If this is something we'd wish to support, then it
-> would
-> have to be a single driver, which is why I was asking.  By separating
-> the drivers this way, we are blocking that as a
-> possibility.  Although
-> I guess the OP has already thought about that and made the decision
-> not to support it.
-
-Is possible to change modes on-the-fly, but you have no reason to do
-that. On the PCB you will have a SPI slave or a serial console :)
-Anyway, the current form of the driver, and through this I want to say
-"this ugly hack", allows the user to switch from serial to SPI mode by
-adding only one property to the device tree node of USART. If the
-driver were in his first form, a simple SPI driver, how you will make a
-dtsi file for an IP like this? You will add two nodes for the same IP
-in dtsi and will take care to enable correct node in dts?
-I think this driver is only a tradeoff between having an ugly hack in
-kernel or having an messy device tree.
-
+> ...
 > 
-> > > I'm suggesting that you use the same platform_* interfaces MFD
-> > > uses to
-> > > register the SPI driver if SPI mode has been selected.  Only do
-> > > so
-> > > from the appropriate driver i.e. USART.
-> > 
-> > Yeah, I understood that but I didn't comment because I'm not sure
-> > this
-> > will work yet.
+> NIP [c0049070] __queue_work+0x24/0x268
 > 
-> Other drivers already do this.
+> LR [c0049308] queue_work_on+0x54/0x70
+> 
+> Call Trace:
+> 
+> [db44dba0] [c0049308] queue_work_on+0x54/0x70
+> 
+> [db44dbb0] [c036befc] max3100_get_mctrl+0x18/0x40
+> 
+> [db44dbc0] [c03614a4] uart_proc_show+0xfc/0x448
+> 
+> [db44dc40] [c0111aa8] seq_read+0x198/0x514
+> 
+> [db44dc90] [c01436e4] proc_reg_read+0x58/0x94
+> 
+> [db44dca0] [c00ee804] do_iter_read+0x190/0x1e0
+> 
+> [db44dcc0] [c00f0040] vfs_readv+0x58/0x7c
+> 
+> [db44dd40] [c011a2f4] default_file_splice_read+0x160/0x27c
+> 
+> [db44de30] [c0119f74] splice_direct_to_actor+0xec/0x23c
+> 
+> [db44de80] [c011a158] do_splice_direct+0x94/0xd0
+> 
+> [db44dec0] [c00eeee8] do_sendfile+0x1e0/0x380
+> 
+> [db44df10] [c00f0424] sys_sendfile64+0xc0/0xd4
+> 
+> [db44df40] [c000e260] ret_from_syscall+0x0/0x3c
+> 
+> 
+> Signed-off-by: Chen Lin <chen.lin5@zte.com.cn>
+> 
+> ---
+> 
+>  drivers/tty/serial/max3100.c | 3 ++-
+> 
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> 
+> diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+> 
+> index 371569a..0429c2d 100644
+> 
+> --- a/drivers/tty/serial/max3100.c
+> 
+> +++ b/drivers/tty/serial/max3100.c
+> 
+> @@ -391,7 +391,8 @@ static unsigned int max3100_get_mctrl(struct
+> uart_port *port)
+> 
+>         dev_dbg(&s->spi->dev, "%s\n", __func__);
+> 
+> 
+>         /* may not be truly up-to-date */
+> 
+> -       max3100_dowork(s);
+> 
+> +       if (s->workqueue)
+> 
+> +               max3100_dowork(s);
 
-Can you give me an example please?
-I am open to suggestions.
+This does not look right in the sense of races (shutdown can kill the
+workqueue right after the if. Or even before the if, as s->workqueue =
+NULL is only after destroy_workqueue in max3100_shutdown).
 
-Sorry for that acked-by. There was a lot of "reviewed-by", "acked-by",
-etc in a single version and I messed up :).
+If get_mctrl needs the queue, it shall not be created and destroyed ad hoc.
+
+>         /* always assert DCD and DSR since these lines are not wired */
+> 
+>         return (s->cts ? TIOCM_CTS : 0) | TIOCM_DSR | TIOCM_CAR;
+> 
+>  }
+
+thanks,
+-- 
+js
+suse labs
