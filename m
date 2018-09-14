@@ -1,44 +1,39 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 4.19-rc4
-Date: Fri, 14 Sep 2018 13:26:20 +0200
-Message-ID: <20180914112620.GA27809@kroah.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: =?UTF-8?Q?Re:_=e7=ad=94=e5=a4=8d:_Re:_[PATCH]_tty:_max3100:_Fix_oop?=
+ =?UTF-8?Q?s_while_'cat/proc/tty/driver/ttyMAX'?=
+Date: Fri, 14 Sep 2018 13:28:11 +0200
+Message-ID: <df806986-3133-4c94-f256-94788af78752@suse.cz>
+References: <201809131432456792094@zte.com.cn>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <201809131432456792094@zte.com.cn>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: chen.lin5@zte.com.cn
+Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit 11da3a7f84f19c26da6f86af878298694ede0804:
+On 09/13/2018, 08:32 AM, chen.lin5@zte.com.cn wrote:
+>        
+> 
+> but 'get_mctrl' is already protected by  the upper layer by spin lock,
+> so, will the races happen?
+> 
+> 
+> for example: in /drivers/tty/serial/serial_core.c 
+> 
+>               spin_lock_irq(&uport->lock);
+> 
+>               result |= uport->ops->get_mctrl(uport);
+> 
+>               spin_unlock_irq(&uport->lock);
 
-  Linux 4.19-rc3 (2018-09-09 17:26:43 -0700)
+Right, but creation and destroy of the workqueue is not locked as far as
+I can see. Am I missing something?
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-4.19-rc4
-
-for you to fetch changes up to 7f2bf7840b74a160f908db83bc8829f8de10629b:
-
-  tty: hvc: hvc_write() fix break condition (2018-09-10 18:04:31 +0200)
-
-----------------------------------------------------------------
-TTY fixes for 4.19-rc4
-
-Here are 3 small HVC tty driver fixes to resolve a reported regression
-from 4.19-rc1.
-
-All of these have been in linux-next for a while with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Nicholas Piggin (3):
-      tty: hvc: hvc_poll() fix read loop hang
-      tty: hvc: hvc_poll() fix read loop batching
-      tty: hvc: hvc_write() fix break condition
-
- drivers/tty/hvc/hvc_console.c | 38 +++++++++++++++++++++++++++++++++-----
- 1 file changed, 33 insertions(+), 5 deletions(-)
+thanks,.
+-- 
+js
+suse labs
