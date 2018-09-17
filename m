@@ -1,120 +1,99 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH v2] serial: 8250_of: Fix for lack of interrupt support
-Date: Mon, 17 Sep 2018 15:55:20 +0100
-Message-ID: <2064e8da-d0da-6d55-e700-af3f428b348d@huawei.com>
-References: <1535620130-199328-1-git-send-email-john.garry@huawei.com>
- <055f5ee8-4905-c229-0e33-6379cf65dfbc@nokia.com>
+From: Chris Brandt <Chris.Brandt@renesas.com>
+Subject: RE: [PATCH 1/2] Revert "serial: sh-sci: Remove SCIx_RZ_SCIFA_REGTYPE"
+Date: Mon, 17 Sep 2018 17:10:51 +0000
+Message-ID: <TY1PR01MB1562D098E006C2BE93EB6E648A1E0@TY1PR01MB1562.jpnprd01.prod.outlook.com>
+References: <20180830125404.21192-1-geert+renesas@glider.be>
+ <20180830125404.21192-2-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <055f5ee8-4905-c229-0e33-6379cf65dfbc@nokia.com>
+In-Reply-To: <20180830125404.21192-2-geert+renesas@glider.be>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: Alexander Sverdlin <alexander.sverdlin@nokia.com>, jslaby@suse.com, robh@kernel.org, joel@jms.id.au, kurt@linutronix.de, yamada.masahiro@socionext.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Ulrich Hecht <uli+renesas@fpond.eu>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 30/08/2018 19:21, Alexander Sverdlin wrote:
-> Hello John!
->
+On Thursday, August 30, 2018, Geert Uytterhoeven wrote:
+> This reverts commit 7acece71a517cad83a0842a94d94c13f271b680c.
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Hi Greg,
 
-Can you kindly consider picking up this patch?
+Acked-by: Chris Brandt <chris.brandt@renesas.com>
 
-It still applies to the branches today in your tty git, but let me know 
-if you still rather I resend.
 
-Thanks,
-John
 
-> On 30/08/2018 11:08, John Garry wrote:
->> In commit c58caaab3bf8 ("serial: 8250: of: Defer probe on missing IRQ"), a
->> check was added for the UART driver being probed prior to the parent IRQ
->> controller.
->>
->> Unfortunately this breaks certain boards which have no interrupt support,
->> like Huawei D03.
->>
->> Indeed, the 8250 DT bindings state that interrupts should be supported -
->> not must.
->>
->> To fix, switch from irq_of_parse_and_map() to of_irq_get(), which
->> does relay whether the IRQ host controller domain is not ready, i.e.
->> defer probe, instead of assuming it.
->>
->> Fixes: c58caaab3bf8 ("serial: 8250: of: Defer probe on missing IRQ")
->> Signed-off-by: John Garry <john.garry@huawei.com>
->
-> This indeed looks like a proper way to handle both cases:
->
-> Reviewed-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
-> Tested-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
->
->> ---
->>
->> Change in v2:
->> - fix check on irq value
->>
->> Note: I think that it would better if we could try to get the interrupt
->> 	  before clk+pm enabling, so we don't need to disable later when
->> 	  deferring, but this is not a fix.
->>
->> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
->> index af8beef..877fd7f 100644
->> --- a/drivers/tty/serial/8250/8250_of.c
->> +++ b/drivers/tty/serial/8250/8250_of.c
->> @@ -58,7 +58,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->>  	struct resource resource;
->>  	struct device_node *np = ofdev->dev.of_node;
->>  	u32 clk, spd, prop;
->> -	int ret;
->> +	int ret, irq;
->>
->>  	memset(port, 0, sizeof *port);
->>
->> @@ -143,21 +143,27 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->>  	if (ret >= 0)
->>  		port->line = ret;
->>
->> -	port->irq = irq_of_parse_and_map(np, 0);
->> -	if (!port->irq) {
->> -		ret = -EPROBE_DEFER;
->> -		goto err_unprepare;
->> +	irq = of_irq_get(np, 0);
->> +	if (irq < 0) {
->> +		if (irq == -EPROBE_DEFER) {
->> +			ret = -EPROBE_DEFER;
->> +			goto err_unprepare;
->> +		}
->> +		/* IRQ support not mandatory */
->> +		irq = 0;
->>  	}
->>
->> +	port->irq = irq;
->> +
->>  	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
->>  	if (IS_ERR(info->rst)) {
->>  		ret = PTR_ERR(info->rst);
->> -		goto err_dispose;
->> +		goto err_unprepare;
->>  	}
->>
->>  	ret = reset_control_deassert(info->rst);
->>  	if (ret)
->> -		goto err_dispose;
->> +		goto err_unprepare;
->>
->>  	port->type = type;
->>  	port->uartclk = clk;
->> @@ -184,8 +190,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->>  		port->handle_irq = fsl8250_handle_irq;
->>
->>  	return 0;
->> -err_dispose:
->> -	irq_dispose_mapping(port->irq);
->>  err_unprepare:
->>  	clk_disable_unprepare(info->clk);
->>  err_pmruntime:
->>
->
+> ---
+>  drivers/tty/serial/sh-sci.c | 31 +++++++++++++++++++++++++++++++
+>  include/linux/serial_sci.h  |  1 +
+>  2 files changed, 32 insertions(+)
+>=20
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index ac4424bf6b136cc4..5d42c9a63001575a 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -291,6 +291,33 @@ static const struct sci_port_params
+> sci_port_params[SCIx_NR_REGTYPES] =3D {
+>  		.error_clear =3D SCIF_ERROR_CLEAR,
+>  	},
+>=20
+> +	/*
+> +	 * The "SCIFA" that is in RZ/T and RZ/A2.
+> +	 * It looks like a normal SCIF with FIFO data, but with a
+> +	 * compressed address space. Also, the break out of interrupts
+> +	 * are different: ERI/BRI, RXI, TXI, TEI, DRI.
+> +	 */
+> +	[SCIx_RZ_SCIFA_REGTYPE] =3D {
+> +		.regs =3D {
+> +			[SCSMR]		=3D { 0x00, 16 },
+> +			[SCBRR]		=3D { 0x02,  8 },
+> +			[SCSCR]		=3D { 0x04, 16 },
+> +			[SCxTDR]	=3D { 0x06,  8 },
+> +			[SCxSR]		=3D { 0x08, 16 },
+> +			[SCxRDR]	=3D { 0x0A,  8 },
+> +			[SCFCR]		=3D { 0x0C, 16 },
+> +			[SCFDR]		=3D { 0x0E, 16 },
+> +			[SCSPTR]	=3D { 0x10, 16 },
+> +			[SCLSR]		=3D { 0x12, 16 },
+> +		},
+> +		.fifosize =3D 16,
+> +		.overrun_reg =3D SCLSR,
+> +		.overrun_mask =3D SCLSR_ORER,
+> +		.sampling_rate_mask =3D SCI_SR(32),
+> +		.error_mask =3D SCIF_DEFAULT_ERROR_MASK,
+> +		.error_clear =3D SCIF_ERROR_CLEAR,
+> +	},
+> +
+>  	/*
+>  	 * Common SH-3 SCIF definitions.
+>  	 */
+> @@ -3110,6 +3137,10 @@ static const struct of_device_id of_sci_match[] =
+=3D
+> {
+>  		.compatible =3D "renesas,scif-r7s72100",
+>  		.data =3D SCI_OF_DATA(PORT_SCIF,
+> SCIx_SH2_SCIF_FIFODATA_REGTYPE),
+>  	},
+> +	{
+> +		.compatible =3D "renesas,scif-r7s9210",
+> +		.data =3D SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE),
+> +	},
+>  	/* Family-specific types */
+>  	{
+>  		.compatible =3D "renesas,rcar-gen1-scif",
+> diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
+> index c0e795d95477daea..1c89611e0e0634ae 100644
+> --- a/include/linux/serial_sci.h
+> +++ b/include/linux/serial_sci.h
+> @@ -36,6 +36,7 @@ enum {
+>  	SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+>  	SCIx_SH7705_SCIF_REGTYPE,
+>  	SCIx_HSCIF_REGTYPE,
+> +	SCIx_RZ_SCIFA_REGTYPE,
+>=20
+>  	SCIx_NR_REGTYPES,
+>  };
+> --
+> 2.17.1
