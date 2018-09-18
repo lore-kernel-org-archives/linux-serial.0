@@ -1,94 +1,126 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v3 00/10] serial: uartps: Add run time support for more
- IPs than hardcoded 2
-Date: Tue, 18 Sep 2018 14:01:40 +0200
-Message-ID: <20180918120140.GA31835@kroah.com>
-References: <cover.1535980253.git.michal.simek@xilinx.com>
- <ac23383e-3d54-1cd2-c1f4-219c8ee306d2@xilinx.com>
+Subject: Re: [PATCH 1/2] sc16is7xx: Fix for multi-channel stall
+Date: Tue, 18 Sep 2018 15:02:43 +0200
+Message-ID: <20180918130243.GA25253@kroah.com>
+References: <1536762716-30673-1-git-send-email-phil@raspberrypi.org>
+ <1536762716-30673-2-git-send-email-phil@raspberrypi.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <ac23383e-3d54-1cd2-c1f4-219c8ee306d2@xilinx.com>
+In-Reply-To: <1536762716-30673-2-git-send-email-phil@raspberrypi.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk, Alexander Graf <agraf@suse.de>, shubhraj@xilinx.com, robh@kernel.org, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Phil Elwell <phil@raspberrypi.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Graf <agraf@suse.de>, Stefan Wahren <stefan.wahren@i2se.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Sep 18, 2018 at 01:54:31PM +0200, Michal Simek wrote:
-> Hi Greg,
+On Wed, Sep 12, 2018 at 03:31:55PM +0100, Phil Elwell wrote:
+> The SC16IS752 is a dual-channel device. The two channels are largely
+> independent, but the IRQ signals are wired together as an open-drain,
+> active low signal which will be driven low while either of the
+> channels requires attention, which can be for significant periods of
+> time until operations complete and the interrupt can be acknowledged.
+> In that respect it is should be treated as a true level-sensitive IRQ.
 > 
-> On 3.9.2018 15:10, Michal Simek wrote:
-> > Hi,
-> > 
-> > this series is trying to address discussion I had with Alan in past
-> > https://patchwork.kernel.org/patch/9738445/ and also with Rob in v1
-> > https://lkml.org/lkml/2018/4/26/551.
-> > 
-> > These patches are doing preparation to enable dynamic ID port allocation
-> > which is capable to create devices with higher IDs.
-> > 
-> > For example this is how it works.
-> > uart0 on higher alias
-> > serial0 = &uart1;
-> > serial30 = &uart0;
-> > 
-> > ~# ls -la /dev/ttyPS*
-> > crw-------    1 root     root      252,   0 Jun  6 12:19 /dev/ttyPS0
-> > crw--w----    1 root     root      253, 100 Jan  1  1970 /dev/ttyPS30
-> > 
-> > Thanks,
-> > Michal
-> > 
-> > Changes in v3:
-> > - New patch found by testing
-> > - New patch - can be sent separately but there is dependency that's why
-> >   sent in this series
-> > - Fix uart_unregister_driver() in error path or when driver is removed.
-> > - Change commit message
-> > - s/,/;/ in filling structure
-> > - get cdns_uart_uart_driver out of PS_UART_CONSOLE ifdefs
-> > - New patch in series
-> > - Rebase on the top of previous broken patch
-> > - Change patch subject ("was serial: uartps: Remove CDNS_UART_NR_PORTS
-> >   macro")
-> > - Keep CDNS_UART_NR_PORTS in this patch and remove it in next one and
-> >   align commit message to reflect this
-> > - Allocate struct console dynamically too to be unique for every
-> >   instance
-> > - Cleanup error path
-> > - New patch in series
-> > 
-> > Changes in v2:
-> > - new patch - it can be sent separately too
-> > - new patch - it can be sent separately too
-> > - new patch - it can be sent separately too
-> > - Remove nr field logic
-> > - new patch - it can be sent separately too
-> > - Register one uart_driver with unique minor at probe time
-> > 
-> > Michal Simek (9):
-> >   serial: uartps: console_setup() can't be placed to init section
-> >   serial: uartps: Do not initialize field to zero again
-> >   serial: uartps: Do not use static struct uart_driver out of probe()
-> >   serial: uartps: Move alias reading higher in probe()
-> >   serial: uartps: Move register to probe based on run time detection
-> >   serial: uartps: Fill struct uart_driver in probe()
-> >   serial: uartps: Change logic how console_port is setup
-> >   serial: uartps: Register own uart console and driver structures
-> >   serial: uartps: Move Port ID to device data structure
-> > 
-> > Nava kishore Manne (1):
-> >   serial: uartps: Fix suspend functionality
-> > 
-> >  drivers/tty/serial/xilinx_uartps.c | 203 +++++++++++++++++++------------------
-> >  1 file changed, 107 insertions(+), 96 deletions(-)
-> > 
+> The kernel, however, needs to be able to exit interrupt context in
+> order to use I2C or SPI to access the device registers (which may
+> involve sleeping).  Therefore the interrupt needs to be masked out or
+> paused in some way.
 > 
-> Can you please look at this series?
-> I have sent 2 more patches on the top of this series where OF patch was
-> reviewed by Rob already.
+> The usual way to manage sleeping from within an interrupt handler
+> is to use a threaded interrupt handler - a regular interrupt routine
+> does the minimum amount of work needed to triage the interrupt before
+> waking the interrupt service thread. If the threaded IRQ is marked as
+> IRQF_ONESHOT the kernel will automatically mask out the interrupt
+> until the thread runs to completion. The sc16is7xx driver used to
+> use a threaded IRQ, but a patch switched to using a kthread_worker
+> in order to set realtime priorities on the handler thread and for
+> other optimisations. The end result is non-threaded IRQ that
+> schedules some work then returns IRQ_HANDLED, making the kernel
+> think that all IRQ processing has completed.
+> 
+> The work-around to prevent a constant stream of interrupts is to
+> mark the interrupt as edge-sensitive rather than level-sensitive,
+> but interpreting an active-low source as a falling-edge source
+> requires care to prevent a total cessation of interrupts. Whereas
+> an edge-triggering source will generate a new edge for every interrupt
+> condition a level-triggering source will keep the signal at the
+> interrupting level until it no longer requires attention; in other
+> words, the host won't see another edge until all interrupt conditions
+> are cleared. It is therefore vital that the interrupt handler does not
+> exit with an outstanding interrupt condition, otherwise the kernel
+> will not receive another interrupt unless some other operation causes
+> the interrupt state on the device to be cleared.
+> 
+> The existing sc16is7xx driver has a very simple interrupt "thread"
+> (kthread_work job) that processes interrupts on each channel in turn
+> until there are no more. If both channels are active and the first
+> channel starts interrupting while the handler for the second channel
+> is running then it will not be detected and an IRQ stall ensues. This
+> could be handled easily if there was a shared IRQ status register, or
+> a convenient way to determine if the IRQ had been deasserted for any
+> length of time, but both appear to be lacking.
+> 
+> Avoid this problem (or at least make it much less likely to happen)
+> by reducing the granularity of per-channel interrupt processing
+> to one condition per iteration, only exiting the overall loop when
+> both channels are no longer interrupting.
+> 
+> Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 243c960..47b4115 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -657,7 +657,7 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
+>  		uart_write_wakeup(port);
+>  }
+>  
+> -static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+> +static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+>  {
+>  	struct uart_port *port = &s->p[portno].port;
+>  
+> @@ -666,7 +666,7 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+>  
+>  		iir = sc16is7xx_port_read(port, SC16IS7XX_IIR_REG);
+>  		if (iir & SC16IS7XX_IIR_NO_INT_BIT)
+> -			break;
+> +			return false;
+>  
+>  		iir &= SC16IS7XX_IIR_ID_MASK;
+>  
+> @@ -688,16 +688,23 @@ static void sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+>  					    port->line, iir);
+>  			break;
+>  		}
+> -	} while (1);
+> +	} while (0);
+> +	return true;
+>  }
+>  
+>  static void sc16is7xx_ist(struct kthread_work *ws)
+>  {
+>  	struct sc16is7xx_port *s = to_sc16is7xx_port(ws, irq_work);
+> -	int i;
+>  
+> -	for (i = 0; i < s->devtype->nr_uart; ++i)
+> -		sc16is7xx_port_irq(s, i);
+> +	while (1) {
+> +		bool keep_polling = false;
+> +		int i;
+> +
+> +		for (i = 0; i < s->devtype->nr_uart; ++i)
+> +			keep_polling |= sc16is7xx_port_irq(s, i);
+> +		if (!keep_polling)
+> +			break;
 
-My tty queue is a bit lagging right now, sorry, will get to that soon...
+This makes me worried, there is no "timeout" now?  What happens if this
+never happens, will you just sit and spin forever?  What prevents that?
+
+thanks,
 
 greg k-h
