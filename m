@@ -1,73 +1,93 @@
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: Re: [PATCH 2/3] dmaengine: Add Slave and Cyclic mode support for
- Actions Semi Owl S900 SoC
-Date: Tue, 18 Sep 2018 16:56:29 -0700
-Message-ID: <20180918235629.GA20199@Mani-XPS-13-9360>
-References: <20180901164215.3683-1-manivannan.sadhasivam@linaro.org>
- <20180901164215.3683-3-manivannan.sadhasivam@linaro.org>
- <20180918163512.GE2613@vkoul-mobl>
- <20180918225236.GA17306@Mani-XPS-13-9360>
- <20180918233200.GK2613@vkoul-mobl>
- <20180918233414.GA19844@Mani-XPS-13-9360>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: [PATCH 2/3] serial: 8250_uniphier: flatten probe function
+Date: Wed, 19 Sep 2018 14:28:12 +0900
+Message-ID: <1537334893-26079-3-git-send-email-yamada.masahiro@socionext.com>
+References: <1537334893-26079-1-git-send-email-yamada.masahiro@socionext.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180918233414.GA19844@Mani-XPS-13-9360>
+In-Reply-To: <1537334893-26079-1-git-send-email-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vinod <vkoul@kernel.org>
-Cc: dan.j.williams@intel.com, afaerber@suse.de, robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, liuwei@actions-semi.com, 96boards@ucrobotics.com, devicetree@vger.kernel.org, daniel.thompson@linaro.org, amit.kucheria@linaro.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, hzhang@ucrobotics.com, bdong@ucrobotics.com, manivannanece23@gmail.com, thomas.liau@actions-semi.com, jeff.chen@actions-semi.com, pn@denx.de, edgar.righi@lsitec.org.br
+To: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Cc: devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Dai Okamura <okamura.dai@socionext.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Sep 18, 2018 at 04:34:14PM -0700, Manivannan Sadhasivam wrote:
-> On Tue, Sep 18, 2018 at 04:32:00PM -0700, Vinod wrote:
-> > Hi Mani,
-> > 
-> > On 18-09-18, 15:52, Manivannan Sadhasivam wrote:
-> > > On Tue, Sep 18, 2018 at 09:35:12AM -0700, Vinod wrote:
-> > > > On 01-09-18, 22:12, Manivannan Sadhasivam wrote:
-> > > > 
-> > > > > @@ -364,6 +372,26 @@ static inline int owl_dma_cfg_lli(struct owl_dma_vchan *vchan,
-> > > > >  			OWL_DMA_MODE_DT_DCU | OWL_DMA_MODE_SAM_INC |
-> > > > >  			OWL_DMA_MODE_DAM_INC;
-> > > > >  
-> > > > > +		break;
-> > > > > +	case DMA_MEM_TO_DEV:
-> > > > > +		mode |= OWL_DMA_MODE_TS(vchan->drq)
-> > > > > +			| OWL_DMA_MODE_ST_DCU | OWL_DMA_MODE_DT_DEV
-> > > > > +			| OWL_DMA_MODE_SAM_INC | OWL_DMA_MODE_DAM_CONST;
-> > > > > +
-> > > > > +		/* Handle bus width for UART */
-> > > > > +		if (sconfig->dst_addr_width == DMA_SLAVE_BUSWIDTH_1_BYTE)
-> > > > > +			mode |= OWL_DMA_MODE_NDDBW_8BIT;
-> > > > 
-> > > > this is fine per se, but not correct way to handle in dmaengine driver.
-> > > > You should be agnostic to user of dmaengine, so handle all the buswidths
-> > > > the IP block supports and update the values accordingly. That way new
-> > > > uses can be added w/o requiring change in dmaengine driver
-> > > 
-> > > Currently, all members of Owl family supports only 32bit and 8bit
-> > > bus widths. 32bit is common for all peripherals and 8bit applies to only
-> > > UART since the internal buffer is 8bit wide. So, this makes sense to me!
-> > 
-> > Above you are onky handing DMA_SLAVE_BUSWIDTH_1_BYTE and not 32bit which
-> > this IP supports.. You should handle all widths supported vt hardware..
-> >
-> 
-> Hi Vinod,
-> 
-> Default width is 32bit and we will only override it for UART... Should I
-> add a comment stating this?
->
+Currently, the DT-related settings are split out to
+uniphier_of_serial_setup(), but it turned out to be not nice.
+The next commit will add a DT property, but it will not fit in
+the helper.  Merge the helper into the probe function.
 
-I think it is better to select 32bit mode eventhough it is the default one.
-Will update it in next revision.
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+---
 
-Thanks,
-Mani
+ drivers/tty/serial/8250/8250_uniphier.c | 49 ++++++++++++---------------------
+ 1 file changed, 17 insertions(+), 32 deletions(-)
 
-> Thanks,
-> Mani
-> 
-> > -- 
-> > ~Vinod
+diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
+index d292654..1028c02 100644
+--- a/drivers/tty/serial/8250/8250_uniphier.c
++++ b/drivers/tty/serial/8250/8250_uniphier.c
+@@ -155,36 +155,6 @@ static void uniphier_serial_dl_write(struct uart_8250_port *up, int value)
+ 	writel(value, up->port.membase + UNIPHIER_UART_DLR);
+ }
+ 
+-static int uniphier_of_serial_setup(struct device *dev, struct uart_port *port,
+-				    struct uniphier8250_priv *priv)
+-{
+-	int ret;
+-	u32 prop;
+-	struct device_node *np = dev->of_node;
+-
+-	ret = of_alias_get_id(np, "serial");
+-	if (ret < 0) {
+-		dev_err(dev, "failed to get alias id\n");
+-		return ret;
+-	}
+-	port->line = ret;
+-
+-	/* Get clk rate through clk driver */
+-	priv->clk = devm_clk_get(dev, NULL);
+-	if (IS_ERR(priv->clk)) {
+-		dev_err(dev, "failed to get clock\n");
+-		return PTR_ERR(priv->clk);
+-	}
+-
+-	ret = clk_prepare_enable(priv->clk);
+-	if (ret < 0)
+-		return ret;
+-
+-	port->uartclk = clk_get_rate(priv->clk);
+-
+-	return 0;
+-}
+-
+ static int uniphier_uart_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -217,9 +187,24 @@ static int uniphier_uart_probe(struct platform_device *pdev)
+ 
+ 	memset(&up, 0, sizeof(up));
+ 
+-	ret = uniphier_of_serial_setup(dev, &up.port, priv);
+-	if (ret < 0)
++	ret = of_alias_get_id(dev->of_node, "serial");
++	if (ret < 0) {
++		dev_err(dev, "failed to get alias id\n");
+ 		return ret;
++	}
++	up.port.line = ret;
++
++	priv->clk = devm_clk_get(dev, NULL);
++	if (IS_ERR(priv->clk)) {
++		dev_err(dev, "failed to get clock\n");
++		return PTR_ERR(priv->clk);
++	}
++
++	ret = clk_prepare_enable(priv->clk);
++	if (ret)
++		return ret;
++
++	up.port.uartclk = clk_get_rate(priv->clk);
+ 
+ 	spin_lock_init(&priv->atomic_write_lock);
+ 
+-- 
+2.7.4
