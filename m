@@ -1,54 +1,36 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH 3/3] serial: 8250_uniphier: add auto-flow-control support
-Date: Wed, 19 Sep 2018 14:28:13 +0900
-Message-ID: <1537334893-26079-4-git-send-email-yamada.masahiro@socionext.com>
-References: <1537334893-26079-1-git-send-email-yamada.masahiro@socionext.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1537334893-26079-1-git-send-email-yamada.masahiro@socionext.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Dai Okamura <okamura.dai@socionext.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, linux-arm-kernel@lists.infradead.org
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v8 0/4] gpiolib: speed up GPIO array processing
+Date: Wed, 19 Sep 2018 11:08:57 -0700
+Message-ID: <CACRpkdbdYmsFD3XOVLWjoGsPSU4UnTKtkYm5VQxGmoeQZewWZA@mail.gmail.com>
+References: <20180902120144.6855-1-jmkrzyszt@gmail.com> <20180905215008.1649-1-jmkrzyszt@gmail.com>
+ <CACRpkdbAG1N0v-BrXruf5088L0x3XwSHbFTWOFxjHQWx0LKz5g@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <CACRpkdbAG1N0v-BrXruf5088L0x3XwSHbFTWOFxjHQWx0LKz5g@mail.gmail.com>
+Sender: netdev-owner@vger.kernel.org
+To: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, Greg KH <gregkh@linuxfoundation.org>, kishon@ti.com, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>, Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, Geert Uytterhoeven <geert@linux-m68k.org>, Sebastien Bourdelin <sebastien.bourdelin@savoirf>
 List-Id: linux-serial@vger.kernel.org
 
-From: Dai Okamura <okamura.dai@socionext.com>
+On Thu, Sep 13, 2018 at 2:22 AM Linus Walleij <linus.walleij@linaro.org> wrote:
+> On Wed, Sep 5, 2018 at 11:49 PM Janusz Krzysztofik <jmkrzyszt@gmail.com> wrote:
+>
+> > The goal is to boost performance of get/set array functions while
+> > processing GPIO arrays which represent pins of a signle chip in
+> > hardware order.  If resulting performance is close to PIO, GPIO API
+> > can be used for data I/O without much loss of speed.
+>
+> I applied the v8 to an immutable branch and pushed to kernelorg
+> so the build servers can churn it a bit, and if it works fine
+> then we can merge this into the devel branch and also set up
+> that as something other subsystems can pull in if they need it.
+>
+> I'm really excited to merge this!
 
-Add selective auto-flow-control support for UniPhier serial driver.
+The branch built with no problems, and now I merged this into
+devel. If that also builds fine, I will let it hit linux-next so we can
+stabilize it for v4.20.
 
-Signed-off-by: Dai Okamura <okamura.dai@socionext.com>
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
-
- Documentation/devicetree/bindings/serial/uniphier-uart.txt | 3 +++
- drivers/tty/serial/8250/8250_uniphier.c                    | 3 +++
- 2 files changed, 6 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/serial/uniphier-uart.txt b/Documentation/devicetree/bindings/serial/uniphier-uart.txt
-index 811c479..7a1bf02 100644
---- a/Documentation/devicetree/bindings/serial/uniphier-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/uniphier-uart.txt
-@@ -6,6 +6,9 @@ Required properties:
- - interrupts: a single interrupt specifier.
- - clocks: phandle to the input clock.
- 
-+Optional properties:
-+-auto-flow-control: enable automatic flow control support.
-+
- Example:
- 	aliases {
- 		serial0 = &serial0;
-diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
-index 1028c02..164ba13 100644
---- a/drivers/tty/serial/8250/8250_uniphier.c
-+++ b/drivers/tty/serial/8250/8250_uniphier.c
-@@ -222,6 +222,9 @@ static int uniphier_uart_probe(struct platform_device *pdev)
- 	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE;
- 	up.capabilities = UART_CAP_FIFO;
- 
-+	if (of_property_read_bool(dev->of_node, "auto-flow-control"))
-+		up.capabilities |= UART_CAP_AFE;
-+
- 	up.port.serial_in = uniphier_serial_in;
- 	up.port.serial_out = uniphier_serial_out;
- 	up.dl_read = uniphier_serial_dl_read;
--- 
-2.7.4
+Yours,
+Linus Walleij
