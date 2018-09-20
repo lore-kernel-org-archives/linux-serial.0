@@ -1,99 +1,49 @@
-From: Andy Duan <fugang.duan@nxp.com>
-Subject: RE: [PATCH v1] tty: serial: imx: enable IDDMAEN for the last tail
- data
-Date: Thu, 20 Sep 2018 10:54:04 +0000
-Message-ID: <VI1PR0402MB36002FFAFC4904D8D5A890DAFF130@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-References: <1537457160-10792-1-git-send-email-yibin.gong@nxp.com>
-         <20180920075513.6jqfbrrjax3sp4cn@pengutronix.de>
-         <VI1PR04MB45432291716B64380C1B90DD89130@VI1PR04MB4543.eurprd04.prod.outlook.com>
-         <1537436376.3362.159.camel@pengutronix.de>
-         <VI1PR0402MB36009F89D7E629CE99A7C592FF130@VI1PR0402MB3600.eurprd04.prod.outlook.com>
- <1537440125.3362.161.camel@pengutronix.de>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 2/2] serial: uartps: Change uart ID port allocation
+Date: Thu, 20 Sep 2018 13:32:25 +0200
+Message-ID: <20180920113225.GA19956@kroah.com>
+References: <b1772d99d4e8b788448cde0fc5c7dccb1f63b507.1537282676.git.michal.simek@xilinx.com>
+ <dcf1c72203baf2629492dce765ce2d555316be0c.1537282676.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1537440125.3362.161.camel@pengutronix.de>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <dcf1c72203baf2629492dce765ce2d555316be0c.1537282676.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lucas Stach <l.stach@pengutronix.de>, Robin Gong <yibin.gong@nxp.com>, =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "jslaby@suse.com" <jslaby@suse.com>
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogTHVjYXMgU3RhY2ggPGwuc3RhY2hAcGVuZ3V0cm9uaXguZGU+IFNlbnQ6IDIwMTjlubQ5
-5pyIMjDml6UgMTg6NDINCj4gQW0gRG9ubmVyc3RhZywgZGVuIDIwLjA5LjIwMTgsIDEwOjMzICsw
-MDAwIHNjaHJpZWIgQW5keSBEdWFuOg0KPiA+IEZyb206IEx1Y2FzIFN0YWNoIDxsLnN0YWNoQHBl
-bmd1dHJvbml4LmRlPiBTZW50OiAyMDE45bm0OeaciDIw5pelDQo+IDE3OjQwDQo+ID4gPiBBbSBE
-b25uZXJzdGFnLCBkZW4gMjAuMDkuMjAxOCwgMDg6MzkgKzAwMDAgc2NocmllYiBSb2JpbiBHb25n
-Og0KPiA+ID4gPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiA+ID4gRnJvbTog
-VXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4NCj4gPiA+
-ID4gPiBTZW50OiAyMDE45bm0OeaciDIw5pelIDE1OjU1DQo+ID4gPiA+ID4gVG86IFJvYmluIEdv
-bmcgPHlpYmluLmdvbmdAbnhwLmNvbT4NCj4gPiA+ID4gPiBDYzoganNsYWJ5QHN1c2UuY29tOyBB
-bmR5IER1YW4gPGZ1Z2FuZy5kdWFuQG54cC5jb20+Ow0KPiA+ID4gPiA+IGxpbnV4LXNlcmlhbEB2
-Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGRsLQ0KPiA+ID4g
-PiA+IGxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyBrZXJuZWxAcGVuZ3V0cm9uaXguZGUN
-Cj4gPiA+ID4gPiBTdWJqZWN0OiBSZTogW1BBVENIIHYxXSB0dHk6IHNlcmlhbDogaW14OiBlbmFi
-bGUgSURETUFFTiBmb3IgdGhlDQo+ID4gPiA+ID4gbGFzdCB0YWlsIGRhdGENCj4gPiA+ID4gPg0K
-PiA+ID4gPiA+IEhlbGxvLA0KPiA+ID4gPiA+DQo+ID4gPiA+ID4gT24gVGh1LCBTZXAgMjAsIDIw
-MTggYXQgMTE6MjY6MDBQTSArMDgwMCwgUm9iaW4gR29uZyB3cm90ZToNCj4gPiA+ID4gPiA+IGVu
-YWJsZSBJRERNQUVOIGluIFVDUjQgdG8gbGV0IHNkbWEgc2NyaXB0IGhhcyB0aGUgY2hhbmNlIHRv
-DQo+ID4gPiA+ID4gPiBkZXRlY3QgdGhlIGlkbGUgc3RhdHVzIGFuZCB0cmFuc2ZlciB0aGUgbGFz
-dCB0YWlsIGRhdGEgd2l0aA0KPiA+ID4gPiA+ID4gdGhlIGludGVycnVwdCBub3RpZnlpbmcgdWFy
-dCBkcml2ZXIuT3RoZXJ3aXNlLCB0aGUgbGFzdCBkbWENCj4gPiA+ID4gPiA+IGRvbmUgaW50ZXJy
-dXB0IG9mIHRoZSB0YWlsIGRhdGEgaW4gcnhmaWZvIHdob3NlIHNpemUgaXMgbGVzcw0KPiA+ID4g
-PiA+ID4gdGhhbiB3YXRlcm1hcmsgbWF5IG5ldmVyIGJlIHJlY2VpdmVkIGJ5IHVhcnQgZHJpdmVy
-Lg0KPiA+ID4gPiA+DQo+ID4gPiA+ID4gSXMgdGhpcyBhIHRoZW9yZXRpYyBpc3N1ZT8gT3IgZG9l
-cyBpdCBmaXggYSByZWFsIHByb2JsZW0/DQo+ID4gPiA+ID4NCj4gPiA+ID4gPiBJZiB0aGUgZm9y
-bWVyIEknZCBzYXkgVUNSMV9BVERNQUVOIGJlaW5nIHNldCBzaG91bGQgcHJldmVudCB0aGlzDQo+
-ID4gPiA+ID4gc3RhbGwuDQo+ID4gPiA+DQo+ID4gPiA+IEl0J3MgYSByZWFsIGZpeCwgeW91IHdp
-bGwgc2VlICd0aW1lb3V0IFdlIHJlYWQgMCBieXRlJyB3aXRoIHRoZQ0KPiA+ID4gPiBhdHRhY2hl
-ZCBzdHJlc3MgdGVzdCBydW5uaW5nIG9uIGkubXg3ZCBvciBpLm14NiBpZiBubyB0aGlzIHBhdGNo
-DQo+ID4gPiA+IGFwcGxpZWQuDQo+ID4gPiA+ICcgd2hpbGUgWyAxIF07IGRvIC91bml0X3Rlc3Rz
-L1VBUlQvbXhjX3VhcnRfc3RyZXNzX3Rlc3Qub3V0DQo+ID4gPiA+IC9kZXYvdHR5bXhjNSAyMDAw
-MDAwIEQgTCAxMDAgMTAwIEw7IGRvbmUgJicNCj4gPiA+ID4gUGxlYXNlIG1ha2Ugc3VyZSBkbWEg
-ZW5hYmxlZCBvbiB0dHlteGNYIGZvciB5b3VyIHRlc3QsIGFuZCBzZG1hDQo+ID4gPiA+IGZpcm13
-YXJlIHNldHVwIGluIHlvdXIgcm9vdGZzIC9saWIvZmlybXdhcmUvaW14L3NkbWEvc2RtYS0NCj4g
-PiA+ID4gaW14NnEuYmluDQo+ID4gPg0KPiA+ID4gb3INCj4gPiA+ID4gL2xpYi9maXJtd2FyZS9p
-bXgvc2RtYS9zZG1hLSBpbXg3ZC5iaW4uDQo+ID4gPiA+IFlvdSBjYW4gZ2V0IHNkbWEgZmlybXdh
-cmUgZnJvbSBiZWxvdzoNCj4gPiA+ID4NCj4gPiA+DQo+ID4gPg0KPiBodHRwczovL2VtZWEwMS5z
-YWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGDQo+ID4g
-PiBnaQ0KPiA+ID4gdA0KPiA+ID4gPiAua2VybmVsLm9yZyUyRnB1YiUyRnNjbSUyRmxpbnV4JTJG
-a2VybmVsJTJGZ2l0JTJGZmlybXdhcmUlMg0KPiBGbGluDQo+ID4gPg0KPiA+ID4gdXgtJmFtcA0K
-PiA+ID4gPiA7ZGF0YT0wMiU3QzAxJTdDZnVnYW5nLmR1YW4lNDBueHAuY29tJTdDMjEzMDc2ZjZk
-MTExNDE0DQo+IDhiNQ0KPiA+ID4NCj4gPiA+IGNlMDhkNjFlZGNmYg0KPiA+ID4gPg0KPiA+ID4N
-Cj4gPiA+DQo+IDg4JTdDNjg2ZWExZDNiYzJiNGM2ZmE5MmNkOTljNWMzMDE2MzUlN0MwJTdDMCU3
-QzYzNjczMDMzMQ0KPiA+ID4gODE0ODA0NTQ1JmFtcA0KPiA+ID4gPiA7c2RhdGE9ZDB1Wk1qTGMl
-MkZySWFlM1dkNlBXdFgyZ0VHbHZaY1VqUEJWcUtLOTU1MGpnJTNEJg0KPiBhbXANCj4gPiA+DQo+
-ID4gPiA7cmVzZXJ2ZWQ9MA0KPiA+ID4gPiBmaXJtd2FyZS5naXQvdHJlZS9pbXgvc2RtYQ0KPiA+
-ID4NCj4gPiA+IFBsZWFzZSBzZWUgY29tbWl0IDkwNWMwZGVjYWQyODQwMmFhMTY2OTc1MDIzZmI4
-OGM4ZjYyZjkzYzgNCj4gb24gd2h5DQo+ID4gPiB1c2luZyB0aGUgaWRsZSBkZXRlY3QgdG9nZXRo
-ZXIgd2l0aCB3aXRoIFNETUEgaXMgd3JvbmcuIFdlIGRvbid0DQo+ID4gPiB3YW50IHRvIHJlLSBp
-bnRyb2R1Y2UgdGhlIGJyb2tlbiBiZWhhdmlvci4NCj4gPiA+DQo+ID4NCj4gPiBUaGUgcGF0Y2gg
-anVzdCB3YW50IHRvIHVzZSBpZGxlIHRpbWVyIHRvIHN0b3AgU0RNQSB0cmFuc2ZlciB1c2luZyB0
-aGUNCj4gPiBuZXcgcmFtIHNjcmlwdCwgd2hvc2UgYWN0aW9uIGlzIG5vdCB0aGUgc2FtZSBhcyBy
-b20gc2NyaXB0Lg0KPiA+IFNkbWEgcm9tIHNjcmlwdCBob3cgdG8gc3RvcCBzZG1hIHRyYW5zZmVy
-IGlmIG9ubHkgb25lIGJ5dGUgaW4gcnggRklGTw0KPiA+IHRoYXQgdHJpZ2dlciBTRE1BIHJlcXVl
-c3QgPw0KPiANCj4gUmlnaHQsIGFuZCB1c2luZyB0aGUgaWRsZSBkZXRlY3QgZG9lc24ndCB3b3Jr
-IHdpdGggdGhlIFJPTSBzY3JpcHQgYXMgdGhpcw0KPiBkb2Vzbid0IHJlYWQgdGhlIHJlbWFpbmlu
-ZyBieXRlcyBpbiB0aGUgRklGTyB3aGVuIHRoZSBpZGxlIGRldGVjdA0KPiBjb25kaXRpb24gaXMg
-aGl0Lg0KPiANCj4gSW5zdGVhZCB3aXRoIHRoZSBST00gc2NyaXB0IHRoZSBhZ2luZyB0aW1lciBp
-cyB1c2VkIHRvIHRlcm1pbmF0ZSB0aGUgRE1BDQo+IHRyYW5zZmVyLiBTbyBpZiAxIGJ5dGUgaXMg
-c2l0dGluZyBpbiB0aGUgRklGTyBiZWxvdyB0aGUgd2F0ZXJtYXJrIGxldmVsLCB0aGUNCj4gc2Vy
-aWFsIGNvcmUgd2lsbCB0cmlnZ2VyIGEgRE1BIHJlcXVlc3Qgd2hlbiB0aGUgYWdpbmcgdGltZSBp
-cyBoaXQuIFRoZSBST00NCj4gc2NyaXB0IGNoZWNrcyB0aGUgYWdpbmcgc3RhdHVzIGFuZCByZWFk
-cyB0aGUgcmVtYWluaW5nIGJ5dGVzIGZyb20gdGhlIEZJRk8sDQo+IHRoZW4gdGVybWluYXRlcyB0
-aGUgdHJhbnNmZXIuIFRoaXMgaXMgYWxsIGRvY3VtZW50ZWQgaW4gdGhlIHJlZmVyZW5jZQ0KPiBt
-YW51YWwuDQo+IA0KPiBJIGZhaWwgdG8gc2VlIHdoeSB0aGlzIHNob3VsZG4ndCB3b3JrIHdpdGgg
-dGhlIFJBTSBzY3JpcHQuIElmIGl0IGRvZXNuJ3Qgd29yaw0KPiB3aXRoIHRoZSBSQU0gZmlybXdh
-cmUsIHRoaXMgc2NyaXB0IGlzIHZpb2xhdGluZyB0aGUgaW50ZXJmYWNlIGJldHdlZW4gdGhlDQo+
-IHNlcmlhbCBjb3JlIGFuZCB0aGUgc2NyaXB0IGluIGFuIGluY29tcGF0aWJsZSB3YXkgYW5kIG5l
-ZWRzIGZpeGluZy4NCj4gDQpJZiByb20gc2NyaXB0IHN0b3AgRE1BIHRyYW5zZmVyIHdoZW4gU0RN
-QSBpcyB0cmlnZ2VyZWQgYnkgYWdpbmcgdGltZXIsICB0aGVuIGlkbGVyIHRpbWVyIGlzIG5vdCBu
-ZWVkZWQuIEFuZCB0aGUgZGF0YSBjb3B5IGFjdGlvbiBzaG91bGQgaGF2ZSBubyBwcm9ibGVtLiBJ
-IHdpbGwgZG8gc3RyZXNzIHRlc3Qgd2l0aCBTRE1BIHJvbSBzY3JpcHQuDQpGb3IgcmFtIHNjcmlw
-dCwgdGhlcmUgaGF2ZSBtYW55IGNoYW5nZXMgYW5kIGRpZmZlcmVudCBhY3Rpb24gd2l0aCByb20g
-c2NyaXB0LiBBZ2luZyB0aW1lciB0cmlnZ2VyIGNhbm5vdCBzdG9wIGN1cnJlbnQgU0RNQSB0cmFu
-c2Zlciwgc28gdXNlIGlkbGVyIHRpbWVyIGFzIHRoZSBzdG9wIGNvbmRpdGlvbiB0cmlnZ2VyIHNv
-dXJjZS4gDQpXZSB3aWxsIGRvIG1vcmUgdGVzdCBvbiByb20gc2NyaXB0LCBpZiBwYXNzIG91ciBh
-bGwgdGVzdCBjYXNlcywgd2UgY2FuIGFsaWduIHJhbSBzY3JpcHQgd2l0aCByb20gc2NyaXB0Lg0K
-VGhhbmtzLg0KDQpBbmR5DQo=
+On Tue, Sep 18, 2018 at 04:57:59PM +0200, Michal Simek wrote:
+> For IPs which have alias algorightm all the time using that alias and
+> minor number. It means serial20 alias ends up as ttyPS20.
+> 
+> If alias is not setup for probed IP instance the first unused position is
+> used but that needs to be checked if it is really empty because another
+> instance doesn't need to be probed at that time. of_alias_get_alias_list()
+> fills alias bitmap which exactly shows which ID is free.
+> If alias pointing to different not compatible IP, it is free to use.
+> 
+> cdns_get_id() call is placed below structure allocation to simplify
+> error path.
+> 
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> ---
+> 
+> Changes in v3: None
+> Changes in v2:
+> - Add handle of return value from of_alias_get_alias_list
+> 
+> Needs to be applied on the top of
+> https://lkml.org/lkml/2018/9/3/404
+> https://lkml.org/lkml/2018/9/3/400 (minor that's why just in case)
+> 
+> Greg: Please apply it with
+> "of: base: Introduce of_alias_get_alias_list() to check alias IDs
+> Rob is ok with that.
+
+I don't have that patch, can you resend the whole series?
+
+thanks,
+
+greg k-h
