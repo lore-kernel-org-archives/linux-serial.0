@@ -1,51 +1,75 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH v3 2/2] serial: uartps: Change uart ID port allocation
-Date: Thu, 20 Sep 2018 13:43:05 +0200
-Message-ID: <cf4e77fe-5ac0-b7f6-4124-90910eca5206@xilinx.com>
-References: <b1772d99d4e8b788448cde0fc5c7dccb1f63b507.1537282676.git.michal.simek@xilinx.com>
- <dcf1c72203baf2629492dce765ce2d555316be0c.1537282676.git.michal.simek@xilinx.com>
- <20180920113225.GA19956@kroah.com>
+From: YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH -next] serial: imx: remove set but not used variable
+ 'rtsirq'
+Date: Thu, 20 Sep 2018 20:04:38 +0800
+Message-ID: <1884583f-5eec-7499-b987-b2e53b15b30e@huawei.com>
+References: <1537408725-196364-1-git-send-email-yuehaibing@huawei.com>
+ <3b23675a-f537-868f-2432-b7f8a0c8c466@suse.cz>
+ <96170d620618804d49ad19323d3cdee853070c72.camel@nxp.com>
+ <VI1PR0402MB3600A7368D538E3B6D044C5FFF130@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180920113225.GA19956@kroah.com>
-Content-Language: en-US
+In-Reply-To: <VI1PR0402MB3600A7368D538E3B6D044C5FFF130@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Andy Duan <fugang.duan@nxp.com>, Leonard Crestez <leonard.crestez@nxp.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "jslaby@suse.cz" <jslaby@suse.cz>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "A.s. Dong" <aisheng.dong@nxp.com>, Abel Vesa <abel.vesa@nxp.com>, Anson Huang <anson.huang@nxp.com>, Bough Chen <haibo.chen@nxp.com>, Cosmin Samoila <cosmin.samoila@nxp.com>, Daniel Baluta <daniel.baluta@nxp.com>, Han Xu <han.xu@nxp.com>, Jacky Bai <ping.bai@nxp.com>, Jun Li <jun.li@nxp.com>, Leo Zhang <leo.zhang@nxp.com>, Peng Fan <peng.fan@nxp.com>, Peter Chen <peter.chen@nxp.com>, Ranjani Vaidyanathan <ranjani.vaidyanathan@nxp.com>, Robert Chiras <robert.chiras@nxp.com>, Robin Gong <yibin.gong@nxp.com>, Shenwei Wang <shenwei.wang@nxp.com>, Viorel Suman <viorel.suman@nxp.com>, Zening Wang <zening.wang@nxp.com>, gregkh@linuxfound
 List-Id: linux-serial@vger.kernel.org
 
-On 20.9.2018 13:32, Greg Kroah-Hartman wrote:
-> On Tue, Sep 18, 2018 at 04:57:59PM +0200, Michal Simek wrote:
->> For IPs which have alias algorightm all the time using that alias and
->> minor number. It means serial20 alias ends up as ttyPS20.
+On 2018/9/20 17:41, Andy Duan wrote:
+> From: Leonard Crestez Sent: 2018年9月20日 16:51
+>> On Thu, 2018-09-20 at 08:45 +0200, Jiri Slaby wrote:
+>>> On 09/20/2018, 03:58 AM, YueHaibing wrote:
+>>>> Fixes gcc '-Wunused-but-set-variable' warning:
+>>>>
+>>>> drivers/tty/serial/imx.c: In function 'imx_uart_probe':
+>>>> drivers/tty/serial/imx.c:2198:20: warning:
+>>>>  variable 'rtsirq' set but not used [-Wunused-but-set-variable]
+>>>>
+>>>> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c @@
+>>>> -2220,7 +2220,6 @@ static int imx_uart_probe(struct
+>> platform_device
+>>>> *pdev)
+>>>>
+>>>>  	rxirq = platform_get_irq(pdev, 0);
+>>>>  	txirq = platform_get_irq(pdev, 1);
+>>>> -	rtsirq = platform_get_irq(pdev, 2);
+>>>
+>>> I am not sure this is correct. platform_get_irq has side effects (like
+>>> enabling the IRQ). Are you sure this won't change the behaviour (this
+>>> is question mostly to IMX fellows)?
 >>
->> If alias is not setup for probed IP instance the first unused position is
->> used but that needs to be checked if it is really empty because another
->> instance doesn't need to be probed at that time. of_alias_get_alias_list()
->> fills alias bitmap which exactly shows which ID is free.
->> If alias pointing to different not compatible IP, it is free to use.
+>> As far as I can tell there was a request_irq call for rtsirq which was
+>> removed by mistake in commit afe9cbb1a6ad ("serial: imx: drop support
+>> for IRDA"):
 >>
->> cdns_get_id() call is placed below structure allocation to simplify
->> error path.
+>> -               /* do not use RTS IRQ on IrDA */
+>> -               if (!USE_IRDA(sport)) {
+>> -                       ret = devm_request_irq(&pdev->dev, rtsirq,
+>> -                                              imx_rtsint, 0,
+>> -
+>> dev_name(&pdev->dev), sport);
+>> -                       if (ret)
+>> -                               return ret;
+>> -               }
 >>
->> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
->> ---
+>> This should have just removed the IRDA check and request rtsirq
+>> unconditionally. Nobody noticed this by testing RTS on imx1, this is an old
+>> chip and later variants have a single combined irq.
 >>
->> Changes in v3: None
->> Changes in v2:
->> - Add handle of return value from of_alias_get_alias_list
+>> The correct fix for the warning would be to restore that request_irq.
 >>
->> Needs to be applied on the top of
->> https://lkml.org/lkml/2018/9/3/404
->> https://lkml.org/lkml/2018/9/3/400 (minor that's why just in case)
->>
->> Greg: Please apply it with
->> "of: base: Introduce of_alias_get_alias_list() to check alias IDs
->> Rob is ok with that.
+>> --
+>> Regards,
+>> Leonard
 > 
-> I don't have that patch, can you resend the whole series?
+> Yes, your explain is very correct! Thanks for your comment.
+> We should restore rtsirq request that for i.MX1.
 
-done.
-M
+Ok, I will post a new fix patch as Leonard and suggested.
+
+> 
+> Regards,
+> Andy Duan
+> 
