@@ -1,68 +1,66 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH -next] serial: imx: remove set but not used variable
- 'rtsirq'
-Date: Thu, 20 Sep 2018 09:19:57 +0200
-Message-ID: <20180920071957.xnwni4lqb5kgncfc@pengutronix.de>
-References: <1537408725-196364-1-git-send-email-yuehaibing@huawei.com>
+From: Robin Gong <yibin.gong@nxp.com>
+Subject: [PATCH v1] tty: serial: imx: enable IDDMAEN for the last tail data
+Date: Thu, 20 Sep 2018 23:26:00 +0800
+Message-ID: <1537457160-10792-1-git-send-email-yibin.gong@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1537408725-196364-1-git-send-email-yuehaibing@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: YueHaibing <yuehaibing@huawei.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+To: jslaby@suse.com, fugang.duan@nxp.com, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-imx@nxp.com
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Sep 20, 2018 at 01:58:45AM +0000, YueHaibing wrote:
-> Fixes gcc '-Wunused-but-set-variable' warning:
-> 
-> drivers/tty/serial/imx.c: In function 'imx_uart_probe':
-> drivers/tty/serial/imx.c:2198:20: warning:
->  variable 'rtsirq' set but not used [-Wunused-but-set-variable]
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+enable IDDMAEN in UCR4 to let sdma script has the chance to detect
+the idle status and transfer the last tail data with the interrupt
+notifying uart driver.Otherwise, the last dma done interrupt of the
+tail data in rxfifo whose size is less than watermark may never be
+received by uart driver.
 
-Wow, this variable is write-only since 
-
-	afe9cbb1a6ad ("serial: imx: drop support for IRDA")
-
-which is over three years old. The last hunk of this patch is wrong
-however, which means that nobody uses handshaking on imx1 with a kernel
-newer than 4.1-rc1. (Well, or they fixed it and didn't made the effort
-to tell.)
-
-I suggest to break rx and tx on imx1, too, and if nobody reports a
-regression within the next three years, we rip out imx1 support
-completely. :-)
-
-Otherwise we need:
+Signed-off-by: Robin Gong <yibin.gong@nxp.com>
+---
+ drivers/tty/serial/imx.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 4e853570ea80..554a69db1bca 100644
+index 239c0fa..bbb1693 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -2350,6 +2350,14 @@ static int imx_uart_probe(struct platform_device *pdev)
- 				ret);
- 			return ret;
- 		}
+@@ -1278,7 +1278,7 @@ static int imx_uart_dma_init(struct imx_port *sport)
+ 
+ static void imx_uart_enable_dma(struct imx_port *sport)
+ {
+-	u32 ucr1;
++	u32 ucr1, ucr4;
+ 
+ 	imx_uart_setup_ufcr(sport, TXTL_DMA, RXTL_DMA);
+ 
+@@ -1287,18 +1287,26 @@ static void imx_uart_enable_dma(struct imx_port *sport)
+ 	ucr1 |= UCR1_RXDMAEN | UCR1_TXDMAEN | UCR1_ATDMAEN;
+ 	imx_uart_writel(sport, ucr1, UCR1);
+ 
++	ucr4 = imx_uart_readl(sport, UCR4);
++	ucr4 |= UCR4_IDDMAEN;
++	imx_uart_writel(sport, ucr4, UCR4);
 +
-+		ret = devm_request_irq(&pdev->dev, rtsirq, imx_uart_rtsint, 0,
-+				       dev_name(&pdev->dev), sport);
-+		if (ret) {
-+			dev_err(&pdev->dev, "failed to request rts irq: %d\n",
-+				ret);
-+			return ret;
-+		}
- 	} else {
- 		ret = devm_request_irq(&pdev->dev, rxirq, imx_uart_int, 0,
- 				       dev_name(&pdev->dev), sport);
-
-Best regards
-Uwe
-
+ 	sport->dma_is_enabled = 1;
+ }
+ 
+ static void imx_uart_disable_dma(struct imx_port *sport)
+ {
+-	u32 ucr1;
++	u32 ucr1, ucr4;
+ 
+ 	/* clear UCR1 */
+ 	ucr1 = imx_uart_readl(sport, UCR1);
+ 	ucr1 &= ~(UCR1_RXDMAEN | UCR1_TXDMAEN | UCR1_ATDMAEN);
+ 	imx_uart_writel(sport, ucr1, UCR1);
+ 
++	ucr4 = imx_uart_readl(sport, UCR4);
++	ucr4 &= ~UCR4_IDDMAEN;
++	imx_uart_writel(sport, ucr4, UCR4);
++
+ 	imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
+ 
+ 	sport->dma_is_enabled = 0;
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+2.7.4
