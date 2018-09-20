@@ -1,66 +1,113 @@
-From: Andy Duan <fugang.duan@nxp.com>
-Subject: RE: [PATCH v1] tty: serial: imx: enable IDDMAEN for the last tail
+From: Lucas Stach <l.stach@pengutronix.de>
+Subject: Re: [PATCH v1] tty: serial: imx: enable IDDMAEN for the last tail
  data
-Date: Thu, 20 Sep 2018 10:33:30 +0000
-Message-ID: <VI1PR0402MB36009F89D7E629CE99A7C592FF130@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+Date: Thu, 20 Sep 2018 12:42:05 +0200
+Message-ID: <1537440125.3362.161.camel@pengutronix.de>
 References: <1537457160-10792-1-git-send-email-yibin.gong@nxp.com>
          <20180920075513.6jqfbrrjax3sp4cn@pengutronix.de>
          <VI1PR04MB45432291716B64380C1B90DD89130@VI1PR04MB4543.eurprd04.prod.outlook.com>
- <1537436376.3362.159.camel@pengutronix.de>
+         <1537436376.3362.159.camel@pengutronix.de>
+         <VI1PR0402MB36009F89D7E629CE99A7C592FF130@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1537436376.3362.159.camel@pengutronix.de>
-Content-Language: en-US
+In-Reply-To: <VI1PR0402MB36009F89D7E629CE99A7C592FF130@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lucas Stach <l.stach@pengutronix.de>, Robin Gong <yibin.gong@nxp.com>, =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+To: Andy Duan <fugang.duan@nxp.com>, Robin Gong <yibin.gong@nxp.com>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "jslaby@suse.com" <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogTHVjYXMgU3RhY2ggPGwuc3RhY2hAcGVuZ3V0cm9uaXguZGU+IFNlbnQ6IDIwMTjlubQ5
-5pyIMjDml6UgMTc6NDANCj4gQW0gRG9ubmVyc3RhZywgZGVuIDIwLjA5LjIwMTgsIDA4OjM5ICsw
-MDAwIHNjaHJpZWIgUm9iaW4gR29uZzoNCj4gPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0t
-DQo+ID4gPiBGcm9tOiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJv
-bml4LmRlPg0KPiA+ID4gU2VudDogMjAxOOW5tDnmnIgyMOaXpSAxNTo1NQ0KPiA+ID4gVG86IFJv
-YmluIEdvbmcgPHlpYmluLmdvbmdAbnhwLmNvbT4NCj4gPiA+IENjOiBqc2xhYnlAc3VzZS5jb207
-IEFuZHkgRHVhbiA8ZnVnYW5nLmR1YW5AbnhwLmNvbT47DQo+ID4gPiBsaW51eC1zZXJpYWxAdmdl
-ci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBkbC0NCj4gPiA+IGxp
-bnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyBrZXJuZWxAcGVuZ3V0cm9uaXguZGUNCj4gPiA+
-IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjFdIHR0eTogc2VyaWFsOiBpbXg6IGVuYWJsZSBJRERNQUVO
-IGZvciB0aGUNCj4gPiA+IGxhc3QgdGFpbCBkYXRhDQo+ID4gPg0KPiA+ID4gSGVsbG8sDQo+ID4g
-Pg0KPiA+ID4gT24gVGh1LCBTZXAgMjAsIDIwMTggYXQgMTE6MjY6MDBQTSArMDgwMCwgUm9iaW4g
-R29uZyB3cm90ZToNCj4gPiA+ID4gZW5hYmxlIElERE1BRU4gaW4gVUNSNCB0byBsZXQgc2RtYSBz
-Y3JpcHQgaGFzIHRoZSBjaGFuY2UgdG8gZGV0ZWN0DQo+ID4gPiA+IHRoZSBpZGxlIHN0YXR1cyBh
-bmQgdHJhbnNmZXIgdGhlIGxhc3QgdGFpbCBkYXRhIHdpdGggdGhlIGludGVycnVwdA0KPiA+ID4g
-PiBub3RpZnlpbmcgdWFydCBkcml2ZXIuT3RoZXJ3aXNlLCB0aGUgbGFzdCBkbWEgZG9uZSBpbnRl
-cnJ1cHQgb2YNCj4gPiA+ID4gdGhlIHRhaWwgZGF0YSBpbiByeGZpZm8gd2hvc2Ugc2l6ZSBpcyBs
-ZXNzIHRoYW4gd2F0ZXJtYXJrIG1heQ0KPiA+ID4gPiBuZXZlciBiZSByZWNlaXZlZCBieSB1YXJ0
-IGRyaXZlci4NCj4gPiA+DQo+ID4gPiBJcyB0aGlzIGEgdGhlb3JldGljIGlzc3VlPyBPciBkb2Vz
-IGl0IGZpeCBhIHJlYWwgcHJvYmxlbT8NCj4gPiA+DQo+ID4gPiBJZiB0aGUgZm9ybWVyIEknZCBz
-YXkgVUNSMV9BVERNQUVOIGJlaW5nIHNldCBzaG91bGQgcHJldmVudCB0aGlzDQo+ID4gPiBzdGFs
-bC4NCj4gPg0KPiA+IEl0J3MgYSByZWFsIGZpeCwgeW91IHdpbGwgc2VlICd0aW1lb3V0IFdlIHJl
-YWQgMCBieXRlJyB3aXRoIHRoZQ0KPiA+IGF0dGFjaGVkIHN0cmVzcyB0ZXN0IHJ1bm5pbmcgb24g
-aS5teDdkIG9yIGkubXg2IGlmIG5vIHRoaXMgcGF0Y2gNCj4gPiBhcHBsaWVkLg0KPiA+ICcgd2hp
-bGUgWyAxIF07IGRvIC91bml0X3Rlc3RzL1VBUlQvbXhjX3VhcnRfc3RyZXNzX3Rlc3Qub3V0DQo+
-ID4gL2Rldi90dHlteGM1IDIwMDAwMDAgRCBMIDEwMCAxMDAgTDsgZG9uZSAmJw0KPiA+IFBsZWFz
-ZSBtYWtlIHN1cmUgZG1hIGVuYWJsZWQgb24gdHR5bXhjWCBmb3IgeW91ciB0ZXN0LCBhbmQgc2Rt
-YQ0KPiA+IGZpcm13YXJlIHNldHVwIGluIHlvdXIgcm9vdGZzIC9saWIvZmlybXdhcmUvaW14L3Nk
-bWEvc2RtYS1pbXg2cS5iaW4NCj4gb3INCj4gPiAvbGliL2Zpcm13YXJlL2lteC9zZG1hL3NkbWEt
-IGlteDdkLmJpbi4NCj4gPiBZb3UgY2FuIGdldCBzZG1hIGZpcm13YXJlIGZyb20gYmVsb3c6DQo+
-ID4NCj4gaHR0cHM6Ly9lbWVhMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3Vy
-bD1odHRwcyUzQSUyRiUyRmdpDQo+IHQNCj4gPiAua2VybmVsLm9yZyUyRnB1YiUyRnNjbSUyRmxp
-bnV4JTJGa2VybmVsJTJGZ2l0JTJGZmlybXdhcmUlMkZsaW4NCj4gdXgtJmFtcA0KPiA+IDtkYXRh
-PTAyJTdDMDElN0NmdWdhbmcuZHVhbiU0MG54cC5jb20lN0MyMTMwNzZmNmQxMTE0MTQ4YjUNCj4g
-Y2UwOGQ2MWVkY2ZiDQo+ID4NCj4gODglN0M2ODZlYTFkM2JjMmI0YzZmYTkyY2Q5OWM1YzMwMTYz
-NSU3QzAlN0MwJTdDNjM2NzMwMzMxDQo+IDgxNDgwNDU0NSZhbXANCj4gPiA7c2RhdGE9ZDB1Wk1q
-TGMlMkZySWFlM1dkNlBXdFgyZ0VHbHZaY1VqUEJWcUtLOTU1MGpnJTNEJmFtcA0KPiA7cmVzZXJ2
-ZWQ9MA0KPiA+IGZpcm13YXJlLmdpdC90cmVlL2lteC9zZG1hDQo+IA0KPiBQbGVhc2Ugc2VlIGNv
-bW1pdCA5MDVjMGRlY2FkMjg0MDJhYTE2Njk3NTAyM2ZiODhjOGY2MmY5M2M4IG9uDQo+IHdoeSB1
-c2luZyB0aGUgaWRsZSBkZXRlY3QgdG9nZXRoZXIgd2l0aCB3aXRoIFNETUEgaXMgd3JvbmcuIFdl
-IGRvbid0DQo+IHdhbnQgdG8gcmUtIGludHJvZHVjZSB0aGUgYnJva2VuIGJlaGF2aW9yLg0KPiAN
-ClRoZSBwYXRjaCBqdXN0IHdhbnQgdG8gdXNlIGlkbGUgdGltZXIgdG8gc3RvcCBTRE1BIHRyYW5z
-ZmVyIHVzaW5nIHRoZSBuZXcgcmFtIHNjcmlwdCwgd2hvc2UgYWN0aW9uIGlzIG5vdCB0aGUgc2Ft
-ZSBhcyByb20gc2NyaXB0Lg0KU2RtYSByb20gc2NyaXB0IGhvdyB0byBzdG9wIHNkbWEgdHJhbnNm
-ZXIgaWYgb25seSBvbmUgYnl0ZSBpbiByeCBGSUZPIHRoYXQgdHJpZ2dlciBTRE1BIHJlcXVlc3Qg
-Pw0K
+Am Donnerstag, den 20.09.2018, 10:33 +0000 schrieb Andy Duan:
+> From: Lucas Stach <l.stach@pengutronix.de> Sent: 2018年9月20日 17:40
+> > Am Donnerstag, den 20.09.2018, 08:39 +0000 schrieb Robin Gong:
+> > > > -----Original Message-----
+> > > > From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > > > Sent: 2018年9月20日 15:55
+> > > > To: Robin Gong <yibin.gong@nxp.com>
+> > > > Cc: jslaby@suse.com; Andy Duan <fugang.duan@nxp.com>;
+> > > > linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org; dl-
+> > > > linux-imx <linux-imx@nxp.com>; kernel@pengutronix.de
+> > > > Subject: Re: [PATCH v1] tty: serial: imx: enable IDDMAEN for
+> > > > the
+> > > > last tail data
+> > > > 
+> > > > Hello,
+> > > > 
+> > > > On Thu, Sep 20, 2018 at 11:26:00PM +0800, Robin Gong wrote:
+> > > > > enable IDDMAEN in UCR4 to let sdma script has the chance to
+> > > > > detect
+> > > > > the idle status and transfer the last tail data with the
+> > > > > interrupt
+> > > > > notifying uart driver.Otherwise, the last dma done interrupt
+> > > > > of
+> > > > > the tail data in rxfifo whose size is less than watermark may
+> > > > > never be received by uart driver.
+> > > > 
+> > > > Is this a theoretic issue? Or does it fix a real problem?
+> > > > 
+> > > > If the former I'd say UCR1_ATDMAEN being set should prevent
+> > > > this
+> > > > stall.
+> > > 
+> > > It's a real fix, you will see 'timeout We read 0 byte' with the
+> > > attached stress test running on i.mx7d or i.mx6 if no this patch
+> > > applied.
+> > > ' while [ 1 ]; do /unit_tests/UART/mxc_uart_stress_test.out
+> > > /dev/ttymxc5 2000000 D L 100 100 L; done &'
+> > > Please make sure dma enabled on ttymxcX for your test, and sdma
+> > > firmware setup in your rootfs /lib/firmware/imx/sdma/sdma-
+> > > imx6q.bin
+> > 
+> > or
+> > > /lib/firmware/imx/sdma/sdma- imx7d.bin.
+> > > You can get sdma firmware from below:
+> > > 
+> > 
+> > https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2F
+> > gi
+> > t
+> > > .kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Ffirmware%2Flin
+> > 
+> > ux-&amp
+> > > ;data=02%7C01%7Cfugang.duan%40nxp.com%7C213076f6d1114148b5
+> > 
+> > ce08d61edcfb
+> > > 
+> > 
+> > 88%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C636730331
+> > 814804545&amp
+> > > ;sdata=d0uZMjLc%2FrIae3Wd6PWtX2gEGlvZcUjPBVqKK9550jg%3D&amp
+> > 
+> > ;reserved=0
+> > > firmware.git/tree/imx/sdma
+> > 
+> > Please see commit 905c0decad28402aa166975023fb88c8f62f93c8 on
+> > why using the idle detect together with with SDMA is wrong. We
+> > don't
+> > want to re- introduce the broken behavior.
+> > 
+> 
+> The patch just want to use idle timer to stop SDMA transfer using the
+> new ram script, whose action is not the same as rom script.
+> Sdma rom script how to stop sdma transfer if only one byte in rx FIFO
+> that trigger SDMA request ?
+
+Right, and using the idle detect doesn't work with the ROM script as
+this doesn't read the remaining bytes in the FIFO when the idle detect
+condition is hit.
+
+Instead with the ROM script the aging timer is used to terminate the
+DMA transfer. So if 1 byte is sitting in the FIFO below the watermark
+level, the serial core will trigger a DMA request when the aging time
+is hit. The ROM script checks the aging status and reads the remaining
+bytes from the FIFO, then terminates the transfer. This is all
+documented in the reference manual.
+
+I fail to see why this shouldn't work with the RAM script. If it
+doesn't work with the RAM firmware, this script is violating the
+interface between the serial core and the script in an incompatible way
+and needs fixing.
+
+Regards,
+Lucas
