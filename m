@@ -1,238 +1,66 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v7 4/4] gpiolib: Implement fast processing path in
- get/set array
-Date: Thu, 20 Sep 2018 12:11:48 +0200
-Message-ID: <20180920101151eucas1p221f5a1715b8556bb9d99bf08fe09ce6f~WE-_cEf4l0754207542eucas1p27@eucas1p2.samsung.com>
-References: <20180831225616.29221-1-jmkrzyszt@gmail.com>
-        <20180902120144.6855-1-jmkrzyszt@gmail.com>
-        <20180902120144.6855-5-jmkrzyszt@gmail.com>
-        <CGME20180920101151eucas1p221f5a1715b8556bb9d99bf08fe09ce6f@eucas1p2.samsung.com>
+From: Andy Duan <fugang.duan@nxp.com>
+Subject: RE: [PATCH v1] tty: serial: imx: enable IDDMAEN for the last tail
+ data
+Date: Thu, 20 Sep 2018 10:33:30 +0000
+Message-ID: <VI1PR0402MB36009F89D7E629CE99A7C592FF130@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+References: <1537457160-10792-1-git-send-email-yibin.gong@nxp.com>
+         <20180920075513.6jqfbrrjax3sp4cn@pengutronix.de>
+         <VI1PR04MB45432291716B64380C1B90DD89130@VI1PR04MB4543.eurprd04.prod.outlook.com>
+ <1537436376.3362.159.camel@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180902120144.6855-5-jmkrzyszt@gmail.com>
+In-Reply-To: <1537436376.3362.159.camel@pengutronix.de>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Janusz Krzysztofik <jmkrzyszt@gmail.com>, Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kishon Vijay Abraham I <kishon@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, Geert Uytterhoeven <geert@linux-m68k.org>
+To: Lucas Stach <l.stach@pengutronix.de>, Robin Gong <yibin.gong@nxp.com>, =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "jslaby@suse.com" <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi All,
-
-On 2018-09-02 14:01, Janusz Krzysztofik wrote:
-> Certain GPIO descriptor arrays returned by gpio_get_array() may contain
-> information on direct mapping of array members to pins of a single GPIO
-> chip in hardware order.  In such cases, bitmaps of values can be passed
-> directly from/to the chip's .get/set_multiple() callbacks without
-> wasting time on iterations.
->
-> Add respective code to gpiod_get/set_array_bitmap_complex() functions.
-> Pins not applicable for fast path are processed as before, skipping
-> over the 'fast' ones.
->
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-
-I've just noticed that this patch landed in today's linux-next. Sadly it
-breaks booting of Exynos5250-based Samsung Snow Chromebook (ARM 32bit,
-device-tree source arch/arm/boot/dts/exynos5250-snow.dts).
-
-Booting hangs after detecting MMC cards. Reverting this patch fixes the
-boot. I will try later to add some debugs and investigate it further what
-really happens when booting hangs.
-
-> ---
->   Documentation/driver-api/gpio/board.rst    | 15 ++++++
->   Documentation/driver-api/gpio/consumer.rst |  8 +++
->   drivers/gpio/gpiolib.c                     | 87 ++++++++++++++++++++++++++++--
->   3 files changed, 105 insertions(+), 5 deletions(-)
->
-> diff --git a/Documentation/driver-api/gpio/board.rst b/Documentation/driver-api/gpio/board.rst
-> index 2c112553df84..c66821e033c2 100644
-> --- a/Documentation/driver-api/gpio/board.rst
-> +++ b/Documentation/driver-api/gpio/board.rst
-> @@ -193,3 +193,18 @@ And the table can be added to the board code as follows::
->   
->   The line will be hogged as soon as the gpiochip is created or - in case the
->   chip was created earlier - when the hog table is registered.
-> +
-> +Arrays of pins
-> +--------------
-> +In addition to requesting pins belonging to a function one by one, a device may
-> +also request an array of pins assigned to the function.  The way those pins are
-> +mapped to the device determines if the array qualifies for fast bitmap
-> +processing.  If yes, a bitmap is passed over get/set array functions directly
-> +between a caller and a respective .get/set_multiple() callback of a GPIO chip.
-> +
-> +In order to qualify for fast bitmap processing, the pin mapping must meet the
-> +following requirements:
-> +- it must belong to the same chip as other 'fast' pins of the function,
-> +- its index within the function must match its hardware number within the chip.
-> +
-> +Open drain and open source pins are excluded from fast bitmap output processing.
-> diff --git a/Documentation/driver-api/gpio/consumer.rst b/Documentation/driver-api/gpio/consumer.rst
-> index 0afd95a12b10..cf992e5ab976 100644
-> --- a/Documentation/driver-api/gpio/consumer.rst
-> +++ b/Documentation/driver-api/gpio/consumer.rst
-> @@ -388,6 +388,14 @@ array_info should be set to NULL.
->   Note that for optimal performance GPIOs belonging to the same chip should be
->   contiguous within the array of descriptors.
->   
-> +Still better performance may be achieved if array indexes of the descriptors
-> +match hardware pin numbers of a single chip.  If an array passed to a get/set
-> +array function matches the one obtained from gpiod_get_array() and array_info
-> +associated with the array is also passed, the function may take a fast bitmap
-> +processing path, passing the value_bitmap argument directly to the respective
-> +.get/set_multiple() callback of the chip.  That allows for utilization of GPIO
-> +banks as data I/O ports without much loss of performance.
-> +
->   The return value of gpiod_get_array_value() and its variants is 0 on success
->   or negative on error. Note the difference to gpiod_get_value(), which returns
->   0 or 1 on success to convey the GPIO value. With the array functions, the GPIO
-> diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-> index cef6ee31fe05..b9d083fb13ee 100644
-> --- a/drivers/gpio/gpiolib.c
-> +++ b/drivers/gpio/gpiolib.c
-> @@ -2789,7 +2789,36 @@ int gpiod_get_array_value_complex(bool raw, bool can_sleep,
->   				  struct gpio_array *array_info,
->   				  unsigned long *value_bitmap)
->   {
-> -	int i = 0;
-> +	int err, i = 0;
-> +
-> +	/*
-> +	 * Validate array_info against desc_array and its size.
-> +	 * It should immediately follow desc_array if both
-> +	 * have been obtained from the same gpiod_get_array() call.
-> +	 */
-> +	if (array_info && array_info->desc == desc_array &&
-> +	    array_size <= array_info->size &&
-> +	    (void *)array_info == desc_array + array_info->size) {
-> +		if (!can_sleep)
-> +			WARN_ON(array_info->chip->can_sleep);
-> +
-> +		err = gpio_chip_get_multiple(array_info->chip,
-> +					     array_info->get_mask,
-> +					     value_bitmap);
-> +		if (err)
-> +			return err;
-> +
-> +		if (!raw && !bitmap_empty(array_info->invert_mask, array_size))
-> +			bitmap_xor(value_bitmap, value_bitmap,
-> +				   array_info->invert_mask, array_size);
-> +
-> +		if (bitmap_full(array_info->get_mask, array_size))
-> +			return 0;
-> +
-> +		i = find_first_zero_bit(array_info->get_mask, array_size);
-> +	} else {
-> +		array_info = NULL;
-> +	}
->   
->   	while (i < array_size) {
->   		struct gpio_chip *chip = desc_array[i]->gdev->chip;
-> @@ -2820,7 +2849,12 @@ int gpiod_get_array_value_complex(bool raw, bool can_sleep,
->   			int hwgpio = gpio_chip_hwgpio(desc);
->   
->   			__set_bit(hwgpio, mask);
-> -			i++;
-> +
-> +			if (array_info)
-> +				find_next_zero_bit(array_info->get_mask,
-> +						   array_size, i);
-> +			else
-> +				i++;
->   		} while ((i < array_size) &&
->   			 (desc_array[i]->gdev->chip == chip));
->   
-> @@ -2831,7 +2865,7 @@ int gpiod_get_array_value_complex(bool raw, bool can_sleep,
->   			return ret;
->   		}
->   
-> -		for (j = first; j < i; j++) {
-> +		for (j = first; j < i; ) {
->   			const struct gpio_desc *desc = desc_array[j];
->   			int hwgpio = gpio_chip_hwgpio(desc);
->   			int value = test_bit(hwgpio, bits);
-> @@ -2840,6 +2874,11 @@ int gpiod_get_array_value_complex(bool raw, bool can_sleep,
->   				value = !value;
->   			__assign_bit(j, value_bitmap, value);
->   			trace_gpio_value(desc_to_gpio(desc), 1, value);
-> +
-> +			if (array_info)
-> +				find_next_zero_bit(array_info->get_mask, i, j);
-> +			else
-> +				j++;
->   		}
->   
->   		if (mask != fastpath)
-> @@ -3041,6 +3080,32 @@ int gpiod_set_array_value_complex(bool raw, bool can_sleep,
->   {
->   	int i = 0;
->   
-> +	/*
-> +	 * Validate array_info against desc_array and its size.
-> +	 * It should immediately follow desc_array if both
-> +	 * have been obtained from the same gpiod_get_array() call.
-> +	 */
-> +	if (array_info && array_info->desc == desc_array &&
-> +	    array_size <= array_info->size &&
-> +	    (void *)array_info == desc_array + array_info->size) {
-> +		if (!can_sleep)
-> +			WARN_ON(array_info->chip->can_sleep);
-> +
-> +		if (!raw && !bitmap_empty(array_info->invert_mask, array_size))
-> +			bitmap_xor(value_bitmap, value_bitmap,
-> +				   array_info->invert_mask, array_size);
-> +
-> +		gpio_chip_set_multiple(array_info->chip, array_info->set_mask,
-> +				       value_bitmap);
-> +
-> +		if (bitmap_full(array_info->set_mask, array_size))
-> +			return 0;
-> +
-> +		i = find_first_zero_bit(array_info->set_mask, array_size);
-> +	} else {
-> +		array_info = NULL;
-> +	}
-> +
->   	while (i < array_size) {
->   		struct gpio_chip *chip = desc_array[i]->gdev->chip;
->   		unsigned long fastpath[2 * BITS_TO_LONGS(FASTPATH_NGPIO)];
-> @@ -3068,7 +3133,14 @@ int gpiod_set_array_value_complex(bool raw, bool can_sleep,
->   			int hwgpio = gpio_chip_hwgpio(desc);
->   			int value = test_bit(i, value_bitmap);
->   
-> -			if (!raw && test_bit(FLAG_ACTIVE_LOW, &desc->flags))
-> +			/*
-> +			 * Pins applicable for fast input but not for
-> +			 * fast output processing may have been already
-> +			 * inverted inside the fast path, skip them.
-> +			 */
-> +			if (!raw && !(array_info &&
-> +			    test_bit(i, array_info->invert_mask)) &&
-> +			    test_bit(FLAG_ACTIVE_LOW, &desc->flags))
->   				value = !value;
->   			trace_gpio_value(desc_to_gpio(desc), 0, value);
->   			/*
-> @@ -3087,7 +3159,12 @@ int gpiod_set_array_value_complex(bool raw, bool can_sleep,
->   					__clear_bit(hwgpio, bits);
->   				count++;
->   			}
-> -			i++;
-> +
-> +			if (array_info)
-> +				find_next_zero_bit(array_info->set_mask,
-> +						   array_size, i);
-> +			else
-> +				i++;
->   		} while ((i < array_size) &&
->   			 (desc_array[i]->gdev->chip == chip));
->   		/* push collected bits to outputs */
->
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+RnJvbTogTHVjYXMgU3RhY2ggPGwuc3RhY2hAcGVuZ3V0cm9uaXguZGU+IFNlbnQ6IDIwMTjlubQ5
+5pyIMjDml6UgMTc6NDANCj4gQW0gRG9ubmVyc3RhZywgZGVuIDIwLjA5LjIwMTgsIDA4OjM5ICsw
+MDAwIHNjaHJpZWIgUm9iaW4gR29uZzoNCj4gPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0t
+DQo+ID4gPiBGcm9tOiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJv
+bml4LmRlPg0KPiA+ID4gU2VudDogMjAxOOW5tDnmnIgyMOaXpSAxNTo1NQ0KPiA+ID4gVG86IFJv
+YmluIEdvbmcgPHlpYmluLmdvbmdAbnhwLmNvbT4NCj4gPiA+IENjOiBqc2xhYnlAc3VzZS5jb207
+IEFuZHkgRHVhbiA8ZnVnYW5nLmR1YW5AbnhwLmNvbT47DQo+ID4gPiBsaW51eC1zZXJpYWxAdmdl
+ci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBkbC0NCj4gPiA+IGxp
+bnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyBrZXJuZWxAcGVuZ3V0cm9uaXguZGUNCj4gPiA+
+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjFdIHR0eTogc2VyaWFsOiBpbXg6IGVuYWJsZSBJRERNQUVO
+IGZvciB0aGUNCj4gPiA+IGxhc3QgdGFpbCBkYXRhDQo+ID4gPg0KPiA+ID4gSGVsbG8sDQo+ID4g
+Pg0KPiA+ID4gT24gVGh1LCBTZXAgMjAsIDIwMTggYXQgMTE6MjY6MDBQTSArMDgwMCwgUm9iaW4g
+R29uZyB3cm90ZToNCj4gPiA+ID4gZW5hYmxlIElERE1BRU4gaW4gVUNSNCB0byBsZXQgc2RtYSBz
+Y3JpcHQgaGFzIHRoZSBjaGFuY2UgdG8gZGV0ZWN0DQo+ID4gPiA+IHRoZSBpZGxlIHN0YXR1cyBh
+bmQgdHJhbnNmZXIgdGhlIGxhc3QgdGFpbCBkYXRhIHdpdGggdGhlIGludGVycnVwdA0KPiA+ID4g
+PiBub3RpZnlpbmcgdWFydCBkcml2ZXIuT3RoZXJ3aXNlLCB0aGUgbGFzdCBkbWEgZG9uZSBpbnRl
+cnJ1cHQgb2YNCj4gPiA+ID4gdGhlIHRhaWwgZGF0YSBpbiByeGZpZm8gd2hvc2Ugc2l6ZSBpcyBs
+ZXNzIHRoYW4gd2F0ZXJtYXJrIG1heQ0KPiA+ID4gPiBuZXZlciBiZSByZWNlaXZlZCBieSB1YXJ0
+IGRyaXZlci4NCj4gPiA+DQo+ID4gPiBJcyB0aGlzIGEgdGhlb3JldGljIGlzc3VlPyBPciBkb2Vz
+IGl0IGZpeCBhIHJlYWwgcHJvYmxlbT8NCj4gPiA+DQo+ID4gPiBJZiB0aGUgZm9ybWVyIEknZCBz
+YXkgVUNSMV9BVERNQUVOIGJlaW5nIHNldCBzaG91bGQgcHJldmVudCB0aGlzDQo+ID4gPiBzdGFs
+bC4NCj4gPg0KPiA+IEl0J3MgYSByZWFsIGZpeCwgeW91IHdpbGwgc2VlICd0aW1lb3V0IFdlIHJl
+YWQgMCBieXRlJyB3aXRoIHRoZQ0KPiA+IGF0dGFjaGVkIHN0cmVzcyB0ZXN0IHJ1bm5pbmcgb24g
+aS5teDdkIG9yIGkubXg2IGlmIG5vIHRoaXMgcGF0Y2gNCj4gPiBhcHBsaWVkLg0KPiA+ICcgd2hp
+bGUgWyAxIF07IGRvIC91bml0X3Rlc3RzL1VBUlQvbXhjX3VhcnRfc3RyZXNzX3Rlc3Qub3V0DQo+
+ID4gL2Rldi90dHlteGM1IDIwMDAwMDAgRCBMIDEwMCAxMDAgTDsgZG9uZSAmJw0KPiA+IFBsZWFz
+ZSBtYWtlIHN1cmUgZG1hIGVuYWJsZWQgb24gdHR5bXhjWCBmb3IgeW91ciB0ZXN0LCBhbmQgc2Rt
+YQ0KPiA+IGZpcm13YXJlIHNldHVwIGluIHlvdXIgcm9vdGZzIC9saWIvZmlybXdhcmUvaW14L3Nk
+bWEvc2RtYS1pbXg2cS5iaW4NCj4gb3INCj4gPiAvbGliL2Zpcm13YXJlL2lteC9zZG1hL3NkbWEt
+IGlteDdkLmJpbi4NCj4gPiBZb3UgY2FuIGdldCBzZG1hIGZpcm13YXJlIGZyb20gYmVsb3c6DQo+
+ID4NCj4gaHR0cHM6Ly9lbWVhMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3Vy
+bD1odHRwcyUzQSUyRiUyRmdpDQo+IHQNCj4gPiAua2VybmVsLm9yZyUyRnB1YiUyRnNjbSUyRmxp
+bnV4JTJGa2VybmVsJTJGZ2l0JTJGZmlybXdhcmUlMkZsaW4NCj4gdXgtJmFtcA0KPiA+IDtkYXRh
+PTAyJTdDMDElN0NmdWdhbmcuZHVhbiU0MG54cC5jb20lN0MyMTMwNzZmNmQxMTE0MTQ4YjUNCj4g
+Y2UwOGQ2MWVkY2ZiDQo+ID4NCj4gODglN0M2ODZlYTFkM2JjMmI0YzZmYTkyY2Q5OWM1YzMwMTYz
+NSU3QzAlN0MwJTdDNjM2NzMwMzMxDQo+IDgxNDgwNDU0NSZhbXANCj4gPiA7c2RhdGE9ZDB1Wk1q
+TGMlMkZySWFlM1dkNlBXdFgyZ0VHbHZaY1VqUEJWcUtLOTU1MGpnJTNEJmFtcA0KPiA7cmVzZXJ2
+ZWQ9MA0KPiA+IGZpcm13YXJlLmdpdC90cmVlL2lteC9zZG1hDQo+IA0KPiBQbGVhc2Ugc2VlIGNv
+bW1pdCA5MDVjMGRlY2FkMjg0MDJhYTE2Njk3NTAyM2ZiODhjOGY2MmY5M2M4IG9uDQo+IHdoeSB1
+c2luZyB0aGUgaWRsZSBkZXRlY3QgdG9nZXRoZXIgd2l0aCB3aXRoIFNETUEgaXMgd3JvbmcuIFdl
+IGRvbid0DQo+IHdhbnQgdG8gcmUtIGludHJvZHVjZSB0aGUgYnJva2VuIGJlaGF2aW9yLg0KPiAN
+ClRoZSBwYXRjaCBqdXN0IHdhbnQgdG8gdXNlIGlkbGUgdGltZXIgdG8gc3RvcCBTRE1BIHRyYW5z
+ZmVyIHVzaW5nIHRoZSBuZXcgcmFtIHNjcmlwdCwgd2hvc2UgYWN0aW9uIGlzIG5vdCB0aGUgc2Ft
+ZSBhcyByb20gc2NyaXB0Lg0KU2RtYSByb20gc2NyaXB0IGhvdyB0byBzdG9wIHNkbWEgdHJhbnNm
+ZXIgaWYgb25seSBvbmUgYnl0ZSBpbiByeCBGSUZPIHRoYXQgdHJpZ2dlciBTRE1BIHJlcXVlc3Qg
+Pw0K
