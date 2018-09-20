@@ -1,49 +1,66 @@
-From: Leonard Crestez <leonard.crestez@nxp.com>
-Subject: Re: [PATCH -next] serial: imx: remove set but not used variable
- 'rtsirq'
-Date: Thu, 20 Sep 2018 08:50:44 +0000
-Message-ID: <96170d620618804d49ad19323d3cdee853070c72.camel@nxp.com>
-References: <1537408725-196364-1-git-send-email-yuehaibing@huawei.com>
-         <3b23675a-f537-868f-2432-b7f8a0c8c466@suse.cz>
+From: Lucas Stach <l.stach@pengutronix.de>
+Subject: Re: [PATCH v1] tty: serial: imx: enable IDDMAEN for the last tail
+ data
+Date: Thu, 20 Sep 2018 11:39:36 +0200
+Message-ID: <1537436376.3362.159.camel@pengutronix.de>
+References: <1537457160-10792-1-git-send-email-yibin.gong@nxp.com>
+         <20180920075513.6jqfbrrjax3sp4cn@pengutronix.de>
+         <VI1PR04MB45432291716B64380C1B90DD89130@VI1PR04MB4543.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3b23675a-f537-868f-2432-b7f8a0c8c466@suse.cz>
-Content-Language: en-US
-Content-ID: <34C1F8B952E84E45884A0D1BA851D765@eurprd04.prod.outlook.com>
+In-Reply-To: <VI1PR04MB45432291716B64380C1B90DD89130@VI1PR04MB4543.eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "yuehaibing@huawei.com" <yuehaibing@huawei.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "jslaby@suse.cz" <jslaby@suse.cz>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, Andy Duan <fugang.duan@nxp.com>, "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
+To: Robin Gong <yibin.gong@nxp.com>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Andy Duan <fugang.duan@nxp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "jslaby@suse.com" <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-T24gVGh1LCAyMDE4LTA5LTIwIGF0IDA4OjQ1ICswMjAwLCBKaXJpIFNsYWJ5IHdyb3RlOg0KPiBP
-biAwOS8yMC8yMDE4LCAwMzo1OCBBTSwgWXVlSGFpYmluZyB3cm90ZToNCj4gPiBGaXhlcyBnY2Mg
-Jy1XdW51c2VkLWJ1dC1zZXQtdmFyaWFibGUnIHdhcm5pbmc6DQo+ID4gDQo+ID4gZHJpdmVycy90
-dHkvc2VyaWFsL2lteC5jOiBJbiBmdW5jdGlvbiAnaW14X3VhcnRfcHJvYmUnOg0KPiA+IGRyaXZl
-cnMvdHR5L3NlcmlhbC9pbXguYzoyMTk4OjIwOiB3YXJuaW5nOg0KPiA+ICB2YXJpYWJsZSAncnRz
-aXJxJyBzZXQgYnV0IG5vdCB1c2VkIFstV3VudXNlZC1idXQtc2V0LXZhcmlhYmxlXQ0KPiA+IA0K
-PiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9z
-ZXJpYWwvaW14LmMNCj4gPiBAQCAtMjIyMCw3ICsyMjIwLDYgQEAgc3RhdGljIGludCBpbXhfdWFy
-dF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiA+ICANCj4gPiAgCXJ4aXJx
-ID0gcGxhdGZvcm1fZ2V0X2lycShwZGV2LCAwKTsNCj4gPiAgCXR4aXJxID0gcGxhdGZvcm1fZ2V0
-X2lycShwZGV2LCAxKTsNCj4gPiAtCXJ0c2lycSA9IHBsYXRmb3JtX2dldF9pcnEocGRldiwgMik7
-DQo+IA0KPiBJIGFtIG5vdCBzdXJlIHRoaXMgaXMgY29ycmVjdC4gcGxhdGZvcm1fZ2V0X2lycSBo
-YXMgc2lkZSBlZmZlY3RzIChsaWtlDQo+IGVuYWJsaW5nIHRoZSBJUlEpLiBBcmUgeW91IHN1cmUg
-dGhpcyB3b24ndCBjaGFuZ2UgdGhlIGJlaGF2aW91ciAodGhpcyBpcw0KPiBxdWVzdGlvbiBtb3N0
-bHkgdG8gSU1YIGZlbGxvd3MpPw0KDQpBcyBmYXIgYXMgSSBjYW4gdGVsbCB0aGVyZSB3YXMgYSBy
-ZXF1ZXN0X2lycSBjYWxsIGZvciBydHNpcnEgd2hpY2ggd2FzDQpyZW1vdmVkIGJ5IG1pc3Rha2Ug
-aW4gY29tbWl0IGFmZTljYmIxYTZhZCAoInNlcmlhbDogaW14OiBkcm9wIHN1cHBvcnQNCmZvciBJ
-UkRBIik6DQoNCi0gICAgICAgICAgICAgICAvKiBkbyBub3QgdXNlIFJUUyBJUlEgb24gSXJEQSAq
-Lw0KLSAgICAgICAgICAgICAgIGlmICghVVNFX0lSREEoc3BvcnQpKSB7DQotICAgICAgICAgICAg
-ICAgICAgICAgICByZXQgPSBkZXZtX3JlcXVlc3RfaXJxKCZwZGV2LT5kZXYsIHJ0c2lycSwNCi0g
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaW14X3J0c2ludCwg
-MCwNCi0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZGV2X25h
-bWUoJnBkZXYtPmRldiksIHNwb3J0KTsNCi0gICAgICAgICAgICAgICAgICAgICAgIGlmIChyZXQp
-DQotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiByZXQ7DQotICAgICAgICAg
-ICAgICAgfQ0KDQpUaGlzIHNob3VsZCBoYXZlIGp1c3QgcmVtb3ZlZCB0aGUgSVJEQSBjaGVjayBh
-bmQgcmVxdWVzdCBydHNpcnENCnVuY29uZGl0aW9uYWxseS4gTm9ib2R5IG5vdGljZWQgdGhpcyBi
-eSB0ZXN0aW5nIFJUUyBvbiBpbXgxLCB0aGlzIGlzIGFuDQpvbGQgY2hpcCBhbmQgbGF0ZXIgdmFy
-aWFudHMgaGF2ZSBhIHNpbmdsZSBjb21iaW5lZCBpcnEuDQoNClRoZSBjb3JyZWN0IGZpeCBmb3Ig
-dGhlIHdhcm5pbmcgd291bGQgYmUgdG8gcmVzdG9yZSB0aGF0IHJlcXVlc3RfaXJxLg0KDQotLQ0K
-UmVnYXJkcywNCkxlb25hcmQNCg==
+Am Donnerstag, den 20.09.2018, 08:39 +0000 schrieb Robin Gong:
+> > -----Original Message-----
+> > From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > Sent: 2018年9月20日 15:55
+> > To: Robin Gong <yibin.gong@nxp.com>
+> > Cc: jslaby@suse.com; Andy Duan <fugang.duan@nxp.com>;
+> > linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org; dl-
+> > linux-imx
+> > <linux-imx@nxp.com>; kernel@pengutronix.de
+> > Subject: Re: [PATCH v1] tty: serial: imx: enable IDDMAEN for the
+> > last tail data
+> > 
+> > Hello,
+> > 
+> > On Thu, Sep 20, 2018 at 11:26:00PM +0800, Robin Gong wrote:
+> > > enable IDDMAEN in UCR4 to let sdma script has the chance to
+> > > detect the
+> > > idle status and transfer the last tail data with the interrupt
+> > > notifying uart driver.Otherwise, the last dma done interrupt of
+> > > the
+> > > tail data in rxfifo whose size is less than watermark may never
+> > > be
+> > > received by uart driver.
+> > 
+> > Is this a theoretic issue? Or does it fix a real problem?
+> > 
+> > If the former I'd say UCR1_ATDMAEN being set should prevent this
+> > stall.
+> 
+> It's a real fix, you will see 'timeout We read 0 byte' with the
+> attached stress test
+> running on i.mx7d or i.mx6 if no this patch applied. 
+> ' while [ 1 ]; do /unit_tests/UART/mxc_uart_stress_test.out
+> /dev/ttymxc5 2000000 D L 100 100 L; done &'
+> Please make sure dma enabled on ttymxcX for your test, and sdma
+> firmware setup in your rootfs 
+> /lib/firmware/imx/sdma/sdma-imx6q.bin or /lib/firmware/imx/sdma/sdma-
+> imx7d.bin.
+> You can get sdma firmware from below:
+> https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-
+> firmware.git/tree/imx/sdma
+
+Please see commit 905c0decad28402aa166975023fb88c8f62f93c8 on why using
+the idle detect together with with SDMA is wrong. We don't want to re-
+introduce the broken behavior.
+
+Regards,
+Lucas
