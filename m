@@ -1,44 +1,61 @@
 From: Songjun Wu <songjun.wu@linux.intel.com>
-Subject: [PATCH 00/14] serial: langtiq: Add CCF suppport
-Date: Mon, 24 Sep 2018 18:27:49 +0800
-Message-ID: <20180924102803.30263-1-songjun.wu@linux.intel.com>
+Subject: [PATCH 10/14] serial: lantiq: Reorder the head files
+Date: Mon, 24 Sep 2018 18:27:59 +0800
+Message-ID: <20180924102803.30263-11-songjun.wu@linux.intel.com>
+References: <20180924102803.30263-1-songjun.wu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180924102803.30263-1-songjun.wu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, hauke.mehrtens@intel.com
-Cc: Songjun Wu <songjun.wu@linux.intel.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, James Hogan <jhogan@kernel.org>, linux-mips@linux-mips.org, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Philippe Ombredanne <pombredanne@nexb.com>, Paul Burton <paul.burton@mips.com>, Rob Herring <robh+dt@kernel.org>, Kate Stewart <kstewart@linuxfoundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>
+Cc: Songjun Wu <songjun.wu@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-This patch series is for adding common clock framework support
-for langtiq serial driver, mainly includes:
-1) Add common clock framework support.
-2) Modify the dts file according to the DT conventions.
-3) Replace the platform dependent functions with kernel functions
+Reorder the head files according to the coding style.
 
+Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
+---
 
-Songjun Wu (14):
-  MIPS: dts: Change upper case to lower case
-  MIPS: dts: Add aliases node for lantiq danube serial
-  serial: lantiq: Get serial id from dts
-  serial: lantiq: Change ltq_w32_mask to asc_update_bits
-  MIPS: lantiq: Unselect SWAP_IO_SPACE when LANTIQ is selected
-  serial: lantiq: Use readl/writel instead of ltq_r32/ltq_w32
-  serial: lantiq: Rename fpiclk to freqclk
-  serial: lantiq: Replace clk_enable/clk_disable with clk generic API
-  serial: lantiq: Add CCF support
-  serial: lantiq: Reorder the head files
-  include: Add lantiq.h in include/linux/
-  serial: lantiq: Replace lantiq_soc.h with lantiq.h
-  serial: lantiq: Change init_lqasc to static declaration
-  dt-bindings: serial: lantiq: Add optional properties for CCF
+ drivers/tty/serial/lantiq.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
- .../devicetree/bindings/serial/lantiq_asc.txt      |  15 +++
- arch/mips/Kconfig                                  |   1 -
- arch/mips/boot/dts/lantiq/danube.dtsi              |  42 +++---
- arch/mips/boot/dts/lantiq/easy50712.dts            |  18 ++-
- drivers/tty/serial/lantiq.c                        | 145 ++++++++++++---------
- include/linux/lantiq.h                             |  23 ++++
- 6 files changed, 155 insertions(+), 89 deletions(-)
- create mode 100644 include/linux/lantiq.h
-
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index 88210de00f35..c983694ba24d 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -8,22 +8,22 @@
+  * Copyright (C) 2010 Thomas Langer, <thomas.langer@lantiq.com>
+  */
+ 
+-#include <linux/slab.h>
+-#include <linux/ioport.h>
+-#include <linux/init.h>
++#include <linux/clk.h>
+ #include <linux/console.h>
+-#include <linux/sysrq.h>
+ #include <linux/device.h>
+-#include <linux/tty.h>
+-#include <linux/tty_flip.h>
+-#include <linux/serial_core.h>
+-#include <linux/serial.h>
+-#include <linux/of_platform.h>
++#include <linux/gpio.h>
++#include <linux/init.h>
++#include <linux/io.h>
++#include <linux/ioport.h>
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+-#include <linux/io.h>
+-#include <linux/clk.h>
+-#include <linux/gpio.h>
++#include <linux/of_platform.h>
++#include <linux/serial.h>
++#include <linux/serial_core.h>
++#include <linux/slab.h>
++#include <linux/sysrq.h>
++#include <linux/tty.h>
++#include <linux/tty_flip.h>
+ 
+ #include <lantiq_soc.h>
+ 
 -- 
 2.11.0
