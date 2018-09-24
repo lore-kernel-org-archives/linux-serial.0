@@ -1,99 +1,133 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 0/2] gpiolib: Fix issues introduced by fast bitmap
- processing path
-Date: Mon, 24 Sep 2018 11:43:37 +0200
-Message-ID: <20180924094339eucas1p282f2f7cb627c183fe87da044edb90fa5~XTMgQ4GFs1339913399eucas1p2N@eucas1p2.samsung.com>
-References: <2785169.v6aIfS3K2k@z50>
-        <CGME20180923235237epcas3p3aa946da71a07da1bc3cd0e8cce3473b2@epcas3p3.samsung.com>
-        <20180923235336.22148-1-jmkrzyszt@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20180923235336.22148-1-jmkrzyszt@gmail.com>
-Content-Language: en-US
-Sender: netdev-owner@vger.kernel.org
-To: Janusz Krzysztofik <jmkrzyszt@gmail.com>, Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kishon Vijay Abraham I <kishon@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, Geert Uytterhoeven <geert@linux-m68k.org>
+From: Songjun Wu <songjun.wu@linux.intel.com>
+Subject: [PATCH 04/14] serial: lantiq: Change ltq_w32_mask to asc_update_bits
+Date: Mon, 24 Sep 2018 18:27:53 +0800
+Message-ID: <20180924102803.30263-5-songjun.wu@linux.intel.com>
+References: <20180924102803.30263-1-songjun.wu@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180924102803.30263-1-songjun.wu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, hauke.mehrtens@intel.com
+Cc: Songjun Wu <songjun.wu@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Janusz,
+ltq prefix is platform specific function, asc prefix
+is more generic.
 
-On 2018-09-24 01:53, Janusz Krzysztofik wrote:
-> While investigating possible reasons of GPIO fast bitmap processing
-> related boot hang on Samsung Snow Chromebook, reported by Marek
-> Szyprowski (thanks!), I've discovered one coding bug, addressed by
-> PATCH 1/2 of this series, and one potential regression introduced at
-> design level of the solution, hopefully fixed by PATCH 2/2.  See
-> commit messages for details.
->
-> Janusz Krzysztofik (2):
->        gpiolib: Fix missing updates of bitmap index
->        gpiolib: Fix array members of same chip processed separately
->
-> The fixes should resolve the boot hang observed by Marek, however the
-> second change excludes that particular case from fast bitmap processing
-> and restores the old behaviour.
+Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
+---
 
-I confirm, that the above 2 patches fixes boot issue on Samsung Snow
-Chromebook with next-20180920.
+ drivers/tty/serial/lantiq.c | 33 ++++++++++++++++++++-------------
+ 1 file changed, 20 insertions(+), 13 deletions(-)
 
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-
-> Hence, it is possible still another
-> issue which have had an influence on that boot hang exists in the code.
-> In order to fully verify the fix, it would have to be tested on a
-> platform where an array of GPIO descriptors is used which starts from
-> at least two consecutive pins of one GPIO chip in hardware order,
-> starting ftom 0, followed by one or more pins belonging to other
-> chip(s).
->
-> In order to verify if separate calls to .set() chip callback for each
-> pin instead of one call to .set_multiple() is actually the reason of
-> boot hang on Samsung Snow Chromebook, the affected driver -
-> drivers/mmc/core/pwrseq_simple.c - would have to be temporarily
-> modified for testing purposes so it calls gpiod_set_value() for each
-> pin instead of gpiod_set_array_value() for all of them.  If that would
-> also result in boot hang, we could be sure the issue was really the
-> one addressed by the second fix.  Marek, could you please try to
-> perform such test?
-
-Yes, I've just tested next-20180920 only with the first patch from this
-patchset and the mentioned change to drivers/mmc/core/pwrseq_simple.c.
-It boots fine, so indeed the issue is in handling of arrays of gpios.
-
-Just to be sure I did it right, this is my change to the mentioned file:
-
-diff --git a/drivers/mmc/core/pwrseq_simple.c 
-b/drivers/mmc/core/pwrseq_simple.c
-index 7f882a2bb872..9397dc1f2e38 100644
---- a/drivers/mmc/core/pwrseq_simple.c
-+++ b/drivers/mmc/core/pwrseq_simple.c
-@@ -38,16 +38,11 @@ static void mmc_pwrseq_simple_set_gpios_value(struct 
-mmc_pwrseq_simple *pwrseq,
-                                               int value)
-  {
-         struct gpio_descs *reset_gpios = pwrseq->reset_gpios;
-+       int i;
-
--       if (!IS_ERR(reset_gpios)) {
--               DECLARE_BITMAP(values, BITS_PER_TYPE(value));
--               int nvalues = reset_gpios->ndescs;
--
--               values[0] = value;
--
--               gpiod_set_array_value_cansleep(nvalues, reset_gpios->desc,
--                                              reset_gpios->info, values);
--       }
-+       if (!IS_ERR(reset_gpios))
-+               for (i = 0; i < reset_gpios->ndescs; i++)
-+ gpiod_set_value_cansleep(reset_gpios->desc[i], value);
-  }
-
-  static void mmc_pwrseq_simple_pre_power_on(struct mmc_host *host)
-
-
-Best regards
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index 66c671677761..4c14608b8ef8 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -113,6 +113,13 @@ struct ltq_uart_port {
+ 	unsigned int		err_irq;
+ };
+ 
++static inline void asc_update_bits(u32 clear, u32 set, void __iomem *reg)
++{
++	u32 tmp = readl(reg);
++
++	writel((tmp & ~clear) | set, reg);
++}
++
+ static inline struct
+ ltq_uart_port *to_ltq_uart_port(struct uart_port *port)
+ {
+@@ -163,16 +170,16 @@ lqasc_rx_chars(struct uart_port *port)
+ 		if (rsr & ASCSTATE_ANY) {
+ 			if (rsr & ASCSTATE_PE) {
+ 				port->icount.parity++;
+-				ltq_w32_mask(0, ASCWHBSTATE_CLRPE,
++				asc_update_bits(0, ASCWHBSTATE_CLRPE,
+ 					port->membase + LTQ_ASC_WHBSTATE);
+ 			} else if (rsr & ASCSTATE_FE) {
+ 				port->icount.frame++;
+-				ltq_w32_mask(0, ASCWHBSTATE_CLRFE,
++				asc_update_bits(0, ASCWHBSTATE_CLRFE,
+ 					port->membase + LTQ_ASC_WHBSTATE);
+ 			}
+ 			if (rsr & ASCSTATE_ROE) {
+ 				port->icount.overrun++;
+-				ltq_w32_mask(0, ASCWHBSTATE_CLRROE,
++				asc_update_bits(0, ASCWHBSTATE_CLRROE,
+ 					port->membase + LTQ_ASC_WHBSTATE);
+ 			}
+ 
+@@ -252,7 +259,7 @@ lqasc_err_int(int irq, void *_port)
+ 	struct uart_port *port = (struct uart_port *)_port;
+ 	spin_lock_irqsave(&ltq_asc_lock, flags);
+ 	/* clear any pending interrupts */
+-	ltq_w32_mask(0, ASCWHBSTATE_CLRPE | ASCWHBSTATE_CLRFE |
++	asc_update_bits(0, ASCWHBSTATE_CLRPE | ASCWHBSTATE_CLRFE |
+ 		ASCWHBSTATE_CLRROE, port->membase + LTQ_ASC_WHBSTATE);
+ 	spin_unlock_irqrestore(&ltq_asc_lock, flags);
+ 	return IRQ_HANDLED;
+@@ -304,7 +311,7 @@ lqasc_startup(struct uart_port *port)
+ 		clk_enable(ltq_port->clk);
+ 	port->uartclk = clk_get_rate(ltq_port->fpiclk);
+ 
+-	ltq_w32_mask(ASCCLC_DISS | ASCCLC_RMCMASK, (1 << ASCCLC_RMCOFFSET),
++	asc_update_bits(ASCCLC_DISS | ASCCLC_RMCMASK, (1 << ASCCLC_RMCOFFSET),
+ 		port->membase + LTQ_ASC_CLC);
+ 
+ 	ltq_w32(0, port->membase + LTQ_ASC_PISEL);
+@@ -320,7 +327,7 @@ lqasc_startup(struct uart_port *port)
+ 	 * setting enable bits
+ 	 */
+ 	wmb();
+-	ltq_w32_mask(0, ASCCON_M_8ASYNC | ASCCON_FEN | ASCCON_TOEN |
++	asc_update_bits(0, ASCCON_M_8ASYNC | ASCCON_FEN | ASCCON_TOEN |
+ 		ASCCON_ROEN, port->membase + LTQ_ASC_CON);
+ 
+ 	retval = request_irq(ltq_port->tx_irq, lqasc_tx_int,
+@@ -364,9 +371,9 @@ lqasc_shutdown(struct uart_port *port)
+ 	free_irq(ltq_port->err_irq, port);
+ 
+ 	ltq_w32(0, port->membase + LTQ_ASC_CON);
+-	ltq_w32_mask(ASCRXFCON_RXFEN, ASCRXFCON_RXFFLU,
++	asc_update_bits(ASCRXFCON_RXFEN, ASCRXFCON_RXFFLU,
+ 		port->membase + LTQ_ASC_RXFCON);
+-	ltq_w32_mask(ASCTXFCON_TXFEN, ASCTXFCON_TXFFLU,
++	asc_update_bits(ASCTXFCON_TXFEN, ASCTXFCON_TXFFLU,
+ 		port->membase + LTQ_ASC_TXFCON);
+ 	if (!IS_ERR(ltq_port->clk))
+ 		clk_disable(ltq_port->clk);
+@@ -438,7 +445,7 @@ lqasc_set_termios(struct uart_port *port,
+ 	spin_lock_irqsave(&ltq_asc_lock, flags);
+ 
+ 	/* set up CON */
+-	ltq_w32_mask(0, con, port->membase + LTQ_ASC_CON);
++	asc_update_bits(0, con, port->membase + LTQ_ASC_CON);
+ 
+ 	/* Set baud rate - take a divider of 2 into account */
+ 	baud = uart_get_baud_rate(port, new, old, 0, port->uartclk / 16);
+@@ -446,19 +453,19 @@ lqasc_set_termios(struct uart_port *port,
+ 	divisor = divisor / 2 - 1;
+ 
+ 	/* disable the baudrate generator */
+-	ltq_w32_mask(ASCCON_R, 0, port->membase + LTQ_ASC_CON);
++	asc_update_bits(ASCCON_R, 0, port->membase + LTQ_ASC_CON);
+ 
+ 	/* make sure the fractional divider is off */
+-	ltq_w32_mask(ASCCON_FDE, 0, port->membase + LTQ_ASC_CON);
++	asc_update_bits(ASCCON_FDE, 0, port->membase + LTQ_ASC_CON);
+ 
+ 	/* set up to use divisor of 2 */
+-	ltq_w32_mask(ASCCON_BRS, 0, port->membase + LTQ_ASC_CON);
++	asc_update_bits(ASCCON_BRS, 0, port->membase + LTQ_ASC_CON);
+ 
+ 	/* now we can write the new baudrate into the register */
+ 	ltq_w32(divisor, port->membase + LTQ_ASC_BG);
+ 
+ 	/* turn the baudrate generator back on */
+-	ltq_w32_mask(0, ASCCON_R, port->membase + LTQ_ASC_CON);
++	asc_update_bits(0, ASCCON_R, port->membase + LTQ_ASC_CON);
+ 
+ 	/* enable rx */
+ 	ltq_w32(ASCWHBSTATE_SETREN, port->membase + LTQ_ASC_WHBSTATE);
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.11.0
