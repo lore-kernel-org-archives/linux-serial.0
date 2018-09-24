@@ -1,7 +1,7 @@
 From: Songjun Wu <songjun.wu@linux.intel.com>
-Subject: [PATCH 03/14] serial: lantiq: Get serial id from dts
-Date: Mon, 24 Sep 2018 18:27:52 +0800
-Message-ID: <20180924102803.30263-4-songjun.wu@linux.intel.com>
+Subject: [PATCH 08/14] serial: lantiq: Replace clk_enable/clk_disable with clk generic API
+Date: Mon, 24 Sep 2018 18:27:57 +0800
+Message-ID: <20180924102803.30263-9-songjun.wu@linux.intel.com>
 References: <20180924102803.30263-1-songjun.wu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180924102803.30263-1-songjun.wu@linux.intel.com>
@@ -10,51 +10,47 @@ To: yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, hauke.mehrtens@inte
 Cc: Songjun Wu <songjun.wu@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-Get serial id from dts, also keep backward compatible when dts is not
-updated.
+The clk driver has introduced new clock APIs that replace
+the existing clk_enable and clk_disable.
+- clk_enable() APIs is replaced with clk_prepare_enable()
+- clk_disable() API is replaced with clk_disable_unprepare()
 
 Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
 ---
 
- drivers/tty/serial/lantiq.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ drivers/tty/serial/lantiq.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index 044128277248..66c671677761 100644
+index 4acdbdf8fe7a..34b1ef3c12ce 100644
 --- a/drivers/tty/serial/lantiq.c
 +++ b/drivers/tty/serial/lantiq.c
-@@ -688,7 +688,7 @@ lqasc_probe(struct platform_device *pdev)
- 	struct ltq_uart_port *ltq_port;
- 	struct uart_port *port;
- 	struct resource *mmres, irqres[3];
--	int line = 0;
-+	int line;
- 	int ret;
+@@ -308,7 +308,7 @@ lqasc_startup(struct uart_port *port)
+ 	int retval;
  
- 	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -699,9 +699,20 @@ lqasc_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
+ 	if (!IS_ERR(ltq_port->clk))
+-		clk_enable(ltq_port->clk);
++		clk_prepare_enable(ltq_port->clk);
+ 	port->uartclk = clk_get_rate(ltq_port->freqclk);
  
--	/* check if this is the console port */
--	if (mmres->start != CPHYSADDR(LTQ_EARLY_ASC))
--		line = 1;
-+	/* get serial id */
-+	line = of_alias_get_id(node, "serial");
-+	if (line < 0) {
-+		if (IS_ENABLED(CONFIG_LANTIQ)) {
-+			if (mmres->start == CPHYSADDR(LTQ_EARLY_ASC))
-+				line = 0;
-+			else
-+				line = 1;
-+		} else {
-+			dev_err(&pdev->dev, "failed to get alias id, errno %d\n",
-+				line);
-+			return line;
-+		}
-+	}
+ 	asc_update_bits(ASCCLC_DISS | ASCCLC_RMCMASK, (1 << ASCCLC_RMCOFFSET),
+@@ -376,7 +376,7 @@ lqasc_shutdown(struct uart_port *port)
+ 	asc_update_bits(ASCTXFCON_TXFEN, ASCTXFCON_TXFFLU,
+ 		port->membase + LTQ_ASC_TXFCON);
+ 	if (!IS_ERR(ltq_port->clk))
+-		clk_disable(ltq_port->clk);
++		clk_disable_unprepare(ltq_port->clk);
+ }
  
- 	if (lqasc_port[line]) {
- 		dev_err(&pdev->dev, "port %d already allocated\n", line);
+ static void
+@@ -630,7 +630,7 @@ lqasc_console_setup(struct console *co, char *options)
+ 	port = &ltq_port->port;
+ 
+ 	if (!IS_ERR(ltq_port->clk))
+-		clk_enable(ltq_port->clk);
++		clk_prepare_enable(ltq_port->clk);
+ 
+ 	port->uartclk = clk_get_rate(ltq_port->freqclk);
+ 
 -- 
 2.11.0
