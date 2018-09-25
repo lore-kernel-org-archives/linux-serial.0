@@ -1,67 +1,59 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 4.19-rc6
-Date: Tue, 25 Sep 2018 16:24:35 +0200
-Message-ID: <20180925142435.GA27225@kroah.com>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH -next] serial: uartps: Fix missing unlock on error in
+ cdns_get_id()
+Date: Tue, 25 Sep 2018 17:19:56 +0200
+Message-ID: <138f0ca2-7e84-faa8-2105-1e49e96cea14@xilinx.com>
+References: <1537885401-18605-1-git-send-email-weiyongjun1@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1537885401-18605-1-git-send-email-weiyongjun1@huawei.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Wei Yongjun <weiyongjun1@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Michal Simek <michal.simek@xilinx.com>
+Cc: kernel-janitors@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit 7876320f88802b22d4e2daf7eb027dd14175a0f8:
+On 25.9.2018 16:23, Wei Yongjun wrote:
+> Add the missing unlock before return from function cdns_get_id()
+> in the error handling case.
+> 
+> Fixes: ae1cca3fa347 ("serial: uartps: Change uart ID port allocation")
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> ---
+>  drivers/tty/serial/xilinx_uartps.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> index f77200a..0e3dae4 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -1394,8 +1394,10 @@ static int cdns_get_id(struct platform_device *pdev)
+>  	if (!alias_bitmap_initialized) {
+>  		ret = of_alias_get_alias_list(cdns_uart_of_match, "serial",
+>  					      alias_bitmap, MAX_UART_INSTANCES);
+> -		if (ret)
+> +		if (ret) {
+> +			mutex_unlock(&bitmap_lock);
+>  			return ret;
+> +		}
+>  
+>  		alias_bitmap_initialized++;
+>  	}
+> 
 
-  Linux 4.19-rc4 (2018-09-16 11:52:37 -0700)
+Thanks for the fix.
 
-are available in the Git repository at:
+Reviewed-by: Michal Simek <michal.simek@xilinx.com>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-4.19-rc6
-
-for you to fetch changes up to 7e620984b62532783912312e334f3c48cdacbd5d:
-
-  serial: imx: restore handshaking irq for imx1 (2018-09-20 14:51:31 +0200)
-
-----------------------------------------------------------------
-TTY/Serial driver fixes for 4.19-rc6
-
-Here are a number of small tty and serial driver fixes for reported
-issues for 4.19-rc6.
-
-One should hopefully resolve a much-reported issue that syzbot has found
-in the tty layer.  Although there are still more issues there, getting
-this fixed is nice to see finally happen.
-
-All of these have been in linux-next for a while with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Christophe Leroy (1):
-      serial: cpm_uart: return immediately from console poll
-
-Dmitry Safonov (1):
-      tty: Drop tty->count on tty_reopen() failure
-
-Gustavo A. R. Silva (1):
-      tty: vt_ioctl: fix potential Spectre v1
-
-Jan Kiszka (1):
-      serial: mvebu-uart: Fix reporting of effective CSIZE to userspace
-
-Stefan Agner (1):
-      tty: serial: lpuart: avoid leaking struct tty_struct
-
-Uwe Kleine-König (1):
-      serial: imx: restore handshaking irq for imx1
-
- drivers/tty/serial/cpm_uart/cpm_uart_core.c | 10 +++++++---
- drivers/tty/serial/fsl_lpuart.c             |  3 ++-
- drivers/tty/serial/imx.c                    |  8 ++++++++
- drivers/tty/serial/mvebu-uart.c             |  1 +
- drivers/tty/tty_io.c                        | 11 ++++++++---
- drivers/tty/vt/vt_ioctl.c                   |  4 ++++
- 6 files changed, 30 insertions(+), 7 deletions(-)
+Thanks,
+Michal
