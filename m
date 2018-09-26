@@ -1,51 +1,48 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [RESEND PATCH v3 2/2] serial: uartps: Change uart ID port
- allocation
-Date: Wed, 26 Sep 2018 12:43:05 +0200
-Message-ID: <c92386bf-ccdc-5c38-faed-75ff5e9718a6@xilinx.com>
-References: <b1772d99d4e8b788448cde0fc5c7dccb1f63b507.1537443710.git.michal.simek@xilinx.com>
- <39e840d1f727fe6338ea14b882ca9bf831f53e32.1537443710.git.michal.simek@xilinx.com>
- <CAMuHMdWQcc+ZD238e13fBcVW77304u2nqq2K9A9-wsDVAPEa4A@mail.gmail.com>
+From: Ludovic Desroches <ludovic.desroches@microchip.com>
+Subject: Re: [PATCH v4 2/2] tty/serial: atmel: add ISO7816 support
+Date: Wed, 26 Sep 2018 14:55:28 +0200
+Message-ID: <20180926125528.fmfti62ymod2derb@M43218.corp.atmel.com>
+References: <20180906134214.29031-1-ludovic.desroches@microchip.com>
+ <20180906134214.29031-3-ludovic.desroches@microchip.com>
+ <20180918132856.GA14333@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdWQcc+ZD238e13fBcVW77304u2nqq2K9A9-wsDVAPEa4A@mail.gmail.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180918132856.GA14333@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <michal.simek@xilinx.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Michal Simek <monstr@monstr.eu>, Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, jslaby@suse.com, arnd@arndb.de, richard.genoud@gmail.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert,
-
-On 24.9.2018 09:37, Geert Uytterhoeven wrote:
-> Hi Michal,
+On Tue, Sep 18, 2018 at 03:28:56PM +0200, Greg KH wrote:
+> On Thu, Sep 06, 2018 at 03:42:14PM +0200, Ludovic Desroches wrote:
+> > From: Nicolas Ferre <nicolas.ferre@microchip.com>
+> > 
+> > When mode is set in atmel_config_iso7816() we backup last RS232 mode
+> > for coming back to this mode if requested.
+> > Also allow setup of T=0 and T=1 parameter and basic support in set_termios
+> > function as well.
+> > 
+> > Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> > [ludovic.desroches@microchip.com: rebase, add check on fidi ratio, checkpatch fixes]
+> > Signed-off-by: Ludovic Desroches <ludovic.desroches@microchip.com>
+> > Acked-by: Richard Genoud <richard.genoud@gmail.com>
+> > ---
+> >  drivers/tty/serial/atmel_serial.c | 190 +++++++++++++++++++++++++++++++++++---
+> >  drivers/tty/serial/atmel_serial.h |   3 +-
+> >  2 files changed, 181 insertions(+), 12 deletions(-)
 > 
-> On Thu, Sep 20, 2018 at 1:42 PM Michal Simek <michal.simek@xilinx.com> wrote:
->> For IPs which have alias algorightm all the time using that alias and
->> minor number. It means serial20 alias ends up as ttyPS20.
->>
->> If alias is not setup for probed IP instance the first unused position is
->> used but that needs to be checked if it is really empty because another
->> instance doesn't need to be probed at that time. of_alias_get_alias_list()
->> fills alias bitmap which exactly shows which ID is free.
->> If alias pointing to different not compatible IP, it is free to use.
->>
->> cdns_get_id() call is placed below structure allocation to simplify
->> error path.
->>
->> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> This doesn't apply to my tree :(
 > 
-> JFTR, for sh-sci, I used a different approach, as all ports in the static DTB
-> can have an alias (if aliases are needed at all), and only DT overlays cannot
-> have them. Cfr. commit 7678f4c20fa7670f ("serial: sh-sci: Add support for
-> dynamic instances").
 
-if you look at all patches I have done for uartps you can find out that
-I am creating uart_driver for every instance separately.
-It means that there is still a limit for number of consoles exactly as
-yours CONFIG_SERIAL_SH_SCI_NR_UARTS but every instance is separated.
+I am rebasing it on tty-next.
 
-Thanks,
-Michal
+> Also, shouldn't this new ioctl be documented somewhere?
+> 
+
+v5 is coming.
+
+Regards
+
+Ludovic
