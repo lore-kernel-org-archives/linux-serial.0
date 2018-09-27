@@ -1,67 +1,67 @@
-From: Ludovic Desroches <ludovic.desroches@microchip.com>
-Subject: [PATCH v5 0/2] add ISO7816 support
-Date: Wed, 26 Sep 2018 14:58:46 +0200
-Message-ID: <20180926125848.31032-1-ludovic.desroches@microchip.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 0/2] serial: sh-sci: Fix earlycon on Renesas ARM platforms
+Date: Thu, 27 Sep 2018 09:38:19 +0200
+Message-ID: <CAMuHMdWdByKxivbQwWL9yF9_r8XObnZuXEZvf_9ZWKYYLWr1bQ@mail.gmail.com>
+References: <20180830125404.21192-1-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180830125404.21192-1-geert+renesas@glider.be>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: gregkh@linuxfoundation.org, arnd@arndb.de, richard.genoud@gmail.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, linux-kernel@vger.kernel.org, Ludovic Desroches <ludovic.desroches@microchip.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Chris Brandt <chris.brandt@renesas.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, uli+renesas@fpond.eu, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Hi Greg,
 
-This patchset adds support for the ISO7816 standard. The USART devices
-in Microchip SoCs have an ISO7816 mode. It allows to let the USART
-managing the CLK and I/O signals of a smart card.
+On Thu, Aug 30, 2018 at 2:54 PM Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
+> Due to an unfortunate oversight, commit 2d4dd0da45401c7a ("serial: sh-sci:
+> Allow for compressed SCIF address") broke earlycon on all Renesas ARM
+> platforms using a SCIF port for the serial console (R-Car, RZ/A1, RZ/G1,
+> RZ/G2 SoCs), due to an incorrect value of port->regshift.
+>
+> This patch series fixes that by reverting that commit, and a (reverse)
+> dependency.
+>
+> Earlycon for RZ/A2 (which is a new platform) will be fixed later in a
+> separate patch.
+>
+> Thanks for applying!
+>
+> Geert Uytterhoeven (2):
+>   Revert "serial: sh-sci: Remove SCIx_RZ_SCIFA_REGTYPE"
+>   Revert "serial: sh-sci: Allow for compressed SCIF address"
+>
+>  drivers/tty/serial/sh-sci.c | 56 +++++++++++++++++++++++++++----------
+>  include/linux/serial_sci.h  |  1 +
+>  2 files changed, 42 insertions(+), 15 deletions(-)
 
-Changes:
-- v5
-  - rebase on tty-next.
-  - add documentation for the new ioctls (mimic rs485 one).
-  - fix a switch/case identation
-- v4
-  - use the IP version number instead of the compatible string to set
-  min and max values for fidi.
-  - remove a useless macro for fidi.
-- v3
-  - add IOCTLs to parisc arch.
-  - rework atmel_config_iso7816 according to the comments by Richard.
-  - keep max iteration hard coded. Will see later if the user need to
-    set this value. It may also concern the normal/inverse mode.
-  - improve the checking of the value from the user space.
-- v2
-  - uart_get_iso7816_config: check there is an iso7816_config function.
-  - use IOCTL macros to generate the IOCTL number.
-  - check that reserved field is not used.
-  - remove debug logs.
-  - check that the iso7816_config is right before doing any action.
-  - change the error from nack and max iteration status to a debug
-    message.
-  - remove patch 3 as it concerns both rs485 and iso7816 to think more
-    about the need of adding a lock or not.
+These are now in tty-next:
 
-Nicolas Ferre (2):
-  tty/serial_core: add ISO7816 infrastructure
-  tty/serial: atmel: add ISO7816 support
+    10c63443b74d1ef5 Revert "serial: sh-sci: Remove SCIx_RZ_SCIFA_REGTYPE"
+    a1c2fd7e1098ea49 Revert "serial: sh-sci: Allow for compressed SCIF address"
 
- Documentation/serial/serial-iso7816.txt |  83 ++++++++++++++
- arch/alpha/include/uapi/asm/ioctls.h    |   2 +
- arch/mips/include/uapi/asm/ioctls.h     |   2 +
- arch/parisc/include/uapi/asm/ioctls.h   |   2 +
- arch/powerpc/include/uapi/asm/ioctls.h  |   2 +
- arch/sh/include/uapi/asm/ioctls.h       |   2 +
- arch/sparc/include/uapi/asm/ioctls.h    |   2 +
- arch/xtensa/include/uapi/asm/ioctls.h   |   2 +
- drivers/tty/serial/atmel_serial.c       | 190 ++++++++++++++++++++++++++++++--
- drivers/tty/serial/atmel_serial.h       |   3 +-
- drivers/tty/serial/serial_core.c        |  60 ++++++++++
- include/linux/serial_core.h             |   3 +
- include/uapi/asm-generic/ioctls.h       |   2 +
- include/uapi/linux/serial.h             |  17 +++
- 14 files changed, 360 insertions(+), 12 deletions(-)
- create mode 100644 Documentation/serial/serial-iso7816.txt
+Can you please include them in v4.19-rc6, as they fix a regression introduced
+in v4.19-rc1?
+
+In addition:
+
+    3d8b43ad9c0cf023 serial: sh-sci: Add earlycon for R7S9210
+
+(also in tty-next) enables earlycon on RZ/A2 again, as it was disabled
+by the two
+reverts above.
+
+Thanks a lot!
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-2.12.2
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
