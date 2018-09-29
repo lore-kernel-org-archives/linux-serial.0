@@ -1,33 +1,38 @@
-From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-Subject: [BUG] sleep in atomic in 8250 runtime PM code path
-Date: Sat, 29 Sep 2018 13:20:36 +0800
-Message-ID: <20180929132036.0323e24b@xhacker.debian>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v2 0/3] Add slave DMA support for Actions Semi S900 SoC
+Date: Sat, 29 Sep 2018 13:16:34 +0530
+Message-ID: <20180929074637.9766-1-manivannan.sadhasivam@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Phil Edworthy <phil.edworthy@renesas.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: vkoul@kernel.org, dan.j.williams@intel.com, afaerber@suse.de, robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, liuwei@actions-semi.com, 96boards@ucrobotics.com, devicetree@vger.kernel.org, daniel.thompson@linaro.org, amit.kucheria@linaro.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, hzhang@ucrobotics.com, bdong@ucrobotics.com, manivannanece23@gmail.com, thomas.liau@actions-semi.com, jeff.chen@actions-semi.com, pn@denx.de, edgar.righi@lsitec.org.br, Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+This patchset adds slave DMA support for Actions Semi S900 SoC of the
+Owl family. As a consumer, enable TX DMA support for UART peripheral
+in S900. The UART driver still supports interrupt mode if there is no
+DMA property specified in DT.
 
-Recently I found I could trigger sleep in atomic bug on berlin after commit
-d76c74387e1c ("serial: 8250_dw: Fix runtime PM handling"). The path looks like:
+The dts patch depends on the previous DMA patches which is not yet
+merged.
 
-dw8250_probe => serial850_register_8250_port => uart_add_one_port=>
-register_console => console_unlock => univ8250_console_write =>
-serial8250_console_write => serial8250_rpm_get => pm_runtime_get_sync
+Thanks,
+Mani
 
-The irq is disabled by printk_safe_enter_irqsave() in console_unlock, but
-pm_runtime_get_sync can't be called in atomic context...
+Changes in v2:
 
-I guess the reason why we didn't notice it is due to the fact that
-only OMAP and DW sets UART_CAP_RPM currently, and DW set the flag in
-May 2018.
+* Modified the comment for bus width as per Vinod's suggestion
 
-Per my understanding, the bug sits in the 8250 core driver rather than
-8250_dw.c.
+Manivannan Sadhasivam (3):
+  arm64: dts: actions: s900: Enable Tx DMA for UART5
+  dmaengine: Add Slave and Cyclic mode support for Actions Semi Owl S900
+    SoC
+  tty: serial: Add Tx DMA support for UART in Actions Semi Owl SoCs
 
-Thanks
+ arch/arm64/boot/dts/actions/s900.dtsi |   2 +
+ drivers/dma/owl-dma.c                 | 279 +++++++++++++++++++++++++-
+ drivers/tty/serial/owl-uart.c         | 172 +++++++++++++++-
+ 3 files changed, 445 insertions(+), 8 deletions(-)
+
+-- 
+2.17.1
