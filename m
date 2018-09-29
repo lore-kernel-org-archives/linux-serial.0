@@ -1,100 +1,100 @@
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Subject: [PATCH] gpiolib: Fix incorrect use of find_next_zero_bit()
-Date: Sat, 29 Sep 2018 14:20:22 +0200
-Message-ID: <20180929122022.6825-1-jmkrzyszt@gmail.com>
-References: <20180923235336.22148-2-jmkrzyszt@gmail.com>
+From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
+Subject: Re: [PATCH 1/2] sc16is7xx: Fix for multi-channel stall
+Date: Sat, 29 Sep 2018 16:04:48 +0200
+Message-ID: <6028e8e5-f8a6-fbe0-8d2a-b6bb3c91aa14@suse.de>
+References: <1536762716-30673-1-git-send-email-phil@raspberrypi.org>
+ <1536762716-30673-2-git-send-email-phil@raspberrypi.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <20180923235336.22148-2-jmkrzyszt@gmail.com>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>, Tony Lindgren <tony@atomide.com>, Dominik Brodowski <linux@dominikbrodowski.net>, Yegor Yefremov <yegorslists@googlemail.com>, netdev@vger.kernel.org, linux-i2c@vger.kernel.org, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Marek Szyprowski <m.szyprowski@samsung.com>, devel@driverdev.osuosl.org, Florian Fainelli <f.fainelli@gmail.com>, Peter Rosin <peda@axentia.se>, Janusz Krzysztofik <jmkrzyszt@gmail.com>, Krzysztof Kozlowski <krzk@kernel.org>, Kishon Vijay Abraham I <kishon@ti.com>, linux-iio@vger.kernel.org, Peter Korsgaard <peter.korsgaard@barco.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Michael Hennerich <Michael.Hennerich@analog.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-gpio@vger.kernel.org, Russ
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1536762716-30673-2-git-send-email-phil@raspberrypi.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Phil Elwell <phil@raspberrypi.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Graf <agraf@suse.de>, Stefan Wahren <stefan.wahren@i2se.com>, Mian Yousaf Kaukab <yousaf.kaukab@suse.com>, Matthias Brugger <mbrugger@suse.com>, Michael Allwright <allsey87@gmail.com>, Jakub Kicinski <kubakici@wp.pl>, Xue Liu <liuxuenetmail@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Commit b17566a6b08b ("gpiolib: Implement fast processing path in
-get/set array"), already fixed to some extent with commit 5d581d7e8cdc
-("gpiolib: Fix missing updates of bitmap index"), introduced a new mode
-of processing bitmaps where bits applicable for fast bitmap processing
-path are supposed to be skipped while iterating bits which don't apply.
-Unfortunately, find_next_zero_bit() function supposed to skip over
-those fast bits is always called with a 'start' argument equal to an
-index of last zero bit found and returns that index value again an
-again, causing an infinite loop.
+Hi Phil and Greg,
 
-Fix it by incrementing the index uncoditionally before
-find_next_zero_bit() is optionally called.
+Am 12.09.18 um 16:31 schrieb Phil Elwell:
+> The SC16IS752 is a dual-channel device. The two channels are largely
+> independent, but the IRQ signals are wired together as an open-drain,
+> active low signal which will be driven low while either of the
+> channels requires attention, which can be for significant periods of
+> time until operations complete and the interrupt can be acknowledged.
+> In that respect it is should be treated as a true level-sensitive IRQ.
+> 
+> The kernel, however, needs to be able to exit interrupt context in
+> order to use I2C or SPI to access the device registers (which may
+> involve sleeping).  Therefore the interrupt needs to be masked out or
+> paused in some way.
+> 
+> The usual way to manage sleeping from within an interrupt handler
+> is to use a threaded interrupt handler - a regular interrupt routine
+> does the minimum amount of work needed to triage the interrupt before
+> waking the interrupt service thread. If the threaded IRQ is marked as
+> IRQF_ONESHOT the kernel will automatically mask out the interrupt
+> until the thread runs to completion. The sc16is7xx driver used to
+> use a threaded IRQ, but a patch switched to using a kthread_worker
+> in order to set realtime priorities on the handler thread and for
+> other optimisations. The end result is non-threaded IRQ that
+> schedules some work then returns IRQ_HANDLED, making the kernel
+> think that all IRQ processing has completed.
+> 
+> The work-around to prevent a constant stream of interrupts is to
+> mark the interrupt as edge-sensitive rather than level-sensitive,
+> but interpreting an active-low source as a falling-edge source
+> requires care to prevent a total cessation of interrupts. Whereas
+> an edge-triggering source will generate a new edge for every interrupt
+> condition a level-triggering source will keep the signal at the
+> interrupting level until it no longer requires attention; in other
+> words, the host won't see another edge until all interrupt conditions
+> are cleared. It is therefore vital that the interrupt handler does not
+> exit with an outstanding interrupt condition, otherwise the kernel
+> will not receive another interrupt unless some other operation causes
+> the interrupt state on the device to be cleared.
+> 
+> The existing sc16is7xx driver has a very simple interrupt "thread"
+> (kthread_work job) that processes interrupts on each channel in turn
+> until there are no more. If both channels are active and the first
+> channel starts interrupting while the handler for the second channel
+> is running then it will not be detected and an IRQ stall ensues. This
+> could be handled easily if there was a shared IRQ status register, or
+> a convenient way to determine if the IRQ had been deasserted for any
+> length of time, but both appear to be lacking.
+> 
+> Avoid this problem (or at least make it much less likely to happen)
+> by reducing the granularity of per-channel interrupt processing
+> to one condition per iteration, only exiting the overall loop when
+> both channels are no longer interrupting.
+> 
+> Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
 
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
----
-Marek,
+These two patches seem to be applied in linux-next tree, but are lacking
+a Fixes: header for backporting to affected stable trees.
 
-Could you please test it on top of next-20180920 with "gpiolib: Fix
-missing updates of bitmap index" and optionally "mmc: pwrseq_simple:
-Fix incorrect handling of GPIO bitmap" also applied?
+openSUSE Tumbleweed's 4.18 appears to be affected, and I didn't see it
+in linux.git for upcoming 4.19 either.
+
+Can the commit message still be updated to get this fixed everywhere?
+
+Which is the offending commit, this one from 2016? The only other 2018
+change seems an unrelated error handling cleanup.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/tty/serial/sc16is7xx.c?id=04da73803c05dc1150ccc31cbf93e8cd56679c09
+
+Also, the above commit message confuses me as to how after this commit
+the driver should be used: Should the interrupt still be falling-edge,
+as documented in the DT bindings, or do user/documentation need to
+switch to level-triggered now?
 
 Thanks,
-Janusz
+Andreas
 
-
- drivers/gpio/gpiolib.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index 6ae13e3e05f1..940b543e966d 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -2878,12 +2878,11 @@ int gpiod_get_array_value_complex(bool raw, bool can_sleep,
- 			int hwgpio = gpio_chip_hwgpio(desc);
- 
- 			__set_bit(hwgpio, mask);
-+			i++;
- 
- 			if (array_info)
- 				i = find_next_zero_bit(array_info->get_mask,
- 						       array_size, i);
--			else
--				i++;
- 		} while ((i < array_size) &&
- 			 (desc_array[i]->gdev->chip == chip));
- 
-@@ -2903,12 +2902,11 @@ int gpiod_get_array_value_complex(bool raw, bool can_sleep,
- 				value = !value;
- 			__assign_bit(j, value_bitmap, value);
- 			trace_gpio_value(desc_to_gpio(desc), 1, value);
-+			j++;
- 
- 			if (array_info)
- 				j = find_next_zero_bit(array_info->get_mask, i,
- 						       j);
--			else
--				j++;
- 		}
- 
- 		if (mask != fastpath)
-@@ -3191,12 +3189,11 @@ int gpiod_set_array_value_complex(bool raw, bool can_sleep,
- 					__clear_bit(hwgpio, bits);
- 				count++;
- 			}
-+			i++;
- 
- 			if (array_info)
- 				i = find_next_zero_bit(array_info->set_mask,
- 						       array_size, i);
--			else
--				i++;
- 		} while ((i < array_size) &&
- 			 (desc_array[i]->gdev->chip == chip));
- 		/* push collected bits to outputs */
 -- 
-2.16.4
+SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
+GF: Felix Imendörffer, Jane Smithard, Graham Norton
+HRB 21284 (AG Nürnberg)
