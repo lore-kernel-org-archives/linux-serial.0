@@ -1,112 +1,100 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: [BUG] sleep in atomic in 8250 runtime PM code path
-Date: Sat, 29 Sep 2018 11:30:45 +0100
-Message-ID: <20180929103045.GQ30658@n2100.armlinux.org.uk>
-References: <20180929132036.0323e24b@xhacker.debian>
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Subject: [PATCH] gpiolib: Fix incorrect use of find_next_zero_bit()
+Date: Sat, 29 Sep 2018 14:20:22 +0200
+Message-ID: <20180929122022.6825-1-jmkrzyszt@gmail.com>
+References: <20180923235336.22148-2-jmkrzyszt@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180929132036.0323e24b@xhacker.debian>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Tony Lindgren <tony@atomide.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Phil Edworthy <phil.edworthy@renesas.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+In-Reply-To: <20180923235336.22148-2-jmkrzyszt@gmail.com>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>, Tony Lindgren <tony@atomide.com>, Dominik Brodowski <linux@dominikbrodowski.net>, Yegor Yefremov <yegorslists@googlemail.com>, netdev@vger.kernel.org, linux-i2c@vger.kernel.org, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Marek Szyprowski <m.szyprowski@samsung.com>, devel@driverdev.osuosl.org, Florian Fainelli <f.fainelli@gmail.com>, Peter Rosin <peda@axentia.se>, Janusz Krzysztofik <jmkrzyszt@gmail.com>, Krzysztof Kozlowski <krzk@kernel.org>, Kishon Vijay Abraham I <kishon@ti.com>, linux-iio@vger.kernel.org, Peter Korsgaard <peter.korsgaard@barco.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Michael Hennerich <Michael.Hennerich@analog.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-gpio@vger.kernel.org, Russ
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Sep 29, 2018 at 01:20:36PM +0800, Jisheng Zhang wrote:
-> Hi,
-> 
-> Recently I found I could trigger sleep in atomic bug on berlin after commit
-> d76c74387e1c ("serial: 8250_dw: Fix runtime PM handling"). The path looks like:
-> 
-> dw8250_probe => serial850_register_8250_port => uart_add_one_port=>
-> register_console => console_unlock => univ8250_console_write =>
-> serial8250_console_write => serial8250_rpm_get => pm_runtime_get_sync
-> 
-> The irq is disabled by printk_safe_enter_irqsave() in console_unlock, but
-> pm_runtime_get_sync can't be called in atomic context...
-> 
-> I guess the reason why we didn't notice it is due to the fact that
-> only OMAP and DW sets UART_CAP_RPM currently, and DW set the flag in
-> May 2018.
-> 
-> Per my understanding, the bug sits in the 8250 core driver rather than
-> 8250_dw.c.
+Commit b17566a6b08b ("gpiolib: Implement fast processing path in
+get/set array"), already fixed to some extent with commit 5d581d7e8cdc
+("gpiolib: Fix missing updates of bitmap index"), introduced a new mode
+of processing bitmaps where bits applicable for fast bitmap processing
+path are supposed to be skipped while iterating bits which don't apply.
+Unfortunately, find_next_zero_bit() function supposed to skip over
+those fast bits is always called with a 'start' argument equal to an
+index of last zero bit found and returns that index value again an
+again, causing an infinite loop.
 
-(Adding Tony and Sebastian, presumably CAP_RPM comes from OMAP since
-that is the only other user, and this same bug is present there too.)
+Fix it by incrementing the index uncoditionally before
+find_next_zero_bit() is optionally called.
 
-Correct.  printk() can be called from atomic contexts (consider what
-happens when an oops or similar occurs - we can be in any context,
-holding any locks etc.)  Plain printk() can also be used from within
-spinlocked irqs-off regions.
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+---
+Marek,
 
-This means the console's write function may be called in these contexts.
-Since pm_runtime_get_sync() is may sleep, it means that its use in the
-console path is _fundamentally_ wrong, and will lead to exactly this
-problem.
+Could you please test it on top of next-20180920 with "gpiolib: Fix
+missing updates of bitmap index" and optionally "mmc: pwrseq_simple:
+Fix incorrect handling of GPIO bitmap" also applied?
 
-I don't see a way around that other than to avoid RPM on consoles.
-(which makes the presence of the RPM code in serial8250_console_write()
-completely unnecessary.)
+Thanks,
+Janusz
 
-When I rewrote the serial drivers and created serial_core & 8250, this
-is something that I realised, and I arranged the PM support at the time
-to always maintain the console in active state (this is prior to RPM).
 
-While I'm looking at commit d74d5d1b7288 ("tty: serial: 8250_core: add
-run time pm"):
+ drivers/gpio/gpiolib.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-+static void serial8250_rpm_get_tx(struct uart_8250_port *p)
-+{
-+       unsigned char rpm_active;
-+
-+       if (!(p->capabilities & UART_CAP_RPM))
-+               return;
-+
-+       rpm_active = xchg(&p->rpm_tx_active, 1);
-+       if (rpm_active)
-+               return;
-+       pm_runtime_get_sync(p->port.dev);
-+}
-
-is particularly "interesting" - if this is called from sections of
-code that allow it to be called concurrently from different contexts,
-then we could have:
-
-rpm_tx_active	thread 0			thread 1
-0
-		xchg(, 1)
-1
-						xchg(, 1)
-						... goes on to use port ...
-		pm_runtime_get_sync()
-
-In other words, the port can be used _before_ pm_runtime_get_sync() is
-called.
-
-If, on the other hand, this can't race, then considering the
-serial8250_rpm_put_tx() path as well, what stops this race from
-happening:
-
-rpm_tx_active	thread 0			thread 1
-1
-		serial8250_rpm_get_tx()
-						serial8250_rpm_put_tx()
-		xchg(, 1)
-1
-						xchg(, 0)
-0
-						pm_runtime_put_autosuspend()
-
-Now to the real point about the above - if _neither_ race is possible,
-then what is the point of the more expensive xchg() here rather than
-simple test-and-assignment of rpm_tx_active?  Either these paths can't
-race with each other and xchg() is unnecessary, or they can and they
-_could_ fail as shown above.  My suspicion is that xchg() is an attempt
-to reduce the likelyhood of one of these races being hit.
-
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index 6ae13e3e05f1..940b543e966d 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -2878,12 +2878,11 @@ int gpiod_get_array_value_complex(bool raw, bool can_sleep,
+ 			int hwgpio = gpio_chip_hwgpio(desc);
+ 
+ 			__set_bit(hwgpio, mask);
++			i++;
+ 
+ 			if (array_info)
+ 				i = find_next_zero_bit(array_info->get_mask,
+ 						       array_size, i);
+-			else
+-				i++;
+ 		} while ((i < array_size) &&
+ 			 (desc_array[i]->gdev->chip == chip));
+ 
+@@ -2903,12 +2902,11 @@ int gpiod_get_array_value_complex(bool raw, bool can_sleep,
+ 				value = !value;
+ 			__assign_bit(j, value_bitmap, value);
+ 			trace_gpio_value(desc_to_gpio(desc), 1, value);
++			j++;
+ 
+ 			if (array_info)
+ 				j = find_next_zero_bit(array_info->get_mask, i,
+ 						       j);
+-			else
+-				j++;
+ 		}
+ 
+ 		if (mask != fastpath)
+@@ -3191,12 +3189,11 @@ int gpiod_set_array_value_complex(bool raw, bool can_sleep,
+ 					__clear_bit(hwgpio, bits);
+ 				count++;
+ 			}
++			i++;
+ 
+ 			if (array_info)
+ 				i = find_next_zero_bit(array_info->set_mask,
+ 						       array_size, i);
+-			else
+-				i++;
+ 		} while ((i < array_size) &&
+ 			 (desc_array[i]->gdev->chip == chip));
+ 		/* push collected bits to outputs */
 -- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 14.8Mbps down 650kbps up
-According to speedtest.net: 13Mbps down 490kbps up
+2.16.4
