@@ -1,42 +1,33 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH] tty: Convert to using %pOFn instead of device_node.name
-Date: Fri, 28 Sep 2018 17:32:37 -0500
-Message-ID: <CAL_JsqK4UGPoqE=K0hdx1=3XnzB5DVY=mCO8jPe=iZrsf9vk2Q@mail.gmail.com>
-References: <20180828015252.28511-1-robh@kernel.org> <20180828015252.28511-46-robh@kernel.org>
- <CAL_JsqJfAsv-MOgk2Ycs2VBj2vK0m29B_3FxwJV5xUjnMbH4sg@mail.gmail.com>
+From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+Subject: [BUG] sleep in atomic in 8250 runtime PM code path
+Date: Sat, 29 Sep 2018 13:20:36 +0800
+Message-ID: <20180929132036.0323e24b@xhacker.debian>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqJfAsv-MOgk2Ycs2VBj2vK0m29B_3FxwJV5xUjnMbH4sg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Phil Edworthy <phil.edworthy@renesas.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 28, 2018 at 5:09 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Mon, Aug 27, 2018 at 8:55 PM Rob Herring <robh@kernel.org> wrote:
-> >
-> > In preparation to remove the node name pointer from struct device_node,
-> > convert printf users to use the %pOFn format specifier.
-> >
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Jiri Slaby <jslaby@suse.com>
-> > Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> > Cc: Paul Mackerras <paulus@samba.org>
-> > Cc: Michael Ellerman <mpe@ellerman.id.au>
-> > Cc: linux-serial@vger.kernel.org
-> > Cc: linuxppc-dev@lists.ozlabs.org
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> >  drivers/tty/ehv_bytechan.c                  | 12 ++++++------
-> >  drivers/tty/serial/cpm_uart/cpm_uart_core.c |  8 ++++----
-> >  drivers/tty/serial/pmac_zilog.c             |  4 ++--
-> >  3 files changed, 12 insertions(+), 12 deletions(-)
->
-> Hey Greg, Is this still in your queue? Maybe you've just been extra
-> busy lately. ;)
+Hi,
 
-NM. I see it's applied now. Sorry for the noise.
+Recently I found I could trigger sleep in atomic bug on berlin after commit
+d76c74387e1c ("serial: 8250_dw: Fix runtime PM handling"). The path looks like:
 
-Rob
+dw8250_probe => serial850_register_8250_port => uart_add_one_port=>
+register_console => console_unlock => univ8250_console_write =>
+serial8250_console_write => serial8250_rpm_get => pm_runtime_get_sync
+
+The irq is disabled by printk_safe_enter_irqsave() in console_unlock, but
+pm_runtime_get_sync can't be called in atomic context...
+
+I guess the reason why we didn't notice it is due to the fact that
+only OMAP and DW sets UART_CAP_RPM currently, and DW set the flag in
+May 2018.
+
+Per my understanding, the bug sits in the 8250 core driver rather than
+8250_dw.c.
+
+Thanks
