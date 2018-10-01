@@ -1,35 +1,39 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] tty:serial:imx: use spin_lock instead of
- spin_lock_irqsave in isr
-Date: Mon, 1 Oct 2018 10:52:12 +0200
-Message-ID: <20181001085212.wu7eba4eh7koy5jx@pengutronix.de>
-References: <20180827144904.17226-1-hangdianqj@163.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] gpiolib: Fix incorrect use of find_next_zero_bit()
+Date: Mon, 1 Oct 2018 11:37:07 +0200
+Message-ID: <CACRpkdbxh3uoVbc1udouxKaN+sc+q_vB7oj_B8PEa4wi=wLedg@mail.gmail.com>
+References: <20180923235336.22148-2-jmkrzyszt@gmail.com> <20180929122022.6825-1-jmkrzyszt@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180827144904.17226-1-hangdianqj@163.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: jun qian <hangdianqj@163.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Barry song <21cnbao@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <20180929122022.6825-1-jmkrzyszt@gmail.com>
+Sender: netdev-owner@vger.kernel.org
+To: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Cc: Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, Greg KH <gregkh@linuxfoundation.org>, kishon@ti.com, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>, Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, Geert Uytterhoeven <geert@linux-m68k.org>, Sebastien Bourdelin <sebastien.bourdelin@savoirfairelinux.com>, Lukas Wunner <luka>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+On Sat, Sep 29, 2018 at 2:19 PM Janusz Krzysztofik <jmkrzyszt@gmail.com> wrote:
 
-On Mon, Aug 27, 2018 at 07:49:04AM -0700, jun qian wrote:
-> Before the program enters the uart ISR, the local interrupt has been
-> disabled by the system, so it's not appropriate to use spin_lock_irqsave
-> interface in the ISR.
+> Commit b17566a6b08b ("gpiolib: Implement fast processing path in
+> get/set array"), already fixed to some extent with commit 5d581d7e8cdc
+> ("gpiolib: Fix missing updates of bitmap index"), introduced a new mode
+> of processing bitmaps where bits applicable for fast bitmap processing
+> path are supposed to be skipped while iterating bits which don't apply.
+> Unfortunately, find_next_zero_bit() function supposed to skip over
+> those fast bits is always called with a 'start' argument equal to an
+> index of last zero bit found and returns that index value again an
+> again, causing an infinite loop.
+>
+> Fix it by incrementing the index uncoditionally before
+> find_next_zero_bit() is optionally called.
+>
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 
-"not appropriate" is a bit strong. It's not as optimal as it could be
-though, yes.
+Patch applied with Marek's Tested-by.
 
-The change is fine,
+Thanks to both of you for digging in and fixing this up!
+Now we are in good shape for the v4.20 cycle :)
 
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Yours,
+Linus Walleij
