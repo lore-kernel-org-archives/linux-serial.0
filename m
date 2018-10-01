@@ -1,39 +1,134 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] gpiolib: Fix incorrect use of find_next_zero_bit()
-Date: Mon, 1 Oct 2018 11:37:07 +0200
-Message-ID: <CACRpkdbxh3uoVbc1udouxKaN+sc+q_vB7oj_B8PEa4wi=wLedg@mail.gmail.com>
-References: <20180923235336.22148-2-jmkrzyszt@gmail.com> <20180929122022.6825-1-jmkrzyszt@gmail.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [BUG] sleep in atomic in 8250 runtime PM code path
+Date: Mon, 1 Oct 2018 11:04:08 -0700
+Message-ID: <20181001180408.GY5662@atomide.com>
+References: <20180929132036.0323e24b@xhacker.debian>
+ <20180929103045.GQ30658@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20180929122022.6825-1-jmkrzyszt@gmail.com>
-Sender: netdev-owner@vger.kernel.org
-To: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Cc: Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Peter Korsgaard <peter.korsgaard@barco.com>, Peter Rosin <peda@axentia.se>, Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>, Dominik Brodowski <linux@dominikbrodowski.net>, Greg KH <gregkh@linuxfoundation.org>, kishon@ti.com, Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>, Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, Geert Uytterhoeven <geert@linux-m68k.org>, Sebastien Bourdelin <sebastien.bourdelin@savoirfairelinux.com>, Lukas Wunner <luka>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180929103045.GQ30658@n2100.armlinux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc: Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Phil Edworthy <phil.edworthy@renesas.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Sep 29, 2018 at 2:19 PM Janusz Krzysztofik <jmkrzyszt@gmail.com> wrote:
+* Russell King - ARM Linux <linux@armlinux.org.uk> [180929 10:35]:
+> On Sat, Sep 29, 2018 at 01:20:36PM +0800, Jisheng Zhang wrote:
+> > Hi,
+> > 
+> > Recently I found I could trigger sleep in atomic bug on berlin after commit
+> > d76c74387e1c ("serial: 8250_dw: Fix runtime PM handling"). The path looks like:
+> > 
+> > dw8250_probe => serial850_register_8250_port => uart_add_one_port=>
+> > register_console => console_unlock => univ8250_console_write =>
+> > serial8250_console_write => serial8250_rpm_get => pm_runtime_get_sync
+> > 
+> > The irq is disabled by printk_safe_enter_irqsave() in console_unlock, but
+> > pm_runtime_get_sync can't be called in atomic context...
+> > 
+> > I guess the reason why we didn't notice it is due to the fact that
+> > only OMAP and DW sets UART_CAP_RPM currently, and DW set the flag in
+> > May 2018.
+> > 
+> > Per my understanding, the bug sits in the 8250 core driver rather than
+> > 8250_dw.c.
+> 
+> (Adding Tony and Sebastian, presumably CAP_RPM comes from OMAP since
+> that is the only other user, and this same bug is present there too.)
 
-> Commit b17566a6b08b ("gpiolib: Implement fast processing path in
-> get/set array"), already fixed to some extent with commit 5d581d7e8cdc
-> ("gpiolib: Fix missing updates of bitmap index"), introduced a new mode
-> of processing bitmaps where bits applicable for fast bitmap processing
-> path are supposed to be skipped while iterating bits which don't apply.
-> Unfortunately, find_next_zero_bit() function supposed to skip over
-> those fast bits is always called with a 'start' argument equal to an
-> index of last zero bit found and returns that index value again an
-> again, causing an infinite loop.
->
-> Fix it by incrementing the index uncoditionally before
-> find_next_zero_bit() is optionally called.
->
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+That only works because of pm_runtime_irq_safe() :( And we should not
+use pm_runtime_irq_safe() at all IMO, it takes a permanent RPM usecount
+on the parent device.
 
-Patch applied with Marek's Tested-by.
+Adding also Andy to Cc as he's been working on related fixes.
 
-Thanks to both of you for digging in and fixing this up!
-Now we are in good shape for the v4.20 cycle :)
+> Correct.  printk() can be called from atomic contexts (consider what
+> happens when an oops or similar occurs - we can be in any context,
+> holding any locks etc.)  Plain printk() can also be used from within
+> spinlocked irqs-off regions.
+> 
+> This means the console's write function may be called in these contexts.
+> Since pm_runtime_get_sync() is may sleep, it means that its use in the
+> console path is _fundamentally_ wrong, and will lead to exactly this
+> problem.
+> 
+> I don't see a way around that other than to avoid RPM on consoles.
+> (which makes the presence of the RPM code in serial8250_console_write()
+> completely unnecessary.)
 
-Yours,
-Linus Walleij
+Yup the way to go is to have some way to attach/detach kernel serial
+console via /sys, and have the serial layer take a usecount on the
+serial driver RPM when kernel serial console is attached. Then the
+user can detach serial console via /sys as needed and have RPM
+working.
+
+> When I rewrote the serial drivers and created serial_core & 8250, this
+> is something that I realised, and I arranged the PM support at the time
+> to always maintain the console in active state (this is prior to RPM).
+> 
+> While I'm looking at commit d74d5d1b7288 ("tty: serial: 8250_core: add
+> run time pm"):
+> 
+> +static void serial8250_rpm_get_tx(struct uart_8250_port *p)
+> +{
+> +       unsigned char rpm_active;
+> +
+> +       if (!(p->capabilities & UART_CAP_RPM))
+> +               return;
+> +
+> +       rpm_active = xchg(&p->rpm_tx_active, 1);
+> +       if (rpm_active)
+> +               return;
+> +       pm_runtime_get_sync(p->port.dev);
+> +}
+> 
+> is particularly "interesting" - if this is called from sections of
+> code that allow it to be called concurrently from different contexts,
+> then we could have:
+> 
+> rpm_tx_active	thread 0			thread 1
+> 0
+> 		xchg(, 1)
+> 1
+> 						xchg(, 1)
+> 						... goes on to use port ...
+> 		pm_runtime_get_sync()
+> 
+> In other words, the port can be used _before_ pm_runtime_get_sync() is
+> called.
+> 
+> If, on the other hand, this can't race, then considering the
+> serial8250_rpm_put_tx() path as well, what stops this race from
+> happening:
+> 
+> rpm_tx_active	thread 0			thread 1
+> 1
+> 		serial8250_rpm_get_tx()
+> 						serial8250_rpm_put_tx()
+> 		xchg(, 1)
+> 1
+> 						xchg(, 0)
+> 0
+> 						pm_runtime_put_autosuspend()
+> 
+> Now to the real point about the above - if _neither_ race is possible,
+> then what is the point of the more expensive xchg() here rather than
+> simple test-and-assignment of rpm_tx_active?  Either these paths can't
+> race with each other and xchg() is unnecessary, or they can and they
+> _could_ fail as shown above.  My suspicion is that xchg() is an attempt
+> to reduce the likelyhood of one of these races being hit.
+
+Yeah the driver would need to maintain a is_suspended flag to prevent
+that. See also the is_suspended related parts for runtime PM docs at
+Documentation/power/runtime_pm.txt.
+
+But let's just make the serial layer take RPM usecount on the
+serial driver when console is in use and have some way for users
+to attach and detach the kernel serial console via /sys to prevent
+PM regressions.
+
+Regards,
+
+Tony
