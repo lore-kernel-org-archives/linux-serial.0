@@ -1,91 +1,95 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 2/2] tty: wipe buffer if not echoing data
-Date: Tue,  2 Oct 2018 10:17:08 -0700
-Message-ID: <20181002171708.1311-3-gregkh@linuxfoundation.org>
-References: <20181002171708.1311-1-gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 1/2] sc16is7xx: Fix for multi-channel stall
+Date: Tue, 2 Oct 2018 13:36:53 -0700
+Message-ID: <20181002203653.GA2397@kroah.com>
+References: <1536762716-30673-1-git-send-email-phil@raspberrypi.org>
+ <1536762716-30673-2-git-send-email-phil@raspberrypi.org>
+ <6028e8e5-f8a6-fbe0-8d2a-b6bb3c91aa14@suse.de>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181002171708.1311-1-gregkh@linuxfoundation.org>
+Content-Disposition: inline
+In-Reply-To: <6028e8e5-f8a6-fbe0-8d2a-b6bb3c91aa14@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, jslaby@suse.com, aszlig@nix.build, gmazyland@gmail.com, torvalds@linux-foundation.org, w@1wt.eu, Greg KH <greg@kroah.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
+Cc: Phil Elwell <phil@raspberrypi.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Alexander Graf <agraf@suse.de>, Stefan Wahren <stefan.wahren@i2se.com>, Mian Yousaf Kaukab <yousaf.kaukab@suse.com>, Matthias Brugger <mbrugger@suse.com>, Michael Allwright <allsey87@gmail.com>, Jakub Kicinski <kubakici@wp.pl>, Xue Liu <liuxuenetmail@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Greg KH <greg@kroah.com>
+On Sat, Sep 29, 2018 at 04:04:48PM +0200, Andreas Färber wrote:
+> Hi Phil and Greg,
+> 
+> Am 12.09.18 um 16:31 schrieb Phil Elwell:
+> > The SC16IS752 is a dual-channel device. The two channels are largely
+> > independent, but the IRQ signals are wired together as an open-drain,
+> > active low signal which will be driven low while either of the
+> > channels requires attention, which can be for significant periods of
+> > time until operations complete and the interrupt can be acknowledged.
+> > In that respect it is should be treated as a true level-sensitive IRQ.
+> > 
+> > The kernel, however, needs to be able to exit interrupt context in
+> > order to use I2C or SPI to access the device registers (which may
+> > involve sleeping).  Therefore the interrupt needs to be masked out or
+> > paused in some way.
+> > 
+> > The usual way to manage sleeping from within an interrupt handler
+> > is to use a threaded interrupt handler - a regular interrupt routine
+> > does the minimum amount of work needed to triage the interrupt before
+> > waking the interrupt service thread. If the threaded IRQ is marked as
+> > IRQF_ONESHOT the kernel will automatically mask out the interrupt
+> > until the thread runs to completion. The sc16is7xx driver used to
+> > use a threaded IRQ, but a patch switched to using a kthread_worker
+> > in order to set realtime priorities on the handler thread and for
+> > other optimisations. The end result is non-threaded IRQ that
+> > schedules some work then returns IRQ_HANDLED, making the kernel
+> > think that all IRQ processing has completed.
+> > 
+> > The work-around to prevent a constant stream of interrupts is to
+> > mark the interrupt as edge-sensitive rather than level-sensitive,
+> > but interpreting an active-low source as a falling-edge source
+> > requires care to prevent a total cessation of interrupts. Whereas
+> > an edge-triggering source will generate a new edge for every interrupt
+> > condition a level-triggering source will keep the signal at the
+> > interrupting level until it no longer requires attention; in other
+> > words, the host won't see another edge until all interrupt conditions
+> > are cleared. It is therefore vital that the interrupt handler does not
+> > exit with an outstanding interrupt condition, otherwise the kernel
+> > will not receive another interrupt unless some other operation causes
+> > the interrupt state on the device to be cleared.
+> > 
+> > The existing sc16is7xx driver has a very simple interrupt "thread"
+> > (kthread_work job) that processes interrupts on each channel in turn
+> > until there are no more. If both channels are active and the first
+> > channel starts interrupting while the handler for the second channel
+> > is running then it will not be detected and an IRQ stall ensues. This
+> > could be handled easily if there was a shared IRQ status register, or
+> > a convenient way to determine if the IRQ had been deasserted for any
+> > length of time, but both appear to be lacking.
+> > 
+> > Avoid this problem (or at least make it much less likely to happen)
+> > by reducing the granularity of per-channel interrupt processing
+> > to one condition per iteration, only exiting the overall loop when
+> > both channels are no longer interrupting.
+> > 
+> > Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+> > ---
+> >  drivers/tty/serial/sc16is7xx.c | 19 +++++++++++++------
+> >  1 file changed, 13 insertions(+), 6 deletions(-)
+> 
+> These two patches seem to be applied in linux-next tree, but are lacking
+> a Fixes: header for backporting to affected stable trees.
+> 
+> openSUSE Tumbleweed's 4.18 appears to be affected, and I didn't see it
+> in linux.git for upcoming 4.19 either.
+> 
+> Can the commit message still be updated to get this fixed everywhere?
 
-If we are not echoing the data to userspace, then perhaps it is a
-"secret" so we should wipe it once we are done with it.
+I can't change the tree, sorry, I can not rebase.
 
-This mirrors the logic that the audit code has.
+If you want these applied to the stable tree, please email
+stable@vger.kernel.org when they hit Linus's tree with the git commit
+ids and I will be glad to queue them up then.
 
-Reported-by: aszlig <aszlig@nix.build>
-Tested-by: Milan Broz <gmazyland@gmail.com>
-Tested-by: aszlig <aszlig@nix.build>
-Cc: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/n_tty.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+thanks,
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 431742201709..d259a6585dbe 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -152,17 +152,28 @@ static inline unsigned char *echo_buf_addr(struct n_tty_data *ldata, size_t i)
- 	return &ldata->echo_buf[i & (N_TTY_BUF_SIZE - 1)];
- }
- 
-+/* If we are not echoing the data, perhaps this is a secret so erase it */
-+static void zero_buffer(struct tty_struct *tty, u8 *buffer, int size)
-+{
-+	bool icanon = !!L_ICANON(tty);
-+	bool no_echo = !L_ECHO(tty);
-+
-+	if (icanon && no_echo)
-+		memset(buffer, 0x00, size);
-+}
-+
- static int tty_copy_to_user(struct tty_struct *tty, void __user *to,
- 			    size_t tail, size_t n)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	size_t size = N_TTY_BUF_SIZE - tail;
--	const void *from = read_buf_addr(ldata, tail);
-+	void *from = read_buf_addr(ldata, tail);
- 	int uncopied;
- 
- 	if (n > size) {
- 		tty_audit_add_data(tty, from, size);
- 		uncopied = copy_to_user(to, from, size);
-+		zero_buffer(tty, from, size);
- 		if (uncopied)
- 			return uncopied;
- 		to += size;
-@@ -171,7 +182,9 @@ static int tty_copy_to_user(struct tty_struct *tty, void __user *to,
- 	}
- 
- 	tty_audit_add_data(tty, from, n);
--	return copy_to_user(to, from, n);
-+	uncopied = copy_to_user(to, from, n);
-+	zero_buffer(tty, from, n);
-+	return uncopied;
- }
- 
- /**
-@@ -1960,11 +1973,12 @@ static int copy_from_read_buf(struct tty_struct *tty,
- 	n = min(head - ldata->read_tail, N_TTY_BUF_SIZE - tail);
- 	n = min(*nr, n);
- 	if (n) {
--		const unsigned char *from = read_buf_addr(ldata, tail);
-+		unsigned char *from = read_buf_addr(ldata, tail);
- 		retval = copy_to_user(*b, from, n);
- 		n -= retval;
- 		is_eof = n == 1 && *from == EOF_CHAR(tty);
- 		tty_audit_add_data(tty, from, n);
-+		zero_buffer(tty, from, n);
- 		smp_store_release(&ldata->read_tail, ldata->read_tail + n);
- 		/* Turn single EOF into zero-length read */
- 		if (L_EXTPROC(tty) && ldata->icanon && is_eof &&
--- 
-2.19.0
+greg k-h
