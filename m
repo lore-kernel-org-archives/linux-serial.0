@@ -1,63 +1,81 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 0/2] serial: sh-sci: Fix earlycon on Renesas ARM platforms
-Date: Tue, 2 Oct 2018 14:38:46 -0700
-Message-ID: <20181002213846.GA1677@kroah.com>
-References: <20180830125404.21192-1-geert+renesas@glider.be>
- <CAMuHMdWdByKxivbQwWL9yF9_r8XObnZuXEZvf_9ZWKYYLWr1bQ@mail.gmail.com>
+From: Milan Broz <gmazyland@gmail.com>
+Subject: Re: [PATCH 2/2] tty: wipe buffer if not echoing data
+Date: Wed, 3 Oct 2018 08:55:24 +0200
+Message-ID: <bda5dd46-94bd-e8ff-d012-ac472a437f1d@gmail.com>
+References: <20181002171708.1311-1-gregkh@linuxfoundation.org>
+ <20181002171708.1311-3-gregkh@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWdByKxivbQwWL9yF9_r8XObnZuXEZvf_9ZWKYYLWr1bQ@mail.gmail.com>
+In-Reply-To: <20181002171708.1311-3-gregkh@linuxfoundation.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Chris Brandt <chris.brandt@renesas.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, uli+renesas@fpond.eu, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, jslaby@suse.com, aszlig@nix.build, torvalds@linux-foundation.org, w@1wt.eu, Greg KH <greg@kroah.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Sep 27, 2018 at 09:38:19AM +0200, Geert Uytterhoeven wrote:
-> Hi Greg,
+On 02/10/2018 19:17, Greg Kroah-Hartman wrote:
+> From: Greg KH <greg@kroah.com>
 > 
-> On Thu, Aug 30, 2018 at 2:54 PM Geert Uytterhoeven
-> <geert+renesas@glider.be> wrote:
-> > Due to an unfortunate oversight, commit 2d4dd0da45401c7a ("serial: sh-sci:
-> > Allow for compressed SCIF address") broke earlycon on all Renesas ARM
-> > platforms using a SCIF port for the serial console (R-Car, RZ/A1, RZ/G1,
-> > RZ/G2 SoCs), due to an incorrect value of port->regshift.
-> >
-> > This patch series fixes that by reverting that commit, and a (reverse)
-> > dependency.
-> >
-> > Earlycon for RZ/A2 (which is a new platform) will be fixed later in a
-> > separate patch.
-> >
-> > Thanks for applying!
-> >
-> > Geert Uytterhoeven (2):
-> >   Revert "serial: sh-sci: Remove SCIx_RZ_SCIFA_REGTYPE"
-> >   Revert "serial: sh-sci: Allow for compressed SCIF address"
-> >
-> >  drivers/tty/serial/sh-sci.c | 56 +++++++++++++++++++++++++++----------
-> >  include/linux/serial_sci.h  |  1 +
-> >  2 files changed, 42 insertions(+), 15 deletions(-)
-> 
-> These are now in tty-next:
-> 
->     10c63443b74d1ef5 Revert "serial: sh-sci: Remove SCIx_RZ_SCIFA_REGTYPE"
->     a1c2fd7e1098ea49 Revert "serial: sh-sci: Allow for compressed SCIF address"
-> 
-> Can you please include them in v4.19-rc6, as they fix a regression introduced
-> in v4.19-rc1?
-> 
-> In addition:
-> 
->     3d8b43ad9c0cf023 serial: sh-sci: Add earlycon for R7S9210
-> 
-> (also in tty-next) enables earlycon on RZ/A2 again, as it was disabled
-> by the two
-> reverts above.
-> 
-> Thanks a lot!
+> If we are not echoing the data to userspace, then perhaps it is a
+> "secret" so we should wipe it once we are done with it.
 
-Now fixed up, thanks.
+Just to explain our test case for cryptsetup, where aszlig initially reported it:
 
-greg k-h
+cryptsetup reads a passphrase from terminal, derives a candidate key for keyslot
+decryption and immediately wipes the passphrase from memory, because it is
+not needed anymore.
+
+And here is the problem - the kernel keeps this passphrase in a tty buffer memory
+that is no longer available to userspace. It can be retrieved from memory dump
+later, even after the crypt mapping is destroyed.
+Almost all userspace tools working with passphrases through tty access have
+the same problem here.
+
+> This mirrors the logic that the audit code has.
+> 
+> Reported-by: aszlig <aszlig@nix.build>
+> Tested-by: Milan Broz <gmazyland@gmail.com>
+> Tested-by: aszlig <aszlig@nix.build>
+> Cc: Willy Tarreau <w@1wt.eu>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  drivers/tty/n_tty.c | 20 +++++++++++++++++---
+...
+
+>  static int tty_copy_to_user(struct tty_struct *tty, void __user *to,
+>  			    size_t tail, size_t n)
+>  {
+>  	struct n_tty_data *ldata = tty->disc_data;
+>  	size_t size = N_TTY_BUF_SIZE - tail;
+> -	const void *from = read_buf_addr(ldata, tail);
+> +	void *from = read_buf_addr(ldata, tail);
+>  	int uncopied;
+>  
+>  	if (n > size) {
+>  		tty_audit_add_data(tty, from, size);
+>  		uncopied = copy_to_user(to, from, size);
+> +		zero_buffer(tty, from, size);
+
+I think Linus mentioned in some previous mail that there should be
+  zero_buffer(tty, from, size - uncopied);
+to avoid wiping of yet uncopied data.
+
+I tested the unmodified version though...
+
+>  		if (uncopied)
+>  			return uncopied;
+>  		to += size;
+> @@ -171,7 +182,9 @@ static int tty_copy_to_user(struct tty_struct *tty, void __user *to,
+>  	}
+>  
+>  	tty_audit_add_data(tty, from, n);
+> -	return copy_to_user(to, from, n);
+> +	uncopied = copy_to_user(to, from, n);
+> +	zero_buffer(tty, from, n);
+> +	return uncopied;
+>  }
+
+
+Milan
