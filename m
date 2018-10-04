@@ -1,66 +1,119 @@
-From: Lance Roy <ldr709@gmail.com>
-Subject: [PATCH] TTY: Replace spin_is_locked() with spin_trylock()
-Date: Thu,  4 Oct 2018 00:14:04 -0700
-Message-ID: <20181004071404.16407-1-ldr709@gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] Revert "serial: 8250_dw: Fix runtime PM handling"
+Date: Thu, 4 Oct 2018 11:54:43 +0300
+Message-ID: <20181004085443.GS15943@smile.fi.intel.com>
+References: <1538455357-16344-1-git-send-email-linux@roeck-us.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1538455357-16344-1-git-send-email-linux@roeck-us.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: "Paul E. McKenney" <paulmck@linux.ibm.com>, Lance Roy <ldr709@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Phil Edworthy <phil.edworthy@renesas.com>
 List-Id: linux-serial@vger.kernel.org
 
-sn_sal_console_write() used spin_is_locked() + spin_lock() to get
-achieve the same thing as a spin_trylock(), so simplify it by using that
-instead. This is also a step towards possibly removing spin_is_locked().
+On Mon, Oct 01, 2018 at 09:42:37PM -0700, Guenter Roeck wrote:
+> This reverts commit d76c74387e1c978b6c5524a146ab0f3f72206f98.
+> 
+> While commit d76c74387e1c ("serial: 8250_dw: Fix runtime PM handling")
+> fixes runtime PM handling when using kgdb, it introduces a traceback for
+> everyone else.
 
-Signed-off-by: Lance Roy <ldr709@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: <linux-serial@vger.kernel.org>
----
- drivers/tty/serial/sn_console.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-diff --git a/drivers/tty/serial/sn_console.c b/drivers/tty/serial/sn_console.c
-index 42b9aded4eb1..fe9170731c16 100644
---- a/drivers/tty/serial/sn_console.c
-+++ b/drivers/tty/serial/sn_console.c
-@@ -888,7 +888,7 @@ sn_sal_console_write(struct console *co, const char *s, unsigned count)
- 
- 	/* somebody really wants this output, might be an
- 	 * oops, kdb, panic, etc.  make sure they get it. */
--	if (spin_is_locked(&port->sc_port.lock)) {
-+	if (!spin_trylock_irqsave(&port->sc_port.lock, flags)) {
- 		int lhead = port->sc_port.state->xmit.head;
- 		int ltail = port->sc_port.state->xmit.tail;
- 		int counter, got_lock = 0;
-@@ -905,13 +905,11 @@ sn_sal_console_write(struct console *co, const char *s, unsigned count)
- 		 */
- 
- 		for (counter = 0; counter < 150; mdelay(125), counter++) {
--			if (!spin_is_locked(&port->sc_port.lock)
--			    || stole_lock) {
--				if (!stole_lock) {
--					spin_lock_irqsave(&port->sc_port.lock,
--							  flags);
--					got_lock = 1;
--				}
-+			if (stole_lock)
-+				break;
-+
-+			if (spin_trylock_irqsave(&port->sc_port.lock, flags)) {
-+				got_lock = 1;
- 				break;
- 			} else {
- 				/* still locked */
-@@ -938,7 +936,6 @@ sn_sal_console_write(struct console *co, const char *s, unsigned count)
- 		puts_raw_fixed(port->sc_ops->sal_puts_raw, s, count);
- 	} else {
- 		stole_lock = 0;
--		spin_lock_irqsave(&port->sc_port.lock, flags);
- 		sn_transmit_chars(port, 1);
- 		spin_unlock_irqrestore(&port->sc_port.lock, flags);
- 
+However, I would prefer to have a better solution as Tony already spelled out.
+
+> 
+> BUG: sleeping function called from invalid context at
+> 	/mnt/host/source/src/third_party/kernel/next/drivers/base/power/runtime.c:1034
+> in_atomic(): 1, irqs_disabled(): 1, pid: 1, name: swapper/0
+> 7 locks held by swapper/0/1:
+>  #0: 000000005ec5bc72 (&dev->mutex){....}, at: __driver_attach+0xb5/0x12b
+>  #1: 000000005d5fa9e5 (&dev->mutex){....}, at: __device_attach+0x3e/0x15b
+>  #2: 0000000047e93286 (serial_mutex){+.+.}, at: serial8250_register_8250_port+0x51/0x8bb
+>  #3: 000000003b328f07 (port_mutex){+.+.}, at: uart_add_one_port+0xab/0x8b0
+>  #4: 00000000fa313d4d (&port->mutex){+.+.}, at: uart_add_one_port+0xcc/0x8b0
+>  #5: 00000000090983ca (console_lock){+.+.}, at: vprintk_emit+0xdb/0x217
+>  #6: 00000000c743e583 (console_owner){-...}, at: console_unlock+0x211/0x60f
+> irq event stamp: 735222
+> __down_trylock_console_sem+0x4a/0x84
+> console_unlock+0x338/0x60f
+> __do_softirq+0x4a4/0x50d
+> irq_exit+0x64/0xe2
+> CPU: 2 PID: 1 Comm: swapper/0 Not tainted 4.19.0-rc5 #6
+> Hardware name: Google Caroline/Caroline, BIOS Google_Caroline.7820.286.0 03/15/2017
+> Call Trace:
+>  dump_stack+0x7d/0xbd
+>  ___might_sleep+0x238/0x259
+>  __pm_runtime_resume+0x4e/0xa4
+>  ? serial8250_rpm_get+0x2e/0x44
+>  serial8250_console_write+0x44/0x301
+>  ? lock_acquire+0x1b8/0x1fa
+>  console_unlock+0x577/0x60f
+>  vprintk_emit+0x1f0/0x217
+>  printk+0x52/0x6e
+>  register_console+0x43b/0x524
+>  uart_add_one_port+0x672/0x8b0
+>  ? set_io_from_upio+0x150/0x162
+>  serial8250_register_8250_port+0x825/0x8bb
+>  dw8250_probe+0x80c/0x8b0
+>  ? dw8250_serial_inq+0x8e/0x8e
+>  ? dw8250_check_lcr+0x108/0x108
+>  ? dw8250_runtime_resume+0x5b/0x5b
+>  ? dw8250_serial_outq+0xa1/0xa1
+>  ? dw8250_remove+0x115/0x115
+>  platform_drv_probe+0x76/0xc5
+>  really_probe+0x1f1/0x3ee
+>  ? driver_allows_async_probing+0x5d/0x5d
+>  driver_probe_device+0xd6/0x112
+>  ? driver_allows_async_probing+0x5d/0x5d
+>  bus_for_each_drv+0xbe/0xe5
+>  __device_attach+0xdd/0x15b
+>  bus_probe_device+0x5a/0x10b
+>  device_add+0x501/0x894
+>  ? _raw_write_unlock+0x27/0x3a
+>  platform_device_add+0x224/0x2b7
+>  mfd_add_device+0x718/0x75b
+>  ? __kmalloc+0x144/0x16a
+>  ? mfd_add_devices+0x38/0xdb
+>  mfd_add_devices+0x9b/0xdb
+>  intel_lpss_probe+0x7d4/0x8ee
+>  intel_lpss_pci_probe+0xac/0xd4
+>  pci_device_probe+0x101/0x18e
+> ...
+> 
+> Revert the offending patch until a more comprehensive solution
+> is available.
+> 
+> Cc: Tony Lindgren <tony@atomide.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Phil Edworthy <phil.edworthy@renesas.com>
+> Fixes: d76c74387e1c ("serial: 8250_dw: Fix runtime PM handling")
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> ---
+>  drivers/tty/serial/8250/8250_dw.c | 4 ----
+>  1 file changed, 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index fa8dcb470640..d31b975dd3fd 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -630,10 +630,6 @@ static int dw8250_probe(struct platform_device *pdev)
+>  	if (!data->skip_autocfg)
+>  		dw8250_setup_port(p);
+>  
+> -#ifdef CONFIG_PM
+> -	uart.capabilities |= UART_CAP_RPM;
+> -#endif
+> -
+>  	/* If we have a valid fifosize, try hooking up DMA */
+>  	if (p->fifosize) {
+>  		data->dma.rxconf.src_maxburst = p->fifosize / 4;
+> -- 
+> 2.7.4
+> 
+
 -- 
-2.19.0
+With Best Regards,
+Andy Shevchenko
