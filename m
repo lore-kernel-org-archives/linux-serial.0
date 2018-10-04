@@ -1,81 +1,66 @@
-From: Milan Broz <gmazyland@gmail.com>
-Subject: Re: [PATCH 2/2] tty: wipe buffer if not echoing data
-Date: Wed, 3 Oct 2018 08:55:24 +0200
-Message-ID: <bda5dd46-94bd-e8ff-d012-ac472a437f1d@gmail.com>
-References: <20181002171708.1311-1-gregkh@linuxfoundation.org>
- <20181002171708.1311-3-gregkh@linuxfoundation.org>
+From: Lance Roy <ldr709@gmail.com>
+Subject: [PATCH] TTY: Replace spin_is_locked() with spin_trylock()
+Date: Thu,  4 Oct 2018 00:14:04 -0700
+Message-ID: <20181004071404.16407-1-ldr709@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181002171708.1311-3-gregkh@linuxfoundation.org>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, jslaby@suse.com, aszlig@nix.build, torvalds@linux-foundation.org, w@1wt.eu, Greg KH <greg@kroah.com>
+To: linux-kernel@vger.kernel.org
+Cc: "Paul E. McKenney" <paulmck@linux.ibm.com>, Lance Roy <ldr709@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 02/10/2018 19:17, Greg Kroah-Hartman wrote:
-> From: Greg KH <greg@kroah.com>
-> 
-> If we are not echoing the data to userspace, then perhaps it is a
-> "secret" so we should wipe it once we are done with it.
+sn_sal_console_write() used spin_is_locked() + spin_lock() to get
+achieve the same thing as a spin_trylock(), so simplify it by using that
+instead. This is also a step towards possibly removing spin_is_locked().
 
-Just to explain our test case for cryptsetup, where aszlig initially reported it:
+Signed-off-by: Lance Roy <ldr709@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: <linux-serial@vger.kernel.org>
+---
+ drivers/tty/serial/sn_console.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-cryptsetup reads a passphrase from terminal, derives a candidate key for keyslot
-decryption and immediately wipes the passphrase from memory, because it is
-not needed anymore.
-
-And here is the problem - the kernel keeps this passphrase in a tty buffer memory
-that is no longer available to userspace. It can be retrieved from memory dump
-later, even after the crypt mapping is destroyed.
-Almost all userspace tools working with passphrases through tty access have
-the same problem here.
-
-> This mirrors the logic that the audit code has.
-> 
-> Reported-by: aszlig <aszlig@nix.build>
-> Tested-by: Milan Broz <gmazyland@gmail.com>
-> Tested-by: aszlig <aszlig@nix.build>
-> Cc: Willy Tarreau <w@1wt.eu>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  drivers/tty/n_tty.c | 20 +++++++++++++++++---
-...
-
->  static int tty_copy_to_user(struct tty_struct *tty, void __user *to,
->  			    size_t tail, size_t n)
->  {
->  	struct n_tty_data *ldata = tty->disc_data;
->  	size_t size = N_TTY_BUF_SIZE - tail;
-> -	const void *from = read_buf_addr(ldata, tail);
-> +	void *from = read_buf_addr(ldata, tail);
->  	int uncopied;
->  
->  	if (n > size) {
->  		tty_audit_add_data(tty, from, size);
->  		uncopied = copy_to_user(to, from, size);
-> +		zero_buffer(tty, from, size);
-
-I think Linus mentioned in some previous mail that there should be
-  zero_buffer(tty, from, size - uncopied);
-to avoid wiping of yet uncopied data.
-
-I tested the unmodified version though...
-
->  		if (uncopied)
->  			return uncopied;
->  		to += size;
-> @@ -171,7 +182,9 @@ static int tty_copy_to_user(struct tty_struct *tty, void __user *to,
->  	}
->  
->  	tty_audit_add_data(tty, from, n);
-> -	return copy_to_user(to, from, n);
-> +	uncopied = copy_to_user(to, from, n);
-> +	zero_buffer(tty, from, n);
-> +	return uncopied;
->  }
-
-
-Milan
+diff --git a/drivers/tty/serial/sn_console.c b/drivers/tty/serial/sn_console.c
+index 42b9aded4eb1..fe9170731c16 100644
+--- a/drivers/tty/serial/sn_console.c
++++ b/drivers/tty/serial/sn_console.c
+@@ -888,7 +888,7 @@ sn_sal_console_write(struct console *co, const char *s, unsigned count)
+ 
+ 	/* somebody really wants this output, might be an
+ 	 * oops, kdb, panic, etc.  make sure they get it. */
+-	if (spin_is_locked(&port->sc_port.lock)) {
++	if (!spin_trylock_irqsave(&port->sc_port.lock, flags)) {
+ 		int lhead = port->sc_port.state->xmit.head;
+ 		int ltail = port->sc_port.state->xmit.tail;
+ 		int counter, got_lock = 0;
+@@ -905,13 +905,11 @@ sn_sal_console_write(struct console *co, const char *s, unsigned count)
+ 		 */
+ 
+ 		for (counter = 0; counter < 150; mdelay(125), counter++) {
+-			if (!spin_is_locked(&port->sc_port.lock)
+-			    || stole_lock) {
+-				if (!stole_lock) {
+-					spin_lock_irqsave(&port->sc_port.lock,
+-							  flags);
+-					got_lock = 1;
+-				}
++			if (stole_lock)
++				break;
++
++			if (spin_trylock_irqsave(&port->sc_port.lock, flags)) {
++				got_lock = 1;
+ 				break;
+ 			} else {
+ 				/* still locked */
+@@ -938,7 +936,6 @@ sn_sal_console_write(struct console *co, const char *s, unsigned count)
+ 		puts_raw_fixed(port->sc_ops->sal_puts_raw, s, count);
+ 	} else {
+ 		stole_lock = 0;
+-		spin_lock_irqsave(&port->sc_port.lock, flags);
+ 		sn_transmit_chars(port, 1);
+ 		spin_unlock_irqrestore(&port->sc_port.lock, flags);
+ 
+-- 
+2.19.0
