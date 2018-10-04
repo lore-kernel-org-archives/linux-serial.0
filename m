@@ -1,95 +1,59 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH v2 2/2] tty: wipe buffer if not echoing data
-Date: Thu,  4 Oct 2018 11:06:14 -0700
-Message-ID: <20181004180614.25619-3-gregkh@linuxfoundation.org>
-References: <20181004180614.25619-1-gregkh@linuxfoundation.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: "H. Peter Anvin (Intel)" <hpa@zytor.com>
+Subject: [PATCH 1/5] asm-generic, termios: add alias constants from MIPS
+Date: Thu,  4 Oct 2018 15:29:49 -0700
+Message-ID: <20181004222953.2229-2-hpa@zytor.com>
+References: <20181004222953.2229-1-hpa@zytor.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181004180614.25619-1-gregkh@linuxfoundation.org>
+In-Reply-To: <20181004222953.2229-1-hpa@zytor.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, jslaby@suse.com, aszlig@nix.build, gmazyland@gmail.com, torvalds@linux-foundation.org, w@1wt.eu, Greg KH <greg@kroah.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: "H. Peter Anvin (Intel)" <hpa@zytor.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Greg KH <greg@kroah.com>
+Some architectures, in this case MIPS, need a couple of legacy alias
+constants for bits. There really is no reason why we can't define them
+generically for all architectures.
 
-If we are not echoing the data to userspace or the console is in icanon
-mode, then perhaps it is a "secret" so we should wipe it once we are
-done with it.
-
-This mirrors the logic that the audit code has.
-
-Reported-by: aszlig <aszlig@nix.build>
-Tested-by: Milan Broz <gmazyland@gmail.com>
-Tested-by: aszlig <aszlig@nix.build>
-Cc: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+linux-kernel@vger.kernel.org (open list)
 ---
-v2 - update changelog comment to mention icanon
-     address the fact that copy_to_user() might not copy the whole buffer
+ include/uapi/asm-generic/termbits.h | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
- drivers/tty/n_tty.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 431742201709..3ad460219fd6 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -152,17 +152,28 @@ static inline unsigned char *echo_buf_addr(struct n_tty_data *ldata, size_t i)
- 	return &ldata->echo_buf[i & (N_TTY_BUF_SIZE - 1)];
- }
+diff --git a/include/uapi/asm-generic/termbits.h b/include/uapi/asm-generic/termbits.h
+index 2fbaf9ae89dd..96ae175eec5b 100644
+--- a/include/uapi/asm-generic/termbits.h
++++ b/include/uapi/asm-generic/termbits.h
+@@ -8,7 +8,10 @@ typedef unsigned char	cc_t;
+ typedef unsigned int	speed_t;
+ typedef unsigned int	tcflag_t;
  
-+/* If we are not echoing the data, perhaps this is a secret so erase it */
-+static void zero_buffer(struct tty_struct *tty, u8 *buffer, int size)
-+{
-+	bool icanon = !!L_ICANON(tty);
-+	bool no_echo = !L_ECHO(tty);
+-#define NCCS 19
++#ifndef NCCS
++# define NCCS 19
++#endif
 +
-+	if (icanon && no_echo)
-+		memset(buffer, 0x00, size);
-+}
-+
- static int tty_copy_to_user(struct tty_struct *tty, void __user *to,
- 			    size_t tail, size_t n)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	size_t size = N_TTY_BUF_SIZE - tail;
--	const void *from = read_buf_addr(ldata, tail);
-+	void *from = read_buf_addr(ldata, tail);
- 	int uncopied;
- 
- 	if (n > size) {
- 		tty_audit_add_data(tty, from, size);
- 		uncopied = copy_to_user(to, from, size);
-+		zero_buffer(tty, from, size - uncopied);
- 		if (uncopied)
- 			return uncopied;
- 		to += size;
-@@ -171,7 +182,9 @@ static int tty_copy_to_user(struct tty_struct *tty, void __user *to,
- 	}
- 
- 	tty_audit_add_data(tty, from, n);
--	return copy_to_user(to, from, n);
-+	uncopied = copy_to_user(to, from, n);
-+	zero_buffer(tty, from, n - uncopied);
-+	return uncopied;
- }
- 
- /**
-@@ -1960,11 +1973,12 @@ static int copy_from_read_buf(struct tty_struct *tty,
- 	n = min(head - ldata->read_tail, N_TTY_BUF_SIZE - tail);
- 	n = min(*nr, n);
- 	if (n) {
--		const unsigned char *from = read_buf_addr(ldata, tail);
-+		unsigned char *from = read_buf_addr(ldata, tail);
- 		retval = copy_to_user(*b, from, n);
- 		n -= retval;
- 		is_eof = n == 1 && *from == EOF_CHAR(tty);
- 		tty_audit_add_data(tty, from, n);
-+		zero_buffer(tty, from, n);
- 		smp_store_release(&ldata->read_tail, ldata->read_tail + n);
- 		/* Turn single EOF into zero-length read */
- 		if (L_EXTPROC(tty) && ldata->icanon && is_eof &&
+ struct termios {
+ 	tcflag_t c_iflag;		/* input mode flags */
+ 	tcflag_t c_oflag;		/* output mode flags */
+@@ -49,6 +52,7 @@ struct ktermios {
+ #define VTIME 5
+ #define VMIN 6
+ #define VSWTC 7
++#define VSWTCH VSWTC
+ #define VSTART 8
+ #define VSTOP 9
+ #define VSUSP 10
+@@ -173,6 +177,7 @@ struct ktermios {
+ #define ECHONL	0000100
+ #define NOFLSH	0000200
+ #define TOSTOP	0000400
++#define ITOSTOP TOSTOP
+ #define ECHOCTL	0001000
+ #define ECHOPRT	0002000
+ #define ECHOKE	0004000
 -- 
-2.19.0
+2.14.4
