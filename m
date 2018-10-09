@@ -1,54 +1,39 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] serial: sh-sci: Fix receive on SCIFA/SCIFB variants with DMA
-Date: Tue,  9 Oct 2018 19:41:58 +0200
-Message-ID: <20181009174158.4476-1-geert+renesas@glider.be>
+From: "H. Peter Anvin" <hpa@zytor.com>
+Subject: Insanely high baud rates
+Date: Tue, 9 Oct 2018 12:19:04 -0700
+Message-ID: <3fcef1c1-d746-ae82-c0e6-f079b1a53ffb@zytor.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Ulrich Hecht <uli+renesas@fpond.eu>, Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+To: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On SCIFA and SCIFB serial ports with DMA support (i.e. some ports on
-R-Car Gen2 and RZ/G1 SoCs), receive DMA operations are submitted before
-the DMA channel pointer is initialized.  Hence this fails, and the
-driver tries to fall back to PIO.  However, at this early phase in the
-initialization sequence, fallback to PIO does not work, leading to a
-serial port that cannot receive any data.
+[Resending to a wider audience]
 
-Fix this by calling sci_submit_rx() after initialization of the DMA
-channel pointer.
+In trying to get the termios2 interface actually implemented in glibc,
+the question came up if we will ever care about baud rates in excess of
+4 Gbps, even in the relatively remote future.
 
-Reported-by: Jinzai Solution and RVC Test Teams via Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Fixes: 2c4ee23530ffc022 ("serial: sh-sci: Postpone DMA release when falling back to PIO")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-Reported on r8a7790/lager using SCIFA1 on Debug Serial 1.
-Tested on r8a7791/koelsch using SCIFA3 on EXIO-B.
+If this is something we care about *at all*, I would like to suggest
+that rather than defining yet another kernel interface, we steal some
+bits from the MSB of the speed fields, alternatively one of the c_cc
+bytes (all  likearchitectures seem to have c_cc[18] free) or some field,
+if we can find them, in c_cflags, to indicate an exponent.
 
-This fixes a regression introduced in v4.19-rc1, so please queue for
-v4.19.
+With 5 bits from the top of the speed fields, the current values would
+be identical up to 248 Gbps, and values up to ~288 Pbps would be
+encodable ±2 ppb.
 
-Thanks!
----
- drivers/tty/serial/sh-sci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+In the short term, all we would have to do in the kernel would be
+erroring out on baud rates higher than 0x0fffffff (2^28-1 due to
+implicit one aliasing rhe first bit of a 5-bit exponent – less than 2^27
+are functionally denorms.) However, I'd like to put the glibc
+infrastructure for this now if this is something we may ever be
+interested in.
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index b73b27dc45e60ffb..7e98a4f3ec77abbd 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1614,10 +1614,10 @@ static void sci_request_dma(struct uart_port *port)
- 		hrtimer_init(&s->rx_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 		s->rx_timer.function = rx_timer_fn;
- 
-+		s->chan_rx_saved = s->chan_rx = chan;
-+
- 		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
- 			sci_submit_rx(s);
--
--		s->chan_rx_saved = s->chan_rx = chan;
- 	}
- }
- 
+Thoughts?
 -- 
-2.17.1
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
