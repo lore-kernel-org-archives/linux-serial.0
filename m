@@ -1,139 +1,54 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v12 0/6] Driver for at91 usart in spi mode
-Date: Tue, 9 Oct 2018 02:04:54 -0700
-Message-ID: <20181009090454.GD4939@dell>
-References: <20180911225440.GL4185@dell>
- <20180912073355.GB2557@piout.net>
- <20180912084143.GN4185@dell>
- <CAMuHMdWefU0pw=c9TKOa+wGHchpg8JRfE0OnC4+wKDt-qrbH1A@mail.gmail.com>
- <20180912105407.GR4185@dell>
- <20180912111757.GC2760@piout.net>
- <20180912114352.GT4185@dell>
- <20180912121420.GE2760@piout.net>
- <20180912131248.GA21544@dell>
- <a143edd3c0de2ba98b64e642b4384edf4323be2b.camel@upb.ro>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: sh-sci: Fix receive on SCIFA/SCIFB variants with DMA
+Date: Tue,  9 Oct 2018 19:41:58 +0200
+Message-ID: <20181009174158.4476-1-geert+renesas@glider.be>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <a143edd3c0de2ba98b64e642b4384edf4323be2b.camel@upb.ro>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Radu Pirea <radu_nicolae.pirea@upb.ro>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Greg KH <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.k>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Ulrich Hecht <uli+renesas@fpond.eu>, Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 12 Sep 2018, Radu Pirea wrote:
+On SCIFA and SCIFB serial ports with DMA support (i.e. some ports on
+R-Car Gen2 and RZ/G1 SoCs), receive DMA operations are submitted before
+the DMA channel pointer is initialized.  Hence this fails, and the
+driver tries to fall back to PIO.  However, at this early phase in the
+initialization sequence, fallback to PIO does not work, leading to a
+serial port that cannot receive any data.
 
-> On Wed, 2018-09-12 at 14:12 +0100, Lee Jones wrote:
-> > On Wed, 12 Sep 2018, Alexandre Belloni wrote:
-> > 
-> > > On 12/09/2018 12:43:52+0100, Lee Jones wrote:
-> > > > > > But ... we can't have it both ways.  *Either* it's a true
-> > > > > > MFD, in
-> > > > > > which case it can/should have 2 separate compatible strings
-> > > > > > which can
-> > > > > > be specified directly from the DT.  *Or* it's not an MFD.  In
-> > > > > > the
-> > > > > > latter case, which I think we're all agreeing on (else we'd
-> > > > > > have 2
-> > > > > > compatible strings), MFD is not the place to handle this (my
-> > > > > > original
-> > > > > > point).
-> > > > > > 
-> > > > > 
-> > > > > If that is what bothers you, then let's move it out of mfd.
-> > > > 
-> > > > As I've already mentioned.  I don't just want it moved out of MFD
-> > > > and
-> > > > shoved somewhere else.  My aim is to fix this properly.
-> > > > 
-> > > 
-> > > If it is out of MFD, then I'm not sure why you would care too much
-> > > about
-> > > it as you won't be maintaining that code. And I still this what was
-> > > done
-> > > was correct but I'm open to test what you suggest.
-> > 
-> > I care for the kernel in general, not just the areas I'm responsible
-> > for.  I guess I'm just that kinda guy! ;)
-> 
-> Well, Lee, like you, I think this driver should not be a MFD driver,
-> but Alex has a good point of view. 
-> 
-> > 
-> > > > > > So ... this is a USART device which can do SPI, right?
-> > > > > > 
-> > > > > > My current thinking is that; as this is a USART device first
-> > > > > > &
-> > > > > > foremost, the USART should be probed in the first instance
-> > > > > > regardless,
-> > > > > > then if SPI mode is specified it (the USART driver) registers
-> > > > > > the SPI
-> > > > > > platform driver (as MFD does currently) and exits gracefully,
-> > > > > > allowing
-> > > > > > the SPI driver to take over.
-> > > > > > 
-> > > > > > Spanner in the works: is it physically possible to change the
-> > > > > > mode at
-> > > > > > run-time?  :s
-> > > > > 
-> > > > > Yes it is possible but on Linux that will not happen without
-> > > > > probing
-> > > > > the drivers again.
-> > > > 
-> > > > Not sure I understand what you mean.
-> > > 
-> > > I was just commenting on changing the mode at runtime.
-> > 
-> > Oh I see.  My question was relating to whether the H/W is physically
-> > capable of changing modes on-the-fly, rather than how Linux would
-> > handle that.  If this is something we'd wish to support, then it
-> > would
-> > have to be a single driver, which is why I was asking.  By separating
-> > the drivers this way, we are blocking that as a
-> > possibility.  Although
-> > I guess the OP has already thought about that and made the decision
-> > not to support it.
-> 
-> Is possible to change modes on-the-fly, but you have no reason to do
-> that. On the PCB you will have a SPI slave or a serial console :)
-> Anyway, the current form of the driver, and through this I want to say
-> "this ugly hack", allows the user to switch from serial to SPI mode by
-> adding only one property to the device tree node of USART. If the
-> driver were in his first form, a simple SPI driver, how you will make a
-> dtsi file for an IP like this? You will add two nodes for the same IP
-> in dtsi and will take care to enable correct node in dts?
-> I think this driver is only a tradeoff between having an ugly hack in
-> kernel or having an messy device tree.
-> 
-> > 
-> > > > I'm suggesting that you use the same platform_* interfaces MFD
-> > > > uses to
-> > > > register the SPI driver if SPI mode has been selected.  Only do
-> > > > so
-> > > > from the appropriate driver i.e. USART.
-> > > 
-> > > Yeah, I understood that but I didn't comment because I'm not sure
-> > > this
-> > > will work yet.
-> > 
-> > Other drivers already do this.
-> 
-> Can you give me an example please?
+Fix this by calling sci_submit_rx() after initialization of the DMA
+channel pointer.
 
-Sorry for the delay, I have been on vacation.
+Reported-by: Jinzai Solution and RVC Test Teams via Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Fixes: 2c4ee23530ffc022 ("serial: sh-sci: Postpone DMA release when falling back to PIO")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+Reported on r8a7790/lager using SCIFA1 on Debug Serial 1.
+Tested on r8a7791/koelsch using SCIFA3 on EXIO-B.
 
-Grep for 'platform_device_add' in drivers/
+This fixes a regression introduced in v4.19-rc1, so please queue for
+v4.19.
 
-> I am open to suggestions.
-> 
-> Sorry for that acked-by. There was a lot of "reviewed-by", "acked-by",
-> etc in a single version and I messed up :).
-> 
+Thanks!
+---
+ drivers/tty/serial/sh-sci.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index b73b27dc45e60ffb..7e98a4f3ec77abbd 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1614,10 +1614,10 @@ static void sci_request_dma(struct uart_port *port)
+ 		hrtimer_init(&s->rx_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 		s->rx_timer.function = rx_timer_fn;
+ 
++		s->chan_rx_saved = s->chan_rx = chan;
++
+ 		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
+ 			sci_submit_rx(s);
+-
+-		s->chan_rx_saved = s->chan_rx = chan;
+ 	}
+ }
+ 
 -- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.17.1
