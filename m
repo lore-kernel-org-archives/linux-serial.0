@@ -1,77 +1,139 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH] of: base: Change logic in of_alias_get_alias_list()
-Date: Tue, 9 Oct 2018 09:18:53 +0200
-Message-ID: <2bbc70c9-21b0-dfa2-ddea-554afb2c4f89@xilinx.com>
-References: <e879d07e97b7f7fc46543315e9fb1b4bc8b7a352.1539001154.git.michal.simek@xilinx.com>
- <CAL_JsqLNMM6mS1oy1voDAibRk1Srcp7i8e3pESTnM957Rxp4ow@mail.gmail.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v12 0/6] Driver for at91 usart in spi mode
+Date: Tue, 9 Oct 2018 02:04:54 -0700
+Message-ID: <20181009090454.GD4939@dell>
+References: <20180911225440.GL4185@dell>
+ <20180912073355.GB2557@piout.net>
+ <20180912084143.GN4185@dell>
+ <CAMuHMdWefU0pw=c9TKOa+wGHchpg8JRfE0OnC4+wKDt-qrbH1A@mail.gmail.com>
+ <20180912105407.GR4185@dell>
+ <20180912111757.GC2760@piout.net>
+ <20180912114352.GT4185@dell>
+ <20180912121420.GE2760@piout.net>
+ <20180912131248.GA21544@dell>
+ <a143edd3c0de2ba98b64e642b4384edf4323be2b.camel@upb.ro>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqLNMM6mS1oy1voDAibRk1Srcp7i8e3pESTnM957Rxp4ow@mail.gmail.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <a143edd3c0de2ba98b64e642b4384edf4323be2b.camel@upb.ro>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Michal Simek <michal.simek@xilinx.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Michal Simek <monstr@monstr.eu>, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Frank Rowand <frowand.list@gmail.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
+To: Radu Pirea <radu_nicolae.pirea@upb.ro>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Greg KH <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Jiri Slaby <jslaby@suse.com>, Richard Genoud <richard.genoud@gmail.com>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.k>
 List-Id: linux-serial@vger.kernel.org
 
-On 8.10.2018 17:07, Rob Herring wrote:
-> On Mon, Oct 8, 2018 at 7:19 AM Michal Simek <michal.simek@xilinx.com> wrote:
->>
->> Check compatible string first before setting up bit in bitmap to also
->> cover cases that allocated bitfield is not big enough.
->> Show warning about it but let driver to continue to work with allocated
->> bitfield to keep at least some devices (included console which
->> is commonly close to serial0) to work.
->>
->> Fixes: b1078c355d76 ("of: base: Introduce of_alias_get_alias_list() to check alias IDs")
->> Fixes: ae1cca3fa347 ("serial: uartps: Change uart ID port allocation")
->> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
->> ---
->>
->> I have looked at it and I don't think there should be necessary to
->> report error immediately back with partially initialized bitfield.
->> The reason is that still there could be a console device which is most
->> likely below that max limit and it is worth to return at least that nbits
->> properly filled.
->> It will also enable cases that you can still continue to use aliases
->> higher then fields prepared for devices without alias.
+On Wed, 12 Sep 2018, Radu Pirea wrote:
+
+> On Wed, 2018-09-12 at 14:12 +0100, Lee Jones wrote:
+> > On Wed, 12 Sep 2018, Alexandre Belloni wrote:
+> > 
+> > > On 12/09/2018 12:43:52+0100, Lee Jones wrote:
+> > > > > > But ... we can't have it both ways.  *Either* it's a true
+> > > > > > MFD, in
+> > > > > > which case it can/should have 2 separate compatible strings
+> > > > > > which can
+> > > > > > be specified directly from the DT.  *Or* it's not an MFD.  In
+> > > > > > the
+> > > > > > latter case, which I think we're all agreeing on (else we'd
+> > > > > > have 2
+> > > > > > compatible strings), MFD is not the place to handle this (my
+> > > > > > original
+> > > > > > point).
+> > > > > > 
+> > > > > 
+> > > > > If that is what bothers you, then let's move it out of mfd.
+> > > > 
+> > > > As I've already mentioned.  I don't just want it moved out of MFD
+> > > > and
+> > > > shoved somewhere else.  My aim is to fix this properly.
+> > > > 
+> > > 
+> > > If it is out of MFD, then I'm not sure why you would care too much
+> > > about
+> > > it as you won't be maintaining that code. And I still this what was
+> > > done
+> > > was correct but I'm open to test what you suggest.
+> > 
+> > I care for the kernel in general, not just the areas I'm responsible
+> > for.  I guess I'm just that kinda guy! ;)
 > 
-> Seems reasonable. Plus if you had a new dtb which added an alias
-> greater than what the OS version supports, you would break that
-> system.
-
-I was checking that with our uart ps driver before I send this patch and
-I found out that there is no reason not to support these cases.
-Driver will simply find out ids which are free and ready for devices
-which don't have alias.
-
+> Well, Lee, like you, I think this driver should not be a MFD driver,
+> but Alex has a good point of view. 
 > 
->>
->> To be fixed patches are present in tty-next branch.
->>
->> ---
->>  drivers/of/base.c                  | 22 ++++++++++++----------
->>  drivers/tty/serial/xilinx_uartps.c |  2 +-
->>  2 files changed, 13 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/of/base.c b/drivers/of/base.c
->> index 908de45f966b..0b9611e196d1 100644
->> --- a/drivers/of/base.c
->> +++ b/drivers/of/base.c
->> @@ -1953,13 +1953,15 @@ int of_alias_get_id(struct device_node *np, const char *stem)
->>   * The function travels the lookup table to record alias ids for the given
->>   * device match structures and alias stem.
->>   *
->> - * Return:     0 or -ENOSYS when !CONFIG_OF
->> + * Return:     0 or -ENOSYS when !CONFIG_OF or
->> + *             -EINVAL if alias ID is greater then allocated nbits
+> > 
+> > > > > > So ... this is a USART device which can do SPI, right?
+> > > > > > 
+> > > > > > My current thinking is that; as this is a USART device first
+> > > > > > &
+> > > > > > foremost, the USART should be probed in the first instance
+> > > > > > regardless,
+> > > > > > then if SPI mode is specified it (the USART driver) registers
+> > > > > > the SPI
+> > > > > > platform driver (as MFD does currently) and exits gracefully,
+> > > > > > allowing
+> > > > > > the SPI driver to take over.
+> > > > > > 
+> > > > > > Spanner in the works: is it physically possible to change the
+> > > > > > mode at
+> > > > > > run-time?  :s
+> > > > > 
+> > > > > Yes it is possible but on Linux that will not happen without
+> > > > > probing
+> > > > > the drivers again.
+> > > > 
+> > > > Not sure I understand what you mean.
+> > > 
+> > > I was just commenting on changing the mode at runtime.
+> > 
+> > Oh I see.  My question was relating to whether the H/W is physically
+> > capable of changing modes on-the-fly, rather than how Linux would
+> > handle that.  If this is something we'd wish to support, then it
+> > would
+> > have to be a single driver, which is why I was asking.  By separating
+> > the drivers this way, we are blocking that as a
+> > possibility.  Although
+> > I guess the OP has already thought about that and made the decision
+> > not to support it.
 > 
-> I think EOVERFLOW or ERANGE would be better as those are less common
-> and I take EINVAL as the caller made an error.
+> Is possible to change modes on-the-fly, but you have no reason to do
+> that. On the PCB you will have a SPI slave or a serial console :)
+> Anyway, the current form of the driver, and through this I want to say
+> "this ugly hack", allows the user to switch from serial to SPI mode by
+> adding only one property to the device tree node of USART. If the
+> driver were in his first form, a simple SPI driver, how you will make a
+> dtsi file for an IP like this? You will add two nodes for the same IP
+> in dtsi and will take care to enable correct node in dts?
+> I think this driver is only a tradeoff between having an ugly hack in
+> kernel or having an messy device tree.
+> 
+> > 
+> > > > I'm suggesting that you use the same platform_* interfaces MFD
+> > > > uses to
+> > > > register the SPI driver if SPI mode has been selected.  Only do
+> > > > so
+> > > > from the appropriate driver i.e. USART.
+> > > 
+> > > Yeah, I understood that but I didn't comment because I'm not sure
+> > > this
+> > > will work yet.
+> > 
+> > Other drivers already do this.
+> 
+> Can you give me an example please?
 
-That's a good point I was also thinking if EINVAL is good reaction on
-this case. I will use EOVERFLOW if there is no issue with it.
+Sorry for the delay, I have been on vacation.
 
-Thanks,
-Michal
+Grep for 'platform_device_add' in drivers/
+
+> I am open to suggestions.
+> 
+> Sorry for that acked-by. There was a lot of "reviewed-by", "acked-by",
+> etc in a single version and I messed up :).
+> 
+
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
