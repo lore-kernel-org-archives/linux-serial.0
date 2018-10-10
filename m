@@ -1,41 +1,31 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 0/2] tty: erase buffers when the kernel is done with
- it.
-Date: Wed, 10 Oct 2018 20:24:21 +0200
-Message-ID: <20181010182421.GA23517@kroah.com>
-References: <20181004180614.25619-1-gregkh@linuxfoundation.org>
- <c54d108b-729a-5866-53d1-26f2e7d0db2b@gmail.com>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: Insanely high baud rates
+Date: Wed, 10 Oct 2018 21:17:17 +0100
+Message-ID: <20181010211717.30c1f052@alans-desktop>
+References: <3fcef1c1-d746-ae82-c0e6-f079b1a53ffb@zytor.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <c54d108b-729a-5866-53d1-26f2e7d0db2b@gmail.com>
+In-Reply-To: <3fcef1c1-d746-ae82-c0e6-f079b1a53ffb@zytor.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Milan Broz <gmazyland@gmail.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jslaby@suse.com, aszlig@nix.build, torvalds@linux-foundation.org, w@1wt.eu, Daniel Zatovic <daniel.zatovic@gmail.com>
+To: "H. Peter Anvin" <hpa@zytor.com>
+Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 10, 2018 at 08:20:06PM +0200, Milan Broz wrote:
-> On 04/10/2018 20:06, Greg Kroah-Hartman wrote:
-> > azlig and Milan Broz reported that when the tty layer is done with a
-> > buffer, the data can hang around in it for a very long time.  That
-> > sometimes can "leak" to userspace under some conditions.
-> > 
-> > Because of this, just zero out the data after the tty layer is finished
-> > with it, for buffers that we "think" should be zeroed out.
-> > 
-> > v2 - addressed some review comments on the 2/2 patch.
-> 
-> Hello Greg,
-> 
-> together with our intern we re-tested both patches and it fixes the reported problem,
-> so, if it helps anything, you can add
-> 
-> Tested-by: Milan Broz <gmazyland@gmail.com>
-> Tested-by: Daniel Zatovic <daniel.zatovic@gmail.com>
-> 
-> Do you plan to add this to linux-next?
+On Tue, 9 Oct 2018 12:19:04 -0700
+"H. Peter Anvin" <hpa@zytor.com> wrote:
 
-Yes, I'll queue it up soon, thanks for testing!
+> [Resending to a wider audience]
+> 
+> In trying to get the termios2 interface actually implemented in glibc,
+> the question came up if we will ever care about baud rates in excess of
+> 4 Gbps, even in the relatively remote future.
 
-greg k-h
+Even RS485 at 4MBits involves deep magic. I think we are fairly safe. Not
+only that but our entire tty layer isn't capable of sustaining anything
+even remotely in that range.
+
+I think its non issue.
+
+Alan
