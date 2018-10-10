@@ -1,70 +1,51 @@
-From: "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: Insanely high baud rates
-Date: Tue, 9 Oct 2018 13:02:44 -0700
-Message-ID: <3422d3a3-b577-99eb-2e05-69d8d5283695@zytor.com>
-References: <3fcef1c1-d746-ae82-c0e6-f079b1a53ffb@zytor.com>
- <20181009195139.GB30972@1wt.eu>
+From: Milan Broz <gmazyland@gmail.com>
+Subject: Re: [PATCH v2 0/2] tty: erase buffers when the kernel is done with
+ it.
+Date: Wed, 10 Oct 2018 20:20:06 +0200
+Message-ID: <c54d108b-729a-5866-53d1-26f2e7d0db2b@gmail.com>
+References: <20181004180614.25619-1-gregkh@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181009195139.GB30972@1wt.eu>
+In-Reply-To: <20181004180614.25619-1-gregkh@linuxfoundation.org>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Willy Tarreau <w@1wt.eu>
-Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, jslaby@suse.com, aszlig@nix.build, gmazyland@gmail.com, torvalds@linux-foundation.org, w@1wt.eu, Daniel Zatovic <daniel.zatovic@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/09/18 12:51, Willy Tarreau wrote:
-> On Tue, Oct 09, 2018 at 12:19:04PM -0700, H. Peter Anvin wrote:
->> [Resending to a wider audience]
->>
->> In trying to get the termios2 interface actually implemented in glibc,
->> the question came up if we will ever care about baud rates in excess of
->> 4 Gbps, even in the relatively remote future.
->>
->> If this is something we care about *at all*, I would like to suggest
->> that rather than defining yet another kernel interface, we steal some
->> bits from the MSB of the speed fields, alternatively one of the c_cc
->> bytes (all  likearchitectures seem to have c_cc[18] free) or some field,
->> if we can find them, in c_cflags, to indicate an exponent.
->>
->> With 5 bits from the top of the speed fields, the current values would
->> be identical up to 248 Gbps, and values up to ~288 Pbps would be
->> encodable ±2 ppb.
->>
->> In the short term, all we would have to do in the kernel would be
->> erroring out on baud rates higher than 0x0fffffff (2^28-1 due to
->> implicit one aliasing rhe first bit of a 5-bit exponent - less than 2^27
->> are functionally denorms.) However, I'd like to put the glibc
->> infrastructure for this now if this is something we may ever be
->> interested in.
->>
->> Thoughts?
+On 04/10/2018 20:06, Greg Kroah-Hartman wrote:
+> azlig and Milan Broz reported that when the tty layer is done with a
+> buffer, the data can hang around in it for a very long time.  That
+> sometimes can "leak" to userspace under some conditions.
 > 
-> Just my two cents, maybe we can conclude that for now we don't care
-> thus don't implement anything, but that everything you identified as
-> a possible place to steal bits should be marked "reserved for future
-> use, must be sent as zero". This will leave you ample room later to
-> decide how to proceed (and maybe it will not be the bps that you'll
-> want to change but the number of lanes, or word size, or bit encoding,
-> especially at 4 Gbps).
+> Because of this, just zero out the data after the tty layer is finished
+> with it, for buffers that we "think" should be zeroed out.
 > 
+> v2 - addressed some review comments on the 2/2 patch.
 
-Well, it would be nice to be able to pre-enable it in glibc as much as
-possible.  What I'm thinking of doing is to use a 64-bit "baud_t" type
-in glibc, and reserve the upper 4 bits of the speed field as must be
-zero (which is de facto the case anyway.) In other to avoid a *huge*
-user space ABI versioning mess we need to be able to encode the baud
-rate inside a 32-bit speed_t in glibc, and given that I believe it would
-be a Very Nice Thing if we could squeeze the information into 32 bits on
-the kernel side as well.
+Hello Greg,
 
-So reserving the upper 4 bits I think is The Right Thing. I think that
-is actually a null change.
+together with our intern we re-tested both patches and it fixes the reported problem,
+so, if it helps anything, you can add
 
-I'm not sure if it would be a good idea to make the kernel -EINVAL on
-currently-unused c_cc bytes or c_*flags; I can see pros and cons (the
-latter being in no small part that that is not legacy behavior.)
+Tested-by: Milan Broz <gmazyland@gmail.com>
+Tested-by: Daniel Zatovic <daniel.zatovic@gmail.com>
 
-	-hpa
+Do you plan to add this to linux-next?
+
+Thanks!
+Milan
+
+> 
+> Greg Kroah-Hartman (1):
+>   tty: wipe buffer if not echoing data
+> 
+> Linus Torvalds (1):
+>   tty: wipe buffer.
+> 
+>  drivers/tty/n_tty.c      | 20 +++++++++++++++++---
+>  drivers/tty/tty_buffer.c |  6 +++++-
+>  2 files changed, 22 insertions(+), 4 deletions(-)
+> 
