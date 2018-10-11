@@ -1,28 +1,31 @@
-From: Craig Milo Rogers <rogers@isi.edu>
+From: "Theodore Y. Ts'o" <tytso@mit.edu>
 Subject: Re: Insanely high baud rates
-Date: Thu, 11 Oct 2018 12:36:51 -0700
-Message-ID: <20181011193651.GA11500@isi.edu>
-References: <3fcef1c1-d746-ae82-c0e6-f079b1a53ffb@zytor.com> <20181010211717.30c1f052@alans-desktop> <16D6AB22-697E-498C-A5B2-3AD90B567E86@zytor.com> <20181011133134.085624af@alans-desktop>
+Date: Thu, 11 Oct 2018 17:40:35 -0400
+Message-ID: <20181011214035.GC565@thunk.org>
+References: <3fcef1c1-d746-ae82-c0e6-f079b1a53ffb@zytor.com>
+ <20181010211717.30c1f052@alans-desktop>
+ <16D6AB22-697E-498C-A5B2-3AD90B567E86@zytor.com>
+ <20181011133134.085624af@alans-desktop>
+ <8A583BC1-A295-48D2-B4C3-3E70AA50D035@zytor.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181011133134.085624af@alans-desktop>
+In-Reply-To: <8A583BC1-A295-48D2-B4C3-3E70AA50D035@zytor.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: hpa@zytor.com, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>
+To: hpa@zytor.com
+Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On 18.10.11, Alan Cox wrote:
-> I mean - what is the baud rate of a pty  ?
+On Thu, Oct 11, 2018 at 07:14:30AM -0700, hpa@zytor.com wrote:
+> >
+> >I mean - what is the baud rate of a pty  ?
+>
+> Whatever the master wants it to be...
 
-	Solaris made the distinction between B0, which means pty hangup mode,
-and any other baud rate:
+I think Alan's point is that it is highly unlikely you would be able
+to push the equivalent of 4 gbps through a PTY layer.  The TTY later
+was never engineered for those speeds, and the real question is ---
+what's the point?  That's what Ethernet is for.
 
-https://docs.oracle.com/cd/E88353_01/html/E37851/pty-4d.html
-
-	But... why not implement a pty bandwidth limitation layer?  You say, I
-need to justify it?  It's for, uh... protecting the system from unrestricted
-pty usage DOS attacks!  Yeah.  That's what it's for.
-
-					Craig Milo Rogers
+       	   	   	       		   - Ted
