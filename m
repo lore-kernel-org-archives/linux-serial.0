@@ -1,31 +1,108 @@
-From: "Theodore Y. Ts'o" <tytso@mit.edu>
-Subject: Re: Insanely high baud rates
-Date: Thu, 11 Oct 2018 17:40:35 -0400
-Message-ID: <20181011214035.GC565@thunk.org>
-References: <3fcef1c1-d746-ae82-c0e6-f079b1a53ffb@zytor.com>
- <20181010211717.30c1f052@alans-desktop>
- <16D6AB22-697E-498C-A5B2-3AD90B567E86@zytor.com>
- <20181011133134.085624af@alans-desktop>
- <8A583BC1-A295-48D2-B4C3-3E70AA50D035@zytor.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH v2] of: base: Change logic in of_alias_get_alias_list()
+Date: Fri, 12 Oct 2018 07:43:11 +0200
+Message-ID: <1bc1488a4cbf21fafc64269958ba3ed04e0a3c1c.1539322989.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <8A583BC1-A295-48D2-B4C3-3E70AA50D035@zytor.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: hpa@zytor.com
-Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu, geert@linux-m68k.org, gregkh@linuxfoundation.org
+Cc: devicetree@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Oct 11, 2018 at 07:14:30AM -0700, hpa@zytor.com wrote:
-> >
-> >I mean - what is the baud rate of a pty  ?
->
-> Whatever the master wants it to be...
+Check compatible string first before setting up bit in bitmap to also
+cover cases that allocated bitfield is not big enough.
+Show warning about it but let driver to continue to work with allocated
+bitfield to keep at least some devices (included console which
+is commonly close to serial0) to work.
 
-I think Alan's point is that it is highly unlikely you would be able
-to push the equivalent of 4 gbps through a PTY layer.  The TTY later
-was never engineered for those speeds, and the real question is ---
-what's the point?  That's what Ethernet is for.
+Fixes: b1078c355d76 ("of: base: Introduce of_alias_get_alias_list() to check alias IDs")
+Fixes: ae1cca3fa347 ("serial: uartps: Change uart ID port allocation")
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
-       	   	   	       		   - Ted
+Changes in v2:
+ - Use EOVERFLOW instead of EINVAL - Rob
+
+I have looked at it and I don't think there should be necessary to
+report error immediately back with partially initialized bitfield.
+The reason is that still there could be a console device which is most
+likely below that max limit and it is worth to return at least that nbits
+properly filled.
+It will also enable cases that you can still continue to use aliases
+higher then fields prepared for devices without alias.
+
+To be fixed patches are present in tty-next branch.
+And this patch depends on
+"of: base: Fix english spelling in of_alias_get_alias_list()"
+
+---
+ drivers/of/base.c                  | 22 ++++++++++++----------
+ drivers/tty/serial/xilinx_uartps.c |  2 +-
+ 2 files changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index 908de45f966b..6418205a05f5 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -1953,13 +1953,15 @@ int of_alias_get_id(struct device_node *np, const char *stem)
+  * The function travels the lookup table to record alias ids for the given
+  * device match structures and alias stem.
+  *
+- * Return:	0 or -ENOSYS when !CONFIG_OF
++ * Return:	0 or -ENOSYS when !CONFIG_OF or
++ *		-EOVERFLOW if alias ID is greater then allocated nbits
+  */
+ int of_alias_get_alias_list(const struct of_device_id *matches,
+ 			     const char *stem, unsigned long *bitmap,
+ 			     unsigned int nbits)
+ {
+ 	struct alias_prop *app;
++	int ret = 0;
+ 
+ 	/* Zero bitmap field to make sure that all the time it is clean */
+ 	bitmap_zero(bitmap, nbits);
+@@ -1976,21 +1978,21 @@ int of_alias_get_alias_list(const struct of_device_id *matches,
+ 			continue;
+ 		}
+ 
+-		if (app->id >= nbits) {
+-			pr_debug("%s: ID %d greater then bitmap field %d\n",
+-				__func__, app->id, nbits);
+-			continue;
+-		}
+-
+ 		if (of_match_node(matches, app->np)) {
+ 			pr_debug("%s: Allocated ID %d\n", __func__, app->id);
+-			set_bit(app->id, bitmap);
++
++			if (app->id >= nbits) {
++				pr_warn("%s: ID %d >= than bitmap field %d\n",
++					__func__, app->id, nbits);
++				ret = -EOVERFLOW;
++			} else {
++				set_bit(app->id, bitmap);
++			}
+ 		}
+-		/* Alias exists but is not compatible with matches */
+ 	}
+ 	mutex_unlock(&of_mutex);
+ 
+-	return 0;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(of_alias_get_alias_list);
+ 
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index d452dceb0cb3..b8f8abc96631 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1393,7 +1393,7 @@ static int cdns_get_id(struct platform_device *pdev)
+ 	if (!alias_bitmap_initialized) {
+ 		ret = of_alias_get_alias_list(cdns_uart_of_match, "serial",
+ 					      alias_bitmap, MAX_UART_INSTANCES);
+-		if (ret) {
++		if (ret && ret != -EOVERFLOW) {
+ 			mutex_unlock(&bitmap_lock);
+ 			return ret;
+ 		}
+-- 
+1.9.1
