@@ -1,53 +1,56 @@
-From: Paul Burton <paul.burton@mips.com>
-Subject: Re: [PATCH 00/14] serial: langtiq: Add CCF suppport
-Date: Mon, 15 Oct 2018 21:58:47 +0000
-Message-ID: <20181015215845.5t7bkyks6hsxqwsb@pburton-laptop>
-References: <20180924102803.30263-1-songjun.wu@linux.intel.com>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: [RFC][PATCHv2 0/4] less deadlock prone serial consoles
+Date: Tue, 16 Oct 2018 14:04:24 +0900
+Message-ID: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180924102803.30263-1-songjun.wu@linux.intel.com>
-Content-Language: en-US
-Content-ID: <65EBC5B044F99A4EA8A4F4D65B6EADD1@namprd22.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Songjun Wu <songjun.wu@linux.intel.com>
-Cc: "yixin.zhu@linux.intel.com" <yixin.zhu@linux.intel.com>, "chuanhua.lei@linux.intel.com" <chuanhua.lei@linux.intel.com>, "hauke.mehrtens@intel.com" <hauke.mehrtens@intel.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, James Hogan <jhogan@kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Philippe Ombredanne <pombredanne@nexb.com>, Rob Herring <robh+dt@kernel.org>, Kate Stewart <kstewart@linuxfoundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>
+To: linux-kernel@vger.kernel.org
+Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Songjun,
+	Hello,
 
-On Mon, Sep 24, 2018 at 06:27:49PM +0800, Songjun Wu wrote:
-> This patch series is for adding common clock framework support
-> for langtiq serial driver, mainly includes:
 
-s/langtiq/lantiq/ ...
+	RFC
 
-> 1) Add common clock framework support.
-> 2) Modify the dts file according to the DT conventions.
-> 3) Replace the platform dependent functions with kernel functions
->=20
-> Songjun Wu (14):
->   MIPS: dts: Change upper case to lower case
->   MIPS: dts: Add aliases node for lantiq danube serial
->   serial: lantiq: Get serial id from dts
->   serial: lantiq: Change ltq_w32_mask to asc_update_bits
->   MIPS: lantiq: Unselect SWAP_IO_SPACE when LANTIQ is selected
->   serial: lantiq: Use readl/writel instead of ltq_r32/ltq_w32
->   serial: lantiq: Rename fpiclk to freqclk
->   serial: lantiq: Replace clk_enable/clk_disable with clk generic API
->   serial: lantiq: Add CCF support
->   serial: lantiq: Reorder the head files
->   include: Add lantiq.h in include/linux/
->   serial: lantiq: Replace lantiq_soc.h with lantiq.h
->   serial: lantiq: Change init_lqasc to static declaration
->   dt-bindings: serial: lantiq: Add optional properties for CCF
 
-It appears that you only copied me on patches 1, 2 & 5. I've applied
-patch 1 to mips-next for 4.20, but I have no clue whether your other
-patches were deemed acceptable by serial or DT maintainers & I have no
-context for the changes being made, so I can neither apply nor ack
-patches 2 & 5. Please copy me on the whole series next time.
+	The patch set reduces the number of ways serial consoles
+can deadlock the system, including the recently reported deadlock
+in panic().
 
-Thanks,
-    Paul
+The test scenario I ran on my x86_64 box:
+- panic() the system while one of the CPUs holds 8250's
+  uart_port->lock.
+
+Test results:
+
+	base		|	patched
+	-----------------------------------------
+	deadlock	|	flush logbuf
+			|	reboot the system
+
+To keep the cover letter short, please find full description in
+commit messages.
+
+P.S. since this is RFC I modify only 8250 serial driver.
+
+Sergey Senozhatsky (4):
+  panic: avoid deadlocks in re-entrant console drivers
+  printk: move printk_safe macros to printk header
+  seial: introduce uart_port locking helpers
+  tty: 8250: switch to uart_port locking helpers
+
+ drivers/tty/serial/8250/8250_core.c |  8 +--
+ drivers/tty/serial/8250/8250_dma.c  |  4 +-
+ drivers/tty/serial/8250/8250_port.c | 81 +++++++++++++----------------
+ include/linux/printk.h              | 40 ++++++++++++++
+ include/linux/serial_core.h         | 48 +++++++++++++++++
+ kernel/panic.c                      |  6 +++
+ kernel/printk/internal.h            | 37 -------------
+ kernel/printk/printk_safe.c         |  6 ++-
+ 8 files changed, 141 insertions(+), 89 deletions(-)
+
+-- 
+2.19.1
