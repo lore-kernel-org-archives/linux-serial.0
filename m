@@ -1,7 +1,7 @@
 From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: [RFC][PATCHv2 2/4] printk: move printk_safe macros to printk header
-Date: Tue, 16 Oct 2018 14:04:26 +0900
-Message-ID: <20181016050428.17966-3-sergey.senozhatsky@gmail.com>
+Subject: [RFC][PATCHv2 3/4] serial: introduce uart_port locking helpers
+Date: Tue, 16 Oct 2018 14:04:27 +0900
+Message-ID: <20181016050428.17966-4-sergey.senozhatsky@gmail.com>
 References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,144 +12,163 @@ To: linux-kernel@vger.kernel.org
 Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Make printk_safe_enter_irqsave()/etc macros available to the
-rest of the kernel.
+The patch introduces several macros which should make serial console
+drivers less printk() deadlock prone.
+
+There are several console driver entry points so we are looking at
+several slightly different deadlock scenarios.
+
+- The first entry point is console ->write() callback, which we call
+  from printk(). A possible deadlock scenario there is:
+
+  CPU0
+	<NMI>
+	spin_lock_irqsave(&port->lock, flags)      << deadlock
+	serial_foo_write()
+	call_console_drivers()
+	console_unlock()
+	console_flush_on_panic()
+	panic()
+	<NMI/>
+	spin_lock_irqsave(&port->lock, flags)
+	serial_foo_write()
+	call_console_drivers()
+	console_unlock()
+	printk()
+	...
+
+  ->write() callback, generally speaking, must be re-entrant in two cases:
+   1) sysrq
+   2) panic (oops_in_progress)
+
+  And this is what uart_port_lock_for_printk()/uart_port_unlock_after_printk()
+  macros are for.
+
+  Usage example:
+
+	static serial_foo_write(...)
+	{
+		struct uart_port *port;
+		unsigned long flags;
+		bool locked;
+
+		uart_port_lock_for_printk(port, flags, locked);
+		uart_console_write(port, s, count, serial_foo_putchar);
+		uart_port_unlock_after_printk(port, flags, locked);
+	}
+
+  Some of the serial drivers already use _some sort_ of
+  uart_port_lock_for_printk(), some are not panic() re-entrant. This
+  should address the issue.
+
+- The rest (of entry points) requires a bit different handling.
+  Let's take a look at the following backtrace:
+
+  	CPU0
+	<IRQ>
+	spin_lock_irqsave(&port->lock, flags)      << deadlock
+	serial_foo_write()
+	call_console_drivers()
+	console_unlock()
+	printk()
+	__queue_work()
+	tty_flip_buffer_push()
+	spin_lock_irqsave(&port->lock, flags)
+	serial_foo_handle_IRQ()
+	<IRQ/>
+
+  Serial drivers invoke tons of core kernel functions - WQ, MM, etc. All
+  of which may printk() in various cases. So we can't really just
+  "remove those printk-s". The simples way to address this seems to be
+  PRINTK_SAFE_CONTEXT_MASK.
+
+  printk_safe() is a special printk() mode, which redirects recursive
+  printk()-s to a secondary (per-CPU) buffer; so we don't re-enter
+  printk() and serial console driver. The secondary (per-CPU) buffer is
+  flushed and printed to the consoles later, from a safe context, when
+  we know that we are not in printk()-recursion anymore.
+
+  And this is what uart_port_lock_*()/uart_port_unlock_*() macros are
+  for. With uart_port_lock_irqsave() the previous example would turn
+  into:
+
+	CPU0
+	<IRQ>
+	irq_work_queue()
+	printk_safe_log_store()
+	printk()
+	__queue_work()
+	tty_flip_buffer_push()
+	uart_port_lock_irqsave(port, flags)
+	serial_foo_handle_IRQ()
+	<IRQ/>
+
+  As of now, no consoles are re-entrant when printk() initiated by
+  console's driver IRQ handler. This macro should address the issue.
 
 Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 ---
- include/linux/printk.h      | 40 +++++++++++++++++++++++++++++++++++++
- kernel/printk/internal.h    | 37 ----------------------------------
- kernel/printk/printk_safe.c |  6 ++++--
- 3 files changed, 44 insertions(+), 39 deletions(-)
+ include/linux/serial_core.h | 48 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-diff --git a/include/linux/printk.h b/include/linux/printk.h
-index cf3eccfe1543..75f99441fd54 100644
---- a/include/linux/printk.h
-+++ b/include/linux/printk.h
-@@ -157,6 +157,46 @@ static inline void printk_nmi_direct_enter(void) { }
- static inline void printk_nmi_direct_exit(void) { }
- #endif /* PRINTK_NMI */
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 047fa67d039b..acc6966fea8e 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -266,6 +266,54 @@ struct uart_port {
+ 	void			*private_data;		/* generic platform data pointer */
+ };
  
-+#ifdef CONFIG_PRINTK
-+extern void printk_safe_enter(void);
-+extern void printk_safe_exit(void);
-+
-+#define printk_safe_enter_irqsave(flags)	\
-+	do {					\
-+		local_irq_save(flags);		\
-+		printk_safe_enter();		\
++#define uart_port_lock_irq(p)						\
++	do {								\
++		printk_safe_enter_irq();				\
++		spin_lock(&(p)->lock);					\
 +	} while (0)
 +
-+#define printk_safe_exit_irqrestore(flags)	\
-+	do {					\
-+		printk_safe_exit();		\
-+		local_irq_restore(flags);	\
++#define uart_port_unlock_irq(p)					\
++	do {								\
++		spin_unlock(&(p)->lock);				\
++		printk_safe_exit_irq();					\
 +	} while (0)
 +
-+#define printk_safe_enter_irq()		\
-+	do {					\
-+		local_irq_disable();		\
-+		printk_safe_enter();		\
++#define uart_port_lock_irqsave(p, flags)				\
++	do {								\
++		printk_safe_enter_irqsave(flags);			\
++		spin_lock(&(p)->lock);					\
 +	} while (0)
 +
-+#define printk_safe_exit_irq()			\
-+	do {					\
-+		printk_safe_exit();		\
-+		local_irq_enable();		\
++#define uart_port_unlock_irqrestore(p, flags)				\
++	do {								\
++		spin_unlock(&(p)->lock);				\
++		printk_safe_exit_irqrestore(flags);			\
 +	} while (0)
++
++#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(SUPPORT_SYSRQ)
++#define uart_port_in_sysrq(p)		p->sysrq
 +#else
-+/*
-+ * On !PRINTK builds we still export console output related locks
-+ * and some functions (console_unlock()/tty/etc.), so printk-safe
-+ * must preserve the existing local IRQ guarantees.
-+ */
-+#define printk_safe_enter_irqsave(flags) local_irq_save(flags)
-+#define printk_safe_exit_irqrestore(flags) local_irq_restore(flags)
-+
-+#define printk_safe_enter_irq() local_irq_disable()
-+#define printk_safe_exit_irq() local_irq_enable()
++#define uart_port_in_sysrq(p)		0
 +#endif
 +
- #ifdef CONFIG_PRINTK
- asmlinkage __printf(5, 0)
- int vprintk_emit(int facility, int level,
-diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
-index 0f1898820cba..03c10f361a15 100644
---- a/kernel/printk/internal.h
-+++ b/kernel/printk/internal.h
-@@ -32,32 +32,6 @@ int vprintk_store(int facility, int level,
- __printf(1, 0) int vprintk_default(const char *fmt, va_list args);
- __printf(1, 0) int vprintk_deferred(const char *fmt, va_list args);
- __printf(1, 0) int vprintk_func(const char *fmt, va_list args);
--void __printk_safe_enter(void);
--void __printk_safe_exit(void);
--
--#define printk_safe_enter_irqsave(flags)	\
--	do {					\
--		local_irq_save(flags);		\
--		__printk_safe_enter();		\
--	} while (0)
--
--#define printk_safe_exit_irqrestore(flags)	\
--	do {					\
--		__printk_safe_exit();		\
--		local_irq_restore(flags);	\
--	} while (0)
--
--#define printk_safe_enter_irq()		\
--	do {					\
--		local_irq_disable();		\
--		__printk_safe_enter();		\
--	} while (0)
--
--#define printk_safe_exit_irq()			\
--	do {					\
--		__printk_safe_exit();		\
--		local_irq_enable();		\
--	} while (0)
- 
- void defer_console_output(void);
- 
-@@ -65,15 +39,4 @@ void defer_console_output(void);
- 
- __printf(1, 0) int vprintk_func(const char *fmt, va_list args) { return 0; }
- 
--/*
-- * In !PRINTK builds we still export logbuf_lock spin_lock, console_sem
-- * semaphore and some of console functions (console_unlock()/etc.), so
-- * printk-safe must preserve the existing local IRQ guarantees.
-- */
--#define printk_safe_enter_irqsave(flags) local_irq_save(flags)
--#define printk_safe_exit_irqrestore(flags) local_irq_restore(flags)
--
--#define printk_safe_enter_irq() local_irq_disable()
--#define printk_safe_exit_irq() local_irq_enable()
--
- #endif /* CONFIG_PRINTK */
-diff --git a/kernel/printk/printk_safe.c b/kernel/printk/printk_safe.c
-index 0913b4d385de..367fcb2c39f0 100644
---- a/kernel/printk/printk_safe.c
-+++ b/kernel/printk/printk_safe.c
-@@ -359,16 +359,18 @@ static __printf(1, 0) int vprintk_safe(const char *fmt, va_list args)
- }
- 
- /* Can be preempted by NMI. */
--void __printk_safe_enter(void)
-+void printk_safe_enter(void)
++#define uart_port_lock_for_printk(p, flags, locked)			\
++	do {								\
++		locked = true;						\
++		if (uart_port_in_sysrq(p))				\
++			locked = false;					\
++		else if (oops_in_progress)				\
++			locked = spin_trylock_irqsave(&(p)->lock,	\
++						      flags);		\
++		else							\
++			spin_lock_irqsave(&(p)->lock, flags);		\
++	} while (0)
++
++#define uart_port_unlock_after_printk(p, flags, locked)		\
++	do {								\
++		if (locked)						\
++			spin_unlock_irqrestore(&(p)->lock, flags);	\
++	} while (0)
++
+ static inline int serial_port_in(struct uart_port *up, int offset)
  {
- 	this_cpu_inc(printk_context);
- }
-+EXPORT_SYMBOL_GPL(printk_safe_enter);
- 
- /* Can be preempted by NMI. */
--void __printk_safe_exit(void)
-+void printk_safe_exit(void)
- {
- 	this_cpu_dec(printk_context);
- }
-+EXPORT_SYMBOL_GPL(printk_safe_exit);
- 
- __printf(1, 0) int vprintk_func(const char *fmt, va_list args)
- {
+ 	return up->serial_in(up, offset);
 -- 
 2.19.1
