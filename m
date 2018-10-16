@@ -1,115 +1,84 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [RFC][PATCHv2 2/4] printk: move printk_safe macros to printk
- header
-Date: Tue, 16 Oct 2018 14:54:15 +0200
-Message-ID: <20181016125415.GA3121@hirez.programming.kicks-ass.net>
-References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
- <20181016050428.17966-3-sergey.senozhatsky@gmail.com>
- <20181016072719.GB4030@hirez.programming.kicks-ass.net>
- <20181016122734.GA1259@jagdpanzerIV>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: "Mukesh, Savaliya" <msavaliy@codeaurora.org>
+Subject: [PATCH] tty: serial: qcom_geni_serial: Add suspend support to non console UART
+Date: Tue, 16 Oct 2018 19:04:08 +0530
+Message-ID: <1539696848-21988-1-git-send-email-msavaliy@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181016122734.GA1259@jagdpanzerIV>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: alokc@codeaurora.org, dianders@google.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Oct 16, 2018 at 09:27:34PM +0900, Sergey Senozhatsky wrote:
-> per-CPU printk_safe _semi-magic_ makes some things simple to handle.
-> We can't just remove per-CPU buffers and add a wake_up_process() at
-> the bottom of vprintk_emit(). Because this will deadlock:
-> 
->   printk()
->    wake_up_process()
->     try_to_wake_up()
->      raw_spin_lock_irqsave()
->  <NMI>
->       printk()
->        wake_up_process()
->         try_to_wake_up()
->          raw_spin_lock_irqsave()
-> 
-> So we still need some amount of per-CPU printk() semi-magic anyway.
+From: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
 
-All we need is 4 max-line-length buffers per-CPU. Nothing more.
+UART driver checks for the PM state and denies suspend if state is ACTIVE.
+This makes UART to deny suspend when client keeps port open which is not
+correct. Instead follow framework and obey suspend-resume callbacks.
 
-The above trainwreck is the direct result of forcing synchronous
-printk'ing (which I'm otherwise a big fan of, but regular console
-drivers stink and are unfixable).
+Signed-off-by: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 36 ++++++-----------------------------
+ 1 file changed, 6 insertions(+), 30 deletions(-)
 
-> And printk-kthread offloding will not eliminate the need of
-> printk_deferred().
-
-Why not? printk() will reduce to a lockless buffer insert. IOW _all_
-printk is deferred.
-
-All you need are 4 max-line-length buffers per CPU and a global/shared
-lockless buffer.
-
-printk will determine the current context:
-
-  task, softirq, hardirq or NMI
-
-and pick the corresponding per-cpu line buffer and do the vsnprintf()
-thing. Then we have the actual line length and content. With the length
-we reserve the bytes from the global buffer, we memcpy into the buffer
-and commit.
-
-Done.
-
-The printk thread will observe it lags behind the buffer head and will
-start printk-ing crud from task context.
-
-> Speaking of lockless logbuf,
-> logbuf buffer and logbuf_lock are the smallest of the problems printk
-> currently has. Mainly because of lockless semi-magical printk_safe
-> buffers.
-
-Which are rubbish. You now have two buffers with duplicated
-functionality and wildly different semantics.
-
-Why not have a single buffer that does it all?
-
-> Replacing one lockless buffer with another lockless buffer will
-> not simplify things in this department. We probably additionally will
-> have some nasty screw ups, e.g. when NMI printk on CPUA interrupts normal
-> printk on the same CPUA and now we have mixed in characters; and so on.
-
-Line buffers fix that. You don't need anything fancy for that.
-
-> per-CPU printk_safe at least keeps us on the safe side in these cases and
-> looks fairly simple.
-
-printk_safe is an abomination, it fixes something that shouldn't need
-fixing. See above.
-
-> We do, however, have loads of problems with all those dependencies which
-> come from serial drivers and friends: timekeeping, scheduler (scheduler
-> is brilliant and cool, but we do have some deadlocks in printk because of
-> it ;), tty, net, MM, wq, etc. So I generally like the idea of "detached
-> serial consoles" (that's what I call it). IOW, elimination of the direct
-> printk -> serial console path. 
-
-Right; we need to get rid of that in the generic case. Only allow
-lockless consoles (earlycon) to be used synchonously. With maybe a
-special case for the BUG/PANIC case to push things out ASAP.
-
-But given 'fine' console drivers like USB-serial, or DRM-framebuffer, I
-don't know if it makes much difference to wake a thread and rely on that
-or call it directly and deadlock :/
-
-> The current approach - use the existing printk_safe mechanism and
-> case-by-case, manually, break dependencies which can deadlock us is
-> a lazy approach, yes; and not very convenient. I'm aware of it.
-
-It's ugly and pushes ugly all over :/
-
-> So, unless I'm missing something, things are not entirely that simple:
-> - throw away printk_safe semi-magic
-> - add a lockless logbuf
-> - add wake_up_process() to vprintk_emit().
-
-No, no wakups. irq_work to wake the printk-thread, at most.
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 29ec343..93598d7 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1327,49 +1327,25 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static int __maybe_unused qcom_geni_serial_sys_suspend_noirq(struct device *dev)
++static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
+ {
+ 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
+ 	struct uart_port *uport = &port->uport;
+ 
+-	if (uart_console(uport)) {
+-		uart_suspend_port(uport->private_data, uport);
+-	} else {
+-		struct uart_state *state = uport->state;
+-		/*
+-		 * If the port is open, deny system suspend.
+-		 */
+-		if (state->pm_state == UART_PM_STATE_ON)
+-			return -EBUSY;
+-	}
+-
+-	return 0;
++	return uart_suspend_port(uport->private_data, uport);
+ }
+ 
+-static int __maybe_unused qcom_geni_serial_sys_resume_noirq(struct device *dev)
++static int __maybe_unused qcom_geni_serial_sys_resume(struct device *dev)
+ {
+ 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
+ 	struct uart_port *uport = &port->uport;
+ 
+-	if (uart_console(uport) &&
+-			console_suspend_enabled && uport->suspended) {
+-		uart_resume_port(uport->private_data, uport);
+-		/*
+-		 * uart_suspend_port() invokes port shutdown which in turn
+-		 * frees the irq. uart_resume_port invokes port startup which
+-		 * performs request_irq. The request_irq auto-enables the IRQ.
+-		 * In addition, resume_noirq implicitly enables the IRQ and
+-		 * leads to an unbalanced IRQ enable warning. Disable the IRQ
+-		 * before returning so that the warning is suppressed.
+-		 */
+-		disable_irq(uport->irq);
+-	}
+-	return 0;
++	return uart_resume_port(uport->private_data, uport);
+ }
+ 
+ static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
+-	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(qcom_geni_serial_sys_suspend_noirq,
+-					qcom_geni_serial_sys_resume_noirq)
++	SET_SYSTEM_SLEEP_PM_OPS(qcom_geni_serial_sys_suspend,
++					qcom_geni_serial_sys_resume)
+ };
+ 
+ static const struct of_device_id qcom_geni_serial_match_table[] = {
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
