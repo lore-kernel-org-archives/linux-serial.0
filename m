@@ -1,7 +1,7 @@
 From: Songjun Wu <songjun.wu@linux.intel.com>
-Subject: [RESEND PATCH 10/14] serial: lantiq: Reorder the head files
-Date: Tue, 16 Oct 2018 17:19:11 +0800
-Message-ID: <20181016091915.19909-11-songjun.wu@linux.intel.com>
+Subject: [RESEND PATCH 12/14] serial: lantiq: Replace lantiq_soc.h with lantiq.h
+Date: Tue, 16 Oct 2018 17:19:13 +0800
+Message-ID: <20181016091915.19909-13-songjun.wu@linux.intel.com>
 References: <20181016091915.19909-1-songjun.wu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181016091915.19909-1-songjun.wu@linux.intel.com>
@@ -10,52 +10,44 @@ To: yixin.zhu@linux.intel.com, chuanhua.lei@linux.intel.com, hauke.mehrtens@inte
 Cc: gregkh@linuxfoundation.org, paul.burton@mips.com, jslaby@suse.com, Songjun Wu <songjun.wu@linux.intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Reorder the head files according to the coding style.
+In this existing lantiq serial driver,
+lantiq_soc.h is defined in the arch directory,
+
+./arch/mips/include/asm/mach-lantiq/falcon/lantiq_soc.h
+./arch/mips/include/asm/mach-lantiq/xway/lantiq_soc.h
+
+This driver need to be extended to support more platform,
+lantiq.h is added in include/linux/ to make it
+globally available and provide some wrapper code.
+Use lantiq.h to make the driver can find the correct
+header file.
 
 Signed-off-by: Songjun Wu <songjun.wu@linux.intel.com>
 ---
 
- drivers/tty/serial/lantiq.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/tty/serial/lantiq.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index 88210de00f35..c983694ba24d 100644
+index c983694ba24d..ba0c70b16bda 100644
 --- a/drivers/tty/serial/lantiq.c
 +++ b/drivers/tty/serial/lantiq.c
-@@ -8,22 +8,22 @@
-  * Copyright (C) 2010 Thomas Langer, <thomas.langer@lantiq.com>
-  */
- 
--#include <linux/slab.h>
--#include <linux/ioport.h>
--#include <linux/init.h>
-+#include <linux/clk.h>
- #include <linux/console.h>
--#include <linux/sysrq.h>
- #include <linux/device.h>
--#include <linux/tty.h>
--#include <linux/tty_flip.h>
--#include <linux/serial_core.h>
--#include <linux/serial.h>
--#include <linux/of_platform.h>
-+#include <linux/gpio.h>
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/ioport.h>
+@@ -15,6 +15,7 @@
+ #include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/ioport.h>
++#include <linux/lantiq.h>
  #include <linux/of_address.h>
  #include <linux/of_irq.h>
--#include <linux/io.h>
--#include <linux/clk.h>
--#include <linux/gpio.h>
-+#include <linux/of_platform.h>
-+#include <linux/serial.h>
-+#include <linux/serial_core.h>
-+#include <linux/slab.h>
-+#include <linux/sysrq.h>
-+#include <linux/tty.h>
-+#include <linux/tty_flip.h>
+ #include <linux/of_platform.h>
+@@ -25,8 +26,6 @@
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
  
- #include <lantiq_soc.h>
- 
+-#include <lantiq_soc.h>
+-
+ #define PORT_LTQ_ASC		111
+ #define MAXPORTS		2
+ #define UART_DUMMY_UER_RX	1
 -- 
 2.11.0
