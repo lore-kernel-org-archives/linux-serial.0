@@ -1,29 +1,57 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [RFC][PATCHv2 1/4] panic: avoid deadlocks in re-entrant console
- drivers
-Date: Wed, 17 Oct 2018 13:48:43 +0900
-Message-ID: <20181017044843.GD1068@jagdpanzerIV>
-References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
- <20181016050428.17966-2-sergey.senozhatsky@gmail.com>
+From: Vinod <vkoul@kernel.org>
+Subject: Re: [[PATCH] 8/9] DMA-UART-Driver-for-AST2500
+Date: Wed, 17 Oct 2018 11:35:31 +0530
+Message-ID: <20181017060531.GU2400@vkoul-mobl>
+References: <1539749466-3912-1-git-send-email-open.sudheer@gmail.com>
+ <1539749466-3912-9-git-send-email-open.sudheer@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181016050428.17966-2-sergey.senozhatsky@gmail.com>
+In-Reply-To: <1539749466-3912-9-git-send-email-open.sudheer@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To: "sudheer.v" <open.sudheer@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>, Russell King <linux@armlinux.org.uk>, Dan Williams <dan.j.williams@intel.com>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <marc.zyngier@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Christian Borntraeger <borntraeger@de.ibm.com>, Michael Moese <mmoese@suse.de>, Hendrik Brueckner <brueckner@linux.vnet.ibm.com>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On (10/16/18 14:04), Sergey Senozhatsky wrote:
-> 
-> Fix this by setting oops_in_progress before console_flush_on_panic(),
-> so re-entrant console drivers will trylock the port->lock instead of
-> spinning on it forever.
-> 
+On 17-10-18, 09:41, sudheer.v wrote:
 
-Just a small note:
-    Regardless of what's going to happen to the series, this patch
-    deserves attention.
+Please add the change log describing the driver and its features
 
-	-ss
+> Signed-off-by: sudheer.v <open.sudheer@gmail.com>
+
+
+> ---
+>  drivers/tty/serial/8250/8250_aspeed_uart_dma.c | 1594 ++++++++++++++++++++++++
+>  1 file changed, 1594 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_aspeed_uart_dma.c
+> 
+> diff --git a/drivers/tty/serial/8250/8250_aspeed_uart_dma.c b/drivers/tty/serial/8250/8250_aspeed_uart_dma.c
+> new file mode 100644
+> index 0000000..e1019a8
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_aspeed_uart_dma.c
+
+why is this in serial. It is dmaengine driver so belongs to drivers/dma/
+like other controllers. Please move it out and resubmit.
+
+While doing resubmission please take some time to understand subsystem
+tags to use. (hint git log <subsystem> will tell you)
+
+Also series has [[PATCH] 8/9] whereas it should be [PATCH 8/9] please
+let git generate that for you (hint git format-patch start..end does a
+good job)
+
+> @@ -0,0 +1,1594 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + *   drivers/tty/serial/8250/8250_aspeed_uart_dma.c
+> + *    1. 2018/07/01 Shivah Shankar created
+> + *    2. 2018/08/25 sudheer.veliseti<open.sudheer@gmail.com> modified
+
+we dont use this log in kernel. I do not see s-o-b by Shivah, that
+should be added. I think he should be author and you need to list
+changes you did..
+
+-- 
+~Vinod
