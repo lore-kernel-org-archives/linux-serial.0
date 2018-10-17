@@ -1,97 +1,43 @@
-From: Joel Fernandes <joel@joelfernandes.org>
-Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
-Date: Tue, 16 Oct 2018 16:09:38 -0700
-Message-ID: <20181016230938.GA140578@joelaf.mtv.corp.google.com>
-References: <1cae8f10-55f5-20ce-9105-30af6f88bd6e@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: "sudheer.v" <open.sudheer@gmail.com>
+Subject: [[PATCH] 0/9] *** DMA support for UART in ASPEED's AST2500  ***
+Date: Wed, 17 Oct 2018 09:40:57 +0530
+Message-ID: <1539749466-3912-1-git-send-email-open.sudheer@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1cae8f10-55f5-20ce-9105-30af6f88bd6e@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Cc: Stephen Boyd <sboyd@kernel.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, "Ivan T. Ivanov" <ivan.ivanov@linaro.org>, "Steven Rostedt (VMware)" <rostedt@goodmis.org>, Kees Cook <keescook@chromium.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
+To: Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>, Russell King <linux@armlinux.org.uk>, Dan Williams <dan.j.williams@intel.com>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <marc.zyngier@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Christian Borntraeger <borntraeger@de.ibm.com>, Michael Moese <mmoese@suse.de>, Hendrik Brueckner <brueckner@linux.vnet.ibm.com>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.orglinux
+Cc: "sudheer.v" <open.sudheer@gmail.com>, Sudheer V <sudheer.veliseti@aspeedtech.com>, ShivahShankar Shakarnarayan rao <shivahshankar.shankarnarayanrao@aspeedtech.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Oct 16, 2018 at 05:08:25PM +0530, Sai Prakash Ranjan wrote:
-> Hi,
-> 
-> On dragonboard 410c, with "ftrace=function" boot args, the console output
-> slows down and board resets without any backtrace as below. This is tested
-> on latest kernel and seems to exist even in older kernels as well.
-> 
-> [    2.949164] EINJ: ACPI disabled.
-> [    3.133001] Serial: 8250/16550 dri
-> Format: Log Type - Time(microsec) - Message - Optional Info
-> Log Type: B - Since Boot(Power On Reset),  D - Delta,  S - Statistic
-> 
-> But with pstore enabled, able to get the below backtrace:
-> <4>[    2.949164] EINJ: ACPI disabled.
-> <6>[    3.133001] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-> <6>[    3.164097] SuperH (H)SCI(F) driver initialized
-> <0>[    3.164471] Internal error: synchronous external abort: 96000010 [#1]
-> PREEMPT SMP
-> <4>[    3.164479] Modules linked in:
-> <4>[    3.164495] CPU: 2 PID: 1 Comm: swapper/0 Not tainted
-> 4.19.0-rc8-00008-ge033b9909fff-dirty #175
-> <4>[    3.164501] Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC
-> (DT)
-> <4>[    3.164508] pstate: 40000085 (nZcv daIf -PAN -UAO)
-> <4>[    3.164514] pc : msm_read.isra.2+0x20/0x50
-> <4>[    3.164520] lr : msm_read.isra.2+0x1c/0x50
-> <4>[    3.164526] sp : ffff000008033a50
-> <4>[    3.164531] x29: ffff000008033a50 x28: ffff000009486018
-> <4>[    3.164548] x27: 0000000000000001 x26: ffff7dfffe7ff070
-> <4>[    3.164565] x25: 0000000000000034 x24: ffff000009486000
-> <4>[    3.164582] x23: 0000000000000000 x22: ffff00000978e190
-> <4>[    3.164599] x21: ffff0000095e8228 x20: 0000000000000034
-> <4>[    3.164616] x19: ffff7dfffe7ff008 x18: ffffffffffffffff
-> <4>[    3.164632] x17: 0000000000000000 x16: 0000000000000000
-> <4>[    3.164649] x15: ffff0000094a96c8 x14: ffff00008978e6bf
-> <4>[    3.164666] x13: ffff00000978e6cd x12: 0000000000000038
-> <4>[    3.164683] x11: ffff0000094c6000 x10: 0000000000000c24
-> <4>[    3.164699] x9 : ffff80003c89b400 x8 : ffff000008033970
-> <4>[    3.164716] x7 : ffff80000eb04100 x6 : 00000000000af304
-> <4>[    3.164732] x5 : 0000000000000c40 x4 : ffff80003c06f000
-> <4>[    3.164750] x3 : ffff80003c89b498 x2 : 0000000000000000
-> <4>[    3.164766] x1 : ffff80003ca68000 x0 : 0000000000000800
-> <0>[    3.164785] Process swapper/0 (pid: 1, stack limit =
-> 0x(____ptrval____))
-> <4>[    3.164791] Call trace:
-> <4>[    3.164797]  msm_read.isra.2+0x20/0x50
-> <4>[    3.164804]  msm_reset_dm_count+0x44/0x80
-> <4>[    3.164810]  __msm_console_write+0x1c8/0x1d0
-> <4>[    3.164816]  msm_serial_early_write_dm+0x3c/0x50
-> <4>[    3.164823]  console_unlock.part.6+0x468/0x528
-> <4>[    3.164829]  vprintk_emit+0x210/0x218
-> <4>[    3.164835]  vprintk_default+0x48/0x58
-> <4>[    3.164841]  vprintk_func+0xf0/0x1c0
-> <4>[    3.164847]  printk+0x74/0x94
-> <4>[    3.164853]  sci_init+0x24/0x3c
-> <4>[    3.164859]  do_one_initcall+0x54/0x248
-> <4>[    3.164866]  kernel_init_freeable+0x210/0x378
-> <4>[    3.164872]  kernel_init+0x18/0x118
-> <4>[    3.164878]  ret_from_fork+0x10/0x1c
-> <0>[    3.164884] Code: aa1e03e0 8b214273 97e616f7 d503201f (b9400260)
-> 
-> Seems to be issue with the msm serial driver and not ftrace.
-> Could someone look into it.
-> 
-> One more thing is for pstore dmesg-ramoops, I had to change late_initcall to
-> postcore_initcall which brings the question as to why we changed to
-> late_initcall?
-> Simple git blame shows to support crypto compress api, but is it really
-> helpful? A lot of boottime issues can be caught with pstore enabled at
-> postcore_initcall rather than late_initcall, this backtrace
-> is just one example. Is there any way we could change this?
+DMA controller driver  and UART dma client driver for aspeed's AST2500
 
-Any chance you are able to dig deeper into the stack trace? I would
-disassemble vmlinux and see which part of msm_read is generating the
-synchronous external abort and look into that.
+sudheer.v (9):
+  DT-changes-for-DMA-UART-of-AST2500
+  Defconfig-changes-for-DMA-UART-of-AST2500
+  configuration-for-DMA-of-AST2500
+  Documentation-DTbindings-DMA-controller-of-AST2500
+  DMA-driver-for-AST2500
+  configuration-for-DMA-UART-of-AST2500
+  Documentation-DTbindings-DMA-UART-of-AST2500
+  DMA-UART-Driver-for-AST2500
+  updating MAINTAINERS for DMA and DMA-UART drivers of AST2500
 
-Also similar to what Steve suggested, I wonder if it boots for you if you
-annotate all the functions in the serial driver with 'notrace'.
+ .../devicetree/bindings/dma/ast-uart-sdma.txt      |   23 +
+ .../devicetree/bindings/serial/ast-sdma-uart.txt   |   34 +
+ MAINTAINERS                                        |   26 +
+ arch/arm/boot/dts/aspeed-ast2500-evb.dts           |   20 +
+ arch/arm/boot/dts/aspeed-g5.dtsi                   |   85 ++
+ arch/arm/configs/aspeed_g5_defconfig               |    6 +-
+ drivers/dma/Kconfig                                |    9 +
+ drivers/dma/Makefile                               |    1 +
+ drivers/dma/aspeed_uart_sdma.c                     |  810 ++++++++++
+ drivers/tty/serial/8250/8250_aspeed_uart_dma.c     | 1594 ++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig                    |   34 +
+ drivers/tty/serial/8250/Makefile                   |    1 +
+ 12 files changed, 2641 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/dma/ast-uart-sdma.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/ast-sdma-uart.txt
+ create mode 100644 drivers/dma/aspeed_uart_sdma.c
+ create mode 100644 drivers/tty/serial/8250/8250_aspeed_uart_dma.c
 
-thanks,
-
- - Joel
+-- 
+1.9.1
