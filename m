@@ -1,68 +1,111 @@
-From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Subject: Re: [[PATCH] 8/9] DMA-UART-Driver-for-AST2500
-Date: Wed, 17 Oct 2018 19:56:25 +1100
-Message-ID: <351eecd5b1b21893e94f76b34c058c6257b7f837.camel@kernel.crashing.org>
-References: <1539749466-3912-1-git-send-email-open.sudheer@gmail.com>
-         <1539749466-3912-9-git-send-email-open.sudheer@gmail.com>
-         <20181017060531.GU2400@vkoul-mobl>
+From: Joel Fernandes <joel@joelfernandes.org>
+Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
+Date: Wed, 17 Oct 2018 03:13:55 -0700
+Message-ID: <20181017101355.GA230639@joelaf.mtv.corp.google.com>
+References: <1cae8f10-55f5-20ce-9105-30af6f88bd6e@codeaurora.org>
+ <20181016112928.4b52afb5@gandalf.local.home>
+ <CAGXu5jLBtBU1eX7tGX1gOVKSFKeLMeoke3bGHUuqxk86dLSnng@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181017060531.GU2400@vkoul-mobl>
+Content-Disposition: inline
+In-Reply-To: <CAGXu5jLBtBU1eX7tGX1gOVKSFKeLMeoke3bGHUuqxk86dLSnng@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vinod <vkoul@kernel.org>, "sudheer.v" <open.sudheer@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>, Russell King <linux@armlinux.org.uk>, Dan Williams <dan.j.williams@intel.com>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <marc.zyngier@arm.com>, Christian Borntraeger <borntraeger@de.ibm.com>, Michael Moese <mmoese@suse.de>, Hendrik Brueckner <brueckner@linux.vnet.ibm.com>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-aspee
+To: Kees Cook <keescook@chromium.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>, Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>, Stephen Boyd <sboyd@kernel.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, "Ivan T. Ivanov" <ivan.ivanov@linaro.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2018-10-17 at 11:35 +0530, Vinod wrote:
-> On 17-10-18, 09:41, sudheer.v wrote:
+Hi Kees,
+
+On Tue, Oct 16, 2018 at 10:02:53AM -0700, Kees Cook wrote:
+> On Tue, Oct 16, 2018 at 8:29 AM, Steven Rostedt <rostedt@goodmis.org> wrote:
+> > On Tue, 16 Oct 2018 17:08:25 +0530
+> > Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org> wrote:
+> >> One more thing is for pstore dmesg-ramoops, I had to change
+> >> late_initcall to postcore_initcall which brings the question as to why
+> >> we changed to late_initcall?
+> >> Simple git blame shows to support crypto compress api, but is it really
+> >> helpful? A lot of boottime issues can be caught with pstore enabled at
+> >> postcore_initcall rather than late_initcall, this backtrace
+> >> is just one example. Is there any way we could change this?
+> >
+> > Does it break if the crypto is not initialized? Perhaps add a command
+> > line flag to have it happen earlier:
+> >
+> >  ramoops=earlyinit
+> >
+> > and add a postcore_initcall that checks if that flag is set, and if so,
+> > it does the work then, and the late_initcall() will do nothing.
+> >
+> > That way, you can still have unmodified kernels use pstore when it
+> > crashes at boot up.
 > 
-> Please add the change log describing the driver and its features
-> 
-> > Signed-off-by: sudheer.v <open.sudheer@gmail.com>
-> 
-> 
-> > ---
-> >  drivers/tty/serial/8250/8250_aspeed_uart_dma.c | 1594 ++++++++++++++++++++++++
-> >  1 file changed, 1594 insertions(+)
-> >  create mode 100644 drivers/tty/serial/8250/8250_aspeed_uart_dma.c
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_aspeed_uart_dma.c b/drivers/tty/serial/8250/8250_aspeed_uart_dma.c
-> > new file mode 100644
-> > index 0000000..e1019a8
-> > --- /dev/null
-> > +++ b/drivers/tty/serial/8250/8250_aspeed_uart_dma.c
-> 
-> why is this in serial. It is dmaengine driver so belongs to drivers/dma/
-> like other controllers. Please move it out and resubmit.
+> Even better, if we could find a way to make it work with a late
+> initialization of compression (i.e. postcore_initcall() by default
+> means anything caught would be uncompressed, but anything after
+> late_initcall() would be compressed). I'd be very happy to review
+> patches for that!
+
+What do you think about the (untested) patch below? It seems to me that it
+should solve the issue of missing early crash dumps, but I have not tested it
+yet. Sai, would you mind trying it out and let me know if you can see the
+early crash dumps properly now?
+
+----8<---
+From: "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Subject: [RFC] pstore: allocate compression during late_initcall
+
+ramoop's pstore registration (using pstore_register) has to run during
+late_initcall because crypto backend may not be ready during
+postcore_initcall. This causes missing of dmesg crash dumps which could
+have been caught by pstore.
+
+Instead, lets allow ramoops pstore registration earlier, and once crypto
+is ready we can initialize the compression.
+
+Reported-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+---
+ fs/pstore/platform.c | 13 +++++++++++++
+ fs/pstore/ram.c      |  2 +-
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/fs/pstore/platform.c b/fs/pstore/platform.c
+index 15e99d5a681d..f09066db2d4d 100644
+--- a/fs/pstore/platform.c
++++ b/fs/pstore/platform.c
+@@ -780,6 +780,19 @@ void __init pstore_choose_compression(void)
+ 	}
+ }
  
-It's not a dmaengine driver. It's a serial UART driver that happens to
-use a dedicated DMA engine.
-
-It's unclear whether it should be split into two drivers, or just have
-the serial driver directly use the dma engine since that engine is
-dedicated in HW to only work on those UARTs and nothing else...
-
-Cheers,
-Ben.
-
-
-> While doing resubmission please take some time to understand subsystem
-> tags to use. (hint git log <subsystem> will tell you)
-> 
-> Also series has [[PATCH] 8/9] whereas it should be [PATCH 8/9] please
-> let git generate that for you (hint git format-patch start..end does a
-> good job)
-> 
-> > @@ -0,0 +1,1594 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + *   drivers/tty/serial/8250/8250_aspeed_uart_dma.c
-> > + *    1. 2018/07/01 Shivah Shankar created
-> > + *    2. 2018/08/25 sudheer.veliseti<open.sudheer@gmail.com> modified
-> 
-> we dont use this log in kernel. I do not see s-o-b by Shivah, that
-> should be added. I think he should be author and you need to list
-> changes you did..
-> 
++static int __init pstore_compression_late_init(void)
++{
++	/*
++	 * Check if any pstore backends registered earlier but did not allocate
++	 * for compression because crypto was not ready, if so then initialize
++	 * compression.
++	 */
++	if (psinfo && !tfm)
++		allocate_buf_for_compression();
++	return 0;
++}
++late_initcall(pstore_compression_late_init);
++
+ module_param(compress, charp, 0444);
+ MODULE_PARM_DESC(compress, "Pstore compression to use");
+ 
+diff --git a/fs/pstore/ram.c b/fs/pstore/ram.c
+index bbd1e357c23d..98e48d1a9776 100644
+--- a/fs/pstore/ram.c
++++ b/fs/pstore/ram.c
+@@ -940,7 +940,7 @@ static int __init ramoops_init(void)
+ 	ramoops_register_dummy();
+ 	return platform_driver_register(&ramoops_driver);
+ }
+-late_initcall(ramoops_init);
++postcore_initcall(ramoops_init);
+ 
+ static void __exit ramoops_exit(void)
+ {
+-- 
+2.19.1.331.ge82ca0e54c-goog
