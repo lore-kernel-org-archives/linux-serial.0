@@ -1,84 +1,91 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC][PATCHv2 2/4] printk: move printk_safe macros to printk
- header
-Date: Wed, 17 Oct 2018 12:50:15 +0200
-Message-ID: <20181017105015.udzegzfh7cxgatso@pathway.suse.cz>
-References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
- <20181016050428.17966-3-sergey.senozhatsky@gmail.com>
- <20181016072719.GB4030@hirez.programming.kicks-ass.net>
- <20181016114006.6q5atyaitapcwbud@pathway.suse.cz>
- <20181016121752.GA2537@hirez.programming.kicks-ass.net>
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
+Date: Wed, 17 Oct 2018 16:57:42 +0530
+Message-ID: <17116a6b-156e-af2f-c20c-88bea10bfc92@codeaurora.org>
+References: <1cae8f10-55f5-20ce-9105-30af6f88bd6e@codeaurora.org>
+ <472db11e-49a6-a1ee-e298-791ee1bbb10b@codeaurora.org>
+ <20181016141610.639b9000@gandalf.local.home>
+ <accdce6d-8fd2-9f15-d4cd-704cbf0b32eb@codeaurora.org>
+ <20181016144123.24c47b38@gandalf.local.home>
+ <7781815e-cba2-9e36-db6d-268298747876@codeaurora.org>
+ <20181016150328.3450d718@gandalf.local.home>
+ <c94103d2-ed5d-bf43-fc71-c60e108f303e@codeaurora.org>
+ <20181016151516.786b16cc@gandalf.local.home>
+ <0b014d85-9988-0bf5-7b72-911dbbcdadfc@codeaurora.org>
+ <153972306834.5275.7510298070540576604@swboyd.mtv.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181016121752.GA2537@hirez.programming.kicks-ass.net>
+In-Reply-To: <153972306834.5275.7510298070540576604@swboyd.mtv.corp.google.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Stephen Boyd <sboyd@kernel.org>, Steven Rostedt <rostedt@goodmis.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, "Joel Fernandes (Google)" <joel@joelfernandes.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 2018-10-16 14:17:52, Peter Zijlstra wrote:
-> On Tue, Oct 16, 2018 at 01:40:06PM +0200, Petr Mladek wrote:
-> > On Tue 2018-10-16 09:27:19, Peter Zijlstra wrote:
+On 10/17/2018 2:21 AM, Stephen Boyd wrote:
+> Quoting Sai Prakash Ranjan (2018-10-16 12:35:57)
+>> On 10/17/2018 12:45 AM, Steven Rostedt wrote:
+>>> On Wed, 17 Oct 2018 00:36:05 +0530
+>>> Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org> wrote:
+>>>
+>>>> On 10/17/2018 12:33 AM, Steven Rostedt wrote:
+>>>>> On Wed, 17 Oct 2018 00:31:03 +0530
+>>>>> Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org> wrote:
+>>>>>     
+>>>>>> Haa seems like you are right! With "ftrace=function
+>>>>>> ftrace_filter=msm_read" , I can trigger the crash, but
+>>>>>> sadly "ftrace_notrace=msm_read" also crashes.
+>>>>>
+>>>>> So there's more than one problem area.
+>>>>>
+>>>>> What about ftrace_notrace=m*
+>>>>>
+>>>>> ?
+>>>>>     
+>>>>
+>>>> That too crashes.
+>>>>
+>>>
+>>> Which compiler are you using and can you send me your config.
+>>>
+>> Config attached.
+>>
+>> Compiler: aarch64-linux-gnu-gcc (Linaro GCC 6.3-2017.02) 6.3.1 20170109
+>>
+>>> I wonder if there's something screwing up with the way ftrace nops are
+>>> working on this board.
+>>>
+>>> A couple things of note, 1) it works fine after boot up. 2) it crashes
+>>> in the initcall code, so it's not due to ftrace being enabled too early.
+>>>
+>>> I'd like to see the full command line as well. I bet if you remove the
+>>> qcom,msm-uartdm from the command line, and had just ftrace=function, it
+>>> may also boot fine too. Can you try that?
+>>>
+>>
+>> Kernel command line: root=/dev/disk/by-partlabel/rootfs rw rootwait
+>> ftrace=function ftrace_notrace=m* earlycon console=ttyMSM0,115200n8
+>>
+>> qcom,msm-uartdm is not in command line, it is the earlycon. So without
+>> earlycon(bootconsole), board boots fine as we discussed earlier.
+>>
 > 
-> > > Instead of this tinkering around the edges, why don't you make the main
-> > > logbuf a lockless ringbuffer and then delegate the actual printing of
-> > > that buffer to a kthread, except for earlycon, which can do synchronous
-> > > output.
-> > 
-> > In fact, there is no problem with printk log buffer. This patchset
-> > tries to avoid deadlock caused by console-specific locks
-> > used by console->write() methods.
-> > 
-> > By other words, we neither need printk_safe or lockless log buffer
-> > to fix this prolem. Instead, we need either printk_deferred context
-> > or lockless consoles.
+> Have you tried with earlycon and no ftrace things on the commandline?
 > 
-> If you have a lockless buffer and a trailing printk thread, that's
-> deferred.
+>   root=/dev/disk/by-partlabel/rootfs rw rootwait earlycon console=ttyMSM0,115200n8
 > 
-> And earlycon _should_ be lockless (yes, I know, some suck)
+> If earlycon is causing problems, it sounds like this may be another case
+> of earlycon uart handing off to the uart driver and that failing because
+> something gets printed while the uart is transitioning from the earlycon
+> console to the kernel boot console. I recall the uart would trample on
+> itself in interesting ways.
 > 
-> But if you do this deferred nonsense that's currently in printk, then
-> you risk never seeing the message -- the same problem I have with the
-> whole printk_safe thing too.
 
-What do you mean with printing the message, please? Storing it
-into a buffer or showing on console?
+Yes I have tried with only earlycon enabled and everything is fine. 
+Issue is reproduced only with ftrace=function cmdline.
 
-I guess that it is storing because you suggest handling
-the console by a printk kthread.
-
-Now, please, what is your vision of the lock less buffer?
-Would it be similar with the one used by ftrace?
-
-The current implementation of the lockless buffer is very tricky
-and supports only one reader. It will be even bigger maze
-of code when we add such a support.
-
-Also the messages are spread in many page-size buffers that
-are linked in a per-cpu lists. The page used by the reader
-is put outside the list. This all makes it very hard to
-reconstruct the log. AFAIK, people use ftrace_dump_on_oops
-even with a crashdump because nobody improved crash
-to extract the messages from the complicated lockless
-buffer for years.
-
-IMHO, the current printk buffer is much more easy from
-this point of view. It is one global buffer plus
-two per-cpu buffers that are mostly empty.
-
-
-I still think that the buffer is the minor problem these
-days. The big problem are consoles and I do not see
-how any lockless buffer could help with it.
-
-Also note that by deferred printk I mean deferring the console
-handling! IMHO, there are _no more problems_ with storing
-the messages into the buffer if we accept that the current
-very limited use of printk_safe per-cpu buffers is easier
-than any complicated generic lockless buffer.
-
-Best Regards,
-Petr
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
