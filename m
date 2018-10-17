@@ -1,52 +1,41 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [RFC][PATCHv2 2/4] printk: move printk_safe macros to printk
- header
-Date: Wed, 17 Oct 2018 09:57:28 +0200
-Message-ID: <20181017075728.GF3121@hirez.programming.kicks-ass.net>
-References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
- <20181016050428.17966-3-sergey.senozhatsky@gmail.com>
- <20181016072719.GB4030@hirez.programming.kicks-ass.net>
- <20181016122734.GA1259@jagdpanzerIV>
- <20181016125415.GA3121@hirez.programming.kicks-ass.net>
- <20181017043251.GC1068@jagdpanzerIV>
+From: Fabien Lahoudere <fabien.lahoudere@collabora.com>
+Subject: Re: [PATCH v3 1/1] serial: imx - Add dma buffer confugration via
+ sysfs
+Date: Wed, 17 Oct 2018 10:20:25 +0200
+Message-ID: <1539764425.3694.1.camel@collabora.com>
+References: <1539249903-6316-1-git-send-email-fabien.lahoudere@collabora.com>
+         <20181015140118.GA16234@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181017043251.GC1068@jagdpanzerIV>
+In-Reply-To: <20181015140118.GA16234@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 17, 2018 at 01:32:51PM +0900, Sergey Senozhatsky wrote:
-> This probably will be a bit more hairy. logbuf is written to by many
-> sources and is read from by many sides, including user-space [both read()
-> and write()]. So we will need more flags/magic around memcpy(). A simple,
-> "grab the logbuf entry, set the proper offset to point to the next available
-> logbuf record and then do memcpy()" won't suffice. We need a flag for
-> "memcpy() complete, we can read this entry". Otherwise:
+Hi Greg,
 
-Sure, but lockless buffers mostly have reserve and commit stages anyway.
-Exactly to avoid that problem.
-
-> All right. OK. So we are on the same page here:
-
-> - Have more opinions on this. People please speak out.
-> - Have clear "let's do it" from Cc-ed people.
+On Mon, 2018-10-15 at 16:01 +0200, Greg KH wrote:
+> On Thu, Oct 11, 2018 at 11:25:03AM +0200, Fabien Lahoudere wrote:
+> > In order to optimize serial communication on imx53 and imx6, we may
+> > need to tweak DMA period and buffer length per period.
 > 
+> Why can you not just automatically determine this information?  What is
+> userspace going to know that the kernel can not just learn now?
 > 
-> If we are really doing this, then let's split it and have
-> incremental changes. Namely, what I suggest is:
+> Having tunables is nice, but it is even better to not need them at all.
 
-I'd start by replacing logbuf with the lockless buffer and ripping out
-the current nmi/safe/etc.. bollocks.
+I agree that it is better to let the kernel do the configuration.
+However in our case we use several serial communication for different device
+and one of them need to tweak that configuration to get small data with a better
+period. However having this parameter for all serial port implies a bigger number
+of interrupts for others too.
 
-There is absolutely no point what so ever in doing anything until that
-is sorted.
-
-After that, move the console output to a kthread, but keep earlycon (if
-set) synchronous.
-
-Also avoid the whole panic/warn special case when earlycon is set, no
-point in doing dodgy crap when you know you have a good option already.
+> 
+> thanks,
+> 
+> greg k-h
+-- 
+Fabien
