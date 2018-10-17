@@ -1,19 +1,25 @@
 From: Anders Roxell <anders.roxell@linaro.org>
-Subject: [PATCH 1/2] serial: set suppress_bind_attrs flag only if builtin
-Date: Wed, 17 Oct 2018 16:03:10 +0200
-Message-ID: <20181017140311.28679-1-anders.roxell@linaro.org>
+Subject: [PATCH 2/2] writeback: don't decrement wb->refcnt if !wb->bdi
+Date: Wed, 17 Oct 2018 16:03:11 +0200
+Message-ID: <20181017140311.28679-2-anders.roxell@linaro.org>
+References: <20181017140311.28679-1-anders.roxell@linaro.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181017140311.28679-1-anders.roxell@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux@armlinux.org.uk, gregkh@linuxfoundation.org, akpm@linux-foundation.org
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, tj@kernel.org, Anders Roxell <anders.roxell@linaro.org>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-serial@vger.kernel.org
 
-When the test 'CONFIG_DEBUG_TEST_DRIVER_REMOVE=y' is enabled,
-arch_initcall(pl011_init) came before subsys_initcall(default_bdi_init).
-devtmpfs gets killed because we try to remove a file and decrement the
-wb reference count before the noop_backing_device_info gets initialized.
+When enabling CONFIG_DEBUG_TEST_DRIVER_REMOVE devtmpfs gets killed
+because we try to remove a file and decrement the wb reference count
+before the noop_backing_device_info gets initialized.
+
+Since arch_initcall(pl011_init) came before
+subsys_initcall(default_bdi_init), devtmpfs' handle_remove() crashes
+because the reference count is a NULL pointer only because bdi->wb
+hasn't been initialized yet.
 
 [    0.332075] Serial: AMBA PL011 UART driver
 [    0.485276] 9000000.pl011: ttyAMA0 at MMIO 0x9000000 (irq = 39, base_baud = 0) is a PL011 rev1
@@ -67,62 +73,30 @@ wb reference count before the noop_backing_device_info gets initialized.
 [    0.528720] Code: 92800002 aa1403e0 d538d081 8b010000 (c85f7c04)
 [    0.529367] ---[ end trace 5a3dee47727f877c ]---
 
-Rework to set suppress_bind_attrs flag to avoid removing the device when
-CONFIG_DEBUG_TEST_DRIVER_REMOVE=y. This applies for pic32_uart and
-xilinx_uartps as well.
+Rework so that wb_put have an extra check if wb->bdi before decrement
+wb->refcnt and also add a WARN_ON to get a warning if it happens again
+in other drivers.
 
+Fixes: 52ebea749aae ("writeback: make backing_dev_info host cgroup-specific bdi_writebacks")
 Cc: Arnd Bergmann <arnd@arndb.de>
 Co-developed-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
 ---
- drivers/tty/serial/amba-pl011.c    | 2 ++
- drivers/tty/serial/pic32_uart.c    | 1 +
- drivers/tty/serial/xilinx_uartps.c | 1 +
- 3 files changed, 4 insertions(+)
+ include/linux/backing-dev-defs.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index ebd33c0232e6..89ade213a1a9 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2780,6 +2780,7 @@ static struct platform_driver arm_sbsa_uart_platform_driver = {
- 		.name	= "sbsa-uart",
- 		.of_match_table = of_match_ptr(sbsa_uart_of_match),
- 		.acpi_match_table = ACPI_PTR(sbsa_uart_acpi_match),
-+		.suppress_bind_attrs = IS_BUILTIN(CONFIG_SERIAL_AMBA_PL011),
- 	},
- };
- 
-@@ -2808,6 +2809,7 @@ static struct amba_driver pl011_driver = {
- 	.drv = {
- 		.name	= "uart-pl011",
- 		.pm	= &pl011_dev_pm_ops,
-+		.suppress_bind_attrs = IS_BUILTIN(CONFIG_SERIAL_AMBA_PL011),
- 	},
- 	.id_table	= pl011_ids,
- 	.probe		= pl011_probe,
-diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
-index fd80d999308d..0bdf1687983f 100644
---- a/drivers/tty/serial/pic32_uart.c
-+++ b/drivers/tty/serial/pic32_uart.c
-@@ -919,6 +919,7 @@ static struct platform_driver pic32_uart_platform_driver = {
- 	.driver		= {
- 		.name	= PIC32_DEV_NAME,
- 		.of_match_table	= of_match_ptr(pic32_serial_dt_ids),
-+		.suppress_bind_attrs = IS_BUILTIN(CONFIG_SERIAL_PIC32),
- 	},
- };
- 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 0e3dae461f71..806a953ac8d4 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1717,6 +1717,7 @@ static struct platform_driver cdns_uart_platform_driver = {
- 		.name = CDNS_UART_NAME,
- 		.of_match_table = cdns_uart_of_match,
- 		.pm = &cdns_uart_dev_pm_ops,
-+		.suppress_bind_attrs = IS_BUILTIN(CONFIG_SERIAL_XILINX_PS_UART),
- 		},
- };
+diff --git a/include/linux/backing-dev-defs.h b/include/linux/backing-dev-defs.h
+index 9a6bc0951cfa..20721550d32a 100644
+--- a/include/linux/backing-dev-defs.h
++++ b/include/linux/backing-dev-defs.h
+@@ -258,7 +258,7 @@ static inline void wb_get(struct bdi_writeback *wb)
+  */
+ static inline void wb_put(struct bdi_writeback *wb)
+ {
+-	if (wb != &wb->bdi->wb)
++	if (!WARN_ON(!wb->bdi) && wb != &wb->bdi->wb)
+ 		percpu_ref_put(&wb->refcnt);
+ }
  
 -- 
 2.19.1
