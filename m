@@ -1,126 +1,66 @@
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
-Date: Wed, 17 Oct 2018 17:23:54 +0530
-Message-ID: <1267c854-9b59-9ad6-b8de-92420b6e0980@codeaurora.org>
-References: <1cae8f10-55f5-20ce-9105-30af6f88bd6e@codeaurora.org>
- <20181016230938.GA140578@joelaf.mtv.corp.google.com>
+From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Subject: Re: [RFC][PATCHv2 2/4] printk: move printk_safe macros to printk
+ header
+Date: Wed, 17 Oct 2018 22:36:38 +0900
+Message-ID: <20181017133638.GA426@tigerII.localdomain>
+References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
+ <20181016050428.17966-3-sergey.senozhatsky@gmail.com>
+ <20181016072719.GB4030@hirez.programming.kicks-ass.net>
+ <20181016122734.GA1259@jagdpanzerIV>
+ <20181016125415.GA3121@hirez.programming.kicks-ass.net>
+ <20181017043251.GC1068@jagdpanzerIV>
+ <20181017075728.GF3121@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181016230938.GA140578@joelaf.mtv.corp.google.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20181017075728.GF3121@hirez.programming.kicks-ass.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joel Fernandes <joel@joelfernandes.org>
-Cc: Stephen Boyd <sboyd@kernel.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, "Ivan T. Ivanov" <ivan.ivanov@linaro.org>, "Steven Rostedt (VMware)" <rostedt@goodmis.org>, Kees Cook <keescook@chromium.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/17/2018 4:39 AM, Joel Fernandes wrote:
-> On Tue, Oct 16, 2018 at 05:08:25PM +0530, Sai Prakash Ranjan wrote:
->> Hi,
->>
->> On dragonboard 410c, with "ftrace=function" boot args, the console output
->> slows down and board resets without any backtrace as below. This is tested
->> on latest kernel and seems to exist even in older kernels as well.
->>
->> [    2.949164] EINJ: ACPI disabled.
->> [    3.133001] Serial: 8250/16550 dri
->> Format: Log Type - Time(microsec) - Message - Optional Info
->> Log Type: B - Since Boot(Power On Reset),  D - Delta,  S - Statistic
->>
->> But with pstore enabled, able to get the below backtrace:
->> <4>[    2.949164] EINJ: ACPI disabled.
->> <6>[    3.133001] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
->> <6>[    3.164097] SuperH (H)SCI(F) driver initialized
->> <0>[    3.164471] Internal error: synchronous external abort: 96000010 [#1]
->> PREEMPT SMP
->> <4>[    3.164479] Modules linked in:
->> <4>[    3.164495] CPU: 2 PID: 1 Comm: swapper/0 Not tainted
->> 4.19.0-rc8-00008-ge033b9909fff-dirty #175
->> <4>[    3.164501] Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC
->> (DT)
->> <4>[    3.164508] pstate: 40000085 (nZcv daIf -PAN -UAO)
->> <4>[    3.164514] pc : msm_read.isra.2+0x20/0x50
->> <4>[    3.164520] lr : msm_read.isra.2+0x1c/0x50
->> <4>[    3.164526] sp : ffff000008033a50
->> <4>[    3.164531] x29: ffff000008033a50 x28: ffff000009486018
->> <4>[    3.164548] x27: 0000000000000001 x26: ffff7dfffe7ff070
->> <4>[    3.164565] x25: 0000000000000034 x24: ffff000009486000
->> <4>[    3.164582] x23: 0000000000000000 x22: ffff00000978e190
->> <4>[    3.164599] x21: ffff0000095e8228 x20: 0000000000000034
->> <4>[    3.164616] x19: ffff7dfffe7ff008 x18: ffffffffffffffff
->> <4>[    3.164632] x17: 0000000000000000 x16: 0000000000000000
->> <4>[    3.164649] x15: ffff0000094a96c8 x14: ffff00008978e6bf
->> <4>[    3.164666] x13: ffff00000978e6cd x12: 0000000000000038
->> <4>[    3.164683] x11: ffff0000094c6000 x10: 0000000000000c24
->> <4>[    3.164699] x9 : ffff80003c89b400 x8 : ffff000008033970
->> <4>[    3.164716] x7 : ffff80000eb04100 x6 : 00000000000af304
->> <4>[    3.164732] x5 : 0000000000000c40 x4 : ffff80003c06f000
->> <4>[    3.164750] x3 : ffff80003c89b498 x2 : 0000000000000000
->> <4>[    3.164766] x1 : ffff80003ca68000 x0 : 0000000000000800
->> <0>[    3.164785] Process swapper/0 (pid: 1, stack limit =
->> 0x(____ptrval____))
->> <4>[    3.164791] Call trace:
->> <4>[    3.164797]  msm_read.isra.2+0x20/0x50
->> <4>[    3.164804]  msm_reset_dm_count+0x44/0x80
->> <4>[    3.164810]  __msm_console_write+0x1c8/0x1d0
->> <4>[    3.164816]  msm_serial_early_write_dm+0x3c/0x50
->> <4>[    3.164823]  console_unlock.part.6+0x468/0x528
->> <4>[    3.164829]  vprintk_emit+0x210/0x218
->> <4>[    3.164835]  vprintk_default+0x48/0x58
->> <4>[    3.164841]  vprintk_func+0xf0/0x1c0
->> <4>[    3.164847]  printk+0x74/0x94
->> <4>[    3.164853]  sci_init+0x24/0x3c
->> <4>[    3.164859]  do_one_initcall+0x54/0x248
->> <4>[    3.164866]  kernel_init_freeable+0x210/0x378
->> <4>[    3.164872]  kernel_init+0x18/0x118
->> <4>[    3.164878]  ret_from_fork+0x10/0x1c
->> <0>[    3.164884] Code: aa1e03e0 8b214273 97e616f7 d503201f (b9400260)
->>
->> Seems to be issue with the msm serial driver and not ftrace.
->> Could someone look into it.
->>
->> One more thing is for pstore dmesg-ramoops, I had to change late_initcall to
->> postcore_initcall which brings the question as to why we changed to
->> late_initcall?
->> Simple git blame shows to support crypto compress api, but is it really
->> helpful? A lot of boottime issues can be caught with pstore enabled at
->> postcore_initcall rather than late_initcall, this backtrace
->> is just one example. Is there any way we could change this?
+On (10/17/18 09:57), Peter Zijlstra wrote:
+> On Wed, Oct 17, 2018 at 01:32:51PM +0900, Sergey Senozhatsky wrote:
+> > This probably will be a bit more hairy. logbuf is written to by many
+> > sources and is read from by many sides, including user-space [both read()
+> > and write()]. So we will need more flags/magic around memcpy(). A simple,
+> > "grab the logbuf entry, set the proper offset to point to the next available
+> > logbuf record and then do memcpy()" won't suffice. We need a flag for
+> > "memcpy() complete, we can read this entry". Otherwise:
 > 
-> Any chance you are able to dig deeper into the stack trace? I would
-> disassemble vmlinux and see which part of msm_read is generating the
-> synchronous external abort and look into that.
+> Sure, but lockless buffers mostly have reserve and commit stages anyway.
+> Exactly to avoid that problem.
+
+Right. So it should be a lockless ringbuffer supporting multiple
+parallel readers and multiple parallel writers from multiple contexts
+(task, sortirq, irq, NMI); with sane wrap around, etc. And we probably
+need to somehow keep the existing format of logbuf entries to avoid
+breakages in crash tool, and so on. It will take a lot of time, I'm
+afraid.
+
+> > All right. OK. So we are on the same page here:
 > 
-
-Yes I had checked the part of msm_read which was generating the abort 
-and it always seems to be in "msm_wait_for_xmitr" at below pointed location.
-
-static inline void msm_wait_for_xmitr(struct uart_port *port)
-{
-         while (!(msm_read(port, UART_SR) & UART_SR_TX_EMPTY)) {     <---
-                 if (msm_read(port, UART_ISR) & UART_ISR_TX_READY)
-                         break;
-                 udelay(1);
-         }
-         msm_write(port, UART_CR_CMD_RESET_TX_READY, UART_CR);
-}
-
-Also I could confirm that this path is entered repeatedly(with tracing 
-register reads/writes from my patch series in 
-https://lore.kernel.org/patchwork/cover/983795/ and tp_printk) and crash 
-is seen at some random time, so could not get much from this.
-
-> Also similar to what Steve suggested, I wonder if it boots for you if you
-> annotate all the functions in the serial driver with 'notrace'.
+> > - Have more opinions on this. People please speak out.
+> > - Have clear "let's do it" from Cc-ed people.
+> > 
+> > 
+> > If we are really doing this, then let's split it and have
+> > incremental changes. Namely, what I suggest is:
 > 
+> I'd start by replacing logbuf with the lockless buffer and ripping out
+> the current nmi/safe/etc.. bollocks.
+> 
+> There is absolutely no point what so ever in doing anything until that
+> is sorted.
 
-I have tried this too, but still the target crashes. So I am doubtful if 
-this is ftrace issue? Maybe earlycon uart issue as Stephen is suspecting.
+Peter, you have your point, however, I think I have a slightly different
+priority list. On the top of my list - deadlocks in printk(). That's the
+whole reason I sent this series. Deadlocks are real. We have real reports;
+in the best case in form of lockdep splats; in the worst case - nothing,
+simply because the system deadlocks in printk(), and even more - printk()
+can deadlock in panic(). So addressing deadlocks in printk() will fix a
+rather big, real problem. Then we can have fun with the rest of the things
+you have mentioned. What do you think?
 
-Thanks,
-Sai
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+	-ss
