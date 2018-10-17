@@ -1,7 +1,7 @@
 From: "sudheer.v" <open.sudheer@gmail.com>
-Subject: [[PATCH] 2/9] Defconfig-changes-for-DMA-UART-of-AST2500
-Date: Wed, 17 Oct 2018 09:40:59 +0530
-Message-ID: <1539749466-3912-3-git-send-email-open.sudheer@gmail.com>
+Subject: [[PATCH] 4/9] Documentation-DTbindings-DMA-controller-of-AST2500
+Date: Wed, 17 Oct 2018 09:41:01 +0530
+Message-ID: <1539749466-3912-5-git-send-email-open.sudheer@gmail.com>
 References: <1539749466-3912-1-git-send-email-open.sudheer@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1539749466-3912-1-git-send-email-open.sudheer@gmail.com>
@@ -12,32 +12,38 @@ List-Id: linux-serial@vger.kernel.org
 
 Signed-off-by: sudheer.v <open.sudheer@gmail.com>
 ---
- arch/arm/configs/aspeed_g5_defconfig | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/dma/ast-uart-sdma.txt      | 23 ++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/dma/ast-uart-sdma.txt
 
-diff --git a/arch/arm/configs/aspeed_g5_defconfig b/arch/arm/configs/aspeed_g5_defconfig
-index b7f8fa1..25813b5 100644
---- a/arch/arm/configs/aspeed_g5_defconfig
-+++ b/arch/arm/configs/aspeed_g5_defconfig
-@@ -132,8 +132,8 @@ CONFIG_KEYBOARD_GPIO_POLLED=y
- CONFIG_SERIAL_8250=y
- # CONFIG_SERIAL_8250_DEPRECATED_OPTIONS is not set
- CONFIG_SERIAL_8250_CONSOLE=y
--CONFIG_SERIAL_8250_NR_UARTS=6
--CONFIG_SERIAL_8250_RUNTIME_UARTS=6
-+CONFIG_SERIAL_8250_NR_UARTS=1
-+CONFIG_SERIAL_8250_RUNTIME_UARTS=1
- CONFIG_SERIAL_8250_EXTENDED=y
- CONFIG_SERIAL_8250_ASPEED_VUART=y
- CONFIG_SERIAL_8250_SHARE_IRQ=y
-@@ -211,6 +211,8 @@ CONFIG_RTC_CLASS=y
- CONFIG_RTC_DRV_DS1307=y
- CONFIG_RTC_DRV_PCF8523=y
- CONFIG_RTC_DRV_RV8803=y
-+CONFIG_DMADEVICES=y
-+CONFIG_AST_UART_SDMA=y
- # CONFIG_VIRTIO_MENU is not set
- # CONFIG_IOMMU_SUPPORT is not set
- CONFIG_IIO=y
+diff --git a/Documentation/devicetree/bindings/dma/ast-uart-sdma.txt b/Documentation/devicetree/bindings/dma/ast-uart-sdma.txt
+new file mode 100644
+index 0000000..e770df2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/dma/ast-uart-sdma.txt
+@@ -0,0 +1,23 @@
++* Aspeed Direct Memory Access (DMA) Controller for AST25XX
++
++
++* DMA controller
++
++Required properties:
++- compatible : Should be "aspeed,ast-uart-sdma"
++- reg : Should contain SDMA registers location and length
++- interrupts : Should contain SDMA interrupt
++- dma-channels: number of DMA channels in DMA controller
++
++Optional properties:
++
++Example
++                        ast_uart_sdma: uart_sdma@1e79e000 {
++                                compatible = "aspeed,ast-uart-sdma";
++                                reg = <0x1e79e000 0x400>;
++                                interrupts = <50>;
++                                #dma-cells = <1>;
++                                dma-channels = <8>;
++                                status = "disabled";
++                        };
++
 -- 
 1.9.1
