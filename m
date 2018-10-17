@@ -1,102 +1,104 @@
-From: Anders Roxell <anders.roxell@linaro.org>
-Subject: [PATCH 2/2] writeback: don't decrement wb->refcnt if !wb->bdi
-Date: Wed, 17 Oct 2018 16:03:11 +0200
-Message-ID: <20181017140311.28679-2-anders.roxell@linaro.org>
-References: <20181017140311.28679-1-anders.roxell@linaro.org>
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
+Date: Wed, 17 Oct 2018 20:19:41 +0530
+Message-ID: <69d2f43d-dc96-9348-7f70-5db88e8f5c39@codeaurora.org>
+References: <1cae8f10-55f5-20ce-9105-30af6f88bd6e@codeaurora.org>
+ <20181016112928.4b52afb5@gandalf.local.home>
+ <CAGXu5jLBtBU1eX7tGX1gOVKSFKeLMeoke3bGHUuqxk86dLSnng@mail.gmail.com>
+ <20181017101355.GA230639@joelaf.mtv.corp.google.com>
+ <2a23cd74-7364-0fb7-3c7b-7be79a881073@codeaurora.org>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181017140311.28679-1-anders.roxell@linaro.org>
+In-Reply-To: <2a23cd74-7364-0fb7-3c7b-7be79a881073@codeaurora.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux@armlinux.org.uk, gregkh@linuxfoundation.org, akpm@linux-foundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, tj@kernel.org, Anders Roxell <anders.roxell@linaro.org>, Arnd Bergmann <arnd@arndb.de>
+To: Joel Fernandes <joel@joelfernandes.org>, Kees Cook <keescook@chromium.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>, Stephen Boyd <sboyd@kernel.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, "Ivan T. Ivanov" <ivan.ivanov@linaro.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-When enabling CONFIG_DEBUG_TEST_DRIVER_REMOVE devtmpfs gets killed
-because we try to remove a file and decrement the wb reference count
-before the noop_backing_device_info gets initialized.
+On 10/17/2018 5:08 PM, Sai Prakash Ranjan wrote:
+>>
+>> What do you think about the (untested) patch below? It seems to me 
+>> that it
+>> should solve the issue of missing early crash dumps, but I have not 
+>> tested it
+>> yet. Sai, would you mind trying it out and let me know if you can see the
+>> early crash dumps properly now?
+>>
+>> ----8<---
+>> From: "Joel Fernandes (Google)" <joel@joelfernandes.org>
+>> Subject: [RFC] pstore: allocate compression during late_initcall
+>>
+>> ramoop's pstore registration (using pstore_register) has to run during
+>> late_initcall because crypto backend may not be ready during
+>> postcore_initcall. This causes missing of dmesg crash dumps which could
+>> have been caught by pstore.
+>>
+>> Instead, lets allow ramoops pstore registration earlier, and once crypto
+>> is ready we can initialize the compression.
+>>
+>> Reported-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+>> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+>> ---
+>>   fs/pstore/platform.c | 13 +++++++++++++
+>>   fs/pstore/ram.c      |  2 +-
+>>   2 files changed, 14 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/fs/pstore/platform.c b/fs/pstore/platform.c
+>> index 15e99d5a681d..f09066db2d4d 100644
+>> --- a/fs/pstore/platform.c
+>> +++ b/fs/pstore/platform.c
+>> @@ -780,6 +780,19 @@ void __init pstore_choose_compression(void)
+>>       }
+>>   }
+>> +static int __init pstore_compression_late_init(void)
+>> +{
+>> +    /*
+>> +     * Check if any pstore backends registered earlier but did not 
+>> allocate
+>> +     * for compression because crypto was not ready, if so then 
+>> initialize
+>> +     * compression.
+>> +     */
+>> +    if (psinfo && !tfm)
+>> +        allocate_buf_for_compression();
+>> +    return 0;
+>> +}
+>> +late_initcall(pstore_compression_late_init);
+>> +
+>>   module_param(compress, charp, 0444);
+>>   MODULE_PARM_DESC(compress, "Pstore compression to use");
+>> diff --git a/fs/pstore/ram.c b/fs/pstore/ram.c
+>> index bbd1e357c23d..98e48d1a9776 100644
+>> --- a/fs/pstore/ram.c
+>> +++ b/fs/pstore/ram.c
+>> @@ -940,7 +940,7 @@ static int __init ramoops_init(void)
+>>       ramoops_register_dummy();
+>>       return platform_driver_register(&ramoops_driver);
+>>   }
+>> -late_initcall(ramoops_init);
+>> +postcore_initcall(ramoops_init);
+>>   static void __exit ramoops_exit(void)
+>>   {
+>>
+> 
+> Yes I could see the early crash dump. Also I tested with different 
+> compression (LZO) instead of deflate just to be sure and it works fine, 
+> thanks :)
+> 
+> Tested-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+> 
 
-Since arch_initcall(pl011_init) came before
-subsys_initcall(default_bdi_init), devtmpfs' handle_remove() crashes
-because the reference count is a NULL pointer only because bdi->wb
-hasn't been initialized yet.
+I just noticed that allocate_buf_for_compression() is also called from 
+pstore_register(). Shouldn't that call be removed now that ramoops_init 
+is moved to postcore_initcall and allocate_buf_for_compression() will 
+just return doing nothing when called from pstore_register()?
 
-[    0.332075] Serial: AMBA PL011 UART driver
-[    0.485276] 9000000.pl011: ttyAMA0 at MMIO 0x9000000 (irq = 39, base_baud = 0) is a PL011 rev1
-[    0.502382] console [ttyAMA0] enabled
-[    0.515710] Unable to handle kernel paging request at virtual address 0000800074c12000
-[    0.516053] Mem abort info:
-[    0.516222]   ESR = 0x96000004
-[    0.516417]   Exception class = DABT (current EL), IL = 32 bits
-[    0.516641]   SET = 0, FnV = 0
-[    0.516826]   EA = 0, S1PTW = 0
-[    0.516984] Data abort info:
-[    0.517149]   ISV = 0, ISS = 0x00000004
-[    0.517339]   CM = 0, WnR = 0
-[    0.517553] [0000800074c12000] user address but active_mm is swapper
-[    0.517928] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-[    0.518305] Modules linked in:
-[    0.518839] CPU: 0 PID: 13 Comm: kdevtmpfs Not tainted 4.19.0-rc5-next-20180928-00002-g2ba39ab0cd01-dirty #82
-[    0.519307] Hardware name: linux,dummy-virt (DT)
-[    0.519681] pstate: 80000005 (Nzcv daif -PAN -UAO)
-[    0.519959] pc : __destroy_inode+0x94/0x2a8
-[    0.520212] lr : __destroy_inode+0x78/0x2a8
-[    0.520401] sp : ffff0000098c3b20
-[    0.520590] x29: ffff0000098c3b20 x28: 00000000087a3714
-[    0.520904] x27: 0000000000002000 x26: 0000000000002000
-[    0.521179] x25: ffff000009583000 x24: 0000000000000000
-[    0.521467] x23: ffff80007bb52000 x22: ffff80007bbaa7c0
-[    0.521737] x21: ffff0000093f9338 x20: 0000000000000000
-[    0.522033] x19: ffff80007bbb05d8 x18: 0000000000000400
-[    0.522376] x17: 0000000000000000 x16: 0000000000000000
-[    0.522727] x15: 0000000000000400 x14: 0000000000000400
-[    0.523068] x13: 0000000000000001 x12: 0000000000000001
-[    0.523421] x11: 0000000000000000 x10: 0000000000000970
-[    0.523749] x9 : ffff0000098c3a60 x8 : ffff80007bbab190
-[    0.524017] x7 : ffff80007bbaa880 x6 : 0000000000000c88
-[    0.524305] x5 : ffff0000093d96c8 x4 : 61c8864680b583eb
-[    0.524567] x3 : ffff0000093d6180 x2 : ffffffffffffffff
-[    0.524872] x1 : 0000800074c12000 x0 : 0000800074c12000
-[    0.525207] Process kdevtmpfs (pid: 13, stack limit = 0x(____ptrval____))
-[    0.525529] Call trace:
-[    0.525806]  __destroy_inode+0x94/0x2a8
-[    0.526108]  destroy_inode+0x34/0x88
-[    0.526370]  evict+0x144/0x1c8
-[    0.526636]  iput+0x184/0x230
-[    0.526871]  dentry_unlink_inode+0x118/0x130
-[    0.527152]  d_delete+0xd8/0xe0
-[    0.527420]  vfs_unlink+0x240/0x270
-[    0.527665]  handle_remove+0x1d8/0x330
-[    0.527875]  devtmpfsd+0x138/0x1c8
-[    0.528085]  kthread+0x14c/0x158
-[    0.528291]  ret_from_fork+0x10/0x18
-[    0.528720] Code: 92800002 aa1403e0 d538d081 8b010000 (c85f7c04)
-[    0.529367] ---[ end trace 5a3dee47727f877c ]---
+Thanks,
+Sai
 
-Rework so that wb_put have an extra check if wb->bdi before decrement
-wb->refcnt and also add a WARN_ON to get a warning if it happens again
-in other drivers.
-
-Fixes: 52ebea749aae ("writeback: make backing_dev_info host cgroup-specific bdi_writebacks")
-Cc: Arnd Bergmann <arnd@arndb.de>
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
----
- include/linux/backing-dev-defs.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/backing-dev-defs.h b/include/linux/backing-dev-defs.h
-index 9a6bc0951cfa..20721550d32a 100644
---- a/include/linux/backing-dev-defs.h
-+++ b/include/linux/backing-dev-defs.h
-@@ -258,7 +258,7 @@ static inline void wb_get(struct bdi_writeback *wb)
-  */
- static inline void wb_put(struct bdi_writeback *wb)
- {
--	if (wb != &wb->bdi->wb)
-+	if (!WARN_ON(!wb->bdi) && wb != &wb->bdi->wb)
- 		percpu_ref_put(&wb->refcnt);
- }
- 
 -- 
-2.19.1
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
