@@ -1,66 +1,75 @@
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
-Date: Thu, 18 Oct 2018 10:51:18 +0530
-Message-ID: <58d2474c-53cd-e6cb-2d25-db38d1a88da6@codeaurora.org>
-References: <1cae8f10-55f5-20ce-9105-30af6f88bd6e@codeaurora.org>
- <20181016112928.4b52afb5@gandalf.local.home>
- <8c2fb318-813d-81f1-1e2f-cdbc68353077@codeaurora.org>
- <20181016125721.236ada82@gandalf.local.home>
- <cab1be04-be06-6f53-7fe9-159936893fc8@codeaurora.org>
- <20181016134803.1b9260c1@gandalf.local.home>
- <472db11e-49a6-a1ee-e298-791ee1bbb10b@codeaurora.org>
- <20181016141610.639b9000@gandalf.local.home>
- <accdce6d-8fd2-9f15-d4cd-704cbf0b32eb@codeaurora.org>
- <20181016144123.24c47b38@gandalf.local.home>
- <7781815e-cba2-9e36-db6d-268298747876@codeaurora.org>
- <20181016150328.3450d718@gandalf.local.home>
- <c94103d2-ed5d-bf43-fc71-c60e108f303e@codeaurora.org>
- <20181017223334.29ca2837@vmware.local.home>
+From: Vinod <vkoul@kernel.org>
+Subject: Re: [[PATCH] 8/9] DMA-UART-Driver-for-AST2500
+Date: Thu, 18 Oct 2018 15:25:07 +0530
+Message-ID: <20181018095507.GC2400@vkoul-mobl>
+References: <1539749466-3912-1-git-send-email-open.sudheer@gmail.com>
+ <1539749466-3912-9-git-send-email-open.sudheer@gmail.com>
+ <20181017060531.GU2400@vkoul-mobl>
+ <351eecd5b1b21893e94f76b34c058c6257b7f837.camel@kernel.crashing.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181017223334.29ca2837@vmware.local.home>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <351eecd5b1b21893e94f76b34c058c6257b7f837.camel@kernel.crashing.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: Stephen Boyd <sboyd@kernel.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, "Joel Fernandes (Google)" <joel@joelfernandes.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: "sudheer.v" <open.sudheer@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>, Russell King <linux@armlinux.org.uk>, Dan Williams <dan.j.williams@intel.com>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <marc.zyngier@arm.com>, Christian Borntraeger <borntraeger@de.ibm.com>, Michael Moese <mmoese@suse.de>, Hendrik Brueckner <brueckner@linux.vnet.ibm.com>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-k
 List-Id: linux-serial@vger.kernel.org
 
-On 10/18/2018 8:03 AM, Steven Rostedt wrote:
-> On Wed, 17 Oct 2018 00:36:05 +0530
-> Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org> wrote:
-> 
->> On 10/17/2018 12:33 AM, Steven Rostedt wrote:
->>> On Wed, 17 Oct 2018 00:31:03 +0530
->>> Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org> wrote:
->>>    
->>>> Haa seems like you are right! With "ftrace=function
->>>> ftrace_filter=msm_read" , I can trigger the crash, but
->>>> sadly "ftrace_notrace=msm_read" also crashes.
->>>
->>> So there's more than one problem area.
->>>
->>> What about ftrace_notrace=m*
->>>
->>> ?
->>>    
->>
->> That too crashes.
->>
-> 
-> So something else is causing an issue besides just msm_read.
-> 
-> Can you do an objdump -dr of the entire vmlinux binary and gzip it and
-> post it somewhere. Not sure if it would be too big to email. You could
-> try sending it to me privately. I'd like to see the binary that you are
-> using.
-> 
+On 17-10-18, 19:56, Benjamin Herrenschmidt wrote:
+> On Wed, 2018-10-17 at 11:35 +0530, Vinod wrote:
+> > On 17-10-18, 09:41, sudheer.v wrote:
+> > 
+> > Please add the change log describing the driver and its features
+> > 
+> > > Signed-off-by: sudheer.v <open.sudheer@gmail.com>
+> > > ---
+> > >  drivers/tty/serial/8250/8250_aspeed_uart_dma.c | 1594 ++++++++++++++++++++++++
+> > >  1 file changed, 1594 insertions(+)
+> > >  create mode 100644 drivers/tty/serial/8250/8250_aspeed_uart_dma.c
+> > > 
+> > > diff --git a/drivers/tty/serial/8250/8250_aspeed_uart_dma.c b/drivers/tty/serial/8250/8250_aspeed_uart_dma.c
+> > > new file mode 100644
+> > > index 0000000..e1019a8
+> > > --- /dev/null
+> > > +++ b/drivers/tty/serial/8250/8250_aspeed_uart_dma.c
+> > 
+> > why is this in serial. It is dmaengine driver so belongs to drivers/dma/
+> > like other controllers. Please move it out and resubmit.
+>  
+> It's not a dmaengine driver. It's a serial UART driver that happens to
+> use a dedicated DMA engine.
 
-I have sent the objdump and dot config to you privately.
+Then I see no reason for it to use dmaengine APIs. The framework allows
+people to share a controller for many clients, but if you have dedicated
+one then you may use it directly
 
-Thanks,
-Sai
+> It's unclear whether it should be split into two drivers, or just have
+> the serial driver directly use the dma engine since that engine is
+> dedicated in HW to only work on those UARTs and nothing else...
+> 
+> Cheers,
+> Ben.
+> 
+> 
+> > While doing resubmission please take some time to understand subsystem
+> > tags to use. (hint git log <subsystem> will tell you)
+> > 
+> > Also series has [[PATCH] 8/9] whereas it should be [PATCH 8/9] please
+> > let git generate that for you (hint git format-patch start..end does a
+> > good job)
+> > 
+> > > @@ -0,0 +1,1594 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/*
+> > > + *   drivers/tty/serial/8250/8250_aspeed_uart_dma.c
+> > > + *    1. 2018/07/01 Shivah Shankar created
+> > > + *    2. 2018/08/25 sudheer.veliseti<open.sudheer@gmail.com> modified
+> > 
+> > we dont use this log in kernel. I do not see s-o-b by Shivah, that
+> > should be added. I think he should be author and you need to list
+> > changes you did..
+> > 
+
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+~Vinod
