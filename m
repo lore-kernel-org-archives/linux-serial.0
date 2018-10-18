@@ -1,42 +1,61 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH V3 3/8] dt-bindings: mmc: fsl-imx-esdhc: add imx8qxp
- compatible string
-Date: Thu, 18 Oct 2018 14:48:56 -0500
-Message-ID: <20181018194856.GA23231@bogus>
-References: <1539886483-15775-1-git-send-email-aisheng.dong@nxp.com>
- <1539886483-15775-4-git-send-email-aisheng.dong@nxp.com>
+From: Paul Walmsley <paul.walmsley@sifive.com>
+Subject: [PATCH 1/2] dt-bindings: serial: add documentation for the SiFive UART driver
+Date: Thu, 18 Oct 2018 16:43:53 -0700
+Message-ID: <20181018234352.26788-2-paul.walmsley@sifive.com>
+References: <20181018234352.26788-1-paul.walmsley@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1539886483-15775-4-git-send-email-aisheng.dong@nxp.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-Cc: "A.s. Dong" <aisheng.dong@nxp.com>, Mark Rutland <mark.rutland@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>, "dongas86@gmail.com" <dongas86@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, Bough Chen <haibo.chen@nxp.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Fabio Estevam <fabio.estevam@nxp.com>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181018234352.26788-1-paul.walmsley@sifive.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Paul Walmsley <paul.walmsley@sifive.com>, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Palmer Dabbelt <palmer@sifive.com>, Paul Walmsley <paul@pwsan.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 18 Oct 2018 18:19:24 +0000, "A.s. Dong" wrote:
-> Add imx8qxp compatible string
-> 
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Mark Rutland <mark.rutland@arm.com>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: linux-serial@vger.kernel.org
-> Cc: devicetree@vger.kernel.org
-> Cc: linux-mmc@vger.kernel.org
-> Cc: Haibo Chen <haibo.chen@nxp.com>
-> Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
-> ---
->  Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Add DT binding documentation for the Linux driver for the SiFive
+asynchronous serial IP block.  Nothing too exotic.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Cc: linux-serial@vger.kernel.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-riscv@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Palmer Dabbelt <palmer@sifive.com>
+Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
+Signed-off-by: Paul Walmsley <paul@pwsan.com>
+---
+ .../bindings/serial/sifive-serial.txt         | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
+
+diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.txt b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+new file mode 100644
+index 000000000000..8982338512f5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+@@ -0,0 +1,21 @@
++SiFive asynchronous serial interface (UART)
++
++Required properties:
++
++- compatible: should be "sifive,fu540-c000-uart0" or "sifive,uart0"
++- reg: address and length of the register space
++- interrupt-parent: should contain a phandle pointing to the SoC interrupt
++    controller device node that the UART interrupts are connected to
++- interrupts: Should contain the UART interrupt identifier
++- clocks: Should contain a clock identifier for the UART's parent clock
++
++
++Example:
++
++uart0: serial@10010000 {
++	compatible = "sifive,uart0";
++	interrupt-parent = <&plic0>;
++	interrupts = <80>;
++	reg = <0x0 0x10010000 0x0 0x1000>;
++	clocks = <&prci PRCI_CLK_TLCLK>;
++};
+-- 
+2.19.1
