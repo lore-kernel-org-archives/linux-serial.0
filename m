@@ -1,73 +1,102 @@
-From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Subject: Re: [[PATCH] 8/9] DMA-UART-Driver-for-AST2500
-Date: Fri, 19 Oct 2018 10:32:24 +1100
-Message-ID: <a3fecf7913d6a85a6294afbc5a1a18b7714d6756.camel@kernel.crashing.org>
-References: <1539749466-3912-1-git-send-email-open.sudheer@gmail.com>
- <1539749466-3912-9-git-send-email-open.sudheer@gmail.com>
- <20181017060531.GU2400@vkoul-mobl>
- <351eecd5b1b21893e94f76b34c058c6257b7f837.camel@kernel.crashing.org>
- <20181018095507.GC2400@vkoul-mobl>
+From: Joel Fernandes <joel@joelfernandes.org>
+Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
+Date: Thu, 18 Oct 2018 21:17:40 -0700
+Message-ID: <20181019041740.GB141835@joelaf.mtv.corp.google.com>
+References: <472db11e-49a6-a1ee-e298-791ee1bbb10b@codeaurora.org>
+ <20181016141610.639b9000@gandalf.local.home>
+ <accdce6d-8fd2-9f15-d4cd-704cbf0b32eb@codeaurora.org>
+ <20181016144123.24c47b38@gandalf.local.home>
+ <7781815e-cba2-9e36-db6d-268298747876@codeaurora.org>
+ <20181016150328.3450d718@gandalf.local.home>
+ <c94103d2-ed5d-bf43-fc71-c60e108f303e@codeaurora.org>
+ <20181017223334.29ca2837@vmware.local.home>
+ <58d2474c-53cd-e6cb-2d25-db38d1a88da6@codeaurora.org>
+ <20181018091706.62310b38@gandalf.local.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20181018095507.GC2400@vkoul-mobl>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Vinod <vkoul@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Kate Stewart <kstewart@linuxfoundation.org>, linux-aspeed@lists.ozlabs.org, Hendrik Brueckner <brueckner@linux.vnet.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Michael Moese <mmoese@suse.de>, Russell King <linux@armlinux.org.uk>, Christian Borntraeger <borntraeger@de.ibm.com>, Joel Stanley <joel@jms.id.au>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, ShivahShankar Shakarnarayan rao <shivahshankar.shankarnarayanrao@aspeedtech.com>, Rob Herring <robh+dt@kernel.org>, Dan Williams <dan.j.williams@intel.com>, linux-arm-kernel@lists.infradead.org, Sudheer V <sudheer.veliseti@aspeedtech.com>, Andrew Jeffery <andrew@aj.id.au>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, "sudheer.v" <open.sudheer@gmail.com>, Philippe
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181018091706.62310b38@gandalf.local.home>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>, Stephen Boyd <sboyd@kernel.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2018-10-18 at 15:25 +0530, Vinod wrote:
+On Thu, Oct 18, 2018 at 09:17:06AM -0400, Steven Rostedt wrote:
+> On Thu, 18 Oct 2018 10:51:18 +0530
+> Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org> wrote:
 > 
-> > It's not a dmaengine driver. It's a serial UART driver that happens to
-> > use a dedicated DMA engine.
-> 
-> Then I see no reason for it to use dmaengine APIs. The framework allows
-> people to share a controller for many clients, but if you have dedicated
-> one then you may use it directly
-
-Well... the engine is shared by a few UARTs, they have dedicated rings
-but there's a common set of regs for interrupt handling etc.
-
-That said, I still think it could be contained within a UART driver,
-there's little benefit in adding the framework overhead, esp since
-these are really weak cores, any overhead will be felt.
-
-Ben.
-
-> > It's unclear whether it should be split into two drivers, or just have
-> > the serial driver directly use the dma engine since that engine is
-> > dedicated in HW to only work on those UARTs and nothing else...
+> > > So something else is causing an issue besides just msm_read.
+> > > 
+> > > Can you do an objdump -dr of the entire vmlinux binary and gzip it and
+> > > post it somewhere. Not sure if it would be too big to email. You could
+> > > try sending it to me privately. I'd like to see the binary that you are
+> > > using.
+> > >   
 > > 
-> > Cheers,
-> > Ben.
-> > 
-> > 
-> > > While doing resubmission please take some time to understand subsystem
-> > > tags to use. (hint git log <subsystem> will tell you)
-> > > 
-> > > Also series has [[PATCH] 8/9] whereas it should be [PATCH 8/9] please
-> > > let git generate that for you (hint git format-patch start..end does a
-> > > good job)
-> > > 
-> > > > @@ -0,0 +1,1594 @@
-> > > > +// SPDX-License-Identifier: GPL-2.0
-> > > > +/*
-> > > > + *   drivers/tty/serial/8250/8250_aspeed_uart_dma.c
-> > > > + *    1. 2018/07/01 Shivah Shankar created
-> > > > + *    2. 2018/08/25 sudheer.veliseti<open.sudheer@gmail.com> modified
-> > > 
-> > > we dont use this log in kernel. I do not see s-o-b by Shivah, that
-> > > should be added. I think he should be author and you need to list
-> > > changes you did..
-> > > 
+> > I have sent the objdump and dot config to you privately.
+> 
+> Thanks. I don't see anything that pops out, but then again, my arm asm
+> foo is very rusty (it has been literally decades since I did any arm
+> asm). I wonder if it could simply be a timing issue?
+> 
+> ffff0000086eb538 <msm_read.isra.1>:
+> ffff0000086eb538:       a9be7bfd        stp     x29, x30, [sp,#-32]!
+> ffff0000086eb53c:       910003fd        mov     x29, sp
+> ffff0000086eb540:       a90153f3        stp     x19, x20, [sp,#16]
+> ffff0000086eb544:       aa0003f4        mov     x20, x0
+> ffff0000086eb548:       2a0103f3        mov     w19, w1
+> ffff0000086eb54c:       aa1e03e0        mov     x0, x30
+> ffff0000086eb550:       97e6bae4        bl      ffff00000809a0e0 <_mcount>
+> 
+> The above is changed to nop on boot, but then to:
+> 
+> 	bl ftrace_caller
+> 
+> When ftrace is enabled.
+> 
+> ffff0000086eb554:       8b334280        add     x0, x20, w19, uxtw
+> ffff0000086eb558:       b9400000        ldr     w0, [x0]
+> ffff0000086eb55c:       a94153f3        ldp     x19, x20, [sp,#16]
+> ffff0000086eb560:       a8c27bfd        ldp     x29, x30, [sp],#32
+> ffff0000086eb564:       d65f03c0        ret
 > 
 > 
+> 
+> ffff00000809a0e4 <ftrace_caller>:
+> ffff00000809a0e4:       a9bf7bfd        stp     x29, x30, [sp,#-16]!
+> ffff00000809a0e8:       910003fd        mov     x29, sp
+> ffff00000809a0ec:       d10013c0        sub     x0, x30, #0x4
+> ffff00000809a0f0:       f94003a1        ldr     x1, [x29]
+> ffff00000809a0f4:       f9400421        ldr     x1, [x1,#8]
+> ffff00000809a0f8:       d1001021        sub     x1, x1, #0x4
+> 
+> ffff00000809a0fc <ftrace_call>:
+> ffff00000809a0fc:       d503201f        nop
+> 
+> The above nop gets patched to:
+> 
+> 	bl ftrace_ops_no_ops
+> 
+> Which will iterate through all the registered functions.
+> 
+> 
+> ffff00000809a100 <ftrace_graph_call>:
+> ffff00000809a100:       d503201f        nop
+> 
+> The above only gets set when function graph tracer is enabled, which it
+> is not in this case.
+> 
+> ffff00000809a104:       a8c17bfd        ldp     x29, x30, [sp],#16
+> ffff00000809a108:       d65f03c0        ret
+> 
+> 
+> Anyone see any problems here?
+
+This seems sane to me, he says in the other thread that he put 'notrace' to
+the msm serial functions (which AIUI should prevent ftrace instrumentation)
+and he still sees the issue.
+
+thanks,
+
+ - Joel
