@@ -1,78 +1,52 @@
-From: Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [PATCH 2/2] tty: serial: add driver for the SiFive UART (fwd)
-Date: Fri, 19 Oct 2018 19:27:35 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1810191926360.5513@hadrien>
+From: Paul Walmsley <paul.walmsley@sifive.com>
+Subject: [PATCH v2 0/2] tty: serial: add DT bindings and serial driver for the SiFive FU540 UART
+Date: Fri, 19 Oct 2018 11:48:26 -0700
+Message-ID: <20181019184827.12351-1-paul.walmsley@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: linux-serial@vger.kernel.org, kbuild-all@01.org, Paul Walmsley <paul.walmsley@sifive.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Wesley Terpstra <wesley@sifive.com>, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, Paul Walmsley <paul@pwsan.com>
+To: linux-serial@vger.kernel.org
+Cc: Paul Walmsley <paul.walmsley@sifive.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Wesley Terpstra <wesley@sifive.com>, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+This series adds a serial driver, with console support, for the
+UART IP block present on the SiFive FU540 SoC.  The programming
+model is straightforward, but unique.
 
-It looks like an unlock is needed before the return on line 562.
+Boot-tested on a SiFive FU540 HiFive-U board (with appropriate patches
+to the DT data).
 
-julia
+The patches in this series can also be found at:
 
----------- Forwarded message ----------
-Date: Fri, 19 Oct 2018 18:12:04 +0800
-From: kbuild test robot <lkp@intel.com>
-To: kbuild@01.org
-Cc: Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [PATCH 2/2] tty: serial: add driver for the SiFive UART
+https://github.com/sifive/riscv-linux/tree/dev/paulw/serial-v4.19-rc7
 
-CC: kbuild-all@01.org
-In-Reply-To: <20181018234352.26788-3-paul.walmsley@sifive.com>
-References: <20181018234352.26788-3-paul.walmsley@sifive.com>
-TO: Paul Walmsley <paul.walmsley@sifive.com>
-CC: linux-serial@vger.kernel.org
-CC: Paul Walmsley <paul.walmsley@sifive.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Wesley Terpstra <wesley@sifive.com>, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, Paul Walmsley <paul@pwsan.com>
+This second version fixes a few problems identified by the 0-day
+build system, mostly focused around remnants relating to
+CONFIG_CONSOLE_POLL, and a missing spin_unlock() in the ISR.
 
-Hi Paul,
+Paul Walmsley (2):
+  dt-bindings: serial: add documentation for the SiFive UART driver
+  tty: serial: add driver for the SiFive UART
 
-I love your patch! Perhaps something to improve:
+ .../bindings/serial/sifive-serial.txt         |   21 +
+ drivers/tty/serial/Kconfig                    |   24 +
+ drivers/tty/serial/Makefile                   |    1 +
+ drivers/tty/serial/sifive.c                   | 1067 +++++++++++++++++
+ include/uapi/linux/serial_core.h              |    3 +
+ 5 files changed, 1116 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
+ create mode 100644 drivers/tty/serial/sifive.c
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on v4.19-rc8 next-20181019]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
 
-url:    https://github.com/0day-ci/linux/commits/Paul-Walmsley/dt-bindings-serial-add-documentation-for-the-SiFive-UART-driver/20181019-165529
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-:::::: branch date: 77 minutes ago
-:::::: commit date: 77 minutes ago
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Palmer Dabbelt <palmer@sifive.com>
+Cc: Wesley Terpstra <wesley@sifive.com>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-riscv@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: devicetree@vger.kernel.org
 
->> drivers/tty/serial/sifive.c:562:2-8: preceding lock on line 558
-
-# https://github.com/0day-ci/linux/commit/15d0af7ab79ba53f984613f23e668cade495babb
-git remote add linux-review https://github.com/0day-ci/linux
-git remote update linux-review
-git checkout 15d0af7ab79ba53f984613f23e668cade495babb
-vim +562 drivers/tty/serial/sifive.c
-
-15d0af7a Paul Walmsley 2018-10-18  552
-15d0af7a Paul Walmsley 2018-10-18  553  static irqreturn_t sifive_serial_irq(int irq, void *dev_id)
-15d0af7a Paul Walmsley 2018-10-18  554  {
-15d0af7a Paul Walmsley 2018-10-18  555  	struct sifive_serial_port *ssp = dev_id;
-15d0af7a Paul Walmsley 2018-10-18  556  	u32 ip;
-15d0af7a Paul Walmsley 2018-10-18  557
-15d0af7a Paul Walmsley 2018-10-18 @558  	spin_lock(&ssp->port.lock);
-15d0af7a Paul Walmsley 2018-10-18  559
-15d0af7a Paul Walmsley 2018-10-18  560  	ip = __ssp_readl(ssp, SIFIVE_SERIAL_IP_OFFS);
-15d0af7a Paul Walmsley 2018-10-18  561  	if (!ip)
-15d0af7a Paul Walmsley 2018-10-18 @562  		return IRQ_NONE;
-15d0af7a Paul Walmsley 2018-10-18  563
-15d0af7a Paul Walmsley 2018-10-18  564  	if (ip & SIFIVE_SERIAL_IP_RXWM_MASK)
-15d0af7a Paul Walmsley 2018-10-18  565  		__ssp_receive_chars(ssp);
-15d0af7a Paul Walmsley 2018-10-18  566  	if (ip & SIFIVE_SERIAL_IP_TXWM_MASK)
-15d0af7a Paul Walmsley 2018-10-18  567  		__ssp_transmit_chars(ssp);
-15d0af7a Paul Walmsley 2018-10-18  568
-15d0af7a Paul Walmsley 2018-10-18  569  	spin_unlock(&ssp->port.lock);
-15d0af7a Paul Walmsley 2018-10-18  570
-15d0af7a Paul Walmsley 2018-10-18  571  	return IRQ_HANDLED;
-15d0af7a Paul Walmsley 2018-10-18  572  }
-15d0af7a Paul Walmsley 2018-10-18  573
-
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+-- 
+2.19.1
