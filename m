@@ -1,52 +1,62 @@
 From: Paul Walmsley <paul.walmsley@sifive.com>
-Subject: [PATCH v2 0/2] tty: serial: add DT bindings and serial driver for the SiFive FU540 UART
-Date: Fri, 19 Oct 2018 11:48:26 -0700
-Message-ID: <20181019184827.12351-1-paul.walmsley@sifive.com>
+Subject: [PATCH v2 1/2] dt-bindings: serial: add documentation for the SiFive UART driver
+Date: Fri, 19 Oct 2018 11:48:27 -0700
+Message-ID: <20181019184827.12351-2-paul.walmsley@sifive.com>
+References: <20181019184827.12351-1-paul.walmsley@sifive.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181019184827.12351-1-paul.walmsley@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Wesley Terpstra <wesley@sifive.com>, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Cc: Paul Walmsley <paul.walmsley@sifive.com>, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Palmer Dabbelt <palmer@sifive.com>, Paul Walmsley <paul@pwsan.com>
 List-Id: linux-serial@vger.kernel.org
 
-This series adds a serial driver, with console support, for the
-UART IP block present on the SiFive FU540 SoC.  The programming
-model is straightforward, but unique.
+Add DT binding documentation for the Linux driver for the SiFive
+asynchronous serial IP block.  Nothing too exotic.
 
-Boot-tested on a SiFive FU540 HiFive-U board (with appropriate patches
-to the DT data).
-
-The patches in this series can also be found at:
-
-https://github.com/sifive/riscv-linux/tree/dev/paulw/serial-v4.19-rc7
-
-This second version fixes a few problems identified by the 0-day
-build system, mostly focused around remnants relating to
-CONFIG_CONSOLE_POLL, and a missing spin_unlock() in the ISR.
-
-Paul Walmsley (2):
-  dt-bindings: serial: add documentation for the SiFive UART driver
-  tty: serial: add driver for the SiFive UART
-
- .../bindings/serial/sifive-serial.txt         |   21 +
- drivers/tty/serial/Kconfig                    |   24 +
- drivers/tty/serial/Makefile                   |    1 +
- drivers/tty/serial/sifive.c                   | 1067 +++++++++++++++++
- include/uapi/linux/serial_core.h              |    3 +
- 5 files changed, 1116 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
- create mode 100644 drivers/tty/serial/sifive.c
-
-
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Palmer Dabbelt <palmer@sifive.com>
-Cc: Wesley Terpstra <wesley@sifive.com>
 Cc: linux-serial@vger.kernel.org
+Cc: devicetree@vger.kernel.org
 Cc: linux-riscv@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
-Cc: devicetree@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Palmer Dabbelt <palmer@sifive.com>
+Reviewed-by: Palmer Dabbelt <palmer@sifive.com>
+Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
+Signed-off-by: Paul Walmsley <paul@pwsan.com>
+---
+ .../bindings/serial/sifive-serial.txt         | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
 
+diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.txt b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+new file mode 100644
+index 000000000000..8982338512f5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+@@ -0,0 +1,21 @@
++SiFive asynchronous serial interface (UART)
++
++Required properties:
++
++- compatible: should be "sifive,fu540-c000-uart0" or "sifive,uart0"
++- reg: address and length of the register space
++- interrupt-parent: should contain a phandle pointing to the SoC interrupt
++    controller device node that the UART interrupts are connected to
++- interrupts: Should contain the UART interrupt identifier
++- clocks: Should contain a clock identifier for the UART's parent clock
++
++
++Example:
++
++uart0: serial@10010000 {
++	compatible = "sifive,uart0";
++	interrupt-parent = <&plic0>;
++	interrupts = <80>;
++	reg = <0x0 0x10010000 0x0 0x1000>;
++	clocks = <&prci PRCI_CLK_TLCLK>;
++};
 -- 
 2.19.1
