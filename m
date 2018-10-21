@@ -1,72 +1,72 @@
-From: Vinod <vkoul@kernel.org>
-Subject: Re: [[PATCH] 8/9] DMA-UART-Driver-for-AST2500
-Date: Sat, 20 Oct 2018 21:56:24 +0530
-Message-ID: <20181020162624.GC2894@vkoul-mobl>
-References: <1539749466-3912-1-git-send-email-open.sudheer@gmail.com>
- <1539749466-3912-9-git-send-email-open.sudheer@gmail.com>
- <20181017060531.GU2400@vkoul-mobl>
- <351eecd5b1b21893e94f76b34c058c6257b7f837.camel@kernel.crashing.org>
- <20181018095507.GC2400@vkoul-mobl>
- <a3fecf7913d6a85a6294afbc5a1a18b7714d6756.camel@kernel.crashing.org>
- <20181019071154.GE13642@Pilot130>
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: [PATCH 0/1] tty: simplify getting .driver_data
+Date: Sun, 21 Oct 2018 22:00:58 +0200
+Message-ID: <20181021200059.2294-1-wsa+renesas@sang-engineering.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181019071154.GE13642@Pilot130>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "sudheer.v" <open.sudheer@gmail.com>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>, Russell King <linux@armlinux.org.uk>, Dan Williams <dan.j.williams@intel.com>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <marc.zyngier@arm.com>, Christian Borntraeger <borntraeger@de.ibm.com>, Michael Moese <mmoese@suse.de>, Hendrik Brueckner <brueckner@linux.vnet.ibm.com>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-renesas-soc@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 19-10-18, 12:41, sudheer.v wrote:
-> On Fri, Oct 19, 2018 at 10:32:24AM +1100, Benjamin Herrenschmidt wrote:
-> > On Thu, 2018-10-18 at 15:25 +0530, Vinod wrote:
-> > > 
-> > > > It's not a dmaengine driver. It's a serial UART driver that happens to
-> > > > use a dedicated DMA engine.
-> > > 
-> > > Then I see no reason for it to use dmaengine APIs. The framework allows
-> > > people to share a controller for many clients, but if you have dedicated
-> > > one then you may use it directly
-> > 
-> > Well... the engine is shared by a few UARTs, they have dedicated rings
-> > but there's a common set of regs for interrupt handling etc.
-> > 
-> > That said, I still think it could be contained within a UART driver,
-> > there's little benefit in adding the framework overhead, esp since
-> > these are really weak cores, any overhead will be felt.
-> > 
-> > Ben.
-> > 
-> > > > It's unclear whether it should be split into two drivers, or just have
-> > > > the serial driver directly use the dma engine since that engine is
-> > > > dedicated in HW to only work on those UARTs and nothing else...
-> > > > 
-> > > > Cheers,
-> > > > Ben.
-> 
-> Initially we wanted to have  a single driver,
-> however we had an informal discussion with one of the maintainer 
-> and based on the feedback, followed the Linux DMA and UART architecture.
-> 
-> If this seperate DMA-engine driver adds more overhead than benifit,
-> we will merge them into a single UART driver and resubmitt the patches.
-> Vinod,
->       can this dma-controller driver sit under dma subsystem?.
->       or better to move it under UART framework.
+I got tired of fixing this in Renesas drivers manually, so I took the big
+hammer. Remove this cumbersome code pattern which got copy-pasted too much
+already:
+
+-	struct platform_device *pdev = to_platform_device(dev);
+-	struct ep93xx_keypad *keypad = platform_get_drvdata(pdev);
++	struct ep93xx_keypad *keypad = dev_get_drvdata(dev);
+
+A branch, tested by buildbot, can be found here:
+
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git coccinelle/get_drvdata
+
+I have been asked if it couldn't be done for dev_set_drvdata as well. I checked
+it and did not find one occasion where it could be simplified like this. Not
+much of a surprise because driver_data is usually set in probe() functions
+which access struct platform_device in many other ways.
+
+I am open for other comments, suggestions, too, of course.
+
+Here is the cocci-script I created:
+
+@@
+struct device* d;
+identifier pdev;
+expression *ptr;
+@@
+(
+-	struct platform_device *pdev = to_platform_device(d);
+|
+-	struct platform_device *pdev;
+	...
+-	pdev = to_platform_device(d);
+)
+	<... when != pdev
+-	&pdev->dev
++	d
+	...>
+
+	ptr =
+-	platform_get_drvdata(pdev)
++	dev_get_drvdata(d)
+
+	<... when != pdev
+-	&pdev->dev
++	d
+	...>
+
+Kind regards,
+
+   Wolfram
 
 
-My advise would be to see what you can do with the DMA IP block. If this
-can/would be used in different places then it would make sense to do a
-dmaengine driver and solve the problem for everyone.
+Wolfram Sang (1):
+  tty: serial: qcom_geni_serial: simplify getting .driver_data
 
-If this is always going to be hidden behind serial then maybe it makes
-sense to be inside serial driver and not use dmaengine APIs
+ drivers/tty/serial/qcom_geni_serial.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-If you decide to prefer the former case, please move it to dmaengine and
-resubmit :)
-
-HTH
 -- 
-~Vinod
+2.19.0
