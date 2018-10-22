@@ -1,132 +1,128 @@
-From: "H. Peter Anvin (Intel)" <hpa@zytor.com>
-Subject: [PATCH stable v2 2/2] arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
-Date: Mon, 22 Oct 2018 09:19:05 -0700
-Message-ID: <20181022161905.26589-2-hpa@zytor.com>
-References: <20181022161905.26589-1-hpa@zytor.com>
+From: Palmer Dabbelt <palmer@sifive.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: serial: add documentation for the SiFive UART driver
+Date: Mon, 22 Oct 2018 09:41:51 -0700 (PDT)
+Message-ID: <mhng-44b7601c-c2f4-4de8-a12e-7730e03d691e@palmer-si-x1c4>
+References: <CAL_JsqJBSqaxnETdJg1Mdp+H2ay+WKT0JaxLe6D4Fwo_99qUkw@mail.gmail.com>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181022161905.26589-1-hpa@zytor.com>
+In-Reply-To: <CAL_JsqJBSqaxnETdJg1Mdp+H2ay+WKT0JaxLe6D4Fwo_99qUkw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: "H. Peter Anvin (Intel)" <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, Johan Hovold <johan@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, stable@vger.kernel.org
+To: robh+dt@kernel.org
+Cc: Paul Walmsley <paul.walmsley@sifive.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, mark.rutland@arm.com, paul@pwsan.com
 List-Id: linux-serial@vger.kernel.org
 
-Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
-using arbitrary flags. Because BOTHER is not defined, the general
-Linux code doesn't allow setting arbitrary baud rates, and because
-CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
-drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
+On Fri, 19 Oct 2018 13:45:57 PDT (-0700), robh+dt@kernel.org wrote:
+> On Fri, Oct 19, 2018 at 1:48 PM Paul Walmsley <paul.walmsley@sifive.com> wrote:
+>>
+>> Add DT binding documentation for the Linux driver for the SiFive
+>> asynchronous serial IP block.  Nothing too exotic.
+>>
+>> Cc: linux-serial@vger.kernel.org
+>> Cc: devicetree@vger.kernel.org
+>> Cc: linux-riscv@lists.infradead.org
+>> Cc: linux-kernel@vger.kernel.org
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> Cc: Rob Herring <robh+dt@kernel.org>
+>> Cc: Mark Rutland <mark.rutland@arm.com>
+>> Cc: Palmer Dabbelt <palmer@sifive.com>
+>> Reviewed-by: Palmer Dabbelt <palmer@sifive.com>
+>> Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
+>> Signed-off-by: Paul Walmsley <paul@pwsan.com>
+>> ---
+>>  .../bindings/serial/sifive-serial.txt         | 21 +++++++++++++++++++
+>>  1 file changed, 21 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.txt b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+>> new file mode 100644
+>> index 000000000000..8982338512f5
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+>> @@ -0,0 +1,21 @@
+>> +SiFive asynchronous serial interface (UART)
+>> +
+>> +Required properties:
+>> +
+>> +- compatible: should be "sifive,fu540-c000-uart0" or "sifive,uart0"
+>
+> I assume once again, the last '0' is a version? As I mentioned for the
+> intc and now the pwm block bindings, if you are going to do version
+> numbers please document the versioning scheme. Palmer mentioned the
+> compatible string is part of the IP block repository? Where does the
+> number come from? What's the next version? Major vs. minor versions?
+> ECO fixes? Is the version s/w readable? How do you ensure it gets
+> updated? All that should be addressed.
 
-Resolve both problems by #defining BOTHER to 037 on Alpha.
+The RISC-V ecosystem is a bit different than that of ARM, MIPS, or Intel in 
+that the ISA is an royalty-free open standard that anyone can implement (ie, 
+without even signing a license agreement), with only the "RISC-V" trademark 
+being held behind a pay+conformance wall.  As a result, we don't actually have 
+any control over who builds a RISC-V chip so all we at SiFive can really to is 
+try to demonstrate good practices in software land and go from there.
 
-However, userspace still needs to know if setting BOTHER is actually
-safe given legacy kernels (does anyone actually care about that on
-Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
-though they use the same structure. Define struct termios2 just for
-compatibility; it is the exact same structure as struct termios. In a
-future patchset, this will be cleaned up so the uapi headers are
-usable from libc.
+As far as SiFive's codebase is concerned, the version number is embedded in the 
+RTL generator, and a device tree is generated along with the RTL.  This device 
+tree is then embedded into a mask ROM on the chip, which allows the earliest 
+stage of boot to proceed.  As I'm sure you know, boot is a very complicated 
+process and as a result the device tree passed to Linux doesn't necessarily 
+look like what's in the ROM, but the intent is to keep iterating until we can 
+get these as similar as possible -- that's why we're submitting every 
+devicetree binding to the standard.
 
-Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Eugene Syromiatnikov <esyr@redhat.com>
-Cc: <linux-alpha@vger.kernel.org>
-Cc: <linux-serial@vger.kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: <stable@vger.kernel.org>
----
- arch/alpha/include/asm/termios.h       |  8 +++++++-
- arch/alpha/include/uapi/asm/ioctls.h   |  5 +++++
- arch/alpha/include/uapi/asm/termbits.h | 17 +++++++++++++++++
- 3 files changed, 29 insertions(+), 1 deletion(-)
+Specifically as far as the UART is concerned, the compat string that's not 
+chip-specific lives here (the "sifive,fu540-c000-uart" string lives in an 
+internal chip repo that I can't point to):
 
-diff --git a/arch/alpha/include/asm/termios.h b/arch/alpha/include/asm/termios.h
-index 6a8c53dec57e..b7c77bb1bfd2 100644
---- a/arch/alpha/include/asm/termios.h
-+++ b/arch/alpha/include/asm/termios.h
-@@ -73,9 +73,15 @@
- })
- 
- #define user_termios_to_kernel_termios(k, u) \
--	copy_from_user(k, u, sizeof(struct termios))
-+	copy_from_user(k, u, sizeof(struct termios2))
- 
- #define kernel_termios_to_user_termios(u, k) \
-+	copy_to_user(u, k, sizeof(struct termios2))
-+
-+#define user_termios_to_kernel_termios_1(k, u) \
-+	copy_from_user(k, u, sizeof(struct termios))
-+
-+#define kernel_termios_to_user_termios_1(u, k) \
- 	copy_to_user(u, k, sizeof(struct termios))
- 
- #endif	/* _ALPHA_TERMIOS_H */
-diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/uapi/asm/ioctls.h
-index 3729d92d3fa8..dc8c20ac7191 100644
---- a/arch/alpha/include/uapi/asm/ioctls.h
-+++ b/arch/alpha/include/uapi/asm/ioctls.h
-@@ -32,6 +32,11 @@
- #define TCXONC		_IO('t', 30)
- #define TCFLSH		_IO('t', 31)
- 
-+#define TCGETS2		_IOR('T', 42, struct termios2)
-+#define TCSETS2		_IOW('T', 43, struct termios2)
-+#define TCSETSW2	_IOW('T', 44, struct termios2)
-+#define TCSETSF2	_IOW('T', 45, struct termios2)
-+
- #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
- #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
- #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
-diff --git a/arch/alpha/include/uapi/asm/termbits.h b/arch/alpha/include/uapi/asm/termbits.h
-index de6c8360fbe3..4575ba34a0ea 100644
---- a/arch/alpha/include/uapi/asm/termbits.h
-+++ b/arch/alpha/include/uapi/asm/termbits.h
-@@ -26,6 +26,19 @@ struct termios {
- 	speed_t c_ospeed;		/* output speed */
- };
- 
-+/* Alpha has identical termios and termios2 */
-+
-+struct termios2 {
-+	tcflag_t c_iflag;		/* input mode flags */
-+	tcflag_t c_oflag;		/* output mode flags */
-+	tcflag_t c_cflag;		/* control mode flags */
-+	tcflag_t c_lflag;		/* local mode flags */
-+	cc_t c_cc[NCCS];		/* control characters */
-+	cc_t c_line;			/* line discipline (== c_cc[19]) */
-+	speed_t c_ispeed;		/* input speed */
-+	speed_t c_ospeed;		/* output speed */
-+};
-+
- /* Alpha has matching termios and ktermios */
- 
- struct ktermios {
-@@ -152,6 +165,7 @@ struct ktermios {
- #define B3000000  00034
- #define B3500000  00035
- #define B4000000  00036
-+#define BOTHER    00037
- 
- #define CSIZE	00001400
- #define   CS5	00000000
-@@ -169,6 +183,9 @@ struct ktermios {
- #define CMSPAR	  010000000000		/* mark or space (stick) parity */
- #define CRTSCTS	  020000000000		/* flow control */
- 
-+#define CIBAUD	07600000
-+#define IBSHIFT	16
-+
- /* c_lflag bits */
- #define ISIG	0x00000080
- #define ICANON	0x00000100
--- 
-2.14.4
+    https://github.com/sifive/sifive-blocks/blob/master/src/main/scala/devices/uart/UART.scala#L43
+
+The version numbering scheme right now is pretty simple: I try to pay as much 
+attention as possible to how the hardware changes (both by looking and with 
+some automation), and I go yell at anyone who does something stupid.  I know 
+it's not the most scalable of schemes, but it's the best we have.  The UART is 
+actually an interesting case right now because we have an outstanding pull 
+request that adds a bit to the UART and then adds "sifive,uart1" to the compat 
+string
+
+    https://github.com/sifive/sifive-blocks/pull/90
+
+My intent is to ensure that the device tree's compat string uniquely identifies 
+the software interface to a block.  Thus, whenever a device's implementation 
+changes in a software-visible way (bug fix or feature addition) we change the 
+compat string -- either adding one (as is the case of the UART, where the 
+compat string will be both "sifive,uart1" and "sifive,uart0" since the new 
+feature is backwards compatible with the old software) or changing one (if the 
+interface change is not compatible with old software).
+
+Like I said above, this is all a manual process right now and this only applies 
+to SiFive's implementations.  I'm confident that I can at least ensure that, 
+for any given SiFive implementation, a block's compat string will uniquely 
+identify the software interface to it.  For the rest of the RISC-V world all we 
+can do is set a good example and review the software.
+
+> Otherwise, don't do version numbers because we have no visibility to
+> what they mean.
+>
+>> +- reg: address and length of the register space
+>> +- interrupt-parent: should contain a phandle pointing to the SoC interrupt
+>> +    controller device node that the UART interrupts are connected to
+>
+> Don't need to document interrupt-parent here.
+>
+>> +- interrupts: Should contain the UART interrupt identifier
+>> +- clocks: Should contain a clock identifier for the UART's parent clock
+>> +
+>> +
+>> +Example:
+>> +
+>> +uart0: serial@10010000 {
+>> +       compatible = "sifive,uart0";
+>> +       interrupt-parent = <&plic0>;
+>> +       interrupts = <80>;
+>> +       reg = <0x0 0x10010000 0x0 0x1000>;
+>> +       clocks = <&prci PRCI_CLK_TLCLK>;
+>> +};
+>> --
+>> 2.19.1
+>>
