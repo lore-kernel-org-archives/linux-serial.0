@@ -1,128 +1,85 @@
-From: Palmer Dabbelt <palmer@sifive.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: serial: add documentation for the SiFive UART driver
-Date: Mon, 22 Oct 2018 09:41:51 -0700 (PDT)
-Message-ID: <mhng-44b7601c-c2f4-4de8-a12e-7730e03d691e@palmer-si-x1c4>
-References: <CAL_JsqJBSqaxnETdJg1Mdp+H2ay+WKT0JaxLe6D4Fwo_99qUkw@mail.gmail.com>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [RFC][PATCHv2 2/4] printk: move printk_safe macros to printk
+ header
+Date: Tue, 23 Oct 2018 15:25:35 +0900
+Message-ID: <20181023062535.GA504@jagdpanzerIV>
+References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
+ <20181016050428.17966-3-sergey.senozhatsky@gmail.com>
+ <20181016072719.GB4030@hirez.programming.kicks-ass.net>
+ <20181016122734.GA1259@jagdpanzerIV>
+ <20181016125415.GA3121@hirez.programming.kicks-ass.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqJBSqaxnETdJg1Mdp+H2ay+WKT0JaxLe6D4Fwo_99qUkw@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20181016125415.GA3121@hirez.programming.kicks-ass.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: robh+dt@kernel.org
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, mark.rutland@arm.com, paul@pwsan.com
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 19 Oct 2018 13:45:57 PDT (-0700), robh+dt@kernel.org wrote:
-> On Fri, Oct 19, 2018 at 1:48 PM Paul Walmsley <paul.walmsley@sifive.com> wrote:
->>
->> Add DT binding documentation for the Linux driver for the SiFive
->> asynchronous serial IP block.  Nothing too exotic.
->>
->> Cc: linux-serial@vger.kernel.org
->> Cc: devicetree@vger.kernel.org
->> Cc: linux-riscv@lists.infradead.org
->> Cc: linux-kernel@vger.kernel.org
->> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> Cc: Rob Herring <robh+dt@kernel.org>
->> Cc: Mark Rutland <mark.rutland@arm.com>
->> Cc: Palmer Dabbelt <palmer@sifive.com>
->> Reviewed-by: Palmer Dabbelt <palmer@sifive.com>
->> Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
->> Signed-off-by: Paul Walmsley <paul@pwsan.com>
->> ---
->>  .../bindings/serial/sifive-serial.txt         | 21 +++++++++++++++++++
->>  1 file changed, 21 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
->>
->> diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.txt b/Documentation/devicetree/bindings/serial/sifive-serial.txt
->> new file mode 100644
->> index 000000000000..8982338512f5
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/serial/sifive-serial.txt
->> @@ -0,0 +1,21 @@
->> +SiFive asynchronous serial interface (UART)
->> +
->> +Required properties:
->> +
->> +- compatible: should be "sifive,fu540-c000-uart0" or "sifive,uart0"
->
-> I assume once again, the last '0' is a version? As I mentioned for the
-> intc and now the pwm block bindings, if you are going to do version
-> numbers please document the versioning scheme. Palmer mentioned the
-> compatible string is part of the IP block repository? Where does the
-> number come from? What's the next version? Major vs. minor versions?
-> ECO fixes? Is the version s/w readable? How do you ensure it gets
-> updated? All that should be addressed.
+On (10/16/18 14:54), Peter Zijlstra wrote:
+> 
+> No, no wakups. irq_work to wake the printk-thread, at most.
+> 
 
-The RISC-V ecosystem is a bit different than that of ARM, MIPS, or Intel in 
-that the ISA is an royalty-free open standard that anyone can implement (ie, 
-without even signing a license agreement), with only the "RISC-V" trademark 
-being held behind a pay+conformance wall.  As a result, we don't actually have 
-any control over who builds a RISC-V chip so all we at SiFive can really to is 
-try to demonstrate good practices in software land and go from there.
+There are cases when we probably prefer to be in "direct printk" mode.
+E.g. sysrq or late PM stages (probably).
 
-As far as SiFive's codebase is concerned, the version number is embedded in the 
-RTL generator, and a device tree is generated along with the RTL.  This device 
-tree is then embedded into a mask ROM on the chip, which allows the earliest 
-stage of boot to proceed.  As I'm sure you know, boot is a very complicated 
-process and as a result the device tree passed to Linux doesn't necessarily 
-look like what's in the ROM, but the intent is to keep iterating until we can 
-get these as similar as possible -- that's why we're submitting every 
-devicetree binding to the standard.
+Doing irq_work->wake_up_process->printk_kthread from sysrq probably
+might not work all the time, so direct printk path may look more
+"reliable" in some cases. In *theory* (just in theory), we can do
 
-Specifically as far as the UART is concerned, the compat string that's not 
-chip-specific lives here (the "sifive,fu540-c000-uart" string lives in an 
-internal chip repo that I can't point to):
+	void __handle_sysrq(int key, bool check_mask)
+	{
+		...
+		op_p->handler(key);
+		...
 
-    https://github.com/sifive/sifive-blocks/blob/master/src/main/scala/devices/uart/UART.scala#L43
++		if (console_trylock())
++			console_unlock();
+	}
 
-The version numbering scheme right now is pretty simple: I try to pay as much 
-attention as possible to how the hardware changes (both by looking and with 
-some automation), and I go yell at anyone who does something stupid.  I know 
-it's not the most scalable of schemes, but it's the best we have.  The UART is 
-actually an interesting case right now because we have an outstanding pull 
-request that adds a bit to the UART and then adds "sifive,uart1" to the compat 
-string
+type of thing. So sysrq handler will just log_store() the data and we
+will try to flush logbuf immediately once we are dont with sysrq handler.
+This will require additional work, tho. Some sysrq handlers can print
+significant (depends on serial console baud) amounts of data. For instance,
+sysrq_handle_showstate() calls show_workqueue_state() and show_state(),
+which do numerous printk()-s. Therefore, those functions touch NMI and
+softlockup watchdogs:
 
-    https://github.com/sifive/sifive-blocks/pull/90
+	void show_workqueue_state(void)
+	{
+		for_each_pwq(pwq, wq) {
+			...
+			touch_nmi_watchdog();
+		}
 
-My intent is to ensure that the device tree's compat string uniquely identifies 
-the software interface to a block.  Thus, whenever a device's implementation 
-changes in a software-visible way (bug fix or feature addition) we change the 
-compat string -- either adding one (as is the case of the UART, where the 
-compat string will be both "sifive,uart1" and "sifive,uart0" since the new 
-feature is backwards compatible with the old software) or changing one (if the 
-interface change is not compatible with old software).
+		for_each_pool(pool, pi) {
+			...
+			touch_nmi_watchdog();
+		}
+	}
 
-Like I said above, this is all a manual process right now and this only applies 
-to SiFive's implementations.  I'm confident that I can at least ensure that, 
-for any given SiFive implementation, a block's compat string will uniquely 
-identify the software interface to it.  For the rest of the RISC-V world all we 
-can do is set a good example and review the software.
+and
 
-> Otherwise, don't do version numbers because we have no visibility to
-> what they mean.
->
->> +- reg: address and length of the register space
->> +- interrupt-parent: should contain a phandle pointing to the SoC interrupt
->> +    controller device node that the UART interrupts are connected to
->
-> Don't need to document interrupt-parent here.
->
->> +- interrupts: Should contain the UART interrupt identifier
->> +- clocks: Should contain a clock identifier for the UART's parent clock
->> +
->> +
->> +Example:
->> +
->> +uart0: serial@10010000 {
->> +       compatible = "sifive,uart0";
->> +       interrupt-parent = <&plic0>;
->> +       interrupts = <80>;
->> +       reg = <0x0 0x10010000 0x0 0x1000>;
->> +       clocks = <&prci PRCI_CLK_TLCLK>;
->> +};
->> --
->> 2.19.1
->>
+	void show_state_filter(unsigned long state_filter)
+	{
+		for_each_process_thread(g, p) {
+			touch_nmi_watchdog();
+			touch_all_softlockup_watchdogs();
+			...
+		}
+	}
+
+If we will move the actual printout to console_unlock() then we will
+have to start touching watchdogs from console_unlock().
+
+Another troubling moment might be that with completely async printk()
+it's easier to cause logbuf wrap around; because CPU which does printk()
+in a loop is always async, console drivers don't throttle it anymore;
+currently it's sometimes sync (when console_sem is not locked, or locked
+but we have active console_sem_owner) or async (when console_sem is
+locked and there is no active console_sem_owner).
+
+	-ss
