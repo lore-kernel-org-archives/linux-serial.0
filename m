@@ -1,158 +1,103 @@
-From: Petr Mladek <pmladek@suse.com>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 Subject: Re: [RFC][PATCHv2 1/4] panic: avoid deadlocks in re-entrant console
  drivers
-Date: Tue, 23 Oct 2018 13:07:51 +0200
-Message-ID: <20181023110751.un2u67bc7dpo4ska@pathway.suse.cz>
+Date: Tue, 23 Oct 2018 20:54:33 +0900
+Message-ID: <20181023115433.GA10251@jagdpanzerIV>
 References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
  <20181016050428.17966-2-sergey.senozhatsky@gmail.com>
+ <20181023110751.un2u67bc7dpo4ska@pathway.suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181016050428.17966-2-sergey.senozhatsky@gmail.com>
+In-Reply-To: <20181023110751.un2u67bc7dpo4ska@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 2018-10-16 14:04:25, Sergey Senozhatsky wrote:
-> >From printk()/serial console point of view panic() is special, because
-> it may force CPU to re-enter printk() or/and serial console driver.
-> Therefore, some of serial consoles drivers are re-entrant. E.g. 8250:
+On (10/23/18 13:07), Petr Mladek wrote:
+> Though this looks a bit weird.
 > 
-> serial8250_console_write()
-> {
->         if (port->sysrq)
->                 locked = 0;
->         else if (oops_in_progress)
->                 locked = spin_trylock_irqsave(&port->lock, flags);
->         else
->                 spin_lock_irqsave(&port->lock, flags);
-> 	...
-> }
-> 
-> panic() does set oops_in_progress via bust_spinlocks(1), so in theory
-> we should be able to re-enter serial console driver from panic():
-> 
-> 	CPU0
-> 	<NMI>
-> 	uart_console_write()
-> 	serial8250_console_write()		// if (oops_in_progress)
-> 						//    spin_trylock_irqsave()
-> 	call_console_drivers()
-> 	console_unlock()
-> 	console_flush_on_panic()
-> 	bust_spinlocks(1)			// oops_in_progress++
-> 	panic()
-> 	<NMI/>
-> 	spin_lock_irqsave(&port->lock, flags)   // spin_lock_irqsave()
-> 	serial8250_console_write()
-> 	call_console_drivers()
-> 	console_unlock()
-> 	printk()
-> 	...
-> 
-> However, this does not happen and we deadlock in serial console on
-> port->lock spinlock. And the problem is that console_flush_on_panic()
-> called after bust_spinlocks(0):
-> 
-> void panic(const char *fmt, ...)
-> {
->         bust_spinlocks(1);
-> ...
->         bust_spinlocks(0);
->         console_flush_on_panic();
-> ...
-> }
-> 
-> bust_spinlocks(0) decrements oops_in_progress, so oops_in_progress
-> can go back to zero. Thus even re-entrant console drivers will simply
-> spin on port->lock spinlock. Given that port->lock may already be
-> locked either by a stopped CPU, or by the very same CPU we execute
-> panic() on (for instance, NMI panic() on printing CPU) the system
-> deadlocks and does not reboot.
+> I have just realized that console_unblank() is called by
+> bust_spinlocks(0) and does basically the same as
+> console_flush_on_panic(). Also it does not make much
+> sense wake_up_klogd() there. Finally, it seems to be
+> too late to disable lockdep there.
 
-The idea makes sense to me. You are right that we already called
-printk/console with busted spinlock many times in panic().
-Therefore it should not be worse.
+Thanks for taking a look.
+As of "weird" part I have some explanations:
 
-
-> Fix this by setting oops_in_progress before console_flush_on_panic(),
-> so re-entrant console drivers will trylock the port->lock instead of
-> spinning on it forever.
-> 
-> Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-> ---
->  kernel/panic.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/kernel/panic.c b/kernel/panic.c
-> index f6d549a29a5c..a0e60ccf3031 100644
-> --- a/kernel/panic.c
-> +++ b/kernel/panic.c
-> @@ -237,7 +237,13 @@ void panic(const char *fmt, ...)
+> @@ -233,17 +233,14 @@ void panic(const char *fmt, ...)
 >  	if (_crash_kexec_post_notifiers)
 >  		__crash_kexec(NULL);
 >  
-> +	/*
-> +	 * Decrement oops_in_progress and let bust_spinlocks() to
-> +	 * unblank_screen(), console_unblank() and wake_up_klogd()
-> +	 */
->  	bust_spinlocks(0);
-> +	/* Set oops_in_progress, so we can reenter serial console driver */
-> +	bust_spinlocks(1);
+> -	bust_spinlocks(0);
+> -
+[..]
+> -	debug_locks_off();
+> +#ifdef CONFIG_VT
+> +	unblank_screen();
+> +#endif
+>  	console_flush_on_panic();
+>  
+>  	if (!panic_blink)
 
-Though this looks a bit weird.
 
-I have just realized that console_unblank() is called by
-bust_spinlocks(0) and does basically the same as
-console_flush_on_panic(). Also it does not make much
-sense wake_up_klogd() there. Finally, it seems to be
-too late to disable lockdep there.
+So I did look at what lib/bust_spinlocks.c does; and I agree that waking
+up klogd makes little sense, on the other hand it just sets per-cpu
+pending bit, so not a big deal. console_unlock() should do there the
+same thing as console_flush_on_panic(). Yes. However, a bit of a bigger
+argument:
+   __attribute__((weak)) suggests that bust_spinlocks() is arch-dependent
+   and it's up to arch to do some extra stuff there [if needed]. So that's
+   why I decided to keep bust_spinlocks(0) in panic() and, thus, call into
+   arch-specific code (or common bust_spinlocks); then bump oops_in_progress
+   so serial consoles become re-entrant and finally call
+   console_flush_on_panic().
 
-I would suggest something like:
+>  void __attribute__((weak)) bust_spinlocks(int yes)
+>  {
+>  	if (yes) {
+> +		/*
+> +		 * Some locks might get ignored in the Oops situation
+> +		 * to get an important work done. Locks debug should
+> +		 * be disabled to avoid reporting bad unlock balance.
+> +		 */
+> +		debug_locks_off();
+>  		++oops_in_progress;
 
-diff --git a/kernel/panic.c b/kernel/panic.c
-index 8b2e002d52eb..c78e3df8dd58 100644
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -233,17 +233,14 @@ void panic(const char *fmt, ...)
- 	if (_crash_kexec_post_notifiers)
- 		__crash_kexec(NULL);
- 
--	bust_spinlocks(0);
--
- 	/*
- 	 * We may have ended up stopping the CPU holding the lock (in
--	 * smp_send_stop()) while still having some valuable data in the console
--	 * buffer.  Try to acquire the lock then release it regardless of the
--	 * result.  The release will also print the buffers out.  Locks debug
--	 * should be disabled to avoid reporting bad unlock balance when
--	 * panic() is not being callled from OOPS.
-+	 * smp_send_stop()) while still having some valuable data in
-+	 * the console buffer. Try hard to see them.
- 	 */
--	debug_locks_off();
-+#ifdef CONFIG_VT
-+	unblank_screen();
-+#endif
- 	console_flush_on_panic();
- 
- 	if (!panic_blink)
-diff --git a/lib/bust_spinlocks.c b/lib/bust_spinlocks.c
-index ab719495e2cb..e42d2fcd6453 100644
---- a/lib/bust_spinlocks.c
-+++ b/lib/bust_spinlocks.c
-@@ -20,6 +20,12 @@
- void __attribute__((weak)) bust_spinlocks(int yes)
- {
- 	if (yes) {
-+		/*
-+		 * Some locks might get ignored in the Oops situation
-+		 * to get an important work done. Locks debug should
-+		 * be disabled to avoid reporting bad unlock balance.
-+		 */
-+		debug_locks_off();
- 		++oops_in_progress;
- 	} else {
- #ifdef CONFIG_VT
+Hmm, I don't think I've seen any reports because of this. From printk/console
+POV the locks which are not taken under oops_in_progress are not released.
+
+Wrt to uart port we usually have "bool locked" flag and unlock
+port->lock only if we locked it:
+
+{
+	if (oops_in_progress)
+		locked = spin_trylock_irqsave(&port->lock, flags);
+
+	...
+
+	if (locked)
+		spin_unlock_irqrestore(&port->lock, flags);
+}
+
+Wrt to console_sem we have
+
+{
+	if (oops_in_progress)
+		if (!down_trylock_console_sem() != 0)
+			return;
+	...
+	console_unlock();
+}
+
+So the locks that we care about in this particular patch (console sem
+and port->lock) probably should not see any locking imbalance.
+
+If you have strong opinion then we can have debug_locks_off() change
+as part of this patch. But maybe I'd prefer to have it as a separate
+patch. What do you think?
+
+	-ss
