@@ -1,138 +1,196 @@
 From: Rob Herring <robh@kernel.org>
 Subject: Re: [PATCH v2 1/2] dt-bindings: serial: add documentation for the
  SiFive UART driver
-Date: Wed, 24 Oct 2018 11:53:49 -0500
-Message-ID: <20181024165349.GA5652@bogus>
-References: <CAL_JsqJBSqaxnETdJg1Mdp+H2ay+WKT0JaxLe6D4Fwo_99qUkw@mail.gmail.com>
- <mhng-44b7601c-c2f4-4de8-a12e-7730e03d691e@palmer-si-x1c4>
+Date: Wed, 24 Oct 2018 12:32:32 -0500
+Message-ID: <20181024173232.GB5652@bogus>
+References: <20181019184827.12351-1-paul.walmsley@sifive.com>
+ <20181019184827.12351-2-paul.walmsley@sifive.com>
+ <CAL_JsqJBSqaxnETdJg1Mdp+H2ay+WKT0JaxLe6D4Fwo_99qUkw@mail.gmail.com>
+ <4317548d-f831-29ba-3be9-35f080587db9@sifive.com>
+ <CAL_JsqLagTgjDhZ02X=wPFDB4WF2bR7=LyzSW9D=ooo_XB_zOg@mail.gmail.com>
+ <6571bb0e-b36a-1196-4d90-8aa62d8a2a90@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <mhng-44b7601c-c2f4-4de8-a12e-7730e03d691e@palmer-si-x1c4>
+In-Reply-To: <6571bb0e-b36a-1196-4d90-8aa62d8a2a90@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Palmer Dabbelt <palmer@sifive.com>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>, mark.rutland@arm.com, paul@pwsan.com
+To: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Palmer Dabbelt <palmer@sifive.com>, Paul Walmsley <paul@pwsan.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Oct 22, 2018 at 09:41:51AM -0700, Palmer Dabbelt wrote:
-> On Fri, 19 Oct 2018 13:45:57 PDT (-0700), robh+dt@kernel.org wrote:
-> > On Fri, Oct 19, 2018 at 1:48 PM Paul Walmsley <paul.walmsley@sifive.com> wrote:
-> > > 
-> > > Add DT binding documentation for the Linux driver for the SiFive
-> > > asynchronous serial IP block.  Nothing too exotic.
-> > > 
-> > > Cc: linux-serial@vger.kernel.org
-> > > Cc: devicetree@vger.kernel.org
-> > > Cc: linux-riscv@lists.infradead.org
-> > > Cc: linux-kernel@vger.kernel.org
-> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Cc: Rob Herring <robh+dt@kernel.org>
-> > > Cc: Mark Rutland <mark.rutland@arm.com>
-> > > Cc: Palmer Dabbelt <palmer@sifive.com>
-> > > Reviewed-by: Palmer Dabbelt <palmer@sifive.com>
-> > > Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
-> > > Signed-off-by: Paul Walmsley <paul@pwsan.com>
-> > > ---
-> > >  .../bindings/serial/sifive-serial.txt         | 21 +++++++++++++++++++
-> > >  1 file changed, 21 insertions(+)
-> > >  create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.txt b/Documentation/devicetree/bindings/serial/sifive-serial.txt
-> > > new file mode 100644
-> > > index 000000000000..8982338512f5
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/serial/sifive-serial.txt
-> > > @@ -0,0 +1,21 @@
-> > > +SiFive asynchronous serial interface (UART)
-> > > +
-> > > +Required properties:
-> > > +
-> > > +- compatible: should be "sifive,fu540-c000-uart0" or "sifive,uart0"
+On Tue, Oct 23, 2018 at 10:05:40AM -0700, Paul Walmsley wrote:
+> 
+> On 10/20/18 7:21 AM, Rob Herring wrote:
+> > On Fri, Oct 19, 2018 at 5:06 PM Paul Walmsley <paul.walmsley@sifive.com> wrote:
+> > > On 10/19/18 1:45 PM, Rob Herring wrote:
+> > > > On Fri, Oct 19, 2018 at 1:48 PM Paul Walmsley <paul.walmsley@sifive.com> wrote:
+> > > > > Add DT binding documentation for the Linux driver for the SiFive
+> > > > > asynchronous serial IP block.  Nothing too exotic.
+> > > > > 
+> > > > > Cc: linux-serial@vger.kernel.org
+> > > > > Cc: devicetree@vger.kernel.org
+> > > > > Cc: linux-riscv@lists.infradead.org
+> > > > > Cc: linux-kernel@vger.kernel.org
+> > > > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > > > Cc: Rob Herring <robh+dt@kernel.org>
+> > > > > Cc: Mark Rutland <mark.rutland@arm.com>
+> > > > > Cc: Palmer Dabbelt <palmer@sifive.com>
+> > > > > Reviewed-by: Palmer Dabbelt <palmer@sifive.com>
+> > > > > Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
+> > > > > Signed-off-by: Paul Walmsley <paul@pwsan.com>
+> > > > > ---
+> > > > >    .../bindings/serial/sifive-serial.txt         | 21 +++++++++++++++++++
+> > > > >    1 file changed, 21 insertions(+)
+> > > > >    create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
+> > > > > 
+> > > > > diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.txt b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+> > > > > new file mode 100644
+> > > > > index 000000000000..8982338512f5
+> > > > > --- /dev/null
+> > > > > +++ b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+> > > > > @@ -0,0 +1,21 @@
+> > > > > +SiFive asynchronous serial interface (UART)
+> > > > > +
+> > > > > +Required properties:
+> > > > > +
+> > > > > +- compatible: should be "sifive,fu540-c000-uart0" or "sifive,uart0"
+> > > > > 
+> > > > As I mentioned for the
+> > > > intc and now the pwm block bindings, if you are going to do version
+> > > > numbers please document the versioning scheme.
+> > > > 
+> > > > 
+> > > > Will add that to the binding document.
+> > I don't seem to be making my point clear. I don't want any of this
+> > added to a binding doc for particular IP blocks. Write a common doc
+> > that explains the scheme and addresses the questions I asked. Then
+> > just reference that doc here.
 > > 
-> > I assume once again, the last '0' is a version? As I mentioned for the
-> > intc and now the pwm block bindings, if you are going to do version
-> > numbers please document the versioning scheme. Palmer mentioned the
-> > compatible string is part of the IP block repository? Where does the
-> > number come from? What's the next version? Major vs. minor versions?
-> > ECO fixes? Is the version s/w readable? How do you ensure it gets
-> > updated? All that should be addressed.
+> > Maybe this is documented somewhere already? Otherwise, if one is
+> > creating a new IP block, how do they know what the versioning scheme
+> > is or what goes in the DT ROM?
 > 
-> The RISC-V ecosystem is a bit different than that of ARM, MIPS, or Intel in
-> that the ISA is an royalty-free open standard that anyone can implement (ie,
-> without even signing a license agreement), with only the "RISC-V" trademark
-> being held behind a pay+conformance wall.  As a result, we don't actually
-> have any control over who builds a RISC-V chip so all we at SiFive can
-> really to is try to demonstrate good practices in software land and go from
-> there.
-
-Rights to the ISA and cores may be different, but how chips are built 
-is not really all that different (or doesn't have to be).
-
-> As far as SiFive's codebase is concerned, the version number is embedded in
-> the RTL generator, and a device tree is generated along with the RTL.  This
-> device tree is then embedded into a mask ROM on the chip, which allows the
-> earliest stage of boot to proceed.  As I'm sure you know, boot is a very
-> complicated process and as a result the device tree passed to Linux doesn't
-> necessarily look like what's in the ROM, but the intent is to keep iterating
-> until we can get these as similar as possible -- that's why we're submitting
-> every devicetree binding to the standard.
-
-So all this discussion is purely SiFive specific and really has nothing 
-to do with RISC-V ecosystem.
-
-Putting the DT into the ROM isn't something I'd do. It's simply not 
-going to work timeline wise IMO.
-
-> Specifically as far as the UART is concerned, the compat string that's not
-> chip-specific lives here (the "sifive,fu540-c000-uart" string lives in an
-> internal chip repo that I can't point to):
 > 
->    https://github.com/sifive/sifive-blocks/blob/master/src/main/scala/devices/uart/UART.scala#L43
+> Seems like there might be some confusion between IP blocks as integrated on
+> an SoC vs. IP blocks in isolation.  It's not necessarily the SoC integrator
+> that sets an IP block version number; this can come from the IP block vendor
+> itself.  So each IP block may have its own version numbering practices for
+> the IP block alone.
 > 
-> The version numbering scheme right now is pretty simple: I try to pay as
-> much attention as possible to how the hardware changes (both by looking and
-> with some automation), and I go yell at anyone who does something stupid.  I
-> know it's not the most scalable of schemes, but it's the best we have.  The
-> UART is actually an interesting case right now because we have an
-> outstanding pull request that adds a bit to the UART and then adds
-> "sifive,uart1" to the compat string
 > 
->    https://github.com/sifive/sifive-blocks/pull/90
+> For SiFive IP blocks, we at SiFive could probably align on a common version
+> numbering structure for what's in the sifive-blocks repository.
 
-Relying on people to catch whether changes are important or not is bound 
-to fail. It's really got to be built into the design flow.
+I thought you had that from what Palmer said and what I've seen so far. 
+You have at least 3 bindings so far it seems.
 
-Even just updating a version register I've experienced the h/w designers 
-forgetting to update it.
+> But other IP blocks from other vendors may not align to that, or may not
+> have version numbers exposed at all.  In those cases there's no way for
+> software folks to find out what they are,  as you pointed out earlier.  This
+> is the case with most DT compatible strings in the kernel tree.
+> 
+> For example, we've integrated the NVDLA IP block, from NVIDIA, on some
+> designs.  Any NVIDIA version numbers in that IP block will probably not
+> follow the SiFive version numbering scheme.  I'd propose the right thing to
+> do for an IP block compatible string is to follow the vendor's practice, and
+> then use the SoC integrator's version numbering practice for the
+> SoC-integrated compatible string.
 
-> My intent is to ensure that the device tree's compat string uniquely
-> identifies the software interface to a block.  Thus, whenever a device's
-> implementation changes in a software-visible way (bug fix or feature
-> addition) we change the compat string -- either adding one (as is the case
-> of the UART, where the compat string will be both "sifive,uart1" and
-> "sifive,uart0" since the new feature is backwards compatible with the old
-> software) or changing one (if the interface change is not compatible with
-> old software).
+Experience has shown that using compatible strings only specific to 
+vendor IP blocks (with or without version numbers) is pretty useless.
 
-What about config options? Say the UART has a configurable FIFO size.
+For licensed IP, I'd suggest you follow standard practices. A genericish
+fallback is generally only used when there's lots of SoCs sharing a 
+block.
 
-What about major vs. minor version changes? Respins of chips would need 
-to make minor changes if picking up major changes are deemed too risky.
+In these cases though it needs to be clear what bindings follow some 
+common versioning scheme and which don't. That's accomplished 
+by referencing what the version scheme is. Otherwise, I'd expect I'll 
+see the versioning scheme copied when in fact the source IP in no way 
+follows it.
 
-> Like I said above, this is all a manual process right now and this only
-> applies to SiFive's implementations.  I'm confident that I can at least
-> ensure that, for any given SiFive implementation, a block's compat string
-> will uniquely identify the software interface to it.  For the rest of the
-> RISC-V world all we can do is set a good example and review the software.
+> In effect, an SoC integration DT compatible string like
+> "sifive,fu540-c000-uart" implicitly states an IP block version number:
+> "whatever came out of the fab on the chip"[**].   I'd propose that even in
+> these cases, there's an advantage to keeping the "0" on the end, since it
+> uniquely identifies an SoC-independent IP block, rather than just the type
+> of the IP block.   But if the "0" on the end of the SoC integration DT
+> compatible string is problematic for you, we can certainly drop that last 0
+> from the SoC integration DT compatible string, and only suffer a slight lack
+> of clarity as to what version was integrated on that chip.
 
-This is all good information and is essentially what I'm looking for. I 
-just don't want it lost in a reply to an email, but something you can 
-reference. Look at bindings/arm/primecell.txt for example. That 
-describes a family of IP blocks and not any specific device.
+Personally I'd leave it off, but I'm fine with either way. It just needs
+to be the way you document for SiFive IP blocks.
 
-Whether the versioning is sufficient or not, I don't really care as long 
-as you docuemnt what it is so it is consistent. Since you have a common 
-schema across IP blocks, that means you should have a common document.
+> But for IP block-specific version strings like "sifive,uart0", I think we
+> can address your concern, at least for these public IP blocks. Since the
+> SiFive UART and some other peripheral IP blocks are open-source, the public
+> can have a pretty good idea of what DT version number corresponds to the
+> source RTL, since the RTL is public.   The version number identifies a
+> specific programming model, without tying that programming model to any
+> SoC-specific workarounds, etc.  So for these cases, I think there's a pretty
+> good case for having IP block-specific version numbers in DT compatible
+> strings, and I hope you'll agree.
+> 
+> 
+> The advantage for all of us is that there's then no need to embed
+> chip-specific DT match strings in these drivers, for the most part.  We just
+> match on "sifive,uart0" and that's it, assuming no chip-specific workarounds
+> are needed.
+> 
+> 
+> > > >    Where does the
+> > > > number come from?
+> > > 
+> > > It comes from the RTL, which is public:
+> > > 
+> > > https://github.com/sifive/sifive-blocks/blob/master/src/main/scala/devices/uart/UART.scala#L43
+> > I'm not going to go read your RTL, sorry.
+> 
+> 
+> There's no need, but you did ask where it came from.  Sorry you didn't like
+> the answer.
+
+I only meant that in context of reviewing the IP block. My questions 
+were meant to be what questions should a common document answer.
+
+> Please let us know what you want us to do.
+> 
+> 
+> Thanks for your review
+> 
+> 
+> - Paul
+> 
+> 
+> ** The caveat is that even with SoC identifiers in the Linux DT compatible
+> strings, there's not enough information in many of the existing kernel DT
+> compatibility strings to uniquely identify chip versions.  Taking OMAP and
+> Tegra as examples, there are several different chip versions for a given SoC
+> generation that came out of the fab.    OMAP chip version strings usually
+> began with "ES"; Tegra version numbers, as I recall, were a letter and two
+> numbers.  For the most part, those versions were never specifically
+> identified in the upstream kernel DT strings or in DT file names. (There are
+> some exceptions with OMAP where we did identify specific chip version
+> numbers, because sizable numbers of folks had boards with early silicon, and
+> we were committed to supporting them at the time.)    Sadly even adding
+> these additional chip version identifiers to the DT strings wouldn't be
+> perfect: I've seen at least one large vendor implementing metal-only ECOs
+> without incrementing public chip version numbers. The point here is that
+> we're already not uniquely identifying IP blocks with our current Linux DT
+> compatibility string scheme.
+
+Yes, I'm certainly aware of this aspect. We have to draw the line 
+somewhere between enough information to distinguish differences and 
+having a sane number of compatible strings. I mainly expect that the 1st 
+versions of SoCs are short lived and ECO changes don't affect 
+compatibility. That's obviously not always the case, but hopefully is 
+sufficient in most cases.
+
+Really, I'd just like to see folks get better at putting version and 
+configuration information into registers. We only need DT for what we 
+can't discover.
 
 Rob
