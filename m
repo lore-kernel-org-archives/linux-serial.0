@@ -1,121 +1,38 @@
-From: saiprakash.ranjan@codeaurora.org
-Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
-Date: Thu, 25 Oct 2018 20:06:39 +0530
-Message-ID: <1e6cc1fa5263b9edfcf7567d3f9f65fd@codeaurora.org>
-References: <472db11e-49a6-a1ee-e298-791ee1bbb10b@codeaurora.org>
- <20181016141610.639b9000@gandalf.local.home>
- <accdce6d-8fd2-9f15-d4cd-704cbf0b32eb@codeaurora.org>
- <20181016144123.24c47b38@gandalf.local.home>
- <7781815e-cba2-9e36-db6d-268298747876@codeaurora.org>
- <20181016150328.3450d718@gandalf.local.home>
- <c94103d2-ed5d-bf43-fc71-c60e108f303e@codeaurora.org>
- <20181017223334.29ca2837@vmware.local.home>
- <58d2474c-53cd-e6cb-2d25-db38d1a88da6@codeaurora.org>
- <20181018091706.62310b38@gandalf.local.home>
- <20181019041740.GB141835@joelaf.mtv.corp.google.com>
- <8a75f2d5-f1bd-504e-b545-ae2e2f61ca8f@codeaurora.org>
- <20181019095122.0f1c0946@gandalf.local.home>
- <9cafe321-87f6-98a3-3bda-c2f7a3d7fc67@codeaurora.org>
- <20181019111205.5c8e98e8@gandalf.local.home>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [[PATCH] 0/9] *** DMA support for UART in ASPEED's AST2500  ***
+Date: Thu, 25 Oct 2018 09:48:41 -0500
+Message-ID: <20181025144841.GA21004@bogus>
+References: <1539749466-3912-1-git-send-email-open.sudheer@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181019111205.5c8e98e8@gandalf.local.home>
+Content-Disposition: inline
+In-Reply-To: <1539749466-3912-1-git-send-email-open.sudheer@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Steven Rostedt <rostedt@goodmis.org>, srinivas.kandagatla@linaro.org, Stephen Boyd <sboyd@kernel.org>
-Cc: Joel Fernandes <joel@joelfernandes.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
+To: "sudheer.v" <open.sudheer@gmail.com>
+Cc: Vinod Koul <vkoul@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>, Russell King <linux@armlinux.org.uk>, Dan Williams <dan.j.williams@intel.com>, Jiri Slaby <jslaby@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <marc.zyngier@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Christian Borntraeger <borntraeger@de.ibm.com>, Michael Moese <mmoese@suse.de>, Hendrik Brueckner <brueckner@linux.vnet.ibm.com>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm
 List-Id: linux-serial@vger.kernel.org
 
-On 10/19/2018 8:42 PM, Steven Rostedt wrote:
-> On Fri, 19 Oct 2018 20:18:19 +0530
-> Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org> wrote:
+On Wed, Oct 17, 2018 at 09:40:57AM +0530, sudheer.v wrote:
+> DMA controller driver  and UART dma client driver for aspeed's AST2500
 > 
-> 
->>> You said that if you add 'ftrace_filter=msm_read' to the command 
->>> line,
->>> it still crashes?
->>> 
->>> So only tracing that function we have an issue, right?
->>> 
->> 
->> Tracing msm_read does cause the crash, but that is not the only one
->> causing the crash because even after "ftrace_notrace=msm_read" the 
->> board
->> crashes which is why I suspect msm earlycon and not ftrace.
-> 
-> I'm saying there's a combination of the two. Because when ftrace is not
-> involved, early con doesn't crash.
-> 
-> I would focus on why earlycon crashes when only msm_read is traced.
-> That should help narrow down the cause.
-> 
-> What we know is:
-> 
-> 	earlycon -> boots
-> 
-> 	ftrace=function -> boots
-> 
->   	earlycon ftrace=function ftrace_filter=msm_read -> crashes
-> 
-> If we remove the "ftrace=function ftrace_filter=msm_read" it boots
-> fine, and I'm assuming that if we just remove earlycon (keeping the
-> ftrace_filter), it also boots too.
-> 
-> Thus, ftrace tracing msm_read is causing earlycon to do something that
-> triggers the crash.
-> 
+> sudheer.v (9):
 
-Hi,
+We need a full name for author and Signed-off-by.
 
-Sorry for late response on this, was running out of debug options
-;-)
+>   DT-changes-for-DMA-UART-of-AST2500
+>   Defconfig-changes-for-DMA-UART-of-AST2500
+>   configuration-for-DMA-of-AST2500
+>   Documentation-DTbindings-DMA-controller-of-AST2500
+>   DMA-driver-for-AST2500
+>   configuration-for-DMA-UART-of-AST2500
+>   Documentation-DTbindings-DMA-UART-of-AST2500
+>   DMA-UART-Driver-for-AST2500
+>   updating MAINTAINERS for DMA and DMA-UART drivers of AST2500
 
-Finally after bisecting (which I should have done earlier) this issue
-till 4.4 kernel where I don't see the crash,  I could see that
-dma node in "apq8016-sbc.dtsi" is somehow causing the crash.
+Your commit messages need some work. Use 'git log --oneline <dir>' on 
+each directory for inspiration as to what the subject should be.
 
-                 dma@7884000 {
-                          status = "okay";    <--- This one
-                  };
+DT bindings specifically are "dt-bindings: <binding dir>: ..."
 
-                  serial@78af000 {
-                          label = "LS-UART0";
-                          status = "okay";
-                          pinctrl-names = "default", "sleep";
-                          pinctrl-0 = <&blsp1_uart1_default>;
-                          pinctrl-1 = <&blsp1_uart1_sleep>;
-                  };
-
-                  serial@78b0000 {
-                          label = "LS-UART1";
-                          status = "okay";
-                          pinctrl-names = "default", "sleep";
-                          pinctrl-0 = <&blsp1_uart2_default>;
-                          pinctrl-1 = <&blsp1_uart2_sleep>;
-                  };
-
-"If I disable dma node and LS-UART0, then I don't see any crash and
-ftrace also works fine"
-
-And one more observation is that even without ftrace cmdline, if I use
-earlycon and disable dma, I face the same crash.
-
-So basically this seems to be some kind of earlycon and dma issue and
-not ftrace(I can be wrong).
-
-So adding Srinivas for more info on this dma node.
-
-Also just for a note: apq8096-db820c.dtsi shows UART0 is disabled 
-because
-bootloader does not allow access to it. Could this also be the case for 
-db410c?
-
-Thanks,
-Sai
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+Rob
