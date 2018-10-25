@@ -1,120 +1,121 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 3.18 34/98] serial: samsung: Add the support for Exynos5433 SoC
-Date: Thu, 25 Oct 2018 10:17:49 -0400
-Message-ID: <20181025141853.214051-34-sashal@kernel.org>
-References: <20181025141853.214051-1-sashal@kernel.org>
+From: saiprakash.ranjan@codeaurora.org
+Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
+Date: Thu, 25 Oct 2018 20:06:39 +0530
+Message-ID: <1e6cc1fa5263b9edfcf7567d3f9f65fd@codeaurora.org>
+References: <472db11e-49a6-a1ee-e298-791ee1bbb10b@codeaurora.org>
+ <20181016141610.639b9000@gandalf.local.home>
+ <accdce6d-8fd2-9f15-d4cd-704cbf0b32eb@codeaurora.org>
+ <20181016144123.24c47b38@gandalf.local.home>
+ <7781815e-cba2-9e36-db6d-268298747876@codeaurora.org>
+ <20181016150328.3450d718@gandalf.local.home>
+ <c94103d2-ed5d-bf43-fc71-c60e108f303e@codeaurora.org>
+ <20181017223334.29ca2837@vmware.local.home>
+ <58d2474c-53cd-e6cb-2d25-db38d1a88da6@codeaurora.org>
+ <20181018091706.62310b38@gandalf.local.home>
+ <20181019041740.GB141835@joelaf.mtv.corp.google.com>
+ <8a75f2d5-f1bd-504e-b545-ae2e2f61ca8f@codeaurora.org>
+ <20181019095122.0f1c0946@gandalf.local.home>
+ <9cafe321-87f6-98a3-3bda-c2f7a3d7fc67@codeaurora.org>
+ <20181019111205.5c8e98e8@gandalf.local.home>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181025141853.214051-1-sashal@kernel.org>
+In-Reply-To: <20181019111205.5c8e98e8@gandalf.local.home>
 Sender: linux-kernel-owner@vger.kernel.org
-To: stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Chanwoo Choi <cw00.choi@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Sasha Levin <sashal@kernel.org>
+To: Steven Rostedt <rostedt@goodmis.org>, srinivas.kandagatla@linaro.org, Stephen Boyd <sboyd@kernel.org>
+Cc: Joel Fernandes <joel@joelfernandes.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Chanwoo Choi <cw00.choi@samsung.com>
+On 10/19/2018 8:42 PM, Steven Rostedt wrote:
+> On Fri, 19 Oct 2018 20:18:19 +0530
+> Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org> wrote:
+> 
+> 
+>>> You said that if you add 'ftrace_filter=msm_read' to the command 
+>>> line,
+>>> it still crashes?
+>>> 
+>>> So only tracing that function we have an issue, right?
+>>> 
+>> 
+>> Tracing msm_read does cause the crash, but that is not the only one
+>> causing the crash because even after "ftrace_notrace=msm_read" the 
+>> board
+>> crashes which is why I suspect msm earlycon and not ftrace.
+> 
+> I'm saying there's a combination of the two. Because when ftrace is not
+> involved, early con doesn't crash.
+> 
+> I would focus on why earlycon crashes when only msm_read is traced.
+> That should help narrow down the cause.
+> 
+> What we know is:
+> 
+> 	earlycon -> boots
+> 
+> 	ftrace=function -> boots
+> 
+>   	earlycon ftrace=function ftrace_filter=msm_read -> crashes
+> 
+> If we remove the "ftrace=function ftrace_filter=msm_read" it boots
+> fine, and I'm assuming that if we just remove earlycon (keeping the
+> ftrace_filter), it also boots too.
+> 
+> Thus, ftrace tracing msm_read is causing earlycon to do something that
+> triggers the crash.
+> 
 
-[ Upstream commit 31ec77aca72ee5920ed3ec3d047734dc0bc43342 ]
+Hi,
 
-This patch adds new s3c24xx_serial_drv_data structure for Exynos5433 SoC
-because Exynos5433 has different fifo size from existing Exynos4 SoC.
+Sorry for late response on this, was running out of debug options
+;-)
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-Acked-by: Inki Dae <inki.dae@samsung.com>
-Acked-by: Geunsik Lim <geunsik.lim@samsung.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/samsung.c | 56 +++++++++++++++++++++++-------------
- 1 file changed, 36 insertions(+), 20 deletions(-)
+Finally after bisecting (which I should have done earlier) this issue
+till 4.4 kernel where I don't see the crash,  I could see that
+dma node in "apq8016-sbc.dtsi" is somehow causing the crash.
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index ba59a76edc8b..957992ceba0a 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1785,32 +1785,43 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- #endif
- 
- #if defined(CONFIG_ARCH_EXYNOS)
-+#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
-+	.info = &(struct s3c24xx_uart_info) {			\
-+		.name		= "Samsung Exynos UART",	\
-+		.type		= PORT_S3C6400,			\
-+		.has_divslot	= 1,				\
-+		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
-+		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,	\
-+		.rx_fifofull	= S5PV210_UFSTAT_RXFULL,	\
-+		.tx_fifofull	= S5PV210_UFSTAT_TXFULL,	\
-+		.tx_fifomask	= S5PV210_UFSTAT_TXMASK,	\
-+		.tx_fifoshift	= S5PV210_UFSTAT_TXSHIFT,	\
-+		.def_clk_sel	= S3C2410_UCON_CLKSEL0,		\
-+		.num_clks	= 1,				\
-+		.clksel_mask	= 0,				\
-+		.clksel_shift	= 0,				\
-+	},							\
-+	.def_cfg = &(struct s3c2410_uartcfg) {			\
-+		.ucon		= S5PV210_UCON_DEFAULT,		\
-+		.ufcon		= S5PV210_UFCON_DEFAULT,	\
-+		.has_fracval	= 1,				\
-+	}							\
-+
- static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
--	.info = &(struct s3c24xx_uart_info) {
--		.name		= "Samsung Exynos4 UART",
--		.type		= PORT_S3C6400,
--		.has_divslot	= 1,
--		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,
--		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,
--		.rx_fifofull	= S5PV210_UFSTAT_RXFULL,
--		.tx_fifofull	= S5PV210_UFSTAT_TXFULL,
--		.tx_fifomask	= S5PV210_UFSTAT_TXMASK,
--		.tx_fifoshift	= S5PV210_UFSTAT_TXSHIFT,
--		.def_clk_sel	= S3C2410_UCON_CLKSEL0,
--		.num_clks	= 1,
--		.clksel_mask	= 0,
--		.clksel_shift	= 0,
--	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
--		.ucon		= S5PV210_UCON_DEFAULT,
--		.ufcon		= S5PV210_UFCON_DEFAULT,
--		.has_fracval	= 1,
--	},
-+	EXYNOS_COMMON_SERIAL_DRV_DATA,
- 	.fifosize = { 256, 64, 16, 16 },
- };
-+
-+static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
-+	EXYNOS_COMMON_SERIAL_DRV_DATA,
-+	.fifosize = { 64, 256, 16, 256 },
-+};
-+
- #define EXYNOS4210_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos4210_serial_drv_data)
-+#define EXYNOS5433_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos5433_serial_drv_data)
- #else
- #define EXYNOS4210_SERIAL_DRV_DATA (kernel_ulong_t)NULL
-+#define EXYNOS5433_SERIAL_DRV_DATA (kernel_ulong_t)NULL
- #endif
- 
- static struct platform_device_id s3c24xx_serial_driver_ids[] = {
-@@ -1832,6 +1843,9 @@ static struct platform_device_id s3c24xx_serial_driver_ids[] = {
- 	}, {
- 		.name		= "exynos4210-uart",
- 		.driver_data	= EXYNOS4210_SERIAL_DRV_DATA,
-+	}, {
-+		.name		= "exynos5433-uart",
-+		.driver_data	= EXYNOS5433_SERIAL_DRV_DATA,
- 	},
- 	{ },
- };
-@@ -1851,6 +1865,8 @@ static const struct of_device_id s3c24xx_uart_dt_match[] = {
- 		.data = (void *)S5PV210_SERIAL_DRV_DATA },
- 	{ .compatible = "samsung,exynos4210-uart",
- 		.data = (void *)EXYNOS4210_SERIAL_DRV_DATA },
-+	{ .compatible = "samsung,exynos5433-uart",
-+		.data = (void *)EXYNOS5433_SERIAL_DRV_DATA },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
+                 dma@7884000 {
+                          status = "okay";    <--- This one
+                  };
+
+                  serial@78af000 {
+                          label = "LS-UART0";
+                          status = "okay";
+                          pinctrl-names = "default", "sleep";
+                          pinctrl-0 = <&blsp1_uart1_default>;
+                          pinctrl-1 = <&blsp1_uart1_sleep>;
+                  };
+
+                  serial@78b0000 {
+                          label = "LS-UART1";
+                          status = "okay";
+                          pinctrl-names = "default", "sleep";
+                          pinctrl-0 = <&blsp1_uart2_default>;
+                          pinctrl-1 = <&blsp1_uart2_sleep>;
+                  };
+
+"If I disable dma node and LS-UART0, then I don't see any crash and
+ftrace also works fine"
+
+And one more observation is that even without ftrace cmdline, if I use
+earlycon and disable dma, I face the same crash.
+
+So basically this seems to be some kind of earlycon and dma issue and
+not ftrace(I can be wrong).
+
+So adding Srinivas for more info on this dma node.
+
+Also just for a note: apq8096-db820c.dtsi shows UART0 is disabled 
+because
+bootloader does not allow access to it. Could this also be the case for 
+db410c?
+
+Thanks,
+Sai
+
 -- 
-2.17.1
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
