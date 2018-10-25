@@ -1,196 +1,62 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 1/2] dt-bindings: serial: add documentation for the
- SiFive UART driver
-Date: Wed, 24 Oct 2018 12:32:32 -0500
-Message-ID: <20181024173232.GB5652@bogus>
-References: <20181019184827.12351-1-paul.walmsley@sifive.com>
- <20181019184827.12351-2-paul.walmsley@sifive.com>
- <CAL_JsqJBSqaxnETdJg1Mdp+H2ay+WKT0JaxLe6D4Fwo_99qUkw@mail.gmail.com>
- <4317548d-f831-29ba-3be9-35f080587db9@sifive.com>
- <CAL_JsqLagTgjDhZ02X=wPFDB4WF2bR7=LyzSW9D=ooo_XB_zOg@mail.gmail.com>
- <6571bb0e-b36a-1196-4d90-8aa62d8a2a90@sifive.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [RFC][PATCHv2 1/4] panic: avoid deadlocks in re-entrant console
+ drivers
+Date: Thu, 25 Oct 2018 10:29:47 +0200
+Message-ID: <20181025082947.gznv5roj3zxzlw3t@pathway.suse.cz>
+References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
+ <20181016050428.17966-2-sergey.senozhatsky@gmail.com>
+ <20181023110751.un2u67bc7dpo4ska@pathway.suse.cz>
+ <20181023115433.GA10251@jagdpanzerIV>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <6571bb0e-b36a-1196-4d90-8aa62d8a2a90@sifive.com>
+In-Reply-To: <20181023115433.GA10251@jagdpanzerIV>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Walmsley <paul.walmsley@sifive.com>
-Cc: "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Palmer Dabbelt <palmer@sifive.com>, Paul Walmsley <paul@pwsan.com>
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Oct 23, 2018 at 10:05:40AM -0700, Paul Walmsley wrote:
-> 
-> On 10/20/18 7:21 AM, Rob Herring wrote:
-> > On Fri, Oct 19, 2018 at 5:06 PM Paul Walmsley <paul.walmsley@sifive.com> wrote:
-> > > On 10/19/18 1:45 PM, Rob Herring wrote:
-> > > > On Fri, Oct 19, 2018 at 1:48 PM Paul Walmsley <paul.walmsley@sifive.com> wrote:
-> > > > > Add DT binding documentation for the Linux driver for the SiFive
-> > > > > asynchronous serial IP block.  Nothing too exotic.
-> > > > > 
-> > > > > Cc: linux-serial@vger.kernel.org
-> > > > > Cc: devicetree@vger.kernel.org
-> > > > > Cc: linux-riscv@lists.infradead.org
-> > > > > Cc: linux-kernel@vger.kernel.org
-> > > > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > > Cc: Rob Herring <robh+dt@kernel.org>
-> > > > > Cc: Mark Rutland <mark.rutland@arm.com>
-> > > > > Cc: Palmer Dabbelt <palmer@sifive.com>
-> > > > > Reviewed-by: Palmer Dabbelt <palmer@sifive.com>
-> > > > > Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
-> > > > > Signed-off-by: Paul Walmsley <paul@pwsan.com>
-> > > > > ---
-> > > > >    .../bindings/serial/sifive-serial.txt         | 21 +++++++++++++++++++
-> > > > >    1 file changed, 21 insertions(+)
-> > > > >    create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
-> > > > > 
-> > > > > diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.txt b/Documentation/devicetree/bindings/serial/sifive-serial.txt
-> > > > > new file mode 100644
-> > > > > index 000000000000..8982338512f5
-> > > > > --- /dev/null
-> > > > > +++ b/Documentation/devicetree/bindings/serial/sifive-serial.txt
-> > > > > @@ -0,0 +1,21 @@
-> > > > > +SiFive asynchronous serial interface (UART)
-> > > > > +
-> > > > > +Required properties:
-> > > > > +
-> > > > > +- compatible: should be "sifive,fu540-c000-uart0" or "sifive,uart0"
-> > > > > 
-> > > > As I mentioned for the
-> > > > intc and now the pwm block bindings, if you are going to do version
-> > > > numbers please document the versioning scheme.
-> > > > 
-> > > > 
-> > > > Will add that to the binding document.
-> > I don't seem to be making my point clear. I don't want any of this
-> > added to a binding doc for particular IP blocks. Write a common doc
-> > that explains the scheme and addresses the questions I asked. Then
-> > just reference that doc here.
+On Tue 2018-10-23 20:54:33, Sergey Senozhatsky wrote:
+> On (10/23/18 13:07), Petr Mladek wrote:
+> > Though this looks a bit weird.
 > > 
-> > Maybe this is documented somewhere already? Otherwise, if one is
-> > creating a new IP block, how do they know what the versioning scheme
-> > is or what goes in the DT ROM?
+> > I have just realized that console_unblank() is called by
+> > bust_spinlocks(0) and does basically the same as
+> > console_flush_on_panic(). Also it does not make much
+> > sense wake_up_klogd() there. Finally, it seems to be
+> > too late to disable lockdep there.
 > 
-> 
-> Seems like there might be some confusion between IP blocks as integrated on
-> an SoC vs. IP blocks in isolation.  It's not necessarily the SoC integrator
-> that sets an IP block version number; this can come from the IP block vendor
-> itself.  So each IP block may have its own version numbering practices for
-> the IP block alone.
-> 
-> 
-> For SiFive IP blocks, we at SiFive could probably align on a common version
-> numbering structure for what's in the sifive-blocks repository.
+> So I did look at what lib/bust_spinlocks.c does; and I agree that waking
+> up klogd makes little sense, on the other hand it just sets per-cpu
+> pending bit, so not a big deal. console_unlock() should do there the
+> same thing as console_flush_on_panic().
 
-I thought you had that from what Palmer said and what I've seen so far. 
-You have at least 3 bindings so far it seems.
+Yes, klogd is not a big deal. I just think that the bust_spinlocks()
+ping-pong would just confuse the code. It might be better to keep
+the spinlocks busted and make sure that we do not cause regressions
+by not calling bust_spinlocks(0).
 
-> But other IP blocks from other vendors may not align to that, or may not
-> have version numbers exposed at all.  In those cases there's no way for
-> software folks to find out what they are,  as you pointed out earlier.  This
-> is the case with most DT compatible strings in the kernel tree.
-> 
-> For example, we've integrated the NVDLA IP block, from NVIDIA, on some
-> designs.  Any NVIDIA version numbers in that IP block will probably not
-> follow the SiFive version numbering scheme.  I'd propose the right thing to
-> do for an IP block compatible string is to follow the vendor's practice, and
-> then use the SoC integrator's version numbering practice for the
-> SoC-integrated compatible string.
+It tried to solve this by calling the important actions from
+bust_spinlocks(0) directly in panic(). I wanted to omit anything
+that does not make sense in panic().
 
-Experience has shown that using compatible strings only specific to 
-vendor IP blocks (with or without version numbers) is pretty useless.
 
-For licensed IP, I'd suggest you follow standard practices. A genericish
-fallback is generally only used when there's lots of SoCs sharing a 
-block.
+> >  void __attribute__((weak)) bust_spinlocks(int yes)
+> >  {
+> >  	if (yes) {
+> > +		/*
+> > +		 * Some locks might get ignored in the Oops situation
+> > +		 * to get an important work done. Locks debug should
+> > +		 * be disabled to avoid reporting bad unlock balance.
+> > +		 */
+> > +		debug_locks_off();
+> >  		++oops_in_progress;
+> 
+> Hmm, I don't think I've seen any reports because of this. From printk/console
+> POV the locks which are not taken under oops_in_progress are not released.
 
-In these cases though it needs to be clear what bindings follow some 
-common versioning scheme and which don't. That's accomplished 
-by referencing what the version scheme is. Otherwise, I'd expect I'll 
-see the versioning scheme copied when in fact the source IP in no way 
-follows it.
+Fair enough. Let's keep debug_locks_off() in panic().
 
-> In effect, an SoC integration DT compatible string like
-> "sifive,fu540-c000-uart" implicitly states an IP block version number:
-> "whatever came out of the fab on the chip"[**].   I'd propose that even in
-> these cases, there's an advantage to keeping the "0" on the end, since it
-> uniquely identifies an SoC-independent IP block, rather than just the type
-> of the IP block.   But if the "0" on the end of the SoC integration DT
-> compatible string is problematic for you, we can certainly drop that last 0
-> from the SoC integration DT compatible string, and only suffer a slight lack
-> of clarity as to what version was integrated on that chip.
-
-Personally I'd leave it off, but I'm fine with either way. It just needs
-to be the way you document for SiFive IP blocks.
-
-> But for IP block-specific version strings like "sifive,uart0", I think we
-> can address your concern, at least for these public IP blocks. Since the
-> SiFive UART and some other peripheral IP blocks are open-source, the public
-> can have a pretty good idea of what DT version number corresponds to the
-> source RTL, since the RTL is public.   The version number identifies a
-> specific programming model, without tying that programming model to any
-> SoC-specific workarounds, etc.  So for these cases, I think there's a pretty
-> good case for having IP block-specific version numbers in DT compatible
-> strings, and I hope you'll agree.
-> 
-> 
-> The advantage for all of us is that there's then no need to embed
-> chip-specific DT match strings in these drivers, for the most part.  We just
-> match on "sifive,uart0" and that's it, assuming no chip-specific workarounds
-> are needed.
-> 
-> 
-> > > >    Where does the
-> > > > number come from?
-> > > 
-> > > It comes from the RTL, which is public:
-> > > 
-> > > https://github.com/sifive/sifive-blocks/blob/master/src/main/scala/devices/uart/UART.scala#L43
-> > I'm not going to go read your RTL, sorry.
-> 
-> 
-> There's no need, but you did ask where it came from.  Sorry you didn't like
-> the answer.
-
-I only meant that in context of reviewing the IP block. My questions 
-were meant to be what questions should a common document answer.
-
-> Please let us know what you want us to do.
-> 
-> 
-> Thanks for your review
-> 
-> 
-> - Paul
-> 
-> 
-> ** The caveat is that even with SoC identifiers in the Linux DT compatible
-> strings, there's not enough information in many of the existing kernel DT
-> compatibility strings to uniquely identify chip versions.  Taking OMAP and
-> Tegra as examples, there are several different chip versions for a given SoC
-> generation that came out of the fab.    OMAP chip version strings usually
-> began with "ES"; Tegra version numbers, as I recall, were a letter and two
-> numbers.  For the most part, those versions were never specifically
-> identified in the upstream kernel DT strings or in DT file names. (There are
-> some exceptions with OMAP where we did identify specific chip version
-> numbers, because sizable numbers of folks had boards with early silicon, and
-> we were committed to supporting them at the time.)    Sadly even adding
-> these additional chip version identifiers to the DT strings wouldn't be
-> perfect: I've seen at least one large vendor implementing metal-only ECOs
-> without incrementing public chip version numbers. The point here is that
-> we're already not uniquely identifying IP blocks with our current Linux DT
-> compatibility string scheme.
-
-Yes, I'm certainly aware of this aspect. We have to draw the line 
-somewhere between enough information to distinguish differences and 
-having a sane number of compatible strings. I mainly expect that the 1st 
-versions of SoCs are short lived and ECO changes don't affect 
-compatibility. That's obviously not always the case, but hopefully is 
-sufficient in most cases.
-
-Really, I'd just like to see folks get better at putting version and 
-configuration information into registers. We only need DT for what we 
-can't discover.
-
-Rob
+Best Regards,
+Petr
