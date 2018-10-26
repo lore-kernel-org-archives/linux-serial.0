@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH 8/9] arm64: tegra: Add nodes for TCU on Tegra194
-Date: Fri, 26 Oct 2018 13:16:37 +0200
-Message-ID: <20181026111638.10759-9-thierry.reding@gmail.com>
+Subject: [PATCH 5/9] mailbox: tegra-hsp: Add suspend/resume support
+Date: Fri, 26 Oct 2018 13:16:34 +0200
+Message-ID: <20181026111638.10759-6-thierry.reding@gmail.com>
 References: <20181026111638.10759-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,77 +12,59 @@ To: Thierry Reding <thierry.reding@gmail.com>, Jassi Brar <jassisinghbrar@gmail.
 Cc: Jiri Slaby <jslaby@suse.com>, Mikko Perttunen <mperttunen@nvidia.com>, Jon Hunter <jonathanh@nvidia.com>, Timo Alho <talho@nvidia.com>, Pekka Pessi <ppessi@nvidia.com>, Mika Liljeberg <mliljeberg@nvidia.com>, linux-tegra@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Mikko Perttunen <mperttunen@nvidia.com>
+From: Thierry Reding <treding@nvidia.com>
 
-Add nodes required for communication through the Tegra Combined UART.
-This includes the AON HSP instance, addition of shared interrupts
-for the TOP0 HSP instance, and finally the TCU node itself. Also
-mark the HSP instances as compatible to tegra194-hsp, as the hardware
-is not identical but is compatible to tegra186-hsp.
+Upon resuming from a system sleep state, the interrupts for all active
+shared mailboxes need to be reenabled, otherwise they will not work.
 
-Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-Acked-by: Jon Hunter <jonathanh@nvidia.com>
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- arch/arm64/boot/dts/nvidia/tegra194.dtsi | 38 ++++++++++++++++++++++--
- 1 file changed, 35 insertions(+), 3 deletions(-)
+ drivers/mailbox/tegra-hsp.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-index c2091bb16546..521d13be0457 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-@@ -340,10 +340,35 @@
- 		};
+diff --git a/drivers/mailbox/tegra-hsp.c b/drivers/mailbox/tegra-hsp.c
+index d070c8e38375..043f7173af8f 100644
+--- a/drivers/mailbox/tegra-hsp.c
++++ b/drivers/mailbox/tegra-hsp.c
+@@ -18,6 +18,7 @@
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
++#include <linux/pm.h>
+ #include <linux/slab.h>
  
- 		hsp_top0: hsp@3c00000 {
--			compatible = "nvidia,tegra186-hsp";
-+			compatible = "nvidia,tegra194-hsp", "nvidia,tegra186-hsp";
- 			reg = <0x03c00000 0xa0000>;
--			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
--			interrupt-names = "doorbell";
-+			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "doorbell", "shared0", "shared1", "shared2",
-+			                  "shared3", "shared4", "shared5", "shared6",
-+			                  "shared7";
-+			#mbox-cells = <2>;
-+		};
+ #include <dt-bindings/mailbox/tegra186-hsp.h>
+@@ -802,6 +803,23 @@ static int tegra_hsp_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static int tegra_hsp_resume(struct device *dev)
++{
++	struct tegra_hsp *hsp = dev_get_drvdata(dev);
++	unsigned int i;
 +
-+		hsp_aon: hsp@c150000 {
-+			compatible = "nvidia,tegra194-hsp", "nvidia,tegra186-hsp";
-+			reg = <0x0c150000 0xa0000>;
-+			interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>,
-+			             <GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>;
-+			/*
-+			 * Shared interrupt 0 is routed only to AON/SPE, so
-+			 * we only have 4 shared interrupts for the CCPLEX.
-+			 */
-+			interrupt-names = "shared1", "shared2", "shared3", "shared4";
- 			#mbox-cells = <2>;
- 		};
- 
-@@ -531,6 +556,13 @@
- 		method = "smc";
- 	};
- 
-+	tcu: tcu {
-+		compatible = "nvidia,tegra194-tcu";
-+		mboxes = <&hsp_top0 TEGRA_HSP_MBOX_TYPE_SM 0>,
-+		         <&hsp_aon TEGRA_HSP_MBOX_TYPE_SM 1>;
-+		mbox-names = "rx", "tx";
-+	};
++	for (i = 0; i < hsp->num_sm; i++) {
++		struct tegra_hsp_mailbox *mb = &hsp->mailboxes[i];
 +
- 	timer {
- 		compatible = "arm,armv8-timer";
- 		interrupts = <GIC_PPI 13
++		if (mb->channel.chan->cl)
++			tegra_hsp_mailbox_startup(mb->channel.chan);
++	}
++
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(tegra_hsp_pm_ops, NULL, tegra_hsp_resume);
++
+ static const struct tegra_hsp_db_map tegra186_hsp_db_map[] = {
+ 	{ "ccplex", TEGRA_HSP_DB_MASTER_CCPLEX, HSP_DB_CCPLEX, },
+ 	{ "bpmp",   TEGRA_HSP_DB_MASTER_BPMP,   HSP_DB_BPMP,   },
+@@ -821,6 +839,7 @@ static struct platform_driver tegra_hsp_driver = {
+ 	.driver = {
+ 		.name = "tegra-hsp",
+ 		.of_match_table = tegra_hsp_match,
++		.pm = &tegra_hsp_pm_ops,
+ 	},
+ 	.probe = tegra_hsp_probe,
+ 	.remove = tegra_hsp_remove,
 -- 
 2.19.1
