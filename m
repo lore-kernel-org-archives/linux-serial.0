@@ -1,51 +1,58 @@
-From: Dashi Cao <dscao999@gmail.com>
-Subject: [PATCH] Add support of TI ICDI to USB simple serial device
-Date: Fri, 26 Oct 2018 19:38:07 +0800
-Message-ID: <20181026113807.20735-1-dscao999@gmail.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH] pch_uart: remove set but not used variable 'tx_empty'
+Date: Mon, 29 Oct 2018 08:52:58 +0100
+Message-ID: <dae7fa7e-5e74-b5c4-f049-a8f7691d1a20@suse.cz>
+References: <1540300894-27202-1-git-send-email-zhongjiang@huawei.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-2
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1540300894-27202-1-git-send-email-zhongjiang@huawei.com>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-usb@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Dashi Cao <dscao999@gmail.com>
+To: zhong jiang <zhongjiang@huawei.com>, gregkh@linuxfoundation.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-TI In-Circuit Debug Interface (ICDI) is a debugging interface for TI ARM microcontrollers. It has four USB interfaces and the first two of them are presented as standard ACM serial device. The 3rd interface is the debugging interface and it can be driven as a Linux USB simple serial device. With it, debugging sessions and firmware up/down loading are supported on Linux.
+On 23. 10. 18, 15:21, zhong jiang wrote:
+> tx_empty is not used after setting its value. It is safe to remove
+> the unused variable.
+> 
+> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
 
-Signed-off-by: Dashi Cao <dscao999@gmail.com>
----
- drivers/usb/serial/usb-serial-simple.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Reviewed-by: Jiri Slaby <jslaby@suse.cz>
 
-diff --git a/drivers/usb/serial/usb-serial-simple.c b/drivers/usb/serial/usb-serial-simple.c
-index 4d0273508043..ae43088b659e 100644
---- a/drivers/usb/serial/usb-serial-simple.c
-+++ b/drivers/usb/serial/usb-serial-simple.c
-@@ -109,6 +109,11 @@ DEVICE(suunto, SUUNTO_IDS);
- 	{ USB_DEVICE(0x908, 0x0004) }
- DEVICE(siemens_mpi, SIEMENS_IDS);
- 
-+/* TI In-Circuit Debug Interface */
-+#define ICDI_IDS()              \
-+	{ USB_DEVICE_INTERFACE_CLASS(0x1cbe, 0x00fd, USB_CLASS_VENDOR_SPEC) }
-+DEVICE(ti_icdi, ICDI_IDS);
-+
- /* All of the above structures mushed into two lists */
- static struct usb_serial_driver * const serial_drivers[] = {
- 	&carelink_device,
-@@ -124,6 +129,7 @@ static struct usb_serial_driver * const serial_drivers[] = {
- 	&hp4x_device,
- 	&suunto_device,
- 	&siemens_mpi_device,
-+	&ti_icdi_device,
- 	NULL
- };
- 
-@@ -141,6 +147,7 @@ static const struct usb_device_id id_table[] = {
- 	HP4X_IDS(),
- 	SUUNTO_IDS(),
- 	SIEMENS_IDS(),
-+	ICDI_IDS(),
- 	{ },
- };
- MODULE_DEVICE_TABLE(usb, id_table);
+> ---
+>  drivers/tty/serial/pch_uart.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+> index cb85002..9ed121f 100644
+> --- a/drivers/tty/serial/pch_uart.c
+> +++ b/drivers/tty/serial/pch_uart.c
+> @@ -933,7 +933,6 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
+>  	struct scatterlist *sg;
+>  	int nent;
+>  	int fifo_size;
+> -	int tx_empty;
+>  	struct dma_async_tx_descriptor *desc;
+>  	int num;
+>  	int i;
+> @@ -958,11 +957,9 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
+>  	}
+>  
+>  	fifo_size = max(priv->fifo_size, 1);
+> -	tx_empty = 1;
+>  	if (pop_tx_x(priv, xmit->buf)) {
+>  		pch_uart_hal_write(priv, xmit->buf, 1);
+>  		port->icount.tx++;
+> -		tx_empty = 0;
+>  		fifo_size--;
+>  	}
+>  
+> 
+
+thanks,
 -- 
-2.11.0
+js
+suse labs
