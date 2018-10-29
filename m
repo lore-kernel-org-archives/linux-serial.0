@@ -1,272 +1,260 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 4/9] mailbox: tegra-hsp: Add support for shared mailboxes
-Date: Mon, 29 Oct 2018 14:16:14 +0100
-Message-ID: <20181029131614.GA14616@ulmo>
-References: <20181026111638.10759-1-thierry.reding@gmail.com>
- <20181026111638.10759-5-thierry.reding@gmail.com>
- <bfc78c91-73f1-4f64-9196-5268a73b5c42@nvidia.com>
- <20181029103937.GB26393@ulmo>
- <9dfa7669-9401-a55c-8959-8d31cf193ca7@nvidia.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 4.20-rc1
+Date: Mon, 29 Oct 2018 15:44:32 +0100
+Message-ID: <20181029144432.GA2127@kroah.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="MGYHOYXEY6WxJCY8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <9dfa7669-9401-a55c-8959-8d31cf193ca7@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Pekka Pessi <ppessi@nvidia.com>
-Cc: Jassi Brar <jassisinghbrar@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Mikko Perttunen <mperttunen@nvidia.com>, Jon Hunter <jonathanh@nvidia.com>, Timo Alho <talho@nvidia.com>, Mika Liljeberg <mliljeberg@nvidia.com>, linux-tegra@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+The following changes since commit 0238df646e6224016a45505d2c111a24669ebe21:
 
---MGYHOYXEY6WxJCY8
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  Linux 4.19-rc7 (2018-10-07 17:26:02 +0200)
 
-On Mon, Oct 29, 2018 at 02:25:42PM +0200, Pekka Pessi wrote:
-> Hi Thierry,
->=20
-> From the 0/9:
-> > Are you aware of any others that we need to take into account?
-> We would like to use upstream driver for RCE (and probably AON and SCE)
-> mailbox handling, too. Eventually.
-> > This is a bit
-> > of a problem because the mailbox driver doesn't really know anything
-> > about the direction when it starts up, so how would it make the decision
-> > about how to program the registers?
-> I'm afraid that information must be stored in the device tree.
-> > What's somewhat surprising is that you're saying that both FULL and
-> > EMPTY interrupts should be handled by the same shared interrupt. That's
-> > the opposite of what the recommended programming sequence is that the
-> > TRM specifies.
-> Which TRM you mean? Something here?
->=20
-> https://p4viewer.nvidia.com/get///hw/ar/doc/Tech_Pubs/Xavier/TRM/
->=20
-> I browsed through he Xavier_TRM_DP09253001v1.pdf HSP section and I could =
-not
-> find any recommendations? But see below.
+are available in the Git repository at:
 
-I'm referring to Xavier_TRM_Public.pdf in that location. If you look at
-page 4422, "Shared Interrupts Configuration", the example has aggregated
-EMPTY and FULL interrupts on shared interrupts 0 and 1, respectively. I
-guess it being an example doesn't make it strictly a recommendation, but
-I wonder if we should avoid giving examples that use mappings which we
-discourage.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-4.20-rc1
 
-> > Why is it better to handle both FULL and EMPTY interrupts
-> > with the same shared interrupt?
-> Only top0 has 8 interrupts, rest of the HSP blocks have only 4 (or 5 in c=
-ase
-> of top1) interrupts per HSP available through LIC. Hogging two of them me=
-ans
-> that only two VMs can access a HSP.
+for you to fetch changes up to 59eaeba63a171127a90bb76187536ba66076af40:
 
-Virtualization isn't something that we're very concerned about upstream,
-but I'll take that under consideration.
+  of: base: Change logic in of_alias_get_alias_list() (2018-10-15 16:16:06 +0200)
 
-> > Would it be safe to clear all of the IE registers to 0 on driver probe?
-> Nope, the driver should clear only the IE register for the shared interru=
-pt
-> that the driver uses. Other IEs are used by other entities.
+----------------------------------------------------------------
+TTY/Serial patches for 4.20-rc1
 
-Right, that makes sense. But within that IE register it can consider all
-bits fair game, right? One thing I wonder, though, is whether there
-should be some external mechanism to set the shared interrupt to use. If
-we go purely by convention we'll eventually get this wrong. So currently
-we list all available interrupts in DT and then we could pick just the
-first. But what if somebody else already picked the first and "owns" it?
+Here is the big tty and serial pull request for 4.20-rc1
 
-I'm not sure we have any practical mechanism to rewrite the DTB, but
-perhaps something to keep in mind if ever we need to support other
-entities down the road.
+Lots of little things here, including a merge from the SPI tree in order
+to keep things simpler for everyone to sync around for one platform.
 
-> > If they are indeed separate
-> > for each processor, it should be fairly easy to keep track of the
-> > mailboxes used by the kernel and process only those.
-> Yes, that is what we should do. Again the directionality should be specif=
-ied
-> in DT.
+Major stuff is:
+	- tty buffer clearing after use
+	- atmel_serial fixes and additions
+	- xilinx uart driver updates
+and of course, lots of tiny fixes and additions to individual serial
+drivers.
 
-Currently we encode the shared mailboxes in DT like this:
+All of these have been in linux-next with no reported issues for a
+while.
 
-	mboxes =3D <&hsp_top0 TEGRA_HSP_MBOX_TYPE_SM 0>,
-		 <&hsp_aon TEGRA_HSP_MBOX_TYPE_SM 1>;
-	mbox-names =3D "rx", "tx";
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-I suppose we could change that to something like:
+----------------------------------------------------------------
+Anson Huang (2):
+      tty: serial: imx: add lock for registers save/restore
+      tty: serial: imx: add pinctrl sleep/default mode switch for suspend
 
-	mboxes =3D <&hsp_top0 TEGRA_HSP_MBOX_TYPE_SM (0 << 31 | 0)>,
-		 <&hsp_aon TEGRA_HSP_MBOX_TYPE_SM (1 << 31 | 0)>;
+Anton Vasilyev (1):
+      serial: mxs-auart: Fix potential infinite loop
 
-Where the MSB of the mailbox index would indicate the direction. We
-could maybe add some eye-candy to make it easier to read:
+Baolin Wang (5):
+      serial: sprd: Remove unused structure
+      serial: sprd: Use readable macros instead of magic number
+      serial: sprd: Remove unnecessary resource validation
+      serial: sprd: Change 'int' to 'unsigned int'
+      serial: sprd: Fix the indentation issue
 
-	mboxes =3D <&hsp_top0 TEGRA_HSP_MBOX_TYPE_SM TEGRA_HSP_MBOX_SM_RX(0)>,
-		 <&hsp_aon TEGRA_HSP_MBOX_TYPE_SM TEGRA_HSP_MBOX_SM_TX(1)>;
+Biju Das (1):
+      dt-bindings: serial: sh-sci: Document r8a7744 bindings
 
-That said, I wonder if perhaps it is safe to treat all mailboxes as
-consumers by default and omit and direction in DT. If a mailbox is used
-as consumer, then the CCPLEX is only interested in FULL interrupts, so
-we enable those. The entity that shares the mailbox will write data to
-it and is only interested in the EMPTY interrupt, which we don't touch
-=66rom the CCPLEX.
+Chris Brandt (1):
+      serial: sh-sci: Add earlycon for R7S9210
 
-For mailboxes that the CCPLEX writes to, we can reconfigure them as
-producers by disabling the FULL interrupt and enabling the EMPTY
-interrupt instead. We can do that the first time somebody calls the
-mbox_send_message() on the mailbox.
+Dai Okamura (1):
+      serial: 8250_uniphier: add auto-flow-control support
 
-Do you see any problems with that approach?
+Douglas Anderson (1):
+      tty: serial: qcom_geni_serial: Fix serial when not used as console
 
-> > I'm not entirely clear on what the advantages are of using the per-
-> > mailbox registers, or how they are supposed to be used. The existing
-> > documentation doesn't really explain how these are supposed to be used
-> > either, so I was mostly just going by trial and error.
-> On virtualized configs, multiple VMs can use same HSP block but each VM m=
-ust
-> use its own interrupt. Because all the IE registers are on the same 64 KB
-> page, the writes to the page are trapped by hypervisor, which means that
-> enabling or disabling an interrupt via the shared IE register is pretty
-> heavy operation. The per-mailbox IE registers are on a page accessed free=
-ly
-> by the IE, no need to trap.
+Geert Uytterhoeven (3):
+      Revert "serial: sh-sci: Remove SCIx_RZ_SCIFA_REGTYPE"
+      Revert "serial: sh-sci: Allow for compressed SCIF address"
+      tty: serial: qcom_geni_serial: Drop useless check for dev.of_node
 
-Do the per-mailbox IE registers act as a second level enable, then? The
-HSP driver would still have to set the IE register to aggregate FULL and
-EMPTY interrupts as needed, but could then use the per-mailbox IE
-registers to actually enable and disable (that is, unmask and mask) the
-interrupts?
+Greg Kroah-Hartman (7):
+      Merge tag 'ib-mfd-spi-tty-v4.20' of git://git.kernel.org/.../lee/mfd into tty-next
+      Merge tag 'ib-mfd-spi-tty-v4.20-1' of git://git.kernel.org/.../lee/mfd into tty-next
+      Merge 4.19-rc4 into tty-next
+      Merge 4.19-rc6 into tty-next
+      Revert "serial:serial_core: Allow use of CTS for PPS line discipline"
+      Merge 4.19-rc7 into tty-next
+      tty: wipe buffer if not echoing data
 
-> If a VM uses only one empty mailbox interrupt, using a dedicated "shared"
-> interrupt and disabling that in GIC could be a lighter operation, we used=
- to
-> do that in Parker.
+He Zhe (2):
+      kgdboc: Passing ekgdboc to command line causes panic
+      kgdboc: Change printk to the right fashion
 
-Okay, that seems like it would somewhat complicate things and we don't
-really support VM uses yet, so I think it best to leave that out for
-now.
+Hiromitsu Yamasaki (1):
+      serial: sh-sci: Add r8a77990 support
 
-Thierry
+Jiri Slaby (1):
+      TTY: tty_buffer, warn on leaks
 
-> On 10/29/2018 12:39 PM, Thierry Reding wrote:
-> > On Mon, Oct 29, 2018 at 12:04:22PM +0200, Pekka Pessi wrote:
-> > > Hi Thierry,
-> > >=20
-> > > There is typically one entity (aux cpu or a VM running on CCPLEX) own=
-ing the
-> > > "empty" or producer side of mailbox (iow, waking up on empty) and ano=
-ther
-> > > entity owning the "full" or consumer side of mailbox (waking up on fu=
-ll). An
-> > > entity should not muck with the interrupts used by the opposite side.
-> > Okay, that explains some of my observations. I was initially trying to
-> > program interrupt enables for both FULL and EMPTY interrupts for all
-> > mailboxes, but then I'd usually get timeouts because the consumer wasn't
-> > responding (i.e. the SPE wasn't getting FULL interrupts for the CCPLEX's
-> > TX mailbox).
-> >=20
-> > If I understand correctly, you're saying that the CPU should only be
-> > using the EMPTY interrupts for it's TX mailbox (while leaving the FULL
-> > interrupts completely untouched) and only the FULL interrupt for it's
-> > RX mailbox (while leaving the EMPTY interrupts untouched). This is a bit
-> > of a problem because the mailbox driver doesn't really know anything
-> > about the direction when it starts up, so how would it make the decision
-> > about how to program the registers?
-> >=20
-> > > One entity typically owns one shared interrupt only.=C2=A0 For the
-> > > BPMP/SCE/RCE/SPE HSP blocks the shared interrupt 0 is owned by the au=
-xiliary
-> > > processor itself, the shared interrupts 1..4 are connected to LIC and=
- are
-> > > available to other entities. The convention is to go through the inte=
-rrupts
-> > > 0..4 and then using the first available shared interrupt for both ful=
-l and
-> > > empty.
-> > That partially matches another of my observations. It seems like we
-> > can't use the shared interrupt 0 at all on at least the AON HSP. That's
-> > fine because that HSP instance contains the TX mailbox for TCU and by
-> > the current convention in the HSP driver, shared interrupt 0 would be
-> > aggregating the FULL interrupts, which according to the above we don't
-> > need for TX mailboxes.
-> >=20
-> > What's somewhat surprising is that you're saying that both FULL and
-> > EMPTY interrupts should be handled by the same shared interrupt. That's
-> > the opposite of what the recommended programming sequence is that the
-> > TRM specifies. Why is it better to handle both FULL and EMPTY interrupts
-> > with the same shared interrupt?
-> >=20
-> > > The interrupt functions should use a mask for mailboxes owned by kern=
-el (in
-> > > essence what the IE register should be for the HSP shared interrupt o=
-wned by
-> > > the kernel) and serve only those mailboxes owned by kernel. Note that=
- there
-> > > is no reset for HSP in Xavier, and the IE register contents may be st=
-ale.
-> > Would it be safe to clear all of the IE registers to 0 on driver probe?
-> > I seem to remember trying to do that and getting similar behaviour to
-> > what I describe above, namely that interrupts on the SPE weren't working
-> > anymore. I concluded that the IE register must be shared between the
-> > various processors, even though that's somewhat suprising given that
-> > there is no way to synchronize accesses to those registers, so their
-> > programming would be somewhat up to chance.
-> >=20
-> > Do you know any more about these registers? If they are indeed separate
-> > for each processor, it should be fairly easy to keep track of the
-> > mailboxes used by the kernel and process only those. Again I don't know
-> > how exactly to distinguish between TX and RX mailboxes because they all
-> > start out the same and only their use defines which direction they go.
-> > Currently this works because we program them as consumers by default.
-> > That means we enable the FULL interrupts but keep EMPTY interrupts
-> > disabled until a message in transmitted on the mailbox, at which point
-> > we enable the EMPTY interrupt. I suppose at that point we should also
-> > disable the FULL interrupt, given the above discussion.
-> >=20
-> > > And lastly, if we want to support only Xavier and later, perhaps we s=
-hould
-> > > be more clear in the bindings? There are no mailbox-specific interrupt
-> > > enable registers available on Parker and your design relies on them.
-> > That was certainly not the intention. I thought I had seen the per-
-> > mailbox interrupt enable registers also in Tegra186 documentation, but
-> > after double-checking they're indeed not there. I don't think the driver
-> > currently "relies" on them because it uses them in addition to the
-> > HSP_IE registers. I suppose that accessing them might cause aborts on
-> > Tegra186 if they don't exist, though.
-> >=20
-> > I'm not entirely clear on what the advantages are of using the per-
-> > mailbox registers, or how they are supposed to be used. The existing
-> > documentation doesn't really explain how these are supposed to be used
-> > either, so I was mostly just going by trial and error.
-> >=20
-> > Do you know anything more on how to use these registers? I can easily
-> > make them Tegra194 specific in the code, but if they're aren't any clear
-> > advantages, it might just be easier to stick with HSP_IE programming
-> > only.
-> >=20
-> > Thierry
->=20
+John Garry (1):
+      serial: 8250_of: Fix for lack of interrupt support
 
---MGYHOYXEY6WxJCY8
-Content-Type: application/pgp-signature; name="signature.asc"
+Lance Roy (1):
+      TTY: sn_console: Replace spin_is_locked() with spin_trylock()
 
------BEGIN PGP SIGNATURE-----
+Laura Abbott (2):
+      kgdboc: Fix restrict error
+      kgdboc: Fix warning with module build
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvXCBoACgkQ3SOs138+
-s6G3oRAAvE4g09T6M+bcqTOHF42q9MRJO0z8Y6o1jeeoiZUWxDWi7iT8JZaJzG9j
-cd4H6MDnVlRLn/Kvu8mTvOV+bzIYoSsYhUC/+FUBhdvy5DDbs2U9+fy2Ee6E0jHu
-BolMQxfFXD+YT1TS2IllYBDmTyhvgczPg0K2AKX7CPFtz/7+XrGvl058sZiTZWbU
-fUHBUkU6DTrHtRH5tHUfnrwBknlkACbKUmwH6YOE3Pq/rtkXXfbYdiRMu2akKts/
-q5I4y25ar/H6y1Qdx8w7uz6Yrb4NigE5Guqs8ZIs5TRn7e9z3UnLNneIKIHkpUcQ
-ko8g95dulzVqTQ4GKUHjX1+1BDMyW6b5w3O0KusQgACZSk539a6TxH2eE3FCaCy7
-kPRaMTez4gPN2Zk+1EfzZFSp5y24RpWF5O9YTyKoT6NotGP/hpfM783vdqyc4YdX
-nYc130K9sXHqVSye86JKgLAg071yaUDSHy5OOzM5Bhr+7igxEAqIA8iWocJX1Dpm
-nIUvXq3xlZ5lhfYhBkmptZCpEZTl+S1qvd2jOf27BTOWOkIPNW2GjKng7FU3BpKS
-9BD+vuFAtFu1RCF/8PJUDyyreMBmDXy+2aX7EZu8SU7T690kWDA2PMxXBFI57mfB
-HwXrg9EWsfSGNSodt5fzAz+XxvR/HWZG9HD2ril/kasMdVIMoIg=
-=whfE
------END PGP SIGNATURE-----
+Lee Jones (4):
+      dt-bindings: mfd: atmel-usart: Correct interrupts property to include IRQ number
+      MAINTAINERS: Change Radu's email address
+      spi: at91-usart: Make local functions static
+      mfd: at91-usart: Include Device Tree header
 
---MGYHOYXEY6WxJCY8--
+Linus Torvalds (1):
+      tty: wipe buffer.
+
+Lokesh Vutla (1):
+      serial: 8250_omap: Make 8250_omap driver driver depend on ARCH_K3
+
+Marek Szyprowski (1):
+      serial: samsung: Enable baud clock for UART reset procedure in resume
+
+Marek Vasut (1):
+      serial: 8250: Fix clearing FIFOs in RS485 mode again
+
+Masahiro Yamada (2):
+      serial: 8250_uniphier: remove unused "fifo-size" property
+      serial: 8250_uniphier: flatten probe function
+
+Michal Simek (15):
+      serial: uartps: console_setup() can't be placed to init section
+      serial: uartps: Do not initialize field to zero again
+      serial: uartps: Do not use static struct uart_driver out of probe()
+      serial: uartps: Move alias reading higher in probe()
+      serial: uartps: Move register to probe based on run time detection
+      serial: uartps: Fill struct uart_driver in probe()
+      serial: uartps: Change logic how console_port is setup
+      serial: uartps: Register own uart console and driver structures
+      serial: uartps: Move Port ID to device data structure
+      serial: uartps: Enable automatic flow control
+      of: base: Introduce of_alias_get_alias_list() to check alias IDs
+      serial: uartps: Change uart ID port allocation
+      serial: uartps: Do not allow use aliases >= MAX_UART_INSTANCES
+      of: base: Fix english spelling in of_alias_get_alias_list()
+      of: base: Change logic in of_alias_get_alias_list()
+
+Miles Chen (1):
+      tty: check name length in tty_find_polling_driver()
+
+Nava kishore Manne (1):
+      serial: uartps: Fix suspend functionality
+
+Nicolas Ferre (2):
+      tty/serial_core: add ISO7816 infrastructure
+      tty/serial: atmel: add ISO7816 support
+
+Phil Elwell (2):
+      sc16is7xx: Fix for multi-channel stall
+      sc16is7xx: Fix for "Unexpected interrupt: 8"
+
+Radu Pirea (6):
+      MAINTAINERS: Add AT91 USART MFD entry
+      dt-bindings: Add binding for atmel-usart in SPI mode
+      mfd: at91-usart: Add MFD driver for USART
+      MAINTAINERS: Add AT91 USART SPI entry
+      spi: at91-usart: Add driver for at91-usart as SPI
+      tty/serial: atmel: Change the driver to work under at91-usart MFD
+
+Rob Herring (1):
+      tty: Convert to using %pOFn instead of device_node.name
+
+Sebastian Andrzej Siewior (1):
+      serial: 8250: drop the printk from serial8250_interrupt()
+
+Shubhrajyoti Datta (4):
+      tty: serial: uartlite: Enable clocks at probe
+      tty: serial: uartlite: Move uart register to probe
+      tty: serial: uartlite: remove console_init
+      tty: serial: uartlite: Use dynamic array for console port
+
+Steve Sakoman (1):
+      serial:serial_core: Allow use of CTS for PPS line discipline
+
+Tobin C. Harding (2):
+      tty_port: Remove incorrect whitespace after comments
+      serial: docs: Fix filename for serial reference implementation
+
+Ulrich Hecht (1):
+      serial: sh-sci: do not warn if DMA transfers are not supported
+
+Vabhav Sharma (1):
+      serial: fsl_lpuart: Remove the alias node dependence
+
+Wei Yongjun (1):
+      serial: uartps: Fix missing unlock on error in cdns_get_id()
+
+YueHaibing (1):
+      tty: serial: remove set but not used variable 'error'
+
+jun qian (1):
+      tty:serial:imx: use spin_lock instead of spin_lock_irqsave in isr
+
+ .../bindings/{serial => mfd}/atmel-usart.txt       |  25 +-
+ .../bindings/serial/renesas,sci-serial.txt         |   6 +
+ .../devicetree/bindings/serial/uniphier-uart.txt   |   3 +-
+ Documentation/serial/driver                        |   2 +-
+ Documentation/serial/serial-iso7816.txt            |  83 ++++
+ MAINTAINERS                                        |  16 +
+ arch/alpha/include/uapi/asm/ioctls.h               |   2 +
+ arch/mips/include/uapi/asm/ioctls.h                |   2 +
+ arch/parisc/include/uapi/asm/ioctls.h              |   2 +
+ arch/powerpc/include/uapi/asm/ioctls.h             |   2 +
+ arch/sh/include/uapi/asm/ioctls.h                  |   2 +
+ arch/sparc/include/uapi/asm/ioctls.h               |   2 +
+ arch/xtensa/include/uapi/asm/ioctls.h              |   2 +
+ drivers/mfd/Kconfig                                |   9 +
+ drivers/mfd/Makefile                               |   1 +
+ drivers/mfd/at91-usart.c                           |  72 ++++
+ drivers/of/base.c                                  |  54 +++
+ drivers/spi/Kconfig                                |   8 +
+ drivers/spi/Makefile                               |   1 +
+ drivers/spi/spi-at91-usart.c                       | 432 +++++++++++++++++++++
+ drivers/tty/ehv_bytechan.c                         |  12 +-
+ drivers/tty/n_tty.c                                |  20 +-
+ drivers/tty/serial/8250/8250_core.c                |   6 +-
+ drivers/tty/serial/8250/8250_of.c                  |  22 +-
+ drivers/tty/serial/8250/8250_port.c                |  29 +-
+ drivers/tty/serial/8250/8250_uniphier.c            |  62 +--
+ drivers/tty/serial/8250/Kconfig                    |   2 +-
+ drivers/tty/serial/Kconfig                         |   1 +
+ drivers/tty/serial/atmel_serial.c                  | 232 +++++++++--
+ drivers/tty/serial/atmel_serial.h                  |   3 +-
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c        |   8 +-
+ drivers/tty/serial/fsl_lpuart.c                    |  12 +-
+ drivers/tty/serial/imx.c                           |  38 +-
+ drivers/tty/serial/kgdboc.c                        |  46 ++-
+ drivers/tty/serial/mxs-auart.c                     |   3 +-
+ drivers/tty/serial/pmac_zilog.c                    |   8 +-
+ drivers/tty/serial/qcom_geni_serial.c              |  69 ++--
+ drivers/tty/serial/samsung.c                       |   8 +
+ drivers/tty/serial/sc16is7xx.c                     |  47 ++-
+ drivers/tty/serial/serial_core.c                   |  60 +++
+ drivers/tty/serial/sh-sci.c                        |   9 +-
+ drivers/tty/serial/sn_console.c                    |  15 +-
+ drivers/tty/serial/sprd_serial.c                   |  98 +++--
+ drivers/tty/serial/uartlite.c                      |  71 ++--
+ drivers/tty/serial/xilinx_uartps.c                 | 303 ++++++++++-----
+ drivers/tty/tty_buffer.c                           |  13 +-
+ drivers/tty/tty_io.c                               |   2 +-
+ drivers/tty/tty_port.c                             |   7 -
+ include/dt-bindings/mfd/at91-usart.h               |  17 +
+ include/linux/of.h                                 |  10 +
+ include/linux/serial_core.h                        |   3 +
+ include/uapi/asm-generic/ioctls.h                  |   2 +
+ include/uapi/linux/serial.h                        |  17 +
+ 53 files changed, 1584 insertions(+), 397 deletions(-)
+ rename Documentation/devicetree/bindings/{serial => mfd}/atmel-usart.txt (76%)
+ create mode 100644 Documentation/serial/serial-iso7816.txt
+ create mode 100644 drivers/mfd/at91-usart.c
+ create mode 100644 drivers/spi/spi-at91-usart.c
+ create mode 100644 include/dt-bindings/mfd/at91-usart.h
