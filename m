@@ -1,53 +1,76 @@
-From: Anders Roxell <anders.roxell@linaro.org>
-Subject: [PATCH v2 2/2] writeback: don't decrement wb->refcnt if !wb->bdi
-Date: Tue, 30 Oct 2018 12:35:45 +0100
-Message-ID: <20181030113545.30999-2-anders.roxell@linaro.org>
-References: <20181030113545.30999-1-anders.roxell@linaro.org>
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Subject: Re: [PATCH 0/7] serial: Finish kgdb on qcom_geni; fix many lockdep
+ splats w/ kgdb
+Date: Tue, 30 Oct 2018 11:56:28 +0000
+Message-ID: <20181030115628.eqtyqdugkpkxvyr2@holly.lan>
+References: <20181029180707.207546-1-dianders@chromium.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181030113545.30999-1-anders.roxell@linaro.org>
+Content-Disposition: inline
+In-Reply-To: <20181029180707.207546-1-dianders@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux@armlinux.org.uk, gregkh@linuxfoundation.org, akpm@linux-foundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, tj@kernel.org, Anders Roxell <anders.roxell@linaro.org>, Arnd Bergmann <arnd@arndb.de>
+To: Douglas Anderson <dianders@chromium.org>
+Cc: Jason Wessel <jason.wessel@windriver.com>, tglx@linutronix.de, mingo@kernel.org, gregkh@linuxfoundation.org, linux-arm-msm@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, nm@ti.com, linux-mips@linux-mips.org, dalias@libc.org, catalin.marinas@arm.com, vigneshr@ti.com, linux-aspeed@lists.ozlabs.org, linux-sh@vger.kernel.org, peterz@infradead.org, will.deacon@arm.com, mhocko@suse.com, paulus@samba.org, hpa@zytor.com, sparclinux@vger.kernel.org, marex@denx.de, sfr@canb.auug.org.au, ysato@users.sourceforge.jp, linux-hexagon@vger.kernel.org, x86@kernel.org, linux@armlinux.org.uk, pombredanne@nexb.com, tony@atomide.com, mingo@redhat.com, joel@jms.id.au, linux-serial@vger.kernel.org, rolf.evers.fischer@aptiv.com, jhogan@kernel.org, asierra@xes-inc.com, linux-snps-arc@lists.i
 List-Id: linux-serial@vger.kernel.org
 
-This happened while running in qemu-system-aarch64, the AMBA PL011 UART
-driver when enabling CONFIG_DEBUG_TEST_DRIVER_REMOVE.
-arch_initcall(pl011_init) came before subsys_initcall(default_bdi_init),
-devtmpfs' handle_remove() crashes because the reference count is a NULL
-pointer only because wb->bdi hasn't been initialized yet.
+On Mon, Oct 29, 2018 at 11:07:00AM -0700, Douglas Anderson wrote:
+> Looking back, this is pretty much two series squashed that could be
+> treated indepdently.  The first is a serial series and the second is a
+> kgdb series.
 
-Rework so that wb_put have an extra check if wb->bdi before decrement
-wb->refcnt and also add a WARN_ON_ONCE to get a warning if it happens again
-in other drivers.
+Indeed.
 
-Fixes: 52ebea749aae ("writeback: make backing_dev_info host cgroup-specific bdi_writebacks")
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
----
- include/linux/backing-dev-defs.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+I couldn't work out the link between the first 5 patches and the last 2
+until I read this...
 
-diff --git a/include/linux/backing-dev-defs.h b/include/linux/backing-dev-defs.h
-index 9a6bc0951cfa..c31157135598 100644
---- a/include/linux/backing-dev-defs.h
-+++ b/include/linux/backing-dev-defs.h
-@@ -258,6 +258,14 @@ static inline void wb_get(struct bdi_writeback *wb)
-  */
- static inline void wb_put(struct bdi_writeback *wb)
- {
-+	if (WARN_ON_ONCE(!wb->bdi)) {
-+		/*
-+		 * A driver bug might cause a file to be removed before bdi was
-+		 * initialized.
-+		 */
-+		return;
-+	}
-+
- 	if (wb != &wb->bdi->wb)
- 		percpu_ref_put(&wb->refcnt);
- }
--- 
-2.19.1
+Is anything in the 01->05 patch set even related to kgdb? From the stack
+traces it looks to me like the lock dep warning would trigger for any
+sysrq. I think separating into two threads for v2 would be sensible.
+
+
+Daniel.
+
+
+> 
+> For all serial patches I'd expect them to go through the tty tree once
+> they've been reviewed.
+> 
+> If folks are OK w/ the 'smp' patch it probably should go in some core
+> kernel tree.  The kgdb patch won't work without it, though, so to land
+> that we'd need coordination between the folks landing that and the
+> folks landing the 'smp' patch.
+> 
+> 
+> Douglas Anderson (7):
+>   serial: qcom_geni_serial: Finish supporting sysrq
+>   serial: core: Allow processing sysrq at port unlock time
+>   serial: qcom_geni_serial: Process sysrq at port unlock time
+>   serial: core: Include console.h from serial_core.h
+>   serial: 8250: Process sysrq at port unlock time
+>   smp: Don't yell about IRQs disabled in kgdb_roundup_cpus()
+>   kgdb: Remove irq flags and local_irq_enable/disable from roundup
+> 
+>  arch/arc/kernel/kgdb.c                      |  4 +--
+>  arch/arm/kernel/kgdb.c                      |  4 +--
+>  arch/arm64/kernel/kgdb.c                    |  4 +--
+>  arch/hexagon/kernel/kgdb.c                  | 11 ++----
+>  arch/mips/kernel/kgdb.c                     |  4 +--
+>  arch/powerpc/kernel/kgdb.c                  |  2 +-
+>  arch/sh/kernel/kgdb.c                       |  4 +--
+>  arch/sparc/kernel/smp_64.c                  |  2 +-
+>  arch/x86/kernel/kgdb.c                      |  9 ++---
+>  drivers/tty/serial/8250/8250_aspeed_vuart.c |  6 +++-
+>  drivers/tty/serial/8250/8250_fsl.c          |  6 +++-
+>  drivers/tty/serial/8250/8250_omap.c         |  6 +++-
+>  drivers/tty/serial/8250/8250_port.c         |  8 ++---
+>  drivers/tty/serial/qcom_geni_serial.c       | 10 ++++--
+>  include/linux/kgdb.h                        |  9 ++---
+>  include/linux/serial_core.h                 | 38 ++++++++++++++++++++-
+>  kernel/debug/debug_core.c                   |  2 +-
+>  kernel/smp.c                                |  4 ++-
+>  18 files changed, 80 insertions(+), 53 deletions(-)
+> 
+> -- 
+> 2.19.1.568.g152ad8e336-goog
+> 
