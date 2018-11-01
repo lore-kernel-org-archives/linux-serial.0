@@ -1,35 +1,25 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [PATCHv3] panic: avoid deadlocks in re-entrant console drivers
-Date: Thu, 1 Nov 2018 10:48:21 +0900
-Message-ID: <20181101014821.GB502@jagdpanzerIV>
-References: <20181016050428.17966-2-sergey.senozhatsky@gmail.com>
- <20181025101036.6823-1-sergey.senozhatsky@gmail.com>
- <20181031122736.epbxu424l3xagge5@pathway.suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Marcel Ziswiler <marcel@ziswiler.com>
+Subject: [PATCH v1 0/3] clk/serial tegra: uart related fixes
+Date: Thu,  1 Nov 2018 02:52:27 +0100
+Message-ID: <20181101015230.27310-1-marcel@ziswiler.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181031122736.epbxu424l3xagge5@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Marcel Ziswiler <marcel@ziswiler.com>, Thierry Reding <thierry.reding@gmail.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Stephen Boyd <sboyd@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Prashant Gaikwad <pgaikwad@nvidia.com>, Peter De Schrijver <pdeschrijver@nvidia.com>, Laxman Dewangan <ldewangan@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, Michael Turquette <mturquette@baylibre.com>, linux-clk@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On (10/31/18 13:27), Petr Mladek wrote:
-> > 
-> > Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-> 
-> The patch makes sense to me. The locks should stay busted also for
-> console_flush_on_panic().
-> 
-> With the added #include <linux/vt_kern.h>:
-> 
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-Thanks!
+This series features some UART related clock issue fix and clean-up.
 
-Since there are no objections - how shall we route it? Via printk tree?
-I'd also prefer this patch to be in -stable, it fixes a real issue after
-all.
 
-	-ss
+Marcel Ziswiler (3):
+  clk: tegra: get rid of duplicate defines
+  clk: tegra: ignore unused vfir clock shared with uartb
+  serial: tegra: fix some spelling mistakes
+
+ drivers/clk/tegra/clk-tegra-periph.c |  5 +----
+ drivers/tty/serial/serial-tegra.c    | 10 +++++-----
+ 2 files changed, 6 insertions(+), 9 deletions(-)
+
+-- 
+2.14.5
