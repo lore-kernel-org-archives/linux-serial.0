@@ -1,45 +1,44 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCHv3] panic: avoid deadlocks in re-entrant console drivers
-Date: Thu, 1 Nov 2018 09:08:08 +0100
-Message-ID: <20181101080808.n73lrlnjd65nk4qf@pathway.suse.cz>
-References: <20181016050428.17966-2-sergey.senozhatsky@gmail.com>
- <20181025101036.6823-1-sergey.senozhatsky@gmail.com>
- <20181031122736.epbxu424l3xagge5@pathway.suse.cz>
- <20181101014821.GB502@jagdpanzerIV>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH] serial: 8250: Default SERIAL_OF_PLATFORM to SERIAL_8250
+Date: Thu,  1 Nov 2018 11:26:06 -0700
+Message-ID: <20181101182609.24142-1-f.fainelli@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181101014821.GB502@jagdpanzerIV>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: arndb@arndb.de, Florian Fainelli <f.fainelli@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Nishanth Menon <nm@ti.com>, Hendrik Brueckner <brueckner@linux.vnet.ibm.com>, Christian Borntraeger <borntraeger@de.ibm.com>, Michael Moese <mmoese@suse.de>, Lokesh Vutla <lokeshvutla@ti.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu 2018-11-01 10:48:21, Sergey Senozhatsky wrote:
-> On (10/31/18 13:27), Petr Mladek wrote:
-> > > 
-> > > Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-> > 
-> > The patch makes sense to me. The locks should stay busted also for
-> > console_flush_on_panic().
-> > 
-> > With the added #include <linux/vt_kern.h>:
-> > 
-> > Reviewed-by: Petr Mladek <pmladek@suse.com>
-> 
-> Thanks!
-> 
-> Since there are no objections - how shall we route it? Via printk tree?
+It is way too easy to miss enabling SERIAL_OF_PLATFORM which would
+result in the inability for the kernel to have a valid console device,
+which can be seen with:
 
-Good question. OK, I am going to put it into printk.git unless I hear
-complains withing next couple of days.
+Warning: unable to open an initial console.
 
+and then:
 
-> I'd also prefer this patch to be in -stable, it fixes a real issue after
-> all.
+Run /init as init process
+Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000100
 
-It makes sense.
+Since SERIAL_OF_PLATFORM already depends on SERIAL_8250 && OF there
+really is no drawback to defaulting this config to the value of
+SERIAL_8250.
 
-Best Regards,
-Petr
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/tty/serial/8250/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 15c2c5463835..d7737dca0e48 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -484,6 +484,7 @@ config SERIAL_8250_PXA
+ config SERIAL_OF_PLATFORM
+ 	tristate "Devicetree based probing for 8250 ports"
+ 	depends on SERIAL_8250 && OF
++	default SERIAL_8250
+ 	help
+ 	  This option is used for all 8250 compatible serial ports that
+ 	  are probed through devicetree, including Open Firmware based
+-- 
+2.17.1
