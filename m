@@ -1,70 +1,45 @@
-From: Marcel Ziswiler <marcel@ziswiler.com>
-Subject: [PATCH v1 3/3] serial: tegra: fix some spelling mistakes
-Date: Thu,  1 Nov 2018 02:52:30 +0100
-Message-ID: <20181101015230.27310-4-marcel@ziswiler.com>
-References: <20181101015230.27310-1-marcel@ziswiler.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCHv3] panic: avoid deadlocks in re-entrant console drivers
+Date: Thu, 1 Nov 2018 09:08:08 +0100
+Message-ID: <20181101080808.n73lrlnjd65nk4qf@pathway.suse.cz>
+References: <20181016050428.17966-2-sergey.senozhatsky@gmail.com>
+ <20181025101036.6823-1-sergey.senozhatsky@gmail.com>
+ <20181031122736.epbxu424l3xagge5@pathway.suse.cz>
+ <20181101014821.GB502@jagdpanzerIV>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181101015230.27310-1-marcel@ziswiler.com>
+Content-Disposition: inline
+In-Reply-To: <20181101014821.GB502@jagdpanzerIV>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Marcel Ziswiler <marcel.ziswiler@toradex.com>, Thierry Reding <thierry.reding@gmail.com>, Jiri Slaby <jslaby@suse.com>, Jonathan Hunter <jonathanh@nvidia.com>, linux-serial@vger.kernel.org, Laxman Dewangan <ldewangan@nvidia.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Thu 2018-11-01 10:48:21, Sergey Senozhatsky wrote:
+> On (10/31/18 13:27), Petr Mladek wrote:
+> > > 
+> > > Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+> > 
+> > The patch makes sense to me. The locks should stay busted also for
+> > console_flush_on_panic().
+> > 
+> > With the added #include <linux/vt_kern.h>:
+> > 
+> > Reviewed-by: Petr Mladek <pmladek@suse.com>
+> 
+> Thanks!
+> 
+> Since there are no objections - how shall we route it? Via printk tree?
 
-Fix a few spelling mistakes I stumbled upon while debugging a customers
-UART issues.
+Good question. OK, I am going to put it into printk.git unless I hear
+complains withing next couple of days.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
----
+> I'd also prefer this patch to be in -stable, it fixes a real issue after
+> all.
 
- drivers/tty/serial/serial-tegra.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+It makes sense.
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index af2a29cfbbe9..d5269aaaf9b2 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -746,7 +746,7 @@ static void tegra_uart_stop_rx(struct uart_port *u)
- 	if (!tup->rx_in_progress)
- 		return;
- 
--	tegra_uart_wait_sym_time(tup, 1); /* wait a character interval */
-+	tegra_uart_wait_sym_time(tup, 1); /* wait one character interval */
- 
- 	ier = tup->ier_shadow;
- 	ier &= ~(UART_IER_RDI | UART_IER_RLSI | UART_IER_RTOIE |
-@@ -887,7 +887,7 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
- 	 *
- 	 * EORD is different interrupt than RX_TIMEOUT - RX_TIMEOUT occurs when
- 	 * the DATA is sitting in the FIFO and couldn't be transferred to the
--	 * DMA as the DMA size alignment(4 bytes) is not met. EORD will be
-+	 * DMA as the DMA size alignment (4 bytes) is not met. EORD will be
- 	 * triggered when there is a pause of the incomming data stream for 4
- 	 * characters long.
- 	 *
-@@ -1079,7 +1079,7 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	if (tup->rts_active)
- 		set_rts(tup, false);
- 
--	/* Clear all interrupts as configuration is going to be change */
-+	/* Clear all interrupts as configuration is going to be changed */
- 	tegra_uart_write(tup, tup->ier_shadow | UART_IER_RDI, UART_IER);
- 	tegra_uart_read(tup, UART_IER);
- 	tegra_uart_write(tup, 0, UART_IER);
-@@ -1165,10 +1165,10 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	/* update the port timeout based on new settings */
- 	uart_update_timeout(u, termios->c_cflag, baud);
- 
--	/* Make sure all write has completed */
-+	/* Make sure all writes have completed */
- 	tegra_uart_read(tup, UART_IER);
- 
--	/* Reenable interrupt */
-+	/* Re-enable interrupt */
- 	tegra_uart_write(tup, tup->ier_shadow, UART_IER);
- 	tegra_uart_read(tup, UART_IER);
- 
--- 
-2.14.5
+Best Regards,
+Petr
