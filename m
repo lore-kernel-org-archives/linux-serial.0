@@ -1,44 +1,37 @@
-From: Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH] serial: 8250: Default SERIAL_OF_PLATFORM to SERIAL_8250
-Date: Thu,  1 Nov 2018 11:26:06 -0700
-Message-ID: <20181101182609.24142-1-f.fainelli@gmail.com>
+From: Stephen Boyd <swboyd@chromium.org>
+Subject: Re: [PATCH 1/7] serial: qcom_geni_serial: Finish supporting sysrq
+Date: Fri, 02 Nov 2018 09:47:07 -0700
+Message-ID: <154117722795.88331.829582703808332252@swboyd.mtv.corp.google.com>
+References: <20181029180707.207546-1-dianders@chromium.org>
+ <20181029180707.207546-2-dianders@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181029180707.207546-2-dianders@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: arndb@arndb.de, Florian Fainelli <f.fainelli@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Nishanth Menon <nm@ti.com>, Hendrik Brueckner <brueckner@linux.vnet.ibm.com>, Christian Borntraeger <borntraeger@de.ibm.com>, Michael Moese <mmoese@suse.de>, Lokesh Vutla <lokeshvutla@ti.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+To: Daniel Thompson <daniel.thompson@linaro.org>, Jason Wessel <jason.wessel@windriver.com>, gregkh@linuxfoundation.org, mingo@kernel.org, tglx@linutronix.de
+Cc: linux-arm-msm@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, Douglas Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, jslaby@suse.com
 List-Id: linux-serial@vger.kernel.org
 
-It is way too easy to miss enabling SERIAL_OF_PLATFORM which would
-result in the inability for the kernel to have a valid console device,
-which can be seen with:
+Quoting Douglas Anderson (2018-10-29 11:07:01)
+> The geni serial driver already had some sysrq code in it, but since
+> SUPPORT_SYSRQ wasn't defined the code didn't do anything useful.
+> Let's make it useful by adding that define using the same formula
+> found in other serial drivers.
+> =
 
-Warning: unable to open an initial console.
+> In order to prevent deadlock, we'll take a page from the
+> 'msm_serial.c' where the spinlock is released around
+> uart_handle_sysrq_char().  This seemed better than copying from
+> '8250_port.c' where we skip locking in the console_write function
+> since the '8250_port.c' method can cause lockdep warnings when
+> dropping into kgdb.
+> =
 
-and then:
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-Run /init as init process
-Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000100
+Given that it's the same as msm_serial.c, and I wrote the msm_serial.c
+"hack" then:
 
-Since SERIAL_OF_PLATFORM already depends on SERIAL_8250 && OF there
-really is no drawback to defaulting this config to the value of
-SERIAL_8250.
-
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/tty/serial/8250/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 15c2c5463835..d7737dca0e48 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -484,6 +484,7 @@ config SERIAL_8250_PXA
- config SERIAL_OF_PLATFORM
- 	tristate "Devicetree based probing for 8250 ports"
- 	depends on SERIAL_8250 && OF
-+	default SERIAL_8250
- 	help
- 	  This option is used for all 8250 compatible serial ports that
- 	  are probed through devicetree, including Open Firmware based
--- 
-2.17.1
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
