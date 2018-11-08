@@ -1,73 +1,99 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v2 0/5] serial: Finish sysrq on qcom_geni; fix sysrq vs.
- lockdep on 8250
-Date: Thu, 8 Nov 2018 10:41:47 +0100
-Message-ID: <20181108094147.clr2nntiqvqkh5q2@pathway.suse.cz>
-References: <20181030221107.79758-1-dianders@chromium.org>
- <20181107182349.GP10650@smile.fi.intel.com>
- <CAD=FV=Xyra4+cLB0J64+SWqCF=YKdEJpAuybQboYxOcfrdTeQg@mail.gmail.com>
+From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Subject: RE: [PATCH] serial: sh-sci: Document r8a774a1 bindings
+Date: Thu, 8 Nov 2018 11:19:17 +0000
+Message-ID: <TY1PR01MB1770A808CD0FB80FD1AE263DC0C50@TY1PR01MB1770.jpnprd01.prod.outlook.com>
+References: <1534250042-15815-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <CAD=FV=Xyra4+cLB0J64+SWqCF=YKdEJpAuybQboYxOcfrdTeQg@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Doug Anderson <dianders@chromium.org>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>, vigneshr@ti.com, linux-aspeed@lists.ozlabs.org, sergey.senozhatsky@gmail.com, Andrew Jeffery <andrew@aj.id.au>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Steven Rostedt <rostedt@goodmis.org>, Tony Lindgren <tony@atomide.com>, joel@jms.id.au, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Jeremy Kerr <jk@ozlabs.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1534250042-15815-1-git-send-email-fabrizio.castro@bp.renesas.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Fabrizio Castro <fabrizio.castro@bp.renesas.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed 2018-11-07 11:26:56, Doug Anderson wrote:
-> On Wed, Nov 7, 2018 at 10:23 AM Andy Shevchenko
-> Ah!  Based on who you added to the CC list I guess you meant to CC
-> "printk" folks?
-> 
-> PRINTK
-> M:      Petr Mladek <pmladek@suse.com>
-> M:      Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-> R:      Steven Rostedt <rostedt@goodmis.org>
-> S:      Maintained
-> F:      kernel/printk/
-> F:      include/linux/printk.h
-> 
-> 
-> I'd be happy to CC those folks on future spins (if there are any).
-> I'm not convinced that these patches are directly relevant to the
-> printk subsystem, but I'm always happy for more people to have a
-> chance to review patches.
+Dear All,
 
-I, as a printk maintainer, am not completely familiar with all
-the console driver problems. But we, printk maintainers, come
-to similar deadlocks from the printk side, so we are definitely
-interested into this kind of patches.
+This is just a gentle reminder.
 
-BTW: There was an attempt to avoid the console_unlock() related
-deadlocks a more generic way, see
-https://lore.kernel.org/lkml/20181016050428.17966-1-sergey.senozhatsky@gmail.com
-Unfortunately, there is some push back against introducing a new
-printk-related-locking API.
+Thanks,
+Fab
+
+> From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> Sent: 14 August 2018 13:34
+> Subject: [PATCH] serial: sh-sci: Document r8a774a1 bindings
+>
+> RZ/G2M (R8A774A1) SoC also has the R-Car Gen3 compatible SCIF and
+> HSCIF ports, so document the SoC specific bindings. While at it,
+> update the RZ/G1 and RZ/G2 family specific strings description as
+> outdated.
+>
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das@bp.renesas.com>
+> ---
+>  .../devicetree/bindings/serial/renesas,sci-serial.txt      | 14 ++++++++=
+------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.=
+txt b/Documentation/devicetree/bindings/serial/renesas,sci-
+> serial.txt
+> index eaca9da..1994ab8 100644
+> --- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> +++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+> @@ -20,6 +20,8 @@ Required properties:
+>      - "renesas,hscif-r8a7745" for R8A7745 (RZ/G1E) HSCIF compatible UART=
+.
+>      - "renesas,scif-r8a77470" for R8A77470 (RZ/G1C) SCIF compatible UART=
+.
+>      - "renesas,hscif-r8a77470" for R8A77470 (RZ/G1C) HSCIF compatible UA=
+RT.
+> +    - "renesas,scif-r8a774a1" for R8A774A1 (RZ/G2M) SCIF compatible UART=
+.
+> +    - "renesas,hscif-r8a774a1" for R8A774A1 (RZ/G2M) HSCIF compatible UA=
+RT.
+>      - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART=
+.
+>      - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART=
+.
+>      - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART=
+.
+> @@ -55,13 +57,13 @@ Required properties:
+>      - "renesas,scifa-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFA compatible=
+ UART.
+>      - "renesas,scifb-sh73a0" for SH73A0 (SH-Mobile AG5) SCIFB compatible=
+ UART.
+>      - "renesas,rcar-gen1-scif" for R-Car Gen1 SCIF compatible UART,
+> -    - "renesas,rcar-gen2-scif" for R-Car Gen2 SCIF compatible UART,
+> -    - "renesas,rcar-gen3-scif" for R-Car Gen3 SCIF compatible UART,
+> -    - "renesas,rcar-gen2-scifa" for R-Car Gen2 SCIFA compatible UART,
+> -    - "renesas,rcar-gen2-scifb" for R-Car Gen2 SCIFB compatible UART,
+> +    - "renesas,rcar-gen2-scif" for R-Car Gen2 and RZ/G1 SCIF compatible =
+UART,
+> +    - "renesas,rcar-gen3-scif" for R-Car Gen3 and RZ/G2 SCIF compatible =
+UART,
+> +    - "renesas,rcar-gen2-scifa" for R-Car Gen2 and RZ/G1 SCIFA compatibl=
+e UART,
+> +    - "renesas,rcar-gen2-scifb" for R-Car Gen2 and RZ/G1 SCIFB compatibl=
+e UART,
+>      - "renesas,rcar-gen1-hscif" for R-Car Gen1 HSCIF compatible UART,
+> -    - "renesas,rcar-gen2-hscif" for R-Car Gen2 HSCIF compatible UART,
+> -    - "renesas,rcar-gen3-hscif" for R-Car Gen3 HSCIF compatible UART,
+> +    - "renesas,rcar-gen2-hscif" for R-Car Gen2 and RZ/G1 HSCIF compatibl=
+e UART,
+> +    - "renesas,rcar-gen3-hscif" for R-Car Gen3 and RZ/G2 HSCIF compatibl=
+e UART,
+>      - "renesas,scif" for generic SCIF compatible UART.
+>      - "renesas,scifa" for generic SCIFA compatible UART.
+>      - "renesas,scifb" for generic SCIFB compatible UART.
+> --
+> 2.7.4
 
 
-> Hopefully anyone who needs this patch can find it on one of the
-> relevant mailing lists.  I screwed up and missed LKML this time
-> around, but there are plenty of other mailing lists here that it could
-> be found on.  If requested I'm also happy to re-post the same series
-> adding those 3 people if that's what everyone wants.
 
-I have glanced over the patches via
-https://www.spinics.net/lists/linux-arm-msm/msg44083.html
-I still have to think about it. I will be traveling next week
-so it might take some time.
 
-Anyway, please CC printk people into v2 if any.
-
-Best Reagards,
-Petr
+Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, B=
+uckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered=
+ No. 04586709.
