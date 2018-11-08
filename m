@@ -1,154 +1,125 @@
-From: <gregkh@linuxfoundation.org>
-Subject: patch "arch/alpha, termios: implement BOTHER, IBSHIFT and termios2" added to tty-linus
-Date: Thu, 08 Nov 2018 05:32:40 -0800
-Message-ID: <1541683960141253@kroah.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 3.18 064/144] serial: samsung: Add the support for Exynos5433 SoC
+Date: Thu,  8 Nov 2018 13:50:35 -0800
+Message-ID: <20181108215059.507617653@linuxfoundation.org>
+References: <20181108215054.826084593@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ANSI_X3.4-1968
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: hpa@zytor.com, alan@lxorguk.ukuu.org.uk, esyr@redhat.com, gregkh@linuxfoundation.org, ink@jurassic.park.msu.ru, johan@kernel.org, jslaby@suse.com, kstewart@linuxfoundation.org, linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org, mattst88@gmail.com, pombredanne@nexb.com, rth@twiddle.net, stable@vger.kernel.org, tglx@linutronix.de, viro@zeniv.linux.org.uk
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181108215054.826084593@linuxfoundation.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>, Inki Dae <inki.dae@samsung.com>, Geunsik Lim <geunsik.lim@samsung.com>, Sasha Levin <sashal@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+3.18-stable review patch.  If anyone has any objections, please let me know.
 
-This is a note to let you know that I've just added the patch titled
+------------------
 
-    arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
+[ Upstream commit 31ec77aca72ee5920ed3ec3d047734dc0bc43342 ]
 
-to my tty git tree which can be found at
-    git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-in the tty-linus branch.
+This patch adds new s3c24xx_serial_drv_data structure for Exynos5433 SoC
+because Exynos5433 has different fifo size from existing Exynos4 SoC.
 
-The patch will show up in the next release of the linux-next tree
-(usually sometime within the next 24 hours during the week.)
-
-The patch will hopefully also be merged in Linus's tree for the
-next -rc kernel release.
-
-If you have any questions about this process, please let me know.
-
-
->From d0ffb805b729322626639336986bc83fc2e60871 Mon Sep 17 00:00:00 2001
-From: "H. Peter Anvin (Intel)" <hpa@zytor.com>
-Date: Mon, 22 Oct 2018 09:19:05 -0700
-Subject: arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
-
-Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
-using arbitrary flags. Because BOTHER is not defined, the general
-Linux code doesn't allow setting arbitrary baud rates, and because
-CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
-drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
-
-Resolve both problems by #defining BOTHER to 037 on Alpha.
-
-However, userspace still needs to know if setting BOTHER is actually
-safe given legacy kernels (does anyone actually care about that on
-Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
-though they use the same structure. Define struct termios2 just for
-compatibility; it is the exact same structure as struct termios. In a
-future patchset, this will be cleaned up so the uapi headers are
-usable from libc.
-
-Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Eugene Syromiatnikov <esyr@redhat.com>
-Cc: <linux-alpha@vger.kernel.org>
-Cc: <linux-serial@vger.kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: <stable@vger.kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Acked-by: Inki Dae <inki.dae@samsung.com>
+Acked-by: Geunsik Lim <geunsik.lim@samsung.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/alpha/include/asm/termios.h       |  8 +++++++-
- arch/alpha/include/uapi/asm/ioctls.h   |  5 +++++
- arch/alpha/include/uapi/asm/termbits.h | 17 +++++++++++++++++
- 3 files changed, 29 insertions(+), 1 deletion(-)
+ drivers/tty/serial/samsung.c | 56 +++++++++++++++++++++++-------------
+ 1 file changed, 36 insertions(+), 20 deletions(-)
 
-diff --git a/arch/alpha/include/asm/termios.h b/arch/alpha/include/asm/termios.h
-index 6a8c53dec57e..b7c77bb1bfd2 100644
---- a/arch/alpha/include/asm/termios.h
-+++ b/arch/alpha/include/asm/termios.h
-@@ -73,9 +73,15 @@
- })
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index ba59a76edc8b..957992ceba0a 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1785,32 +1785,43 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ #endif
  
- #define user_termios_to_kernel_termios(k, u) \
--	copy_from_user(k, u, sizeof(struct termios))
-+	copy_from_user(k, u, sizeof(struct termios2))
- 
- #define kernel_termios_to_user_termios(u, k) \
-+	copy_to_user(u, k, sizeof(struct termios2))
+ #if defined(CONFIG_ARCH_EXYNOS)
++#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
++	.info = &(struct s3c24xx_uart_info) {			\
++		.name		= "Samsung Exynos UART",	\
++		.type		= PORT_S3C6400,			\
++		.has_divslot	= 1,				\
++		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
++		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,	\
++		.rx_fifofull	= S5PV210_UFSTAT_RXFULL,	\
++		.tx_fifofull	= S5PV210_UFSTAT_TXFULL,	\
++		.tx_fifomask	= S5PV210_UFSTAT_TXMASK,	\
++		.tx_fifoshift	= S5PV210_UFSTAT_TXSHIFT,	\
++		.def_clk_sel	= S3C2410_UCON_CLKSEL0,		\
++		.num_clks	= 1,				\
++		.clksel_mask	= 0,				\
++		.clksel_shift	= 0,				\
++	},							\
++	.def_cfg = &(struct s3c2410_uartcfg) {			\
++		.ucon		= S5PV210_UCON_DEFAULT,		\
++		.ufcon		= S5PV210_UFCON_DEFAULT,	\
++		.has_fracval	= 1,				\
++	}							\
 +
-+#define user_termios_to_kernel_termios_1(k, u) \
-+	copy_from_user(k, u, sizeof(struct termios))
-+
-+#define kernel_termios_to_user_termios_1(u, k) \
- 	copy_to_user(u, k, sizeof(struct termios))
- 
- #endif	/* _ALPHA_TERMIOS_H */
-diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/uapi/asm/ioctls.h
-index 3729d92d3fa8..dc8c20ac7191 100644
---- a/arch/alpha/include/uapi/asm/ioctls.h
-+++ b/arch/alpha/include/uapi/asm/ioctls.h
-@@ -32,6 +32,11 @@
- #define TCXONC		_IO('t', 30)
- #define TCFLSH		_IO('t', 31)
- 
-+#define TCGETS2		_IOR('T', 42, struct termios2)
-+#define TCSETS2		_IOW('T', 43, struct termios2)
-+#define TCSETSW2	_IOW('T', 44, struct termios2)
-+#define TCSETSF2	_IOW('T', 45, struct termios2)
-+
- #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
- #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
- #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
-diff --git a/arch/alpha/include/uapi/asm/termbits.h b/arch/alpha/include/uapi/asm/termbits.h
-index de6c8360fbe3..4575ba34a0ea 100644
---- a/arch/alpha/include/uapi/asm/termbits.h
-+++ b/arch/alpha/include/uapi/asm/termbits.h
-@@ -26,6 +26,19 @@ struct termios {
- 	speed_t c_ospeed;		/* output speed */
+ static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
+-	.info = &(struct s3c24xx_uart_info) {
+-		.name		= "Samsung Exynos4 UART",
+-		.type		= PORT_S3C6400,
+-		.has_divslot	= 1,
+-		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,
+-		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,
+-		.rx_fifofull	= S5PV210_UFSTAT_RXFULL,
+-		.tx_fifofull	= S5PV210_UFSTAT_TXFULL,
+-		.tx_fifomask	= S5PV210_UFSTAT_TXMASK,
+-		.tx_fifoshift	= S5PV210_UFSTAT_TXSHIFT,
+-		.def_clk_sel	= S3C2410_UCON_CLKSEL0,
+-		.num_clks	= 1,
+-		.clksel_mask	= 0,
+-		.clksel_shift	= 0,
+-	},
+-	.def_cfg = &(struct s3c2410_uartcfg) {
+-		.ucon		= S5PV210_UCON_DEFAULT,
+-		.ufcon		= S5PV210_UFCON_DEFAULT,
+-		.has_fracval	= 1,
+-	},
++	EXYNOS_COMMON_SERIAL_DRV_DATA,
+ 	.fifosize = { 256, 64, 16, 16 },
  };
- 
-+/* Alpha has identical termios and termios2 */
 +
-+struct termios2 {
-+	tcflag_t c_iflag;		/* input mode flags */
-+	tcflag_t c_oflag;		/* output mode flags */
-+	tcflag_t c_cflag;		/* control mode flags */
-+	tcflag_t c_lflag;		/* local mode flags */
-+	cc_t c_cc[NCCS];		/* control characters */
-+	cc_t c_line;			/* line discipline (== c_cc[19]) */
-+	speed_t c_ispeed;		/* input speed */
-+	speed_t c_ospeed;		/* output speed */
++static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
++	EXYNOS_COMMON_SERIAL_DRV_DATA,
++	.fifosize = { 64, 256, 16, 256 },
 +};
 +
- /* Alpha has matching termios and ktermios */
+ #define EXYNOS4210_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos4210_serial_drv_data)
++#define EXYNOS5433_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos5433_serial_drv_data)
+ #else
+ #define EXYNOS4210_SERIAL_DRV_DATA (kernel_ulong_t)NULL
++#define EXYNOS5433_SERIAL_DRV_DATA (kernel_ulong_t)NULL
+ #endif
  
- struct ktermios {
-@@ -152,6 +165,7 @@ struct ktermios {
- #define B3000000  00034
- #define B3500000  00035
- #define B4000000  00036
-+#define BOTHER    00037
- 
- #define CSIZE	00001400
- #define   CS5	00000000
-@@ -169,6 +183,9 @@ struct ktermios {
- #define CMSPAR	  010000000000		/* mark or space (stick) parity */
- #define CRTSCTS	  020000000000		/* flow control */
- 
-+#define CIBAUD	07600000
-+#define IBSHIFT	16
-+
- /* c_lflag bits */
- #define ISIG	0x00000080
- #define ICANON	0x00000100
+ static struct platform_device_id s3c24xx_serial_driver_ids[] = {
+@@ -1832,6 +1843,9 @@ static struct platform_device_id s3c24xx_serial_driver_ids[] = {
+ 	}, {
+ 		.name		= "exynos4210-uart",
+ 		.driver_data	= EXYNOS4210_SERIAL_DRV_DATA,
++	}, {
++		.name		= "exynos5433-uart",
++		.driver_data	= EXYNOS5433_SERIAL_DRV_DATA,
+ 	},
+ 	{ },
+ };
+@@ -1851,6 +1865,8 @@ static const struct of_device_id s3c24xx_uart_dt_match[] = {
+ 		.data = (void *)S5PV210_SERIAL_DRV_DATA },
+ 	{ .compatible = "samsung,exynos4210-uart",
+ 		.data = (void *)EXYNOS4210_SERIAL_DRV_DATA },
++	{ .compatible = "samsung,exynos5433-uart",
++		.data = (void *)EXYNOS5433_SERIAL_DRV_DATA },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
 -- 
-2.19.1
+2.17.1
