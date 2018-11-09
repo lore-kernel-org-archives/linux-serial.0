@@ -1,30 +1,55 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [LINUX PATCHv3 0/9] serial-uartlite: Add support for dynamic
- allocation
-Date: Fri, 9 Nov 2018 08:45:49 -0800
-Message-ID: <20181109164549.GA28175@kroah.com>
-References: <1539685088-13465-1-git-send-email-shubhrajyoti.datta@gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/2] tty: serial: add driver for the SiFive UART
+Date: Fri, 9 Nov 2018 08:59:51 -0800
+Message-ID: <20181109165951.GA13927@kroah.com>
+References: <20181018234352.26788-1-paul.walmsley@sifive.com>
+ <20181018234352.26788-3-paul.walmsley@sifive.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1539685088-13465-1-git-send-email-shubhrajyoti.datta@gmail.com>
+In-Reply-To: <20181018234352.26788-3-paul.walmsley@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: shubhrajyoti.datta@gmail.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jslaby@suse.com, jacmet@sunsite.dk, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+To: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Wesley Terpstra <wesley@sifive.com>, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, Paul Walmsley <paul@pwsan.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Oct 16, 2018 at 03:47:59PM +0530, shubhrajyoti.datta@gmail.com wrote:
-> From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+On Thu, Oct 18, 2018 at 04:43:54PM -0700, Paul Walmsley wrote:
+> Add a serial driver for the SiFive UART, found on SiFive FU540 devices
+> (among others).
 > 
-> Currently the number of uarts are configured through a Kconfig
-> option Make it dynamic.
-> While at it adapt to the runtime framework.
+> The underlying serial IP block is relatively basic, and currently does
+> not support serial break detection.  Further information on the IP
+> block can be found in the documentation and Chisel sources:
 > 
-> It is based a similar series on the uartps from Michal
+> https://static.dev.sifive.com/FU540-C000-v1.0.pdf
+> 
+> https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/uart
+> 
+> This driver was written in collaboration with Wesley Terpstra
+> <wesley@sifive.com>.
+> 
+> Boot-tested on a SiFive HiFive Unleashed A00 board.
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: Palmer Dabbelt <palmer@sifive.com>
+> Cc: Wesley Terpstra <wesley@sifive.com>
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-riscv@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
+> Signed-off-by: Paul Walmsley <paul@pwsan.com>
+> ---
+>  drivers/tty/serial/Kconfig       |   24 +
+>  drivers/tty/serial/Makefile      |    1 +
+>  drivers/tty/serial/sifive.c      | 1070 ++++++++++++++++++++++++++++++
+>  include/uapi/linux/serial_core.h |    3 +
+>  4 files changed, 1098 insertions(+)
+>  create mode 100644 drivers/tty/serial/sifive.c
 
-I've applied the first 5, can you fix up the rest and resend so that
-they do not cause build breakage at any point?
+Seems like the 0-day bot did not like this driver, can you fix up those
+build errors and resend?
 
 thanks,
 
