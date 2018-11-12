@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v2 03/10] dt-bindings: tegra186-hsp: Add shared mailboxes
-Date: Mon, 12 Nov 2018 16:18:46 +0100
-Message-ID: <20181112151853.29289-4-thierry.reding@gmail.com>
+Subject: [PATCH v2 08/10] arm64: tegra: Add nodes for TCU on Tegra194
+Date: Mon, 12 Nov 2018 16:18:51 +0100
+Message-ID: <20181112151853.29289-9-thierry.reding@gmail.com>
 References: <20181112151853.29289-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -17,122 +17,84 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, Jassi Brar <jassisinghbrar@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Jassi Brar <jassisinghbrar@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: devicetree@vger.kernel.org, Mika Liljeberg <mliljeberg@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>, Timo Alho <talho@nvidia.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-tegra@vger.kernel.org, Pekka Pessi <ppessi@nvidia.com>, Jon Hunter <jonathanh@nvidia.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
 From: Mikko Perttunen <mperttunen@nvidia.com>
 
-Shared mailboxes are a mechanism to transport data from one processor in
-the system to another. They are bidirectional links with both a producer
-and a consumer. Interrupts are used to let the consumer know when data
-was written to the mailbox by the producer, and to let the producer know
-when the consumer has read the data from the mailbox. These interrupts
-are mapped to one or more "shared interrupts". Typically each processor
-in the system owns one of these shared interrupts.
-
-Add documentation to the device tree bindings about how clients can use
-mailbox specifiers to request a specific shared mailbox and select which
-direction they drive. Also document how to specify the shared interrupts
-in addition to the existing doorbell interrupt.
+Add nodes required for communication through the Tegra Combined UART.
+This includes the AON HSP instance, addition of shared interrupts
+for the TOP0 HSP instance, and finally the TCU node itself. Also
+mark the HSP instances as compatible to tegra194-hsp, as the hardware
+is not identical but is compatible to tegra186-hsp.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 Acked-by: Jon Hunter <jonathanh@nvidia.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
 Changes in v2:
-- describe in more detail how the mailbox specifiers are constructed
-- encode mailbox direction in the device tree mailbox specifier
+- encode direction of mailboxes in device tree mailbox specifier
 
-Rob,
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi | 38 ++++++++++++++++++++++--
+ 1 file changed, 35 insertions(+), 3 deletions(-)
 
-you had already reviewed this and I've kept your tag for now, even
-though there have been slight changes in this. If you don't mind taking
-another look to verify that the changes I've made are still okay.
-
-Thanks,
-Thierry
-
- .../bindings/mailbox/nvidia,tegra186-hsp.txt  | 30 +++++++++++++++----
- include/dt-bindings/mailbox/tegra186-hsp.h    | 11 +++++++
- 2 files changed, 36 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt b/Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt
-index b99d25fc2f26..ff3eafc5a882 100644
---- a/Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt
-+++ b/Documentation/devicetree/bindings/mailbox/nvidia,tegra186-hsp.txt
-@@ -15,12 +15,15 @@ Required properties:
-     Array of strings.
-     one of:
-     - "nvidia,tegra186-hsp"
-+    - "nvidia,tegra194-hsp", "nvidia,tegra186-hsp"
- - reg : Offset and length of the register set for the device.
- - interrupt-names
-     Array of strings.
-     Contains a list of names for the interrupts described by the interrupt
-     property. May contain the following entries, in any order:
-     - "doorbell"
-+    - "sharedN", where 'N' is a number from zero up to the number of
-+      external interrupts supported by the HSP instance minus one.
-     Users of this binding MUST look up entries in the interrupt property
-     by name, using this interrupt-names property to do so.
- - interrupts
-@@ -29,12 +32,29 @@ Required properties:
-     in a matching order.
- - #mbox-cells : Should be 2.
+diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+index c2091bb16546..4451532a2b4c 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+@@ -340,10 +340,35 @@
+ 		};
  
--The mbox specifier of the "mboxes" property in the client node should
--contain two data. The first one should be the HSP type and the second
--one should be the ID that the client is going to use. Those information
--can be found in the following file.
-+The mbox specifier of the "mboxes" property in the client node should contain
-+two cells. The first cell determines the HSP type and the second cell is used
-+to identify the mailbox that the client is going to use.
+ 		hsp_top0: hsp@3c00000 {
+-			compatible = "nvidia,tegra186-hsp";
++			compatible = "nvidia,tegra194-hsp", "nvidia,tegra186-hsp";
+ 			reg = <0x03c00000 0xa0000>;
+-			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
+-			interrupt-names = "doorbell";
++			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "doorbell", "shared0", "shared1", "shared2",
++			                  "shared3", "shared4", "shared5", "shared6",
++			                  "shared7";
++			#mbox-cells = <2>;
++		};
++
++		hsp_aon: hsp@c150000 {
++			compatible = "nvidia,tegra194-hsp", "nvidia,tegra186-hsp";
++			reg = <0x0c150000 0xa0000>;
++			interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>,
++			             <GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>;
++			/*
++			 * Shared interrupt 0 is routed only to AON/SPE, so
++			 * we only have 4 shared interrupts for the CCPLEX.
++			 */
++			interrupt-names = "shared1", "shared2", "shared3", "shared4";
+ 			#mbox-cells = <2>;
+ 		};
  
--- <dt-bindings/mailbox/tegra186-hsp.h>.
-+For doorbells, the second cell specifies the index of the doorbell to use.
-+
-+For shared mailboxes, the second cell is composed of two fields:
-+- bits 31..24:
-+    A bit mask of flags that further specify how the shared mailbox will be
-+    used. Valid flags are:
-+    - bit 31:
-+        Defines the direction of the mailbox. If set, the mailbox will be used
-+        as a producer (i.e. used to send data). If cleared, the mailbox is the
-+        consumer of data sent by a producer.
-+
-+- bits 23.. 0:
-+    The index of the shared mailbox to use. The number of available mailboxes
-+    may vary by instance of the HSP block and SoC generation.
-+
-+The following file contains definitions that can be used to construct mailbox
-+specifiers:
-+
-+    <dt-bindings/mailbox/tegra186-hsp.h>
+@@ -531,6 +556,13 @@
+ 		method = "smc";
+ 	};
  
- Example:
- 
-diff --git a/include/dt-bindings/mailbox/tegra186-hsp.h b/include/dt-bindings/mailbox/tegra186-hsp.h
-index bcab5b7ca785..3bdec7a84d35 100644
---- a/include/dt-bindings/mailbox/tegra186-hsp.h
-+++ b/include/dt-bindings/mailbox/tegra186-hsp.h
-@@ -22,4 +22,15 @@
- #define TEGRA_HSP_DB_MASTER_CCPLEX 17
- #define TEGRA_HSP_DB_MASTER_BPMP 19
- 
-+/*
-+ * Shared mailboxes are unidirectional, so the direction needs to be specified
-+ * in the device tree.
-+ */
-+#define TEGRA_HSP_SM_MASK 0x00ffffff
-+#define TEGRA_HSP_SM_FLAG_RX (0 << 31)
-+#define TEGRA_HSP_SM_FLAG_TX (1 << 31)
++	tcu: tcu {
++		compatible = "nvidia,tegra194-tcu";
++		mboxes = <&hsp_top0 TEGRA_HSP_MBOX_TYPE_SM TEGRA_HSP_SM_RX(0)>,
++		         <&hsp_aon TEGRA_HSP_MBOX_TYPE_SM TEGRA_HSP_SM_TX(1)>;
++		mbox-names = "rx", "tx";
++	};
 +
-+#define TEGRA_HSP_SM_RX(x) (TEGRA_HSP_SM_FLAG_RX | ((x) & TEGRA_HSP_SM_MASK))
-+#define TEGRA_HSP_SM_TX(x) (TEGRA_HSP_SM_FLAG_TX | ((x) & TEGRA_HSP_SM_MASK))
-+
- #endif
+ 	timer {
+ 		compatible = "arm,armv8-timer";
+ 		interrupts = <GIC_PPI 13
 -- 
 2.19.1
