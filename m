@@ -1,7 +1,8 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v2 02/10] mailbox: Allow multiple controllers per device
-Date: Mon, 12 Nov 2018 16:18:45 +0100
-Message-ID: <20181112151853.29289-3-thierry.reding@gmail.com>
+Subject: [PATCH v2 06/10] dt-bindings: serial: Add bindings for nvidia,
+ tegra194-tcu
+Date: Mon, 12 Nov 2018 16:18:49 +0100
+Message-ID: <20181112151853.29289-7-thierry.reding@gmail.com>
 References: <20181112151853.29289-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,33 +24,59 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Mikko Perttunen <mperttunen@nvidia.com>
 
-Look through the whole controller list when mapping device tree
-phandles to controllers instead of stopping at the first one.
-
-Each controller is intended to only contain one kind of mailbox,
-but some devices (like Tegra HSP) implement multiple kinds and use
-the same device tree node for all of them. As such, we need to allow
-multiple mbox_controllers per device tree node.
+Add bindings for the Tegra Combined UART device used to talk to the
+UART console on Tegra194 systems.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Jon Hunter <jonathanh@nvidia.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/mailbox/mailbox.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../bindings/serial/nvidia,tegra194-tcu.txt   | 35 +++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
 
-diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
-index 0eaf21259874..f34820bcf33c 100644
---- a/drivers/mailbox/mailbox.c
-+++ b/drivers/mailbox/mailbox.c
-@@ -335,7 +335,8 @@ struct mbox_chan *mbox_request_channel(struct mbox_client *cl, int index)
- 	list_for_each_entry(mbox, &mbox_cons, node)
- 		if (mbox->dev->of_node == spec.np) {
- 			chan = mbox->of_xlate(mbox, &spec);
--			break;
-+			if (!IS_ERR(chan))
-+				break;
- 		}
- 
- 	of_node_put(spec.np);
+diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
+new file mode 100644
+index 000000000000..085a8591accd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
+@@ -0,0 +1,35 @@
++NVIDIA Tegra Combined UART (TCU)
++
++The TCU is a system for sharing a hardware UART instance among multiple
++systems within the Tegra SoC. It is implemented through a mailbox-
++based protocol where each "virtual UART" has a pair of mailboxes, one
++for transmitting and one for receiving, that is used to communicate
++with the hardware implementing the TCU.
++
++Required properties:
++- name : Should be tcu
++- compatible
++    Array of strings
++    One of:
++    - "nvidia,tegra194-tcu"
++- mbox-names:
++    "rx" - Mailbox for receiving data from hardware UART
++    "tx" - Mailbox for transmitting data to hardware UART
++- mboxes: Mailboxes corresponding to the mbox-names.
++
++This node is a mailbox consumer. See the following files for details of
++the mailbox subsystem, and the specifiers implemented by the relevant
++provider(s):
++
++- .../mailbox/mailbox.txt
++- .../mailbox/nvidia,tegra186-hsp.txt
++
++Example bindings:
++-----------------
++
++tcu: tcu {
++	compatible = "nvidia,tegra194-tcu";
++	mboxes = <&hsp_top0 TEGRA_HSP_MBOX_TYPE_SM 0>,
++	         <&hsp_aon TEGRA_HSP_MBOX_TYPE_SM 1>;
++	mbox-names = "rx", "tx";
++};
 -- 
 2.19.1
