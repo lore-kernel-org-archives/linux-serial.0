@@ -1,73 +1,102 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH] Add support of TI ICDI to USB simple serial device
-Date: Mon, 12 Nov 2018 10:17:20 +0100
-Message-ID: <20181112091720.GC13311@localhost>
-References: <20181026113807.20735-1-dscao999@gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [PATCH v2 00/10] serial: Add Tegra Combined UART driver
+Date: Mon, 12 Nov 2018 16:18:43 +0100
+Message-ID: <20181112151853.29289-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181026113807.20735-1-dscao999@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Dashi Cao <dscao999@gmail.com>
-Cc: linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Felipe Balbi <felipe.balbi@linux.intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jassi Brar <jassisinghbrar@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, Mika Liljeberg <mliljeberg@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>, Timo Alho <talho@nvidia.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-tegra@vger.kernel.org, Pekka Pessi <ppessi@nvidia.com>, Jon Hunter <jonathanh@nvidia.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Oct 26, 2018 at 07:38:07PM +0800, Dashi Cao wrote:
-> TI In-Circuit Debug Interface (ICDI) is a debugging interface for TI ARM microcontrollers. It has four USB interfaces and the first two of them are presented as standard ACM serial device. The 3rd interface is the debugging interface and it can be driven as a Linux USB simple serial device. With it, debugging sessions and firmware up/down loading are supported on Linux.
+From: Thierry Reding <treding@nvidia.com>
 
-Please break your lines at 72 column or so.
+Hi everyone,
 
-And use the common subject prefix (e.g. "USB: serial: add support
-of TI ICD...").
+this is a reworked version of Mikko's earlier proposal[0]. I've reworked
+the TCU driver itself so that it relies less on global variables as well
+as added a Kconfig option to allow the console support to be selected. I
+also fixed a couple of issues that manifested themselves as I was moving
+towards the IRQ driven mode (TCU was passing a pointer to a local
+variable which was getting stored in the mailbox's ring buffer and the
+data pointed at was becoming stale by the time the mailbox got around to
+dequeue it).
 
-> Signed-off-by: Dashi Cao <dscao999@gmail.com>
+The biggest bulk of the changes is in the mailbox driver. This series
+addresses all of Jassi's comments from back at the time. One notable
+additional change is that shared mailboxes are now interrupt driven,
+which removes the need for polling mode.
 
-You never replied to Felipe's question whether you had verified that this
-doesn't break OpenOCD?
+Unfortunately there is still an issue because the TCU uses the mailbox
+in atomic context for both TTY and console modes, so we get a sleeping-
+while-atomic BUG when using mbox_client->tx_block = true in order to
+rate-limit mbox_send_message(). In order to work around this, I added a
+mechanism to mbox_send_message() that will allow blocking from atomic
+context if the mailbox controller implements the new ->flush() callback.
+For Tegra HSP shared mailboxes this is done by spinning on the shared
+mailbox register until the receiver has marked the mailbox as empty. I
+have been running this locally for a couple of days now and it works
+perfectly.
 
-> ---
->  drivers/usb/serial/usb-serial-simple.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/usb/serial/usb-serial-simple.c b/drivers/usb/serial/usb-serial-simple.c
-> index 4d0273508043..ae43088b659e 100644
-> --- a/drivers/usb/serial/usb-serial-simple.c
-> +++ b/drivers/usb/serial/usb-serial-simple.c
-> @@ -109,6 +109,11 @@ DEVICE(suunto, SUUNTO_IDS);
->  	{ USB_DEVICE(0x908, 0x0004) }
->  DEVICE(siemens_mpi, SIEMENS_IDS);
->  
-> +/* TI In-Circuit Debug Interface */
-> +#define ICDI_IDS()              \
-> +	{ USB_DEVICE_INTERFACE_CLASS(0x1cbe, 0x00fd, USB_CLASS_VENDOR_SPEC) }
-> +DEVICE(ti_icdi, ICDI_IDS);
+Furthermore this series incorporates Mikko's work in progress on
+splitting up the mailbox controllers and allowing multiple controllers
+to match on the same device tree node during mbox_request_channel().
 
-Please use a TI_ prefix for ICDI_IDS as well.
+Last but not least there are no build-time dependencies between the
+mailbox and serial drivers, so I think the easiest way to merge this is
+if Jassi picks up patches 1-5, Greg takes patches 6 & 7 and I pick up
+patches 8-10 into the Tegra tree.
 
-Can you post the lsusb -v output (or usb-devices) for the device for
-reference?
-
-> +
->  /* All of the above structures mushed into two lists */
->  static struct usb_serial_driver * const serial_drivers[] = {
->  	&carelink_device,
-> @@ -124,6 +129,7 @@ static struct usb_serial_driver * const serial_drivers[] = {
->  	&hp4x_device,
->  	&suunto_device,
->  	&siemens_mpi_device,
-> +	&ti_icdi_device,
->  	NULL
->  };
->  
-> @@ -141,6 +147,7 @@ static const struct usb_device_id id_table[] = {
->  	HP4X_IDS(),
->  	SUUNTO_IDS(),
->  	SIEMENS_IDS(),
-> +	ICDI_IDS(),
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(usb, id_table);
+Changes in v2:
+- address all of Pekka's comments regarding shared interrupts, registers
+  that don't exist on Tegra186 and shared mailbox directionality
+- add a patch to enable the TCU in the 64-bit ARM default configuration
 
 Thanks,
-Johan
+Thierry
+
+[0]: https://lore.kernel.org/patchwork/project/lkml/list/?series=357641
+
+Mikko Perttunen (5):
+  mailbox: Allow multiple controllers per device
+  dt-bindings: tegra186-hsp: Add shared mailboxes
+  dt-bindings: serial: Add bindings for nvidia,tegra194-tcu
+  arm64: tegra: Add nodes for TCU on Tegra194
+  arm64: tegra: Mark TCU as primary serial port on Tegra194 P2888
+
+Thierry Reding (5):
+  mailbox: Support blocking transfers in atomic context
+  mailbox: tegra-hsp: Add support for shared mailboxes
+  mailbox: tegra-hsp: Add suspend/resume support
+  serial: Add Tegra Combined UART driver
+  arm64: defconfig: Enable Tegra TCU
+
+ .../bindings/mailbox/nvidia,tegra186-hsp.txt  |  30 +-
+ .../bindings/serial/nvidia,tegra194-tcu.txt   |  35 ++
+ .../arm64/boot/dts/nvidia/tegra194-p2888.dtsi |   2 +-
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi      |  38 +-
+ arch/arm64/configs/defconfig                  |   1 +
+ drivers/mailbox/mailbox.c                     |  11 +-
+ drivers/mailbox/tegra-hsp.c                   | 517 +++++++++++++++---
+ drivers/tty/serial/Kconfig                    |  22 +
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/tegra-tcu.c                | 299 ++++++++++
+ include/dt-bindings/mailbox/tegra186-hsp.h    |  11 +
+ include/linux/mailbox_controller.h            |   4 +
+ include/uapi/linux/serial_core.h              |   3 +
+ 13 files changed, 903 insertions(+), 71 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
+ create mode 100644 drivers/tty/serial/tegra-tcu.c
+
+-- 
+2.19.1
