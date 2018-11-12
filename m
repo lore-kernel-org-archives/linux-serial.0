@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v2 01/10] mailbox: Support blocking transfers in atomic context
-Date: Mon, 12 Nov 2018 16:18:44 +0100
-Message-ID: <20181112151853.29289-2-thierry.reding@gmail.com>
+Subject: [PATCH v2 05/10] mailbox: tegra-hsp: Add suspend/resume support
+Date: Mon, 12 Nov 2018 16:18:48 +0100
+Message-ID: <20181112151853.29289-6-thierry.reding@gmail.com>
 References: <20181112151853.29289-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,60 +23,57 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Thierry Reding <treding@nvidia.com>
 
-The mailbox framework supports blocking transfers via completions for
-clients that can sleep. In order to support blocking transfers in cases
-where the transmission is not permitted to sleep, add a new ->flush()
-callback that controller drivers can implement to busy loop until the
-transmission has been completed. This will automatically be called when
-available and interrupts are disabled for clients that request blocking
-transfers.
+Upon resuming from a system sleep state, the interrupts for all active
+shared mailboxes need to be reenabled, otherwise they will not work.
 
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/mailbox/mailbox.c          | 8 ++++++++
- include/linux/mailbox_controller.h | 4 ++++
- 2 files changed, 12 insertions(+)
+ drivers/mailbox/tegra-hsp.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
-index 674b35f402f5..0eaf21259874 100644
---- a/drivers/mailbox/mailbox.c
-+++ b/drivers/mailbox/mailbox.c
-@@ -267,6 +267,14 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
- 		unsigned long wait;
- 		int ret;
+diff --git a/drivers/mailbox/tegra-hsp.c b/drivers/mailbox/tegra-hsp.c
+index 0100a974149b..1259abf3542f 100644
+--- a/drivers/mailbox/tegra-hsp.c
++++ b/drivers/mailbox/tegra-hsp.c
+@@ -18,6 +18,7 @@
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
++#include <linux/pm.h>
+ #include <linux/slab.h>
  
-+		if (irqs_disabled() && chan->mbox->ops->flush) {
-+			ret = chan->mbox->ops->flush(chan, chan->cl->tx_tout);
-+			if (ret < 0)
-+				tx_tick(chan, ret);
+ #include <dt-bindings/mailbox/tegra186-hsp.h>
+@@ -817,6 +818,23 @@ static int tegra_hsp_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static int tegra_hsp_resume(struct device *dev)
++{
++	struct tegra_hsp *hsp = dev_get_drvdata(dev);
++	unsigned int i;
 +
-+			return ret;
-+		}
++	for (i = 0; i < hsp->num_sm; i++) {
++		struct tegra_hsp_mailbox *mb = &hsp->mailboxes[i];
 +
- 		if (!chan->cl->tx_tout) /* wait forever */
- 			wait = msecs_to_jiffies(3600000);
- 		else
-diff --git a/include/linux/mailbox_controller.h b/include/linux/mailbox_controller.h
-index 74deadb42d76..2a07d93f781a 100644
---- a/include/linux/mailbox_controller.h
-+++ b/include/linux/mailbox_controller.h
-@@ -24,6 +24,9 @@ struct mbox_chan;
-  *		transmission of data is reported by the controller via
-  *		mbox_chan_txdone (if it has some TX ACK irq). It must not
-  *		sleep.
-+ * @flush:	Called when a client requests transmissions to be blocking but
-+ *		the context doesn't allow sleeping. Typically the controller
-+ *		will implement a busy loop waiting for the data to flush out.
-  * @startup:	Called when a client requests the chan. The controller
-  *		could ask clients for additional parameters of communication
-  *		to be provided via client's chan_data. This call may
-@@ -46,6 +49,7 @@ struct mbox_chan;
-  */
- struct mbox_chan_ops {
- 	int (*send_data)(struct mbox_chan *chan, void *data);
-+	int (*flush)(struct mbox_chan *chan, unsigned long timeout);
- 	int (*startup)(struct mbox_chan *chan);
- 	void (*shutdown)(struct mbox_chan *chan);
- 	bool (*last_tx_done)(struct mbox_chan *chan);
++		if (mb->channel.chan->cl)
++			tegra_hsp_mailbox_startup(mb->channel.chan);
++	}
++
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(tegra_hsp_pm_ops, NULL, tegra_hsp_resume);
++
+ static const struct tegra_hsp_db_map tegra186_hsp_db_map[] = {
+ 	{ "ccplex", TEGRA_HSP_DB_MASTER_CCPLEX, HSP_DB_CCPLEX, },
+ 	{ "bpmp",   TEGRA_HSP_DB_MASTER_BPMP,   HSP_DB_BPMP,   },
+@@ -843,6 +861,7 @@ static struct platform_driver tegra_hsp_driver = {
+ 	.driver = {
+ 		.name = "tegra-hsp",
+ 		.of_match_table = tegra_hsp_match,
++		.pm = &tegra_hsp_pm_ops,
+ 	},
+ 	.probe = tegra_hsp_probe,
+ 	.remove = tegra_hsp_remove,
 -- 
 2.19.1
