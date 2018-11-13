@@ -1,82 +1,126 @@
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
-Date: Tue, 13 Nov 2018 09:44:22 +0000
-Message-ID: <38099043-f5ed-6d81-bf94-13f61cfa8507@linaro.org>
-References: <472db11e-49a6-a1ee-e298-791ee1bbb10b@codeaurora.org>
- <20181016141610.639b9000@gandalf.local.home>
- <accdce6d-8fd2-9f15-d4cd-704cbf0b32eb@codeaurora.org>
- <20181016144123.24c47b38@gandalf.local.home>
- <7781815e-cba2-9e36-db6d-268298747876@codeaurora.org>
- <20181016150328.3450d718@gandalf.local.home>
- <c94103d2-ed5d-bf43-fc71-c60e108f303e@codeaurora.org>
- <20181017223334.29ca2837@vmware.local.home>
- <58d2474c-53cd-e6cb-2d25-db38d1a88da6@codeaurora.org>
- <20181018091706.62310b38@gandalf.local.home>
- <20181019041740.GB141835@joelaf.mtv.corp.google.com>
- <8a75f2d5-f1bd-504e-b545-ae2e2f61ca8f@codeaurora.org>
- <20181019095122.0f1c0946@gandalf.local.home>
- <9cafe321-87f6-98a3-3bda-c2f7a3d7fc67@codeaurora.org>
- <20181019111205.5c8e98e8@gandalf.local.home>
- <1e6cc1fa5263b9edfcf7567d3f9f65fd@codeaurora.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2 06/10] dt-bindings: serial: Add bindings for
+ nvidia,tegra194-tcu
+Date: Tue, 13 Nov 2018 11:03:55 +0100
+Message-ID: <20181113100355.GA15642@ulmo>
+References: <20181112151853.29289-1-thierry.reding@gmail.com>
+ <20181112151853.29289-7-thierry.reding@gmail.com>
+ <f7d19f6e-0dcd-753c-a407-fcec4fa1474b@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1e6cc1fa5263b9edfcf7567d3f9f65fd@codeaurora.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: saiprakash.ranjan@codeaurora.org, Steven Rostedt <rostedt@goodmis.org>, Stephen Boyd <sboyd@kernel.org>
-Cc: Joel Fernandes <joel@joelfernandes.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
+Content-Type: multipart/mixed; boundary="===============0263439412098821479=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <f7d19f6e-0dcd-753c-a407-fcec4fa1474b@nvidia.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jon Hunter <jonathanh@nvidia.com>
+Cc: devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jassi Brar <jassisinghbrar@gmail.com>, Mika Liljeberg <mliljeberg@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>, Timo Alho <talho@nvidia.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-tegra@vger.kernel.org, Pekka Pessi <ppessi@nvidia.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sai,
+
+--===============0263439412098821479==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="7JfCtLOvnd9MIVvH"
+Content-Disposition: inline
 
 
+--7JfCtLOvnd9MIVvH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 25/10/18 15:36, saiprakash.ranjan@codeaurora.org wrote:
-> "If I disable dma node and LS-UART0, then I don't see any crash and
-> ftrace also works fine"
-> 
-> And one more observation is that even without ftrace cmdline, if I use
-> earlycon and disable dma, I face the same crash.
-> 
-> So basically this seems to be some kind of earlycon and dma issue and
-> not ftrace(I can be wrong).
-> 
-> So adding Srinivas for more info on this dma node.
+On Tue, Nov 13, 2018 at 09:39:08AM +0000, Jon Hunter wrote:
+>=20
+> On 12/11/2018 15:18, Thierry Reding wrote:
+> > From: Mikko Perttunen <mperttunen@nvidia.com>
+> >=20
+> > Add bindings for the Tegra Combined UART device used to talk to the
+> > UART console on Tegra194 systems.
+> >=20
+> > Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > Acked-by: Jon Hunter <jonathanh@nvidia.com>
+> > Acked-by: Thierry Reding <treding@nvidia.com>
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > ---
+> >  .../bindings/serial/nvidia,tegra194-tcu.txt   | 35 +++++++++++++++++++
+> >  1 file changed, 35 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/serial/nvidia,teg=
+ra194-tcu.txt
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra194-t=
+cu.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
+> > new file mode 100644
+> > index 000000000000..085a8591accd
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
+> > @@ -0,0 +1,35 @@
+> > +NVIDIA Tegra Combined UART (TCU)
+> > +
+> > +The TCU is a system for sharing a hardware UART instance among multiple
+> > +systems within the Tegra SoC. It is implemented through a mailbox-
+> > +based protocol where each "virtual UART" has a pair of mailboxes, one
+> > +for transmitting and one for receiving, that is used to communicate
+> > +with the hardware implementing the TCU.
+> > +
+> > +Required properties:
+> > +- name : Should be tcu
+> > +- compatible
+> > +    Array of strings
+> > +    One of:
+> > +    - "nvidia,tegra194-tcu"
+> > +- mbox-names:
+> > +    "rx" - Mailbox for receiving data from hardware UART
+> > +    "tx" - Mailbox for transmitting data to hardware UART
+> > +- mboxes: Mailboxes corresponding to the mbox-names.
+>=20
+> Looks like there is some trailing white-space in the above line and git
+> warns after applying this patch.
 
-Its Interesting that my old email conversations with SBoyd show that I 
-have investigated this issue in early 2016!
+I'm not seeing it. I remember seeing that trailing space in an earlier
+version of this patch and fixing it up. Did you perhaps end up applying
+the wrong version?
 
-My analysis so far:
+Thierry
 
-This reason for such behavior is due the common iface clock
-(GCC_BLSP1_AHB_CLK) across multiple drivers(serial ports, bam dma
-and other low speed devices).
-The code flow in DB410C is bit different, as the uart0 is first
-attempted to set as console and then uart1, this ordering triggers
-pm state change uart_change_pm(state, UART_PM_STATE_OFF) from serial
-core while setting up uart0, this would go and disable all the
-clocks for uart0.
-As uart1 is not setup Yet, and earlycon is still active, any
-attempts by earlycon to write to registers would trigger a system
-reboot as the clock was just disabled by uart0 change_pm code.
+--7JfCtLOvnd9MIVvH
+Content-Type: application/pgp-signature; name="signature.asc"
 
-This can even be triggered with any drivers like spi which uses same
-clock I guess.
+-----BEGIN PGP SIGNATURE-----
 
-Hope it helps,
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlvqoYYACgkQ3SOs138+
+s6HinA//RCbYotsZykkHSETpQ0vxALAy3maWLAEaUmDFgYT8c/ZYtqn4Ak8Prn/b
+r8sltNU9JX67zXJMaQzMsR1Ahtxy/WwD9dlujTwwY7qEs/Z7dHUhcTHQ3yxzgRAb
+W60FcRS0gJIMY5F+fnxricT5SLNZJTk72m99It1wfze0al2PvJfU4UbBzqIjjVXC
+thFeBqmOaWIMrugTRhdDAZGOqwzl0796YvT+HGPiLtW8+dheRV9dUd5ceR0mhjv/
+tWaZQxHAzPzb7haQXbKuW5YG3Q94Q/VwzxcZtbWwsk2QLn/FiqMB5Ek6ym2/p0qy
+tdvz+64xVgEp+VETjE+aJdgw5nY9HcgDdqTPvUQ9G6AlJDI4QqUE7xzfCjyCpzuS
+YBUd2c61T0v8JuHqZUuaVCIsHu0DfBw36OHKesvdQk2eNrmdKpWODFZwQc1LaIa8
+1u9J5IM+QcDTHIuTm9qk5ZcXNE206Cd7bKBCmjdn3YP8HQpZbHxWfu5Qs9zsBmSD
+/f4pCmaCJdNBWBadK6Jvvtt+R0Y1OKz2i5xQOJMNlfBWeP5d2sUejf7LJpZszmom
+CKaNIn1xXLE1c05k88FjdM40o3yljr1KYvjK7XMmlyUQ3kokgrw8GZCIATLh0pmb
+04Ax1o0TiplOgVEkD2LlL39N/dnwqhFp+DHzzGpF9F4FzbGXk10=
+=K2yk
+-----END PGP SIGNATURE-----
 
-Either earlycon needs to reference the clocks or those clocks needs to
-be marked always-on (but only with earlycon).
-
-> 
-> Also just for a note: apq8096-db820c.dtsi shows UART0 is disabled because
-> bootloader does not allow access to it. Could this also be the case for 
-> db410c?
-No, this is not the case with DB410c. DB820c has added restrictions in 
-TZ, I think new booloaders should have solved this issue.
+--7JfCtLOvnd9MIVvH--
 
 
-Thanks,
-srini
+--===============0263439412098821479==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============0263439412098821479==--
