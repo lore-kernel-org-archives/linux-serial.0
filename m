@@ -1,76 +1,77 @@
-From: Jon Hunter <jonathanh@nvidia.com>
-Subject: Re: [PATCH v2 06/10] dt-bindings: serial: Add bindings for
- nvidia,tegra194-tcu
-Date: Tue, 13 Nov 2018 09:39:08 +0000
-Message-ID: <f7d19f6e-0dcd-753c-a407-fcec4fa1474b@nvidia.com>
-References: <20181112151853.29289-1-thierry.reding@gmail.com>
- <20181112151853.29289-7-thierry.reding@gmail.com>
+From: Colin King <colin.king@canonical.com>
+Subject: [PATCH][serial-next][V2] serial-uartlite: fix null pointer dereference on pointer port
+Date: Tue, 13 Nov 2018 09:43:23 +0000
+Message-ID: <20181113094323.27934-1-colin.king@canonical.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20181112151853.29289-7-thierry.reding@gmail.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, Jassi Brar <jassisinghbrar@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: devicetree@vger.kernel.org, Mika Liljeberg <mliljeberg@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>, Timo Alho <talho@nvidia.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-tegra@vger.kernel.org, Pekka Pessi <ppessi@nvidia.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Korsgaard <jacmet@sunsite.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+From: Colin Ian King <colin.king@canonical.com>
 
-On 12/11/2018 15:18, Thierry Reding wrote:
-> From: Mikko Perttunen <mperttunen@nvidia.com>
-> 
-> Add bindings for the Tegra Combined UART device used to talk to the
-> UART console on Tegra194 systems.
-> 
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Acked-by: Jon Hunter <jonathanh@nvidia.com>
-> Acked-by: Thierry Reding <treding@nvidia.com>
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> ---
->  .../bindings/serial/nvidia,tegra194-tcu.txt   | 35 +++++++++++++++++++
->  1 file changed, 35 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
-> new file mode 100644
-> index 000000000000..085a8591accd
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
-> @@ -0,0 +1,35 @@
-> +NVIDIA Tegra Combined UART (TCU)
-> +
-> +The TCU is a system for sharing a hardware UART instance among multiple
-> +systems within the Tegra SoC. It is implemented through a mailbox-
-> +based protocol where each "virtual UART" has a pair of mailboxes, one
-> +for transmitting and one for receiving, that is used to communicate
-> +with the hardware implementing the TCU.
-> +
-> +Required properties:
-> +- name : Should be tcu
-> +- compatible
-> +    Array of strings
-> +    One of:
-> +    - "nvidia,tegra194-tcu"
-> +- mbox-names:
-> +    "rx" - Mailbox for receiving data from hardware UART
-> +    "tx" - Mailbox for transmitting data to hardware UART
-> +- mboxes: Mailboxes corresponding to the mbox-names.
+Pointer port is dereferenced on port->private_data when assigning pointer
+pdata before port is null checked, leading to a potential null pointer
+dereference.  Fix this by assigning pdata after the null pointer check on
+port.
 
-Looks like there is some trailing white-space in the above line and git
-warns after applying this patch.
+Detected by CoverityScan, CID#1475434 ("Dereference before null check")
 
-Cheers
-Jon
+Fixes: 3b209d253e7f ("serial-uartlite: Do not use static struct uart_driver out of probe()")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/tty/serial/uartlite.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 4a7989df5ff5..b8b912b5a8b9 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -694,10 +694,11 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
+ static int ulite_release(struct device *dev)
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+-	struct uartlite_data *pdata = port->private_data;
+ 	int rc = 0;
+ 
+ 	if (port) {
++		struct uartlite_data *pdata = port->private_data;
++
+ 		rc = uart_remove_one_port(pdata->ulite_uart_driver, port);
+ 		dev_set_drvdata(dev, NULL);
+ 		port->mapbase = 0;
+@@ -715,10 +716,12 @@ static int ulite_release(struct device *dev)
+ static int __maybe_unused ulite_suspend(struct device *dev)
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+-	struct uartlite_data *pdata = port->private_data;
+ 
+-	if (port)
++	if (port) {
++		struct uartlite_data *pdata = port->private_data;
++
+ 		uart_suspend_port(pdata->ulite_uart_driver, port);
++	}
+ 
+ 	return 0;
+ }
+@@ -732,10 +735,12 @@ static int __maybe_unused ulite_suspend(struct device *dev)
+ static int __maybe_unused ulite_resume(struct device *dev)
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+-	struct uartlite_data *pdata = port->private_data;
+ 
+-	if (port)
++	if (port) {
++		struct uartlite_data *pdata = port->private_data;
++
+ 		uart_resume_port(pdata->ulite_uart_driver, port);
++	}
+ 
+ 	return 0;
+ }
 -- 
-nvpublic
+2.19.1
