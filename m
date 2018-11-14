@@ -1,84 +1,36 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4/4] serdev: document the write functions using kernel-doc
-Date: Wed, 14 Nov 2018 16:09:04 +0100
-Message-ID: <20181114150904.19653-5-johan@kernel.org>
-References: <20181114150904.19653-1-johan@kernel.org>
+From: Stefan Agner <stefan@agner.ch>
+Subject: [PATCH 1/3] serial: imx: fix error handling in console_setup
+Date: Wed, 14 Nov 2018 18:49:38 +0100
+Message-ID: <20181114174940.7865-1-stefan@agner.ch>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181114150904.19653-1-johan@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, Andrey Smirnov <andrew.smirnov@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: fabio.estevam@nxp.com, u.kleine-koenig@pengutronix.de, s.hauer@pengutronix.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>
 List-Id: linux-serial@vger.kernel.org
 
-Document the asynchronous serdev_device_write_buf() and synchronous
-serdev_device_write() functions using kernel-doc.
+The ipg clock only needs to be unprepared in case preparing
+per clock fails. The ipg clock has already disabled at the point.
 
-Specifically, mention that writing data only means that data has been
-buffered by the controller, and that the synchronous helper depends on
-serdev_device_write_wakeup() being called in the driver write_wakeup()
-callback.
-
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Fixes: 1cf93e0d5488 ("serial: imx: remove the uart_console() check")
+Signed-off-by: Stefan Agner <stefan@agner.ch>
 ---
- drivers/tty/serdev/core.c | 37 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+ drivers/tty/serial/imx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index c7006bbb793a..a0ac16ee6575 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -217,6 +217,21 @@ void serdev_device_write_wakeup(struct serdev_device *serdev)
- }
- EXPORT_SYMBOL_GPL(serdev_device_write_wakeup);
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 0f67197a3783..313c3b1900a8 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2068,7 +2068,7 @@ imx_uart_console_setup(struct console *co, char *options)
  
-+/**
-+ * serdev_device_write_buf() - write data asynchronously
-+ * @serdev:	serdev device
-+ * @buf:	data to be written
-+ * @count:	number of bytes to write
-+ *
-+ * Write data to the device asynchronously.
-+ *
-+ * Note that any accepted data has only been buffered by the controller; use
-+ * serdev_device_wait_until_sent() to make sure the controller write buffer
-+ * has actually been emptied.
-+ *
-+ * Return: The number of bytes written (less than count if not enough room in
-+ * the write buffer), or a negative errno on errors.
-+ */
- int serdev_device_write_buf(struct serdev_device *serdev,
- 			    const unsigned char *buf, size_t count)
- {
-@@ -229,6 +244,28 @@ int serdev_device_write_buf(struct serdev_device *serdev,
- }
- EXPORT_SYMBOL_GPL(serdev_device_write_buf);
+ 	retval = clk_prepare(sport->clk_per);
+ 	if (retval)
+-		clk_disable_unprepare(sport->clk_ipg);
++		clk_unprepare(sport->clk_ipg);
  
-+/**
-+ * serdev_device_write() - write data synchronously
-+ * @serdev:	serdev device
-+ * @buf:	data to be written
-+ * @count:	number of bytes to write
-+ * @timeout:	timeout in jiffies, or 0 to wait indefinitely
-+ *
-+ * Write data to the device synchronously by repeatedly calling
-+ * serdev_device_write() until the controller has accepted all data (unless
-+ * interrupted by a timeout or a signal).
-+ *
-+ * Note that any accepted data has only been buffered by the controller; use
-+ * serdev_device_wait_until_sent() to make sure the controller write buffer
-+ * has actually been emptied.
-+ *
-+ * Note that this function depends on serdev_device_write_wakeup() being
-+ * called in the serdev driver write_wakeup() callback.
-+ *
-+ * Return: The number of bytes written (less than count if interrupted),
-+ * -ETIMEDOUT or -ERESTARTSYS if interrupted before any bytes were written, or
-+ * a negative errno on errors.
-+ */
- int serdev_device_write(struct serdev_device *serdev,
- 			const unsigned char *buf, size_t count,
- 			long timeout)
+ error_console:
+ 	return retval;
 -- 
 2.19.1
