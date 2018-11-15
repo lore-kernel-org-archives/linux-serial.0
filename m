@@ -1,115 +1,76 @@
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
-Date: Thu, 15 Nov 2018 10:53:24 +0000
-Message-ID: <ed648cc5-0748-8bcc-5ebb-ce6dbc7d4fee@linaro.org>
-References: <472db11e-49a6-a1ee-e298-791ee1bbb10b@codeaurora.org>
- <20181016141610.639b9000@gandalf.local.home>
- <accdce6d-8fd2-9f15-d4cd-704cbf0b32eb@codeaurora.org>
- <20181016144123.24c47b38@gandalf.local.home>
- <7781815e-cba2-9e36-db6d-268298747876@codeaurora.org>
- <20181016150328.3450d718@gandalf.local.home>
- <c94103d2-ed5d-bf43-fc71-c60e108f303e@codeaurora.org>
- <20181017223334.29ca2837@vmware.local.home>
- <58d2474c-53cd-e6cb-2d25-db38d1a88da6@codeaurora.org>
- <20181018091706.62310b38@gandalf.local.home>
- <20181019041740.GB141835@joelaf.mtv.corp.google.com>
- <8a75f2d5-f1bd-504e-b545-ae2e2f61ca8f@codeaurora.org>
- <20181019095122.0f1c0946@gandalf.local.home>
- <9cafe321-87f6-98a3-3bda-c2f7a3d7fc67@codeaurora.org>
- <20181019111205.5c8e98e8@gandalf.local.home>
- <1e6cc1fa5263b9edfcf7567d3f9f65fd@codeaurora.org>
- <38099043-f5ed-6d81-bf94-13f61cfa8507@linaro.org>
- <8f65f83b-8cd9-5e35-c324-30b86390906e@codeaurora.org>
+From: Emil Renner Berthing <kernel@esmil.dk>
+Subject: Re: [PATCH v3 2/2] tty: serial: add driver for the SiFive UART
+Date: Thu, 15 Nov 2018 12:01:25 +0100
+Message-ID: <CANBLGcy9WoBqBKQnvz-YGQpXossP2HDmW_go8WZD7FfBZdr5VQ@mail.gmail.com>
+References: <20181020101045.15991-1-paul.walmsley@sifive.com> <20181020101045.15991-3-paul.walmsley@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <8f65f83b-8cd9-5e35-c324-30b86390906e@codeaurora.org>
-Content-Language: en-US
+In-Reply-To: <20181020101045.15991-3-paul.walmsley@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>, Steven Rostedt <rostedt@goodmis.org>, Stephen Boyd <sboyd@kernel.org>
-Cc: Joel Fernandes <joel@joelfernandes.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, Geliang Tang <geliangtang@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Pramod Gurav <gpramod@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>
+To: paul.walmsley@sifive.com
+Cc: linux-serial@vger.kernel.org, paul@pwsan.com, Palmer Dabbelt <palmer@sifive.com>, wesley@sifive.com, jslaby@suse.com, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, julia.lawall@lip6.fr, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-riscv@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
+Hi Paul,
 
+Thanks for the patch!
 
-On 15/11/18 10:33, Sai Prakash Ranjan wrote:
-> On 11/13/2018 3:14 PM, Srinivas Kandagatla wrote:
->> Hi Sai,
->>
->>
->>
->> On 25/10/18 15:36, saiprakash.ranjan@codeaurora.org wrote:
->>> "If I disable dma node and LS-UART0, then I don't see any crash and
->>> ftrace also works fine"
->>>
->>> And one more observation is that even without ftrace cmdline, if I use
->>> earlycon and disable dma, I face the same crash.
->>>
->>> So basically this seems to be some kind of earlycon and dma issue and
->>> not ftrace(I can be wrong).
->>>
->>> So adding Srinivas for more info on this dma node.
->>
->> Its Interesting that my old email conversations with SBoyd show that I 
->> have investigated this issue in early 2016!
->>
->> My analysis so far:
->>
->> This reason for such behavior is due the common iface clock
->> (GCC_BLSP1_AHB_CLK) across multiple drivers(serial ports, bam dma
->> and other low speed devices).
->> The code flow in DB410C is bit different, as the uart0 is first
->> attempted to set as console and then uart1, this ordering triggers
->> pm state change uart_change_pm(state, UART_PM_STATE_OFF) from serial
->> core while setting up uart0, this would go and disable all the
->> clocks for uart0.
->> As uart1 is not setup Yet, and earlycon is still active, any
->> attempts by earlycon to write to registers would trigger a system
->> reboot as the clock was just disabled by uart0 change_pm code.
->>
->> This can even be triggered with any drivers like spi which uses same
->> clock I guess.
->>
->> Hope it helps,
->>
->> Either earlycon needs to reference the clocks or those clocks needs to
->> be marked always-on (but only with earlycon).
->>
->>>
->>> Also just for a note: apq8096-db820c.dtsi shows UART0 is disabled 
->>> because
->>> bootloader does not allow access to it. Could this also be the case 
->>> for db410c?
->> No, this is not the case with DB410c. DB820c has added restrictions in 
->> TZ, I think new booloaders should have solved this issue.
->>
->>
-> 
-> Hi Srinivas,
-> 
-> Thanks a lot for pointing out the cause of crash.
-> I just tried setting GCC_BLSP1_AHB_CLK with flag CLK_IS_CRITICAL and the
-> crash disappears.
-> 
-> But I suppose setting CLK_IS_CRITICAL is not the solution?
-> 
+On Sat, 20 Oct 2018 at 12:12, Paul Walmsley <paul.walmsley@sifive.com> wrote:
+> +/*
+> + *
+> + */
 
-Yes, this is not the solution, but it proves that the hand-off between 
-booloaders and kernel is the issue.
+Interesting comment ;)
 
-In general there is wider issue with resources hand-off between 
-bootloader and kernel.
+> +static int __init sifive_serial_console_setup(struct console *co, char *options)
 
-There has been some proposal in the past by Viresh for a new framework 
-called boot-constriants (https://lkml.org/lkml/2017/12/14/440) which am 
-not sure if its still actively looked at. But something similar should 
-be the way to address such issues.
+Unfortunately I get this error unless I remove the __init:
+...
+  GEN     .version
+  CHK     include/generated/compile.h
+  AR      built-in.a
+  LD      vmlinux.o
+  MODPOST vmlinux.o
+WARNING: vmlinux.o(.data+0x14e48): Section mismatch in reference from
+the variable .LANCHOR0 to the function
+.init.text:sifive_serial_console_setup()
+The variable .LANCHOR0 references
+the function __init sifive_serial_console_setup()
+If the reference is valid then annotate the
+variable with __init* or __refdata (see linux/init.h) or name the variable:
+*_template, *_timer, *_sht, *_ops, *_probe, *_probe_one, *_console
 
---srini
+FATAL: modpost: Section mismatches detected.
+Set CONFIG_SECTION_MISMATCH_WARN_ONLY=y to allow them.
+make[1]: *** [scripts/Makefile.modpost:98: vmlinux.o] Error 1
+make: *** [Makefile:1040: vmlinux] Error 2
 
+I have
+CONFIG_SERIAL_CORE=y
+CONFIG_SERIAL_CORE_CONSOLE=y
+CONFIG_SERIAL_SIFIVE=y
+CONFIG_SERIAL_SIFIVE_CONSOLE=y
+and it happens both on v4.20-rc2 and v4.19.
+Without the __init everything seems to work fine though.
 
+> +#else
+> +
+> +#define SIFIVE_SERIAL_CONSOLE  NULL
+> +
+> +static inline void __ssp_add_console_port(struct sifive_serial_port *ssp)
+> +{}
+> +static void __ssp_remove_console_port(struct sifive_serial_port *ssp)
+> +{}
 
+Missing "inline"?
 
-> Thanks,
-> Sai
+> +static int __init sifive_serial_init(void)
+> +{
+> +       int r;
+
+If you're sending a v4 anyway, here and in the the probe function
+using int ret; for this kind of variable is a common idiom and
+hence easier to read.
+
+/Emil
