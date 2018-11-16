@@ -1,101 +1,47 @@
-From: Paul Walmsley <paul.walmsley@sifive.com>
-Subject: Re: [PATCH v3 2/2] tty: serial: add driver for the SiFive UART
-Date: Thu, 15 Nov 2018 12:11:12 -0800 (PST)
-Message-ID: <alpine.DEB.2.21.9999.1811151146530.25598@viisi.sifive.com>
-References: <20181020101045.15991-1-paul.walmsley@sifive.com> <20181020101045.15991-3-paul.walmsley@sifive.com> <CANBLGcy9WoBqBKQnvz-YGQpXossP2HDmW_go8WZD7FfBZdr5VQ@mail.gmail.com>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
+Date: Fri, 16 Nov 2018 09:09:20 +0530
+Message-ID: <CAOh2x=kHQ_PfZqcoDE1+jx-ArMOh4hAFqXxiiKJ9=3JZUySQEw@mail.gmail.com>
+References: <472db11e-49a6-a1ee-e298-791ee1bbb10b@codeaurora.org>
+ <20181016141610.639b9000@gandalf.local.home> <accdce6d-8fd2-9f15-d4cd-704cbf0b32eb@codeaurora.org>
+ <20181016144123.24c47b38@gandalf.local.home> <7781815e-cba2-9e36-db6d-268298747876@codeaurora.org>
+ <20181016150328.3450d718@gandalf.local.home> <c94103d2-ed5d-bf43-fc71-c60e108f303e@codeaurora.org>
+ <20181017223334.29ca2837@vmware.local.home> <58d2474c-53cd-e6cb-2d25-db38d1a88da6@codeaurora.org>
+ <20181018091706.62310b38@gandalf.local.home> <20181019041740.GB141835@joelaf.mtv.corp.google.com>
+ <8a75f2d5-f1bd-504e-b545-ae2e2f61ca8f@codeaurora.org> <20181019095122.0f1c0946@gandalf.local.home>
+ <9cafe321-87f6-98a3-3bda-c2f7a3d7fc67@codeaurora.org> <20181019111205.5c8e98e8@gandalf.local.home>
+ <1e6cc1fa5263b9edfcf7567d3f9f65fd@codeaurora.org> <38099043-f5ed-6d81-bf94-13f61cfa8507@linaro.org>
+ <8f65f83b-8cd9-5e35-c324-30b86390906e@codeaurora.org> <ed648cc5-0748-8bcc-5ebb-ce6dbc7d4fee@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CANBLGcy9WoBqBKQnvz-YGQpXossP2HDmW_go8WZD7FfBZdr5VQ@mail.gmail.com>
+In-Reply-To: <ed648cc5-0748-8bcc-5ebb-ce6dbc7d4fee@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Emil Renner Berthing <kernel@esmil.dk>
-Cc: paul.walmsley@sifive.com, linux-serial@vger.kernel.org, paul@pwsan.com, Palmer Dabbelt <palmer@sifive.com>, wesley@sifive.com, jslaby@suse.com, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, julia.lawall@lip6.fr, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-riscv@lists.infradead.org
+To: srinivas.kandagatla@linaro.org
+Cc: saiprakash.ranjan@codeaurora.org, Steven Rostedt <rostedt@goodmis.org>, sboyd@kernel.org, joel@joelfernandes.org, bjorn.andersson@linaro.org, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, geliangtang@gmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, gpramod@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "open list:ARM/QUALCOMM SUPPORT" <linux-soc@vger.kernel.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Rajendra Nayak <rnayak@codeaurora.org>, vivek.gautam@codeaurora.org, sibis@codeaurora.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Emil,
+On Thu, Nov 15, 2018 at 4:23 PM Srinivas Kandagatla
+<srinivas.kandagatla@linaro.org> wrote:
 
-On Thu, 15 Nov 2018, Emil Renner Berthing wrote:
-
-> Thanks for the patch!
-
-Thanks for your comments!
-
-> On Sat, 20 Oct 2018 at 12:12, Paul Walmsley <paul.walmsley@sifive.com> wrote:
+> Yes, this is not the solution, but it proves that the hand-off between
+> booloaders and kernel is the issue.
 >
->> +static int __init sifive_serial_console_setup(struct console *co, char *options)
+> In general there is wider issue with resources hand-off between
+> bootloader and kernel.
 >
-> Unfortunately I get this error unless I remove the __init:
-> ...
->  GEN     .version
->  CHK     include/generated/compile.h
->  AR      built-in.a
->  LD      vmlinux.o
->  MODPOST vmlinux.o
-> WARNING: vmlinux.o(.data+0x14e48): Section mismatch in reference from
-> the variable .LANCHOR0 to the function
-> .init.text:sifive_serial_console_setup()
-> The variable .LANCHOR0 references
-> the function __init sifive_serial_console_setup()
-> If the reference is valid then annotate the
-> variable with __init* or __refdata (see linux/init.h) or name the variable:
-> *_template, *_timer, *_sht, *_ops, *_probe, *_probe_one, *_console
->
-> FATAL: modpost: Section mismatches detected.
-> Set CONFIG_SECTION_MISMATCH_WARN_ONLY=y to allow them.
-> make[1]: *** [scripts/Makefile.modpost:98: vmlinux.o] Error 1
-> make: *** [Makefile:1040: vmlinux] Error 2
->
-> I have
-> CONFIG_SERIAL_CORE=y
-> CONFIG_SERIAL_CORE_CONSOLE=y
-> CONFIG_SERIAL_SIFIVE=y
-> CONFIG_SERIAL_SIFIVE_CONSOLE=y
-> and it happens both on v4.20-rc2 and v4.19.
-> Without the __init everything seems to work fine though.
+> There has been some proposal in the past by Viresh for a new framework
+> called boot-constriants (https://lkml.org/lkml/2017/12/14/440) which am
+> not sure if its still actively looked at. But something similar should
+> be the way to address such issues.
 
-Thanks for the report.  There are some patches to address this:
+It isn't dead code yet and I am waiting to gain few more use-cases
+before I attempt
+to convince Greg again :)
 
-https://lore.kernel.org/lkml/20181115005602.30746-1-paul.walmsley@sifive.com/
+Here is the code..
 
->> +#else
->> +
->> +#define SIFIVE_SERIAL_CONSOLE  NULL
->> +
->> +static inline void __ssp_add_console_port(struct sifive_serial_port *ssp)
->> +{}
->> +static void __ssp_remove_console_port(struct sifive_serial_port *ssp)
->> +{}
->
-> Missing "inline"?
+git://git.kernel.org/pub/scm/linux/kernel/git/vireshk/linux.git boot-constraint
 
-That is indeed an error, but the other way around: I didn't mean for that 
-inline to be there.
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/coding-style.rst
-
-I've dropped the inline; thanks for pointing the situation out.
-
->> +static int __init sifive_serial_init(void)
->> +{
->> +       int r;
->
-> If you're sending a v4 anyway, here and in the the probe function
-> using int ret; for this kind of variable is a common idiom and
-> hence easier to read.
-
-Precedent exists in the kernel for using "r" as a return value also:
-
-$ fgrep -r 'return r;' linux/
-4491
-$
-
-which probably traces back ultimately to Torvalds' guidance to keep 
-variable names short:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/coding-style.rst#n284
-
-But I am not religious about it.   So if this is a big deal for you, I 
-guess reply back, and it can be changed.
-
-
-- Paul
+--
+viresh
