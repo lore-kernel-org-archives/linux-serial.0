@@ -1,71 +1,164 @@
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Subject: Re: Crash in msm serial on dragonboard with ftrace bootargs
-Date: Fri, 16 Nov 2018 16:19:48 +0530
-Message-ID: <6ba6073e-c2ff-193c-3038-8329c06e325c@codeaurora.org>
-References: <472db11e-49a6-a1ee-e298-791ee1bbb10b@codeaurora.org>
- <accdce6d-8fd2-9f15-d4cd-704cbf0b32eb@codeaurora.org>
- <20181016144123.24c47b38@gandalf.local.home>
- <7781815e-cba2-9e36-db6d-268298747876@codeaurora.org>
- <20181016150328.3450d718@gandalf.local.home>
- <c94103d2-ed5d-bf43-fc71-c60e108f303e@codeaurora.org>
- <20181017223334.29ca2837@vmware.local.home>
- <58d2474c-53cd-e6cb-2d25-db38d1a88da6@codeaurora.org>
- <20181018091706.62310b38@gandalf.local.home>
- <20181019041740.GB141835@joelaf.mtv.corp.google.com>
- <8a75f2d5-f1bd-504e-b545-ae2e2f61ca8f@codeaurora.org>
- <20181019095122.0f1c0946@gandalf.local.home>
- <9cafe321-87f6-98a3-3bda-c2f7a3d7fc67@codeaurora.org>
- <20181019111205.5c8e98e8@gandalf.local.home>
- <1e6cc1fa5263b9edfcf7567d3f9f65fd@codeaurora.org>
- <38099043-f5ed-6d81-bf94-13f61cfa8507@linaro.org>
- <8f65f83b-8cd9-5e35-c324-30b86390906e@codeaurora.org>
- <ed648cc5-0748-8bcc-5ebb-ce6dbc7d4fee@linaro.org>
- <CAOh2x=kHQ_PfZqcoDE1+jx-ArMOh4hAFqXxiiKJ9=3JZUySQEw@mail.gmail.com>
+From: Paul Walmsley <paul.walmsley@sifive.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: serial: add documentation for the
+ SiFive UART driver
+Date: Fri, 16 Nov 2018 15:10:35 -0800 (PST)
+Message-ID: <alpine.DEB.2.21.9999.1811161505240.25712@viisi.sifive.com>
+References: <20181019184827.12351-1-paul.walmsley@sifive.com> <20181019184827.12351-2-paul.walmsley@sifive.com> <CAL_JsqJBSqaxnETdJg1Mdp+H2ay+WKT0JaxLe6D4Fwo_99qUkw@mail.gmail.com> <4317548d-f831-29ba-3be9-35f080587db9@sifive.com>
+ <CAL_JsqLagTgjDhZ02X=wPFDB4WF2bR7=LyzSW9D=ooo_XB_zOg@mail.gmail.com> <6571bb0e-b36a-1196-4d90-8aa62d8a2a90@sifive.com> <20181024173232.GB5652@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="8323329-964611338-1542409835=:25712"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOh2x=kHQ_PfZqcoDE1+jx-ArMOh4hAFqXxiiKJ9=3JZUySQEw@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <20181024173232.GB5652@bogus>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Viresh Kumar <viresh.kumar@linaro.org>, srinivas.kandagatla@linaro.org
-Cc: Steven Rostedt <rostedt@goodmis.org>, sboyd@kernel.org, joel@joelfernandes.org, bjorn.andersson@linaro.org, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Jiri Slaby <jslaby@suse.com>, Kees Cook <keescook@chromium.org>, geliangtang@gmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, gpramod@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "open list:ARM/QUALCOMM SUPPORT" <linux-soc@vger.kernel.org>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Rajendra Nayak <rnayak@codeaurora.org>, vivek.gautam@codeaurora.org, sibis@codeaurora.org
+To: Rob Herring <robh@kernel.org>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Palmer Dabbelt <palmer@sifive.com>, Paul Walmsley <paul@pwsan.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 11/16/2018 9:09 AM, Viresh Kumar wrote:
-> On Thu, Nov 15, 2018 at 4:23 PM Srinivas Kandagatla
-> <srinivas.kandagatla@linaro.org> wrote:
-> 
->> Yes, this is not the solution, but it proves that the hand-off between
->> booloaders and kernel is the issue.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-964611338-1542409835=:25712
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+
+On Wed, 24 Oct 2018, Rob Herring wrote:
+
+> On Tue, Oct 23, 2018 at 10:05:40AM -0700, Paul Walmsley wrote:
+>> On 10/20/18 7:21 AM, Rob Herring wrote:
+>>> On Fri, Oct 19, 2018 at 5:06 PM Paul Walmsley <paul.walmsley@sifive.com=
+> wrote:
+>>>> On 10/19/18 1:45 PM, Rob Herring wrote:
+>>>>> On Fri, Oct 19, 2018 at 1:48 PM Paul Walmsley <paul.walmsley@sifive.c=
+om> wrote:
+>>>>>> Add DT binding documentation for the Linux driver for the SiFive
+>>>>>> asynchronous serial IP block.  Nothing too exotic.
+>>>>>>
+>>>>>> Cc: linux-serial@vger.kernel.org
+>>>>>> Cc: devicetree@vger.kernel.org
+>>>>>> Cc: linux-riscv@lists.infradead.org
+>>>>>> Cc: linux-kernel@vger.kernel.org
+>>>>>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>>>>> Cc: Rob Herring <robh+dt@kernel.org>
+>>>>>> Cc: Mark Rutland <mark.rutland@arm.com>
+>>>>>> Cc: Palmer Dabbelt <palmer@sifive.com>
+>>>>>> Reviewed-by: Palmer Dabbelt <palmer@sifive.com>
+>>>>>> Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
+>>>>>> Signed-off-by: Paul Walmsley <paul@pwsan.com>
+>>>>>> ---
+>>>>>>    .../bindings/serial/sifive-serial.txt         | 21 ++++++++++++++=
++++++
+>>>>>>    1 file changed, 21 insertions(+)
+>>>>>>    create mode 100644 Documentation/devicetree/bindings/serial/sifiv=
+e-serial.txt
+>>>>>>
+>>>>>> diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.=
+txt b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+>>>>>> new file mode 100644
+>>>>>> index 000000000000..8982338512f5
+>>>>>> --- /dev/null
+>>>>>> +++ b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+>>>>>> @@ -0,0 +1,21 @@
+>>>>>> +SiFive asynchronous serial interface (UART)
+>>>>>> +
+>>>>>> +Required properties:
+>>>>>> +
+>>>>>> +- compatible: should be "sifive,fu540-c000-uart0" or "sifive,uart0"
+>>>>>>
+>>>>> As I mentioned for the
+>>>>> intc and now the pwm block bindings, if you are going to do version
+>>>>> numbers please document the versioning scheme.
+>>>>>
+>>>>>
+>>>>> Will add that to the binding document.
+>>> I don't seem to be making my point clear. I don't want any of this
+>>> added to a binding doc for particular IP blocks. Write a common doc
+>>> that explains the scheme and addresses the questions I asked. Then
+>>> just reference that doc here.
+>>>
+>>> Maybe this is documented somewhere already? Otherwise, if one is
+>>> creating a new IP block, how do they know what the versioning scheme
+>>> is or what goes in the DT ROM?
 >>
->> In general there is wider issue with resources hand-off between
->> bootloader and kernel.
 >>
->> There has been some proposal in the past by Viresh for a new framework
->> called boot-constriants (https://lkml.org/lkml/2017/12/14/440) which am
->> not sure if its still actively looked at. But something similar should
->> be the way to address such issues.
-> 
-> It isn't dead code yet and I am waiting to gain few more use-cases
-> before I attempt
-> to convince Greg again :)
-> 
-> Here is the code..
-> 
-> git://git.kernel.org/pub/scm/linux/kernel/git/vireshk/linux.git boot-constraint
-> 
-> --
-> viresh
-> 
+>> Seems like there might be some confusion between IP blocks as integrated=
+ on
+>> an SoC vs. IP blocks in isolation.=A0 It's not necessarily the SoC integ=
+rator
+>> that sets an IP block version number; this can come from the IP block ve=
+ndor
+>> itself.=A0 So each IP block may have its own version numbering practices=
+ for
+>> the IP block alone.
+>>
+>>
+>> For SiFive IP blocks, we at SiFive could probably align on a common vers=
+ion
+>> numbering structure for what's in the sifive-blocks repository.
+>
+> I thought you had that from what Palmer said and what I've seen so far.
+> You have at least 3 bindings so far it seems.
 
-Maybe you can take this earlycon issue as a usecase.
-I have added a boot constraint for earlycon on db410c and have sent a 
-patch. Whenever you repitch boot-constraint, you can add that as well :)
+Yep.
 
-Thanks,
-Sai
+>> But other IP blocks from other vendors may not align to that, or may not
+>> have version numbers exposed at all.=A0 In those cases there's no way fo=
+r
+>> software folks to find out what they are,=A0 as you pointed out earlier.=
+=A0 This
+>> is the case with most DT compatible strings in the kernel tree.
+>>
+>> For example, we've integrated the NVDLA IP block, from NVIDIA, on some
+>> designs.=A0 Any NVIDIA version numbers in that IP block will probably no=
+t
+>> follow the SiFive version numbering scheme.=A0 I'd propose the right thi=
+ng to
+>> do for an IP block compatible string is to follow the vendor's practice,=
+ and
+>> then use the SoC integrator's version numbering practice for the
+>> SoC-integrated compatible string.
+>
+> Experience has shown that using compatible strings only specific to
+> vendor IP blocks (with or without version numbers) is pretty useless.
+>
+> For licensed IP, I'd suggest you follow standard practices.
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+OK
+
+> A genericish fallback is generally only used when there's lots of SoCs=20
+> sharing a block.
+>
+> In these cases though it needs to be clear what bindings follow some
+> common versioning scheme and which don't. That's accomplished
+> by referencing what the version scheme is. Otherwise, I'd expect I'll
+> see the versioning scheme copied when in fact the source IP in no way
+> follows it.
+>
+>> In effect, an SoC integration DT compatible string like
+>> "sifive,fu540-c000-uart" implicitly states an IP block version number:
+>> "whatever came out of the fab on the chip"[**].=A0=A0 I'd propose that e=
+ven in
+>> these cases, there's an advantage to keeping the "0" on the end, since i=
+t
+>> uniquely identifies an SoC-independent IP block, rather than just the ty=
+pe
+>> of the IP block. =A0 But if the "0" on the end of the SoC integration DT
+>> compatible string is problematic for you, we can certainly drop that las=
+t 0
+>> from the SoC integration DT compatible string, and only suffer a slight =
+lack
+>> of clarity as to what version was integrated on that chip.
+>
+> Personally I'd leave it off, but I'm fine with either way. It just needs
+> to be the way you document for SiFive IP blocks.
+
+OK, we'll leave it off.
+
+> Really, I'd just like to see folks get better at putting version and
+> configuration information into registers. We only need DT for what we
+> can't discover.
+
+Yep, agreed.
+
+
+- Paul
+--8323329-964611338-1542409835=:25712--
