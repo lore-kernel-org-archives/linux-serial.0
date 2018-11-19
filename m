@@ -1,7 +1,7 @@
 From: Sugaya Taichi <sugaya.taichi@socionext.com>
-Subject: [PATCH 13/14] ARM: configs: Add Milbeaut M10V defconfig
-Date: Mon, 19 Nov 2018 10:02:15 +0900
-Message-ID: <1542589336-13925-4-git-send-email-sugaya.taichi@socionext.com>
+Subject: [PATCH 12/14] ARM: dts: milbeaut: Add device tree set for the Milbeaut M10V board
+Date: Mon, 19 Nov 2018 10:02:14 +0900
+Message-ID: <1542589336-13925-3-git-send-email-sugaya.taichi@socionext.com>
 References: <1542589336-13925-1-git-send-email-sugaya.taichi@socionext.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1542589336-13925-1-git-send-email-sugaya.taichi@socionext.com>
@@ -10,383 +10,610 @@ To: linux-clk@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@list
 Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>, Sugaya Taichi <sugaya.taichi@socionext.com>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds the minimal defconfig for the Milbeaut M10V.
+Add devicetree for Milbeaut M10V SoC and M10V Evaluation board.
 
 Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
 ---
- arch/arm/configs/milbeaut_m10v_defconfig | 364 +++++++++++++++++++++++++++++++
- 1 file changed, 364 insertions(+)
- create mode 100644 arch/arm/configs/milbeaut_m10v_defconfig
+ arch/arm/boot/dts/Makefile               |   1 +
+ arch/arm/boot/dts/milbeaut-m10v-evb.dts  |  35 +++
+ arch/arm/boot/dts/milbeaut-m10v-evb.dtsi |  17 ++
+ arch/arm/boot/dts/milbeaut-m10v.dtsi     | 510 +++++++++++++++++++++++++++++++
+ 4 files changed, 563 insertions(+)
+ create mode 100644 arch/arm/boot/dts/milbeaut-m10v-evb.dts
+ create mode 100644 arch/arm/boot/dts/milbeaut-m10v-evb.dtsi
+ create mode 100644 arch/arm/boot/dts/milbeaut-m10v.dtsi
 
-diff --git a/arch/arm/configs/milbeaut_m10v_defconfig b/arch/arm/configs/milbeaut_m10v_defconfig
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index b0e966d..ee6220b 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1207,6 +1207,7 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += \
+ 	mt7623n-bananapi-bpi-r2.dtb \
+ 	mt8127-moose.dtb \
+ 	mt8135-evbp1.dtb
++dtb-$(CONFIG_MACH_M10V_EVB) += milbeaut-m10v-evb.dtb
+ dtb-$(CONFIG_ARCH_ZX) += zx296702-ad1.dtb
+ dtb-$(CONFIG_ARCH_ASPEED) += \
+ 	aspeed-ast2500-evb.dtb \
+diff --git a/arch/arm/boot/dts/milbeaut-m10v-evb.dts b/arch/arm/boot/dts/milbeaut-m10v-evb.dts
 new file mode 100644
-index 0000000..90c22f8
+index 0000000..af8d6e4
 --- /dev/null
-+++ b/arch/arm/configs/milbeaut_m10v_defconfig
-@@ -0,0 +1,364 @@
-+# CONFIG_LOCALVERSION_AUTO is not set
-+CONFIG_DEFAULT_HOSTNAME="mlbel"
-+CONFIG_SYSVIPC=y
-+CONFIG_POSIX_MQUEUE=y
-+CONFIG_FHANDLE=y
-+CONFIG_NO_HZ_FULL=y
-+CONFIG_NO_HZ_FULL_ALL=y
-+CONFIG_NO_HZ_FULL_SYSIDLE=y
-+CONFIG_NO_HZ_FULL_SYSIDLE_SMALL=4
-+CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_BSD_PROCESS_ACCT=y
-+CONFIG_BSD_PROCESS_ACCT_V3=y
-+CONFIG_TASKSTATS=y
-+CONFIG_TASK_DELAY_ACCT=y
-+CONFIG_TASK_XACCT=y
-+CONFIG_TASK_IO_ACCOUNTING=y
-+CONFIG_IKCONFIG=y
-+CONFIG_IKCONFIG_PROC=y
-+CONFIG_CGROUPS=y
-+CONFIG_CGROUP_DEBUG=y
-+CONFIG_CPUSETS=y
-+CONFIG_CGROUP_SCHED=y
-+CONFIG_CFS_BANDWIDTH=y
-+CONFIG_RT_GROUP_SCHED=y
-+CONFIG_NAMESPACES=y
-+CONFIG_USER_NS=y
-+CONFIG_BLK_DEV_INITRD=y
-+CONFIG_CC_OPTIMIZE_FOR_SIZE=y
-+CONFIG_KALLSYMS_ALL=y
-+CONFIG_EMBEDDED=y
-+# CONFIG_COMPAT_BRK is not set
-+CONFIG_SLAB=y
-+CONFIG_PROFILING=y
-+CONFIG_OPROFILE=m
-+CONFIG_MODULES=y
-+CONFIG_MODULE_UNLOAD=y
-+CONFIG_ARCH_MILBEAUT=y
-+CONFIG_ARCH_MILBEAUT_M10V=y
-+# CONFIG_CACHE_L2X0 is not set
-+CONFIG_ARM_ERRATA_754322=y
-+CONFIG_ARM_ERRATA_775420=y
-+# CONFIG_PCI is not set
-+# CONFIG_PCI_DEBUG is not set
-+# CONFIG_PCI_HOST_GENERIC is not set
-+# CONFIG_PCIE_SN_DW_PLAT is not set
-+# CONFIG_PCI_MSI is not set
-+# CONFIG_PCIEPORTBUS is not set
-+# CONFIG_PCIEAER is not set
-+# CONFIG_PCIEASPM is not set
-+CONFIG_SMP=y
-+# CONFIG_ARM_CPU_TOPOLOGY is not set
-+CONFIG_HAVE_ARM_ARCH_TIMER=y
-+CONFIG_VMSPLIT_2G=y
-+CONFIG_PREEMPT=y
-+CONFIG_THUMB2_KERNEL=y
-+CONFIG_HIGHMEM=y
-+# CONFIG_COMPACTION is not set
-+CONFIG_CMA=y
-+# CONFIG_ATAGS is not set
-+CONFIG_ZBOOT_ROM_TEXT=0x0
-+CONFIG_ZBOOT_ROM_BSS=0x0
-+CONFIG_ARM_APPENDED_DTB=y
-+CONFIG_KEXEC=y
-+CONFIG_CPU_FREQ=y
-+CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND=y
-+CONFIG_CPUFREQ_DT=y
-+CONFIG_CPU_IDLE=y
-+CONFIG_VFP=y
-+CONFIG_NEON=y
-+CONFIG_KERNEL_MODE_NEON=y
-+CONFIG_PM_RUNTIME=y
-+CONFIG_PM_DEBUG=y
-+CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y
-+CONFIG_NET=y
-+CONFIG_PACKET=y
-+CONFIG_PACKET_DIAG=m
-+CONFIG_UNIX=y
-+CONFIG_INET=y
-+CONFIG_IP_MULTICAST=y
-+CONFIG_IP_MROUTE=y
-+CONFIG_IP_PIMSM_V1=y
-+CONFIG_IP_PIMSM_V2=y
-+CONFIG_SYN_COOKIES=y
-+CONFIG_NET_IPVTI=m
-+CONFIG_INET_AH=y
-+CONFIG_INET_ESP=y
-+CONFIG_INET_IPCOMP=y
-+CONFIG_INET_XFRM_MODE_TRANSPORT=m
-+CONFIG_INET_XFRM_MODE_TUNNEL=m
-+CONFIG_INET_XFRM_MODE_BEET=m
-+CONFIG_INET_UDP_DIAG=m
-+CONFIG_TCP_CONG_ADVANCED=y
-+CONFIG_IP_SCTP=m
-+CONFIG_SCTP_COOKIE_HMAC_SHA1=y
-+CONFIG_TIPC=y
-+CONFIG_L2TP=m
-+CONFIG_L2TP_DEBUGFS=m
-+CONFIG_L2TP_V3=y
-+CONFIG_L2TP_IP=y
-+CONFIG_L2TP_ETH=y
-+CONFIG_IPX=m
-+CONFIG_NETLINK_MMAP=y
-+CONFIG_NETLINK_DIAG=y
-+CONFIG_CFG80211=y
-+CONFIG_NL80211_TESTMODE=y
-+CONFIG_CFG80211_DEVELOPER_WARNINGS=y
-+CONFIG_CFG80211_REG_DEBUG=y
-+CONFIG_CFG80211_INTERNAL_REGDB=y
-+CONFIG_CFG80211_WEXT=y
-+CONFIG_MAC80211=y
-+# CONFIG_MAC80211_RC_MINSTREL is not set
-+CONFIG_MAC80211_LEDS=y
-+CONFIG_RFKILL=y
-+CONFIG_RFKILL_INPUT=y
-+CONFIG_RFKILL_REGULATOR=y
-+CONFIG_DEVTMPFS=y
-+CONFIG_DEVTMPFS_MOUNT=y
-+CONFIG_DMA_CMA=y
-+CONFIG_CMA_SIZE_MBYTES=16
-+CONFIG_MTD=y
-+CONFIG_MTD_BLOCK=y
-+CONFIG_MTD_M25P80=y
-+CONFIG_MTD_NAND=y
-+CONFIG_MTD_NAND_CDN_HPNFC=y
-+CONFIG_MTD_NAND_CDN_HPNFC_DT=y
-+CONFIG_MTD_NAND_PLATFORM=y
-+CONFIG_MTD_SPI_NOR=y
-+CONFIG_MTD_UBI=y
-+CONFIG_MTD_UBI_BEB_LIMIT=3
-+CONFIG_BLK_DEV_LOOP=y
-+CONFIG_BLK_DEV_LOOP_MIN_COUNT=2
-+CONFIG_BLK_DEV_RAM=y
-+CONFIG_SCSI=y
-+CONFIG_BLK_DEV_SD=y
-+CONFIG_NETDEVICES=y
-+CONFIG_MACVLAN=y
-+CONFIG_TUN=y
-+CONFIG_VETH=y
-+# CONFIG_NET_CADENCE is not set
-+# CONFIG_NET_VENDOR_BROADCOM is not set
-+# CONFIG_NET_VENDOR_CIRRUS is not set
-+# CONFIG_NET_VENDOR_FARADAY is not set
-+# CONFIG_NET_VENDOR_INTEL is not set
-+# CONFIG_NET_VENDOR_MARVELL is not set
-+# CONFIG_NET_VENDOR_MICREL is not set
-+# CONFIG_NET_VENDOR_NATSEMI is not set
-+CONFIG_R8169=y
-+# CONFIG_NET_VENDOR_SEEQ is not set
-+# CONFIG_NET_VENDOR_SMSC is not set
-+# CONFIG_NET_SOCIONEXT_OGMA=y
-+# CONFIG_NET_VENDOR_STMICRO is not set
-+# CONFIG_NET_VENDOR_WIZNET is not set
-+CONFIG_REALTEK_PHY=y
-+CONFIG_MWIFIEX=m
-+CONFIG_MWIFIEX_SDIO=m
-+CONFIG_INPUT_POLLDEV=y
-+# CONFIG_INPUT_MOUSEDEV is not set
-+CONFIG_INPUT_EVDEV=y
-+# CONFIG_INPUT_KEYBOARD is not set
-+# CONFIG_INPUT_MOUSE is not set
-+CONFIG_SERIO_LIBPS2=y
-+CONFIG_LEGACY_PTY_COUNT=4
-+# CONFIG_DEVKMEM is not set
-+CONFIG_SERIAL_8250=y
-+# CONFIG_SERIAL_8250_DEPRECATED_OPTIONS is not set
-+CONFIG_SERIAL_8250_CONSOLE=y
-+# CONFIG_SERIAL_8250_DMA is not set
-+CONFIG_SERIAL_8250_EXTENDED=y
-+CONFIG_SERIAL_8250_DW=y
-+CONFIG_SERIAL_OF_PLATFORM=y
-+CONFIG_SERIAL_M10V_USIO=y
-+CONFIG_SERIAL_M10V_USIO_CONSOLE=y
-+# CONFIG_HW_RANDOM is not set
-+# CONFIG_I2C is not set
-+# CONFIG_I2C_BOARDINFO is not set
-+# CONFIG_I2C_COMPAT is not set
-+# CONFIG_I2C_CHARDEV is not set
-+# CONFIG_I2C_MUX is not set
-+# CONFIG_I2C_HELPER_AUTO is not set
-+# CONFIG_I2C_ALGOBIT is not set
-+# CONFIG_I2C_SNI_M10V is not set
-+CONFIG_SPI=y
-+# CONFIG_SPI_SN_USIO=y
-+#CONFIG_SPI_SNI is not set
-+#CONFIG_SPI_SPIDEV is not set
-+CONFIG_GPIOLIB=y
-+CONFIG_GPIO_SYSFS=y
-+CONFIG_GPIO_PCA953X=y
-+CONFIG_GPIO_PCA953X_IRQ=y
-+# CONFIG_HWMON is not set
-+CONFIG_WATCHDOG=y
-+CONFIG_SOFT_WATCHDOG=m
-+CONFIG_REGULATOR=y
-+CONFIG_REGULATOR_DEBUG=y
-+CONFIG_REGULATOR_S6AP412=y
-+CONFIG_MEDIA_SUPPORT=y
-+CONFIG_MEDIA_CAMERA_SUPPORT=y
-+CONFIG_MEDIA_CONTROLLER=y
-+CONFIG_VIDEO_V4L2_SUBDEV_API=y
-+CONFIG_VIDEO_ADV_DEBUG=y
-+CONFIG_MEDIA_USB_SUPPORT=y
-+CONFIG_USB_VIDEO_CLASS=y
-+# CONFIG_USB_GSPCA is not set
-+CONFIG_V4L_PLATFORM_DRIVERS=y
-+CONFIG_SOC_CAMERA=y
-+CONFIG_SOC_CAMERA_PLATFORM=y
-+CONFIG_V4L_MEM2MEM_DRIVERS=y
-+CONFIG_V4L_TEST_DRIVERS=y
-+CONFIG_VIDEO_VIVID=m
-+CONFIG_VIDEO_VIVID_MAX_DEVS=64
-+CONFIG_FB=y
-+# CONFIG_VGA_ARB is not set
-+# CONFIG_USB is not set
-+# CONFIG_USB_ANNOUNCE_NEW_DEVICES is not set
-+# CONFIG_USB_MON is not set
-+# CONFIG_USB_XHCI_HCD is not set
-+# CONFIG_USB_EHCI_HCD is not set
-+# CONFIG_USB_EHCI_ROOT_HUB_TT is not set
-+# CONFIG_USB_EHCI_HCD_PLATFORM is not set
-+# CONFIG_USB_OHCI_HCD is not set
-+# CONFIG_USB_OHCI_HCD_PCI is not set
-+# CONFIG_USB_OHCI_HCD_PLATFORM is not set
-+# CONFIG_USB_STORAGE is not set
-+# CONFIG_USB_SERIAL is not set
-+# CONFIG_USB_SERIAL_GENERIC is not set
-+# CONFIG_USB_SERIAL_CP210X is not set
-+# CONFIG_USB_SERIAL_FTDI_SIO is not set
-+# CONFIG_USB_SERIAL_PL2303 is not set
-+# CONFIG_USB_ULPI is not set
-+# CONFIG_USB_GADGET is not set
-+# CONFIG_USB_DWC3 is not set
-+# CONFIG_USB_DWC3_PCI is not set
-+# CONFIG_USB_DWC3_OTG is not set
-+# CONFIG_USB_DWC3_SN is not set
-+# CONFIG_USB_DWC3_OF_SIMPLE is not set
-+# CONFIG_USB_GADGET_SN_LAP is not set
-+# CONFIG_USB_CONFIGFS is not set
-+# CONFIG_USB_CONFIGFS_ACM is not set
-+# CONFIG_USB_CONFIGFS_MASS_STORAGE is not set
-+# CONFIG_USB_CONFIGFS_F_MTP is not set
-+# CONFIG_USB_CONFIGFS_F_UVC is not set
-+# CONFIG_USB_CONFIGFS_UEVENT is not set
-+# CONFIG_MMC is not set
-+# CONFIG_MMC_SDHCI is not set
-+# CONFIG_MMC_SDHCI_PLTFM is not set
-+# CONFIG_MMC_SDHCI_F_SDH30 is not set
-+# CONFIG_MMC_SDHCI_F_EMMC50 is not set
-+CONFIG_NEW_LEDS=y
-+CONFIG_LEDS_CLASS=y
-+CONFIG_LEDS_GPIO=y
-+CONFIG_LEDS_TRIGGER_TIMER=y
-+CONFIG_LEDS_TRIGGER_HEARTBEAT=y
-+CONFIG_RTC_CLASS=y
-+# CONFIG_RTC_HCTOSYS is not set
-+# CONFIG_RTC_SYSTOHC is not set
-+CONFIG_RTC_DEBUG=y
-+CONFIG_RTC_DRV_RX8025=y
-+CONFIG_DMADEVICES=y
-+CONFIG_MB86S7X_HDMAC=y
-+CONFIG_MB8AC0300_XDMAC=y
-+CONFIG_UIO=y
-+CONFIG_UIO_SNI=y
-+# CONFIG_IOMMU_SUPPORT is not set
-+CONFIG_PWM=y
-+# CONFIG_PWM_SYSFS is not set
-+CONFIG_PWM_M10V=y
-+CONFIG_RESET_CONTROLLER=y
-+CONFIG_EXFAT=y
-+CONFIG_EXT4_FS=y
-+# CONFIG_EXT4_USE_FOR_EXT23 is not set
-+# CONFIG_XFS_FS is not set
-+CONFIG_FANOTIFY=y
-+CONFIG_FANOTIFY_ACCESS_PERMISSIONS=y
-+CONFIG_QUOTA=y
-+CONFIG_AUTOFS4_FS=y
-+# CONFIG_FUSE_FS is not set
-+CONFIG_FSCACHE=y
-+CONFIG_FSCACHE_STATS=y
-+CONFIG_FSCACHE_HISTOGRAM=y
-+CONFIG_MSDOS_FS=y
-+CONFIG_VFAT_FS=y
-+CONFIG_FAT_DEFAULT_CODEPAGE=932
-+CONFIG_TMPFS=y
-+CONFIG_TMPFS_POSIX_ACL=y
-+CONFIG_UBIFS_FS=y
-+CONFIG_UBIFS_FS_ADVANCED_COMPR=y
-+CONFIG_ROMFS_FS=y
-+CONFIG_ROMFS_BACKED_BY_BOTH=y
-+CONFIG_NFS_FS=m
-+CONFIG_NLS_CODEPAGE_437=y
-+CONFIG_NLS_CODEPAGE_737=y
-+CONFIG_NLS_CODEPAGE_775=y
-+CONFIG_NLS_CODEPAGE_850=y
-+CONFIG_NLS_CODEPAGE_852=y
-+CONFIG_NLS_CODEPAGE_855=y
-+CONFIG_NLS_CODEPAGE_857=y
-+CONFIG_NLS_CODEPAGE_860=y
-+CONFIG_NLS_CODEPAGE_861=y
-+CONFIG_NLS_CODEPAGE_862=y
-+CONFIG_NLS_CODEPAGE_863=y
-+CONFIG_NLS_CODEPAGE_864=y
-+CONFIG_NLS_CODEPAGE_865=y
-+CONFIG_NLS_CODEPAGE_866=y
-+CONFIG_NLS_CODEPAGE_869=y
-+CONFIG_NLS_CODEPAGE_936=y
-+CONFIG_NLS_CODEPAGE_950=y
-+CONFIG_NLS_CODEPAGE_932=y
-+CONFIG_NLS_CODEPAGE_949=y
-+CONFIG_NLS_CODEPAGE_874=y
-+CONFIG_NLS_ISO8859_8=y
-+CONFIG_NLS_CODEPAGE_1250=y
-+CONFIG_NLS_CODEPAGE_1251=y
-+CONFIG_NLS_ASCII=y
-+CONFIG_NLS_ISO8859_1=y
-+CONFIG_NLS_ISO8859_2=y
-+CONFIG_NLS_ISO8859_3=y
-+CONFIG_NLS_ISO8859_4=y
-+CONFIG_NLS_ISO8859_5=y
-+CONFIG_NLS_ISO8859_6=y
-+CONFIG_NLS_ISO8859_7=y
-+CONFIG_NLS_ISO8859_9=y
-+CONFIG_NLS_ISO8859_13=y
-+CONFIG_NLS_ISO8859_14=y
-+CONFIG_NLS_ISO8859_15=y
-+CONFIG_NLS_KOI8_R=y
-+CONFIG_NLS_KOI8_U=y
-+CONFIG_NLS_MAC_ROMAN=y
-+CONFIG_NLS_MAC_CELTIC=y
-+CONFIG_NLS_MAC_CENTEURO=y
-+CONFIG_NLS_MAC_CROATIAN=y
-+CONFIG_NLS_MAC_CYRILLIC=y
-+CONFIG_NLS_MAC_GAELIC=y
-+CONFIG_NLS_MAC_GREEK=y
-+CONFIG_NLS_MAC_ICELAND=y
-+CONFIG_NLS_MAC_INUIT=y
-+CONFIG_NLS_MAC_ROMANIAN=y
-+CONFIG_NLS_MAC_TURKISH=y
-+CONFIG_NLS_UTF8=y
-+CONFIG_IPCU_FS=y
-+# CONFIG_TEST_IPCU_FS is not set
-+CONFIG_PRINTK_TIME=y
-+CONFIG_DYNAMIC_DEBUG=y
-+CONFIG_DEBUG_INFO=y
-+#CONFIG_DEBUG_INFO_REDUCED is not set
-+CONFIG_DEBUG_FS=y
-+CONFIG_DEBUG_GIC_BL=y
-+CONFIG_HEADERS_CHECK=y
-+CONFIG_DEBUG_SECTION_MISMATCH=y
-+CONFIG_DEBUG_MEMORY_INIT=y
-+# CONFIG_DEBUG_PREEMPT is not set
-+CONFIG_RCU_TORTURE_TEST=m
-+CONFIG_RCU_CPU_STALL_TIMEOUT=60
-+CONFIG_KGDB=y
-+CONFIG_DEBUG_USER=y
-+CONFIG_DEBUG_LL=y
-+CONFIG_DEBUG_LL_MILBEAUT_UART=y
-+CONFIG_EARLY_PRINTK=y
-+# CONFIG_EARLY_PRINTK_DIRECT is not set
-+CONFIG_KEYS=y
-+CONFIG_ENCRYPTED_KEYS=y
-+CONFIG_SECURITY=y
-+# CONFIG_CRYPTO_ANSI_CPRNG is not set
-+# CONFIG_CRYPTO_HW is not set
-+CONFIG_FONTS=y
++++ b/arch/arm/boot/dts/milbeaut-m10v-evb.dts
+@@ -0,0 +1,35 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Socionext Milbeaut M10V Evaluation Board */
++/dts-v1/;
++#include "milbeaut-m10v-evb.dtsi"
++
++/ {
++	cpus {
++		cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a7";
++			reg = <0xf00>;
++		};
++		cpu@1 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a7";
++			reg = <0xf01>;
++		};
++
++		cpu@2 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a7";
++			reg = <0xf02>;
++		};
++		cpu@3 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a7";
++			reg = <0xf03>;
++		};
++
++	};
++	trampoline: trampoline@0x0000F100 {
++		compatible = "socionext,smp-trampoline";
++		reg = <0x0000F100 0x100>;
++	};
++};
+diff --git a/arch/arm/boot/dts/milbeaut-m10v-evb.dtsi b/arch/arm/boot/dts/milbeaut-m10v-evb.dtsi
+new file mode 100644
+index 0000000..fc35c0b
+--- /dev/null
++++ b/arch/arm/boot/dts/milbeaut-m10v-evb.dtsi
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: GPL-2.0
++#include "milbeaut-m10v.dtsi"
++
++/ {
++	model = "Socionext M10V EVB";
++	compatible = "socionext,sc2000a", "socionext,milbeaut-m10v-evb";
++	interrupt-parent = <&gic>;
++	chosen {
++		bootargs = "consoleblank=0 loglevel=8 init=/sbin/finit root=/dev/mmcblk0p2 rootwait ro console=ttyUSI0,115200n8 console=/dev/tty1 ";
++		linux,initrd-start = <0x4A000000>;
++		linux,initrd-end =   <0x4BF00000>;
++	};
++	memory {
++		device_type = "memory";
++		reg = <0x40000000  0x80000000>;
++	};
++};
+diff --git a/arch/arm/boot/dts/milbeaut-m10v.dtsi b/arch/arm/boot/dts/milbeaut-m10v.dtsi
+new file mode 100644
+index 0000000..4745dc6
+--- /dev/null
++++ b/arch/arm/boot/dts/milbeaut-m10v.dtsi
+@@ -0,0 +1,510 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++
++#include "skeleton.dtsi"
++
++/ {
++	compatible = "socionext,sc2000a";
++	interrupt-parent = <&gic>;
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++	};
++
++
++	gic: interrupt-controller@1d000000 {
++		compatible = "arm,cortex-a7-gic";
++		interrupt-controller;
++		#interrupt-cells = <3>;
++		reg = <0x1d001000 0x1000>, /* Distributer base and size */
++		      <0x1d002000 0x1000>; /* CPU I/f base and size */
++	};
++
++	m10v-clk-tree@ {
++		compatible = "socionext,milbeaut-m10v-clk-regs";
++		reg = <0x1d021000 0x4000>;
++
++		clocks {
++			#address-cells = <0>;
++			#size-cells = <0>;
++
++			uclk40xi: uclk40xi {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <40000000>;
++			};
++
++			aumclki: aumclki {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <20000000>;
++			};
++
++			rtc32k: rtc32k {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <32768>;
++			};
++
++			pxrefclk: pxrefclk {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <100000000>;
++			};
++
++			pcisuppclk: pcisuppclk {
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&uclk40xi>;
++				clock-div = <20>;
++				clock-mult = <1>;
++			};
++
++			usb2_clk: usb2_clk {
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&uclk40xi>;
++				clock-div = <2>;
++				clock-mult = <1>;
++			};
++
++			pll1: pll1 {
++				compatible =
++				"socionext,milbeaut-m10v-pll-fixed-factor";
++				#clock-cells = <0>;
++				clocks = <&uclk40xi>;
++				offset = <1>;
++				clock-div = <1>;
++				clock-mult = <40>;
++			};
++
++			pll2: pll2 {
++				compatible =
++				"socionext,milbeaut-m10v-pll-fixed-factor";
++				#clock-cells = <0>;
++				clocks = <&uclk40xi>;
++				offset = <2>;
++				clock-div = <1>;
++				clock-mult = <30>;
++			};
++
++			pll6: pll6 { /* CLK 6-1 */
++				compatible =
++				"socionext,milbeaut-m10v-pll-fixed-factor";
++				#clock-cells = <0>;
++				clocks = <&uclk40xi>;
++				offset = <7>;
++				clock-div = <1>;
++				clock-mult = <35>;
++			};
++
++			pll7: pll7 { /* CLK 7-1 */
++				compatible =
++				"socionext,milbeaut-m10v-pll-fixed-factor";
++				#clock-cells = <0>;
++				clocks = <&uclk40xi>;
++				offset = <8>;
++				clock-div = <1>;
++				clock-mult = <40>;
++			};
++
++			pll9: pll9 { /* CA7CLK, ATCLK */
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&uclk40xi>;
++				clock-div = <1>;
++				clock-mult = <33>;
++			};
++
++			pll10: pll10 {
++				compatible =
++				"socionext,milbeaut-m10v-pll-fixed-factor";
++				#clock-cells = <0>;
++				clocks = <&uclk40xi>;
++				offset = <10>;
++				clock-div = <5>;
++				clock-mult = <108>;
++			};
++
++			pll11: pll11 { /* CLK 11-1 */
++				compatible =
++				"socionext,milbeaut-m10v-pll-fixed-factor";
++				#clock-cells = <0>;
++				clocks = <&uclk40xi>;
++				offset = <12>;
++				clock-div = <2>;
++				clock-mult = <75>;
++			};
++
++			emmcclk: emmcclk {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll11>;
++				offset = <28>; /* EMMCCLK */
++				mask = <0x3>;
++				ratios = <15 0x7 10 0x6 9 0x5 8 0x4>;
++			};
++
++			pll1_div_1_2: pll1_div_1_2 { /* CLK 1-2 */
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&pll1>;
++				clock-div = <2>;
++				clock-mult = <1>;
++			};
++
++			pll2_div_1_2: pll2_div_1_2 { /* CLK 2-2 */
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&pll2>;
++				clock-div = <2>;
++				clock-mult = <1>;
++			};
++
++			pll6_div_1_2: pll6_div_1_2 { /* CLK 6-2 */
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&pll6>;
++				clock-div = <2>;
++				clock-mult = <1>;
++			};
++
++			pll6_div_1_3: pll6_div_1_3 { /* CLK 6-3 */
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&pll6>;
++				clock-div = <3>;
++				clock-mult = <1>;
++			};
++
++			pll7_div_1_2: pll7_div_1_2 { /* CLK 7-2 */
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&pll7>;
++				clock-div = <2>;
++				clock-mult = <1>;
++			};
++
++			pll7_div_1_5: pll7_div_1_5 { /* CLK 7-5 */
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&pll7>;
++				clock-div = <5>;
++				clock-mult = <1>;
++			};
++
++			pll10_div_1_2: pll10_div_1_2 { /* CLK 10-2 */
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&pll10>;
++				clock-div = <2>;
++				clock-mult = <1>;
++			};
++
++			spiclk_mux_0: spiclk_mux_0 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll10_div_1_2>;
++				offset = <227>; /* SPICLK */
++				mask = <0x3>;
++				ratios = <4 0x5 2 0x4>;
++			};
++
++			spiclk_mux_1: spiclk_mux_1 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll7_div_1_2>;
++				offset = <227>; /* SPICLK */
++				mask = <0x3>;
++				ratios = <8 0x6>;
++			};
++
++			spiclk: spiclk {
++				compatible = "socionext,milbeaut-m10v-clk-mux";
++				#clock-cells = <0>;
++				clocks = <&spiclk_mux_0>, <&spiclk_mux_1>;
++			};
++
++			ca7wdclk: ca7wdclk {
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&pll2_div_1_2>;
++				clock-div = <12>;
++				clock-mult = <1>;
++			};
++
++			pll9_div_1_2: pll9_div_1_2 {
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&pll9>;
++				clock-div = <2>;
++				clock-mult = <1>;
++			};
++
++			mclk400: mclk400 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll1_div_1_2>;
++				offset = <295>; /* MCLK400 */
++				mask = <0x3>;
++				ratios = <4 0x7 2 0x5>;
++			};
++
++			mclk200: mclk200 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll1_div_1_2>;
++				offset = <291>; /* MCLK200 */
++				mask = <0x7>;
++				ratios = <8 0xf 4 0xb>;
++			};
++
++			aclk400: aclk400 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll1_div_1_2>;
++				offset = <288>; /* ACLK400 */
++				mask = <0x3>;
++				ratios = <4 0x7 2 0x5>;
++			};
++
++			aclk300: aclk300 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll2_div_1_2>;
++				offset = <352>; /* ACLK300 */
++				mask = <0x1>;
++				ratios = <6 0x3 4 0x2>;
++			};
++
++			aclk: aclk {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll1_div_1_2>;
++				offset = <276>; /* ACLK */
++				mask = <0x7>;
++				ratios = <8 0xf 4 0xb>;
++			};
++
++			aclkexs: aclkexs {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll1_div_1_2>;
++				offset = <272>; /* ACLKEXS */
++				mask = <0x7>;
++				ratios = <8 0xf 6 0xd 5 0xc 4 0xb>;
++			};
++
++			hclk: hclk {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll1_div_1_2>;
++				offset = <263>; /* HCLK */
++				mask = <0xf>;
++				ratios = <16 0x1f 8 0x17>;
++			};
++
++			hclkbmh: hclkbmh {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll1_div_1_2>;
++				offset = <268>; /* HCLKBMH */
++				mask = <0x7>;
++				ratios = <8 0xf 4 0xb>;
++			};
++
++			pclk: pclk {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll1_div_1_2>;
++				offset = <256>; /* PCLK */
++				mask = <0x3f>;
++				ratios = <32 0x5f 16 0x4f>;
++			};
++
++			pclkca7wd: pclkca7wd {
++				compatible = "fixed-factor-clock";
++				#clock-cells = <0>;
++				clocks = <&pll1_div_1_2>;
++				clock-div = <16>;
++				clock-mult = <1>;
++			};
++
++			rclk: rclk {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll10_div_1_2>;
++				offset = <0>; /* RCLK */
++				mask = <0x3>;
++				ratios = <64 0x7 48 0x6 32 0x5 16 0x4>;
++			};
++
++			uhs1clk0: uhs1clk0 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll7>;
++				offset = <3>; /* UHS1CLK0 */
++				mask = <0xf>;
++				ratios = <16 0x14 8 0x13 4 0x12 3 0x11 2 0x10>;
++			};
++
++			uhs1clk1_div1: uhs1clk1_div1 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll7>;
++				offset = <8>; /* UHS1CLK1 */
++				mask = <0xf>;
++				ratios = <16 0x14 8 0x13>;
++			};
++
++			uhs1clk1_div2: uhs1clk1_div2 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll6_div_1_2>;
++				offset = <8>; /* UHS1CLK1 */
++				mask = <0xf>;
++				ratios = <1 0x18>;
++			};
++
++			uhs1clk1: uhs1clk1 {
++				compatible = "socionext,milbeaut-m10v-clk-mux";
++				#clock-cells = <0>;
++				clocks = <&uhs1clk1_div1>, <&uhs1clk1_div2>;
++			};
++
++			uhs1clk2_div1: uhs1clk2_div1 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll7>;
++				offset = <13>; /* UHS1CLK2 */
++				mask = <0xf>;
++				ratios = <16 0x14 8 0x13 4 0x12>;
++			};
++
++			uhs1clk2_div2: uhs1clk2_div2 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll6_div_1_2>;
++				offset = <13>; /* UHS1CLK2 */
++				mask = <0xf>;
++				ratios = <1 0x18>;
++			};
++
++			uhs1clk2: uhs1clk2 {
++				compatible = "socionext,milbeaut-m10v-clk-mux";
++				#clock-cells = <0>;
++				clocks = <&uhs1clk2_div1>, <&uhs1clk2_div2>;
++			};
++
++			uhs2clk: uhs2clk {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll6_div_1_3>;
++				offset = <18>; /* UHS2CLK */
++				mask = <0x7>;
++				ratios = <18 0xf 16 0xe 14 0xd 13 0xc
++						12 0xb 11 0xa 10 0x9 9 0x8>;
++			};
++
++			nfclk_div1: nfclk_div1 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll7_div_1_2>;
++				offset = <22>; /* NFCLK */
++				mask = <0x1f>;
++				ratios = <40 0x24 16 0x23 13 0x22 10 0x21
++						8 0x20>;
++			};
++
++			nfclk_div2: nfclk_div2 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll7_div_1_5>;
++				offset = <22>; /* NFCLK */
++				mask = <0x1f>;
++				ratios = <10 0x28>;
++			};
++
++			nfclk: nfclk {
++				compatible = "socionext,milbeaut-m10v-clk-mux";
++				#clock-cells = <0>;
++				clocks = <&nfclk_div1>, <&nfclk_div2>;
++			};
++
++			clk5: clk5 {
++				compatible = "socionext,milbeaut-m10v-clk-div";
++				#clock-cells = <0>;
++				clocks = <&pll10_div_1_2>;
++				offset = <239>; /* NETAUSEL */
++				mask = <0x3>;
++				ratios = <64 0x7 48 0x6 32 0x5 16 0x4>;
++			};
++		};
++	};
++
++	peri-timer@1e000000 { /* 32-bit Reload Timers */
++		compatible = "socionext,milbeaut-m10v-timer";
++		reg = <0x1e000050 0x10>, <0x1e000060 0x10>;
++		interrupts = <0 91 4>;
++		clocks = <&rclk>;
++	};
++
++	timer { /* The Generic Timer */
++		compatible = "arm,armv7-timer";
++		interrupts = <GIC_PPI 13
++				(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
++			<GIC_PPI 14
++				(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
++			<GIC_PPI 11
++				(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
++			<GIC_PPI 10
++				(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
++		clock-frequency = <40000000>;//40M
++		always-on;
++		arm,cpu-registers-not-fw-configured;
++	};
++
++	dummy_clk: dummy_clk {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <50000000>;
++	};
++
++	pinctrl: pinctrl@1d022000 {
++		compatible = "socionext,milbeaut-m10v-pinctrl";
++		reg = <0x1d022000 0x1000>,
++		      <0x1c26f000 0x1000>;
++		reg-names = "pinctrl", "exiu";
++		gpio-controller;
++		#gpio-cells = <2>;
++		interrupt-controller;
++		#interrupt-cells = <2>;
++		clocks = <&dummy_clk>;
++		interrupts = <0 54 4>, <0 55 4>, <0 56 4>, <0 57 4>,
++				<0 58 4>, <0 59 4>, <0 60 4>, <0 61 4>,
++				<0 62 4>, <0 63 4>, <0 64 4>, <0 65 4>,
++				<0 66 4>, <0 67 4>, <0 68 4>, <0 69 4>;
++		interrupt-names = "pin-48", "pin-49", "pin-50", "pin-51",
++				"pin-52", "pin-53", "pin-54", "pin-55",
++				"pin-56", "pin-57", "pin-58", "pin-59",
++				"pin-60", "pin-61", "pin-62", "pin-63";
++
++		usio1_pins: usio1_pins {
++			pins = "PE4", "PE5", "P87";
++			function = "usio1";
++		};
++	};
++
++	usio1: usio_uart@1e700010 { /* PE4, PE5 */
++		/* Enable this as ttyUSI0 */
++		index = <0>;
++		compatible = "socionext,milbeaut-m10v-usio-uart";
++		reg = <0x1e700010 0x10>;
++		interrupts = <0 141 0x4>, <0 149 0x4>;
++		interrupt-names = "rx", "tx";
++		clocks = <&hclk>;
++	};
++};
 -- 
 1.9.1
