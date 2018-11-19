@@ -1,55 +1,26 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 0/4] serdev: make serdev_device_write() more usable
-Date: Mon, 19 Nov 2018 09:16:35 -0600
-Message-ID: <CAL_JsqJyTVsN1=YpeHNtTr+Tpw9Qmqd=mWfhg-d3WgzUX7DqKw@mail.gmail.com>
-References: <20181114150904.19653-1-johan@kernel.org>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 03/14] ARM: milbeaut: Add Milbeaut M10V early printk
+Date: Mon, 19 Nov 2018 09:21:24 -0600
+Message-ID: <CAL_JsqKMK7nMUxZLu9eV8tpnCXsAr2F4j=xTO8UL0g8V30kYZg@mail.gmail.com>
+References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com> <1542589274-13878-4-git-send-email-sugaya.taichi@socionext.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181114150904.19653-1-johan@kernel.org>
+In-Reply-To: <1542589274-13878-4-git-send-email-sugaya.taichi@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andrey Smirnov <andrew.smirnov@gmail.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: sugaya.taichi@socionext.com
+Cc: linux-clk <linux-clk@vger.kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 14, 2018 at 9:10 AM Johan Hovold <johan@kernel.org> wrote:
+On Sun, Nov 18, 2018 at 7:00 PM Sugaya Taichi
+<sugaya.taichi@socionext.com> wrote:
 >
-> This series make the synchronous serdev_device_write() helper more
-> usable by
->
->         1) allowing drivers to pass a zero timeout to indicate that they
->            want to wait forever;
->
->         2) returning the number of bytes actually written (buffered)
->            if the helper is interrupted;
->
->         3) make the helper use interruptible wait so that the helper can
->            be used on behalf of user space.
->
-> Finally, the two write functions are documented using kernel-doc.
->
-> Turns out I was using the wrong timeout for two gnss drivers that
-> expected the helper to wait indefinitely. I've fixed up those separately
-> (by using MAX_SCHEDULE_TIMEOUT for now), but for the helper to be usable
-> when using flow control we really want it to be interruptible.
->
-> Besides the two gnss drivers, there's currently only one other in-kernel
-> user of this helper and that driver (rave-sp) uses a non-zero timeout
-> and doesn't check the return value and therefore does not need to be
-> updated.
->
-> Note that this series depends on the two above mentioned GNSS fixes
-> (submitted for v4.20-rc3).
->
-> Johan
->
->
-> Johan Hovold (4):
->   serdev: use zero to indicate infinite write timeout
->   serdev: make synchronous write return bytes written
->   serdev: make synchronous write helper interruptible
->   serdev: document the write functions using kernel-doc
+> Add Milbeaut M10V earlyprintk.
 
-Other than the one nit, for the series:
+Do you really need earlyprintk? earlycon is preferred instead. It's
+not quite as early, but doesn't require rebuilding the kernel and
+supports more than 1 fixed device. If you crash before earlycon is
+enabled, that pretty much means either a bad dtb memory node or just
+flaky memory.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Rob
