@@ -1,340 +1,135 @@
-From: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 01/14] ARM: milbeaut: Add basic support for Milbeaut m10v SoC
-Date: Mon, 19 Nov 2018 10:24:11 -0600
-Message-ID: <CAL_JsqJotYwwC490XmCtn_=-mrosxG3UUCy0P_SVO3d94yW6VA@mail.gmail.com>
-References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com> <1542589274-13878-2-git-send-email-sugaya.taichi@socionext.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 4.19 121/205] arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
+Date: Mon, 19 Nov 2018 17:27:08 +0100
+Message-ID: <20181119162636.039331082@linuxfoundation.org>
+References: <20181119162616.586062722@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1542589274-13878-2-git-send-email-sugaya.taichi@socionext.com>
+In-Reply-To: <20181119162616.586062722@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: sugaya.taichi@socionext.com
-Cc: linux-clk <linux-clk@vger.kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, "H. Peter Anvin (Intel)" <hpa@zytor.com>, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Nov 18, 2018 at 7:00 PM Sugaya Taichi
-<sugaya.taichi@socionext.com> wrote:
->
-> This adds the basic M10V SoC support under arch/arm.
-> Since all cores are activated in the custom bootloader before booting
-> linux, it is necessary to wait for sub-cores using the trampoline area.
->
-> Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
-> ---
->  arch/arm/Kconfig                  |   2 +
->  arch/arm/Makefile                 |   1 +
->  arch/arm/mach-milbeaut/Kconfig    |  28 +++++++
->  arch/arm/mach-milbeaut/Makefile   |   3 +
->  arch/arm/mach-milbeaut/m10v_evb.c |  31 ++++++++
->  arch/arm/mach-milbeaut/platsmp.c  | 157 ++++++++++++++++++++++++++++++++++++++
->  6 files changed, 222 insertions(+)
->  create mode 100644 arch/arm/mach-milbeaut/Kconfig
->  create mode 100644 arch/arm/mach-milbeaut/Makefile
->  create mode 100644 arch/arm/mach-milbeaut/m10v_evb.c
->  create mode 100644 arch/arm/mach-milbeaut/platsmp.c
->
-> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-> index 91be74d..0b8a1af 100644
-> --- a/arch/arm/Kconfig
-> +++ b/arch/arm/Kconfig
-> @@ -767,6 +767,8 @@ source "arch/arm/mach-mediatek/Kconfig"
->
->  source "arch/arm/mach-meson/Kconfig"
->
-> +source "arch/arm/mach-milbeaut/Kconfig"
-> +
->  source "arch/arm/mach-mmp/Kconfig"
->
->  source "arch/arm/mach-moxart/Kconfig"
-> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-> index 05a91d8..627853c 100644
-> --- a/arch/arm/Makefile
-> +++ b/arch/arm/Makefile
-> @@ -190,6 +190,7 @@ machine-$(CONFIG_ARCH_MV78XX0)              += mv78xx0
->  machine-$(CONFIG_ARCH_MVEBU)           += mvebu
->  machine-$(CONFIG_ARCH_MXC)             += imx
->  machine-$(CONFIG_ARCH_MEDIATEK)                += mediatek
-> +machine-$(CONFIG_ARCH_MILBEAUT)                += milbeaut
->  machine-$(CONFIG_ARCH_MXS)             += mxs
->  machine-$(CONFIG_ARCH_NETX)            += netx
->  machine-$(CONFIG_ARCH_NOMADIK)         += nomadik
-> diff --git a/arch/arm/mach-milbeaut/Kconfig b/arch/arm/mach-milbeaut/Kconfig
-> new file mode 100644
-> index 0000000..63b6f69
-> --- /dev/null
-> +++ b/arch/arm/mach-milbeaut/Kconfig
-> @@ -0,0 +1,28 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +menuconfig ARCH_MILBEAUT
-> +       bool "Socionext Milbeaut SoCs"
-> +       depends on ARCH_MULTI_V7
-> +       select ARM_GIC
+4.19-stable review patch.  If anyone has any objections, please let me know.
 
-> +       select CLKDEV_LOOKUP
-> +       select GENERIC_CLOCKEVENTS
-> +       select CLKSRC_MMIO
+------------------
 
-The clock and timer drivers' kconfig entries should select these.
+From: H. Peter Anvin (Intel) <hpa@zytor.com>
 
-> +       select ZONE_DMA
+commit d0ffb805b729322626639336986bc83fc2e60871 upstream.
 
-Why is this needed?
+Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
+using arbitrary flags. Because BOTHER is not defined, the general
+Linux code doesn't allow setting arbitrary baud rates, and because
+CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
+drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
 
-> +       help
-> +               This enables support for Socionext Milbeaut SoCs
-> +
-> +if ARCH_MILBEAUT
-> +
-> +config ARCH_MILBEAUT_M10V
-> +       bool "Milbeaut SC2000/M10V platform"
-> +       select ARM_ARCH_TIMER
-> +       select M10V_TIMER
-> +       select PINCTRL
-> +       select PINCTRL_M10V
-> +       help
-> +         Support for Socionext's MILBEAUT M10V based systems
-> +
-> +config MACH_M10V_EVB
-> +       bool "Support for Milbeaut Evaluation boards"
+Resolve both problems by #defining BOTHER to 037 on Alpha.
 
-You shouldn't need a kconfig entry for each board.
+However, userspace still needs to know if setting BOTHER is actually
+safe given legacy kernels (does anyone actually care about that on
+Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
+though they use the same structure. Define struct termios2 just for
+compatibility; it is the exact same structure as struct termios. In a
+future patchset, this will be cleaned up so the uapi headers are
+usable from libc.
 
-> +       default y
-> +
-> +endif
-> diff --git a/arch/arm/mach-milbeaut/Makefile b/arch/arm/mach-milbeaut/Makefile
-> new file mode 100644
-> index 0000000..64f6f52
-> --- /dev/null
-> +++ b/arch/arm/mach-milbeaut/Makefile
-> @@ -0,0 +1,3 @@
-> +obj-$(CONFIG_SMP) += platsmp.o
-> +obj-$(CONFIG_MACH_M10V_EVB) += m10v_evb.o
-> +
-> diff --git a/arch/arm/mach-milbeaut/m10v_evb.c b/arch/arm/mach-milbeaut/m10v_evb.c
-> new file mode 100644
-> index 0000000..a1fa7c3
-> --- /dev/null
-> +++ b/arch/arm/mach-milbeaut/m10v_evb.c
+Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Eugene Syromiatnikov <esyr@redhat.com>
+Cc: <linux-alpha@vger.kernel.org>
+Cc: <linux-serial@vger.kernel.org>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-This all looks SoC specific, not board specific.
+---
+ arch/alpha/include/asm/termios.h       |    8 +++++++-
+ arch/alpha/include/uapi/asm/ioctls.h   |    5 +++++
+ arch/alpha/include/uapi/asm/termbits.h |   17 +++++++++++++++++
+ 3 files changed, 29 insertions(+), 1 deletion(-)
 
-> @@ -0,0 +1,31 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2018 Socionext Inc.
-> + * Copyright:   (C) 2015 Linaro Ltd.
-> + */
-> +
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-
-Not needed.
-
-> +
-> +#include <asm/mach/arch.h>
-> +#include <asm/mach/map.h>
-> +
-> +static struct map_desc m10v_io_desc[] __initdata = {
-> +};
-> +
-> +void __init m10v_map_io(void)
-> +{
-> +       debug_ll_io_init();
-
-If you use earlycon instead, then this isn't needed.
-
-> +       iotable_init(m10v_io_desc, ARRAY_SIZE(m10v_io_desc));
-
-This isn't needed.
-
-> +}
-> +
-> +static const char * const m10v_compat[] = {
-> +       "socionext,milbeaut-m10v-evb",
-> +       NULL,
-> +};
-> +
-> +DT_MACHINE_START(M10V_REB, "Socionext Milbeaut")
-> +       .dt_compat      = m10v_compat,
-> +       .l2c_aux_mask   = 0xffffffff,
-> +       .map_io         = m10v_map_io,
-
-It looks like you can remove this entire file and use the default machine desc.
-
-> +MACHINE_END
-> diff --git a/arch/arm/mach-milbeaut/platsmp.c b/arch/arm/mach-milbeaut/platsmp.c
-> new file mode 100644
-> index 0000000..b706851
-> --- /dev/null
-> +++ b/arch/arm/mach-milbeaut/platsmp.c
-> @@ -0,0 +1,157 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2018 Socionext Inc.
-> + * Copyright:  (C) 2015 Linaro Ltd.
-> + */
-> +
-> +#include <linux/cpu_pm.h>
-> +#include <linux/irqchip/arm-gic.h>
-> +#include <linux/of_device.h>
-
-Not needed.
-
-> +#include <linux/of_address.h>
-> +#include <linux/platform_device.h>
-
-Not needed.
-
-> +#include <linux/suspend.h>
-> +
-> +#include <asm/cacheflush.h>
-> +#include <asm/cp15.h>
-> +#include <asm/idmap.h>
-> +#include <asm/smp_plat.h>
-> +#include <asm/suspend.h>
-> +
-> +#define M10V_MAX_CPU   4
-> +
-> +#define KERNEL_UNBOOT_FLAG     0x12345678
-> +#define CPU_FINISH_SUSPEND_FLAG 0x56784321
-> +
-> +static void __iomem *trampoline;
-> +
-> +static int m10v_boot_secondary(unsigned int l_cpu, struct task_struct *idle)
-> +{
-> +       unsigned int mpidr, cpu, cluster;
-> +
-> +       mpidr = cpu_logical_map(l_cpu);
-> +       cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
-> +       cluster = MPIDR_AFFINITY_LEVEL(mpidr, 1);
-> +
-> +       if (cpu >= M10V_MAX_CPU)
-> +               return -EINVAL;
-> +
-> +       pr_debug("%s: cpu %u cluster %u\n", __func__, cpu, cluster);
-> +
-> +       writel(virt_to_phys(secondary_startup), trampoline + cpu * 4);
-> +       arch_send_wakeup_ipi_mask(cpumask_of(l_cpu));
-> +
-> +       return 0;
-> +}
-> +
-> +static void m10v_cpu_die(unsigned int l_cpu)
-> +{
-> +       gic_cpu_if_down(0);
-> +
-> +       v7_exit_coherency_flush(louis);
-> +
-> +       /* Now we are prepared for power-down, do it: */
-> +       wfi();
-> +}
-> +
-> +static int m10v_cpu_kill(unsigned int l_cpu)
-> +{
-> +       unsigned int mpidr, cpu;
-> +
-> +       mpidr = cpu_logical_map(l_cpu);
-> +       cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
-> +
-> +       writel(KERNEL_UNBOOT_FLAG, trampoline + cpu * 4);
-> +
-> +       return 1;
-> +}
-> +
-> +static struct smp_operations m10v_smp_ops __initdata = {
-> +       .smp_boot_secondary     = m10v_boot_secondary,
-> +       .cpu_die                = m10v_cpu_die,
-> +       .cpu_kill               = m10v_cpu_kill,
-> +};
-> +
-> +static int __init m10v_smp_init(void)
-> +{
-> +       unsigned int mpidr, cpu, cluster;
-> +       struct device_node *np;
-> +
-> +       np = of_find_compatible_node(NULL, NULL, "socionext,milbeaut-m10v-evb");
-> +       if (!np || !of_device_is_available(np))
-
-Just use of_machine_is_compatible() here.
-
-> +               return -ENODEV;
-> +       of_node_put(np);
-> +
-> +       np = of_find_compatible_node(NULL, NULL, "socionext,smp-trampoline");
-> +       if (!np)
-> +               return -ENODEV;
-> +
-> +       trampoline = of_iomap(np, 0);
-> +       if (!trampoline)
-> +               return -ENODEV;
-> +       of_node_put(np);
-> +
-> +       mpidr = read_cpuid_mpidr();
-> +       cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
-> +       cluster = MPIDR_AFFINITY_LEVEL(mpidr, 1);
-> +
-> +       pr_info("MCPM boot on cpu_%u cluster_%u\n", cpu, cluster);
-> +
-> +       for (cpu = 0; cpu < M10V_MAX_CPU; cpu++)
-> +               writel(KERNEL_UNBOOT_FLAG, trampoline + cpu * 4);
-> +
-> +       smp_set_ops(&m10v_smp_ops);
-> +
-> +       return 0;
-> +}
-> +early_initcall(m10v_smp_init);
-> +
-> +static int m10v_pm_valid(suspend_state_t state)
-> +{
-> +       return (state == PM_SUSPEND_STANDBY) || (state == PM_SUSPEND_MEM);
-> +}
-> +
-> +typedef void (*phys_reset_t)(unsigned long);
-> +static phys_reset_t phys_reset;
-> +
-> +static int m10v_die(unsigned long arg)
-> +{
-> +       setup_mm_for_reboot();
-> +       asm("wfi");
-> +       /* Boot just like a secondary */
-> +       phys_reset = (phys_reset_t)(unsigned long)virt_to_phys(cpu_reset);
-> +       phys_reset(virt_to_phys(cpu_resume));
-> +
-> +       return 0;
-> +}
-> +
-> +static int m10v_pm_enter(suspend_state_t state)
-> +{
-> +       switch (state) {
-> +       case PM_SUSPEND_STANDBY:
-> +               pr_err("STANDBY\n");
-> +               asm("wfi");
-> +               break;
-> +       case PM_SUSPEND_MEM:
-> +               pr_err("SUSPEND\n");
-> +               cpu_pm_enter();
-> +               cpu_suspend(0, m10v_die);
-> +               cpu_pm_exit();
-> +               break;
-> +       }
-> +       return 0;
-> +}
-> +
-> +static const struct platform_suspend_ops m10v_pm_ops = {
-> +       .valid          = m10v_pm_valid,
-> +       .enter          = m10v_pm_enter,
-> +};
-> +
-> +struct clk *m10v_clclk_register(struct device *cpu_dev);
-> +
-> +static int __init m10v_pm_init(void)
-> +{
-> +       suspend_set_ops(&m10v_pm_ops);
-> +
-> +       return 0;
-> +}
-> +late_initcall(m10v_pm_init);
-> --
-> 1.9.1
->
+--- a/arch/alpha/include/asm/termios.h
++++ b/arch/alpha/include/asm/termios.h
+@@ -73,9 +73,15 @@
+ })
+ 
+ #define user_termios_to_kernel_termios(k, u) \
+-	copy_from_user(k, u, sizeof(struct termios))
++	copy_from_user(k, u, sizeof(struct termios2))
+ 
+ #define kernel_termios_to_user_termios(u, k) \
++	copy_to_user(u, k, sizeof(struct termios2))
++
++#define user_termios_to_kernel_termios_1(k, u) \
++	copy_from_user(k, u, sizeof(struct termios))
++
++#define kernel_termios_to_user_termios_1(u, k) \
+ 	copy_to_user(u, k, sizeof(struct termios))
+ 
+ #endif	/* _ALPHA_TERMIOS_H */
+--- a/arch/alpha/include/uapi/asm/ioctls.h
++++ b/arch/alpha/include/uapi/asm/ioctls.h
+@@ -32,6 +32,11 @@
+ #define TCXONC		_IO('t', 30)
+ #define TCFLSH		_IO('t', 31)
+ 
++#define TCGETS2		_IOR('T', 42, struct termios2)
++#define TCSETS2		_IOW('T', 43, struct termios2)
++#define TCSETSW2	_IOW('T', 44, struct termios2)
++#define TCSETSF2	_IOW('T', 45, struct termios2)
++
+ #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
+ #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
+ #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
+--- a/arch/alpha/include/uapi/asm/termbits.h
++++ b/arch/alpha/include/uapi/asm/termbits.h
+@@ -26,6 +26,19 @@ struct termios {
+ 	speed_t c_ospeed;		/* output speed */
+ };
+ 
++/* Alpha has identical termios and termios2 */
++
++struct termios2 {
++	tcflag_t c_iflag;		/* input mode flags */
++	tcflag_t c_oflag;		/* output mode flags */
++	tcflag_t c_cflag;		/* control mode flags */
++	tcflag_t c_lflag;		/* local mode flags */
++	cc_t c_cc[NCCS];		/* control characters */
++	cc_t c_line;			/* line discipline (== c_cc[19]) */
++	speed_t c_ispeed;		/* input speed */
++	speed_t c_ospeed;		/* output speed */
++};
++
+ /* Alpha has matching termios and ktermios */
+ 
+ struct ktermios {
+@@ -152,6 +165,7 @@ struct ktermios {
+ #define B3000000  00034
+ #define B3500000  00035
+ #define B4000000  00036
++#define BOTHER    00037
+ 
+ #define CSIZE	00001400
+ #define   CS5	00000000
+@@ -169,6 +183,9 @@ struct ktermios {
+ #define CMSPAR	  010000000000		/* mark or space (stick) parity */
+ #define CRTSCTS	  020000000000		/* flow control */
+ 
++#define CIBAUD	07600000
++#define IBSHIFT	16
++
+ /* c_lflag bits */
+ #define ISIG	0x00000080
+ #define ICANON	0x00000100
