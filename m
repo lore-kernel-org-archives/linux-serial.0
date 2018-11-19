@@ -1,703 +1,340 @@
 From: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 12/14] ARM: dts: milbeaut: Add device tree set for the
- Milbeaut M10V board
-Date: Mon, 19 Nov 2018 09:46:02 -0600
-Message-ID: <CAL_JsqJiZnoUK7sgNYGpxzcF+rjpj6cV54jW2z4_7hui-WWenA@mail.gmail.com>
-References: <1542589336-13925-1-git-send-email-sugaya.taichi@socionext.com> <1542589336-13925-3-git-send-email-sugaya.taichi@socionext.com>
+Subject: Re: [PATCH 01/14] ARM: milbeaut: Add basic support for Milbeaut m10v SoC
+Date: Mon, 19 Nov 2018 10:24:11 -0600
+Message-ID: <CAL_JsqJotYwwC490XmCtn_=-mrosxG3UUCy0P_SVO3d94yW6VA@mail.gmail.com>
+References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com> <1542589274-13878-2-git-send-email-sugaya.taichi@socionext.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1542589336-13925-3-git-send-email-sugaya.taichi@socionext.com>
+In-Reply-To: <1542589274-13878-2-git-send-email-sugaya.taichi@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: sugaya.taichi@socionext.com, ARM-SoC Maintainers <arm@kernel.org>
+To: sugaya.taichi@socionext.com
 Cc: linux-clk <linux-clk@vger.kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Nov 18, 2018 at 7:01 PM Sugaya Taichi
+On Sun, Nov 18, 2018 at 7:00 PM Sugaya Taichi
 <sugaya.taichi@socionext.com> wrote:
 >
-> Add devicetree for Milbeaut M10V SoC and M10V Evaluation board.
+> This adds the basic M10V SoC support under arch/arm.
+> Since all cores are activated in the custom bootloader before booting
+> linux, it is necessary to wait for sub-cores using the trampoline area.
 >
 > Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
 > ---
->  arch/arm/boot/dts/Makefile               |   1 +
->  arch/arm/boot/dts/milbeaut-m10v-evb.dts  |  35 +++
->  arch/arm/boot/dts/milbeaut-m10v-evb.dtsi |  17 ++
->  arch/arm/boot/dts/milbeaut-m10v.dtsi     | 510 +++++++++++++++++++++++++++++++
-
-I'm not seeing why you need this split into 3 files instead of 2.
-
->  4 files changed, 563 insertions(+)
->  create mode 100644 arch/arm/boot/dts/milbeaut-m10v-evb.dts
->  create mode 100644 arch/arm/boot/dts/milbeaut-m10v-evb.dtsi
->  create mode 100644 arch/arm/boot/dts/milbeaut-m10v.dtsi
-
-Build your dtb with 'W=12' and fix any warnings.
-
+>  arch/arm/Kconfig                  |   2 +
+>  arch/arm/Makefile                 |   1 +
+>  arch/arm/mach-milbeaut/Kconfig    |  28 +++++++
+>  arch/arm/mach-milbeaut/Makefile   |   3 +
+>  arch/arm/mach-milbeaut/m10v_evb.c |  31 ++++++++
+>  arch/arm/mach-milbeaut/platsmp.c  | 157 ++++++++++++++++++++++++++++++++++++++
+>  6 files changed, 222 insertions(+)
+>  create mode 100644 arch/arm/mach-milbeaut/Kconfig
+>  create mode 100644 arch/arm/mach-milbeaut/Makefile
+>  create mode 100644 arch/arm/mach-milbeaut/m10v_evb.c
+>  create mode 100644 arch/arm/mach-milbeaut/platsmp.c
 >
-> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-> index b0e966d..ee6220b 100644
-> --- a/arch/arm/boot/dts/Makefile
-> +++ b/arch/arm/boot/dts/Makefile
-> @@ -1207,6 +1207,7 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += \
->         mt7623n-bananapi-bpi-r2.dtb \
->         mt8127-moose.dtb \
->         mt8135-evbp1.dtb
-> +dtb-$(CONFIG_MACH_M10V_EVB) += milbeaut-m10v-evb.dtb
-
-ARM SoC maintainers,
-
-Can we start at least start putting new SoCs in vendor subdirs? This
-one doesn't appear to share anything.
-
->  dtb-$(CONFIG_ARCH_ZX) += zx296702-ad1.dtb
->  dtb-$(CONFIG_ARCH_ASPEED) += \
->         aspeed-ast2500-evb.dtb \
-> diff --git a/arch/arm/boot/dts/milbeaut-m10v-evb.dts b/arch/arm/boot/dts/milbeaut-m10v-evb.dts
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 91be74d..0b8a1af 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -767,6 +767,8 @@ source "arch/arm/mach-mediatek/Kconfig"
+>
+>  source "arch/arm/mach-meson/Kconfig"
+>
+> +source "arch/arm/mach-milbeaut/Kconfig"
+> +
+>  source "arch/arm/mach-mmp/Kconfig"
+>
+>  source "arch/arm/mach-moxart/Kconfig"
+> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+> index 05a91d8..627853c 100644
+> --- a/arch/arm/Makefile
+> +++ b/arch/arm/Makefile
+> @@ -190,6 +190,7 @@ machine-$(CONFIG_ARCH_MV78XX0)              += mv78xx0
+>  machine-$(CONFIG_ARCH_MVEBU)           += mvebu
+>  machine-$(CONFIG_ARCH_MXC)             += imx
+>  machine-$(CONFIG_ARCH_MEDIATEK)                += mediatek
+> +machine-$(CONFIG_ARCH_MILBEAUT)                += milbeaut
+>  machine-$(CONFIG_ARCH_MXS)             += mxs
+>  machine-$(CONFIG_ARCH_NETX)            += netx
+>  machine-$(CONFIG_ARCH_NOMADIK)         += nomadik
+> diff --git a/arch/arm/mach-milbeaut/Kconfig b/arch/arm/mach-milbeaut/Kconfig
 > new file mode 100644
-> index 0000000..af8d6e4
+> index 0000000..63b6f69
 > --- /dev/null
-> +++ b/arch/arm/boot/dts/milbeaut-m10v-evb.dts
-> @@ -0,0 +1,35 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Socionext Milbeaut M10V Evaluation Board */
-> +/dts-v1/;
-> +#include "milbeaut-m10v-evb.dtsi"
+> +++ b/arch/arm/mach-milbeaut/Kconfig
+> @@ -0,0 +1,28 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +menuconfig ARCH_MILBEAUT
+> +       bool "Socionext Milbeaut SoCs"
+> +       depends on ARCH_MULTI_V7
+> +       select ARM_GIC
+
+> +       select CLKDEV_LOOKUP
+> +       select GENERIC_CLOCKEVENTS
+> +       select CLKSRC_MMIO
+
+The clock and timer drivers' kconfig entries should select these.
+
+> +       select ZONE_DMA
+
+Why is this needed?
+
+> +       help
+> +               This enables support for Socionext Milbeaut SoCs
 > +
-> +/ {
-> +       cpus {
-
-cpus is not board specific.
-
-> +               cpu@0 {
-
-Unit-address is wrong. Should be '@f00' to match reg.
-
-> +                       device_type = "cpu";
-> +                       compatible = "arm,cortex-a7";
-> +                       reg = <0xf00>;
-> +               };
-> +               cpu@1 {
-> +                       device_type = "cpu";
-> +                       compatible = "arm,cortex-a7";
-> +                       reg = <0xf01>;
-> +               };
+> +if ARCH_MILBEAUT
 > +
-> +               cpu@2 {
-> +                       device_type = "cpu";
-> +                       compatible = "arm,cortex-a7";
-> +                       reg = <0xf02>;
-> +               };
-> +               cpu@3 {
-> +                       device_type = "cpu";
-> +                       compatible = "arm,cortex-a7";
-> +                       reg = <0xf03>;
-> +               };
+> +config ARCH_MILBEAUT_M10V
+> +       bool "Milbeaut SC2000/M10V platform"
+> +       select ARM_ARCH_TIMER
+> +       select M10V_TIMER
+> +       select PINCTRL
+> +       select PINCTRL_M10V
+> +       help
+> +         Support for Socionext's MILBEAUT M10V based systems
 > +
-> +       };
-> +       trampoline: trampoline@0x0000F100 {
+> +config MACH_M10V_EVB
+> +       bool "Support for Milbeaut Evaluation boards"
 
-Also, not board specific.
+You shouldn't need a kconfig entry for each board.
 
-This should be under a simple-bus node. The unit-address should be '@f100'.
-
-> +               compatible = "socionext,smp-trampoline";
-> +               reg = <0x0000F100 0x100>;
-
-Use lowercase hex.
-
-> +       };
-> +};
-> diff --git a/arch/arm/boot/dts/milbeaut-m10v-evb.dtsi b/arch/arm/boot/dts/milbeaut-m10v-evb.dtsi
+> +       default y
+> +
+> +endif
+> diff --git a/arch/arm/mach-milbeaut/Makefile b/arch/arm/mach-milbeaut/Makefile
 > new file mode 100644
-> index 0000000..fc35c0b
+> index 0000000..64f6f52
 > --- /dev/null
-> +++ b/arch/arm/boot/dts/milbeaut-m10v-evb.dtsi
-> @@ -0,0 +1,17 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include "milbeaut-m10v.dtsi"
+> +++ b/arch/arm/mach-milbeaut/Makefile
+> @@ -0,0 +1,3 @@
+> +obj-$(CONFIG_SMP) += platsmp.o
+> +obj-$(CONFIG_MACH_M10V_EVB) += m10v_evb.o
 > +
-> +/ {
-> +       model = "Socionext M10V EVB";
-> +       compatible = "socionext,sc2000a", "socionext,milbeaut-m10v-evb";
-
-Wrong order. And these need to be documented.
-
-> +       interrupt-parent = <&gic>;
-> +       chosen {
-> +               bootargs = "consoleblank=0 loglevel=8 init=/sbin/finit root=/dev/mmcblk0p2 rootwait ro console=ttyUSI0,115200n8 console=/dev/tty1 ";
-
-Most of these options look user specific and should be dropped. Use
-'stdout-path' to specify the default console.
-
-> +               linux,initrd-start = <0x4A000000>;
-> +               linux,initrd-end =   <0x4BF00000>;
-
-initrd should be filled in by the bootloader.
-
-> +       };
-> +       memory {
-
-Needs a unit-address.
-
-> +               device_type = "memory";
-> +               reg = <0x40000000  0x80000000>;
-> +       };
-> +};
-> diff --git a/arch/arm/boot/dts/milbeaut-m10v.dtsi b/arch/arm/boot/dts/milbeaut-m10v.dtsi
+> diff --git a/arch/arm/mach-milbeaut/m10v_evb.c b/arch/arm/mach-milbeaut/m10v_evb.c
 > new file mode 100644
-> index 0000000..4745dc6
+> index 0000000..a1fa7c3
 > --- /dev/null
-> +++ b/arch/arm/boot/dts/milbeaut-m10v.dtsi
-> @@ -0,0 +1,510 @@
+> +++ b/arch/arm/mach-milbeaut/m10v_evb.c
+
+This all looks SoC specific, not board specific.
+
+> @@ -0,0 +1,31 @@
 > +// SPDX-License-Identifier: GPL-2.0
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/input/input.h>
-> +#include <dt-bindings/gpio/gpio.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +/*
+> + * Copyright (C) 2018 Socionext Inc.
+> + * Copyright:   (C) 2015 Linaro Ltd.
+> + */
 > +
-> +#include "skeleton.dtsi"
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
 
-Don't use skeleton.dtsi. It is deprecated.
-
-> +
-> +/ {
-> +       compatible = "socionext,sc2000a";
-> +       interrupt-parent = <&gic>;
-> +       cpus {
-> +               #address-cells = <1>;
-> +               #size-cells = <0>;
-> +       };
-
-Just move this to the other file with the cpu nodes.
+Not needed.
 
 > +
+> +#include <asm/mach/arch.h>
+> +#include <asm/mach/map.h>
 > +
-> +       gic: interrupt-controller@1d000000 {
-> +               compatible = "arm,cortex-a7-gic";
-> +               interrupt-controller;
-> +               #interrupt-cells = <3>;
-> +               reg = <0x1d001000 0x1000>, /* Distributer base and size */
-> +                     <0x1d002000 0x1000>; /* CPU I/f base and size */
-> +       };
-> +
-> +       m10v-clk-tree@ {
-
-unit-address
-
-> +               compatible = "socionext,milbeaut-m10v-clk-regs";
-> +               reg = <0x1d021000 0x4000>;
-> +
-> +               clocks {
-> +                       #address-cells = <0>;
-> +                       #size-cells = <0>;
-> +
-> +                       uclk40xi: uclk40xi {
-> +                               compatible = "fixed-clock";
-> +                               #clock-cells = <0>;
-> +                               clock-frequency = <40000000>;
-> +                       };
-
-Any fixed clocks from oscillators on the board should be at the top
-level and defined as inputs to the clock controller node with a
-'clocks' property.
-
-> +
-> +                       aumclki: aumclki {
-> +                               compatible = "fixed-clock";
-> +                               #clock-cells = <0>;
-> +                               clock-frequency = <20000000>;
-> +                       };
-> +
-> +                       rtc32k: rtc32k {
-> +                               compatible = "fixed-clock";
-> +                               #clock-cells = <0>;
-> +                               clock-frequency = <32768>;
-> +                       };
-> +
-> +                       pxrefclk: pxrefclk {
-> +                               compatible = "fixed-clock";
-> +                               #clock-cells = <0>;
-> +                               clock-frequency = <100000000>;
-> +                       };
-> +
-> +                       pcisuppclk: pcisuppclk {
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uclk40xi>;
-> +                               clock-div = <20>;
-> +                               clock-mult = <1>;
-> +                       };
-
-Please look at any recent example of clock bindings. We don't try to
-describe every divider, mux, gate, etc. in DT, but just clock
-controller blocks with all the output clocks enumerated in clock
-cells.
-
-> +
-> +                       usb2_clk: usb2_clk {
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uclk40xi>;
-> +                               clock-div = <2>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       pll1: pll1 {
-> +                               compatible =
-> +                               "socionext,milbeaut-m10v-pll-fixed-factor";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uclk40xi>;
-> +                               offset = <1>;
-> +                               clock-div = <1>;
-> +                               clock-mult = <40>;
-> +                       };
-> +
-> +                       pll2: pll2 {
-> +                               compatible =
-> +                               "socionext,milbeaut-m10v-pll-fixed-factor";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uclk40xi>;
-> +                               offset = <2>;
-> +                               clock-div = <1>;
-> +                               clock-mult = <30>;
-> +                       };
-> +
-> +                       pll6: pll6 { /* CLK 6-1 */
-> +                               compatible =
-> +                               "socionext,milbeaut-m10v-pll-fixed-factor";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uclk40xi>;
-> +                               offset = <7>;
-> +                               clock-div = <1>;
-> +                               clock-mult = <35>;
-> +                       };
-> +
-> +                       pll7: pll7 { /* CLK 7-1 */
-> +                               compatible =
-> +                               "socionext,milbeaut-m10v-pll-fixed-factor";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uclk40xi>;
-> +                               offset = <8>;
-> +                               clock-div = <1>;
-> +                               clock-mult = <40>;
-> +                       };
-> +
-> +                       pll9: pll9 { /* CA7CLK, ATCLK */
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uclk40xi>;
-> +                               clock-div = <1>;
-> +                               clock-mult = <33>;
-> +                       };
-> +
-> +                       pll10: pll10 {
-> +                               compatible =
-> +                               "socionext,milbeaut-m10v-pll-fixed-factor";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uclk40xi>;
-> +                               offset = <10>;
-> +                               clock-div = <5>;
-> +                               clock-mult = <108>;
-> +                       };
-> +
-> +                       pll11: pll11 { /* CLK 11-1 */
-> +                               compatible =
-> +                               "socionext,milbeaut-m10v-pll-fixed-factor";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uclk40xi>;
-> +                               offset = <12>;
-> +                               clock-div = <2>;
-> +                               clock-mult = <75>;
-> +                       };
-> +
-> +                       emmcclk: emmcclk {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll11>;
-> +                               offset = <28>; /* EMMCCLK */
-> +                               mask = <0x3>;
-> +                               ratios = <15 0x7 10 0x6 9 0x5 8 0x4>;
-> +                       };
-> +
-> +                       pll1_div_1_2: pll1_div_1_2 { /* CLK 1-2 */
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll1>;
-> +                               clock-div = <2>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       pll2_div_1_2: pll2_div_1_2 { /* CLK 2-2 */
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll2>;
-> +                               clock-div = <2>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       pll6_div_1_2: pll6_div_1_2 { /* CLK 6-2 */
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll6>;
-> +                               clock-div = <2>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       pll6_div_1_3: pll6_div_1_3 { /* CLK 6-3 */
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll6>;
-> +                               clock-div = <3>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       pll7_div_1_2: pll7_div_1_2 { /* CLK 7-2 */
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll7>;
-> +                               clock-div = <2>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       pll7_div_1_5: pll7_div_1_5 { /* CLK 7-5 */
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll7>;
-> +                               clock-div = <5>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       pll10_div_1_2: pll10_div_1_2 { /* CLK 10-2 */
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll10>;
-> +                               clock-div = <2>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       spiclk_mux_0: spiclk_mux_0 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll10_div_1_2>;
-> +                               offset = <227>; /* SPICLK */
-> +                               mask = <0x3>;
-> +                               ratios = <4 0x5 2 0x4>;
-> +                       };
-> +
-> +                       spiclk_mux_1: spiclk_mux_1 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll7_div_1_2>;
-> +                               offset = <227>; /* SPICLK */
-> +                               mask = <0x3>;
-> +                               ratios = <8 0x6>;
-> +                       };
-> +
-> +                       spiclk: spiclk {
-> +                               compatible = "socionext,milbeaut-m10v-clk-mux";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&spiclk_mux_0>, <&spiclk_mux_1>;
-> +                       };
-> +
-> +                       ca7wdclk: ca7wdclk {
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll2_div_1_2>;
-> +                               clock-div = <12>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       pll9_div_1_2: pll9_div_1_2 {
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll9>;
-> +                               clock-div = <2>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       mclk400: mclk400 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll1_div_1_2>;
-> +                               offset = <295>; /* MCLK400 */
-> +                               mask = <0x3>;
-> +                               ratios = <4 0x7 2 0x5>;
-> +                       };
-> +
-> +                       mclk200: mclk200 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll1_div_1_2>;
-> +                               offset = <291>; /* MCLK200 */
-> +                               mask = <0x7>;
-> +                               ratios = <8 0xf 4 0xb>;
-> +                       };
-> +
-> +                       aclk400: aclk400 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll1_div_1_2>;
-> +                               offset = <288>; /* ACLK400 */
-> +                               mask = <0x3>;
-> +                               ratios = <4 0x7 2 0x5>;
-> +                       };
-> +
-> +                       aclk300: aclk300 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll2_div_1_2>;
-> +                               offset = <352>; /* ACLK300 */
-> +                               mask = <0x1>;
-> +                               ratios = <6 0x3 4 0x2>;
-> +                       };
-> +
-> +                       aclk: aclk {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll1_div_1_2>;
-> +                               offset = <276>; /* ACLK */
-> +                               mask = <0x7>;
-> +                               ratios = <8 0xf 4 0xb>;
-> +                       };
-> +
-> +                       aclkexs: aclkexs {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll1_div_1_2>;
-> +                               offset = <272>; /* ACLKEXS */
-> +                               mask = <0x7>;
-> +                               ratios = <8 0xf 6 0xd 5 0xc 4 0xb>;
-> +                       };
-> +
-> +                       hclk: hclk {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll1_div_1_2>;
-> +                               offset = <263>; /* HCLK */
-> +                               mask = <0xf>;
-> +                               ratios = <16 0x1f 8 0x17>;
-> +                       };
-> +
-> +                       hclkbmh: hclkbmh {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll1_div_1_2>;
-> +                               offset = <268>; /* HCLKBMH */
-> +                               mask = <0x7>;
-> +                               ratios = <8 0xf 4 0xb>;
-> +                       };
-> +
-> +                       pclk: pclk {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll1_div_1_2>;
-> +                               offset = <256>; /* PCLK */
-> +                               mask = <0x3f>;
-> +                               ratios = <32 0x5f 16 0x4f>;
-> +                       };
-> +
-> +                       pclkca7wd: pclkca7wd {
-> +                               compatible = "fixed-factor-clock";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll1_div_1_2>;
-> +                               clock-div = <16>;
-> +                               clock-mult = <1>;
-> +                       };
-> +
-> +                       rclk: rclk {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll10_div_1_2>;
-> +                               offset = <0>; /* RCLK */
-> +                               mask = <0x3>;
-> +                               ratios = <64 0x7 48 0x6 32 0x5 16 0x4>;
-> +                       };
-> +
-> +                       uhs1clk0: uhs1clk0 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll7>;
-> +                               offset = <3>; /* UHS1CLK0 */
-> +                               mask = <0xf>;
-> +                               ratios = <16 0x14 8 0x13 4 0x12 3 0x11 2 0x10>;
-> +                       };
-> +
-> +                       uhs1clk1_div1: uhs1clk1_div1 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll7>;
-> +                               offset = <8>; /* UHS1CLK1 */
-> +                               mask = <0xf>;
-> +                               ratios = <16 0x14 8 0x13>;
-> +                       };
-> +
-> +                       uhs1clk1_div2: uhs1clk1_div2 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll6_div_1_2>;
-> +                               offset = <8>; /* UHS1CLK1 */
-> +                               mask = <0xf>;
-> +                               ratios = <1 0x18>;
-> +                       };
-> +
-> +                       uhs1clk1: uhs1clk1 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-mux";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uhs1clk1_div1>, <&uhs1clk1_div2>;
-> +                       };
-> +
-> +                       uhs1clk2_div1: uhs1clk2_div1 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll7>;
-> +                               offset = <13>; /* UHS1CLK2 */
-> +                               mask = <0xf>;
-> +                               ratios = <16 0x14 8 0x13 4 0x12>;
-> +                       };
-> +
-> +                       uhs1clk2_div2: uhs1clk2_div2 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll6_div_1_2>;
-> +                               offset = <13>; /* UHS1CLK2 */
-> +                               mask = <0xf>;
-> +                               ratios = <1 0x18>;
-> +                       };
-> +
-> +                       uhs1clk2: uhs1clk2 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-mux";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&uhs1clk2_div1>, <&uhs1clk2_div2>;
-> +                       };
-> +
-> +                       uhs2clk: uhs2clk {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll6_div_1_3>;
-> +                               offset = <18>; /* UHS2CLK */
-> +                               mask = <0x7>;
-> +                               ratios = <18 0xf 16 0xe 14 0xd 13 0xc
-> +                                               12 0xb 11 0xa 10 0x9 9 0x8>;
-> +                       };
-> +
-> +                       nfclk_div1: nfclk_div1 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll7_div_1_2>;
-> +                               offset = <22>; /* NFCLK */
-> +                               mask = <0x1f>;
-> +                               ratios = <40 0x24 16 0x23 13 0x22 10 0x21
-> +                                               8 0x20>;
-> +                       };
-> +
-> +                       nfclk_div2: nfclk_div2 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll7_div_1_5>;
-> +                               offset = <22>; /* NFCLK */
-> +                               mask = <0x1f>;
-> +                               ratios = <10 0x28>;
-> +                       };
-> +
-> +                       nfclk: nfclk {
-> +                               compatible = "socionext,milbeaut-m10v-clk-mux";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&nfclk_div1>, <&nfclk_div2>;
-> +                       };
-> +
-> +                       clk5: clk5 {
-> +                               compatible = "socionext,milbeaut-m10v-clk-div";
-> +                               #clock-cells = <0>;
-> +                               clocks = <&pll10_div_1_2>;
-> +                               offset = <239>; /* NETAUSEL */
-> +                               mask = <0x3>;
-> +                               ratios = <64 0x7 48 0x6 32 0x5 16 0x4>;
-> +                       };
-> +               };
-> +       };
-> +
-> +       peri-timer@1e000000 { /* 32-bit Reload Timers */
-
-timer@1e000050
-
-This and all memory mapped peripherals go under simple-bus nodes(s).
-
-> +               compatible = "socionext,milbeaut-m10v-timer";
-> +               reg = <0x1e000050 0x10>, <0x1e000060 0x10>;
-> +               interrupts = <0 91 4>;
-> +               clocks = <&rclk>;
-> +       };
-> +
-> +       timer { /* The Generic Timer */
-> +               compatible = "arm,armv7-timer";
-> +               interrupts = <GIC_PPI 13
-> +                               (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
-> +                       <GIC_PPI 14
-> +                               (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
-> +                       <GIC_PPI 11
-> +                               (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
-> +                       <GIC_PPI 10
-> +                               (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
-> +               clock-frequency = <40000000>;//40M
-> +               always-on;
-> +               arm,cpu-registers-not-fw-configured;
-
-This was a work-around for some existing platforms. New platforms
-should fix the firmware/bootloader.
-
-> +       };
-> +
-> +       dummy_clk: dummy_clk {
-> +               compatible = "fixed-clock";
-> +               #clock-cells = <0>;
-> +               clock-frequency = <50000000>;
-> +       };
-> +
-> +       pinctrl: pinctrl@1d022000 {
-> +               compatible = "socionext,milbeaut-m10v-pinctrl";
-> +               reg = <0x1d022000 0x1000>,
-> +                     <0x1c26f000 0x1000>;
-> +               reg-names = "pinctrl", "exiu";
-> +               gpio-controller;
-> +               #gpio-cells = <2>;
-> +               interrupt-controller;
-> +               #interrupt-cells = <2>;
-> +               clocks = <&dummy_clk>;
-
-Please use a real clock or make clocks optional.
-
-> +               interrupts = <0 54 4>, <0 55 4>, <0 56 4>, <0 57 4>,
-> +                               <0 58 4>, <0 59 4>, <0 60 4>, <0 61 4>,
-> +                               <0 62 4>, <0 63 4>, <0 64 4>, <0 65 4>,
-> +                               <0 66 4>, <0 67 4>, <0 68 4>, <0 69 4>;
-> +               interrupt-names = "pin-48", "pin-49", "pin-50", "pin-51",
-> +                               "pin-52", "pin-53", "pin-54", "pin-55",
-> +                               "pin-56", "pin-57", "pin-58", "pin-59",
-> +                               "pin-60", "pin-61", "pin-62", "pin-63";
-> +
-> +               usio1_pins: usio1_pins {
-> +                       pins = "PE4", "PE5", "P87";
-> +                       function = "usio1";
-> +               };
-> +       };
-> +
-> +       usio1: usio_uart@1e700010 { /* PE4, PE5 */
-
-serial@...
-
-> +               /* Enable this as ttyUSI0 */
-> +               index = <0>;
-
-Drop this. aliases node is the right way to do this.
-
-> +               compatible = "socionext,milbeaut-m10v-usio-uart";
-> +               reg = <0x1e700010 0x10>;
-> +               interrupts = <0 141 0x4>, <0 149 0x4>;
-> +               interrupt-names = "rx", "tx";
-> +               clocks = <&hclk>;
-> +       };
+> +static struct map_desc m10v_io_desc[] __initdata = {
 > +};
+> +
+> +void __init m10v_map_io(void)
+> +{
+> +       debug_ll_io_init();
+
+If you use earlycon instead, then this isn't needed.
+
+> +       iotable_init(m10v_io_desc, ARRAY_SIZE(m10v_io_desc));
+
+This isn't needed.
+
+> +}
+> +
+> +static const char * const m10v_compat[] = {
+> +       "socionext,milbeaut-m10v-evb",
+> +       NULL,
+> +};
+> +
+> +DT_MACHINE_START(M10V_REB, "Socionext Milbeaut")
+> +       .dt_compat      = m10v_compat,
+> +       .l2c_aux_mask   = 0xffffffff,
+> +       .map_io         = m10v_map_io,
+
+It looks like you can remove this entire file and use the default machine desc.
+
+> +MACHINE_END
+> diff --git a/arch/arm/mach-milbeaut/platsmp.c b/arch/arm/mach-milbeaut/platsmp.c
+> new file mode 100644
+> index 0000000..b706851
+> --- /dev/null
+> +++ b/arch/arm/mach-milbeaut/platsmp.c
+> @@ -0,0 +1,157 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2018 Socionext Inc.
+> + * Copyright:  (C) 2015 Linaro Ltd.
+> + */
+> +
+> +#include <linux/cpu_pm.h>
+> +#include <linux/irqchip/arm-gic.h>
+> +#include <linux/of_device.h>
+
+Not needed.
+
+> +#include <linux/of_address.h>
+> +#include <linux/platform_device.h>
+
+Not needed.
+
+> +#include <linux/suspend.h>
+> +
+> +#include <asm/cacheflush.h>
+> +#include <asm/cp15.h>
+> +#include <asm/idmap.h>
+> +#include <asm/smp_plat.h>
+> +#include <asm/suspend.h>
+> +
+> +#define M10V_MAX_CPU   4
+> +
+> +#define KERNEL_UNBOOT_FLAG     0x12345678
+> +#define CPU_FINISH_SUSPEND_FLAG 0x56784321
+> +
+> +static void __iomem *trampoline;
+> +
+> +static int m10v_boot_secondary(unsigned int l_cpu, struct task_struct *idle)
+> +{
+> +       unsigned int mpidr, cpu, cluster;
+> +
+> +       mpidr = cpu_logical_map(l_cpu);
+> +       cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+> +       cluster = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+> +
+> +       if (cpu >= M10V_MAX_CPU)
+> +               return -EINVAL;
+> +
+> +       pr_debug("%s: cpu %u cluster %u\n", __func__, cpu, cluster);
+> +
+> +       writel(virt_to_phys(secondary_startup), trampoline + cpu * 4);
+> +       arch_send_wakeup_ipi_mask(cpumask_of(l_cpu));
+> +
+> +       return 0;
+> +}
+> +
+> +static void m10v_cpu_die(unsigned int l_cpu)
+> +{
+> +       gic_cpu_if_down(0);
+> +
+> +       v7_exit_coherency_flush(louis);
+> +
+> +       /* Now we are prepared for power-down, do it: */
+> +       wfi();
+> +}
+> +
+> +static int m10v_cpu_kill(unsigned int l_cpu)
+> +{
+> +       unsigned int mpidr, cpu;
+> +
+> +       mpidr = cpu_logical_map(l_cpu);
+> +       cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+> +
+> +       writel(KERNEL_UNBOOT_FLAG, trampoline + cpu * 4);
+> +
+> +       return 1;
+> +}
+> +
+> +static struct smp_operations m10v_smp_ops __initdata = {
+> +       .smp_boot_secondary     = m10v_boot_secondary,
+> +       .cpu_die                = m10v_cpu_die,
+> +       .cpu_kill               = m10v_cpu_kill,
+> +};
+> +
+> +static int __init m10v_smp_init(void)
+> +{
+> +       unsigned int mpidr, cpu, cluster;
+> +       struct device_node *np;
+> +
+> +       np = of_find_compatible_node(NULL, NULL, "socionext,milbeaut-m10v-evb");
+> +       if (!np || !of_device_is_available(np))
+
+Just use of_machine_is_compatible() here.
+
+> +               return -ENODEV;
+> +       of_node_put(np);
+> +
+> +       np = of_find_compatible_node(NULL, NULL, "socionext,smp-trampoline");
+> +       if (!np)
+> +               return -ENODEV;
+> +
+> +       trampoline = of_iomap(np, 0);
+> +       if (!trampoline)
+> +               return -ENODEV;
+> +       of_node_put(np);
+> +
+> +       mpidr = read_cpuid_mpidr();
+> +       cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+> +       cluster = MPIDR_AFFINITY_LEVEL(mpidr, 1);
+> +
+> +       pr_info("MCPM boot on cpu_%u cluster_%u\n", cpu, cluster);
+> +
+> +       for (cpu = 0; cpu < M10V_MAX_CPU; cpu++)
+> +               writel(KERNEL_UNBOOT_FLAG, trampoline + cpu * 4);
+> +
+> +       smp_set_ops(&m10v_smp_ops);
+> +
+> +       return 0;
+> +}
+> +early_initcall(m10v_smp_init);
+> +
+> +static int m10v_pm_valid(suspend_state_t state)
+> +{
+> +       return (state == PM_SUSPEND_STANDBY) || (state == PM_SUSPEND_MEM);
+> +}
+> +
+> +typedef void (*phys_reset_t)(unsigned long);
+> +static phys_reset_t phys_reset;
+> +
+> +static int m10v_die(unsigned long arg)
+> +{
+> +       setup_mm_for_reboot();
+> +       asm("wfi");
+> +       /* Boot just like a secondary */
+> +       phys_reset = (phys_reset_t)(unsigned long)virt_to_phys(cpu_reset);
+> +       phys_reset(virt_to_phys(cpu_resume));
+> +
+> +       return 0;
+> +}
+> +
+> +static int m10v_pm_enter(suspend_state_t state)
+> +{
+> +       switch (state) {
+> +       case PM_SUSPEND_STANDBY:
+> +               pr_err("STANDBY\n");
+> +               asm("wfi");
+> +               break;
+> +       case PM_SUSPEND_MEM:
+> +               pr_err("SUSPEND\n");
+> +               cpu_pm_enter();
+> +               cpu_suspend(0, m10v_die);
+> +               cpu_pm_exit();
+> +               break;
+> +       }
+> +       return 0;
+> +}
+> +
+> +static const struct platform_suspend_ops m10v_pm_ops = {
+> +       .valid          = m10v_pm_valid,
+> +       .enter          = m10v_pm_enter,
+> +};
+> +
+> +struct clk *m10v_clclk_register(struct device *cpu_dev);
+> +
+> +static int __init m10v_pm_init(void)
+> +{
+> +       suspend_set_ops(&m10v_pm_ops);
+> +
+> +       return 0;
+> +}
+> +late_initcall(m10v_pm_init);
 > --
 > 1.9.1
 >
