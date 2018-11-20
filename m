@@ -1,135 +1,133 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 3.18 71/90] arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
-Date: Mon, 19 Nov 2018 17:29:53 +0100
-Message-ID: <20181119162631.732191857@linuxfoundation.org>
-References: <20181119162620.585061184@linuxfoundation.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2 01/10] mailbox: Support blocking transfers in atomic
+ context
+Date: Tue, 20 Nov 2018 16:29:07 +0100
+Message-ID: <20181120152907.GA28796@ulmo>
+References: <20181112151853.29289-1-thierry.reding@gmail.com>
+ <20181112151853.29289-2-thierry.reding@gmail.com>
+ <CABb+yY3HwvG6sSKnweiDpyg85Fk8Q9hOVaF-s7gv4RDzEoaGqA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181119162620.585061184@linuxfoundation.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, "H. Peter Anvin (Intel)" <hpa@zytor.com>, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Content-Type: multipart/mixed; boundary="===============3901182344694834560=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CABb+yY3HwvG6sSKnweiDpyg85Fk8Q9hOVaF-s7gv4RDzEoaGqA@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jassi Brar <jassisinghbrar@gmail.com>
+Cc: Devicetree List <devicetree@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, mliljeberg@nvidia.com, Mikko Perttunen <mperttunen@nvidia.com>, talho@nvidia.com, linux-serial@vger.kernel.org, jslaby@suse.com, linux-tegra@vger.kernel.org, ppessi@nvidia.com, Jon Hunter <jonathanh@nvidia.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-3.18-stable review patch.  If anyone has any objections, please let me know.
 
-------------------
+--===============3901182344694834560==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="envbJBWh7q8WU6mo"
+Content-Disposition: inline
 
-From: H. Peter Anvin (Intel) <hpa@zytor.com>
 
-commit d0ffb805b729322626639336986bc83fc2e60871 upstream.
+--envbJBWh7q8WU6mo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
-using arbitrary flags. Because BOTHER is not defined, the general
-Linux code doesn't allow setting arbitrary baud rates, and because
-CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
-drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
+On Sat, Nov 17, 2018 at 11:27:17AM -0600, Jassi Brar wrote:
+> On Mon, Nov 12, 2018 at 9:18 AM Thierry Reding <thierry.reding@gmail.com> wrote:
+> >
+> > From: Thierry Reding <treding@nvidia.com>
+> >
+> > The mailbox framework supports blocking transfers via completions for
+> > clients that can sleep. In order to support blocking transfers in cases
+> > where the transmission is not permitted to sleep, add a new ->flush()
+> > callback that controller drivers can implement to busy loop until the
+> > transmission has been completed. This will automatically be called when
+> > available and interrupts are disabled for clients that request blocking
+> > transfers.
+> >
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > ---
+> >  drivers/mailbox/mailbox.c          | 8 ++++++++
+> >  include/linux/mailbox_controller.h | 4 ++++
+> >  2 files changed, 12 insertions(+)
+> >
+> > diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
+> > index 674b35f402f5..0eaf21259874 100644
+> > --- a/drivers/mailbox/mailbox.c
+> > +++ b/drivers/mailbox/mailbox.c
+> > @@ -267,6 +267,14 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
+> >                 unsigned long wait;
+> >                 int ret;
+> >
+> > +               if (irqs_disabled() && chan->mbox->ops->flush) {
+> > +                       ret = chan->mbox->ops->flush(chan, chan->cl->tx_tout);
+> > +                       if (ret < 0)
+> > +                               tx_tick(chan, ret);
+> > +
+> > +                       return ret;
+> > +               }
+> > +
+> This is hacky. I think we can do without busy waiting in atomic
+> context. You could queue locally while in atomic context and then
+> transfer in blocking mode. I don't think we should worry about the
+> 'throughput' as there already is no h/w rate control even with
+> busy-waiting.
 
-Resolve both problems by #defining BOTHER to 037 on Alpha.
+I actually tried to do that before I added this flushing mechanism. The
+problem is, like you said, one of rate control. As mentioned in the
+cover letter, the shared mailboxes implemented in tegra-hsp are used as
+RX and TX channels for the TCU, which is like a virtual UART. The TTY
+driver included as part of this series will use one of the mailboxes to
+transmit data that is written to the console. The problem is that if
+these transmissions are not rate-limited on the TTY driver side, the
+console will just keep writing data and eventually overflow the buffer
+that we have in the mailbox subsystem.
 
-However, userspace still needs to know if setting BOTHER is actually
-safe given legacy kernels (does anyone actually care about that on
-Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
-though they use the same structure. Define struct termios2 just for
-compatibility; it is the exact same structure as struct termios. In a
-future patchset, this will be cleaned up so the uapi headers are
-usable from libc.
+The problem is that data comes in at a much higher rate than what we can
+output. This is especially true at boot when the TCU console takes over
+and the whole log buffer is dumped on it.
 
-Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Eugene Syromiatnikov <esyr@redhat.com>
-Cc: <linux-alpha@vger.kernel.org>
-Cc: <linux-serial@vger.kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+So the only way to rate-limit is to either make mbox_send_message()
+block, but that can only be done in non-atomic context. The console,
+however, will always run in atomic context, so the only way to do rate-
+limiting is by busy looping.
 
----
- arch/alpha/include/asm/termios.h       |    8 +++++++-
- arch/alpha/include/uapi/asm/ioctls.h   |    5 +++++
- arch/alpha/include/uapi/asm/termbits.h |   17 +++++++++++++++++
- 3 files changed, 29 insertions(+), 1 deletion(-)
+Thierry
 
---- a/arch/alpha/include/asm/termios.h
-+++ b/arch/alpha/include/asm/termios.h
-@@ -72,9 +72,15 @@
- })
- 
- #define user_termios_to_kernel_termios(k, u) \
--	copy_from_user(k, u, sizeof(struct termios))
-+	copy_from_user(k, u, sizeof(struct termios2))
- 
- #define kernel_termios_to_user_termios(u, k) \
-+	copy_to_user(u, k, sizeof(struct termios2))
-+
-+#define user_termios_to_kernel_termios_1(k, u) \
-+	copy_from_user(k, u, sizeof(struct termios))
-+
-+#define kernel_termios_to_user_termios_1(u, k) \
- 	copy_to_user(u, k, sizeof(struct termios))
- 
- #endif	/* _ALPHA_TERMIOS_H */
---- a/arch/alpha/include/uapi/asm/ioctls.h
-+++ b/arch/alpha/include/uapi/asm/ioctls.h
-@@ -31,6 +31,11 @@
- #define TCXONC		_IO('t', 30)
- #define TCFLSH		_IO('t', 31)
- 
-+#define TCGETS2		_IOR('T', 42, struct termios2)
-+#define TCSETS2		_IOW('T', 43, struct termios2)
-+#define TCSETSW2	_IOW('T', 44, struct termios2)
-+#define TCSETSF2	_IOW('T', 45, struct termios2)
-+
- #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
- #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
- #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
---- a/arch/alpha/include/uapi/asm/termbits.h
-+++ b/arch/alpha/include/uapi/asm/termbits.h
-@@ -25,6 +25,19 @@ struct termios {
- 	speed_t c_ospeed;		/* output speed */
- };
- 
-+/* Alpha has identical termios and termios2 */
-+
-+struct termios2 {
-+	tcflag_t c_iflag;		/* input mode flags */
-+	tcflag_t c_oflag;		/* output mode flags */
-+	tcflag_t c_cflag;		/* control mode flags */
-+	tcflag_t c_lflag;		/* local mode flags */
-+	cc_t c_cc[NCCS];		/* control characters */
-+	cc_t c_line;			/* line discipline (== c_cc[19]) */
-+	speed_t c_ispeed;		/* input speed */
-+	speed_t c_ospeed;		/* output speed */
-+};
-+
- /* Alpha has matching termios and ktermios */
- 
- struct ktermios {
-@@ -147,6 +160,7 @@ struct ktermios {
- #define B3000000  00034
- #define B3500000  00035
- #define B4000000  00036
-+#define BOTHER    00037
- 
- #define CSIZE	00001400
- #define   CS5	00000000
-@@ -164,6 +178,9 @@ struct ktermios {
- #define CMSPAR	  010000000000		/* mark or space (stick) parity */
- #define CRTSCTS	  020000000000		/* flow control */
- 
-+#define CIBAUD	07600000
-+#define IBSHIFT	16
-+
- /* c_lflag bits */
- #define ISIG	0x00000080
- #define ICANON	0x00000100
+--envbJBWh7q8WU6mo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlv0KEAACgkQ3SOs138+
+s6E93w//XhzNtaPg4I6695pMUdnzMFUHZ6s0L2MkqsOBMZK1aEyNVe9Bx2HI8TUn
+F7RjY9XKClvPc/+Jwd9nvXBdP2AuTLSKzWRs+Y5mIX27l7qbzCTBKeX/jn9Uq2YO
+Cp0wf+IJ5IswPjuwh93VCiTPVTfaNiWCadCMThwjlVFd0oq2ktAhBR2X0ND9e3Bm
+BPP78LhfR5g8E4SUaRM9z0vugPUuldeiOPJpw0QMHZBsnsTc7enbdhTRbSM4vD6W
+mpsqHx93UjtMA3O4oMM3DWyg1Dz4jcZGXT62BjHJE+4Sqi95Ouf3529loX2L+k5/
+kmXO7pf0iAkfIg6xtm0dEYOxSzX3Q7C0xqlRwjVR6l27hSn6GluQ/SIwXg5XW5tc
+Lw7PKNWupHbitJadyux67EGPvrS7UyYdYgOXP/0xjVXDf1Y6+wVYKXok0469OnFD
+DoSp9holxv3ETx7SXL0nb0/bItnljAFRB4+64EyiM6k/yusK++bwdSA3vPaZUHDV
+yIewQRDQfnz6+9gOylbqF9dpRpdN+o635RpKpjcCdbBbt44oe1EqiMyTWhEEBG0w
+zMJzSaqORdqNBW/2yK43h1nrqotiJZqnJI6puLQfYDMfBGY5SxjgqKCFR8XOMJzy
+mSpuSODHPeIpBIALixRHnd4CVrUgRHsoVMRSxegHKpp58CZVEIA=
+=fUQD
+-----END PGP SIGNATURE-----
+
+--envbJBWh7q8WU6mo--
+
+
+--===============3901182344694834560==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============3901182344694834560==--
