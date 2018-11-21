@@ -1,50 +1,39 @@
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v2 15/15] MAINTAINERS: Add entry for RDA Micro SoC architecture
-Date: Wed, 21 Nov 2018 09:06:52 +0530
-Message-ID: <20181121033652.12247-16-manivannan.sadhasivam@linaro.org>
-References: <20181121033652.12247-1-manivannan.sadhasivam@linaro.org>
+From: <sugaya.taichi@socionext.com>
+Subject: RE: [PATCH 03/14] ARM: milbeaut: Add Milbeaut M10V early printk
+Date: Wed, 21 Nov 2018 04:07:19 +0000
+Message-ID: <7f32b467a1d84987b9d80cdd540e035b@SOC-EX02V.e01.socionext.com>
+References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com>
+ <1542589274-13878-4-git-send-email-sugaya.taichi@socionext.com>
+ <CAL_JsqKMK7nMUxZLu9eV8tpnCXsAr2F4j=xTO8UL0g8V30kYZg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181121033652.12247-1-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <CAL_JsqKMK7nMUxZLu9eV8tpnCXsAr2F4j=xTO8UL0g8V30kYZg@mail.gmail.com>
+Content-Language: ja-JP
 Sender: linux-kernel-owner@vger.kernel.org
-To: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, daniel.lezcano@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net, overseas.sales@unisoc.com, Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To: robh+dt@kernel.org
+Cc: linux-clk@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, mturquette@baylibre.com, sboyd@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, daniel.lezcano@linaro.org, tglx@linutronix.de, linux@armlinux.org.uk, jslaby@suse.com, masami.hiramatsu@linaro.org, jaswinder.singh@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-Add MAINTAINERS entry for RDA Micro SoC architecture with myself
-and Andreas Färber as the maintainers.
-
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- MAINTAINERS | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6c3fbbb361f8..7a5ae685a638 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1945,6 +1945,20 @@ M:	Lennert Buytenhek <kernel@wantstofly.org>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
- 
-+ARM/RDA MICRO ARCHITECTURE
-+M:	Andreas Färber <afaerber@suse.de>
-+M:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-+S:	Maintained
-+F:	arch/arm/boot/dts/rda8810pl-*
-+F:	drivers/clocksource/timer-rda.c
-+F:	drivers/irqchip/irq-rda-intc.c
-+F:	drivers/tty/serial/rda-uart.c
-+F:	Documentation/devicetree/bindings/arm/rda.txt
-+F:	Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.txt
-+F:	Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
-+F:	Documentation/devicetree/bindings/timer/rda,8810pl-timer.txt
-+
- ARM/REALTEK ARCHITECTURE
- M:	Andreas Färber <afaerber@suse.de>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
--- 
-2.17.1
+SGkgUm9iDQoNClRoYW5rIHlvdSBmb3IgeW91ciBjb21tZW50Lg0KDQo+IC0tLS0tT3JpZ2luYWwg
+TWVzc2FnZS0tLS0tDQo+IEZyb206IFJvYiBIZXJyaW5nIFttYWlsdG86cm9iaCtkdEBrZXJuZWwu
+b3JnXQ0KPiBTZW50OiBUdWVzZGF5LCBOb3ZlbWJlciAyMCwgMjAxOCAxMjoyMSBBTQ0KPiBUbzog
+U3VnYXlhLCBUYWljaGkv6I+F6LC3IOWkquS4gA0KPiBDYzogbGludXgtY2xrOyBkZXZpY2V0cmVl
+QHZnZXIua2VybmVsLm9yZzsgbW9kZXJhdGVkIGxpc3Q6QVJNL0ZSRUVTQ0FMRQ0KPiBJTVggLyBN
+WEMgQVJNIEFSQ0hJVEVDVFVSRTsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgb3BlbiBs
+aXN0OlNFUklBTA0KPiBEUklWRVJTOyBNaWNoYWVsIFR1cnF1ZXR0ZTsgU3RlcGhlbiBCb3lkOyBN
+YXJrIFJ1dGxhbmQ7IEdyZWcgS3JvYWgtSGFydG1hbjsNCj4gRGFuaWVsIExlemNhbm87IFRob21h
+cyBHbGVpeG5lcjsgUnVzc2VsbCBLaW5nOyBKaXJpIFNsYWJ5OyBNYXNhbWkgSGlyYW1hdHN1Ow0K
+PiBKYXNzaSBCcmFyDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMDMvMTRdIEFSTTogbWlsYmVhdXQ6
+IEFkZCBNaWxiZWF1dCBNMTBWIGVhcmx5IHByaW50aw0KPiANCj4gT24gU3VuLCBOb3YgMTgsIDIw
+MTggYXQgNzowMCBQTSBTdWdheWEgVGFpY2hpDQo+IDxzdWdheWEudGFpY2hpQHNvY2lvbmV4dC5j
+b20+IHdyb3RlOg0KPiA+DQo+ID4gQWRkIE1pbGJlYXV0IE0xMFYgZWFybHlwcmludGsuDQo+IA0K
+PiBEbyB5b3UgcmVhbGx5IG5lZWQgZWFybHlwcmludGs/IGVhcmx5Y29uIGlzIHByZWZlcnJlZCBp
+bnN0ZWFkLiBJdCdzDQo+IG5vdCBxdWl0ZSBhcyBlYXJseSwgYnV0IGRvZXNuJ3QgcmVxdWlyZSBy
+ZWJ1aWxkaW5nIHRoZSBrZXJuZWwgYW5kDQo+IHN1cHBvcnRzIG1vcmUgdGhhbiAxIGZpeGVkIGRl
+dmljZS4gSWYgeW91IGNyYXNoIGJlZm9yZSBlYXJseWNvbiBpcw0KPiBlbmFibGVkLCB0aGF0IHBy
+ZXR0eSBtdWNoIG1lYW5zIGVpdGhlciBhIGJhZCBkdGIgbWVtb3J5IG5vZGUgb3IganVzdA0KPiBm
+bGFreSBtZW1vcnkuDQpPSy4gSSB1c2UgZWFybHljb24gc2luY2Ugd291bGQgbGlrZSB0byB1c2Ug
+ZmxleGlibGUgZnVuY3Rpb25zLg0KDQpUaGFua3MNClN1Z2F5YSBUYWljaGkNCg0KPiANCj4gUm9i
+DQo=
