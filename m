@@ -1,7 +1,7 @@
 From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v2 01/15] dt-bindings: Add RDA Micro vendor prefix
-Date: Wed, 21 Nov 2018 09:06:38 +0530
-Message-ID: <20181121033652.12247-2-manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v2 02/15] dt-bindings: arm: Document RDA8810PL and reference boards
+Date: Wed, 21 Nov 2018 09:06:39 +0530
+Message-ID: <20181121033652.12247-3-manivannan.sadhasivam@linaro.org>
 References: <20181121033652.12247-1-manivannan.sadhasivam@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -15,27 +15,42 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Andreas Färber <afaerber@suse.de>
 
-Add vendor prefix for RDA Micro which now merged into Unisoc
-Communications Inc.
+Add bindings for RDA Micro RDA8810PL SoC and below reference boards:
+
+1. Orange Pi 2G-IoT - http://www.orangepi.org/OrangePi2GIOT/
+2. Orange Pi i96 - https://www.96boards.org/product/orangepi-i96/
 
 Cc: overseas.sales@unisoc.com
+Cc: zhao_steven@263.net
 Signed-off-by: Andreas Färber <afaerber@suse.de>
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/arm/rda.txt | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/rda.txt
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index 4b1a2a8fcc16..37826fac7684 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -320,6 +320,7 @@ ralink	Mediatek/Ralink Technology Corp.
- ramtron	Ramtron International
- raspberrypi	Raspberry Pi Foundation
- raydium	Raydium Semiconductor Corp.
-+rda	Unisoc Communications, Inc.
- realtek Realtek Semiconductor Corp.
- renesas	Renesas Electronics Corporation
- richtek	Richtek Technology Corporation
+diff --git a/Documentation/devicetree/bindings/arm/rda.txt b/Documentation/devicetree/bindings/arm/rda.txt
+new file mode 100644
+index 000000000000..43c80762c428
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/rda.txt
+@@ -0,0 +1,17 @@
++RDA Micro platforms device tree bindings
++----------------------------------------
++
++RDA8810PL SoC
++=============
++
++Required root node properties:
++
++ - compatible :  must contain "rda,8810pl"
++
++
++Boards:
++
++Root node property compatible must contain, depending on board:
++
++ - Orange Pi 2G-IoT: "xunlong,orangepi-2g-iot"
++ - Orange Pi i96: "xunlong,orangepi-i96"
 -- 
 2.17.1
