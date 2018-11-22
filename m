@@ -1,114 +1,279 @@
-From: Jassi Brar <jassisinghbrar@gmail.com>
-Subject: Re: [PATCH v2 01/10] mailbox: Support blocking transfers in atomic
- context
-Date: Wed, 21 Nov 2018 20:18:22 -0600
-Message-ID: <CABb+yY0nH3Su6a11TZLJf=CCpD+gTpqUkLnRhpy4MUwNJk5prw@mail.gmail.com>
-References: <20181112151853.29289-1-thierry.reding@gmail.com>
- <20181112151853.29289-2-thierry.reding@gmail.com>
- <CABb+yY3HwvG6sSKnweiDpyg85Fk8Q9hOVaF-s7gv4RDzEoaGqA@mail.gmail.com>
- <20181120152907.GA28796@ulmo> <20181121142740.GA29704@ulmo>
+From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
+Subject: Re: [PATCH 05/14] clocksource/drivers/timer-milbeaut: Add Milbeaut
+ M10V timer
+Date: Thu, 22 Nov 2018 11:23:54 +0900
+Message-ID: <07d26609-e10c-70f1-1360-63ed0e214d7e@socionext.com>
+References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com>
+ <1542589274-13878-6-git-send-email-sugaya.taichi@socionext.com>
+ <c6b7ddb0-064a-8f09-bbb4-9754f3d63ecb@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20181121142740.GA29704@ulmo>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Devicetree List <devicetree@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, mliljeberg@nvidia.com, Mikko Perttunen <mperttunen@nvidia.com>, talho@nvidia.com, linux-serial@vger.kernel.org, jslaby@suse.com, linux-tegra@vger.kernel.org, ppessi@nvidia.com, Jon Hunter <jonathanh@nvidia.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <c6b7ddb0-064a-8f09-bbb4-9754f3d63ecb@linaro.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Daniel Lezcano <daniel.lezcano@linaro.org>, linux-clk@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 21, 2018 at 8:27 AM Thierry Reding <thierry.reding@gmail.com> wrote:
->
-> On Tue, Nov 20, 2018 at 04:29:07PM +0100, Thierry Reding wrote:
-> > On Sat, Nov 17, 2018 at 11:27:17AM -0600, Jassi Brar wrote:
-> > > On Mon, Nov 12, 2018 at 9:18 AM Thierry Reding <thierry.reding@gmail.com> wrote:
-> > > >
-> > > > From: Thierry Reding <treding@nvidia.com>
-> > > >
-> > > > The mailbox framework supports blocking transfers via completions for
-> > > > clients that can sleep. In order to support blocking transfers in cases
-> > > > where the transmission is not permitted to sleep, add a new ->flush()
-> > > > callback that controller drivers can implement to busy loop until the
-> > > > transmission has been completed. This will automatically be called when
-> > > > available and interrupts are disabled for clients that request blocking
-> > > > transfers.
-> > > >
-> > > > Signed-off-by: Thierry Reding <treding@nvidia.com>
-> > > > ---
-> > > >  drivers/mailbox/mailbox.c          | 8 ++++++++
-> > > >  include/linux/mailbox_controller.h | 4 ++++
-> > > >  2 files changed, 12 insertions(+)
-> > > >
-> > > > diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
-> > > > index 674b35f402f5..0eaf21259874 100644
-> > > > --- a/drivers/mailbox/mailbox.c
-> > > > +++ b/drivers/mailbox/mailbox.c
-> > > > @@ -267,6 +267,14 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
-> > > >                 unsigned long wait;
-> > > >                 int ret;
-> > > >
-> > > > +               if (irqs_disabled() && chan->mbox->ops->flush) {
-> > > > +                       ret = chan->mbox->ops->flush(chan, chan->cl->tx_tout);
-> > > > +                       if (ret < 0)
-> > > > +                               tx_tick(chan, ret);
-> > > > +
-> > > > +                       return ret;
-> > > > +               }
-> > > > +
-> > > This is hacky. I think we can do without busy waiting in atomic
-> > > context. You could queue locally while in atomic context and then
-> > > transfer in blocking mode. I don't think we should worry about the
-> > > 'throughput' as there already is no h/w rate control even with
-> > > busy-waiting.
-> >
-> > I actually tried to do that before I added this flushing mechanism. The
-> > problem is, like you said, one of rate control. As mentioned in the
-> > cover letter, the shared mailboxes implemented in tegra-hsp are used as
-> > RX and TX channels for the TCU, which is like a virtual UART. The TTY
-> > driver included as part of this series will use one of the mailboxes to
-> > transmit data that is written to the console. The problem is that if
-> > these transmissions are not rate-limited on the TTY driver side, the
-> > console will just keep writing data and eventually overflow the buffer
-> > that we have in the mailbox subsystem.
-> >
-> > The problem is that data comes in at a much higher rate than what we can
-> > output. This is especially true at boot when the TCU console takes over
-> > and the whole log buffer is dumped on it.
-> >
-> > So the only way to rate-limit is to either make mbox_send_message()
-> > block, but that can only be done in non-atomic context. The console,
-> > however, will always run in atomic context, so the only way to do rate-
-> > limiting is by busy looping.
->
-> What I also tried before was to implement busy looping within the
-> ->send_data() callback of the driver so that we didn't have to put this
-> into the core. Unfortunately, however, the ->send_data() callback is
-> called under chan->lock, which means that from mbox_send_message() we
-> don't have a way to mark the transfer as done. In order to do that we'd
-> have to call mbox_chan_txdone(), but that ends up calling tx_tick() and
-> that in turn also attempts to take the chan->lock, which would cause a
-> deadlock.
->
-> The explicit flushing is the best alternative that I could come up with.
-> I think it's not all that hacky, because it's very explicit about what's
-> going on and it has the nice side-effect that it will allow the mailbox
-> to work in interrupt driven mode if possible and only resorting to the
-> busy loop in atomic context.
->
-> At this point I think I have explored all other options and I frankly
-> can't find a more proper way to achieve what we need here. Perhaps you
-> can think of additional ways to accomplish this?
->
-Well, I would have a local ring buffer (array) of enough size to hold
-the characters and then have a task consuming data from that ring
-buffer by transmitting over mailbox.
+Hi Daniel
 
--jassi
+Thank you for your comments.
+
+On 2018/11/21 19:08, Daniel Lezcano wrote:
+> Hi Sugaya,
+>
+>
+> On 19/11/2018 02:01, Sugaya Taichi wrote:
+>> Add Milbeaut M10V timer using 32bit timer in peripheral.
+> Give a better description of the timer as it is new timer introduced.
+
+I got it. Add more description.
+
+
+>> Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
+>> ---
+>>   drivers/clocksource/Kconfig      |   8 +++
+>>   drivers/clocksource/Makefile     |   1 +
+>>   drivers/clocksource/timer-m10v.c | 146 +++++++++++++++++++++++++++++++++++++++
+>>   3 files changed, 155 insertions(+)
+>>   create mode 100644 drivers/clocksource/timer-m10v.c
+>>
+>> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+>> index 55c77e4..a278d72 100644
+>> --- a/drivers/clocksource/Kconfig
+>> +++ b/drivers/clocksource/Kconfig
+>> @@ -638,4 +638,12 @@ config GX6605S_TIMER
+>>   	help
+>>   	  This option enables support for gx6605s SOC's timer.
+>>   
+>> +config M10V_TIMER
+>> +	bool "Milbeaut M10V timer driver" if COMPILE_TEST
+>> +	depends on OF
+>> +	depends on ARM
+>> +	select TIMER_OF
+>> +	help
+>> +	  Enables the support for Milbeaut M10V timer driver.
+>> +
+>>   endmenu
+>> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
+>> index dd91381..8e908b4 100644
+>> --- a/drivers/clocksource/Makefile
+>> +++ b/drivers/clocksource/Makefile
+>> @@ -55,6 +55,7 @@ obj-$(CONFIG_CLKSRC_TI_32K)	+= timer-ti-32k.o
+>>   obj-$(CONFIG_CLKSRC_NPS)	+= timer-nps.o
+>>   obj-$(CONFIG_OXNAS_RPS_TIMER)	+= timer-oxnas-rps.o
+>>   obj-$(CONFIG_OWL_TIMER)		+= timer-owl.o
+>> +obj-$(CONFIG_M10V_TIMER)	+= timer-m10v.o
+>>   obj-$(CONFIG_SPRD_TIMER)	+= timer-sprd.o
+>>   obj-$(CONFIG_NPCM7XX_TIMER)	+= timer-npcm7xx.o
+>>   
+>> diff --git a/drivers/clocksource/timer-m10v.c b/drivers/clocksource/timer-m10v.c
+>> new file mode 100644
+>> index 0000000..ff97c23
+>> --- /dev/null
+>> +++ b/drivers/clocksource/timer-m10v.c
+>> @@ -0,0 +1,146 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Copyright (C) 2018 Socionext Inc.
+>> + */
+>> +
+>> +#include <linux/clk.h>
+> ------->
+>
+>> +#include <linux/clockchips.h>
+> It is included from timer-of.h
+>
+> <-------
+
+OK. Remove it.
+
+
+>
+>> +#include <linux/interrupt.h>
+>> +#include <linux/irq.h>
+>> +#include <linux/irqreturn.h>
+> ------->
+>
+>> +#include <linux/of.h>
+>> +#include <linux/of_address.h>
+>> +#include <linux/of_irq.h>
+>> +#include <linux/slab.h>
+> Those are not needed IMO.
+>
+> <---------
+
+OK, remove these.
+
+
+>
+>
+>> +#include "timer-of.h"
+>> +
+>> +#define FSL_TMR_TMCSR_OFS	0x0
+>> +#define FSL_TMR_TMR_OFS		0x4
+>> +#define FSL_TMR_TMRLR1_OFS	0x8
+>> +#define FSL_TMR_TMRLR2_OFS	0xc
+>> +#define FSL_RMT_REGSZPCH	0x10
+>> +
+>> +#define FSL_TMR_TMCSR_OUTL	BIT(5)
+>> +#define FSL_TMR_TMCSR_RELD	BIT(4)
+>> +#define FSL_TMR_TMCSR_INTE	BIT(3)
+>> +#define FSL_TMR_TMCSR_UF	BIT(2)
+>> +#define FSL_TMR_TMCSR_CNTE	BIT(1)
+>> +#define FSL_TMR_TMCSR_TRG	BIT(0)
+>> +
+>> +#define FSL_TMR_TMCSR_CSL_DIV2	0
+>> +#define FSL_TMR_TMCSR_CSL	BIT(10)
+>> +
+>> +#define M10V_TIMER_RATING	500
+>> +
+>> +static irqreturn_t m10v_timer_interrupt(int irq, void *dev_id)
+>> +{
+>> +	struct clock_event_device *clk = dev_id;
+>> +	struct timer_of *to = to_timer_of(clk);
+>> +	u32 val;
+>> +
+>> +	val = readl_relaxed(timer_of_base(to) + FSL_TMR_TMCSR_OFS);
+>> +	val &= ~FSL_TMR_TMCSR_UF;
+>> +	writel_relaxed(val, timer_of_base(to) + FSL_TMR_TMCSR_OFS);
+>> +
+>> +	clk->event_handler(clk);
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +static int m10v_set_state_periodic(struct clock_event_device *clk)
+>> +{
+>> +	struct timer_of *to = to_timer_of(clk);
+>> +	u32 val = (FSL_TMR_TMCSR_CSL_DIV2 * FSL_TMR_TMCSR_CSL);
+> 	FSL_TMR_TMCSR_CSL_DIV2 is zero, so val is always zero.
+Ah, yes.
+The FSL_TMR_TMCSR is the 10th bit field of the register, so it would be 
+better
+to bit-shift.
+I will use it as simply 0.
+
+> 	
+>> +	writel_relaxed(val, timer_of_base(to) + FSL_TMR_TMCSR_OFS);
+>> +
+>> +	writel_relaxed(to->of_clk.period, timer_of_base(to) +
+>> +				FSL_TMR_TMRLR1_OFS);
+>> +	val |= FSL_TMR_TMCSR_RELD | FSL_TMR_TMCSR_CNTE |
+>> +		FSL_TMR_TMCSR_TRG | FSL_TMR_TMCSR_INTE;
+>> +	writel_relaxed(val, timer_of_base(to) + FSL_TMR_TMCSR_OFS);
+>> +	return 0;
+>> +}
+>> +
+>> +static int m10v_set_state_oneshot(struct clock_event_device *clk)
+>> +{
+>> +	struct timer_of *to = to_timer_of(clk);
+>> +	u32 val = (FSL_TMR_TMCSR_CSL_DIV2 * FSL_TMR_TMCSR_CSL);
+>> +
+>> +	writel_relaxed(val, timer_of_base(to) + FSL_TMR_TMCSR_OFS);
+>> +	return 0;
+>> +}
+>> +
+>> +static int m10v_clkevt_next_event(unsigned long event,
+>> +				   struct clock_event_device *clk)
+>> +{
+>> +	struct timer_of *to = to_timer_of(clk);
+>> +
+>> +	writel_relaxed(event, timer_of_base(to) + FSL_TMR_TMRLR1_OFS);
+>> +	writel_relaxed((FSL_TMR_TMCSR_CSL_DIV2 * FSL_TMR_TMCSR_CSL) |
+> Same comment here.
+
+I got it.
+
+
+>> +			FSL_TMR_TMCSR_CNTE | FSL_TMR_TMCSR_INTE |
+>> +			FSL_TMR_TMCSR_TRG, timer_of_base(to) +
+>> +			FSL_TMR_TMCSR_OFS);
+>> +	return 0;
+>> +}
+>> +
+>> +static int m10v_config_clock_source(struct timer_of *to)
+>> +{
+>> +	writel_relaxed(0, timer_of_base(to) + FSL_TMR_TMCSR_OFS);
+>> +	writel_relaxed(~0, timer_of_base(to) + FSL_TMR_TMR_OFS);
+>> +	writel_relaxed(~0, timer_of_base(to) + FSL_TMR_TMRLR1_OFS);
+>> +	writel_relaxed(~0, timer_of_base(to) + FSL_TMR_TMRLR2_OFS);
+>> +	writel_relaxed(BIT(4) | BIT(1) | BIT(0), timer_of_base(to) +
+>> +		FSL_TMR_TMCSR_OFS);
+>> +	return 0;
+>> +}
+>> +
+>> +static int m10v_config_clock_event(struct timer_of *to)
+>> +{
+>> +	writel_relaxed(0, timer_of_base(to) + FSL_TMR_TMCSR_OFS);
+>> +	return 0;
+>> +}
+>> +
+>> +static struct timer_of to = {
+>> +	.flags = TIMER_OF_IRQ | TIMER_OF_BASE | TIMER_OF_CLOCK,
+>> +
+>> +	.clkevt = {
+>> +		.name = "m10v-clkevt",
+>> +		.rating = M10V_TIMER_RATING,
+>> +		.cpumask = cpu_possible_mask,
+>> +	},
+>> +
+>> +	.of_irq = {
+>> +		.flags = IRQF_TIMER | IRQF_IRQPOLL,
+>> +	},
+>> +};
+>> +
+>> +static int __init m10v_timer_init(struct device_node *node)
+>> +{
+>> +	int ret;
+>> +
+>> +	to.clkevt.features = CLOCK_EVT_FEAT_DYNIRQ | CLOCK_EVT_FEAT_ONESHOT;
+>> +	to.clkevt.set_state_oneshot = m10v_set_state_oneshot;
+>> +	to.clkevt.set_state_periodic = m10v_set_state_periodic;
+>> +	to.clkevt.set_next_event = m10v_clkevt_next_event;
+>> +	to.of_irq.handler = m10v_timer_interrupt;
+> Move the initialization in the timer_of structure above.
+
+Okay.
+
+
+>
+>> +	ret = timer_of_init(node, &to);
+>> +	if (ret)
+>> +		goto err;
+> You should return directly, rollback is done in the timer_of_init().
+
+OK.
+
+
+>
+>> +
+>> +	m10v_config_clock_source(&to);
+>> +	clocksource_mmio_init(timer_of_base(&to) + FSL_TMR_TMR_OFS,
+>> +		node->name, timer_of_rate(&to), M10V_TIMER_RATING, 32,
+>> +		clocksource_mmio_readl_down);
+> May be you can add the sched_clock also ?
+
+OK. Add it and confirm.
+
+
+Thanks
+Sugaya Taichi
+
+
+>
+>> +	m10v_config_clock_event(&to);
+>> +	clockevents_config_and_register(&to.clkevt, timer_of_rate(&to),
+>> +				15, 0xffffffff);
+>> +
+>> +	return 0;
+>> +err:
+>> +	timer_of_cleanup(&to);
+>> +	return ret;
+>> +}
+>> +TIMER_OF_DECLARE(m10v_peritimer, "socionext,milbeaut-m10v-timer",
+>> +		m10v_timer_init);
+>>
+>
