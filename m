@@ -1,276 +1,114 @@
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: Re: [PATCH v2 08/15] irqchip: Add RDA8810PL interrupt driver
-Date: Wed, 21 Nov 2018 23:11:02 +0530
-Message-ID: <20181121174017.GA4411@Mani-XPS-13-9360>
-References: <20181121033652.12247-1-manivannan.sadhasivam@linaro.org>
- <20181121033652.12247-9-manivannan.sadhasivam@linaro.org>
- <83f70f64-79f1-c6e5-0328-09cc567f2686@arm.com>
+From: Jassi Brar <jassisinghbrar@gmail.com>
+Subject: Re: [PATCH v2 01/10] mailbox: Support blocking transfers in atomic
+ context
+Date: Wed, 21 Nov 2018 20:18:22 -0600
+Message-ID: <CABb+yY0nH3Su6a11TZLJf=CCpD+gTpqUkLnRhpy4MUwNJk5prw@mail.gmail.com>
+References: <20181112151853.29289-1-thierry.reding@gmail.com>
+ <20181112151853.29289-2-thierry.reding@gmail.com>
+ <CABb+yY3HwvG6sSKnweiDpyg85Fk8Q9hOVaF-s7gv4RDzEoaGqA@mail.gmail.com>
+ <20181120152907.GA28796@ulmo> <20181121142740.GA29704@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <83f70f64-79f1-c6e5-0328-09cc567f2686@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marc Zyngier <marc.zyngier@arm.com>
-Cc: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, tglx@linutronix.de, jason@lakedaemon.net, daniel.lezcano@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net, overseas.sales@unisoc.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20181121142740.GA29704@ulmo>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Devicetree List <devicetree@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, mliljeberg@nvidia.com, Mikko Perttunen <mperttunen@nvidia.com>, talho@nvidia.com, linux-serial@vger.kernel.org, jslaby@suse.com, linux-tegra@vger.kernel.org, ppessi@nvidia.com, Jon Hunter <jonathanh@nvidia.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Marc,
+On Wed, Nov 21, 2018 at 8:27 AM Thierry Reding <thierry.reding@gmail.com> wrote:
+>
+> On Tue, Nov 20, 2018 at 04:29:07PM +0100, Thierry Reding wrote:
+> > On Sat, Nov 17, 2018 at 11:27:17AM -0600, Jassi Brar wrote:
+> > > On Mon, Nov 12, 2018 at 9:18 AM Thierry Reding <thierry.reding@gmail.com> wrote:
+> > > >
+> > > > From: Thierry Reding <treding@nvidia.com>
+> > > >
+> > > > The mailbox framework supports blocking transfers via completions for
+> > > > clients that can sleep. In order to support blocking transfers in cases
+> > > > where the transmission is not permitted to sleep, add a new ->flush()
+> > > > callback that controller drivers can implement to busy loop until the
+> > > > transmission has been completed. This will automatically be called when
+> > > > available and interrupts are disabled for clients that request blocking
+> > > > transfers.
+> > > >
+> > > > Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > > > ---
+> > > >  drivers/mailbox/mailbox.c          | 8 ++++++++
+> > > >  include/linux/mailbox_controller.h | 4 ++++
+> > > >  2 files changed, 12 insertions(+)
+> > > >
+> > > > diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
+> > > > index 674b35f402f5..0eaf21259874 100644
+> > > > --- a/drivers/mailbox/mailbox.c
+> > > > +++ b/drivers/mailbox/mailbox.c
+> > > > @@ -267,6 +267,14 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
+> > > >                 unsigned long wait;
+> > > >                 int ret;
+> > > >
+> > > > +               if (irqs_disabled() && chan->mbox->ops->flush) {
+> > > > +                       ret = chan->mbox->ops->flush(chan, chan->cl->tx_tout);
+> > > > +                       if (ret < 0)
+> > > > +                               tx_tick(chan, ret);
+> > > > +
+> > > > +                       return ret;
+> > > > +               }
+> > > > +
+> > > This is hacky. I think we can do without busy waiting in atomic
+> > > context. You could queue locally while in atomic context and then
+> > > transfer in blocking mode. I don't think we should worry about the
+> > > 'throughput' as there already is no h/w rate control even with
+> > > busy-waiting.
+> >
+> > I actually tried to do that before I added this flushing mechanism. The
+> > problem is, like you said, one of rate control. As mentioned in the
+> > cover letter, the shared mailboxes implemented in tegra-hsp are used as
+> > RX and TX channels for the TCU, which is like a virtual UART. The TTY
+> > driver included as part of this series will use one of the mailboxes to
+> > transmit data that is written to the console. The problem is that if
+> > these transmissions are not rate-limited on the TTY driver side, the
+> > console will just keep writing data and eventually overflow the buffer
+> > that we have in the mailbox subsystem.
+> >
+> > The problem is that data comes in at a much higher rate than what we can
+> > output. This is especially true at boot when the TCU console takes over
+> > and the whole log buffer is dumped on it.
+> >
+> > So the only way to rate-limit is to either make mbox_send_message()
+> > block, but that can only be done in non-atomic context. The console,
+> > however, will always run in atomic context, so the only way to do rate-
+> > limiting is by busy looping.
+>
+> What I also tried before was to implement busy looping within the
+> ->send_data() callback of the driver so that we didn't have to put this
+> into the core. Unfortunately, however, the ->send_data() callback is
+> called under chan->lock, which means that from mbox_send_message() we
+> don't have a way to mark the transfer as done. In order to do that we'd
+> have to call mbox_chan_txdone(), but that ends up calling tx_tick() and
+> that in turn also attempts to take the chan->lock, which would cause a
+> deadlock.
+>
+> The explicit flushing is the best alternative that I could come up with.
+> I think it's not all that hacky, because it's very explicit about what's
+> going on and it has the nice side-effect that it will allow the mailbox
+> to work in interrupt driven mode if possible and only resorting to the
+> busy loop in atomic context.
+>
+> At this point I think I have explored all other options and I frankly
+> can't find a more proper way to achieve what we need here. Perhaps you
+> can think of additional ways to accomplish this?
+>
+Well, I would have a local ring buffer (array) of enough size to hold
+the characters and then have a task consuming data from that ring
+buffer by transmitting over mailbox.
 
-On Wed, Nov 21, 2018 at 08:41:25AM +0000, Marc Zyngier wrote:
-> On 21/11/2018 03:36, Manivannan Sadhasivam wrote:
-> > Add interrupt driver for RDA Micro RDA8810PL SoC.
-> > 
-> > Signed-off-by: Andreas Färber <afaerber@suse.de>
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > ---
-> >  arch/arm/mach-rda/Kconfig      |   1 +
-> >  drivers/irqchip/Kconfig        |   4 ++
-> >  drivers/irqchip/Makefile       |   1 +
-> >  drivers/irqchip/irq-rda-intc.c | 113 +++++++++++++++++++++++++++++++++
-> >  4 files changed, 119 insertions(+)
-> >  create mode 100644 drivers/irqchip/irq-rda-intc.c
-> > 
-> > diff --git a/arch/arm/mach-rda/Kconfig b/arch/arm/mach-rda/Kconfig
-> > index dafab78d7aab..29012bc68ca4 100644
-> > --- a/arch/arm/mach-rda/Kconfig
-> > +++ b/arch/arm/mach-rda/Kconfig
-> > @@ -3,5 +3,6 @@ menuconfig ARCH_RDA
-> >  	depends on ARCH_MULTI_V7
-> >  	select COMMON_CLK
-> >  	select GENERIC_IRQ_CHIP
-> > +	select RDA_INTC
-> >  	help
-> >  	  This enables support for the RDA Micro 8810PL SoC family.
-> > diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-> > index 51a5ef0e96ed..9d54645870ad 100644
-> > --- a/drivers/irqchip/Kconfig
-> > +++ b/drivers/irqchip/Kconfig
-> > @@ -195,6 +195,10 @@ config JCORE_AIC
-> >  	help
-> >  	  Support for the J-Core integrated AIC.
-> >  
-> > +config RDA_INTC
-> > +	bool
-> > +	select IRQ_DOMAIN
-> > +
-> >  config RENESAS_INTC_IRQPIN
-> >  	bool
-> >  	select IRQ_DOMAIN
-> > diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
-> > index 794c13d3ac3d..417108027e40 100644
-> > --- a/drivers/irqchip/Makefile
-> > +++ b/drivers/irqchip/Makefile
-> > @@ -43,6 +43,7 @@ obj-$(CONFIG_IMGPDC_IRQ)		+= irq-imgpdc.o
-> >  obj-$(CONFIG_IRQ_MIPS_CPU)		+= irq-mips-cpu.o
-> >  obj-$(CONFIG_SIRF_IRQ)			+= irq-sirfsoc.o
-> >  obj-$(CONFIG_JCORE_AIC)			+= irq-jcore-aic.o
-> > +obj-$(CONFIG_RDA_INTC)			+= irq-rda-intc.o
-> >  obj-$(CONFIG_RENESAS_INTC_IRQPIN)	+= irq-renesas-intc-irqpin.o
-> >  obj-$(CONFIG_RENESAS_IRQC)		+= irq-renesas-irqc.o
-> >  obj-$(CONFIG_VERSATILE_FPGA_IRQ)	+= irq-versatile-fpga.o
-> > diff --git a/drivers/irqchip/irq-rda-intc.c b/drivers/irqchip/irq-rda-intc.c
-> > new file mode 100644
-> > index 000000000000..1b372bdb23bc
-> > --- /dev/null
-> > +++ b/drivers/irqchip/irq-rda-intc.c
-> > @@ -0,0 +1,113 @@
-> > +// SPDX-License-Identifier: GPL-2.0+
-> > +/*
-> > + * RDA8810PL SoC irqchip driver
-> > + *
-> > + * Copyright RDA Microelectronics Company Limited
-> > + * Copyright (c) 2017 Andreas Färber
-> > + * Copyright (c) 2018 Manivannan Sadhasivam
-> > + */
-> > +
-> > +#include <linux/init.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/irq.h>
-> > +#include <linux/irqchip.h>
-> > +#include <linux/irqdomain.h>
-> > +#include <linux/of_address.h>
-> > +
-> > +#include <asm/irq.h>
-> 
-> You shouldn't need to include this.
-> 
-
-Ack.
-
-> > +#include <asm/exception.h>
-> > +
-> > +#define RDA_INTC_FINALSTATUS	0x00
-> > +#define RDA_INTC_STATUS		0x04
-> > +#define RDA_INTC_MASK_SET	0x08
-> > +#define RDA_INTC_MASK_CLR	0x0c
-> > +#define RDA_INTC_WAKEUP_MASK	0x18
-> > +#define RDA_INTC_CPU_SLEEP	0x1c
-> 
-> Half of these constants are unused. Do we really need them?
-> 
-
-Usually I tend to define all registers to provide overall reg map. But
-I have no issues to remove the not used ones.
-
-> > +
-> > +#define RDA_IRQ_MASK_ALL	0xFFFFFFFF
-> > +
-> > +#define RDA_NR_IRQS 32
-> 
-> Surely the mask can be derived from the number of interrupts?
-> 
-
-Why not? Since each bit corresponds to a single interrupt, 0xFFFFFFFF
-can cover all 32 bits which is equal to the total number of interrupts
-supported by the controller. Am I missing anything here?
-
-> > +
-> > +static void __iomem *base;
-> 
-> Everything in this driver is prefixed with rda_. It would seem valuable
-> to  do the same here, as "base" is a bit too generic.
-> 
-
-Ack.
-
-> > +
-> > +static void rda_intc_mask_irq(struct irq_data *d)
-> > +{
-> > +	writel_relaxed(BIT(d->hwirq), base + RDA_INTC_MASK_CLR);
-> > +}
-> > +
-> > +static void rda_intc_unmask_irq(struct irq_data *d)
-> > +{
-> > +	writel_relaxed(BIT(d->hwirq), base + RDA_INTC_MASK_SET);
-> 
-> Are the names MASK_CLR and MASK_SET from the datasheet? They seem to be
-> backward (you set the mask to unmask...), and seem to behave like an
-> enable instead. That's not a big issue, just curious.
-> 
-
-Yes, this naming convention comes from the datasheet and it is a bit
-wierd as you said ;-)
-
-> > +}
-> > +
-> > +static int rda_intc_set_type(struct irq_data *data, unsigned int flow_type)
-> > +{
-> > +	/* Hardware supports only level triggered interrupts */
-> > +	if (flow_type & (IRQF_TRIGGER_HIGH | IRQF_TRIGGER_LOW))
-> > +		irq_set_handler(data->irq, handle_level_irq);
-> 
-> Why do you need to do this? You've already configured it at map time,
-> and it is not changing under your feet. This should be written as:
-> 
-> if ((flow_type & (IRQF_TRIGGER_HIGH | IRQF_TRIGGER_LOW)) == flow_type)
-> 	return 0;
-> 
-> return -EINVAL;
-> 
-
-Okay.
-
-> > +	else
-> > +		return -EINVAL;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static struct irq_domain *rda_irq_domain;
-> 
-> Please move this to the top of the file, next to "base".
-> 
-
-Ack.
-
-> > +
-> > +static void __exception_irq_entry rda_handle_irq(struct pt_regs *regs)
-> > +{
-> > +	u32 stat = readl_relaxed(base + RDA_INTC_FINALSTATUS);
-> > +	u32 hwirq;
-> > +
-> > +	while (stat) {
-> > +		hwirq = __fls(stat);
-> > +		handle_domain_irq(rda_irq_domain, hwirq, regs);
-> > +		stat &= ~(1 << hwirq);
-> > +	}
-> > +}
-> > +
-> > +static struct irq_chip rda_irq_chip = {
-> > +	.name		= "rda-intc",
-> > +	.irq_mask	= rda_intc_mask_irq,
-> > +	.irq_unmask	= rda_intc_unmask_irq,
-> > +	.irq_set_type	= rda_intc_set_type,
-> > +};
-> > +
-> > +static int rda_irq_map(struct irq_domain *d,
-> > +		       unsigned int virq, irq_hw_number_t hw)
-> > +{
-> > +	irq_set_status_flags(virq, IRQ_LEVEL);
-> > +	irq_set_chip_and_handler(virq, &rda_irq_chip, handle_level_irq);
-> > +	irq_set_chip_data(virq, d->host_data);
-> > +	irq_set_probe(virq);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct irq_domain_ops rda_irq_domain_ops = {
-> > +	.map = rda_irq_map,
-> > +	.xlate = irq_domain_xlate_onecell,
-> > +};
-> > +
-> > +static int __init rda8810_intc_init(struct device_node *node,
-> > +				    struct device_node *parent)
-> > +{
-> > +	base = of_io_request_and_map(node, 0, "rda-intc");
-> > +	if (!base)
-> > +		return -ENXIO;
-> > +
-> > +	/* Mask, and invalidate all interrupt sources */
-> 
-> What does "invalidate" mean here?
-> 
-
-Mean to say "disable" but yeah not appropriate. Will remove it.
-
-> > +	writel_relaxed(RDA_IRQ_MASK_ALL, base + RDA_INTC_MASK_CLR);
-> > +
-> > +	rda_irq_domain = irq_domain_create_linear(&node->fwnode, RDA_NR_IRQS,
-> > +						  &rda_irq_domain_ops, base);
-> > +	if (WARN_ON(!rda_irq_domain)) {
-> > +		iounmap(base);
-> > +		return -ENODEV;
-> 
-> Why ENODEV? ENOMEM seems more appropriate. The WARN_ON is a bit
-> superfluous, as the failing probe should be noisy enough.
-> 
-
-Ack. ENOMEM comes from your suggestion in previous review.
-
-> > +	}
-> > +
-> > +	set_handle_irq(rda_handle_irq);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +IRQCHIP_DECLARE(rda_intc, "rda,8810pl-intc", rda8810_intc_init);
-> > 
-> 
-> You've already posted two versions in 3 days, please allow for a week
-> between versions.
-> 
-
-Sorry for that. I thought the other way, allowing too much delay would
-hinder the review process. Will post the next revision after few more days.
-
-Thanks,
-Mani
-
-> Thanks,
-> 
-> 	M.
-> -- 
-> Jazz is not dead. It just smells funny...
+-jassi
