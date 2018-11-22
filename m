@@ -1,24 +1,43 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 14/15] tty: serial: Add RDA8810PL UART driver
-Date: Thu, 22 Nov 2018 11:09:51 +0100
-Message-ID: <20181122100951.GA31718@kroah.com>
-References: <20181121033652.12247-1-manivannan.sadhasivam@linaro.org>
- <20181121033652.12247-15-manivannan.sadhasivam@linaro.org>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCHv3] panic: avoid deadlocks in re-entrant console drivers
+Date: Thu, 22 Nov 2018 14:12:02 +0100
+Message-ID: <20181122131202.nkcurdt5k6jrhowa@pathway.suse.cz>
+References: <20181016050428.17966-2-sergey.senozhatsky@gmail.com>
+ <20181025101036.6823-1-sergey.senozhatsky@gmail.com>
+ <20181031122736.epbxu424l3xagge5@pathway.suse.cz>
+ <20181101014821.GB502@jagdpanzerIV>
+ <20181101080808.n73lrlnjd65nk4qf@pathway.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181121033652.12247-15-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <20181101080808.n73lrlnjd65nk4qf@pathway.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, daniel.lezcano@linaro.org, jslaby@suse.com, afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net, overseas.sales@unisoc.com
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 21, 2018 at 09:06:51AM +0530, Manivannan Sadhasivam wrote:
-> Add UART driver for RDA Micro RDA8810PL SoC.
+On Thu 2018-11-01 09:08:08, Petr Mladek wrote:
+> On Thu 2018-11-01 10:48:21, Sergey Senozhatsky wrote:
+> > On (10/31/18 13:27), Petr Mladek wrote:
+> > > > 
+> > > > Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+> > > 
+> > > The patch makes sense to me. The locks should stay busted also for
+> > > console_flush_on_panic().
+> > > 
+> > > With the added #include <linux/vt_kern.h>:
+> > > 
+> > > Reviewed-by: Petr Mladek <pmladek@suse.com>
+> > 
+> > Thanks!
+> > 
+> > Since there are no objections - how shall we route it? Via printk tree?
 > 
-> Signed-off-by: Andreas Färber <afaerber@suse.de>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> Good question. OK, I am going to put it into printk.git unless I hear
+> complains withing next couple of days.
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+I have pushed this into printk.git, branch for-4.21.
+
+Best Regards,
+Petr
