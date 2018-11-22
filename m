@@ -1,59 +1,24 @@
-From: Chanho Park <parkch98@gmail.com>
-Subject: [PATCH] tty: do not set TTY_IO_ERROR flag if console port
-Date: Thu, 22 Nov 2018 18:23:47 +0900
-Message-ID: <1542878627-25315-1-git-send-email-parkch98@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 14/15] tty: serial: Add RDA8810PL UART driver
+Date: Thu, 22 Nov 2018 11:09:51 +0100
+Message-ID: <20181122100951.GA31718@kroah.com>
+References: <20181121033652.12247-1-manivannan.sadhasivam@linaro.org>
+ <20181121033652.12247-15-manivannan.sadhasivam@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181121033652.12247-15-manivannan.sadhasivam@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Chanho Park <parkch98@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Rob Herring <robh@kernel.org>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, daniel.lezcano@linaro.org, jslaby@suse.com, afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net, overseas.sales@unisoc.com
 List-Id: linux-serial@vger.kernel.org
 
-Since Commit 761ed4a94582 ('tty: serial_core: convert uart_close to use
-tty_port_close') and Commit 4dda864d7307 ('tty: serial_core: Fix serial
-console crash on port shutdown), a serial port which is used as
-console can be stuck when logging out if there is a remained process.
-After logged out, agetty will try to grab the serial port but it will
-be failed because the previous process did not release the port
-correctly. To fix this, TTY_IO_ERROR bit should not be enabled of
-tty_port_close if the port is console port.
+On Wed, Nov 21, 2018 at 09:06:51AM +0530, Manivannan Sadhasivam wrote:
+> Add UART driver for RDA Micro RDA8810PL SoC.
+> 
+> Signed-off-by: Andreas Färber <afaerber@suse.de>
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-Reproduce step:
-- Run background processes from serial console
-$ while true; do sleep 10; done &
-
-- Log out
-$ logout
--> Stuck
-
-- Read journal log by journalctl | tail
-Jan 28 16:07:01 ubuntu systemd[1]: Stopped Serial Getty on ttyAMA0.
-Jan 28 16:07:01 ubuntu systemd[1]: Started Serial Getty on ttyAMA0.
-Jan 28 16:07:02 ubuntu agetty[1643]: /dev/ttyAMA0: not a tty
-
-Fixes: 761ed4a94582ab29 ("tty: serial_core: convert uart_close to use tty_port_close")
-
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Signed-off-by: Chanho Park <parkch98@gmail.com>
----
- drivers/tty/tty_port.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index cb60750..044c3cb 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -633,7 +633,8 @@ void tty_port_close(struct tty_port *port, struct tty_struct *tty,
- 	if (tty_port_close_start(port, tty, filp) == 0)
- 		return;
- 	tty_port_shutdown(port, tty);
--	set_bit(TTY_IO_ERROR, &tty->flags);
-+	if (!port->console)
-+		set_bit(TTY_IO_ERROR, &tty->flags);
- 	tty_port_close_end(port, tty);
- 	tty_port_tty_set(port, NULL);
- }
--- 
-1.9.1
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
