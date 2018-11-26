@@ -1,46 +1,72 @@
-From: Leonard Crestez <leonard.crestez@nxp.com>
-Subject: imx6sx uart failing loopback tests with sdma firmware (ROM works)
-Date: Mon, 26 Nov 2018 11:53:18 +0000
-Message-ID: <6d8280df85c6e5b2ddba635780cd2912d9c5d425.camel@nxp.com>
+From: Lucas Stach <l.stach@pengutronix.de>
+Subject: Re: imx6sx uart failing loopback tests with sdma firmware (ROM
+ works)
+Date: Mon, 26 Nov 2018 13:01:51 +0100
+Message-ID: <1543233711.2507.29.camel@pengutronix.de>
+References: <6d8280df85c6e5b2ddba635780cd2912d9c5d425.camel@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
-Content-ID: <008117BBEC490F4DABC9F492D0038EDA@eurprd04.prod.outlook.com>
+In-Reply-To: <6d8280df85c6e5b2ddba635780cd2912d9c5d425.camel@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "l.stach@pengutronix.de" <l.stach@pengutronix.de>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Andy Duan <fugang.duan@nxp.com>
+To: Leonard Crestez <leonard.crestez@nxp.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Andy Duan <fugang.duan@nxp.com>
 Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Robin Gong <yibin.gong@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-SGVsbG8sDQoNCk9uIGEgYnVpbGQgZmFybSBhdCBOWFAgd2UgZm91bmQgdGhhdCBsaW51eC1uZXh0
-IG5vdyBmYWlscyBvbiBzaW1wbGUNCmxvb3BiYWNrIHRlc3RzIG9uIGlteDZzeC1zZGIgKGJ1dCBu
-b3Qgb3RoZXIgU09DcyBBRkFJQ1QpLiBJIHRyYWNrZWQNCnRoaXMgZG93biB0byBjb21taXQgMzBm
-ZGQ1MWJlMTYxDQooIkFSTTogaW14X3Y2X3Y3X2RlZmNvbmZpZzogYWRkIENPTkZJR19GV19MT0FE
-RVJfVVNFUl9IRUxQRVIiKQ0KDQpBbGwgdGhhdCBkb2VzIGlzIGVuYWJsZSBsb2FkaW5nIFNETUEg
-ZmlybXdhcmUgZnJvbSByb290ZnMsIGluIHRoZW9yeQ0KdGhpcyBjb25maWcgd2FzIGFsd2F5cyBz
-dXBwb3J0ZWQgc28gaXQgd291bGQgbm90IGJlIGEgbmV3IGJ1Zy4NCg0KVGhpcyBkb2Vzbid0IGhh
-cHBlbiB3aXRoIHRoZSBOWFAgdmVuZG9yIHRyZWUgYnV0IHRoZXJlIGlzIHF1aXRlIGEgbGFyZ2UN
-CmRlbHRhIGluIHVhcnQgZG1hIGNvZGUuIEluIHBhcnRpY3VsYXIgdXBzdHJlYW0gZHJvcHBlZCBJ
-RERNQUVOIGNsYWltaW5nDQp0aGF0IHRoaXMgd29ya3Mgd2l0aCBib3RoIFJPTSBhbmQgRlcgc2Ny
-aXB0cywgc2VlIGNvbW1pdCA5MDVjMGRlY2FkMjgNCigic2VyaWFsOiBpbXg6IGRvbid0IHVzZSBp
-ZGxlIGNvbmRpdGlvbiBkZXRlY3QgZm9yIERNQSB0cmFuc2ZlcnMiKQ0KDQpUaGlzIGRvZXNuJ3Qg
-c2VlbSB0byB3b3JrIG9uIDZzeCB0aG91Z2ggYW5kIEkgZG9uJ3Qga25vdyB3aHkgOigNCg0KVGhl
-IGlzc3VlIGNhbiBiZSB3b3JrZWQtYXJvdW5kIGJ5IGZvcmNpbmcgUlggc2NyaXB0IGZyb20gUk9N
-Og0KDQpkaWZmIC0tZ2l0IGRyaXZlcnMvZG1hL2lteC1zZG1hLmMgZHJpdmVycy9kbWEvaW14LXNk
-bWEuYw0KQEAgLTg5NCw5ICs4OTQsMTEgQEAgc3RhdGljIHZvaWQgc2RtYV9nZXRfcGMoc3RydWN0
-IHNkbWFfY2hhbm5lbCAqc2RtYWMsDQogICAgICAgICAgICAgICAgYnJlYWs7DQogICAgICAgIGNh
-c2UgSU1YX0RNQVRZUEVfVUFSVDoNCi0gICAgICAgICAgICAgICBwZXJfMl9lbWkgPSBzZG1hLT5z
-Y3JpcHRfYWRkcnMtPnVhcnRfMl9tY3VfYWRkcjsNCisgICAgICAgICAgICAgICAvL3Blcl8yX2Vt
-aSA9IHNkbWEtPnNjcmlwdF9hZGRycy0+dWFydF8yX21jdV9hZGRyOw0KKyAgICAgICAgICAgICAg
-IHBlcl8yX2VtaSA9IDgxNzsNCiAgICAgICAgICAgICAgICBlbWlfMl9wZXIgPSBzZG1hLT5zY3Jp
-cHRfYWRkcnMtPm1jdV8yX2FwcF9hZGRyOw0KICAgICAgICAgICAgICAgIGJyZWFrOw0KICAgICAg
-ICBjYXNlIElNWF9ETUFUWVBFX1VBUlRfU1A6DQoNClRoZSBhYm92ZSBkb2Vzbid0IGxvb2sgbGlr
-ZSBhIGdvb2QgZml4LiBJIHRyaWVkIHRvIHJldmVydCA5MDVjMGRlY2FkMjgNCmFuZCByZXNvbHZl
-IGNvbmZsaWN0cyBhbmQgdGhhdCBhbHNvIHNlZW1zIHRvIHdvcmssIHB1c2hlZCBoZXJlOg0KaHR0
-cHM6Ly9naXRodWIuY29tL2NkbGVvbmFyZC9saW51eC9jb21taXQvMGExNzU3ZjQ2N2U2ZGM5NjAz
-N2VjMmUzZWE3Yzg4YzVhNGViMmNlYg0KDQpZb3UgY2FuIGZpbmQgdGVzdCBjb2RlIGhlcmUgKG5v
-dCB2ZXJ5IGludGVyZXN0aW5nKToNCmh0dHBzOi8vc291cmNlLmNvZGVhdXJvcmEub3JnL2V4dGVy
-bmFsL2lteC9pbXgtdGVzdC90cmVlL3Rlc3QvbXhjX3VhcnRfdGVzdC9teGNfdWFydF90ZXN0LmM/
-aD1pbXhfNC4xNC42Ml8xLjAuMF9iZXRhDQoNCkFueSBpZGVhIG9uIGhvdyB0byBmaXggdGhpcz8N
-Cg0KLS0NClJlZ2FyZHMsDQpMZW9uYXJkDQo=
+Am Montag, den 26.11.2018, 11:53 +0000 schrieb Leonard Crestez:
+> Hello,
+> 
+> On a build farm at NXP we found that linux-next now fails on simple
+> loopback tests on imx6sx-sdb (but not other SOCs AFAICT). I tracked
+> this down to commit 30fdd51be161
+> ("ARM: imx_v6_v7_defconfig: add CONFIG_FW_LOADER_USER_HELPER")
+> 
+> All that does is enable loading SDMA firmware from rootfs, in theory
+> this config was always supported so it would not be a new bug.
+> 
+> This doesn't happen with the NXP vendor tree but there is quite a large
+> delta in uart dma code. In particular upstream dropped IDDMAEN claiming
+> that this works with both ROM and FW scripts, see commit 905c0decad28
+> ("serial: imx: don't use idle condition detect for DMA transfers")
+> 
+> This doesn't seem to work on 6sx though and I don't know why :(
+> 
+> The issue can be worked-around by forcing RX script from ROM:
+> 
+> diff --git drivers/dma/imx-sdma.c drivers/dma/imx-sdma.c
+> @@ -894,9 +894,11 @@ static void sdma_get_pc(struct sdma_channel *sdmac,
+>                 break;
+>         case IMX_DMATYPE_UART:
+> -               per_2_emi = sdma->script_addrs->uart_2_mcu_addr;
+> +               //per_2_emi = sdma->script_addrs->uart_2_mcu_addr;
+> +               per_2_emi = 817;
+>                 emi_2_per = sdma->script_addrs->mcu_2_app_addr;
+>                 break;
+>         case IMX_DMATYPE_UART_SP:
+> 
+> The above doesn't look like a good fix. I tried to revert 905c0decad28
+> and resolve conflicts and that also seems to work, pushed here:
+> https://github.com/cdleonard/linux/commit/0a1757f467e6dc96037ec2e3ea7c88c5a4eb2ceb
+> 
+> You can find test code here (not very interesting):
+> https://source.codeaurora.org/external/imx/imx-test/tree/test/mxc_uart_test/mxc_uart_test.c?h=imx_4.14.62_1.0.0_beta
+> 
+> Any idea on how to fix this?
+
+The RAM script is probably busted, as it doesn't provide the same
+interface as the ROM script. The assumption of 905c0decad28 was that
+the RAM script is an extension to the ROM script, but it seems like
+this is not the case and the RAM script actually dropped some crucial
+functionality.
+
+See also https://lkml.org/lkml/2018/9/20/522
+
+Please see if you can follow up internally and get a fixed SDMA
+firmware pushed out. Fixed probably only means that the UART script
+needs to be dropped, as the ROM script is totally fine when doing the
+correct setup in the UART driver and the sole purpose of the RAM script
+was to work with the broken UART driver.
+
+Regards,
+Lucas
