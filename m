@@ -1,72 +1,180 @@
-From: Lucas Stach <l.stach@pengutronix.de>
-Subject: Re: imx6sx uart failing loopback tests with sdma firmware (ROM
- works)
-Date: Mon, 26 Nov 2018 13:01:51 +0100
-Message-ID: <1543233711.2507.29.camel@pengutronix.de>
-References: <6d8280df85c6e5b2ddba635780cd2912d9c5d425.camel@nxp.com>
+From: Ryan Case <ryandcase@chromium.org>
+Subject: [PATCH] tty: serial: qcom_geni_serial: Fix softlock
+Date: Mon, 26 Nov 2018 18:25:36 -0800
+Message-ID: <20181127022536.104663-1-ryandcase@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <6d8280df85c6e5b2ddba635780cd2912d9c5d425.camel@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Leonard Crestez <leonard.crestez@nxp.com>, "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, Andy Duan <fugang.duan@nxp.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Robin Gong <yibin.gong@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Evan Green <evgreen@chromium.org>, Doug Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ryan Case <ryandcase@chromium.org>
 List-Id: linux-serial@vger.kernel.org
 
-Am Montag, den 26.11.2018, 11:53 +0000 schrieb Leonard Crestez:
-> Hello,
-> 
-> On a build farm at NXP we found that linux-next now fails on simple
-> loopback tests on imx6sx-sdb (but not other SOCs AFAICT). I tracked
-> this down to commit 30fdd51be161
-> ("ARM: imx_v6_v7_defconfig: add CONFIG_FW_LOADER_USER_HELPER")
-> 
-> All that does is enable loading SDMA firmware from rootfs, in theory
-> this config was always supported so it would not be a new bug.
-> 
-> This doesn't happen with the NXP vendor tree but there is quite a large
-> delta in uart dma code. In particular upstream dropped IDDMAEN claiming
-> that this works with both ROM and FW scripts, see commit 905c0decad28
-> ("serial: imx: don't use idle condition detect for DMA transfers")
-> 
-> This doesn't seem to work on 6sx though and I don't know why :(
-> 
-> The issue can be worked-around by forcing RX script from ROM:
-> 
-> diff --git drivers/dma/imx-sdma.c drivers/dma/imx-sdma.c
-> @@ -894,9 +894,11 @@ static void sdma_get_pc(struct sdma_channel *sdmac,
->                 break;
->         case IMX_DMATYPE_UART:
-> -               per_2_emi = sdma->script_addrs->uart_2_mcu_addr;
-> +               //per_2_emi = sdma->script_addrs->uart_2_mcu_addr;
-> +               per_2_emi = 817;
->                 emi_2_per = sdma->script_addrs->mcu_2_app_addr;
->                 break;
->         case IMX_DMATYPE_UART_SP:
-> 
-> The above doesn't look like a good fix. I tried to revert 905c0decad28
-> and resolve conflicts and that also seems to work, pushed here:
-> https://github.com/cdleonard/linux/commit/0a1757f467e6dc96037ec2e3ea7c88c5a4eb2ceb
-> 
-> You can find test code here (not very interesting):
-> https://source.codeaurora.org/external/imx/imx-test/tree/test/mxc_uart_test/mxc_uart_test.c?h=imx_4.14.62_1.0.0_beta
-> 
-> Any idea on how to fix this?
+Transfers were being divided into device FIFO sized (64 byte max)
+operations which would poll for completion within a spin_lock_irqsave /
+spin_unlock_irqrestore block. This both made things slow by waiting for
+the FIFO to completely drain before adding further data and would also
+result in softlocks on large transmissions.
 
-The RAM script is probably busted, as it doesn't provide the same
-interface as the ROM script. The assumption of 905c0decad28 was that
-the RAM script is an extension to the ROM script, but it seems like
-this is not the case and the RAM script actually dropped some crucial
-functionality.
+This patch allows larger transfers with continuous FIFO additions as
+space becomes available and removes polling from the interrupt handler.
 
-See also https://lkml.org/lkml/2018/9/20/522
+Signed-off-by: Ryan Case <ryandcase@chromium.org>
+Version: 1
+---
 
-Please see if you can follow up internally and get a fixed SDMA
-firmware pushed out. Fixed probably only means that the UART script
-needs to be dropped, as the ROM script is totally fine when doing the
-correct setup in the UART driver and the sole purpose of the RAM script
-was to work with the broken UART driver.
+ drivers/tty/serial/qcom_geni_serial.c | 58 ++++++++++++++++++---------
+ 1 file changed, 40 insertions(+), 18 deletions(-)
 
-Regards,
-Lucas
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 7ded51081add..835a184e0b7d 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -117,6 +117,8 @@ struct qcom_geni_serial_port {
+ 	u32 *rx_fifo;
+ 	u32 loopback;
+ 	bool brk;
++
++	u32 cur_tx_remaining;
+ };
+ 
+ static const struct uart_ops qcom_geni_console_pops;
+@@ -439,6 +441,7 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+ 	struct qcom_geni_serial_port *port;
+ 	bool locked = true;
+ 	unsigned long flags;
++	unsigned int geni_status;
+ 
+ 	WARN_ON(co->index < 0 || co->index >= GENI_UART_CONS_PORTS);
+ 
+@@ -452,6 +455,8 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+ 	else
+ 		spin_lock_irqsave(&uport->lock, flags);
+ 
++	geni_status = readl_relaxed(uport->membase + SE_GENI_STATUS);
++
+ 	/* Cancel the current write to log the fault */
+ 	if (!locked) {
+ 		geni_se_cancel_m_cmd(&port->se);
+@@ -465,9 +470,17 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+ 		}
+ 		writel_relaxed(M_CMD_CANCEL_EN, uport->membase +
+ 							SE_GENI_M_IRQ_CLEAR);
+-	}
++	} else if ((geni_status & M_GENI_CMD_ACTIVE) && !port->cur_tx_remaining)
++		/* It seems we can interrupt existing transfers unless all data
++		 * has been sent, in which case we need to look for done first.
++		 */
++		qcom_geni_serial_poll_tx_done(uport);
+ 
+ 	__qcom_geni_serial_console_write(uport, s, count);
++
++	if (port->cur_tx_remaining)
++		qcom_geni_serial_setup_tx(uport, port->cur_tx_remaining);
++
+ 	if (locked)
+ 		spin_unlock_irqrestore(&uport->lock, flags);
+ }
+@@ -701,40 +714,47 @@ static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop)
+ 	port->handle_rx(uport, total_bytes, drop);
+ }
+ 
+-static void qcom_geni_serial_handle_tx(struct uart_port *uport)
++static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
++		bool active)
+ {
+ 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+ 	struct circ_buf *xmit = &uport->state->xmit;
+ 	size_t avail;
+ 	size_t remaining;
++	size_t pending;
+ 	int i;
+ 	u32 status;
+ 	unsigned int chunk;
+ 	int tail;
+-	u32 irq_en;
+ 
+-	chunk = uart_circ_chars_pending(xmit);
+ 	status = readl_relaxed(uport->membase + SE_GENI_TX_FIFO_STATUS);
+-	/* Both FIFO and framework buffer are drained */
+-	if (!chunk && !status) {
++
++	/* Complete the current tx command before taking newly added data */
++	if (active)
++		pending = port->cur_tx_remaining;
++	else
++		pending = uart_circ_chars_pending(xmit);
++
++	/* All data has been transmitted and acknowledged as received */
++	if (!pending && !status && done) {
+ 		qcom_geni_serial_stop_tx(uport);
+ 		goto out_write_wakeup;
+ 	}
+ 
+-	if (!uart_console(uport)) {
+-		irq_en = readl_relaxed(uport->membase + SE_GENI_M_IRQ_EN);
+-		irq_en &= ~(M_TX_FIFO_WATERMARK_EN);
+-		writel_relaxed(0, uport->membase + SE_GENI_TX_WATERMARK_REG);
+-		writel_relaxed(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
+-	}
++	avail = port->tx_fifo_depth - (status & TX_FIFO_WC);
++	avail *= port->tx_bytes_pw;
++	if (avail < 0)
++		avail = 0;
+ 
+-	avail = (port->tx_fifo_depth - port->tx_wm) * port->tx_bytes_pw;
+ 	tail = xmit->tail;
+-	chunk = min3((size_t)chunk, (size_t)(UART_XMIT_SIZE - tail), avail);
++	chunk = min3((size_t)pending, (size_t)(UART_XMIT_SIZE - tail), avail);
+ 	if (!chunk)
+ 		goto out_write_wakeup;
+ 
+-	qcom_geni_serial_setup_tx(uport, chunk);
++	if (!port->cur_tx_remaining) {
++		qcom_geni_serial_setup_tx(uport, pending);
++		port->cur_tx_remaining = pending;
++	}
+ 
+ 	remaining = chunk;
+ 	for (i = 0; i < chunk; ) {
+@@ -753,11 +773,10 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport)
+ 		tail += tx_bytes;
+ 		uport->icount.tx += tx_bytes;
+ 		remaining -= tx_bytes;
++		port->cur_tx_remaining -= tx_bytes;
+ 	}
+ 
+ 	xmit->tail = tail & (UART_XMIT_SIZE - 1);
+-	if (uart_console(uport))
+-		qcom_geni_serial_poll_tx_done(uport);
+ out_write_wakeup:
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(uport);
+@@ -767,6 +786,7 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
+ {
+ 	unsigned int m_irq_status;
+ 	unsigned int s_irq_status;
++	unsigned int geni_status;
+ 	struct uart_port *uport = dev;
+ 	unsigned long flags;
+ 	unsigned int m_irq_en;
+@@ -780,6 +800,7 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
+ 	spin_lock_irqsave(&uport->lock, flags);
+ 	m_irq_status = readl_relaxed(uport->membase + SE_GENI_M_IRQ_STATUS);
+ 	s_irq_status = readl_relaxed(uport->membase + SE_GENI_S_IRQ_STATUS);
++	geni_status = readl_relaxed(uport->membase + SE_GENI_STATUS);
+ 	m_irq_en = readl_relaxed(uport->membase + SE_GENI_M_IRQ_EN);
+ 	writel_relaxed(m_irq_status, uport->membase + SE_GENI_M_IRQ_CLEAR);
+ 	writel_relaxed(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
+@@ -794,7 +815,8 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
+ 
+ 	if (m_irq_status & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN) &&
+ 	    m_irq_en & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN))
+-		qcom_geni_serial_handle_tx(uport);
++		qcom_geni_serial_handle_tx(uport, m_irq_status & M_CMD_DONE_EN,
++					geni_status & M_GENI_CMD_ACTIVE);
+ 
+ 	if (s_irq_status & S_GP_IRQ_0_EN || s_irq_status & S_GP_IRQ_1_EN) {
+ 		if (s_irq_status & S_GP_IRQ_0_EN)
+-- 
+2.20.0.rc0.387.gc7a69e6b6c-goog
