@@ -1,180 +1,72 @@
-From: Ryan Case <ryandcase@chromium.org>
-Subject: [PATCH] tty: serial: qcom_geni_serial: Fix softlock
-Date: Mon, 26 Nov 2018 18:25:36 -0800
-Message-ID: <20181127022536.104663-1-ryandcase@chromium.org>
+From: Peter Shih <pihsun@chromium.org>
+Subject: [PATCH] tty: serial: 8250_mtk: always resume the device in probe.
+Date: Tue, 27 Nov 2018 12:49:50 +0800
+Message-ID: <20181127044952.45703-1-pihsun@chromium.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Evan Green <evgreen@chromium.org>, Doug Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ryan Case <ryandcase@chromium.org>
+Cc: pihsun@chromium.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Transfers were being divided into device FIFO sized (64 byte max)
-operations which would poll for completion within a spin_lock_irqsave /
-spin_unlock_irqrestore block. This both made things slow by waiting for
-the FIFO to completely drain before adding further data and would also
-result in softlocks on large transmissions.
+serial8250_register_8250_port calls uart_config_port, which calls
+config_port on the port before it tries to power on the port. So we need
+the port to be on before calling serial8250_register_8250_port. Change
+the code to always do a runtime resume in probe before registering port,
+and always do a runtime suspend in remove.
 
-This patch allows larger transfers with continuous FIFO additions as
-space becomes available and removes polling from the interrupt handler.
+This basically reverts the change in commit 68e5fc4a255a ("tty: serial:
+8250_mtk: use pm_runtime callbacks for enabling"), but still use
+pm_runtime callbacks.
 
-Signed-off-by: Ryan Case <ryandcase@chromium.org>
-Version: 1
+Fixes: 68e5fc4a255a ("tty: serial: 8250_mtk: use pm_runtime callbacks for enabling")
+Signed-off-by: Peter Shih <pihsun@chromium.org>
 ---
+ drivers/tty/serial/8250/8250_mtk.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
- drivers/tty/serial/qcom_geni_serial.c | 58 ++++++++++++++++++---------
- 1 file changed, 40 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 7ded51081add..835a184e0b7d 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -117,6 +117,8 @@ struct qcom_geni_serial_port {
- 	u32 *rx_fifo;
- 	u32 loopback;
- 	bool brk;
-+
-+	u32 cur_tx_remaining;
- };
+diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+index dd5e1cede2b58..c3f933d10295e 100644
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -213,17 +213,17 @@ static int mtk8250_probe(struct platform_device *pdev)
  
- static const struct uart_ops qcom_geni_console_pops;
-@@ -439,6 +441,7 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
- 	struct qcom_geni_serial_port *port;
- 	bool locked = true;
- 	unsigned long flags;
-+	unsigned int geni_status;
+ 	platform_set_drvdata(pdev, data);
  
- 	WARN_ON(co->index < 0 || co->index >= GENI_UART_CONS_PORTS);
- 
-@@ -452,6 +455,8 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
- 	else
- 		spin_lock_irqsave(&uport->lock, flags);
- 
-+	geni_status = readl_relaxed(uport->membase + SE_GENI_STATUS);
-+
- 	/* Cancel the current write to log the fault */
- 	if (!locked) {
- 		geni_se_cancel_m_cmd(&port->se);
-@@ -465,9 +470,17 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
- 		}
- 		writel_relaxed(M_CMD_CANCEL_EN, uport->membase +
- 							SE_GENI_M_IRQ_CLEAR);
+-	pm_runtime_enable(&pdev->dev);
+-	if (!pm_runtime_enabled(&pdev->dev)) {
+-		err = mtk8250_runtime_resume(&pdev->dev);
+-		if (err)
+-			return err;
 -	}
-+	} else if ((geni_status & M_GENI_CMD_ACTIVE) && !port->cur_tx_remaining)
-+		/* It seems we can interrupt existing transfers unless all data
-+		 * has been sent, in which case we need to look for done first.
-+		 */
-+		qcom_geni_serial_poll_tx_done(uport);
++	err = mtk8250_runtime_resume(&pdev->dev);
++	if (err)
++		return err;
  
- 	__qcom_geni_serial_console_write(uport, s, count);
+ 	data->line = serial8250_register_8250_port(&uart);
+ 	if (data->line < 0)
+ 		return data->line;
+ 
++	pm_runtime_set_active(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
 +
-+	if (port->cur_tx_remaining)
-+		qcom_geni_serial_setup_tx(uport, port->cur_tx_remaining);
-+
- 	if (locked)
- 		spin_unlock_irqrestore(&uport->lock, flags);
- }
-@@ -701,40 +714,47 @@ static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop)
- 	port->handle_rx(uport, total_bytes, drop);
+ 	return 0;
  }
  
--static void qcom_geni_serial_handle_tx(struct uart_port *uport)
-+static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
-+		bool active)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
- 	struct circ_buf *xmit = &uport->state->xmit;
- 	size_t avail;
- 	size_t remaining;
-+	size_t pending;
- 	int i;
- 	u32 status;
- 	unsigned int chunk;
- 	int tail;
--	u32 irq_en;
+@@ -234,13 +234,11 @@ static int mtk8250_remove(struct platform_device *pdev)
+ 	pm_runtime_get_sync(&pdev->dev);
  
--	chunk = uart_circ_chars_pending(xmit);
- 	status = readl_relaxed(uport->membase + SE_GENI_TX_FIFO_STATUS);
--	/* Both FIFO and framework buffer are drained */
--	if (!chunk && !status) {
-+
-+	/* Complete the current tx command before taking newly added data */
-+	if (active)
-+		pending = port->cur_tx_remaining;
-+	else
-+		pending = uart_circ_chars_pending(xmit);
-+
-+	/* All data has been transmitted and acknowledged as received */
-+	if (!pending && !status && done) {
- 		qcom_geni_serial_stop_tx(uport);
- 		goto out_write_wakeup;
- 	}
+ 	serial8250_unregister_port(data->line);
++	mtk8250_runtime_suspend(&pdev->dev);
  
--	if (!uart_console(uport)) {
--		irq_en = readl_relaxed(uport->membase + SE_GENI_M_IRQ_EN);
--		irq_en &= ~(M_TX_FIFO_WATERMARK_EN);
--		writel_relaxed(0, uport->membase + SE_GENI_TX_WATERMARK_REG);
--		writel_relaxed(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
--	}
-+	avail = port->tx_fifo_depth - (status & TX_FIFO_WC);
-+	avail *= port->tx_bytes_pw;
-+	if (avail < 0)
-+		avail = 0;
+ 	pm_runtime_disable(&pdev->dev);
+ 	pm_runtime_put_noidle(&pdev->dev);
  
--	avail = (port->tx_fifo_depth - port->tx_wm) * port->tx_bytes_pw;
- 	tail = xmit->tail;
--	chunk = min3((size_t)chunk, (size_t)(UART_XMIT_SIZE - tail), avail);
-+	chunk = min3((size_t)pending, (size_t)(UART_XMIT_SIZE - tail), avail);
- 	if (!chunk)
- 		goto out_write_wakeup;
+-	if (!pm_runtime_status_suspended(&pdev->dev))
+-		mtk8250_runtime_suspend(&pdev->dev);
+-
+ 	return 0;
+ }
  
--	qcom_geni_serial_setup_tx(uport, chunk);
-+	if (!port->cur_tx_remaining) {
-+		qcom_geni_serial_setup_tx(uport, pending);
-+		port->cur_tx_remaining = pending;
-+	}
- 
- 	remaining = chunk;
- 	for (i = 0; i < chunk; ) {
-@@ -753,11 +773,10 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport)
- 		tail += tx_bytes;
- 		uport->icount.tx += tx_bytes;
- 		remaining -= tx_bytes;
-+		port->cur_tx_remaining -= tx_bytes;
- 	}
- 
- 	xmit->tail = tail & (UART_XMIT_SIZE - 1);
--	if (uart_console(uport))
--		qcom_geni_serial_poll_tx_done(uport);
- out_write_wakeup:
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(uport);
-@@ -767,6 +786,7 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- {
- 	unsigned int m_irq_status;
- 	unsigned int s_irq_status;
-+	unsigned int geni_status;
- 	struct uart_port *uport = dev;
- 	unsigned long flags;
- 	unsigned int m_irq_en;
-@@ -780,6 +800,7 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- 	spin_lock_irqsave(&uport->lock, flags);
- 	m_irq_status = readl_relaxed(uport->membase + SE_GENI_M_IRQ_STATUS);
- 	s_irq_status = readl_relaxed(uport->membase + SE_GENI_S_IRQ_STATUS);
-+	geni_status = readl_relaxed(uport->membase + SE_GENI_STATUS);
- 	m_irq_en = readl_relaxed(uport->membase + SE_GENI_M_IRQ_EN);
- 	writel_relaxed(m_irq_status, uport->membase + SE_GENI_M_IRQ_CLEAR);
- 	writel_relaxed(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
-@@ -794,7 +815,8 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- 
- 	if (m_irq_status & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN) &&
- 	    m_irq_en & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN))
--		qcom_geni_serial_handle_tx(uport);
-+		qcom_geni_serial_handle_tx(uport, m_irq_status & M_CMD_DONE_EN,
-+					geni_status & M_GENI_CMD_ACTIVE);
- 
- 	if (s_irq_status & S_GP_IRQ_0_EN || s_irq_status & S_GP_IRQ_1_EN) {
- 		if (s_irq_status & S_GP_IRQ_0_EN)
 -- 
 2.20.0.rc0.387.gc7a69e6b6c-goog
