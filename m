@@ -1,212 +1,54 @@
-From: Ryan Case <ryandcase@chromium.org>
-Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Fix softlock
-Date: Tue, 27 Nov 2018 17:24:44 -0800
-Message-ID: <CACjz--n6eXtT6-CDhVEStSD_59yJ-fdmfHzo9SH_da5ZzL_mDw@mail.gmail.com>
-References: <20181127022536.104663-1-ryandcase@chromium.org> <154336440880.88331.11610393939844825622@swboyd.mtv.corp.google.com>
+From: Stephen Boyd <sboyd@kernel.org>
+Subject: Re: [PATCH 02/14] dt-bindings: soc: milbeaut: Add Milbeaut trampoline
+ description
+Date: Tue, 27 Nov 2018 18:01:14 -0800
+Message-ID: <154337047410.88331.9696178601340675631@swboyd.mtv.corp.google.com>
+References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com>
+ <1542589274-13878-3-git-send-email-sugaya.taichi@socionext.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <154336440880.88331.11610393939844825622@swboyd.mtv.corp.google.com>
+In-Reply-To: <1542589274-13878-3-git-send-email-sugaya.taichi@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Boyd <swboyd@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Evan Green <evgreen@chromium.org>, Doug Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Michael Turquette <mturquette@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>, Sugaya Taichi <sugaya.taichi@socionext.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Nov 27, 2018 at 4:20 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> Quoting Ryan Case (2018-11-26 18:25:36)
-> > Transfers were being divided into device FIFO sized (64 byte max)
-> > operations which would poll for completion within a spin_lock_irqsave /
-> > spin_unlock_irqrestore block. This both made things slow by waiting for
-> > the FIFO to completely drain before adding further data and would also
-> > result in softlocks on large transmissions.
-> >
-> > This patch allows larger transfers with continuous FIFO additions as
-> > space becomes available and removes polling from the interrupt handler.
-> >
-> > Signed-off-by: Ryan Case <ryandcase@chromium.org>
-> > Version: 1
->
-> I've never seen a Version tag before. Did you manually add this?
+Quoting Sugaya Taichi (2018-11-18 17:01:07)
+> Add DT bindings document for Milbeaut trampoline.
+> =
 
-I submitted with patman, this should have been Series-version:
+> Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
+> ---
+>  .../devicetree/bindings/soc/socionext/socionext,m10v.txt     | 12 ++++++=
+++++++
+>  1 file changed, 12 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/soc/socionext/socio=
+next,m10v.txt
+> =
 
->
-> > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> > index 7ded51081add..835a184e0b7d 100644
-> > --- a/drivers/tty/serial/qcom_geni_serial.c
-> > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> > @@ -117,6 +117,8 @@ struct qcom_geni_serial_port {
-> >         u32 *rx_fifo;
-> >         u32 loopback;
-> >         bool brk;
-> > +
-> > +       u32 cur_tx_remaining;
->
-> Nitpick: Can it just be tx_remaining? And why u32? Why not unsigned int?
+> diff --git a/Documentation/devicetree/bindings/soc/socionext/socionext,m1=
+0v.txt b/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
+> new file mode 100644
+> index 0000000..f5d906c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
+> @@ -0,0 +1,12 @@
+> +Socionext M10V SMP trampoline driver binding
+> +
+> +This is a driver to wait for sub-cores while boot process.
+> +
+> +- compatible: should be "socionext,smp-trampoline"
+> +- reg: should be <0x4C000100 0x100>
+> +
+> +EXAMPLE
+> +       trampoline: trampoline@0x4C000100 {
 
-Sure, and unsigned int is fine.
+Drop the 0x part of unit addresses.
 
->
-> >  };
-> >
-> >  static const struct uart_ops qcom_geni_console_pops;
-> > @@ -439,6 +441,7 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
-> >         struct qcom_geni_serial_port *port;
-> >         bool locked = true;
-> >         unsigned long flags;
-> > +       unsigned int geni_status;
->
-> Nitpick: Use u32 for register reads.
+> +               compatible =3D "socionext,smp-trampoline";
+> +               reg =3D <0x4C000100 0x100>;
 
-will do.
-
->
-> >
-> >         WARN_ON(co->index < 0 || co->index >= GENI_UART_CONS_PORTS);
-> >
-> > @@ -465,9 +470,17 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
-> >                 }
-> >                 writel_relaxed(M_CMD_CANCEL_EN, uport->membase +
-> >                                                         SE_GENI_M_IRQ_CLEAR);
-> > -       }
-> > +       } else if ((geni_status & M_GENI_CMD_ACTIVE) && !port->cur_tx_remaining)
-> > +               /* It seems we can interrupt existing transfers unless all data
->
-> Nitpick: Have /* on a line by itself
->
-> Is this comment supposed to say "we can't interrupt existing transfers"?
-
-Nope, comment is correct as is.
-
->
-> > +                * has been sent, in which case we need to look for done first.
-> > +                */
-> > +               qcom_geni_serial_poll_tx_done(uport);
->
-> Another nitpick: Please put braces around multi-line if branches for
-> greater code clarity.
-
-will do.
-
->
-> >
-> >         __qcom_geni_serial_console_write(uport, s, count);
-> > +
-> > +       if (port->cur_tx_remaining)
-> > +               qcom_geni_serial_setup_tx(uport, port->cur_tx_remaining);
->
-> Does this happen? Is the console being used as a tty at the same time?
-
-Yup, happens quite a bit.
-
->
-> > +
-> >         if (locked)
-> >                 spin_unlock_irqrestore(&uport->lock, flags);
-> >  }
-> > @@ -701,40 +714,47 @@ static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop)
-> >         port->handle_rx(uport, total_bytes, drop);
-> >  }
-> >
-> > -static void qcom_geni_serial_handle_tx(struct uart_port *uport)
-> > +static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
-> > +               bool active)
-> >  {
-> >         struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
-> >         struct circ_buf *xmit = &uport->state->xmit;
-> >         size_t avail;
-> >         size_t remaining;
-> > +       size_t pending;
-> >         int i;
-> >         u32 status;
-> >         unsigned int chunk;
-> >         int tail;
-> > -       u32 irq_en;
-> >
-> > -       chunk = uart_circ_chars_pending(xmit);
-> >         status = readl_relaxed(uport->membase + SE_GENI_TX_FIFO_STATUS);
-> > -       /* Both FIFO and framework buffer are drained */
-> > -       if (!chunk && !status) {
-> > +
-> > +       /* Complete the current tx command before taking newly added data */
-> > +       if (active)
-> > +               pending = port->cur_tx_remaining;
-> > +       else
-> > +               pending = uart_circ_chars_pending(xmit);
-> > +
-> > +       /* All data has been transmitted and acknowledged as received */
-> > +       if (!pending && !status && done) {
->
-> Nitpick: status is a poor variable name to test here. I don't understand
-> what this line is doing. Maybe it would help to have another local
-> variable like 'needs_attention'?
-
-It could be renamed but since this isn't a general file cleanup patch
-I was avoiding non-functional changes. It is the TX_FIFO_STATUS
-register, if non-zero there is still data in the FIFO or related
-activity ongoing.
-
->
-> >                 qcom_geni_serial_stop_tx(uport);
-> >                 goto out_write_wakeup;
-> >         }
-> >
-> > -       if (!uart_console(uport)) {
-> > -               irq_en = readl_relaxed(uport->membase + SE_GENI_M_IRQ_EN);
-> > -               irq_en &= ~(M_TX_FIFO_WATERMARK_EN);
-> > -               writel_relaxed(0, uport->membase + SE_GENI_TX_WATERMARK_REG);
-> > -               writel_relaxed(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
-> > -       }
-> > +       avail = port->tx_fifo_depth - (status & TX_FIFO_WC);
-> > +       avail *= port->tx_bytes_pw;
-> > +       if (avail < 0)
-> > +               avail = 0;
->
-> How can 'avail' be less than 0? It's size_t which is unsigned? If
-> underflow is happening from that subtraction or overflow from the
-> multiply that could be bad but I hope that is impossible.
-
-I hope underflow is impossible as well. However, if the hardware did
-wind up in a strange state I wanted to err on the side of not throwing
-away data and being able to resume later if things recovered. I can
-remove the defensive checks if that's the custom, otherwise I'll
-update the comparison logic accordingly.
-
->
-> >
-> > -       avail = (port->tx_fifo_depth - port->tx_wm) * port->tx_bytes_pw;
-> >         tail = xmit->tail;
-> > -       chunk = min3((size_t)chunk, (size_t)(UART_XMIT_SIZE - tail), avail);
-> > +       chunk = min3((size_t)pending, (size_t)(UART_XMIT_SIZE - tail), avail);
->
-> Nitpick: If we made 'avail' unsigned int would we be able to drop the
-> casts on this min3() call? This line is quite hard to read.
-
-Seems they can go away without any changes.
-
->
-> >         if (!chunk)
-> >                 goto out_write_wakeup;
-> >
-> > -       qcom_geni_serial_setup_tx(uport, chunk);
-> > +       if (!port->cur_tx_remaining) {
-> > +               qcom_geni_serial_setup_tx(uport, pending);
-> > +               port->cur_tx_remaining = pending;
-> > +       }
-> >
-> >         remaining = chunk;
-> >         for (i = 0; i < chunk; ) {
-> > @@ -767,6 +786,7 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
-> >  {
-> >         unsigned int m_irq_status;
-> >         unsigned int s_irq_status;
-> > +       unsigned int geni_status;
->
-> Nitpick: I guess this driver isn't using u32 for registers already.
-> Would be nice to mop this up in another patch.
->
-> >         struct uart_port *uport = dev;
-> >         unsigned long flags;
-> >         unsigned int m_irq_en;
-> >
+Looks like a software construct, which we wouldn't want to put into DT
+this way. DT doesn't describe drivers.
