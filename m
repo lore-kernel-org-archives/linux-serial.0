@@ -1,107 +1,88 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v1 3/3] serial: tegra: fix some spelling mistakes
-Date: Wed, 28 Nov 2018 10:20:04 +0100
-Message-ID: <20181128092004.GE17419@ulmo>
-References: <20181101015230.27310-1-marcel@ziswiler.com>
- <20181101015230.27310-4-marcel@ziswiler.com>
+From: Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH v2 01/10] mailbox: Support blocking transfers in atomic
+ context
+Date: Wed, 28 Nov 2018 09:43:29 +0000
+Message-ID: <0545f5e1-1740-2129-9d0e-5c950bd9bf74@nvidia.com>
+References: <20181112151853.29289-1-thierry.reding@gmail.com>
+ <20181112151853.29289-2-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="6e7ZaeXHKrTJCxdu"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181101015230.27310-4-marcel@ziswiler.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marcel Ziswiler <marcel@ziswiler.com>
-Cc: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Jiri Slaby <jslaby@suse.com>, Jonathan Hunter <jonathanh@nvidia.com>, linux-serial@vger.kernel.org, Laxman Dewangan <ldewangan@nvidia.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20181112151853.29289-2-thierry.reding@gmail.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jassi Brar <jassisinghbrar@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, Mika Liljeberg <mliljeberg@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>, Timo Alho <talho@nvidia.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-tegra@vger.kernel.org, Pekka Pessi <ppessi@nvidia.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
 
---6e7ZaeXHKrTJCxdu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Nov 01, 2018 at 02:52:30AM +0100, Marcel Ziswiler wrote:
-> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
->=20
-> Fix a few spelling mistakes I stumbled upon while debugging a customers
-> UART issues.
->=20
-> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
->=20
+On 12/11/2018 15:18, Thierry Reding wrote:
+> From: Thierry Reding <treding@nvidia.com>
+> 
+> The mailbox framework supports blocking transfers via completions for
+> clients that can sleep. In order to support blocking transfers in cases
+> where the transmission is not permitted to sleep, add a new ->flush()
+> callback that controller drivers can implement to busy loop until the
+> transmission has been completed. This will automatically be called when
+> available and interrupts are disabled for clients that request blocking
+> transfers.
+> 
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
 > ---
->=20
->  drivers/tty/serial/serial-tegra.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/seria=
-l-tegra.c
-> index af2a29cfbbe9..d5269aaaf9b2 100644
-> --- a/drivers/tty/serial/serial-tegra.c
-> +++ b/drivers/tty/serial/serial-tegra.c
-> @@ -746,7 +746,7 @@ static void tegra_uart_stop_rx(struct uart_port *u)
->  	if (!tup->rx_in_progress)
->  		return;
-> =20
-> -	tegra_uart_wait_sym_time(tup, 1); /* wait a character interval */
-> +	tegra_uart_wait_sym_time(tup, 1); /* wait one character interval */
-> =20
->  	ier =3D tup->ier_shadow;
->  	ier &=3D ~(UART_IER_RDI | UART_IER_RLSI | UART_IER_RTOIE |
-> @@ -887,7 +887,7 @@ static int tegra_uart_hw_init(struct tegra_uart_port =
-*tup)
->  	 *
->  	 * EORD is different interrupt than RX_TIMEOUT - RX_TIMEOUT occurs when
->  	 * the DATA is sitting in the FIFO and couldn't be transferred to the
-> -	 * DMA as the DMA size alignment(4 bytes) is not met. EORD will be
-> +	 * DMA as the DMA size alignment (4 bytes) is not met. EORD will be
->  	 * triggered when there is a pause of the incomming data stream for 4
->  	 * characters long.
->  	 *
-> @@ -1079,7 +1079,7 @@ static void tegra_uart_set_termios(struct uart_port=
- *u,
->  	if (tup->rts_active)
->  		set_rts(tup, false);
-> =20
-> -	/* Clear all interrupts as configuration is going to be change */
-> +	/* Clear all interrupts as configuration is going to be changed */
->  	tegra_uart_write(tup, tup->ier_shadow | UART_IER_RDI, UART_IER);
->  	tegra_uart_read(tup, UART_IER);
->  	tegra_uart_write(tup, 0, UART_IER);
-> @@ -1165,10 +1165,10 @@ static void tegra_uart_set_termios(struct uart_po=
-rt *u,
->  	/* update the port timeout based on new settings */
->  	uart_update_timeout(u, termios->c_cflag, baud);
-> =20
-> -	/* Make sure all write has completed */
-> +	/* Make sure all writes have completed */
->  	tegra_uart_read(tup, UART_IER);
-> =20
-> -	/* Reenable interrupt */
-> +	/* Re-enable interrupt */
+>  drivers/mailbox/mailbox.c          | 8 ++++++++
+>  include/linux/mailbox_controller.h | 4 ++++
+>  2 files changed, 12 insertions(+)
+> 
+> diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
+> index 674b35f402f5..0eaf21259874 100644
+> --- a/drivers/mailbox/mailbox.c
+> +++ b/drivers/mailbox/mailbox.c
+> @@ -267,6 +267,14 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
+>  		unsigned long wait;
+>  		int ret;
+>  
+> +		if (irqs_disabled() && chan->mbox->ops->flush) {
+> +			ret = chan->mbox->ops->flush(chan, chan->cl->tx_tout);
+> +			if (ret < 0)
+> +				tx_tick(chan, ret);
+> +
+> +			return ret;
+> +		}
 
-I think both forms are valid. Either way:
+It seems to me that if mbox_send_message() is called from an atomic
+context AND tx_block is true, then if 'flush' is not populated this
+should be an error condition as we do not wish to call
+wait_for_completion from an atomic context.
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+I understand that there is some debate about adding such flush support,
+but irrespective of the above change, it seems to me that if the
+mbox_send_message() can be called from an atomic context (which it
+appears to), then it should be detecting if someone is trying to do so
+with 'tx_block' set as this should be an error.
 
---6e7ZaeXHKrTJCxdu
-Content-Type: application/pgp-signature; name="signature.asc"
+Furthermore, if the underlying mailbox driver can support sending a
+message from an atomic context and busy wait until it is done, surely
+the mailbox framework should provide a means to support this?
 
------BEGIN PGP SIGNATURE-----
+Now it could be possible for the underlying mailbox driver to detect we
+are in an atomic context and if the 'tx_block' is set do the right thing
+by busy waiting until the message is sent. However, the problem with
+that is, that for the mbox_send_message() to ensure the right thing is
+done, it needs to check that 'tx_done' is set in the case of a blocking
+transfer in an atomic context. At that point you may as well add the
+flush operator as I think it is more implicit/clear.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlv+XcQACgkQ3SOs138+
-s6E7mg//UyZ1H1cQlmNMldSeHIIK4SeXON8qXOeM7HTcLh5uUv/c+R64nrbZ3rQz
-wd8FPn3qsti83FKTIV1Ev1SO93mtrhB5MU1/zBisFXHVPiDLs75J7pMHg2MJ957e
-75ebhBdqOS1JPvbmp1T+J96MtKMkXW6v/9Z9BhL0HVhBmflfsJHrA3FkLJL8/RAM
-vVtJ9RPcXJUgCz+vTjmU4D6E15yKPpPm/eV0nGYbFbwyDMwPag22t8j6sDg2UZ5r
-JKwD9ONmHLXUbjYz3+yw+/vZGcnGJFuJDeFC8gpx4hsK5ZNw1pVs2gxLMjwE1QZm
-liED6qT1VakaIp6/5p3YJncYJxN/4ITyuzC2e7Z8gCxxo5mns/eGzEqlRh+nKcVe
-2kccILiSROjPFa2yjCH6VtwfWsuJmJ55Jhqrfls5k8xS8O4l5Say0zrmgNEb/6X8
-fBwVc3a0ppjkQijklfbvlTo4bajO9gS7Uo+YJ63rmi63kPYSLHi/OkFIGfXNi1Ys
-mrLreQu0Wa3xF16Dadfxw7Jz7y5sa1lj5VSjJt5G4wWi3iw3fOicKjiwutyV7ytL
-ylHU6TyR7Wyz14jPynrUCaGB4uIulPgc34W8KpDN6A4nJOWi4UbHlInhmyErUVCu
-cVoY07JADA5egkRIjt34La6Dz9nC09gB5gzMuhQjHn0oSCcFDjo=
-=bd89
------END PGP SIGNATURE-----
+Cheers
+Jon
 
---6e7ZaeXHKrTJCxdu--
+-- 
+nvpublic
