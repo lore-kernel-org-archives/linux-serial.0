@@ -1,50 +1,39 @@
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v3 15/15] MAINTAINERS: Add entry for RDA Micro SoC architecture
-Date: Wed, 28 Nov 2018 19:21:06 +0530
-Message-ID: <20181128135106.9255-16-manivannan.sadhasivam@linaro.org>
-References: <20181128135106.9255-1-manivannan.sadhasivam@linaro.org>
+From: Stephen Boyd <swboyd@chromium.org>
+Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Fix softlock
+Date: Wed, 28 Nov 2018 08:32:34 -0800
+Message-ID: <154342275484.88331.11625853632580952641@swboyd.mtv.corp.google.com>
+References: <20181127022536.104663-1-ryandcase@chromium.org>
+ <154336440880.88331.11610393939844825622@swboyd.mtv.corp.google.com>
+ <CACjz--n6eXtT6-CDhVEStSD_59yJ-fdmfHzo9SH_da5ZzL_mDw@mail.gmail.com>
+ <154337068886.88331.5708018437286125025@swboyd.mtv.corp.google.com>
+ <CACjz--nbtoHA3ejeF+es4q5qsyYeoLRbUsd+a0r2RYfkuVVwPg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181128135106.9255-1-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <CACjz--nbtoHA3ejeF+es4q5qsyYeoLRbUsd+a0r2RYfkuVVwPg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, daniel.lezcano@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net, overseas.sales@unisoc.com, Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To: Ryan Case <ryandcase@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Evan Green <evgreen@chromium.org>, Doug Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add MAINTAINERS entry for RDA Micro SoC architecture with myself
-and Andreas Färber as the maintainers.
+Quoting Ryan Case (2018-11-27 18:37:15)
+> On Tue, Nov 27, 2018 at 6:04 PM Stephen Boyd <swboyd@chromium.org> wrote:
+> >
+> > Quoting Ryan Case (2018-11-27 17:24:44)
+> >
+> > > I hope underflow is impossible as well. However, if the hardware did
+> > > wind up in a strange state I wanted to err on the side of not throwing
+> > > away data and being able to resume later if things recovered. I can
+> > > remove the defensive checks if that's the custom, otherwise I'll
+> > > update the comparison logic accordingly.
+> >
+> > Well it looks like impossible code because an unsigned value can't be
+> > less than zero. So it's not about customs, more about dead code removal.
+> =
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- MAINTAINERS | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+> Agreed on the current dead code aspect which is why I offered the
+> option of updating the comparison logic, but I can just delete it if
+> you want.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6c3fbbb361f8..7a5ae685a638 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1945,6 +1945,20 @@ M:	Lennert Buytenhek <kernel@wantstofly.org>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
- 
-+ARM/RDA MICRO ARCHITECTURE
-+M:	Andreas Färber <afaerber@suse.de>
-+M:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-+S:	Maintained
-+F:	arch/arm/boot/dts/rda8810pl-*
-+F:	drivers/clocksource/timer-rda.c
-+F:	drivers/irqchip/irq-rda-intc.c
-+F:	drivers/tty/serial/rda-uart.c
-+F:	Documentation/devicetree/bindings/arm/rda.txt
-+F:	Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.txt
-+F:	Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
-+F:	Documentation/devicetree/bindings/timer/rda,8810pl-timer.txt
-+
- ARM/REALTEK ARCHITECTURE
- M:	Andreas Färber <afaerber@suse.de>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
--- 
-2.17.1
+Ok, got it.
