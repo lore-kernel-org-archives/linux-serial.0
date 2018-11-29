@@ -1,181 +1,86 @@
-From: Ryan Case <ryandcase@chromium.org>
-Subject: [PATCH v2] tty: serial: qcom_geni_serial: Fix softlock
-Date: Wed, 28 Nov 2018 15:54:59 -0800
-Message-ID: <20181128235459.180940-1-ryandcase@chromium.org>
+From: Jassi Brar <jassisinghbrar@gmail.com>
+Subject: Re: [PATCH v2 01/10] mailbox: Support blocking transfers in atomic
+ context
+Date: Wed, 28 Nov 2018 23:23:36 -0600
+Message-ID: <CABb+yY1u24JYO68f74qSJ1RpqidJ4H7cnP1Sy=RdqcBHru5XQg@mail.gmail.com>
+References: <20181112151853.29289-1-thierry.reding@gmail.com>
+ <20181112151853.29289-2-thierry.reding@gmail.com>
+ <0545f5e1-1740-2129-9d0e-5c950bd9bf74@nvidia.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Evan Green <evgreen@chromium.org>, Doug Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>, Ryan Case <ryandcase@chromium.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <0545f5e1-1740-2129-9d0e-5c950bd9bf74@nvidia.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jon Hunter <jonathanh@nvidia.com>
+Cc: Devicetree List <devicetree@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, mliljeberg@nvidia.com, Mikko Perttunen <mperttunen@nvidia.com>, talho@nvidia.com, Thierry Reding <thierry.reding@gmail.com>, linux-serial@vger.kernel.org, jslaby@suse.com, linux-tegra@vger.kernel.org, ppessi@nvidia.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Transfers were being divided into device FIFO sized (64 byte max)
-operations which would poll for completion within a spin_lock_irqsave /
-spin_unlock_irqrestore block. This both made things slow by waiting for
-the FIFO to completely drain before adding further data and would also
-result in softlocks on large transmissions.
+On Wed, Nov 28, 2018 at 3:43 AM Jon Hunter <jonathanh@nvidia.com> wrote:
+>
+>
+> On 12/11/2018 15:18, Thierry Reding wrote:
+> > From: Thierry Reding <treding@nvidia.com>
+> >
+> > The mailbox framework supports blocking transfers via completions for
+> > clients that can sleep. In order to support blocking transfers in cases
+> > where the transmission is not permitted to sleep, add a new ->flush()
+> > callback that controller drivers can implement to busy loop until the
+> > transmission has been completed. This will automatically be called when
+> > available and interrupts are disabled for clients that request blocking
+> > transfers.
+> >
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > ---
+> >  drivers/mailbox/mailbox.c          | 8 ++++++++
+> >  include/linux/mailbox_controller.h | 4 ++++
+> >  2 files changed, 12 insertions(+)
+> >
+> > diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
+> > index 674b35f402f5..0eaf21259874 100644
+> > --- a/drivers/mailbox/mailbox.c
+> > +++ b/drivers/mailbox/mailbox.c
+> > @@ -267,6 +267,14 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
+> >               unsigned long wait;
+> >               int ret;
+> >
+> > +             if (irqs_disabled() && chan->mbox->ops->flush) {
+> > +                     ret = chan->mbox->ops->flush(chan, chan->cl->tx_tout);
+> > +                     if (ret < 0)
+> > +                             tx_tick(chan, ret);
+> > +
+> > +                     return ret;
+> > +             }
+>
+> It seems to me that if mbox_send_message() is called from an atomic
+> context AND tx_block is true, then if 'flush' is not populated this
+> should be an error condition as we do not wish to call
+> wait_for_completion from an atomic context.
+>
+> I understand that there is some debate about adding such flush support,
+> but irrespective of the above change, it seems to me that if the
+> mbox_send_message() can be called from an atomic context (which it
+> appears to), then it should be detecting if someone is trying to do so
+> with 'tx_block' set as this should be an error.
+>
+Layers within kernel space have to trust each other. A badly written
+client can break the consumer in so many ways, we can not catch every
+possibility.
 
-This patch allows larger transfers with continuous FIFO additions as
-space becomes available and removes polling from the interrupt handler.
+> Furthermore, if the underlying mailbox driver can support sending a
+> message from an atomic context and busy wait until it is done, surely
+> the mailbox framework should provide a means to support this?
+>
+Being able to put the message on bus in atomic context is a feature -
+which we do support. But busy-waiting in a loop is not a feature, and
+we don't want to encourage that.
 
-Signed-off-by: Ryan Case <ryandcase@chromium.org>
----
-
-Changes in v2:
-- Addressed nits raised by Stephen
-
- drivers/tty/serial/qcom_geni_serial.c | 56 +++++++++++++++++++--------
- 1 file changed, 39 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 7ded51081add..26f7c0df83ae 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -117,6 +117,8 @@ struct qcom_geni_serial_port {
- 	u32 *rx_fifo;
- 	u32 loopback;
- 	bool brk;
-+
-+	unsigned int tx_remaining;
- };
- 
- static const struct uart_ops qcom_geni_console_pops;
-@@ -439,6 +441,7 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
- 	struct qcom_geni_serial_port *port;
- 	bool locked = true;
- 	unsigned long flags;
-+	u32 geni_status;
- 
- 	WARN_ON(co->index < 0 || co->index >= GENI_UART_CONS_PORTS);
- 
-@@ -452,6 +455,8 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
- 	else
- 		spin_lock_irqsave(&uport->lock, flags);
- 
-+	geni_status = readl_relaxed(uport->membase + SE_GENI_STATUS);
-+
- 	/* Cancel the current write to log the fault */
- 	if (!locked) {
- 		geni_se_cancel_m_cmd(&port->se);
-@@ -465,9 +470,19 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
- 		}
- 		writel_relaxed(M_CMD_CANCEL_EN, uport->membase +
- 							SE_GENI_M_IRQ_CLEAR);
-+	} else if ((geni_status & M_GENI_CMD_ACTIVE) && !port->tx_remaining) {
-+		/*
-+		 * It seems we can interrupt existing transfers unless all data
-+		 * has been sent, in which case we need to look for done first.
-+		 */
-+		qcom_geni_serial_poll_tx_done(uport);
- 	}
- 
- 	__qcom_geni_serial_console_write(uport, s, count);
-+
-+	if (port->tx_remaining)
-+		qcom_geni_serial_setup_tx(uport, port->tx_remaining);
-+
- 	if (locked)
- 		spin_unlock_irqrestore(&uport->lock, flags);
- }
-@@ -701,40 +716,45 @@ static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop)
- 	port->handle_rx(uport, total_bytes, drop);
- }
- 
--static void qcom_geni_serial_handle_tx(struct uart_port *uport)
-+static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
-+		bool active)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
- 	struct circ_buf *xmit = &uport->state->xmit;
- 	size_t avail;
- 	size_t remaining;
-+	size_t pending;
- 	int i;
- 	u32 status;
- 	unsigned int chunk;
- 	int tail;
--	u32 irq_en;
- 
--	chunk = uart_circ_chars_pending(xmit);
- 	status = readl_relaxed(uport->membase + SE_GENI_TX_FIFO_STATUS);
--	/* Both FIFO and framework buffer are drained */
--	if (!chunk && !status) {
-+
-+	/* Complete the current tx command before taking newly added data */
-+	if (active)
-+		pending = port->tx_remaining;
-+	else
-+		pending = uart_circ_chars_pending(xmit);
-+
-+	/* All data has been transmitted and acknowledged as received */
-+	if (!pending && !status && done) {
- 		qcom_geni_serial_stop_tx(uport);
- 		goto out_write_wakeup;
- 	}
- 
--	if (!uart_console(uport)) {
--		irq_en = readl_relaxed(uport->membase + SE_GENI_M_IRQ_EN);
--		irq_en &= ~(M_TX_FIFO_WATERMARK_EN);
--		writel_relaxed(0, uport->membase + SE_GENI_TX_WATERMARK_REG);
--		writel_relaxed(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
--	}
-+	avail = port->tx_fifo_depth - (status & TX_FIFO_WC);
-+	avail *= port->tx_bytes_pw;
- 
--	avail = (port->tx_fifo_depth - port->tx_wm) * port->tx_bytes_pw;
- 	tail = xmit->tail;
--	chunk = min3((size_t)chunk, (size_t)(UART_XMIT_SIZE - tail), avail);
-+	chunk = min3(avail, pending, (UART_XMIT_SIZE - tail));
- 	if (!chunk)
- 		goto out_write_wakeup;
- 
--	qcom_geni_serial_setup_tx(uport, chunk);
-+	if (!port->tx_remaining) {
-+		qcom_geni_serial_setup_tx(uport, pending);
-+		port->tx_remaining = pending;
-+	}
- 
- 	remaining = chunk;
- 	for (i = 0; i < chunk; ) {
-@@ -753,11 +773,10 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport)
- 		tail += tx_bytes;
- 		uport->icount.tx += tx_bytes;
- 		remaining -= tx_bytes;
-+		port->tx_remaining -= tx_bytes;
- 	}
- 
- 	xmit->tail = tail & (UART_XMIT_SIZE - 1);
--	if (uart_console(uport))
--		qcom_geni_serial_poll_tx_done(uport);
- out_write_wakeup:
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(uport);
-@@ -767,6 +786,7 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- {
- 	unsigned int m_irq_status;
- 	unsigned int s_irq_status;
-+	unsigned int geni_status;
- 	struct uart_port *uport = dev;
- 	unsigned long flags;
- 	unsigned int m_irq_en;
-@@ -780,6 +800,7 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- 	spin_lock_irqsave(&uport->lock, flags);
- 	m_irq_status = readl_relaxed(uport->membase + SE_GENI_M_IRQ_STATUS);
- 	s_irq_status = readl_relaxed(uport->membase + SE_GENI_S_IRQ_STATUS);
-+	geni_status = readl_relaxed(uport->membase + SE_GENI_STATUS);
- 	m_irq_en = readl_relaxed(uport->membase + SE_GENI_M_IRQ_EN);
- 	writel_relaxed(m_irq_status, uport->membase + SE_GENI_M_IRQ_CLEAR);
- 	writel_relaxed(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
-@@ -794,7 +815,8 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- 
- 	if (m_irq_status & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN) &&
- 	    m_irq_en & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN))
--		qcom_geni_serial_handle_tx(uport);
-+		qcom_geni_serial_handle_tx(uport, m_irq_status & M_CMD_DONE_EN,
-+					geni_status & M_GENI_CMD_ACTIVE);
- 
- 	if (s_irq_status & S_GP_IRQ_0_EN || s_irq_status & S_GP_IRQ_1_EN) {
- 		if (s_irq_status & S_GP_IRQ_0_EN)
--- 
-2.20.0.rc0.387.gc7a69e6b6c-goog
+Cheers!
