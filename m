@@ -1,53 +1,30 @@
-From: Ludovic Desroches <ludovic.desroches@microchip.com>
-Subject: Re: [PATCH] dmaengine: at_hdmac: fix module unloading
-Date: Thu, 29 Nov 2018 14:52:59 +0100
-Message-ID: <20181129135259.nhzx5wvpc6kxosto@M43218.corp.atmel.com>
+From: Vinod Koul <vkoul@kernel.org>
+Subject: Re: [PATCH] dmaengine: at_hdmac: fix memory leak in at_dma_xlate()
+Date: Thu, 29 Nov 2018 19:50:55 +0530
+Message-ID: <20181129142054.GH3175@vkoul-mobl.Dlink>
 References: <20181127160635.11836-1-richard.genoud@gmail.com>
- <20181127160635.11836-2-richard.genoud@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181127160635.11836-2-richard.genoud@gmail.com>
+In-Reply-To: <20181127160635.11836-1-richard.genoud@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Richard Genoud <richard.genoud@gmail.com>
-Cc: Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vkoul@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Mario Forner <m.forner@be4energy.com>, linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, stable@vger.kernel.org
+Cc: Ludovic Desroches <ludovic.desroches@microchip.com>, Dan Williams <dan.j.williams@intel.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Mario Forner <m.forner@be4energy.com>, linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Nov 27, 2018 at 05:06:35PM +0100, Richard Genoud wrote:
-> of_dma_controller_free() was not called on module onloading.
-
-s/onloading/unloading
-
-> This lead to a soft lockup:
-> watchdog: BUG: soft lockup - CPU#0 stuck for 23s!
-> Modules linked in: at_hdmac [last unloaded: at_hdmac]
-> when of_dma_request_slave_channel() tried to call ofdma->of_dma_xlate().
+On 27-11-18, 17:06, Richard Genoud wrote:
+> The leak was found when opening/closing a serial port a great number of
+> time, increasing kmalloc-32 in slabinfo.
 > 
-> Cc: stable@vger.kernel.org
-> Fixes: bbe89c8e3d59 ("at_hdmac: move to generic DMA binding")
-> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+> Each time the port was opened, dma_request_slave_channel() was called.
+> Then, in at_dma_xlate(), atslave was allocated with devm_kzalloc() and
+> never freed. (Well, it was free at module unload, but that's not what we
+> want).
+> So, here, kzalloc is more suited for the job since it has to be freed in
+> atc_free_chan_resources().
 
-Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
+Applied, thanks
 
-Thanks
-
-Ludovic
-
-> ---
->  drivers/dma/at_hdmac.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/dma/at_hdmac.c b/drivers/dma/at_hdmac.c
-> index 1b7f0ca0d5cd..01d936c9fe89 100644
-> --- a/drivers/dma/at_hdmac.c
-> +++ b/drivers/dma/at_hdmac.c
-> @@ -2006,6 +2006,8 @@ static int at_dma_remove(struct platform_device *pdev)
->  	struct resource		*io;
->  
->  	at_dma_off(atdma);
-> +	if (pdev->dev.of_node)
-> +		of_dma_controller_free(pdev->dev.of_node);
->  	dma_async_device_unregister(&atdma->dma_common);
->  
->  	dma_pool_destroy(atdma->memset_pool);
+-- 
+~Vinod
