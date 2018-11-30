@@ -1,113 +1,455 @@
 From: Stephen Boyd <sboyd@kernel.org>
-Subject: Re: [PATCH 06/14] dt-bindings: clock: milbeaut: add Milbeaut clock
- description
-Date: Fri, 30 Nov 2018 00:19:29 -0800
-Message-ID: <154356596981.88331.14415961625410424962@swboyd.mtv.corp.google.com>
+Subject: Re: [PATCH 07/14] clock: milbeaut: Add Milbeaut M10V clock control
+Date: Fri, 30 Nov 2018 00:31:38 -0800
+Message-ID: <154356669840.88331.4455990896653868594@swboyd.mtv.corp.google.com>
 References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com>
- <1542589274-13878-7-git-send-email-sugaya.taichi@socionext.com>
+ <1542589274-13878-8-git-send-email-sugaya.taichi@socionext.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1542589274-13878-7-git-send-email-sugaya.taichi@socionext.com>
+In-Reply-To: <1542589274-13878-8-git-send-email-sugaya.taichi@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Cc: Michael Turquette <mturquette@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>, Sugaya Taichi <sugaya.taichi@socionext.com>
 List-Id: linux-serial@vger.kernel.org
 
-Quoting Sugaya Taichi (2018-11-18 17:01:11)
-> Add DT bindings document for Milbeaut clock.
+Quoting Sugaya Taichi (2018-11-18 17:01:12)
+> Add Milbeaut M10V clock ( including PLL ) control.
+
+Please give some more details here.
+
 > =
 
 > Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
 > ---
->  .../devicetree/bindings/clock/milbeaut-clock.txt   | 93 ++++++++++++++++=
+>  drivers/clk/Makefile   |   1 +
+>  drivers/clk/clk-m10v.c | 671 +++++++++++++++++++++++++++++++++++++++++++=
 ++++++
->  1 file changed, 93 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/milbeaut-cloc=
-k.txt
+
+And this is different from Uniphier? Maybe we need a socionext
+directory under drivers/clk/.
+
+>  2 files changed, 672 insertions(+)
+>  create mode 100644 drivers/clk/clk-m10v.c
 > =
 
-> diff --git a/Documentation/devicetree/bindings/clock/milbeaut-clock.txt b=
-/Documentation/devicetree/bindings/clock/milbeaut-clock.txt
+> diff --git a/drivers/clk/clk-m10v.c b/drivers/clk/clk-m10v.c
 > new file mode 100644
-> index 0000000..5c093c8
+> index 0000000..aa92a69
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/milbeaut-clock.txt
-> @@ -0,0 +1,93 @@
-> +Milbeaut M10V Clock Controller Binding
-> +----------------------------------------
-> +Milbeaut clock controller is consists of few oscillators, PLL, multiplex=
-er
-> +and few divider modules
+> +++ b/drivers/clk/clk-m10v.c
+> @@ -0,0 +1,671 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2018 Socionext Inc.
+> + * Copyright (C) 2016 Linaro Ltd.
+> + *
+> + */
 > +
-> +This binding uses common clock bindings
-> +[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
-> +
-> +Required properties:
-> +- compatible: shall be "socionext,milbeaut-m10v-clk-regs"
-> +- reg: shall contain base address and length of clock registers
-> +- #clock-cells: shall be 0
-> +
-> +Example:
-> +       m10v-clk-tree@ {
-> +               compatible =3D "socionext,milbeaut-m10v-clk-regs";
-> +               reg =3D <0x1d021000 0x4000>;
-> +
-> +               clocks {
-> +                       #address-cells =3D <0>;
-> +                       #size-cells =3D <0>;
-> +
-> +                       uclk40xi: uclk40xi {
-> +                               compatible =3D "fixed-clock";
-> +                               #clock-cells =3D <0>;
-> +                               clock-frequency =3D <40000000>;
-> +                       };
-> +               };
+> +#include <linux/clk-provider.h>
+> +#include <linux/clkdev.h>
 
-This style of binding is highly discouraged. We don't describe each and
-every clk in DT, we describe clk controllers and their outputs and
-inputs in DT. The driver is the place where the clock controller
-describes the internal clk topology of that controller. Also, fixed
-frequency clks are typically oscillators and those would come from the
-board dts file, but otherwise I wouldn't expect to see fixed frequency
-clks in DT.
+Is this include used?
 
+> +#include <linux/delay.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/of_address.h>
+> +#include <linux/of.h>
+> +#include <linux/spinlock.h>
+> +
+> +#define CLKSEL1                0x0
+> +#define CLKSEL(n)      (((n) - 1) * 4 + CLKSEL1)
+> +
+> +#define PLLCNT1                0x30
+> +#define PLLCNT(n)      (((n) - 1) * 4 + PLLCNT1)
+> +
+> +#define CLKSTOP1       0x54
+> +#define CLKSTOP(n)     (((n) - 1) * 4 + CLKSTOP1)
+> +
+> +#define CRSWR          0x8c
+> +#define CRRRS          0x90
+> +#define CRRSM          0x94
+> +
+> +#define to_m10v_mux(_hw)       container_of(_hw, struct m10v_mux, hw)
+> +#define to_m10v_gate(_hw)      container_of(_hw, struct m10v_gate, hw)
+> +#define to_m10v_div(_hw)       container_of(_hw, struct m10v_div, hw)
+> +#define to_m10v_pll(_hw)       container_of(_hw, struct m10v_pll, hw)
+> +
+> +static void __iomem *clk_base;
+> +static struct device_node *np_top;
+> +static DEFINE_SPINLOCK(crglock);
+
+Please make more specific names for these global variables by prefixing
+with m10v_. Also consider getting rid of the iomem and np_top globals
+entirely and associate those with clks differently.
+
+> +
+> +static __init void __iomem *m10v_clk_iomap(void)
+> +{
+> +       if (clk_base)
+> +               return clk_base;
+> +
+> +       np_top =3D of_find_compatible_node(NULL, NULL,
+> +                       "socionext,milbeaut-m10v-clk-regs");
+> +       if (!np_top) {
+> +               pr_err("%s: CLK iomap failed!\n", __func__);
+
+We haven't iomapped yet though.
+
+> +               return NULL;
 > +       }
 > +
-> +The clock consumer shall specify the desired clock-output of the clock
-> +controller (as defined in [2]) by specifying output-id in its "clock"
-> +phandle cell
-> +[2] arch/arm/boot/dts/milbeaut-m10v-clk.h
+> +       clk_base =3D of_iomap(np_top, 0);
+> +       of_node_put(np_top);
+
+Would be nicer to use platform_device APIs instead of OF ones.
+
+> +
+> +       return clk_base;
+> +}
+> +
+> +struct m10v_mux {
+> +       struct clk_hw hw;
+> +       const char *cname;
+> +       u32 parent;
+> +};
+> +
+> +static u8 m10v_mux_get_parent(struct clk_hw *hw)
+> +{
+> +       struct m10v_mux *mcm =3D to_m10v_mux(hw);
+> +       struct clk_hw *parent;
+> +       int i;
+> +
+> +       i =3D clk_hw_get_num_parents(hw);
+> +       while (i--) {
+> +               parent =3D clk_hw_get_parent_by_index(hw, i);
+> +               if (clk_hw_get_rate(parent))
+> +                       break;
+> +       }
+> +
+> +       if (i < 0) {
+> +               pr_info("%s:%s no parent?!\n",
+> +                       __func__, mcm->cname);
+> +               i =3D 0;
+> +       }
+> +
+> +       return i;
+> +}
+> +
+> +static int m10v_mux_set_parent(struct clk_hw *hw, u8 index)
+> +{
+> +       struct m10v_mux *mcm =3D to_m10v_mux(hw);
+> +
+> +       mcm->parent =3D index;
+> +       return 0;
+> +}
+> +
+> +static const struct clk_ops m10v_mux_ops =3D {
+> +       .get_parent =3D m10v_mux_get_parent,
+> +       .set_parent =3D m10v_mux_set_parent,
+> +       .determine_rate =3D __clk_mux_determine_rate,
+> +};
+> +
+> +void __init m10v_clk_mux_setup(struct device_node *node)
+> +{
+> +       const char *clk_name =3D node->name;
+> +       struct clk_init_data init;
+> +       const char **parent_names;
+> +       struct m10v_mux *mcm;
+> +       struct clk *clk;
+> +       int i, parents;
+> +
+> +       if (!m10v_clk_iomap())
+> +               return;
+> +
+> +       of_property_read_string(node, "clock-output-names", &clk_name);
+> +
+> +       parents =3D of_clk_get_parent_count(node);
+> +       if (parents < 2) {
+> +               pr_err("%s: not a mux\n", clk_name);
+
+How is this possible?
+
+> +               return;
+> +       }
+> +
+> +       parent_names =3D kzalloc((sizeof(char *) * parents), GFP_KERNEL);
+> +       if (!parent_names)
+> +               return;
+> +
+> +       for (i =3D 0; i < parents; i++)
+> +               parent_names[i] =3D of_clk_get_parent_name(node, i);
+
+This is of_clk_parent_fill().
+
+> +
+> +       mcm =3D kzalloc(sizeof(*mcm), GFP_KERNEL);
+> +       if (!mcm)
+> +               goto err_mcm;
+> +
+> +       init.name =3D clk_name;
+> +       init.ops =3D &m10v_mux_ops;
+> +       init.flags =3D CLK_IS_BASIC | CLK_SET_RATE_PARENT;
+
+Please don't use CLK_IS_BASIC unless you need it.
+
+> +       init.num_parents =3D parents;
+> +       init.parent_names =3D parent_names;
+> +
+> +       mcm->cname =3D clk_name;
+> +       mcm->parent =3D 0;
+> +       mcm->hw.init =3D &init;
+> +
+> +       clk =3D clk_register(NULL, &mcm->hw);
+> +       if (IS_ERR(clk))
+> +               goto err_clk;
+> +
+> +       of_clk_add_provider(node, of_clk_src_simple_get, clk);
+> +       return;
+> +
+> +err_clk:
+> +       kfree(mcm);
+> +err_mcm:
+> +       kfree(parent_names);
+> +}
+> +CLK_OF_DECLARE(m10v_clk_mux, "socionext,milbeaut-m10v-clk-mux",
+> +                       m10v_clk_mux_setup);
+
+Any chance you can use a platform driver?
+
+> +
+> +struct m10v_pll {
+> +       struct clk_hw hw;
+> +       const char *cname;
+> +       const struct clk_ops ops;
+> +       u32 offset;
+> +       u32 div, mult;
+> +       bool ro;
+> +};
+> +
+> +#define ST     1
+> +#define SEL    2
+> +
+> +static void _mpg_enable(struct clk_hw *hw, unsigned int enable)
+> +{
+> +       struct m10v_pll *mpg =3D to_m10v_pll(hw);
+> +       unsigned long flags;
+> +       u32 val;
+> +
+> +       if (mpg->ro) {
+> +               pr_debug("%s:%d %s: read-only\n",
+> +                        __func__, __LINE__, mpg->cname);
+> +               return;
+> +       }
+> +
+> +       spin_lock_irqsave(&crglock, flags);
+> +
+> +       val =3D readl(clk_base + PLLCNT(SEL));
+> +       if (enable)
+> +               val |=3D BIT(mpg->offset);
+> +       else
+> +               val &=3D ~BIT(mpg->offset);
+> +       writel(val, clk_base + PLLCNT(SEL));
+> +
+> +       spin_unlock_irqrestore(&crglock, flags);
+> +}
+> +
+> +static int mpg_enable(struct clk_hw *hw)
+> +{
+> +       _mpg_enable(hw, 1);
+> +       return 0;
+> +}
+> +
+> +static void mpg_disable(struct clk_hw *hw)
+> +{
+> +       _mpg_enable(hw, 0);
+> +}
+> +
+> +static int mpg_is_enabled(struct clk_hw *hw)
+> +{
+> +       struct m10v_pll *mpg =3D to_m10v_pll(hw);
+> +
+> +       return readl(clk_base + PLLCNT(SEL)) & (1 << mpg->offset);
+> +}
+> +
+> +static void _mpg_prepare(struct clk_hw *hw, unsigned int on)
+> +{
+> +       struct m10v_pll *mpg =3D to_m10v_pll(hw);
+> +       unsigned long flags;
+> +       u32 val;
+> +
+> +       if (mpg->ro) {
+
+Should have different RO ops for read-only clks.
+
+> +               pr_debug("%s:%d %s: read-only\n",
+> +                        __func__, __LINE__, mpg->cname);
+> +               return;
+> +       }
+> +
+> +       val =3D readl(clk_base + PLLCNT(ST));
+> +       if (!on =3D=3D !(val & BIT(mpg->offset)))
+> +               return;
+> +
+> +       /* disable */
+
+Please remove obvious comments.
+
+> +       mpg_disable(hw);
+> +
+> +       spin_lock_irqsave(&crglock, flags);
+> +
+> +       val =3D readl(clk_base + PLLCNT(ST));
+> +       if (on)
+> +               val |=3D BIT(mpg->offset);
+> +       else
+> +               val &=3D ~BIT(mpg->offset);
+> +       writel(val, clk_base + PLLCNT(ST));
+> +
+> +       spin_unlock_irqrestore(&crglock, flags);
+> +
+> +       udelay(on ? 200 : 10);
+> +}
+> +
+> +static int mpg_prepare(struct clk_hw *hw)
+> +{
+> +       _mpg_prepare(hw, 1);
+> +       return 0;
+> +}
+> +
+> +static void mpg_unprepare(struct clk_hw *hw)
+> +{
+> +       _mpg_prepare(hw, 0);
+> +}
+> +
+> +static int mpg_set_rate(struct clk_hw *hw, unsigned long rate,
+> +                               unsigned long prate)
+> +{
+
+Why is this implemented then?
+
+> +       return 0;
+> +}
+> +
+> +static unsigned long mpg_recalc_rate(struct clk_hw *hw,
+> +               unsigned long prate)
+> +{
+> +       struct m10v_pll *mpg =3D to_m10v_pll(hw);
+> +       unsigned long long rate =3D prate;
+> +
+> +       if (mpg_is_enabled(hw)) {
+> +               rate =3D (unsigned long long)prate * mpg->mult;
+> +               do_div(rate, mpg->div);
+> +       }
+> +
+> +       return (unsigned long)rate;
+> +}
+> +
+> +static long mpg_round_rate(struct clk_hw *hw, unsigned long rate,
+> +                               unsigned long *prate)
+> +{
+> +       struct m10v_pll *mpg =3D to_m10v_pll(hw);
+> +       unsigned long long temp_rate =3D (unsigned long long)*prate * mpg=
+->mult;
+> +
+> +       if (mpg->ro)
+> +               return mpg_recalc_rate(hw, *prate);
+> +
+> +       return do_div(temp_rate, mpg->div);
+
+There shouldn't be round_rate implemented at all if the device is
+'read-only' or can't change frequency because set_rate op is empty.
+
+> +}
+> +
+[..]
+> +
+> +static void mdc_set_div(struct m10v_div *mdc, u32 div)
+> +{
+> +       u32 off, shift, val;
+> +
+> +       off =3D mdc->offset / 32 * 4;
+> +       shift =3D mdc->offset % 32;
+> +
+> +       val =3D readl(clk_base + CLKSEL1 + off);
+> +       val &=3D ~(mdc->mask << shift);
+> +       val |=3D (div << shift);
+> +       writel(val, clk_base + CLKSEL1 + off);
+> +
+> +       if (mdc->waitdchreq) {
+> +               unsigned int count =3D 250;
+> +
+> +               writel(1, clk_base + CLKSEL(11));
+> +
+> +               do {
+> +                       udelay(1);
+> +               } while (--count && readl(clk_base + CLKSEL(11)) & 1);
+
+Use readl_poll_timeout()?
+
+> +
+> +               if (!count)
+> +                       pr_err("%s:%s CLK(%d) couldn't stabilize\n",
+> +                               __func__, mdc->cname, mdc->offset);
+> +       }
+> +}
 > +
 [...]
 > +
-> +Example
-> +       piclk_mux_0: spiclk_mux_0 {
-> +               compatible =3D "socionext,m10v-clk-div";
-> +               #clock-cells =3D <0>;
-> +               clocks =3D <&pll10_div_1_2>;
-> +               offset =3D <bSPICLK>;
-> +               mask =3D <0x3>;
-> +               ratios =3D <4 0x5 2 0x4>;
-> +       };
+> +void __init m10v_clk_gate_setup(struct device_node *node)
+> +{
+> +       const char *clk_name =3D node->name;
+> +       struct clk_init_data init;
+> +       const char *parent_name;
+> +       struct m10v_gate *mgc;
+> +       struct clk *clk;
+> +       u32 offset;
+> +       int ret;
 > +
-> +       pll10: pll10 {
-> +               compatible =3D "socionext,m10v-pll-fixed-factor";
-> +               #clock-cells =3D <0>;
-> +               clocks =3D <&uclk40xi>;
-> +               offset =3D <10>;
-> +               clock-div =3D <5>;
-> +               clock-mult =3D <108>;
-> +       };
+> +       if (!m10v_clk_iomap())
+> +               return;
 > +
-> +       emmcclk: emmcclk {
-> +               compatible =3D "socionext,m10v-clk-div";
-> +               #clock-cells =3D <0>;
-> +               clocks =3D <&pll11>;
-> +               offset =3D <bEMMCCLK>;
-> +               mask =3D <0x3>;
-> +               ratios =3D <15 0x7 10 0x6 9 0x5 8 0x4>;
+> +       of_property_read_string(node, "clock-output-names", &clk_name);
+> +
+> +       ret =3D of_property_read_u32(node, "offset", &offset);
+> +       if (ret) {
+> +               pr_err("%s: missing 'offset' property\n", clk_name);
+> +               return;
+> +       }
+> +
+> +       parent_name =3D of_clk_get_parent_name(node, 0);
+> +
+> +       mgc =3D kzalloc(sizeof(*mgc), GFP_KERNEL);
+> +       if (!mgc)
+> +               return;
+> +
+> +       init.name =3D clk_name;
+> +       init.ops =3D &m10v_gate_ops;
+> +       init.flags =3D CLK_IS_BASIC | CLK_SET_RATE_PARENT;
+> +       init.parent_names =3D &parent_name;
+> +       init.num_parents =3D 1;
+> +
+> +       mgc->cname =3D clk_name;
+> +       mgc->offset =3D offset;
+> +       mgc->hw.init =3D &init;
+> +       if (of_get_property(node, "read-only", NULL))
+> +               mgc->ro =3D true;
+> +
+> +       clk =3D clk_register(NULL, &mgc->hw);
 
-Yeah, please no. This whole binding needs a rewrite to not have one node
-per clk.
+Please use clk_hw based registration and provider APIs.
+
+> +       if (IS_ERR(clk))
+> +               kfree(mgc);
+> +       else
+> +               of_clk_add_provider(node, of_clk_src_simple_get, clk);
+> +}
+> +CLK_OF_DECLARE(m10v_clk_gate, "socionext,milbeaut-m10v-clk-gate",
+> +               m10v_clk_gate_setup);
+> -- =
+
+
+I suspect this driver will significantly change so I'm not reviewing
+any further until it's sent again.
