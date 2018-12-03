@@ -1,71 +1,87 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH] serial/sunsu: add missing of_node_put()
-Date: Sun, 02 Dec 2018 20:57:52 -0800 (PST)
-Message-ID: <20181202.205752.1359988041150979586.davem@davemloft.net>
-References: <20181121160615.23666-1-tiny.windzz@gmail.com>
+From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
+Subject: Re: [PATCH 02/14] dt-bindings: soc: milbeaut: Add Milbeaut trampoline
+ description
+Date: Mon, 3 Dec 2018 16:42:56 +0900
+Message-ID: <f5917f71-f15b-a92d-649c-e3f5f5f10698@socionext.com>
+References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com>
+ <1542589274-13878-3-git-send-email-sugaya.taichi@socionext.com>
+ <154337047410.88331.9696178601340675631@swboyd.mtv.corp.google.com>
+ <c746a3de-a9e3-9f25-ecb9-703ceb7e62d0@socionext.com>
+ <154356579701.88331.5043467509900444879@swboyd.mtv.corp.google.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181121160615.23666-1-tiny.windzz@gmail.com>
+In-Reply-To: <154356579701.88331.5043467509900444879@swboyd.mtv.corp.google.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: tiny.windzz@gmail.com
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Michael Turquette <mturquette@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Yangtao Li <tiny.windzz@gmail.com>
-Date: Wed, 21 Nov 2018 11:06:15 -0500
+Hi,
 
-> of_find_node_by_path() acquires a reference to the node
-> returned by it and that reference needs to be dropped by its caller.
-> This place is not doing this, so fix it.
+On 2018/11/30 17:16, Stephen Boyd wrote:
+> Quoting Sugaya, Taichi (2018-11-29 04:24:51)
+>> On 2018/11/28 11:01, Stephen Boyd wrote:
+>>> Quoting Sugaya Taichi (2018-11-18 17:01:07)
+>>>>    create mode 100644 Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt b/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
+>>>> new file mode 100644
+>>>> index 0000000..f5d906c
+>>>> --- /dev/null
+>>>> +++ b/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
+>>>> @@ -0,0 +1,12 @@
+>>>> +Socionext M10V SMP trampoline driver binding
+>>>> +
+>>>> +This is a driver to wait for sub-cores while boot process.
+>>>> +
+>>>> +- compatible: should be "socionext,smp-trampoline"
+>>>> +- reg: should be <0x4C000100 0x100>
+>>>> +
+>>>> +EXAMPLE
+>>>> +       trampoline: trampoline@0x4C000100 {
+>>> Drop the 0x part of unit addresses.
+>>
+>> Okay.
+>>
+>>
+>>>> +               compatible = "socionext,smp-trampoline";
+>>>> +               reg = <0x4C000100 0x100>;
+>>> Looks like a software construct, which we wouldn't want to put into DT
+>>> this way. DT doesn't describe drivers.
+>> We would like to use this node only getting the address of the
+>> trampoline area
+>> in which sub-cores wait.  (They have finished to go to this area in previous
+>> bootloader process.)
 > 
-> Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+> Is this area part of memory, or a special SRAM? If it's part of memory,
+> I would expect this node to be under the reserved-memory node and
+> pointed to by some other node that uses this region. Could even be the
+> CPU nodes.
 
-Several coding style problems and you are adding two new
-leaks.
+Yes, 0x4C000100 is a part of memory under the reserved-memory node. So 
+we would like to use the SRAM ( allocated 0x00000000 ) area instead.
+BTW, sorry, the trampoline address of this example is simply wrong.  We 
+were going to use a part of the SRAM from the beginning.
 
-> +		struct device_node *tmp;
->  		const char *keyb = of_get_property(ap, "keyboard", NULL);
->  		const char *ms = of_get_property(ap, "mouse", NULL);
+> 
+>>
+>> So should we embed the constant value in source codes instead of getting
+>> from
+>> DT because the address is constant at the moment? Or is there other
+>> approach?
+>>
+> 
+> If it's constant then that also works. Why does it need to come from DT
+> at all then?
 
-Always order local variable declarations from longest to
-shortest line.
+We think it is not good to embed constant value in driver codes and do 
+not have another way...
+Are there better ways?
 
->  
->  		if (keyb) {
-> -			if (dp == of_find_node_by_path(keyb))
-> -				return SU_PORT_KBD;
-> +			tmp = of_find_node_by_path(keyb);
-> +			if (tmp && dp == tmp){
+Thanks
+Sugaya Taichi
 
-Always put a space between ")" and the "{" openning a new basic
-block.
-
-> +				rc = SU_PORT_KBD;
-> +				goto out;
-> +			}
->  		}
->  		if (ms) {
-> -			if (dp == of_find_node_by_path(ms))
-> -				return SU_PORT_MS;
-> +			tmp = of_find_node_by_path(ms);
-> +			if (tmp && dp == tmp){
-> +				rc = SU_PORT_MS;
-> +				goto out;
-> +			}
->  		}
->  	}
->  
-> -	return SU_PORT_PORT;
-> +out:
-> +	of_node_put(ap);
-> +	return rc;
-
-Now you have two references, one held by 'ap' and one held by 'tmp'.
-
-You are not releasing the one held by 'tmp', and you must release
-'tmp' even if it equals 'dp'.
-
-It's pretty obvious you have no way by which to test these changes and
-therefore are not doing so.
+> 
