@@ -1,18 +1,16 @@
 From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
-Subject: Re: [PATCH 02/14] dt-bindings: soc: milbeaut: Add Milbeaut trampoline
+Subject: Re: [PATCH 06/14] dt-bindings: clock: milbeaut: add Milbeaut clock
  description
-Date: Mon, 3 Dec 2018 16:42:56 +0900
-Message-ID: <f5917f71-f15b-a92d-649c-e3f5f5f10698@socionext.com>
+Date: Mon, 3 Dec 2018 17:08:15 +0900
+Message-ID: <15178a7c-7d12-7c10-6093-192754827b5a@socionext.com>
 References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com>
- <1542589274-13878-3-git-send-email-sugaya.taichi@socionext.com>
- <154337047410.88331.9696178601340675631@swboyd.mtv.corp.google.com>
- <c746a3de-a9e3-9f25-ecb9-703ceb7e62d0@socionext.com>
- <154356579701.88331.5043467509900444879@swboyd.mtv.corp.google.com>
+ <1542589274-13878-7-git-send-email-sugaya.taichi@socionext.com>
+ <154356596981.88331.14415961625410424962@swboyd.mtv.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <154356579701.88331.5043467509900444879@swboyd.mtv.corp.google.com>
+In-Reply-To: <154356596981.88331.14415961625410424962@swboyd.mtv.corp.google.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
@@ -21,67 +19,106 @@ List-Id: linux-serial@vger.kernel.org
 
 Hi,
 
-On 2018/11/30 17:16, Stephen Boyd wrote:
-> Quoting Sugaya, Taichi (2018-11-29 04:24:51)
->> On 2018/11/28 11:01, Stephen Boyd wrote:
->>> Quoting Sugaya Taichi (2018-11-18 17:01:07)
->>>>    create mode 100644 Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt b/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
->>>> new file mode 100644
->>>> index 0000000..f5d906c
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
->>>> @@ -0,0 +1,12 @@
->>>> +Socionext M10V SMP trampoline driver binding
->>>> +
->>>> +This is a driver to wait for sub-cores while boot process.
->>>> +
->>>> +- compatible: should be "socionext,smp-trampoline"
->>>> +- reg: should be <0x4C000100 0x100>
->>>> +
->>>> +EXAMPLE
->>>> +       trampoline: trampoline@0x4C000100 {
->>> Drop the 0x part of unit addresses.
+Thank you for your comments.
+
+On 2018/11/30 17:19, Stephen Boyd wrote:
+> Quoting Sugaya Taichi (2018-11-18 17:01:11)
+>> Add DT bindings document for Milbeaut clock.
 >>
->> Okay.
+>> Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
+>> ---
+>>   .../devicetree/bindings/clock/milbeaut-clock.txt   | 93 ++++++++++++++++++++++
+>>   1 file changed, 93 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/clock/milbeaut-clock.txt
 >>
->>
->>>> +               compatible = "socionext,smp-trampoline";
->>>> +               reg = <0x4C000100 0x100>;
->>> Looks like a software construct, which we wouldn't want to put into DT
->>> this way. DT doesn't describe drivers.
->> We would like to use this node only getting the address of the
->> trampoline area
->> in which sub-cores wait.  (They have finished to go to this area in previous
->> bootloader process.)
+>> diff --git a/Documentation/devicetree/bindings/clock/milbeaut-clock.txt b/Documentation/devicetree/bindings/clock/milbeaut-clock.txt
+>> new file mode 100644
+>> index 0000000..5c093c8
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/clock/milbeaut-clock.txt
+>> @@ -0,0 +1,93 @@
+>> +Milbeaut M10V Clock Controller Binding
+>> +----------------------------------------
+>> +Milbeaut clock controller is consists of few oscillators, PLL, multiplexer
+>> +and few divider modules
+>> +
+>> +This binding uses common clock bindings
+>> +[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
+>> +
+>> +Required properties:
+>> +- compatible: shall be "socionext,milbeaut-m10v-clk-regs"
+>> +- reg: shall contain base address and length of clock registers
+>> +- #clock-cells: shall be 0
+>> +
+>> +Example:
+>> +       m10v-clk-tree@ {
+>> +               compatible = "socionext,milbeaut-m10v-clk-regs";
+>> +               reg = <0x1d021000 0x4000>;
+>> +
+>> +               clocks {
+>> +                       #address-cells = <0>;
+>> +                       #size-cells = <0>;
+>> +
+>> +                       uclk40xi: uclk40xi {
+>> +                               compatible = "fixed-clock";
+>> +                               #clock-cells = <0>;
+>> +                               clock-frequency = <40000000>;
+>> +                       };
+>> +               };
 > 
-> Is this area part of memory, or a special SRAM? If it's part of memory,
-> I would expect this node to be under the reserved-memory node and
-> pointed to by some other node that uses this region. Could even be the
-> CPU nodes.
+> This style of binding is highly discouraged. We don't describe each and
+> every clk in DT, we describe clk controllers and their outputs and
+> inputs in DT. The driver is the place where the clock controller
+> describes the internal clk topology of that controller. Also, fixed
+> frequency clks are typically oscillators and those would come from the
+> board dts file, but otherwise I wouldn't expect to see fixed frequency
+> clks in DT.
 
-Yes, 0x4C000100 is a part of memory under the reserved-memory node. So 
-we would like to use the SRAM ( allocated 0x00000000 ) area instead.
-BTW, sorry, the trampoline address of this example is simply wrong.  We 
-were going to use a part of the SRAM from the beginning.
+I understand. Received the similar comment from Rob in the DT part also.
 
 > 
->>
->> So should we embed the constant value in source codes instead of getting
->> from
->> DT because the address is constant at the moment? Or is there other
->> approach?
->>
+>> +       }
+>> +
+>> +The clock consumer shall specify the desired clock-output of the clock
+>> +controller (as defined in [2]) by specifying output-id in its "clock"
+>> +phandle cell
+>> +[2] arch/arm/boot/dts/milbeaut-m10v-clk.h
+>> +
+> [...]
+>> +
+>> +Example
+>> +       piclk_mux_0: spiclk_mux_0 {
+>> +               compatible = "socionext,m10v-clk-div";
+>> +               #clock-cells = <0>;
+>> +               clocks = <&pll10_div_1_2>;
+>> +               offset = <bSPICLK>;
+>> +               mask = <0x3>;
+>> +               ratios = <4 0x5 2 0x4>;
+>> +       };
+>> +
+>> +       pll10: pll10 {
+>> +               compatible = "socionext,m10v-pll-fixed-factor";
+>> +               #clock-cells = <0>;
+>> +               clocks = <&uclk40xi>;
+>> +               offset = <10>;
+>> +               clock-div = <5>;
+>> +               clock-mult = <108>;
+>> +       };
+>> +
+>> +       emmcclk: emmcclk {
+>> +               compatible = "socionext,m10v-clk-div";
+>> +               #clock-cells = <0>;
+>> +               clocks = <&pll11>;
+>> +               offset = <bEMMCCLK>;
+>> +               mask = <0x3>;
+>> +               ratios = <15 0x7 10 0x6 9 0x5 8 0x4>;
 > 
-> If it's constant then that also works. Why does it need to come from DT
-> at all then?
+> Yeah, please no. This whole binding needs a rewrite to not have one node
+> per clk.
 
-We think it is not good to embed constant value in driver codes and do 
-not have another way...
-Are there better ways?
+OK, I will renew the binding.
 
-Thanks
+Thanks.
 Sugaya Taichi
 
 > 
