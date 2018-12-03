@@ -1,31 +1,56 @@
-From: Stephen Boyd <swboyd@chromium.org>
-Subject: Re: [PATCH v3] tty: serial: qcom_geni_serial: Fix softlock
-Date: Mon, 03 Dec 2018 08:22:15 -0800
-Message-ID: <154385413596.88331.2252934244242692154@swboyd.mtv.corp.google.com>
-References: <20181130021840.75861-1-ryandcase@chromium.org>
+From: Olof Johansson <olof@lixom.net>
+Subject: Re: [PATCH v2 06/15] arm: dts: Add devicetree for OrangePi 2G IoT board
+Date: Mon, 3 Dec 2018 09:11:05 -0800
+Message-ID: <CAOesGMgSxwcmBLDvxsvcCJ9-NvJ3-wK8fZBZV2ZNuzAa1idi3w@mail.gmail.com>
+References: <20181121033652.12247-1-manivannan.sadhasivam@linaro.org>
+ <20181121033652.12247-7-manivannan.sadhasivam@linaro.org> <CAL_JsqJ=88ORdgbRDn+VWk9=ydShidqwOxdAMfDbH4W2drnXzA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181130021840.75861-1-ryandcase@chromium.org>
+In-Reply-To: <CAL_JsqJ=88ORdgbRDn+VWk9=ydShidqwOxdAMfDbH4W2drnXzA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Evan Green <evgreen@chromium.org>, Doug Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ryan Case <ryandcase@chromium.org>
+To: Rob Herring <robh+dt@kernel.org>
+Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, DTML <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, Amit Kucheria <amit.kucheria@linaro.org>, LinusW <linus.walleij@linaro.org>, zhao_steven@263.net, overseas.sales@unisoc.com
 List-Id: linux-serial@vger.kernel.org
 
-Quoting Ryan Case (2018-11-29 18:18:40)
-> Transfers were being divided into device FIFO sized (64 byte max)
-> operations which would poll for completion within a spin_lock_irqsave /
-> spin_unlock_irqrestore block. This both made things slow by waiting for
-> the FIFO to completely drain before adding further data and would also
-> result in softlocks on large transmissions.
-> =
+On Mon, Dec 3, 2018 at 7:54 AM Rob Herring <robh+dt@kernel.org> wrote:
+>
+> On Tue, Nov 20, 2018 at 9:38 PM Manivannan Sadhasivam
+> <manivannan.sadhasivam@linaro.org> wrote:
+> >
+> > Add initial devicetree support for OrangePi 2G IoT board from Xunlong.
+> >
+> > Signed-off-by: Andreas F=C3=A4rber <afaerber@suse.de>
+> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > ---
+> >  arch/arm/boot/dts/Makefile                    |  2 +
+> >  .../boot/dts/rda8810pl-orangepi-2g-iot.dts    | 40 +++++++++++++++++++
+> >  2 files changed, 42 insertions(+)
+> >  create mode 100644 arch/arm/boot/dts/rda8810pl-orangepi-2g-iot.dts
+> >
+> > diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+> > index b0e966d625b9..a0fdad8f10dd 100644
+> > --- a/arch/arm/boot/dts/Makefile
+> > +++ b/arch/arm/boot/dts/Makefile
+> > @@ -806,6 +806,8 @@ dtb-$(CONFIG_ARCH_QCOM) +=3D \
+> >         qcom-msm8974-sony-xperia-castor.dtb \
+> >         qcom-msm8974-sony-xperia-honami.dtb \
+> >         qcom-mdm9615-wp8548-mangoh-green.dtb
+> > +dtb-$(CONFIG_ARCH_RDA) +=3D \
+> > +       rda8810pl-orangepi-2g-iot.dtb
+> >  dtb-$(CONFIG_ARCH_REALVIEW) +=3D \
+>
+> Question for Arnd/Olof: can we *please* start putting new SoC families
+> in sub-dirs?
 
-> This patch allows larger transfers with continuous FIFO additions as
-> space becomes available and removes polling from the interrupt handler.
-> =
+I think we're at a point where it's becoming quite awkward to keep it
+in a flat directory, yes.
 
-> Signed-off-by: Ryan Case <ryandcase@chromium.org>
-> ---
+Best way to handle this is usually right before the closing of a merge
+window, so let's do it then. It'll be a conflict-ridden mess if we try
+to stage something in -next, so I'd rather just do it directly in our
+tree as a one-shot thing.
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+
+-Olof
