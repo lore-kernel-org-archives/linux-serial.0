@@ -1,80 +1,77 @@
-From: Anup Patel <anup@brainfault.org>
-Subject: [PATCH 3/3] RISC-V: Remove EARLY_PRINTK support
-Date: Tue,  4 Dec 2018 19:25:07 +0530
-Message-ID: <20181204135507.3706-4-anup@brainfault.org>
-References: <20181204135507.3706-1-anup@brainfault.org>
+From: Stephen Boyd <sboyd@kernel.org>
+Subject: Re: [PATCH 07/14] clock: milbeaut: Add Milbeaut M10V clock control
+Date: Tue, 04 Dec 2018 10:14:08 -0800
+Message-ID: <154394724886.88331.4940706362054124931@swboyd.mtv.corp.google.com>
+References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com>
+ <1542589274-13878-8-git-send-email-sugaya.taichi@socionext.com>
+ <154356669840.88331.4455990896653868594@swboyd.mtv.corp.google.com>
+ <CAK7LNAQEeLo=PW=DygyVxVHyn5jgRP18nb0cK+u1wGNd4BUh7Q@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181204135507.3706-1-anup@brainfault.org>
+In-Reply-To: <CAK7LNAQEeLo=PW=DygyVxVHyn5jgRP18nb0cK+u1wGNd4BUh7Q@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>
-Cc: Atish Patra <atish.patra@wdc.com>, Christoph Hellwig <hch@infradead.org>, Rob Herring <robh@kernel.org>, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Anup Patel <anup@brainfault.org>
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: sugaya.taichi@socionext.com, DTML <devicetree@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-clk <linux-clk@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-The EARLY_PRINTK using SBI console calls is not required
-any more because we now have RISC-V SBI support in generic
-earlycon framework.
+Quoting Masahiro Yamada (2018-12-04 03:03:53)
+> Hi Stephen,
+> =
 
-Signed-off-by: Anup Patel <anup@brainfault.org>
----
- arch/riscv/Kconfig.debug  |  2 --
- arch/riscv/kernel/setup.c | 28 ----------------------------
- 2 files changed, 30 deletions(-)
+> =
 
-diff --git a/arch/riscv/Kconfig.debug b/arch/riscv/Kconfig.debug
-index c5a72f17c469..e69de29bb2d1 100644
---- a/arch/riscv/Kconfig.debug
-+++ b/arch/riscv/Kconfig.debug
-@@ -1,2 +0,0 @@
--config EARLY_PRINTK
--	def_bool y
-diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
-index 2c290e6aaa6e..fc8006a042eb 100644
---- a/arch/riscv/kernel/setup.c
-+++ b/arch/riscv/kernel/setup.c
-@@ -35,31 +35,9 @@
- #include <asm/sections.h>
- #include <asm/pgtable.h>
- #include <asm/smp.h>
--#include <asm/sbi.h>
- #include <asm/tlbflush.h>
- #include <asm/thread_info.h>
- 
--#ifdef CONFIG_EARLY_PRINTK
--static void sbi_console_write(struct console *co, const char *buf,
--			      unsigned int n)
--{
--	int i;
--
--	for (i = 0; i < n; ++i) {
--		if (buf[i] == '\n')
--			sbi_console_putchar('\r');
--		sbi_console_putchar(buf[i]);
--	}
--}
--
--struct console riscv_sbi_early_console_dev __initdata = {
--	.name	= "early",
--	.write	= sbi_console_write,
--	.flags	= CON_PRINTBUFFER | CON_BOOT | CON_ANYTIME,
--	.index	= -1
--};
--#endif
--
- #ifdef CONFIG_DUMMY_CONSOLE
- struct screen_info screen_info = {
- 	.orig_video_lines	= 30,
-@@ -219,12 +197,6 @@ static void __init setup_bootmem(void)
- 
- void __init setup_arch(char **cmdline_p)
- {
--#if defined(CONFIG_EARLY_PRINTK)
--       if (likely(early_console == NULL)) {
--               early_console = &riscv_sbi_early_console_dev;
--               register_console(early_console);
--       }
--#endif
- 	*cmdline_p = boot_command_line;
- 
- 	parse_early_param();
--- 
-2.17.1
+> On Fri, Nov 30, 2018 at 5:31 PM Stephen Boyd <sboyd@kernel.org> wrote:
+> >
+> > Quoting Sugaya Taichi (2018-11-18 17:01:12)
+> > > Add Milbeaut M10V clock ( including PLL ) control.
+> >
+> > Please give some more details here.
+> >
+> > >
+> > > Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
+> > > ---
+> > >  drivers/clk/Makefile   |   1 +
+> > >  drivers/clk/clk-m10v.c | 671 +++++++++++++++++++++++++++++++++++++++=
+++++++++++
+> >
+> > And this is different from Uniphier? Maybe we need a socionext
+> > directory under drivers/clk/.
+> =
+
+> =
+
+> =
+
+> This is always a difficult question,
+> and I do not have a strong opinion.
+> =
+
+> =
+
+> I am fine with moving the files to drivers/clk/socionext
+> although no file would be shared.
+> =
+
+> =
+
+> FYI
+> =
+
+> UniPhier and Milbeaut are completely different platforms
+> developed/maintained by different teams.
+> =
+
+> They happen to live in the same company now
+> just because Socionext merged the LSI business from Panasonic and Fujitsu.
+> =
+
+> UniPhier originates in Panasonic, while Milbeaut in Fujitsu.
+> =
+
+
+Thanks for the background info. I'd prefer to defer to however the dts
+files are getting split up into directories. If they're all put under
+arch/arm64/boot/dts/socionext/ then I would say combine the two clk
+drivers into a socionext directory. Otherwise, keep them split out.
