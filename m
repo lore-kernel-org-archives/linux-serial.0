@@ -1,7 +1,7 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH] serial: uartps: Add the device_init_wakeup
-Date: Wed,  5 Dec 2018 14:20:11 +0100
-Message-ID: <ec9fdbdf1c444dc60edfc75a31583630e76a9b72.1544016009.git.michal.simek@xilinx.com>
+Subject: [PATCH] serial: uartps: Check if the device is a console
+Date: Wed,  5 Dec 2018 14:20:38 +0100
+Message-ID: <ad7c37027afef738fcda5d978a73cc4c595ef412.1544016036.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
@@ -10,34 +10,37 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 
-Initialise the device wakeup.
+While checking for console_suspend_enabled also check if the
+device is a console.
 
 Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
 
- drivers/tty/serial/xilinx_uartps.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/xilinx_uartps.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 379242b96790..0140644391df 100644
+index 0140644391df..9cdc36be5b13 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1624,6 +1624,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	pm_runtime_set_autosuspend_delay(&pdev->dev, UART_AUTOSUSPEND_TIMEOUT);
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
-+	device_init_wakeup(port->dev, true);
+@@ -1255,7 +1255,7 @@ static int cdns_uart_suspend(struct device *device)
  
- #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
- 	/*
-@@ -1702,6 +1703,7 @@ static int cdns_uart_remove(struct platform_device *pdev)
- 	pm_runtime_disable(&pdev->dev);
- 	pm_runtime_set_suspended(&pdev->dev);
- 	pm_runtime_dont_use_autosuspend(&pdev->dev);
-+	device_init_wakeup(&pdev->dev, false);
+ 	may_wake = device_may_wakeup(device);
  
- #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
- 	if (console_port == port)
+-	if (console_suspend_enabled && may_wake) {
++	if (console_suspend_enabled && uart_console(port) && may_wake) {
+ 		unsigned long flags = 0;
+ 
+ 		spin_lock_irqsave(&port->lock, flags);
+@@ -1293,7 +1293,7 @@ static int cdns_uart_resume(struct device *device)
+ 
+ 	may_wake = device_may_wakeup(device);
+ 
+-	if (console_suspend_enabled && !may_wake) {
++	if (console_suspend_enabled && uart_console(port) && !may_wake) {
+ 		clk_enable(cdns_uart->pclk);
+ 		clk_enable(cdns_uart->uartclk);
+ 
 -- 
 1.9.1
