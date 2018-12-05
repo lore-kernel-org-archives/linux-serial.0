@@ -1,77 +1,54 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 10/14] dt-bindings: pinctrl: milbeaut: Add Milbeaut M10V
- pinctrl description
-Date: Tue, 4 Dec 2018 17:11:31 -0600
-Message-ID: <20181204231131.GA7366@bogus>
-References: <1542589336-13925-1-git-send-email-sugaya.taichi@socionext.com>
+From: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
+Subject: [PATCH v2 1/2] serial: 8250: Add dts binding to rate limit serial port during overruns
+Date: Wed,  5 Dec 2018 13:50:57 +1300
+Message-ID: <20181205005058.14095-1-darwin.dingel@alliedtelesis.co.nz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1542589336-13925-1-git-send-email-sugaya.taichi@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sugaya Taichi <sugaya.taichi@socionext.com>
-Cc: linux-clk@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
+To: andriy.shevchenko@linux.intel.com, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Nov 19, 2018 at 10:02:12AM +0900, Sugaya Taichi wrote:
-> Add DT bindings document for Milbeaut M10V pinctrl.
-> 
-> Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
-> ---
->  .../pinctrl/socionext,milbeaut-pinctrl.txt         | 33 ++++++++++++++++++++++
->  1 file changed, 33 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pinctrl/socionext,milbeaut-pinctrl.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/pinctrl/socionext,milbeaut-pinctrl.txt b/Documentation/devicetree/bindings/pinctrl/socionext,milbeaut-pinctrl.txt
-> new file mode 100644
-> index 0000000..7469189
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pinctrl/socionext,milbeaut-pinctrl.txt
-> @@ -0,0 +1,33 @@
-> +Milbeaut SoCs pin controller
-> +
-> +Required properties:
-> +- compatible: should be one of the following:
-> +    "socionext,milbeaut-m10v-pinctrl"  - for m10v SoC
-> +- reg: offset and length of the register set.
-> +- reg-names: should be "pinctrl", "exiu".
-> +- gpio-cells; should be 2.
+When this dts binding is enabled and input overrun on the serial port is
+detected, serial port receive will be throttled to give some breathing ro=
+om
+for processing other tasks. This is particularly useful to avoid situatio=
+ns
+where serial port HW malfunctions triggering input overruns and then othe=
+r
+processes get starved of processing time. Value provided will be in
+milliseconds.
 
-#gpio-cells
+&serial0{
+=09overrun-throttle-ms =3D <500>;
+};
 
-gpio-controller?
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Jiri Slaby <jslaby@suse.com>
+Signed-off-by: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
+---
+=20Documentation/devicetree/bindings/serial/8250.txt | 1 +
+=201 file changed, 1 insertion(+)
 
-> +- interrupt-cells: should be 2.
+diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Document=
+ation/devicetree/bindings/serial/8250.txt
+index aeb6db4e35c3..da50321da34d 100644
+--- a/Documentation/devicetree/bindings/serial/8250.txt
++++ b/Documentation/devicetree/bindings/serial/8250.txt
+@@ -51,6 +51,7 @@ Optional properties:
+=20- tx-threshold: Specify the TX FIFO low water indication for parts wit=
+h
+=20  programmable TX FIFO thresholds.
+=20- resets : phandle + reset specifier pairs
++- overrun-throttle-ms : how long to pause uart rx when input overrun is =
+encountered.
+=20
+=20Note:
+=20* fsl,ns16550:
+--=20
+2.19.2
 
-#interrupt-cells
-
-interrupt-controller?
-
-> +- clocks: phandle to the input clock.
-> +- interrupts: three interrupts specifer.
-> +- interrupt-names: corresponds "interrupts" factor.
-> +
-> +Example:
-> +	pinctrl: pinctrl@1d022000 {
-> +		compatible = "socionext,milbeaut-m10v-pinctrl";
-> +		reg = <0x1d022000 0x1000>,
-> +			<0x1c26f000 0x1000>;
-> +		reg-names = "pinctrl", "exiu";
-> +		gpio-controller;
-> +		#gpio-cells = <2>;
-> +		interrupt-controller;
-> +		#interrupt-cells = <2>;
-> +		clocks = <&dummy_clk>;
-> +		interrupts = <0 54 4>, <0 55 4>, <0 56 4>, <0 57 4>,
-> +				<0 58 4>, <0 59 4>, <0 60 4>, <0 61 4>,
-> +				<0 62 4>, <0 63 4>, <0 64 4>, <0 65 4>,
-> +				<0 66 4>, <0 67 4>, <0 68 4>, <0 69 4>;
-> +		interrupt-names = "pin-48", "pin-49", "pin-50", "pin-51",
-> +				"pin-52", "pin-53", "pin-54", "pin-55",
-> +				"pin-56", "pin-57", "pin-58", "pin-59",
-> +				"pin-60", "pin-61", "pin-62", "pin-63";
-> +	}
-> -- 
-> 1.9.1
-> 
+changes in v2:
+- separated dts binding to another patch
