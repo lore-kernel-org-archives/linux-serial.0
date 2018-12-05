@@ -1,47 +1,34 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH] serial: uartps: Fix interrupt mask issue to handle the RX interrupts properly
-Date: Wed,  5 Dec 2018 14:21:28 +0100
-Message-ID: <903d6b4f614a395d063f95bfc4658a6944526958.1544016085.git.michal.simek@xilinx.com>
+From: Vinod Koul <vkoul@kernel.org>
+Subject: Re: [PATCH v2 0/4] add uart DMA function
+Date: Wed, 5 Dec 2018 22:01:33 +0530
+Message-ID: <20181205163133.GQ2847@vkoul-mobl>
+References: <1543999380-7946-1-git-send-email-long.cheng@mediatek.com>
+ <20181205100306.GA12106@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181205100306.GA12106@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Cc: Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Long Cheng <long.cheng@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Nava kishore Manne <nava.manne@xilinx.com>
+Hi Greg,
 
-This patch Correct the RX interrupt mask value to handle the
-RX interrupts properly.
+On 05-12-18, 11:03, Greg Kroah-Hartman wrote:
+> On Wed, Dec 05, 2018 at 04:42:56PM +0800, Long Cheng wrote:
+> > In Mediatek SOCs, the uart can support DMA function.
+> > Base on DMA engine formwork, we add the DMA code to support uart. And put the code under drivers/dma.
+> > 
+> > This series contains document bindings, Kconfig to control the function enable or not,
+> > device tree including interrupt and dma device node, the code of UART DM
+> 
+> I've queued up patches 1 and 3 from this series in my tty tree, thanks.
 
-Fixes: c8dbdc842d30 ("serial: xuartps: Rewrite the interrupt handling logic")
-Signed-off-by: Nava kishore Manne <navam@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
+Do you mind not taking patch 2, I would like that to go thru dmaengine
+tree
 
- drivers/tty/serial/xilinx_uartps.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index c6d38617d622..094f2958cb2b 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -123,7 +123,7 @@
- #define CDNS_UART_IXR_RXTRIG	0x00000001 /* RX FIFO trigger interrupt */
- #define CDNS_UART_IXR_RXFULL	0x00000004 /* RX FIFO full interrupt. */
- #define CDNS_UART_IXR_RXEMPTY	0x00000002 /* RX FIFO empty interrupt. */
--#define CDNS_UART_IXR_MASK	0x00001FFF /* Valid bit mask */
-+#define CDNS_UART_IXR_RXMASK	0x000021e7 /* Valid RX bit mask */
- 
- 	/*
- 	 * Do not enable parity error interrupt for the following
-@@ -364,7 +364,7 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
- 		cdns_uart_handle_tx(dev_id);
- 		isrstatus &= ~CDNS_UART_IXR_TXEMPTY;
- 	}
--	if (isrstatus & CDNS_UART_IXR_MASK)
-+	if (isrstatus & CDNS_UART_IXR_RXMASK)
- 		cdns_uart_handle_rx(dev_id, isrstatus);
- 
- 	spin_unlock(&port->lock);
+Thanks
 -- 
-1.9.1
+~Vinod
