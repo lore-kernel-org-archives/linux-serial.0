@@ -1,123 +1,61 @@
 From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
-Subject: Re: [PATCH 02/14] dt-bindings: soc: milbeaut: Add Milbeaut trampoline
- description
-Date: Wed, 5 Dec 2018 19:30:39 +0900
-Message-ID: <60f13d51-51e6-33f9-5393-e9425883c528@socionext.com>
+Subject: Re: [PATCH 07/14] clock: milbeaut: Add Milbeaut M10V clock control
+Date: Wed, 5 Dec 2018 20:42:41 +0900
+Message-ID: <c0b37449-1221-9849-8014-13b3eeb43382@socionext.com>
 References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com>
- <1542589274-13878-3-git-send-email-sugaya.taichi@socionext.com>
- <154337047410.88331.9696178601340675631@swboyd.mtv.corp.google.com>
- <c746a3de-a9e3-9f25-ecb9-703ceb7e62d0@socionext.com>
- <154356579701.88331.5043467509900444879@swboyd.mtv.corp.google.com>
- <f5917f71-f15b-a92d-649c-e3f5f5f10698@socionext.com>
- <CAL_Jsq+dnKht3TwCh1qB1H4pYFhQJmSN0nAayU+=PJLAvq0bbQ@mail.gmail.com>
- <90b00858-6e9e-8f7c-f6d4-b35e5daa6eee@socionext.com>
- <CAL_JsqJ=FRfzVFiOJ0wvoV5iZV+Gx3ft9pGyhb-GoKnOAQgPtQ@mail.gmail.com>
+ <1542589274-13878-8-git-send-email-sugaya.taichi@socionext.com>
+ <154356669840.88331.4455990896653868594@swboyd.mtv.corp.google.com>
+ <298cd5a5-66cf-0936-405e-59bcc7c396ed@socionext.com>
+ <154394734173.88331.18352656286616172689@swboyd.mtv.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqJ=FRfzVFiOJ0wvoV5iZV+Gx3ft9pGyhb-GoKnOAQgPtQ@mail.gmail.com>
+In-Reply-To: <154394734173.88331.18352656286616172689@swboyd.mtv.corp.google.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linux-clk <linux-clk@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Michael Turquette <mturquette@baylibre.com>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
+To: Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Michael Turquette <mturquette@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Hi
 
-On 2018/12/04 22:32, Rob Herring wrote:
-> On Tue, Dec 4, 2018 at 5:30 AM Sugaya, Taichi
-> <sugaya.taichi@socionext.com> wrote:
->>
->> Hi
->>
->> On 2018/12/04 0:49, Rob Herring wrote:
->>> On Mon, Dec 3, 2018 at 1:42 AM Sugaya, Taichi
->>> <sugaya.taichi@socionext.com> wrote:
->>>>
->>>> Hi,
->>>>
->>>> On 2018/11/30 17:16, Stephen Boyd wrote:
->>>>> Quoting Sugaya, Taichi (2018-11-29 04:24:51)
->>>>>> On 2018/11/28 11:01, Stephen Boyd wrote:
->>>>>>> Quoting Sugaya Taichi (2018-11-18 17:01:07)
->>>>>>>>      create mode 100644 Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
->>>>>>>>
->>>>>>>> diff --git a/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt b/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
->>>>>>>> new file mode 100644
->>>>>>>> index 0000000..f5d906c
->>>>>>>> --- /dev/null
->>>>>>>> +++ b/Documentation/devicetree/bindings/soc/socionext/socionext,m10v.txt
->>>>>>>> @@ -0,0 +1,12 @@
->>>>>>>> +Socionext M10V SMP trampoline driver binding
->>>>>>>> +
->>>>>>>> +This is a driver to wait for sub-cores while boot process.
->>>>>>>> +
->>>>>>>> +- compatible: should be "socionext,smp-trampoline"
->>>>>>>> +- reg: should be <0x4C000100 0x100>
->>>>>>>> +
->>>>>>>> +EXAMPLE
->>>>>>>> +       trampoline: trampoline@0x4C000100 {
->>>>>>> Drop the 0x part of unit addresses.
->>>>>>
->>>>>> Okay.
->>>>>>
->>>>>>
->>>>>>>> +               compatible = "socionext,smp-trampoline";
->>>>>>>> +               reg = <0x4C000100 0x100>;
->>>>>>> Looks like a software construct, which we wouldn't want to put into DT
->>>>>>> this way. DT doesn't describe drivers.
->>>>>> We would like to use this node only getting the address of the
->>>>>> trampoline area
->>>>>> in which sub-cores wait.  (They have finished to go to this area in previous
->>>>>> bootloader process.)
->>>>>
->>>>> Is this area part of memory, or a special SRAM? If it's part of memory,
->>>>> I would expect this node to be under the reserved-memory node and
->>>>> pointed to by some other node that uses this region. Could even be the
->>>>> CPU nodes.
->>>>
->>>> Yes, 0x4C000100 is a part of memory under the reserved-memory node. So
->>>> we would like to use the SRAM ( allocated 0x00000000 ) area instead.
->>>> BTW, sorry, the trampoline address of this example is simply wrong.  We
->>>> were going to use a part of the SRAM from the beginning.
->>>>
->>>>>
->>>>>>
->>>>>> So should we embed the constant value in source codes instead of getting
->>>>>> from
->>>>>> DT because the address is constant at the moment? Or is there other
->>>>>> approach?
->>>>>>
->>>>>
->>>>> If it's constant then that also works. Why does it need to come from DT
->>>>> at all then?
->>>>
->>>> We think it is not good to embed constant value in driver codes and do
->>>> not have another way...
->>>> Are there better ways?
+On 2018/12/05 3:15, Stephen Boyd wrote:
+> Quoting Sugaya, Taichi (2018-12-04 00:26:16)
+>> On 2018/11/30 17:31, Stephen Boyd wrote:
+>>> Quoting Sugaya Taichi (2018-11-18 17:01:12)
+>>>> +void __init m10v_clk_mux_setup(struct device_node *node)
+>>>> +{
+>>>> +       const char *clk_name = node->name;
+>>>> +       struct clk_init_data init;
+>>>> +       const char **parent_names;
+>>>> +       struct m10v_mux *mcm;
+>>>> +       struct clk *clk;
+>>>> +       int i, parents;
+>>>> +
+>>>> +       if (!m10v_clk_iomap())
+>>>> +               return;
+>>>> +
+>>>> +       of_property_read_string(node, "clock-output-names", &clk_name);
+>>>> +
+>>>> +       parents = of_clk_get_parent_count(node);
+>>>> +       if (parents < 2) {
+>>>> +               pr_err("%s: not a mux\n", clk_name);
 >>>
->>> If this is just memory, can you use the standard spin-table binding in
->>> the DT spec? There are some requirements like 64-bit values even on
->>> 32-bit machines (though this gets violated).
+>>> How is this possible?
 >>
->> The spin-table seems to be used on only 64-bit arch. Have it ever worked
->> on 32-bit machine?
+>> When the node has more than 1 clks...
+>> Or I am misunderstanding your question?
 > 
-> Yes.
-> 
->> And I would like not to use it because avoid violation.
-> 
-> The issue now that I remember is cpu-release-addr is defined to always
-> be a 64-bit value while some platforms made it a 32-bit value.
-> 'cpu-release-addr' is also used for some other enable-methods.
+> This looks like code that's checking DT for correctness. We don't
+> typically do that in the kernel because the kernel isn't a DT validator.
+> That's all I'm saying. I think this comment is not useful if the driver
+> design is done to specify parent linkages in C code instead of DT, so
+> don't worry about this too much.
 
-Thanks.
-OK, try to use the spin-table.
+I understand.
+Thank you for additional information.
 
-Best Regards,
 Sugaya Taichi
 
-> 
-> Rob
 > 
