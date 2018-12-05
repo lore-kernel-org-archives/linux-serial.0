@@ -1,61 +1,83 @@
-From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
-Subject: Re: [PATCH 07/14] clock: milbeaut: Add Milbeaut M10V clock control
-Date: Wed, 5 Dec 2018 20:42:41 +0900
-Message-ID: <c0b37449-1221-9849-8014-13b3eeb43382@socionext.com>
-References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com>
- <1542589274-13878-8-git-send-email-sugaya.taichi@socionext.com>
- <154356669840.88331.4455990896653868594@swboyd.mtv.corp.google.com>
- <298cd5a5-66cf-0936-405e-59bcc7c396ed@socionext.com>
- <154394734173.88331.18352656286616172689@swboyd.mtv.corp.google.com>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH] tty: xilinx_uartps: Correct return value in probe
+Date: Wed, 5 Dec 2018 13:53:57 +0100
+Message-ID: <3245866d-d70b-5118-43c8-91811b1d3bbb@xilinx.com>
+References: <1543927882-15091-1-git-send-email-rajan.vaja@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <154394734173.88331.18352656286616172689@swboyd.mtv.corp.google.com>
+In-Reply-To: <1543927882-15091-1-git-send-email-rajan.vaja@xilinx.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Michael Turquette <mturquette@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
+To: Rajan Vaja <rajan.vaja@xilinx.com>, gregkh@linuxfoundation.org, jslaby@suse.com, michal.simek@xilinx.com
+Cc: linux-kernel@vger.kernel.org, jollys@xilinx.com, anirudh@xilinx.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi
-
-On 2018/12/05 3:15, Stephen Boyd wrote:
-> Quoting Sugaya, Taichi (2018-12-04 00:26:16)
->> On 2018/11/30 17:31, Stephen Boyd wrote:
->>> Quoting Sugaya Taichi (2018-11-18 17:01:12)
->>>> +void __init m10v_clk_mux_setup(struct device_node *node)
->>>> +{
->>>> +       const char *clk_name = node->name;
->>>> +       struct clk_init_data init;
->>>> +       const char **parent_names;
->>>> +       struct m10v_mux *mcm;
->>>> +       struct clk *clk;
->>>> +       int i, parents;
->>>> +
->>>> +       if (!m10v_clk_iomap())
->>>> +               return;
->>>> +
->>>> +       of_property_read_string(node, "clock-output-names", &clk_name);
->>>> +
->>>> +       parents = of_clk_get_parent_count(node);
->>>> +       if (parents < 2) {
->>>> +               pr_err("%s: not a mux\n", clk_name);
->>>
->>> How is this possible?
->>
->> When the node has more than 1 clks...
->> Or I am misunderstanding your question?
+On 04. 12. 18 13:51, Rajan Vaja wrote:
+> Existing driver checks for alternate clock if devm_clk_get() fails
+> and returns error code for last clock failure. If xilinx_uartps is
+> called before clock driver, devm_clk_get() returns -EPROBE_DEFER.
+> In this case, probe should not check for alternate clock as main
+> clock is already present in DTS and return -EPROBE_DEFER only.
 > 
-> This looks like code that's checking DT for correctness. We don't
-> typically do that in the kernel because the kernel isn't a DT validator.
-> That's all I'm saying. I think this comment is not useful if the driver
-> design is done to specify parent linkages in C code instead of DT, so
-> don't worry about this too much.
-
-I understand.
-Thank you for additional information.
-
-Sugaya Taichi
-
+> This patch fixes it by not checking for alternate clock when main
+> clock get returns -EPROBE_DEFER.
 > 
+> Signed-off-by: Rajan Vaja <rajan.vaja@xilinx.com>
+> ---
+>  drivers/tty/serial/xilinx_uartps.c | 26 ++++++++++++--------------
+>  1 file changed, 12 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> index 57c66d2..a23baa4 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -1545,27 +1545,25 @@ static int cdns_uart_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	cdns_uart_data->pclk = devm_clk_get(&pdev->dev, "pclk");
+> +	if (PTR_ERR(cdns_uart_data->pclk) == -EPROBE_DEFER)
+> +		return PTR_ERR(cdns_uart_data->pclk);
+> +
+>  	if (IS_ERR(cdns_uart_data->pclk)) {
+>  		cdns_uart_data->pclk = devm_clk_get(&pdev->dev, "aper_clk");
+> -		if (!IS_ERR(cdns_uart_data->pclk))
+> -			dev_err(&pdev->dev, "clock name 'aper_clk' is deprecated.\n");
+> -	}
+> -	if (IS_ERR(cdns_uart_data->pclk)) {
+> -		dev_err(&pdev->dev, "pclk clock not found.\n");
+> -		rc = PTR_ERR(cdns_uart_data->pclk);
+> -		goto err_out_unregister_driver;
+> +		if (IS_ERR(cdns_uart_data->pclk))
+> +			return PTR_ERR(cdns_uart_data->pclk);
+> +		dev_err(&pdev->dev, "clock name 'aper_clk' is deprecated.\n");
+>  	}
+>  
+>  	cdns_uart_data->uartclk = devm_clk_get(&pdev->dev, "uart_clk");
+> +	if (PTR_ERR(cdns_uart_data->uartclk) == -EPROBE_DEFER)
+> +		return PTR_ERR(cdns_uart_data->uartclk);
+> +
+>  	if (IS_ERR(cdns_uart_data->uartclk)) {
+>  		cdns_uart_data->uartclk = devm_clk_get(&pdev->dev, "ref_clk");
+> -		if (!IS_ERR(cdns_uart_data->uartclk))
+> -			dev_err(&pdev->dev, "clock name 'ref_clk' is deprecated.\n");
+> -	}
+> -	if (IS_ERR(cdns_uart_data->uartclk)) {
+> -		dev_err(&pdev->dev, "uart_clk clock not found.\n");
+> -		rc = PTR_ERR(cdns_uart_data->uartclk);
+> -		goto err_out_unregister_driver;
+> +		if (IS_ERR(cdns_uart_data->uartclk))
+> +			return PTR_ERR(cdns_uart_data->uartclk);
+> +		dev_err(&pdev->dev, "clock name 'ref_clk' is deprecated.\n");
+>  	}
+>  
+>  	rc = clk_prepare_enable(cdns_uart_data->pclk);
+> 
+
+Nack. This is the origin version before dynamic port allocation.
+Please look at Xilinx version which has this feature already and it is
+resolved there properly.
+
+Thanks,
+Michal
