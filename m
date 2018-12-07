@@ -1,47 +1,83 @@
 From: Palmer Dabbelt <palmer@sifive.com>
-Subject: Re: [PATCH 0/3] RISC-V SBI earlycon
-Date: Fri, 07 Dec 2018 10:30:33 -0800 (PST)
-Message-ID: <mhng-e67fd38e-d244-43da-817b-0b703347aa83@palmer-si-x1c4>
-References: <20181204135507.3706-1-anup@brainfault.org>
+Subject: Re: [PATCH 3/3] RISC-V: Remove EARLY_PRINTK support
+Date: Fri, 07 Dec 2018 10:30:32 -0800 (PST)
+Message-ID: <mhng-4b39b504-3f5e-4c66-afaa-7929e92a14f7@palmer-si-x1c4>
+References: <20181204135507.3706-4-anup@brainfault.org>
 Mime-Version: 1.0 (MHng)
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181204135507.3706-1-anup@brainfault.org>
+In-Reply-To: <20181204135507.3706-4-anup@brainfault.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.com, aou@eecs.berkeley.edu, atish.patra@wdc.com, Christoph Hellwig <hch@infradead.org>, robh@kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, anup@brainfault.org
+Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, aou@eecs.berkeley.edu, atish.patra@wdc.com, Christoph Hellwig <hch@infradead.org>, robh@kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, anup@brainfault.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 04 Dec 2018 05:55:04 PST (-0800), anup@brainfault.org wrote:
-> This patchset adds RISC-V SBI earlycon and removes RISC-V EARLY_PRINTK.
+On Tue, 04 Dec 2018 05:55:07 PST (-0800), anup@brainfault.org wrote:
+> The EARLY_PRINTK using SBI console calls is not required
+> any more because we now have RISC-V SBI support in generic
+> earlycon framework.
 >
-> We should use earlycon over existing EARLY_PRINTK for SBI console because:
-> 1. It's a more generic way of implementing early console for debugging
-> 2. Current RISC-V EARLY_PRINTK is a compile-time option whereas earlycon
->    is enabled at run-time via kernel parameters.
-> 3. To use earlycon with SBI, we have to pass "earlycon=sbi" in kernel
->    parameters. If earlycon kernel parameter is not provided then kernel
->    boots much faster which is very useful in real-world RISC-V deployments.
+> Signed-off-by: Anup Patel <anup@brainfault.org>
+> ---
+>  arch/riscv/Kconfig.debug  |  2 --
+>  arch/riscv/kernel/setup.c | 28 ----------------------------
+>  2 files changed, 30 deletions(-)
 >
-> The patchset is tested on QEMU virt machine. It is based on Linux-4.20-rc5
-> and can be found at riscv_earlycon_v1 branch of:
-> https://github.com/avpatel/linux.git
+> diff --git a/arch/riscv/Kconfig.debug b/arch/riscv/Kconfig.debug
+> index c5a72f17c469..e69de29bb2d1 100644
+> --- a/arch/riscv/Kconfig.debug
+> +++ b/arch/riscv/Kconfig.debug
+> @@ -1,2 +0,0 @@
+> -config EARLY_PRINTK
+> -	def_bool y
+> diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
+> index 2c290e6aaa6e..fc8006a042eb 100644
+> --- a/arch/riscv/kernel/setup.c
+> +++ b/arch/riscv/kernel/setup.c
+> @@ -35,31 +35,9 @@
+>  #include <asm/sections.h>
+>  #include <asm/pgtable.h>
+>  #include <asm/smp.h>
+> -#include <asm/sbi.h>
+>  #include <asm/tlbflush.h>
+>  #include <asm/thread_info.h>
 >
-> Anup Patel (3):
->   tty/serial: Add RISC-V SBI earlycon support
->   RISC-V: defconfig: Enable RISC-V SBI earlycon support
->   RISC-V: Remove EARLY_PRINTK support
+> -#ifdef CONFIG_EARLY_PRINTK
+> -static void sbi_console_write(struct console *co, const char *buf,
+> -			      unsigned int n)
+> -{
+> -	int i;
+> -
+> -	for (i = 0; i < n; ++i) {
+> -		if (buf[i] == '\n')
+> -			sbi_console_putchar('\r');
+> -		sbi_console_putchar(buf[i]);
+> -	}
+> -}
+> -
+> -struct console riscv_sbi_early_console_dev __initdata = {
+> -	.name	= "early",
+> -	.write	= sbi_console_write,
+> -	.flags	= CON_PRINTBUFFER | CON_BOOT | CON_ANYTIME,
+> -	.index	= -1
+> -};
+> -#endif
+> -
+>  #ifdef CONFIG_DUMMY_CONSOLE
+>  struct screen_info screen_info = {
+>  	.orig_video_lines	= 30,
+> @@ -219,12 +197,6 @@ static void __init setup_bootmem(void)
 >
->  arch/riscv/Kconfig.debug                |  2 --
->  arch/riscv/configs/defconfig            |  1 +
->  arch/riscv/kernel/setup.c               | 28 -------------------------
->  drivers/tty/serial/Kconfig              | 12 +++++++++++
->  drivers/tty/serial/Makefile             |  1 +
->  drivers/tty/serial/earlycon-riscv-sbi.c | 28 +++++++++++++++++++++++++
->  6 files changed, 42 insertions(+), 30 deletions(-)
->  create mode 100644 drivers/tty/serial/earlycon-riscv-sbi.c
+>  void __init setup_arch(char **cmdline_p)
+>  {
+> -#if defined(CONFIG_EARLY_PRINTK)
+> -       if (likely(early_console == NULL)) {
+> -               early_console = &riscv_sbi_early_console_dev;
+> -               register_console(early_console);
+> -       }
+> -#endif
+>  	*cmdline_p = boot_command_line;
+>
+>  	parse_early_param();
 
-I'm adding these to my for-next.
-
-Thanks!
+Reviewed-by: Palmer Dabbelt <palmer@sifive.com>
