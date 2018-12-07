@@ -1,188 +1,154 @@
-From: Sean Wang <sean.wang@kernel.org>
-Subject: Re: [PATCH v2 2/4] dmaengine: mtk_uart_dma: add Mediatek uart DMA support
-Date: Thu, 6 Dec 2018 13:22:01 -0800
-Message-ID: <CAGp9LzpVuhWHBgL3qoXQKqoGAhCWY8FS7b_xVi2V=JeDAOz+8g@mail.gmail.com>
-References: <1543999380-7946-1-git-send-email-long.cheng@mediatek.com>
- <1543999380-7946-3-git-send-email-long.cheng@mediatek.com>
- <CAGp9LzqkOHPqVmAOR+YRotOb511BEDOpUWHc-YSjphF3Gpar=w@mail.gmail.com> <1544090140.28871.11.camel@mhfsdcap03>
+From: Jassi Brar <jassisinghbrar@gmail.com>
+Subject: Re: [PATCH v2 01/10] mailbox: Support blocking transfers in atomic
+ context
+Date: Thu, 6 Dec 2018 23:56:25 -0600
+Message-ID: <CABb+yY1G+6MQmrSeZvOXnuREB87+DYHGxNu1tBb9W6apizLtGw@mail.gmail.com>
+References: <20181112151853.29289-1-thierry.reding@gmail.com>
+ <20181112151853.29289-2-thierry.reding@gmail.com>
+ <0545f5e1-1740-2129-9d0e-5c950bd9bf74@nvidia.com>
+ <CABb+yY1u24JYO68f74qSJ1RpqidJ4H7cnP1Sy=RdqcBHru5XQg@mail.gmail.com>
+ <20181129152312.GB23750@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1544090140.28871.11.camel@mhfsdcap03>
-Sender: linux-kernel-owner@vger.kernel.org
-To: long.cheng@mediatek.com
-Cc: vkoul@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, srv_heupstream@mediatek.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, jslaby@suse.com, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, dan.j.williams@intel.com, linux-arm-kernel@lists.infradead.org, yt.shen@mediatek.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20181129152312.GB23750@ulmo>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Devicetree List <devicetree@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, mliljeberg@nvidia.com, Mikko Perttunen <mperttunen@nvidia.com>, talho@nvidia.com, linux-serial@vger.kernel.org, jslaby@suse.com, linux-tegra@vger.kernel.org, ppessi@nvidia.com, Jon Hunter <jonathanh@nvidia.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Dec 6, 2018 at 1:55 AM Long Cheng <long.cheng@mediatek.com> wrote:
+On Thu, Nov 29, 2018 at 9:23 AM Thierry Reding <thierry.reding@gmail.com> wrote:
 >
-> On Wed, 2018-12-05 at 13:07 -0800, Sean Wang wrote:
-> > .
-> > On Wed, Dec 5, 2018 at 1:31 AM Long Cheng <long.cheng@mediatek.com> wrote:
+> On Wed, Nov 28, 2018 at 11:23:36PM -0600, Jassi Brar wrote:
+> > On Wed, Nov 28, 2018 at 3:43 AM Jon Hunter <jonathanh@nvidia.com> wrote:
 > > >
-> > > In DMA engine framework, add 8250 mtk dma to support it.
 > > >
-> > > Signed-off-by: Long Cheng <long.cheng@mediatek.com>
-> > > ---
-> > >  drivers/dma/mediatek/8250_mtk_dma.c |  894 +++++++++++++++++++++++++++++++++++
-> > >  drivers/dma/mediatek/Kconfig        |   11 +
-> > >  drivers/dma/mediatek/Makefile       |    1 +
-> > >  3 files changed, 906 insertions(+)
-> > >  create mode 100644 drivers/dma/mediatek/8250_mtk_dma.c
+> > > On 12/11/2018 15:18, Thierry Reding wrote:
+> > > > From: Thierry Reding <treding@nvidia.com>
+> > > >
+> > > > The mailbox framework supports blocking transfers via completions for
+> > > > clients that can sleep. In order to support blocking transfers in cases
+> > > > where the transmission is not permitted to sleep, add a new ->flush()
+> > > > callback that controller drivers can implement to busy loop until the
+> > > > transmission has been completed. This will automatically be called when
+> > > > available and interrupts are disabled for clients that request blocking
+> > > > transfers.
+> > > >
+> > > > Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > > > ---
+> > > >  drivers/mailbox/mailbox.c          | 8 ++++++++
+> > > >  include/linux/mailbox_controller.h | 4 ++++
+> > > >  2 files changed, 12 insertions(+)
+> > > >
+> > > > diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
+> > > > index 674b35f402f5..0eaf21259874 100644
+> > > > --- a/drivers/mailbox/mailbox.c
+> > > > +++ b/drivers/mailbox/mailbox.c
+> > > > @@ -267,6 +267,14 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
+> > > >               unsigned long wait;
+> > > >               int ret;
+> > > >
+> > > > +             if (irqs_disabled() && chan->mbox->ops->flush) {
+> > > > +                     ret = chan->mbox->ops->flush(chan, chan->cl->tx_tout);
+> > > > +                     if (ret < 0)
+> > > > +                             tx_tick(chan, ret);
+> > > > +
+> > > > +                     return ret;
+> > > > +             }
 > > >
-> > > diff --git a/drivers/dma/mediatek/8250_mtk_dma.c b/drivers/dma/mediatek/8250_mtk_dma.c
-> > > new file mode 100644
-> > > index 0000000..3454679
-> > > --- /dev/null
-> > > +++ b/drivers/dma/mediatek/8250_mtk_dma.c
-> > > @@ -0,0 +1,894 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +/*
-> > > + * Mediatek 8250 DMA driver.
-> > > + *
-> > > + * Copyright (c) 2018 MediaTek Inc.
-> > > + * Author: Long Cheng <long.cheng@mediatek.com>
-> > > + */
-> > > +
-> > > +#include <linux/clk.h>
-> > > +#include <linux/dmaengine.h>
-> > > +#include <linux/dma-mapping.h>
-> > > +#include <linux/err.h>
-> > > +#include <linux/init.h>
-> > > +#include <linux/interrupt.h>
-> > > +#include <linux/list.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/of_dma.h>
-> > > +#include <linux/of_device.h>
-> > > +#include <linux/platform_device.h>
-> > > +#include <linux/slab.h>
-> > > +#include <linux/spinlock.h>
-> > > +#include <linux/pm_runtime.h>
-> > > +#include <linux/iopoll.h>
-> > > +
-> > > +#include "../virt-dma.h"
-> > > +
-> > > +#define MTK_APDMA_DEFAULT_REQUESTS     127
-> > > +#define MTK_APDMA_CHANNELS             (CONFIG_SERIAL_8250_NR_UARTS * 2)
-> > > +
-> > > +#define VFF_EN_B               BIT(0)
-> > > +#define VFF_STOP_B             BIT(0)
-> > > +#define VFF_FLUSH_B            BIT(0)
-> > > +#define VFF_4G_SUPPORT_B       BIT(0)
-> > > +#define VFF_RX_INT_EN0_B       BIT(0)  /*rx valid size >=  vff thre*/
-> > > +#define VFF_RX_INT_EN1_B       BIT(1)
-> > > +#define VFF_TX_INT_EN_B                BIT(0)  /*tx left size >= vff thre*/
-> > > +#define VFF_WARM_RST_B         BIT(0)
-> > > +#define VFF_RX_INT_FLAG_CLR_B  (BIT(0) | BIT(1))
-> > > +#define VFF_TX_INT_FLAG_CLR_B  0
-> > > +#define VFF_STOP_CLR_B         0
-> > > +#define VFF_FLUSH_CLR_B                0
-> > > +#define VFF_INT_EN_CLR_B       0
-> > > +#define VFF_4G_SUPPORT_CLR_B   0
-> > > +
-> > > +/* interrupt trigger level for tx */
-> > > +#define VFF_TX_THRE(n)         ((n) * 7 / 8)
-> > > +/* interrupt trigger level for rx */
-> > > +#define VFF_RX_THRE(n)         ((n) * 3 / 4)
-> > > +
-> > > +#define MTK_DMA_RING_SIZE      0xffffU
-> > > +/* invert this bit when wrap ring head again*/
-> > > +#define MTK_DMA_RING_WRAP      0x10000U
-> > > +
-> > > +#define VFF_INT_FLAG           0x00
-> > > +#define VFF_INT_EN             0x04
-> > > +#define VFF_EN                 0x08
-> > > +#define VFF_RST                        0x0c
-> > > +#define VFF_STOP               0x10
-> > > +#define VFF_FLUSH              0x14
-> > > +#define VFF_ADDR               0x1c
-> > > +#define VFF_LEN                        0x24
-> > > +#define VFF_THRE               0x28
-> > > +#define VFF_WPT                        0x2c
-> > > +#define VFF_RPT                        0x30
-> > > +/*TX: the buffer size HW can read. RX: the buffer size SW can read.*/
-> > > +#define VFF_VALID_SIZE         0x3c
-> > > +/*TX: the buffer size SW can write. RX: the buffer size HW can write.*/
-> > > +#define VFF_LEFT_SIZE          0x40
-> > > +#define VFF_DEBUG_STATUS       0x50
-> > > +#define VFF_4G_SUPPORT         0x54
-> > > +
-> > > +struct mtk_dmadev {
-> > > +       struct dma_device ddev;
-> > > +       void __iomem *mem_base[MTK_APDMA_CHANNELS];
-> > > +       spinlock_t lock; /* dma dev lock */
-> > > +       struct tasklet_struct task;
-> > > +       struct list_head pending;
-> > > +       struct clk *clk;
-> > > +       unsigned int dma_requests;
-> > > +       bool support_33bits;
-> > > +       unsigned int dma_irq[MTK_APDMA_CHANNELS];
-> > > +       struct mtk_chan *ch[MTK_APDMA_CHANNELS];
-> > > +};
-> > > +
-> > > +struct mtk_chan {
-> > > +       struct virt_dma_chan vc;
-> > > +       struct list_head node;
-> > > +       struct dma_slave_config cfg;
-> > > +       void __iomem *base;
-> > > +       struct mtk_dma_desc *desc;
-> > > +
-> > > +       bool stop;
-> > > +       bool requested;
-> > > +
-> > > +       unsigned int dma_sig;
+> > > It seems to me that if mbox_send_message() is called from an atomic
+> > > context AND tx_block is true, then if 'flush' is not populated this
+> > > should be an error condition as we do not wish to call
+> > > wait_for_completion from an atomic context.
+> > >
+> > > I understand that there is some debate about adding such flush support,
+> > > but irrespective of the above change, it seems to me that if the
+> > > mbox_send_message() can be called from an atomic context (which it
+> > > appears to), then it should be detecting if someone is trying to do so
+> > > with 'tx_block' set as this should be an error.
+> > >
+> > Layers within kernel space have to trust each other. A badly written
+> > client can break the consumer in so many ways, we can not catch every
+> > possibility.
 > >
-> > the member can be removed as no real user would refer to it
-> >
+> > > Furthermore, if the underlying mailbox driver can support sending a
+> > > message from an atomic context and busy wait until it is done, surely
+> > > the mailbox framework should provide a means to support this?
+> > >
+> > Being able to put the message on bus in atomic context is a feature -
+> > which we do support. But busy-waiting in a loop is not a feature, and
+> > we don't want to encourage that.
 >
-> Ok, i will remove it at next patch
+> I agree that in generally busy-waiting is a bad idea and shouldn't be
+> encouraged. However, I also think that an exception proves the rule. If
+> you look at the console drivers in drivers/tty/serial, all of them will
+> busy loop prior to or after sending a character. This is pretty much
+> part of the API and as such busy-looping is very much a feature.
 >
-> > > +       unsigned int dma_ch;
-> >
-> > a chan_id is already included in struct dma_chan, we can reuse it
-> >
+> The reason why this is done is because on one hand we have an atomic
+> context and on the other hand we want to make sure that all characters
+> actually make it to the console when we print them.
 >
-> chan_id is start from 0. but in this driver, dma info is stored to list.
-> if use port1, in filter_fn function, will set dma_ch to 2, 3(tx, rx). So
-> can't using chan_id
+> As an example how this can break, I've taken your suggestion to
+> implement a producer/consumer mode in the TCU driver where the console
+> write function will just stash characters into a circular buffer and a
+> work queue will then use mbox_send_message() to drain the circular
+> buffer. While this does work on the surface, I was able to concern both
+> of the issues that I was concerned about: 1) it is easy to overflow the
+> circular buffer by just dumping enough data at once to the console and
+> 2) when a crash happens, everything in the kernel stops, including the
+> consumer workqueue that is supposed to drain the circular buffer and
+> flush messages to the TCU. The result is that, in my particular case,
+> the boot log will just stop at a random place in the middle of messages
+> from much earlier in the boot because the TCU hasn't caught up yet and
+> there's a lot of characters still in the circular buffer.
 >
-
-if you use of_dma_xlate_by_chan_id in of_dma_controller_register, the
-client device still can get the right channel with the appropriate
-chan_id expressed in dmas property in dts.
-
-> > > +       unsigned int sgidx;
-> >
-
-[ ... ]
-
-> ok, i will modify it
-> > > +               wpt = mtk_dma_chan_read(c, VFF_WPT);
-> > > +               wrap = wpt & MTK_DMA_RING_WRAP ? 0U : MTK_DMA_RING_WRAP;
-> > > +
-> > > +               if ((wpt & (len - 1U)) + send < len)
-> > > +                       mtk_dma_chan_write(c, VFF_WPT, wpt + send);
-> > > +               else
-> > > +                       mtk_dma_chan_write(c, VFF_WPT,
-> > > +                                          ((wpt + send) & (len - 1U))
-> > > +                                          | wrap);
-> > > +
-> > > +               c->remain_size -= send;
-> >
-> > I'm curious why you don't need to set up the hardware from the
-> > descriptor information
-> >
+> Now, 1) can be mitigated by increasing the circular buffer size. A value
+> that seems to give reliably good results in 2 << CONFIG_LOG_BUF_SHIFT.
 >
-> mtk_dma_chan_write is update the hardware. remain_size is length of TX
-> data.
+Yes please.
 
-I thought it is not enough to be a full dmaengine. if the driver only
-supports single continuous data moving for device_prep_slave_sg
-callback.
+> I thought that I could also mitigate 2) by busy looping in the TCU driver,
+> but it turns out that that doesn't work. The reason is that since we are
+> in atomic context with all interrupts disabled, the mailbox won't ever
+> consume any new characters, so the read pointer in the circular buffer
+> won't increment, leaving me with no condition upon which to loop that
+> would work.
+>
+So you want to be able to rely on an emulated console (running on a
+totally different subsystem) to dump development-phase early-boot
+logs? At the cost of legitimizing busy looping in atomic context - one
+random driver messing up the api for ever. Maybe you could have the
+ring buffer in some shmem and only pass the number of valid characters
+in it, to the remote?
 
-We could try to turn each sg item information such as source or
-destination address and data length to be one part of the descriptor.
-When a descriptor is being issued, and then program VFF_ADDR/LEN and
-issue the data move by other VFF_* registers rather than assuming the
-data portion is always the fixed as the user assignment at
-mtk_dma_slave_config.
+>
+>         http://patchwork.ozlabs.org/project/linux-tegra/list/?series=78477
+>
+> The difference to the earlier versions is that the flushing is now
+> explicit. I think this combines the best of both worlds. On one hand it
+> makes the mechanism completely opt-in, so nothing gets hidden in the
+> regular functions. On the other hand, it allows clients to make use of
+> this functionality very explicitly. A client that doesn't call the
+> mbox_flush() function will just not busy-loop. But clients that need to
+> make sure messages are flushed in atomic contexts can now do that. Does
+> that sound like a more acceptable solution to you? We could even go and
+> add documentation to mbox_flush() that it should only be used under
+> special circumstances.
+>
+> If you still think that's a bad idea, do you have any other suggestions
+> on how to move forward?
+>
+It would help if other maintainers chime in if a subsystem should
+support busy-wait in atomic context for a one-off driver.
+
+Regards.
