@@ -1,61 +1,99 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 01/10] mailbox: Support blocking transfers in atomic
- context
-Date: Fri, 7 Dec 2018 16:39:01 +0100
-Message-ID: <20181207153901.GA29185@kroah.com>
-References: <20181112151853.29289-1-thierry.reding@gmail.com>
- <20181112151853.29289-2-thierry.reding@gmail.com>
- <0545f5e1-1740-2129-9d0e-5c950bd9bf74@nvidia.com>
- <CABb+yY1u24JYO68f74qSJ1RpqidJ4H7cnP1Sy=RdqcBHru5XQg@mail.gmail.com>
- <20181129152312.GB23750@ulmo>
- <CABb+yY1G+6MQmrSeZvOXnuREB87+DYHGxNu1tBb9W6apizLtGw@mail.gmail.com>
- <20181207113245.GA30719@ulmo>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20181207113245.GA30719@ulmo>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Devicetree List <devicetree@vger.kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, mliljeberg@nvidia.com, Mikko Perttunen <mperttunen@nvidia.com>, talho@nvidia.com, linux-serial@vger.kernel.org, jslaby@suse.com, linux-tegra@vger.kernel.org, ppessi@nvidia.com, Jon Hunter <jonathanh@nvidia.com>, linux-arm-kernel@lists.infradead.org
+From: Palmer Dabbelt <palmer@sifive.com>
+Subject: Re: [PATCH 1/3] tty/serial: Add RISC-V SBI earlycon support
+Date: Fri, 07 Dec 2018 10:30:27 -0800 (PST)
+Message-ID: <mhng-03b5ef96-37b8-4a95-94fa-2fb5e8e59da3@palmer-si-x1c4>
+References: <20181204135507.3706-2-anup@brainfault.org>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181204135507.3706-2-anup@brainfault.org>
+Sender: linux-kernel-owner@vger.kernel.org
+Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, aou@eecs.berkeley.edu, atish.patra@wdc.com, Christoph Hellwig <hch@infradead.org>, robh@kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, anup@brainfault.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Dec 07, 2018 at 12:32:45PM +0100, Thierry Reding wrote:
-> Greg,
-> 
-> any ideas on how we can move forward here? For reasons given elsewhere
-> in this thread I understand that there is no way to make the console
-> code run in non-atomic context. Have you ever run into a case where the
-> console driver couldn't busy-loop? Were there any solutions to this?
+On Tue, 04 Dec 2018 05:55:05 PST (-0800), anup@brainfault.org wrote:
+> In RISC-V, the M-mode runtime firmware provide SBI calls for
+> debug prints. This patch adds earlycon support using RISC-V
+> SBI console calls. To enable it, just pass "earlycon=sbi" in
+> kernel parameters.
+>
+> Signed-off-by: Anup Patel <anup@brainfault.org>
+> ---
+>  drivers/tty/serial/Kconfig              | 12 +++++++++++
+>  drivers/tty/serial/Makefile             |  1 +
+>  drivers/tty/serial/earlycon-riscv-sbi.c | 28 +++++++++++++++++++++++++
+>  3 files changed, 41 insertions(+)
+>  create mode 100644 drivers/tty/serial/earlycon-riscv-sbi.c
+>
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 32886c304641..287bb41ac814 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -85,6 +85,18 @@ config SERIAL_EARLYCON_ARM_SEMIHOST
+>  	  with "earlycon=smh" on the kernel command line. The console is
+>  	  enabled when early_param is processed.
+>
+> +config SERIAL_EARLYCON_RISCV_SBI
+> +	bool "Early console using RISC-V SBI"
+> +	depends on RISCV
+> +	select SERIAL_CORE
+> +	select SERIAL_CORE_CONSOLE
+> +	select SERIAL_EARLYCON
+> +	help
+> +	  Support for early debug console using RISC-V SBI. This enables
+> +	  the console before standard serial driver is probed. This is enabled
+> +	  with "earlycon=sbi" on the kernel command line. The console is
+> +	  enabled when early_param is processed.
+> +
+>  config SERIAL_SB1250_DUART
+>  	tristate "BCM1xxx on-chip DUART serial support"
+>  	depends on SIBYTE_SB1xxx_SOC=y
+> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+> index daac675612df..3ce26ce08616 100644
+> --- a/drivers/tty/serial/Makefile
+> +++ b/drivers/tty/serial/Makefile
+> @@ -7,6 +7,7 @@ obj-$(CONFIG_SERIAL_CORE) += serial_core.o
+>
+>  obj-$(CONFIG_SERIAL_EARLYCON) += earlycon.o
+>  obj-$(CONFIG_SERIAL_EARLYCON_ARM_SEMIHOST) += earlycon-arm-semihost.o
+> +obj-$(CONFIG_SERIAL_EARLYCON_RISCV_SBI) += earlycon-riscv-sbi.o
+>
+>  # These Sparc drivers have to appear before others such as 8250
+>  # which share ttySx minor node space.  Otherwise console device
+> diff --git a/drivers/tty/serial/earlycon-riscv-sbi.c b/drivers/tty/serial/earlycon-riscv-sbi.c
+> new file mode 100644
+> index 000000000000..e1a551aae336
+> --- /dev/null
+> +++ b/drivers/tty/serial/earlycon-riscv-sbi.c
+> @@ -0,0 +1,28 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * RISC-V SBI based earlycon
+> + *
+> + * Copyright (C) 2018 Anup Patel <anup@brainfault.org>
+> + */
+> +#include <linux/kernel.h>
+> +#include <linux/console.h>
+> +#include <linux/init.h>
+> +#include <linux/serial_core.h>
+> +#include <asm/sbi.h>
+> +
+> +static void sbi_console_write(struct console *con,
+> +			      const char *s, unsigned int n)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < n; ++i)
+> +		sbi_console_putchar(s[i]);
+> +}
+> +
+> +static int __init early_sbi_setup(struct earlycon_device *device,
+> +				  const char *opt)
+> +{
+> +	device->con->write = sbi_console_write;
+> +	return 0;
+> +}
+> +EARLYCON_DECLARE(sbi, early_sbi_setup);
 
-I don't know of any such cases, hardware sucks at times, and we just
-have to deal with getting it to work by doing stuff like this :(
-
-> I've looked through quite a few drivers and they all end up with a busy
-> loop, waiting for the transmission FIFO to become empty. There are also
-> a few implementations for hypervisors that call back into some firmware
-> in order to send the characters, but I expect those to do the busy
-> looping in the firmware.
-
-busy loops are ok here, as you point out.
-
-> Perhaps the most prominent case that I came across and that is quite
-> similar to this discussion is netconsole. There's a lot of code in the
-> network layer that exists only to allow using a network device for
-> outputting a console. I don't think the changes to the mailbox
-> framework are anywhere near as complicated.
-
-Neither do I, I have no objection to your changes at all.
-
-thanks,
-
-greg k-h
+Reviewed-by: Palmer Dabbelt <palmer@sifive.com>
