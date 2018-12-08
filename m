@@ -1,64 +1,64 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [RFC][PATCHv2 3/4] serial: introduce uart_port locking helpers
-Date: Sat, 8 Dec 2018 12:12:49 +0900
-Message-ID: <20181208031249.GA443@jagdpanzerIV>
-References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
- <20181016050428.17966-4-sergey.senozhatsky@gmail.com>
+From: Jassi Brar <jassisinghbrar@gmail.com>
+Subject: Re: [PATCH v2 01/10] mailbox: Support blocking transfers in atomic
+ context
+Date: Sat, 8 Dec 2018 11:21:41 +0530
+Message-ID: <CABb+yY3_uWv1YVxXxjgygPemBZraCTAXNyXT9G4aTMZv1t7d0g@mail.gmail.com>
+References: <20181112151853.29289-1-thierry.reding@gmail.com>
+ <20181112151853.29289-2-thierry.reding@gmail.com>
+ <0545f5e1-1740-2129-9d0e-5c950bd9bf74@nvidia.com>
+ <CABb+yY1u24JYO68f74qSJ1RpqidJ4H7cnP1Sy=RdqcBHru5XQg@mail.gmail.com>
+ <20181129152312.GB23750@ulmo>
+ <CABb+yY1G+6MQmrSeZvOXnuREB87+DYHGxNu1tBb9W6apizLtGw@mail.gmail.com>
+ <4f7a4211-47ee-1114-0974-a3b402178106@kapsi.fi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181016050428.17966-4-sergey.senozhatsky@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-kernel@vger.kernel.org, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <4f7a4211-47ee-1114-0974-a3b402178106@kapsi.fi>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Mikko Perttunen <cyndis@kapsi.fi>
+Cc: Devicetree List <devicetree@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, mliljeberg@nvidia.com, Mikko Perttunen <mperttunen@nvidia.com>, talho@nvidia.com, Thierry Reding <thierry.reding@gmail.com>, linux-serial@vger.kernel.org, jslaby@suse.com, linux-tegra@vger.kernel.org, ppessi@nvidia.com, Jon Hunter <jonathanh@nvidia.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On (10/16/18 14:04), Sergey Senozhatsky wrote:
-[..]
-> - The first entry point is console ->write() callback, which we call
->   from printk(). A possible deadlock scenario there is:
-> 
->   CPU0
-> 	<NMI>
-> 	spin_lock_irqsave(&port->lock, flags)      << deadlock
-> 	serial_foo_write()
-> 	call_console_drivers()
-> 	console_unlock()
-> 	console_flush_on_panic()
-> 	panic()
-> 	<NMI/>
-> 	spin_lock_irqsave(&port->lock, flags)
-> 	serial_foo_write()
-> 	call_console_drivers()
-> 	console_unlock()
-> 	printk()
-> 	...
-
-[..]
-> - The rest (of entry points) requires a bit different handling.
->   Let's take a look at the following backtrace:
-> 
->   	CPU0
-> 	<IRQ>
-> 	spin_lock_irqsave(&port->lock, flags)      << deadlock
-> 	serial_foo_write()
-> 	call_console_drivers()
-> 	console_unlock()
-> 	printk()
-> 	__queue_work()
-> 	tty_flip_buffer_push()
-> 	spin_lock_irqsave(&port->lock, flags)
-> 	serial_foo_handle_IRQ()
-> 	<IRQ/>
+On Fri, Dec 7, 2018 at 11:50 AM Mikko Perttunen <cyndis@kapsi.fi> wrote:
 >
->   Serial drivers invoke tons of core kernel functions - WQ, MM, etc. All
->   of which may printk() in various cases. So we can't really just
->   "remove those printk-s". The simples way to address this seems to be
->   PRINTK_SAFE_CONTEXT_MASK.
+> On 07/12/2018 11.26, Jassi Brar wrote:
+> >> I thought that I could also mitigate 2) by busy looping in the TCU driver,
+> >> but it turns out that that doesn't work. The reason is that since we are
+> >> in atomic context with all interrupts disabled, the mailbox won't ever
+> >> consume any new characters, so the read pointer in the circular buffer
+> >> won't increment, leaving me with no condition upon which to loop that
+> >> would work.
+> >>
+> > So you want to be able to rely on an emulated console (running on a
+> > totally different subsystem) to dump development-phase early-boot
+> > logs? At the cost of legitimizing busy looping in atomic context - one
+> > random driver messing up the api for ever. Maybe you could have the
+> > ring buffer in some shmem and only pass the number of valid characters
+> > in it, to the remote?
+> >
+>
+> I would like to note that this is the one and only console interface
+> that exists on these systems, for both development phase and production.
+> Other UARTs are not externally accessible on the systems, or they are
+> comparatively difficult to access as they aren't intended to be used as
+> consoles in the system design.
 
-serial/UART and printk guys, sorry to bother you, do you hate this
-idea of removing console_driver->CORE KERNEL->printk->console_driver
-deadlock path? Or is there any chance we can move forward?
-
-	-ss
+> The combination of hardware and firmware
+> implementing the console is black box from software's point of view
+> (similarly to any other UART HW). The interface has also been fixed at
+> an early system design phase, as there are many operating systems
+> running on these boards, each with their own drivers.
+>
+That is the saddest part - someone, who writes test cases for the h/w
+team and with almost no knowledge of how OSes work, decides how the
+firmware is going to work and calls it done. Then the Linux is left to
+deal with the mess as we "can't do anything about it".
