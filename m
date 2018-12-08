@@ -1,56 +1,64 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 12/15] dt-bindings: serial: Document RDA Micro UART
-Date: Fri, 7 Dec 2018 17:41:18 -0600
-Message-ID: <20181207234118.GA16289@bogus>
-References: <20181128135106.9255-1-manivannan.sadhasivam@linaro.org>
- <20181128135106.9255-13-manivannan.sadhasivam@linaro.org>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [RFC][PATCHv2 3/4] serial: introduce uart_port locking helpers
+Date: Sat, 8 Dec 2018 12:12:49 +0900
+Message-ID: <20181208031249.GA443@jagdpanzerIV>
+References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
+ <20181016050428.17966-4-sergey.senozhatsky@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181128135106.9255-13-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <20181016050428.17966-4-sergey.senozhatsky@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc: olof@lixom.net, arnd@arndb.de, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, daniel.lezcano@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net, overseas.sales@unisoc.com
+To: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-kernel@vger.kernel.org, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Nov 28, 2018 at 07:21:03PM +0530, Manivannan Sadhasivam wrote:
-> From: Andreas Färber <afaerber@suse.de>
+On (10/16/18 14:04), Sergey Senozhatsky wrote:
+[..]
+> - The first entry point is console ->write() callback, which we call
+>   from printk(). A possible deadlock scenario there is:
 > 
-> Add an initial binding for the UART in RDA Micro RDA8810PL SoC.
-> 
-> Signed-off-by: Andreas Färber <afaerber@suse.de>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
->  .../bindings/serial/rda,8810pl-uart.txt           | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt b/Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
-> new file mode 100644
-> index 000000000000..ee03116d7415
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
-> @@ -0,0 +1,15 @@
-> +RDA Micro UART
-> +
-> +Required properties:
-> +- compatible :  "rda,8810pl-uart" for RDA8810PL SoCs.
-> +- reg        :  Offset and length of the register set for the device.
-> +- interrupts :  Should contain UART interrupt.
+>   CPU0
+> 	<NMI>
+> 	spin_lock_irqsave(&port->lock, flags)      << deadlock
+> 	serial_foo_write()
+> 	call_console_drivers()
+> 	console_unlock()
+> 	console_flush_on_panic()
+> 	panic()
+> 	<NMI/>
+> 	spin_lock_irqsave(&port->lock, flags)
+> 	serial_foo_write()
+> 	call_console_drivers()
+> 	console_unlock()
+> 	printk()
+> 	...
 
-Uarts generally need a clock.
-
-> +
-> +
-> +Example:
-> +
-> +		uart2: serial@20a90000 {
-> +			compatible = "rda,8810pl-uart";
-> +			reg = <0x20a90000 0x1000>;
-> +			interrupts = <11 IRQ_TYPE_LEVEL_HIGH>;
-> +		};
-> -- 
-> 2.17.1
+[..]
+> - The rest (of entry points) requires a bit different handling.
+>   Let's take a look at the following backtrace:
 > 
+>   	CPU0
+> 	<IRQ>
+> 	spin_lock_irqsave(&port->lock, flags)      << deadlock
+> 	serial_foo_write()
+> 	call_console_drivers()
+> 	console_unlock()
+> 	printk()
+> 	__queue_work()
+> 	tty_flip_buffer_push()
+> 	spin_lock_irqsave(&port->lock, flags)
+> 	serial_foo_handle_IRQ()
+> 	<IRQ/>
+>
+>   Serial drivers invoke tons of core kernel functions - WQ, MM, etc. All
+>   of which may printk() in various cases. So we can't really just
+>   "remove those printk-s". The simples way to address this seems to be
+>   PRINTK_SAFE_CONTEXT_MASK.
+
+serial/UART and printk guys, sorry to bother you, do you hate this
+idea of removing console_driver->CORE KERNEL->printk->console_driver
+deadlock path? Or is there any chance we can move forward?
+
+	-ss
