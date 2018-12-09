@@ -1,30 +1,29 @@
 From: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
-Subject: [PATCH v3 2/2] serial: 8250: Rate limit serial port rx interrupts during input overruns
-Date: Mon, 10 Dec 2018 11:29:09 +1300
-Message-ID: <20181209222909.16204-1-darwin.dingel@alliedtelesis.co.nz>
+Subject: [PATCH v3 1/2] dt-bindings: serial: 8250: Add rate limit for serial port input overruns
+Date: Mon, 10 Dec 2018 11:27:39 +1300
+Message-ID: <20181209222739.15866-1-darwin.dingel@alliedtelesis.co.nz>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, robh@kernel.org
-Cc: chris.packham@alliedtelesis.co.nz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
+To: gregkh@linuxfoundation.org, robh+dt@kernel.org
+Cc: chris.packham@alliedtelesis.co.nz, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
 List-Id: linux-serial@vger.kernel.org
 
-When a serial port gets faulty or gets flooded with inputs, its interrupt=
+When a serial port continuously experiences input overrun from
+(1) continuous receive characters from remote and or (2) hardware
+issues, its interrupt handler can preempt other tasks especially
+when the system is busy (ie. boot up period). This can cause other
+tasks to get starved of processing time from the CPU.
 
-handler starts to work double time to get the characters to the workqueue=
+When this dts binding is enabled and input overrun on the serial port
+is detected, serial port receive will be throttled to give some breathing=
 
-for the tty layer to handle them. When this busy time on the serial/tty
-subsystem happens during boot, where it is also busy on the userspace
-trying to initialise, some processes can continuously get preempted
-and will be on hold until the interrupts subside.
+room for processing other tasks. Value provided will be in milliseconds.
 
-The fix is to backoff on processing received characters for a specified
-amount of time when an input overrun is seen (received a new character
-before the previous one is processed). This only stops receive and will
-continue to transmit characters to serial port. After the backoff period
-is done, it receive will be re-enabled. This is optional and will only
-be enabled by setting 'overrun-throttle-ms' in the dts.
+&serial0{
+=09overrun-throttle-ms =3D <500>;
+};
 
 Signed-off-by: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
 ---
@@ -37,127 +36,23 @@ Notes:
 =20   v2->v3:
 =20   - Fixed commit message and reviewed-by fields
 
-=20drivers/tty/serial/8250/8250_core.c | 25 +++++++++++++++++++++++++
-=20drivers/tty/serial/8250/8250_fsl.c  | 23 ++++++++++++++++++++++-
-=20drivers/tty/serial/8250/8250_of.c   |  5 +++++
-=20include/linux/serial_8250.h         |  4 ++++
-=204 files changed, 56 insertions(+), 1 deletion(-)
+=20Documentation/devicetree/bindings/serial/8250.txt | 1 +
+=201 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/825=
-0/8250_core.c
-index 94f3e1c64490..189ab1212d9a 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -942,6 +942,21 @@ static struct uart_8250_port *serial8250_find_match_=
-or_unused(struct uart_port *
-=20	return NULL;
-=20}
+diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Document=
+ation/devicetree/bindings/serial/8250.txt
+index aeb6db4e35c3..da50321da34d 100644
+--- a/Documentation/devicetree/bindings/serial/8250.txt
++++ b/Documentation/devicetree/bindings/serial/8250.txt
+@@ -51,6 +51,7 @@ Optional properties:
+=20- tx-threshold: Specify the TX FIFO low water indication for parts wit=
+h
+=20  programmable TX FIFO thresholds.
+=20- resets : phandle + reset specifier pairs
++- overrun-throttle-ms : how long to pause uart rx when input overrun is =
+encountered.
 =20
-+static void serial_8250_overrun_backoff_work(struct work_struct *work)
-+{
-+	struct uart_8250_port *up =3D
-+	    container_of(to_delayed_work(work), struct uart_8250_port,
-+			 overrun_backoff);
-+	struct uart_port *port =3D &up->port;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	up->ier |=3D UART_IER_RLSI | UART_IER_RDI;
-+	up->port.read_status_mask |=3D UART_LSR_DR;
-+	serial_out(up, UART_IER, up->ier);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-=20/**
-=20 *	serial8250_register_8250_port - register a serial port
-=20 *	@up: serial port template
-@@ -1056,6 +1071,16 @@ int serial8250_register_8250_port(struct uart_8250=
-_port *up)
-=20			ret =3D 0;
-=20		}
-=20	}
-+
-+	/* Initialise interrupt backoff work if required */
-+	if (up->overrun_backoff_time_ms > 0) {
-+		uart->overrun_backoff_time_ms =3D up->overrun_backoff_time_ms;
-+		INIT_DELAYED_WORK(&uart->overrun_backoff,
-+				  serial_8250_overrun_backoff_work);
-+	} else {
-+		uart->overrun_backoff_time_ms =3D 0;
-+	}
-+
-=20	mutex_unlock(&serial_mutex);
-=20
-=20	return ret;
-diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250=
-/8250_fsl.c
-index 6640a4c7ddd1..bb9571eed275 100644
---- a/drivers/tty/serial/8250/8250_fsl.c
-+++ b/drivers/tty/serial/8250/8250_fsl.c
-@@ -45,8 +45,29 @@ int fsl8250_handle_irq(struct uart_port *port)
-=20
-=20	lsr =3D orig_lsr =3D up->port.serial_in(&up->port, UART_LSR);
-=20
--	if (lsr & (UART_LSR_DR | UART_LSR_BI))
-+	/* Process incoming characters first */
-+	if ((lsr & (UART_LSR_DR | UART_LSR_BI)) &&
-+	    (up->ier & (UART_IER_RLSI | UART_IER_RDI))) {
-=20		lsr =3D serial8250_rx_chars(up, lsr);
-+	}
-+
-+	/* Stop processing interrupts on input overrun */
-+	if ((orig_lsr & UART_LSR_OE) && (up->overrun_backoff_time_ms > 0)) {
-+		unsigned long delay;
-+
-+		up->ier =3D port->serial_in(port, UART_IER);
-+		if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
-+			port->ops->stop_rx(port);
-+		} else {
-+			/* Keep restarting the timer until
-+			 * the input overrun subsides.
-+			 */
-+			cancel_delayed_work(&up->overrun_backoff);
-+		}
-+
-+		delay =3D msecs_to_jiffies(up->overrun_backoff_time_ms);
-+		schedule_delayed_work(&up->overrun_backoff, delay);
-+	}
-=20
-=20	serial8250_modem_status(up);
-=20
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/=
-8250_of.c
-index 877fd7f8a8ed..a1a85805d010 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -240,6 +240,11 @@ static int of_platform_serial_probe(struct platform_=
-device *ofdev)
-=20	if (of_property_read_bool(ofdev->dev.of_node, "auto-flow-control"))
-=20		port8250.capabilities |=3D UART_CAP_AFE;
-=20
-+	if (of_property_read_u32(ofdev->dev.of_node,
-+			"overrun-throttle-ms",
-+			&port8250.overrun_backoff_time_ms) !=3D 0)
-+		port8250.overrun_backoff_time_ms =3D 0;
-+
-=20	ret =3D serial8250_register_8250_port(&port8250);
-=20	if (ret < 0)
-=20		goto err_dispose;
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 18e21427bce4..5a655ba8d273 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -134,6 +134,10 @@ struct uart_8250_port {
-=20	void			(*dl_write)(struct uart_8250_port *, int);
-=20
-=20	struct uart_8250_em485 *em485;
-+
-+	/* Serial port overrun backoff */
-+	struct delayed_work overrun_backoff;
-+	u32 overrun_backoff_time_ms;
-=20};
-=20
-=20static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up=
-)
+=20Note:
+=20* fsl,ns16550:
 --=20
 2.19.2
