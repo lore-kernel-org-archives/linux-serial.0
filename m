@@ -1,14 +1,14 @@
 From: Long Cheng <long.cheng@mediatek.com>
-Subject: [PATCH v4 1/2] dmaengine: 8250_mtk_dma: add Mediatek uart DMA support
-Date: Mon, 10 Dec 2018 10:57:15 +0800
-Message-ID: <1544410636-31815-2-git-send-email-long.cheng@mediatek.com>
-References: <1544410636-31815-1-git-send-email-long.cheng@mediatek.com>
+Subject: [resend PATCH v4 1/2] dmaengine: 8250_mtk_dma: add Mediatek uart DMA support
+Date: Mon, 10 Dec 2018 11:47:44 +0800
+Message-ID: <1544413665-1222-2-git-send-email-long.cheng@mediatek.com>
+References: <1544413665-1222-1-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1544410636-31815-1-git-send-email-long.cheng@mediatek.com>
+In-Reply-To: <1544413665-1222-1-git-send-email-long.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+To: Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>
 Cc: Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, Sean Wang <sean.wang@kernel.org>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Long Cheng <long.cheng@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
