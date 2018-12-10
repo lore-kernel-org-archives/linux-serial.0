@@ -1,7 +1,7 @@
 From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v4 05/15] ARM: dts: Add devicetree for RDA8810PL SoC
-Date: Mon, 10 Dec 2018 23:05:40 +0530
-Message-ID: <20181210173550.29643-6-manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v4 06/15] ARM: dts: Add devicetree for OrangePi 2G IoT board
+Date: Mon, 10 Dec 2018 23:05:41 +0530
+Message-ID: <20181210173550.29643-7-manivannan.sadhasivam@linaro.org>
 References: <20181210173550.29643-1-manivannan.sadhasivam@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -13,106 +13,84 @@ To: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, tglx@linutronix.de, jason
 Cc: linux-unisoc@lists.infradead.org, afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net, Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add initial device tree for RDA8810PL SoC from RDA Microelectronics.
+Add initial devicetree support for OrangePi 2G IoT board from Xunlong.
 
 Signed-off-by: Andreas Färber <afaerber@suse.de>
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- arch/arm/boot/dts/rda8810pl.dtsi | 86 ++++++++++++++++++++++++++++++++
- 1 file changed, 86 insertions(+)
- create mode 100644 arch/arm/boot/dts/rda8810pl.dtsi
+ arch/arm/boot/dts/Makefile                    |  2 +
+ .../boot/dts/rda8810pl-orangepi-2g-iot.dts    | 50 +++++++++++++++++++
+ 2 files changed, 52 insertions(+)
+ create mode 100644 arch/arm/boot/dts/rda8810pl-orangepi-2g-iot.dts
 
-diff --git a/arch/arm/boot/dts/rda8810pl.dtsi b/arch/arm/boot/dts/rda8810pl.dtsi
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index b0e966d625b9..a0fdad8f10dd 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -806,6 +806,8 @@ dtb-$(CONFIG_ARCH_QCOM) += \
+ 	qcom-msm8974-sony-xperia-castor.dtb \
+ 	qcom-msm8974-sony-xperia-honami.dtb \
+ 	qcom-mdm9615-wp8548-mangoh-green.dtb
++dtb-$(CONFIG_ARCH_RDA) += \
++	rda8810pl-orangepi-2g-iot.dtb
+ dtb-$(CONFIG_ARCH_REALVIEW) += \
+ 	arm-realview-pb1176.dtb \
+ 	arm-realview-pb11mp.dtb \
+diff --git a/arch/arm/boot/dts/rda8810pl-orangepi-2g-iot.dts b/arch/arm/boot/dts/rda8810pl-orangepi-2g-iot.dts
 new file mode 100644
-index 000000000000..15547b138977
+index 000000000000..98e34248ae80
 --- /dev/null
-+++ b/arch/arm/boot/dts/rda8810pl.dtsi
-@@ -0,0 +1,86 @@
++++ b/arch/arm/boot/dts/rda8810pl-orangepi-2g-iot.dts
+@@ -0,0 +1,50 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
-+ * RDA8810PL SoC
-+ *
 + * Copyright (c) 2017 Andreas Färber
 + * Copyright (c) 2018 Manivannan Sadhasivam
 + */
 +
++/dts-v1/;
++
++#include "rda8810pl.dtsi"
++
 +/ {
-+	compatible = "rda,8810pl";
-+	interrupt-parent = <&intc>;
-+	#address-cells = <1>;
-+	#size-cells = <1>;
++	compatible = "xunlong,orangepi-2g-iot", "rda,8810pl";
++	model = "Orange Pi 2G-IoT";
 +
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a5";
-+			reg = <0x0>;
-+		};
++	aliases {
++		serial0 = &uart1;
++		serial1 = &uart2;
++		serial2 = &uart3;
 +	};
 +
-+	sram@100000 {
-+		compatible = "mmio-sram";
-+		reg = <0x100000 0x10000>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
++	chosen {
++		stdout-path = "serial2:921600n8";
 +	};
 +
-+	apb@20800000 {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x0 0x20800000 0x100000>;
-+
-+		intc: interrupt-controller@0 {
-+			compatible = "rda,8810pl-intc";
-+			reg = <0x0 0x1000>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
++	memory@80000000 {
++		device_type = "memory";
++		reg = <0x80000000 0x10000000>;
 +	};
 +
-+	apb@20900000 {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x0 0x20900000 0x100000>;
++	uart_clk: uart-clk {
++		compatible = "fixed-clock";
++		clock-frequency = <921600>;
++		#clock-cells = <0>;
 +	};
++};
 +
-+	apb@20a00000 {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x0 0x20a00000 0x100000>;
++&uart1 {
++	status = "okay";
++	clocks = <&uart_clk>;
++};
 +
-+		uart1: serial@0 {
-+			compatible = "rda,8810pl-uart";
-+			reg = <0x0 0x1000>;
-+			status = "disabled";
-+		};
++&uart2 {
++	status = "okay";
++	clocks = <&uart_clk>;
++};
 +
-+		uart2: serial@10000 {
-+			compatible = "rda,8810pl-uart";
-+			reg = <0x10000 0x1000>;
-+			status = "disabled";
-+		};
-+
-+		uart3: serial@90000 {
-+			compatible = "rda,8810pl-uart";
-+			reg = <0x90000 0x1000>;
-+			status = "disabled";
-+		};
-+	};
-+
-+	l2: cache-controller@21100000 {
-+		compatible = "arm,pl310-cache";
-+		reg = <0x21100000 0x1000>;
-+		cache-unified;
-+		cache-level = <2>;
-+	};
++&uart3 {
++	status = "okay";
++	clocks = <&uart_clk>;
 +};
 -- 
 2.17.1
