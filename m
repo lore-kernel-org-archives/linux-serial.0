@@ -1,58 +1,42 @@
-From: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
-Subject: [PATCH v3 1/2] dt-bindings: serial: 8250: Add rate limit for serial port input overruns
-Date: Mon, 10 Dec 2018 11:27:39 +1300
-Message-ID: <20181209222739.15866-1-darwin.dingel@alliedtelesis.co.nz>
+From: Long Cheng <long.cheng@mediatek.com>
+Subject: [PATCH v4 0/2] add uart DMA function
+Date: Mon, 10 Dec 2018 10:57:14 +0800
+Message-ID: <1544410636-31815-1-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, robh+dt@kernel.org
-Cc: chris.packham@alliedtelesis.co.nz, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
+To: Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, Sean Wang <sean.wang@kernel.org>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Long Cheng <long.cheng@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-When a serial port continuously experiences input overrun from
-(1) continuous receive characters from remote and or (2) hardware
-issues, its interrupt handler can preempt other tasks especially
-when the system is busy (ie. boot up period). This can cause other
-tasks to get starved of processing time from the CPU.
+In Mediatek SOCs, the uart can support DMA function.
+Base on DMA engine formwork, we add the DMA code to support uart. And put the code under drivers/dma.
 
-When this dts binding is enabled and input overrun on the serial port
-is detected, serial port receive will be throttled to give some breathing=
+This series contains document bindings, Kconfig to control the function enable or not,
+device tree including interrupt and dma device node, the code of UART DM
 
-room for processing other tasks. Value provided will be in milliseconds.
+Changes compared to v3:
+-fix CONFIG_PM, will cause build fail
+Changes compared to v2:
+-remove unimportant parameters
+-instead of cookie, use APIs of virtual channel.
+-use of_dma_xlate_by_chan_id.
+Changes compared to v1:
+-mian revised file, 8250_mtk_dma.c
+--parameters renamed for standard
+--remove atomic operation
 
-&serial0{
-=09overrun-throttle-ms =3D <500>;
-};
+Long Cheng (2):
+  dmaengine: 8250_mtk_dma: add Mediatek uart DMA support
+  arm: dts: mt2701: add uart APDMA to device tree
 
-Signed-off-by: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
----
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi |   50 ++
+ drivers/dma/mediatek/8250_mtk_dma.c       |  830 +++++++++++++++++++++++++++++
+ drivers/dma/mediatek/Kconfig              |   11 +
+ drivers/dma/mediatek/Makefile             |    1 +
+ 4 files changed, 892 insertions(+)
+ create mode 100644 drivers/dma/mediatek/8250_mtk_dma.c
 
-Notes:
-=20   Changelog
-=20   v1->v2:
-=20   - Separated dts binding to another patch
-=20  =20
-=20   v2->v3:
-=20   - Fixed commit message and reviewed-by fields
-
-=20Documentation/devicetree/bindings/serial/8250.txt | 1 +
-=201 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Document=
-ation/devicetree/bindings/serial/8250.txt
-index aeb6db4e35c3..da50321da34d 100644
---- a/Documentation/devicetree/bindings/serial/8250.txt
-+++ b/Documentation/devicetree/bindings/serial/8250.txt
-@@ -51,6 +51,7 @@ Optional properties:
-=20- tx-threshold: Specify the TX FIFO low water indication for parts wit=
-h
-=20  programmable TX FIFO thresholds.
-=20- resets : phandle + reset specifier pairs
-+- overrun-throttle-ms : how long to pause uart rx when input overrun is =
-encountered.
-=20
-=20Note:
-=20* fsl,ns16550:
---=20
-2.19.2
+-- 
+1.7.9.5
