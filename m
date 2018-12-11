@@ -1,169 +1,1064 @@
-From: Dmitry Safonov <dima@arista.com>
-Subject: Re: [LKP] [tty] c96cf923a9:
- WARNING:possible_circular_locking_dependency_detected
-Date: Tue, 11 Dec 2018 20:59:35 +0000
-Message-ID: <2780774e-b397-dcc2-6950-cccb527d5014@arista.com>
-References: <20181211091154.GL23332@shao2-debian>
- <b8a5b151-9eaa-b098-f24f-b17c1886f456@suse.cz>
+From: Sean Wang <sean.wang@kernel.org>
+Subject: Re: [PATCH v5 1/2] dmaengine: 8250_mtk_dma: add Mediatek uart DMA support
+Date: Tue, 11 Dec 2018 15:12:51 -0800
+Message-ID: <CAGp9LzqB=hzkOHZqa-ZzRLcJujU--7gxYZczXiEj3DiH+FmhbQ@mail.gmail.com>
+References: <1544506645-27979-1-git-send-email-long.cheng@mediatek.com> <1544506645-27979-2-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <b8a5b151-9eaa-b098-f24f-b17c1886f456@suse.cz>
-Content-Language: en-US
+In-Reply-To: <1544506645-27979-2-git-send-email-long.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jiri Slaby <jslaby@suse.cz>, kernel test robot <rong.a.chen@intel.com>
-Cc: lkp@01.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mikulas Patocka <mpatocka@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>
+To: long.cheng@mediatek.com
+Cc: vkoul@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, ryder.lee@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>, dan.j.williams@intel.com, gregkh@linuxfoundation.org, jslaby@suse.com, =?UTF-8?B?U2VhbiBXYW5nICjnjovlv5fkupgp?= <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, yingjoe.chen@mediatek.com, YT Shen <yt.shen@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi, everyone,
+Sorry for that I didn't have a full review at one time in the earlier version
 
-I'm looking into that.
+       On Mon, Dec 10, 2018 at 9:37 PM Long Cheng
+<long.cheng@mediatek.com> wrote:
+>
+> In DMA engine framework, add 8250 mtk dma to support it.
 
-Greg, please, keep tty patches set in linux-next, I'll address this
-report before it goes into master.
+It looks like there are still many rooms to improve the description,
+especially it's a totally new driver.
 
-This theoretical issue is not strictly related to the patches set, but
-can be hit without patches.
+>
+> Signed-off-by: Long Cheng <long.cheng@mediatek.com>
+> ---
+>  drivers/dma/mediatek/8250_mtk_dma.c |  830 +++++++++++++++++++++++++++++++++++
+>  drivers/dma/mediatek/Kconfig        |   11 +
+>  drivers/dma/mediatek/Makefile       |    1 +
+>  3 files changed, 842 insertions(+)
+>  create mode 100644 drivers/dma/mediatek/8250_mtk_dma.c
+>
+> diff --git a/drivers/dma/mediatek/8250_mtk_dma.c b/drivers/dma/mediatek/8250_mtk_dma.c
+> new file mode 100644
+> index 0000000..f79d180
+> --- /dev/null
+> +++ b/drivers/dma/mediatek/8250_mtk_dma.c
+> @@ -0,0 +1,830 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Mediatek 8250 DMA driver.
 
-On 12/11/18 1:49 PM, Jiri Slaby wrote:
-> On 11. 12. 18, 10:11, kernel test robot wrote:
->> FYI, we noticed the following commit (built with gcc-7):
->>
->> commit: c96cf923a98d1b094df9f0cf97a83e118817e31b ("tty: Don't block on IO when ldisc change is pending")
->> https://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git tty-testing
-> ...
->> [   87.209665] WARNING: possible circular locking dependency detected
->> [   87.210547] 4.20.0-rc4-00057-gc96cf92 #1 Tainted: G        W        
->> [   87.211449] ------------------------------------------------------
->> [   87.212405] getty/519 is trying to acquire lock:
->> [   87.213074] (____ptrval____) (&obj_hash[i].lock){-.-.}, at: debug_check_no_obj_freed+0xb4/0x302
->> [   87.214343] 
->> [   87.214343] but task is already holding lock:
->> [   87.215174] (____ptrval____) (&port_lock_key){-.-.}, at: uart_shutdown+0x3a3/0x4e2
-> 
-> This looks sensible -- normal use case.
-> 
->> [   87.216260] which lock already depends on the new lock.
->> [   87.216260] 
->> [   87.217421] 
->> [   87.217421] the existing dependency chain (in reverse order) is:
-> 
-> This is during console init, so even if the report is not false
-> positive, the deadlock is unlikely to happen. And only triggered with
-> CONFIG_DEBUG_OBJECTS_FREE.
-> 
-> In any way, I don't see any connection between #2 and #0 below. The
-> stack traces are completely different -- one from start_kernel, one from
-> exit syscall.
-> 
-> I also wonder how could the commit above start causing this? Well, it
-> might make it happen more likely due to more of EAGAINs.
+MediaTek
 
-Yes, as far as I can see right now, this is not related to tty changes,
-but to non-clear locking policy between
-DEBUG_OBJECTS_FREE hash bucket lock <-> uart's port->mutex.
+> + *
+> + * Copyright (c) 2018 MediaTek Inc.
+> + * Author: Long Cheng <long.cheng@mediatek.com>
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/dmaengine.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/err.h>
+> +#include <linux/init.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/list.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of_dma.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/iopoll.h>
+> +
+> +#include "../virt-dma.h"
+> +
+> +#define MTK_APDMA_DEFAULT_REQUESTS     127
+> +#define MTK_APDMA_CHANNELS             (CONFIG_SERIAL_8250_NR_UARTS * 2)
+> +
+> +#define VFF_EN_B               BIT(0)
+> +#define VFF_STOP_B             BIT(0)
+> +#define VFF_FLUSH_B            BIT(0)
+> +#define VFF_4G_SUPPORT_B       BIT(0)
+> +#define VFF_RX_INT_EN0_B       BIT(0)  /*rx valid size >=  vff thre*/
+> +#define VFF_RX_INT_EN1_B       BIT(1)
+> +#define VFF_TX_INT_EN_B                BIT(0)  /*tx left size >= vff thre*/
+> +#define VFF_WARM_RST_B         BIT(0)
+> +#define VFF_RX_INT_FLAG_CLR_B  (BIT(0) | BIT(1))
+> +#define VFF_TX_INT_FLAG_CLR_B  0
+> +#define VFF_STOP_CLR_B         0
+> +#define VFF_FLUSH_CLR_B                0
+> +#define VFF_INT_EN_CLR_B       0
+> +#define VFF_4G_SUPPORT_CLR_B   0
+> +
+> +/* interrupt trigger level for tx */
+> +#define VFF_TX_THRE(n)         ((n) * 7 / 8)
+> +/* interrupt trigger level for rx */
+> +#define VFF_RX_THRE(n)         ((n) * 3 / 4)
+> +
+> +#define MTK_DMA_RING_SIZE      0xffffU
+> +/* invert this bit when wrap ring head again*/
+> +#define MTK_DMA_RING_WRAP      0x10000U
+> +
+> +#define VFF_INT_FLAG           0x00
+> +#define VFF_INT_EN             0x04
+> +#define VFF_EN                 0x08
+> +#define VFF_RST                        0x0c
+> +#define VFF_STOP               0x10
+> +#define VFF_FLUSH              0x14
+> +#define VFF_ADDR               0x1c
+> +#define VFF_LEN                        0x24
+> +#define VFF_THRE               0x28
+> +#define VFF_WPT                        0x2c
+> +#define VFF_RPT                        0x30
+> +/*TX: the buffer size HW can read. RX: the buffer size SW can read.*/
+> +#define VFF_VALID_SIZE         0x3c
+> +/*TX: the buffer size SW can write. RX: the buffer size HW can write.*/
+> +#define VFF_LEFT_SIZE          0x40
+> +#define VFF_DEBUG_STATUS       0x50
+> +#define VFF_4G_SUPPORT         0x54
+> +
+> +struct mtk_dmadev {
+> +       struct dma_device ddev;
+> +       void __iomem *mem_base[MTK_APDMA_CHANNELS];
+> +       spinlock_t lock; /* dma dev lock */
+> +       struct tasklet_struct task;
 
-As far as I remember WARN() prints can't be deferred and it makes sense
-to have WARN() in debug objects.
-I see probably fast and quite simple solution: to copy debug object's
-state on stack and call debug_print_object() without bucket lock...
-But not sure how straight-forward is this. I mean if speaking from
-lib/debugobjects perspective.
+we can drop tasklet and instead allows descriptors to be handled as
+fast as possible.
+similar suggestions have been made in the other dmaengine [1] and mtk-hsdma.c
 
-I'll prepare a patch for that as it seems the easiest way (I haven't
-looked long yet, though).
+[1] https://lkml.org/lkml/2018/11/11/146
 
-+Cc: Sergey, Petr, Steven - with their console_unlock()/printk() and
-deferring expertise they probably have more brighter ideas.
+> +       struct list_head pending;
+> +       struct clk *clk;
+> +       unsigned int dma_requests;
+> +       bool support_33bits;
+> +       unsigned int dma_irq[MTK_APDMA_CHANNELS];
+> +       struct mtk_chan *ch[MTK_APDMA_CHANNELS];
+> +};
+> +
+> +struct mtk_chan {
+> +       struct virt_dma_chan vc;
+> +       struct list_head node;
+> +       struct dma_slave_config cfg;
+> +       void __iomem *base;
+> +       struct mtk_dma_desc *desc;
+> +
+> +       bool stop;
+> +       bool requested;
+> +
+> +       unsigned int rx_status;
+> +};
+> +
+> +struct mtk_dma_sg {
+> +       dma_addr_t addr;
+> +       unsigned int en;                /* number of elements (24-bit) */
+> +       unsigned int fn;                /* number of frames (16-bit) */
+> +};
+> +
+> +struct mtk_dma_desc {
+> +       struct virt_dma_desc vd;
+> +       enum dma_transfer_direction dir;
+> +
+> +       unsigned int sglen;
+> +       struct mtk_dma_sg sg[0];
+> +
+> +       unsigned int len;
+> +};
+> +
+> +static inline struct mtk_dmadev *to_mtk_dma_dev(struct dma_device *d)
+> +{
+> +       return container_of(d, struct mtk_dmadev, ddev);
+> +}
+> +
+> +static inline struct mtk_chan *to_mtk_dma_chan(struct dma_chan *c)
+> +{
+> +       return container_of(c, struct mtk_chan, vc.chan);
+> +}
+> +
+> +static inline struct mtk_dma_desc *to_mtk_dma_desc
+> +       (struct dma_async_tx_descriptor *t)
+> +{
+> +       return container_of(t, struct mtk_dma_desc, vd.tx);
+> +}
+> +
+> +static void mtk_dma_chan_write(struct mtk_chan *c,
+> +                              unsigned int reg, unsigned int val)
+> +{
+> +       writel(val, c->base + reg);
+> +}
+> +
+> +static unsigned int mtk_dma_chan_read(struct mtk_chan *c, unsigned int reg)
+> +{
+> +       return readl(c->base + reg);
+> +}
+> +
+> +static void mtk_dma_desc_free(struct virt_dma_desc *vd)
+> +{
+> +       struct dma_chan *chan = vd->tx.chan;
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +
+> +       kfree(c->desc);
+> +       c->desc = NULL;
+> +}
+> +
+> +static void mtk_dma_tx_flush(struct dma_chan *chan)
+> +{
 
->> [   87.218483] -> #2 (&port_lock_key){-.-.}:
->> [   87.219282]        lock_acquire+0x28c/0x2e7
->> [   87.219901]        _raw_spin_lock_irqsave+0x35/0x49
->> [   87.220601]        serial8250_console_write+0x110/0x5b5
->> [   87.221354]        univ8250_console_write+0x5f/0x64
->> [   87.222056]        console_unlock+0x61c/0x7cf
->> [   87.222680]        register_console+0x63a/0x7b0
->> [   87.223345]        univ8250_console_init+0x1e/0x28
->> [   87.224041]        console_init+0x3be/0x57e
->> [   87.224641]        start_kernel+0x441/0x6c6
->> [   87.225246]        x86_64_start_reservations+0x29/0x2b
->> [   87.225979]        x86_64_start_kernel+0x6f/0x72
->> [   87.226637]        secondary_startup_64+0xa4/0xb0
->> [   87.227314] 
->> [   87.227314] -> #1 (console_owner){-...}:
->> [   87.228127]        lock_acquire+0x28c/0x2e7
->> [   87.228728]        console_unlock+0x424/0x7cf
->> [   87.229363]        vprintk_emit+0x22d/0x252
->> [   87.229969]        vprintk_default+0x18/0x1a
->> [   87.230576]        vprintk_func+0xa9/0xab
->> [   87.231156]        printk+0x97/0xbe
->> [   87.231659]        __debug_object_init+0x8db/0x92d
->> [   87.232349]        debug_object_init+0x14/0x17
->> [   87.232987]        __init_work+0x1b/0x1d
->> [   87.233551]        rhashtable_init+0x53b/0x602
->> [   87.234192]        rhltable_init+0xe/0x41
->> [   87.234772]        test_insert_dup+0xac/0xa94
->> [   87.235467]        test_rht_init+0x387/0x79c
->> [   87.236222]        do_one_initcall+0x23c/0x4af
->> [   87.236869]        kernel_init_freeable+0x5ec/0x69f
->> [   87.237855]        kernel_init+0xc/0x100
->> [   87.238470]        ret_from_fork+0x3a/0x50
->> [   87.239071] 
->> [   87.239071] -> #0 (&obj_hash[i].lock){-.-.}:
->> [   87.239904]        __lock_acquire+0x1f78/0x22d1
->> [   87.240556]        lock_acquire+0x28c/0x2e7
->> [   87.241173]        _raw_spin_lock_irqsave+0x35/0x49
->> [   87.241882]        debug_check_no_obj_freed+0xb4/0x302
->> [   87.242620]        free_unref_page_prepare+0x33a/0x483
->> [   87.243368]        free_unref_page+0x48/0x80
->> [   87.243991]        __free_pages+0x2e/0x40
->> [   87.244611]        free_pages+0x54/0x5a
->> [   87.245188]        uart_shutdown+0x3df/0x4e2
->> [   87.245817]        uart_hangup+0x123/0x280
->> [   87.246406]        __tty_hangup+0x4da/0x50f
->> [   87.247025]        tty_vhangup_session+0xe/0x10
->> [   87.247680]        disassociate_ctty+0xeb/0x5c5
->> [   87.248349]        do_exit+0xc97/0x1daf
->> [   87.248920]        __x64_sys_exit_group+0x0/0x3e
->> [   87.249587]        __wake_up_parent+0x0/0x52
->> [   87.250211]        do_syscall_64+0x5e8/0x881
->> [   87.250839]        entry_SYSCALL_64_after_hwframe+0x49/0xbe
->> [   87.251637] 
->> [   87.251637] other info that might help us debug this:
->> [   87.251637] 
->> [   87.252790] Chain exists of:
->> [   87.252790]   &obj_hash[i].lock --> console_owner --> &port_lock_key
->> [   87.252790] 
->> [   87.254307]  Possible unsafe locking scenario:
->> [   87.254307] 
->> [   87.255156]        CPU0                    CPU1
->> [   87.255813]        ----                    ----
->> [   87.256460]   lock(&port_lock_key);
->> [   87.256973]                                lock(console_owner);
->> [   87.257829]                                lock(&port_lock_key);
->> [   87.258680]   lock(&obj_hash[i].lock);
->> [   87.259223] 
->> [   87.259223]  *** DEADLOCK ***
->> [   87.259223] 
->> [   87.260067] 3 locks held by getty/519:
->> [   87.260605]  #0: (____ptrval____) (&tty->legacy_mutex){+.+.}, at: tty_lock+0x5c/0x68
->> [   87.261717]  #1: (____ptrval____) (&port->mutex){+.+.}, at: uart_hangup+0x4b/0x280
->> [   87.262795]  #2: (____ptrval____) (&port_lock_key){-.-.}, at: uart_shutdown+0x3a3/0x4e2
->> [   87.263974] 
->> [   87.263974] stack backtrace:
->> [   87.264631] CPU: 0 PID: 519 Comm: getty Tainted: G        W         4.20.0-rc4-00057-gc96cf92 #1
->> [   87.265893] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
->> [   87.267082] Call Trace:
->> [   87.267451]  dump_stack+0x86/0xc3
->> [   87.267942]  print_circular_bug+0x4a8/0x4b9
->> [   87.268635]  check_prevs_add+0x466/0x109c
->> [   87.269230]  ? quarantine_put+0x114/0x135
->> [   87.269821]  ? quarantine_put+0x114/0x135
->> [   87.270399]  ? serial_do_unlink+0x266/0x272
->> [   87.271009]  ? print_circular_bug_header+0x122/0x122
->> [   87.271722]  ? __kasan_slab_free+0x1e8/0x1fd
->> [   87.272341]  ? __kasan_slab_free+0x153/0x1fd
+If the user is only one, let's span the content into where the user is.
 
-Thanks,
-          Dmitry
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +
+> +       if (mtk_dma_chan_read(c, VFF_FLUSH) == 0U)
+> +               mtk_dma_chan_write(c, VFF_FLUSH, VFF_FLUSH_B);
+> +}
+> +
+> +static void mtk_dma_tx_write(struct dma_chan *chan)
+> +{
+
+If the user is only one, let's span the content into where the user is.
+
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +       unsigned int txcount = c->desc->len;
+> +       unsigned int len, send, left, wpt, wrap;
+> +
+> +       len = mtk_dma_chan_read(c, VFF_LEN);
+> +
+> +       while ((left = mtk_dma_chan_read(c, VFF_LEFT_SIZE)) > 0U) {
+> +               if (c->desc->len == 0U)
+
+merge the condition back into the condition in while
+
+> +                       break;
+> +               send = min_t(unsigned int, left, c->desc->len);
+> +               wpt = mtk_dma_chan_read(c, VFF_WPT);
+> +               wrap = wpt & MTK_DMA_RING_WRAP ? 0U : MTK_DMA_RING_WRAP;
+> +
+> +               if ((wpt & (len - 1U)) + send < len)
+> +                       mtk_dma_chan_write(c, VFF_WPT, wpt + send);
+> +               else
+> +                       mtk_dma_chan_write(c, VFF_WPT,
+> +                                          ((wpt + send) & (len - 1U))
+> +                                          | wrap);
+> +
+> +               c->desc->len -= send;
+
+->len can be renamed to ->avail_len to say it's variable during the work
+
+> +       }
+> +
+> +       if (txcount != c->desc->len) {
+> +               mtk_dma_chan_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
+> +               mtk_dma_tx_flush(chan);
+> +       }
+> +}
+> +
+> +static void mtk_dma_start_tx(struct mtk_chan *c)
+> +{
+> +       if (mtk_dma_chan_read(c, VFF_LEFT_SIZE) == 0U)
+> +               mtk_dma_chan_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
+> +       else
+> +               mtk_dma_tx_write(&c->vc.chan);
+> +
+> +       c->stop = false;
+> +}
+> +
+> +static void mtk_dma_get_rx_size(struct mtk_chan *c)
+> +{
+
+If the user is only one, let's span the content into where the user is.
+
+> +       unsigned int rx_size = mtk_dma_chan_read(c, VFF_LEN);
+> +       unsigned int rdptr, wrptr, wrreg, rdreg, count;
+
+too much variable seems a little lousy, two variables are enough
+
+unsigned int rd, wr;
+
+> +
+> +       rdreg = mtk_dma_chan_read(c, VFF_RPT);
+> +       wrreg = mtk_dma_chan_read(c, VFF_WPT);
+> +       rdptr = rdreg & MTK_DMA_RING_SIZE;
+> +       wrptr = wrreg & MTK_DMA_RING_SIZE;
+
+rd = mtk_dma_chan_read(c, VFF_RPT) & MTK_DMA_RING_SIZE;
+wr = mtk_dma_chan_read(c, VFF_WPT) & MTK_DMA_RING_SIZE
+
+> +       count = ((rdreg ^ wrreg) & MTK_DMA_RING_WRAP) ?
+> +                       (wrptr + rx_size - rdptr) : (wrptr - rdptr);
+> +
+> +       c->rx_status = count;
+
+drop the variable count and have a direct assignment
+
+> +
+> +       mtk_dma_chan_write(c, VFF_RPT, wrreg);
+> +}
+> +
+> +static void mtk_dma_start_rx(struct mtk_chan *c)
+> +{
+> +       struct dma_chan *chan = &c->vc.chan;
+> +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(chan->device);
+> +       struct mtk_dma_desc *d = c->desc;
+> +
+> +       if (mtk_dma_chan_read(c, VFF_VALID_SIZE) == 0U)
+> +               return;
+> +
+> +       if (d && vchan_next_desc(&c->vc)) {
+> +               mtk_dma_get_rx_size(c);
+> +               list_del(&d->vd.node);
+> +               vchan_cookie_complete(&d->vd);
+> +       } else {
+> +               spin_lock(&mtkd->lock);
+> +               if (list_empty(&mtkd->pending))
+> +                       list_add_tail(&c->node, &mtkd->pending);
+> +               spin_unlock(&mtkd->lock);
+> +               tasklet_schedule(&mtkd->task);
+> +       }
+> +}
+> +
+> +static void mtk_dma_reset(struct mtk_chan *c)
+> +{
+
+If the user is only one, let's span the content into where the user is.
+
+> +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(c->vc.chan.device);
+> +       u32 status;
+> +       int ret;
+> +
+> +       mtk_dma_chan_write(c, VFF_ADDR, 0);
+> +       mtk_dma_chan_write(c, VFF_THRE, 0);
+> +       mtk_dma_chan_write(c, VFF_LEN, 0);
+> +       mtk_dma_chan_write(c, VFF_RST, VFF_WARM_RST_B);
+> +
+> +       ret = readx_poll_timeout(readl,
+> +                                c->base + VFF_EN,
+> +                                status, status == 0, 10, 100);
+> +       if (ret) {
+> +               dev_err(c->vc.chan.device->dev,
+> +                               "dma reset: fail, timeout\n");
+> +               return;
+> +       }
+> +
+> +       if (c->cfg.direction == DMA_DEV_TO_MEM)
+> +               mtk_dma_chan_write(c, VFF_RPT, 0);
+> +       else if (c->cfg.direction == DMA_MEM_TO_DEV)
+> +               mtk_dma_chan_write(c, VFF_WPT, 0);
+
+using switch and case statement
+
+> +
+> +       if (mtkd->support_33bits)
+> +               mtk_dma_chan_write(c, VFF_4G_SUPPORT, VFF_4G_SUPPORT_CLR_B);
+> +}
+> +
+> +static void mtk_dma_stop(struct mtk_chan *c)
+
+If the user is only one, let's span the content into where the user is.
+
+> +{
+> +       u32 status;
+> +       int ret;
+> +
+> +       mtk_dma_chan_write(c, VFF_FLUSH, VFF_FLUSH_CLR_B);
+> +       /* Wait for flush */
+> +       ret = readx_poll_timeout(readl,
+> +                                c->base + VFF_FLUSH,
+> +                                status,
+> +                                (status & VFF_FLUSH_B) != VFF_FLUSH_B,
+> +                                10, 100);
+> +       if (ret)
+> +               dev_err(c->vc.chan.device->dev,
+> +                       "dma stop: polling FLUSH fail, DEBUG=0x%x\n",
+> +                       mtk_dma_chan_read(c, VFF_DEBUG_STATUS));
+> +
+> +       /*set stop as 1 -> wait until en is 0 -> set stop as 0*/
+> +       mtk_dma_chan_write(c, VFF_STOP, VFF_STOP_B);
+> +       ret = readx_poll_timeout(readl,
+> +                                c->base + VFF_EN,
+> +                                status, status == 0, 10, 100);
+> +       if (ret)
+> +               dev_err(c->vc.chan.device->dev,
+> +                       "dma stop: polling VFF_EN fail, DEBUG=0x%x\n",
+> +                       mtk_dma_chan_read(c, VFF_DEBUG_STATUS));
+> +
+> +       mtk_dma_chan_write(c, VFF_STOP, VFF_STOP_CLR_B);
+> +       mtk_dma_chan_write(c, VFF_INT_EN, VFF_INT_EN_CLR_B);
+> +
+> +       if (c->cfg.direction == DMA_DEV_TO_MEM)
+> +               mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
+> +       else
+> +               mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_TX_INT_FLAG_CLR_B);
+
+using switch and case statement
+
+> +
+> +       c->stop = true;
+> +}
+> +
+> +/*
+> + * This callback schedules all pending channels. We could be more
+> + * clever here by postponing allocation of the real DMA channels to
+> + * this point, and freeing them when our virtual channel becomes idle.
+> + *
+> + * We would then need to deal with 'all channels in-use'
+> + */
+> +static void mtk_dma_sched(unsigned long data)
+> +{
+
+As at the initial be said, try to make descriptors submit as fast as
+possible without involving in a tasklet. The same improvement had been
+done at mtk-hsdma.c  so you could have a reference to it first if you
+have no much idea of how to begin to improve.
+
+> +       struct mtk_dmadev *mtkd = (struct mtk_dmadev *)data;
+> +       struct virt_dma_desc *vd;
+> +       struct mtk_chan *c;
+> +       unsigned long flags;
+> +       LIST_HEAD(head);
+> +
+> +       spin_lock_irq(&mtkd->lock);
+> +       list_splice_tail_init(&mtkd->pending, &head);
+> +       spin_unlock_irq(&mtkd->lock);
+> +
+> +       if (!list_empty(&head)) {
+> +               c = list_first_entry(&head, struct mtk_chan, node);
+> +
+> +               spin_lock_irqsave(&c->vc.lock, flags);
+> +               if (c->cfg.direction == DMA_DEV_TO_MEM) {
+> +                       list_del_init(&c->node);
+> +                       mtk_dma_start_rx(c);
+> +               } else if (c->cfg.direction == DMA_MEM_TO_DEV) {
+> +                       vd = vchan_next_desc(&c->vc);
+> +                       c->desc = to_mtk_dma_desc(&vd->tx);
+> +                       list_del_init(&c->node);
+> +                       mtk_dma_start_tx(c);
+> +               }
+> +               spin_unlock_irqrestore(&c->vc.lock, flags);
+> +       }
+> +}
+> +
+> +static int mtk_dma_alloc_chan_resources(struct dma_chan *chan)
+> +{
+> +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(chan->device);
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +       int ret = -EBUSY;
+> +
+> +       pm_runtime_get_sync(mtkd->ddev.dev);
+> +
+> +       if (!mtkd->ch[chan->chan_id]) {
+> +               c->base = mtkd->mem_base[chan->chan_id]
+
+mtkd->mem_base is unnecessary, we can directly decide c->base in the
+driver probe stage
+
+> +               mtkd->ch[chan->chan_id] = c;
+
+mtkd->ch is also unnecessary, the core always pass struct dma_chan
+*chan to each callback function
+
+> +               ret = 1;
+
+ret be 1 seems be wrong
+
+> +       }
+> +       c->requested = false;
+> +       mtk_dma_reset(c);
+> +
+> +       return ret;
+> +}
+> +
+> +static void mtk_dma_free_chan_resources(struct dma_chan *chan)
+> +{
+> +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(chan->device);
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +
+> +       if (c->requested) {
+> +               c->requested = false;
+> +               free_irq(mtkd->dma_irq[chan->chan_id], chan);
+
+it makes not consistent because there are not request_irq present at
+mtk_dma_alloc_chan_resources. but I'd prefer a  devm_request_irq is
+being done
+as the driver got probe.
+
+> +       }
+> +
+> +       tasklet_kill(&mtkd->task);
+> +       tasklet_kill(&c->vc.task);
+> +
+> +       c->base = NULL;
+> +       mtkd->ch[chan->chan_id] = NULL;
+> +       vchan_free_chan_resources(&c->vc);
+> +
+> +       pm_runtime_put_sync(mtkd->ddev.dev);
+> +}
+> +
+> +static enum dma_status mtk_dma_tx_status(struct dma_chan *chan,
+> +                                        dma_cookie_t cookie,
+> +                                        struct dma_tx_state *txstate)
+> +{
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +       enum dma_status ret;
+> +       unsigned long flags;
+> +
+> +       if (!txstate)
+> +               return DMA_ERROR;
+> +
+> +       ret = dma_cookie_status(chan, cookie, txstate);
+> +       spin_lock_irqsave(&c->vc.lock, flags);
+> +       if (ret == DMA_IN_PROGRESS) {
+> +               c->rx_status = mtk_dma_chan_read(c, VFF_RPT)
+> +                            & MTK_DMA_RING_SIZE;
+> +               dma_set_residue(txstate, c->rx_status);
+> +       } else if (ret == DMA_COMPLETE && c->cfg.direction == DMA_DEV_TO_MEM) {
+> +               dma_set_residue(txstate, c->rx_status);
+> +       } else {
+> +               dma_set_residue(txstate, 0);
+> +       }
+> +       spin_unlock_irqrestore(&c->vc.lock, flags);
+> +
+> +       return ret;
+> +}
+> +
+> +static struct dma_async_tx_descriptor *mtk_dma_prep_slave_sg
+> +       (struct dma_chan *chan, struct scatterlist *sgl,
+> +       unsigned int sglen,     enum dma_transfer_direction dir,
+> +       unsigned long tx_flags, void *context)
+> +{
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +       struct scatterlist *sgent;
+> +       struct mtk_dma_desc *d;
+> +       struct mtk_dma_sg *sg;
+> +       unsigned int size, i, j, en;
+> +
+> +       en = 1;
+> +
+> +       if ((dir != DMA_DEV_TO_MEM) &&
+> +               (dir != DMA_MEM_TO_DEV)) {
+> +               dev_err(chan->device->dev, "bad direction\n");
+> +               return NULL;
+> +       }
+> +
+> +       /* Now allocate and setup the descriptor. */
+> +       d = kzalloc(sizeof(*d) + sglen * sizeof(d->sg[0]), GFP_ATOMIC);
+> +       if (!d)
+> +               return NULL;
+> +
+> +       d->dir = dir;
+> +
+> +       j = 0;
+> +       for_each_sg(sgl, sgent, sglen, i) {
+> +               d->sg[j].addr = sg_dma_address(sgent);
+> +               d->sg[j].en = en;
+> +               d->sg[j].fn = sg_dma_len(sgent) / en;
+> +               j++;
+> +       }
+> +
+> +       d->sglen = j;
+> +
+> +       if (dir == DMA_MEM_TO_DEV) {
+> +               for (size = i = 0; i < d->sglen; i++) {
+> +                       sg = &d->sg[i];
+> +                       size += sg->en * sg->fn;
+> +               }
+> +               d->len = size;
+> +       }
+> +
+
+The driver always only handles data move for the single contiguous
+area, but it seems the callback must provide the scatter-gather
+function to the dmaegine. otherwise, why is the callback be called
+device_prep_slave_sg?
+
+> +       return vchan_tx_prep(&c->vc, &d->vd, tx_flags);
+> +}
+> +
+> +static void mtk_dma_issue_pending(struct dma_chan *chan)
+> +{
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +       struct virt_dma_desc *vd;
+> +       struct mtk_dmadev *mtkd;
+> +       unsigned long flags;
+> +
+> +       spin_lock_irqsave(&c->vc.lock, flags);
+> +       if (c->cfg.direction == DMA_DEV_TO_MEM) {
+> +               mtkd = to_mtk_dma_dev(chan->device);
+
+mtkd can be dropped as it seems no users
+
+> +               if (vchan_issue_pending(&c->vc) && !c->desc) {
+> +                       vd = vchan_next_desc(&c->vc);
+> +                       c->desc = to_mtk_dma_desc(&vd->tx);
+> +               }
+> +       } else if (c->cfg.direction == DMA_MEM_TO_DEV) {
+> +               if (vchan_issue_pending(&c->vc) && !c->desc) {
+> +                       vd = vchan_next_desc(&c->vc);
+> +                       c->desc = to_mtk_dma_desc(&vd->tx);
+> +                       mtk_dma_start_tx(c);
+> +               }
+> +       }
+> +       spin_unlock_irqrestore(&c->vc.lock, flags);
+> +}
+> +
+> +static irqreturn_t mtk_dma_rx_interrupt(int irq, void *dev_id)
+> +{
+> +       struct dma_chan *chan = (struct dma_chan *)dev_id;
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +       unsigned long flags;
+> +
+> +       spin_lock_irqsave(&c->vc.lock, flags);
+> +       mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
+> +
+> +       mtk_dma_start_rx(c);
+> +
+> +       spin_unlock_irqrestore(&c->vc.lock, flags);
+> +
+> +       return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t mtk_dma_tx_interrupt(int irq, void *dev_id)
+> +{
+> +       struct dma_chan *chan = (struct dma_chan *)dev_id;
+> +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(chan->device);
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +       struct mtk_dma_desc *d = c->desc;
+> +       unsigned long flags;
+> +
+> +       spin_lock_irqsave(&c->vc.lock, flags);
+> +       if (d->len != 0U) {
+> +               list_add_tail(&c->node, &mtkd->pending);
+> +               tasklet_schedule(&mtkd->task);
+> +       } else {
+> +               list_del(&d->vd.node);
+> +               vchan_cookie_complete(&d->vd);
+> +       }
+> +       spin_unlock_irqrestore(&c->vc.lock, flags);
+> +
+> +       mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_TX_INT_FLAG_CLR_B);
+> +
+> +       return IRQ_HANDLED;
+> +}
+> +
+> +static int mtk_dma_slave_config(struct dma_chan *chan,
+> +                               struct dma_slave_config *cfg)
+> +{
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(c->vc.chan.device);
+> +       int ret;
+> +
+> +       c->cfg = *cfg;
+> +
+> +       if (cfg->direction == DMA_DEV_TO_MEM) {
+> +               unsigned int rx_len = cfg->src_addr_width * 1024;
+
+it seems you should use cfg->src_port_window_size as the comments explains
+
+* @src_port_window_size: The length of the register area in words the data need
+ * to be accessed on the device side. It is only used for devices which is using
+ * an area instead of a single register to receive the data. Typically the DMA
+ * loops in this area in order to transfer the data.
+ * @dst_port_window_size: same as src_port_window_size but for the destination
+ * port.
+
+> +
+> +               mtk_dma_chan_write(c, VFF_ADDR, cfg->src_addr);
+> +               mtk_dma_chan_write(c, VFF_LEN, rx_len);
+> +               mtk_dma_chan_write(c, VFF_THRE, VFF_RX_THRE(rx_len));
+> +               mtk_dma_chan_write(c,
+> +                                  VFF_INT_EN, VFF_RX_INT_EN0_B
+> +                                  | VFF_RX_INT_EN1_B);
+> +               mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
+> +               mtk_dma_chan_write(c, VFF_EN, VFF_EN_B);
+
+I'd prefer to move those channel interrupt enablement to
+.device_alloc_chan_resources
+and related disablement to .device_free_chan_resources
+
+> +
+> +               if (!c->requested) {
+> +                       c->requested = true;
+> +                       ret = request_irq(mtkd->dma_irq[chan->chan_id],
+> +                                         mtk_dma_rx_interrupt,
+> +                                         IRQF_TRIGGER_NONE,
+> +                                         KBUILD_MODNAME, chan);
+
+ISR registration usually happens as the driver got probe, it can give
+the system more flexibility to manage such IRQ affinity on the fly.
+
+> +                       if (ret < 0) {
+> +                               dev_err(chan->device->dev, "Can't request rx dma IRQ\n");
+> +                               return -EINVAL;
+> +                       }
+> +               }
+> +       } else if (cfg->direction == DMA_MEM_TO_DEV)    {
+> +               unsigned int tx_len = cfg->dst_addr_width * 1024;
+
+Ditto as above, it seems you should use cfg->dst_port_window_size
+
+> +
+> +               mtk_dma_chan_write(c, VFF_ADDR, cfg->dst_addr);
+> +               mtk_dma_chan_write(c, VFF_LEN, tx_len);
+> +               mtk_dma_chan_write(c, VFF_THRE, VFF_TX_THRE(tx_len));
+> +               mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_TX_INT_FLAG_CLR_B);
+> +               mtk_dma_chan_write(c, VFF_EN, VFF_EN_B);
+
+ditto, I'd prefer to move those channel interrupt enablement to
+.device_alloc_chan_resources and related disablement to
+.device_free_chan_resources
+
+> +
+> +               if (!c->requested) {
+> +                       c->requested = true;
+> +                       ret = request_irq(mtkd->dma_irq[chan->chan_id],
+> +                                         mtk_dma_tx_interrupt,
+> +                                         IRQF_TRIGGER_NONE,
+> +                                         KBUILD_MODNAME, chan);
+
+ditto, we can request ISR with devm_request_irq in the driver got
+probe and trim the c->request member
+
+> +                       if (ret < 0) {
+> +                               dev_err(chan->device->dev, "Can't request tx dma IRQ\n");
+> +                               return -EINVAL;
+> +                       }
+> +               }
+> +       }
+> +
+> +       if (mtkd->support_33bits)
+> +               mtk_dma_chan_write(c, VFF_4G_SUPPORT, VFF_4G_SUPPORT_B);
+> +
+> +       if (mtk_dma_chan_read(c, VFF_EN) != VFF_EN_B) {
+> +               dev_err(chan->device->dev,
+> +                       "config dma dir[%d] fail\n", cfg->direction);
+> +               return -EINVAL;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +static int mtk_dma_terminate_all(struct dma_chan *chan)
+> +{
+> +       struct mtk_chan *c = to_mtk_dma_chan(chan);
+> +       unsigned long flags;
+> +
+> +       spin_lock_irqsave(&c->vc.lock, flags);
+> +       list_del_init(&c->node);
+> +       mtk_dma_stop(c);
+> +       spin_unlock_irqrestore(&c->vc.lock, flags);
+> +
+> +       return 0;
+> +}
+> +
+> +static int mtk_dma_device_pause(struct dma_chan *chan)
+> +{
+> +       /* just for check caps pass */
+> +       return -EINVAL;
+
+always return error code seems not the client driver wants us to do.
+
+maybe if the hardware doesn't support pause, we can make a software
+pause, that waits until all active descriptors in hardware done, then
+disable interrupt and then stop handling the following vd in the
+vchan.
+
+> +}
+> +
+> +static int mtk_dma_device_resume(struct dma_chan *chan)
+> +{
+> +       /* just for check caps pass */
+> +       return -EINVAL;
+
+similar to the above
+
+> +}
+> +
+> +static void mtk_dma_free(struct mtk_dmadev *mtkd)
+> +{
+> +       tasklet_kill(&mtkd->task);
+> +       while (list_empty(&mtkd->ddev.channels) == 0) {
+!list_empty(&mtkd->ddev.channels)
+> +               struct mtk_chan *c = list_first_entry(&mtkd->ddev.channels,
+> +                       struct mtk_chan, vc.chan.device_node);
+> +
+> +               list_del(&c->vc.chan.device_node);
+> +               tasklet_kill(&c->vc.task);
+> +               devm_kfree(mtkd->ddev.dev, c);
+
+no need to call devm_kfree, the core would help do this
+
+> +       }
+> +}
+> +
+> +static const struct of_device_id mtk_uart_dma_match[] = {
+> +       { .compatible = "mediatek,mt6577-uart-dma", },
+> +       { /* sentinel */ },
+> +};
+> +MODULE_DEVICE_TABLE(of, mtk_uart_dma_match);
+> +
+> +static int mtk_apdma_probe(struct platform_device *pdev)
+> +{
+> +       struct mtk_dmadev *mtkd;
+> +       struct resource *res;
+> +       struct mtk_chan *c;
+> +       unsigned int i;
+> +       int rc;
+> +
+> +       mtkd = devm_kzalloc(&pdev->dev, sizeof(*mtkd), GFP_KERNEL);
+> +       if (!mtkd)
+> +               return -ENOMEM;
+> +
+> +       for (i = 0; i < MTK_APDMA_CHANNELS; i++) {
+> +               res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+> +               if (!res)
+> +                       return -ENODEV;
+> +               mtkd->mem_base[i] = devm_ioremap_resource(&pdev->dev, res);
+> +               if (IS_ERR(mtkd->mem_base[i]))
+> +                       return PTR_ERR(mtkd->mem_base[i]);
+> +       }
+> +
+> +       for (i = 0; i < MTK_APDMA_CHANNELS; i++) {
+> +               mtkd->dma_irq[i] = platform_get_irq(pdev, i);
+> +               if ((int)mtkd->dma_irq[i] < 0) {
+> +                       dev_err(&pdev->dev, "failed to get IRQ[%d]\n", i);
+> +                       return -EINVAL;
+> +               }
+> +       }
+> +
+> +       mtkd->clk = devm_clk_get(&pdev->dev, NULL);
+> +       if (IS_ERR(mtkd->clk)) {
+> +               dev_err(&pdev->dev, "No clock specified\n");
+> +               return PTR_ERR(mtkd->clk);
+> +       }
+> +
+> +       if (of_property_read_bool(pdev->dev.of_node, "dma-33bits")) {
+> +               dev_info(&pdev->dev, "Support dma 33bits\n");
+> +               mtkd->support_33bits = true;
+> +       }
+> +
+> +       if (mtkd->support_33bits)
+> +               rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(33));
+> +       else
+> +               rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+
+ rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32 |
+mtkd->support_33bits));
+
+> +       if (rc)
+> +               return rc;
+> +
+> +       dma_cap_set(DMA_SLAVE, mtkd->ddev.cap_mask);
+> +       mtkd->ddev.device_alloc_chan_resources = mtk_dma_alloc_chan_resources;
+> +       mtkd->ddev.device_free_chan_resources = mtk_dma_free_chan_resources;
+> +       mtkd->ddev.device_tx_status = mtk_dma_tx_status;
+> +       mtkd->ddev.device_issue_pending = mtk_dma_issue_pending;
+> +       mtkd->ddev.device_prep_slave_sg = mtk_dma_prep_slave_sg;
+> +       mtkd->ddev.device_config = mtk_dma_slave_config;
+> +       mtkd->ddev.device_pause = mtk_dma_device_pause;
+> +       mtkd->ddev.device_resume = mtk_dma_device_resume;
+> +       mtkd->ddev.device_terminate_all = mtk_dma_terminate_all;
+> +       mtkd->ddev.src_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE);
+> +       mtkd->ddev.dst_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE);
+> +       mtkd->ddev.directions = BIT(DMA_DEV_TO_MEM) | BIT(DMA_MEM_TO_DEV);
+> +       mtkd->ddev.residue_granularity = DMA_RESIDUE_GRANULARITY_SEGMENT;
+> +       mtkd->ddev.dev = &pdev->dev;
+> +       INIT_LIST_HEAD(&mtkd->ddev.channels);
+> +       INIT_LIST_HEAD(&mtkd->pending);
+> +
+> +       spin_lock_init(&mtkd->lock);
+> +       tasklet_init(&mtkd->task, mtk_dma_sched, (unsigned long)mtkd);
+> +
+> +       mtkd->dma_requests = MTK_APDMA_DEFAULT_REQUESTS;
+> +       if (of_property_read_u32(pdev->dev.of_node,
+> +                                "dma-requests", &mtkd->dma_requests)) {
+> +               dev_info(&pdev->dev,
+> +                        "Missing dma-requests property, using %u.\n",
+> +                        MTK_APDMA_DEFAULT_REQUESTS);
+> +       }
+> +
+> +       for (i = 0; i < MTK_APDMA_CHANNELS; i++) {
+> +               c = devm_kzalloc(mtkd->ddev.dev, sizeof(*c), GFP_KERNEL);
+> +               if (!c)
+> +                       goto err_no_dma;
+> +
+> +               c->vc.desc_free = mtk_dma_desc_free;
+> +               vchan_init(&c->vc, &mtkd->ddev);
+> +               INIT_LIST_HEAD(&c->node);
+> +       }
+> +
+> +       pm_runtime_enable(&pdev->dev);
+> +       pm_runtime_set_active(&pdev->dev);
+> +
+> +       rc = dma_async_device_register(&mtkd->ddev);
+> +       if (rc)
+> +               goto rpm_disable;
+> +
+> +       platform_set_drvdata(pdev, mtkd);
+> +
+> +       if (pdev->dev.of_node) {
+> +               /* Device-tree DMA controller registration */
+> +               rc = of_dma_controller_register(pdev->dev.of_node,
+> +                                               of_dma_xlate_by_chan_id,
+> +                                               mtkd);
+> +               if (rc)
+> +                       goto dma_remove;
+> +       }
+> +
+> +       return rc;
+> +
+> +dma_remove:
+> +       dma_async_device_unregister(&mtkd->ddev);
+> +rpm_disable:
+> +       pm_runtime_disable(&pdev->dev);
+> +err_no_dma:
+> +       mtk_dma_free(mtkd);
+> +       return rc;
+> +}
+> +
+> +static int mtk_apdma_remove(struct platform_device *pdev)
+> +{
+> +       struct mtk_dmadev *mtkd = platform_get_drvdata(pdev);
+> +
+> +       if (pdev->dev.of_node)
+> +               of_dma_controller_free(pdev->dev.of_node);
+> +
+> +       pm_runtime_disable(&pdev->dev);
+> +       pm_runtime_put_noidle(&pdev->dev);
+> +
+> +       dma_async_device_unregister(&mtkd->ddev);
+> +
+> +       mtk_dma_free(mtkd);
+> +
+> +       return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int mtk_dma_suspend(struct device *dev)
+> +{
+> +       struct mtk_dmadev *mtkd = dev_get_drvdata(dev);
+> +
+> +       if (!pm_runtime_suspended(dev))
+> +               clk_disable_unprepare(mtkd->clk);
+> +
+> +       return 0;
+> +}
+> +
+> +static int mtk_dma_resume(struct device *dev)
+> +{
+> +       int ret;
+> +       struct mtk_dmadev *mtkd = dev_get_drvdata(dev);
+> +
+> +       if (!pm_runtime_suspended(dev)) {
+> +               ret = clk_prepare_enable(mtkd->clk);
+> +               if (ret)
+> +                       return ret;
+> +       }
+> +
+> +       return 0;
+> +}
+> +#endif /* CONFIG_PM_SLEEP */
+> +
+> +#ifdef CONFIG_PM
+> +static int mtk_dma_runtime_suspend(struct device *dev)
+> +{
+> +       struct mtk_dmadev *mtkd = dev_get_drvdata(dev);
+> +
+> +       clk_disable_unprepare(mtkd->clk);
+> +
+> +       return 0;
+> +}
+> +
+> +static int mtk_dma_runtime_resume(struct device *dev)
+> +{
+> +       int ret;
+> +       struct mtk_dmadev *mtkd = dev_get_drvdata(dev);
+> +
+> +       ret = clk_prepare_enable(mtkd->clk);
+> +       if (ret)
+> +               return ret;
+> +
+> +       return 0;
+> +}
+> +#endif /* CONFIG_PM */
+> +
+> +static const struct dev_pm_ops mtk_dma_pm_ops = {
+> +       SET_SYSTEM_SLEEP_PM_OPS(mtk_dma_suspend, mtk_dma_resume)
+> +       SET_RUNTIME_PM_OPS(mtk_dma_runtime_suspend,
+> +                          mtk_dma_runtime_resume, NULL)
+> +};
+> +
+> +static struct platform_driver mtk_dma_driver = {
+
+mtk_dma is much general and all functions and structures in the driver
+should be all consistent.  I'd prefer to have all naming starts with
+mtk_uart_apdma.
+
+> +       .probe  = mtk_apdma_probe,
+
+such  as
+mtk_uart_apdma_probe
+
+> +       .remove = mtk_apdma_remove,
+
+mtk_uart_apdma_remove
+
+> +       .driver = {
+> +               .name           = KBUILD_MODNAME,
+> +               .pm             = &mtk_dma_pm_ops,
+
+mtk_uart_apdma_pm_ops
+
+> +               .of_match_table = of_match_ptr(mtk_uart_dma_match),
+
+mtk_uart_apdma_match
+
+> +       },
+> +};
+> +
+> +module_platform_driver(mtk_dma_driver);
+
+mtk_uart_apdma_driver
+
+> +
+> +MODULE_DESCRIPTION("MediaTek UART APDMA Controller Driver");
+> +MODULE_AUTHOR("Long Cheng <long.cheng@mediatek.com>");
+> +MODULE_LICENSE("GPL v2");
+> +
+> diff --git a/drivers/dma/mediatek/Kconfig b/drivers/dma/mediatek/Kconfig
+> index 27bac0b..d399624 100644
+> --- a/drivers/dma/mediatek/Kconfig
+> +++ b/drivers/dma/mediatek/Kconfig
+> @@ -1,4 +1,15 @@
+>
+> +config DMA_MTK_UART
+
+MTK_UART_APDMA to align the other drivers
+
+> +       tristate "MediaTek SoCs APDMA support for UART"
+> +       depends on OF && SERIAL_8250_MT6577
+> +       select DMA_ENGINE
+> +       select DMA_VIRTUAL_CHANNELS
+> +       help
+> +         Support for the UART DMA engine found on MediaTek MTK SoCs.
+> +         when 8250 mtk uart is enabled, and if you want to using DMA,
+
+8250 mtk uart should be changed to SERIAL_8250_MT6577 to be more intuitive
+
+> +         you can enable the config. the DMA engine just only be used
+> +         with MediaTek Socs.
+
+SoCs
+
+> +
+>  config MTK_HSDMA
+>         tristate "MediaTek High-Speed DMA controller support"
+>         depends on ARCH_MEDIATEK || COMPILE_TEST
+> diff --git a/drivers/dma/mediatek/Makefile b/drivers/dma/mediatek/Makefile
+> index 6e778f8..2f2efd9 100644
+> --- a/drivers/dma/mediatek/Makefile
+> +++ b/drivers/dma/mediatek/Makefile
+> @@ -1 +1,2 @@
+> +obj-$(CONFIG_DMA_MTK_UART) += 8250_mtk_dma.o
+
+obj-$(CONFIG_MTK_UART_APDMA) += mtk-uart-apdma.o
+to align the other dirvers
+
+>  obj-$(CONFIG_MTK_HSDMA) += mtk-hsdma.o
+> --
+> 1.7.9.5
+>
