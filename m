@@ -1,80 +1,19 @@
-From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH] serial/sunsu: fix refcount leak
-Date: Wed, 12 Dec 2018 11:01:45 -0500
-Message-ID: <20181212160145.23117-1-tiny.windzz@gmail.com>
+From: Frank Lee <tiny.windzz@gmail.com>
+Subject: Re: [PATCH] serial/sunsu: fix refcount leak
+Date: Thu, 13 Dec 2018 00:05:47 +0800
+Message-ID: <CAEExFWuoJZfHeVemcLz9JhrQ_RBMzjsB3CopymBMWhEyWVR=rA@mail.gmail.com>
+References: <20181212160145.23117-1-tiny.windzz@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181212160145.23117-1-tiny.windzz@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: davem@davemloft.net, gregkh@linuxfoundation.org, jslaby@suse.com, sparclinux@vger.kernel.org
-Cc: daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The function of_find_node_by_path() acquires a reference to the node
-returned by it and that reference needs to be dropped by its caller.
+Sorry for got to add a prefix(PATCH v2).
+I hope this has no effect.
 
-su_get_type() doesn't do that. The match node are used as an identifier
-to compare against the current node, so we can directly drop the refcount
-after getting the node from the path as it is not used as pointer.
-
-Fix this by use a single variable and drop the refcount right after
-of_find_node_by_path().
-
-Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
----
- drivers/tty/serial/sunsu.c | 31 ++++++++++++++++++++++++++-----
- 1 file changed, 26 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index 6cf3e9b0728f..c5428b0426a9 100644
---- a/drivers/tty/serial/sunsu.c
-+++ b/drivers/tty/serial/sunsu.c
-@@ -1394,22 +1394,43 @@ static inline struct console *SUNSU_CONSOLE(void)
- static enum su_type su_get_type(struct device_node *dp)
- {
- 	struct device_node *ap = of_find_node_by_path("/aliases");
-+	enum su_type rc = SU_PORT_PORT;
- 
- 	if (ap) {
- 		const char *keyb = of_get_property(ap, "keyboard", NULL);
- 		const char *ms = of_get_property(ap, "mouse", NULL);
-+		struct device_node *match;
- 
- 		if (keyb) {
--			if (dp == of_find_node_by_path(keyb))
--				return SU_PORT_KBD;
-+			match = of_find_node_by_path(keyb);
-+
-+			/*
-+			 * The pointer is used as an identifier not
-+			 * as a pointer, we can drop the refcount on
-+			 * the of__node immediately after getting it.
-+			 */
-+			of_node_put(match);
-+
-+			if (dp == match) {
-+				rc = SU_PORT_KBD;
-+				goto out;
-+			}
- 		}
- 		if (ms) {
--			if (dp == of_find_node_by_path(ms))
--				return SU_PORT_MS;
-+			match = of_find_node_by_path(ms);
-+
-+			of_node_put(match);
-+
-+			if (dp == match) {
-+				rc = SU_PORT_MS;
-+				goto out;
-+			}
- 		}
- 	}
- 
--	return SU_PORT_PORT;
-+out:
-+	of_node_put(ap);
-+	return rc;
- }
- 
- static int su_probe(struct platform_device *op)
--- 
-2.17.0
+MBR,
+Yangtao
