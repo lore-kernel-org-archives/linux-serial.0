@@ -1,56 +1,80 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH v4 11/15] clocksource: Add clock driver for RDA8810PL SoC
-Date: Wed, 12 Dec 2018 16:52:58 +0100
-Message-ID: <affe5ffd-66de-526a-f568-52ad5f0c0083@linaro.org>
-References: <20181210173550.29643-1-manivannan.sadhasivam@linaro.org>
- <20181210173550.29643-12-manivannan.sadhasivam@linaro.org>
- <0b90a179-aa4b-57f7-0874-996d5c535ea9@linaro.org>
- <20181212154748.GA28130@Mani-XPS-13-9360>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+From: Yangtao Li <tiny.windzz@gmail.com>
+Subject: [PATCH] serial/sunsu: fix refcount leak
+Date: Wed, 12 Dec 2018 11:01:45 -0500
+Message-ID: <20181212160145.23117-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181212154748.GA28130@Mani-XPS-13-9360>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, gregkh@linuxfoundation.org, jslaby@suse.com, linux-unisoc@lists.infradead.org, afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net
+To: davem@davemloft.net, gregkh@linuxfoundation.org, jslaby@suse.com, sparclinux@vger.kernel.org
+Cc: daniel.lezcano@linaro.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 12/12/2018 16:47, Manivannan Sadhasivam wrote:
-> Hi Daniel,
-> 
-> On Wed, Dec 12, 2018 at 04:07:53PM +0100, Daniel Lezcano wrote:
->> On 10/12/2018 18:35, Manivannan Sadhasivam wrote:
->>> Add clock driver for RDA Micro RDA8810PL SoC supporting OSTIMER
->>> and HWTIMER.
->>>
->>> RDA8810PL has two independent timers: OSTIMER (56 bit) and HWTIMER
->>> (64 bit). Each timer provides optional interrupt support. In this
->>> driver, OSTIMER is used for clockevents and HWTIMER is used for
->>> clocksource.
->>>
->>> Signed-off-by: Andreas Färber <afaerber@suse.de>
->>> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
->>
->> The driver looks good to me. Do you want me to pick it up via my tree?
->>
-> 
-> Yes, please do. Marc is going to pick up the irqchip driver but I'm not
-> sure about the serial driver. The rest of the patches can be picked up
-> by the ARM maintainers (I need to send another version for dropping
-> Andreas from MAINTAINERS).
+The function of_find_node_by_path() acquires a reference to the node
+returned by it and that reference needs to be dropped by its caller.
 
-Ok, applied.
+su_get_type() doesn't do that. The match node are used as an identifier
+to compare against the current node, so we can directly drop the refcount
+after getting the node from the path as it is not used as pointer.
 
-Thanks
+Fix this by use a single variable and drop the refcount right after
+of_find_node_by_path().
 
-  -- Daniel
+Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+---
+ drivers/tty/serial/sunsu.c | 31 ++++++++++++++++++++++++++-----
+ 1 file changed, 26 insertions(+), 5 deletions(-)
 
-
+diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
+index 6cf3e9b0728f..c5428b0426a9 100644
+--- a/drivers/tty/serial/sunsu.c
++++ b/drivers/tty/serial/sunsu.c
+@@ -1394,22 +1394,43 @@ static inline struct console *SUNSU_CONSOLE(void)
+ static enum su_type su_get_type(struct device_node *dp)
+ {
+ 	struct device_node *ap = of_find_node_by_path("/aliases");
++	enum su_type rc = SU_PORT_PORT;
+ 
+ 	if (ap) {
+ 		const char *keyb = of_get_property(ap, "keyboard", NULL);
+ 		const char *ms = of_get_property(ap, "mouse", NULL);
++		struct device_node *match;
+ 
+ 		if (keyb) {
+-			if (dp == of_find_node_by_path(keyb))
+-				return SU_PORT_KBD;
++			match = of_find_node_by_path(keyb);
++
++			/*
++			 * The pointer is used as an identifier not
++			 * as a pointer, we can drop the refcount on
++			 * the of__node immediately after getting it.
++			 */
++			of_node_put(match);
++
++			if (dp == match) {
++				rc = SU_PORT_KBD;
++				goto out;
++			}
+ 		}
+ 		if (ms) {
+-			if (dp == of_find_node_by_path(ms))
+-				return SU_PORT_MS;
++			match = of_find_node_by_path(ms);
++
++			of_node_put(match);
++
++			if (dp == match) {
++				rc = SU_PORT_MS;
++				goto out;
++			}
+ 		}
+ 	}
+ 
+-	return SU_PORT_PORT;
++out:
++	of_node_put(ap);
++	return rc;
+ }
+ 
+ static int su_probe(struct platform_device *op)
 -- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+2.17.0
