@@ -1,53 +1,31 @@
 From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [LKP] [tty] c96cf923a9:
- WARNING:possible_circular_locking_dependency_detected
-Date: Wed, 12 Dec 2018 14:04:32 +0900
-Message-ID: <20181212050432.GE431@jagdpanzerIV>
-References: <20181211091154.GL23332@shao2-debian>
- <b8a5b151-9eaa-b098-f24f-b17c1886f456@suse.cz>
- <2780774e-b397-dcc2-6950-cccb527d5014@arista.com>
- <20181212034252.GD431@jagdpanzerIV>
+Subject: Re: [PATCHv3] panic: avoid deadlocks in re-entrant console drivers
+Date: Wed, 12 Dec 2018 14:23:08 +0900
+Message-ID: <20181212052308.GG431@jagdpanzerIV>
+References: <20181016050428.17966-2-sergey.senozhatsky@gmail.com>
+ <20181025101036.6823-1-sergey.senozhatsky@gmail.com>
+ <20181031122736.epbxu424l3xagge5@pathway.suse.cz>
+ <20181101014821.GB502@jagdpanzerIV>
+ <20181101080808.n73lrlnjd65nk4qf@pathway.suse.cz>
+ <20181122131202.nkcurdt5k6jrhowa@pathway.suse.cz>
+ <CAJmjG2-_8T6uJP54-+gUG7Aq7kNqkAKAEXbzzV9JVKyZFRh4GQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181212034252.GD431@jagdpanzerIV>
+In-Reply-To: <CAJmjG2-_8T6uJP54-+gUG7Aq7kNqkAKAEXbzzV9JVKyZFRh4GQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Safonov <dima@arista.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, kernel test robot <rong.a.chen@intel.com>, lkp@01.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mikulas Patocka <mpatocka@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Peter Zijlstra <peterz@infradead.org>, Waiman Long <longman@redhat.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To: Daniel Wang <wonderfly@google.com>
+Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On (12/12/18 12:42), Sergey Senozhatsky wrote:
-[..]
-> > >> [   87.255156]        CPU0                    CPU1
-> > >> [   87.255813]        ----                    ----
-> > >> [   87.256460]   lock(&port_lock_key);
-> > >> [   87.256973]                                lock(console_owner);
-> > >> [   87.257829]                                lock(&port_lock_key);
-> > >> [   87.258680]   lock(&obj_hash[i].lock);
-> 
-> So it's like
-> 
-> 	CPU0					CPU1
-> 
-> 	uart_shutdown()				db->lock
-> 	 uart_port->lock			 debug_print_object()
-> 	  free_page()				  printk
-> 	   debug_check_no_obj_freed		   uart_port->lock
-> 	    db->lock
-> 
-> 
-> In this particular case we probably can just move free_page()
-> out of uart_port lock scope. Note that free_page()->MM can printk()
-> on its own.
-> 
-[..]
-> 
-> [1] https://lore.kernel.org/lkml/1542653726-5655-8-git-send-email-longman@redhat.com/T/#u
+On (12/11/18 16:53), Daniel Wang wrote:
+> Is it okay to tag this commit with `Cc: stable@vger.kernel.org` so
+> that it'll get applied to the stable trees once merged into Linux's
+> tree, if it's not too late? Otherwise I'll follow up on the stable
+> merges separately. Thanks for making the changes anyway.
 
-That said, I'd first try Waiman's patch. The one I suggested is
-more of a defense move - there are too many things happening under
-uart_port->lock. This is not the first time we see lockdep complaining
-about the way uart and the rest of the kernel interact.
+My bad! I should have Cc-ed stable on that one, sorry. I guess now it
+would be easier to wait and follow up once it gets merged.
 
 	-ss
